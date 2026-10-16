@@ -896,3 +896,17 @@ En la primera convocatoria de un modelo nuevo, los cuadros de más de 25 ms baja
 No hay captura de una criatura convocada corriendo en partida porque la cámara sigue al mago; la reemplaza la galería de paridad en «run».
 
 Deuda: el cuadro de la convocatoria sigue en 62–74 ms. Son 38 ms fijos de convocar más la primera vez del modelo (material y pipeline). Propuesta de corte: precalentar los modelos del libro al empezar la partida y perfilar el costo de convocar.
+
+### F115 — Elegir el nivel del mago (RFC-030, corte 030d)
+
+Fila «Nivel del mago» (1–9) en el boot, junto al rival. También existe `--level=N` para el servidor dedicado. El nivel elegido se reinicia en `play_solo`, `host_lan` y `return_to_boot`, así que no queda pegado de una partida a otra. En red lo decide solo el servidor.
+
+**Cierre (2026-10-16).** Review PASS (`reviews/REVIEW-F115-level-pick.md`). Playtest con ventana PASS (`agent/out/pt115/`):
+- **Nivel 4 contra la IA:** Maná 1400/1400, libro con 7 casillas y los dos magos en nivel 4.
+- **«Jugar solo»:** nivel 9, Maná 1900/1900, libro con 11 casillas.
+- **Dedicado con `--level=2`:** el cliente ve Maná 1200/1200 y libro con 5 casillas (`oham, ycro, palk, sohe, guls`).
+- **Errores:** ninguno.
+
+Deuda:
+- Desde la partida no hay forma de volver al boot con input, así que el reinicio del nivel dentro del mismo proceso no se pudo probar como jugador.
+- El dedicado se probó con un solo cliente.

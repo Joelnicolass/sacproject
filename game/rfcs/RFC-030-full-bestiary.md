@@ -247,7 +247,7 @@ debug/rules/f111_bestiary_*.tres      M  wizard_level_stats = true
 **Árbol**
 ```text
 scenes/flow/sacrifice_flow.gd         M  level_override (0 = el de las reglas); --level=N en dedicado y solo (como --ai-slots, :110)
-scenes/ui/character_select.tscn/.gd   M  fila «Nivel del mago» 1–9 (solo en «Contra la IA»), default = data/match_rules.tres
+scenes/ui/boot.tscn/.gd               M  fila «Nivel del mago» 1–9 junto a %AiGod (§13), default = data/match_rules.tres
 scenes/world/wizard/wizard_spawner.gd M  usa level_override si > 0
 ```
 **Escena de prueba:** la escena que abre el jugador (boot → selección → «Contra la IA»). No hace falta escena de debug. El playtester elige nivel 4 y pulsa Jugar.

@@ -26,10 +26,11 @@ func _place(pawn: Node, slot: int) -> void:
 	var rules: Variant = owner.get("rules") if owner else null
 	if rules is MatchRules:
 		var match_rules := rules as MatchRules
-		pawn.set("level", match_rules.wizard_level)
+		var level := _level(match_rules)
+		pawn.set("level", level)
 		if match_rules.wizard_level_stats:
-			pawn.set("level_health_bonus", match_rules.health_per_level * match_rules.wizard_level)
-			pawn.set("level_mana_bonus", match_rules.mana_per_level * match_rules.wizard_level)
+			pawn.set("level_health_bonus", match_rules.health_per_level * level)
+			pawn.set("level_mana_bonus", match_rules.mana_per_level * level)
 		for component in ["SoulPurse", "ManaPool", "Health", "Spellbook", "Caster", "GhostForm"]:
 			var node := pawn.get_node_or_null(component)
 			if node:
@@ -41,6 +42,11 @@ func _place(pawn: Node, slot: int) -> void:
 	var spot := start.spawn_spot(toward_fount)
 	body.position = (_root as Node3D).to_local(spot.origin)
 	body.rotation.y = spot.basis.get_euler().y
+
+
+## RFC-030 030d (F115): the level chosen for this match (boot or --level) wins over the rules; 0 = the rules.
+func _level(match_rules: MatchRules) -> int:
+	return SacrificeFlow.level_override if SacrificeFlow.level_override > 0 else match_rules.wizard_level
 
 
 ## The start with that slot number. With more players than starts they share, in order.

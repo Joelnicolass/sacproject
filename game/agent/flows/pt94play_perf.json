@@ -1,0 +1,148 @@
+{
+ "scene": "res://debug/village.tscn",
+ "wait_first": 1.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "HighNoon/Units/Hunter",
+    "timeout": 30
+   }
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "view",
+    "args": [
+     "point:1262,1230",
+     70,
+     45,
+     0
+    ]
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "frame_ms",
+    "args": [
+     10.0
+    ]
+   }
+  },
+  {
+   "wait": 10.5
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "frame_report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "frame_ms",
+    "args": [
+     10.0
+    ]
+   }
+  },
+  {
+   "wait": 10.5
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "frame_report",
+    "args": []
+   }
+  },
+  {
+   "press": "check_tick"
+  },
+  {
+   "wait": 5.0
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "summary",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "frame_ms",
+    "args": [
+     10.0
+    ]
+   }
+  },
+  {
+   "wait": 10.5
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "frame_report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "frame_ms",
+    "args": [
+     10.0
+    ]
+   }
+  },
+  {
+   "wait": 10.5
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "frame_report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "frame_ms",
+    "args": [
+     10.0
+    ]
+   }
+  },
+  {
+   "wait": 10.5
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "frame_report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "summary",
+    "args": []
+   }
+  },
+  {
+   "shot": "perf_aldea.png"
+  }
+ ]
+}

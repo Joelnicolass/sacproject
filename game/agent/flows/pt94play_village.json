@@ -1,0 +1,326 @@
+{
+ "scene": "res://debug/village.tscn",
+ "wait_first": 1.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "HighNoon/Units/Hunter",
+    "timeout": 30
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "summary",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "frame_ms",
+    "args": [
+     8.0
+    ]
+   }
+  },
+  {
+   "wait": 8.5
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "frame_report",
+    "args": []
+   }
+  },
+  {
+   "press": "check_tick"
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "frame_ms",
+    "args": [
+     8.0
+    ]
+   }
+  },
+  {
+   "wait": 8.5
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "frame_report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "summary",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "frame_ms",
+    "args": [
+     8.0
+    ]
+   }
+  },
+  {
+   "wait": 8.5
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "frame_report",
+    "args": []
+   }
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "pressed": true
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "call": {
+    "harness": "pt94play",
+    "method": "wizard_clip",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94play",
+    "method": "wizard_rate",
+    "args": [
+     3.0
+    ]
+   }
+  },
+  {
+   "shot": "w1_mago_camina.png"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "w2_mago_camina.png"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "w3_mago_camina.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "rate_report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94play",
+    "method": "wizard_clip",
+    "args": []
+   }
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "pressed": false
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "view",
+    "args": [
+     "node:Farmer15",
+     17,
+     7,
+     20
+    ]
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "aim",
+    "args": [
+     "Farmer15"
+    ]
+   }
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 1.2
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "farmer",
+    "args": [
+     "Farmer15"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Farmer15"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "view",
+    "args": [
+     "node:Farmer15",
+     7,
+     8,
+     20
+    ]
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Farmer15"
+    ]
+   }
+  },
+  {
+   "shot": "f1_huye.png"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "f2_huye.png"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "f3_huye.png"
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Farmer15"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clip_rate",
+    "args": [
+     "Farmer15",
+     1.5
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "view",
+    "args": [
+     "node:Farmer15",
+     9,
+     4,
+     110
+    ]
+   }
+  },
+  {
+   "wait": 0.8
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Farmer15"
+    ]
+   }
+  },
+  {
+   "shot": "f4_huye_lado.png"
+  },
+  {
+   "wait": 0.8
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "rate_report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "farmer",
+    "args": [
+     "Farmer15"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "summary",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Farmer1,Farmer2,Farmer3,Farmer4,Farmer5,Farmer6,Farmer7,Farmer8,Farmer9,Farmer10,Farmer11,Farmer12,Farmer13,Farmer14,Farmer15,Farmer16,Farmer17,Farmer18,Farmer19,Farmer20,Farmer21,Farmer22,Farmer23,Farmer24,Farmer25,Farmer26"
+    ]
+   }
+  }
+ ]
+}

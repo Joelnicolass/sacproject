@@ -1,0 +1,715 @@
+{
+ "scene": "res://debug/village.tscn",
+ "wait_first": 1.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "HighNoon/Units/Hunter",
+    "timeout": 30
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "frame_ms",
+    "args": [
+     8.0
+    ]
+   }
+  },
+  {
+   "wait": 8.5
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "frame_report",
+    "args": []
+   }
+  },
+  {
+   "press": "check_tick"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "frame_ms",
+    "args": [
+     8.0
+    ]
+   }
+  },
+  {
+   "wait": 8.5
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "frame_report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "view",
+    "args": [
+     "node:Farmer15",
+     17,
+     7,
+     20
+    ]
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "aim",
+    "args": [
+     "Farmer15"
+    ]
+   }
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "farmer",
+    "args": [
+     "Farmer15"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "view",
+    "args": [
+     "node:Farmer15",
+     1.8,
+     0.5,
+     90
+    ]
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Farmer15"
+    ]
+   }
+  },
+  {
+   "shot": "p1_farmer_huye.png"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Farmer15"
+    ]
+   }
+  },
+  {
+   "shot": "p2_farmer_huye.png"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Farmer15"
+    ]
+   }
+  },
+  {
+   "shot": "p3_farmer_huye.png"
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "view",
+    "args": [
+     "node:Farmer15",
+     2.2,
+     0.3,
+     200
+    ]
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Farmer15"
+    ]
+   }
+  },
+  {
+   "shot": "p4_farmer_huye_frente.png"
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "farmer",
+    "args": [
+     "Farmer15"
+    ]
+   }
+  },
+  {
+   "scene": "res://debug/village_taurock.tscn"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "wait_until": {
+    "node": "HighNoon/Units/Hunter",
+    "timeout": 30
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "press": "check_tick"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Taurock1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "view",
+    "args": [
+     "node:Taurock1",
+     14,
+     5,
+     90
+    ]
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "aim",
+    "args": [
+     "Taurock1"
+    ]
+   }
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "wait": 0.7
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Taurock1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "taurock",
+    "args": []
+   }
+  },
+  {
+   "shot": "t00_taurock.png"
+  },
+  {
+   "wait": 0.7
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Taurock1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "taurock",
+    "args": []
+   }
+  },
+  {
+   "shot": "t01_taurock.png"
+  },
+  {
+   "wait": 0.7
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Taurock1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "taurock",
+    "args": []
+   }
+  },
+  {
+   "shot": "t02_taurock.png"
+  },
+  {
+   "wait": 0.7
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Taurock1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "taurock",
+    "args": []
+   }
+  },
+  {
+   "shot": "t03_taurock.png"
+  },
+  {
+   "wait": 0.7
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Taurock1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "taurock",
+    "args": []
+   }
+  },
+  {
+   "shot": "t04_taurock.png"
+  },
+  {
+   "wait": 0.7
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Taurock1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "taurock",
+    "args": []
+   }
+  },
+  {
+   "shot": "t05_taurock.png"
+  },
+  {
+   "wait": 0.7
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Taurock1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "taurock",
+    "args": []
+   }
+  },
+  {
+   "shot": "t06_taurock.png"
+  },
+  {
+   "wait": 0.7
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Taurock1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "taurock",
+    "args": []
+   }
+  },
+  {
+   "shot": "t07_taurock.png"
+  },
+  {
+   "wait": 0.7
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Taurock1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "taurock",
+    "args": []
+   }
+  },
+  {
+   "shot": "t08_taurock.png"
+  },
+  {
+   "wait": 0.7
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Taurock1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "taurock",
+    "args": []
+   }
+  },
+  {
+   "shot": "t09_taurock.png"
+  },
+  {
+   "wait": 0.7
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Taurock1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "taurock",
+    "args": []
+   }
+  },
+  {
+   "shot": "t10_taurock.png"
+  },
+  {
+   "wait": 0.7
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Taurock1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "taurock",
+    "args": []
+   }
+  },
+  {
+   "shot": "t11_taurock.png"
+  },
+  {
+   "wait": 0.7
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Taurock1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "taurock",
+    "args": []
+   }
+  },
+  {
+   "shot": "t12_taurock.png"
+  },
+  {
+   "wait": 0.7
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Taurock1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "taurock",
+    "args": []
+   }
+  },
+  {
+   "shot": "t13_taurock.png"
+  },
+  {
+   "wait": 0.7
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Taurock1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "taurock",
+    "args": []
+   }
+  },
+  {
+   "shot": "t14_taurock.png"
+  },
+  {
+   "wait": 0.7
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Taurock1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "taurock",
+    "args": []
+   }
+  },
+  {
+   "shot": "t15_taurock.png"
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clip_rate",
+    "args": [
+     "Taurock1",
+     2.0
+    ]
+   }
+  },
+  {
+   "wait": 2.2
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "rate_report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Taurock1"
+    ]
+   }
+  },
+  {
+   "shot": "t16_taurock.png"
+  },
+  {
+   "scene": "res://debug/nav_cross.tscn"
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "press": "check_tick"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "view",
+    "args": [
+     "node:Trogg",
+     8,
+     3,
+     90
+    ]
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Trogg"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clip_rate",
+    "args": [
+     "Trogg",
+     3.0
+    ]
+   }
+  },
+  {
+   "shot": "r1_trogg_corre.png"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "r2_trogg_corre.png"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "r3_trogg_corre.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "rate_report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Trogg"
+    ]
+   }
+  }
+ ]
+}

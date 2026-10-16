@@ -381,6 +381,8 @@ scenes/world/unit_body.gd             —  no se toca
 - **Fuego amigo: divergencia heredada del hueco Fuego amigo (AUDIT-2026-10-12:152).** sacengine tiene `friendlyFire=true` por defecto (`options.d:98`), con ×0,5 en salpicadura y `ignoreFriendly` en el veneno (`state.d:28892-28899`, `9415-9419`). Acá `Health.damage_typed` no daña al mismo slot, así que el vapor y el veneno no tocan a los aliados. Se resuelve en un RFC aparte.
 - **Queda para 030k:** los debuffs de la dosis (`ires` 1000, `freg` 0), el bloqueo de maná a los 2 s y el contagio.
 
+**Decisión del usuario (2026-10-16): fuego amigo.** Tiene que existir, como en sacengine (`friendlyFire=true` por defecto, `options.d:98`), y tiene que ser configurable desde un menú de opciones nuevo con gráficos y jugabilidad. Va en **RFC-031**: el menú de opciones, el fuego amigo como regla de partida que decide el host o el servidor, y `sideDamageMultiplier` e `ignoreFriendly` en `Health`. Hasta entonces, la divergencia de 030g y 030h sigue declarada.
+
 ### 030h — F119 Impacto con salpicadura (Scarab, Mutant, Abomination, Flummox)
 
 **Árbol**
@@ -457,14 +459,115 @@ debug/f136_healing_web.tscn + rules        N  carril A (IA: aliado al 50 % lejos
 - **Diseño propuesto:** un hijo `ShotDropper` (`ShotLook.dropper`) que corre solo en el servidor.
 - **Va aparte** porque es una mecánica durante el vuelo, necesita decidir de dónde sale el número aleatorio (determinismo) y el costo de unas 40 gotas por disparo hay que medirlo.
 
-### 030i — F120 Aturdir y petrificar (Flummox, Basilisk)
+### 030i — Aturdir y petrificar (Flummox `crba`, Basilisk `dpsf`; plan del tech lead, 2026-10-16)
 
-**Árbol**
-- N: `impacts/stun_impact.tscn` y `impacts/petrify_impact.tscn`.
-- N: `scenes/world/units/stun.gd` (estado en la unidad, hijo).
-- M: `unit_body.gd` (modo detenido); `data/shots/crba.tres`, `dpsf.tres`.
+**Sacengine — aturdir:**
+- `stunWithCooldown(obj, 480)` (`state.d:8561-8568`) pasa el modo a `stunned` con un enfriamiento de 8 s. `canStun` (`8546-8553`) rechaza si hay enfriamiento o si el cuerpo está stunned, dying, dead, rockForm, playingDead, etc.
+- La duración es la del clip: `(knocked2Floor + getUp)·2` cuadros (`8138-8146`, `14170-14212`; slots 9 y 10). En vuelo usa `flyDamage` (slot 35).
+- El Flummox aturde, antes del daño, a **todo** cuerpo a ≤ 8 m: sin filtro de bando, incluido el tirador y los magos (`24059-24067`, `9075-9089`).
 
-**Escena de prueba:** `res://debug/f118_stun.tscn`. **Criterio:** el blanco queda quieto el tiempo del original (log) y después vuelve a pelear.
+**Sacengine — petrificar:**
+- `dpsf` sale de las manos, recto a 48 m/s, con caja de 0,35 m y línea de visión (`23686-23725`). **No hace daño**: solo llama a `petrify`.
+- Duración: un mago queda 2,5 s y una criatura `min(10, 10000/vida máx)` s (`11641-11645`).
+- La rechaza `ccProtected`; se petrifica igual a un aturdido o a un Rockform (`11631-11640`, `189-197`).
+- Mientras dura:
+  - no actúa, no gira, no se mueve y no regenera;
+  - congela la pose;
+  - un volador cae;
+  - **recibe daño ×0,2** (`8965`);
+  - se ve gris (`bone.d:189-192`).
+- Al terminar llama a `damageStun`: cae, se levanta y queda con 4 s de enfriamiento (`23732-23764`).
+- Aturdido o petrificado, el cuerpo sigue siendo blanco válido y obstáculo. Las órdenes se guardan y se ejecutan al levantarse (`93-145`, `1140-1142`).
+
+**Duraciones (frames de los .wad):**
+
+| Criatura | Aturdido | Petrificado |
+|---|---|---|
+| Druid / Trogg | 226 cuadros (3,77 s) | 600 (10 s) |
+| Earthfling | 112 | |
+| Frostwolf | 152 | |
+| Scythe | 390 | |
+| Flummox | 116 | 263 |
+| Basilisk | 154 | 357 |
+| Shrike en vuelo | 96 | |
+
+**Diseño: un dueño de «¿puede actuar?».** El nodo `Afflictions`, hijo de `unit.tscn`, responde `holds()`, `immobilized()`, `damage_factor()`, `cc_protected()` y `clip_role()`.
+- Cada estado es un hijo `Affliction` (`Stunned`, `Petrified`, y más adelante `Frozen`). Sus banderas están en `AfflictionType` (`.tres`).
+- Quién gana lo dice el dato (`cancels`), no el orden.
+- `StunImpact` es un hijo `ShotImpact` más.
+- A los clientes se replica `Afflictions:shown` (máscara de bits).
+- `unit_body.gd` no crece: la rama `_playing_dead` se funde con la puerta.
+
+#### 030i-a — F120 Estado común y aturdir (Flummox)
+```text
+tools/export_stats.py                          M  stun_animations {knock 9, get_up 10, fly_damage 35} + clips
+scenes/data/creature_type.gd, game_data.gd     M  stun_animations
+scenes/data/affliction_type.gd                 N  AfflictionType (Resource)
+data/afflictions/stunned.tres                  N
+scenes/world/units/afflictions/afflictions.gd  N  Afflictions (dueño; shown replicado; held_changed/look_changed)
+scenes/world/units/afflictions/affliction.gd   N  Affliction (Node)
+scenes/world/units/afflictions/stunned.gd      N  Stunned (cuadros del clip; enfriamiento; knock→get_up)
+scenes/world/units/impacts/stun_impact.gd      N  StunImpact: bodies_within 8 m, sin filtro de bando, cooldown 480
+scenes/world/units/impacts/flummox_impact.tscn N  lob_splash_impact + StunImpact
+data/shots/crba.tres                           M  impact = flummox_impact.tscn
+scenes/world/units/unit.tscn                   M  Afflictions/Stunned + sync shown
+scenes/world/unit_body.gd                      M  neto ≤ 0 (fusión con _playing_dead; clip_role; ability_status)
+debug/f118_stun.tscn + rules                   N  carril A (Flummox vs 3 Druids), carril B (Flummox + aliado + Earthfling)
+```
+Criterios:
+1. **Duración:** «durante 226», y «se levanta» llega a los 226 ±2 cuadros. En ese lapso el cuerpo se mueve menos de 0,05 m y no ataca.
+2. **Vuelve a pelear:** al levantarse retoma el combate.
+3. **Enfriamiento:** un segundo disparo antes de 8 s no aturde, pero sí hace daño.
+4. **Sin bando:** quedan aturdidos el Earthfling (112), el Druid aliado (226) y el propio Flummox (116).
+5. **Cliente:** en `net_local` el cliente ve caer y levantarse.
+6. **Regresiones:** `f117_splash` hace el mismo daño (382,50), y `f136`, `f29`, `f25` y Play Dead se comportan igual. Los digests de seed 7 y `--npcs` no cambian.
+
+Riesgo: el export puede ocupar mucho disco. Si pasa de +1 GB, se usa un Tween de reserva.
+
+#### 030i-b — F137 Petrificar y la mirada del Basilisk
+```text
+data/afflictions/petrified.tres                N  holds, immobilizes, damage_factor 0.2, cc_protects, cancels [stunned]
+scenes/world/units/afflictions/petrified.gd    N  congela clip; StoneLook; volador cae; al terminar knock (enfriamiento 240) + rocas
+scenes/world/look/stone_look.gd, stone.gdshader N
+scenes/world/components/clip_pose_player.gd    M  frozen
+scenes/world/components/health.gd              M  × afflictions.damage_factor()
+scenes/world/units/flight.gd                   M  drop()
+scenes/world/units/impacts/petrify_impact.gd/.tscn N  solo el tocado; cap 10 s, k 10000, mago 2,5 s; sin daño
+data/shots/dpsf.tres                           N  0,35 m, sweep, impact petrify
+scenes/world/units/unit.tscn                   M  Afflictions/Petrified + Health.afflictions
+scenes/world/unit_body.gd                      M  0 líneas
+debug/f137_petrify.tscn + rules                N  A (Basilisk vs Druid + Trogg propio atacando), B (vs Flummox), C (vs Gargoyle)
+```
+Criterios:
+1. **Duración:** 600 cuadros, después «aturdido 226». En el Flummox, 263.
+2. **El impacto no hace daño.**
+3. **Daño recibido:** cada golpe sobre el cuerpo petrificado se multiplica por 0,20.
+4. **Quieto:** se mueve menos de 0,05 m y la pose queda congelada.
+5. **Protegido:** un segundo disparo no lo petrifica.
+6. **Vuelve a pelear.**
+7. **Gargoyle:** cae al suelo y vuelve a 4,5 m.
+8. **Cliente:** ve la piedra.
+9. **Regresiones:** las mismas que en 030i-a, más `f115_passives`. El digest no cambia.
+
+Declarado: el Basilisk deja de hacer los 150 de daño directo que hace hoy.
+
+#### 030i-c — F138 Magos aturdidos y petrificados
+`wizard_body.tscn` recibe `Afflictions` con `Stunned` y `Petrified`. El aturdido corta el lanzamiento y el arreglo de `hitFloor` (`sacobject.d:844-857`) aplica igual. La piedra dura 2,5 s. Hasta este corte, los impactos ignoran al mago y lo dejan en el log (divergencia declarada).
+
+**Digest de seed 7:** no cambia. El Flummox es de nivel 4, el Basilisk de nivel 2, no hay RNG nuevo y los factores neutros dan exactamente 1,0.
+
+**Riesgos:**
+- Al fundir la rama, Play Dead suma `_cap_air_pace`.
+- `StoneLook` usa overrides por superficie.
+- Sin huesos de mano, el Basilisk mira desde un solo punto (divergencia).
+- El aturdido sí alcanza a los aliados; el daño todavía no, hasta RFC-031.
+- Hay otros lectores de `mode` que no saben si el cuerpo está retenido.
+
+**Fuera de alcance:**
+- El aturdido por golpe cuerpo a cuerpo (`9246-9262`): cambiaría el digest de nivel 1 y va en un corte propio.
+- Catapulta (030j) y congelar (030k).
+- Skin of Stone.
+- Migrar Rockform y Play Dead a `Afflictions` (030v).
 
 ### 030j — F121 Empuje, vórtice y catapulta (Squall, Vortick, Flurry)
 
@@ -595,7 +698,7 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 ## 10. Orden de implementación
 
-030a → 030b → 030c → 030d (con esto, **todas disponibles**) → 030e (las 5 de nivel 9 son híbridas) → 030e2 (pose y cápsula de las híbridas) → 030f → 030g → 030h → 030h2 (Scarab: telaraña que cura) → 030h3 (gotas de la Abomination) → 030i → 030j → 030k → 030l → 030m → 030n → 030o → 030p → 030q → 030r → 030s → 030t → 030u → (030v).
+030a → 030b → 030c → 030d (con esto, **todas disponibles**) → 030e (las 5 de nivel 9 son híbridas) → 030e2 (pose y cápsula de las híbridas) → 030f → 030g → 030h → 030h2 (Scarab: telaraña que cura) → 030i-a → 030i-b → 030i-c → 030h3 (gotas de la Abomination; espera el RNG de simulación) → 030j → 030k → 030l → 030m → 030n → 030o → 030p → 030q → 030r → 030s → 030t → 030u → (030v).
 
 ## 11. Cómo verifica un humano
 

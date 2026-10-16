@@ -181,7 +181,8 @@ func _store_pick(data: Dictionary, from_peer: int) -> void:
 	_publish_picks()
 
 
-func _on_peer_left(_peer_id: int, slot: int) -> void:
+func _on_peer_left(peer_id: int, slot: int) -> void:
+	print("peer_left peer %d slot %d" % [peer_id, slot])
 	if not slot_picks.has(slot):
 		return
 	slot_picks.erase(slot)

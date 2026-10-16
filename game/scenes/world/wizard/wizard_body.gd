@@ -240,9 +240,11 @@ func _process(delta: float) -> void:
 	submit_drive.rpc_id(MpAuthority.SERVER_PEER, _read_forward(), look_yaw)
 
 
-## Exact match: Shift+W is creature_3 and must not walk.
+## Exact match: Shift+W is creature_3 and must not walk. The pause menu (group menu_open, RFC-031 031b) stops it.
 func _read_forward() -> float:
 	var forward := 0.0
+	if get_tree().get_first_node_in_group("menu_open"):
+		return forward
 	if Input.is_action_pressed("move_forward", true):
 		forward += 1.0
 	if Input.is_action_pressed("move_backward", true):

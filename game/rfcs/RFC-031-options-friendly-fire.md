@@ -144,7 +144,7 @@ Criterios:
 ### 031b — F141 Menú de pausa y Salir al menú
 ```text
 project.godot                          M  acción pause_menu = Escape
-scenes/ui/pause_menu/pause_menu.tscn   N  CanvasLayer > Dim > Panel: Continuar, Opciones (oculto hasta 031c), Salir al menú + ConfirmationDialog; process_mode ALWAYS
+scenes/ui/pause_menu/pause_menu.tscn   N  CanvasLayer > Dim > Panel: Continuar, Opciones (oculto hasta 031c), Salir al menú + confirmación en el mismo panel (botones: AgentKit no pulsa ConfirmationDialog); process_mode ALWAYS
 scenes/ui/pause_menu/pause_menu.gd     N  PauseMenu: open/close; solo → paused; red → no; grupo menu_open; Salir: paused=false → return_to_boot
 scenes/world/high_noon.tscn            M  instancia PauseMenu
 scenes/world/match_command.gd          M  callado con menu_open
@@ -160,6 +160,7 @@ Criterios:
 6. Captura a 1280×720 donde el menú se lea bien.
 
 ### 031c — F142 Opciones → Gráficos
+**Primer paso (por REVIEW-F141):** `scenes/ui/world_input.gd` (`WorldInput`, RefCounted) es el único dueño de «¿el input del jugador llega al mundo?». `blocked(from)` mira el grupo `WorldInput.MODAL`. `PauseMenu` y `OptionsMenu` entran a ese grupo, y los 5 lectores (`match_command`, `wizard_body`, `world_camera` ×2, `soul_system`) llaman a `WorldInput.blocked(self)`. `walk_order` queda como chequeo propio de `match_command`. Las políticas por canal se agregan cuando haga falta un chat.
 ```text
 scenes/ui/options/user_settings.gd     N  UserSettings (static): read/write en user://settings.cfg; no pisa un archivo ilegible
 scenes/ui/hud_scale.gd                 M  usa UserSettings

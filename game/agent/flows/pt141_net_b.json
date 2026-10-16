@@ -1,0 +1,187 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.5,
+ "steps": [
+  {
+   "click": "%God_james"
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "click": "%Play"
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "click": "%Join"
+  },
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 30
+   }
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "call": {
+    "harness": "pt141_play",
+    "method": "mark",
+    "args": []
+   }
+  },
+  {
+   "press": "creature_1"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "pt141_play",
+    "method": "fresh",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt141_play",
+    "method": "ui",
+    "args": []
+   }
+  },
+  {
+   "press": "order_attack"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "drag": {
+    "node": "%View",
+    "from_x": 640,
+    "from_y": 440,
+    "to_x": 640,
+    "to_y": 440
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "call": {
+    "harness": "pt141_play",
+    "method": "ui",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt141_play",
+    "method": "fresh",
+    "args": []
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "pt141_play",
+    "method": "fresh",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt141_watch",
+    "method": "state",
+    "args": [
+     "Wizard1"
+    ]
+   }
+  },
+  {
+   "shot": "pt141_c5_b_walking.png"
+  },
+  {
+   "wait": 16.0
+  },
+  {
+   "call": {
+    "harness": "pt141_watch",
+    "method": "state",
+    "args": [
+     "Wizard1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt141_watch",
+    "method": "state",
+    "args": [
+     "Wizard2"
+    ]
+   }
+  },
+  {
+   "press": "order_attack"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "drag": {
+    "node": "%View",
+    "from_x": 640,
+    "from_y": 440,
+    "to_x": 640,
+    "to_y": 440
+   }
+  },
+  {
+   "call": {
+    "harness": "pt141_play",
+    "method": "fresh",
+    "args": []
+   }
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 2.0
+   }
+  },
+  {
+   "call": {
+    "harness": "pt141_play",
+    "method": "fresh",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt141_watch",
+    "method": "state",
+    "args": [
+     "Wizard2"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt141_play",
+    "method": "ui",
+    "args": []
+   }
+  },
+  {
+   "shot": "pt141_c5_b_after_a_left.png"
+  }
+ ]
+}

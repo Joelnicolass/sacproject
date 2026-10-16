@@ -47,6 +47,7 @@
 [ext_resource type="Resource" path="res://data/look/ground/high_noon_tiles.tres" id="f22_tiles"]
 [ext_resource type="Script" path="res://scenes/world/ai/ai_roster.gd" id="f77_roster"]
 [ext_resource type="PackedScene" path="res://scenes/world/ai/ai_side.tscn" id="f77_side"]
+[ext_resource type="PackedScene" path="res://scenes/ui/pause_menu/pause_menu.tscn" id="f141_pause"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
 bg_color = Color(1, 1, 1, 0)
@@ -317,3 +318,6 @@ command_log = NodePath("../Battle")
 cues = ExtResource("f80_cues")
 probe = NodePath("../TargetProbe")
 skin = NodePath("../CursorSkin")
+
+[node name="PauseMenu" parent="." instance=ExtResource("f141_pause")]
+unique_name_in_owner = true

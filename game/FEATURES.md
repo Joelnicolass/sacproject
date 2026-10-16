@@ -1132,3 +1132,27 @@ Deuda:
 - Con los dos flags gana `--no` (sacengine se queda con el último).
 - 031d: `--souls` choca con el flag propio de `ai_match`.
 - No se volvieron a correr seed 1, `--npcs` ni `ai_duel_seeded_ff`.
+
+### F141 — Menú de pausa y Salir al menú (RFC-031, corte 031b)
+
+`PauseMenu` (`scenes/ui/pause_menu/`) es un CanvasLayer con `process_mode ALWAYS`.
+- Se abre y se cierra con Esc (acción `pause_menu`).
+- **En solo** pausa el árbol. **En red** no pausa y solo muestra «Partida en curso».
+- Mientras está abierto entra al grupo `menu_open`. Con eso se callan `match_command`, `wizard_body._read_forward`, `world_camera` y `soul_system`, y `%Dim` se come el clic.
+- **Salir** pide confirmación dentro del mismo panel y después hace `paused = false` y `return_to_boot`.
+- El servidor registra `peer_left`.
+
+**Cierre (2026-10-16).** Review PASS (`reviews/REVIEW-F141-pause-menu.md`). Playtest con ventana (`agent/out/pt141/`):
+- **Pausa:** el Manahoar se mueve 0,000 m en 3 s pausado y retoma al continuar.
+- **Esc con hechizo armado:** el hechizo sigue armado y se lanza con el clic siguiente.
+- **Clic y órdenes con el menú abierto:** no tienen efecto (el control con el menú cerrado sí cambia la selección).
+- **Salir:** vuelve al boot en ≤ 2 s sin pausa. «Contra la IA» nivel 4 da 7 casillas, con lo que **se cierra la deuda de F115**.
+- **Red:** el menú de A no pausa. El mago de B avanza 28 m en 3 s con el menú de A abierto (corrida del developer). Cuando A sale, el servidor registra `peer_left` y B sigue.
+- **Regresiones:** `f25` y `f10_walk` dan AGENT_OK. Los digests de seed 7 y `f139_ff_clouds` no cambian.
+
+Deuda:
+- **Dueño único del input al mundo:** pasa a 031c como primer paso (`WorldInput`).
+- **Criatura de B en red sin medir:** solo se midió al mago, y la orden del playtest fue «avanzar» a un Manahoar.
+- **Esc en la confirmación:** cierra todo el menú.
+- **Cursor del hechizo:** queda encima del menú.
+- **Panel:** offsets fijos.

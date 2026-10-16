@@ -1,0 +1,29 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.5,
+ "steps": [
+  {"click": "%God_james"},
+  {"wait": 0.4},
+  {"click": "%Play"},
+  {"wait": 0.5},
+  {"click": "%Join"},
+  {"wait_until": {"node": "%Stats", "text_contains": "Vida", "timeout": 30}},
+  {"wait": 1.0},
+  {"press": "pause_menu"},
+  {"wait": 0.3},
+  {"call": {"harness": "pt141_watch", "method": "state", "args": ["Wizard1"]}},
+  {"shot": "pt141dev_net_a_menu.png"},
+  {"press": "creature_1"},
+  {"press": {"name": "move_forward", "hold": 1.0}},
+  {"wait": 0.5},
+  {"call": {"harness": "pt141_watch", "method": "state", "args": ["Wizard1"]}},
+  {"wait": 14.0},
+  {"call": {"harness": "pt141_watch", "method": "state", "args": ["Wizard2"]}},
+  {"click": "%Quit"},
+  {"wait": 0.2},
+  {"click": "%ConfirmQuit"},
+  {"wait_until": {"node": "%God_james", "timeout": 2}},
+  {"call": {"harness": "pt141_watch", "method": "state", "args": []}},
+  {"wait": 1.0}
+ ]
+}

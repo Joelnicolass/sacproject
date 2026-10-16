@@ -1,0 +1,21 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.5,
+ "steps": [
+  {"click": "%God_james"},
+  {"wait": 0.4},
+  {"click": "%Play"},
+  {"wait": 0.5},
+  {"click": "%Join"},
+  {"wait_until": {"node": "%Stats", "text_contains": "Vida", "timeout": 30}},
+  {"wait": 3.0},
+  {"call": {"harness": "pt141_watch", "method": "state", "args": ["Wizard2"]}},
+  {"press": {"name": "move_forward", "hold": 3.0}},
+  {"call": {"harness": "pt141_watch", "method": "state", "args": ["Wizard2"]}},
+  {"wait": 14.0},
+  {"call": {"harness": "pt141_watch", "method": "state", "args": ["Wizard1"]}},
+  {"call": {"harness": "pt141_watch", "method": "state", "args": ["Wizard2"]}},
+  {"press": {"name": "move_forward", "hold": 2.0}},
+  {"call": {"harness": "pt141_watch", "method": "state", "args": ["Wizard2"]}}
+ ]
+}

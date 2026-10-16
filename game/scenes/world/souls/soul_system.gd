@@ -102,6 +102,8 @@ func _tell_no_souls() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if not event.is_action_pressed("drop_soul", false, true):
 		return
+	if get_tree().get_first_node_in_group("menu_open"):
+		return
 	if world == null or world.call("local_wizard") == null:
 		return
 	get_viewport().set_input_as_handled()

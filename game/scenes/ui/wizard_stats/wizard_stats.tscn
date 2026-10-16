@@ -1,0 +1,165 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/wizard_stats/wizard_stats.gd" id="1_stats"]
+[ext_resource type="Script" path="res://scenes/ui/wizard_stats/stat_bar.gd" id="2_bar"]
+[ext_resource type="Script" path="res://scenes/ui/wizard_stats/soul_counter.gd" id="3_soul"]
+[ext_resource type="Resource" path="res://data/ui/hud_scale.tres" id="4_scale"]
+
+[node name="WizardStats" type="Control" node_paths=PackedStringArray("frames")]
+custom_minimum_size = Vector2(153.6, 115.2)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 153.6
+offset_bottom = 115.2
+mouse_filter = 2
+script = ExtResource("1_stats")
+hud_scale = ExtResource("4_scale")
+frames = [NodePath("Souls/Frame"), NodePath("Mana/Frame"), NodePath("Health/Frame")]
+
+[node name="Souls" type="Control" parent="."]
+layout_mode = 1
+anchor_left = 0.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Frame" type="Control" parent="Souls"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Top" type="TextureRect" parent="Souls/Frame"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 0.5
+mouse_filter = 2
+expand_mode = 1
+
+[node name="Bottom" type="TextureRect" parent="Souls/Frame"]
+layout_mode = 1
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+expand_mode = 1
+flip_v = true
+
+[node name="SoulCounter" type="Control" parent="Souls"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_soul")
+
+[node name="Count" type="Label" parent="Souls/SoulCounter" groups=["hud_text_allowed"]]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Mana" type="Control" parent="."]
+layout_mode = 1
+anchor_left = 0.5
+anchor_right = 0.75
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Frame" type="Control" parent="Mana"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Top" type="TextureRect" parent="Mana/Frame"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 0.5
+mouse_filter = 2
+expand_mode = 1
+
+[node name="Bottom" type="TextureRect" parent="Mana/Frame"]
+layout_mode = 1
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+expand_mode = 1
+flip_v = true
+
+[node name="ManaBar" type="Control" parent="Mana"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_bar")
+
+[node name="Health" type="Control" parent="."]
+layout_mode = 1
+anchor_left = 0.75
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Frame" type="Control" parent="Health"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Top" type="TextureRect" parent="Health/Frame"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 0.5
+mouse_filter = 2
+expand_mode = 1
+
+[node name="Bottom" type="TextureRect" parent="Health/Frame"]
+layout_mode = 1
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+expand_mode = 1
+flip_v = true
+
+[node name="HealthBar" type="Control" parent="Health"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_bar")
+strip_prefix = "stat_health"
+fallback_color = Color(0.7529412, 0, 0, 1)

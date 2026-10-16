@@ -1,0 +1,114 @@
+{
+ "scene": "res://debug/doctor_path.tscn",
+ "wait_first": 4.0,
+ "steps": [
+  {
+   "wait": 8.0
+  },
+  {
+   "shot": "w00_8s.png"
+  },
+  {
+   "wait": 3
+  },
+  {
+   "shot": "w01_11s.png"
+  },
+  {
+   "wait": 3
+  },
+  {
+   "shot": "w02_14s.png"
+  },
+  {
+   "wait": 3
+  },
+  {
+   "shot": "w03_17s.png"
+  },
+  {
+   "wait": 3
+  },
+  {
+   "shot": "w04_20s.png"
+  },
+  {
+   "wait": 3
+  },
+  {
+   "shot": "w05_23s.png"
+  },
+  {
+   "wait": 3
+  },
+  {
+   "shot": "w06_26s.png"
+  },
+  {
+   "wait": 3
+  },
+  {
+   "shot": "w07_29s.png"
+  },
+  {
+   "wait": 3
+  },
+  {
+   "shot": "w08_32s.png"
+  },
+  {
+   "wait": 3
+  },
+  {
+   "shot": "w09_35s.png"
+  },
+  {
+   "wait": 3
+  },
+  {
+   "shot": "w10_38s.png"
+  },
+  {
+   "wait": 3
+  },
+  {
+   "shot": "w11_41s.png"
+  },
+  {
+   "wait": 3
+  },
+  {
+   "shot": "w12_44s.png"
+  },
+  {
+   "wait": 3
+  },
+  {
+   "shot": "w13_47s.png"
+  },
+  {
+   "wait": 3
+  },
+  {
+   "shot": "w14_50s.png"
+  },
+  {
+   "wait": 3
+  },
+  {
+   "shot": "w15_53s.png"
+  },
+  {
+   "wait": 3
+  },
+  {
+   "shot": "w16_56s.png"
+  },
+  {
+   "wait": 3
+  },
+  {
+   "shot": "w17_59s.png"
+  }
+ ]
+}

@@ -1,0 +1,14 @@
+{
+ "scene": "res://agent/fixtures/rfc022e_gallery.tscn",
+ "wait_first": 6.0,
+ "steps": [
+  { "press": { "name": "debug_next_camera", "hold": 0.05 } },
+  { "wait": 0.6 },
+  { "shot": "rts.png" },
+  { "press": { "name": "debug_next_camera", "hold": 0.05 } },
+  { "press": { "name": "debug_next_camera", "hold": 0.05 } },
+  { "press": { "name": "debug_next_camera", "hold": 0.05 } },
+  { "wait": 0.6 },
+  { "shot": "mid.png" }
+ ]
+}

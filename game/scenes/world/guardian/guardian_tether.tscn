@@ -1,0 +1,14 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/guardian/guardian_tether.gd" id="1_tether"]
+[ext_resource type="Shader" path="res://scenes/world/guardian/guardian_tether.gdshader" id="2_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_beam"]
+shader = ExtResource("2_shader")
+
+[node name="GuardianTether" type="Node3D" node_paths=PackedStringArray("beam")]
+script = ExtResource("1_tether")
+beam = NodePath("Beam")
+
+[node name="Beam" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_beam")

@@ -1,0 +1,30 @@
+{
+  "scene": "res://debug/wizard_ghost.tscn",
+  "wait_first": 0.3,
+  "steps": [
+    { "wait_until": { "node": "%GhostState", "visible": true, "timeout": 20 } },
+    { "wait": 2.2 },
+    { "press": { "name": "move_forward", "hold": 6.5 } },
+    { "wait_until": { "node": "%Stats", "text_contains": "Vida 1500/1500", "timeout": 20 } },
+    { "wait_until": { "node": "%GhostState", "visible": false, "timeout": 3 } },
+    { "print": { "node": "%Stats", "prop": "text" } },
+    { "wait_until": { "node": "%Stats", "text_contains": "Maná 1000/1000", "timeout": 30 } },
+    { "print": { "node": "%Stats", "prop": "text" } },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
+    { "press": { "name": "move_backward", "hold": 9.0 } },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
+    { "print": { "node": "Druid", "prop": "position" } },
+    { "print": { "node": "Druid", "prop": "mode" } },
+    { "repeat": {
+        "times": 100,
+        "steps": [
+          { "print": { "node": "%Stats", "prop": "text" } },
+          { "print": { "node": "Druid", "prop": "mode" } },
+          { "wait": 0.1 }
+        ]
+    } },
+    { "shot": "pt31_08_regen.png" },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
+    { "print": { "node": "Druid", "prop": "swings" } }
+  ]
+}

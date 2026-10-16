@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/world/units/unit.tscn" id="1_unit"]
+[ext_resource type="Script" path="res://scenes/world/units/peasant_behavior.gd" id="2_behavior"]
+[ext_resource type="Script" path="res://scenes/world/units/grudge_memory.gd" id="3_grudge"]
+
+[node name="Peasant" instance=ExtResource("1_unit")]
+idle_aggro = false
+
+[node name="GrudgeMemory" type="Node" parent="." node_paths=PackedStringArray("body", "health")]
+script = ExtResource("3_grudge")
+body = NodePath("..")
+health = NodePath("../Health")
+
+[node name="PeasantBehavior" type="Node" parent="." node_paths=PackedStringArray("body", "grudge")]
+script = ExtResource("2_behavior")
+body = NodePath("..")
+grudge = NodePath("../GrudgeMemory")

@@ -1,0 +1,10 @@
+{
+ "scene": "res://agent/fixtures/rfc022c_match.tscn",
+ "wait_first": 5.0,
+ "steps": [
+  { "shot": "game_start.png" },
+  { "press": { "name": "move_forward", "hold": 2.0 } },
+  { "wait": 0.3 },
+  { "shot": "game_walk.png" }
+ ]
+}

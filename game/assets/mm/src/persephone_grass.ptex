@@ -1,0 +1,623 @@
+{
+ "name": "persephone_grass",
+ "label": "persephone_grass",
+ "type": "graph",
+ "node_position": {
+  "x": 0,
+  "y": 0
+ },
+ "parameters": {},
+ "nodes": [
+  {
+   "name": "tone_noise",
+   "type": "perlin",
+   "node_position": {
+    "x": 220,
+    "y": 0
+   },
+   "parameters": {
+    "iterations": 5,
+    "persistence": 0.55,
+    "scale_x": 3,
+    "scale_y": 3
+   }
+  },
+  {
+   "name": "tone_color",
+   "type": "colorize",
+   "node_position": {
+    "x": 440,
+    "y": 0
+   },
+   "parameters": {
+    "gradient": {
+     "interpolation": 1,
+     "type": "Gradient",
+     "points": [
+      {
+       "pos": 0,
+       "r": 0.17,
+       "g": 0.21,
+       "b": 0.06,
+       "a": 1
+      },
+      {
+       "pos": 0.5,
+       "r": 0.29,
+       "g": 0.33,
+       "b": 0.09,
+       "a": 1
+      },
+      {
+       "pos": 1,
+       "r": 0.4,
+       "g": 0.41,
+       "b": 0.13,
+       "a": 1
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "dry_noise",
+   "type": "perlin",
+   "node_position": {
+    "x": 660,
+    "y": 0
+   },
+   "parameters": {
+    "iterations": 4,
+    "persistence": 0.6,
+    "scale_x": 5,
+    "scale_y": 5
+   }
+  },
+  {
+   "name": "dry_mask",
+   "type": "colorize",
+   "node_position": {
+    "x": 880,
+    "y": 0
+   },
+   "parameters": {
+    "gradient": {
+     "interpolation": 1,
+     "type": "Gradient",
+     "points": [
+      {
+       "pos": 0.6,
+       "r": 0,
+       "g": 0,
+       "b": 0,
+       "a": 1
+      },
+      {
+       "pos": 0.72,
+       "r": 1,
+       "g": 1,
+       "b": 1,
+       "a": 1
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "dry_tint",
+   "type": "uniform",
+   "node_position": {
+    "x": 1100,
+    "y": 0
+   },
+   "parameters": {
+    "color": {
+     "r": 0.5,
+     "g": 0.42,
+     "b": 0.19,
+     "a": 1
+    }
+   }
+  },
+  {
+   "name": "dirt_noise",
+   "type": "perlin",
+   "node_position": {
+    "x": 0,
+    "y": 160
+   },
+   "parameters": {
+    "iterations": 5,
+    "persistence": 0.65,
+    "scale_x": 4,
+    "scale_y": 4
+   }
+  },
+  {
+   "name": "dirt_mask",
+   "type": "colorize",
+   "node_position": {
+    "x": 220,
+    "y": 160
+   },
+   "parameters": {
+    "gradient": {
+     "interpolation": 1,
+     "type": "Gradient",
+     "points": [
+      {
+       "pos": 0.72,
+       "r": 0,
+       "g": 0,
+       "b": 0,
+       "a": 1
+      },
+      {
+       "pos": 0.79,
+       "r": 1,
+       "g": 1,
+       "b": 1,
+       "a": 1
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "dirt_tint",
+   "type": "uniform",
+   "node_position": {
+    "x": 440,
+    "y": 160
+   },
+   "parameters": {
+    "color": {
+     "r": 0.22,
+     "g": 0.15,
+     "b": 0.08,
+     "a": 1
+    }
+   }
+  },
+  {
+   "name": "blades",
+   "type": "perlin",
+   "node_position": {
+    "x": 660,
+    "y": 160
+   },
+   "parameters": {
+    "iterations": 4,
+    "persistence": 0.65,
+    "scale_x": 128,
+    "scale_y": 128
+   }
+  },
+  {
+   "name": "warp_noise",
+   "type": "perlin",
+   "node_position": {
+    "x": 880,
+    "y": 160
+   },
+   "parameters": {
+    "iterations": 3,
+    "persistence": 0.5,
+    "scale_x": 12,
+    "scale_y": 12
+   }
+  },
+  {
+   "name": "blades_warp",
+   "type": "warp",
+   "node_position": {
+    "x": 1100,
+    "y": 160
+   },
+   "parameters": {
+    "amount": 0.05,
+    "eps": 0.02,
+    "mode": 0
+   }
+  },
+  {
+   "name": "clumps",
+   "type": "voronoi",
+   "node_position": {
+    "x": 0,
+    "y": 320
+   },
+   "parameters": {
+    "intensity": 1,
+    "randomness": 1,
+    "scale_x": 64,
+    "scale_y": 64,
+    "stretch_x": 1,
+    "stretch_y": 1
+   }
+  },
+  {
+   "name": "macro_height",
+   "type": "perlin",
+   "node_position": {
+    "x": 220,
+    "y": 320
+   },
+   "parameters": {
+    "iterations": 5,
+    "persistence": 0.6,
+    "scale_x": 6,
+    "scale_y": 6
+   }
+  },
+  {
+   "name": "h_detail",
+   "type": "blend",
+   "node_position": {
+    "x": 440,
+    "y": 320
+   },
+   "parameters": {
+    "amount": 0.45,
+    "blend_type": 0
+   }
+  },
+  {
+   "name": "h_all",
+   "type": "blend",
+   "node_position": {
+    "x": 660,
+    "y": 320
+   },
+   "parameters": {
+    "amount": 0.35,
+    "blend_type": 0
+   }
+  },
+  {
+   "name": "alb_dry",
+   "type": "blend",
+   "node_position": {
+    "x": 880,
+    "y": 320
+   },
+   "parameters": {
+    "amount": 0.85,
+    "blend_type": 0
+   }
+  },
+  {
+   "name": "alb_dirt",
+   "type": "blend",
+   "node_position": {
+    "x": 1100,
+    "y": 320
+   },
+   "parameters": {
+    "amount": 1.0,
+    "blend_type": 0
+   }
+  },
+  {
+   "name": "alb_detail",
+   "type": "blend",
+   "node_position": {
+    "x": 0,
+    "y": 480
+   },
+   "parameters": {
+    "amount": 0.55,
+    "blend_type": 2
+   }
+  },
+  {
+   "name": "blade_shade",
+   "type": "colorize",
+   "node_position": {
+    "x": 220,
+    "y": 480
+   },
+   "parameters": {
+    "gradient": {
+     "interpolation": 1,
+     "type": "Gradient",
+     "points": [
+      {
+       "pos": 0.25,
+       "r": 0.62,
+       "g": 0.62,
+       "b": 0.62,
+       "a": 1
+      },
+      {
+       "pos": 0.75,
+       "r": 1,
+       "g": 1,
+       "b": 1,
+       "a": 1
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "alb_hue",
+   "type": "adjust_hsv",
+   "node_position": {
+    "x": 440,
+    "y": 480
+   },
+   "parameters": {
+    "hue": 0.0,
+    "saturation": 1.0,
+    "value": 1.0
+   }
+  },
+  {
+   "name": "normal",
+   "type": "normal_map",
+   "node_position": {
+    "x": 660,
+    "y": 480
+   },
+   "parameters": {
+    "amount": 0.55,
+    "param0": 11,
+    "param1": 0.99,
+    "param2": 0,
+    "param3": 0,
+    "param4": 1,
+    "size": 4
+   }
+  },
+  {
+   "name": "rough",
+   "type": "colorize",
+   "node_position": {
+    "x": 880,
+    "y": 480
+   },
+   "parameters": {
+    "gradient": {
+     "interpolation": 1,
+     "type": "Gradient",
+     "points": [
+      {
+       "pos": 0,
+       "r": 0.8,
+       "g": 0.8,
+       "b": 0.8,
+       "a": 1
+      },
+      {
+       "pos": 1,
+       "r": 1,
+       "g": 1,
+       "b": 1,
+       "a": 1
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "ao",
+   "type": "colorize",
+   "node_position": {
+    "x": 1100,
+    "y": 480
+   },
+   "parameters": {
+    "gradient": {
+     "interpolation": 1,
+     "type": "Gradient",
+     "points": [
+      {
+       "pos": 0.05,
+       "r": 0.42,
+       "g": 0.42,
+       "b": 0.42,
+       "a": 1
+      },
+      {
+       "pos": 0.7,
+       "r": 1,
+       "g": 1,
+       "b": 1,
+       "a": 1
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Material",
+   "type": "material",
+   "node_position": {
+    "x": 0,
+    "y": 640
+   },
+   "parameters": {
+    "albedo_color": {
+     "r": 1,
+     "g": 1,
+     "b": 1,
+     "a": 1
+    },
+    "ao_light_affect": 1,
+    "depth_scale": 0.3,
+    "emission_energy": 0,
+    "metallic": 0,
+    "normal_scale": 1,
+    "resolution": 1,
+    "roughness": 1,
+    "size": 11,
+    "subsurf_scatter_strength": 0
+   }
+  }
+ ],
+ "connections": [
+  {
+   "from": "tone_noise",
+   "from_port": 0,
+   "to": "tone_color",
+   "to_port": 0
+  },
+  {
+   "from": "dry_noise",
+   "from_port": 0,
+   "to": "dry_mask",
+   "to_port": 0
+  },
+  {
+   "from": "tone_color",
+   "from_port": 0,
+   "to": "alb_dry",
+   "to_port": 1
+  },
+  {
+   "from": "dry_tint",
+   "from_port": 0,
+   "to": "alb_dry",
+   "to_port": 0
+  },
+  {
+   "from": "dry_mask",
+   "from_port": 0,
+   "to": "alb_dry",
+   "to_port": 2
+  },
+  {
+   "from": "dirt_noise",
+   "from_port": 0,
+   "to": "dirt_mask",
+   "to_port": 0
+  },
+  {
+   "from": "alb_dry",
+   "from_port": 0,
+   "to": "alb_dirt",
+   "to_port": 1
+  },
+  {
+   "from": "dirt_tint",
+   "from_port": 0,
+   "to": "alb_dirt",
+   "to_port": 0
+  },
+  {
+   "from": "dirt_mask",
+   "from_port": 0,
+   "to": "alb_dirt",
+   "to_port": 2
+  },
+  {
+   "from": "blades",
+   "from_port": 0,
+   "to": "blades_warp",
+   "to_port": 0
+  },
+  {
+   "from": "warp_noise",
+   "from_port": 0,
+   "to": "blades_warp",
+   "to_port": 1
+  },
+  {
+   "from": "blades_warp",
+   "from_port": 0,
+   "to": "blade_shade",
+   "to_port": 0
+  },
+  {
+   "from": "alb_dirt",
+   "from_port": 0,
+   "to": "alb_detail",
+   "to_port": 1
+  },
+  {
+   "from": "blade_shade",
+   "from_port": 0,
+   "to": "alb_detail",
+   "to_port": 0
+  },
+  {
+   "from": "alb_detail",
+   "from_port": 0,
+   "to": "alb_hue",
+   "to_port": 0
+  },
+  {
+   "from": "blades_warp",
+   "from_port": 0,
+   "to": "h_detail",
+   "to_port": 0
+  },
+  {
+   "from": "clumps",
+   "from_port": 0,
+   "to": "h_detail",
+   "to_port": 1
+  },
+  {
+   "from": "h_detail",
+   "from_port": 0,
+   "to": "h_all",
+   "to_port": 0
+  },
+  {
+   "from": "macro_height",
+   "from_port": 0,
+   "to": "h_all",
+   "to_port": 1
+  },
+  {
+   "from": "h_all",
+   "from_port": 0,
+   "to": "normal",
+   "to_port": 0
+  },
+  {
+   "from": "h_all",
+   "from_port": 0,
+   "to": "rough",
+   "to_port": 0
+  },
+  {
+   "from": "h_all",
+   "from_port": 0,
+   "to": "ao",
+   "to_port": 0
+  },
+  {
+   "from": "alb_hue",
+   "from_port": 0,
+   "to": "Material",
+   "to_port": 0
+  },
+  {
+   "from": "rough",
+   "from_port": 0,
+   "to": "Material",
+   "to_port": 2
+  },
+  {
+   "from": "normal",
+   "from_port": 0,
+   "to": "Material",
+   "to_port": 4
+  },
+  {
+   "from": "ao",
+   "from_port": 0,
+   "to": "Material",
+   "to_port": 5
+  },
+  {
+   "from": "h_all",
+   "from_port": 0,
+   "to": "Material",
+   "to_port": 6
+  }
+ ]
+}

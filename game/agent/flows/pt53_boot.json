@@ -1,0 +1,54 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.2,
+ "steps": [
+  {
+   "assert": {
+    "node": "%WizardName",
+    "text_equals": "Jadugarr"
+   }
+  },
+  {
+   "shot": "pt53_boot_jadugarr.png"
+  },
+  {
+   "click": "%Wizard_cwa1"
+  },
+  {
+   "wait": 0.8
+  },
+  {
+   "assert": {
+    "node": "%WizardName",
+    "text_equals": "Seerix"
+   }
+  },
+  {
+   "shot": "pt53_boot_seerix.png"
+  },
+  {
+   "click": "%Wizard_cwd0"
+  },
+  {
+   "wait": 0.8
+  },
+  {
+   "assert": {
+    "node": "%WizardName",
+    "text_equals": "The Ragman"
+   }
+  },
+  {
+   "shot": "pt53_boot_ragman.png"
+  },
+  {
+   "click": "%Wizard_cwa2"
+  },
+  {
+   "wait": 0.8
+  },
+  {
+   "shot": "pt53_boot_marduk.png"
+  }
+ ]
+}

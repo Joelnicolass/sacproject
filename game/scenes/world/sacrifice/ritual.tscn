@@ -1,0 +1,86 @@
+[gd_scene load_steps=15 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/sacrifice/ritual.gd" id="1_ritual"]
+[ext_resource type="Script" path="res://addons/fsm_kit/fsm_machine.gd" id="2_machine"]
+[ext_resource type="Script" path="res://addons/fsm_kit/fsm_state.gd" id="3_state"]
+[ext_resource type="Script" path="res://scenes/world/sacrifice/ritual_states/setup.gd" id="4_setup"]
+[ext_resource type="Script" path="res://scenes/world/sacrifice/ritual_states/walk.gd" id="5_walk"]
+[ext_resource type="Script" path="res://scenes/world/sacrifice/ritual_states/shoot.gd" id="6_shoot"]
+[ext_resource type="Script" path="res://scenes/world/sacrifice/ritual_states/wait.gd" id="7_wait"]
+[ext_resource type="Script" path="res://scenes/world/sacrifice/ritual_push.gd" id="8_push"]
+[ext_resource type="Script" path="res://scenes/world/sacrifice/ritual_fx.gd" id="9_fx"]
+[ext_resource type="PackedScene" path="res://scenes/world/sacrifice/red_vortex.tscn" id="10_vortex"]
+[ext_resource type="PackedScene" path="res://scenes/fx/tether.tscn" id="11_tether"]
+[ext_resource type="Script" path="res://addons/mp_kit/mp_replicate.gd" id="12_net"]
+[ext_resource type="Resource" path="res://data/match_rules.tres" id="13_rules"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_ritual"]
+properties/0/path = NodePath(".:phase")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+properties/1/path = NodePath(".:round_index")
+properties/1/spawn = true
+properties/1/replication_mode = 2
+properties/2/path = NodePath(".:outcome")
+properties/2/spawn = true
+properties/2/replication_mode = 2
+properties/3/path = NodePath(".:kind")
+properties/3/spawn = true
+properties/3/replication_mode = 0
+properties/4/path = NodePath(".:caster_slot")
+properties/4/spawn = true
+properties/4/replication_mode = 0
+properties/5/path = NodePath(".:target_slot")
+properties/5/spawn = true
+properties/5/replication_mode = 0
+properties/6/path = NodePath(".:creature_path")
+properties/6/spawn = true
+properties/6/replication_mode = 0
+
+[node name="Ritual" type="Node3D" node_paths=PackedStringArray("phases", "push", "fx")]
+script = ExtResource("1_ritual")
+rules = ExtResource("13_rules")
+phases = NodePath("Phases")
+push = NodePath("Push")
+fx = NodePath("Fx")
+
+[node name="Phases" type="Node" parent="." node_paths=PackedStringArray("initial_state", "actor")]
+script = ExtResource("2_machine")
+initial_state = NodePath("Off")
+actor = NodePath("..")
+
+[node name="Off" type="Node" parent="Phases"]
+script = ExtResource("3_state")
+
+[node name="Setup" type="Node" parent="Phases"]
+script = ExtResource("4_setup")
+
+[node name="Walk" type="Node" parent="Phases"]
+script = ExtResource("5_walk")
+
+[node name="Shoot" type="Node" parent="Phases"]
+script = ExtResource("6_shoot")
+
+[node name="Wait" type="Node" parent="Phases"]
+script = ExtResource("7_wait")
+
+[node name="Ended" type="Node" parent="Phases"]
+script = ExtResource("3_state")
+
+[node name="Push" type="Node" parent="." node_paths=PackedStringArray("ritual")]
+script = ExtResource("8_push")
+ritual = NodePath("..")
+
+[node name="Fx" type="Node3D" parent="." node_paths=PackedStringArray("ritual")]
+script = ExtResource("9_fx")
+vortex_scene = ExtResource("10_vortex")
+bolt_scene = ExtResource("11_tether")
+ritual = NodePath("..")
+
+[node name="Net" type="Node" parent="."]
+script = ExtResource("12_net")
+sync_properties = PackedStringArray()
+interpolate = false
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_ritual")

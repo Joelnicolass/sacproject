@@ -1,0 +1,26 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.0,
+ "steps": [
+  { "click": "%Wizard_cwa0" },
+  { "wait": 0.3 },
+  { "click": "%God_james" },
+  { "wait": 0.3 },
+  { "click": "%Play" },
+  { "click": "%Join" },
+  { "wait_until": { "node": "%Stats", "text_contains": "Vida 1950/1950", "timeout": 20 } },
+  { "wait_until": { "node": "%Units/Manahoar1", "timeout": 10 } },
+  { "wait_until": { "node": "%Wizards/Wizard1", "timeout": 10 } },
+  { "assert": { "node": "%Units/Manahoar1", "visible": true } },
+  { "print": { "node": "%Units/Manahoar1", "prop": "owner_slot" } },
+  { "print": { "node": "%Units/Manahoar1", "prop": "creature_tag" } },
+  { "print": { "node": "%Units/Manahoar1", "prop": "mode" } },
+  { "print": { "node": "%Units/Manahoar1", "prop": "global_position" } },
+  { "print": { "node": "%Wizards/Wizard1", "prop": "owner_slot" } },
+  { "print": { "node": "%Wizards/Wizard2", "prop": "owner_slot" } },
+  { "wait": 2.0 },
+  { "print": { "node": "%Units/Manahoar1", "prop": "global_position" } },
+  { "shot": "late_join_b_sees.png" },
+  { "wait": 6.0 }
+ ]
+}

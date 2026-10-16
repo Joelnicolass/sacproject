@@ -1,0 +1,16 @@
+web/
+web-spike/
+.rea-snapshots/
+.tools/
+rea/
+sacengine/
+godot-studio-skills/
+
+# Sistema y dependencias
+.DS_Store
+node_modules/
+.next/
+__pycache__/
+
+# Salidas de pruebas del juego (renderizan arte del original; 7,8 GB)
+game/agent/out/

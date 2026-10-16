@@ -1,0 +1,243 @@
+{
+ "scene": "res://debug/fx_light_steal.tscn",
+ "wait_first": 1.0,
+ "steps": [
+  {
+   "wait": 0.5
+  },
+  {
+   "scene": "res://debug/vfx_lab.tscn"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "press": {
+    "name": "debug_toggle_layer_4",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "press": {
+    "name": "debug_next_quality",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "press": {
+    "name": "debug_next_quality",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "call": {
+    "harness": "fx_light_watch",
+    "method": "start"
+   }
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.08
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.08
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.05
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "shot": "robo_pelea_0_a.png"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "robo_pelea_0_b.png"
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "robo_pelea_0_c.png"
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.08
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.08
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.05
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "shot": "robo_pelea_1_a.png"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "robo_pelea_1_b.png"
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "robo_pelea_1_c.png"
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.08
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.08
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.05
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "shot": "robo_pelea_2_a.png"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "robo_pelea_2_b.png"
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "robo_pelea_2_c.png"
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "call": {
+    "harness": "fx_light_watch",
+    "method": "stop"
+   }
+  }
+ ]
+}

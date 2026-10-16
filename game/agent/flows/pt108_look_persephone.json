@@ -1,0 +1,117 @@
+{
+ "scene": "res://agent/fixtures/biome_pick_persephone.tscn",
+ "wait_first": 13.0,
+ "steps": [
+  {
+   "shot": "persephone_t0.png"
+  },
+  {
+   "press": {
+    "name": "turn_right",
+    "hold": 0.5
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "persephone_t90.png"
+  },
+  {
+   "press": {
+    "name": "turn_right",
+    "hold": 0.5
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "persephone_t180.png"
+  },
+  {
+   "press": {
+    "name": "turn_right",
+    "hold": 0.5
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "persephone_t270.png"
+  },
+  {
+   "press": {
+    "name": "turn_right",
+    "hold": 0.5
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "persephone_t360.png"
+  },
+  {
+   "press": {
+    "name": "zoom_out",
+    "hold": 3.0
+   }
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "shot": "persephone_zmax_0.png"
+  },
+  {
+   "press": {
+    "name": "turn_right",
+    "hold": 0.5
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "persephone_zmax_90.png"
+  },
+  {
+   "press": {
+    "name": "turn_right",
+    "hold": 0.5
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "persephone_zmax_180.png"
+  },
+  {
+   "press": {
+    "name": "turn_right",
+    "hold": 0.5
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "persephone_zmax_270.png"
+  },
+  {
+   "press": {
+    "name": "turn_right",
+    "hold": 0.5
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "persephone_zmax_360.png"
+  }
+ ]
+}

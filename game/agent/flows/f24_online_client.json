@@ -1,0 +1,24 @@
+{
+  "scene": "res://scenes/ui/boot.tscn",
+  "wait_first": 0.8,
+  "steps": [
+    { "click": "%Play" },
+    { "click": "%Join" },
+    { "wait_until": { "node": "%Stats", "text_contains": "Vida", "timeout": 12 } },
+    { "wait": 1.0 },
+    { "print": { "node": "%Stats", "prop": "text" } },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "god" } },
+    { "shot": "f24_online_0.png" },
+    { "press": "spell_3" },
+    { "wait": 0.1 },
+    { "assert": { "node": "%Battle", "text_equals": "Elegí el blanco" } },
+    { "click": "%View" },
+    { "wait_until": { "node": "%Battle", "text_equals": "Heal", "timeout": 2 } },
+    { "wait": 1.0 },
+    { "print": { "node": "%Stats", "prop": "text" } },
+    { "press": "spell_3" },
+    { "wait": 0.1 },
+    { "assert": { "node": "%Battle", "text_equals": "Enfriando" } },
+    { "shot": "f24_online.png" }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "scene": "res://debug/summon_unit.tscn",
+  "wait_first": 2.0,
+  "steps": [
+    { "wait_until": { "node": "%Stats", "text_contains": "Vida", "timeout": 10 } },
+    { "print": { "node": "%Slots/Creature1/Name", "prop": "text" } },
+    { "print": { "node": "%Slots/Creature2/Name", "prop": "text" } },
+    { "print": { "node": "%Slots/Creature3/Name", "prop": "text" } },
+    { "print": { "node": "%Slots/Creature4/Name", "prop": "text" } },
+    { "shot": "f25_flying_0_book.png" },
+    { "press": "creature_4" },
+    { "wait": 0.1 },
+    { "print": { "node": "%Battle", "prop": "text" } },
+    { "wait_until": { "node": "%Units/Gargoyle1", "timeout": 6 } },
+    { "print": { "node": "%Units/Gargoyle1", "prop": "mode" } },
+    { "print": { "node": "%Units/Gargoyle1", "prop": "global_position" } },
+    { "assert": { "node": "%Battle", "text_equals": "Gargoyle" } },
+    { "shot": "f25_flying_1_gargoyle.png" },
+    { "wait": 0.8 },
+    { "print": { "node": "%Units/Gargoyle1", "prop": "global_position" } },
+    { "press": "order_units" },
+    { "wait": 1.5 },
+    { "print": { "node": "%Battle", "prop": "text" } },
+    { "print": { "node": "%Units/Gargoyle1", "prop": "global_position" } },
+    { "print": { "node": "%Battle", "prop": "text" } },
+    { "shot": "f25_flying_2_ordered.png" }
+  ]
+}

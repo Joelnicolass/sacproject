@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="AiProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/ai/data/ai_profile.gd" id="1_profile"]
+
+; Perfil de la IA para james (RFC-024 024e). Los mismos numeros que profile_original.tres: el original no tiene personalidad por
+; dios (shiny.d no lee el dios en ninguna constante); el dios cambia solo por el libro del mago. No se guarda ningun numero: valen
+; los del script, que son los del original (el caso ai_profiles_by_god de rules_suite compara cada propiedad con profile_original).
+
+[resource]
+script = ExtResource("1_profile")
+god = &"james"

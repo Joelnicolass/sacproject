@@ -1,0 +1,19 @@
+.godot/
+cache/
+*.import
+!assets/cc0/**/*.import
+
+# Capturas del juego original usadas como referencia: no se versionan.
+visual/refs/original/
+
+# Capturas lado a lado de F79: recortan la captura del original, no se versionan.
+agent/out/f79_*/f79_3_side_by_side.png
+
+# Capturas lado a lado de F80: incluyen cursores e iconos del original, no se versionan.
+agent/out/f80_*/*_side_by_side.png
+agent/out/f84/*side_by_side*.png
+
+# Capturas y salidas de pruebas: renderizan arte del original extraído a cache/ (decisión del orquestador, REVIEW-F84 N4).
+# Los archivos ya versionados en agent/out/ siguen versionados; lo nuevo no se agrega.
+agent/out/
+__pycache__/

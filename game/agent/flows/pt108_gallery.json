@@ -1,0 +1,132 @@
+{
+ "scene": "res://agent/fixtures/pt22c_gallery_look.tscn",
+ "wait_first": 8.0,
+ "steps": [
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "shot": "rts_persephone.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_biome",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "shot": "rts_pyro.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_biome",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "shot": "rts_james.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_biome",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "shot": "rts_stratos.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_biome",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "shot": "rts_charnel.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_biome",
+    "hold": 0.05
+   }
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "shot": "horizonte_persephone.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_biome",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "shot": "horizonte_pyro.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_biome",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "shot": "horizonte_james.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_biome",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "shot": "horizonte_stratos.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_biome",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "shot": "horizonte_charnel.png"
+  }
+ ]
+}

@@ -1,0 +1,58 @@
+[gd_resource type="Resource" script_class="BenchRules" load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
+[ext_resource type="Script" path="res://scenes/world/ai/data/ai_seat.gd" id="3_seat"]
+[ext_resource type="Script" path="res://debug/bench_structure.gd" id="4_structure"]
+[ext_resource type="Resource" path="res://data/ai/profile_original.tres" id="5_profile"]
+
+[sub_resource type="Resource" id="Seat_james"]
+script = ExtResource("3_seat")
+slot = 2
+wizard = "cwa0"
+god = &"james"
+profile = ExtResource("5_profile")
+
+[sub_resource type="Resource" id="Manalith_west"]
+script = ExtResource("4_structure")
+slot = 2
+spell_tag = "htlm"
+fount = "FountWest"
+
+[sub_resource type="Resource" id="Group_rangers"]
+script = ExtResource("2_group")
+tag = "amuh"
+slot = 1
+count = 4
+columns = 4
+spacing_m = 4.0
+near_slot = 2
+near_distance_m = 110.0
+near_angle_deg = 20.0
+order = "attack_structure"
+order_slot = 2
+
+[sub_resource type="Resource" id="Group_troggs"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 2
+count = 4
+columns = 4
+spacing_m = 3.0
+near_slot = 2
+near_distance_m = 14.0
+near_angle_deg = -40.0
+
+[resource]
+script = ExtResource("1_rules")
+biome_god = &"james"
+starting_souls = 4
+match_seed = 1
+anchor = Vector3(1036, 0, 1008)
+start_paused = true
+groups = Array[ExtResource("2_group")]([SubResource("Group_rangers"), SubResource("Group_troggs")])
+ai_seats = Array[ExtResource("3_seat")]([SubResource("Seat_james")])
+structures = Array[ExtResource("4_structure")]([SubResource("Manalith_west")])
+pending_text = "IA en pausa"
+ignore_annihilation = true
+probe = "guard"

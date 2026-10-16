@@ -1,0 +1,92 @@
+{
+ "scene": "res://debug/guardian_manalith.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 15
+   }
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "click": "%SpellBook/Tabs/StructureTab"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "click": "%SpellBook/Slots/Structure2"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "call": {
+    "harness": "wizard_travel",
+    "method": "set_pointer_world",
+    "args": [
+     1515,
+     17.0,
+     1462
+    ]
+   }
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "pt63g_c2b_1.png"
+  },
+  {
+   "click": "%SpellBook/Tabs/StructureTab"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "click": "%SpellBook/Slots/Structure2"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "call": {
+    "harness": "wizard_travel",
+    "method": "set_pointer_world",
+    "args": [
+     1520,
+     16,
+     1450
+    ]
+   }
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "pt63g_c2b_2.png"
+  }
+ ]
+}

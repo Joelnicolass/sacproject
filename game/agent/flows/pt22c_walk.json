@@ -1,0 +1,9 @@
+{ "scene": "res://agent/fixtures/rfc022c_match.tscn", "wait_first": 5.0,
+ "steps": [
+  {"shot":"w00.png"},
+  {"press":{"name":"move_forward","hold":3.0}},{"wait":0.3},{"shot":"w01.png"},
+  {"press":{"name":"turn_left","hold":0.8}},{"press":{"name":"move_forward","hold":3.0}},{"wait":0.3},{"shot":"w02.png"},
+  {"press":{"name":"turn_left","hold":0.8}},{"press":{"name":"move_forward","hold":3.0}},{"wait":0.3},{"shot":"w03.png"},
+  {"press":{"name":"turn_left","hold":0.8}},{"press":{"name":"move_forward","hold":4.0}},{"wait":0.3},{"shot":"w04.png"},
+  {"press":{"name":"turn_left","hold":0.8}},{"press":{"name":"move_forward","hold":4.0}},{"wait":0.3},{"shot":"w05.png"}
+ ]}

@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="LookQuality" format=3]
+
+[ext_resource type="Script" uid="uid://bkc6vpfs3gs4q" path="res://scenes/world/look/look_quality.gd" id="1_q"]
+
+[resource]
+script = ExtResource("1_q")
+id = &"medium_fx_legacy"
+label = "Medio (VFX previos a 029)"
+scaling_mode = 3
+scale = 0.67
+screen_space_aa = 1
+shadow_distance_cap = 220.0
+grass_radius_m = 64.0
+grass_near_radius_m = 14.0
+ssao_enabled = true
+ssil_enabled = false
+ground_layers = 4
+ground_triplanar = true
+ground_stochastic = false
+ground_macro = true
+grass_enabled = true
+grass_near_segments = 2
+grass_density_scale = 1.0
+grass_clumps = true
+grass_trample = true
+fx_soft_particles = false
+fx_frame_blend = false

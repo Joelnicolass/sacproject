@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="LightLook" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/look/light/light_look.gd" id="1_l"]
+
+[resource]
+script = ExtResource("1_l")
+label = "James: mediodia de desierto"
+sun_azimuth_deg = 23.0
+sun_elevation_deg = 46.0
+sun_color = Color(1.0, 0.927, 0.751, 1)
+sun_energy = 1.8
+fill_color = Color(0.7, 0.78, 1.0, 1)
+fill_energy = 0.22
+ambient_color = Color(0.719, 0.719, 0.978, 1)
+ambient_energy = 0.48
+tonemap_exposure = 1.0
+volumetric_density = 0.01

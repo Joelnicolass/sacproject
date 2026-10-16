@@ -1,0 +1,33 @@
+{
+  "scene": "res://scenes/ui/boot.tscn",
+  "wait_first": 2.0,
+  "steps": [
+    { "click": "%Wizard_cwa1" },
+    { "wait": 0.25 },
+    { "click": "%God_persephone" },
+    { "wait": 0.25 },
+    { "click": "%Play" },
+    { "wait": 0.2 },
+    { "click": "%Join" },
+    { "wait_until": { "node": "%Stats", "text_contains": "Vida 1950/1950 · Maná 1900/1900", "timeout": 25 } },
+    { "wait_until": { "node": "%Wizards/Wizard2", "timeout": 40 } },
+    { "assert": { "node": "%Title", "text_equals": "Seerix · Persephone" } },
+    { "assert": { "node": "%Stats", "text_equals": "Vida 1950/1950 · Maná 1900/1900 · Almas 12" } },
+    { "print": { "node": "%Title", "prop": "text" } },
+    { "print": { "node": "%Stats", "prop": "text" } },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "owner_slot" } },
+    { "print": { "node": "%Wizards/Wizard2", "prop": "owner_slot" } },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
+    { "print": { "node": "%Wizards/Wizard2", "prop": "position" } },
+    { "press": { "name": "move_forward", "hold": 1.2 } },
+    { "press": { "name": "turn_left", "hold": 0.5 } },
+    { "wait": 0.8 },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
+    { "print": { "node": "%Wizards/Wizard2", "prop": "position" } },
+    { "shot": "a_full_01.png" },
+    { "press": { "name": "move_forward", "hold": 1.4 } },
+    { "wait": 0.8 },
+    { "shot": "a_full_02.png" },
+    { "wait": 3.0 }
+  ]
+}

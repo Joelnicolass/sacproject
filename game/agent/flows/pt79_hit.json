@@ -1,0 +1,179 @@
+{
+ "scene": "res://debug/roster_hit.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "%OrdersLog",
+    "text_contains": "Druid 800/800",
+    "timeout": 40
+   }
+  },
+  {
+   "press": "check_tick"
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "assert": {
+    "node": "%SelectionRoster",
+    "prop": "count",
+    "equals": 4
+   }
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "min_health"
+   }
+  },
+  {
+   "shot": "c0_full.png"
+  },
+  {
+   "wait": 2.5
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "min_health"
+   }
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster/Scroll/Cells/Cell1",
+    "prop": "health_fraction"
+   }
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster/Scroll/Cells/Cell2",
+    "prop": "health_fraction"
+   }
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster/Scroll/Cells/Cell3",
+    "prop": "health_fraction"
+   }
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster/Scroll/Cells/Cell4",
+    "prop": "health_fraction"
+   }
+  },
+  {
+   "shot": "c1_t1.png"
+  },
+  {
+   "wait": 2.5
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "min_health"
+   }
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster/Scroll/Cells/Cell1",
+    "prop": "health_fraction"
+   }
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster/Scroll/Cells/Cell2",
+    "prop": "health_fraction"
+   }
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster/Scroll/Cells/Cell3",
+    "prop": "health_fraction"
+   }
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster/Scroll/Cells/Cell4",
+    "prop": "health_fraction"
+   }
+  },
+  {
+   "shot": "c2_t2.png"
+  },
+  {
+   "wait": 2.5
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "min_health"
+   }
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster/Scroll/Cells/Cell1",
+    "prop": "health_fraction"
+   }
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster/Scroll/Cells/Cell2",
+    "prop": "health_fraction"
+   }
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster/Scroll/Cells/Cell3",
+    "prop": "health_fraction"
+   }
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster/Scroll/Cells/Cell4",
+    "prop": "health_fraction"
+   }
+  },
+  {
+   "shot": "c3_t3.png"
+  },
+  {
+   "wait": 2.5
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "min_health"
+   }
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster/Scroll/Cells/Cell1",
+    "prop": "health_fraction"
+   }
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster/Scroll/Cells/Cell2",
+    "prop": "health_fraction"
+   }
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster/Scroll/Cells/Cell3",
+    "prop": "health_fraction"
+   }
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster/Scroll/Cells/Cell4",
+    "prop": "health_fraction"
+   }
+  },
+  {
+   "shot": "c4_t4.png"
+  }
+ ]
+}

@@ -1,0 +1,345 @@
+class_name AiWizardBrain
+extends Node
+
+## The brain of the AI's wizard (RFC-024 §3.1 `AiWizardBrain`; shiny.d:3303-3387 `wizBrain`). The task board calls `think`
+## for the wizard when a record asks for it. Every 16 ticks of his age he replans: the weights of attacking, supporting and
+## converting (weightTriple), the queue is emptied and every phase child fills it again. Then he casts the best entry he
+## can pay (executeBestCast, shiny.d:3201-3280): if the target or the place is out of reach he walks toward it; if he
+## cannot afford it a non-forced entry is skipped and a forced one waits for the next try; `lightCanCast` is the check
+## (mana, souls, cooldown) that keeps the AI from asking for what the Caster would refuse. 024d adds: the souls he can take by
+## touching them (within (1 - threat) * 100 + 80 m, shiny.d:3330-3337), the capture branch of a record with command 2
+## (Manalith over a free fount, castCachedInRange; Desecrate of the enemy altar with the creature of most souls,
+## pickGuardCreature) and the ghost (waits for his Manahoars or goes to the nearest mana building).
+
+@export var perception: AiPerception
+@export var stance: AiStance
+@export var groups: AiGroups
+@export var port: AiCommandPort
+@export var creature_brain: CreatureBrain
+@export var profile: AiProfile
+
+const CASTER := preload("res://scenes/world/spells/caster.gd")
+
+var rng := AiRand.new()
+var eval: AiSpellEval
+var phases: Array[AiPhase] = []
+var casts_started := 0
+## Adenda 1.3 (AiDifficulty.summon_interval_s, mana_reserve): set by AiSide.setup. 0 and 0 = the original (Normal, Hard).
+var summon_interval_ticks := 0
+var mana_reserve := 0.0
+## The port tick of the last summon he started (the summon interval counts from it).
+var _last_summon_tick := -1000000
+
+
+func _ready() -> void:
+	for child in get_children():
+		if child is AiPhase:
+			(child as AiPhase).brain = self
+			phases.append(child)
+
+
+## Called by AiSide.setup once the profile is set.
+func prepare() -> void:
+	eval = AiSpellEval.new(perception, stance, groups, profile)
+
+
+## wizBrain (shiny.d:3303-3387). Returns 1 when it gave an order or cast, 2 when it started a capture cast, 0 when it had nothing to do.
+func think(wizard: AiTrack, cmd: int, record: AiRecord) -> int:
+	if not wizard.is_valid():
+		return 0
+	if bool(wizard.node.call("is_ghost")):
+		return _ghost(wizard, cmd, record)
+	## A cast decided and waiting its delay (Easy, 024e): he stands as if casting and orders nothing else (else he walked on toward
+	## the fount and stood on it when the Manalith left: «Sin lugar»).
+	if port.cast_pending():
+		return 1
+	if wizard.spell_dirty:
+		rebuild_spells(wizard)
+	if wizard.age >= wizard.next_replan:
+		wizard.next_replan = wizard.age + profile.wizard_replan_ticks
+		wizard.next_reissue = wizard.age - 1
+		var w3 := AiField.weight_triple(cmd, stance.enemy_ratio(), profile.aggression)
+		wizard.cast_queue.clear()
+		for phase in phases:
+			phase.run(wizard, w3, record if cmd == 2 else null)
+	## Souls he can take by touching (retail: 100 + 80 m scaled by the threat; the beta 80 + 60): first what he can cast in passing
+	## (checkOnly), else he walks onto the soul.
+	var reach := AiField.f32((1.0 - wizard.threat) * profile.soul_reach_scale + profile.soul_reach_base)
+	if wizard.ord_state == 34:
+		reach *= profile.soul_keep_factor
+	var soul := perception.find_best_near(wizard.cur_pos, reach, true)
+	if soul != null:
+		if execute_best_cast(wizard, true) != 0:
+			return 1
+		port.order_go_to(wizard, 34, soul.cur_pos)
+		return 1
+	if record != null and cmd == 2:
+		var captured := _capture_block(wizard, record)
+		if captured != 0:
+			return captured
+	if execute_best_cast(wizard, false) != 0:
+		return 1
+	return creature_brain.think(wizard, cmd, record)
+
+
+## The cmd 2 block of wizBrain (shiny.d:3354-3382): every 8 ages, at the target of his capture record, Desecrate (an altar) or Manalith
+## (a free fount). Returns 2 when it started the cast.
+func _capture_block(wizard: AiTrack, record: AiRecord) -> int:
+	var tn := record.target
+	if tn == null or wizard.age < wizard.next_reissue:
+		return 0
+	wizard.next_reissue = wizard.age + profile.wizard_reissue_ticks
+	if tn.flags & AiTrack.ALTAR:
+		## The desecrate path: an enemy altar not under ritual, the creature with most souls brought next to the wizard, and
+		## the altar being the closest enemy one in range (the game's closestEnemyAltar).
+		if wizard.desecrate_spell != null and (tn.flags & AiTrack.ENEMY) and not perception.desecration_against(tn):
+			var guard := pick_guard_creature(tn)
+			if guard != null and perception.closest_enemy_altar_in_range() == tn.node:
+				var spell: SpellType = wizard.desecrate_spell
+				var radius := AiField.f32(spell.cast_range * profile.desecrate_range_factor)
+				if port.order_target_radius(guard, 3, wizard, radius) != 0:
+					if enqueue_forced_execute(wizard, guard, spell, spell.cast_range, null) != 0:
+						wizard.next_reissue += 7 * profile.wizard_reissue_ticks
+						return 2
+	elif (tn.flags & AiTrack.CAPTURABLE) and (tn.status & AiTrack.UNBUILT):
+		if cast_cached_in_range(wizard, tn) != 0:
+			return 2
+	return 0
+
+
+## pickGuardCreature (shiny.d:3026-3050, 0x485700): of the own creatures (not the wizard) the one that weighs most
+## (1 within 10 m of the target, falling linearly to 0 at 3620 m) times its souls; a strict argmax from 0, so a creature of 0 souls
+## is never picked. Deviation: the game's own test `sacrifice_status` (alive, free, not held, a Captive) filters the candidates first,
+## so the AI never asks Desecrate for a creature that would answer «Blanco inválido» (sacengine tests the mode after picking). A creature
+## bound by the Guardian spell is skipped (isGuardianEnt, shiny.d:3032).
+func pick_guard_creature(target: AiTrack) -> AiTrack:
+	var best := 0.0
+	var best_track: AiTrack
+	var system := perception.sacrifice()
+	for c: AiTrack in perception.bodies(0):
+		if c.kind == AiTrack.Kind.WIZ or not c.is_valid():
+			continue
+		## isGuardianEnt (shiny.d:3032): a creature bound to a building by the Guardian spell is never the victim.
+		if c.is_guardian_bound():
+			continue
+		if system != null and not system.sacrifice_status(perception.slot, c.node).is_empty():
+			continue
+		var worth := AiGroups.souls_pair(c).x
+		var d := c.extrap_pos.distance_to(target.cur_pos)
+		var w := 0.0
+		if d <= 10.0:
+			w = 1.0
+		elif d < 3620.0:
+			w = (3620.0 - d) * 0.0002770083083305508
+		var v := w * float(worth)
+		if best < v:
+			best = v
+			best_track = c
+	if best_track != null and best_track.group != null:
+		(best_track.group as AiGroup).members.erase(best_track)
+		best_track.group = null
+	return best_track
+
+
+## castCachedInRange (shiny.d:3285-3301, 0x48dce0): the Manalith spell, forced, when the wizard is within range * sqrt(1.4) * 5 of the
+## fount and the threat is under 0.9 (retail; the beta 0.6). The fount must still be free (canCastSpellOn's onlyManafounts reads it live).
+func cast_cached_in_range(wizard: AiTrack, fount: AiTrack) -> int:
+	var shrine: SpellType = wizard.shrine_spell
+	if shrine == null or wizard.threat >= profile.build_threat_cap:
+		return 0
+	if not fount.is_valid() or not bool(fount.node.call("is_free")):
+		return 0
+	var r := float(shrine.cast_range)
+	r = r * r * 1.399999976158142 * 25.0
+	if wizard.cur_pos.distance_squared_to(fount.cur_pos) > r:
+		return 0
+	return enqueue_forced_execute(wizard, fount, shrine, shrine.cast_range, null)
+
+
+## enqueueForcedExecute (shiny.d:3290, 0x48d080): score 0, forced, and straight to the execution.
+func enqueue_forced_execute(wizard: AiTrack, target: AiTrack, spell: Resource, range_m: float, obj: AiTrack) -> int:
+	AiCastQueue.enqueue(wizard.cast_queue, AiCastQueue.make(AiCastQueue.FORCED, 0.0, target, spell, range_m, obj))
+	return execute_best_cast(wizard, false)
+
+
+## The ghost (shiny.d:3306-3326): his own Manahoars within 256 m will channel him back, so he waits; with none near he goes to the
+## nearest mana building of his side (altar, Manalith). That last part is a deliberate deviation of sacengine, not of thaum.
+func _ghost(wizard: AiTrack, cmd: int, record: AiRecord) -> int:
+	for t: AiTrack in perception.bodies(0):
+		if t.kind == AiTrack.Kind.MAHO and wizard.cur_pos.distance_squared_to(t.cur_pos) <= 256.0 * 256.0:
+			return creature_brain.think(wizard, cmd, record)
+	var best: AiTrack
+	var best_d := INF
+	for t: AiTrack in perception.structures(0):
+		if not t.is_valid() or not ((t.flags & AiTrack.ALTAR) or (t.status & AiTrack.MANALITH)):
+			continue
+		var d := wizard.cur_pos.distance_squared_to(t.cur_pos)
+		if d < best_d:
+			best_d = d
+			best = t
+	if best != null:
+		port.order_if_changed(wizard, 3, best, null)
+		return 1
+	return creature_brain.think(wizard, cmd, record)
+
+
+## A target that still exists and is not dying (the Caster would answer "Blanco inválido").
+static func target_alive(t: AiTrack) -> bool:
+	if t == null or not t.is_valid():
+		return false
+	return not (t.node.has_method("is_dead") and bool(t.node.call("is_dead")))
+
+
+## wizSpellRebuild (shiny.d:2610-2636): the book of the wizard in the lists the phases read.
+func rebuild_spells(wizard: AiTrack) -> void:
+	wizard.summons = []
+	wizard.spell_accs = []
+	wizard.manahoar_spell = null
+	wizard.shrine_spell = null
+	wizard.convert_spell = null
+	wizard.desecrate_spell = null
+	var book := wizard.node.get_node("Spellbook")
+	for i in int(book.call("creature_count")):
+		var type: CreatureType = book.call("creature_at", i)
+		if type == null:
+			continue
+		if type.tag == AiPerception.MAHO_TAG:
+			wizard.manahoar_spell = type
+		else:
+			wizard.summons.append({"tag": type.tag, "type": type, "acc": perception.tag_acc(type.tag)})
+	for i in int(book.call("size")):
+		var spell: SpellType = book.call("spell_at", i)
+		if spell != null and AiSpellEval.wants_acc(spell):
+			wizard.spell_accs.append({"spell": spell, "fn": AiSpellEval.rating_fn(spell)})
+	for i in int(book.call("structure_count")):
+		var spell: SpellType = book.call("structure_at", i)
+		if spell == null:
+			continue
+		if wizard.shrine_spell == null and (spell.flags & (1 << 11)) != 0:
+			wizard.shrine_spell = spell
+		if spell.tag == "ccas":
+			wizard.convert_spell = spell
+		if spell.tag == "ucas":
+			wizard.desecrate_spell = spell
+	wizard.spell_dirty = false
+
+
+## lightCanCast (shiny.d:3174-3199): mana, souls, cooldown and a free wizard. The mana test is the Caster's own (cost <= mana
+## + epsilon; sacengine rounds with ftol), so the AI never asks for what the Caster would answer «Sin maná».
+func light_can_cast(wizard: AiTrack, spell: Resource) -> bool:
+	var node := wizard.node
+	if not bool(node.call("can_cast")):
+		return false
+	## a cast decided and waiting its delay (Easy, 024e) keeps him busy like one being cast
+	if port != null and port.cast_pending():
+		return false
+	var caster := node.get_node("Caster")
+	if bool(caster.call("is_casting")):
+		return false
+	var book := node.get_node("Spellbook")
+	var cooldown := 0.0
+	if spell is CreatureType:
+		var purse := node.get_node_or_null("SoulPurse")
+		if (purse != null and int(purse.get("count")) < (spell as CreatureType).souls) or purse == null:
+			return false
+		cooldown = float(book.call("creature_cooldown", int(book.call("creature_index_of", (spell as CreatureType).tag))))
+	elif spell is SpellType:
+		var tag := (spell as SpellType).tag
+		if bool((spell as SpellType).is_structure):
+			cooldown = float(book.call("structure_cooldown", int(book.call("structure_index_of", tag))))
+		else:
+			cooldown = float(book.call("cooldown", int(book.call("index_of", tag))))
+	else:
+		return false
+	if cooldown > 0.0:
+		return false
+	var cost := maxf(CASTER.MIN_MANA_COST, float(spell.get("mana_cost")))
+	return cost <= AiPerception._mana_now(node) + CASTER.MANA_EPSILON
+
+
+## 024e: what a cast that waited its delay (Easy) checks again when it leaves the port: lightCanCast, and for an entry with an action
+## (Manalith, Convert, Desecrate) the game's own check of it (Caster.action_status: the fount still has room, the soul is still free, the
+## enemy altar still in range), so the half second never turns into a refusal. `point` is where it was going to be cast.
+## Returns "" when it can go, else why not.
+func cast_refusal(wizard: AiTrack, spell: Resource, target: AiTrack, point: Vector3) -> String:
+	if not light_can_cast(wizard, spell):
+		return "lightCanCast"
+	if not (spell is SpellType and bool((spell as SpellType).is_structure)):
+		return ""
+	var caster := wizard.node.get_node("Caster")
+	var picked: Node3D = target.node if target != null and target.is_valid() else null
+	return str(caster.call("action_status", (spell as SpellType).tag, point, picked))
+
+
+## Adenda 1.3: the summon interval of the difficulty has passed since his last summon (always true with interval 0).
+func summon_interval_over() -> bool:
+	return summon_interval_ticks <= 0 or port.now_tick() - _last_summon_tick >= summon_interval_ticks
+
+
+## Adenda 1.3: a creature of `mana_cost` leaves him at least the reserve of the difficulty (always true with reserve 0).
+func keeps_reserve(wizard: AiTrack, mana_cost: float) -> bool:
+	if mana_reserve <= 0.0:
+		return true
+	return AiPerception._mana_now(wizard.node) - mana_cost >= mana_reserve * AiPerception._mana_max(wizard.node)
+
+
+## executeBestCast (shiny.d:3201-3280). `check_only` is the soul-pickup test; 024c always passes false.
+func execute_best_cast(wizard: AiTrack, check_only: bool) -> int:
+	var queue := wizard.cast_queue
+	var i := 0
+	while i < queue.size():
+		var e: Dictionary = queue[i]
+		var forced := (int(e["flag"]) & AiCastQueue.FORCED) != 0
+		var target: AiTrack = e["target"]
+		var obj: AiTrack = e["obj"]
+		var spell: Resource = e["spell"]
+		if spell == null or (forced and target != null and check_only):
+			i += 1
+			continue
+		## No Manalith: only what the wizard can pay now (shiny.d:3216-3224).
+		if stance.manalith_count() == 0:
+			var cost := maxf(CASTER.MIN_MANA_COST, float(spell.get("mana_cost")))
+			if cost > AiPerception._mana_now(wizard.node) + CASTER.MANA_EPSILON:
+				if forced:
+					return 0
+				i += 1
+				continue
+		if target != null and not target_alive(target):
+			i += 1
+			continue
+		if obj != null:
+			if target != null and target.kind == AiTrack.Kind.WIZ and bool(target.node.call("is_ghost")):
+				i += 1
+				continue
+			var range_m := float(e["range"])
+			if wizard.cur_pos.distance_squared_to(obj.cur_pos) > range_m * range_m:
+				if not check_only:
+					port.order_pos_radius(wizard, 2, obj.cur_pos, range_m)
+					return 1
+				i += 1
+				continue
+		if not light_can_cast(wizard, spell):
+			if not forced:
+				i += 1
+				continue
+			if obj == null:
+				return 0
+			if not check_only:
+				port.order_target_radius(wizard, 3, obj, float(e["range"]))
+				return 1
+			i += 1
+			continue
+		## Without perfect information (024e) a body the side does not see now cannot be clicked: the entry is skipped (he went
+		## toward where it was seen; if it is there his sight marks it and the next try casts).
+		if target != null and not port.can_aim(target):
+			i += 1
+			continue
+		## sacengine checks the line of fire and sight here (shiny.d:3254-3270); the port has none yet («aprox.»).
+		var point := obj.cur_pos if obj != null else wizard.cur_pos
+		port.start_casting(spell, target, point)
+		casts_started += 1
+		if spell is CreatureType:
+			_last_summon_tick = port.now_tick()
+		queue.remove_at(i)
+		return 1
+	return 0

@@ -1,0 +1,63 @@
+{
+ "scene": "res://debug/doctor_bench.tscn",
+ "wait_first": 3.0,
+ "steps": [
+  {
+   "click": "%SpellTab"
+  },
+  {
+   "press": {
+    "name": "turn_right",
+    "hold": 0.48
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 0.6
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "press": {
+    "name": "turn_left",
+    "hold": 0.07
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "pt63_e_melee_L.png"
+  },
+  {
+   "print": {
+    "node": "%Camera",
+    "prop": "rotation_degrees"
+   }
+  },
+  {
+   "press": {
+    "name": "turn_right",
+    "hold": 0.14
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "pt63_e_melee_R.png"
+  },
+  {
+   "print": {
+    "node": "%Camera",
+    "prop": "rotation_degrees"
+   }
+  }
+ ]
+}

@@ -1,0 +1,96 @@
+{
+ "scene": "res://debug/f111_bestiary.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "Overlay/Status",
+    "text_contains": "Enter",
+    "timeout": 60
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "pt113_watch",
+    "method": "start",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "cast_watch",
+    "method": "start",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt113_watch",
+    "method": "book",
+    "args": []
+   }
+  },
+  {
+   "print": {
+    "node": "%Stats",
+    "prop": "text"
+   }
+  },
+  {
+   "assert": {
+    "node": "%Stats",
+    "text_contains": "Vida 1950/1950 · Maná 1900/1900"
+   }
+  },
+  {
+   "press": "check_tick"
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "press": "creature_2"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/cast_watch",
+    "prop": "casts_done",
+    "gte": 1,
+    "timeout": 10
+   }
+  },
+  {
+   "call": {
+    "harness": "cast_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "wait_until": {
+    "node": "%SelectionRoster",
+    "prop": "summary",
+    "contains": "Trogg ",
+    "timeout": 8
+   }
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "summary"
+   }
+  },
+  {
+   "print": {
+    "node": "%Stats",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "trogg9_hud.png"
+  }
+ ]
+}

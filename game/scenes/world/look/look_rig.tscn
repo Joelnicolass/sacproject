@@ -1,0 +1,29 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/world/look/look_rig.gd" id="1_rig"]
+[ext_resource type="Script" path="res://scenes/world/look/quality_applier.gd" id="2_quality"]
+[ext_resource type="PackedScene" path="res://scenes/world/look/light/light_layer.tscn" id="3_light"]
+[ext_resource type="PackedScene" path="res://scenes/world/look/ground/terrain_layer.tscn" id="4_ground"]
+[ext_resource type="PackedScene" path="res://scenes/world/look/sky/sky_layer.tscn" id="5_sky"]
+[ext_resource type="PackedScene" path="res://scenes/world/look/grass/grass_layer.tscn" id="6_grass"]
+[ext_resource type="PackedScene" path="res://scenes/world/look/fx/fx_light_layer.tscn" id="7_fx_light"]
+
+[node name="Look" type="Node" node_paths=PackedStringArray("layers", "quality")]
+script = ExtResource("1_rig")
+layers = NodePath("Layers")
+quality = NodePath("Quality")
+
+[node name="Layers" type="Node" parent="."]
+
+[node name="Light" parent="Layers" instance=ExtResource("3_light")]
+
+[node name="Ground" parent="Layers" instance=ExtResource("4_ground")]
+
+[node name="Sky" parent="Layers" instance=ExtResource("5_sky")]
+
+[node name="Grass" parent="Layers" instance=ExtResource("6_grass")]
+
+[node name="FxLight" parent="Layers" instance=ExtResource("7_fx_light")]
+
+[node name="Quality" type="Node" parent="."]
+script = ExtResource("2_quality")

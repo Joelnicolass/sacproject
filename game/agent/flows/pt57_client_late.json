@@ -1,0 +1,15 @@
+{
+  "scene": "res://scenes/ui/boot.tscn",
+  "wait_first": 1.0,
+  "steps": [
+    { "click": "%Play" },
+    { "click": "%Join" },
+    { "wait_until": { "node": "%Stats", "text_contains": "Vida", "timeout": 20 } },
+    { "wait": 2.5 },
+    { "print": { "node": "%MatchResult", "prop": "visible" } },
+    { "print": { "node": "%MatchResult", "prop": "text" } },
+    { "print": { "node": "HighNoon/MapProps/Starts/Start2/Altar", "prop": "state" } },
+    { "shot": "pt57_late_b.png" },
+    { "assert": { "node": "%MatchResult", "text_contains": "Derrota" } }
+  ]
+}

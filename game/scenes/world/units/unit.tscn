@@ -1,0 +1,146 @@
+[gd_scene load_steps=19 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/unit_body.gd" id="1_body"]
+[ext_resource type="Script" path="res://scenes/world/body_visual.gd" id="2_visual"]
+[ext_resource type="Script" path="res://scenes/world/components/health.gd" id="3_health"]
+[ext_resource type="Script" path="res://scenes/world/units/melee_attack.gd" id="4_melee"]
+[ext_resource type="Script" path="res://scenes/world/units/corpse.gd" id="5_corpse"]
+[ext_resource type="PackedScene" path="res://scenes/world/units/unit_health_bar.tscn" id="6_bar"]
+[ext_resource type="Script" path="res://addons/mp_kit/mp_replicate.gd" id="7_replicate"]
+[ext_resource type="Script" path="res://scenes/world/units/unit_orders.gd" id="f27_orders"]
+[ext_resource type="Script" path="res://scenes/world/units/captive.gd" id="f59_captive"]
+[ext_resource type="PackedScene" path="res://scenes/fx/portal_disc.tscn" id="f59_portal"]
+[ext_resource type="Script" path="res://scenes/world/components/mana_pool.gd" id="f29_mana"]
+[ext_resource type="Script" path="res://scenes/world/units/ranged_attack.gd" id="f29_ranged"]
+[ext_resource type="Script" path="res://scenes/world/units/active_ability.gd" id="f29_ability"]
+[ext_resource type="Script" path="res://scenes/world/components/clip_pose_player.gd" id="f36_clip"]
+[ext_resource type="Script" path="res://scenes/world/units/unit_mana_support.gd" id="f41_mana_support"]
+[ext_resource type="Script" path="res://scenes/world/guardian/guardian_bond.gd" id="f63_bond"]
+[ext_resource type="PackedScene" path="res://scenes/world/guardian/guardian_tether.tscn" id="f63_tether"]
+[ext_resource type="Resource" path="res://data/match_rules.tres" id="f63_rules"]
+[ext_resource type="Script" path="res://scenes/world/warp_snap.gd" id="warp_snap"]
+[ext_resource type="Script" path="res://scenes/world/nav/path_follower.gd" id="f72_follower"]
+[ext_resource type="Script" path="res://scenes/world/units/target_picker.gd" id="f72_picker"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_unit"]
+radius = 0.3
+height = 1.8
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_unit"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:owner_slot")
+properties/2/spawn = true
+properties/2/replication_mode = 0
+properties/3/path = NodePath(".:creature_tag")
+properties/3/spawn = true
+properties/3/replication_mode = 2
+properties/4/path = NodePath(".:model")
+properties/4/spawn = true
+properties/4/replication_mode = 2
+properties/5/path = NodePath(".:mode")
+properties/5/spawn = true
+properties/5/replication_mode = 2
+properties/6/path = NodePath(".:swings")
+properties/6/spawn = true
+properties/6/replication_mode = 2
+properties/7/path = NodePath("Health:maximum")
+properties/7/spawn = true
+properties/7/replication_mode = 2
+properties/8/path = NodePath("Health:current")
+properties/8/spawn = true
+properties/8/replication_mode = 2
+properties/9/path = NodePath("ManaPool:maximum")
+properties/9/spawn = true
+properties/9/replication_mode = 2
+properties/10/path = NodePath("ManaPool:current")
+properties/10/spawn = true
+properties/10/replication_mode = 2
+properties/11/path = NodePath(".:shots")
+properties/11/spawn = true
+properties/11/replication_mode = 2
+properties/12/path = NodePath("GuardianBond:post_path")
+properties/12/spawn = true
+properties/12/replication_mode = 2
+
+[node name="Unit" type="CharacterBody3D"]
+collision_layer = 2
+script = ExtResource("1_body")
+
+[node name="Tilt" type="Node3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Tilt"]
+script = ExtResource("2_visual")
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_unit")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("3_health")
+
+[node name="MeleeAttack" type="Node" parent="."]
+script = ExtResource("4_melee")
+
+[node name="ManaPool" type="Node" parent="."]
+script = ExtResource("f29_mana")
+
+[node name="RangedAttack" type="Node" parent="."]
+script = ExtResource("f29_ranged")
+
+[node name="ActiveAbility" type="Node" parent="."]
+script = ExtResource("f29_ability")
+
+[node name="ManaSupport" type="Node3D" parent="."]
+script = ExtResource("f41_mana_support")
+
+[node name="ClipPose" type="Node" parent="." node_paths=PackedStringArray("mesh_path")]
+script = ExtResource("f36_clip")
+mesh_path = NodePath("../Tilt/Mesh")
+
+[node name="Orders" type="Node" parent="."]
+script = ExtResource("f27_orders")
+
+[node name="PathFollower" type="Node" parent="." node_paths=PackedStringArray("body")]
+script = ExtResource("f72_follower")
+body = NodePath("..")
+
+[node name="TargetPicker" type="Node" parent="." node_paths=PackedStringArray("body")]
+script = ExtResource("f72_picker")
+body = NodePath("..")
+
+[node name="Corpse" type="Node" parent="." node_paths=PackedStringArray("pivot")]
+script = ExtResource("5_corpse")
+pivot = NodePath("../Tilt")
+
+[node name="Captive" type="Node" parent="." node_paths=PackedStringArray("body")]
+script = ExtResource("f59_captive")
+body = NodePath("..")
+portal_scene = ExtResource("f59_portal")
+
+[node name="GuardianBond" type="Node" parent="." node_paths=PackedStringArray("body", "health", "orders", "ability")]
+script = ExtResource("f63_bond")
+body = NodePath("..")
+health = NodePath("../Health")
+orders = NodePath("../Orders")
+ability = NodePath("../ActiveAbility")
+rules = ExtResource("f63_rules")
+tether_scene = ExtResource("f63_tether")
+
+[node name="HealthBar" parent="." instance=ExtResource("6_bar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 0)
+
+[node name="Net" type="Node" parent="."]
+script = ExtResource("7_replicate")
+sync_properties = PackedStringArray()
+
+[node name="WarpSnap" type="Node" parent="." node_paths=PackedStringArray("net")]
+script = ExtResource("warp_snap")
+net = NodePath("../Net")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_unit")

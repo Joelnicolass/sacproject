@@ -1,0 +1,14 @@
+{
+  "scene": "res://scenes/world/high_noon.tscn",
+  "wait_first": 12.0,
+  "steps": [
+    { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
+    { "press": { "name": "move_forward", "hold": 1.0 } },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
+    { "shot": "f15_sky.png" },
+    { "press": { "name": "turn_right", "hold": 1.5 } },
+    { "shot": "f15_turn.png" },
+    { "press": { "name": "turn_left", "hold": 0.8 } },
+    { "shot": "f15_plants.png" }
+  ]
+}

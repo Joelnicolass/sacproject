@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="AiSeat" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/ai/data/ai_seat.gd" id="1_seat"]
+[ext_resource type="Resource" path="res://data/ai/difficulty_normal.tres" id="2_normal"]
+
+[resource]
+script = ExtResource("1_seat")
+slot = 2
+wizard = "cwa0"
+god = &""
+difficulty = ExtResource("2_normal")

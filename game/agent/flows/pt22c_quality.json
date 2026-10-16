@@ -1,0 +1,8 @@
+{ "scene": "res://agent/fixtures/pt22c_gallery_look.tscn", "wait_first": 4.0,
+ "steps": [
+  {"press":{"name":"debug_next_quality","hold":0.05}},{"wait":1.0},{"shot":"q_low.png"},
+  {"press":{"name":"debug_next_quality","hold":0.05}},{"wait":1.0},{"shot":"q_med.png"},
+  {"press":{"name":"debug_next_quality","hold":0.05}},{"wait":1.0},{"shot":"q_high.png"},
+  {"press":{"name":"debug_next_camera","hold":0.05}},{"wait":1.0},{"shot":"q_high_cam1.png"},
+  {"press":{"name":"debug_next_quality","hold":0.05}},{"wait":1.0},{"shot":"q_low_cam1.png"}
+ ]}

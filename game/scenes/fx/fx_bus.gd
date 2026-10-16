@@ -1,0 +1,149 @@
+extends Node
+
+## Autoload FxBus. Plays ParticleType bursts by name (res://data/fx/<name>.tres) from a pool of
+## SpriteParticles per type (RFC-029 029b): a play reuses an idle emitter instead of instancing one.
+
+const SPRITE_PARTICLES := preload("res://scenes/fx/sprite_particles.tscn")
+const TYPES_DIR := "res://data/fx/"
+
+## Own generator for the particle seeds (RFC-029 029a, H1): a CPUParticles3D with a random seed
+## draws it from the global RNG, the one MatchSeed seeds for the simulation. Constant seed, so two
+## runs of the same lab draw the same sprites.
+@export var particle_seed: int = 9529
+## Emitters per type when its ParticleType has no `pool_max`. When all of a type are playing, the
+## oldest one starts over.
+@export_range(1, 256) var max_pooled_per_type: int = 12
+## Builds every pool of data/fx up to its cap when the game loads. Building a CPUParticles3D draws
+## from the global RNG; done here it happens before MatchSeed seeds the match, so a play never does.
+@export var prewarm := true
+
+var _types: Dictionary = {}
+var _rng := RandomNumberGenerator.new()
+## type name -> Array[SpriteParticles] idle (hidden), ready for the next play.
+var _idle: Dictionary = {}
+## type name -> Array[SpriteParticles] playing, oldest first.
+var _playing: Dictionary = {}
+
+
+func _ready() -> void:
+	_rng.seed = particle_seed
+	if prewarm and not _is_headless():
+		_prewarm_all()
+
+
+## Seed for the next emitter (SpriteParticles, SpriteEmitter): from this generator, never the global one.
+func next_particle_seed() -> int:
+	return _rng.randi()
+
+
+## `dir` is not applied: the burst goes in its type's direction (it already did before the pool).
+func play(type_name: String, at: Vector3, _dir := Vector3.UP) -> void:
+	if _is_headless():
+		return
+	var emitter := _take(type_name)
+	if emitter == null:
+		return
+	emitter.replay(at, next_particle_seed())
+
+
+func broadcast(type_name: String, at: Vector3, dir := Vector3.UP) -> void:
+	if MpKit.is_networked():
+		if MpKit.is_server():
+			_play_everywhere.rpc(type_name, at, dir)
+		return
+	play(type_name, at, dir)
+
+
+func particle_type(type_name: String) -> ParticleType:
+	if not _types.has(type_name):
+		var path := TYPES_DIR + type_name + ".tres"
+		_types[type_name] = load(path) as ParticleType if ResourceLoader.exists(path) else null
+	return _types[type_name]
+
+
+## Most emitters FxBus keeps for the type (its `pool_max`, else `max_pooled_per_type`).
+func pool_cap(type: ParticleType) -> int:
+	return type.pool_max if type != null and type.pool_max > 0 else max_pooled_per_type
+
+
+## An idle emitter of the type, a new one while under the cap, or the oldest playing one.
+func _take(type_name: String) -> SpriteParticles:
+	if not _playing.has(type_name) and not _open_pool(type_name):
+		return null
+	var idle: Array = _idle[type_name]
+	var playing: Array = _playing[type_name]
+	var emitter: SpriteParticles = null
+	if not idle.is_empty():
+		emitter = idle.pop_back()
+	elif playing.size() < pool_cap(particle_type(type_name)):
+		emitter = _build(type_name)
+		if emitter == null:
+			return null
+	else:
+		emitter = playing.pop_front()
+	playing.push_back(emitter)
+	return emitter
+
+
+func _open_pool(type_name: String) -> bool:
+	var type := particle_type(type_name)
+	if type == null or type.lifetime_s <= 0.0:
+		return false
+	_idle[type_name] = []
+	_playing[type_name] = []
+	return true
+
+
+func _build(type_name: String) -> SpriteParticles:
+	var emitter: SpriteParticles = SPRITE_PARTICLES.instantiate()
+	emitter.type = particle_type(type_name)
+	emitter.pooled = true
+	emitter.name = "%s_%d" % [type_name, (_playing[type_name] as Array).size() + (_idle[type_name] as Array).size()]
+	add_child(emitter)
+	if emitter.is_queued_for_deletion():
+		## No atlas in the catalog: the type never draws, so it keeps no pool.
+		_idle.erase(type_name)
+		_playing.erase(type_name)
+		_types[type_name] = null
+		return null
+	emitter.finished.connect(_release.bind(type_name, emitter))
+	return emitter
+
+
+func _release(type_name: String, emitter: SpriteParticles) -> void:
+	var playing: Array = _playing.get(type_name, [])
+	var at := playing.find(emitter)
+	if at < 0:
+		return
+	playing.remove_at(at)
+	(_idle[type_name] as Array).push_back(emitter)
+
+
+func _prewarm_all() -> void:
+	var dir := DirAccess.open(TYPES_DIR)
+	if dir == null:
+		return
+	var names := PackedStringArray()
+	for file in dir.get_files():
+		var file_name := file.trim_suffix(".remap")
+		if file_name.ends_with(".tres"):
+			names.append(file_name.get_basename())
+	names.sort()
+	for type_name in names:
+		if not _open_pool(type_name):
+			continue
+		var idle: Array = _idle[type_name]
+		for i in pool_cap(particle_type(type_name)):
+			var emitter := _build(type_name)
+			if emitter == null:
+				break
+			idle.push_back(emitter)
+
+
+static func _is_headless() -> bool:
+	return DisplayServer.get_name() == "headless"
+
+
+@rpc("authority", "call_local", "unreliable")
+func _play_everywhere(type_name: String, at: Vector3, dir: Vector3) -> void:
+	play(type_name, at, dir)

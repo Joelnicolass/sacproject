@@ -1,0 +1,185 @@
+{
+ "scene": "res://debug/f111_bestiary.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "Overlay/Status",
+    "text_contains": "Enter",
+    "timeout": 60
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "pt113_watch",
+    "method": "start",
+    "args": []
+   }
+  },
+  {
+   "press": "check_tick"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "press": "creature_5"
+  },
+  {
+   "wait_until": {
+    "node": "%SelectionRoster",
+    "prop": "summary",
+    "contains": "Necryl ",
+    "timeout": 8
+   }
+  },
+  {
+   "wait": 4.3
+  },
+  {
+   "call": {
+    "harness": "pt113_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt113_watch",
+    "method": "set_mode",
+    "args": [
+     "duel"
+    ]
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "call": {
+    "harness": "pt113_watch",
+    "method": "aim_own",
+    "args": []
+   }
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "assert": {
+    "node": "%SelectionRoster",
+    "prop": "summary",
+    "contains": "Necryl "
+   }
+  },
+  {
+   "call": {
+    "harness": "pt113_watch",
+    "method": "aim_enemy",
+    "args": []
+   }
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt113_watch",
+    "prop": "hits_total",
+    "gte": 1,
+    "timeout": 60
+   }
+  },
+  {
+   "wait": 0.8
+  },
+  {
+   "shot": "charnel_c5_direct_fight.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt113_watch",
+    "prop": "over",
+    "gte": 1,
+    "timeout": 180
+   }
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "call": {
+    "harness": "pt113_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt113_watch",
+    "method": "set_mode",
+    "args": [
+     "soul"
+    ]
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "charnel_c5_direct_soul_close.png"
+  },
+  {
+   "call": {
+    "harness": "pt113_watch",
+    "method": "set_mode",
+    "args": [
+     "soul_top"
+    ]
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "charnel_c5_direct_soul_top.png"
+  },
+  {
+   "call": {
+    "harness": "pt113_watch",
+    "method": "set_mode",
+    "args": [
+     "soul_other"
+    ]
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "charnel_c5_direct_soul_other.png"
+  },
+  {
+   "call": {
+    "harness": "pt113_watch",
+    "method": "report",
+    "args": []
+   }
+  }
+ ]
+}

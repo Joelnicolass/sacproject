@@ -1,0 +1,50 @@
+{
+ "scene": "res://debug/f111_bestiary.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "Overlay/Status",
+    "text_contains": "Enter",
+    "timeout": 60
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "pt113_watch",
+    "method": "start",
+    "args": []
+   }
+  },
+  {
+   "press": "check_tick"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "press": "creature_8"
+  },
+  {
+   "wait_until": {
+    "node": "%SelectionRoster",
+    "prop": "summary",
+    "contains": "Deadeye ",
+    "timeout": 8
+   }
+  },
+  {
+   "wait": 8.0
+  },
+  {
+   "call": {
+    "harness": "pt113_watch",
+    "method": "report",
+    "args": []
+   }
+  }
+ ]
+}

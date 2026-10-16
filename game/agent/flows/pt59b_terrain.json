@@ -1,0 +1,84 @@
+{
+ "scene": "res://debug/biome_pick.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "t0_start.png"
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 1.5
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "t1_walk.png"
+  },
+  {
+   "press": {
+    "name": "turn_left",
+    "hold": 0.6
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "t2_left.png"
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 2.0
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "t3_walk2.png"
+  },
+  {
+   "press": {
+    "name": "turn_right",
+    "hold": 1.2
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "t4_right.png"
+  },
+  {
+   "press": {
+    "name": "zoom_out",
+    "hold": 1.0
+   }
+  },
+  {
+   "wait": 0.8
+  },
+  {
+   "shot": "t5_zoomout.png"
+  },
+  {
+   "press": {
+    "name": "turn_right",
+    "hold": 0.6
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "t6_turn.png"
+  }
+ ]
+}

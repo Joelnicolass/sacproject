@@ -1,0 +1,66 @@
+{
+  "scene": "res://debug/cast_heal.tscn",
+  "wait_first": 2.0,
+  "steps": [
+    { "wait_until": { "node": "%Stats", "text_contains": "Vida", "timeout": 10 } },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "global_position" } },
+    { "repeat": {
+        "times": 40,
+        "until": { "node": "%HitLog", "text_contains": "mira Druid" },
+        "steps": [ { "press": { "name": "zoom_out", "hold": 0.03 } }, { "wait": 0.15 } ]
+    } },
+    { "press": "spell_2" },
+    { "wait": 0.1 },
+    { "assert": { "node": "%Battle", "text_equals": "Elegí el blanco" } },
+    { "click": "%View" },
+    { "print": { "node": "%Ping", "prop": "global_position" } },
+    { "wait": 0.1 },
+    { "assert": { "node": "%Battle", "text_equals": "Rock" } },
+    { "press": "spell_2" },
+    { "wait": 0.1 },
+    { "print": { "node": "%Battle", "prop": "text" } },
+    { "assert": { "node": "%Battle", "text_equals": "Enfriando" } },
+    { "print": { "node": "%SpellBook/Slots/Spell2/Time", "prop": "text" } },
+    { "wait_until": { "node": "%Spells/Rock1", "timeout": 2 } },
+    { "print": { "node": "%Spells/Rock1", "prop": "global_position" } },
+    { "shot": "pt24_rock_0_spawn.png" },
+    { "wait": 0.2 },
+    { "print": { "node": "%Spells/Rock1", "prop": "global_position" } },
+    { "shot": "pt24_rock_1_risen.png" },
+    { "press": "spell_1" },
+    { "wait": 0.1 },
+    { "print": { "node": "%Battle", "prop": "text" } },
+    { "assert": { "node": "%Battle", "text_equals": "Enfriando" } },
+    { "print": { "node": "%SpellBook/Slots/Spell1/Time", "prop": "text" } },
+    { "print": { "node": "%Spells/Rock1", "prop": "global_position" } },
+    { "shot": "pt24_rock_2_flight.png" },
+    { "repeat": {
+        "times": 100,
+        "until": { "node": "%Spells/Rock1", "visible_in_tree": false },
+        "steps": [
+          { "print": { "node": "%Spells/Rock1", "prop": "global_position" } },
+          { "wait": 0.1 }
+        ]
+    } },
+    { "shot": "pt24_rock_3_impact.png" },
+    { "print": { "node": "%SpellBook/Slots/Spell2/Time", "prop": "text" } },
+    { "print": { "node": "%SpellBook/Slots/Spell1/Time", "prop": "visible" } },
+    { "repeat": {
+        "times": 60,
+        "until": { "node": "%SpellBook/Slots/Spell2/Time", "visible": false },
+        "steps": [
+          { "press": "spell_2" },
+          { "wait": 0.1 },
+          { "print": { "node": "%Battle", "prop": "text" } },
+          { "print": { "node": "%SpellBook/Slots/Spell2/Time", "prop": "text" } },
+          { "print": { "node": "%SpellBook/Slots/Spell1/Time", "prop": "visible" } },
+          { "wait": 0.4 }
+        ]
+    } },
+    { "press": "spell_2" },
+    { "wait": 0.1 },
+    { "print": { "node": "%Battle", "prop": "text" } },
+    { "assert": { "node": "%Battle", "text_equals": "Elegí el blanco" } },
+    { "shot": "pt24_rock_4_ready.png" }
+  ]
+}

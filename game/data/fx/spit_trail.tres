@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ParticleType" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
+
+[resource]
+script = ExtResource("1_type")
+atlas_key = "dirt"
+h_frames = 4
+v_frames = 4
+size = Vector2(1.0, 1.0)
+energy = 1.0
+frame_s = 0.06667
+lifetime_s = 0.517
+count = 2
+scale_min = 0.5
+scale_max = 0.5
+emission_radius = 0.2
+additive = false
+lit = true
+pool_max = 160

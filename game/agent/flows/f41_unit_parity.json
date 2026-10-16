@@ -1,0 +1,18 @@
+{
+  "scene": "res://debug/unit_parity_gallery.tscn",
+  "wait_first": 1.2,
+  "steps": [
+    { "wait": 1.0 },
+    { "assert": { "node": "%Debug", "text_contains": "probe manahoar mana: running" } },
+    { "shot": "f41_idle.png" },
+    { "key": "check_tick" },
+    { "wait": 0.8 },
+    { "shot": "f41_run.png" },
+    { "key": "check_tick" },
+    { "wait": 0.8 },
+    { "shot": "f41_attack.png" },
+    { "wait": 3.0 },
+    { "assert": { "node": "%Debug", "text_contains": "probe manahoar mana: pass" } },
+    { "shot": "f41_mana_pass.png" }
+  ]
+}

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="LookProfile" load_steps=4 format=3]
+
+[ext_resource type="Script" uid="uid://cc2j8npemwosk" path="res://scenes/world/look/look_profile.gd" id="1_p"]
+[ext_resource type="Resource" path="res://data/look/light/pyro_light.tres" id="2_light"]
+
+[ext_resource type="Resource" path="res://data/look/sky/pyro_sky.tres" id="9_sky"]
+
+[ext_resource type="Resource" path="res://data/look/grass/pyro_grass.tres" id="10_grass"]
+
+[resource]
+script = ExtResource("1_p")
+god = &"pyro"
+label = "Pyro"
+light = ExtResource("2_light")
+sky = ExtResource("9_sky")
+grass = ExtResource("10_grass")

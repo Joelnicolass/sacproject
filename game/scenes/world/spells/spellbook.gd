@@ -1,0 +1,214 @@
+extends Node
+
+## Book of a wizard: the god's creatures and spells up to the wizard's level (getSpells, state.d:29512) in one
+## list sorted by spell_order, like sacengine Spellbook.sort. Two tabs read it: creature entry 0 is creature_1 (Q), 1 is
+## creature_2 (Shift+Q)…; spell entry 0 is spell_1 (X), 1 spell_2 (R)…
+## Cooldowns count down on every peer. The server sets them (applyCooldown, over the whole
+## book) and pushes them to the owner client.
+
+signal book_changed
+signal cooldowns_changed
+
+@export var rules: MatchRules
+
+## CreatureType or SpellType, sorted by spell_order.
+var _entries: Array[Resource] = []
+var _creature_rows := PackedInt32Array()
+var _spell_rows := PackedInt32Array()
+var _structure_rows := PackedInt32Array()
+var _cooldowns := PackedFloat32Array()
+var _max_cooldowns := PackedFloat32Array()
+var _god := ""
+var _level := 0
+
+@onready var _wizard: Node = get_parent()
+
+
+func _ready() -> void:
+	if _wizard.has_signal("pick_changed"):
+		_wizard.pick_changed.connect(_rebuild)
+	_rebuild()
+
+
+func size() -> int:
+	return _spell_rows.size()
+
+
+func spell_at(index: int) -> SpellType:
+	if index < 0 or index >= _spell_rows.size():
+		return null
+	return _entries[_spell_rows[index]]
+
+
+func spell_by_tag(tag: String) -> SpellType:
+	var index := index_of(tag)
+	if index < 0:
+		return null
+	return spell_at(index)
+
+
+func index_of(tag: String) -> int:
+	return _tab_index(_spell_rows, tag)
+
+
+func cooldown(index: int) -> float:
+	return _cooldown_at(_spell_rows, index)
+
+
+func max_cooldown(index: int) -> float:
+	return _max_cooldown_at(_spell_rows, index)
+
+
+func structure_count() -> int:
+	return _structure_rows.size()
+
+
+func structure_at(index: int) -> SpellType:
+	if index < 0 or index >= _structure_rows.size():
+		return null
+	return _entries[_structure_rows[index]]
+
+
+func structure_by_tag(tag: String) -> SpellType:
+	var index := structure_index_of(tag)
+	if index < 0:
+		return null
+	return structure_at(index)
+
+
+func structure_index_of(tag: String) -> int:
+	return _tab_index(_structure_rows, tag)
+
+
+func structure_cooldown(index: int) -> float:
+	return _cooldown_at(_structure_rows, index)
+
+
+func structure_max_cooldown(index: int) -> float:
+	return _max_cooldown_at(_structure_rows, index)
+
+
+func creature_count() -> int:
+	return _creature_rows.size()
+
+
+func creature_at(index: int) -> CreatureType:
+	if index < 0 or index >= _creature_rows.size():
+		return null
+	return _entries[_creature_rows[index]]
+
+
+func creature_index_of(tag: String) -> int:
+	return _tab_index(_creature_rows, tag)
+
+
+func creature_cooldown(index: int) -> float:
+	return _cooldown_at(_creature_rows, index)
+
+
+func creature_max_cooldown(index: int) -> float:
+	return _max_cooldown_at(_creature_rows, index)
+
+
+## sacengine applyCooldown: the cast entry waits castingTime(level) + cooldown + extra; every
+## other entry castingTime + generic + extra. A running cooldown is never shortened.
+func apply_cooldown(tag: String) -> void:
+	var row := _row_of(tag)
+	if row < 0 or rules == null:
+		return
+	var cast := _entries[row]
+	var casting := CastTime.seconds(cast, _level)
+	for i in _entries.size():
+		var base := float(cast.get("cooldown_s")) if i == row else rules.other_spell_cooldown_s
+		_raise(i, casting + base + rules.extra_cooldown_s)
+	cooldowns_changed.emit()
+	_push_to_owner()
+
+
+func _tab_index(rows: PackedInt32Array, tag: String) -> int:
+	for i in rows.size():
+		if str(_entries[rows[i]].get("tag")) == tag:
+			return i
+	return -1
+
+
+func _row_of(tag: String) -> int:
+	for i in _entries.size():
+		if str(_entries[i].get("tag")) == tag:
+			return i
+	return -1
+
+
+func _cooldown_at(rows: PackedInt32Array, index: int) -> float:
+	return _cooldowns[rows[index]] if index >= 0 and index < rows.size() else 0.0
+
+
+func _max_cooldown_at(rows: PackedInt32Array, index: int) -> float:
+	return _max_cooldowns[rows[index]] if index >= 0 and index < rows.size() else 0.0
+
+
+func _raise(index: int, value: float) -> void:
+	if _cooldowns[index] <= 0.0 or value > _max_cooldowns[index]:
+		_max_cooldowns[index] = value
+	if value > _cooldowns[index]:
+		_cooldowns[index] = value
+
+
+func _push_to_owner() -> void:
+	if not MpKit.is_networked() or not MpKit.is_server():
+		return
+	var peer := MpKit.peer_id_for(int(_wizard.get("owner_slot")))
+	if peer > 0 and peer != multiplayer.get_unique_id():
+		_receive_cooldowns.rpc_id(peer, _cooldowns, _max_cooldowns)
+
+
+@rpc("authority", "call_remote", "reliable")
+func _receive_cooldowns(remaining: PackedFloat32Array, maximum: PackedFloat32Array) -> void:
+	if remaining.size() != _cooldowns.size():
+		return
+	_cooldowns = remaining
+	_max_cooldowns = maximum
+	cooldowns_changed.emit()
+
+
+func _process(delta: float) -> void:
+	for i in _cooldowns.size():
+		if _cooldowns[i] > 0.0:
+			_cooldowns[i] = maxf(_cooldowns[i] - delta, 0.0)
+
+
+func _rebuild() -> void:
+	var god := str(_wizard.get("god"))
+	var level_value: Variant = _wizard.get("level")
+	var level := int(level_value) if level_value != null else 1
+	if god == _god and level == _level and not _entries.is_empty():
+		return
+	_god = god
+	_level = level
+	# TODO(RFC-030 N2): a level change rebuilds the book and clears every cooldown. Today the level is fixed for the
+	# match; when XP raises it mid-match, keep the cooldowns of the entries that stay (by tag).
+	var book := GameData.book(god, level)
+	var sorted: Array[Resource] = []
+	for creature in book.get("creatures", []):
+		sorted.append(creature)
+	for spell in book.get("spells", []):
+		sorted.append(spell)
+	for structure in book.get("structures", []):
+		sorted.append(structure)
+	sorted.sort_custom(func(a: Resource, b: Resource) -> bool: return int(a.get("spell_order")) < int(b.get("spell_order")))
+	_entries = sorted
+	_creature_rows = PackedInt32Array()
+	_spell_rows = PackedInt32Array()
+	_structure_rows = PackedInt32Array()
+	for i in _entries.size():
+		if _entries[i] is CreatureType:
+			_creature_rows.append(i)
+		elif _entries[i] is SpellType and bool(_entries[i].get("is_structure")):
+			_structure_rows.append(i)
+		else:
+			_spell_rows.append(i)
+	_cooldowns = PackedFloat32Array()
+	_cooldowns.resize(_entries.size())
+	_max_cooldowns = PackedFloat32Array()
+	_max_cooldowns.resize(_entries.size())
+	book_changed.emit()

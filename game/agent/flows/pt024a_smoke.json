@@ -1,0 +1,17 @@
+{
+  "scene": "res://debug/ai_match.tscn",
+  "wait_first": 1.5,
+  "steps": [
+    { "assert": { "node": "Overlay/Status", "text_contains": "Pendiente" } },
+    { "shot": "pt024a_0_pendiente.png" },
+    { "press": "check_tick" },
+    { "wait": 3.0 },
+    { "assert": { "node": "Overlay/Status", "text_contains": "Corriendo" } },
+    { "shot": "pt024a_1_corriendo.png" },
+    { "wait": 12.0 },
+    { "shot": "pt024a_2_pelea.png" },
+    { "wait_until": { "node": "Overlay/Status", "text_contains": "Terminado", "timeout": 120 } },
+    { "print": { "node": "Overlay/Status", "prop": "text" } },
+    { "shot": "pt024a_3_terminado.png" }
+  ]
+}

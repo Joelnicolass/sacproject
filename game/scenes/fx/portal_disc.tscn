@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/portal_disc.gd" id="1_disc"]
+[ext_resource type="Resource" path="res://data/fx/portal_blue.tres" id="2_look"]
+
+[node name="PortalDisc" type="MeshInstance3D"]
+cast_shadow = 0
+script = ExtResource("1_disc")
+look = ExtResource("2_look")

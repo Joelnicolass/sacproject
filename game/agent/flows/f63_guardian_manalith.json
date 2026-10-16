@@ -1,0 +1,253 @@
+{
+ "scene": "res://debug/guardian_manalith.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 15
+   }
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "click": "%SpellBook/Tabs/StructureTab"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "click": "%SpellBook/Slots/Structure1"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "call": {
+    "harness": "wizard_travel",
+    "method": "set_pointer_world",
+    "args": [
+     1520,
+     16,
+     1450
+    ]
+   }
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "wait_until": {
+    "node": "%Structures/Structure1",
+    "timeout": 25
+   }
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "print": {
+    "node": "%Structures/Structure1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "click": "%SpellBook/Tabs/StructureTab"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "click": "%SpellBook/Slots/Structure2"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "call": {
+    "harness": "wizard_travel",
+    "method": "set_pointer_world",
+    "args": [
+     1515,
+     17.0,
+     1462
+    ]
+   }
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "wait": 2.5
+  },
+  {
+   "print": {
+    "node": "Guard1/GuardianBond",
+    "prop": "post_path"
+   }
+  },
+  {
+   "print": {
+    "node": "%Structures/Structure1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "print": {
+    "node": "Guard1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "call": {
+    "harness": "guardian_watch",
+    "method": "frame",
+    "args": [
+     "Guard1",
+     36.0,
+     9.0,
+     95.0,
+     0.5
+    ]
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "f63_manalith_00_beam.png"
+  },
+  {
+   "call": {
+    "harness": "guardian_watch",
+    "method": "frame",
+    "args": [
+     "Guard1",
+     22.0,
+     8.0,
+     275.0,
+     0.55
+    ]
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "f63_manalith_01_beam_close.png"
+  },
+  {
+   "wait": 10.0
+  },
+  {
+   "print": {
+    "node": "%Structures/Structure1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "print": {
+    "node": "Guard1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "wait": 10.0
+  },
+  {
+   "print": {
+    "node": "%Structures/Structure1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "print": {
+    "node": "Guard1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "wait": 10.0
+  },
+  {
+   "print": {
+    "node": "%Structures/Structure1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "print": {
+    "node": "Guard1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "print": {
+    "node": "Guard1/GuardianBond",
+    "prop": "post_path"
+   }
+  },
+  {
+   "print": {
+    "node": "%Structures/Structure1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "wait": 12.0
+  },
+  {
+   "print": {
+    "node": "%Structures/Structure1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "wait": 10.0
+  },
+  {
+   "print": {
+    "node": "%Structures/Structure1/Health",
+    "prop": "current"
+   }
+  }
+ ]
+}

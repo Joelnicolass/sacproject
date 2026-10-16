@@ -1,0 +1,80 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.0,
+ "steps": [
+  {
+   "click": "%God_pyro"
+  },
+  {
+   "click": "%Play"
+  },
+  {
+   "click": "%Solo"
+  },
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 20
+   }
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "call": {
+    "harness": "pt113_watch",
+    "method": "book",
+    "args": []
+   }
+  },
+  {
+   "assert": {
+    "node": "%SpellBook/Slots/Creature4",
+    "visible_in_tree": true
+   }
+  },
+  {
+   "assert": {
+    "node": "%SpellBook/Slots/Creature5",
+    "visible_in_tree": false
+   }
+  },
+  {
+   "shot": "lvl1_pyro_book.png"
+  },
+  {
+   "press": "creature_5"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "assert": {
+    "node": "%SelectionRoster",
+    "prop": "cells_shown",
+    "equals": 0
+   }
+  },
+  {
+   "press": "creature_2"
+  },
+  {
+   "wait_until": {
+    "node": "%SelectionRoster",
+    "prop": "summary",
+    "contains": "Cog ",
+    "timeout": 5
+   }
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "summary"
+   }
+  },
+  {
+   "shot": "lvl1_pyro_cog.png"
+  }
+ ]
+}

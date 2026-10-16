@@ -1,0 +1,21 @@
+{
+  "scene": "res://debug/data_book.tscn",
+  "wait_first": 0.8,
+  "steps": [
+    { "print": { "node": "%Book", "prop": "text" } },
+    { "assert": { "node": "%Book", "text_equals": "Pendiente" } },
+    { "shot": "f16_pendiente.png" },
+    { "press": "check_tick" },
+    { "wait": 0.4 },
+    { "print": { "node": "%Book", "prop": "text" } },
+    { "shot": "f16_libros.png" },
+    { "assert": { "node": "%Book", "text_contains": "James: Manahoar, Trogg, Earthfling, Gargoyle / Speedup, Heal, Rock" } },
+    { "assert": { "node": "%Book", "text_contains": "Persephone: " } },
+    { "assert": { "node": "%Book", "text_contains": "Druid, Ranger, Shrike" } },
+    { "assert": { "node": "%Book", "text_contains": "Wrath" } },
+    { "assert": { "node": "%Book", "text_contains": "Trogg 960 vida 8.25 m/s 1 alma" } },
+    { "assert": { "node": "%Book", "text_contains": "Rock 300 maná alcance 125 cooldown 8 s" } },
+    { "assert": { "node": "%Book", "text_contains": "15 magos: Jadugarr" } },
+    { "assert": { "node": "%Book", "text_contains": "Hachimen" } }
+  ]
+}

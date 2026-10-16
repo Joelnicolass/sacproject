@@ -1,0 +1,12 @@
+[gd_resource type="Resource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/god_theme.gd" id="1_theme"]
+
+[ext_resource type="Resource" path="res://data/look/stratos.tres" id="2_look"]
+
+[resource]
+script = ExtResource("1_theme")
+god = &"stratos"
+cache_dir = "res://cache/look/themes/stratos"
+sun_strength = 12.0
+look = ExtResource("2_look")

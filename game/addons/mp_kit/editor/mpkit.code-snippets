@@ -1,0 +1,100 @@
+{
+  "MpKit submit RPC": {
+    "scope": "gdscript",
+    "prefix": "mpkit-submit",
+    "description": "Host-authoritative submit_* / apply_* (LAN and dedicated).",
+    "body": [
+      "func try_${1:action}(payload: Dictionary) -> void:",
+      "\tif MpAuthority.should_send_command():",
+      "\t\tsubmit_${1:action}.rpc_id(1, payload)",
+      "\telse:",
+      "\t\tapply_${1:action}(payload)",
+      "",
+      "@rpc(\"any_peer\", \"call_remote\", \"reliable\")",
+      "func submit_${1:action}(payload: Dictionary) -> void:",
+      "\tif not MpAuthority.accept_command(self, player_slot):",
+      "\t\treturn",
+      "\tapply_${1:action}(payload)",
+      "",
+      "func apply_${1:action}(payload: Dictionary) -> void:",
+      "\t$0"
+    ]
+  },
+  "MpKit custom tunnel send": {
+    "scope": "gdscript",
+    "prefix": "mpkit-custom",
+    "description": "Send an opaque Dictionary on a named channel (not auto-broadcast).",
+    "body": [
+      "MpKit.send_custom(&\"${1:channel}\", {",
+      "\t\"${2:key}\": ${3:value},",
+      "})"
+    ]
+  },
+  "MpKit custom tunnel listen": {
+    "scope": "gdscript",
+    "prefix": "mpkit-custom-on",
+    "description": "Listen to MpKit.custom_received for one channel.",
+    "body": [
+      "func _ready() -> void:",
+      "\tMpKit.custom_received.connect(_on_custom)",
+      "",
+      "func _on_custom(channel: StringName, data: Dictionary, from_peer: int) -> void:",
+      "\tif channel != &\"${1:channel}\":",
+      "\t\treturn",
+      "\t$0"
+    ]
+  },
+  "MpKit dedicated boot": {
+    "scope": "gdscript",
+    "prefix": "mpkit-boot",
+    "description": "Dedicated vs lobby boot (same project as clients).",
+    "body": [
+      "func _ready() -> void:",
+      "\tvar port := int(MpBoot.user_value(\"mp-port\", \"7777\"))",
+      "\tMpKit.configure(port, ${1:4}, 1)",
+      "\tif MpBoot.is_dedicated_process():",
+      "\t\tvar err := MpKit.host_dedicated()",
+      "\t\tif err != OK:",
+      "\t\t\tpush_error(\"dedicated bind failed\")",
+      "\t\t\tget_tree().quit(1)",
+      "\t\treturn"
+    ]
+  },
+  "MpKit LAN advertise": {
+    "scope": "gdscript",
+    "prefix": "mpkit-lan-adv",
+    "description": "Advertise this listen-host on the LAN.",
+    "body": [
+      "MpLan.advertise(self, \"${1:room}\")"
+    ]
+  },
+  "MpKit session flow": {
+    "scope": "gdscript",
+    "prefix": "mpkit-flow",
+    "description": "Subclass MpFlow for boot/world and late-join snapshot.",
+    "body": [
+      "extends MpFlow",
+      "",
+      "",
+      "func _ready() -> void:",
+      "\tboot_path = \"res://${1:scenes/ui/boot.tscn}\"",
+      "\tadd_world(&\"${2:2d}\", \"res://${3:scenes/world/match_2d.tscn}\")",
+      "\t# add_world(&\"3d\", \"res://scenes/world/match_3d.tscn\")",
+      "\tmax_players = ${4:4}",
+      "\troom_name = \"${5:MpKit}\"",
+      "\tstart_when = StartWhen.DEDICATED_FIRST_CLIENT",
+      "\tsuper._ready()"
+    ]
+  },
+  "MpKit LAN browse": {
+    "scope": "gdscript",
+    "prefix": "mpkit-lan-browse",
+    "description": "Browse LAN rooms (UDP).",
+    "body": [
+      "var _beacon := MpLan.browse(self)",
+      "_beacon.rooms_changed.connect(func(rooms: Array) -> void:",
+      "\t$0",
+      ")"
+    ]
+  }
+}

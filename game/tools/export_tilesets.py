@@ -1,0 +1,394 @@
+#!/usr/bin/env python3
+"""Per-god land look (sky, ground atlas, ENVI colors) from the local install.
+
+Writes game/cache/look/themes/<god>/. Does not copy the wads.
+Layout follows sacengine sacmap.d: the LAND folder of each god holds LAND.PALT,
+0000-0255.MAPT, the ENVI and the sky textures it names (SKY_ is read by its
+literal name, like sacengine does).
+"""
+
+import itertools
+import json
+import struct
+import sys
+from collections import Counter
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from export_high_noon_look import extract  # noqa: E402
+from export_persephone import decode_txtr, walk, write_png  # noqa: E402
+
+ROOT = Path(__file__).resolve().parents[1]
+INSTALL = Path("/Users/joelsartori/Downloads/sacgame/Sacrifice")
+OUT = ROOT / "cache" / "look" / "themes"
+MAP = INSTALL / "maps" / "(2) High Noon.scp"
+# Land High Noon's LEVL names (levl.d detectTileset); its TMAP ids index this land's MAPTs.
+MAP_GOD = "james"
+
+# nttData.d landFolders; sun strength from renderer.d setupEnvironment.
+GODS = {
+    "persephone": ("prsc.wad", "prsc.LAND", 6.0),
+    "pyro": ("pyro_a.wad", "PY_A.LAND", 2.0),
+    "james": ("james_a.wad", "JA_A.LAND", 14.0),
+    "stratos": ("strato_a.wad", "ST_A.LAND", 12.0),
+    "charnel": ("char.wad", "char.LAND", 4.0),
+}
+
+
+def tag(raw: bytes) -> str:
+    return raw[::-1].decode("latin1").rstrip("\x00")
+
+
+def land_folder(wad: Path, suffix: str) -> dict:
+    folder = {}
+    for odir, name, ext, raw in walk(wad.read_bytes()):
+        if odir.endswith(suffix):
+            folder[(name, ext)] = raw
+    return folder
+
+
+def parse_envi(raw: bytes) -> dict:
+    """envi.d Envi (428 bytes); colors are stored BGR."""
+    direct, ambi, amb_r, amb_g, amb_b = struct.unpack_from("<5f", raw, 4)
+    shadow, sun_x, sun_y, sun_z = struct.unpack_from("<4f", raw, 368)
+    fog_near, fog_far, fog_density = struct.unpack_from("<3f", raw, 416)
+    return {
+        "sun_direct_strength": direct,
+        "sun_ambient_strength": ambi,
+        "ambient_rgb": [amb_r, amb_g, amb_b],
+        "sky_rgb": [raw[26], raw[25], raw[24]],
+        "textures": {
+            "sky_": tag(raw[48:52]),
+            "skyt": tag(raw[112:116]),
+            "skyb": tag(raw[176:180]),
+            "sun_": tag(raw[240:244]),
+            "undr": tag(raw[304:308]),
+            "edge": tag(raw[404:408]),
+        },
+        "shadow_strength": shadow,
+        "sun_direction": [sun_x, sun_y, sun_z],
+        "sun_rgb": list(raw[384:387]),
+        "fog_rgb": [raw[410], raw[409], raw[408]],
+        "fog_type": raw[412],
+        "fog_near": fog_near,
+        "fog_far": fog_far,
+        "fog_density": fog_density,
+    }
+
+
+def cap(values) -> list:
+    return [round(max(0.0, min(v, 1.0)), 4) for v in values]
+
+
+def godot_colors(envi: dict) -> dict:
+    """Same formulas as sacengine renderer.d setupEnvironment."""
+    direct = envi["sun_direct_strength"]
+    ambi = envi["sun_ambient_strength"]
+    ambient = cap([ambi * c / 255.0 for c in envi["ambient_rgb"]])
+    sun = cap([c / 255.0 for c in envi["sun_rgb"]])
+    total = direct + ambi
+    mixed = cap([(ambi * a + direct * s) / total for a, s in zip(ambient, sun)]) if total > 0 else sun
+    return {
+        "background_color": cap([c / 255.0 for c in envi["sky_rgb"]]),
+        "ambient_color": ambient,
+        "sun_color": mixed,
+        "fog_color": cap([c / 255.0 for c in envi["fog_rgb"]]),
+        "fog_begin": envi["fog_near"],
+        "fog_end": envi["fog_far"],
+    }
+
+
+def folder_png(folder: dict, name: str, dest: Path) -> bool:
+    raw = folder.get((name, "TXTR"))
+    if raw is None:
+        return False
+    pal_name = tag(raw[8:12])
+    palette = None
+    if pal_name.lower() != "gray":
+        pal = folder.get((pal_name, "PALT"))
+        if pal is None:
+            return False
+        palette = pal[8:]
+    width, height, rgba = decode_txtr(raw, palette)
+    write_png(dest, width, height, rgba)
+    return True
+
+
+def tile_groups(folder: dict) -> dict:
+    """MGnn.MAPG (maps.d MapGroup, 60 bytes; loadDTIndex reads num at 33, indices at 34).
+    Base groups start with a normalized height band (4 floats); transition groups have
+    byte 32 set and start with the two base group numbers they blend."""
+    groups = {}
+    for (name, ext), raw in folder.items():
+        if ext != "MAPG" or len(raw) != 60 or not name[2:].isdigit():
+            continue
+        group = {"tiles": list(raw[34 : 34 + raw[33]])}
+        if raw[32]:
+            group["pair"] = struct.unpack_from("<2i", raw, 0)
+        else:
+            group["band"] = struct.unpack_from("<4f", raw, 0)
+        groups[int(name[2:])] = group
+    return groups
+
+
+def patch_color(folder: dict, palt: bytes, index: int, x0: int, y0: int, size: int) -> tuple:
+    data = folder[(f"{index:04d}", "MAPT")]
+    total = [0, 0, 0]
+    for y in range(y0, y0 + size):
+        for x in range(x0, x0 + size):
+            color = data[64 * y + x]
+            for c in range(3):
+                total[c] += palt[3 * color + c]
+    return tuple(t / (size * size) for t in total)
+
+
+def color_distance(a: tuple, b: tuple) -> float:
+    return sum((x - y) ** 2 for x, y in zip(a, b))
+
+
+CORNERS = ((0, 0), (48, 0), (0, 48), (48, 48))
+
+
+def tile_signatures(folder: dict, palt: bytes, groups: dict, present: set) -> dict:
+    """Tile index -> (group, position, base group seen at each 16x16 corner)."""
+    base_color = {}
+    for number, group in groups.items():
+        tiles = [t for t in group["tiles"] if t in present]
+        if "band" in group and tiles:
+            colors = [patch_color(folder, palt, t, 0, 0, 64) for t in tiles]
+            base_color[number] = tuple(sum(c[i] for c in colors) / len(colors) for i in range(3))
+    signatures = {}
+    for number in sorted(groups):
+        group = groups[number]
+        for position, tile in enumerate(group["tiles"]):
+            if tile in signatures or tile not in present:
+                continue
+            if "band" in group:
+                corners = (number,) * 4
+            else:
+                sides = [s for s in group["pair"] if s in base_color]
+                if not sides:
+                    continue
+                corners = tuple(
+                    min(sides, key=lambda s: color_distance(patch_color(folder, palt, tile, x, y, 16), base_color[s]))
+                    for x, y in CORNERS
+                )
+            signatures[tile] = (number, position, corners)
+    return signatures
+
+
+def band_center(group: dict) -> float | None:
+    """None for a zero-width band ([0,0,0,0], or James MG05 [1,1,1,1]): no height role."""
+    band = group.get("band")
+    if band is None or band[0] == band[3]:
+        return None
+    return (band[1] + band[2]) / 2.0
+
+
+def base_mapping(source: dict, target: dict, tmap: bytes, by_corners: dict) -> dict:
+    """Source base group -> target base group.
+
+    Groups with a height role keep the band order and, among the orders that keep the most
+    map cells of each transition blended (the target land has that pair, or both sides
+    land on one group), take the nearest bands. A group without a role takes the group
+    its cells border most on the map."""
+    roles = {n: c for n, g in source["groups"].items() if (c := band_center(g)) is not None}
+    targets = {n: c for n, g in target["groups"].items() if (c := band_center(g)) is not None}
+    if not roles or not targets:
+        return {}
+    cells = Counter(tmap)
+    seams = Counter()
+    for tile, count in cells.items():
+        signature = source["signatures"].get(tile)
+        if signature and len(set(signature[2])) > 1:
+            seams[signature[2]] += count
+
+    def kept(mapping: dict) -> int:
+        total = 0
+        for corners, count in seams.items():
+            wanted = tuple(mapping.get(c, -1) for c in corners)
+            if -1 not in wanted and (len(set(wanted)) == 1 or wanted in by_corners):
+                total += count
+        return total
+
+    order = sorted(roles, key=lambda n: (roles[n], n))
+    best = None
+    for choice in itertools.product(sorted(targets), repeat=len(order)):
+        if any(targets[a] > targets[b] for a, b in zip(choice, choice[1:])):
+            continue
+        mapping = dict(zip(order, choice))
+        distance = sum(abs(targets[mapping[n]] - roles[n]) for n in order)
+        score = (-kept(mapping), distance, choice)
+        if best is None or score < best[0]:
+            best = (score, mapping)
+    mapping = dict(best[1])
+
+    width = 256
+    neighbors = {}
+    for index, tile in enumerate(tmap):
+        signature = source["signatures"].get(tile)
+        if signature is None or signature[0] in roles or "band" not in source["groups"][signature[0]]:
+            continue
+        x, y = index % width, index // width
+        for nx, ny in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)):
+            if 0 <= nx < width and 0 <= ny < len(tmap) // width:
+                other = source["signatures"].get(tmap[ny * width + nx])
+                if other:
+                    for corner in other[2]:
+                        if corner in roles:
+                            neighbors.setdefault(signature[0], Counter())[corner] += 1
+    for number, counter in neighbors.items():
+        mapping[number] = mapping[counter.most_common(1)[0][0]]
+    return mapping
+
+
+def land_remap(source: dict, target: dict, tmap: bytes) -> tuple:
+    """High Noon tile id -> MAPT index of another land with the same role, and the base group map."""
+    by_corners = {}
+    for tile, (number, _, corners) in sorted(target["signatures"].items()):
+        is_base = "band" in target["groups"][number]
+        if len(set(corners)) == 1 and not is_base:
+            continue
+        by_corners.setdefault(corners, []).append(tile)
+    base_map = base_mapping(source, target, tmap, by_corners)
+    remap = {}
+    for tile in sorted(set(tmap)):
+        signature = source["signatures"].get(tile)
+        if signature is None:
+            continue
+        _, position, corners = signature
+        wanted = tuple(base_map.get(c, -1) for c in corners)
+        if -1 in wanted:
+            continue
+        options = by_corners.get(wanted)
+        if not options:
+            majority = max(set(wanted), key=lambda g: (wanted.count(g), -wanted.index(g)))
+            options = by_corners.get((majority,) * 4, [])
+        if options:
+            remap[tile] = options[position % len(options)]
+    return remap, base_map
+
+
+def land_tiles(folder: dict) -> dict | None:
+    palt = folder.get(("LAND", "PALT"))
+    if palt is None:
+        return None
+    palt = palt[8:]
+    present = {int(name) for (name, ext) in folder if ext == "MAPT" and name.isdigit()}
+    groups = tile_groups(folder)
+    return {
+        "palt": palt,
+        "present": present,
+        "groups": groups,
+        "signatures": tile_signatures(folder, palt, groups, present),
+    }
+
+
+def export_atlas(folder: dict, tmap: bytes, dest: Path, map_land: dict | None) -> dict:
+    """16x16 grid of 64x64 MAPT, like terrain.gd / sacrifice_ground.gdshader expect."""
+    land = land_tiles(folder)
+    if land is None:
+        return {"ok": False}
+    palt = land["palt"]
+    present = land["present"]
+    used = set(tmap)
+    # WORKAROUND: High Noon's tile ids index James's MAPTs (sacmap.d:192-195 loads the
+    # LEVL land only; a missing MAPT stays blank, 695). To show the map under another
+    # god, each used id takes the MAPT of that land with the same role: base groups by
+    # MAPG height band (base_mapping), transitions by which base group each corner shows.
+    # Nearest band alone sent James's rock (MG03) and MG05 to Persephone's MG00, a single
+    # near-white tile (0000, also the filler under void cells), and lost the seams Persephone's
+    # chain of groups can't blend: flat square cells.
+    remap = {}
+    groups = {}
+    if map_land is not None:
+        remap, groups = land_remap(map_land, land, tmap)
+    atlas = bytearray(1024 * 1024 * 4)
+    for index in range(256):
+        source = remap.get(index, index if map_land is None else None)
+        if source is None or source not in present:
+            continue
+        data = folder[(f"{source:04d}", "MAPT")][:4096]
+        ox = (index % 16) * 64
+        oy = (index // 16) * 64
+        for y in range(64):
+            row = data[64 * y : 64 * y + 64]
+            out = ((oy + y) * 1024 + ox) * 4
+            for x, color in enumerate(row):
+                atlas[out + 4 * x : out + 4 * x + 4] = palt[3 * color : 3 * color + 3] + b"\xff"
+    write_png(dest, 1024, 1024, bytes(atlas))
+    unmapped = sorted(used - set(remap)) if map_land is not None else sorted(used - present)
+    return {
+        "ok": True,
+        "mapt": len(present),
+        "groups": {str(k): v for k, v in sorted(groups.items())},
+        "remap": {str(k): v for k, v in remap.items()},
+        "unmapped": unmapped,
+    }
+
+
+def export_god(god: str, wad_name: str, land: str, sun_strength: float, tmap: bytes, map_land: dict | None) -> dict:
+    out = OUT / god
+    out.mkdir(parents=True, exist_ok=True)
+    folder = land_folder(INSTALL / "data" / wad_name, land)
+    missing = []
+    envi_raw = folder.get(("ENVI", "ENVI"))
+    envi = parse_envi(envi_raw) if envi_raw and len(envi_raw) == 428 else None
+    if envi is None:
+        missing.append("ENVI")
+    names = envi["textures"] if envi else {}
+    # sacmap.d reads SKY_ by its literal name (the ENVI may point to an smk).
+    sources = {
+        "skyt.png": names.get("skyt", "SKYT"),
+        "skyb.png": names.get("skyb", "SKYB"),
+        "sky.png": "SKY_",
+        "undr.png": names.get("undr", "UNDR"),
+        "sun.png": names.get("sun_", "SUN_"),
+        "edge.png": names.get("edge", "EDGE"),
+    }
+    found = []
+    for filename, name in sources.items():
+        if folder_png(folder, name, out / filename):
+            found.append(filename)
+        else:
+            missing.append(filename)
+    atlas = export_atlas(folder, tmap, out / "atlas.png", map_land)
+    if atlas["ok"]:
+        found.append("atlas.png")
+    else:
+        missing.append("atlas.png")
+    theme = {
+        "god": god,
+        "land": f"{wad_name}/{land}",
+        "sun_strength": sun_strength,
+        "found": found,
+        "missing": missing,
+        "atlas_groups": atlas.get("groups", {}),
+        "atlas_remap": atlas.get("remap", {}),
+        "atlas_unmapped": atlas.get("unmapped", []),
+    }
+    if envi:
+        theme.update(godot_colors(envi))
+        theme["envi"] = envi
+    (out / "theme.json").write_text(json.dumps(theme, indent=2) + "\n")
+    remapped = len(atlas.get("remap", {}))
+    print(f"{god:<11} {land:<10} found {found} missing {missing} mapt {atlas.get('mapt', 0)} remapped {remapped} groups {atlas.get('groups', {})} unmapped {atlas.get('unmapped', [])}")
+    if envi:
+        colors = godot_colors(envi)
+        print(f"{'':<11} bg {colors['background_color']} ambient {colors['ambient_color']} sun {colors['sun_color']} fog {colors['fog_color']} {colors['fog_begin']}-{colors['fog_end']}")
+    return theme
+
+
+def main() -> None:
+    OUT.mkdir(parents=True, exist_ok=True)
+    (OUT / ".gdignore").write_text("")
+    tmap = extract(MAP, "", "TMAP")[512 : 512 + 256 * 256]
+    print("high noon tile ids", len(set(tmap)))
+    wad_name, land, _ = GODS[MAP_GOD]
+    map_land = land_tiles(land_folder(INSTALL / "data" / wad_name, land))
+    for god, (wad_name, land, sun_strength) in GODS.items():
+        export_god(god, wad_name, land, sun_strength, tmap, None if god == MAP_GOD else map_land)
+
+
+if __name__ == "__main__":
+    main()

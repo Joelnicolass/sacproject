@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://debug/look_gallery.tscn" id="1_g"]
+
+[node name="LookGalleryLook" instance=ExtResource("1_g")]
+classic = false

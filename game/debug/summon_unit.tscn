@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" uid="uid://highnoonworld01" path="res://scenes/world/high_noon.tscn" id="1_world"]
+[ext_resource type="Resource" path="res://debug/rules/summon_unit.tres" id="2_rules"]
+
+[node name="SummonUnit" type="Node"]
+
+[node name="HighNoon" parent="." instance=ExtResource("1_world")]
+rules = ExtResource("2_rules")
+
+[node name="Camera" parent="HighNoon"]
+debug_pointer = Vector2(640, 360)
+
+[node name="Population" parent="HighNoon"]
+spawn_creatures = false

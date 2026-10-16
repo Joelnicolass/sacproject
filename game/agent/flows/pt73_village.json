@@ -1,0 +1,156 @@
+{
+ "scene": "res://debug/village.tscn",
+ "wait_first": 1.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "HighNoon/Units/Hunter",
+    "timeout": 30
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "view",
+    "args": [
+     "point:1258,1243",
+     24,
+     9.5,
+     20
+    ]
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "print": {
+    "node": "%Status",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "v01_aldea_en_pausa.png"
+  },
+  {
+   "press": "check_tick"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "print": {
+    "node": "%Status",
+    "prop": "text"
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "view",
+    "args": [
+     "node:Farmer15",
+     17,
+     7,
+     20
+    ]
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "aim",
+    "args": [
+     "Farmer15"
+    ]
+   }
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 1.2
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "shot": "v02_huye_1.png"
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "view",
+    "args": [
+     "node:Farmer15",
+     17,
+     7,
+     110
+    ]
+   }
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "shot": "v03_huye_2.png"
+  },
+  {
+   "wait_until": {
+    "node": "HighNoon/SoulSystem/Souls/Soul1",
+    "timeout": 120
+   }
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "view",
+    "args": [
+     "soul",
+     8,
+     3.2,
+     200
+    ]
+   }
+  },
+  {
+   "wait": 0.8
+  },
+  {
+   "print": {
+    "node": "%Stats",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "v04_alma_roja.png"
+  }
+ ]
+}

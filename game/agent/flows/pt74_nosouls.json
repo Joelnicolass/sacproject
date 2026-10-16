@@ -1,0 +1,216 @@
+{
+ "scene": "res://debug/ai_no_souls.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "assert": {
+    "node": "Overlay/Status",
+    "text_contains": "IA en pausa"
+   }
+  },
+  {
+   "shot": "z0_pausa.png"
+  },
+  {
+   "press": "check_tick"
+  },
+  {
+   "call": {
+    "harness": "pt74_probe",
+    "method": "start",
+    "args": [
+     10.0
+    ]
+   }
+  },
+  {
+   "wait": 10.0
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/ManaPool",
+    "prop": "current"
+   }
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/SoulPurse",
+    "prop": "count"
+   }
+  },
+  {
+   "wait": 10.0
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/ManaPool",
+    "prop": "current"
+   }
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/SoulPurse",
+    "prop": "count"
+   }
+  },
+  {
+   "shot": "z02.png"
+  },
+  {
+   "wait": 10.0
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/ManaPool",
+    "prop": "current"
+   }
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/SoulPurse",
+    "prop": "count"
+   }
+  },
+  {
+   "wait": 10.0
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/ManaPool",
+    "prop": "current"
+   }
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/SoulPurse",
+    "prop": "count"
+   }
+  },
+  {
+   "wait": 10.0
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/ManaPool",
+    "prop": "current"
+   }
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/SoulPurse",
+    "prop": "count"
+   }
+  },
+  {
+   "wait": 10.0
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/ManaPool",
+    "prop": "current"
+   }
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/SoulPurse",
+    "prop": "count"
+   }
+  },
+  {
+   "shot": "z06.png"
+  },
+  {
+   "wait": 10.0
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/ManaPool",
+    "prop": "current"
+   }
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/SoulPurse",
+    "prop": "count"
+   }
+  },
+  {
+   "wait": 10.0
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/ManaPool",
+    "prop": "current"
+   }
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/SoulPurse",
+    "prop": "count"
+   }
+  },
+  {
+   "wait": 10.0
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/ManaPool",
+    "prop": "current"
+   }
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/SoulPurse",
+    "prop": "count"
+   }
+  },
+  {
+   "wait": 10.0
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/ManaPool",
+    "prop": "current"
+   }
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/SoulPurse",
+    "prop": "count"
+   }
+  },
+  {
+   "wait": 10.0
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/ManaPool",
+    "prop": "current"
+   }
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/SoulPurse",
+    "prop": "count"
+   }
+  },
+  {
+   "wait": 10.0
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/ManaPool",
+    "prop": "current"
+   }
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/Wizards/Wizard2/SoulPurse",
+    "prop": "count"
+   }
+  },
+  {
+   "shot": "z12.png"
+  }
+ ]
+}

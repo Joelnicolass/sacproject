@@ -1,0 +1,173 @@
+{
+ "scene": "res://debug/guardian_manalith.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 15
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "cue_probe",
+    "method": "mirror",
+    "args": [
+     true
+    ]
+   }
+  },
+  {
+   "click": "%SpellBook/Tabs/StructureTab"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "click": "%SpellBook/Slots/Structure1"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "assert": {
+    "node": "%Battle",
+    "prop": "armed",
+    "equals": "structure"
+   }
+  },
+  {
+   "assert": {
+    "node": "%Battle",
+    "prop": "armed_icon",
+    "equals": "htlm"
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Aim",
+    "visible": true
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Aim",
+    "prop": "texture",
+    "contains": "ImageTexture"
+   }
+  },
+  {
+   "call": {
+    "harness": "wizard_travel",
+    "method": "set_pointer_world",
+    "args": [
+     1520,
+     16,
+     1450
+    ]
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "assert": {
+    "node": "%TargetProbe",
+    "prop": "kind",
+    "equals": "ground"
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Invalid",
+    "visible": false
+   }
+  },
+  {
+   "shot": "f80_3a_manalith_ground.png"
+  },
+  {
+   "call": {
+    "harness": "selection_probe",
+    "method": "aim_body",
+    "args": [
+     "Guard1"
+    ]
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "assert": {
+    "node": "%TargetProbe",
+    "prop": "kind",
+    "equals": "own_unit"
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Invalid",
+    "visible": true
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Invalid",
+    "prop": "texture",
+    "contains": "ImageTexture"
+   }
+  },
+  {
+   "assert": {
+    "node": "%CursorSkin",
+    "prop": "current",
+    "equals": "Tfrn"
+   }
+  },
+  {
+   "call": {
+    "harness": "cue_probe",
+    "method": "report"
+   }
+  },
+  {
+   "print": {
+    "node": "%TargetProbe",
+    "prop": "pointer"
+   }
+  },
+  {
+   "shot": "f80_3_manalith.png"
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "assert": {
+    "node": "%Battle",
+    "prop": "armed",
+    "equals": ""
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Aim",
+    "visible": false
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Invalid",
+    "visible": false
+   }
+  }
+ ]
+}

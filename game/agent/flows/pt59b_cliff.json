@@ -1,0 +1,60 @@
+{
+ "scene": "res://debug/hole_edge.tscn",
+ "wait_first": 1.0,
+ "steps": [
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "c0_start.png"
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 3.5
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "c1_acercando.png"
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 1.5
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "c2_borde.png"
+  },
+  {
+   "press": {
+    "name": "turn_left",
+    "hold": 0.5
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "c3_borde_giro.png"
+  },
+  {
+   "press": {
+    "name": "zoom_out",
+    "hold": 1.0
+   }
+  },
+  {
+   "wait": 0.8
+  },
+  {
+   "shot": "c4_borde_zoomout.png"
+  }
+ ]
+}

@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="GroundLayer" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/look/ground/ground_layer.gd" id="1_l"]
+[ext_resource type="Texture2D" path="res://assets/cc0/ground/Rock051/albedo.jpg" id="2_a"]
+[ext_resource type="Texture2D" path="res://assets/cc0/ground/Rock051/normal.png" id="3_n"]
+[ext_resource type="Texture2D" path="res://assets/cc0/ground/Rock051/orm.png" id="4_o"]
+
+[resource]
+script = ExtResource("1_l")
+label = "Roca"
+albedo = ExtResource("2_a")
+normal = ExtResource("3_n")
+orm = ExtResource("4_o")
+uv_scale_m = 3.5
+triplanar = true
+slope_min_deg = 5.0
+slope_soft_deg = 4.0
+height_contrast = 0.9
+normal_strength = 1.2
+priority = 2.0
+patchiness = 0.6
+tint = Color(0.9, 0.86, 0.8, 1)
+altitude_min_m = 21.0
+altitude_soft_m = 6.0

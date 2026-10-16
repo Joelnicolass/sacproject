@@ -1,0 +1,397 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.0,
+ "steps": [
+  {
+   "click": "%Play"
+  },
+  {
+   "click": "%Join"
+  },
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 20
+   }
+  },
+  {
+   "wait_until": {
+    "node": "%Wizards/Wizard1",
+    "timeout": 40
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "nb0_load.png"
+  },
+  {
+   "call": {
+    "harness": "cam_watch",
+    "method": "set_mode",
+    "args": [
+     "carry",
+     14.0,
+     2.0,
+     90.0
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "%SacrificeSystem/Doctors/Doctor1",
+    "timeout": 60
+   }
+  },
+  {
+   "print": {
+    "node": "%SacrificeSystem/Doctors/Doctor1",
+    "prop": "owner_slot"
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "print": {
+    "node": "Offering",
+    "prop": "global_position"
+   }
+  },
+  {
+   "print": {
+    "node": "Offering",
+    "prop": "mode"
+   }
+  },
+  {
+   "print": {
+    "node": "%SacrificeSystem/Doctors/Doctor1",
+    "prop": "global_position"
+   }
+  },
+  {
+   "print": {
+    "node": "%SacrificeSystem/Doctors/Doctor1",
+    "prop": "pose"
+   }
+  },
+  {
+   "print": {
+    "node": "%SacrificeSystem/Doctors/Doctor1",
+    "prop": "carried"
+   }
+  },
+  {
+   "shot": "nb1_cae.png"
+  },
+  {
+   "wait": 2.4
+  },
+  {
+   "print": {
+    "node": "Offering",
+    "prop": "global_position"
+   }
+  },
+  {
+   "print": {
+    "node": "Offering",
+    "prop": "mode"
+   }
+  },
+  {
+   "print": {
+    "node": "%SacrificeSystem/Doctors/Doctor1",
+    "prop": "global_position"
+   }
+  },
+  {
+   "print": {
+    "node": "%SacrificeSystem/Doctors/Doctor1",
+    "prop": "pose"
+   }
+  },
+  {
+   "print": {
+    "node": "%SacrificeSystem/Doctors/Doctor1",
+    "prop": "carried"
+   }
+  },
+  {
+   "shot": "nb2_toma.png"
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "print": {
+    "node": "Offering",
+    "prop": "global_position"
+   }
+  },
+  {
+   "print": {
+    "node": "Offering",
+    "prop": "mode"
+   }
+  },
+  {
+   "print": {
+    "node": "%SacrificeSystem/Doctors/Doctor1",
+    "prop": "global_position"
+   }
+  },
+  {
+   "print": {
+    "node": "%SacrificeSystem/Doctors/Doctor1",
+    "prop": "pose"
+   }
+  },
+  {
+   "print": {
+    "node": "%SacrificeSystem/Doctors/Doctor1",
+    "prop": "carried"
+   }
+  },
+  {
+   "shot": "nb3_mitad.png"
+  },
+  {
+   "wait": 0.9
+  },
+  {
+   "print": {
+    "node": "Offering",
+    "prop": "global_position"
+   }
+  },
+  {
+   "print": {
+    "node": "Offering",
+    "prop": "mode"
+   }
+  },
+  {
+   "print": {
+    "node": "%SacrificeSystem/Doctors/Doctor1",
+    "prop": "global_position"
+   }
+  },
+  {
+   "print": {
+    "node": "%SacrificeSystem/Doctors/Doctor1",
+    "prop": "pose"
+   }
+  },
+  {
+   "print": {
+    "node": "%SacrificeSystem/Doctors/Doctor1",
+    "prop": "carried"
+   }
+  },
+  {
+   "shot": "nb4_mitad_1s.png"
+  },
+  {
+   "wait": 8.5
+  },
+  {
+   "call": {
+    "harness": "cam_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     12.0,
+     0.5,
+     90.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "click": "%SpellTab"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "press": "spell_2"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "print": {
+    "node": "%Stats",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "nb5_rock_armado.png"
+  },
+  {
+   "call": {
+    "harness": "cam_watch",
+    "method": "probe"
+   }
+  },
+  {
+   "drag": {
+    "node": "%View",
+    "from_x": 640,
+    "from_y": 362,
+    "to_x": 640,
+    "to_y": 362
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "print": {
+    "node": "%Stats",
+    "prop": "text"
+   }
+  },
+  {
+   "call": {
+    "harness": "cam_watch",
+    "method": "probe"
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "print": {
+    "node": "%SacrificeSystem/Doctors/Doctor1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "wait": 0.45
+  },
+  {
+   "print": {
+    "node": "%SacrificeSystem/Doctors/Doctor1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "shot": "nr_0.png"
+  },
+  {
+   "wait": 0.45
+  },
+  {
+   "print": {
+    "node": "%SacrificeSystem/Doctors/Doctor1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "shot": "nr_1.png"
+  },
+  {
+   "wait": 0.45
+  },
+  {
+   "print": {
+    "node": "%SacrificeSystem/Doctors/Doctor1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "shot": "nr_2.png"
+  },
+  {
+   "wait": 0.45
+  },
+  {
+   "print": {
+    "node": "%SacrificeSystem/Doctors/Doctor1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "shot": "nr_3.png"
+  },
+  {
+   "wait": 0.45
+  },
+  {
+   "print": {
+    "node": "%SacrificeSystem/Doctors/Doctor1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "shot": "nr_4.png"
+  },
+  {
+   "wait": 0.45
+  },
+  {
+   "print": {
+    "node": "%SacrificeSystem/Doctors/Doctor1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "shot": "nr_5.png"
+  },
+  {
+   "wait": 0.45
+  },
+  {
+   "print": {
+    "node": "%SacrificeSystem/Doctors/Doctor1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "shot": "nr_6.png"
+  },
+  {
+   "wait": 0.45
+  },
+  {
+   "print": {
+    "node": "%SacrificeSystem/Doctors/Doctor1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "shot": "nr_7.png"
+  },
+  {
+   "print": {
+    "node": "Offering",
+    "prop": "mode"
+   }
+  }
+ ]
+}

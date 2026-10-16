@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="LightLook" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/look/light/light_look.gd" id="1_l"]
+
+[resource]
+script = ExtResource("1_l")
+label = "Charnel: noche con luna"
+sun_azimuth_deg = -40.0
+sun_elevation_deg = 42.0
+sun_color = Color(1.0, 0.867, 0.781, 1)
+sun_energy = 0.7
+fill_color = Color(0.5, 0.7, 0.9, 1)
+fill_energy = 0.22
+ambient_color = Color(0.524, 0.886, 0.978, 1)
+ambient_energy = 0.6
+tonemap_exposure = 1.0
+volumetric_density = 0.01

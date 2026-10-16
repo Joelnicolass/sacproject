@@ -1,0 +1,462 @@
+{
+ "scene": "res://debug/convert_ritual.tscn",
+ "wait_first": 1.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 30
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "print": {
+    "node": "%View",
+    "prop": "size"
+   }
+  },
+  {
+   "shot": "r_c00_antes.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "victim",
+     24.0,
+     7.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "shot": "r_c01_matan.png"
+  },
+  {
+   "wait_until": {
+    "node": "HighNoon/SoulSystem/Souls/Soul1",
+    "timeout": 120
+   }
+  },
+  {
+   "wait": 3.8
+  },
+  {
+   "print": {
+    "node": "%Stats",
+    "prop": "text"
+   }
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "soul",
+     9.0,
+     3.5,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.8
+  },
+  {
+   "shot": "r_c02_alma_roja.png"
+  },
+  {
+   "click": "%StructureTab"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "press": "spell_3"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "drag": {
+    "node": "%View",
+    "from_x": 640,
+    "from_y": 360,
+    "to_x": 640,
+    "to_y": 360
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "vortex",
+     34.0,
+     3.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.9
+  },
+  {
+   "shot": "r_c03_vortice.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "wait_until": {
+    "node": "%SacrificeSystem/Doctors/Doctor1",
+    "timeout": 10
+   }
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "pair",
+     20.0,
+     6.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 1.2
+  },
+  {
+   "shot": "r_c04_cae.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "shot": "r_c05_camina.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     7.0,
+     2.5,
+     150.0
+    ]
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "shot": "r_c06_bombea.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "shot": "r_c07_bombea_final.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "pair",
+     16.0,
+     5.0,
+     150.0
+    ]
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "shot": "r_c08_acarreo.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     7.0,
+     250.0
+    ]
+   }
+  },
+  {
+   "shot": "r_c09_acarreo_altar.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "ritual",
+     26.0,
+     10.0,
+     160.0
+    ]
+   }
+  },
+  {
+   "shot": "r_c10_ritual.png"
+  },
+  {
+   "wait": 5.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "shot": "r_c11_ritual.png"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "shot": "r_c12_ronda2.png"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "shot": "r_c12_ronda5.png"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "shot": "r_c12_ronda8.png"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "shot": "r_c13_fin.png"
+  },
+  {
+   "print": {
+    "node": "%Stats",
+    "prop": "text"
+   }
+  }
+ ]
+}

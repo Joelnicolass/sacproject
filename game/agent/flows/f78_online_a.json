@@ -1,0 +1,91 @@
+{
+  "scene": "res://scenes/ui/boot.tscn",
+  "wait_first": 1.0,
+  "steps": [
+    {
+      "click": "%Play"
+    },
+    {
+      "click": "%Join"
+    },
+    {
+      "wait_until": {
+        "node": "%Stats",
+        "text_contains": "Vida",
+        "timeout": 20
+      }
+    },
+    {
+      "wait_until": {
+        "node": "%OrdersLog",
+        "text_contains": "150 propias",
+        "timeout": 40
+      }
+    },
+    {
+      "wait": 1.0
+    },
+    {
+      "press": "check_tick"
+    },
+    {
+      "wait": 0.5
+    },
+    {
+      "assert": {
+        "node": "%Selection",
+        "prop": "count",
+        "equals": 150
+      }
+    },
+    {
+      "shot": "f78_o0_sel150.png"
+    },
+    {
+      "call": {
+        "harness": "selection_probe",
+        "method": "aim_empty"
+      }
+    },
+    {
+      "press": "order_units"
+    },
+    {
+      "wait": 1.0
+    },
+    {
+      "print": {
+        "node": "%OrdersLog",
+        "prop": "text"
+      }
+    },
+    {
+      "wait": 5.0
+    },
+    {
+      "shot": "f78_o1_moving.png"
+    },
+    {
+      "call": {
+        "harness": "selection_probe",
+        "method": "aim_empty"
+      }
+    },
+    {
+      "press": "select"
+    },
+    {
+      "wait": 0.3
+    },
+    {
+      "assert": {
+        "node": "%Selection",
+        "prop": "count",
+        "equals": 0
+      }
+    },
+    {
+      "shot": "f78_o2_cleared.png"
+    }
+  ]
+}

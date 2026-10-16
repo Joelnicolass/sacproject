@@ -1,0 +1,103 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.5,
+ "steps": [
+  {
+   "click": "%Wizard_cwa1"
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "click": "%Play"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "click": "%Solo"
+  },
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 20
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 3.0
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "a00_toaltar.png"
+  },
+  {
+   "print": {
+    "node": "%Wizards/Wizard1",
+    "prop": "global_position"
+   }
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 3.0
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "a01_toaltar.png"
+  },
+  {
+   "print": {
+    "node": "%Wizards/Wizard1",
+    "prop": "global_position"
+   }
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 3.0
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "a02_toaltar.png"
+  },
+  {
+   "print": {
+    "node": "%Wizards/Wizard1",
+    "prop": "global_position"
+   }
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 3.0
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "a03_toaltar.png"
+  },
+  {
+   "print": {
+    "node": "%Wizards/Wizard1",
+    "prop": "global_position"
+   }
+  }
+ ]
+}

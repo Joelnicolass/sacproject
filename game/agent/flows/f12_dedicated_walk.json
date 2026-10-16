@@ -1,0 +1,21 @@
+{
+  "scene": "res://scenes/ui/boot.tscn",
+  "wait_first": 0.8,
+  "steps": [
+    { "click": "%Play" },
+    { "print": { "node": "%Ip", "prop": "text" } },
+    { "click": "%Join" },
+    { "wait_until": { "node": "%Stats", "text_contains": "Vida", "timeout": 12 } },
+    { "wait": 1.0 },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
+    { "print": { "node": "AgentKit/wizard_travel", "prop": "text" } },
+    { "assert": { "node": "AgentKit/wizard_travel", "text_contains": "quieto" } },
+    { "shot": "f12_antes.png" },
+    { "press": { "name": "move_forward", "hold": 1.5 } },
+    { "wait": 0.5 },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
+    { "print": { "node": "AgentKit/wizard_travel", "prop": "text" } },
+    { "assert": { "node": "AgentKit/wizard_travel", "text_contains": "caminó" } },
+    { "shot": "f12_despues.png" }
+  ]
+}

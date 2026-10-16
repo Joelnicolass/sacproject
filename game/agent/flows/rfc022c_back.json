@@ -1,0 +1,3 @@
+{ "scene": "res://agent/fixtures/rfc022c_back.tscn", "wait_first": 4.0,
+  "steps": [ { "shot": "back_pbr.png" },
+    { "press": { "name": "debug_toggle_layer_2", "hold": 0.05 } }, { "wait": 0.5 }, { "shot": "back_classic.png" } ] }

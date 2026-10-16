@@ -1,0 +1,177 @@
+{
+ "scene": "res://debug/selection_many.tscn",
+ "wait_first": 2.5,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "%OrdersLog",
+    "text_contains": "150 propias",
+    "timeout": 40
+   }
+  },
+  {
+   "call": {
+    "harness": "pt72_watch",
+    "method": "set_trace",
+    "args": [
+     [
+      "__none__"
+     ]
+    ]
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "press": "check_tick"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "assert": {
+    "node": "%Selection",
+    "prop": "count",
+    "equals": 150
+   }
+  },
+  {
+   "call": {
+    "harness": "pt72_watch",
+    "method": "aim_ahead",
+    "args": [
+     110
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt72_watch",
+    "method": "drop_followers",
+    "args": []
+   }
+  },
+  {
+   "shot": "m0_antes.png"
+  },
+  {
+   "call": {
+    "harness": "pt72_watch",
+    "method": "begin",
+    "args": [
+     1
+    ]
+   }
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "pt72_watch",
+    "method": "move_report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt72_watch",
+    "method": "stuck_report",
+    "args": []
+   }
+  },
+  {
+   "shot": "m1_1s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "pt72_watch",
+    "method": "move_report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt72_watch",
+    "method": "stuck_report",
+    "args": []
+   }
+  },
+  {
+   "shot": "m2_4s.png"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "call": {
+    "harness": "pt72_watch",
+    "method": "move_report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt72_watch",
+    "method": "stuck_report",
+    "args": []
+   }
+  },
+  {
+   "shot": "m3_10s.png"
+  },
+  {
+   "wait": 10.0
+  },
+  {
+   "call": {
+    "harness": "pt72_watch",
+    "method": "move_report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt72_watch",
+    "method": "stuck_report",
+    "args": []
+   }
+  },
+  {
+   "shot": "m4_20s.png"
+  },
+  {
+   "wait": 10.0
+  },
+  {
+   "call": {
+    "harness": "pt72_watch",
+    "method": "move_report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt72_watch",
+    "method": "stuck_report",
+    "args": []
+   }
+  },
+  {
+   "print": {
+    "node": "%OrdersLog",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "m5_30s.png"
+  }
+ ]
+}

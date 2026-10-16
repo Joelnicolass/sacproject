@@ -1,0 +1,324 @@
+{
+ "scene": "res://debug/unit_parity_gallery.tscn",
+ "wait_first": 2.5,
+ "steps": [
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "hide_hud"
+   }
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     0,
+     6,
+     13,
+     0,
+     1.5,
+     0
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "pt53_g_idle_w.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     -11,
+     6,
+     22,
+     -11,
+     1.5,
+     10
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "pt53_g_idle_r1L.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     11,
+     6,
+     22,
+     11,
+     1.5,
+     10
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "pt53_g_idle_r1R.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     -11,
+     6,
+     32,
+     -11,
+     1.5,
+     20
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "pt53_g_idle_r2L.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     11,
+     6,
+     32,
+     11,
+     1.5,
+     20
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "pt53_g_idle_r2R.png"
+  },
+  {
+   "press": "debug_anim_cycle"
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     0,
+     6,
+     13,
+     0,
+     1.5,
+     0
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "pt53_g_run_w.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     -11,
+     6,
+     22,
+     -11,
+     1.5,
+     10
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "pt53_g_run_r1L.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     11,
+     6,
+     22,
+     11,
+     1.5,
+     10
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "pt53_g_run_r1R.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     -11,
+     6,
+     32,
+     -11,
+     1.5,
+     20
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "pt53_g_run_r2L.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     11,
+     6,
+     32,
+     11,
+     1.5,
+     20
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "pt53_g_run_r2R.png"
+  },
+  {
+   "press": "debug_anim_cycle"
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     0,
+     6,
+     13,
+     0,
+     1.5,
+     0
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "pt53_g_attack_w.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     -11,
+     6,
+     22,
+     -11,
+     1.5,
+     10
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "pt53_g_attack_r1L.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     11,
+     6,
+     22,
+     11,
+     1.5,
+     10
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "pt53_g_attack_r1R.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     -11,
+     6,
+     32,
+     -11,
+     1.5,
+     20
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "pt53_g_attack_r2L.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     11,
+     6,
+     32,
+     11,
+     1.5,
+     20
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "pt53_g_attack_r2R.png"
+  }
+ ]
+}

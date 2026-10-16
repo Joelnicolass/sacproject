@@ -1,0 +1,61 @@
+{
+  "scene": "res://debug/orders_group.tscn",
+  "wait_first": 2.0,
+  "steps": [
+    {
+      "wait_until": {
+        "node": "%OrdersLog",
+        "text_contains": "Druid 800/800",
+        "timeout": 10
+      }
+    },
+    {
+      "assert": {
+        "node": "%OrdersLog",
+        "text_contains": "4 Trogg"
+      }
+    },
+    {
+      "press": "check_tick"
+    },
+    {
+      "wait": 0.3
+    },
+    {
+      "assert": {
+        "node": "%Selection",
+        "prop": "count",
+        "equals": 4
+      }
+    },
+    {
+      "assert": {
+        "node": "Group",
+        "prop": "bars_count",
+        "equals": 4
+      }
+    },
+    {
+      "call": {
+        "harness": "selection_probe",
+        "method": "aim_empty"
+      }
+    },
+    {
+      "press": "select"
+    },
+    {
+      "wait": 0.2
+    },
+    {
+      "assert": {
+        "node": "%Selection",
+        "prop": "count",
+        "equals": 0
+      }
+    },
+    {
+      "shot": "f78_4_four_cleared.png"
+    }
+  ]
+}

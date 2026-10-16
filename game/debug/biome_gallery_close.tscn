@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://debug/biome_gallery.tscn" id="1_gallery"]
+
+[node name="BiomeGallery" instance=ExtResource("1_gallery")]
+close_at = Vector2(1539.7, 1331.6)

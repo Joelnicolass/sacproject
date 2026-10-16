@@ -1,0 +1,26 @@
+{
+  "scene": "res://agent/fixtures/pt72_guard_near_aggro.tscn",
+  "wait_first": 2.5,
+  "steps": [
+    { "wait_until": { "node": "%OrdersLog", "text_contains": "Druid 800/800", "timeout": 20 } },
+    { "call": { "harness": "pt72_watch", "method": "foe_distance", "args": [] } },
+    { "press": "check_tick" },
+    { "wait": 0.3 },
+    { "call": { "harness": "pt72_watch", "method": "aim_ahead", "args": [40] } },
+    { "press": "order_guard" },
+    { "wait": 0.2 },
+    { "press": "select" },
+    { "wait": 10.0 },
+    { "call": { "harness": "pt72_watch", "method": "begin", "args": [1] } },
+    { "shot": "d1_guardia.png" },
+    { "wait": 20.0 },
+    { "call": { "harness": "pt72_watch", "method": "report", "args": [] } },
+    { "call": { "harness": "pt72_watch", "method": "seen_report", "args": [] } },
+    { "shot": "d2_20s.png" },
+    { "wait": 20.0 },
+    { "call": { "harness": "pt72_watch", "method": "report", "args": [] } },
+    { "call": { "harness": "pt72_watch", "method": "seen_report", "args": [] } },
+    { "print": { "node": "%OrdersLog", "prop": "text" } },
+    { "shot": "d3_40s.png" }
+  ]
+}

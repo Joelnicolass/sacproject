@@ -1,0 +1,12 @@
+{ "scene": "res://debug/doctor_bench.tscn", "wait_first": 1.5,
+ "steps": [
+  { "press": { "name": "turn_left", "hold": 0.5 } },
+  { "wait": 0.4 },
+  { "print": { "node": "%Camera", "prop": "rotation_degrees" } },
+  { "print": { "node": "%Camera", "prop": "global_position" } },
+  { "shot": "pt63_aim0_rock.png" },
+  { "press": { "name": "zoom_in", "hold": 0.4 } },
+  { "wait": 0.3 },
+  { "print": { "node": "%Camera", "prop": "global_position" } },
+  { "shot": "pt63_aim1_rock_zoom.png" }
+ ]}

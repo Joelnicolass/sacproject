@@ -1,0 +1,6 @@
+{"scene":"res://agent/fixtures/pt024a/ai_match_cam.tscn","wait_first":1.5,"steps":[
+{"print":{"node":"Runner","prop":"camera_offset"}},
+{"press":"check_tick"},{"wait":2.0},
+{"print":{"node":"BenchCamera","prop":"global_position"}},
+{"print":{"node":"BenchCamera","prop":"current"}},
+{"shot":"pt024a_probe.png"}]}

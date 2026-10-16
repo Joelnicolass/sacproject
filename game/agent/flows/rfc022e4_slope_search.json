@@ -1,0 +1,1 @@
+{ "scene": "res://agent/fixtures/rfc022e4_slope.tscn", "wait_first": 10.0, "steps": [ { "shot": "s.png" } ] }

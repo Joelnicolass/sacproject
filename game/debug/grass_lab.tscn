@@ -1,0 +1,56 @@
+[gd_scene format=3 uid="uid://c1rob78d0fps6"]
+
+[ext_resource type="Script" uid="uid://gksgujlai7yw" path="res://debug/grass_lab.gd" id="1_lab"]
+[ext_resource type="Script" uid="uid://dvl2wg4u7mur4" path="res://debug/grass_lab_ground.gd" id="2_ground"]
+[ext_resource type="PackedScene" path="res://scenes/world/look/look_rig.tscn" id="3_rig"]
+[ext_resource type="PackedScene" path="res://debug/gallery_body.tscn" id="4_body"]
+[ext_resource type="Environment" path="res://data/look/env_base.tres" id="5_env"]
+
+[node name="GrassLab" type="Node" unique_id=1022913190 node_paths=PackedStringArray("ground", "rig", "sun", "game_camera", "lab_camera", "info", "creatures")]
+script = ExtResource("1_lab")
+ground = NodePath("Ground")
+rig = NodePath("Look")
+sun = NodePath("Sun")
+game_camera = NodePath("GameCamera")
+body_scene = ExtResource("4_body")
+lab_camera = NodePath("LabCamera")
+info = NodePath("Ui/Info")
+creatures = NodePath("Creatures")
+
+[node name="Env" type="WorldEnvironment" parent="." unique_id=208699773]
+environment = ExtResource("5_env")
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=281552855]
+transform = Transform3D(0.921061, -0.27935162, 0.27131036, 0, 0.6967067, 0.7173561, -0.38941833, -0.6607287, 0.6417094, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Ground" type="MeshInstance3D" parent="." unique_id=2087518101]
+script = ExtResource("2_ground")
+
+[node name="Look" parent="." unique_id=296819492 node_paths=PackedStringArray("sun", "world_environment", "terrain") instance=ExtResource("3_rig")]
+sun = NodePath("../Sun")
+world_environment = NodePath("../Env")
+terrain = NodePath("../Ground")
+
+[node name="LabCamera" type="Camera3D" parent="." unique_id=182705118]
+current = true
+fov = 65.0
+far = 2000.0
+
+[node name="GameCamera" type="Camera3D" parent="." unique_id=283509704]
+fov = 70.0
+far = 2000.0
+
+[node name="Creatures" type="Node3D" parent="." unique_id=1205801069]
+
+[node name="Ui" type="CanvasLayer" parent="." unique_id=1709409808]
+layer = 20
+
+[node name="Info" type="Label" parent="Ui" unique_id=1216916173]
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 1260.0
+offset_bottom = 90.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 16

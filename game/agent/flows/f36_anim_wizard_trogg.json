@@ -1,0 +1,22 @@
+{
+  "scene": "res://debug/anim_wizard_trogg.tscn",
+  "wait_first": 1.2,
+  "steps": [
+    { "wait_until": { "node": "%Debug", "text_contains": "cycle idle", "timeout": 6 } },
+    { "wait_until": { "node": "%Debug", "text_contains": "jwi1", "timeout": 6 } },
+    { "wait_until": { "node": "%Debug", "text_contains": "HUi1", "timeout": 6 } },
+    { "shot": "f36_0_idle.png" },
+
+    { "press": "debug_anim_cycle" },
+    { "wait_until": { "node": "%Debug", "text_contains": "cycle run", "timeout": 6 } },
+    { "wait_until": { "node": "%Debug", "text_contains": "jwrn", "timeout": 6 } },
+    { "wait_until": { "node": "%Debug", "text_contains": "HUrn", "timeout": 6 } },
+    { "shot": "f36_1_run.png" },
+
+    { "press": "debug_anim_cycle" },
+    { "wait_until": { "node": "%Debug", "text_contains": "cycle attack", "timeout": 6 } },
+    { "wait_until": { "node": "%Debug", "text_contains": "HUa1", "timeout": 6 } },
+    { "wait_until": { "node": "%Debug", "text_contains": "impact 15", "timeout": 6 } },
+    { "shot": "f36_2_attack.png" }
+  ]
+}

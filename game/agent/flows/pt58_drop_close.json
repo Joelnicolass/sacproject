@@ -1,0 +1,22 @@
+{
+  "scene": "res://debug/doctor_bench.tscn",
+  "wait_first": 0.05,
+  "steps": [
+    { "print": { "node": "DoctorDrop", "prop": "global_position" } },
+    { "press": { "name": "turn_left", "hold": 1.0 } },
+    { "print": { "node": "DoctorDrop", "prop": "global_position" } },
+    { "shot": "pt58_d1_drop_in_air.png" },
+    { "wait": 0.3 },
+    { "print": { "node": "DoctorDrop", "prop": "global_position" } },
+    { "shot": "pt58_d2_drop.png" },
+    { "wait": 2.5 },
+    { "print": { "node": "DoctorDrop", "prop": "global_position" } },
+    { "print": { "node": "DoctorDrop/Health", "prop": "current" } },
+    { "print": { "node": "%Camera", "prop": "rotation_degrees" } },
+    { "shot": "pt58_e0_far.png" },
+    { "press": { "name": "move_forward", "hold": 1.1 } },
+    { "wait": 0.4 },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "global_position" } },
+    { "shot": "pt58_e1_close.png" }
+  ]
+}

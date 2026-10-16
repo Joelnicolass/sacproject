@@ -1,0 +1,89 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.0,
+ "steps": [
+  {
+   "click": "%Play"
+  },
+  {
+   "click": "%Join"
+  },
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 20
+   }
+  },
+  {
+   "wait_until": {
+    "node": "%Wizards/Wizard2",
+    "timeout": 40
+   }
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "print": {
+    "node": "%MatchResult",
+    "prop": "visible"
+   }
+  },
+  {
+   "print": {
+    "node": "HighNoon/MapProps/Starts/Start1/Altar",
+    "prop": "state"
+   }
+  },
+  {
+   "print": {
+    "node": "HighNoon/MapProps/Starts/Start2/Altar",
+    "prop": "state"
+   }
+  },
+  {
+   "assert": {
+    "node": "%MatchResult",
+    "visible": false
+   }
+  },
+  {
+   "shot": "pt57_a0_load.png"
+  },
+  {
+   "wait_until": {
+    "node": "%MatchResult",
+    "visible": true,
+    "timeout": 90
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "print": {
+    "node": "%MatchResult",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "pt57_a1_result.png"
+  },
+  {
+   "assert": {
+    "node": "%MatchResult",
+    "text_contains": "Victoria"
+   }
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "shot": "pt57_a2_result_later.png"
+  },
+  {
+   "wait": 30.0
+  }
+ ]
+}

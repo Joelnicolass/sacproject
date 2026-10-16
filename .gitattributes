@@ -1,0 +1,10 @@
+# Arte CC0 del remaster (RFC-022 §17): binarios por Git LFS.
+game/assets/cc0/**/*.png filter=lfs diff=lfs merge=lfs -text
+game/assets/cc0/**/*.jpg filter=lfs diff=lfs merge=lfs -text
+game/assets/cc0/**/*.jpeg filter=lfs diff=lfs merge=lfs -text
+game/assets/cc0/**/*.webp filter=lfs diff=lfs merge=lfs -text
+game/assets/cc0/**/*.exr filter=lfs diff=lfs merge=lfs -text
+game/assets/cc0/**/*.hdr filter=lfs diff=lfs merge=lfs -text
+game/assets/cc0/**/*.glb filter=lfs diff=lfs merge=lfs -text
+# Materiales generados con Material Maker: el .ptex fuente va a git normal; los mapas exportados por LFS.
+game/assets/mm/**/*.png filter=lfs diff=lfs merge=lfs -text

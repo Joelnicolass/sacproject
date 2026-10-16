@@ -1,0 +1,81 @@
+{
+ "scene": "res://debug/biome_gallery_close.tscn",
+ "wait_first": 5.0,
+ "steps": [
+  {
+   "shot": "hot_persephone.png"
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 2.5
+  },
+  {
+   "shot": "hot_pyro.png"
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 2.5
+  },
+  {
+   "shot": "hot_james.png"
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 2.5
+  },
+  {
+   "shot": "hot_stratos.png"
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 2.5
+  },
+  {
+   "shot": "hot_charnel.png"
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 2.5
+  },
+  {
+   "shot": "hot_persephone2.png"
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 2.5
+  },
+  {
+   "shot": "hot_pyro2.png"
+  }
+ ]
+}

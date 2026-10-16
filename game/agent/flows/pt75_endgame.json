@@ -1,0 +1,111 @@
+{
+ "scene": "res://debug/ai_endgame.tscn",
+ "wait_first": 3.0,
+ "steps": [
+  {
+   "press": "check_tick"
+  },
+  {
+   "wait": 200.0
+  },
+  {
+   "shot": "e00_200s.png"
+  },
+  {
+   "wait": 26
+  },
+  {
+   "shot": "e01_226s.png"
+  },
+  {
+   "wait": 26
+  },
+  {
+   "shot": "e02_252s.png"
+  },
+  {
+   "wait": 4
+  },
+  {
+   "shot": "e03_256s.png"
+  },
+  {
+   "wait": 4
+  },
+  {
+   "shot": "e04_260s.png"
+  },
+  {
+   "wait": 4
+  },
+  {
+   "shot": "e05_264s.png"
+  },
+  {
+   "wait": 4
+  },
+  {
+   "shot": "e06_268s.png"
+  },
+  {
+   "wait": 4
+  },
+  {
+   "shot": "e07_272s.png"
+  },
+  {
+   "wait": 4
+  },
+  {
+   "shot": "e08_276s.png"
+  },
+  {
+   "wait": 4
+  },
+  {
+   "shot": "e09_280s.png"
+  },
+  {
+   "wait": 4
+  },
+  {
+   "shot": "e10_284s.png"
+  },
+  {
+   "wait": 4
+  },
+  {
+   "shot": "e11_288s.png"
+  },
+  {
+   "wait": 4
+  },
+  {
+   "shot": "e12_292s.png"
+  },
+  {
+   "wait": 4
+  },
+  {
+   "shot": "e13_296s.png"
+  },
+  {
+   "wait": 4
+  },
+  {
+   "shot": "e14_300s.png"
+  },
+  {
+   "wait": 4
+  },
+  {
+   "shot": "e15_304s.png"
+  },
+  {
+   "wait": 4
+  },
+  {
+   "shot": "e16_308s.png"
+  }
+ ]
+}

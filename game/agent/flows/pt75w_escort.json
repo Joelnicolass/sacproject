@@ -1,0 +1,204 @@
+{
+ "scene": "res://debug/escort_jam.tscn",
+ "wait_first": 3.0,
+ "steps": [
+  {
+   "wait": 1.0
+  },
+  {
+   "print": {
+    "node": "Overlay/Status",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "ej00_start.png"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "print": {
+    "node": "Overlay/Status",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "ej01_legs_7s.png"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "print": {
+    "node": "Overlay/Status",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "ej02_legs_13s.png"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "print": {
+    "node": "Overlay/Status",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "ej03_legs_19s.png"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "print": {
+    "node": "Overlay/Status",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "ej04_legs_25s.png"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "print": {
+    "node": "Overlay/Status",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "ej05_legs_31s.png"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "print": {
+    "node": "Overlay/Status",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "ej06_legs_37s.png"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "print": {
+    "node": "Overlay/Status",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "ej07_legs_43s.png"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "print": {
+    "node": "Overlay/Status",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "ej08_legs_49s.png"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "print": {
+    "node": "Overlay/Status",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "ej09_legs_55s.png"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "print": {
+    "node": "Overlay/Status",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "ej10_legs_61s.png"
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 4.0
+   }
+  },
+  {
+   "shot": "ej20_h_forward.png"
+  },
+  {
+   "press": {
+    "name": "turn_left",
+    "hold": 1.5
+   }
+  },
+  {
+   "shot": "ej21_h_turned.png"
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 2.0
+   }
+  },
+  {
+   "shot": "ej22_h_back_2s.png"
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 3.0
+   }
+  },
+  {
+   "shot": "ej23_h_back_5s.png"
+  },
+  {
+   "press": {
+    "name": "turn_right",
+    "hold": 0.8
+   }
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 3.0
+   }
+  },
+  {
+   "shot": "ej24_h_side.png"
+  },
+  {
+   "press": {
+    "name": "move_backward",
+    "hold": 2.0
+   }
+  },
+  {
+   "shot": "ej25_h_backpedal.png"
+  },
+  {
+   "print": {
+    "node": "Overlay/Status",
+    "prop": "text"
+   }
+  }
+ ]
+}

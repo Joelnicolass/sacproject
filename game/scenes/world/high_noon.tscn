@@ -1,0 +1,319 @@
+[gd_scene format=3 uid="uid://cvgikgwb1sifg"]
+
+[ext_resource type="Script" uid="uid://chaq34qan04i8" path="res://scenes/world/high_noon.gd" id="1_world"]
+[ext_resource type="Script" uid="uid://cnbnjgq6ehkv7" path="res://scenes/world/terrain.gd" id="2_terrain"]
+[ext_resource type="Script" uid="uid://ot34p6tw0si5" path="res://scenes/world/body_visual.gd" id="3_visual"]
+[ext_resource type="Script" uid="uid://l3u0mgrbc72j" path="res://scenes/world/wizard/wizard_spawner.gd" id="4_spawner"]
+[ext_resource type="PackedScene" path="res://scenes/world/wizard/wizard_body.tscn" id="5_wizard"]
+[ext_resource type="Script" uid="uid://bahus244cwp1m" path="res://scenes/world/map_props.gd" id="6_props"]
+[ext_resource type="Script" uid="uid://cm4vcossqdpt5" path="res://scenes/world/match_command.gd" id="7_match"]
+[ext_resource type="PackedScene" path="res://scenes/world/props/player_start.tscn" id="8_start"]
+[ext_resource type="PackedScene" path="res://scenes/world/props/manafount.tscn" id="9_fount"]
+[ext_resource type="PackedScene" path="res://scenes/world/props/plant.tscn" id="10_plant"]
+[ext_resource type="Script" uid="uid://nxbcgsgrjk48" path="res://scenes/world/world_camera.gd" id="11_camera"]
+[ext_resource type="Resource" path="res://data/match_rules.tres" id="12_rules"]
+[ext_resource type="Script" uid="uid://daosef86scnum" path="res://scenes/world/match_biome.gd" id="13_biome"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="14_hud"]
+[ext_resource type="PackedScene" path="res://scenes/ui/spell_book.tscn" id="15_book"]
+[ext_resource type="Script" uid="uid://c8mumq6up5ajy" path="res://scenes/world/spells/spell_spawner.gd" id="16_spawner"]
+[ext_resource type="Script" uid="uid://k8nbg7yvigvf" path="res://scenes/world/structures/structure_spawner.gd" id="17_structure_spawner"]
+[ext_resource type="PackedScene" path="res://scenes/world/structures/structure.tscn" id="18_structure"]
+[ext_resource type="PackedScene" path="res://scenes/world/units/unit.tscn" id="f25_unit"]
+[ext_resource type="Script" uid="uid://c3o4n6xmxkjph" path="res://scenes/world/units/unit_spawner.gd" id="f25_unit_spawner"]
+[ext_resource type="Script" uid="uid://dqkkafcm1xuke" path="res://scenes/world/orders.gd" id="f27_orders"]
+[ext_resource type="PackedScene" path="res://scenes/world/units/peasant.tscn" id="f73_peasant"]
+[ext_resource type="Script" path="res://scenes/world/map/map_population.gd" id="f73_population"]
+[ext_resource type="PackedScene" path="res://scenes/world/map/map_building.tscn" id="f73_building"]
+[ext_resource type="Script" path="res://scenes/world/nav/nav_service.gd" id="f72_nav"]
+[ext_resource type="Script" path="res://scenes/world/vision/side_vision.gd" id="f72_vision"]
+[ext_resource type="Script" uid="uid://0e71ph1e726s" path="res://scenes/world/selection.gd" id="f27_selection"]
+[ext_resource type="PackedScene" path="res://scenes/ui/selection_roster/selection_roster.tscn" id="f79_roster"]
+[ext_resource type="Script" uid="uid://dx4uvidfw53j2" path="res://scenes/world/units/shot_spawner.gd" id="f29_shots"]
+[ext_resource type="PackedScene" path="res://scenes/world/souls/soul_system.tscn" id="f30_souls"]
+[ext_resource type="PackedScene" path="res://scenes/world/sky.tscn" id="f40_sky"]
+[ext_resource type="PackedScene" path="res://scenes/world/match/match.tscn" id="f57_match"]
+[ext_resource type="PackedScene" path="res://scenes/ui/match_result.tscn" id="f57_result"]
+[ext_resource type="Script" path="res://scenes/world/command_log.gd" id="f80_log"]
+[ext_resource type="Resource" path="res://data/ui/command_cues.tres" id="f80_cues"]
+[ext_resource type="PackedScene" path="res://scenes/ui/command_cue/command_cue.tscn" id="f80_cue"]
+[ext_resource type="Script" path="res://scenes/ui/command_cue/cursor_skin.gd" id="f80_skin"]
+[ext_resource type="Script" path="res://scenes/ui/command_cue/target_probe.gd" id="f80_probe"]
+[ext_resource type="Script" path="res://scenes/world/structure_inspector.gd" id="f93_inspector"]
+[ext_resource type="PackedScene" path="res://scenes/world/sacrifice/sacrifice_system.tscn" id="f59_sacrifice"]
+[ext_resource type="PackedScene" path="res://scenes/ui/ritual_notice.tscn" id="f60_notice"]
+[ext_resource type="Environment" path="res://data/look/env_base.tres" id="f22_env"]
+[ext_resource type="Resource" path="res://data/look/quality_medium.tres" id="f22_medium"]
+[ext_resource type="PackedScene" path="res://scenes/world/look/look_rig.tscn" id="f22_look"]
+[ext_resource type="Resource" path="res://data/look/ground/high_noon_tiles.tres" id="f22_tiles"]
+[ext_resource type="Script" path="res://scenes/world/ai/ai_roster.gd" id="f77_roster"]
+[ext_resource type="PackedScene" path="res://scenes/world/ai/ai_side.tscn" id="f77_side"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
+bg_color = Color(1, 1, 1, 0)
+
+[node name="HighNoon" type="Node3D" unique_id=741096982]
+script = ExtResource("1_world")
+rules = ExtResource("12_rules")
+
+[node name="Sky" parent="." unique_id=733427404 instance=ExtResource("f40_sky")]
+unique_name_in_owner = true
+background_color = Color(2.8878452e-07, 0.92139935, 0.5927794, 1)
+
+[node name="Environment" type="WorldEnvironment" parent="." unique_id=749856849]
+unique_name_in_owner = true
+environment = ExtResource("f22_env")
+
+[node name="Look" parent="." unique_id=1022000001 node_paths=PackedStringArray("sun", "world_environment", "terrain", "legacy_sky") instance=ExtResource("f22_look")]
+unique_name_in_owner = true
+sun = NodePath("../Sun")
+world_environment = NodePath("../Environment")
+terrain = NodePath("../Terrain")
+legacy_sky = NodePath("../Sky")
+tile_map = ExtResource("f22_tiles")
+
+[node name="Quality" parent="Look" index="1"]
+quality = ExtResource("f22_medium")
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=1176620511]
+transform = Transform3D(0.921061, -0.27935162, 0.27131036, 0, 0.6967067, 0.7173561, -0.38941833, -0.6607287, 0.6417094, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Camera" type="Camera3D" parent="." unique_id=1948599183 node_paths=PackedStringArray("ground", "edge_area")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.7, 0.7, 0, -0.7, 0.7, 0, 18, 18)
+far = 20000.0
+script = ExtResource("11_camera")
+ground = NodePath("../Terrain")
+edge_area = NodePath("../Hud/View")
+
+[node name="Terrain" type="MeshInstance3D" parent="." unique_id=1483961628]
+unique_name_in_owner = true
+script = ExtResource("2_terrain")
+
+[node name="Missing" type="Label3D" parent="Terrain" unique_id=430681053]
+visible = false
+text = "Falta el terreno de High Noon."
+font_size = 48
+
+[node name="Creature" type="MeshInstance3D" parent="." unique_id=2147282153]
+unique_name_in_owner = true
+script = ExtResource("3_visual")
+model = "peas"
+
+[node name="MapProps" type="Node3D" parent="." unique_id=693965675]
+script = ExtResource("6_props")
+plant_scene = ExtResource("10_plant")
+plant_models = PackedStringArray("PCF1", "PCF2", "PCF3", "PCF4", "PCG1", "PCG2", "PCW5", "PCW6", "PCW7", "PCW8", "PGL1", "PGL2", "PCC1", "PCC2")
+widget_models = {
+"JAW1": PackedStringArray("PCW7", "PCW6", "PCF4"),
+"JAW2": PackedStringArray("PCW8", "PCF3", "PCF1"),
+"JAW3": PackedStringArray("PCF1", "PCF2", "PCC1", "PCC2"),
+"JAW4": PackedStringArray("PCG2", "PCW5"),
+"JAW5": PackedStringArray("PGL1", "PGL2", "PCG1")
+}
+
+[node name="Starts" type="Node3D" parent="MapProps" unique_id=1503934309]
+
+[node name="Start1" parent="MapProps/Starts" unique_id=966119700 node_paths=PackedStringArray("faces") instance=ExtResource("8_start")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1500, 16.9, 1570)
+faces = NodePath("../../Founts/FountEast")
+
+[node name="Start2" parent="MapProps/Starts" unique_id=1542996342 node_paths=PackedStringArray("faces") instance=ExtResource("8_start")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1040, 15.1, 980)
+slot = 2
+faces = NodePath("../../Founts/FountWest")
+
+[node name="Founts" type="Node3D" parent="MapProps" unique_id=52088304]
+
+[node name="FountCenter" parent="MapProps/Founts" unique_id=1897756010 instance=ExtResource("9_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1270, 10, 1270)
+
+[node name="FountEast" parent="MapProps/Founts" unique_id=646644486 instance=ExtResource("9_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1520, 16.1, 1450)
+
+[node name="FountSouth" parent="MapProps/Founts" unique_id=351329644 instance=ExtResource("9_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1080, 16.2, 1490)
+
+[node name="FountNorth" parent="MapProps/Founts" unique_id=1492753983 instance=ExtResource("9_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1450, 13.7, 1070)
+
+[node name="FountWest" parent="MapProps/Founts" unique_id=1824358006 instance=ExtResource("9_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1030, 21, 1110)
+
+[node name="Wizards" type="Node3D" parent="." unique_id=322085300]
+unique_name_in_owner = true
+
+[node name="WizardSpawner" type="MultiplayerSpawner" parent="." unique_id=506358298]
+spawn_path = NodePath("../Wizards")
+script = ExtResource("4_spawner")
+pawn_scene = ExtResource("5_wizard")
+spawn_points = NodePath("../MapProps/Starts")
+actor_name_prefix = "Wizard"
+
+[node name="MatchBiome" type="Node" parent="." unique_id=1771451217 node_paths=PackedStringArray("world")]
+script = ExtResource("13_biome")
+world = NodePath("..")
+
+[node name="Units" type="Node3D" parent="." unique_id=1921753883]
+unique_name_in_owner = true
+
+[node name="UnitSpawner" type="MultiplayerSpawner" parent="." unique_id=928255093]
+spawn_path = NodePath("../Units")
+script = ExtResource("f25_unit_spawner")
+unit_scene = ExtResource("f25_unit")
+peasant_scene = ExtResource("f73_peasant")
+rules = ExtResource("12_rules")
+
+[node name="Buildings" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="Population" type="Node3D" parent="." node_paths=PackedStringArray("buildings_root", "unit_spawner")]
+unique_name_in_owner = true
+script = ExtResource("f73_population")
+spawn_creatures = true
+building_scene = ExtResource("f73_building")
+buildings_root = NodePath("../Buildings")
+unit_spawner = NodePath("../UnitSpawner")
+
+[node name="Spells" type="Node3D" parent="." unique_id=99761749]
+unique_name_in_owner = true
+
+[node name="Structures" type="Node3D" parent="." unique_id=771314657]
+unique_name_in_owner = true
+
+[node name="StructureSpawner" type="MultiplayerSpawner" parent="." unique_id=687306311]
+spawn_path = NodePath("../Structures")
+script = ExtResource("17_structure_spawner")
+structure_scene = ExtResource("18_structure")
+rules = ExtResource("12_rules")
+
+[node name="SpellSpawner" type="MultiplayerSpawner" parent="." unique_id=1184984889]
+spawn_path = NodePath("../Spells")
+script = ExtResource("16_spawner")
+
+[node name="Shots" type="Node3D" parent="." unique_id=529699962]
+unique_name_in_owner = true
+
+[node name="ShotSpawner" type="MultiplayerSpawner" parent="." unique_id=2135793793]
+spawn_path = NodePath("../Shots")
+script = ExtResource("f29_shots")
+
+[node name="SoulSystem" parent="." unique_id=277566274 node_paths=PackedStringArray("world") instance=ExtResource("f30_souls")]
+world = NodePath("..")
+
+[node name="SacrificeSystem" parent="." unique_id=956844796 node_paths=PackedStringArray("world") instance=ExtResource("f59_sacrifice")]
+unique_name_in_owner = true
+world = NodePath("..")
+
+[node name="Match" parent="." unique_id=1957000101 node_paths=PackedStringArray("world") instance=ExtResource("f57_match")]
+unique_name_in_owner = true
+world = NodePath("..")
+
+[node name="Nav" type="Node" parent="." node_paths=PackedStringArray("terrain", "structures")]
+unique_name_in_owner = true
+script = ExtResource("f72_nav")
+terrain = NodePath("../Terrain")
+structures = NodePath("../Structures")
+
+[node name="Vision" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("f72_vision")
+
+[node name="Selection" type="Node" parent="." unique_id=1294781756 node_paths=PackedStringArray("box", "ground")]
+unique_name_in_owner = true
+script = ExtResource("f27_selection")
+box = NodePath("../Hud/SelectionBox")
+ground = NodePath("../Terrain")
+max_size = 0
+
+[node name="Orders" type="Node" parent="." unique_id=1688586003]
+unique_name_in_owner = true
+script = ExtResource("f27_orders")
+max_units = 0
+row_size = 12
+
+[node name="MatchCommand" type="Node" parent="." unique_id=391205645]
+script = ExtResource("7_match")
+
+[node name="Inspector" type="Node" parent="."]
+unique_name_in_owner = true
+editor_description = "RFC-028b: la casa, el cactus o el Manalith clicado muestra su barra de vida; local, sin RPC."
+script = ExtResource("f93_inspector")
+
+[node name="Ping" type="MeshInstance3D" parent="." unique_id=1174697680]
+unique_name_in_owner = true
+visible = false
+
+[node name="AiRoster" type="Node" parent="." node_paths=PackedStringArray("world", "wizard_spawner")]
+unique_name_in_owner = true
+editor_description = "RFC-024 024f: arma los asientos IA (MatchRules.ai_seats o SacrificeFlow.solo_ai_seats) solo en solo o en el servidor. Sin asientos no hace nada."
+script = ExtResource("f77_roster")
+world = NodePath("..")
+wizard_spawner = NodePath("../WizardSpawner")
+side_scene = ExtResource("f77_side")
+
+[node name="Hud" type="CanvasLayer" parent="." unique_id=1419423165]
+
+[node name="View" type="Button" parent="Hud" unique_id=363790488]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_clear")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_clear")
+theme_override_styles/hover = SubResource("StyleBoxFlat_clear")
+theme_override_styles/focus = SubResource("StyleBoxFlat_clear")
+flat = true
+
+[node name="SelectionRoster" parent="Hud" node_paths=PackedStringArray("selection", "avoid") instance=ExtResource("f79_roster")]
+unique_name_in_owner = true
+selection = NodePath("../../Selection")
+avoid = NodePath("../SpellBook")
+
+[node name="SelectionBox" type="ReferenceRect" parent="Hud" unique_id=2145779674]
+unique_name_in_owner = true
+visible = false
+mouse_filter = 2
+border_color = Color(1, 1, 1, 1)
+editor_only = false
+
+[node name="SpellBook" parent="Hud" unique_id=1866160798 instance=ExtResource("15_book")]
+unique_name_in_owner = true
+
+[node name="Battle" type="Node" parent="Hud" unique_id=1054612398]
+unique_name_in_owner = true
+script = ExtResource("f80_log")
+cues = ExtResource("f80_cues")
+
+[node name="WizardHud" parent="Hud" unique_id=1561071952 instance=ExtResource("14_hud")]
+unique_name_in_owner = true
+
+[node name="MatchResult" parent="Hud" unique_id=1957000102 node_paths=PackedStringArray("match_state") instance=ExtResource("f57_result")]
+unique_name_in_owner = true
+match_state = NodePath("../../Match")
+
+[node name="RitualNotice" parent="Hud" unique_id=1957000103 instance=ExtResource("f60_notice")]
+unique_name_in_owner = true
+
+[node name="TargetProbe" type="Node" parent="Hud" unique_id=1957000104 node_paths=PackedStringArray("world_view", "camera", "hud_controls")]
+unique_name_in_owner = true
+script = ExtResource("f80_probe")
+world_view = NodePath("../View")
+camera = NodePath("../../Camera")
+hud_controls = [NodePath("../SpellBook"), NodePath("../SelectionRoster")]
+
+[node name="CursorSkin" type="Node" parent="Hud" unique_id=1957000105 node_paths=PackedStringArray("command_log", "probe")]
+unique_name_in_owner = true
+script = ExtResource("f80_skin")
+cues = ExtResource("f80_cues")
+command_log = NodePath("../Battle")
+probe = NodePath("../TargetProbe")
+
+[node name="CommandCue" parent="Hud" unique_id=1957000106 node_paths=PackedStringArray("command_log", "probe", "skin") instance=ExtResource("f80_cue")]
+unique_name_in_owner = true
+command_log = NodePath("../Battle")
+cues = ExtResource("f80_cues")
+probe = NodePath("../TargetProbe")
+skin = NodePath("../CursorSkin")

@@ -1,0 +1,13 @@
+{
+ "scene": "res://agent/fixtures/rfc022c_match.tscn",
+ "wait_first": 5.0,
+ "steps": [
+  { "shot": "game_start.png" },
+  { "drag": { "node": "HighNoon/Hud/View", "from_x": 640, "from_y": 200, "to_x": 640, "to_y": 560 } },
+  { "wait": 0.6 },
+  { "shot": "game_look_a.png" },
+  { "drag": { "node": "HighNoon/Hud/View", "from_x": 640, "from_y": 600, "to_x": 640, "to_y": 100 } },
+  { "wait": 0.6 },
+  { "shot": "game_look_b.png" }
+ ]
+}

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ShotLook" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/units/shot_look.gd" id="1_look"]
+
+[resource]
+script = ExtResource("1_look")
+model = "rock"
+model_scale = 0.3
+hit_size = 0.7
+spin_min = 0.2
+spin_max = 0.8
+trail_fx = "spit_trail"
+trail_every = 1
+impact_fx = PackedStringArray("spit_rock", "spit_dirt")
+fallback_color = Color(0.42, 0.4, 0.34, 1)
+fallback_radius = 0.15

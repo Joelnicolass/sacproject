@@ -1,0 +1,35 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" uid="uid://cvgikgwb1sifg" path="res://scenes/world/high_noon.tscn" id="1_world"]
+[ext_resource type="Resource" path="res://debug/rules/village.tres" id="2_rules"]
+[ext_resource type="Script" path="res://debug/village.gd" id="4_village"]
+
+[node name="Village" type="Node"]
+editor_description = "SOLO (un proceso). 26 Farmers, 6 Taurocks y las casas de High Noon. El mago humano Persephone (0 almas) nace a 30 m de la casa jhut (1255,1214) con su Druid Hunter seleccionado y quieto; los NPC esperan en «Aldea en pausa» hasta check_tick (Enter). Atacar a un Farmer: order_units sobre el (huye de Hunter si hay refugio a menos de 50 m). Convert: el alma roja queda pegada al cadaver; pestana Estructuras, spell_3, clic en el alma a menos de 20 m del mago; Almas 0 pasa a Almas 1 cuando el ritual termina. En esta escena el altar propio esta lejos y el Farmer muere lejos del mago: para convertir usar village_cower. Variantes: village_cower (Farmer6, sin refugio a 50 m, se encoge; mago a 15 m y altar propio a 70 m: Hunter lo mata en su sitio y el Convert cabe en menos de 60 s) y village_taurock (Taurock1 a 70 m de Hunter; a 80 m el puntaje de blanco no lo elige, corte 73,7 m)."
+
+[node name="HighNoon" parent="." instance=ExtResource("1_world")]
+rules = ExtResource("2_rules")
+
+[node name="Camera" parent="HighNoon"]
+start_zoom = 0.5
+debug_pointer = Vector2(640, 360)
+
+[node name="Overlay" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="Status" type="Label" parent="Overlay"]
+unique_name_in_owner = true
+offset_left = 24.0
+offset_top = 80.0
+offset_right = 900.0
+offset_bottom = 150.0
+mouse_filter = 2
+text = "Aldea en pausa"
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+
+[node name="Village" type="Node" parent="." node_paths=PackedStringArray("world", "status_label")]
+script = ExtResource("4_village")
+world = NodePath("../HighNoon")
+status_label = NodePath("../Overlay/Status")

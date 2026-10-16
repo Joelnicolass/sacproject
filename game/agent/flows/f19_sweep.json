@@ -1,0 +1,23 @@
+{
+  "scene": "res://scenes/world/high_noon.tscn",
+  "wait_first": 3.0,
+  "steps": [
+    { "print": { "node": "%Camera", "prop": "global_rotation" } },
+    { "shot": "f19_sweep_0.png" },
+    { "press": { "name": "turn_right", "hold": 1.2 } },
+    { "print": { "node": "%Camera", "prop": "global_rotation" } },
+    { "shot": "f19_sweep_1.png" },
+    { "press": { "name": "turn_right", "hold": 1.2 } },
+    { "print": { "node": "%Camera", "prop": "global_rotation" } },
+    { "shot": "f19_sweep_2.png" },
+    { "press": { "name": "turn_right", "hold": 1.2 } },
+    { "print": { "node": "%Camera", "prop": "global_rotation" } },
+    { "shot": "f19_sweep_3.png" },
+    { "press": { "name": "turn_right", "hold": 1.2 } },
+    { "print": { "node": "%Camera", "prop": "global_rotation" } },
+    { "shot": "f19_sweep_4.png" },
+    { "press": { "name": "turn_right", "hold": 1.2 } },
+    { "print": { "node": "%Camera", "prop": "global_rotation" } },
+    { "shot": "f19_sweep_5.png" }
+  ]
+}

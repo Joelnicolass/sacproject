@@ -1,0 +1,168 @@
+[gd_scene load_steps=21 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/wizard/wizard_body.gd" id="1_body"]
+[ext_resource type="Resource" path="res://scenes/world/walk_step.tres" id="2_step"]
+[ext_resource type="Script" path="res://scenes/world/body_visual.gd" id="3_visual"]
+[ext_resource type="Script" path="res://scenes/world/components/health.gd" id="4_health"]
+[ext_resource type="Script" path="res://scenes/world/components/mana_pool.gd" id="5_mana"]
+[ext_resource type="Script" path="res://scenes/world/components/soul_purse.gd" id="6_souls"]
+[ext_resource type="Resource" path="res://data/match_rules.tres" id="7_rules"]
+[ext_resource type="Script" path="res://addons/mp_kit/mp_replicate.gd" id="8_replicate"]
+[ext_resource type="Script" path="res://scenes/world/spells/spellbook.gd" id="9_book"]
+[ext_resource type="Script" path="res://scenes/world/spells/caster.gd" id="10_caster"]
+[ext_resource type="Script" path="res://scenes/world/spells/summoner.gd" id="11_summoner"]
+[ext_resource type="Script" path="res://scenes/world/wizard/ghost_form.gd" id="12_ghost"]
+[ext_resource type="Script" path="res://scenes/world/components/clip_pose_player.gd" id="13_clip"]
+[ext_resource type="Script" path="res://scenes/world/spells/actions/manalith_action.gd" id="14_manalith"]
+[ext_resource type="Script" path="res://scenes/world/spells/actions/desecrate_action.gd" id="15_desecrate"]
+[ext_resource type="Script" path="res://scenes/world/spells/actions/convert_action.gd" id="16_convert"]
+[ext_resource type="Script" path="res://scenes/world/spells/actions/guardian_action.gd" id="17_guardian"]
+[ext_resource type="Script" path="res://scenes/world/spells/actions/teleport_action.gd" id="18_teleport"]
+[ext_resource type="PackedScene" path="res://scenes/fx/teleport_rings.tscn" id="19_rings"]
+[ext_resource type="Script" path="res://scenes/world/warp_snap.gd" id="warp_snap"]
+[ext_resource type="Script" path="res://scenes/world/nav/path_follower.gd" id="f72_follower"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.35
+height = 1.8
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_wizard"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:owner_slot")
+properties/2/spawn = true
+properties/2/replication_mode = 0
+properties/3/path = NodePath(".:wizard_tag")
+properties/3/spawn = true
+properties/3/replication_mode = 2
+properties/4/path = NodePath(".:model")
+properties/4/spawn = true
+properties/4/replication_mode = 2
+properties/5/path = NodePath(".:god")
+properties/5/spawn = true
+properties/5/replication_mode = 2
+properties/6/path = NodePath("Health:maximum")
+properties/6/spawn = true
+properties/6/replication_mode = 2
+properties/7/path = NodePath("Health:current")
+properties/7/spawn = true
+properties/7/replication_mode = 2
+properties/8/path = NodePath("ManaPool:maximum")
+properties/8/spawn = true
+properties/8/replication_mode = 2
+properties/9/path = NodePath("ManaPool:current")
+properties/9/spawn = true
+properties/9/replication_mode = 2
+properties/10/path = NodePath("SoulPurse:count")
+properties/10/spawn = true
+properties/10/replication_mode = 2
+properties/11/path = NodePath("GhostForm:under_ritual")
+properties/11/spawn = true
+properties/11/replication_mode = 2
+properties/12/path = NodePath("GhostForm:stage")
+properties/12/spawn = true
+properties/12/replication_mode = 2
+properties/13/path = NodePath(".:level")
+properties/13/spawn = true
+properties/13/replication_mode = 2
+
+[node name="Wizard" type="CharacterBody3D"]
+script = ExtResource("1_body")
+step = ExtResource("2_step")
+wizard_tag = "cwa0"
+model = "jnwr"
+god = "james"
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+script = ExtResource("3_visual")
+model = "jnwr"
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("4_health")
+
+[node name="ManaPool" type="Node" parent="."]
+script = ExtResource("5_mana")
+
+[node name="SoulPurse" type="Node" parent="."]
+script = ExtResource("6_souls")
+rules = ExtResource("7_rules")
+
+[node name="Spellbook" type="Node" parent="."]
+script = ExtResource("9_book")
+rules = ExtResource("7_rules")
+
+[node name="Summoner" type="Node" parent="."]
+script = ExtResource("11_summoner")
+
+[node name="Caster" type="Node" parent="." node_paths=PackedStringArray("spellbook", "summoner", "actions")]
+script = ExtResource("10_caster")
+rules = ExtResource("7_rules")
+spellbook = NodePath("../Spellbook")
+summoner = NodePath("../Summoner")
+actions = NodePath("Actions")
+
+[node name="Actions" type="Node" parent="Caster"]
+
+[node name="Manalith" type="Node" parent="Caster/Actions"]
+script = ExtResource("14_manalith")
+tag = "htlm"
+prompt = "Elegí el suelo"
+
+[node name="Desecrate" type="Node" parent="Caster/Actions"]
+script = ExtResource("15_desecrate")
+tag = "ucas"
+pick = 1
+prompt = "Elegí tu criatura"
+
+[node name="Convert" type="Node" parent="Caster/Actions"]
+script = ExtResource("16_convert")
+tag = "ccas"
+pick = 2
+prompt = "Elegí un alma roja"
+
+[node name="Guardian" type="Node" parent="Caster/Actions"]
+script = ExtResource("17_guardian")
+tag = "ndrg"
+pick = 1
+prompt = "Elegí una criatura propia"
+cast_fx = "heal"
+rules = ExtResource("7_rules")
+
+[node name="Teleport" type="Node" parent="Caster/Actions"]
+script = ExtResource("18_teleport")
+tag = "elet"
+pick = 3
+prompt = "Elegí un edificio propio"
+rings_scene = ExtResource("19_rings")
+
+[node name="GhostForm" type="Node" parent="." node_paths=PackedStringArray("visual")]
+script = ExtResource("12_ghost")
+rules = ExtResource("7_rules")
+visual = NodePath("../Mesh")
+
+[node name="ClipPose" type="Node" parent="." node_paths=PackedStringArray("mesh_path")]
+script = ExtResource("13_clip")
+mesh_path = NodePath("../Mesh")
+
+[node name="PathFollower" type="Node" parent="." node_paths=PackedStringArray("body")]
+script = ExtResource("f72_follower")
+body = NodePath("..")
+
+[node name="Net" type="Node" parent="."]
+script = ExtResource("8_replicate")
+sync_properties = PackedStringArray()
+
+[node name="WarpSnap" type="Node" parent="." node_paths=PackedStringArray("net")]
+script = ExtResource("warp_snap")
+net = NodePath("../Net")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_wizard")

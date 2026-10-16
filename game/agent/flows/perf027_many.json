@@ -1,0 +1,43 @@
+{
+  "scene": "res://agent/fixtures/perf027_many.tscn",
+  "wait_first": 1.0,
+  "steps": [
+    {
+      "wait_until": {
+        "node": "FrameBudget",
+        "prop": "phase",
+        "equals": "await_order",
+        "timeout": 900
+      }
+    },
+    {
+      "press": "check_tick"
+    },
+    {
+      "wait": 0.5
+    },
+    {
+      "print": {
+        "node": "SelectionMany/Group",
+        "prop": "sel_count"
+      }
+    },
+    {
+      "press": "order_units"
+    },
+    {
+      "wait_until": {
+        "node": "FrameBudget",
+        "prop": "phase",
+        "equals": "done",
+        "timeout": 900
+      }
+    },
+    {
+      "print": {
+        "node": "SelectionMany/Group",
+        "prop": "ordered_count"
+      }
+    }
+  ]
+}

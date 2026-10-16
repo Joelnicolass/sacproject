@@ -1,0 +1,156 @@
+{
+ "scene": "res://debug/rock_hit.tscn",
+ "wait_first": 1.5,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "%HitLog",
+    "text_contains": "Druid 800/800",
+    "timeout": 15
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "repeat": {
+    "times": 60,
+    "until": {
+     "node": "%HitLog",
+     "text_contains": "mira suelo"
+    },
+    "steps": [
+     {
+      "press": {
+       "name": "zoom_in",
+       "hold": 0.03
+      }
+     },
+     {
+      "wait": 0.15
+     }
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "hud_cache_probe",
+    "method": "hide_cache"
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "press": "spell_2"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "assert": {
+    "node": "%Battle",
+    "prop": "armed",
+    "equals": "spell"
+   }
+  },
+  {
+   "assert": {
+    "node": "%Battle",
+    "prop": "armed_icon",
+    "equals": "kcor"
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Aim",
+    "visible": true
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Aim",
+    "prop": "texture",
+    "contains": "null"
+   }
+  },
+  {
+   "shot": "f80_nocache_armed.png"
+  },
+  {
+   "click": "%View"
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "assert": {
+    "node": "%Battle",
+    "text_equals": "Blanco inválido"
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Invalid",
+    "visible": true
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Invalid",
+    "prop": "texture",
+    "contains": "null"
+   }
+  },
+  {
+   "shot": "f80_nocache_refused.png"
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "assert": {
+    "node": "%Battle",
+    "prop": "armed",
+    "equals": ""
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Aim",
+    "visible": false
+   }
+  },
+  {
+   "call": {
+    "harness": "hud_cache_probe",
+    "method": "restore_cache"
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "press": "spell_2"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Aim",
+    "visible": true
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Aim",
+    "prop": "texture",
+    "contains": "ImageTexture"
+   }
+  }
+ ]
+}

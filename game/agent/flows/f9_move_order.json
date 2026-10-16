@@ -1,0 +1,18 @@
+{
+  "scene": "res://debug/move_order.tscn",
+  "wait_first": 0.8,
+  "steps": [
+    { "print": { "node": "%Verdict", "prop": "text" } },
+    { "assert": { "node": "%Verdict", "text_equals": "Pendiente" } },
+    { "shot": "f9_pendiente.png" },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
+    { "print": { "node": "%Creature", "prop": "position" } },
+    { "press": "check_tick" },
+    { "wait": 0.4 },
+    { "assert": { "node": "%Verdict", "text_equals": "coincide" } },
+    { "print": { "node": "%Verdict", "prop": "text" } },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
+    { "print": { "node": "%Creature", "prop": "position" } },
+    { "shot": "f9_coincide.png" }
+  ]
+}

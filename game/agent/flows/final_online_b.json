@@ -1,0 +1,713 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.0,
+ "steps": [
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "b00_boot.png"
+  },
+  {
+   "click": "%Wizard_cwa0"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "click": "%God_james"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "click": "%Play"
+  },
+  {
+   "click": "%Join"
+  },
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida 1950/1950",
+    "timeout": 20
+   }
+  },
+  {
+   "wait_until": {
+    "node": "%Wizards/Wizard1",
+    "timeout": 20
+   }
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "press": {
+    "name": "zoom_out",
+    "hold": 2.2
+   }
+  },
+  {
+   "print": {
+    "node": "MatchBiome",
+    "prop": "god"
+   }
+  },
+  {
+   "print": {
+    "node": "%Title",
+    "prop": "text"
+   }
+  },
+  {
+   "print": {
+    "node": "%Stats",
+    "prop": "text"
+   }
+  },
+  {
+   "assert": {
+    "node": "%Title",
+    "text_equals": "Jadugarr · James"
+   }
+  },
+  {
+   "assert": {
+    "node": "%Stats",
+    "text_contains": "Vida 1950/1950 · Maná"
+   }
+  },
+  {
+   "assert": {
+    "node": "%Stats",
+    "text_contains": "Almas 12"
+   }
+  },
+  {
+   "print": {
+    "node": "%Wizards/Wizard1/Mesh",
+    "prop": "model"
+   }
+  },
+  {
+   "print": {
+    "node": "%Wizards/Wizard2/Mesh",
+    "prop": "model"
+   }
+  },
+  {
+   "print": {
+    "node": "%Wizards/Wizard1",
+    "prop": "global_position"
+   }
+  },
+  {
+   "print": {
+    "node": "%Wizards/Wizard2",
+    "prop": "global_position"
+   }
+  },
+  {
+   "print": {
+    "node": "%Camera",
+    "prop": "yaw"
+   }
+  },
+  {
+   "shot": "b01_start.png"
+  },
+  {
+   "click": "%CreatureTab"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "print": {
+    "node": "%Slots/Creature1/Name",
+    "prop": "text"
+   }
+  },
+  {
+   "print": {
+    "node": "%Slots/Creature2/Name",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": {
+    "name": "b02_book_creatures.png",
+    "node": "%SpellBook"
+   }
+  },
+  {
+   "click": "%SpellTab"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "print": {
+    "node": "%Slots/Spell1/Name",
+    "prop": "text"
+   }
+  },
+  {
+   "print": {
+    "node": "%Slots/Spell2/Name",
+    "prop": "text"
+   }
+  },
+  {
+   "print": {
+    "node": "%Slots/Spell3/Name",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": {
+    "name": "b03_book_spells.png",
+    "node": "%SpellBook"
+   }
+  },
+  {
+   "wait_until": {
+    "node": "%Units/Manahoar1",
+    "timeout": 40
+   }
+  },
+  {
+   "print": {
+    "node": "%Units/Manahoar1",
+    "prop": "owner_slot"
+   }
+  },
+  {
+   "print": {
+    "node": "%Units/Manahoar1",
+    "prop": "global_position"
+   }
+  },
+  {
+   "wait": 0.7
+  },
+  {
+   "print": {
+    "node": "%Units/Manahoar1",
+    "prop": "global_position"
+   }
+  },
+  {
+   "wait": 0.7
+  },
+  {
+   "print": {
+    "node": "%Units/Manahoar1",
+    "prop": "global_position"
+   }
+  },
+  {
+   "print": {
+    "node": "%Stats",
+    "prop": "text"
+   }
+  },
+  {
+   "press": "spell_3"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "click": "%View"
+  },
+  {
+   "wait_until": {
+    "node": "%Battle",
+    "text_equals": "Heal",
+    "timeout": 3
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "print": {
+    "node": "%Stats",
+    "prop": "text"
+   }
+  },
+  {
+   "print": {
+    "node": "%Slots/Spell3/Time",
+    "prop": "text"
+   }
+  },
+  {
+   "print": {
+    "node": "%Slots/Spell1/Time",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": {
+    "name": "b04_heal_book.png",
+    "node": "%SpellBook"
+   }
+  },
+  {
+   "press": "spell_1"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "wait": 2.6
+  },
+  {
+   "press": "spell_1"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "click": "%View"
+  },
+  {
+   "wait_until": {
+    "node": "%Battle",
+    "text_equals": "Speedup",
+    "timeout": 3
+   }
+  },
+  {
+   "wait": 0.8
+  },
+  {
+   "print": {
+    "node": "%Stats",
+    "prop": "text"
+   }
+  },
+  {
+   "print": {
+    "node": "%Slots/Spell1/Time",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "b05_speedup.png"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "print": {
+    "node": "%Wizards/Wizard2",
+    "prop": "speed_factor"
+   }
+  },
+  {
+   "press": {
+    "name": "turn_left",
+    "hold": 2.051
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%Camera",
+    "prop": "yaw"
+   }
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 17.62
+   }
+  },
+  {
+   "print": {
+    "node": "%Wizards/Wizard2",
+    "prop": "global_position"
+   }
+  },
+  {
+   "press": {
+    "name": "turn_left",
+    "hold": 0.2236
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%Camera",
+    "prop": "yaw"
+   }
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 12.27
+   }
+  },
+  {
+   "print": {
+    "node": "%Wizards/Wizard2",
+    "prop": "global_position"
+   }
+  },
+  {
+   "shot": "b_walk1.png"
+  },
+  {
+   "press": {
+    "name": "turn_right",
+    "hold": 0.25
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%Camera",
+    "prop": "yaw"
+   }
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 3.06
+   }
+  },
+  {
+   "print": {
+    "node": "%Wizards/Wizard2",
+    "prop": "global_position"
+   }
+  },
+  {
+   "press": {
+    "name": "turn_left",
+    "hold": 0.25
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%Camera",
+    "prop": "yaw"
+   }
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 3.61
+   }
+  },
+  {
+   "print": {
+    "node": "%Wizards/Wizard2",
+    "prop": "global_position"
+   }
+  },
+  {
+   "press": {
+    "name": "turn_left",
+    "hold": 0.25
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%Camera",
+    "prop": "yaw"
+   }
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 3.57
+   }
+  },
+  {
+   "print": {
+    "node": "%Wizards/Wizard2",
+    "prop": "global_position"
+   }
+  },
+  {
+   "shot": "b_walk4.png"
+  },
+  {
+   "press": {
+    "name": "turn_left",
+    "hold": 0.2367
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%Camera",
+    "prop": "yaw"
+   }
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 20.8
+   }
+  },
+  {
+   "print": {
+    "node": "%Wizards/Wizard2",
+    "prop": "global_position"
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "print": {
+    "node": "%Wizards/Wizard2",
+    "prop": "global_position"
+   }
+  },
+  {
+   "print": {
+    "node": "%Wizards/Wizard1",
+    "prop": "global_position"
+   }
+  },
+  {
+   "print": {
+    "node": "%Stats",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "b08_arrived.png"
+  },
+  {
+   "press": "creature_2"
+  },
+  {
+   "wait_until": {
+    "node": "%SelectionRoster",
+    "prop": "summary",
+    "equals": "Trogg 960/960",
+    "timeout": 4
+   }
+  },
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Almas 11",
+    "timeout": 4
+   }
+  },
+  {
+   "print": {
+    "node": "%Stats",
+    "prop": "text"
+   }
+  },
+  {
+   "print": {
+    "node": "%Units/Trogg1",
+    "prop": "owner_slot"
+   }
+  },
+  {
+   "print": {
+    "node": "%Units/Trogg1",
+    "prop": "global_position"
+   }
+  },
+  {
+   "shot": "b09_trogg.png"
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "print": {
+    "node": "%Ping",
+    "prop": "global_position"
+   }
+  },
+  {
+   "wait": 0.7
+  },
+  {
+   "print": {
+    "node": "%Units/Trogg1",
+    "prop": "global_position"
+   }
+  },
+  {
+   "wait": 0.7
+  },
+  {
+   "print": {
+    "node": "%Units/Trogg1",
+    "prop": "global_position"
+   }
+  },
+  {
+   "shot": "b10_trogg_walk.png"
+  },
+  {
+   "wait_until": {
+    "node": "%Units/Druid1",
+    "timeout": 120
+   }
+  },
+  {
+   "repeat": {
+    "times": 40,
+    "until": {
+     "node": "%Souls/Soul1",
+     "visible_in_tree": true
+    },
+    "steps": [
+     {
+      "wait": 2.0
+     },
+     {
+      "print": {
+       "node": "%Units/Trogg1/Health",
+       "prop": "current"
+      }
+     },
+     {
+      "print": {
+       "node": "%Units/Trogg1",
+       "prop": "mode"
+      }
+     },
+     {
+      "print": {
+       "node": "%Units/Trogg1",
+       "prop": "global_position"
+      }
+     },
+     {
+      "print": {
+       "node": "%Units/Druid1/Health",
+       "prop": "current"
+      }
+     },
+     {
+      "print": {
+       "node": "%Units/Druid1",
+       "prop": "global_position"
+      }
+     },
+     {
+      "print": {
+       "node": "%Stats",
+       "prop": "text"
+      }
+     },
+     {
+      "shot": "b11_fight.png"
+     }
+    ]
+   }
+  },
+  {
+   "print": {
+    "node": "%Souls/Soul1",
+    "prop": "owner_slot"
+   }
+  },
+  {
+   "print": {
+    "node": "%Souls/Soul1",
+    "prop": "attached"
+   }
+  },
+  {
+   "print": {
+    "node": "%Souls/Soul1",
+    "prop": "global_position"
+   }
+  },
+  {
+   "print": {
+    "node": "%Wizards/Wizard2",
+    "prop": "global_position"
+   }
+  },
+  {
+   "shot": "b12_soul.png"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "print": {
+    "node": "%Souls/Soul1",
+    "prop": "state"
+   }
+  },
+  {
+   "print": {
+    "node": "%Stats",
+    "prop": "text"
+   }
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "b13_soul_grown.png"
+  }
+ ]
+}

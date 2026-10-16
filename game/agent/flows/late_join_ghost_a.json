@@ -1,0 +1,116 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 0.8,
+ "steps": [
+  {
+   "click": "%Play"
+  },
+  {
+   "click": "%Join"
+  },
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "visible_in_tree": true,
+    "timeout": 15
+   }
+  },
+  {
+   "press": "creature_1"
+  },
+  {
+   "wait_until": {
+    "node": "%Units/Manahoar1",
+    "timeout": 6
+   }
+  },
+  {
+   "wait_until": {
+    "node": "%GhostState",
+    "visible": true,
+    "timeout": 30
+   }
+  },
+  {
+   "repeat": {
+    "times": 30,
+    "until": {
+     "node": "%Souls/Soul1",
+     "visible_in_tree": true
+    },
+    "steps": [
+     {
+      "wait": 2.0
+     },
+     {
+      "print": {
+       "node": "%Units/Manahoar1",
+       "prop": "mode"
+      }
+     },
+     {
+      "print": {
+       "node": "%Units/Manahoar1/Health",
+       "prop": "current"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "wait": 3.5
+  },
+  {
+   "print": {
+    "node": "%Units/Manahoar1",
+    "prop": "mode"
+   }
+  },
+  {
+   "print": {
+    "node": "%Souls/Soul1",
+    "prop": "state"
+   }
+  },
+  {
+   "print": {
+    "node": "%Wizards/Wizard1/GhostForm",
+    "prop": "stage"
+   }
+  },
+  {
+   "print": {
+    "node": "%Wizards/Wizard1/Mesh",
+    "prop": "visible"
+   }
+  },
+  {
+   "assert": {
+    "node": "%Wizards/Wizard1/Mesh",
+    "visible": true
+   }
+  },
+  {
+   "shot": "late_ghost_a_ready.png"
+  },
+  {
+   "wait_until": {
+    "node": "%Wizards/Wizard2",
+    "timeout": 90
+   }
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "assert": {
+    "node": "%Wizards/Wizard1/Mesh",
+    "visible": true
+   }
+  },
+  {
+   "shot": "late_ghost_a_end.png"
+  }
+ ]
+}

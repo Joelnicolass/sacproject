@@ -1,0 +1,13 @@
+{
+  "scene": "res://debug/look_gallery.tscn",
+  "wait_first": 4.0,
+  "steps": [
+    { "shot": "ref.png" },
+    { "press": { "name": "debug_next_camera", "hold": 0.05 } },
+    { "wait": 0.5 },
+    { "shot": "rts.png" },
+    { "press": { "name": "debug_next_camera", "hold": 0.05 } },
+    { "wait": 0.5 },
+    { "shot": "horizonte.png" }
+  ]
+}

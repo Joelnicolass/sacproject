@@ -1,0 +1,1132 @@
+{
+ "scene": "res://debug/ai_endgame.tscn",
+ "wait_first": 3.0,
+ "steps": [
+  {
+   "press": "check_tick"
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "wizard2",
+     30.0,
+     18.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "eg00_start.png"
+  },
+  {
+   "wait": 30.0
+  },
+  {
+   "shot": "eg01_wizard2_32s.png"
+  },
+  {
+   "wait": 30.0
+  },
+  {
+   "shot": "eg02_wizard2_62s.png"
+  },
+  {
+   "wait": 30.0
+  },
+  {
+   "shot": "eg03_wizard2_92s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg04_carrier_95s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg04_altar_95s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg05_carrier_98s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg05_altar_98s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg06_carrier_101s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg06_altar_101s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg07_carrier_104s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg07_altar_104s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg08_carrier_107s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg08_altar_107s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg09_carrier_110s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg09_altar_110s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg10_carrier_113s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg10_altar_113s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg11_carrier_116s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg11_altar_116s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg12_carrier_119s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg12_altar_119s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg13_carrier_122s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg13_altar_122s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg14_carrier_125s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg14_altar_125s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg15_carrier_128s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg15_altar_128s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg16_carrier_131s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg16_altar_131s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg17_carrier_134s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg17_altar_134s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg18_carrier_137s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg18_altar_137s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg19_carrier_140s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg19_altar_140s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg20_carrier_143s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg20_altar_143s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg21_carrier_146s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg21_altar_146s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg22_carrier_149s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg22_altar_149s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg23_carrier_152s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg23_altar_152s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg24_carrier_155s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg24_altar_155s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg25_carrier_158s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg25_altar_158s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     18.0,
+     10.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "eg26_carrier_161s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "altar",
+     45.0,
+     26.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "eg26_altar_161s.png"
+  },
+  {
+   "wait_until": {
+    "node": "%MatchResult",
+    "text_contains": "Derrota",
+    "timeout": 150
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "print": {
+    "node": "%RitualNotice",
+    "prop": "text"
+   }
+  },
+  {
+   "print": {
+    "node": "%MatchResult",
+    "prop": "text"
+   }
+  },
+  {
+   "assert": {
+    "node": "%MatchResult",
+    "visible_in_tree": true
+   }
+  },
+  {
+   "shot": "eg99_derrota.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "",
+     14.0,
+     3.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "eg99_derrota_gamecam.png"
+  }
+ ]
+}

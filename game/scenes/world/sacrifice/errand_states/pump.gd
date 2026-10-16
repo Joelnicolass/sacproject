@@ -1,0 +1,73 @@
+extends ErrandStep
+
+## Convert: the doctor stands over the corpse and pumps it back to life (sacengine SacDocCarry `pump`,
+## state.d:15725-15748; exe 0x44a0f0). When it starts the creature stands up with
+## max(400, 50 % of its max health) and is nobody's target; the doctor works (soul number + 1) times
+## rules.convert_pump_s_per_soul seconds, then the soul is gone, the creature is taken and goes on to
+## Haul. If the site falls the doctor dies. If the doctor dies here, the creature dies again and leaves
+## its soul on its own side (freeCreature on a convertReviving creature, state.d:10145-10147): the
+## soul that was hidden while it pumped is replaced by the one its new death drops.
+
+var _left := 0.0
+## The corpse really stood up: only then there is something to undo if the doctor dies.
+var _pumping := false
+
+
+func enter() -> void:
+	super.enter()
+	_pumping = false
+	var body := errand.body
+	var soul := errand.soul
+	var corpse := soul.corpse as UnitBody if soul != null and is_instance_valid(soul) else null
+	var captive := Captive.of(corpse) if corpse != null else null
+	var rules := body.rules
+	if captive == null or not captive.revive(
+			rules.convert_revive_min_health if rules else 400.0,
+			rules.convert_revive_fraction if rules else 0.5):
+		## sacengine: convertRevive failed -> the soul is freed and the doctor dies.
+		errand.release_soul()
+		body.kill()
+		return
+	_pumping = true
+	errand.creature = corpse
+	errand.captive = captive
+	soul.state = Soul.State.REVIVING
+	_left = SacrificeMath.pump_seconds(soul.number, rules.convert_pump_s_per_soul if rules else 5.0)
+	body.begin_work(DoctorBody.Work.PUMP)
+	FxBus.broadcast("heal", corpse.global_position + Vector3.UP)
+
+
+func physics_update(delta: float) -> void:
+	var body := errand.body
+	if body.is_dead():
+		return
+	if not errand.site_standing():
+		body.kill()
+		return
+	_left -= delta
+	if _left > 0.0:
+		return
+	body.end_work()
+	_drop_soul()
+	if errand.captive == null or not errand.captive.take(body):
+		body.kill()
+		return
+	transition(&"Haul")
+
+
+## The doctor died while pumping.
+func doctor_died() -> void:
+	if not _pumping:
+		errand.release_soul()
+		return
+	_drop_soul()
+	if errand.captive != null and is_instance_valid(errand.captive):
+		errand.captive.die_again()
+
+
+## The creature keeps its soul from now on (state.d:15668-15672); the one on the map goes.
+func _drop_soul() -> void:
+	var soul := errand.soul
+	errand.soul = null
+	if soul != null and is_instance_valid(soul):
+		soul.queue_free()

@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="MatchRules" format=3]
+
+[ext_resource type="Script" uid="uid://dkx21381l0b2k" path="res://scenes/data/match_rules.gd" id="1_rules"]
+
+[resource]
+script = ExtResource("1_rules")
+biome_god = &"persephone"
+biome_seed = 1

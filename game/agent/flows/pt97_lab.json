@@ -1,0 +1,520 @@
+{
+ "scene": "res://debug/vfx_lab.tscn",
+ "wait_first": 6.0,
+ "steps": [
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "ring",
+    "args": [
+     "wrath_explosion1",
+     6.0
+    ]
+   }
+  },
+  {
+   "press": {
+    "name": "debug_next_quality",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "shot": "lab_bajo_0_antes.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "record",
+    "args": [
+     1.8
+    ]
+   }
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.03
+  },
+  {
+   "shot": "lab_bajo_1_durante_a.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "wait": 0.12
+  },
+  {
+   "shot": "lab_bajo_2_durante_b.png"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "lab_bajo_3_durante_c.png"
+  },
+  {
+   "wait": 1.4
+  },
+  {
+   "shot": "lab_bajo_4_despues.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "series"
+   }
+  },
+  {
+   "press": {
+    "name": "debug_next_quality",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "shot": "lab_medio_0_antes.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "record",
+    "args": [
+     1.8
+    ]
+   }
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.03
+  },
+  {
+   "shot": "lab_medio_1_durante_a.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "wait": 0.12
+  },
+  {
+   "shot": "lab_medio_2_durante_b.png"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "lab_medio_3_durante_c.png"
+  },
+  {
+   "wait": 1.4
+  },
+  {
+   "shot": "lab_medio_4_despues.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "series"
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "lab_medio_rep_0_antes.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "record",
+    "args": [
+     1.8
+    ]
+   }
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.03
+  },
+  {
+   "shot": "lab_medio_rep_1_durante_a.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "wait": 0.12
+  },
+  {
+   "shot": "lab_medio_rep_2_durante_b.png"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "lab_medio_rep_3_durante_c.png"
+  },
+  {
+   "wait": 1.4
+  },
+  {
+   "shot": "lab_medio_rep_4_despues.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "series"
+   }
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "shadows"
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.03
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "shot": "lab_medio_doble.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "shadows"
+   }
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "press": {
+    "name": "debug_toggle_layer_5",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "lab_medio_kp5off_0_antes.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "record",
+    "args": [
+     1.8
+    ]
+   }
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.03
+  },
+  {
+   "shot": "lab_medio_kp5off_1_durante_a.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "wait": 0.12
+  },
+  {
+   "shot": "lab_medio_kp5off_2_durante_b.png"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "lab_medio_kp5off_3_durante_c.png"
+  },
+  {
+   "wait": 1.4
+  },
+  {
+   "shot": "lab_medio_kp5off_4_despues.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "series"
+   }
+  },
+  {
+   "press": {
+    "name": "debug_toggle_layer_5",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "press": {
+    "name": "debug_next_quality",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "shot": "lab_alto_0_antes.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "record",
+    "args": [
+     1.8
+    ]
+   }
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.03
+  },
+  {
+   "shot": "lab_alto_1_durante_a.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "wait": 0.12
+  },
+  {
+   "shot": "lab_alto_2_durante_b.png"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "lab_alto_3_durante_c.png"
+  },
+  {
+   "wait": 1.4
+  },
+  {
+   "shot": "lab_alto_4_despues.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "series"
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.03
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "shot": "lab_alto_doble.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "shadows"
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.03
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  }
+ ]
+}

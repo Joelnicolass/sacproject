@@ -1,0 +1,7 @@
+{"scene":"res://debug/desecrate_carry.tscn","wait_first":1.0,"steps":[
+{"wait_until":{"node":"%Stats","text_contains":"Vida","timeout":20}},{"wait":1.0},
+{"press":{"name":"move_forward","hold":2.0}},{"wait":0.5},
+{"print":{"node":"%Wizards/Wizard1","prop":"global_position"}},
+{"press":{"name":"turn_left","hold":0.5}},{"press":{"name":"zoom_out","hold":1.1}},{"wait":1.0},
+{"print":{"node":"%Camera","prop":"global_position"}},{"print":{"node":"%Camera","prop":"rotation_degrees"}},
+{"shot":"z0.png"}]}

@@ -1,0 +1,480 @@
+{
+ "scene": "res://agent/fixtures/f97_wrath_splash_persephone.tscn",
+ "wait_first": 1.5,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "%HitLog",
+    "text_contains": "Ranger 800/800",
+    "timeout": 10
+   }
+  },
+  {
+   "print": {
+    "node": "%Title",
+    "prop": "text"
+   }
+  },
+  {
+   "print": {
+    "node": "%HitLog",
+    "prop": "text"
+   }
+  },
+  {
+   "click": "%SpellBook/Tabs/SpellTab"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%SpellBook/Slots/Spell1/Name",
+    "prop": "text"
+   }
+  },
+  {
+   "print": {
+    "node": "%SpellBook/Slots/Spell2/Name",
+    "prop": "text"
+   }
+  },
+  {
+   "print": {
+    "node": "%SpellBook/Slots/Spell3/Name",
+    "prop": "text"
+   }
+  },
+  {
+   "assert": {
+    "node": "%SpellBook/Slots/Spell2/Name",
+    "text_equals": "Wrath"
+   }
+  },
+  {
+   "assert": {
+    "node": "%SpellBook/Slots/Spell3/Name",
+    "text_equals": "Heal"
+   }
+  },
+  {
+   "repeat": {
+    "times": 40,
+    "until": {
+     "node": "%HitLog",
+     "text_contains": "mira Druid"
+    },
+    "steps": [
+     {
+      "press": {
+       "name": "zoom_out",
+       "hold": 0.03
+      }
+     },
+     {
+      "wait": 0.15
+     }
+    ]
+   }
+  },
+  {
+   "print": {
+    "node": "%HitLog",
+    "prop": "text"
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "call": {
+    "harness": "fx_light_watch",
+    "method": "start"
+   }
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "shot": "juego_wrath_0_antes.png"
+  },
+  {
+   "press": "spell_2"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "assert": {
+    "node": "%Battle",
+    "text_equals": "Elegí el blanco"
+   }
+  },
+  {
+   "click": "%View"
+  },
+  {
+   "wait": 0.05
+  },
+  {
+   "assert": {
+    "node": "%Battle",
+    "text_equals": "Wrath"
+   }
+  },
+  {
+   "wait_until": {
+    "node": "%HitLog",
+    "text_contains": "dano Druid",
+    "timeout": 8
+   }
+  },
+  {
+   "shot": "juego_wrath_1_impacto.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "juego_wrath_2_t010.png"
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "juego_wrath_3_t025.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "wait": 0.25
+  },
+  {
+   "shot": "juego_wrath_4_t050.png"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "juego_wrath_5_despues.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "print": {
+    "node": "%HitLog",
+    "prop": "text"
+   }
+  },
+  {
+   "assert": {
+    "node": "%HitLog",
+    "text_contains": "dano Druid 550 vida 250"
+   }
+  },
+  {
+   "press": {
+    "name": "turn_left",
+    "hold": 0.5
+   }
+  },
+  {
+   "wait": 0.8
+  },
+  {
+   "print": {
+    "node": "%HitLog",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "juego_heal_0_antes.png"
+  },
+  {
+   "repeat": {
+    "times": 30,
+    "until": {
+     "node": "%Battle",
+     "text_equals": "Elegí el blanco"
+    },
+    "steps": [
+     {
+      "press": "spell_3"
+     },
+     {
+      "wait": 0.3
+     }
+    ]
+   }
+  },
+  {
+   "click": "%View"
+  },
+  {
+   "wait": 0.05
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "assert": {
+    "node": "%Battle",
+    "text_equals": "Heal"
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "juego_heal_01.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "juego_heal_02.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "juego_heal_03.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "juego_heal_04.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "juego_heal_05.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "juego_heal_06.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "juego_heal_07.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "juego_heal_08.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "juego_heal_09.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "juego_heal_10.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "juego_heal_11.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "juego_heal_12.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "shot": "juego_heal_99_despues.png"
+  },
+  {
+   "call": {
+    "harness": "fx_light_probe",
+    "method": "lights"
+   }
+  },
+  {
+   "call": {
+    "harness": "fx_light_watch",
+    "method": "stop"
+   }
+  }
+ ]
+}

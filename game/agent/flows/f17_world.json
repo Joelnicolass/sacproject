@@ -1,0 +1,26 @@
+{
+  "scene": "res://scenes/world/high_noon.tscn",
+  "wait_first": 3.0,
+  "steps": [
+    { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "rotation" } },
+    { "print": { "node": "%Camera", "prop": "global_position" } },
+    { "shot": "f17_world_start.png" },
+    { "press": { "name": "move_forward", "hold": 2.0 } },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
+    { "print": { "node": "%Camera", "prop": "global_position" } },
+    { "shot": "f17_world_walk.png" },
+    { "press": { "name": "turn_left", "hold": 0.5 } },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "rotation" } },
+    { "shot": "f17_world_turn_left.png" },
+    { "press": { "name": "move_forward", "hold": 1.0 } },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
+    { "press": { "name": "turn_right", "hold": 1.0 } },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "rotation" } },
+    { "shot": "f17_world_turn_right.png" },
+    { "print": { "node": "MapProps/Plant0", "prop": "global_position" } },
+    { "print": { "node": "MapProps/Plant39", "prop": "global_position" } },
+    { "print": { "node": "MapProps/Founts/FountWest", "prop": "global_position" } },
+    { "print": { "node": "MapProps/Starts/Start2/Altar", "prop": "global_position" } }
+  ]
+}

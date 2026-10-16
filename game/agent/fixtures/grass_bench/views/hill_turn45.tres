@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="GrassBenchView" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://agent/fixtures/grass_bench_view.gd" id="1_v"]
+
+[resource]
+script = ExtResource("1_v")
+label = "hill_turn45"
+spot = Vector2(1540, 1508)
+yaw_deg = 210
+eye = Vector3(1537.0, 3.5, 1502.8)
+target = Vector3(1571.8, 1.5, 1512.1)
+fov = 75

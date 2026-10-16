@@ -1,0 +1,16 @@
+{
+  "scene": "res://debug/walk_order.tscn",
+  "wait_first": 1.2,
+  "steps": [
+    { "assert": { "node": "%WalkState", "text_equals": "Quieto" } },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
+    { "print": { "node": "%Creature", "prop": "position" } },
+    { "shot": "f10_quieto.png" },
+    { "press": "order_units" },
+    { "wait": 1.0 },
+    { "assert": { "node": "%WalkState", "text_equals": "Caminando" } },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
+    { "print": { "node": "%Creature", "prop": "position" } },
+    { "shot": "f10_caminando.png" }
+  ]
+}

@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://debug/ai_endgame.tscn" id="1_endgame"]
+[ext_resource type="Resource" path="res://debug/rules/ai_endgame_human.tres" id="2_rules"]
+
+[node name="AiEndgameHuman" instance=ExtResource("1_endgame")]
+editor_description = "RFC-024 024f (F77). El otro final de ai_endgame: el humano (slot 1) arranca a 40 m del altar de la IA (slot 2, James, Normal) con un Manahoar propio (no persigue al mago IA) y maná lleno. Enter (check_tick), luego %StructureTab, spell_4 y clic sobre el Manahoar: los doctores profanan el altar de la IA y, al caer su mago, el cartel «Victoria»."
+
+[node name="Runner" parent="." index="3"]
+default_rules = ExtResource("2_rules")
+follow_slot = 1

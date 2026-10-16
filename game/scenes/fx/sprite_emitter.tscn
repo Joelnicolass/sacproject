@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/sprite_emitter.gd" id="1_emitter"]
+
+[node name="SpriteEmitter" type="CPUParticles3D"]
+use_fixed_seed = true
+local_coords = false
+script = ExtResource("1_emitter")

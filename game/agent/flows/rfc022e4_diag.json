@@ -1,0 +1,9 @@
+{
+ "scene": "res://agent/fixtures/rfc022e4_diag.tscn",
+ "wait_first": 16.0,
+ "steps": [
+  {
+   "shot": "d.png"
+  }
+ ]
+}

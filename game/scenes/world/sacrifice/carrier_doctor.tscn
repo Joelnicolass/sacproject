@@ -1,0 +1,41 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/world/sacrifice/doctor.tscn" id="1_doctor"]
+[ext_resource type="Script" path="res://scenes/world/sacrifice/carry_errand.gd" id="2_errand"]
+[ext_resource type="Script" path="res://addons/fsm_kit/fsm_machine.gd" id="3_machine"]
+[ext_resource type="Script" path="res://addons/fsm_kit/fsm_state.gd" id="4_state"]
+[ext_resource type="Script" path="res://scenes/world/sacrifice/errand_states/approach.gd" id="5_approach"]
+[ext_resource type="Script" path="res://scenes/world/sacrifice/errand_states/pump.gd" id="7_pump"]
+[ext_resource type="Script" path="res://scenes/world/sacrifice/errand_states/haul.gd" id="6_haul"]
+[ext_resource type="Script" path="res://scenes/world/nav/path_follower.gd" id="8_follower"]
+
+[node name="CarrierDoctor" instance=ExtResource("1_doctor")]
+
+[node name="PathFollower" type="Node" parent="." node_paths=PackedStringArray("body")]
+script = ExtResource("8_follower")
+body = NodePath("..")
+
+[node name="Errand" type="Node" parent="." node_paths=PackedStringArray("body", "steps")]
+script = ExtResource("2_errand")
+body = NodePath("..")
+steps = NodePath("Steps")
+
+[node name="Steps" type="Node" parent="Errand" node_paths=PackedStringArray("initial_state", "actor")]
+script = ExtResource("3_machine")
+initial_state = NodePath("Wait")
+actor = NodePath("..")
+
+[node name="Wait" type="Node" parent="Errand/Steps"]
+script = ExtResource("4_state")
+
+[node name="Approach" type="Node" parent="Errand/Steps"]
+script = ExtResource("5_approach")
+
+[node name="Pump" type="Node" parent="Errand/Steps"]
+script = ExtResource("7_pump")
+
+[node name="Haul" type="Node" parent="Errand/Steps"]
+script = ExtResource("6_haul")
+
+[node name="Over" type="Node" parent="Errand/Steps"]
+script = ExtResource("4_state")

@@ -1,0 +1,205 @@
+{
+ "scene": "res://debug/teleport_home.tscn",
+ "steps": [
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 15
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "teleport_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "teleport_watch",
+    "method": "arm",
+    "args": [
+     "/Users/joelsartori/Development/sacproject/game/agent/out/pt64t"
+    ]
+   }
+  },
+  {
+   "shot": "t_before.png"
+  },
+  {
+   "print": {
+    "node": "%Stats",
+    "prop": "text"
+   }
+  },
+  {
+   "click": "%SpellBook/Tabs/StructureTab"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "press": "spell_5"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "call": {
+    "harness": "teleport_watch",
+    "method": "frame_on",
+    "args": [
+     1500,
+     17,
+     1500,
+     120,
+     70,
+     0
+    ]
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "call": {
+    "harness": "wizard_travel",
+    "method": "set_pointer_world",
+    "args": [
+     1450,
+     17.4,
+     1450
+    ]
+   }
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "t_invalid.png"
+  },
+  {
+   "call": {
+    "harness": "teleport_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "print": {
+    "node": "%Stats",
+    "prop": "text"
+   }
+  },
+  {
+   "press": "spell_5"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "call": {
+    "harness": "wizard_travel",
+    "method": "set_pointer_world",
+    "args": [
+     1500,
+     17.4,
+     1570
+    ]
+   }
+  },
+  {
+   "shot": "t_aim.png"
+  },
+  {
+   "press": "select"
+  },
+  {
+   "call": {
+    "harness": "teleport_watch",
+    "method": "release",
+    "args": []
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "print": {
+    "node": "%Stats",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "t_casting.png"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "call": {
+    "harness": "teleport_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "print": {
+    "node": "%Stats",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "t_after.png"
+  },
+  {
+   "press": "spell_5"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "t_second.png"
+  },
+  {
+   "wait": 1.0
+  }
+ ]
+}

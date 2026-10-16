@@ -1,0 +1,16 @@
+{
+  "scene": "res://debug/unit_parity_gallery.tscn",
+  "wait_first": 2.5,
+  "steps": [
+    { "print": { "node": "%Debug", "prop": "text" } },
+    { "shot": "pt53_gal_idle.png" },
+    { "press": "debug_anim_cycle" },
+    { "wait": 0.8 },
+    { "print": { "node": "%Debug", "prop": "text" } },
+    { "shot": "pt53_gal_run.png" },
+    { "press": "debug_anim_cycle" },
+    { "wait": 0.8 },
+    { "print": { "node": "%Debug", "prop": "text" } },
+    { "shot": "pt53_gal_attack.png" }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+ "scene": "res://debug/biome_pick.tscn",
+ "wait_first": 13.0,
+ "steps": [
+  {
+   "shot": "pyro_t0.png"
+  },
+  {
+   "press": {
+    "name": "turn_right",
+    "hold": 0.5
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "pyro_t1.png"
+  },
+  {
+   "press": {
+    "name": "turn_right",
+    "hold": 0.5
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "pyro_t2.png"
+  },
+  {
+   "press": {
+    "name": "turn_right",
+    "hold": 0.5
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "pyro_t3.png"
+  }
+ ]
+}

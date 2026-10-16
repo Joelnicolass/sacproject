@@ -1,0 +1,42 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" uid="uid://highnoonworld01" path="res://scenes/world/high_noon.tscn" id="1_world"]
+[ext_resource type="PackedScene" path="res://scenes/world/units/unit.tscn" id="2_unit"]
+[ext_resource type="Script" path="res://debug/melee_duel.gd" id="3_duel"]
+
+[node name="MeleeDuel" type="Node"]
+
+[node name="HighNoon" parent="." instance=ExtResource("1_world")]
+
+[node name="Arena" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="DuelCamera" type="Camera3D" parent="."]
+unique_name_in_owner = true
+far = 20000.0
+
+[node name="Overlay" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="DuelLog" type="Label" parent="Overlay"]
+unique_name_in_owner = true
+offset_left = 24.0
+offset_top = 80.0
+offset_right = 900.0
+offset_bottom = 150.0
+mouse_filter = 2
+text = "Duelo"
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+
+[node name="Duel" type="Node" parent="." node_paths=PackedStringArray("world", "arena", "camera", "log_label")]
+script = ExtResource("3_duel")
+world = NodePath("../HighNoon")
+unit_scene = ExtResource("2_unit")
+arena = NodePath("../Arena")
+camera = NodePath("../DuelCamera")
+log_label = NodePath("../Overlay/DuelLog")
+
+[node name="Population" parent="HighNoon"]
+spawn_creatures = false

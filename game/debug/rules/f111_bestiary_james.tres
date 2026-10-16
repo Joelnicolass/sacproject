@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="BenchRules" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
+
+[sub_resource type="Resource" id="Group_guls"]
+script = ExtResource("2_group")
+tag = "guls"
+slot = 2
+count = 1
+columns = 1
+spacing_m = 3.0
+offset_m = -5
+facing_x = 1.0
+
+[sub_resource type="Resource" id="Group_raeb"]
+script = ExtResource("2_group")
+tag = "raeb"
+slot = 2
+count = 1
+columns = 1
+spacing_m = 3.0
+offset_m = 5
+facing_x = 1.0
+
+[resource]
+script = ExtResource("1_rules")
+anchor = Vector3(1454, 0, 1601)
+starting_souls = 60
+biome_god = &"james"
+match_seed = 1
+wizard_level = 9
+wizard_level_stats = true
+groups = Array[ExtResource("2_group")]([SubResource("Group_guls"), SubResource("Group_raeb")])
+human_god = &"james"
+start_paused = true
+pending_text = "Bestiario James, nivel 9 (Enter)"
+ignore_annihilation = true

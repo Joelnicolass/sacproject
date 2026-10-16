@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# usage: run_f54c.sh PORT  -- dedicated + client A + client B on structure_siege, then late-join B2
+set -u
+GODOT=/Applications/Godot.app/Contents/MacOS/Godot
+export GODOT
+ROOT=/Users/joelsartori/Development/sacproject/game
+PORT="$1"
+OUT="$ROOT/agent/out/pt19c/net"
+mkdir -p "$OUT"
+cd "$ROOT"
+"$GODOT" --headless --path "$ROOT" -- --dedicated --mp-port="$PORT" --world=res://debug/structure_siege.tscn > "$OUT/server.log" 2>&1 &
+SERVER=$!
+echo "$SERVER" > "$OUT/server.pid"
+for _ in $(seq 1 80); do grep -q "dedicated listo" "$OUT/server.log" && break; sleep 0.25; done
+launch() { # flow log
+  addons/agent_kit/cli.sh "$ROOT" flow --flow="$1" --out=res://agent/out/pt19c/net --fail-on-error --mp-port="$PORT" --world=res://debug/structure_siege.tscn > "$OUT/$2.log" 2>&1 &
+  LP=$!
+}
+for TRY in 1 2 3; do launch pt19c_net_a.json a; A=$LP; sleep 6; grep -q "click missed" "$OUT/a.log" || break; done
+for TRY in 1 2 3; do launch pt19c_net_b.json b; B=$LP; sleep 3; grep -q "click missed" "$OUT/b.log" || break; done
+echo "a $A b $B server $SERVER"
+for _ in $(seq 1 120); do grep -q "ManalithFx prop=tint" "$OUT/a.log" && break; sleep 0.5; done
+sleep 2
+launch pt19c_net_c.json c; C=$LP
+wait $C; echo "c exit $?"
+wait $B; echo "b exit $?"
+wait $A; echo "a exit $?"
+sleep 1
+kill "$SERVER" 2>/dev/null
+wait "$SERVER" 2>/dev/null
+echo "server stopped"

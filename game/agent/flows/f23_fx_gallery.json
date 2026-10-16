@@ -1,0 +1,117 @@
+{
+  "scene": "res://debug/fx_gallery.tscn",
+  "wait_first": 0.95,
+  "steps": [
+    {
+      "call": {
+        "harness": "fx_pool_probe",
+        "method": "watch_pool"
+      }
+    },
+    {
+      "shot": "f23_auto_1s.png"
+    },
+    {
+      "call": {
+        "harness": "fx_pool_probe",
+        "method": "pool"
+      }
+    },
+    {
+      "assert": {
+        "node": "/root/AgentKit/fx_pool_probe",
+        "prop": "playing",
+        "gte": 1
+      }
+    },
+    {
+      "wait": 0.5
+    },
+    {
+      "shot": "f23_auto_1_5s.png"
+    },
+    {
+      "wait": 3.0
+    },
+    {
+      "call": {
+        "harness": "fx_pool_probe",
+        "method": "pool"
+      }
+    },
+    {
+      "assert": {
+        "node": "/root/AgentKit/fx_pool_probe",
+        "prop": "playing",
+        "equals": 0
+      }
+    },
+    {
+      "assert": {
+        "node": "/root/AgentKit/fx_pool_probe",
+        "prop": "excess",
+        "equals": 0
+      }
+    },
+    {
+      "shot": "f23_empty_4s.png"
+    },
+    {
+      "press": {
+        "name": "check_tick",
+        "hold": 0.05
+      }
+    },
+    {
+      "wait": 0.25
+    },
+    {
+      "shot": "f23_replay_0_3s.png"
+    },
+    {
+      "call": {
+        "harness": "fx_pool_probe",
+        "method": "pool"
+      }
+    },
+    {
+      "assert": {
+        "node": "/root/AgentKit/fx_pool_probe",
+        "prop": "playing",
+        "gte": 1
+      }
+    },
+    {
+      "wait": 3.8
+    },
+    {
+      "call": {
+        "harness": "fx_pool_probe",
+        "method": "pool"
+      }
+    },
+    {
+      "assert": {
+        "node": "/root/AgentKit/fx_pool_probe",
+        "prop": "playing",
+        "equals": 0
+      }
+    },
+    {
+      "assert": {
+        "node": "/root/AgentKit/fx_pool_probe",
+        "prop": "excess",
+        "equals": 0
+      }
+    },
+    {
+      "print": {
+        "node": "/root/AgentKit/fx_pool_probe",
+        "prop": "peaks"
+      }
+    },
+    {
+      "shot": "f23_empty_after_replay.png"
+    }
+  ]
+}

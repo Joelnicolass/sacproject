@@ -1,0 +1,64 @@
+{
+  "scene": "res://agent/fixtures/pt024a/ai_match_cam.tscn",
+  "wait_first": 1.5,
+  "steps": [
+    {
+      "assert": {
+        "node": "Overlay/Status",
+        "text_contains": "Pendiente"
+      }
+    },
+    {
+      "shot": "pt024a_c2_0_pendiente.png"
+    },
+    {
+      "press": "check_tick"
+    },
+    {
+      "wait": 2.0
+    },
+    {
+      "assert": {
+        "node": "Overlay/Status",
+        "text_contains": "Corriendo"
+      }
+    },
+    {
+      "shot": "pt024a_c2_1_corriendo.png"
+    },
+    {
+      "wait": 8.0
+    },
+    {
+      "shot": "pt024a_c2_2_pelea.png"
+    },
+    {
+      "wait": 8.0
+    },
+    {
+      "shot": "pt024a_c2_3_pelea.png"
+    },
+    {
+      "wait": 10.0
+    },
+    {
+      "shot": "pt024a_c2_4_pelea.png"
+    },
+    {
+      "wait_until": {
+        "node": "Overlay/Status",
+        "text_contains": "Terminado",
+        "timeout": 120
+      }
+    },
+    {
+      "print": {
+        "node": "Overlay/Status",
+        "prop": "text"
+      }
+    },
+    {
+      "shot": "pt024a_c2_5_terminado.png"
+    }
+  ]
+}

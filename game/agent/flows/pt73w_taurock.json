@@ -1,0 +1,197 @@
+{
+ "scene": "res://debug/village_taurock.tscn",
+ "wait_first": 1.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "HighNoon/Units/Hunter",
+    "timeout": 30
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "view",
+    "args": [
+     "pair:Hunter,Taurock1",
+     60,
+     35,
+     90
+    ]
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "w_t01_pausa.png"
+  },
+  {
+   "press": "check_tick"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "print": {
+    "node": "HighNoon/Units/Hunter/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "print": {
+    "node": "HighNoon/Units/Hunter/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "print": {
+    "node": "HighNoon/Units/Hunter/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "print": {
+    "node": "HighNoon/Units/Hunter/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "view",
+    "args": [
+     "pair:Hunter,Taurock1",
+     16,
+     7,
+     90
+    ]
+   }
+  },
+  {
+   "shot": "w_t02_3.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "print": {
+    "node": "HighNoon/Units/Hunter/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "print": {
+    "node": "HighNoon/Units/Hunter/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "print": {
+    "node": "HighNoon/Units/Hunter/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "view",
+    "args": [
+     "pair:Hunter,Taurock1",
+     16,
+     7,
+     90
+    ]
+   }
+  },
+  {
+   "shot": "w_t02_6.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "print": {
+    "node": "HighNoon/Units/Hunter/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "shot": "w_t03_fin.png"
+  }
+ ]
+}

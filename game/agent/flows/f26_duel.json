@@ -1,0 +1,21 @@
+{
+  "scene": "res://debug/melee_duel.tscn",
+  "wait_first": 1.2,
+  "steps": [
+    { "assert": { "node": "%DuelLog", "text_contains": "Trogg" } },
+    { "assert": { "node": "%DuelLog", "text_contains": "Druid" } },
+    { "shot": "f26_start.png" },
+    { "wait": 2.6 },
+    { "shot": "f26_fight.png" },
+    { "wait_until": { "node": "%DuelLog", "text_contains": "muere", "timeout": 60 } },
+    { "print": { "node": "%DuelLog", "prop": "text" } },
+    { "wait": 0.25 },
+    { "shot": "f26_blood.png" },
+    { "wait": 1.6 },
+    { "shot": "f26_corpse.png" },
+    { "press": "check_tick" },
+    { "wait": 0.35 },
+    { "assert": { "node": "%DuelLog", "text_contains": "Druid 800/800" } },
+    { "shot": "f26_respawn.png" }
+  ]
+}

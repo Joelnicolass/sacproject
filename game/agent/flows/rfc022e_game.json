@@ -1,0 +1,16 @@
+{
+ "scene": "res://agent/fixtures/rfc022c_match.tscn",
+ "wait_first": 10.0,
+ "steps": [
+  { "shot": "game_start.png" },
+  { "press": { "name": "turn_right", "hold": 0.5 } },
+  { "wait": 0.5 },
+  { "shot": "game_turn_a.png" },
+  { "press": { "name": "turn_right", "hold": 0.5 } },
+  { "wait": 0.5 },
+  { "shot": "game_turn_b.png" },
+  { "press": { "name": "turn_right", "hold": 0.5 } },
+  { "wait": 0.5 },
+  { "shot": "game_turn_c.png" }
+ ]
+}

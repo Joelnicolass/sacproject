@@ -1,0 +1,525 @@
+{
+ "scene": "res://debug/doctor_path.tscn",
+ "wait_first": 4.0,
+ "steps": [
+  {
+   "wait": 4.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "pillar",
+     90.0,
+     190.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "dw00_overview.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     22.0,
+     60.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw01_doctor_7s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     22.0,
+     60.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw02_doctor_10s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "pillar",
+     90.0,
+     190.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw02_overview_10s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     22.0,
+     60.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw03_doctor_13s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     22.0,
+     60.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw04_doctor_16s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "pillar",
+     90.0,
+     190.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw04_overview_16s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     22.0,
+     60.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw05_doctor_19s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     22.0,
+     60.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw06_doctor_22s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "pillar",
+     90.0,
+     190.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw06_overview_22s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     22.0,
+     60.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw07_doctor_25s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     22.0,
+     60.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw08_doctor_28s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "pillar",
+     90.0,
+     190.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw08_overview_28s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     22.0,
+     60.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw09_doctor_31s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     22.0,
+     60.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw10_doctor_34s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "pillar",
+     90.0,
+     190.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw10_overview_34s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     22.0,
+     60.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw11_doctor_37s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     22.0,
+     60.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw12_doctor_40s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "pillar",
+     90.0,
+     190.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw12_overview_40s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     22.0,
+     60.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw13_doctor_43s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     22.0,
+     60.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw14_doctor_46s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "pillar",
+     90.0,
+     190.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw14_overview_46s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     22.0,
+     60.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw15_doctor_49s.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     22.0,
+     60.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw16_doctor_52s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "pillar",
+     90.0,
+     190.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "dw16_overview_52s.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "",
+     14.0,
+     3.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "wait": 8.0
+  },
+  {
+   "shot": "dw99_end.png"
+  }
+ ]
+}

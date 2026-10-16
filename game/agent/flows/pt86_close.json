@@ -1,0 +1,148 @@
+{
+ "scene": "res://debug/selection_many.tscn",
+ "wait_first": 2.5,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "%OrdersLog",
+    "text_contains": "Druid 800/800",
+    "timeout": 25
+   }
+  },
+  {
+   "press": "check_tick"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "assert": {
+    "node": "%Selection",
+    "prop": "count",
+    "equals": 150
+   }
+  },
+  {
+   "press": {
+    "name": "zoom_out",
+    "hold": 0.6
+   }
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 4.5
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "print": {
+    "node": "Arena/Druid1",
+    "prop": "global_position"
+   }
+  },
+  {
+   "shot": "c01_near_druid.png"
+  },
+  {
+   "call": {
+    "harness": "selection_probe",
+    "method": "aim_body",
+    "args": [
+     "Druid1",
+     1.0
+    ]
+   }
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "print": {
+    "node": "%Orders",
+    "prop": "last_apply_us"
+   }
+  },
+  {
+   "shot": "c02_run_to_attack.png"
+  },
+  {
+   "wait": 0.25
+  },
+  {
+   "shot": "c03_run_to_attack.png"
+  },
+  {
+   "wait": 0.25
+  },
+  {
+   "shot": "c04_run_to_attack.png"
+  },
+  {
+   "wait": 0.25
+  },
+  {
+   "shot": "c05_run_to_attack.png"
+  },
+  {
+   "wait": 0.25
+  },
+  {
+   "shot": "c06_run_to_attack.png"
+  },
+  {
+   "wait": 0.25
+  },
+  {
+   "shot": "c07_run_to_attack.png"
+  },
+  {
+   "print": {
+    "node": "%OrdersLog",
+    "prop": "text"
+   }
+  },
+  {
+   "wait_until": {
+    "node": "%OrdersLog",
+    "text_contains": "muere Druid",
+    "timeout": 60
+   }
+  },
+  {
+   "wait": 0.8
+  },
+  {
+   "shot": "c08_corpse.png"
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "c09_corpse.png"
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "shot": "c10_after_idle.png"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "shot": "c11_after_idle.png"
+  },
+  {
+   "print": {
+    "node": "%OrdersLog",
+    "prop": "text"
+   }
+  }
+ ]
+}

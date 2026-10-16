@@ -1,0 +1,97 @@
+{
+ "scene": "res://debug/f111_bestiary.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "Overlay/Status",
+    "text_contains": "Enter",
+    "timeout": 60
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "pt113_watch",
+    "method": "start",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt113_watch",
+    "method": "book",
+    "args": []
+   }
+  },
+  {
+   "assert": {
+    "node": "%SpellBook/Slots/Creature6",
+    "visible_in_tree": true
+   }
+  },
+  {
+   "assert": {
+    "node": "%SpellBook/Slots/Creature7",
+    "visible_in_tree": false
+   }
+  },
+  {
+   "shot": "lvl3_james_book.png"
+  },
+  {
+   "press": "check_tick"
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "press": "creature_7"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "assert": {
+    "node": "%SelectionRoster",
+    "prop": "cells_shown",
+    "equals": 0
+   }
+  },
+  {
+   "press": "creature_6"
+  },
+  {
+   "wait_until": {
+    "node": "%SelectionRoster",
+    "prop": "summary",
+    "contains": "Taurock ",
+    "timeout": 8
+   }
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "summary"
+   }
+  },
+  {
+   "shot": "lvl3_james_taurock.png"
+  },
+  {
+   "call": {
+    "harness": "pt113_watch",
+    "method": "book",
+    "args": []
+   }
+  }
+ ]
+}

@@ -1,0 +1,198 @@
+{
+ "scene": "res://agent/fixtures/vfx_lab_additive.tscn",
+ "wait_first": 6.0,
+ "steps": [
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "press": {
+    "name": "debug_toggle_layer_4",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "shot": "additive_legacy.png"
+  },
+  {
+   "scene": "res://agent/fixtures/vfx_lab_legacy.tscn"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "press": {
+    "name": "debug_toggle_layer_4",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "shot": "lab_legacy.png"
+  },
+  {
+   "shot": "lab_legacy_heal_1.png"
+  },
+  {
+   "shot": "lab_legacy_heal_2.png"
+  },
+  {
+   "shot": "lab_legacy_heal_3.png"
+  },
+  {
+   "shot": "lab_legacy_heal_4.png"
+  },
+  {
+   "shot": "lab_legacy_heal_5.png"
+  },
+  {
+   "shot": "lab_legacy_heal_6.png"
+  },
+  {
+   "scene": "res://debug/vfx_lab.tscn"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "press": {
+    "name": "debug_toggle_layer_4",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "shot": "lab_medium.png"
+  },
+  {
+   "shot": "lab_medium_heal_1.png"
+  },
+  {
+   "shot": "lab_medium_heal_2.png"
+  },
+  {
+   "shot": "lab_medium_heal_3.png"
+  },
+  {
+   "shot": "lab_medium_heal_4.png"
+  },
+  {
+   "shot": "lab_medium_heal_5.png"
+  },
+  {
+   "shot": "lab_medium_heal_6.png"
+  }
+ ]
+}

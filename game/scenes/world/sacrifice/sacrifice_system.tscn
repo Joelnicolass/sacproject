@@ -1,0 +1,37 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/sacrifice/sacrifice_system.gd" id="1_system"]
+[ext_resource type="Script" path="res://addons/mp_kit/mp_spawner.gd" id="2_spawner"]
+
+[node name="SacrificeSystem" type="Node" node_paths=PackedStringArray("doctors_root", "doctor_spawner", "vortices_root", "vortex_spawner", "rituals_root", "ritual_spawner")]
+script = ExtResource("1_system")
+doctors_root = NodePath("Doctors")
+doctor_spawner = NodePath("DoctorSpawner")
+vortices_root = NodePath("Vortices")
+vortex_spawner = NodePath("VortexSpawner")
+rituals_root = NodePath("Rituals")
+ritual_spawner = NodePath("RitualSpawner")
+
+[node name="Doctors" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="DoctorSpawner" type="MultiplayerSpawner" parent="."]
+script = ExtResource("2_spawner")
+spawn_path = NodePath("../Doctors")
+spawnable_scenes = PackedStringArray("res://scenes/world/sacrifice/carrier_doctor.tscn", "res://scenes/world/sacrifice/ritual_doctor.tscn")
+
+[node name="Vortices" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="VortexSpawner" type="MultiplayerSpawner" parent="."]
+script = ExtResource("2_spawner")
+spawn_path = NodePath("../Vortices")
+spawnable_scenes = PackedStringArray("res://scenes/world/sacrifice/red_vortex.tscn")
+
+[node name="Rituals" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="RitualSpawner" type="MultiplayerSpawner" parent="."]
+script = ExtResource("2_spawner")
+spawn_path = NodePath("../Rituals")
+spawnable_scenes = PackedStringArray("res://scenes/world/sacrifice/ritual.tscn")

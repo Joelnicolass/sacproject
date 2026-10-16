@@ -1,0 +1,29 @@
+{
+  "scene": "res://scenes/world/high_noon.tscn",
+  "wait_first": 1.4,
+  "steps": [
+    { "assert": { "node": "%Battle", "text_equals": "Mago" } },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
+    { "click": "%View" },
+    { "wait": 1.1 },
+    { "assert": { "node": "%Battle", "text_equals": "Mago" } },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
+    { "shot": "f13_mago.png" },
+    { "press": "creature_2" },
+    { "wait": 0.6 },
+    { "assert": { "node": "%Battle", "text_equals": "Trogg" } },
+    { "print": { "node": "Units/Trogg1", "prop": "position" } },
+    { "shot": "f13_summon.png" },
+    { "press": "order_units" },
+    { "wait": 1.1 },
+    { "assert": { "node": "%Battle", "text_equals": "Orden" } },
+    { "print": { "node": "Units/Trogg1", "prop": "position" } },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
+    { "shot": "f13_order.png" },
+    { "wait": 1.4 },
+    { "press": "spell_2" },
+    { "wait": 0.1 },
+    { "assert": { "node": "%Battle", "text_equals": "Elegí el blanco" } },
+    { "shot": "f13_spell.png" }
+  ]
+}

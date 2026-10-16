@@ -1,0 +1,20 @@
+{
+  "scene": "res://debug/summon_unit.tscn",
+  "wait_first": 2.0,
+  "steps": [
+    { "wait_until": { "node": "%Stats", "text_contains": "Vida", "timeout": 10 } },
+    { "print": { "node": "%Wizards/Wizard1/Mesh", "prop": "position" } },
+    { "press": { "name": "move_forward", "hold": 0.8 } },
+    { "wait": 0.2 },
+    { "print": { "node": "%Wizards/Wizard1/Mesh", "prop": "position" } },
+    { "shot": "pt34_anim_wizard_walk.png" },
+
+    { "press": "creature_2" },
+    { "wait": 0.7 },
+    { "print": { "node": "%Units/Trogg1/Tilt/Mesh", "prop": "position" } },
+    { "press": "order_units" },
+    { "wait": 0.9 },
+    { "print": { "node": "%Units/Trogg1/Tilt/Mesh", "prop": "position" } },
+    { "shot": "pt34_anim_trogg_walk.png" }
+  ]
+}

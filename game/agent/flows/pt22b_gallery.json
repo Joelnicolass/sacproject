@@ -1,0 +1,141 @@
+{
+ "scene": "res://debug/look_gallery.tscn",
+ "wait_first": 4.0,
+ "steps": [
+  {
+   "shot": "g0.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_biome",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.8
+  },
+  {
+   "shot": "g_biome1.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_biome",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.8
+  },
+  {
+   "shot": "g_biome2.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_biome",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.8
+  },
+  {
+   "shot": "g_biome3.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_biome",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.8
+  },
+  {
+   "shot": "g_biome4.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_biome",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.8
+  },
+  {
+   "shot": "g_biome5.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "g_cam1.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "g_cam2.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "g_cam3.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_quality",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "g_q1.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_quality",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "g_q2.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_quality",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "g_q3.png"
+  }
+ ]
+}

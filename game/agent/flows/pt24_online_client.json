@@ -1,0 +1,30 @@
+{
+  "scene": "res://scenes/ui/boot.tscn",
+  "wait_first": 0.8,
+  "steps": [
+    { "click": "%Play" },
+    { "click": "%Join" },
+    { "wait_until": { "node": "%Stats", "text_contains": "Vida", "timeout": 15 } },
+    { "wait": 1.0 },
+    { "print": { "node": "%Title", "prop": "text" } },
+    { "print": { "node": "%Stats", "prop": "text" } },
+    { "shot": "pt24_online_0_before.png" },
+    { "press": "spell_3" },
+    { "wait": 0.1 },
+    { "assert": { "node": "%Battle", "text_equals": "Elegí el blanco" } },
+    { "click": "%View" },
+    { "wait_until": { "node": "%Battle", "text_equals": "Heal", "timeout": 2 } },
+    { "print": { "node": "%Stats", "prop": "text" } },
+    { "wait": 0.5 },
+    { "print": { "node": "%Stats", "prop": "text" } },
+    { "shot": "pt24_online_1_heal.png" },
+    { "shot": { "name": "pt24_online_1_bar.png", "node": "%SpellBook" } },
+    { "print": { "node": "%SpellBook/Slots/Spell3/Time", "prop": "text" } },
+    { "press": "spell_3" },
+    { "wait": 0.1 },
+    { "print": { "node": "%Battle", "prop": "text" } },
+    { "assert": { "node": "%Battle", "text_equals": "Enfriando" } },
+    { "wait": 1.0 },
+    { "print": { "node": "%Stats", "prop": "text" } }
+  ]
+}

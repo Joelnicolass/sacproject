@@ -1,0 +1,334 @@
+{
+  "scene": "res://scenes/ui/boot.tscn",
+  "wait_first": 1.5,
+  "steps": [
+    {
+      "click": "%Wizard_cwa1"
+    },
+    {
+      "wait": 0.4
+    },
+    {
+      "click": "%God_persephone"
+    },
+    {
+      "wait": 0.3
+    },
+    {
+      "click": "%Play"
+    },
+    {
+      "wait": 0.3
+    },
+    {
+      "click": "%Solo"
+    },
+    {
+      "wait_until": {
+        "node": "%Stats",
+        "text_contains": "Vida",
+        "timeout": 12
+      }
+    },
+    {
+      "wait": 2.0
+    },
+    {
+      "press": {
+        "name": "turn_left",
+        "hold": 0.3
+      }
+    },
+    {
+      "wait": 0.5
+    },
+    {
+      "press": {
+        "name": "move_forward",
+        "hold": 2.0
+      }
+    },
+    {
+      "wait": 0.2
+    },
+    {
+      "print": {
+        "node": "%Wizards/Wizard1",
+        "prop": "global_position"
+      }
+    },
+    {
+      "shot": "walk_00.png"
+    },
+    {
+      "press": {
+        "name": "move_forward",
+        "hold": 2.0
+      }
+    },
+    {
+      "wait": 0.2
+    },
+    {
+      "print": {
+        "node": "%Wizards/Wizard1",
+        "prop": "global_position"
+      }
+    },
+    {
+      "shot": "walk_01.png"
+    },
+    {
+      "press": {
+        "name": "move_forward",
+        "hold": 2.0
+      }
+    },
+    {
+      "wait": 0.2
+    },
+    {
+      "print": {
+        "node": "%Wizards/Wizard1",
+        "prop": "global_position"
+      }
+    },
+    {
+      "shot": "walk_02.png"
+    },
+    {
+      "press": {
+        "name": "move_forward",
+        "hold": 2.0
+      }
+    },
+    {
+      "wait": 0.2
+    },
+    {
+      "print": {
+        "node": "%Wizards/Wizard1",
+        "prop": "global_position"
+      }
+    },
+    {
+      "shot": "walk_03.png"
+    },
+    {
+      "press": {
+        "name": "move_forward",
+        "hold": 2.0
+      }
+    },
+    {
+      "wait": 0.2
+    },
+    {
+      "print": {
+        "node": "%Wizards/Wizard1",
+        "prop": "global_position"
+      }
+    },
+    {
+      "shot": "walk_04.png"
+    },
+    {
+      "press": {
+        "name": "move_forward",
+        "hold": 2.0
+      }
+    },
+    {
+      "wait": 0.2
+    },
+    {
+      "print": {
+        "node": "%Wizards/Wizard1",
+        "prop": "global_position"
+      }
+    },
+    {
+      "shot": "walk_05.png"
+    },
+    {
+      "press": {
+        "name": "move_forward",
+        "hold": 2.0
+      }
+    },
+    {
+      "wait": 0.2
+    },
+    {
+      "print": {
+        "node": "%Wizards/Wizard1",
+        "prop": "global_position"
+      }
+    },
+    {
+      "shot": "walk_06.png"
+    },
+    {
+      "press": {
+        "name": "move_forward",
+        "hold": 2.0
+      }
+    },
+    {
+      "wait": 0.2
+    },
+    {
+      "print": {
+        "node": "%Wizards/Wizard1",
+        "prop": "global_position"
+      }
+    },
+    {
+      "shot": "walk_07.png"
+    },
+    {
+      "press": {
+        "name": "move_forward",
+        "hold": 2.0
+      }
+    },
+    {
+      "wait": 0.2
+    },
+    {
+      "print": {
+        "node": "%Wizards/Wizard1",
+        "prop": "global_position"
+      }
+    },
+    {
+      "shot": "walk_08.png"
+    },
+    {
+      "press": {
+        "name": "move_forward",
+        "hold": 2.0
+      }
+    },
+    {
+      "wait": 0.2
+    },
+    {
+      "print": {
+        "node": "%Wizards/Wizard1",
+        "prop": "global_position"
+      }
+    },
+    {
+      "shot": "walk_09.png"
+    },
+    {
+      "press": {
+        "name": "move_forward",
+        "hold": 2.0
+      }
+    },
+    {
+      "wait": 0.2
+    },
+    {
+      "print": {
+        "node": "%Wizards/Wizard1",
+        "prop": "global_position"
+      }
+    },
+    {
+      "shot": "walk_10.png"
+    },
+    {
+      "press": {
+        "name": "move_forward",
+        "hold": 2.0
+      }
+    },
+    {
+      "wait": 0.2
+    },
+    {
+      "print": {
+        "node": "%Wizards/Wizard1",
+        "prop": "global_position"
+      }
+    },
+    {
+      "shot": "walk_11.png"
+    },
+    {
+      "press": {
+        "name": "move_forward",
+        "hold": 2.0
+      }
+    },
+    {
+      "wait": 0.2
+    },
+    {
+      "print": {
+        "node": "%Wizards/Wizard1",
+        "prop": "global_position"
+      }
+    },
+    {
+      "shot": "walk_12.png"
+    },
+    {
+      "press": {
+        "name": "move_forward",
+        "hold": 2.0
+      }
+    },
+    {
+      "wait": 0.2
+    },
+    {
+      "print": {
+        "node": "%Wizards/Wizard1",
+        "prop": "global_position"
+      }
+    },
+    {
+      "shot": "walk_13.png"
+    },
+    {
+      "press": {
+        "name": "move_forward",
+        "hold": 2.0
+      }
+    },
+    {
+      "wait": 0.2
+    },
+    {
+      "print": {
+        "node": "%Wizards/Wizard1",
+        "prop": "global_position"
+      }
+    },
+    {
+      "shot": "walk_14.png"
+    },
+    {
+      "press": {
+        "name": "move_forward",
+        "hold": 2.0
+      }
+    },
+    {
+      "wait": 0.2
+    },
+    {
+      "print": {
+        "node": "%Wizards/Wizard1",
+        "prop": "global_position"
+      }
+    },
+    {
+      "shot": "walk_15.png"
+    }
+  ]
+}

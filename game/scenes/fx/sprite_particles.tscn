@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/sprite_particles.gd" id="1_sprite"]
+
+[node name="SpriteParticles" type="CPUParticles3D"]
+emitting = false
+use_fixed_seed = true
+one_shot = true
+explosiveness = 1.0
+local_coords = false
+direction = Vector3(0, 1, 0)
+gravity = Vector3(0, 0, 0)
+script = ExtResource("1_sprite")

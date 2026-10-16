@@ -1,0 +1,175 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.0,
+ "steps": [
+  {
+   "click": "%Wizard_cwa1"
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "click": "%God_persephone"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "click": "%Play"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "click": "%Solo"
+  },
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 20
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "pt73w_real",
+    "method": "audit",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt73w_real",
+    "method": "wiz",
+    "args": []
+   }
+  },
+  {
+   "shot": "r00_inicio.png"
+  },
+  {
+   "call": {
+    "harness": "pt73w_real",
+    "method": "view",
+    "args": [
+     1270,
+     1270,
+     70,
+     45,
+     0
+    ]
+   }
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "shot": "r01_aldea_alta.png"
+  },
+  {
+   "call": {
+    "harness": "pt73w_real",
+    "method": "view",
+    "args": [
+     1270,
+     1255,
+     35,
+     14,
+     30
+    ]
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "r02_aldea_media.png"
+  },
+  {
+   "call": {
+    "harness": "pt73w_real",
+    "method": "view",
+    "args": [
+     1255,
+     1214,
+     18,
+     6,
+     200
+    ]
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "r03_casa.png"
+  },
+  {
+   "call": {
+    "harness": "pt73w_real",
+    "method": "view",
+    "args": [
+     1313,
+     1239,
+     18,
+     6,
+     20
+    ]
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "r04_casa2.png"
+  },
+  {
+   "call": {
+    "harness": "pt73w_real",
+    "method": "view",
+    "args": [
+     1270,
+     1275,
+     16,
+     5,
+     90
+    ]
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "r05_manantial.png"
+  },
+  {
+   "call": {
+    "harness": "pt73w_real",
+    "method": "view",
+    "args": [
+     1239,
+     1300,
+     22,
+     8,
+     150
+    ]
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "r06_casa3.png"
+  },
+  {
+   "call": {
+    "harness": "pt73w_real",
+    "method": "audit",
+    "args": []
+   }
+  }
+ ]
+}

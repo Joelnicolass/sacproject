@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="BenchRules" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
+[ext_resource type="Script" path="res://scenes/world/ai/data/ai_seat.gd" id="3_seat"]
+[ext_resource type="Resource" path="res://data/ai/profile_original.tres" id="4_profile"]
+
+[sub_resource type="Resource" id="Seat_james"]
+script = ExtResource("3_seat")
+slot = 2
+wizard = "cwa0"
+god = &"james"
+profile = ExtResource("4_profile")
+
+[sub_resource type="Resource" id="Group_druids"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 1
+count = 3
+columns = 3
+spacing_m = 4.0
+near_slot = 2
+near_distance_m = 150.0
+order = "advance_altar"
+order_slot = 2
+
+[sub_resource type="Resource" id="Group_troggs"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 2
+count = 3
+columns = 3
+spacing_m = 3.0
+near_slot = 2
+near_distance_m = 12.0
+
+[resource]
+script = ExtResource("1_rules")
+biome_god = &"james"
+starting_souls = 12
+match_seed = 1
+anchor = Vector3(1085, 0, 1066)
+start_paused = true
+groups = Array[ExtResource("2_group")]([SubResource("Group_druids"), SubResource("Group_troggs")])
+ai_seats = Array[ExtResource("3_seat")]([SubResource("Seat_james")])
+pending_text = "IA en pausa"
+ignore_annihilation = true
+probe = "defend"

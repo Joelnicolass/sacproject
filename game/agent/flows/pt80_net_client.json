@@ -1,0 +1,162 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.0,
+ "steps": [
+  {
+   "click": "%Play"
+  },
+  {
+   "click": "%Join"
+  },
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 20
+   }
+  },
+  {
+   "wait_until": {
+    "node": "%OrdersLog",
+    "text_contains": "150 propias",
+    "timeout": 40
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "cue_probe",
+    "method": "mirror",
+    "args": [
+     true
+    ]
+   }
+  },
+  {
+   "press": "spell_2"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "assert": {
+    "node": "%Battle",
+    "prop": "armed",
+    "equals": "spell"
+   }
+  },
+  {
+   "assert": {
+    "node": "%Battle",
+    "prop": "armed_icon",
+    "equals": "kcor"
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Aim",
+    "visible": true
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Aim",
+    "prop": "texture",
+    "contains": "ImageTexture"
+   }
+  },
+  {
+   "call": {
+    "harness": "cue_probe",
+    "method": "report"
+   }
+  },
+  {
+   "shot": "pt80_net_rock_armed.png"
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "assert": {
+    "node": "%Battle",
+    "prop": "armed",
+    "equals": ""
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Aim",
+    "visible": false
+   }
+  },
+  {
+   "press": "check_tick"
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "assert": {
+    "node": "%Selection",
+    "prop": "count",
+    "equals": 150
+   }
+  },
+  {
+   "press": "order_attack"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "assert": {
+    "node": "%Battle",
+    "prop": "armed_icon",
+    "equals": "Matt"
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Aim",
+    "visible": true
+   }
+  },
+  {
+   "call": {
+    "harness": "cue_probe",
+    "method": "report"
+   }
+  },
+  {
+   "shot": "pt80_net_attack_armed.png"
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "assert": {
+    "node": "%Battle",
+    "prop": "armed",
+    "equals": ""
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Aim",
+    "visible": false
+   }
+  },
+  {
+   "shot": "pt80_net_rest_sel150.png"
+  }
+ ]
+}

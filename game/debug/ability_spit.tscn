@@ -1,0 +1,42 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" uid="uid://highnoonworld01" path="res://scenes/world/high_noon.tscn" id="1_world"]
+[ext_resource type="PackedScene" path="res://scenes/world/units/unit.tscn" id="2_unit"]
+[ext_resource type="Script" path="res://debug/ability_spit.gd" id="3_spit"]
+
+[node name="AbilitySpit" type="Node"]
+
+[node name="HighNoon" parent="." instance=ExtResource("1_world")]
+
+[node name="Arena" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="SpitCamera" type="Camera3D" parent="."]
+unique_name_in_owner = true
+far = 20000.0
+
+[node name="Overlay" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="SpitLog" type="Label" parent="Overlay"]
+unique_name_in_owner = true
+offset_left = 24.0
+offset_top = 80.0
+offset_right = 1000.0
+offset_bottom = 260.0
+mouse_filter = 2
+text = "Escupir"
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+
+[node name="Spit" type="Node" parent="." node_paths=PackedStringArray("world", "arena", "camera", "log_label")]
+script = ExtResource("3_spit")
+world = NodePath("../HighNoon")
+unit_scene = ExtResource("2_unit")
+arena = NodePath("../Arena")
+camera = NodePath("../SpitCamera")
+log_label = NodePath("../Overlay/SpitLog")
+
+[node name="Population" parent="HighNoon"]
+spawn_creatures = false

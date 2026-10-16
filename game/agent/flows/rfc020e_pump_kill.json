@@ -1,0 +1,317 @@
+{
+ "scene": "res://debug/convert_pump_kill.tscn",
+ "wait_first": 1.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 30
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "print": {
+    "node": "%View",
+    "prop": "size"
+   }
+  },
+  {
+   "shot": "c00_antes.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "victim",
+     24.0,
+     7.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "shot": "c01_matan.png"
+  },
+  {
+   "wait_until": {
+    "node": "HighNoon/SoulSystem/Souls/Soul1",
+    "timeout": 120
+   }
+  },
+  {
+   "wait": 3.8
+  },
+  {
+   "print": {
+    "node": "%Stats",
+    "prop": "text"
+   }
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "soul",
+     9.0,
+     3.5,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 0.8
+  },
+  {
+   "shot": "c02_alma_roja.png"
+  },
+  {
+   "click": "%StructureTab"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "press": "spell_3"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "drag": {
+    "node": "%View",
+    "from_x": 640,
+    "from_y": 360,
+    "to_x": 640,
+    "to_y": 360
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "wait_until": {
+    "node": "%SacrificeSystem/Doctors/Doctor1",
+    "timeout": 10
+   }
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "pair",
+     20.0,
+     6.0,
+     200.0
+    ]
+   }
+  },
+  {
+   "wait": 3.5
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "shot": "p01_camina.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "doctor",
+     8.0,
+     3.0,
+     120.0
+    ]
+   }
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "shot": "p02_bombea.png"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "shot": "p03_guardias_1.png"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "shot": "p03_guardias_3.png"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "victim",
+     14.0,
+     5.0,
+     150.0
+    ]
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "shot": "p04_muere_otra_vez.png"
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "set_mode",
+    "args": [
+     "soul",
+     8.0,
+     3.0,
+     150.0
+    ]
+   }
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "call": {
+    "harness": "convert_watch",
+    "method": "probe",
+    "args": []
+   }
+  },
+  {
+   "shot": "p05_alma_vuelve.png"
+  },
+  {
+   "print": {
+    "node": "%Stats",
+    "prop": "text"
+   }
+  }
+ ]
+}

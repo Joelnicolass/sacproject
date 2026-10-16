@@ -1,0 +1,11 @@
+{
+  "scene": "res://scenes/world/high_noon.tscn",
+  "wait_first": 0.6,
+  "steps": [
+    { "print": { "node": "MapProps/Plant8", "prop": "mesh.resource_path" } },
+    { "print": { "node": "MapProps/Plant8", "prop": "scale" } },
+    { "print": { "node": "MapProps/Plant8", "prop": "material_override" } },
+    { "print": { "node": "MapProps/Plant8", "prop": "mesh._surfaces" } },
+    { "print": { "node": "MapProps/Plant3", "prop": "mesh._surfaces" } }
+  ]
+}

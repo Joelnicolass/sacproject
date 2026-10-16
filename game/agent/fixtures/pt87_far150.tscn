@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://agent/fixtures/perf027_many.tscn" id="1_many"]
+
+[node name="Pt87Far150" instance=ExtResource("1_many")]
+
+[node name="FrameBudget" parent="."]
+label = "far150"
+out_dir = "res://agent/out/pt87"

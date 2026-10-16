@@ -1,0 +1,46 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/body_visual.gd" id="1_visual"]
+[ext_resource type="Script" path="res://scenes/world/mana_source.gd" id="2_source"]
+[ext_resource type="Resource" path="res://data/match_rules.tres" id="3_rules"]
+[ext_resource type="Script" path="res://scenes/world/props/manafount_body.gd" id="4_body"]
+[ext_resource type="PackedScene" path="res://scenes/fx/sprite_emitter.tscn" id="5_emitter"]
+[ext_resource type="Resource" path="res://data/fx/manafount.tres" id="7_free"]
+[ext_resource type="Resource" path="res://data/fx/manalith.tres" id="8_column"]
+[ext_resource type="Script" path="res://scenes/world/components/ground_snap.gd" id="6_snap"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_pool"]
+height = 4.0
+radius = 3.6
+
+[node name="Manafount" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("4_body")
+
+[node name="Visual" type="MeshInstance3D" parent="."]
+script = ExtResource("1_visual")
+model = "pcfn"
+stand_on_feet = false
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+position = Vector3(0, 1, 0)
+shape = SubResource("CylinderShape3D_pool")
+
+[node name="ManaSource" type="Node3D" parent="."]
+script = ExtResource("2_source")
+rules = ExtResource("3_rules")
+
+[node name="FreeFx" parent="." instance=ExtResource("5_emitter")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.75, 0)
+type = ExtResource("7_free")
+start_active = true
+
+[node name="ManalithFx" parent="." instance=ExtResource("5_emitter")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15, 0)
+type = ExtResource("8_column")
+
+[node name="GroundSnap" type="Node3D" parent="."]
+script = ExtResource("6_snap")

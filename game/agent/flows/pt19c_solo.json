@@ -1,0 +1,14 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.0,
+ "steps": [
+  {"click": "%Play"},
+  {"click": "%Solo"},
+  {"wait_until": {"node": "%Stats", "text_contains": "Vida", "timeout": 20}},
+  {"wait": 2.0},
+  {"call": {"harness": "wizard_travel", "method": "local_wizard_position"}},
+  {"print": {"node": "%Wizards/Wizard1", "prop": "position"}},
+  {"shot": "pt19c_00_spawn.png"},
+  {"print": {"node": "/root/HighNoon/MapProps/Founts/FountEast/FreeFx", "prop": "emitting"}}
+ ]
+}

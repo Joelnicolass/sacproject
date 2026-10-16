@@ -1,0 +1,23 @@
+class_name PortalLook
+extends Resource
+
+## Look of a flat ring + glowing center that faces the camera (sacengine SacVortex, sacobject.d:4045-4108,
+## renderer.d:222-239). One .tres per colour: data/fx/portal_blue.tres (the carried creature's ring),
+## data/fx/portal_red.tres (the Sac Doctor's vortex). The atlases are the 4x4 TXTRs of MAIN.WAD
+## exported to res://cache/look/fx/<tag>.png.
+
+## Atlas tag of the ring (rim): `ltn2` blue, `vtx1` red.
+@export var rim_tag := "ltn2"
+## Atlas tag of the center sprite: `vtx3` blue, `vtx2` red.
+@export var center_tag := "vtx3"
+## Color multiplier of the shadeless material (HDR). sacengine: rim 10, center 1 (renderer.d:222-239).
+@export_range(0.0, 40.0, 0.1) var rim_energy := 10.0
+@export_range(0.0, 40.0, 0.1) var center_energy := 1.0
+## Seconds each of the 16 atlas cells stays (2 ticks at 60 Hz: 0.53 s per cycle, sacobject.d:4101-4105).
+@export_range(0.005, 0.5, 0.001) var frame_s := 2.0 / 60.0
+## Inner radius of the ring as a fraction of the outer one: thickness 0.35 (sacobject.d:4079).
+@export_range(0.05, 0.95, 0.01) var inner_ratio := 0.65
+## The ring texture is mirrored this many times around it (16 cells of the zigzag, sacobject.d:4062-4093).
+@export_range(1.0, 64.0, 1.0) var zigzag_repeats := 16.0
+## Filling when an atlas is not in the cache (not from the original).
+@export var fallback_color := Color(0.3, 0.7, 1.0)

@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="ParticleType" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
+
+[resource]
+script = ExtResource("1_type")
+atlas_key = "manalith"
+h_frames = 3
+v_frames = 3
+size = Vector2(12, 12)
+energy = 2.0
+frame_s = 0.03333
+lifetime_s = 1.5
+speed_min = 10.0
+speed_max = 20.0
+spread = 0.0
+emission_radius = 3.5
+rate_per_s = 240.0
+lifetime_randomness = 0.3
+fade_s = 1.2
+alpha_max = 0.07
+scale_fade_s = 1.2

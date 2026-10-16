@@ -1,0 +1,18 @@
+---
+description: Todo AgentKit queda en res://agent/; el playtester no espera OK y no toca reglas de negocio.
+alwaysApply: true
+---
+
+# Workspace AgentKit
+
+El playtest **no** espera permiso para jugar. Si falta el contexto para armar el escenario, devuelve solo `NEED_SETUP` a quien lo invocó (otro agente o un humano) y espera `PLAYTEST_SETUP`. Si la escena del producto ya es la situación, o el setup ya vino, sigue sin preguntar.
+
+**Nada** que cree para AgentKit sale de `res://agent/` (`flows/`, `harness/`, `fixtures/`, `out/`). Cero escenas de test, scripts o `.tres` en `src/`, `scenes/`, `tests/` o glue. Cero cambios a reglas de negocio (`project.godot`, InputMap, resources, scripts de actores).
+
+La acción del jugador es `press` de una acción que **ya** está en el InputMap (`InputEventAction`; `_unhandled_input` + `is_action_pressed` cuenta). La escena de prueba es `res://debug/`, armada por el developer. El playtester no la crea y no usa `call()` para construirla. Si no existe, `NEED_SETUP` a quien lo invocó.
+
+El harness no mueve, no dispara y no fuerza el estado (`velocity`, `global_position`, `InputEventKey`, `call` para saltear el botón). Si el JSON puede `scene` + `press`, no agregues un `func`.
+
+`Could not find type` de un `class_name` que ya está en un `.gd`: importá el proyecto una vez (`--import --quit`) y reintentá. No edites `.godot/global_script_class_cache.cfg`. Si el mismo error vuelve, devolvé `CACHE_STALE` a quien te invocó.
+
+Detalle: skill `godot-playtest` → `evaluate.md`.

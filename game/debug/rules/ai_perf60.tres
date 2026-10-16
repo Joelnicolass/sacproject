@@ -1,0 +1,91 @@
+[gd_resource type="Resource" script_class="BenchRules" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
+[ext_resource type="Script" path="res://scenes/world/ai/data/ai_seat.gd" id="3_seat"]
+[ext_resource type="Script" path="res://debug/bench_structure.gd" id="4_structure"]
+
+; RFC-024 024e (adenda §6): rendimiento de la IA. IA contra IA (Normal y Normal; otras con --difficulties=hard,hard), 30 criaturas
+; por bando puestas junto a su mago (60 en el campo), 12 almas y mana lleno con un Manalith cada uno (la IA convoca, convierte y
+; lanza desde el primer tick), los 32 NPC presentes, 5 min. Criterio: ai_ms (tick completo) por bando media <= 0,5, p99 <= 2,
+; max <= 6; sep_ms se informa aparte. Variante de estres: --souls=60 (cada IA convoca ~55 mas: ~85-90 criaturas por bando).
+
+[sub_resource type="Resource" id="Seat_1"]
+script = ExtResource("3_seat")
+slot = 1
+wizard = "cwa0"
+god = &"james"
+
+[sub_resource type="Resource" id="Seat_2"]
+script = ExtResource("3_seat")
+slot = 2
+wizard = "cwa0"
+god = &"james"
+
+[sub_resource type="Resource" id="Troggs_1"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 1
+count = 15
+columns = 5
+spacing_m = 3.0
+near_slot = 1
+near_distance_m = 18.0
+
+[sub_resource type="Resource" id="Druids_1"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 1
+count = 15
+columns = 5
+spacing_m = 3.0
+near_slot = 1
+near_distance_m = 18.0
+near_angle_deg = 90.0
+
+[sub_resource type="Resource" id="Troggs_2"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 2
+count = 15
+columns = 5
+spacing_m = 3.0
+near_slot = 2
+near_distance_m = 18.0
+
+[sub_resource type="Resource" id="Druids_2"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 2
+count = 15
+columns = 5
+spacing_m = 3.0
+near_slot = 2
+near_distance_m = 18.0
+near_angle_deg = 90.0
+
+[sub_resource type="Resource" id="Manalith_east"]
+script = ExtResource("4_structure")
+slot = 1
+spell_tag = "htlm"
+fount = "FountEast"
+
+[sub_resource type="Resource" id="Manalith_west"]
+script = ExtResource("4_structure")
+slot = 2
+spell_tag = "htlm"
+fount = "FountWest"
+
+[resource]
+script = ExtResource("1_rules")
+starting_souls = 12
+biome_god = &"james"
+match_seed = 1
+anchor = Vector3(1270, 0, 1270)
+start_paused = true
+npcs = true
+groups = Array[ExtResource("2_group")]([SubResource("Troggs_1"), SubResource("Druids_1"), SubResource("Troggs_2"), SubResource("Druids_2")])
+ai_seats = Array[ExtResource("3_seat")]([SubResource("Seat_1"), SubResource("Seat_2")])
+structures = Array[ExtResource("4_structure")]([SubResource("Manalith_east"), SubResource("Manalith_west")])
+pending_text = "IA contra IA (rendimiento) en pausa"
+ignore_annihilation = true

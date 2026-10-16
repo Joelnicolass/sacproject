@@ -1,0 +1,10 @@
+{
+  "scene": "res://debug/body_gallery.tscn",
+  "wait_first": 3.0,
+  "steps": [
+    { "shot": "f17_gallery_before.png" },
+    { "press": "check_tick" },
+    { "wait": 0.5 },
+    { "shot": "f17_gallery.png" }
+  ]
+}

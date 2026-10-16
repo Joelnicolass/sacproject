@@ -1,0 +1,9 @@
+{
+ "scene": "res://agent/fixtures/biome_pick_james.tscn",
+ "wait_first": 13.0,
+ "steps": [
+  {
+   "wait": 12.0
+  }
+ ]
+}

@@ -1,0 +1,33 @@
+{
+  "scene": "res://scenes/ui/boot.tscn",
+  "wait_first": 2.5,
+  "steps": [
+    { "click": "%Play" },
+    { "wait": 0.2 },
+    { "click": "%Join" },
+    { "wait_until": { "node": "%Stats", "text_contains": "Vida 1950/1950 · Maná 1900/1900", "timeout": 20 } },
+    { "wait_until": { "node": "%Wizards/Wizard1", "timeout": 20 } },
+    { "wait": 5.0 },
+    { "print": { "node": "%Title", "prop": "text" } },
+    { "print": { "node": "%Stats", "prop": "text" } },
+    { "print": { "node": "MatchBiome", "prop": "god" } },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "owner_slot" } },
+    { "print": { "node": "%Wizards/Wizard2", "prop": "owner_slot" } },
+    { "print": { "node": "%Wizards/Wizard1/Mesh", "prop": "model" } },
+    { "print": { "node": "%Wizards/Wizard2/Mesh", "prop": "model" } },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
+    { "print": { "node": "%Wizards/Wizard2", "prop": "position" } },
+    { "assert": { "node": "%Stats", "text_equals": "Vida 1950/1950 · Maná 1900/1900 · Almas 12" } },
+    { "shot": "b_antes.png" },
+    { "press": { "name": "move_forward", "hold": 1.0 } },
+    { "wait": 0.6 },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
+    { "print": { "node": "%Wizards/Wizard2", "prop": "position" } },
+    { "shot": "b_despues.png" },
+    { "wait": 3.0 },
+    { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
+    { "print": { "node": "%Wizards/Wizard2", "prop": "position" } },
+    { "shot": "b_final.png" },
+    { "wait": 3.0 }
+  ]
+}

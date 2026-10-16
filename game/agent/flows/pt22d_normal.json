@@ -1,0 +1,127 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.0,
+ "steps": [
+  {
+   "click": "%Play"
+  },
+  {
+   "click": "%Solo"
+  },
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 15
+   }
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "shot": "n0_start.png"
+  },
+  {
+   "print": {
+    "node": "%Camera",
+    "prop": "view_pitch_deg"
+   }
+  },
+  {
+   "press": {
+    "name": "zoom_in",
+    "hold": 3.0
+   }
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "print": {
+    "node": "%Camera",
+    "prop": "view_pitch_deg"
+   }
+  },
+  {
+   "print": {
+    "node": "%Camera",
+    "prop": "zoom"
+   }
+  },
+  {
+   "shot": "n1_zoomin.png"
+  },
+  {
+   "press": {
+    "name": "turn_left",
+    "hold": 0.8
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "n2_turn0.png"
+  },
+  {
+   "press": {
+    "name": "turn_left",
+    "hold": 0.8
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "n2_turn1.png"
+  },
+  {
+   "press": {
+    "name": "turn_left",
+    "hold": 0.8
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "n2_turn2.png"
+  },
+  {
+   "press": {
+    "name": "turn_left",
+    "hold": 0.8
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "n2_turn3.png"
+  },
+  {
+   "wait": 10
+  },
+  {
+   "shot": "n3_10s.png"
+  },
+  {
+   "press": {
+    "name": "zoom_out",
+    "hold": 3.0
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "print": {
+    "node": "%Camera",
+    "prop": "view_pitch_deg"
+   }
+  },
+  {
+   "shot": "n4_zoomout.png"
+  }
+ ]
+}

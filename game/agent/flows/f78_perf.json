@@ -1,0 +1,103 @@
+{
+  "scene": "res://debug/selection_many.tscn",
+  "wait_first": 2.5,
+  "steps": [
+    {
+      "wait_until": {
+        "node": "%OrdersLog",
+        "text_contains": "Druid 800/800",
+        "timeout": 25
+      }
+    },
+    {
+      "wait": 4.0
+    },
+    {
+      "print": {
+        "node": "Group",
+        "prop": "frame_ms"
+      }
+    },
+    {
+      "print": {
+        "node": "Group",
+        "prop": "cpu_ms"
+      }
+    },
+    {
+      "print": {
+        "node": "Group",
+        "prop": "draw_calls"
+      }
+    },
+    {
+      "press": "check_tick"
+    },
+    {
+      "wait": 4.0
+    },
+    {
+      "print": {
+        "node": "Group",
+        "prop": "frame_ms"
+      }
+    },
+    {
+      "print": {
+        "node": "Group",
+        "prop": "cpu_ms"
+      }
+    },
+    {
+      "print": {
+        "node": "Group",
+        "prop": "draw_calls"
+      }
+    },
+    {
+      "print": {
+        "node": "Group",
+        "prop": "sel_count"
+      }
+    },
+    {
+      "shot": "f78_perf_sel150.png"
+    },
+    {
+      "call": {
+        "harness": "selection_probe",
+        "method": "aim_empty"
+      }
+    },
+    {
+      "press": "select"
+    },
+    {
+      "wait": 4.0
+    },
+    {
+      "print": {
+        "node": "Group",
+        "prop": "frame_ms"
+      }
+    },
+    {
+      "print": {
+        "node": "Group",
+        "prop": "cpu_ms"
+      }
+    },
+    {
+      "print": {
+        "node": "Group",
+        "prop": "draw_calls"
+      }
+    },
+    {
+      "print": {
+        "node": "Group",
+        "prop": "sel_count"
+      }
+    }
+  ]
+}

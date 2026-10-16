@@ -1,0 +1,24 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://debug/unit_parity_gallery.tscn" id="1_base"]
+
+[node name="NpcAnimGallery" instance=ExtResource("1_base")]
+wizard_tags = PackedStringArray()
+unit_tags = PackedStringArray("zepe", "raeb")
+cycle_roles = PackedStringArray("idle", "run", "attack", "cower", "talk_cower", "work")
+mana_probe = false
+show_collisions = false
+columns = 2
+spacing = 4.0
+
+[node name="Camera" parent="." index="2"]
+transform = Transform3D(1, 0, 0, 0, 0.9774, 0.2113, 0, -0.2113, 0.9774, 0, 2.6, 16.5)
+fov = 45.0
+
+[node name="Panel" parent="Hud" index="0"]
+offset_right = 900.0
+offset_bottom = 110.0
+
+[node name="Debug" parent="Hud" index="1"]
+offset_right = 890.0
+offset_bottom = 100.0

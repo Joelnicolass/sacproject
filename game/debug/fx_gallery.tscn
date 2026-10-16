@@ -1,0 +1,136 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://debug/fx_gallery.gd" id="1_gallery"]
+
+[sub_resource type="Environment" id="Environment_fx"]
+background_mode = 1
+background_color = Color(0.08, 0.09, 0.12, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.5, 0.5, 0.55, 1)
+tonemap_mode = 3
+
+[sub_resource type="StandardMaterial3D" id="Material_ground"]
+albedo_color = Color(0.32, 0.28, 0.22, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ground"]
+material = SubResource("Material_ground")
+size = Vector2(60, 30)
+
+[node name="FxGallery" type="Node3D"]
+script = ExtResource("1_gallery")
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_fx")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.5, 0.866, 0, -0.866, 0.5, 0, 10, 0)
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9748, 0.2232, 0, -0.2232, 0.9748, 0, 7, 24)
+current = true
+fov = 50.0
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_ground")
+
+[node name="Slots" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="cast_james" type="Marker3D" parent="Slots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 1.5, 0)
+
+[node name="Label" type="Label3D" parent="Slots/cast_james"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.25, 2)
+pixel_size = 0.008
+billboard = 1
+text = "cast_james"
+font_size = 48
+outline_size = 10
+
+[node name="cast_persephone" type="Marker3D" parent="Slots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 1.5, 0)
+
+[node name="Label" type="Label3D" parent="Slots/cast_persephone"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.25, 2)
+pixel_size = 0.008
+billboard = 1
+text = "cast_persephone"
+font_size = 48
+outline_size = 10
+
+[node name="summon" type="Marker3D" parent="Slots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0.3, 0)
+
+[node name="Label" type="Label3D" parent="Slots/summon"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 2)
+pixel_size = 0.008
+billboard = 1
+text = "summon"
+font_size = 48
+outline_size = 10
+
+[node name="heal" type="Marker3D" parent="Slots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.3, 0)
+
+[node name="Label" type="Label3D" parent="Slots/heal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 2)
+pixel_size = 0.008
+billboard = 1
+text = "heal"
+font_size = 48
+outline_size = 10
+
+[node name="speedup" type="Marker3D" parent="Slots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="Label" type="Label3D" parent="Slots/speedup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.75, 2)
+pixel_size = 0.008
+billboard = 1
+text = "speedup"
+font_size = 48
+outline_size = 10
+
+[node name="rock" type="Marker3D" parent="Slots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1, 0)
+
+[node name="Label" type="Label3D" parent="Slots/rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.75, 2)
+pixel_size = 0.008
+billboard = 1
+text = "rock"
+font_size = 48
+outline_size = 10
+
+[node name="dirt" type="Marker3D" parent="Slots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.5, 0)
+
+[node name="Label" type="Label3D" parent="Slots/dirt"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 2)
+pixel_size = 0.008
+billboard = 1
+text = "dirt"
+font_size = 48
+outline_size = 10
+
+[node name="blood" type="Marker3D" parent="Slots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1, 0)
+
+[node name="Label" type="Label3D" parent="Slots/blood"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.75, 2)
+pixel_size = 0.008
+billboard = 1
+text = "blood"
+font_size = 48
+outline_size = 10
+
+[node name="hover_blood" type="Marker3D" parent="Slots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 1, 0)
+
+[node name="Label" type="Label3D" parent="Slots/hover_blood"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.75, 2)
+pixel_size = 0.008
+billboard = 1
+text = "hover_blood"
+font_size = 48
+outline_size = 10

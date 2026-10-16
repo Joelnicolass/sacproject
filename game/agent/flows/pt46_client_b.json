@@ -1,0 +1,145 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.0,
+ "steps": [
+  {
+   "click": "%Play"
+  },
+  {
+   "click": "%Join"
+  },
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 20
+   }
+  },
+  {
+   "wait_until": {
+    "node": "%Wizards/Wizard1",
+    "timeout": 40
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "pt46_b0_load.png"
+  },
+  {
+   "wait_until": {
+    "node": "%Structures/Structure1",
+    "timeout": 60
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "print": {
+    "node": "%Structures/Structure1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "shot": "pt46_b1_appears.png"
+  },
+  {
+   "wait": 2.5
+  },
+  {
+   "print": {
+    "node": "%Structures/Structure1/Health",
+    "prop": "maximum"
+   }
+  },
+  {
+   "print": {
+    "node": "%Structures/Structure1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "wait": 2.5
+  },
+  {
+   "print": {
+    "node": "%Structures/Structure1/Health",
+    "prop": "maximum"
+   }
+  },
+  {
+   "print": {
+    "node": "%Structures/Structure1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "shot": "pt46_b2_damaged.png"
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "print": {
+    "node": "%Structures/Structure1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 6.0
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "print": {
+    "node": "%Wizards/Wizard2",
+    "prop": "global_position"
+   }
+  },
+  {
+   "print": {
+    "node": "%Structures/Structure1",
+    "prop": "global_position"
+   }
+  },
+  {
+   "print": {
+    "node": "%Structures/Structure1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "shot": "pt46_b3_walk1.png"
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 6.0
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "print": {
+    "node": "%Wizards/Wizard2",
+    "prop": "global_position"
+   }
+  },
+  {
+   "print": {
+    "node": "%Structures/Structure1/Health",
+    "prop": "current"
+   }
+  },
+  {
+   "shot": "pt46_b4_walk2.png"
+  }
+ ]
+}

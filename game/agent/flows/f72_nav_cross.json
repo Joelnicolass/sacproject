@@ -1,0 +1,52 @@
+{
+  "scene": "res://debug/nav_cross.tscn",
+  "wait_first": 2.0,
+  "steps": [
+    {
+      "assert": {
+        "node": "Overlay/Status",
+        "text_contains": "Pendiente"
+      }
+    },
+    {
+      "shot": "f72_nav_cross_0_pendiente.png"
+    },
+    {
+      "press": "check_tick"
+    },
+    {
+      "wait": 4.0
+    },
+    {
+      "shot": "f72_nav_cross_1_vista_aerea.png"
+    },
+    {
+      "wait": 8.0
+    },
+    {
+      "shot": "f72_nav_cross_2_vista_aerea.png"
+    },
+    {
+      "wait": 8.0
+    },
+    {
+      "shot": "f72_nav_cross_3_vista_aerea.png"
+    },
+    {
+      "wait_until": {
+        "node": "Overlay/Status",
+        "text_contains": "Lleg\u00f3",
+        "timeout": 90
+      }
+    },
+    {
+      "print": {
+        "node": "Overlay/Status",
+        "prop": "text"
+      }
+    },
+    {
+      "shot": "f72_nav_cross_4_llego.png"
+    }
+  ]
+}

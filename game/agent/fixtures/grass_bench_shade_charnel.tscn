@@ -1,0 +1,22 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="PackedScene" uid="uid://highnoonworld01" path="res://scenes/world/high_noon.tscn" id="1_world"]
+[ext_resource type="Resource" path="res://debug/rules/biome_charnel.tres" id="2_rules"]
+[ext_resource type="Script" path="res://agent/fixtures/grass_bench.gd" id="3_bench"]
+[ext_resource type="Script" path="res://agent/fixtures/grass_bench_view.gd" id="10_script"]
+[ext_resource type="Resource" path="res://agent/fixtures/grass_bench/views/shade_a.tres" id="4_v"]
+[ext_resource type="Resource" path="res://agent/fixtures/grass_bench/views/shade_b.tres" id="5_v"]
+
+[node name="GrassBenchShadeCharnel" type="Node"]
+
+[node name="HighNoon" parent="." instance=ExtResource("1_world")]
+rules = ExtResource("2_rules")
+
+[node name="GrassBench" type="Node" parent="." node_paths=PackedStringArray("world")]
+script = ExtResource("3_bench")
+world = NodePath("../HighNoon")
+views = Array[ExtResource("10_script")]([ExtResource("4_v"), ExtResource("5_v")])
+sweep_steps = 0
+
+[node name="Population" parent="HighNoon"]
+spawn_creatures = false

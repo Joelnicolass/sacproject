@@ -395,6 +395,14 @@ data/shots/slba.tres, babt.tres, tugt.tres, crba.tres  N  ShotLook + impact
 
 **Criterio:** un disparo baja la vida de los 3 Druids; el log trae el daño por distancia.
 
+**Decisiones (2026-10-16, por el developer de F119):**
+- **Árbol real:** además, `impacts/lob_splash_impact.tscn` (escena heredada de `splash_impact.tscn` con `direct_hit` apagado y radio `effect_range`) y `SplashDamage.bodies_within` (un solo recorrido; `DeathCloud.bodies_within` delega). `SplashDamage.deal/hurt` toman el tipo de daño. No hay `slba.tres`.
+- **Mutant `babt` y Abomination `tugt`** (`state.d:24381-24387`, `24432-24439`): el cuerpo tocado recibe el `amount` entero como ranged|splash (resistencia de salpicadura a distancia, `8952-8954`) y queda fuera del área; el resto, `amount·(1 − d/damageRange)`. Si cae al suelo, solo el área. Caja de choque 1,25 m.
+- **Flummox `crba`** (`24059-24067`): `dealSplashRangedDamageAt(0, …, effectRange)`, sin golpe entero: el tocado también cae con la distancia. Caja 2 m. El aturdido (`stunWithCooldown`) queda para 030i, como hijo `ShotImpact` de la escena del impacto.
+- **Scarab `slba` queda fuera:** es «Healing web». `scarabProjectileHit` (`23609-23627`) llama a `dealSplashSpellDamageAt` con un callback que cura a los del bando y devuelve `false`, así que no daña a nadie; además apunta al aliado más herido (`12949-12958`) y no dispara a enemigos (`12850-12853`). Hoy el port le pega daño directo a distancia a enemigos: hace falta un corte propio (impacto de cura + elección de blanco).
+- **Fuera:** las gotas de la Abomination (`AbominationDroplet`, 50 de daño directo a distancia, `24488-24505`), los modelos de los proyectiles (bolas de reserva) y las partículas `splat`/`gib` (se usa `blood`).
+- **Fuego amigo:** divergencia heredada (ver 030g).
+
 ### 030i — F120 Aturdir y petrificar (Flummox, Basilisk)
 
 **Árbol**
@@ -533,7 +541,7 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 ## 10. Orden de implementación
 
-030a → 030b → 030c → 030d (con esto, **todas disponibles**) → 030e (las 5 de nivel 9 son híbridas) → 030e2 (pose y cápsula de las híbridas) → 030f → 030g → 030h → 030i → 030j → 030k → 030l → 030m → 030n → 030o → 030p → 030q → 030r → 030s → 030t → 030u → (030v).
+030a → 030b → 030c → 030d (con esto, **todas disponibles**) → 030e (las 5 de nivel 9 son híbridas) → 030e2 (pose y cápsula de las híbridas) → 030f → 030g → 030h → 030h2 (Scarab: telaraña que cura; gotas de la Abomination) → 030i → 030j → 030k → 030l → 030m → 030n → 030o → 030p → 030q → 030r → 030s → 030t → 030u → (030v).
 
 ## 11. Cómo verifica un humano
 

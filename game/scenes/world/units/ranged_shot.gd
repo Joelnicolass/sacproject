@@ -7,6 +7,7 @@ extends Node3D
 ## amount as direct ranged damage (earthflingProjectileExplosion, state.d:23152-23154). Straight shots
 ## (getShotDirection) fly their ability range and vanish.
 ## The server (or solo) moves it; clients get the position and play the trail locally.
+## F119: a ShotLook with an `impact` scene (ShotImpact) decides the damage where it bursts instead (splash, 030h).
 
 const _HEALTH := preload("res://scenes/world/components/health.gd")
 const LOOKS_DIR := "res://data/shots/"
@@ -20,6 +21,8 @@ var velocity := Vector3.ZERO
 var target_path := NodePath()
 var shooter_path := NodePath()
 var look: ShotLook
+## The shot's SPEL (ranges for its impact); null when GameData has no such tag.
+var ability: AbilityType
 
 var _traveled := 0.0
 var _spin_axis := Vector3.UP
@@ -37,6 +40,7 @@ func setup(data: Dictionary) -> void:
 	target_path = NodePath(str(data.get("target", "")))
 	shooter_path = NodePath(str(data.get("shooter", "")))
 	look = _look_for(str(data.get("tag", "")))
+	ability = GameData.ability(str(data.get("tag", "")))
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash(name)
 	_spin_axis = Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0)).normalized()
@@ -158,8 +162,18 @@ func _ground_height(at: Vector3) -> float:
 	return float(hit.position.y) if not hit.is_empty() else -INF
 
 
+## Server (or solo) only: _physics_process is off on clients.
 func _burst(target: Node3D) -> void:
-	if target and is_instance_valid(target) and _is_live_body(target):
+	if look.impact:
+		var node := look.impact.instantiate()
+		var impact := node as ShotImpact
+		if impact:
+			add_child(impact)
+			impact.apply(self, target if target and is_instance_valid(target) else null, global_position, ability)
+		else:
+			node.free()
+			push_warning("RangedShot: el impacto de %s no es un ShotImpact." % name)
+	elif target and is_instance_valid(target) and _is_live_body(target):
 		target.get_node("Health").call("damage_typed", damage, _HEALTH.DIRECT_RANGED, from_slot)
 	for fx in look.impact_fx:
 		FxBus.broadcast(fx, global_position)

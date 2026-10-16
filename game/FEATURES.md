@@ -1027,3 +1027,31 @@ Deuda:
 - `HealEffect.on()` duplica a `caster.gd`.
 - Las perillas de `Poisoned` no se pueden editar.
 - Los debuffs del veneno quedan para 030k y `ignite` para 030r.
+
+### F119 — Impacto con salpicadura (RFC-030, corte 030h)
+
+`ShotImpact` (`apply(shot, target, point, ability)`, que se compone con hijos `ShotImpact`) se asigna por disparo en `ShotLook.impact`. `RangedShot._burst` lo instancia solo en el servidor; si un disparo no tiene impacto, mantiene el golpe directo. `SplashImpact` usa las perillas `direct_hit` y `radius_source`. `SplashDamage.bodies_within` es el único recorrido de cuerpos: lo usan las nubes de F118 y el `kind` del daño.
+
+| Criatura | Golpe al tocado | Salpicadura |
+|---|---|---|
+| Mutant (`babt`) | entero | `damage_range` 10, sin el tocado |
+| Abomination (`tugt`) | entero | `damage_range` 10, sin el tocado |
+| Flummox (`crba`) | sin golpe entero | `effect_range` 8, incluye al tocado |
+
+Fuentes en sacengine: `state.d:24381`, `24432`, `24059`, `9400`. El Scarab no entra en este corte: su disparo cura. Pasa a 030h2.
+
+**Cierre (2026-10-16).** Review PASS (`reviews/REVIEW-F119-splash-shots.md`). El orquestador corrigió que se perdía el nodo cuando el impacto no era un `ShotImpact`. Playtest con ventana PASS (`agent/out/pt119/`):
+- **Mutant:** el tocado recibe 382,50. A 1,05 m, 342,53, y a 1,18 m, 337,47.
+- **Abomination:** el disparo cayó al suelo y aplicó solo el área: 220,07 a 4,25 m, 287,02 a 2,50 m y 262,20 a 3,15 m.
+- **Flummox:** 315,00 a 0 m y 276,87 / 277,30 a 0,97 m.
+- Una choza recibió 71. El tirador no se daña a sí mismo.
+- La roca del Flummox se ve como un proyectil razonable.
+- **Regresiones:**
+  - `f25_flying_summon` y `pt118_bench` dan AGENT_OK. El vapor sigue bajando la vida de 743 a 506.
+  - El digest de seed 7 no cambia y `rules_suite` PASS.
+
+Deuda:
+- **Sin probar:** el golpe directo de la Abomination (mismo código que el Mutant) y un segundo disparo.
+- **030h2:** el Scarab hoy hace 150 de daño directo a enemigos y en sacengine solo cura aliados (gravedad alta). También van ahí las gotas de la Abomination.
+- **Visual:** bolas de reserva en Mutant y Abomination.
+- **Limpieza:** hay un segundo recorrido de cuerpos solo para el log, y `who()` está duplicado.

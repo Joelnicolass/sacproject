@@ -18,5 +18,8 @@ extends Resource
 @export var trail_every := 1
 ## FxBus types broadcast where it bursts.
 @export var impact_fx: PackedStringArray = PackedStringArray()
+## F119: ShotImpact scene the server (or solo) applies where it bursts, in place of the plain direct ranged hit
+## (impacts/*.tscn). Empty = the whole amount as direct ranged damage to the body it hit.
+@export var impact: PackedScene
 @export var fallback_color := Color(0.8, 0.7, 0.5)
 @export var fallback_radius := 0.15

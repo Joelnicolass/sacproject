@@ -7,7 +7,6 @@ extends Node3D
 ## on the bodies around the dead one's center, plays its puff through FxBus (clients see it there) and frees itself.
 ## Server (or solo) only. The variants override _affect(); the numbers come from the SPEL of `ability`.
 
-const _ROCK := preload("res://scenes/world/spells/rock_projectile.gd")
 const _SPLASH := preload("res://scenes/world/spells/splash_damage.gd")
 
 ## Bodies a cloud may touch: creatures and wizards (sacengine movingObjects). SteamCloud also hits buildings itself.
@@ -38,20 +37,9 @@ func _affect(_center: Vector3) -> void:
 	pass
 
 
-## Live creatures and wizards whose hit box is within `radius` of `center`, but the dead one; in group order, so the
-## result does not depend on the scene tree (sacengine walks its proximity grid, same set).
+## Live creatures and wizards whose hit box is within `radius` of `center`, but the dead one (SplashDamage owns the walk).
 func bodies_within(center: Vector3, radius: float) -> Array[Node3D]:
-	var found: Array[Node3D] = []
-	var seen := {}
-	for group in GROUPS:
-		for node in get_tree().get_nodes_in_group(group):
-			var body := node as Node3D
-			if body == null or body == dead or seen.has(body) or not _ROCK.is_live_body(body):
-				continue
-			seen[body] = true
-			if _SPLASH.box_distance(body, center) <= radius:
-				found.append(body)
-	return found
+	return _SPLASH.bodies_within(get_tree(), center, radius, dead, GROUPS)
 
 
 static func who(body: Node) -> String:

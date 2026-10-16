@@ -15,27 +15,37 @@ const GROUPS: Array[StringName] = [&"wizard", &"unit", &"structure"]
 
 
 ## Hurts every body around `center` except `direct` (which the caller already hit with the whole amount).
-static func deal(tree: SceneTree, center: Vector3, amount: float, radius: float, direct: Node3D, from_slot: int) -> void:
+## `kind` is the Health damage kind: splash spell (Wrath, Fireball, Swarm, Steam Cloud) or splash ranged
+## (dealSplashRangedDamageAt, state.d:9400: a creature's shot, F119).
+static func deal(tree: SceneTree, center: Vector3, amount: float, radius: float, direct: Node3D, from_slot: int, kind: StringName = _HEALTH.SPLASH_SPELL) -> void:
+	for body in bodies_within(tree, center, radius, direct):
+		if float(body.get_node("Health").get("maximum")) <= 0.0:
+			continue
+		hurt(body, amount * maxf(0.0, 1.0 - box_distance(body, center) / radius), from_slot, kind)
+
+
+## The one walk of a splash (sacengine dealDamageAt's collisionTargets, state.d:9075-9088): live bodies of `groups`
+## whose hit box is within `radius` of `center`, but `except`, in group order (so the result does not depend on the
+## scene tree). Wizards and creatures go first. DeathCloud asks with creatures and wizards only.
+static func bodies_within(tree: SceneTree, center: Vector3, radius: float, except: Node3D = null, groups: Array[StringName] = GROUPS) -> Array[Node3D]:
+	var found: Array[Node3D] = []
 	if radius <= 0.0:
-		return
+		return found
 	var seen := {}
-	for group in GROUPS:
+	for group in groups:
 		for node in tree.get_nodes_in_group(group):
 			var body := node as Node3D
-			if body == null or body == direct or seen.has(body) or not _ROCK.is_live_body(body):
+			if body == null or body == except or seen.has(body) or not _ROCK.is_live_body(body):
 				continue
 			seen[body] = true
-			var health := body.get_node("Health")
-			if float(health.get("maximum")) <= 0.0:
-				continue
-			var distance := box_distance(body, center)
-			if distance <= radius:
-				hurt(body, amount * maxf(0.0, 1.0 - distance / radius), from_slot)
+			if box_distance(body, center) <= radius:
+				found.append(body)
+	return found
 
 
-static func hurt(body: Node3D, amount: float, from_slot: int) -> void:
-	var taken := float(body.get_node("Health").call("damage_typed", amount, _HEALTH.SPLASH_SPELL, from_slot))
-	_ROCK.report(body, taken, _HEALTH.SPLASH_SPELL)
+static func hurt(body: Node3D, amount: float, from_slot: int, kind: StringName = _HEALTH.SPLASH_SPELL) -> void:
+	var taken := float(body.get_node("Health").call("damage_typed", amount, kind, from_slot))
+	_ROCK.report(body, taken, kind)
 
 
 ## sacengine boxPointDistance: from the point to the body's hit box. A map building gives its model box

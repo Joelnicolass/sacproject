@@ -334,8 +334,6 @@ func _seat() -> void:
 func _physics_process(delta: float) -> void:
 	if not _should_simulate():
 		_present_pose(delta)
-		if _clip_pose:
-			_clip_pose.call("advance", delta)
 		return
 	if _seat_left > 0:
 		_seat()
@@ -391,8 +389,6 @@ func _physics_process(delta: float) -> void:
 	if GroundGuard.has_fallen(self):
 		_return_to_altar()
 	_update_clip_state(Vector2(velocity.x, velocity.z).length())
-	if _clip_pose:
-		_clip_pose.call("advance", delta)
 
 
 ## sacengine updateCreatureStats (state.d:14400-14403): regeneration · mana/maxMana per second,

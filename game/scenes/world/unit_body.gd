@@ -496,14 +496,10 @@ func _seat() -> void:
 func _physics_process(delta: float) -> void:
 	if not _should_simulate():
 		_update_clip_state()
-		if _clip_pose:
-			_clip_pose.call("advance", delta)
 		return
 	if is_taken():
 		## The Captive child moves it (a Sac Doctor carries it): no AI, no gravity, no collision.
 		_update_clip_state()
-		if _clip_pose:
-			_clip_pose.call("advance", delta)
 		return
 	if _seat_left > 0:
 		_seat()
@@ -531,8 +527,6 @@ func _physics_process(delta: float) -> void:
 		if not is_flying:
 			GroundGuard.hold_on_ground(self, before_dead)
 		_update_clip_state()
-		if _clip_pose:
-			_clip_pose.call("advance", delta)
 		return
 	match mode:
 		Mode.IDLE:
@@ -561,8 +555,6 @@ func _physics_process(delta: float) -> void:
 	if not is_flying and GroundGuard.has_fallen(self):
 		_gib_fallen()
 	_update_clip_state()
-	if _clip_pose:
-		_clip_pose.call("advance", delta)
 
 
 func _should_simulate() -> bool:

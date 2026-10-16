@@ -1,0 +1,181 @@
+{
+ "scene": "res://debug/village_cower.tscn",
+ "wait_first": 1.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "HighNoon/Units/Hunter",
+    "timeout": 30
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "pt73_watch",
+    "method": "view",
+    "args": [
+     "node:Farmer6",
+     6,
+     2.2,
+     217
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "watch",
+    "args": [
+     "Farmer6"
+    ]
+   }
+  },
+  {
+   "press": "check_tick"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Farmer6"
+    ]
+   }
+  },
+  {
+   "shot": "c1_encogido.png"
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clip_rate",
+    "args": [
+     "Farmer6",
+     4.0
+    ]
+   }
+  },
+  {
+   "wait": 5.0
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Farmer6"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "sequence",
+    "args": []
+   }
+  },
+  {
+   "shot": "c2_t6s.png"
+  },
+  {
+   "wait": 5.0
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Farmer6"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "sequence",
+    "args": []
+   }
+  },
+  {
+   "shot": "c3_t11s.png"
+  },
+  {
+   "wait": 5.0
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "rate_report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Farmer6"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "sequence",
+    "args": []
+   }
+  },
+  {
+   "shot": "c4_t16s.png"
+  },
+  {
+   "wait": 5.0
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Farmer6"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "sequence",
+    "args": []
+   }
+  },
+  {
+   "shot": "c5_t21s.png"
+  },
+  {
+   "wait": 5.0
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "clips",
+    "args": [
+     "Farmer6"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt94_clips",
+    "method": "sequence",
+    "args": []
+   }
+  },
+  {
+   "shot": "c6_t26s.png"
+  }
+ ]
+}

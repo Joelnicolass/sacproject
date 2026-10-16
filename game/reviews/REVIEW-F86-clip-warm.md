@@ -18,8 +18,10 @@ Reviewer: studio-reviewer (Opus 5.5). Guardado por el orquestador.
   2. `warm_us_by_model` no lo usa nadie: que lo lea FrameBudget o sacarlo.
   3. El `print` del precalentado debería ir detrás de una opción verbose.
 
-## Hallazgo descartado por el orquestador
+## Hallazgo descartado por el orquestador (ERRÓNEO, corregido el 2026-10-16)
 El reviewer sospechó que el clip avanzaba dos veces por tick (en `ClipPosePlayer._physics_process` y en el cuerpo). Revisé con `grep`: ningún cuerpo llama a `advance(`; el único que lo llama es `clip_pose_player.gd:62`. No hay doble avance.
 
 ## Para 027a
 El developer de 027b dejó el archivo original en el árbol unos minutos, durante sus corridas «antes». Las corridas de 027a anteriores a las 02:08 pueden mezclar versiones.
+
+**Corrección:** el descarte estaba mal. El orquestador buscó `advance(` y no encontró las llamadas `_clip_pose.call("advance", delta)` en `unit_body.gd` (líneas 500, 506, 535 y 565) ni en `wizard_body.gd` (338 y 395). El doble avance es real: los clips avanzan 2× por tick físico. Es solo presentación (`impact_frame` aparece únicamente en informes de debug) y se corrige junto con F94.

@@ -75,6 +75,8 @@ func _ready() -> void:
 	_apply_role("", true)
 
 
+## The player owns its clock: one advance per physics tick. Bodies only pick the role with play(); they must not call
+## advance() too (until RFC-028c units and wizards did, and every creature clip ran at twice its framerate).
 func _physics_process(delta: float) -> void:
 	advance(delta)
 

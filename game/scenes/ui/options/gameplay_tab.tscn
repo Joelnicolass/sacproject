@@ -1,0 +1,46 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/options/gameplay_tab.gd" id="1_tab"]
+[ext_resource type="Resource" path="res://data/ui/gameplay_prefs.tres" id="2_prefs"]
+
+[node name="GameplayTab" type="VBoxContainer"]
+custom_minimum_size = Vector2(360, 0)
+theme_override_constants/separation = 10
+script = ExtResource("1_tab")
+prefs = ExtResource("2_prefs")
+
+[node name="FriendlyFire" type="CheckButton" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Fuego amigo"
+
+[node name="DropSoul" type="CheckButton" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Soltar almas con P"
+
+[node name="SoulsRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="SoulsLabel" type="Label" parent="SoulsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Almas iniciales"
+
+[node name="StartingSouls" type="SpinBox" parent="SoulsRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 30.0
+value = 12.0
+rounded = true
+
+[node name="RulesNote" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.75, 0.75, 1)
+text = "Las reglas las decide quien creó la partida"
+autowrap_mode = 3

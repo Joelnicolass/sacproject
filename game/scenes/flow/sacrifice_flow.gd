@@ -14,10 +14,11 @@ var slot_picks: Dictionary = {}
 ## RFC-024 024f: the AI seats of the match this process simulates when the rules bring none (AiRoster reads them):
 ## «Contra la IA» in solo, or the dedicated started with --ai-slots=2 [--ai-god=pyro]. Empty = only humans.
 var solo_ai_seats: Array[AiSeat] = []
-## RFC-031 031a2 (F140): what the next match overrides of its rules (level, friendly fire). HighNoon applies it on
-## the authority. «Contra la IA» takes the level from the boot; the dedicated (and solo) the flags of this process.
+## RFC-031 031a2 (F140) / 031d (F143): what the next match overrides of its rules (level, friendly fire, drop soul,
+## starting souls). HighNoon applies it on the authority. Solo and «Contra la IA» take the boot's choice (GameplayPrefs
+## and %AiLevel) over the flags; the dedicated and the benches never go through the boot: only the flags of this process.
 var setup := MatchSetup.new()
-## The flags of this process (--level=N, --friendly-fire / --no-friendly-fire), read once; every reset starts here.
+## The flags of this process (MatchSetup.from_cli), read once; every reset starts here.
 var _cli_setup := MatchSetup.new()
 
 func _ready() -> void:
@@ -72,19 +73,19 @@ func pick_for(slot: int) -> Dictionary:
 	return {}
 
 
-func play_solo() -> void:
+## Solo. `chosen` is what the boot chose (GameplayPrefs, RFC-031 031d): every field it sets wins over the flags of this
+## process (boot > flag > rules); null keeps the flags.
+func play_solo(chosen: MatchSetup = null) -> void:
 	solo_ai_seats = []
-	setup = _cli_setup.copy()
+	setup = _cli_setup.overlaid_by(chosen)
 	_play_alone()
 
 
-## «Contra la IA»: solo, with the AI in slot 2. `god` empty = drawn when the match starts. `level` 1-9 is the wizard
-## level of both wizards (030d) and wins over --level; 0 keeps --level or the rules.
-func play_vs_ai(god: StringName = &"", level: int = 0) -> void:
+## «Contra la IA»: solo, with the AI in slot 2. `god` empty = drawn when the match starts. `chosen` is the boot's setup
+## (GameplayPrefs + the level of %AiLevel, 1-9 for both wizards, 030d); its fields win over the flags.
+func play_vs_ai(god: StringName = &"", chosen: MatchSetup = null) -> void:
 	solo_ai_seats = [_vs_ai_seat(god)]
-	setup = _cli_setup.copy()
-	if level >= 1 and level <= 9:
-		setup.level = level
+	setup = _cli_setup.overlaid_by(chosen)
 	_play_alone()
 
 

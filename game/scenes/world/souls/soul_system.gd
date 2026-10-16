@@ -65,14 +65,22 @@ func request_drop() -> void:
 	if MpAuthority.should_send_command():
 		submit_drop.rpc_id(MpAuthority.SERVER_PEER)
 		return
-	if not drop_soul(MpKit.local_slot()):
+	if not drop_soul(MpKit.local_slot()) and drop_allowed():
 		_say(NO_SOULS)
 
 
-## sacengine dropSoul: one soul off the purse, emerging at the wizard's feet with its side.
-func drop_soul(slot: int) -> bool:
+## The match lets P drop a soul (MatchRules.enable_drop_soul of the world's rules, options.d:106; RFC-031 031d sets it
+## from the boot or --[no-]drop-soul). Server or solo: a client's world keeps the product rules.
+func drop_allowed() -> bool:
 	var rules := _rules()
-	if rules and not rules.enable_drop_soul:
+	return rules == null or rules.enable_drop_soul
+
+
+## sacengine dropSoul: one soul off the purse, emerging at the wizard's feet with its side. Nothing (and no answer)
+## when the match does not allow it.
+func drop_soul(slot: int) -> bool:
+	if not drop_allowed():
+		print("soltar almas desactivado: el slot %d no suelta" % slot)
 		return false
 	var wizard := _wizard_for(slot)
 	if wizard == null:
@@ -90,7 +98,7 @@ func submit_drop() -> void:
 	var slot := MpAuthority.command_slot(self)
 	if slot <= 0:
 		return
-	if not drop_soul(slot):
+	if not drop_soul(slot) and drop_allowed():
 		_tell_no_souls.rpc_id(multiplayer.get_remote_sender_id())
 
 

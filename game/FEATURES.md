@@ -1189,3 +1189,28 @@ Deuda:
 - **Pasto al reiniciar en Baja:** una vez arrancó inactivo. Fue intermitente y no se pudo aislar.
 - **Botón Cerrar con HUD 1,2:** un clic falló una vez y no se reprodujo.
 - **Sin ejercitar:** los interruptores de Pantalla completa y VSync, y el look final (031-R).
+
+### F143 — Opciones → Jugabilidad (RFC-031, corte 031d)
+
+**Qué hace**
+- **`GameplayPrefs`** (`[partida]`): fuego amigo, soltar almas con P y almas iniciales. `to_setup` fija **solo lo que el jugador eligió explícitamente**.
+- **`MatchSetup`:** suma `drop_soul`, `starting_souls`, `--souls`, `--[no-]drop-soul` y `overlaid_by`. Es el único dueño de `--souls`; `ai_match` ya no lo parsea.
+- **Precedencia final:** elección explícita del jugador > flag > reglas.
+- **`MatchState`:** manda las tres reglas en el snapshot.
+- **`GameplayTab`:** se edita en el boot y en partida es de solo lectura (lee `MatchState`).
+- **`UserSettings` es el único dueño de `settings.cfg`.** Bajo AgentKit, sin `--user-settings=`, trabaja en sandbox: lee los defaults y escribe solo en memoria. Así los playtests nunca leen ni escriben el archivo del jugador. `--user-settings` reemplaza a `--apply-graphics` de F142.
+
+**Cierre (2026-10-16).** La review dio FAIL por B1: los playtests leían y pisaban las preferencias del jugador. Se corrigió en una ronda con el sandbox y la elección explícita. Playtest con ventana (`agent/out/pt143/`):
+- **Fuego amigo desde el boot:** apagarlo da «fuego amigo: no». Captura de la pestaña editada.
+- **Almas:** con 6, los dos magos arrancan con 6. Con soltar apagado, P no suelta (6→6). El contraste encendido baja 6→5→4.
+- **Persistencia:** las preferencias sobreviven al reinicio (`--user-settings`).
+- **Sandbox:** sin `--user-settings` muestra los defaults.
+- **Solo lectura en partida:** con la nota visible.
+- **Red:** un dedicado `--souls=6 --no-drop-soul` con un cliente que entra 8 s tarde. Los dos ven en la pestaña los valores del servidor y arrancan con 6 almas.
+- **El jugador queda aislado:** con un `settings.cfg` sembrado con FF off, una corrida bajo agente igual dice «sí» y el SHA del archivo no cambia. Con `--no-friendly-fire` gana el flag.
+- **Regresiones:** `f25`, `f10_walk` y `pt141_solo` dan AGENT_OK. El digest de seed 7 no cambia.
+
+Deuda:
+- **Fireball real desde el boot con FF off sobre una criatura propia en el radio: sin medir.** El flow no logra apuntar el Fireball, porque el Caster no acepta aliados como blanco directo (`caster.gd:333`, flag `disallowAlly`). El 0 sale de la cadena ya probada: el boot da «no», con `MatchSetup.friendly_fire = 0` el Fireball sobre Cogs propios hace 0 (dev F143) y F139 cubrió ×0 y ×0,5.
+- **Abiertos:** N4 (`print` en cada P), N5 (rango 1-30 contra `--souls=0`) y N6 (defaults antes del primer snapshot en el cliente).
+- **Look:** queda pendiente 031-R.

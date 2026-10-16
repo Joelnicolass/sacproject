@@ -91,5 +91,5 @@ func _initial_scale() -> float:
 	var stored: Variant = UserSettings.read_value(SECTION, KEY, default_scale)
 	if typeof(stored) in [TYPE_INT, TYPE_FLOAT] and is_finite(float(stored)):
 		return float(stored)
-	push_warning("HudScale: [%s] %s en %s no es un número; se usa el valor por defecto." % [SECTION, KEY, UserSettings.PATH])
+	push_warning("HudScale: [%s] %s en %s no es un número; se usa el valor por defecto." % [SECTION, KEY, UserSettings.path()])
 	return default_scale

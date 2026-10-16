@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="GameplayPrefs" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/options/gameplay_prefs.gd" id="1_prefs"]
+[ext_resource type="Resource" path="res://data/match_rules.tres" id="2_rules"]
+
+[resource]
+script = ExtResource("1_prefs")
+rules = ExtResource("2_rules")

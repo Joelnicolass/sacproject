@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # usage (through godot_run.sh): pt142_run.sh FLOW OUTNAME [extra user args] -- playtest F142: one Godot with window,
 # --max-fps 60 --resolution 1280x720, --fail-on-error. Killed above 2.5 GB or after RUN_LOOPS*2 s.
+# Under AgentKit the preferences are sandboxed (UserSettings.sandboxed: defaults, nothing written, GraphicsApplier inert).
+# The pt142 flows that apply or persist graphics need --user-settings=user://pt142_settings.cfg as an extra user arg
+# (it replaced --apply-graphics in F143).
 ROOT=/Users/joelsartori/Development/sacproject/game
 cd "$ROOT"
 OUT=agent/out/pt142/$2

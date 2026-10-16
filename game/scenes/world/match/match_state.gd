@@ -13,6 +13,8 @@ signal altar_state_changed(altar: Altar, state: Altar.State)
 signal side_defeated(slot: int)
 ## The match has a result (a winner, or nobody left).
 signal result_changed
+## The rules of this match shown to the players changed: taken from the world (server, solo) or from a snapshot (client).
+signal rules_changed
 
 ## Key of the dict in MpKit.push_snapshot (MpFlow ignores a snapshot with no world_id).
 const SNAPSHOT_KEY := "match"
@@ -32,6 +34,10 @@ var ended := false
 ## match setup changes only the world's rules, and this node keeps the product's.
 var friendly_fire := false
 var ally_damage_factor := 0.5
+## RFC-031 031d (F143): the other two rules the player sees in Options → Jugabilidad, same channel as friendly_fire.
+## The simulation reads world.rules (SoulPurse through WizardSpawner, SoulSystem); these are the copy the clients show.
+var drop_soul := true
+var starting_souls := 12
 
 var _collapsing: Dictionary = {}
 ## A client printed the rule of the first snapshot.
@@ -130,11 +136,15 @@ func take_rules() -> void:
 	var from: MatchRules = source if source is MatchRules else defaults
 	friendly_fire = from.friendly_fire
 	ally_damage_factor = from.ally_damage_factor
+	drop_soul = from.enable_drop_soul
+	starting_souls = from.starting_souls
 	_print_rules()
+	rules_changed.emit()
 
 
 func _print_rules() -> void:
 	print("fuego amigo: %s" % ("sí (×%.2f)" % ally_damage_factor if friendly_fire else "no"))
+	print("almas iniciales: %d · soltar almas: %s" % [starting_souls, "sí" if drop_soul else "no"])
 
 
 func collapse_seconds() -> float:
@@ -214,6 +224,7 @@ func to_snapshot() -> Dictionary:
 	return {
 		"altars": entries, "defeated": defeated_slots.duplicate(), "winner": winner_slot, "ended": ended,
 		"friendly_fire": friendly_fire, "ally_damage_factor": ally_damage_factor,
+		"drop_soul": drop_soul, "starting_souls": starting_souls,
 	}
 
 
@@ -221,11 +232,17 @@ func apply_snapshot(data: Dictionary) -> void:
 	if data.has("friendly_fire"):
 		var fire := bool(data["friendly_fire"])
 		var factor := float(data.get("ally_damage_factor", ally_damage_factor))
-		if not _rules_known or fire != friendly_fire or factor != ally_damage_factor:
+		var drop := bool(data.get("drop_soul", drop_soul))
+		var souls := int(data.get("starting_souls", starting_souls))
+		if not _rules_known or fire != friendly_fire or factor != ally_damage_factor or drop != drop_soul \
+				or souls != starting_souls:
 			friendly_fire = fire
 			ally_damage_factor = factor
+			drop_soul = drop
+			starting_souls = souls
 			_rules_known = true
 			_print_rules()
+			rules_changed.emit()
 	for entry: Dictionary in data.get("altars", []):
 		var altar := _altar_at(int(entry.get("slot", 0)), int(entry.get("index", 0)))
 		if altar == null:

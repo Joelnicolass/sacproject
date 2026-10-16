@@ -9,17 +9,39 @@ extends RefCounted
 var level := 0
 ## 1 on, 0 off, -1 = the rules' friendly_fire.
 var friendly_fire := -1
+## RFC-031 031d (F143): 1 on, 0 off, -1 = the rules' enable_drop_soul (P drops a soul).
+var drop_soul := -1
+## RFC-031 031d (F143): blue souls of every wizard at the start; -1 = the rules' starting_souls.
+var starting_souls := -1
 
 
 func copy() -> MatchSetup:
 	var other := MatchSetup.new()
 	other.level = level
 	other.friendly_fire = friendly_fire
+	other.drop_soul = drop_soul
+	other.starting_souls = starting_souls
 	return other
 
 
 func is_empty() -> bool:
-	return level == 0 and friendly_fire < 0
+	return level == 0 and friendly_fire < 0 and drop_soul < 0 and starting_souls < 0
+
+
+## A copy of this setup where every field `over` sets wins (boot > flag: the boot's setup over the flags' one).
+func overlaid_by(over: MatchSetup) -> MatchSetup:
+	var merged := copy()
+	if over == null:
+		return merged
+	if over.level > 0:
+		merged.level = over.level
+	if over.friendly_fire >= 0:
+		merged.friendly_fire = over.friendly_fire
+	if over.drop_soul >= 0:
+		merged.drop_soul = over.drop_soul
+	if over.starting_souls >= 0:
+		merged.starting_souls = over.starting_souls
+	return merged
 
 
 ## A copy of `rules` with the overrides of this setup. Without overrides (a bench, a run with no flags) it returns
@@ -32,12 +54,18 @@ func apply_to(rules: Variant) -> Variant:
 		copy.wizard_level = level
 	if friendly_fire >= 0:
 		copy.friendly_fire = friendly_fire == 1
+	if drop_soul >= 0:
+		copy.enable_drop_soul = drop_soul == 1
+	if starting_souls >= 0:
+		copy.starting_souls = starting_souls
 	return copy
 
 
-## --level=N (1-9, like sacengine app.d:276) and --friendly-fire / --no-friendly-fire (app.d:333-355: the flag is the
-## name of the option field). Prints what it took. With both flags --no-friendly-fire wins (sacengine keeps the last one
-## in argv; passing both is a usage error).
+## --level=N (1-9, like sacengine app.d:276), --souls=N (app.d:278; the one owner of this flag, the bench ai_match
+## included: it reaches the bench through HighNoon like any other match), and the option flags --friendly-fire /
+## --no-friendly-fire and --drop-soul / --no-drop-soul (app.d:333-355: the flag is the name of the option field).
+## Prints what it took. With both forms of a flag the --no- one wins (sacengine keeps the last one in argv; passing
+## both is a usage error).
 static func from_cli() -> MatchSetup:
 	var setup := MatchSetup.new()
 	var raw := MpBoot.user_value("level", "")
@@ -52,4 +80,15 @@ static func from_cli() -> MatchSetup:
 		setup.friendly_fire = 0
 	elif MpBoot.user_flag("friendly-fire"):
 		setup.friendly_fire = 1
+	if MpBoot.user_flag("no-drop-soul"):
+		setup.drop_soul = 0
+	elif MpBoot.user_flag("drop-soul"):
+		setup.drop_soul = 1
+	var souls := MpBoot.user_value("souls", "")
+	if not souls.is_empty():
+		if souls.is_valid_int() and int(souls) >= 0:
+			setup.starting_souls = int(souls)
+			print("almas iniciales %d (--souls)" % setup.starting_souls)
+		else:
+			push_warning("--souls=%s: no es un número ≥ 0, se usan las de las reglas" % souls)
 	return setup

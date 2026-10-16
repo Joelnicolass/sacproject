@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://bootsacrifice01"]
+[gd_scene load_steps=9 format=3 uid="uid://bootsacrifice01"]
 
 [ext_resource type="Script" path="res://scenes/ui/boot.gd" id="1_boot"]
 [ext_resource type="PackedScene" path="res://scenes/ui/character_select.tscn" id="2_select"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/options/options_menu.tscn" id="4_options"]
 [ext_resource type="Script" path="res://scenes/ui/options/graphics_applier.gd" id="5_applier"]
 [ext_resource type="Resource" path="res://data/ui/graphics_prefs.tres" id="6_prefs"]
+[ext_resource type="Resource" path="res://data/ui/gameplay_prefs.tres" id="7_gameplay"]
 
 [node name="Boot" type="Control"]
 layout_mode = 3
@@ -16,6 +17,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_boot")
 rules = ExtResource("3_rules")
+gameplay_prefs = ExtResource("7_gameplay")
 
 [node name="CharacterSelect" parent="." instance=ExtResource("2_select")]
 unique_name_in_owner = true

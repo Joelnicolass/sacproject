@@ -2,6 +2,8 @@ extends Control
 
 ## Product rules: %AiLevel starts at their wizard_level (RFC-030 030d).
 @export var rules: MatchRules
+## RFC-031 031d (F143): the player's Options → Jugabilidad (data/ui/gameplay_prefs.tres); the matches made here take it.
+@export var gameplay_prefs: GameplayPrefs
 
 @onready var ip: LineEdit = %Ip
 @onready var status: Label = %Status
@@ -32,13 +34,22 @@ func _on_confirmed() -> void:
 	column.visible = true
 
 func _on_solo() -> void:
-	SacrificeFlow.play_solo()
+	SacrificeFlow.play_solo(_setup(0))
 
 ## «Contra la IA» (RFC-024 024f): solo with the AI in slot 2; the god of %AiGod, or drawn with «Aleatorio».
 func _on_vs_ai() -> void:
 	var picker: OptionButton = %AiGod
 	var level: OptionButton = %AiLevel
-	SacrificeFlow.play_vs_ai(StringName(str(picker.get_item_metadata(picker.selected))), int(level.get_item_metadata(level.selected)))
+	SacrificeFlow.play_vs_ai(StringName(str(picker.get_item_metadata(picker.selected))), _setup(int(level.get_item_metadata(level.selected))))
+
+## The match this boot creates: Options → Jugabilidad and `level` (0 = the rules'). Without prefs, only the level.
+func _setup(level: int) -> MatchSetup:
+	if gameplay_prefs:
+		return gameplay_prefs.to_setup(level)
+	push_warning("Boot: falta gameplay_prefs; la partida usa las reglas y los flags.")
+	var setup := MatchSetup.new()
+	setup.level = level
+	return setup
 
 func _fill_ai_gods() -> void:
 	var picker: OptionButton = %AiGod

@@ -81,6 +81,8 @@ Features: F139–F143 (cortes 031a, 031a2, 031b, 031c, 031d).
 5. **`MatchSetup`** (RefCounted en `SacrificeFlow`) reemplaza `level_override` / `_cli_level`.
    - `HighNoon._enter_tree`, en la autoridad, aplica `rules = setup.apply_to(rules)` (`duplicate()`) antes de `MatchSeed.begin`.
    - Precedencia: boot > flag > reglas.
+   - **Precedencia final (F143, REVIEW-F143):** elección explícita del jugador > flag > reglas. «Explícita» es una clave que está en `[partida]` o que el jugador tocó en la sesión; `GameplayPrefs.to_setup` deja en −1 el resto, así que un `--no-friendly-fire` / `--souls` / `--[no-]drop-soul` vale desde el boot cuando el jugador no eligió ese campo. El nivel de «Contra la IA» siempre viene del selector del boot.
+   - **Sandbox (F143):** `UserSettings` es el único dueño del archivo. Bajo AgentKit (`--agent=…`) sin `--user-settings`, `sandboxed()` es true: se leen los defaults y se escribe en un `ConfigFile` en memoria; el `settings.cfg` del jugador nunca se lee ni se pisa. `--user-settings=user://<archivo>.cfg` cambia la ruta (tests de persistencia) y apaga el sandbox; reemplaza a `--apply-graphics`. `GraphicsApplier` queda inerte cuando `sandboxed()`.
 6. **Preferencias locales.** `GraphicsPrefs` y `GameplayPrefs` son Resources compartidos (patrón `HudScale`) y viven en `[graphics]` / `[partida]` de `user://settings.cfg`. El archivo lo maneja el helper estático `UserSettings`.
 7. **Gráficos por presets:** el menú elige un `LookQuality` y no copia sus campos. «Personalizada» queda fuera.
 8. **Pausa.**

@@ -10,8 +10,9 @@ extends Node
 ## - Quality: `rig.apply_quality(preset)` in a match (the world has a rig; the boot has none).
 ## - Inert in everything (window and preset) in the editor, in a headless process, in the dedicated server and under
 ##   AgentKit (`--agent=…` in the user args): user://settings.cfg is shared by the player and the agents' runs, so a
-##   test never inherits the player's choice (no VSync off / no cap in a playtest). `--apply-graphics` (debug only, for
-##   the F142 playtest) turns it back on under AgentKit; the engine flags of the run still win.
+##   test never inherits the player's choice (no VSync off / no cap in a playtest). The rule is UserSettings.sandboxed():
+##   `--user-settings=user://<file>.cfg` (a playtest of the preferences) turns it back on with that file; the engine
+##   flags of the run still win.
 
 ## The shared preference (data/ui/graphics_prefs.tres).
 @export var prefs: GraphicsPrefs
@@ -79,12 +80,7 @@ func _inert() -> bool:
 		return true
 	if MpBoot.is_dedicated_process():
 		return true
-	var user_args := OS.get_cmdline_user_args()
-	var under_agent := false
-	for arg in user_args:
-		if arg.begins_with("--agent="):
-			under_agent = true
-	return under_agent and not ("--apply-graphics" in user_args)
+	return UserSettings.sandboxed()
 
 
 ## What the engine's own command line set for this run. Godot consumes its flags (--max-fps, --disable-vsync,

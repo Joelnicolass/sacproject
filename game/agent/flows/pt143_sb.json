@@ -1,0 +1,46 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.5,
+ "steps": [
+  {
+   "click": "%God_pyro"
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "click": "%Play"
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "click": "%Options"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "drag": {
+    "node": "%OptionTabs",
+    "from_x": 140,
+    "from_y": 14,
+    "to_x": 140,
+    "to_y": 14
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "call": {
+    "harness": "pt143_watch",
+    "method": "state",
+    "args": []
+   }
+  },
+  {
+   "shot": "pt143_s1_sandbox_tab.png"
+  }
+ ]
+}

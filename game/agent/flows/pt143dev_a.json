@@ -1,0 +1,208 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.5,
+ "steps": [
+  {
+   "click": "%God_james"
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "click": "%Play"
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "call": {
+    "harness": "pt143_watch",
+    "method": "state",
+    "args": []
+   }
+  },
+  {
+   "click": "%Options"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "drag": {
+    "node": "%OptionTabs",
+    "from_x": 140,
+    "from_y": 14,
+    "to_x": 140,
+    "to_y": 14
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "assert": {
+    "node": "%FriendlyFire",
+    "visible_in_tree": true
+   }
+  },
+  {
+   "call": {
+    "harness": "pt143_watch",
+    "method": "state",
+    "args": []
+   }
+  },
+  {
+   "shot": "pt143_a1_boot_tab_default.png"
+  },
+  {
+   "click": "%FriendlyFire"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "click": "%DropSoul"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "range": {
+    "node": "%StartingSouls",
+    "value": 6
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "call": {
+    "harness": "pt143_watch",
+    "method": "state",
+    "args": []
+   }
+  },
+  {
+   "shot": "pt143_a2_boot_tab_edited.png"
+  },
+  {
+   "click": "%CloseOptions"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "click": "%VsAi"
+  },
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 60
+   }
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "call": {
+    "harness": "pt143_watch",
+    "method": "state",
+    "args": []
+   }
+  },
+  {
+   "press": "pause_menu"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "click": "PauseMenu/Dim/PausePanel/Column/Main/Options"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "drag": {
+    "node": "%OptionTabs",
+    "from_x": 140,
+    "from_y": 14,
+    "to_x": 140,
+    "to_y": 14
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "call": {
+    "harness": "pt143_watch",
+    "method": "state",
+    "args": []
+   }
+  },
+  {
+   "shot": "pt143_a3_match_tab_readonly.png"
+  },
+  {
+   "assert": {
+    "node": "%FriendlyFire",
+    "prop": "disabled",
+    "equals": true
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "call": {
+    "harness": "pt143_watch",
+    "method": "state",
+    "args": []
+   }
+  },
+  {
+   "click": "%CloseOptions"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "click": "PauseMenu/Dim/PausePanel/Column/Main/Continue"
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "press": "drop_soul"
+  },
+  {
+   "wait": 0.8
+  },
+  {
+   "call": {
+    "harness": "pt143_watch",
+    "method": "state",
+    "args": []
+   }
+  },
+  {
+   "press": "drop_soul"
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "call": {
+    "harness": "pt143_watch",
+    "method": "state",
+    "args": []
+   }
+  },
+  {
+   "shot": "pt143_a4_after_p.png"
+  }
+ ]
+}

@@ -21,6 +21,9 @@ signal struck(target: Node3D, amount: float, hit_chance: float, roll: float)
 @export var downward_threshold := 0.25
 ## sacengine `dealDamage`: melee damage *= 0.4 * meleeResistance.
 @export var melee_resistance_scale := 0.4
+## F117: the attacker's passiveOnDamage (Firefist ahtf) and its own health, which the factor reads. Optional: empty = ×1.
+@export var passive: DamagePassive
+@export var own_health: Health
 
 ## sacengine `defaultMeleeHitbox`: the Druid's box is 1.3× wider and deeper.
 const WIDTH_SCALE := {"nmuh": 1.3}
@@ -194,7 +197,11 @@ func _animation(index: int) -> Dictionary:
 	return anim if int(anim.get("frames", 0)) > 0 else {}
 
 
-## sacengine attackDamageFactor (state.d:8884): a guardian hits harder. 1 for a body without the property.
+## sacengine attackDamageFactor (state.d:8882-8892): a guardian hits harder (1 for a body without the property), and the
+## passive scales melee by the attacker's health (Firefist).
 func _attack_factor() -> float:
 	var factor: Variant = _body.get("attack_factor")
-	return maxf(0.0, float(factor)) if factor != null else 1.0
+	var result := maxf(0.0, float(factor)) if factor != null else 1.0
+	if passive != null and own_health != null and own_health.maximum > 0.0:
+		result *= passive.outgoing_melee_factor(own_health.current / own_health.maximum)
+	return result

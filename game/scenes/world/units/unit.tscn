@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3]
+[gd_scene load_steps=30 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/unit_body.gd" id="1_body"]
 [ext_resource type="Script" path="res://scenes/world/body_visual.gd" id="2_visual"]
@@ -23,6 +23,10 @@
 [ext_resource type="Script" path="res://scenes/world/units/target_picker.gd" id="f72_picker"]
 [ext_resource type="Script" path="res://scenes/world/units/flight.gd" id="f116_flight"]
 [ext_resource type="Script" path="res://scenes/world/units/body_collider.gd" id="f135_collider"]
+[ext_resource type="Script" path="res://scenes/world/units/damage_passive.gd" id="f117_passive"]
+[ext_resource type="Script" path="res://scenes/data/damage_passive_type.gd" id="f117_type"]
+[ext_resource type="Resource" path="res://data/passives/korq.tres" id="f117_korq"]
+[ext_resource type="Resource" path="res://data/passives/ahtf.tres" id="f117_ahtf"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_unit"]
 radius = 0.3
@@ -86,11 +90,19 @@ script = ExtResource("2_visual")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_unit")
 
-[node name="Health" type="Node" parent="."]
+[node name="Health" type="Node" parent="." node_paths=PackedStringArray("passive")]
 script = ExtResource("3_health")
+passive = NodePath("../DamagePassive")
 
-[node name="MeleeAttack" type="Node" parent="."]
+[node name="MeleeAttack" type="Node" parent="." node_paths=PackedStringArray("passive", "own_health")]
 script = ExtResource("4_melee")
+passive = NodePath("../DamagePassive")
+own_health = NodePath("../Health")
+
+[node name="DamagePassive" type="Node" parent="." node_paths=PackedStringArray("body")]
+script = ExtResource("f117_passive")
+body = NodePath("..")
+types = Array[ExtResource("f117_type")]([ExtResource("f117_korq"), ExtResource("f117_ahtf")])
 
 [node name="ManaPool" type="Node" parent="."]
 script = ExtResource("f29_mana")

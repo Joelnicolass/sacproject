@@ -331,7 +331,7 @@ Riesgo: el cambio de reposo afecta a todas las criaturas de nivel 2 o más. Hay 
 
 **Árbol**
 ```text
-tools/export_stats.py                 M  passive_on_damage = slots[2] (sacobject.d:426); abilities ya no lo mezcla (Phoenix rifl deja de ser activa)
+tools/export_stats.py                 M  passive_on_damage = slots[2] (sacobject.d:426); abilities conserva el slot 2 (ver Decisiones de 030f)
 scenes/data/creature_type.gd, game_data.gd  M  passive_on_damage: String
 scenes/world/units/damage_passive.gd  N  class_name DamagePassive: incoming_factor(vida%) / outgoing_melee_factor(vida%) desde su .tres
 data/passives/korq.tres, ahtf.tres    N  DamagePassiveType (a + b·vida% o 1 + c·(1−vida%))
@@ -343,6 +343,11 @@ scenes/world/units/unit.tscn          M  hijo DamagePassive; Health y MeleeAttac
 1. Log: el golpe al Taurock al 50 % vale ×0,625.
 2. El golpe del Firefist al 20 % vale ×2,2.
 3. Los NPC Taurock de F73 usan la pasiva (declarado: `village_taurock` cambia su registro).
+
+**Decisiones (2026-10-16, por el developer de F117):**
+- **Criterios 1 y 2:** se leen como fórmula con la h anterior al golpe. Taurock recibe ×(0,25 + 0,75·h) de todo daño menos la caída (`state.d:9010-9015`). Firefist hace ×(1 + 1,5·(1−h)) de daño, solo cuerpo a cuerpo (`state.d:8886-8890`). En el banco, el Druid golpea primero y el Firefist llega a h = 0,181, así que el log muestra ×2,228; eso cumple.
+- **`abilities` sigue incluyendo el slot 2.** Sacarlo rompía tres cosas: la IA cuenta ese slot (`shiny.d:888-898`), el aura `hmba` del Manahoar vive ahí y el digest de nivel 1 cambiaría. Phoenix `rifl` ya no era activa: `active_ability` toma el slot 1 en las criaturas a distancia.
+- **Quedan sin efecto:** `tdhg` y `tfhg` (Styx, Warmonger), que ahora aparecen en `passive_on_damage`.
 
 ### 030g — F118 Nubes al morir (Cog, Phoenix, Necryl, Mutant, Dragon)
 
@@ -491,7 +496,7 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 1. **Disco y tiempo del export (030a):** hoy son 1,6 GB de OBJ para 32 modelos (RFC-023 §2). Las 35 nuevas suman ≈ +1,7 GB (inferido). Si RFC-023 (esqueleto) se aprueba, esos clips se reemplazan por `.glb`. 030a sigue valiendo para los datos y los niveles.
 2. **Pose y tamaño:** las 35 están horneadas desde la pose de enlace. Las alturas actuales pueden ser falsas (Phoenix 12,4 m). Se corrige al re-hornear con `idle`; si no, se usa `BodyPoseOverride`.
 3. **Cuerpos grandes:** `BodySeparation` y la navegación (RFC-026) con cajas de 6 a 10 m pueden trabar el paso. Se mide en el banco de 030b.
-4. **El export pierde roles de pasiva** (`abilities[2]`): se corrige en 030f. Hasta entonces Phoenix muestra `rifl` como activa con «No implementado».
+4. **El export pierde roles de pasiva** (`abilities[2]`): **cerrado en 030f.** `passive_on_damage` se exporta aparte y `abilities` conserva el slot 2 porque la IA y `hmba` lo usan. Phoenix `rifl` no era activa.
 5. **La IA valora habilidades que el port no tiene** (`fill_by_tag` usa el dato), así que puede preferir una criatura cuya habilidad todavía no existe. Es aceptable: la IA no usa habilidades de criatura.
 6. **Escenas de debug sin `.tres` propio** heredan nivel 9 desde 030c (ver criterio 4 de 030c).
 7. **Efectos de disparo y habilidades:** lo de §2.1 sale de grep (inferido). Cada corte lee la función de sacengine antes de codificar.

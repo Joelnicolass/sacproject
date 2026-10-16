@@ -160,6 +160,9 @@ func _prepare() -> void:
 				"x": x, "y": (0.0 if is_nan(ground) else ground) + 0.2, "z": z,
 				"yaw": yaw,
 			})
+			if group.health_fraction < 1.0:
+				var health := unit.get_node("Health") as Health
+				health.current = health.maximum * group.health_fraction
 			audit.watch_unit(unit)
 			_watched.append(unit)
 			made.append(unit)

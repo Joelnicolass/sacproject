@@ -23,3 +23,5 @@ extends Resource
 ## "advance_altar": the group is ordered (Orders.apply_for, like a human's) to advance to the altar of `order_slot`.
 @export var order := ""
 @export var order_slot := 2
+## F117: each body starts with this fraction of its health (1 = full). The bench writes Health.current once, before the record starts.
+@export_range(0.01, 1.0, 0.01) var health_fraction := 1.0

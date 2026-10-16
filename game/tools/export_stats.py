@@ -943,6 +943,9 @@ def main() -> None:
         entry["ranged"] = creature_tag in ntt["ranged"]
         entry["ranged_attack"] = slots[0] if entry["ranged"] else ""
         entry["active_ability"] = slots[1] if entry["ranged"] else slots[0]
+        # sacobject.d:426 passiveOnDamage = abilities[2] (korq Taurock, ahtf Firefist, rifl Phoenix, gcil, hmba...).
+        entry["passive_on_damage"] = slots[2]
+        # Every non-null slot, the passive too: shiny.d:888-898 counts and rates all of sacObject.abilities.
         entry["abilities"] = [a for a in slots if a]
         entry["passive_abilities"] = [a for a in entry["passive_abilities"] if a]
         model_path = model_paths.get(entry["model"].lower(), "")

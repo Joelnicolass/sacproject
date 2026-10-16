@@ -33,6 +33,8 @@ const SPLASH_RANGED := &"splash_ranged"
 ## Takes a hit before this body does (a building's guardians, RFC-021b). Optional: empty = nobody
 ## stands in for it.
 @export var deflector: DamageDeflector
+## F117: the body's passiveOnDamage (Taurock korq). Optional: empty = no passive, every hit ×1.
+@export var passive: DamagePassive
 
 ## Multiplies damage_typed on top of the resistance: the body's own effects, as dealDamage
 ## stacks them (state.d:8962-8969); Rockform sets 0.05.
@@ -63,7 +65,7 @@ func damage(amount: float, from_slot: int = 0) -> void:
 	## A caller that does not say the kind (melee, rituals) is asked as melee.
 	if not is_nan(_deflect(amount, MELEE, from_slot)):
 		return
-	_hit(amount, from_slot)
+	_hit(amount * _passive_factor(), from_slot)
 
 
 func _hit(amount: float, from_slot: int) -> void:
@@ -88,7 +90,7 @@ func damage_typed(amount: float, kind: StringName, from_slot: int = 0) -> float:
 	var taken := 0.0
 	if from_slot <= 0 or from_slot != _owner_slot():
 		var factor := float(kind_factors.get(kind, 1.0))
-		taken = minf(current, amount * resistance(kind) * maxf(0.0, damage_factor) * maxf(0.0, factor))
+		taken = minf(current, amount * resistance(kind) * maxf(0.0, damage_factor) * maxf(0.0, factor) * _passive_factor())
 	if taken > 0.0:
 		_hit(taken, from_slot)
 	hurt.emit(taken, kind, from_slot)
@@ -112,6 +114,13 @@ func resistance(kind: StringName) -> float:
 
 
 var _deflecting := false
+
+
+## sacengine dealRawDamage (state.d:9010-9028): the passive scales every kind of hit by the health before it.
+func _passive_factor() -> float:
+	if passive == null or maximum <= 0.0:
+		return 1.0
+	return passive.incoming_factor(current / maximum)
 
 
 ## One query per hit: the damage the deflector's stand-ins took, or NAN if it did not deflect.

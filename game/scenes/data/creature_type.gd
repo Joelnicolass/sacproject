@@ -43,6 +43,9 @@ extends Resource
 @export var ranged_attack_tag: String = ""
 ## AbilityType tag of the active ability (abilities[1] if ranged, else abilities[0]).
 @export var active_ability_tag: String = ""
+## sacengine passiveOnDamage = abilities[2] (sacobject.d:426): korq (Taurock), ahtf (Firefist), rifl, gcil... "" = none.
+## DamagePassive looks it up among its DamagePassiveType resources; a tag without one there does nothing.
+@export var passive_on_damage: String = ""
 ## shoot0, shoot1 from the SXSK/SKEL: {tag, frames, framerate, shoot_ticks}.
 @export var shoot_animations: Array[Dictionary] = []
 ## Peasant clips (CRE8 animation slots 32/33/35/37, RFC-028c): role -> {tag, frames, framerate}, with roles

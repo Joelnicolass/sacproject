@@ -980,3 +980,19 @@ Deuda:
 - No se probó el choque contra el techo de una estructura alta.
 - Hay comentarios viejos en `pt116_flight.gd` y en la nota de adrg.
 - Pendiente 030e2-R (REA).
+
+### F117 — Pasivas de daño: Taurock y Firefist (RFC-030, corte 030f)
+
+`DamagePassive`, hijo de `unit.tscn`, es el único que calcula el factor de `passiveOnDamage`. `Health` y `MeleeAttack` le preguntan por un socket. Los datos viven en `data/passives/korq.tres` (Taurock recibe ×(0,25 + 0,75·h), `state.d:9010-9015`) y en `ahtf.tres` (Firefist pega ×(1 + 1,5·(1−h)) cuerpo a cuerpo, `state.d:8886-8890`). En ambos casos, h es la vida relativa antes del golpe. `export_stats.py` exporta `passive_on_damage` sin sacar el slot 2 de `abilities`, porque lo usan la IA y el `hmba` del Manahoar.
+
+**Cierre (2026-10-16).** Review PASS (`reviews/REVIEW-F117-damage-passives.md`). Playtest con ventana PASS (`agent/out/pt117/`):
+- **Taurock:** al 50 % recibe ×0,6250. Los 13 golpes siguen la fórmula con un error de ±0,0003.
+- **Firefist:** ×2,2281 con h = 0,181 y ×2,2824 con h = 0,145. El blanco recibe el factor una sola vez.
+- **NPC Taurock** (`pt73_taurock`): AGENT_OK. Cambia su registro, y eso estaba declarado.
+- **Regresión:** `f25_flying_summon` AGENT_OK. Los digests de seed 7, `--npcs` y `npc_load` no cambian. `rules_suite` PASS.
+
+Deuda:
+- Falta la excepción del daño por caída: el port todavía no tiene caída.
+- `gcil` (rayo ×0,25) va a necesitar una firma que reciba el tipo de daño.
+- `tdhg` y `tfhg` quedan sin efecto.
+- En el banco, las unidades aparecen recién al largar.

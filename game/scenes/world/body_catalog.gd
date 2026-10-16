@@ -9,6 +9,9 @@ extends RefCounted
 ## The headless server reads sizes only.
 
 const BAKED_DIR := "res://cache/baked/"
+## Clip frames baked by tools/bake_clips.gd (RFC-027 027h): one geometry .res per frame OBJ, same relative path.
+const CLIPS_SUBDIR := "clips/"
+const LOOK_DIR := "res://cache/look/"
 const OVERRIDES_PATH := "res://data/bodies/pose_overrides.tres"
 
 static var _dir := BAKED_DIR
@@ -101,6 +104,14 @@ static func mesh(model: String) -> Mesh:
 		loaded = ResourceLoader.load(path) as Mesh
 	_meshes[model] = loaded
 	return loaded
+
+
+## Where tools/bake_clips.gd leaves the baked frame of a clip OBJ (res://cache/look/X.obj -> <baked>/clips/X.res).
+## Empty for a path outside cache/look/. Only a path: the file may not exist (cache not baked yet).
+static func clip_frame_path(obj_path: String) -> String:
+	if not obj_path.begins_with(LOOK_DIR):
+		return ""
+	return _dir + CLIPS_SUBDIR + obj_path.trim_prefix(LOOK_DIR).get_basename() + ".res"
 
 
 ## Local transform that stands the baked mesh upright with its origin on the ground.

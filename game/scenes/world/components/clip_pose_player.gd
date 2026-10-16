@@ -2,8 +2,8 @@
 class_name ClipPosePlayer
 extends Node
 
-## Plays real SXSK clips as per-frame meshes exported by sacengine.
-## Falls back to the static baked mesh if cache or clip is missing.
+## Plays real SXSK clips as per-frame meshes exported by sacengine, baked to .res by tools/bake_clips.gd (027h).
+## An unbaked frame is built from its OBJ; falls back to the static baked mesh if cache or clip is missing.
 
 ## The active clip went past its last frame and started again (RFC-028c). Emitted on the physics tick that wraps,
 ## on every peer (the clip clock runs without meshes too); the body picks the next variant from it.
@@ -31,8 +31,8 @@ static var _warm_log := -1
 ## first body of a model decides for all of them. 1 removes the frame-0 hitch of a role change (the first order
 ## of 150); 0 turns the warm-up off.
 @export_range(0, 8) var warm_frames_per_role := 1
-## Time per frame for the warm-up queue. One OBJ costs ~9–12 ms, so at least one is built per frame and a frame
-## never pays more than one OBJ over the budget.
+## Time per frame for the warm-up queue. A baked frame loads in ~1 ms; an unbaked OBJ costs ~9–12 ms. At least one
+## is built per frame, so a frame never pays more than one over the budget.
 @export_range(0.0, 16.0, 0.5) var warm_budget_ms := 4.0
 
 var _cache: Dictionary = {}
@@ -277,9 +277,40 @@ func _frame_mesh(path: String) -> Mesh:
 		return null
 	if _mesh_cache.has(path):
 		return _mesh_cache[path]
-	var built := _OBJ.build(path, "", {_OBJ.MIRROR_Z: true})
+	var started := Time.get_ticks_usec()
+	var built := _baked_frame(path)
+	var source := "horneado"
+	if built == null:
+		built = _OBJ.build(path, "", {_OBJ.MIRROR_Z: true})
+		source = "obj"
 	_mesh_cache[path] = built
+	if _warm_logging():
+		print("ClipPosePlayer: cuadro %s %s %.1f ms" % [path.trim_prefix(BodyCatalog.LOOK_DIR), source, (Time.get_ticks_usec() - started) / 1000.0])
 	return built
+
+
+## RFC-027 027h: the frame's geometry baked by tools/bake_clips.gd, read with ResourceLoader (~1 ms instead of
+## 10–15 ms of OBJ parsing). The bake saves no materials (they would embed one texture copy per frame): each surface
+## is named after its OBJ label and gets the same shared ObjMesh.material() that build() would put. Null when the
+## frame is not baked, or the OBJ is newer than its bake: then the caller builds the OBJ as before.
+static func _baked_frame(obj_path: String) -> ArrayMesh:
+	var baked := BodyCatalog.clip_frame_path(obj_path)
+	if baked.is_empty() or not ResourceLoader.exists(baked):
+		return null
+	# A frame whose OBJ is gone falls back like an unbuildable OBJ (base mesh), not to orphan geometry.
+	if not FileAccess.file_exists(obj_path):
+		return null
+	# Baked frames are invalidated by OBJ mtime only: changing obj_mesh.gd needs `bake_clips.gd -- --force`.
+	if FileAccess.get_modified_time(obj_path) > FileAccess.get_modified_time(baked):
+		return null
+	var mesh := ResourceLoader.load(baked) as ArrayMesh
+	if mesh == null:
+		return null
+	var keys := _OBJ.chroma_keys(obj_path)
+	for i in mesh.get_surface_count():
+		var label := mesh.surface_get_name(i)
+		mesh.surface_set_material(i, _OBJ.material(obj_path, label, "", int(keys.get(label, -1))))
+	return mesh
 
 
 func _restore_base() -> void:

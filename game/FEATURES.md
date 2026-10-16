@@ -884,3 +884,10 @@ Review NEEDS WORK, corregida (`reviews/REVIEW-F98-lightning.md`). Playtest PASS 
 Follow-ups para un RFC de simulación:
 - El daño y las chispas deberían llegar en el frame 12.
 - Falta el redireccionado por `collideRay`.
+
+### F89 — Cuadros de clip horneados a .res (RFC-027, corte 027h)
+Hecho y cerrado (2026-10-16). `tools/bake_clips.gd` hornea 16 633 cuadros de clip a `cache/baked/clips/*.res` (solo geometría, 942 MB, incremental; `-- --force` si cambia `obj_mesh.gd`). `ClipPosePlayer` los carga con `ResourceLoader` (~1 ms) y, si no están, cae al OBJ.
+
+En la primera convocatoria de un modelo nuevo, los cuadros de más de 25 ms bajan de 31–97 a 1. Primera orden de 150: de 3,3 a 2,8 ms. Digest igual. Malla idéntica bit a bit. Review PASS (`reviews/REVIEW-F89-baked-clips.md`). Sin playtest de jugador aparte: el developer midió con ventana en los 5 biomas y la galería se ve igual.
+
+Deuda: el cuadro de la convocatoria sigue en 62–74 ms. Son 38 ms fijos de convocar más la primera vez del modelo (material y pipeline). Propuesta de corte: precalentar los modelos del libro al empezar la partida y perfilar el costo de convocar.

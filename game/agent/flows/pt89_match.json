@@ -1,0 +1,234 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.0,
+ "steps": [
+  {
+   "click": "%God_james"
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "click": "%Play"
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "assert": {
+    "node": "%VsAi",
+    "visible_in_tree": true
+   }
+  },
+  {
+   "print": {
+    "node": "%VsAi",
+    "prop": "text"
+   }
+  },
+  {
+   "click": "%VsAi"
+  },
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 60
+   }
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "shot": "m0_start.png"
+  },
+  {
+   "press": "creature_1"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "summary"
+   }
+  },
+  {
+   "press": "creature_2"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "summary"
+   }
+  },
+  {
+   "press": "creature_3"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "summary"
+   }
+  },
+  {
+   "press": "creature_1"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "summary"
+   }
+  },
+  {
+   "press": "creature_2"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "summary"
+   }
+  },
+  {
+   "print": {
+    "node": "%Stats",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "m1_summoned.png"
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "pressed": true
+   }
+  },
+  {
+   "wait": 1.8
+  },
+  {
+   "shot": "m2_run_a.png"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "m2_run_b.png"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "m2_run_c.png"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "pressed": false
+   }
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "shot": "m3_stop.png"
+  },
+  {
+   "press": "creature_4"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "press": "creature_5"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "press": "creature_6"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "press": "creature_3"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "summary"
+   }
+  },
+  {
+   "shot": "m4_more.png"
+  },
+  {
+   "call": {
+    "harness": "pt77_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 3.0
+   }
+  },
+  {
+   "shot": "m5_after_walk.png"
+  },
+  {
+   "wait": 15.0
+  },
+  {
+   "shot": "m6_t0.png"
+  },
+  {
+   "wait": 15.0
+  },
+  {
+   "shot": "m6_t1.png"
+  },
+  {
+   "wait": 15.0
+  },
+  {
+   "shot": "m6_t2.png"
+  },
+  {
+   "wait": 15.0
+  },
+  {
+   "shot": "m6_t3.png"
+  },
+  {
+   "call": {
+    "harness": "pt77_watch",
+    "method": "report",
+    "args": []
+   }
+  }
+ ]
+}

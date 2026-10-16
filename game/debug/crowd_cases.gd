@@ -35,8 +35,120 @@ const MAX_OFF_SLOT := 60
 const END_SETTLE_S := 5.0
 
 
+## F88 round 4: crowd_return / crowd_return_held. RETURN_COUNT creatures get an order RETURN_M ahead (`move`, or
+## `guard_area`, which holds the slot: `ordered` stays on) and settle; then a runner of the same slot is ordered straight
+## through the middle of the formation and out the back. «Su lugar» is where each one stood before the runner (move) or
+## its slot (guard_area). PASS: RETURN_TICKS_AFTER ticks after the runner is out of the formation's box (grown by
+## RETURN_BOX_M), none is more than RETURN_OFF_M from its place.
+const RETURN_ORIGIN := Vector3(6400.0, 0.0, 6000.0)
+const RETURN_COUNT := 36
+const RETURN_M := 20.0
+const RETURN_OFF_M := 0.5
+const RETURN_TICKS_AFTER := 60
+const RETURN_BOX_M := 1.5
+## The widest of the three kinds, so the crossing shoves.
+const RETURN_RUNNER_TAG := "oham"
+
+
 func run(host: Node3D) -> Dictionary:
-	return {"crowd_150": await crowd(host)}
+	var out := {"crowd_150": await crowd(host)}
+	out["crowd_return"] = await crowd_return(host, "move")
+	out["crowd_return_held"] = await crowd_return(host, "guard_area")
+	return out
+
+
+func crowd_return(host: Node3D, command: String) -> Dictionary:
+	var tree := host.get_tree()
+	var root := Node3D.new()
+	root.name = "CrowdReturn"
+	host.add_child(root)
+	var floor_body := _floor()
+	floor_body.position = Vector3(RETURN_ORIGIN.x, 0.0, RETURN_ORIGIN.z)
+	root.add_child(floor_body)
+	var orders := Node.new()
+	orders.name = "ReturnOrders"
+	orders.set_script(ORDERS_SCRIPT)
+	orders.set("log_orders", false)
+	root.add_child(orders)
+	var state_was := MatchSeed.separation.state
+	var seed_was := MatchSeed.separation.seed
+	MatchSeed.separation.seed = SEPARATION_SEED
+	var units: Array[Node3D] = []
+	var columns := ceili(sqrt(float(RETURN_COUNT)))
+	for i in RETURN_COUNT:
+		var at := RETURN_ORIGIN + Vector3((i % columns - 0.5 * (columns - 1)) * SPACING_M, 0.05, floori(float(i) / columns) * SPACING_M)
+		units.append(_unit(root, TAGS[i % TAGS.size()], at))
+	for _i in SETTLE_TICKS:
+		await tree.physics_frame
+	var goal := RETURN_ORIGIN + Vector3(0.0, 0.0, RETURN_M)
+	orders.call("apply_for", 1, units, command, goal, null, 0.0)
+	var dt := 1.0 / float(Engine.physics_ticks_per_second)
+	var waited := 0
+	while waited < int(LIMIT_S / dt) and units.any(func(u: Node3D) -> bool: return int(u.get("mode")) == UnitBody.Mode.MOVE):
+		await tree.physics_frame
+		waited += 1
+	for _i in int(END_SETTLE_S / dt):
+		await tree.physics_frame
+	var places: Array[Vector2] = []
+	var lo := Vector2(INF, INF)
+	var hi := Vector2(-INF, -INF)
+	for unit in units:
+		var place := _flat(unit)
+		if command != "move":
+			var anchor := Vector3(unit.get_node("Orders").call("anchor"))
+			place = Vector2(anchor.x, anchor.z)
+		places.append(place)
+		lo = Vector2(minf(lo.x, place.x), minf(lo.y, place.y))
+		hi = Vector2(maxf(hi.x, place.x), maxf(hi.y, place.y))
+	lo -= Vector2(RETURN_BOX_M, RETURN_BOX_M)
+	hi += Vector2(RETURN_BOX_M, RETURN_BOX_M)
+	## Straight down the column nearest the middle, so it goes through the bodies and not along a gap between columns.
+	var lane := places[0].x
+	for place in places:
+		if absf(place.x - 0.5 * (lo.x + hi.x)) < absf(lane - 0.5 * (lo.x + hi.x)):
+			lane = place.x
+	var runner := _unit(root, RETURN_RUNNER_TAG, Vector3(lane, 0.05, hi.y + 8.0))
+	for _i in SETTLE_TICKS:
+		await tree.physics_frame
+	orders.call("apply_for", 1, [runner], "move", Vector3(runner.global_position.x, 0.0, lo.y - 12.0), null, 0.0)
+	var entered := false
+	var out_tick := -1
+	var ticks := 0
+	var worst_during := 0.0
+	while ticks < int(LIMIT_S / dt):
+		await tree.physics_frame
+		ticks += 1
+		var r := _flat(runner)
+		var inside := r.x >= lo.x and r.x <= hi.x and r.y >= lo.y and r.y <= hi.y
+		if inside:
+			entered = true
+		for i in units.size():
+			worst_during = maxf(worst_during, _flat(units[i]).distance_to(places[i]))
+		if entered and not inside:
+			out_tick = ticks
+			break
+	for _i in RETURN_TICKS_AFTER:
+		await tree.physics_frame
+	var off := 0
+	var worst := 0.0
+	var offenders: PackedStringArray = []
+	for i in units.size():
+		var d := _flat(units[i]).distance_to(places[i])
+		worst = maxf(worst, d)
+		if d > RETURN_OFF_M:
+			off += 1
+			if offenders.size() < 6:
+				offenders.append("%s %.2f m%s" % [units[i].name, d, " (ordered)" if bool(units[i].get("ordered")) else ""])
+	MatchSeed.separation.seed = seed_was
+	MatchSeed.separation.state = state_was
+	root.free()
+	var checks := {"runner_crossed": entered and out_tick > 0, "all_back": off == 0}
+	var result := {
+		"ok": checks.values().all(func(v: bool) -> bool: return v), "checks": checks, "off": off, "worst_m": snappedf(worst, 0.01),
+		"worst_during_m": snappedf(worst_during, 0.01), "runner_out_s": snappedf(out_tick * dt, 0.01), "offenders": offenders,
+	}
+	print("crowd_return %s: %s" % [command, result])
+	return result
 
 
 func crowd(host: Node3D, count := COUNT, order_m := ORDER_M) -> Dictionary:

@@ -71,6 +71,7 @@ properties/13/spawn = true
 properties/13/replication_mode = 2
 
 [node name="Wizard" type="CharacterBody3D"]
+floor_max_angle = 1.4835298
 script = ExtResource("1_body")
 step = ExtResource("2_step")
 wizard_tag = "cwa0"

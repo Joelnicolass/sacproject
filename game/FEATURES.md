@@ -818,6 +818,12 @@ Pendiente:
 - Los magos siguen con 45°.
 - La escena del caso no repite cifras exactas entre corridas: hay que revisarlo.
 
+**Ronda 4 (2026-10-16).**
+- **Magos en laderas:** el `floor_max_angle` del mago también pasa a 85°. En el caso `debug/wizard_slope.tscn`, el mago sube 18 m en 3,8 s; antes se frenaba a 13 m.
+- **Regreso a su lugar:** `MakeWay` ahora espera 20 ticks en lugar de 60 y vuelve al paso propio de la criatura. Casos `crowd_return` (antes 4 fuera de lugar, ahora 0) y `crowd_return_held` en `rules_suite`.
+- **Determinismo:** la variación entre corridas venía del banco: `orders_group.tres` no fijaba `match_seed`. Ahora los casos usan `debug/rules/crowd_cases.tres` (semilla 88) y dos corridas de `crowd_rock` dan resultados idénticos.
+- **Digests nuevos:** seed 1 `9e595f8c…`, seed 7 `f98fbe79…`, seed 7 con `--npcs` `cfb2c4ff…`.
+
 ### F114 — Efectos del nivel en el mago (RFC-030, corte 030c)
 
 **Cierre (2026-10-16).** Review PASS (`reviews/REVIEW-F114-level-effects.md`): `CastTime` coincide con sacengine en 7 casos verificados a mano. Playtest con ventana PASS (`agent/out/pt114/`):

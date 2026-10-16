@@ -26,8 +26,10 @@ const DETOUR_DEG: Array[float] = [45.0, 90.0]
 ## m/s of the sidestep of a creature that makes way.
 const YIELD_SPEED := 2.5
 ## Physics ticks a creature that made way waits, after its last request ran out, before it walks back home (the walker
-## that asked has to get past first).
-const RETURN_TICKS := 60
+## that asked has to get past first). F88 round 4: 60 → 20 and the walk back at the creature's own pace (see with_yield):
+## with 60 and YIELD_SPEED, a creature shoved 2 m by a runner was still 2 m off a second after the runner left
+## (debug/crowd_cases.gd, crowd_return).
+const RETURN_TICKS := 20
 ## A creature that made way is back home this close (m).
 const HOME_M := 0.15
 ## Physics ticks a request to make way, and the side of a slide, hold after they were last made.
@@ -41,7 +43,7 @@ static var _asks: Dictionary = {}
 ## swing from one side of a blocker to the other every tick.
 static var _sides: Dictionary = {}
 ## Where a creature stood still before it made way or was pushed out by a walker of its slot (instance id -> [flat
-## position, last tick it was disturbed]): RETURN_TICKS after the last disturbance it walks back there at YIELD_SPEED,
+## position, last tick it was disturbed]): RETURN_TICKS after the last disturbance it walks back there at its own pace,
 ## so the formation it had arrived in is kept. Dropped when it is back or moves by itself.
 static var _homes: Dictionary = {}
 static var _pruned_tick := -1
@@ -73,7 +75,7 @@ static func with_yield(body: Node3D, velocity: Vector3, delta: float) -> Vector3
 	if gap <= HOME_M:
 		_homes.erase(id)
 		return velocity
-	back *= minf(YIELD_SPEED, gap / delta) / gap
+	back *= minf(maxf(YIELD_SPEED, _pace(body)), gap / delta) / gap
 	velocity.x = back.x
 	velocity.z = back.y
 	return velocity
@@ -144,6 +146,13 @@ static func restore(saved: Array) -> void:
 	_sides = saved[1]
 	_homes = saved[2]
 	_pruned_tick = saved[3]
+
+
+## The walking speed of `body` (UnitBody move_speed · speed_factor), 0 when it has none.
+static func _pace(body: Node3D) -> float:
+	var speed: Variant = body.get("move_speed")
+	var factor: Variant = body.get("speed_factor")
+	return (float(speed) if speed != null else 0.0) * (float(factor) if factor != null else 1.0)
 
 
 ## The side to slide to: the one kept from a recent slide, or `fresh`.

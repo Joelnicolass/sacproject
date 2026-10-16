@@ -933,3 +933,23 @@ Deuda:
 - **Ikarus sobre el manantial:** aterrizó encima del manantial (h = 3,1 m en GROUND), y eso después lo hizo despegar con un destino a 8,8 m.
 - **Silverback:** tarda de 5 a 10 s en recorrer 5 m. Es un problema anterior a este corte.
 - **`unit_body.gd`:** pasa las 1000 líneas.
+
+### F134 — Reposo con stance1 y pose medida en tierra (RFC-030, corte 030e2a)
+
+El rol `idle` repite el `pose_source` horneado: `stance1` desde nivel 2, igual que sacengine en `state.d:7957-7960`, en lugar del gesto idle0. Esto arregla que «Rhinok flote» y que Silverback llegue a 14 m. `BodyPoseOverride.rest_hovers` marca a Phoenix: flota a propósito. La auditoría `tools/audit_body_pose.gd` suma la sección HIBRIDA, que recorre todos los cuadros horneados. Bancos de perfil congelados: `debug/f134_hybrid_pose_{small,big}.tscn`.
+
+**Cierre (2026-10-16).** Review PASS (`reviews/REVIEW-F134-rest-pose.md`). Playtest con ventana PASS (`agent/out/pt134/`):
+- **Pies en reposo:** de −0,08 a +0,02 m en las 9 que caminan. Phoenix queda arriba, como está aceptado.
+- **Tags de reposo:** CKst, SPst, CKst, CKst, SPst, DGst, DMst, Eds1, ADst y DFst.
+- **Colaterales:** cambian 25 criaturas no híbridas de nivel ≥ 2. Pasan a `*st`, sin poses raras, con los pies en ±0,31 m.
+- **Regresión:** `f25_flying_summon` AGENT_OK. El digest de seed 7 no cambia y `rules_suite` PASS.
+
+Decisión: C2 (cápsula en tierra de 7 híbridas) pasa a F135, porque cambia la simulación (`MeleeAttack` usa `info().height`).
+
+Deuda:
+- La auditoría sigue en FAIL hasta F135. Faltaría marcar los casos `C2_F135`.
+- `verdict = ["HIBRIDA"]` tapa otros veredictos del cuadro 0.
+- En el banco big, `GroundLine` mide menos de 1 px.
+- Rhinok se ve de frente en el banco de perfil.
+- Gammel (`gamm`) no tiene `pose_source`.
+- Los gestos idle al azar (1 de cada 5) quedan fuera.

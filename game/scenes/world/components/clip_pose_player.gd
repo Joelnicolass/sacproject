@@ -141,6 +141,13 @@ func has_role(role: String) -> bool:
 	return not _clip_for_role(role).is_empty()
 
 
+## True when `model` has a playable clip (more than one frame) called `tag` in the cache, whatever the roles.
+func has_clip(model: String, tag: String) -> bool:
+	_load_cache()
+	var clip: Dictionary = _cache.get(model, {}).get(tag, {})
+	return int(clip.get("frames", 0)) > 1 and not (clip.get("frame_objs", []) as Array).is_empty()
+
+
 func active_tag() -> String:
 	return str(_active_clip.get("tag", ""))
 

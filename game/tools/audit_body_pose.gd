@@ -4,6 +4,8 @@ extends SceneTree
 ## Uses the same pose and capsule the game uses (BodyCatalog) over frame 0 of the idle clip.
 ## "$GODOT" --headless --path game --script res://tools/audit_body_pose.gd
 ## Ends with POSE AUDIT PASS, or POSE AUDIT FAIL and exit code 1.
+## F134: hybrid fliers (fly, and rest on a stance1 clip) are judged over every frame of that rest clip in a
+## second section, HIBRIDA, instead of by frame 0.
 
 const _OBJ := preload("res://scenes/world/obj_mesh.gd")
 
@@ -17,6 +19,13 @@ const FEET_TOLERANCE := 0.3
 const CAPSULE_TOLERANCE := 0.25
 ## A model whose up axis tilts further than this from +y is lying on its side.
 const UPRIGHT_MIN_Y := 0.9
+## F134 C1: median over the rest clip of each frame's lowest point, and the lowest point of the whole clip.
+const HYBRID_MEDIAN_LIMIT := 0.30
+const HYBRID_MIN_LIMIT := -0.35
+## F134 C1 for a model marked rest_hovers (Phoenix): the lowest point of the clip within this distance of y = 0.
+const HYBRID_HOVER_LIMIT := 0.35
+## F134 C2: p95 of the frame tops - this <= capsule <= highest top + this.
+const HYBRID_CAPSULE_SLACK := 0.10
 
 
 func _read(path: String) -> Dictionary:
@@ -51,6 +60,7 @@ func _initialize() -> void:
 		return
 	print("model|kind|name|fly|up_y|foot|cap_h|cap_r|reach|idle_tag|posed_y(min,max)|posed_size|verdict")
 	var failed := 0
+	var hybrids: Array = []
 	var keys := rows.keys()
 	keys.sort()
 	for model: String in keys:
@@ -69,6 +79,9 @@ func _initialize() -> void:
 		var cap_r := minf(float(info.get("radius", 0.35)), cap_h * 0.45)
 		var up := (pose.basis * Vector3.UP).normalized()
 		var verdict: PackedStringArray = []
+		var hybrid := _is_hybrid(kind, data, idle_tag, flies)
+		if hybrid:
+			hybrids.append([model, rows[model][1], idle_tag, frames])
 		var posed_y := "-"
 		var posed_size := "-"
 		var frame: ArrayMesh = null
@@ -86,7 +99,10 @@ func _initialize() -> void:
 				verdict.append("FLOTA(%+.2f)" % box.position.y if box.position.y > 0.0 else "HUNDIDO(%+.2f)" % box.position.y)
 			if absf(cap_h - box.size.y) > CAPSULE_TOLERANCE * box.size.y:
 				verdict.append("CAPSULA(%.2f vs %.2f)" % [cap_h, box.size.y])
-		if not verdict.is_empty():
+		if hybrid:
+			# Frame 0 alone says little for a rest clip that beats its wings: the HIBRIDA section judges it.
+			verdict = PackedStringArray(["HIBRIDA"])
+		elif not verdict.is_empty():
 			failed += 1
 		print("%s|%s|%s|%s|%.2f|%.2f|%.2f|%.2f|%.2f|%s|%s|%s|%s" % [
 			model, kind, rows[model][1], "vuela" if flies else "", up.y,
@@ -94,9 +110,82 @@ func _initialize() -> void:
 			idle_tag, posed_y, posed_size, "ok" if verdict.is_empty() else " ".join(verdict),
 		])
 	print("modelos %d, con falla %d" % [keys.size(), failed])
+	failed += _audit_hybrids(hybrids)
 	if failed == 0:
 		print("POSE AUDIT PASS")
 		quit()
 	else:
 		print("POSE AUDIT FAIL")
 		quit(1)
+
+
+## A unit that flies and rests on its stance1 clip (the body was baked from it): it lands, so it must stand.
+## The nine with takeoff/fly/land clips, plus Rhinok, which flies without them.
+func _is_hybrid(kind: String, data: Dictionary, rest_tag: String, flies: bool) -> bool:
+	var stance := str(data.get("stance_animation", {}).get("tag", ""))
+	return kind == "unit" and flies and not stance.is_empty() and stance == rest_tag
+
+
+## F134: every frame of the rest clip, posed as the game poses it (BodyCatalog.pose, overrides included), from the
+## frames baked by tools/bake_clips.gd (027h). Returns how many hybrids fail C1 or C2.
+func _audit_hybrids(hybrids: Array) -> int:
+	print("")
+	print("HIBRIDA|model|name|rest_tag|frames|min|median_frame_min|p50_max|p95_max|top_max|cap_h|hovers|verdict")
+	var failed := 0
+	for row: Array in hybrids:
+		var model: String = row[0]
+		var mins: Array[float] = []
+		var maxes: Array[float] = []
+		var pose := BodyCatalog.pose(model, true)
+		var missing := 0
+		for path: Variant in row[3]:
+			var baked := BodyCatalog.clip_frame_path(str(path))
+			var mesh: Mesh = null
+			if not baked.is_empty() and ResourceLoader.exists(baked):
+				mesh = ResourceLoader.load(baked) as Mesh
+			if mesh == null:
+				missing += 1
+				continue
+			var box := pose * mesh.get_aabb()
+			mins.append(box.position.y)
+			maxes.append(box.end.y)
+		var entry := BodyCatalog.overrides().find(model)
+		var hovers := entry != null and entry.rest_hovers
+		var cap_h := maxf(float(BodyCatalog.info(model).get("height", 1.8)), 0.6)
+		var verdict: PackedStringArray = []
+		var stats := "-|-|-|-|-"
+		if mins.is_empty():
+			verdict.append("SIN_HORNEAR")
+		else:
+			if missing > 0:
+				verdict.append("SIN_HORNEAR(%d)" % missing)
+			var low: float = mins.min()
+			var median := _percentile(mins, 0.5)
+			var p95 := _percentile(maxes, 0.95)
+			var top: float = maxes.max()
+			stats = "%+.2f|%+.2f|%.2f|%.2f|%.2f" % [low, median, _percentile(maxes, 0.5), p95, top]
+			if hovers:
+				if absf(low) > HYBRID_HOVER_LIMIT:
+					verdict.append("C1(min %+.2f)" % low)
+			elif absf(median) > HYBRID_MEDIAN_LIMIT or low < HYBRID_MIN_LIMIT:
+				verdict.append("C1(med %+.2f min %+.2f)" % [median, low])
+			if cap_h < p95 - HYBRID_CAPSULE_SLACK or cap_h > top + HYBRID_CAPSULE_SLACK:
+				verdict.append("C2(cap %.2f p95 %.2f tope %.2f)" % [cap_h, p95, top])
+		if not verdict.is_empty():
+			failed += 1
+		print("HIBRIDA|%s|%s|%s|%d|%s|%.2f|%s|%s" % [
+			model, row[1], row[2], mins.size(), stats, cap_h, "flota" if hovers else "",
+			"ok" if verdict.is_empty() else " ".join(verdict),
+		])
+	print("hibridas %d, con falla %d" % [hybrids.size(), failed])
+	return failed
+
+
+## Nearest-rank percentile (0.5 = median, averaged between the two middle values of an even count).
+static func _percentile(values: Array[float], fraction: float) -> float:
+	var sorted := values.duplicate()
+	sorted.sort()
+	var count := sorted.size()
+	if fraction == 0.5:
+		return sorted[count / 2] if count % 2 == 1 else (sorted[count / 2 - 1] + sorted[count / 2]) * 0.5
+	return sorted[clampi(ceili(fraction * count) - 1, 0, count - 1)]

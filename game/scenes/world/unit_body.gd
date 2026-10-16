@@ -974,7 +974,7 @@ func _apply_cower_look() -> void:
 
 
 func _clip_roles() -> Dictionary:
-	var idle_tag := str(type.idle_animation.get("tag", "")) if type else ""
+	var idle_tag := _rest_tag()
 	var run: Dictionary = type.walk_animation if type else {}
 	if int(run.get("frames", 0)) <= 1 and type:
 		run = type.run_animation
@@ -1002,6 +1002,18 @@ func _clip_roles() -> Dictionary:
 		if not tag.is_empty():
 			roles[role] = tag
 	return roles
+
+
+## F134: the clip a creature stands in at rest. sacengine plays stance1 at the start of every idle loop
+## (state.d:7957-7960: frame 0 -> stance1, or stance2 when damaged) and only now and then a random idle gesture.
+## The body was baked from that rest clip (BodyCatalog pose_source: stance1 for book creatures of level 2+,
+## idle0 below), so the idle role plays it; without one in the clip cache it keeps the idle gesture.
+func _rest_tag() -> String:
+	var idle_tag := str(type.idle_animation.get("tag", "")) if type else ""
+	var rest := str(BodyCatalog.info(model).get("pose_source", ""))
+	if rest.is_empty() or rest == idle_tag or _clip_pose == null:
+		return idle_tag
+	return rest if bool(_clip_pose.call("has_clip", model, rest)) else idle_tag
 
 
 func _lunge() -> void:

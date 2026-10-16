@@ -275,6 +275,42 @@ debug/rules/f114_flyers.tres          N  BenchRules: las 9 híbridas propias a 1
 3. Captura lateral: el cuerpo dentro de su cápsula en tierra y en vuelo (cierra lo pendiente de F53 para estas 9).
 4. Red: el estado de vuelo se ve igual en A y B.
 
+### 030e2 — Pose y cápsula de las híbridas (F134 = 030e2a, F135 = 030e2b; plan del tech lead, 2026-10-16)
+
+**Diagnóstico.** No es la altura de los pies. La medición de F116 ignoraba `data/bodies/pose_overrides.tres`, que desde F112 sube a Hellmouth +1,68 m y a Rhinok +1,40 m. Además, el port repite el gesto `idle` (Edi1, DMi1, ADi1…) en lugar del reposo `stance1`, que es lo que hace sacengine en cada vuelta (`state.d:7957-7992`); el horneado de nivel 2 o más ya usa `stance1`. Eso explica que «Rhinok flote» y los 14,35 m de Silverback. En sacengine el origen está en el suelo, y lo que queda debajo (alas, cola) se dibuja dentro del terreno, que es lo fiel. Phoenix (DFst) toca −0,03 m en el fondo del aleteo y en la mediana flota +2,35 m: es intencional, se marca `rest_hovers`. Lo que de verdad queda es la cápsula **en vuelo** de Blight, Ikarus, Pyrodactyl y Silverback.
+
+**030e2a — F134: reposo con `stance1` y pose medida en tierra**
+```text
+scenes/world/unit_body.gd             M  _clip_roles: "idle" = pose_source del modelo (stance1 desde nivel 2; idle0 en nivel 1), si no idle_animation
+scenes/data/body_pose_override.gd     M  @export rest_hovers := false (lo lee la auditoría)
+data/bodies/pose_overrides.tres       M  fdrg rest_hovers = true; notas en ddmn/edmn
+tools/audit_body_pose.gd              M  sección HIBRIDA: mín, mediana del mín por cuadro, p95 máx, tope, cápsula; veredictos C1/C2
+debug/unit_parity_gallery.gd          M  @export freeze_time, face_yaw_deg
+debug/f134_hybrid_pose_small.tscn     N  5 chicas de perfil, cámara ortográfica lateral, cápsula visible
+debug/f134_hybrid_pose_big.tscn       N  5 grandes, igual
+```
+Criterios:
+1. **C1:** en las 9 que caminan, la mediana del mín por cuadro queda en [−0,30, +0,30] y el mín ≥ −0,35. En Phoenix, el mín queda en [−0,35, +0,35].
+2. **C2:** p95 máx − 0,10 ≤ cápsula ≤ tope máx + 0,10.
+3. El label de la galería muestra `tag=<pose_source>`, y en nivel 1 no cambia ningún tag.
+4. Cuatro PNG de perfil, en idle y en fly, con los pies sobre la línea del suelo (±0,3 m).
+5. Las líneas no híbridas de la auditoría quedan idénticas, el digest de seed 7 no cambia y `f25_flying_summon` da OK.
+
+Riesgo: el cambio de reposo afecta a todas las criaturas de nivel 2 o más. Hay que comprobar la lista `bad` de `sacobject.d:675-677` y los flows que verifican tags de idle.
+
+**Decisión (2026-10-16, por el developer de F134):** C2 falló en 7 de 10, porque las cápsulas se habían medido en el cuadro 0. Agrandarlas cambia la simulación: `info().height` alimenta la caja de golpe de `MeleeAttack`. Por eso C2 **pasa a F135**, que pone `capsule_height` en el rango [p95 − 0,10, tope + 0,10] para adrg, ddmn, drag, edmn, fdrg, sprg y sprl, y declara el digest nuevo. F134 cierra con C1, C3, C4 y C5 y sin cambio de simulación.
+
+**030e2b — F135: cápsula en tierra (C2 de 030e2a) y en vuelo.** `BodyPoseOverride.capsule_height_flying` (dcak 4,95, ecak 5,82, fcak 5,10, adrg 12,08), `BodyCatalog.info().height_flying` y `Flight` cambia la altura de la `CollisionShape3D` al entrar y salir de FLYING. `unit_body.gd` no se toca. Criterios:
+- **C3:** p50 máx(fly) ≤ cápsula de vuelo y p95 − 0,10 ≤ cápsula de vuelo.
+- `f114_flyers` despega y aterriza igual que en F116.
+- El digest no cambia.
+
+**030e2-R — REA (sin código).** En `Sacrifice.exe`: ¿el desplazamiento SXSK se escala por `zfactor/referenceHeight`, y se suma algún término a la z de render (por ejemplo, el short de los bytes 10-11 de la cabecera)?
+- **Si hay término:** se pasa a `position_offset` en los datos.
+- **Si no hay:** los lifts de F112 quedan como desvío visual declarado y Phoenix queda con offset 0.
+
+**Fuera de alcance:** los gestos idle al azar, `rotateOnGround`, el hitbox por cuadro y la mira y la selección en vuelo.
+
 ### 030f — F117 Pasivas de daño (Taurock, Firefist)
 
 **Árbol**

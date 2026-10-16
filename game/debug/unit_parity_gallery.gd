@@ -22,6 +22,11 @@ const RULES := preload("res://data/match_rules.tres")
 @export var row_gap := 10.0
 ## Draws the CollisionShape3D of every body (the capsule the game gives it) over its model.
 @export var show_collisions := true
+## F134: stops the bodies' clocks (clips, physics, AI). Each role change shows frame 0 of its clip and stays there,
+## so a capture compares the same frame every time.
+@export var freeze_time := false
+## F134: degrees the units turn around +y after spawning (90 = profile for a camera looking down -z).
+@export_range(-180.0, 180.0, 1.0) var face_yaw_deg := 0.0
 
 var _cycle_idx := 0
 var _wizards: Array[Node3D] = []
@@ -42,6 +47,9 @@ func _ready() -> void:
 	get_tree().debug_collisions_hint = show_collisions
 	_spawn_all()
 	_apply_cycle()
+	if freeze_time:
+		# Method calls still reach the bodies (debug_set_clip_state shows frame 0 of the new clip); only the clocks stop.
+		_actors.process_mode = Node.PROCESS_MODE_DISABLED
 	set_process(true)
 	call_deferred("_start_probe")
 
@@ -112,6 +120,7 @@ func _spawn_unit(tag: String, at: Vector3) -> void:
 	unit.set("idle_aggro", false)
 	unit.set("mode", 0)
 	unit.position = at
+	unit.rotation.y = deg_to_rad(face_yaw_deg)
 	_actors.add_child(unit)
 	_units.append(unit)
 	if tag == "oham":

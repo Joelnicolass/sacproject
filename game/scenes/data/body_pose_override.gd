@@ -43,6 +43,14 @@ extends Resource
 		reach = value
 		emit_changed()
 
+@export_group("Reposo")
+## The rest clip (pose_source) floats on purpose: its frames only touch the ground at the bottom of the beat
+## (Phoenix). tools/audit_body_pose.gd then judges the lowest point of the clip, not its median.
+@export var rest_hovers := false:
+	set(value):
+		rest_hovers = value
+		emit_changed()
+
 @export_group("")
 ## Why this correction exists. Free text for whoever opens the file next.
 @export_multiline var note := ""

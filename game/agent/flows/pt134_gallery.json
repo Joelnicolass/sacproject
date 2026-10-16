@@ -1,0 +1,418 @@
+{
+ "scene": "res://debug/f110_bestiary_gallery.tscn",
+ "wait_first": 6.0,
+ "steps": [
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "hide_hud"
+   }
+  },
+  {
+   "call": {
+    "harness": "pt112_probe",
+    "method": "units"
+   }
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     -36,
+     3.5,
+     47,
+     -36,
+     2.5,
+     30
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "gal_r1_x-36.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     -9,
+     3.5,
+     47,
+     -9,
+     2.5,
+     30
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "gal_r1_x-9.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     18,
+     3.5,
+     47,
+     18,
+     2.5,
+     30
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "gal_r1_x18.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     40.5,
+     3.5,
+     47,
+     40.5,
+     2.5,
+     30
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "gal_r1_x40.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     -36,
+     3.5,
+     77,
+     -36,
+     2.5,
+     60
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "gal_r2_x-36.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     -9,
+     3.5,
+     77,
+     -9,
+     2.5,
+     60
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "gal_r2_x-9.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     18,
+     3.5,
+     77,
+     18,
+     2.5,
+     60
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "gal_r2_x18.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     40.5,
+     3.5,
+     77,
+     40.5,
+     2.5,
+     60
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "gal_r2_x40.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     -36,
+     3.5,
+     107,
+     -36,
+     2.5,
+     90
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "gal_r3_x-36.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     -9,
+     3.5,
+     107,
+     -9,
+     2.5,
+     90
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "gal_r3_x-9.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     18,
+     3.5,
+     107,
+     18,
+     2.5,
+     90
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "gal_r3_x18.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     40.5,
+     3.5,
+     107,
+     40.5,
+     2.5,
+     90
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "gal_r3_x40.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     -36,
+     3.5,
+     137,
+     -36,
+     2.5,
+     120
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "gal_r4_x-36.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     -9,
+     3.5,
+     137,
+     -9,
+     2.5,
+     120
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "gal_r4_x-9.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     18,
+     3.5,
+     137,
+     18,
+     2.5,
+     120
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "gal_r4_x18.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     40.5,
+     3.5,
+     137,
+     40.5,
+     2.5,
+     120
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "gal_r4_x40.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     -36,
+     3.5,
+     167,
+     -36,
+     2.5,
+     150
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "gal_r5_x-36.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     -9,
+     3.5,
+     167,
+     -9,
+     2.5,
+     150
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "gal_r5_x-9.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     18,
+     3.5,
+     167,
+     18,
+     2.5,
+     150
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "gal_r5_x18.png"
+  },
+  {
+   "call": {
+    "harness": "gallery_view",
+    "method": "look",
+    "args": [
+     40.5,
+     3.5,
+     167,
+     40.5,
+     2.5,
+     150
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "gal_r5_x40.png"
+  }
+ ]
+}

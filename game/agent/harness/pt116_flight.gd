@@ -57,7 +57,7 @@ func _order(far: bool) -> void:
 		var at := unit.position
 		var point := at + Vector3(FAR_M, 0.0, 0.0) if far else at + Vector3(NEAR_M, 0.0, 0.0)
 		_goal[unit] = point
-		_stats[unit] = {"states": [], "max_above": 0.0, "max_air_pace": 0.0, "max_ground_pace": 0.0, "roles": {}, "done_tick": -1}
+		_stats[unit] = {"states": [], "max_above": 0.0, "max_air_pace": 0.0, "max_ground_pace": 0.0, "roles": {}, "done_tick": -1, "cap_air": 0.0, "cap_ground": 0.0}
 		_last_state[unit] = int(unit.get_node("Flight").get("state"))
 		_last_at[unit] = at
 		(unit.get_node("Orders") as _ORDERS).give(_ORDERS.Command.MOVE, null, point, Vector2.ZERO, 0.0)
@@ -77,8 +77,10 @@ func _watch() -> void:
 		if state == 2:
 			s["max_above"] = maxf(float(s["max_above"]), above)
 			s["max_air_pace"] = maxf(float(s["max_air_pace"]), pace)
+			s["cap_air"] = _height(unit)
 		elif state == 0:
 			s["max_ground_pace"] = maxf(float(s["max_ground_pace"]), pace)
+			s["cap_ground"] = _height(unit)
 		var role := (unit.get_node("ClipPose") as ClipPosePlayer).active_role()
 		(s["roles"] as Dictionary)[role] = true
 		if state != int(_last_state[unit]):
@@ -108,9 +110,10 @@ func _summary() -> void:
 		var near := ""
 		if int(s["done_tick"]) < 0:
 			near = " | sin llegar, vecino " + _nearest(unit)
-		print("PT116 %s %-10s run %.2f fly %.2f takeoff %.2fs land %.2fs | %s | h_max %.2f air %.2f ground %.2f | fin %.2fs falta %.2f m pies %.3f | clips %s" % [
+		print("PT116 %s %-10s run %.2f fly %.2f takeoff %.2fs land %.2fs | %s | h_max %.2f air %.2f ground %.2f | fin %.2fs falta %.2f m pies %.3f | cap tierra %.2f vuelo %.2f | clips %s" % [
 			_phase, type.display_name, type.running_speed, type.flying_speed, type.takeoff_time_s(), type.land_time_s(),
 			" ".join(s["states"]), s["max_above"], s["max_air_pace"], s["max_ground_pace"], int(s["done_tick"]) / 60.0, miss, feet,
+			s["cap_ground"], s["cap_air"],
 			",".join((s["roles"] as Dictionary).keys())] + near)
 
 
@@ -140,3 +143,10 @@ func _radius(body: Node3D) -> float:
 	var col := body.get_node_or_null("Collision") as CollisionShape3D
 	var capsule := col.shape as CapsuleShape3D if col else null
 	return capsule.radius if capsule else 0.0
+
+
+## F135: the capsule height the body has now (Flight changes it while FLYING).
+func _height(body: Node3D) -> float:
+	var col := body.get_node_or_null("Collision") as CollisionShape3D
+	var capsule := col.shape as CapsuleShape3D if col else null
+	return capsule.height if capsule else 0.0

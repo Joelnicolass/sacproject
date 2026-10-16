@@ -187,8 +187,18 @@ func _apply_cycle() -> void:
 		if wizard and wizard.has_method("debug_set_clip_state"):
 			wizard.call("debug_set_clip_state", "run" if role == "run" else "idle")
 	for unit in _units:
+		_set_flight(unit, role == "fly")
 		if unit and unit.has_method("debug_set_clip_state"):
 			unit.call("debug_set_clip_state", role)
+
+
+## F135: on the "fly" role a hybrid flier is put in FLYING (its capsule takes the flying height); otherwise GROUND.
+## Only the bench does this: in a match Flight changes state on its own.
+func _set_flight(unit: Node3D, flying: bool) -> void:
+	var flight := unit.get_node_or_null("Flight") as Flight if unit else null
+	if flight == null:
+		return
+	flight.state = Flight.State.FLYING if flying and flight.is_capable() else Flight.State.GROUND
 
 
 ## The clip role the gallery is showing now ("" with no roles).
@@ -253,6 +263,10 @@ func _actor_line(body: Node3D) -> String:
 		var creature := GameData.creature(creature_tag)
 		if creature:
 			extras = " ability=%s abilities=%s" % [creature.active_ability_tag, ",".join(creature.ability_tags)]
+	var col := body.get_node_or_null("Collision") as CollisionShape3D
+	var capsule := col.shape as CapsuleShape3D if col else null
+	if capsule:
+		extras += " cap_h=%.2f" % capsule.height
 	return "%s model=%s role=%s tag=%s frame=%d fps=%d rot_y=%.1f y=%.2f%s" % [
 		body.name,
 		model,

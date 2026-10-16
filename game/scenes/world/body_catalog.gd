@@ -60,7 +60,7 @@ static func has_model(model: String) -> bool:
 	return _bodies.has(model) or _props.has(model)
 
 
-## Baked measures plus the capsule corrections: height, radius and reach are final.
+## Baked measures plus the capsule corrections: height, height_flying, radius and reach are final.
 ## A scale in the override scales the baked capsule too; capsule_* replaces it.
 static func info(model: String) -> Dictionary:
 	_ensure()
@@ -68,12 +68,17 @@ static func info(model: String) -> Dictionary:
 		return _infos[model]
 	var data: Dictionary = _bodies.get(model, _props.get(model, {}))
 	var entry := overrides().find(model)
-	if entry and not data.is_empty():
+	if not data.is_empty():
 		data = data.duplicate()
+	if entry and not data.is_empty():
 		var wide := maxf(absf(entry.model_scale.x), absf(entry.model_scale.z))
 		data["height"] = entry.capsule_height if entry.capsule_height > 0.0 else float(data.get("height", 0.0)) * absf(entry.model_scale.y)
 		data["radius"] = entry.capsule_radius if entry.capsule_radius > 0.0 else float(data.get("radius", 0.0)) * wide
 		data["reach"] = entry.reach if entry.reach > 0.0 else float(data.get("reach", 0.0)) * wide
+	if not data.is_empty():
+		## F135: the capsule height of a hybrid flier while it flies (Flight); the ground one without an override.
+		var flying := entry.capsule_height_flying if entry else 0.0
+		data["height_flying"] = flying if flying > 0.0 else float(data.get("height", 0.0))
 	_infos[model] = data
 	return data
 

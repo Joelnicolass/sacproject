@@ -305,6 +305,22 @@ Riesgo: el cambio de reposo afecta a todas las criaturas de nivel 2 o más. Hay 
 - `f114_flyers` despega y aterriza igual que en F116.
 - El digest no cambia.
 
+**F135, cambio de simulación declarado (por REVIEW-F135 B2):** cambia la altura de tierra de 7 modelos:
+
+| Modelo | Antes | Después |
+|---|---|---|
+| adrg | 6,90 | 12,18 |
+| drag | 11,98 | 12,75 |
+| sprg | 3,72 | 3,91 |
+| sprl | 3,75 | 3,89 |
+| ddmn | 10,47 | 11,02 |
+| edmn | 9,52 | 10,07 |
+| fdrg | 12,96 | 15,21 |
+
+- **Qué cambia:** la caja vertical de `MeleeAttack`, `BodySeparation`, el origen del disparo y `captive`. Además, en vuelo la mira apunta al centro de la cápsula de vuelo.
+- **Partidas afectadas:** las que incluyen esas híbridas, es decir, nivel 2 o más.
+- **Digest:** el de seed 7 no cambia porque no las incluye, y ningún digest lo cubre. Esto reemplaza al criterio «el digest no cambia» de 030e2b.
+
 **030e2-R — REA (sin código).** En `Sacrifice.exe`: ¿el desplazamiento SXSK se escala por `zfactor/referenceHeight`, y se suma algún término a la z de render (por ejemplo, el short de los bytes 10-11 de la cabecera)?
 - **Si hay término:** se pasa a `position_offset` en los datos.
 - **Si no hay:** los lifts de F112 quedan como desvío visual declarado y Phoenix queda con offset 0.

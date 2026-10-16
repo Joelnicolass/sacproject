@@ -32,6 +32,12 @@ extends Resource
 	set(value):
 		capsule_height = value
 		emit_changed()
+## Meters, while a hybrid flier is up (Flight FLYING; F135, RFC-030e2b). The fly clip spreads wings and necks above
+## the rest pose. 0 uses capsule_height (or the baked height). The radius does not change in the air.
+@export_range(0.0, 20.0, 0.01, "or_greater") var capsule_height_flying := 0.0:
+	set(value):
+		capsule_height_flying = value
+		emit_changed()
 ## Meters. 0 uses the baked radius (scaled with the model).
 @export_range(0.0, 10.0, 0.01, "or_greater") var capsule_radius := 0.0:
 	set(value):

@@ -953,3 +953,30 @@ Deuda:
 - Rhinok se ve de frente en el banco de perfil.
 - Gammel (`gamm`) no tiene `pose_source`.
 - Los gestos idle al azar (1 de cada 5) quedan fuera.
+
+### F135 — Cápsula en tierra y en vuelo (RFC-030, corte 030e2b)
+
+`BodyCollider` (hijo de `unit.tscn`) es el **único** dueño de la cápsula. La calcula como una función idempotente de (modelo, estado de vuelo) y la recalcula con `model_changed`, `ready` y `Flight.state_changed`. `UnitBody._apply_model` ya no crea la cápsula y `Flight` volvió a ser solo una máquina de estados. Cuando llegue la caja por cuadro de RFC-023, es el único lugar que hay que cambiar.
+
+Los datos van en `BodyPoseOverride.capsule_height` y en `capsule_height_flying`, según el p95 de los cuadros horneados:
+- **Tierra:** adrg 12,18, drag 12,75, ddmn 11,02, edmn 10,07, fdrg 15,21, sprg 3,91 y sprl 3,89.
+- **Vuelo:** adrg 17,78, dcak 7,19, ecak 6,98, fcak 7,19, drag 13,10, sprg 5,86 y sprl 5,86.
+
+La auditoría da `POSE AUDIT PASS`, con C1, C2 y C3.
+
+**Cierre (2026-10-16).** La primera review dio NEEDS WORK: el cliente que entraba tarde veía la cápsula de tierra en vuelo, y faltaba declarar el cambio de simulación. Un primer arreglo, con un one-shot dentro de `Flight`, falló en la red real. Por pedido del usuario se rediseñó con un solo dueño, porque parchear el orden entre dos escritores no escala. La segunda review dio PASS.
+
+Playtest (`agent/out/pt135/`):
+- **Bancos de perfil:** alturas idle y fly iguales a lo esperado, con `fly_bad 0`.
+- **f114 a 150 m:** sin cambios respecto de F116.
+- **Red con un cliente que entra tarde con Ikarus en vuelo:** B ve 6,98 desde el primer tick, con `fly_bad 0` en 1156 ticks.
+- **Regresión:** `f25_flying_summon` dio OK. El digest de seed 7 no cambia y `rules_suite` PASS.
+
+**Cambio de simulación declarado:** cambia la altura de tierra de 7 modelos y, con ella, la caja de `MeleeAttack`, `BodySeparation`, el origen del disparo y la mira en vuelo. Afecta a las partidas con esas híbridas, que aparecen desde el nivel 2. Ningún digest lo cubre.
+
+Deuda:
+- TAKEOFF y LANDING usan la cápsula de tierra.
+- `MeleeAttack`, `BodySeparation` y `HealthBar` usan la altura de tierra también en vuelo.
+- No se probó el choque contra el techo de una estructura alta.
+- Hay comentarios viejos en `pt116_flight.gd` y en la nota de adrg.
+- Pendiente 030e2-R (REA).

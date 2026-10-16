@@ -19,6 +19,8 @@ signal died(tag: String, owner_slot: int, at: Vector3)
 signal struck(target: Node3D, amount: float, hit_chance: float, roll: float)
 ## The summon cast ended; it now acts and joins its owner's selection.
 signal summoned
+## F135: `model` changed (data, not order). BodyCollider refits the capsule from it.
+signal model_changed
 ## Held by a Sac Doctor (true) or let go (false). The Captive child draws its ring.
 signal held_changed(held: bool)
 ## Held or being revived by a Sac Doctor (true) or neither (false). The Captive child keeps the group
@@ -52,6 +54,7 @@ const _RANGED := preload("res://scenes/world/units/ranged_attack.gd")
 	set(value):
 		model = value
 		_apply_model()
+		model_changed.emit()
 ## Player slot that summoned it (0 = nobody).
 @export var owner_slot := 0:
 	set(value):
@@ -486,14 +489,8 @@ func _apply_model() -> void:
 	_mesh_base_pos = visual.position
 	_mesh_base_rot = visual.rotation
 	_sync_clip_pose()
-	var col := get_node_or_null("Collision") as CollisionShape3D
+	# The capsule is BodyCollider's (F135): the only writer of the Collision shape.
 	var height := float(visual.call("body_height"))
-	if col:
-		var capsule := CapsuleShape3D.new()
-		capsule.height = maxf(height, 0.6)
-		capsule.radius = minf(float(visual.call("body_radius")), capsule.height * 0.45)
-		col.shape = capsule
-		col.position = Vector3(0.0, capsule.height * 0.5, 0.0)
 	var bar := get_node_or_null("HealthBar")
 	if bar:
 		bar.call("place_above", height)

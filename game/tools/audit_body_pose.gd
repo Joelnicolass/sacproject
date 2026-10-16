@@ -6,6 +6,7 @@ extends SceneTree
 ## Ends with POSE AUDIT PASS, or POSE AUDIT FAIL and exit code 1.
 ## F134: hybrid fliers (fly, and rest on a stance1 clip) are judged over every frame of that rest clip in a
 ## second section, HIBRIDA, instead of by frame 0.
+## F135: a third section, VUELO, judges the flying capsule (BodyCatalog height_flying) over every frame of the fly clip.
 
 const _OBJ := preload("res://scenes/world/obj_mesh.gd")
 
@@ -26,6 +27,8 @@ const HYBRID_MIN_LIMIT := -0.35
 const HYBRID_HOVER_LIMIT := 0.35
 ## F134 C2: p95 of the frame tops - this <= capsule <= highest top + this.
 const HYBRID_CAPSULE_SLACK := 0.10
+## F135 C3: p50 of the fly frame tops <= flying capsule; p95 - this <= flying capsule <= max(capsule, highest top) + this.
+const FLYING_CAPSULE_SLACK := 0.10
 
 
 func _read(path: String) -> Dictionary:
@@ -81,7 +84,9 @@ func _initialize() -> void:
 		var verdict: PackedStringArray = []
 		var hybrid := _is_hybrid(kind, data, idle_tag, flies)
 		if hybrid:
-			hybrids.append([model, rows[model][1], idle_tag, frames])
+			var fly_tag := str(data.get("flight_animations", {}).get("fly", {}).get("tag", ""))
+			var fly_frames: Array = clips.get(model, {}).get(fly_tag, {}).get("frame_objs", []) if not fly_tag.is_empty() else []
+			hybrids.append([model, rows[model][1], idle_tag, frames, fly_tag, fly_frames])
 		var posed_y := "-"
 		var posed_size := "-"
 		var frame: ArrayMesh = null
@@ -100,8 +105,15 @@ func _initialize() -> void:
 			if absf(cap_h - box.size.y) > CAPSULE_TOLERANCE * box.size.y:
 				verdict.append("CAPSULA(%.2f vs %.2f)" % [cap_h, box.size.y])
 		if hybrid:
-			# Frame 0 alone says little for a rest clip that beats its wings: the HIBRIDA section judges it.
-			verdict = PackedStringArray(["HIBRIDA"])
+			# Frame 0 alone says little for a rest clip that beats its wings: the HIBRIDA section judges where it stands
+			# and its capsule. A body on its side or with no clip still fails here (REVIEW-F134).
+			var kept := PackedStringArray(["HIBRIDA"])
+			for flag in verdict:
+				if flag == "DE_COSTADO" or flag == "SIN_CLIP":
+					kept.append(flag)
+			verdict = kept
+			if kept.size() > 1:
+				failed += 1
 		elif not verdict.is_empty():
 			failed += 1
 		print("%s|%s|%s|%s|%.2f|%.2f|%.2f|%.2f|%.2f|%s|%s|%s|%s" % [
@@ -111,6 +123,7 @@ func _initialize() -> void:
 		])
 	print("modelos %d, con falla %d" % [keys.size(), failed])
 	failed += _audit_hybrids(hybrids)
+	failed += _audit_flying(hybrids)
 	if failed == 0:
 		print("POSE AUDIT PASS")
 		quit()
@@ -139,10 +152,7 @@ func _audit_hybrids(hybrids: Array) -> int:
 		var pose := BodyCatalog.pose(model, true)
 		var missing := 0
 		for path: Variant in row[3]:
-			var baked := BodyCatalog.clip_frame_path(str(path))
-			var mesh: Mesh = null
-			if not baked.is_empty() and ResourceLoader.exists(baked):
-				mesh = ResourceLoader.load(baked) as Mesh
+			var mesh := _baked_frame(str(path))
 			if mesh == null:
 				missing += 1
 				continue
@@ -179,6 +189,65 @@ func _audit_hybrids(hybrids: Array) -> int:
 		])
 	print("hibridas %d, con falla %d" % [hybrids.size(), failed])
 	return failed
+
+
+## F135 C3: every frame of the fly clip, posed as the game poses it, against the capsule Flight gives it while FLYING
+## (BodyCatalog height_flying). A hybrid without a fly clip (Rhinok) never flies here: SIN_VUELO, not counted.
+func _audit_flying(hybrids: Array) -> int:
+	print("")
+	print("VUELO|model|name|fly_tag|frames|min|p50_max|p95_max|top_max|cap_h|cap_fly|verdict")
+	var failed := 0
+	for row: Array in hybrids:
+		var model: String = row[0]
+		var info := BodyCatalog.info(model)
+		var cap_h := maxf(float(info.get("height", 1.8)), 0.6)
+		var cap_fly := maxf(float(info.get("height_flying", cap_h)), 0.6)
+		var fly_tag: String = row[4]
+		var mins: Array[float] = []
+		var maxes: Array[float] = []
+		var missing := 0
+		var pose := BodyCatalog.pose(model, true)
+		for path: Variant in row[5]:
+			var mesh := _baked_frame(str(path))
+			if mesh == null:
+				missing += 1
+				continue
+			var box := pose * mesh.get_aabb()
+			mins.append(box.position.y)
+			maxes.append(box.end.y)
+		var verdict: PackedStringArray = []
+		var stats := "-|-|-|-"
+		if fly_tag.is_empty():
+			verdict.append("SIN_VUELO")
+		elif maxes.is_empty():
+			verdict.append("SIN_HORNEAR")
+			failed += 1
+		else:
+			if missing > 0:
+				verdict.append("SIN_HORNEAR(%d)" % missing)
+			var p50 := _percentile(maxes, 0.5)
+			var p95 := _percentile(maxes, 0.95)
+			var top: float = maxes.max()
+			# min: how far above the origin the fly clip carries the body (informative; the capsule starts at the origin).
+			stats = "%+.2f|%.2f|%.2f|%.2f" % [mins.min(), p50, p95, top]
+			if cap_fly < p50 or cap_fly < p95 - FLYING_CAPSULE_SLACK or cap_fly > maxf(cap_h, top) + FLYING_CAPSULE_SLACK:
+				verdict.append("C3(vuelo %.2f p50 %.2f p95 %.2f tope %.2f)" % [cap_fly, p50, p95, top])
+			if not verdict.is_empty():
+				failed += 1
+		print("VUELO|%s|%s|%s|%d|%s|%.2f|%.2f|%s" % [
+			model, row[1], fly_tag if not fly_tag.is_empty() else "-", maxes.size(), stats, cap_h, cap_fly,
+			"ok" if verdict.is_empty() else " ".join(verdict),
+		])
+	print("vuelo %d, con falla %d" % [hybrids.size(), failed])
+	return failed
+
+
+## A clip frame baked by tools/bake_clips.gd (027h), or null.
+static func _baked_frame(obj_path: String) -> Mesh:
+	var baked := BodyCatalog.clip_frame_path(obj_path)
+	if baked.is_empty() or not ResourceLoader.exists(baked):
+		return null
+	return ResourceLoader.load(baked) as Mesh
 
 
 ## Nearest-rank percentile (0.5 = median, averaged between the two middle values of an even count).

@@ -40,22 +40,69 @@ note = "Netherfiend (F112): el cuadro 0 de stance1 PCst deja la malla 1,04 m baj
 script = ExtResource("2_entry")
 model = "ddmn"
 position_offset = Vector3(0, 1.68, 0)
-capsule_height = 10.47
-note = "Hellmouth (F112): el cuadro 0 de stance1 DMst deja la malla 1,68 m bajo el origen aunque el desplazamiento de raíz del SXSK ya sube la cadera; idle0 da lo mismo. Se sube 1,68 m (medido con tools/audit_body_pose.gd) y la cápsula mide el cuerpo entero. Causa probable: la malla respecto del desplazamiento de raíz, a revisar en RFC-023. F134: desde que el reposo juega DMst (stance1) entero, la sección HIBRIDA de la auditoría mide el mínimo de todos los cuadros con este alzado: −0,18 m, dentro de C1. El alzado queda como desvío visual declarado hasta 030e2-R (REA)."
+capsule_height = 11.02
+note = "Hellmouth (F112): el cuadro 0 de stance1 DMst deja la malla 1,68 m bajo el origen aunque el desplazamiento de raíz del SXSK ya sube la cadera; idle0 da lo mismo. Se sube 1,68 m (medido con tools/audit_body_pose.gd) y la cápsula mide el cuerpo entero. Causa probable: la malla respecto del desplazamiento de raíz, a revisar en RFC-023. F134: desde que el reposo juega DMst (stance1) entero, la sección HIBRIDA de la auditoría mide el mínimo de todos los cuadros con este alzado: −0,18 m, dentro de C1. El alzado queda como desvío visual declarado hasta 030e2-R (REA). F135: cápsula 11,02 = p95 del tope de DMst (C2); en vuelo DMfl da p95 11,08, dentro de C3 con la de tierra, así que no lleva capsule_height_flying."
 
 [sub_resource type="Resource" id="Resource_edmn"]
 script = ExtResource("2_entry")
 model = "edmn"
 position_offset = Vector3(0, 1.40, 0)
-capsule_height = 9.52
-note = "Rhinok (F112): el cuadro 0 de stance1 Eds1 deja la malla 1,40 m bajo el origen aunque el desplazamiento de raíz del SXSK ya sube la cadera; idle0 da lo mismo. Se sube 1,40 m (medido con tools/audit_body_pose.gd) y la cápsula mide el cuerpo entero. Causa probable: la malla respecto del desplazamiento de raíz, a revisar en RFC-023. F134: el reposo ahora juega Eds1 (stance1) entero en vez del gesto Edi1, que era lo que se veía flotar; con este alzado el mínimo de todos los cuadros es −0,30 m, dentro de C1. El alzado queda como desvío visual declarado hasta 030e2-R (REA)."
+capsule_height = 10.07
+note = "Rhinok (F112): el cuadro 0 de stance1 Eds1 deja la malla 1,40 m bajo el origen aunque el desplazamiento de raíz del SXSK ya sube la cadera; idle0 da lo mismo. Se sube 1,40 m (medido con tools/audit_body_pose.gd) y la cápsula mide el cuerpo entero. Causa probable: la malla respecto del desplazamiento de raíz, a revisar en RFC-023. F134: el reposo ahora juega Eds1 (stance1) entero en vez del gesto Edi1, que era lo que se veía flotar; con este alzado el mínimo de todos los cuadros es −0,30 m, dentro de C1. El alzado queda como desvío visual declarado hasta 030e2-R (REA). F135: cápsula 10,07 = p95 del tope de Eds1 (C2). No tiene clip fly: no hay cápsula de vuelo."
 
 [sub_resource type="Resource" id="Resource_fdrg"]
 script = ExtResource("2_entry")
 model = "fdrg"
 rest_hovers = true
-note = "Phoenix (F134): el reposo DFst (stance1) flota a propósito. Solo toca el suelo en el fondo del aleteo (−0,03 m) y en la mediana de los cuadros queda unos 2,35 m arriba. La auditoría juzga el mínimo del clip, no la mediana. Sin desplazamiento: el origen sigue en el suelo, como en sacengine."
+capsule_height = 15.21
+note = "Phoenix (F134): el reposo DFst (stance1) flota a propósito. Solo toca el suelo en el fondo del aleteo (−0,03 m) y en la mediana de los cuadros queda unos 2,35 m arriba. La auditoría juzga el mínimo del clip, no la mediana. Sin desplazamiento: el origen sigue en el suelo, como en sacengine. F135: cápsula 15,21 = p95 del tope de DFst (C2). Se usa el tope y no la altura de la masa (unos 9,7 m en el cuadro 0) porque la cápsula nace en el origen, en el suelo, y el cuerpo flota encima: con la masa, los 3 a 5 m de arriba quedarían afuera. En vuelo DFfl da p95 13,79, dentro de C3 con la de tierra: sin capsule_height_flying."
+
+[sub_resource type="Resource" id="Resource_adrg"]
+script = ExtResource("2_entry")
+model = "adrg"
+capsule_height = 12.18
+capsule_height_flying = 17.78
+note = "Silverback (F135): cápsula 12,18 = p95 del tope de ADst (C2). En vuelo ADfl abre las alas y el cuello: p95 del tope 17,78 (C3, tools/audit_body_pose.gd); Flight cambia la altura al entrar y salir de FLYING."
+
+[sub_resource type="Resource" id="Resource_dcak"]
+script = ExtResource("2_entry")
+model = "dcak"
+capsule_height_flying = 7.19
+note = "Blight (F135): en vuelo CKfl sube las alas: p95 del tope 7,19 (C3, tools/audit_body_pose.gd). La de tierra queda la horneada."
+
+[sub_resource type="Resource" id="Resource_drag"]
+script = ExtResource("2_entry")
+model = "drag"
+capsule_height = 12.75
+capsule_height_flying = 13.1
+note = "Dragon (F135): cápsula 12,75 = p95 del tope de DGst (C2). En vuelo DGfl da p95 13,10 (C3)."
+
+[sub_resource type="Resource" id="Resource_ecak"]
+script = ExtResource("2_entry")
+model = "ecak"
+capsule_height_flying = 6.98
+note = "Ikarus (F135): en vuelo ECfl sube las alas: p95 del tope 6,98 (C3). La de tierra queda la horneada."
+
+[sub_resource type="Resource" id="Resource_fcak"]
+script = ExtResource("2_entry")
+model = "fcak"
+capsule_height_flying = 7.19
+note = "Pyrodactyl (F135): en vuelo CKfl sube las alas: p95 del tope 7,19 (C3). La de tierra queda la horneada."
+
+[sub_resource type="Resource" id="Resource_sprg"]
+script = ExtResource("2_entry")
+model = "sprg"
+capsule_height = 3.91
+capsule_height_flying = 5.86
+note = "Seraph (F135): cápsula 3,91 = p95 del tope de SPst (C2). En vuelo SPfl da p95 5,86 (C3)."
+
+[sub_resource type="Resource" id="Resource_sprl"]
+script = ExtResource("2_entry")
+model = "sprl"
+capsule_height = 3.89
+capsule_height_flying = 5.86
+note = "Gremlin (F135): cápsula 3,89 = p95 del tope de SPst (C2). En vuelo SPfl da p95 5,86 (C3)."
 
 [resource]
 script = ExtResource("1_list")
-entries = Array[ExtResource("2_entry")]([SubResource("Resource_pcfn"), SubResource("Resource_sbob"), SubResource("Resource_sacd"), SubResource("Resource_aprc"), SubResource("Resource_prcy"), SubResource("Resource_ddmn"), SubResource("Resource_edmn"), SubResource("Resource_fdrg")])
+entries = Array[ExtResource("2_entry")]([SubResource("Resource_pcfn"), SubResource("Resource_sbob"), SubResource("Resource_sacd"), SubResource("Resource_aprc"), SubResource("Resource_prcy"), SubResource("Resource_ddmn"), SubResource("Resource_edmn"), SubResource("Resource_fdrg"), SubResource("Resource_adrg"), SubResource("Resource_dcak"), SubResource("Resource_drag"), SubResource("Resource_ecak"), SubResource("Resource_fcak"), SubResource("Resource_sprg"), SubResource("Resource_sprl")])

@@ -1,0 +1,148 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.5,
+ "steps": [
+  {
+   "click": "%God_pyro"
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "click": "%Play"
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "click": "%Join"
+  },
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 30
+   }
+  },
+  {
+   "wait_until": {
+    "node": "%Wizards/Wizard1",
+    "timeout": 60
+   }
+  },
+  {
+   "call": {
+    "harness": "pt135_capsule",
+    "method": "arm",
+    "args": [
+     1
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "arm",
+    "args": [
+     1
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt135_capsule",
+    "prop": "tracked",
+    "gte": 1,
+    "timeout": 30
+   }
+  },
+  {
+   "call": {
+    "harness": "pt135_capsule",
+    "method": "heights",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "follow",
+    "args": [
+     0,
+     14,
+     30
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt135_capsule",
+    "method": "overlay",
+    "args": [
+     true
+    ]
+   }
+  },
+  {
+   "wait": 0.8
+  },
+  {
+   "call": {
+    "harness": "pt135_capsule",
+    "method": "heights",
+    "args": []
+   }
+  },
+  {
+   "shot": "net_b_air_late.png"
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "call": {
+    "harness": "pt135_capsule",
+    "method": "heights",
+    "args": []
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt116_watch",
+    "prop": "landed",
+    "gte": 1,
+    "timeout": 60
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "call": {
+    "harness": "pt135_capsule",
+    "method": "heights",
+    "args": []
+   }
+  },
+  {
+   "shot": "net_b_landed.png"
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "wait": 1.0
+  }
+ ]
+}

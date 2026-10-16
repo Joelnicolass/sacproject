@@ -745,6 +745,31 @@ Playtest con ventana (`agent/out/pt87/`):
 - **Partida de 2 min:** AGENT_OK.
 - **Regresión:** `f78_many` y `perf027_first_order` dan AGENT_OK.
 
+### F88 — Apiñamiento en BodySeparation (RFC-027, corte 027d)
+
+**Ronda de corrección (2026-10-16), sobre `reviews/REVIEW-F88-crowding.md`.** Implementado en `scenes/world/body_separation.gd`, `scenes/world/body_grid.gd`, `scenes/world/make_way.gd` y `debug/crowd_cases.gd` (caso `crowd_150` en `rules_suite`). Es un desvío del port: con `BodySeparation.make_way` apagado vuelve la regla de sacengine (además hay que apagar `wizard_passes_own`).
+- **Paso 1, sin cambio de conducta:** se extrajo `MakeWay`, se documentó el re-archivado a mitad del tick y el «modo original» de `use_grid`, y `frame_budget` guarda y restaura las tablas. El A/B sobre clones congelados da igual en los tres casos: seed 1 `3678de90…`, `ai_duel_seeded` seed 7 `2544ee1a…` y seed 7 `--npcs` `0bc14063…`.
+- **Paso 2, digest nuevo:**
+  - El desliz queda solo para el grupo `unit`.
+  - Los pedidos de ceder respetan el vencimiento y toman la dirección del caminante más cercano.
+  - No ceden las criaturas que fingen estar muertas o están ocultas (`is_targetable`) ni las que tienen `ordered`.
+  - Las que cedieron o fueron empujadas vuelven a su lugar 60 ticks después.
+- **`crowd_150` (orden a 80 m):**
+  - 0 trabadas > 2 s (antes del corte, 28); la peor quedó quieta 0,78 s.
+  - Todas llegan en 15,2 s.
+  - `off_slot` = 45 de 150 a más de 2 m (111 sin el regreso), con un umbral de 60.
+  - `sep_ms` medio: 2,1 ms.
+- **Causa del `off_slot`:** el reparto greedy de casillas en `Orders` cruza la formación. Queda como deuda de `Orders`.
+- **`run_perf027.sh` con 150 cuerpos (RUN `d2`, archivo `d2_many150_r1`):**
+  - Quietas: separación 1,83 ms por tick (c3: 4,3), tick 6,95 ms, 1,37 ticks por frame, frame 22,8 ms.
+  - En marcha: separación 2,77 ms (c3: 5,0), tick 11,3 ms, 2,06 ticks por frame, frame 34,4 ms.
+- `rules_suite` PASS.
+
+**Línea base de digests desde F88** (`ai_match`, 0 errores):
+- `ai_vs_trivial` seed 1 (3 min): `9037ccbcd3befa687919081932d3893d57c9e76715855c442e29be7ef4de70d5`.
+- `ai_duel_seeded` seed 7 (2 min): `039b7736fbc8f48f00734f620e6a1a0fbc294f001ec0efeac27b3795f241a2fe`.
+- `ai_duel_seeded` seed 7 `--npcs` (2 min): `ff5e0d1e1bf7290610d639109207adf975d0b5b079bb0635abc861a75d3b633b`.
+
 ### F114 — Efectos del nivel en el mago (RFC-030, corte 030c)
 
 **Cierre (2026-10-16).** Review PASS (`reviews/REVIEW-F114-level-effects.md`): `CastTime` coincide con sacengine en 7 casos verificados a mano. Playtest con ventana PASS (`agent/out/pt114/`):

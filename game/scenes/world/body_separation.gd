@@ -27,7 +27,8 @@ const NEAR_SLACK := 0.001
 enum Face { NONE, LEFT, RIGHT, BACK, FRONT }
 
 ## Off: the old way, every body against every other at its live position (to compare the cost; the same velocity as
-## the grid while nothing moved since the grid was filed).
+## the grid while nothing moved since the grid was filed). It is not the rule of sacengine by itself: for that also
+## turn off make_way and wizard_passes_own (the two deviations of the port).
 static var use_grid := true
 ## Deviation of the port (RFC-024 024d fix, decision of the orchestrator): a wizard has right of way over his own creatures.
 ## When the body that moves is a wizard, the creatures (group «unit») of his own slot are not obstacles for him; they still
@@ -38,26 +39,9 @@ static var wizard_passes_own := true
 ## RFC-027 027d (F88), deviation of the port (debt of F72, RFC-026 §8: inside BodySeparation, no RVO). In sacengine
 ## positionAfterCollision a body that walks head-on into another only has the step cut (newPosition.x = min(…)) and waits:
 ## with 150 creatures ordered through each other's formation slots, dozens stood still for good behind bodies already
-## parked on their slots (debug/crowd_cases.gd, crowd_150). With make_way on:
-## - Slide: a body whose first-pass cut leaves less than SLIDE_KEEP of its speed tries the detours DETOUR_DEG off its
-##   heading, first to the side it slid to in the last HOLD_TICKS, else away from the bodies that cut it, and takes the
-##   first that keeps SLIDE_KEEP of its speed.
-## - Yield: a creature of the same slot standing still (UnitBody IDLE) that cut such a body steps aside, across the
-##   walker's heading and away from its line, at YIELD_SPEED, until HOLD_TICKS after it was last asked (from its next
-##   resolve on: the order of the bodies in the tick decides whether that is this tick or the next one).
-## - Soft between walkers: for a creature on its way (MOVE or CHASE) the creatures of its slot also on their way do not
-##   cut the step (first pass); the second pass still pushes the two out of each other at up to FIXUP_SPEED, so two
-##   that meet head-on press, turn the overlap sideways and pass instead of holding each other.
-## Both passes run as before on the resulting velocity. Off = the original rule.
+## parked on their slots (debug/crowd_cases.gd, crowd_150). On: the slide, the yield and the soft contact between
+## walkers of MakeWay (see there). Both passes run as before on the resulting velocity. Off = the original rule.
 static var make_way := true
-## The fraction of its speed a cut step must keep along its own heading to count as free.
-const SLIDE_KEEP := 0.5
-## The detours tried, in degrees off the heading, in order (each to the preferred side, then to the other).
-const DETOUR_DEG: Array[float] = [45.0, 90.0]
-## m/s of the sidestep of a creature that makes way.
-const YIELD_SPEED := 2.5
-## Physics ticks a request to make way, and the side of a slide, hold after they were last made.
-const HOLD_TICKS := 20
 ## On: resolve() adds its time to sep_us (the bench reports it per tick as `sep_ms`).
 static var measure := false
 static var sep_us := 0
@@ -90,7 +74,7 @@ static func _resolve(body: Node3D, velocity: Vector3, delta: float) -> Vector3:
 	if delta <= 0.0 or not body.is_inside_tree():
 		return velocity
 	if make_way:
-		velocity = _with_yield(body, velocity)
+		velocity = MakeWay.with_yield(body, velocity, delta)
 	if use_grid:
 		return _resolve_near(body, velocity, delta)
 	var others := _obstacles(body)
@@ -121,7 +105,7 @@ static func _resolve(body: Node3D, velocity: Vector3, delta: float) -> Vector3:
 
 
 ## The grid path. RFC-027 027d (F88): the obstacles are read where BodyGrid filed them at the first resolve of the
-## tick, as sacengine reads the hitboxes of state.proximity, built once per frame (before 027d they were read live,
+## tick (or again in the middle of it after a spawn or a removal, see BodyGrid.file), as sacengine reads the hitboxes of state.proximity, built once per frame (before 027d they were read live,
 ## each at the place it had reached in this tick). A candidate of the cells around the body goes to _scan only if
 ## its box can overlap the probe of either pass: _scan gives Face.NONE and draws nothing for one that does not (see
 ## _scan), so leaving it out changes neither the push, the cuts nor the seeded stream. With make_way, a detour may
@@ -214,11 +198,11 @@ static func _separate(body: Node3D, at: Vector3, half: float, height: float, vel
 	var cut_halves := halves
 	var cut_heights := heights
 	var cut_nodes := nodes
-	if make_way and _walks(body):
+	if make_way and MakeWay.walks(body):
 		var slot := int(body.get("owner_slot"))
 		var own_walkers := PackedInt32Array()
 		for i in nodes.size():
-			if _walks(nodes[i]) and int(nodes[i].get("owner_slot")) == slot:
+			if MakeWay.walks(nodes[i]) and int(nodes[i].get("owner_slot")) == slot:
 				own_walkers.append(i)
 		if not own_walkers.is_empty():
 			cut_x = PackedFloat64Array()
@@ -236,31 +220,12 @@ static func _separate(body: Node3D, at: Vector3, half: float, height: float, vel
 				cut_halves.append(halves[i])
 				cut_heights.append(heights[i])
 				cut_nodes.append(nodes[i])
-	var faces := _cut_faces(at, wanted, delta, inner, height, cut_x, cut_y, cut_z, cut_halves, cut_heights)
-	var kept := _cut(wanted, faces)
+	var faces := first_pass_faces(at, wanted, delta, inner, height, cut_x, cut_y, cut_z, cut_halves, cut_heights)
+	var kept := cut_step(wanted, faces)
 	var speed := wanted.length()
-	if make_way and speed > 0.0 and kept.dot(wanted) < SLIDE_KEEP * speed * speed:
-		var heading := wanted / speed
-		var across := Vector2(-heading.y, heading.x)
-		var lateral := 0.0
-		for i in faces.size():
-			if _blocks(faces[i], wanted):
-				lateral += (Vector2(cut_x[i], cut_z[i]) - Vector2(at.x, at.z)).dot(across)
-				_ask_to_yield(body, cut_nodes[i], heading)
-		var side := _slide_side(body, -1.0 if lateral > 0.0 else 1.0)
-		var found := false
-		for degrees in DETOUR_DEG:
-			for turn: float in [side, -side]:
-				var angle := deg_to_rad(degrees)
-				var detour: Vector2 = (heading * cos(angle) + across * (turn * sin(angle))) * speed
-				var detour_kept := _cut(detour, _cut_faces(at, detour, delta, inner, height, cut_x, cut_y, cut_z, cut_halves, cut_heights))
-				if detour_kept.dot(detour) >= SLIDE_KEEP * speed * speed:
-					kept = detour_kept
-					found = true
-					_sides[body.get_instance_id()] = [turn, Engine.get_physics_frames() + HOLD_TICKS]
-					break
-			if found:
-				break
+	if make_way and speed > 0.0 and kept.dot(wanted) < MakeWay.SLIDE_KEEP * speed * speed and body.is_in_group(&"unit"):
+		kept = MakeWay.slide(body, at, wanted, faces, inner, height, delta, cut_x, cut_y, cut_z, cut_halves, cut_heights,
+				cut_nodes)
 	velocity.x = kept.x
 	velocity.z = kept.y
 	var step := Vector3(velocity.x, 0.0, velocity.z) * delta
@@ -281,6 +246,14 @@ static func _separate(body: Node3D, at: Vector3, half: float, height: float, vel
 				push.y -= amount
 			Face.FRONT:
 				push.y += amount
+	if make_way and push != Vector2.ZERO and wanted == Vector2.ZERO and body.is_in_group(&"unit") \
+			and int(body.get("mode")) == UnitBody.Mode.IDLE and not bool(body.get("ordered")):
+		var slot := int(body.get("owner_slot"))
+		for i in faces.size():
+			if faces[i] != Face.NONE and nodes[i].is_in_group(&"unit") and int(nodes[i].get("owner_slot")) == slot:
+				MakeWay.pushed(body, MakeWay.walks(nodes[i]))
+				if MakeWay.walks(nodes[i]):
+					break
 	var cap := FIXUP_SPEED * delta
 	if push.length() > cap:
 		push = push.normalized() * cap
@@ -290,14 +263,14 @@ static func _separate(body: Node3D, at: Vector3, half: float, height: float, vel
 
 
 ## The faces of the first pass (inner box) for a step of `move` (m/s, flat).
-static func _cut_faces(at: Vector3, move: Vector2, delta: float, inner: float, height: float, at_x: PackedFloat64Array,
+static func first_pass_faces(at: Vector3, move: Vector2, delta: float, inner: float, height: float, at_x: PackedFloat64Array,
 		at_y: PackedFloat64Array, at_z: PackedFloat64Array, halves: PackedFloat64Array, heights: PackedFloat64Array) -> PackedInt32Array:
 	var probe := at + Vector3(move.x, 0.0, move.y) * delta
 	return _scan(probe, inner, height, at_x, at_y, at_z, halves, heights)[0]
 
 
 ## `move` cut by the faces of the first pass: no component goes deeper into an obstacle (newPosition.x = min(…)).
-static func _cut(move: Vector2, faces: PackedInt32Array) -> Vector2:
+static func cut_step(move: Vector2, faces: PackedInt32Array) -> Vector2:
 	for face in faces:
 		match face:
 			Face.LEFT:
@@ -312,7 +285,7 @@ static func _cut(move: Vector2, faces: PackedInt32Array) -> Vector2:
 
 
 ## Whether `face` cuts a component that `move` has.
-static func _blocks(face: int, move: Vector2) -> bool:
+static func blocks(face: int, move: Vector2) -> bool:
 	match face:
 		Face.LEFT:
 			return move.x > 0.0
@@ -323,80 +296,6 @@ static func _blocks(face: int, move: Vector2) -> bool:
 		Face.FRONT:
 			return move.y < 0.0
 	return false
-
-
-## make_way requests: instance id of the creature asked to step aside -> [sidestep (flat, m/s), last tick]. A request
-## holds HOLD_TICKS after the last time it was made, so the one asked gets clear instead of stepping back the next tick.
-static var _asks: Dictionary = {}
-## The side (+1 / -1 across the heading) a body last slid to -> [side, last tick]: kept HOLD_TICKS, so a body does not
-## swing from one side of a blocker to the other every tick.
-static var _sides: Dictionary = {}
-static var _pruned_tick := -1
-
-
-## The side to slide to: the one kept from a recent slide, or `fresh`.
-static func _slide_side(body: Node3D, fresh: float) -> float:
-	var held: Variant = _sides.get(body.get_instance_id())
-	if held != null and int(held[1]) >= Engine.get_physics_frames():
-		return float(held[0])
-	return fresh
-
-
-## Drops the requests and sides that ran out (once a second: they are also checked when read).
-static func _prune() -> void:
-	var tick := Engine.get_physics_frames()
-	if tick - _pruned_tick < 60:
-		return
-	_pruned_tick = tick
-	for table: Dictionary in [_asks, _sides]:
-		for id in table.keys():
-			if int(table[id][1]) < tick:
-				table.erase(id)
-
-
-## `walker`, heading `heading`, was cut by `other`: a creature of its slot that stands still (IDLE) is asked to make way.
-static func _ask_to_yield(walker: Node3D, other: Node3D, heading: Vector2) -> void:
-	if not other.is_in_group(&"unit") or not "owner_slot" in walker:
-		return
-	if int(other.get("owner_slot")) != int(walker.get("owner_slot")) or int(other.get("mode")) != UnitBody.Mode.IDLE:
-		return
-	var id := other.get_instance_id()
-	var until := Engine.get_physics_frames() + HOLD_TICKS
-	var held: Variant = _asks.get(id)
-	if held != null:
-		held[1] = until
-		return
-	var across := Vector2(-heading.y, heading.x)
-	var from := walker.global_position
-	var at := other.global_position
-	var side := 1.0 if Vector2(at.x - from.x, at.z - from.z).dot(across) >= 0.0 else -1.0
-	_asks[id] = [across * (side * YIELD_SPEED), until]
-
-
-## A creature on its way (UnitBody MOVE or CHASE).
-static func _walks(node: Node3D) -> bool:
-	if not node.is_in_group(&"unit"):
-		return false
-	var mode := int(node.get("mode"))
-	return mode == UnitBody.Mode.MOVE or mode == UnitBody.Mode.CHASE
-
-
-## `velocity` of `body`, or the sidestep it was asked for if it was asked and still stands still (no velocity of its own).
-static func _with_yield(body: Node3D, velocity: Vector3) -> Vector3:
-	_prune()
-	if _asks.is_empty() or velocity.x != 0.0 or velocity.z != 0.0:
-		return velocity
-	var id := body.get_instance_id()
-	var ask: Variant = _asks.get(id)
-	if ask == null:
-		return velocity
-	if int(ask[1]) < Engine.get_physics_frames():
-		_asks.erase(id)
-		return velocity
-	var away: Vector2 = ask[0]
-	velocity.x = away.x
-	velocity.z = away.y
-	return velocity
 
 
 ## (half width, height) of a body's box. Both come from the model, which changes rarely, so they

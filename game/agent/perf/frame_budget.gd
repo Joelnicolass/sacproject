@@ -505,10 +505,13 @@ func _sweeps() -> Dictionary:
 	if bodies.is_empty():
 		return {"bodies": 0}
 	var sep_was := BodySeparation.sep_us
+	# RFC-027 027d review N3: the resolve sweep would leave make_way requests and sides behind.
+	var make_way_was := MakeWay.snapshot()
 	var out := {"bodies": bodies.size()}
 	for part in ["resolve", "obstacles_brute", "clip", "ground_guard", "move_and_slide"]:
 		out[part] = _sweep(bodies, part)
 	BodySeparation.sep_us = sep_was
+	MakeWay.restore(make_way_was)
 	return out
 
 

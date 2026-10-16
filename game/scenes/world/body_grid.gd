@@ -37,7 +37,9 @@ var _ids: Dictionary = {}
 
 
 ## Files the obstacles again when the physics tick changed or when a body joined or left the groups since (a spawn
-## or a corpse); otherwise does nothing.
+## or a corpse); otherwise does nothing. A filing in the middle of a tick (a body spawned or freed by the physics of a
+## body resolved earlier) reads every position again: the bodies already moved this tick are filed where they are now,
+## not where the tick started, so for the rest of that tick the snapshot is no longer the one of the tick start.
 ## Side effect: the first call on a tree connects `tree.node_removed` to this grid (and keeps it connected), so a
 ## filed body that leaves the tree between two filings is marked in `left` (see _on_node_removed).
 func file(tree: SceneTree, groups: Array[StringName]) -> void:

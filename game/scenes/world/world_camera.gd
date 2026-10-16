@@ -95,7 +95,7 @@ func yaw_degrees() -> float:
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouse:
 		_pointer = (event as InputEventMouse).position
-	if not current or _menu_open():
+	if not current or WorldInput.blocked(self):
 		return
 	if event is InputEventMouseButton:
 		var button := event as InputEventMouseButton
@@ -130,7 +130,7 @@ func _free_look(motion: InputEventMouseMotion) -> bool:
 
 
 func _process(delta: float) -> void:
-	if current and not _menu_open():
+	if current and not WorldInput.blocked(self):
 		_steer(delta)
 	_settle_zoom(delta)
 	if follow and "look_yaw" in follow:
@@ -177,11 +177,6 @@ func _edge_pointer() -> Variant:
 		return null
 	# The pointer the GUI hover saw, not the OS cursor, which can sit over a window the game never got events for.
 	return _pointer
-
-
-## RFC-031 031b: the pause menu (online the world keeps running) silences the keys, the wheel and the edges.
-func _menu_open() -> bool:
-	return get_tree().get_first_node_in_group("menu_open") != null
 
 
 func _nudge_zoom(amount: float) -> void:

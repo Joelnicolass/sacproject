@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/pause_menu/pause_menu.gd" id="1_pause"]
+[ext_resource type="PackedScene" path="res://scenes/ui/options/options_menu.tscn" id="2_options"]
 
 [node name="PauseMenu" type="CanvasLayer"]
 process_mode = 3
@@ -17,7 +18,8 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.55)
 
-[node name="Panel" type="PanelContainer" parent="Dim"]
+[node name="PausePanel" type="PanelContainer" parent="Dim"]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -31,56 +33,58 @@ offset_bottom = 40.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Column" type="VBoxContainer" parent="Dim/Panel"]
+[node name="Column" type="VBoxContainer" parent="Dim/PausePanel"]
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_constants/separation = 12
 
-[node name="PauseTitle" type="Label" parent="Dim/Panel/Column"]
+[node name="PauseTitle" type="Label" parent="Dim/PausePanel/Column"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Pausa"
 horizontal_alignment = 1
 
-[node name="Main" type="VBoxContainer" parent="Dim/Panel/Column"]
+[node name="Main" type="VBoxContainer" parent="Dim/PausePanel/Column"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Continue" type="Button" parent="Dim/Panel/Column/Main"]
+[node name="Continue" type="Button" parent="Dim/PausePanel/Column/Main"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Continuar"
 
-[node name="Options" type="Button" parent="Dim/Panel/Column/Main"]
+[node name="Options" type="Button" parent="Dim/PausePanel/Column/Main"]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
 text = "Opciones"
 
-[node name="Quit" type="Button" parent="Dim/Panel/Column/Main"]
+[node name="Quit" type="Button" parent="Dim/PausePanel/Column/Main"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Salir al menú"
 
-[node name="Confirm" type="VBoxContainer" parent="Dim/Panel/Column"]
+[node name="Confirm" type="VBoxContainer" parent="Dim/PausePanel/Column"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Question" type="Label" parent="Dim/Panel/Column/Confirm"]
+[node name="Question" type="Label" parent="Dim/PausePanel/Column/Confirm"]
 layout_mode = 2
 text = "¿Dejar la partida y volver al menú?"
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="ConfirmQuit" type="Button" parent="Dim/Panel/Column/Confirm"]
+[node name="ConfirmQuit" type="Button" parent="Dim/PausePanel/Column/Confirm"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Salir"
 
-[node name="CancelQuit" type="Button" parent="Dim/Panel/Column/Confirm"]
+[node name="CancelQuit" type="Button" parent="Dim/PausePanel/Column/Confirm"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Volver"
+
+[node name="OptionsMenu" parent="." instance=ExtResource("2_options")]
+unique_name_in_owner = true

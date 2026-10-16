@@ -10,7 +10,7 @@ func state(path: String = "") -> String:
 	if tree == null:
 		return "pt141 no tree"
 	var scene := tree.current_scene
-	var line := "pt141 paused=%s menu_open=%d" % [tree.paused, tree.get_nodes_in_group(&"menu_open").size()]
+	var line := "pt141 paused=%s menu_open=%d" % [tree.paused, tree.get_nodes_in_group(WorldInput.MODAL).size()]
 	if scene == null:
 		line += " scene=null"
 		print(line)

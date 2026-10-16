@@ -16,6 +16,7 @@ func _ready() -> void:
 	_fill_ai_levels()
 	%Join.pressed.connect(_on_join)
 	%Back.pressed.connect(_show_select)
+	%Options.pressed.connect(%OptionsMenu.open)
 	character_select.confirmed.connect(_on_confirmed)
 	_show_select()
 

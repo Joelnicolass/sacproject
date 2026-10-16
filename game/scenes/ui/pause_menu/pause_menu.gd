@@ -3,17 +3,17 @@ extends CanvasLayer
 ## RFC-031 031b (F141): the pause menu. `pause_menu` (Esc) opens and closes it.
 ## - Alone the tree pauses (this layer runs with process_mode ALWAYS); online the match goes on and only the overlay
 ##   shows (the server and the other player are not stopped by one player's menu).
-## - While open the node is in the group `menu_open`: MatchCommand, WizardBody._read_forward and WorldCamera read it
-##   and keep the world input quiet, as they do for `walk_order`. The dim also eats the clicks on the world.
+## - While open the node is in the group `WorldInput.MODAL`: the world input readers ask `WorldInput.blocked` and keep
+##   quiet. The dim also eats the clicks on the world.
 ## - «Salir al menú» asks first, inside the same panel (Salir / Volver); then it unpauses and asks the session flow
 ##   (MpFlow.return_to_boot) to go back to the boot. A client leaves the server cleanly there (MpKit.leave), and the
 ##   server sees peer_left.
-## Opciones stays hidden until 031c.
+## «Opciones» (RFC-031 031c) opens the OptionsMenu child over this panel; Esc closes it first, then this menu.
 
 signal opened
 signal closed
 
-const OPEN_GROUP := &"menu_open"
+const OPEN_GROUP := WorldInput.MODAL
 
 ## Title alone (the match is paused) and online (it is not).
 @export var paused_title := "Pausa"
@@ -25,6 +25,10 @@ var _paused_here := false
 
 func _ready() -> void:
 	%Continue.pressed.connect(close)
+	%Options.pressed.connect(%OptionsMenu.open)
+	# The options overlay replaces this one while it is open (its own dim and panel; no double dim).
+	%OptionsMenu.opened.connect(%Dim.hide)
+	%OptionsMenu.closed.connect(_on_options_closed)
 	%Quit.pressed.connect(_show_confirm.bind(true))
 	%CancelQuit.pressed.connect(_show_confirm.bind(false))
 	%ConfirmQuit.pressed.connect(_quit)
@@ -57,6 +61,7 @@ func close() -> void:
 	if not is_open():
 		return
 	remove_from_group(OPEN_GROUP)
+	%OptionsMenu.close()
 	%Dim.visible = false
 	_release_pause()
 	closed.emit()
@@ -70,6 +75,10 @@ func _input(event: InputEvent) -> void:
 		close()
 	else:
 		open()
+
+
+func _on_options_closed() -> void:
+	%Dim.visible = is_open()
 
 
 func _show_confirm(asking: bool) -> void:

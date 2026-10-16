@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1_q")
 id = &"low"
-label = "Bajo"
+label = "Baja"
 scaling_mode = 1
 scale = 0.5
 screen_space_aa = 0

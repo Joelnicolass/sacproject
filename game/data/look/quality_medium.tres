@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1_q")
 id = &"medium"
-label = "Medio"
+label = "Media"
 scaling_mode = 3
 scale = 0.67
 screen_space_aa = 1

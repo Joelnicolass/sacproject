@@ -48,6 +48,8 @@
 [ext_resource type="Script" path="res://scenes/world/ai/ai_roster.gd" id="f77_roster"]
 [ext_resource type="PackedScene" path="res://scenes/world/ai/ai_side.tscn" id="f77_side"]
 [ext_resource type="PackedScene" path="res://scenes/ui/pause_menu/pause_menu.tscn" id="f141_pause"]
+[ext_resource type="Script" path="res://scenes/ui/options/graphics_applier.gd" id="f142_applier"]
+[ext_resource type="Resource" path="res://data/ui/graphics_prefs.tres" id="f142_prefs"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
 bg_color = Color(1, 1, 1, 0)
@@ -321,3 +323,8 @@ skin = NodePath("../CursorSkin")
 
 [node name="PauseMenu" parent="." instance=ExtResource("f141_pause")]
 unique_name_in_owner = true
+
+[node name="GraphicsApplier" type="Node" parent="." node_paths=PackedStringArray("rig")]
+script = ExtResource("f142_applier")
+prefs = ExtResource("f142_prefs")
+rig = NodePath("../Look")

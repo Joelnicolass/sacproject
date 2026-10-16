@@ -9,12 +9,11 @@ extends Resource
 ## pixels = units · scale · height / `base_height`, with scale 0.8 = the original (default) and
 ## 1.0 = sacengine, free between `min_scale` and `max_scale`.
 ##
-## The player's choice lives in `user://settings.cfg` (`[hud] scale`). `--hud-scale=` on the command
-## line wins for one run and is not saved. There is no options menu yet: change it with `set_scale`,
-## the inspector of `data/ui/hud_scale.tres` (`default_scale`) or that file.
+## The player's choice lives in `user://settings.cfg` (`[hud] scale`, through UserSettings). `--hud-scale=` on the
+## command line wins for one run and is not saved. Options → Gráficos (RFC-031 031c) changes it with `set_scale`;
+## the inspector of `data/ui/hud_scale.tres` (`default_scale`) sets the value when the player chose nothing.
 ## The value is runtime state of this shared instance; the exported fields are never written.
 
-const SETTINGS_PATH := "user://settings.cfg"
 const SECTION := "hud"
 const KEY := "scale"
 const ARG := "--hud-scale="
@@ -78,15 +77,7 @@ static func socket_warning(scale: HudScale) -> String:
 
 
 func _save(value: float) -> void:
-	var config := ConfigFile.new()
-	var loaded := config.load(SETTINGS_PATH)
-	if loaded != OK and loaded != ERR_FILE_NOT_FOUND:
-		push_error("HudScale: no se pudo leer %s (%s); no se guarda para no pisarlo." % [SETTINGS_PATH, error_string(loaded)])
-		return
-	config.set_value(SECTION, KEY, value)
-	var saved := config.save(SETTINGS_PATH)
-	if saved != OK:
-		push_error("HudScale: no se pudo guardar %s (%s)." % [SETTINGS_PATH, error_string(saved)])
+	UserSettings.write_values(SECTION, {KEY: value})
 
 
 func _initial_scale() -> float:
@@ -97,10 +88,8 @@ func _initial_scale() -> float:
 				return text.to_float()
 			push_warning("HudScale: %s no es un número; se usa el valor por defecto." % arg)
 			return default_scale
-	var config := ConfigFile.new()
-	if config.load(SETTINGS_PATH) == OK and config.has_section_key(SECTION, KEY):
-		var stored: Variant = config.get_value(SECTION, KEY, default_scale)
-		if typeof(stored) in [TYPE_INT, TYPE_FLOAT] and is_finite(float(stored)):
-			return float(stored)
-		push_warning("HudScale: [%s] %s en %s no es un número; se usa el valor por defecto." % [SECTION, KEY, SETTINGS_PATH])
+	var stored: Variant = UserSettings.read_value(SECTION, KEY, default_scale)
+	if typeof(stored) in [TYPE_INT, TYPE_FLOAT] and is_finite(float(stored)):
+		return float(stored)
+	push_warning("HudScale: [%s] %s en %s no es un número; se usa el valor por defecto." % [SECTION, KEY, UserSettings.PATH])
 	return default_scale

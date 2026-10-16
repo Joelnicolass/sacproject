@@ -1156,3 +1156,36 @@ Deuda:
 - **Esc en la confirmación:** cierra todo el menú.
 - **Cursor del hechizo:** queda encima del menú.
 - **Panel:** offsets fijos.
+
+### F142 — Opciones → Gráficos (RFC-031, corte 031c)
+
+**Piezas**
+- **`WorldInput`** (`scenes/ui/world_input.gd`): es el único que decide si el input del jugador llega al mundo. `blocked()` revisa el grupo `MODAL`, y lo consultan `match_command`, `wizard_body`, `world_camera` y `soul_system`.
+- **`UserSettings`**: es el único que lee y escribe `user://settings.cfg`. Escribe de forma atómica (`.tmp` + rename) y no pisa un archivo que no pudo leer.
+- **`GraphicsPrefs`** (Resource compartido): preset (`LookQuality` existentes), pantalla completa, VSync, tope de FPS. `HudScale` migra a `UserSettings`.
+- **`GraphicsApplier`** (en el boot y en el mundo):
+  - Solo actúa en la escena que está corriendo.
+  - Queda inerte en el editor, en headless, en el dedicado y bajo AgentKit, salvo que se pase `--apply-graphics`.
+  - Respeta los flags del motor de esa corrida.
+- **`OptionsMenu` → pestaña Gráficos**: se abre desde el boot y desde la pausa. Esc cierra primero las opciones.
+
+**Cierre (2026-10-16).** Review PASS (`reviews/REVIEW-F142-graphics-options.md`). La corrección única trajo tres cosas: el applier inerte bajo AgentKit, la escritura atómica y un solo oscurecido de fondo.
+
+Playtest con ventana (`agent/out/pt142/`):
+- **Calidad en vivo:** Baja se aplica en 23–45 ms sin cortar la partida. El peor cuadro fue 142 ms. Las capturas Media/Baja muestran el cambio.
+- **Persistencia:** al reiniciar arranca en Baja.
+- **HUD:** el tamaño cambia en vivo a 0,6 y 1,2.
+- **Esc:** primero cierra las opciones y después la pausa, sin oscurecer dos veces.
+- **Sin `--apply-graphics`:** no se aplica ninguna preferencia.
+
+**Bug encontrado en el playtest y arreglado por el orquestador:** Godot consume sus propios flags (`--max-fps`, `--disable-vsync`, `-f`/`-w`) antes de `OS.get_cmdline_args()`, así que la preferencia «Sin tope» pisaba el `--max-fps 60` de las pruebas. Ahora el applier detecta esos overrides comparando el estado al arrancar con los project settings. Lo hace una vez por proceso, antes de tocar la ventana. Verificado: `engine_fps=60` en toda la corrida, con la preferencia sin tope.
+
+**Regresiones:** `f25`, `f10_walk` y `pt141_solo` dan AGENT_OK. El digest de seed 7 no cambia (`4915c884…`).
+
+**`settings.cfg` del usuario:** no existía antes de las pruebas y quedó ausente después. Las copias de prueba están en el scratchpad.
+
+Deuda:
+- **Pasto en pausa:** al cambiar el preset con la partida en pausa, el pasto queda en 0 celdas hasta que se despausa.
+- **Pasto al reiniciar en Baja:** una vez arrancó inactivo. Fue intermitente y no se pudo aislar.
+- **Botón Cerrar con HUD 1,2:** un clic falló una vez y no se reprodujo.
+- **Sin ejercitar:** los interruptores de Pantalla completa y VSync, y el look final (031-R).

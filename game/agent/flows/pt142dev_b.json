@@ -1,0 +1,148 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.5,
+ "steps": [
+  {
+   "click": "%God_james"
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "click": "%Play"
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "click": "%Solo"
+  },
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 60
+   }
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "call": {
+    "harness": "pt142_probe",
+    "method": "state",
+    "args": []
+   }
+  },
+  {
+   "shot": "pt142_b1_low_restart.png"
+  },
+  {
+   "press": "pause_menu"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "click": "%Options"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "range": {
+    "node": "%HudSize",
+    "value": 1.2
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "call": {
+    "harness": "hud_scale_probe",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt142_probe",
+    "method": "state",
+    "args": []
+   }
+  },
+  {
+   "click": "%CloseOptions"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "press": "pause_menu"
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "call": {
+    "harness": "hud_scale_probe",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "shot": "pt142_b2_hud_120.png"
+  },
+  {
+   "press": "pause_menu"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "click": "%Options"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "range": {
+    "node": "%HudSize",
+    "value": 0.6
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "click": "%CloseOptions"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "press": "pause_menu"
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "call": {
+    "harness": "hud_scale_probe",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "shot": "pt142_b3_hud_060.png"
+  },
+  {
+   "call": {
+    "harness": "pt142_probe",
+    "method": "state",
+    "args": []
+   }
+  }
+ ]
+}

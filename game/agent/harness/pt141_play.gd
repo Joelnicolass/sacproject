@@ -50,7 +50,7 @@ func ui() -> String:
 	var tree := get_tree()
 	if tree == null:
 		return "no tree"
-	var line := "pt141p paused=%s menu_open=%d" % [tree.paused, tree.get_nodes_in_group(&"menu_open").size()]
+	var line := "pt141p paused=%s menu_open=%d" % [tree.paused, tree.get_nodes_in_group(WorldInput.MODAL).size()]
 	var scene := _scene()
 	if scene == null:
 		line += " scene=null"

@@ -1,0 +1,118 @@
+@tool
+class_name GraphicsApplier
+extends Node
+
+## RFC-031 031c (F142): puts the player's GraphicsPrefs on screen, at start and live on every change.
+## - Only where this node's owner is the running scene: the boot, or the world in a match. A debug scene that
+##   instances the world (look_bench, biome_gallery with F6) keeps its own window settings and preset.
+## - Window: fullscreen or windowed, VSync and `Engine.max_fps`. An engine flag of this run (`--max-fps`,
+##   `--disable-vsync`, `-f`/`--fullscreen`, `-w`/`--windowed`) wins over the preference and is left alone.
+## - Quality: `rig.apply_quality(preset)` in a match (the world has a rig; the boot has none).
+## - Inert in everything (window and preset) in the editor, in a headless process, in the dedicated server and under
+##   AgentKit (`--agent=…` in the user args): user://settings.cfg is shared by the player and the agents' runs, so a
+##   test never inherits the player's choice (no VSync off / no cap in a playtest). `--apply-graphics` (debug only, for
+##   the F142 playtest) turns it back on under AgentKit; the engine flags of the run still win.
+
+## The shared preference (data/ui/graphics_prefs.tres).
+@export var prefs: GraphicsPrefs
+## The world's look rig; empty in the boot (window settings only).
+@export var rig: LookRig
+
+
+func _ready() -> void:
+	if _inert():
+		return
+	if prefs == null:
+		push_warning("GraphicsApplier: falta prefs; no se aplica nada.")
+		return
+	prefs.changed.connect(apply)
+	apply()
+
+
+## Applies everything the preference holds; cheap when nothing changed.
+func apply() -> void:
+	if _inert() or prefs == null:
+		return
+	if not _owns_scene():
+		return
+	_apply_window()
+	var line := "gráficos: %s · vsync %s · pantalla completa %s · tope %s" % [
+		prefs.quality_id(), _yes(prefs.vsync()), _yes(prefs.fullscreen()),
+		str(prefs.max_fps()) if prefs.max_fps() > 0 else "no",
+	]
+	var preset := prefs.quality()
+	if _has_rig() and preset and rig.quality_preset != preset:
+		var started := Time.get_ticks_usec()
+		rig.apply_quality(preset)
+		line += " · preset aplicado en %d ms" % roundi((Time.get_ticks_usec() - started) / 1000.0)
+	print(line)
+
+
+func _apply_window() -> void:
+	var window := get_window()
+	_snapshot_launch(window)
+	if not _launch_overrides.get("mode", false):
+		var full := window.mode in [Window.MODE_FULLSCREEN, Window.MODE_EXCLUSIVE_FULLSCREEN]
+		if prefs.fullscreen() and not full:
+			window.mode = Window.MODE_FULLSCREEN
+		elif not prefs.fullscreen() and full:
+			window.mode = Window.MODE_WINDOWED
+	if not _launch_overrides.get("vsync", false):
+		var vsync := DisplayServer.VSYNC_ENABLED if prefs.vsync() else DisplayServer.VSYNC_DISABLED
+		if DisplayServer.window_get_vsync_mode() != vsync:
+			DisplayServer.window_set_vsync_mode(vsync)
+	if not _launch_overrides.get("max_fps", false):
+		Engine.max_fps = prefs.max_fps()
+
+
+## The scene that owns this node is the running one: the boot, or the world the flow (or F6 on it) is running.
+func _owns_scene() -> bool:
+	return owner != null and is_inside_tree() and owner == get_tree().current_scene
+
+
+func _has_rig() -> bool:
+	return rig != null and is_instance_valid(rig) and rig.is_inside_tree()
+
+
+func _inert() -> bool:
+	if Engine.is_editor_hint() or DisplayServer.get_name() == "headless":
+		return true
+	if MpBoot.is_dedicated_process():
+		return true
+	var user_args := OS.get_cmdline_user_args()
+	var under_agent := false
+	for arg in user_args:
+		if arg.begins_with("--agent="):
+			under_agent = true
+	return under_agent and not ("--apply-graphics" in user_args)
+
+
+## What the engine's own command line set for this run. Godot consumes its flags (--max-fps, --disable-vsync,
+## -f/-w) before OS.get_cmdline_args(), so they are detected by comparing the state at launch with the project
+## settings, once per process and before this node ever touches the window (the boot's applier runs first).
+static var _launch_overrides := {}
+
+
+static func _snapshot_launch(window: Window) -> void:
+	if not _launch_overrides.is_empty():
+		return
+	var project_mode := int(ProjectSettings.get_setting("display/window/size/mode", Window.MODE_WINDOWED))
+	var project_vsync := int(ProjectSettings.get_setting("display/window/vsync/vsync_mode", DisplayServer.VSYNC_ENABLED))
+	var project_fps := int(ProjectSettings.get_setting("application/run/max_fps", 0))
+	_launch_overrides = {
+		"mode": int(window.mode) != project_mode,
+		"vsync": int(DisplayServer.window_get_vsync_mode()) != project_vsync,
+		"max_fps": Engine.max_fps != project_fps,
+	}
+
+
+static func _yes(on: bool) -> String:
+	return "sí" if on else "no"
+
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings := PackedStringArray()
+	var socket := GraphicsPrefs.socket_warning(prefs)
+	if not socket.is_empty():
+		warnings.append(socket)
+	return warnings

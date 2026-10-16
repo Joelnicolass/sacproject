@@ -102,8 +102,9 @@ func _on_feedback(text: String) -> void:
 
 
 func _input(event: InputEvent) -> void:
-	## RFC-031 031b: the pause menu (group menu_open) silences the hotkeys and the actions on the world.
-	if get_tree().get_first_node_in_group("walk_order") or get_tree().get_first_node_in_group("menu_open"):
+	## A modal UI (pause, options) silences the hotkeys and the actions on the world (WorldInput, RFC-031 031c).
+	## `walk_order` is this node's own check: the walk-order debug scene drives the world by itself.
+	if get_tree().get_first_node_in_group("walk_order") or WorldInput.blocked(self):
 		return
 	if event is InputEventMouseButton:
 		return

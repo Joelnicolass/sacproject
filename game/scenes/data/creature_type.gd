@@ -58,6 +58,10 @@ extends Resource
 ## F116 (RFC-030e): takeoff, fly and land clips (CRE8 slots 32-34) as sacengine loads them: a slot that repeats stance1
 ## or ends in "00" is left out (Phoenix has only fly; Rhinok none). role -> {tag, frames, framerate}.
 @export var flight_animations: Dictionary = {}
+## F120 (RFC-030i-a): knock, get_up and fly_damage clips (CRE8 slots 9, 10, 35) by the same rule: role -> {tag, frames,
+## framerate}. Stunned lasts (knock + get_up)·2 ticks on the ground and fly_damage·2 in the air (state.d:8138-8150, 14170-14212).
+## Peasants have no fly_damage (slot 35 is their dig).
+@export var stun_animations: Dictionary = {}
 
 
 func is_flying() -> bool:

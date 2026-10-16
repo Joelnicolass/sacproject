@@ -27,6 +27,10 @@ enum State { GROUND, TAKEOFF, FLYING, LANDING }
 @export var downward_hover_speed := 3.0
 ## sacengine landingSpeed = 0.5 · flying speed (stats.d:145-147).
 @export_range(0.0, 1.0) var landing_speed_factor := 0.5
+## F120: while a state holds the body (stunned, petrified) its movement does not change (sacengine stunned keeps
+## creatureState.movement, state.d:8138-8150, 14170-14212): no takeoff, no landing, and a flier keeps its height.
+## Optional: empty = nothing holds it.
+@export var afflictions: Afflictions
 ## Height over the ground at which a flier coming down has touched it.
 @export var touch_m := 0.05
 
@@ -71,7 +75,7 @@ func holds_still() -> bool:
 func goes_by_air(distance: float) -> bool:
 	if state == State.FLYING or state == State.TAKEOFF:
 		return true
-	if state != State.GROUND or not is_capable() or distance <= 0.0:
+	if state != State.GROUND or _held() or not is_capable() or distance <= 0.0:
 		return false
 	var type := body.type
 	if type.takeoff_time_s() + distance / type.flying_speed >= distance / type.running_speed:
@@ -84,6 +88,8 @@ func goes_by_air(distance: float) -> bool:
 ## over the ground under its center, `on_floor`: its capsule rests on something (a slope holds it above `above`); both only
 ## read while FLYING. Returns the vertical speed of a flier; 0 on the ground.
 func advance(delta: float, walking: bool, above: float, on_floor: bool) -> float:
+	if _held():
+		return 0.0
 	match state:
 		State.TAKEOFF:
 			_left -= delta
@@ -96,6 +102,11 @@ func advance(delta: float, walking: bool, above: float, on_floor: bool) -> float
 		State.FLYING:
 			return _vertical(delta, walking, above, on_floor)
 	return 0.0
+
+
+## Held: the state and the height wait (advance returns 0: a flier hangs where it is).
+func _held() -> bool:
+	return afflictions != null and afflictions.holds()
 
 
 func _take_off() -> void:

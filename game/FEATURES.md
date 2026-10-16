@@ -1214,3 +1214,41 @@ Deuda:
 - **Fireball real desde el boot con FF off sobre una criatura propia en el radio: sin medir.** El flow no logra apuntar el Fireball, porque el Caster no acepta aliados como blanco directo (`caster.gd:333`, flag `disallowAlly`). El 0 sale de la cadena ya probada: el boot da «no», con `MatchSetup.friendly_fire = 0` el Fireball sobre Cogs propios hace 0 (dev F143) y F139 cubrió ×0 y ×0,5.
 - **Abiertos:** N4 (`print` en cada P), N5 (rango 1-30 contra `--souls=0`) y N6 (defaults antes del primer snapshot en el cliente).
 - **Look:** queda pendiente 031-R.
+
+### F120 — Estado común y aturdir: Flummox (RFC-030, corte 030i-a)
+
+**Qué es.** `Afflictions` (hijo de `unit.tscn`) es el único que decide `holds`, `immobilized`, `damage_factor`, `cc_protected` y `clip_role`.
+- **Estados:** cada uno es un hijo `Affliction`, con sus datos en un `AfflictionType` (`.tres`).
+- **Prioridad:** cuál gana lo decide el dato `cancels`.
+- **Red:** `shown` es una máscara de bits que se replica.
+- **`Stunned`:** el enfriamiento es de 480 ticks y la duración la da el clip, `(knock + get_up)·2` o `fly_damage` (`state.d:8546-8568`, `8138-8146`).
+- **`StunImpact`:** está en `flummox_impact.tscn` y aturde antes de dañar. Alcanza a todo cuerpo a 8 m o menos, sin filtrar bando y con el tirador incluido (`24059-24067`).
+- **`Flight`:** consulta a `Afflictions`. Un híbrido aturdido no despega ni aterriza.
+- **`unit_body.gd`:** la puerta se fundió con `_playing_dead`. Pasó de 1046 a 1043 líneas.
+- **WORKAROUND:** hoy la caída y el levantarse son un Tween de reserva sobre `Tilt:z`, con el pivote levantado. Los clips knock/get_up costarían unos 1,6 GB; cuando existan, el Tween no corre.
+
+**Cierre (2026-10-16).** Review PASS (`reviews/REVIEW-F120-stun.md`). La corrección única cubrió:
+- un híbrido aturdido en el aire queda fijo a 3,017 m, con 0 de deriva;
+- en el suelo, con una orden, no despega;
+- el pivote ya no se hunde;
+- al morir no salta;
+- se corta el lunge.
+
+Playtest con ventana (`agent/out/pt120/`):
+- **Carril A:** 3 Druids, 226 cuadros exactos, con deriva ≤ 0,003 m y ningún golpe mientras están aturdidos. Vuelven a pelear. Un disparo con enfriamiento dice «en enfriamiento» y aun así hace daño.
+- **Carril B:** Earthfling 112, Druid aliado 226 y el propio Flummox 116.
+- **Captura** `a_druid_down.png`: caídos de costado, sin hundirse.
+- **Regresiones:**
+  - `f29`, `f25` y `f10_walk`: AGENT_OK.
+  - Play Dead (flow nuevo `pt120_play_dead`): quieto, sin activar la máscara.
+  - Digest seed 7 sin cambio; `--npcs` igual al A/B de HEAD; `f139` sin cambio.
+  - `rules_suite` PASS.
+
+Deuda:
+- **Sin verificar:** la red (no hay banco de red con Flummox) y el cliente que entra tarde (N4).
+- **Look del Tween:** cae de costado y no hacia atrás, y se queda en idle de pie (V3). Pasa a `studio-visual` o a los clips.
+- **`PathFollower`:** vuelve a planear la ruta mientras está aturdido.
+- **«Blanco inválido»:** es el texto que se muestra para un cuerpo aturdido.
+- **Aturdido por melee** (`state.d:9246-9262`): no está.
+- **Magos (030i-c):** no se aturden.
+- **Play Dead:** ahora revienta sobre un pozo y en el aire muestra idle.

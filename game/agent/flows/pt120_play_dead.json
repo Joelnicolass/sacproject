@@ -1,0 +1,31 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.5,
+ "steps": [
+  { "click": "%God_charnel" },
+  { "wait": 0.4 },
+  { "click": "%Play" },
+  { "wait": 0.5 },
+  { "click": "%Solo" },
+  { "wait_until": { "node": "%Stats", "text_contains": "Vida", "timeout": 60 } },
+  { "wait": 1.5 },
+  { "print": { "node": "%Slots/Creature1/Name", "prop": "text" } },
+  { "print": { "node": "%Slots/Creature2/Name", "prop": "text" } },
+  { "print": { "node": "%Slots/Creature3/Name", "prop": "text" } },
+  { "assert": { "node": "%Slots/Creature3/Name", "text_contains": "Fallen" } },
+  { "press": "creature_3" },
+  { "wait": 4.0 },
+  { "call": { "harness": "pt120_watch", "method": "arm_dead", "args": [] } },
+  { "print": { "node": "%Battle", "prop": "text" } },
+  { "press": "order_units" },
+  { "wait": 0.4 },
+  { "press": "use_ability" },
+  { "wait": 0.3 },
+  { "shot": "dead_1_playing.png" },
+  { "wait": 2.0 },
+  { "call": { "harness": "pt120_watch", "method": "dead_report", "args": [] } },
+  { "assert": { "node": "AgentKit/pt120_watch", "prop": "dead_frames", "gte": 60 } },
+  { "assert": { "node": "AgentKit/pt120_watch", "prop": "dead_drift", "lte": 0.05 } },
+  { "shot": "dead_2_still.png" }
+ ]
+}

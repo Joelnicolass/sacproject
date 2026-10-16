@@ -59,6 +59,8 @@ func is_full() -> bool:
 	return current >= maximum
 
 
+## TODO(030i-b): this path applies no body factor (REVIEW-F139 N5). Petrified (×0.2, state.d:8965) needs
+## Afflictions.damage_factor() here as well as in damage_typed; Stunned is ×1, so F120 leaves both untouched.
 func damage(amount: float, from_slot: int = 0) -> void:
 	if not _has_authority() or amount <= 0.0 or is_dead() or not _can_be_damaged():
 		return

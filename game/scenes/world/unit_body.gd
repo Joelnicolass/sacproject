@@ -158,6 +158,8 @@ var _stealth := false
 @onready var _target_picker: Node = get_node_or_null("TargetPicker")
 ## F116 (RFC-030e): takes off, flies and lands a hybrid flier. Without it every hybrid walks.
 @onready var _flight: Flight = get_node_or_null("Flight")
+## F120 (RFC-030i): the one owner of «can it act?» (stunned, petrified). Held, the body neither thinks nor turns.
+@onready var _afflictions: Afflictions = $Afflictions
 
 
 ## Before it enters the tree: the summon cast has just started.
@@ -212,6 +214,7 @@ func _ready() -> void:
 	health.changed.connect(_on_health_changed)
 	$HealthBar.call("bind", health, owner_slot)
 	$MeleeAttack.struck.connect(_on_struck)
+	_afflictions.held_changed.connect(_cancel_attacks.unbind(1))
 	$RangedAttack.call("setup", self, type, $ManaPool, $MeleeAttack, _rng)
 	$ActiveAbility.call("setup", self, type, $ManaPool)
 	var mana_support := get_node_or_null("ManaSupport")
@@ -376,14 +379,14 @@ func request_ability(target_pos: Vector3, foe: Node3D = null) -> String:
 
 
 func ability_status(target_pos: Vector3, foe: Node3D = null) -> String:
-	if mode == Mode.DEAD or mode == Mode.SUMMONING or is_taken():
+	if mode == Mode.DEAD or mode == Mode.SUMMONING or is_taken() or _afflictions.holds():
 		return "Blanco inválido"
 	return str($ActiveAbility.call("status", target_pos, foe))
 
 
 ## Server or solo: sacengine useAbility. "" = used.
 func use_ability(target_pos: Vector3, foe: Node3D = null) -> String:
-	if mode == Mode.DEAD or mode == Mode.SUMMONING or is_taken():
+	if mode == Mode.DEAD or mode == Mode.SUMMONING or is_taken() or _afflictions.holds():
 		return "Blanco inválido"
 	return str($ActiveAbility.call("use", target_pos, foe))
 
@@ -551,34 +554,28 @@ func _physics_process(delta: float) -> void:
 	_since_damage += delta
 	velocity.x = 0.0
 	velocity.z = 0.0
-	if _playing_dead:
-		_regenerate(delta)
-		if is_obstacle():
-			velocity = BodySeparation.resolve(self, velocity, delta)
-		if not airborne:
-			velocity = GroundGuard.keep_on_ground(self, velocity, delta)
-		var before_dead := global_position
-		move_and_slide()
-		if not airborne:
-			GroundGuard.hold_on_ground(self, before_dead)
-		_update_clip_state()
-		return
-	match mode:
-		Mode.IDLE:
-			_idle(delta)
-		Mode.MOVE:
-			_move(delta)
-		Mode.CHASE:
-			_chase(delta)
-		Mode.ATTACK:
-			_attack(delta)
-		Mode.SHOOT:
-			_shoot(delta)
-		Mode.ROCK_FORM, Mode.COWER:
+	## The gate: playing dead (regenerating) or held by Afflictions, the body only falls and is pushed; its mode (and its
+	## order) waits for it. Declared (F120): Play Dead now also gibs over a hole (has_fallen) and, in the air, shows idle, not fly.
+	if _playing_dead or _afflictions.holds():
+		if _playing_dead:
 			_regenerate(delta)
-		Mode.DEAD, Mode.SUMMONING:
-			if not airborne and is_on_floor():
-				return
+	else:
+		match mode:
+			Mode.IDLE:
+				_idle(delta)
+			Mode.MOVE:
+				_move(delta)
+			Mode.CHASE:
+				_chase(delta)
+			Mode.ATTACK:
+				_attack(delta)
+			Mode.SHOOT:
+				_shoot(delta)
+			Mode.ROCK_FORM, Mode.COWER:
+				_regenerate(delta)
+			Mode.DEAD, Mode.SUMMONING:
+				if not airborne and is_on_floor():
+					return
 	if _flight != null and _flight.holds_still():
 		velocity.x = 0.0
 		velocity.z = 0.0
@@ -751,6 +748,9 @@ func _shoot(delta: float) -> void:
 func _cancel_attacks() -> void:
 	$MeleeAttack.call("cancel")
 	$RangedAttack.call("cancel")
+	if _pose_tween and _pose_tween.is_valid():
+		_pose_tween.kill()
+		($Tilt as Node3D).rotation.x = 0.0
 
 
 func _turn_toward(direction: Vector3, delta: float) -> void:
@@ -891,15 +891,16 @@ func _update_clip_state() -> void:
 	if not _debug_clip_role.is_empty():
 		_clip_pose.call("play", _debug_clip_role)
 		return
+	var held_role := "idle" if _playing_dead else _afflictions.clip_role()
+	if not held_role.is_empty():
+		_clip_pose.call("play", held_role if _has_clip(held_role) else "idle")
+		return
 	var flight_role := _flight_role()
 	if not flight_role.is_empty() and _has_clip(flight_role):
 		_clip_pose.call("play", flight_role)
 		return
 	if mode == Mode.ATTACK:
 		_clip_pose.call("play", "attack")
-		return
-	if _playing_dead:
-		_clip_pose.call("play", "idle")
 		return
 	if mode == Mode.COWER and _has_clip(_cower_role):
 		_clip_pose.call("play", _cower_role)
@@ -984,20 +985,16 @@ func _clip_roles() -> Dictionary:
 		"run": str(run.get("tag", "")),
 		"attack": attack_tag,
 	}
-	# RFC-028c: peasant clips (cower, talk_cower, work); empty for every other creature.
-	var extra: Dictionary = type.extra_animations if type else {}
-	for role: String in ["cower", "talk_cower", "work"]:
-		var clip: Variant = extra.get(role, {})
-		var tag := str((clip as Dictionary).get("tag", "")) if clip is Dictionary else ""
-		if not tag.is_empty():
-			roles[role] = tag
-	# F116: takeoff, fly and land of a hybrid flier (only the Flight state plays them).
-	var flight: Dictionary = type.flight_animations if type else {}
-	for role: String in ["takeoff", "fly", "land"]:
-		var clip: Variant = flight.get(role, {})
-		var tag := str((clip as Dictionary).get("tag", "")) if clip is Dictionary else ""
-		if not tag.is_empty():
-			roles[role] = tag
+	# RFC-028c peasant clips (cower, talk_cower, work; empty for every other creature), F116 takeoff/fly/land of a hybrid
+	# flier (only the Flight state plays them) and F120 knock/get_up/fly_damage (only Afflictions/Stunned asks for them).
+	var sets: Array = [[type.extra_animations, ["cower", "talk_cower", "work"]], [type.flight_animations, ["takeoff", "fly", "land"]],
+		[type.stun_animations, ["knock", "get_up", "fly_damage"]]] if type else []
+	for pair: Array in sets:
+		for role: String in pair[1]:
+			var clip: Variant = (pair[0] as Dictionary).get(role, {})
+			var tag := str((clip as Dictionary).get("tag", "")) if clip is Dictionary else ""
+			if not tag.is_empty():
+				roles[role] = tag
 	return roles
 
 

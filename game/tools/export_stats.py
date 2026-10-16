@@ -45,6 +45,11 @@ EXTRA_ANIM_SLOTS = {"cower": 32, "pull": 33, "work": 35, "talk_cower": 37}
 PEASANT_TAGS = ("zepa", "zepd", "zepe", "zepf", "saep")
 ## F116 (RFC-030e): the flight slots of every other creature (`animations.d`: takeoff 32, fly 33, land 34).
 FLIGHT_ANIM_SLOTS = {"takeoff": 32, "fly": 33, "land": 34}
+## F120 (RFC-030i-a): the stun slots (`animations.d`: knocked2Floor 9, getUp 10, flyDamage 35). sacengine stunned lasts
+## (knocked2Floor + getUp)·updateAnimFactor ticks on the ground and flyDamage·updateAnimFactor in the air (state.d:8138-8150,
+## 14170-14212). Only the timing is exported: the mesh clips would add ~1,6 GB to anim_f37 (5583 frames over the 52 book
+## creatures), so Stunned falls back to a Tween on Tilt (RFC-030i-a risk). Slot 35 is a peasant's dig: peasants have no fly_damage.
+STUN_ANIM_SLOTS = {"knock": 9, "get_up": 10, "fly_damage": 35}
 ## SKEL event tags (`sxsk.d` translateAnimEvent): attack, shoot.
 ATTACK_EVENT = b"kcta"
 SHOOT_EVENT = b"lrba"
@@ -296,7 +301,8 @@ def extra_animation_tags(raw: bytes) -> dict:
 def flight_animations(anim_index: dict, model_path: str, tags: dict, stance_tag: str, peasant: bool) -> dict:
     """F116: takeoff/fly/land clips the way sacengine loads them (sacobject.d:675-689): a slot whose id starts with "00"
     (the human tag ends with it, e.g. Phoenix DF00) or repeats stance1 (Rhinok Eds1 in every flight slot) has no clip.
-    canFly = there is a fly clip (sacobject.d:113-115). Peasants use those slots for other clips (sacobject.d:690-697)."""
+    canFly = there is a fly clip (sacobject.d:113-115). Peasants use those slots for other clips (sacobject.d:690-697).
+    F120: the stun slots go through the same rule (peasant False, fly_damage already dropped for peasants)."""
     if peasant:
         return {}
     clips: dict = {}
@@ -336,6 +342,7 @@ def decode_cre8(raw: bytes) -> dict:
         "locomotion_animation_tags": locomotion_animation_tags(raw),
         "extra_animation_tags": extra_animation_tags(raw),
         "flight_animation_tags": {role: human_tag(raw, 176 + slot * 4) for role, slot in FLIGHT_ANIM_SLOTS.items()},
+        "stun_animation_tags": {role: human_tag(raw, 176 + slot * 4) for role, slot in STUN_ANIM_SLOTS.items()},
     })
     return entry
 
@@ -1004,6 +1011,10 @@ def main() -> None:
         entry["extra_animations"] = extra
         entry["flight_animations"] = flight_animations(
             anim_index, model_path, entry.pop("flight_animation_tags"), locomotion.get("stance", ""), creature_tag in PEASANT_TAGS)
+        stun_tags: dict = entry.pop("stun_animation_tags")
+        if creature_tag in PEASANT_TAGS:
+            stun_tags.pop("fly_damage", None)
+        entry["stun_animations"] = flight_animations(anim_index, model_path, stun_tags, locomotion.get("stance", ""), False)
     for entry in wizards.values():
         entry["abilities"] = [a for a in entry["abilities"] if a]
         # Ghost timing (state.d:14000-14099): dying, deadToGhost and ghostToIdle last numFrames·updateAnimFactor ticks.

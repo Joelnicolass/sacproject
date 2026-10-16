@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=3]
+[gd_scene load_steps=40 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/unit_body.gd" id="1_body"]
 [ext_resource type="Script" path="res://scenes/world/body_visual.gd" id="2_visual"]
@@ -34,6 +34,9 @@
 [ext_resource type="Resource" path="res://data/death_clouds/tum.tres" id="f118_tum"]
 [ext_resource type="Script" path="res://scenes/data/target_policy.gd" id="f136_policy"]
 [ext_resource type="Resource" path="res://data/targeting/slba.tres" id="f136_slba"]
+[ext_resource type="Script" path="res://scenes/world/units/afflictions/afflictions.gd" id="f120_afflictions"]
+[ext_resource type="Script" path="res://scenes/world/units/afflictions/stunned.gd" id="f120_stunned"]
+[ext_resource type="Resource" path="res://data/afflictions/stunned.tres" id="f120_stunned_type"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_unit"]
 radius = 0.3
@@ -82,6 +85,9 @@ properties/12/replication_mode = 2
 properties/13/path = NodePath("Flight:state")
 properties/13/spawn = true
 properties/13/replication_mode = 2
+properties/14/path = NodePath("Afflictions:shown")
+properties/14/spawn = true
+properties/14/replication_mode = 2
 
 [node name="Unit" type="CharacterBody3D"]
 collision_layer = 2
@@ -133,6 +139,18 @@ script = ExtResource("f41_mana_support")
 script = ExtResource("f36_clip")
 mesh_path = NodePath("../Tilt/Mesh")
 
+[node name="Afflictions" type="Node" parent="." node_paths=PackedStringArray("body", "health")]
+script = ExtResource("f120_afflictions")
+body = NodePath("..")
+health = NodePath("../Health")
+
+[node name="Stunned" type="Node" parent="Afflictions" node_paths=PackedStringArray("clip_pose", "tilt", "visual")]
+script = ExtResource("f120_stunned")
+type = ExtResource("f120_stunned_type")
+clip_pose = NodePath("../../ClipPose")
+tilt = NodePath("../../Tilt")
+visual = NodePath("../../Tilt/Mesh")
+
 [node name="Orders" type="Node" parent="."]
 script = ExtResource("f27_orders")
 
@@ -145,9 +163,10 @@ script = ExtResource("f72_picker")
 body = NodePath("..")
 policies = Array[ExtResource("f136_policy")]([ExtResource("f136_slba")])
 
-[node name="Flight" type="Node" parent="." node_paths=PackedStringArray("body")]
+[node name="Flight" type="Node" parent="." node_paths=PackedStringArray("body", "afflictions")]
 script = ExtResource("f116_flight")
 body = NodePath("..")
+afflictions = NodePath("../Afflictions")
 
 [node name="BodyCollider" type="Node" parent="." node_paths=PackedStringArray("body", "collision", "flight", "visual")]
 script = ExtResource("f135_collider")

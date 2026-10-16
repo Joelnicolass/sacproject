@@ -354,12 +354,32 @@ scenes/world/units/unit.tscn          M  hijo DamagePassive; Health y MeleeAttac
 **Árbol**
 ```text
 tools/export_stats.py                 M  exporta los SPEL pasivos goc@/cen@/tum@ (carpeta a ubicar en spells.wad; hoy no salen en ningún json)
-scenes/world/units/death_cloud.tscn/.gd  N  área que cura o daña en el tiempo; números del SPEL; FxBus para el humo
-scenes/world/unit_body.gd             M  al morir instancia DeathCloud si la criatura tiene esa pasiva (state.d:8274-8278)
+scenes/data/creature_type.gd, game_data.gd  M  passive_abilities (CRE8 440/452)
+scenes/data/death_cloud_type.gd       N  class_name DeathCloudType: tag, scene, fx_name, fx_height_m
+data/death_clouds/goc.tres, cen.tres, tum.tres  N  un DeathCloudType por pasiva
+scenes/world/units/death_cloud.gd     N  class_name DeathCloud: actúa una vez sobre los cuerpos del radio, humo por FxBus, se libera
+scenes/world/units/death_clouds/steam_cloud|poison_cloud|healing_shower.tscn/.gd  N  una escena por variante (sin if kind)
+scenes/world/units/death_cloud_spawner.gd  N  hijo de unit.tscn; escucha Health.died en el servidor (state.d:8274-8278)
+scenes/world/units/poisoned.gd        N  class_name Poisoned: una dosis de veneno, hija del cuerpo
+scenes/world/spells/heal_effect.gd    M  on(target); add() suma cuadros con saturación (satAdd)
+scenes/world/units/unit.tscn          M  hijo DeathCloudSpawner
+tools/export_particles.py, data/fx/steam|poison|poison_dose|rainbow.tres  M/N  humo de las nubes
+scenes/world/unit_body.gd             —  no se toca
 ```
 **Escena de prueba:** `res://debug/f116_death_clouds.tscn`: un Cog, un Necryl y un Mutant con 1 de vida junto a Druids enemigos y aliados. El playtester pulsa `check_tick`.
 
 **Criterios:** cada muerte deja su nube; vida de los vecinos medida antes y después (sube con `tum@`, baja con `goc@`/`cen@`).
+
+**Decisiones (2026-10-16, por el developer de F118):**
+- **`unit_body.gd` no se toca.** El dueño es `DeathCloudSpawner`, hijo de `unit.tscn`: escucha `Health.died` solo en el servidor y, por cada tag de `CreatureType.passive_abilities` (CRE8 440/452) con un `DeathCloudType` (`data/death_clouds/*.tres`), instancia su escena en diferido.
+- **Las nubes no duran.** En sacengine actúan una vez, en su primer update, y se van (`state.d:25216-25254`, `25674-25697`). Lo que dura queda en los cuerpos: una dosis `Poisoned` (veneno) o un `HealEffect` (cura). La nube se ve en los clientes por `FxBus.broadcast`, igual que Wrath y Fireball.
+- **Números del SPEL** (`@PRC.SCAT` de `spells.wad`; ahora salen en `abilities.json` con sus `args`):
+  - `goc@` Steam Cloud (Cog y Phoenix): 300·(1 − d/10), daño de salpicadura de hechizo, a 10 m. Usa `SplashDamage`, así que también daña edificios.
+  - `cen@` Poison Cloud (Necryl): a 5 m, 150 / 5 / 1,3 = 23,08 por segundo durante 300 cuadros (`state.d:11610-11614`).
+  - `tum@` Healing Shower (Mutant, Dragon y Sirocco `risH`): a 30 m y solo al mismo bando. `amount` pasa a infinito (`sacspell.d:211`) y `heal()` lo convierte en la vida máxima del cuerpo (`state.d:10446-10449`): cura `maxHealth` en total a 240 por segundo, en ceil(maxHealth/240·60) cuadros, y corta si se llena (`16293-16310`). Si ya había una cura, suma cuadros con saturación (`satAdd`, `10455`).
+- **Phoenix, Dragon y Sirocco entran** con la misma mecánica: Phoenix tiene `goc@`; Dragon y Sirocco, `tum@`. Phoenix no renace; su `rifl` es el escudo de 030n.
+- **Fuego amigo: divergencia heredada del hueco Fuego amigo (AUDIT-2026-10-12:152).** sacengine tiene `friendlyFire=true` por defecto (`options.d:98`), con ×0,5 en salpicadura y `ignoreFriendly` en el veneno (`state.d:28892-28899`, `9415-9419`). Acá `Health.damage_typed` no daña al mismo slot, así que el vapor y el veneno no tocan a los aliados. Se resuelve en un RFC aparte.
+- **Queda para 030k:** los debuffs de la dosis (`ires` 1000, `freg` 0), el bloqueo de maná a los 2 s y el contagio.
 
 ### 030h — F119 Impacto con salpicadura (Scarab, Mutant, Abomination, Flummox)
 

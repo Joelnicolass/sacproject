@@ -43,6 +43,10 @@ ATLASES = {
     # Manafount jet and Manalith column (RFC-019c): sacobject.d:1393-1400.
     "elec": ("main.wad", "MAIN.WAD!/bits.FLDR"),
     "fb_g": ("main.wad", "MAIN.WAD!/bits.FLDR"),
+    # Death clouds (RFC-030g): steam (goc@), poison (cen@), rainbow (tum@), sacobject.d:1612-1716.
+    "stem": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
+    "pois": ("main.wad", "MAIN.WAD!/bits.FLDR"),
+    "prbw": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
 }
 
 # sacobject.d: width/height, energy, delay, gravity per ParticleType.
@@ -72,10 +76,15 @@ PARTICLES = {
     "manafount": dict(txtr="elec", n_u=4, n_v=4, width=6.0, height=6.0, energy=20.0, delay=1, gravity=True, lifetime_frames=160),
     # Manalith: 3x3 fb_g, 12x12 m, no gravity; lifetime up to 5 * numFrames(18) ticks (state.d:27793-27811).
     "manalith": dict(txtr="fb_g", n_u=3, n_v=3, width=12.0, height=12.0, energy=20.0, delay=1, gravity=False, lifetime_frames=90),
+    # Death clouds (RFC-030g): steam 2x2 energy 0.25 (lifetime 63, state.d:25226), poison 1x1 energy 1 delay 2
+    # (lifetime 95..127, state.d:25248), rainbow 1x1 energy 5 delay 2 gravity (lifetime 63, state.d:25689).
+    "steam": dict(txtr="stem", n_u=4, n_v=4, width=2.0, height=2.0, energy=0.25, delay=1, gravity=False, lifetime_frames=63),
+    "poison": dict(txtr="pois", n_u=4, n_v=4, width=1.0, height=1.0, energy=1.0, delay=2, gravity=False, lifetime_frames=127),
+    "rainbow": dict(txtr="prbw", n_u=4, n_v=4, width=1.0, height=1.0, energy=5.0, delay=2, gravity=True, lifetime_frames=63),
     "red_vortex_droplet": dict(txtr="vtx2", n_u=4, n_v=4, width=1.0, height=1.0, energy=3.0, delay=2, gravity=False, lifetime_frames=64),
 }
 
-ADDITIVE = {"cast_james", "cast_persephone", "heal", "speedup", "soul", "wrath_cast", "wrath_explosion1", "wrath_explosion2", "wrath_particle", "needle", "red_vortex_droplet", "teleport_ring", "manafount", "manalith"}
+ADDITIVE = {"cast_james", "cast_persephone", "heal", "speedup", "soul", "wrath_cast", "wrath_explosion1", "wrath_explosion2", "wrath_particle", "needle", "red_vortex_droplet", "teleport_ring", "manafount", "manalith", "steam", "rainbow"}
 GRAVITY = 15.0
 
 

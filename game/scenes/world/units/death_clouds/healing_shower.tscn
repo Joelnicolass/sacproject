@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/units/death_clouds/healing_shower.gd" id="1_cloud"]
+
+[node name="HealingShower" type="Node3D"]
+script = ExtResource("1_cloud")

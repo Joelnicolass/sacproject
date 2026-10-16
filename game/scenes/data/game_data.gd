@@ -157,6 +157,7 @@ func _make_creature(row: Dictionary) -> _CREATURE_TYPE:
 	type.ranged_attack_tag = str(row.get("ranged_attack", ""))
 	type.active_ability_tag = str(row.get("active_ability", ""))
 	type.passive_on_damage = str(row.get("passive_on_damage", ""))
+	type.passive_abilities = PackedStringArray(row.get("passive_abilities", []))
 	for anim: Variant in row.get("shoot_animations", []):
 		type.shoot_animations.append(anim if anim is Dictionary else {})
 	type.extra_animations = row.get("extra_animations", {}) if row.get("extra_animations", {}) is Dictionary else {}

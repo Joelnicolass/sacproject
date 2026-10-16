@@ -1,0 +1,230 @@
+{
+ "scene": "res://debug/f116_death_clouds.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "Overlay/Status",
+    "text_contains": "Enter",
+    "timeout": 60
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "print": {
+    "node": "Overlay/Status",
+    "prop": "text"
+   }
+  },
+  {
+   "call": {
+    "harness": "pt118_watch",
+    "method": "frame",
+    "args": [
+     1270,
+     1270,
+     0,
+     60,
+     70
+    ]
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "shot": "p0_paused.png"
+  },
+  {
+   "press": "check_tick"
+  },
+  {
+   "wait_until": {
+    "node": "Runner",
+    "prop": "_running",
+    "equals": true,
+    "timeout": 10
+   }
+  },
+  {
+   "call": {
+    "harness": "pt118_watch",
+    "method": "arm",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt118_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt118_watch",
+    "method": "frame",
+    "args": [
+     1270,
+     1270,
+     0,
+     60,
+     70
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "d0_started.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt118_watch",
+    "prop": "deaths",
+    "gte": 3,
+    "timeout": 40
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt118_watch",
+    "prop": "captured",
+    "gte": 3,
+    "timeout": 10
+   }
+  },
+  {
+   "call": {
+    "harness": "pt118_watch",
+    "method": "frame",
+    "args": [
+     1268.5,
+     1270,
+     0,
+     5,
+     6.5
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "e1_necryl_poison.png"
+  },
+  {
+   "call": {
+    "harness": "pt118_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "call": {
+    "harness": "pt118_watch",
+    "method": "frame",
+    "args": [
+     1268.5,
+     1225,
+     0,
+     5,
+     6.5
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "e2_cog_after.png"
+  },
+  {
+   "call": {
+    "harness": "pt118_watch",
+    "method": "frame",
+    "args": [
+     1268.5,
+     1270,
+     0,
+     5,
+     6.5
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "e3_necryl_after.png"
+  },
+  {
+   "call": {
+    "harness": "pt118_watch",
+    "method": "frame",
+    "args": [
+     1268.5,
+     1315,
+     0,
+     5,
+     6.5
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "e4_mutant_after.png"
+  },
+  {
+   "wait": 4.5
+  },
+  {
+   "call": {
+    "harness": "pt118_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt118_watch",
+    "method": "frame",
+    "args": [
+     1270,
+     1270,
+     0,
+     60,
+     70
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "e5_overview.png"
+  },
+  {
+   "assert": {
+    "node": "AgentKit/pt118_watch",
+    "prop": "deaths",
+    "gte": 3
+   }
+  },
+  {
+   "assert": {
+    "node": "AgentKit/pt118_watch",
+    "prop": "captured",
+    "gte": 3
+   }
+  }
+ ]
+}

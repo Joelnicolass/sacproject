@@ -8,11 +8,16 @@ const NODE_NAME := "HealEffect"
 ## sacengine healSpeed.
 const HEAL_SPEED := 240.0
 const FPS := 60.0
+## sacengine int.max (32 bits): satAdd caps the frames of heals that add up there (state.d:10455).
+const FRAMES_CAP := 2147483647
 
 ## Seconds between `heal` bursts on the target (sacengine spawns particles every frame).
 @export var fx_interval_s := 0.5
 
+## Prints «cura <who> total N vida V» when it ends (the Healing Shower's log, F118). Off for the Heal spell.
+var report_end := false
 var frames_left := 0
+var _healed := 0.0
 var per_frame := 0.0
 var _health: Node
 var _fx_left := 0.0
@@ -24,9 +29,20 @@ static func can_heal(body: Node) -> bool:
 	return health != null and not health.call("is_dead") and not health.call("is_full")
 
 
+## The HealEffect of `target`, made if it has none (one per body; a second heal adds to it).
+static func on(target: Node) -> Node:
+	var effect: Node = target.get_node_or_null(NODE_NAME)
+	if effect == null:
+		effect = load("res://scenes/world/spells/heal_effect.gd").new()
+		effect.name = NODE_NAME
+		target.add_child(effect)
+	return effect
+
+
 func add(amount: float) -> void:
 	var frames := ceili(amount / HEAL_SPEED * FPS)
-	frames_left += frames
+	## A heal already running gets the new frames on top, saturated (satAdd, state.d:10455).
+	frames_left = mini(frames_left + frames, FRAMES_CAP)
 	per_frame = maxf(per_frame, amount / float(frames))
 
 
@@ -37,12 +53,22 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	frames_left -= 1
 	if _health == null or frames_left < 0 or _health.call("is_dead"):
-		queue_free()
+		_end()
 		return
+	var before := float(_health.get("current"))
 	_health.call("heal", per_frame)
+	_healed += float(_health.get("current")) - before
 	_fx_left -= delta
 	if _fx_left <= 0.0:
 		_fx_left = fx_interval_s
 		FxBus.broadcast("heal", (get_parent() as Node3D).global_position + Vector3.UP)
 	if _health.call("is_full"):
-		queue_free()
+		_end()
+
+
+func _end() -> void:
+	if report_end and _health != null:
+		var body := get_parent()
+		var who := str(body.call("display_name")) if body.has_method("display_name") else str(body.name)
+		print("cura %s total %d vida %d" % [who, roundi(_healed), roundi(float(_health.get("current")))])
+	queue_free()

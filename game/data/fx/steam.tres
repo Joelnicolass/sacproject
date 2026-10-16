@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ParticleType" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
+
+[resource]
+script = ExtResource("1_type")
+atlas_key = "steam"
+size = Vector2(2.0, 2.0)
+energy = 0.25
+frame_s = 0.03333
+lifetime_s = 1.05
+count = 100
+speed_min = 0.2
+speed_max = 0.6
+scale_min = 0.75
+scale_max = 0.75
+emission_radius = 1.0
+pool_max = 4

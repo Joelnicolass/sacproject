@@ -377,8 +377,31 @@ def decode_spel(raw: bytes) -> dict:
         "flags2": u32(raw, 92),
         "amount2": u32(raw, 96),
         "amount3": u32(raw, 100),
+        "args": spel_args(raw),
     })
     return entry
+
+
+## spells.d Spel.args (8 × {type, what} at byte 142): `ires`/`freg` of poison, `ttex` of a particle... as sacspell.d
+## spellArgInt/spellArgFloat read them. Type read reversed; i = int, f = float, t = tag (reversed too).
+SPEL_ARGS_OFFSET = 142
+
+
+def spel_args(raw: bytes) -> dict:
+    args = {}
+    for i in range(8):
+        at = SPEL_ARGS_OFFSET + 8 * i
+        kind = raw[at : at + 4][::-1].decode("latin1").rstrip("\x00")
+        what = raw[at + 4 : at + 8]
+        if not kind or kind.startswith("-") or kind.endswith("-"):
+            continue
+        if kind[0] == "i":
+            args[kind] = struct.unpack("<i", what)[0]
+        elif kind[0] == "f":
+            args[kind] = round(struct.unpack("<f", what)[0], 6)
+        elif kind[0] == "t":
+            args[kind] = what[::-1].decode("latin1").rstrip("\x00")
+    return args
 
 
 def decode_strc(raw: bytes) -> dict:
@@ -905,6 +928,9 @@ def main() -> None:
     ntt = parse_ntt_data()
     texts = english_texts()
     creatures, wizards, spells, abilities, structures = {}, {}, {}, {}, {}
+    ## F118 (RFC-030g): the @PRC SPELs (goc@ Steam Cloud, cen@ Poison Cloud, tum@ Healing Shower...). Only the ones a CRE8
+    ## names in its passive slots (440/452, sacobject.d:607-610) go to abilities.json, below.
+    procs = {}
 
     for odir, name, ext, raw in ex.walk((INSTALL / "spells.wad").read_bytes()):
         spell_tag = name[::-1]
@@ -918,7 +944,9 @@ def main() -> None:
         elif ext == "SPEL":
             entry = decode_spel(raw)
             target = abilities if "@ABI" in odir else spells
-            if "@ABI" not in odir and ("@PRC" in odir or "@SHR" in odir):
+            if "@PRC" in odir:
+                target = procs
+            elif "@ABI" not in odir and "@SHR" in odir:
                 continue
         elif ext == "STRC":
             entry = decode_strc(raw)
@@ -935,6 +963,10 @@ def main() -> None:
         target[spell_tag] = entry
 
     spells.update(structures)
+    for entry in creatures.values():
+        for passive in entry["passive_abilities"]:
+            if passive in procs:
+                abilities[passive] = procs[passive]
     anim_index = index_saxs_animations()
     model_paths = index_saxs_models()
     for creature_tag, entry in creatures.items():

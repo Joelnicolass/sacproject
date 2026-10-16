@@ -24,4 +24,4 @@ extends Resource
 @export var order := ""
 @export var order_slot := 2
 ## F117: each body starts with this fraction of its health (1 = full). The bench writes Health.current once, before the record starts.
-@export_range(0.01, 1.0, 0.01) var health_fraction := 1.0
+@export_range(0.0001, 1.0, 0.0001, "or_less") var health_fraction := 1.0

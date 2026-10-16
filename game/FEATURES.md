@@ -996,3 +996,34 @@ Deuda:
 - `gcil` (rayo ×0,25) va a necesitar una firma que reciba el tipo de daño.
 - `tdhg` y `tfhg` quedan sin efecto.
 - En el banco, las unidades aparecen recién al largar.
+
+### F118 — Nubes al morir (RFC-030, corte 030g)
+
+`DeathCloudSpawner`, hijo de `unit.tscn` y activo solo en el servidor, escucha `Health.died`. Instancia una nube por cada pasiva del CRE8 que tenga su `.tres` en `data/death_clouds/`. Como en sacengine, la nube actúa en un solo update y desaparece (`state.d:25216-25254`, `25674-25697`); lo que dura queda en el cuerpo.
+
+| Nube | Criaturas | Efecto |
+|---|---|---|
+| Vapor (`goc@`) | Cog, Phoenix | `SplashDamage` 300·(1−d/10) |
+| Veneno (`cen@`) | Necryl | Dosis `Poisoned` de 23,08/s durante 5 s, en 5 m |
+| Cura (`tum@`) | Mutant, Dragon, Sirocco | `HealEffect` de hasta `maxHealth` a 240/s, solo aliados, en 30 m |
+
+El humo sale por `FxBus.broadcast`. El export lee los SPEL de `@PRC.SCAT` con `args`.
+
+**Cierre (2026-10-16).** La review dio NEEDS WORK (`reviews/REVIEW-F118-death-clouds.md`): la cura no tenía fin. Se corrigió en una ronda (`add(maximum)` + satAdd). Playtest con ventana PASS (`agent/out/pt118/`):
+- **Humo:** las tres nubes tienen captura.
+- **Vapor:** el enemigo pierde 236,8 y el aliado 0.
+- **Veneno:** el enemigo pierde 115,38 y el aliado 0.
+- **Cura:** el aliado sube de 400 a 800, con 496 de cura total, por debajo del máximo de 800.
+- **Arreglo del orquestador:** el aliado mostraba el humo verde de la dosis aunque no recibía daño. Ahora el humo de `Poisoned` solo sale si `Health` aceptó el veneno. Repetí la prueba: AGENT_OK y los mismos números.
+- **Regresiones:** `f25_flying_summon` AGENT_OK. El digest de seed 7 no cambia. `rules_suite` PASS.
+
+Divergencia heredada: no hay fuego amigo (AUDIT-2026-10-12:152). En sacengine el vapor hace ×0,5 a los aliados y el veneno ×1. Queda para un RFC aparte, que espera la decisión del usuario.
+
+Deuda:
+- Red sin verificar con input real: hace falta un segundo cliente que mate la criatura.
+- Phoenix y Dragon no están en el banco.
+- `Poisoned` hace 300 ticks y sacengine 301.
+- `bodies_within` duplica a `SplashDamage`.
+- `HealEffect.on()` duplica a `caster.gd`.
+- Las perillas de `Poisoned` no se pueden editar.
+- Los debuffs del veneno quedan para 030k y `ignite` para 030r.

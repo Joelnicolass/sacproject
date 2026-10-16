@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3]
+[gd_scene load_steps=35 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/unit_body.gd" id="1_body"]
 [ext_resource type="Script" path="res://scenes/world/body_visual.gd" id="2_visual"]
@@ -27,6 +27,11 @@
 [ext_resource type="Script" path="res://scenes/data/damage_passive_type.gd" id="f117_type"]
 [ext_resource type="Resource" path="res://data/passives/korq.tres" id="f117_korq"]
 [ext_resource type="Resource" path="res://data/passives/ahtf.tres" id="f117_ahtf"]
+[ext_resource type="Script" path="res://scenes/world/units/death_cloud_spawner.gd" id="f118_spawner"]
+[ext_resource type="Script" path="res://scenes/data/death_cloud_type.gd" id="f118_type"]
+[ext_resource type="Resource" path="res://data/death_clouds/goc.tres" id="f118_goc"]
+[ext_resource type="Resource" path="res://data/death_clouds/cen.tres" id="f118_cen"]
+[ext_resource type="Resource" path="res://data/death_clouds/tum.tres" id="f118_tum"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_unit"]
 radius = 0.3
@@ -103,6 +108,12 @@ own_health = NodePath("../Health")
 script = ExtResource("f117_passive")
 body = NodePath("..")
 types = Array[ExtResource("f117_type")]([ExtResource("f117_korq"), ExtResource("f117_ahtf")])
+
+[node name="DeathCloudSpawner" type="Node" parent="." node_paths=PackedStringArray("body", "health")]
+script = ExtResource("f118_spawner")
+body = NodePath("..")
+health = NodePath("../Health")
+types = Array[ExtResource("f118_type")]([ExtResource("f118_goc"), ExtResource("f118_cen"), ExtResource("f118_tum")])
 
 [node name="ManaPool" type="Node" parent="."]
 script = ExtResource("f29_mana")

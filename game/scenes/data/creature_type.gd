@@ -46,6 +46,10 @@ extends Resource
 ## sacengine passiveOnDamage = abilities[2] (sacobject.d:426): korq (Taurock), ahtf (Firefist), rifl, gcil... "" = none.
 ## DamagePassive looks it up among its DamagePassiveType resources; a tag without one there does nothing.
 @export var passive_on_damage: String = ""
+## CRE8 passiveAbility / passiveAbility2 (bytes 440/452, sacobject.d:607-610): goc@ (Cog, Phoenix), cen@ (Necryl),
+## tum@ (Mutant, Dragon), eniv... sacengine kill() runs the death clouds among them (state.d:8274-8278); DeathCloudSpawner
+## looks each one up in its DeathCloudType resources.
+@export var passive_abilities: PackedStringArray = PackedStringArray()
 ## shoot0, shoot1 from the SXSK/SKEL: {tag, frames, framerate, shoot_ticks}.
 @export var shoot_animations: Array[Dictionary] = []
 ## Peasant clips (CRE8 animation slots 32/33/35/37, RFC-028c): role -> {tag, frames, framerate}, with roles

@@ -1111,3 +1111,24 @@ Deuda:
 - `unruled`: dos defaults sin `MatchState`.
 - Rencor contra atacante aliado (sacengine lo marca y el port no).
 - La petrificación de 030i tiene que entrar también por `damage()`.
+
+### F140 — MatchSetup, flag del dedicado y la regla en los clientes (RFC-031, corte 031a2)
+
+`MatchSetup` (`scenes/flow/match_setup.gd`, RefCounted) reemplaza a `level_override` y `_cli_level`.
+- `from_cli()` lee `--level=N` y `--friendly-fire` / `--no-friendly-fire` (`app.d:333-355`).
+- `apply_to(rules)` devuelve un `duplicate()` con los overrides. Si no hay overrides, devuelve el mismo objeto.
+- `HighNoon._enter_tree` lo aplica en la autoridad antes de `MatchSeed.begin`.
+- `WizardSpawner` lee `rules.wizard_level`.
+- Precedencia: boot > flag > reglas.
+- La regla llega a los clientes por el snapshot de `MatchState`.
+
+**Cierre (2026-10-16).** Review PASS (`reviews/REVIEW-F140-match-setup.md`). Dos nits resueltos por el orquestador: un comentario de `high_noon.gd` y la precedencia cuando se pasan los dos flags. Playtest con ventana PASS (`agent/out/pt140/`):
+- **Dedicado `--no-friendly-fire --level=2` con 2 clientes:** los dos clientes, también el que entró 8 s más tarde, muestran «fuego amigo: no», maná 1200 y 5 casillas.
+- **«Contra la IA», nivel 4:** «sí (×0.50)», maná 1400 y 7 casillas. El `.tres` sigue sin tocar: nivel 9 y FF on (`same=false`).
+- **Solo:** nivel 9, 11 casillas.
+- **Digests:** seed 7, `f139_ff_clouds` y `f116` sin cambio. `rules_suite` PASS.
+
+Deuda:
+- Con los dos flags gana `--no` (sacengine se queda con el último).
+- 031d: `--souls` choca con el flag propio de `ai_match`.
+- No se volvieron a correr seed 1, `--npcs` ni `ai_duel_seeded_ff`.

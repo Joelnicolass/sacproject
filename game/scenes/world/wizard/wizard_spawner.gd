@@ -44,9 +44,10 @@ func _place(pawn: Node, slot: int) -> void:
 	body.rotation.y = spot.basis.get_euler().y
 
 
-## RFC-030 030d (F115): the level chosen for this match (boot or --level) wins over the rules; 0 = the rules.
+## RFC-030 030d (F115): the level of this match. The level chosen in the boot or with --level is already in the world's
+## rules (MatchSetup.apply_to in HighNoon, RFC-031 031a2).
 func _level(match_rules: MatchRules) -> int:
-	return SacrificeFlow.level_override if SacrificeFlow.level_override > 0 else match_rules.wizard_level
+	return match_rules.wizard_level
 
 
 ## The start with that slot number. With more players than starts they share, in order.

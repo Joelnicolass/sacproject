@@ -10,8 +10,10 @@ var _local_wizard: Node3D
 
 func _enter_tree() -> void:
 	_entered_ms = Time.get_ticks_msec()
-	## The one who simulates draws (or takes) the match seed before any child is ready (RFC-024 §5.1).
+	## The one who simulates applies the match setup (level, friendly fire; RFC-031 031a2) and draws (or takes) the match
+	## seed before any child is ready (RFC-024 §5.1). The setup returns a copy when it overrides something (an empty setup returns `rules` itself): never mutate world.rules at runtime.
 	if not MpKit.is_networked() or MpKit.is_server():
+		rules = SacrificeFlow.setup.apply_to(rules)
 		MatchSeed.begin(rules)
 
 

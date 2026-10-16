@@ -14,11 +14,11 @@ var slot_picks: Dictionary = {}
 ## RFC-024 024f: the AI seats of the match this process simulates when the rules bring none (AiRoster reads them):
 ## «Contra la IA» in solo, or the dedicated started with --ai-slots=2 [--ai-god=pyro]. Empty = only humans.
 var solo_ai_seats: Array[AiSeat] = []
-## RFC-030 030d (F115): the wizard level of this match, for every wizard (WizardSpawner). 0 = MatchRules.wizard_level.
-## «Contra la IA» takes it from the boot; the dedicated (and solo) from --level=N, like sacengine app.d:276.
-var level_override := 0
-## --level=N of this process (1-9), 0 without the flag or out of range.
-var _cli_level := 0
+## RFC-031 031a2 (F140): what the next match overrides of its rules (level, friendly fire). HighNoon applies it on
+## the authority. «Contra la IA» takes the level from the boot; the dedicated (and solo) the flags of this process.
+var setup := MatchSetup.new()
+## The flags of this process (--level=N, --friendly-fire / --no-friendly-fire), read once; every reset starts here.
+var _cli_setup := MatchSetup.new()
 
 func _ready() -> void:
 	boot_path = "res://scenes/ui/boot.tscn"
@@ -30,7 +30,8 @@ func _ready() -> void:
 	start_when = StartWhen.DEDICATED_FIRST_CLIENT
 	## Before super._ready(): MpKit.configure takes max_players there, so the one human gets slot 1 and the AI keeps slot 2.
 	_read_dedicated_ai()
-	_read_cli_level()
+	_cli_setup = MatchSetup.from_cli()
+	setup = _cli_setup.copy()
 	MpKit.slot_assigned.connect(_on_slot_assigned)
 	MpKit.custom_received.connect(_on_custom_received)
 	MpKit.peer_left.connect(_on_peer_left)
@@ -73,15 +74,17 @@ func pick_for(slot: int) -> Dictionary:
 
 func play_solo() -> void:
 	solo_ai_seats = []
-	level_override = _cli_level
+	setup = _cli_setup.copy()
 	_play_alone()
 
 
 ## «Contra la IA»: solo, with the AI in slot 2. `god` empty = drawn when the match starts. `level` 1-9 is the wizard
-## level of both wizards (030d); 0 keeps --level or the rules.
+## level of both wizards (030d) and wins over --level; 0 keeps --level or the rules.
 func play_vs_ai(god: StringName = &"", level: int = 0) -> void:
 	solo_ai_seats = [_vs_ai_seat(god)]
-	level_override = level if level >= 1 and level <= 9 else _cli_level
+	setup = _cli_setup.copy()
+	if level >= 1 and level <= 9:
+		setup.level = level
 	_play_alone()
 
 
@@ -93,13 +96,13 @@ func _play_alone() -> void:
 
 func host_lan() -> Error:
 	solo_ai_seats = []
-	level_override = _cli_level
+	setup = _cli_setup.copy()
 	return super.host_lan()
 
 
 func return_to_boot() -> void:
 	solo_ai_seats = []
-	level_override = _cli_level
+	setup = _cli_setup.copy()
 	super.return_to_boot()
 
 
@@ -147,21 +150,6 @@ func _read_dedicated_ai() -> void:
 	solo_ai_seats = seats
 	max_players = seats[0].slot - 1
 	print("dedicado con ia en slots %s" % raw)
-
-
-## --level=N (RFC-030 §4): the level of the match on the dedicated, or of a solo run. Clients do not choose: the server
-## spawns the wizards and their level replicates.
-func _read_cli_level() -> void:
-	var raw := MpBoot.user_value("level", "")
-	if raw.is_empty():
-		return
-	var level := int(raw)
-	if level < 1 or level > 9:
-		push_warning("--level=%s: fuera de 1-9, se usa el de las reglas" % raw)
-		return
-	_cli_level = level
-	level_override = level
-	print("nivel del mago %d (--level)" % level)
 
 
 func _on_slot_assigned(_slot: int) -> void:

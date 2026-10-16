@@ -11,6 +11,8 @@ extends Resource
 @export var columns := 3
 @export var spacing_m := 3.0
 @export var offset_m := 0.0
+## F116: along the Z axis from BenchRules.anchor (a row of different creatures side by side).
+@export var offset_z_m := 0.0
 @export var facing_x := 1.0
 
 ## Placement relative to a wizard (RFC-024 024c): with `near_slot` > 0 the group stands `near_distance_m` from the wizard of that

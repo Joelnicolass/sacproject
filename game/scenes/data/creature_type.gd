@@ -48,10 +48,31 @@ extends Resource
 ## Peasant clips (CRE8 animation slots 32/33/35/37, RFC-028c): role -> {tag, frames, framerate}, with roles
 ## cower, pull, work (dig) and talk_cower. Empty for every creature that is not a peasant.
 @export var extra_animations: Dictionary = {}
+## F116 (RFC-030e): takeoff, fly and land clips (CRE8 slots 32-34) as sacengine loads them: a slot that repeats stance1
+## or ends in "00" is left out (Phoenix has only fly; Rhinok none). role -> {tag, frames, framerate}.
+@export var flight_animations: Dictionary = {}
 
 
 func is_flying() -> bool:
 	return running_speed <= 0.0 and flying_speed > 0.0
+
+
+## sacengine canFly && !mustFly (sacobject.d:81-83, 113-115): walks and flies (the hybrids). It flies when that arrives
+## first (Flight). A creature that must fly (is_flying) is not a hybrid.
+func is_hybrid_flier() -> bool:
+	return running_speed > 0.0 and flying_speed > 0.0 and flight_animations.has("fly")
+
+
+## sacengine takeoffTime (sacobject.d:125-128): takeoff frames / animFPS (30); 0 without a takeoff clip.
+func takeoff_time_s() -> float:
+	var clip: Dictionary = flight_animations.get("takeoff", {})
+	return float(clip.get("frames", 0)) / 30.0
+
+
+## sacengine landing: the land clip lasts numFrames·updateAnimFactor ticks (state.d:14155-14160); 0 without one.
+func land_time_s() -> float:
+	var clip: Dictionary = flight_animations.get("land", {})
+	return float(clip.get("frames", 0)) / 30.0
 
 
 func level() -> int:

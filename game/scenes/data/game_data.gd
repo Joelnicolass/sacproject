@@ -159,6 +159,7 @@ func _make_creature(row: Dictionary) -> _CREATURE_TYPE:
 	for anim: Variant in row.get("shoot_animations", []):
 		type.shoot_animations.append(anim if anim is Dictionary else {})
 	type.extra_animations = row.get("extra_animations", {}) if row.get("extra_animations", {}) is Dictionary else {}
+	type.flight_animations = row.get("flight_animations", {}) if row.get("flight_animations", {}) is Dictionary else {}
 	return type
 
 

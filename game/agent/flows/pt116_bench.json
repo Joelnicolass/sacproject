@@ -1,0 +1,774 @@
+{
+ "scene": "res://debug/f114_flyers.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "Overlay/Status",
+    "text_contains": "Enter",
+    "timeout": 60
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "press": "check_tick"
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "arm",
+    "args": [
+     -1
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt116_watch",
+    "prop": "tracked",
+    "gte": 10,
+    "timeout": 20
+   }
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "arm",
+    "args": [
+     -1
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "frame",
+    "args": [
+     1120,
+     1270,
+     115,
+     55,
+     0
+    ]
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "a0_ground.png"
+  },
+  {
+   "drag": {
+    "node": "%View",
+    "from_x": 40,
+    "from_y": 70,
+    "to_x": 1240,
+    "to_y": 600
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "print": {
+    "node": "%Selection",
+    "prop": "count"
+   }
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "summary"
+   }
+  },
+  {
+   "shot": "a1_selected.png"
+  },
+  {
+   "assert": {
+    "node": "%Selection",
+    "prop": "count",
+    "equals": 10
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "frame",
+    "args": [
+     1120,
+     1255,
+     30,
+     9,
+     6
+    ]
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "shot": "a2_ground_close.png"
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "frame",
+    "args": [
+     1190,
+     1270,
+     0,
+     95,
+     100
+    ]
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "aim_clear",
+    "args": [
+     1262,
+     1270,
+     7
+    ]
+   }
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "text"
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "b0_takeoff.png"
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "wait": 1.6
+  },
+  {
+   "shot": "b1_air_top.png"
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "follow",
+    "args": [
+     0,
+     20,
+     45
+    ]
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "b2_air_follow.png"
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "follow_unit",
+    "args": [
+     4,
+     14,
+     3,
+     4
+    ]
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "b3_air_side_info.png"
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "follow",
+    "args": [
+     0,
+     20,
+     45
+    ]
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "b4_air_follow.png"
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "unfollow",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "frame",
+    "args": [
+     1250,
+     1270,
+     0,
+     40,
+     70
+    ]
+   }
+  },
+  {
+   "wait": 2.5
+  },
+  {
+   "shot": "c0_landing.png"
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "shot": "c1_landed.png"
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "wait": 8.0
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "frame_all",
+    "args": [
+     0,
+     45,
+     60
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "c2_settled.png"
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "frame_all",
+    "args": [
+     40,
+     4,
+     0
+    ]
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "shot": "c3_side_ground_info.png"
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "frame_all",
+    "args": [
+     0,
+     40,
+     45
+    ]
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "reset",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "aim_unit",
+    "args": [
+     0
+    ]
+   }
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "summary"
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "aim_free",
+    "args": [
+     0,
+     5
+    ]
+   }
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "aim_unit",
+    "args": [
+     1
+    ]
+   }
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "summary"
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "aim_free",
+    "args": [
+     1,
+     5
+    ]
+   }
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "aim_unit",
+    "args": [
+     2
+    ]
+   }
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "summary"
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "aim_free",
+    "args": [
+     2,
+     5
+    ]
+   }
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "aim_unit",
+    "args": [
+     3
+    ]
+   }
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "summary"
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "aim_free",
+    "args": [
+     3,
+     5
+    ]
+   }
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "aim_unit",
+    "args": [
+     4
+    ]
+   }
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "summary"
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "aim_free",
+    "args": [
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "aim_unit",
+    "args": [
+     5
+    ]
+   }
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "summary"
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "aim_free",
+    "args": [
+     5,
+     5
+    ]
+   }
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "aim_unit",
+    "args": [
+     6
+    ]
+   }
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "summary"
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "aim_free",
+    "args": [
+     6,
+     5
+    ]
+   }
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "aim_unit",
+    "args": [
+     7
+    ]
+   }
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "summary"
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "aim_free",
+    "args": [
+     7,
+     5
+    ]
+   }
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "aim_unit",
+    "args": [
+     8
+    ]
+   }
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "summary"
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "aim_free",
+    "args": [
+     8,
+     5
+    ]
+   }
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "aim_unit",
+    "args": [
+     9
+    ]
+   }
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "print": {
+    "node": "%SelectionRoster",
+    "prop": "summary"
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "aim_free",
+    "args": [
+     9,
+     5
+    ]
+   }
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "d0_near_moving.png"
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "shot": "d1_near.png"
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "wait": 5.0
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "shot": "d2_near_done.png"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "report",
+    "args": []
+   }
+  }
+ ]
+}

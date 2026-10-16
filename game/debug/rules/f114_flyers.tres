@@ -1,0 +1,106 @@
+[gd_resource type="Resource" script_class="BenchRules" load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
+
+[sub_resource type="Resource" id="Group_kacd"]
+script = ExtResource("2_group")
+tag = "kacd"
+slot = 1
+count = 1
+columns = 1
+offset_z_m = -50.0
+facing_x = 1.0
+
+[sub_resource type="Resource" id="Group_lrps"]
+script = ExtResource("2_group")
+tag = "lrps"
+slot = 1
+count = 1
+columns = 1
+offset_z_m = -40.0
+facing_x = 1.0
+
+[sub_resource type="Resource" id="Group_kace"]
+script = ExtResource("2_group")
+tag = "kace"
+slot = 1
+count = 1
+columns = 1
+offset_z_m = -30.0
+facing_x = 1.0
+
+[sub_resource type="Resource" id="Group_kacf"]
+script = ExtResource("2_group")
+tag = "kacf"
+slot = 1
+count = 1
+columns = 1
+offset_z_m = -20.0
+facing_x = 1.0
+
+[sub_resource type="Resource" id="Group_grps"]
+script = ExtResource("2_group")
+tag = "grps"
+slot = 1
+count = 1
+columns = 1
+offset_z_m = -10.0
+facing_x = 1.0
+
+[sub_resource type="Resource" id="Group_grdg"]
+script = ExtResource("2_group")
+tag = "grdg"
+slot = 1
+count = 1
+columns = 1
+offset_z_m = 10.0
+facing_x = 1.0
+
+[sub_resource type="Resource" id="Group_nomd"]
+script = ExtResource("2_group")
+tag = "nomd"
+slot = 1
+count = 1
+columns = 1
+offset_z_m = 20.0
+facing_x = 1.0
+
+[sub_resource type="Resource" id="Group_gard"]
+script = ExtResource("2_group")
+tag = "gard"
+slot = 1
+count = 1
+columns = 1
+offset_z_m = 30.0
+facing_x = 1.0
+
+[sub_resource type="Resource" id="Group_grdb"]
+script = ExtResource("2_group")
+tag = "grdb"
+slot = 1
+count = 1
+columns = 1
+offset_z_m = 40.0
+facing_x = 1.0
+
+[sub_resource type="Resource" id="Group_grdr"]
+script = ExtResource("2_group")
+tag = "grdr"
+slot = 1
+count = 1
+columns = 1
+offset_z_m = 50.0
+facing_x = 1.0
+
+[resource]
+script = ExtResource("1_rules")
+anchor = Vector3(1120, 0, 1270)
+starting_souls = 12
+match_seed = 1
+wizard_level = 9
+groups = Array[ExtResource("2_group")]([SubResource("Group_kacd"), SubResource("Group_lrps"), SubResource("Group_kace"), SubResource("Group_kacf"), SubResource("Group_grps"), SubResource("Group_grdg"), SubResource("Group_nomd"), SubResource("Group_gard"), SubResource("Group_grdb"), SubResource("Group_grdr")])
+human_god = &"james"
+start_paused = true
+pending_text = "Voladoras: 10 híbridas a 150 m del manantial central (Enter)"
+ignore_annihilation = true

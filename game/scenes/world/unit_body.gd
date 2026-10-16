@@ -153,6 +153,8 @@ var _stealth := false
 ## Optional children (RFC-024 024b): without them the body walks and picks as it did before.
 @onready var _path_follower: Node = get_node_or_null("PathFollower")
 @onready var _target_picker: Node = get_node_or_null("TargetPicker")
+## F116 (RFC-030e): takes off, flies and lands a hybrid flier. Without it every hybrid walks.
+@onready var _flight: Flight = get_node_or_null("Flight")
 
 
 ## Before it enters the tree: the summon cast has just started.
@@ -201,6 +203,8 @@ func _ready() -> void:
 		_clip_pose.call("setup", model, _clip_roles(), _mesh_base_pos, _mesh_base_rot)
 	if _clip_pose and _clip_pose.has_signal("clip_looped"):
 		_clip_pose.connect("clip_looped", _on_clip_looped)
+	if _flight:
+		_flight.state_changed.connect(_on_flight_changed)
 	var health := _health()
 	health.changed.connect(_on_health_changed)
 	$HealthBar.call("bind", health, owner_slot)
@@ -225,7 +229,7 @@ func _ready() -> void:
 		_rng.seed = MatchSeed.derive(["body", String(name)])
 	else:
 		_rng.randomize()
-	if type and not type.is_flying():
+	if type and not is_flying():
 		_seat_left = seat_attempts
 	_setup_melee()
 
@@ -275,6 +279,9 @@ func begin_walk(goal: Vector3) -> void:
 func walk_to(point: Vector3) -> void:
 	if mode == Mode.DEAD or mode == Mode.SUMMONING or is_taken():
 		return
+	if _flies_to(point):
+		begin_walk(point)
+		return
 	if is_instance_valid(_path_follower):
 		_path_follower.call("go_to", point)
 	else:
@@ -285,11 +292,31 @@ func is_walking() -> bool:
 	return mode == Mode.MOVE
 
 
+## In the air: a creature that must fly, or a hybrid the Flight child has up (F116).
+func is_flying() -> bool:
+	if type and type.is_flying():
+		return true
+	return _flight != null and _flight.is_airborne()
+
+
+## F116: the Flight child takes the walk to `point` by air (sacengine moveTowards, state.d:12335-12339). A flier goes
+## straight: its waypoints are dropped.
+func _flies_to(point: Vector3) -> bool:
+	if _flight == null or not _should_simulate():
+		return false
+	var flat := Vector2(point.x - global_position.x, point.z - global_position.z).length()
+	if not _flight.goes_by_air(flat):
+		return false
+	if is_instance_valid(_path_follower):
+		_path_follower.call("cancel")
+	return true
+
+
 ## Teleport (RFC-021c). The server puts the body at `point` (a spot on the land) in one step: it keeps the
 ## height it had over the ground (a flier), has no goal, target or velocity, and keeps its order only if it is
 ## guard or retreat (sacengine teleport, state.d:10260-10261, 10269). The clients are told not to glide.
 func warp_to(point: Vector3) -> void:
-	var above := maxf(0.0, global_position.y - _ground_height(global_position)) if type and type.is_flying() else 0.0
+	var above := maxf(0.0, global_position.y - _ground_height(global_position)) if is_flying() else 0.0
 	global_position = Vector3(point.x, point.y + above, point.z)
 	velocity = Vector3.ZERO
 	halt()
@@ -435,7 +462,7 @@ func _sync_clip_pose() -> void:
 func _apply_type() -> void:
 	type = GameData.creature(creature_tag)
 	if type:
-		move_speed = type.flying_speed if type.is_flying() else type.running_speed
+		move_speed = type.flying_speed if is_flying() else type.running_speed
 	else:
 		move_speed = 0.0
 	_sync_clip_pose()
@@ -504,15 +531,25 @@ func _physics_process(delta: float) -> void:
 	if _seat_left > 0:
 		_seat()
 		return
-	var is_flying := type and type.is_flying()
+	var must_fly := type != null and type.is_flying()
+	var airborne := is_flying()
 	var gravity := float(ProjectSettings.get_setting("physics/3d/default_gravity"))
-	if not is_flying:
-		if is_on_floor():
+	if must_fly:
+		_hold_flying_height(delta)
+	elif _flight != null and _flight.is_capable():
+		var above := global_position.y - _ground_height(global_position) if airborne else 0.0
+		var lift := _flight.advance(delta, mode == Mode.MOVE, above, is_on_floor())
+		if airborne:
+			velocity.y = lift
+		elif is_on_floor():
 			velocity.y = 0.0
 		else:
 			velocity.y -= gravity * delta
 	else:
-		_hold_flying_height(delta)
+		if is_on_floor():
+			velocity.y = 0.0
+		else:
+			velocity.y -= gravity * delta
 	_since_damage += delta
 	velocity.x = 0.0
 	velocity.z = 0.0
@@ -520,11 +557,11 @@ func _physics_process(delta: float) -> void:
 		_regenerate(delta)
 		if is_obstacle():
 			velocity = BodySeparation.resolve(self, velocity, delta)
-		if not is_flying:
+		if not airborne:
 			velocity = GroundGuard.keep_on_ground(self, velocity, delta)
 		var before_dead := global_position
 		move_and_slide()
-		if not is_flying:
+		if not airborne:
 			GroundGuard.hold_on_ground(self, before_dead)
 		_update_clip_state()
 		return
@@ -542,19 +579,35 @@ func _physics_process(delta: float) -> void:
 		Mode.ROCK_FORM, Mode.COWER:
 			_regenerate(delta)
 		Mode.DEAD, Mode.SUMMONING:
-			if not is_flying and is_on_floor():
+			if not airborne and is_on_floor():
 				return
+	if _flight != null and _flight.holds_still():
+		velocity.x = 0.0
+		velocity.z = 0.0
 	if is_obstacle():
 		velocity = BodySeparation.resolve(self, velocity, delta)
-	if not is_flying:
+	if _flight != null and _flight.is_airborne():
+		_cap_air_pace()
+	if not airborne:
 		velocity = GroundGuard.keep_on_ground(self, velocity, delta)
 	var before := global_position
 	move_and_slide()
-	if not is_flying:
+	if not airborne:
 		GroundGuard.hold_on_ground(self, before)
-	if not is_flying and GroundGuard.has_fallen(self):
+	if not airborne and GroundGuard.has_fallen(self):
 		_gib_fallen()
 	_update_clip_state()
+
+
+## F116: a hybrid in the air keeps its flying pace; the push of BodySeparation turns its heading but does not add to
+## it (sacengine caps the air speed at speedInAir, state.d:14742-14751).
+func _cap_air_pace() -> void:
+	var pace := move_speed * speed_factor
+	var flat := Vector2(velocity.x, velocity.z)
+	if pace > 0.0 and flat.length() > pace:
+		flat = flat.normalized() * pace
+		velocity.x = flat.x
+		velocity.z = flat.y
 
 
 func _should_simulate() -> bool:
@@ -626,6 +679,12 @@ func _idle(delta: float) -> void:
 
 
 func _move(delta: float) -> void:
+	if _flight != null and _flight.state == Flight.State.GROUND and _flight.is_capable():
+		var final_goal := _goal
+		if is_instance_valid(_path_follower) and bool(_path_follower.call("is_active")):
+			final_goal = _path_follower.get("goal")
+		if _flies_to(final_goal):
+			_goal = final_goal
 	var pace := move_speed * speed_factor
 	var flat := Vector3(_goal.x - global_position.x, 0.0, _goal.z - global_position.z)
 	if pace <= 0.0 or flat.length() <= pace * delta:
@@ -835,6 +894,10 @@ func _update_clip_state() -> void:
 	if not _debug_clip_role.is_empty():
 		_clip_pose.call("play", _debug_clip_role)
 		return
+	var flight_role := _flight_role()
+	if not flight_role.is_empty() and _has_clip(flight_role):
+		_clip_pose.call("play", flight_role)
+		return
 	if mode == Mode.ATTACK:
 		_clip_pose.call("play", "attack")
 		return
@@ -849,6 +912,27 @@ func _update_clip_state() -> void:
 		return
 	var moving := mode == Mode.MOVE or mode == Mode.CHASE
 	_clip_pose.call("play", "run" if moving else "idle")
+
+
+## F116: the clip of the Flight state ("" on the ground).
+func _flight_role() -> String:
+	if _flight == null or mode == Mode.DEAD:
+		return ""
+	match _flight.state:
+		Flight.State.TAKEOFF:
+			return "takeoff"
+		Flight.State.FLYING:
+			return "fly"
+		Flight.State.LANDING:
+			return "land"
+	return ""
+
+
+## F116: on every peer (Flight:state is replicated): the pace of the air or the ground, and the clip.
+func _on_flight_changed(_state: Flight.State) -> void:
+	if type:
+		move_speed = type.flying_speed if is_flying() else type.running_speed
+	_update_clip_state()
 
 
 ## RFC-028c: the clip role this body plays when it stands in IDLE ("idle" = the CRE8 idle0). A role this model
@@ -907,6 +991,13 @@ func _clip_roles() -> Dictionary:
 	var extra: Dictionary = type.extra_animations if type else {}
 	for role: String in ["cower", "talk_cower", "work"]:
 		var clip: Variant = extra.get(role, {})
+		var tag := str((clip as Dictionary).get("tag", "")) if clip is Dictionary else ""
+		if not tag.is_empty():
+			roles[role] = tag
+	# F116: takeoff, fly and land of a hybrid flier (only the Flight state plays them).
+	var flight: Dictionary = type.flight_animations if type else {}
+	for role: String in ["takeoff", "fly", "land"]:
+		var clip: Variant = flight.get(role, {})
 		var tag := str((clip as Dictionary).get("tag", "")) if clip is Dictionary else ""
 		if not tag.is_empty():
 			roles[role] = tag

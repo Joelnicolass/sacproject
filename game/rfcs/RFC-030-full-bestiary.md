@@ -456,7 +456,7 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 ## 10. Orden de implementación
 
-030a → 030b → 030c → 030d (con esto, **todas disponibles**) → 030e (las 5 de nivel 9 son híbridas) → 030f → 030g → 030h → 030i → 030j → 030k → 030l → 030m → 030n → 030o → 030p → 030q → 030r → 030s → 030t → 030u → (030v).
+030a → 030b → 030c → 030d (con esto, **todas disponibles**) → 030e (las 5 de nivel 9 son híbridas) → 030e2 (pose y cápsula de las híbridas) → 030f → 030g → 030h → 030i → 030j → 030k → 030l → 030m → 030n → 030o → 030p → 030q → 030r → 030s → 030t → 030u → (030v).
 
 ## 11. Cómo verifica un humano
 
@@ -484,3 +484,5 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 - **Orden:** 030a puede ir ya. 030b espera a que cierren F79/F80/F84 en el HUD (ya cerradas) y a 028a, porque los dos tocan el libro y el HUD.
 - **030d (por REVIEW-F77):** «Contra la IA» se elige en el boot después de la selección de personaje. La fila «Nivel del mago» va junto a `%AiGod` en el boot, no en `character_select`.
 - **030e (por el playtest de F112):** Rhinok flota en el idle (`Eds1`, que también es tag de vuelo) y Phoenix flota +3,26 m. Las dos entran al criterio de pose de 030e.
+- **030e, revisado por REVIEW-F116 (2026-10-16):** fiel a sacengine (`sacobject.d:675-689`), Rhinok no vuela y camina siempre: sus slots de vuelo repiten `stance1`. Según los datos no flota, está hundido entre −0,77 y −1,47 m. Phoenix vuela siempre y no tiene takeoff ni land (`DF00`), así que también despega con destinos a 5 m. Se acepta como excepción al criterio 2. El criterio 3 (pose y cápsula: Rhinok, Hellmouth y Silverback hundidos, alas y cuellos fuera de la cápsula, y decidir con REA si Phoenix flota como en el original) pasa al corte nuevo **030e2**.
+- **Deuda de 030e:** no hay combate en el aire (CHASE y ataque hacen bajar a tierra), falta el clip `hover`, `badLanding` y morir en el aire, el vuelo largo no sigue el relieve, y el export no aplica `nonFlyingTags` ni `fixFamiliar`.

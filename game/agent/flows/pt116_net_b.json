@@ -1,0 +1,120 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.5,
+ "steps": [
+  {
+   "click": "%God_pyro"
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "click": "%Play"
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "click": "%Join"
+  },
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 30
+   }
+  },
+  {
+   "wait_until": {
+    "node": "%Wizards/Wizard1",
+    "timeout": 60
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "arm",
+    "args": [
+     1
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt116_watch",
+    "prop": "tracked",
+    "gte": 1,
+    "timeout": 90
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "follow",
+    "args": [
+     0,
+     10,
+     22
+    ]
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "net_b_ground.png"
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt116_watch",
+    "prop": "flying_now",
+    "gte": 1,
+    "timeout": 40
+   }
+  },
+  {
+   "wait": 0.9
+  },
+  {
+   "shot": "net_b_air.png"
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt116_watch",
+    "prop": "landed",
+    "gte": 1,
+    "timeout": 30
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "net_b_landed.png"
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "wait": 2.0
+  }
+ ]
+}

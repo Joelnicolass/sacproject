@@ -147,7 +147,7 @@ func _prepare() -> void:
 			var row := floori(float(index) / group.columns)
 			var rows := ceili(float(group.count) / group.columns)
 			var x := _rules.anchor.x + group.offset_m + (row - (rows - 1) * 0.5) * group.spacing_m
-			var z := _rules.anchor.z + (column - (group.columns - 1) * 0.5) * group.spacing_m
+			var z := _rules.anchor.z + group.offset_z_m + (column - (group.columns - 1) * 0.5) * group.spacing_m
 			var yaw := atan2(group.facing_x, 0.0)
 			if group.near_slot > 0:
 				var spot := _near_spot(group, index, terrain)

@@ -67,7 +67,7 @@ func finish(wizard: WizardBody, spell: SpellType, target: Node3D) -> String:
 	var heights := PackedFloat32Array()
 	for body in travelers(wizard, radius):
 		var info := BodyCatalog.info(str(body.get("model")))
-		var flying := body is UnitBody and (body as UnitBody).type != null and (body as UnitBody).type.is_flying()
+		var flying := body is UnitBody and (body as UnitBody).is_flying()
 		var spot := TeleportMath.carried(body.global_position, start, destination, flying, on_ground)
 		spot.y = _land_y(terrain, spot, destination.y)
 		froms.append(_feet_of(body))

@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/unit_body.gd" id="1_body"]
 [ext_resource type="Script" path="res://scenes/world/body_visual.gd" id="2_visual"]
@@ -21,6 +21,7 @@
 [ext_resource type="Script" path="res://scenes/world/warp_snap.gd" id="warp_snap"]
 [ext_resource type="Script" path="res://scenes/world/nav/path_follower.gd" id="f72_follower"]
 [ext_resource type="Script" path="res://scenes/world/units/target_picker.gd" id="f72_picker"]
+[ext_resource type="Script" path="res://scenes/world/units/flight.gd" id="f116_flight"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_unit"]
 radius = 0.3
@@ -66,6 +67,9 @@ properties/11/replication_mode = 2
 properties/12/path = NodePath("GuardianBond:post_path")
 properties/12/spawn = true
 properties/12/replication_mode = 2
+properties/13/path = NodePath("Flight:state")
+properties/13/spawn = true
+properties/13/replication_mode = 2
 
 [node name="Unit" type="CharacterBody3D"]
 collision_layer = 2
@@ -112,6 +116,10 @@ body = NodePath("..")
 
 [node name="TargetPicker" type="Node" parent="." node_paths=PackedStringArray("body")]
 script = ExtResource("f72_picker")
+body = NodePath("..")
+
+[node name="Flight" type="Node" parent="." node_paths=PackedStringArray("body")]
+script = ExtResource("f116_flight")
 body = NodePath("..")
 
 [node name="Corpse" type="Node" parent="." node_paths=PackedStringArray("pivot")]

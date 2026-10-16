@@ -910,3 +910,26 @@ Fila «Nivel del mago» (1–9) en el boot, junto al rival. También existe `--l
 Deuda:
 - Desde la partida no hay forma de volver al boot con input, así que el reinicio del nivel dentro del mismo proceso no se pudo probar como jugador.
 - El dedicado se probó con un solo cliente.
+
+### F116 — Voladoras híbridas: despegue, vuelo y aterrizaje (RFC-030, corte 030e)
+
+El nodo `Flight` (hijo de `unit.tscn`) tiene cuatro estados: GROUND, TAKEOFF, FLYING y LANDING. Las híbridas despegan si `takeoff + d/vuelo < d/tierra` (sacengine `state.d:12335-12339`), vuelan recto a `flying_speed` y aterrizan cuando se quedan quietas. El estado se replica y el cliente saca de ahí el clip y la velocidad. `export_stats.py` exporta takeoff, fly y land (slots CRE8 32-34) con la regla de descarte de sacengine.
+
+**Cierre (2026-10-16).** La review (`reviews/REVIEW-F116-flyers.md`) dio FAIL por un único bloqueante: la sonda usaba tokens prohibidos. Se corrigió en una ronda, y en la misma se agregó un tope de velocidad en el aire (`_cap_air_pace`). Playtest con ventana PASS (`agent/out/pt116/`):
+- **Destino a 150 m:** el rectángulo seleccionó las 10 y se dio clic derecho. Las 8 que tienen clips pasan por TAKEOFF → FLYING → LANDING → GROUND. Despegan en 0,87–1,98 s. La velocidad máxima en el aire es igual a `flying_speed` (exceso máximo 0,35 %).
+- **Destino a 5 m:** caminan.
+- **Red:** servidor dedicado con `--level=9` y 2 clientes. A y B ven la misma secuencia: despegue de 0,85 s y altura de 4,5 m. Capturas `net_a_air.png` y `net_b_air.png`.
+- **Regresiones:** `f25_flying_summon` dio AGENT_OK. El digest de seed 7 no cambia (`4915c884…`). `rules_suite` PASS.
+
+Excepciones fieles a sacengine:
+- Rhinok no vuela, porque sus slots de vuelo repiten `stance1`.
+- Phoenix vuela siempre, incluso hacia un destino a 5 m, y no tiene clips de takeoff ni de land.
+
+Deuda:
+- **030e2:** pose y cápsula.
+- **Combate en el aire:** al perseguir o atacar, la voladora baja a tierra.
+- **Clips y estados de vuelo:** faltan `hover`, `badLanding` y morir en el aire.
+- **Relieve:** el vuelo no lo sigue y llega a 25–32 m sobre un cañón.
+- **Ikarus sobre el manantial:** aterrizó encima del manantial (h = 3,1 m en GROUND), y eso después lo hizo despegar con un destino a 8,8 m.
+- **Silverback:** tarda de 5 a 10 s en recorrer 5 m. Es un problema anterior a este corte.
+- **`unit_body.gd`:** pasa las 1000 líneas.

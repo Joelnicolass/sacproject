@@ -43,6 +43,8 @@ EXTRA_ANIM_SLOTS = {"cower": 32, "pull": 33, "work": 35, "talk_cower": 37}
 ## Peasants (nttData.d:133, same list as PeasantBehavior.TAGS): only they read those slots as peasant clips;
 ## on every other creature they are takeoff/fly/flyDamage/flyAttack.
 PEASANT_TAGS = ("zepa", "zepd", "zepe", "zepf", "saep")
+## F116 (RFC-030e): the flight slots of every other creature (`animations.d`: takeoff 32, fly 33, land 34).
+FLIGHT_ANIM_SLOTS = {"takeoff": 32, "fly": 33, "land": 34}
 ## SKEL event tags (`sxsk.d` translateAnimEvent): attack, shoot.
 ATTACK_EVENT = b"kcta"
 SHOOT_EVENT = b"lrba"
@@ -291,6 +293,22 @@ def extra_animation_tags(raw: bytes) -> dict:
     return {role: human_tag(raw, 176 + slot * 4) for role, slot in EXTRA_ANIM_SLOTS.items()}
 
 
+def flight_animations(anim_index: dict, model_path: str, tags: dict, stance_tag: str, peasant: bool) -> dict:
+    """F116: takeoff/fly/land clips the way sacengine loads them (sacobject.d:675-689): a slot whose id starts with "00"
+    (the human tag ends with it, e.g. Phoenix DF00) or repeats stance1 (Rhinok Eds1 in every flight slot) has no clip.
+    canFly = there is a fly clip (sacobject.d:113-115). Peasants use those slots for other clips (sacobject.d:690-697)."""
+    if peasant:
+        return {}
+    clips: dict = {}
+    for role, anim_tag in tags.items():
+        if not anim_tag or anim_tag.endswith("00") or anim_tag == stance_tag:
+            continue
+        clip = clip_animation(anim_index, model_path, anim_tag)
+        if clip:
+            clips[role] = clip
+    return clips
+
+
 def decode_cre8(raw: bytes) -> dict:
     entry = spell_header(raw)
     entry.update({
@@ -317,6 +335,7 @@ def decode_cre8(raw: bytes) -> dict:
         "shoot_animation_tags": shoot_animation_tags(raw),
         "locomotion_animation_tags": locomotion_animation_tags(raw),
         "extra_animation_tags": extra_animation_tags(raw),
+        "flight_animation_tags": {role: human_tag(raw, 176 + slot * 4) for role, slot in FLIGHT_ANIM_SLOTS.items()},
     })
     return entry
 
@@ -649,6 +668,13 @@ def _collect_mesh_clip_tags(creatures: dict, wizards: dict, books: dict) -> dict
             shoot_tag = str(shoot0.get("tag", ""))
             if shoot_tag and shoot_tag[-2:] != "00":
                 tags_by_model.setdefault(model, set()).add(shoot_tag)
+        ## F116: the hybrid fliers' takeoff, fly and land.
+        flight = row.get("flight_animations", {})
+        if isinstance(flight, dict):
+            for clip in flight.values():
+                tag_name = str(clip.get("tag", "")) if isinstance(clip, dict) else ""
+                if tag_name:
+                    tags_by_model.setdefault(model, set()).add(tag_name)
     for actor_tag in GAME_ACTOR_CREATURES:
         row = creatures.get(actor_tag, {})
         model = str(row.get("model", ""))
@@ -941,6 +967,8 @@ def main() -> None:
         else:
             entry.pop("extra_animation_tags")
         entry["extra_animations"] = extra
+        entry["flight_animations"] = flight_animations(
+            anim_index, model_path, entry.pop("flight_animation_tags"), locomotion.get("stance", ""), creature_tag in PEASANT_TAGS)
     for entry in wizards.values():
         entry["abilities"] = [a for a in entry["abilities"] if a]
         # Ghost timing (state.d:14000-14099): dying, deadToGhost and ghostToIdle last numFrames·updateAnimFactor ticks.

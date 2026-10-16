@@ -17,6 +17,8 @@ const GROUP := &"nav_service"
 @export var margin_m := 1.5
 ## A node needs whole land around it too (sacengine isFree asks the cells around the node).
 @export var erode_edges := true
+## A straight line must stay this far (m) from a box blocker (a building) to be clear (NavGrid.crosses_box, F88 round 2).
+@export var box_clearance_m := 0.5
 @export var blocker_groups: PackedStringArray = PackedStringArray(["manafount", "altar", "map_building", "nav_blocker"])
 ## What the players build (Manaliths, RFC-021): their collision blocks too, and the grid is built again when one
 ## appears or falls (024c; the debt of F72/F73). `structures` is the node they are put under (%Structures).
@@ -75,7 +77,7 @@ func is_ready() -> bool:
 func build() -> float:
 	if terrain == null or not terrain.has_method("ground_cell_counts"):
 		return 0.0
-	grid.build(terrain, _blockers(), margin_m, erode_edges)
+	grid.build(terrain, _blockers(), margin_m, erode_edges, box_clearance_m)
 	_watch_buildings()
 	print("nav: grilla %d nodos libres, %d regiones, %.0f ms" % [grid.free_count, grid.component_count, grid.build_ms])
 	built.emit(grid.build_ms)
@@ -121,6 +123,11 @@ func find_path(from: Vector3, to: Vector3) -> PackedVector3Array:
 
 func line_clear(from: Vector3, to: Vector3) -> bool:
 	return not grid.built or grid.line_clear(from, to)
+
+
+## Whether the straight line from `from` to `to` goes through a box blocker (a building), whatever the grid says.
+func crosses_box(from: Vector3, to: Vector3) -> bool:
+	return grid.built and grid.crosses_box(from, to)
 
 
 func component_at(point: Vector3) -> int:

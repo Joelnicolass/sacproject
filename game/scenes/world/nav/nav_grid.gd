@@ -8,6 +8,10 @@ extends RefCounted
 ## (blockingTolerance 1.5, state.d:790). Components are 4-connected, the same moves the A* makes.
 ## Paths come from AStarGrid2D (octile, no corner cutting) and are pulled straight again over the grid.
 ## The grid only answers questions; moving is the body's job (CharacterBody3D / move_and_slide).
+## F88 round 2: a 5 m node is free when its center clears a box blocker by `margin_m`, but line_clear takes the
+## whole 5 m square around it as walkable, and a tipi's box can reach 1 m into such a square. The boxes are kept, and
+## a line that crosses one (grown by `box_clearance_m`) is not clear (see crosses_box). Without it, a creature at the
+## foot of a tipi was sent straight through the box and pressed on its face for good (debug/crowd_tipi.tscn).
 
 const SIZE := 512
 const CELL_M := 5.0
@@ -28,6 +32,10 @@ var _land := PackedByteArray()
 var _land_eroded := true
 var land_builds := 0
 
+## The box blockers of the last build: [center (x, z), half extents (x, z), cos(yaw), sin(yaw), reach], see crosses_box.
+var _boxes: Array = []
+var _box_clearance := 0.5
+
 var _comp_of_run := PackedInt32Array()
 var _run_row_start := PackedInt32Array()
 var _run_x0 := PackedInt32Array()
@@ -36,7 +44,8 @@ var _run_x1 := PackedInt32Array()
 
 ## `terrain` answers ground_cell_counts(); `discs` are blockers: [Vector2 center (x, z), float radius] or, for a box,
 ## [Vector2 center, Vector2 half extents (x, z), float yaw].
-func build(terrain: Node, discs: Array, margin_m := 1.5, erode_edges := true) -> void:
+## `box_clearance_m`: how far from a box a straight line must stay to be clear (about a body's half width).
+func build(terrain: Node, discs: Array, margin_m := 1.5, erode_edges := true, box_clearance_m := 0.5) -> void:
 	var started := Time.get_ticks_usec()
 	## The land does not change while the match goes on: the free nodes of the ground are worked out once (40 ms) and every
 	## later build (a Manalith went up, a house fell) only blocks the discs again and finds the components (RFC-024 024d: the
@@ -46,9 +55,13 @@ func build(terrain: Node, discs: Array, margin_m := 1.5, erode_edges := true) ->
 		_land_eroded = erode_edges
 		land_builds += 1
 	open = _land.duplicate()
+	_boxes = []
+	_box_clearance = box_clearance_m
 	for disc in discs:
 		if disc.size() >= 3:
 			_block_box(disc[0], disc[1], float(disc[2]), margin_m)
+			var half: Vector2 = disc[1]
+			_boxes.append([disc[0], half, cos(float(disc[2])), sin(float(disc[2])), half.length() + box_clearance_m])
 		else:
 			_block_disc(disc[0], float(disc[1]) + margin_m)
 	_find_components()
@@ -113,8 +126,69 @@ func nearest_free(node: Vector2i, component := -1) -> Vector2i:
 
 
 ## True when the straight line from `a` to `b` (x, z of world points) crosses only free nodes, each
-## taken as the 5 m square around it. Conservative: a line that grazes a blocked square is not clear.
+## taken as the 5 m square around it, and no box blocker (crosses_box). Conservative: a line that grazes a blocked
+## square is not clear.
 func line_clear(a: Vector3, b: Vector3) -> bool:
+	return _grid_line_clear(a, b) and not crosses_box(a, b)
+
+
+## True when the segment from `a` to `b` (flat) passes through a box blocker of the last build grown by
+## `box_clearance_m` on every side (slab test in the box's frame).
+func crosses_box(a: Vector3, b: Vector3) -> bool:
+	if _boxes.is_empty():
+		return false
+	var lo_x := minf(a.x, b.x)
+	var hi_x := maxf(a.x, b.x)
+	var lo_z := minf(a.z, b.z)
+	var hi_z := maxf(a.z, b.z)
+	for box: Array in _boxes:
+		var center: Vector2 = box[0]
+		var reach: float = box[4]
+		if center.x + reach < lo_x or center.x - reach > hi_x or center.y + reach < lo_z or center.y - reach > hi_z:
+			continue
+		var half: Vector2 = box[1]
+		var cos_y: float = box[2]
+		var sin_y: float = box[3]
+		## Into the box frame, as _block_box.
+		var ax := a.x - center.x
+		var az := a.z - center.y
+		var bx := b.x - center.x
+		var bz := b.z - center.y
+		var p := Vector2(ax * cos_y - az * sin_y, ax * sin_y + az * cos_y)
+		var q := Vector2(bx * cos_y - bz * sin_y, bx * sin_y + bz * cos_y)
+		if _segment_in_box(p, q, half + Vector2(_box_clearance, _box_clearance)):
+			return true
+	return false
+
+
+## Whether the segment p-q meets the box [-half, half] (Liang-Barsky clip).
+static func _segment_in_box(p: Vector2, q: Vector2, half: Vector2) -> bool:
+	var t0 := 0.0
+	var t1 := 1.0
+	var d := q - p
+	for axis in 2:
+		var start := p[axis]
+		var delta := d[axis]
+		var lo := -half[axis]
+		var hi := half[axis]
+		if absf(delta) < 0.000001:
+			if start < lo or start > hi:
+				return false
+			continue
+		var ta := (lo - start) / delta
+		var tb := (hi - start) / delta
+		if ta > tb:
+			var swap := ta
+			ta = tb
+			tb = swap
+		t0 = maxf(t0, ta)
+		t1 = minf(t1, tb)
+		if t0 > t1:
+			return false
+	return true
+
+
+func _grid_line_clear(a: Vector3, b: Vector3) -> bool:
 	var ax := a.x / CELL_M + 0.5
 	var az := a.z / CELL_M + 0.5
 	var bx := b.x / CELL_M + 0.5
@@ -184,6 +258,10 @@ func find_path(from: Vector3, to: Vector3) -> PackedVector3Array:
 	# The real goal replaces the last node when its own node was free (no snap happened).
 	if goal == goal_node:
 		out[out.size() - 1] = to
+	# The walker is not on the start node: when the line from where it stands to the first waypoint goes through a
+	# box blocker, the start node comes first (F88 round 2: else the first leg runs into the tipi it stands by).
+	if crosses_box(from, out[0]):
+		out.insert(0, node_point(start))
 	return out
 
 

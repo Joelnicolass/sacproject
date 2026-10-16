@@ -114,7 +114,7 @@ func _physics_process(delta: float) -> void:
 		return
 	var here := body.global_position
 	var changed := false
-	while waypoints.size() > 1 and _flat(here, waypoints[0]) <= advance_m:
+	while waypoints.size() > 1 and _may_advance(here):
 		waypoints.remove_at(0)
 		changed = true
 	if changed:
@@ -131,6 +131,16 @@ func _physics_process(delta: float) -> void:
 	if stuck or blocked:
 		repaths += 1
 		_plan()
+
+
+## The body is done with waypoints[0]: within `advance_m` of it, unless the leg after it would go through a building
+## (NavService.crosses_box, F88 round 2: the start node a path puts first beside a tipi); within `arrive_m` always, so the
+## leg never ends under the body (a body at the end of its leg stops, and the order with it).
+func _may_advance(here: Vector3) -> bool:
+	var gap := _flat(here, waypoints[0])
+	if gap > advance_m:
+		return false
+	return gap <= arrive_m or not _nav_ready() or not _nav.crosses_box(here, waypoints[1])
 
 
 ## A pursuit: where to head to reach `target` this tick. The goal itself while the line is clear (or there

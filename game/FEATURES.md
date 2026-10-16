@@ -770,6 +770,23 @@ Playtest con ventana (`agent/out/pt87/`):
 - `ai_duel_seeded` seed 7 (2 min): `039b7736fbc8f48f00734f620e6a1a0fbc294f001ec0efeac27b3795f241a2fe`.
 - `ai_duel_seeded` seed 7 `--npcs` (2 min): `ff5e0d1e1bf7290610d639109207adf975d0b5b079bb0635abc861a75d3b633b`.
 
+**Ronda 2 tras el playtest (2026-10-16).** El playtest con ventana encontró criaturas trabadas para siempre al pie de los tipis (Manahoar29 y otras, cerca de (1488, 1511)).
+- **Causa:** la NavGrid libera un nodo de 5 m por su centro, pero `line_clear` toma todo su cuadrado. La caja del tipi entra ~1 m en ese cuadrado y la recta la atraviesa. Además, Godot no desliza de frente contra la pared (`wall_min_slide_angle` de 15°).
+- **Arreglo en la navegación:**
+  - `NavGrid.crosses_box`: segmento contra caja con holgura `box_clearance_m` 0,5.
+  - `line_clear` exacto contra cajas.
+  - `find_path` pone primero el nodo de partida si el primer tramo cruza una caja.
+  - `PathFollower._may_advance`.
+- **Caso nuevo `debug/crowd_tipi.tscn`:** de 2 trabadas para siempre a 0; todas llegan en 21,8 s.
+- `rules_suite` PASS. En la ventana, Manahoar29 sale del tipi.
+- **Digest:** seed 1 pasa a `2ad66932…`; seed 7 queda `039b7736…` y con `--npcs` `ff5e0d1e…`, sin cambio.
+- **Descartado:** `wall_min_slide_angle = 0`. Era más fiel al deslizamiento del original, pero solo no alcanza.
+
+Deuda:
+- 31–35 pares encimados que tiemblan junto a la roca grande.
+- Verificar a Trogg7 contra su casilla.
+- El reparto greedy de casillas de `Orders`.
+
 ### F114 — Efectos del nivel en el mago (RFC-030, corte 030c)
 
 **Cierre (2026-10-16).** Review PASS (`reviews/REVIEW-F114-level-effects.md`): `CastTime` coincide con sacengine en 7 casos verificados a mano. Playtest con ventana PASS (`agent/out/pt114/`):

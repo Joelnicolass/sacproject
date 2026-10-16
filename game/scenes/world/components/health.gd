@@ -6,7 +6,7 @@ extends Node
 
 signal changed(current: float, maximum: float)
 signal died(from_slot: int)
-## After damage_typed(): what was really taken (0 = immune, ally or dead).
+## After damage_typed(): what was really taken (0 = immune, an ally with no friendly fire, or dead).
 signal hurt(amount: float, kind: StringName, from_slot: int)
 ## Every hit that took health, whatever called (a blow, a shot, a spell, a ritual): what was taken, who
 ## took it and whether the bar was full before (sacengine dealDamage notes a grudge only then, state.d:8933).
@@ -65,7 +65,11 @@ func damage(amount: float, from_slot: int = 0) -> void:
 	## A caller that does not say the kind (melee, rituals) is asked as melee.
 	if not is_nan(_deflect(amount, MELEE, from_slot)):
 		return
-	_hit(amount * _passive_factor(), from_slot)
+	## Before F139 this path did not look at the side; with no MatchState it still does not.
+	var side := _side_factor(from_slot, false, 1.0)
+	if side <= 0.0:
+		return
+	_hit(amount * side * _passive_factor(), from_slot)
 
 
 func _hit(amount: float, from_slot: int) -> void:
@@ -77,20 +81,23 @@ func _hit(amount: float, from_slot: int) -> void:
 
 
 ## sacengine dealDamage (state.d:8948-8972) and dealRawDamage (state.d:9001-9050):
-## amount · max(0, resistance) · damage_factor of the body's CRE8/WIZD data, capped at the health left.
-## An ally takes nothing (no friendly fire, state.d:8961), nor a dead body (canDamage).
+## amount · side factor · max(0, resistance) · damage_factor of the body's CRE8/WIZD data, capped at the health left.
+## The side factor is the match's friendly fire (_side_factor): an ally takes nothing with it off (dealDamage returns 0,
+## state.d:8961) and ally_damage_factor with it on (sideDamageMultiplier, state.d:9005, 28892-28899); `ignore_friendly`
+## (poison, state.d:9415-9419) takes ×1 then. A dead body takes nothing (canDamage).
 ## Melee callers still apply sacengine's extra 0.4 themselves (melee_attack.gd).
 ## Returns the damage taken.
-func damage_typed(amount: float, kind: StringName, from_slot: int = 0) -> float:
+func damage_typed(amount: float, kind: StringName, from_slot: int = 0, ignore_friendly := false) -> float:
 	if not _has_authority() or amount <= 0.0 or is_dead() or not _can_be_damaged():
 		return 0.0
 	var passed := _deflect(amount, kind, from_slot)
 	if not is_nan(passed):
 		return passed
 	var taken := 0.0
-	if from_slot <= 0 or from_slot != _owner_slot():
+	var side := _side_factor(from_slot, ignore_friendly, 0.0)
+	if side > 0.0:
 		var factor := float(kind_factors.get(kind, 1.0))
-		taken = minf(current, amount * resistance(kind) * maxf(0.0, damage_factor) * maxf(0.0, factor) * _passive_factor())
+		taken = minf(current, amount * side * resistance(kind) * maxf(0.0, damage_factor) * maxf(0.0, factor) * _passive_factor())
 	if taken > 0.0:
 		_hit(taken, from_slot)
 	hurt.emit(taken, kind, from_slot)
@@ -114,6 +121,32 @@ func resistance(kind: StringName) -> float:
 
 
 var _deflecting := false
+## F139: the match's MatchState, found on the first hit between allies (group `match_state`).
+var _match: MatchState
+
+
+## F139 (RFC-031 §3.2): the one place that decides how much of a hit from `from_slot` this body takes for its side.
+## Another side, or no side (0): ×1. The same side: 0 with friendly fire off (state.d:8961); with it on, ×1 if the hit
+## ignores it (poison, state.d:9415-9419) and the match's ally_damage_factor otherwise (state.d:9005, 28892-28899).
+## The rule is the one MatchState took from the world's rules. With no MatchState (a harness) it is `unruled`: the
+## behaviour each caller had before F139 (damage_typed 0, damage ×1).
+func _side_factor(from_slot: int, ignore_friendly: bool, unruled: float) -> float:
+	if from_slot <= 0 or from_slot != _owner_slot():
+		return 1.0
+	var state := _match_state()
+	if state == null:
+		return unruled
+	if not state.friendly_fire:
+		return 0.0
+	return 1.0 if ignore_friendly else maxf(0.0, state.ally_damage_factor)
+
+
+func _match_state() -> MatchState:
+	if _match == null or not is_instance_valid(_match):
+		_match = null
+		if is_inside_tree():
+			_match = get_tree().get_first_node_in_group(&"match_state") as MatchState
+	return _match
 
 
 ## sacengine dealRawDamage (state.d:9010-9028): the passive scales every kind of hit by the health before it.

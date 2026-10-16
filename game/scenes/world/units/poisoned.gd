@@ -7,9 +7,11 @@ extends Node
 ## Doses stack: each is its own node. It ends when the body dies (canBePoisoned) or the frames run out. Server (or solo) only;
 ## Health is replicated, the puff of poison goes through FxBus.
 ##
+## The dose passes ignoreFriendly (dealPoisonDamage, state.d:9418): with the match's friendly fire on, a body of the poisoner's
+## own side takes ×1, not ally_damage_factor; with it off, nothing (Health._side_factor, F139).
+##
 ## Not here (RFC-030k, poison of shots): the dose's debuffs (`ires` resistance, `freg` regeneration, `iacc` accuracy), the
-## mana block after 2 s (Poison.manaBlockDelay) and infection. Health refuses damage between bodies of one slot (the game has
-## no friendly fire, health.gd), so a cloud does not poison its own side here, while sacengine does (ignoreFriendly).
+## mana block after 2 s (Poison.manaBlockDelay) and infection.
 
 const _HEALTH := preload("res://scenes/world/components/health.gd")
 ## sacengine updateFPS: the dose deals damage_per_s / 60 per physics frame.
@@ -51,13 +53,13 @@ func _physics_process(delta: float) -> void:
 	if _health == null or frames_left < 0 or _health.is_dead():
 		_end()
 		return
-	var dealt := _health.damage_typed(damage_per_s / FPS, _HEALTH.SPLASH_SPELL, from_slot)
+	var dealt := _health.damage_typed(damage_per_s / FPS, _HEALTH.SPLASH_SPELL, from_slot, true)
 	taken += dealt
 	_dealt_since_fx += dealt
 	_fx_left -= delta
 	if _fx_left <= 0.0:
 		_fx_left = fx_interval_s
-		# Puff only if Health took the poison: a body it refuses (own side, no friendly fire) must not look poisoned.
+		# Puff only if Health took the poison: a body it refuses (own side with friendly fire off) must not look poisoned.
 		if _dealt_since_fx > 0.0:
 			FxBus.broadcast(fx_name, (get_parent() as Node3D).global_position + Vector3.UP)
 		_dealt_since_fx = 0.0

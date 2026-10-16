@@ -167,3 +167,14 @@ extends Resource
 ## Per level, when wizard_level_stats is on (state.d:2308-2311).
 @export var health_per_level: float = 50.0
 @export var mana_per_level: float = 100.0
+
+@export_group("Daño entre aliados")
+# RFC-031 031a (F139)
+## sacengine option friendlyFire (options.d:98). Off: a body takes nothing from its own side (dealDamage returns 0 for an ally,
+## state.d:8961). On: it takes `ally_damage_factor` of every hit of its own side, melee, shot, spell, splash, cloud and
+## buildings alike (dealRawDamage's sideDamageMultiplier, state.d:9005, 9175, 28892-28899); poison passes ignoreFriendly and
+## takes ×1 (state.d:9415-9419). The script keeps it off so the benches and their digests do not change; the product
+## (data/match_rules.tres) turns it on, the default of sacengine. MatchState takes it from the world's rules and Health asks it.
+@export var friendly_fire: bool = false
+## sideDamageMultiplier between allies (state.d:28892-28899).
+@export_range(0.0, 1.0, 0.05) var ally_damage_factor: float = 0.5

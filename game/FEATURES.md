@@ -1075,3 +1075,39 @@ Deuda:
 - **Duplicaciones:** la regla de enemigo está escrita 3 veces, y `is_patient` copia la validez.
 - **`fired`:** sigue informando 150 de daño.
 - **Órdenes:** el jugador no puede ordenar curar a un aliado.
+
+### F139 — Fuego amigo como regla de simulación (RFC-031, corte 031a)
+
+`Health._side_factor` decide el factor de bando y nadie más lo hace:
+
+| Caso | Factor |
+|---|---|
+| Mismo bando, fuego amigo encendido | ×`ally_damage_factor` (0,5) |
+| Mismo bando, fuego amigo apagado | 0 |
+| Veneno (`ignore_friendly`) | ×1 |
+
+Fuentes: `state.d:8961`, `9005`, `28892-28899`, `9415-9419`.
+
+`MatchRules.friendly_fire` vale `false` en el script, para que bancos y digests no cambien, y `true` en `data/match_rules.tres`, como el `options.d:98` de producto. `MatchState.take_rules()` lee `world.rules` y lo manda en el snapshot.
+
+**Cierre (2026-10-16).** Review PASS (`reviews/REVIEW-F139-friendly-fire.md`). Playtest con ventana (`agent/out/pt139/`):
+- **Vapor con FF on:** propio ×0,500 (124,81 de 249,61). Enemigo 237,33.
+- **Veneno con FF on:** propio y enemigo 115,38 cada uno, relación 1,00.
+- **FF off:** propio 0 de vapor y 0 de veneno, sin humo de la dosis.
+- **Fireball (input real):** Cogs propios ×0,500 a 1,28 m y a 3,89 m. Rencor N/A: ningún cuerpo propio tiene `GrudgeMemory`.
+- **Regresiones:** dan AGENT_OK `f25`, `pt118`, `pt119`, `pt136`, y también `f28_rock`, `f26_duel`, `f29_spit` y `f10_walk`, que ahora heredan FF on. `rules_suite` PASS.
+- **Digests:** sin cambios. Referencia que discrimina, `ai_match` seed 7, 0,5 min:
+
+  | Reglas | Digest |
+  |---|---|
+  | `f139_ff_clouds` (dos corridas) | `af04fefb…` |
+  | `f139_ff_off_clouds` | `01853244…` |
+  | `f116_death_clouds` | `01853244…` (igual al anterior) |
+
+  `ai_duel_seeded_ff` no discrimina: no hay daño entre aliados.
+
+Deuda:
+- **Criterio 5 sin verificar (disparo en línea).** El banco `f139_ff_shot_line` nace sobre la fuente: el Druid propio no queda sobre la línea y el chorro tapa las capturas. Hay que moverlo y fijar al Druid. El filtro `_can_hit` no cambió en este corte (F119/F136).
+- `unruled`: dos defaults sin `MatchState`.
+- Rencor contra atacante aliado (sacengine lo marca y el port no).
+- La petrificación de 030i tiene que entrar también por `damage()`.

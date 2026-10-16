@@ -27,14 +27,23 @@ var winner_slot := 0
 var defeated_slots: Array[int] = []
 ## True once the match has a result, with or without a winner.
 var ended := false
+## F139 (RFC-031): the friendly fire of this match, as the server took it from the world's rules (take_rules) and the
+## clients from the snapshot. Health reads it (Health._side_factor). Not `rules` of this node: a bench (ai_match) or the
+## match setup changes only the world's rules, and this node keeps the product's.
+var friendly_fire := false
+var ally_damage_factor := 0.5
 
 var _collapsing: Dictionary = {}
+## A client printed the rule of the first snapshot.
+var _rules_known := false
 
 
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
 	add_to_group(&"match_state")
+	if is_authority():
+		take_rules()
 	for altar in altars():
 		altar.state_changed.connect(_on_altar_state_changed.bind(altar))
 	if not MpKit.is_networked():
@@ -113,6 +122,21 @@ func has_result() -> bool:
 	return ended
 
 
+## Server (or solo): the friendly fire of this match from the world's rules (never from `rules` of this node, RFC-031
+## §2.2). A world with no MatchRules keeps the script defaults (off). Prints the rule once per call.
+func take_rules() -> void:
+	var source: Variant = world.get("rules") if world != null and "rules" in world else null
+	var defaults := MatchRules.new()
+	var from: MatchRules = source if source is MatchRules else defaults
+	friendly_fire = from.friendly_fire
+	ally_damage_factor = from.ally_damage_factor
+	_print_rules()
+
+
+func _print_rules() -> void:
+	print("fuego amigo: %s" % ("sí (×%.2f)" % ally_damage_factor if friendly_fire else "no"))
+
+
 func collapse_seconds() -> float:
 	return rules.altar_collapse_s if rules else FALLBACK_COLLAPSE_S
 
@@ -187,10 +211,21 @@ func to_snapshot() -> Dictionary:
 			"state": int(altar.state),
 			"left": float(_collapsing.get(altar, 0.0)),
 		})
-	return {"altars": entries, "defeated": defeated_slots.duplicate(), "winner": winner_slot, "ended": ended}
+	return {
+		"altars": entries, "defeated": defeated_slots.duplicate(), "winner": winner_slot, "ended": ended,
+		"friendly_fire": friendly_fire, "ally_damage_factor": ally_damage_factor,
+	}
 
 
 func apply_snapshot(data: Dictionary) -> void:
+	if data.has("friendly_fire"):
+		var fire := bool(data["friendly_fire"])
+		var factor := float(data.get("ally_damage_factor", ally_damage_factor))
+		if not _rules_known or fire != friendly_fire or factor != ally_damage_factor:
+			friendly_fire = fire
+			ally_damage_factor = factor
+			_rules_known = true
+			_print_rules()
 	for entry: Dictionary in data.get("altars", []):
 		var altar := _altar_at(int(entry.get("slot", 0)), int(entry.get("index", 0)))
 		if altar == null:

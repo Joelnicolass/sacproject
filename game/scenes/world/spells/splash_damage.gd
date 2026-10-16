@@ -3,8 +3,10 @@ extends RefCounted
 
 ## sacengine dealSplashSpellDamageAt / dealDamageAt (state.d:9063-9095): every live wizard, creature
 ## and building within `radius` of the burst takes amount·(1 − d/radius) as splash spell damage, d being
-## the distance from the point to its hit box. The side is not filtered here (Health refuses damage to
-## its own slot); a body with no health (maximum ≤ 0, sacengine canDamage) is skipped. Used by Wrath,
+## the distance from the point to its hit box. The side is not filtered here: the rule of the side lives in Health
+## (Health._side_factor: an ally takes 0 or ally_damage_factor by the match's friendly fire, F139), and the attacker
+## stands in its own radius like any body (dealDamageAt skips only the directTarget, state.d:9077). A body with no
+## health (maximum ≤ 0, sacengine canDamage) is skipped. Used by Wrath,
 ## Fireball and Swarm (RFC-028b). Wizards and creatures go first, in the order of their groups, so the
 ## damage they take is the same as before buildings joined.
 

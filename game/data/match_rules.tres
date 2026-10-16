@@ -6,3 +6,4 @@
 script = ExtResource("1_rules")
 wizard_level = 9
 wizard_level_stats = true
+friendly_fire = true

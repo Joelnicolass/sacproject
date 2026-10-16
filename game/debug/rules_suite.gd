@@ -21,6 +21,9 @@ const CROWD_CASES := preload("res://debug/crowd_cases.gd")  # 027d
 @export var max_spawned_units := 12
 @export var max_spawned_structures := 4
 
+## F139: the world of the «fuego amigo» case. MatchState reads its rules (world.rules), never its own.
+var rules: MatchRules
+
 var _results: Dictionary = {}
 
 
@@ -50,6 +53,7 @@ func _run_suite() -> void:
 	_results.merge(VILLAGE_CASES.new().run(self))  # 024b2
 	_results.merge(await AI_CASES.new().run(self))  # 024c
 	_results.merge(await CROWD_CASES.new().run(self))  # 027d
+	_results["friendly_fire"] = await _test_friendly_fire()  # 031a
 	_print_suite()
 
 
@@ -156,6 +160,75 @@ func _test_desctruction() -> Dictionary:
 	var ok := bool(structure.call("is_dead"))
 	structure.queue_free()
 	return {"ok": ok, "destroyed": ok}
+
+
+## F139 (RFC-031 031a): Health._side_factor with the rule MatchState takes from the world's rules. Two Druids of slot 1 and
+## one of slot 2, hit by slot 1. On: splash and melee ×ally_damage_factor (0.5), poison ×1 (ignoreFriendly). Off: 0 on
+## every path. The MatchState's own `rules` is the product's (on); with the world's off the own side still takes 0.
+func _test_friendly_fire() -> Dictionary:
+	var world_rules := RULES.duplicate() as MatchRules
+	world_rules.friendly_fire = true
+	rules = world_rules
+	var state := MatchState.new()
+	state.rules = RULES
+	state.world = self
+	add_child(state)
+	var own := _spawn_unit("nmuh", 1, Vector3(0.0, 0.0, 60.0))
+	var foe := _spawn_unit("nmuh", 2, Vector3(6.0, 0.0, 60.0))
+	var own_health := own.get_node("Health") as Health
+	var foe_health := foe.get_node("Health") as Health
+	own_health.setup(5000.0)
+	foe_health.setup(5000.0)
+	var out := {}
+	out["on_rule"] = state.friendly_fire and is_equal_approx(state.ally_damage_factor, 0.5)
+	var own_splash := own_health.damage_typed(100.0, Health.SPLASH_SPELL, 1)
+	var foe_splash := foe_health.damage_typed(100.0, Health.SPLASH_SPELL, 1)
+	out["on_splash_ratio"] = own_splash / foe_splash if foe_splash > 0.0 else -1.0
+	var before := own_health.current
+	own_health.damage(100.0, 1)
+	out["on_melee_taken"] = before - own_health.current
+	out["on_poison_ratio"] = await _poison_ratio(own_health, foe_health)
+	var trap := RULES.friendly_fire
+	world_rules.friendly_fire = false
+	state.take_rules()
+	out["off_rule"] = not state.friendly_fire
+	out["off_splash"] = own_health.damage_typed(100.0, Health.SPLASH_SPELL, 1)
+	before = own_health.current
+	own_health.damage(100.0, 1)
+	out["off_melee_taken"] = before - own_health.current
+	var poison := await _poison_taken(own, foe)
+	out["off_poison_own"] = poison[0]
+	out["off_poison_foe"] = poison[1]
+	var ok: bool = bool(out["on_rule"]) and absf(float(out["on_splash_ratio"]) - 0.5) <= 0.005 \
+		and absf(float(out["on_melee_taken"]) - 50.0) <= 0.01 and absf(float(out["on_poison_ratio"]) - 1.0) <= 0.01 \
+		and trap and bool(out["off_rule"]) and float(out["off_splash"]) == 0.0 and float(out["off_melee_taken"]) == 0.0 \
+		and float(out["off_poison_own"]) == 0.0 and float(out["off_poison_foe"]) > 0.0
+	out["ok"] = ok
+	print("fuego amigo caso %s" % out)
+	own.queue_free()
+	foe.queue_free()
+	state.queue_free()
+	rules = null
+	return out
+
+
+## The same dose of poison from slot 1 on both bodies: taken by `own` / taken by `foe`.
+func _poison_ratio(own_health: Health, foe_health: Health) -> float:
+	var taken := await _poison_taken(own_health.get_parent(), foe_health.get_parent())
+	return taken[0] / taken[1] if taken[1] > 0.0 else -1.0
+
+
+func _poison_taken(own: Node, foe: Node) -> Array[float]:
+	var own_dose := Poisoned.start(own, 60.0, 30, 1)
+	var foe_dose := Poisoned.start(foe, 60.0, 30, 1)
+	var taken: Array[float] = [0.0, 0.0]
+	for _frame in 40:
+		if is_instance_valid(own_dose):
+			taken[0] = float(own_dose.get("taken"))
+		if is_instance_valid(foe_dose):
+			taken[1] = float(foe_dose.get("taken"))
+		await get_tree().physics_frame
+	return taken
 
 
 func _all_unit_tags() -> PackedStringArray:

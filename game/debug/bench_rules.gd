@@ -3,6 +3,8 @@ extends MatchRules
 
 ## MatchRules of a bench match (debug/ai_match): the round rules of the parent plus what the runner
 ## puts on the field. It is still a MatchRules for the world; the runner reads the extra part.
+## F139: a bench inherits the script's friendly_fire = false (an ally takes nothing), not the product's, so the benches
+## and their digests stay as they were. A bench that wants it on says so (f139_ff_*.tres, ai_duel_seeded_ff.tres).
 
 ## Groups to spawn when the match starts, in order.
 @export var groups: Array[BenchGroup] = []

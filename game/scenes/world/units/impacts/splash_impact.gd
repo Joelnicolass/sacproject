@@ -10,7 +10,8 @@ extends ShotImpact
 ##   of damageRange the falloff: `direct_hit` on, `radius_source` DAMAGE_RANGE.
 ## - Flummox crba (flummoxProjectileExplosion 24059-24067): dealSplashRangedDamageAt(0, …, effectRange): nobody is
 ##   hit whole, the body it hit included takes the falloff: `direct_hit` off, `radius_source` EFFECT_RANGE.
-## No friendly fire: Health refuses damage to the shooter's slot (inherited divergence, AUDIT-2026-10-12:152).
+## The side is Health's rule (Health._side_factor, F139): the shooter's own side takes 0 or ally_damage_factor by the
+## match's friendly fire, the shooter included if it stands in the radius (state.d:9077).
 
 const _HEALTH := preload("res://scenes/world/components/health.gd")
 const _SPLASH := preload("res://scenes/world/spells/splash_damage.gd")

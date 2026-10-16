@@ -44,7 +44,7 @@ static var _asks: Dictionary = {}
 static var _sides: Dictionary = {}
 ## Where a creature stood still before it made way or was pushed out by a walker of its slot (instance id -> [flat
 ## position, last tick it was disturbed]): RETURN_TICKS after the last disturbance it walks back there at its own pace,
-## so the formation it had arrived in is kept. Dropped when it is back or moves by itself.
+## so the formation it had arrived in is kept. Kept when it is back; dropped when it moves by itself.
 static var _homes: Dictionary = {}
 static var _pruned_tick := -1
 
@@ -72,8 +72,10 @@ static func with_yield(body: Node3D, velocity: Vector3, delta: float) -> Vector3
 	var at := body.global_position
 	var back: Vector2 = (home[0] as Vector2) - Vector2(at.x, at.z)
 	var gap := back.length()
+	## F88 round 5: back home, the spot is kept (not dropped) until the creature moves by itself. Dropped, the next push
+	## from a neighbour standing still marked the spot it had been pushed to as its new home, a few cm on each tick, and a
+	## creature crept off its place for good (debug/crowd_cases.gd crowd_return_grid).
 	if gap <= HOME_M:
-		_homes.erase(id)
 		return velocity
 	back *= minf(maxf(YIELD_SPEED, _pace(body)), gap / delta) / gap
 	velocity.x = back.x
@@ -92,10 +94,15 @@ static func slide(body: Node3D, at: Vector3, wanted: Vector2, faces: PackedInt32
 	var heading := wanted / speed
 	var across := Vector2(-heading.y, heading.x)
 	var lateral := 0.0
+	## F88 round 5: only a creature on its way asks others to make way. A creature walking back home (or stepping aside)
+	## that asked its neighbours kept them, and they it, stepping aside and putting their return off for good in a dense
+	## crowd (debug/crowd_cases.gd crowd_return_grid).
+	var asks := walks(body)
 	for i in faces.size():
 		if BodySeparation.blocks(faces[i], wanted):
 			lateral += (Vector2(cut_x[i], cut_z[i]) - Vector2(at.x, at.z)).dot(across)
-			_ask_to_yield(body, cut_nodes[i], heading)
+			if asks:
+				_ask_to_yield(body, cut_nodes[i], heading)
 	var side := _slide_side(body, -1.0 if lateral > 0.0 else 1.0)
 	for degrees in DETOUR_DEG:
 		for turn: float in [side, -side]:

@@ -46,6 +46,10 @@ const RETURN_M := 20.0
 const RETURN_OFF_M := 0.5
 const RETURN_TICKS_AFTER := 60
 const RETURN_BOX_M := 1.5
+## F88 round 5: the runner's goal is this far beyond the formation, and no creature may be carried more than RETURN_CARRY_M
+## from its place while it crosses (it steps aside, it is not pushed along ahead of the runner).
+const RETURN_BEYOND_M := 20.0
+const RETURN_CARRY_M := 3.0
 ## The widest of the three kinds, so the crossing shoves.
 const RETURN_RUNNER_TAG := "oham"
 
@@ -54,10 +58,12 @@ func run(host: Node3D) -> Dictionary:
 	var out := {"crowd_150": await crowd(host)}
 	out["crowd_return"] = await crowd_return(host, "move")
 	out["crowd_return_held"] = await crowd_return(host, "guard_area")
+	out["crowd_return_trogg"] = await crowd_return(host, "move", "ycro")
+	out["crowd_return_grid"] = await crowd_return(host, "", "ycro")
 	return out
 
 
-func crowd_return(host: Node3D, command: String) -> Dictionary:
+func crowd_return(host: Node3D, command: String, runner_tag := RETURN_RUNNER_TAG) -> Dictionary:
 	var tree := host.get_tree()
 	var root := Node3D.new()
 	root.name = "CrowdReturn"
@@ -80,8 +86,9 @@ func crowd_return(host: Node3D, command: String) -> Dictionary:
 		units.append(_unit(root, TAGS[i % TAGS.size()], at))
 	for _i in SETTLE_TICKS:
 		await tree.physics_frame
-	var goal := RETURN_ORIGIN + Vector3(0.0, 0.0, RETURN_M)
-	orders.call("apply_for", 1, units, command, goal, null, 0.0)
+	## command "" = no order: the crowd stands on its 2 m grid as debug/selection_many.tscn spawns it (pt88b_open, part A).
+	if not command.is_empty():
+		orders.call("apply_for", 1, units, command, RETURN_ORIGIN + Vector3(0.0, 0.0, RETURN_M), null, 0.0)
 	var dt := 1.0 / float(Engine.physics_ticks_per_second)
 	var waited := 0
 	while waited < int(LIMIT_S / dt) and units.any(func(u: Node3D) -> bool: return int(u.get("mode")) == UnitBody.Mode.MOVE):
@@ -94,7 +101,7 @@ func crowd_return(host: Node3D, command: String) -> Dictionary:
 	var hi := Vector2(-INF, -INF)
 	for unit in units:
 		var place := _flat(unit)
-		if command != "move":
+		if command != "move" and not command.is_empty():
 			var anchor := Vector3(unit.get_node("Orders").call("anchor"))
 			place = Vector2(anchor.x, anchor.z)
 		places.append(place)
@@ -107,10 +114,10 @@ func crowd_return(host: Node3D, command: String) -> Dictionary:
 	for place in places:
 		if absf(place.x - 0.5 * (lo.x + hi.x)) < absf(lane - 0.5 * (lo.x + hi.x)):
 			lane = place.x
-	var runner := _unit(root, RETURN_RUNNER_TAG, Vector3(lane, 0.05, hi.y + 8.0))
+	var runner := _unit(root, runner_tag, Vector3(lane, 0.05, hi.y + 8.0))
 	for _i in SETTLE_TICKS:
 		await tree.physics_frame
-	orders.call("apply_for", 1, [runner], "move", Vector3(runner.global_position.x, 0.0, lo.y - 12.0), null, 0.0)
+	orders.call("apply_for", 1, [runner], "move", Vector3(runner.global_position.x, 0.0, lo.y - RETURN_BEYOND_M), null, 0.0)
 	var entered := false
 	var out_tick := -1
 	var ticks := 0
@@ -139,15 +146,22 @@ func crowd_return(host: Node3D, command: String) -> Dictionary:
 			off += 1
 			if offenders.size() < 6:
 				offenders.append("%s %.2f m%s" % [units[i].name, d, " (ordered)" if bool(units[i].get("ordered")) else ""])
+	## For the report only: how many are still off three seconds later (a slow return or one that never comes).
+	for _i in 180:
+		await tree.physics_frame
+	var off_late := 0
+	for i in units.size():
+		if _flat(units[i]).distance_to(places[i]) > RETURN_OFF_M:
+			off_late += 1
 	MatchSeed.separation.seed = seed_was
 	MatchSeed.separation.state = state_was
 	root.free()
-	var checks := {"runner_crossed": entered and out_tick > 0, "all_back": off == 0}
+	var checks := {"runner_crossed": entered and out_tick > 0, "all_back": off == 0, "not_carried": worst_during <= RETURN_CARRY_M}
 	var result := {
 		"ok": checks.values().all(func(v: bool) -> bool: return v), "checks": checks, "off": off, "worst_m": snappedf(worst, 0.01),
-		"worst_during_m": snappedf(worst_during, 0.01), "runner_out_s": snappedf(out_tick * dt, 0.01), "offenders": offenders,
+		"worst_during_m": snappedf(worst_during, 0.01), "runner_out_s": snappedf(out_tick * dt, 0.01), "offenders": offenders, "off_3s_later": off_late,
 	}
-	print("crowd_return %s: %s" % [command, result])
+	print("crowd_return %s %s: %s" % [command, runner_tag, result])
 	return result
 
 

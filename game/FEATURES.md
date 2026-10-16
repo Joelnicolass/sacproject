@@ -824,6 +824,17 @@ Pendiente:
 - **Determinismo:** la variación entre corridas venía del banco: `orders_group.tres` no fijaba `match_seed`. Ahora los casos usan `debug/rules/crowd_cases.tres` (semilla 88) y dos corridas de `crowd_rock` dan resultados idénticos.
 - **Digests nuevos:** seed 1 `9e595f8c…`, seed 7 `f98fbe79…`, seed 7 con `--npcs` `cfb2c4ff…`.
 
+**Ronda 5 (2026-10-16).** Un corredor que cruzaba una formación quieta arrastraba criaturas por delante, hasta unos 20 m, y las desplazadas no volvían a su lugar. Arreglos:
+- `BodySeparation._without_carry`: sin empuje en el sentido de la marcha sobre las quietas o las que ceden.
+- `MakeWay.slide`: solo las que caminan piden paso.
+- `MakeWay`: conserva el «home» original. Antes lo borraba a menos de 0,15 m y la criatura iba derivando.
+
+Caso `crowd_return_grid`: el desplazamiento máximo baja de 4,09 a 1,76 m y quedan 0 criaturas fuera de lugar (antes 16). `rules_suite` PASS completo; `crowd_tipi`, `crowd_rock` y `wizard_slope` PASS.
+
+Digests nuevos: seed 1 `752c58f7…`, seed 7 `4915c884…`, seed 7 `--npcs` `44b89859…`.
+
+Deuda: si el corredor se detiene sobre el lugar de otra, esa criatura no busca el punto libre más cercano; tampoco cede hacia el lado más libre.
+
 ### F114 — Efectos del nivel en el mago (RFC-030, corte 030c)
 
 **Cierre (2026-10-16).** Review PASS (`reviews/REVIEW-F114-level-effects.md`): `CastTime` coincide con sacengine en 7 casos verificados a mano. Playtest con ventana PASS (`agent/out/pt114/`):

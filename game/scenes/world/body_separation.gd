@@ -255,6 +255,12 @@ static func _separate(body: Node3D, at: Vector3, half: float, height: float, vel
 				MakeWay.pushed(body, MakeWay.walks(nodes[i]))
 				if MakeWay.walks(nodes[i]):
 					break
+	# F88 round 5: a creature that stands still or makes way is pushed out of a walker of any slot only across the walker's
+	# heading, never along it: the push out of the box (the axis of least overlap) often lay along the march, and a runner
+	# through a dense crowd carried three creatures 20 m ahead of it (pt88b_open; debug/crowd_cases.gd crowd_return_grid).
+	# The walker still slides round it and asks it to make way (MakeWay); the overlap is undone sideways.
+	if make_way and push != Vector2.ZERO and body.is_in_group(&"unit") and not MakeWay.walks(body):
+		push = _without_carry(faces, pass_two[2], nodes)
 	push = _capped(push, delta)
 	velocity.x += push.x / delta
 	velocity.z += push.y / delta
@@ -280,7 +286,36 @@ static func _second_pass(at: Vector3, kept: Vector2, delta: float, outer: float,
 				push.y -= amount
 			Face.FRONT:
 				push.y += amount
-	return [push, faces]
+	return [push, faces, amounts]
+
+
+## The push of the second pass (`faces`, `amounts`, one per obstacle in `nodes`) with, for each walking creature, the part
+## along its heading (its velocity of the last tick) taken out when it points the way the walker goes.
+static func _without_carry(faces: PackedInt32Array, amounts: PackedFloat64Array, nodes: Array[Node3D]) -> Vector2:
+	var push := Vector2.ZERO
+	for i in faces.size():
+		var out := Vector2.ZERO
+		match faces[i]:
+			Face.LEFT:
+				out.x = -amounts[i]
+			Face.RIGHT:
+				out.x = amounts[i]
+			Face.BACK:
+				out.y = -amounts[i]
+			Face.FRONT:
+				out.y = amounts[i]
+			_:
+				continue
+		var other := nodes[i]
+		if other is CharacterBody3D and MakeWay.walks(other):
+			var heading := Vector2((other as CharacterBody3D).velocity.x, (other as CharacterBody3D).velocity.z)
+			if heading.length_squared() > 0.000001:
+				heading = heading.normalized()
+				var along := out.dot(heading)
+				if along > 0.0:
+					out -= heading * along
+		push += out
+	return push
 
 
 ## `push` capped at collisionFixupSpeed for one tick.

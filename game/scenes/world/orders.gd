@@ -94,7 +94,8 @@ func _apply(slot: int, unit_paths: PackedStringArray, command: String, point: Ve
 	var spots: Array[Vector3] = []
 	for offset in slots:
 		spots.append(_spot(kind, point, target, offset, facing))
-	var matched := _match(units, spots)
+	var yaw := _yaw_of(target) if kind == UnitOrders.Command.GUARD and target else facing
+	var matched := _match(units, spots) if last_rows <= 1 else _match_rows(units, slots, yaw)
 	var retarget := kind == UnitOrders.Command.ATTACK and target != null and target.is_in_group("unit")
 	for i in units.size():
 		var unit: Node3D = units[i]
@@ -223,6 +224,38 @@ func _match(units: Array[Node3D], spots: Array[Vector3]) -> PackedInt32Array:
 		left -= 1
 		if left == 0:
 			break
+	return result
+
+
+## The rows of a formation larger than one line (the port's extension, `row_size`): sacengine matches one line of at most
+## numCreaturesInGroup = 12 greedily (state.d:29205), and greedy over 150 bodies crossed the formation: the front of the
+## crowd took the back rows and everyone else walked through the bodies already parked, which carried them off their slots
+## (F88 round 3, debug/crowd_rock.tscn). Here the units furthest along `yaw` take the front row, the next ones the row
+## behind, and so on; inside a row they keep their order across (left to right). No two paths cross. Ties go by index.
+func _match_rows(units: Array[Node3D], slots: Array[Vector2], yaw: float) -> PackedInt32Array:
+	var n := units.size()
+	var result := PackedInt32Array()
+	result.resize(n)
+	result.fill(-1)
+	var ahead := Vector3(sin(yaw), 0.0, cos(yaw))
+	var right := ahead.cross(Vector3.UP)
+	var order: Array = []
+	for u in n:
+		order.append([-ahead.dot(units[u].global_position), u])
+	order.sort()
+	var per_row := mini(row_size, n)
+	var start := 0
+	while start < mini(n, slots.size()):
+		var stop := mini(start + per_row, mini(n, slots.size()))
+		var row: Array = []
+		for k in range(start, stop):
+			var u: int = order[k][1]
+			row.append([right.dot(units[u].global_position), u])
+		row.sort()
+		## The slots of this row, left to right (_formation lays them out in that order).
+		for k in row.size():
+			result[row[k][1]] = start + k
+		start = stop
 	return result
 
 

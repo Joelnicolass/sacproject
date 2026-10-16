@@ -69,6 +69,7 @@ properties/12/replication_mode = 2
 
 [node name="Unit" type="CharacterBody3D"]
 collision_layer = 2
+floor_max_angle = 1.4835298
 script = ExtResource("1_body")
 
 [node name="Tilt" type="Node3D" parent="."]

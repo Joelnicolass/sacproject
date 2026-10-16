@@ -226,15 +226,49 @@ static func _separate(body: Node3D, at: Vector3, half: float, height: float, vel
 	if make_way and speed > 0.0 and kept.dot(wanted) < MakeWay.SLIDE_KEEP * speed * speed and body.is_in_group(&"unit"):
 		kept = MakeWay.slide(body, at, wanted, faces, inner, height, delta, cut_x, cut_y, cut_z, cut_halves, cut_heights,
 				cut_nodes)
+	var outer := half + 0.5 * BLOCK_SLACK
+	var pass_two := _second_pass(at, kept, delta, outer, height, at_x, at_y, at_z, halves, heights)
+	var push: Vector2 = pass_two[0]
+	faces = pass_two[1]
+	# F88 round 3: a creature whose step only enters the slack band of a body (outside its inner box, inside its grown one)
+	# is not cut by the first pass, so it never slid, but the push of the second pass took the whole step back: it stood
+	# still for good beside a diagonal neighbour (a creature walking back to its spot in a parked formation,
+	# debug/crowd_rock.tscn). When the step plus the push keeps less than SLIDE_KEEP of the speed, the detours of the slide
+	# are tried against the grown boxes, and the push is worked out again for the detour taken.
+	if make_way and speed > 0.0 and body.is_in_group(&"unit"):
+		var net := kept + _capped(push, delta) / delta
+		if net.dot(wanted) < MakeWay.SLIDE_KEEP * speed * speed:
+			var detour := MakeWay.slide(body, at, wanted, first_pass_faces(at, wanted, delta, outer, height, at_x, at_y, at_z,
+					halves, heights), outer, height, delta, at_x, at_y, at_z, halves, heights, nodes)
+			if detour.dot(wanted) >= MakeWay.SLIDE_KEEP * speed * speed:
+				kept = detour
+				pass_two = _second_pass(at, kept, delta, outer, height, at_x, at_y, at_z, halves, heights)
+				push = pass_two[0]
+				faces = pass_two[1]
 	velocity.x = kept.x
 	velocity.z = kept.y
-	var step := Vector3(velocity.x, 0.0, velocity.z) * delta
-	var probe := at + step
-	var push := Vector2.ZERO
-	var outer := half + 0.5 * BLOCK_SLACK
+	if make_way and push != Vector2.ZERO and wanted == Vector2.ZERO and body.is_in_group(&"unit") \
+			and int(body.get("mode")) == UnitBody.Mode.IDLE and not bool(body.get("ordered")):
+		var slot := int(body.get("owner_slot"))
+		for i in faces.size():
+			if faces[i] != Face.NONE and nodes[i].is_in_group(&"unit") and int(nodes[i].get("owner_slot")) == slot:
+				MakeWay.pushed(body, MakeWay.walks(nodes[i]))
+				if MakeWay.walks(nodes[i]):
+					break
+	push = _capped(push, delta)
+	velocity.x += push.x / delta
+	velocity.z += push.y / delta
+	return velocity
+
+
+## The second pass (box grown by blockSlack) for the step `kept` (m/s, flat): [push (m, flat, before the cap), faces].
+static func _second_pass(at: Vector3, kept: Vector2, delta: float, outer: float, height: float, at_x: PackedFloat64Array,
+		at_y: PackedFloat64Array, at_z: PackedFloat64Array, halves: PackedFloat64Array, heights: PackedFloat64Array) -> Array:
+	var probe := at + Vector3(kept.x, 0.0, kept.y) * delta
 	var scan := _scan(probe, outer, height, at_x, at_y, at_z, halves, heights)
-	faces = scan[0]
+	var faces: PackedInt32Array = scan[0]
 	var amounts: PackedFloat64Array = scan[1]
+	var push := Vector2.ZERO
 	for i in faces.size():
 		var amount := amounts[i]
 		match faces[i]:
@@ -246,20 +280,13 @@ static func _separate(body: Node3D, at: Vector3, half: float, height: float, vel
 				push.y -= amount
 			Face.FRONT:
 				push.y += amount
-	if make_way and push != Vector2.ZERO and wanted == Vector2.ZERO and body.is_in_group(&"unit") \
-			and int(body.get("mode")) == UnitBody.Mode.IDLE and not bool(body.get("ordered")):
-		var slot := int(body.get("owner_slot"))
-		for i in faces.size():
-			if faces[i] != Face.NONE and nodes[i].is_in_group(&"unit") and int(nodes[i].get("owner_slot")) == slot:
-				MakeWay.pushed(body, MakeWay.walks(nodes[i]))
-				if MakeWay.walks(nodes[i]):
-					break
+	return [push, faces]
+
+
+## `push` capped at collisionFixupSpeed for one tick.
+static func _capped(push: Vector2, delta: float) -> Vector2:
 	var cap := FIXUP_SPEED * delta
-	if push.length() > cap:
-		push = push.normalized() * cap
-	velocity.x += push.x / delta
-	velocity.z += push.y / delta
-	return velocity
+	return push.normalized() * cap if push.length() > cap else push
 
 
 ## The faces of the first pass (inner box) for a step of `move` (m/s, flat).

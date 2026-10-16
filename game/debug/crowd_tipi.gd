@@ -8,6 +8,9 @@ extends Node
 ## quits. Run: Godot --headless --fixed-fps 60 --path game res://debug/crowd_tipi.tscn
 ## Before the fix (2026-10-16): 4 trabadas for good against the south faces of both tipis (Manahoar68, Trogg82 at Bld076;
 ## Manahoar104, Trogg130 at Bld072), MOVE with zero velocity until the end.
+## Variant debug/crowd_rock.tscn (F88 round 3): the order of pt88b_rock, (1583, 1483), up the ridge east of the tipis, with
+## the facing of a player who orders ahead (`face_goal`). It also asks that `watch_name` ends within `slot_m` of its slot and
+## that no pair is sunk at the end (closer than `deep_ratio` x the sum of radii, as agent/harness/crowd_watch.gd).
 
 const STUCK_S := 2.0
 const PROGRESS_M := 0.5
@@ -22,6 +25,15 @@ const LIMIT_S := 45.0
 @export var facing := 0.0
 @export var expected := 150
 @export var quit_when_done := true
+## Face from the crowd's centroid to the goal (the formation looks where it goes, as a player's order ahead).
+@export var face_goal := false
+## Empty = no slot check.
+@export var watch_name := ""
+@export var slot_m := 2.0
+## Pairs closer than this x (radius a + radius b) at the end are sunk; < 0 = no check.
+@export var deep_ratio := -1.0
+## Seconds the case waits after the last arrival before the end checks (returns of MakeWay).
+@export var settle_s := 0.0
 
 var _started := false
 
@@ -47,7 +59,14 @@ func _run(units: Array) -> void:
 	var tree := get_tree()
 	for _i in 30:
 		await tree.physics_frame
-	orders.call("apply_for", 1, units, "move", goal, null, facing)
+	var yaw := facing
+	if face_goal:
+		var center := Vector3.ZERO
+		for unit: Node3D in units:
+			center += unit.global_position
+		center /= units.size()
+		yaw = atan2(goal.x - center.x, goal.z - center.z)
+	orders.call("apply_for", 1, units, "move", goal, null, yaw)
 	var count := units.size()
 	var dt := 1.0 / float(Engine.physics_ticks_per_second)
 	var marks: Array[Vector2] = []
@@ -63,10 +82,20 @@ func _run(units: Array) -> void:
 	var ticks := 0
 	var walking := count
 	var limit := int(LIMIT_S / dt)
+	var watched: Node3D = null
+	for unit: Node3D in units:
+		if unit.name == watch_name:
+			watched = unit
+	var watch_arrived_off := -1.0
+	var watch_arrived_s := -1.0
 	while ticks < limit and walking > 0:
 		await tree.physics_frame
 		ticks += 1
 		walking = 0
+		if watched != null and watch_arrived_s < 0.0 and int(watched.get("mode")) != UnitBody.Mode.MOVE:
+			var anchor := Vector3(watched.get_node("Orders").call("anchor"))
+			watch_arrived_s = ticks * dt
+			watch_arrived_off = _flat(watched).distance_to(Vector2(anchor.x, anchor.z))
 		for i in count:
 			var unit: Node3D = units[i]
 			if not is_instance_valid(unit):
@@ -90,12 +119,51 @@ func _run(units: Array) -> void:
 				stuck += 1
 				if stuck_at.size() < 8:
 					stuck_at.append("%s t=%.1fs at=(%.1f, %.1f)" % [unit.name, ticks * dt, here.x, here.y])
+	for _i in int(settle_s / dt):
+		await tree.physics_frame
 	var ok := stuck == 0 and walking == 0
 	var report := {"stuck": stuck, "walking_at_end": walking, "worst_still_s": snappedf(worst_s, 0.01),
 			"seconds": snappedf(ticks * dt, 0.01), "stuck_at": stuck_at}
-	print("crowd_tipi: %s %s" % ["PASS" if ok else "FAIL", JSON.stringify(report)])
+	var ordered := 0
+	for unit: Node3D in units:
+		if is_instance_valid(unit) and bool(unit.get("ordered")):
+			ordered += 1
+	report["ordered_at_end"] = ordered
+	if not watch_name.is_empty():
+		for unit: Node3D in units:
+			if is_instance_valid(unit) and unit.name == watch_name:
+				var slot := Vector3(unit.get_node("Orders").call("anchor"))
+				var off := _flat(unit).distance_to(Vector2(slot.x, slot.z))
+				report["watch_to_slot_m"] = snappedf(off, 0.01)
+				report["watch_arrived"] = [snappedf(watch_arrived_s, 0.01), snappedf(watch_arrived_off, 0.01)]
+				report["watch_at"] = [snappedf(unit.global_position.x, 0.1), snappedf(unit.global_position.z, 0.1)]
+				report["watch_slot"] = [snappedf(slot.x, 0.1), snappedf(slot.z, 0.1)]
+				ok = ok and off <= slot_m
+	var off_slot := 0
+	for unit: Node3D in units:
+		var anchor := Vector3(unit.get_node("Orders").call("anchor"))
+		if _flat(unit).distance_to(Vector2(anchor.x, anchor.z)) > 2.0:
+			off_slot += 1
+	report["off_slot_2m"] = off_slot
+	if deep_ratio >= 0.0:
+		var deep := _deep_pairs(units)
+		report["deep_pairs"] = deep
+		ok = ok and deep == 0
+	print("%s: %s %s" % [str(get_parent().name).to_snake_case(), "PASS" if ok else "FAIL", JSON.stringify(report)])
 	if quit_when_done:
 		tree.quit(0 if ok else 1)
+
+
+func _deep_pairs(units: Array) -> int:
+	var deep := 0
+	var radii := PackedFloat64Array()
+	for unit: Node3D in units:
+		radii.append(float(BodyLibrary.info(str(unit.get("model"))).get("radius", 0.35)))
+	for i in units.size():
+		for j in range(i + 1, units.size()):
+			if _flat(units[i]).distance_to(_flat(units[j])) < deep_ratio * (radii[i] + radii[j]):
+				deep += 1
+	return deep
 
 
 static func _flat(node: Node3D) -> Vector2:

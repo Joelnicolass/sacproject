@@ -799,6 +799,25 @@ Deuda:
 - Verificar a Trogg7 contra su casilla.
 - El reparto greedy de casillas de `Orders`.
 
+**Ronda 3 (2026-10-16): la ladera junto a la roca.** La causa era el `floor_max_angle` de Godot (45°): convertía en pared una ladera de unos 48°, cuando sacengine no tiene límite de pendiente. Arreglos:
+- `unit.tscn` pasa a `floor_max_angle` de 85°.
+- `Orders._match_rows`: las filas se asignan por avance y, dentro de cada fila, de izquierda a derecha, para que la formación no se cruce. Solo aplica con más de una fila; es un desvío del port, porque sacengine forma una sola línea de 12.
+- `BodySeparation`: también hace slide cuando la segunda pasada anula el paso.
+
+Caso `debug/crowd_rock.tscn`:
+- Trabadas: de 29 (34,7 s) a 0.
+- Manahoar29 queda a 0,27 m de su casilla.
+- Todas llegan en 13,2 s.
+
+`rules_suite` y `crowd_tipi` dan PASS.
+
+Digests nuevos: seed 1 `1bb3a8b0…`, seed 7 `12633046…`, seed 7 `--npcs` `ff7b9e73…`.
+
+Pendiente:
+- El regreso a su lugar cuando un corredor cruza la formación (2 de 149).
+- Los magos siguen con 45°.
+- La escena del caso no repite cifras exactas entre corridas: hay que revisarlo.
+
 ### F114 — Efectos del nivel en el mago (RFC-030, corte 030c)
 
 **Cierre (2026-10-16).** Review PASS (`reviews/REVIEW-F114-level-effects.md`): `CastTime` coincide con sacengine en 7 casos verificados a mano. Playtest con ventana PASS (`agent/out/pt114/`):

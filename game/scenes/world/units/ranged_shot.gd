@@ -8,6 +8,7 @@ extends Node3D
 ## (getShotDirection) fly their ability range and vanish.
 ## The server (or solo) moves it; clients get the position and play the trail locally.
 ## F119: a ShotLook with an `impact` scene (ShotImpact) decides the damage where it bursts instead (splash, 030h).
+## F136: ShotLook.hits_allies turns the side filter around (the Scarab's web) and burst_at_range_end bursts it where its range ends.
 
 const _HEALTH := preload("res://scenes/world/components/health.gd")
 const LOOKS_DIR := "res://data/shots/"
@@ -103,15 +104,21 @@ func _process(delta: float) -> void:
 
 func _physics_process(delta: float) -> void:
 	var step := velocity * delta
+	var from := global_position
 	global_position += step
 	velocity.y -= gravity * delta
 	_traveled += step.length()
 	var hit := _collision_target()
+	if hit == null and look.sweep:
+		hit = _swept_target(from, global_position)
 	if hit:
 		_burst(hit)
 	elif global_position.y < _ground_height(global_position):
 		_burst(null)
 	elif _traveled >= max_distance:
+		if look.burst_at_range_end:
+			_burst(null)
+			return
 		set_physics_process(false)
 		queue_free()
 
@@ -129,16 +136,44 @@ func _collision_target() -> Node3D:
 	var best_d := INF
 	for found in get_world_3d().direct_space_state.intersect_shape(query, 16):
 		var body := found.get("collider") as Node3D
-		if body == null or body == shooter or not _is_live_body(body):
-			continue
-		var side := int(body.get("owner_slot")) if "owner_slot" in body else 0
-		if body != intended and from_slot > 0 and side == from_slot:
+		if not _can_hit(body, intended, shooter):
 			continue
 		var d := global_position.distance_squared_to(body.global_position)
 		if d < best_d:
 			best_d = d
 			best = body
 	return best
+
+
+## The first body the shot may hit on the segment `from` → `to` (ShotLook.sweep), or null.
+func _swept_target(from: Vector3, to: Vector3) -> Node3D:
+	var intended := get_node_or_null(target_path) if not target_path.is_empty() else null
+	var shooter := get_node_or_null(shooter_path) if not shooter_path.is_empty() else null
+	var query := PhysicsRayQueryParameters3D.create(from, to)
+	query.collision_mask = 3
+	var skip: Array[RID] = []
+	for _try in 8:
+		query.exclude = skip
+		var hit := get_world_3d().direct_space_state.intersect_ray(query)
+		if hit.is_empty():
+			return null
+		var body := hit.get("collider") as Node3D
+		if _can_hit(body, intended, shooter):
+			return body
+		var object := hit.get("collider") as CollisionObject3D
+		if object == null:
+			return null
+		skip.append(object.get_rid())
+	return null
+
+
+## earthflingProjectileCollisionTarget / scarabProjectileCollisionTarget: a live body, not the shooter, that is the
+## intended target or (ShotLook.hits_allies) of the shooter's side, else not of it.
+func _can_hit(body: Node3D, intended: Node, shooter: Node) -> bool:
+	if body == null or body == shooter or not _is_live_body(body):
+		return false
+	var side := int(body.get("owner_slot")) if "owner_slot" in body else 0
+	return body == intended or from_slot <= 0 or (side == from_slot) == look.hits_allies
 
 
 static func _is_live_body(body: Node) -> bool:

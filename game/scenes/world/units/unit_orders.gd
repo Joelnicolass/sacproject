@@ -198,6 +198,7 @@ func _walk(spot: Vector3) -> void:
 	_body.call("walk_to", spot)
 
 
+## is_foe: a foe by the rules of orders, not the body's kept target (a Scarab's wounded ally fails here and is picked again).
 func _in_sight(foe: Variant, center: Vector3) -> bool:
 	if not _body.call("is_foe", foe):
 		return false

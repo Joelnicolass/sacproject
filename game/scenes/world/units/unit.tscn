@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3]
+[gd_scene load_steps=37 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/unit_body.gd" id="1_body"]
 [ext_resource type="Script" path="res://scenes/world/body_visual.gd" id="2_visual"]
@@ -32,6 +32,8 @@
 [ext_resource type="Resource" path="res://data/death_clouds/goc.tres" id="f118_goc"]
 [ext_resource type="Resource" path="res://data/death_clouds/cen.tres" id="f118_cen"]
 [ext_resource type="Resource" path="res://data/death_clouds/tum.tres" id="f118_tum"]
+[ext_resource type="Script" path="res://scenes/data/target_policy.gd" id="f136_policy"]
+[ext_resource type="Resource" path="res://data/targeting/slba.tres" id="f136_slba"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_unit"]
 radius = 0.3
@@ -141,6 +143,7 @@ body = NodePath("..")
 [node name="TargetPicker" type="Node" parent="." node_paths=PackedStringArray("body")]
 script = ExtResource("f72_picker")
 body = NodePath("..")
+policies = Array[ExtResource("f136_policy")]([ExtResource("f136_slba")])
 
 [node name="Flight" type="Node" parent="." node_paths=PackedStringArray("body")]
 script = ExtResource("f116_flight")

@@ -39,6 +39,19 @@ static func on(target: Node) -> Node:
 	return effect
 
 
+## sacengine heal() with an infinite amount (Healing Shower tum@, Scarab slba; sacspell.d:211, state.d:10446-10449): the body's
+## maxHealth in total. Skips a body that cannot heal (canHeal) and returns null; else the HealEffect it added to.
+## `report_end` prints «cura <who> total N vida V» when that heal ends.
+static func heal_full(body: Node, report_end := false) -> Node:
+	if not can_heal(body):
+		return null
+	var effect := on(body)
+	effect.call("add", float(body.get_node("Health").get("maximum")))
+	if report_end:
+		effect.set("report_end", true)
+	return effect
+
+
 func add(amount: float) -> void:
 	var frames := ceili(amount / HEAL_SPEED * FPS)
 	## A heal already running gets the new frames on top, saturated (satAdd, state.d:10455).

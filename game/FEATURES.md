@@ -1055,3 +1055,23 @@ Deuda:
 - **030h2:** el Scarab hoy hace 150 de daño directo a enemigos y en sacengine solo cura aliados (gravedad alta). También van ahí las gotas de la Abomination.
 - **Visual:** bolas de reserva en Mutant y Abomination.
 - **Limpieza:** hay un segundo recorrido de cuerpos solo para el log, y `who()` está duplicado.
+
+### F136 — Telaraña que cura del Scarab (RFC-030, corte 030h2)
+
+El blanco de una criatura a distancia se decide en `TargetPolicy` (Resource por tag del ataque, en `TargetPicker.policies`). `WoundedAllyPolicy` (`data/targeting/slba.tres`) elige al aliado más herido (`state.d:12949-12958`, `28828-28842`). La telaraña es `HealImpact`: cura a los del bando del tirador en 5 m con `HealEffect.heal_full`, la misma regla que `tum@` (`23609-23627`). En `ShotLook`, `hits_allies`, `sweep` y `burst_at_range_end` reproducen el choque, el barrido y el estallido al final del alcance de sacengine. `is_foe` sigue significando enemigo; la política solo decide qué blanco conserva el cuerpo. No hay ningún `if scarab`: sin política, el código es el de antes.
+
+**Cierre (2026-10-16).** La review dio PASS (`reviews/REVIEW-F136-healing-web.md`). Antes del playtest se hicieron tres ajustes de documentación: la descripción del banco, los desvíos en el RFC y el contrato `is_foe`/`_is_valid_foe`. El playtest con ventana dio PASS (`agent/out/pt136/`):
+- **Carril A:** el primer disparo fue al Druid aliado a 85 m, no al enemigo a 6 m. Lo llenó en 1,28 s, de 459 a 800 a 240/s. El enemigo no recibió cura, y el Scarab dejó de disparar cuando el aliado quedó lleno.
+- **Carril B:** con la orden de atacar, el enemigo quedó en 550/550 y el aliado a 2 m pasó de 289 a 550.
+- **Carril C:** con un enemigo en contacto, 6 golpes cuerpo a cuerpo y ninguna cura.
+- **Regresiones:** `f25_flying_summon` y `pt119_splash` (382,50) dieron AGENT_OK. El digest seed 7 no cambió y `rules_suite` dio PASS.
+
+Declarado: con nivel ≥ 2, la IA que convoca Scarabs ahora cura.
+
+Deuda:
+- **Capturas:** la barra de una unidad propia solo se dibuja cuando está seleccionada, así que no hay captura de la barra llena del aliado.
+- **Estallido:** falta el efecto visual.
+- **Edificios propios:** no se verificó si frenan la telaraña.
+- **Duplicaciones:** la regla de enemigo está escrita 3 veces, y `is_patient` copia la validez.
+- **`fired`:** sigue informando 150 de daño.
+- **Órdenes:** el jugador no puede ordenar curar a un aliado.

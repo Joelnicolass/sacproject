@@ -101,10 +101,13 @@ func shoot_range() -> float:
 	return maxf(range_factor * attack.cast_range, attack.cast_range - range_margin)
 
 
-## sacengine attack: shoot unless the foe is in melee contact.
+## sacengine attack: shoot unless the foe is in melee contact. A body of its own side (a Scarab's patient, F136) is
+## always shot, never struck (state.d:12850-12853).
 func prefers(target: Node3D) -> bool:
 	if attack == null or target == null:
 		return false
+	if "owner_slot" in target and int(target.get("owner_slot")) == int(_body.get("owner_slot")):
+		return true
 	if _melee == null or not _melee.call("in_reach", target, float(_melee.get("start_factor"))):
 		return true
 	return _box_gap(target) > melee_distance

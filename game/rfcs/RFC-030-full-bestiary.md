@@ -403,6 +403,60 @@ data/shots/slba.tres, babt.tres, tugt.tres, crba.tres  N  ShotLook + impact
 - **Fuera:** las gotas de la Abomination (`AbominationDroplet`, 50 de daño directo a distancia, `24488-24505`), los modelos de los proyectiles (bolas de reserva) y las partículas `splat`/`gib` (se usa `blood`).
 - **Fuego amigo:** divergencia heredada (ver 030g).
 
+### 030h2 — F136 Telaraña que cura (Scarab `slba`; plan del tech lead, 2026-10-16)
+
+**Sacengine:**
+- **Impacto** (`scarabProjectileHit`, `state.d:23609-23627`): cura a los cuerpos móviles del bando del tirador que estén a ≤ 5 m (`effect_range`). Usa la misma regla que `tum@`: hasta `maxHealth`, a 240/s, con satAdd (`10443-10458`). No daña a nadie ni a ningún edificio, y el tirador también entra.
+- **Proyectil** (`23631-23672`): va recto. Choca con su blanco o con cualquier cuerpo de su bando. La caja de choque mide 0,15 m. Al agotar el alcance, estalla igual.
+- **Blanco por IA** (`12949-12958`, `28828-28842`): el aliado con la vida relativa más baja y no lleno; primero dentro de 110 m y después dentro de la vista. Nunca elige a un enemigo.
+- **Orden de atacar a un enemigo** (`12849-12855`): le dispara y lo cura a él no, sino a los aliados que estén a 5 m del impacto. En contacto le pega cuerpo a cuerpo. Nunca le pega cuerpo a cuerpo a un aliado.
+
+**Árbol**
+```text
+scenes/data/target_policy.gd               N  TargetPolicy (Resource): tag, accepts(body,node,ordered), pick(body,center,within)
+scenes/data/wounded_ally_policy.gd         N  WoundedAllyPolicy: aliado más herido; con orden acepta foes como hoy
+data/targeting/slba.tres                   N  WoundedAllyPolicy tag "slba"
+scenes/world/units/target_picker.gd        M  @export policies; active() por ranged_attack_tag; pick()/accepts() delegan; sin política = código de hoy
+scenes/world/unit_body.gd                  M  solo _is_valid_foe pregunta a TargetPicker.accepts (neto 0 líneas)
+scenes/world/units/ranged_attack.gd        M  prefers(): nunca melee al propio slot
+scenes/world/units/shot_look.gd            M  @export hits_allies, burst_at_range_end
+scenes/world/units/ranged_shot.gd          M  respeta hits_allies; _burst(null) al agotar alcance si burst_at_range_end
+scenes/world/units/impacts/heal_impact.gd/.tscn N  HealImpact: bodies_within + HealEffect.heal_full al slot del tirador
+scenes/world/spells/heal_effect.gd         M  static heal_full(body) (compartida con tum@)
+scenes/world/units/death_clouds/healing_shower.gd M  usa heal_full
+data/shots/slba.tres                       N  ShotLook (0,15 m, hits_allies, burst_at_range_end, heal_impact)
+scenes/world/units/unit.tscn               M  TargetPicker.policies = [slba.tres]
+debug/ai_match.gd, bench_group.gd          M  order "attack_unit"
+debug/f136_healing_web.tscn + rules        N  carril A (IA: aliado al 50 % lejos, enemigo al 50 % cerca), carril B (orden de atacar al enemigo, aliado al 50 % a 2 m); carriles a 160 m
+```
+
+**Criterios**
+1. **Carril A, primer disparo:** el primer disparo va al aliado aunque el enemigo esté más cerca. El aliado pasa de 400 a 800 en ≤ 2 s con «cura total ≤ 400». El Scarab no hace ningún daño.
+2. **Carril A, enemigo:** el enemigo nunca recibe cura. Cuando el aliado está lleno, el Scarab deja de disparar.
+3. **Carril B:** el Scarab dispara al enemigo, que queda en 800/800, y el aliado a 2 m recibe cura. En contacto le pega cuerpo a cuerpo al enemigo.
+4. **Regresiones:** `f117_splash` (382,50), `f116_death_clouds`, `f29_spit` y `f25_summon` dan lo mismo. El digest de seed 7 no cambia: el Scarab es de nivel 2. Queda declarado que, con nivel ≥ 2, la IA que convoca Scarabs ahora cura.
+
+**Riesgos**
+- `body.target` puede ser un aliado: revisar los lectores de `target` en `ai` y en el HUD.
+- `closest_foe` queda con un nombre engañoso, y `fired` sigue informando 150.
+- `burst_at_range_end` solo vale para `slba`.
+
+**Desvíos (developer de F136, 2026-10-16):**
+- **Desvío 1, `is_foe` sigue significando «enemigo».** La política decide solo `_is_valid_foe`, es decir, el blanco que el cuerpo conserva. Si `is_foe` delegaba en ella, `Orders._closest_enemy_creature` (el reasignado de una orden de atacar) tomaba como «enemigo» al aliado herido: el Scarab del carril B quedó atacando a su Manahoar aliado. `UnitOrders._in_sight` también usa `is_foe`, así que con un aliado de blanco vuelve a pedir blanco a la política. `unit_body.gd` sigue con 1046 líneas.
+- **Desvío 2, `ShotLook.sweep` (solo `slba`).** Si la caja no toca a nadie en el cuadro, se revisa el segmento recorrido (`lineOfSight` de `updateScarabProjectile`, `state.d:23655-23664`; Earthfling no lo tiene). A 48 m/s el disparo avanza 0,8 m por cuadro y una caja de 0,15 m puede atravesar un cuerpo.
+- **Carril C agregado** (z +200: Scarab con orden de atacar a un Trogg pegado) para el cuerpo a cuerpo en contacto. Con un Druid, el hueco entre cajas queda en 0,62–0,64 m, por encima de `melee_distance` 0,5, y el Scarab dispara. Es la regla de hoy para toda criatura a distancia y no se tocó.
+- **Escena real** (`debug/f136_healing_web.tscn`, semilla 4): carriles a z −80, +80 y +200 (a z ±160 hay huecos en el terreno). Carril A: Druid aliado al 50 % a 85 m y Manahoar enemigo al 50 % a 6 m (un Druid enemigo mataba al Scarab en 4 s). Carril B: Manahoar enemigo y Manahoar aliado al 50 %, los dos pacíficos, para que nadie más toque la vida del enemigo.
+- **Vidas reales de los criterios:**
+  - C1: el Druid aliado pasa de 400 (459 al llegar la telaraña, por la regeneración) a 800, con `cura Druid total 304`.
+  - C3: el enemigo es un Manahoar y queda en 550/550, no 800/800; el aliado, otro Manahoar, se cura de 289 a 550.
+  - Contacto: 6 golpes del Scarab al Trogg en el carril C.
+- **Declarado:** con nivel ≥ 2, la IA que convoca Scarabs ahora cura. Con una orden de atacar de la IA, el Scarab le dispara al enemigo y cura a los aliados a 5 m del impacto.
+
+### 030h3 — Gotas de la Abomination (`AbominationDroplet`, `state.d:4838-4845`, `24441-24452`, `24488-24505`)
+- **Mecánica:** en cada cuadro de vuelo, con probabilidad 3/4, suelta una gota. La gota cae a 10 m/s², choca con cualquier obstáculo y hace 50 de daño directo a distancia.
+- **Diseño propuesto:** un hijo `ShotDropper` (`ShotLook.dropper`) que corre solo en el servidor.
+- **Va aparte** porque es una mecánica durante el vuelo, necesita decidir de dónde sale el número aleatorio (determinismo) y el costo de unas 40 gotas por disparo hay que medirlo.
+
 ### 030i — F120 Aturdir y petrificar (Flummox, Basilisk)
 
 **Árbol**
@@ -541,7 +595,7 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 ## 10. Orden de implementación
 
-030a → 030b → 030c → 030d (con esto, **todas disponibles**) → 030e (las 5 de nivel 9 son híbridas) → 030e2 (pose y cápsula de las híbridas) → 030f → 030g → 030h → 030h2 (Scarab: telaraña que cura; gotas de la Abomination) → 030i → 030j → 030k → 030l → 030m → 030n → 030o → 030p → 030q → 030r → 030s → 030t → 030u → (030v).
+030a → 030b → 030c → 030d (con esto, **todas disponibles**) → 030e (las 5 de nivel 9 son híbridas) → 030e2 (pose y cápsula de las híbridas) → 030f → 030g → 030h → 030h2 (Scarab: telaraña que cura) → 030h3 (gotas de la Abomination) → 030i → 030j → 030k → 030l → 030m → 030n → 030o → 030p → 030q → 030r → 030s → 030t → 030u → (030v).
 
 ## 11. Cómo verifica un humano
 

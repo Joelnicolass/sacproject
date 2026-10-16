@@ -21,5 +21,14 @@ extends Resource
 ## F119: ShotImpact scene the server (or solo) applies where it bursts, in place of the plain direct ranged hit
 ## (impacts/*.tscn). Empty = the whole amount as direct ranged damage to the body it hit.
 @export var impact: PackedScene
+## F136: the shot bursts on its target or on any body of the shooter's side, and flies through the rest
+## (scarabProjectileCollisionTarget, state.d:23637-23642). Off: its target or any body not of the shooter's side.
+@export var hits_allies := false
+## F136: when its box touches nothing this frame, it also checks the segment it flew (lineOfSight in
+## updateScarabProjectile, state.d:23655-23664), so a small fast shot does not pass through a body. Only slba.
+@export var sweep := false
+## F136: at the end of its range it bursts there (impact included) instead of vanishing (updateScarabProjectile,
+## state.d:23667-23670). Only slba so far.
+@export var burst_at_range_end := false
 @export var fallback_color := Color(0.8, 0.7, 0.5)
 @export var fallback_radius := 0.15

@@ -1,0 +1,99 @@
+[gd_resource type="Resource" script_class="BenchRules" load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
+
+[sub_resource type="Resource" id="Group_A_scarab"]
+script = ExtResource("2_group")
+tag = "cara"
+slot = 1
+count = 1
+columns = 1
+offset_m = 0.0
+offset_z_m = -80.0
+facing_x = 1.0
+
+[sub_resource type="Resource" id="Group_A_ally"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 1
+count = 1
+columns = 1
+offset_m = 85.0
+offset_z_m = -80.0
+facing_x = -1.0
+health_fraction = 0.50000
+
+[sub_resource type="Resource" id="Group_A_foe"]
+script = ExtResource("2_group")
+tag = "oham"
+slot = 2
+count = 1
+columns = 1
+offset_m = -6.0
+offset_z_m = -80.0
+facing_x = 1.0
+health_fraction = 0.50000
+
+[sub_resource type="Resource" id="Group_B_scarab"]
+script = ExtResource("2_group")
+tag = "cara"
+slot = 1
+count = 1
+columns = 1
+offset_m = -60.0
+offset_z_m = 80.0
+facing_x = 1.0
+order = "attack_unit"
+order_slot = 2
+
+[sub_resource type="Resource" id="Group_B_foe"]
+script = ExtResource("2_group")
+tag = "oham"
+slot = 2
+count = 1
+columns = 1
+offset_m = -30.0
+offset_z_m = 80.0
+facing_x = -1.0
+
+[sub_resource type="Resource" id="Group_B_ally"]
+script = ExtResource("2_group")
+tag = "oham"
+slot = 1
+count = 1
+columns = 1
+offset_m = -28.0
+offset_z_m = 80.0
+facing_x = -1.0
+health_fraction = 0.50000
+
+[sub_resource type="Resource" id="Group_C_scarab"]
+script = ExtResource("2_group")
+tag = "cara"
+slot = 1
+count = 1
+columns = 1
+offset_m = 0.0
+offset_z_m = 200.0
+facing_x = 1.0
+order = "attack_unit"
+order_slot = 2
+
+[sub_resource type="Resource" id="Group_C_foe"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 2
+count = 1
+columns = 1
+offset_m = 1.5
+offset_z_m = 200.0
+facing_x = -1.0
+
+[resource]
+script = ExtResource("1_rules")
+groups = Array[ExtResource("2_group")]([SubResource("Group_A_scarab"), SubResource("Group_A_ally"), SubResource("Group_A_foe"), SubResource("Group_B_scarab"), SubResource("Group_B_foe"), SubResource("Group_B_ally"), SubResource("Group_C_scarab"), SubResource("Group_C_foe")])
+anchor = Vector3(1270, 0, 1270)
+start_paused = true
+match_seed = 4
+ignore_annihilation = true

@@ -166,7 +166,7 @@ func _prepare() -> void:
 			audit.watch_unit(unit)
 			_watched.append(unit)
 			made.append(unit)
-		if group.order == "advance_altar" or group.order == "attack_structure":
+		if group.order == "advance_altar" or group.order == "attack_structure" or group.order == "attack_unit":
 			_orders_at_start.append([group, made])
 	for wizard in get_tree().get_nodes_in_group("wizard"):
 		var purse := wizard.get_node_or_null("SoulPurse")
@@ -440,6 +440,12 @@ func _near_spot(group: BenchGroup, index: int, terrain: Node) -> Vector4:
 
 
 func _order_advance(group: BenchGroup, units: Array[Node3D]) -> void:
+	if group.order == "attack_unit":
+		## F136: an attack on the creature of `order_slot` closest to the group's first body (Orders.apply_for, like a click).
+		var foe := _closest_unit_of(group.order_slot, units[0].global_position) if not units.is_empty() else null
+		if foe != null:
+			_world.get_node("%Orders").call("apply_for", group.slot, units, "attack", foe.global_position, foe, 0.0)
+		return
 	if group.order == "attack_structure":
 		## An attack on the first structure (a Manalith) of `order_slot`: Orders.apply_for, like a human's order on a click.
 		var structure: Node3D
@@ -457,6 +463,20 @@ func _order_advance(group: BenchGroup, units: Array[Node3D]) -> void:
 	if altar == null:
 		return
 	_world.get_node("%Orders").call("apply_for", group.slot, units, "advance", altar.global_position, null, 0.0)
+
+
+func _closest_unit_of(slot: int, from: Vector3) -> Node3D:
+	var best: Node3D = null
+	var best_d := INF
+	for node in get_tree().get_nodes_in_group("unit"):
+		var unit := node as Node3D
+		if unit == null or int(unit.get("owner_slot")) != slot:
+			continue
+		var d := unit.global_position.distance_to(from)
+		if d < best_d:
+			best_d = d
+			best = unit
+	return best
 
 
 ## A side of the AI for each seat, started with the match (audit.start follows).

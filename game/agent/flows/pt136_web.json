@@ -1,0 +1,33 @@
+{
+ "scene": "res://debug/f136_healing_web.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  { "wait_until": { "node": "Overlay/Status", "text_contains": "Enter", "timeout": 60 } },
+  { "wait": 1.0 },
+  { "print": { "node": "Overlay/Status", "prop": "text" } },
+  { "shot": "p0_paused.png" },
+  { "press": "check_tick" },
+  { "wait_until": { "node": "Runner", "prop": "_running", "equals": true, "timeout": 10 } },
+  { "wait": 0.3 },
+  { "call": { "harness": "pt136_watch", "method": "arm", "args": [] } },
+  { "call": { "harness": "pt136_watch", "method": "frame", "args": [1270, 1190, 0, 40, 70] } },
+  { "wait": 0.1 },
+  { "shot": "p1_laneA_start.png" },
+  { "call": { "harness": "pt136_watch", "method": "report", "args": [] } },
+  { "wait_until": { "node": "AgentKit/pt136_watch", "prop": "c_struck", "gte": 2, "timeout": 20 } },
+  { "call": { "harness": "pt136_watch", "method": "frame", "args": [1270, 1470, 0, 5, 8] } },
+  { "wait": 0.05 },
+  { "shot": "C_melee.png" },
+  { "wait_until": { "node": "AgentKit/pt136_watch", "prop": "a_full", "gte": 1, "timeout": 30 } },
+  { "wait_until": { "node": "AgentKit/pt136_watch", "prop": "b_full", "gte": 1, "timeout": 30 } },
+  { "call": { "harness": "pt136_watch", "method": "report", "args": [] } },
+  { "wait": 6.0 },
+  { "call": { "harness": "pt136_watch", "method": "frame", "args": [1310, 1190, 0, 40, 60] } },
+  { "wait": 0.1 },
+  { "shot": "p2_laneA_after.png" },
+  { "call": { "harness": "pt136_watch", "method": "report", "args": [] } },
+  { "assert": { "node": "AgentKit/pt136_watch", "prop": "a_full", "gte": 1 } },
+  { "assert": { "node": "AgentKit/pt136_watch", "prop": "b_full", "gte": 1 } },
+  { "assert": { "node": "AgentKit/pt136_watch", "prop": "c_struck", "gte": 1 } }
+ ]
+}

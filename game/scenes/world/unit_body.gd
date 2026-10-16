@@ -447,8 +447,9 @@ func can_take_mana() -> bool:
 	return mode != Mode.DEAD and mode != Mode.SUMMONING
 
 
+## A foe by the rules of orders (Orders retarget, UnitOrders); not the target this body keeps (_is_valid_foe, its TargetPolicy).
 func is_foe(node: Variant) -> bool:
-	return _is_valid_foe(node)
+	return UnitBody.is_valid_foe_of(owner_slot, node, self, not ordered)
 
 
 func _health() -> Node:
@@ -792,11 +793,10 @@ func closest_foe(center: Vector3, threshold := 0.25, ref_range := 100.0, within 
 	return best
 
 
-## An order (`ordered`) may name any body that is not of the own side, a neutral house included
-## (sacengine isValidAttackTarget); what a creature picks by itself must be a stance enemy
-## (isValidEnemyAttackTarget, state.d:12442).
+## The target this body keeps, by its TargetPolicy (F136); without one, a foe: under an order any body not of the own side
+## (isValidAttackTarget), else a stance enemy (isValidEnemyAttackTarget, state.d:12442).
 func _is_valid_foe(node: Variant) -> bool:
-	return UnitBody.is_valid_foe_of(owner_slot, node, self, not ordered)
+	return _target_picker.call("accepts", node, ordered) if is_instance_valid(_target_picker) else UnitBody.is_valid_foe_of(owner_slot, node, self, not ordered)
 
 
 ## Whether `node` is a creature, wizard or structure that a body of player `slot` may fight (`me` is that

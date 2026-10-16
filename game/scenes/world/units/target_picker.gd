@@ -15,7 +15,7 @@ extends Node
 ## candidates must also lie within that distance of the anchor, because patrolAround's threshold is ~0 at
 ## the anchor and would otherwise take any foe the side has seen at any range, making the unit leave and
 ## come back over and over. Missing («aprox.»): the DangerGrid factor (needs area spells to
-## paint danger), the melee reach/height filter `maxTargetHeight`, the scarab and raging special cases.
+## paint danger), the melee reach/height filter `maxTargetHeight` and the raging case. The scarab is a TargetPolicy (F136).
 ## Where the world has no SideVision (a bare body in a test), "visible" is "within its sight range".
 
 signal picked(target: Node3D)
@@ -37,6 +37,9 @@ signal picked(target: Node3D)
 @export var max_query_m := 5120.0
 ## Keep what each pick weighed in last_scores (probes and the debug scene). Off in a match.
 @export var record_scores := false
+## F136 (RFC-030h2): target rules by ranged attack (data/targeting/<tag>.tres). The one whose tag is the body's
+## ranged attack picks and accepts in place of the enemy score; a body with none keeps this script's rules.
+@export var policies: Array[TargetPolicy] = []
 
 var last_attacker_id := 0
 var _vision: SideVision
@@ -92,6 +95,12 @@ static func score_cutoff(threshold: float, ref_range: float, max_weight := 1.25 
 ## distance where the score changes shape (100; 150 for advance). `within` limits the foes to that
 ## distance of `center` (a guard's sight range; INF for patrol and advance).
 func pick(center: Vector3, threshold := 0.25, ref_range := 100.0, within := INF) -> Node3D:
+	var policy := active()
+	if policy != null:
+		var chosen := policy.pick(body, center, within)
+		if chosen != null:
+			picked.emit(chosen)
+		return chosen
 	var started := Time.get_ticks_usec()
 	picks += 1
 	last_scores = []
@@ -134,6 +143,25 @@ func pick(center: Vector3, threshold := 0.25, ref_range := 100.0, within := INF)
 	if best != null:
 		picked.emit(best)
 	return best
+
+
+## Whether the body may keep `node` as its target (UnitBody._is_valid_foe): the active policy's rule, or a foe
+## (by stance unless `ordered`) as before policies.
+func accepts(node: Variant, ordered: bool) -> bool:
+	var policy := active()
+	if policy != null:
+		return policy.accepts(body, node, ordered)
+	return UnitBody.is_valid_foe_of(body.owner_slot, node, body, not ordered)
+
+
+## The policy for the body's ranged attack, or null (the default rules).
+func active() -> TargetPolicy:
+	if policies.is_empty() or body == null or body.type == null or body.type.ranged_attack_tag.is_empty():
+		return null
+	for policy in policies:
+		if policy != null and policy.tag == body.type.ranged_attack_tag:
+			return policy
+	return null
 
 
 ## Something hit this body: it weighs x1.2 until the next hit (state.d:8905-8906, a creature only).

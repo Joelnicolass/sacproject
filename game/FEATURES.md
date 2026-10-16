@@ -835,6 +835,17 @@ Digests nuevos: seed 1 `752c58f7…`, seed 7 `4915c884…`, seed 7 `--npcs` `44b
 
 Deuda: si el corredor se detiene sobre el lugar de otra, esa criatura no busca el punto libre más cercano; tampoco cede hacia el lado más libre.
 
+**Cierre (2026-10-16).** Playtest final con ventana (`agent/out/pt88d/`):
+- **Corredor A:** cruza la formación sin arrastrar a nadie. Desplazamiento máximo de 0,90 m; todas vuelven a 0,15 m o menos.
+- **Trabadas:** ninguna; la peor quedó quieta 0,40 s.
+- **Errores:** ninguno.
+- **Regreso a su lugar tras un corredor que sale:** lo cubre el caso headless `crowd_return_grid`.
+
+Deuda declarada:
+- Si un corredor queda detenido pegado a la formación, las que estaban en ese lugar quedan corridas 1–1,35 m.
+- Ese corredor perdió la orden a 7 m de su punto, junto al borde: falta investigarlo.
+- 5 de 150 terminan a más de 2 m de su casilla (reparto de `Orders`).
+
 ### F114 — Efectos del nivel en el mago (RFC-030, corte 030c)
 
 **Cierre (2026-10-16).** Review PASS (`reviews/REVIEW-F114-level-effects.md`): `CastTime` coincide con sacengine en 7 casos verificados a mano. Playtest con ventana PASS (`agent/out/pt114/`):

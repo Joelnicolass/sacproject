@@ -832,7 +832,7 @@ Review NEEDS WORK, corregida (`reviews/REVIEW-F98-lightning.md`). Playtest PASS 
 - `final_wrath_splash` AGENT_OK.
 - El digest de seed 1 no cambia.
 
-Pendiente, en investigación: en el cliente de red el extremo del rayo quedó a 15 m de la unidad más cercana. Puede ser que el blanco sea un mago o un NPC, o que el seguimiento no se resuelva en el cliente.
+**Cerrado (2026-10-16).** El desvío de 15 m que se vio en el cliente de red era un error del harness, no del juego: el blanco era un Farmer que murió y salió del grupo `unit`, así que el harness midió contra otra criatura. Con el harness corregido, que ahora mide contra el nodo que sigue el rayo, el cliente informa blanco Taurock2 y desvío de 0,00 m (`agent/out/pt98/net2/`).
 
 Follow-ups para un RFC de simulación:
 - El daño y las chispas deberían llegar en el frame 12.

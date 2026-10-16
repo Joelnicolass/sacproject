@@ -4,7 +4,9 @@ extends Node
 ##   start(type_name)  watches FxBus's beams of that BeamType once per drawn frame. For each beam it prints
 ##             «BEAM fin vivo X s cuadros N cambios C inicio→fin L m desvío_fin E m» when it hides:
 ##             X = seconds visible, C = shapes after the first, E = largest distance between the beam's
-##             end and the center (Collision) of the unit nearest to it while visible.
+##             end and the center (Collision) of the unit nearest to it while visible (group `unit` only:
+##             a dead unit leaves it), then «blanco» = the node the end follows (`_follow`) and
+##             «desvío_blanco» = largest distance from the end to that node's center.
 ##   report()  read-only summary line.
 ## Props for wait_until / assert: beams_done, last_seconds, last_changes, last_end_error_m, last_length_m.
 ## Reads the BeamFx children of FxBus with get() (its time `_t`, shape `_shape`, ends `_from`/`_to`).
@@ -15,6 +17,10 @@ var last_frames := 0
 var last_changes := 0
 var last_end_error_m := 0.0
 var last_length_m := 0.0
+## Name of the node the beam's end followed («ninguno» = it stayed on the point it was given), and the
+## largest distance between the end and that node's center (Collision) while both were visible.
+var last_target := ""
+var last_target_error_m := -1.0
 
 var _type := ""
 var _live: Dictionary = {}
@@ -53,6 +59,13 @@ func _process(delta: float) -> void:
 		var end: Vector3 = beam.get("_to")
 		row["err"] = maxf(float(row["err"]), _nearest_center_distance(end))
 		row["len"] = (beam.get("_from") as Vector3).distance_to(end)
+		var target: Variant = beam.get("_follow")
+		if target != null and is_instance_valid(target) and (target as Node).is_inside_tree():
+			var center := _center_of(target as Node3D)
+			row["target"] = String((target as Node).name)
+			row["target_err"] = maxf(float(row.get("target_err", 0.0)), center.distance_to(end))
+		elif not row.has("target"):
+			row["target"] = "ninguno"
 		_live[id] = row
 	var ids := []
 	for beam in now:
@@ -70,9 +83,16 @@ func _close(row: Dictionary) -> void:
 	last_changes = int(row["changes"])
 	last_end_error_m = float(row["err"])
 	last_length_m = float(row["len"])
-	var line := "vivo %.3f s cuadros %d cambios %d inicio→fin %.1f m desvío_fin %.2f m" % [last_seconds, last_frames, last_changes, last_length_m, last_end_error_m]
+	last_target = str(row.get("target", "ninguno"))
+	last_target_error_m = float(row.get("target_err", -1.0))
+	var line := "vivo %.3f s cuadros %d cambios %d inicio→fin %.1f m desvío_fin %.2f m blanco %s desvío_blanco %.2f m" % [last_seconds, last_frames, last_changes, last_length_m, last_end_error_m, last_target, last_target_error_m]
 	_summary.append(line)
 	print("BEAM fin " + line)
+
+
+func _center_of(body: Node3D) -> Vector3:
+	var col := body.get_node_or_null("Collision") as Node3D
+	return (col if col != null else body).global_transform.origin
 
 
 func _nearest_center_distance(at: Vector3) -> float:

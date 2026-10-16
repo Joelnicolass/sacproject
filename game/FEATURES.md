@@ -821,3 +821,19 @@ Deuda:
 - 10 flows actualizados sin correr.
 - Aviso de mayúsculas en el ícono `HRba.png` (se guarda como `hrba.png`).
 - En la partida de prueba contra la IA, su mago murió dos veces sin que el humano lo atacara. Falta investigar la causa.
+
+### F98 — Rayo fiel de Lightning (RFC-029, corte 029d)
+Hecho (2026-10-16). Lightning dibuja un `BeamFx`, port de `LightningBolt` de sacengine (`state.d:2815-2850, 16322-16386`, `sacobject.d:2189-2295`, `renderer.d:264-272, 1873-1905`), en lugar de `wrath_explosion1`. Se apoya en `BeamType.tres`, `FxBus.broadcast_beam` (un RPC unreliable por rayo) y un pool de 6.
+
+Review NEEDS WORK, corregida (`reviews/REVIEW-F98-lightning.md`). Playtest PASS (`agent/out/pt98/`):
+- El rayo vive 1,050 s y cambia de forma 10 veces, igual que el original.
+- Lámina lateral `lamina_lateral.png`.
+- Dedicado + cliente: el cliente ve el rayo (1,050 s) y el servidor no da errores.
+- `final_wrath_splash` AGENT_OK.
+- El digest de seed 1 no cambia.
+
+Pendiente, en investigación: en el cliente de red el extremo del rayo quedó a 15 m de la unidad más cercana. Puede ser que el blanco sea un mago o un NPC, o que el seguimiento no se resuelva en el cliente.
+
+Follow-ups para un RFC de simulación:
+- El daño y las chispas deberían llegar en el frame 12.
+- Falta el redireccionado por `collideRay`.

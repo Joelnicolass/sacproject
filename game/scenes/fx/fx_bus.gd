@@ -17,8 +17,18 @@ const TYPES_DIR := "res://data/fx/"
 ## from the global RNG; done here it happens before MatchSeed seeds the match, so a play never does.
 @export var prewarm := true
 
+## Own generator for the shapes of the beams (RFC-029 029d), apart from the particle seeds so a beam
+## does not change which sprites a burst draws.
+@export var beam_seed: int = 9829
+
 var _types: Dictionary = {}
 var _rng := RandomNumberGenerator.new()
+var _beam_rng := RandomNumberGenerator.new()
+## beam type name -> BeamType (or null).
+var _beam_types: Dictionary = {}
+## beam type name -> Array[BeamFx] idle / playing (oldest first).
+var _beam_idle: Dictionary = {}
+var _beam_playing: Dictionary = {}
 ## type name -> Array[SpriteParticles] idle (hidden), ready for the next play.
 var _idle: Dictionary = {}
 ## type name -> Array[SpriteParticles] playing, oldest first.
@@ -27,6 +37,7 @@ var _playing: Dictionary = {}
 
 func _ready() -> void:
 	_rng.seed = particle_seed
+	_beam_rng.seed = beam_seed
 	if prewarm and not _is_headless():
 		_prewarm_all()
 
@@ -147,3 +158,87 @@ static func _is_headless() -> bool:
 @rpc("authority", "call_local", "unreliable")
 func _play_everywhere(type_name: String, at: Vector3, dir: Vector3) -> void:
 	play(type_name, at, dir)
+
+
+const BEAM_TYPES_DIR := "res://data/fx/beams/"
+
+
+## A bolt of the BeamType res://data/fx/beams/<type_name>.tres from `from` to `to` (RFC-029 029d).
+## With `follow`, the end keeps its offset from that node while it lives. A type without `scene`
+## gives only its flash at `to`.
+func play_beam(type_name: String, from: Vector3, to: Vector3, follow: Node3D = null) -> void:
+	if _is_headless():
+		return
+	var type := beam_type(type_name)
+	if type == null:
+		return
+	if type.scene == null:
+		_beam_flash(type, to)
+		return
+	var beam := _take_beam(type_name, type)
+	if beam != null:
+		beam.play(from, to, _beam_rng.randi(), follow)
+
+
+## One RPC per beam. `follow` travels as its path (the units have the same path on every peer).
+func broadcast_beam(type_name: String, from: Vector3, to: Vector3, follow: Node3D = null) -> void:
+	var path := str(follow.get_path()) if follow != null and follow.is_inside_tree() else ""
+	if MpKit.is_networked():
+		if MpKit.is_server():
+			_play_beam_everywhere.rpc(type_name, from, to, path)
+		return
+	play_beam(type_name, from, to, follow)
+
+
+func beam_type(type_name: String) -> BeamType:
+	if not _beam_types.has(type_name):
+		var path := BEAM_TYPES_DIR + type_name + ".tres"
+		_beam_types[type_name] = load(path) as BeamType if ResourceLoader.exists(path) else null
+	return _beam_types[type_name]
+
+
+func _take_beam(type_name: String, type: BeamType) -> BeamFx:
+	if not _beam_playing.has(type_name):
+		_beam_idle[type_name] = []
+		_beam_playing[type_name] = []
+	var idle: Array = _beam_idle[type_name]
+	var playing: Array = _beam_playing[type_name]
+	var beam: BeamFx = null
+	if not idle.is_empty():
+		beam = idle.pop_back()
+	elif playing.size() < type.pool_max:
+		beam = type.scene.instantiate() as BeamFx
+		if beam == null:
+			return null
+		beam.type = type
+		beam.pooled = true
+		beam.name = "beam_%s_%d" % [type_name, playing.size() + idle.size()]
+		add_child(beam)
+		beam.finished.connect(_release_beam.bind(type_name, beam))
+	else:
+		beam = playing.pop_front()
+	playing.push_back(beam)
+	return beam
+
+
+func _release_beam(type_name: String, beam: BeamFx) -> void:
+	var playing: Array = _beam_playing.get(type_name, [])
+	var at := playing.find(beam)
+	if at < 0:
+		return
+	playing.remove_at(at)
+	(_beam_idle[type_name] as Array).push_back(beam)
+
+
+## The flash alone (a BeamType without `scene`), from the rig's FxLightLayer like a burst's light.
+func _beam_flash(type: BeamType, at: Vector3) -> void:
+	if type.light != null:
+		type.light.light_up(get_tree(), null, at)
+
+
+@rpc("authority", "call_local", "unreliable")
+func _play_beam_everywhere(type_name: String, from: Vector3, to: Vector3, follow_path: String) -> void:
+	var follow: Node3D = null
+	if not follow_path.is_empty():
+		follow = get_tree().root.get_node_or_null(NodePath(follow_path)) as Node3D
+	play_beam(type_name, from, to, follow)

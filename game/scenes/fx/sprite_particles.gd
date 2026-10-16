@@ -3,9 +3,6 @@ extends CPUParticles3D
 
 ## One-shot burst of atlas sprites. Frees itself when the burst ends, unless FxBus pools it.
 
-## Group of the rig's FxLightLayer (RFC-029 029c). No node in it (headless, dedicated, layer removed) = no light.
-const LIGHT_POOL_GROUP := &"fx_light_pool"
-
 @export var type: ParticleType
 @export_file("*.json") var catalog_path: String = "res://cache/look/fx/fx.json"
 ## Owned by FxBus's pool (RFC-029 029b): it waits hidden for `replay` and hides again when the burst
@@ -44,11 +41,8 @@ func replay(at: Vector3, burst_seed: int) -> void:
 ## The type's light from the rig's pool, keyed by this emitter: a pooled emitter that plays again
 ## (or is taken back while playing) restarts its own light at the new place instead of adding one.
 func _request_light() -> void:
-	if type.light == null or not is_inside_tree():
-		return
-	var pool := get_tree().get_first_node_in_group(LIGHT_POOL_GROUP)
-	if pool != null:
-		pool.call(&"flash", self, type.light, global_position)
+	if type.light != null and is_inside_tree():
+		type.light.light_up(get_tree(), self, global_position)
 
 
 func _configure(material: ShaderMaterial) -> void:

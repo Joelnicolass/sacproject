@@ -1,0 +1,174 @@
+class_name BeamFx
+extends MeshInstance3D
+
+## A bolt between two points (RFC-029 029d), drawn like sacengine's Lightning (renderer.d:1873-1905):
+## `type.bolts` ribbons of 3 fins at 120°, each following its own LightningBolt, that change shape every
+## `change_s`, travel in from the start, pulse in brightness and leave from the start before dying.
+## The end can follow a node (the target's center moves while it burns, state.d:16372 `end.center`).
+## Presentation only: FxBus plays it, it moves nothing, and the shape comes from a generator of its own.
+## Frees itself at the end of its life, unless FxBus pools it (then it hides and says `finished`).
+
+signal finished
+
+const SHADER := preload("res://scenes/fx/beam.gdshader")
+const UV_INSET := 0.5 / 64.0
+
+@export var type: BeamType
+## Owned by FxBus's pool: it waits hidden for `play` and hides again at the end instead of freeing itself.
+@export var pooled := false
+
+static var _materials: Dictionary = {}
+
+var _imesh: ImmediateMesh
+var _rng := RandomNumberGenerator.new()
+var _bolts: Array[LightningBolt] = []
+var _from := Vector3.ZERO
+var _to := Vector3.ZERO
+var _follow: Node3D
+var _follow_offset := Vector3.ZERO
+var _t := 0.0
+var _shape := 0
+var _flashed := false
+var _live := false
+
+
+func _ready() -> void:
+	global_transform = Transform3D.IDENTITY
+	_imesh = ImmediateMesh.new()
+	mesh = _imesh
+	if type != null:
+		material_override = material_for(type)
+	visible = false
+	set_process(false)
+
+
+## Starts the beam from `from` to `to`. With `follow`, the end keeps its offset from that node while
+## the node lives. `beam_seed` picks the shapes (same seed, same bolt).
+func play(from: Vector3, to: Vector3, beam_seed: int, follow: Node3D = null) -> void:
+	if type == null:
+		return
+	if material_override == null:
+		material_override = material_for(type)
+	_from = from
+	_to = to
+	_follow = follow
+	_follow_offset = to - follow.global_position if follow != null else Vector3.ZERO
+	_rng.seed = beam_seed
+	_bolts.clear()
+	for i in type.bolts:
+		var bolt := LightningBolt.new(type.segments)
+		bolt.change_shape(_rng, type.jitter_m)
+		_bolts.append(bolt)
+	_t = 0.0
+	_shape = 0
+	_flashed = false
+	_live = true
+	visible = true
+	set_process(true)
+	_draw()
+
+
+## End of the bolt now (the followed node's point while it lives).
+func _end_point() -> Vector3:
+	if _follow != null and is_instance_valid(_follow) and _follow.is_inside_tree():
+		_to = _follow.global_position + _follow_offset
+	return _to
+
+
+func _process(delta: float) -> void:
+	_t += delta
+	if _t >= type.life_s:
+		_stop()
+		return
+	var wanted := int(floor(_t / type.change_s))
+	while _shape < wanted:
+		_shape += 1
+		for bolt in _bolts:
+			bolt.change_shape(_rng, type.jitter_m)
+	if not _flashed and _t >= type.travel_s:
+		_flashed = true
+		_flash()
+	_draw()
+
+
+func _stop() -> void:
+	_live = false
+	_follow = null
+	_imesh.clear_surfaces()
+	visible = false
+	set_process(false)
+	finished.emit()
+	if not pooled:
+		queue_free()
+
+
+func _flash() -> void:
+	if type.light != null and is_inside_tree():
+		type.light.light_up(get_tree(), self, _end_point())
+
+
+func _draw() -> void:
+	_imesh.clear_surfaces()
+	var start := _from
+	var diff := _end_point() - start
+	var length := diff.length()
+	if length < 0.001 or _bolts.is_empty():
+		return
+	var axis := diff / length
+	var turn := Quaternion(Vector3.BACK, axis) if axis.dot(Vector3.BACK) > -0.9999 else Quaternion(Vector3.RIGHT, PI)
+	var sqrt34 := sqrt(0.75)
+	var fins: Array[Vector3] = [
+		turn * (Vector3(0.0, -1.0, 0.0) * type.width_m),
+		turn * (Vector3(sqrt34, 0.5, 0.0) * type.width_m),
+		turn * (Vector3(-sqrt34, 0.5, 0.0) * type.width_m),
+	]
+	var span := type.span_at(_t)
+	var n := type.segments
+	var points := PackedVector3Array()
+	points.resize(n + 1)
+	set_instance_shader_parameter(&"cell", float(int(floor(_t / type.frame_s)) % (type.h_frames * type.v_frames)))
+	set_instance_shader_parameter(&"energy", type.energy_at(_t))
+	_imesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
+	for bolt in _bolts:
+		for k in n + 1:
+			var p := bolt.sample(clampf(float(k) / float(n), span.x, span.y))
+			points[k] = start + turn * Vector3(p.x, p.y, p.z * length)
+		_add_ribbon(points, fins, n)
+	_imesh.surface_end()
+
+
+## sacengine makeLineMesh (sacobject.d:2189-2227): per segment and fin a quad from the axis to the fin's
+## edge, pointed at both ends; u flips every segment, v = 1 on the axis (the bright row of the cell).
+func _add_ribbon(points: PackedVector3Array, fins: Array[Vector3], n: int) -> void:
+	for i in n:
+		for j in 3:
+			var pos: Array[Vector3] = []
+			var uvs: Array[Vector2] = []
+			for k in 4:
+				var bone := i + 1 if (k == 1 or k == 2) else i
+				var p := points[bone]
+				if (k == 2 or k == 3) and bone != 0 and bone != n:
+					p += fins[j]
+				pos.append(p)
+				var flip := ((i & 1) == 1) != (k == 1 or k == 2)
+				uvs.append(Vector2(1.0 - UV_INSET if flip else UV_INSET, 1.0 - UV_INSET if (k == 0 or k == 1) else UV_INSET))
+			for idx in [0, 1, 2, 2, 3, 0]:
+				_imesh.surface_set_uv(uvs[idx])
+				_imesh.surface_add_vertex(pos[idx])
+
+
+## Shared material of a BeamType (its cell and brightness are instance uniforms). Parameters are
+## refreshed on every call, so an edit in the inspector shows up on the next pooled beam built.
+static func material_for(beam: BeamType) -> ShaderMaterial:
+	var material: ShaderMaterial = _materials.get(beam)
+	if material == null:
+		material = ShaderMaterial.new()
+		material.shader = SHADER
+		_materials[beam] = material
+	var texture := FxAtlas.texture(beam.atlas_tag)
+	material.set_shader_parameter("use_textures", texture != null)
+	material.set_shader_parameter("atlas", texture)
+	material.set_shader_parameter("h_frames", beam.h_frames)
+	material.set_shader_parameter("v_frames", beam.v_frames)
+	material.set_shader_parameter("soft_distance_m", beam.soft_distance_m)
+	return material

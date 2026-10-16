@@ -29,6 +29,8 @@ const MANA_EPSILON := 0.01
 const MIN_MANA_COST := 1.0
 ## Hands of a wizard, as a fraction of the body height (Wrath leaves from there).
 const HAND_HEIGHT := 0.65
+## BeamType of the Lightning strike (res://data/fx/beams/), RFC-029 029d.
+const LIGHTNING_BEAM := "lightning"
 const NO_MANA := SpellAction.NO_MANA
 const NO_SOULS := "Sin almas"
 const COOLING := SpellAction.COOLING
@@ -559,8 +561,17 @@ func _strike_lightning(spell: SpellType, target: Node3D) -> void:
 		return
 	var taken := float(target.get_node("Health").call("damage_typed", float(spell.damage), _HEALTH.DIRECT_SPELL, int(_wizard.get("owner_slot"))))
 	_ROCK.report(target, taken, _HEALTH.DIRECT_SPELL)
-	var center := _ROCK.body_center(target)
-	FxBus.broadcast("wrath_explosion1", center)
+	FxBus.broadcast_beam(LIGHTNING_BEAM, _lightning_origin(), _ROCK.body_center(target), target)
+
+
+## sacengine updateLightningCasting (state.d:16322-16341): the bolt starts 0.5 above the top of the
+## wizard's hitbox and 0.75 ahead of its front. Presentation only.
+func _lightning_origin() -> Vector3:
+	var info := BodyLibrary.info(str(_wizard.get("model")))
+	var at := _wizard.global_position + Vector3.UP * (float(info.get("height", 1.8)) + 0.5)
+	if _wizard.has_method("facing_flat"):
+		at += (_wizard.call("facing_flat") as Vector3) * (float(info.get("reach", 0.5)) + 0.75)
+	return at
 
 
 ## The spell of the book by tag, from either tab, or null.

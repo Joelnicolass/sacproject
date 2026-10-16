@@ -685,6 +685,13 @@
   {
    "call": {
     "harness": "pt88_watch",
+    "method": "far_list",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt88_watch",
     "method": "track",
     "args": [
      false
@@ -1211,6 +1218,13 @@
    "call": {
     "harness": "pt88_watch",
     "method": "track_goal",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt88_watch",
+    "method": "far_list",
     "args": []
    }
   },

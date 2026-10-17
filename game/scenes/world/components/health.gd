@@ -87,17 +87,22 @@ func is_full() -> bool:
 
 ## A hit whose caller already applied the body's damage_factor and resistance (melee, rituals). The states the body is
 ## in still scale it (_state_factor, REVIEW-F139 N5).
-func damage(amount: float, from_slot: int = 0) -> void:
+## F164: returns the damage taken (capped at the health left, like damage_typed); 0 when nothing reached the body or a
+## deflector took it. LifeDrain.feed reads it; callers that ignore it do not change.
+func damage(amount: float, from_slot: int = 0) -> float:
 	if not _has_authority() or amount <= 0.0 or is_dead() or not _can_be_damaged():
-		return
+		return 0.0
 	## A caller that does not say the kind (melee, rituals) is asked as melee.
 	if not is_nan(_deflect(amount, MELEE, from_slot)):
-		return
+		return 0.0
 	## Before F139 this path did not look at the side; with no MatchState it still does not.
 	var side := _side_factor(from_slot, false, 1.0)
 	if side <= 0.0:
-		return
-	_hit(amount * side * _state_factor() * _passive_factor(), from_slot)
+		return 0.0
+	var scaled := amount * side * _state_factor() * _passive_factor()
+	var taken := minf(current, scaled)
+	_hit(scaled, from_slot)
+	return taken
 
 
 func _hit(amount: float, from_slot: int) -> void:

@@ -1,3 +1,4 @@
+class_name ManaPool
 extends Node
 
 ## Mana of a body. No passive regeneration: sources (manafount, altar) call add().
@@ -49,6 +50,16 @@ func add(amount: float, source: StringName = &"") -> void:
 	given.emit(amount)
 	fed.emit(amount, source)
 
+
+
+## sacengine drainMana (state.d:8822-8825): mana − amount, never under 0. Poison does not block it (F123: the
+## Tickferno's heat ray). Returns what it took.
+func drain(amount: float) -> float:
+	if not _has_authority() or amount <= 0.0:
+		return 0.0
+	var before := current
+	current = maxf(0.0, current - amount)
+	return before - current
 
 func _has_authority() -> bool:
 	return not MpKit.is_networked() or MpKit.is_server()

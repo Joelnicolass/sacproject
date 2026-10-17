@@ -1482,3 +1482,30 @@ Deuda:
 - **Accesos sin tipo** en `PoisonImpact`.
 - **`f116` y `f117`:** se corren en la pasada `all` del cierre del RFC.
 - **Encuadres:** el pasto alto tapa los cuerpos en las tomas rasantes.
+
+### F123 — Disparos de fuego (RFC-030, corte 030l)
+
+**Piezas:**
+- **`Burning`** (extiende `DamageOverTime`) es su propio dueño: un fuego no suma con otros. Cuelga del cuerpo y hace `lifetime+1` actualizaciones de `damage/lifetime`, más el drenaje de maná.
+- **`BurnImpact`** tiene tres variantes:
+  - `heat_ray_impact` (Tickferno `sfba`): drena el 0,5 del maná.
+  - `rocket_impact` (Pyromaniac `lffa`): `pierce_shield`.
+  - `bombard_impact` (Bombard `cfba`): `SplashImpact` más un fuego visual de 60 ticks.
+- **`Health.damage_typed(..., pierce_shield)`** saltea `damage_factor` y `_state_factor`, que son solo escudos; queda documentado en `affliction_type.gd`.
+- **`ManaPool.drain()`.**
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-030l.md`). El playtest falló en lo visual: el fuego salía blanco sobre la nieve y la Bombard no mostraba explosión. Se corrigió en una ronda.
+- **Tickferno:** 216,9 en 61 actualizaciones; el maná del blanco queda en 49,17.
+- **Pyromaniac:** 866,9 en 301, sin daño directo.
+- **Bombard:** 517,5 / 386 / 354.
+- **Vuelo:** sfba 49, lffa 51 y cfba 32 ticks.
+- **Determinismo:** `f123` da `d7db648e` en fixed, stress y window. `quick` PASS y las líneas base no cambian. `rules_suite` PASS.
+- **Look:**
+  - `fire` usa un atlas con alfa derivada del brillo (`firy_a`) y mezcla normal. En la caja del cuerpo da R>G>B con luminancia 0,61 (Druid) y 0,54 (Trogg), y la barra se lee (`agent/out/pt123/k1`, `k5`).
+  - Bombard: `bombard_fire`, 60 partículas en 6 m (`k2`).
+
+Deuda:
+- Sin incendio de edificios ni `DamageMod.ignite` (030r).
+- El rayo y el humo del cohete usan visuales de reserva.
+- No hay fuego visual sobre un cuerpo que acaba de morir (M3).
+- El carril de la Bombard está a 25 m: a 60 m hay un hueco del mapa.

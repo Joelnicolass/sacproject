@@ -20,6 +20,8 @@ extends Resource
 ## so the rock's ×0.05 does not stack and the end can knock it down. The body reads it (UnitBody, on held_changed).
 @export var breaks_special_modes := false
 ## Multiplies every hit the body takes while it lasts (petrified ×0.2, state.d:8965). Stunned: 1.
+## Only for shields (dealDamage's `!peirceShield` block, state.d:8962-8969): a pierce_shield hit (the Pyromaniac's fire,
+## F123) skips it in Health. A state whose factor is not a shield needs its own field, not this one.
 @export var damage_factor := 1.0
 ## Refuses the crowd control that asks ccProtected (petrify, state.d:11631-11640).
 @export var cc_protects := false

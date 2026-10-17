@@ -47,6 +47,8 @@ ATLASES = {
     "stem": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
     "pois": ("main.wad", "MAIN.WAD!/bits.FLDR"),
     "prbw": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
+    # Fire on a burning body and the flame of a fire shot (RFC-030l): sacobject.d:1413-1424.
+    "firy": ("main.wad", "MAIN.WAD!/bits.FLDR"),
 }
 
 # sacobject.d: width/height, energy, delay, gravity per ParticleType.
@@ -81,6 +83,10 @@ PARTICLES = {
     "steam": dict(txtr="stem", n_u=4, n_v=4, width=2.0, height=2.0, energy=0.25, delay=1, gravity=False, lifetime_frames=63),
     "poison": dict(txtr="pois", n_u=4, n_v=4, width=1.0, height=1.0, energy=1.0, delay=2, gravity=False, lifetime_frames=127),
     "rainbow": dict(txtr="prbw", n_u=4, n_v=4, width=1.0, height=1.0, energy=5.0, delay=2, gravity=True, lifetime_frames=63),
+    # Fire (RFC-030l): firy 4x4, 1x1 m, energy 8, delay 2 (sacobject.d:1419-1424, 1793); lifetime up to numFrames
+    # (spawnFireParticles, state.d:15093-15110). The original adds it (energy 8); over the snow that only reaches white, so
+    # the port draws firy_a (the same glow as a straight-alpha overlay, glow_to_alpha) with blend_mix and energy 1.
+    "fire": dict(txtr="firy_a", n_u=4, n_v=4, width=1.0, height=1.0, energy=1.0, delay=2, gravity=False, lifetime_frames=63),
     "red_vortex_droplet": dict(txtr="vtx2", n_u=4, n_v=4, width=1.0, height=1.0, energy=3.0, delay=2, gravity=False, lifetime_frames=64),
 }
 
@@ -119,6 +125,23 @@ def index_folders(wad: Path) -> dict:
     return files
 
 
+def glow_to_alpha(rgba: bytes, gain: float) -> bytes:
+    """An additive glow on black as a straight-alpha overlay (RFC-030l): the hue at full brightness, alpha = brightness · gain.
+    Drawn with blend_mix it keeps its color over a bright ground (snow), where adding light can only reach white."""
+    out = bytearray(len(rgba))
+    for i in range(0, len(rgba), 4):
+        r, g, b = rgba[i], rgba[i + 1], rgba[i + 2]
+        peak = max(r, g, b)
+        if peak == 0:
+            continue
+        out[i : i + 4] = bytes((r * 255 // peak, g * 255 // peak, b * 255 // peak, min(255, int(peak * gain))))
+    return bytes(out)
+
+
+# Atlases also written as a straight-alpha overlay: tag -> (png name, gain).
+OVERLAYS = {"firy": ("firy_a", 3.0)}
+
+
 def export_atlas(files: dict, folder: str, tag: str, dest: Path) -> tuple[int, int] | None:
     raw = files.get((folder, tag, "TXTR"))
     if raw is None:
@@ -132,6 +155,9 @@ def export_atlas(files: dict, folder: str, tag: str, dest: Path) -> tuple[int, i
         palette = pal[8:]
     width, height, rgba = decode_txtr(raw, palette)
     write_png(dest, width, height, rgba)
+    if tag in OVERLAYS:
+        name, gain = OVERLAYS[tag]
+        write_png(dest.with_name(f"{name}.png"), width, height, glow_to_alpha(rgba, gain))
     return width, height
 
 
@@ -147,6 +173,8 @@ def main() -> None:
         print("atlas", tag, wad_name, folder, size)
         if size:
             atlases[tag] = f"res://cache/look/fx/{tag}.png"
+            if tag in OVERLAYS:
+                atlases[OVERLAYS[tag][0]] = f"res://cache/look/fx/{OVERLAYS[tag][0]}.png"
 
     catalog = {}
     for name, p in PARTICLES.items():

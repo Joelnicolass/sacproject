@@ -711,6 +711,65 @@ agent/run_determinism.sh                       M  caso f121 (0,5 min)
 
 **Escena de prueba:** `res://debug/f121_fire_shots.tscn`. **Criterio:** forma de vuelo y daño de cada uno contra el original.
 
+**Plan (developer de F123, 2026-10-17):** el del tech lead en `rfcs/plans/030k-030l-plan.md` §030l, con estas precisiones:
+- `Burning` (`scenes/world/units/burning.gd`, `extends DamageOverTime`) es un `Fire` de sacengine.
+  - `Burning.ignite(...)` hace de `setAblaze` / `setAblazeWithManaDrain`: `damage/lifetime` por actualización, `lifetime + 1` actualizaciones (lo cuenta la base) y `mana_drain/lifetime` con `ManaPool.drain`.
+  - Las partículas `fire` (FxBus) salen solo sobre criaturas y magos, aunque el fuego no haga daño.
+  - Un fuego no suma nada con otros (no hay agregados como en `Poisoning`), así que cada `Burning` es su propio dueño: cuelga del cuerpo que quema, avanza solo en `_physics_process` y se libera al terminar.
+- `BurnImpact` (`impacts/burn_impact.gd`) tiene knobs de monto (del disparo o ninguno), duración (la del SPEL o fija), `kind`, `pierce_shield`, fracción de maná y radio de salpicadura. Las variantes son escenas:
+  - `heat_ray_impact.tscn`: sfba, drena 0,5 del maná máximo.
+  - `rocket_impact.tscn`: lffa, con `pierce_shield`.
+  - `bombard_impact.tscn`: cfba, `SplashImpact` más un `BurnImpact` visual de 60 cuadros sobre el tocado y el radio.
+- `Health.damage_typed(..., pierce_shield)`: con `peirceShield` no se aplican `damage_factor` (Rockform, Life Shield) ni `_state_factor()` (petrificado). `DamageOverTime.pierce_shield` lo pasa.
+- `ManaPool` (ahora con `class_name`) tiene `drain(amount)`: baja sin pasar de 0 y el veneno no la bloquea.
+- `data/shots/sfba|lffa|cfba.tres`.
+- `data/fx/fire.tres`: atlas `firy` 4×4, energía 8, delay 2, agregado a `tools/export_particles.py`.
+
+**Resultado (developer de F123, 2026-10-17):** `debug/f123_fire_shots.tscn` (caso `f123` del banco), semilla 7, comparado con `agent/tools/f123_expect.py`:
+- **C1 Tickferno:** `fuego Druid1 total 216.9 en 61 actualizaciones … maná -50.83 (queda 49.17)`.
+- **C2 Pyromaniac:** `fuego Trogg1 total 866.9 en 301 actualizaciones`, sin daño directo.
+- **C3 Bombard:** el tocado queda con 282,5 de vida (517,5 de daño). Los otros dos Druids, a 2,54 m y 3,16 m de la caja, reciben 386 y 354, que es `575·(1−d/10)·0,9`. Los tres tienen `fuego … total 0.0 en 61 actualizaciones`.
+- **C4 Vuelo:**
+  - `vuelo sfba 39.20 m, 49.0 cuadros a 48 m/s`, contra 50 ±2 esperados;
+  - `vuelo lffa 51.00 m, 51.0 cuadros a 60 m/s`, contra 50 ±2 esperados;
+  - `cfba` ya era balística, con g 30 (`RangedAttack.BALLISTIC`).
+- **C5 Determinismo:**
+  - `f123` da d7db648e en fixed, stress y window, y entra en `quick` y en `det_baseline.txt`;
+  - `quick` PASS, con s7, f139, s1_quick, f148, f121 y f122 iguales a la línea base (ninguno trae estas criaturas);
+  - `rules_suite` PASS.
+- **Ventana** (`agent/flows/pt123_play.json`, capturas en `agent/out/pt123/`): se ven la estela del rayo de calor, el fuego sobre el Trogg y las llamas de la Bombard sobre los Druids.
+
+*Desvíos del plan:*
+- **Carril C a 25 m:** a 60 m, hacia +x y hacia −x desde (1270, 1470), los tres Druids caían al vacío. Las demás distancias relativas (3 m entre Druids) se mantienen.
+- **Carriles en z +80, +140 y +200:** se evita la roca `bld3`.
+- `Burning` es su propio dueño, sin un nodo agregador en `unit.tscn`.
+
+*Divergencias declaradas:*
+- Las del plan: no hay incendio de edificios (`igniteBuilding`) ni `DamageMod.ignite` (030r).
+- El rayo y el humo del cohete usan visuales de reserva: la estela del rayo es una ristra de `fire` y la del cohete es `steam`.
+- Las partículas de fuego salen como una ráfaga de 30 cada 10 ticks, no 3 por cuadro.
+- No hay lista global de fuegos: cada `Burning` avanza en el orden del árbol. sacengine los saca con swap-remove.
+- `pierce_shield` no se ejercita en la escena (el Trogg no tiene escudo); se verifica en la review.
+
+**Corrección (developer de F123, 2026-10-17; review APPROVE con menores, playtest visual FAIL):**
+- **V1, fuego blanco:**
+  - El original suma `firy` con energía 8. Sobre la nieve, sumar luz solo puede llegar al blanco.
+  - Por eso `tools/export_particles.py` escribe además `firy_a.png`, el mismo brillo como overlay de alfa recta (`glow_to_alpha`: el tono a pleno, y alfa = brillo·3), con un promedio de color de (254, 171, 100).
+  - `fire.tres` pasa a `blend_mix` con energía 1 y `alpha_max` 0,85. También es más chica y lenta: escala de 0,6 a 0,9, velocidad de 0,3 a 1,2 m/s y vida de 0,8 s.
+  - `Burning` la emite a `fire_height_m` (0,8 m, knob de `BurnImpact`), por debajo de la barra de vida.
+  - Medición en la caja del cuerpo, proyectada por `pt123_watch`:
+    - `k1_druid1_burning.png`: R 0,674 / G 0,598 / B 0,506, con luminancia 0,607;
+    - `k5_trogg_burning.png`: R 0,595 / G 0,531 / B 0,495, con luminancia 0,542;
+    - antes del fuego (`k0`), la caja daba 0,789 y gris.
+  - La barra se lee en las dos capturas.
+- **V2, explosión de la Bombard:** sacengine lanza 80 partículas `fire`, de escala 2 a 10, sobre el disco `effectRange` y subiendo (`bombardProjectileExplosion`, state.d:24529-24541). Se agregó `data/fx/bombard_fire.tres` (60 partículas, escala 2 a 5, radio 6 m, el mismo atlas) y es el `impact_fx` de `cfba.tres`. Se ve en `k2_bombard_explosion.png`.
+- **M1:** se sacó `RangedShot.traveled()`. El vuelo lo mide `pt123_watch`, desde el tick en que aparece el disparo hasta el tick en que se va: lffa 51, sfba 49 y cfba 32 ticks.
+- **M2:** `AfflictionType.damage_factor` queda documentado como de escudos solamente, porque `pierce_shield` lo saltea.
+- **M4:** `ManaPool` tipado en `BurnImpact`.
+- **Nit:** se reescribió el comentario de `DamageOverTime` (el dueño de las dosis, o la dosis misma si no hay nada que sumar).
+- **M3, declarado:** `Burning.ignite` no pone el fuego visual sobre un cuerpo que acaba de morir; sacengine sí, porque `updateFire` solo mira el tipo.
+- `f123` sigue en d7db648e en fixed: el look no es simulación.
+
 ### 030m — F124 Rayos y armas (Gnome, Warmonger, Styx)
 
 **Árbol**

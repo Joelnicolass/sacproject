@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/units/impacts/burn_impact.gd" id="1_burn"]
+
+[node name="HeatRayImpact" type="Node"]
+editor_description = "Rayo de calor del Tickferno (sfba, updateTickfernoProjectile, state.d:23797-23810): criatura o mago → fuego de amount en duración·60 cuadros (ranged directo) que además drena la mitad de su maná máximo; edificio → el mismo fuego sin drenaje; suelo → nada."
+script = ExtResource("1_burn")
+mana_drain_fraction = 0.5

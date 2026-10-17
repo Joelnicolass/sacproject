@@ -95,7 +95,9 @@ func _hit(amount: float, from_slot: int) -> void:
 ## (poison, state.d:9415-9419) takes ×1 then. A dead body takes nothing (canDamage).
 ## Melee callers still apply sacengine's extra 0.4 themselves (melee_attack.gd).
 ## Returns the damage taken.
-func damage_typed(amount: float, kind: StringName, from_slot: int = 0, ignore_friendly := false) -> float:
+## `pierce_shield` (sacengine DamageMod.peirceShield, state.d:8962-8969): the body's shields and states (damage_factor:
+## Rockform, Life Shield; _state_factor: petrified) do not scale it. The Pyromaniac's fire (F123).
+func damage_typed(amount: float, kind: StringName, from_slot: int = 0, ignore_friendly := false, pierce_shield := false) -> float:
 	if not _has_authority() or amount <= 0.0 or is_dead() or not _can_be_damaged():
 		return 0.0
 	var passed := _deflect(amount, kind, from_slot)
@@ -105,7 +107,8 @@ func damage_typed(amount: float, kind: StringName, from_slot: int = 0, ignore_fr
 	var side := _side_factor(from_slot, ignore_friendly, 0.0)
 	if side > 0.0:
 		var factor := float(kind_factors.get(kind, 1.0))
-		taken = minf(current, amount * side * resistance(kind) * maxf(0.0, damage_factor) * maxf(0.0, factor) * _state_factor() * _passive_factor())
+		var shields := 1.0 if pierce_shield else maxf(0.0, damage_factor) * _state_factor()
+		taken = minf(current, amount * side * resistance(kind) * maxf(0.0, factor) * shields * _passive_factor())
 	if taken > 0.0:
 		_hit(taken, from_slot)
 	hurt.emit(taken, kind, from_slot)

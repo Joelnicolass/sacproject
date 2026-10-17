@@ -1425,3 +1425,32 @@ Deuda:
 - Los edificios no absorben las gotas.
 - La distancia se mide al origen y no a la hitbox.
 - Fuera del mapa, el tope es de 600 ticks.
+
+### F121 — Empuje, vórtice y catapulta (RFC-030, corte 030j)
+
+**Piezas:**
+- **`Tumbling`:** estado de `Afflictions` (`data/afflictions/tumbling.tres`). Mueve el cuerpo con `Afflictions.steer`: gravedad 9,81 y amortiguación 0,99/0,998. Aterriza en la tierra o sobre lo que toque (`is_on_floor`). Daño de caída `max(0, −vz−3)·20` y después `Stunned.fall_down`, (hitFloor+getUp)·2.
+- **Squall (`amba`):** `PushImpact` + `Pushback`, 22,5 m/s durante 40 ticks.
+- **Vortick (`cita`):** `DirectImpact` + `Vortex`, 2 s; arroja durante 45 ticks y aplica el campo hasta el tick 90.
+- **Flurry (`caba`):** `SplashImpact` + `Implosion`, 20 m a 0 en 1,5 s.
+- Los efectos que duran varios ticks corren solo en el servidor, bajo `Shots`, con prioridad de física −1.
+
+**Cierre (2026-10-17).** La review pidió cambios (`reviews/REVIEW-RFC-030j.md`): B1, el aterrizaje sobre algo que no es tierra, y B2, el criterio de la implosión. Los dos se corrigieron en una ronda.
+- **Squall:** 15,00 m en 40 ticks.
+- **Vortick, Druid:** ápice 6,91 m (réplica 6,91), aterriza a 6,34 m (réplica 6,31), caída 162. Aturdido 286 ticks; se levanta y vuelve a pelear.
+- **Flurry:** el Druid lejano termina a 1,30 m del centro.
+- **Determinismo:** `f121` da `fcefa9a3` en fixed, stress y window. `quick`: s7, s1_quick, f148 y f139 (con 030k-a aparcado) iguales a la línea base.
+- **Playtest con ventana** (`agent/out/pt121/`, RSS 688 MB): 4 PASS. El punto 3 falla en lo visual: el Druid aterriza sobre la caja de colisión de la choza, 17 m sobre la tierra y al lado del cono. La causa es la colisión preexistente de `MapBuilding`, que es una caja; F121 aterriza bien sobre lo que colisiona.
+
+Deuda:
+- **Edificios:** la colisión de `MapBuilding` es la caja del modelo y no su forma; los cuerpos quedan parados en el aire junto a techos cónicos.
+- **Pose:** dos escritores de `Tilt.rotation:z` (Stunned y Tumbling, m1). El tumbo usa un Tween de reserva, sin clips `tumble`/`hitFloor`; se resuelve con el sistema de animaciones.
+- **Rutas por string** en `BodyNudge` y `Tumbling` (m5).
+- **Divergencias declaradas en el RFC:**
+  - las cápsulas no se atraviesan (implosión y choque en el aire);
+  - un petrificado no se puede arrojar;
+  - Rockform aterriza con `fall_down`;
+  - `fasterStandupTimes` de los magos;
+  - `BodySeparation` desvía el tumbo.
+- **Estado de caída:** `Stunned` deduce la caída de `previous`; un cliente que entra tarde cuenta knock.
+- **Sin probar:** el mago arrojado en partida, `net_local` y las partículas del vórtice y la implosión.

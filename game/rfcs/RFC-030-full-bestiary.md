@@ -575,7 +575,78 @@ Declarado: el Basilisk deja de hacer los 150 de daño directo que hace hoy.
 - N: `impacts/push_impact.tscn` y `impacts/vortex_impact.tscn`.
 - M: `data/shots/amba.tres`, `cita.tres`, `caba.tres`.
 
-**Escena de prueba:** `res://debug/f119_push.tscn`. **Criterio:** la posición del blanco cambia lo medido contra sacengine (23840, 23974, 24602).
+**Escena de prueba:** `res://debug/f121_push.tscn`. **Criterio:** la posición del blanco cambia lo medido contra sacengine (23840, 23974, 24602).
+
+**Plan (developer de F121, 2026-10-17)**
+
+*Sacengine:*
+- **Squall `amba`** (`updateSquallProjectile`, `state.d:23974-24008`): disparo recto a 60 m/s, caja 0,45 m. Si toca una criatura (o un mago), primero `pushback` y después 520 de daño directo a distancia; un edificio solo recibe el daño; el suelo y el fin del alcance no hacen nada. `Pushback` (`4768-4776`, `24017-24031`) dura 2/3 s: en cada uno de 40 ticks llama a `push(22,5·dirección)`, 15 m en total. `push` (`8604-8612`) desliza sobre la tierra: si el paso sale de la tierra no se mueve, y la altura es la del suelo. **No aturde ni arroja.** Si el cuerpo ya está en tumbo, le suma la velocidad una vez y termina.
+- **Vortick `cita`** (`updateVortickProjectile`, `23840-23879`): recto a 48 m/s, caja 0,45 m. En una criatura, 150 de daño directo a distancia; en la criatura, en el suelo o al agotar el alcance (110 m), `spawnVortex` en la posición del cuadro anterior. `VortexEffect` (`4736-4751`, `23922-23960`): dura 2 s, radio = `effectRange` (2 m), alto 4 m. Caja: ±√2·radio en el plano, de −1 m a +4 m. Mientras `frame < 90` toca a todo cuerpo móvil, sin filtro de bando: si `frame < 45` y no está en tumbo, `catapult(dirección tangente·1,5 m/s, +2,5 m/s)`; si está en tumbo, le suma el campo `(5,5·(−y−x), 5,5·(x−y), 5,5)` m/s² relativo al centro (solo debajo de 4 m), con `vz ≥ 1` y sin gravedad ese tick (`antiGravityTime`). Se actualiza antes que las criaturas.
+- **Flurry `caba`** (`flurryProjectileImplosion`, `24577-24598`; `updateFlurryImplosion`, `24619-24672`): bola con gravedad (30 m/s²) a 42 m/s, caja 1,75 m. Al tocar: 400 a distancia con resistencia de salpicadura al tocado, salpicadura en 10 m al resto, y una implosión que encoge de 20 m a 0 en 1,5 s. Cada tick, a cada cuerpo móvil dentro del cubo ±escala y a ≤ 20 m del centro: `speed = √(max(10,d)·max(10,escala))/20·15/60` m por tick hacia el centro. Si el paso queda a ≤ 0,125 m del suelo, se desliza (como `push`). Si no, `catapult(2·speed·dir)`. En tumbo, `position += 2·speed·dir`.
+- **Catapulta y tumbo** (`catapult`, `8579-8599`; `14781-14797`; `14175-14212`): no se arroja a un volador en el aire ni a un cuerpo muerto, en `landing` o convocándose. El modo pasa a `stunned` y el movimiento a `tumbling`, con `fallingVelocity = v` (o `+= v` si ya está en tumbo). En el tumbo, cada tick: si está en el suelo y baja, `vz = 0`; si no, `vz −= 9,81/60` (salvo `antiGravityTime`). Después, `vxy ·= 0,99`, `vz ·= 0,998` y `pos += v/60`. Aterriza cuando `vz ≤ 0` y `pos.z + vz/60 ≤ suelo`. Ahí sufre `dealFallDamage = max(0, −vz − 3)·20` (sin resistencia ni bando, `9429-9438`) y queda aturdido `hitFloor + getUp` cuadros ×2 (sin tocar el enfriamiento del aturdido). Un híbrido que puede volar deja el tumbo en el ápice y vuelve a volar.
+- **Magos:** sí. El vórtice y la implosión tocan a todo `movingObject` y `pushback` acepta cualquier blanco de tipo criatura, magos incluidos.
+
+*Árbol (N/M):*
+```text
+tools/export_stats.py                          M  STUN_ANIM_SLOTS y WIZARD_STUN_ANIM_SLOTS + hit_floor (slot 8), solo el largo
+scenes/data/affliction_type.gd                 —  sin cambios
+data/afflictions/tumbling.tres                 N  id tumbling, bit 2, holds, cancels [stunned]
+scenes/world/units/afflictions/affliction.gd   M  steer(velocity, delta) por defecto = la misma
+scenes/world/units/afflictions/afflictions.gd  M  steer() (el estado que mueve al cuerpo), previous (máscara antes del último cambio)
+scenes/world/units/afflictions/tumbling.gd     N  Tumbling: catapult(v, side), add_velocity, shift, steer (balística), aterrizaje → daño de caída + Stunned.fall_down
+scenes/world/units/afflictions/stunned.gd      M  fall_down(): hit_floor + get_up, sin enfriamiento; el cliente lo deduce de `previous`
+scenes/world/units/body_nudge.gd               N  BodyNudge (static): slide (push de sacengine), center, box, ground
+scenes/world/units/impacts/direct_impact.gd    N  DirectImpact: el monto entero, directo a distancia, al tocado
+scenes/world/units/impacts/pushback.gd         N  Pushback (Node, hijo del cuerpo empujado, prioridad −1): 22,5 m/s × 40 ticks
+scenes/world/units/impacts/push_impact.gd/.tscn N  Squall: PushImpact (Pushback) + DirectImpact
+scenes/world/units/impacts/vortex.gd/.tscn     N  Vortex (Node3D en el contenedor de disparos, prioridad −1): updateVortexEffect
+scenes/world/units/impacts/vortex_impact.gd/.tscn N  Vortick: DirectImpact + VortexImpact (Vortex en la posición del tick anterior)
+scenes/world/units/impacts/implosion.gd/.tscn  N  Implosion (Node3D, prioridad −1): updateFlurryImplosion
+scenes/world/units/impacts/implosion_impact.gd/.tscn N  Flurry: SplashImpact (directo + 10 m) + ImplosionImpact
+data/shots/amba.tres, cita.tres, caba.tres     N  ShotLook (0,45 / 0,45 / 1,75 m; cita burst_at_range_end)
+scenes/world/units/unit.tscn                   M  Afflictions/Tumbling; Stunned.fall_type
+scenes/world/wizard/wizard_body.tscn, .gd      M  Afflictions/Tumbling; una línea: velocity = _afflictions.steer(...)
+scenes/world/unit_body.gd                      M  +1 steer, −1 (else/if aplanado): neto 0
+debug/f121_push.tscn + rules/f121_push.tres    N  carriles A (Squall → Druid), B (Vortick → Druid trabado con un Trogg), C (Flurry → 3 Druids)
+agent/run_determinism.sh                       M  caso f121 (0,5 min)
+```
+
+*Criterios (log con números):*
+1. **Squall:** el Druid se desliza `15·|dir_xz|` m (±0,3 m) en 40 ticks y no cambia de altura más que el relieve. Log `empuje <cuerpo> … m en 40 ticks`.
+2. **Vortick:** el blanco sale arrojado. El ápice (sobre el suelo de partida) y el desplazamiento al aterrizar coinciden ±10 % con la réplica de sacengine (`agent/tools/f121_expect.py`) desde el mismo punto relativo al centro del vórtice. Log `tumbo <cuerpo> desde …`, `ápice … m`, `aterriza … a … m, vz …, caída …`.
+3. **Aterriza y vuelve a pelear:** después de `aturdido tras caer … (hit_floor+get_up)·2` llega «se levanta» a esos ticks (±2) y el Druid y el Trogg vuelven a pegarse.
+4. **Flurry:** los Druids van hacia el centro de la implosión hasta tocar las cápsulas de los otros. El Druid lejano (12,42 m) recorre ±10 % del tirón de la réplica y queda a ≤ 1,3 m del centro (réplica sin choques: 0,04 m).
+6. **Aterrizar sobre algo (REVIEW-F121 B1):** un cuerpo arrojado que cae sobre un edificio u otra cápsula aterriza por contacto de suelo (`is_on_floor` después de `move_and_slide`), con el mismo daño de caída y el mismo `fall_down`. Carril D: el Druid sobre la choza `Bld068_jhut` aterriza «sobre Bld068_jhut» y se levanta 286 ticks después.
+5. **Determinismo:** `quick` PASS y `f121` igual en los 3 modos. Los digests de la línea base no cambian (las tres son de nivel ≥ 2).
+
+*Divergencias declaradas:*
+- Un híbrido arrojado deja el tumbo en el ápice, pero no vuelve a volar: cae con la gravedad del cuerpo.
+- Sobre el borde de un agujero, `GroundGuard.hold_on_ground` puede frenar el tumbo.
+- La caja del vórtice usa la cápsula del cuerpo como caja.
+- **Cápsulas (B2):** en el port, las cápsulas de `CharacterBody3D` no se atraviesan. En sacengine, la implosión mueve `position` sin `positionAfterCollision` y los cuerpos se solapan en el centro. Por eso el tirón de la implosión termina donde se tocan las cápsulas (≈ 1,1-1,3 m con 4 Druids).
+- **`BodySeparation` en el tumbo (m4):** `BodySeparation.resolve` también corrige la velocidad del cuerpo en tumbo. Es el equivalente de `positionAfterCollision`, pero con otro reparto. Dos cuerpos arrojados juntos se separan en el aire (el Trogg del carril B cae a 15,98 m contra 12,88 de la réplica de un cuerpo solo). Un cuerpo que cae sobre otra cápsula se desliza al costado.
+- **Petrificado (m3):** no se lo puede arrojar, porque `tumbling` no cancela `petrified`. En sacengine, `catapult` lo acepta (modo `stunned`).
+- **Rockform (m3):** un Earthfling en Rockform arrojado aterriza con `fall_down` (hitFloor + getUp) y sigue en Rockform. En sacengine sigue en `rockForm` y no reproduce hitFloor.
+- **`fasterStandupTimes` (m3):** `WIZARD_STUN_ANIM_SLOTS` exporta `hit_floor` (slot 8) sin el arreglo de `sacobject.d:844-874`. Para 7 magos (yogo, seerix, acheron, buta, charlotte, shakti, marduk), sacengine usa knocked2Floor en lugar de hitFloor, así que acá yacen otro largo.
+- **Altura sobre edificios:** `BodyNudge.floor_y` toma la altura propia del cuerpo cuando está apoyado sobre algo por encima de la tierra (sacengine `getHeight` cuenta los techos). Así, un empuje o un tirón sobre un techo no lo baja a la tierra.
+
+*Deuda (no se arregla en F121):*
+- **m1:** hay dos escritores de `Tilt.rotation:z` (`Stunned` y `Tumbling`). Hace falta un único dueño de la pose derivado de `clip_role`, y va con el sistema de animaciones.
+- **m5:** quedan rutas por string (`"Afflictions/Tumbling"`, `"Collision"`, `"Flight"`) en `BodyNudge` y `Tumbling` en lugar de sockets `@export`.
+- **`previous`:** un cliente que entra tarde ve knock en vez de hitFloor (solo cosmético). Se arregla con un tipo o bit propio para «caído».
+
+**Resultado (developer de F121, 2026-10-17)** — `debug/f121_push.tscn`, semilla 7, comparado con `agent/tools/f121_expect.py`:
+- **Escena real:** carril A (z −80) Squall → Druid pacifista a 20 m. Carril B (z +80) Vortick → Druid a 25 m trabado con un Trogg propio a 26,5 m. Carril C (z +80, x negativo) Flurry en x −10 → 3 Druids pacifistas en x −40 y uno en x −52 (z +200 tiene una ladera de 12 m y x −90 en z −80 es un agujero).
+- **C1 Squall:** 15,00 m en 40 ticks, plano 14,94 m = 15·|dir_xz| 14,94.
+- **C2 Vortick (Druid):** ápice 6,91 m (réplica 6,91), aterriza a 6,34 m (6,31), vz −11,12 (−10,98), caída 162 (160); 170 ticks. **Trogg:** ápice 6,84 (6,85) pero 15,98 m contra 12,88 (124 %): los dos cuerpos chocan en el aire (la réplica es de un cuerpo solo). Con el Trogg solo, en la misma escena: ápice 7,01 / 7,01 y 5,72 / 5,70 m.
+- **C3:** «aturdido tras caer … 286» (Druid: hitFloor 67 + getUp 76) y «se levanta» a los 286 ticks. Después, `struck Trogg1 -> Druid2` desde el tick 622.
+- **C4 Flurry:** el Druid a 12,42 m termina a 1,30 m del centro (réplica 0,04 m). Los cercanos quedan a 1,1-1,3 m: las cápsulas de los cuerpos no se atraviesan en el port, y en sacengine sí (la implosión mueve `position` sin `positionAfterCollision`). **Divergencia nueva**, heredada de la física de los cuerpos.
+- **C5:** `quick` PASS (s7, f139, s1_quick y f148 iguales a la línea base). `f121` da 9fc5b190 en fixed, stress y window, y entra en `quick` y en `det_baseline.txt`. `rules_suite` PASS (con `sim_rng_lint`).
+- **Corrección (REVIEW-F121):**
+  - **C6 (B1):** el Druid del carril D aterriza «sobre Bld068_jhut» (vz −11,13, caída 163). Queda aturdido 286 ticks y se levanta en el 1053.
+  - **m2:** `sweep` en `amba` y `cita`.
+  - **Digest nuevo de `f121`:** fcefa9a3, igual en fixed, stress y window, y actualizado en `det_baseline.txt`.
+  - **`quick`:** s7, s1_quick, f148 y f121 dan OK. `f139` falla (a267c95b contra af04fefb) por la fase 1 de 030k-a (veneno sin cablear) que está en el árbol, no por 030j.
 
 ### 030k — F122 Veneno y congelación a distancia (Necryl, Deadeye, Hellmouth, Silverback)
 

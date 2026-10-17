@@ -19,6 +19,11 @@ func clip_role() -> String:
 	return ""
 
 
+## Server, every tick while it is on: the body's velocity (Afflictions.steer). Default: it does not move the body.
+func steer(velocity: Vector3, _delta: float) -> Vector3:
+	return velocity
+
+
 ## Every peer, when its bit changes: start or stop the look (and the local clock of the clip). Also when Afflictions
 ## ends it on the server (a state that cancels it started, or the body died).
 func _shown(_on: bool) -> void:

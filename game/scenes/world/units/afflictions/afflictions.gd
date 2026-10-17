@@ -27,6 +27,11 @@ signal held_changed(held: bool)
 			_show(was)
 
 
+## The mask as it was before the last change of `shown` (every peer). A state that takes over from another in the same
+## tick reads it (F121: Stunned after a Tumbling that landed lies hitFloor + getUp, not knock + getUp).
+var previous := 0
+
+
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
@@ -98,6 +103,17 @@ func cc_protected() -> bool:
 	return false
 
 
+## Server: the body's velocity for this tick, as the states that are on say (F121: a Tumbling body flies its ballistic
+## path, sacengine CreatureMovement.tumbling). With none, `velocity` as it came. The body calls it once per tick, after
+## its own gravity and before BodySeparation and move_and_slide.
+func steer(velocity: Vector3, delta: float) -> Vector3:
+	if shown == 0:
+		return velocity
+	for affliction in _on():
+		velocity = affliction.steer(velocity, delta)
+	return velocity
+
+
 ## The clip role of the first state that is on and says one; "" when none.
 func clip_role() -> String:
 	if shown == 0:
@@ -149,6 +165,7 @@ func _on() -> Array[Affliction]:
 
 
 func _show(was: int) -> void:
+	previous = was
 	var was_held := false
 	for child in get_children():
 		var affliction := child as Affliction

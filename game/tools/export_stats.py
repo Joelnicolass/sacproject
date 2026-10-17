@@ -49,10 +49,12 @@ FLIGHT_ANIM_SLOTS = {"takeoff": 32, "fly": 33, "land": 34}
 ## (knocked2Floor + getUp)·updateAnimFactor ticks on the ground and flyDamage·updateAnimFactor in the air (state.d:8138-8150,
 ## 14170-14212). Only the timing is exported: the mesh clips would add ~1,6 GB to anim_f37 (5583 frames over the 52 book
 ## creatures), so Stunned falls back to a Tween on Tilt (RFC-030i-a risk). Slot 35 is a peasant's dig: peasants have no fly_damage.
-STUN_ANIM_SLOTS = {"knock": 9, "get_up": 10, "fly_damage": 35}
+STUN_ANIM_SLOTS = {"knock": 9, "get_up": 10, "fly_damage": 35, "hit_floor": 8}
 ## F138 (RFC-030i-c): a wizard walks only, so only knock and get_up. The fasterStandupTimes fix (sacobject.d:844-874)
 ## swaps hitFloor (slot 8) for knocked2Floor on seven wizards; neither slot 9 nor 10 changes, so the stun length doesn't.
-WIZARD_STUN_ANIM_SLOTS = {"knock": 9, "get_up": 10}
+## F121 (RFC-030j): hitFloor (slot 8) too, only its length: a tumbling body that lands plays hitFloor then getUp
+## (state.d:14175-14212). Timing only, like the rest (no mesh clip).
+WIZARD_STUN_ANIM_SLOTS = {"knock": 9, "get_up": 10, "hit_floor": 8}
 ## SKEL event tags (`sxsk.d` translateAnimEvent): attack, shoot.
 ATTACK_EVENT = b"kcta"
 SHOOT_EVENT = b"lrba"

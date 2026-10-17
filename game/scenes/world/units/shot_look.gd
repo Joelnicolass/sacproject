@@ -25,10 +25,10 @@ extends Resource
 ## (scarabProjectileCollisionTarget, state.d:23637-23642). Off: its target or any body not of the shooter's side.
 @export var hits_allies := false
 ## F136: when its box touches nothing this frame, it also checks the segment it flew (lineOfSight in
-## updateScarabProjectile, state.d:23655-23664), so a small fast shot does not pass through a body. Only slba.
+## updateScarabProjectile, state.d:23655-23664), so a small fast shot does not pass through a body. slba; F121: amba and cita too (lineOfSightWithoutSide, 23863, 23992).
 @export var sweep := false
 ## F136: at the end of its range it bursts there (impact included) instead of vanishing (updateScarabProjectile,
-## state.d:23667-23670). Only slba so far.
+## state.d:23667-23670). slba; F121: cita too (its vortex spawns where the range ends, state.d:23866).
 @export var burst_at_range_end := false
 ## F148 (RFC-030 030h3): ShotDropper scene the server (or solo) puts on the shot; every tick of its flight it may
 ## drop a droplet that falls on whoever is below (animateAbominationProjectile, state.d:24441-24452). Only tugt so far.

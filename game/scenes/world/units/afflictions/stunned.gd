@@ -15,6 +15,9 @@ extends Affliction
 ## sacengine updateAnimFactor: a 30 fps clip frame lasts 2 ticks of 60.
 const FRAME_TICKS := 2
 
+## F121: the state whose landing hands over to this one (tumbling.tres). Then it lies hitFloor + getUp, not knock +
+## getUp (state.d:14175-14212); a client tells it from Afflictions.previous. Optional: empty = always knock + getUp.
+@export var fall_type: AfflictionType
 @export var clip_pose: ClipPosePlayer
 @export var tilt: Node3D
 ## Its body_radius lifts the pivot while it lies, as Corpse.lay_down does, so half the body does not sink.
@@ -38,6 +41,8 @@ var _elapsed := 0
 var _knock_ticks := 0
 var _total := 0
 var _airborne := false
+## Lying after a fall (hitFloor + getUp) rather than knocked down.
+var _from_fall := false
 var _tween: Tween
 
 
@@ -51,9 +56,21 @@ func stun_with_cooldown(cooldown_ticks: int) -> bool:
 	if _cooldown > 0 or body == null or not _body_allows(body) or not _afflictions().admit(self):
 		return false
 	_cooldown = cooldown_ticks
+	_from_fall = false
 	_afflictions().mark(self, true)
 	print("aturdido %s durante %d (cuadro %d)" % [str(body.call("display_name")), _total, MatchClock.now()])
 	return true
+
+
+## Server (or solo): a thrown body landed (Tumbling). sacengine keeps the mode stunned and plays hitFloor, then getUp
+## (state.d:14182-14212): no canStun, no cooldown (the one it had keeps running).
+func fall_down() -> void:
+	var body := _body()
+	if body == null:
+		return
+	_from_fall = true
+	_afflictions().mark(self, true)
+	print("aturdido tras caer %s durante %d (hit_floor + get_up) (cuadro %d)" % [str(body.call("display_name")), _total, MatchClock.now()])
 
 
 ## Server (or solo): sacengine damageStun as the end of a petrification calls it (state.d:23732-23739, 8569-8577): the
@@ -70,7 +87,9 @@ func cooldown_ticks() -> int:
 func clip_role() -> String:
 	if _airborne:
 		return "fly_damage"
-	return "knock" if _elapsed < _knock_ticks else "get_up"
+	if _elapsed < _knock_ticks:
+		return "hit_floor" if _from_fall else "knock"
+	return "get_up"
 
 
 ## canStun (state.d:8546-8553), with the port's names: a live, targetable creature (not summoning, held by a doctor,
@@ -95,6 +114,8 @@ func _physics_process(_delta: float) -> void:
 
 func _shown(on: bool) -> void:
 	if on:
+		if not _simulates():
+			_from_fall = fall_type != null and _afflictions().previous & (1 << fall_type.bit) != 0
 		_measure()
 		_elapsed = 0
 		set_physics_process(true)
@@ -108,9 +129,11 @@ func _measure() -> void:
 	var type := _clip_type(body)
 	var clips: Dictionary = type.get("stun_animations") if type else {}
 	_airborne = body != null and body.has_method("is_flying") and bool(body.call("is_flying"))
-	var knock := _frames(clips, "knock")
+	var knock := _frames(clips, "hit_floor" if _from_fall else "knock")
 	var up := _frames(clips, "get_up")
-	if _airborne:
+	if _from_fall:
+		_airborne = false
+	elif _airborne:
 		knock = 0
 		up = _frames(clips, "fly_damage")
 		if up == 0 and type is CreatureType:

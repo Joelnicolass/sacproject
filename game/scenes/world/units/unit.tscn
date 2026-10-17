@@ -1,4 +1,4 @@
-[gd_scene load_steps=44 format=3]
+[gd_scene load_steps=46 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/unit_body.gd" id="1_body"]
 [ext_resource type="Script" path="res://scenes/world/body_visual.gd" id="2_visual"]
@@ -39,6 +39,8 @@
 [ext_resource type="Resource" path="res://data/afflictions/stunned.tres" id="f120_stunned_type"]
 [ext_resource type="Script" path="res://scenes/world/units/afflictions/petrified.gd" id="f137_petrified"]
 [ext_resource type="Resource" path="res://data/afflictions/petrified.tres" id="f137_petrified_type"]
+[ext_resource type="Script" path="res://scenes/world/units/afflictions/tumbling.gd" id="f121_tumbling"]
+[ext_resource type="Resource" path="res://data/afflictions/tumbling.tres" id="f121_tumbling_type"]
 [ext_resource type="Script" path="res://scenes/world/look/stone_look.gd" id="f137_stone_look"]
 [ext_resource type="Shader" path="res://scenes/world/look/stone.gdshader" id="f137_stone_shader"]
 
@@ -152,6 +154,7 @@ health = NodePath("../Health")
 [node name="Stunned" type="Node" parent="Afflictions" node_paths=PackedStringArray("clip_pose", "tilt", "visual")]
 script = ExtResource("f120_stunned")
 type = ExtResource("f120_stunned_type")
+fall_type = ExtResource("f121_tumbling_type")
 clip_pose = NodePath("../../ClipPose")
 tilt = NodePath("../../Tilt")
 visual = NodePath("../../Tilt/Mesh")
@@ -168,6 +171,12 @@ visual = NodePath("../../Tilt/Mesh")
 script = ExtResource("f137_stone_look")
 mesh = NodePath("../../../Tilt/Mesh")
 shader = ExtResource("f137_stone_shader")
+
+[node name="Tumbling" type="Node" parent="Afflictions" node_paths=PackedStringArray("stunned", "tilt")]
+script = ExtResource("f121_tumbling")
+type = ExtResource("f121_tumbling_type")
+stunned = NodePath("../Stunned")
+tilt = NodePath("../../Tilt")
 
 [node name="Orders" type="Node" parent="."]
 script = ExtResource("f27_orders")

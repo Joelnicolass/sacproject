@@ -392,6 +392,7 @@ func _physics_process(delta: float) -> void:
 		velocity.z = 0.0
 	_since_damage += delta
 	_regenerate(delta)
+	velocity = _afflictions.steer(velocity, delta)  ## F121: a thrown wizard (Tumbling) flies its own ballistic path.
 	if is_obstacle() and not _afflictions.immobilized():
 		velocity = BodySeparation.resolve(self, velocity, delta)
 	velocity = GroundGuard.keep_on_ground(self, velocity, delta)

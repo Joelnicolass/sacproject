@@ -3,7 +3,7 @@ extends RefCounted
 
 ## RFC-033: the one place that knows where the original's assets live under res://assets/original/.
 ## Only the importers in tools/ write there; the game only reads. Moving a family is a one-line change here.
-## Consumers migrate one family at a time (033b: textures, via OriginalMaterial).
+## Consumers migrate one family at a time (033b: textures, via OriginalMaterial; 033c: props and sizes, via BodyCatalog).
 
 const ROOT := "res://assets/original/"
 const TEXTURES_DIR := ROOT + "textures/"
@@ -14,6 +14,11 @@ const FX_DIR := ROOT + "fx/"
 const THEMES_DIR := ROOT + "themes/"
 const MAPS_DIR := ROOT + "maps/"
 const DATA_DIR := ROOT + "data/"
+const UI_ICONS_DIR := UI_DIR + "icons/"
+const UI_HUD_DIR := UI_DIR + "hud/"
+const UI_CURSORS_DIR := UI_DIR + "cursors/"
+const UI_XMENU_DIR := UI_DIR + "xmenu/"
+const FX_CATALOG := FX_DIR + "fx.json"
 
 
 ## A model's texture: textures/<model>/<label>.png (label like "001").
@@ -38,6 +43,11 @@ static func model(name: String) -> String:
 	return MODELS_DIR + name + ".glb"
 
 
+## models/sizes.json: {"bodies": {...}, "props": {...}}, the measurements of every body and prop (tools/import_props.py).
+static func sizes() -> String:
+	return MODELS_DIR + "sizes.json"
+
+
 ## family: "icons", "hud", "cursors" or "xmenu".
 static func ui(family: String, name: String) -> String:
 	return UI_DIR + "%s/%s.png" % [family, name]
@@ -48,7 +58,7 @@ static func fx(tag: String) -> String:
 
 
 static func fx_catalog() -> String:
-	return FX_DIR + "fx.json"
+	return FX_CATALOG
 
 
 ## A theme file: themes/<god>/<name>.png (atlas, edge, sky, skyb, skyt, sun, undr).

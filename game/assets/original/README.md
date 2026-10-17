@@ -9,11 +9,11 @@ The paths are owned by `scenes/data/original_assets.gd` (`OriginalAssets`). Noth
 | Folder | What | Importer | Cut |
 |---|---|---|---|
 | `textures/<owner>/<NNN>.png`, `textures/index.json` | One PNG per unique model texture (bodies, buildings, plants), colour key applied to alpha; the index maps model + material label to the PNG (shared ones live under the first model) | `python3 tools/import_textures.py` | 033b |
-| `props/<name>.glb` | Static models (buildings, BLDG components, plants), no materials | `tools/import_props.py` | 033c |
+| `props/<name>.glb` | Static models (buildings, BLDG components, plants): one primitive per material label, a glTF material that only carries the label (the textured one comes from `OriginalMaterial`) | `python3 tools/import_props.py` | 033c |
 | `models/<m>.glb`, `models/index.json` | Animated bodies with skeleton and clips | `tools/export_skeletal.py` | RFC-023 |
-| `models/sizes.json` | Body and prop measurements (the dedicated server uses them without meshes) | `tools/import_props.py` | 033c |
-| `ui/{icons,hud,cursors,xmenu}/` | HUD, icons, cursors, X menu | `tools/import_ui.py` | 033d |
-| `fx/<tag>.png`, `fx/fx.json` | Particle atlases and their catalog | `tools/import_ui.py` | 033d |
+| `models/sizes.json` | `{bodies, props}` measurements copied from `cache/baked/*.json` (the dedicated server uses them without meshes) | `python3 tools/import_props.py` | 033c |
+| `ui/{icons,hud,cursors,xmenu}/` | HUD, icons, cursors, X menu | `python3 tools/import_ui.py` | 033d |
+| `fx/<tag>.png`, `fx/fx.json` | Particle atlases (mipmaps only for the ones the catalog lists) and their catalog; `scri.png` is Divine Sight's eye (4x4 sheet, decoded from charlie.wad) | `python3 tools/import_ui.py` | 033d |
 | `themes/<god>/` | Tileset, sky, sun, `envi.tres` per god | `tools/import_themes.py` | 033e |
 | `maps/high_noon/` | `terrain.res`, `tiles.png`, `light.png`, `ntts.json`, `widgets.json` | `tools/import_map.py` + `tools/import_terrain.gd` | 033f |
 | `data/*.json` | Creatures, spells, abilities, wizards, books, buildings | `tools/export_stats.py --out assets/original/data` | 033g |

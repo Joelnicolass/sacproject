@@ -2088,3 +2088,49 @@ Deuda:
 - Los `baked/bodies` de esos 17 modelos siguen sin chroma hasta re-hornear o RFC-023: el cuerpo quieto y el cuadro de clip se ven distintos.
 - El importador lee de `cache/look`, no de los WAD; se arregla en 033h. No borrar `cache/` antes.
 - Las capturas con partículas no tienen semilla: el criterio «HUD 0 px» no se puede cumplir así.
+
+### F169 — Props y edificios como `.glb` (RFC-033, corte 033c)
+
+**Piezas:**
+- **`tools/import_props.py`:** 117 `.glb` en `assets/original/props/` (1,94 MB, LFS), un primitivo por etiqueta, sin texturas; los materiales salen de `OriginalMaterial`. Escritor glTF compartido en `tools/sac_formats/gltf_writer.py` (lo usa también `export_skeletal.py`).
+- **`assets/original/models/sizes.json`:** medidas de 84 cuerpos y 117 props; el dedicado las lee sin mallas.
+- **`BodyCatalog`:** una malla compartida por modelo de prop; ya no lee `cache/baked/props`.
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-033c.md`).
+- **Paridad geométrica:** 117/117 a 0 mm (posición, uv y normal), con `force_disable_compression=true` en los `.import` (la compresión por defecto metía hasta 27,7 mm).
+- **Banco:** `all` y `quick` iguales a la base en todos los modos (la marca CONTAMINATED es por otros Godot en paralelo; no toca el digest).
+- **Capturas:** dentro del piso, salvo `body_gallery` con 0,18 % de píxeles distintos por malla indexada contra la vieja sin índices (mismos datos). Piso nuevo de `body_gallery`: ~1 700 px.
+
+Deuda:
+- `ensure_tangents=false` en los props; 022g reimporta con tangentes cuando haya normal maps.
+- Para cerrar en 033i hace falta un `all` sin otros Godot en paralelo.
+### F165 — Divine Sight fiel: el ojo (RFC-030, extra)
+
+**Piezas:**
+- **`abilities/divine_sight.gd`:** sin blanco ni preparación (SPEL `eesd` flags 0), así que funciona desde el botón. Lanza el ojo con `ShotSpawner.spawn_scene` (nuevo, replicable).
+- **`divine_sight_eye.gd/.tscn`:** nace 2 m delante, sube 45 ticks a 4 m, vuela recto 500 ticks o fija al enemigo más cercano a 250 m y lo persigue (aceleración 3/tick); vive 45+1800 ticks. Maná 50, enfriamiento 25 s, `effectRange` 75 (sacengine `state.d` 13102-13109, 25159-25214). Solo lo simula el servidor.
+- **`SideVision.update_vision()`:** único dueño de la grilla de visión (256×256 de 10 m). Como en sacengine con la niebla apagada, nadie la consume todavía.
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-F165.md`).
+- **Flow `f165_divine_sight`** desde la UI: 3/3 PASS, 36 asserts por corrida (maná, posición, persecución, visión, enfriamiento, fin).
+- **`f133`** mismo digest (`bfca4703`); `quick` PASS.
+
+Deuda:
+- El ojo es un resplandor provisorio casi invisible; el sprite original `scri` (hoja 4×4, `Bloo.WAD`) se exporta en 033d.
+- Busca blanco cada tick, no por la cola de IA; sin línea de vista.
+
+### F170 — HUD, iconos, cursores y FX como assets (RFC-033, corte 033d)
+
+**Piezas:**
+- **`tools/import_ui.py`:** 270 PNG en `assets/original/ui/{icons,hud,cursors,xmenu}` y `assets/original/fx/` con `fx.json` (3,2 MB con los `.import`, LFS), lossless; mips solo en los atlas del catálogo y en `scri`.
+- **Consumidores por `OriginalAssets`** (`UI_*_DIR`, `FX_CATALOG`): `HudIcons`, `FxAtlas`, `sprite_particles`, `teleport_rings`, `soul`.
+- **Ojo de Divine Sight (F165):** el `glow` provisorio pasa al sprite original `scri` (hoja 4×4, 16 cuadros, 8 ticks por cuadro: `animationDelay` 4 × `updateAnimFactor` 2, sacengine `sacobject.d:3859-3861`).
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-033d.md`).
+- **Paridad:** 270 de 270 PNG idénticos byte a byte a `cache/look`; atlas iguales en todos los mips; las 701 texturas de 033b siguen iguales.
+- **Capturas:** el panel del HUD da 0 px por regiones; el resto dentro del ruido conocido. Captura del ojo: `agent/out/f165/f165_rising.png`.
+- **`quick`** igual a la base; flow `f165_divine_sight` PASS.
+
+Deuda:
+- El lector de TXTR está duplicado entre `export_particles.py` y `tools/sac_formats/` (033h).
+- `import_ui.py` copia de `cache/look`, salvo `scri`, que sale del WAD (033h).

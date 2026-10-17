@@ -57,7 +57,7 @@ const SPRITE_LIFT := 1.25 * 1.6
 @export_flags_3d_physics var ground_mask := 1
 
 @export_group("Look")
-@export_file("*.json") var catalog_path := "res://cache/look/fx/fx.json"
+@export_file("*.json") var catalog_path := OriginalAssets.FX_CATALOG
 @export var atlas_key := "soul"
 @export var shader: Shader = preload("res://scenes/world/souls/soul.gdshader")
 ## sacengine uses 20 with its own tonemap; under High Noon's ACES that clips the soul to white.

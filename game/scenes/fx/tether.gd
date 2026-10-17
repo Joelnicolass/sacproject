@@ -40,7 +40,7 @@ const UV_INSET := 0.5 / 64.0
 @export var max_relative_speed := 20.0
 
 @export_group("Look")
-## Atlas tag (4x4) of the rope, exported by tools/export_particles.py.
+## Atlas tag (4x4) of the rope, imported by tools/import_ui.py.
 @export var atlas_tag := "ltn2"
 ## sacengine: 0.375 + 14.625 * (...) = between 0.375 and 15 (renderer.d:1688-1690).
 @export var energy_min := 0.375
@@ -89,7 +89,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if start == null:
 		warnings.append("Asigná en `start` el nodo donde empieza la cuerda (la aguja del doctor).")
 	if _missing:
-		warnings.append("Falta el atlas `%s.png` en cache/look/fx/ (tools/export_particles.py): se dibuja un relleno." % atlas_tag)
+		warnings.append("Falta el atlas `%s.png` en assets/original/fx/ (tools/import_ui.py): se dibuja un relleno." % atlas_tag)
 	return warnings
 
 

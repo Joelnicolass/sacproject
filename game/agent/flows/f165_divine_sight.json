@@ -1,0 +1,401 @@
+{
+ "scene": "res://debug/f165_divine_sight.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "assert": {
+    "node": "%SelectionRoster",
+    "visible": true
+   }
+  },
+  {
+   "assert": {
+    "node": "%SelectionRoster",
+    "prop": "count",
+    "equals": 1
+   }
+  },
+  {
+   "assert": {
+    "node": "%SelectionRoster/Ability",
+    "visible": true
+   }
+  },
+  {
+   "assert": {
+    "node": "%SelectionRoster",
+    "prop": "ability_tag",
+    "equals": "eesd"
+   }
+  },
+  {
+   "assert": {
+    "node": "AgentKit/f165_probe",
+    "prop": "eye_count",
+    "equals": 0
+   }
+  },
+  {
+   "assert": {
+    "node": "AgentKit/f165_probe",
+    "prop": "mana",
+    "equals": 200
+   }
+  },
+  {
+   "call": {
+    "harness": "f165_probe",
+    "method": "frame_fixed",
+    "args": [
+     -10,
+     8,
+     10,
+     35
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "f165_before.png"
+  },
+  {
+   "click": "%SelectionRoster/Ability"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/f165_probe",
+    "prop": "eye_count",
+    "equals": 1,
+    "timeout": 3
+   }
+  },
+  {
+   "assert": {
+    "node": "%Battle",
+    "text_equals": "Divine Sight"
+   }
+  },
+  {
+   "assert": {
+    "node": "AgentKit/f165_probe",
+    "prop": "mana",
+    "equals": 150
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/f165_probe",
+    "prop": "eye_frame",
+    "gte": 25,
+    "timeout": 3
+   }
+  },
+  {
+   "call": {
+    "harness": "f165_probe",
+    "method": "frame_fixed",
+    "args": [
+     -10,
+     8,
+     10,
+     35
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "f165_rising.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/f165_probe",
+    "prop": "eye_frame",
+    "gte": 50,
+    "timeout": 3
+   }
+  },
+  {
+   "assert": {
+    "node": "AgentKit/f165_probe",
+    "prop": "spawn_ahead_m",
+    "gte": 1.95,
+    "lte": 2.05
+   }
+  },
+  {
+   "assert": {
+    "node": "AgentKit/f165_probe",
+    "prop": "spawn_side_m",
+    "lte": 0.05
+   }
+  },
+  {
+   "assert": {
+    "node": "AgentKit/f165_probe",
+    "prop": "rise_drift_m",
+    "lte": 0.001
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/f165_probe",
+    "prop": "eye_target",
+    "equals": "Nmuh1",
+    "timeout": 3
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/f165_probe",
+    "prop": "eye_frame",
+    "gte": 110,
+    "timeout": 3
+   }
+  },
+  {
+   "call": {
+    "harness": "f165_probe",
+    "method": "frame_fixed",
+    "args": [
+     -10,
+     8,
+     10,
+     35
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "f165_inflight.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/f165_probe",
+    "prop": "eye_to_foe_m",
+    "lte": 1.5,
+    "timeout": 10
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "print": {
+    "node": "AgentKit/f165_probe",
+    "prop": "eye_to_foe_m"
+   }
+  },
+  {
+   "print": {
+    "node": "AgentKit/f165_probe",
+    "prop": "locked_frame"
+   }
+  },
+  {
+   "print": {
+    "node": "AgentKit/f165_probe",
+    "prop": "max_speed_mps"
+   }
+  },
+  {
+   "print": {
+    "node": "AgentKit/f165_probe",
+    "prop": "min_clear_m"
+   }
+  },
+  {
+   "print": {
+    "node": "AgentKit/f165_probe",
+    "prop": "visible_cells"
+   }
+  },
+  {
+   "assert": {
+    "node": "AgentKit/f165_probe",
+    "prop": "max_speed_mps",
+    "gte": 20.0,
+    "lte": 30.05
+   }
+  },
+  {
+   "assert": {
+    "node": "AgentKit/f165_probe",
+    "prop": "min_clear_m",
+    "gte": 3.5
+   }
+  },
+  {
+   "assert": {
+    "node": "AgentKit/f165_probe",
+    "prop": "eye_scale",
+    "equals": 1.0
+   }
+  },
+  {
+   "assert": {
+    "node": "AgentKit/f165_probe",
+    "prop": "sees_foe",
+    "equals": true
+   }
+  },
+  {
+   "assert": {
+    "node": "AgentKit/f165_probe",
+    "prop": "explored_foe",
+    "equals": true
+   }
+  },
+  {
+   "assert": {
+    "node": "AgentKit/f165_probe",
+    "prop": "sees_beside_60",
+    "equals": true
+   }
+  },
+  {
+   "assert": {
+    "node": "AgentKit/f165_probe",
+    "prop": "sees_beside_90",
+    "equals": false
+   }
+  },
+  {
+   "assert": {
+    "node": "AgentKit/f165_probe",
+    "prop": "sees_behind_ranger_90",
+    "equals": false
+   }
+  },
+  {
+   "assert": {
+    "node": "AgentKit/f165_probe",
+    "prop": "visible_cells",
+    "gte": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "f165_probe",
+    "method": "frame_fixed",
+    "args": [
+     -10,
+     8,
+     10,
+     35
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "f165_flight.png"
+  },
+  {
+   "click": "%SelectionRoster/Ability"
+  },
+  {
+   "assert": {
+    "node": "%Battle",
+    "text_equals": "Enfriando"
+   }
+  },
+  {
+   "assert": {
+    "node": "AgentKit/f165_probe",
+    "prop": "eye_count",
+    "equals": 1
+   }
+  },
+  {
+   "assert": {
+    "node": "AgentKit/f165_probe",
+    "prop": "mana",
+    "equals": 150
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/f165_probe",
+    "prop": "eye_gone",
+    "equals": true,
+    "timeout": 45
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "assert": {
+    "node": "AgentKit/f165_probe",
+    "prop": "sees_foe",
+    "equals": false
+   }
+  },
+  {
+   "assert": {
+    "node": "AgentKit/f165_probe",
+    "prop": "visible_cells",
+    "equals": 0
+   }
+  },
+  {
+   "assert": {
+    "node": "AgentKit/f165_probe",
+    "prop": "explored_foe",
+    "equals": true
+   }
+  },
+  {
+   "click": "%SelectionRoster/Ability"
+  },
+  {
+   "assert": {
+    "node": "%Battle",
+    "text_equals": "Divine Sight"
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/f165_probe",
+    "prop": "eye_count",
+    "equals": 1,
+    "timeout": 3
+   }
+  },
+  {
+   "assert": {
+    "node": "AgentKit/f165_probe",
+    "prop": "mana",
+    "equals": 100
+   }
+  },
+  {
+   "call": {
+    "harness": "f165_probe",
+    "method": "frame_fixed",
+    "args": [
+     -10,
+     8,
+     10,
+     35
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "f165_second.png"
+  }
+ ]
+}

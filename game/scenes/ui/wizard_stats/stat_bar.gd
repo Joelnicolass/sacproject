@@ -4,12 +4,12 @@ extends Control
 ## One stat bar of the wizard HUD (sacengine renderStatBar, renderer.d:4808-4826), drawn inside a
 ## 32×96-unit frame: a 32×68 area from y = 14 filled from the bottom by the `mid` strip, capped by the
 ## 4-unit `top` strip above the fill and the 6-unit `bottom` strip below it (both drawn even when empty,
-## as in sacengine). The strips are `<strip_prefix>_{top,mid,bottom}.png` of the HUD cache
-## (tools/export_icons.py); without them the fill is a flat `fallback_color` rectangle.
+## as in sacengine). The strips are `<strip_prefix>_{top,mid,bottom}.png` of assets/original/ui/hud
+## (tools/import_ui.py); without them the fill is a flat `fallback_color` rectangle.
 
-## Name prefix of the three strips in cache/look/hud (`stat_mana`, `stat_health`).
+## Name prefix of the three strips in assets/original/ui/hud (`stat_mana`, `stat_health`).
 @export var strip_prefix := "stat_mana"
-## Fill colour when the strips are not in the cache.
+## Fill colour when the strips are missing.
 @export var fallback_color := Color8(0, 96, 192)
 ## Frame size in HUD units (the bar scales with the control's height).
 @export var frame_units := Vector2(32.0, 96.0)

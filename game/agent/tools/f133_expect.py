@@ -17,8 +17,7 @@ Events (audit tick = seconds · 60) and what each gives:
   30 Earthfling1 Rockform: ok, mana 200->187, cooldown 60       72 Earthfling1: Enfriando; 120: Blanco inválido (already a rock)
   36 Fallen1 Play Dead: ok, mana 200->200, cooldown 0           132 Fallen1: Blanco inválido (already playing dead)
   42 Sylph1 Stealth: ok, mana 200->150, cooldown 300
-  60 Ranger1 Divine Sight on Sylph1: ok, mana 200->150, cooldown 1500 (through the bench, which passes the target body; from the UI the
-     click gives «Blanco inválido» because eesd has flags 0: F165)
+  60 Ranger1 Divine Sight: ok, mana 200->150, cooldown 1500 (F165: no target, like the UI button; it throws the eye, log «ojo Eye1 de Ranger1»)
 """
 import importlib.util
 import os
@@ -74,6 +73,7 @@ def check_log(path):
     ok &= verdict(any(re.match(r"escudo Druid1 1200 ticks", l) for l in lines), "Life Shield: escudo de 1200 ticks en Druid1")
     ok &= verdict(any(re.match(r"ritmo FlameMinion1 ×1\.7500", l) for l in lines), "Run Away: FlameMinion1 va a ×1,75")
     ok &= verdict(any(re.match(r"rockform abierto Earthfling1", l) for l in lines), "Rockform: Earthfling1 abre la roca")
+    ok &= verdict(any(re.match(r"ojo Eye\d+ de Ranger1 \(tick \d+\)", l) for l in lines), "Divine Sight: el ojo sale del Ranger1")
     ok &= verdict(not any("SCRIPT ERROR" in l for l in lines), "sin SCRIPT ERROR")
     return ok
 

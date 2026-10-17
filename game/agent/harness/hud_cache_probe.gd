@@ -1,7 +1,7 @@
 extends Node
 
 ## Playtest helper for RFC-025b «respaldo sin caché»: points HudIcons at an empty folder and swaps
-## the roster for a fresh copy of its own scene, as on a clone without cache/look. The product has
+## the roster for a fresh copy of its own scene, as on a clone without assets/original/ui. The product has
 ## no reload API: the copy is built from `scene_file_path` after the folders changed.
 ##
 ##   hide_cache()    HudIcons.icon_dir / hud_dir -> a folder with nothing; new roster.

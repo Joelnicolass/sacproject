@@ -3,10 +3,10 @@ extends Node
 ## Observation only (RFC-028b playtest): `watch()` keeps where the next spell leaves %Spells (a Wrath bursts
 ## and frees itself in the same frame, so that is the burst point); `check` compares a building's splash
 ## with amount·(1 − d/r), d measured here, independently of SplashDamage: from the burst to the model box
-## baked in cache/baked/props.json (single-piece BLDG at the building's origin, unturned). Moves no actor,
+## in assets/original/models/sizes.json (single-piece BLDG at the building's origin, unturned). Moves no actor,
 ## edits no rule.
 
-const PROPS_PATH := "res://cache/baked/props.json"
+const PROPS_PATH := "res://assets/original/models/sizes.json"
 
 var center := Vector3.INF
 var _spells: Node
@@ -38,7 +38,8 @@ func check(building_name: String, amount: float, radius: float) -> String:
 	if parts.size() != 1 or float(parts[0].get("facing", 0.0)) != 0.0 or float(parts[0].get("x", 0.0)) != 0.0 or float(parts[0].get("y", 0.0)) != 0.0:
 		return "%s: solo edificios de una pieza sin giro ni desplazamiento" % tag
 	var props: Variant = JSON.parse_string(FileAccess.get_file_as_string(PROPS_PATH))
-	var raw: Array = (props as Dictionary).get(str(parts[0].get("tag", tag)), {}).get("box", []) if props is Dictionary else []
+	var sizes: Dictionary = (props as Dictionary).get("props", {}) if props is Dictionary else {}
+	var raw: Array = sizes.get(str(parts[0].get("tag", tag)), {}).get("box", [])
 	if raw.size() != 6:
 		return "%s: sin caja horneada" % tag
 	var low := Vector3(raw[0], raw[1], raw[2])

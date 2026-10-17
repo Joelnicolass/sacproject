@@ -122,11 +122,9 @@ user = "Druid1"
 script = ExtResource("3_event")
 at_s = 1.0
 action = "ability"
-label = "R1 usa Divine Sight sobre S1 (aplicada)"
+label = "R1 usa Divine Sight (sin blanco, como el botón)"
 slot = 1
 user = "Ranger1"
-target = "Sylph1"
-point = Vector2(1260, 1190)
 
 [sub_resource type="Resource" id="Event_7"]
 script = ExtResource("3_event")

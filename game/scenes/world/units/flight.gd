@@ -42,6 +42,7 @@ enum State { GROUND, TAKEOFF, FLYING, LANDING }
 		state_changed.emit(state)
 
 var _left := 0.0
+var _fall_speed := 0.0
 
 
 func _ready() -> void:
@@ -88,6 +89,9 @@ func goes_by_air(distance: float) -> bool:
 ## over the ground under its center, `on_floor`: its capsule rests on something (a slope holds it above `above`); both only
 ## read while FLYING. Returns the vertical speed of a flier; 0 on the ground.
 func advance(delta: float, walking: bool, above: float, on_floor: bool) -> float:
+	if is_dropped():
+		return _fall(delta, above, on_floor)
+	_fall_speed = 0.0
 	if _held():
 		return 0.0
 	match state:
@@ -102,6 +106,22 @@ func advance(delta: float, walking: bool, above: float, on_floor: bool) -> float
 		State.FLYING:
 			return _vertical(delta, walking, above, on_floor)
 	return 0.0
+
+
+## F137: a state that drops fliers (AfflictionType.drops_fliers: petrified) lets gravity take this flier down while it
+## lasts, a hybrid or one that must fly alike (sacengine petrify startTumbling, state.d:11636); its state waits. The body
+## then asks advance() for its vertical speed, even one that must fly.
+func is_dropped() -> bool:
+	return afflictions != null and afflictions.drops_fliers()
+
+
+## Falling with gravity until it rests on the ground (`above` 0 or on the floor).
+func _fall(delta: float, above: float, on_floor: bool) -> float:
+	if on_floor or not is_finite(above) or above <= 0.0:
+		_fall_speed = 0.0
+		return 0.0
+	_fall_speed += float(ProjectSettings.get_setting("physics/3d/default_gravity")) * delta
+	return -minf(_fall_speed, above / maxf(delta, 0.000001))
 
 
 ## Held: the state and the height wait (advance returns 0: a flier hangs where it is).

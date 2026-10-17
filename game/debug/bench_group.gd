@@ -21,6 +21,7 @@ extends Resource
 @export var near_distance_m := 0.0
 @export var near_angle_deg := 0.0
 ## "attack_unit" (F136): the group is ordered to attack the creature of `order_slot` closest to its first body.
+## "ability" (F137): each body uses its active ability on itself when the clock starts (Rockform).
 ## "advance_altar": the group is ordered (Orders.apply_for, like a human's) to advance to the altar of `order_slot`.
 @export var order := ""
 @export var order_slot := 2

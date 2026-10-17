@@ -13,6 +13,12 @@ extends Resource
 @export var holds := true
 ## Not even pushed: no separation and no pose (petrified, `effects.immobilized`).
 @export var immobilizes := false
+## A flier falls while it lasts (sacengine petrify startTumbling, state.d:11636): Flight lets gravity take it down to
+## the ground and the body goes back up to its height when it ends. Off: a flier hangs where it is (stunned).
+@export var drops_fliers := false
+## Ends the body's own special mode when it starts (Rockform: sacengine petrify sets mode = stunned, state.d:11631-11640),
+## so the rock's ×0.05 does not stack and the end can knock it down. The body reads it (UnitBody, on held_changed).
+@export var breaks_special_modes := false
 ## Multiplies every hit the body takes while it lasts (petrified ×0.2, state.d:8965). Stunned: 1.
 @export var damage_factor := 1.0
 ## Refuses the crowd control that asks ccProtected (petrify, state.d:11631-11640).

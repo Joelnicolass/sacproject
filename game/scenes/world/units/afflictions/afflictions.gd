@@ -4,8 +4,8 @@ extends Node
 
 ## F120 (RFC-030i): the one owner of «can this creature act?». Its Affliction children are the states (Stunned; later
 ## Petrified, Frozen), each with its AfflictionType. The body and the rest ask here, never a child:
-## holds() (no AI, attack, turn or ability), immobilized() (not even pushed), damage_factor(), cc_protected() and
-## clip_role(). Who wins between two states is the data's (`AfflictionType.cancels`), not the order of the children.
+## holds() (no AI, attack, turn or ability), immobilized() (not even pushed), drops_fliers(), damage_factor(),
+## cc_protected() and clip_role(). Who wins between two states is the data's (`AfflictionType.cancels`), not the order of the children.
 ##
 ## The server (or solo) decides; `shown` (one bit per type) is replicated, so on a client a state is on exactly when
 ## its bit is, and the children draw it from there.
@@ -50,16 +50,39 @@ func holds() -> bool:
 
 
 func immobilized() -> bool:
+	if shown == 0:
+		return false
 	for affliction in _on():
 		if affliction.type.immobilizes:
 			return true
 	return false
 
 
-## Product of the factors of the states that are on (1 with none). Health does not read it yet: Stunned is 1.
-## 030i-b (Petrified ×0.2, state.d:8965) makes Health.damage_typed AND Health.damage (melee, which today applies no
-## body factor at all, REVIEW-F139 N5) multiply by it.
+## A state that is on lets a flier fall (petrified; Flight reads it).
+func drops_fliers() -> bool:
+	if shown == 0:
+		return false
+	for affliction in _on():
+		if affliction.type.drops_fliers:
+			return true
+	return false
+
+
+## A state that is on ends the body's special mode (petrified ends Rockform).
+func breaks_special_modes() -> bool:
+	if shown == 0:
+		return false
+	for affliction in _on():
+		if affliction.type.breaks_special_modes:
+			return true
+	return false
+
+
+## Product of the factors of the states that are on (1 with none). Health multiplies every hit by it, on both of its
+## paths (damage and damage_typed): petrified ×0.2 (state.d:8965), stunned ×1.
 func damage_factor() -> float:
+	if shown == 0:
+		return 1.0
 	var factor := 1.0
 	for affliction in _on():
 		factor *= affliction.type.damage_factor
@@ -67,6 +90,8 @@ func damage_factor() -> float:
 
 
 func cc_protected() -> bool:
+	if shown == 0:
+		return false
 	for affliction in _on():
 		if affliction.type.cc_protects:
 			return true

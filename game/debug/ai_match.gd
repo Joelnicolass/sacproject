@@ -165,7 +165,7 @@ func _prepare() -> void:
 			audit.watch_unit(unit)
 			_watched.append(unit)
 			made.append(unit)
-		if group.order == "advance_altar" or group.order == "attack_structure" or group.order == "attack_unit":
+		if group.order in ["advance_altar", "attack_structure", "attack_unit", "ability"]:
 			_orders_at_start.append([group, made])
 	for wizard in get_tree().get_nodes_in_group("wizard"):
 		var purse := wizard.get_node_or_null("SoulPurse")
@@ -439,6 +439,11 @@ func _near_spot(group: BenchGroup, index: int, terrain: Node) -> Vector4:
 
 
 func _order_advance(group: BenchGroup, units: Array[Node3D]) -> void:
+	if group.order == "ability":
+		## F137: each body uses its active ability on itself when the clock starts (an Earthfling's Rockform), like a click.
+		for unit in units:
+			unit.call("use_ability", unit.global_position, null)
+		return
 	if group.order == "attack_unit":
 		## F136: an attack on the creature of `order_slot` closest to the group's first body (Orders.apply_for, like a click).
 		var foe := _closest_unit_of(group.order_slot, units[0].global_position) if not units.is_empty() else null

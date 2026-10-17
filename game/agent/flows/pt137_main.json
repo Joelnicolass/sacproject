@@ -1,0 +1,17 @@
+{
+ "scene": "res://debug/f137_petrify.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  { "wait_until": { "node": "Overlay/Status", "text_contains": "Enter", "timeout": 60 } },
+  { "wait": 0.5 },
+  { "press": "check_tick" },
+  { "wait_until": { "node": "Runner", "prop": "_running", "equals": true, "timeout": 10 } },
+  { "wait": 0.3 },
+  { "call": { "harness": "pt137_watch", "method": "arm", "args": [] } },
+  { "shot": "m0_started.png" },
+  { "wait_until": { "node": "AgentKit/pt137_watch", "prop": "done", "equals": true, "timeout": 90 } },
+  { "wait": 1.0 },
+  { "call": { "harness": "pt137_watch", "method": "report", "args": [] } },
+  { "shot": "m1_end.png" }
+ ]
+}

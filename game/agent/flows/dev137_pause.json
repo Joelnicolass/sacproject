@@ -1,0 +1,17 @@
+{
+ "scene": "res://debug/f137_petrify.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  { "wait_until": { "node": "Overlay/Status", "text_contains": "Enter", "timeout": 60 } },
+  { "wait": 0.5 },
+  { "press": "check_tick" },
+  { "wait_until": { "node": "Runner", "prop": "_running", "equals": true, "timeout": 10 } },
+  { "call": { "harness": "dev137_watch", "method": "arm", "args": [] } },
+  { "wait": 5.0 },
+  { "press": "pause_menu" },
+  { "wait": 6.0 },
+  { "press": "pause_menu" },
+  { "wait": 8.0 },
+  { "call": { "harness": "dev137_watch", "method": "report", "args": [] } }
+ ]
+}

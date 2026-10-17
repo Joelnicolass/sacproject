@@ -535,9 +535,9 @@ func _physics_process(delta: float) -> void:
 	var must_fly := type != null and type.is_flying()
 	var airborne := is_flying()
 	var gravity := float(ProjectSettings.get_setting("physics/3d/default_gravity"))
-	if must_fly:
+	if must_fly and not (_flight != null and _flight.is_dropped()):
 		_hold_flying_height(delta)
-	elif _flight != null and _flight.is_capable():
+	elif _flight != null and (must_fly or _flight.is_capable()):
 		var above := global_position.y - _ground_height(global_position) if airborne else 0.0
 		var lift := _flight.advance(delta, mode == Mode.MOVE, above, is_on_floor())
 		if airborne:
@@ -579,7 +579,7 @@ func _physics_process(delta: float) -> void:
 	if _flight != null and _flight.holds_still():
 		velocity.x = 0.0
 		velocity.z = 0.0
-	if is_obstacle():
+	if is_obstacle() and not _afflictions.immobilized():
 		velocity = BodySeparation.resolve(self, velocity, delta)
 	if _flight != null and _flight.is_airborne():
 		_cap_air_pace()
@@ -746,6 +746,8 @@ func _shoot(delta: float) -> void:
 
 
 func _cancel_attacks() -> void:
+	if mode == Mode.ROCK_FORM and _should_simulate() and _afflictions.breaks_special_modes():
+		mode = Mode.IDLE  ## F137: petrified ends Rockform (state.d:11631-11640); Afflictions.held_changed calls here.
 	$MeleeAttack.call("cancel")
 	$RangedAttack.call("cancel")
 	if _pose_tween and _pose_tween.is_valid():

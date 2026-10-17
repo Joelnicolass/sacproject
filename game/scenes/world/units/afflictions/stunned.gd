@@ -51,6 +51,13 @@ func stun_with_cooldown(cooldown_ticks: int) -> bool:
 	return true
 
 
+## Server (or solo): sacengine damageStun as the end of a petrification calls it (state.d:23732-23739, 8569-8577): the
+## stun cooldown is cleared first, then it stuns with the damage-stun cooldown (4 s).
+func knock(cooldown_ticks: int) -> bool:
+	_cooldown = 0
+	return stun_with_cooldown(cooldown_ticks)
+
+
 func cooldown_ticks() -> int:
 	return _cooldown
 

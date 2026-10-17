@@ -35,6 +35,10 @@ static var _warm_log := -1
 ## is built per frame, so a frame never pays more than one over the budget.
 @export_range(0.0, 16.0, 0.5) var warm_budget_ms := 4.0
 
+## F137 (RFC-030i-b): the pose holds (sacengine petrified, bone.d / state.d:11631-11640): the clock stops, play() does not
+## switch the clip and the frame on the mesh stays. Set by its owner (Petrified) on every peer; off resumes from it.
+var frozen := false
+
 var _cache: Dictionary = {}
 var _cache_loaded := false
 var _model := ""
@@ -129,6 +133,8 @@ func setup(model: String, role_to_tag: Dictionary, mesh_base_pos: Vector3, mesh_
 
 
 func play(role: String, restart := false) -> void:
+	if frozen:
+		return
 	_apply_role(role, restart)
 
 
@@ -169,7 +175,7 @@ func impact_frame() -> int:
 
 func advance(delta: float) -> void:
 	_bind_mesh()
-	if _mesh == null:
+	if _mesh == null or frozen:
 		return
 	if _active_clip.is_empty() or _active_frames.is_empty():
 		_restore_base()

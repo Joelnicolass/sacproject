@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3]
+[gd_scene load_steps=44 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/unit_body.gd" id="1_body"]
 [ext_resource type="Script" path="res://scenes/world/body_visual.gd" id="2_visual"]
@@ -37,6 +37,10 @@
 [ext_resource type="Script" path="res://scenes/world/units/afflictions/afflictions.gd" id="f120_afflictions"]
 [ext_resource type="Script" path="res://scenes/world/units/afflictions/stunned.gd" id="f120_stunned"]
 [ext_resource type="Resource" path="res://data/afflictions/stunned.tres" id="f120_stunned_type"]
+[ext_resource type="Script" path="res://scenes/world/units/afflictions/petrified.gd" id="f137_petrified"]
+[ext_resource type="Resource" path="res://data/afflictions/petrified.tres" id="f137_petrified_type"]
+[ext_resource type="Script" path="res://scenes/world/look/stone_look.gd" id="f137_stone_look"]
+[ext_resource type="Shader" path="res://scenes/world/look/stone.gdshader" id="f137_stone_shader"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_unit"]
 radius = 0.3
@@ -103,9 +107,10 @@ script = ExtResource("2_visual")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_unit")
 
-[node name="Health" type="Node" parent="." node_paths=PackedStringArray("passive")]
+[node name="Health" type="Node" parent="." node_paths=PackedStringArray("passive", "afflictions")]
 script = ExtResource("3_health")
 passive = NodePath("../DamagePassive")
+afflictions = NodePath("../Afflictions")
 
 [node name="MeleeAttack" type="Node" parent="." node_paths=PackedStringArray("passive", "own_health")]
 script = ExtResource("4_melee")
@@ -150,6 +155,19 @@ type = ExtResource("f120_stunned_type")
 clip_pose = NodePath("../../ClipPose")
 tilt = NodePath("../../Tilt")
 visual = NodePath("../../Tilt/Mesh")
+
+[node name="Petrified" type="Node" parent="Afflictions" node_paths=PackedStringArray("clip_pose", "stone_look", "stunned", "visual")]
+script = ExtResource("f137_petrified")
+type = ExtResource("f137_petrified_type")
+clip_pose = NodePath("../../ClipPose")
+stone_look = NodePath("StoneLook")
+stunned = NodePath("../Stunned")
+visual = NodePath("../../Tilt/Mesh")
+
+[node name="StoneLook" type="Node" parent="Afflictions/Petrified" node_paths=PackedStringArray("mesh")]
+script = ExtResource("f137_stone_look")
+mesh = NodePath("../../../Tilt/Mesh")
+shader = ExtResource("f137_stone_shader")
 
 [node name="Orders" type="Node" parent="."]
 script = ExtResource("f27_orders")

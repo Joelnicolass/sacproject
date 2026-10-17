@@ -1252,3 +1252,44 @@ Deuda:
 - **Aturdido por melee** (`state.d:9246-9262`): no está.
 - **Magos (030i-c):** no se aturden.
 - **Play Dead:** ahora revienta sobre un pozo y en el aire muestra idle.
+
+### F137 — Petrificar y la mirada del Basilisk (RFC-030, corte 030i-b)
+
+`petrified.tres` (holds, immobilizes, damage ×0,2, cc_protects, `cancels [stunned]`, `drops_fliers`, `breaks_special_modes`) es la base de `Petrified`:
+- Cuenta su duración en ticks propios, así que no avanza con el juego en pausa. Termina en `frame++>=lifetime` (`state.d:23760`).
+- Al terminar lanza `Stunned.knock(240)` y 32 rocas. Si el cuerpo muere petrificado, suelta las rocas igual.
+
+Piezas que lo rodean:
+- `StoneLook` y `stone.gdshader`: gris 0,3 + 0,7·brillo·(1, 1, 0,8) sobre sRGB (`bone.d:189-192`). Vuelve a vestir solo cuando cambia la malla.
+- `ClipPosePlayer.frozen`.
+- `Health._state_factor()`: un único factor que usan tanto `damage()` como `damage_typed()`.
+- `Flight.is_dropped()`: el volador cae.
+- `PetrifyImpact` en `dpsf.tres`: no hace daño, y el Basilisk deja de hacer sus 150 directos. Duración `min(10, 10000/máx)` s, mago 2,5 s (`11631-11645`).
+- `unit_body.gd`: 1043 → 1045 (+2: al quedar retenido sale de Rockform, según el dato).
+
+**Cierre (2026-10-16).** La review dio FAIL por dos bloqueantes, corregidos en una ronda:
+- B1: el reloj del motor seguía corriendo en pausa.
+- B2: Rockform no se rompía, y el daño quedaba en ×0,01.
+
+Playtest con ventana PASS en 10 de 11 criterios (`agent/out/pt137/`):
+- Druid: 600 de piedra y después aturdido 226. Flummox: 263 y después 116.
+- El impacto no hace daño.
+- Los 14 golpes del Trogg sobre la piedra hacen exactamente ×0,200.
+- Deriva 0 y pose congelada.
+- Un segundo impacto informa «protegido».
+- El Druid vuelve a pelear.
+- La Gargoyle queda a 0,004 m del suelo y después vuelve a 4,5 m.
+- Con 5 s de pausa la piedra no avanza, y la vida final es idéntica a la corrida sin pausa.
+- Hay captura de las rocas.
+- Regresiones: `pt120_bench` y `f25` dan AGENT_OK. Los digests seed 7 y `f139` no cambian. `rules_suite` PASS.
+- La captura `p_a_druid_stone_90.png` se lee como una estatua gris.
+
+Deuda:
+- Red sin verificar.
+- B2 no se probó con input real: ninguna IA le apunta a una roca.
+- N1: sacengine usa dos manos y aquí hay un solo proyectil.
+- N3: un híbrido tirado mientras está FLYING usa el aturdido de vuelo estando en el suelo.
+- N4: la caché de StoneLook nunca se libera.
+- N5: Skin of Stone va a necesitar convivir con StoneLook.
+- N6: un cliente que entra tarde ve la pose de reposo.
+- La barra de vida de la Gargoyle de piedra queda alta.

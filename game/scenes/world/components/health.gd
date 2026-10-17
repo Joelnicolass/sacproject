@@ -35,6 +35,8 @@ const SPLASH_RANGED := &"splash_ranged"
 @export var deflector: DamageDeflector
 ## F117: the body's passiveOnDamage (Taurock korq). Optional: empty = no passive, every hit ×1.
 @export var passive: DamagePassive
+## F137: the states the body is in (petrified ×0.2, state.d:8965) scale every hit, on both paths. Optional: empty = ×1.
+@export var afflictions: Afflictions
 
 ## Multiplies damage_typed on top of the resistance: the body's own effects, as dealDamage
 ## stacks them (state.d:8962-8969); Rockform sets 0.05.
@@ -59,8 +61,8 @@ func is_full() -> bool:
 	return current >= maximum
 
 
-## TODO(030i-b): this path applies no body factor (REVIEW-F139 N5). Petrified (×0.2, state.d:8965) needs
-## Afflictions.damage_factor() here as well as in damage_typed; Stunned is ×1, so F120 leaves both untouched.
+## A hit whose caller already applied the body's damage_factor and resistance (melee, rituals). The states the body is
+## in still scale it (_state_factor, REVIEW-F139 N5).
 func damage(amount: float, from_slot: int = 0) -> void:
 	if not _has_authority() or amount <= 0.0 or is_dead() or not _can_be_damaged():
 		return
@@ -71,7 +73,7 @@ func damage(amount: float, from_slot: int = 0) -> void:
 	var side := _side_factor(from_slot, false, 1.0)
 	if side <= 0.0:
 		return
-	_hit(amount * side * _passive_factor(), from_slot)
+	_hit(amount * side * _state_factor() * _passive_factor(), from_slot)
 
 
 func _hit(amount: float, from_slot: int) -> void:
@@ -83,7 +85,8 @@ func _hit(amount: float, from_slot: int) -> void:
 
 
 ## sacengine dealDamage (state.d:8948-8972) and dealRawDamage (state.d:9001-9050):
-## amount · side factor · max(0, resistance) · damage_factor of the body's CRE8/WIZD data, capped at the health left.
+## amount · side factor · max(0, resistance) · damage_factor of the body's CRE8/WIZD data · its states, capped at the
+## health left.
 ## The side factor is the match's friendly fire (_side_factor): an ally takes nothing with it off (dealDamage returns 0,
 ## state.d:8961) and ally_damage_factor with it on (sideDamageMultiplier, state.d:9005, 28892-28899); `ignore_friendly`
 ## (poison, state.d:9415-9419) takes ×1 then. A dead body takes nothing (canDamage).
@@ -99,7 +102,7 @@ func damage_typed(amount: float, kind: StringName, from_slot: int = 0, ignore_fr
 	var side := _side_factor(from_slot, ignore_friendly, 0.0)
 	if side > 0.0:
 		var factor := float(kind_factors.get(kind, 1.0))
-		taken = minf(current, amount * side * resistance(kind) * maxf(0.0, damage_factor) * maxf(0.0, factor) * _passive_factor())
+		taken = minf(current, amount * side * resistance(kind) * maxf(0.0, damage_factor) * maxf(0.0, factor) * _state_factor() * _passive_factor())
 	if taken > 0.0:
 		_hit(taken, from_slot)
 	hurt.emit(taken, kind, from_slot)
@@ -149,6 +152,11 @@ func _match_state() -> MatchState:
 		if is_inside_tree():
 			_match = get_tree().get_first_node_in_group(&"match_state") as MatchState
 	return _match
+
+
+## F137: the one place both damage paths ask for the factor of the states the body is in (dealDamage, state.d:8965).
+func _state_factor() -> float:
+	return maxf(0.0, afflictions.damage_factor()) if afflictions else 1.0
 
 
 ## sacengine dealRawDamage (state.d:9010-9028): the passive scales every kind of hit by the health before it.

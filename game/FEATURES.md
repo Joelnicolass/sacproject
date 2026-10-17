@@ -2134,3 +2134,21 @@ Deuda:
 Deuda:
 - El lector de TXTR está duplicado entre `export_particles.py` y `tools/sac_formats/` (033h).
 - `import_ui.py` copia de `cache/look`, salvo `scri`, que sale del WAD (033h).
+
+### F171 — Temas de dioses y cielo como assets (RFC-033, corte 033e)
+
+**Piezas:**
+- **`tools/import_themes.py`:** los 5 temas en `assets/original/themes/<god>/` (tileset, cielo, sol y `envi.tres` con `GodEnvi`), 2,5 MB.
+- **`GodTheme.resolved()`** (antes `with_cache()`): el directorio se deriva del dios con `OriginalAssets.theme_dir`; ningún `.tres` escribe rutas.
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-033e.md`).
+- **Paridad:** 35 imágenes idénticas a la caché por byte y mip; colores, niebla y sol iguales a `theme.json`. El cielo original no cambia.
+- **Capturas:** 4 biomas dentro de ±5 % del piso; pyro +22–25 % por el cielo que rota con el tiempo de captura (dos `after` iguales difieren 74 k px).
+- **`quick`** igual a la base.
+- **Fuera de partida** (escenas `debug/*` y editor), el terreno por defecto usa el tema de James y ahora tiene el borde del vacío de ENVI, que antes faltaba; en partida manda `ThemeApplier`.
+
+Deuda:
+- `sky.gd` y `terrain.gd` concatenan `THEMES_DIR` en vez de pasar por `OriginalAssets` (033f).
+- El arnés de capturas no congela el tiempo del cielo (033f).
+- 4 campos de `GodEnvi` sin lector; se borran si 033f/033g no los usan.
+- `import_themes.py` copia de la caché, no del WAD (033h).

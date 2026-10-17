@@ -1,0 +1,14 @@
+[remap]
+
+importer="image"
+type="Image"
+uid="uid://c31cap7mrp5bg"
+path="res://.godot/imported/atlas.png-fde34edaf116752a11792d876f8f9e60.image"
+
+[deps]
+
+source_file="res://assets/original/themes/james/atlas.png"
+dest_files=["res://.godot/imported/atlas.png-fde34edaf116752a11792d876f8f9e60.image"]
+
+[params]
+

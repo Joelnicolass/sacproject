@@ -1,0 +1,14 @@
+[remap]
+
+importer="image"
+type="Image"
+uid="uid://dg12ysn1h5paf"
+path="res://.godot/imported/atlas.png-ffd8684ed26c7d25ce7c60943ca7a5ae.image"
+
+[deps]
+
+source_file="res://assets/original/themes/charnel/atlas.png"
+dest_files=["res://.godot/imported/atlas.png-ffd8684ed26c7d25ce7c60943ca7a5ae.image"]
+
+[params]
+

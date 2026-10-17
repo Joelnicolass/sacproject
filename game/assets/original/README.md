@@ -14,7 +14,7 @@ The paths are owned by `scenes/data/original_assets.gd` (`OriginalAssets`). Noth
 | `models/sizes.json` | `{bodies, props}` measurements copied from `cache/baked/*.json` (the dedicated server uses them without meshes) | `python3 tools/import_props.py` | 033c |
 | `ui/{icons,hud,cursors,xmenu}/` | HUD, icons, cursors, X menu | `python3 tools/import_ui.py` | 033d |
 | `fx/<tag>.png`, `fx/fx.json` | Particle atlases (mipmaps only for the ones the catalog lists) and their catalog; `scri.png` is Divine Sight's eye (4x4 sheet, decoded from charlie.wad) | `python3 tools/import_ui.py` | 033d |
-| `themes/<god>/` | Tileset, sky, sun, `envi.tres` per god | `tools/import_themes.py` | 033e |
+| `themes/<god>/` | Tileset, sky, sun, `envi.tres` per god | `python3 tools/import_themes.py` | 033e |
 | `maps/high_noon/` | `terrain.res`, `tiles.png`, `light.png`, `ntts.json`, `widgets.json` | `tools/import_map.py` + `tools/import_terrain.gd` | 033f |
 | `data/*.json` | Creatures, spells, abilities, wizards, books, buildings | `tools/export_stats.py --out assets/original/data` | 033g |
 

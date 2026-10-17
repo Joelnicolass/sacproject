@@ -61,6 +61,11 @@ static func fx_catalog() -> String:
 	return FX_CATALOG
 
 
+## themes/<god>: the folder with a god's tileset, sky, sun and envi.tres.
+static func theme_dir(god: String) -> String:
+	return THEMES_DIR + god
+
+
 ## A theme file: themes/<god>/<name>.png (atlas, edge, sky, skyb, skyt, sun, undr).
 static func theme(god: String, name: String) -> String:
 	return THEMES_DIR + "%s/%s.png" % [god, name]

@@ -9,6 +9,10 @@ extends SceneTree
 ## 033d, 2D: every PNG of cache/look/{icons,hud,cursors,xmenu,fx} against assets/original/ui|fx loaded with load(): same size
 ## and format, identical pixels; fx atlases the catalog lists must also carry the mipmaps Image.generate_mipmaps() made
 ## (FxAtlas.catalog_texture before), the others none; fx.json equals the old catalog with the new paths.
+## 033e, themes: for each god, atlas/edge loaded as Image equal cache/look/themes/<god>/*.png (format, size, bytes, no
+## mipmaps); skyt/skyb/sky equal the old Image + generate_mipmaps() at every level; sun/undr equal and without mipmaps;
+## GodTheme.resolved() gives the colours and fog range of the old theme.json, and its files exist; persephone's sky is the
+## duplicate cache/look/persephone/sky*.png the old Sky read.
 ## The colour key was applied at runtime only where the OBJ sat beside its SAXS (bind-pose bodies, not clip frames), so
 ## the PNG of a model with clips differs from what its frames showed before. That is reported, not failed: "chroma".
 
@@ -87,6 +91,7 @@ func _initialize() -> void:
 		changed += int(chroma[m])
 	print("chroma: %d labels of %d models with clips draw differently from their old (un-keyed) frames: %s" % [changed, names.size(), ", ".join(names)])
 	_audit_2d()
+	_audit_themes()
 	quit(1 if _failed > 0 else 0)
 
 
@@ -130,6 +135,56 @@ func _audit_2d() -> void:
 			_fail("2D %s: %s" % [target, verdict])
 		count[sources[source][2]] = int(count.get(sources[source][2], 0)) + 1
 	print("audit 2D: %s identical to cache/look, %d failed in total" % [count, _failed])
+
+
+func _audit_themes() -> void:
+	var count := 0
+	var kinds := {"atlas": "image", "edge": "image", "skyt": "mips", "skyb": "mips", "sky": "mips", "sun": "plain", "undr": "plain"}
+	for god: String in ["persephone", "pyro", "james", "stratos", "charnel"]:
+		var old_dir := "res://cache/look/themes/%s/" % god
+		for name: String in kinds:
+			var want := Image.load_from_file(ProjectSettings.globalize_path(old_dir + name + ".png"))
+			var target := OriginalAssets.theme(god, name)
+			if want == null or not ResourceLoader.exists(target):
+				_fail("theme %s/%s: cannot load" % [god, name])
+				continue
+			var got: Image
+			if kinds[name] == "image":
+				got = load(target) as Image
+			else:
+				got = (load(target) as Texture2D).get_image()
+			if got == null:
+				_fail("theme %s/%s: not %s" % [god, name, kinds[name]])
+				continue
+			if kinds[name] == "mips":
+				want.generate_mipmaps()
+			if got.get_format() != want.get_format():
+				_fail("theme %s/%s: format %d, old %d" % [god, name, got.get_format(), want.get_format()])
+				continue
+			var verdict := _compare_levels(got, want)
+			if not verdict.is_empty():
+				_fail("theme %s/%s: %s" % [god, name, verdict])
+			count += 1
+		var old: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(old_dir + "theme.json"))
+		var theme: Resource = load("res://data/themes/%s.tres" % god)
+		var resolved: Resource = theme.resolved()
+		if not resolved.missing.is_empty() or theme.get("god") != StringName(god):
+			_fail("theme %s: missing %s or wrong god" % [god, resolved.missing])
+		for key: String in ["background_color", "ambient_color", "sun_color", "fog_color"]:
+			var rgb: Array = old[key]
+			if resolved.get(key) != Color(float(rgb[0]), float(rgb[1]), float(rgb[2])):
+				_fail("theme %s: %s %s, old %s" % [god, key, resolved.get(key), rgb])
+		if resolved.fog_begin != float(old["fog_begin"]) or resolved.fog_end != float(old["fog_end"]):
+			_fail("theme %s: fog range" % god)
+		if resolved.sun_direct_strength != float(old["envi"]["sun_direct_strength"]):
+			_fail("theme %s: sun_direct_strength" % god)
+		if theme.dir() != OriginalAssets.theme_dir(god) or not ResourceLoader.exists(theme.file("atlas.png")):
+			_fail("theme %s: dir or atlas" % god)
+	for pair in [["skyt", "skyt"], ["skyb", "skyb"], ["sky", "sky"]]:
+		var dup := FileAccess.get_file_as_bytes("res://cache/look/persephone/%s.png" % pair[0])
+		if dup != FileAccess.get_file_as_bytes(OriginalAssets.theme("persephone", pair[1])):
+			_fail("persephone %s differs from the old duplicate" % pair[0])
+	print("audit themes: %d images identical to cache/look/themes, 5 envi equal to theme.json, %d failed in total" % [count, _failed])
 
 
 ## Like _compare for any format with 4 bytes per pixel (RGBA8): exact at level 0 and in every level.

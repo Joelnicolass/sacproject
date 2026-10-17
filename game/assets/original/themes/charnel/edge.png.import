@@ -1,0 +1,14 @@
+[remap]
+
+importer="image"
+type="Image"
+uid="uid://ga5pbydbkp4b"
+path="res://.godot/imported/edge.png-f3ab0b0012e34000087b6345da615efa.image"
+
+[deps]
+
+source_file="res://assets/original/themes/charnel/edge.png"
+dest_files=["res://.godot/imported/edge.png-f3ab0b0012e34000087b6345da615efa.image"]
+
+[params]
+

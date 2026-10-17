@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="GodEnvi" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/god_envi.gd" id="1_envi"]
+
+[resource]
+script = ExtResource("1_envi")
+background_color = Color(0.7843, 1.0, 0.9804, 1)
+ambient_color = Color(0.3059, 0.4706, 0.6, 1)
+sun_color = Color(0.7275, 0.6177, 0.5926, 1)
+fog_color = Color(0.4314, 0.6667, 0.8078, 1)
+fog_begin = 0.0
+fog_end = 1500.0
+fog_density = 1.0
+sun_direct_strength = 1.0
+sun_ambient_strength = 0.6000000238418579
+shadow_strength = 0.125
+sun_direction = Vector3(-0.823974609375, 0.020599365234375, 0.5664825439453125)

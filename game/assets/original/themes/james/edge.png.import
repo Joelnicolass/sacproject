@@ -1,0 +1,14 @@
+[remap]
+
+importer="image"
+type="Image"
+uid="uid://d2q28r7av4gl1"
+path="res://.godot/imported/edge.png-ae4d91ffc8ef5b6c84eeacadb4e1eb7e.image"
+
+[deps]
+
+source_file="res://assets/original/themes/james/edge.png"
+dest_files=["res://.godot/imported/edge.png-ae4d91ffc8ef5b6c84eeacadb4e1eb7e.image"]
+
+[params]
+

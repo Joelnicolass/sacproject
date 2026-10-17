@@ -1,12 +1,14 @@
-[gd_resource type="Resource" load_steps=3 format=3]
+[gd_resource type="Resource" load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/god_theme.gd" id="1_theme"]
 
 [ext_resource type="Resource" path="res://data/look/charnel.tres" id="2_look"]
 
+[ext_resource type="Resource" path="res://assets/original/themes/charnel/envi.tres" id="3_envi"]
+
 [resource]
 script = ExtResource("1_theme")
 god = &"charnel"
-cache_dir = "res://cache/look/themes/charnel"
+envi = ExtResource("3_envi")
 sun_strength = 4.0
 look = ExtResource("2_look")

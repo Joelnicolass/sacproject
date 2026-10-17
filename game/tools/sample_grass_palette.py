@@ -2,7 +2,7 @@
 """Proposes a biome's GrassPalette from the color of its original ground (RFC-022e §11, 022e4b).
 
 Ground color = mean of the slot-0 tiles (grass tiles of data/look/ground/high_noon_tiles.tres) of the
-god's atlas (cache/look/themes/<god>/atlas.png), weighted by how often each tile is used on the map
+god's atlas (assets/original/themes/<god>/atlas.png), weighted by how often each tile is used on the map
 (R channel of cache/look/tiles.png). The palette is that color moved by the same HSV transfer that
 takes Persephone's ground to meadow.tres (hue offset, saturation and value gains), with a saturation
 cap. Self-check: on Persephone the proposal must equal meadow within 0.02 per channel.
@@ -39,7 +39,7 @@ def grass_slot_tiles() -> list:
 
 
 def ground_color(god: str, tiles: list) -> tuple:
-    atlas = np.asarray(Image.open(f"cache/look/themes/{god}/atlas.png").convert("RGB"), dtype=float) / 255.0
+    atlas = np.asarray(Image.open(f"assets/original/themes/{god}/atlas.png").convert("RGB"), dtype=float) / 255.0
     cell = atlas.shape[0] // 16
     use = np.bincount(np.asarray(Image.open("cache/look/tiles.png").convert("RGB"))[..., 0].ravel(), minlength=256)
     total = np.zeros(3)

@@ -67,9 +67,9 @@ func preview() -> void:
 	var theme_path := "res://data/themes/%s.tres" % god
 	if terrain and terrain.has_method("set_tileset_dir") and ResourceLoader.exists(theme_path):
 		var theme: Resource = load(theme_path)
-		if theme and theme.has_method("with_cache"):
-			var resolved: Resource = theme.call("with_cache")
-			terrain.call("set_tileset_dir", resolved.call("file", "atlas.png").get_base_dir())
+		if theme and theme.has_method("resolved"):
+			var resolved: Resource = theme.call("resolved")
+			terrain.call("set_tileset_dir", resolved.call("dir"))
 	apply_profile(LookApplier.profile_for(god))
 
 

@@ -1,12 +1,12 @@
 extends Resource
 
-## Land look of one god. The committed .tres keeps engine knobs and neutral
-## defaults; the ENVI colors come from <cache_dir>/theme.json (tools/export_tilesets.py).
+## Land look of one god. The committed .tres keeps engine knobs and neutral defaults; the ENVI colours
+## come from `envi` (assets/original/themes/<god>/envi.tres, tools/import_themes.py) and the images
+## from OriginalAssets.theme_dir(god).
 
 @export var god: StringName = &"james"
-@export_dir var cache_dir: String = "res://cache/look/themes/james"
-## Used when a file is not in cache_dir.
-@export_dir var fallback_dir: String = "res://cache/look/themes/james"## renderer.d setupEnvironment sunStrength (persephone 6, pyro 2, james 14, stratos 12, charnel 4).
+@export var envi: GodEnvi
+## renderer.d setupEnvironment sunStrength (persephone 6, pyro 2, james 14, stratos 12, charnel 4).
 @export var sun_strength: float = 14.0
 ## Light energy when sun_strength * ENVI direct strength equals reference_sun_strength.
 @export var sun_energy_at_reference: float = 1.0
@@ -29,35 +29,30 @@ extends Resource
 var missing: PackedStringArray = []
 
 
-## Copy with the ENVI colors from theme.json; keeps the defaults if the cache is missing.
-func with_cache() -> Resource:
-	var resolved: Resource = duplicate()
-	var path := cache_dir.path_join("theme.json")
-	if not FileAccess.file_exists(path):
-		resolved.missing = PackedStringArray(["theme.json"])
-		return resolved
-	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
-	if not data is Dictionary:
-		resolved.missing = PackedStringArray(["theme.json"])
-		return resolved
-	resolved.missing = PackedStringArray(data.get("missing", []))
-	resolved.background_color = _color(data, "background_color", background_color)
-	resolved.ambient_color = _color(data, "ambient_color", ambient_color)
-	resolved.sun_color = _color(data, "sun_color", sun_color)
-	resolved.fog_color = _color(data, "fog_color", fog_color)
-	resolved.fog_begin = float(data.get("fog_begin", fog_begin))
-	resolved.fog_end = float(data.get("fog_end", fog_end))
-	var envi: Dictionary = data.get("envi", {})
-	resolved.sun_direct_strength = float(envi.get("sun_direct_strength", sun_direct_strength))
-	return resolved
+## Copy with the ENVI colours of `envi`; keeps the defaults when it is missing.
+func resolved() -> Resource:
+	var result: Resource = duplicate()
+	if envi == null:
+		result.missing = PackedStringArray(["envi"])
+		return result
+	result.background_color = envi.background_color
+	result.ambient_color = envi.ambient_color
+	result.sun_color = envi.sun_color
+	result.fog_color = envi.fog_color
+	result.fog_begin = envi.fog_begin
+	result.fog_end = envi.fog_end
+	result.sun_direct_strength = envi.sun_direct_strength
+	return result
 
 
-## Path of a cached file, or the same name in fallback_dir.
+## Folder with this god's images (atlas, edge, sky, skyb, skyt, sun, undr).
+func dir() -> String:
+	return OriginalAssets.theme_dir(String(god))
+
+
+## Path of one of this god's images, e.g. file("atlas.png").
 func file(file_name: String) -> String:
-	var path := cache_dir.path_join(file_name)
-	if FileAccess.file_exists(path):
-		return path
-	return fallback_dir.path_join(file_name)
+	return dir().path_join(file_name)
 
 
 func sun_energy() -> float:
@@ -69,10 +64,3 @@ func sun_energy() -> float:
 ## Godot's sun already folds the PI in, so the ambient keeps that ratio to the sun scale.
 func ambient_light_energy() -> float:
 	return ambient_energy * sun_energy_at_reference * PI / reference_sun_strength
-
-
-func _color(data: Dictionary, key: String, fallback: Color) -> Color:
-	var rgb: Array = data.get(key, [])
-	if rgb.size() < 3:
-		return fallback
-	return Color(float(rgb[0]), float(rgb[1]), float(rgb[2]))

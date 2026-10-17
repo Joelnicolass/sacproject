@@ -2,8 +2,8 @@
 extends MeshInstance3D
 
 @export var cache_path: String = "res://cache/high_noon_terrain.bin"
-## Folder with atlas.png (16x16 MAPT grid). The light map is the map's own.
-@export_dir var tileset_dir: String = "res://cache/look"
+## Folder with atlas.png (16x16 MAPT grid) and edge.png: a god's themes/ folder. The light map is the map's own.
+@export_dir var tileset_dir: String = OriginalAssets.THEMES_DIR + "james"
 ## The map sits around x/z 930-1620, far from where the editor camera opens. In the editor only,
 ## the parent is shifted so the map shows at the origin. Children keep their real coordinates,
 ## and the shift is taken off while the scene is saved.
@@ -366,6 +366,14 @@ func _load_png(path: String) -> ImageTexture:
 	return ImageTexture.create_from_image(image)
 
 
+## atlas.png and edge.png of a god: imported as Image (exact pixels, no mipmaps, no compression).
+func _load_image_texture(path: String) -> ImageTexture:
+	if not ResourceLoader.exists(path):
+		return null
+	var image := load(path) as Image
+	return ImageTexture.create_from_image(image) if image else null
+
+
 func set_tileset_dir(dir: String) -> void:
 	tileset_dir = dir
 	if mesh:
@@ -373,14 +381,14 @@ func set_tileset_dir(dir: String) -> void:
 
 
 func _apply_ground_texture() -> void:
-	var atlas := _load_png(tileset_dir.path_join("atlas.png"))
+	var atlas := _load_image_texture(tileset_dir.path_join("atlas.png"))
 	var light := _load_png("res://cache/look/light.png")
 	if atlas == null:
 		return
 	var mat := ShaderMaterial.new()
 	mat.shader = load("res://scenes/world/sacrifice_ground.gdshader")
 	mat.set_shader_parameter("atlas", atlas)
-	var edge := _load_png(tileset_dir.path_join("edge.png"))
+	var edge := _load_image_texture(tileset_dir.path_join("edge.png"))
 	if edge:
 		mat.set_shader_parameter("edge", edge)
 		mat.set_shader_parameter("has_edge", true)

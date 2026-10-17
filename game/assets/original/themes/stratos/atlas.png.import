@@ -1,0 +1,14 @@
+[remap]
+
+importer="image"
+type="Image"
+uid="uid://c8f7i7ejadkf6"
+path="res://.godot/imported/atlas.png-adb6def7ff08957132742d2f70f3e448.image"
+
+[deps]
+
+source_file="res://assets/original/themes/stratos/atlas.png"
+dest_files=["res://.godot/imported/atlas.png-adb6def7ff08957132742d2f70f3e448.image"]
+
+[params]
+

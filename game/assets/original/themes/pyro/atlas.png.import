@@ -1,0 +1,14 @@
+[remap]
+
+importer="image"
+type="Image"
+uid="uid://bfqwpbwaq48pb"
+path="res://.godot/imported/atlas.png-104274342b2191b171fae8fbe0bff0a9.image"
+
+[deps]
+
+source_file="res://assets/original/themes/pyro/atlas.png"
+dest_files=["res://.godot/imported/atlas.png-104274342b2191b171fae8fbe0bff0a9.image"]
+
+[params]
+

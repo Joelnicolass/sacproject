@@ -17,9 +17,9 @@ const TEXTURE_REPEATS := 8
 ## World height of the sky origin.
 @export var base_height := -511.0
 @export var background_color := Color(1.0, 0.706, 0.471)
-@export_file("*.png") var top_path := "res://cache/look/persephone/skyt.png"
-@export_file("*.png") var bottom_path := "res://cache/look/persephone/skyb.png"
-@export_file("*.png") var clouds_path := "res://cache/look/persephone/sky.png"
+@export_file("*.png") var top_path := OriginalAssets.THEMES_DIR + "persephone/skyt.png"
+@export_file("*.png") var bottom_path := OriginalAssets.THEMES_DIR + "persephone/skyb.png"
+@export_file("*.png") var clouds_path := OriginalAssets.THEMES_DIR + "persephone/sky.png"
 
 @onready var _spin: Node3D = %Spin
 @onready var _top: MeshInstance3D = %Top
@@ -104,28 +104,11 @@ func _bind(mesh: MeshInstance3D, uniform: String, path: String) -> void:
 	material.set_shader_parameter(uniform, texture)
 
 
-func _load_png(path: String) -> ImageTexture:
-	if not FileAccess.file_exists(path):
+## The imported sky texture (mipmapped, see tools/import_themes.py); null when the path is not there.
+func _load_png(path: String) -> Texture2D:
+	if not ResourceLoader.exists(path):
 		return null
-	var image := Image.new()
-	var bytes := FileAccess.get_file_as_bytes(path)
-	if bytes.is_empty():
-		return null
-	var ext := path.get_extension().to_lower()
-	var ok := ERR_FILE_UNRECOGNIZED
-	match ext:
-		"png":
-			ok = image.load_png_from_buffer(bytes)
-		"jpg", "jpeg":
-			ok = image.load_jpg_from_buffer(bytes)
-		"webp":
-			ok = image.load_webp_from_buffer(bytes)
-		_:
-			ok = image.load(path)
-	if ok != OK:
-		return null
-	image.generate_mipmaps()
-	return ImageTexture.create_from_image(image)
+	return load(path) as Texture2D
 
 
 func _mirror(u: float) -> float:

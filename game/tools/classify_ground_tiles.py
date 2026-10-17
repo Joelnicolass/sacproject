@@ -9,7 +9,7 @@ from PIL import Image
 
 GRASS, SOIL, PATH, NONE = 0, 2, 3, 255
 
-atlas = np.array(Image.open("cache/look/themes/persephone/atlas.png").convert("RGB")).astype(float)
+atlas = np.array(Image.open("assets/original/themes/persephone/atlas.png").convert("RGB")).astype(float)
 cell = atlas.shape[0] // 16
 slots = []
 for tile in range(256):

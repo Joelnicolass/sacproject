@@ -1,0 +1,14 @@
+[remap]
+
+importer="image"
+type="Image"
+uid="uid://dr48arue62026"
+path="res://.godot/imported/edge.png-f97f41c9755c91c33418e24465589a2b.image"
+
+[deps]
+
+source_file="res://assets/original/themes/stratos/edge.png"
+dest_files=["res://.godot/imported/edge.png-f97f41c9755c91c33418e24465589a2b.image"]
+
+[params]
+

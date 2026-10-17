@@ -35,9 +35,9 @@ static func pick_random(match_seed: int) -> Resource:
 	return theme_for(pick_god(match_seed))
 
 
-## Returns the theme with the cached ENVI colors, as applied.
+## Returns the theme with its ENVI colours, as applied.
 static func apply(theme: Resource, world_root: Node) -> Resource:
-	var resolved: Resource = theme.with_cache()
+	var resolved: Resource = theme.resolved()
 	var sky := world_root.get_node_or_null(SKY_NODE)
 	if sky:
 		sky.set("background_color", resolved.background_color)
@@ -55,7 +55,7 @@ static func apply(theme: Resource, world_root: Node) -> Resource:
 		sun.light_energy = resolved.sun_energy()
 	var terrain := world_root.get_node_or_null(TERRAIN_NODE)
 	if terrain and terrain.has_method("set_tileset_dir"):
-		terrain.set_tileset_dir(resolved.file("atlas.png").get_base_dir())
+		terrain.set_tileset_dir(resolved.dir())
 	# Also with a null look (classic mode): a layer that was on puts the classic values back.
 	LookApplier.apply(resolved.look, world_root)
 	return resolved

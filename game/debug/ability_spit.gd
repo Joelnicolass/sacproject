@@ -59,6 +59,7 @@ var _round := 0
 
 
 func _ready() -> void:
+	MeleeAttack.log_gap = true  # melee_gap_expect reads the approach of the final_spit_melee flow
 	world.local_wizard_changed.connect(func(_wizard: Node3D) -> void: _start.call_deferred())
 	if world.call("local_wizard"):
 		_start.call_deferred()

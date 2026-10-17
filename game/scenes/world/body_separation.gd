@@ -385,6 +385,18 @@ static func _box(body: Node3D) -> Vector2:
 	return box
 
 
+## Centre-to-centre distance, along the line from `a` to `b`, at which the second pass of positionAfterCollision leaves
+## two bodies at rest: their axis-aligned boxes, grown by half of blockSlack, stop overlapping on the wider axis
+## (max(|dx|, |dz|) = both halves + that slack). A walker asked to stop closer is pushed back out every tick.
+static func rest_distance(a: Node3D, b: Node3D) -> float:
+	var apart := b.global_position - a.global_position
+	var along := maxf(absf(apart.x), absf(apart.z))
+	var rest := half_size(a) + half_size(b) + 0.5 * BLOCK_SLACK
+	if along < 0.000001:
+		return rest
+	return rest * Vector2(apart.x, apart.z).length() / along
+
+
 ## Half the box width: the same body size Orders uses for the formation (getFormationOffsets).
 static func half_size(body: Node3D) -> float:
 	var model := str(body.get("model")) if "model" in body else ""

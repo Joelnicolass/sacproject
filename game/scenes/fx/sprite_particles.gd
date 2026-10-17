@@ -4,7 +4,7 @@ extends CPUParticles3D
 ## One-shot burst of atlas sprites. Frees itself when the burst ends, unless FxBus pools it.
 
 @export var type: ParticleType
-@export_file("*.json") var catalog_path: String = "res://cache/look/fx/fx.json"
+@export_file("*.json") var catalog_path: String = OriginalAssets.FX_CATALOG
 ## Owned by FxBus's pool (RFC-029 029b): it waits hidden for `replay` and hides again when the burst
 ## ends (`finished`) instead of freeing itself. Off = one burst on entering the tree, then queue_free.
 @export var pooled := false

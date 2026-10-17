@@ -7,7 +7,7 @@ extends Node3D
 ## a ring is born each frame at a height that moves in steps along the body (up_steps / down_steps), lives
 ## `teleport_ring_s`, rises a little, shrinks with sqrt(1 - age) and glows with 20 * scale². One MultiMesh draws them all;
 ## it frees itself when the last ring is gone. Presentation: it is never created on the dedicated server.
-## The atlas `brng` comes from the local install through the cache (tools/export_particles.py).
+## The atlas `brng` comes from the local install through tools/import_ui.py (assets/original/fx).
 
 const TICKS_PER_S := 60.0
 ## Where the ring height jumps, as (frame as a fraction of the effect, change in body heights): state.d:16078-16091.
@@ -23,7 +23,7 @@ const TICKS_PER_ATLAS_FRAME := 8.0
 @export var rules: MatchRules
 ## Entry of fx.json with the atlas of the ring.
 @export var atlas_key := "teleport_ring"
-@export_file("*.json") var catalog_path: String = "res://cache/look/fx/fx.json"
+@export_file("*.json") var catalog_path: String = OriginalAssets.FX_CATALOG
 @export var rings: MultiMeshInstance3D
 
 var _going_out := true

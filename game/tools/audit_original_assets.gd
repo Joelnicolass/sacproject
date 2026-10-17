@@ -6,6 +6,9 @@ extends SceneTree
 ## 033b, textures: for every (model, label) of textures/index.json the imported texture (all mipmap levels) must be
 ## byte-identical to the old runtime pipeline: source file (TGA or PNG), colour key of the limb record, alpha edges,
 ## mipmaps. Exits 1 on any mismatch.
+## 033d, 2D: every PNG of cache/look/{icons,hud,cursors,xmenu,fx} against assets/original/ui|fx loaded with load(): same size
+## and format, identical pixels; fx atlases the catalog lists must also carry the mipmaps Image.generate_mipmaps() made
+## (FxAtlas.catalog_texture before), the others none; fx.json equals the old catalog with the new paths.
 ## The colour key was applied at runtime only where the OBJ sat beside its SAXS (bind-pose bodies, not clip frames), so
 ## the PNG of a model with clips differs from what its frames showed before. That is reported, not failed: "chroma".
 
@@ -83,7 +86,59 @@ func _initialize() -> void:
 	for m: String in names:
 		changed += int(chroma[m])
 	print("chroma: %d labels of %d models with clips draw differently from their old (un-keyed) frames: %s" % [changed, names.size(), ", ".join(names)])
+	_audit_2d()
 	quit(1 if _failed > 0 else 0)
+
+
+func _audit_2d() -> void:
+	var catalog: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(OriginalAssets.fx_catalog()))
+	var old_catalog: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://cache/look/fx/fx.json"))
+	if catalog.size() != old_catalog.size():
+		_fail("fx.json: %d entries, old %d" % [catalog.size(), old_catalog.size()])
+	var mipped := {}
+	for key: String in old_catalog:
+		var entry: Dictionary = old_catalog[key].duplicate()
+		entry["png"] = str(entry["png"]).replace("res://cache/look/fx/", OriginalAssets.FX_DIR)
+		if catalog.get(key) != entry:
+			_fail("fx.json entry %s differs" % key)
+		mipped[str(entry["png"])] = true
+	var count := {}
+	var sources := {}
+	for family in ["icons", "hud", "cursors", "xmenu"]:
+		for file in DirAccess.get_files_at("res://cache/look/" + family + "/"):
+			if file.ends_with(".png"):
+				sources["res://cache/look/%s/%s" % [family, file]] = [OriginalAssets.UI_DIR + family + "/" + file, false, family]
+	for file in DirAccess.get_files_at("res://cache/look/fx/"):
+		if file.ends_with(".png"):
+			var target := OriginalAssets.FX_DIR + file
+			sources["res://cache/look/fx/" + file] = [target, mipped.has(target), "fx"]
+	for source: String in sources:
+		var target: String = sources[source][0]
+		var want := Image.load_from_file(ProjectSettings.globalize_path(source))
+		var tex := load(target) as Texture2D if ResourceLoader.exists(target) else null
+		if tex == null:
+			_fail("2D %s: cannot load %s" % [source, target])
+			continue
+		if sources[source][1]:
+			want.generate_mipmaps()
+		var got := tex.get_image()
+		if got.get_format() != want.get_format():
+			_fail("2D %s: format %d, old %d" % [target, got.get_format(), want.get_format()])
+			continue
+		var verdict := _compare_levels(got, want)
+		if not verdict.is_empty():
+			_fail("2D %s: %s" % [target, verdict])
+		count[sources[source][2]] = int(count.get(sources[source][2], 0)) + 1
+	print("audit 2D: %s identical to cache/look, %d failed in total" % [count, _failed])
+
+
+## Like _compare for any format with 4 bytes per pixel (RGBA8): exact at level 0 and in every level.
+func _compare_levels(got: Image, want: Image) -> String:
+	if got.get_size() != want.get_size() or got.get_mipmap_count() != want.get_mipmap_count():
+		return "size or mip count differs (%s/%d vs %s/%d)" % [got.get_size(), got.get_mipmap_count(), want.get_size(), want.get_mipmap_count()]
+	if got.get_data() != want.get_data():
+		return _compare(got, want) if got.get_format() == Image.FORMAT_RGBA8 else "data differs"
+	return ""
 
 
 func _fail(message: String) -> void:

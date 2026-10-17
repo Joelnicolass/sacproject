@@ -2118,3 +2118,19 @@ Deuda:
 Deuda:
 - El ojo es un resplandor provisorio casi invisible; el sprite original `scri` (hoja 4×4, `Bloo.WAD`) se exporta en 033d.
 - Busca blanco cada tick, no por la cola de IA; sin línea de vista.
+
+### F170 — HUD, iconos, cursores y FX como assets (RFC-033, corte 033d)
+
+**Piezas:**
+- **`tools/import_ui.py`:** 270 PNG en `assets/original/ui/{icons,hud,cursors,xmenu}` y `assets/original/fx/` con `fx.json` (3,2 MB con los `.import`, LFS), lossless; mips solo en los atlas del catálogo y en `scri`.
+- **Consumidores por `OriginalAssets`** (`UI_*_DIR`, `FX_CATALOG`): `HudIcons`, `FxAtlas`, `sprite_particles`, `teleport_rings`, `soul`.
+- **Ojo de Divine Sight (F165):** el `glow` provisorio pasa al sprite original `scri` (hoja 4×4, 16 cuadros, 8 ticks por cuadro: `animationDelay` 4 × `updateAnimFactor` 2, sacengine `sacobject.d:3859-3861`).
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-033d.md`).
+- **Paridad:** 270 de 270 PNG idénticos byte a byte a `cache/look`; atlas iguales en todos los mips; las 701 texturas de 033b siguen iguales.
+- **Capturas:** el panel del HUD da 0 px por regiones; el resto dentro del ruido conocido. Captura del ojo: `agent/out/f165/f165_rising.png`.
+- **`quick`** igual a la base; flow `f165_divine_sight` PASS.
+
+Deuda:
+- El lector de TXTR está duplicado entre `export_particles.py` y `tools/sac_formats/` (033h).
+- `import_ui.py` copia de `cache/look`, salvo `scri`, que sale del WAD (033h).

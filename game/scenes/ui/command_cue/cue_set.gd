@@ -3,7 +3,7 @@ extends Resource
 
 ## What the command cursor shows instead of words (RFC-025c): which icon goes with an armed order,
 ## which words mean «refused» and which cursor goes with what lies under the pointer. Only tags and
-## names of the local cache (cache/look/{icons,xmenu,cursors}); no image of the original ships here.
+## names of assets/original/ui/{icons,xmenu,cursors}; no image of the original ships here.
 ## Another variant is another .tres.
 
 ## Armed order -> icon tag. `attack`/`advance` = Matt, `guard`/`guard_area` = Mgua, `move` = Mgot

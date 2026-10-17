@@ -23,8 +23,11 @@ extends Node3D
 ## Divergences (declared): (1) frontOfAIQueue: sacengine looks for the target only on the ticks its creature is at the front of the
 ## side's AI queue; the eye looks every tick. (2) The target is a valid foe by UnitBody.is_valid_foe_of (no stealth, no rock, no
 ## corpse), the port's one definition. (3) The sight has no terrain line of sight (SideVision's own approximation) and its refresh
-## starts at the first flying tick, not at (id + frame) % 30. (4) The sprite `scri` (16 frames, 2.5 x 2.25 m, energy 3) is not in
-## the local cache: the look is a placeholder glow of the same size.
+## starts at the first flying tick, not at (id + frame) % 30.
+## Look (SacDivineSight, renderer.d:882-891 and 3517-3530): the sprite `scri` (4x4 sheet, 16 frames) on a 2.5 x 2.25 m billboard,
+## shadeless, energy 3 (the material's albedo_color), alpha blended with alpha = scale². One cell per animationDelay (4) x
+## updateAnimFactor (2) = 8 ticks, so a cycle is 128 ticks. Each copy runs its own clock from the tick it appears (presentation only:
+## a client has no frame count, so it counts physics ticks itself).
 
 signal ended
 
@@ -39,8 +42,12 @@ const TICKS := float(MatchClock.TICKS_PER_SECOND)
 @export var refresh_ticks := 30
 ## Who may be the target: the moving bodies of sacengine's creature type.
 @export var target_groups: Array[StringName] = [&"wizard", &"unit"]
-## The glow (a MeshInstance3D with its own material); its alpha follows scale².
+## The sprite (a MeshInstance3D with its own StandardMaterial3D whose uv1_scale is one cell); its alpha follows scale².
 @export var glow: MeshInstance3D
+## Cells of the sprite sheet (scri.png) and the ticks each one stays (sacengine animationDelay 4 x updateAnimFactor 2).
+@export var frames_h := 4
+@export var frames_v := 4
+@export var ticks_per_frame := 8
 
 ## Bench log (the F165 probe turns it on; off in the product).
 static var log_eye := false
@@ -59,6 +66,7 @@ var _last_land := 0.0
 var _shooter_name := ""
 var _vision: SideVision
 var _material: StandardMaterial3D
+var _first_tick := 0
 
 
 ## The packet of DivineSight.fire (ShotSpawner.spawn_scene): name, x/y/z, vx/vy/vz (m/s), slot, tag, shooter (its name, for the log).
@@ -84,6 +92,7 @@ func _ready() -> void:
 	if glow and glow.material_override is StandardMaterial3D:
 		_material = (glow.material_override as StandardMaterial3D).duplicate()
 		glow.material_override = _material
+	_first_tick = Engine.get_physics_frames()
 	if MpKit.is_networked() and not MpKit.is_server():
 		set_physics_process(false)
 		return
@@ -97,6 +106,9 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if _material:
 		_material.albedo_color.a = clampf(scale.x * scale.x, 0.0, 1.0)
+		var cells := frames_h * frames_v
+		var cell := posmod(floori(float(Engine.get_physics_frames() - _first_tick) / ticks_per_frame), cells)
+		_material.uv1_offset = Vector3(float(cell % frames_h) / frames_h, float(floori(float(cell) / frames_h)) / frames_v, 0.0)
 
 
 func _physics_process(_delta: float) -> void:

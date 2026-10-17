@@ -2,12 +2,9 @@
 class_name FxAtlas
 extends RefCounted
 
-## Atlases of the particle exporter (tools/export_particles.py) by TXTR tag: `res://cache/look/fx/<tag>.png`.
-## The cache is outside git and outside the import pipeline: PNGs are read from disk. Static and
-## @tool so the editor and a headless run can use it without autoloads. A missing file is null:
-## the caller draws its own fill and warns.
-
-const DIR := "res://cache/look/fx/"
+## Atlases of the particle importer (tools/import_ui.py) by TXTR tag: `res://assets/original/fx/<tag>.png` (RFC-033d), imported
+## textures read with `load()`. Static and @tool so the editor and a headless run can use it without autoloads. A missing
+## file is null: the caller draws its own fill and warns.
 
 static var _textures: Dictionary = {}
 
@@ -17,12 +14,8 @@ static func texture(tag: String) -> Texture2D:
 		return null
 	if _textures.has(tag):
 		return _textures[tag]
-	var texture_out: Texture2D = null
-	var absolute := ProjectSettings.globalize_path(DIR + tag + ".png")
-	if FileAccess.file_exists(absolute):
-		var image := Image.load_from_file(absolute)
-		if image != null and not image.is_empty():
-			texture_out = ImageTexture.create_from_image(image)
+	var path := OriginalAssets.fx(tag)
+	var texture_out: Texture2D = load(path) as Texture2D if ResourceLoader.exists(path) else null
 	_textures[tag] = texture_out
 	return texture_out
 
@@ -30,7 +23,7 @@ static func texture(tag: String) -> Texture2D:
 const SHADER_ADD := preload("res://scenes/fx/sprite_particle_add.gdshader")
 const SHADER_MIX := preload("res://scenes/fx/sprite_particle_mix.gdshader")
 const SHADER_MIX_LIT := preload("res://scenes/fx/sprite_particle_mix_lit.gdshader")
-const CATALOG := "res://cache/look/fx/fx.json"
+const CATALOG := OriginalAssets.FX_CATALOG
 
 static var _catalogs: Dictionary = {}
 static var _catalog_textures: Dictionary = {}
@@ -38,38 +31,31 @@ static var _materials: Dictionary = {}
 static var _meshes: Dictionary = {}
 
 
-## Entry of an fx.json catalog (empty when the cache or the key is missing).
+## Entry of an fx.json catalog (empty when the catalog or the key is missing).
 static func catalog_entry(atlas_key: String, path: String = CATALOG) -> Dictionary:
 	if not _catalogs.has(path):
 		var data: Dictionary = {}
-		var absolute := ProjectSettings.globalize_path(path)
-		if FileAccess.file_exists(absolute):
-			var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(absolute))
+		if FileAccess.file_exists(path):
+			var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
 			if parsed is Dictionary:
 				data = parsed
 		_catalogs[path] = data
 	return _catalogs[path].get(atlas_key, {})
 
 
-## Atlas PNG of a catalog entry, with mipmaps (particles shrink far away).
+## Atlas PNG of a catalog entry (imported with mipmaps: particles shrink far away).
 static func catalog_texture(atlas_key: String, path: String = CATALOG) -> Texture2D:
 	var png: String = catalog_entry(atlas_key, path).get("png", "")
 	if png.is_empty():
 		return null
 	if _catalog_textures.has(png):
 		return _catalog_textures[png]
-	var texture: Texture2D = null
-	var absolute := ProjectSettings.globalize_path(png)
-	if FileAccess.file_exists(absolute):
-		var image := Image.load_from_file(absolute)
-		if image != null and not image.is_empty():
-			image.generate_mipmaps()
-			texture = ImageTexture.create_from_image(image)
+	var texture: Texture2D = load(png) as Texture2D if ResourceLoader.exists(png) else null
 	_catalog_textures[png] = texture
 	return texture
 
 
-## Shared shadeless material of a ParticleType; null when its atlas is not in the cache.
+## Shared shadeless material of a ParticleType; null when its atlas is missing.
 ## The material is cached per ParticleType, but its parameters are refreshed on every call,
 ## so an edit in the inspector (energy, atlas, blending) shows up when the emitter rebuilds.
 static func material_for(particle: ParticleType, path: String = CATALOG) -> ShaderMaterial:

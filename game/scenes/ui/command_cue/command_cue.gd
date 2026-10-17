@@ -50,7 +50,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if not scale_warning.is_empty():
 		warnings.append(scale_warning)
 	if HudIcons.icon("ncst") == null:
-		warnings.append("Falta cache/look/cursors: corré tools/export_icons.py. Sin eso se dibuja un círculo de respaldo.")
+		warnings.append("Faltan assets/original/ui/cursors: corré tools/import_ui.py. Sin eso se dibuja un círculo de respaldo.")
 	return warnings
 
 

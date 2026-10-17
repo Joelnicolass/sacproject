@@ -1,10 +1,9 @@
 class_name HudIcons
 extends RefCounted
 
-## Images the HUD draws from the local cache (cache/look/, ignored by git: nothing of the original
-## ships in the repo). `tools/export_icons.py` writes the 32×32 CRE8/SPEL icons and the HUD sheets
-## (tabs, page, fram, spi2). Every lookup returns null when the file is missing, so a clone without
-## the cache still runs and each view draws its own fallback.
+## Images the HUD draws from res://assets/original/ui/ (RFC-033d; `tools/import_ui.py` writes them, LFS). The
+## 32×32 CRE8/SPEL icons and the HUD sheets (tabs, page, fram, spi2) are imported textures read with `load()`.
+## Every lookup returns null when the file is missing, so each view draws its own fallback.
 ##
 ## RFC-025c adds the cursors of curs.FLDR (`cursor`) and the XMNU icons of xmenu.wad (`xmenu`); the
 ## order icons Matt/Mgua/Mgot and the invalid-target icon ncst are in `icons/` next to the rest.
@@ -12,10 +11,10 @@ extends RefCounted
 ## `icon_dir` / `hud_dir` / `cursor_dir` / `xmenu_dir` are static knobs: point them at an empty
 ## folder to rehearse the fallback.
 
-const ICON_DIR := "res://cache/look/icons/"
-const HUD_DIR := "res://cache/look/hud/"
-const CURSOR_DIR := "res://cache/look/cursors/"
-const XMENU_DIR := "res://cache/look/xmenu/"
+const ICON_DIR := OriginalAssets.UI_ICONS_DIR
+const HUD_DIR := OriginalAssets.UI_HUD_DIR
+const CURSOR_DIR := OriginalAssets.UI_CURSORS_DIR
+const XMENU_DIR := OriginalAssets.UI_XMENU_DIR
 
 static var icon_dir := ICON_DIR
 static var hud_dir := HUD_DIR
@@ -112,10 +111,6 @@ static func reset() -> void:
 
 
 static func _load_png(path: String) -> Texture2D:
-	var absolute := ProjectSettings.globalize_path(path)
-	if not FileAccess.file_exists(absolute):
+	if not ResourceLoader.exists(path):
 		return null
-	var image := Image.load_from_file(absolute)
-	if image == null or image.is_empty():
-		return null
-	return ImageTexture.create_from_image(image)
+	return load(path) as Texture2D

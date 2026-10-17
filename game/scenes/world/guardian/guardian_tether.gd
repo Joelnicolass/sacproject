@@ -11,7 +11,7 @@ extends Node3D
 ## building is (state.d:15404-15417).
 ## Look: the tube of 3 planes with pointed ends that sacengine draws (makeLineMeshes(19, 4, 4, 1.5, 1.0,
 ## pointy), sacobject.d:4466-4472), additive and shadeless with energy 5 (renderer.d:253-261), from the
-## `grdn` atlas (charlie.wad, sacobject.d:4466) that tools/export_particles.py puts in cache/look/fx/. One
+## `grdn` atlas (charlie.wad, sacobject.d:4466) that tools/import_ui.py puts in assets/original/fx/. One
 ## cell of the 4x4 per 2 ticks (16 cells). Without the atlas it falls back to a flat soft color.
 ## The beam waits for the building while `post_path` is set and the building has not arrived on this peer
 ## (a late client); it only withdraws when the bond ends (retire()).
@@ -25,7 +25,7 @@ enum Phase { APPEARING, STEADY, WITHDRAWING_AT_BUILDING, WITHDRAWING_AT_CREATURE
 @export var jitter_radius := 0.75
 ## Distance from the axis to each of the 3 planes, meters (the 1.0 passed to makeLineMeshes, sacobject.d:4472).
 @export var width := 1.0
-## Atlas tag of the beam (cache/look/fx/<tag>.png).
+## Atlas tag of the beam (assets/original/fx/<tag>.png).
 @export var atlas_tag := "grdn"
 ## Brightness (SacGuardianTether material energy, renderer.d:257).
 @export var energy := 5.0

@@ -14,6 +14,11 @@ const FX_DIR := ROOT + "fx/"
 const THEMES_DIR := ROOT + "themes/"
 const MAPS_DIR := ROOT + "maps/"
 const DATA_DIR := ROOT + "data/"
+const UI_ICONS_DIR := UI_DIR + "icons/"
+const UI_HUD_DIR := UI_DIR + "hud/"
+const UI_CURSORS_DIR := UI_DIR + "cursors/"
+const UI_XMENU_DIR := UI_DIR + "xmenu/"
+const FX_CATALOG := FX_DIR + "fx.json"
 
 
 ## A model's texture: textures/<model>/<label>.png (label like "001").
@@ -53,7 +58,7 @@ static func fx(tag: String) -> String:
 
 
 static func fx_catalog() -> String:
-	return FX_DIR + "fx.json"
+	return FX_CATALOG
 
 
 ## A theme file: themes/<god>/<name>.png (atlas, edge, sky, skyb, skyt, sun, undr).

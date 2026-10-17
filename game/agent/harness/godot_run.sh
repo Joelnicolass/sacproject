@@ -91,7 +91,19 @@ launch() {  # launch <cmd...>: start once nothing exclusive runs and fewer than 
   "$@" &
   child=$!
   sleep 1; rm -rf "$LAUNCH"   # the child is visible to ps now; let the next one decide
-  wait $child
+  # A window run that never quits holds the only window for everyone (2026-10-17: a capture scene hung 21 min).
+  # Cap its wall time (GODOT_WINDOW_MAX_S, default 600 s; 0 = no cap) and kill the whole process group past it.
+  if [ "${is_window:-0}" = 1 ] && [ "${GODOT_WINDOW_MAX_S:-600}" -gt 0 ]; then
+    ( sleep "${GODOT_WINDOW_MAX_S:-600}"
+      if kill -0 $child 2>/dev/null; then
+        echo "godot_run: ventana pasó ${GODOT_WINDOW_MAX_S:-600}s, se corta: $*" >&2
+        pkill -9 -P $child 2>/dev/null; kill -9 $child 2>/dev/null
+      fi ) &
+    dog=$!
+  fi
+  wait $child; code=$?
+  [ -n "${dog:-}" ] && kill $dog 2>/dev/null
+  return $code
 }
 
 if [ $import -eq 1 ]; then
@@ -113,6 +125,7 @@ if [ $headless -eq 0 ]; then
   take "$WIN"; echo "$*" > "$WIN/cmd"
   trap 'rm -rf "$WIN"; rm -f "$ticket"' EXIT INT TERM
   echo "godot_run: ventana, espera ${waited}s" >&2
+  is_window=1
   launch "$@"
   exit $?
 fi

@@ -24,6 +24,9 @@ static var log_melee := false
 ## sacengine `defaultMeleeHitbox`: hitboxCenter *= 1.3 for most creatures.
 @export var forward_factor := 1.3
 @export var height_factor := 1.5
+## sacengine `attack` (state.d:12857-12862): with the target inside the melee box the attacker keeps walking in until
+## its centre is within this share of its box's forward offset (targetDistance) from the target's near edge.
+@export var close_in_factor := 0.8
 ## sacengine `meleeAttackIsDownward`: target center this far below ours uses attack2.
 @export var downward_threshold := 0.25
 ## sacengine `dealDamage`: melee damage *= 0.4 * meleeResistance.
@@ -69,6 +72,20 @@ func cancel() -> void:
 
 func can_start(target: Node3D) -> bool:
 	return type != null and type.melee_strength > 0 and in_reach(target, start_factor)
+
+
+## Flat velocity-per-pace (length 0..1) that keeps closing in on `target` while it is in melee reach, so a ranged
+## foe ends inside RangedAttack.melee_distance. Zero once close enough or out of reach. The body applies its own pace.
+func close_in(target: Node3D, pace: float, delta: float) -> Vector3:
+	if _body == null or target == null or pace <= 0.0 or not in_reach(target, start_factor):
+		return Vector3.ZERO
+	var to_foe := target.global_position - _body.global_position
+	to_foe.y = 0.0
+	var edge := to_foe.length() - float(profile_of(target).get("reach", 0.35))
+	var excess := edge - close_in_factor * forward_factor * reach
+	if excess <= 0.0 or delta <= 0.0:
+		return Vector3.ZERO
+	return to_foe.normalized() * minf(pace, excess / delta)
 
 
 ## sacengine `startMeleeAttacking` (state.d:8725): attack2 when striking downward, else

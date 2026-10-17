@@ -70,6 +70,7 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 			"gravity": falling,
 			"max_distance": flight_limit,
 			"target": "",
+			"intended": str(target.get_path()) if _is_foe(target) else "",
 			"shooter": str(user.get_path()),
 		})
 		if log_effects:
@@ -81,6 +82,11 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 
 ## state.uniformDirection: a point of the cube [−1, 1]³, normalized. The draws are the simulation's: do not reorder them.
 func _uniform_direction(rng: RandomNumberGenerator) -> Vector3:
+	return LobAbility.uniform_direction(rng)
+
+
+## The cube point, 3 draws (MiteHop's too).
+static func uniform_direction(rng: RandomNumberGenerator) -> Vector3:
 	return Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0)).normalized()
 
 

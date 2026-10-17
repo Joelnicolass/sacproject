@@ -29,6 +29,8 @@ const LOOKS_DIR := "res://data/shots/"
 ## F155: the shot bursts on any creature but its shooter (the Viscous oil's kcfa, state.d:25580-25586), whatever the side:
 ## neither the target nor the side filter matters. Wins over hits_allies. Also read by 030s-b.
 @export var hits_every_side := false
+## F156: the shot only meets a body that Poisoning.can_be_poisoned (blightMiteCollisionTarget, state.d:25262-25269); it flies through the rest.
+@export var hits_only_poisonable := false
 ## F155: the shot's hit carries DamageMod.ignite (fkba, cfba: state.d:23247, 24521; fhba, the Spitfire's cone, is not a shot): on an oiled body it
 ## takes ×2 and lights the oil. RangedShot.mods -> ShotImpact.land and the impacts.
 @export var ignites := false

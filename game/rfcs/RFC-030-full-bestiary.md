@@ -1212,6 +1212,21 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 *Divergencias declaradas:* los edificios no frenan el rayo; el nodo del rayo se libera al pegar (no guarda sus 64 cuadros: el look tiene los suyos); sin cicatriz ni sonido; los candidatos de una descarga van en orden de grupos y no de cercanía; un cuerpo que muere pierde la carga al instante.
 
+#### 030s-b: Plan (developer) / Resultado
+
+**Plan (developer de 030s-b, 2026-10-17):** el del tech lead en `rfcs/plans/030q-030s-plan.md` §030s-b, con los archivos de la fase 0 (`MiteHop`, `bilemites.tscn`, `liba.tres`, `f156_expect.py`, carril M). Números de `state.d` 13111-13119, 25235-25340, 28778, 29106-29111 y `stats.d` 122.
+- `ShotInFlight.spent() -> bool` (false por defecto; solo `MiteHop` lo redefine). `RangedShot._physics_process`, después de `fly()`: si `spent()`, apaga la física y `queue_free` (+4 líneas).
+- `liba.tres`: `hits_every_side = true`. `LobAbility.fire`: el paquete lleva `"intended"` (ruta del blanco si es enemigo, `""` si no); `"target"` queda igual (`f129` y `f155` no cambian). `LobAbility.uniform_direction(rng)` estático, que usa también `MiteHop` (un solo dueño del cubo normalizado).
+- Catálogo `"liba"` (`bilemites.tscn`); `ai_match` enciende `MiteHop.log_hop`; caso `f156` (0,3 min, semilla 7) en `run_determinism.sh` (usage, `case_args`, `quick` fixed). Ventana: `pt156_watch.gd`, `run_pt156.sh`, `flows/pt156_play.json`.
+
+**Resultado (developer de 030s-b, 2026-10-17):**
+- `f156_expect.py` da `RESULTADO PASS` en fixed, stress y window: maná 200→140 y los 10 ácaros salen en T+94 (tick 128); 30 saltos o pegadas comparados con la réplica (±1); ningún ácaro pasa de 5 saltos; factor 0,8ⁿ (n hasta 10); cada ácaro se suelta a los +481 y el factor vuelve a 1,0; el Blight no recibe ninguno. Cuerpos: Blight1, Druid1 (blanco), Druid2, Druid3 (aliado).
+- **Determinismo:** `f156` da `502fa00b` en los 3 modos y se grabó en `det_baseline.txt`. `quick`: las 17 líneas base iguales. `rules_suite` PASS con `--fixed-fps 60` (con `sim_rng_lint`).
+- **Ventana** (`run_pt156.sh pt156_play`, capturas en `agent/out/pt156/play/`; Enter y cámara en picado reencuadrada): `p1`-`p3` los ácaros en el aire y saltando (7 a 9 px de diámetro a 24 m de altura de cámara), `p4` y `p5` ácaros pegados al Druid1 (14 a 20 px, con el factor bajando a 0,21 con 7 pegados), `p6` suelto (3 pegados, 0,512). Las esferas verdes se distinguen sobre la nieve a simple vista; la medición de contraste por luminancia sale baja (0,0 a 0,3) porque la nieve es clara, y la dio el ojo.
+- **No ejercitado en el banco:** el camino `spent()` (5.º toque y suelta a los +30): en la semilla 7 los 10 ácaros pegan a Druid1 antes de llegar al 5.º salto. El criterio 3 («se libera a los +30») queda por cubrir con un carril sin blancos cercanos.
+
+*Divergencias declaradas:* un ácaro parado sigue chocando durante sus 30 ticks (sacengine no choca una vez parado); el suelo es el del terreno, sin techos; sobre un hueco (sin suelo) el ácaro no toca y vuela hasta el fin del alcance; el ácaro no pega a su tirador; el look del ácaro es de reserva (esfera verde, `fallback_color`).
+
 ### 030r — F129 Sticky bomb y Viscous oil
 - **Árbol:** N `abilities/lob_ability.tscn/.gd` (proyectil de habilidad); M `ability_catalog.tres`.
 - **Escena de prueba:** `res://debug/f127_lobs.tscn`. **Criterio:** daño o efecto en el blanco.
@@ -1310,3 +1325,9 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 - **030e (por el playtest de F112):** Rhinok flota en el idle (`Eds1`, que también es tag de vuelo) y Phoenix flota +3,26 m. Las dos entran al criterio de pose de 030e.
 - **030e, revisado por REVIEW-F116 (2026-10-16):** fiel a sacengine (`sacobject.d:675-689`), Rhinok no vuela y camina siempre: sus slots de vuelo repiten `stance1`. Según los datos no flota, está hundido entre −0,77 y −1,47 m. Phoenix vuela siempre y no tiene takeoff ni land (`DF00`), así que también despega con destinos a 5 m. Se acepta como excepción al criterio 2. El criterio 3 (pose y cápsula: Rhinok, Hellmouth y Silverback hundidos, alas y cuellos fuera de la cápsula, y decidir con REA si Phoenix flota como en el original) pasa al corte nuevo **030e2**.
 - **Deuda de 030e:** no hay combate en el aire (CHASE y ataque hacen bajar a tierra), falta el clip `hover`, `badLanding` y morir en el aire, el vuelo largo no sigue el relieve, y el export no aplica `nonFlyingTags` ni `fixFamiliar`.
+
+**Ronda de corrección de 030s-b (2026-10-17, review B1/M1/M2/M4):**
+- B1: carril N en `f156_mites.tres` (Blight2 a (+45, +78) del ancla, evento a los 6 s sobre suelo a 38 m, sin nadie a 15 m): los 10 ácaros hacen 5 saltos a «nadie», `parado` y `suelto` a exactamente +30, una sola liberación y ningún salto después. `f156_expect` lo verifica (N1-N3) y el carril M queda igual.
+- M1: `ShotLook.hits_only_poisonable` (solo `liba.tres`): `RangedShot._can_hit` consulta `Poisoning.can_be_poisoned`, como blightMiteCollisionTarget (25262-25269). El aceite (`kcfa`) no lo usa: `f155` no cambia.
+- M2: `MiteHop._intended` aplica el filtro de altura ≤ 10 (`_low_enough`, compartido con `_closest`); los digests de los carriles existentes no cambian.
+- Digest de `f156` regrabado (carril N nuevo): `73dfff7f`.

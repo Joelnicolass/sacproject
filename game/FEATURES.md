@@ -1866,3 +1866,29 @@ Deuda:
 - Sin manchas ni `igniteBuilding`.
 - Rain of Fire, Lava ball y Dragonfire van a tener que llevar `IGNITE` cuando entren.
 - El aliento del Spitfire (`fhba`) es un cono y queda para su propio corte.
+
+### F156 — Bilemites del Blight (RFC-030, corte 030s-b)
+
+**Piezas**
+- `MiteHop` (`ShotInFlight` con `holds_height`) mueve cada ácaro:
+  - g = 20; en cada toque de suelo salta hacia la criatura más cercana a ≤ 15 m y con ≤ 10 de altura, con prioridad para el blanco pedido (`spawn_data["intended"]`);
+  - al 5.º toque se queda quieto y `spent()` libera el disparo a los +30;
+  - el suelo lo da `Terrain`, sin techos;
+  - RNG `["mites", nombre]`.
+- `ShotInFlight.spent()` es nuevo y `RangedShot` libera el disparo cuando da true.
+- `LobAbility` gana `intended` y `uniform_direction` estático, compartido con `MiteHop`.
+- `ShotLook.hits_only_poisonable`: el ácaro solo choca con cuerpos que se pueden envenenar.
+- Cada ácaro se pega con `StickImpact` (`mites`, ×0,8, +481) en `Clinging`.
+
+**Cierre (2026-10-17).** La review pidió cambios por B1: `spent()` no tenía evidencia. Se agregó el carril N, se aplicó M1 (`hits_only_poisonable`) y M2 (filtro de altura del blanco pedido) (`reviews/REVIEW-RFC-030s-b.md`).
+- **Maná:** 200 → 140 en T+94.
+- **Carril M:** 30 saltos y todas las pegadas según la réplica (±1). El factor baja hasta 0,8¹⁰ = 0,107, cada ácaro se suelta a +481 y el factor vuelve a 1,0.
+- **Carril N:** sin blancos, los 10 ácaros hacen 5 saltos, quedan `parado` y se liberan a +30 exactos.
+- **Determinismo:** `f156` da `73dfff7f` en fixed, stress y window. `quick` (con `f129` y `f155` iguales) y `rules_suite` dan PASS.
+- **Playtest:** los ácaros se ven saltando, y pegados se ven como esferas verdes sobre el Druid. El factor baja y se recupera según el log.
+
+**Deuda**
+- Un ácaro quieto sigue chocando durante sus 30 ticks.
+- Nunca choca con el tirador. En sacengine sí puede después del cuadro 30.
+- El look es de reserva (esfera verde).
+- Sobre un hueco vuela hasta el fin del alcance.

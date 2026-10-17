@@ -128,6 +128,10 @@ func _physics_process(delta: float) -> void:
 	_traveled += step.length()
 	if _in_flight:
 		_in_flight.fly(self, global_position)
+		if _in_flight.spent():
+			set_physics_process(false)
+			queue_free()
+			return
 	if not look.collides:
 		if _traveled >= max_distance:
 			set_physics_process(false)
@@ -202,6 +206,10 @@ func _swept_target(from: Vector3, to: Vector3) -> Node3D:
 func _can_hit(body: Node3D, intended: Node, shooter: Node) -> bool:
 	if body == null or body == shooter or not _is_live_body(body):
 		return false
+	if look.hits_only_poisonable:
+		var poisoning := Poisoning.of(body)
+		if poisoning == null or not poisoning.can_be_poisoned():
+			return false
 	var side := int(body.get("owner_slot")) if "owner_slot" in body else 0
 	return body == intended or from_slot <= 0 or look.hits_every_side or (side == from_slot) == look.hits_allies
 

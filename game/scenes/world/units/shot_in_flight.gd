@@ -28,3 +28,8 @@ func _fly(_shot: RangedShot, _at: Vector3) -> void:
 ## ground check, and the shot ends on a body or at the end of its range only. Default: false.
 func holds_height() -> bool:
 	return false
+
+
+## True once the shot has nothing left to do (F156: a stopped Bilemite after its 30 ticks of fade): RangedShot frees it. Default: false.
+func spent() -> bool:
+	return false

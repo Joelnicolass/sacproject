@@ -96,15 +96,18 @@ case " ${MODES[*]} " in *" fixed "*) ;; *) MODES=(fixed "${MODES[@]}") ;; esac
 # quick (cortes intermedios, ~3-4 min): s1_quick (IA con hechizos, 0,5 min) en los 3 modos + s7, f139, f148, f121, f122, f123, f149, f124, f125, f126, f127, f153, f128, f129, f130, f155, f156, f131, f132, f133, f161, f166, f162 y f164 solo fixed,
 # comparados con agent/det_baseline.txt (caso digest). La pasada `all` queda para el cierre de cada RFC.
 if [ "$CASE_ARG" = quick ]; then
-  "$0" s1_quick fixed stress window || true
-  "$0" s7 fixed >/dev/null; "$0" f139 fixed >/dev/null; "$0" f148 fixed >/dev/null; "$0" f121 fixed >/dev/null; "$0" f122 fixed >/dev/null; "$0" f123 fixed >/dev/null; "$0" f149 fixed >/dev/null; "$0" f124 fixed >/dev/null; "$0" f125 fixed >/dev/null; "$0" f126 fixed >/dev/null; "$0" f127 fixed >/dev/null; "$0" f153 fixed >/dev/null; "$0" f128 fixed >/dev/null; "$0" f129 fixed >/dev/null; "$0" f130 fixed >/dev/null; "$0" f155 fixed >/dev/null; "$0" f156 fixed >/dev/null; "$0" f131 fixed >/dev/null; "$0" f132 fixed >/dev/null; "$0" f133 fixed >/dev/null; "$0" f161 fixed >/dev/null; "$0" f166 fixed >/dev/null; "$0" f162 fixed >/dev/null; "$0" f163 fixed >/dev/null; "$0" f177 fixed >/dev/null; "$0" f164 fixed >/dev/null
+  # Every digest compared below must come from this invocation: drop the old ones first (a stale file read as
+  # «OK» once hid that no case had run, 2026-10-17). Children run through `bash`, never the exec bit.
+  rm -f "$OUT"/*_fixed.json "$OUT"/*_fixed.meta
+  bash "$0" s1_quick fixed stress window || true
+  bash "$0" s7 fixed >/dev/null; bash "$0" f139 fixed >/dev/null; bash "$0" f148 fixed >/dev/null; bash "$0" f121 fixed >/dev/null; bash "$0" f122 fixed >/dev/null; bash "$0" f123 fixed >/dev/null; bash "$0" f149 fixed >/dev/null; bash "$0" f124 fixed >/dev/null; bash "$0" f125 fixed >/dev/null; bash "$0" f126 fixed >/dev/null; bash "$0" f127 fixed >/dev/null; bash "$0" f153 fixed >/dev/null; bash "$0" f128 fixed >/dev/null; bash "$0" f129 fixed >/dev/null; bash "$0" f130 fixed >/dev/null; bash "$0" f155 fixed >/dev/null; bash "$0" f156 fixed >/dev/null; bash "$0" f131 fixed >/dev/null; bash "$0" f132 fixed >/dev/null; bash "$0" f133 fixed >/dev/null; bash "$0" f161 fixed >/dev/null; bash "$0" f166 fixed >/dev/null; bash "$0" f162 fixed >/dev/null; bash "$0" f163 fixed >/dev/null; bash "$0" f177 fixed >/dev/null; bash "$0" f164 fixed >/dev/null
   ok=1
   while read -r c want; do
     [ -z "$c" ] && continue
     got=$(python3 -I -c "import json,sys;print(json.load(open(sys.argv[1])).get('digest',''))" "$OUT/${c}_fixed.json" 2>/dev/null)
     if [ "$got" = "$want" ]; then echo "baseline $c OK ${got:0:8}"; else echo "baseline $c FAIL got=${got:0:8} want=${want:0:8}"; ok=0; fi
   done < "$ROOT/agent/det_baseline.txt"
-  DET_MODES="fixed stress window" "$0" table s1_quick | grep -q "DETERMINISM PASS" || ok=0
+  DET_MODES="fixed stress window" bash "$0" table s1_quick | grep -q "DETERMINISM PASS" || ok=0
   [ $ok = 1 ] && { echo "QUICK PASS"; exit 0; } || { echo "QUICK FAIL"; exit 1; }
 fi
 if [ "$CASE_ARG" = all ]; then CASES=("${ALL_CASES[@]}"); else CASES=("$CASE_ARG"); fi

@@ -2,7 +2,7 @@ extends Node3D
 
 ## RFC-023 023c capture: six creatures in a row, the fixed camera, one PNG per role. Run it twice, with and without
 ## `--baked-bodies`, into two folders, then compare them with agent/tools/rig023c_diff.py:
-##   godot --path game --max-fps 60 --resolution 1280x720 res://agent/harness/rig023c_shots.tscn -- --out=/abs/dir [--baked-bodies]
+##   godot --path game --max-fps 60 --resolution 1280x720 res://debug/rig023c/rig023c_shots.tscn -- --out=/abs/dir [--baked-bodies]
 ## --empty leaves the units out (the background the diff subtracts). Each role is played for the same number of physics ticks, then the clocks are frozen; the skeleton is put on the very
 ## frame the clock stopped on (BodyRig.pose_at), so what differs is the look of the two bodies and not their timing.
 

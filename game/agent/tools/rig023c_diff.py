@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""RFC-023 023c: numeric diff of the baked and the skeletal captures of agent/harness/rig023c_shots.tscn.
+"""RFC-023 023c: numeric diff of the baked and the skeletal captures of debug/rig023c/rig023c_shots.tscn.
 
 python3 agent/tools/rig023c_diff.py BAKED_DIR SKELETAL_DIR EMPTY_DIR
 

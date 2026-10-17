@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://agent/harness/rig023c_check.gd" id="1_check"]
+[ext_resource type="Script" path="res://debug/rig023c/rig023c_check.gd" id="1_check"]
 
 [node name="Rig023cCheck" type="Node"]
 script = ExtResource("1_check")

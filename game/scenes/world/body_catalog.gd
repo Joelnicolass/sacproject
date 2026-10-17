@@ -17,6 +17,12 @@ const CLIPS_SUBDIR := "clips/"
 const LOOK_DIR := "res://cache/look/"
 const OVERRIDES_PATH := "res://data/bodies/pose_overrides.tres"
 
+## Models whose skeleton did not close against the original frame by frame (tools/audit_skeletal.gd, RFC-023 023c): they
+## keep the baked per-frame meshes. Empty while every exported model closes; the list is in the RFC's 023c result.
+const SKELETAL_FALLBACK: PackedStringArray = []
+
+## -1 unknown, 0 off, 1 on: the `--baked-bodies` user argument.
+static var _baked_forced := -1
 static var _dir := BAKED_DIR
 static var _loaded := false
 static var _bodies: Dictionary = {}
@@ -56,6 +62,21 @@ static func overrides() -> BodyPoseOverrides:
 ## The editor always shows meshes; a headless run (the dedicated server) never loads them.
 static func loads_meshes() -> bool:
 	return Engine.is_editor_hint() or DisplayServer.get_name() != "headless"
+
+
+## True when `model` has a skeletal asset (models/index.json) that is not in SKELETAL_FALLBACK: its bodies are drawn by a
+## BodyRig. A model with no clip of its own still stays baked: the caller also checks it has the clip it rests on.
+static func has_skeletal(model: String) -> bool:
+	return not model.is_empty() and not baked_bodies_forced() and not SKELETAL_FALLBACK.has(model) \
+		and not BodyRig.model_info(model).is_empty()
+
+
+## The `--baked-bodies` user argument draws every body from the baked per-frame meshes, as before RFC-023: to compare the
+## two looks and to measure the old cost in the same build. Until RFC-023h retires the baked meshes.
+static func baked_bodies_forced() -> bool:
+	if _baked_forced < 0:
+		_baked_forced = 1 if OS.get_cmdline_user_args().has("--baked-bodies") else 0
+	return _baked_forced == 1
 
 
 static func has_model(model: String) -> bool:
@@ -150,9 +171,13 @@ static func clip_frame_path(obj_path: String) -> String:
 ## Local transform that stands the baked mesh upright with its origin on the ground.
 ## Bodies baked from an idle frame need no lift (foot_offset 0); older bind-pose bodies lift by it.
 ## Buildings and plants keep the sacengine origin (stand_on_feet off). The override goes on top.
-static func pose(model: String, stand_on_feet := true) -> Transform3D:
+## `skeletal`: a BodyRig draws the body (RFC-023 023c). A body that was baked from the bind pose (no pose_source: the
+## peasants, Zyzyx) was turned upright and lifted by foot_offset to stand; its clips already stand on the ground, so the
+## skeleton does not take either. Only the hand overrides apply.
+static func pose(model: String, stand_on_feet := true, skeletal := false) -> Transform3D:
 	var data := info(model)
-	var turn := _vector(data.get("upright_fix"), Vector3.ZERO)
+	var bind_fix := not (skeletal and str(data.get("pose_source", "")).is_empty())
+	var turn := _vector(data.get("upright_fix"), Vector3.ZERO) if bind_fix else Vector3.ZERO
 	var at := Vector3.ZERO
 	var size := Vector3.ONE
 	var entry := overrides().find(model)
@@ -160,7 +185,7 @@ static func pose(model: String, stand_on_feet := true) -> Transform3D:
 		turn += entry.rotation_degrees
 		at = entry.position_offset
 		size = entry.model_scale
-	if stand_on_feet:
+	if stand_on_feet and bind_fix:
 		at.y += float(data.get("foot_offset", 0.0))
 	var radians := Vector3(deg_to_rad(turn.x), deg_to_rad(turn.y), deg_to_rad(turn.z))
 	return Transform3D(Basis.from_euler(radians) * Basis.from_scale(size), at)

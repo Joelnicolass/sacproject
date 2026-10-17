@@ -24,8 +24,14 @@ const _LOCKED: PackedStringArray = ["mesh", "position", "rotation", "scale"]
 		_refresh_in_editor()
 @export var placeholder_height := 1.8
 
+## The skeletal body (BodyRig, RFC-023 023c) that hangs under this node and draws instead of the baked mesh. It inherits
+## this node's transform (the pose, the capsule scale, DevourGrowth). Set by the body's clip animator; null otherwise.
+@export var rig: BodyRig
+
 ## The list of corrections this visual is listening to. After BodyCatalog.refresh() it is a new one.
 var _watched: BodyPoseOverrides
+## The skeleton draws this model: this node keeps the pose and the measures, and no mesh of its own.
+var _skeletal := false
 
 
 func _validate_property(property: Dictionary) -> void:
@@ -62,6 +68,24 @@ func show_model(tag: String) -> void:
 	_apply()
 
 
+## true: the rig draws and this node's own mesh goes away; false: the baked mesh is shown again (a model with no .glb).
+func use_skeleton(on: bool) -> void:
+	if on == _skeletal:
+		return
+	_skeletal = on
+	if on:
+		mesh = null
+	if is_node_ready():
+		_apply()
+
+
+## GeometryInstance3D.transparency of the whole body, rig included (it does not inherit): summoning, play dead, stealth.
+func set_fade(value: float) -> void:
+	transparency = value
+	if rig != null:
+		rig.set_fade(value)
+
+
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if model.is_empty():
@@ -88,8 +112,8 @@ func _refresh_in_editor() -> void:
 func _apply() -> void:
 	update_configuration_warnings()
 	_watch()
-	transform = BodyCatalog.pose(model, stand_on_feet)
-	if BodyCatalog.loads_meshes():
+	transform = BodyCatalog.pose(model, stand_on_feet, _skeletal)
+	if BodyCatalog.loads_meshes() and not _skeletal:
 		var baked := BodyCatalog.mesh(model)
 		if baked:
 			mesh = baked

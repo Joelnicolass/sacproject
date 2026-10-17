@@ -8,7 +8,10 @@ extends Resource
 ## A role without a tag here (or whose tag the model lacks) falls back to idle, like the baked player did.
 
 ## Roles the BodyRig state machine has a state for (body_rig.tscn). A new role needs a state there.
-const ROLES: PackedStringArray = ["idle", "run", "attack", "shoot", "cast", "hit", "death", "held", "thrash", "rise", "fly"]
+## The unit roles after "rise"/"fly" (023c): the peasant clips, the hybrid fliers' takeoff/land, the stun clips and the
+## idle gesture (sacengine plays idle0 now and then on top of the rest pose, state.d:7957-7992).
+const ROLES: PackedStringArray = ["idle", "run", "attack", "shoot", "cast", "hit", "death", "held", "thrash", "rise", "fly",
+	"cower", "talk_cower", "work", "takeoff", "land", "knock", "get_up", "fly_damage", "gesture"]
 ## Roles that end by themselves and hand the body back to idle; the others loop or hold (death).
 const ONE_SHOT_ROLES: PackedStringArray = ["attack", "shoot", "cast", "hit", "rise"]
 
@@ -24,6 +27,16 @@ const ONE_SHOT_ROLES: PackedStringArray = ["attack", "shoot", "cast", "hit", "ri
 		emit_changed()
 ## Roles that repeat. The rest play once and hold their last frame (or return to idle, see ONE_SHOT_ROLES).
 @export var looping_roles: PackedStringArray = ["idle", "run", "held", "thrash", "fly"]
+
+
+## A BodyClips made at run time from a role -> tag map (a unit's CreatureType gives it, see UnitClipRoles): every role
+## repeats, because the clip clock wraps whatever it plays (ClipClock). Not saved anywhere.
+static func from_roles(model_tag: String, role_to_tag: Dictionary) -> BodyClips:
+	var made := BodyClips.new()
+	made.model = model_tag
+	made.roles = role_to_tag.duplicate()
+	made.looping_roles = PackedStringArray(role_to_tag.keys())
+	return made
 
 
 ## The clip tag of `role`, "" when the model has none.

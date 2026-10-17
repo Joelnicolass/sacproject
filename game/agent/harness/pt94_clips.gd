@@ -15,7 +15,7 @@ var _process_sum := 0.0
 var _physics_sum := 0.0
 var _frame_sum := 0.0
 var _frame_max := 0.0
-var _rate_players: Array[ClipPosePlayer] = []
+var _rate_players: Array[ClipPlayback] = []
 var _rate_names: PackedStringArray = []
 var _rate_last: PackedInt32Array = []
 var _rate_steps: PackedInt32Array = []
@@ -72,7 +72,7 @@ func watch(node_name: String) -> String:
 	var body := _find(node_name)
 	if body == null:
 		return "sin %s" % node_name
-	var player := body.get_node_or_null("ClipPose") as ClipPosePlayer
+	var player := body.get_node_or_null("ClipPose") as ClipPlayback
 	if player == null:
 		return "sin ClipPose"
 	_watched = node_name
@@ -122,7 +122,7 @@ func clip_rate(names_csv: String, seconds: float) -> String:
 	var root := _root()
 	for node_name in names_csv.split(","):
 		var body := root.find_child(node_name.strip_edges(), true, false) if root else null
-		var player := body.get_node_or_null("ClipPose") as ClipPosePlayer if body else null
+		var player := body.get_node_or_null("ClipPose") as ClipPlayback if body else null
 		if player == null:
 			continue
 		_rate_players.append(player)

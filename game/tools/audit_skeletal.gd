@@ -5,6 +5,7 @@ extends SceneTree
 ## frames {0, middle, last}, skins the mesh on the CPU (skeleton global pose x skin bind) and compares every vertex
 ## with the same frame of the baked OBJ. Prints model / clip / frame / max_err_mm and fails above TOLERANCE_MM.
 ## "$GODOT" --headless --path game --script res://tools/audit_skeletal.gd [-- --dir=res://other/models --models=eorc,jnwr --ref=DIR]
+## --clips=FILE: a JSON {model: [tag]} (tools/export_skeletal_reference.py --unit-clips writes it): only those clips are audited.
 ## --ref=DIR: reference OBJs written by tools/export_skeletal_reference.py (sacengine export, every clip, frames
 ## 0 / middle / last: <DIR>/<model>/<clip>/<frame>.obj). A clip without them fails. Without --ref the baked
 ## OBJs of cache/look/anim_f37 are used and clips that have none are only counted.
@@ -25,6 +26,7 @@ func _initialize() -> void:
 	var dir := MODELS_DIR
 	var models: Array = DEFAULT_MODELS.duplicate()
 	var ref_dir := ""
+	var only: Dictionary = {}
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--dir="):
 			dir = arg.trim_prefix("--dir=")
@@ -32,6 +34,8 @@ func _initialize() -> void:
 			models = arg.trim_prefix("--models=").split(",")
 		elif arg.begins_with("--ref="):
 			ref_dir = arg.trim_prefix("--ref=")
+		elif arg.begins_with("--clips="):
+			only = JSON.parse_string(FileAccess.get_file_as_string(arg.trim_prefix("--clips=")))
 	var index: Dictionary = {}
 	var text := FileAccess.get_file_as_string(dir.path_join("index.json"))
 	if text != "":
@@ -77,6 +81,8 @@ func _initialize() -> void:
 		var unnorm: Array = index[model].get("unnormalized_vertices", [])
 		var unnorm_global := _global_indices(mesh_node, unnorm)
 		for clip: String in clips.keys():
+			if not only.is_empty() and not (only.get(model, []) as Array).has(clip):
+				continue
 			clips_total += 1
 			var clip_dir := (ref_dir if ref_dir != "" else BAKED_DIR).path_join(model).path_join(clip)
 			var frames := int(clips[clip]["frames"])

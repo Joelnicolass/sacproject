@@ -24,7 +24,8 @@
 [ext_resource type="Script" path="res://scenes/world/components/mana_pool.gd" id="f29_mana"]
 [ext_resource type="Script" path="res://scenes/world/units/ranged_attack.gd" id="f29_ranged"]
 [ext_resource type="Script" path="res://scenes/world/units/active_ability.gd" id="f29_ability"]
-[ext_resource type="Script" path="res://scenes/world/components/clip_pose_player.gd" id="f36_clip"]
+[ext_resource type="Script" path="res://scenes/world/body/body_animator.gd" id="f36_clip"]
+[ext_resource type="PackedScene" path="res://scenes/world/body/body_rig.tscn" id="f162_rig"]
 [ext_resource type="Script" path="res://scenes/world/units/unit_mana_support.gd" id="f41_mana_support"]
 [ext_resource type="Script" path="res://scenes/world/guardian/guardian_bond.gd" id="f63_bond"]
 [ext_resource type="PackedScene" path="res://scenes/world/guardian/guardian_tether.tscn" id="f63_tether"]
@@ -139,8 +140,11 @@ script = ExtResource("1_body")
 
 [node name="Tilt" type="Node3D" parent="."]
 
-[node name="Mesh" type="MeshInstance3D" parent="Tilt"]
+[node name="Mesh" type="MeshInstance3D" parent="Tilt" node_paths=PackedStringArray("rig")]
 script = ExtResource("2_visual")
+rig = NodePath("Rig")
+
+[node name="Rig" parent="Tilt/Mesh" instance=ExtResource("f162_rig")]
 
 [node name="Collision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -222,9 +226,9 @@ catalog = ExtResource("f126_catalog")
 [node name="ManaSupport" type="Node3D" parent="."]
 script = ExtResource("f41_mana_support")
 
-[node name="ClipPose" type="Node" parent="." node_paths=PackedStringArray("mesh_path")]
+[node name="ClipPose" type="Node" parent="." node_paths=PackedStringArray("visual")]
 script = ExtResource("f36_clip")
-mesh_path = NodePath("../Tilt/Mesh")
+visual = NodePath("../Tilt/Mesh")
 
 [node name="Afflictions" type="Node" parent="." node_paths=PackedStringArray("body", "health", "clip_pose", "look", "life_shield")]
 script = ExtResource("f120_afflictions")

@@ -173,3 +173,6 @@ IK, ragdoll, retarget entre modelos, animaciones nuevas hechas a mano, root moti
 
 ## Nota del orquestador (2026-10-16, REVIEW-F112)
 En sacengine la pose de reposo es `stance1` (slot 0, offset 176), y los `idle0..3` son gestos que salen al azar con probabilidad 1/5 (`state.d:7957-7992`). Hoy el port usa `idle0` como idle en loop. La actualización de este RFC tiene que pasar todas las criaturas a `stance1` como reposo y dejar `idle0..3` como gestos. En F112 solo se horneó la pose de las 35 nuevas desde `stance1`.
+
+## Decisión del usuario (2026-10-17)
+El pasto se apaga de forma provisoria (`grass_enabled = false` en `data/look/quality_{low,medium,high}.tres`) y queda para el final. RFC-023 ya no espera a 022e1: arranca con 023a.

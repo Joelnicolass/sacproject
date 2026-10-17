@@ -2027,3 +2027,18 @@ Deuda:
 - El flow `final_spit_melee` falla ya en HEAD (timeout en «golpe Earthfling a Druid»); no viene de este corte.
 - Divine Sight desde la UI sigue dando «Blanco inválido» (F165).
 - El comentario de `catalog` en `active_ability.gd:50` quedó viejo; se actualiza en 030v-b.
+
+### F160 — Habilidades viejas al catálogo, segunda tanda (RFC-030, corte 030v-b)
+
+**Piezas:**
+- **Rockform (`dihk`)** pasa a `abilities/rockform.gd/.tscn`, con sus exports (salen de `ActiveAbility`).
+- **Play Dead (`dedp`) y Stealth (`ivni`)** comparten `TimedStateAbility`: prende un flag de `UnitBody` (`body_setter`) y lo apaga en un tick de `MatchClock`. Cambian solo los valores del `.tscn`.
+- **`ActiveAbility`** ya no tiene `match ability.tag` (312 → 212 líneas): un tag sin escena da «No implementado». Sale también `stealth_alpha`, que nadie leía.
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-030v-b.md`). Sin playtest: es lógica pura.
+- **`f133`** da `bfca4703` en fixed, stress y window, con el log de eventos idéntico al de antes de migrar. `f133_expect.py` PASS.
+- **Banco:** `quick` igual (21 líneas); `rules_suite` PASS; flows `pt120_play_dead` y `f79_ability` PASS.
+- Ninguna escena seteaba los exports borrados, así que no se pierde ningún valor.
+
+Deuda:
+- `body_setter` es un StringName con guarda `has_method`: un typo falla en silencio.

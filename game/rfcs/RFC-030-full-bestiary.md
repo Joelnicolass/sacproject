@@ -1437,3 +1437,11 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 - `active_ability.gd`: 350 → 312 líneas. `unit_body.gd` queda en 1040.
 
 *Divergencias declaradas:* Divine Sight desde la UI sigue pidiendo un blanco que el SPEL (flags 0) no da (F165); Rockform, Play Dead y Stealth siguen en el `match` hasta 030v-b.
+
+#### 030v-b: Resultado
+
+**Resultado (developer de 030v-b, 2026-10-17):** F160. Rockform (dihk), Play Dead (dedp) y Stealth (ivni) pasan del `match` de `ActiveAbility` al `AbilityCatalog`, sin cambiar comportamiento.
+- **Archivos nuevos** en `scenes/world/units/abilities/`: `rockform.gd/.tscn` (`Rockform`: entra en roca, FX y caparazón con `show_rock_form`, con los `@export` de la roca), `timed_state_ability.gd` (`TimedStateAbility`: prende un flag de `UnitBody` y lo apaga en un tick de `MatchClock`; el `_physics_process` se enciende solo mientras el flag está activo), `play_dead.tscn` y `stealth.tscn` (la misma clase con `body_setter`, `min_duration_s`, `fx` y `fx_height` distintos). 3 entradas en `data/abilities/ability_catalog.tres` (los tags distinguen mayúsculas).
+- **`active_ability.gd`:** 312 → 212 líneas. Ya no queda `match ability.tag`, ni `ROCK_FORM`/`PLAY_DEAD`/`STEALTH`, `DEFAULT_*_S`, `_apply*`, `_play_dead_until`/`_stealth_until`, `_shell*`, el grupo `Rockform` ni `stealth_alpha` (no lo leía nadie). `show_rock_form` delega en el efecto; un tag sin escena da «No implementado». El comentario de `catalog` quedó al día. `unit_body.gd` sigue en 1040.
+- **Medido:** `f133` = `bfca4703660b6c54783ba3953572075aed30a8e799d5955dde31a1d4fdebd359` en fixed, stress y window (igual a `det_baseline.txt`); log y `.events` guardados antes de tocar, idénticos línea a línea salvo los ms de `mundo listo`/`nav` y el reporte de tiempos. `f133_expect.py` PASS. `quick` PASS (21 digests iguales a la base). `rules_suite` (`--fixed-fps 60`) PASS. Flows `pt120_play_dead` y `f79_ability` AGENT_OK.
+- **Desvíos del plan:** Play Dead y Stealth comparten una clase en vez de dos (solo cambian los datos del `.tscn`). El timer vive en el efecto y corre justo después del `_physics_process` de `ActiveAbility` (su padre), en el mismo tick. Corrí los dos flows con ventana (así los lanzan sus scripts).

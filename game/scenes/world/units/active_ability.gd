@@ -3,22 +3,16 @@ extends Node
 
 ## A creature's active ability, used on command (Ctrl+Q / Shift+B). sacengine `ability`
 ## (sacobject.d:444): abilities[1] for a ranged creature, else abilities[0].
-## F152 (030o-b): time is MatchClock's ticks, not the render delta (RFC-032): the cooldown, Stealth and Play Dead are
-## «until tick N». An effect with windup() > 0 (Firewalk) prepares first: use() turns on UsingAbility (the body is held,
+## F152 (030o-b): time is MatchClock's ticks, not the render delta (RFC-032): the cooldown (and the timers of Stealth and Play Dead, in
+## their effects) is «until tick N». An effect with windup() > 0 (Firewalk) prepares first: use() turns on UsingAbility (the body is held,
 ## sacengine startUsingAbility) and the effect fires at `now + windup`, where the mana is spent even if fire() did
 ## nothing (state.d:12746-12748) and the cooldown is set if it was 0. If the state was cut before (stunned, frozen…)
 ## nothing is spent.
 ## Checks follow abilityStatus (state.d:29582-29604): cooldown → mana → target → range → the
 ## ability's own rule. `useAbility` (state.d:13463-13561) drains manaCost and sets the ability
 ## cooldown (cooldown·60 frames, counted down every frame, state.d:13937) when it applies.
-## Implemented from the active book roster:
-## Rockform (dihk), Play Dead (dedp), Stealth (ivni). F133: Life Shield (hsba), Run Away (!nur) and Divine Sight (eesd) have
-## an AbilityEffect scene of their own (ability_catalog.tres).
-##
-## Rockform (state.d:13052-13065, 25040-25067): the creature stops, drops its orders and turns into a
-## rock (renderer.d:2084-2091: the rock model at its center, scale 0.55·hit box diagonal, grown over
-## 30 frames). It takes 5 % damage (state.d:8964), still regenerates (state.d:1430), is hidden from
-## enemy AI and does nothing until it gets an order (state.d:13663-13669).
+## Implemented from the active book roster: every ability has an AbilityEffect scene of its own (ability_catalog.tres). F133 (030v-b):
+## the last three, Rockform (dihk), Play Dead (dedp) and Stealth (ivni), left the `match` that lived here; this node only checks and pays.
 
 const COOLING := "Enfriando"
 const NO_MANA := "Sin maná"
@@ -27,29 +21,15 @@ const BAD_TARGET := "Blanco inválido"
 const NOT_IMPLEMENTED := "No implementado"
 const NO_ABILITY := "Sin habilidad"
 
-## sacengine SpellTag.rockForm.
-const ROCK_FORM := "dihk"
-const PLAY_DEAD := "dedp"
-const STEALTH := "ivni"
 ## sacengine manaEpsilon (abilityStatus).
 const MANA_EPSILON := 0.01
-const DEFAULT_STEALTH_S := 5.0
-const DEFAULT_PLAY_DEAD_S := 6.0
 
 ## R6 (030v-a): the bench log of every use (mana spent, preparation, cut). `ai_match` turns it on; off in the product.
 static var log_ability := false
 
-@export_group("Rockform")
-## Baked model of the rock shell (the Rock spell's rock.MRMM).
-@export var rock_model := "rock"
-@export var rock_scale_factor := 0.55
-## sacengine RockForm.numFrames at 60 fps.
-@export var rock_grow_s := 0.5
-@export var rock_color := Color(0.42, 0.4, 0.34)
 @export_group("Active effects")
-## F126: which tag has an AbilityEffect scene of its own (Protector); a tag that is not there keeps the branches below.
+## F126: which tag has an AbilityEffect scene of its own; a tag that is not there is «No implementado».
 @export var catalog: AbilityCatalog
-@export var stealth_alpha := 0.25
 
 var ability: AbilityType
 ## A guardian has no active ability (activeAbility, state.d:1414). GuardianBond sets it.
@@ -59,11 +39,6 @@ var _body: Node3D
 var _mana: Node
 ## MatchClock tick at which the cooldown ends (0 = ready).
 var _ready_at := 0
-var _shell: MeshInstance3D
-var _shell_tween: Tween
-## MatchClock ticks at which Play Dead / Stealth end (0 = off).
-var _play_dead_until := 0
-var _stealth_until := 0
 ## F152: the preparation. MatchClock tick at which the effect fires (-1 = none) and the target it was ordered on.
 var _fire_at := -1
 var _fire_pos := Vector3.ZERO
@@ -91,14 +66,6 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	var now := MatchClock.now()
-	if _play_dead_until > 0 and now >= _play_dead_until:
-		_play_dead_until = 0
-		if _body and _body.has_method("set_playing_dead"):
-			_body.call("set_playing_dead", false)
-	if _stealth_until > 0 and now >= _stealth_until:
-		_stealth_until = 0
-		if _body and _body.has_method("set_stealth"):
-			_body.call("set_stealth", false)
 	if _fire_at >= 0:
 		## F132: a preparation that something cut (stunned, frozen…) is over at that tick, not at the shoot tick.
 		var using := _using()
@@ -124,28 +91,16 @@ func _cooling() -> bool:
 func status(target_pos: Vector3, target: Node3D) -> String:
 	if ability == null or locked:
 		return NO_ABILITY
-	if _effect == null and not [ROCK_FORM, PLAY_DEAD, STEALTH].has(ability.tag):
+	if _effect == null:
 		return NOT_IMPLEMENTED
 	if _cooling():
 		return COOLING
 	if _cost() > _mana_left() + MANA_EPSILON:
 		return NO_MANA
-	if _effect:
-		var using := _using()
-		if using and using.is_on():
-			return BAD_TARGET
-		return _effect.status(target_pos, target)
-	match ability.tag:
-		ROCK_FORM:
-			if _body.call("is_rock_form"):
-				return BAD_TARGET
-		PLAY_DEAD:
-			if _play_dead_until > 0:
-				return BAD_TARGET
-		STEALTH:
-			if _stealth_until > 0:
-				return BAD_TARGET
-	return ""
+	var using := _using()
+	if using and using.is_on():
+		return BAD_TARGET
+	return _effect.status(target_pos, target)
 
 
 ## Server or solo. Returns "" when used, else the reason.
@@ -153,14 +108,11 @@ func use(target_pos: Vector3, target: Node3D) -> String:
 	var reason := status(target_pos, target)
 	if not reason.is_empty():
 		return reason
-	if _effect and _effect.windup() > 0:
+	if _effect.windup() > 0:
 		return _begin_windup(target_pos, target)
 	var before := _mana_left()
-	if _effect:
-		if not _effect.fire(target_pos, target):
-			return BAD_TARGET
-	else:
-		_apply(target)
+	if not _effect.fire(target_pos, target):
+		return BAD_TARGET
 	_pay()
 	_start_cooldown(true)
 	_log_spent(before)
@@ -174,7 +126,7 @@ func _pay() -> void:
 
 ## Starts the cooldown (`force`, or only if it was 0: state.d:12746-12748).
 func _start_cooldown(force: bool) -> void:
-	if (_effect == null or _effect.starts_cooldown) and (force or not _cooling()):
+	if _effect.starts_cooldown and (force or not _cooling()):
 		_ready_at = MatchClock.now() + roundi(ability.cooldown_s * MatchClock.TICKS_PER_SECOND)
 
 
@@ -249,64 +201,12 @@ func _finish_windup() -> void:
 		(_body.get_node("Afflictions") as Afflictions).mark(using, false)
 
 
-func _apply(target: Node3D) -> void:
-	match ability.tag:
-		ROCK_FORM:
-			_body.call("enter_rock_form")
-			FxBus.broadcast("rock_emerge", _body.global_position + Vector3.UP * 0.5)
-		PLAY_DEAD:
-			_apply_play_dead()
-		STEALTH:
-			_apply_stealth()
-
-
-## Every peer, from UnitBody's mode setter.
+## Every peer, from UnitBody's mode setter: the Rockform effect draws the shell (any other creature has none).
 func show_rock_form(on: bool) -> void:
-	if AbilityEffect.log_effects:
-		print("rockform %s %s (tick %d)" % ["abierto" if on else "cerrado", AbilityEffect.who(_body), MatchClock.now()])
-	if on and _shell == null:
-		_shell = MeshInstance3D.new()
-		_shell.name = "RockShell"
-		_shell.mesh = BodyLibrary.mesh(rock_model)
-		if _shell.mesh == null:
-			var ball := SphereMesh.new()
-			_shell.mesh = ball
-			var mat := StandardMaterial3D.new()
-			mat.albedo_color = rock_color
-			mat.roughness = 1.0
-			_shell.material_override = mat
-		_body.add_child(_shell)
-	if _shell == null:
-		return
-	var profile: Dictionary = _body.call("melee_profile")
-	var reach := float(profile.get("reach", 0.35))
-	var height := float(profile.get("height", 1.8))
-	var full := rock_scale_factor * Vector3(2.0 * reach, height, 2.0 * reach).length()
-	_shell.position = Vector3(0.0, height * 0.5, 0.0)
-	if _shell_tween:
-		_shell_tween.kill()
-	if on:
-		_shell.visible = true
-		_shell.scale = Vector3.ONE * 0.01
-	_shell_tween = _shell.create_tween()
-	_shell_tween.tween_property(_shell, "scale", Vector3.ONE * (full if on else 0.01), rock_grow_s)
-	if not on:
-		_shell_tween.tween_callback(_shell.hide)
+	var rock := _effect as Rockform
+	if rock:
+		rock.show_rock_form(on)
 
 
 func _mana_left() -> float:
 	return float(_mana.get("current")) if _mana else 0.0
-
-
-func _apply_play_dead() -> void:
-	_play_dead_until = MatchClock.now() + roundi(maxf(ability.duration, DEFAULT_PLAY_DEAD_S) * MatchClock.TICKS_PER_SECOND)
-	if _body.has_method("set_playing_dead"):
-		_body.call("set_playing_dead", true)
-	FxBus.broadcast("dirt", _body.global_position + Vector3.UP * 0.3)
-
-
-func _apply_stealth() -> void:
-	_stealth_until = MatchClock.now() + roundi(maxf(ability.duration, DEFAULT_STEALTH_S) * MatchClock.TICKS_PER_SECOND)
-	if _body.has_method("set_stealth"):
-		_body.call("set_stealth", true)
-	FxBus.broadcast("spit_trail", _body.global_position + Vector3.UP)

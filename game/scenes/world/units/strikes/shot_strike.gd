@@ -36,7 +36,7 @@ var max_distance := 0.0
 ## The ability tag, for the log.
 var tag := ""
 ## The RangedAttack that fired it (its shot_origin() for a strike that follows the shooter). Injected by launch().
-var source: Node
+var source: RangedAttack
 
 ## Print the rays, bursts and blows. Off in the product; the bench (debug/ai_match.gd) turns it on.
 static var log_strikes := false
@@ -48,7 +48,7 @@ var _finished := false
 
 ## `data`: the keys of RangedAttack._fire (the ones of RangedShot.setup plus aim_x/y/z and accuracy). Call it once the
 ## strike is in the tree: tick 0 may already cast against the world. `from`: the RangedAttack that fired it.
-func launch(data: Dictionary, shot_look: ShotLook, from: Node = null) -> void:
+func launch(data: Dictionary, shot_look: ShotLook, from: RangedAttack = null) -> void:
 	source = from
 	tag = str(data.get("tag", ""))
 	origin = Vector3(float(data.get("x", 0.0)), float(data.get("y", 0.0)), float(data.get("z", 0.0)))

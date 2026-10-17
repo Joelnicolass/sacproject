@@ -102,17 +102,17 @@ PARTICLES = {
     "freeze": dict(txtr="cst0_a", n_u=4, n_v=4, width=1.0, height=1.0, energy=1.0, delay=1, gravity=False, lifetime_frames=66),
     "shard": dict(txtr="shrd", n_u=4, n_v=4, width=1.0, height=1.0, energy=1.0, delay=1, gravity=True, lifetime_frames=31),
     # F124: gnomeHit (sacobject.d:1630-1635, 1788: gsqb 0.5x0.5, energy 5, delay 2, gravity; 200 of lifetime 63,
-    # animateGnomeHit state.d:11710-11722), warmongerHit (1636-1641, 1789: wsqb, delay 1; 030m-b) and styxSpark
+    # animateGnomeHit state.d:11710-11722), warmongerHit (1636-1641, 1789: wsqb, delay 1, lifetime 31, animateWarmongerHit state.d:11821-11831; 030m-b) and styxSpark
     # (1521-1525, 1782: styx 1x1 atlas, 1x1 m, energy 15, delay 2, no gravity; 192 of lifetime 15..95, 24137-24152).
-    # The original adds them; over the snow that only reaches white, so (like the fire) the port draws gsqb_a and styx_a
+    # The original adds them; over the snow that only reaches white, so (like the fire) the port draws gsqb_a, wsqb_a and styx_a
     # (glow_to_alpha) with blend_mix and energy 1.
     "gnome_hit": dict(txtr="gsqb_a", n_u=4, n_v=4, width=0.5, height=0.5, energy=1.0, delay=2, gravity=True, lifetime_frames=63),
-    "warmonger_hit": dict(txtr="wsqb", n_u=4, n_v=4, width=0.5, height=0.5, energy=5.0, delay=1, gravity=True, lifetime_frames=63),
+    "warmonger_hit": dict(txtr="wsqb_a", n_u=4, n_v=4, width=0.5, height=0.5, energy=1.0, delay=1, gravity=True, lifetime_frames=31),
     "styx_spark": dict(txtr="styx_a", n_u=1, n_v=1, width=1.0, height=1.0, energy=1.0, delay=2, gravity=False, lifetime_frames=95),
     "red_vortex_droplet": dict(txtr="vtx2", n_u=4, n_v=4, width=1.0, height=1.0, energy=3.0, delay=2, gravity=False, lifetime_frames=64),
 }
 
-ADDITIVE = {"cast_james", "cast_persephone", "heal", "speedup", "soul", "wrath_cast", "wrath_explosion1", "wrath_explosion2", "wrath_particle", "needle", "red_vortex_droplet", "teleport_ring", "manafount", "manalith", "steam", "rainbow", "warmonger_hit"}
+ADDITIVE = {"cast_james", "cast_persephone", "heal", "speedup", "soul", "wrath_cast", "wrath_explosion1", "wrath_explosion2", "wrath_particle", "needle", "red_vortex_droplet", "teleport_ring", "manafount", "manalith", "steam", "rainbow"}
 GRAVITY = 15.0
 
 
@@ -161,7 +161,7 @@ def glow_to_alpha(rgba: bytes, gain: float) -> bytes:
 
 
 # Atlases also written as a straight-alpha overlay: tag -> (png name, gain).
-OVERLAYS = {"firy": ("firy_a", 3.0), "cst0": ("cst0_a", 3.0), "gsqb": ("gsqb_a", 3.0), "styx": ("styx_a", 6.0), "gmfl": ("gmfl_a", 2.0)}
+OVERLAYS = {"firy": ("firy_a", 3.0), "cst0": ("cst0_a", 3.0), "gsqb": ("gsqb_a", 3.0), "wsqb": ("wsqb_a", 3.0), "styx": ("styx_a", 6.0), "gmfl": ("gmfl_a", 2.0)}
 
 
 def export_atlas(files: dict, folder: str, tag: str, dest: Path) -> tuple[int, int] | None:

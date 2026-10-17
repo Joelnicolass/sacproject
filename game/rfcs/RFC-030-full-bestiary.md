@@ -879,6 +879,32 @@ Después de la corrección:
 - El origen del `StyxBolt` no sigue al tirador; el final sí sigue al blanco.
 - La salpicadura del Styx alcanza la choza `Bld069_jhut` a 8,01 m del carril D. No aparece en los eventos `hurt` del banco.
 
+**030m-b: Plan (developer, 2026-10-17):** el del tech lead en `rfcs/plans/030m-030n-plan.md` §030m (carriles C y E), sobre 030m-a.
+- `strikes/warmonger_gun.tscn`: `RayStrike` con `bursts 16`, `first_tick 2`, `period 4`, `rays 2`, `reroll`, `follow`, `foes_only`, prioridad −1, `label "ametralladora"`. Sin beam: sacengine no dibuja fogonazo del arma (el `SacWarmongerEffect` es la llama del modelo); solo `warmongerHit` donde termina cada rayo.
+- `data/shots/fhga.tres` (strike `warmonger_gun`, `impact_fx` `warmonger_hit`) y `data/fx/warmonger_hit.tres`: 20 partículas, vida 31 ticks (0,517 s), velocidad 0,8–3,2, gravedad, `pool_max` 20 (15 ráfagas/s × 2 rayos × 0,517 s × 1,25 ≈ 19).
+- `tools/export_particles.py`: `warmonger_hit` pasa a `wsqb_a` (overlay de alfa, `glow_to_alpha`, `blend_mix`, energía 1) con `lifetime_frames` 31 (antes 63). Sobre la nieve, nada aditivo.
+- M1 y M2 de la review de 030m-a: `RangedAttack` tiene `class_name`, `ShotStrike.source` y `launch(from)` son `RangedAttack`, `RayStrike` llama `source.shot_origin()` directo (sin `call` ni `has_method`) y `BreathOfLife._origin` también.
+- `debug/rules/f124_bolts.tres`: carriles C y E **al final** (los cuerpos A, B y D no se renumeran). Harness `pt124_watch` ve a Warmonger1/2, Druid6/7 y Trogg2.
+
+**030m-b: Resultado (developer, 2026-10-17):** semilla 7, `f124` fixed/stress/window = `3a9bb548` (baseline regrabada). Carriles A, B y D dan las mismas líneas que antes.
+- **C (Warmonger1, `nugf`):** `fired` en el tick 107 (ticks de `MatchClock` en el log: 109 + 4k).
+  - Exactamente 16 `ráfaga k/16` (109, 113, …, 169) y 32 `rayo fhga`.
+  - Druid6 (C1) recibe 5 rayos de 72 (`hurt direct_ranged`), el resto termina en `suelo` o `nada`.
+  - `rayo fhga Warmonger1 → Trogg2 (aliado) a 34.5 m: sin daño (aliado)`; Trogg2 queda en 960.
+  - Maná de Warmonger1 500 → 467, una sola vez (muere en el tick 270, antes de la segunda tanda).
+- **E (Warmonger2):** muere a los 2,2 s; `ametralladora fhga cortada: tirador muerto tras la ráfaga 7/16` y ningún rayo después.
+- **Pruebas:** `quick` PASS (todas las líneas base iguales, f124 incluida), `rules_suite` `--fixed-fps 60` PASS.
+- **Ventana** (`pt124_play`, capturas `c0_lane_before`, `c1_gun_hits_druid_a/b`, `c2_ally_stops_ray(_b)` en `agent/out/pt124/`): las chispas naranjas de `warmonger_hit` se distinguen de la nieve (R−B ≈ +130 en los píxeles de chispa contra −2 del pasto) sobre Druid6 y sobre el Trogg que frena los rayos.
+
+*Desvíos del plan:*
+- **Carril C movido a (1375, 1155)** (offset +105/−115; C1 +143/−115): el del plan, (1290, 1250), tiene una choza `jhut` (1313, 1239) con huella grande que corta la línea de tiro y el Warmonger no disparaba hasta el tick 254. Un segundo intento en (1320, 1155) tenía una loma de 5 m en medio. El elegido tiene suelo sin huecos, ningún `ntts` a menos de 26 m del tramo y el terreno por debajo de la línea de tiro (script de búsqueda con `terrain.bin`).
+- **C2 en +141,5/−114,3 (1 m delante de C1 y 0,7 m al costado), no a +1,5 m al costado:** a 8 m del tirador los rayos le pasan por arriba (el Warmonger dispara desde alto y el rayo baja hacia el centro del Druid); pegado al blanco sí lo frena, como en B de 030m-a.
+- Warmonger1 muere a los 4,5 s, después de las 16 ráfagas (la tanda dura hasta el tick 169).
+
+*Divergencias declaradas:*
+- Sin `igniteBuilding` ni `iacc`; el rayo se corta en rocas y estructuras (las del plan).
+- Sin fogonazo en la boca (sacengine tampoco lo dibuja).
+
 ### 030n — F125 Disparos grandes (Boulderdash, Phoenix, Rhinok)
 
 **Árbol:** M `data/shots/emba|rdra|hrba.tres` (más un impacto si hace falta).

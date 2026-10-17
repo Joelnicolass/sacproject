@@ -43,13 +43,13 @@ var _rng: RandomNumberGenerator
 
 
 func _strike_tick(age: int) -> void:
-	if follow and (shooter() == null or not is_instance_valid(source) or not source.has_method("shot_origin")):
+	if follow and (shooter() == null or not is_instance_valid(source)):
 		_log("%s %s cortada: tirador muerto tras la ráfaga %d/%d" % [label, tag, _bursts_fired, bursts])
 		finish()
 		return
 	if age < first_tick or (age - first_tick) % period_ticks != 0:
 		return
-	var from: Vector3 = source.call("shot_origin") if follow else origin
+	var from: Vector3 = source.shot_origin() if follow else origin
 	_bursts_fired += 1
 	if bursts > 1:
 		_log("ráfaga %d/%d %s %s (tick %d)" % [_bursts_fired, bursts, tag, shooter_name(), MatchClock.now()])

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BenchRules" load_steps=16 format=3]
+[gd_resource type="Resource" script_class="BenchRules" load_steps=23 format=3]
 
 [ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
 [ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
@@ -130,12 +130,85 @@ label = "un golpe (carril D)"
 slot = 2
 victim = "Styx1"
 
+[sub_resource type="Resource" id="Group_C_warmonger"]
+script = ExtResource("2_group")
+tag = "nugf"
+slot = 1
+count = 1
+columns = 1
+offset_m = 105.0
+offset_z_m = -115.0
+facing_x = 1.0
+order = "attack_unit"
+order_slot = 2
+
+[sub_resource type="Resource" id="Group_C1_druid"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 2
+count = 1
+columns = 1
+offset_m = 143.0
+offset_z_m = -115.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_C2_trogg_ally"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 1
+count = 1
+columns = 1
+offset_m = 141.5
+offset_z_m = -114.3
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_E_warmonger"]
+script = ExtResource("2_group")
+tag = "nugf"
+slot = 1
+count = 1
+columns = 1
+offset_m = 0.0
+offset_z_m = 25.0
+facing_x = 1.0
+order = "attack_unit"
+order_slot = 2
+
+[sub_resource type="Resource" id="Group_E1_druid"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 2
+count = 1
+columns = 1
+offset_m = 38.0
+offset_z_m = 25.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Event_kill_warmonger_c"]
+script = ExtResource("3_event")
+at_s = 4.5
+action = "kill"
+label = "una ráfaga (carril C)"
+slot = 2
+victim = "Warmonger1"
+
+[sub_resource type="Resource" id="Event_kill_warmonger_e"]
+script = ExtResource("3_event")
+at_s = 2.2
+action = "kill"
+label = "una ráfaga cortada (carril E)"
+slot = 2
+victim = "Warmonger2"
+
 [resource]
 script = ExtResource("1_rules")
 match_seed = 7
-groups = Array[ExtResource("2_group")]([SubResource("Group_A_gnome"), SubResource("Group_A1_druid"), SubResource("Group_B_gnome"), SubResource("Group_B1_druid"), SubResource("Group_B2_trogg_ally"), SubResource("Group_D_styx"), SubResource("Group_D1_druid"), SubResource("Group_D2_druid"), SubResource("Group_D3_druid")])
+groups = Array[ExtResource("2_group")]([SubResource("Group_A_gnome"), SubResource("Group_A1_druid"), SubResource("Group_B_gnome"), SubResource("Group_B1_druid"), SubResource("Group_B2_trogg_ally"), SubResource("Group_D_styx"), SubResource("Group_D1_druid"), SubResource("Group_D2_druid"), SubResource("Group_D3_druid"), SubResource("Group_C_warmonger"), SubResource("Group_C1_druid"), SubResource("Group_C2_trogg_ally"), SubResource("Group_E_warmonger"), SubResource("Group_E1_druid")])
 anchor = Vector3(1270, 0, 1270)
 start_paused = true
-events = Array[ExtResource("3_event")]([SubResource("Event_kill_gnome_a"), SubResource("Event_kill_gnome_b"), SubResource("Event_kill_styx")])
+events = Array[ExtResource("3_event")]([SubResource("Event_kill_gnome_a"), SubResource("Event_kill_gnome_b"), SubResource("Event_kill_styx"), SubResource("Event_kill_warmonger_c"), SubResource("Event_kill_warmonger_e")])
 pending_text = "Rayos y golpes en pausa"
 ignore_annihilation = true

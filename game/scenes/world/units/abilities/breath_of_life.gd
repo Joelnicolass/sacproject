@@ -101,9 +101,9 @@ func _arrive() -> void:
 
 ## sacengine shotPosition: the Dragon's shot origin (its RangedAttack), or its feet lifted when it has none.
 func _origin() -> Vector3:
-	var ranged := user.get_node_or_null("RangedAttack")
-	if ranged != null and ranged.has_method("shot_origin"):
-		return ranged.call("shot_origin")
+	var ranged := user.get_node_or_null("RangedAttack") as RangedAttack
+	if ranged != null:
+		return ranged.shot_origin()
 	return user.global_position + Vector3.UP * 1.8
 
 

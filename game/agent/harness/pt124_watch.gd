@@ -1,6 +1,6 @@
 extends Node
 
-## Read-only observer for the F124 window run (RFC-030 030m-a: Gnome plfa ray, Styx dhga blow). It never moves, orders
+## Read-only observer for the F124 window run (RFC-030 030m: Gnome plfa ray, Styx dhga blow, Warmonger fhga gun). It never moves, orders
 ## or damages anything: it reads Health and ManaPool, listens to RangedAttack.fired and re-frames the screen camera
 ## (like a player scrolling the view; the bench camera is fixed).
 ##
@@ -10,8 +10,8 @@ extends Node
 ## Props: tick, rel (ticks since the bench started: Enter).
 
 const _TERRAIN := preload("res://scenes/world/terrain.gd")
-const TARGETS := ["Druid1", "Druid2", "Trogg1", "Druid3", "Druid4", "Druid5"]
-const SHOOTERS := ["Gnome1", "Gnome2", "Styx1"]
+const TARGETS := ["Druid1", "Druid2", "Trogg1", "Druid3", "Druid4", "Druid5", "Druid6", "Trogg2", "Druid7"]
+const SHOOTERS := ["Gnome1", "Gnome2", "Styx1", "Warmonger1", "Warmonger2"]
 
 var tick := 0
 var rel := -1

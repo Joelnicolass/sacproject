@@ -72,6 +72,25 @@
   {
    "call": {
     "harness": "pt124_watch",
+    "method": "frame",
+    "args": [
+     1394,
+     1155,
+     0,
+     40,
+     30
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "c0_lane_before.png"
+  },
+  {
+   "call": {
+    "harness": "pt124_watch",
     "method": "frame_on",
     "args": [
      "Gnome1",
@@ -224,6 +243,81 @@
   },
   {
    "shot": "d2_styx_splash_sparks.png"
+  },
+  {
+   "call": {
+    "harness": "pt124_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt124_watch",
+    "method": "frame_on",
+    "args": [
+     "Druid6",
+     -2,
+     9,
+     6
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt124_watch",
+    "prop": "rel",
+    "gte": 113,
+    "timeout": 15
+   }
+  },
+  {
+   "shot": "c1_gun_hits_druid_a.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt124_watch",
+    "prop": "rel",
+    "gte": 128,
+    "timeout": 15
+   }
+  },
+  {
+   "shot": "c1_gun_hits_druid_b.png"
+  },
+  {
+   "call": {
+    "harness": "pt124_watch",
+    "method": "frame_on",
+    "args": [
+     "Trogg2",
+     -2,
+     7,
+     4
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt124_watch",
+    "prop": "rel",
+    "gte": 138,
+    "timeout": 15
+   }
+  },
+  {
+   "shot": "c2_ally_stops_ray.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt124_watch",
+    "prop": "rel",
+    "gte": 150,
+    "timeout": 15
+   }
+  },
+  {
+   "shot": "c2_ally_stops_ray_b.png"
   },
   {
    "call": {

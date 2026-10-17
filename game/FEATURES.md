@@ -1729,3 +1729,26 @@ Deuda:
 - El clic real sobre un alma o un cadáver no se probó en ventana.
 - Sin re-selección ni vuelco final.
 - El aliado se decide por slot.
+
+### F150 — Ráfaga del Warmonger (RFC-030, corte 030m-b)
+
+**Piezas:**
+- `strikes/warmonger_gun.tscn` es un `RayStrike` con:
+  - 16 ráfagas de 2 rayos, la primera en el tick 2 y luego una cada 4 ticks;
+  - puntería sorteada en cada rayo;
+  - origen que sigue al tirador (`follow`) y `foes_only`.
+- Si el tirador muere, la ráfaga se corta.
+- No tiene fogonazo propio. Donde pega cada rayo salen chispas `warmonger_hit` (`wsqb_a`, MIX).
+- `RangedAttack` ahora tiene `class_name`. `ShotStrike.source` quedó tipado y `shot_origin()` se llama directo (M1 y M2 de F124).
+
+**Cierre (2026-10-17).** La review aprobó el corte (`reviews/REVIEW-RFC-030m-b.md`).
+- **Carril C:** salen las 16 ráfagas y los 32 rayos, en los ticks 109 a 169. Druid6 recibe 5 rayos de 72. Trogg2, aliado pegado al blanco, frena rayos sin recibir daño y queda en 960. El maná baja de 500 a 467 una sola vez.
+- **Carril E:** sale `ametralladora fhga cortada: tirador muerto tras la ráfaga 7/16` y después no hay más rayos.
+- **Carriles A, B y D:** dan las mismas líneas que antes.
+- **Determinismo:** `f124` da `3a9bb548` en fixed, stress y window. `quick` y `rules_suite` dan PASS.
+- **Playtest:** PASS en los 4 puntos. Las chispas se distinguen de la nieve (R−B ≈ +130).
+- **Desvío:** el carril C se movió a (1375, 1155), porque la choza `jhut` y una loma cortaban la línea de tiro.
+
+Deuda:
+- Las chispas salen también cuando el rayo termina en el aire.
+- No se probó en red.

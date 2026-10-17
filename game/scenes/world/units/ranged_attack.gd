@@ -1,3 +1,4 @@
+class_name RangedAttack
 extends Node
 
 ## A ranged creature's shot (sacengine `attack`/`shoot`/`aim`/`shootOnTick`, state.d:12511-12855).

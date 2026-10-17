@@ -29,6 +29,7 @@ ATLASES = {
     "wrth": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
     "prth": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
     "dust": ("shawn.wad", "shwn.WAD!/jams.FLDR/text.FLDR"),
+    "jspk": ("shawn.wad", "shwn.WAD!/jams.FLDR/text.FLDR"),  # F151: the Rhinok's spikes (SacSpike, sacobject.d:2984-2988)
     # Sac Doctor carry (RFC-020c): blue rim/rope, blue and red vortex layers, needle sparks
     # (renderer.d:222-239, sacobject.d:4030-4054, 1479-1484).
     "ltn2": ("main.wad", "MAIN.WAD!/bits.FLDR"),

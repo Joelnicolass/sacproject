@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/units/impacts/spike_wave.gd" id="1_wave"]
+
+[node name="SpikeWave" type="Node3D"]
+process_physics_priority = -1
+editor_description = "Anillos del Rhinok (RhinokProjectile fase spreading, state.d:4996-5025, 24942-25037): en los cuadros 14, 29, 44, 59 y 89 tras el golpe, el anillo i (de 1 + 5,75·i a +6 m, medido desde los pies, visto desde arriba) daña el monto entero de salpicadura a distancia a criaturas y edificios sobre tierra y a no más de 10 m del suelo; no al tocado ni a los aliados. Termina en el cuadro 90."
+script = ExtResource("1_wave")

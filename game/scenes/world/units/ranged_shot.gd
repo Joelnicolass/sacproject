@@ -13,6 +13,8 @@ extends Node3D
 ## F148: a ShotLook with an `in_flight` scene (ShotInFlight) acts on every tick of the flight: the Abomination's droplets
 ## (ShotDropper, 030h3); F149: the Silverback's breath (FrostWave), whose ShotLook.collides is off: it touches neither a
 ## body nor the ground and flies its whole range.
+## F151: an in_flight that holds the shot's height (GroundHug, ShotInFlight.holds_height) takes the ground check away: the
+## Rhinok's shot ends on a body or at the end of its range only.
 
 const TRAIL_FPS := 60.0
 
@@ -133,7 +135,7 @@ func _physics_process(delta: float) -> void:
 		hit = _swept_target(from, global_position)
 	if hit:
 		_burst(hit)
-	elif global_position.y < _ground_height(global_position):
+	elif not (_in_flight and _in_flight.holds_height()) and global_position.y < ground_height(global_position):
 		_burst(null)
 	elif _traveled >= max_distance:
 		if look.burst_at_range_end:
@@ -205,7 +207,9 @@ static func _is_live_body(body: Node) -> bool:
 	return health != null and not health.call("is_dead")
 
 
-func _ground_height(at: Vector3) -> float:
+## sacengine getHeight: the top of the land or of a building (structures, altars, manafounts: layer 1) under `at`, wizards
+## left out; -INF off the map. The ground check of the flight, and GroundHug's height (F151).
+func ground_height(at: Vector3) -> float:
 	var query := PhysicsRayQueryParameters3D.create(at + Vector3.UP * 500.0, at + Vector3.DOWN * 500.0)
 	query.collision_mask = 1
 	var skip: Array[RID] = []
@@ -215,6 +219,11 @@ func _ground_height(at: Vector3) -> float:
 	query.exclude = skip
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
 	return float(hit.position.y) if not hit.is_empty() else -INF
+
+
+## F151: the shot flew its whole range (sacengine remainingDistance <= 0). SpikeImpact asks it before it hurts the target.
+func range_spent() -> bool:
+	return _traveled >= max_distance
 
 
 ## Server (or solo) only: _physics_process is off on clients.

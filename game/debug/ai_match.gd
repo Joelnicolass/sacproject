@@ -93,6 +93,8 @@ func _ready() -> void:
 	FrostWave.log_touches = true  # F149: bench logs the Silverback's breath (off in the product)
 	ShotSplit.log_split = true  # F125: bench logs the Boulderdash's fan (off in the product)
 	ShotStrike.log_strikes = true  # F124: bench logs the rays and the Styx's blows (off in the product)
+	GroundHug.log_flight = true  # F151: bench logs the Rhinok's flight on the land (off in the product)
+	SpikeWave.log_spikes = true  # F151: bench logs the Rhinok's rings of spikes (off in the product)
 	_set_status(_rules.pending_text)
 	var wait := _rules.start_paused and not _headless and not _args.has("autostart")
 	if not wait:

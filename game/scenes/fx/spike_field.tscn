@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/spike_field.gd" id="1_field"]
+
+[node name="SpikeField" type="Node3D"]
+editor_description = "Púas del Rhinok (Spike, state.d:3875-3885; SacSpike, sacobject.d:2984-2994): un evento = muchas púas en un anillo [inner, outer], verticales e inclinadas hasta 2 m, que salen del suelo y se hunden en 2/3 s. Solo presentación."
+script = ExtResource("1_field")
+
+[node name="Spikes" type="MultiMeshInstance3D" parent="."]
+unique_name_in_owner = true
+cast_shadow = 0

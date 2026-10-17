@@ -22,3 +22,9 @@ func fly(shot: RangedShot, at: Vector3) -> void:
 ## What this node does on a tick of flight. Default: nothing.
 func _fly(_shot: RangedShot, _at: Vector3) -> void:
 	pass
+
+
+## True when this node owns the shot's height (F151: GroundHug, sacengine position.z = getHeight): RangedShot then skips its
+## ground check, and the shot ends on a body or at the end of its range only. Default: false.
+func holds_height() -> bool:
+	return false

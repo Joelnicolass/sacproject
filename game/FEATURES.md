@@ -1584,3 +1584,27 @@ Deuda:
 - **Giro visual:** cada piedra tiene el suyo; en sacengine lo comparten.
 - **Final del alcance:** `>=` contra `<0` de sacengine.
 - **Phoenix:** sin el tubo de 30 cuadros y dispara desde tierra (deuda de 030e).
+
+### F151 — Rhinok: disparo pegado al suelo y anillos de púas (RFC-030, corte 030n-b)
+
+**Piezas:**
+- **`GroundHug`** (un `ShotInFlight` con `holds_height() = true`): es el único dueño de la altura del disparo, que va a 0,05 m sobre `RangedShot.ground_height()`. Esa altura cuenta techos, igual que `getHeight`. `RangedShot` ya no hace su chequeo de suelo para este disparo.
+- **`SpikeImpact`:** al tocado le hace 500 `splash_ranged`. Al blanco pedido le hace daño solo si de verdad se agotó el alcance (`range_spent()`).
+- **`SpikeWave`:** anillos en +14/29/44/59/89 cuadros, cada uno de 1 + 5,75·i a +6 m. Dañan criaturas, magos y edificios sobre tierra y a ≤10 m de altura, sin el tocado ni aliados. Hacen un golpe por anillo.
+- **Púas visuales:** `scenes/fx/spike_field` es un MultiMesh con la malla de `makeSpikeMesh` y la textura `jspk`. `FxBus.broadcast_scene` manda un RPC con parámetros por anillo: 10 por disparo en vez de unos 70.
+
+**Cierre (2026-10-17).** La review pidió CHANGES por B1: el disparo reventaba contra manantiales y estructuras, y el blanco pedido recibía 500 desde lejos. El playtest falló en lo visual: las púas se veían como puntitos. Las dos cosas se corrigieron en una ronda (`reviews/REVIEW-RFC-030n-b.md`).
+- **Anillos:** C0 recibe 450 al chocar. De C1 a C5 reciben 450 cada uno en +14, +29, +44, +59 y +89. C6 (aliado) y el Rhinok no reciben nada. La jhut y los dos jcc2 reciben 500.
+- **Carril D:** el disparo pasa por encima del manantial jfnt (sube a 19,10 m) y choca con D1 a 16 m.
+- **Determinismo:** `f125` da `04bb9085` en fixed, stress y window, con `f151_expect` y `f125_expect` en PASS. `quick` y `rules_suite` dan PASS.
+- **Look:**
+  - el muro de púas se ve de costado (`agent/out/pt151/pt/p3_ring5_side.png`);
+  - desde arriba, la franja del anillo gana entre 2 y 4 puntos de píxeles oscuros contra el interior y el exterior (`f151_bands.py`).
+
+**Desvío aprobado:** las púas de cada anillo duran 0,4 s y no 2/3 s. Con 2/3 s se ven tres anillos a la vez y no se lee cuál daña.
+
+Deuda:
+- La rama «alcance agotado con el blanco vivo» no se puede provocar con la IA del banco. La cubre solo la guarda.
+- El blanco pedido aliado pasa por el fuego amigo (m3, declarado).
+- La señal visual cenital es débil y el pasto sigue tapando a los cuerpos.
+- `SpikeWave` vive en el contenedor de disparos (R4, sin probar en red).

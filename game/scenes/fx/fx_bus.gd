@@ -26,6 +26,8 @@ var _rng := RandomNumberGenerator.new()
 var _beam_rng := RandomNumberGenerator.new()
 ## beam type name -> BeamType (or null).
 var _beam_types: Dictionary = {}
+## F151: scene path -> PackedScene (or null) of broadcast_scene.
+var _scenes: Dictionary = {}
 ## beam type name -> Array[BeamFx] idle / playing (oldest first).
 var _beam_idle: Dictionary = {}
 var _beam_playing: Dictionary = {}
@@ -242,3 +244,38 @@ func _play_beam_everywhere(type_name: String, from: Vector3, to: Vector3, follow
 	if not follow_path.is_empty():
 		follow = get_tree().root.get_node_or_null(NodePath(follow_path)) as Node3D
 	play_beam(type_name, from, to, follow)
+
+
+## F151: a presentation scene played on every peer with its parameters, one RPC per event (not one per piece: the
+## Rhinok's ring of spikes is one call). `scene_path` is a PackedScene whose root has play(params: Dictionary); it goes
+## under the current scene at `at` and frees itself. Never headless.
+func broadcast_scene(scene_path: String, at: Vector3, params: Dictionary) -> void:
+	if MpKit.is_networked():
+		if MpKit.is_server():
+			_play_scene_everywhere.rpc(scene_path, at, params)
+		return
+	play_scene(scene_path, at, params)
+
+
+func play_scene(scene_path: String, at: Vector3, params: Dictionary) -> void:
+	if _is_headless() or not scene_path.begins_with("res://"):
+		return
+	if not _scenes.has(scene_path):
+		_scenes[scene_path] = load(scene_path) as PackedScene if ResourceLoader.exists(scene_path) else null
+	var packed: PackedScene = _scenes[scene_path]
+	var parent := get_tree().current_scene
+	if packed == null or parent == null:
+		return
+	var node := packed.instantiate() as Node3D
+	if node == null or not node.has_method("play"):
+		if node:
+			node.free()
+		return
+	parent.add_child(node)
+	node.global_position = at
+	node.call("play", params)
+
+
+@rpc("authority", "call_local", "unreliable")
+func _play_scene_everywhere(scene_path: String, at: Vector3, params: Dictionary) -> void:
+	play_scene(scene_path, at, params)

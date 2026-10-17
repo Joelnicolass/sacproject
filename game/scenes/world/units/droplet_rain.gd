@@ -181,7 +181,7 @@ func _shape(size: float) -> BoxShape3D:
 	return shape
 
 
-## The ground under `at` (RangedShot._ground_height: terrain and buildings, wizards left out), or -INF off the map.
+## The ground under `at` (RangedShot.ground_height: terrain and buildings, wizards left out), or -INF off the map.
 func _ground_height(at: Vector3) -> float:
 	var query := PhysicsRayQueryParameters3D.create(at + Vector3.UP * 500.0, at + Vector3.DOWN * 500.0)
 	query.collision_mask = ground_mask

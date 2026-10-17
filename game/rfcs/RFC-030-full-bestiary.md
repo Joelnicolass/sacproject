@@ -923,6 +923,86 @@ Después de la corrección:
 - Las del plan: el giro usa `Vector3.UP`, el Phoenix tira desde su altura de vuelo sin el tubo de 30 cuadros, y el giro y el polvo usan RNG propio.
 - **El pasto tapa a los Druids** en la captura cercana (`a3`). En `a2` las piedras se ven chicas con la cámara alta.
 
+**Plan (developer de 030n-b, 2026-10-17):** el del tech lead en `rfcs/plans/030m-030n-plan.md` §030n (Rhinok), sobre 030n-a. Números verificados en `state.d` 11880-11885, 4996-5025, 24933 y 24942-25037.
+- `GroundHug` (`ground_hug_flight.gd/.tscn`, un `ShotInFlight`): en cada tick vuelve el disparo a `suelo + 0,05` antes de que `RangedShot` busque el choque. Las púas del camino son visuales (`rock_emerge` cada 4 ticks en un disco de 2,5 m, con `MatchSeed.rng(["spikes", disparo])`).
+- `SpikeImpact` (`impacts/spike_impact.gd/.tscn`): el tocado recibe el monto entero como `splash_ranged` y los anillos salen bajo su centro. Si se agota el alcance, el pedido vivo recibe lo mismo y los anillos salen del punto final.
+- `SpikeWave` (`impacts/spike_wave.gd/.tscn`, Node3D en el contenedor de disparos, prioridad −1):
+  - el cuadro es `MatchClock.now()` menos el tick del golpe;
+  - el anillo i daña en `damage_frames[i]` (14, 29, 44, 59, 89), de `1 + 5,75·i` a +6 m, con la distancia xy medida desde los pies;
+  - cuenta criaturas, magos y edificios sobre tierra y a no más de 10 m del suelo;
+  - saltea al tocado y a los aliados (mismo slot y no es el pedido) antes de Health;
+  - el daño es una vez **por anillo**, como en sacengine: un cuerpo que cae donde dos franjas se pisan recibe los dos golpes;
+  - termina en el cuadro 90.
+- `data/shots/hrba.tres`: caja de 5 m, `in_flight` `ground_hug_flight`, impacto `spike_impact`, `burst_at_range_end` y fx `rock_emerge`.
+- Los logs se encienden con `GroundHug.log_flight` y `SpikeWave.log_spikes` desde `debug/ai_match.gd`. La réplica es `agent/tools/f151_expect.py` (distancia → anillo → cuadro).
+- Carril C en `debug/f125_big_shots` (después de B):
+  - Rhinok (−60/+45) contra C0 (−32);
+  - C1 a C5 en −28, −22, −17, −11 y −5;
+  - C6, aliado del slot 1, en −32/+53;
+  - el Rhinok muere a los 4 s.
+
+**Resultado (developer de 030n-b, 2026-10-17):** semilla 7, caso `f125`.
+- **C3 Vuelo:** Shot5 vuela 21 ticks con |y − (suelo + 0,05)| = 0,000 y choca con Druid5 (C0) en el cuadro 118: `dano Druid5 450`.
+- **C4 Anillos:**
+  - Druid6 (4 m) recibe 450 en 132 (+14), Druid7 (10 m) en 147 (+29), Druid8 (15 m) en 162 (+44), Druid9 (21 m) en 177 (+59) y Druid10 (27 m) en 207 (+89), una vez cada uno;
+  - Druid11 (C6, 8 m) y Rhinok1 (28 m) aparecen como `aliado, sin daño`;
+  - también reciben 500 `Bld069_jhut` (14,59 m, +44) y los dos `Bld041/043_jcc2` (26,18 m, +89);
+  - `fin +90` en el cuadro 208;
+  - `f151_expect.py` da `RESULTADO PASS (0 diferencias)` en fixed, stress y window.
+- **030n-a sin cambios:** `f125_expect.py` da `3 piedras, 0 con diferencias`, y el fuego del Phoenix sigue en 732,0 / 61.
+- **C5 Determinismo:**
+  - `f125` da f8709101 en los 3 modos y se regrabó en `det_baseline.txt`;
+  - `quick` PASS, con las otras 9 líneas base sin cambios;
+  - `rules_suite` PASS. El `sim_rng_lint` obligó a sembrar las púas visuales con `MatchSeed.rng`.
+- **Ventana** (`agent/flows/pt151_play.json`, `agent/harness/pt151_watch.gd`, `run_pt151.sh`, capturas en `agent/out/pt151/play/`):
+  - `c1`: las púas del camino detrás del Rhinok, con el disparo en rel 106 en (1228,63, 10,14, 1315,45);
+  - `c2`: el golpe en C0 (Druid5 en 350);
+  - `c3`/`c4`: las púas de los anillos y C1 y C3 en 350, con los anillos 1 y 3;
+  - `c6`: el report da Druid11 en 800 en rel 212;
+  - nadie queda dentro de rocas ni de chozas (`c4` los muestra en el pasto abierto);
+  - en la ventana el Rhinok dispara en rel 92; headless, en el cuadro 97. Los daños caen en los mismos desfases que da la réplica.
+
+*Desvíos del plan:* C6 va en +53 en vez de +55, para quedar a 8,6 m de JAW2 y no a 6,8. El Rhinok muere a los 4 s en vez de 5 s: el ciclo de disparo es de unos 285 ticks y así nunca dispara dos veces. Los dos desvíos los aceptó el orquestador.
+
+*Divergencias declaradas:*
+- Las del plan: vuela a +0,05 m, al agotar el alcance revienta en el mismo tick (±1), el aliado se decide por slot y las púas son el visual `rock_emerge`.
+- La altura del vuelo es la de la tierra, sin los techos de los edificios que sí cuenta `getHeight`.
+- Si `RangedShot` revienta sin cuerpo por el chequeo del suelo, `SpikeImpact` lo toma como alcance agotado.
+- **El pasto tapa a C6** en la captura cercana: su vida sale del report del watcher.
+
+**Corrección (developer de 030n-b, ronda única, `reviews/REVIEW-RFC-030n-b.md`):**
+- **B1, la altura tiene un solo dueño:**
+  - `ShotInFlight.holds_height()` vale false por defecto, y `GroundHug` lo pone en true. Con eso `RangedShot` saltea su chequeo de suelo y el disparo solo termina por choque o por alcance.
+  - `GroundHug` toma la altura de `RangedShot.ground_height()`, que pasó a ser pública. Es el rayo con máscara 1 que cuenta techos de estructuras, altares y manantiales, igual que `getHeight`.
+  - `SpikeImpact` solo le hace daño al blanco pedido si `RangedShot.range_spent()`.
+- **m1, carril D:**
+  - Rhinok2 en +225/+180 contra Druid12 (D1) en +262, con el manantial jfnt (1520, 1450) en el medio, y Druid13 (D2) a 4 m.
+  - Shot6 sube a 19,10 m sobre el manantial en los ticks 13 a 19, baja al suelo (16,0 m) y choca con D1 en el cuadro 168 (450). D2 recibe 450 en +14.
+  - Antes de la corrección habría reventado en el tick 13 y Druid12 habría recibido 500 desde 16 m.
+  - La rama de alcance agotado con el blanco vivo no se da en la IA del banco (siempre se tira dentro del alcance). Queda cubierta por `range_spent()`.
+- **Visual:**
+  - Las púas son las de `Spike`/`SacSpike` (state.d:3875-3885, sacobject.d:2984-2994, renderer.d:2627-2638):
+    - malla de `makeSpikeMesh` (radio 0,3 m en el suelo y 0,25 m a 0,75; punta en 1);
+    - textura `jspk`, sacada de `shwn.WAD` con `tools/export_particles.py`, en MIX;
+    - eje s·d con d = (0, 2,5, 0) + disco de 2 m × U(0,85, 1,15) y s = 1 − (2t/L − 1)².
+  - Lo dibuja `scenes/fx/spike_field.tscn` (MultiMesh). Cada evento es un solo `FxBus.broadcast_scene`, que es nuevo: un RPC con parámetros.
+  - Cada anillo es un evento con 1 púa/m² en su franja (hasta 1000; sacengine mantiene unas 1200 en pie). En vuelo, un evento cada 6 ticks con 18 púas.
+  - Pasa de unos 70 RPC a 10 por disparo (m5). La semilla sale de `MatchSeed.derive([…, tick])` (m6).
+- **Medición** (`agent/tools/f151_bands.py`, muestras de `pt151_watch.samples`, cámara cenital a 62 m, oscuro con luminancia < 0,4, después − antes):
+
+| Captura | Franja | Interior | Exterior |
+|---|---|---|---|
+| Anillo 2 (`p3_ring2_overhead.png`) | +0,0363 | −0,0182 | −0,0039 |
+| Anillo 3 (`p3_ring3_overhead.png`) | +0,0233 | −0,0109 | −0,0011 |
+
+  Los dos dan PASS. Con el umbral 0,5 la línea base en pausa sale más oscura y el resultado no sirve. En `p3_ring5_side.png` se ve de costado el muro de púas del anillo 5.
+- **m3 declarado:** el blanco pedido recibe el daño por Health. Un pedido aliado queda en 0 o en `ally_damage_factor` según el fuego amigo.
+- **Divergencia nueva:** las púas de cada anillo duran 0,4 s, no 2/3 s, para que haya un solo anillo en pie por vez. En sacengine nacen sin parar sobre el círculo que crece.
+- **Pruebas:**
+  - `f125` da 04bb9085 en los 3 modos y se regrabó;
+  - `f151_expect` y `f125_expect` dan PASS en los 3;
+  - `quick` y `rules_suite` dan PASS.
+
 ### 030o — F126 Catálogo de habilidades + Protector y Firewalk
 
 **Árbol**

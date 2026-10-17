@@ -1324,3 +1324,25 @@ Deuda:
 - **Red:** sin verificar.
 - **`f20_solo`:** falla en `%God_persephone`, también en HEAD (es preexistente).
 - **Determinismo (alarma, preexistente desde el primer commit):** `spellbook.gd` descuenta los enfriamientos en `_process(delta)`, con el reloj de render. Por eso la IA decide distinto con ventana. Va en un corte propio.
+
+### F144 — Banco de determinismo y línea base (RFC-032, corte 032a)
+
+**Qué es.** `agent/run_determinism.sh <caso|all|table> [modos]` corre `ai_match` en tres modos y compara cada uno contra `fixed`:
+- **`fixed`:** headless con `--fixed-fps 60`.
+- **`stress`:** headless con `--max-fps 6`; con el tope de 8 pasos de física por cuadro da unos 48 ticks por segundo.
+- **`window`:** `--max-fps 60` con `--autostart --quit`.
+
+Todo pasa por `godot_run.sh`. Un vigía mide RSS y tiempo y marca `CONTAMINATED`, y la comparación muestra la primera línea de `events` que difiere. Las salidas quedan en `agent/out/det/`. El corte no cambia el producto; solo documenta `ai_match`.
+
+**Cierre (2026-10-16).** La corrida `window` sirvió de playtest con ventana. Los 4 casos dan `fixed` = `fixed2`. Ninguna corrida quedó contaminada; RSS máximo 744 MB. Una pasada completa tarda unos 12 minutos.
+
+**Digests 032a (línea base en HEAD):**
+
+| Caso | fixed | stress | window |
+|---|---|---|---|
+| s7 (`ai_duel_seeded`, 2 min) | `4915c88453c02814584f26cff3596e4aed817e42f04e9021a04f658344f5597d` | igual | igual |
+| s7_npcs | `7179b17d6f6cd03b4ba4c61ab8a6a5d0d6d4f0d79e1a1cd387211a2c512d86f6` | igual | igual |
+| s1_trivial (`ai_vs_trivial`, 3 min) | `e076abe1cf0e70cbac9898c5211e5601a1973ee42cc955743bf665a049f42bf9` | **`8ee40cbc…`** ≠ | **`37768d9c…`** ≠ |
+| f139 (`f139_ff_clouds`, 0,5 min) | `af04fefbb80252e24a6e642d60759e4c8efaa90c34fdf2f83a7460897b26bb6d` | igual | igual |
+
+**El banco discrimina.** En `s1_trivial`, el modo `stress` diverge en la línea 91 de `events` (un summon 12 ticks antes) y `window` en la línea 171. Es el enfriamiento de `Spellbook`, que se calcula en `_process`; lo corrige 032b.

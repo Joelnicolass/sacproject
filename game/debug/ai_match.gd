@@ -14,6 +14,9 @@ extends Node
 ## MatchSetup.from_cli, its one owner since RFC-031 031d, and applied by HighNoon to the world's copy of these rules),
 ## autostart (skip the pause with a window), quit (quit at the end with a window). Headless it starts
 ## and quits by itself; with a window it waits in «Pendiente» for check_tick (Enter) and stays on screen.
+## Determinism (RFC-032): the digest is indexed by audit.tick, but while it waits for Enter the world already runs,
+## so a window run is comparable with headless only with --autostart (ventana comparable solo con --autostart).
+## The three-clock bench is agent/run_determinism.sh (fixed, stress and window modes).
 
 const REPORT_TAG := "AI_REPORT "
 

@@ -1,0 +1,322 @@
+{
+ "scene": "res://debug/f155_oil.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait_until": {
+    "node": "Runner",
+    "prop": "_running",
+    "equals": true,
+    "timeout": 60
+   }
+  },
+  {
+   "call": {
+    "harness": "pt155_watch",
+    "method": "frame_between",
+    "args": [
+     "Pyrodactyl1",
+     "Druid1",
+     0,
+     22,
+     24
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt155_watch",
+    "prop": "rel",
+    "gte": 150,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt155_watch",
+    "method": "frame_between",
+    "args": [
+     "Pyrodactyl1",
+     "Druid1",
+     0,
+     22,
+     24
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt155_watch",
+    "method": "report",
+    "args": [
+     [
+      "Pyrodactyl1",
+      "Druid1"
+     ]
+    ]
+   }
+  },
+  {
+   "shot": "play/p1_oil_falling.png"
+  },
+  {
+   "call": {
+    "harness": "pt155_watch",
+    "method": "frame_on",
+    "args": [
+     "Druid1",
+     0,
+     3.5,
+     4.5
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt155_watch",
+    "method": "report",
+    "args": [
+     [
+      "Druid1",
+      "Druid4"
+     ]
+    ]
+   }
+  },
+  {
+   "shot": "play/c1_druid1_clean.png"
+  },
+  {
+   "call": {
+    "harness": "pt155_watch",
+    "method": "frame_on",
+    "args": [
+     "Druid4",
+     0,
+     3.5,
+     4.5
+    ]
+   }
+  },
+  {
+   "shot": "play/c2_druid4_clean.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt155_watch",
+    "prop": "rel",
+    "gte": 176,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt155_watch",
+    "method": "frame_on",
+    "args": [
+     "Druid1",
+     0,
+     3.5,
+     4.5
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt155_watch",
+    "method": "report",
+    "args": [
+     [
+      "Druid1",
+      "Druid2",
+      "Druid3",
+      "Druid4",
+      "Trogg1"
+     ]
+    ]
+   }
+  },
+  {
+   "shot": "play/c3_druid1_oiled.png"
+  },
+  {
+   "call": {
+    "harness": "pt155_watch",
+    "method": "frame_on",
+    "args": [
+     "Druid4",
+     0,
+     3.5,
+     4.5
+    ]
+   }
+  },
+  {
+   "shot": "play/c4_druid4_clean.png"
+  },
+  {
+   "call": {
+    "harness": "pt155_watch",
+    "method": "frame_between",
+    "args": [
+     "Druid1",
+     "Druid3",
+     0,
+     5,
+     7
+    ]
+   }
+  },
+  {
+   "shot": "play/p2_oiled_group.png"
+  },
+  {
+   "call": {
+    "harness": "pt155_watch",
+    "method": "frame_on",
+    "args": [
+     "Trogg1",
+     0,
+     5,
+     7
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt155_watch",
+    "method": "report",
+    "args": [
+     [
+      "Trogg1"
+     ]
+    ]
+   }
+  },
+  {
+   "shot": "play/p2c_trogg_oiled.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt155_watch",
+    "prop": "rel",
+    "gte": 244,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt155_watch",
+    "method": "frame_on",
+    "args": [
+     "Druid3",
+     0,
+     3.5,
+     4.5
+    ]
+   }
+  },
+  {
+   "shot": "play/p3_before_fire.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt155_watch",
+    "prop": "rel",
+    "gte": 251,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt155_watch",
+    "method": "frame_on",
+    "args": [
+     "Druid3",
+     0,
+     3.5,
+     4.5
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt155_watch",
+    "method": "report",
+    "args": [
+     [
+      "Druid1",
+      "Druid2",
+      "Druid3"
+     ]
+    ]
+   }
+  },
+  {
+   "shot": "play/p4_blast_chain.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt155_watch",
+    "prop": "rel",
+    "gte": 262,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt155_watch",
+    "method": "frame_on",
+    "args": [
+     "Druid3",
+     0,
+     3.5,
+     4.5
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt155_watch",
+    "method": "report",
+    "args": [
+     [
+      "Druid1",
+      "Druid2",
+      "Druid3"
+     ]
+    ]
+   }
+  },
+  {
+   "shot": "play/p5_fire_after.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt155_watch",
+    "prop": "rel",
+    "gte": 300,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt155_watch",
+    "method": "report",
+    "args": [
+     [
+      "Druid3",
+      "Trogg1",
+      "Druid4"
+     ]
+    ]
+   }
+  }
+ ]
+}

@@ -1,4 +1,4 @@
-[gd_scene load_steps=61 format=3]
+[gd_scene load_steps=63 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/unit_body.gd" id="1_body"]
 [ext_resource type="PackedScene" path="res://scenes/world/components/pace_factors.tscn" id="f129_pace"]
@@ -57,6 +57,9 @@
 [ext_resource type="Script" path="res://scenes/world/units/poisoning.gd" id="f122_poisoning"]
 [ext_resource type="Script" path="res://scenes/world/look/stone_look.gd" id="f137_stone_look"]
 [ext_resource type="Shader" path="res://scenes/world/look/stone.gdshader" id="f137_stone_shader"]
+
+[ext_resource type="Script" path="res://scenes/world/units/afflictions/oiled.gd" id="f155_oiled"]
+[ext_resource type="Resource" path="res://data/afflictions/oiled.tres" id="f155_oiled_type"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_unit"]
 radius = 0.3
@@ -132,8 +135,9 @@ script = ExtResource("2_visual")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_unit")
 
-[node name="Health" type="Node" parent="." node_paths=PackedStringArray("passive", "afflictions", "poisoning", "life_shield")]
+[node name="Health" type="Node" parent="." node_paths=PackedStringArray("oil", "passive", "afflictions", "poisoning", "life_shield")]
 script = ExtResource("3_health")
+oil = NodePath("../Afflictions/Oiled")
 passive = NodePath("../DamagePassive")
 afflictions = NodePath("../Afflictions")
 poisoning = NodePath("../Poisoning")
@@ -245,6 +249,11 @@ script = ExtResource("f152_firewalking")
 type = ExtResource("f152_firewalking_type")
 snap = NodePath("../../WarpSnap")
 tilt = NodePath("../../Tilt")
+
+[node name="Oiled" type="Node" parent="Afflictions" node_paths=PackedStringArray("orders")]
+script = ExtResource("f155_oiled")
+type = ExtResource("f155_oiled_type")
+orders = NodePath("../../Orders")
 
 [node name="Orders" type="Node" parent="."]
 script = ExtResource("f27_orders")

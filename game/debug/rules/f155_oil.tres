@@ -1,0 +1,180 @@
+[gd_resource type="Resource" script_class="BenchRules" load_steps=18 format=3]
+
+[ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
+[ext_resource type="Script" path="res://debug/bench_event.gd" id="3_event"]
+
+[sub_resource type="Resource" id="Group_Pyro"]
+script = ExtResource("2_group")
+tag = "kacf"
+slot = 1
+count = 1
+columns = 1
+offset_m = -25.0
+offset_z_m = -35.0
+facing_x = 1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_O1_druid"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 2
+count = 1
+columns = 1
+offset_m = 0.0
+offset_z_m = -35.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_O2_druid"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 2
+count = 1
+columns = 1
+offset_m = 2.0
+offset_z_m = -35.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_O3_druid"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 1
+count = 1
+columns = 1
+offset_m = 0.0
+offset_z_m = -32.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_O4_druid"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 2
+count = 1
+columns = 1
+offset_m = 18.0
+offset_z_m = -35.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_O5_trogg"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 2
+count = 1
+columns = 1
+offset_m = 0.0
+offset_z_m = -48.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_FM"]
+script = ExtResource("2_group")
+tag = "fplk"
+slot = 1
+count = 1
+columns = 1
+offset_m = -18.0
+offset_z_m = -20.0
+facing_x = 1.0
+
+[sub_resource type="Resource" id="Event_Oil"]
+script = ExtResource("3_event")
+at_s = 0.5
+action = "ability"
+label = "Viscous oil sobre O1 (carril O, 25 m)"
+slot = 1
+user = "Pyrodactyl1"
+point = Vector2(1270, 1235)
+
+[sub_resource type="Resource" id="Event_Walk_O5"]
+script = ExtResource("3_event")
+at_s = 2.5
+action = "attack"
+order = "move"
+label = "Trogg1 (O5) camina hacia el Flame Minion (el aceite lo frena a medio camino)"
+slot = 2
+user = "Trogg1"
+target = "FlameMinion1"
+point = Vector2(1252, 1250)
+
+[sub_resource type="Resource" id="Group_Pyro_R"]
+script = ExtResource("2_group")
+tag = "kacf"
+slot = 1
+count = 1
+columns = 1
+offset_m = -25.0
+offset_z_m = 35.0
+facing_x = 1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_R_fling"]
+script = ExtResource("2_group")
+tag = "palk"
+slot = 2
+count = 1
+columns = 1
+offset_m = 0.0
+offset_z_m = 35.0
+facing_x = -1.0
+pacifist = true
+order = "ability"
+
+[sub_resource type="Resource" id="Group_R_basilisk"]
+script = ExtResource("2_group")
+tag = "guls"
+slot = 1
+count = 1
+columns = 1
+offset_m = -20.0
+offset_z_m = 35.0
+facing_x = 1.0
+
+[sub_resource type="Resource" id="Event_Oil_R"]
+script = ExtResource("3_event")
+at_s = 0.5
+action = "ability"
+label = "Viscous oil sobre el Earthfling en Rockform (carril R)"
+slot = 1
+user = "Pyrodactyl2"
+point = Vector2(1270, 1305)
+
+[sub_resource type="Resource" id="Group_R_flummox"]
+script = ExtResource("2_group")
+tag = "wlce"
+slot = 2
+count = 1
+columns = 1
+offset_m = 10.0
+offset_z_m = 35.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Event_Stun_R1"]
+script = ExtResource("3_event")
+at_s = 0.1
+action = "stun"
+label = "Basilisk1 aturdido: la mirada sale despues de que el aceite caiga (carril R)"
+slot = 1
+user = "Basilisk1"
+
+[sub_resource type="Resource" id="Event_Stun_R2"]
+script = ExtResource("3_event")
+at_s = 2.8
+action = "stun"
+label = "Basilisk1 aturdido otra vez hasta pasado el tick 183 del aceite"
+slot = 1
+user = "Basilisk1"
+
+[resource]
+script = ExtResource("1_rules")
+match_seed = 7
+groups = Array[ExtResource("2_group")]([SubResource("Group_Pyro"), SubResource("Group_O1_druid"), SubResource("Group_O2_druid"), SubResource("Group_O3_druid"), SubResource("Group_O4_druid"), SubResource("Group_O5_trogg"), SubResource("Group_FM"), SubResource("Group_Pyro_R"), SubResource("Group_R_fling"), SubResource("Group_R_basilisk"), SubResource("Group_R_flummox")])
+anchor = Vector3(1270, 0, 1270)
+start_paused = true
+events = Array[ExtResource("3_event")]([SubResource("Event_Oil"), SubResource("Event_Walk_O5"), SubResource("Event_Oil_R"), SubResource("Event_Stun_R1"), SubResource("Event_Stun_R2")])
+pending_text = "Viscous oil en pausa"
+ignore_annihilation = true

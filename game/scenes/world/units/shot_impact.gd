@@ -25,6 +25,12 @@ func _affect(_shot: Node3D, _target: Node3D, _point: Vector3, _ability: AbilityT
 	pass
 
 
+## F155: the DamageMod bits the shot (or strike) `holder` carries; 0 when it has none.
+static func mods_of(holder: Node) -> int:
+	var value: Variant = holder.get("mods") if holder != null else null
+	return int(value) if value != null else 0
+
+
 static func who(body: Node) -> String:
 	return str(body.call("display_name")) if body.has_method("display_name") else str(body.name)
 
@@ -50,7 +56,8 @@ static func land(holder: Node3D, look: ShotLook, target: Node3D, point: Vector3,
 	elif hit and preload("res://scenes/world/spells/rock_projectile.gd").is_live_body(hit):
 		## Local preloads: the variants (SplashImpact, DirectImpact, …) already name theirs _HEALTH and _ROCK.
 		var direct_ranged: StringName = preload("res://scenes/world/components/health.gd").DIRECT_RANGED
-		taken = float(hit.get_node("Health").call("damage_typed", float(holder.get("damage")), direct_ranged, int(holder.get("from_slot"))))
+		taken = float(hit.get_node("Health").call("damage_typed", float(holder.get("damage")), direct_ranged, int(holder.get("from_slot")), false, false, mods_of(holder)))
+		preload("res://scenes/world/spells/rock_projectile.gd").report(hit, taken, direct_ranged)  ## F155: the bench reads this line
 	for fx in look.impact_fx:
 		FxBus.broadcast(fx, point)
 	return taken

@@ -241,6 +241,8 @@ func _apply(target: Node3D) -> void:
 
 ## Every peer, from UnitBody's mode setter.
 func show_rock_form(on: bool) -> void:
+	if AbilityEffect.log_effects:
+		print("rockform %s %s (tick %d)" % ["abierto" if on else "cerrado", AbilityEffect.who(_body), MatchClock.now()])
 	if on and _shell == null:
 		_shell = MeshInstance3D.new()
 		_shell.name = "RockShell"

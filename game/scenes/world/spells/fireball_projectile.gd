@@ -140,10 +140,10 @@ func _ground_height(at: Vector3) -> float:
 func _explode(direct: Node3D) -> void:
 	var center := global_position
 	if direct and is_instance_valid(direct) and _ROCK.is_live_body(direct):
-		SplashDamage.hurt(direct, damage, from_slot)
+		SplashDamage.hurt(direct, damage, from_slot, Health.SPLASH_SPELL, Health.IGNITE)
 	else:
 		direct = null
-	SplashDamage.deal(get_tree(), center, damage, damage_range, direct, from_slot)
+	SplashDamage.deal(get_tree(), center, damage, damage_range, direct, from_slot, Health.SPLASH_SPELL, Health.IGNITE)
 	FxBus.broadcast("wrath_explosion1", center)
 	FxBus.broadcast("wrath_explosion2", center)
 	FxBus.broadcast("wrath_particle", center)

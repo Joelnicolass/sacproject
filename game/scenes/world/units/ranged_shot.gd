@@ -20,6 +20,8 @@ const TRAIL_FPS := 60.0
 
 var damage := 0.0
 var from_slot := 0
+## F155: the DamageMod bits its hit carries (Health.IGNITE when its ShotLook ignites). ShotImpact.mods_of reads it.
+var mods := 0
 var gravity := 0.0
 var max_distance := INF
 var velocity := Vector3.ZERO
@@ -52,6 +54,7 @@ func setup(data: Dictionary) -> void:
 	shooter_path = NodePath(str(data.get("shooter", "")))
 	look = ShotLook.for_tag(str(data.get("tag", "")))
 	ability = GameData.ability(str(data.get("tag", "")))
+	mods = Health.IGNITE if look.ignites else 0
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash(name)
 	_spin_axis = Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0)).normalized()
@@ -200,7 +203,7 @@ func _can_hit(body: Node3D, intended: Node, shooter: Node) -> bool:
 	if body == null or body == shooter or not _is_live_body(body):
 		return false
 	var side := int(body.get("owner_slot")) if "owner_slot" in body else 0
-	return body == intended or from_slot <= 0 or (side == from_slot) == look.hits_allies
+	return body == intended or from_slot <= 0 or look.hits_every_side or (side == from_slot) == look.hits_allies
 
 
 static func _is_live_body(body: Node) -> bool:

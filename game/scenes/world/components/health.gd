@@ -47,6 +47,9 @@ const IGNITE := 1 << 6
 @export var poisoning: Poisoning
 ## F126: the body's life shield (Life Shield, Protector). Optional: empty = no shield, ×1.
 @export var life_shield: LifeShield
+## F155: the body's oil (Oiled). A hit with IGNITE that reaches it while the body is oiled takes ×2 and lights it (sacengine
+## dealRawDamage, state.d:9028-9031). Optional: empty = never doubled.
+@export var oil: Oiled
 
 ## Multiplies damage_typed on top of the resistance: the body's own effects, as dealDamage
 ## stacks them (state.d:8962-8969); Rockform sets 0.05.
@@ -117,7 +120,10 @@ func damage_typed(amount: float, kind: StringName, from_slot: int = 0, ignore_fr
 		var factor := float(kind_factors.get(kind, 1.0))
 		var shields := 1.0 if pierce_shield else shield_factor() * _state_factor()
 		var before := amount * side * resistance(kind) * maxf(0.0, factor) * shields
-		taken = minf(current, before * _passive_factor(before, mods, from_slot))
+		var scaled := before * _passive_factor(before, mods, from_slot)
+		if mods & IGNITE != 0 and oil != null and oil.ignite():
+			scaled *= 2.0
+		taken = minf(current, scaled)
 	if taken > 0.0:
 		_hit(taken, from_slot)
 	hurt.emit(taken, kind, from_slot)

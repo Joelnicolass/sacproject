@@ -23,6 +23,12 @@ extends Node
 		if is_node_ready() and stone and not Engine.is_editor_hint():
 			_dressed = null
 			_dress()
+## The shader's stone_base, stone_gain, stone_roughness and stone_metallic (F155: the oil is a dark glossy coat, not grey stone;
+## Afflictions sets them with the tint from the state that is on). The defaults are the stone's.
+@export var base := 0.3
+@export var gain := 0.7
+@export var roughness := 0.5
+@export var metallic := 0.5
 ## On: the stone overrides are on the mesh. Off: the surfaces get their own materials back.
 @export var stone := false:
 	set(value):
@@ -44,6 +50,20 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	if mesh and mesh.mesh != _dressed:
+		_dress()
+
+
+## Every knob of the look at once (one redress, whatever changed). Afflictions calls it with the state that is on.
+func apply(new_tint: Color, new_base: float, new_gain: float, new_roughness: float, new_metallic: float) -> void:
+	if new_tint == tint and new_base == base and new_gain == gain and new_roughness == roughness and new_metallic == metallic:
+		return
+	tint = new_tint
+	base = new_base
+	gain = new_gain
+	roughness = new_roughness
+	metallic = new_metallic
+	if is_node_ready() and stone and not Engine.is_editor_hint():
+		_dressed = null
 		_dress()
 
 
@@ -75,13 +95,17 @@ func _undress() -> void:
 
 
 func _stone_for(source: Material) -> ShaderMaterial:
-	var key: Array = [source if source else shader, tint]
+	var key: Array = [source if source else shader, tint, base, gain, roughness, metallic]
 	var found := _materials.get(key) as ShaderMaterial
 	if found and found.shader == shader:
 		return found
 	var built := ShaderMaterial.new()
 	built.shader = shader
 	built.set_shader_parameter("stone_tint", Vector3(tint.r, tint.g, tint.b))
+	built.set_shader_parameter("stone_base", base)
+	built.set_shader_parameter("stone_gain", gain)
+	built.set_shader_parameter("stone_roughness", roughness)
+	built.set_shader_parameter("stone_metallic", metallic)
 	var base := source as BaseMaterial3D
 	if base:
 		built.set_shader_parameter("albedo_tex", base.albedo_texture)

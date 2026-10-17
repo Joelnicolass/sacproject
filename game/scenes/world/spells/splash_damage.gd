@@ -18,12 +18,12 @@ const GROUPS: Array[StringName] = [&"wizard", &"unit", &"structure"]
 
 ## Hurts every body around `center` except `direct` (which the caller already hit with the whole amount).
 ## `kind` is the Health damage kind: splash spell (Wrath, Fireball, Swarm, Steam Cloud) or splash ranged
-## (dealSplashRangedDamageAt, state.d:9400: a creature's shot, F119).
-static func deal(tree: SceneTree, center: Vector3, amount: float, radius: float, direct: Node3D, from_slot: int, kind: StringName = _HEALTH.SPLASH_SPELL) -> void:
+## (dealSplashRangedDamageAt, state.d:9400: a creature's shot, F119). `mods`: the DamageMod bits (F155: IGNITE).
+static func deal(tree: SceneTree, center: Vector3, amount: float, radius: float, direct: Node3D, from_slot: int, kind: StringName = _HEALTH.SPLASH_SPELL, mods := 0) -> void:
 	for body in bodies_within(tree, center, radius, direct):
 		if float(body.get_node("Health").get("maximum")) <= 0.0:
 			continue
-		hurt(body, amount * maxf(0.0, 1.0 - box_distance(body, center) / radius), from_slot, kind)
+		hurt(body, amount * maxf(0.0, 1.0 - box_distance(body, center) / radius), from_slot, kind, mods)
 
 
 ## The one walk of a splash (sacengine dealDamageAt's collisionTargets, state.d:9075-9088): live bodies of `groups`
@@ -45,8 +45,9 @@ static func bodies_within(tree: SceneTree, center: Vector3, radius: float, excep
 	return found
 
 
-static func hurt(body: Node3D, amount: float, from_slot: int, kind: StringName = _HEALTH.SPLASH_SPELL) -> void:
-	var taken := float(body.get_node("Health").call("damage_typed", amount, kind, from_slot))
+## `mods` (F155): the DamageMod bits the hit carries (Health.IGNITE: Fireball, Steam Cloud, fkba/cfba shots, the oil's blast).
+static func hurt(body: Node3D, amount: float, from_slot: int, kind: StringName = _HEALTH.SPLASH_SPELL, mods := 0) -> void:
+	var taken := float(body.get_node("Health").call("damage_typed", amount, kind, from_slot, false, false, mods))
 	_ROCK.report(body, taken, kind)
 
 

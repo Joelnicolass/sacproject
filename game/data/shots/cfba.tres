@@ -8,5 +8,6 @@ script = ExtResource("1_look")
 hit_size = 1.75
 impact_fx = PackedStringArray("bombard_fire")
 impact = ExtResource("2_impact")
+ignites = true
 fallback_color = Color(0.3, 0.3, 0.3, 1)
 fallback_radius = 0.4

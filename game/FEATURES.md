@@ -1837,3 +1837,32 @@ Deuda:
 - Aliado se decide por slot.
 - Los edificios no frenan el rayo.
 - Sin probar en red (R8).
+
+### F155 — Viscous oil del Pyrodactyl y DamageMod.ignite ×2 (RFC-030, corte 030r-b)
+
+**Piezas:**
+- **`Oiled`** (afflicción, bit 7, `coexists`):
+  - dura 900 ticks y borra las órdenes en cada tick; en las unidades tiene `holds` y en los magos no;
+  - `ignite()` hace estallar el aceite al tick siguiente: 500 de salpicadura con `IGNITE` en un radio de 5, a nombre del que tiró el aceite, más fuego visual y la bola `oil_blast`.
+- **`AfflictionType.coexists`:** `admit` lo saltea en las dos direcciones.
+- **`Health.oil`:** un golpe con `IGNITE` sobre un cuerpo untado vale ×2, después del chequeo de bando.
+- **Cadena de mods:** `ShotLook.ignites` → `RangedShot.mods` → `ShotImpact.mods_of` → `DirectImpact`/`SplashImpact` → `SplashDamage.deal`/`hurt`.
+  - Encienden: `fkba`, `cfba`, Fireball y la nube de vapor.
+  - No encienden: Tickferno y Phoenix.
+- **`ShotLook.hits_every_side`:** la bola de aceite le pega a cualquier bando.
+- **`Afflictions`:** `held_changed` también se emite cuando cambia `breaks_special_modes()`, así un cuerpo untado en Rockform que es petrificado cierra el Rockform.
+- **Look untado:** negro brillante, con un `StoneLook` que ahora tiene los knobs `base`, `gain`, `roughness` y `metallic`.
+
+**Cierre (2026-10-17).** La review pidió cambios por B1 (Rockform untado y petrificado) y el playtest falló en lo visual: el untado no se distinguía y la explosión era chica. Se corrigió todo en una ronda (`reviews/REVIEW-RFC-030r-b.md`).
+- **Lanzamiento:** maná de 300 a 240. Quedan untados O1, O2, O3 y O5; O5 queda quieto (0,0000 m).
+- **Encendido:** el primer `fkba` sobre O1 hace 288. O1 arde y explota al tick siguiente (450). O2 explota en cadena. O3, que es aliado, recibe 0 y no arde. El aceite se limpia en +901.
+- **Carril R:** aparece `rockform cerrado Earthfling1` al petrificar a un Earthfling untado.
+- **Look:** el untado oscurece la silueta entre 49 % y 59 % (antes 4 %). La explosión ocupa 12 veces más píxeles de fuego, con una bola de unos 500 px.
+- **Determinismo:** `f155` da `5727036b` en fixed, stress y window. `quick` y `rules_suite` dan PASS. `f123`, que ahora enciende, no cambia.
+
+Deuda:
+- `holds` del aceite es más fuerte que en sacengine: bloquea habilidades y deja colgados a los que van en vuelo (declarado).
+- Las explosiones en cadena siguen el orden del árbol.
+- Sin manchas ni `igniteBuilding`.
+- Rain of Fire, Lava ball y Dragonfire van a tener que llevar `IGNITE` cuando entren.
+- El aliento del Spitfire (`fhba`) es un cono y queda para su propio corte.

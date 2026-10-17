@@ -30,8 +30,16 @@ extends Resource
 ## The ids of the states this one ends when it starts. A state that is on refuses a new one unless the new one
 ## cancels it, so who wins is said here, not by the order of the children (sacengine canStun refuses `stunned`).
 @export var cancels: Array[StringName] = []
+## F155: lives next to the other states (Oiled): admit neither refuses it for a state that is on nor refuses the others
+## for it, and it cancels nothing. Off (default): the exclusive rule above.
+@export var coexists := false
 ## F149: the mesh look while it is on (Afflictions.look, one StoneLook per body): a tint of the stone shader. Off: the
 ## state draws nothing on the mesh. Among the states that are on, the highest look_priority wins (petrified over frozen).
 @export var has_look := false
 @export var look_tint := Color(1.0, 1.0, 0.8)
 @export var look_priority := 0
+## F155: the rest of the stone shader's knobs for this look (the defaults are the stone's; the oil is dark and glossy).
+@export var look_base := 0.3
+@export var look_gain := 0.7
+@export var look_roughness := 0.5
+@export var look_metallic := 0.5

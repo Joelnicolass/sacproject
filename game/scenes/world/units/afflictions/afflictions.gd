@@ -10,7 +10,9 @@ extends Node
 ## The server (or solo) decides; `shown` (one bit per type) is replicated, so on a client a state is on exactly when
 ## its bit is, and the children draw it from there.
 
-## The state that holds the body started (true) or the last one ended (false). Every peer.
+## The state that holds the body started (true) or the last one ended (false), or one that ends its special mode started
+## or ended (F155, REVIEW-030r-b B1: a Rockform already held by the oil that is petrified changes `holds()` not at all).
+## Idempotent for the listeners (the body cancels its attacks and closes Rockform). Every peer.
 signal held_changed(held: bool)
 
 @export var body: Node3D
@@ -152,12 +154,15 @@ func pose_role(clip_pose: ClipPosePlayer) -> String:
 
 
 ## Server: may `affliction` start? Every state that is on must be one it cancels (so a stunned body refuses a second
-## stun, sacengine canStun state.d:8546-8553). The ones it cancels end here.
+## stun, sacengine canStun state.d:8546-8553). The ones it cancels end here. F155: a type that `coexists` (Oiled) skips the
+## states that are on, and a state that is on and coexists is skipped by the others (neither direction refuses or cancels).
 func admit(affliction: Affliction) -> bool:
 	if affliction.type == null or (body and not body.is_inside_tree()):
 		return false
 	var cancelled: Array[Affliction] = []
 	for other in _on():
+		if affliction.type.coexists or other.type.coexists:
+			continue
 		if not affliction.type.cancels.has(other.type.id):
 			return false
 		cancelled.append(other)
@@ -184,6 +189,7 @@ func _on() -> Array[Affliction]:
 func _show(was: int) -> void:
 	previous = was
 	var was_held := false
+	var was_breaking := false
 	for child in get_children():
 		var affliction := child as Affliction
 		if affliction == null or affliction.type == null:
@@ -191,13 +197,15 @@ func _show(was: int) -> void:
 		var bit := 1 << affliction.type.bit
 		if was & bit != 0 and affliction.type.holds:
 			was_held = true
+		if was & bit != 0 and affliction.type.breaks_special_modes:
+			was_breaking = true
 		if (was & bit) != (shown & bit):
 			affliction._shown(shown & bit != 0)
 	if clip_pose:
 		clip_pose.frozen = immobilized()
 	_show_look()
 	var held := holds()
-	if held != was_held:
+	if held != was_held or breaks_special_modes() != was_breaking:
 		held_changed.emit(held)
 
 
@@ -211,7 +219,7 @@ func _show_look() -> void:
 		if type.has_look and (best == null or type.look_priority > best.look_priority):
 			best = type
 	if best:
-		look.tint = best.look_tint
+		look.apply(best.look_tint, best.look_base, best.look_gain, best.look_roughness, best.look_metallic)
 	look.stone = best != null
 
 

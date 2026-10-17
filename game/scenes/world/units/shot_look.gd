@@ -26,6 +26,12 @@ const LOOKS_DIR := "res://data/shots/"
 ## F136: the shot bursts on its target or on any body of the shooter's side, and flies through the rest
 ## (scarabProjectileCollisionTarget, state.d:23637-23642). Off: its target or any body not of the shooter's side.
 @export var hits_allies := false
+## F155: the shot bursts on any creature but its shooter (the Viscous oil's kcfa, state.d:25580-25586), whatever the side:
+## neither the target nor the side filter matters. Wins over hits_allies. Also read by 030s-b.
+@export var hits_every_side := false
+## F155: the shot's hit carries DamageMod.ignite (fkba, cfba: state.d:23247, 24521; fhba, the Spitfire's cone, is not a shot): on an oiled body it
+## takes ×2 and lights the oil. RangedShot.mods -> ShotImpact.land and the impacts.
+@export var ignites := false
 ## F136: when its box touches nothing this frame, it also checks the segment it flew (lineOfSight in
 ## updateScarabProjectile, state.d:23655-23664), so a small fast shot does not pass through a body. slba; F121: amba and cita too (lineOfSightWithoutSide, 23863, 23992).
 @export var sweep := false

@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3]
+[gd_scene load_steps=37 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/wizard/wizard_body.gd" id="1_body"]
 [ext_resource type="PackedScene" path="res://scenes/world/components/pace_factors.tscn" id="f129_pace"]
@@ -35,6 +35,9 @@
 [ext_resource type="Script" path="res://scenes/world/units/poisoning.gd" id="f122_poisoning"]
 [ext_resource type="Script" path="res://scenes/world/look/stone_look.gd" id="f137_stone_look"]
 [ext_resource type="Shader" path="res://scenes/world/look/stone.gdshader" id="f137_stone_shader"]
+
+[ext_resource type="Script" path="res://scenes/world/units/afflictions/oiled.gd" id="f155_oiled"]
+[ext_resource type="Resource" path="res://data/afflictions/oiled_wizard.tres" id="f155_oiled_type"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -108,8 +111,9 @@ model = "jnwr"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_body")
 
-[node name="Health" type="Node" parent="." node_paths=PackedStringArray("afflictions", "poisoning")]
+[node name="Health" type="Node" parent="." node_paths=PackedStringArray("oil", "afflictions", "poisoning")]
 script = ExtResource("4_health")
+oil = NodePath("../Afflictions/Oiled")
 afflictions = NodePath("../Afflictions")
 poisoning = NodePath("../Poisoning")
 
@@ -229,6 +233,10 @@ script = ExtResource("f149_frozen")
 type = ExtResource("f149_frozen_type")
 visual = NodePath("../../Tilt/Mesh")
 
+
+[node name="Oiled" type="Node" parent="Afflictions"]
+script = ExtResource("f155_oiled")
+type = ExtResource("f155_oiled_type")
 
 [node name="PathFollower" type="Node" parent="." node_paths=PackedStringArray("body")]
 script = ExtResource("f72_follower")

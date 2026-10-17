@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/units/impacts/oil_impact.gd" id="1_oil"]
+
+[node name="OilImpact" type="Node"]
+editor_description = "F155 (RFC-030 030r-b): impacto del Viscous oil del Pyrodactyl (kcfa, oilExplosion). Sin daño: unta de aceite (Oiled) a toda criatura o mago a menos de effect_range (15 m) del punto, de cualquier bando; el aceite dura duration·60 ticks. Choca con cualquier criatura salvo el tirador, o con el suelo."
+script = ExtResource("1_oil")

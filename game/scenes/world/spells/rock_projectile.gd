@@ -270,7 +270,7 @@ func _burst(target: Node3D) -> void:
 
 static func report(target: Node3D, taken: float, kind: StringName) -> void:
 	var health := target.get_node("Health")
-	var who := str(target.call("display_name")) if target.has_method("display_name") else str(target.name)
+	var who := str(target.call("display_name")) if target.has_method("display_name") and not Oiled.log_oil else str(target.name)  ## F155: the bench tells apart bodies of the same kind
 	var line := "dano %s %d vida %d" % [who, roundi(taken), roundi(float(health.get("current")))]
 	if taken <= 0.0 and float(health.call("resistance", kind)) <= 0.0:
 		line += " (inmune)"

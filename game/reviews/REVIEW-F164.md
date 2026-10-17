@@ -1,0 +1,9 @@
+# REVIEW F164 (030w-e, drenaje de vida) - APPROVE
+
+1. Fidelidad (state.d 8834-8840, 8933-8946, 9001-9046): healFromDrain cura `actualDamage*drain` con el daño de dealRawDamage, ya con resistencia, escudos y tope `min(health, dano)`. `Health.damage`/`damage_typed` devuelven `taken = minf(current, scaled)` tras los mismos factores: coincide (life_drain.gd:24-36, health.gd:98-105). Solo atacante creatura viva (`attacker is UnitBody`, no muerto); el mago tiene drain 0 y queda fuera igual que en el motor. Blancos: dealDamage de MovingObject, por eso unit/wizard y no estructura (life_drain.gd:38-42). Cadaver: `Health.damage` devuelve 0 si `is_dead()`, no cura. Tope de vida en `heal` (health.gd:243).
+2. Un dueño: los llamadores de `Health.damage` fuera de MeleeAttack (ritual.gd:169, tumbling.gd:188, debug/*) ignoran el retorno; un `-> float` no los rompe. `PoisonImpact._drain` (poison_impact.gd:54) duplica la regla: aceptable hasta F164b si F164b lo reemplaza por `LifeDrain.feed`; nit: dejar un comentario "reemplazar por LifeDrain.feed (F164b)" para que no sobreviva dos dueños.
+3. Digest de f166: hashea posiciones, no vida (lo dice f133_expect.py:5), asi que cambiar la vida inicial de Locust2 al 50 % no lo mueve. Limitacion del banco: el digest no prueba la vida; la prueba es `check_drain` de f164_expect.py/f166_expect.py sobre las lineas "drena". Digest f164 identico en fixed/stress/window (97cd4399).
+4. Red/sim: solo servidor/solo (`Health.heal` tiene `_has_authority`), `feed` no toca RPC ni estado de cliente. OK.
+
+Nits: (a) `damage_typed` devuelve `passed` en la rama `_deflect` (health.gd:131); si un deflector devuelve >0 y lo pasa DirectImpact/ShotImpact, feed curaria con daño que no entro. No verificado con un caso; el motor no deflecta dentro de dealDamage. (b) `log_drain` estatico queda encendido por ai_match, correcto fuera de producto.
+Veredicto: APPROVE, sin bloqueantes.

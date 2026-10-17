@@ -1,4 +1,6 @@
 # Features
+- Con un `deflector` (el escudo del Protector desvía el golpe a otro cuerpo), `damage_typed` devuelve el daño que tomó el que desvía y `LifeDrain.feed` cura con eso; falta confirmar contra sacengine si el original drena en ese caso.
+- El digest del banco hashea posiciones, no vida: el drenaje lo prueban `check_drain` de `f164_expect.py` y `f166_expect.py`.
 
 Fan game de Sacrifice. Arquitectura estándar. Multijugador online con servidor dedicado.
 

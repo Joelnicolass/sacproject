@@ -26,6 +26,28 @@ held() {  # held <dir>: a live process holds it.
   local holder; holder=$(cat "$1/pid" 2>/dev/null)
   [ -n "$holder" ] && kill -0 "$holder" 2>/dev/null
 }
+# FIFO tickets (2026-10-17): without them a stream of window runs starved headless waiters for 30+ min. Each run
+# takes a ticket <time_ns>.<pid>.<x|h>; an exclusive run waits for every older ticket, a headless run only for
+# older exclusive ones. A ticket whose pid died is stale and removed.
+QUEUE=/tmp/sacproject_godot.queue
+mkdir -p "$QUEUE"
+ticket=""
+take_ticket() {  # take_ticket <x|h>
+  ticket="$QUEUE/$(python3 -c 'import time; print(time.time_ns())').$$.$1"
+  : > "$ticket"
+}
+older() {  # older <x|any>: is there a live ticket older than mine (of that kind)?
+  local mine f base pid kind; mine=$(basename "$ticket")
+  for f in "$QUEUE"/*; do
+    [ -e "$f" ] || continue
+    base=$(basename "$f"); pid=$(echo "$base" | cut -d. -f2); kind=$(echo "$base" | cut -d. -f3)
+    if ! kill -0 "$pid" 2>/dev/null; then rm -f "$f"; continue; fi
+    [ "$base" = "$mine" ] && continue
+    [ "$1" = x ] && [ "$kind" != x ] && continue
+    [ "${base%%.*}" -lt "${mine%%.*}" ] && return 0
+  done
+  return 1
+}
 godots() { ps -axo comm= | awk '$1 ~ /(^|\/)Godot$|(^|\/)godot4?$/' | wc -l | tr -d ' '; }
 
 # Preflight (2026-10-17): a `class_name` missing from the project's class cache (a merge or a new script without
@@ -55,14 +77,20 @@ case " $* " in *" --headless "*) headless=1 ;; esac
 case " $* " in *" --import "*) headless=0 ;; esac
 
 if [ $headless -eq 0 ]; then
+  take_ticket x
+  trap 'rm -f "$ticket"' EXIT INT TERM
+  while older any; do sleep 2; waited=$((waited+2)); done
   take "$EXCL"; echo "$*" > "$EXCL/cmd"
-  trap 'rm -rf "$EXCL"' EXIT INT TERM
+  trap 'rm -rf "$EXCL"; rm -f "$ticket"' EXIT INT TERM
   until bash "$HERE/godot_busy.sh" >/dev/null; do sleep 3; waited=$((waited+3)); done
   echo "godot_run: exclusivo, espera ${waited}s" >&2
   "$@"
   exit $?
 fi
 
+take_ticket h
+trap 'rm -f "$ticket"' EXIT INT TERM
+while older x; do sleep 2; waited=$((waited+2)); done
 # Headless: grab a free slot, then launch only while nothing exclusive runs and fewer than SLOTS Godots are up.
 slot=""
 until [ -n "$slot" ]; do
@@ -74,7 +102,7 @@ until [ -n "$slot" ]; do
   [ -z "$slot" ] && { sleep 2; waited=$((waited+2)); }
 done
 echo $$ > "$slot/pid"; echo "$*" > "$slot/cmd"
-trap 'rm -rf "$slot"' EXIT INT TERM
+trap 'rm -rf "$slot"; rm -f "$ticket"' EXIT INT TERM
 while :; do
   take "$LAUNCH"
   if ! held "$EXCL" && [ "$(godots)" -lt "$SLOTS" ]; then break; fi

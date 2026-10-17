@@ -5,7 +5,7 @@ state.d and the SPEL data, next to what the port logged.
 Usage: python3 -I agent/tools/f166_expect.py [godot log of debug/f166_locust_ray (rules debug/rules/f166_locust_ray.tres)]
        python3 -I agent/tools/f166_expect.py --lanes     (only the lane check against the map caches)
 
-Needs the bench switches on (debug/ai_match.gd): ShotStrike.log_strikes.
+Needs the bench switches on (debug/ai_match.gd): ShotStrike.log_strikes, LifeDrain.log_drain (F164).
 
 sacengine:
 - locustShoot (11527-11531) creates a LocustShoot; updateLocustShoot (22992-23005) acts in that same frame: collideRay from the
@@ -13,7 +13,7 @@ sacengine:
   stops it (buildings too). With a creature or a building it is dealRangedDamage(DamageMod.none) at once: no flight, no
   projectile. With nothing, the visual end is 0.5 * range (the port: RayStrike.miss_fraction, only the beam).
 - LocustProjectile (23007-23022) is only visual (blood or rubble flowing back to the Locust at 36 m/s): not a damage.
-- The damage is amount * the target's direct ranged resistance (Troll lort 0.9 -> 200 * 0.9 = 180). F164 adds the 0.875 drain.
+- The damage is amount * the target's direct ranged resistance (Troll lort 0.9 -> 200 * 0.9 = 180). F164 adds the 0.875 drain (check_drain; Locust2 starts at 50 % for it).
 Cast (anchor 1270, 1270; row z-80 and z-70; 0.3 min). Locust1 (slot 1, 50 % health, holds still) at -45/-80; Troll3 (slot 1, pacifist)
 at -20/-80 in the line, 3 m before Troll1. A Troll and not a Druid: the Locust hovers 4 m over the ground and its ray goes down at 0.36-0.52
 per meter, so it flies over a Druid (2.5 m) at 15 m and only a body of 4 m is still in its way; Troll1 (slot 2, pacifist) at -17/-80. Locust2 at -60/-70 and Troll2 at -35/-70 (free line; 15 m further west than the row of the plan because the jhut at -15/-56 is within 21 m of -20/-70). Both Locusts
@@ -124,6 +124,36 @@ def check_log(path):
     ok &= verdict(not any(r["target"] == "Troll1" for r in blocked), "ningún rayo de Locust1 llega a Troll1 (detrás de Troll3)")
     ok &= verdict(not any(re.match(r"dano Troll1 ", l) for l in lines), "Troll1 no recibe daño de ese rayo")
     ok &= verdict(all(r["dist"] <= reach + 0.01 for r in rays), "ningún rayo pasa del alcance de %.0f m" % reach)
+    ok &= check_drain(lines, hits, free)
+    return ok
+
+
+def check_drain(lines, hits, free):
+    """F164 (state.d:8834-8840): every ray of Locust2 that takes health heals 0.875 · the direct hit in its own tick, up to the
+    maximum (450); Locust2 starts at 50 %. Locust1 hit nobody (Troll3 is an ally and takes 0) and never feeds."""
+    pazb = json.load(open(os.path.join(HERE, "..", "..", "assets", "original", "data", "creatures.json"), encoding="utf-8"))["pazb"]
+    full, scale = float(pazb["health"]), float(pazb["drain"])
+    feeds = []
+    for line in lines:
+        m = re.match(r"drena (\S+) de (\S+) " + NUM + r" \(escala " + NUM + r"\) -> vida " + NUM + r" ganada " + NUM + r" \(tick (\d+)\)", line)
+        if m:
+            feeds.append((m.group(1), m.group(2), float(m.group(3)), float(m.group(4)), float(m.group(5)), float(m.group(6)), int(m.group(7))))
+    ok = verdict(not any(f[0] == "Locust1" for f in feeds), "Locust1 (su rayo frena en el aliado, sin daño) no tiene líneas de cura")
+    hp = full * 0.5
+    capped = 0
+    for r in hits:
+        want = min(full, hp + scale * r["taken"])
+        gained, hp = want - hp, want
+        fed = [f for f in feeds if f[0] == "Locust2" and f[6] == r["tick"]]
+        if gained <= TOL / 10:
+            capped += 1
+            ok &= verdict(not fed, "tick %d: rayo %.2f con la vida al tope de %.0f: sin línea de cura" % (r["tick"], r["taken"], full))
+        else:
+            good = len(fed) == 1 and abs(fed[0][2] - r["taken"]) <= TOL and abs(fed[0][5] - gained) <= TOL and abs(fed[0][4] - hp) <= TOL
+            ok &= verdict(good, "tick %d: rayo %.2f -> Locust2 cura %.4f (esperado %.4f · %.3f), vida %.4f" % (
+                r["tick"], r["taken"], fed[0][5] if fed else 0.0, gained, scale, hp))
+    ok &= verdict(any(f[0] == "Locust2" for f in feeds), "Locust2 cura al menos una vez: %d líneas" % sum(1 for f in feeds if f[0] == "Locust2"))
+    ok &= verdict(all(f[0] in ("Locust2",) for f in feeds), "solo Locust2 aparece en las líneas de cura")
     return ok
 
 

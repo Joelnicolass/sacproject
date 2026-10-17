@@ -89,6 +89,7 @@ func _ready() -> void:
 		roster.set("enabled", false)
 	BodySeparation.use_grid = str(_args.get("sep", "grid")) != "brute"
 	BodySeparation.measure = true
+	BodySeparation.log_push = _args.has("log-push")  # F177: attribution of the pushes of bodies in melee (off in the product)
 	add_child(_world)
 	var rain := _world.get_node_or_null("DropletRain")
 	if rain:
@@ -118,6 +119,7 @@ func _ready() -> void:
 	DevourGrowth.log_devour = true  # F131: bench logs what the Devour gives (off in the product)
 	Soul.log_souls = true  # F131: bench logs the souls eaten and the corpses they dissolve (off in the product)
 	QuakeWave.log_quake = true  # F132: bench logs the Jabberocky's Quake wave (off in the product)
+	LifeDrain.log_drain = true  # F164: bench logs each life drained from a blow or a direct shot (off in the product)
 	Vined.log_vines = true  # F159: bench logs the Dragon's Grasping Vines (off in the product)
 	FireShield.log_shield = true  # F163: bench logs the Phoenix shield burns (off in the product)
 	_set_status(_rules.pending_text)

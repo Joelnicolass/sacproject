@@ -42,6 +42,8 @@ static var wizard_passes_own := true
 ## parked on their slots (debug/crowd_cases.gd, crowd_150). On: the slide, the yield and the soft contact between
 ## walkers of MakeWay (see there). Both passes run as before on the resulting velocity. Off = the original rule.
 static var make_way := true
+## Bench log (`ai_match --log-push`; off in the product): one `sep_push` line per tick for a body in CHASE or ATTACK that was pushed (F177).
+static var log_push := false
 ## On: resolve() adds its time to sep_us (the bench reports it per tick as `sep_ms`).
 static var measure := false
 static var sep_us := 0
@@ -261,10 +263,22 @@ static func _separate(body: Node3D, at: Vector3, half: float, height: float, vel
 	# The walker still slides round it and asks it to make way (MakeWay); the overlap is undone sideways.
 	if make_way and push != Vector2.ZERO and body.is_in_group(&"unit") and not MakeWay.walks(body):
 		push = _without_carry(faces, pass_two[2], nodes)
+	if log_push and push != Vector2.ZERO and body.is_in_group(&"unit") and int(body.get("mode")) in [UnitBody.Mode.CHASE, UnitBody.Mode.ATTACK]:
+		_print_push(body, at, wanted, kept, push, faces, pass_two[2], nodes)
 	push = _capped(push, delta)
 	velocity.x += push.x / delta
 	velocity.z += push.y / delta
 	return velocity
+
+
+static func _print_push(body: Node3D, at: Vector3, wanted: Vector2, kept: Vector2, push: Vector2, faces: PackedInt32Array,
+		amounts: PackedFloat64Array, nodes: Array[Node3D]) -> void:
+	var parts := PackedStringArray()
+	for i in faces.size():
+		if faces[i] != Face.NONE:
+			parts.append("[%s %s %.4f]" % [nodes[i].name, Face.keys()[faces[i]], amounts[i]])
+	print("sep_push %s tick=%d at=(%.3f,%.3f) wanted=(%.3f,%.3f) kept=(%.3f,%.3f) push=(%.4f,%.4f) %s" % [body.name, MatchClock.now(),
+			at.x, at.z, wanted.x, wanted.y, kept.x, kept.y, push.x, push.y, " ".join(parts)])
 
 
 ## The second pass (box grown by blockSlack) for the step `kept` (m/s, flat): [push (m, flat, before the cap), faces].

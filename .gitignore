@@ -4,6 +4,7 @@ web-spike/
 .tools/
 rea/
 sacengine/
+!game/agent/fixtures/sacengine/
 godot-studio-skills/
 
 # Sistema y dependencias

@@ -10,9 +10,7 @@ extends Node
 ## (ManaPool.drain; 0 for rifl) and puffs the shield particles. Buildings are not touched (movingObjectById).
 ## A child of unit.tscn like MeleeOnHit; it only acts on a body whose CreatureType.passive_on_damage is `passive_tag`, so the other
 ## creatures carry it and ignore it. Server (or solo) only. Divergences (declared): the particles are the reserve look (FxBus `fire`
-## on the burned body every `fire_every_ticks`); a body that is not targetable (stealth, taken…) is neither shield nor target.
-
-const _ROCK := preload("res://scenes/world/spells/rock_projectile.gd")
+## on the burned body every `fire_every_ticks`); the shield ticks only on a carrier (the node sleeps on the rest).
 
 ## Bench log (`ai_match` turns it on; off in the product): one line per tick a body burns.
 static var log_shield := false
@@ -36,17 +34,25 @@ const GROUPS: Array[StringName] = [&"unit", &"wizard"]
 @export var fire_every_ticks := 5
 @export var fire_height_m := 0.8
 
+var _carrier := false
 var _burn_ticks := {}
 var _allies_seen := {}
 
 
 func _ready() -> void:
+	set_physics_process(false)
 	if body == null:
 		body = get_parent() as Node3D
 	if health == null and body != null:
 		health = body.get_node_or_null("Health") as Health
 	if mana == null and body != null:
 		mana = body.get_node_or_null("ManaPool") as ManaPool
+	# The type may not be set yet (children are ready before the parent): asked again when the body gets its model, and once the
+	# frame's setup is over. Only a carrier of the passive ticks.
+	if body != null and body.has_signal("model_changed"):
+		body.connect("model_changed", _refresh)
+	_refresh()
+	_refresh.call_deferred()
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -56,8 +62,14 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 
+## Turns the tick on for a carrier of the passive and off for everyone else.
+func _refresh() -> void:
+	_carrier = _carries()
+	set_physics_process(_carrier and _has_authority())
+
+
 func _physics_process(_delta: float) -> void:
-	if not _has_authority() or not _carries() or not _can_shield():
+	if not _carrier or not _can_shield():
 		return
 	var cost := _mana_cost()
 	if cost > 0.0 and (mana == null or mana.current < cost):
@@ -71,7 +83,7 @@ func _physics_process(_delta: float) -> void:
 	for group in GROUPS:
 		for other in get_tree().get_nodes_in_group(group):
 			var target := other as Node3D
-			if target == null or target == body or not _ROCK.is_live_body(target):
+			if target == null or target == body or not _burnable(target):
 				continue
 			if not _meets(mine, target):
 				continue
@@ -146,11 +158,29 @@ func _carries() -> bool:
 	return type != null and type.passive_on_damage == passive_tag
 
 
-## canShield: alive, not reviving, not a ghost.
+## canShield (state.d:218-225): stunned, cowering, casting, rockForm, firewalk and stealth keep the shield; dying, dead, summoning,
+## reviving and taken by a Doctor do not.
 func _can_shield() -> bool:
 	if health != null and health.is_dead():
 		return false
-	return not body.has_method("is_targetable") or bool(body.call("is_targetable"))
+	return _present(body)
+
+
+## A moving body the shield can burn: movingObjectById takes any creature or wizard that is not dead (stealth and firewalk included).
+func _burnable(target: Node3D) -> bool:
+	if not Attackable.is_body(target) or target.is_in_group(&"structure"):
+		return false
+	var life := target.get_node_or_null("Health") as Health
+	return life != null and not life.is_dead() and _present(target)
+
+
+func _present(node: Node) -> bool:
+	if not "mode" in node:
+		return true
+	var mode: int = node.get("mode")
+	if mode == UnitBody.Mode.DEAD or mode == UnitBody.Mode.SUMMONING or mode == UnitBody.Mode.REVIVING:
+		return false
+	return not (node.has_method("is_taken") and bool(node.call("is_taken")))
 
 
 func _has_authority() -> bool:

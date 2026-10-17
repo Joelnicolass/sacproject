@@ -17,7 +17,7 @@ A contact window is one attacker and target on consecutive ticks (a gap of more 
                  reach from the target's edge (d = foe_reach + 0.8 * 1.3 * reach), or, when that lies inside what BodySeparation
                  allows, the box gap 0.1 it rests two bodies at (half of blockSlack; counted as «held at the BodySeparation floor»).
                  Past both is a failure, and so is a body that settles at neither.
-  3. Tremor:     the approach speed (d[t-1] - d[t]) changes sign at most once per window (a settled window has none).
+  3. Tremor:     the approach speed (d[t-1] - d[t]) ...replaced (F177): the peak-to-peak amplitude of d, from the first tick the box gap is within REST_GAP + GOAL_TOL, is at most AMPLITUDE_MAX (0.03 m).
 Exit 0 when every check passes, 1 otherwise (the failing creature and the cause are printed).
 """
 import re
@@ -27,6 +27,7 @@ from collections import defaultdict
 FORWARD = 1.3
 FACTOR = 0.8
 OVERLAP_MIN = -0.05
+AMPLITUDE_MAX = 0.03  # F177: peak-to-peak of the centre distance d (m) in a contact window, from the first tick the boxes are at rest distance
 GOAL_TOL = 0.02
 GAP_TICKS = 3
 SETTLE = 6
@@ -64,14 +65,13 @@ def windows(rows):
     return out
 
 
-def approach_signs(w):
-    """Signs of the approach speed (d[t-1] - d[t]) over the window, ignoring moves under MOVE_EPS."""
-    signs = []
-    for prev, now in zip(w, w[1:]):
-        v = prev["d"] - now["d"]
-        if abs(v) >= MOVE_EPS:
-            signs.append(1 if v > 0 else -1)
-    return signs
+def amplitude(w):
+    """Peak-to-peak of the centre distance d over the window, from the first tick the box gap reaches the rest distance (the approach is not tremor)."""
+    for n, r in enumerate(w):
+        if r["axis"] <= REST_GAP + GOAL_TOL:
+            tail = [x["d"] for x in w[n:]]
+            return max(tail) - min(tail)
+    return 0.0
 
 
 def check(paths, table):
@@ -91,11 +91,10 @@ def check(paths, table):
                 s["min_gap"] = low["axis"]
             if low["axis"] < OVERLAP_MIN:
                 failures.append("%s: %s->%s tick %d box gap %.3f < %.2f (overlap)" % (path, low["a"], low["b"], low["tick"], low["axis"], OVERLAP_MIN))
-            signs = approach_signs(w)
-            flips = sum(1 for x, y in zip(signs, signs[1:]) if x != y)
-            s["flips"] = max(s["flips"], flips)
-            if flips > 1:
-                failures.append("%s: %s->%s tick %d..%d: approach speed flips sign %d times (tremor)" % (path, w[0]["a"], w[0]["b"], w[0]["tick"], w[-1]["tick"], flips))
+            amp = amplitude(w)
+            s["flips"] = max(s["flips"], amp)
+            if amp > AMPLITUDE_MAX:
+                failures.append("%s: %s->%s tick %d..%d: peak-to-peak amplitude %.3f m > %.2f (tremor)" % (path, w[0]["a"], w[0]["b"], w[0]["tick"], w[-1]["tick"], amp, AMPLITUDE_MAX))
             if len(w) >= SETTLE:
                 last = w[-1]
                 goal_d = last["foe_reach"] + FACTOR * FORWARD * last["reach"]
@@ -112,13 +111,13 @@ def check(paths, table):
                 elif still and not held and last["gap"] > goal_gap + GOAL_TOL:
                     failures.append("%s: %s->%s tick %d settled at gap %.3f (axis %.3f), neither the goal %.3f nor the push floor" % (path, last["a"], last["b"], last["tick"], last["gap"], last["axis"], goal_gap))
     if table or True:
-        print("%-14s %7s %9s %9s %9s %6s" % ("creature", "windows", "min gap", "final(med)", "goal", "flips"))  # goal: sacengine, centre gap
+        print("%-14s %7s %9s %9s %9s %6s" % ("creature", "windows", "min gap", "final(med)", "goal", "ampl"))  # goal: sacengine, centre gap
         for kind, s in sorted(stats.items()):
             fin = sorted(f[0] for f in s["finals"])
             goals = sorted(f[1] for f in s["finals"])
             med = fin[len(fin) // 2] if fin else float("nan")
             goal = goals[len(goals) // 2] if goals else float("nan")
-            print("%-14s %7d %9.3f %9.3f %9.3f %6d%s" % (kind, s["windows"], s["min_gap"], med, goal, s["flips"],
+            print("%-14s %7d %9.3f %9.3f %9.3f %6.3f%s" % (kind, s["windows"], s["min_gap"], med, goal, s["flips"],
                   ("  (%d windows held at the BodySeparation floor)" % s["push"]) if s.get("push") else ""))
     return failures
 

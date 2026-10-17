@@ -1,4 +1,6 @@
 # Features
+- Con un `deflector` (el escudo del Protector desvía el golpe a otro cuerpo), `damage_typed` devuelve el daño que tomó el que desvía y `LifeDrain.feed` cura con eso; falta confirmar contra sacengine si el original drena en ese caso.
+- El digest del banco hashea posiciones, no vida: el drenaje lo prueban `check_drain` de `f164_expect.py` y `f166_expect.py`.
 
 Fan game de Sacrifice. Arquitectura estándar. Multijugador online con servidor dedicado.
 
@@ -2155,7 +2157,7 @@ Deuda:
 
 Deuda:
 - El flujo de partículas de sangre o escombro hacia la Locust (`LocustProjectile`) es un beam provisorio.
-- El drenaje de 0,875 llega con F164 (030w-e).
+- El drenaje de 0,875 llegó con F164 (030w-e): Locust2 arranca al 50 % de vida para medirlo (`f166_expect.py`, `check_drain`).
 
 ### F170 — HUD, iconos, cursores y FX como assets (RFC-033, corte 033d)
 
@@ -2232,6 +2234,33 @@ Deuda:
 - `final_spit_melee` (Druid contra Earthfling, 1 contra 1): gap de caja mínimo 0,100 m (el reposo de `BodySeparation`), 0 cambios de signo de la velocidad de acercamiento, se asienta en el piso de `BodySeparation` (el objetivo de sacengine, d = 1,05 m, queda por dentro). PASS.
 - `s7` (3 contra 3): el gap de caja baja a -0,067 (Druid) y -0,072 (Trogg) y la velocidad de acercamiento cambia de signo cientos de veces por ventana (524 y 759 como máximo). No viene de `close_in`: con el knob en 1000 (sin acercamiento) da -0,061 / -0,108 y 409 / 682 cambios. Es el empuje de terceros cuerpos de `BodySeparation` (5 m/s, 0,08 m por tick) en la melé; el comando de `close_in` ahí es cero. Queda anotado, sin tocar `BodySeparation` (su regla es la de sacengine).
 
+### F177 — Temblor en la melé de grupo (plan 030w, corte 030w-a): medición, sin cambio de juego
+
+**Estado.** No se activó ni A ni B y **se quitaron del código** (la receta queda abajo). Ningún digest cambió. Queda `BodySeparation.log_push` (apagado; `ai_match --log-push`), igual que `MeleeAttack.log_gap`, el caso `f177` (`debug/f177_melee_group.tscn`: 3 Druid contra 3 Trogg y un cuarto Trogg que aprieta) y la réplica `agent/tools/melee_gap_expect.py` con el criterio **superposición nunca menor a -0,05 m y amplitud pico a pico de `d` de 0,03 m o menos por ventana de contacto** (medida desde el primer tick con la caja a la distancia de reposo).
+
+**Medición del estado actual (no cumple).**
+- `f177`: piso de caja 0,017 (Druid) y 0,100 (Trogg); amplitud máxima 0,166 m (Druid2) y 0,083 m (Trogg2). Superposición: cumple. Amplitud: no cumple.
+- `s7`: piso de caja -0,067 (Druid) y -0,072 (Trogg); amplitud máxima 0,445 m y 0,412 m. Ninguno de los dos criterios cumple. La amplitud incluye la deriva lenta de pares empujados a lo largo de cientos de ticks, no solo el temblor de 2 ticks.
+- Umbral sin ajustar.
+
+**Receta de B (fiel parcial, dueño `MeleeAttack`).** `moving_pace_factor` (`@export`, 0,5) y `static var melee_moving`: `close_in` multiplica la marcha por 0,5 hasta el primer cuadro de ataque del golpe (`_next_tick == 0`; sacengine `meleeMoving`, `state.d:8725-8731`, `14668-14671`) y después da cero (`meleeAttacking`, `14411-14412`). Le falta para ser fiel: la **aceleración y la desaceleración** en el suelo también a la mitad (`14668-14671` escala velocidad y aceleración, el port fija la velocidad), el `facing` (el cuerpo gira mientras camina) y un estado de velocidad en `UnitBody` (sacengine frena por desaceleración, no corta en seco), que no se pudo agregar porque `unit_body.gd` está en el tope de 1040 líneas.
+
+**Receta de A (desvío, dueño `BodySeparation`).** `static var share_push` y `share_of`: `_second_pass` multiplica el solapamiento de cada obstáculo que también se empuja fuera de este cuerpo (no está `Afflictions.fixed()` y no lo exime `_passes`) por `1 / (k + 1)`, con k los obstáculos que lo empujan en ese tick. Con k = 1 es 0,5 y el par se separa exacto en un tick. El 0,5 fijo del plan no amortigua una fila de cuerpos (valor propio -1 del modo alterno); `1 / (k + 1)` sí en teoría. El reposo (`rest_distance`) no cambia.
+
+**Tabla (fixed, semilla 7; piso de caja en m / máximo de cambios de signo de la métrica vieja, Druid y Trogg):**
+
+| caso | A off, B off | A off, B on | A on, B off | A on, B on |
+|---|---|---|---|---|
+| f177 | 0,017 / 414 y 0,100 / 16 | 0,017 / 386 y 0,100 / 104 | 0,060 / 21 y 0,058 / 30 | 0,060 / 21 y 0,057 / 30 |
+| s7 | -0,067 / 524 y -0,072 / 759 | -0,277 / 479 y -0,095 / 755 | -0,002 / 675 y -0,006 / 705 | -0,091 / 677 y -0,033 / 705 |
+
+**Atribución** (`--log-push` sobre s7): una fila de cuerpos **quietos** (`wanted = 0`: Trogg1, Trogg4, Druid1, Druid4) con solapamiento permanente de 0,02-0,04 m que otros cuerpos mantienen apretada; cada tick todos se llevan su empuje de la foto del principio del cuadro y oscilan en un ciclo de 2 ticks de 0,02 m. En `f177` el tercer cuerpo es el Trogg4, que empuja con marcha entera. B no ayuda y en s7 empeora el piso (-0,277).
+
+**Deuda.**
+- La aritmética de la separación es la misma que la de sacengine (`positionAfterCollision`, empuje entero por cuerpo sobre la foto del cuadro); no se midió que el original tiemble igual. Medir 3 contra 3 en el original con REA.
+- El port agrega `make_way`/`MakeWay.slide`, que el original no tiene; en `f177` el ciclo de 3 ticks del Trogg4 pasa por su deslizamiento. Medir con `make_way` apagado.
+- Si se reabre: A con `1 / (k + 1)` o un empuje con memoria; ambos cambian los digests de todo caso con dos cuerpos en contacto.
+
 ### F173 — Datos de juego como assets (RFC-033, corte 033g)
 
 **Piezas:**
@@ -2289,6 +2318,26 @@ Deuda:
 - `Burning.ignite` descarta un edificio con daño 0; sacengine lo prende igual con `setAblaze` (solo visual).
 - **Trail:** el puff no escala con el radio de la onda; los FX propios de `fhba` (`firy`) y `ehba` (`rock`) quedan para cuando haya tiempo de exportarlos.
 - **Orden fuego/golpe:** no se ve en el log (el `fuego` se imprime al terminar); lo cubre el código, no la réplica.
+
+### F164 — Drenaje de vida (RFC-030, corte 030w-e)
+
+**Sacengine:** `dealDamage` (8933-8946, la línea 8940 llama) calcula el daño que el blanco toma de verdad (con el tope de la vida que le queda) y llama a `healFromDrain` (8834-8840): un atacante vivo que es criatura cura `daño · drain` al instante, con el tope del máximo (`heal`, 8815-8817). Sacengine drena todo el daño de la criatura, también el de un disparo a distancia. Solo contra cuerpos móviles; un edificio no alimenta el drenaje. Charnel 0,5 (Scythe, Fallen, Blight, Necryl, Hellmouth, Styx, Deadeye, Netherfiend, Abomination, Gangrel, Astaroth) y Locust 0,875.
+
+**Piezas:**
+- **`LifeDrain`** (`scenes/world/units/life_drain.gd`, `static func feed(attacker, target, taken)`): la regla única. Solo actúa con `taken > 0`, un `UnitBody` vivo con `type.drain > 0`, `attacker != target` y un blanco `unit` o `wizard` (nunca `structure`). El `drain` sale de `CreatureType.drain` (Resource, sin mutar). `static var log_drain` (banco, apagado en el producto): `drena A de B daño (escala) -> vida v ganada g (tick t)`, solo si ganó algo.
+- **`Health.damage()`** devuelve el daño tomado (`float`, con el tope de la vida que queda), como `damage_typed`. Lo que emite `hit` no cambia.
+- **Tres llamadores, sin lógica propia:** `MeleeAttack._land`, la rama directa de `ShotImpact.land` (Fallen `dkba`, Locust `zbba` por `RayStrike`) y `DirectImpact._affect`. El tirador sale de `shooter_path` del holder (`ShotImpact.shooter_of`).
+- **Banco:** `debug/f164_drain.tscn`, `rules/f164_drain.tres`, `agent/tools/f164_expect.py`, caso `f164` en `run_determinism.sh` (solo fixed en `quick`) y en `det_baseline.txt` (`97cd4399`); `f166_expect.py` suma `check_drain` y Locust2 arranca al 50 % de vida.
+
+**Caso:** Scythe1 al 50 % pega a Troll1: cada golpe con cantidad > 0 le sube 0,5 · cantidad, con el tope de 540 (los golpes con la vida ya en el tope no dejan línea). Scythe2 con la vida llena no cura. Fallen1 al 50 % cura 56,25 por disparo (0,5 · 112,5). En `f166`, Locust2 cura 157,5 (0,875 · 180) y después queda al tope de 450; Locust1, cuyo rayo frena en un aliado sin daño, no cura. Filas corridas al oeste (K2/T2 en -45/-42, F1/T3 en -60/-40) para librar la jhut y un jcc2 (validado con `--lanes`).
+
+**Cierre (2026-10-17).**
+- **Digests:** `f164` `97cd4399` igual en fixed, stress y window. La base no cambió: el audit mira la vida de los blancos y no la del atacante, y ningún caso de `quick` hace que la cura cambie un resultado. `f156`, `f133` y `f166` dan los mismos digests (no hubo nada que regrabar); `f166` con Locust2 al 50 % también.
+- **Banco:** `quick` con las 24 líneas previas de la base OK; `rules_suite --fixed-fps 60` PASS. Los avisos CONTAMINATED de algunas corridas vienen de otros Godot de la máquina, no de diferencias de digest.
+- **Sin capturas:** el drenaje no tiene efecto visual en este corte (la barra de vida del atacante sube; no hay FX).
+
+Deuda (F164b):
+- Salpicadura por cuerpo (`SplashImpact`), `PoisonImpact`/`DiseaseImpact` con la cura por `rangedAttack.amount` (23523, 24360, 24879) y `Burning`. `PoisonImpact._drain` queda con su copia de la regla; pasa a `LifeDrain.feed` cuando entren los otros.
 
 ### F163 — Escudo de fuego del Phoenix (RFC-030, corte 030w-f)
 

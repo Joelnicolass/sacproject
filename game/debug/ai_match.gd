@@ -87,6 +87,9 @@ func _ready() -> void:
 	BodySeparation.use_grid = str(_args.get("sep", "grid")) != "brute"
 	BodySeparation.measure = true
 	add_child(_world)
+	var rain := _world.get_node_or_null("DropletRain")
+	if rain:
+		rain.set("log_hits", true)  # F148: bench logs the drops (off in the product)
 	_set_status(_rules.pending_text)
 	var wait := _rules.start_paused and not _headless and not _args.has("autostart")
 	if not wait:
@@ -162,6 +165,10 @@ func _prepare() -> void:
 				"x": x, "y": (0.0 if is_nan(ground) else ground) + 0.2, "z": z,
 				"yaw": yaw,
 			})
+			if group.pacifist and unit.get("type") is CreatureType:
+				var calm := (unit.get("type") as CreatureType).duplicate() as CreatureType
+				calm.aggressiveness = 0
+				unit.set("type", calm)
 			if group.health_fraction < 1.0:
 				var health := unit.get_node("Health") as Health
 				health.current = health.maximum * group.health_fraction
@@ -449,7 +456,7 @@ func _order_advance(group: BenchGroup, units: Array[Node3D]) -> void:
 		return
 	if group.order == "attack_unit":
 		## F136: an attack on the creature of `order_slot` closest to the group's first body (Orders.apply_for, like a click).
-		var foe := _closest_unit_of(group.order_slot, units[0].global_position) if not units.is_empty() else null
+		var foe := _closest_unit_of(group.order_slot, units[0].global_position, group.order_farthest) if not units.is_empty() else null
 		if foe != null:
 			_world.get_node("%Orders").call("apply_for", group.slot, units, "attack", foe.global_position, foe, 0.0)
 		return
@@ -472,14 +479,14 @@ func _order_advance(group: BenchGroup, units: Array[Node3D]) -> void:
 	_world.get_node("%Orders").call("apply_for", group.slot, units, "advance", altar.global_position, null, 0.0)
 
 
-func _closest_unit_of(slot: int, from: Vector3) -> Node3D:
+func _closest_unit_of(slot: int, from: Vector3, farthest := false) -> Node3D:
 	var best: Node3D = null
 	var best_d := INF
 	for node in get_tree().get_nodes_in_group("unit"):
 		var unit := node as Node3D
 		if unit == null or int(unit.get("owner_slot")) != slot:
 			continue
-		var d := unit.global_position.distance_to(from)
+		var d := unit.global_position.distance_to(from) * (-1.0 if farthest else 1.0)
 		if d < best_d:
 			best_d = d
 			best = unit

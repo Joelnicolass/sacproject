@@ -9,6 +9,7 @@ extends Node3D
 ## The server (or solo) moves it; clients get the position and play the trail locally.
 ## F119: a ShotLook with an `impact` scene (ShotImpact) decides the damage where it bursts instead (splash, 030h).
 ## F136: ShotLook.hits_allies turns the side filter around (the Scarab's web) and burst_at_range_end bursts it where its range ends.
+## F148: a ShotLook with a `dropper` scene (ShotDropper) drops droplets during the flight (the Abomination's gut, 030h3).
 
 const _HEALTH := preload("res://scenes/world/components/health.gd")
 const LOOKS_DIR := "res://data/shots/"
@@ -28,6 +29,7 @@ var ability: AbilityType
 var _traveled := 0.0
 var _spin_axis := Vector3.UP
 var _spin_rate := 0.0
+var _dropper: ShotDropper
 
 
 func setup(data: Dictionary) -> void:
@@ -48,6 +50,7 @@ func setup(data: Dictionary) -> void:
 	_spin_rate = TAU * rng.randf_range(look.spin_min, look.spin_max)
 	_add_visual()
 	_attach_net()
+	_add_dropper()
 	## ShotLook.trail_every counts 60 fps frames; the trail now goes by time (FxTrail, RFC-029 029b).
 	FxTrail.attach(self, look.trail_fx, float(maxi(look.trail_every, 1)) / TRAIL_FPS)
 
@@ -79,6 +82,19 @@ func _add_visual() -> void:
 	add_child(visual)
 
 
+## Server (or solo) only, like the impact: the droplets are simulation (ShotLook.dropper).
+func _add_dropper() -> void:
+	if look.dropper == null or (MpKit.is_networked() and not MpKit.is_server()):
+		return
+	var node := look.dropper.instantiate()
+	_dropper = node as ShotDropper
+	if _dropper:
+		add_child(_dropper)
+	else:
+		node.free()
+		push_warning("RangedShot: el dropper de %s no es un ShotDropper." % name)
+
+
 func _ready() -> void:
 	if MpKit.is_networked() and not MpKit.is_server():
 		set_physics_process(false)
@@ -108,6 +124,8 @@ func _physics_process(delta: float) -> void:
 	global_position += step
 	velocity.y -= gravity * delta
 	_traveled += step.length()
+	if _dropper:
+		_dropper.drop(global_position, from_slot)
 	var hit := _collision_target()
 	if hit == null and look.sweep:
 		hit = _swept_target(from, global_position)

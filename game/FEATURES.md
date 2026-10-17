@@ -1403,3 +1403,25 @@ Todo pasa por `godot_run.sh`. Un vigía mide RSS y tiempo y marca `CONTAMINATED`
 - El lint se puede burlar a propósito (exención por archivo, lista blanca por texto) y solo cubre `scenes/world`.
 - La vida de `red_vortex` cuenta llamadas y no `MatchClock`.
 - Queda destrabado 030h3, las gotas de la Abomination, que va con `MatchSeed.rng`.
+
+### F148 — Gotas de la Abomination (RFC-030, corte 030h3)
+
+**Piezas:**
+- **`ShotDropper`** (`ShotLook.dropper`): hijo del disparo `tugt`, corre solo en el servidor. En cada tick suelta una gota con probabilidad 3/4, según `!!state.uniform(4)` (`state.d:24445`), con `MatchSeed.rng(["drops", nombre del disparo])`.
+- **`DropletRain`:** un pool de arrays empaquetados en `high_noon.tscn`. La gota cae a 10 m/s² y, al chocar (caja de 0,25 contra cualquier bando), hace 50 de daño directo a distancia con `Health.damage_typed`. Si cae bajo el suelo, termina sin daño (`24488-24505`).
+- **Clientes:** ven un `trail_fx` puramente visual (`abom_drip`).
+
+**Cierre (2026-10-17).** Review PASS (`reviews/REVIEW-F148-droplets.md`). El orquestador puso los logs del producto apagados por defecto; el bench los enciende. Medido con `f148`:
+- **Gotas:** 155 de 201 ticks de vuelo (0,77).
+- **Daño:** 45 por gota al Druid (50 × 0,9).
+- **Determinismo:** `f148` da `ca532e1b0db6c9dbf82e51acef7ec27f1587dbfa3dc545480de450b2d9c6bf26` en fixed, stress y window. `quick` PASS.
+- **Costo:** 0,19 ms por tick con 197 gotas, por debajo del tope de 0,5 ms.
+- **Ventana:** captura `agent/out/pt148/d1_drops.png`.
+- **Salpicadura de `f117`:** sin cambios. Las gotas además rematan al Druid golpeado, como en el original.
+- **`rules_suite`:** PASS.
+
+Deuda:
+- Las gotas que se ven no son las simuladas.
+- Los edificios no absorben las gotas.
+- La distancia se mide al origen y no a la hitbox.
+- Fuera del mapa, el tope es de 600 ticks.

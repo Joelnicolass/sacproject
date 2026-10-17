@@ -30,5 +30,8 @@ extends Resource
 ## F136: at the end of its range it bursts there (impact included) instead of vanishing (updateScarabProjectile,
 ## state.d:23667-23670). Only slba so far.
 @export var burst_at_range_end := false
+## F148 (RFC-030 030h3): ShotDropper scene the server (or solo) puts on the shot; every tick of its flight it may
+## drop a droplet that falls on whoever is below (animateAbominationProjectile, state.d:24441-24452). Only tugt so far.
+@export var dropper: PackedScene
 @export var fallback_color := Color(0.8, 0.7, 0.5)
 @export var fallback_radius := 0.15

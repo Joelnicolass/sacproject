@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # RFC-032 032a (F144): the determinism bench. Same match, three clocks, one digest.
-#   agent/run_determinism.sh CASE|all [MODE...]   CASE: s7 s7_npcs s1_trivial f139   MODE: fixed stress window fixed2
+#   agent/run_determinism.sh CASE|all [MODE...]   CASE: s7 s7_npcs s1_trivial f139 f148 (F148: Abomination drops)   MODE: fixed stress window fixed2
 #                                                  (default modes: fixed stress window; fixed2 = fixed again, criterion 1)
 #   agent/run_determinism.sh table                 verdict + markdown table from agent/out/det/
 #   agent/run_determinism.sh quick                 short pass for intermediate cuts (see below)
@@ -84,7 +84,7 @@ MODES=("$@"); [ ${#MODES[@]} -eq 0 ] && MODES=(fixed stress window)
 # comparados con agent/det_baseline.txt (caso digest). La pasada `all` queda para el cierre de cada RFC.
 if [ "$CASE_ARG" = quick ]; then
   "$0" s1_quick fixed stress window || true
-  "$0" s7 fixed >/dev/null; "$0" f139 fixed >/dev/null
+  "$0" s7 fixed >/dev/null; "$0" f139 fixed >/dev/null; "$0" f148 fixed >/dev/null
   ok=1
   while read -r c want; do
     [ -z "$c" ] && continue
@@ -105,6 +105,7 @@ case_args() { # case -> ai_match args (no out/events)
     s1_trivial) echo "--rules=res://debug/rules/ai_vs_trivial.tres --seed=1 --minutes=3" ;;
     f139) echo "--rules=res://debug/rules/f139_ff_clouds.tres --seed=7 --minutes=0.5" ;;
     s1_quick) echo "--rules=res://debug/rules/ai_vs_trivial.tres --seed=1 --minutes=0.5" ;;
+    f148) echo "--rules=res://debug/rules/f148_droplets.tres --seed=7 --minutes=0.5" ;;
     *) return 1 ;;
   esac
 }

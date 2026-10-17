@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="ParticleType" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
+
+[resource]
+script = ExtResource("1_type")
+atlas_key = "blood"
+h_frames = 4
+v_frames = 4
+size = Vector2(0.3, 0.3)
+energy = 8.0
+frame_s = 0.13333
+lifetime_s = 1.2
+gravity = 10.0
+count = 1
+spread = 0.0
+direction = Vector3(0, -1, 0)
+random_start_frame = true
+fade_s = 0.2
+additive = false
+lit = true
+pool_max = 96

@@ -1,0 +1,172 @@
+{
+ "scene": "res://debug/f148_droplets.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "Overlay/Status",
+    "text_contains": "Enter",
+    "timeout": 60
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "frame",
+    "args": [
+     1290,
+     1190,
+     0,
+     5,
+     20
+    ]
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "shot": "p0_paused_side.png"
+  },
+  {
+   "press": "check_tick"
+  },
+  {
+   "wait_until": {
+    "node": "Runner",
+    "prop": "_running",
+    "equals": true,
+    "timeout": 10
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "frame",
+    "args": [
+     1290,
+     1190,
+     0,
+     5,
+     20
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "Runner/HighNoon/DropletRain",
+    "prop": "added",
+    "gte": 10,
+    "timeout": 30
+   }
+  },
+  {
+   "shot": "d0_first_drops.png"
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "d1_drops.png"
+  },
+  {
+   "wait": 0.15
+  },
+  {
+   "shot": "d2_drops.png"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "d3_drops_falling.png"
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/DropletRain",
+    "prop": "added"
+   }
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/DropletRain",
+    "prop": "hits"
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "frame",
+    "args": [
+     1288,
+     1190,
+     0,
+     3,
+     8
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "Runner/HighNoon/DropletRain",
+    "prop": "added",
+    "gte": 45,
+    "timeout": 30
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "d4_close_drops.png"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "d5_close_drops.png"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "d6_close_drops.png"
+  },
+  {
+   "wait_until": {
+    "node": "Runner",
+    "prop": "_finished",
+    "equals": true,
+    "timeout": 60
+   }
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/DropletRain",
+    "prop": "added"
+   }
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/DropletRain",
+    "prop": "hits"
+   }
+  },
+  {
+   "print": {
+    "node": "Runner/HighNoon/DropletRain",
+    "prop": "peak"
+   }
+  },
+  {
+   "assert": {
+    "node": "Runner/HighNoon/DropletRain",
+    "prop": "added",
+    "gte": 100
+   }
+  }
+ ]
+}

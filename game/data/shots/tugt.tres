@@ -1,14 +1,17 @@
-[gd_resource type="Resource" script_class="ShotLook" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="ShotLook" load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/units/shot_look.gd" id="1_look"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/impacts/splash_impact.tscn" id="2_impact"]
+[ext_resource type="PackedScene" path="res://scenes/world/units/shot_dropper.tscn" id="3_dropper"]
 
 [resource]
 script = ExtResource("1_look")
 hit_size = 1.25
 spin_min = 0.3
 spin_max = 0.9
+trail_fx = "abom_drip"
 impact_fx = PackedStringArray("blood")
 impact = ExtResource("2_impact")
+dropper = ExtResource("3_dropper")
 fallback_color = Color(0.55, 0.12, 0.1, 1)
 fallback_radius = 0.3

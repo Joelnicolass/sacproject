@@ -25,5 +25,11 @@ extends Resource
 ## "advance_altar": the group is ordered (Orders.apply_for, like a human's) to advance to the altar of `order_slot`.
 @export var order := ""
 @export var order_slot := 2
+## F148: "attack_unit" picks the creature of `order_slot` farthest from the group's first body instead of the closest
+## (an Abomination shooting over the Druids that stand under its gut's flight).
+@export var order_farthest := false
+## F148: each body gets a copy of its CreatureType with aggressiveness 0 (a pacifist, sacobject.d:84): it never picks a
+## foe, so Druids stay where the bench put them (under the gut's flight) instead of running at the shooter.
+@export var pacifist := false
 ## F117: each body starts with this fraction of its health (1 = full). The bench writes Health.current once, before the record starts.
 @export_range(0.0001, 1.0, 0.0001, "or_less") var health_fraction := 1.0

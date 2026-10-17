@@ -1,0 +1,49 @@
+[gd_resource type="Resource" script_class="BenchRules" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
+
+[sub_resource type="Resource" id="Group_abom"]
+script = ExtResource("2_group")
+tag = "ctug"
+slot = 1
+count = 6
+columns = 6
+spacing_m = 4.0
+offset_m = 0.0
+offset_z_m = -80.0
+facing_x = 1.0
+order = "attack_unit"
+order_slot = 2
+order_farthest = true
+
+[sub_resource type="Resource" id="Group_under"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 2
+count = 9
+columns = 3
+spacing_m = 0.8
+offset_m = 17.0
+offset_z_m = -80.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_far"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 2
+count = 3
+columns = 3
+spacing_m = 1.5
+offset_m = 35.0
+offset_z_m = -80.0
+facing_x = -1.0
+pacifist = true
+
+[resource]
+script = ExtResource("1_rules")
+groups = Array[ExtResource("2_group")]([SubResource("Group_abom"), SubResource("Group_under"), SubResource("Group_far")])
+anchor = Vector3(1270, 0, 1270)
+start_paused = true
+ignore_annihilation = true

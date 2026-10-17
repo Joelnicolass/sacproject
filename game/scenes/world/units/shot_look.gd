@@ -42,7 +42,8 @@ const LOOKS_DIR := "res://data/shots/"
 @export var burst_at_range_end := false
 ## F148/F149: ShotInFlight scene the server (or solo) puts on the shot; it acts on every tick of the flight. tugt: a
 ## ShotDropper (a droplet that falls on whoever is below, animateAbominationProjectile, state.d:24441-24452); rdba: a
-## FrostWave (the Silverback's breath grows and freezes, updateSilverbackProjectile, 24758-24831).
+## GrowingWave + FreezeTouch (the Silverback's breath grows and freezes, updateSilverbackProjectile, 24758-24831); F162: fhba and
+## ehba, the Spitfire's and the Gargoyle's waves (spitfire_wave, gargoyle_wave).
 @export var in_flight: PackedScene
 ## F149: off, the shot touches nothing on its way, neither a body nor the ground, and flies its whole range (the
 ## Silverback's breath: its in_flight does the damage). On: it bursts on its hit (the rest of the shots).

@@ -1518,8 +1518,8 @@ Deuda:
   - **Duración:** `ceil(60·1000/vidaMáx·20)` en float32 exacto; un mago, 300.
   - **Rotura:** se rompe con `Health.hit` > 0.
   - **Deshielo:** 150 de hechizo con esquirlas.
-- **`ShotInFlight`:** hijo de vuelo de un disparo. `ShotDropper` (Abomination) y `FrostWave` (Silverback `rdba`) heredan de él.
-- **`FrostWave`:** onda que crece hasta 7,5 m y no choca (`ShotLook.collides = false`). Tiene memoria de tocados: el blanco pedido recibe 100 % directo y el resto, salpicadura con caída.
+- **`ShotInFlight`:** hijo de vuelo de un disparo. `ShotDropper` (Abomination) y `GrowingWave` (Silverback `rdba`; antes `FrostWave`, F162) heredan de él.
+- **`GrowingWave`:** (F162; antes `FrostWave`) onda que crece hasta 7,5 m y no choca (`ShotLook.collides = false`). Tiene memoria de tocados: el blanco pedido recibe 100 % directo y el resto, salpicadura con caída.
 - **Un dueño:** `Afflictions._show` es el único que escribe la pose congelada (`clip_pose.frozen`) y el look del mesh, a través de un único `StoneLook` (`Afflictions/Look`). El tinte sale de `AfflictionType.look_tint` y `look_priority`: la piedra gana al hielo.
 
 **Cierre (2026-10-17).** La review pidió CHANGES por B1: piedra e hielo escribían los dos el material del mesh. Se corrigió en una ronda con un dueño único del look (`reviews/REVIEW-RFC-030k-b.md`).
@@ -2263,3 +2263,29 @@ Deuda:
 
 Deuda:
 - `models/sizes.json` sale del horneado de cuerpos, no del WAD (RFC-023).
+### F162 — Ondas del Spitfire y del Gargoyle (RFC-030, corte 030w-c)
+
+**Piezas:**
+- **`GrowingWave`** (antes `FrostWave`, `git mv`): dueño único del radio `radius_at`, de la caminata con `SplashDamage.bodies_within`, del «una vez por vuelo», del filtro de bando, de directo contra salpicadura (con `shot.mods`) y del log `onda …`. Knobs: `final_radius`, `building_groups`; `static var log_touches`.
+- **`WaveTouch`** (base) y sus hijos en la escena de la onda: `before_hit`, `after_hit` y `settled` (con `direct` para el orden de sacengine).
+  - **`FreezeTouch`:** lo de F149 (`zerf`, lista de congelar al final del cuadro).
+  - **`IgniteTouch`:** `Burning.ignite(0, 30)`; el blanco, golpe y después fuego; los demás, fuego y después salpicadura. `@export` `fire_ticks`, `fire_damage`, `fire_fx`.
+- **Escenas:** `frost_wave.tscn` (`GrowingWave` 7,5 + `FreezeTouch`), `spitfire_wave.tscn` (7,5 + `IgniteTouch`) y `gargoyle_wave.tscn` (6,0, sin hijos).
+- **`ShotLook`:** `data/shots/fhba.tres` (`in_flight`, `collides = false`, `ignites = true`) y `ehba.tres`. Trail provisorio: `fire` (cada 2) y `rock_trail`.
+
+**Fidelidad (sacengine `updateSpitfireProjectile` 23025-23069, `updateGargoyleProjectile` 23079-23113):**
+- **Fuego del Spitfire:** 0 de daño en 31 actualizaciones. Lo que pesa es el `DamageMod.ignite` del golpe (el aceite ×2, F155).
+- **Gargoyle:** sin fuego ni `ignite`.
+- **Alcance:** la onda vuela su alcance entero (34 y 40 m) sin chocar, también más allá del blanco.
+
+**Cierre (2026-10-17).**
+- **Paso 0:** `f149` da `bf28b3fd` antes y después del refactor; `f149_expect.py` PASS.
+- **Caso `f162_waves`:** `f162_expect.py` PASS (radio de cada `toca`, daño directo y de salpicadura, aliado 0, una vez por cuerpo, `fuego` en W1 y W2 durante 31 actualizaciones). Digest `f3e46a91` igual en fixed, stress y window.
+- **Banco:** `quick` con las 22 líneas de la base OK; `rules_suite --fixed-fps 60` PASS.
+- **Carriles:** la fila del Gargoyle del plan (z −66) deja una choza de la aldea al final del vuelo de 40 m y la onda la tocaba; se movió a z −36 (validado con `--lanes` a lo largo de todo el vuelo).
+- **Capturas:** `agent/out/f162/` (`f162_spitfire.json`, `f162_gargoyle.json`, observador `agent/harness/f162_watch.gd`).
+
+Deuda:
+- `Burning.ignite` descarta un edificio con daño 0; sacengine lo prende igual con `setAblaze` (solo visual).
+- **Trail:** el puff no escala con el radio de la onda; los FX propios de `fhba` (`firy`) y `ehba` (`rock`) quedan para cuando haya tiempo de exportarlos.
+- **Orden fuego/golpe:** no se ve en el log (el `fuego` se imprime al terminar); lo cubre el código, no la réplica.

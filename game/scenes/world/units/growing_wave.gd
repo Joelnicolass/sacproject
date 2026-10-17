@@ -1,18 +1,20 @@
-class_name FrostWave
+class_name GrowingWave
 extends ShotInFlight
 
-## F149 (RFC-030 030k-b): the Silverback's Icy Breath (rdba), sacengine updateSilverbackProjectile (state.d:24758-24831).
-## The breath flies straight through everything (ShotLook.collides off: no body, no ground) for its range and grows:
-## on its update number n (frame = n − 1) its radius is finalSilverbackProjectileSize · frame / (60 · range / speed),
-## 7,5 m at the end. Every update it walks the bodies whose hit box is within that radius (dealDamageAt with the
-## Silverback's callback) and each body is taken once in the whole flight (damagedTargets):
-##   the shot's target: the whole amount as direct ranged damage (dealRangedDamage), then tryFreezeWithCooldown;
+## F149 (RFC-030 030k-b), generalised by F162 (030w-c): a creature's wave that grows while it flies. The Silverback's
+## Icy Breath (rdba, sacengine updateSilverbackProjectile, state.d:24758-24831), the Spitfire's fire wave (fhba,
+## updateSpitfireProjectile, 23025-23069) and the Gargoyle's wave (ehba, updateGargoyleProjectile, 23079-23113) are the
+## same walk; only what a touched body takes besides the damage changes, and that is a WaveTouch child.
+## The wave flies straight through everything (ShotLook.collides off: no body, no ground) for its range and grows:
+## on its update number n (frame = n − 1) its radius is final_radius · frame / (60 · range / speed). Every update it
+## walks the bodies whose hit box is within that radius (dealDamageAt with the callback of the shooter) and each body is
+## taken once in the whole flight (damagedTargets):
+##   the shot's target: the whole amount as direct ranged damage (dealRangedDamage) with the shot's mods;
 ##   a body of the shooter's side: nothing;
-##   any other body: amount · (1 − d / radius) as splash ranged damage; a creature or a wizard that was not frozen when
-##     the breath touched it tries to freeze at the end of the update (toFreeze);
-##   a building: the damage only.
-## The freeze is the body's own Afflictions/Frozen (tryFreezeWithCooldown with the SPEL `zerf`).
-## The breath's mist (SilverbackEffect, ParticleType.freeze) is presentation: ShotLook.trail_fx on every peer.
+##   any other body: amount · (1 − d / radius) as splash ranged damage with the shot's mods.
+## Each WaveTouch child adds its effect: before_hit and after_hit around the damage of every body that takes it, and
+## settled() at the end of the update (FreezeTouch: Silverback, IgniteTouch: Spitfire; the Gargoyle's wave has none).
+## The wave's mist is presentation: ShotLook.trail_fx on every peer.
 ## Deviation (declared): on its first update the radius is 0 and the port's walk (SplashDamage.bodies_within) takes
 ## nobody; sacengine takes a body whose box holds the point.
 
@@ -20,25 +22,26 @@ const _HEALTH := preload("res://scenes/world/components/health.gd")
 const _SPLASH := preload("res://scenes/world/spells/splash_damage.gd")
 const TICKS := float(MatchClock.TICKS_PER_SECOND)
 
-## sacengine finalSilverbackProjectileSize: the radius at the end of the range (m).
+## sacengine final*ProjectileSize: the radius at the end of the range (m). Silverback and Spitfire 7,5, Gargoyle 6.
 @export var final_radius := 7.5
-## The SPEL of the freeze a touched body may take (zerf: 20 s, 150 of spell damage when it thaws).
-@export var freeze_spell := "zerf"
-## The Frozen state under each body.
-@export var frozen_path := NodePath("Afflictions/Frozen")
 ## A body in one of these groups takes the damage only (sacengine TargetType.building).
 @export var building_groups: Array[StringName] = [&"structure"]
-## Print the start of the breath and every body it touches. Off in the product; the bench (debug/ai_match.gd) turns it
-## on for every breath (agent/tools/f149_expect.py reads it).
+## Print the start of the wave and every body it touches. Off in the product; the bench (debug/ai_match.gd) turns it
+## on for every wave (agent/tools/f149_expect.py and f162_expect.py read it).
 static var log_touches := false
 
 ## The bodies already taken (damagedTargets): each one once in the whole flight.
 var _touched := {}
-var _spell: SpellType
-var _warned := false
+var _touches: Array[WaveTouch] = []
 
 
-## updateSilverbackProjectile, one update: the radius of this frame, the walk, then the bodies to freeze.
+func _ready() -> void:
+	for child in get_children():
+		if child is WaveTouch:
+			_touches.append(child)
+
+
+## One update: the radius of this frame, the walk (damage and the touches around it), then settled().
 func _fly(shot: RangedShot, at: Vector3) -> void:
 	var amount := shot.damage
 	var from_slot := shot.from_slot
@@ -46,31 +49,27 @@ func _fly(shot: RangedShot, at: Vector3) -> void:
 	if ticks == 1 and log_touches:
 		_log_start(shot, at)
 	var intended := _intended(shot)
-	var to_freeze: Array[Frozen] = []
 	for body in _SPLASH.bodies_within(get_tree(), at, radius):
 		var health := body.get_node_or_null("Health") as Health
 		if _touched.has(body) or health == null or health.maximum <= 0.0:
 			continue
 		_touched[body] = true
-		var frozen: Frozen = null if _is_building(body) else body.get_node_or_null(frozen_path) as Frozen
-		var can_freeze := frozen != null and not frozen.is_on()
 		var distance := _SPLASH.box_distance(body, at)
 		if body == intended:
 			_log_touch(shot, body, at, distance, radius, "directo")
-			_SPLASH.hurt(body, amount, from_slot, _HEALTH.DIRECT_RANGED)
-			if can_freeze:
-				frozen.try_freeze_with_cooldown(_freeze_spell(), from_slot)
+			var direct_states := _before(body, true, shot)
+			_SPLASH.hurt(body, amount, from_slot, _HEALTH.DIRECT_RANGED, shot.mods)
+			_after(body, true, direct_states, shot)
 			continue
 		if from_slot > 0 and _side(body) == from_slot:
 			_log_touch(shot, body, at, distance, radius, "mismo bando")
 			continue
 		_log_touch(shot, body, at, distance, radius, "salpicadura")
-		_SPLASH.hurt(body, amount * maxf(0.0, 1.0 - distance / radius), from_slot, _HEALTH.SPLASH_RANGED)
-		if can_freeze:
-			to_freeze.append(frozen)
-	for frozen in to_freeze:
-		if is_instance_valid(frozen):
-			frozen.try_freeze_with_cooldown(_freeze_spell(), from_slot)
+		var splash_states := _before(body, false, shot)
+		_SPLASH.hurt(body, amount * maxf(0.0, 1.0 - distance / radius), from_slot, _HEALTH.SPLASH_RANGED, shot.mods)
+		_after(body, false, splash_states, shot)
+	for touch in _touches:
+		touch.settled(shot)
 
 
 ## The radius on `frame` (0 on the first update): final_radius · frame / (60 · range / speed), from the shot's SPEL;
@@ -88,20 +87,25 @@ func _intended(shot: RangedShot) -> Node:
 	return null if shot.target_path.is_empty() else shot.get_node_or_null(shot.target_path)
 
 
-func _freeze_spell() -> SpellType:
-	if _spell == null:
-		_spell = GameData.spell(freeze_spell)
-		if _spell == null and not _warned:
-			_warned = true
-			push_warning("FrostWave: GameData no tiene el SPEL %s." % freeze_spell)
-	return _spell
-
-
-func _is_building(body: Node) -> bool:
+## True when the body is a building (sacengine TargetType.building): a touch may skip it.
+func is_building(body: Node) -> bool:
 	for group in building_groups:
 		if body.is_in_group(group):
 			return true
 	return false
+
+
+## The states the touches read before the damage (WaveTouch.before_hit), in the order of the children.
+func _before(body: Node3D, direct: bool, shot: RangedShot) -> Array:
+	var states := []
+	for touch in _touches:
+		states.append(touch.before_hit(body, direct, shot, self))
+	return states
+
+
+func _after(body: Node3D, direct: bool, states: Array, shot: RangedShot) -> void:
+	for i in _touches.size():
+		_touches[i].after_hit(body, direct, states[i], shot)
 
 
 static func _side(body: Node) -> int:

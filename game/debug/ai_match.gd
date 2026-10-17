@@ -93,7 +93,7 @@ func _ready() -> void:
 	var rain := _world.get_node_or_null("DropletRain")
 	if rain:
 		rain.set("log_hits", true)  # F148: bench logs the drops (off in the product)
-	FrostWave.log_touches = true  # F149: bench logs the Silverback's breath (off in the product)
+	GrowingWave.log_touches = true  # F149, F162: bench logs the Silverback's breath and the Spitfire's and Gargoyle's waves (off in the product)
 	ShotSplit.log_split = true  # F125: bench logs the Boulderdash's fan (off in the product)
 	ShotStrike.log_strikes = true  # F124: bench logs the rays and the Styx's blows (off in the product)
 	GroundHug.log_flight = true  # F151: bench logs the Rhinok's flight on the land (off in the product)

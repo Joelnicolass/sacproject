@@ -11,7 +11,7 @@ extends Node3D
 ## F119: a ShotLook with an `impact` scene (ShotImpact) decides the damage where it bursts instead (splash, 030h).
 ## F136: ShotLook.hits_allies turns the side filter around (the Scarab's web) and burst_at_range_end bursts it where its range ends.
 ## F148: a ShotLook with an `in_flight` scene (ShotInFlight) acts on every tick of the flight: the Abomination's droplets
-## (ShotDropper, 030h3); F149: the Silverback's breath (FrostWave), whose ShotLook.collides is off: it touches neither a
+## (ShotDropper, 030h3); F149: the Silverback's breath (GrowingWave), whose ShotLook.collides is off: it touches neither a
 ## body nor the ground and flies its whole range.
 ## F151: an in_flight that holds the shot's height (GroundHug, ShotInFlight.holds_height) takes the ground check away: the
 ## Rhinok's shot ends on a body or at the end of its range only.

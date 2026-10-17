@@ -110,6 +110,7 @@ func _ready() -> void:
 	Oiled.log_oil = true  # F155: bench logs the Viscous oil (smearing, ignite, blast) (off in the product)
 	LightningCharge.log_charge = true  # F130: bench logs the Lightning Charge and the Giant's walk (off in the product)
 	MeleeOnHit.log_on_hit = true  # F158: bench logs the on-hit passives (off in the product)
+	MELEE_ATTACK.log_gap = true  # melee_gap_expect: bench logs each tick of a melee approach (off in the product)
 	MELEE_ATTACK.log_melee = true  # F130: bench logs each blow's numbers (off in the product)
 	FastRevive.log_revive = true  # F153: bench logs the fast revival (off in the product)
 	DevourGrowth.log_devour = true  # F131: bench logs what the Devour gives (off in the product)

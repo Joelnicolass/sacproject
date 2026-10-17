@@ -723,10 +723,10 @@ func _chase(delta: float) -> void:
 
 func _attack(delta: float) -> void:
 	if _is_valid_foe(target):
-		var to_foe := target.global_position - global_position
-		to_foe.y = 0.0
+		var to_foe := (target.global_position - global_position) * Vector3(1.0, 0.0, 1.0)
 		if to_foe.length_squared() > 0.000001:
 			_turn_toward(to_foe.normalized(), delta)
+		velocity += $MeleeAttack.call("close_in", target, 0.0 if _afflictions.fixed() else move_speed * speed_factor, delta)
 	if not $MeleeAttack.call("advance", delta):
 		mode = Mode.CHASE
 

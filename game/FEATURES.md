@@ -2169,3 +2169,27 @@ Deuda:
 Deuda:
 - `Terrain.data` cae en silencio a High Noon si no se asigna (`terrain.gd:102`); conviene limitarlo al editor y a las probes, con aviso, antes de un segundo mapa.
 - `agent/tools/f1*_expect.py` todavía leen `cache/high_noon_terrain.bin` y `cache/data` (033h).
+### Acercamiento cuerpo a cuerpo (causa de final_spit_melee)
+
+**Síntoma.** `agent/flows/final_spit_melee.json` fallaba desde el primer commit: el Earthfling escupía a 2 m y moría sin golpear al Druid.
+
+**Causa.** `UnitBody` frenaba al primer roce (`MeleeAttack.can_start`): el Druid quedaba a gap 0,93 m, y `RangedAttack.prefers` solo deja pegar a un tirador con el blanco a gap ≤ 0,5 (`rangedMeleeAttackDistance`, `state.d:8752`). Con el blanco ya dentro de su caja de melee, sacengine sigue acercando al atacante (`attack`, `state.d:12857-12862`): `moveWithinRange(movementPosition, 0.8·targetDistance)`, con `targetDistance` el desplazamiento del centro de su caja de melee (1,3·`reach`) y `movementPosition` el borde del blanco.
+
+**Regla en el port.** `MeleeAttack.close_in(target, pace, delta)` (`close_in_factor` 0,8, `@export`): con el blanco en alcance camina hasta `foe_reach + 0,8·forward_factor·reach` del centro del blanco, sin pasarse en el último paso, y nunca por dentro de `BodySeparation.rest_distance(a, b)` (donde el segundo paso de `positionAfterCollision` deja dos cajas en reposo, a medio `blockSlack`: si no, el empuje lo devolvía cada tick). `UnitBody._attack` suma esa velocidad (pace 0 con `Afflictions.fixed()`; `holds()` ya corta antes). `MeleeAttack.box_half(factor)` es el dueño del ancho de la caja de melee (`WIDTH_SCALE` del Druid) para `in_reach`; la caja solo se ensancha: su desplazamiento hacia delante no (`sacobject.d:446-476`), por eso `close_in` no lo aplica.
+
+**Digests regrabados** (`agent/det_baseline.txt`; mismo digest en fixed, stress y window; con el knob en 1000 la base de main se reproduce exacta). Primera línea distinta, siempre un golpe o una posición que depende del acercamiento:
+
+| caso | primera línea distinta (antes -> ahora) |
+|---|---|
+| s7 | t209 `hp Druid1` 746.67 -> 746.65 (daño del golpe del Trogg por otro `facing`) |
+| f139 | los golpes del Cog1 pasan del t37 al t36 |
+| f121 | t251 `hp Druid2 385.17` -> t252 `hp Trogg1 793.33` (otro golpe antes) |
+| f130 | t600 `pos StormGiant1` 1255.8,10.5,1284.4 -> 1257.5,10.6,1284.7 |
+| f131 | t370 `hp Netherfiend1` 2573.36 -> 2573.35 |
+| f132 | t108 `died Dragon1` 1325.0 -> 1326.3 |
+
+`s7_npcs` (t672 `hp Farmer4` 449.15 -> 449.34) y `s1_trivial` (t2241 `struck Taurock3 -> Wizard2` 42.16 -> 44.60) también cambian pero no están en la base.
+
+**Medición** (`MeleeAttack.log_gap`, apagado en el producto; lo enciende `ai_match` y `debug/ability_spit.gd`; línea `melee_gap A->B d= gap= vx= vz= tick=…`; `agent/tools/melee_gap_expect.py LOG…`):
+- `final_spit_melee` (Druid contra Earthfling, 1 contra 1): gap de caja mínimo 0,100 m (el reposo de `BodySeparation`), 0 cambios de signo de la velocidad de acercamiento, se asienta en el piso de `BodySeparation` (el objetivo de sacengine, d = 1,05 m, queda por dentro). PASS.
+- `s7` (3 contra 3): el gap de caja baja a -0,067 (Druid) y -0,072 (Trogg) y la velocidad de acercamiento cambia de signo cientos de veces por ventana (524 y 759 como máximo). No viene de `close_in`: con el knob en 1000 (sin acercamiento) da -0,061 / -0,108 y 409 / 682 cambios. Es el empuje de terceros cuerpos de `BodySeparation` (5 m/s, 0,08 m por tick) en la melé; el comando de `close_in` ahí es cero. Queda anotado, sin tocar `BodySeparation` (su regla es la de sacengine).

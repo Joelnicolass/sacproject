@@ -18,12 +18,17 @@ signal connected(target: Node3D, was_frozen: bool)
 
 ## Bench log (`ai_match` turns it on; off in the product): one line per blow with the numbers the replica needs (F130).
 static var log_melee := false
+## Bench log (`ai_match` turns it on; off in the product): one `melee_gap` line per tick the attacker closes in on a target in reach.
+static var log_gap := false
 
 ## sacengine `attack`: meleeHitboxFactor.
 @export var start_factor := 0.8
 ## sacengine `defaultMeleeHitbox`: hitboxCenter *= 1.3 for most creatures.
 @export var forward_factor := 1.3
 @export var height_factor := 1.5
+## sacengine `attack` (state.d:12857-12862): with the target inside the melee box the attacker keeps walking in until
+## its centre is within this share of its box's forward offset (targetDistance) from the target's near edge.
+@export var close_in_factor := 0.8
 ## sacengine `meleeAttackIsDownward`: target center this far below ours uses attack2.
 @export var downward_threshold := 0.25
 ## sacengine `dealDamage`: melee damage *= 0.4 * meleeResistance.
@@ -71,6 +76,27 @@ func can_start(target: Node3D) -> bool:
 	return type != null and type.melee_strength > 0 and in_reach(target, start_factor)
 
 
+## Flat velocity-per-pace (length 0..1) that keeps closing in on `target` while it is in melee reach, so a ranged
+## foe ends inside RangedAttack.melee_distance. Zero once close enough or out of reach. The body applies its own pace.
+func close_in(target: Node3D, pace: float, delta: float) -> Vector3:
+	if _body == null or target == null or pace <= 0.0 or not in_reach(target, start_factor):
+		return Vector3.ZERO
+	var to_foe := target.global_position - _body.global_position
+	to_foe.y = 0.0
+	var foe_reach := float(profile_of(target).get("reach", 0.35))
+	## The goal never lies inside the distance BodySeparation leaves two bodies at (it would push the walker back every tick).
+	var goal := maxf(foe_reach + close_in_factor * forward_factor * reach, BodySeparation.rest_distance(_body, target))
+	var excess := to_foe.length() - goal
+	var walk := Vector3.ZERO if excess <= 0.0 or delta <= 0.0 else to_foe.normalized() * minf(pace, excess / delta)
+	if log_gap:
+		var radius := BodySeparation.half_size(_body)
+		var foe_radius := BodySeparation.half_size(target)
+		print("melee_gap %s->%s d=%.3f gap=%.3f vx=%.3f vz=%.3f tick=%d reach=%.3f foe_reach=%.3f radius=%.3f foe_radius=%.3f axis_gap=%.3f" % [
+			_body.name, target.name, to_foe.length(), to_foe.length() - radius - foe_radius, walk.x, walk.z, MatchClock.now(), reach, foe_reach, radius, foe_radius,
+			maxf(absf(to_foe.x), absf(to_foe.z)) - radius - foe_radius])
+	return walk
+
+
 ## sacengine `startMeleeAttacking` (state.d:8725): attack2 when striking downward, else
 ## a random one of attack0/attack1.
 func start(target: Node3D) -> void:
@@ -104,12 +130,18 @@ func swing_period_s(index: int) -> float:
 	return float(anim.get("frames", 0)) / float(anim.get("framerate", 30)) if not anim.is_empty() else 0.0
 
 
+## Half width of the melee box at `factor` of its size: the reach, widened for the creatures WIDTH_SCALE names. One owner for
+## the box width: in_reach (and so can_start and close_in's gate) reads it here. The box only widens, its forward offset
+## (forward_factor·reach, what close_in walks to) does not (sacobject.d:446-476).
+func box_half(factor: float) -> float:
+	return reach * float(WIDTH_SCALE.get(type.tag if type else "", 1.0)) * factor
+
+
 func in_reach(target: Node3D, factor: float) -> bool:
 	if _body == null or target == null or not is_instance_valid(target):
 		return false
-	var widen := float(WIDTH_SCALE.get(type.tag if type else "", 1.0))
 	var center := _body.global_position + facing_of(_body) * (forward_factor * reach)
-	var half := reach * widen * factor
+	var half := box_half(factor)
 	var foe := profile_of(target)
 	var foe_reach := float(foe.get("reach", 0.35))
 	var at := target.global_position

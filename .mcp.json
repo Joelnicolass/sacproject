@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "blender": {
+      "command": "/Users/joelsartori/.local/bin/uvx",
+      "args": ["--from", "git+https://projects.blender.org/lab/blender_mcp.git@v1.0.3#subdirectory=mcp", "blender-mcp"]
+    },
+    "aseprite": {
+      "command": "/Users/joelsartori/.local/bin/uv",
+      "args": ["--directory", "/Users/joelsartori/Development/sacproject/.tools/aseprite-mcp", "run", "-m", "aseprite_mcp"],
+      "env": {
+        "ASEPRITE_PATH": "/Applications/Aseprite.app/Contents/MacOS/aseprite"
+      }
+    }
+  }
+}

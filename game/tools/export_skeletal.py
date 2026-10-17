@@ -29,6 +29,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+from sac_formats.gltf_writer import FLOAT, UINT, USHORT, Gltf, import_params, write_glb as pack_glb  # noqa: E402
 ## The single place that names the output folder; everything else is relative to --out.
 DEFAULT_OUT = ROOT / "assets" / "original" / "models"
 DEFAULT_MODELS = ["eorc", "jnwr"]
@@ -639,32 +641,6 @@ def parse_clip(sxsk: bytes, skel: bytes | None, model: Model):
 # ---------------------------------------------------------------------------------------------------------
 
 
-class Gltf:
-    def __init__(self):
-        self.blob = bytearray()
-        self.views, self.accessors = [], []
-
-    def view(self, raw: bytes, target=None):
-        while len(self.blob) % 4:
-            self.blob.append(0)
-        v = {"buffer": 0, "byteOffset": len(self.blob), "byteLength": len(raw)}
-        if target:
-            v["target"] = target
-        self.blob += raw
-        self.views.append(v)
-        return len(self.views) - 1
-
-    def accessor(self, raw, ctype, count, atype, target=None, lo=None, hi=None):
-        a = {"bufferView": self.view(raw, target), "componentType": ctype, "count": count, "type": atype}
-        if lo is not None:
-            a["min"], a["max"] = lo, hi
-        self.accessors.append(a)
-        return len(self.accessors) - 1
-
-
-FLOAT, USHORT, UINT = 5126, 5123, 5125
-
-
 def smooth_normals(positions, faces):
     acc = [[0.0, 0.0, 0.0] for _ in positions]
     for a, b, c in faces:
@@ -879,19 +855,8 @@ def write_glb(path: Path, model_tag: str, model: Model, clips: dict, exact: bool
                    "skeleton": 0}],
         "meshes": [{"name": model_tag, "primitives": primitives}],
         "animations": animations,
-        "accessors": g.accessors,
-        "bufferViews": g.views,
-        "buffers": [{"byteLength": len(g.blob)}],
     }
-    js = json.dumps(doc, separators=(",", ":")).encode()
-    js += b" " * (-len(js) % 4)
-    blob = bytes(g.blob) + b"\0" * (-len(g.blob) % 4)
-    total = 12 + 8 + len(js) + 8 + len(blob)
-    path.write_bytes(
-        struct.pack("<III", 0x46546C67, 2, total)
-        + struct.pack("<II", len(js), 0x4E4F534A) + js
-        + struct.pack("<II", len(blob), 0x004E4942) + blob
-    )
+    pack_glb(path, doc, g)
     # Written vertex numbering (unused vertices removed) for the vertices the game does not normalize.
     unnorm_out = []
     for surface, vertex, wsum, radius in unnormalized:
@@ -904,15 +869,7 @@ def write_glb(path: Path, model_tag: str, model: Model, clips: dict, exact: bool
 
 
 def write_import(path: Path):
-    path.write_text(
-        "[remap]\n\nimporter=\"scene\"\ntype=\"PackedScene\"\n\n[params]\n\n"
-        "nodes/root_type=\"\"\nnodes/root_name=\"\"\nnodes/apply_root_scale=true\nnodes/root_scale=1.0\n"
-        "meshes/ensure_tangents=true\nmeshes/generate_lods=false\nmeshes/create_shadow_meshes=false\n"
-        "meshes/light_baking=0\nskins/use_named_skins=true\n"
-        "animation/import=true\nanimation/fps=30\nanimation/trimming=false\nanimation/remove_immutable_tracks=false\n"
-        "animation/import_rest_as_RESET=false\n"
-        "import_script/path=\"\"\n_subresources={}\ngltf/naming_version=2\ngltf/embedded_image_handling=1\n"
-    )
+    path.write_text(import_params(animation=True))
 
 
 # ---------------------------------------------------------------------------------------------------------

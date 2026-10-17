@@ -1,0 +1,10 @@
+# REVIEW RFC-033c (F169): props a .glb
+
+Veredicto: APPROVE (con 2 notas, sin bloqueantes).
+
+1. Un dueño: PASS. `OriginalAssets.prop/sizes` (scenes/data/original_assets.gd) da las rutas; `BodyCatalog._prop_mesh` (scenes/world/body_catalog.gd:117-139) pone `OriginalMaterial.for_label` sobre la malla que cachea ResourceLoader y la guarda en `_meshes[model]`: una malla por modelo, sin duplicar por instancia. El dedicado: `mesh()` sale en body_catalog.gd:103 si `not loads_meshes()` y `_ensure()` solo lee `sizes.json`. Nota: `_prop_mesh` muta las superficies de la malla cacheada; es idempotente, pero depende de que nadie más cargue el .glb.
+2. Determinismo: PASS. Verificado: `sizes.json` == `cache/baked/{bodies,props}.json` como datos parseados, mismas claves y mismo orden (bodies y props). El dedicado lee los mismos floats con el mismo `JSON.parse_string`. CONTAMINATED (agent/run_determinism.sh:131,151) solo significa que otro Godot corrió en paralelo (afecta tiempo/RSS, no el digest); los digests de `all` y `quick` coinciden con baseline y entre modos, así que el digest es válido. El FAIL impreso es del script, no del digest. Nota: para cerrar el RFC (033i) conviene un `all` sin contaminación.
+3. body_gallery 0,18 %: aceptable. Mismos datos por esquina (0 mm, uv 0, normal 0); la diferencia es orden de rasterizado por índices, medido (sin índices 1/4/0 px). Forzar sin índices infla el .glb y no aporta fidelidad. Dejar como está y documentar el piso nuevo de `body_gallery_all` (≤ ~1 700 px). `ensure_tangents=false`: no rompe RFC-022g (hoy ningún material usa normal map); cuando llegue, 022g debe reimportar con true (cambio de un flag en los .import y en import_props.py, sin tocar la geometría).
+4. Versionado: PASS. 117 `.glb.import` con `force_disable_compression=true` y UIDs (`git check-ignore` no los ignora); `.glb` -> `filter: lfs`; `sizes.json` (50 KB) sin LFS, correcto; 0 archivos de `cache/` en git. `splash_probe.gd:6,38` y el texto de pose_overrides.tres migrados bien.
+
+Alcance: sin extras. Look de las capturas (props) fuera de esta review.

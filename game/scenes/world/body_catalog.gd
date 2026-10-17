@@ -2,12 +2,15 @@
 class_name BodyCatalog
 extends RefCounted
 
-## Baked bodies and props from tools/bake_bodies.gd: sizes, pose and meshes by model tag.
+## Bodies and props: sizes, pose and meshes by model tag.
+## Sizes come from assets/original/models/sizes.json (tools/import_props.py), props are the .glb of
+## assets/original/props/ (RFC-033 033c), bodies are still the meshes baked by tools/bake_bodies.gd until RFC-023.
 ## On top of them go the hand corrections in data/bodies/pose_overrides.tres (turn, offset,
-## scale, capsule). Nothing else corrects a pose: the baked JSON is never edited by hand.
-## Static and @tool: the editor has no autoloads, so BodyVisual reads the cache through here.
-## The headless server reads sizes only.
+## scale, capsule). Nothing else corrects a pose: the sizes JSON is never edited by hand.
+## Static and @tool: the editor has no autoloads, so BodyVisual reads the assets through here.
+## The headless server reads sizes only, never a mesh.
 
+## Baked body meshes (bodies/<m>.res) and clip frames: only until RFC-023 / 033i.
 const BAKED_DIR := "res://cache/baked/"
 ## Clip frames baked by tools/bake_clips.gd (RFC-027 027h): one geometry .res per frame OBJ, same relative path.
 const CLIPS_SUBDIR := "clips/"
@@ -102,13 +105,38 @@ static func mesh(model: String) -> Mesh:
 	_ensure()
 	if _meshes.has(model):
 		return _meshes[model]
-	var folder := "bodies" if _bodies.has(model) else "props"
-	var path := _dir + "%s/%s.res" % [folder, model]
 	var loaded: Mesh = null
-	if ResourceLoader.exists(path):
-		loaded = ResourceLoader.load(path) as Mesh
+	if _bodies.has(model):
+		var path := _dir + "bodies/%s.res" % model
+		if ResourceLoader.exists(path):
+			loaded = ResourceLoader.load(path) as Mesh
+	else:
+		loaded = _prop_mesh(model)
 	_meshes[model] = loaded
 	return loaded
+
+
+## The mesh of props/<model>.glb with the shared materials of OriginalMaterial on its surfaces (named after the
+## material label of the original). One mesh per model, shared by every instance: the resource cache keeps the
+## loaded scene's mesh, so the materials are set once.
+static func _prop_mesh(model: String) -> Mesh:
+	var path := OriginalAssets.prop(model)
+	if not ResourceLoader.exists(path):
+		return null
+	var scene := ResourceLoader.load(path) as PackedScene
+	if scene == null:
+		return null
+	var root := scene.instantiate()
+	var holder: MeshInstance3D = root as MeshInstance3D
+	if holder == null:
+		holder = root.find_child("*", true, false) as MeshInstance3D
+	var found: Mesh = holder.mesh if holder else null
+	root.free()
+	if found == null:
+		return null
+	for i in found.get_surface_count():
+		found.surface_set_material(i, OriginalMaterial.for_label(model, found.surface_get_name(i)))
+	return found
 
 
 ## Where tools/bake_clips.gd leaves the baked frame of a clip OBJ (res://cache/look/X.obj -> <baked>/clips/X.res).
@@ -142,8 +170,9 @@ static func _ensure() -> void:
 	if _loaded:
 		return
 	_loaded = true
-	_bodies = _read_json(_dir + "bodies.json")
-	_props = _read_json(_dir + "props.json")
+	var sizes := _read_json(OriginalAssets.sizes())
+	_bodies = sizes.get("bodies", {})
+	_props = sizes.get("props", {})
 
 
 static func _on_overrides_changed() -> void:

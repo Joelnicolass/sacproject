@@ -2088,3 +2088,19 @@ Deuda:
 - Los `baked/bodies` de esos 17 modelos siguen sin chroma hasta re-hornear o RFC-023: el cuerpo quieto y el cuadro de clip se ven distintos.
 - El importador lee de `cache/look`, no de los WAD; se arregla en 033h. No borrar `cache/` antes.
 - Las capturas con partículas no tienen semilla: el criterio «HUD 0 px» no se puede cumplir así.
+
+### F169 — Props y edificios como `.glb` (RFC-033, corte 033c)
+
+**Piezas:**
+- **`tools/import_props.py`:** 117 `.glb` en `assets/original/props/` (1,94 MB, LFS), un primitivo por etiqueta, sin texturas; los materiales salen de `OriginalMaterial`. Escritor glTF compartido en `tools/sac_formats/gltf_writer.py` (lo usa también `export_skeletal.py`).
+- **`assets/original/models/sizes.json`:** medidas de 84 cuerpos y 117 props; el dedicado las lee sin mallas.
+- **`BodyCatalog`:** una malla compartida por modelo de prop; ya no lee `cache/baked/props`.
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-033c.md`).
+- **Paridad geométrica:** 117/117 a 0 mm (posición, uv y normal), con `force_disable_compression=true` en los `.import` (la compresión por defecto metía hasta 27,7 mm).
+- **Banco:** `all` y `quick` iguales a la base en todos los modos (la marca CONTAMINATED es por otros Godot en paralelo; no toca el digest).
+- **Capturas:** dentro del piso, salvo `body_gallery` con 0,18 % de píxeles distintos por malla indexada contra la vieja sin índices (mismos datos). Piso nuevo de `body_gallery`: ~1 700 px.
+
+Deuda:
+- `ensure_tangents=false` en los props; 022g reimporta con tangentes cuando haya normal maps.
+- Para cerrar en 033i hace falta un `all` sin otros Godot en paralelo.

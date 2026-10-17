@@ -7,7 +7,7 @@
 script = ExtResource("2_entry")
 model = "pcfn"
 rotation_degrees = Vector3(0, 90, 0)
-note = "Manantial: giro a mano que antes vivía en cache/baked/props.json."
+note = "Manantial: giro a mano que antes vivía en las medidas horneadas de los props."
 
 [sub_resource type="Resource" id="Resource_sbob"]
 script = ExtResource("2_entry")

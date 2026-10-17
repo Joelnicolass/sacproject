@@ -1,6 +1,8 @@
-[gd_scene load_steps=49 format=3]
+[gd_scene load_steps=51 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/unit_body.gd" id="1_body"]
+[ext_resource type="PackedScene" path="res://scenes/world/units/life_shield.tscn" id="f126_shield"]
+[ext_resource type="Resource" path="res://data/abilities/ability_catalog.tres" id="f126_catalog"]
 [ext_resource type="Script" path="res://scenes/world/body_visual.gd" id="2_visual"]
 [ext_resource type="Script" path="res://scenes/world/components/health.gd" id="3_health"]
 [ext_resource type="Script" path="res://scenes/world/units/melee_attack.gd" id="4_melee"]
@@ -97,6 +99,9 @@ properties/13/replication_mode = 2
 properties/14/path = NodePath("Afflictions:shown")
 properties/14/spawn = true
 properties/14/replication_mode = 2
+properties/15/path = NodePath("LifeShield:shown")
+properties/15/spawn = true
+properties/15/replication_mode = 2
 
 [node name="Unit" type="CharacterBody3D"]
 collision_layer = 2
@@ -112,11 +117,16 @@ script = ExtResource("2_visual")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_unit")
 
-[node name="Health" type="Node" parent="." node_paths=PackedStringArray("passive", "afflictions", "poisoning")]
+[node name="Health" type="Node" parent="." node_paths=PackedStringArray("passive", "afflictions", "poisoning", "life_shield")]
 script = ExtResource("3_health")
 passive = NodePath("../DamagePassive")
 afflictions = NodePath("../Afflictions")
 poisoning = NodePath("../Poisoning")
+life_shield = NodePath("../LifeShield")
+
+[node name="LifeShield" parent="." node_paths=PackedStringArray("body", "health") instance=ExtResource("f126_shield")]
+body = NodePath("..")
+health = NodePath("../Health")
 
 [node name="MeleeAttack" type="Node" parent="." node_paths=PackedStringArray("passive", "own_health")]
 script = ExtResource("4_melee")
@@ -148,6 +158,7 @@ script = ExtResource("f29_ranged")
 
 [node name="ActiveAbility" type="Node" parent="."]
 script = ExtResource("f29_ability")
+catalog = ExtResource("f126_catalog")
 
 [node name="ManaSupport" type="Node3D" parent="."]
 script = ExtResource("f41_mana_support")

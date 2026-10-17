@@ -40,6 +40,8 @@ const SPLASH_RANGED := &"splash_ranged"
 ## F122: the body's poison (Poisoning): its resistance bonus goes into every resistance and its factor into regenerate().
 ## Optional: empty = no bonus, regeneration ×1.
 @export var poisoning: Poisoning
+## F126: the body's life shield (Life Shield, Protector). Optional: empty = no shield, ×1.
+@export var life_shield: LifeShield
 
 ## Multiplies damage_typed on top of the resistance: the body's own effects, as dealDamage
 ## stacks them (state.d:8962-8969); Rockform sets 0.05.
@@ -107,12 +109,17 @@ func damage_typed(amount: float, kind: StringName, from_slot: int = 0, ignore_fr
 	var side := _side_factor(from_slot, ignore_friendly, 0.0)
 	if side > 0.0:
 		var factor := float(kind_factors.get(kind, 1.0))
-		var shields := 1.0 if pierce_shield else maxf(0.0, damage_factor) * _state_factor()
+		var shields := 1.0 if pierce_shield else shield_factor() * _state_factor()
 		taken = minf(current, amount * side * resistance(kind) * maxf(0.0, factor) * shields * _passive_factor())
 	if taken > 0.0:
 		_hit(taken, from_slot)
 	hurt.emit(taken, kind, from_slot)
 	return taken
+
+
+## sacengine dealDamage (state.d:8962-8963): the body's damage_factor (Rockform) times the life shield's. The melee path asks it too.
+func shield_factor() -> float:
+	return maxf(0.0, damage_factor) * (life_shield.factor() if life_shield else 1.0)
 
 
 ## The body's resistance for `kind`: CreatureType for a UnitBody, WizardType for a wizard.

@@ -1017,6 +1017,32 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 **Criterios:** maná de la criatura y efecto medidos (log); ya no dice «No implementado».
 
+#### 030o-a: Plan (developer) / Resultado
+
+**Plan (developer de 030o-a, 2026-10-17):** el del tech lead en `rfcs/plans/030o-030p-plan.md` §030o-a. Números de `state.d` 13092-13100, 13196-13202, 25698-25713, 25122, 218-224 y 8962-8963.
+- `AbilityCatalog` (`data/abilities/ability_catalog.tres`, `{"HSba": protector.tscn}`) dice qué tag tiene efecto propio. `ActiveAbility` lo instancia como hijo «Effect» y le delega `status()` (después del maná) y `fire()`; la regla y el efecto viven en `AbilityEffect`, y el enfriamiento y el gasto siguen en `ActiveAbility`.
+- `LifeShield` (hijo de `unit.tscn`, `shown` replicado) es el único dueño del escudo: `start(ticks)`, `is_on()` derivado de `MatchClock`, `factor()` (×0,5), fin por tiempo o por muerte. Life Shield (`hsba`) y Protector (`HSba`) lo usan.
+- `Health.shield_factor() = max(0, damage_factor) · life_shield.factor()`: lo usan `damage_typed` (salvo `pierce_shield`) y el golpe cuerpo a cuerpo (`melee_attack.gd`).
+- Se borraron de `ActiveAbility` `SHIELD_FACTOR`, `shield_alpha`, `_life_shield_left`, `_apply_life_shield` y `_reset_shield` (neto −5 líneas).
+- Logs apagados por defecto: `AbilityEffect.log_effects` y `LifeShield.log_shields`, encendidos en `debug/ai_match.gd`.
+
+**Resultado (developer de 030o-a, 2026-10-17):** semilla 7, caso `f126` (carril A, 0,36 min).
+- `agent/tools/f126_expect.py` da `RESULTADO PASS` en fixed, stress y window:
+  - T = tick 5: `habilidad Protector mana 500->200` y `escudo Ent1 1200 ticks`;
+  - T+1: `protector Ent1: Druid1 10,0 m sí; Druid2 27,5 m ya tenía; Druid3 35,0 m fuera`, y Druid4 (enemigo) no aparece;
+  - Life Shield migrado: `habilidad Life Shield mana 100->50` y `escudo Druid2 1200 ticks`;
+  - **A1 800,0 → 530,0** en el tick 16 (sin escudo habría quedado en 260);
+  - los escudos terminan en 1205 (Ent1, Druid2) y 1206 (Druid1).
+- **Determinismo:** `f126` da 446809b6 en los 3 modos y se grabó en `det_baseline.txt` y en `quick`. `quick` PASS (las 10 líneas anteriores sin cambios; `shield_factor` es neutro sin escudo). `rules_suite` PASS.
+- **Ventana** (`agent/flows/pt126_play.json`, `agent/harness/pt126_watch.gd`, `run_pt126.sh`, capturas en `agent/out/pt126/play/`): `p2_ent_bubble` (burbuja del Ent), `p2_a1_bubble` y `p1_ray_b` (A1 escudado con el rayo del Gnome saliendo; el report da A1 en 530,0), `p3_a2_bubble_a3_none` (A2 con burbuja y A3 sin ella) y `p3_a4_enemy_none` (A4 sin burbuja). RSS máximo 619 MB.
+
+*Desvíos del plan:* ninguno. `wizard_body` no necesitó `life_shield` (`Health` lo trata como opcional).
+
+*Divergencias declaradas:*
+- El escudo termina por tiempo o por muerte; los modos sin `canShield` quedan fuera, y no existe `shieldBlocked`.
+- La burbuja es un placeholder (MIX, alfa 0,22): en el pasto, la de un Druid (0,6 m) se ve tenue desde la cámara del banco; la del Ent se ve bien.
+- El look del Life Shield del Druid cambia: antes era transparencia del cuerpo con varios escritores.
+
 ### 030p — F127 Halo of Earth y Breath of life
 - **Árbol:** N `abilities/halo_of_earth.tscn/.gd`, `abilities/breath_of_life.tscn/.gd`; M `ability_catalog.tres`.
 - **Escena de prueba:** `res://debug/f125_abilities.tscn`. **Criterio:** efecto medido.

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="AbilityCatalog" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/data/ability_catalog.gd" id="1_catalog"]
+[ext_resource type="PackedScene" path="res://scenes/world/units/abilities/protector.tscn" id="2_protector"]
+
+[resource]
+script = ExtResource("1_catalog")
+effects = {
+"HSba": ExtResource("2_protector")
+}

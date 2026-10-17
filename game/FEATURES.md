@@ -1608,3 +1608,33 @@ Deuda:
 - El blanco pedido aliado pasa por el fuego amigo (m3, declarado).
 - La señal visual cenital es débil y el pasto sigue tapando a los cuerpos.
 - `SpikeWave` vive en el contenedor de disparos (R4, sin probar en red).
+
+### F126 — Catálogo de habilidades, LifeShield y Protector (RFC-030, corte 030o-a)
+
+**Piezas:**
+- **`AbilityCatalog`** (`data/abilities/ability_catalog.tres`, con `{"HSba": protector.tscn}`): asocia cada tag con un `AbilityEffect`.
+  - `ActiveAbility` instancia el efecto y le delega `status()` y `fire()`.
+  - El gasto de maná y el enfriamiento siguen siendo de `ActiveAbility`.
+  - La rama vieja del `match` pasó a `_apply()`.
+- **`LifeShield`** (componente de `unit.tscn`): es el único dueño del escudo.
+  - `is_on()` se deriva de `MatchClock` en el servidor y del `shown` replicado en el cliente.
+  - `start_for(ability)` arranca el escudo.
+  - La burbuja usa un shader fresnel en MIX, escalada ×1,4 de la caja (`renderer.d:3511`).
+- **`Health.shield_factor()`** = `damage_factor` (Rockform) · `life_shield.factor()`. `pierce_shield` lo saltea.
+- **Protector (Ent):**
+  - Gasta 300 de maná y se pone el escudo.
+  - En T+1 se lo da a los aliados del mismo slot que estén a ≤ 30 m (3D, centro a centro). No incluye magos, inválidos ni a quien ya tenga escudo.
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-030o-a.md`). El playtest falló en un punto visual: la burbuja sobre un Druid no se leía. Se corrigió en una ronda con el shader fresnel; azul − rojo da +27,8 contra el pasto y Druid4 sin escudo da −2,7.
+- **Protector:** `mana 500->200`. En T+1, Druid1 a 10 m lo recibe, Druid2 ya tenía y Druid3 a 35 m queda fuera. El enemigo no aparece.
+- **Escudo:** el rayo del Gnome deja a Druid1 en 530 (sin escudo quedaría en 260). Los escudos terminan en T+1200 y el de Druid1 en T+1201.
+- **Life Shield del Druid:** migrado. Ahora se ve como burbuja y no como transparencia.
+- **Determinismo:** `f126` da `446809b6` en fixed, stress y window. `quick` PASS sin cambios en las líneas base. `rules_suite` PASS.
+
+Deuda:
+- **Enfriamiento de `ActiveAbility`:** se descuenta con `delta` y no con ticks. Es de antes; se migra en 030o-b.
+- **Bando:** se compara por slot.
+- **Ent muerto en T:** no reparte el escudo en T+1. Falta confirmarlo contra el original.
+- **Escudo tras revivir:** un cuerpo que vuelve a la vida no recupera la burbuja.
+- **Textura:** la `ent1.TXTR` animada del original no está en los datos exportados.
+- **Duración mínima:** se perdió el piso de 1 s. No afecta a los datos actuales.

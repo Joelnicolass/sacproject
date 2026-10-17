@@ -95,6 +95,8 @@ func _ready() -> void:
 	ShotStrike.log_strikes = true  # F124: bench logs the rays and the Styx's blows (off in the product)
 	GroundHug.log_flight = true  # F151: bench logs the Rhinok's flight on the land (off in the product)
 	SpikeWave.log_spikes = true  # F151: bench logs the Rhinok's rings of spikes (off in the product)
+	AbilityEffect.log_effects = true  # F126: bench logs the Protector (off in the product)
+	LifeShield.log_shields = true  # F126: bench logs the life shields (off in the product)
 	_set_status(_rules.pending_text)
 	var wait := _rules.start_paused and not _headless and not _args.has("autostart")
 	if not wait:

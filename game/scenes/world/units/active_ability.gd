@@ -32,7 +32,6 @@ const DIVINE_SIGHT := "eesd"
 const _SPEEDUP_EFFECT := preload("res://scenes/world/spells/speedup_effect.gd")
 ## sacengine manaEpsilon (abilityStatus).
 const MANA_EPSILON := 0.01
-const SHIELD_FACTOR := 0.5
 const DEFAULT_STEALTH_S := 5.0
 const DEFAULT_PLAY_DEAD_S := 6.0
 
@@ -44,8 +43,9 @@ const DEFAULT_PLAY_DEAD_S := 6.0
 @export var rock_grow_s := 0.5
 @export var rock_color := Color(0.42, 0.4, 0.34)
 @export_group("Active effects")
+## F126: which tag has an AbilityEffect scene of its own (Protector); a tag that is not there keeps the branches below.
+@export var catalog: AbilityCatalog
 @export var stealth_alpha := 0.25
-@export var shield_alpha := 0.9
 
 var ability: AbilityType
 ## A guardian has no active ability (activeAbility, state.d:1414). GuardianBond sets it.
@@ -58,13 +58,20 @@ var _shell: MeshInstance3D
 var _shell_tween: Tween
 var _play_dead_left := 0.0
 var _stealth_left := 0.0
-var _life_shield_left := 0.0
+## F126: the AbilityEffect of this ability (instanced from the catalog), or null.
+var _effect: AbilityEffect
 
 
 func setup(body: Node3D, creature: CreatureType, mana: Node) -> void:
 	_body = body
 	_mana = mana
 	ability = GameData.ability(creature.active_ability_tag) if creature and not creature.active_ability_tag.is_empty() else null
+	var scene := catalog.scene_for(ability.tag) if catalog and ability else null
+	if scene:
+		_effect = scene.instantiate() as AbilityEffect
+		_effect.name = "Effect"
+		_effect.setup(body, ability)
+		add_child(_effect)
 
 
 func _ready() -> void:
@@ -82,10 +89,6 @@ func _physics_process(delta: float) -> void:
 		_stealth_left = maxf(0.0, _stealth_left - delta)
 		if _stealth_left == 0.0 and _body and _body.has_method("set_stealth"):
 			_body.call("set_stealth", false)
-	if _life_shield_left > 0.0:
-		_life_shield_left = maxf(0.0, _life_shield_left - delta)
-		if _life_shield_left == 0.0:
-			_reset_shield()
 
 
 func display_name() -> String:
@@ -100,12 +103,14 @@ func cooldown_left() -> float:
 func status(target_pos: Vector3, target: Node3D) -> String:
 	if ability == null or locked:
 		return NO_ABILITY
-	if not [ROCK_FORM, RUN_AWAY, PLAY_DEAD, STEALTH, LIFE_SHIELD, DIVINE_SIGHT].has(ability.tag):
+	if _effect == null and not [ROCK_FORM, RUN_AWAY, PLAY_DEAD, STEALTH, LIFE_SHIELD, DIVINE_SIGHT].has(ability.tag):
 		return NOT_IMPLEMENTED
 	if _cooldown > 0.0:
 		return COOLING
 	if maxf(1.0, float(ability.mana_cost)) > _mana_left() + MANA_EPSILON:
 		return NO_MANA
+	if _effect:
+		return _effect.status(target_pos, target)
 	match ability.tag:
 		ROCK_FORM:
 			if _body.call("is_rock_form"):
@@ -121,7 +126,8 @@ func status(target_pos: Vector3, target: Node3D) -> String:
 			if _stealth_left > 0.0:
 				return BAD_TARGET
 		LIFE_SHIELD:
-			if _life_shield_left > 0.0:
+			var shield := LifeShield.of(_body)
+			if shield == null or shield.is_on():
 				return BAD_TARGET
 		DIVINE_SIGHT:
 			if target == null:
@@ -137,6 +143,18 @@ func use(target_pos: Vector3, target: Node3D) -> String:
 	if not reason.is_empty():
 		return reason
 	var before := _mana_left()
+	if _effect:
+		if not _effect.fire(target_pos, target):
+			return BAD_TARGET
+	else:
+		_apply(target)
+	_mana.call("spend", maxf(1.0, float(ability.mana_cost)))
+	_cooldown = ability.cooldown_s
+	print("habilidad %s mana %d->%d" % [ability.display_name, roundi(before), roundi(_mana_left())])
+	return ""
+
+
+func _apply(target: Node3D) -> void:
 	match ability.tag:
 		ROCK_FORM:
 			_body.call("enter_rock_form")
@@ -148,13 +166,10 @@ func use(target_pos: Vector3, target: Node3D) -> String:
 		STEALTH:
 			_apply_stealth()
 		LIFE_SHIELD:
-			_apply_life_shield()
+			LifeShield.of(_body).start_for(ability)
+			FxBus.broadcast("heal", _body.global_position + Vector3.UP)
 		DIVINE_SIGHT:
 			_apply_divine_sight(target)
-	_mana.call("spend", maxf(1.0, float(ability.mana_cost)))
-	_cooldown = ability.cooldown_s
-	print("habilidad %s mana %d->%d" % [ability.display_name, roundi(before), roundi(_mana_left())])
-	return ""
 
 
 ## Every peer, from UnitBody's mode setter.
@@ -219,17 +234,6 @@ func _apply_stealth() -> void:
 	FxBus.broadcast("spit_trail", _body.global_position + Vector3.UP)
 
 
-func _apply_life_shield() -> void:
-	_life_shield_left = maxf(ability.duration, 1.0)
-	var health := _body.get_node_or_null("Health")
-	if health:
-		health.set("damage_factor", SHIELD_FACTOR)
-	var mesh := _body.get_node_or_null("Tilt/Mesh") as GeometryInstance3D
-	if mesh:
-		mesh.transparency = minf(mesh.transparency, 1.0 - shield_alpha)
-	FxBus.broadcast("heal", _body.global_position + Vector3.UP)
-
-
 func _apply_divine_sight(target: Node3D) -> void:
 	if target and target.has_method("set_stealth"):
 		target.call("set_stealth", false)
@@ -238,12 +242,3 @@ func _apply_divine_sight(target: Node3D) -> void:
 	FxBus.broadcast("spit_rock", _body.global_position + Vector3.UP)
 	if target:
 		FxBus.broadcast("spit_dirt", target.global_position + Vector3.UP * 0.5)
-
-
-func _reset_shield() -> void:
-	var health := _body.get_node_or_null("Health")
-	if health:
-		health.set("damage_factor", 1.0)
-	var mesh := _body.get_node_or_null("Tilt/Mesh") as GeometryInstance3D
-	if mesh and not (_body.has_method("is_summoning") and _body.call("is_summoning")):
-		mesh.transparency = 0.0

@@ -165,12 +165,12 @@ func _land() -> void:
 	var target := _target
 	if target == null or not is_instance_valid(target) or not in_reach(target, 1.0):
 		return
-	var health := target.get_node_or_null("Health")
-	if health == null or health.call("is_dead"):
+	var health := target.get_node_or_null("Health") as Health
+	if health == null or health.is_dead():
 		return
 	var result := roll_damage(target, _anim)
 	## dealDamage scales melee by rockForm and the other shields too (state.d:8962-8969).
-	var amount := float(result["amount"]) * maxf(0.0, float(health.get("damage_factor"))) * _attack_factor()
+	var amount := float(result["amount"]) * health.shield_factor() * _attack_factor()
 	if amount <= 0.0:
 		return
 	health.call("damage", amount, int(_body.get("owner_slot")))

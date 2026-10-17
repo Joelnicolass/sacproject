@@ -11,7 +11,7 @@
     { "assert": { "node": "%Stats", "text_contains": "Vida 0/1950" } },
     { "wait": 2.0 },
     { "print": { "node": "%Wizards/Wizard1/GhostForm", "prop": "stage" } },
-    { "print": { "node": "%Wizards/Wizard1/Mesh", "prop": "transparency" } },
+    { "print": { "node": "%Wizards/Wizard1/Tilt/Mesh", "prop": "transparency" } },
     { "print": { "node": "Druid", "prop": "mode" } },
     { "shot": "f31_online_ghost.png" },
     { "press": { "name": "move_forward", "hold": 6.5 } },
@@ -22,7 +22,7 @@
     { "wait_until": { "node": "%GhostState", "visible": false, "timeout": 3 } },
     { "wait": 0.3 },
     { "print": { "node": "%Wizards/Wizard1/GhostForm", "prop": "stage" } },
-    { "print": { "node": "%Wizards/Wizard1/Mesh", "prop": "transparency" } },
+    { "print": { "node": "%Wizards/Wizard1/Tilt/Mesh", "prop": "transparency" } },
     { "shot": "f31_online_revived.png" }
   ]
 }

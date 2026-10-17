@@ -15,7 +15,7 @@
     { "wait": 2.0 },
     { "print": { "node": "%Title", "prop": "text" } },
     { "print": { "node": "%Stats", "prop": "text" } },
-    { "print": { "node": "%Wizards/Wizard1/Mesh", "prop": "model" } },
+    { "print": { "node": "%Wizards/Wizard1/Tilt/Mesh", "prop": "model" } },
     { "print": { "node": "%Wizards/Wizard1", "prop": "owner_slot" } },
     { "print": { "node": "%Wizards/Wizard1", "prop": "global_position" } },
     { "print": { "node": "MapProps/Starts/Start1", "prop": "global_position" } },

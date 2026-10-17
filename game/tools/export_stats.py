@@ -50,6 +50,9 @@ FLIGHT_ANIM_SLOTS = {"takeoff": 32, "fly": 33, "land": 34}
 ## 14170-14212). Only the timing is exported: the mesh clips would add ~1,6 GB to anim_f37 (5583 frames over the 52 book
 ## creatures), so Stunned falls back to a Tween on Tilt (RFC-030i-a risk). Slot 35 is a peasant's dig: peasants have no fly_damage.
 STUN_ANIM_SLOTS = {"knock": 9, "get_up": 10, "fly_damage": 35}
+## F138 (RFC-030i-c): a wizard walks only, so only knock and get_up. The fasterStandupTimes fix (sacobject.d:844-874)
+## swaps hitFloor (slot 8) for knocked2Floor on seven wizards; neither slot 9 nor 10 changes, so the stun length doesn't.
+WIZARD_STUN_ANIM_SLOTS = {"knock": 9, "get_up": 10}
 ## SKEL event tags (`sxsk.d` translateAnimEvent): attack, shoot.
 ATTACK_EVENT = b"kcta"
 SHOOT_EVENT = b"lrba"
@@ -365,6 +368,7 @@ def decode_wizd(raw: bytes) -> dict:
         "corpse_rise_tag": human_tag(raw, CORPSE_RISE_OFFSET),
         "float_to_stance_tag": human_tag(raw, FLOAT_TO_STANCE_OFFSET),
         "locomotion_animation_tags": locomotion_animation_tags(raw),
+        "stun_animation_tags": {role: human_tag(raw, 176 + slot * 4) for role, slot in WIZARD_STUN_ANIM_SLOTS.items()},
     }
 
 
@@ -1028,6 +1032,8 @@ def main() -> None:
         ]
         entry["corpse_rise_frames"] = melee_animation(anim_index, model_path, entry.pop("corpse_rise_tag")).get("frames", 0)
         entry["float_to_stance_frames"] = melee_animation(anim_index, model_path, entry.pop("float_to_stance_tag")).get("frames", 0)
+        entry["stun_animations"] = flight_animations(
+            anim_index, model_path, entry.pop("stun_animation_tags"), locomotion.get("stance", ""), False)
 
     lists = ntt["lists"]
     books = {}
@@ -1082,6 +1088,7 @@ def main() -> None:
     print("magos", ", ".join(w["name"] for w in ordered_wizards.values()))
     james = ordered_wizards["cwa0"]
     print("cwa0 muerte", james["death_frames"], "fantasma", james["corpse_rise_frames"], "vuelta", james["float_to_stance_frames"])
+    print("magos aturdidos", {t: {r: c.get("frames") for r, c in w["stun_animations"].items()} for t, w in ordered_wizards.items()})
 
 
 if __name__ == "__main__":

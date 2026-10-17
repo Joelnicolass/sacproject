@@ -893,9 +893,9 @@ func _update_clip_state() -> void:
 	if not _debug_clip_role.is_empty():
 		_clip_pose.call("play", _debug_clip_role)
 		return
-	var held_role := "idle" if _playing_dead else _afflictions.clip_role()
+	var held_role := "idle" if _playing_dead else _afflictions.pose_role(_clip_pose as ClipPosePlayer)
 	if not held_role.is_empty():
-		_clip_pose.call("play", held_role if _has_clip(held_role) else "idle")
+		_clip_pose.call("play", held_role)
 		return
 	var flight_role := _flight_role()
 	if not flight_role.is_empty() and _has_clip(flight_role):

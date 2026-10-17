@@ -74,6 +74,8 @@ var _debug_clip_role := ""
 @onready var souls: Node = $SoulPurse
 @onready var ghost: Node = $GhostForm
 @onready var _clip_pose: Node = $ClipPose
+## F138 (RFC-030i-c): the one owner of «held» (stunned, petrified); walking, turning, casting and summoning ask it.
+@onready var _afflictions: Afflictions = $Afflictions
 
 
 func _ready() -> void:
@@ -83,7 +85,7 @@ func _ready() -> void:
 	look_yaw = rotation.y
 	_net_yaw = rotation.y
 	_apply_model()
-	var mesh := get_node_or_null("Mesh") as Node3D
+	var mesh := get_node_or_null("Tilt/Mesh") as Node3D
 	if mesh:
 		_mesh_base_pos = mesh.position
 		_mesh_base_rot = mesh.rotation
@@ -127,8 +129,9 @@ func is_obstacle() -> bool:
 	return ghost.call("is_obstacle")
 
 
+## sacengine canCast: idle or moving; a stunned or petrified wizard is neither (Caster cuts a cast in progress).
 func can_cast() -> bool:
-	return ghost.call("can_cast")
+	return ghost.call("can_cast") and not _afflictions.holds()
 
 
 func can_take_mana() -> bool:
@@ -141,6 +144,11 @@ func can_collect_souls() -> bool:
 
 func spellbook_visible() -> bool:
 	return ghost.call("spellbook_visible")
+
+
+## Its WizardType: Afflictions/Stunned reads the stun clips from it.
+func clip_type() -> WizardType:
+	return _type
 
 
 func display_name() -> String:
@@ -193,7 +201,7 @@ func _apply_type() -> void:
 	mana.setup(_type.mana + level_mana_bonus)
 
 func _apply_model() -> void:
-	var visual := get_node_or_null("Mesh")
+	var visual := get_node_or_null("Tilt/Mesh")
 	if visual == null or model.is_empty() or not visual.has_method("show_model"):
 		return
 	visual.call("show_model", model)
@@ -205,7 +213,7 @@ func _apply_model() -> void:
 	_fit_shape()
 
 func _fit_shape() -> void:
-	var visual := get_node_or_null("Mesh")
+	var visual := get_node_or_null("Tilt/Mesh")
 	var col := get_node_or_null("Collision") as CollisionShape3D
 	if visual == null or col == null or not visual.has_method("body_height"):
 		return
@@ -356,9 +364,11 @@ func _physics_process(delta: float) -> void:
 		yaw = _net_yaw
 	elif is_local():
 		forward = _read_forward()
-	if not ghost.call("can_move"):
+	## Held (F138): it neither walks nor turns, and a walk order waits for it (state.d:93-145, 1140-1142).
+	var held := _afflictions.holds()
+	if held or not ghost.call("can_move"):
 		forward = 0.0
-		_walking = false
+		_walking = _walking and held
 		yaw = rotation.y
 	rotation.y = yaw
 	if absf(forward) > 0.001 and pace > 0.0:
@@ -366,7 +376,7 @@ func _physics_process(delta: float) -> void:
 		var ahead := facing_flat()
 		velocity.x = ahead.x * pace * forward
 		velocity.z = ahead.z * pace * forward
-	elif _walking and pace > 0.0:
+	elif _walking and pace > 0.0 and not held:
 		var flat := Vector3(_goal.x - global_position.x, 0.0, _goal.z - global_position.z)
 		if flat.length() <= pace * delta:
 			_walking = false
@@ -382,7 +392,7 @@ func _physics_process(delta: float) -> void:
 		velocity.z = 0.0
 	_since_damage += delta
 	_regenerate(delta)
-	if is_obstacle():
+	if is_obstacle() and not _afflictions.immobilized():
 		velocity = BodySeparation.resolve(self, velocity, delta)
 	velocity = GroundGuard.keep_on_ground(self, velocity, delta)
 	var before := global_position
@@ -396,7 +406,7 @@ func _physics_process(delta: float) -> void:
 ## sacengine updateCreatureStats (state.d:14400-14403): regeneration · mana/maxMana per second,
 ## only while standing (idle, not casting) and not just hit (isRegenerating, state.d:1429).
 func _regenerate(delta: float) -> void:
-	if not ghost.call("can_cast") or _since_damage < regen_pause_s or health.call("is_full"):
+	if not can_cast() or _since_damage < regen_pause_s or health.call("is_full"):
 		return
 	if not is_zero_approx(velocity.x) or not is_zero_approx(velocity.z):
 		return
@@ -462,6 +472,10 @@ func _update_clip_state(flat_speed: float) -> void:
 		return
 	if not _debug_clip_role.is_empty():
 		_clip_pose.call("play", _debug_clip_role)
+		return
+	var held_role := _afflictions.pose_role(_clip_pose as ClipPosePlayer)
+	if not held_role.is_empty():
+		_clip_pose.call("play", held_role)
 		return
 	var moving := flat_speed > 0.1 and bool(ghost.call("can_move"))
 	_clip_pose.call("play", "run" if moving else "idle")

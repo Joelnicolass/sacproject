@@ -389,8 +389,10 @@ func _physics_process(delta: float) -> void:
 		_finish()
 
 
-## The wizard died while casting: the spell does not land and a creature being summoned goes.
+## The wizard died, or was stunned or petrified (F138), while casting: the spell does not land and a creature being
+## summoned goes.
 func _interrupt() -> void:
+	print("se corta %s slot %d" % [str(_entry.get("display_name")), int(_wizard.get("owner_slot"))])
 	if _entry is CreatureType and is_instance_valid(_target):
 		_target.queue_free()
 	if _active != null:

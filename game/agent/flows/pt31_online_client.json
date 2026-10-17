@@ -7,7 +7,7 @@
     { "wait_until": { "node": "%Stats", "text_contains": "Almas 12", "timeout": 15 } },
     { "print": { "node": "%Stats", "prop": "text" } },
     { "print": { "node": "%Wizards/Wizard1/GhostForm", "prop": "stage" } },
-    { "print": { "node": "%Wizards/Wizard1/Mesh", "prop": "transparency" } },
+    { "print": { "node": "%Wizards/Wizard1/Tilt/Mesh", "prop": "transparency" } },
     { "shot": "pt31_on_00_start.png" },
     { "repeat": {
         "times": 250,
@@ -22,7 +22,7 @@
     { "repeat": {
         "times": 20,
         "steps": [
-          { "print": { "node": "%Wizards/Wizard1/Mesh", "prop": "transparency" } },
+          { "print": { "node": "%Wizards/Wizard1/Tilt/Mesh", "prop": "transparency" } },
           { "print": { "node": "%Wizards/Wizard1/GhostForm", "prop": "stage" } },
           { "wait": 0.1 }
         ]
@@ -56,13 +56,13 @@
     { "repeat": {
         "times": 13,
         "steps": [
-          { "print": { "node": "%Wizards/Wizard1/Mesh", "prop": "transparency" } },
+          { "print": { "node": "%Wizards/Wizard1/Tilt/Mesh", "prop": "transparency" } },
           { "print": { "node": "%Wizards/Wizard1/GhostForm", "prop": "stage" } },
           { "wait": 0.1 }
         ]
     } },
     { "wait_until": { "node": "%GhostState", "visible": false, "timeout": 3 } },
-    { "print": { "node": "%Wizards/Wizard1/Mesh", "prop": "transparency" } },
+    { "print": { "node": "%Wizards/Wizard1/Tilt/Mesh", "prop": "transparency" } },
     { "print": { "node": "%Wizards/Wizard1/GhostForm", "prop": "stage" } },
     { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
     { "print": { "node": "%Stats", "prop": "text" } },

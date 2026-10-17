@@ -86,13 +86,13 @@
   },
   {
    "print": {
-    "node": "%Wizards/Wizard1/Mesh",
+    "node": "%Wizards/Wizard1/Tilt/Mesh",
     "prop": "model"
    }
   },
   {
    "print": {
-    "node": "%Wizards/Wizard2/Mesh",
+    "node": "%Wizards/Wizard2/Tilt/Mesh",
     "prop": "model"
    }
   },

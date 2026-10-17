@@ -109,6 +109,15 @@ func clip_role() -> String:
 	return ""
 
 
+## The role `clip_pose` shows while a state says one: that role when the model has its clip, else idle (the Tween of
+## the state draws the rest). "" = no state says one. UnitBody and WizardBody both play this.
+func pose_role(clip_pose: ClipPosePlayer) -> String:
+	var role := clip_role()
+	if role.is_empty() or clip_pose == null or clip_pose.has_role(role):
+		return role
+	return "idle"
+
+
 ## Server: may `affliction` start? Every state that is on must be one it cancels (so a stunned body refuses a second
 ## stun, sacengine canStun state.d:8546-8553). The ones it cancels end here.
 func admit(affliction: Affliction) -> bool:

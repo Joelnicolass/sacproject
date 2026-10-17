@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3]
+[gd_scene load_steps=28 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/wizard/wizard_body.gd" id="1_body"]
 [ext_resource type="Resource" path="res://scenes/world/walk_step.tres" id="2_step"]
@@ -21,6 +21,13 @@
 [ext_resource type="PackedScene" path="res://scenes/fx/teleport_rings.tscn" id="19_rings"]
 [ext_resource type="Script" path="res://scenes/world/warp_snap.gd" id="warp_snap"]
 [ext_resource type="Script" path="res://scenes/world/nav/path_follower.gd" id="f72_follower"]
+[ext_resource type="Script" path="res://scenes/world/units/afflictions/afflictions.gd" id="f120_afflictions"]
+[ext_resource type="Script" path="res://scenes/world/units/afflictions/stunned.gd" id="f120_stunned"]
+[ext_resource type="Resource" path="res://data/afflictions/stunned.tres" id="f120_stunned_type"]
+[ext_resource type="Script" path="res://scenes/world/units/afflictions/petrified.gd" id="f137_petrified"]
+[ext_resource type="Resource" path="res://data/afflictions/petrified.tres" id="f137_petrified_type"]
+[ext_resource type="Script" path="res://scenes/world/look/stone_look.gd" id="f137_stone_look"]
+[ext_resource type="Shader" path="res://scenes/world/look/stone.gdshader" id="f137_stone_shader"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -69,6 +76,9 @@ properties/12/replication_mode = 2
 properties/13/path = NodePath(".:level")
 properties/13/spawn = true
 properties/13/replication_mode = 2
+properties/14/path = NodePath("Afflictions:shown")
+properties/14/spawn = true
+properties/14/replication_mode = 2
 
 [node name="Wizard" type="CharacterBody3D"]
 floor_max_angle = 1.4835298
@@ -78,7 +88,9 @@ wizard_tag = "cwa0"
 model = "jnwr"
 god = "james"
 
-[node name="Mesh" type="MeshInstance3D" parent="."]
+[node name="Tilt" type="Node3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Tilt"]
 script = ExtResource("3_visual")
 model = "jnwr"
 
@@ -86,8 +98,9 @@ model = "jnwr"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_body")
 
-[node name="Health" type="Node" parent="."]
+[node name="Health" type="Node" parent="." node_paths=PackedStringArray("afflictions")]
 script = ExtResource("4_health")
+afflictions = NodePath("../Afflictions")
 
 [node name="ManaPool" type="Node" parent="."]
 script = ExtResource("5_mana")
@@ -147,11 +160,37 @@ rings_scene = ExtResource("19_rings")
 [node name="GhostForm" type="Node" parent="." node_paths=PackedStringArray("visual")]
 script = ExtResource("12_ghost")
 rules = ExtResource("7_rules")
-visual = NodePath("../Mesh")
+visual = NodePath("../Tilt/Mesh")
 
 [node name="ClipPose" type="Node" parent="." node_paths=PackedStringArray("mesh_path")]
 script = ExtResource("13_clip")
-mesh_path = NodePath("../Mesh")
+mesh_path = NodePath("../Tilt/Mesh")
+
+[node name="Afflictions" type="Node" parent="." node_paths=PackedStringArray("body", "health")]
+script = ExtResource("f120_afflictions")
+body = NodePath("..")
+health = NodePath("../Health")
+
+[node name="Stunned" type="Node" parent="Afflictions" node_paths=PackedStringArray("clip_pose", "tilt", "visual")]
+script = ExtResource("f120_stunned")
+type = ExtResource("f120_stunned_type")
+clip_pose = NodePath("../../ClipPose")
+tilt = NodePath("../../Tilt")
+visual = NodePath("../../Tilt/Mesh")
+corpse_lays_down = false
+
+[node name="Petrified" type="Node" parent="Afflictions" node_paths=PackedStringArray("clip_pose", "stone_look", "stunned", "visual")]
+script = ExtResource("f137_petrified")
+type = ExtResource("f137_petrified_type")
+clip_pose = NodePath("../../ClipPose")
+stone_look = NodePath("StoneLook")
+stunned = NodePath("../Stunned")
+visual = NodePath("../../Tilt/Mesh")
+
+[node name="StoneLook" type="Node" parent="Afflictions/Petrified" node_paths=PackedStringArray("mesh")]
+script = ExtResource("f137_stone_look")
+mesh = NodePath("../../../Tilt/Mesh")
+shader = ExtResource("f137_stone_shader")
 
 [node name="PathFollower" type="Node" parent="." node_paths=PackedStringArray("body")]
 script = ExtResource("f72_follower")

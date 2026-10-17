@@ -4,7 +4,7 @@ extends ShotImpact
 ## F137 (RFC-030i-b): the Basilisk's gaze (dpsf). updateBasiliskProjectile (state.d:23686-23725) calls petrify on the
 ## creature it touched and nothing else: no damage, no splash. petrify (11641-11645) lasts 2,5 s on a wizard and
 ## min(10, 10000 / max health) s on a creature; the body's Afflictions/Petrified decides whether it takes it.
-## A wizard has no Petrified until 030i-c: it is left out and named in the log (declared divergence).
+## A wizard has its Petrified since F138 (RFC-030i-c).
 
 ## sacengine petrify: a creature's lifetime is min(cap_s, k / max health) seconds.
 @export var cap_s := 10.0
@@ -19,9 +19,7 @@ func _affect(_shot: Node3D, target: Node3D, _point: Vector3, _ability: AbilityTy
 		return
 	var petrified := target.get_node_or_null(petrified_path) as Petrified
 	if petrified == null:
-		## A building takes nothing (sacengine terminates on it); a wizard waits for 030i-c (declared divergence).
-		if target.is_in_group(&"wizard"):
-			print("  petrificar: %s no tiene Petrified" % who(target))
+		## A building takes nothing (sacengine terminates on it).
 		return
 	petrified.petrify(lifetime_ticks(target))
 

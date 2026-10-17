@@ -21,7 +21,7 @@
     { "print": { "node": "%Stats", "prop": "text" } },
     { "assert": { "node": "%Title", "text_equals": "Seerix · Persephone" } },
     { "assert": { "node": "%Stats", "text_equals": "Vida 1950/1950 · Maná 1900/1900 · Almas 12" } },
-    { "print": { "node": "%Wizards/Wizard1/Mesh", "prop": "model" } },
+    { "print": { "node": "%Wizards/Wizard1/Tilt/Mesh", "prop": "model" } },
     { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
     { "shot": "f20_solo.png" },
     { "press": { "name": "move_forward", "hold": 1.0 } },

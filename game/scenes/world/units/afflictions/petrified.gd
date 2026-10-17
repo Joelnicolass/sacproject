@@ -52,11 +52,11 @@ func petrify(lifetime_ticks: int) -> bool:
 
 
 ## canBePetrified (state.d:189-197), with the port's names: not dead, not still summoned, not held by a doctor.
-## Playing dead and Rockform may be petrified.
+## Playing dead and Rockform may be petrified. A wizard (F138) only alive: dying, dead and every ghost stage say no.
 func _body_allows(body: Node3D) -> bool:
 	var unit := body as UnitBody
 	if unit == null:
-		return false
+		return body.has_method("is_targetable") and bool(body.call("is_targetable"))
 	return not unit.is_dead() and not unit.is_taken() and unit.mode != UnitBody.Mode.SUMMONING
 
 

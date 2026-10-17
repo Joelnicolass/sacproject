@@ -234,4 +234,5 @@ func _make_wizard(row: Dictionary) -> _WIZARD_TYPE:
 	type.death_frames = PackedInt32Array(row.get("death_frames", []))
 	type.corpse_rise_frames = int(row.get("corpse_rise_frames", 0))
 	type.float_to_stance_frames = int(row.get("float_to_stance_frames", 0))
+	type.stun_animations = row.get("stun_animations", {}) if row.get("stun_animations", {}) is Dictionary else {}
 	return type

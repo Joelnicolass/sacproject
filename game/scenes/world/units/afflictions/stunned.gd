@@ -6,6 +6,8 @@ extends Affliction
 ## holds it for the length of its clips: (knocked2Floor + getUp)·updateAnimFactor ticks on the ground, flyDamage in the
 ## air (8138-8150, 14170-14212). The cooldown counts from the stun, every tick.
 ##
+## A wizard too (F138, RFC-030i-c): its WizardType clips; it never flies. The fasterStandupTimes fix
+## (sacobject.d:844-874) only swaps hitFloor, which a stun on the ground never plays (14170-14212), so it changes nothing here.
 ## Look: the knock and get_up roles of ClipPose when the model has those clips; the export leaves them out (they would
 ## add ~1,6 GB to the clip cache), so meanwhile it falls on its side and gets up with a Tween on Tilt.
 ## WORKAROUND: Tween on Tilt rotation:z in place of the knocked2Floor/getUp mesh clips (disk, RFC-030i-a risk).
@@ -27,6 +29,9 @@ const FRAME_TICKS := 2
 ## Cut short (it died lying, or another state took over): back to upright in this long. A death leaves the height to
 ## Corpse, which lays it down from this pose.
 @export var cut_s := 0.2
+## A body whose Corpse lays it down from the lying pose (a creature). Off (a wizard, no Corpse): a death also brings the
+## pivot back to 0, or the ghost and the revived wizard would float.
+@export var corpse_lays_down := true
 
 var _cooldown := 0
 var _elapsed := 0
@@ -96,24 +101,32 @@ func _shown(on: bool) -> void:
 	_play_fallback(on)
 
 
-## The length from the body's clips (CreatureType.stun_animations), on every peer. Without knock or get_up the
-## sacengine creature stands in stance1 for one loop; the port uses its rest clip (idle_animation).
+## The length from the body's clips (CreatureType or WizardType stun_animations), on every peer. Without knock or
+## get_up the sacengine creature stands in stance1 for one loop; the port uses its rest clip (idle_animation).
 func _measure() -> void:
 	var body := _body()
-	var type := body.get("type") as CreatureType if body else null
-	var clips: Dictionary = type.stun_animations if type else {}
+	var type := _clip_type(body)
+	var clips: Dictionary = type.get("stun_animations") if type else {}
 	_airborne = body != null and body.has_method("is_flying") and bool(body.call("is_flying"))
 	var knock := _frames(clips, "knock")
 	var up := _frames(clips, "get_up")
 	if _airborne:
 		knock = 0
 		up = _frames(clips, "fly_damage")
-		if up == 0 and type:
-			up = int(type.flight_animations.get("fly", {}).get("frames", 0))
+		if up == 0 and type is CreatureType:
+			up = int((type as CreatureType).flight_animations.get("fly", {}).get("frames", 0))
 	elif knock + up == 0 and type:
-		up = int(type.idle_animation.get("frames", 0))
+		up = int((type.get("idle_animation") as Dictionary).get("frames", 0))
 	_knock_ticks = knock * FRAME_TICKS
 	_total = maxi(1, (knock + up) * FRAME_TICKS)
+
+
+## F138: a body that says its clip data (a wizard: its WizardType; it has no `type`, which other readers take for a
+## creature's), else its CreatureType.
+static func _clip_type(body: Node3D) -> Resource:
+	if body and body.has_method("clip_type"):
+		return body.call("clip_type")
+	return body.get("type") as CreatureType if body else null
 
 
 static func _frames(clips: Dictionary, role: String) -> int:
@@ -133,7 +146,7 @@ func _play_fallback(on: bool) -> void:
 			_tween.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
 			_tween.tween_property(tilt, "rotation:z", 0.0, cut_s).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 			var health := _afflictions().health
-			if health == null or not health.is_dead():
+			if health == null or not health.is_dead() or not corpse_lays_down:
 				_tween.parallel().tween_property(tilt, "position:y", 0.0, cut_s)
 		return
 	if clip_pose and clip_pose.has_role(clip_role()):

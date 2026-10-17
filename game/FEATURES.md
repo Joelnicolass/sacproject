@@ -1293,3 +1293,34 @@ Deuda:
 - N5: Skin of Stone va a necesitar convivir con StoneLook.
 - N6: un cliente que entra tarde ve la pose de reposo.
 - La barra de vida de la Gargoyle de piedra queda alta.
+
+### F138 — Magos aturdidos y petrificados (RFC-030, corte 030i-c)
+
+**Cómo funciona.** `wizard_body.tscn` incorpora el mismo `Afflictions` (`Stunned`, `Petrified` con `StoneLook`). La malla pasa a `Tilt/Mesh` y se replica `shown`.
+- **Bloqueo de acciones:** `WizardBody.can_cast()` exige además `not holds()`. Con eso, `Caster` corta el lanzamiento y el maná drenado se pierde (`state.d:15138`, `15206-15213`). También frena a la IA y al input del jugador.
+- **Movimiento:** mientras está retenido, el mago no camina ni gira. La orden queda guardada y se ejecuta al soltarse.
+- **Regeneración:** no regenera vida (`1429`).
+- **Pose:** `Afflictions.pose_role()` queda compartido con `unit_body`.
+- **Duración:** `(knock + get_up)·2` (Jadugarr 114, Marduk 104). El arreglo de `hitFloor` no la cambia (`sacobject.d:844-874`). La piedra dura 2,5 s.
+- **Quién puede ser afectado:** solo un mago vivo puede quedar aturdido o petrificado. Un fantasma o un mago muerto no.
+- **Sin chequeos de tipo:** cada cuerpo responde `clip_type()` / `is_targetable()`.
+
+**Cierre (2026-10-16).**
+- **Review: NEEDS WORK.** El bloqueante B1 era que un mago que muere aturdido quedaba flotando. Se corrigió en una ronda con `Stunned.corpse_lays_down`, desactivado en el mago. Headless: al morir y al revivir, `Tilt.y` = 0.
+- **Playtest con ventana** (`agent/out/pt138/`):
+  - **Aturdido:** 104 cuadros, deriva 0, sin lanzamientos. Captura del mago caído.
+  - **Piedra:** 150 de piedra (151 cuadros en gris), deriva 0 y factor 0,20. Después, aturdido de 104. Captura del mago gris.
+  - **Vuelve a actuar:** el mago se recupera y a los 6–11 ticks lanza Rock.
+  - **Regresiones:**
+    - `pt120_bench` (226/112/116), `pt137_main` (600/263), `pt141_solo` y `f10_walk`: AGENT_OK.
+    - Digest de seed 7 sin cambio. `rules_suite` PASS.
+- **Verificado solo en headless:**
+  - «se corta Rock slot 2» al petrificarlo mientras lanza;
+  - B1.
+
+**Deuda**
+- **Corte de lanzamiento por aturdido:** no hay un caso determinista, porque la IA decide distinto con ventana (ver determinismo).
+- **×0,2 sobre el mago:** no se probó con un golpe real.
+- **Red:** sin verificar.
+- **`f20_solo`:** falla en `%God_persephone`, también en HEAD (es preexistente).
+- **Determinismo (alarma, preexistente desde el primer commit):** `spellbook.gd` descuenta los enfriamientos en `_process(delta)`, con el reloj de render. Por eso la IA decide distinto con ventana. Va en un corte propio.

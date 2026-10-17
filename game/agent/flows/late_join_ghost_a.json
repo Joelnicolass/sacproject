@@ -81,13 +81,13 @@
   },
   {
    "print": {
-    "node": "%Wizards/Wizard1/Mesh",
+    "node": "%Wizards/Wizard1/Tilt/Mesh",
     "prop": "visible"
    }
   },
   {
    "assert": {
-    "node": "%Wizards/Wizard1/Mesh",
+    "node": "%Wizards/Wizard1/Tilt/Mesh",
     "visible": true
    }
   },
@@ -105,7 +105,7 @@
   },
   {
    "assert": {
-    "node": "%Wizards/Wizard1/Mesh",
+    "node": "%Wizards/Wizard1/Tilt/Mesh",
     "visible": true
    }
   },

@@ -5,7 +5,7 @@ extends ShotImpact
 ## dealSplashRangedDamageAt that calls stunWithCooldown(target, 480) on every moving body whose box is within
 ## effectRange of the burst, before its damage: no side filter, the shooter included (dealDamageAt skips only the
 ## direct target, which is 0 here, 9075-9089). The walk is SplashDamage's; each body's Afflictions/Stunned decides.
-## A body with no Stunned (a wizard until 030i-c) is left out and named in the log (declared divergence).
+## Wizards too (F138, RFC-030i-c: wizard_body.tscn has Afflictions/Stunned). A body with no Stunned is named in the log.
 
 const _SPLASH := preload("res://scenes/world/spells/splash_damage.gd")
 

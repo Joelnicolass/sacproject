@@ -4,7 +4,7 @@
   "steps": [
     { "print": { "node": "%Stats", "prop": "text" } },
     { "print": { "node": "%Wizards/Wizard1/GhostForm", "prop": "stage" } },
-    { "print": { "node": "%Wizards/Wizard1/Mesh", "prop": "transparency" } },
+    { "print": { "node": "%Wizards/Wizard1/Tilt/Mesh", "prop": "transparency" } },
     { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
     { "print": { "node": "Druid", "prop": "position" } },
     { "assert": { "node": "%GhostState", "visible": false } },
@@ -23,7 +23,7 @@
     { "repeat": {
         "times": 7,
         "steps": [
-          { "print": { "node": "%Wizards/Wizard1/Mesh", "prop": "transparency" } },
+          { "print": { "node": "%Wizards/Wizard1/Tilt/Mesh", "prop": "transparency" } },
           { "wait": 0.1 }
         ]
     } },
@@ -31,7 +31,7 @@
     { "repeat": {
         "times": 12,
         "steps": [
-          { "print": { "node": "%Wizards/Wizard1/Mesh", "prop": "transparency" } },
+          { "print": { "node": "%Wizards/Wizard1/Tilt/Mesh", "prop": "transparency" } },
           { "print": { "node": "%Wizards/Wizard1/GhostForm", "prop": "stage" } },
           { "wait": 0.1 }
         ]
@@ -78,13 +78,13 @@
     { "repeat": {
         "times": 13,
         "steps": [
-          { "print": { "node": "%Wizards/Wizard1/Mesh", "prop": "transparency" } },
+          { "print": { "node": "%Wizards/Wizard1/Tilt/Mesh", "prop": "transparency" } },
           { "print": { "node": "%Wizards/Wizard1/GhostForm", "prop": "stage" } },
           { "wait": 0.1 }
         ]
     } },
     { "wait_until": { "node": "%GhostState", "visible": false, "timeout": 3 } },
-    { "print": { "node": "%Wizards/Wizard1/Mesh", "prop": "transparency" } },
+    { "print": { "node": "%Wizards/Wizard1/Tilt/Mesh", "prop": "transparency" } },
     { "print": { "node": "%Wizards/Wizard1/GhostForm", "prop": "stage" } },
     { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
     { "print": { "node": "%Stats", "prop": "text" } },

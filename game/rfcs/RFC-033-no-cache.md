@@ -431,3 +431,7 @@ Ya hay en LFS 109 MB de `assets/cc0` y `assets/mm`. Cada regeneración de textur
 - `Terrain.data` tiene un respaldo (High Noon) cuando no se asigna, para no tocar la veintena de probes y bancos que arman un `Terrain` con el script solo. Además de `data`, `Terrain` suma `tiles_path` y `light_path` exportados.
 - `Sky.set_time()` es API pública nueva (solo para congelar el cielo en capturas).
 - No se pudo medir contra una base con el cielo congelado: la comparación del cielo contra la base no es posible; se midió el suelo (filas ≥ 428) y el piso nuevo con dos corridas `after`.
+
+## Nota del orquestador (2026-10-17, verificación después del merge de melee)
+- `main` en 0026e9e: `all` da s7 `c5a5755a`, s7_npcs `4386b384`, s1_trivial `60fbf6d5` y f139 `4750f4d1`, iguales en fixed, fixed2, stress y window, sin CONTAMINATED. `quick` PASS. `final_spit_melee` 3/3 y `f165_divine_sight` PASS.
+- **Trampa del banco (para 033h):** `run_determinism.sh` arma la tabla con todos los `agent/out/det/<caso>_<modo>.json` que existan, aunque ese modo no haya corrido en esta invocación. Un `fixed2` viejo del 16/10 dio un falso «DETERMINISM FAIL». La tabla tiene que mirar solo los modos corridos ahora, o borrar los de esta invocación antes de correr.

@@ -5,7 +5,7 @@ extends Node
 ## ShotLook.in_flight; RangedShot instances it on the server (or solo) only, as a child of the shot, and calls fly()
 ## once per physics tick, after it moved and before it checks its hit (sacengine updates the projectile's effect in
 ## the same frame as its move: animateAbominationProjectile, state.d:24454-24460; updateSilverbackProjectile, 24760-24831).
-## Variants: ShotDropper (the Abomination's droplets, F148) and FrostWave (the Silverback's breath, F149). They
+## Variants: ShotDropper (the Abomination's droplets, F148) and GrowingWave (the Silverback's breath, F149). They
 ## override _fly(); the count of ticks is this node's.
 
 ## Ticks the shot flew with this node (1 on the first call of fly()).

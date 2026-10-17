@@ -33,6 +33,10 @@ extends ShotStrike
 ## Meters of the beam along the ray: a gun flame at the muzzle (the Gnome's GnomeEffect, createGunFlameMeshes length
 ## 1.7, sacobject.d:4268-4283). 0: the whole ray, to where it ends.
 @export_range(0.0, 200.0, 0.1, "suffix:m") var beam_length := 0.0
+## F166: a ray that meets nothing (no body, no ground, no structure) is drawn only this fraction of its length: the Locust's
+## zbba shows 0.5 * range when it finds no target (updateLocustShoot, state.d:23003-23005). Only the beam: where the ray
+## ends for the log and the damage is not touched. 1 = the whole ray (the Gnome's).
+@export_range(0.0, 1.0, 0.01) var miss_fraction := 1.0
 ## Word for the strike in the log of a cut (`<label> <tag> cortada: …`).
 @export var label := "rayo"
 ## What stops a ray besides the bodies: ground (1) and structures (2).
@@ -99,7 +103,8 @@ func _cast(from: Vector3, direction: Vector3) -> void:
 			body = collider
 		break
 	if not beam.is_empty():
-		FxBus.broadcast_beam(beam, from, from + direction * beam_length if beam_length > 0.0 else end)
+		var seen_end := end if stopped else from + (end - from) * miss_fraction
+		FxBus.broadcast_beam(beam, from, from + direction * beam_length if beam_length > 0.0 else seen_end)
 	var distance := from.distance_to(end)
 	if body == null:
 		_land(null, end)

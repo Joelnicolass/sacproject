@@ -2119,6 +2119,24 @@ Deuda:
 - El ojo es un resplandor provisorio casi invisible; el sprite original `scri` (hoja 4×4, `Bloo.WAD`) se exporta en 033d.
 - Busca blanco cada tick, no por la cola de IA; sin línea de vista.
 
+### F166 — Rayo instantáneo de la Locust (RFC-030, corte 030w-d)
+
+**Sacengine:** `locustShoot` (11527-11531) y `updateLocustShoot` (22992-23005): en el mismo cuadro del disparo, `collideRay` desde el origen hasta el alcance de `zbba` (50 m) con el filtro `id != atacante && isValidTarget` (primer cuerpo vivo de cualquier bando, o edificio); con blanco, `dealRangedDamage(DamageMod.none)`. Sin blanco, el extremo visual es 0,5 del alcance. `LocustProjectile` (23007-23022) es solo visual.
+
+**Piezas:**
+- **`data/shots/zbba.tres`:** `ShotLook` con `strike = locust_ray.tscn` y sin `impact`, así que el daño sale por `ShotImpact.land` (directo, 200 · resistencia directa del blanco).
+- **`strikes/locust_ray.tscn`:** `RayStrike` de una ráfaga, `foes_only = false` (Health decide el fuego amigo), `beam = locust_ray`. Reusa el rayo del Gnome sin código nuevo.
+- **`RayStrike.miss_fraction`** (`@export`, 1 por defecto; Locust 0,5): fracción del rayo que se dibuja cuando no encuentra nada. Solo visual; el Gnome y el Warmonger no cambian.
+- **`data/fx/beams/locust_ray.tres`:** beam provisorio (atlas `ltn2`, una banda fina de 0,2 s).
+- **Banco:** `debug/f166_locust_ray.tscn`, `rules/f166_locust_ray.tres`, `agent/tools/f166_expect.py`, caso `f166` en `run_determinism.sh` (solo fixed en `quick`) y en `det_baseline.txt` (`5a402302`), `ai_match.camera_target_offset` (la cámara mira la fila, no el manantial) y `agent/run_f166.sh` + flow para las capturas.
+- **Beam:** `locust_ray` usa el atlas alfa `gmfl_a` en `MIX` (nada aditivo sobre nieve); es provisorio.
+
+**Caso:** Locust1 (50 % de vida) contra Troll1 con un Troll3 aliado en la línea: el rayo frena en el Troll3 y no le hace daño. Locust2 contra Troll2 en línea libre: 180 (200 · 0,9) en el tick del disparo. Un Troll y no un Druid porque la Locust vuela a 4 m del suelo y su rayo baja ~0,4 m por metro: a un Druid le pasa por arriba. La fila de Locust2 está corrida 15 m para librar la jhut (-15/-56).
+
+Deuda:
+- El flujo de partículas de sangre o escombro hacia la Locust (`LocustProjectile`) es un beam provisorio.
+- El drenaje de 0,875 llega con F164 (030w-e).
+
 ### F170 — HUD, iconos, cursores y FX como assets (RFC-033, corte 033d)
 
 **Piezas:**

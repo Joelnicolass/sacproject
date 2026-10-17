@@ -13,6 +13,9 @@ extends Node
 @export var starts_cooldown := true
 ## The preparation comes from the creature's ability clip (see windup()). Off = windup_ticks as is (Protector, Halo: none).
 @export var windup_from_clip := false
+## F157: which of the creature's two ability clips the preparation reads (shoot_animations[windup_clip]). 1 = shoot1 (Firewalk, Breath
+## of life, Pull, Sticky bomb: they must not change); 0 = shoot0 (the Styx's Rend Soul prepares its attack clip, 100 ticks).
+@export_range(0, 1) var windup_clip := 1
 
 ## Ticks one animation frame lasts (sacengine updates 60 times a second, the clips run at 30).
 const FRAME_TICKS := 2
@@ -35,18 +38,19 @@ func _ready() -> void:
 
 
 ## Ticks from the order to fire(). 0 = fire() in the same tick. With `windup_from_clip` the creature prepares until the shoot
-## tick of its ability clip (shoot_animations[1]: shoot_ticks[0] at framerate → 60 ticks/s, or its last frame if it has none); windup_ticks is the fallback when
+## tick of its ability clip (shoot_animations[windup_clip]: shoot_ticks[0] at framerate → 60 ticks/s, or its last frame if it has none); windup_ticks is the fallback when
 ## it has no such clip (or the flag is off). The one owner of the lookup: Firewalk (shoot1) and Breath of life (shoot2).
 func windup() -> int:
 	if windup_from_clip:
 		var type: CreatureType = user.get("type") if user else null
-		if type and type.shoot_animations.size() > 1:
-			var ticks: Array = type.shoot_animations[1].get("shoot_ticks", [])
-			var rate := float(type.shoot_animations[1].get("framerate", 0))
+		if type and type.shoot_animations.size() > windup_clip:
+			var clip: Dictionary = type.shoot_animations[windup_clip]
+			var ticks: Array = clip.get("shoot_ticks", [])
+			var rate := float(clip.get("framerate", 0))
 			if not ticks.is_empty() and rate > 0.0:
 				return roundi(float(MatchClock.TICKS_PER_SECOND) * float(ticks[0]) / rate)
 			## A clip without `lrba` shoots on its last frame (sacengine: Sticky bomb, 47 x 2 = 94 ticks).
-			var frames := int(type.shoot_animations[1].get("frames", 0))
+			var frames := int(clip.get("frames", 0))
 			if frames > 0:
 				return FRAME_TICKS * (frames - 1)
 	return windup_ticks

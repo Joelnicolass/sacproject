@@ -186,6 +186,21 @@ func sever() -> void:
 		print("cadáver %s disuelto (tick %d)" % [dead.name, MatchClock.now()])
 
 
+## Server or solo. Rend Soul (updateRendShoot, state.d:25867-25890): the soul explodes. It lets go of its corpse (severSoul dissolves
+## it), has nothing inside and goes. What the blast does is the strike's.
+func burst() -> void:
+	_who = label()
+	if _remains == null:
+		_remains = corpse
+	attached = false
+	corpse = null
+	sever()
+	number = 0
+	if log_souls:
+		print("alma %s reventada (tick %d)" % [_who, MatchClock.now()])
+	queue_free()
+
+
 ## What the logs call it: the creature it came from (its corpse), else its own name.
 func label() -> String:
 	if _remains != null and is_instance_valid(_remains):

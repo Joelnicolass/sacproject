@@ -1348,3 +1348,20 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 - **Desvíos del plan:** H1 (Hellmouth) es pacifista (si no, ataca a V5 y se aleja del alma); V2 y V5 llevan `holds_still` (sin eso V5 pegaría a N1 antes de los 5,0 s y V2 en los primeros 18 ticks); el `slot` de los eventos `kill` es el de quien mata (el contrario al de la víctima).
 
 *Divergencias declaradas:* la criatura no se acerca ni gira (sacengine camina a rango con `moveWithinRange2D`); el alcance sale de la caja del `melee_profile`; el bulto es una escala del mesh (no la deformación de huesos); sin sonido (`ltss`).
+
+#### 030t-b: Plan (developer) / Resultado
+
+**Plan (developer de 030t-b, 2026-10-17):** el del tech lead en `rfcs/plans/030t-030v-plan.md` §030t-b y `rfcs/plans/030t-030u-phase0-diffs.md`. Números de `state.d` 9075-9089, 12750, 13219-13230, 25867-25890.
+- `AbilityEffect.windup_clip` (`@export_range(0,1)`, por defecto 1: Firewalk, Breath, Pull y Sticky no cambian). `Soul.burst()` (`sever` + `number = 0` + `alma X reventada` + `queue_free`).
+- `RendSoulAbility` (`abilities/rend_soul.tscn/.gd`, `windup_from_clip`, `windup_clip 0`) y `SoulStrike` (`strikes/soul_strike.tscn/.gd`, `ShotStrike`, `land_tick 1`, beam `styx`, prioridad −1). Look `data/shots/rend_soul.tres` (`impact` = `rend_blast_impact.tscn`, `impact_fx` = `styx_spark`). Catálogo `"dner"`.
+- Carril R (z +15) al final de `f131_devour_rend.tres` (el carril D no se renumera): S1 = Styx1, R0/R6/R7 = Trogg6/7/8, J1..J5 = Jabberocky1..5, A1 = Druid2. Ventana: `pt157_watch.gd`, `run_pt157.sh`, `flows/pt157_play.json`.
+
+**Resultado (developer de 030t-b, 2026-10-17):**
+- `f157_expect.py` da `RESULTADO PASS` (criterios 1–5) y `f131_expect.py` sigue en PASS. Rechazos «Fuera de alcance» (R6, 95 m) y «Blanco inválido» (R7, alma del slot 2) sin gasto. T (tick 136 del reloj): «usando habilidad Rend Soul Styx1 100 ticks»; maná 500→400, enfriamiento 600; en T+101 (237) el alma reventada y el cadáver disuelto en el mismo tick, beam styx y «salpicadura dner … radio 40.0 m de 2500».
+- Daño por Jabberocky = 2500·(1 − d/40)·0,75 con la d del log: J1 1728 (3,14 m), J2 1306, J3 837, J4 368 (32,15 m), J5 fuera del radio. Styx1 y Druid2 reciben 0 (regla de bando). El J4 de 271 del plan estaba mal (la `d` es a la caja, no al centro).
+- **Réplica:** `f157_expect.py` recibió tres correcciones de la fase 0: los logs de los efectos llevan 4 ticks de reloj sobre el tick del banco (`CLOCK`, igual que `f131`), los eventos del cadáver se filtran por `Trogg6` (el Devour del carril D también disuelve cadáveres) y los edificios del radio (`Bld069_jhut`, `Bld070_jhut`) reciben la caída entera sin resistencia (R5), no 0.
+- `f131` regrabado con el carril R (digest `8e93f3cb`, igual en fixed, stress y window); línea base de `det_baseline.txt` actualizada.
+- **Desvíos del plan:** A1 (Druid2) es pacifista (si no, ataca a los Jabberocky y se mueve); el look `rend_soul.tres` no existía (la fase 0 solo dejó `rend_blast_impact.tscn`): se creó. `canRend` incluye `!dropped`.
+- `unit_body.gd` queda en 1040 líneas.
+
+*Divergencias declaradas:* la criatura no se acerca ni gira antes de reventar el alma; sin sonido (`pxbf`, lightning); sin las 2 `StyxExplosion` (el look usa el beam `styx` y las 192 chispas de `styx_spark`).

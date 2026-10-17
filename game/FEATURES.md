@@ -1925,3 +1925,21 @@ Deuda:
 - No se acerca ni gira hacia el alma.
 - El bulto es una escala del mesh, no el inflado del original.
 - Sin sonido.
+
+### F157 — Rend Soul del Styx (RFC-030, corte 030t-b)
+
+**Piezas**
+- **`RendSoulAbility`** (`dner`): sale del primer clip de disparo (`windup_clip 0`, 100 ticks). La valida la misma regla `can_rend` del golpe.
+- **`SoulStrike`** (`ShotStrike`, `land_tick 1`): vuelve a chequear, hace `Soul.burst()` (que llama a `sever()`) y dibuja el beam styx. La salpicadura de 2500 con caída a 40 m sale de `rend_blast_impact` (`SplashImpact` sin golpe directo).
+- **`AbilityEffect.windup_clip`**: knob nuevo, con valor por defecto 1.
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-030t-b.md`).
+- **Rechazos:** «Fuera de alcance» a 95 m y «Blanco inválido» con un alma roja, sin gastar maná.
+- **Uso:** prepara 100 ticks; maná 500 → 400; enfriamiento 600.
+- **Estallido:** el alma revienta y el cadáver se disuelve en el mismo tick. Los Jabberocky reciben 1728, 1306, 837 y 368; el quinto, fuera del radio, recibe 0. El aliado y el Styx reciben 0.
+- **Determinismo:** `f131` (carriles D y R) da `8e93f3cb` en fixed, stress y window. `quick` y `rules_suite` dan PASS.
+
+**Deuda**
+- El estallido no se lee: faltan las 2 `StyxExplosion` y las chispas se pierden sobre la nieve. En el banco, además, un Devour simultáneo justo al lado lo tapa.
+- `fire()` vuelve a chequear el alcance de 90 m al disparar.
+- Sin sonido.

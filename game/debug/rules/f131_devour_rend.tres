@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BenchRules" load_steps=24 format=3]
+[gd_resource type="Resource" script_class="BenchRules" load_steps=39 format=3]
 
 [ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
 [ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
@@ -188,12 +188,173 @@ slot = 2
 user = "Trogg5"
 target = "Netherfiend1"
 
+[sub_resource type="Resource" id="Group_S1"]
+script = ExtResource("2_group")
+tag = "nugd"
+slot = 1
+count = 1
+columns = 1
+offset_m = -45.0
+offset_z_m = 15.0
+facing_x = 1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_R0"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 1
+count = 1
+columns = 1
+offset_m = -20.0
+offset_z_m = 15.0
+facing_x = -1.0
+
+[sub_resource type="Resource" id="Group_R6"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 1
+count = 1
+columns = 1
+offset_m = 50.0
+offset_z_m = 15.0
+facing_x = -1.0
+
+[sub_resource type="Resource" id="Group_R7"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 2
+count = 1
+columns = 1
+offset_m = -30.0
+offset_z_m = 5.0
+facing_x = -1.0
+
+[sub_resource type="Resource" id="Group_J1"]
+script = ExtResource("2_group")
+tag = "mtse"
+slot = 2
+count = 1
+columns = 1
+offset_m = -14.0
+offset_z_m = 15.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_J2"]
+script = ExtResource("2_group")
+tag = "mtse"
+slot = 2
+count = 1
+columns = 1
+offset_m = -5.0
+offset_z_m = 15.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_J3"]
+script = ExtResource("2_group")
+tag = "mtse"
+slot = 2
+count = 1
+columns = 1
+offset_m = 5.0
+offset_z_m = 15.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_J4"]
+script = ExtResource("2_group")
+tag = "mtse"
+slot = 2
+count = 1
+columns = 1
+offset_m = 15.0
+offset_z_m = 15.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_J5"]
+script = ExtResource("2_group")
+tag = "mtse"
+slot = 2
+count = 1
+columns = 1
+offset_m = 26.0
+offset_z_m = 15.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_A1"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 1
+count = 1
+columns = 1
+offset_m = -20.0
+offset_z_m = 20.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Event_kill_R0"]
+script = ExtResource("3_event")
+at_s = 0.3
+action = "kill"
+label = "R0 cae (carril R, alma propia del slot 1)"
+slot = 2
+victim = "Trogg6"
+
+[sub_resource type="Resource" id="Event_kill_R6"]
+script = ExtResource("3_event")
+at_s = 0.3
+action = "kill"
+label = "R6 cae (carril R, a 95 m)"
+slot = 2
+victim = "Trogg7"
+
+[sub_resource type="Resource" id="Event_kill_R7"]
+script = ExtResource("3_event")
+at_s = 0.3
+action = "kill"
+label = "R7 cae (carril R, alma del slot 2)"
+slot = 1
+victim = "Trogg8"
+
+[sub_resource type="Resource" id="Event_rend_R6"]
+script = ExtResource("3_event")
+at_s = 2.0
+action = "ability"
+label = "Rend Soul sobre el alma de R6 (carril R, fuera de alcance)"
+slot = 1
+user = "Styx1"
+target = "Trogg7"
+target_soul = true
+
+[sub_resource type="Resource" id="Event_rend_R7"]
+script = ExtResource("3_event")
+at_s = 2.1
+action = "ability"
+label = "Rend Soul sobre el alma de R7 (carril R, blanco inválido)"
+slot = 1
+user = "Styx1"
+target = "Trogg8"
+target_soul = true
+
+[sub_resource type="Resource" id="Event_rend_R0"]
+script = ExtResource("3_event")
+at_s = 2.2
+action = "ability"
+label = "Rend Soul sobre el alma de R0 (T, carril R)"
+slot = 1
+user = "Styx1"
+target = "Trogg6"
+target_soul = true
+
 [resource]
 script = ExtResource("1_rules")
 match_seed = 7
-groups = Array[ExtResource("2_group")]([SubResource("Group_N1"), SubResource("Group_V1"), SubResource("Group_V1b"), SubResource("Group_V2"), SubResource("Group_V3"), SubResource("Group_V5"), SubResource("Group_H1"), SubResource("Group_V4")])
+groups = Array[ExtResource("2_group")]([SubResource("Group_N1"), SubResource("Group_V1"), SubResource("Group_V1b"), SubResource("Group_V2"), SubResource("Group_V3"), SubResource("Group_V5"), SubResource("Group_H1"), SubResource("Group_V4"), SubResource("Group_S1"), SubResource("Group_R0"), SubResource("Group_R6"), SubResource("Group_R7"), SubResource("Group_J1"), SubResource("Group_J2"), SubResource("Group_J3"), SubResource("Group_J4"), SubResource("Group_J5"), SubResource("Group_A1")])
 anchor = Vector3(1270, 0, 1270)
 start_paused = true
-events = Array[ExtResource("3_event")]([SubResource("Event_kill_V1"), SubResource("Event_kill_V1b"), SubResource("Event_kill_V2"), SubResource("Event_kill_V3"), SubResource("Event_kill_V4"), SubResource("Event_dev_V2"), SubResource("Event_dev_V3"), SubResource("Event_dev_V1"), SubResource("Event_dev_V1b"), SubResource("Event_dev_V4"), SubResource("Event_hit_V5")])
+events = Array[ExtResource("3_event")]([SubResource("Event_kill_V1"), SubResource("Event_kill_V1b"), SubResource("Event_kill_V2"), SubResource("Event_kill_V3"), SubResource("Event_kill_V4"), SubResource("Event_dev_V2"), SubResource("Event_dev_V3"), SubResource("Event_dev_V1"), SubResource("Event_dev_V1b"), SubResource("Event_dev_V4"), SubResource("Event_hit_V5"), SubResource("Event_kill_R0"), SubResource("Event_kill_R6"), SubResource("Event_kill_R7"), SubResource("Event_rend_R6"), SubResource("Event_rend_R7"), SubResource("Event_rend_R0")])
 pending_text = "Devour en pausa"
 ignore_annihilation = true

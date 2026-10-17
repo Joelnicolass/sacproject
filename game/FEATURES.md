@@ -2043,6 +2043,26 @@ Deuda:
 Deuda:
 - `body_setter` es un StringName con guarda `has_method`: un typo falla en silencio.
 
+### F161 — El Brainiac y el Shrike aturden al blanco (RFC-030, corte 030w-b)
+
+**Fuentes (sacengine, solo lectura):** `updateBrainiacProjectile` (state.d:22886-22936) y `updateShrikeProjectile` (22952-22989): la criatura o el mago golpeado recibe `stunWithCooldown(stunCooldownFrames)` y después, por el `goto case`, `dealRangedDamage` con `DamageMod.none`. Un edificio recibe solo el daño; el suelo, nada. **480 es el enfriamiento** del aturdimiento (`stunCooldownFrames = 8·updateFPS`, 8561-8568), no la duración: el Troll queda tumbado 72 ticks (el largo de su `Stunned`).
+
+**Piezas:**
+- **`StunImpact.target_only`** (`@export`, apagado por defecto): aturde solo al cuerpo golpeado si es criatura o mago. Apagado, queda la caminata de radio del Flummox (F120), sin cambios. La línea de enfriamiento del log ahora lleva `(cuadro N)`.
+- **`impacts/stun_hit_impact.tscn`:** `StunImpact(target_only)` con un hijo `DirectImpact`. `ShotImpact.apply` corre primero el nodo y después los hijos: aturde y después daña, el orden de sacengine. Sin script nuevo.
+- **`data/shots/bsba.tres` y `absh.tres`:** `ShotLook` (`hit_size` 0,45 y 0,6, `sweep`, `impact = stun_hit_impact.tscn`). Vuelan a 36 m/s según su SPEL (bsba 200 / alcance 90; absh 150 / alcance 35).
+- **Caso `f161`** (`debug/f161_stun_shots.*`, `agent/tools/f161_expect.py`): Brainiac y Shrike quietos contra un Troll cada uno a 25 m, filas separadas 8 m, sin contacto.
+
+**Comportamiento medido:** el primer impacto da `aturdido Troll durante 72` y en la línea siguiente el `directo` (180,0 el Brainiac, 135,0 el Shrike: monto · 0,9). Los impactos dentro de los 480 ticks dan `aturdir: … en enfriamiento (c)` con c = 480 − Δt; el primero después de 480 vuelve a aturdir.
+
+**Desvíos del plan:**
+- El plan dice Troll `ycrp`; ese tag es el Yeti. El Troll es `lort`.
+- `trail_fx` provisorio (`heal`) para las dos estelas.
+
+Deuda:
+- El deslizamiento de 1,5 m del Brainiac pegado al suelo (revienta sin daño) y la estela original (`BrainiacEffect` 32 cuadros, `ShrikeEffect` 128).
+- El disparo en el suelo (ni cuerpo ni edificio) no se mide en el caso.
+
 ### F176 — Exportador esqueletal y paridad (RFC-023, corte 023a)
 
 **Piezas:**

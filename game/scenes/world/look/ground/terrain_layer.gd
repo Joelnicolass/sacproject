@@ -5,7 +5,7 @@ extends LookLayer
 ## Ground layer of the rig: gives the map's terrain the biome's `GroundSet` as a PBR material
 ## (`ground_pbr.gdshader`). Hiding the node, a null profile or a profile without ground puts the
 ## classic atlas x light map ground back. Heights and collision are untouched (the mesh is the
-## same). The material and the zone mask are rebuilt from cache/ every time and never saved.
+## same). The material and the zone mask are rebuilt from the map on every load and never saved.
 
 var _rig: LookRig
 var _ground: GroundSet

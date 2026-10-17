@@ -85,6 +85,11 @@ TARGET = "Druid1"
 RANGES = {("Ikarus1", "Druid1"): 25.0}
 
 
+def map_file(name):
+    """A High Noon map file from assets/original/maps/high_noon/ (RFC-033, 033f)."""
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "assets", "original", "maps", "high_noon", name)
+
+
 def cache(name):
     return base.cache(name)
 
@@ -118,8 +123,8 @@ def check_lanes():
     ok = True
     terrain = base.Terrain.load()
     try:
-        ntts = json.load(open(cache("high_noon_ntts.json"), encoding="utf-8"))
-        widgets = json.load(open(cache("high_noon_widgets.json"), encoding="utf-8"))
+        ntts = json.load(open(map_file("ntts.json"), encoding="utf-8"))
+        widgets = json.load(open(map_file("widgets.json"), encoding="utf-8"))
     except OSError:
         ntts, widgets = {"structures": []}, {}
     structures = ntts.get("structures", [])

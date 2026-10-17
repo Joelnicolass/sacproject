@@ -15,7 +15,7 @@ func _initialize() -> void:
 	root.add_child(terrain)
 	await process_frame
 	if terrain.mesh == null:
-		print("ERROR sin terreno en cache/")
+		print("ERROR sin terreno (assets/original/maps/high_noon/terrain.res)")
 		quit(1)
 		return
 	var has_option := "smooth_ground" in terrain

@@ -17,9 +17,9 @@ const TEXTURE_REPEATS := 8
 ## World height of the sky origin.
 @export var base_height := -511.0
 @export var background_color := Color(1.0, 0.706, 0.471)
-@export_file("*.png") var top_path := OriginalAssets.THEMES_DIR + "persephone/skyt.png"
-@export_file("*.png") var bottom_path := OriginalAssets.THEMES_DIR + "persephone/skyb.png"
-@export_file("*.png") var clouds_path := OriginalAssets.THEMES_DIR + "persephone/sky.png"
+@export_file("*.png") var top_path := OriginalAssets.theme("persephone", "skyt")
+@export_file("*.png") var bottom_path := OriginalAssets.theme("persephone", "skyb")
+@export_file("*.png") var clouds_path := OriginalAssets.theme("persephone", "sky")
 
 @onready var _spin: Node3D = %Spin
 @onready var _top: MeshInstance3D = %Top
@@ -70,6 +70,14 @@ func set_textures(top: String, bottom: String, clouds: String) -> void:
 	if not is_node_ready():
 		return
 	_bind_all()
+
+
+## Puts the sky at `seconds` of its motion (rotation and clouds) and draws it there. With set_process(false) it stays
+## put: a still sky, for captures that must not carry the sky's motion as noise.
+func set_time(seconds: float) -> void:
+	_time = seconds
+	if is_node_ready():
+		_update()
 
 
 func current_angle() -> float:

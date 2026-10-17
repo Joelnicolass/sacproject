@@ -1,0 +1,14 @@
+[remap]
+
+importer="image"
+type="Image"
+uid="uid://gxvac33jphbb"
+path="res://.godot/imported/tiles.png-c39b843dbffb05bf926fd6fc9fbf2cad.image"
+
+[deps]
+
+source_file="res://assets/original/maps/high_noon/tiles.png"
+dest_files=["res://.godot/imported/tiles.png-c39b843dbffb05bf926fd6fc9fbf2cad.image"]
+
+[params]
+

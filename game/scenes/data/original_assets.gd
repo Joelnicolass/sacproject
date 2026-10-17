@@ -19,6 +19,12 @@ const UI_HUD_DIR := UI_DIR + "hud/"
 const UI_CURSORS_DIR := UI_DIR + "cursors/"
 const UI_XMENU_DIR := UI_DIR + "xmenu/"
 const FX_CATALOG := FX_DIR + "fx.json"
+## High Noon, the only map so far (maps/high_noon/): ground, tile index, baked light, entities and widgets.
+const HIGH_NOON_TERRAIN := MAPS_DIR + "high_noon/terrain.res"
+const HIGH_NOON_TILES := MAPS_DIR + "high_noon/tiles.png"
+const HIGH_NOON_LIGHT := MAPS_DIR + "high_noon/light.png"
+const HIGH_NOON_NTTS := MAPS_DIR + "high_noon/ntts.json"
+const HIGH_NOON_WIDGETS := MAPS_DIR + "high_noon/widgets.json"
 
 
 ## A model's texture: textures/<model>/<label>.png (label like "001").
@@ -75,7 +81,8 @@ static func theme_envi(god: String) -> String:
 	return THEMES_DIR + god + "/envi.tres"
 
 
-## A map file: maps/<map>/<file> (terrain.res, tiles.png, light.png, ntts.json, widgets.json).
+## A map file: maps/<map>/<file> (terrain.res, tiles.png, light.png, ntts.json, widgets.json). The HIGH_NOON_* consts are
+## the same paths for export defaults, which need constants.
 static func map(map_name: String, file: String) -> String:
 	return MAPS_DIR + "%s/%s" % [map_name, file]
 

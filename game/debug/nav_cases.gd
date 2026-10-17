@@ -44,7 +44,7 @@ func run(host: Node3D) -> Dictionary:
 	host.add_child(_root)
 	var out := {}
 	if not _terrain.has_ground_data():
-		var missing := {"ok": false, "reason": "sin terreno en cache/"}
+		var missing := {"ok": false, "reason": "sin terreno (assets/original/maps/high_noon/terrain.res)"}
 		_root.free()
 		return {"nav_grid_build": missing}
 	_service.build()

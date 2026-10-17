@@ -2152,3 +2152,20 @@ Deuda:
 - El arnés de capturas no congela el tiempo del cielo (033f).
 - 4 campos de `GodEnvi` sin lector; se borran si 033f/033g no los usan.
 - `import_themes.py` copia de la caché, no del WAD (033h).
+
+### F172 — Terreno y mapa de High Noon como assets (RFC-033, corte 033f)
+
+**Piezas:**
+- **`tools/import_map.py` + `tools/import_terrain.gd`:** `assets/original/maps/high_noon/` con `terrain.res` (`MapTerrainData`, sin texturas; lo lee el dedicado), `tiles.png`, `light.png`, `ntts.json` y `widgets.json`.
+- **`GrassHeight.from_terrain`:** la altura del pasto se calcula al cargar (no se guarda `height.exr`); el relleno de huecos es un BFS por anillos (166 s → 1,4 s). `bake_grass_height.gd` se borró.
+- **`Sky.set_time()`:** el arnés de capturas congela el cielo (`rfc033_view.freeze_sky()`).
+- **Deudas de 033e cerradas:** rutas del cielo y del terreno por `OriginalAssets`; 4 campos de `GodEnvi` sin lector borrados.
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-033f.md`).
+- **Paridad:** 0 fallos: 20 586 vértices, normales e índices iguales al `.bin`; texturas y datos del mapa iguales; altura del pasto con 0 texels distintos.
+- **Banco:** `all` (s7 4915c884, f139 5ade9305, s1_trivial e076abe1, s7_npcs 7179b17d) y `quick` iguales a la base en todos los modos; `rules_suite` y `f131 --lanes` PASS.
+- **Capturas:** con el cielo congelado, el piso de los biomas baja de 20–150 k a 4–22 k px; el suelo queda dentro del piso de la base salvo charnel (466 contra 409 px).
+
+Deuda:
+- `Terrain.data` cae en silencio a High Noon si no se asigna (`terrain.gd:102`); conviene limitarlo al editor y a las probes, con aviso, antes de un segundo mapa.
+- `agent/tools/f1*_expect.py` todavía leen `cache/high_noon_terrain.bin` y `cache/data` (033h).

@@ -354,7 +354,7 @@ func _nav_rebuild(host: Node3D) -> Dictionary:
 	host.add_child(root)
 	if not terrain.has_ground_data():
 		root.free()
-		return {"ok": false, "reason": "sin terreno en cache/"}
+		return {"ok": false, "reason": "sin terreno (assets/original/maps/high_noon/terrain.res)"}
 	service.build()
 	var spot := Vector3(1037.7, 15.0, 1009.9)
 	var cell := NavGrid.node_of(spot)

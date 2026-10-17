@@ -2,12 +2,12 @@ class_name GroundMaterial
 extends RefCounted
 
 ## Dumps a `GroundSet` into the uniforms of `ground_pbr.gdshader`, so `terrain.gd` knows nothing of
-## layers. Everything built here is runtime-only (zone mask from the cache, noise): none of it is
+## layers. Everything built here is runtime-only (zone mask from the map, noise): none of it is
 ## stored in a scene.
 
 const SHADER := preload("res://scenes/world/look/ground/ground_pbr.gdshader")
 const NOISE_SIZE := 256
-const LIGHT_MAP := "res://cache/look/light.png"
+const LIGHT_MAP := OriginalAssets.HIGH_NOON_LIGHT
 
 static var _noise: ImageTexture
 static var _bump: ImageTexture
@@ -177,9 +177,7 @@ static func _build_noise() -> void:
 
 
 static func _load_image_texture(path: String) -> ImageTexture:
-	if not FileAccess.file_exists(path):
+	if not ResourceLoader.exists(path):
 		return null
-	var image := Image.new()
-	if image.load(ProjectSettings.globalize_path(path)) != OK:
-		return null
-	return ImageTexture.create_from_image(image)
+	var image := load(path) as Image
+	return ImageTexture.create_from_image(image) if image else null

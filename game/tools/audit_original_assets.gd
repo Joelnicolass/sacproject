@@ -13,6 +13,10 @@ extends SceneTree
 ## mipmaps); skyt/skyb/sky equal the old Image + generate_mipmaps() at every level; sun/undr equal and without mipmaps;
 ## GodTheme.resolved() gives the colours and fog range of the old theme.json, and its files exist; persephone's sky is the
 ## duplicate cache/look/persephone/sky*.png the old Sky read.
+## 033f, map: terrain.res (vertices, normals, indices) equals cache/high_noon_terrain.bin parsed here, every value; tiles.png
+## and light.png are the same bytes as cache/look/ and load as the same Image; ntts.json and widgets.json equal the cache files
+## (bytes and parsed); a Terrain built from terrain.res gives the same tile ids and ground, and GrassHeight.from_terrain equals
+## cache/look/height.exr texel by texel (max difference 0).
 ## The colour key was applied at runtime only where the OBJ sat beside its SAXS (bind-pose bodies, not clip frames), so
 ## the PNG of a model with clips differs from what its frames showed before. That is reported, not failed: "chroma".
 
@@ -92,6 +96,7 @@ func _initialize() -> void:
 	print("chroma: %d labels of %d models with clips draw differently from their old (un-keyed) frames: %s" % [changed, names.size(), ", ".join(names)])
 	_audit_2d()
 	_audit_themes()
+	await _audit_map()
 	quit(1 if _failed > 0 else 0)
 
 
@@ -185,6 +190,93 @@ func _audit_themes() -> void:
 		if dup != FileAccess.get_file_as_bytes(OriginalAssets.theme("persephone", pair[1])):
 			_fail("persephone %s differs from the old duplicate" % pair[0])
 	print("audit themes: %d images identical to cache/look/themes, 5 envi equal to theme.json, %d failed in total" % [count, _failed])
+
+
+func _audit_map() -> void:
+	# terrain.res against the bin, read here independently of tools/import_terrain.gd.
+	var data := load(OriginalAssets.map("high_noon", "terrain.res")) as MapTerrainData
+	var bin := FileAccess.open("res://cache/high_noon_terrain.bin", FileAccess.READ)
+	if data == null or bin == null:
+		_fail("map: terrain.res or the bin is missing")
+		return
+	bin.get_buffer(4)
+	bin.get_16()
+	bin.get_16()
+	bin.get_16()
+	var vertex_count := bin.get_32()
+	var index_count := bin.get_32()
+	var bad := 0
+	if data.vertices.size() != vertex_count or data.normals.size() != vertex_count or data.indices.size() != index_count:
+		_fail("map: terrain sizes %d/%d/%d, bin %d/%d" % [data.vertices.size(), data.normals.size(), data.indices.size(), vertex_count, index_count])
+		return
+	for i in vertex_count:
+		if data.vertices[i] != Vector3(bin.get_float(), bin.get_float(), bin.get_float()):
+			bad += 1
+	for i in vertex_count:
+		if data.normals[i] != Vector3(bin.get_float(), bin.get_float(), bin.get_float()):
+			bad += 1
+	for i in index_count:
+		if data.indices[i] != bin.get_32():
+			bad += 1
+	if bad > 0:
+		_fail("map: %d terrain values differ from the bin" % bad)
+	# tiles.png and light.png: same bytes and the same Image as before.
+	for name: String in ["tiles", "light"]:
+		var old_path := "res://cache/look/%s.png" % name
+		var new_path := OriginalAssets.map("high_noon", name + ".png")
+		if FileAccess.get_file_as_bytes(old_path) != FileAccess.get_file_as_bytes(new_path):
+			_fail("map: %s.png bytes differ" % name)
+		var want := Image.load_from_file(ProjectSettings.globalize_path(old_path))
+		var got := load(new_path) as Image
+		if got == null or want == null or got.get_format() != want.get_format() or got.get_size() != want.get_size() or got.get_data() != want.get_data() or got.has_mipmaps():
+			_fail("map: %s.png does not load as the same Image" % name)
+	for pair in [["ntts.json", "res://cache/high_noon_ntts.json"], ["widgets.json", "res://cache/high_noon_widgets.json"]]:
+		var new_text := FileAccess.get_file_as_string(OriginalAssets.map("high_noon", pair[0]))
+		var old_text := FileAccess.get_file_as_string(pair[1])
+		if new_text != old_text or JSON.parse_string(new_text) != JSON.parse_string(old_text):
+			_fail("map: %s differs" % pair[0])
+	# A Terrain built from the resource: ground, tile ids, and the grass height against height.exr.
+	var terrain := MeshInstance3D.new()
+	terrain.set_script(load("res://scenes/world/terrain.gd"))
+	terrain.set("data", data)
+	root.add_child(terrain)
+	await process_frame
+	if not terrain.call("has_ground_data"):
+		_fail("map: Terrain has no ground from terrain.res")
+		return
+	var tiles := Image.load_from_file(ProjectSettings.globalize_path("res://cache/look/tiles.png"))
+	var ids: PackedByteArray = terrain.call("tile_ids")
+	var tile_bad := 0
+	for y in 256:
+		for x in 256:
+			if ids[y * 256 + x] != tiles.get_pixel(x, y).r8:
+				tile_bad += 1
+	if ids.size() != 65536 or tile_bad > 0:
+		_fail("map: %d tile ids differ" % tile_bad)
+	var started := Time.get_ticks_msec()
+	var height := GrassHeight.from_terrain(terrain)
+	var took := Time.get_ticks_msec() - started
+	var exr := Image.new()
+	if exr.load(ProjectSettings.globalize_path("res://cache/look/height.exr")) != OK:
+		_fail("map: cannot read cache/look/height.exr")
+		return
+	var worst := 0.0
+	var differ := 0
+	if exr.get_size() != height.get_size():
+		_fail("map: height size %s, exr %s" % [height.get_size(), exr.get_size()])
+		return
+	for y in height.get_height():
+		for x in height.get_width():
+			var a := height.get_pixel(x, y)
+			var b := exr.get_pixel(x, y)
+			var d := maxf(absf(a.r - b.r), absf(a.g - b.g))
+			if d > 0.0 or is_nan(a.r) != is_nan(b.r):
+				differ += 1
+			worst = maxf(worst, d)
+	if differ > 0:
+		_fail("map: GrassHeight differs from height.exr in %d texels (max %f)" % [differ, worst])
+	print("audit map: terrain.res %d vertices / %d indices equal the bin, tiles/light bytes and Image equal, ntts/widgets equal, GrassHeight vs height.exr max diff %f (%d texels, %d ms), %d failed in total" % [vertex_count, index_count, worst, differ, took, _failed])
+	terrain.queue_free()
 
 
 ## Like _compare for any format with 4 bytes per pixel (RGBA8): exact at level 0 and in every level.

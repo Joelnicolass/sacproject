@@ -13,7 +13,7 @@ const FOUNT_GROUP := &"manafount"
 @export var plant_models: PackedStringArray = PackedStringArray()
 ## Map widget tag (JAW1…) → plant models drawn for it. The map is James land; the look is Persephone.
 @export var widget_models: Dictionary = {}
-@export_file("*.json") var widgets_path := "res://cache/high_noon_widgets.json"
+@export_file("*.json") var widgets_path := OriginalAssets.HIGH_NOON_WIDGETS
 @export var plant_seed := 17
 @export var altar_clear := 40.0
 @export var fount_clear := 6.0

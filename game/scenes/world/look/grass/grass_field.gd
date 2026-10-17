@@ -7,18 +7,17 @@ extends LookLayer
 ## wider blades for the far ones). Crossing a cell only moves the `transform` of the cells left
 ## behind: nothing is regenerated. `grass.gdshader` places, culls, bends and colors every blade, so
 ## the CPU does a handful of uniform writes per frame. Hiding the node, a profile without grass,
-## a missing height map or a preset with grass off removes every cell.
+## a map without ground or a preset with grass off removes every cell.
 ## Everything built here (MultiMeshes, height texture, clearings, stamps) is runtime-only: the cells
 ## are internal children and never reach a saved scene. In a dedicated or headless process the
 ## rig is freed, so this never exists there. In the editor it follows the viewport camera.
 
 const SHADER := preload("res://scenes/world/look/grass/grass.gdshader")
 const BAKE_SHADER := preload("res://scenes/world/look/grass/grass_bake.gdshader")
-const HEIGHT_MAP := "res://cache/look/height.exr"
 const CELL_M := 16.0
-const MAP_M := 2560.0
+const MAP_M := GrassHeight.MAP_M
 const MAP_CELLS := 160
-const HEIGHT_TEXELS := 1024
+const HEIGHT_TEXELS := GrassHeight.SIZE
 ## The ground's color is baked finer (1.25 m per texel): in the distance fade a blade takes the color of
 ## the ground right where it stands, so what is left of it does not stand out from the ground's detail.
 const GROUND_TEXELS := 2048
@@ -49,7 +48,6 @@ const PBR_ROUGHNESS := 0.85
 
 static var _height_image: Image
 static var _height_texture: ImageTexture
-static var _height_warned := false
 
 var _rig: LookRig
 var _grass: GrassSet
@@ -176,7 +174,7 @@ func _refresh() -> void:
 		return
 	if _rig.tile_map == null or terrain.get("material_override") == null:
 		return
-	if not _load_height():
+	if not _load_height(terrain):
 		return
 	_material = ShaderMaterial.new()
 	_material.shader = SHADER
@@ -712,17 +710,13 @@ func _height_range(key: Vector2i) -> Vector2:
 	return Vector2(low, high)
 
 
-func _load_height() -> bool:
+## The land height, derived from the terrain the first time a field loads (GrassHeight): not stored anywhere.
+func _load_height(terrain: Object) -> bool:
 	if _height_texture:
 		return true
-	if not FileAccess.file_exists(HEIGHT_MAP):
-		if not _height_warned:
-			_height_warned = true
-			push_warning("Falta %s: sin altura no hay pasto. Correr tools/bake_grass_height.gd." % HEIGHT_MAP)
+	if not terrain.has_method("has_ground_data") or not terrain.call("has_ground_data"):
 		return false
-	var image := Image.new()
-	if image.load(ProjectSettings.globalize_path(HEIGHT_MAP)) != OK:
-		return false
+	var image := GrassHeight.from_terrain(terrain)
 	_height_image = image
 	var half := image.duplicate() as Image
 	half.convert(Image.FORMAT_RGH)
@@ -732,8 +726,6 @@ func _load_height() -> bool:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
-	if not FileAccess.file_exists(HEIGHT_MAP):
-		warnings.append("Falta cache/look/height.exr: correr tools/bake_grass_height.gd.")
 	var type := _grass.primary() if _grass else null
 	if type and type.far_coverage() < GrassType.MIN_FAR_COVERAGE:
 		warnings.append("La cobertura lejana (%.1f) es menor que %.1f: queda suelo pelado entre briznas. Subí density_far o far_width_scale." % [type.far_coverage(), GrassType.MIN_FAR_COVERAGE])

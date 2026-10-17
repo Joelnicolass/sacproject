@@ -7,14 +7,13 @@ extends RefCounted
 ## stance is read from the first side towards the second; a side is its own ally. Slot = side + 1
 ## (players 1 and 2, Farmers 3, Taurocks 4); slot 0 is the neutral side 31, the owner of the map's houses,
 ## which has no relations and which nobody has as an enemy (High Noon: enemies 0xe and 0x7ffffffd… skip bit 31).
-## The map's rows live in `cache/high_noon_ntts.json` (tools/export_high_noon_ntts.py); nothing of the original
-## is stored in the repo. Without the file, or for a side the file does not describe, «another slot is an
+## The map's rows live in `assets/original/maps/high_noon/ntts.json` (tools/import_map.py). Without the file, or for a side the file does not describe, «another slot is an
 ## enemy» (what the port did before this cut). Static and @tool: the editor and a headless run read it
 ## without autoloads, and the suite can load its own rows with set_rows().
 
 enum Stance { NEUTRAL, ALLY, ENEMY }
 
-const NTTS_PATH := "res://cache/high_noon_ntts.json"
+const NTTS_PATH := OriginalAssets.HIGH_NOON_NTTS
 const NEUTRAL_SIDE := 31
 
 static var _loaded := false

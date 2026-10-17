@@ -63,6 +63,13 @@
    "wait": 4.0
   },
   {
+   "call": {
+    "harness": "rfc033_view",
+    "method": "freeze_sky",
+    "args": []
+   }
+  },
+  {
    "shot": "biome_persephone.png"
   },
   {
@@ -70,6 +77,13 @@
   },
   {
    "wait": 4.0
+  },
+  {
+   "call": {
+    "harness": "rfc033_view",
+    "method": "freeze_sky",
+    "args": []
+   }
   },
   {
    "shot": "biome_pyro.png"
@@ -81,6 +95,13 @@
    "wait": 4.0
   },
   {
+   "call": {
+    "harness": "rfc033_view",
+    "method": "freeze_sky",
+    "args": []
+   }
+  },
+  {
    "shot": "biome_james.png"
   },
   {
@@ -88,6 +109,13 @@
   },
   {
    "wait": 4.0
+  },
+  {
+   "call": {
+    "harness": "rfc033_view",
+    "method": "freeze_sky",
+    "args": []
+   }
   },
   {
    "shot": "biome_stratos.png"
@@ -99,6 +127,13 @@
    "wait": 4.0
   },
   {
+   "call": {
+    "harness": "rfc033_view",
+    "method": "freeze_sky",
+    "args": []
+   }
+  },
+  {
    "shot": "biome_charnel.png"
   },
   {
@@ -106,6 +141,13 @@
   },
   {
    "wait": 4.0
+  },
+  {
+   "call": {
+    "harness": "rfc033_view",
+    "method": "freeze_sky",
+    "args": []
+   }
   },
   {
    "shot": "look_gallery_ref.png"

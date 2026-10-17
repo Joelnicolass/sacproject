@@ -4,7 +4,7 @@ extends Node3D
 ## What the map's NTTS puts on the field besides the player starts and the founts (RFC-024 addendum 1,
 ## 024b2): the neutral buildings (houses, fences, decorations) and the creatures of the sides the players do
 ## not take (26 Farmers of side 2 = slot 3 and 6 Taurocks of side 3 = slot 4). The rows come from
-## `cache/high_noon_ntts.json` (tools/export_high_noon_ntts.py), never from the repo.
+## `assets/original/maps/high_noon/ntts.json` (tools/import_map.py).
 ## Buildings first (they block the nav grid and peasants look for them), then the creatures. Every peer
 ## places the buildings (scene nodes with fixed names, health through MapBuilding's synchronizer); only the
 ## server or a solo game spawns the creatures, through the UnitSpawner (they replicate). Nothing respawns.
@@ -12,7 +12,7 @@ extends Node3D
 
 signal populated(report: Dictionary)
 
-@export_file("*.json") var ntts_path := "res://cache/high_noon_ntts.json"
+@export_file("*.json") var ntts_path := OriginalAssets.HIGH_NOON_NTTS
 ## Off in scenes that want an empty field; high_noon.tscn turns it on.
 @export var spawn_creatures := false
 ## Structures the scene already places by hand (the founts and the altars).

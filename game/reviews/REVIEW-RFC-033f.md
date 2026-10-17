@@ -1,0 +1,11 @@
+# Review RFC-033f (F172): terreno y mapa de High Noon a assets/original/maps/high_noon/
+
+Veredicto: APPROVE (con 1 nit recomendado).
+
+1. Sim/dedicado: PASS. `rg "high_noon_|cache/"` en scenes/data/debug/addons: ningun camino de terreno o mapa lee cache/ (los `cache/` restantes son cuerpos, datos de criaturas/edificios y referencias de tick, fuera de 033f). `high_noon_` solo aparece en high_noon.tscn:47 (tiles .tres de look). `terrain.res` es MapTerrainData (arrays), sin texturas ni GPU.
+2. GrassHeight.from_terrain (scenes/world/look/grass/grass_height.gd:44-75): PASS. El relleno por frente es BFS por anillos con conectividad 4; cada anillo se copia leyendo solo `filled` de anillos previos (se marca filled despues de copiar todo el frente), vecino elegido en orden fijo +x,-x,+z,-z. Equivale al barrido anillo a anillo, no solo en este mapa. Sin RNG, orden estable (barrido lineal + orden de insercion). Unico matiz: la equivalencia con el algoritmo viejo (borrado) se razono, la paridad medida es solo con High Noon.
+3. Terrain.data con respaldo implicito (scenes/world/terrain.gd:102-103): NEEDS WORK (nit, no bloqueante). Un mapa futuro sin `data` asignado cae en silencio a High Noon y cargaria el terreno equivocado. Recomendado: respaldo solo si `Engine.is_editor_hint()` o un flag `@export var fallback_high_noon := false` que probes/benches activen, y `push_warning`/`push_error` cuando se use; en juego, `data == null` debe ir a MISSING_TEXT. Hoy no hay mapas futuros, por eso no bloquea.
+4. Sky.set_time (scenes/world/sky.gd:77): PASS. API minima (1 setter + `_update`); solo la usa el arnes (agent/harness/rfc033_view.gd:33-41) y debug/look_gallery.gd (debug, permitido). Ningun codigo de harness dentro del juego.
+5. envi.tres: PASS. Diff de los 5 temas = solo 4 lineas borradas cada uno (fog_density, sun_ambient_strength, shadow_strength, sun_direction). Colores, niebla begin/end y sun_direct_strength intactos. Ningun lector de GodEnvi usa esos campos (`theme.fog_density` en theme_applier.gd:73,86 es de GodTheme; `sun_direction()` de light_layer.gd:119 es de _look).
+
+Alcance: ningun extra detectado; bake_grass_height.gd borrado coherente con el RFC. Look/captura: lo cubre el reporte del developer (cielo congelado); no verifique visual ni corri Godot.

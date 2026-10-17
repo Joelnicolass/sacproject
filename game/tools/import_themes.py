@@ -13,8 +13,8 @@ the ones the game drew before; theme.json holds the ENVI colours). The raw WAD e
 
 Per god: atlas.png and edge.png (CPU images: TerrainMesh reads them as Image, exact, no mipmaps, no compression),
 skyt.png / skyb.png / sky.png (mipmapped textures: the sky sampled them with Image.generate_mipmaps()), sun.png and
-undr.png (textures without mipmaps; no consumer yet), and envi.tres (a GodEnvi: the ENVI colours the old theme.json
-carried, in the order sacengine's renderer.d setupEnvironment gives them).
+undr.png (textures without mipmaps; no consumer yet), and envi.tres (a GodEnvi: the ENVI colours, fog range and sun strength the game reads, in the order sacengine's
+renderer.d setupEnvironment gives them; the ENVI fields nobody reads stay in theme.json, not in the asset).
 
 The cloud/sky textures of persephone are the ones the old sky read from cache/look/persephone/ (a duplicate, same md5).
 """
@@ -61,7 +61,6 @@ def color(rgb: list) -> str:
 
 def envi_tres(theme: dict) -> str:
     envi = theme["envi"]
-    sun = envi["sun_direction"]
     lines = [
         "background_color = " + color(theme["background_color"]),
         "ambient_color = " + color(theme["ambient_color"]),
@@ -69,11 +68,7 @@ def envi_tres(theme: dict) -> str:
         "fog_color = " + color(theme["fog_color"]),
         "fog_begin = " + repr(float(theme["fog_begin"])),
         "fog_end = " + repr(float(theme["fog_end"])),
-        "fog_density = " + repr(float(envi["fog_density"])),
         "sun_direct_strength = " + repr(float(envi["sun_direct_strength"])),
-        "sun_ambient_strength = " + repr(float(envi["sun_ambient_strength"])),
-        "shadow_strength = " + repr(float(envi["shadow_strength"])),
-        "sun_direction = Vector3(%s, %s, %s)" % tuple(repr(float(v)) for v in sun),
     ]
     return ENVI_HEAD + "\n".join(lines) + "\n"
 

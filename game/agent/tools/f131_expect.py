@@ -168,8 +168,8 @@ def lane_report(lanes, margin=5.0, step=2.5, half_box=None, big_struct=None):
     ok = True
     terrain = base.Terrain.load()
     try:
-        ntts = json.load(open(base.cache("high_noon_ntts.json"), encoding="utf-8"))
-        widgets = json.load(open(base.cache("high_noon_widgets.json"), encoding="utf-8"))
+        ntts = json.load(open(base.map_file("ntts.json"), encoding="utf-8"))
+        widgets = json.load(open(base.map_file("widgets.json"), encoding="utf-8"))
     except OSError:
         ntts, widgets = {"structures": []}, {}
     if terrain is None:

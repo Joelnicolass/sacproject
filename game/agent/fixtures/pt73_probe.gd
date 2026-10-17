@@ -8,7 +8,7 @@ extends Node
 
 const ORDERS := preload("res://scenes/world/units/unit_orders.gd")
 const TAG := "PT73 "
-const NTTS := "res://cache/high_noon_ntts.json"
+const NTTS := OriginalAssets.HIGH_NOON_NTTS
 
 var _world: Node3D
 var _args: Dictionary = {}

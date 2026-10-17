@@ -1,9 +1,14 @@
 @tool
 extends MeshInstance3D
 
-@export var cache_path: String = "res://cache/high_noon_terrain.bin"
+## The map's raw ground (assets/original/maps/<map>/terrain.res). Everything else is derived from it on load.
+## high_noon.tscn assigns it; a Terrain built from the script alone (probes, benches) gets High Noon's.
+@export var data: MapTerrainData
 ## Folder with atlas.png (16x16 MAPT grid) and edge.png: a god's themes/ folder. The light map is the map's own.
-@export_dir var tileset_dir: String = OriginalAssets.THEMES_DIR + "james"
+@export_dir var tileset_dir: String = OriginalAssets.theme_dir("james")
+## The map's tile index (256x256, tile id in R) and baked light. Imported as Image, read on the CPU.
+@export_file("*.png") var tiles_path: String = OriginalAssets.HIGH_NOON_TILES
+@export_file("*.png") var light_path: String = OriginalAssets.HIGH_NOON_LIGHT
 ## The map sits around x/z 930-1620, far from where the editor camera opens. In the editor only,
 ## the parent is shifted so the map shows at the origin. Children keep their real coordinates,
 ## and the shift is taken off while the scene is saved.
@@ -13,7 +18,7 @@ extends MeshInstance3D
 		_apply_preview_offset()
 
 ## Ground normals averaged per grid vertex, weighted by triangle area, like sacmap.d generateNormals,
-## so the slopes read as one surface. Off: one flat normal per triangle, as the cache stores them.
+## so the slopes read as one surface. Off: one flat normal per triangle, as the data stores them.
 ## The cliff walls keep their flat normal either way.
 @export var smooth_ground := true:
 	set(value):
@@ -42,7 +47,7 @@ var _ground := PackedVector3Array()
 var _cell_triangles := PackedInt32Array()
 var _lowest_ground := 0.0
 var _cell_counts := PackedByteArray()
-## Kept so smooth_ground swaps normals without reading cache/ again.
+## Kept so smooth_ground swaps normals without reading the data again.
 var _mesh_arrays := []
 var _flat_normals := PackedVector3Array()
 var _smooth_normals := PackedVector3Array()
@@ -51,7 +56,7 @@ var _classic_material: ShaderMaterial
 var _ground_override: Material
 
 
-## The mesh and the ground material are rebuilt from cache/ on every load, also in the editor
+## The mesh and the ground material are rebuilt from `data` on every load, also in the editor
 ## preview. Not stored: a saved scene must not carry the original map or its textures (RULES.md).
 func _validate_property(property: Dictionary) -> void:
 	if property.name == "mesh" or property.name == "material_override":
@@ -94,34 +99,15 @@ func _set_preview_offset(offset: Vector3) -> void:
 
 
 func _load_mesh() -> bool:
-	if not FileAccess.file_exists(cache_path):
+	if data == null and ResourceLoader.exists(OriginalAssets.HIGH_NOON_TERRAIN):
+		data = load(OriginalAssets.HIGH_NOON_TERRAIN) as MapTerrainData
+	if data == null or not data.is_valid():
 		return false
-	var file := FileAccess.open(cache_path, FileAccess.READ)
-	if file == null:
-		return false
-	if file.get_buffer(4) != "HNTR".to_utf8_buffer():
-		return false
-	var version := file.get_16()
-	file.get_16()
-	file.get_16()
-	if version != 1:
-		return false
-	var vertex_count := file.get_32()
-	var index_count := file.get_32()
-	if vertex_count == 0 or index_count == 0:
-		return false
-	var vertices := PackedVector3Array()
-	vertices.resize(vertex_count)
-	var normals := PackedVector3Array()
-	normals.resize(vertex_count)
-	for i in vertex_count:
-		vertices[i] = Vector3(file.get_float(), file.get_float(), file.get_float())
-	for i in vertex_count:
-		normals[i] = Vector3(file.get_float(), file.get_float(), file.get_float())
-	var indices := PackedInt32Array()
-	indices.resize(index_count)
-	for i in index_count:
-		indices[i] = file.get_32()
+	var vertices := data.vertices
+	var normals := data.normals
+	var indices := data.indices
+	var vertex_count := vertices.size()
+	var index_count := indices.size()
 	var arrays := []
 	arrays.resize(Mesh.ARRAY_MAX)
 	var colors := PackedColorArray()
@@ -180,7 +166,7 @@ func _refresh_normals() -> void:
 
 ## sacmap.d generateNormals: each ground position gets the sum of the unnormalized cross products of
 ## the triangles that touch it (so bigger faces weigh more), normalized. Walls (zero area seen from
-## above) and every vertex a wall touches keep the cache normal, so the cliff edge stays sharp.
+## above) and every vertex a wall touches keep the data normal, so the cliff edge stays sharp.
 func _smooth_ground_normals(vertices: PackedVector3Array, indices: PackedInt32Array, flat: PackedVector3Array) -> PackedVector3Array:
 	var sums := {}
 	var wall_vertex := {}
@@ -214,7 +200,7 @@ func _position_key(v: Vector3) -> Vector3i:
 
 
 ## sacmap.d appendEdgeWall texcoords: top_a (0,0), top_b (1,0), bot_b (1,1), bot_a (0,1).
-## export_high_noon_terrain.py writes each wall as (top_a, bot_b, top_b), (bot_b, top_a, bot_a).
+## The terrain importer keeps each wall as (top_a, bot_b, top_b), (bot_b, top_a, bot_a).
 ## Alpha 0 marks the wall for sacrifice_ground.gdshader: EDGE texture, or the cell's tile without one.
 func _color_wall(colors: PackedColorArray, ids: Array, tile: int, first: bool) -> void:
 	var uvs := [Vector2(0, 0), Vector2(1, 1), Vector2(1, 0)] if first else [Vector2(1, 1), Vector2(0, 0), Vector2(0, 1)]
@@ -320,12 +306,12 @@ func _flat_cross(a: Vector3, b: Vector3, at: Vector2) -> float:
 	return (b.x - a.x) * (at.y - a.z) - (b.z - a.z) * (at.x - a.x)
 
 
-## The original tile id of each 10 m cell, 256x256 row-major (empty without the cache).
+## The original tile id of each 10 m cell, 256x256 row-major (empty without the map's tiles.png).
 func tile_ids() -> PackedByteArray:
 	return _tile_ids()
 
 
-## The classic atlas x light map material (null until the cache is loaded), also while a look layer
+## The classic atlas x light map material (null until the ground is loaded), also while a look layer
 ## shows its own ground: the classic grass paints it and bakes its colors from it.
 func classic_material() -> ShaderMaterial:
 	return _classic_material
@@ -343,11 +329,8 @@ func clear_ground_override() -> void:
 
 
 func _tile_ids() -> PackedByteArray:
-	var path := "res://cache/look/tiles.png"
-	if not FileAccess.file_exists(path):
-		return PackedByteArray()
-	var image := Image.new()
-	if image.load(ProjectSettings.globalize_path(path)) != OK:
+	var image := _load_image(tiles_path)
+	if image == null:
 		return PackedByteArray()
 	var ids := PackedByteArray()
 	ids.resize(256 * 256)
@@ -357,20 +340,18 @@ func _tile_ids() -> PackedByteArray:
 	return ids
 
 
-func _load_png(path: String) -> ImageTexture:
-	if not FileAccess.file_exists(path):
+## A PNG imported as Image (importer="image": exact pixels, no sRGB, no mipmaps, no compression).
+func _load_image(path: String) -> Image:
+	if not ResourceLoader.exists(path):
 		return null
-	var image := Image.new()
-	if image.load(ProjectSettings.globalize_path(path)) != OK:
-		return null
-	return ImageTexture.create_from_image(image)
+	return load(path) as Image
 
 
 ## atlas.png and edge.png of a god: imported as Image (exact pixels, no mipmaps, no compression).
 func _load_image_texture(path: String) -> ImageTexture:
 	if not ResourceLoader.exists(path):
 		return null
-	var image := load(path) as Image
+	var image := _load_image(path)
 	return ImageTexture.create_from_image(image) if image else null
 
 
@@ -382,7 +363,7 @@ func set_tileset_dir(dir: String) -> void:
 
 func _apply_ground_texture() -> void:
 	var atlas := _load_image_texture(tileset_dir.path_join("atlas.png"))
-	var light := _load_png("res://cache/look/light.png")
+	var light := _load_image_texture(light_path)
 	if atlas == null:
 		return
 	var mat := ShaderMaterial.new()
@@ -399,7 +380,7 @@ func _apply_ground_texture() -> void:
 	_apply_light_levels()
 
 
-## The material is rebuilt from cache/ and is not editable, so the two levels live on the node.
+## The material is rebuilt on load and is not editable, so the two levels live on the node.
 func _apply_light_levels() -> void:
 	var mat := _classic_material
 	if mat == null:

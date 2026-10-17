@@ -1,10 +1,10 @@
 class_name GrassLabGround
 extends MeshInstance3D
 
-## Lab ground (debug only): a flat-ish square patch cut from the baked height map (so the grass
+## Lab ground (debug only): a flat-ish square patch cut from the derived height map (so the grass
 ## has the same heights as in the map), at map coordinates, with the ground look given by the
 ## rig's `TerrainLayer` like the real terrain. It offers the small part of `terrain.gd` that the
-## look layers and the lab use: `tile_ids`, `ground_height`, `set_ground_override`.
+## look layers and the lab use: `tile_ids`, `has_ground_data`, `ground_height`, `set_ground_override`.
 
 @export var center := Vector2(1500.0, 1500.0)
 @export var half_size_m := 65.0
@@ -19,12 +19,31 @@ var _material_classic := StandardMaterial3D.new()
 func _ready() -> void:
 	add_to_group("terrain")
 	_material_classic.albedo_color = Color(0.25, 0.35, 0.12)
-	_height = Image.new()
-	if _height.load(ProjectSettings.globalize_path("res://cache/look/height.exr")) != OK:
-		push_error("Falta cache/look/height.exr (tools/bake_grass_height.gd).")
+	_height = _derive_height()
+	if _height == null:
+		push_error("Falta el terreno de High Noon (assets/original/maps/high_noon/terrain.res).")
 		return
 	mesh = _build()
 	material_override = _material_classic
+
+
+## The grass height as the game derives it: from a throw-away Terrain built from the map's data.
+func _derive_height() -> Image:
+	var data := load(OriginalAssets.HIGH_NOON_TERRAIN) as MapTerrainData
+	if data == null:
+		return null
+	var helper := MeshInstance3D.new()
+	helper.set_script(load("res://scenes/world/terrain.gd"))
+	helper.set("data", data)
+	add_child(helper)
+	helper.remove_from_group("terrain")
+	var image := GrassHeight.from_terrain(helper)
+	helper.free()
+	return image
+
+
+func has_ground_data() -> bool:
+	return _height != null
 
 
 func ground_height(x: float, z: float) -> float:

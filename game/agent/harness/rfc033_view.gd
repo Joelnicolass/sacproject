@@ -26,3 +26,18 @@ func hide_log() -> String:
 		return "no OrdersLog"
 	label.visible = false
 	return "ok"
+
+
+## freeze_sky(): stops every Sky of the scene at time 0 (rotation and clouds), so the biome captures stop carrying the
+## sky's motion as noise. Observation only: it changes no game state, just which instant the sky is drawn at.
+func freeze_sky() -> String:
+	var root := get_tree().current_scene
+	if root == null:
+		return "no scene"
+	var frozen := 0
+	for node in root.find_children("*", "Node3D", true, false):
+		if node.get_script() != null and node.has_method("set_time") and node.has_method("cloud_offset"):
+			node.set_process(false)
+			node.set_time(0.0)
+			frozen += 1
+	return "frozen %d" % frozen

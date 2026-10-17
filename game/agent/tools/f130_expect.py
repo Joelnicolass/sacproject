@@ -121,8 +121,8 @@ def check_lanes():
     terrain = base.Terrain.load()
     try:
         import json
-        ntts = json.load(open(base.cache("high_noon_ntts.json"), encoding="utf-8"))
-        widgets = json.load(open(base.cache("high_noon_widgets.json"), encoding="utf-8"))
+        ntts = json.load(open(base.map_file("ntts.json"), encoding="utf-8"))
+        widgets = json.load(open(base.map_file("widgets.json"), encoding="utf-8"))
     except OSError:
         ntts, widgets = {"structures": []}, {}
     structures = ntts.get("structures", [])

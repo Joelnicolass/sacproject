@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dgy8stlnkln0j"
-path="res://.godot/imported/risH.png-78ef423a7e219a7b6ed242f4af589b8e.ctex"
+uid="uid://crppaxi3c5887"
+path="res://.godot/imported/eaf_h.png-11ec36e85b24b4711afa33c5c6acdd71.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/original/ui/icons/risH.png"
-dest_files=["res://.godot/imported/risH.png-78ef423a7e219a7b6ed242f4af589b8e.ctex"]
+source_file="res://assets/original/ui/icons/eaf_h.png"
+dest_files=["res://.godot/imported/eaf_h.png-11ec36e85b24b4711afa33c5c6acdd71.ctex"]
 
 [params]
 

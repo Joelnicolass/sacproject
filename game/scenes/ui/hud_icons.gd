@@ -28,13 +28,13 @@ static var _xmenu: Dictionary = {}
 static var _scaled: Dictionary = {}
 
 
-## The CRE8/SPEL icon `<tag>.png` (a creature, spell or ability), or null.
+## The CRE8/SPEL icon of `tag` (file name by `OriginalAssets.icon_file`) (a creature, spell or ability), or null.
 static func icon(tag: String) -> Texture2D:
 	if tag.is_empty():
 		return null
 	var key := icon_dir + tag
 	if not _icons.has(key):
-		_icons[key] = _load_png(icon_dir + tag + ".png")
+		_icons[key] = _load_png(icon_dir + OriginalAssets.icon_file(tag))
 	return _icons[key]
 
 

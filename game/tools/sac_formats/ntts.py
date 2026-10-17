@@ -1,34 +1,27 @@
-#!/usr/bin/env python3
-"""Export the creatures, structures and sides of High Noon to game/cache/high_noon_ntts.json.
+"""High Noon's NTTS (creatures, structures, widgets) and SIDS (sides), RFC-024 addendum 1, cut 024b2.
 
-RFC-024 addendum 1, cut 024b2. NTTS layout and sides follow sacengine `ntts.d` and `sids.d`:
+NTTS layout and sides follow sacengine `ntts.d` and `sids.d`:
   Structure (48 bytes) type=2: x y z facing(deg) tag[4] flags side unknown id base
   Creature  (48 bytes) type=64: x y z facing(rad) tag[4] flags side unknown id unknown
+  Widgets   (type 8192): tag[4], count, then x y facing per widget
   SIDS: u32 count, then 20 bytes per side: id allies enemies assignment color
 Sac axes (x, y, z up) become Godot (x, z = y); the height of the land is chosen by the game.
 
-Tags: a creature keeps the raw tag (zepe, raeb), the key of cache/data/creatures.json. A structure
-keeps the name the WAD index uses (jhut, jwg1, jfnt), which is the reverse of the NTTS bytes (tuhj),
-the key of cache/data/buildings.json. Both are written as `tag`; `raw` has the bytes as stored.
-The "side" of a structure out of range (>= 32) is the neutral side 31 (sacengine placeStructure).
-
-Reads the local install; the cache is gitignored. Run: python3 tools/export_high_noon_ntts.py
+Tags: a creature keeps the raw tag (zepe, raeb), the key of data/creatures.json. A structure keeps the name the WAD index uses
+(jhut, jwg1, jfnt), which is the reverse of the NTTS bytes (tuhj), the key of data/buildings.json. Both are written as `tag`;
+`raw` has the bytes as stored. The "side" of a structure out of range (>= 32) is the neutral side 31 (sacengine placeStructure).
 """
 
 import json
 import struct
-import sys
 from pathlib import Path
 
-from export_high_noon_look import extract
+from .wad import extract
 
-DEFAULT_SCP = "/Users/joelsartori/Downloads/sacgame/Sacrifice/maps/(2) High Noon.scp"
-ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_OUT = ROOT / "cache" / "high_noon_ntts.json"
+WIDGETS_TYPE = 8192
 STRUCTURE = 2
 CREATURE = 64
 NEUTRAL_SIDE = 31
-## BldgFlags.shelter (bldg.d:11); the BLDG flags themselves come from export_stats.py (buildings.json).
 SIDS_RECORD = 20
 
 
@@ -77,9 +70,24 @@ def read_sides(sids: bytes) -> list:
     return sides
 
 
-def main() -> int:
-    scp = Path(sys.argv[1] if len(sys.argv) > 1 else DEFAULT_SCP)
-    out = Path(sys.argv[2] if len(sys.argv) > 2 else DEFAULT_OUT)
+def read_widgets(ntts: bytes) -> dict:
+    widgets = {}
+    offset = 4
+    while offset < len(ntts):
+        kind, size = struct.unpack_from("<II", ntts, offset)
+        if kind == WIDGETS_TYPE:
+            tag = ntts[offset + 8: offset + 12][::-1].decode("latin1")
+            count = struct.unpack_from("<I", ntts, offset + 12)[0]
+            rows = widgets.setdefault(tag, [])
+            for k in range(count):
+                x, y, facing = struct.unpack_from("<fff", ntts, offset + 16 + 12 * k)
+                rows.append([round(x, 3), round(y, 3), round(facing, 4)])
+        offset += size
+    return widgets
+
+
+def ntts_json(scp: Path) -> str:
+    """high_noon_ntts.json: sides, creatures and structures."""
     structures, creatures = read_entities(extract(scp, "", "NTTS"))
     sides = read_sides(extract(scp, "", "SIDS"))
     payload = {
@@ -89,22 +97,8 @@ def main() -> int:
         "creatures": creatures,
         "structures": structures,
     }
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(payload, separators=(",", ":")))
-    by_tag: dict = {}
-    for row in structures:
-        key = (row["tag"], row["side"])
-        by_tag[key] = by_tag.get(key, 0) + 1
-    creature_count: dict = {}
-    for row in creatures:
-        key = (row["tag"], row["side"])
-        creature_count[key] = creature_count.get(key, 0) + 1
-    print("creatures", creature_count)
-    print("structures", sorted(by_tag.items()))
-    print("sides", [(s["id"], hex(s["allies"]), hex(s["enemies"]), s["assignment"]) for s in sides])
-    print(out)
-    return 0
+    return json.dumps(payload, separators=(",", ":"))
 
 
-if __name__ == "__main__":
-    raise SystemExit(main())
+def widgets_json(scp: Path) -> str:
+    return json.dumps(read_widgets(extract(scp, "", "NTTS")), separators=(",", ":"))

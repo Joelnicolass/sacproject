@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://baceg2snsdpwo"
-path="res://.godot/imported/Mgot.png-d432692f5639ad01f63c0db4616e9faa.ctex"
+uid="uid://cmxcoa38igf0j"
+path="res://.godot/imported/pez_h.png-85cca1a84e0390e7378bb3d78e201394.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/original/ui/icons/Mgot.png"
-dest_files=["res://.godot/imported/Mgot.png-d432692f5639ad01f63c0db4616e9faa.ctex"]
+source_file="res://assets/original/ui/icons/pez_h.png"
+dest_files=["res://.godot/imported/pez_h.png-85cca1a84e0390e7378bb3d78e201394.ctex"]
 
 [params]
 

@@ -6,7 +6,7 @@ extends Resource
 ## Lives in data/bodies/pose_overrides.tres, which is committed. A new bake does not touch it.
 ## BodyCatalog adds it on top of what tools/bake_bodies.gd measured.
 
-## Model tag, as in cache/baked (eorc, jnwr, pcfn...).
+## Model tag (eorc, jnwr, pcfn...).
 @export var model := "":
 	set(value):
 		model = value

@@ -8,7 +8,7 @@ extends Node
 ##   restore_cache() the real folders again; new roster.
 ##   silence_roster() hides and freezes the roster (baseline runs of older flows).
 
-const EMPTY := "res://agent/out/_no_cache/"
+const EMPTY := "res://agent/out/_no_assets/"
 
 
 func hide_cache() -> String:

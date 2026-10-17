@@ -198,14 +198,14 @@ game/
     ├── import_themes.py                # 033e (export_tilesets.py)
     ├── import_map.py + import_terrain.gd   # 033f (export_high_noon_*.py)
     ├── export_stats.py                 # 033g: --out assets/original/data; sale _export_all_frames con 023h
-    └── audit_original_assets.gd        # NUEVO 033b/c: paridad numérica (texturas e imágenes, vértices) contra cache/ mientras exista
+    └── check_original_assets.sh        # 033h (reemplazó a audit_original_assets.gd): regenera con cada importador --out y compara; antes: paridad contra cache/ mientras exista
 ```
 
 **Responsabilidades (una por pieza):**
 - **`OriginalAssets`:** el único que conoce rutas de `assets/original`. Renombrar o mover es un cambio de una línea, y el lint de §8 lo busca.
 - **`OriginalMaterial`:** el único que arma el material de un modelo del original.
 - **Importadores:** uno por familia. Leen la instalación (`INSTALL`) y escriben solo su carpeta. Son idempotentes: si se corren dos veces, `git status` queda limpio, así que la salida tiene que ser determinista (orden de claves, sin timestamps).
-- **`audit_original_assets.gd`:** compara la salida nueva contra `cache/` mientras exista. Se borra en 033i.
+- **`tools/check_original_assets.sh`** (033h; antes `audit_original_assets.gd`, que comparaba contra `cache/` y se borró en 033h): regenera cada familia con su importador (`--out` a una carpeta temporal) y compara con `assets/original/`.
 - **`data/`:** solo lo editado a mano. Nunca lo escribe un importador.
 
 ## 7. Resource, nodo, `@export`
@@ -231,7 +231,7 @@ game/
 - **Captura:** `rfc033_shots` contra `agent/out/033/base/`, con el diff de AgentKit (`agent_diff.gd`). Umbrales:
   - **2D** (HUD, iconos, cursores, menú X): **0 píxeles distintos**.
   - **3D** (galerías, biomas): máximo por canal ≤ 2/255 y ≤ 0,5 % de píxeles distintos. Si el import de Godot genera mipmaps algo distintos que `Image.generate_mipmaps()`, la diferencia tiene que quedar acá. Si no queda, el corte no pasa y se ajusta el import; no se sube el umbral.
-- **Paridad de datos:** `audit_original_assets.gd` (headless):
+- **Paridad de datos:** `audit_original_assets.gd` (headless; desde 033h, `tools/check_original_assets.sh`):
   - imágenes: `Image.get_data()` idéntico tras chroma;
   - vértices: ≤ 1e-5 m contra `baked/*.res`;
   - terreno: arrays idénticos.
@@ -249,7 +249,7 @@ game/
 | **033f** Mapa | `import_map.py` + `import_terrain.gd` → `maps/high_noon/`; `MapTerrainData`; `Terrain.data`; `tiles` y `light` como `Image`; `GrassHeight.from_terrain`; `ntts` y `widgets` | Terreno: arrays idénticos; `GrassHeight` = `height.exr` (máximo de diferencia 0); **`all` igual**; `biome_gallery` en umbral; nav (`debug/nav_cases`) PASS |
 | **033g** Datos | `export_stats.py --out assets/original/data` (sin `anim_*`); `GameData`, `map_building`, `ai_perception`, `body_gallery`, `audit_body_pose`, `agent/tools/*_expect.py` | Los JSON son byte a byte iguales a `cache/data`; **`all` igual**; **dedicado headless s7 con `cache.off` = mismo digest** (hito: el servidor ya no usa la caché) |
 | **033h** Refs, legado y tools | `tick_*` a `agent/fixtures/sacengine/`; se borran el legado de F1, `export_high_noon_look.py`, `anim_clips_f36` y los `--out` por defecto a `cache/`; `sample_grass_palette.py` y `classify_ground_tiles.py` leen `assets/original`; `wizard.gd` y `wizard_preview` se van con 023 (si 023 no llegó, `wizard_preview` usa la malla de `BodyCatalog`) | `debug/*_tick.tscn` PASS; `rg "cache/" tools/*.py` solo en comentarios de historia (o 0); `quick` igual |
-| **033i** Cierre (**después de 023h**) | Se borra `audit_original_assets.gd`, `BodyCatalog.BAKED_DIR`/`clip_frame_path`, `bake_bodies.gd` y `bake_clips.gd`. `mv cache cache.off` | `rg -n "cache/" scenes data debug addons project.godot --glob '!*.md'` **vacío** (y `res://cache` en `agent/harness agent/fixtures`); F5 1P y dedicado + cliente con `cache.off`; banco `all` y flows PASS; `rfc033_shots` en umbral; `du -sh .godot/imported` anotado |
+| **033i** Cierre (**después de 023h**) | Se borran `BodyCatalog.BAKED_DIR`/`clip_frame_path`, `bake_bodies.gd` y `bake_clips.gd`. `mv cache cache.off` | `rg -n "cache/" scenes data debug addons project.godot --glob '!*.md'` **vacío** (y `res://cache` en `agent/harness agent/fixtures`); F5 1P y dedicado + cliente con `cache.off`; banco `all` y flows PASS; `rfc033_shots` en umbral; `du -sh .godot/imported` anotado |
 
 **Orden.** Es el de la tabla: empieza por lo simple (texturas y modelos estáticos), como pidió el usuario. 033d y 033e son independientes entre sí. 033g puede adelantarse si el dedicado lo necesita antes. Solo 033i espera a 023h.
 
@@ -449,3 +449,31 @@ Ya hay en LFS 109 MB de `assets/cc0` y `assets/mm`. Cada regeneración de textur
 - `anim_mesh_clips_f37.json` queda en `cache/data` (el plan dice «sin `anim_*`»); sus lectores son solo del cliente y se van con 023h.
 - Extra: las medidas de cuerpos de `f129/f155/f156_expect.py` pasaron a `sizes.json` (033c), que estaba disponible.
 - No se agregó una auditoría de datos a `audit_original_assets.gd`: `cmp` byte a byte es más fuerte.
+
+## 033h: Resultado (F174)
+
+- **Refs de tick:** `agent/fixtures/sacengine/tick{,_move,_state,_advance}.txt` (versionados; el `.gitignore` de la raíz ignoraba `sacengine/` y se le sumó `!game/agent/fixtures/sacengine/`). `debug/{idle_tick,move_order,state_tick,advance_tick}.tscn` y los defaults de `tick_check.gd`, `move_order_check.gd`, `state_tick_check.gd` apuntan ahí; los scripts de check se quedan en `scenes/world/` (solo cambió la ruta). Los cuatro dan «coincide» (sonda headless en el scratchpad, no versionada).
+- **Trampa del banco:** `run_determinism.sh` pasa `DET_MODES` (los modos de esta invocación) al informe; la tabla y el veredicto miran solo esos modos más `fixed` (la referencia). `table` a mano sigue mostrando todo. `quick` lo usa para `s1_quick`. **Prueba:** con un `s7_fixed2.json` falso (`deadbeef…`) en `agent/out/det/`, `bash agent/run_determinism.sh s7` da DETERMINISM PASS (fixed, stress y window `c5a5755a…`); `table s7` a mano, con el falso, da FAIL (como antes). El falso se borró.
+- **Importadores desde la instalación (WAD/.scp), sin `cache/`:** nuevo lector único `tools/sac_formats/{wad,txtr,png,models,bldg,props,bodies,ntts,terrain,install}.py` (`SAC_INSTALL` cambia la ruta). Se sacó el lector TXTR duplicado de `export_particles.py` (que pasó a `tools/fx_catalog.py`: solo las tablas de partículas) y `export_persephone.py` ahora importa de `sac_formats` (los nombres que usan `export_bodies/stats/skeletal` siguen). Cada importador tiene `--out=DIR`. Regenerados a una carpeta temporal y comparados con `diff -r --exclude='*.import'`:
+  - `textures/` (670 PNG + `index.json`): **idéntico**. `props/` (117 `.glb`): **idéntico byte a byte**; `--verify` 0 mm. `themes/` (35 PNG + 5 `envi.tres`): **idéntico**. `maps/high_noon/` (`tiles.png`, `light.png`, `ntts.json`, `widgets.json`): **idéntico**; el HNTR que arma `import_map.py --terrain-bin=F` es **idéntico** a `cache/high_noon_terrain.bin` y `import_terrain.gd -- --bin=F` da «0 written, 1 unchanged» (mismos arrays; el `.res` no es reproducible byte a byte por el id local aleatorio de Godot). `data/` (`export_stats.py --out`): **idéntico** (`cmp`) tras sacar `decode_bldg/read_buildings` a `sac_formats/bldg.py`.
+  - `fx/` (38 PNG + `fx.json`) y `ui/{hud,cursors,xmenu}`: **idénticos**. `ui/icons/`: idéntico salvo **un archivo nuevo, `tum@.png`** (Healing Shower, `wobf`): la caché de iconos era anterior a esa habilidad. Se agregó con su `.import` (un `--import`).
+  - **Choque de mayúsculas, defecto viejo:** `hsba`/`HSba` y `hrba`/`HRba` (habilidades distintas: Life Shield/Protector, Spikey Death/Halo of Earth) son un solo archivo en macOS; el exportador dejaba el nombre del primero y el contenido del último, así que `hsba.png` y `hrba.png` muestran el ícono de Protector y de Halo of Earth. (Corregido en la ronda de review: ver abajo.)
+  - `decode_txtr` unificado con el orden de las partículas (el color clave gana al plano alfa); las texturas de cuerpos y props no cambian (nunca activan los dos a la vez).
+  - **Lo que no se pasa a WAD:** `models/sizes.json`. Sus medidas salen de `tools/bake_bodies.gd` (mallas posadas); `import_props.py` ya no toca `sizes.json` salvo con `--sizes-from=cache/baked`. Lo resuelve RFC-023 al medir desde el `.glb`. Las franjas de la barra (`stat_*`) siguen saliendo de los arreglos de `sacengine/source/sacobject.d` (solo lectura, valores), como antes.
+- **Borrado:** `tools/audit_original_assets.gd` (la paridad ahora es `diff -r` contra el WAD), `tools/export_icons.py` (pasó a `import_ui.py`), `export_tilesets.py` (→ `tools/land_themes.py` + `import_themes.py`), `export_high_noon_{look,ntts,terrain,widgets}.py` (→ `import_map.py` + `sac_formats/{ntts,terrain}.py`; el legado de F1 desaparece), `scenes/world/wizard.gd` (lector OBJ sin otro uso). `tools/audit_original_props.gd` y los exportadores de cuerpos/clips siguen (033i).
+- **`wizard_preview`:** usa solo la malla de `BodyLibrary`/`BodyCatalog` (se quitó `bodies_dir` y el respaldo al OBJ de `cache/look/bodies`).
+- **`agent/tools/f1*_expect.py`:** leen el terreno con `agent/tools/terrain_asset.py` (lee `terrain.res` sin Godot; igual al `.bin`, vértices e índices). `f126–f159_expect.py --lanes`: PASS (15 de 15). `hud_cache_probe.gd` apunta a `agent/out/_no_assets/`. `sample_grass_palette.py` lee `maps/high_noon/tiles.png`.
+- **`Terrain.data`:** ya no cae en silencio a High Noon. Solo el editor, con `push_warning`; en partida sin `data` hay `push_error` y no se arma la malla. Las únicas sondas que armaban un `Terrain` con el script solo eran `debug/{nav_cases,ai_cases,terrain_normals_probe}.gd`: ahora asignan `data`. `rules_suite --fixed-fps 60` PASS (98 casos, nav incluido), `terrain_normals_probe` igual, y un `Terrain` sin `data` falla visible. Las sondas `pt*_watch` usan `high_noon.tscn` y no cambian.
+- **Banco** (`all fixed fixed2 stress window`): `s7` `c5a5755a…`, `s7_npcs` `4386b384…`, `s1_trivial` `60fbf6d5…`, `f139` `4750f4d1…`, iguales en los 4 modos y a la base. El veredicto sale FAIL solo por CONTAMINATED (otro Godot en el worktree de RFC-023 durante fixed/stress; `window` limpio y mismos digests). `quick`: los 21 digests de `det_baseline.txt` **iguales**; mismo aviso de CONTAMINATED en `s1_quick`. `f165` PASS (36 asserts, `AGENT_ERRORS []`).
+- **`rg "cache/"`** en `scenes data debug addons agent/harness`: solo cliente de cuerpos y clips (`body_catalog.gd`, `structure_body.gd`, `clip_pose_player.gd`, comentario de `obj_mesh.gd`), RFC-023/033i.
+
+**Desvíos del plan:**
+- Los scripts `*_tick_check.gd` y `move_order_check.gd` no se movieron a `agent/`: solo se cambió el default; las refs sí están en `agent/fixtures/sacengine/`.
+- `sizes.json` no se regenera desde la instalación (ver arriba).
+- `audit_original_assets.gd` se borró ya en 033h (el plan decía 033i): sin la caché como fuente no tenía contra qué comparar. Lo reemplaza `tools/check_original_assets.sh` (regenera cada familia con su importador y compara con `diff -r`; terreno por `import_terrain.gd`; nombres de íconos GDScript = Python por `tools/check_icon_files.gd`).
+- Las capturas `rfc033_shots` no se corrieron: 033h no toca nada visible salvo `tum@.png`, que ningún código usa.
+
+**Ronda de corrección de 033h (review CHANGES_REQUESTED):**
+- **`run_determinism.sh`:** `fixed` se corre siempre en la invocación (se agrega si falta) y el veredicto exige al menos 2 modos frescos por caso; con uno solo, FAIL «sin comparación». Pruebas: `f139 fixed` solo = FAIL sin comparación; un `f139_fixed` falso + `f139 stress` = PASS porque `fixed` se vuelve a correr (el falso no se usa); `s7` normal = PASS.
+- **Íconos que chocan en macOS:** cada mayúscula del tag se escribe `_` + minúscula (`HSba` → `_h_sba.png`, `hsba` → `hsba.png`). Dueño único `OriginalAssets.icon_file(tag)` (lo usa `HudIcons.icon`); `import_ui.py` espeja `icon_file`, sin el workaround `spelled`, y falla si dos nombres chocan con `lower()`; `tools/check_icon_files.gd` compara GDScript y Python en todos los tags. 12 PNG y sus `.import` renombrados con `git mv` (UIDs conservados); nuevos `_h_sba`, `_h_rba`, `_e_h_t_h`, `_r_a_m_h`; `hsba.png` y `hrba.png` ahora tienen su ícono (Life Shield, Spikey Death). Captura: `agent/out/033h/icons_life_shield_protector_spikey_halo.png` (los cuatro íconos distintos; carga por `HudIcons.icon`).
+- **Paridad:** `tools/check_original_assets.sh` → textures, props, themes, map, ui, fx, data, terrain.res OK, nombres de íconos OK, `ASSETS PARITY PASS`.

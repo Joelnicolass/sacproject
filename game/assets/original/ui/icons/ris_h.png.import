@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bw3j53xaogfx8"
-path="res://.godot/imported/uslH.png-57911cda214e63a1465e8c131f776baa.ctex"
+uid="uid://dgy8stlnkln0j"
+path="res://.godot/imported/ris_h.png-a3a88613d3eaab61ba59bc1d5fe84b8a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/original/ui/icons/uslH.png"
-dest_files=["res://.godot/imported/uslH.png-57911cda214e63a1465e8c131f776baa.ctex"]
+source_file="res://assets/original/ui/icons/ris_h.png"
+dest_files=["res://.godot/imported/ris_h.png-a3a88613d3eaab61ba59bc1d5fe84b8a.ctex"]
 
 [params]
 

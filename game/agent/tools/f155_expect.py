@@ -4,7 +4,7 @@ debug/f155_oil, replicated from state.d and the SPEL data, next to what the port
 class are those of f128_expect.py (loaded from the same folder).
 
 Usage: python3 -I agent/tools/f155_expect.py [godot log of debug/f155_oil (rules debug/rules/f155_oil.tres)]
-       python3 -I agent/tools/f155_expect.py --lanes     (only the lane check against the map caches)
+       python3 -I agent/tools/f155_expect.py --lanes     (only the lane check against the map files)
        python3 -I agent/tools/f155_expect.py --schedule  (the tick table, no log)
 
 Needs the bench switches on (debug/ai_match.gd): AbilityEffect.log_effects (the `lob` line) and Oiled.log_oil.
@@ -121,9 +121,6 @@ def model_file(name):
     """A model measurement file from assets/original/models/ (RFC-033, 033c)."""
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "assets", "original", "models", name)
 
-
-def cache(name):
-    return base.cache(name)
 
 
 def world(name):

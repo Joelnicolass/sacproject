@@ -13,9 +13,14 @@ without meshes; the values are copied, never recomputed).
   python3 tools/import_props.py --check    # report what would change, write nothing
   python3 tools/import_props.py --verify   # read the written .glb files back and compare them with the OBJ (mm)
 
-Source: the OBJ and the measurements that tools/export_persephone.py, export_stats.py and tools/bake_bodies.gd leave in
-cache/ (catalog.json, baked/{bodies,props}.json). Run it once; the result is versioned. An existing .glb.import is never
-touched (it carries the UID). Deterministic: a second run writes nothing.
+Source: the installation's WAD files, read with tools/sac_formats (joby.wad, prsc.wad, models.wad, jamesmod.wad): the model
+is built in memory as the OBJ text it has always been imported from (5 decimals), so the vertices are the same. Run it once;
+the result is versioned. An existing .glb.import is never touched (it carries the UID). Deterministic: a second run writes
+nothing.
+
+sizes.json is the one thing the WAD cannot give: those measurements come out of the posed body meshes that tools/bake_bodies.gd
+measures (RFC-023 will derive them from the .glb). It is copied only on request, `--sizes-from=cache/baked`, and left alone
+otherwise.
 """
 
 import json
@@ -28,10 +33,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from sac_formats.gltf_writer import (ARRAY_BUFFER, ELEMENT_ARRAY_BUFFER, FLOAT, UINT, USHORT, Gltf,  # noqa: E402
                                      import_params, write_glb)
 
+from sac_formats import props as propslib  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[1]
-CATALOG = ROOT / "cache" / "look" / "persephone" / "catalog.json"
-BAKED = ROOT / "cache" / "baked"
-OUT = ROOT / "assets" / "original" / "props"
+ARGS = {a.split("=", 1)[0]: (a.split("=", 1)[1] if "=" in a else True) for a in sys.argv[1:]}
+OUT = Path(ARGS.get("--out", ROOT / "assets" / "original" / "props"))
 SIZES = ROOT / "assets" / "original" / "models" / "sizes.json"
 
 ## Area share of near-horizontal faces above which a plant lies on the ground (ObjMesh.GROUND_WIDGET_RATIO).
@@ -42,10 +48,10 @@ def f32(x: float) -> float:
     return struct.unpack("<f", struct.pack("<f", x))[0]
 
 
-def parse_obj(path: Path):
+def parse_obj(text: str):
     """ObjMesh.parse: [(label, verts, uvs, normals)] with three corners per face, plus whether the file has normals."""
     positions, normals, uvs, surfaces = [], [], [], []
-    for line in path.read_text().split("\n"):
+    for line in text.split("\n"):
         parts = line.split()
         if not parts:
             continue
@@ -142,7 +148,7 @@ def side_normals(verts):
     return out
 
 
-def build_surfaces(obj: Path, foliage: bool):
+def build_surfaces(obj: str, foliage: bool):
     """ObjMesh.build: [(label, verts, uvs, normals)] in the order and winding the game used."""
     surfaces, has_normals = parse_obj(obj)
     flip = False if foliage else needs_flip(surfaces, has_normals)
@@ -244,13 +250,12 @@ def read_glb(path: Path):
 
 
 def verify() -> None:
-    catalog = json.loads(CATALOG.read_text())
-    items = [(i, False) for i in catalog.get("structures", [])] + [(i, True) for i in catalog.get("plants", [])]
+    items = propslib.all_props()
     worst = {"position (mm)": 0.0, "uv": 0.0, "normal": 0.0}
     bad = 0
-    for item, foliage in items:
-        name = item["name"]
-        want = build_surfaces(ROOT / item["mesh"].replace("res://", ""), foliage)
+    for item in items:
+        name = item.name
+        want = build_surfaces(item.obj, item.foliage)
         got = read_glb(OUT / (name + ".glb"))
         if len(got) != len(want) or any(g[0] != w[0] or len(g[1]) != len(w[1]) for g, w in zip(got, want)):
             print("MISMATCH shape", name)
@@ -268,18 +273,16 @@ def verify() -> None:
 
 
 def main() -> None:
-    if "--verify" in sys.argv:
+    if "--verify" in ARGS:
         verify()
-    check = "--check" in sys.argv
-    catalog = json.loads(CATALOG.read_text())
-    items = [(i, False) for i in catalog.get("structures", [])] + [(i, True) for i in catalog.get("plants", [])]
+    check = "--check" in ARGS
+    items = propslib.all_props()
     written = kept = 0
     total = 0
     import tempfile
-    for item, foliage in sorted(items, key=lambda x: x[0]["name"]):
-        name = item["name"]
-        obj = ROOT / item["mesh"].replace("res://", "")
-        surfaces = build_surfaces(obj, foliage)
+    for item in items:
+        name = item.name
+        surfaces = build_surfaces(item.obj, item.foliage)
         assert surfaces, name
         target = OUT / (name + ".glb")
         with tempfile.TemporaryDirectory() as tmp:
@@ -297,18 +300,21 @@ def main() -> None:
         imp = target.with_name(target.name + ".import")
         if not imp.exists() and not check:
             imp.write_text(import_params(animation=False, exact=True, tangents=False))
-    sizes = {
-        "bodies": json.loads((BAKED / "bodies.json").read_text()),
-        "props": json.loads((BAKED / "props.json").read_text()),
-    }
-    text = json.dumps(sizes, indent=1) + "\n"
-    sizes_changed = not (SIZES.exists() and SIZES.read_text() == text)
-    if sizes_changed and not check:
-        SIZES.parent.mkdir(parents=True, exist_ok=True)
-        SIZES.write_text(text)
-    print("props %d (%d written, %d unchanged), %.2f MB of .glb; sizes.json %s: %d bodies, %d props%s" % (
-        len(items), written, kept, total / 1e6, "changed" if sizes_changed else "unchanged",
-        len(sizes["bodies"]), len(sizes["props"]), " [check]" if check else ""))
+    note = "sizes.json untouched"
+    if "--sizes-from" in ARGS:
+        baked = Path(ARGS["--sizes-from"])
+        sizes = {
+            "bodies": json.loads((baked / "bodies.json").read_text()),
+            "props": json.loads((baked / "props.json").read_text()),
+        }
+        text = json.dumps(sizes, indent=1) + "\n"
+        changed = not (SIZES.exists() and SIZES.read_text() == text)
+        if changed and not check:
+            SIZES.parent.mkdir(parents=True, exist_ok=True)
+            SIZES.write_text(text)
+        note = "sizes.json %s: %d bodies, %d props" % ("changed" if changed else "unchanged", len(sizes["bodies"]), len(sizes["props"]))
+    print("props %d (%d written, %d unchanged), %.2f MB of .glb; %s%s" % (
+        len(items), written, kept, total / 1e6, note, " [check]" if check else ""))
 
 
 if __name__ == "__main__":

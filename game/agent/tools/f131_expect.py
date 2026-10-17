@@ -5,7 +5,7 @@ the same scene) is f157_expect.py; both load this module for the lane check. PHA
 against a real log (the port has no Devour yet). The log lines marked (new) are the ones phase 2 must print.
 
 Usage: python3 -I agent/tools/f131_expect.py [godot log of debug/f131_devour_rend (rules debug/rules/f131_devour_rend.tres)]
-       python3 -I agent/tools/f131_expect.py --lanes     (only the lane check against the map caches)
+       python3 -I agent/tools/f131_expect.py --lanes     (only the lane check against the map files)
        python3 -I agent/tools/f131_expect.py --numbers   (the figures of the replica and the tick table, no log)
 
 Needs the bench switches on (debug/ai_match.gd): AbilityEffect.log_effects and MeleeAttack.log_melee.
@@ -173,7 +173,7 @@ def lane_report(lanes, margin=5.0, step=2.5, half_box=None, big_struct=None):
     except OSError:
         ntts, widgets = {"structures": []}, {}
     if terrain is None:
-        print("(sin cache/high_noon_terrain.bin: se omite el suelo)")
+        print("(sin assets/original/maps/high_noon/terrain.res: se omite el suelo)")
     structures = ntts.get("structures", [])
     for name in lanes:
         x, z = world(lanes, name)

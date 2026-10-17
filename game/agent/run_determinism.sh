@@ -11,6 +11,7 @@
 # Every Godot goes through agent/harness/godot_run.sh, one at a time. Watchdog: kill at RSS > 2.5 GB or after the
 # time limit of the mode; CONTAMINATED in the meta if another Godot (not the user's editor) shows up during the run.
 # Out: agent/out/det/<case>_<mode>.json (AI_REPORT), .events (audit lines), .log, .meta (wall_s, rss, flags).
+# The table and the verdict only look at the modes this invocation ran (plus `fixed`, the reference); `table` by hand shows all.
 # Verdict: a case passes when every mode it has gives the digest of `fixed`; the first different events line is printed.
 set -u
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"  # the project this script lives in (a worktree runs its own code, not the main checkout's)
@@ -25,6 +26,11 @@ import json, os, sys
 out, wanted = sys.argv[1], sys.argv[2:]
 cases = wanted or ["s7", "s7_npcs", "s1_trivial", "f139"]
 modes = ["fixed", "fixed2", "stress", "window"]
+# Only the modes this invocation ran (DET_MODES): an old <case>_<mode>.* from a previous run is not a result of now.
+# `table` called by hand leaves it unset and shows everything that is on disk.
+only = os.environ.get("DET_MODES", "").split()
+if only:
+    modes = [m for m in modes if m in only]
 def load(case, mode):
     base = os.path.join(out, "%s_%s" % (case, mode))
     rep, meta, lines = None, {}, None
@@ -38,8 +44,11 @@ def load(case, mode):
     except Exception: pass
     return rep, meta, lines
 rows, verdict = [], True
+nocmp = []
 for case in cases:
     ref, _, ref_lines = load(case, "fixed")
+    if only and sum(1 for m in modes if load(case, m)[0] is not None) < 2:
+        nocmp.append(case); verdict = False
     for mode in modes:
         rep, meta, lines = load(case, mode)
         if rep is None and not meta:
@@ -69,6 +78,8 @@ print("|---|---|---|---|---|---|---|---|---|---|")
 for r in rows:
     print("| " + " | ".join(c.replace("|", "\\|") for c in r) + " |")
 print()
+for c in nocmp:
+    print("%s: sin comparación (hace falta fixed más otro modo corrido ahora)" % c)
 print("DETERMINISM %s" % ("PASS" if verdict and rows else "FAIL"))
 PY
 }
@@ -80,6 +91,8 @@ fi
 CASE_ARG=${1:?usage: run_determinism.sh CASE|all [MODE...] | table}
 shift
 MODES=("$@"); [ ${#MODES[@]} -eq 0 ] && MODES=(fixed stress window)
+# `fixed` is the reference: always run it in this invocation, and a verdict needs at least two fresh modes.
+case " ${MODES[*]} " in *" fixed "*) ;; *) MODES=(fixed "${MODES[@]}") ;; esac
 # quick (cortes intermedios, ~3-4 min): s1_quick (IA con hechizos, 0,5 min) en los 3 modos + s7, f139, f148, f121, f122, f123, f149, f124, f125, f126, f127, f153, f128, f129, f130, f155, f156, f131, f132 y f133 solo fixed,
 # comparados con agent/det_baseline.txt (caso digest). La pasada `all` queda para el cierre de cada RFC.
 if [ "$CASE_ARG" = quick ]; then
@@ -91,7 +104,7 @@ if [ "$CASE_ARG" = quick ]; then
     got=$(python3 -I -c "import json,sys;print(json.load(open(sys.argv[1])).get('digest',''))" "$OUT/${c}_fixed.json" 2>/dev/null)
     if [ "$got" = "$want" ]; then echo "baseline $c OK ${got:0:8}"; else echo "baseline $c FAIL got=${got:0:8} want=${want:0:8}"; ok=0; fi
   done < "$ROOT/agent/det_baseline.txt"
-  "$0" table s1_quick | grep -q "DETERMINISM PASS" || ok=0
+  DET_MODES="fixed stress window" "$0" table s1_quick | grep -q "DETERMINISM PASS" || ok=0
   [ $ok = 1 ] && { echo "QUICK PASS"; exit 0; } || { echo "QUICK FAIL"; exit 1; }
 fi
 if [ "$CASE_ARG" = all ]; then CASES=("${ALL_CASES[@]}"); else CASES=("$CASE_ARG"); fi
@@ -175,4 +188,4 @@ for CASE in "${CASES[@]}"; do
     grep -h "SCRIPT ERROR" "$BASE.log" | head -3 | cut -c1-200
   done
 done
-report "${CASES[@]}"
+DET_MODES="${MODES[*]}" report "${CASES[@]}"

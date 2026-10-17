@@ -1,17 +1,23 @@
 #!/usr/bin/env python3
 """Import the original's 2D art (HUD, spell icons, cursors, X menu, particle atlases) to assets/original/{ui,fx}/.
 
-RFC-033 (033d). Writes only assets/original/ui/{icons,hud,cursors,xmenu}/ and assets/original/fx/. Deterministic and
-idempotent: a second run writes nothing, and an existing .png.import is never touched (it carries the UID).
+RFC-033 (033d, from the WAD in 033h). Writes only assets/original/ui/{icons,hud,cursors,xmenu}/ and assets/original/fx/.
+Deterministic and idempotent: a second run writes nothing, and an existing .png.import is never touched (it carries the UID).
 
-  python3 tools/import_ui.py            # write
-  python3 tools/import_ui.py --check    # report what would change, write nothing
+  python3 tools/import_ui.py                 # write
+  python3 tools/import_ui.py --check         # report what would change, write nothing
+  python3 tools/import_ui.py --out=DIR       # write under DIR/{ui,fx} instead (to compare with the versioned ones)
 
-Source: the PNGs that tools/export_icons.py and tools/export_particles.py leave in cache/look/ (copied byte for byte, so
-the pixels are the ones the game drew before), plus the sprite `scri` of Divine Sight's eye, decoded here from
-charlie.wad with the same TXTR reader (Bloo.WAD!/Pers.FLDR/tex.FLDR, sacobject.d:3851-3865 names it tex_ZERO_.FLDR).
-fx.json is the particle catalog with its `png` paths moved to res://assets/original/fx/. The raw WAD extraction of the
-other images stays in the exporters until 033h; this step only copies. Run it once; the result is versioned.
+Source: the installation's WAD files, read with tools/sac_formats (the only TXTR reader):
+  main.wad     icon.FLDR (spell, creature and ability icons, order icons), curs.FLDR (cursors), huds/bits/font.FLDR (HUD sheets),
+               bits.FLDR (most particle atlases)
+  xmenu.wad    the XMNU of the X menu, whose icon is an icon.FLDR one (SacXmenu.load)
+  charlie.wad, shawn.wad   the other particle atlases; `scri` is Divine Sight's eye (Bloo.WAD!/Pers.FLDR/tex.FLDR,
+               sacobject.d:3851-3865 names it tex_ZERO_.FLDR)
+The icon names come from assets/original/data/{creatures,spells,abilities}.json (tools/export_stats.py --out). The six stat bar
+strips are byte arrays in the D source (SacHud, sacobject.d:2111-2122), read from the local sacengine checkout (read-only:
+the numbers, no code). The particle numbers (size, energy, lifetime...) live in tools/fx_catalog.py; fx.json is that catalog
+with the `png` paths on res://assets/original/fx/.
 
 Import settings (so the pixels reach the screen as before): lossless, no fix_alpha_border, and mipmaps only where the old
 code generated them: fx atlases the catalog lists (FxAtlas.catalog_texture) and `scri`. The atlases read without mipmaps
@@ -19,19 +25,44 @@ code generated them: fx atlases the catalog lists (FxAtlas.catalog_texture) and 
 """
 
 import json
-import shutil
+import re
 import sys
-import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import fx_catalog  # noqa: E402
+from sac_formats import txtr  # noqa: E402
+from sac_formats.install import INSTALL  # noqa: E402
+from sac_formats.wad import index_flat  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
-LOOK = ROOT / "cache" / "look"
-OUT = ROOT / "assets" / "original"
-FAMILIES = ("icons", "hud", "cursors", "xmenu")
-OLD_FX = "res://cache/look/fx/"
+ARGS = {a.split("=", 1)[0]: (a.split("=", 1)[1] if "=" in a else True) for a in sys.argv[1:]}
+OUT = Path(ARGS.get("--out", ROOT / "assets" / "original"))
+DATA = ROOT / "assets" / "original" / "data"
+SACOBJECT = ROOT.parent / "sacengine" / "source" / "sacobject.d"
 NEW_FX = "res://assets/original/fx/"
+ICON_ROOT = "MAIN.WAD!/icon.FLDR"
+CURSOR_ROOT = "MAIN.WAD!/curs.FLDR"
+# SacCursor (sacobject.d:1973-2021): the order icons and the invalid-target icon live in icon.FLDR.
+ORDER_ICONS = ("Matt", "Mgua", "Mgot", "ncst")
+# SacHud: huds.FLDR/{fram,page,tabs}.TXTR, bits.FLDR/spi2.TXTR; SacSoul (sacobject.d:1170) and SacFont fn10 (sacfont.d:27).
+HUD_SHEETS = {
+    "tabs": "MAIN.WAD!/huds.FLDR",
+    "page": "MAIN.WAD!/huds.FLDR",
+    "fram": "MAIN.WAD!/huds.FLDR",
+    "spi2": "MAIN.WAD!/bits.FLDR",
+    "spir": "MAIN.WAD!/bits.FLDR",
+    "fn10": "MAIN.WAD!/font.FLDR",
+}
+# SacHud mana[0..2] / health[0..2]: name of the D array -> (output file, height); all 32 wide, RGBA.
+STAT_STRIPS = {
+    "manaTopData": ("stat_mana_top", 4),
+    "manaData": ("stat_mana_mid", 1),
+    "manaBottomData": ("stat_mana_bottom", 6),
+    "healthTopData": ("stat_health_top", 4),
+    "healthData": ("stat_health_mid", 1),
+    "healthBottomData": ("stat_health_bottom", 6),
+}
 # Sprites decoded from the install here: tag -> (wad, folder).
 EXTRA_FX = {"scri": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR")}
 
@@ -93,37 +124,145 @@ class Writer:
                 imp.write_text(IMPORT_TEMPLATE.format(rel=rel, mips="true" if mips else "false"))
 
 
-def decode_extra(tag: str, wad_name: str, folder: str) -> bytes:
-    from export_particles import export_atlas, index_folders
-    from export_persephone import INSTALL
+def stat_strips() -> dict:
+    """{file stem: PNG bytes}: the SacHud bar strips (sacobject.d:2111-2122), 32 px wide RGBA byte arrays in the D source."""
+    if not SACOBJECT.exists():
+        print("stat strips: no", SACOBJECT)
+        return {}
+    source = SACOBJECT.read_text(errors="replace")
+    out = {}
+    for array, (name, height) in STAT_STRIPS.items():
+        match = re.search(r"ubyte\[\]\s+%s\s*=\s*\[([0-9,\s]+)\]" % array, source)
+        if match is None:
+            print("stat strip missing", array)
+            continue
+        data = bytes(int(v) for v in match.group(1).replace(" ", "").split(",") if v)
+        if len(data) != 32 * height * 4:
+            print("stat strip size", array, len(data))
+            continue
+        out[name] = txtr.png_bytes(32, height, data)
+    return out
 
-    files = index_folders(INSTALL / wad_name)
-    with tempfile.TemporaryDirectory() as tmp:
-        dest = Path(tmp) / f"{tag}.png"
-        size = export_atlas(files, folder, tag, dest)
-        assert size is not None, f"{tag} not found in {wad_name}!{folder}"
-        return dest.read_bytes()
+
+def icon_file(tag: str) -> str:
+    """File stem of an icon tag: each capital letter becomes "_" + lower case. Mirrors OriginalAssets.icon_file (GDScript)."""
+    return "".join("_" + c.lower() if c != c.lower() else c for c in tag)
+
+
+def png_of(found) -> bytes | None:
+    return None if found is None else txtr.png_bytes(*found)
+
+
+def ui_images() -> dict:
+    """{family: {file stem: PNG bytes}} of the HUD, icons, cursors and X menu."""
+    files = index_flat(INSTALL / "main.wad")
+    # makeIconByTag: every .ICON under icon.FLDR, by file name.
+    icon_folder = {}
+    for folder, name, ext in files:
+        if ext == "ICON" and folder.startswith(ICON_ROOT) and name not in icon_folder:
+            icon_folder[name] = folder
+
+    def icon(name: str) -> bytes | None:
+        folder = icon_folder.get(name)
+        return png_of(txtr.flat_texture(files, folder, name, "ICON")) if folder else None
+
+    out = {"icons": {}, "hud": {}, "cursors": {}, "xmenu": {}}
+    missing = []
+    for table in ("creatures", "spells", "abilities"):
+        path = DATA / f"{table}.json"
+        if not path.exists():
+            print("no", path, "(run tools/export_stats.py --out assets/original/data)")
+            continue
+        for spell_tag, row in json.loads(path.read_text()).items():
+            name = str(row.get("icon", "")).strip("\x00")[::-1]
+            if not name:
+                continue
+            png = icon(name)
+            if png is None:
+                missing.append(f"{spell_tag}:{name[::-1]}")
+            else:
+                out["icons"][icon_file(spell_tag)] = png
+    for name in ORDER_ICONS:
+        png = icon(name)
+        if png is None:
+            print("order icon missing", name)
+        else:
+            out["icons"][icon_file(name)] = png
+    # Every cursor of curs.FLDR (Cnor, Cfun, ... Tnon), palette Cur1.PALT of the folder.
+    for folder, name, ext in sorted(files):
+        if ext == "ICON" and folder == CURSOR_ROOT:
+            png = png_of(txtr.flat_texture(files, folder, name, "ICON"))
+            if png is not None:
+                out["cursors"][name] = png
+    # The icon of every XMNU of xmenu.wad (SacXmenu.load: XMNU.icon names an icon.FLDR icon).
+    for (_folder, _name, ext), raw in sorted(index_flat(INSTALL / "xmenu.wad").items()):
+        if ext != "XMNU" or len(raw) < 12:
+            continue
+        tag = raw[0:4].decode("latin1").rstrip("\x00")
+        png = icon(raw[8:12][::-1].decode("latin1").rstrip("\x00"))
+        if png is None:
+            print("xmenu sin icono", tag)
+        else:
+            out["xmenu"][tag] = png
+    for name, folder in HUD_SHEETS.items():
+        png = png_of(txtr.flat_texture(files, folder, name))
+        if png is None:
+            print("hud sheet missing", name)
+        else:
+            out["hud"][name] = png
+    out["hud"].update(stat_strips())
+    for family, images in out.items():
+        seen = {}
+        for stem in images:
+            if seen.setdefault(stem.lower(), stem) != stem:
+                raise SystemExit("%s: %s and %s are one file on macOS/Windows" % (family, seen[stem.lower()], stem))
+    if missing:
+        print("icons without art:", len(missing), missing[:12])
+    return out
+
+
+def fx_images() -> tuple:
+    """({png stem: PNG bytes}, catalog with res:// paths). Includes `scri`, Divine Sight's eye."""
+    wads = {}
+    images, png_paths = {}, {}
+    atlases = dict(fx_catalog.ATLASES)
+    atlases.update(EXTRA_FX)
+    for tag, (wad_name, folder) in atlases.items():
+        if wad_name not in wads:
+            wads[wad_name] = index_flat(INSTALL / wad_name)
+        found = fx_catalog.atlas_images(wads[wad_name], folder, tag)
+        if found is None:
+            print("atlas missing", tag, wad_name, folder)
+            continue
+        for stem, (width, height, rgba) in found.items():
+            images[stem] = txtr.png_bytes(width, height, rgba)
+            png_paths[stem] = f"{NEW_FX}{stem}.png"
+    return images, fx_catalog.catalog(png_paths)
+
+
+def icon_tags() -> list:
+    """Every tag the game can ask HudIcons.icon for: the keys of creatures, spells and abilities, and the order icons."""
+    tags = list(ORDER_ICONS)
+    for table in ("creatures", "spells", "abilities"):
+        tags += json.loads((DATA / f"{table}.json").read_text()).keys()
+    return sorted(set(tags))
 
 
 def main() -> None:
-    writer = Writer("--check" in sys.argv)
+    if "--icon-files" in ARGS:      # tag<TAB>file, for tools/check_icon_files.gd
+        Path(ARGS["--icon-files"]).write_text("".join(f"{t}\t{icon_file(t)}.png\n" for t in icon_tags()))
+        return
+    writer = Writer("--check" in ARGS)
     counts = {}
-    for family in FAMILIES:
-        for png in sorted((LOOK / family).glob("*.png")):
-            writer.put(OUT / "ui" / family / png.name, png.read_bytes(), mips=False)
+    for family, images in ui_images().items():
+        for stem, data in sorted(images.items()):
+            writer.put(OUT / "ui" / family / f"{stem}.png", data, mips=False)
             counts[family] = counts.get(family, 0) + 1
-
-    catalog = json.loads((LOOK / "fx" / "fx.json").read_text())
+    images, catalog = fx_images()
     with_mips = {entry["txtr"] for entry in catalog.values()} | set(EXTRA_FX)
-    for png in sorted((LOOK / "fx").glob("*.png")):
-        writer.put(OUT / "fx" / png.name, png.read_bytes(), mips=png.stem in with_mips)
+    for stem, data in sorted(images.items()):
+        writer.put(OUT / "fx" / f"{stem}.png", data, mips=stem in with_mips)
         counts["fx"] = counts.get("fx", 0) + 1
-    for tag, (wad_name, folder) in sorted(EXTRA_FX.items()):
-        writer.put(OUT / "fx" / f"{tag}.png", decode_extra(tag, wad_name, folder), mips=True)
-        counts["fx"] += 1
-    for entry in catalog.values():
-        assert entry["png"].startswith(OLD_FX), entry["png"]
-        entry["png"] = NEW_FX + entry["png"][len(OLD_FX):]
     writer.put(OUT / "fx" / "fx.json", (json.dumps(catalog, indent=2) + "\n").encode())
     print("ui/fx %s: %d written, %d unchanged%s" % (counts, writer.written, writer.kept, " [check]" if writer.check else ""))
 

@@ -11,7 +11,7 @@
 [node name="TickCheck" type="Node" parent="." node_paths=PackedStringArray("world")]
 script = ExtResource("2_check")
 order = ExtResource("3_order")
-reference_path = "res://cache/tick_advance_ref.txt"
+reference_path = "res://agent/fixtures/sacengine/tick_advance.txt"
 world = NodePath("../HighNoon")
 
 [node name="Verdict" type="Label" parent="."]

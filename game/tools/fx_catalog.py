@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
-"""Particle atlases from the local install (sacobject.d SacParticle / SacSoul).
+"""The particle atlases and their catalog (sacobject.d SacParticle / SacSoul): which TXTR of which WAD folder, and the
+per-type numbers (size, energy, delay, gravity, lifetime) the game reads from fx.json.
 
-Writes game/cache/look/fx/<name>.png and fx.json. Does not copy the wads.
+Data and helpers only; tools/import_ui.py writes assets/original/fx/ with them. The TXTR is read by tools/sac_formats.
 """
 
-import json
+import sys
 from pathlib import Path
 
-from export_persephone import INSTALL, parse_le, walk, write_png
-
-ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "cache" / "look" / "fx"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from sac_formats import txtr as _txtr  # noqa: E402
 
 UPDATE_FPS = 60
 UPDATE_ANIM_FACTOR = 2
@@ -116,37 +115,6 @@ ADDITIVE = {"cast_james", "cast_persephone", "heal", "speedup", "soul", "wrath_c
 GRAVITY = 15.0
 
 
-def decode_txtr(raw: bytes, palette: bytes | None) -> tuple[int, int, bytes]:
-    """Same layout as sacengine txtr.d: 36-byte header, indices, optional alpha plane."""
-    width = parse_le(raw[0:4])
-    height = parse_le(raw[4:8])
-    has_alpha_color = bool(raw[12] & 4)
-    has_explicit_alpha = bool(raw[14] & 1)
-    alpha_color = (raw[18], raw[17], raw[16])
-    body = raw[36:]
-    count = width * height
-    indexes = body[:count]
-    explicit = body[count : 2 * count] if has_explicit_alpha else b""
-    rgba = bytearray(count * 4)
-    for i, color in enumerate(indexes):
-        if palette is None:
-            pixel = (color, color, color)
-        else:
-            pixel = (palette[3 * color], palette[3 * color + 1], palette[3 * color + 2])
-        alpha = explicit[i] if explicit else 255
-        if has_alpha_color and pixel == alpha_color:
-            alpha = 0
-        rgba[4 * i : 4 * i + 4] = bytes(pixel) + bytes((alpha,))
-    return width, height, bytes(rgba)
-
-
-def index_folders(wad: Path) -> dict:
-    files = {}
-    for odir, name, ext, raw in walk(wad.read_bytes()):
-        files[(odir, name, ext)] = raw
-    return files
-
-
 def glow_to_alpha(rgba: bytes, gain: float) -> bytes:
     """An additive glow on black as a straight-alpha overlay (RFC-030l): the hue at full brightness, alpha = brightness · gain.
     Drawn with blend_mix it keeps its color over a bright ground (snow), where adding light can only reach white."""
@@ -164,47 +132,28 @@ def glow_to_alpha(rgba: bytes, gain: float) -> bytes:
 OVERLAYS = {"firy": ("firy_a", 3.0), "cst0": ("cst0_a", 3.0), "gsqb": ("gsqb_a", 3.0), "wsqb": ("wsqb_a", 3.0), "styx": ("styx_a", 6.0), "gmfl": ("gmfl_a", 2.0)}
 
 
-def export_atlas(files: dict, folder: str, tag: str, dest: Path) -> tuple[int, int] | None:
-    raw = files.get((folder, tag, "TXTR"))
-    if raw is None:
+def atlas_images(files: dict, folder: str, tag: str):
+    """{png stem: (width, height, RGBA)} of an atlas and of its straight-alpha overlay, None if the TXTR is missing."""
+    found = _txtr.flat_texture(files, folder, tag)
+    if found is None:
         return None
-    pal_name = raw[8:12][::-1].decode("latin1").rstrip("\x00")
-    palette = None
-    if pal_name.lower() != "gray":
-        pal = files.get((folder, pal_name, "PALT"))
-        if pal is None:
-            return None
-        palette = pal[8:]
-    width, height, rgba = decode_txtr(raw, palette)
-    write_png(dest, width, height, rgba)
+    width, height, rgba = found
+    out = {tag: (width, height, rgba)}
     if tag in OVERLAYS:
         name, gain = OVERLAYS[tag]
-        write_png(dest.with_name(f"{name}.png"), width, height, glow_to_alpha(rgba, gain))
-    return width, height
+        out[name] = (width, height, glow_to_alpha(rgba, gain))
+    return out
 
 
-def main() -> None:
-    OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / ".gdignore").write_text("")
-    wads = {}
-    atlases = {}
-    for tag, (wad_name, folder) in ATLASES.items():
-        if wad_name not in wads:
-            wads[wad_name] = index_folders(INSTALL / wad_name)
-        size = export_atlas(wads[wad_name], folder, tag, OUT / f"{tag}.png")
-        print("atlas", tag, wad_name, folder, size)
-        if size:
-            atlases[tag] = f"res://cache/look/fx/{tag}.png"
-            if tag in OVERLAYS:
-                atlases[OVERLAYS[tag][0]] = f"res://cache/look/fx/{OVERLAYS[tag][0]}.png"
-
-    catalog = {}
+def catalog(png_of: dict) -> dict:
+    """fx.json: the PARTICLES whose atlas was read. png_of maps an atlas stem (cstj, firy_a...) to the path the game loads."""
+    out = {}
     for name, p in PARTICLES.items():
-        png = atlases.get(p["txtr"])
+        png = png_of.get(p["txtr"])
         if png is None:
             continue
         frame_s = p["delay"] * UPDATE_ANIM_FACTOR / UPDATE_FPS
-        catalog[name] = {
+        out[name] = {
             "png": png,
             "txtr": p["txtr"],
             "n_u": p["n_u"],
@@ -218,11 +167,6 @@ def main() -> None:
             "lifetime_s": round(p["lifetime_frames"] / UPDATE_FPS, 5),
             "additive": name in ADDITIVE,
         }
-    catalog["soul"]["frames_blue"] = [0, 7]
-    catalog["soul"]["frames_red"] = [8, 15]
-    (OUT / "fx.json").write_text(json.dumps(catalog, indent=2))
-    print("fx", len(catalog), sorted(catalog))
-
-
-if __name__ == "__main__":
-    main()
+    out["soul"]["frames_blue"] = [0, 7]
+    out["soul"]["frames_red"] = [8, 15]
+    return out

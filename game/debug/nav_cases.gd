@@ -24,6 +24,7 @@ func run(host: Node3D) -> Dictionary:
 	_terrain = MeshInstance3D.new()
 	_terrain.name = "Terrain"
 	_terrain.set_script(TERRAIN_SCRIPT)
+	_terrain.set("data", load(OriginalAssets.HIGH_NOON_TERRAIN))
 	_root.add_child(_terrain)
 	var fount := StaticBody3D.new()
 	fount.name = "FakeFount"

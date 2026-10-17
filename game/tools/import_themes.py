@@ -7,29 +7,29 @@ existing .png.import is never touched (it carries the UID).
   python3 tools/import_themes.py            # write
   python3 tools/import_themes.py --check    # report what would change, write nothing
 
-Source: what tools/export_tilesets.py leaves in cache/look/themes/<god>/ (PNG copied byte for byte, so the pixels are
-the ones the game drew before; theme.json holds the ENVI colours). The raw WAD extraction stays in the exporter until
-033h; this step only copies and converts. Run it once; the result is versioned.
+Source: the god WADs (prsc, pyro_a, james_a, strato_a, char) and High Noon's .scp, read with tools/sac_formats; tools/land_themes.py
+holds the tileset logic (LAND/MAPG, the remap of High Noon's tile ids onto every land) and the ENVI colours. Run it once; the
+result is versioned.
 
 Per god: atlas.png and edge.png (CPU images: TerrainMesh reads them as Image, exact, no mipmaps, no compression),
 skyt.png / skyb.png / sky.png (mipmapped textures: the sky sampled them with Image.generate_mipmaps()), sun.png and
 undr.png (textures without mipmaps; no consumer yet), and envi.tres (a GodEnvi: the ENVI colours, fog range and sun strength the game reads, in the order sacengine's
 renderer.d setupEnvironment gives them; the ENVI fields nobody reads stay in theme.json, not in the asset).
 
-The cloud/sky textures of persephone are the ones the old sky read from cache/look/persephone/ (a duplicate, same md5).
+The cloud/sky textures of persephone are the ones the old sky read from a duplicate (same md5).
 """
 
-import json
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import land_themes  # noqa: E402
 from import_ui import IMPORT_TEMPLATE  # noqa: E402
+from sac_formats import txtr  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
-SRC = ROOT / "cache" / "look" / "themes"
-OUT = ROOT / "assets" / "original" / "themes"
-GODS = ("persephone", "pyro", "james", "stratos", "charnel")
+ARGS = {a.split("=", 1)[0]: (a.split("=", 1)[1] if "=" in a else True) for a in sys.argv[1:]}
+OUT = Path(ARGS.get("--out", ROOT / "assets" / "original" / "themes"))
 # file -> "image" (CPU Image), "mips" (texture with mipmaps) or "plain" (texture without)
 KINDS = {"atlas": "image", "edge": "image", "skyt": "mips", "skyb": "mips", "sky": "mips", "sun": "plain", "undr": "plain"}
 
@@ -98,13 +98,11 @@ class Writer:
 
 
 def main() -> None:
-    writer = Writer("--check" in sys.argv)
-    for god in GODS:
-        for name, kind in KINDS.items():
-            png = SRC / god / (name + ".png")
-            writer.put(OUT / god / png.name, png.read_bytes(), kind)
-        theme = json.loads((SRC / god / "theme.json").read_text())
+    writer = Writer("--check" in ARGS)
+    for god, (images, theme) in land_themes.build_all().items():
         assert not theme["missing"], (god, theme["missing"])
+        for name, kind in KINDS.items():
+            writer.put(OUT / god / (name + ".png"), txtr.png_bytes(*images[name + ".png"]), kind)
         writer.put(OUT / god / "envi.tres", envi_tres(theme).encode())
     print("themes: %d written, %d unchanged%s" % (writer.written, writer.kept, " [check]" if writer.check else ""))
 

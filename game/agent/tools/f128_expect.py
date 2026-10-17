@@ -4,7 +4,7 @@ replicated from state.d and the SPEL data, next to what the port logged. F154 (C
 other numbers: agent/tools/f154_expect.py loads this module and calls check_log(path, "cage").
 
 Usage: python3 -I agent/tools/f128_expect.py [godot log of debug/f128_pull (rules debug/rules/f128_pull.tres)]
-       python3 -I agent/tools/f128_expect.py --lanes     (only the lane check against the map caches)
+       python3 -I agent/tools/f128_expect.py --lanes     (only the lane check against the map files)
        python3 -I agent/tools/f128_expect.py --schedule  (the tick table of a pull, no log)
 
 Needs the bench switch on (debug/ai_match.gd): Pulling.log_pull.
@@ -46,6 +46,10 @@ physics of the body. Port axes: x, y up, z; the original's z is the port's y.
 import json
 import math
 import os
+import sys as _sys
+
+_sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import terrain_asset  # noqa: E402  (agent/tools/terrain_asset.py: reads assets/original/maps/high_noon/terrain.res)
 import re
 import struct
 import sys
@@ -107,12 +111,9 @@ def map_file(name):
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "assets", "original", "maps", "high_noon", name)
 
 
-def cache(name):
-    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "cache", name)
-
 
 class Terrain:
-    """HNTR v1 (tools/export_high_noon_terrain.py, scenes/world/terrain.gd): vertices, indices; a 10 m grid of triangles."""
+    """terrain.res: vertices, indices; a 10 m grid of triangles."""
     CELL = 10.0
 
     def __init__(self, verts, idx):
@@ -128,17 +129,10 @@ class Terrain:
 
     @staticmethod
     def load():
-        try:
-            raw = open(cache("high_noon_terrain.bin"), "rb").read()
-        except OSError:
+        loaded = terrain_asset.load()
+        if loaded is None:
             return None
-        if raw[:4] != b"HNTR":
-            return None
-        vc, ic = struct.unpack_from("<II", raw, 10)
-        off = 18
-        verts = [struct.unpack_from("<fff", raw, off + 12 * i) for i in range(vc)]
-        off += 24 * vc
-        return Terrain(verts, struct.unpack_from("<%dI" % ic, raw, off))
+        return Terrain(*loaded)
 
     def ground(self, x, z):
         """Land height under (x, z), None over a hole."""

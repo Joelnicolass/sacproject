@@ -2207,3 +2207,21 @@ Deuda:
 
 Deuda:
 - `anim_mesh_clips_f37.json` sigue en `cache/data`; sus lectores son solo del cliente y se van con RFC-023 (023h).
+
+### F174 — Refs de prueba, importadores desde WAD y tools (RFC-033, corte 033h)
+
+**Piezas:**
+- **Importadores desde la instalación:** `import_textures`, `import_props`, `import_ui`, `import_themes` e `import_map` leen WAD y `.scp` con un lector único (`tools/sac_formats/`) y aceptan `--out`. `tools/check_original_assets.sh` regenera todo a una carpeta temporal y compara contra `assets/original/` (`ASSETS PARITY PASS`).
+- **Refs de tick** en `agent/fixtures/sacengine/`; los checks de debug apuntan ahí.
+- **`run_determinism.sh`:** `fixed` siempre se corre y el veredicto pide al menos 2 modos frescos; un modo solo da «sin comparación».
+- **Iconos:** `OriginalAssets.icon_file(tag)` (mayúscula → `_` + minúscula). Life Shield, Protector, Halo of Earth y Spikey Death ya no comparten archivo.
+- **`Terrain.data`** solo cae a High Noon en el editor, con aviso; en partida, sin `data`, da error.
+- **Borrados:** `export_icons.py`, `export_high_noon_*.py`, `wizard.gd` (`wizard_preview` usa `BodyLibrary`) y la auditoría vieja.
+
+**Cierre (2026-10-17).** Review CHANGES_REQUESTED (`reviews/REVIEW-RFC-033h.md`), corregida en una ronda.
+- **Paridad:** regenerado desde WAD, idéntico a lo versionado; único nuevo, `ui/icons/tum@.png`.
+- **Banco:** `all` (s7 `c5a5755a`, s7_npcs `4386b384`, s1_trivial `60fbf6d5`, f139 `4750f4d1`) y `quick` iguales a la base; `rules_suite` 98 PASS; 15/15 `--lanes`; `f165` PASS.
+- **Lo único que sigue leyendo `cache/`:** cuerpos y clips del cliente (`body_catalog`, `structure_body`, `clip_pose_player`), que se van con RFC-023.
+
+Deuda:
+- `models/sizes.json` sale del horneado de cuerpos, no del WAD (RFC-023).

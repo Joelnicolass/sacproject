@@ -5,7 +5,7 @@ against a real log (the port has no QuakeAbility yet). F158 (lane Y) and F159 (l
 and share this scene; the lane helpers are f131_expect.py's.
 
 Usage: python3 -I agent/tools/f132_expect.py [godot log of debug/f132_quake_onhit (rules debug/rules/f132_quake_onhit.tres)]
-       python3 -I agent/tools/f132_expect.py --lanes     (only the lane check against the map caches)
+       python3 -I agent/tools/f132_expect.py --lanes     (only the lane check against the map files)
        python3 -I agent/tools/f132_expect.py --numbers   (the wave table and the tick table, no log)
 
 Needs the bench switches on (debug/ai_match.gd): QuakeWave.log_quake and AbilityEffect.log_effects.

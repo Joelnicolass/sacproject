@@ -24,6 +24,8 @@ extends Node
 @export var gap_m := 60.0
 ## Fixed seed: the same rolls (accuracy) every run.
 @export var shooter_seed := 29
+## F165: the shooter neither picks a target nor attacks (it only uses its ability), as the target does.
+@export var shooter_idle := false
 @export var settle_frames := 4
 ## Creatures recharge mana only at sources (updateCreatureStats, state.d:14409): the pair goes to
 ## the nearest spot on land no source reaches, so the mana each spit costs stays spent.
@@ -90,6 +92,9 @@ func _start() -> void:
 	var target_at := _on_land(shooter_at + ahead * gap_m)
 	_shooter = _spawn(shooter_tag, shooter_slot, shooter_at, ahead)
 	_shooter.set("rng_seed", shooter_seed)
+	if shooter_idle:
+		_shooter.set("target_groups", PackedStringArray())
+		_shooter.set("idle_aggro", false)
 	_target = _spawn(target_tag, target_slot, target_at, -ahead)
 	if target_approaches:
 		_target.set("target_groups", PackedStringArray(["unit"]))

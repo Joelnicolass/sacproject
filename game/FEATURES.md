@@ -2104,3 +2104,17 @@ Deuda:
 Deuda:
 - `ensure_tangents=false` en los props; 022g reimporta con tangentes cuando haya normal maps.
 - Para cerrar en 033i hace falta un `all` sin otros Godot en paralelo.
+### F165 — Divine Sight fiel: el ojo (RFC-030, extra)
+
+**Piezas:**
+- **`abilities/divine_sight.gd`:** sin blanco ni preparación (SPEL `eesd` flags 0), así que funciona desde el botón. Lanza el ojo con `ShotSpawner.spawn_scene` (nuevo, replicable).
+- **`divine_sight_eye.gd/.tscn`:** nace 2 m delante, sube 45 ticks a 4 m, vuela recto 500 ticks o fija al enemigo más cercano a 250 m y lo persigue (aceleración 3/tick); vive 45+1800 ticks. Maná 50, enfriamiento 25 s, `effectRange` 75 (sacengine `state.d` 13102-13109, 25159-25214). Solo lo simula el servidor.
+- **`SideVision.update_vision()`:** único dueño de la grilla de visión (256×256 de 10 m). Como en sacengine con la niebla apagada, nadie la consume todavía.
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-F165.md`).
+- **Flow `f165_divine_sight`** desde la UI: 3/3 PASS, 36 asserts por corrida (maná, posición, persecución, visión, enfriamiento, fin).
+- **`f133`** mismo digest (`bfca4703`); `quick` PASS.
+
+Deuda:
+- El ojo es un resplandor provisorio casi invisible; el sprite original `scri` (hoja 4×4, `Bloo.WAD`) se exporta en 033d.
+- Busca blanco cada tick, no por la cola de IA; sin línea de vista.

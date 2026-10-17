@@ -12,6 +12,12 @@ extends Node
 ## Approximations («aprox.»): no field of view (sightFov and alertness are not exported) and no terrain
 ## line of sight (`fogOfWar` is off by default in sacengine, options.d:93, which skips it too). Buildings do
 ## not observe: the port has no sight range for them. Everything runs in _physics_process.
+##
+## F165: SideVision is also the one owner of the sight that is not a creature's own, the terrain grid `updateVision` keeps
+## (state.d:29699-29744): per side a 256x256 grid of 10 m cells with «seen until tick N» and «explored once». Whoever looks
+## from a spot (the Ranger's Divine Sight eye) calls update_vision(); the queries are position_visible_to() /
+## position_explored_by(). sacengine reads the grid only with fogOfWar on (off by default, options.d:93) and the port has no
+## fog yet, so nothing in the match consumes it: it is the data a fog will draw, and what the F165 flow checks.
 
 ## `attacker` hurt `victim`: the victim's TargetPicker listens and remembers who hit it.
 signal revealed(attacker: Node3D, victim: Node3D)
@@ -20,6 +26,11 @@ signal revealed(attacker: Node3D, victim: Node3D)
 signal marked(side: int, node: Node3D)
 
 const GROUP := &"side_vision"
+## sacengine visionGridSize (state.d:30255): cells per side of the terrain sight grid, 10 m each (DangerGrid.coord).
+const GRID := 256
+const CELL_M := 10.0
+## sacengine updateVision `refresh` = updateFPS / 2 (state.d:29703): a cell stays seen this many ticks after it was lit.
+const REFRESH_TICKS := 30
 ## 32 * updateFPS / 5 (state.d:29692).
 const SEEN_TICKS := 384
 ## frame + 1000000 in sacengine: a permanent mark.
@@ -41,6 +52,10 @@ var total_us := 0
 
 var _seen: Dictionary = {}
 var _cursor: Dictionary = {}
+## side -> PackedInt32Array(GRID * GRID): the tick until which each cell is seen (sacengine visionCounters, kept as a deadline
+## so nothing counts down per tick). side -> PackedByteArray(GRID * GRID): 1 once the cell was ever seen (exploredTerrain).
+var _sight_until: Dictionary = {}
+var _explored: Dictionary = {}
 
 
 func _ready() -> void:
@@ -163,3 +178,80 @@ func _purge() -> void:
 		for id in marks.keys():
 			if not is_instance_id_valid(id):
 				marks.erase(id)
+
+
+## sacengine updateVision (state.d:29699-29744), for the sight that comes from a spot and not from a body's own range: lights the
+## cells of `side`'s grid whose center lies within `radius` m (flat) of `center`, through tick + REFRESH_TICKS, and marks them explored.
+## The caller picks how often (sacengine: every REFRESH_TICKS ticks per source, (id + frame) % refresh). Approximation (declared,
+## like observe()): no terrain line of sight (the original ray-casts from the eye to each cell). Server (or solo) only.
+## Returns how many cells it lit.
+func update_vision(side: int, center: Vector3, radius: float) -> int:
+	if side <= 0 or radius <= 0.0:
+		return 0
+	if not _sight_until.has(side):
+		var until := PackedInt32Array()
+		until.resize(GRID * GRID)
+		_sight_until[side] = until
+		var seen_once := PackedByteArray()
+		seen_once.resize(GRID * GRID)
+		_explored[side] = seen_once
+	var until: PackedInt32Array = _sight_until[side]
+	var seen_once: PackedByteArray = _explored[side]
+	var cx := cell_of(center.x)
+	var cy := cell_of(center.z)
+	var reach := maxi(1, int(0.1 * radius))
+	var radius_sq := radius * radius
+	var lit := 0
+	for dy in range(-reach, reach + 1):
+		var y := cy + dy
+		if y < 0 or y >= GRID:
+			continue
+		for dx in range(-reach, reach + 1):
+			var x := cx + dx
+			if x < 0 or x >= GRID:
+				continue
+			var off_x := CELL_M * x - center.x
+			var off_y := CELL_M * y - center.z
+			if off_x * off_x + off_y * off_y > radius_sq:
+				continue
+			var index := y * GRID + x
+			if until[index] < tick + REFRESH_TICKS:
+				until[index] = tick + REFRESH_TICKS
+			seen_once[index] = 1
+			lit += 1
+	return lit
+
+
+## sacengine DangerGrid.coord: the cell a world coordinate falls in (cells are centered on multiples of 10 m).
+static func cell_of(meters: float) -> int:
+	return clampi(int(0.1 * (meters + 5.0)), 0, GRID - 1)
+
+
+## sacengine positionVisibleToSide (state.d:29745-29750) with the fog on: the cell under `at` is lit for `side` now.
+func position_visible_to(side: int, at: Vector3) -> bool:
+	if not _sight_until.has(side):
+		return false
+	return _lit(int((_sight_until[side] as PackedInt32Array)[cell_of(at.z) * GRID + cell_of(at.x)]))
+
+
+## sacengine positionExploredBySide (state.d:29751-29756) with the fog on: the cell was lit at some point.
+func position_explored_by(side: int, at: Vector3) -> bool:
+	if not _explored.has(side):
+		return false
+	return int((_explored[side] as PackedByteArray)[cell_of(at.z) * GRID + cell_of(at.x)]) != 0
+
+
+## How many cells `side` sees now.
+func visible_cell_count(side: int) -> int:
+	if not _sight_until.has(side):
+		return 0
+	var count := 0
+	for deadline in (_sight_until[side] as PackedInt32Array):
+		if _lit(deadline):
+			count += 1
+	return count
+
+
+## A cell with deadline `until` (0 = never lit) is seen through that tick.
+func _lit(until: int) -> bool:
+	return until > 0 and until >= tick

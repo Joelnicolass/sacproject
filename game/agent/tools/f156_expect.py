@@ -4,7 +4,7 @@ state.d and the SPEL data, next to what the port logged. The terrain, the caches
 (loaded from the same folder).
 
 Usage: python3 -I agent/tools/f156_expect.py [godot log of debug/f156_mites (rules debug/rules/f156_mites.tres)]
-       python3 -I agent/tools/f156_expect.py --lanes     (only the lane check against the map caches)
+       python3 -I agent/tools/f156_expect.py --lanes     (only the lane check against the map files)
        python3 -I agent/tools/f156_expect.py --schedule  (the tick table, no log)
 
 Lane N (B1 of the review: the `spent()` branch): Blight2 (slot 1) alone at (+45, +78) from the anchor, ordered at 6 s to use the ability on
@@ -26,7 +26,7 @@ sacengine:
   0.8 ^ numBlightMites (stats.d:122). No damage. The shooter never takes one (declared divergence: sacengine allows it after 30 ticks).
 - The replica takes each mite's origin and velocity from the `lob` line and, since Python does not reproduce Godot's RNG, restarts every
   segment from the post-hop state the port logs (`salto`): it integrates it with g = 20 (move, then gravity: RangedShot) against the real
-  terrain (cache/high_noon_terrain.bin) and the bodies of lane M as still capsules, and says on which tick the ground is touched and which
+  terrain (assets/original/maps/high_noon/terrain.res) and the bodies of lane M as still capsules, and says on which tick the ground is touched and which
   body is hit. It also checks that each hop's velocity is inside what the formulas allow and that the body it aims at is the closest one
   within 15 m (or the target it was thrown at, Druid1, when it is in range).
 Lane M (anchor 1270, 1270): Blight1 -25/-20 (slot 1, looks to +x), Druid1 0/-20 (slot 2, 25 m, the target), Druid2 +3/-17 (slot 2),
@@ -118,9 +118,6 @@ def model_file(name):
     """A model measurement file from assets/original/models/ (RFC-033, 033c)."""
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "assets", "original", "models", name)
 
-
-def cache(name):
-    return base.cache(name)
 
 
 def world(name):

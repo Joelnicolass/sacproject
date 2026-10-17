@@ -4,7 +4,7 @@ debug/f132_quake_onhit, replicated from state.d and the SPEL data, next to what 
 not yet run against a real log (the port has no MeleeOnHit yet). The lane helpers are f131_expect.py's.
 
 Usage: python3 -I agent/tools/f158_expect.py [godot log of debug/f132_quake_onhit (rules debug/rules/f132_quake_onhit.tres)]
-       python3 -I agent/tools/f158_expect.py --lanes     (only the lane check against the map caches)
+       python3 -I agent/tools/f158_expect.py --lanes     (only the lane check against the map files)
        python3 -I agent/tools/f158_expect.py --numbers   (the figures of the replica, no log)
 
 Needs the bench switches on (debug/ai_match.gd): MeleeAttack.log_melee and the freeze line of Affliction.inflict (new).

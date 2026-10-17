@@ -4,7 +4,7 @@ from state.d and the SPEL data, next to what the port logged. The terrain, the c
 f128_expect.py (loaded from the same folder).
 
 Usage: python3 -I agent/tools/f129_expect.py [godot log of debug/f129_lobs (rules debug/rules/f129_lobs.tres)]
-       python3 -I agent/tools/f129_expect.py --lanes     (only the lane check against the map caches)
+       python3 -I agent/tools/f129_expect.py --lanes     (only the lane check against the map files)
        python3 -I agent/tools/f129_expect.py --schedule  (the tick table, no log)
 
 Needs the bench switches on (debug/ai_match.gd): AbilityEffect.log_effects, Clinging.log_cling and PaceFactors.log_pace.
@@ -20,7 +20,7 @@ sacengine:
   box (0.25 m) takes it: numStickyBombs += 1 and it stays 601 ticks (`++infectionTime <= 60 * duration`, duration 10), then
   numStickyBombs -= 1. movementSpeed multiplies by 0.75 ^ numStickyBombs (stats.d:122). No damage.
 - The replica integrates each of the 10 velocities the port logs with g = 20 from the origin it logs, in the port's order (move,
-  then gravity: RangedShot._physics_process), against the bodies of lane S as still capsules on the real terrain (cache/high_noon_terrain.bin,
+  then gravity: RangedShot._physics_process), against the bodies of lane S as still capsules on the real terrain (assets/original/maps/high_noon/terrain.res,
   capsule from assets/original/models/sizes.json like BodyCollider: height, radius <= 0.45 * height), and says for each one the tick (the tick
   of the volley + steps) and the body it hits or that it touches the ground. The foe filter is the port's (RangedShot._can_hit):
   another side than the shooter's; the ally never receives one. The pick among bodies in the box is the nearest to its origin.
@@ -99,9 +99,6 @@ def model_file(name):
     """A model measurement file from assets/original/models/ (RFC-033, 033c)."""
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "assets", "original", "models", name)
 
-
-def cache(name):
-    return base.cache(name)
 
 
 def world(name):

@@ -11,7 +11,7 @@
 [node name="TickCheck" type="Node" parent="."]
 script = ExtResource("2_check")
 order = ExtResource("3_order")
-reference_path = "res://cache/tick_ref.txt"
+reference_path = "res://agent/fixtures/sacengine/tick.txt"
 
 [node name="Verdict" type="Label" parent="."]
 unique_name_in_owner = true

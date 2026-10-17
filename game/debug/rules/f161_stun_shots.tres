@@ -1,0 +1,77 @@
+[gd_resource type="Resource" script_class="BenchRules" load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
+[ext_resource type="Script" path="res://debug/bench_event.gd" id="3_event"]
+
+[sub_resource type="Resource" id="Group_B1"]
+script = ExtResource("2_group")
+tag = "bobs"
+slot = 1
+count = 1
+columns = 1
+offset_m = -45.0
+offset_z_m = -80.0
+facing_x = 1.0
+holds_still = true
+
+[sub_resource type="Resource" id="Group_S1"]
+script = ExtResource("2_group")
+tag = "tbsh"
+slot = 1
+count = 1
+columns = 1
+offset_m = -45.0
+offset_z_m = -72.0
+facing_x = 1.0
+holds_still = true
+
+[sub_resource type="Resource" id="Group_T1"]
+script = ExtResource("2_group")
+tag = "lort"
+slot = 2
+count = 1
+columns = 1
+offset_m = -20.0
+offset_z_m = -80.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_T2"]
+script = ExtResource("2_group")
+tag = "lort"
+slot = 2
+count = 1
+columns = 1
+offset_m = -20.0
+offset_z_m = -72.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Event_hit_B1"]
+script = ExtResource("3_event")
+at_s = 0.5
+action = "attack"
+label = "B1 ataca a T1 (bsba, 25 m)"
+slot = 1
+user = "Brainiac1"
+target = "Troll1"
+
+[sub_resource type="Resource" id="Event_hit_S1"]
+script = ExtResource("3_event")
+at_s = 0.5
+action = "attack"
+label = "S1 ataca a T2 (absh, 25 m)"
+slot = 1
+user = "Shrike1"
+target = "Troll2"
+
+[resource]
+script = ExtResource("1_rules")
+match_seed = 7
+groups = Array[ExtResource("2_group")]([SubResource("Group_B1"), SubResource("Group_S1"), SubResource("Group_T1"), SubResource("Group_T2")])
+anchor = Vector3(1270, 0, 1270)
+start_paused = true
+events = Array[ExtResource("3_event")]([SubResource("Event_hit_B1"), SubResource("Event_hit_S1")])
+pending_text = "Disparos que aturden en pausa"
+ignore_annihilation = true

@@ -5,7 +5,6 @@ For each model writes, into the output folder (`--out`, default assets/original/
     <m>.glb            Skeleton3D + one skinned mesh (one primitive per body part, <= 4 influences)
                        + every SXSK clip of the model as bone tracks (root displacement = root position track)
     <m>.glb.import     Godot import parameters (written next to the .glb)
-    <m>.events.json    clip -> [{frame, kind, parameter}] from the SKEL files
     index.json         model -> bones, clips (frames, framerate, hands, ...), bind discrepancy, AABB
 All paths stored inside index.json are relative to the output folder.
 
@@ -868,8 +867,12 @@ def write_glb(path: Path, model_tag: str, model: Model, clips: dict, exact: bool
     return discrepancy, reverse, (lo_all, hi_all), dropped_out, unnorm_out
 
 
+# Puts the clips back with every key (see tools/skeletal_post_import.gd).
+POST_IMPORT_SCRIPT = "res://tools/skeletal_post_import.gd"
+
+
 def write_import(path: Path):
-    path.write_text(import_params(animation=True))
+    path.write_text(import_params(animation=True, import_script=POST_IMPORT_SCRIPT))
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -925,13 +928,9 @@ def export_model(tag: str, out: Path, model_paths: dict, anim_index: dict, exact
     out.mkdir(parents=True, exist_ok=True)
     discrepancy, reversed_faces, (lo, hi), dropped, unnorm = write_glb(out / (tag + ".glb"), tag, model, clips, exact)
     write_import(out / (tag + ".glb.import"))
-    (out / (tag + ".events.json")).write_text(
-        json.dumps({t: c["events"] for t, c in clips.items()}, indent=1, sort_keys=True)
-    )
     abs_pos = model.abs_pos()
     entry = {
         "glb": tag + ".glb",
-        "events": tag + ".events.json",
         "source": model_paths[key],
         "scaling": model.scaling,
         "zfactor": model.zfactor,

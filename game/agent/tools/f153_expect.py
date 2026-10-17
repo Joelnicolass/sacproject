@@ -3,7 +3,7 @@
 bench, replicated from state.d and the SPEL data, next to what the port logged.
 
 Usage: python3 -I agent/tools/f153_expect.py [godot log of the lane D scene (debug/rules/f153_breath.tres) or its bench case]
-       python3 -I agent/tools/f153_expect.py --lanes     (only the lane check against the map caches)
+       python3 -I agent/tools/f153_expect.py --lanes     (only the lane check against the map files)
        python3 -I agent/tools/f153_expect.py --model D   (the flight and the revival of a breath that flies D meters)
 
 Needs the bench switch on (debug/ai_match.gd): BreathOfLife.log_breath and FastRevive.log_revive.
@@ -40,6 +40,10 @@ Port axes: x, y up, z; the original's z is the port's y.
 import json
 import math
 import os
+import sys as _sys
+
+_sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import terrain_asset  # noqa: E402  (agent/tools/terrain_asset.py: reads assets/original/maps/high_noon/terrain.res)
 import re
 import struct
 import sys
@@ -78,23 +82,10 @@ def map_file(name):
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "assets", "original", "maps", "high_noon", name)
 
 
-def cache(name):
-    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "cache", name)
-
 
 def load_terrain():
-    """HNTR v1 (tools/export_high_noon_terrain.py, scenes/world/terrain.gd): vertices, indices."""
-    try:
-        raw = open(cache("high_noon_terrain.bin"), "rb").read()
-    except OSError:
-        return None
-    if raw[:4] != b"HNTR":
-        return None
-    vc, ic = struct.unpack_from("<II", raw, 10)
-    off = 18
-    verts = [struct.unpack_from("<fff", raw, off + 12 * i) for i in range(vc)]
-    off += 24 * vc
-    return verts, struct.unpack_from("<%dI" % ic, raw, off)
+    """Vertices and indices of the ground (assets/original/maps/high_noon/terrain.res, RFC-033): (verts, idx), None without the file."""
+    return terrain_asset.load()
 
 
 def ground(terrain, x, z):

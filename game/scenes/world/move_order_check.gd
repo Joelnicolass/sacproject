@@ -1,7 +1,7 @@
 extends Node
 
 @export var order: MoveOrder
-@export var reference_path: String = "res://cache/tick_move_ref.txt"
+@export var reference_path: String = "res://agent/fixtures/sacengine/tick_move.txt"
 @export var subject: Node3D
 ## Used when subject is empty: the world's local wizard (spawned at runtime).
 @export var world: Node

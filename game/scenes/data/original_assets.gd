@@ -49,9 +49,27 @@ static func model(name: String) -> String:
 	return MODELS_DIR + name + ".glb"
 
 
+## models/index.json: every skeletal model's bones, clips (frames, framerate, hands, events) and AABB
+## (tools/export_skeletal.py).
+static func models_index() -> String:
+	return MODELS_DIR + "index.json"
+
+
 ## models/sizes.json: {"bodies": {...}, "props": {...}}, the measurements of every body and prop (tools/import_props.py).
 static func sizes() -> String:
 	return MODELS_DIR + "sizes.json"
+
+
+## The file name of an icon tag in `ui/icons/`: every capital letter is written as `_` + lower case (`HSba` -> `_h_sba.png`,
+## `hsba` -> `hsba.png`, `!nur` -> `!nur.png`). The original has tags that differ only in case (Life Shield `hsba`, Protector
+## `HSba`) and macOS and Windows see them as one file. tools/import_ui.py `icon_file` is the same function; the importer fails
+## on a clash and tools/check_icon_files.gd compares both on every tag.
+static func icon_file(tag: String) -> String:
+	var name := ""
+	for i in tag.length():
+		var letter := tag[i]
+		name += "_" + letter.to_lower() if letter != letter.to_lower() else letter
+	return name + ".png"
 
 
 ## family: "icons", "hud", "cursors" or "xmenu".

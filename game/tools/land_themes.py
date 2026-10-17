@@ -1,27 +1,22 @@
-#!/usr/bin/env python3
 """Per-god land look (sky, ground atlas, ENVI colors) from the local install.
 
-Writes game/cache/look/themes/<god>/. Does not copy the wads.
 Layout follows sacengine sacmap.d: the LAND folder of each god holds LAND.PALT,
 0000-0255.MAPT, the ENVI and the sky textures it names (SKY_ is read by its
-literal name, like sacengine does).
+literal name, like sacengine does). tools/import_themes.py writes assets/original/themes/ with it.
 """
 
 import itertools
-import json
 import struct
 import sys
 from collections import Counter
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from export_high_noon_look import extract  # noqa: E402
-from export_persephone import decode_txtr, walk, write_png  # noqa: E402
+from sac_formats.install import INSTALL as DATA, MAPS  # noqa: E402
+from sac_formats.txtr import folder_texture  # noqa: E402
+from sac_formats.wad import extract, walk  # noqa: E402
 
-ROOT = Path(__file__).resolve().parents[1]
-INSTALL = Path("/Users/joelsartori/Downloads/sacgame/Sacrifice")
-OUT = ROOT / "cache" / "look" / "themes"
-MAP = INSTALL / "maps" / "(2) High Noon.scp"
+MAP = MAPS / "(2) High Noon.scp"
 # Land High Noon's LEVL names (levl.d detectTileset); its TMAP ids index this land's MAPTs.
 MAP_GOD = "james"
 
@@ -96,22 +91,6 @@ def godot_colors(envi: dict) -> dict:
         "fog_begin": envi["fog_near"],
         "fog_end": envi["fog_far"],
     }
-
-
-def folder_png(folder: dict, name: str, dest: Path) -> bool:
-    raw = folder.get((name, "TXTR"))
-    if raw is None:
-        return False
-    pal_name = tag(raw[8:12])
-    palette = None
-    if pal_name.lower() != "gray":
-        pal = folder.get((pal_name, "PALT"))
-        if pal is None:
-            return False
-        palette = pal[8:]
-    width, height, rgba = decode_txtr(raw, palette)
-    write_png(dest, width, height, rgba)
-    return True
 
 
 def tile_groups(folder: dict) -> dict:
@@ -284,7 +263,7 @@ def land_tiles(folder: dict) -> dict | None:
     }
 
 
-def export_atlas(folder: dict, tmap: bytes, dest: Path, map_land: dict | None) -> dict:
+def build_atlas(folder: dict, tmap: bytes, map_land: dict | None) -> dict:
     """16x16 grid of 64x64 MAPT, like terrain.gd / sacrifice_ground.gdshader expect."""
     land = land_tiles(folder)
     if land is None:
@@ -316,10 +295,10 @@ def export_atlas(folder: dict, tmap: bytes, dest: Path, map_land: dict | None) -
             out = ((oy + y) * 1024 + ox) * 4
             for x, color in enumerate(row):
                 atlas[out + 4 * x : out + 4 * x + 4] = palt[3 * color : 3 * color + 3] + b"\xff"
-    write_png(dest, 1024, 1024, bytes(atlas))
     unmapped = sorted(used - set(remap)) if map_land is not None else sorted(used - present)
     return {
         "ok": True,
+        "image": (1024, 1024, bytes(atlas)),
         "mapt": len(present),
         "groups": {str(k): v for k, v in sorted(groups.items())},
         "remap": {str(k): v for k, v in remap.items()},
@@ -327,10 +306,9 @@ def export_atlas(folder: dict, tmap: bytes, dest: Path, map_land: dict | None) -
     }
 
 
-def export_god(god: str, wad_name: str, land: str, sun_strength: float, tmap: bytes, map_land: dict | None) -> dict:
-    out = OUT / god
-    out.mkdir(parents=True, exist_ok=True)
-    folder = land_folder(INSTALL / "data" / wad_name, land)
+def build_god(god: str, wad_name: str, land: str, sun_strength: float, tmap: bytes, map_land: dict | None):
+    """({png name: (width, height, RGBA)}, theme dict with the ENVI colours)."""
+    folder = land_folder(DATA / wad_name, land)
     missing = []
     envi_raw = folder.get(("ENVI", "ENVI"))
     envi = parse_envi(envi_raw) if envi_raw and len(envi_raw) == 428 else None
@@ -346,49 +324,37 @@ def export_god(god: str, wad_name: str, land: str, sun_strength: float, tmap: by
         "sun.png": names.get("sun_", "SUN_"),
         "edge.png": names.get("edge", "EDGE"),
     }
-    found = []
+    images = {}
     for filename, name in sources.items():
-        if folder_png(folder, name, out / filename):
-            found.append(filename)
+        found = folder_texture(folder, name)
+        if found is not None:
+            images[filename] = found
         else:
             missing.append(filename)
-    atlas = export_atlas(folder, tmap, out / "atlas.png", map_land)
+    atlas = build_atlas(folder, tmap, map_land)
     if atlas["ok"]:
-        found.append("atlas.png")
+        images["atlas.png"] = atlas["image"]
     else:
         missing.append("atlas.png")
     theme = {
         "god": god,
         "land": f"{wad_name}/{land}",
         "sun_strength": sun_strength,
-        "found": found,
+        "found": sorted(images),
         "missing": missing,
-        "atlas_groups": atlas.get("groups", {}),
-        "atlas_remap": atlas.get("remap", {}),
-        "atlas_unmapped": atlas.get("unmapped", []),
     }
     if envi:
         theme.update(godot_colors(envi))
         theme["envi"] = envi
-    (out / "theme.json").write_text(json.dumps(theme, indent=2) + "\n")
-    remapped = len(atlas.get("remap", {}))
-    print(f"{god:<11} {land:<10} found {found} missing {missing} mapt {atlas.get('mapt', 0)} remapped {remapped} groups {atlas.get('groups', {})} unmapped {atlas.get('unmapped', [])}")
-    if envi:
-        colors = godot_colors(envi)
-        print(f"{'':<11} bg {colors['background_color']} ambient {colors['ambient_color']} sun {colors['sun_color']} fog {colors['fog_color']} {colors['fog_begin']}-{colors['fog_end']}")
-    return theme
+    return images, theme
 
 
-def main() -> None:
-    OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / ".gdignore").write_text("")
-    tmap = extract(MAP, "", "TMAP")[512 : 512 + 256 * 256]
-    print("high noon tile ids", len(set(tmap)))
+def build_all() -> dict:
+    """{god: (images, theme)} for the five gods; High Noon's tile ids are remapped onto every land that is not James's."""
+    tmap = extract(MAP, "", "TMAP")[512: 512 + 256 * 256]
     wad_name, land, _ = GODS[MAP_GOD]
-    map_land = land_tiles(land_folder(INSTALL / "data" / wad_name, land))
-    for god, (wad_name, land, sun_strength) in GODS.items():
-        export_god(god, wad_name, land, sun_strength, tmap, None if god == MAP_GOD else map_land)
-
-
-if __name__ == "__main__":
-    main()
+    map_land = land_tiles(land_folder(DATA / wad_name, land))
+    return {
+        god: build_god(god, wad_name, land, sun_strength, tmap, None if god == MAP_GOD else map_land)
+        for god, (wad_name, land, sun_strength) in GODS.items()
+    }

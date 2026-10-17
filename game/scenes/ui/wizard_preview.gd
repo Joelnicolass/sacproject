@@ -1,8 +1,5 @@
 extends SubViewportContainer
 
-const _OBJ_MESH := preload("res://scenes/world/wizard.gd")
-
-@export var bodies_dir: String = "res://cache/look/bodies"
 @export var spin_speed: float = 0.5
 @export var model_height: float = 2.0
 @export var model_rotation: Vector3 = Vector3.ZERO
@@ -33,22 +30,14 @@ func show_model(model: String) -> void:
 	_shown[model] = visual
 
 
+## The baked body of BodyLibrary (the same mesh the match draws). RFC-023 replaces it with the .glb.
 func _build(model: String) -> MeshInstance3D:
-	var library: Variant = get_tree().root.get_node_or_null("BodyLibrary")
-	if library != null and library.has_method("mesh"):
-		var baked: Variant = library.mesh(model)
-		if baked is Mesh:
-			var instance := MeshInstance3D.new()
-			instance.mesh = baked
-			return instance
-	var path := "%s/%s/%s.obj" % [bodies_dir, model, model]
-	if not FileAccess.file_exists(path):
+	var baked := BodyLibrary.mesh(model)
+	if baked == null:
 		return null
-	var visual := MeshInstance3D.new()
-	visual.set_script(_OBJ_MESH)
-	visual.set("cache_path", path)
-	visual.set("missing_message", "")
-	return visual
+	var instance := MeshInstance3D.new()
+	instance.mesh = baked
+	return instance
 
 
 func _fit(visual: MeshInstance3D) -> void:

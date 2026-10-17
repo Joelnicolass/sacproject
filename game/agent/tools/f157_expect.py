@@ -4,7 +4,7 @@ replicated from state.d and the SPEL data, next to what the port logged. PHASE 0
 against a real log (the port has no Rend Soul yet). The lanes and the shared helpers are f131_expect.py's.
 
 Usage: python3 -I agent/tools/f157_expect.py [godot log of debug/f131_devour_rend (rules debug/rules/f131_devour_rend.tres)]
-       python3 -I agent/tools/f157_expect.py --lanes     (only the lane check against the map caches)
+       python3 -I agent/tools/f157_expect.py --lanes     (only the lane check against the map files)
        python3 -I agent/tools/f157_expect.py --numbers   (the figures of the replica and the tick table, no log)
 
 Needs the bench switches on (debug/ai_match.gd): AbilityEffect.log_effects, plus the splash lines of SplashImpact.

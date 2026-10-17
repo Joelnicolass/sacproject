@@ -3,7 +3,7 @@
 lanes L and K of debug/f130_lightning, replicated from state.d and the SPEL data, next to what the port logged.
 
 Usage: python3 -I agent/tools/f130_expect.py [godot log of debug/f130_lightning (rules debug/rules/f130_lightning.tres)]
-       python3 -I agent/tools/f130_expect.py --lanes     (only the lane check against the map caches)
+       python3 -I agent/tools/f130_expect.py --lanes     (only the lane check against the map files)
        python3 -I agent/tools/f130_expect.py --numbers   (the figures of the replica, no log)
 
 Needs the bench switches on (debug/ai_match.gd): LightningStrike.log_bolt, LightningCharge.log_charge, PaceFactors.log_pace,

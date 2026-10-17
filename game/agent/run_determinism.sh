@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # RFC-032 032a (F144): the determinism bench. Same match, three clocks, one digest.
-#   agent/run_determinism.sh CASE|all [MODE...]   CASE: s7 s7_npcs s1_trivial f139 f148 (F148: Abomination drops) f121 (F121: push, vortex, implosion) f122 (F122: poison shots) f123 (F123: fire shots) f149 (F149: Silverback freeze) f124 (F124: Gnome ray, Styx blow) f125 (F125: Boulderdash fan, Phoenix heat ray) f126 (F126: Protector) f127 (F127: Halo of Earth) f153 (F153: Breath of life) f128 (F128: Web pull, Cage pull) f129 (F129: Sticky bomb) f130 (F130: Call lightning, Lightning charge) f155 (F155: Viscous oil, ignite) f156 (F156: Bilemites) f131 (F131: Devour) f132 (F132: Quake) f133 (F133: viejas habilidades) f177 (F177: mele de grupo)   MODE: fixed stress window fixed2
+#   agent/run_determinism.sh CASE|all [MODE...]   CASE: s7 s7_npcs s1_trivial f139 f148 (F148: Abomination drops) f121 (F121: push, vortex, implosion) f122 (F122: poison shots) f123 (F123: fire shots) f149 (F149: Silverback freeze) f124 (F124: Gnome ray, Styx blow) f125 (F125: Boulderdash fan, Phoenix heat ray) f126 (F126: Protector) f127 (F127: Halo of Earth) f153 (F153: Breath of life) f128 (F128: Web pull, Cage pull) f129 (F129: Sticky bomb) f130 (F130: Call lightning, Lightning charge) f155 (F155: Viscous oil, ignite) f156 (F156: Bilemites) f131 (F131: Devour) f132 (F132: Quake) f133 (F133: viejas habilidades) f161 (F161: Brainiac y Shrike aturden)   MODE: fixed stress window fixed2 f166 (F166: Locust ray) f177 (F177: mele de grupo)
 #                                                  (default modes: fixed stress window; fixed2 = fixed again, criterion 1)
 #   agent/run_determinism.sh table                 verdict + markdown table from agent/out/det/
 #   agent/run_determinism.sh quick                 short pass for intermediate cuts (see below)
@@ -11,6 +11,7 @@
 # Every Godot goes through agent/harness/godot_run.sh, one at a time. Watchdog: kill at RSS > 2.5 GB or after the
 # time limit of the mode; CONTAMINATED in the meta if another Godot (not the user's editor) shows up during the run.
 # Out: agent/out/det/<case>_<mode>.json (AI_REPORT), .events (audit lines), .log, .meta (wall_s, rss, flags).
+# The table and the verdict only look at the modes this invocation ran (plus `fixed`, the reference); `table` by hand shows all.
 # Verdict: a case passes when every mode it has gives the digest of `fixed`; the first different events line is printed.
 set -u
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"  # the project this script lives in (a worktree runs its own code, not the main checkout's)
@@ -25,6 +26,11 @@ import json, os, sys
 out, wanted = sys.argv[1], sys.argv[2:]
 cases = wanted or ["s7", "s7_npcs", "s1_trivial", "f139"]
 modes = ["fixed", "fixed2", "stress", "window"]
+# Only the modes this invocation ran (DET_MODES): an old <case>_<mode>.* from a previous run is not a result of now.
+# `table` called by hand leaves it unset and shows everything that is on disk.
+only = os.environ.get("DET_MODES", "").split()
+if only:
+    modes = [m for m in modes if m in only]
 def load(case, mode):
     base = os.path.join(out, "%s_%s" % (case, mode))
     rep, meta, lines = None, {}, None
@@ -38,8 +44,11 @@ def load(case, mode):
     except Exception: pass
     return rep, meta, lines
 rows, verdict = [], True
+nocmp = []
 for case in cases:
     ref, _, ref_lines = load(case, "fixed")
+    if only and sum(1 for m in modes if load(case, m)[0] is not None) < 2:
+        nocmp.append(case); verdict = False
     for mode in modes:
         rep, meta, lines = load(case, mode)
         if rep is None and not meta:
@@ -69,6 +78,8 @@ print("|---|---|---|---|---|---|---|---|---|---|")
 for r in rows:
     print("| " + " | ".join(c.replace("|", "\\|") for c in r) + " |")
 print()
+for c in nocmp:
+    print("%s: sin comparación (hace falta fixed más otro modo corrido ahora)" % c)
 print("DETERMINISM %s" % ("PASS" if verdict and rows else "FAIL"))
 PY
 }
@@ -80,18 +91,20 @@ fi
 CASE_ARG=${1:?usage: run_determinism.sh CASE|all [MODE...] | table}
 shift
 MODES=("$@"); [ ${#MODES[@]} -eq 0 ] && MODES=(fixed stress window)
-# quick (cortes intermedios, ~3-4 min): s1_quick (IA con hechizos, 0,5 min) en los 3 modos + s7, f139, f148, f121, f122, f123, f149, f124, f125, f126, f127, f153, f128, f129, f130, f155, f156, f131, f132, f133 y f177 solo fixed,
+# `fixed` is the reference: always run it in this invocation, and a verdict needs at least two fresh modes.
+case " ${MODES[*]} " in *" fixed "*) ;; *) MODES=(fixed "${MODES[@]}") ;; esac
+# quick (cortes intermedios, ~3-4 min): s1_quick (IA con hechizos, 0,5 min) en los 3 modos + s7, f139, f148, f121, f122, f123, f149, f124, f125, f126, f127, f153, f128, f129, f130, f155, f156, f131, f132, f133, f161 y f166 solo fixed,
 # comparados con agent/det_baseline.txt (caso digest). La pasada `all` queda para el cierre de cada RFC.
 if [ "$CASE_ARG" = quick ]; then
   "$0" s1_quick fixed stress window || true
-  "$0" s7 fixed >/dev/null; "$0" f139 fixed >/dev/null; "$0" f148 fixed >/dev/null; "$0" f121 fixed >/dev/null; "$0" f122 fixed >/dev/null; "$0" f123 fixed >/dev/null; "$0" f149 fixed >/dev/null; "$0" f124 fixed >/dev/null; "$0" f125 fixed >/dev/null; "$0" f126 fixed >/dev/null; "$0" f127 fixed >/dev/null; "$0" f153 fixed >/dev/null; "$0" f128 fixed >/dev/null; "$0" f129 fixed >/dev/null; "$0" f130 fixed >/dev/null; "$0" f155 fixed >/dev/null; "$0" f156 fixed >/dev/null; "$0" f131 fixed >/dev/null; "$0" f132 fixed >/dev/null; "$0" f133 fixed >/dev/null; "$0" f177 fixed >/dev/null
+  "$0" s7 fixed >/dev/null; "$0" f139 fixed >/dev/null; "$0" f148 fixed >/dev/null; "$0" f121 fixed >/dev/null; "$0" f122 fixed >/dev/null; "$0" f123 fixed >/dev/null; "$0" f149 fixed >/dev/null; "$0" f124 fixed >/dev/null; "$0" f125 fixed >/dev/null; "$0" f126 fixed >/dev/null; "$0" f127 fixed >/dev/null; "$0" f153 fixed >/dev/null; "$0" f128 fixed >/dev/null; "$0" f129 fixed >/dev/null; "$0" f130 fixed >/dev/null; "$0" f155 fixed >/dev/null; "$0" f156 fixed >/dev/null; "$0" f131 fixed >/dev/null; "$0" f132 fixed >/dev/null; "$0" f133 fixed >/dev/null; "$0" f161 fixed >/dev/null; "$0" f166 fixed >/dev/null; "$0" f177 fixed >/dev/null
   ok=1
   while read -r c want; do
     [ -z "$c" ] && continue
     got=$(python3 -I -c "import json,sys;print(json.load(open(sys.argv[1])).get('digest',''))" "$OUT/${c}_fixed.json" 2>/dev/null)
     if [ "$got" = "$want" ]; then echo "baseline $c OK ${got:0:8}"; else echo "baseline $c FAIL got=${got:0:8} want=${want:0:8}"; ok=0; fi
   done < "$ROOT/agent/det_baseline.txt"
-  "$0" table s1_quick | grep -q "DETERMINISM PASS" || ok=0
+  DET_MODES="fixed stress window" "$0" table s1_quick | grep -q "DETERMINISM PASS" || ok=0
   [ $ok = 1 ] && { echo "QUICK PASS"; exit 0; } || { echo "QUICK FAIL"; exit 1; }
 fi
 if [ "$CASE_ARG" = all ]; then CASES=("${ALL_CASES[@]}"); else CASES=("$CASE_ARG"); fi
@@ -122,6 +135,8 @@ case_args() { # case -> ai_match args (no out/events)
     f131) echo "--rules=res://debug/rules/f131_devour_rend.tres --seed=7 --minutes=0.15" ;;
     f132) echo "--rules=res://debug/rules/f132_quake_onhit.tres --seed=7 --minutes=0.5" ;;
     f133) echo "--rules=res://debug/rules/f133_legacy_abilities.tres --seed=7 --minutes=0.3" ;;
+    f161) echo "--rules=res://debug/rules/f161_stun_shots.tres --seed=7 --minutes=0.4" ;;
+    f166) echo "--rules=res://debug/rules/f166_locust_ray.tres --seed=7 --minutes=0.3" ;;
     f177) echo "--rules=res://debug/rules/f177_melee_group.tres --seed=7 --minutes=0.3" ;;
     f124) echo "--rules=res://debug/rules/f124_bolts.tres --seed=7 --minutes=0.5" ;;
     *) return 1 ;;
@@ -176,4 +191,4 @@ for CASE in "${CASES[@]}"; do
     grep -h "SCRIPT ERROR" "$BASE.log" | head -3 | cut -c1-200
   done
 done
-report "${CASES[@]}"
+DET_MODES="${MODES[*]}" report "${CASES[@]}"

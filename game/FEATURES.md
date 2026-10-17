@@ -2043,6 +2043,26 @@ Deuda:
 Deuda:
 - `body_setter` es un StringName con guarda `has_method`: un typo falla en silencio.
 
+### F161 — El Brainiac y el Shrike aturden al blanco (RFC-030, corte 030w-b)
+
+**Fuentes (sacengine, solo lectura):** `updateBrainiacProjectile` (state.d:22886-22936) y `updateShrikeProjectile` (22952-22989): la criatura o el mago golpeado recibe `stunWithCooldown(stunCooldownFrames)` y después, por el `goto case`, `dealRangedDamage` con `DamageMod.none`. Un edificio recibe solo el daño; el suelo, nada. **480 es el enfriamiento** del aturdimiento (`stunCooldownFrames = 8·updateFPS`, 8561-8568), no la duración: el Troll queda tumbado 72 ticks (el largo de su `Stunned`).
+
+**Piezas:**
+- **`StunImpact.target_only`** (`@export`, apagado por defecto): aturde solo al cuerpo golpeado si es criatura o mago. Apagado, queda la caminata de radio del Flummox (F120), sin cambios. La línea de enfriamiento del log ahora lleva `(cuadro N)`.
+- **`impacts/stun_hit_impact.tscn`:** `StunImpact(target_only)` con un hijo `DirectImpact`. `ShotImpact.apply` corre primero el nodo y después los hijos: aturde y después daña, el orden de sacengine. Sin script nuevo.
+- **`data/shots/bsba.tres` y `absh.tres`:** `ShotLook` (`hit_size` 0,45 y 0,6, `sweep`, `impact = stun_hit_impact.tscn`). Vuelan a 36 m/s según su SPEL (bsba 200 / alcance 90; absh 150 / alcance 35).
+- **Caso `f161`** (`debug/f161_stun_shots.*`, `agent/tools/f161_expect.py`): Brainiac y Shrike quietos contra un Troll cada uno a 25 m, filas separadas 8 m, sin contacto.
+
+**Comportamiento medido:** el primer impacto da `aturdido Troll durante 72` y en la línea siguiente el `directo` (180,0 el Brainiac, 135,0 el Shrike: monto · 0,9). Los impactos dentro de los 480 ticks dan `aturdir: … en enfriamiento (c)` con c = 480 − Δt; el primero después de 480 vuelve a aturdir.
+
+**Desvíos del plan:**
+- El plan dice Troll `ycrp`; ese tag es el Yeti. El Troll es `lort`.
+- `trail_fx` provisorio (`heal`) para las dos estelas.
+
+Deuda:
+- El deslizamiento de 1,5 m del Brainiac pegado al suelo (revienta sin daño) y la estela original (`BrainiacEffect` 32 cuadros, `ShrikeEffect` 128).
+- El disparo en el suelo (ni cuerpo ni edificio) no se mide en el caso.
+
 ### F176 — Exportador esqueletal y paridad (RFC-023, corte 023a)
 
 **Piezas:**
@@ -2119,6 +2139,24 @@ Deuda:
 - El ojo es un resplandor provisorio casi invisible; el sprite original `scri` (hoja 4×4, `Bloo.WAD`) se exporta en 033d.
 - Busca blanco cada tick, no por la cola de IA; sin línea de vista.
 
+### F166 — Rayo instantáneo de la Locust (RFC-030, corte 030w-d)
+
+**Sacengine:** `locustShoot` (11527-11531) y `updateLocustShoot` (22992-23005): en el mismo cuadro del disparo, `collideRay` desde el origen hasta el alcance de `zbba` (50 m) con el filtro `id != atacante && isValidTarget` (primer cuerpo vivo de cualquier bando, o edificio); con blanco, `dealRangedDamage(DamageMod.none)`. Sin blanco, el extremo visual es 0,5 del alcance. `LocustProjectile` (23007-23022) es solo visual.
+
+**Piezas:**
+- **`data/shots/zbba.tres`:** `ShotLook` con `strike = locust_ray.tscn` y sin `impact`, así que el daño sale por `ShotImpact.land` (directo, 200 · resistencia directa del blanco).
+- **`strikes/locust_ray.tscn`:** `RayStrike` de una ráfaga, `foes_only = false` (Health decide el fuego amigo), `beam = locust_ray`. Reusa el rayo del Gnome sin código nuevo.
+- **`RayStrike.miss_fraction`** (`@export`, 1 por defecto; Locust 0,5): fracción del rayo que se dibuja cuando no encuentra nada. Solo visual; el Gnome y el Warmonger no cambian.
+- **`data/fx/beams/locust_ray.tres`:** beam provisorio (atlas alfa `gmfl_a` en MIX, vida 0,267 s). Un rayo que frena en el suelo se dibuja completo; en sacengine el terreno cuenta como «none» y se dibuja a 0,5 (deuda del beam).
+- **Banco:** `debug/f166_locust_ray.tscn`, `rules/f166_locust_ray.tres`, `agent/tools/f166_expect.py`, caso `f166` en `run_determinism.sh` (solo fixed en `quick`) y en `det_baseline.txt` (`5a402302`), `ai_match.camera_target_offset` (la cámara mira la fila, no el manantial) y `agent/run_f166.sh` + flow para las capturas.
+- **Beam:** `locust_ray` usa el atlas alfa `gmfl_a` en `MIX` (nada aditivo sobre nieve); es provisorio.
+
+**Caso:** Locust1 (50 % de vida) contra Troll1 con un Troll3 aliado en la línea: el rayo frena en el Troll3 y no le hace daño. Locust2 contra Troll2 en línea libre: 180 (200 · 0,9) en el tick del disparo. Un Troll y no un Druid porque la Locust vuela a 4 m del suelo y su rayo baja ~0,4 m por metro: a un Druid le pasa por arriba. La fila de Locust2 está corrida 15 m para librar la jhut (-15/-56).
+
+Deuda:
+- El flujo de partículas de sangre o escombro hacia la Locust (`LocustProjectile`) es un beam provisorio.
+- El drenaje de 0,875 llega con F164 (030w-e).
+
 ### F170 — HUD, iconos, cursores y FX como assets (RFC-033, corte 033d)
 
 **Piezas:**
@@ -2194,27 +2232,32 @@ Deuda:
 - `final_spit_melee` (Druid contra Earthfling, 1 contra 1): gap de caja mínimo 0,100 m (el reposo de `BodySeparation`), 0 cambios de signo de la velocidad de acercamiento, se asienta en el piso de `BodySeparation` (el objetivo de sacengine, d = 1,05 m, queda por dentro). PASS.
 - `s7` (3 contra 3): el gap de caja baja a -0,067 (Druid) y -0,072 (Trogg) y la velocidad de acercamiento cambia de signo cientos de veces por ventana (524 y 759 como máximo). No viene de `close_in`: con el knob en 1000 (sin acercamiento) da -0,061 / -0,108 y 409 / 682 cambios. Es el empuje de terceros cuerpos de `BodySeparation` (5 m/s, 0,08 m por tick) en la melé; el comando de `close_in` ahí es cero. Queda anotado, sin tocar `BodySeparation` (su regla es la de sacengine).
 
-### F177 — Temblor en la melé de grupo (plan 030w, corte 030w-a): medición, SIN decidir
+### F177 — Temblor en la melé de grupo (plan 030w, corte 030w-a): medición, sin cambio de juego
 
-**Estado.** Los dos interruptores quedan **apagados** (`MeleeAttack.melee_moving`, `BodySeparation.share_push`): ningún digest cambió. Ninguna combinación cumple el criterio (≤ 2 cambios de signo por ventana y caja ≥ -0,05 m en `f177` y `s7`), y el plan manda parar y reportar.
+**Estado.** No se activó ni A ni B y **se quitaron del código** (la receta queda abajo). Ningún digest cambió. Queda `BodySeparation.log_push` (apagado; `ai_match --log-push`), igual que `MeleeAttack.log_gap`, el caso `f177` (`debug/f177_melee_group.tscn`: 3 Druid contra 3 Trogg y un cuarto Trogg que aprieta) y la réplica `agent/tools/melee_gap_expect.py` con el criterio **superposición nunca menor a -0,05 m y amplitud pico a pico de `d` de 0,03 m o menos por ventana de contacto** (medida desde el primer tick con la caja a la distancia de reposo).
 
-**Piezas.**
-- **B (fiel, dueño `MeleeAttack`):** `moving_pace_factor` (`@export`, 0,5) y `static var melee_moving`. `close_in` camina a media marcha hasta el primer cuadro de ataque del golpe (`_next_tick == 0`, `meleeMoving`, sacengine `state.d:14668-14671`, `8725-8731`) y después da cero (`meleeAttacking` frena, `14411-14412`).
-- **A (desvío, dueño `BodySeparation`):** `static var share_push`, `pushes_back`, `share_of`. `_second_pass` multiplica el solapamiento de cada obstáculo que también se empuja fuera de este cuerpo por `1 / (k + 1)`, con k los obstáculos que lo empujan en ese tick. Con k = 1 es 0,5 (el par se separa exacto en un tick). La versión del plan (0,5 fijo para todo par) no amortigua las cadenas: con dos vecinos el modo alterno de una fila de cuerpos quietos tiene valor propio -1 y no decae (s7: 755 cambios de signo con 0,5; con `1 / (k + 1)` los valores propios de D⁻¹L quedan bajo 2 y la fila se asienta en teoría).
-- **Bancos:** `ai_match --melee-moving`, `--share-push`, `--log-push` (línea `sep_push A tick at wanted kept push [B cara monto]…` para cuerpos en CHASE/ATTACK empujados); `agent/tools/f177_matrix.sh [rules] [minutos]` corre las 4 combinaciones A×B; `melee_gap_expect.py` con `TREMOR_MAX = 2`; caso `f177` (`debug/f177_melee_group.tscn`, 3 Druid contra 3 Trogg y un cuarto Trogg que aprieta).
+**Medición del estado actual (no cumple).**
+- `f177`: piso de caja 0,017 (Druid) y 0,100 (Trogg); amplitud máxima 0,166 m (Druid2) y 0,083 m (Trogg2). Superposición: cumple. Amplitud: no cumple.
+- `s7`: piso de caja -0,067 (Druid) y -0,072 (Trogg); amplitud máxima 0,445 m y 0,412 m. Ninguno de los dos criterios cumple. La amplitud incluye la deriva lenta de pares empujados a lo largo de cientos de ticks, no solo el temblor de 2 ticks.
+- Umbral sin ajustar.
 
-**Medición** (fixed, semilla 7; piso de caja / cambios de signo máximos Druid y Trogg):
+**Receta de B (fiel parcial, dueño `MeleeAttack`).** `moving_pace_factor` (`@export`, 0,5) y `static var melee_moving`: `close_in` multiplica la marcha por 0,5 hasta el primer cuadro de ataque del golpe (`_next_tick == 0`; sacengine `meleeMoving`, `state.d:8725-8731`, `14668-14671`) y después da cero (`meleeAttacking`, `14411-14412`). Le falta para ser fiel: la **aceleración y la desaceleración** en el suelo también a la mitad (`14668-14671` escala velocidad y aceleración, el port fija la velocidad), el `facing` (el cuerpo gira mientras camina) y un estado de velocidad en `UnitBody` (sacengine frena por desaceleración, no corta en seco), que no se pudo agregar porque `unit_body.gd` está en el tope de 1040 líneas.
+
+**Receta de A (desvío, dueño `BodySeparation`).** `static var share_push` y `share_of`: `_second_pass` multiplica el solapamiento de cada obstáculo que también se empuja fuera de este cuerpo (no está `Afflictions.fixed()` y no lo exime `_passes`) por `1 / (k + 1)`, con k los obstáculos que lo empujan en ese tick. Con k = 1 es 0,5 y el par se separa exacto en un tick. El 0,5 fijo del plan no amortigua una fila de cuerpos (valor propio -1 del modo alterno); `1 / (k + 1)` sí en teoría. El reposo (`rest_distance`) no cambia.
+
+**Tabla (fixed, semilla 7; piso de caja en m / máximo de cambios de signo de la métrica vieja, Druid y Trogg):**
 
 | caso | A off, B off | A off, B on | A on, B off | A on, B on |
 |---|---|---|---|---|
 | f177 | 0,017 / 414 y 0,100 / 16 | 0,017 / 386 y 0,100 / 104 | 0,060 / 21 y 0,058 / 30 | 0,060 / 21 y 0,057 / 30 |
 | s7 | -0,067 / 524 y -0,072 / 759 | -0,277 / 479 y -0,095 / 755 | -0,002 / 675 y -0,006 / 705 | -0,091 / 677 y -0,033 / 705 |
 
-(s7 con A al 0,5 fijo del plan: -0,029 / 701 y -0,089 / 761 sin B; -0,042 / 681 y -0,058 / 745 con B.)
+**Atribución** (`--log-push` sobre s7): una fila de cuerpos **quietos** (`wanted = 0`: Trogg1, Trogg4, Druid1, Druid4) con solapamiento permanente de 0,02-0,04 m que otros cuerpos mantienen apretada; cada tick todos se llevan su empuje de la foto del principio del cuadro y oscilan en un ciclo de 2 ticks de 0,02 m. En `f177` el tercer cuerpo es el Trogg4, que empuja con marcha entera. B no ayuda y en s7 empeora el piso (-0,277).
 
-**Atribución** (`--log-push` sobre s7): el temblor no viene del acercamiento ni de un par. Es una fila de cuerpos **quietos** (`wanted = 0`: Trogg1, Trogg4, Druid1, Druid4) con solapamiento permanente de 0,02-0,04 m que otros cuerpos mantienen apretada, y cada tick todos se llevan su empuje de la foto del principio del cuadro: un ciclo de 2 ticks de 0,02 m de amplitud (Trogg4 x 1265,440 / 1265,464). `d` alterna 1,231 / 1,250. El metro de la réplica (cambio de signo con `MOVE_EPS` 0,005 m/tick) lo cuenta como cientos de cambios. En `f177` el tercer cuerpo es el Trogg4 que empuja con marcha entera (ciclo de 3 ticks, gap 0,100 / 0,048). B no ayuda y en s7 empeora el piso (-0,277): quien llega a media marcha ya no es el que pasa de largo, pero el de atrás sí.
-
-**Decisión pendiente (del orquestador).** (1) Aceptar A (`1 / (k + 1)`): f177 pasa de 414 a 21 cambios y el piso de caja de s7 sube a -0,002 / -0,006, pero cambia los digests de todo caso con dos cuerpos en contacto y no llega a ≤ 2. (2) Relajar la métrica (amplitud, no signo: 0,02 m no se ve). (3) Un empuje con memoria (amortiguar contra el empuje del tick anterior), que ya es otra cosa que sacengine. Capturas de la melé: no se tomaron, nada visible cambia con los interruptores apagados.
+**Deuda.**
+- La aritmética de la separación es la misma que la de sacengine (`positionAfterCollision`, empuje entero por cuerpo sobre la foto del cuadro); no se midió que el original tiemble igual. Medir 3 contra 3 en el original con REA.
+- El port agrega `make_way`/`MakeWay.slide`, que el original no tiene; en `f177` el ciclo de 3 ticks del Trogg4 pasa por su deslizamiento. Medir con `make_way` apagado.
+- Si se reabre: A con `1 / (k + 1)` o un empuje con memoria; ambos cambian los digests de todo caso con dos cuerpos en contacto.
 
 ### F173 — Datos de juego como assets (RFC-033, corte 033g)
 
@@ -2229,3 +2272,21 @@ Deuda:
 
 Deuda:
 - `anim_mesh_clips_f37.json` sigue en `cache/data`; sus lectores son solo del cliente y se van con RFC-023 (023h).
+
+### F174 — Refs de prueba, importadores desde WAD y tools (RFC-033, corte 033h)
+
+**Piezas:**
+- **Importadores desde la instalación:** `import_textures`, `import_props`, `import_ui`, `import_themes` e `import_map` leen WAD y `.scp` con un lector único (`tools/sac_formats/`) y aceptan `--out`. `tools/check_original_assets.sh` regenera todo a una carpeta temporal y compara contra `assets/original/` (`ASSETS PARITY PASS`).
+- **Refs de tick** en `agent/fixtures/sacengine/`; los checks de debug apuntan ahí.
+- **`run_determinism.sh`:** `fixed` siempre se corre y el veredicto pide al menos 2 modos frescos; un modo solo da «sin comparación».
+- **Iconos:** `OriginalAssets.icon_file(tag)` (mayúscula → `_` + minúscula). Life Shield, Protector, Halo of Earth y Spikey Death ya no comparten archivo.
+- **`Terrain.data`** solo cae a High Noon en el editor, con aviso; en partida, sin `data`, da error.
+- **Borrados:** `export_icons.py`, `export_high_noon_*.py`, `wizard.gd` (`wizard_preview` usa `BodyLibrary`) y la auditoría vieja.
+
+**Cierre (2026-10-17).** Review CHANGES_REQUESTED (`reviews/REVIEW-RFC-033h.md`), corregida en una ronda.
+- **Paridad:** regenerado desde WAD, idéntico a lo versionado; único nuevo, `ui/icons/tum@.png`.
+- **Banco:** `all` (s7 `c5a5755a`, s7_npcs `4386b384`, s1_trivial `60fbf6d5`, f139 `4750f4d1`) y `quick` iguales a la base; `rules_suite` 98 PASS; 15/15 `--lanes`; `f165` PASS.
+- **Lo único que sigue leyendo `cache/`:** cuerpos y clips del cliente (`body_catalog`, `structure_body`, `clip_pose_player`), que se van con RFC-023.
+
+Deuda:
+- `models/sizes.json` sale del horneado de cuerpos, no del WAD (RFC-023).

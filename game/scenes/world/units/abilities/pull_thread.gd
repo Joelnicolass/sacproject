@@ -10,7 +10,7 @@ extends Node3D
 ## peer), `seed` (the shapes) and `grow_ticks`. It ends with the bit of the user's Pulling (replicated), or when a body is
 ## gone; `wait_ticks` covers the clients whose bit arrives after the event. Presentation only, never headless, drawn in MIX
 ## (alpha blend, never additive).
-## WORKAROUND: the textures of the original (TXTR `cord`, `ltng`) are not in the exporter's atlases (tools/export_particles.py):
+## WORKAROUND: the textures of the original (TXTR `cord`, `ltng`) are not in the exporter's atlases (tools/fx_catalog.py):
 ## a flat color stands in until `texture_tag` has an atlas.
 ## Divergences (declared): the web / cage mesh around the target is not drawn; the cage's shape does not reset at each pull
 ## (the clients do not see the pull ticks): one ramp from the start.

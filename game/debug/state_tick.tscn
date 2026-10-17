@@ -11,7 +11,7 @@
 [node name="StateTickCheck" type="Node" parent="." node_paths=PackedStringArray("world", "camera")]
 script = ExtResource("2_check")
 tick = ExtResource("3_tick")
-reference_path = "res://cache/tick_state_ref.txt"
+reference_path = "res://agent/fixtures/sacengine/tick_state.txt"
 world = NodePath("../HighNoon")
 camera = NodePath("../HighNoon/Camera")
 

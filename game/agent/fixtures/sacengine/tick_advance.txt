@@ -1,0 +1,6 @@
+n=60
+order=advance
+x=0
+y=0
+z=3
+life=1

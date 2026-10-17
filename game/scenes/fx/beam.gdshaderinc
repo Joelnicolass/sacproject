@@ -1,6 +1,6 @@
 // Ribbon of a BeamFx (sacengine shadelessBoneMaterial with Blending.Additive, renderer.d:264-272), shared by
 // beam.gdshader (blend_add, the default) and beam_mix.gdshader (blend_mix, BeamType.blend MIX). With BEAM_MIX the
-// atlas is a straight-alpha overlay (export_particles glow_to_alpha, *_a.png): the colour as is, and its alpha times
+// atlas is a straight-alpha overlay (fx_catalog glow_to_alpha, *_a.png): the colour as is, and its alpha times
 // `energy` (clamped to 1) is the coverage, so the beam keeps its hue over a bright ground (snow).
 // UV comes from beam_fx.gd in cell fractions (0..1): the axis at the bottom of the cell (bright row of
 // ltn2), the fin's edge at the top. The cell and the brightness are per beam (instance uniforms), so

@@ -1,23 +1,18 @@
-#!/usr/bin/env python3
-"""Export High Noon height and cliff walls to a Godot mesh bin.
+"""High Noon's height map (HMAP) and cliff walls as the HNTR v1 mesh bin: vertices and flat normals in Godot axes, then the
+triangle indices. tools/import_map.py writes it outside the repo and tools/import_terrain.gd turns it into terrain.res.
 
-Reads the local Sacrifice install. Writes game/cache/, which is gitignored.
+Offsets are those of (2) High Noon.scp: the HMAP sits at a fixed place of that file.
 """
 
 import struct
-import sys
 import zlib
 from pathlib import Path
 
-DEFAULT_SCP = "/Users/joelsartori/Downloads/sacgame/Sacrifice/maps/(2) High Noon.scp"
 HMAP_OFF = 15499
 HMAP_Z = 21763
 HMAP_SIZE = 132096
 MAP_DEPTH = 50.0
 CELL = 10.0
-
-ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_OUT = ROOT / "cache" / "high_noon_terrain.bin"
 
 
 def le_u16(b):
@@ -116,28 +111,23 @@ def norm(v):
     return (v[0] / length, v[1] / length, v[2] / length)
 
 
-def main():
-    scp = Path(sys.argv[1] if len(sys.argv) > 1 else DEFAULT_SCP)
-    out = Path(sys.argv[2] if len(sys.argv) > 2 else DEFAULT_OUT)
+def hntr(scp: Path) -> bytes:
+    """The HNTR v1 bytes of the map's ground and cliff walls."""
     blob = scp.read_bytes()
-    raw = zlib.decompress(blob[HMAP_OFF : HMAP_OFF + HMAP_Z])
+    raw = zlib.decompress(blob[HMAP_OFF: HMAP_OFF + HMAP_Z])
     if len(raw) != HMAP_SIZE:
-        print("hmap size", len(raw), "expected", HMAP_SIZE)
-        return 1
+        raise ValueError("hmap size %d, expected %d" % (len(raw), HMAP_SIZE))
     width = le_u16(raw[0:2])
     height = le_u16(raw[2:4])
     need = 4 + 2 * width * height
     if len(raw) < need:
-        print("hmap short", len(raw), need)
-        return 1
-    if len(raw) > need:
-        print("tail ignored", len(raw) - need)
+        raise ValueError("hmap short %d < %d" % (len(raw), need))
     samples = []
     for y in range(height):
         row_e = []
         row_h = []
         for x in range(width):
-            elev = le_u16(raw[4 + 2 * (y * width + x) : 6 + 2 * (y * width + x)])
+            elev = le_u16(raw[4 + 2 * (y * width + x): 6 + 2 * (y * width + x)])
             void = bool(elev & (1 << 15))
             elev &= ~(1 << 15)
             row_e.append(void)
@@ -148,8 +138,7 @@ def main():
     n, m = height, width
     land = [heights[j][i] for j in range(n) for i in range(m) if not edges[j][i]]
     if not land:
-        print("no land")
-        return 1
+        raise ValueError("no land")
     base = min(land)
     for j in range(n):
         for i in range(m):
@@ -186,7 +175,6 @@ def main():
                     corners.append(godot(ii, jj, heights[jj][ii]))
                 push_tri(*corners, False)
 
-    walls = 0
     for j in range(n - 1):
         for i in range(m - 1):
             for slot in range(8):
@@ -199,9 +187,7 @@ def main():
                 bot_a = add(top_a, (0.0, -MAP_DEPTH, 0.0))
                 push_tri(top_a, bot_b, top_b, True)
                 push_tri(bot_b, top_a, bot_a, True)
-                walls += 1
 
-    out.parent.mkdir(parents=True, exist_ok=True)
     payload = bytearray()
     payload += b"HNTR"
     payload += struct.pack("<HHH", 1, width, height)
@@ -212,11 +198,4 @@ def main():
         payload += struct.pack("<fff", *v)
     for idx in indices:
         payload += struct.pack("<I", idx)
-    out.write_bytes(payload)
-    print("width", width, "height", height, "verts", len(verts), "indices", len(indices), "walls", walls)
-    print(out)
-    return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+    return bytes(payload)

@@ -14,11 +14,14 @@ import re
 import shutil
 import struct
 import subprocess
+import sys
 import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-INSTALL = Path("/Users/joelsartori/Downloads/sacgame/Sacrifice/data")
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from sac_formats.bldg import read_buildings  # noqa: E402
+from sac_formats.install import INSTALL  # noqa: E402
 NTT_DATA = ROOT.parent / "sacengine" / "source" / "nttData.d"
 OUT = ROOT / "cache" / "data"
 ## RFC-033g: with `--out DIR` the game data (creatures, wizards, spells, abilities, books, buildings) goes to DIR
@@ -804,66 +807,9 @@ def export_f37_mesh_clips(anim_index: dict, model_paths: dict, creatures: dict, 
 
 ## BLDG (RFC-024 addendum, cut 024b2). Layout follows sacengine `bldg.d`: header 128 bytes
 ## (flags, ground 8x8, maxHealth u32, 10 floats, tileset, numComponents u32 at 120) and 48 bytes per component.
-BLDG_WADS = ("joby.wad", "pyromod.wad", "jamesmod.wad", "stratmod.wad")
-## Models are exported only for the land the map is built with (High Noon is James). The other gods
-## would need a table per biome (RFC-024 addendum 1 risk 9): their BLDGs are in buildings.json anyway.
-BLDG_MODEL_WADS = ("jamesmod.wad",)
-BLDG_SHELTER = 1 << 15
-BLDG_GROUND = 1 << 31
-BLDG_HEADER = 128
-BLDG_COMPONENT = 48
+## The BLDG reader (layout, wads) lives in tools/sac_formats/bldg.py, shared with the props importer.
 BUILDING_MODELS_DIR = ROOT / "cache" / "look" / "buildings"
 CATALOG_PATH = ROOT / "cache" / "look" / "persephone" / "catalog.json"
-
-
-def decode_bldg(raw: bytes, folder: str) -> dict:
-    """Name-order tags (the reverse of the stored bytes, like every WAD name). `components` come in file order."""
-    flags = u32(raw, 0)
-    count = u32(raw, 120)
-    if len(raw) != BLDG_HEADER + BLDG_COMPONENT * count:
-        return {}
-    components = []
-    for k in range(count):
-        base = BLDG_HEADER + BLDG_COMPONENT * k
-        components.append({
-            "kind": human_tag(raw, base),
-            "tag": human_tag(raw, base + 4),
-            "destroyed": human_tag(raw, base + 12),
-            "x": f32(raw, base + 20),
-            "y": f32(raw, base + 24),
-            "z": f32(raw, base + 28),
-            "facing": f32(raw, base + 32),
-            "spell": human_tag(raw, base + 36),
-        })
-    return {
-        "flags": flags,
-        "shelter": bool(flags & BLDG_SHELTER),
-        "ground": bool(flags & BLDG_GROUND),
-        "max_health": u32(raw, 68),
-        "tileset": human_tag(raw, 112),
-        "folder": folder,
-        "components": components,
-    }
-
-
-def read_buildings() -> tuple[dict, dict]:
-    """Every BLDG of the god wads (tag -> entry) and the MRMM models of the BLDG_MODEL_WADS (tag -> source)."""
-    buildings: dict = {}
-    models: dict = {}
-    for wad_name in BLDG_WADS:
-        wad = INSTALL / wad_name
-        if not wad.exists():
-            continue
-        folders = ex.index_folders(wad)
-        for odir, files in folders.items():
-            for (name, ext), raw in files.items():
-                if ext == "BLDG" and name not in buildings:
-                    entry = decode_bldg(raw, odir)
-                    if entry:
-                        buildings[name] = entry
-                elif ext == "MRMM" and name not in models and wad_name in BLDG_MODEL_WADS:
-                    models[name] = (wad_name, odir, files, raw)
-    return buildings, models
 
 
 def write_buildings_json(buildings: dict) -> None:

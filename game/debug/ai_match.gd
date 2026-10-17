@@ -34,6 +34,8 @@ const MELEE_ATTACK := preload("res://scenes/world/units/melee_attack.gd")
 @export var settle_frames := 4
 @export_group("Camera")
 @export var camera_offset := Vector3(0.0, 30.0, 50.0)
+## The point the camera looks at, from the anchor (a scene whose lanes are far from it, F166). Zero: the anchor.
+@export var camera_target_offset := Vector3.ZERO
 ## > 0: the bench camera keeps looking at the wizard of that slot (the AI scenes follow their wizard).
 @export var follow_slot := 0
 
@@ -553,7 +555,7 @@ func _frame_camera() -> void:
 		return
 	var terrain := _world.get_node("Terrain")
 	var ground := float(terrain.call("ground_height", _rules.anchor.x, _rules.anchor.z))
-	var center := Vector3(_rules.anchor.x, 0.0 if is_nan(ground) else ground, _rules.anchor.z)
+	var center := Vector3(_rules.anchor.x, 0.0 if is_nan(ground) else ground, _rules.anchor.z) + camera_target_offset
 	camera.global_position = center + camera_offset
 	camera.look_at(center, Vector3.UP)
 	camera.current = true

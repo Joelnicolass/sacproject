@@ -22,11 +22,15 @@ Log lines (Firewalking.log_walk and AbilityEffect.log_effects on):
   habilidad Firewalk mana 500->250
   Warmonger3 Fuera de alcance
 The check compares each logged frame with the model horizontally (HORIZ_TOL_M), with the land's height from
-cache/high_noon_terrain.bin (flat when it is missing).
+assets/original/maps/high_noon/terrain.res (flat when it is missing).
 """
 import json
 import math
 import os
+import sys as _sys
+
+_sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import terrain_asset  # noqa: E402  (agent/tools/terrain_asset.py: reads assets/original/maps/high_noon/terrain.res)
 import re
 import struct
 import sys
@@ -54,23 +58,10 @@ def map_file(name):
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "assets", "original", "maps", "high_noon", name)
 
 
-def cache(name):
-    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "cache", name)
-
 
 def load_terrain():
-    """HNTR v1 (tools/export_high_noon_terrain.py, scenes/world/terrain.gd): vertices, normals, indices."""
-    try:
-        raw = open(cache("high_noon_terrain.bin"), "rb").read()
-    except OSError:
-        return None
-    if raw[:4] != b"HNTR":
-        return None
-    vc, ic = struct.unpack_from("<II", raw, 10)
-    off = 18
-    verts = [struct.unpack_from("<fff", raw, off + 12 * i) for i in range(vc)]
-    off += 24 * vc
-    return verts, struct.unpack_from("<%dI" % ic, raw, off)
+    """Vertices and indices of the ground (assets/original/maps/high_noon/terrain.res, RFC-033): (verts, idx), None without the file."""
+    return terrain_asset.load()
 
 
 def ground(terrain, x, z):

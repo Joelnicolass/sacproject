@@ -5,7 +5,7 @@ before and after the abilities move to the AbilityCatalog (the digest in agent/d
 before; this script checks the result of each event and the mana and cooldown lines, which the digest does not see: it hashes positions).
 
 Usage: python3 -I agent/tools/f133_expect.py [godot log of debug/f133_legacy_abilities (rules debug/rules/f133_legacy_abilities.tres)]
-       python3 -I agent/tools/f133_expect.py --lanes     (only the lane check against the map caches)
+       python3 -I agent/tools/f133_expect.py --lanes     (only the lane check against the map files)
 
 Needs the bench switches on (debug/ai_match.gd): ActiveAbility.log_ability and AbilityEffect.log_effects.
 

@@ -3,7 +3,7 @@
 lane A of debug/f126_protector_firewalk, replicated from state.d and the SPEL data, next to what the port logged.
 
 Usage: python3 -I agent/tools/f126_expect.py [godot log of debug/f126_protector_firewalk or the f126 bench case]
-       python3 -I agent/tools/f126_expect.py --lanes   (only the lane check against the map caches)
+       python3 -I agent/tools/f126_expect.py --lanes   (only the lane check against the map files)
 
 sacengine:
 - useAbility (13463-13561): protector / lifeShield; when it returns true, apply() drains manaCost and sets the cooldown
@@ -21,6 +21,10 @@ horizontal one plus the ground and center heights within DIST_TOL_M (the box hei
 import json
 import math
 import os
+import sys as _sys
+
+_sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import terrain_asset  # noqa: E402  (agent/tools/terrain_asset.py: reads assets/original/maps/high_noon/terrain.res)
 import re
 import struct
 import sys
@@ -52,23 +56,10 @@ def map_file(name):
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "assets", "original", "maps", "high_noon", name)
 
 
-def cache(name):
-    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "cache", name)
-
 
 def load_terrain():
-    """HNTR v1 (tools/export_high_noon_terrain.py, scenes/world/terrain.gd): vertices, normals, indices."""
-    try:
-        raw = open(cache("high_noon_terrain.bin"), "rb").read()
-    except OSError:
-        return None
-    if raw[:4] != b"HNTR":
-        return None
-    vc, ic = struct.unpack_from("<II", raw, 10)
-    off = 18
-    verts = [struct.unpack_from("<fff", raw, off + 12 * i) for i in range(vc)]
-    off += 24 * vc
-    return verts, struct.unpack_from("<%dI" % ic, raw, off)
+    """Vertices and indices of the ground (assets/original/maps/high_noon/terrain.res, RFC-033): (verts, idx), None without the file."""
+    return terrain_asset.load()
 
 
 def ground(terrain, x, z):

@@ -2,7 +2,8 @@
 extends MeshInstance3D
 
 ## The map's raw ground (assets/original/maps/<map>/terrain.res). Everything else is derived from it on load.
-## high_noon.tscn assigns it; a Terrain built from the script alone (probes, benches) gets High Noon's.
+## high_noon.tscn assigns it. A Terrain built from the script alone (a probe) assigns `data` itself; only the editor
+## falls back to High Noon's (a half-built scene), with a warning. In a match, a missing `data` is an error, not a silent default.
 @export var data: MapTerrainData
 ## Folder with atlas.png (16x16 MAPT grid) and edge.png: a god's themes/ folder. The light map is the map's own.
 @export_dir var tileset_dir: String = OriginalAssets.theme_dir("james")
@@ -99,9 +100,14 @@ func _set_preview_offset(offset: Vector3) -> void:
 
 
 func _load_mesh() -> bool:
-	if data == null and ResourceLoader.exists(OriginalAssets.HIGH_NOON_TERRAIN):
+	if data == null and Engine.is_editor_hint() and ResourceLoader.exists(OriginalAssets.HIGH_NOON_TERRAIN):
+		push_warning("Terrain.data is empty: the editor shows High Noon's ground. Assign data in the scene.")
 		data = load(OriginalAssets.HIGH_NOON_TERRAIN) as MapTerrainData
-	if data == null or not data.is_valid():
+	if data == null:
+		push_error("Terrain '%s' has no data (MapTerrainData): assign it in the scene." % name)
+		return false
+	if not data.is_valid():
+		push_error("Terrain '%s': data is not a valid MapTerrainData (vertices, normals, indices)." % name)
 		return false
 	var vertices := data.vertices
 	var normals := data.normals

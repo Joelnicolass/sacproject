@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://debug/ai_match.tscn" id="1_match"]
+[ext_resource type="Resource" path="res://debug/rules/f166_locust_ray.tres" id="2_rules"]
+
+[node name="F166LocustRay" instance=ExtResource("1_match")]
+editor_description = "RFC-030 030w-d (F166). Rayo instantáneo de la Locust (zbba) desde el manantial central (1270, 1270), semilla 7, sin fuego amigo. Fila z -80: Locust1 (slot 1, 50 % de vida, quieta) en -45 contra el Troll1 enemigo (slot 2, pacifista) en -17, con el Troll3 aliado pacifista en -20 en la línea (un Troll y no un Druid: la Locust vuela a 4 m del suelo y su rayo baja ~0,4 m por metro, así que le pasa por arriba a un Druid): el rayo frena en el Troll3, que no recibe nada, y el Troll1 queda intacto; con la precisión 800 algunos rayos se van al suelo. Fila z -70: Locust2 en -60 contra el Troll2 en -35 (corridos para librar la jhut), línea libre: el daño directo (200 · 0,9 = 180) cae en el tick del disparo, sin vuelo. Los dos atacan a los 0,5 s. Enter (check_tick) arranca. Log: `rayo zbba <tirador> → <cuerpo>[ (aliado)] a <m> m: <daño>`. Réplica: agent/tools/f166_expect.py."
+
+[node name="Runner" parent="." index="3"]
+default_rules = ExtResource("2_rules")
+camera_offset = Vector3(-4, 5, 18)
+camera_target_offset = Vector3(-33, -3, -80)
+default_minutes = 0.3

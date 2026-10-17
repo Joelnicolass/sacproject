@@ -22,7 +22,7 @@ sacengine:
   the pulls; the fourth pull throws Druid5 and nothing drives it after: it flies on its own until it lands.
 - That flight is Tumbling's (the port; sacengine updateCreature, 14781-14797): each tick, on the land (y <= ground + 0.02) and going
   down vy = 0, else vy -= 9.81 / 60; then vx, vz *= 0.99 and vy *= 0.998; position += v / 60; with vy <= 0 and y + vy / 60 <=
-  ground + 0.02 it lands. The ground is the map's (cache/high_noon_terrain.bin), which climbs 4 cm per m on this lane. The
+  ground + 0.02 it lands. The ground is the map's (assets/original/maps/high_noon/terrain.res), which climbs 4 cm per m on this lane. The
   replica takes the position and velocity the port logs when it starts the tumble («tumbo … desde … v …») and says where and
   when it lands: ±1 tick and ±0.05 m. While the body rises faster than the land under it the replica is only approximate
   (the real body slides on the floor): it says so and widens the margin to ±3 ticks and ±0.15 m.

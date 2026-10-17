@@ -14,23 +14,23 @@ Layout:
                                   (bodypart003, M000, plant). A texture used by several models is stored once, under the
                                   first one (sorted); every other model points to it.
 
-Source: the files the exporters leave in cache/look (SAXS and TGA of cache/look/bodies from export_bodies.py;
-OBJ and PNG of the props from export_persephone.py / export_stats.py). The raw WAD extraction stays in those exporters
-until 033h; this step only converts. Run it once; the result is versioned.
+Source: the installation's WAD files, read with tools/sac_formats (the only reader): the SXTX/SAXS of every body (saxs*.wad)
+and the textures of the props (joby.wad, prsc.wad, models.wad, jamesmod.wad). No cache/ involved.
 """
 
+import io
 import json
-import re
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from PIL import Image  # noqa: E402
+import numpy as np  # noqa: E402
+from sac_formats import bodies, props as propslib  # noqa: E402
 from sac_formats import textures as tx  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
-BODIES = ROOT / "cache" / "look" / "bodies"
-CATALOG = ROOT / "cache" / "look" / "persephone" / "catalog.json"
-OUT = ROOT / "assets" / "original" / "textures"
+OUT = Path(next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--out=")), ROOT / "assets" / "original" / "textures"))
 
 IMPORT_TEMPLATE = """[remap]
 
@@ -69,44 +69,43 @@ detect_3d/compress_to=1
 """
 
 
+def rgb_or_rgba(image: Image.Image) -> np.ndarray:
+    """H x W x 3 (opaque) or H x W x 4 uint8, like tx.load_rgb_or_rgba but from memory."""
+    rgba = np.asarray(image.convert("RGBA"))
+    if rgba[..., 3].min() == 255:
+        return np.ascontiguousarray(rgba[..., :3])
+    return np.ascontiguousarray(rgba)
+
+
 def body_textures():
-    """(model, label, file stem, pixels) for every TGA of every body, chroma applied."""
-    for folder in sorted(p for p in BODIES.iterdir() if p.is_dir()):
-        model = folder.name
-        saxs = folder / (model + ".SAXS")
-        keys = tx.chroma_keys(saxs.read_bytes()) if saxs.exists() else {}
-        for tga in sorted(folder.glob("*.tga")):
-            stem = tga.stem
+    """(model, label, file stem, pixels) for every SXTX (a TGA file) of every body, chroma applied."""
+    files_of = bodies.read_bodies(bodies.model_names())
+    for model in sorted(files_of):
+        files = files_of[model]
+        saxs = files.get(model + ".SAXS")
+        keys = tx.chroma_keys(saxs) if saxs else {}
+        for key in sorted(k for k in files if k.endswith(".SXTX") and k.startswith(".")):
+            stem = key[1:-len(".SXTX")]
             label = "bodypart" + stem
-            pixels = tx.load_rgb_or_rgba(tga)
+            image = Image.open(io.BytesIO(files[key]))
+            image.load()
+            pixels = rgb_or_rgba(image)
             if label in keys:
                 pixels = tx.apply_chroma(pixels, keys[label])
             yield model, label, stem, pixels
 
 
-def obj_labels(obj: Path) -> list:
-    seen = []
-    for label in re.findall(r"^usemtl (\S*)", obj.read_text(), re.M):
-        if label not in seen:
-            seen.append(label)
-    return seen
-
-
 def prop_textures():
-    """(prop, label, label, pixels) for every building component and plant of the Persephone catalog."""
-    catalog = json.loads(CATALOG.read_text())
-    items = [(i, False) for i in catalog.get("structures", [])] + [(i, True) for i in catalog.get("plants", [])]
-    for item, _plant in sorted(items, key=lambda x: x[0]["name"]):
-        name = item["name"]
-        obj = ROOT / item["mesh"].replace("res://", "")
-        fallback = ROOT / item["texture"].replace("res://", "") if item.get("texture") else None
-        for label in obj_labels(obj):
-            beside = obj.parent / (label + ".png")
-            src = beside if beside.exists() else fallback
-            if src is None or not src.exists():
-                print("  no texture for", name, label)
+    """(prop, label, label, pixels) for every building component, spell model and plant."""
+    for prop in propslib.all_props():
+        for label in prop.labels():
+            found = prop.textures.get(label)
+            if found is None:
+                print("  no texture for", prop.name, label)
                 continue
-            yield name, label, label, tx.load_rgb_or_rgba(src)
+            width, height, rgba = found
+            image = Image.frombytes("RGBA", (width, height), rgba)
+            yield prop.name, label, label, rgb_or_rgba(image)
 
 
 def main() -> None:

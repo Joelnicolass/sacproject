@@ -1,14 +1,14 @@
 class_name ShotDropper
-extends Node
+extends ShotInFlight
 
 ## F148 (RFC-030 030h3): the droplets an Abomination's gut drops while it flies. sacengine animateAbominationProjectile
 ## (state.d:24441-24452): every frame of flight `numParticles = !!state.uniform(4)`, so with probability 3/4 one
 ## AbominationDroplet (state.d:4838-4845) is added at the shot's new position (i = 0 of 1: oldPosition·0 + position·1),
 ## with velocity 0. The droplet's fall and hit belong to DropletRain (one pool in the world, server only).
 ##
-## The scene is ShotLook.dropper. RangedShot instances it on the server (or solo) only, as a child of the shot, and calls
-## drop() once per physics tick, after it moved and before it checks its hit (the order of updateAbominationProjectile,
-## state.d:24454-24460). Chance comes from MatchSeed: one stream per shot, ["drops", shot name].
+## The scene is ShotLook.in_flight (a ShotInFlight, F149). RangedShot instances it on the server (or solo) only, as a
+## child of the shot, and calls fly() once per physics tick, after it moved and before it checks its hit (the order of
+## updateAbominationProjectile, state.d:24454-24460). Chance comes from MatchSeed: one stream per shot, ["drops", shot name].
 
 ## state.uniform(4) != 0: a droplet unless the roll is 0, i.e. (one_in − 1) / one_in of the ticks.
 @export_range(1, 16) var one_in := 4
@@ -19,8 +19,7 @@ extends Node
 ## abominationDropletSize (state.d:24481): side of the droplet's hit box in meters.
 @export var hit_size := 0.25
 
-## Ticks the shot flew with this dropper, and droplets it dropped.
-var ticks := 0
+## Droplets it dropped (the ticks are ShotInFlight's).
 var drops := 0
 ## Where the shot was on its first and on its last tick with this dropper.
 var first_at := Vector3.ZERO
@@ -35,9 +34,13 @@ func _ready() -> void:
 	_rng = MatchSeed.rng(["drops", String(get_parent().name)])
 
 
-## One roll per tick of flight; on a hit of the roll, a droplet at `at` for the shooter's side `from_slot`.
+func _fly(shot: RangedShot, at: Vector3) -> void:
+	drop(at, shot.from_slot)
+
+
+## One roll per tick of flight (fly() already counted it); on a hit of the roll, a droplet at `at` for the shooter's
+## side `from_slot`.
 func drop(at: Vector3, from_slot: int) -> void:
-	ticks += 1
 	if ticks == 1:
 		first_at = at
 	last_at = at

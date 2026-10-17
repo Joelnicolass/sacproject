@@ -4,16 +4,13 @@ extends Affliction
 ## F137 (RFC-030i-b): sacengine petrified. petrify (state.d:11631-11645) refuses a ccProtected body (a petrified one
 ## among them, stats.d:89) and one that cannot be immobilized (dying, dead, reviving…, state.d:189-197); a stunned body
 ## is petrified all the same (the type's `cancels`). While it lasts the type's flags say the rest: held, not pushed,
-## a flier falls (startTumbling), every hit ×0.2 (8965), refuses crowd control. Here: the pose freezes (ClipPosePlayer)
-## and the body turns grey (StoneLook), on every peer from the replicated bit.
+## a flier falls (startTumbling), every hit ×0.2 (8965), refuses crowd control. The pose and the grey belong to
+## Afflictions (its clip_pose and look, from the type's look_tint; F149: one owner for petrified and frozen).
 ## The end (updatePetrification, 23732-23764): the stun cooldown is cleared and damageStun knocks it down with 4 s of
 ## cooldown (Stunned.knock); 32 rocks burst from its box.
 
 ## sacengine damageStunCooldownFrames = 4·updateFPS.
 @export var knock_cooldown_ticks := 240
-## The pose that holds while it lasts.
-@export var clip_pose: ClipPosePlayer
-@export var stone_look: StoneLook
 ## Knocked down when it ends. Optional: empty = it just stands up.
 @export var stunned: Stunned
 ## Its body_height() puts the rocks at the middle of the body.
@@ -35,7 +32,7 @@ func _ready() -> void:
 ## Server (or solo): sacengine petrify(obj, lifetime). True when it turned to stone.
 func petrify(lifetime_ticks: int) -> bool:
 	var body := _body()
-	if body == null or lifetime_ticks <= 0 or not _body_allows(body):
+	if body == null or lifetime_ticks <= 0 or not can_be_immobilized(body):
 		return false
 	if _afflictions().cc_protected():
 		print("  petrificar: %s protegido" % str(body.call("display_name")))
@@ -51,9 +48,10 @@ func petrify(lifetime_ticks: int) -> bool:
 	return true
 
 
-## canBePetrified (state.d:189-197), with the port's names: not dead, not still summoned, not held by a doctor.
-## Playing dead and Rockform may be petrified. A wizard (F138) only alive: dying, dead and every ghost stage say no.
-func _body_allows(body: Node3D) -> bool:
+## canBeImmobilized = canBePetrified = canBeFrozen (state.d:189-198), with the port's names: not dead, not still
+## summoned, not held by a doctor. Playing dead and Rockform may be petrified. A wizard (F138) only alive: dying, dead
+## and every ghost stage say no. Frozen asks here too (F149).
+static func can_be_immobilized(body: Node3D) -> bool:
 	var unit := body as UnitBody
 	if unit == null:
 		return body.has_method("is_targetable") and bool(body.call("is_targetable"))
@@ -91,10 +89,6 @@ func _burst_rocks() -> void:
 
 
 func _shown(on: bool) -> void:
-	if clip_pose:
-		clip_pose.frozen = on
-	if stone_look:
-		stone_look.stone = on
 	if not on and is_physics_processing():
 		## Ended from outside while the server still ran it (the body died, state.d:23759-23760): rocks, no stun.
 		set_physics_process(false)

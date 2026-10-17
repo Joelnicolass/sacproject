@@ -12,6 +12,6 @@ spin_max = 0.9
 trail_fx = "abom_drip"
 impact_fx = PackedStringArray("blood")
 impact = ExtResource("2_impact")
-dropper = ExtResource("3_dropper")
+in_flight = ExtResource("3_dropper")
 fallback_color = Color(0.55, 0.12, 0.1, 1)
 fallback_radius = 0.3

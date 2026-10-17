@@ -30,8 +30,12 @@ extends Resource
 ## F136: at the end of its range it bursts there (impact included) instead of vanishing (updateScarabProjectile,
 ## state.d:23667-23670). slba; F121: cita too (its vortex spawns where the range ends, state.d:23866).
 @export var burst_at_range_end := false
-## F148 (RFC-030 030h3): ShotDropper scene the server (or solo) puts on the shot; every tick of its flight it may
-## drop a droplet that falls on whoever is below (animateAbominationProjectile, state.d:24441-24452). Only tugt so far.
-@export var dropper: PackedScene
+## F148/F149: ShotInFlight scene the server (or solo) puts on the shot; it acts on every tick of the flight. tugt: a
+## ShotDropper (a droplet that falls on whoever is below, animateAbominationProjectile, state.d:24441-24452); rdba: a
+## FrostWave (the Silverback's breath grows and freezes, updateSilverbackProjectile, 24758-24831).
+@export var in_flight: PackedScene
+## F149: off, the shot touches nothing on its way, neither a body nor the ground, and flies its whole range (the
+## Silverback's breath: its in_flight does the damage). On: it bursts on its hit (the rest of the shots).
+@export var collides := true
 @export var fallback_color := Color(0.8, 0.7, 0.5)
 @export var fallback_radius := 0.15

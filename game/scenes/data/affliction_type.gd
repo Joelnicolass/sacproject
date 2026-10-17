@@ -28,3 +28,8 @@ extends Resource
 ## The ids of the states this one ends when it starts. A state that is on refuses a new one unless the new one
 ## cancels it, so who wins is said here, not by the order of the children (sacengine canStun refuses `stunned`).
 @export var cancels: Array[StringName] = []
+## F149: the mesh look while it is on (Afflictions.look, one StoneLook per body): a tint of the stone shader. Off: the
+## state draws nothing on the mesh. Among the states that are on, the highest look_priority wins (petrified over frozen).
+@export var has_look := false
+@export var look_tint := Color(1.0, 1.0, 0.8)
+@export var look_priority := 0

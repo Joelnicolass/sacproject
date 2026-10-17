@@ -13,3 +13,6 @@ breaks_special_modes = true
 damage_factor = 0.2
 cc_protects = true
 cancels = Array[StringName]([&"stunned"])
+has_look = true
+look_tint = Color(1, 1, 0.8, 1)
+look_priority = 2

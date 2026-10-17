@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # RFC-032 032a (F144): the determinism bench. Same match, three clocks, one digest.
-#   agent/run_determinism.sh CASE|all [MODE...]   CASE: s7 s7_npcs s1_trivial f139 f148 (F148: Abomination drops) f121 (F121: push, vortex, implosion) f122 (F122: poison shots) f123 (F123: fire shots)   MODE: fixed stress window fixed2
+#   agent/run_determinism.sh CASE|all [MODE...]   CASE: s7 s7_npcs s1_trivial f139 f148 (F148: Abomination drops) f121 (F121: push, vortex, implosion) f122 (F122: poison shots) f123 (F123: fire shots) f149 (F149: Silverback freeze)   MODE: fixed stress window fixed2
 #                                                  (default modes: fixed stress window; fixed2 = fixed again, criterion 1)
 #   agent/run_determinism.sh table                 verdict + markdown table from agent/out/det/
 #   agent/run_determinism.sh quick                 short pass for intermediate cuts (see below)
@@ -80,11 +80,11 @@ fi
 CASE_ARG=${1:?usage: run_determinism.sh CASE|all [MODE...] | table}
 shift
 MODES=("$@"); [ ${#MODES[@]} -eq 0 ] && MODES=(fixed stress window)
-# quick (cortes intermedios, ~3-4 min): s1_quick (IA con hechizos, 0,5 min) en los 3 modos + s7, f139, f148, f121, f122 y f123 solo fixed,
+# quick (cortes intermedios, ~3-4 min): s1_quick (IA con hechizos, 0,5 min) en los 3 modos + s7, f139, f148, f121, f122, f123 y f149 solo fixed,
 # comparados con agent/det_baseline.txt (caso digest). La pasada `all` queda para el cierre de cada RFC.
 if [ "$CASE_ARG" = quick ]; then
   "$0" s1_quick fixed stress window || true
-  "$0" s7 fixed >/dev/null; "$0" f139 fixed >/dev/null; "$0" f148 fixed >/dev/null; "$0" f121 fixed >/dev/null; "$0" f122 fixed >/dev/null; "$0" f123 fixed >/dev/null
+  "$0" s7 fixed >/dev/null; "$0" f139 fixed >/dev/null; "$0" f148 fixed >/dev/null; "$0" f121 fixed >/dev/null; "$0" f122 fixed >/dev/null; "$0" f123 fixed >/dev/null; "$0" f149 fixed >/dev/null
   ok=1
   while read -r c want; do
     [ -z "$c" ] && continue
@@ -109,6 +109,7 @@ case_args() { # case -> ai_match args (no out/events)
     f121) echo "--rules=res://debug/rules/f121_push.tres --seed=7 --minutes=0.5" ;;
     f122) echo "--rules=res://debug/rules/f122_poison.tres --seed=7 --minutes=0.5" ;;
     f123) echo "--rules=res://debug/rules/f123_fire_shots.tres --seed=7 --minutes=0.5" ;;
+    f149) echo "--rules=res://debug/rules/f149_freeze.tres --seed=7 --minutes=0.6" ;;
     *) return 1 ;;
   esac
 }

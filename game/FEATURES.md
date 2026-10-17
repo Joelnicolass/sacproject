@@ -1509,3 +1509,30 @@ Deuda:
 - El rayo y el humo del cohete usan visuales de reserva.
 - No hay fuego visual sobre un cuerpo que acaba de morir (M3).
 - El carril de la Bombard está a 25 m: a 60 m hay un hueco del mapa.
+
+### F149 — Congelar a distancia (RFC-030, corte 030k-b)
+
+**Piezas:**
+- **`Frozen`:** hijo `Affliction` (`data/afflictions/frozen.tres`, bit 3, inmoviliza, `cc_protects`, `cancels [stunned]`).
+  - **Entrada:** `try_freeze_with_cooldown` con `MatchSeed.rng(["freeze", nombre])`.
+  - **Duración:** `ceil(60·1000/vidaMáx·20)` en float32 exacto; un mago, 300.
+  - **Rotura:** se rompe con `Health.hit` > 0.
+  - **Deshielo:** 150 de hechizo con esquirlas.
+- **`ShotInFlight`:** hijo de vuelo de un disparo. `ShotDropper` (Abomination) y `FrostWave` (Silverback `rdba`) heredan de él.
+- **`FrostWave`:** onda que crece hasta 7,5 m y no choca (`ShotLook.collides = false`). Tiene memoria de tocados: el blanco pedido recibe 100 % directo y el resto, salpicadura con caída.
+- **Un dueño:** `Afflictions._show` es el único que escribe la pose congelada (`clip_pose.frozen`) y el look del mesh, a través de un único `StoneLook` (`Afflictions/Look`). El tinte sale de `AfflictionType.look_tint` y `look_priority`: la piedra gana al hielo.
+
+**Cierre (2026-10-17).** La review pidió CHANGES por B1: piedra e hielo escribían los dos el material del mesh. Se corrigió en una ronda con un dueño único del look (`reviews/REVIEW-RFC-030k-b.md`).
+- **Congelado:** el Trogg recibe 450 y queda congelado 1250 ticks. El Druid recibe 14 de salpicadura y queda 1500. Deriva de 0,0000 m mientras duran.
+- **Deshielo:** 0 al Trogg (es inmune) y 150 al Druid, sin derribo.
+- **Rotura:** el dardo del Deadeye rompe el hielo en el cuadro 104 y el daño del deshielo entra en el 105.
+- **Determinismo:** `f149` da `bf28b3fd` en fixed, stress y window. `quick`: s7, f139, s1_quick, f148 (después del refactor), f121, f122 y f123 iguales a la línea base.
+- **Otras pruebas:** `f137` sigue gris y sin deriva. `rules_suite` PASS.
+- **Playtest con ventana:** PASS en los 4 puntos (`agent/out/pt149/play/`).
+
+Deuda:
+- **Golpe de 0:** no rompe el hielo; en sacengine sí.
+- **Hielo:** es un tinte gris azulado sutil, no el cubo `frez`.
+- **Esquirlas:** se tiñeron de azul para que se vean sobre la nieve.
+- **Fuera de este corte:** `healBlocked` y el sonido.
+- **Sin captura:** que E1 vuelva a moverse después del deshielo.

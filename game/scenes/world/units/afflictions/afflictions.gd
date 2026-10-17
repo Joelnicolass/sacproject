@@ -16,6 +16,13 @@ signal held_changed(held: bool)
 @export var body: Node3D
 ## On its death every state ends (sacengine: a dying creature leaves stunned).
 @export var health: Health
+## F149: the one owner of the frozen pose. While a state that immobilizes is on (petrified, frozen) the clip holds,
+## on every peer from the replicated mask. Optional: empty = no pose to hold.
+@export var clip_pose: ClipPosePlayer
+## F149 (REVIEW-030k-b B1): the one owner of the mesh look. The tint of the state with a look (AfflictionType.has_look)
+## and the highest look_priority among the ones that are on (petrified over frozen); none = off. Every peer, from the
+## mask, so two states that change in the same tick cannot undress each other. Optional: empty = no look.
+@export var look: StoneLook
 ## The bits of the states that are on (AfflictionType.bit). Replicated by the unit's MultiplayerSynchronizer.
 @export var shown := 0:
 	set(value):
@@ -176,9 +183,26 @@ func _show(was: int) -> void:
 			was_held = true
 		if (was & bit) != (shown & bit):
 			affliction._shown(shown & bit != 0)
+	if clip_pose:
+		clip_pose.frozen = immobilized()
+	_show_look()
 	var held := holds()
 	if held != was_held:
 		held_changed.emit(held)
+
+
+## Idempotent: the look follows the mask, whatever changed and in whatever order.
+func _show_look() -> void:
+	if look == null:
+		return
+	var best: AfflictionType = null
+	for affliction in _on():
+		var type := affliction.type
+		if type.has_look and (best == null or type.look_priority > best.look_priority):
+			best = type
+	if best:
+		look.tint = best.look_tint
+	look.stone = best != null
 
 
 func _on_died(_from_slot: int) -> void:

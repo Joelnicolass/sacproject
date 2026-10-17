@@ -703,6 +703,66 @@ agent/run_determinism.sh                       M  caso f121 (0,5 min)
 - Nueva: una dosis que se le da a un cuerpo cuyo `Poisoning` ya corrió en ese tick arranca en el siguiente. En sacengine la lista es global y corre en el mismo cuadro, así que acá llega 1 tick tarde.
 - Visto en `f139`: el Necryl en melee se infecta de su propio blanco. El contagio no mira el bando, igual que en sacengine.
 
+#### 030k-b — F149 Congelar a distancia (Silverback `rdba`)
+
+**Plan (developer de F149, 2026-10-17):** el del tech lead en `rfcs/plans/030k-030l-plan.md` §030k-b, sin cambios de árbol. Se hizo en dos fases: primero archivos nuevos sin referencias, en paralelo con 030k-a; después el cableado.
+- `Frozen` (`afflictions/frozen.gd` + `data/afflictions/frozen.tres`, bit 3) es un `Affliction`:
+  - `try_freeze_with_cooldown` rechaza `cc_protected` y muertos. Con enfriamiento > 0 tira `uniform(600)` con `MatchSeed ["freeze", nombre]`, y si la tirada deja intentar, el enfriamiento vuelve a 600.
+  - `freeze` dura `ceil(60·1000/vidaMáx·20)` en float32, como sacengine (`_f32` en cada paso, REVIEW N6): Trogg 1250, y 801 (no 800) para Sara Bella y Gangrel (1500 de vida). Un mago dura 300. No cuenta el cuadro en que arranca.
+  - Termina por tiempo (deshielo en el mismo tick) o con `Health.hit` > 0 (deshielo en el tick siguiente).
+  - El deshielo hace 150 de hechizo directo del bando que congeló, más las esquirlas `freeze_shards`.
+- Pose: el único dueño es `Afflictions._show` (`clip_pose.frozen = immobilized()`); `Petrified` ya no la escribe. `Petrified.can_be_immobilized` es estática y la usan los dos.
+- `ShotInFlight` (`shot_in_flight.gd`) es lo que el disparo hace en cada tick de vuelo:
+  - `ShotLook.dropper` pasa a `in_flight` y `ShotDropper` pasa a ser un `ShotInFlight` (`f148` no cambia).
+  - `FrostWave` (`frost_wave.gd/.tscn`): radio `7,5·frame/(60·40/36)` y recorrido `SplashDamage.bodies_within` con memoria de tocados. Al blanco: 500 directo a distancia y después congela. Al mismo bando: nada. Al resto: `500·(1−d/r)` como salpicadura y congela al final del update.
+  - `ShotLook.collides = false` (`rdba.tres`): no choca con cuerpos ni con el suelo y vuela 40 m.
+- El look del mesh también tiene un solo dueño, `Afflictions.look`: un único `StoneLook` por cuerpo (nodo `Afflictions/Look`).
+  - Lo resolvió REVIEW-030k-b B1: antes Petrified y Frozen escribían cada uno los overrides de material del mesh.
+  - `_show` elige el `look_tint` del estado encendido con `has_look` y mayor `look_priority` (petrificado 2, gris; congelado 1, hielo (0,6, 0,85, 1)) y lo apaga cuando no queda ninguno. Es idempotente.
+  - `StoneLook.tint` llega al `stone_tint` del shader. La caché de materiales usa `[fuente, tint]` como clave.
+- FX: `frost_breath` (`cst0_a`, alfa con mezcla normal; aditivo sobre la nieve da blanco) como `trail_fx` del aliento, y `freeze_shards` (`shrd`). Se regeneraron con `tools/export_particles.py`.
+
+**Resultado (developer de F149, 2026-10-17):** `debug/f149_freeze.tscn` (caso `f149` del banco), semilla 7, comparado con `agent/tools/f149_expect.py`:
+- **C1 Congelación:**
+  - Trogg1 (D1) recibe 450 directos y queda `congelado durante 1250`.
+  - Druid1 (D2) recibe la caída: 14, contra 14,0 de la réplica (tick 22, d 2,29 m, r 2,36 m), y queda `congelado durante 1500`.
+  - Los dos alientos hacen 67 actualizaciones.
+- **C2 Quietud** (ventana, `pt149_watch`): desplazamiento 0,0000 m en los tres congelados, 0 golpes mientras duran y el tinte de hielo en todos los cuadros (1249/1249 y 1499/1499).
+- **C3 Fin:** Trogg1 se descongela en el cuadro 1325 con `deshielo 0 (inmune)`; Druid1, en el 1580 con 150. Sin derribo, vuelven a idle.
+- **C4 Rotura:** E1 (Druid2) se congela en el 75. El veneno del Deadeye llega en el 103; el primer tick rompe el hielo en el 104 (0,83 de daño) y el deshielo de 150 llega en el 105.
+- **C5 Determinismo:**
+  - `f149` da bf28b3fd en fixed, stress y window, y entra en `quick` y en `det_baseline.txt`.
+  - `quick` PASS: s7, f139, s1_quick, f148, f121, f122 y f123 iguales a la línea base.
+  - `f137` (pt137_main): clip_changes 0, drift 0 y ×0,2 con piedra.
+  - `rules_suite` PASS.
+- Capturas en `agent/out/pt149/`: onda en vuelo, Trogg y Druid congelados, deshielo con esquirlas, E1 congelado y hielo roto por el dardo.
+
+**Corrección de la review (REVIEW-RFC-030k-b, 2026-10-17):**
+- **B1:** el look del mesh pasa a tener un solo dueño, `Afflictions.look` (ver el plan).
+- **N1:** se corrigió el comentario: en sacengine una caída de más de 0 también rompe el hielo (`state.d:9037`).
+- **N2:** se quitó `cooldown_ticks()`.
+- **N3:** `RangedShot` ahora tiene `class_name` y `ShotInFlight` / `FrostWave` lo usan tipado.
+- **N4:** se usa `get_node_or_null("Health")`.
+- **N5:** `FrostWave.log_touches` es estático y viene apagado; lo enciende `debug/ai_match.gd`, como `DropletRain.log_hits`.
+- **N6:** la duración usa float32 exacto en lugar del épsilon.
+
+Después de la corrección:
+- `f149` sigue dando bf28b3fd en fixed, stress y window.
+- `quick` PASS.
+- `f137` (pt137_main): grey en todos los cuadros, clip_changes 0 y drift 0. La piedra se ve gris en la captura.
+
+*Desvíos del plan:*
+- **Carriles en z +140 (D) y z +200 (E).** Son los que están libres de rocas, estructuras y accesorios en `high_noon_ntts.json` / `high_noon_widgets.json`; en z −80 está `bld3`.
+- **D2 en x +22, z +143.** A 18 m quedaba más cerca que D1 y `attack_unit` (el más cercano) lo elegía como blanco.
+- **El Deadeye en x +20, z +260,** a 60 m de E1 de costado: en x −40, z +200 cae a un hueco. Muere a los 9 s (una sola dosis).
+- **0,6 min,** porque D2 deshiela en el cuadro 1580.
+- **Esquirlas teñidas:** `freeze_shards` lleva un `color_ramp` azul hielo. El atlas `shrd` es casi blanco y se pierde sobre la nieve; el original lo dibuja tal cual.
+
+*Divergencias declaradas:*
+- Las del plan: un golpe de 0 no rompe el hielo; el deshielo por golpe hace el daño un tick después; un cuerpo en tumbo no se congela; el hielo es un tinte, no el cubo `frez`.
+- Nueva: en el primer update el radio es 0 y no toca a nadie.
+- Fuera de este corte: `healBlocked` (curas bloqueadas mientras dura, igual que en Petrified) y el sonido `3zrf`.
+
 ### 030l — F123 Disparos de fuego (Tickferno, Pyromaniac, Bombard)
 
 **Árbol**

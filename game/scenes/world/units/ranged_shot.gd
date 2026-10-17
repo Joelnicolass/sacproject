@@ -1,3 +1,4 @@
+class_name RangedShot
 extends Node3D
 
 ## A creature's ranged shot. sacengine updateEarthflingProjectile (state.d:23178-23198): each frame
@@ -9,7 +10,9 @@ extends Node3D
 ## The server (or solo) moves it; clients get the position and play the trail locally.
 ## F119: a ShotLook with an `impact` scene (ShotImpact) decides the damage where it bursts instead (splash, 030h).
 ## F136: ShotLook.hits_allies turns the side filter around (the Scarab's web) and burst_at_range_end bursts it where its range ends.
-## F148: a ShotLook with a `dropper` scene (ShotDropper) drops droplets during the flight (the Abomination's gut, 030h3).
+## F148: a ShotLook with an `in_flight` scene (ShotInFlight) acts on every tick of the flight: the Abomination's droplets
+## (ShotDropper, 030h3); F149: the Silverback's breath (FrostWave), whose ShotLook.collides is off: it touches neither a
+## body nor the ground and flies its whole range.
 
 const _HEALTH := preload("res://scenes/world/components/health.gd")
 const LOOKS_DIR := "res://data/shots/"
@@ -29,7 +32,7 @@ var ability: AbilityType
 var _traveled := 0.0
 var _spin_axis := Vector3.UP
 var _spin_rate := 0.0
-var _dropper: ShotDropper
+var _in_flight: ShotInFlight
 
 
 func setup(data: Dictionary) -> void:
@@ -50,7 +53,7 @@ func setup(data: Dictionary) -> void:
 	_spin_rate = TAU * rng.randf_range(look.spin_min, look.spin_max)
 	_add_visual()
 	_attach_net()
-	_add_dropper()
+	_add_in_flight()
 	## ShotLook.trail_every counts 60 fps frames; the trail now goes by time (FxTrail, RFC-029 029b).
 	FxTrail.attach(self, look.trail_fx, float(maxi(look.trail_every, 1)) / TRAIL_FPS)
 
@@ -82,17 +85,17 @@ func _add_visual() -> void:
 	add_child(visual)
 
 
-## Server (or solo) only, like the impact: the droplets are simulation (ShotLook.dropper).
-func _add_dropper() -> void:
-	if look.dropper == null or (MpKit.is_networked() and not MpKit.is_server()):
+## Server (or solo) only, like the impact: what it does in flight is simulation (ShotLook.in_flight).
+func _add_in_flight() -> void:
+	if look.in_flight == null or (MpKit.is_networked() and not MpKit.is_server()):
 		return
-	var node := look.dropper.instantiate()
-	_dropper = node as ShotDropper
-	if _dropper:
-		add_child(_dropper)
+	var node := look.in_flight.instantiate()
+	_in_flight = node as ShotInFlight
+	if _in_flight:
+		add_child(_in_flight)
 	else:
 		node.free()
-		push_warning("RangedShot: el dropper de %s no es un ShotDropper." % name)
+		push_warning("RangedShot: el in_flight de %s no es un ShotInFlight." % name)
 
 
 func _ready() -> void:
@@ -124,8 +127,13 @@ func _physics_process(delta: float) -> void:
 	global_position += step
 	velocity.y -= gravity * delta
 	_traveled += step.length()
-	if _dropper:
-		_dropper.drop(global_position, from_slot)
+	if _in_flight:
+		_in_flight.fly(self, global_position)
+	if not look.collides:
+		if _traveled >= max_distance:
+			set_physics_process(false)
+			queue_free()
+		return
 	var hit := _collision_target()
 	if hit == null and look.sweep:
 		hit = _swept_target(from, global_position)

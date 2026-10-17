@@ -36,6 +36,8 @@ ATLASES = {
     "vtx2": ("main.wad", "MAIN.WAD!/bits.FLDR"),
     "vtx3": ("main.wad", "MAIN.WAD!/bits.FLDR"),
     "cst0": ("main.wad", "MAIN.WAD!/bits.FLDR"),
+    # F149: Freeze shards (sacobject.d:1485-1490, Stratos txtr).
+    "shrd": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
     # Guardian tether beam (RFC-021b): SacGuardianTether.loadTexture, sacobject.d:4466.
     "grdn": ("charlie.wad", "Bloo.WAD!/Misc.FLDR/txtr.FLDR"),
     # Teleport rings (RFC-021c): SacBlueRing.loadTexture, sacobject.d:2147.
@@ -87,6 +89,11 @@ PARTICLES = {
     # (spawnFireParticles, state.d:15093-15110). The original adds it (energy 8); over the snow that only reaches white, so
     # the port draws firy_a (the same glow as a straight-alpha overlay, glow_to_alpha) with blend_mix and energy 1.
     "fire": dict(txtr="firy_a", n_u=4, n_v=4, width=1.0, height=1.0, energy=1.0, delay=2, gravity=False, lifetime_frames=63),
+    # F149: the Silverback's breath (ParticleType.freeze, sacobject.d:1479-1484: cst0 1x1, energy 3; lifetime
+    # cast(int)(60·40/36) = 66, state.d:24816-24828), drawn as cst0_a with blend_mix like the fire (additive over the
+    # snow only reaches white), and the thaw's shards (ParticleType.shard, 1485-1490: shrd, gravity; 31, 17605).
+    "freeze": dict(txtr="cst0_a", n_u=4, n_v=4, width=1.0, height=1.0, energy=1.0, delay=1, gravity=False, lifetime_frames=66),
+    "shard": dict(txtr="shrd", n_u=4, n_v=4, width=1.0, height=1.0, energy=1.0, delay=1, gravity=True, lifetime_frames=31),
     "red_vortex_droplet": dict(txtr="vtx2", n_u=4, n_v=4, width=1.0, height=1.0, energy=3.0, delay=2, gravity=False, lifetime_frames=64),
 }
 
@@ -139,7 +146,7 @@ def glow_to_alpha(rgba: bytes, gain: float) -> bytes:
 
 
 # Atlases also written as a straight-alpha overlay: tag -> (png name, gain).
-OVERLAYS = {"firy": ("firy_a", 3.0)}
+OVERLAYS = {"firy": ("firy_a", 3.0), "cst0": ("cst0_a", 3.0)}
 
 
 def export_atlas(files: dict, folder: str, tag: str, dest: Path) -> tuple[int, int] | None:

@@ -90,6 +90,7 @@ func _ready() -> void:
 	var rain := _world.get_node_or_null("DropletRain")
 	if rain:
 		rain.set("log_hits", true)  # F148: bench logs the drops (off in the product)
+	FrostWave.log_touches = true  # F149: bench logs the Silverback's breath (off in the product)
 	_set_status(_rules.pending_text)
 	var wait := _rules.start_paused and not _headless and not _args.has("autostart")
 	if not wait:

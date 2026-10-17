@@ -56,7 +56,7 @@ func _run() -> void:
 			var rig := unit.get_node("Tilt/Mesh/Rig") as BodyRig
 			if animator.is_skeletal() and rig.is_loaded():
 				rig.pose_at(animator.active_role(), float(animator.active_frame()) / maxf(float(animator.active_framerate()), 1.0))
-			var screen_x := get_viewport().get_camera_3d().unproject_position(unit.global_position + Vector3.UP).x
+			var screen_x := get_viewport().get_camera_3d().unproject_position(unit.global_transform.origin + Vector3.UP).x
 			report.append("%s\t%s\tframe=%d\tskeletal=%s\tscreen_x=%.0f" % [unit.creature_tag, role, animator.active_frame(), animator.is_skeletal(), screen_x])
 		for i in 3:
 			await get_tree().process_frame

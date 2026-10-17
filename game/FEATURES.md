@@ -1809,3 +1809,31 @@ Deuda:
 - La esfera ámbar es un placeholder. Las bombas en vuelo se ven chicas y el pasto tapa las pegadas.
 - Una criatura a la que no se le puede pegar frena la bomba (en sacengine la atraviesa).
 - El log `marcha` está dentro de `Clinging`.
+
+### F130 — Call lightning y la carga de rayo del Storm Giant (RFC-030, corte 030s-a)
+
+**Piezas:**
+- **`Health.damage_typed(..., mods)`:** `LIGHTNING = 1<<5`, `IGNITE = 1<<6`; `_passive_factor(before, mods, from_slot)`.
+- **`LightningStrike`:** coordinador que vive solo en el servidor. Aplica el retardo de 12 y el rebote, y hace el daño de hechizo directo con `LIGHTNING`. Se llama así porque `LightningBolt` ya existía en `scenes/fx`.
+- **`CallLightning`:** cuesta −50 de maná y no tiene enfriamiento. El rayo `ntil` nace en `centro + 100·normalize(uD + (0,6,0))`, con el RNG `["call_lightning", …]`.
+- **`LightningCharge`:** es el único dueño de la carga.
+  - `absorb`: suma `int(f·daño)` (f = 4 para aliados, 2 para el resto) y deja el daño en ×0,25.
+  - Descargas `gcil` de 250 a cuerpos o al suelo, cada una por −125.
+  - `PaceFactors`: ×1,5.
+  - Chispas con un RNG de presentación.
+- **`DamagePassive` y `MeleeAttack`:** golpe y precisión ×1,5. El log del golpe está detrás de `log_melee`.
+
+**Cierre (2026-10-17).** La review pidió cambios por B1 (la dirección del cielo no se normalizaba primero). Lo corrigió el orquestador (`reviews/REVIEW-RFC-030s-a.md`).
+- **Uso:** maná de 200 a 150. En T+12 el gigante se hace 93,75 de daño y suma +1500 de carga.
+- **Cargado:** paso 0,225 contra 0,150 y precisión 2250 contra 1500.
+- **Descargas:** 4, cada una por −125. La carga termina en el tick 1016.
+- **Determinismo:** `f130` da `84715e1b` en fixed, stress y window, también después de B1. `quick` y `rules_suite` dan PASS.
+- **Playtest:** PASS. Se ven el rayo, las chispas y las descargas al suelo.
+
+Deuda:
+- El rayo se ve blanco sobre la nieve; se lee por el halo.
+- `styx_spark` no se probó con varios rayos al mismo tiempo.
+- La carga se calcula en float64.
+- Aliado se decide por slot.
+- Los edificios no frenan el rayo.
+- Sin probar en red (R8).

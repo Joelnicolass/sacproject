@@ -1,8 +1,9 @@
-[gd_scene load_steps=60 format=3]
+[gd_scene load_steps=61 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/unit_body.gd" id="1_body"]
 [ext_resource type="PackedScene" path="res://scenes/world/components/pace_factors.tscn" id="f129_pace"]
 [ext_resource type="PackedScene" path="res://scenes/world/components/clinging.tscn" id="f129_cling"]
+[ext_resource type="PackedScene" path="res://scenes/world/units/lightning_charge.tscn" id="f130_charge"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/life_shield.tscn" id="f126_shield"]
 [ext_resource type="Resource" path="res://data/abilities/ability_catalog.tres" id="f126_catalog"]
 [ext_resource type="Script" path="res://scenes/world/body_visual.gd" id="2_visual"]
@@ -113,6 +114,9 @@ properties/15/replication_mode = 2
 properties/16/path = NodePath("Clinging:shown")
 properties/16/spawn = true
 properties/16/replication_mode = 2
+properties/17/path = NodePath("LightningCharge:shown")
+properties/17/spawn = true
+properties/17/replication_mode = 2
 
 [node name="Unit" type="CharacterBody3D"]
 collision_layer = 2
@@ -144,9 +148,10 @@ script = ExtResource("4_melee")
 passive = NodePath("../DamagePassive")
 own_health = NodePath("../Health")
 
-[node name="DamagePassive" type="Node" parent="." node_paths=PackedStringArray("body")]
+[node name="DamagePassive" type="Node" parent="." node_paths=PackedStringArray("body", "charge")]
 script = ExtResource("f117_passive")
 body = NodePath("..")
+charge = NodePath("../LightningCharge")
 types = Array[ExtResource("f117_type")]([ExtResource("f117_korq"), ExtResource("f117_ahtf")])
 
 [node name="DeathCloudSpawner" type="Node" parent="." node_paths=PackedStringArray("body", "health")]
@@ -170,6 +175,10 @@ body = NodePath("..")
 [node name="Clinging" parent="." node_paths=PackedStringArray("body", "poisoning", "pace") instance=ExtResource("f129_cling")]
 body = NodePath("..")
 poisoning = NodePath("../Poisoning")
+pace = NodePath("../PaceFactors")
+
+[node name="LightningCharge" parent="." node_paths=PackedStringArray("body", "pace") instance=ExtResource("f130_charge")]
+body = NodePath("..")
 pace = NodePath("../PaceFactors")
 
 [node name="RangedAttack" type="Node" parent="."]

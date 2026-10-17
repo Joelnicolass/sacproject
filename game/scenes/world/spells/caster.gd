@@ -561,7 +561,8 @@ func _throw_swarm(spell: SpellType, target: Node3D) -> void:
 func _strike_lightning(spell: SpellType, target: Node3D) -> void:
 	if target == null or not _ROCK.is_live_body(target):
 		return
-	var taken := float(target.get_node("Health").call("damage_typed", float(spell.damage), _HEALTH.DIRECT_SPELL, int(_wizard.get("owner_slot"))))
+	## F130: DamageMod.lightning, which charges a Storm Giant (state.d:9017-9022).
+	var taken := float(target.get_node("Health").call("damage_typed", float(spell.damage), _HEALTH.DIRECT_SPELL, int(_wizard.get("owner_slot")), false, false, _HEALTH.LIGHTNING))
 	_ROCK.report(target, taken, _HEALTH.DIRECT_SPELL)
 	FxBus.broadcast_beam(LIGHTNING_BEAM, _lightning_origin(), _ROCK.body_center(target), target)
 

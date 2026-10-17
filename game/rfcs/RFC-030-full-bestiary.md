@@ -1175,6 +1175,23 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 *Divergencias declaradas:* las bombas se dibujan en posiciones fijas del cuerpo; una criatura que no se puede pegar frena la bomba (en sacengine la atraviesa); sin sonido; la bomba sale del frente del cuerpo a `shot_height` y no de la mano de la animación.
 
+#### 030s-a: Plan (developer) / Resultado
+
+**Plan (developer de 030s-a, 2026-10-17):** el del tech lead en `rfcs/plans/030q-030s-plan.md` §030s-a. Números de `state.d` 13121-13136, 10474-10491, 16366-16386, 9017-9022, 9237, 25342-25386 y `stats.d` 122.
+- `LightningStrike` (`abilities/lightning_strike.gd/.tscn`; coordinador en el contenedor de disparos, solo servidor; `launch` e `is_valid_target` estáticos) es el único dueño de «un rayo vuela y daña»: rebota en el primer cuerpo del camino (`retarget`), a los 12 ticks hace el daño directo con `Health.LIGHTNING` y el look es `FxBus.broadcast_beam("lightning")`. **Nombre:** la fase 0 lo llamó `LightningBolt`, pero `scenes/fx/lightning_bolt.gd` ya es el `class_name LightningBolt` (la forma del rayo del `BeamFx`); chocaba y rompía `fx_bus`/`pull_thread`.
+- `CallLightning` (`AbilityEffect`, catálogo `"gsba"`): sin preparación ni enfriamiento, `MatchSeed.rng(["call_lightning", usuario, tick])`.
+- `LightningCharge` (hijo de `unit.tscn`; sockets `body` y `pace`; `LightningCharge:shown` replicado, índice 17 tras `Clinging:shown`): dueño de los cuadros, la rampa y las descargas; `PaceFactors` `&"lightning_charge"` ×1,5; chispas con un RNG de presentación sembrado por `MatchSeed.seed_rng`. `DamagePassive.charge` solo lo consulta (`incoming_factor`, `outgoing_melee_factor`, `melee_accuracy_factor`); `Health.damage_typed(..., mods)` y `Health.LIGHTNING/IGNITE`; `Caster._strike_lightning` pasa `LIGHTNING`.
+- `MeleeAttack.roll_damage` multiplica la precisión por el factor de la carga; `MeleeAttack.log_melee` escribe la línea `golpe …` (apagada en el producto). Banco: `ai_match` enciende `LightningStrike.log_bolt`, `LightningCharge.log_charge` y `log_melee`; caso `f130` (0,4 min, semilla 7) en `run_determinism.sh` (usage, `case_args`, `quick` fixed).
+
+**Resultado (developer de 030s-a, 2026-10-17):** semilla 7, caso `f130` (carriles L y K, `friendly_fire` y `ally_damage_factor 0,5`).
+- `f130_expect.py` da `RESULTADO PASS` en fixed, stress y window: maná 200→150 sin enfriamiento; en T+12 93,75 de daño y +1500; paso cargado 0,225 contra 0,150; precisión 2250 (×1,5) contra 1500; 4 descargas a ≤ 30 m o al suelo, a +12, cada una descuenta 125; fin en T+12+1500−125·k.
+- **Determinismo:** `f130` da `84715e1b` en los 3 modos y se grabó en `det_baseline.txt`. `quick`: las otras 15 líneas base iguales. `rules_suite` PASS con `--fixed-fps 60`.
+- **Ajuste del log:** la línea `golpe` imprime facing, pendiente, p y tirada con 6 decimales; con 4 la réplica no cerraba a ±0,01 porque `(1−tirada)/(1−p)` amplifica el redondeo.
+- **Ventana** (`agent/flows/pt130_play.json`, `agent/harness/pt130_watch.gd`, `run_pt130.sh "pt130_play"`; capturas en `agent/out/pt130/play/`, con Enter y cámara cercana re-encuadrada): `p1`/`p2` el rayo cae sobre el Storm Giant (pico de luminancia +93 sobre el fondo a lo largo del haz, mínimo +48), `p3` el gigante cargado con chispas azules (1796 píxeles con azul−rojo > 60 en la zona, fondo 1), `p4`/`p5` descarga hacia el suelo (253 contra 184 de fondo). El rayo es blanco-azulado fino sobre la nieve: se distingue, pero con poco color.
+- **Pendiente visual:** el beam `lightning` es aditivo y sobre nieve queda blanco sobre blanco (se lee por el halo y el brillo); `styx_spark` tiene `count 192` y `pool_max 8`: con la carga (2 por segundo) no se ve saturado, pero el golpe de varios rayos juntos no se probó.
+
+*Divergencias declaradas:* los edificios no frenan el rayo; el nodo del rayo se libera al pegar (no guarda sus 64 cuadros: el look tiene los suyos); sin cicatriz ni sonido; los candidatos de una descarga van en orden de grupos y no de cercanía; un cuerpo que muere pierde la carga al instante.
+
 ### 030r — F129 Sticky bomb y Viscous oil
 - **Árbol:** N `abilities/lob_ability.tscn/.gd` (proyectil de habilidad); M `ability_catalog.tres`.
 - **Escena de prueba:** `res://debug/f127_lobs.tscn`. **Criterio:** daño o efecto en el blanco.

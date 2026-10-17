@@ -19,6 +19,11 @@ const SPLASH_SPELL := &"splash_spell"
 const DIRECT_RANGED := &"direct_ranged"
 const SPLASH_RANGED := &"splash_ranged"
 
+## sacengine DamageMod bits that are not the kind (state.d:8868-8880), for damage_typed(..., mods). F130 (lightning charges the
+## Storm Giant) and F155 (ignite lights the oil) read them; the kinds above stay the resistance's.
+const LIGHTNING := 1 << 5
+const IGNITE := 1 << 6
+
 ## Only read by setup(): MatchRules.start_health, if not negative, replaces a full bar.
 @export var rules: MatchRules
 @export var maximum: float = 0.0:
@@ -97,9 +102,10 @@ func _hit(amount: float, from_slot: int) -> void:
 ## (poison, state.d:9415-9419) takes ×1 then. A dead body takes nothing (canDamage).
 ## Melee callers still apply sacengine's extra 0.4 themselves (melee_attack.gd).
 ## Returns the damage taken.
+## `mods` (F130): the DamageMod bits of the hit (LIGHTNING, IGNITE). The body's passive and the oil read them.
 ## `pierce_shield` (sacengine DamageMod.peirceShield, state.d:8962-8969): the body's shields and states (damage_factor:
 ## Rockform, Life Shield; _state_factor: petrified) do not scale it. The Pyromaniac's fire (F123).
-func damage_typed(amount: float, kind: StringName, from_slot: int = 0, ignore_friendly := false, pierce_shield := false) -> float:
+func damage_typed(amount: float, kind: StringName, from_slot: int = 0, ignore_friendly := false, pierce_shield := false, mods := 0) -> float:
 	if not _has_authority() or amount <= 0.0 or is_dead() or not _can_be_damaged():
 		return 0.0
 	var passed := _deflect(amount, kind, from_slot)
@@ -110,7 +116,8 @@ func damage_typed(amount: float, kind: StringName, from_slot: int = 0, ignore_fr
 	if side > 0.0:
 		var factor := float(kind_factors.get(kind, 1.0))
 		var shields := 1.0 if pierce_shield else shield_factor() * _state_factor()
-		taken = minf(current, amount * side * resistance(kind) * maxf(0.0, factor) * shields * _passive_factor())
+		var before := amount * side * resistance(kind) * maxf(0.0, factor) * shields
+		taken = minf(current, before * _passive_factor(before, mods, from_slot))
 	if taken > 0.0:
 		_hit(taken, from_slot)
 	hurt.emit(taken, kind, from_slot)
@@ -177,11 +184,14 @@ func _state_factor() -> float:
 	return maxf(0.0, afflictions.damage_factor()) if afflictions else 1.0
 
 
-## sacengine dealRawDamage (state.d:9010-9028): the passive scales every kind of hit by the health before it.
-func _passive_factor() -> float:
+## sacengine dealRawDamage (state.d:9010-9028): the passive scales every kind of hit by the health before it. F130: it also
+## gets the hit's `mods`, the damage that reached it (`before`: side, resistance and shields already applied) and whether the
+## attacker is of the body's side, which the Lightning Charge reads (state.d:9017-9022).
+func _passive_factor(before := 0.0, mods := 0, from_slot := 0) -> float:
 	if passive == null or maximum <= 0.0:
 		return 1.0
-	return passive.incoming_factor(current / maximum)
+	var ally := from_slot > 0 and from_slot == _owner_slot()
+	return passive.incoming_factor(current / maximum, mods, before, ally)
 
 
 ## One query per hit: the damage the deflector's stand-ins took, or NAN if it did not deflect.

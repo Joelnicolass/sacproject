@@ -12,6 +12,9 @@ extends Node
 
 signal struck(target: Node3D, amount: float, hit_chance: float, roll: float)
 
+## Bench log (`ai_match` turns it on; off in the product): one line per blow with the numbers the replica needs (F130).
+static var log_melee := false
+
 ## sacengine `attack`: meleeHitboxFactor.
 @export var start_factor := 0.8
 ## sacengine `defaultMeleeHitbox`: hitboxCenter *= 1.3 for most creatures.
@@ -121,18 +124,22 @@ func roll_damage(target: Node3D, anim: Dictionary) -> Dictionary:
 	var facing := 1.5 + 0.5 * facing_of(_body).dot(facing_of(target))
 	var damage := facing * pending
 	var foe := profile_of(target)
-	var accuracy := float(type.melee_accuracy)
+	## F130: ×1.5 while the Storm Giant's Lightning Charge is on (dealMeleeDamage, state.d:9237).
+	var accuracy := float(type.melee_accuracy) * (passive.melee_accuracy_factor() if passive != null else 1.0)
 	var total := accuracy + float(foe.get("evasion", 0.0)) / facing
 	if not (total > 0.0):
-		return {"amount": 0.0, "chance": 0.0, "roll": 1.0}
+		return {"amount": 0.0, "chance": 0.0, "roll": 1.0, "accuracy": accuracy, "evasion": float(foe.get("evasion", 0.0)),
+			"facing": facing, "pending": pending, "resistance": 0.0}
 	var hit_chance := accuracy / total
 	var roll := _rng.randf()
 	if roll >= hit_chance:
 		damage *= (1.0 - roll) / (1.0 - hit_chance)
 	damage *= float(type.melee_strength)
 	## F122: the poison's resistanceBonus goes inside the max (state.d:8950-8951); Poisoning owns it.
-	damage *= melee_resistance_scale * maxf(0.0, float(foe.get("resistance", 1.0)) + Poisoning.resistance_bonus_of(target))
-	return {"amount": damage, "chance": hit_chance, "roll": roll}
+	var resistance := maxf(0.0, float(foe.get("resistance", 1.0)) + Poisoning.resistance_bonus_of(target))
+	damage *= melee_resistance_scale * resistance
+	return {"amount": damage, "chance": hit_chance, "roll": roll, "accuracy": accuracy, "evasion": float(foe.get("evasion", 0.0)),
+		"facing": facing, "pending": pending, "resistance": resistance}
 
 
 static func facing_of(node: Node3D) -> Vector3:
@@ -170,7 +177,12 @@ func _land() -> void:
 		return
 	var result := roll_damage(target, _anim)
 	## dealDamage scales melee by rockForm and the other shields too (state.d:8962-8969).
-	var amount := float(result["amount"]) * health.shield_factor() * _attack_factor()
+	var factor := health.shield_factor() * _attack_factor()
+	var amount := float(result["amount"]) * factor
+	if log_melee:
+		print("golpe %s → %s precisión %.1f evasión %.1f facing %.6f pendiente %.6f p %.6f tirada %.6f fuerza %d escala %.4f resistencia %.4f factor %.4f cantidad %.4f (tick %d)" % [
+			_body.name, target.name, result["accuracy"], result["evasion"], result["facing"], result["pending"], result["chance"], result["roll"],
+			type.melee_strength, melee_resistance_scale, result["resistance"], factor, amount, MatchClock.now()])
 	if amount <= 0.0:
 		return
 	health.call("damage", amount, int(_body.get("owner_slot")))

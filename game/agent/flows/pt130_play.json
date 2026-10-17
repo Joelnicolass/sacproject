@@ -1,0 +1,256 @@
+{
+ "scene": "res://debug/f130_lightning.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "call": {
+    "harness": "pt130_watch",
+    "method": "frame_on",
+    "args": [
+     "StormGiant1",
+     0,
+     10,
+     18
+    ]
+   }
+  },
+  {
+   "shot": "play/p0_before.png"
+  },
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait_until": {
+    "node": "Runner",
+    "prop": "_running",
+    "equals": true,
+    "timeout": 60
+   }
+  },
+  {
+   "call": {
+    "harness": "pt130_watch",
+    "method": "frame_on",
+    "args": [
+     "StormGiant1",
+     0,
+     10,
+     18
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt130_watch",
+    "prop": "rel",
+    "gte": 9,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt130_watch",
+    "method": "frame_on",
+    "args": [
+     "StormGiant1",
+     0,
+     10,
+     18
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt130_watch",
+    "method": "report",
+    "args": [
+     "StormGiant1"
+    ]
+   }
+  },
+  {
+   "shot": "play/p1_bolt_falling.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt130_watch",
+    "prop": "rel",
+    "gte": 15,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt130_watch",
+    "method": "frame_on",
+    "args": [
+     "StormGiant1",
+     0,
+     10,
+     18
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt130_watch",
+    "method": "report",
+    "args": [
+     "StormGiant1"
+    ]
+   }
+  },
+  {
+   "shot": "play/p2_bolt_hits.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt130_watch",
+    "prop": "rel",
+    "gte": 60,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt130_watch",
+    "method": "frame_on",
+    "args": [
+     "StormGiant1",
+     0,
+     6,
+     10
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt130_watch",
+    "method": "report",
+    "args": [
+     "StormGiant1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt130_watch",
+    "method": "pixels",
+    "args": [
+     "StormGiant1"
+    ]
+   }
+  },
+  {
+   "shot": "play/p3_charged_sparks.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt130_watch",
+    "prop": "rel",
+    "gte": 100,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt130_watch",
+    "method": "frame_on",
+    "args": [
+     "StormGiant1",
+     0,
+     6,
+     10
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt130_watch",
+    "method": "report",
+    "args": [
+     "StormGiant1"
+    ]
+   }
+  },
+  {
+   "shot": "play/p3b_charged_sparks.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt130_watch",
+    "prop": "discharges",
+    "gte": 1,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt130_watch",
+    "method": "frame_on",
+    "args": [
+     "StormGiant1",
+     0,
+     12,
+     16
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt130_watch",
+    "method": "report",
+    "args": [
+     "StormGiant1"
+    ]
+   }
+  },
+  {
+   "shot": "play/p4_discharge_a.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt130_watch",
+    "prop": "discharges",
+    "equals": 0,
+    "timeout": 120
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt130_watch",
+    "prop": "discharges",
+    "gte": 1,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt130_watch",
+    "method": "frame_on",
+    "args": [
+     "StormGiant1",
+     0,
+     12,
+     16
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt130_watch",
+    "method": "report",
+    "args": [
+     "StormGiant1"
+    ]
+   }
+  },
+  {
+   "shot": "play/p5_discharge_b.png"
+  }
+ ]
+}

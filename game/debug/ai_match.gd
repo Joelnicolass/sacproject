@@ -19,6 +19,7 @@ extends Node
 ## The three-clock bench is agent/run_determinism.sh (fixed, stress and window modes).
 
 const REPORT_TAG := "AI_REPORT "
+const MELEE_ATTACK := preload("res://scenes/world/units/melee_attack.gd")
 
 ## The world is put in the tree by code: its rules (and the seed) must exist before it enters.
 @export var world_scene: PackedScene
@@ -103,6 +104,9 @@ func _ready() -> void:
 	PaceFactors.log_pace = true  # F129: bench logs the factors of speed_factor (off in the product)
 	Pulling.log_pull = true  # F128: bench logs the pulls (off in the product)
 	BreathOfLife.log_breath = true  # F153: bench logs the Dragon's breath (off in the product)
+	LightningStrike.log_bolt = true  # F130: bench logs the Storm Giant's bolts (off in the product)
+	LightningCharge.log_charge = true  # F130: bench logs the Lightning Charge and the Giant's walk (off in the product)
+	MELEE_ATTACK.log_melee = true  # F130: bench logs each blow's numbers (off in the product)
 	FastRevive.log_revive = true  # F153: bench logs the fast revival (off in the product)
 	_set_status(_rules.pending_text)
 	var wait := _rules.start_paused and not _headless and not _args.has("autostart")

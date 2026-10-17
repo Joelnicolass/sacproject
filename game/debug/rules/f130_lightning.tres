@@ -1,0 +1,58 @@
+[gd_resource type="Resource" script_class="BenchRules" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
+
+[sub_resource type="Resource" id="Group_L_giant"]
+script = ExtResource("2_group")
+tag = "rgos"
+slot = 1
+count = 1
+columns = 1
+offset_m = -40.0
+offset_z_m = 15.0
+facing_x = 1.0
+order = "ability"
+
+[sub_resource type="Resource" id="Group_L1_trogg"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 2
+count = 1
+columns = 1
+offset_m = -10.0
+offset_z_m = 15.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_K_giant"]
+script = ExtResource("2_group")
+tag = "rgos"
+slot = 1
+count = 1
+columns = 1
+offset_m = 28.0
+offset_z_m = -50.0
+facing_x = 1.0
+
+[sub_resource type="Resource" id="Group_K1_trogg"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 2
+count = 1
+columns = 1
+offset_m = 58.0
+offset_z_m = -50.0
+facing_x = -1.0
+pacifist = true
+
+[resource]
+script = ExtResource("1_rules")
+match_seed = 7
+groups = Array[ExtResource("2_group")]([SubResource("Group_L_giant"), SubResource("Group_L1_trogg"), SubResource("Group_K_giant"), SubResource("Group_K1_trogg")])
+anchor = Vector3(1270, 0, 1270)
+start_paused = true
+pending_text = "Call lightning y carga de rayo en pausa"
+ignore_annihilation = true
+friendly_fire = true
+ally_damage_factor = 0.5

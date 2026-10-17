@@ -2071,3 +2071,20 @@ Deuda:
 Deuda:
 - Falta medir el ruido entre dos corridas iguales de las capturas 3D y de `fx_gallery` antes de usarlas como criterio numérico (lo hace 033b).
 - Los 5,8 GB restantes de `.godot/imported` son huérfanos; se van solo con una purga total.
+
+### F168 — Texturas originales como assets (RFC-033, corte 033b)
+
+**Piezas:**
+- **`tools/import_textures.py`** (+ `tools/sac_formats/textures.py`): 670 PNG únicos con el chroma aplicado en `assets/original/textures/` (73 MB, LFS) e `index.json` (modelo + etiqueta → PNG).
+- **`OriginalMaterial`** (`scenes/world/original_material.gd`): único dueño de los materiales de modelos originales; `apply_to` sirve para los `.glb` de RFC-023.
+- **Migrados a `assets/`:** `ObjMesh`, `ClipPosePlayer._baked_frame`, `wizard.gd`, `bake_clips`, `bake_bodies`, `audit_body_pose`.
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-033b.md`).
+- **Paridad de imagen:** 701 de 701 etiquetas idénticas a la tubería vieja (±1 de alfa en mips chicos de 3).
+- **`quick`** igual a la base. **Capturas:** `body_gallery` 0 px; el resto tiene ruido de partículas sin semilla y quedó dentro del piso en las corridas 3 y 4.
+- **Cambio de fidelidad:** el chroma ahora se aplica a todas las texturas SAXS, como en sacengine (`saxs.d:76-77`); antes faltaba en 19 etiquetas de 17 modelos con clips.
+
+Deuda:
+- Los `baked/bodies` de esos 17 modelos siguen sin chroma hasta re-hornear o RFC-023: el cuerpo quieto y el cuadro de clip se ven distintos.
+- El importador lee de `cache/look`, no de los WAD; se arregla en 033h. No borrar `cache/` antes.
+- Las capturas con partículas no tienen semilla: el criterio «HUD 0 px» no se puede cumplir así.

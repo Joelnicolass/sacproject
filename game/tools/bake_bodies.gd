@@ -44,7 +44,7 @@ func _initialize() -> void:
 		var model := str(item.get("name", ""))
 		var frame := str(idle_frames.get(model, ""))
 		var posed := not frame.is_empty() and FileAccess.file_exists(frame)
-		var built := _OBJ.build(frame if posed else str(item.get("mesh", "")), "", {_OBJ.MIRROR_Z: true})
+		var built := _OBJ.build(frame if posed else str(item.get("mesh", "")), {_OBJ.MIRROR_Z: true})
 		if built == null:
 			print("falta ", model)
 			continue
@@ -71,7 +71,7 @@ func _initialize() -> void:
 	for item: Dictionary in catalog.get("plants", []):
 		var name := str(item.get("name", ""))
 		var mesh_path := str(item.get("mesh", ""))
-		var built := _OBJ.build(mesh_path, str(item.get("texture", "")), {_OBJ.FOLIAGE: true})
+		var built := _OBJ.build(mesh_path, {_OBJ.FOLIAGE: true})
 		if built:
 			props[name] = _describe(built, Vector3.ZERO)
 			_save(built, OUT + "props/%s.res" % name)

@@ -91,7 +91,7 @@ func _initialize() -> void:
 		var posed_size := "-"
 		var frame: ArrayMesh = null
 		if not frames.is_empty():
-			frame = _OBJ.build(str(frames[0]), "", {_OBJ.MIRROR_Z: true})
+			frame = _OBJ.build(str(frames[0]), {_OBJ.MIRROR_Z: true})
 		if frame == null:
 			verdict.append("SIN_CLIP")
 		else:

@@ -1,0 +1,35 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/units/abilities/divine_sight_eye.gd" id="1_eye"]
+
+[sub_resource type="Gradient" id="Gradient_eye"]
+offsets = PackedFloat32Array(0, 0.18, 0.5, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.35, 0.7, 1, 0.95, 0.1, 0.35, 1, 0.55, 0.05, 0.2, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="Tex_eye"]
+gradient = SubResource("Gradient_eye")
+width = 128
+height = 128
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="Mat_eye"]
+transparency = 1
+cull_mode = 2
+shading_mode = 0
+albedo_texture = SubResource("Tex_eye")
+billboard_mode = 1
+
+[sub_resource type="QuadMesh" id="Mesh_eye"]
+size = Vector2(2.5, 2.25)
+
+[node name="DivineSightEye" type="Node3D" node_paths=PackedStringArray("glow")]
+editor_description = "F165 (RFC-030): el ojo del Divine Sight del Ranger (eesd). DivineSight (AbilityEffect) lo crea en el ShotSpawner (spawn_scene); lo simula solo el servidor (sube 45 ticks hasta 4 m, vuela recto a 30 m/s hasta 250 m o fija a la criatura enemiga más cercana a 250 m y la persigue con aceleración 3, ilumina 75 m de la grilla de SideVision de su lado, vive 30 s) y los clientes reciben posición y escala. Look PROVISORIO: un resplandor de 2,5 x 2,25 m (el sprite scri del original no está en el cache local). Knobs: flying_height, rising_ticks, refresh_ticks, target_groups."
+script = ExtResource("1_eye")
+glow = NodePath("Glow")
+
+[node name="Glow" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("Mesh_eye")
+material_override = SubResource("Mat_eye")

@@ -226,14 +226,19 @@ static func _is_live_body(body: Node) -> bool:
 ## sacengine getHeight: the top of the land or of a building (structures, altars, manafounts: layer 1) under `at`, wizards
 ## left out; -INF off the map. The ground check of the flight, and GroundHug's height (F151).
 func ground_height(at: Vector3) -> float:
+	return RangedShot.land_height(self, at)
+
+
+## The same for any node in the tree (F165: the Divine Sight eye flies over it). `from` only gives the tree and the physics world.
+static func land_height(from: Node3D, at: Vector3) -> float:
 	var query := PhysicsRayQueryParameters3D.create(at + Vector3.UP * 500.0, at + Vector3.DOWN * 500.0)
 	query.collision_mask = 1
 	var skip: Array[RID] = []
-	for body in get_tree().get_nodes_in_group("wizard"):
+	for body in from.get_tree().get_nodes_in_group("wizard"):
 		if body is CollisionObject3D:
 			skip.append((body as CollisionObject3D).get_rid())
 	query.exclude = skip
-	var hit := get_world_3d().direct_space_state.intersect_ray(query)
+	var hit := from.get_world_3d().direct_space_state.intersect_ray(query)
 	return float(hit.position.y) if not hit.is_empty() else -INF
 
 

@@ -13,7 +13,7 @@
 # Out: agent/out/det/<case>_<mode>.json (AI_REPORT), .events (audit lines), .log, .meta (wall_s, rss, flags).
 # Verdict: a case passes when every mode it has gives the digest of `fixed`; the first different events line is printed.
 set -u
-ROOT=/Users/joelsartori/Development/sacproject/game
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"  # the project this script lives in (a worktree runs its own code, not the main checkout's)
 BIN=/Applications/Godot.app/Contents/MacOS/Godot
 OUT="$ROOT/agent/out/det"
 ALL_CASES=(s7 s7_npcs s1_trivial f139)

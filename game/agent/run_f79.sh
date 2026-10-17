@@ -2,7 +2,7 @@
 # usage: run_f79.sh FLOW [WxH] [OUTNAME]  -- one windowed flow (RFC-025b), 60 fps cap, RSS watchdog (2.5 GB).
 # Refuses to start when another test Godot is running (the user's --editor does not count).
 set -u
-ROOT=/Users/joelsartori/Development/sacproject/game
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 RES="${2:-1280x720}"
 NAME="${3:-f79_${RES}}"
 OUT="$ROOT/agent/out/$NAME"; mkdir -p "$OUT"

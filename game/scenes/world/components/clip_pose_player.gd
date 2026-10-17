@@ -294,7 +294,7 @@ func _frame_mesh(path: String) -> Mesh:
 	var built := _baked_frame(path)
 	var source := "horneado"
 	if built == null:
-		built = _OBJ.build(path, "", {_OBJ.MIRROR_Z: true})
+		built = _OBJ.build(path, {_OBJ.MIRROR_Z: true})
 		source = "obj"
 	_mesh_cache[path] = built
 	if _warm_logging():
@@ -304,7 +304,7 @@ func _frame_mesh(path: String) -> Mesh:
 
 ## RFC-027 027h: the frame's geometry baked by tools/bake_clips.gd, read with ResourceLoader (~1 ms instead of
 ## 10–15 ms of OBJ parsing). The bake saves no materials (they would embed one texture copy per frame): each surface
-## is named after its OBJ label and gets the same shared ObjMesh.material() that build() would put. Null when the
+## is named after its OBJ label and gets the same shared OriginalMaterial that build() would put. Null when the
 ## frame is not baked, or the OBJ is newer than its bake: then the caller builds the OBJ as before.
 static func _baked_frame(obj_path: String) -> ArrayMesh:
 	var baked := BodyCatalog.clip_frame_path(obj_path)
@@ -319,10 +319,9 @@ static func _baked_frame(obj_path: String) -> ArrayMesh:
 	var mesh := ResourceLoader.load(baked) as ArrayMesh
 	if mesh == null:
 		return null
-	var keys := _OBJ.chroma_keys(obj_path)
+	var model := OriginalMaterial.model_of(obj_path)
 	for i in mesh.get_surface_count():
-		var label := mesh.surface_get_name(i)
-		mesh.surface_set_material(i, _OBJ.material(obj_path, label, "", int(keys.get(label, -1))))
+		mesh.surface_set_material(i, OriginalMaterial.for_label(model, mesh.surface_get_name(i)))
 	return mesh
 
 

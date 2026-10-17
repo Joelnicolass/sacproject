@@ -1,0 +1,3911 @@
+{
+ "models": {
+  "aarc": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "AArc"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "AArc"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "AArc"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "AArc"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "AArc"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "AArc"
+   }
+  },
+  "abrx": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "ABRX"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "ABRX"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "ABRX"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "ABRX"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "ABRX"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "ABRX"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "ABRX"
+   }
+  },
+  "aclw": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "aclw"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "aclw"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "aclw"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "aclw"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "aclw"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "aclw"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "aclw"
+   }
+  },
+  "adrg": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "adrg"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "adrg"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "adrg"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "adrg"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "adrg"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "adrg"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "adrg"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "adrg"
+   },
+   "bodypart009": {
+    "cutout": false,
+    "file": "009",
+    "owner": "adrg"
+   },
+   "bodypart010": {
+    "cutout": true,
+    "file": "010",
+    "owner": "adrg"
+   }
+  },
+  "alba": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "alba"
+   }
+  },
+  "alpi": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "alpi"
+   }
+  },
+  "alto": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "alto"
+   }
+  },
+  "apez": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "apez"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "apez"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "apez"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "apez"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "apez"
+   }
+  },
+  "aprc": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "aprc"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "aprc"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "aprc"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "aprc"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "aprc"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "aprc"
+   }
+  },
+  "arch": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "arch"
+   }
+  },
+  "babc": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "babc"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "babc"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "babc"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "babc"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "babc"
+   }
+  },
+  "baby": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "baby"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "baby"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "baby"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "baby"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "baby"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "baby"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "baby"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "baby"
+   },
+   "bodypart009": {
+    "cutout": true,
+    "file": "009",
+    "owner": "baby"
+   }
+  },
+  "bala": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "bala"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "bala"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "bala"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "bala"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "bala"
+   }
+  },
+  "bale": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "bale"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "bale"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "bale"
+   }
+  },
+  "ban2": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "ban2"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "ban2"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "ban2"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "ban2"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "ban2"
+   },
+   "bodypart006": {
+    "cutout": true,
+    "file": "006",
+    "owner": "ban2"
+   }
+  },
+  "bane": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "bane"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "ban2"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "ban2"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "ban2"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "ban2"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "bane"
+   }
+  },
+  "bld1": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "bld1"
+   }
+  },
+  "bld2": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "bld1"
+   }
+  },
+  "bld3": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "bld3"
+   }
+  },
+  "bon1": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "bon1"
+   }
+  },
+  "bon2": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "bon1"
+   }
+  },
+  "bon3": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "bon1"
+   }
+  },
+  "bon4": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "bon1"
+   }
+  },
+  "bon5": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "bon1"
+   }
+  },
+  "bon6": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "bon1"
+   }
+  },
+  "brod": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "brod"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "brod"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "brod"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "brod"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "brod"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "brod"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "brod"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "brod"
+   },
+   "bodypart009": {
+    "cutout": false,
+    "file": "009",
+    "owner": "brod"
+   },
+   "bodypart010": {
+    "cutout": false,
+    "file": "010",
+    "owner": "brod"
+   },
+   "bodypart011": {
+    "cutout": false,
+    "file": "011",
+    "owner": "brod"
+   },
+   "bodypart012": {
+    "cutout": false,
+    "file": "012",
+    "owner": "brod"
+   }
+  },
+  "buga": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "buga"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "buga"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "buga"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "buga"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "buga"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "buga"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "buga"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "buga"
+   }
+  },
+  "bugf": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "bugf"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "bugf"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "bugf"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "bugf"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "bugf"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "bugf"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "bugf"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "bugf"
+   }
+  },
+  "bugl": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "bugl"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "bugl"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "bugl"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "bugl"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "bugl"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "bugl"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "bugl"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "bugl"
+   }
+  },
+  "bugz": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "bugz"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "bugz"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "bugz"
+   },
+   "bodypart004": {
+    "cutout": true,
+    "file": "004",
+    "owner": "bugz"
+   }
+  },
+  "buta": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "buta"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "buta"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "buta"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "buta"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "buta"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "buta"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "buta"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "buta"
+   },
+   "bodypart009": {
+    "cutout": false,
+    "file": "009",
+    "owner": "buta"
+   }
+  },
+  "cavd": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "cavd"
+   }
+  },
+  "cave": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "cave"
+   }
+  },
+  "dcak": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "dcak"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "dcak"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "dcak"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "dcak"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "dcak"
+   },
+   "bodypart006": {
+    "cutout": true,
+    "file": "006",
+    "owner": "dcak"
+   }
+  },
+  "ddiz": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "ddiz"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "ddiz"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "ddiz"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "ddiz"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "ddiz"
+   },
+   "bodypart006": {
+    "cutout": true,
+    "file": "006",
+    "owner": "ddiz"
+   }
+  },
+  "ddmn": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "ddmn"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "ddmn"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "ddmn"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "ddmn"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "ddmn"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "ddmn"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "ddmn"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "ddmn"
+   },
+   "bodypart009": {
+    "cutout": false,
+    "file": "009",
+    "owner": "ddmn"
+   },
+   "bodypart010": {
+    "cutout": true,
+    "file": "010",
+    "owner": "ddmn"
+   }
+  },
+  "dflp": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "dflp"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "dflp"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "dflp"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "dflp"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "dflp"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "dflp"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "dflp"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "dflp"
+   },
+   "bodypart009": {
+    "cutout": false,
+    "file": "009",
+    "owner": "dflp"
+   },
+   "bodypart010": {
+    "cutout": false,
+    "file": "009",
+    "owner": "dflp"
+   }
+  },
+  "dklp": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "dklp"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "dklp"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "dklp"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "dklp"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "dklp"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "dklp"
+   }
+  },
+  "dpez": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "dpez"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "dpez"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "dpez"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "dpez"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "dpez"
+   }
+  },
+  "drag": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "drag"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "drag"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "drag"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "drag"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "drag"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "drag"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "drag"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "drag"
+   },
+   "bodypart009": {
+    "cutout": true,
+    "file": "009",
+    "owner": "drag"
+   }
+  },
+  "dslg": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "dslg"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "dslg"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "dslg"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "dslg"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "dslg"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "dslg"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "dslg"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "dslg"
+   },
+   "bodypart009": {
+    "cutout": false,
+    "file": "009",
+    "owner": "dslg"
+   },
+   "bodypart010": {
+    "cutout": false,
+    "file": "010",
+    "owner": "dslg"
+   },
+   "bodypart011": {
+    "cutout": false,
+    "file": "011",
+    "owner": "dslg"
+   }
+  },
+  "eber": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "eber"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "eber"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "eber"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "eber"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "eber"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "eber"
+   }
+  },
+  "ecak": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "ecak"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "ecak"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "ecak"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "ecak"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "ecak"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "ecak"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "ecak"
+   }
+  },
+  "eclw": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "eclw"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "eclw"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "eclw"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "eclw"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "eclw"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "eclw"
+   }
+  },
+  "edmn": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "edmn"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "edmn"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "edmn"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "edmn"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "edmn"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "edmn"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "edmn"
+   }
+  },
+  "ehbt": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "ehbt"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "ehbt"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "ehbt"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "ehbt"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "ehbt"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "ehbt"
+   },
+   "bodypart007": {
+    "cutout": true,
+    "file": "007",
+    "owner": "ehbt"
+   }
+  },
+  "eklp": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "eklp"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "eklp"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "eklp"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "eklp"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "eklp"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "eklp"
+   }
+  },
+  "eorc": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "eorc"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "eorc"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "eorc"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "eorc"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "eorc"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "eorc"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "eorc"
+   }
+  },
+  "epez": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "epez"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "epez"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "epez"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "epez"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "epez"
+   }
+  },
+  "eslg": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "eslg"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "eslg"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "eslg"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "eslg"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "eslg"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "eslg"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "eslg"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "eslg"
+   },
+   "bodypart009": {
+    "cutout": false,
+    "file": "009",
+    "owner": "eslg"
+   },
+   "bodypart010": {
+    "cutout": false,
+    "file": "010",
+    "owner": "eslg"
+   },
+   "bodypart011": {
+    "cutout": false,
+    "file": "011",
+    "owner": "eslg"
+   }
+  },
+  "estm": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "estm"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "estm"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "estm"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "estm"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "estm"
+   }
+  },
+  "faez": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "faez"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "faez"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "faez"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "faez"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "faez"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "faez"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "faez"
+   }
+  },
+  "famr": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "FAmr"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "FAmr"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "FAmr"
+   },
+   "bodypart004": {
+    "cutout": true,
+    "file": "004",
+    "owner": "FAmr"
+   }
+  },
+  "fcak": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "fcak"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "fcak"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "fcak"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "fcak"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "fcak"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "fcak"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "fcak"
+   },
+   "bodypart008": {
+    "cutout": true,
+    "file": "008",
+    "owner": "fcak"
+   }
+  },
+  "fclw": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "fclw"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "fclw"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "fclw"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "fclw"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "fclw"
+   }
+  },
+  "fdrg": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "fdrg"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "fdrg"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "fdrg"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "fdrg"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "fdrg"
+   },
+   "bodypart006": {
+    "cutout": true,
+    "file": "006",
+    "owner": "fdrg"
+   }
+  },
+  "fdzy": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "fdzy"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "fdzy"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "fdzy"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "fdzy"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "fdzy"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "fdzy"
+   }
+  },
+  "fflp": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "fflp"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "fflp"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "fflp"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "fflp"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "fflp"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "fflp"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "fflp"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "fflp"
+   }
+  },
+  "fhbt": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "fhbt"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "fhbt"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "fhbt"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "fhbt"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "fhbt"
+   },
+   "bodypart006": {
+    "cutout": true,
+    "file": "006",
+    "owner": "fhbt"
+   }
+  },
+  "fklp": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "fklp"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "fklp"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "fklp"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "fklp"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "fklp"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "fklp"
+   }
+  },
+  "fpez": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "fpez"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "fpez"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "fpez"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "fpez"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "fpez"
+   }
+  },
+  "ftrl": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "ftrl"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "ftrl"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "ftrl"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "ftrl"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "ftrl"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "ftrl"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "ftrl"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "ftrl"
+   }
+  },
+  "gamm": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "gamm"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "gamm"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "gamm"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "gamm"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "gamm"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "gamm"
+   },
+   "bodypart007": {
+    "cutout": true,
+    "file": "007",
+    "owner": "gamm"
+   }
+  },
+  "gobl": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "gobl"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "gobl"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "gobl"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "gobl"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "gobl"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "gobl"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "gobl"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "gobl"
+   },
+   "bodypart009": {
+    "cutout": false,
+    "file": "009",
+    "owner": "gobl"
+   }
+  },
+  "gret": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "gret"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "gret"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "gret"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "gret"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "gret"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "gret"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "gret"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "gret"
+   },
+   "bodypart009": {
+    "cutout": false,
+    "file": "009",
+    "owner": "gret"
+   }
+  },
+  "gund": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "gund"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "gund"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "gund"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "gund"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "gund"
+   }
+  },
+  "gunf": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "gunf"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "gunf"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "gunf"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "gunf"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "gunf"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "gunf"
+   }
+  },
+  "gutc": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "gutc"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "gutc"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "gutc"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "gutc"
+   }
+  },
+  "hero": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "hero"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "hero"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "hero"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "hero"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "hero"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "hero"
+   },
+   "bodypart007": {
+    "cutout": true,
+    "file": "007",
+    "owner": "hero"
+   }
+  },
+  "hoom": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "hoom"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "hoom"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "hoom"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "hoom"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "hoom"
+   }
+  },
+  "huma": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "huma"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "huma"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "huma"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "huma"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "huma"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "huma"
+   }
+  },
+  "humn": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "humn"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "humn"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "humn"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "humn"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "humn"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "humn"
+   }
+  },
+  "huta": {
+   "M000": {
+    "cutout": true,
+    "file": "M000",
+    "owner": "huta"
+   }
+  },
+  "jau1": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jau1"
+   }
+  },
+  "jau2": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jau2"
+   }
+  },
+  "jcc1": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jcc1"
+   }
+  },
+  "jcc2": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jcc1"
+   }
+  },
+  "jcc3": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jcc1"
+   }
+  },
+  "jcc4": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jcc1"
+   }
+  },
+  "jcmp": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jcmp"
+   }
+  },
+  "jcrt": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jcrt"
+   }
+  },
+  "jct1": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jct1"
+   }
+  },
+  "jct2": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jct1"
+   }
+  },
+  "jct3": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jct1"
+   }
+  },
+  "jeg1": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jeg1"
+   }
+  },
+  "jeg2": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jeg1"
+   }
+  },
+  "jeg3": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jeg1"
+   }
+  },
+  "jfn1": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jfn1"
+   }
+  },
+  "jfn2": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jfn1"
+   }
+  },
+  "jfn3": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jfn1"
+   }
+  },
+  "jfnt": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jfnt"
+   }
+  },
+  "jfor": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jfor"
+   }
+  },
+  "jhbr": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jhbr"
+   }
+  },
+  "jhut": {
+   "M000": {
+    "cutout": true,
+    "file": "M000",
+    "owner": "jhut"
+   }
+  },
+  "jman": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jman"
+   },
+   "M001": {
+    "cutout": false,
+    "file": "M001",
+    "owner": "jman"
+   }
+  },
+  "jmbr": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jhbr"
+   }
+  },
+  "jmrq": {
+   "M000": {
+    "cutout": true,
+    "file": "M000",
+    "owner": "jmrq"
+   }
+  },
+  "jnwr": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "jnwr"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "jnwr"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "jnwr"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "jnwr"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "jnwr"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "jnwr"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "jnwr"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "jnwr"
+   },
+   "bodypart009": {
+    "cutout": false,
+    "file": "009",
+    "owner": "jnwr"
+   },
+   "bodypart010": {
+    "cutout": false,
+    "file": "010",
+    "owner": "jnwr"
+   },
+   "bodypart011": {
+    "cutout": false,
+    "file": "011",
+    "owner": "jnwr"
+   }
+  },
+  "jpil": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jpil"
+   }
+  },
+  "jpit": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jpit"
+   }
+  },
+  "jrng": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jrng"
+   }
+  },
+  "jshr": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jshr"
+   },
+   "M001": {
+    "cutout": false,
+    "file": "M001",
+    "owner": "jshr"
+   },
+   "M002": {
+    "cutout": false,
+    "file": "M002",
+    "owner": "jshr"
+   }
+  },
+  "jst1": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "bld3"
+   }
+  },
+  "jtar": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jtar"
+   }
+  },
+  "jwbr": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jhbr"
+   }
+  },
+  "jwel": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "jwel"
+   }
+  },
+  "jwg1": {
+   "M000": {
+    "cutout": true,
+    "file": "M000",
+    "owner": "jhut"
+   }
+  },
+  "lflp": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "lflp"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "lflp"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "lflp"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "lflp"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "lflp"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "lflp"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "lflp"
+   }
+  },
+  "lhbt": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "lhbt"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "lhbt"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "lhbt"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "lhbt"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "lhbt"
+   },
+   "bodypart006": {
+    "cutout": true,
+    "file": "006",
+    "owner": "lhbt"
+   }
+  },
+  "ltrl": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "ltrl"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "ltrl"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "ltrl"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "ltrl"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "ltrl"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "ltrl"
+   }
+  },
+  "maho": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "maho"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "maho"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "maho"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "maho"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "maho"
+   }
+  },
+  "mana": {
+   "M000": {
+    "cutout": false,
+    "file": "M001",
+    "owner": "mana"
+   },
+   "M001": {
+    "cutout": false,
+    "file": "M001",
+    "owner": "mana"
+   }
+  },
+  "mar2": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "mar2"
+   }
+  },
+  "mar3": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "mar3"
+   }
+  },
+  "mr2x": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "mr2x"
+   }
+  },
+  "mr3x": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "mr3x"
+   }
+  },
+  "mrdk": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "mrdk"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "mrdk"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "mrdk"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "mrdk"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "mrdk"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "mrdk"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "mrdk"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "mrdk"
+   },
+   "bodypart009": {
+    "cutout": false,
+    "file": "009",
+    "owner": "mrdk"
+   }
+  },
+  "pcb1": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcb1"
+   }
+  },
+  "pcb2": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcb2"
+   }
+  },
+  "pcb3": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcb2"
+   }
+  },
+  "pcbs": {
+   "M000": {
+    "cutout": true,
+    "file": "M000",
+    "owner": "pcbs"
+   }
+  },
+  "pcc1": {
+   "plant": {
+    "cutout": true,
+    "file": "plant",
+    "owner": "PCC1"
+   }
+  },
+  "pcc2": {
+   "plant": {
+    "cutout": true,
+    "file": "plant",
+    "owner": "PCC2"
+   }
+  },
+  "pcf1": {
+   "plant": {
+    "cutout": true,
+    "file": "plant",
+    "owner": "PCF1"
+   }
+  },
+  "pcf2": {
+   "plant": {
+    "cutout": true,
+    "file": "plant",
+    "owner": "PCF2"
+   }
+  },
+  "pcf3": {
+   "plant": {
+    "cutout": true,
+    "file": "plant",
+    "owner": "PCF3"
+   }
+  },
+  "pcf4": {
+   "plant": {
+    "cutout": true,
+    "file": "plant",
+    "owner": "PCF4"
+   }
+  },
+  "pcfe": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcfe"
+   }
+  },
+  "pcfn": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcfn"
+   }
+  },
+  "pcg1": {
+   "plant": {
+    "cutout": true,
+    "file": "plant",
+    "owner": "PCG1"
+   }
+  },
+  "pcg2": {
+   "plant": {
+    "cutout": true,
+    "file": "plant",
+    "owner": "PCG2"
+   }
+  },
+  "pch2": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pch2"
+   }
+  },
+  "pch3": {
+   "M000": {
+    "cutout": true,
+    "file": "M000",
+    "owner": "pch3"
+   }
+  },
+  "pcr1": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcr1"
+   }
+  },
+  "pcr2": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcr2"
+   }
+  },
+  "pcr3": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcr3"
+   }
+  },
+  "pcr4": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcr4"
+   }
+  },
+  "pcr5": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcr5"
+   }
+  },
+  "pcr6": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcr6"
+   }
+  },
+  "pcr7": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcr7"
+   }
+  },
+  "pcr8": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcr7"
+   }
+  },
+  "pcr9": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcr9"
+   }
+  },
+  "pcru": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcru"
+   }
+  },
+  "pcsb": {
+   "M000": {
+    "cutout": true,
+    "file": "M000",
+    "owner": "pcsb"
+   }
+  },
+  "pcsh": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcsh"
+   }
+  },
+  "pcsp": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcsp"
+   }
+  },
+  "pct1": {
+   "M000": {
+    "cutout": true,
+    "file": "M000",
+    "owner": "pct1"
+   }
+  },
+  "pct2": {
+   "M000": {
+    "cutout": true,
+    "file": "M000",
+    "owner": "pct2"
+   }
+  },
+  "pct4": {
+   "M000": {
+    "cutout": true,
+    "file": "M000",
+    "owner": "pct4"
+   }
+  },
+  "pct5": {
+   "M000": {
+    "cutout": true,
+    "file": "M000",
+    "owner": "pct5"
+   }
+  },
+  "pct6": {
+   "M000": {
+    "cutout": true,
+    "file": "M000",
+    "owner": "pct6"
+   },
+   "M001": {
+    "cutout": false,
+    "file": "M001",
+    "owner": "pct6"
+   }
+  },
+  "pct7": {
+   "M000": {
+    "cutout": true,
+    "file": "M000",
+    "owner": "pct7"
+   }
+  },
+  "pct8": {
+   "M000": {
+    "cutout": true,
+    "file": "M000",
+    "owner": "pct8"
+   }
+  },
+  "pct9": {
+   "M000": {
+    "cutout": true,
+    "file": "M000",
+    "owner": "pct9"
+   }
+  },
+  "pcta": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcta"
+   }
+  },
+  "pcw5": {
+   "plant": {
+    "cutout": true,
+    "file": "plant",
+    "owner": "PCW5"
+   }
+  },
+  "pcw6": {
+   "plant": {
+    "cutout": false,
+    "file": "plant",
+    "owner": "PCW6"
+   }
+  },
+  "pcw7": {
+   "plant": {
+    "cutout": true,
+    "file": "plant",
+    "owner": "PCW7"
+   }
+  },
+  "pcw8": {
+   "plant": {
+    "cutout": false,
+    "file": "plant",
+    "owner": "PCW8"
+   }
+  },
+  "pcx1": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcx1"
+   }
+  },
+  "pcx2": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcx2"
+   }
+  },
+  "pcx3": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcx3"
+   }
+  },
+  "pcx4": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcx4"
+   }
+  },
+  "pcx5": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcx5"
+   }
+  },
+  "pcx6": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcx6"
+   }
+  },
+  "pcx7": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pcx7"
+   }
+  },
+  "peas": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "peas"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "peas"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "peas"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "peas"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "peas"
+   }
+  },
+  "pgl1": {
+   "plant": {
+    "cutout": true,
+    "file": "plant",
+    "owner": "PGL1"
+   }
+  },
+  "pgl2": {
+   "plant": {
+    "cutout": true,
+    "file": "plant",
+    "owner": "PGL2"
+   }
+  },
+  "prcy": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "prcy"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "prcy"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "prcy"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "prcy"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "prcy"
+   }
+  },
+  "prt1": {
+   "M000": {
+    "cutout": true,
+    "file": "M000",
+    "owner": "prt1"
+   }
+  },
+  "prt2": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "prt2"
+   }
+  },
+  "prt3": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "prt3"
+   }
+  },
+  "ptre": {
+   "M000": {
+    "cutout": true,
+    "file": "M000",
+    "owner": "ptre"
+   }
+  },
+  "puac": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "puac"
+   }
+  },
+  "puap": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "puap"
+   }
+  },
+  "puar": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "puar"
+   }
+  },
+  "puav": {
+   "M000": {
+    "cutout": true,
+    "file": "M000",
+    "owner": "puav"
+   }
+  },
+  "pwm1": {
+   "M000": {
+    "cutout": true,
+    "file": "M000",
+    "owner": "pwm1"
+   }
+  },
+  "pwmx": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "pwmx"
+   }
+  },
+  "quil": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "quil"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "quil"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "quil"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "quil"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "quil"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "quil"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "quil"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "quil"
+   },
+   "bodypart009": {
+    "cutout": false,
+    "file": "009",
+    "owner": "quil"
+   }
+  },
+  "rigl": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "rigl"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "rigl"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "rigl"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "rigl"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "rigl"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "rigl"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "rigl"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "rigl"
+   }
+  },
+  "rock": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "rock"
+   }
+  },
+  "sacd": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "sacd"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "sacd"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "sacd"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "sacd"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "sacd"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "sacd"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "sacd"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "sacd"
+   }
+  },
+  "sage": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "sage"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "sage"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "sage"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "sage"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "sage"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "sage"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "sage"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "sage"
+   },
+   "bodypart009": {
+    "cutout": false,
+    "file": "009",
+    "owner": "sage"
+   }
+  },
+  "sara": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "sara"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "sara"
+   },
+   "bodypart003": {
+    "cutout": true,
+    "file": "003",
+    "owner": "sara"
+   }
+  },
+  "sbob": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "sbob"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "sbob"
+   },
+   "bodypart003": {
+    "cutout": true,
+    "file": "003",
+    "owner": "sbob"
+   }
+  },
+  "serx": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "serx"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "serx"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "serx"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "serx"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "serx"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "serx"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "serx"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "serx"
+   }
+  },
+  "shkt": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "shkt"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "shkt"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "shkt"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "shkt"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "shkt"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "shkt"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "shkt"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "shkt"
+   },
+   "bodypart009": {
+    "cutout": false,
+    "file": "009",
+    "owner": "shkt"
+   },
+   "bodypart010": {
+    "cutout": false,
+    "file": "010",
+    "owner": "shkt"
+   },
+   "bodypart011": {
+    "cutout": true,
+    "file": "011",
+    "owner": "shkt"
+   }
+  },
+  "silo": {
+   "M000": {
+    "cutout": true,
+    "file": "M000",
+    "owner": "silo"
+   }
+  },
+  "sirc": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "sirc"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "sirc"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "sirc"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "sirc"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "sirc"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "sirc"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "sirc"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "sirc"
+   },
+   "bodypart009": {
+    "cutout": true,
+    "file": "009",
+    "owner": "sirc"
+   }
+  },
+  "sogr": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "sogr"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "sogr"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "sogr"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "sogr"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "sogr"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "sogr"
+   }
+  },
+  "spdr": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "spdr"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "spdr"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "spdr"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "spdr"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "spdr"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "spdr"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "spdr"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "spdr"
+   }
+  },
+  "sprg": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "sprg"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "sprg"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "sprg"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "sprg"
+   },
+   "bodypart005": {
+    "cutout": true,
+    "file": "005",
+    "owner": "sprg"
+   },
+   "bodypart006": {
+    "cutout": true,
+    "file": "005",
+    "owner": "sprg"
+   }
+  },
+  "sprl": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "sprl"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "sprl"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "sprl"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "sprl"
+   },
+   "bodypart005": {
+    "cutout": true,
+    "file": "005",
+    "owner": "sprl"
+   },
+   "bodypart006": {
+    "cutout": true,
+    "file": "005",
+    "owner": "sprl"
+   }
+  },
+  "stmp": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "stmp"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "stmp"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "stmp"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "stmp"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "stmp"
+   }
+  },
+  "surt": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "surt"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "surt"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "surt"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "surt"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "surt"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "surt"
+   }
+  },
+  "the2": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "the2"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "the2"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "the2"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "the2"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "the2"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "the2"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "the2"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "the2"
+   }
+  },
+  "thes": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "thes"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "thes"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "thes"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "thes"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "thes"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "thes"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "lflp"
+   }
+  },
+  "xwiz": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "xwiz"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "xwiz"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "xwiz"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "xwiz"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "xwiz"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "xwiz"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "xwiz"
+   },
+   "bodypart008": {
+    "cutout": true,
+    "file": "008",
+    "owner": "xwiz"
+   }
+  },
+  "yogo": {
+   "bodypart001": {
+    "cutout": false,
+    "file": "001",
+    "owner": "YOGO"
+   },
+   "bodypart002": {
+    "cutout": false,
+    "file": "002",
+    "owner": "YOGO"
+   },
+   "bodypart003": {
+    "cutout": false,
+    "file": "003",
+    "owner": "YOGO"
+   },
+   "bodypart004": {
+    "cutout": false,
+    "file": "004",
+    "owner": "YOGO"
+   },
+   "bodypart005": {
+    "cutout": false,
+    "file": "005",
+    "owner": "YOGO"
+   },
+   "bodypart006": {
+    "cutout": false,
+    "file": "006",
+    "owner": "YOGO"
+   },
+   "bodypart007": {
+    "cutout": false,
+    "file": "007",
+    "owner": "YOGO"
+   },
+   "bodypart008": {
+    "cutout": false,
+    "file": "008",
+    "owner": "YOGO"
+   },
+   "bodypart009": {
+    "cutout": false,
+    "file": "009",
+    "owner": "YOGO"
+   },
+   "bodypart010": {
+    "cutout": false,
+    "file": "009",
+    "owner": "YOGO"
+   }
+  }
+ }
+}

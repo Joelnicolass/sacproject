@@ -6,7 +6,7 @@ extends SceneTree
 ## Output: BodyCatalog.clip_frame_path(obj) under cache/baked/clips/ (ignored by git, like all of cache/), with a
 ## .gdignore so the editor never scans it. Incremental: a frame whose .res is newer than its OBJ is skipped.
 ## No materials are saved (each frame would embed its own texture copy): every surface is named after its OBJ
-## label and ClipPosePlayer puts back the shared ObjMesh.material() at load.
+## label and ClipPosePlayer puts back the shared OriginalMaterial at load.
 
 const _OBJ := preload("res://scenes/world/obj_mesh.gd")
 const CLIPS := "res://cache/data/anim_mesh_clips_f37.json"
@@ -55,14 +55,12 @@ func _initialize() -> void:
 
 
 func _bake(obj: String, out: String) -> bool:
-	var built := _OBJ.build(obj, "", {_OBJ.MIRROR_Z: true})
+	var built := _OBJ.build(obj, {_OBJ.MIRROR_Z: true})
 	if built == null:
 		push_error("No se pudo armar %s" % obj)
 		return false
 	for i in built.get_surface_count():
-		var mat := built.surface_get_material(i)
-		# ObjMesh names each material after its OBJ label; a surface without texture has none, and gets none back.
-		built.surface_set_name(i, mat.resource_name if mat else "")
+		# ObjMesh names each surface after its OBJ label; ClipPosePlayer puts the shared material back from that name.
 		built.surface_set_material(i, null)
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(out.get_base_dir()))
 	var err := ResourceSaver.save(built, out, ResourceSaver.FLAG_COMPRESS)

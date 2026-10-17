@@ -3,7 +3,7 @@ extends RefCounted
 
 ## RFC-033: the one place that knows where the original's assets live under res://assets/original/.
 ## Only the importers in tools/ write there; the game only reads. Moving a family is a one-line change here.
-## No consumer uses it yet (033b onwards migrate them one family at a time).
+## Consumers migrate one family at a time (033b: textures, via OriginalMaterial).
 
 const ROOT := "res://assets/original/"
 const TEXTURES_DIR := ROOT + "textures/"
@@ -23,6 +23,11 @@ static func texture(model: String, label: String) -> String:
 
 static func textures(model: String) -> String:
 	return TEXTURES_DIR + model + "/"
+
+
+## textures/index.json: which texture each model's material label uses (see tools/import_textures.py).
+static func texture_index() -> String:
+	return TEXTURES_DIR + "index.json"
 
 
 static func prop(name: String) -> String:

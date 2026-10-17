@@ -18,3 +18,4 @@ game/agent/out/*
 
 # Assets finales del port (RFC-023, 2026-10-17): sus .import sí se versionan.
 !game/assets/original/**/*.import
+.claude/worktrees/

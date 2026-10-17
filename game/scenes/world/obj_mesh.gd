@@ -1,9 +1,10 @@
 extends RefCounted
 
-## Reads the OBJ files the exporters leave in cache/look/. One surface per usemtl.
+## Reads the OBJ files the exporters leave in cache/look/. One surface per usemtl, named after its label.
 ## Godot draws clockwise faces; the winding is checked against the file normals.
+## Materials come from OriginalMaterial (textures of assets/original/textures/), never from files beside the OBJ.
 
-## sacengine saveObj writes SAXS bodies as (x, z, -y). The map uses (x, z, y).
+## sacengine saveObj writes the bodies as (x, z, -y). The map uses (x, z, y).
 const MIRROR_Z := "mirror_z"
 ## Widgets (plants): every face drawn on both sides, like sacengine loadWIDG.
 ## Cards keep normals up; ground widgets (rocks, mounds) get smooth normals per side.
@@ -12,7 +13,7 @@ const FOLIAGE := "foliage"
 const GROUND_WIDGET_RATIO := 0.7
 
 
-static func build(path: String, fallback_texture: String = "", options: Dictionary = {}) -> ArrayMesh:
+static func build(path: String, options: Dictionary = {}) -> ArrayMesh:
 	var parsed := parse(path, bool(options.get(MIRROR_Z, false)))
 	if parsed.is_empty():
 		return null
@@ -22,7 +23,7 @@ static func build(path: String, fallback_texture: String = "", options: Dictiona
 	if not foliage:
 		flip = _needs_flip(surfaces, parsed["has_normals"])
 	var ground := foliage and is_ground_widget(surfaces)
-	var keys := chroma_keys(path)
+	var model := OriginalMaterial.model_of(path)
 	var built := ArrayMesh.new()
 	for surface: Dictionary in surfaces:
 		var verts: PackedVector3Array = surface["v"]
@@ -50,9 +51,11 @@ static func build(path: String, fallback_texture: String = "", options: Dictiona
 			arrays = _smooth(arrays)
 		built.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 		var label := str(surface["label"])
-		var mat := material(path, label, fallback_texture, int(keys.get(label, -1)))
+		var index := built.get_surface_count() - 1
+		built.surface_set_name(index, label)
+		var mat := OriginalMaterial.for_label(model, label)
 		if mat:
-			built.surface_set_material(built.get_surface_count() - 1, mat)
+			built.surface_set_material(index, mat)
 	if built.get_surface_count() == 0:
 		return null
 	return built
@@ -109,66 +112,6 @@ static func parse(path: String, mirror_z: bool = false) -> Dictionary:
 	return {"surfaces": surfaces, "has_normals": not normals.is_empty()}
 
 
-## One material per texture file and chroma key, shared by every mesh that uses it.
-## A material is never edited after it is built: do not mutate what material() returns.
-static var _materials: Dictionary = {}
-
-
-## chroma_key: RGB (0xRRGGBB) that becomes transparent, -1 for none.
-static func material(obj_path: String, label: String, fallback_texture: String, chroma_key: int = -1) -> StandardMaterial3D:
-	var path := texture_for(obj_path, label, fallback_texture)
-	if path.is_empty() or not FileAccess.file_exists(path):
-		return null
-	var key := "%s|%s|%d" % [path, label, chroma_key]
-	if _materials.has(key):
-		return _materials[key]
-	var built := _build_material(path, label, chroma_key)
-	_materials[key] = built
-	return built
-
-
-static func _build_material(path: String, label: String, chroma_key: int) -> StandardMaterial3D:
-	var image := Image.new()
-	if image.load(ProjectSettings.globalize_path(path)) != OK:
-		return null
-	if image.is_compressed():
-		image.decompress()
-	if chroma_key >= 0:
-		_apply_chroma_key(image, chroma_key)
-	var cutout := image.detect_alpha() != Image.ALPHA_NONE
-	if cutout:
-		# Transparent texels are black; without this the smaller mipmaps turn plants into black specks.
-		image.convert(Image.FORMAT_RGBA8)
-		image.fix_alpha_edges()
-	image.generate_mipmaps()
-	var mat := StandardMaterial3D.new()
-	mat.resource_name = label
-	mat.albedo_texture = ImageTexture.create_from_image(image)
-	mat.roughness = 0.85
-	if cutout:
-		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
-		mat.alpha_scissor_threshold = 0.4
-	return mat
-
-
-static func texture_for(obj_path: String, label: String, fallback_texture: String) -> String:
-	var digits := ""
-	for i in label.length():
-		var c := label[i]
-		if c >= "0" and c <= "9":
-			digits += c
-	var beside := obj_path.get_base_dir().path_join(label + ".png")
-	if not label.is_empty() and FileAccess.file_exists(beside):
-		return beside
-	if digits.is_empty():
-		return fallback_texture
-	var stem := obj_path.get_file().get_basename()
-	var tga := "res://cache/look/%s/%s.tga" % [stem, digits]
-	if FileAccess.file_exists(tga):
-		return tga
-	return obj_path.get_base_dir().path_join(digits + ".tga")
-
-
 static func _bucket(label: String) -> Dictionary:
 	return {"label": label, "v": PackedVector3Array(), "n": PackedVector3Array(), "u": PackedVector2Array()}
 
@@ -201,23 +144,6 @@ static func _needs_flip(surfaces: Array, has_normals: bool) -> bool:
 	return score < 0.0
 
 
-## SAXS limb records (offset 0x58, 6 bytes each): flags bit 0 turns the chroma key on.
-## Keyed by the OBJ label bodypartNNN; limb NNN-1. Empty without a SAXS beside the OBJ.
-static func chroma_keys(obj_path: String) -> Dictionary:
-	var saxs := obj_path.get_basename() + ".SAXS"
-	if not FileAccess.file_exists(saxs):
-		return {}
-	var raw := FileAccess.get_file_as_bytes(saxs)
-	var keys := {}
-	for limb in 16:
-		var at := 0x58 + limb * 6
-		if at + 6 > raw.size():
-			break
-		if raw[at] & 1:
-			keys["bodypart%03d" % (limb + 1)] = raw.decode_u32(at + 2) & 0xffffff
-	return keys
-
-
 static func is_ground_widget(surfaces: Array) -> bool:
 	var flat := 0.0
 	var total := 0.0
@@ -230,18 +156,6 @@ static func is_ground_widget(surfaces: Array) -> bool:
 			if area > 0.0 and absf(face.y) / area > 0.5:
 				flat += area
 	return total > 0.0 and flat / total >= GROUND_WIDGET_RATIO
-
-
-static func _apply_chroma_key(image: Image, key: int) -> void:
-	image.convert(Image.FORMAT_RGBA8)
-	var data := image.get_data()
-	var r := (key >> 16) & 0xff
-	var g := (key >> 8) & 0xff
-	var b := key & 0xff
-	for i in range(0, data.size(), 4):
-		if data[i] == r and data[i + 1] == g and data[i + 2] == b:
-			data[i + 3] = 0
-	image.set_data(image.get_width(), image.get_height(), false, Image.FORMAT_RGBA8, data)
 
 
 ## Original triangles followed by the same triangles with the opposite winding.

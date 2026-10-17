@@ -16,5 +16,6 @@ agent/out/f84/*side_by_side*.png
 
 # Capturas y salidas de pruebas: renderizan arte del original extraído a cache/ (decisión del orquestador, REVIEW-F84 N4).
 # Los archivos ya versionados en agent/out/ siguen versionados; lo nuevo no se agrega.
-agent/out/
+agent/out/*
+!agent/out/.gdignore
 __pycache__/

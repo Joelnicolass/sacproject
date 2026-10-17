@@ -1,0 +1,196 @@
+{
+ "scene": "res://debug/body_gallery.tscn",
+ "wait_first": 6.0,
+ "steps": [
+  {
+   "shot": "body_gallery_all.png"
+  },
+  {
+   "call": {
+    "harness": "rfc033_view",
+    "method": "frame",
+    "args": [
+     -12,
+     14,
+     8,
+     -12,
+     1,
+     -8,
+     12
+    ]
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "body_gallery_left.png"
+  },
+  {
+   "call": {
+    "harness": "rfc033_view",
+    "method": "frame",
+    "args": [
+     12,
+     14,
+     -20,
+     12,
+     1,
+     -36,
+     12
+    ]
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "body_gallery_right.png"
+  },
+  {
+   "scene": "res://debug/fx_gallery.tscn"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "shot": "fx_gallery.png"
+  },
+  {
+   "scene": "res://agent/fixtures/biome_pick_persephone.tscn"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "shot": "biome_persephone.png"
+  },
+  {
+   "scene": "res://agent/fixtures/biome_pick_pyro.tscn"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "shot": "biome_pyro.png"
+  },
+  {
+   "scene": "res://agent/fixtures/biome_pick_james.tscn"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "shot": "biome_james.png"
+  },
+  {
+   "scene": "res://agent/fixtures/biome_pick_stratos.tscn"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "shot": "biome_stratos.png"
+  },
+  {
+   "scene": "res://agent/fixtures/biome_pick_charnel.tscn"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "shot": "biome_charnel.png"
+  },
+  {
+   "scene": "res://agent/fixtures/look_gallery_still.tscn"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "shot": "look_gallery_ref.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "look_gallery_rts.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "look_gallery_horizon.png"
+  },
+  {
+   "scene": "res://debug/orders_group.tscn"
+  },
+  {
+   "wait_until": {
+    "node": "%OrdersLog",
+    "text_contains": "Druid 800/800",
+    "timeout": 25
+   }
+  },
+  {
+   "call": {
+    "harness": "cue_probe",
+    "method": "mirror",
+    "args": [
+     true
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "rfc033_view",
+    "method": "hide_log"
+   }
+  },
+  {
+   "press": "check_tick"
+  },
+  {
+   "wait": 0.8
+  },
+  {
+   "shot": "hud_group.png"
+  },
+  {
+   "press": "order_attack"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "shot": "hud_attack_armed.png"
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "press": "order_menu"
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "hud_xmenu.png"
+  }
+ ]
+}

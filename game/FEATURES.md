@@ -2057,3 +2057,17 @@ Deuda:
 Deuda:
 - 023g mide el costo de los huesos auxiliares con 150 cuerpos.
 - 023b tiene que resetear el esqueleto al cambiar de clip: el import de glTF descarta pistas constantes iguales al reposo.
+
+### F167 — Base del port sin caché (RFC-033, corte 033a)
+
+**Piezas:**
+- **LFS** para `.res` y `.exr` de `assets/original/`; `.gdignore` en `agent/out/` y `cache/look/anim_f37/`, así Godot deja de importar salidas de prueba y cuadros horneados.
+- **`OriginalAssets`** (`scenes/data/original_assets.gd`): único dueño de las rutas de los assets originales; todavía sin consumidores.
+- **Capturas base** con cámara fija: `bash agent/run_rfc033_shots.sh base|after`, en `agent/out/033/` (fuera de git).
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-033a.md`). `quick` igual a la base. El `.gdignore` de `anim_f37` no rompe la animación: esos OBJ se leen con `FileAccess`, no con `ResourceLoader`.
+- `.godot/imported` bajó de 10 GB a 5,8 GB; 4,2 GB quedaron movidos a `.godot/imported_orphans_033a/` hasta que el usuario decida borrarlos.
+
+Deuda:
+- Falta medir el ruido entre dos corridas iguales de las capturas 3D y de `fx_gallery` antes de usarlas como criterio numérico (lo hace 033b).
+- Los 5,8 GB restantes de `.godot/imported` son huérfanos; se van solo con una purga total.

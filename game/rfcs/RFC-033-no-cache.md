@@ -320,3 +320,16 @@ Ya hay en LFS 109 MB de `assets/cc0` y `assets/mm`. Cada regeneración de textur
 - Features F167–F175 para 033a–033i, en ese orden.
 - El arreglo de `.gitignore` para `assets/original/**/*.import` ya entró con 023a; 033a suma `.res` a LFS.
 - Orden de la cola: 023a (en curso) → 033a → 033b → 033c → … ; RFC-023 sigue en paralelo solo en planes, nunca dos developers a la vez.
+
+## 033a: Resultado (F167)
+
+- **LFS y git:** `.gitattributes` de la raíz suma `game/assets/original/**/*.res` y `*.exr` (`git check-attr filter` da `lfs`; `.json` queda sin filtro). `git check-ignore game/assets/original/x/y.png.import` ya no lo marca (el arreglo de `.gitignore` entró con 023a). Se agregó `!agent/out/.gdignore` en `game/.gitignore` y en el `.gitignore` de la raíz (ambos ignoraban `agent/out/` entero) para que el `.gdignore` se versione.
+- **`.gdignore`:** `agent/out/.gdignore` (versionado) y `cache/look/anim_f37/.gdignore` (la caché no está en git). `ClipPosePlayer` y `ObjMesh` leen esos OBJ con `FileAccess`/`ResourceLoader`, que siguen funcionando.
+- **`OriginalAssets`** (`scenes/data/original_assets.gd`): raíz y helpers por familia (`texture`, `prop`, `model`, `ui`, `fx`, `theme`, `theme_envi`, `map`, `data`). Sin consumidores todavía. `assets/original/README.md` lista importador y corte por carpeta.
+- **Capturas base** (con `cache/`, 1280x720, `--max-fps 60`, una corrida): `agent/out/033/base/` (16 PNG, no versionadas) con `bash agent/run_rfc033_shots.sh base` (el corte siguiente corre `after` y diffea con AgentKit). Flow: `agent/flows/rfc033_shots.json`; harness `agent/harness/rfc033_view.gd` (encuadre ortográfico fijo y `hide_log`).
+- **`.godot/imported`:** el `.gdignore` solo no purga lo ya importado (un `--import` no cambió nada: 10 GB). Se movieron (no se borraron) 44 182 entradas de `agent/out` y `anim_f37` a `.godot/imported_orphans_033a/` (4,2 GB): **10 GB → 5,8 GB**. Los 5,8 GB restantes son huérfanos de archivos ya borrados que no se pueden mapear por ruta; solo una purga total y reimport los saca. Borrar `imported_orphans_033a/` es decisión del usuario.
+- **Banco:** `agent/run_determinism.sh quick` = QUICK PASS contra `det_baseline.txt`.
+
+**Desvíos del plan:**
+- El HUD en partida usa `debug/orders_group.tscn` con `check_tick` y `order_menu`, no `--autostart` en tick fijo: su texto de depuración trae `frame_ms`, que cambia cada corrida; `hide_log` lo apaga para llegar a 0 px.
+- No se midió el piso de ruido entre dos corridas iguales (3D, `fx_gallery`, con partículas): 033b conviene que corra `base` dos veces para fijarlo antes de aceptar el umbral de §8.0.

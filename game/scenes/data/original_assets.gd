@@ -1,0 +1,65 @@
+class_name OriginalAssets
+extends RefCounted
+
+## RFC-033: the one place that knows where the original's assets live under res://assets/original/.
+## Only the importers in tools/ write there; the game only reads. Moving a family is a one-line change here.
+## No consumer uses it yet (033b onwards migrate them one family at a time).
+
+const ROOT := "res://assets/original/"
+const TEXTURES_DIR := ROOT + "textures/"
+const PROPS_DIR := ROOT + "props/"
+const MODELS_DIR := ROOT + "models/"
+const UI_DIR := ROOT + "ui/"
+const FX_DIR := ROOT + "fx/"
+const THEMES_DIR := ROOT + "themes/"
+const MAPS_DIR := ROOT + "maps/"
+const DATA_DIR := ROOT + "data/"
+
+
+## A model's texture: textures/<model>/<label>.png (label like "001").
+static func texture(model: String, label: String) -> String:
+	return TEXTURES_DIR + "%s/%s.png" % [model, label]
+
+
+static func textures(model: String) -> String:
+	return TEXTURES_DIR + model + "/"
+
+
+static func prop(name: String) -> String:
+	return PROPS_DIR + name + ".glb"
+
+
+static func model(name: String) -> String:
+	return MODELS_DIR + name + ".glb"
+
+
+## family: "icons", "hud", "cursors" or "xmenu".
+static func ui(family: String, name: String) -> String:
+	return UI_DIR + "%s/%s.png" % [family, name]
+
+
+static func fx(tag: String) -> String:
+	return FX_DIR + tag + ".png"
+
+
+static func fx_catalog() -> String:
+	return FX_DIR + "fx.json"
+
+
+## A theme file: themes/<god>/<name>.png (atlas, edge, sky, skyb, skyt, sun, undr).
+static func theme(god: String, name: String) -> String:
+	return THEMES_DIR + "%s/%s.png" % [god, name]
+
+
+static func theme_envi(god: String) -> String:
+	return THEMES_DIR + god + "/envi.tres"
+
+
+## A map file: maps/<map>/<file> (terrain.res, tiles.png, light.png, ntts.json, widgets.json).
+static func map(map_name: String, file: String) -> String:
+	return MAPS_DIR + "%s/%s" % [map_name, file]
+
+
+## A game data file: data/<name>.json (creatures, spells, abilities, wizards, books, buildings).
+static func data(name: String) -> String:
+	return DATA_DIR + name + ".json"

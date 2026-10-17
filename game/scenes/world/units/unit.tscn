@@ -1,8 +1,9 @@
-[gd_scene load_steps=63 format=3]
+[gd_scene load_steps=64 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/unit_body.gd" id="1_body"]
 [ext_resource type="PackedScene" path="res://scenes/world/components/pace_factors.tscn" id="f129_pace"]
 [ext_resource type="PackedScene" path="res://scenes/world/components/clinging.tscn" id="f129_cling"]
+[ext_resource type="PackedScene" path="res://scenes/world/components/devour_growth.tscn" id="f131_growth"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/lightning_charge.tscn" id="f130_charge"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/life_shield.tscn" id="f126_shield"]
 [ext_resource type="Resource" path="res://data/abilities/ability_catalog.tres" id="f126_catalog"]
@@ -120,6 +121,9 @@ properties/16/replication_mode = 2
 properties/17/path = NodePath("LightningCharge:shown")
 properties/17/spawn = true
 properties/17/replication_mode = 2
+properties/18/path = NodePath("DevourGrowth:shown")
+properties/18/spawn = true
+properties/18/replication_mode = 2
 
 [node name="Unit" type="CharacterBody3D"]
 collision_layer = 2
@@ -135,8 +139,9 @@ script = ExtResource("2_visual")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_unit")
 
-[node name="Health" type="Node" parent="." node_paths=PackedStringArray("oil", "passive", "afflictions", "poisoning", "life_shield")]
+[node name="Health" type="Node" parent="." node_paths=PackedStringArray("oil", "passive", "afflictions", "poisoning", "life_shield", "growth")]
 script = ExtResource("3_health")
+growth = NodePath("../DevourGrowth")
 oil = NodePath("../Afflictions/Oiled")
 passive = NodePath("../DamagePassive")
 afflictions = NodePath("../Afflictions")
@@ -180,6 +185,11 @@ body = NodePath("..")
 body = NodePath("..")
 poisoning = NodePath("../Poisoning")
 pace = NodePath("../PaceFactors")
+
+[node name="DevourGrowth" parent="." node_paths=PackedStringArray("body", "health", "visual") instance=ExtResource("f131_growth")]
+body = NodePath("..")
+health = NodePath("../Health")
+visual = NodePath("../Tilt/Mesh")
 
 [node name="LightningCharge" parent="." node_paths=PackedStringArray("body", "pace") instance=ExtResource("f130_charge")]
 body = NodePath("..")

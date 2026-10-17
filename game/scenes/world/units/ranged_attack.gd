@@ -257,6 +257,15 @@ func shot_origin() -> Vector3:
 	return ShotAim.origin(_body, shot_height)
 
 
+## sacengine shotPosition of `body`: its RangedAttack's shot origin, or its feet lifted when it has none. Breath of life and Devour
+## (the soul shrinks toward it) both ask it.
+static func origin_of(body: Node3D) -> Vector3:
+	var ranged := body.get_node_or_null("RangedAttack") as RangedAttack
+	if ranged != null:
+		return ranged.shot_origin()
+	return body.global_position + Vector3.UP * 1.8
+
+
 ## sacengine predictShotTargetPosition: the target's center where it will be when the shot arrives.
 func _predicted(target: Node3D) -> Vector3:
 	var center := _center(target)

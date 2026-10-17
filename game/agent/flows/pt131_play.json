@@ -1,0 +1,254 @@
+{
+ "scene": "res://debug/f131_devour_rend.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait_until": {
+    "node": "Runner",
+    "prop": "_running",
+    "equals": true,
+    "timeout": 60
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt131_watch",
+    "prop": "rel",
+    "gte": 3,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt131_watch",
+    "method": "frame_between",
+    "args": [
+     "Netherfiend1",
+     "Trogg1",
+     0,
+     7,
+     7
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt131_watch",
+    "method": "report",
+    "args": [
+     "Netherfiend1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt131_watch",
+    "method": "height_px",
+    "args": [
+     "Netherfiend1"
+    ]
+   }
+  },
+  {
+   "shot": "play/p0_before.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt131_watch",
+    "prop": "rel",
+    "gte": 150,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt131_watch",
+    "method": "frame_between",
+    "args": [
+     "Netherfiend1",
+     "Trogg1",
+     0,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt131_watch",
+    "method": "souls",
+    "args": [
+     "Netherfiend1"
+    ]
+   }
+  },
+  {
+   "shot": "play/p1_windup_soul.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt131_watch",
+    "prop": "rel",
+    "gte": 204,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt131_watch",
+    "method": "souls",
+    "args": [
+     "Netherfiend1"
+    ]
+   }
+  },
+  {
+   "shot": "play/p2_soul_a.png"
+  },
+  {
+   "call": {
+    "harness": "pt131_watch",
+    "method": "souls",
+    "args": [
+     "Netherfiend1"
+    ]
+   }
+  },
+  {
+   "shot": "play/p3_soul_b.png"
+  },
+  {
+   "call": {
+    "harness": "pt131_watch",
+    "method": "souls",
+    "args": [
+     "Netherfiend1"
+    ]
+   }
+  },
+  {
+   "shot": "play/p4_soul_c.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt131_watch",
+    "prop": "rel",
+    "gte": 330,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt131_watch",
+    "method": "frame_on",
+    "args": [
+     "Netherfiend1",
+     0,
+     6,
+     9
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt131_watch",
+    "method": "report",
+    "args": [
+     "Netherfiend1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt131_watch",
+    "method": "height_px",
+    "args": [
+     "Netherfiend1"
+    ]
+   }
+  },
+  {
+   "shot": "play/p5_bigger_n1.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt131_watch",
+    "prop": "rel",
+    "gte": 480,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt131_watch",
+    "method": "frame_on",
+    "args": [
+     "Netherfiend1",
+     0,
+     6,
+     9
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt131_watch",
+    "method": "report",
+    "args": [
+     "Netherfiend1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt131_watch",
+    "method": "height_px",
+    "args": [
+     "Netherfiend1"
+    ]
+   }
+  },
+  {
+   "shot": "play/p6_bigger_n2.png"
+  },
+  {
+   "call": {
+    "harness": "pt131_watch",
+    "method": "frame_on",
+    "args": [
+     "Hellmouth1",
+     0,
+     9,
+     14
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt131_watch",
+    "method": "report",
+    "args": [
+     "Hellmouth1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt131_watch",
+    "method": "height_px",
+    "args": [
+     "Hellmouth1"
+    ]
+   }
+  },
+  {
+   "shot": "play/p7_hellmouth.png"
+  }
+ ]
+}

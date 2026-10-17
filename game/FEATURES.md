@@ -1892,3 +1892,36 @@ Deuda:
 - Nunca choca con el tirador. En sacengine sí puede después del cuadro 30.
 - El look es de reserva (esfera verde).
 - Sobre un hueco vuela hasta el fin del alcance.
+
+### F131 — Devour de la Netherfiend y el Hellmouth (RFC-030, corte 030t-a)
+
+**Piezas:**
+- **`DevourAbility`** (`ifna`, `windup_from_clip`):
+  - Necesita un alma azul en NORMAL o EMERGING, a una distancia 2D ≤ la diagonal de la caja.
+  - Llama a `soul.begin_devour` y a `DevourGrowth.grow`.
+  - Si la criatura no está llena, la cura con Rainbow: 600 en 150 ticks.
+- **`DevourGrowth`:** es el único dueño de n, del incremento, de la regeneración extra (inc/60), de la resistencia ×0,9ⁿ y del bulto `2 − 0,75ⁿ`, que escala el mesh. Replica `shown`.
+- **`Soul`:**
+  - estado `DEVOURING`, al final del enum;
+  - `begin_devour` encoge el alma 3/60 por tick hacia el origen del disparo;
+  - `sever()` es el único que disuelve el cadáver;
+  - `is_free_or_own` y `on_corpse` (que Breath también usa).
+- **`Health`:** `growth`, `raise_maximum` y resistencia con el factor de crecimiento.
+- **`MeleeAttack`:** la resistencia también usa el factor de crecimiento.
+- **`ActiveAbility`:** el costo pasa a `float(mana_cost)`. Una habilidad de costo 0 no gasta y se puede usar con maná 0, como en sacengine.
+- **Banco:** `BenchEvent.target_soul` y `BenchGroup.holds_still`.
+
+**Cierre (2026-10-17).** La review pidió un cambio (B1: API solo para el harness). Lo resolvió el orquestador. Detalle en `reviews/REVIEW-RFC-030t-a.md`.
+- **Rechazos:** «Blanco inválido» y «Fuera de alcance», sin gastar maná.
+- **Netherfiend con un alma:** vida 900 → 1400, máximo 2300, regeneración +9,583/s, resistencia ×0,9. Maná 500 sin cambio, sin enfriamiento.
+- **Netherfiend con dos almas:** máximo 2800, regeneración +18,854/s, resistencia ×0,81. El golpe de un Trogg sale con resistencia 0,6075.
+- **Hellmouth:** 5900/5900, sin cura.
+- **Cura:** +4 por tick durante 150 ticks.
+- **Determinismo:** `f131` da `6973c160` en fixed, stress y window. `quick` no cambia, ni antes ni después del costo 0 (Play Dead y `f153` incluidos). `rules_suite` da PASS.
+- **Playtest:** el alma se encoge hacia la Netherfiend y la Netherfiend crece ×1,39 en píxeles.
+
+Deuda:
+- El cadáver desaparece de golpe a los 2,5 s (`Corpse.dissolve` no tiene fundido). Vale para todo el juego.
+- No se acerca ni gira hacia el alma.
+- El bulto es una escala del mesh, no el inflado del original.
+- Sin sonido.

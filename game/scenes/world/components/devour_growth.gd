@@ -1,0 +1,117 @@
+class_name DevourGrowth
+extends Node
+
+## F131 (RFC-030 030t-a): what a creature that ate souls (Devour: Netherfiend crpd, Hellmouth nomd) has become. The one owner
+## of the souls eaten, the regeneration they added, the resistance they took and the bulk the body draws. sacengine devourSoul
+## (state.d:13138-13163), per soul eaten: health and maximum +500; the regeneration increment is 0.25·maximum the first time
+## and 0.75·increment + 125 after; regeneration += increment/60 a second; the five resistances ×0.9; numBulks +1. The bulk is
+## render only: 2 − 0.75ⁿ, reached by a smoothing of exp(ln 0.1/60) a tick (state.d:13943-13948).
+## Nobody else keeps these numbers: Health asks resistance_factor() (and MeleeAttack through resistance_factor_of), UnitBody asks
+## extra_regeneration_of() when it regenerates, DevourAbility calls grow(). The cure (Rainbow) is HealEffect's.
+## `shown` (the souls eaten) is replicated (the unit's MultiplayerSynchronizer, "DevourGrowth:shown"): every peer draws the bulk
+## from it. Declared: the bulk is a scale of the mesh, not sacengine's bone bulge (placeholder).
+## Server (or solo) only for grow().
+
+## Bench log (`ai_match` turns it on; off in the product).
+static var log_devour := false
+
+## The body that grows (its name goes in the log). Empty = the parent.
+@export var body: Node3D
+## Where the maximum goes up and the bar is (Health.raise_maximum). Required.
+@export var health: Health
+## What is scaled for the bulk (the mesh of the body). Empty = nothing is drawn.
+@export var visual: Node3D
+@export_group("Per soul")
+@export var health_per_soul := 500.0
+## The first increment is this fraction of the maximum (after the +500), the next ones increment·keep + add.
+@export var first_increment := 0.25
+@export var increment_keep := 0.75
+@export var increment_add := 125.0
+## Regeneration per second is increment/this (updateFPS).
+@export var regeneration_ticks := 60.0
+@export var resistance_step := 0.9
+@export_group("Bulk")
+## bulk target = 2 − bulk_step^n
+@export var bulk_step := 0.75
+## Smoothing per tick: 1 − exp(ln(0.1)/60).
+@export var bulk_blend := 0.0376494
+
+## Replicated: souls eaten. The setter is the one place the bulk is asked.
+@export var shown := 0:
+	set(value):
+		if value == shown:
+			return
+		shown = value
+		set_physics_process(is_inside_tree() and _bulk_moving())
+
+var _increment := -1.0
+var _extra := 0.0
+var _resistance := 1.0
+var _bulk := 1.0
+
+
+## The DevourGrowth of `node`, or null (a body that cannot devour has none).
+static func of(node: Node) -> DevourGrowth:
+	return (node.get_node_or_null("DevourGrowth") as DevourGrowth) if node else null
+
+
+## ×0.9ⁿ the body took (1 with none). MeleeAttack and Health multiply their resistance by it.
+static func resistance_factor_of(node: Node) -> float:
+	var growth := of(node)
+	return growth.resistance_factor() if growth else 1.0
+
+
+## What the souls added to the regeneration per second (0 with none). UnitBody adds it to the type's.
+static func extra_regeneration_of(node: Node) -> float:
+	var growth := of(node)
+	return growth.extra_regeneration() if growth else 0.0
+
+
+func _ready() -> void:
+	if body == null:
+		body = get_parent() as Node3D
+	set_physics_process(_bulk_moving())
+
+
+func resistance_factor() -> float:
+	return _resistance
+
+
+func extra_regeneration() -> float:
+	return _extra
+
+
+## Server (or solo). The body eats `souls` souls (the soul.number of what it devoured). `from` is what the log calls them.
+func grow(souls: int, from := "") -> void:
+	if not _has_authority() or souls <= 0 or health == null:
+		return
+	var life := health.current
+	var most := health.maximum
+	for _i in souls:
+		health.raise_maximum(health_per_soul)
+		_increment = first_increment * health.maximum if _increment < 0.0 else increment_keep * _increment + increment_add
+		_extra += _increment / regeneration_ticks
+		_resistance *= resistance_step
+		shown += 1
+	if log_devour:
+		print("devora %s alma %s n %d vida %d->%d máx %d->%d incremento %.3f regeneración +%.3f/s resistencia %.4f (tick %d)" % [
+			AbilityEffect.who(body), from, souls, roundi(life), roundi(health.current), roundi(most), roundi(health.maximum),
+			_increment, _extra, _resistance, MatchClock.now()])
+
+
+func _physics_process(_delta: float) -> void:
+	var target := 2.0 - pow(bulk_step, float(shown))
+	_bulk = (1.0 - bulk_blend) * _bulk + bulk_blend * target
+	if absf(_bulk - target) < 0.0005:
+		_bulk = target
+		set_physics_process(false)
+	if visual != null:
+		visual.scale = Vector3.ONE * _bulk
+
+
+func _bulk_moving() -> bool:
+	return shown > 0 and absf(_bulk - (2.0 - pow(bulk_step, float(shown)))) >= 0.0005
+
+
+func _has_authority() -> bool:
+	return not MpKit.is_networked() or MpKit.is_server()

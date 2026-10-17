@@ -33,3 +33,6 @@ extends Resource
 @export var pacifist := false
 ## F117: each body starts with this fraction of its health (1 = full). The bench writes Health.current once, before the record starts.
 @export_range(0.0001, 1.0, 0.0001, "or_less") var health_fraction := 1.0
+## F131: each body never picks a foe by itself (UnitBody.idle_aggro off): it stays where the bench put it until an order (an `attack`
+## event) sends it. A body that still has aggressiveness: unlike a pacifist it obeys «attack».
+@export var holds_still := false

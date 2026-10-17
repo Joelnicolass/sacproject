@@ -101,10 +101,7 @@ func _arrive() -> void:
 
 ## sacengine shotPosition: the Dragon's shot origin (its RangedAttack), or its feet lifted when it has none.
 func _origin() -> Vector3:
-	var ranged := user.get_node_or_null("RangedAttack") as RangedAttack
-	if ranged != null:
-		return ranged.shot_origin()
-	return user.global_position + Vector3.UP * 1.8
+	return RangedAttack.origin_of(user)
 
 
 ## The breath's body: a RangedShot of the shot container, placed by this node every tick.

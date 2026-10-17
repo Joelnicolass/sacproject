@@ -63,13 +63,7 @@ static func corpse_of(target: Node3D) -> UnitBody:
 
 ## The soul that waits on `corpse` (Soul.corpse), or null.
 static func soul_of(corpse: Node3D) -> Soul:
-	if corpse == null or not corpse.is_inside_tree():
-		return null
-	for node in corpse.get_tree().get_nodes_in_group(&"soul"):
-		var soul := node as Soul
-		if soul != null and soul.corpse == corpse:
-			return soul
-	return null
+	return Soul.on_corpse(corpse)
 
 
 static func _slot_of(body: Node) -> int:

@@ -110,6 +110,8 @@ func _ready() -> void:
 	LightningCharge.log_charge = true  # F130: bench logs the Lightning Charge and the Giant's walk (off in the product)
 	MELEE_ATTACK.log_melee = true  # F130: bench logs each blow's numbers (off in the product)
 	FastRevive.log_revive = true  # F153: bench logs the fast revival (off in the product)
+	DevourGrowth.log_devour = true  # F131: bench logs what the Devour gives (off in the product)
+	Soul.log_souls = true  # F131: bench logs the souls eaten and the corpses they dissolve (off in the product)
 	_set_status(_rules.pending_text)
 	var wait := _rules.start_paused and not _headless and not _args.has("autostart")
 	if not wait:
@@ -189,6 +191,8 @@ func _prepare() -> void:
 				var calm := (unit.get("type") as CreatureType).duplicate() as CreatureType
 				calm.aggressiveness = 0
 				unit.set("type", calm)
+			if group.holds_still:
+				unit.set("idle_aggro", false)
 			if group.health_fraction < 1.0:
 				var health := unit.get_node("Health") as Health
 				health.current = health.maximum * group.health_fraction

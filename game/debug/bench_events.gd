@@ -98,6 +98,8 @@ func _use_ability(event: BenchEvent, tick: int) -> Node3D:
 		push_warning("bench: no hay un cuerpo %s para usar la habilidad" % event.user)
 		return null
 	var foe := world.get_node_or_null("%Units/" + event.target) as Node3D if not event.target.is_empty() else null
+	if event.target_soul:
+		foe = Soul.on_corpse(foe)
 	var at := Vector3(event.point.x, 0.0, event.point.y)
 	at.y = BodyNudge.ground_y(body, at)
 	var reason: String = body.call("use_ability", at, foe)

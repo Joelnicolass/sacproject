@@ -163,14 +163,10 @@ func _try_collect(soul: Node3D, wizards: Array[Node], reach: float) -> void:
 		tied = false
 	if best == null or tied:
 		return
-	var corpse: Node3D = soul.get("corpse")
 	soul.call("begin_collect", best, int(best.get("owner_slot")))
 	soul_collected.emit(int(best.get("owner_slot")), int(soul.get("number")), soul.origin)
 	best.get_node("SoulPurse").call("add", int(soul.get("number")))
-	if corpse and is_instance_valid(corpse):
-		var remains := corpse.get_node_or_null("Corpse")
-		if remains:
-			remains.call("dissolve", corpse)
+	soul.call("sever")
 
 
 func _stance(soul: Node3D, slot: int) -> Stance:

@@ -136,7 +136,8 @@ func roll_damage(target: Node3D, anim: Dictionary) -> Dictionary:
 		damage *= (1.0 - roll) / (1.0 - hit_chance)
 	damage *= float(type.melee_strength)
 	## F122: the poison's resistanceBonus goes inside the max (state.d:8950-8951); Poisoning owns it.
-	var resistance := maxf(0.0, float(foe.get("resistance", 1.0)) + Poisoning.resistance_bonus_of(target))
+	## F131: the resistance the target has devoured down to (DevourGrowth ×0.9 a soul) goes inside it too.
+	var resistance := maxf(0.0, float(foe.get("resistance", 1.0)) * DevourGrowth.resistance_factor_of(target) + Poisoning.resistance_bonus_of(target))
 	damage *= melee_resistance_scale * resistance
 	return {"amount": damage, "chance": hit_chance, "roll": roll, "accuracy": accuracy, "evasion": float(foe.get("evasion", 0.0)),
 		"facing": facing, "pending": pending, "resistance": resistance}

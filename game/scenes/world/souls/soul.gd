@@ -10,9 +10,12 @@ extends Node3D
 ## Color is per viewer (`color_for`): blue if it has no side or it is the viewer's, else red.
 ## Convert (RFC-020e): a red soul can be converted by the other side; while a Sac Doctor revives its
 ## corpse the soul is REVIVING (nobody collects or converts it, it is not drawn).
+## F131 (RFC-030 030t-a): a creature with Devour eats it (DEVOURING): it shrinks at 3/s toward the eater's shot origin and
+## the corpse dissolves (sacengine devourSoul, severSoul, updateSoul: state.d:13138, 17925, 14991). This script owns what a soul
+## is and what can be done to it: the corpse it leaves (`sever`), who may eat it, which soul waits on a corpse.
 
-## REVIVING is last: `state` is replicated as an integer.
-enum State { NORMAL, EMERGING, COLLECTING, REVIVING }
+## REVIVING and DEVOURING go last: `state` is replicated as an integer.
+enum State { NORMAL, EMERGING, COLLECTING, REVIVING, DEVOURING }
 enum SoulColor { BLUE, RED }
 
 const _SPRITES := preload("res://scenes/fx/sprite_particles.gd")
@@ -45,6 +48,8 @@ const SPRITE_LIFT := 1.25 * 1.6
 @export_group("Motion")
 @export var emerge_s := 3.0
 @export var collect_shrink_per_s := 4.0
+## Devour (state.d:14998: 3/updateFPS a tick).
+@export var devour_shrink_per_s := 3.0
 @export var fall_speed := 1.0
 @export var collector_lift := 0.5
 ## sacengine turns the ring of a multi-soul 2π/8 rad/s.
@@ -58,6 +63,9 @@ const SPRITE_LIFT := 1.25 * 1.6
 ## sacengine uses 20 with its own tonemap; under High Noon's ACES that clips the soul to white.
 @export var energy := 2.0
 
+## Bench log (`ai_match` turns it on; off in the product): a soul being eaten and the corpse it leaves.
+static var log_souls := false
+
 var corpse: Node3D
 var collector: Node3D
 ## Where it came from (SoulSystem.ORIGIN_*), for the ledger of the bench. Not replicated: the clients only draw.
@@ -65,6 +73,9 @@ var origin: StringName = &"creature"
 
 ## Server only: bit `slot` set = a Convert of that slot is underway on this soul.
 var _reserved_mask := 0
+## The corpse the soul left (begin_collect, begin_devour): sever() dissolves it. Server only.
+var _remains: Node3D
+var _who := ""
 var _anim_t := 0.0
 var _facing := 0.0
 var _sprites: Array[MeshInstance3D] = []
@@ -135,13 +146,68 @@ func is_reserved_for(slot: int) -> bool:
 func begin_collect(by: Node3D, slot: int) -> void:
 	collector = by
 	collector_slot = slot
+	_remains = corpse
 	attached = false
 	corpse = null
 	state = State.COLLECTING
 
 
+## Blue for `slot`: no side (free, dropped) or its own (isApplicable of Devour, state.d:30820-30825).
+func is_free_or_own(slot: int) -> bool:
+	return color_for(slot) == SoulColor.BLUE
+
+
+## Server or solo. `by` eats the soul (devourSoul, state.d:13138-13148): it leaves the corpse, takes the eater's side and
+## shrinks toward its shot origin; the corpse dissolves. What the eater gains is DevourGrowth's.
+func begin_devour(by: Node3D) -> void:
+	collector = by
+	collector_slot = int(by.get("owner_slot")) if "owner_slot" in by else 0
+	_remains = corpse
+	_who = label()
+	attached = false
+	corpse = null
+	state = State.DEVOURING
+	if log_souls:
+		print("alma %s devorando (tick %d)" % [_who, MatchClock.now()])
+	sever()
+
+
+## Server or solo. The soul no longer holds its corpse: it dissolves (severSoul, state.d:17925-17935). The one place that does.
+func sever() -> void:
+	var dead := _remains
+	_remains = null
+	if dead == null or not is_instance_valid(dead):
+		return
+	var body := dead.get_node_or_null("Corpse")
+	if body == null:
+		return
+	body.call("dissolve", dead)
+	if log_souls:
+		print("cadáver %s disuelto (tick %d)" % [dead.name, MatchClock.now()])
+
+
+## What the logs call it: the creature it came from (its corpse), else its own name.
+func label() -> String:
+	if _remains != null and is_instance_valid(_remains):
+		return str(_remains.name)
+	if corpse != null and is_instance_valid(corpse):
+		return str(corpse.name)
+	return _who if not _who.is_empty() else str(name)
+
+
+## The soul that waits on `corpse` (Soul.corpse), or null. A soul being eaten or collected has let go of it.
+static func on_corpse(corpse_node: Node3D) -> Soul:
+	if corpse_node == null or not corpse_node.is_inside_tree():
+		return null
+	for node in corpse_node.get_tree().get_nodes_in_group(&"soul"):
+		var soul := node as Soul
+		if soul != null and soul.corpse == corpse_node:
+			return soul
+	return null
+
+
 func _physics_process(delta: float) -> void:
-	if state != State.COLLECTING:
+	if state != State.COLLECTING and state != State.DEVOURING:
 		if attached:
 			_follow_corpse()
 		else:
@@ -153,6 +219,8 @@ func _physics_process(delta: float) -> void:
 				state = State.NORMAL
 		State.COLLECTING:
 			_collect_step(delta)
+		State.DEVOURING:
+			_devour_step(delta)
 
 
 func _follow_corpse() -> void:
@@ -196,6 +264,22 @@ func _collect_step(delta: float) -> void:
 		global_position = global_position * factor + _collector_center() * (1.0 - factor)
 	if scaling <= 0.0:
 		number = 0
+		queue_free()
+
+
+## updateSoul (state.d:14991-15006): it shrinks toward the eater's shot origin and goes at nothing.
+func _devour_step(delta: float) -> void:
+	var previous := scaling
+	scaling = maxf(scaling - devour_shrink_per_s * delta, 0.0)
+	if scaling < 1e-6:
+		scaling = 0.0
+	if collector and is_instance_valid(collector):
+		var factor := scaling / previous if previous > 0.0 else 0.0
+		global_position = global_position * factor + RangedAttack.origin_of(collector) * (1.0 - factor)
+	if scaling <= 0.0:
+		number = 0
+		if log_souls:
+			print("alma %s devorada (tick %d)" % [_who, MatchClock.now()])
 		queue_free()
 
 

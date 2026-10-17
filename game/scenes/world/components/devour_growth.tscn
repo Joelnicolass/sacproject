@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/components/devour_growth.gd" id="1_growth"]
+
+[node name="DevourGrowth" type="Node"]
+editor_description = "F131 (RFC-030 030t-a): lo que crece una criatura que devora almas (Netherfiend, Hellmouth). Dueño único de las almas comidas, la regeneración extra (incremento 0,25·máx y luego 0,75·inc + 125, /60 por segundo), la resistencia ×0,9 por alma y el bulto (2 − 0,75ⁿ suavizado; escala del mesh, placeholder). shown se replica. El padre asigna body, health y visual."
+script = ExtResource("1_growth")

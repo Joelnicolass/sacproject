@@ -35,3 +35,6 @@ extends Resource
 @export var point := Vector2.ZERO
 ## F129, action "attack": the order the body is given (Orders.COMMANDS). A pacifist (aggressiveness 0) refuses "attack" and "advance": it walks with "move".
 @export_enum("attack", "move", "advance") var order := "attack"
+## F131, action "ability": the target is the soul that waits on the body named `target` (Soul.on_corpse), not the body: Devour and
+## Rend Soul are aimed at souls, like a click on one.
+@export var target_soul := false

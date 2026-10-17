@@ -124,7 +124,7 @@ func status(target_pos: Vector3, target: Node3D) -> String:
 		return NOT_IMPLEMENTED
 	if _cooling():
 		return COOLING
-	if maxf(1.0, float(ability.mana_cost)) > _mana_left() + MANA_EPSILON:
+	if _cost() > _mana_left() + MANA_EPSILON:
 		return NO_MANA
 	if _effect:
 		var using := _using()
@@ -176,10 +176,16 @@ func use(target_pos: Vector3, target: Node3D) -> String:
 
 ## Charges the mana and starts the cooldown (`force`, or only if it was 0: state.d:12746-12748).
 func _spend(before: float, force: bool) -> void:
-	_mana.call("spend", maxf(1.0, float(ability.mana_cost)))
+	_mana.call("spend", _cost())
 	if (_effect == null or _effect.starts_cooldown) and (force or not _cooling()):
 		_ready_at = MatchClock.now() + roundi(ability.cooldown_s * MatchClock.TICKS_PER_SECOND)
 	print("habilidad %s mana %d->%d enfriamiento %d ticks" % [ability.display_name, roundi(before), roundi(_mana_left()), maxi(0, _ready_at - MatchClock.now())])
+
+
+## The mana an ability costs: exactly the SPEL's (abilityStatus, useAbility: state.d:29584, 13468). 0 (Devour, Play Dead) spends
+## nothing; before F131 a cost was at least 1.
+func _cost() -> float:
+	return float(ability.mana_cost) if ability else 0.0
 
 
 func _using() -> Affliction:
@@ -209,7 +215,7 @@ func _finish_windup() -> void:
 		print("preparación cortada %s %s (tick %d)" % [ability.display_name, str(_body.name), MatchClock.now()])
 		return
 	var before := _mana_left()
-	if maxf(1.0, float(ability.mana_cost)) > before + MANA_EPSILON:
+	if _cost() > before + MANA_EPSILON:
 		## sacengine loadOnTick asks mana >= cost at the load tick (12592-12605): short of it, nothing happens and nothing is spent.
 		print("preparación sin maná %s %s (tick %d)" % [ability.display_name, str(_body.name), MatchClock.now()])
 		(_body.get_node("Afflictions") as Afflictions).mark(using, false)

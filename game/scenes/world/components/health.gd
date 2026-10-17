@@ -50,6 +50,9 @@ const IGNITE := 1 << 6
 ## F155: the body's oil (Oiled). A hit with IGNITE that reaches it while the body is oiled takes ×2 and lights it (sacengine
 ## dealRawDamage, state.d:9028-9031). Optional: empty = never doubled.
 @export var oil: Oiled
+## F131: what the body has devoured (Devour): its five resistances ×0.9 each soul (sacengine devourSoul, state.d:13154-13158).
+## Optional: empty = ×1.
+@export var growth: DevourGrowth
 
 ## Multiplies damage_typed on top of the resistance: the body's own effects, as dealDamage
 ## stacks them (state.d:8962-8969); Rockform sets 0.05.
@@ -64,6 +67,14 @@ func setup(full: float) -> void:
 	current = full
 	if rules and rules.start_health >= 0.0:
 		current = minf(rules.start_health, full)
+
+
+## Server or solo. The maximum goes up by `amount` and so does the health (devourSoul: health += 500, maxHealth += 500).
+func raise_maximum(amount: float) -> void:
+	if not _has_authority() or amount <= 0.0:
+		return
+	maximum += amount
+	current += amount
 
 
 func is_dead() -> bool:
@@ -138,8 +149,10 @@ func shield_factor() -> float:
 ## The body's resistance for `kind`: CreatureType for a UnitBody, WizardType for a wizard.
 ## sacengine stores them ×1e-3 (sacobject.d:156-160); a 0 is immunity (Trogg vs spells).
 ## F122: dealDamage adds the poison's resistanceBonus inside the max (state.d:8950-8957): max(0, resistance + bonus).
+## F131: the resistance is the one the body has devoured down to (DevourGrowth, ×0.9 a soul).
 func resistance(kind: StringName) -> float:
-	return maxf(0.0, _base_resistance(kind) + (poisoning.resistance_bonus() if poisoning else 0.0))
+	var base := _base_resistance(kind) * (growth.resistance_factor() if growth else 1.0)
+	return maxf(0.0, base + (poisoning.resistance_bonus() if poisoning else 0.0))
 
 
 func _base_resistance(kind: StringName) -> float:

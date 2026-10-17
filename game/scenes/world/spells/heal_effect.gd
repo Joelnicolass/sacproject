@@ -16,6 +16,8 @@ const FRAMES_CAP := 2147483647
 
 ## Prints «cura <who> total N vida V» when it ends (the Healing Shower's log, F118). Off for the Heal spell.
 var report_end := false
+## F131: prints «cura <who> +N vida V» each tick it heals (the bench reads Devour's cure with it). Off for every other heal.
+var report_each := false
 var frames_left := 0
 var _healed := 0.0
 var per_frame := 0.0
@@ -71,6 +73,8 @@ func _physics_process(delta: float) -> void:
 	var before := float(_health.get("current"))
 	_health.call("heal", per_frame)
 	_healed += float(_health.get("current")) - before
+	if report_each:
+		print("cura %s +%.3f vida %.1f (tick %d)" % [get_parent().name, float(_health.get("current")) - before, float(_health.get("current")), MatchClock.now()])
 	_fx_left -= delta
 	if _fx_left <= 0.0:
 		_fx_left = fx_interval_s

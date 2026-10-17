@@ -183,3 +183,41 @@ El pasto se apaga de forma provisoria (`grass_enabled = false` en `data/look/qua
 - `export_skeletal.py` es el importador que los genera desde la instalación; se corre al agregar o regenerar modelos, no en cada arranque.
 - Cambia §3.1: «`.glb.import` en `cache/`, nunca en git» pasa a «`.glb.import` versionado junto al `.glb`». §3.3: `BodyRig` lee de `assets/original/models/`; el aviso sin caché pasa a «falta el asset».
 - Las texturas de los cuerpos (hoy en `cache/`) migran a `assets/original/textures/` en un corte posterior. El resto de la caché (terreno, props) se planifica en un RFC aparte.
+
+## 023a: Resultado (developer, 2026-10-17; ronda de corrección tras REVIEW-RFC-023a)
+
+Entregado: `tools/export_skeletal.py` (salida por defecto `assets/original/models/`, `--out`), `tools/export_skeletal_reference.py` (OBJ de referencia desde sacengine, fuera de git, `agent/out/skeletal_ref/`), `tools/audit_skeletal.gd` (`MODELS_DIR` es la única ruta; `--ref=DIR` usa la referencia de sacengine; sin `--ref` usa `cache/look/anim_f37`), `.gitignore` (`!assets/original/**/*.import`). Generados: `eorc` (19 huesos, 51 clips) y `jnwr` (32 huesos, 39 clips), 3,1 MB.
+
+Regenerar y auditar (desde `game/`, Godot siempre por `agent/harness/godot_run.sh`):
+1. `python3 tools/export_skeletal.py` y `godot --headless --path . --import`.
+2. `python3 tools/export_skeletal_reference.py` (ejecuta el binario de sacengine, ~8 min para los 90 clips).
+3. `godot --headless --path . --script res://tools/audit_skeletal.gd -- --ref=<abs>/agent/out/skeletal_ref`.
+
+Paridad contra la exportación OBJ de sacengine (con la corrección de desplazamiento por `referenceHeight`, sin umbral), TODOS los clips, cuadros {0, mitad, último}: **90 de 90 clips, 270 filas, PASS**.
+
+| modelo | clips auditados | max_err_mm | vértices sin normalizar |
+|---|---|---|---|
+| eorc | 51 de 51 | 0,31 | 0 |
+| jnwr | 39 de 39 | 0,22 | 1 (error previsto 3,95 mm, medido 4,08 mm) |
+
+Vértice sin normalizar de `jnwr` (superficie 1, vértice 208 escrito; pesos 1,0 + 0,0061 = 1,006): sacengine usa el peso crudo y suma el desplazamiento de raíz fuera de la suma ponderada; el `.glb` normaliza (glTF lo exige). Diferencia = |suma−1|·|p−D| (D = desplazamiento de raíz). Está en `index.json` → `unnormalized_vertices` (vértices con |suma−1| > 0,002) y el audit los compara con `p = D + suma·(p_normalizado − D)` (error restante ≤ 0,22 mm), reportando el previsto y el medido. No se reproduce en glTF.
+
+Huesos auxiliares (offset por influencia; glTF tiene una sola posición de bind por vértice): la influencia principal usa el hueso real; solo los vértices cuyas influencias discrepan más de 0,5 mm (`BIND_THRESHOLD`) reciben huesos auxiliares (hijos del hueso, sin animar, bind desplazado cuantizado a 0,5 mm, `SHIFT_STEP`). El resto usa el bind promediado con huesos reales (error < 0,5 mm).
+
+| modelo | huesos reales | auxiliares antes (0,05 mm, sin umbral) | auxiliares ahora (0,5 mm) | total ahora |
+|---|---|---|---|---|
+| eorc | 19 | 286 | 263 | 282 |
+| jnwr | 32 | 208 | 198 | 230 |
+
+Barrido de umbral = paso (mm) → auxiliares eorc / jnwr: 0,5 → 263/198; 1 → 219/129; 2 → 143/14; 3 → 106/0; 5 → 97/0. Con 1 mm de presupuesto no se baja de ~64: `eorc` necesitaría un umbral por encima de 5 mm (error de varios mm). Si pesa en 023g, la salida es skinning propio en shader con los offsets por influencia en `CUSTOM`, o aceptar un umbral mayor en modelos puntuales (`--bind-threshold-mm`, `--shift-step-mm`).
+
+Otros hallazgos:
+- El import del editor regenera tangentes (mikktspace) y reordena vértices: el audit lee el `.glb` con `GLTFDocument` (mismo orden que el exportador) y comprueba aparte que `load()` del importado funciona. El import corre sin errores ni avisos.
+- Un vértice sin caras (último de la superficie 10 de `jnwr`) no se escribe: `index.json` → `dropped_vertices`.
+- Las pistas constantes iguales al reposo (p. ej. hueso 17 de `jnwr`, identidad) las descarta el importador de glTF: el audit parte de `reset_bone_poses()` antes de cada seek; **023b tiene que resetear el esqueleto al cambiar de clip** (o dejar que `AnimationPlayer` lo haga con una pista RESET), si no la pose del clip anterior queda en esos huesos.
+- La caché global de poses de `Skeleton3D` queda vieja tras `seek` en headless: el audit calcula las poses globales desde las locales.
+- Orientación de caras comprobada: tras el import las caras exteriores son frontales en ambos modelos. No se verificaron materiales ni tangentes.
+- `index.json` guarda por clip frames, framerate, `reference_height`, manos (hueso + offset crudo) y eventos, con rutas relativas a la carpeta. AABB solo en reposo (`bind_aabb`): 023b fija un `custom_aabb` con margen.
+
+## Enmienda del criterio de paridad (orquestador, 2026-10-17, REVIEW-023a)
+«≤ 1 mm por vértice» vale salvo para los vértices cuyos pesos no suman 1 en el original (sacengine no normaliza). Esos se listan en `index.json` → `unnormalized_vertices` con su error previsto |suma−1|·|p−D|, y el audit los compara contra esa posición escalada. La referencia de paridad es la exportación OBJ de sacengine (`tools/export_skeletal_reference.py`, todos los clips en {0, mitad, último}), no los OBJ horneados. La cantidad de huesos auxiliares (eorc 282, jnwr 230 en total) se mide en 023g; si pesa, la salida es skinning en shader o un umbral por modelo.

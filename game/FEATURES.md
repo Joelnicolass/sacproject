@@ -2042,3 +2042,18 @@ Deuda:
 
 Deuda:
 - `body_setter` es un StringName con guarda `has_method`: un typo falla en silencio.
+
+### F176 — Exportador esqueletal y paridad (RFC-023, corte 023a)
+
+**Piezas:**
+- **`tools/export_skeletal.py`:** de los WAD del original a un `.glb` por modelo en `assets/original/models/` (versionado, LFS), con esqueleto, malla única y todos los clips SXSK; más `.events.json` e `index.json`.
+- **Huesos auxiliares:** el original da a cada influencia su propio offset; glTF admite un solo bind. Se agregan hijos sin animar solo cuando las influencias discrepan más de 0,5 mm (eorc 282 huesos, jnwr 230).
+- **`tools/export_skeletal_reference.py` y `tools/audit_skeletal.gd --ref=`:** paridad contra la exportación OBJ de sacengine.
+
+**Cierre (2026-10-17).** Review CHANGES_REQUESTED (`reviews/REVIEW-RFC-023a.md`), corregida en una ronda. Sin playtest: es una herramienta.
+- **Paridad:** 90 de 90 clips (eorc 51, jnwr 39) en los cuadros {0, mitad, último}. Error máximo 0,31 mm en eorc y 0,22 mm en jnwr.
+- **Vértice sin normalizar:** jnwr tiene uno (pesos 1,006104), listado en `index.json` con su error previsto de 3,95 mm; medido 4,08 mm.
+
+Deuda:
+- 023g mide el costo de los huesos auxiliares con 150 cuerpos.
+- 023b tiene que resetear el esqueleto al cambiar de clip: el import de glTF descarta pistas constantes iguales al reposo.

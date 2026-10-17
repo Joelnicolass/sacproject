@@ -1,0 +1,76 @@
+{
+ "HU00": [],
+ "HU2t": [],
+ "HUa1": [
+  {
+   "frame": 15,
+   "kind": "attack",
+   "parameter": 0.0
+  },
+  {
+   "frame": 0,
+   "kind": "sound",
+   "parameter": 0.0
+  }
+ ],
+ "HUa2": [
+  {
+   "frame": 14,
+   "kind": "attack",
+   "parameter": 0.0
+  }
+ ],
+ "HUa3": [
+  {
+   "frame": 18,
+   "kind": "attack",
+   "parameter": 0.0
+  }
+ ],
+ "HUam": [],
+ "HUbo": [],
+ "HUca": [],
+ "HUcr": [],
+ "HUd1": [],
+ "HUd2": [],
+ "HUd3": [],
+ "HUdb": [],
+ "HUdf": [],
+ "HUdg": [],
+ "HUdl": [],
+ "HUdo": [],
+ "HUdr": [],
+ "HUdt": [],
+ "HUfa": [],
+ "HUfd": [],
+ "HUft": [],
+ "HUgu": [],
+ "HUhf": [],
+ "HUi1": [],
+ "HUi2": [],
+ "HUi3": [],
+ "HUi4": [],
+ "HUlf": [],
+ "HUno": [],
+ "HUof": [],
+ "HUrn": [],
+ "HUrz": [],
+ "HUsa": [],
+ "HUsf": [],
+ "HUsr": [],
+ "HUst": [],
+ "HUt2": [],
+ "HUta": [],
+ "HUtu": [],
+ "HUwk": [],
+ "HUwp": [],
+ "OCno": [],
+ "OGam": [],
+ "OGdg": [],
+ "OGi2": [],
+ "OGlf": [],
+ "OGno": [],
+ "OGrn": [],
+ "OGsr": [],
+ "OGwk": []
+}

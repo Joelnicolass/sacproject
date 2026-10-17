@@ -1,0 +1,2879 @@
+{
+ "eorc": {
+  "bind_aabb": {
+   "max": [
+    0.5355,
+    0.278173,
+    1.005504
+   ],
+   "min": [
+    -0.520576,
+    -0.404032,
+    -1.187877
+   ]
+  },
+  "bind_discrepancy": {
+   "bind_threshold_mm": 0.5,
+   "exact": true,
+   "helper_joints": 263,
+   "max_mm": 156.315,
+   "mean_mm": 7.0817,
+   "per_part_max_mm": [
+    6.6739,
+    156.315,
+    155.8013,
+    114.7506,
+    108.9653
+   ],
+   "shift_step_mm": 0.5,
+   "unnormalized_count": 0
+  },
+  "bind_position": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.174081,
+    -0.037619,
+    -0.029845
+   ],
+   [
+    0.183995,
+    0.01145,
+    -0.385386
+   ],
+   [
+    0.165673,
+    -0.075844,
+    -1.004877
+   ],
+   [
+    0.0,
+    0.0,
+    0.198945
+   ],
+   [
+    0.0,
+    -0.0,
+    0.386694
+   ],
+   [
+    -0.0,
+    -0.072741,
+    0.568795
+   ],
+   [
+    0.0,
+    0.087173,
+    0.828504
+   ],
+   [
+    -0.145837,
+    -0.176253,
+    0.424688
+   ],
+   [
+    -0.358968,
+    -0.177164,
+    0.277279
+   ],
+   [
+    -0.349133,
+    -0.177164,
+    -0.030416
+   ],
+   [
+    -0.349576,
+    -0.177164,
+    -0.579826
+   ],
+   [
+    0.141201,
+    -0.162174,
+    0.42299
+   ],
+   [
+    0.362572,
+    -0.170119,
+    0.281529
+   ],
+   [
+    0.3455,
+    -0.170119,
+    -0.020061
+   ],
+   [
+    0.358438,
+    -0.170119,
+    -0.475802
+   ],
+   [
+    -0.167954,
+    -0.037619,
+    -0.028032
+   ],
+   [
+    -0.180067,
+    0.002126,
+    -0.390938
+   ],
+   [
+    -0.195191,
+    -0.08486,
+    -1.00879
+   ]
+  ],
+  "bone_parent": [
+   0,
+   0,
+   1,
+   2,
+   0,
+   4,
+   5,
+   6,
+   5,
+   8,
+   9,
+   10,
+   5,
+   12,
+   13,
+   14,
+   0,
+   16,
+   17
+  ],
+  "bones": [
+   "root",
+   "bone_01",
+   "bone_02",
+   "bone_03",
+   "bone_04",
+   "bone_05",
+   "bone_06",
+   "bone_07",
+   "bone_08",
+   "bone_09",
+   "bone_10",
+   "bone_11",
+   "bone_12",
+   "bone_13",
+   "bone_14",
+   "bone_15",
+   "bone_16",
+   "bone_17",
+   "bone_18"
+  ],
+  "clips": {
+   "HU00": {
+    "events": [],
+    "framerate": 30,
+    "frames": 1,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HU2t": {
+    "events": [],
+    "framerate": 30,
+    "frames": 26,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUa1": {
+    "events": [
+     {
+      "frame": 15,
+      "kind": "attack",
+      "parameter": 0.0
+     },
+     {
+      "frame": 0,
+      "kind": "sound",
+      "parameter": 0.0
+     }
+    ],
+    "framerate": 30,
+    "frames": 24,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUa2": {
+    "events": [
+     {
+      "frame": 14,
+      "kind": "attack",
+      "parameter": 0.0
+     }
+    ],
+    "framerate": 30,
+    "frames": 20,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUa3": {
+    "events": [
+     {
+      "frame": 18,
+      "kind": "attack",
+      "parameter": 0.0
+     }
+    ],
+    "framerate": 30,
+    "frames": 45,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUam": {
+    "events": [],
+    "framerate": 30,
+    "frames": 71,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUbo": {
+    "events": [],
+    "framerate": 30,
+    "frames": 71,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUca": {
+    "events": [],
+    "framerate": 30,
+    "frames": 36,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUcr": {
+    "events": [],
+    "framerate": 30,
+    "frames": 53,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUd1": {
+    "events": [],
+    "framerate": 30,
+    "frames": 54,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUd2": {
+    "events": [],
+    "framerate": 30,
+    "frames": 65,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUd3": {
+    "events": [],
+    "framerate": 30,
+    "frames": 49,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUdb": {
+    "events": [],
+    "framerate": 30,
+    "frames": 36,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUdf": {
+    "events": [],
+    "framerate": 30,
+    "frames": 36,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUdg": {
+    "events": [],
+    "framerate": 30,
+    "frames": 71,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUdl": {
+    "events": [],
+    "framerate": 30,
+    "frames": 36,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUdo": {
+    "events": [],
+    "framerate": 30,
+    "frames": 69,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUdr": {
+    "events": [],
+    "framerate": 30,
+    "frames": 36,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUdt": {
+    "events": [],
+    "framerate": 30,
+    "frames": 33,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUfa": {
+    "events": [],
+    "framerate": 30,
+    "frames": 35,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUfd": {
+    "events": [],
+    "framerate": 30,
+    "frames": 37,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUft": {
+    "events": [],
+    "framerate": 30,
+    "frames": 60,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUgu": {
+    "events": [],
+    "framerate": 30,
+    "frames": 76,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUhf": {
+    "events": [],
+    "framerate": 30,
+    "frames": 67,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUi1": {
+    "events": [],
+    "framerate": 30,
+    "frames": 118,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUi2": {
+    "events": [],
+    "framerate": 30,
+    "frames": 82,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUi3": {
+    "events": [],
+    "framerate": 30,
+    "frames": 78,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUi4": {
+    "events": [],
+    "framerate": 30,
+    "frames": 38,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUlf": {
+    "events": [],
+    "framerate": 30,
+    "frames": 71,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUno": {
+    "events": [],
+    "framerate": 30,
+    "frames": 107,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUof": {
+    "events": [],
+    "framerate": 30,
+    "frames": 31,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUrn": {
+    "events": [],
+    "framerate": 30,
+    "frames": 39,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUrz": {
+    "events": [],
+    "framerate": 30,
+    "frames": 55,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUsa": {
+    "events": [],
+    "framerate": 30,
+    "frames": 43,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUsf": {
+    "events": [],
+    "framerate": 30,
+    "frames": 76,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUsr": {
+    "events": [],
+    "framerate": 30,
+    "frames": 71,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUst": {
+    "events": [],
+    "framerate": 30,
+    "frames": 76,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUt2": {
+    "events": [],
+    "framerate": 30,
+    "frames": 71,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUta": {
+    "events": [],
+    "framerate": 30,
+    "frames": 98,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUtu": {
+    "events": [],
+    "framerate": 30,
+    "frames": 64,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUwk": {
+    "events": [],
+    "framerate": 30,
+    "frames": 40,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "HUwp": {
+    "events": [],
+    "framerate": 30,
+    "frames": 44,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "OCno": {
+    "events": [],
+    "framerate": 30,
+    "frames": 146,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "OGam": {
+    "events": [],
+    "framerate": 30,
+    "frames": 78,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "OGdg": {
+    "events": [],
+    "framerate": 30,
+    "frames": 71,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "OGi2": {
+    "events": [],
+    "framerate": 30,
+    "frames": 119,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "OGlf": {
+    "events": [],
+    "framerate": 30,
+    "frames": 78,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "OGno": {
+    "events": [],
+    "framerate": 30,
+    "frames": 151,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "OGrn": {
+    "events": [],
+    "framerate": 30,
+    "frames": 32,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "OGsr": {
+    "events": [],
+    "framerate": 30,
+    "frames": 71,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "OGwk": {
+    "events": [],
+    "framerate": 30,
+    "frames": 44,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   }
+  },
+  "dropped_vertices": [
+   [],
+   [],
+   [],
+   [],
+   []
+  ],
+  "events": "eorc.events.json",
+  "faces_reversed_for_gltf": false,
+  "glb": "eorc.glb",
+  "scaling": 0.0010000000474974513,
+  "skipped_clips": [],
+  "source": "saxs_r1.wad/sxr1.WAD!/humn.FLDR/eorc.SAXC/eorc.SXMD",
+  "unnormalized_vertices": [],
+  "zfactor": 1.0000001192092896
+ },
+ "jnwr": {
+  "bind_aabb": {
+   "max": [
+    1.07619,
+    2.714949,
+    0.911411
+   ],
+   "min": [
+    -1.059584,
+    -1.369958,
+    -4.287388
+   ]
+  },
+  "bind_discrepancy": {
+   "bind_threshold_mm": 0.5,
+   "exact": true,
+   "helper_joints": 198,
+   "max_mm": 2.7734,
+   "mean_mm": 0.34,
+   "per_part_max_mm": [
+    2.1573,
+    2.7734,
+    1.7537,
+    2.4169,
+    2.1992,
+    1.9357,
+    2.4008,
+    2.2944,
+    2.2148,
+    1.7261,
+    0.0
+   ],
+   "shift_step_mm": 0.5,
+   "unnormalized_count": 1
+  },
+  "bind_position": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.005512,
+    -0.002985,
+    -0.011852
+   ],
+   [
+    -0.000627,
+    0.385724,
+    -0.313423
+   ],
+   [
+    -0.008032,
+    0.746078,
+    -0.333599
+   ],
+   [
+    0.320295,
+    1.35514,
+    -0.406835
+   ],
+   [
+    0.704946,
+    0.880562,
+    -0.384547
+   ],
+   [
+    0.89159,
+    0.42651,
+    -0.730502
+   ],
+   [
+    0.891319,
+    0.879067,
+    -1.658862
+   ],
+   [
+    0.898434,
+    1.422301,
+    -2.440767
+   ],
+   [
+    0.898434,
+    2.016708,
+    -3.285198
+   ],
+   [
+    0.884205,
+    2.538149,
+    -4.026088
+   ],
+   [
+    -0.312882,
+    1.364278,
+    -0.403037
+   ],
+   [
+    -0.713278,
+    0.880563,
+    -0.384547
+   ],
+   [
+    -0.886684,
+    0.464877,
+    -0.706656
+   ],
+   [
+    0.008896,
+    1.225102,
+    -0.635682
+   ],
+   [
+    0.007665,
+    1.169915,
+    -0.750394
+   ],
+   [
+    0.015441,
+    1.603911,
+    -0.608449
+   ],
+   [
+    0.001776,
+    0.963372,
+    -0.853335
+   ],
+   [
+    -0.265511,
+    0.033139,
+    -0.475423
+   ],
+   [
+    -0.257008,
+    -0.71895,
+    -0.470479
+   ],
+   [
+    -0.257074,
+    -1.102039,
+    -0.401537
+   ],
+   [
+    0.280857,
+    0.033764,
+    -0.476212
+   ],
+   [
+    0.264471,
+    -0.717014,
+    -0.438924
+   ],
+   [
+    0.264775,
+    -1.101774,
+    -0.467069
+   ],
+   [
+    0.015816,
+    -0.001815,
+    -0.005963
+   ],
+   [
+    -0.201723,
+    -0.022741,
+    0.388324
+   ],
+   [
+    -0.252946,
+    -0.717318,
+    0.323857
+   ],
+   [
+    -0.230393,
+    -1.071177,
+    0.528962
+   ],
+   [
+    0.195086,
+    -0.025754,
+    0.384984
+   ],
+   [
+    0.2344,
+    -0.717318,
+    0.318004
+   ],
+   [
+    0.238737,
+    -1.072258,
+    0.52917
+   ],
+   [
+    0.004794,
+    -0.082346,
+    0.717711
+   ]
+  ],
+  "bone_parent": [
+   0,
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   3,
+   11,
+   12,
+   3,
+   14,
+   15,
+   15,
+   1,
+   18,
+   19,
+   1,
+   21,
+   22,
+   0,
+   24,
+   25,
+   26,
+   24,
+   28,
+   29,
+   24
+  ],
+  "bones": [
+   "root",
+   "bone_01",
+   "bone_02",
+   "bone_03",
+   "bone_04",
+   "bone_05",
+   "bone_06",
+   "bone_07",
+   "bone_08",
+   "bone_09",
+   "bone_10",
+   "bone_11",
+   "bone_12",
+   "bone_13",
+   "bone_14",
+   "bone_15",
+   "bone_16",
+   "bone_17",
+   "bone_18",
+   "bone_19",
+   "bone_20",
+   "bone_21",
+   "bone_22",
+   "bone_23",
+   "bone_24",
+   "bone_25",
+   "bone_26",
+   "bone_27",
+   "bone_28",
+   "bone_29",
+   "bone_30",
+   "bone_31"
+  ],
+  "clips": {
+   "jw2t": {
+    "events": [],
+    "framerate": 30,
+    "frames": 83,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwa1": {
+    "events": [
+     {
+      "frame": 24,
+      "kind": "attack",
+      "parameter": 0.0
+     }
+    ],
+    "framerate": 30,
+    "frames": 48,
+    "hands": [
+     {
+      "bone": 9,
+      "bone_name": "bone_09",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwa2": {
+    "events": [
+     {
+      "frame": 32,
+      "kind": "attack",
+      "parameter": 0.0
+     }
+    ],
+    "framerate": 30,
+    "frames": 65,
+    "hands": [
+     {
+      "bone": 13,
+      "bone_name": "bone_13",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwa3": {
+    "events": [
+     {
+      "frame": 25,
+      "kind": "attack",
+      "parameter": 0.0
+     }
+    ],
+    "framerate": 30,
+    "frames": 49,
+    "hands": [
+     {
+      "bone": 9,
+      "bone_name": "bone_09",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwam": {
+    "events": [],
+    "framerate": 30,
+    "frames": 108,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwcr": {
+    "events": [],
+    "framerate": 30,
+    "frames": 51,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwd1": {
+    "events": [],
+    "framerate": 30,
+    "frames": 87,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwd2": {
+    "events": [],
+    "framerate": 30,
+    "frames": 51,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwd3": {
+    "events": [],
+    "framerate": 30,
+    "frames": 154,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwdg": {
+    "events": [],
+    "framerate": 30,
+    "frames": 71,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwf2": {
+    "events": [],
+    "framerate": 30,
+    "frames": 31,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwfa": {
+    "events": [],
+    "framerate": 30,
+    "frames": 48,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwfd": {
+    "events": [],
+    "framerate": 30,
+    "frames": 29,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwfm": {
+    "events": [],
+    "framerate": 30,
+    "frames": 58,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwfs": {
+    "events": [],
+    "framerate": 30,
+    "frames": 58,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwgu": {
+    "events": [],
+    "framerate": 30,
+    "frames": 28,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwh1": {
+    "events": [],
+    "framerate": 30,
+    "frames": 56,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwh2": {
+    "events": [],
+    "framerate": 30,
+    "frames": 40,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwhb": {
+    "events": [],
+    "framerate": 30,
+    "frames": 59,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwhl": {
+    "events": [],
+    "framerate": 30,
+    "frames": 56,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwhr": {
+    "events": [],
+    "framerate": 30,
+    "frames": 56,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwht": {
+    "events": [],
+    "framerate": 30,
+    "frames": 56,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwi1": {
+    "events": [],
+    "framerate": 30,
+    "frames": 108,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwi2": {
+    "events": [],
+    "framerate": 30,
+    "frames": 116,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwi3": {
+    "events": [],
+    "framerate": 30,
+    "frames": 103,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwi4": {
+    "events": [],
+    "framerate": 30,
+    "frames": 187,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwlf": {
+    "events": [],
+    "framerate": 30,
+    "frames": 108,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwr1": {
+    "events": [
+     {
+      "frame": 11,
+      "kind": "cast",
+      "parameter": 0.0
+     }
+    ],
+    "framerate": 30,
+    "frames": 29,
+    "hands": [
+     {
+      "bone": 13,
+      "bone_name": "bone_13",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 6,
+      "bone_name": "bone_06",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwr2": {
+    "events": [],
+    "framerate": 30,
+    "frames": 22,
+    "hands": [
+     {
+      "bone": 13,
+      "bone_name": "bone_13",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 6,
+      "bone_name": "bone_06",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwr3": {
+    "events": [],
+    "framerate": 30,
+    "frames": 17,
+    "hands": [
+     {
+      "bone": 13,
+      "bone_name": "bone_13",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 6,
+      "bone_name": "bone_06",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwrn": {
+    "events": [],
+    "framerate": 30,
+    "frames": 44,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jws1": {
+    "events": [
+     {
+      "frame": 10,
+      "kind": "cast",
+      "parameter": 0.0
+     }
+    ],
+    "framerate": 30,
+    "frames": 29,
+    "hands": [
+     {
+      "bone": 13,
+      "bone_name": "bone_13",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 6,
+      "bone_name": "bone_06",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jws2": {
+    "events": [],
+    "framerate": 30,
+    "frames": 22,
+    "hands": [
+     {
+      "bone": 13,
+      "bone_name": "bone_13",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 6,
+      "bone_name": "bone_06",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jws3": {
+    "events": [],
+    "framerate": 30,
+    "frames": 20,
+    "hands": [
+     {
+      "bone": 13,
+      "bone_name": "bone_13",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 6,
+      "bone_name": "bone_06",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwsf": {
+    "events": [],
+    "framerate": 30,
+    "frames": 103,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwsr": {
+    "events": [],
+    "framerate": 30,
+    "frames": 117,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwst": {
+    "events": [],
+    "framerate": 30,
+    "frames": 108,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwtk": {
+    "events": [],
+    "framerate": 30,
+    "frames": 108,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   },
+   "jwtu": {
+    "events": [],
+    "framerate": 30,
+    "frames": 38,
+    "hands": [
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "bone": 0,
+      "bone_name": "root",
+      "offset_raw": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "reference_height": 1.0
+   }
+  },
+  "dropped_vertices": [
+   [],
+   [],
+   [],
+   [],
+   [],
+   [],
+   [],
+   [],
+   [],
+   [],
+   [
+    48
+   ]
+  ],
+  "events": "jnwr.events.json",
+  "faces_reversed_for_gltf": false,
+  "glb": "jnwr.glb",
+  "scaling": 0.0013000000035390258,
+  "skipped_clips": [],
+  "source": "saxs_wiz.wad/sxwz.WAD!/jnwr.FLDR/jnwr.SAXC/jnwr.SXMD",
+  "unnormalized_vertices": [
+   {
+    "predicted_err_mm": 3.952,
+    "surface": 1,
+    "vertex": 208,
+    "weight_sum": 1.006104
+   }
+  ],
+  "zfactor": 1.0
+ }
+}

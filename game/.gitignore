@@ -2,6 +2,7 @@
 cache/
 *.import
 !assets/cc0/**/*.import
+!assets/original/**/*.import
 
 # Capturas del juego original usadas como referencia: no se versionan.
 visual/refs/original/

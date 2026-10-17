@@ -1322,7 +1322,7 @@ Deuda:
 - **Corte de lanzamiento por aturdido:** no hay un caso determinista, porque la IA decide distinto con ventana (ver determinismo).
 - **×0,2 sobre el mago:** no se probó con un golpe real.
 - **Red:** sin verificar.
-- **`f20_solo`:** falla en `%God_persephone`, también en HEAD (es preexistente).
+- **`f20_solo`:** el fallo «click missed %God_persephone» (pointer did not hit) no se reproduce: pasa en HEAD 2 de 2 (2026-10-17). El selector no cambió desde c79753e, así que es un flake de la entrega del clic sintético de AgentKit. Si vuelve a pasar, poner una sonda de eventos reales de mouse y foco en esa corrida.
 - **Determinismo (alarma, preexistente desde el primer commit):** `spellbook.gd` descuenta los enfriamientos en `_process(delta)`, con el reloj de render. Por eso la IA decide distinto con ventana. Va en un corte propio.
 
 ### F144 — Banco de determinismo y línea base (RFC-032, corte 032a)

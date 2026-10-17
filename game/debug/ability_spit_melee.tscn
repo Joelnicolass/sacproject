@@ -7,4 +7,5 @@
 [node name="Spit" parent="."]
 target_mana_share = 0.0
 target_approaches = true
+target_closes_in = true
 force_swings_at_rock = true

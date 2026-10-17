@@ -43,6 +43,12 @@ extends Node
 ## never picks a rock (isVisibleToAI, state.d:93), but dealDamage scales a landed blow by 0.05
 ## (state.d:8964); this shows that blow.
 @export var force_swings_at_rock := false
+## WORKAROUND: sacengine's attacker keeps walking in while its target is inside its melee box, until it stands within
+## 0.8 of the distance from its centre to that box (attack, state.d:12857-12862). UnitBody stops at the first touch, which
+## leaves a ranged foe gap > 0.5 away (RangedAttack.prefers): it keeps spitting point-blank and never swings. Until UnitBody
+## closes in like the original (it moves every melee fight, so it needs its own determinism baseline), this scene walks
+## the approaching target those last steps so the contact rule can be shown. Only while the target swings at the shooter.
+@export var target_closes_in := false
 
 @export_group("Camera")
 @export var camera_side_m := 10.0
@@ -163,10 +169,12 @@ func _on_land(at: Vector3) -> Vector3:
 	return at
 
 
-func _physics_process(_delta: float) -> void:
-	if not force_swings_at_rock or not _alive(_shooter) or not _alive(_target):
+func _physics_process(delta: float) -> void:
+	if not _alive(_shooter) or not _alive(_target):
 		return
-	if not _shooter.call("is_rock_form"):
+	if target_closes_in:
+		_close_in(delta)
+	if not force_swings_at_rock or not _shooter.call("is_rock_form"):
 		return
 	var mode := int(_target.get("mode"))
 	if mode != UnitBody.Mode.IDLE and mode != UnitBody.Mode.CHASE:
@@ -178,6 +186,24 @@ func _physics_process(_delta: float) -> void:
 	_target.set("target", _shooter)
 	_target.set("swings", int(_target.get("swings")) + 1)
 	_target.set("mode", UnitBody.Mode.ATTACK)
+
+
+## One physics step of the target walking in on the shooter (see target_closes_in): along the flat line, never past the
+## stop distance, at the target's own running pace.
+func _close_in(delta: float) -> void:
+	if int(_target.get("mode")) != UnitBody.Mode.ATTACK or int(_shooter.get("mode")) == UnitBody.Mode.DEAD:
+		return
+	var reach := float(_target.call("melee_profile").get("reach", 0.35))
+	var foe_reach := float(_shooter.call("melee_profile").get("reach", 0.35))
+	var forward := float(_target.get_node("MeleeAttack").get("forward_factor"))
+	var stop_m := foe_reach + 0.8 * forward * reach
+	var to_foe := _shooter.global_position - _target.global_position
+	to_foe.y = 0.0
+	var excess := to_foe.length() - stop_m
+	if excess <= 0.0:
+		return
+	var step := minf(excess, float(_target.get("move_speed")) * float(_target.get("speed_factor")) * delta)
+	_target.global_position += to_foe.normalized() * step
 
 
 func _on_struck(foe: Node3D, amount: float, _hit_chance: float, _roll: float, from: Node3D) -> void:

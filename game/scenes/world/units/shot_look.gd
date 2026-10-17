@@ -4,6 +4,8 @@ extends Resource
 ## How a creature's ranged shot looks: res://data/shots/<ability tag>.tres. Flight and damage
 ## come from the AbilityType; a tag without a .tres flies as a plain ball with no particles.
 
+const LOOKS_DIR := "res://data/shots/"
+
 ## Baked model (BodyLibrary); empty = a ball of fallback_radius.
 @export var model := ""
 @export var model_scale := 1.0
@@ -37,5 +39,20 @@ extends Resource
 ## F149: off, the shot touches nothing on its way, neither a body nor the ground, and flies its whole range (the
 ## Silverback's breath: its in_flight does the damage). On: it bursts on its hit (the rest of the shots).
 @export var collides := true
+## F124 (RFC-030 030m): ShotStrike scene that replaces the flight (strikes/*.tscn): a ray at once (the Gnome's
+## gnome_ray), a blow on the next tick (the Styx's styx_strike). RangedAttack instances it on the server (or solo).
+## Empty = a RangedShot flies.
+@export var strike: PackedScene
 @export var fallback_color := Color(0.8, 0.7, 0.5)
 @export var fallback_radius := 0.15
+
+
+## The look of an ability tag (res://data/shots/<tag>.tres), or a plain ball. The one lookup for RangedShot and
+## RangedAttack (which needs `strike` before anything flies).
+static func for_tag(tag: String) -> ShotLook:
+	var path := LOOKS_DIR + tag + ".tres"
+	if not tag.is_empty() and ResourceLoader.exists(path):
+		var found := load(path) as ShotLook
+		if found:
+			return found
+	return ShotLook.new()

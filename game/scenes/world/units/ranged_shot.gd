@@ -14,8 +14,6 @@ extends Node3D
 ## (ShotDropper, 030h3); F149: the Silverback's breath (FrostWave), whose ShotLook.collides is off: it touches neither a
 ## body nor the ground and flies its whole range.
 
-const _HEALTH := preload("res://scenes/world/components/health.gd")
-const LOOKS_DIR := "res://data/shots/"
 const TRAIL_FPS := 60.0
 
 var damage := 0.0
@@ -45,7 +43,7 @@ func setup(data: Dictionary) -> void:
 	max_distance = float(data.get("max_distance", INF))
 	target_path = NodePath(str(data.get("target", "")))
 	shooter_path = NodePath(str(data.get("shooter", "")))
-	look = _look_for(str(data.get("tag", "")))
+	look = ShotLook.for_tag(str(data.get("tag", "")))
 	ability = GameData.ability(str(data.get("tag", "")))
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash(name)
@@ -56,15 +54,6 @@ func setup(data: Dictionary) -> void:
 	_add_in_flight()
 	## ShotLook.trail_every counts 60 fps frames; the trail now goes by time (FxTrail, RFC-029 029b).
 	FxTrail.attach(self, look.trail_fx, float(maxi(look.trail_every, 1)) / TRAIL_FPS)
-
-
-static func _look_for(tag: String) -> ShotLook:
-	var path := LOOKS_DIR + tag + ".tres"
-	if not tag.is_empty() and ResourceLoader.exists(path):
-		var found := load(path) as ShotLook
-		if found:
-			return found
-	return ShotLook.new()
 
 
 func _add_visual() -> void:
@@ -225,18 +214,6 @@ func _ground_height(at: Vector3) -> float:
 
 ## Server (or solo) only: _physics_process is off on clients.
 func _burst(target: Node3D) -> void:
-	if look.impact:
-		var node := look.impact.instantiate()
-		var impact := node as ShotImpact
-		if impact:
-			add_child(impact)
-			impact.apply(self, target if target and is_instance_valid(target) else null, global_position, ability)
-		else:
-			node.free()
-			push_warning("RangedShot: el impacto de %s no es un ShotImpact." % name)
-	elif target and is_instance_valid(target) and _is_live_body(target):
-		target.get_node("Health").call("damage_typed", damage, _HEALTH.DIRECT_RANGED, from_slot)
-	for fx in look.impact_fx:
-		FxBus.broadcast(fx, global_position)
+	ShotImpact.land(self, look, target, global_position, ability)
 	set_physics_process(false)
 	queue_free()

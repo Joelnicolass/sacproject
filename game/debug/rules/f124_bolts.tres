@@ -1,0 +1,141 @@
+[gd_resource type="Resource" script_class="BenchRules" load_steps=16 format=3]
+
+[ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
+[ext_resource type="Script" path="res://debug/bench_event.gd" id="3_event"]
+
+[sub_resource type="Resource" id="Group_A_gnome"]
+script = ExtResource("2_group")
+tag = "plfl"
+slot = 1
+count = 1
+columns = 1
+offset_m = -5.0
+offset_z_m = -50.0
+facing_x = 1.0
+order = "attack_unit"
+order_slot = 2
+
+[sub_resource type="Resource" id="Group_A1_druid"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 2
+count = 1
+columns = 1
+offset_m = 55.0
+offset_z_m = -50.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_B_gnome"]
+script = ExtResource("2_group")
+tag = "plfl"
+slot = 1
+count = 1
+columns = 1
+offset_m = 170.0
+offset_z_m = 60.0
+facing_x = 1.0
+order = "attack_unit"
+order_slot = 2
+
+[sub_resource type="Resource" id="Group_B1_druid"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 2
+count = 1
+columns = 1
+offset_m = 230.0
+offset_z_m = 60.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_B2_trogg_ally"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 1
+count = 1
+columns = 1
+offset_m = 173.0
+offset_z_m = 60.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_D_styx"]
+script = ExtResource("2_group")
+tag = "nugd"
+slot = 1
+count = 1
+columns = 1
+offset_m = -80.0
+offset_z_m = 45.0
+facing_x = 1.0
+order = "attack_unit"
+order_slot = 2
+
+[sub_resource type="Resource" id="Group_D1_druid"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 2
+count = 1
+columns = 1
+offset_m = -42.0
+offset_z_m = 45.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_D2_druid"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 2
+count = 1
+columns = 1
+offset_m = -42.0
+offset_z_m = 49.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_D3_druid"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 2
+count = 1
+columns = 1
+offset_m = -42.0
+offset_z_m = 57.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Event_kill_gnome_a"]
+script = ExtResource("3_event")
+at_s = 6.0
+action = "kill"
+label = "un rayo (carril A)"
+slot = 2
+victim = "Gnome1"
+
+[sub_resource type="Resource" id="Event_kill_gnome_b"]
+script = ExtResource("3_event")
+at_s = 6.0
+action = "kill"
+label = "un rayo (carril B)"
+slot = 2
+victim = "Gnome2"
+
+[sub_resource type="Resource" id="Event_kill_styx"]
+script = ExtResource("3_event")
+at_s = 4.5
+action = "kill"
+label = "un golpe (carril D)"
+slot = 2
+victim = "Styx1"
+
+[resource]
+script = ExtResource("1_rules")
+match_seed = 7
+groups = Array[ExtResource("2_group")]([SubResource("Group_A_gnome"), SubResource("Group_A1_druid"), SubResource("Group_B_gnome"), SubResource("Group_B1_druid"), SubResource("Group_B2_trogg_ally"), SubResource("Group_D_styx"), SubResource("Group_D1_druid"), SubResource("Group_D2_druid"), SubResource("Group_D3_druid")])
+anchor = Vector3(1270, 0, 1270)
+start_paused = true
+events = Array[ExtResource("3_event")]([SubResource("Event_kill_gnome_a"), SubResource("Event_kill_gnome_b"), SubResource("Event_kill_styx")])
+pending_text = "Rayos y golpes en pausa"
+ignore_annihilation = true

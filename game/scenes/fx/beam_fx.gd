@@ -11,6 +11,7 @@ extends MeshInstance3D
 signal finished
 
 const SHADER := preload("res://scenes/fx/beam.gdshader")
+const SHADER_MIX := preload("res://scenes/fx/beam_mix.gdshader")
 const UV_INSET := 0.5 / 64.0
 
 @export var type: BeamType
@@ -163,8 +164,8 @@ static func material_for(beam: BeamType) -> ShaderMaterial:
 	var material: ShaderMaterial = _materials.get(beam)
 	if material == null:
 		material = ShaderMaterial.new()
-		material.shader = SHADER
 		_materials[beam] = material
+	material.shader = SHADER_MIX if beam.blend == BeamType.Blend.MIX else SHADER
 	var texture := FxAtlas.texture(beam.atlas_tag)
 	material.set_shader_parameter("use_textures", texture != null)
 	material.set_shader_parameter("atlas", texture)

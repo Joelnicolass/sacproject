@@ -14,7 +14,7 @@ extends Node
 ##   fires (state.d:12631-12758); the cooldown (ability cooldown·60 frames) starts on the first
 ##   shot (state.d:12774-12776) and counts down every frame (state.d:13936).
 ## - Aim: target center led by its velocity, plus 0.5·g·d/speed² upward for ballistic shots
-##   (getShotDirectionWithGravity, state.d:11506), then ranged accuracy (applyRangedAccuracy,
+##   (getShotDirectionWithGravity, state.d:11506), then ranged accuracy (ShotAim.scatter, applyRangedAccuracy,
 ##   state.d:11491): angle = atan(accuracy·0.001·0.14 + 0.03), azimuth angle·r³ and elevation
 ##   0.1·angle·r³ with r uniform in [−1, 1].
 
@@ -189,11 +189,12 @@ func _shoot_tick(tick_count: int) -> void:
 
 
 func _fire(target: Node3D) -> void:
+	var look := ShotLook.for_tag(attack.tag)
 	var spawner := get_tree().get_first_node_in_group("shot_spawner")
-	if spawner == null:
+	if look.strike == null and spawner == null:
 		push_warning("RangedAttack: no hay ShotSpawner en el mundo.")
 		return
-	var origin := _shot_origin()
+	var origin := shot_origin()
 	var predicted := _predicted(target)
 	var offset := predicted - origin
 	var direction: Vector3 = offset.normalized() if offset.length_squared() > 0.000001 else _body.call("facing_flat")
@@ -201,11 +202,11 @@ func _fire(target: Node3D) -> void:
 	var gravity := float(FALLING_ACCELERATION.get(attack.tag, DEFAULT_FALLING)) if ballistic else 0.0
 	if ballistic:
 		direction.y += 0.5 * gravity * offset.length() / (attack.speed * attack.speed)
-	direction = _apply_accuracy(direction)
+	direction = ShotAim.scatter(direction, _accuracy(), _rng)
 	if not ballistic:
 		direction = direction.normalized()
 	var velocity: Vector3 = direction * attack.speed
-	spawner.call("spawn_shot", {
+	var data := {
 		"tag": attack.tag,
 		"x": origin.x, "y": origin.y, "z": origin.z,
 		"vx": velocity.x, "vy": velocity.y, "vz": velocity.z,
@@ -215,21 +216,36 @@ func _fire(target: Node3D) -> void:
 		"max_distance": INF if ballistic else attack.cast_range,
 		"target": str(target.get_path()),
 		"shooter": str(_body.get_path()),
-	})
+		## F124: the predicted point without accuracy, and the accuracy, for the strikes that aim again.
+		"aim_x": predicted.x, "aim_y": predicted.y, "aim_z": predicted.z,
+		"accuracy": _accuracy(),
+	}
+	if look.strike != null:
+		_strike(look, data)
+	else:
+		spawner.call("spawn_shot", data)
 
 
-## sacengine applyRangedAccuracy. sacengine's z-up axes map to Godot as z → Y, x → X.
-func _apply_accuracy(direction: Vector3) -> Vector3:
-	var accuracy := float(type.ranged_accuracy) if type else 0.0
-	var angle := atan(accuracy * 0.001 * 0.14 + 0.03)
-	var azimuth_roll := _rng.randf_range(-1.0, 1.0)
-	var elevation_roll := _rng.randf_range(-1.0, 1.0)
-	var azimuth := angle * azimuth_roll * azimuth_roll * azimuth_roll
-	var elevation := 0.1 * angle * elevation_roll * elevation_roll * elevation_roll
-	return direction.rotated(Vector3.RIGHT, elevation).rotated(Vector3.UP, azimuth)
+## F124 (RFC-030 030m): a ShotStrike (ShotLook.strike) in place of a flying shot: the Gnome's ray, the Styx's blow.
+## Server (or solo) only, as this node's child; it is not replicated (its look goes through FxBus).
+func _strike(look: ShotLook, data: Dictionary) -> void:
+	var node := look.strike.instantiate()
+	var strike := node as ShotStrike
+	if strike == null:
+		node.free()
+		push_warning("RangedAttack: el strike de %s no es un ShotStrike." % attack.tag)
+		return
+	add_child(strike)
+	strike.launch(data, look, self)
 
 
-func _shot_origin() -> Vector3:
+## The shooter's ranged accuracy (ShotAim.scatter).
+func _accuracy() -> float:
+	return float(type.ranged_accuracy) if type else 0.0
+
+
+## Where a shot leaves: the body's front at shot_height of its height. Public for a strike that follows its shooter.
+func shot_origin() -> Vector3:
 	var profile: Dictionary = _body.call("melee_profile")
 	var facing: Vector3 = _body.call("facing_flat")
 	return _body.global_position + facing * float(profile.get("reach", 0.35)) + Vector3.UP * float(profile.get("height", 1.8)) * shot_height
@@ -265,7 +281,7 @@ func _box_gap(target: Node3D) -> float:
 
 func _clear_shot(target: Node3D, predicted: Vector3) -> bool:
 	var drop := Vector3.DOWN * clear_shot_drop
-	var query := PhysicsRayQueryParameters3D.create(_shot_origin() + drop, predicted + drop)
+	var query := PhysicsRayQueryParameters3D.create(shot_origin() + drop, predicted + drop)
 	query.collision_mask = ground_mask
 	var skip: Array[RID] = []
 	for node: Node in [_body, target]:

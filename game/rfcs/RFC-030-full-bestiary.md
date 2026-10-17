@@ -836,7 +836,48 @@ Después de la corrección:
 - N: `impacts/bolt_impact.tscn` (patrón `StyxBolt`/`StyxExplosion`).
 - M: `data/shots/plfa|fhga|dhga.tres`.
 
-**Escena de prueba:** `res://debug/f122_bolts.tscn`. **Criterio:** daño y radio medidos.
+**Escena de prueba:** `res://debug/f124_bolts.tscn` (los carriles C y E del Warmonger, en 030m-b). **Criterio:** daño y radio medidos.
+
+**Plan (developer de 030m-a, 2026-10-17):** el del tech lead en `rfcs/plans/030m-030n-plan.md` §030m. Gnome, Styx y Warmonger no tienen proyectil, así que `bolt_impact` pasa a ser «strikes»:
+- `ShotLook.strike` (PackedScene) y `ShotLook.for_tag` (la única búsqueda de `data/shots/`, que antes era `RangedShot._look_for`).
+- `RangedAttack._fire`: precisión con `ShotAim.scatter` (sacada tal cual, mismo orden de sorteos) y diccionario con `aim_x/y/z` y `accuracy`. Si el look tiene `strike`, lo instancia como hijo propio, solo en el servidor, y llama a `launch(data, look, self)`. `shot_origin()` pasa a ser público.
+- `ShotImpact.land(holder, look, target, point, ability)` (estático) es el único dueño de lo que pasa donde pega un disparo o un strike: impacto o daño directo, y después `impact_fx`. `RangedShot._burst` lo usa. Devuelve el daño directo recibido.
+- `scenes/world/units/strikes/`:
+  - `ShotStrike` (Node3D, prioridad −1, mismos nombres que `RangedShot`). El tick 0 corre en `launch`; después corre los ticks que avanzó `MatchClock`.
+  - `RayStrike` (ráfagas, `first_tick`, período, rayos, `reroll`, `follow`, `foes_only`, beam).
+  - `TargetStrike` (golpe en `land_tick`, en el centro del blanco vivo o en el punto apuntado).
+  - `gnome_ray.tscn` y `styx_strike.tscn`.
+- `data/shots/plfa.tres` (strike `gnome_ray`, fx `gnome_hit`) y `dhga.tres` (strike `styx_strike`, impacto `splash_impact.tscn`, fx `styx_spark`).
+- Beams `data/fx/beams/gnome_flame.tres` (gmfl 2×2, 1,7 m, 16 ticks: el `GnomeEffect`, que es un fogonazo en la boca y no un rayo, sacobject.d:4268-4283) y `styx.tres` (ltn2, 1 bolt de ancho 1,5, 64 ticks, cambia cada 6, sigue al blanco).
+- Partículas `gnome_hit` (gsqb) y `styx_spark` (styx), dibujadas como overlay de alfa (`gsqb_a`, `styx_a`, `glow_to_alpha`) con `blend_mix`, como el fuego. `warmonger_hit` (wsqb) ya queda exportada para 030m-b.
+- Logs (`rayo …`, `golpe …`) apagados en el producto: los enciende `ShotStrike.log_strikes` desde `debug/ai_match.gd`.
+
+**Resultado (developer de 030m-a, 2026-10-17):** `debug/f124_bolts.tscn` (caso `f124` del banco), semilla 7:
+- **C1 Gnome (A):** `rayo plfa Gnome1 → Druid1 a 61.1 m: 540.0` en el mismo tick que `fired` (rel 11 en la ventana). Druid1 queda en 260 y el maná del Gnome pasa de 200 a 187.
+- **C2 Aliado (B):** `rayo plfa Gnome2 → Trogg1 (aliado) a 1.8 m: 0.0`. Trogg1 queda en 960 y Druid2 en 800.
+- **C3 Styx (D):**
+  - `fired` en rel 102 y `golpe dhga Styx1 → Druid3` en el tick siguiente;
+  - aparece `salpicadura dhga … radio 10.0 m de 500`;
+  - Druid3 (D1) pierde 450, Druid4 (D2, a 3,77 m) pierde 280,35 = 450·(1−0,377) y Druid5 (D3) pierde 0;
+  - el maná del Styx pasa de 500 a 467, un solo disparo antes de morir en rel 270;
+  - el beam se ve en `d1_styx_bolt.png` y `d2_styx_splash_sparks.png`.
+- **C6 Determinismo:**
+  - `f124` da c5abf4c8 en fixed, stress y window, y entra en `quick` y en `det_baseline.txt`;
+  - `quick` PASS, con s7, f139, s1_quick, f148, f121, f122, f123 y f149 iguales a la línea base (`ShotAim` y `land` son neutros);
+  - `rules_suite` PASS.
+- **Ventana** (`agent/flows/pt124_play.json`, `agent/harness/pt124_watch.gd`, capturas en `agent/out/pt124/`): se ven las chispas verdes del golpe del Gnome sobre Druid1 (`a2`) y sobre el Trogg aliado que frena el rayo (`b1`), y el bolt del Styx hasta los Druids (`d1`, `d2`).
+
+*Desvíos del plan:*
+- **B2 en +173/+60 (a 3 m del Gnome), no en +227:** el carril B baja ~1 m cada 8 m. A 8 m o a 57 m el rayo le pasaba al Trogg por arriba o al costado (con semilla 7 la precisión 150 sorteó un azimut de 2,9°, casi el máximo). Es fiel: sacengine también falla.
+- **Beam `gnome_flame` (fogonazo de 1,7 m), no `gnome_ray`:** el `GnomeEffect` original es eso, no un trazo hasta el blanco.
+- Las chispas del Styx van en `dhga.impact_fx` (las lanza `land`); el strike solo tiene el beam.
+
+*Divergencias declaradas:*
+- Las del plan: el rayo se corta en rocas y estructuras, y no hay `StyxExplosion` ni `igniteBuilding`.
+- **El fogonazo del Gnome no se ve sobre la nieve** (`a1_gnome_flame.png`): el beam se dibuja solo con `blend_add`, energía 10, y el verde sumado sobre el blanco se satura. Queda para un pase visual (el shader de beam no tiene modo mix).
+- Las chispas `styx_spark` no se distinguen en la captura con la cámara alta: los Druids quedan chicos en cuadro.
+- El origen del `StyxBolt` no sigue al tirador; el final sí sigue al blanco.
+- La salpicadura del Styx alcanza la choza `Bld069_jhut` a 8,01 m del carril D. No aparece en los eventos `hurt` del banco.
 
 ### 030n — F125 Disparos grandes (Boulderdash, Phoenix, Rhinok)
 

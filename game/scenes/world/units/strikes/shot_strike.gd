@@ -1,0 +1,129 @@
+class_name ShotStrike
+extends Node3D
+
+## F124 (RFC-030 030m): a creature's ranged attack with no flight, in place of a RangedShot: the Gnome's ray (plfa,
+## gnomeShoot state.d:11724-11735), the Styx's bolt at the next tick (dhga, StyxShoot 11852-11855, 24154-24172) and the
+## Warmonger's gun (fhga, 030m-b). The scene is ShotLook.strike; RangedAttack instances it on the server (or solo) only,
+## as its own child, and calls launch() once. The strike is not replicated: what peers see goes through FxBus.
+##
+## Ticks: launch() runs tick 0 in the tick of the shot; then every physics tick runs the ticks MatchClock advanced
+## since (1, 2, …). The scene's process_physics_priority is −1: sacengine updates its effects before its creatures
+## (state.d:29331 vs 29345). Variants override _strike_tick() and call finish() when done.
+##
+## Same names as RangedShot, so a ShotImpact reads either: damage, from_slot, velocity, ability, target_path,
+## shooter_path.
+
+const _ROCK := preload("res://scenes/world/spells/rock_projectile.gd")
+const _MELEE := preload("res://scenes/world/units/melee_attack.gd")
+
+## Already scaled by the shooter (attack_factor).
+var damage := 0.0
+var from_slot := 0
+## The shot's direction (accuracy drawn once by RangedAttack) times the ability speed.
+var velocity := Vector3.ZERO
+var ability: AbilityType
+var target_path := NodePath()
+var shooter_path := NodePath()
+var look: ShotLook
+## Where the shot leaves (RangedAttack.shot_origin at the shot tick).
+var origin := Vector3.ZERO
+## The predicted target center, without accuracy (sacengine `target` of the *Shoot functions).
+var aim := Vector3.ZERO
+## The shooter's ranged accuracy (CreatureType.ranged_accuracy), for the strikes that draw it again.
+var accuracy := 0.0
+## The ability range (RangedAttack's max_distance).
+var max_distance := 0.0
+## The ability tag, for the log.
+var tag := ""
+## The RangedAttack that fired it (its shot_origin() for a strike that follows the shooter). Injected by launch().
+var source: Node
+
+## Print the rays, bursts and blows. Off in the product; the bench (debug/ai_match.gd) turns it on.
+static var log_strikes := false
+
+var _born_tick := 0
+var _done_tick := 0
+var _finished := false
+
+
+## `data`: the keys of RangedAttack._fire (the ones of RangedShot.setup plus aim_x/y/z and accuracy). Call it once the
+## strike is in the tree: tick 0 may already cast against the world. `from`: the RangedAttack that fired it.
+func launch(data: Dictionary, shot_look: ShotLook, from: Node = null) -> void:
+	source = from
+	tag = str(data.get("tag", ""))
+	origin = Vector3(float(data.get("x", 0.0)), float(data.get("y", 0.0)), float(data.get("z", 0.0)))
+	global_position = origin
+	velocity = Vector3(float(data.get("vx", 0.0)), float(data.get("vy", 0.0)), float(data.get("vz", 0.0)))
+	aim = Vector3(float(data.get("aim_x", origin.x)), float(data.get("aim_y", origin.y)), float(data.get("aim_z", origin.z)))
+	accuracy = float(data.get("accuracy", 0.0))
+	damage = float(data.get("damage", 0.0))
+	from_slot = int(data.get("slot", 0))
+	max_distance = float(data.get("max_distance", 0.0))
+	target_path = NodePath(str(data.get("target", "")))
+	shooter_path = NodePath(str(data.get("shooter", "")))
+	look = shot_look if shot_look != null else ShotLook.new()
+	ability = GameData.ability(tag)
+	_born_tick = MatchClock.now()
+	_done_tick = 0
+	_strike_tick(0)
+
+
+func _physics_process(_delta: float) -> void:
+	var age := MatchClock.now() - _born_tick
+	while not _finished and _done_tick < age:
+		_done_tick += 1
+		_strike_tick(_done_tick)
+
+
+## What the strike does on its tick `age` (0 = the tick of the shot). Default: nothing.
+func _strike_tick(_age: int) -> void:
+	pass
+
+
+## Done: no more ticks; freed at the end of the frame (an impact child goes with it).
+func finish() -> void:
+	_finished = true
+	set_physics_process(false)
+	queue_free()
+
+
+## The shooter while it lives, else null.
+func shooter() -> Node3D:
+	var body: Node3D = null
+	if not shooter_path.is_empty():
+		body = get_node_or_null(shooter_path) as Node3D
+	return body if body != null and _ROCK.is_live_body(body) else null
+
+
+## The body the shooter aimed at while it is a live target, else null.
+func intended() -> Node3D:
+	var body: Node3D = null
+	if not target_path.is_empty():
+		body = get_node_or_null(target_path) as Node3D
+	return body if body != null and _ROCK.is_live_body(body) else null
+
+
+## The shooter's node name (a stable id on the field: Gnome1), even after it died.
+func shooter_name() -> String:
+	if shooter_path.is_empty():
+		return "?"
+	return str(shooter_path.get_name(shooter_path.get_name_count() - 1))
+
+
+func _log(line: String) -> void:
+	if log_strikes:
+		print(line)
+
+
+## What lands at `point` on `target` (or on nothing): ShotImpact.land. Returns the direct damage taken.
+func _land(target: Node3D, point: Vector3) -> float:
+	return ShotImpact.land(self, look, target, point, ability)
+
+
+## A body's center (sacengine obj.center): its Collision shape, else half its height over its feet. The same rule as
+## RangedAttack._center.
+static func center_of(body: Node3D) -> Vector3:
+	var col := body.get_node_or_null("Collision") as Node3D
+	if col:
+		return col.global_position
+	return body.global_position + Vector3.UP * float(_MELEE.profile_of(body).get("height", 1.8)) * 0.5

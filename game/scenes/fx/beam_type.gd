@@ -37,6 +37,11 @@ extends Resource
 @export_range(0.0, 2.0, 0.001, "suffix:s") var travel_s := 12.0 / 60.0
 
 @export_group("Look")
+enum Blend { ADD, MIX }
+## ADD: the atlas adds light (sacengine; the spell bolts). MIX: the atlas is a straight-alpha overlay (*_a.png of
+## tools/export_particles.py) drawn over the scene, for a glow that has to keep its hue over the snow (the Gnome's
+## flame, F124); its alpha times the brightness (clamped to 1) is the coverage.
+@export var blend := Blend.ADD
 ## Brightness pulse 0.375 + 14.625 · (0.5 + 0.25 cos 7a + 0.25 sin 11a), a = π · t / life
 ## (renderer.d:1881-1882): between `energy_min` and `energy_max`.
 @export var energy_min := 0.375

@@ -1536,3 +1536,30 @@ Deuda:
 - **Esquirlas:** se tiñeron de azul para que se vean sobre la nieve.
 - **Fuera de este corte:** `healBlocked` y el sonido.
 - **Sin captura:** que E1 vuelva a moverse después del deshielo.
+
+### F124 — Rayo del Gnome y golpe del Styx (RFC-030, corte 030m-a)
+
+**Piezas:**
+- **`ShotLook.strike`:** escena `ShotStrike` que reemplaza el vuelo. La instancia `RangedAttack._strike` como hijo, solo en el servidor.
+- **`RayStrike`** (`gnome_ray.tscn`): un rayo `collideRay` en el mismo tick. Lo frena cualquier cuerpo, de cualquier bando. Hace 600 directos y el fuego amigo lo decide `Health`.
+- **`TargetStrike`** (`styx_strike.tscn`): golpe en T+1 sobre el centro del blanco vivo, con la salpicadura del Mutant.
+- **`ShotImpact.land`:** único dueño de lo que pasa donde pega, para disparos y strikes.
+- **`ShotAim.scatter`:** la precisión de sacengine, movida sin cambios.
+- **`ShotLook.for_tag`:** única búsqueda de looks.
+- **`BeamType.blend`:** `ADD` o `MIX` (`beam_mix.gdshader`). El fogonazo `gnome_flame` usa `MIX` con el atlas `gmfl_a`.
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-030m-a.md`). El fogonazo no se veía sobre la nieve; se corrigió con la mezcla `MIX` y quedó medido en verde, luminancia 0,736 contra 0,690 de la nieve.
+- **Gnome:** 540 al Druid en el mismo tick de `fired`. El maná del Gnome pasa de 200 a 187.
+- **Aliado que frena:** el Trogg aliado frena el rayo con 0 de daño. El Druid de atrás queda en 800.
+- **Styx:** golpe en T+1. Hace 450 / 280,35 / 0 y el maná pasa de 500 a 467.
+- **Determinismo:** `f124` da `c5abf4c8` en fixed, stress y window. `quick`: s7, f139, s1_quick, f148, f121, f122, f123 y f149 iguales a la línea base. `rules_suite` PASS.
+- **Playtest con ventana:** PASS en los 4 puntos (`agent/out/pt124/play/`).
+
+Deuda:
+- **Fogonazo:** sale a la altura del disparo (unos 0,9 m adelante), no en el arma del hombro. Falta un hueso de mano y va con el sistema de animaciones.
+- **Rayo del Styx:** se ve recto y liso, termina un poco antes del blanco y no tiene `StyxExplosion`.
+- **Salpicadura:** no tiene anillo visible.
+- **Bench:** la línea de kill del banco usa una base de ticks distinta a la de `fired`.
+- **Styx gibeado en T:** el golpe no cae (M4).
+- **Caso sin ejercitar:** el tirador que muere en T.
+- **Menores M1-M3:** `source` sin tipo y `shot_origin()` sin caller hasta 030m-b; el watch lee una variable privada.

@@ -5,8 +5,12 @@ Runs the sacengine binary (read only, never modified) with `export-all-frames:` 
 model, adds the displacement correction the game applies (referenceHeight, sxsk.d frameOffset; without the
 skip threshold export_stats uses) and keeps only the frames the audit compares: 0, middle and last.
 Output: <out>/<model>/<clip>/<frame>.obj, outside git (default agent/out/skeletal_ref/, ignored).
-Usage: python3 tools/export_skeletal_reference.py [--out DIR] [--clips TAG,TAG] [model ...]   (default eorc jnwr)
+Usage: python3 tools/export_skeletal_reference.py [--out DIR] [--clips TAG,TAG | --unit-clips] [model ...]   (default eorc jnwr)
+--unit-clips: only the clips the creature units play (UnitClipRoles: stance/idle, run/walk, melee[0], cower/work,
+flight, stun) and writes <out>/unit_clips.json ({model: [tag]}), which `audit_skeletal.gd --clips=` reads.
 """
+
+import json
 
 import argparse
 import shutil
@@ -20,6 +24,27 @@ import export_skeletal as sk  # noqa: E402
 stats = sk.stats
 ROOT = sk.ROOT
 DEFAULT_OUT = ROOT / "agent" / "out" / "skeletal_ref"
+
+
+UNIT_ROLE_FIELDS = ("stance_animation", "idle_animation", "run_animation", "walk_animation")
+UNIT_ROLE_DICTS = ("extra_animations", "flight_animations", "stun_animations")
+
+
+def unit_clip_tags() -> dict:
+    """model -> clip tags the units of that model play (the roles of scenes/world/body/unit_clip_roles.gd)."""
+    creatures = json.loads((ROOT / "assets" / "original" / "data" / "creatures.json").read_text())
+    found: dict = {}
+    for entry in creatures.values():
+        tags = found.setdefault(entry["model"], set())
+        for field in UNIT_ROLE_FIELDS:
+            tags.add((entry.get(field) or {}).get("tag", ""))
+        for anim in entry.get("melee_animations", [])[:1]:
+            tags.add(anim.get("tag", ""))
+        for field in UNIT_ROLE_DICTS:
+            for clip in (entry.get(field) or {}).values():
+                if isinstance(clip, dict):
+                    tags.add(clip.get("tag", ""))
+    return {model: sorted(t for t in tags if t) for model, tags in found.items()}
 
 
 def kept_frames(count: int) -> list:
@@ -50,10 +75,20 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
     parser.add_argument("--clips", default="", help="comma separated clip tags (default: all)")
+    parser.add_argument("--unit-clips", action="store_true", help="only the clips creature units play")
+    parser.add_argument("--write-clips-only", action="store_true", help="with --unit-clips: write unit_clips.json and stop")
     parser.add_argument("models", nargs="*", default=sk.DEFAULT_MODELS)
     args = parser.parse_args()
     out = args.out.resolve()
     wanted = {c for c in args.clips.split(",") if c}
+    per_model = unit_clip_tags() if args.unit_clips else {}
+    if args.unit_clips:
+        out.mkdir(parents=True, exist_ok=True)
+        merged = json.loads((out / "unit_clips.json").read_text()) if (out / "unit_clips.json").exists() else {}
+        merged.update({m: per_model.get(m, []) for m in args.models})
+        (out / "unit_clips.json").write_text(json.dumps(merged, indent=1, sort_keys=True))
+        if args.write_clips_only:
+            return
     model_paths = stats.index_saxs_models()
     anim_index = stats.index_saxs_animations()
     failed = []
@@ -68,6 +103,8 @@ def main():
         scaling = struct.unpack_from("<f", files[(tag, "SAXS")], 0)[0]
         for clip_tag, sxsk, skel in clips:
             if wanted and clip_tag not in wanted:
+                continue
+            if args.unit_clips and clip_tag not in per_model.get(tag, []):
                 continue
             clip_out = out / tag / clip_tag
             frames = struct.unpack_from("<H", sxsk, 2)[0]

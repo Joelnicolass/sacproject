@@ -81,7 +81,7 @@ func _watch() -> void:
 		elif state == 0:
 			s["max_ground_pace"] = maxf(float(s["max_ground_pace"]), pace)
 			s["cap_ground"] = _height(unit)
-		var role := (unit.get_node("ClipPose") as ClipPosePlayer).active_role()
+		var role := (unit.get_node("ClipPose") as ClipPlayback).active_role()
 		(s["roles"] as Dictionary)[role] = true
 		if state != int(_last_state[unit]):
 			var goal: Vector3 = _goal[unit]

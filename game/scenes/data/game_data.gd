@@ -148,6 +148,7 @@ func _make_creature(row: Dictionary) -> _CREATURE_TYPE:
 	type.casting_time_s = float(row.get("casting_time_s", 0.0))
 	type.spell_order = int(row.get("spell_order", 0))
 	type.ability_tags = PackedStringArray(row.get("abilities", []))
+	type.stance_animation = row.get("stance_animation", {}) if row.get("stance_animation", {}) is Dictionary else {}
 	type.idle_animation = row.get("idle_animation", {}) if row.get("idle_animation", {}) is Dictionary else {}
 	type.run_animation = row.get("run_animation", {}) if row.get("run_animation", {}) is Dictionary else {}
 	type.walk_animation = row.get("walk_animation", {}) if row.get("walk_animation", {}) is Dictionary else {}

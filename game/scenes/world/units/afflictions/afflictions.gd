@@ -20,7 +20,7 @@ signal held_changed(held: bool)
 @export var health: Health
 ## F149: the one owner of the frozen pose. While a state that immobilizes is on (petrified, frozen) the clip holds,
 ## on every peer from the replicated mask. Optional: empty = no pose to hold.
-@export var clip_pose: ClipPosePlayer
+@export var clip_pose: ClipPlayback
 ## F149 (REVIEW-030k-b B1): the one owner of the mesh look. The tint of the state with a look (AfflictionType.has_look)
 ## and the highest look_priority among the ones that are on (petrified over frozen); none = off. Every peer, from the
 ## mask, so two states that change in the same tick cannot undress each other. Optional: empty = no look.
@@ -176,7 +176,7 @@ func clip_role() -> String:
 
 ## The role `clip_pose` shows while a state says one: that role when the model has its clip, else idle (the Tween of
 ## the state draws the rest). "" = no state says one. UnitBody and WizardBody both play this.
-func pose_role(clip_pose: ClipPosePlayer) -> String:
+func pose_role(clip_pose: ClipPlayback) -> String:
 	var role := clip_role()
 	if role.is_empty() or clip_pose == null or clip_pose.has_role(role):
 		return role

@@ -872,6 +872,8 @@ POST_IMPORT_SCRIPT = "res://tools/skeletal_post_import.gd"
 
 
 def write_import(path: Path):
+    if path.exists():
+        return  # the editor adds the UID and the imported path there: an existing .import is never rewritten
     path.write_text(import_params(animation=True, import_script=POST_IMPORT_SCRIPT))
 
 
@@ -944,7 +946,7 @@ def export_model(tag: str, out: Path, model_paths: dict, anim_index: dict, exact
         "bind_aabb": {"min": [round(c, 6) for c in lo], "max": [round(c, 6) for c in hi]},
         "skipped_clips": skipped,
         "clips": {
-            t: {"frames": c["frames"], "framerate": c["framerate"], "reference_height": round(c["reference_height"], 6),
+            t: {"frames": c["frames"], "framerate": c["framerate"], "reference_height": round(c["reference_height"], 6) if math.isfinite(c["reference_height"]) else 0.0,
                 "hands": [dict(h, bone_name=bone_name(h["bone"])) for h in c["hands"]],
                 "events": c["events"]}
             for t, c in sorted(clips.items())

@@ -40,6 +40,8 @@ const SUMMONING_ALPHA := 0.36
 const COWER_SCALE := Vector3(1.08, 0.6, 1.08)
 ## sacengine cower (state.d:8164-8171): when the cower clip ends, 1 time in 5 the peasant talks while cowering.
 const TALK_COWER_EVERY := 5
+## RFC-023: 1 rest loop in GESTURE_EVERY ends in the idle gesture (sacengine's 1/5, state.d:7957-7992).
+const GESTURE_EVERY := 5
 ## sacengine dealDamage: damage ×0.05 in rockForm (state.d:8964).
 const ROCK_FORM_DAMAGE := 0.05
 const _RANGED := preload("res://scenes/world/units/ranged_attack.gd")
@@ -149,6 +151,9 @@ var _idle_role := "idle"
 ## Clip role of COWER: "cower", or "talk_cower" after a loop when (hash(name) + loops) % 5 == 0 (no randi()).
 var _cower_role := "cower"
 var _cower_loops := 0
+## RFC-023: after a rest loop (stance1) the body plays the idle gesture 1 time in GESTURE_EVERY, picked like the talk-cower.
+var _idle_loops := 0
+var _gesturing := false
 var _playing_dead := false
 var _stealth := false
 
@@ -205,7 +210,7 @@ func _ready() -> void:
 	if mesh:
 		_mesh_base_pos = mesh.position
 		_mesh_base_rot = mesh.rotation
-		_clip_pose.call("setup", model, _clip_roles(), _mesh_base_pos, _mesh_base_rot)
+		_clip_pose.call("setup", model, UnitClipRoles.for_type(type, model), _mesh_base_pos, _mesh_base_rot)
 	if _clip_pose and _clip_pose.has_signal("clip_looped"):
 		_clip_pose.connect("clip_looped", _on_clip_looped)
 	if _flight:
@@ -417,9 +422,9 @@ func set_playing_dead(on: bool) -> void:
 	if _playing_dead == on:
 		return
 	_playing_dead = on
-	var visual := get_node_or_null("Tilt/Mesh") as GeometryInstance3D
+	var visual := get_node_or_null("Tilt/Mesh") as BodyVisual
 	if visual:
-		visual.transparency = 0.5 if on else 0.0
+		visual.set_fade(0.5 if on else 0.0)
 	if on:
 		halt()
 	_update_clip_state()
@@ -429,9 +434,9 @@ func set_stealth(on: bool) -> void:
 	if _stealth == on:
 		return
 	_stealth = on
-	var visual := get_node_or_null("Tilt/Mesh") as GeometryInstance3D
+	var visual := get_node_or_null("Tilt/Mesh") as BodyVisual
 	if visual:
-		visual.transparency = 0.75 if on else 0.0
+		visual.set_fade(0.75 if on else 0.0)
 	_update_clip_state()
 
 
@@ -459,7 +464,7 @@ func _sync_clip_pose() -> void:
 		return
 	if model.is_empty():
 		return
-	_clip_pose.call("setup", model, _clip_roles(), _mesh_base_pos, _mesh_base_rot)
+	_clip_pose.call("setup", model, UnitClipRoles.for_type(type, model), _mesh_base_pos, _mesh_base_rot)
 
 func _apply_type() -> void:
 	type = GameData.creature(creature_tag)
@@ -874,21 +879,23 @@ func _apply_rock_form() -> void:
 
 
 func _apply_summon_look() -> void:
-	var visual := get_node_or_null("Tilt/Mesh") as GeometryInstance3D
+	var visual := get_node_or_null("Tilt/Mesh") as BodyVisual
 	if visual:
-		visual.transparency = 1.0 - SUMMONING_ALPHA if mode == Mode.SUMMONING else 0.0
+		visual.set_fade(1.0 - SUMMONING_ALPHA if mode == Mode.SUMMONING else 0.0)
 
 
 func _update_clip_state() -> void:
 	if mode != Mode.COWER:
 		_cower_role = "cower"
+	if mode != Mode.IDLE:
+		_gesturing = false
 	_apply_cower_look()
 	if _clip_pose == null:
 		return
 	if not _debug_clip_role.is_empty():
 		_clip_pose.call("play", _debug_clip_role)
 		return
-	var held_role := "idle" if _playing_dead else _afflictions.pose_role(_clip_pose as ClipPosePlayer)
+	var held_role := "idle" if _playing_dead else _afflictions.pose_role(_clip_pose as ClipPlayback)
 	if not held_role.is_empty():
 		_clip_pose.call("play", held_role)
 		return
@@ -904,6 +911,9 @@ func _update_clip_state() -> void:
 		return
 	if mode == Mode.IDLE and _idle_role != "idle" and _has_clip(_idle_role):
 		_clip_pose.call("play", _idle_role)
+		return
+	if _gesturing and mode == Mode.IDLE and _has_clip("gesture"):
+		_clip_pose.call("play", "gesture")
 		return
 	var moving := mode == Mode.MOVE or mode == Mode.CHASE
 	_clip_pose.call("play", "run" if moving else "idle")
@@ -949,6 +959,12 @@ func _has_clip(role: String) -> bool:
 ## A cower (or talk-cower) loop ended: sacengine picks talk-cower 1 time in 5 (state.d:8164-8171); here the pick
 ## is (hash(name) + loops) % 5, the same on every peer and every run.
 func _on_clip_looped(role: String) -> void:
+	if mode == Mode.IDLE and (role == "idle" or role == "gesture"):
+		# sacengine rolls a gesture after each stance loop (state.d:7957-7992); here (hash(name) + loops) % 5, the same on every peer.
+		_idle_loops += 1
+		_gesturing = role == "idle" and posmod(hash(String(name)) + _idle_loops, GESTURE_EVERY) == 0 and _has_clip("gesture")
+		_update_clip_state()
+		return
 	if mode != Mode.COWER or (role != "cower" and role != "talk_cower"):
 		return
 	_cower_loops += 1
@@ -966,45 +982,6 @@ func _apply_cower_look() -> void:
 	var want := COWER_SCALE if squash else Vector3.ONE
 	if pivot.scale != want:
 		pivot.scale = want
-
-
-func _clip_roles() -> Dictionary:
-	var idle_tag := _rest_tag()
-	var run: Dictionary = type.walk_animation if type else {}
-	if int(run.get("frames", 0)) <= 1 and type:
-		run = type.run_animation
-	var attack_tag := ""
-	if type and not type.melee_animations.is_empty():
-		var anim: Dictionary = type.melee_animations[0]
-		attack_tag = str(anim.get("tag", ""))
-	var roles := {
-		"idle": idle_tag,
-		"run": str(run.get("tag", "")),
-		"attack": attack_tag,
-	}
-	# RFC-028c peasant clips (cower, talk_cower, work; empty for every other creature), F116 takeoff/fly/land of a hybrid
-	# flier (only the Flight state plays them) and F120 knock/get_up/fly_damage (only Afflictions/Stunned asks for them).
-	var sets: Array = [[type.extra_animations, ["cower", "talk_cower", "work"]], [type.flight_animations, ["takeoff", "fly", "land"]],
-		[type.stun_animations, ["knock", "get_up", "fly_damage"]]] if type else []
-	for pair: Array in sets:
-		for role: String in pair[1]:
-			var clip: Variant = (pair[0] as Dictionary).get(role, {})
-			var tag := str((clip as Dictionary).get("tag", "")) if clip is Dictionary else ""
-			if not tag.is_empty():
-				roles[role] = tag
-	return roles
-
-
-## F134: the clip a creature stands in at rest. sacengine plays stance1 at the start of every idle loop
-## (state.d:7957-7960: frame 0 -> stance1, or stance2 when damaged) and only now and then a random idle gesture.
-## The body was baked from that rest clip (BodyCatalog pose_source: stance1 for book creatures of level 2+,
-## idle0 below), so the idle role plays it; without one in the clip cache it keeps the idle gesture.
-func _rest_tag() -> String:
-	var idle_tag := str(type.idle_animation.get("tag", "")) if type else ""
-	var rest := str(BodyCatalog.info(model).get("pose_source", ""))
-	if rest.is_empty() or rest == idle_tag or _clip_pose == null:
-		return idle_tag
-	return rest if bool(_clip_pose.call("has_clip", model, rest)) else idle_tag
 
 
 func _lunge() -> void:

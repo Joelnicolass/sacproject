@@ -18,7 +18,7 @@ const FRAME_TICKS := 2
 ## F121: the state whose landing hands over to this one (tumbling.tres). Then it lies hitFloor + getUp, not knock +
 ## getUp (state.d:14175-14212); a client tells it from Afflictions.previous. Optional: empty = always knock + getUp.
 @export var fall_type: AfflictionType
-@export var clip_pose: ClipPosePlayer
+@export var clip_pose: ClipPlayback
 @export var tilt: Node3D
 ## Its body_radius lifts the pivot while it lies, as Corpse.lay_down does, so half the body does not sink.
 @export var visual: Node3D

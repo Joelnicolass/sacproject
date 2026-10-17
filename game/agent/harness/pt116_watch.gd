@@ -142,7 +142,7 @@ func _physics_process(delta: float) -> void:
 			s["ground_pace"] = maxf(float(s["ground_pace"]), pace)
 		if state == Flight.State.TAKEOFF:
 			s["ever_takeoff"] = true
-		var pose := u.get_node_or_null("ClipPose") as ClipPosePlayer
+		var pose := u.get_node_or_null("ClipPose") as ClipPlayback
 		if pose != null:
 			(s["roles"] as Dictionary)[pose.active_role()] = true
 		if bool(u.get("ordered")):

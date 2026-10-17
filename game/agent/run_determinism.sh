@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # RFC-032 032a (F144): the determinism bench. Same match, three clocks, one digest.
-#   agent/run_determinism.sh CASE|all [MODE...]   CASE: s7 s7_npcs s1_trivial f139 f148 (F148: Abomination drops) f121 (F121: push, vortex, implosion) f122 (F122: poison shots) f123 (F123: fire shots) f149 (F149: Silverback freeze) f124 (F124: Gnome ray, Styx blow) f125 (F125: Boulderdash fan, Phoenix heat ray) f126 (F126: Protector) f127 (F127: Halo of Earth) f153 (F153: Breath of life) f128 (F128: Web pull, Cage pull) f129 (F129: Sticky bomb) f130 (F130: Call lightning, Lightning charge) f155 (F155: Viscous oil, ignite) f156 (F156: Bilemites) f131 (F131: Devour) f132 (F132: Quake) f133 (F133: viejas habilidades) f161 (F161: Brainiac y Shrike aturden)   MODE: fixed stress window fixed2 f166 (F166: Locust ray) f162 (F162: Spitfire y Gargoyle, ondas)
+#   agent/run_determinism.sh CASE|all [MODE...]   CASE: s7 s7_npcs s1_trivial f139 f148 (F148: Abomination drops) f121 (F121: push, vortex, implosion) f122 (F122: poison shots) f123 (F123: fire shots) f149 (F149: Silverback freeze) f124 (F124: Gnome ray, Styx blow) f125 (F125: Boulderdash fan, Phoenix heat ray) f126 (F126: Protector) f127 (F127: Halo of Earth) f153 (F153: Breath of life) f128 (F128: Web pull, Cage pull) f129 (F129: Sticky bomb) f130 (F130: Call lightning, Lightning charge) f155 (F155: Viscous oil, ignite) f156 (F156: Bilemites) f131 (F131: Devour) f132 (F132: Quake) f133 (F133: viejas habilidades) f161 (F161: Brainiac y Shrike aturden)   MODE: fixed stress window fixed2 f166 (F166: Locust ray) f162 (F162: Spitfire y Gargoyle, ondas) f177 (F177: mele de grupo) f164 (F164: drenaje de vida)
 #                                                  (default modes: fixed stress window; fixed2 = fixed again, criterion 1)
 #   agent/run_determinism.sh table                 verdict + markdown table from agent/out/det/
 #   agent/run_determinism.sh quick                 short pass for intermediate cuts (see below)
@@ -93,11 +93,11 @@ shift
 MODES=("$@"); [ ${#MODES[@]} -eq 0 ] && MODES=(fixed stress window)
 # `fixed` is the reference: always run it in this invocation, and a verdict needs at least two fresh modes.
 case " ${MODES[*]} " in *" fixed "*) ;; *) MODES=(fixed "${MODES[@]}") ;; esac
-# quick (cortes intermedios, ~3-4 min): s1_quick (IA con hechizos, 0,5 min) en los 3 modos + s7, f139, f148, f121, f122, f123, f149, f124, f125, f126, f127, f153, f128, f129, f130, f155, f156, f131, f132, f133, f161, f166 y f162 solo fixed,
+# quick (cortes intermedios, ~3-4 min): s1_quick (IA con hechizos, 0,5 min) en los 3 modos + s7, f139, f148, f121, f122, f123, f149, f124, f125, f126, f127, f153, f128, f129, f130, f155, f156, f131, f132, f133, f161, f166, f162 y f164 solo fixed,
 # comparados con agent/det_baseline.txt (caso digest). La pasada `all` queda para el cierre de cada RFC.
 if [ "$CASE_ARG" = quick ]; then
   "$0" s1_quick fixed stress window || true
-  "$0" s7 fixed >/dev/null; "$0" f139 fixed >/dev/null; "$0" f148 fixed >/dev/null; "$0" f121 fixed >/dev/null; "$0" f122 fixed >/dev/null; "$0" f123 fixed >/dev/null; "$0" f149 fixed >/dev/null; "$0" f124 fixed >/dev/null; "$0" f125 fixed >/dev/null; "$0" f126 fixed >/dev/null; "$0" f127 fixed >/dev/null; "$0" f153 fixed >/dev/null; "$0" f128 fixed >/dev/null; "$0" f129 fixed >/dev/null; "$0" f130 fixed >/dev/null; "$0" f155 fixed >/dev/null; "$0" f156 fixed >/dev/null; "$0" f131 fixed >/dev/null; "$0" f132 fixed >/dev/null; "$0" f133 fixed >/dev/null; "$0" f161 fixed >/dev/null; "$0" f166 fixed >/dev/null; "$0" f162 fixed >/dev/null
+  "$0" s7 fixed >/dev/null; "$0" f139 fixed >/dev/null; "$0" f148 fixed >/dev/null; "$0" f121 fixed >/dev/null; "$0" f122 fixed >/dev/null; "$0" f123 fixed >/dev/null; "$0" f149 fixed >/dev/null; "$0" f124 fixed >/dev/null; "$0" f125 fixed >/dev/null; "$0" f126 fixed >/dev/null; "$0" f127 fixed >/dev/null; "$0" f153 fixed >/dev/null; "$0" f128 fixed >/dev/null; "$0" f129 fixed >/dev/null; "$0" f130 fixed >/dev/null; "$0" f155 fixed >/dev/null; "$0" f156 fixed >/dev/null; "$0" f131 fixed >/dev/null; "$0" f132 fixed >/dev/null; "$0" f133 fixed >/dev/null; "$0" f161 fixed >/dev/null; "$0" f166 fixed >/dev/null; "$0" f162 fixed >/dev/null; "$0" f177 fixed >/dev/null; "$0" f164 fixed >/dev/null
   ok=1
   while read -r c want; do
     [ -z "$c" ] && continue
@@ -138,6 +138,8 @@ case_args() { # case -> ai_match args (no out/events)
     f161) echo "--rules=res://debug/rules/f161_stun_shots.tres --seed=7 --minutes=0.4" ;;
     f166) echo "--rules=res://debug/rules/f166_locust_ray.tres --seed=7 --minutes=0.3" ;;
     f162) echo "--rules=res://debug/rules/f162_waves.tres --seed=7 --minutes=0.3" ;;
+    f177) echo "--rules=res://debug/rules/f177_melee_group.tres --seed=7 --minutes=0.3" ;;
+    f164) echo "--rules=res://debug/rules/f164_drain.tres --seed=7 --minutes=0.3" ;;
     f124) echo "--rules=res://debug/rules/f124_bolts.tres --seed=7 --minutes=0.5" ;;
     *) return 1 ;;
   esac
@@ -145,8 +147,8 @@ case_args() { # case -> ai_match args (no out/events)
 
 # The Godot child of the godot_run.sh pid: RSS cap, time cap (from the moment Godot starts, not the lock wait),
 # and any other Godot (not ours, not the user's editor) marks the run CONTAMINATED.
-watch() { # runner_pid meta limit_s
-  local runner=$1 meta=$2 limit=$3 start="" g="" rss_max=0 contaminated=0 dog=none
+watch() { # runner_pid meta limit_s log
+  local runner=$1 meta=$2 limit=$3 log=$4 start="" g="" rss_max=0 contaminated=0 dog=none
   while kill -0 "$runner" 2>/dev/null; do
     # Only the Godot child counts (godot_run.sh also spawns mkdir, sleep and godot_busy.sh while it waits).
     [ -z "$g" ] && g=$(ps -axo pid=,ppid=,comm= | awk -v r="$runner" '$2 == r && $3 ~ /(^|\/)Godot$/ {print $1; exit}')
@@ -158,6 +160,10 @@ watch() { # runner_pid meta limit_s
         if [ "$r" -gt "$RSS_LIMIT_KB" ]; then dog="rss_kill"; kill -9 "$g"; fi
       fi
       if [ $(( $(date +%s) - start )) -gt "$limit" ]; then dog="timeout_kill"; kill -9 "$g"; fi
+      # A script that does not compile never starts the match: stop now instead of waiting for the time cap.
+      if [ -n "$log" ] && grep -q -E "Parse Error|Failed to load script|Compile Error" "$log" 2>/dev/null; then
+        dog="script_error_kill"; kill -9 "$g"
+      fi
       local p others=""
       for p in $(ps -axo pid=,comm= | awk '$2 ~ /(^|\/)Godot$|(^|\/)godot4?$/ {print $1}'); do
         [ "$p" = "$g" ] && continue
@@ -186,7 +192,7 @@ for CASE in "${CASES[@]}"; do
     esac
     # shellcheck disable=SC2086
     bash "$ROOT/agent/harness/godot_run.sh" "$BIN" "${GARGS[@]}" --path "$ROOT" res://debug/ai_match.tscn -- $ARGS $IO > "$BASE.log" 2>&1 &
-    P=$!; watch "$P" "$BASE.meta" "$LIMIT"; wait "$P"; code=$?
+    P=$!; watch "$P" "$BASE.meta" "$LIMIT" "$BASE.log"; wait "$P"; code=$?
     echo "$CASE $MODE exit $code $(cat "$BASE.meta")"
     grep -h "SCRIPT ERROR" "$BASE.log" | head -3 | cut -c1-200
   done

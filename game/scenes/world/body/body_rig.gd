@@ -55,6 +55,7 @@ static var _index_loaded := false
 
 var _model_root: Node3D
 var _skeleton: Skeleton3D
+var _fade := 0.0
 ## tag -> Animation of the .glb, as imported. Never edited: variants are copies.
 var _source: Dictionary = {}
 var _role := ""
@@ -129,8 +130,36 @@ func is_loaded() -> bool:
 	return _model_root != null
 
 
+## The instanced model (null before it loads); what changes when the rig loads another one.
+func model_root() -> Node3D:
+	return _model_root
+
+
+## The skinned MeshInstance3D nodes of the loaded model (empty before it loads): what StoneLook dresses and set_fade fades.
+func skinned_meshes() -> Array[MeshInstance3D]:
+	var found: Array[MeshInstance3D] = []
+	if _model_root != null:
+		for node in _model_root.find_children("*", "MeshInstance3D", true, false):
+			found.append(node as MeshInstance3D)
+	return found
+
+
+## GeometryInstance3D.transparency of the whole body (0 opaque, 1 invisible). It does not inherit, so it goes mesh by mesh;
+## a model that loads later gets it too.
+func set_fade(value: float) -> void:
+	_fade = value
+	for mesh in skinned_meshes():
+		mesh.transparency = value
+
+
+## Holds the pose (a petrified body) or lets it move again.
+func set_paused(on: bool) -> void:
+	_tree.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL if on else AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_IDLE
+
+
 ## Plays `role` through the state machine (travel: it blends with xfade). `restart` starts it again from frame 0.
-func play(role: String, restart := false) -> void:
+## `at` > 0 moves the new clip that many seconds in (a clock that is already running when the model shows up).
+func play(role: String, restart := false, at := 0.0) -> void:
 	if _model_root == null:
 		return
 	var wanted := resolve_role(role)
@@ -148,6 +177,8 @@ func play(role: String, restart := false) -> void:
 		playback.travel(wanted)
 	_role = wanted
 	_apply_hands(wanted)
+	if at > 0.0:
+		_tree.advance(at)
 
 
 ## Holds the body at `seconds` of `role`'s clip, outside the state machine (comparisons and captures). The skeleton
@@ -221,6 +252,7 @@ func _reload() -> void:
 	_model_root = root
 	_skeleton = root.find_children("*", "Skeleton3D", true, false)[0] as Skeleton3D
 	_fit_bounds(root, info)
+	set_fade(_fade)
 	_anim.root_node = _anim.get_path_to(root)
 	_tree.root_node = _tree.get_path_to(root)
 	_bind_hands()

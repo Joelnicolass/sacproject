@@ -1,13 +1,9 @@
 @tool
 class_name ClipPosePlayer
-extends Node
+extends ClipPlayback
 
 ## Plays real SXSK clips as per-frame meshes exported by sacengine, baked to .res by tools/bake_clips.gd (027h).
 ## An unbaked frame is built from its OBJ; falls back to the static baked mesh if cache or clip is missing.
-
-## The active clip went past its last frame and started again (RFC-028c). Emitted on the physics tick that wraps,
-## on every peer (the clip clock runs without meshes too); the body picks the next variant from it.
-signal clip_looped(role: String)
 
 const _OBJ := preload("res://scenes/world/obj_mesh.gd")
 
@@ -34,10 +30,6 @@ static var _warm_log := -1
 ## Time per frame for the warm-up queue. A baked frame loads in ~1 ms; an unbaked OBJ costs ~9–12 ms. At least one
 ## is built per frame, so a frame never pays more than one over the budget.
 @export_range(0.0, 16.0, 0.5) var warm_budget_ms := 4.0
-
-## F137 (RFC-030i-b): the pose holds (sacengine petrified, bone.d / state.d:11631-11640): the clock stops, play() does not
-## switch the clip and the frame on the mesh stays. Set by its owner (Petrified) on every peer; off resumes from it.
-var frozen := false
 
 var _cache: Dictionary = {}
 var _cache_loaded := false

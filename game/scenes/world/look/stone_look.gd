@@ -42,6 +42,10 @@ extends Node
 static var _materials: Dictionary = {}
 
 var _dressed: Mesh
+## RFC-023: when `mesh` is a BodyVisual that a BodyRig draws for, the skinned meshes of the rig are dressed instead. The
+## materials they had (OriginalMaterial overrides, not the mesh's own) are kept here to put back: instance id -> Array.
+var _dressed_root: Node
+var _saved: Dictionary = {}
 
 
 func _ready() -> void:
@@ -49,8 +53,18 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	if mesh and mesh.mesh != _dressed:
+	if mesh == null:
+		return
+	var rig := _rig()
+	var stale := (rig.model_root() != _dressed_root) if rig != null else (mesh.mesh != _dressed)
+	if stale:
 		_dress()
+
+
+## The BodyRig that draws `mesh`'s body while it shows a skeleton, else null (the mesh itself is what shows).
+func _rig() -> BodyRig:
+	var visual := mesh as BodyVisual
+	return visual.rig if visual != null and visual.rig != null and visual.rig.is_loaded() else null
 
 
 ## Every knob of the look at once (one redress, whatever changed). Afflictions calls it with the state that is on.
@@ -79,6 +93,10 @@ func _refresh() -> void:
 func _dress() -> void:
 	if mesh == null:
 		return
+	var rig := _rig()
+	if rig != null:
+		_dress_rig(rig)
+		return
 	_dressed = mesh.mesh
 	if _dressed == null or shader == null:
 		return
@@ -86,9 +104,34 @@ func _dress() -> void:
 		mesh.set_surface_override_material(i, _stone_for(_dressed.surface_get_material(i)))
 
 
+func _dress_rig(rig: BodyRig) -> void:
+	_dressed = null
+	_dressed_root = rig.model_root()
+	if shader == null:
+		return
+	for body in rig.skinned_meshes():
+		var id := body.get_instance_id()
+		if not _saved.has(id):
+			var originals := []
+			for i in body.get_surface_override_material_count():
+				originals.append(body.get_surface_override_material(i))
+			_saved[id] = originals
+		var source: Array = _saved[id]
+		for i in source.size():
+			body.set_surface_override_material(i, _stone_for(source[i]))
+
+
 func _undress() -> void:
 	_dressed = null
-	if mesh == null:
+	_dressed_root = null
+	for id: int in _saved:
+		var body := instance_from_id(id) as MeshInstance3D
+		if body != null:
+			var originals: Array = _saved[id]
+			for i in originals.size():
+				body.set_surface_override_material(i, originals[i])
+	_saved.clear()
+	if mesh == null or mesh.mesh == null:
 		return
 	for i in mesh.get_surface_override_material_count():
 		mesh.set_surface_override_material(i, null)

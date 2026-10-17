@@ -29,6 +29,8 @@ extends Resource
 @export var casting_time_s: float = 0.0
 @export var spell_order: int = 0
 @export var ability_tags: PackedStringArray = PackedStringArray()
+## stance1 (slot 0): the rest pose sacengine plays between gestures (state.d:7957-7992). RFC-023: the idle role plays it.
+@export var stance_animation: Dictionary = {}
 ## idle0 from SXSK/SKEL: baseline breathing/stance loop for presentation timing.
 @export var idle_animation: Dictionary = {}
 ## run from SXSK/SKEL: locomotion loop (most creatures use this while moving).

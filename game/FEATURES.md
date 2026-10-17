@@ -1752,3 +1752,34 @@ Deuda:
 Deuda:
 - Las chispas salen también cuando el rayo termina en el aire.
 - No se probó en red.
+
+### F128 y F154 — Web pull del Gremlin y Cage pull del Seraph (RFC-030, cortes 030q-a y 030q-b)
+
+**Piezas:**
+- **`Pull`** (`AbilityEffect`): preparación de 54 ticks y `starts_cooldown = false`. Es un knob nuevo de la base y `ActiveAbility._spend` lo respeta.
+  - `status`: el blanco tiene que ser no aliado, sin Life Shield y estar a ≤ 50 m.
+  - `fire`: tira un rayo de rebote al primer cuerpo vivo del camino.
+- **`Pulling`** (afflicción del usuario, bit 6, `holds`): es el único dueño de la simulación del tirón.
+  - Tira en el último cuadro del clip: aturde 480 ticks y lanza `catapult(−16,5·dir + 0,8175 arriba)`.
+  - Durante una ventana de 25 ticks le pisa la velocidad al blanco con `Tumbling.drive`.
+  - También maneja el tirón extra y el fin.
+  - `stunned`, `petrified`, `frozen` y `tumbling` lo cancelan.
+- **Hilo** (`pull_thread`): hebra de color oscuro para la Web y rayo azul para la Cage, en MIX. Se dibuja con `FxBus.broadcast_scene` y se libera con el bit replicado.
+- **`BodyNudge.fixed()`** (`Afflictions.immobilized()`) es el único dueño de «¿se puede mover?»: `slide`, `push` y `catapult` no mueven a un cuerpo petrificado ni congelado.
+- **Carga:** `ActiveAbility` vuelve a comprobar `mana >= coste` en el tick de carga.
+
+**Cierre (2026-10-17).** La review pidió cambios por B1: un blanco petrificado o congelado se deslizaba. Se corrigió en una ronda y se agregó el carril R (`reviews/REVIEW-RFC-030q.md`).
+- **Rechazos** sin gasto de maná.
+- **Carga:** 54 ticks, maná de 300 a 240, sin enfriamiento.
+- **Web:** tirones en T+162, T+326 y T+490. Termina en la 3.ª ventana con distancia de caja 2,87.
+- **Cage:** 4 tirones y termina en T+815.
+- **Carril R:** con el Druid petrificado por un Basilisk, dos tirones lo dejan en x = 1488,000 (desvío 0).
+- **Vuelo:** el vuelo libre entre ventanas (~11,7 m por ciclo) es fiel a sacengine.
+- **Determinismo:** `f128` da `3a314b14` en fixed, stress y window. `quick` y `rules_suite` dan PASS.
+- **Playtest:** el hilo de la Web se ve (contraste 3,66). El Druid se arrastra a ras del suelo con saltitos de menos de 1 m, fiel al impulso vertical de 0,8175. El blanco termina cerca y el hilo desaparece.
+
+Deuda:
+- La jaula del Seraph se ve como un cable azul; faltan las texturas `cord` y `ltng`. No se dibuja la red alrededor del blanco.
+- El usuario no camina ni gira; tampoco hay clip de disparo.
+- El hilo se suelta antes de tiempo si la latencia pasa de 30 ticks.
+- El Druid queda clavado tras el aturdido que deja la caída, aunque la ventana siga activa. Está pendiente de revisar.

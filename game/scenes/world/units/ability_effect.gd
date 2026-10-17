@@ -9,6 +9,8 @@ extends Node
 
 ## Ticks the body prepares before fire() (sacengine startUsingAbility … shoot tick). 0 = at once (Protector, Life Shield).
 @export var windup_ticks := 0
+## Starts the cooldown when it fires. Off = none (the pull: sacengine returns before setting it, state.d:12738-12739).
+@export var starts_cooldown := true
 ## The preparation comes from the creature's ability clip (see windup()). Off = windup_ticks as is (Protector, Halo: none).
 @export var windup_from_clip := false
 

@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/units/abilities/pull_thread.gd" id="1_thread"]
+
+[sub_resource type="StandardMaterial3D" id="Material_cord"]
+transparency = 1
+blend_mode = 0
+shading_mode = 0
+cull_mode = 2
+albedo_color = Color(0.32, 0.2, 0.08, 1)
+
+[node name="PullThread" type="Node3D"]
+editor_description = "F128 (RFC-030 030q-a): hilo del Web pull del Gremlin (renderer.d:3551-3565). Una cuerda recta del disparo del usuario al centro del blanco, que sale en 20 cuadros y sigue a los dos cuerpos mientras el usuario tira. FxBus.broadcast_scene lo crea con play(user, target, seed). En MIX. Color liso: falta la textura cord del exportador."
+script = ExtResource("1_thread")
+width = 0.1
+fins = 2
+
+[node name="Strand" type="MeshInstance3D" parent="."]
+unique_name_in_owner = true
+top_level = true
+cast_shadow = 0
+material_override = SubResource("Material_cord")

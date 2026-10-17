@@ -1,4 +1,4 @@
-[gd_scene load_steps=56 format=3]
+[gd_scene load_steps=58 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/unit_body.gd" id="1_body"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/life_shield.tscn" id="f126_shield"]
@@ -47,6 +47,8 @@
 [ext_resource type="Resource" path="res://data/afflictions/frozen.tres" id="f149_frozen_type"]
 [ext_resource type="Script" path="res://scenes/world/units/afflictions/affliction.gd" id="f152_affliction"]
 [ext_resource type="Resource" path="res://data/afflictions/using_ability.tres" id="f152_using_type"]
+[ext_resource type="Script" path="res://scenes/world/units/afflictions/pulling.gd" id="f128_pulling"]
+[ext_resource type="Resource" path="res://data/afflictions/pulling.tres" id="f128_pulling_type"]
 [ext_resource type="Script" path="res://scenes/world/units/afflictions/firewalking.gd" id="f152_firewalking"]
 [ext_resource type="Resource" path="res://data/afflictions/firewalking.tres" id="f152_firewalking_type"]
 [ext_resource type="Script" path="res://scenes/world/units/poisoning.gd" id="f122_poisoning"]
@@ -207,6 +209,10 @@ tilt = NodePath("../../Tilt")
 script = ExtResource("f149_frozen")
 type = ExtResource("f149_frozen_type")
 visual = NodePath("../../Tilt/Mesh")
+
+[node name="Pulling" type="Node" parent="Afflictions"]
+script = ExtResource("f128_pulling")
+type = ExtResource("f128_pulling_type")
 
 [node name="UsingAbility" type="Node" parent="Afflictions"]
 script = ExtResource("f152_affliction")

@@ -1132,6 +1132,31 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 - **Árbol:** N `abilities/pull.tscn/.gd` (una escena; `.tres` o `@export` distinto por tag, `state.d:13538`); M `ability_catalog.tres`.
 - **Escena de prueba:** `res://debug/f126_pull.tscn`. **Criterio:** el blanco se acerca X m.
 
+#### 030q-a: Plan (developer) / Resultado
+
+**Plan (developer de 030q-a, 2026-10-17):** el del tech lead en `rfcs/plans/030q-030s-plan.md` §030q-a. Números de `state.d` 10108-10113, 13166-13175, 12592-12605, 12738-12739 y 25434-25519.
+- `Pull` (`AbilityEffect`, `abilities/pull.gd`, escenas `web_pull.tscn` y `cage_pull.tscn`) juzga el blanco (no aliado, sin Life Shield, ≤ 50 m), prepara 54 ticks (carga en el cuadro 27) y en `fire` arranca el `Pulling` del usuario. `AbilityEffect.starts_cooldown` es un knob nuevo de la base y `ActiveAbility._spend` lo respeta (la Web y la Cage lo apagan).
+- `Pulling` (`Affliction`, `pulling.tres`, bit 6, `holds`, `cancels [using_ability]`; nodo `Afflictions/Pulling` en `unit.tscn`) es el único dueño de la simulación: hilo, tirones, ventana de 25 ticks, tirón extra y fin (`_finish()` único). Usa `Stunned.stun_with_cooldown(480)`, `Tumbling.catapult` y el nuevo `Tumbling.drive(v)` (sin `WORKAROUND:`), o `BodyNudge.push` en el suelo. Prioridad −1. `stunned`, `petrified`, `frozen` y `tumbling` agregan `&"pulling"` a `cancels`.
+- Hilo (`pull_thread.gd/.tscn`): `FxBus.broadcast_scene` una vez, en MIX (alfa, nunca aditivo). Catálogo: `"psla"` → `web_pull.tscn`, `"psaa"` → `cage_pull.tscn`. `ai_match` enciende `Pulling.log_pull`. Caso `f128` (0,3 min) en `run_determinism.sh`.
+
+**Resultado (developer de 030q-a, 2026-10-17):** semilla 7, caso `f128` (carril Q, 0,3 min).
+- `f128_expect.py` da `RESULTADO PASS` en fixed, stress y window: rechazos «Blanco inválido» (ticks 18 y 21) y «Fuera de alcance» (24) sin gasto; preparación de 54 ticks, maná 300→240, sin enfriamiento; tirones en T+162/326/490, solo el primero aturde; velocidad horizontal 16,50 y 0,275 m por tick en las ventanas; termina por «cerca» en la 3.ª ventana (tick 541).
+- **Determinismo:** `f128` da `8b230572` en fixed, stress y window y se grabó en `det_baseline.txt`. `quick`: las otras 13 líneas base iguales. `rules_suite` PASS con `--fixed-fps 60`.
+- **Desvío del carril:** el Druid1 pasó de 20 m a 31 m del Gremlin (x −9). Con 20 m el Tumbling del blanco vuela unos 11,7 m por ciclo (la ventana de 6,6 m más el vuelo libre con el amortiguamiento 0,99) y la distancia cierra en la 2.ª ventana; la estimación del plan («6,4 m por ventana») no contaba el vuelo libre. La regla de cierre es la de sacengine y el log la verifica tick a tick. El chequeo de suelo del carril Q pasó de «plano» a «pendiente ≤ 0,1 m por m».
+- **Ventana** (`agent/flows/pt128_play.json`, `agent/harness/pt128_watch.gd`, `run_pt128.sh`, capturas en `agent/out/pt128/play/`): `p1_web_thread` (cuerda marrón oscura entre Gremlin y Druid, luminancia 33 a 84 contra 184 de fondo), `p3_web_druid_air`, `p5_web_end`. El primer hilo era crema (0,93, 0,9, 0,78) y no se distinguía de la nieve (luminancia ~185 en todo el cuadro): pasó a (0,32, 0,2, 0,08) con ancho 0,1.
+- **Pendiente visual:** el Druid en el aire se ve muy chico y el pasto lo tapa; los residuos `rock_dust` del fin casi no se ven.
+
+*Divergencias declaradas:* las de `pulling.gd` (un edificio o un alma en el camino no cambia el blanco, el usuario no se acerca ni gira, sin telaraña ni jaula alrededor del blanco, sin clip de disparo mientras tira); hilo de color liso (`WORKAROUND:` en `pull_thread.gd`: faltan las texturas `cord` y `ltng` del exportador).
+
+#### 030q-b: Plan (developer) / Resultado
+
+**Plan (developer de 030q-b, 2026-10-17):** el del tech lead en `rfcs/plans/030q-030s-plan.md` §030q-b. Es el mismo `Pull` y el mismo `Pulling`: cambian la escena (`cage_pull.tscn`, SPs1 de 102 cuadros: vuelta de 204 ticks, tirones en T+202+204k), el hilo (`cage_thread.tscn`: rayo de 10 tramos, dispersión 2,5 m, cambia de forma cada 6 ticks, crece en 0,5 s) y las chispas del final (`styx_spark`).
+
+**Resultado (developer de 030q-b, 2026-10-17):** semilla 7, caso `f128` (carril C, el mismo caso y los mismos baselines).
+- `f154_expect.py` da `RESULTADO PASS` en fixed, stress y window: 4 tirones en los ticks 236, 440, 644 y 848 (T+202+204k), solo el primero aturde, fin por «4 tirones» en el tick 849 (T+815) con la caja a 10,77 m; Druid5 sigue en el aire y aterriza en el 866 en (1093,48, 1509,99), igual que la réplica. La réplica ahora cuenta que el `Pulling` pisa la velocidad con el empuje (sin elevación) un tick después del 4.º tirón, antes de terminar.
+- **Desvío del carril:** el carril C se mudó a suelo plano en (1100, 1510) (Seraph1 en x −170 / z +240, Druid5 en x −212, 42 m). En el carril de z −50 el suelo sube 4 cm por m y el blanco planeaba 26 m en el primer ciclo, así que la distancia cerraba antes del 4.º tirón con cualquier distancia inicial probada (30, 36, 42 m).
+- **Ventana** (misma corrida): `p2_cage_thread` (rayo azul (0,1, 0,3, 0,95) con quiebres, luminancia 36 a 129 contra 174 de fondo), `p4_cage_druid_air`, `p6_cage_end` (chispas azules en el blanco). El primer hilo era celeste claro y no se distinguía de la nieve.
+
 ### 030r — F129 Sticky bomb y Viscous oil
 - **Árbol:** N `abilities/lob_ability.tscn/.gd` (proyectil de habilidad); M `ability_catalog.tres`.
 - **Escena de prueba:** `res://debug/f127_lobs.tscn`. **Criterio:** daño o efecto en el blanco.

@@ -53,10 +53,16 @@ func _ready() -> void:
 	set_physics_process(false)
 
 
+## Server (or solo): sacengine `fallingVelocity = v` on a body already thrown (the pull sets it each tick of its window).
+func drive(v: Vector3) -> void:
+	if is_on():
+		velocity = v
+
+
 ## Server (or solo): sacengine catapult(side, velocity). True when it is (now or already) thrown.
 func catapult(push: Vector3, side: int) -> bool:
 	var body := _body()
-	if body == null:
+	if body == null or BodyNudge.fixed(body):
 		return false
 	if is_on():
 		velocity += push

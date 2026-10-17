@@ -17,6 +17,8 @@ static func push(body: Node3D, velocity: Vector3) -> bool:
 
 ## The step `offset` of sacengine push / the implosion's slide. True when the body moved.
 static func slide(body: Node3D, offset: Vector3) -> bool:
+	if fixed(body):
+		return false
 	var at := body.global_position + offset
 	if not airborne(body):
 		if not on_land(body, at):
@@ -24,6 +26,13 @@ static func slide(body: Node3D, offset: Vector3) -> bool:
 		at.y = floor_y(body, at)
 	body.global_position = at
 	return true
+
+
+## sacengine effects.fixed (push and catapult do nothing, state.d:8588-8590): a petrified or frozen body. The one answer
+## to «can this body be moved from outside?», asked of its Afflictions.
+static func fixed(body: Node) -> bool:
+	var afflictions := body.get_node_or_null("Afflictions") as Afflictions
+	return afflictions != null and afflictions.immobilized()
 
 
 ## In the air on its own (a flier), not thrown.

@@ -1385,3 +1385,21 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 - `unit_body.gd` queda en 1040 líneas.
 
 *Divergencias declaradas:* el suelo no se curva (la `displacement` de sacengine es render); el look es un anillo de tierra (MIX) más el polvo `dirt`; sin sonido.
+
+#### 030u-b: Plan (developer) / Resultado
+
+**Plan (developer de 030u-b, 2026-10-17):** el del tech lead en `rfcs/plans/030t-030v-plan.md` §030u-b y `rfcs/plans/030t-030u-phase0-diffs.md`. Números de `state.d` 14411-14438, 10693-10725 y `stats.d` 86-90.
+- `MeleeAttack` (ahora con `class_name`): `signal connected(target, was_frozen)`. `was_frozen` se lee antes del daño; la señal sale al final de `_land` aunque el monto sea ≤ 0, y el daño y `struck` quedan envueltos en `if amount > 0`.
+- `Affliction.inflict(spell, from_slot) -> bool` virtual. `Frozen.inflict` y `try_freeze_with_cooldown` comparten `_try`; con `inflict` loguea `congelar X enfriamiento C tirada R congela|rechaza`, con la única tirada (sin tirada con enfriamiento 0, como sacengine). `Frozen.is_frozen(node)` estático.
+- `MeleeOnHit` (`units/melee_on_hit.gd/.tscn`, hijo de `unit.tscn`: `melee`, `body`, `types`): por cada tag de `passive_abilities` con tipo aplica `skip_if_was_frozen` y `refuse_flying` y llama a `inflict`. `static log_on_hit` (`ai_match` lo enciende). `data/passives/yeti_freeze.tres` (`zerf`, `Afflictions/Frozen`, `skip_if_was_frozen`).
+- `Afflictions.life_shield` (socket opcional, asignado en `unit.tscn`): con el escudo encendido `cc_protected()` da true, antes del `shown == 0`.
+- Carril Y en `f132_quake_onhit`: Y1 Yeti1 (−30/−15), T1 Troll1 pacifista (−25/−15), Y2 Yeti2 (−38/−25), T2 Druid2 pacifista (−30/−25); los Yeti `holds_still`. Eventos: Life Shield de Druid2 a 0,3 s, ambos Yeti atacan a 0,5 s (orden `attack`). Verificado con `f158_expect.py --lanes` (cajas reales por especie, cabañas y distancia a la onda del Quake).
+
+**Resultado (developer de 030u-b, 2026-10-17):**
+- `f158_expect.py` PASS y `f132_expect.py` PASS en fixed, stress y window (digest `06b3d897`, igual en los tres; `det_baseline.txt` actualizado). El primer golpe (tick 52) congela a Troll1 750; el golpe del tick 174 rompe el hielo (240) y en 175 aparece `deshielo Troll1 150` sin volver a congelar; los intentos siguientes (c 357 / r 234 rechaza; c 235 / r 261 congela; c 356 / r 108 rechaza) cumplen c ≤ r; Druid2 recibe 7 golpes y nunca se congela.
+- R2: `quick` con las 18 líneas anteriores iguales (`f149` y `f128` no cambian); `rules_suite` PASS con `--fixed-fps 60`.
+- Ventana: `pt158_play` (`pt158_watch.gd`, `run_pt158.sh`, `flows/pt158_play.json`): Troll1 pasa de amarillo a azul hielo tras el golpe (`p1`), Druid2 `libre escudo` (`p2`, encuadre lejano por el Yeti pegado a la cámara), hielo roto en `p3`.
+- **Desvíos del plan:** el carril Y se mudó de x 0 / z −35/−45 (pisaba a J2 y la onda del Quake, 10 m + caja) a x −30..−38 / z −15/−25. El tag `ycrp` tiene 3600 de vida: la cuenta de 750 es del Troll (1600).
+- `unit_body.gd` queda en 1040 líneas.
+
+*Divergencias declaradas:* con enfriamiento 0 no hay tirada ni línea `congelar`; sin sonido.

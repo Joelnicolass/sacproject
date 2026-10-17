@@ -61,14 +61,36 @@ func _ready() -> void:
 		owner_node.health.hit.connect(_on_hit)
 
 
+## The Frozen state under `node` is on (a body that is not a creature or has none: false).
+static func is_frozen(node: Node) -> bool:
+	var frozen := node.get_node_or_null("Afflictions/Frozen") as Frozen if node else null
+	return frozen != null and frozen.is_on()
+
+
+## F158: the on-hit freeze (Yeti zerf). Same as try_freeze_with_cooldown, and it logs the cooldown and the one roll it drew.
+func inflict(spell: SpellType, from_slot: int) -> bool:
+	return _try(spell, from_slot, true)
+
+
 ## Server (or solo): sacengine tryFreezeWithCooldown(wizard, side, target, spell). True when it froze.
 func try_freeze_with_cooldown(spell: SpellType, from_slot: int) -> bool:
+	return _try(spell, from_slot, false)
+
+
+func _try(spell: SpellType, from_slot: int, log_roll: bool) -> bool:
 	var body := _body()
 	if body == null or not _can_cc() or _afflictions().cc_protected():
 		return false
-	if _cooldown > 0 and _cooldown > _roll():
-		print("  congelar: %s en enfriamiento %d" % [str(body.name), _cooldown])
-		return false
+	if _cooldown > 0:
+		## One roll, as sacengine's `cooldown<=0||cooldown<=uniform`: with no cooldown there is none.
+		var roll := _roll()
+		var passes := _cooldown <= roll
+		if log_roll:
+			print("congelar %s enfriamiento %d tirada %d %s (tick %d)" % [str(body.name), _cooldown, roll, "congela" if passes else "rechaza", MatchClock.now()])
+		elif not passes:
+			print("  congelar: %s en enfriamiento %d" % [str(body.name), _cooldown])
+		if not passes:
+			return false
 	var done := freeze(spell, from_slot)
 	_cooldown = max_cooldown_ticks
 	set_physics_process(true)

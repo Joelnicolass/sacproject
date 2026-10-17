@@ -1965,3 +1965,24 @@ Deuda:
 - El Jabberocky no tiene pose de preparación.
 - No hay deformación del terreno, temblor de pantalla ni sonido.
 - El anillo avanza a saltos de tick.
+
+### F158 — El Yeti congela al golpear (RFC-030, corte 030u-b)
+
+**Piezas:**
+- **`MeleeAttack`** ahora tiene `class_name` y emite `connected(target, was_frozen)` después de cada golpe, aunque haga 0.
+- **`MeleeOnHit`** es un componente de `unit.tscn` con `types: Array[OnHitPassiveType]`. Por cada pasiva al golpear, llama a `Affliction.inflict(spell, slot)`. Una pasiva nueva es solo un `.tres` nuevo (`data/passives/yeti_freeze.tres`: `zerf`, `skip_if_was_frozen`).
+- **`Affliction.inflict()`** es virtual. `Frozen.inflict` llama a `try_freeze_with_cooldown` con una sola tirada.
+- **`Afflictions.cc_protected()`** protege con Life Shield (socket `life_shield`), fiel a `ccProtected`. También protege de la petrificación.
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-030u-b.md`).
+- **Congelado:** el primer golpe del Yeti congela al Troll por 750 ticks.
+- **Rotura:** un golpe sobre el Troll congelado rompe el hielo y, en el tick siguiente, sale `deshielo Troll1 150`, sin volver a congelar.
+- **Intentos siguientes:** congela si y solo si c ≤ r (enfriamiento contra tirada).
+- **Life Shield:** el Druid con escudo recibe 7 golpes y nunca se congela.
+- **Determinismo:** `f132` (Q + Y) da `06b3d897` en fixed, stress y window. `quick` no cambia (`f149` y `f128` incluidos, R2). `rules_suite` PASS.
+- **Playtest:** el Troll se ve azul hielo, el hielo se rompe y el Druid con escudo queda libre.
+
+Deuda:
+- Solo Life Shield cuenta como `shielded`. Faltan Skin of Stone, Ethereal Form, Fireform, Protective Swarm y Air Shield.
+- No se evalúa `isApplicable` de la pasiva.
+- El log no distingue «sin tirada» de «congela».

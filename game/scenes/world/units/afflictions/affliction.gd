@@ -14,6 +14,12 @@ func is_on() -> bool:
 	return owner_node != null and type != null and owner_node.is_on(type)
 
 
+## F158: an on-hit passive (MeleeOnHit) or a spell lays this state on the body with `spell` from the side `from_slot`. True when it
+## took hold. Default: this state is not laid that way.
+func inflict(_spell: SpellType, _from_slot: int) -> bool:
+	return false
+
+
 ## The clip role the body plays while it is on ("" = it does not say).
 func clip_role() -> String:
 	return ""

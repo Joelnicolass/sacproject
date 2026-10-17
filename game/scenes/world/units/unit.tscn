@@ -1,4 +1,4 @@
-[gd_scene load_steps=64 format=3]
+[gd_scene load_steps=67 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/unit_body.gd" id="1_body"]
 [ext_resource type="PackedScene" path="res://scenes/world/components/pace_factors.tscn" id="f129_pace"]
@@ -10,6 +10,9 @@
 [ext_resource type="Script" path="res://scenes/world/body_visual.gd" id="2_visual"]
 [ext_resource type="Script" path="res://scenes/world/components/health.gd" id="3_health"]
 [ext_resource type="Script" path="res://scenes/world/units/melee_attack.gd" id="4_melee"]
+[ext_resource type="PackedScene" path="res://scenes/world/units/melee_on_hit.tscn" id="f158_onhit"]
+[ext_resource type="Script" path="res://scenes/data/on_hit_passive_type.gd" id="f158_type"]
+[ext_resource type="Resource" path="res://data/passives/yeti_freeze.tres" id="f158_zerf"]
 [ext_resource type="Script" path="res://scenes/world/units/corpse.gd" id="5_corpse"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/unit_health_bar.tscn" id="6_bar"]
 [ext_resource type="Script" path="res://addons/mp_kit/mp_replicate.gd" id="7_replicate"]
@@ -157,6 +160,11 @@ script = ExtResource("4_melee")
 passive = NodePath("../DamagePassive")
 own_health = NodePath("../Health")
 
+[node name="MeleeOnHit" parent="." node_paths=PackedStringArray("melee", "body") instance=ExtResource("f158_onhit")]
+melee = NodePath("../MeleeAttack")
+body = NodePath("..")
+types = Array[ExtResource("f158_type")]([ExtResource("f158_zerf")])
+
 [node name="DamagePassive" type="Node" parent="." node_paths=PackedStringArray("body", "charge")]
 script = ExtResource("f117_passive")
 body = NodePath("..")
@@ -209,12 +217,13 @@ script = ExtResource("f41_mana_support")
 script = ExtResource("f36_clip")
 mesh_path = NodePath("../Tilt/Mesh")
 
-[node name="Afflictions" type="Node" parent="." node_paths=PackedStringArray("body", "health", "clip_pose", "look")]
+[node name="Afflictions" type="Node" parent="." node_paths=PackedStringArray("body", "health", "clip_pose", "look", "life_shield")]
 script = ExtResource("f120_afflictions")
 body = NodePath("..")
 health = NodePath("../Health")
 clip_pose = NodePath("../ClipPose")
 look = NodePath("Look")
+life_shield = NodePath("../LifeShield")
 
 [node name="Stunned" type="Node" parent="Afflictions" node_paths=PackedStringArray("clip_pose", "tilt", "visual")]
 script = ExtResource("f120_stunned")

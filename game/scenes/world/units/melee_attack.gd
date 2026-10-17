@@ -1,3 +1,4 @@
+class_name MeleeAttack
 extends Node
 
 ## One melee swing at a time, timed by the creature's SXSK attack animation and resolved
@@ -11,6 +12,9 @@ extends Node
 ## touches the unscaled box on the attack tick.
 
 signal struck(target: Node3D, amount: float, hit_chance: float, roll: float)
+## F158: a blow reached its target on the attack tick, whatever the damage roll gave (even 0): the on-hit passives (the Yeti's
+## Freeze) fire here (state.d:14411-14438). `was_frozen`: the target was frozen before the blow took its health.
+signal connected(target: Node3D, was_frozen: bool)
 
 ## Bench log (`ai_match` turns it on; off in the product): one line per blow with the numbers the replica needs (F130).
 static var log_melee := false
@@ -176,6 +180,7 @@ func _land() -> void:
 	var health := target.get_node_or_null("Health") as Health
 	if health == null or health.is_dead():
 		return
+	var was_frozen := Frozen.is_frozen(target)
 	var result := roll_damage(target, _anim)
 	## dealDamage scales melee by rockForm and the other shields too (state.d:8962-8969).
 	var factor := health.shield_factor() * _attack_factor()
@@ -184,10 +189,10 @@ func _land() -> void:
 		print("golpe %s → %s precisión %.1f evasión %.1f facing %.6f pendiente %.6f p %.6f tirada %.6f fuerza %d escala %.4f resistencia %.4f factor %.4f cantidad %.4f (tick %d)" % [
 			_body.name, target.name, result["accuracy"], result["evasion"], result["facing"], result["pending"], result["chance"], result["roll"],
 			type.melee_strength, melee_resistance_scale, result["resistance"], factor, amount, MatchClock.now()])
-	if amount <= 0.0:
-		return
-	health.call("damage", amount, int(_body.get("owner_slot")))
-	struck.emit(target, amount, float(result["chance"]), float(result["roll"]))
+	if amount > 0.0:
+		health.call("damage", amount, int(_body.get("owner_slot")))
+		struck.emit(target, amount, float(result["chance"]), float(result["roll"]))
+	connected.emit(target, was_frozen)
 
 
 func _pick_animation(target: Node3D) -> Dictionary:

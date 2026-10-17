@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BenchRules" load_steps=19 format=3]
+[gd_resource type="Resource" script_class="BenchRules" load_steps=26 format=3]
 
 [ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
 [ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
@@ -121,12 +121,80 @@ label = "J1 vuelve a usar el Quake (Enfriando)"
 slot = 1
 user = "Jabberocky1"
 
+[sub_resource type="Resource" id="Group_Y1"]
+script = ExtResource("2_group")
+tag = "ycrp"
+slot = 1
+count = 1
+columns = 1
+offset_m = -30.0
+offset_z_m = -15.0
+facing_x = 1.0
+holds_still = true
+[sub_resource type="Resource" id="Group_T1"]
+script = ExtResource("2_group")
+tag = "lort"
+slot = 2
+count = 1
+columns = 1
+offset_m = -25.0
+offset_z_m = -15.0
+facing_x = -1.0
+pacifist = true
+[sub_resource type="Resource" id="Group_Y2"]
+script = ExtResource("2_group")
+tag = "ycrp"
+slot = 1
+count = 1
+columns = 1
+offset_m = -38.0
+offset_z_m = -25.0
+facing_x = 1.0
+holds_still = true
+[sub_resource type="Resource" id="Group_T2"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 2
+count = 1
+columns = 1
+offset_m = -30.0
+offset_z_m = -25.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Event_shield_T2"]
+script = ExtResource("3_event")
+at_s = 0.3
+action = "ability"
+label = "T2 se pone el Life Shield (carril Y)"
+slot = 2
+user = "Druid2"
+point = Vector2(1240, 1245)
+
+[sub_resource type="Resource" id="Event_hit_Y1"]
+script = ExtResource("3_event")
+at_s = 0.5
+action = "attack"
+label = "Y1 ataca a T1 (carril Y, congela)"
+slot = 1
+user = "Yeti1"
+target = "Troll1"
+
+[sub_resource type="Resource" id="Event_hit_Y2"]
+script = ExtResource("3_event")
+at_s = 0.5
+action = "attack"
+label = "Y2 ataca a T2 (carril Y, escudo: no congela)"
+slot = 1
+user = "Yeti2"
+target = "Druid2"
+
 [resource]
 script = ExtResource("1_rules")
 match_seed = 7
-groups = Array[ExtResource("2_group")]([SubResource("Group_J1"), SubResource("Group_Q1"), SubResource("Group_Q2"), SubResource("Group_Q3"), SubResource("Group_Q4"), SubResource("Group_Q5"), SubResource("Group_J2")])
+groups = Array[ExtResource("2_group")]([SubResource("Group_J1"), SubResource("Group_Q1"), SubResource("Group_Q2"), SubResource("Group_Q3"), SubResource("Group_Q4"), SubResource("Group_Q5"), SubResource("Group_J2"), SubResource("Group_Y1"), SubResource("Group_T1"), SubResource("Group_Y2"), SubResource("Group_T2")])
 anchor = Vector3(1270, 0, 1270)
 start_paused = true
-events = Array[ExtResource("3_event")]([SubResource("Event_use_J1"), SubResource("Event_use_J2"), SubResource("Event_stun_J2"), SubResource("Event_again_J2"), SubResource("Event_again_J1")])
+events = Array[ExtResource("3_event")]([SubResource("Event_use_J1"), SubResource("Event_use_J2"), SubResource("Event_stun_J2"), SubResource("Event_again_J2"), SubResource("Event_again_J1"), SubResource("Event_shield_T2"), SubResource("Event_hit_Y1"), SubResource("Event_hit_Y2")])
 pending_text = "Quake en pausa"
 ignore_annihilation = true

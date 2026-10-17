@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/quake_ring.gd" id="1_ring"]
+
+[node name="QuakeRing" type="Node3D"]
+editor_description = "F132 (RFC-030 030u-a): onda de tierra del Quake del Jabberocky. Un anillo que sale de los pies y se desvanece en wave_s, siguiendo el suelo; MIX, nunca aditivo. FxBus.broadcast_scene lo lanza en todos los pares. Solo presentación."
+script = ExtResource("1_ring")
+
+[node name="Ring" type="MeshInstance3D" parent="."]
+unique_name_in_owner = true
+cast_shadow = 0

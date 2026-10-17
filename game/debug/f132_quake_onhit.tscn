@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://debug/ai_match.tscn" id="1_match"]
+[ext_resource type="Resource" path="res://debug/rules/f132_quake_onhit.tres" id="2_rules"]
+
+[node name="F132QuakeOnhit" instance=ExtResource("1_match")]
+editor_description = "RFC-030 030u-a (F132). Quake del Jabberocky (mtse, kauq) desde el manantial central (1270, 1270), semilla 7. Carril Q (z -55, movido de +15 porque el cuerpo del Jabberocky pisaba la punta de la cabaña jhut de 1239/1300; los carriles Y de F158 y V de F159 se suman en 030u-b y 030u-c): J1 = Jabberocky1 (slot 1, pacifista) en 20/-55; Q1 = Trogg1 (slot 2) en 25/-55 (5 m); Q2 = Druid1 (slot 1) en 20/-61 (6 m); Q3 = Trogg2 (slot 2) en 28,5/-55 (8,5 m); Q4 = Trogg3 (slot 2) en 9,5/-55 (10,5 m); Q5 = Trogg4 (slot 2) en 20/-67 (12 m); J2 = Jabberocky2 (slot 1) en -5/-34. Todos pacifistas, quietos. J1 usa el Quake a los 0,5 s (T = tick 30: prepara 192 ticks, maná 500->200, sacudida en T+192, enfriamiento 600, aturde Q1 en T+195, Q2 en T+196 y Q3 en T+197; nunca Q4, Q5 ni J1) y a los 4,0 s (Enfriando). J2 lo usa a los 0,5 s, queda aturdido a 1,0 s (se corta en T2+30, sin sacudida ni enfriamiento) y a los 3,3 s da Sin maná (desvío del plan: con el aturdimiento a 1,5 s, que dura 132 ticks, el cuerpo sigue retenido a los 3,0 s y da «Blanco inválido», y a los 3,8 s el maná regenerado ya llega a 300). 0,5 min. Enter (check_tick) arranca. Réplica: agent/tools/f132_expect.py."
+
+[node name="Runner" parent="." index="3"]
+default_rules = ExtResource("2_rules")
+camera_offset = Vector3(10, 28, -70)
+default_minutes = 0.5

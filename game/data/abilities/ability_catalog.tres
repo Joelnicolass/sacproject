@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="AbilityCatalog" load_steps=14 format=3]
+[gd_resource type="Resource" script_class="AbilityCatalog" load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scenes/data/ability_catalog.gd" id="1_catalog"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/abilities/protector.tscn" id="2_protector"]
@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" path="res://scenes/world/units/abilities/bilemites.tscn" id="11_mites"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/abilities/devour.tscn" id="12_devour"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/abilities/rend_soul.tscn" id="13_rend"]
+[ext_resource type="PackedScene" path="res://scenes/world/units/abilities/quake.tscn" id="14_quake"]
 
 [resource]
 script = ExtResource("1_catalog")
@@ -28,5 +29,6 @@ effects = {
 "kcfa": ExtResource("10_oil"),
 "liba": ExtResource("11_mites"),
 "ifna": ExtResource("12_devour"),
-"dner": ExtResource("13_rend")
+"dner": ExtResource("13_rend"),
+"kauq": ExtResource("14_quake")
 }

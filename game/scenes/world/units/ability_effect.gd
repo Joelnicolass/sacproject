@@ -16,6 +16,10 @@ extends Node
 ## F157: which of the creature's two ability clips the preparation reads (shoot_animations[windup_clip]). 1 = shoot1 (Firewalk, Breath
 ## of life, Pull, Sticky bomb: they must not change); 0 = shoot0 (the Styx's Rend Soul prepares its attack clip, 100 ticks).
 @export_range(0, 1) var windup_clip := 1
+## F132: the mana is paid when the preparation starts, not at the shoot tick (sacengine act(), state.d:13495-13510: the Jabberocky's
+## Quake). At the shoot tick ActiveAbility does not check the mana again: fire() and, if it was 0, the cooldown. If the preparation is cut the mana
+## is gone and there is no cooldown. Off = the mana is paid at the shoot tick (Firewalk, Breath, Pull, Sticky, Oil, Mites, Devour, Rend).
+@export var pays_upfront := false
 
 ## Ticks one animation frame lasts (sacengine updates 60 times a second, the clips run at 30).
 const FRAME_TICKS := 2

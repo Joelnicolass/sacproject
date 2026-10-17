@@ -1365,3 +1365,23 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 - `unit_body.gd` queda en 1040 líneas.
 
 *Divergencias declaradas:* la criatura no se acerca ni gira antes de reventar el alma; sin sonido (`pxbf`, lightning); sin las 2 `StyxExplosion` (el look usa el beam `styx` y las 192 chispas de `styx_spark`).
+
+#### 030u-a: Plan (developer) / Resultado
+
+**Plan (developer de 030u-a, 2026-10-17):** el del tech lead en `rfcs/plans/030t-030v-plan.md` §030u-a y `rfcs/plans/030t-030u-phase0-diffs.md`. Números de `state.d` 13495-13510, 13204-13207, 5187-5225, 25716-25759, 8546-8568.
+- `AbilityEffect.pays_upfront` (por defecto false: Firewalk, Breath, Pull, Sticky, Oil, Mites, Devour y Rend no cambian). `ActiveAbility`: `_spend` se parte en `_pay`, `_start_cooldown` y `_log_spent`. Con `pays_upfront`, `_begin_windup` cobra y `_finish_windup` hace `fire()` y el enfriamiento si era 0, sin chequear maná (log `habilidad X enfriamiento N ticks`).
+- `QuakeAbility` (`abilities/quake.tscn/.gd`, `windup_from_clip`, `windup_clip 0`, `pays_upfront`): `fire` imprime `sacudida X` y llama a `QuakeWave.launch` en los pies. `QuakeWave` y `QuakeRing` ya los había dejado la fase 0. Catálogo `"kauq"`; `ai_match` enciende `QuakeWave.log_quake`.
+- `Frozen` usa `SacFloat.f32` (dedupe sin cambio de resultado).
+- Carril Q (z +15) en `debug/f132_quake_onhit.tscn` + `rules/f132_quake_onhit.tres`: J1 = Jabberocky1, Q1 = Trogg1, Q2 = Druid1, Q3 = Trogg2, Q4 = Trogg3, Q5 = Trogg4, J2 = Jabberocky2 (todos pacifistas). Carril verificado contra `high_noon_widgets`, `ntts` y `terrain.bin`. Caso `f132` (0,5 min) en `run_determinism.sh` y su línea en `det_baseline.txt` (19.ª). Ventana: `pt132_watch.gd`, `run_pt132.sh`, `flows/pt132_play.json`.
+
+**Resultado (developer de 030u-a, 2026-10-17):**
+- `f132_expect.py` da `RESULTADO PASS` en fixed, stress y window (digest `e93cbf39`, igual en los tres). T = tick 30 del banco (34 del reloj): «usando habilidad Quake Jabberocky1 192 ticks», maná 500→200; sacudida y enfriamiento 600 en T+192 (226); Q1 aturdido en 229, Q2 en 230, Q3 en 231 (T+195/196/197 del banco); nunca Q4, Q5 ni J1; la onda se libera en 257 (T+223). J1 a los 4,0 s: «Enfriando».
+- `quick` PASS con las 19 líneas base iguales; `rules_suite` PASS con `--fixed-fps 60`. Ventana: `pt132_play` con anillo de tierra expandiéndose (capturas `p3`/`p4`) y los Troggs y el Druid aturdidos (`p7`).
+- **Réplica:** `f132_expect.py` recibió tres correcciones de la fase 0: `CLOCK = 4` sobre los logs de los efectos, los cuerpos se identifican por nombre (el banco los asienta unos dm fuera del punto) y los números de J2 (abajo).
+- **Desvíos del plan:**
+  - J2 se aturde a 1,0 s (no a 1,5 s) y vuelve a usar el Quake a los 3,3 s (no a los 3,0 s). El aturdimiento dura 132 ticks y retiene al cuerpo («Blanco inválido», `use_ability` con `holds()`), y a los 3,8 s el maná regenerado (+34/s) ya pasa de 300. Con 1,0 s y 3,3 s da «Sin maná». El corte sale en T2+30.
+  - `ActiveAbility` detecta la preparación cortada en el tick del corte (antes solo lo veía en el tick del disparo): `preparación cortada` sale a los 64 del reloj. Mismo resultado para Firewalk (`f126`, `f152`): nada se dispara ni se cobra.
+  - `QuakeRing` lleva el reloj de `MatchClock` (no el delta de render) y `lift 0.8` (a 0,12 el pasto lo tapaba).
+- `unit_body.gd` queda en 1040 líneas.
+
+*Divergencias declaradas:* el suelo no se curva (la `displacement` de sacengine es render); el look es un anillo de tierra (MIX) más el polvo `dirt`; sin sonido.

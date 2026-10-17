@@ -100,8 +100,13 @@ func _physics_process(_delta: float) -> void:
 		_stealth_until = 0
 		if _body and _body.has_method("set_stealth"):
 			_body.call("set_stealth", false)
-	if _fire_at >= 0 and now >= _fire_at:
-		_finish_windup()
+	if _fire_at >= 0:
+		## F132: a preparation that something cut (stunned, frozen…) is over at that tick, not at the shoot tick.
+		var using := _using()
+		if using == null or not using.is_on():
+			_cut_windup()
+		elif now >= _fire_at:
+			_finish_windup()
 
 
 func display_name() -> String:
@@ -170,15 +175,24 @@ func use(target_pos: Vector3, target: Node3D) -> String:
 			return BAD_TARGET
 	else:
 		_apply(target)
-	_spend(before, true)
+	_pay()
+	_start_cooldown(true)
+	_log_spent(before)
 	return ""
 
 
-## Charges the mana and starts the cooldown (`force`, or only if it was 0: state.d:12746-12748).
-func _spend(before: float, force: bool) -> void:
+## Charges the mana.
+func _pay() -> void:
 	_mana.call("spend", _cost())
+
+
+## Starts the cooldown (`force`, or only if it was 0: state.d:12746-12748).
+func _start_cooldown(force: bool) -> void:
 	if (_effect == null or _effect.starts_cooldown) and (force or not _cooling()):
 		_ready_at = MatchClock.now() + roundi(ability.cooldown_s * MatchClock.TICKS_PER_SECOND)
+
+
+func _log_spent(before: float) -> void:
 	print("habilidad %s mana %d->%d enfriamiento %d ticks" % [ability.display_name, roundi(before), roundi(_mana_left()), maxi(0, _ready_at - MatchClock.now())])
 
 
@@ -204,15 +218,31 @@ func _begin_windup(target_pos: Vector3, target: Node3D) -> String:
 	_fire_pos = target_pos
 	_fire_target = target
 	print("usando habilidad %s %s %d ticks (tick %d)" % [ability.display_name, str(_body.name), ticks, MatchClock.now()])
+	if _effect.pays_upfront:
+		var before := _mana_left()
+		_pay()
+		_log_spent(before)
 	return ""
+
+
+## The preparation was cut: nothing fires. A mana paid at the start (pays_upfront) stays spent; no cooldown.
+func _cut_windup() -> void:
+	_fire_at = -1
+	print("preparación cortada %s %s (tick %d)" % [ability.display_name, str(_body.name), MatchClock.now()])
 
 
 ## The effect's tick: if the preparation survived, it fires and the mana is spent even when fire() did nothing.
 func _finish_windup() -> void:
 	_fire_at = -1
 	var using := _using()
-	if using == null or not using.is_on():
-		print("preparación cortada %s %s (tick %d)" % [ability.display_name, str(_body.name), MatchClock.now()])
+	var target := _fire_target if is_instance_valid(_fire_target) else null
+	if _effect.pays_upfront:
+		## Paid at the start (act(), 13495-13510): no mana check here; fire(), then the cooldown if it was 0.
+		_effect.fire(_fire_pos, target)
+		_start_cooldown(false)
+		print("habilidad %s enfriamiento %d ticks (tick %d)" % [ability.display_name, maxi(0, _ready_at - MatchClock.now()), MatchClock.now()])
+		if using.is_on():
+			(_body.get_node("Afflictions") as Afflictions).mark(using, false)
 		return
 	var before := _mana_left()
 	if _cost() > before + MANA_EPSILON:
@@ -220,9 +250,10 @@ func _finish_windup() -> void:
 		print("preparación sin maná %s %s (tick %d)" % [ability.display_name, str(_body.name), MatchClock.now()])
 		(_body.get_node("Afflictions") as Afflictions).mark(using, false)
 		return
-	var target := _fire_target if is_instance_valid(_fire_target) else null
 	_effect.fire(_fire_pos, target)
-	_spend(before, false)
+	_pay()
+	_start_cooldown(false)
+	_log_spent(before)
 	if using.is_on():
 		(_body.get_node("Afflictions") as Afflictions).mark(using, false)
 

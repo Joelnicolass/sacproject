@@ -159,9 +159,12 @@ def flat(lanes, a, b):
     return math.hypot(ax - bx, az - bz)
 
 
-def lane_report(lanes, margin=5.0, step=2.5):
+def lane_report(lanes, margin=5.0, step=2.5, half_box=None, big_struct=None):
     """Land under every body and over the rectangle that holds them (no hole), no structure within 11 m of a body, no widget
-    within 6 m. Shared by f131, f157, f132, f158 and f159 (each with its own lanes). Returns ok."""
+    within 6 m. Shared by f131, f157, f132, f158 and f159 (each with its own lanes). Returns ok.
+    half_box (kind -> m, optional): the body's real half width instead of its centre; then no widget within half_box + 2 m and no
+    structure within CLEAR_STRUCTURE_M or, for a tag in big_struct (tag -> radius m), radius + half_box + 2 m. Without it the
+    check is the old centre one."""
     ok = True
     terrain = base.Terrain.load()
     try:
@@ -175,13 +178,16 @@ def lane_report(lanes, margin=5.0, step=2.5):
     for name in lanes:
         x, z = world(lanes, name)
         y = terrain.ground(x, z) if terrain else None
+        hb = (half_box or {}).get(lanes[name][3]) if half_box else None
+        wid_m = CLEAR_WIDGET_M if hb is None else max(CLEAR_WIDGET_M, hb + 2.0)
+        st_m = lambda tag: CLEAR_STRUCTURE_M if hb is None else max(CLEAR_STRUCTURE_M, (big_struct or {}).get(tag, 0.0) + hb + 2.0)
         near = [(s["tag"], round(math.hypot(s["x"] - x, s["z"] - z), 1)) for s in structures
-                if math.hypot(s["x"] - x, s["z"] - z) < CLEAR_STRUCTURE_M]
-        props = [k for k, ps in widgets.items() for p in ps if math.hypot(p[0] - x, p[1] - z) < CLEAR_WIDGET_M]
+                if math.hypot(s["x"] - x, s["z"] - z) < st_m(s["tag"])]
+        props = [k for k, ps in widgets.items() for p in ps if math.hypot(p[0] - x, p[1] - z) < wid_m]
         bad = (terrain is not None and y is None) or near or props
         ok = ok and not bad
         print("carril %-8s (%.1f, %.1f) suelo %s estructuras<%d %s widgets<%d %s %s" % (
-            name, x, z, "?" if y is None else "%.2f" % y, CLEAR_STRUCTURE_M, near, CLEAR_WIDGET_M, props, "MAL" if bad else "ok"))
+            name, x, z, "?" if y is None else "%.2f" % y, CLEAR_STRUCTURE_M, near, wid_m, props, "MAL" if bad else "ok"))
     if terrain:
         xs = [world(lanes, n)[0] for n in lanes]
         zs = [world(lanes, n)[1] for n in lanes]

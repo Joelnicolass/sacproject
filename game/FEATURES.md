@@ -1943,3 +1943,25 @@ Deuda:
 - El estallido no se lee: faltan las 2 `StyxExplosion` y las chispas se pierden sobre la nieve. En el banco, además, un Devour simultáneo justo al lado lo tapa.
 - `fire()` vuelve a chequear el alcance de 90 m al disparar.
 - Sin sonido.
+
+### F132 — Quake del Jabberocky (RFC-030, corte 030u-a)
+
+**Piezas:**
+- **`AbilityEffect.pays_upfront`:** `ActiveAbility` cobra el maná al empezar la preparación, igual que `act()` de sacengine. En el disparo hace `fire()` y pone el enfriamiento si estaba en 0. `_spend` se separó en `_pay`, `_start_cooldown` y `_log_spent`.
+- **Preparación cortada:** ahora se detecta en el tick del corte, no en el del disparo.
+- **`QuakeAbility`** (`kauq`, shoot0, 192 ticks): lanza `QuakeWave` en los pies del Jabberocky.
+  - **`QuakeWave`** corre solo en el servidor. La onda avanza 1,667·f m en float32 (`SacFloat`). En los cuadros 1–5 aturde 480 ticks a todo cuerpo dentro de la banda, de cualquier bando. No hace daño.
+  - **`QuakeRing`** es un anillo de tierra en MIX que sigue el reloj de partida.
+- **`SacFloat`:** dueño único de la emulación float32. `Frozen` también lo usa.
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-030u-a.md`). El playtest encontró a J1 pisando una cabaña: se movió el carril y `--lanes` ahora mide la caja real.
+- **Uso:** maná de 500 a 200 al empezar. La sacudida sale en T+192 con enfriamiento 600.
+- **Aturdidos:** Q1, Q2 (aliado) y Q3 en T+195, T+196 y T+197. Q4, Q5 y J1 nunca quedan aturdidos. La onda se libera en T+223.
+- **J2 cortado:** pierde el maná sin sacudida ni enfriamiento y después da «Sin maná». J1 da «Enfriando».
+- **Determinismo:** `f132` da `b929107e` en fixed, stress y window. `quick` (19 líneas base) y `rules_suite` dan PASS.
+
+**Deuda:**
+- Los aturdidos no se distinguen visualmente, porque la inclinación es provisional.
+- El Jabberocky no tiene pose de preparación.
+- No hay deformación del terreno, temblor de pantalla ni sonido.
+- El anillo avanza a saltos de tick.

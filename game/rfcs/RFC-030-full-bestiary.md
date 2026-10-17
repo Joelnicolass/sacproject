@@ -885,6 +885,44 @@ Después de la corrección:
 
 **Escena de prueba:** `res://debug/f123_big_shots.tscn`. **Criterio:** daño y forma medidos.
 
+**Plan (developer de 030n-a, 2026-10-17):** el del tech lead en `rfcs/plans/030m-030n-plan.md` §030n, sobre 030m-a.
+- `ShotLook.volley` (1 por defecto) y `ShotLook.range_factor` (1 por defecto).
+- `RangedAttack._fire`: en la rama sin `strike`, un bucle de `volley` disparos con la misma dirección (una sola tirada de precisión). Cada paquete es una copia del diccionario, con `volley_index` (−k..k) y `aim_distance` (|apuntado − origen|). `max_distance` pasa a ser `cast_range · range_factor`.
+- `RangedShot.spawn_data`: el paquete con el que nació. Lo lee su `ShotInFlight`.
+- `ShotSplit` (`split_flight.gd/.tscn`, un `ShotInFlight`):
+  - cuenta `max(0, aim_distance − 60)` hacia abajo, a `speed/60` por tick;
+  - el tick en que baja de 0, las laterales giran `índice · 3,5°` alrededor de `Vector3.UP`, después del movimiento de ese tick (el orden de `updateBoulderdashProjectile`, state.d:24729-24755);
+  - el log `abanico …` se enciende con `ShotSplit.log_split` desde `debug/ai_match.gd`.
+- `data/shots/emba.tres`: modelo `rock` (0,45, provisional), caja 0,7, `volley 3`, `range_factor 2`, `in_flight` `split_flight`, `burst_at_range_end` sin impacto (al agotar el alcance no daña), estela `rock_trail` y fx `rock` + `dirt`.
+- `data/shots/rdra.tres`: caja 0,35, `sweep`, `burst_at_range_end` e impacto `heat_ray_impact.tscn` (el del Tickferno).
+- `debug/f125_big_shots.tscn` con los carriles A y B (caso `f125` del banco, 0,3 min) y la réplica `agent/tools/f125_expect.py`.
+
+**Resultado (developer de 030n-a, 2026-10-17):** semilla 7.
+- **C1 Abanico (A):**
+  - salen Shot1, Shot2 y Shot3 con índices −1, 0 y +1, apuntado 68,138 m;
+  - aparece `abanico ±3,5° a los 8.138 m` en el tick 9 de vuelo, con ángulos visto desde arriba de +3,5000°, 0 y −3,5000°;
+  - los tres terminan en el tick 68 sobre Druid2, Druid1 y Druid3, a ≤0,003 m de la réplica (`3 piedras, 0 con diferencias`);
+  - cada Druid recibe `hurt 450.00 direct_ranged` en el mismo tick y no hay piedras que caigan al suelo.
+- **C2 Phoenix (B):**
+  - `fired` en rel 45 y primer cuadro de fuego en rel 91: 45 ticks para unos 45 m (d/60);
+  - `fuego rdra a Druid: 800.0 en 60 cuadros, maná 50.00` y `fuego Druid4 total 732.0 en 61 actualizaciones`, con 12 por tick (`direct_ranged`, sin daño directo);
+  - el drenaje es 50,83 (100 → 49,17). El log muestra `queda 82.50` porque B1 está a 47 m de `FountSouth` (radio 50): el manantial le da 33,33/s mientras arde, igual que en sacengine (`updateCreatureStats`, state.d:14409-14410; el `Fire` no bloquea la regeneración). Criterio C2 enmendado (review m1): se mide el drenaje (−50,83), no el maná final;
+  - el Phoenix no muere (como pide el plan) y vuelve a disparar a los 4 s: el segundo fuego mata a Druid4.
+- **C5 Determinismo:**
+  - `f125` da c06a1501 en fixed, stress y window, y entra en `quick` y en `det_baseline.txt`;
+  - `quick` PASS, con las 9 líneas base sin cambios (`volley 1` y `range_factor 1` son neutros);
+  - `rules_suite` PASS.
+- **Ventana** (`agent/flows/pt125_play.json`, `agent/harness/pt125_watch.gd`, capturas en `agent/out/pt125/`):
+  - `a1`/`a2`: las tres piedras abiertas en abanico hacia los tres Druids (en rel 92 están a z 1222,50 / 1219,82 / 1217,13);
+  - `a3`: el polvo de los tres impactos, con los Druids en 350;
+  - `b1`/`b2`: Druid4 en llamas.
+
+*Desvíos del plan:* ninguno de diseño. El giro sale espejado por los ejes: el índice −1 va hacia +z (A2). Es simétrico, y la réplica usa la misma convención.
+
+*Divergencias declaradas:*
+- Las del plan: el giro usa `Vector3.UP`, el Phoenix tira desde su altura de vuelo sin el tubo de 30 cuadros, y el giro y el polvo usan RNG propio.
+- **El pasto tapa a los Druids** en la captura cercana (`a3`). En `a2` las piedras se ven chicas con la cámara alta.
+
 ### 030o — F126 Catálogo de habilidades + Protector y Firewalk
 
 **Árbol**

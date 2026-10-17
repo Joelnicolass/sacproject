@@ -213,7 +213,7 @@ func _fire(target: Node3D) -> void:
 		"damage": float(attack.damage) * _attack_factor(),
 		"slot": int(_body.get("owner_slot")),
 		"gravity": gravity,
-		"max_distance": INF if ballistic else attack.cast_range,
+		"max_distance": INF if ballistic else attack.cast_range * look.range_factor,
 		"target": str(target.get_path()),
 		"shooter": str(_body.get_path()),
 		## F124: the predicted point without accuracy, and the accuracy, for the strikes that aim again.
@@ -222,8 +222,15 @@ func _fire(target: Node3D) -> void:
 	}
 	if look.strike != null:
 		_strike(look, data)
-	else:
-		spawner.call("spawn_shot", data)
+		return
+	## F125 (RFC-030 030n-a): ShotLook.volley shots with this one direction (one accuracy roll, boulderdashShoot
+	## state.d:11806-11808); each packet says which one it is and how far the aim was (ShotSplit fans them out).
+	var half := (maxi(look.volley, 1) - 1) / 2
+	for index in range(-half, half + 1):
+		var shot := data.duplicate()  # a new Dictionary per shot: the spawner writes its name
+		shot["volley_index"] = index
+		shot["aim_distance"] = offset.length()
+		spawner.call("spawn_shot", shot)
 
 
 ## F124 (RFC-030 030m): a ShotStrike (ShotLook.strike) in place of a flying shot: the Gnome's ray, the Styx's blow.

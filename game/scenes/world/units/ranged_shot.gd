@@ -27,6 +27,10 @@ var look: ShotLook
 ## The shot's SPEL (ranges for its impact); null when GameData has no such tag.
 var ability: AbilityType
 
+## F125: the packet it was spawned with (RangedAttack._fire). Its ShotInFlight reads what the flight needs (ShotSplit:
+## volley_index, aim_distance). Read only.
+var spawn_data: Dictionary = {}
+
 var _traveled := 0.0
 var _spin_axis := Vector3.UP
 var _spin_rate := 0.0
@@ -35,6 +39,7 @@ var _in_flight: ShotInFlight
 
 func setup(data: Dictionary) -> void:
 	name = str(data["name"])
+	spawn_data = data
 	position = Vector3(float(data["x"]), float(data["y"]), float(data["z"]))
 	velocity = Vector3(float(data["vx"]), float(data["vy"]), float(data["vz"]))
 	damage = float(data.get("damage", 0.0))

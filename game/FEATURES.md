@@ -1563,3 +1563,24 @@ Deuda:
 - **Styx gibeado en T:** el golpe no cae (M4).
 - **Caso sin ejercitar:** el tirador que muere en T.
 - **Menores M1-M3:** `source` sin tipo y `shot_origin()` sin caller hasta 030m-b; el watch lee una variable privada.
+
+### F125 — Abanico del Boulderdash y fuego del Phoenix (RFC-030, corte 030n-a)
+
+**Piezas:**
+- **`ShotLook.volley`** (`emba` = 3): `RangedAttack._fire` dispara varias balas con una sola tirada de puntería y le pone a cada una `volley_index` y `aim_distance`.
+- **`ShotLook.range_factor`** (`emba` = 2): multiplica el alcance.
+- **`RangedShot.spawn_data`:** guarda el paquete con que nació el disparo; es de solo lectura.
+- **`ShotSplit`** (un `ShotInFlight`): gira las piedras laterales ±3,5° después de moverlas, en el tick en que `max(0, d−60)` cruza 0.
+- **Phoenix `rdra`:** reusa `heat_ray_impact` (el fuego del Tickferno).
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-030n-a.md`).
+- **Abanico:** ±3,5000° a los 8,138 m. Las 3 piedras pegan en Druid2/1/3 a ≤0,003 m de `f125_expect.py` y hacen 450 cada una.
+- **Phoenix:** 732,0 en 61 actualizaciones, sin daño directo, y drena 50,83 de maná. El Druid termina en 82,5 porque está dentro del radio de `FountSouth`, igual que en sacengine.
+- **Determinismo:** `f125` da `c06a1501` en fixed, stress y window. `quick` PASS sin cambios en las líneas base. `rules_suite` PASS.
+- **Playtest con ventana:** PASS en los 4 puntos (`agent/out/pt125/play/`).
+
+Deuda:
+- **Pasto:** tapa las piedras en vuelo (vuelan a ~1 m) y a los Druids. Viene apareciendo en todos los cortes; conviene un tema aparte (cámara, altura del pasto o recorte alrededor de las unidades).
+- **Giro visual:** cada piedra tiene el suyo; en sacengine lo comparten.
+- **Final del alcance:** `>=` contra `<0` de sacengine.
+- **Phoenix:** sin el tubo de 30 cuadros y dispara desde tierra (deuda de 030e).

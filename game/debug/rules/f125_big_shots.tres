@@ -1,0 +1,91 @@
+[gd_resource type="Resource" script_class="BenchRules" load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
+[ext_resource type="Script" path="res://debug/bench_event.gd" id="3_event"]
+
+[sub_resource type="Resource" id="Group_A_boulderdash"]
+script = ExtResource("2_group")
+tag = "llab"
+slot = 1
+count = 1
+columns = 1
+offset_m = 0.0
+offset_z_m = -50.0
+facing_x = 1.0
+order = "attack_unit"
+order_slot = 2
+
+[sub_resource type="Resource" id="Group_A1_druid"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 2
+count = 1
+columns = 1
+offset_m = 70.0
+offset_z_m = -50.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_A2_druid"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 2
+count = 1
+columns = 1
+offset_m = 70.0
+offset_z_m = -46.34
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_A3_druid"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 2
+count = 1
+columns = 1
+offset_m = 70.0
+offset_z_m = -53.66
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_B_phoenix"]
+script = ExtResource("2_group")
+tag = "grdr"
+slot = 1
+count = 1
+columns = 1
+offset_m = -200.0
+offset_z_m = 195.0
+facing_x = 1.0
+order = "attack_unit"
+order_slot = 2
+
+[sub_resource type="Resource" id="Group_B1_druid"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 2
+count = 1
+columns = 1
+offset_m = -150.0
+offset_z_m = 195.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Event_kill_boulderdash"]
+script = ExtResource("3_event")
+at_s = 6.0
+action = "kill"
+label = "un abanico (carril A)"
+slot = 2
+victim = "Boulderdash1"
+
+[resource]
+script = ExtResource("1_rules")
+match_seed = 7
+groups = Array[ExtResource("2_group")]([SubResource("Group_A_boulderdash"), SubResource("Group_A1_druid"), SubResource("Group_A2_druid"), SubResource("Group_A3_druid"), SubResource("Group_B_phoenix"), SubResource("Group_B1_druid")])
+anchor = Vector3(1270, 0, 1270)
+start_paused = true
+events = Array[ExtResource("3_event")]([SubResource("Event_kill_boulderdash")])
+pending_text = "Disparos grandes en pausa"
+ignore_annihilation = true

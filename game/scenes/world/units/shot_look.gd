@@ -43,6 +43,11 @@ const LOOKS_DIR := "res://data/shots/"
 ## gnome_ray), a blow on the next tick (the Styx's styx_strike). RangedAttack instances it on the server (or solo).
 ## Empty = a RangedShot flies.
 @export var strike: PackedScene
+## F125 (RFC-030 030n-a): shots per fire, one accuracy roll for all (boulderdashShoot fires which = −1, 0, +1,
+## state.d:11806-11808). RangedAttack writes volley_index −k..k and aim_distance in each packet (RangedShot.spawn_data).
+@export_range(1, 9, 2) var volley := 1
+## F125: a straight shot flies range_factor · the SPEL's range (emba 2: remainingDistance = 2·range, state.d:11799).
+@export var range_factor := 1.0
 @export var fallback_color := Color(0.8, 0.7, 0.5)
 @export var fallback_radius := 0.15
 

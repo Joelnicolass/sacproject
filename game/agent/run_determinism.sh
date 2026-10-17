@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # RFC-032 032a (F144): the determinism bench. Same match, three clocks, one digest.
-#   agent/run_determinism.sh CASE|all [MODE...]   CASE: s7 s7_npcs s1_trivial f139 f148 (F148: Abomination drops) f121 (F121: push, vortex, implosion) f122 (F122: poison shots) f123 (F123: fire shots) f149 (F149: Silverback freeze) f124 (F124: Gnome ray, Styx blow) f125 (F125: Boulderdash fan, Phoenix heat ray) f126 (F126: Protector) f127 (F127: Halo of Earth) f153 (F153: Breath of life) f128 (F128: Web pull, Cage pull) f129 (F129: Sticky bomb) f130 (F130: Call lightning, Lightning charge) f155 (F155: Viscous oil, ignite) f156 (F156: Bilemites) f131 (F131: Devour) f132 (F132: Quake) f133 (F133: viejas habilidades)   MODE: fixed stress window fixed2
+#   agent/run_determinism.sh CASE|all [MODE...]   CASE: s7 s7_npcs s1_trivial f139 f148 (F148: Abomination drops) f121 (F121: push, vortex, implosion) f122 (F122: poison shots) f123 (F123: fire shots) f149 (F149: Silverback freeze) f124 (F124: Gnome ray, Styx blow) f125 (F125: Boulderdash fan, Phoenix heat ray) f126 (F126: Protector) f127 (F127: Halo of Earth) f153 (F153: Breath of life) f128 (F128: Web pull, Cage pull) f129 (F129: Sticky bomb) f130 (F130: Call lightning, Lightning charge) f155 (F155: Viscous oil, ignite) f156 (F156: Bilemites) f131 (F131: Devour) f132 (F132: Quake) f133 (F133: viejas habilidades) f161 (F161: Brainiac y Shrike aturden)   MODE: fixed stress window fixed2
 #                                                  (default modes: fixed stress window; fixed2 = fixed again, criterion 1)
 #   agent/run_determinism.sh table                 verdict + markdown table from agent/out/det/
 #   agent/run_determinism.sh quick                 short pass for intermediate cuts (see below)
@@ -93,11 +93,11 @@ shift
 MODES=("$@"); [ ${#MODES[@]} -eq 0 ] && MODES=(fixed stress window)
 # `fixed` is the reference: always run it in this invocation, and a verdict needs at least two fresh modes.
 case " ${MODES[*]} " in *" fixed "*) ;; *) MODES=(fixed "${MODES[@]}") ;; esac
-# quick (cortes intermedios, ~3-4 min): s1_quick (IA con hechizos, 0,5 min) en los 3 modos + s7, f139, f148, f121, f122, f123, f149, f124, f125, f126, f127, f153, f128, f129, f130, f155, f156, f131, f132 y f133 solo fixed,
+# quick (cortes intermedios, ~3-4 min): s1_quick (IA con hechizos, 0,5 min) en los 3 modos + s7, f139, f148, f121, f122, f123, f149, f124, f125, f126, f127, f153, f128, f129, f130, f155, f156, f131, f132, f133 y f161 solo fixed,
 # comparados con agent/det_baseline.txt (caso digest). La pasada `all` queda para el cierre de cada RFC.
 if [ "$CASE_ARG" = quick ]; then
   "$0" s1_quick fixed stress window || true
-  "$0" s7 fixed >/dev/null; "$0" f139 fixed >/dev/null; "$0" f148 fixed >/dev/null; "$0" f121 fixed >/dev/null; "$0" f122 fixed >/dev/null; "$0" f123 fixed >/dev/null; "$0" f149 fixed >/dev/null; "$0" f124 fixed >/dev/null; "$0" f125 fixed >/dev/null; "$0" f126 fixed >/dev/null; "$0" f127 fixed >/dev/null; "$0" f153 fixed >/dev/null; "$0" f128 fixed >/dev/null; "$0" f129 fixed >/dev/null; "$0" f130 fixed >/dev/null; "$0" f155 fixed >/dev/null; "$0" f156 fixed >/dev/null; "$0" f131 fixed >/dev/null; "$0" f132 fixed >/dev/null; "$0" f133 fixed >/dev/null
+  "$0" s7 fixed >/dev/null; "$0" f139 fixed >/dev/null; "$0" f148 fixed >/dev/null; "$0" f121 fixed >/dev/null; "$0" f122 fixed >/dev/null; "$0" f123 fixed >/dev/null; "$0" f149 fixed >/dev/null; "$0" f124 fixed >/dev/null; "$0" f125 fixed >/dev/null; "$0" f126 fixed >/dev/null; "$0" f127 fixed >/dev/null; "$0" f153 fixed >/dev/null; "$0" f128 fixed >/dev/null; "$0" f129 fixed >/dev/null; "$0" f130 fixed >/dev/null; "$0" f155 fixed >/dev/null; "$0" f156 fixed >/dev/null; "$0" f131 fixed >/dev/null; "$0" f132 fixed >/dev/null; "$0" f133 fixed >/dev/null; "$0" f161 fixed >/dev/null
   ok=1
   while read -r c want; do
     [ -z "$c" ] && continue
@@ -135,6 +135,7 @@ case_args() { # case -> ai_match args (no out/events)
     f131) echo "--rules=res://debug/rules/f131_devour_rend.tres --seed=7 --minutes=0.15" ;;
     f132) echo "--rules=res://debug/rules/f132_quake_onhit.tres --seed=7 --minutes=0.5" ;;
     f133) echo "--rules=res://debug/rules/f133_legacy_abilities.tres --seed=7 --minutes=0.3" ;;
+    f161) echo "--rules=res://debug/rules/f161_stun_shots.tres --seed=7 --minutes=0.4" ;;
     f124) echo "--rules=res://debug/rules/f124_bolts.tres --seed=7 --minutes=0.5" ;;
     *) return 1 ;;
   esac

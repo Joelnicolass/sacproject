@@ -1,0 +1,26 @@
+{
+ "scene": "res://debug/f161_stun_shots.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {"press": {"name": "check_tick", "hold": 0.05}},
+  {"wait_until": {"node": "Runner", "prop": "_running", "equals": true, "timeout": 60}},
+  {"wait_until": {"node": "AgentKit/pt161_watch", "prop": "rel", "gte": 3, "timeout": 240}},
+  {"call": {"harness": "pt161_watch", "method": "frame_between", "args": ["Brainiac1", "Troll1", 0, 6, 22]}},
+  {"call": {"harness": "pt161_watch", "method": "state", "args": [["Troll1", "Troll2"]]}},
+  {"shot": "pt/p0_before.png"},
+  {"wait_until": {"node": "AgentKit/pt161_watch", "prop": "rel", "gte": 102, "timeout": 240}},
+  {"call": {"harness": "pt161_watch", "method": "frame_on", "args": ["Troll1", 7, 3, 10]}},
+  {"call": {"harness": "pt161_watch", "method": "state", "args": [["Troll1", "Troll2"]]}},
+  {"shot": "pt/p1_troll1_hit.png"},
+  {"wait_until": {"node": "AgentKit/pt161_watch", "prop": "rel", "gte": 125, "timeout": 240}},
+  {"call": {"harness": "pt161_watch", "method": "frame_on", "args": ["Troll1", 7, 3, 10]}},
+  {"call": {"harness": "pt161_watch", "method": "state", "args": [["Troll1", "Troll2"]]}},
+  {"shot": "pt/p2_troll1_lying.png"},
+  {"call": {"harness": "pt161_watch", "method": "frame_on", "args": ["Troll2", 7, 3, 10]}},
+  {"shot": "pt/p3_troll2_lying.png"},
+  {"wait_until": {"node": "AgentKit/pt161_watch", "prop": "rel", "gte": 230, "timeout": 240}},
+  {"call": {"harness": "pt161_watch", "method": "frame_on", "args": ["Troll1", 7, 3, 10]}},
+  {"call": {"harness": "pt161_watch", "method": "state", "args": [["Troll1", "Troll2"]]}},
+  {"shot": "pt/p4_troll1_up.png"}
+ ]
+}

@@ -7,7 +7,7 @@
     {"assert": {"node": "%SelectionRoster", "prop": "count", "equals": 1}},
     {"assert": {"node": "%SelectionRoster/Ability", "visible": true}},
     {"assert": {"node": "%SelectionRoster", "prop": "ability_tag", "equals": "dihk"}},
-    {"assert": {"node": "%SelectionRoster/Ability/AbilityIcon", "prop": "texture", "contains": "ImageTexture"}},
+    {"assert": {"node": "%SelectionRoster/Ability/AbilityIcon", "prop": "texture", "contains": "res://assets/original/ui/icons/"}},
     {"print": {"node": "Arena/Palk1/ManaPool", "prop": "current"}},
     {"shot": "f79_ability_before.png"},
     {"click": "%SelectionRoster/Ability"},

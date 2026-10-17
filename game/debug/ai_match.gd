@@ -96,6 +96,7 @@ func _ready() -> void:
 	ShotStrike.log_strikes = true  # F124: bench logs the rays and the Styx's blows (off in the product)
 	GroundHug.log_flight = true  # F151: bench logs the Rhinok's flight on the land (off in the product)
 	SpikeWave.log_spikes = true  # F151: bench logs the Rhinok's rings of spikes (off in the product)
+	ActiveAbility.log_ability = true  # R6 (030v-a): bench logs each use of an active ability (off in the product)
 	AbilityEffect.log_effects = true  # F126: bench logs the Protector (off in the product)
 	LifeShield.log_shields = true  # F126: bench logs the life shields (off in the product)
 	Firewalking.log_walk = true  # F152: bench logs the Warmonger's walk (off in the product)

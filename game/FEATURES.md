@@ -2010,3 +2010,20 @@ Deuda:
 - Las lianas son de reserva, sin el modelo `vine`.
 - No hay `healBlocked` ni `shieldBlocked`.
 - La regeneración del port solo corre en reposo.
+
+### F133 — Habilidades viejas al catálogo, primera tanda (RFC-030, corte 030v-a)
+
+**Piezas:**
+- **Life Shield (`hsba`), Run Away (`!nur`) y Divine Sight (`eesd`)** pasan a ser `AbilityEffect` en `scenes/world/units/abilities/` y se registran en `ability_catalog.tres`. Salen sus ramas del `match` de `active_ability.gd` (350 → 312 líneas).
+- **R6:** `ActiveAbility.log_ability` (estático, apagado); solo `ai_match` lo enciende.
+- **Caso `f133`** (`debug/f133_legacy_abilities.*`, `agent/tools/f133_expect.py`): las seis habilidades viejas sobre carriles, en la fila z-80 porque la cabaña `jhut` pisa z+15.
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-030v-a.md`). Sin playtest: es lógica pura.
+- **Digest de `f133`:** se grabó antes de migrar (`bfca4703`) y da lo mismo después, en fixed, stress y window. Como el digest solo ve posiciones, también se comparó el log de habilidades, que es idéntico línea a línea.
+- **Banco:** `quick` igual; `rules_suite` PASS; flows `f29_spit`, `f79_ability` y `pt120_play_dead` PASS.
+- **Desvío:** las tres heredan el rechazo con `UsingAbility` encendido. Ninguna criatura que las tiene prepara habilidades, así que no cambia nada jugable.
+
+Deuda:
+- El flow `final_spit_melee` falla ya en HEAD (timeout en «golpe Earthfling a Druid»); no viene de este corte.
+- Divine Sight desde la UI sigue dando «Blanco inválido» (F165).
+- El comentario de `catalog` en `active_ability.gd:50` quedó viejo; se actualiza en 030v-b.

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="AbilityCatalog" load_steps=15 format=3]
+[gd_resource type="Resource" script_class="AbilityCatalog" load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scenes/data/ability_catalog.gd" id="1_catalog"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/abilities/protector.tscn" id="2_protector"]
@@ -15,6 +15,10 @@
 [ext_resource type="PackedScene" path="res://scenes/world/units/abilities/rend_soul.tscn" id="13_rend"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/abilities/quake.tscn" id="14_quake"]
 
+[ext_resource type="PackedScene" path="res://scenes/world/units/abilities/life_shield_ability.tscn" id="15_shield"]
+[ext_resource type="PackedScene" path="res://scenes/world/units/abilities/run_away.tscn" id="16_run"]
+[ext_resource type="PackedScene" path="res://scenes/world/units/abilities/divine_sight.tscn" id="17_sight"]
+
 [resource]
 script = ExtResource("1_catalog")
 effects = {
@@ -30,5 +34,8 @@ effects = {
 "liba": ExtResource("11_mites"),
 "ifna": ExtResource("12_devour"),
 "dner": ExtResource("13_rend"),
-"kauq": ExtResource("14_quake")
+"kauq": ExtResource("14_quake"),
+"hsba": ExtResource("15_shield"),
+"!nur": ExtResource("16_run"),
+"eesd": ExtResource("17_sight")
 }

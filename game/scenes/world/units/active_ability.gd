@@ -12,8 +12,8 @@ extends Node
 ## ability's own rule. `useAbility` (state.d:13463-13561) drains manaCost and sets the ability
 ## cooldown (cooldown·60 frames, counted down every frame, state.d:13937) when it applies.
 ## Implemented from the active book roster:
-## Rockform (dihk), Run Away (!nur), Play Dead (dedp), Stealth (ivni),
-## Life Shield (hsba), Divine Sight (eesd).
+## Rockform (dihk), Play Dead (dedp), Stealth (ivni). F133: Life Shield (hsba), Run Away (!nur) and Divine Sight (eesd) have
+## an AbilityEffect scene of their own (ability_catalog.tres).
 ##
 ## Rockform (state.d:13052-13065, 25040-25067): the creature stops, drops its orders and turns into a
 ## rock (renderer.d:2084-2091: the rock model at its center, scale 0.55·hit box diagonal, grown over
@@ -29,16 +29,15 @@ const NO_ABILITY := "Sin habilidad"
 
 ## sacengine SpellTag.rockForm.
 const ROCK_FORM := "dihk"
-const RUN_AWAY := "!nur"
 const PLAY_DEAD := "dedp"
 const STEALTH := "ivni"
-const LIFE_SHIELD := "hsba"
-const DIVINE_SIGHT := "eesd"
-const _SPEEDUP_EFFECT := preload("res://scenes/world/spells/speedup_effect.gd")
 ## sacengine manaEpsilon (abilityStatus).
 const MANA_EPSILON := 0.01
 const DEFAULT_STEALTH_S := 5.0
 const DEFAULT_PLAY_DEAD_S := 6.0
+
+## R6 (030v-a): the bench log of every use (mana spent, preparation, cut). `ai_match` turns it on; off in the product.
+static var log_ability := false
 
 @export_group("Rockform")
 ## Baked model of the rock shell (the Rock spell's rock.MRMM).
@@ -125,7 +124,7 @@ func _cooling() -> bool:
 func status(target_pos: Vector3, target: Node3D) -> String:
 	if ability == null or locked:
 		return NO_ABILITY
-	if _effect == null and not [ROCK_FORM, RUN_AWAY, PLAY_DEAD, STEALTH, LIFE_SHIELD, DIVINE_SIGHT].has(ability.tag):
+	if _effect == null and not [ROCK_FORM, PLAY_DEAD, STEALTH].has(ability.tag):
 		return NOT_IMPLEMENTED
 	if _cooling():
 		return COOLING
@@ -140,25 +139,12 @@ func status(target_pos: Vector3, target: Node3D) -> String:
 		ROCK_FORM:
 			if _body.call("is_rock_form"):
 				return BAD_TARGET
-		RUN_AWAY:
-			var speeding := _body.get_node_or_null("SpeedupEffect") != null
-			if speeding:
-				return BAD_TARGET
 		PLAY_DEAD:
 			if _play_dead_until > 0:
 				return BAD_TARGET
 		STEALTH:
 			if _stealth_until > 0:
 				return BAD_TARGET
-		LIFE_SHIELD:
-			var shield := LifeShield.of(_body)
-			if shield == null or shield.is_on():
-				return BAD_TARGET
-		DIVINE_SIGHT:
-			if target == null:
-				return BAD_TARGET
-			if _body.global_position.distance_to(target_pos) > ability.cast_range:
-				return OUT_OF_RANGE
 	return ""
 
 
@@ -193,7 +179,8 @@ func _start_cooldown(force: bool) -> void:
 
 
 func _log_spent(before: float) -> void:
-	print("habilidad %s mana %d->%d enfriamiento %d ticks" % [ability.display_name, roundi(before), roundi(_mana_left()), maxi(0, _ready_at - MatchClock.now())])
+	if log_ability:
+		print("habilidad %s mana %d->%d enfriamiento %d ticks" % [ability.display_name, roundi(before), roundi(_mana_left()), maxi(0, _ready_at - MatchClock.now())])
 
 
 ## The mana an ability costs: exactly the SPEL's (abilityStatus, useAbility: state.d:29584, 13468). 0 (Devour, Play Dead) spends
@@ -217,7 +204,8 @@ func _begin_windup(target_pos: Vector3, target: Node3D) -> String:
 	_fire_at = MatchClock.now() + ticks
 	_fire_pos = target_pos
 	_fire_target = target
-	print("usando habilidad %s %s %d ticks (tick %d)" % [ability.display_name, str(_body.name), ticks, MatchClock.now()])
+	if log_ability:
+		print("usando habilidad %s %s %d ticks (tick %d)" % [ability.display_name, str(_body.name), ticks, MatchClock.now()])
 	if _effect.pays_upfront:
 		var before := _mana_left()
 		_pay()
@@ -228,7 +216,8 @@ func _begin_windup(target_pos: Vector3, target: Node3D) -> String:
 ## The preparation was cut: nothing fires. A mana paid at the start (pays_upfront) stays spent; no cooldown.
 func _cut_windup() -> void:
 	_fire_at = -1
-	print("preparación cortada %s %s (tick %d)" % [ability.display_name, str(_body.name), MatchClock.now()])
+	if log_ability:
+		print("preparación cortada %s %s (tick %d)" % [ability.display_name, str(_body.name), MatchClock.now()])
 
 
 ## The effect's tick: if the preparation survived, it fires and the mana is spent even when fire() did nothing.
@@ -240,14 +229,16 @@ func _finish_windup() -> void:
 		## Paid at the start (act(), 13495-13510): no mana check here; fire(), then the cooldown if it was 0.
 		_effect.fire(_fire_pos, target)
 		_start_cooldown(false)
-		print("habilidad %s enfriamiento %d ticks (tick %d)" % [ability.display_name, maxi(0, _ready_at - MatchClock.now()), MatchClock.now()])
+		if log_ability:
+			print("habilidad %s enfriamiento %d ticks (tick %d)" % [ability.display_name, maxi(0, _ready_at - MatchClock.now()), MatchClock.now()])
 		if using.is_on():
 			(_body.get_node("Afflictions") as Afflictions).mark(using, false)
 		return
 	var before := _mana_left()
 	if _cost() > before + MANA_EPSILON:
 		## sacengine loadOnTick asks mana >= cost at the load tick (12592-12605): short of it, nothing happens and nothing is spent.
-		print("preparación sin maná %s %s (tick %d)" % [ability.display_name, str(_body.name), MatchClock.now()])
+		if log_ability:
+			print("preparación sin maná %s %s (tick %d)" % [ability.display_name, str(_body.name), MatchClock.now()])
 		(_body.get_node("Afflictions") as Afflictions).mark(using, false)
 		return
 	_effect.fire(_fire_pos, target)
@@ -263,17 +254,10 @@ func _apply(target: Node3D) -> void:
 		ROCK_FORM:
 			_body.call("enter_rock_form")
 			FxBus.broadcast("rock_emerge", _body.global_position + Vector3.UP * 0.5)
-		RUN_AWAY:
-			_apply_run_away()
 		PLAY_DEAD:
 			_apply_play_dead()
 		STEALTH:
 			_apply_stealth()
-		LIFE_SHIELD:
-			LifeShield.of(_body).start_for(ability)
-			FxBus.broadcast("heal", _body.global_position + Vector3.UP)
-		DIVINE_SIGHT:
-			_apply_divine_sight(target)
 
 
 ## Every peer, from UnitBody's mode setter.
@@ -314,18 +298,6 @@ func _mana_left() -> float:
 	return float(_mana.get("current")) if _mana else 0.0
 
 
-func _apply_run_away() -> void:
-	if _body.get_node_or_null(_SPEEDUP_EFFECT.NODE_NAME) != null:
-		return
-	var effect: Node = _SPEEDUP_EFFECT.new()
-	effect.name = _SPEEDUP_EFFECT.NODE_NAME
-	effect.call("start", maxf(ability.duration, 1.0))
-	_body.add_child(effect)
-	if _body.has_method("halt"):
-		_body.call("halt")
-	FxBus.broadcast("speedup", _body.global_position + Vector3.UP)
-
-
 func _apply_play_dead() -> void:
 	_play_dead_until = MatchClock.now() + roundi(maxf(ability.duration, DEFAULT_PLAY_DEAD_S) * MatchClock.TICKS_PER_SECOND)
 	if _body.has_method("set_playing_dead"):
@@ -338,13 +310,3 @@ func _apply_stealth() -> void:
 	if _body.has_method("set_stealth"):
 		_body.call("set_stealth", true)
 	FxBus.broadcast("spit_trail", _body.global_position + Vector3.UP)
-
-
-func _apply_divine_sight(target: Node3D) -> void:
-	if target and target.has_method("set_stealth"):
-		target.call("set_stealth", false)
-	if target and target.has_method("clear_special_states"):
-		target.call("clear_special_states")
-	FxBus.broadcast("spit_rock", _body.global_position + Vector3.UP)
-	if target:
-		FxBus.broadcast("spit_dirt", target.global_position + Vector3.UP * 0.5)

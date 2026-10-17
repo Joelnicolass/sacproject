@@ -1421,3 +1421,19 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 - `unit_body.gd` queda en 1040 líneas.
 
 *Divergencias declaradas:* las lianas son un look de reserva (sin el modelo `vine`); un segundo golpe solo extiende el tiempo del mismo juego de lianas; no se bloquean `healBlocked` ni `shieldBlocked`; la catapulta respeta `fixed()` (`Tumbling.catapult` usa `BodyNudge.fixed`, así que un cuerpo enredado no se lanza, como sacengine 8588); la regeneración del port sigue siendo solo en reposo.
+
+#### 030v-a: Plan (developer) / Resultado
+
+**Plan (developer de 030v-a, 2026-10-17):** el del tech lead en `rfcs/plans/030t-030v-plan.md` §030v-a. Refactorización sin cambio de comportamiento. Orden: (0) caso `f133` con el código de antes, (1) R6, (2) migración.
+- **Paso 0:** `debug/f133_legacy_abilities.tscn` + `debug/rules/f133_legacy_abilities.tres` (0,3 min, fila z-80), caso `f133` en `run_determinism.sh` (usage, `case_args`, `quick` en fixed), `agent/tools/f133_expect.py` (lanes + resultado de cada evento + maná y enfriamiento de las seis). Digest grabado en `det_baseline.txt` antes de tocar `active_ability.gd`.
+- **R6:** `static var log_ability := false` en `ActiveAbility`, guarda sus 5 `print`; `debug/ai_match.gd` lo enciende.
+- **Migración:** `LifeShieldAbility` (hsba), `RunAway` (`!nur`) y `DivineSight` (eesd) como `AbilityEffect` en `abilities/`, y 3 entradas nuevas en `data/abilities/ability_catalog.tres`. Se borran del `match` de `active_ability.gd` sus ramas, constantes y `_apply_*`.
+
+**Resultado (developer de 030v-a, 2026-10-17):**
+- Digest de `f133` antes de migrar, en fixed, stress y window: `bfca4703660b6c54783ba3953572075aed30a8e799d5955dde31a1d4fdebd359`. Después de migrar: el mismo en los tres modos, y el log de habilidades (`bench:`, `habilidad`, `escudo`, `ritmo`, `rockform`) es idéntico línea a línea.
+- `f133_expect.py` PASS antes y después: las 11 respuestas de los eventos (ok, Enfriando, Blanco inválido) y el maná y enfriamiento de las seis habilidades.
+- **Desvíos del plan:** (1) la fila es z-80, no z+15: la cabaña `jhut` de 1239/1300 pisa esa fila (lo marca `--lanes`). (2) Los tags son `hsba` (Life Shield), `!nur` (Run Away) y `eesd` (Divine Sight); el prompt decía `eesd` para los dos últimos. (3) Los cinco del slot 1 llevan `holds_still` para que no ataquen al Sylph. (4) El digest hashea posiciones, así que no ve el maná ni los escudos: el criterio se completa con la comparación del log. (5) Divine Sight en el banco da `ok` porque el evento pasa el cuerpo `Sylph1` como blanco; desde la UI sigue dando «Blanco inválido» (F165).
+- Los 3 efectos agregan el nodo `Effect` bajo `ActiveAbility` de Druid, Shrike, Ranger, Flame Minion, Silverback y Frostwolf, y ahora `status()` rechaza con «Blanco inválido» si el cuerpo tiene `UsingAbility` encendido; esas criaturas no preparan nada, así que no cambia.
+- `active_ability.gd`: 350 → 312 líneas. `unit_body.gd` queda en 1040.
+
+*Divergencias declaradas:* Divine Sight desde la UI sigue pidiendo un blanco que el SPEL (flags 0) no da (F165); Rockform, Play Dead y Stealth siguen en el `match` hasta 030v-b.

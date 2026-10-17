@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/units/abilities/divine_sight.gd" id="1_sight"]
+
+[node name="DivineSight" type="Node"]
+editor_description = "F133 (RFC-030 030v-a): efecto propio del Divine Sight del Ranger (eesd). ActiveAbility lo instancia como \"Effect\" desde data/abilities/ability_catalog.tres. Pide blanco y alcance; lo revela. Desde la UI siempre da Blanco inválido (el SPEL tiene flags 0): F165."
+script = ExtResource("1_sight")

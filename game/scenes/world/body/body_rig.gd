@@ -17,8 +17,6 @@ const MODEL_NODE := "Model"
 const EVENTS_PATH := "../../ClipEvents"
 ## The exporter writes the OBJ axes of sacengine; the game draws them with z mirrored (ObjMesh.MIRROR_Z).
 const MIRROR := Vector3(1.0, 1.0, -1.0)
-## Seconds a stepped key is placed before its frame's time (see _resampled).
-const STEP_BIAS_S := 0.0005
 
 ## "model|tag|stepped|looping" -> Animation. One copy per variant, shared by every rig of that model.
 static var _variants: Dictionary = {}
@@ -288,11 +286,15 @@ func _variant(tag: String, looping: bool) -> Animation:
 	var fps := maxf(float(clip.get("framerate", 30)), 1.0)
 	var frames := int(clip.get("frames", 1))
 	var source := _source[tag] as Animation
-	var made := _resampled(source, frames, fps, looping) if stepped else source.duplicate() as Animation
+	var made := source.duplicate() as Animation
 	made.loop_mode = Animation.LOOP_LINEAR if looping else Animation.LOOP_NONE
 	if looping:
 		# The original shows `frames` frames per cycle and wraps: the last key blends into the first.
 		made.length = frames / fps
+	if stepped:
+		# The import keeps every key (tools/skeletal_post_import.gd): holding the nearest one is the original's frame.
+		for track in made.get_track_count():
+			made.track_set_interpolation_type(track, Animation.INTERPOLATION_NEAREST)
 	var event_track := -1
 	for event: Dictionary in clip.get("events", []):
 		if event_track < 0:
@@ -301,36 +303,6 @@ func _variant(tag: String, looping: bool) -> Animation:
 		var at := minf(float(event["frame"]) / fps, made.length)
 		made.track_insert_key(event_track, at, {"method": &"fire", "args": [str(event["kind"])]})
 	_variants[key] = made
-	return made
-
-
-## The clip with one key per original frame, held until the next one (nearest key): the original's frame by frame look.
-## The imported clip cannot do it by itself: the scene importer's animation optimizer drops the keys a linear blend of
-## their neighbours reproduces (a third of them), so holding the previous key would show the wrong pose there. Each
-## frame's value is read from the smooth clip at its exact time. A key sits STEP_BIAS_S before its frame time so the
-## frame is already on at the float32 rounding of its time.
-func _resampled(source: Animation, frames: int, fps: float, looping: bool) -> Animation:
-	var made := Animation.new()
-	made.length = (frames if looping else frames - 1) / fps
-	for track in source.get_track_count():
-		var type := source.track_get_type(track)
-		if type != Animation.TYPE_POSITION_3D and type != Animation.TYPE_ROTATION_3D and type != Animation.TYPE_SCALE_3D:
-			continue
-		var copy := made.add_track(type)
-		made.track_set_path(copy, source.track_get_path(track))
-		made.track_set_interpolation_type(copy, Animation.INTERPOLATION_NEAREST)
-		var count := 1 if source.track_get_key_count(track) == 1 else frames
-		for frame in count:
-			var at := frame / fps
-			var value: Variant
-			match type:
-				Animation.TYPE_POSITION_3D:
-					value = source.position_track_interpolate(track, at)
-				Animation.TYPE_ROTATION_3D:
-					value = source.rotation_track_interpolate(track, at)
-				_:
-					value = source.scale_track_interpolate(track, at)
-			made.track_insert_key(copy, maxf(at - STEP_BIAS_S, 0.0), value)
 	return made
 
 

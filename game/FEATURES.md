@@ -1667,3 +1667,36 @@ Deuda:
 - El print de `ActiveAbility` sigue siempre encendido (R6, 030v).
 - Fuera de alcance rechaza la habilidad en vez de acercarse.
 - Mientras camina, la cápsula sigue en la capa de unidades.
+
+### F127 — Halo of Earth del Rhinok (RFC-030, corte 030p-a)
+
+**Piezas:**
+- **`HaloOfEarthAbility`** (`HRba` en el catálogo): crea el coordinador `HaloOfEarth` en el contenedor de disparos. Corre solo en el servidor, con prioridad −1.
+- **`HaloOfEarth`:** es el único dueño de las 6 rocas.
+  - Nacen en T+1 dentro de la caja ×1,25.
+  - Sin blanco, orbitan con Hermite.
+  - Con blanco, persiguen sumando 3 por tick hasta 30.
+  - Explotan al chocar con un no aliado, al tocar el suelo desde la edad 35 o al cumplir 2100 ticks.
+  - Hacen 600 de daño de hechizo directo.
+  - Usan `MatchSeed.rng(["halo", …])`.
+- **Las rocas** son `RangedShot` (look `halo_rock`, `collides false`) que crea `ShotSpawner.spawn_shot`, que ahora devuelve el nodo. Cada roca usa `RangedShot.touching()`.
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-030p-a.md`).
+- **Gasto:** el maná pasa de 750 a 100 y el enfriamiento es de 2400 ticks.
+- **Blancos:** la roca 0 va a Druid1 y la roca 1 a Trogg2.
+- **Daño:**
+  - Druid1 recibe 600 y después 211 (200 más 11 de regeneración), y muere.
+  - Trogg2 es inmune: recibe 4 golpes de 0.
+  - El aliado y el Druid a 65 m nunca son blanco.
+- **Fin:** el coordinador termina en el tick 248.
+- **Determinismo:** `f127` da `d165115b` en fixed, stress y window. `quick` y `rules_suite` dan PASS.
+- **Playtest:** las rocas en órbita se ven bien y el impacto sobre Druid1 también.
+
+Deuda:
+- Las rocas que persiguen vuelan a ras del suelo y el pasto las tapa (es el corte del pasto, pendiente).
+- Si el Rhinok muere antes de T+1, el coordinador termina (en el motor queda vivo).
+- El choque usa la cápsula en lugar de cajas.
+- La línea de vista es un rayo.
+- La órbita usa un RNG propio.
+- Sin temblor ni sonido.
+- Sin probar en red (R3).

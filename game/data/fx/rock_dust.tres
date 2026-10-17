@@ -17,3 +17,4 @@ scale_max = 3.0
 emission_radius = 0.75
 additive = false
 lit = true
+pool_max = 128

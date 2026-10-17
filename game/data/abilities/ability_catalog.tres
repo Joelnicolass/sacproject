@@ -1,12 +1,14 @@
-[gd_resource type="Resource" script_class="AbilityCatalog" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="AbilityCatalog" load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/data/ability_catalog.gd" id="1_catalog"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/abilities/protector.tscn" id="2_protector"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/abilities/firewalk.tscn" id="3_firewalk"]
+[ext_resource type="PackedScene" path="res://scenes/world/units/abilities/halo_of_earth_ability.tscn" id="4_halo"]
 
 [resource]
 script = ExtResource("1_catalog")
 effects = {
 "HSba": ExtResource("2_protector"),
-"wfhg": ExtResource("3_firewalk")
+"wfhg": ExtResource("3_firewalk"),
+"HRba": ExtResource("4_halo")
 }

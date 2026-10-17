@@ -145,6 +145,11 @@ func _physics_process(delta: float) -> void:
 		queue_free()
 
 
+## The live body not of this shot's side that its box touches now (a coordinator that moves the shot asks it).
+func touching() -> Node3D:
+	return _collision_target()
+
+
 func _collision_target() -> Node3D:
 	var shape := BoxShape3D.new()
 	shape.size = Vector3.ONE * look.hit_size

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # RFC-032 032a (F144): the determinism bench. Same match, three clocks, one digest.
-#   agent/run_determinism.sh CASE|all [MODE...]   CASE: s7 s7_npcs s1_trivial f139 f148 (F148: Abomination drops) f121 (F121: push, vortex, implosion) f122 (F122: poison shots) f123 (F123: fire shots) f149 (F149: Silverback freeze) f124 (F124: Gnome ray, Styx blow) f125 (F125: Boulderdash fan, Phoenix heat ray) f126 (F126: Protector)   MODE: fixed stress window fixed2
+#   agent/run_determinism.sh CASE|all [MODE...]   CASE: s7 s7_npcs s1_trivial f139 f148 (F148: Abomination drops) f121 (F121: push, vortex, implosion) f122 (F122: poison shots) f123 (F123: fire shots) f149 (F149: Silverback freeze) f124 (F124: Gnome ray, Styx blow) f125 (F125: Boulderdash fan, Phoenix heat ray) f126 (F126: Protector) f127 (F127: Halo of Earth)   MODE: fixed stress window fixed2
 #                                                  (default modes: fixed stress window; fixed2 = fixed again, criterion 1)
 #   agent/run_determinism.sh table                 verdict + markdown table from agent/out/det/
 #   agent/run_determinism.sh quick                 short pass for intermediate cuts (see below)
@@ -80,11 +80,11 @@ fi
 CASE_ARG=${1:?usage: run_determinism.sh CASE|all [MODE...] | table}
 shift
 MODES=("$@"); [ ${#MODES[@]} -eq 0 ] && MODES=(fixed stress window)
-# quick (cortes intermedios, ~3-4 min): s1_quick (IA con hechizos, 0,5 min) en los 3 modos + s7, f139, f148, f121, f122, f123, f149, f124, f125 y f126 solo fixed,
+# quick (cortes intermedios, ~3-4 min): s1_quick (IA con hechizos, 0,5 min) en los 3 modos + s7, f139, f148, f121, f122, f123, f149, f124, f125, f126 y f127 solo fixed,
 # comparados con agent/det_baseline.txt (caso digest). La pasada `all` queda para el cierre de cada RFC.
 if [ "$CASE_ARG" = quick ]; then
   "$0" s1_quick fixed stress window || true
-  "$0" s7 fixed >/dev/null; "$0" f139 fixed >/dev/null; "$0" f148 fixed >/dev/null; "$0" f121 fixed >/dev/null; "$0" f122 fixed >/dev/null; "$0" f123 fixed >/dev/null; "$0" f149 fixed >/dev/null; "$0" f124 fixed >/dev/null; "$0" f125 fixed >/dev/null; "$0" f126 fixed >/dev/null
+  "$0" s7 fixed >/dev/null; "$0" f139 fixed >/dev/null; "$0" f148 fixed >/dev/null; "$0" f121 fixed >/dev/null; "$0" f122 fixed >/dev/null; "$0" f123 fixed >/dev/null; "$0" f149 fixed >/dev/null; "$0" f124 fixed >/dev/null; "$0" f125 fixed >/dev/null; "$0" f126 fixed >/dev/null; "$0" f127 fixed >/dev/null
   ok=1
   while read -r c want; do
     [ -z "$c" ] && continue
@@ -112,6 +112,7 @@ case_args() { # case -> ai_match args (no out/events)
     f149) echo "--rules=res://debug/rules/f149_freeze.tres --seed=7 --minutes=0.6" ;;
     f125) echo "--rules=res://debug/rules/f125_big_shots.tres --seed=7 --minutes=0.3" ;;
     f126) echo "--rules=res://debug/rules/f126_protector_firewalk.tres --seed=7 --minutes=0.36" ;;
+    f127) echo "--rules=res://debug/rules/f127_halo_breath.tres --seed=7 --minutes=0.15" ;;
     f124) echo "--rules=res://debug/rules/f124_bolts.tres --seed=7 --minutes=0.5" ;;
     *) return 1 ;;
   esac

@@ -1070,6 +1070,21 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 - **Árbol:** N `abilities/halo_of_earth.tscn/.gd`, `abilities/breath_of_life.tscn/.gd`; M `ability_catalog.tres`.
 - **Escena de prueba:** `res://debug/f125_abilities.tscn`. **Criterio:** efecto medido.
 
+#### 030p-a: Plan (developer) / Resultado
+
+**Plan (developer de 030p-a, 2026-10-17):** el del tech lead en `rfcs/plans/030o-030p-plan.md` §030p-a. Números de `state.d` 13232-13236, 19284-19321, 19212-19270, 19076-19100, 19272-19282, 202-209, 28825 y util.d 554-560.
+- `HaloOfEarthAbility` (`AbilityEffect` sin preparación) pone un coordinador `HaloOfEarth` en el contenedor de disparos; el coordinador (prioridad −1, solo en el servidor) simula las 6 rocas y las mueve; cada roca es un `RangedShot` con `ShotLook halo_rock` (no colisiona, solo se dibuja y se replica). Catálogo: `"HRba": halo_of_earth_ability.tscn` (la clave es el tag; ningún archivo se llama como el tag).
+- `ShotSpawner` pasa a tener `class_name` y `spawn_shot` devuelve el `RangedShot` (null en un cliente); `ranged_shot.gd` expone `touching()`. Los dos `WORKAROUND:` del coordinador se tiparon y se borraron.
+- `ai_match` enciende `HaloOfEarth.log_halo`. `rock_dust.tres` pasa a `pool_max 128` (6 rocas × 30 estelas/s × 0,517 s × 1,25).
+
+**Resultado (developer de 030p-a, 2026-10-17):** semilla 7, caso `f127` (carril C, 0,15 min).
+- `f127_expect.py` da `RESULTADO PASS` en fixed, stress y window: maná 750→100, enfriamiento 2400, 6 rocas en T+1 dentro de la caja ×1,25, roca 0 → Druid1 y roca 1 → Trogg2, persecución ±1 tick, Druid1 recibe 600 y 211 (muere; el 211 es la vida que le quedó tras regenerar 11 en 52 ticks), Trogg2 4 golpes de 0, nunca Trogg1 ni Druid2, fin en el tick 248 (< T+600). La réplica no modela la regeneración, así que el golpe que mata admite hasta 60 más.
+- **Determinismo:** `f127` da `d165115b` en fixed, stress y window y se grabó en `det_baseline.txt`. `quick`: las otras 11 líneas base iguales. `rules_suite` PASS.
+- **Ventana** (`agent/flows/pt127_play.json`, `agent/harness/pt127_watch.gd`, `run_pt127.sh`, capturas en `agent/out/pt127/play/`): `p1_rise` (las 6 rocas, luminancia 20 a 36 contra 120 a 170 de fondo), `p2_orbit` (4 rocas orbitando sobre el Rhinok), `p5_impact` (la explosión de tierra sobre Druid1).
+- **Pendiente visual:** las dos rocas que persiguen vuelan a ras del suelo y la hierba de nieve las tapa en `p3_chase` y `p4_close` (luminancia 158 a 185 contra 174 a 190): en esas capturas no se distinguen del fondo.
+
+*Divergencias declaradas:* las del coordinador (línea de visión por rayo al centro, aliado = mismo slot, RNG de MatchSeed, estela de polvo siempre, sin sacudida ni sonido, edificios sin `Health` no frenan una roca).
+
 ### 030q — F128 Web pull y Cage pull
 - **Árbol:** N `abilities/pull.tscn/.gd` (una escena; `.tres` o `@export` distinto por tag, `state.d:13538`); M `ability_catalog.tres`.
 - **Escena de prueba:** `res://debug/f126_pull.tscn`. **Criterio:** el blanco se acerca X m.

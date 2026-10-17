@@ -1,6 +1,8 @@
-[gd_scene load_steps=33 format=3]
+[gd_scene load_steps=35 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/wizard/wizard_body.gd" id="1_body"]
+[ext_resource type="PackedScene" path="res://scenes/world/components/pace_factors.tscn" id="f129_pace"]
+[ext_resource type="PackedScene" path="res://scenes/world/components/clinging.tscn" id="f129_cling"]
 [ext_resource type="Resource" path="res://scenes/world/walk_step.tres" id="2_step"]
 [ext_resource type="Script" path="res://scenes/world/body_visual.gd" id="3_visual"]
 [ext_resource type="Script" path="res://scenes/world/components/health.gd" id="4_health"]
@@ -84,6 +86,9 @@ properties/13/replication_mode = 2
 properties/14/path = NodePath("Afflictions:shown")
 properties/14/spawn = true
 properties/14/replication_mode = 2
+properties/15/path = NodePath("Clinging:shown")
+properties/15/spawn = true
+properties/15/replication_mode = 2
 
 [node name="Wizard" type="CharacterBody3D"]
 floor_max_angle = 1.4835298
@@ -116,6 +121,14 @@ poisoning = NodePath("../Poisoning")
 script = ExtResource("f122_poisoning")
 body = NodePath("..")
 health = NodePath("../Health")
+
+[node name="PaceFactors" parent="." node_paths=PackedStringArray("body") instance=ExtResource("f129_pace")]
+body = NodePath("..")
+
+[node name="Clinging" parent="." node_paths=PackedStringArray("body", "poisoning", "pace") instance=ExtResource("f129_cling")]
+body = NodePath("..")
+poisoning = NodePath("../Poisoning")
+pace = NodePath("../PaceFactors")
 
 [node name="SoulPurse" type="Node" parent="."]
 script = ExtResource("6_souls")

@@ -8,12 +8,14 @@ extends Resource
 ##   kill   the body named `victim` under %Units dies at that second.
 ##   ability  the body named `user` uses its active ability (like a click) on the point `point` (x, z of the map; the land's
 ##          height is taken) and on the body named `target` when there is one. The refusal goes to the log with the body's name.
+##   attack  F129: the body named `user` (of `slot`) is ordered to attack the body named `target` (Orders.apply_for, like a click);
+##          `point` is where the order is given when there is no target.
 ## `watch` says what the report reads about it: «tracked» (is it in the perception of `from_slot`?), «attacked» (the first
 ## tick a creature of `from_slot` has it as a target, and the first tick it was within sight of one), «untracked» (ticks until
 ## the perception of `from_slot` drops the victim).
 
 @export var at_s := 60.0
-@export_enum("spawn", "kill", "ability", "stun") var action := "spawn"
+@export_enum("spawn", "kill", "ability", "stun", "attack") var action := "spawn"
 @export var label := "event"
 @export var tag := "ycro"
 @export var slot := 1
@@ -31,3 +33,5 @@ extends Resource
 @export var user := ""
 @export var target := ""
 @export var point := Vector2.ZERO
+## F129, action "attack": the order the body is given (Orders.COMMANDS). A pacifist (aggressiveness 0) refuses "attack" and "advance": it walks with "move".
+@export_enum("attack", "move", "advance") var order := "attack"

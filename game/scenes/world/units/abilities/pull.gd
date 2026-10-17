@@ -15,9 +15,6 @@ extends AbilityEffect
 ## fire() (pull, 13166-13175): a ray from the shot origin to the target's center; the first valid body on the way, of any
 ## side, becomes the target. A body, not a structure or a soul (declared in Pulling).
 
-## sacengine updateAnimFactor: a 30 fps clip frame lasts 2 ticks of 60.
-const FRAME_TICKS := 2
-
 ## The frame of the clip where the pull is loaded (`liba`, not exported: SPs1 and LSs1 have it at 27).
 @export var load_frame := 27
 ## Which of the creature's shoot clips it plays (CreatureType.shoot_animations): 0 = shoot1.

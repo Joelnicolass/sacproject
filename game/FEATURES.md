@@ -1783,3 +1783,29 @@ Deuda:
 - El usuario no camina ni gira; tampoco hay clip de disparo.
 - El hilo se suelta antes de tiempo si la latencia pasa de 30 ticks.
 - El Druid queda clavado tras el aturdido que deja la caída, aunque la ventana siga activa. Está pendiente de revisar.
+
+### F129 — Sticky bomb del Ikarus, PaceFactors y Clinging (RFC-030, corte 030r-a)
+
+**Piezas:**
+- **`PaceFactors`** (unidades y magos): único dueño de `speed_factor`, que es el producto de las fuentes ordenadas por nombre. Solo escribe si el valor cambia y corre solo en el servidor. Speedup pasa por acá; el doctor sigue escribiendo directo.
+- **`Clinging`:** guarda lo que tiene pegado cada cuerpo, por tipo y con vencimiento en ticks. Le da `factor^n` a `PaceFactors` y replica `shown` para el look.
+- **`LobAbility`:** el efecto común de las habilidades que lanzan proyectiles. Tiene `shots`, `spread` y `falling`, y usa el RNG `["lob", …]`.
+- **`StickImpact`:** pega la bomba solo a criaturas enemigas que se pueden envenenar.
+- **`ShotAim.origin()`:** compartido.
+- **`AbilityEffect.windup()`:** 2 ticks por cuadro; si el clip no trae `lrba`, usa el último cuadro.
+- **Banco:** acción `attack` con el knob `order`.
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-030r-a.md`).
+- **Lanzamiento:** preparación de 94 ticks; el maná baja de 300 a 240 y el enfriamiento queda en 360.
+- **Bombas:** cada una de las 10 pega o cae al suelo según la réplica (±1). El aliado no recibe ninguna.
+- **Velocidad:** queda en 0,75ⁿ (±2 %) y vuelve a 1,0 cuando se sueltan las bombas, en el tick +601.
+- **Determinismo:** `f129` da `7c69f9b0` en fixed, stress y window. Lo volvió a correr el orquestador después de los ajustes visuales. `quick` (incluidos Speedup y Firewalk en `f126`) y `rules_suite` dan PASS.
+- **Desvíos en el banco:**
+  - La habilidad se usa a los 0,7 s.
+  - El Druid pacifista recibe una orden `move`.
+  - La ventana corre con `--autostart --seed=2`.
+
+Deuda:
+- La esfera ámbar es un placeholder. Las bombas en vuelo se ven chicas y el pasto tapa las pegadas.
+- Una criatura a la que no se le puede pegar frena la bomba (en sacengine la atraviesa).
+- El log `marcha` está dentro de `Clinging`.

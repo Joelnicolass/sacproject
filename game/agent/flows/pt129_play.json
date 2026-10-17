@@ -1,0 +1,275 @@
+{
+ "scene": "res://debug/f129_lobs.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "Runner",
+    "prop": "_running",
+    "equals": true,
+    "timeout": 60
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt129_watch",
+    "prop": "rel",
+    "gte": 3,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt129_watch",
+    "method": "frame_between",
+    "args": [
+     "Ikarus1",
+     "Druid1",
+     0,
+     24,
+     16
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt129_watch",
+    "method": "report",
+    "args": [
+     "Ikarus1",
+     "Druid1"
+    ]
+   }
+  },
+  {
+   "shot": "play/p0_before.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt129_watch",
+    "prop": "rel",
+    "gte": 150,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt129_watch",
+    "method": "frame_between",
+    "args": [
+     "Ikarus1",
+     "Druid1",
+     0,
+     24,
+     16
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt129_watch",
+    "method": "report",
+    "args": [
+     "Ikarus1",
+     "Druid1"
+    ]
+   }
+  },
+  {
+   "shot": "play/p1_in_air.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt129_watch",
+    "prop": "rel",
+    "gte": 170,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt129_watch",
+    "method": "frame_between",
+    "args": [
+     "Ikarus1",
+     "Druid1",
+     0,
+     20,
+     12
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt129_watch",
+    "method": "report",
+    "args": [
+     "Ikarus1",
+     "Druid1"
+    ]
+   }
+  },
+  {
+   "shot": "play/p2_in_air_late.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt129_watch",
+    "prop": "rel",
+    "gte": 200,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt129_watch",
+    "method": "frame_on",
+    "args": [
+     "Druid1",
+     0,
+     3,
+     3.5
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt129_watch",
+    "method": "report",
+    "args": [
+     "Ikarus1",
+     "Druid1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt129_watch",
+    "method": "pixels",
+    "args": [
+     "Druid1"
+    ]
+   }
+  },
+  {
+   "shot": "play/p3_stuck_close.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt129_watch",
+    "prop": "rel",
+    "gte": 300,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt129_watch",
+    "method": "frame_on",
+    "args": [
+     "Druid1",
+     0,
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt129_watch",
+    "method": "report",
+    "args": [
+     "Ikarus1",
+     "Druid1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt129_watch",
+    "method": "pixels",
+    "args": [
+     "Druid1"
+    ]
+   }
+  },
+  {
+   "shot": "play/p4_walking_slow.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt129_watch",
+    "prop": "rel",
+    "gte": 330,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt129_watch",
+    "method": "frame_on",
+    "args": [
+     "Druid1",
+     0,
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt129_watch",
+    "method": "report",
+    "args": [
+     "Ikarus1",
+     "Druid1"
+    ]
+   }
+  },
+  {
+   "shot": "play/p5_walking_slow2.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt129_watch",
+    "prop": "rel",
+    "gte": 790,
+    "timeout": 120
+   }
+  },
+  {
+   "call": {
+    "harness": "pt129_watch",
+    "method": "frame_on",
+    "args": [
+     "Druid1",
+     0,
+     3,
+     3.5
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt129_watch",
+    "method": "report",
+    "args": [
+     "Ikarus1",
+     "Druid1"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt129_watch",
+    "method": "pixels",
+    "args": [
+     "Druid1"
+    ]
+   }
+  },
+  {
+   "shot": "play/p6_released.png"
+  }
+ ]
+}

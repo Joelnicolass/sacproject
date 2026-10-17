@@ -80,6 +80,8 @@ func _fire(event: BenchEvent, tick: int) -> void:
 			print("bench: %s aturde a %s en el tick %d: %s" % [event.label, event.user, tick, body.get_node("Afflictions/Stunned").call("stun_with_cooldown", 120)])
 	elif event.action == "ability":
 		entry["node"] = _use_ability(event, tick)
+	elif event.action == "attack":
+		entry["node"] = _order_attack(event, tick)
 	else:
 		var victim := world.get_node_or_null("%Units/" + event.victim) as Node3D
 		entry["node"] = victim
@@ -100,6 +102,19 @@ func _use_ability(event: BenchEvent, tick: int) -> Node3D:
 	at.y = BodyNudge.ground_y(body, at)
 	var reason: String = body.call("use_ability", at, foe)
 	print("bench: %s usa la habilidad: %s (tick %d)" % [event.user, "ok" if reason.is_empty() else "rechazada, " + reason, tick])
+	return body
+
+
+## F129: `user` is ordered to attack `target` (Orders.apply_for with the event's slot: the same validation as a human's click).
+func _order_attack(event: BenchEvent, tick: int) -> Node3D:
+	var body := world.get_node_or_null("%Units/" + event.user) as Node3D
+	var foe := world.get_node_or_null("%Units/" + event.target) as Node3D if not event.target.is_empty() else null
+	if body == null:
+		push_warning("bench: no hay un cuerpo %s para atacar" % event.user)
+		return null
+	var at := foe.global_position if foe != null else Vector3(event.point.x, 0.0, event.point.y)
+	world.get_node("%Orders").call("apply_for", event.slot, [body], event.order, at, foe if event.order == "attack" else null, 0.0)
+	print("bench: %s ataca a %s (tick %d)" % [event.user, event.target if foe != null else str(event.point), tick])
 	return body
 
 

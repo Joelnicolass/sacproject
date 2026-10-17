@@ -1,6 +1,8 @@
-[gd_scene load_steps=58 format=3]
+[gd_scene load_steps=60 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/unit_body.gd" id="1_body"]
+[ext_resource type="PackedScene" path="res://scenes/world/components/pace_factors.tscn" id="f129_pace"]
+[ext_resource type="PackedScene" path="res://scenes/world/components/clinging.tscn" id="f129_cling"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/life_shield.tscn" id="f126_shield"]
 [ext_resource type="Resource" path="res://data/abilities/ability_catalog.tres" id="f126_catalog"]
 [ext_resource type="Script" path="res://scenes/world/body_visual.gd" id="2_visual"]
@@ -108,6 +110,9 @@ properties/14/replication_mode = 2
 properties/15/path = NodePath("LifeShield:shown")
 properties/15/spawn = true
 properties/15/replication_mode = 2
+properties/16/path = NodePath("Clinging:shown")
+properties/16/spawn = true
+properties/16/replication_mode = 2
 
 [node name="Unit" type="CharacterBody3D"]
 collision_layer = 2
@@ -158,6 +163,14 @@ poisoning = NodePath("../Poisoning")
 script = ExtResource("f122_poisoning")
 body = NodePath("..")
 health = NodePath("../Health")
+
+[node name="PaceFactors" parent="." node_paths=PackedStringArray("body") instance=ExtResource("f129_pace")]
+body = NodePath("..")
+
+[node name="Clinging" parent="." node_paths=PackedStringArray("body", "poisoning", "pace") instance=ExtResource("f129_cling")]
+body = NodePath("..")
+poisoning = NodePath("../Poisoning")
+pace = NodePath("../PaceFactors")
 
 [node name="RangedAttack" type="Node" parent="."]
 script = ExtResource("f29_ranged")

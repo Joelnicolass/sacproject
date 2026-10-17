@@ -254,9 +254,7 @@ func _accuracy() -> float:
 
 ## Where a shot leaves: the body's front at shot_height of its height. Public for a strike that follows its shooter.
 func shot_origin() -> Vector3:
-	var profile: Dictionary = _body.call("melee_profile")
-	var facing: Vector3 = _body.call("facing_flat")
-	return _body.global_position + facing * float(profile.get("reach", 0.35)) + Vector3.UP * float(profile.get("height", 1.8)) * shot_height
+	return ShotAim.origin(_body, shot_height)
 
 
 ## sacengine predictShotTargetPosition: the target's center where it will be when the shot arrives.

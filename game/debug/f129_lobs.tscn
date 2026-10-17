@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://debug/ai_match.tscn" id="1_match"]
+[ext_resource type="Resource" path="res://debug/rules/f129_lobs.tres" id="2_rules"]
+
+[node name="F129Lobs" instance=ExtResource("1_match")]
+editor_description = "RFC-030 030r-a (F129). Sticky bomb del Ikarus (acia) desde el manantial central (1270, 1270), semilla 7. Carril S (z +15): Ikarus1 (slot 1, 300 de maná) en x -40 mirando a +x; Druid1 enemigo en x -15 (25 m, el blanco), Trogg1 enemigo en x -13 / z +17, Druid2 aliado en x -8 / z +19 (no recibe ninguna). La habilidad apunta a Druid1 a los 0,7 s (a los 0,5 s con la semilla 7 ninguna bomba le pega): prepara 94 ticks, a los T+94 maná 300->240 y enfriamiento 360, lanza 10 bombas (dispersión 0,2, gravedad 20) que se pegan (velocidad x0,75 por bomba, se sueltan a los +601) o tocan el suelo. Druid1 ataca al Ikarus a los 3,5 s para medir su paso con las bombas pegadas. 0,3 min. Enter (check_tick) arranca. Réplica: agent/tools/f129_expect.py."
+
+[node name="Runner" parent="." index="3"]
+default_rules = ExtResource("2_rules")
+camera_offset = Vector3(0, 60, -40)
+default_minutes = 0.3

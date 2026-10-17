@@ -99,6 +99,8 @@ func _ready() -> void:
 	LifeShield.log_shields = true  # F126: bench logs the life shields (off in the product)
 	Firewalking.log_walk = true  # F152: bench logs the Warmonger's walk (off in the product)
 	HaloOfEarth.log_halo = true  # F127: bench logs the Rhinok's rocks (off in the product)
+	Clinging.log_cling = true  # F129: bench logs the Sticky bombs and what they slow (off in the product)
+	PaceFactors.log_pace = true  # F129: bench logs the factors of speed_factor (off in the product)
 	Pulling.log_pull = true  # F128: bench logs the pulls (off in the product)
 	BreathOfLife.log_breath = true  # F153: bench logs the Dragon's breath (off in the product)
 	FastRevive.log_revive = true  # F153: bench logs the fast revival (off in the product)

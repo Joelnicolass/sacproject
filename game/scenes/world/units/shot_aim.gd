@@ -15,3 +15,11 @@ static func scatter(direction: Vector3, accuracy: float, rng: RandomNumberGenera
 	var azimuth := angle * azimuth_roll * azimuth_roll * azimuth_roll
 	var elevation := 0.1 * angle * elevation_roll * elevation_roll * elevation_roll
 	return direction.rotated(Vector3.RIGHT, elevation).rotated(Vector3.UP, azimuth)
+
+
+## Where a shot leaves a body: its front (melee_profile reach along facing_flat) at `height_fraction` of its height. The one
+## owner of the origin: RangedAttack.shot_origin (its shot_height) and LobAbility (its own).
+static func origin(body: Node3D, height_fraction: float) -> Vector3:
+	var profile: Dictionary = body.call("melee_profile")
+	var facing: Vector3 = body.call("facing_flat")
+	return body.global_position + facing * float(profile.get("reach", 0.35)) + Vector3.UP * float(profile.get("height", 1.8)) * height_fraction

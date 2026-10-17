@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="AbilityCatalog" load_steps=8 format=3]
+[gd_resource type="Resource" script_class="AbilityCatalog" load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scenes/data/ability_catalog.gd" id="1_catalog"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/abilities/protector.tscn" id="2_protector"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://scenes/world/units/abilities/breath_of_life_ability.tscn" id="5_breath"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/abilities/web_pull.tscn" id="6_web"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/abilities/cage_pull.tscn" id="7_cage"]
+[ext_resource type="PackedScene" path="res://scenes/world/units/abilities/sticky_bomb.tscn" id="8_sticky"]
 
 [resource]
 script = ExtResource("1_catalog")
@@ -16,5 +17,6 @@ effects = {
 "HRba": ExtResource("4_halo"),
 "filb": ExtResource("5_breath"),
 "psla": ExtResource("6_web"),
-"psaa": ExtResource("7_cage")
+"psaa": ExtResource("7_cage"),
+"acia": ExtResource("8_sticky")
 }

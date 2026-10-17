@@ -2127,7 +2127,7 @@ Deuda:
 - **`data/shots/zbba.tres`:** `ShotLook` con `strike = locust_ray.tscn` y sin `impact`, así que el daño sale por `ShotImpact.land` (directo, 200 · resistencia directa del blanco).
 - **`strikes/locust_ray.tscn`:** `RayStrike` de una ráfaga, `foes_only = false` (Health decide el fuego amigo), `beam = locust_ray`. Reusa el rayo del Gnome sin código nuevo.
 - **`RayStrike.miss_fraction`** (`@export`, 1 por defecto; Locust 0,5): fracción del rayo que se dibuja cuando no encuentra nada. Solo visual; el Gnome y el Warmonger no cambian.
-- **`data/fx/beams/locust_ray.tres`:** beam provisorio (atlas `ltn2`, una banda fina de 0,2 s).
+- **`data/fx/beams/locust_ray.tres`:** beam provisorio (atlas alfa `gmfl_a` en MIX, vida 0,267 s). Un rayo que frena en el suelo se dibuja completo; en sacengine el terreno cuenta como «none» y se dibuja a 0,5 (deuda del beam).
 - **Banco:** `debug/f166_locust_ray.tscn`, `rules/f166_locust_ray.tres`, `agent/tools/f166_expect.py`, caso `f166` en `run_determinism.sh` (solo fixed en `quick`) y en `det_baseline.txt` (`5a402302`), `ai_match.camera_target_offset` (la cámara mira la fila, no el manantial) y `agent/run_f166.sh` + flow para las capturas.
 - **Beam:** `locust_ray` usa el atlas alfa `gmfl_a` en `MIX` (nada aditivo sobre nieve); es provisorio.
 

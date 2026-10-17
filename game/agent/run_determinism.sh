@@ -147,8 +147,8 @@ case_args() { # case -> ai_match args (no out/events)
 
 # The Godot child of the godot_run.sh pid: RSS cap, time cap (from the moment Godot starts, not the lock wait),
 # and any other Godot (not ours, not the user's editor) marks the run CONTAMINATED.
-watch() { # runner_pid meta limit_s
-  local runner=$1 meta=$2 limit=$3 start="" g="" rss_max=0 contaminated=0 dog=none
+watch() { # runner_pid meta limit_s log
+  local runner=$1 meta=$2 limit=$3 log=$4 start="" g="" rss_max=0 contaminated=0 dog=none
   while kill -0 "$runner" 2>/dev/null; do
     # Only the Godot child counts (godot_run.sh also spawns mkdir, sleep and godot_busy.sh while it waits).
     [ -z "$g" ] && g=$(ps -axo pid=,ppid=,comm= | awk -v r="$runner" '$2 == r && $3 ~ /(^|\/)Godot$/ {print $1; exit}')
@@ -160,6 +160,10 @@ watch() { # runner_pid meta limit_s
         if [ "$r" -gt "$RSS_LIMIT_KB" ]; then dog="rss_kill"; kill -9 "$g"; fi
       fi
       if [ $(( $(date +%s) - start )) -gt "$limit" ]; then dog="timeout_kill"; kill -9 "$g"; fi
+      # A script that does not compile never starts the match: stop now instead of waiting for the time cap.
+      if [ -n "$log" ] && grep -q -E "Parse Error|Failed to load script|Compile Error" "$log" 2>/dev/null; then
+        dog="script_error_kill"; kill -9 "$g"
+      fi
       local p others=""
       for p in $(ps -axo pid=,comm= | awk '$2 ~ /(^|\/)Godot$|(^|\/)godot4?$/ {print $1}'); do
         [ "$p" = "$g" ] && continue
@@ -188,7 +192,7 @@ for CASE in "${CASES[@]}"; do
     esac
     # shellcheck disable=SC2086
     bash "$ROOT/agent/harness/godot_run.sh" "$BIN" "${GARGS[@]}" --path "$ROOT" res://debug/ai_match.tscn -- $ARGS $IO > "$BASE.log" 2>&1 &
-    P=$!; watch "$P" "$BASE.meta" "$LIMIT"; wait "$P"; code=$?
+    P=$!; watch "$P" "$BASE.meta" "$LIMIT" "$BASE.log"; wait "$P"; code=$?
     echo "$CASE $MODE exit $code $(cat "$BASE.meta")"
     grep -h "SCRIPT ERROR" "$BASE.log" | head -3 | cut -c1-200
   done

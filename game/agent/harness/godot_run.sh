@@ -28,6 +28,28 @@ held() {  # held <dir>: a live process holds it.
 }
 godots() { ps -axo comm= | awk '$1 ~ /(^|\/)Godot$|(^|\/)godot4?$/' | wc -l | tr -d ' '; }
 
+# Preflight (2026-10-17): a `class_name` missing from the project's class cache (a merge or a new script without
+# `--import`) makes every scene that uses it fail to compile, and a window run then hangs on its loading screen.
+# Before any Godot run that is not itself an import, compare the class_names in the project's .gd files with
+# .godot/global_script_class_cache.cfg and, if one is missing, import twice first (each import is exclusive).
+project=""
+prev=""
+for a in "$@"; do [ "$prev" = "--path" ] && project="$a"; prev="$a"; done
+[ -z "$project" ] && [ -f project.godot ] && project="$PWD"
+case " $* " in *" --import "*) project="" ;; esac
+if [ -n "$project" ] && [ -f "$project/project.godot" ] && [ -z "${GODOT_RUN_NO_PREFLIGHT:-}" ]; then
+  cache="$project/.godot/global_script_class_cache.cfg"
+  missing=$(comm -23 \
+    <(grep -rhoE --include='*.gd' '^class_name [A-Za-z_][A-Za-z0-9_]*' --exclude-dir=.godot --exclude-dir=cache --exclude-dir=out "$project" | awk '{print $2}' | sort -u) \
+    <(grep -oE '"class": &"[A-Za-z0-9_]+"' "$cache" 2>/dev/null | sed 's/.*&"//;s/"$//' | sort -u))
+  if [ -n "$missing" ]; then
+    bin="/Applications/Godot.app/Contents/MacOS/Godot"
+    echo "godot_run: clases sin importar ($(echo $missing | tr '\n' ' ')); --import x2 en $project" >&2
+    GODOT_RUN_NO_PREFLIGHT=1 bash "$0" "$bin" --headless --path "$project" --import >/dev/null 2>&1
+    GODOT_RUN_NO_PREFLIGHT=1 bash "$0" "$bin" --headless --path "$project" --import >/dev/null 2>&1
+  fi
+fi
+
 headless=0
 case " $* " in *" --headless "*) headless=1 ;; esac
 case " $* " in *" --import "*) headless=0 ;; esac

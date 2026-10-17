@@ -21,11 +21,13 @@ const SPRITES := preload("res://scenes/fx/sprite_particles.tscn")
 @export_range(0.0, 1.0, 0.05) var drops_after := 0.3
 ## Where the drops come out under the center, as a fraction of the radius (state.d:15471: -0.8).
 @export var drops_depth := 0.8
-## The server frees it after this long if nobody did (a wizard freed mid-cast). 0 = never.
+## The server frees it after this long if nobody did (a wizard freed mid-cast). 0 = never. Counted in ticks of the
+## match (MatchClock.ticks_for, RFC-032 032d), not with the render delta.
 @export var max_life_s := 0.0
 
 var _pulse_left := 0.0
-var _age := 0.0
+## Physics ticks lived (server or solo; a pause does not count, _physics_process does not run).
+var _life_ticks := 0
 
 
 func _ready() -> void:
@@ -46,14 +48,19 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 
-func _process(delta: float) -> void:
-	if Engine.is_editor_hint():
+## Simulation: the lifetime, on the server only.
+func _physics_process(_delta: float) -> void:
+	if Engine.is_editor_hint() or max_life_s <= 0.0 or (MpKit.is_networked() and not MpKit.is_server()):
 		return
-	if max_life_s > 0.0 and (not MpKit.is_networked() or MpKit.is_server()):
-		_age += delta
-		if _age >= max_life_s:
-			queue_free()
-			return
+	_life_ticks += 1
+	if _life_ticks >= MatchClock.ticks_for(max_life_s):
+		queue_free()
+
+
+## Presentation: the drops (every peer that draws).
+func _process(delta: float) -> void:
+	if Engine.is_editor_hint() or is_queued_for_deletion():
+		return
 	_pulse_left -= delta
 	if _pulse_left > 0.0:
 		return

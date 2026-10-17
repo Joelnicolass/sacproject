@@ -66,10 +66,7 @@ var _look_materials: Array[StandardMaterial3D] = []
 
 func _ready() -> void:
 	add_to_group(GROUP)
-	if MatchSeed.is_active():
-		_rng.seed = MatchSeed.derive(["ghost", int(_wizard.get("owner_slot"))])
-	else:
-		_rng.randomize()
+	MatchSeed.seed_rng(_rng, ["ghost", int(_wizard.get("owner_slot"))])
 	_show_stage(false)
 	if MpKit.is_networked() and not MpKit.is_server():
 		set_physics_process(false)

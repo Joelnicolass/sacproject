@@ -48,7 +48,7 @@ func setup(body: Node3D, creature: CreatureType, body_reach: float, body_height:
 	reach = maxf(body_reach, 0.1)
 	height = maxf(body_height, 0.6)
 	## Never the global RNG: a body without a stream gets one derived from the match seed and its name.
-	_rng = rng if rng else MatchSeed.rng_for(["melee", String(body.name)])
+	_rng = rng if rng else MatchSeed.rng(["melee", String(body.name)])
 
 
 func is_swinging() -> bool:

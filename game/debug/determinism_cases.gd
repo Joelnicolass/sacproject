@@ -5,10 +5,33 @@ extends RefCounted
 ##   move it, and the Spellbook has no _process.
 ## - match_clock_pause: SceneTree.physics_frame keeps coming while the tree is paused, but now() stands still (and so
 ##   does a running cooldown); unpaused, it counts one per frame again.
+## - sim_rng_lint (032c): no script of the simulation (scenes/world/**, without look/) draws from the global RNG
+##   (rand*, randomize, seed, shuffle, pick_random), makes a RandomNumberGenerator that MatchSeed does not seed, or sorts
+##   by instance_id. Presentation and seeded-by-hand exceptions are an explicit list (LINT_*). lint(root) takes any
+##   folder, so a sabotaged copy outside the project can prove it fails.
+## - make_way_pause (032d): a MakeWay request (HOLD_TICKS) survives 120 ticks of pause and runs out after HOLD_TICKS
+##   of play.
+## - vortex_life (032d): a RedVortex with max_life_s 1.0 is freed after 60 ticks (±1) of the match.
 ## `run(host)` adds its own wizard under `host` and removes it at the end. rules_suite has no HighNoon: MatchClock hooks
 ## itself lazily on the first now().
 
 const WIZARD_SCENE := preload("res://scenes/world/wizard/wizard_body.tscn")
+const VORTEX_SCENE := preload("res://scenes/world/sacrifice/red_vortex.tscn")
+const SIM_ROOT := "res://scenes/world"
+## Paths (relative to the root) skipped by sim_rng_lint: presentation folders and files.
+const LINT_SKIP_DIRS: Array[String] = ["look/"]
+## Whole files allowed: the owner of chance, and selection (human input, RFC-032 §8: its sort by instance_id stays).
+const LINT_ALLOWED_FILES: Array[String] = ["match_seed.gd", "selection.gd"]
+## Single lines allowed (file -> stripped line): generators seeded by hand from a stable number, for presentation
+## (spin of a shot) or from a seed that is already the match's (biome, props).
+const LINT_ALLOWED_LINES := {
+	"map_props.gd": "var rng := RandomNumberGenerator.new()",  # rng.seed = plant_seed (@export)
+	"theme_applier.gd": "var rng := RandomNumberGenerator.new()",  # rng.seed = match_seed (the biome stream)
+	"units/ranged_shot.gd": "var rng := RandomNumberGenerator.new()",  # spin of the shot, hash(name)
+	"spells/rock_projectile.gd": "var rng := RandomNumberGenerator.new()",  # spin of the rock, hash(name)
+}
+const VORTEX_LIFE_S := 1.0
+const PAUSE_TICKS := 120
 const GOD := "james"
 const RENDER_FRAMES := 12
 const SLOW_TICKS_PER_SECOND := 4
@@ -31,6 +54,9 @@ func run(host: Node3D) -> Dictionary:
 	var out := {}
 	out["spellbook_cadence"] = await _cadence(book)
 	out["match_clock_pause"] = await _pause(book)
+	out["sim_rng_lint"] = _verdict("sim_rng_lint", lint(SIM_ROOT))
+	out["make_way_pause"] = await _make_way_pause()
+	out["vortex_life"] = await _vortex_life()
 	_root.queue_free()
 	return out
 
@@ -99,6 +125,123 @@ func _pause(book: Node) -> Dictionary:
 	await _ticks(30)
 	checks["unpaused_counts_again"] = MatchClock.now() - paused_now == 30
 	return _verdict("match_clock_pause", checks)
+
+
+## Every .gd under `root` (but LINT_SKIP_DIRS) against the rules of sim_rng_lint. {files, offenders, clean}.
+static func lint(root: String) -> Dictionary:
+	var global_rng := RegEx.create_from_string("(?<![\\w.])(randf|randi|randf_range|randi_range|randfn|randomize|seed|rand_from_seed)\\s*\\(")
+	var array_rng := RegEx.create_from_string("\\.(shuffle|pick_random)\\s*\\(")
+	var made := RegEx.create_from_string("var\\s+(\\w+)\\s*(:=|:\\s*RandomNumberGenerator\\s*=)\\s*RandomNumberGenerator\\.new\\(\\)")
+	var offenders: Array[String] = []
+	var files := _scripts(root.trim_suffix("/"), "")
+	for rel in files:
+		if LINT_ALLOWED_FILES.has(rel):
+			continue
+		var text := FileAccess.get_file_as_string(root.trim_suffix("/") + "/" + rel)
+		var allowed: String = LINT_ALLOWED_LINES.get(rel, "")
+		var lines := text.split("\n")
+		for i in lines.size():
+			var code := _code_of(lines[i]).strip_edges()
+			if code.is_empty() or (allowed != "" and code == allowed):
+				continue
+			var why := ""
+			if global_rng.search(code) or array_rng.search(code):
+				why = "RNG global"
+			elif code.contains("RandomNumberGenerator.new()"):
+				var found := made.search(code)
+				if found == null or not text.contains("MatchSeed.seed_rng(%s," % found.get_string(1)):
+					why = "RandomNumberGenerator sin MatchSeed"
+			elif code.contains("sort_custom") and code.contains("get_instance_id"):
+				why = "orden por instance_id"
+			if why != "":
+				offenders.append("%s:%d %s «%s»" % [rel, i + 1, why, code.left(80)])
+	return {"files": files.size(), "offenders": offenders, "clean": files.size() > 0 and offenders.is_empty()}
+
+
+static func _scripts(root: String, rel: String) -> Array[String]:
+	var out: Array[String] = []
+	var dir := DirAccess.open(root + ("/" + rel if rel != "" else ""))
+	if dir == null:
+		return out
+	for sub in dir.get_directories():
+		var child := rel + sub + "/"
+		if not LINT_SKIP_DIRS.has(child):
+			out.append_array(_scripts(root, child))
+	for file in dir.get_files():
+		if file.ends_with(".gd"):
+			out.append(rel + file)
+	return out
+
+
+## The line without its comment (a # outside a string).
+static func _code_of(line: String) -> String:
+	var quote := ""
+	var i := 0
+	while i < line.length():
+		var c := line[i]
+		i += 1
+		if quote != "":
+			if c == "\\":
+				i += 1
+			elif c == quote:
+				quote = ""
+		elif c == "\"" or c == "'":
+			quote = c
+		elif c == "#":
+			return line.left(i - 1)
+	return line
+
+
+## A request to make way (HOLD_TICKS) on a still body: it holds through PAUSE_TICKS of pause (MatchClock stands still)
+## and runs out after HOLD_TICKS of play.
+func _make_way_pause() -> Dictionary:
+	var checks := {}
+	var tree := _host.get_tree()
+	var saved := MakeWay.snapshot()
+	var body := Node3D.new()
+	body.name = "MakeWayProbe"
+	_root.add_child(body)
+	var away := Vector2(MakeWay.YIELD_SPEED, 0.0)
+	var now := MatchClock.now()
+	MakeWay._asks[body.get_instance_id()] = [away, now + MakeWay.HOLD_TICKS, now, 0.0]
+	tree.paused = true
+	await _ticks(PAUSE_TICKS)
+	tree.paused = false
+	var held := MakeWay.with_yield(body, Vector3.ZERO, 1.0 / 60.0)
+	checks["now_moved_in_pause"] = MatchClock.now() - now
+	checks["held_after_pause"] = is_equal_approx(held.x, away.x) and is_zero_approx(held.z)
+	await _ticks(MakeWay.HOLD_TICKS + 2)
+	var gone := MakeWay.with_yield(body, Vector3.ZERO, 1.0 / 60.0)
+	checks["runs_out_in_play"] = gone == Vector3.ZERO
+	checks["pause_does_not_count"] = int(checks["now_moved_in_pause"]) == 0
+	MakeWay.restore(saved)
+	body.queue_free()
+	return _verdict("make_way_pause", checks)
+
+
+## A RedVortex with max_life_s VORTEX_LIFE_S: the tick it asks to be freed, counted from the tick it entered.
+func _vortex_life() -> Dictionary:
+	var checks := {}
+	var vortex := VORTEX_SCENE.instantiate() as RedVortex
+	vortex.name = "VortexLifeProbe"
+	vortex.max_life_s = VORTEX_LIFE_S
+	var start := MatchClock.now()
+	_root.add_child(vortex)
+	var want := MatchClock.ticks_for(VORTEX_LIFE_S)
+	var queued_at := -1
+	for _i in want + 30:
+		await _ticks(1)
+		if not is_instance_valid(vortex) or vortex.is_queued_for_deletion():
+			## Asked in the _physics_process of the tick before this physics_frame.
+			queued_at = MatchClock.now() - 1
+			break
+	var lived := queued_at - start + 1 if queued_at >= 0 else -1
+	checks["want_ticks"] = want
+	checks["lived_ticks"] = lived
+	checks["freed_at_60_pm_1"] = lived >= 0 and absi(lived - want) <= 1
+	if is_instance_valid(vortex) and not vortex.is_queued_for_deletion():
+		vortex.queue_free()
+	return _verdict("vortex_life", checks)
 
 
 func _ticks(count: int) -> void:

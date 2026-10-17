@@ -46,7 +46,7 @@ func _draw() -> void:
 		forced = (rules as MatchRules).biome_god
 		match_seed = (rules as MatchRules).biome_seed
 	if match_seed == 0:
-		match_seed = MatchSeed.derive(["biome"]) if MatchSeed.is_active() else randi()
+		match_seed = MatchSeed.rng(["biome"]).seed  # the biome stream of the match (randomized without one)
 	var picked: StringName = forced if forced != &"" and ThemeApplier.has_theme(forced) else ThemeApplier.pick_god(match_seed)
 	if not ThemeApplier.has_theme(picked):
 		print("bioma sin tema")

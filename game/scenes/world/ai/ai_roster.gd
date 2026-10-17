@@ -81,7 +81,5 @@ func _seat_all(seats: Array[AiSeat]) -> void:
 ## A seat without a god («Aleatorio»): drawn from the match seed, so a seeded match draws the same god.
 func _draw_god(slot: int) -> StringName:
 	var gods := GameData.gods()
-	var rng := MatchSeed.rng_for(["ai_god", slot]) if MatchSeed.is_active() else RandomNumberGenerator.new()
-	if not MatchSeed.is_active():
-		rng.randomize()
+	var rng := MatchSeed.rng(["ai_god", slot])
 	return StringName(gods[rng.randi_range(0, gods.size() - 1)])

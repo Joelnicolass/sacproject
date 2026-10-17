@@ -52,7 +52,7 @@ func stun_with_cooldown(cooldown_ticks: int) -> bool:
 		return false
 	_cooldown = cooldown_ticks
 	_afflictions().mark(self, true)
-	print("aturdido %s durante %d (cuadro %d)" % [str(body.call("display_name")), _total, Engine.get_physics_frames()])
+	print("aturdido %s durante %d (cuadro %d)" % [str(body.call("display_name")), _total, MatchClock.now()])
 	return true
 
 
@@ -87,7 +87,7 @@ func _physics_process(_delta: float) -> void:
 	if is_on():
 		_elapsed += 1
 		if _simulates() and _elapsed >= _total:
-			print("%s se levanta (cuadro %d)" % [str(_body().call("display_name")), Engine.get_physics_frames()])
+			print("%s se levanta (cuadro %d)" % [str(_body().call("display_name")), MatchClock.now()])
 			_afflictions().mark(self, false)
 	if _cooldown <= 0 and not is_on():
 		set_physics_process(false)

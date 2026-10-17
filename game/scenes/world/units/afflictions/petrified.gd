@@ -44,7 +44,7 @@ func petrify(lifetime_ticks: int) -> bool:
 		return false
 	_elapsed = 0
 	_lifetime = lifetime_ticks
-	_start_frame = Engine.get_physics_frames()
+	_start_frame = MatchClock.now()
 	_afflictions().mark(self, true)
 	set_physics_process(true)
 	print("petrificado %s durante %d (cuadro %d)" % [str(body.call("display_name")), _lifetime, _start_frame])
@@ -66,7 +66,7 @@ func _physics_process(_delta: float) -> void:
 	if not is_on():
 		set_physics_process(false)
 		return
-	if Engine.get_physics_frames() == _start_frame:
+	if MatchClock.now() == _start_frame:
 		return
 	_elapsed += 1
 	if _elapsed > _lifetime:
@@ -77,7 +77,7 @@ func _end() -> void:
 	set_physics_process(false)
 	var body := _body()
 	_afflictions().mark(self, false)
-	print("%s deja de ser piedra (cuadro %d)" % [str(body.call("display_name")), Engine.get_physics_frames()])
+	print("%s deja de ser piedra (cuadro %d)" % [str(body.call("display_name")), MatchClock.now()])
 	if stunned:
 		stunned.knock(knock_cooldown_ticks)
 	_burst_rocks()

@@ -67,10 +67,7 @@ func _ready() -> void:
 		beam.mesh = ImmediateMesh.new()
 		beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		_apply_look()
-	if MatchSeed.is_active():
-		_rng.seed = MatchSeed.derive(["tether", String(name)])
-	else:
-		_rng.randomize()
+	MatchSeed.seed_rng(_rng, ["tether", String(name)])
 
 
 func _apply_look() -> void:

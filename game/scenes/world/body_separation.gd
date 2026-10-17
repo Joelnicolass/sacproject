@@ -372,6 +372,7 @@ static func box_of(body: Node3D) -> Vector2:
 
 
 static func _box(body: Node3D) -> Vector2:
+	## A cache per step of the engine, not game time (RFC-032 032d): not MatchClock.
 	var tick := Engine.get_physics_frames()
 	if tick != _boxes_tick:
 		_boxes_tick = tick

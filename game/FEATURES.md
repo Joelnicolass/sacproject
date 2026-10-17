@@ -1375,3 +1375,31 @@ Todo pasa por `godot_run.sh`. Un vigía mide RSS y tiempo y marca `CONTAMINATED`
 **Deuda:**
 - El redondeo a ticks puede correr un enfriamiento hasta 1 tick.
 - Subir de nivel a mitad de partida limpia los enfriamientos (`_rebuild`, igual que antes).
+
+### F146 — Un dueño del azar (RFC-032, corte 032c)
+
+`MatchSeed.rng(parts)` y `MatchSeed.seed_rng(rng, parts, override)` son el único fallback de azar. La convención es `[sistema, id estable]`, sin `instance_id`. El RNG global queda sembrado con `derive(["presentation"])` y es solo para presentación; ningún digest cambió, así que no había consumidores ocultos. Se migraron `unit_body` (ahora 1040 líneas), `ghost_form`, `guardian_tether`, `ai_roster`, `match_biome` y `melee_attack`. El caso `sim_rng_lint` de `rules_suite` revisa 172 archivos sin infractores y se probó saboteado: falla con un `randf()` sembrado. Con `--seed=0` cada corrida sortea una semilla distinta.
+
+### F147 — Plazos y vidas útiles en ticks de partida (RFC-032, corte 032d)
+
+`make_way`, `petrified` y `stunned` usan `MatchClock.now()`. Si el reloj retrocede, `make_way._prune` vacía las tablas. `red_vortex` cuenta su vida en ticks de física, solo en el servidor. Casos `make_way_pause` (0 ticks en 120 de pausa) y `vortex_life` (60/60).
+
+**Cierre de F146 + F147 y del RFC-032 (2026-10-17).** Review PASS (`reviews/REVIEW-F146-F147-rng-ticks.md`). Evidencia:
+- `quick`: PASS.
+- `rules_suite`: PASS.
+- Una corrida con ventana con `pt137_main` y `pt141_solo`: AGENT_OK. La petrificación dura lo mismo.
+- **Pasada completa `all`: DETERMINISM PASS.** Los 4 casos dan el mismo digest en `fixed`, `stress` y `window`:
+
+| Caso | Digest |
+|---|---|
+| s7 | `4915c884…` |
+| s7_npcs | `7179b17d…` |
+| s1_trivial | `e076abe1…` |
+| f139 | `af04fefb…` |
+
+**Digests 032c/032d:** iguales a 032b.
+
+**Deuda:**
+- El lint se puede burlar a propósito (exención por archivo, lista blanca por texto) y solo cubre `scenes/world`.
+- La vida de `red_vortex` cuenta llamadas y no `MatchClock`.
+- Queda destrabado 030h3, las gotas de la Abomination, que va con `MatchSeed.rng`.

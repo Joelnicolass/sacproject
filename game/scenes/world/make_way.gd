@@ -17,7 +17,8 @@ extends RefCounted
 ## - Soft between walkers: for a creature on its way (MOVE or CHASE) the creatures of its slot also on their way do not
 ##   cut the step (first pass, BodySeparation._separate); the second pass still pushes the two out of each other at up
 ##   to FIXUP_SPEED, so two that meet head-on press, turn the overlap sideways and pass instead of holding each other.
-## Static state, like the box cache of BodySeparation: only the tables of the requests and of the sides.
+## Static state, like the box cache of BodySeparation: only the tables of the requests and of the sides. Every deadline
+## (HOLD_TICKS, RETURN_TICKS) is a tick of the match (MatchClock.now(), RFC-032 032d): it does not run out in a pause.
 
 ## The fraction of its speed a cut step must keep along its own heading to count as free.
 const SLIDE_KEEP := 0.5
@@ -59,7 +60,7 @@ static func with_yield(body: Node3D, velocity: Vector3, delta: float) -> Vector3
 		_homes.erase(id)
 		return velocity
 	var ask: Variant = _asks.get(id)
-	if ask != null and int(ask[1]) >= Engine.get_physics_frames():
+	if ask != null and int(ask[1]) >= MatchClock.now():
 		var away: Vector2 = ask[0]
 		velocity.x = away.x
 		velocity.z = away.y
@@ -67,7 +68,7 @@ static func with_yield(body: Node3D, velocity: Vector3, delta: float) -> Vector3
 	if ask != null:
 		_asks.erase(id)
 	var home: Variant = _homes.get(id)
-	if home == null or int(home[1]) + RETURN_TICKS >= Engine.get_physics_frames():
+	if home == null or int(home[1]) + RETURN_TICKS >= MatchClock.now():
 		return velocity
 	var at := body.global_position
 	var back: Vector2 = (home[0] as Vector2) - Vector2(at.x, at.z)
@@ -111,7 +112,7 @@ static func slide(body: Node3D, at: Vector3, wanted: Vector2, faces: PackedInt32
 			var detour_kept := BodySeparation.cut_step(detour, BodySeparation.first_pass_faces(at, detour, delta, inner,
 					height, cut_x, cut_y, cut_z, cut_halves, cut_heights))
 			if detour_kept.dot(detour) >= SLIDE_KEEP * speed * speed:
-				_sides[body.get_instance_id()] = [turn, Engine.get_physics_frames() + HOLD_TICKS]
+				_sides[body.get_instance_id()] = [turn, MatchClock.now() + HOLD_TICKS]
 				return detour_kept
 	return kept
 
@@ -130,7 +131,7 @@ static func walks(node: Node3D) -> bool:
 static func pushed(body: Node3D, by_walker: bool) -> void:
 	var id := body.get_instance_id()
 	if by_walker:
-		_mark_home(id, body.global_position, Engine.get_physics_frames())
+		_mark_home(id, body.global_position, MatchClock.now())
 	elif not _homes.has(id):
 		_mark_home(id, body.global_position, -RETURN_TICKS - 1)
 
@@ -165,14 +166,20 @@ static func _pace(body: Node3D) -> float:
 ## The side to slide to: the one kept from a recent slide, or `fresh`.
 static func _slide_side(body: Node3D, fresh: float) -> float:
 	var held: Variant = _sides.get(body.get_instance_id())
-	if held != null and int(held[1]) >= Engine.get_physics_frames():
+	if held != null and int(held[1]) >= MatchClock.now():
 		return float(held[0])
 	return fresh
 
 
 ## Drops the requests and sides that ran out and the homes of freed bodies (once a second; also checked when read).
 static func _prune() -> void:
-	var tick := Engine.get_physics_frames()
+	var tick := MatchClock.now()
+	if tick < _pruned_tick:
+		## The clock went back: a new match (MatchClock.begin). The ticks of the old one mean nothing now.
+		_asks.clear()
+		_sides.clear()
+		_homes.clear()
+		_pruned_tick = -1
 	if tick - _pruned_tick < 60:
 		return
 	_pruned_tick = tick
@@ -198,7 +205,7 @@ static func _ask_to_yield(walker: Node3D, other: Node3D, heading: Vector2) -> vo
 	if bool(other.get("ordered")) or not bool(other.call("is_targetable")):
 		return
 	var id := other.get_instance_id()
-	var tick := Engine.get_physics_frames()
+	var tick := MatchClock.now()
 	var from := walker.global_position
 	var at := other.global_position
 	var gap := Vector2(at.x - from.x, at.z - from.z)

@@ -43,6 +43,8 @@ var _ids: Dictionary = {}
 ## Side effect: the first call on a tree connects `tree.node_removed` to this grid (and keeps it connected), so a
 ## filed body that leaves the tree between two filings is marked in `left` (see _on_node_removed).
 func file(tree: SceneTree, groups: Array[StringName]) -> void:
+	## A cache per step of the engine, not game time (RFC-032 032d): it must refile on a paused step too, so it does
+	## not read MatchClock.
 	var tick := Engine.get_physics_frames()
 	var members := 0
 	for group in groups:

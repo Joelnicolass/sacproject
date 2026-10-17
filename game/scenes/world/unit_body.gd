@@ -229,12 +229,7 @@ func _ready() -> void:
 		return
 	health.died.connect(_on_died)
 	_init_stats()
-	if rng_seed != 0:
-		_rng.seed = rng_seed
-	elif MatchSeed.is_active():
-		_rng.seed = MatchSeed.derive(["body", String(name)])
-	else:
-		_rng.randomize()
+	MatchSeed.seed_rng(_rng, ["body", String(name)], rng_seed)
 	if type and not is_flying():
 		_seat_left = seat_attempts
 	_setup_melee()

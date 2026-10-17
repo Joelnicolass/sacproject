@@ -1,4 +1,4 @@
-[gd_scene load_steps=70 format=3]
+[gd_scene load_steps=71 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/unit_body.gd" id="1_body"]
 [ext_resource type="PackedScene" path="res://scenes/world/components/pace_factors.tscn" id="f129_pace"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://scenes/world/components/health.gd" id="3_health"]
 [ext_resource type="Script" path="res://scenes/world/units/melee_attack.gd" id="4_melee"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/melee_on_hit.tscn" id="f158_onhit"]
+[ext_resource type="PackedScene" path="res://scenes/world/units/fire_shield.tscn" id="f163_shield"]
 [ext_resource type="Script" path="res://scenes/data/on_hit_passive_type.gd" id="f158_type"]
 [ext_resource type="Resource" path="res://data/passives/yeti_freeze.tres" id="f158_zerf"]
 [ext_resource type="Resource" path="res://data/passives/dragon_vines.tres" id="f159_eniv"]
@@ -196,6 +197,11 @@ body = NodePath("..")
 body = NodePath("..")
 poisoning = NodePath("../Poisoning")
 pace = NodePath("../PaceFactors")
+
+[node name="FireShield" parent="." node_paths=PackedStringArray("body", "health", "mana") instance=ExtResource("f163_shield")]
+body = NodePath("..")
+health = NodePath("../Health")
+mana = NodePath("../ManaPool")
 
 [node name="DevourGrowth" parent="." node_paths=PackedStringArray("body", "health", "visual") instance=ExtResource("f131_growth")]
 body = NodePath("..")

@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://debug/ai_match.tscn" id="1_match"]
+[ext_resource type="Resource" path="res://debug/rules/f163_phoenix_shield.tres" id="2_rules"]
+
+[node name="F163PhoenixShield" instance=ExtResource("1_match")]
+editor_description = "RFC-030 030w-f (F163). El Escudo del Phoenix (rifl): una fila z -80 desde el manantial central (1270, 1270), semilla 7. P1 (slot 1) en -30, P2 (slot 2) en -30/-77 con la caja x1,5 superpuesta, P3 (slot 1, aliado de P1) en -33, P4 (slot 2) en -30/-60 lejos. Todos pacifistas y quietos; nadie ataca. Cada tick, cada Phoenix quema a quien no es aliado y su caja x1,5 toca (hechizo directo mrff.amount/60, atravesando escudos); el maná no se toca. Enter (check_tick) arranca. Log: `escudo <fuente> quema <cuerpo> <daño> vida <vida> (tick N)`. Réplica: agent/tools/f163_expect.py."
+
+[node name="Runner" parent="." index="3"]
+default_rules = ExtResource("2_rules")
+camera_offset = Vector3(0, 12, 18)
+default_minutes = 0.2

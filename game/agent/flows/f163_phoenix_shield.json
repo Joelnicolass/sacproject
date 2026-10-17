@@ -1,0 +1,19 @@
+{
+ "scene": "res://debug/f163_phoenix_shield.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  { "wait_until": { "node": "Overlay/Status", "text_contains": "Enter", "timeout": 60 } },
+  { "wait": 0.5 },
+  { "call": { "harness": "f163_watch", "method": "look", "args": [0.0, 10.0, 22.0] } },
+  { "press": "check_tick" },
+  { "wait_until": { "node": "Runner", "prop": "_running", "equals": true, "timeout": 10 } },
+  { "wait": 1.0 },
+  { "shot": "shield_a.png" },
+  { "wait": 1.5 },
+  { "shot": "shield_b.png" },
+  { "call": { "harness": "f163_watch", "method": "look", "args": [-6.0, 4.0, 12.0] } },
+  { "wait": 1.5 },
+  { "shot": "shield_c.png" },
+  { "call": { "harness": "f163_watch", "method": "report", "args": [] } }
+ ]
+}

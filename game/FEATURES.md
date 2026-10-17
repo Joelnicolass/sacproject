@@ -2289,3 +2289,26 @@ Deuda:
 - `Burning.ignite` descarta un edificio con daño 0; sacengine lo prende igual con `setAblaze` (solo visual).
 - **Trail:** el puff no escala con el radio de la onda; los FX propios de `fhba` (`firy`) y `ehba` (`rock`) quedan para cuando haya tiempo de exportarlos.
 - **Orden fuego/golpe:** no se ve en el log (el `fuego` se imprime al terminar); lo cubre el código, no la réplica.
+
+### F163 — Escudo de fuego del Phoenix (RFC-030, corte 030w-f)
+
+**Piezas:**
+- **`FireShield`** (`scenes/world/units/fire_shield.gd` + `fire_shield.tscn`, hijo de `unit.tscn` como `MeleeOnHit`): dueño único del escudo del Phoenix (`rifl`). Solo actúa si `CreatureType.passive_on_damage == passive_tag` y en el servidor; los demás cuerpos lo llevan y lo ignoran. `unit_body.gd` no cambió (1040 líneas).
+  - Cada tick: caja propia (`BodySeparation.box_of`) ×1,5 desde el centro contra la caja de cada cuerpo vivo de los grupos `unit` y `wizard` (menos él). Al que no es aliado (`SideRelations.stance`) le da `Health.damage_typed(mrff.amount/60, DIRECT_SPELL, slot, false, pierce_shield = true)`: reusa la regla de daño, no la duplica.
+  - Maná: el costo sale del SPEL `rifl` (0); si fuera > 0 se exige y se drena con `ManaPool.drain`.
+  - `@export`: `passive_tag`, `spell`, `box_scale`, y de look `fire_fx`, `fire_every_ticks`, `fire_height_m`. `static var log_shield` (banco).
+
+**Fidelidad (sacengine `runPhoenixPassive` 13899-13919, `runPassive` 13921-13931, `ignite` 17254-17261, `dealFireDamage` 9421-9427, `canShield` 218-225):**
+- 250/60 por cuadro como hechizo directo, atravesando Life Shield/Rockform; aliado y edificios no.
+- **R6 medido:** la caja del Phoenix mide ±5,67 m de ancho y 15,2 m de alto; ×1,5 baja 3,8 m bajo sus pies. Un Druid en el suelo a 8 m (Phoenix en el suelo del caso) se quema; con el vuelo a 4,5 m su cabeza (1,9 m) aún entra con 1,2 m de margen.
+- **Divergencias declaradas:** el look es de reserva (`fire` sobre el quemado cada 5 cuadros, sin las partículas propias del escudo); un cuerpo no apuntable (sigilo, cautivo) ni es escudo ni blanco.
+
+**Cierre (2026-10-17).**
+- **Caso `f163_phoenix_shield`:** `f163_expect.py` PASS (quién quema a quién, caja ×1,5, 250/60·resistencia ±0,001, un quema por cuadro de contacto, aliados 0, P3 y P4 sin líneas, maná no baja, Druid1 quemado 193 cuadros hasta morir). Digest `83189d94` igual en fixed, stress y window.
+- **Carriles (desvío del plan):** P3 en −36/−90,5 (no −33/−80: ahí quedaba dentro de la caja de P2, su enemigo, y se quemaba) y P4 en +10/−80 (la fila z −60 caía junto a una choza); se agregó D1 (Druid, slot 2, −22/−80) para medir R6. Validados con `--lanes`. Los cuerpos se empujan unos metros por `BodySeparation`; la réplica lee las posiciones de cada línea.
+- **Banco:** `quick` con las 25 líneas de la base OK, incluida `f125` (no cambió: su Phoenix nunca toca un cuerpo; no se regraba nada); `rules_suite --fixed-fps 60` PASS. Los avisos CONTAMINATED de las corridas fixed/stress son de otros agentes con Godot en la máquina; los digests de los 3 modos coinciden.
+- **Capturas:** `agent/out/f163/shield_a.png`, `shield_b.png`, `shield_c.png` (`agent/flows/f163_phoenix_shield.json`, observador `agent/harness/f163_watch.gd`, `agent/run_f163.sh`).
+
+Deuda:
+- Las partículas propias del escudo (`spawnPhoenixShieldParticles`, tasa 3) y las 3 de fuego por quemado no existen: el puff de `fire` es chico sobre la nieve.
+- `canShield` se aproxima con `is_targetable()` y no estar muerto (no se distingue `REVIVING`/fantasma).

@@ -1085,6 +1085,23 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 *Divergencias declaradas:* las del coordinador (línea de visión por rayo al centro, aliado = mismo slot, RNG de MatchSeed, estela de polvo siempre, sin sacudida ni sonido, edificios sin `Health` no frenan una roca).
 
+#### 030p-b: Plan (developer) / Resultado
+
+**Plan (developer de 030p-b, 2026-10-17):** el del tech lead en `rfcs/plans/030o-030p-plan.md` §030p-b. Números de `state.d` 13238-13248, 13470-13493, 25943-25975, 8651-8664, 14101-14131 y 29582-29604.
+- `BreathOfLifeAbility` (`AbilityEffect` con preparación de 52 ticks, de `shoot_animations[1]`) juzga el blanco (alma → cadáver, muerto, mismo slot, alma NORMAL o EMERGING, ≤ 40 m en 3D) y pone un `BreathOfLife` en el contenedor de disparos. El coordinador (prioridad −1, solo en el servidor) mueve un `RangedShot` (`ShotLook breath_of_life`) con `v = 60·(blanco − pos)`, tope 60; al llegar agrega `FastRevive` al cuerpo.
+- `FastRevive` usa `Captive.revive(0, 1)` y deja el alma en REVIVING; durante 150 ticks sube 2 m/75 por tick (1,97 m) y gira 2π; al final borra el alma y llama a `Captive.finish_revive()` (nuevo: REVIVING → IDLE, velocidad cero; `taken_changed(false)` devuelve la capa y el grupo `unit`).
+- `AbilityEffect.windup()` pasa a ser el único dueño de la búsqueda del clip (`windup_from_clip`, apagado por defecto: Protector y Halo no preparan). Firewalk y Breath lo encienden en su escena y ya no lo duplican.
+- `match_command._ability_at`: cuerpo vivo, y si la habilidad tiene `targetSouls | targetCorpses`, alma (`_soul_under`) y después cadáver (`_corpse_under`, máscara 8), y por último el suelo. Catálogo: `"filb": breath_of_life_ability.tscn`.
+- Los dos `WORKAROUND:` (`spawn_shot` y `finish_revive` llamados por nombre) se tiparon y se borraron. `ai_match` enciende `BreathOfLife.log_breath` y `FastRevive.log_revive`.
+
+**Resultado (developer de 030p-b, 2026-10-17):** semilla 7, caso `f153` (carril D, 0,15 min).
+- `f153_expect.py` da `RESULTADO PASS` en fixed, stress y window: «Blanco inválido» (D3) en el tick 84 y «Fuera de alcance» (D2) en el 90 sin gasto; preparación de 52 ticks, maná 750→700 y enfriamiento 240; el aliento sale en el 152 y llega en el 172 (d 19,0004 m; la réplica da 173, dentro de ±1); D1 vuelve a 800/800 en el tick de la llegada, sube 1,9733 m a los 74 ticks y queda IDLE en el 322 con 800 de vida.
+- **Determinismo:** `f153` da `130a619b` en fixed, stress y window y se grabó en `det_baseline.txt`. `quick`: las otras 12 líneas base iguales (`f126` con Firewalk incluido, tras mover `windup()` a la base). `rules_suite` PASS.
+- **Ventana** (`debug/f153_breath.tscn`, `agent/flows/pt153_play.json`, `agent/harness/pt153_watch.gd`, `run_pt153.sh`, capturas en `agent/out/pt153/play/`): cubre hasta rel 392 (220 después de la llegada). `p1`/`p2` el aliento dorado en vuelo, `p4_rising` y `p5_turning_top` D1 levantándose (y 10,29 y 11,17) y girando, `p6_standing`/`p7_end` D1 de pie, grupo `unit`, capa de unidades, sin alma. El `report()` imprime modo, grupo, capa y almas.
+- **Sin probar en ventana:** el clic real sobre un alma o un cadáver (`_ability_at`); el banco ordena la habilidad por `BenchEvents`.
+
+*Divergencias declaradas:* las del plan (no se acerca ni gira hacia el blanco, aliado por slot, aliento y partículas placeholder, sin `botRevive`), y el cuerpo vuelve al suelo por gravedad, no se vuelve a agregar a la selección y no usa el clip de revivir.
+
 ### 030q — F128 Web pull y Cage pull
 - **Árbol:** N `abilities/pull.tscn/.gd` (una escena; `.tres` o `@export` distinto por tag, `state.d:13538`); M `ability_catalog.tres`.
 - **Escena de prueba:** `res://debug/f126_pull.tscn`. **Criterio:** el blanco se acerca X m.

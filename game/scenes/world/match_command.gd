@@ -450,6 +450,11 @@ func _use_ability() -> void:
 
 func _ability_at(screen: Vector2) -> void:
 	var body := _body_under(screen, false)
+	## RFC-030 030p-b: an ability that aims at souls or corpses (Breath of life) looks for them after the living body.
+	if body == null and _aims_at_dead(_ability_tag):
+		body = _soul_under(screen)
+		if body == null:
+			body = _corpse_under(screen)
 	var ground: Variant = _ray_ground(screen)
 	if body == null and ground == null:
 		%Battle.say("Sin blanco")
@@ -458,6 +463,23 @@ func _ability_at(screen: Vector2) -> void:
 	if _apply_ability(_ability_tag, point, body):
 		_mode = ""
 		_show_ping(point)
+
+
+## spells.d:168-183: targetSouls (1 << 1) and targetCorpses (1 << 3).
+func _aims_at_dead(tag: String) -> bool:
+	var ability: AbilityType = GameData.ability(tag)
+	return ability != null and (ability.flags & ((1 << 1) | (1 << 3))) != 0
+
+
+## A corpse under the cursor (layer 8, mask 8): the body itself, group «corpse».
+func _corpse_under(screen: Vector2) -> Node3D:
+	var hit: Dictionary = _cast(screen, 8, false)
+	if hit.is_empty():
+		return null
+	var body: Object = hit.get("collider")
+	if body is Node3D and (body as Node).is_in_group("corpse"):
+		return body as Node3D
+	return null
 
 
 ## Every selected creature whose active ability is `tag` gets the order; the others skip it

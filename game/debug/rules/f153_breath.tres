@@ -1,0 +1,113 @@
+[gd_resource type="Resource" script_class="BenchRules" load_steps=15 format=3]
+
+[ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
+[ext_resource type="Script" path="res://debug/bench_event.gd" id="3_event"]
+
+[sub_resource type="Resource" id="Group_D_dragon"]
+script = ExtResource("2_group")
+tag = "grdg"
+slot = 1
+count = 1
+columns = 1
+offset_m = -10.0
+offset_z_m = -45.0
+facing_x = 1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_D1_druid"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 1
+count = 1
+columns = 1
+offset_m = 15.0
+offset_z_m = -45.0
+facing_x = 1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_D2_druid"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 1
+count = 1
+columns = 1
+offset_m = 38.0
+offset_z_m = -45.0
+facing_x = 1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_D3_druid"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 2
+count = 1
+columns = 1
+offset_m = -10.0
+offset_z_m = -35.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Event_kill_D1"]
+script = ExtResource("3_event")
+at_s = 0.3
+action = "kill"
+label = "D1 cae (carril D)"
+slot = 2
+victim = "Druid1"
+
+[sub_resource type="Resource" id="Event_kill_D2"]
+script = ExtResource("3_event")
+at_s = 0.3
+action = "kill"
+label = "D2 cae (carril D)"
+slot = 2
+victim = "Druid2"
+
+[sub_resource type="Resource" id="Event_kill_D3"]
+script = ExtResource("3_event")
+at_s = 0.3
+action = "kill"
+label = "D3 cae (carril D)"
+slot = 1
+victim = "Druid3"
+
+[sub_resource type="Resource" id="Event_breath_D3"]
+script = ExtResource("3_event")
+at_s = 1.4
+action = "ability"
+label = "Breath of life (carril D, D3 enemigo)"
+slot = 1
+user = "Dragon1"
+target = "Druid3"
+point = Vector2(1260, 1235)
+
+[sub_resource type="Resource" id="Event_breath_D2"]
+script = ExtResource("3_event")
+at_s = 1.5
+action = "ability"
+label = "Breath of life (carril D, D2 a 48 m)"
+slot = 1
+user = "Dragon1"
+target = "Druid2"
+point = Vector2(1308, 1225)
+
+[sub_resource type="Resource" id="Event_breath_D1"]
+script = ExtResource("3_event")
+at_s = 1.6
+action = "ability"
+label = "Breath of life (carril D, D1 a 25 m)"
+slot = 1
+user = "Dragon1"
+target = "Druid1"
+point = Vector2(1285, 1225)
+
+[resource]
+script = ExtResource("1_rules")
+match_seed = 7
+groups = Array[ExtResource("2_group")]([SubResource("Group_D_dragon"), SubResource("Group_D1_druid"), SubResource("Group_D2_druid"), SubResource("Group_D3_druid")])
+anchor = Vector3(1270, 0, 1270)
+start_paused = true
+events = Array[ExtResource("3_event")]([SubResource("Event_kill_D1"), SubResource("Event_kill_D2"), SubResource("Event_kill_D3"), SubResource("Event_breath_D3"), SubResource("Event_breath_D2"), SubResource("Event_breath_D1")])
+pending_text = "Breath of life en pausa"
+ignore_annihilation = true

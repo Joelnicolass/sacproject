@@ -128,6 +128,16 @@ func revive(min_health: float, fraction: float) -> bool:
 	return true
 
 
+## Server or solo (RFC-030 030p-b). The fast revival ends (FastRevive): REVIVING → IDLE, still, alive and with its owner.
+## `taken_changed(false)` gives back the unit layer and the group «unit». False if it was not REVIVING.
+func finish_revive() -> bool:
+	if body == null or not body.is_reviving():
+		return false
+	body.velocity = Vector3.ZERO
+	body.mode = UnitBody.Mode.IDLE
+	return true
+
+
 ## Server or solo. The Convert doctor died while it pumped: the creature dies again (freeCreature on a
 ## convertReviving creature kills it, state.d:10145-10147) and leaves its soul, on its own side.
 func die_again() -> void:

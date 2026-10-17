@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/units/abilities/breath_of_life_ability.gd" id="1_ability"]
+[ext_resource type="PackedScene" path="res://scenes/world/units/abilities/breath_of_life.tscn" id="2_breath"]
+
+[node name="BreathOfLifeAbility" type="Node"]
+editor_description = "F153 (RFC-030 030p-b): efecto propio del Breath of life del Dragon (filb). ActiveAbility lo instancia como \"Effect\" desde data/abilities/ability_catalog.tres. Prepara 52 ticks (DGs2: tick 26 a 30 fps), acepta un alma o un cadáver aliado a 40 m o menos y suelta el aliento (BreathOfLife) en el contenedor de disparos."
+script = ExtResource("1_ability")
+windup_ticks = 52
+windup_from_clip = true
+breath_scene = ExtResource("2_breath")

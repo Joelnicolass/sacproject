@@ -1700,3 +1700,32 @@ Deuda:
 - La órbita usa un RNG propio.
 - Sin temblor ni sonido.
 - Sin probar en red (R3).
+
+### F153 — Breath of life del Dragon (RFC-030, corte 030p-b)
+
+**Piezas:**
+- **`BreathOfLifeAbility`** (`filb` en el catálogo):
+  - Preparación tomada del clip (`AbilityEffect.windup_from_clip`, un solo `windup()` en la base).
+  - El blanco se resuelve de alma a cadáver. Tiene que estar muerto, ser del mismo slot, con el alma en NORMAL o EMERGING, y a ≤ 40 m.
+- **`BreathOfLife`:** solo servidor, prioridad −1. Mueve un `RangedShot` con `v = 60·(t − p)` y tope 60.
+- **`FastRevive`:**
+  - Es hijo del cuerpo y dura 150 ticks.
+  - Vida al máximo y alma en REVIVING.
+  - Sube 1,97 m y gira 2π.
+  - Al final quita el alma y llama a `Captive.finish_revive()`, que devuelve el cuerpo a IDLE, a su capa y al grupo `unit`.
+- **`match_command._ability_at`:** el clic busca cuerpo, alma, cadáver y suelo, en ese orden. El alma y el cadáver solo se buscan si la habilidad tiene `targetSouls` o `targetCorpses`.
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-030p-b.md`).
+- **Rechazos:** «Blanco inválido» con un cadáver enemigo y «Fuera de alcance» a 48 m, sin gasto.
+- **Gasto:** preparación de 52 ticks, maná de 750 a 700 y enfriamiento de 240.
+- **Aliento:** sale en el tick 152 y llega en el 172 (±1 respecto de la réplica).
+- **Revivir:** D1 vuelve con 800/800 en el tick de llegada, sube 1,9733 m y queda IDLE a los 150 ticks, en el grupo `unit` y sin alma.
+- **Determinismo:** `f153` da `130a619b` en fixed, stress y window. `quick`, con las 12 líneas base iguales, y `rules_suite` dan PASS.
+- **Playtest con ventana:** PASS en los 5 puntos.
+
+Deuda:
+- El aliento dorado se ve pálido y chico sobre la nieve.
+- En red, el path del `Soul` en `submit_ability` no está probado (m1).
+- El clic real sobre un alma o un cadáver no se probó en ventana.
+- Sin re-selección ni vuelco final.
+- El aliado se decide por slot.

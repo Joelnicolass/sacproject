@@ -99,6 +99,8 @@ func _ready() -> void:
 	LifeShield.log_shields = true  # F126: bench logs the life shields (off in the product)
 	Firewalking.log_walk = true  # F152: bench logs the Warmonger's walk (off in the product)
 	HaloOfEarth.log_halo = true  # F127: bench logs the Rhinok's rocks (off in the product)
+	BreathOfLife.log_breath = true  # F153: bench logs the Dragon's breath (off in the product)
+	FastRevive.log_revive = true  # F153: bench logs the fast revival (off in the product)
 	_set_status(_rules.pending_text)
 	var wait := _rules.start_paused and not _headless and not _args.has("autostart")
 	if not wait:

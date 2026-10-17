@@ -8,8 +8,9 @@ extends Node
 ## Server (or solo): on a client ActiveAbility does not call it and its _physics_process stays off.
 
 ## Ticks the body prepares before fire() (sacengine startUsingAbility … shoot tick). 0 = at once (Protector, Life Shield).
-## 030o-b (Firewalk) overrides windup() from the shoot animation.
 @export var windup_ticks := 0
+## The preparation comes from the creature's ability clip (see windup()). Off = windup_ticks as is (Protector, Halo: none).
+@export var windup_from_clip := false
 
 ## Bench log (`ai_match` turns it on; off in the product).
 static var log_effects := false
@@ -28,8 +29,17 @@ func _ready() -> void:
 	set_physics_process(false)
 
 
-## Ticks from the order to fire(). 0 = fire() in the same tick.
+## Ticks from the order to fire(). 0 = fire() in the same tick. With `windup_from_clip` the creature prepares until the shoot
+## tick of its ability clip (shoot_animations[1]: shoot_ticks[0] at framerate → 60 ticks/s); windup_ticks is the fallback when
+## it has no such clip (or the flag is off). The one owner of the lookup: Firewalk (shoot1) and Breath of life (shoot2).
 func windup() -> int:
+	if windup_from_clip:
+		var type: CreatureType = user.get("type") if user else null
+		if type and type.shoot_animations.size() > 1:
+			var ticks: Array = type.shoot_animations[1].get("shoot_ticks", [])
+			var rate := float(type.shoot_animations[1].get("framerate", 0))
+			if not ticks.is_empty() and rate > 0.0:
+				return roundi(float(MatchClock.TICKS_PER_SECOND) * float(ticks[0]) / rate)
 	return windup_ticks
 
 

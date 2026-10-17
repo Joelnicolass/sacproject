@@ -13,18 +13,6 @@ extends AbilityEffect
 @export var range_factor := 0.75
 
 
-## Ticks of the preparation: the shoot tick of shoot1 (shoot_animations[1], GFs2 tick 75 at 30 fps → 150) at 60 ticks/s.
-## The clip is the owner; windup_ticks is the fallback when the creature has no shoot1.
-func windup() -> int:
-	var type: CreatureType = user.get("type") if user else null
-	if type and type.shoot_animations.size() > 1:
-		var ticks: Array = type.shoot_animations[1].get("shoot_ticks", [])
-		var rate := float(type.shoot_animations[1].get("framerate", 0))
-		if not ticks.is_empty() and rate > 0.0:
-			return roundi(float(MatchClock.TICKS_PER_SECOND) * float(ticks[0]) / rate)
-	return windup_ticks
-
-
 func status(target_pos: Vector3, _target: Node3D) -> String:
 	if ability == null or Firewalking.of(user) == null or not BodyNudge.on_land(user, target_pos):
 		return ActiveAbility.BAD_TARGET

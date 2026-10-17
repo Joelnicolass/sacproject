@@ -2231,5 +2231,6 @@ Deuda:
 - **Capturas:** `agent/out/f162/` (`f162_spitfire.json`, `f162_gargoyle.json`, observador `agent/harness/f162_watch.gd`).
 
 Deuda:
+- `Burning.ignite` descarta un edificio con daño 0; sacengine lo prende igual con `setAblaze` (solo visual).
 - **Trail:** el puff no escala con el radio de la onda; los FX propios de `fhba` (`firy`) y `ehba` (`rock`) quedan para cuando haya tiempo de exportarlos.
 - **Orden fuego/golpe:** no se ve en el log (el `fuego` se imprime al terminar); lo cubre el código, no la réplica.

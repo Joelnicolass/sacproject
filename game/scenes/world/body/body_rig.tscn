@@ -1,0 +1,106 @@
+[gd_scene load_steps=18 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/body/body_rig.gd" id="1_rig"]
+[ext_resource type="Script" path="res://scenes/world/body/clip_events.gd" id="2_events"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_idle"]
+animation = &"role/idle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_run"]
+animation = &"role/run"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_attack"]
+animation = &"role/attack"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_shoot"]
+animation = &"role/shoot"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cast"]
+animation = &"role/cast"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_hit"]
+animation = &"role/hit"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_death"]
+animation = &"role/death"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_held"]
+animation = &"role/held"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_thrash"]
+animation = &"role/thrash"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_rise"]
+animation = &"role/rise"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_fly"]
+animation = &"role/fly"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="Transition_start"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="Transition_travel"]
+xfade_time = 0.15
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="Transition_to_idle"]
+xfade_time = 0.15
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_rig"]
+states/Start/position = Vector2(60, 100)
+states/idle/node = SubResource("AnimationNodeAnimation_idle")
+states/idle/position = Vector2(260, 40)
+states/run/node = SubResource("AnimationNodeAnimation_run")
+states/run/position = Vector2(460, 40)
+states/attack/node = SubResource("AnimationNodeAnimation_attack")
+states/attack/position = Vector2(660, 40)
+states/shoot/node = SubResource("AnimationNodeAnimation_shoot")
+states/shoot/position = Vector2(860, 40)
+states/cast/node = SubResource("AnimationNodeAnimation_cast")
+states/cast/position = Vector2(260, 150)
+states/hit/node = SubResource("AnimationNodeAnimation_hit")
+states/hit/position = Vector2(460, 150)
+states/death/node = SubResource("AnimationNodeAnimation_death")
+states/death/position = Vector2(660, 150)
+states/held/node = SubResource("AnimationNodeAnimation_held")
+states/held/position = Vector2(860, 150)
+states/thrash/node = SubResource("AnimationNodeAnimation_thrash")
+states/thrash/position = Vector2(260, 260)
+states/rise/node = SubResource("AnimationNodeAnimation_rise")
+states/rise/position = Vector2(460, 260)
+states/fly/node = SubResource("AnimationNodeAnimation_fly")
+states/fly/position = Vector2(660, 260)
+transitions = ["Start", "idle", SubResource("Transition_start"), "idle", "run", SubResource("Transition_travel"), "idle", "attack", SubResource("Transition_travel"), "idle", "shoot", SubResource("Transition_travel"), "idle", "cast", SubResource("Transition_travel"), "idle", "hit", SubResource("Transition_travel"), "idle", "death", SubResource("Transition_travel"), "idle", "held", SubResource("Transition_travel"), "idle", "thrash", SubResource("Transition_travel"), "idle", "rise", SubResource("Transition_travel"), "idle", "fly", SubResource("Transition_travel"), "run", "idle", SubResource("Transition_travel"), "run", "attack", SubResource("Transition_travel"), "run", "shoot", SubResource("Transition_travel"), "run", "cast", SubResource("Transition_travel"), "run", "hit", SubResource("Transition_travel"), "run", "death", SubResource("Transition_travel"), "run", "held", SubResource("Transition_travel"), "run", "thrash", SubResource("Transition_travel"), "run", "rise", SubResource("Transition_travel"), "run", "fly", SubResource("Transition_travel"), "attack", "idle", SubResource("Transition_to_idle"), "attack", "run", SubResource("Transition_travel"), "attack", "shoot", SubResource("Transition_travel"), "attack", "cast", SubResource("Transition_travel"), "attack", "hit", SubResource("Transition_travel"), "attack", "death", SubResource("Transition_travel"), "attack", "held", SubResource("Transition_travel"), "attack", "thrash", SubResource("Transition_travel"), "attack", "rise", SubResource("Transition_travel"), "attack", "fly", SubResource("Transition_travel"), "shoot", "idle", SubResource("Transition_to_idle"), "shoot", "run", SubResource("Transition_travel"), "shoot", "attack", SubResource("Transition_travel"), "shoot", "cast", SubResource("Transition_travel"), "shoot", "hit", SubResource("Transition_travel"), "shoot", "death", SubResource("Transition_travel"), "shoot", "held", SubResource("Transition_travel"), "shoot", "thrash", SubResource("Transition_travel"), "shoot", "rise", SubResource("Transition_travel"), "shoot", "fly", SubResource("Transition_travel"), "cast", "idle", SubResource("Transition_to_idle"), "cast", "run", SubResource("Transition_travel"), "cast", "attack", SubResource("Transition_travel"), "cast", "shoot", SubResource("Transition_travel"), "cast", "hit", SubResource("Transition_travel"), "cast", "death", SubResource("Transition_travel"), "cast", "held", SubResource("Transition_travel"), "cast", "thrash", SubResource("Transition_travel"), "cast", "rise", SubResource("Transition_travel"), "cast", "fly", SubResource("Transition_travel"), "hit", "idle", SubResource("Transition_to_idle"), "hit", "run", SubResource("Transition_travel"), "hit", "attack", SubResource("Transition_travel"), "hit", "shoot", SubResource("Transition_travel"), "hit", "cast", SubResource("Transition_travel"), "hit", "death", SubResource("Transition_travel"), "hit", "held", SubResource("Transition_travel"), "hit", "thrash", SubResource("Transition_travel"), "hit", "rise", SubResource("Transition_travel"), "hit", "fly", SubResource("Transition_travel"), "death", "idle", SubResource("Transition_travel"), "death", "run", SubResource("Transition_travel"), "death", "attack", SubResource("Transition_travel"), "death", "shoot", SubResource("Transition_travel"), "death", "cast", SubResource("Transition_travel"), "death", "hit", SubResource("Transition_travel"), "death", "held", SubResource("Transition_travel"), "death", "thrash", SubResource("Transition_travel"), "death", "rise", SubResource("Transition_travel"), "death", "fly", SubResource("Transition_travel"), "held", "idle", SubResource("Transition_travel"), "held", "run", SubResource("Transition_travel"), "held", "attack", SubResource("Transition_travel"), "held", "shoot", SubResource("Transition_travel"), "held", "cast", SubResource("Transition_travel"), "held", "hit", SubResource("Transition_travel"), "held", "death", SubResource("Transition_travel"), "held", "thrash", SubResource("Transition_travel"), "held", "rise", SubResource("Transition_travel"), "held", "fly", SubResource("Transition_travel"), "thrash", "idle", SubResource("Transition_travel"), "thrash", "run", SubResource("Transition_travel"), "thrash", "attack", SubResource("Transition_travel"), "thrash", "shoot", SubResource("Transition_travel"), "thrash", "cast", SubResource("Transition_travel"), "thrash", "hit", SubResource("Transition_travel"), "thrash", "death", SubResource("Transition_travel"), "thrash", "held", SubResource("Transition_travel"), "thrash", "rise", SubResource("Transition_travel"), "thrash", "fly", SubResource("Transition_travel"), "rise", "idle", SubResource("Transition_to_idle"), "rise", "run", SubResource("Transition_travel"), "rise", "attack", SubResource("Transition_travel"), "rise", "shoot", SubResource("Transition_travel"), "rise", "cast", SubResource("Transition_travel"), "rise", "hit", SubResource("Transition_travel"), "rise", "death", SubResource("Transition_travel"), "rise", "held", SubResource("Transition_travel"), "rise", "thrash", SubResource("Transition_travel"), "rise", "fly", SubResource("Transition_travel"), "fly", "idle", SubResource("Transition_travel"), "fly", "run", SubResource("Transition_travel"), "fly", "attack", SubResource("Transition_travel"), "fly", "shoot", SubResource("Transition_travel"), "fly", "cast", SubResource("Transition_travel"), "fly", "hit", SubResource("Transition_travel"), "fly", "death", SubResource("Transition_travel"), "fly", "held", SubResource("Transition_travel"), "fly", "thrash", SubResource("Transition_travel"), "fly", "rise", SubResource("Transition_travel")]
+graph_offset = Vector2(0, 0)
+
+[node name="BodyRig" type="Node3D"]
+script = ExtResource("1_rig")
+
+[node name="ModelSlot" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="Anim" type="AnimationPlayer" parent="."]
+unique_name_in_owner = true
+deterministic = true
+
+[node name="Tree" type="AnimationTree" parent="."]
+unique_name_in_owner = true
+tree_root = SubResource("AnimationNodeStateMachine_rig")
+anim_player = NodePath("../Anim")
+deterministic = true
+active = false
+
+[node name="HandL" type="BoneAttachment3D" parent="."]
+unique_name_in_owner = true
+
+[node name="Socket" type="Node3D" parent="HandL"]
+
+[node name="HandR" type="BoneAttachment3D" parent="."]
+unique_name_in_owner = true
+
+[node name="Socket" type="Node3D" parent="HandR"]
+
+[node name="ClipEvents" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("2_events")

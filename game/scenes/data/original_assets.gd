@@ -49,6 +49,12 @@ static func model(name: String) -> String:
 	return MODELS_DIR + name + ".glb"
 
 
+## models/index.json: every skeletal model's bones, clips (frames, framerate, hands, events) and AABB
+## (tools/export_skeletal.py).
+static func models_index() -> String:
+	return MODELS_DIR + "index.json"
+
+
 ## models/sizes.json: {"bodies": {...}, "props": {...}}, the measurements of every body and prop (tools/import_props.py).
 static func sizes() -> String:
 	return MODELS_DIR + "sizes.json"

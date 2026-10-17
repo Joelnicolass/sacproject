@@ -1,6 +1,6 @@
 # RFC-030 — Bestiario completo por nivel de mago
 
-Estado: plan del tech lead (Opus), pendiente de OK. Arquitectura **estándar**. MP **online con dedicado** (MpKit); la IA vive en quien simula. Autoridad: PRD > FEATURES > RULES > VISUAL > RFC-023/024/025/026/027 > este RFC.
+Estado: **cerrado (2026-10-17)**, cortes 030a–030v hechos (F121–F160); banco `all` y `quick` PASS. Lo que queda (F161–F166) es extra, sin aprobar. Arquitectura **estándar**. MP **online con dedicado** (MpKit); la IA vive en quien simula. Autoridad: PRD > FEATURES > RULES > VISUAL > RFC-023/024/025/026/027 > este RFC.
 Pedido del usuario: «también está pendiente tener a disponibilidad todas las criaturas. Hoy tenemos las básicas, pero en el juego original al avanzar en la campaña teníamos muchas más criaturas».
 Features: **F112–F133** (cortes 030a–030v).
 
@@ -1445,3 +1445,9 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 - **`active_ability.gd`:** 312 → 212 líneas. Ya no queda `match ability.tag`, ni `ROCK_FORM`/`PLAY_DEAD`/`STEALTH`, `DEFAULT_*_S`, `_apply*`, `_play_dead_until`/`_stealth_until`, `_shell*`, el grupo `Rockform` ni `stealth_alpha` (no lo leía nadie). `show_rock_form` delega en el efecto; un tag sin escena da «No implementado». El comentario de `catalog` quedó al día. `unit_body.gd` sigue en 1040.
 - **Medido:** `f133` = `bfca4703660b6c54783ba3953572075aed30a8e799d5955dde31a1d4fdebd359` en fixed, stress y window (igual a `det_baseline.txt`); log y `.events` guardados antes de tocar, idénticos línea a línea salvo los ms de `mundo listo`/`nav` y el reporte de tiempos. `f133_expect.py` PASS. `quick` PASS (21 digests iguales a la base). `rules_suite` (`--fixed-fps 60`) PASS. Flows `pt120_play_dead` y `f79_ability` AGENT_OK.
 - **Desvíos del plan:** Play Dead y Stealth comparten una clase en vez de dos (solo cambian los datos del `.tscn`). El timer vive en el efecto y corre justo después del `_physics_process` de `ActiveAbility` (su padre), en el mismo tick. Corrí los dos flows con ventana (así los lanzan sus scripts).
+
+## Cierre (2026-10-17)
+- `run_determinism.sh all` (s7, s7_npcs, s1_trivial, f139 en fixed, fixed2, stress y window): DETERMINISM PASS, digests iguales a la base.
+- `run_determinism.sh quick` (los casos F, incluido f133): PASS en 030v-b.
+- Deuda abierta: el pasto tapa unidades y proyectiles; los cadáveres no se desvanecen; poses de aturdido y windup provisorias (RFC-023); solo Life Shield cuenta como escudo; nada probado en red; `final_spit_melee` falla desde antes de 030v; Divine Sight desde la UI (F165).
+- Cortes extra propuestos, sin aprobar: F161–F166.

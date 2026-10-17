@@ -3,6 +3,7 @@
 #   agent/run_determinism.sh CASE|all [MODE...]   CASE: s7 s7_npcs s1_trivial f139   MODE: fixed stress window fixed2
 #                                                  (default modes: fixed stress window; fixed2 = fixed again, criterion 1)
 #   agent/run_determinism.sh table                 verdict + markdown table from agent/out/det/
+#   agent/run_determinism.sh quick                 short pass for intermediate cuts (see below)
 # Modes (debug/ai_match.tscn):
 #   fixed   headless --fixed-fps 60 (as fast as it can, 1/60 per frame: the reference)
 #   stress  headless in real time, --max-fps 6 (up to 8 physics steps per frame: render clock != tick clock)
@@ -79,6 +80,20 @@ fi
 CASE_ARG=${1:?usage: run_determinism.sh CASE|all [MODE...] | table}
 shift
 MODES=("$@"); [ ${#MODES[@]} -eq 0 ] && MODES=(fixed stress window)
+# quick (cortes intermedios, ~3-4 min): s1_quick (IA con hechizos, 0,5 min) en los 3 modos + s7 y f139 solo fixed,
+# comparados con agent/det_baseline.txt (caso digest). La pasada `all` queda para el cierre de cada RFC.
+if [ "$CASE_ARG" = quick ]; then
+  "$0" s1_quick fixed stress window || true
+  "$0" s7 fixed >/dev/null; "$0" f139 fixed >/dev/null
+  ok=1
+  while read -r c want; do
+    [ -z "$c" ] && continue
+    got=$(python3 -I -c "import json,sys;print(json.load(open(sys.argv[1])).get('digest',''))" "$OUT/${c}_fixed.json" 2>/dev/null)
+    if [ "$got" = "$want" ]; then echo "baseline $c OK ${got:0:8}"; else echo "baseline $c FAIL got=${got:0:8} want=${want:0:8}"; ok=0; fi
+  done < "$ROOT/agent/det_baseline.txt"
+  "$0" table s1_quick | grep -q "DETERMINISM PASS" || ok=0
+  [ $ok = 1 ] && { echo "QUICK PASS"; exit 0; } || { echo "QUICK FAIL"; exit 1; }
+fi
 if [ "$CASE_ARG" = all ]; then CASES=("${ALL_CASES[@]}"); else CASES=("$CASE_ARG"); fi
 mkdir -p "$OUT"
 cd "$ROOT"
@@ -89,6 +104,7 @@ case_args() { # case -> ai_match args (no out/events)
     s7_npcs) echo "--rules=res://debug/rules/ai_duel_seeded.tres --seed=7 --minutes=2 --npcs" ;;
     s1_trivial) echo "--rules=res://debug/rules/ai_vs_trivial.tres --seed=1 --minutes=3" ;;
     f139) echo "--rules=res://debug/rules/f139_ff_clouds.tres --seed=7 --minutes=0.5" ;;
+    s1_quick) echo "--rules=res://debug/rules/ai_vs_trivial.tres --seed=1 --minutes=0.5" ;;
     *) return 1 ;;
   esac
 }

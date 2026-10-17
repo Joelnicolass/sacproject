@@ -16,6 +16,7 @@ const NAV_CASES := preload("res://debug/nav_cases.gd")  # 024b
 const VILLAGE_CASES := preload("res://debug/village_cases.gd")  # 024b2
 const AI_CASES := preload("res://debug/ai_cases.gd")  # 024c
 const CROWD_CASES := preload("res://debug/crowd_cases.gd")  # 027d
+const DETERMINISM_CASES := preload("res://debug/determinism_cases.gd")  # 032b
 
 @export var auto_run := true
 @export var max_spawned_units := 12
@@ -54,6 +55,7 @@ func _run_suite() -> void:
 	_results.merge(await AI_CASES.new().run(self))  # 024c
 	_results.merge(await CROWD_CASES.new().run(self))  # 027d
 	_results["friendly_fire"] = await _test_friendly_fire()  # 031a
+	_results.merge(await DETERMINISM_CASES.new().run(self))  # 032b
 	_print_suite()
 
 

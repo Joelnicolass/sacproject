@@ -1346,3 +1346,32 @@ Todo pasa por `godot_run.sh`. Un vigía mide RSS y tiempo y marca `CONTAMINATED`
 | f139 (`f139_ff_clouds`, 0,5 min) | `af04fefbb80252e24a6e642d60759e4c8efaa90c34fdf2f83a7460897b26bb6d` | igual | igual |
 
 **El banco discrimina.** En `s1_trivial`, el modo `stress` diverge en la línea 91 de `events` (un summon 12 ticks antes) y `window` en la línea 171. Es el enfriamiento de `Spellbook`, que se calcula en `_process`; lo corrige 032b.
+
+### F145 — MatchClock y enfriamientos por tick (RFC-032, corte 032b)
+
+**Qué cambia:**
+- **`MatchClock`** (`scenes/world/match_clock.gd`, estático) es el único reloj de la simulación. Se engancha a `SceneTree.physics_frame`, no avanza en pausa y se reinicia en `HighNoon._enter_tree`.
+- **`Spellbook`** guarda `_ready_tick`, con `cooldown = (ready − now)/60`, y ya no tiene `_process`. Cada cliente convierte el RPC a su propio `now`.
+- **`rules_suite`** suma los casos `spellbook_cadence` y `match_clock_pause` (`debug/determinism_cases.gd`).
+- **Banco `run_determinism.sh quick`** (para cortes intermedios, unos 2 minutos): corre `s1_quick` en los 3 modos y `s7`/`f139` en fixed contra `agent/det_baseline.txt`.
+
+**Cierre (2026-10-16).** Review PASS (`reviews/REVIEW-F145-match-clock.md`).
+- **`all` → DETERMINISM PASS en los 4 casos × 3 modos.** `s1_trivial` ahora da `e076abe1…` también en stress y en window; en F144 divergía.
+- **`quick`:** PASS en 1 min 45 s.
+- **HUD del libro con ventana:** el enfriamiento baja en vivo (3,2 → 1,7 → listo).
+- **Online, dedicado más un cliente** (`pt145_net`): el cliente ve 3,1 → 1,6 en 1,5 s, lo mismo que en solo salvo la latencia. AGENT_OK.
+- **`f25`:** AGENT_OK. **`rules_suite`:** PASS.
+
+**Digests 032b:**
+
+| Caso | Digest |
+|---|---|
+| s7 | `4915c88453c02814584f26cff3596e4aed817e42f04e9021a04f658344f5597d` |
+| s7_npcs | `7179b17d6f6cd03b4ba4c61ab8a6a5d0d6d4f0d79e1a1cd387211a2c512d86f6` |
+| s1_trivial | `e076abe1cf0e70cbac9898c5211e5601a1973ee42cc955743bf665a049f42bf9` (ahora en los 3 modos) |
+| s1_quick | `44d78b49ebad84f3cddf817ea1655bd7a312ee3f6e2a395300dcc175344743d8` |
+| f139 | `af04fefbb80252e24a6e642d60759e4c8efaa90c34fdf2f83a7460897b26bb6d` |
+
+**Deuda:**
+- El redondeo a ticks puede correr un enfriamiento hasta 1 tick.
+- Subir de nivel a mitad de partida limpia los enfriamientos (`_rebuild`, igual que antes).

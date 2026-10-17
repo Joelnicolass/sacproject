@@ -176,3 +176,10 @@ En sacengine la pose de reposo es `stance1` (slot 0, offset 176), y los `idle0..
 
 ## Decisión del usuario (2026-10-17)
 El pasto se apaga de forma provisoria (`grass_enabled = false` en `data/look/quality_{low,medium,high}.tres`) y queda para el final. RFC-023 ya no espera a 022e1: arranca con 023a.
+
+## Decisión del usuario (2026-10-17): sin caché en el port final
+- El port final no depende de `cache/`. Cada modelo es un asset propio: `game/assets/original/models/<m>.glb`, con esqueleto, malla y todas sus animaciones, uno por modelo. No hay mallas por cuadro.
+- Esos assets **se commitean** (git LFS para `.glb` y `.png`), y sus `.import` también. RULES.md se actualizó; los WAD siguen fuera de git.
+- `export_skeletal.py` es el importador que los genera desde la instalación; se corre al agregar o regenerar modelos, no en cada arranque.
+- Cambia §3.1: «`.glb.import` en `cache/`, nunca en git» pasa a «`.glb.import` versionado junto al `.glb`». §3.3: `BodyRig` lee de `assets/original/models/`; el aviso sin caché pasa a «falta el asset».
+- Las texturas de los cuerpos (hoy en `cache/`) migran a `assets/original/textures/` en un corte posterior. El resto de la caché (terreno, props) se planifica en un RFC aparte.

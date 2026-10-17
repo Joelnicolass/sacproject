@@ -14,3 +14,6 @@ __pycache__/
 
 # Salidas de pruebas del juego (renderizan arte del original; 7,8 GB)
 game/agent/out/
+
+# Assets finales del port (RFC-023, 2026-10-17): sus .import sí se versionan.
+!game/assets/original/**/*.import

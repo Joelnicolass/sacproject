@@ -8,3 +8,5 @@ game/assets/cc0/**/*.hdr filter=lfs diff=lfs merge=lfs -text
 game/assets/cc0/**/*.glb filter=lfs diff=lfs merge=lfs -text
 # Materiales generados con Material Maker: el .ptex fuente va a git normal; los mapas exportados por LFS.
 game/assets/mm/**/*.png filter=lfs diff=lfs merge=lfs -text
+game/assets/original/**/*.glb filter=lfs diff=lfs merge=lfs -text
+game/assets/original/**/*.png filter=lfs diff=lfs merge=lfs -text

@@ -657,6 +657,52 @@ agent/run_determinism.sh                       M  caso f121 (0,5 min)
 
 **Escena de prueba:** `res://debug/f120_poison.tscn`. **Criterio:** daño por segundo medido; el congelado no se mueve.
 
+#### 030k-a — F122 Veneno a distancia (Necryl `cena`, Deadeye `lfda`, Hellmouth `mhba`) y debuffs de `cen@`
+
+**Plan (developer de F122, 2026-10-17):** el del tech lead en `rfcs/plans/030k-030l-plan.md` §030k-a (sacengine, diseño, árbol y criterios), sin cambios de árbol.
+- `Poisoning` (`scenes/world/units/poisoning.gd`, hijo `Poisoning` de `unit.tscn` y `wizard_body.tscn`) es el único dueño.
+  - Sus hijos son las dosis `Poisoned` (`extends DamageOverTime`) y las corre en orden en `_physics_process`, solo en servidor o solo.
+  - Los agregados se derivan de las dosis vivas en cada consulta: `resistance_bonus()` = 1e-3·Σ ires, `regeneration_factor()` = Π freg, `mana_blocked()` y `damage_sum()` = Σ int(por s).
+  - El contagio usa `BodyNudge.box(...).grow(2 m)` + `bodies_in`, y el enfriamiento es `vida + 180` ticks de `MatchClock`.
+- `DamageOverTime.step()` da `lifetime + 1` actualizaciones: daña, termina si `frame >= lifetime` y recién después suma `frame`.
+- Health, ManaPool y MeleeAttack le preguntan a `Poisoning`:
+  - `Health.resistance` = `max(0, base + bonus)`;
+  - `Health.regenerate(amount)`, que `unit_body` y `wizard_body` llaman en lugar de `heal` (neto 0);
+  - `ManaPool.add` no da nada con el maná bloqueado;
+  - `MeleeAttack.roll_damage` suma el bono dentro del max.
+- `PoisonImpact`: con criatura o mago, `drenaje = amount·drain` del tirador y dosis DIRECT_RANGED; con un edificio, daño directo. `disease_impact.tscn` es la misma con `infectious = true`.
+- `AbilityType.args` viene de `abilities.json`. La nube `cen@` envenena con sus `ires 1000` / `freg 0`.
+
+**Resultado (developer de F122, 2026-10-17):** `debug/f122_poison.tscn` (caso `f122` del banco), semilla 7, comparado con `agent/tools/f122_expect.py`:
+- **C1 Deadeye:** `veneno Druid4 total 499.3 en 601 actualizaciones`. El drenaje lleva al Deadeye de 585 a 945.
+- **C2 Hellmouth:** 61,538/s × 0,9 = 0,923 por tick: 110,8 en 120 ticks (total de la dosis: 554,8 en 601). El Hellmouth pasa de 2700 a 3100.
+- **C3 Necryl:** drenaje de 630 a 730 y `Druid1 regeneración ×0.00` mientras dura (vuelve a ×1.00 al terminar).
+  - El primer tick no se loguea aparte. Sale de 15,385/60 × (0,9 + 1) = 0,4872, y el total de Druid1 coincide exacto con la réplica, que usa ese tick.
+- **C4 Contagio:**
+  - `Druid2 infectado por Druid1: 15/s, 600 cuadros` y, una sola vez, `Druid1 reinfectado por Druid2: 15/s, 600 cuadros`. Druid3 (control, a 6 m) no aparece nunca.
+  - Druid1 muere en la actualización 546 de su dosis, igual que la réplica en orden port; sacengine da 545, dentro de ±2.
+  - Druid2 termina con 515 de vida, contra 514,5 de la réplica.
+- **C5 Maná:** `maná bloqueado por Dose (cuadro 120, tick N)` sale 120 ticks después de cada impacto (Druid5 en el 183; Druid1, Druid2 y Druid4 en el 197).
+  - La dosis de reinfección de Druid1 se bloquea en el 198, un tick después, porque se le dio cuando su Poisoning ya había corrido ese tick.
+  - `maná libre` sale cuando termina la última dosis.
+- **C6 Determinismo:**
+  - `f122` da aab853fc en fixed, stress y window, y entra en `quick` y en `det_baseline.txt` (con el carril A movido, ver abajo).
+  - `quick`: s7, s1_quick, f148 y f121 iguales a la línea base.
+  - `f139` cambia (declarado: tiene un Necryl). Da 5ade9305 en fixed, stress y window y se regrabó la línea base. El `f139_fixed2` que queda en `agent/out/det` es de una corrida vieja.
+  - `rules_suite` PASS.
+  - No se corrieron `f116` ni `f117`.
+
+*Desvíos del plan:*
+- **Carril A movido (playtest):** en z −80 los Druids quedaban dentro de la roca `bld3` del mapa, en (1300, 1190), y solo se veían sus barras de vida. Ahora el Necryl está en x +35 / z −50 = (1305, 1220) y los Druids en x +65 (1335, 1220; 1335, 1221,5; 1335, 1214), con las mismas distancias relativas. El lugar se eligió con `high_noon_terrain.bin` + `high_noon_widgets.json` / `high_noon_ntts.json`: 0,3 m de desnivel en el Necryl, 0,66 m en el grupo de Druids, línea de tiro libre y el accesorio más cercano (JAW1) a 14 m. Los números no cambian.
+- El kill del Necryl pasa de 10 s a 8 s: a 10 s alcanzaba a disparar una segunda vez (tick ≈ 545) y la medición ya no era de una sola dosis.
+- Los logs de `Poisoning` nombran el nodo (`Druid4`), no el tipo, para distinguir A1, A2 y A3.
+- Un cuerpo sin hijo `Poisoning` no se envenena y lo dice en el log (`veneno: X no tiene Poisoning`).
+
+*Divergencias declaradas:*
+- Las del plan: contagio en cada tick, sin la cola de IA; sin el ×1,5 del guardián, sin `iacc` y sin el drain general de `dealDamage`.
+- Nueva: una dosis que se le da a un cuerpo cuyo `Poisoning` ya corrió en ese tick arranca en el siguiente. En sacengine la lista es global y corre en el mismo cuadro, así que acá llega 1 tick tarde.
+- Visto en `f139`: el Necryl en melee se infecta de su propio blanco. El contagio no mira el bando, igual que en sacengine.
+
 ### 030l — F123 Disparos de fuego (Tickferno, Pyromaniac, Bombard)
 
 **Árbol**

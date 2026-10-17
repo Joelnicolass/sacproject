@@ -18,3 +18,14 @@ extends Resource
 @export var flags: int = 0
 @export var flags1: int = 0
 @export var flags2: int = 0
+## SPEL args (spells.d Spel.args, as sacspell.d spellArgInt / spellArgFloat): `ires` and `freg` of poison, `ttex` of a
+## particle… Read with the default sacengine passes (SacSpell.spellArgInt("ires", 0)).
+@export var args: Dictionary = {}
+
+
+func arg_int(key: String, fallback := 0) -> int:
+	return int(args.get(key, fallback))
+
+
+func arg_float(key: String, fallback := 0.0) -> float:
+	return float(args.get(key, fallback))

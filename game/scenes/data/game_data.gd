@@ -208,6 +208,7 @@ func _make_ability(row: Dictionary) -> _ABILITY_TYPE:
 	type.flags = int(row.get("flags", 0))
 	type.flags1 = int(row.get("flags1", 0))
 	type.flags2 = int(row.get("flags2", 0))
+	type.args = row.get("args", {})
 	return type
 
 

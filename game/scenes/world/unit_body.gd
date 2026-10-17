@@ -650,7 +650,7 @@ func _regenerate(delta: float) -> void:
 	var mana := $ManaPool
 	var full := float(mana.get("maximum"))
 	var factor := 1.0 if full <= 0.0 else float(mana.get("current")) / full
-	health.call("heal", type.regeneration_per_s * factor * delta)
+	health.call("regenerate", type.regeneration_per_s * factor * delta)
 	_last_health = float(health.get("current"))
 
 

@@ -21,6 +21,9 @@ signal fed(amount: float, source: StringName)
 	set(value):
 		current = value
 		changed.emit(current, maximum)
+## F122: the body's poison (Poisoning). While a dose blocks the mana, add() gives nothing (sacengine giveMana,
+## state.d:8829). Optional: empty = never blocked.
+@export var poisoning: Poisoning
 
 
 func setup(full: float) -> void:
@@ -39,6 +42,8 @@ func spend(amount: float) -> bool:
 
 func add(amount: float, source: StringName = &"") -> void:
 	if not _has_authority() or amount <= 0.0:
+		return
+	if poisoning and poisoning.mana_blocked():
 		return
 	current = minf(current + amount, maximum)
 	given.emit(amount)

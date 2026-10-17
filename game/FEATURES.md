@@ -1454,3 +1454,31 @@ Deuda:
   - `BodySeparation` desvía el tumbo.
 - **Estado de caída:** `Stunned` deduce la caída de `previous`; un cliente que entra tarde cuenta knock.
 - **Sin probar:** el mago arrojado en partida, `net_local` y las partículas del vórtice y la implosión.
+
+### F122 — Veneno a distancia (RFC-030, corte 030k-a)
+
+**Piezas:**
+- **`Poisoning`** (hijo de la unidad y del mago): único dueño de los agregados del veneno. Deriva en cada consulta, a partir de sus dosis vivas:
+  - la resistencia extra (`ires`·1e-3, en todo daño);
+  - la regeneración (×Π`freg`);
+  - el bloqueo de maná (a los 120 ticks de cada dosis);
+  - el contagio (caja +2 m, enfriamiento `vida+180`, ida y vuelta).
+- **`Poisoned`:** extiende `DamageOverTime` (base compartida con el fuego de 030l), con `lifetime+1` actualizaciones.
+- **`PoisonImpact`/`DiseaseImpact`:** el tirador se cura `amount·drain` y el blanco recibe la dosis (sin daño directo); un edificio recibe daño directo.
+- **Disparos:** `cena` (Necryl, contagia), `lfda` (Deadeye) y `mhba` (Hellmouth).
+- **Nube `cen@`:** ahora trae `ires 1000` / `freg 0`.
+
+**Cierre (2026-10-17).** La review pidió cambios por un solo bloqueante: `Poisoned.start` era API que solo usaba el harness. Lo corrigió el orquestador (`reviews/REVIEW-RFC-030k-a.md`); `rules_suite` da PASS.
+- **Deadeye:** 499,3 en 601 actualizaciones; drain +360.
+- **Hellmouth:** 110,8 en 120 ticks; drain +400.
+- **Necryl:** drain +100 y regeneración ×0. Contagia a Druid2 y este reinfecta una vez a Druid1. Druid3 nunca se infecta. Druid1 muere en la actualización 546 (réplica 546) y Druid2 queda con 514,5.
+- **Determinismo:** `f122` da `aab853fc` en fixed, stress y window. `f139` se regrabó (`5ade9305`, igual en los 3 modos; tiene un Necryl). `quick`: s7, s1_quick, f148 y f121 iguales.
+- **Playtest** (`agent/out/pt122/`): la lógica da PASS en los 5 puntos. El carril A estaba dentro de la estructura `bld3` y se movió a (1335, 1220). En las capturas se ven el humo y las barras de los dos infectados, y la barra limpia de Druid3; el pasto alto tapa los cuerpos.
+
+Deuda:
+- **Contagio por bando:** el contagio ignora el bando, como en sacengine, así que el Necryl en melee se infecta de su propio blanco.
+- **Portador muriendo:** un portador en modo `dying` no contagia (en sacengine sí, 1 tick).
+- **`nerf_factor`:** está duplicado.
+- **Accesos sin tipo** en `PoisonImpact`.
+- **`f116` y `f117`:** se corren en la pasada `all` del cierre del RFC.
+- **Encuadres:** el pasto alto tapa los cuerpos en las tomas rasantes.

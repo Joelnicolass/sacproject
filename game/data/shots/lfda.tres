@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ShotLook" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/units/shot_look.gd" id="1_look"]
+[ext_resource type="PackedScene" path="res://scenes/world/units/impacts/poison_impact.tscn" id="2_impact"]
+
+[resource]
+script = ExtResource("1_look")
+hit_size = 0.1
+impact = ExtResource("2_impact")
+sweep = true
+fallback_color = Color(0.55, 0.8, 0.3, 1)
+fallback_radius = 0.1

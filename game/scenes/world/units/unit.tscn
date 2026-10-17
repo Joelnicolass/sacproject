@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=3]
+[gd_scene load_steps=47 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/unit_body.gd" id="1_body"]
 [ext_resource type="Script" path="res://scenes/world/body_visual.gd" id="2_visual"]
@@ -41,6 +41,7 @@
 [ext_resource type="Resource" path="res://data/afflictions/petrified.tres" id="f137_petrified_type"]
 [ext_resource type="Script" path="res://scenes/world/units/afflictions/tumbling.gd" id="f121_tumbling"]
 [ext_resource type="Resource" path="res://data/afflictions/tumbling.tres" id="f121_tumbling_type"]
+[ext_resource type="Script" path="res://scenes/world/units/poisoning.gd" id="f122_poisoning"]
 [ext_resource type="Script" path="res://scenes/world/look/stone_look.gd" id="f137_stone_look"]
 [ext_resource type="Shader" path="res://scenes/world/look/stone.gdshader" id="f137_stone_shader"]
 
@@ -109,10 +110,11 @@ script = ExtResource("2_visual")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_unit")
 
-[node name="Health" type="Node" parent="." node_paths=PackedStringArray("passive", "afflictions")]
+[node name="Health" type="Node" parent="." node_paths=PackedStringArray("passive", "afflictions", "poisoning")]
 script = ExtResource("3_health")
 passive = NodePath("../DamagePassive")
 afflictions = NodePath("../Afflictions")
+poisoning = NodePath("../Poisoning")
 
 [node name="MeleeAttack" type="Node" parent="." node_paths=PackedStringArray("passive", "own_health")]
 script = ExtResource("4_melee")
@@ -130,8 +132,14 @@ body = NodePath("..")
 health = NodePath("../Health")
 types = Array[ExtResource("f118_type")]([ExtResource("f118_goc"), ExtResource("f118_cen"), ExtResource("f118_tum")])
 
-[node name="ManaPool" type="Node" parent="."]
+[node name="ManaPool" type="Node" parent="." node_paths=PackedStringArray("poisoning")]
 script = ExtResource("f29_mana")
+poisoning = NodePath("../Poisoning")
+
+[node name="Poisoning" type="Node" parent="." node_paths=PackedStringArray("body", "health")]
+script = ExtResource("f122_poisoning")
+body = NodePath("..")
+health = NodePath("../Health")
 
 [node name="RangedAttack" type="Node" parent="."]
 script = ExtResource("f29_ranged")

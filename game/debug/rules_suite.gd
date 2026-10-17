@@ -221,8 +221,8 @@ func _poison_ratio(own_health: Health, foe_health: Health) -> float:
 
 
 func _poison_taken(own: Node, foe: Node) -> Array[float]:
-	var own_dose := Poisoned.start(own, 60.0, 30, 1)
-	var foe_dose := Poisoned.start(foe, 60.0, 30, 1)
+	var own_dose := Poisoning.dose_body(own, 60.0, 30, Health.SPLASH_SPELL, 1)
+	var foe_dose := Poisoning.dose_body(foe, 60.0, 30, Health.SPLASH_SPELL, 1)
 	var taken: Array[float] = [0.0, 0.0]
 	for _frame in 40:
 		if is_instance_valid(own_dose):

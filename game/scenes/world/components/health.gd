@@ -37,6 +37,9 @@ const SPLASH_RANGED := &"splash_ranged"
 @export var passive: DamagePassive
 ## F137: the states the body is in (petrified ×0.2, state.d:8965) scale every hit, on both paths. Optional: empty = ×1.
 @export var afflictions: Afflictions
+## F122: the body's poison (Poisoning): its resistance bonus goes into every resistance and its factor into regenerate().
+## Optional: empty = no bonus, regeneration ×1.
+@export var poisoning: Poisoning
 
 ## Multiplies damage_typed on top of the resistance: the body's own effects, as dealDamage
 ## stacks them (state.d:8962-8969); Rockform sets 0.05.
@@ -111,7 +114,12 @@ func damage_typed(amount: float, kind: StringName, from_slot: int = 0, ignore_fr
 
 ## The body's resistance for `kind`: CreatureType for a UnitBody, WizardType for a wizard.
 ## sacengine stores them ×1e-3 (sacobject.d:156-160); a 0 is immunity (Trogg vs spells).
+## F122: dealDamage adds the poison's resistanceBonus inside the max (state.d:8950-8957): max(0, resistance + bonus).
 func resistance(kind: StringName) -> float:
+	return maxf(0.0, _base_resistance(kind) + (poisoning.resistance_bonus() if poisoning else 0.0))
+
+
+func _base_resistance(kind: StringName) -> float:
 	var body := get_parent()
 	var data: Resource = null
 	var type: Variant = body.get("type") if body and "type" in body else null
@@ -122,7 +130,7 @@ func resistance(kind: StringName) -> float:
 	if data == null:
 		return 1.0
 	var value: Variant = data.get("%s_resistance" % kind)
-	return maxf(0.0, float(value)) if value != null else 1.0
+	return float(value) if value != null else 1.0
 
 
 var _deflecting := false
@@ -174,6 +182,12 @@ func _deflect(amount: float, kind: StringName, from_slot: int) -> float:
 	var taken: float = deflector.deflect(amount, kind, from_slot)
 	_deflecting = false
 	return taken
+
+
+## sacengine updateCreatureStats (state.d:14403): heal(max(0, regeneration · poisonRegeneration) · …). The body's
+## regeneration (amount already scaled by mana and delta) times the poison's factor (freg 0: none while it lasts).
+func regenerate(amount: float) -> void:
+	heal(amount * (maxf(0.0, poisoning.regeneration_factor()) if poisoning else 1.0))
 
 
 func heal(amount: float) -> void:

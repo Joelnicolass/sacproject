@@ -1,0 +1,276 @@
+{
+ "scene": "res://debug/f122_poison.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "Overlay/Status",
+    "text_contains": "Enter",
+    "timeout": 60
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "call": {
+    "harness": "pt122_watch",
+    "method": "frame",
+    "args": [
+     1322,
+     1218,
+     4,
+     16,
+     18
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "a0_lane_before.png"
+  },
+  {
+   "call": {
+    "harness": "pt122_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "press": "check_tick"
+  },
+  {
+   "wait_until": {
+    "node": "Runner",
+    "prop": "_running",
+    "equals": true,
+    "timeout": 10
+   }
+  },
+  {
+   "call": {
+    "harness": "pt122_watch",
+    "method": "frame",
+    "args": [
+     1322,
+     1218,
+     4,
+     16,
+     18
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt122_watch",
+    "prop": "shots",
+    "gte": 1,
+    "timeout": 10
+   }
+  },
+  {
+   "shot": "a1_dart_flight.png"
+  },
+  {
+   "call": {
+    "harness": "pt122_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt122_watch",
+    "prop": "d1_pois",
+    "equals": 1,
+    "timeout": 10
+   }
+  },
+  {
+   "call": {
+    "harness": "pt122_watch",
+    "method": "frame",
+    "args": [
+     1335,
+     1218,
+     9,
+     5,
+     0
+    ]
+   }
+  },
+  {
+   "wait": 0.55
+  },
+  {
+   "shot": "a2_d1_smoke.png"
+  },
+  {
+   "call": {
+    "harness": "pt122_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt122_watch",
+    "prop": "d2_pois",
+    "equals": 1,
+    "timeout": 10
+   }
+  },
+  {
+   "wait": 0.4
+  },
+  {
+   "shot": "a3_contagion.png"
+  },
+  {
+   "call": {
+    "harness": "pt122_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt122_watch",
+    "method": "frame",
+    "args": [
+     1327,
+     1350,
+     -5,
+     4,
+     8
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt122_watch",
+    "prop": "d4_hp",
+    "lte": 720.0,
+    "timeout": 20
+   }
+  },
+  {
+   "shot": "b1_deadeye_victim.png"
+  },
+  {
+   "call": {
+    "harness": "pt122_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt122_watch",
+    "method": "frame",
+    "args": [
+     1300,
+     1350,
+     0,
+     10,
+     30
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "b2_deadeye_lane.png"
+  },
+  {
+   "call": {
+    "harness": "pt122_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt122_watch",
+    "method": "frame",
+    "args": [
+     1283,
+     1470,
+     2,
+     12,
+     26
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt122_watch",
+    "prop": "d5_hp",
+    "lte": 650.0,
+    "timeout": 20
+   }
+  },
+  {
+   "shot": "c1_hellmouth.png"
+  },
+  {
+   "call": {
+    "harness": "pt122_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "pt122_watch",
+    "method": "frame",
+    "args": [
+     1335,
+     1218,
+     9,
+     5,
+     0
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt122_watch",
+    "prop": "d1_dead",
+    "equals": 1,
+    "timeout": 30
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "a4_d1_dead.png"
+  },
+  {
+   "call": {
+    "harness": "pt122_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt122_watch",
+    "prop": "tick",
+    "gte": 900,
+    "timeout": 30
+   }
+  },
+  {
+   "call": {
+    "harness": "pt122_watch",
+    "method": "report",
+    "args": []
+   }
+  }
+ ]
+}

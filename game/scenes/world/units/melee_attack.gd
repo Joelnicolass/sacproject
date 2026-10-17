@@ -130,7 +130,8 @@ func roll_damage(target: Node3D, anim: Dictionary) -> Dictionary:
 	if roll >= hit_chance:
 		damage *= (1.0 - roll) / (1.0 - hit_chance)
 	damage *= float(type.melee_strength)
-	damage *= melee_resistance_scale * maxf(0.0, float(foe.get("resistance", 1.0)))
+	## F122: the poison's resistanceBonus goes inside the max (state.d:8950-8951); Poisoning owns it.
+	damage *= melee_resistance_scale * maxf(0.0, float(foe.get("resistance", 1.0)) + Poisoning.resistance_bonus_of(target))
 	return {"amount": damage, "chance": hit_chance, "roll": roll}
 
 

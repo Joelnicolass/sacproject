@@ -1986,3 +1986,27 @@ Deuda:
 - Solo Life Shield cuenta como `shielded`. Faltan Skin of Stone, Ethereal Form, Fireform, Protective Swarm y Air Shield.
 - No se evalúa `isApplicable` de la pasiva.
 - El log no distingue «sin tirada» de «congela».
+
+### F159 — El Dragon enreda al golpear (RFC-030, corte 030u-c)
+
+**Piezas:**
+- **`Vined`** (Affliction; `vined.tres`: bit 8, `coexists`, `cc_protects`, `pins`, `blocks_regeneration`):
+  - cada golpe agrega su propio vencimiento;
+  - la duración sale de `Affliction.cc_ticks`, la misma fórmula que `Frozen`, en float32;
+  - `steer` deja la velocidad xz en cero;
+  - las lianas son placeholder, en MIX.
+- **`Afflictions.fixed()`** (`immobilized() or pins()`) es el único dueño de «no se mueve desde afuera». Lo usan `BodyNudge`, `unit_body` y `wizard_body`; empujes, tirones y catapulta lo respetan.
+- **`Health.regenerate`** corta si `blocks_regeneration()`.
+- **`dragon_vines.tres`** (`eniv`, `refuse_flying`) se suma a `MeleeOnHit.types`.
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-030u-c.md`).
+- **Enredo:** un solo golpe da `enredado Jabberocky3 durante 429 (n 1)`.
+- **Mientras dura:** el Jabberocky queda quieto (desvío 0) y sin regenerar, aunque tenga una orden de moverse.
+- **Al terminar:** camina 5 m en 60 ticks y regenera.
+- **Determinismo:** `f132` (carriles Q, Y y V) da `18bfca66` en fixed, stress y window. `quick` no cambia (f121, f128, f149 y f155 incluidos). `rules_suite` da PASS.
+- **Playtest:** PASS en los 4 puntos.
+
+Deuda:
+- Las lianas son de reserva, sin el modelo `vine`.
+- No hay `healBlocked` ni `shieldBlocked`.
+- La regeneración del port solo corre en reposo.

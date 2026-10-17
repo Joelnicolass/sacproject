@@ -1,4 +1,4 @@
-[gd_scene load_steps=67 format=3]
+[gd_scene load_steps=70 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/unit_body.gd" id="1_body"]
 [ext_resource type="PackedScene" path="res://scenes/world/components/pace_factors.tscn" id="f129_pace"]
@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" path="res://scenes/world/units/melee_on_hit.tscn" id="f158_onhit"]
 [ext_resource type="Script" path="res://scenes/data/on_hit_passive_type.gd" id="f158_type"]
 [ext_resource type="Resource" path="res://data/passives/yeti_freeze.tres" id="f158_zerf"]
+[ext_resource type="Resource" path="res://data/passives/dragon_vines.tres" id="f159_eniv"]
 [ext_resource type="Script" path="res://scenes/world/units/corpse.gd" id="5_corpse"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/unit_health_bar.tscn" id="6_bar"]
 [ext_resource type="Script" path="res://addons/mp_kit/mp_replicate.gd" id="7_replicate"]
@@ -63,6 +64,8 @@
 [ext_resource type="Shader" path="res://scenes/world/look/stone.gdshader" id="f137_stone_shader"]
 
 [ext_resource type="Script" path="res://scenes/world/units/afflictions/oiled.gd" id="f155_oiled"]
+[ext_resource type="Script" path="res://scenes/world/units/afflictions/vined.gd" id="f159_vined"]
+[ext_resource type="Resource" path="res://data/afflictions/vined.tres" id="f159_vined_type"]
 [ext_resource type="Resource" path="res://data/afflictions/oiled.tres" id="f155_oiled_type"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_unit"]
@@ -163,7 +166,7 @@ own_health = NodePath("../Health")
 [node name="MeleeOnHit" parent="." node_paths=PackedStringArray("melee", "body") instance=ExtResource("f158_onhit")]
 melee = NodePath("../MeleeAttack")
 body = NodePath("..")
-types = Array[ExtResource("f158_type")]([ExtResource("f158_zerf")])
+types = Array[ExtResource("f158_type")]([ExtResource("f158_zerf"), ExtResource("f159_eniv")])
 
 [node name="DamagePassive" type="Node" parent="." node_paths=PackedStringArray("body", "charge")]
 script = ExtResource("f117_passive")
@@ -273,6 +276,11 @@ tilt = NodePath("../../Tilt")
 script = ExtResource("f155_oiled")
 type = ExtResource("f155_oiled_type")
 orders = NodePath("../../Orders")
+
+[node name="Vined" type="Node" parent="Afflictions" node_paths=PackedStringArray("visual")]
+script = ExtResource("f159_vined")
+type = ExtResource("f159_vined_type")
+visual = NodePath("../../Tilt/Mesh")
 
 [node name="Orders" type="Node" parent="."]
 script = ExtResource("f27_orders")

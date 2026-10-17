@@ -225,7 +225,10 @@ func _deflect(amount: float, kind: StringName, from_slot: int) -> float:
 
 ## sacengine updateCreatureStats (state.d:14403): heal(max(0, regeneration · poisonRegeneration) · …). The body's
 ## regeneration (amount already scaled by mana and delta) times the poison's factor (freg 0: none while it lasts).
+## F159: a state that blocks regeneration (Vined: sacengine regenerationBlocked, stats.d:73) makes it nothing.
 func regenerate(amount: float) -> void:
+	if afflictions != null and afflictions.blocks_regeneration():
+		return
 	heal(amount * (maxf(0.0, poisoning.regeneration_factor()) if poisoning else 1.0))
 
 

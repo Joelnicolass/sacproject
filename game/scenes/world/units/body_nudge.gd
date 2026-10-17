@@ -28,11 +28,11 @@ static func slide(body: Node3D, offset: Vector3) -> bool:
 	return true
 
 
-## sacengine effects.fixed (push and catapult do nothing, state.d:8588-8590): a petrified or frozen body. The one answer
+## sacengine effects.fixed (push and catapult do nothing, state.d:8588-8590): a petrified, frozen or vined body. The one answer
 ## to «can this body be moved from outside?», asked of its Afflictions.
 static func fixed(body: Node) -> bool:
 	var afflictions := body.get_node_or_null("Afflictions") as Afflictions
-	return afflictions != null and afflictions.immobilized()
+	return afflictions != null and afflictions.fixed()
 
 
 ## In the air on its own (a flier), not thrown.

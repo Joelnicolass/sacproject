@@ -1,0 +1,226 @@
+{
+ "scene": "res://debug/f132_quake_onhit.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "press": {
+    "name": "check_tick",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait_until": {
+    "node": "Runner",
+    "prop": "_running",
+    "equals": true,
+    "timeout": 60
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt159_watch",
+    "prop": "rel",
+    "gte": 3,
+    "timeout": 240
+   }
+  },
+  {
+   "call": {
+    "harness": "pt159_watch",
+    "method": "frame_between",
+    "args": [
+     "Dragon1",
+     "Jabberocky3",
+     0,
+     9,
+     22
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt159_watch",
+    "method": "state",
+    "args": [
+     [
+      "Dragon1",
+      "Jabberocky3"
+     ]
+    ]
+   }
+  },
+  {
+   "shot": "pt/p0_before.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt159_watch",
+    "prop": "rel",
+    "gte": 70,
+    "timeout": 240
+   }
+  },
+  {
+   "call": {
+    "harness": "pt159_watch",
+    "method": "frame_on",
+    "args": [
+     "Jabberocky3",
+     9,
+     5,
+     16
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt159_watch",
+    "method": "state",
+    "args": [
+     [
+      "Jabberocky3"
+     ]
+    ]
+   }
+  },
+  {
+   "shot": "pt/p1_vined_close.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt159_watch",
+    "prop": "rel",
+    "gte": 300,
+    "timeout": 240
+   }
+  },
+  {
+   "call": {
+    "harness": "pt159_watch",
+    "method": "frame_on",
+    "args": [
+     "Jabberocky3",
+     9,
+     5,
+     16
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt159_watch",
+    "method": "state",
+    "args": [
+     [
+      "Jabberocky3"
+     ]
+    ]
+   }
+  },
+  {
+   "shot": "pt/p2_vined_still.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt159_watch",
+    "prop": "rel",
+    "gte": 520,
+    "timeout": 240
+   }
+  },
+  {
+   "call": {
+    "harness": "pt159_watch",
+    "method": "frame_on",
+    "args": [
+     "Jabberocky3",
+     9,
+     5,
+     16
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt159_watch",
+    "method": "state",
+    "args": [
+     [
+      "Jabberocky3"
+     ]
+    ]
+   }
+  },
+  {
+   "shot": "pt/p3_free.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt159_watch",
+    "prop": "rel",
+    "gte": 600,
+    "timeout": 240
+   }
+  },
+  {
+   "call": {
+    "harness": "pt159_watch",
+    "method": "frame_on",
+    "args": [
+     "Jabberocky3",
+     12,
+     6,
+     20
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt159_watch",
+    "method": "state",
+    "args": [
+     [
+      "Jabberocky3"
+     ]
+    ]
+   }
+  },
+  {
+   "shot": "pt/p4_walking.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt159_watch",
+    "prop": "rel",
+    "gte": 880,
+    "timeout": 240
+   }
+  },
+  {
+   "call": {
+    "harness": "pt159_watch",
+    "method": "frame_on",
+    "args": [
+     "Jabberocky3",
+     12,
+     6,
+     20
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "pt159_watch",
+    "method": "state",
+    "args": [
+     [
+      "Jabberocky3"
+     ]
+    ]
+   }
+  },
+  {
+   "shot": "pt/p5_idle_regen.png"
+  }
+ ]
+}

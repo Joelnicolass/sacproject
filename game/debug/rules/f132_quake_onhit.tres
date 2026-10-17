@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BenchRules" load_steps=26 format=3]
+[gd_resource type="Resource" script_class="BenchRules" load_steps=32 format=3]
 
 [ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
 [ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
@@ -189,12 +189,60 @@ slot = 1
 user = "Yeti2"
 target = "Druid2"
 
+[sub_resource type="Resource" id="Group_D1"]
+script = ExtResource("2_group")
+tag = "grdg"
+slot = 1
+count = 1
+columns = 1
+offset_m = 55.0
+offset_z_m = -58.0
+facing_x = 1.0
+holds_still = true
+[sub_resource type="Resource" id="Group_JV"]
+script = ExtResource("2_group")
+tag = "mtse"
+slot = 2
+count = 1
+columns = 1
+offset_m = 67.0
+offset_z_m = -58.0
+facing_x = -1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Event_hit_D1"]
+script = ExtResource("3_event")
+at_s = 0.5
+action = "attack"
+label = "D1 ataca a JV (carril V, enreda)"
+slot = 1
+user = "Dragon1"
+target = "Jabberocky3"
+
+[sub_resource type="Resource" id="Event_kill_D1"]
+script = ExtResource("3_event")
+at_s = 1.8
+action = "kill"
+label = "D1 muere a 1,8 s (un solo golpe)"
+slot = 2
+victim = "Dragon1"
+
+[sub_resource type="Resource" id="Event_move_JV"]
+script = ExtResource("3_event")
+at_s = 2.0
+action = "attack"
+label = "JV recibe la orden de marcha a 2,0 s (queda enredado hasta b1+429)"
+slot = 2
+user = "Jabberocky3"
+order = "move"
+point = Vector2(1350, 1212)
+
 [resource]
 script = ExtResource("1_rules")
 match_seed = 7
-groups = Array[ExtResource("2_group")]([SubResource("Group_J1"), SubResource("Group_Q1"), SubResource("Group_Q2"), SubResource("Group_Q3"), SubResource("Group_Q4"), SubResource("Group_Q5"), SubResource("Group_J2"), SubResource("Group_Y1"), SubResource("Group_T1"), SubResource("Group_Y2"), SubResource("Group_T2")])
+groups = Array[ExtResource("2_group")]([SubResource("Group_J1"), SubResource("Group_Q1"), SubResource("Group_Q2"), SubResource("Group_Q3"), SubResource("Group_Q4"), SubResource("Group_Q5"), SubResource("Group_J2"), SubResource("Group_Y1"), SubResource("Group_T1"), SubResource("Group_Y2"), SubResource("Group_T2"), SubResource("Group_D1"), SubResource("Group_JV")])
 anchor = Vector3(1270, 0, 1270)
 start_paused = true
-events = Array[ExtResource("3_event")]([SubResource("Event_use_J1"), SubResource("Event_use_J2"), SubResource("Event_stun_J2"), SubResource("Event_again_J2"), SubResource("Event_again_J1"), SubResource("Event_shield_T2"), SubResource("Event_hit_Y1"), SubResource("Event_hit_Y2")])
+events = Array[ExtResource("3_event")]([SubResource("Event_use_J1"), SubResource("Event_use_J2"), SubResource("Event_stun_J2"), SubResource("Event_again_J2"), SubResource("Event_again_J1"), SubResource("Event_shield_T2"), SubResource("Event_hit_Y1"), SubResource("Event_hit_Y2"), SubResource("Event_hit_D1"), SubResource("Event_kill_D1"), SubResource("Event_move_JV")])
 pending_text = "Quake en pausa"
 ignore_annihilation = true

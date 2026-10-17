@@ -84,6 +84,32 @@ func immobilized() -> bool:
 	return false
 
 
+## F159: a state that is on holds the body where it is (Vined: pins, sacengine effects.vined → fixed).
+func pins() -> bool:
+	if shown == 0:
+		return false
+	for affliction in _on():
+		if affliction.type.pins:
+			return true
+	return false
+
+
+## sacengine effects.fixed (push, catapult and the walk do nothing, state.d:8588-8590): a petrified or frozen body, or a pinned one.
+## The one answer to «can this body be moved from outside?» (BodyNudge, BodySeparation).
+func fixed() -> bool:
+	return immobilized() or pins()
+
+
+## F159: a state that is on stops the body's regeneration (Vined; Health.regenerate asks).
+func blocks_regeneration() -> bool:
+	if shown == 0:
+		return false
+	for affliction in _on():
+		if affliction.type.blocks_regeneration:
+			return true
+	return false
+
+
 ## A state that is on lets a flier fall (petrified; Flight reads it).
 func drops_fliers() -> bool:
 	if shown == 0:

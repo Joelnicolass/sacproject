@@ -25,6 +25,11 @@ extends Resource
 ## Only for shields (dealDamage's `!peirceShield` block, state.d:8962-8969): a pierce_shield hit (the Pyromaniac's fire,
 ## F123) skips it in Health. A state whose factor is not a shield needs its own field, not this one.
 @export var damage_factor := 1.0
+## F159: the body cannot be moved from outside nor walk (sacengine effects.fixed = vined, state.d:8588-8590, stats.d:94): the Grasping
+## Vines. Unlike `immobilizes` it still is an obstacle (the separation pushes others, not it) and keeps its pose and its AI.
+@export var pins := false
+## F159: the body does not regenerate while it lasts (sacengine regenerationBlocked: immobilized, rings of fire, slimed, vined, stats.d:73).
+@export var blocks_regeneration := false
 ## Refuses the crowd control that asks ccProtected (petrify, state.d:11631-11640).
 @export var cc_protects := false
 ## The ids of the states this one ends when it starts. A state that is on refuses a new one unless the new one

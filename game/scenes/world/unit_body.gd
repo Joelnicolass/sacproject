@@ -574,7 +574,7 @@ func _physics_process(delta: float) -> void:
 		velocity.x = 0.0
 		velocity.z = 0.0
 	velocity = _afflictions.steer(velocity, delta)  ## F121: a thrown body (Tumbling) flies its own ballistic path.
-	if is_obstacle() and not _afflictions.immobilized():
+	if is_obstacle() and not _afflictions.fixed():
 		velocity = BodySeparation.resolve(self, velocity, delta)
 	if _flight != null and _flight.is_airborne():
 		_cap_air_pace()

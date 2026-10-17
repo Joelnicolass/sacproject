@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=3]
+[gd_scene load_steps=39 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/wizard/wizard_body.gd" id="1_body"]
 [ext_resource type="PackedScene" path="res://scenes/world/components/pace_factors.tscn" id="f129_pace"]
@@ -37,6 +37,8 @@
 [ext_resource type="Shader" path="res://scenes/world/look/stone.gdshader" id="f137_stone_shader"]
 
 [ext_resource type="Script" path="res://scenes/world/units/afflictions/oiled.gd" id="f155_oiled"]
+[ext_resource type="Script" path="res://scenes/world/units/afflictions/vined.gd" id="f159_vined"]
+[ext_resource type="Resource" path="res://data/afflictions/vined.tres" id="f159_vined_type"]
 [ext_resource type="Resource" path="res://data/afflictions/oiled_wizard.tres" id="f155_oiled_type"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
@@ -237,6 +239,11 @@ visual = NodePath("../../Tilt/Mesh")
 [node name="Oiled" type="Node" parent="Afflictions"]
 script = ExtResource("f155_oiled")
 type = ExtResource("f155_oiled_type")
+
+[node name="Vined" type="Node" parent="Afflictions" node_paths=PackedStringArray("visual")]
+script = ExtResource("f159_vined")
+type = ExtResource("f159_vined_type")
+visual = NodePath("../../Tilt/Mesh")
 
 [node name="PathFollower" type="Node" parent="." node_paths=PackedStringArray("body")]
 script = ExtResource("f72_follower")

@@ -19,7 +19,6 @@ extends Affliction
 ## updates after the hit); the ice is a tint of Afflictions.look (frozen.tres look_tint), not the `frez` cube.
 
 const _HEALTH := preload("res://scenes/world/components/health.gd")
-const TICKS := float(MatchClock.TICKS_PER_SECOND)
 ## sacengine computes the duration in float32 (REVIEW-030k-b N6): 60 · (1000 / 960 · 20) is 1250 there and
 ## 1250.0000000000002 in a double (a Trogg 1250, not 1251), and 60 · (1000 / 1500 · 20) is 801 there, not 800 (Sara
 ## Bella, Gangrel). So the port rounds every step to float32 (SacFloat.f32) as sacengine does, no epsilon.
@@ -124,14 +123,8 @@ func freeze(spell: SpellType, from_slot: int) -> bool:
 ## The lifetime in physics ticks: cast(int)ceil(updateFPS · duration), duration = (wizard ? 0.25 : 1000 / max health)
 ## · SPEL duration (state.d:10701-10702).
 func lifetime_ticks(body: Node3D, spell: SpellType) -> int:
-	var seconds := SacFloat.f32(SacFloat.f32(wizard_factor) * SacFloat.f32(spell.duration))
-	if not body.is_in_group(&"wizard"):
-		var health := _afflictions().health
-		var maximum := health.maximum if health else 0.0
-		if maximum <= 0.0:
-			return 0
-		seconds = SacFloat.f32(SacFloat.f32(SacFloat.f32(creature_k) / SacFloat.f32(maximum)) * SacFloat.f32(spell.duration))
-	return ceili(SacFloat.f32(TICKS * seconds))
+	var health := _afflictions().health
+	return cc_ticks(body.is_in_group(&"wizard"), health.maximum if health else 0.0, spell.duration, creature_k, wizard_factor)
 
 
 ## canBeFrozen = canBeImmobilized (state.d:189-198, 204): Petrified's.

@@ -114,6 +114,7 @@ func _ready() -> void:
 	DevourGrowth.log_devour = true  # F131: bench logs what the Devour gives (off in the product)
 	Soul.log_souls = true  # F131: bench logs the souls eaten and the corpses they dissolve (off in the product)
 	QuakeWave.log_quake = true  # F132: bench logs the Jabberocky's Quake wave (off in the product)
+	Vined.log_vines = true  # F159: bench logs the Dragon's Grasping Vines (off in the product)
 	_set_status(_rules.pending_text)
 	var wait := _rules.start_paused and not _headless and not _args.has("autostart")
 	if not wait:

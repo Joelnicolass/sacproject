@@ -1403,3 +1403,21 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 - `unit_body.gd` queda en 1040 líneas.
 
 *Divergencias declaradas:* con enfriamiento 0 no hay tirada ni línea `congelar`; sin sonido.
+
+#### 030u-c: Plan (developer) / Resultado
+
+**Plan (developer de 030u-c, 2026-10-17):** el del tech lead en `rfcs/plans/030t-030v-plan.md` §030u-c y `rfcs/plans/030t-030u-phase0-diffs.md`. Números de `state.d` 10795-10812, 3092-3104, 17852-17876, 8588-8605 y `stats.d` 68-95.
+- `AfflictionType`: `pins` y `blocks_regeneration`. `Afflictions`: `pins()`, `fixed()` (= `immobilized()` o `pins()`) y `blocks_regeneration()`. `BodyNudge.fixed` y las líneas de `unit_body.gd` y `wizard_body.gd` (separación) usan `fixed()`: neto 0. `Health.regenerate` corta si `blocks_regeneration()`.
+- `Affliction.cc_ticks(wizard, vida_máx, duración, k, factor)`: la cuenta `ceil(60 · (mago 0,25 : 1000/vidaMáx) · duración)` en float32 con `SacFloat.f32`. `Frozen.lifetime_ticks` y `Vined` la comparten (un solo dueño de la fórmula).
+- `Vined` (`afflictions/vined.gd`, `data/afflictions/vined.tres`: bit 8, `coexists`, `holds = false`, `cc_protects`, `pins`, `blocks_regeneration`): lista de vencimientos (cada golpe suma uno con su timer); `inflict` → `grasp`, que no aplica a voladores ni a un cuerpo muerto; `steer` deja xz en cero; la muerte del cuerpo vacía la lista. Look de reserva: 16 lianas en espiral, malla de tubo opaca (MIX), RNG de presentación con `MatchSeed.seed_rng`, crecen y se achican en 1 s. Logs `enredado X durante N (n k) (cuadro T)` y `enredado fin X (n k) (cuadro T)` detrás de `Vined.log_vines` (`ai_match`).
+- `data/passives/dragon_vines.tres` (`eniv`, `Afflictions/Vined`, `refuse_flying`); `unit.tscn` suma `MeleeOnHit.types` y el nodo `Afflictions/Vined`; `wizard_body.tscn`, el nodo.
+- Carril V en `f132_quake_onhit`: D1 `grdg` (slot 1, `holds_still`) y JV `mtse` (slot 2, pacifista); D1 ataca a JV a 0,5 s y muere a 1,8 s; JV recibe `move` a 2,0 s. Comentario de `SacFloat` actualizado (N5 de la review de F132).
+
+**Resultado (developer de 030u-c, 2026-10-17):**
+- `f159_expect.py`, `f158_expect.py` y `f132_expect.py` PASS en fixed, stress y window: un solo golpe (tick 61) y `enredado Jabberocky3 durante 429 (n 1)`, fin en el cuadro 490 (b1 + 429). Digest nuevo de `f132`: `18bfca66` en los tres modos (`det_baseline.txt` actualizado).
+- Ventana `pt159_play` con el vigía (`pt159_watch.gd`, `run_pt159.sh`, `flows/pt159_play.json`) y `f159_expect.py --watch`: JV queda quieto (desvío 0,0000 m) de b1 a b1+429, la vida no cambia (5283,567) y después avanza 5,24 m en 60 ticks y regenera (248 lecturas por encima). Capturas: lianas verdes visibles sobre el Jabberocky (`p2`) y libre después (`p3`).
+- `quick` PASS con las 20 líneas base iguales (`f121`, `f128`, `f149` y `f155` no cambian); `rules_suite` PASS con `--fixed-fps 60`.
+- **Desvíos del plan:** (1) el carril V se mudó de +20/+32/+45 a +55/+67/+80 (z −58): la fila del plan quedaba a 3 m de J1 y dentro de la onda del Quake; verificado con `f159_expect.py --lanes` (cajas reales por especie, a más de 16 m de la onda y a más de 20 m del carril Y). (2) JV se llama `Jabberocky3` (J1 y J2 del carril Q ya son `Jabberocky1/2`); el criterio y la réplica leen ese nombre. (3) El evento `kill` lleva `slot = 2`: con el slot del Dragon no hace daño (fuego amigo). (4) `f159_expect.py` sin `--watch` salta la quietud y la vida (el log determinista no trae `vigila`); con `--watch` las exige.
+- `unit_body.gd` queda en 1040 líneas.
+
+*Divergencias declaradas:* las lianas son un look de reserva (sin el modelo `vine`); un segundo golpe solo extiende el tiempo del mismo juego de lianas; no se bloquean `healBlocked` ni `shieldBlocked`; la catapulta respeta `fixed()` (`Tumbling.catapult` usa `BodyNudge.fixed`, así que un cuerpo enredado no se lanza, como sacengine 8588); la regeneración del port sigue siendo solo en reposo.

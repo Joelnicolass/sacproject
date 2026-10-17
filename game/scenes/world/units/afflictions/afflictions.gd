@@ -61,6 +61,16 @@ func holds() -> bool:
 	return false
 
 
+## A state that is on takes the body out of the world: not an obstacle, not a target (Firewalking).
+func hides() -> bool:
+	if shown == 0:
+		return false
+	for affliction in _on():
+		if affliction.type.hides:
+			return true
+	return false
+
+
 func immobilized() -> bool:
 	if shown == 0:
 		return false

@@ -1638,3 +1638,32 @@ Deuda:
 - **Escudo tras revivir:** un cuerpo que vuelve a la vida no recupera la burbuja.
 - **Textura:** la `ent1.TXTR` animada del original no está en los datos exportados.
 - **Duración mínima:** se perdió el piso de 1 s. No afecta a los datos actuales.
+
+### F152 — Preparación de habilidades y Firewalk del Warmonger (RFC-030, corte 030o-b)
+
+**Piezas:**
+- **`UsingAbility`** (aflicción `using_ability.tres`, bit 4, `holds`): las habilidades con `windup()` retienen el cuerpo hasta el shoot tick de shoot1.
+  - `ActiveAbility` cobra el maná en ese tick aunque el efecto falle, y pone el enfriamiento solo si estaba en 0.
+  - Si un aturdimiento, petrificación, congelación o tumbo corta la preparación, no gasta nada.
+- **`Firewalking`** (`firewalking.tres`, bit 5, `holds` + `hides`): `steer()` es el único que escribe la posición.
+  - Recorre 60 cuadros: lineal hasta 20 m y, más allá, en dos mitades de ±10 m con un salto en el medio.
+  - Durante la caminata no es blanco ni obstáculo, no recibe daño y no se lo puede inmovilizar.
+  - Es invisible y deja una estela de llamas (`firewalk_trail`) con un estallido al empezar y otro al terminar.
+- **`AfflictionType.hides`** → `Afflictions.hides()`, que leen `is_targetable` e `is_obstacle` (neto 0 líneas).
+- **Firewalk (`wfhg`)** en el catálogo: alcance 200·0,75.
+- **Enfriamientos en ticks:** el de `ActiveAbility`, el de Stealth y el de Play Dead pasan a contarse en ticks de `MatchClock`.
+- **Banco:** las acciones `ability` y `stun` viven en `debug/`.
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-030o-b.md`). El playtest falló en lo visual: la estela no se leía, porque el pool de `fire` era de 16 y se vaciaba. Se corrigió en una ronda; R−B quedó +70,7 sobre el pasto, con 4× más píxeles de fuego.
+- **Preparación:** 150 ticks; el maná pasa de 500 a 250 y el enfriamiento queda en 600 ticks.
+- **W1:** salta 40,36 m en el cuadro 31 y termina en (1280, 1290).
+- **W2:** avanza 0,25 m por cuadro.
+- **W3:** a 160 m queda «Fuera de alcance», sin gastar maná.
+- **Corte:** si se lo aturde durante la preparación, sale `preparación cortada` y no gasta.
+- **Determinismo:** `f126` (carriles A + B) da `45d8baca` en fixed, stress y window. Las otras 10 líneas base no cambian con la migración a ticks. `quick` y `rules_suite` dan PASS.
+
+Deuda:
+- Con la cámara alineada con el recorrido, la estela se ve como una bola de llamas y no como un rastro.
+- El print de `ActiveAbility` sigue siempre encendido (R6, 030v).
+- Fuera de alcance rechaza la habilidad en vez de acercarse.
+- Mientras camina, la cápsula sigue en la capa de unidades.

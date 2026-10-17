@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/units/abilities/firewalk.gd" id="1_firewalk"]
+
+[node name="Firewalk" type="Node"]
+editor_description = "F152 (RFC-030 030o-b): efecto propio del Firewalk del Warmonger (wfhg). ActiveAbility lo instancia como \"Effect\" desde data/abilities/ability_catalog.tres. Prepara 150 ticks (GFs2: tick 75 a 30 fps), alcance 200 x 0,75, camina con Firewalking."
+script = ExtResource("1_firewalk")
+windup_ticks = 150
+range_factor = 0.75

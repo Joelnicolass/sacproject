@@ -3,6 +3,11 @@ extends Node
 
 ## A creature's active ability, used on command (Ctrl+Q / Shift+B). sacengine `ability`
 ## (sacobject.d:444): abilities[1] for a ranged creature, else abilities[0].
+## F152 (030o-b): time is MatchClock's ticks, not the render delta (RFC-032): the cooldown, Stealth and Play Dead are
+## «until tick N». An effect with windup() > 0 (Firewalk) prepares first: use() turns on UsingAbility (the body is held,
+## sacengine startUsingAbility) and the effect fires at `now + windup`, where the mana is spent even if fire() did
+## nothing (state.d:12746-12748) and the cooldown is set if it was 0. If the state was cut before (stunned, frozen…)
+## nothing is spent.
 ## Checks follow abilityStatus (state.d:29582-29604): cooldown → mana → target → range → the
 ## ability's own rule. `useAbility` (state.d:13463-13561) drains manaCost and sets the ability
 ## cooldown (cooldown·60 frames, counted down every frame, state.d:13937) when it applies.
@@ -53,11 +58,17 @@ var locked := false
 
 var _body: Node3D
 var _mana: Node
-var _cooldown := 0.0
+## MatchClock tick at which the cooldown ends (0 = ready).
+var _ready_at := 0
 var _shell: MeshInstance3D
 var _shell_tween: Tween
-var _play_dead_left := 0.0
-var _stealth_left := 0.0
+## MatchClock ticks at which Play Dead / Stealth end (0 = off).
+var _play_dead_until := 0
+var _stealth_until := 0
+## F152: the preparation. MatchClock tick at which the effect fires (-1 = none) and the target it was ordered on.
+var _fire_at := -1
+var _fire_pos := Vector3.ZERO
+var _fire_target: Node3D
 ## F126: the AbilityEffect of this ability (instanced from the catalog), or null.
 var _effect: AbilityEffect
 
@@ -79,16 +90,18 @@ func _ready() -> void:
 		set_physics_process(false)
 
 
-func _physics_process(delta: float) -> void:
-	_cooldown = maxf(0.0, _cooldown - delta)
-	if _play_dead_left > 0.0:
-		_play_dead_left = maxf(0.0, _play_dead_left - delta)
-		if _play_dead_left == 0.0 and _body and _body.has_method("set_playing_dead"):
+func _physics_process(_delta: float) -> void:
+	var now := MatchClock.now()
+	if _play_dead_until > 0 and now >= _play_dead_until:
+		_play_dead_until = 0
+		if _body and _body.has_method("set_playing_dead"):
 			_body.call("set_playing_dead", false)
-	if _stealth_left > 0.0:
-		_stealth_left = maxf(0.0, _stealth_left - delta)
-		if _stealth_left == 0.0 and _body and _body.has_method("set_stealth"):
+	if _stealth_until > 0 and now >= _stealth_until:
+		_stealth_until = 0
+		if _body and _body.has_method("set_stealth"):
 			_body.call("set_stealth", false)
+	if _fire_at >= 0 and now >= _fire_at:
+		_finish_windup()
 
 
 func display_name() -> String:
@@ -96,7 +109,11 @@ func display_name() -> String:
 
 
 func cooldown_left() -> float:
-	return _cooldown
+	return float(maxi(0, _ready_at - MatchClock.now())) / float(MatchClock.TICKS_PER_SECOND)
+
+
+func _cooling() -> bool:
+	return MatchClock.now() < _ready_at
 
 
 ## "" = ready. Clients see the replicated mana, not the cooldown: the server checks again.
@@ -105,11 +122,14 @@ func status(target_pos: Vector3, target: Node3D) -> String:
 		return NO_ABILITY
 	if _effect == null and not [ROCK_FORM, RUN_AWAY, PLAY_DEAD, STEALTH, LIFE_SHIELD, DIVINE_SIGHT].has(ability.tag):
 		return NOT_IMPLEMENTED
-	if _cooldown > 0.0:
+	if _cooling():
 		return COOLING
 	if maxf(1.0, float(ability.mana_cost)) > _mana_left() + MANA_EPSILON:
 		return NO_MANA
 	if _effect:
+		var using := _using()
+		if using and using.is_on():
+			return BAD_TARGET
 		return _effect.status(target_pos, target)
 	match ability.tag:
 		ROCK_FORM:
@@ -120,10 +140,10 @@ func status(target_pos: Vector3, target: Node3D) -> String:
 			if speeding:
 				return BAD_TARGET
 		PLAY_DEAD:
-			if _play_dead_left > 0.0:
+			if _play_dead_until > 0:
 				return BAD_TARGET
 		STEALTH:
-			if _stealth_left > 0.0:
+			if _stealth_until > 0:
 				return BAD_TARGET
 		LIFE_SHIELD:
 			var shield := LifeShield.of(_body)
@@ -142,16 +162,58 @@ func use(target_pos: Vector3, target: Node3D) -> String:
 	var reason := status(target_pos, target)
 	if not reason.is_empty():
 		return reason
+	if _effect and _effect.windup() > 0:
+		return _begin_windup(target_pos, target)
 	var before := _mana_left()
 	if _effect:
 		if not _effect.fire(target_pos, target):
 			return BAD_TARGET
 	else:
 		_apply(target)
-	_mana.call("spend", maxf(1.0, float(ability.mana_cost)))
-	_cooldown = ability.cooldown_s
-	print("habilidad %s mana %d->%d" % [ability.display_name, roundi(before), roundi(_mana_left())])
+	_spend(before, true)
 	return ""
+
+
+## Charges the mana and starts the cooldown (`force`, or only if it was 0: state.d:12746-12748).
+func _spend(before: float, force: bool) -> void:
+	_mana.call("spend", maxf(1.0, float(ability.mana_cost)))
+	if force or not _cooling():
+		_ready_at = MatchClock.now() + roundi(ability.cooldown_s * MatchClock.TICKS_PER_SECOND)
+	print("habilidad %s mana %d->%d enfriamiento %d ticks" % [ability.display_name, roundi(before), roundi(_mana_left()), maxi(0, _ready_at - MatchClock.now())])
+
+
+func _using() -> Affliction:
+	return _body.get_node_or_null("Afflictions/UsingAbility") as Affliction if _body else null
+
+
+## sacengine startUsingAbility: the body is held until the effect's tick. Nothing is spent yet.
+func _begin_windup(target_pos: Vector3, target: Node3D) -> String:
+	var using := _using()
+	var owner_node := _body.get_node("Afflictions") as Afflictions
+	if using == null or not owner_node.admit(using):
+		return BAD_TARGET
+	owner_node.mark(using, true)
+	var ticks := _effect.windup()
+	_fire_at = MatchClock.now() + ticks
+	_fire_pos = target_pos
+	_fire_target = target
+	print("usando habilidad %s %s %d ticks (tick %d)" % [ability.display_name, str(_body.name), ticks, MatchClock.now()])
+	return ""
+
+
+## The effect's tick: if the preparation survived, it fires and the mana is spent even when fire() did nothing.
+func _finish_windup() -> void:
+	_fire_at = -1
+	var using := _using()
+	if using == null or not using.is_on():
+		print("preparación cortada %s %s (tick %d)" % [ability.display_name, str(_body.name), MatchClock.now()])
+		return
+	var before := _mana_left()
+	var target := _fire_target if is_instance_valid(_fire_target) else null
+	_effect.fire(_fire_pos, target)
+	_spend(before, false)
+	if using.is_on():
+		(_body.get_node("Afflictions") as Afflictions).mark(using, false)
 
 
 func _apply(target: Node3D) -> void:
@@ -221,14 +283,14 @@ func _apply_run_away() -> void:
 
 
 func _apply_play_dead() -> void:
-	_play_dead_left = maxf(ability.duration, DEFAULT_PLAY_DEAD_S)
+	_play_dead_until = MatchClock.now() + roundi(maxf(ability.duration, DEFAULT_PLAY_DEAD_S) * MatchClock.TICKS_PER_SECOND)
 	if _body.has_method("set_playing_dead"):
 		_body.call("set_playing_dead", true)
 	FxBus.broadcast("dirt", _body.global_position + Vector3.UP * 0.3)
 
 
 func _apply_stealth() -> void:
-	_stealth_left = maxf(ability.duration, DEFAULT_STEALTH_S)
+	_stealth_until = MatchClock.now() + roundi(maxf(ability.duration, DEFAULT_STEALTH_S) * MatchClock.TICKS_PER_SECOND)
 	if _body.has_method("set_stealth"):
 		_body.call("set_stealth", true)
 	FxBus.broadcast("spit_trail", _body.global_position + Vector3.UP)

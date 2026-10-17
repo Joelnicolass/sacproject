@@ -73,6 +73,13 @@ func _fire(event: BenchEvent, tick: int) -> void:
 	if event.action == "spawn":
 		entry["node"] = _spawn(event)
 		print("bench: %s en el tick %d" % [event.label, tick])
+	elif event.action == "stun":
+		var body := world.get_node_or_null("%Units/" + event.user) as Node3D
+		entry["node"] = body
+		if body:
+			print("bench: %s aturde a %s en el tick %d: %s" % [event.label, event.user, tick, body.get_node("Afflictions/Stunned").call("stun_with_cooldown", 120)])
+	elif event.action == "ability":
+		entry["node"] = _use_ability(event, tick)
 	else:
 		var victim := world.get_node_or_null("%Units/" + event.victim) as Node3D
 		entry["node"] = victim
@@ -80,6 +87,20 @@ func _fire(event: BenchEvent, tick: int) -> void:
 			victim.get_node("Health").call("damage", 1.0e9, event.slot)
 			print("bench: %s mata a %s en el tick %d" % [event.label, event.victim, tick])
 	_live.append(entry)
+
+
+## F152: `user` uses its active ability like a click (UnitBody.use_ability); a refusal is logged with the body's name.
+func _use_ability(event: BenchEvent, tick: int) -> Node3D:
+	var body := world.get_node_or_null("%Units/" + event.user) as Node3D
+	if body == null:
+		push_warning("bench: no hay un cuerpo %s para usar la habilidad" % event.user)
+		return null
+	var foe := world.get_node_or_null("%Units/" + event.target) as Node3D if not event.target.is_empty() else null
+	var at := Vector3(event.point.x, 0.0, event.point.y)
+	at.y = BodyNudge.ground_y(body, at)
+	var reason: String = body.call("use_ability", at, foe)
+	print("bench: %s usa la habilidad: %s (tick %d)" % [event.user, "ok" if reason.is_empty() else "rechazada, " + reason, tick])
+	return body
 
 
 func _spawn(event: BenchEvent) -> Node3D:

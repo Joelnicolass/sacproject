@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BenchRules" load_steps=11 format=3]
+[gd_resource type="Resource" script_class="BenchRules" load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
 [ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
@@ -81,12 +81,72 @@ label = "un rayo (carril A)"
 slot = 2
 victim = "Gnome1"
 
+[sub_resource type="Resource" id="Group_W1_warmonger"]
+script = ExtResource("2_group")
+tag = "nugf"
+slot = 1
+count = 1
+columns = 1
+offset_m = -50.0
+offset_z_m = 20.0
+facing_x = 1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_W2_warmonger"]
+script = ExtResource("2_group")
+tag = "nugf"
+slot = 1
+count = 1
+columns = 1
+offset_m = -35.0
+offset_z_m = 8.0
+facing_x = 1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Group_W3_warmonger"]
+script = ExtResource("2_group")
+tag = "nugf"
+slot = 1
+count = 1
+columns = 1
+offset_m = -50.0
+offset_z_m = 40.0
+facing_x = 1.0
+pacifist = true
+
+[sub_resource type="Resource" id="Event_ability_W1"]
+script = ExtResource("3_event")
+at_s = 0.5
+action = "ability"
+label = "Firewalk (carril B, W1)"
+slot = 1
+user = "Warmonger1"
+point = Vector2(1280, 1290)
+
+[sub_resource type="Resource" id="Event_ability_W2"]
+script = ExtResource("3_event")
+at_s = 0.5
+action = "ability"
+label = "Firewalk (carril B, W2)"
+slot = 1
+user = "Warmonger2"
+point = Vector2(1250, 1278)
+
+[sub_resource type="Resource" id="Event_ability_W3"]
+script = ExtResource("3_event")
+at_s = 0.5
+action = "ability"
+label = "Firewalk (carril B, W3)"
+slot = 1
+user = "Warmonger3"
+point = Vector2(1358.6, 1230)
+
 [resource]
 script = ExtResource("1_rules")
 match_seed = 7
-groups = Array[ExtResource("2_group")]([SubResource("Group_E_ent"), SubResource("Group_A1_druid"), SubResource("Group_A2_druid"), SubResource("Group_A3_druid"), SubResource("Group_A4_druid"), SubResource("Group_G1_gnome")])
+groups = Array[ExtResource("2_group")]([SubResource("Group_E_ent"), SubResource("Group_A1_druid"), SubResource("Group_A2_druid"), SubResource("Group_A3_druid"), SubResource("Group_A4_druid"), SubResource("Group_G1_gnome"), SubResource("Group_W1_warmonger"), SubResource("Group_W2_warmonger"), SubResource("Group_W3_warmonger")])
 anchor = Vector3(1270, 0, 1270)
 start_paused = true
-events = Array[ExtResource("3_event")]([SubResource("Event_kill_gnome")])
+events = Array[ExtResource("3_event")]([SubResource("Event_kill_gnome"), SubResource("Event_ability_W1"), SubResource("Event_ability_W2"), SubResource("Event_ability_W3")])
 pending_text = "Protector en pausa"
 ignore_annihilation = true

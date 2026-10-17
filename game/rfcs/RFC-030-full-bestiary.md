@@ -1043,6 +1043,29 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 - La burbuja es un placeholder (MIX, alfa 0,22): en el pasto, la de un Druid (0,6 m) se ve tenue desde la cámara del banco; la del Ent se ve bien.
 - El look del Life Shield del Druid cambia: antes era transparencia del cuerpo con varios escritores.
 
+#### 030o-b: Plan (developer) / Resultado
+
+**Plan (developer de 030o-b, 2026-10-17):** el del tech lead en `rfcs/plans/030o-030p-plan.md` §030o-b. Números de `state.d` 13470-13493, 12631-12758 (el maná se cobra aunque `firewalk` falle: 12746-12748), 13213-13217, 25802-25846 y modo firewalk (124, 135, 141, 193, 8922).
+- `ActiveAbility`: con `windup() > 0` (Firewalk, 150 ticks de `shoot_animations[1]`), `use()` enciende `UsingAbility` (hijo de `Afflictions`, bit 4, `holds`) y no gasta. En `now + windup` dispara el efecto, cobra el maná siempre y pone el enfriamiento si estaba en 0; si `UsingAbility` ya no estaba (aturdimiento, petrificado, congelado, tumbling lo cancelan por `cancels`) loguea `preparación cortada` y no gasta.
+- Tiempo en ticks (`MatchClock`): el enfriamiento, Stealth y Play Dead pasan de restar `delta` a «hasta el tick N».
+- `Firewalking` (Affliction, bit 5, `holds`, `hides`, `cancels using_ability`): `walk(end)`, `steer()` escribe la posición de cada cuadro, `WarpSnap.announce()` en el salto, oculta `Tilt`, estela `fire` (MIX).
+- `AfflictionType.hides` → `Afflictions.hides()`; `is_obstacle` e `is_targetable` suman `and not _afflictions.hides()` (neto 0 líneas, `unit_body.gd` queda en 1040).
+- `BenchEvent.action "ability"` (`user`, `target`, `point`) y `"stun"` (solo para el caso de la preparación cortada); `ai_match` enciende `Firewalking.log_walk`. Catálogo: `"wfhg": firewalk.tscn`.
+
+**Resultado (developer de 030o-b, 2026-10-17):** semilla 7, caso `f126` (carriles A y B, 0,36 min).
+- `agent/tools/f152_expect.py` da `RESULTADO PASS` y `f126_expect.py` (carril A) sigue en PASS:
+  - `usando habilidad Firewalk Warmonger1 150 ticks`; el camino empieza 150 ticks después; `habilidad Firewalk mana 500->250 enfriamiento 600 ticks`;
+  - W1: cuadro 30 a 10,00 m del origen, cuadro 31 a 9,67 m del destino (salto 40,36 m), cuadro 60 en (1280, 1290); a mitad de la caminata `is_targetable` e `is_obstacle` en false; la malla vuelve a verse al terminar;
+  - W2: 0,250 m por tick, termina en (1250, 1278);
+  - W3 (160 m): «Fuera de alcance», sin preparación ni gasto.
+- **Preparación cortada:** `debug/rules/f152_cut.tres` (Warmonger usa Firewalk a 0,5 s y lo aturden a 1,5 s): `preparación cortada Firewalk Warmonger1`, sin camino y sin gasto de maná.
+- **Determinismo:** `f126` pasa a 45d8baca en fixed, stress y window y se regrabó en `det_baseline.txt` (cambia por el carril B). `quick`: las otras 10 líneas base iguales, así que la migración a ticks no movió ningún digest. `rules_suite` PASS.
+- **Ventana** (`agent/flows/pt152_play.json`, `agent/harness/pt152_watch.gd`, `run_pt152.sh`, capturas en `agent/out/pt152/play/`): `p1_preparing` (W1 quieto preparándose), `p2_walking_a` (sin malla, solo la estela de fuego) y `p5_appeared` (W1 en el destino con la malla de vuelta).
+
+*Desvíos del plan:* la orden de banco la ejecuta `BenchEvents` (que ya despacha los eventos), no `ai_match.gd`; `ai_match` solo enciende el log. `bench_event.action "stun"` es un agregado para probar el corte.
+
+*Divergencias declaradas:* las del plan (fuera de alcance rechaza en vez de acercarse, no gira hacia el blanco, usa siempre shoot1, la barra de vida queda visible, la cápsula sigue en la capa de unidades, sin `catapult` final). La estela de fuego es chica a la distancia de la cámara del banco.
+
 ### 030p — F127 Halo of Earth y Breath of life
 - **Árbol:** N `abilities/halo_of_earth.tscn/.gd`, `abilities/breath_of_life.tscn/.gd`; M `ability_catalog.tres`.
 - **Escena de prueba:** `res://debug/f125_abilities.tscn`. **Criterio:** efecto medido.

@@ -11,6 +11,8 @@ extends Resource
 @export_range(0, 30) var bit := 0
 ## No AI, no orders carried out, no attacks, no turning, no ability (sacengine stunned: the mode switch skips them).
 @export var holds := true
+## The body is not seen, not hit and not in the way while it lasts (Firewalking: sacengine mode firewalk, state.d:124, 135, 141).
+@export var hides := false
 ## Not even pushed: no separation and no pose (petrified, `effects.immobilized`).
 @export var immobilizes := false
 ## A flier falls while it lasts (sacengine petrify startTumbling, state.d:11636): Flight lets gravity take it down to

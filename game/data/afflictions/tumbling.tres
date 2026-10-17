@@ -12,4 +12,4 @@ drops_fliers = false
 breaks_special_modes = false
 damage_factor = 1.0
 cc_protects = false
-cancels = Array[StringName]([&"stunned"])
+cancels = Array[StringName]([&"stunned", &"using_ability"])

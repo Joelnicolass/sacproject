@@ -245,7 +245,7 @@ func is_dead() -> bool:
 
 ## sacengine isObstacle / isReactingToObstacles (state.d:112-126): not dead, not preSpawning.
 func is_obstacle() -> bool:
-	return mode != Mode.DEAD and mode != Mode.SUMMONING and not is_taken()
+	return mode != Mode.DEAD and mode != Mode.SUMMONING and not is_taken() and not _afflictions.hides()
 
 
 func facing_flat() -> Vector3:
@@ -410,7 +410,7 @@ func is_rock_form() -> bool:
 
 
 func is_targetable() -> bool:
-	return mode != Mode.DEAD and mode != Mode.SUMMONING and not is_taken() and not _playing_dead and not _stealth
+	return mode != Mode.DEAD and mode != Mode.SUMMONING and not is_taken() and not _playing_dead and not _stealth and not _afflictions.hides()
 
 
 func set_playing_dead(on: bool) -> void:

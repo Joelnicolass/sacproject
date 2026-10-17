@@ -42,14 +42,7 @@ static var wizard_passes_own := true
 ## parked on their slots (debug/crowd_cases.gd, crowd_150). On: the slide, the yield and the soft contact between
 ## walkers of MakeWay (see there). Both passes run as before on the resulting velocity. Off = the original rule.
 static var make_way := true
-## F177, deviation of the port (030w-a, third after make_way and wizard_passes_own): sacengine pushes each body of a pair by the
-## whole overlap (state.d:14545-14552, every body reads the boxes of the start of the frame), so two bodies leave each other
-## twice as far apart as they overlap and a third body that presses them keeps the pair shaking. On: a body takes only
-## `share_of` the overlap of the obstacles that are pushed out of it too in the same tick (a pair separates exactly in one tick,
-## chains are damped). The rest distance does not change. OFF until the cut is decided (the measurement did not meet the criterion,
-## see FEATURES.md F177); `ai_match --share-push` turns it on for the bench. Off = the original rule.
-static var share_push := false
-## Bench log (`ai_match --log-push`; off in the product): one `sep_push` line per tick for a body in CHASE or ATTACK that was pushed.
+## Bench log (`ai_match --log-push`; off in the product): one `sep_push` line per tick for a body in CHASE or ATTACK that was pushed (F177).
 static var log_push := false
 ## On: resolve() adds its time to sep_us (the bench reports it per tick as `sep_ms`).
 static var measure := false
@@ -236,7 +229,7 @@ static func _separate(body: Node3D, at: Vector3, half: float, height: float, vel
 		kept = MakeWay.slide(body, at, wanted, faces, inner, height, delta, cut_x, cut_y, cut_z, cut_halves, cut_heights,
 				cut_nodes)
 	var outer := half + 0.5 * BLOCK_SLACK
-	var pass_two := _second_pass(at, kept, delta, outer, height, at_x, at_y, at_z, halves, heights, body, nodes)
+	var pass_two := _second_pass(at, kept, delta, outer, height, at_x, at_y, at_z, halves, heights)
 	var push: Vector2 = pass_two[0]
 	faces = pass_two[1]
 	# F88 round 3: a creature whose step only enters the slack band of a body (outside its inner box, inside its grown one)
@@ -251,7 +244,7 @@ static func _separate(body: Node3D, at: Vector3, half: float, height: float, vel
 					halves, heights), outer, height, delta, at_x, at_y, at_z, halves, heights, nodes)
 			if detour.dot(wanted) >= MakeWay.SLIDE_KEEP * speed * speed:
 				kept = detour
-				pass_two = _second_pass(at, kept, delta, outer, height, at_x, at_y, at_z, halves, heights, body, nodes)
+				pass_two = _second_pass(at, kept, delta, outer, height, at_x, at_y, at_z, halves, heights)
 				push = pass_two[0]
 				faces = pass_two[1]
 	velocity.x = kept.x
@@ -290,17 +283,11 @@ static func _print_push(body: Node3D, at: Vector3, wanted: Vector2, kept: Vector
 
 ## The second pass (box grown by blockSlack) for the step `kept` (m/s, flat): [push (m, flat, before the cap), faces].
 static func _second_pass(at: Vector3, kept: Vector2, delta: float, outer: float, height: float, at_x: PackedFloat64Array,
-		at_y: PackedFloat64Array, at_z: PackedFloat64Array, halves: PackedFloat64Array, heights: PackedFloat64Array,
-		body: Node3D, nodes: Array[Node3D]) -> Array:
+		at_y: PackedFloat64Array, at_z: PackedFloat64Array, halves: PackedFloat64Array, heights: PackedFloat64Array) -> Array:
 	var probe := at + Vector3(kept.x, 0.0, kept.y) * delta
 	var scan := _scan(probe, outer, height, at_x, at_y, at_z, halves, heights)
 	var faces: PackedInt32Array = scan[0]
 	var amounts: PackedFloat64Array = scan[1]
-	if share_push:
-		var share := share_of(body, faces, nodes)
-		for i in faces.size():
-			if faces[i] != Face.NONE and pushes_back(body, nodes[i]):
-				amounts[i] *= share
 	var push := Vector2.ZERO
 	for i in faces.size():
 		var amount := amounts[i]
@@ -314,24 +301,6 @@ static func _second_pass(at: Vector3, kept: Vector2, delta: float, outer: float,
 			Face.FRONT:
 				push.y += amount
 	return [push, faces, amounts]
-
-
-## F177: whether `other` is pushed out of `body` in this tick too (an obstacle that resolves against bodies: not fixed in place,
-## and `body` is not one it walks through).
-static func pushes_back(body: Node3D, other: Node3D) -> bool:
-	return not BodyNudge.fixed(other) and not _passes(other, body)
-
-
-## F177: the part of each overlap that `body` undoes itself, 1 / (k + 1) with k the obstacles that push back at it in this tick
-## (_second_pass). One neighbour: 0.5, the pair separates exactly. A body in a chain has two or more, and with 0.5 for each pair
-## the alternating mode of a chain of stopped bodies does not decay (eigenvalue -1: the shake of s7); 1 / (k + 1) is a damped
-## Jacobi step of the contact graph (eigenvalues of D^-1 L below 2), which settles.
-static func share_of(body: Node3D, faces: PackedInt32Array, nodes: Array[Node3D]) -> float:
-	var pushers := 0
-	for i in faces.size():
-		if faces[i] != Face.NONE and pushes_back(body, nodes[i]):
-			pushers += 1
-	return 1.0 / float(pushers + 1)
 
 
 ## The push of the second pass (`faces`, `amounts`, one per obstacle in `nodes`) with, for each walking creature, the part

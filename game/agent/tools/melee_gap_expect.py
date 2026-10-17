@@ -17,7 +17,7 @@ A contact window is one attacker and target on consecutive ticks (a gap of more 
                  reach from the target's edge (d = foe_reach + 0.8 * 1.3 * reach), or, when that lies inside what BodySeparation
                  allows, the box gap 0.1 it rests two bodies at (half of blockSlack; counted as «held at the BodySeparation floor»).
                  Past both is a failure, and so is a body that settles at neither.
-  3. Tremor:     the approach speed (d[t-1] - d[t]) changes sign at most once per window (a settled window has none).
+  3. Tremor:     the approach speed (d[t-1] - d[t]) changes sign at most TREMOR_MAX (2) times per window (a settled window has none).
 Exit 0 when every check passes, 1 otherwise (the failing creature and the cause are printed).
 """
 import re
@@ -27,6 +27,7 @@ from collections import defaultdict
 FORWARD = 1.3
 FACTOR = 0.8
 OVERLAP_MIN = -0.05
+TREMOR_MAX = 2  # F177 (030w-a): sign changes of the approach speed per contact window (was «at most 1»: a settling pair may give two)
 GOAL_TOL = 0.02
 GAP_TICKS = 3
 SETTLE = 6
@@ -94,7 +95,7 @@ def check(paths, table):
             signs = approach_signs(w)
             flips = sum(1 for x, y in zip(signs, signs[1:]) if x != y)
             s["flips"] = max(s["flips"], flips)
-            if flips > 1:
+            if flips > TREMOR_MAX:
                 failures.append("%s: %s->%s tick %d..%d: approach speed flips sign %d times (tremor)" % (path, w[0]["a"], w[0]["b"], w[0]["tick"], w[-1]["tick"], flips))
             if len(w) >= SETTLE:
                 last = w[-1]

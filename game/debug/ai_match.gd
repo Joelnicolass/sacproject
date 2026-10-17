@@ -87,6 +87,10 @@ func _ready() -> void:
 		roster.set("enabled", false)
 	BodySeparation.use_grid = str(_args.get("sep", "grid")) != "brute"
 	BodySeparation.measure = true
+	## F177 (030w-a): the two switches of the measurement (off in the product until the cut is decided).
+	MELEE_ATTACK.melee_moving = _args.has("melee-moving")
+	BodySeparation.share_push = _args.has("share-push")
+	BodySeparation.log_push = _args.has("log-push")  # F177: attribution of the pushes of bodies in melee (off in the product)
 	add_child(_world)
 	var rain := _world.get_node_or_null("DropletRain")
 	if rain:

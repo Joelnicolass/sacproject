@@ -2194,6 +2194,28 @@ Deuda:
 - `final_spit_melee` (Druid contra Earthfling, 1 contra 1): gap de caja mínimo 0,100 m (el reposo de `BodySeparation`), 0 cambios de signo de la velocidad de acercamiento, se asienta en el piso de `BodySeparation` (el objetivo de sacengine, d = 1,05 m, queda por dentro). PASS.
 - `s7` (3 contra 3): el gap de caja baja a -0,067 (Druid) y -0,072 (Trogg) y la velocidad de acercamiento cambia de signo cientos de veces por ventana (524 y 759 como máximo). No viene de `close_in`: con el knob en 1000 (sin acercamiento) da -0,061 / -0,108 y 409 / 682 cambios. Es el empuje de terceros cuerpos de `BodySeparation` (5 m/s, 0,08 m por tick) en la melé; el comando de `close_in` ahí es cero. Queda anotado, sin tocar `BodySeparation` (su regla es la de sacengine).
 
+### F177 — Temblor en la melé de grupo (plan 030w, corte 030w-a): medición, SIN decidir
+
+**Estado.** Los dos interruptores quedan **apagados** (`MeleeAttack.melee_moving`, `BodySeparation.share_push`): ningún digest cambió. Ninguna combinación cumple el criterio (≤ 2 cambios de signo por ventana y caja ≥ -0,05 m en `f177` y `s7`), y el plan manda parar y reportar.
+
+**Piezas.**
+- **B (fiel, dueño `MeleeAttack`):** `moving_pace_factor` (`@export`, 0,5) y `static var melee_moving`. `close_in` camina a media marcha hasta el primer cuadro de ataque del golpe (`_next_tick == 0`, `meleeMoving`, sacengine `state.d:14668-14671`, `8725-8731`) y después da cero (`meleeAttacking` frena, `14411-14412`).
+- **A (desvío, dueño `BodySeparation`):** `static var share_push`, `pushes_back`, `share_of`. `_second_pass` multiplica el solapamiento de cada obstáculo que también se empuja fuera de este cuerpo por `1 / (k + 1)`, con k los obstáculos que lo empujan en ese tick. Con k = 1 es 0,5 (el par se separa exacto en un tick). La versión del plan (0,5 fijo para todo par) no amortigua las cadenas: con dos vecinos el modo alterno de una fila de cuerpos quietos tiene valor propio -1 y no decae (s7: 755 cambios de signo con 0,5; con `1 / (k + 1)` los valores propios de D⁻¹L quedan bajo 2 y la fila se asienta en teoría).
+- **Bancos:** `ai_match --melee-moving`, `--share-push`, `--log-push` (línea `sep_push A tick at wanted kept push [B cara monto]…` para cuerpos en CHASE/ATTACK empujados); `agent/tools/f177_matrix.sh [rules] [minutos]` corre las 4 combinaciones A×B; `melee_gap_expect.py` con `TREMOR_MAX = 2`; caso `f177` (`debug/f177_melee_group.tscn`, 3 Druid contra 3 Trogg y un cuarto Trogg que aprieta).
+
+**Medición** (fixed, semilla 7; piso de caja / cambios de signo máximos Druid y Trogg):
+
+| caso | A off, B off | A off, B on | A on, B off | A on, B on |
+|---|---|---|---|---|
+| f177 | 0,017 / 414 y 0,100 / 16 | 0,017 / 386 y 0,100 / 104 | 0,060 / 21 y 0,058 / 30 | 0,060 / 21 y 0,057 / 30 |
+| s7 | -0,067 / 524 y -0,072 / 759 | -0,277 / 479 y -0,095 / 755 | -0,002 / 675 y -0,006 / 705 | -0,091 / 677 y -0,033 / 705 |
+
+(s7 con A al 0,5 fijo del plan: -0,029 / 701 y -0,089 / 761 sin B; -0,042 / 681 y -0,058 / 745 con B.)
+
+**Atribución** (`--log-push` sobre s7): el temblor no viene del acercamiento ni de un par. Es una fila de cuerpos **quietos** (`wanted = 0`: Trogg1, Trogg4, Druid1, Druid4) con solapamiento permanente de 0,02-0,04 m que otros cuerpos mantienen apretada, y cada tick todos se llevan su empuje de la foto del principio del cuadro: un ciclo de 2 ticks de 0,02 m de amplitud (Trogg4 x 1265,440 / 1265,464). `d` alterna 1,231 / 1,250. El metro de la réplica (cambio de signo con `MOVE_EPS` 0,005 m/tick) lo cuenta como cientos de cambios. En `f177` el tercer cuerpo es el Trogg4 que empuja con marcha entera (ciclo de 3 ticks, gap 0,100 / 0,048). B no ayuda y en s7 empeora el piso (-0,277): quien llega a media marcha ya no es el que pasa de largo, pero el de atrás sí.
+
+**Decisión pendiente (del orquestador).** (1) Aceptar A (`1 / (k + 1)`): f177 pasa de 414 a 21 cambios y el piso de caja de s7 sube a -0,002 / -0,006, pero cambia los digests de todo caso con dos cuerpos en contacto y no llega a ≤ 2. (2) Relajar la métrica (amplitud, no signo: 0,02 m no se ve). (3) Un empuje con memoria (amortiguar contra el empuje del tick anterior), que ya es otra cosa que sacengine. Capturas de la melé: no se tomaron, nada visible cambia con los interruptores apagados.
+
 ### F173 — Datos de juego como assets (RFC-033, corte 033g)
 
 **Piezas:**

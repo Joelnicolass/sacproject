@@ -20,6 +20,10 @@ signal connected(target: Node3D, was_frozen: bool)
 static var log_melee := false
 ## Bench log (`ai_match` turns it on; off in the product): one `melee_gap` line per tick the attacker closes in on a target in reach.
 static var log_gap := false
+## F177 (030w-a) switch, OFF until the cut is decided (the measurement did not meet the criterion, see FEATURES.md F177): on is
+## sacengine's `meleeMoving` (half pace until the first attack tick, then it brakes); off is the old rule (full pace for the whole
+## swing). `ai_match --melee-moving` turns it on for the bench.
+static var melee_moving := false
 
 ## sacengine `attack`: meleeHitboxFactor.
 @export var start_factor := 0.8
@@ -29,6 +33,9 @@ static var log_gap := false
 ## sacengine `attack` (state.d:12857-12862): with the target inside the melee box the attacker keeps walking in until
 ## its centre is within this share of its box's forward offset (targetDistance) from the target's near edge.
 @export var close_in_factor := 0.8
+## sacengine `meleeMoving` (state.d:14668-14671): from `startMeleeAttacking` (8725-8731) up to the first attack tick of the swing the
+## body walks in at half pace; from that tick on the mode is `meleeAttacking` (14411-14412), which is not moving, and it brakes.
+@export_range(0.0, 1.0, 0.05) var moving_pace_factor := 0.5
 ## sacengine `meleeAttackIsDownward`: target center this far below ours uses attack2.
 @export var downward_threshold := 0.25
 ## sacengine `dealDamage`: melee damage *= 0.4 * meleeResistance.
@@ -77,17 +84,21 @@ func can_start(target: Node3D) -> bool:
 
 
 ## Flat velocity-per-pace (length 0..1) that keeps closing in on `target` while it is in melee reach, so a ranged
-## foe ends inside RangedAttack.melee_distance. Zero once close enough or out of reach. The body applies its own pace.
+## foe ends inside RangedAttack.melee_distance. Zero once close enough or out of reach, and (F177) from the first attack tick of
+## the swing on. Half pace before it. The body applies its own pace.
 func close_in(target: Node3D, pace: float, delta: float) -> Vector3:
 	if _body == null or target == null or pace <= 0.0 or not in_reach(target, start_factor):
 		return Vector3.ZERO
+	var braking := melee_moving and _next_tick > 0
+	if melee_moving:
+		pace *= moving_pace_factor
 	var to_foe := target.global_position - _body.global_position
 	to_foe.y = 0.0
 	var foe_reach := float(profile_of(target).get("reach", 0.35))
 	## The goal never lies inside the distance BodySeparation leaves two bodies at (it would push the walker back every tick).
 	var goal := maxf(foe_reach + close_in_factor * forward_factor * reach, BodySeparation.rest_distance(_body, target))
 	var excess := to_foe.length() - goal
-	var walk := Vector3.ZERO if excess <= 0.0 or delta <= 0.0 else to_foe.normalized() * minf(pace, excess / delta)
+	var walk := Vector3.ZERO if braking or excess <= 0.0 or delta <= 0.0 else to_foe.normalized() * minf(pace, excess / delta)
 	if log_gap:
 		var radius := BodySeparation.half_size(_body)
 		var foe_radius := BodySeparation.half_size(target)

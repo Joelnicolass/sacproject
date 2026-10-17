@@ -1,0 +1,155 @@
+[gd_resource type="Resource" script_class="BenchRules" load_steps=18 format=3]
+
+[ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
+[ext_resource type="Script" path="res://debug/bench_event.gd" id="3_event"]
+
+[sub_resource type="Resource" id="Group_D1"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 1
+count = 1
+columns = 1
+offset_m = -6.0
+offset_z_m = -83.0
+facing_x = 1.0
+holds_still = true
+
+[sub_resource type="Resource" id="Group_D2"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 1
+count = 1
+columns = 1
+offset_m = -6.0
+offset_z_m = -80.0
+facing_x = 1.0
+holds_still = true
+
+[sub_resource type="Resource" id="Group_D3"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 1
+count = 1
+columns = 1
+offset_m = -6.0
+offset_z_m = -77.0
+facing_x = 1.0
+holds_still = true
+
+[sub_resource type="Resource" id="Group_T1"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 2
+count = 1
+columns = 1
+offset_m = 6.0
+offset_z_m = -83.0
+facing_x = -1.0
+holds_still = true
+
+[sub_resource type="Resource" id="Group_T2"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 2
+count = 1
+columns = 1
+offset_m = 6.0
+offset_z_m = -80.0
+facing_x = -1.0
+holds_still = true
+
+[sub_resource type="Resource" id="Group_T3"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 2
+count = 1
+columns = 1
+offset_m = 6.0
+offset_z_m = -77.0
+facing_x = -1.0
+holds_still = true
+
+[sub_resource type="Resource" id="Group_T4"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 2
+count = 1
+columns = 1
+offset_m = 14.0
+offset_z_m = -80.0
+facing_x = -1.0
+holds_still = true
+
+[sub_resource type="Resource" id="Event_0"]
+script = ExtResource("3_event")
+at_s = 0.3
+action = "attack"
+label = "D1 ataca a T1"
+slot = 1
+user = "Druid1"
+target = "Trogg1"
+
+[sub_resource type="Resource" id="Event_1"]
+script = ExtResource("3_event")
+at_s = 0.3
+action = "attack"
+label = "D2 ataca a T2"
+slot = 1
+user = "Druid2"
+target = "Trogg2"
+
+[sub_resource type="Resource" id="Event_2"]
+script = ExtResource("3_event")
+at_s = 0.3
+action = "attack"
+label = "D3 ataca a T3"
+slot = 1
+user = "Druid3"
+target = "Trogg3"
+
+[sub_resource type="Resource" id="Event_3"]
+script = ExtResource("3_event")
+at_s = 0.3
+action = "attack"
+label = "T1 ataca a D1"
+slot = 2
+user = "Trogg1"
+target = "Druid1"
+
+[sub_resource type="Resource" id="Event_4"]
+script = ExtResource("3_event")
+at_s = 0.3
+action = "attack"
+label = "T2 ataca a D2"
+slot = 2
+user = "Trogg2"
+target = "Druid2"
+
+[sub_resource type="Resource" id="Event_5"]
+script = ExtResource("3_event")
+at_s = 0.3
+action = "attack"
+label = "T3 ataca a D3"
+slot = 2
+user = "Trogg3"
+target = "Druid3"
+
+[sub_resource type="Resource" id="Event_6"]
+script = ExtResource("3_event")
+at_s = 1.0
+action = "attack"
+label = "T4 ataca a D2 (el tercero que aprieta)"
+slot = 2
+user = "Trogg4"
+target = "Druid2"
+
+[resource]
+script = ExtResource("1_rules")
+match_seed = 7
+groups = Array[ExtResource("2_group")]([SubResource("Group_D1"), SubResource("Group_D2"), SubResource("Group_D3"), SubResource("Group_T1"), SubResource("Group_T2"), SubResource("Group_T3"), SubResource("Group_T4")])
+anchor = Vector3(1270, 0, 1270)
+start_paused = true
+events = Array[ExtResource("3_event")]([SubResource("Event_0"), SubResource("Event_1"), SubResource("Event_2"), SubResource("Event_3"), SubResource("Event_4"), SubResource("Event_5"), SubResource("Event_6")])
+pending_text = "Mele de grupo en pausa"
+ignore_annihilation = true

@@ -1,0 +1,4892 @@
+{
+ "ca_a": {
+  "flags": 2147488775,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "caab",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL1",
+    "tag": "caap",
+    "destroyed": "",
+    "x": 20.0,
+    "y": 20.0,
+    "z": 0.0,
+    "facing": 270.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL2",
+    "tag": "caap",
+    "destroyed": "",
+    "x": -20.0,
+    "y": 20.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL3",
+    "tag": "caap",
+    "destroyed": "",
+    "x": 20.0,
+    "y": -20.0,
+    "z": 0.0,
+    "facing": 180.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL4",
+    "tag": "caap",
+    "destroyed": "",
+    "x": -20.0,
+    "y": -20.0,
+    "z": 0.0,
+    "facing": 90.0,
+    "spell": ""
+   },
+   {
+    "kind": "TOP!",
+    "tag": "caar",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "cafn": {
+  "flags": 2147493904,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "cafn",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "cama": {
+  "flags": 21920,
+  "shelter": false,
+  "ground": false,
+  "max_health": 5000,
+  "tileset": "",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "cama",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "cat1": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 1000,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "cat1",
+    "destroyed": "ctx1",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "casb": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "casb",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "car1": {
+  "flags": 2147491848,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "car1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "cabe": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "cab1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "plt1",
+    "tag": "cab2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": -60.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "plt2",
+    "tag": "cab2",
+    "destroyed": "",
+    "x": 60.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 90.0,
+    "spell": ""
+   },
+   {
+    "kind": "plt3",
+    "tag": "cab2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 60.0,
+    "z": 0.0,
+    "facing": 180.0,
+    "spell": ""
+   },
+   {
+    "kind": "plt4",
+    "tag": "cab2",
+    "destroyed": "",
+    "x": -60.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": -90.0,
+    "spell": ""
+   },
+   {
+    "kind": "lef1",
+    "tag": "cab3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "lef2",
+    "tag": "cab3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 90.0,
+    "spell": ""
+   },
+   {
+    "kind": "lef3",
+    "tag": "cab3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 180.0,
+    "spell": ""
+   },
+   {
+    "kind": "lef4",
+    "tag": "cab3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 270.0,
+    "spell": ""
+   }
+  ]
+ },
+ "caa1": {
+  "flags": 2147491848,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "caa1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "cagw": {
+  "flags": 2147491848,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "cagw",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": "arch"
+   }
+  ]
+ },
+ "cash": {
+  "flags": 2147491848,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "cash",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "cpw1": {
+  "flags": 2147483840,
+  "shelter": false,
+  "ground": true,
+  "max_health": 20000,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "cpw1",
+    "destroyed": "cpwx",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": "pusw"
+   }
+  ]
+ },
+ "cht1": {
+  "flags": 2147524800,
+  "shelter": true,
+  "ground": true,
+  "max_health": 5000,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "cht1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "casp": {
+  "flags": 5542,
+  "shelter": false,
+  "ground": false,
+  "max_health": 5000,
+  "tileset": "",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "casp",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "cht2": {
+  "flags": 2147524800,
+  "shelter": true,
+  "ground": true,
+  "max_health": 5000,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "cht2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "cat2": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 1000,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "cat2",
+    "destroyed": "ctx1",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "cat3": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 1000,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "cat3",
+    "destroyed": "ctx1",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "car2": {
+  "flags": 2147491848,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "car2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "cat4": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 1000,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "cat4",
+    "destroyed": "ctx2",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "cat5": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 1000,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "cat5",
+    "destroyed": "ctx2",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "cat6": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 1000,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "cat6",
+    "destroyed": "ctx2",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "mard": {
+  "flags": 2147484288,
+  "shelter": false,
+  "ground": true,
+  "max_health": 50000,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "marb",
+    "destroyed": "mbx3",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "MAIN",
+    "tag": "marm",
+    "destroyed": "mmx3",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": "MMtp"
+   },
+   {
+    "kind": "STR1",
+    "tag": "mars",
+    "destroyed": "msx3",
+    "x": -20.0,
+    "y": -20.0,
+    "z": 0.0,
+    "facing": 45.0,
+    "spell": "MMst"
+   },
+   {
+    "kind": "STR2",
+    "tag": "mars",
+    "destroyed": "msx3",
+    "x": 20.0,
+    "y": -20.0,
+    "z": 0.0,
+    "facing": 135.0,
+    "spell": "MMst"
+   },
+   {
+    "kind": "STR3",
+    "tag": "mars",
+    "destroyed": "msx3",
+    "x": 20.0,
+    "y": 20.0,
+    "z": 0.0,
+    "facing": 225.0,
+    "spell": "MMst"
+   },
+   {
+    "kind": "STR4",
+    "tag": "mars",
+    "destroyed": "msx3",
+    "x": -20.0,
+    "y": 20.0,
+    "z": 0.0,
+    "facing": 315.0,
+    "spell": "MMst"
+   }
+  ]
+ },
+ "ctc_": {
+  "flags": 2147524800,
+  "shelter": true,
+  "ground": true,
+  "max_health": 50000,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "ctch",
+    "destroyed": "tcx2",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "SPI1",
+    "tag": "ctcs",
+    "destroyed": "tcx4",
+    "x": -20.0,
+    "y": -20.0,
+    "z": 0.0,
+    "facing": 45.0,
+    "spell": ""
+   },
+   {
+    "kind": "SPI2",
+    "tag": "ctcs",
+    "destroyed": "tcx4",
+    "x": 20.0,
+    "y": -20.0,
+    "z": 0.0,
+    "facing": 135.0,
+    "spell": ""
+   },
+   {
+    "kind": "SPI3",
+    "tag": "ctcs",
+    "destroyed": "tcx4",
+    "x": 20.0,
+    "y": 20.0,
+    "z": 0.0,
+    "facing": 225.0,
+    "spell": ""
+   },
+   {
+    "kind": "SPI4",
+    "tag": "ctcs",
+    "destroyed": "tcx4",
+    "x": -20.0,
+    "y": 20.0,
+    "z": 0.0,
+    "facing": 315.0,
+    "spell": ""
+   }
+  ]
+ },
+ "cas2": {
+  "flags": 2147491848,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "cas2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "cat7": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 1000,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "cat7",
+    "destroyed": "ctx2",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "cat8": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 1000,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "cat8",
+    "destroyed": "ctx2",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "chs1": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "chs1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "chs2": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "chs2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "cmf_": {
+  "flags": 2147483840,
+  "shelter": false,
+  "ground": true,
+  "max_health": 20000,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "cmfb",
+    "destroyed": "cmfx",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "GUN",
+    "tag": "cmfg",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIVT",
+    "tag": "cmfp",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "grv1": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "grv1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "grv2": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "grv2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "grv3": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "grv3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "maus": {
+  "flags": 2147524800,
+  "shelter": true,
+  "ground": true,
+  "max_health": 5000,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "maus",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "crs1": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "crs1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "mas2": {
+  "flags": 2147524800,
+  "shelter": true,
+  "ground": true,
+  "max_health": 5000,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "mas2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "cua_": {
+  "flags": 2147488775,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "cuab",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL1",
+    "tag": "cuap",
+    "destroyed": "",
+    "x": 20.0,
+    "y": 20.0,
+    "z": 0.0,
+    "facing": 270.0,
+    "spell": ""
+   },
+   {
+    "kind": "TUB1",
+    "tag": "cuat",
+    "destroyed": "",
+    "x": -40.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "TOP!",
+    "tag": "cuar",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL2",
+    "tag": "cuap",
+    "destroyed": "",
+    "x": -20.0,
+    "y": 20.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "TUB2",
+    "tag": "cuat",
+    "destroyed": "",
+    "x": 40.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 180.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL3",
+    "tag": "cuap",
+    "destroyed": "",
+    "x": 20.0,
+    "y": -20.0,
+    "z": 0.0,
+    "facing": 180.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL4",
+    "tag": "cuap",
+    "destroyed": "",
+    "x": -20.0,
+    "y": -20.0,
+    "z": 0.0,
+    "facing": 90.0,
+    "spell": ""
+   },
+   {
+    "kind": "TUB3",
+    "tag": "cuat",
+    "destroyed": "",
+    "x": 0.0,
+    "y": -40.0,
+    "z": 0.0,
+    "facing": 90.0,
+    "spell": ""
+   },
+   {
+    "kind": "TUB4",
+    "tag": "cuat",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 40.0,
+    "z": 0.0,
+    "facing": 270.0,
+    "spell": ""
+   }
+  ]
+ },
+ "e2u_": {
+  "flags": 192,
+  "shelter": false,
+  "ground": false,
+  "max_health": 20000,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "e2u1",
+    "destroyed": "e2ux",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "mar1": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 20000,
+  "tileset": "char",
+  "folder": "joby.WAD!/ch_a.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "mar1",
+    "destroyed": "mr1x",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pct1": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 1000,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pct1",
+    "destroyed": "pcx1",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pct2": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 1000,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pct2",
+    "destroyed": "pcx1",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pcr2": {
+  "flags": 2147491848,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pcr2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pcsp": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pcsp",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pcru": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pcru",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "ptre": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 1000,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "ptre",
+    "destroyed": "pcx6",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pcr3": {
+  "flags": 2147491848,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pcr3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pcr4": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pcr4",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "hut1": {
+  "flags": 2147524800,
+  "shelter": true,
+  "ground": true,
+  "max_health": 5000,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "huta",
+    "destroyed": "pcx3",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "mana": {
+  "flags": 21920,
+  "shelter": false,
+  "ground": false,
+  "max_health": 5000,
+  "tileset": "",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "mana",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "font": {
+  "flags": 2147493904,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pcfn",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "silo": {
+  "flags": 2147524800,
+  "shelter": true,
+  "ground": true,
+  "max_health": 7500,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "silo",
+    "destroyed": "pcx4",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pcta": {
+  "flags": 2147491848,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pcta",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": "arch"
+   }
+  ]
+ },
+ "pcsb": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pcsb",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pcr5": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pcr5",
+    "destroyed": "pcr5",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pcr6": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pcr6",
+    "destroyed": "pcr6",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pcr7": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pcr7",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pcr8": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pcr8",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pcr9": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pcr9",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pcr1": {
+  "flags": 2147491848,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pcr1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pcbe": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pcb1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "plt1",
+    "tag": "pcb2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": -60.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "plt2",
+    "tag": "pcb2",
+    "destroyed": "",
+    "x": 60.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 90.0,
+    "spell": ""
+   },
+   {
+    "kind": "plt3",
+    "tag": "pcb2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 60.0,
+    "z": 0.0,
+    "facing": 180.0,
+    "spell": ""
+   },
+   {
+    "kind": "plt4",
+    "tag": "pcb2",
+    "destroyed": "",
+    "x": -60.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": -90.0,
+    "spell": ""
+   },
+   {
+    "kind": "lef1",
+    "tag": "pcb3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "lef2",
+    "tag": "pcb3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 90.0,
+    "spell": ""
+   },
+   {
+    "kind": "lef3",
+    "tag": "pcb3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 180.0,
+    "spell": ""
+   },
+   {
+    "kind": "lef4",
+    "tag": "pcb3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 270.0,
+    "spell": ""
+   }
+  ]
+ },
+ "alt1": {
+  "flags": 2147488775,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "alba",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL1",
+    "tag": "alpi",
+    "destroyed": "",
+    "x": 20.0,
+    "y": 20.0,
+    "z": 0.0,
+    "facing": 270.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL2",
+    "tag": "alpi",
+    "destroyed": "",
+    "x": -20.0,
+    "y": 20.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL3",
+    "tag": "alpi",
+    "destroyed": "",
+    "x": 20.0,
+    "y": -20.0,
+    "z": 0.0,
+    "facing": 180.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL4",
+    "tag": "alpi",
+    "destroyed": "",
+    "x": -20.0,
+    "y": -20.0,
+    "z": 0.0,
+    "facing": 90.0,
+    "spell": ""
+   },
+   {
+    "kind": "TOP!",
+    "tag": "alto",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "arch": {
+  "flags": 2147491848,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "arch",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pcfe": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pcfe",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pct4": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 1000,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pct4",
+    "destroyed": "pcx1",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pct5": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 1000,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pct5",
+    "destroyed": "pcx1",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pch2": {
+  "flags": 2147524800,
+  "shelter": true,
+  "ground": true,
+  "max_health": 5000,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pch2",
+    "destroyed": "pcx5",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pct6": {
+  "flags": 2147483848,
+  "shelter": false,
+  "ground": true,
+  "max_health": 5000,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pct6",
+    "destroyed": "pcx6",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pcsh": {
+  "flags": 5542,
+  "shelter": false,
+  "ground": false,
+  "max_health": 5000,
+  "tileset": "",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pcsh",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pct7": {
+  "flags": 8392,
+  "shelter": false,
+  "ground": false,
+  "max_health": 1000,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pct7",
+    "destroyed": "pcx6",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pcpw": {
+  "flags": 2147483840,
+  "shelter": false,
+  "ground": true,
+  "max_health": 20000,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "cpw1",
+    "destroyed": "cpwx",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": "pusw"
+   }
+  ]
+ },
+ "pcbs": {
+  "flags": 2147491848,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pcbs",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pcwm": {
+  "flags": 2147524800,
+  "shelter": true,
+  "ground": true,
+  "max_health": 10000,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pwm1",
+    "destroyed": "pwmx",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pch3": {
+  "flags": 2147524800,
+  "shelter": true,
+  "ground": true,
+  "max_health": 5000,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pch3",
+    "destroyed": "pcx7",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pct8": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 1000,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pct8",
+    "destroyed": "pcx1",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pct9": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 1000,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pct9",
+    "destroyed": "pcx1",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pua_": {
+  "flags": 2147488775,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "puac",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL1",
+    "tag": "puap",
+    "destroyed": "",
+    "x": 20.0,
+    "y": 20.0,
+    "z": 0.0,
+    "facing": 270.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL2",
+    "tag": "puap",
+    "destroyed": "",
+    "x": -20.0,
+    "y": 20.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL3",
+    "tag": "puap",
+    "destroyed": "",
+    "x": 20.0,
+    "y": -20.0,
+    "z": 0.0,
+    "facing": 180.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL4",
+    "tag": "puap",
+    "destroyed": "",
+    "x": -20.0,
+    "y": -20.0,
+    "z": 0.0,
+    "facing": 90.0,
+    "spell": ""
+   },
+   {
+    "kind": "TOP!",
+    "tag": "puar",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "VIN1",
+    "tag": "puav",
+    "destroyed": "",
+    "x": -40.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "VIN2",
+    "tag": "puav",
+    "destroyed": "",
+    "x": 40.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 180.0,
+    "spell": ""
+   },
+   {
+    "kind": "VIN3",
+    "tag": "puav",
+    "destroyed": "",
+    "x": 0.0,
+    "y": -40.0,
+    "z": 0.0,
+    "facing": 90.0,
+    "spell": ""
+   },
+   {
+    "kind": "VIN4",
+    "tag": "puav",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 40.0,
+    "z": 0.0,
+    "facing": 270.0,
+    "spell": ""
+   }
+  ]
+ },
+ "mar3": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 20000,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "mar3",
+    "destroyed": "mr3x",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "prt_": {
+  "flags": 2147524616,
+  "shelter": true,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "prsc",
+  "folder": "joby.WAD!/prsc.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "prt1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "SAT1",
+    "tag": "prt2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "SAT2",
+    "tag": "prt2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 90.0,
+    "spell": ""
+   },
+   {
+    "kind": "SAT3",
+    "tag": "prt3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 180.0,
+    "spell": ""
+   },
+   {
+    "kind": "SAT4",
+    "tag": "prt2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 270.0,
+    "spell": ""
+   }
+  ]
+ },
+ "ealt": {
+  "flags": 5127,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "ethr",
+  "folder": "joby.WAD!/ethr.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "ea_b",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "TOP!",
+    "tag": "ea_r",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "sta1": {
+  "flags": 128,
+  "shelter": false,
+  "ground": false,
+  "max_health": 1000,
+  "tileset": "ethr",
+  "folder": "joby.WAD!/ethr.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "st1a",
+    "destroyed": "st1x",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": "port"
+   },
+   {
+    "kind": "HEAD",
+    "tag": "st1b",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "esb_": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "ethr",
+  "folder": "joby.WAD!/ethr.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "esb_",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "esb1": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "ethr",
+  "folder": "joby.WAD!/ethr.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "esb1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "esb2": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "ethr",
+  "folder": "joby.WAD!/ethr.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "esb2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "ear1": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "ethr",
+  "folder": "joby.WAD!/ethr.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "ear1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "ear2": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "ethr",
+  "folder": "joby.WAD!/ethr.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "ear2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "sta2": {
+  "flags": 128,
+  "shelter": false,
+  "ground": false,
+  "max_health": 1000,
+  "tileset": "ethr",
+  "folder": "joby.WAD!/ethr.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "st2a",
+    "destroyed": "st2x",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": "port"
+   },
+   {
+    "kind": "HEAD",
+    "tag": "st2b",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "sta3": {
+  "flags": 128,
+  "shelter": false,
+  "ground": false,
+  "max_health": 1000,
+  "tileset": "ethr",
+  "folder": "joby.WAD!/ethr.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "st3a",
+    "destroyed": "st3x",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": "port"
+   },
+   {
+    "kind": "HEAD",
+    "tag": "st3b",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "sta4": {
+  "flags": 128,
+  "shelter": false,
+  "ground": false,
+  "max_health": 1000,
+  "tileset": "ethr",
+  "folder": "joby.WAD!/ethr.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "st4a",
+    "destroyed": "st4x",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": "port"
+   }
+  ]
+ },
+ "sta5": {
+  "flags": 128,
+  "shelter": false,
+  "ground": false,
+  "max_health": 1000,
+  "tileset": "ethr",
+  "folder": "joby.WAD!/ethr.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "st5a",
+    "destroyed": "st5x",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": "port"
+   },
+   {
+    "kind": "HEAD",
+    "tag": "st5b",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "etfn": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "ethr",
+  "folder": "joby.WAD!/ethr.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "etfn",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "eis1": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "ethr",
+  "folder": "joby.WAD!/ethr.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "eis1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "eis2": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "ethr",
+  "folder": "joby.WAD!/ethr.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "eis2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "eis3": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "ethr",
+  "folder": "joby.WAD!/ethr.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "eis3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "eis4": {
+  "flags": 8200,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "ethr",
+  "folder": "joby.WAD!/ethr.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "eis4",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pasp": {
+  "flags": 5542,
+  "shelter": false,
+  "ground": false,
+  "max_health": 5000,
+  "tileset": "",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pysh",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pfon": {
+  "flags": 2147493904,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pfon",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "prc1": {
+  "flags": 0,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "prc1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "prc2": {
+  "flags": 0,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "prc2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pyal": {
+  "flags": 2147488775,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pypt",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL1",
+    "tag": "pypl",
+    "destroyed": "",
+    "x": 20.0,
+    "y": 20.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL2",
+    "tag": "pypl",
+    "destroyed": "",
+    "x": -20.0,
+    "y": 20.0,
+    "z": 0.0,
+    "facing": 90.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL3",
+    "tag": "pypl",
+    "destroyed": "",
+    "x": 20.0,
+    "y": -20.0,
+    "z": 0.0,
+    "facing": 180.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL4",
+    "tag": "pypl",
+    "destroyed": "",
+    "x": -20.0,
+    "y": -20.0,
+    "z": 0.0,
+    "facing": 270.0,
+    "spell": ""
+   },
+   {
+    "kind": "TOP!",
+    "tag": "pyrg",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": -2.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pyft": {
+  "flags": 128,
+  "shelter": false,
+  "ground": false,
+  "max_health": 10000,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pyft",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pyma": {
+  "flags": 21920,
+  "shelter": false,
+  "ground": false,
+  "max_health": 5000,
+  "tileset": "",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pyma",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pyst": {
+  "flags": 0,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pyst",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pyt1": {
+  "flags": 8392,
+  "shelter": false,
+  "ground": false,
+  "max_health": 1000,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pyt1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pyt2": {
+  "flags": 8392,
+  "shelter": false,
+  "ground": false,
+  "max_health": 1000,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pyt2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pyt3": {
+  "flags": 8392,
+  "shelter": false,
+  "ground": false,
+  "max_health": 1000,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pyt3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pyt4": {
+  "flags": 8392,
+  "shelter": false,
+  "ground": false,
+  "max_health": 1000,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pyt4",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pyt5": {
+  "flags": 8392,
+  "shelter": false,
+  "ground": false,
+  "max_health": 1000,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pyt5",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pyt6": {
+  "flags": 8392,
+  "shelter": false,
+  "ground": false,
+  "max_health": 1000,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pyt6",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "plm1": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 1000,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "plm1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "plm3": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 1000,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "plm3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "plm2": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 1000,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "plm2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pmv1": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pmv1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": "mvlc"
+   }
+  ]
+ },
+ "pmv2": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pmv2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": "mvlc"
+   }
+  ]
+ },
+ "vbl1": {
+  "flags": 0,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "vbl1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "vbl3": {
+  "flags": 0,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "vbl3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "vbl4": {
+  "flags": 0,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "vbl4",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "vbl2": {
+  "flags": 0,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "vbl2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "vbl5": {
+  "flags": 0,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "vbl5",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "vbl6": {
+  "flags": 0,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "vbl6",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "vbl7": {
+  "flags": 0,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "vbl7",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "vbl8": {
+  "flags": 0,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "vbl8",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "parc": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "parc",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "dyno": {
+  "flags": 128,
+  "shelter": false,
+  "ground": false,
+  "max_health": 6000,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "dybd",
+    "destroyed": "dydm",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "TOP!",
+    "tag": "dypt",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": "pdyn"
+   }
+  ]
+ },
+ "pmag": {
+  "flags": 128,
+  "shelter": false,
+  "ground": false,
+  "max_health": 6000,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "mpil",
+    "destroyed": "mpil",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "BRAK",
+    "tag": "mbra",
+    "destroyed": "",
+    "x": 19.0,
+    "y": 0.0,
+    "z": 69.0,
+    "facing": 0.0,
+    "spell": "mfrb"
+   },
+   {
+    "kind": "GUN!",
+    "tag": "mgun",
+    "destroyed": "",
+    "x": 19.12,
+    "y": 0.0,
+    "z": 82.404,
+    "facing": 0.0,
+    "spell": "mfry"
+   }
+  ]
+ },
+ "pht1": {
+  "flags": 41088,
+  "shelter": true,
+  "ground": false,
+  "max_health": 5000,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pht1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pcmf": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jcmp",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pht2": {
+  "flags": 41088,
+  "shelter": true,
+  "ground": false,
+  "max_health": 5000,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pht2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pwhr": {
+  "flags": 41088,
+  "shelter": true,
+  "ground": false,
+  "max_health": 5000,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pwhr",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "pyua": {
+  "flags": 2147488775,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "pypt",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL1",
+    "tag": "pyu1",
+    "destroyed": "",
+    "x": 20.0,
+    "y": 20.0,
+    "z": 0.0,
+    "facing": 270.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL2",
+    "tag": "pyu1",
+    "destroyed": "",
+    "x": -20.0,
+    "y": 20.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL3",
+    "tag": "pyu1",
+    "destroyed": "",
+    "x": 20.0,
+    "y": -20.0,
+    "z": 0.0,
+    "facing": 90.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL4",
+    "tag": "pyu1",
+    "destroyed": "",
+    "x": -20.0,
+    "y": -20.0,
+    "z": 0.0,
+    "facing": 180.0,
+    "spell": ""
+   },
+   {
+    "kind": "TOP!",
+    "tag": "pyu2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "mar4": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 20000,
+  "tileset": "PY_A",
+  "folder": "PMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "mar4",
+    "destroyed": "mr4x",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "bld1": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "bld1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "bld2": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "bld2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "bld3": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "bld3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "bon1": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "bon1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "bon2": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "bon2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "bon3": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "bon3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "bon4": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "bon4",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "bon5": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "bon5",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "bon6": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "bon6",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jaal": {
+  "flags": 2147488775,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jpit",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL1",
+    "tag": "jpil",
+    "destroyed": "",
+    "x": 20.0,
+    "y": 20.0,
+    "z": 0.0,
+    "facing": 225.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL2",
+    "tag": "jpil",
+    "destroyed": "",
+    "x": -20.0,
+    "y": 20.0,
+    "z": 0.0,
+    "facing": 315.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL3",
+    "tag": "jpil",
+    "destroyed": "",
+    "x": 20.0,
+    "y": -20.0,
+    "z": 0.0,
+    "facing": 135.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL4",
+    "tag": "jpil",
+    "destroyed": "",
+    "x": -20.0,
+    "y": -20.0,
+    "z": 0.0,
+    "facing": 45.0,
+    "spell": ""
+   },
+   {
+    "kind": "TOP!",
+    "tag": "jrng",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jcc1": {
+  "flags": 8392,
+  "shelter": false,
+  "ground": false,
+  "max_health": 1000,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jcc1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jcc2": {
+  "flags": 8392,
+  "shelter": false,
+  "ground": false,
+  "max_health": 1000,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jcc2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jcc3": {
+  "flags": 8392,
+  "shelter": false,
+  "ground": false,
+  "max_health": 1000,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jcc3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jcc4": {
+  "flags": 8392,
+  "shelter": false,
+  "ground": false,
+  "max_health": 1000,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jcc4",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jeg1": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jeg1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jeg2": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jeg2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jeg3": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jeg3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jfnt": {
+  "flags": 2147493904,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jfnt",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jman": {
+  "flags": 21920,
+  "shelter": false,
+  "ground": false,
+  "max_health": 5000,
+  "tileset": "",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jman",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jsac": {
+  "flags": 5542,
+  "shelter": false,
+  "ground": false,
+  "max_health": 5000,
+  "tileset": "",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jshr",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jst1": {
+  "flags": 0,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jst1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jtar": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jtar",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jhut": {
+  "flags": 41152,
+  "shelter": true,
+  "ground": false,
+  "max_health": 5000,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jhut",
+    "destroyed": "jhbr",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "cave": {
+  "flags": 128,
+  "shelter": false,
+  "ground": false,
+  "max_health": 6000,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "cave",
+    "destroyed": "cavd",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jpw1": {
+  "flags": 2147483776,
+  "shelter": false,
+  "ground": true,
+  "max_health": 20000,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "cpw1",
+    "destroyed": "cpwx",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": "pusw"
+   }
+  ]
+ },
+ "jfor": {
+  "flags": 0,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jfor",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jwg1": {
+  "flags": 41152,
+  "shelter": true,
+  "ground": false,
+  "max_health": 5000,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jwg1",
+    "destroyed": "jwbr",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jcmp": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jcmp",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jmrq": {
+  "flags": 41152,
+  "shelter": true,
+  "ground": false,
+  "max_health": 5000,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jmrq",
+    "destroyed": "jmbr",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jcrt": {
+  "flags": 128,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jcrt",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jwel": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jwel",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jct1": {
+  "flags": 192,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jct1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jct2": {
+  "flags": 192,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jct2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jct3": {
+  "flags": 192,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jct3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jfn1": {
+  "flags": 192,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jfn1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jfn2": {
+  "flags": 192,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jfn2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jfn3": {
+  "flags": 192,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jfn3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "jaua": {
+  "flags": 2147488775,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jpit",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL1",
+    "tag": "jau1",
+    "destroyed": "",
+    "x": 20.0,
+    "y": 20.0,
+    "z": 0.0,
+    "facing": 90.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL2",
+    "tag": "jau1",
+    "destroyed": "",
+    "x": -20.0,
+    "y": 20.0,
+    "z": 0.0,
+    "facing": 180.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL3",
+    "tag": "jau1",
+    "destroyed": "",
+    "x": 20.0,
+    "y": -20.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL4",
+    "tag": "jau1",
+    "destroyed": "",
+    "x": -20.0,
+    "y": -20.0,
+    "z": 0.0,
+    "facing": 270.0,
+    "spell": ""
+   },
+   {
+    "kind": "TOP!",
+    "tag": "jau2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "mar2": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 20000,
+  "tileset": "JA_A",
+  "folder": "JMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "mar2",
+    "destroyed": "mr2x",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "sarc": {
+  "flags": 2147491848,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "sarc",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": "arch"
+   }
+  ]
+ },
+ "sfc1": {
+  "flags": 8,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "sfc1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "sfc2": {
+  "flags": 8,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "sfc2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "sic1": {
+  "flags": 2147483656,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "sic1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": -200.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "sic2": {
+  "flags": 2147483656,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "sic2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": -10.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "sic3": {
+  "flags": 2147483656,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "sic3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": -10.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "spfl": {
+  "flags": 8,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "spfl",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "stal": {
+  "flags": 2147488775,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "crpt",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL1",
+    "tag": "sapl",
+    "destroyed": "",
+    "x": 30.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 270.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL2",
+    "tag": "sapl",
+    "destroyed": "",
+    "x": -30.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL3",
+    "tag": "sapl",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 30.0,
+    "z": 0.0,
+    "facing": 180.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL4",
+    "tag": "sapl",
+    "destroyed": "",
+    "x": 0.0,
+    "y": -30.0,
+    "z": 0.0,
+    "facing": 90.0,
+    "spell": ""
+   },
+   {
+    "kind": "TOP!",
+    "tag": "sarg",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": -1.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "stam": {
+  "flags": 21920,
+  "shelter": false,
+  "ground": false,
+  "max_health": 5000,
+  "tileset": "",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "stam",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "stc1": {
+  "flags": 8,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "stc1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "stdw": {
+  "flags": 2147483656,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "stdw",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "stmf": {
+  "flags": 2147493904,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "stmf",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "stsp": {
+  "flags": 5542,
+  "shelter": false,
+  "ground": false,
+  "max_health": 5000,
+  "tileset": "",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "sshr",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "stt1": {
+  "flags": 2147483656,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "stt1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "stdy": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "stdy",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "stdx": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "stdx",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "stc2": {
+  "flags": 0,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "stc2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "stc3": {
+  "flags": 0,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "stc3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "stt2": {
+  "flags": 0,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "stt2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "stt3": {
+  "flags": 0,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "stt3",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "slp1": {
+  "flags": 0,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "slp1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "slp2": {
+  "flags": 0,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "slp2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "sig1": {
+  "flags": 2147524800,
+  "shelter": true,
+  "ground": true,
+  "max_health": 5000,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "sig1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "sfir": {
+  "flags": 2147483648,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "jcmp",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "sfor": {
+  "flags": 0,
+  "shelter": false,
+  "ground": false,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "sfor",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "sht1": {
+  "flags": 2147524800,
+  "shelter": true,
+  "ground": true,
+  "max_health": 5000,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "sht1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "stst": {
+  "flags": 41152,
+  "shelter": true,
+  "ground": false,
+  "max_health": 5000,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "stst",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "stua": {
+  "flags": 2147488775,
+  "shelter": false,
+  "ground": true,
+  "max_health": 0,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "crpt",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL1",
+    "tag": "stu1",
+    "destroyed": "",
+    "x": 30.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 270.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL2",
+    "tag": "stu1",
+    "destroyed": "",
+    "x": -30.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL3",
+    "tag": "stu1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 30.0,
+    "z": 0.0,
+    "facing": 180.0,
+    "spell": ""
+   },
+   {
+    "kind": "PIL4",
+    "tag": "stu1",
+    "destroyed": "",
+    "x": 0.0,
+    "y": -30.0,
+    "z": 0.0,
+    "facing": 90.0,
+    "spell": ""
+   },
+   {
+    "kind": "TOP!",
+    "tag": "stu2",
+    "destroyed": "",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ },
+ "mar5": {
+  "flags": 2147492040,
+  "shelter": false,
+  "ground": true,
+  "max_health": 20000,
+  "tileset": "ST_A",
+  "folder": "SMOD.WAD!/bild.FLDR",
+  "components": [
+   {
+    "kind": "BASE",
+    "tag": "mar5",
+    "destroyed": "mr5x",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "facing": 0.0,
+    "spell": ""
+   }
+  ]
+ }
+}

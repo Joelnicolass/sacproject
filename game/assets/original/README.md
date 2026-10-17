@@ -16,6 +16,6 @@ The paths are owned by `scenes/data/original_assets.gd` (`OriginalAssets`). Noth
 | `fx/<tag>.png`, `fx/fx.json` | Particle atlases (mipmaps only for the ones the catalog lists) and their catalog; `scri.png` is Divine Sight's eye (4x4 sheet, decoded from charlie.wad) | `python3 tools/import_ui.py` | 033d |
 | `themes/<god>/` | Tileset, sky, sun, `envi.tres` per god | `python3 tools/import_themes.py` | 033e |
 | `maps/high_noon/` | `terrain.res` (`MapTerrainData`: vertices, normals, indices), `tiles.png` and `light.png` (imported as `Image`, read on the CPU), `ntts.json`, `widgets.json`. The grass height is not stored: `GrassHeight.from_terrain` derives it | `python3 tools/import_map.py` (png, json) and `godot --headless --script res://tools/import_terrain.gd` (`terrain.res`) | 033f |
-| `data/*.json` | Creatures, spells, abilities, wizards, books, buildings | `tools/export_stats.py --out assets/original/data` | 033g |
+| `data/*.json` | Creatures, spells, abilities, wizards, books, buildings (game data the simulation reads; the dedicated server needs them) | `python3 tools/export_stats.py --out assets/original/data` (reads the WAD; with `--out` no `anim_*.json`, no models, no catalog) | 033g |
 
 Until 033h the importers read what the old exporters leave in `cache/look/` (TGA, SAXS, OBJ from `export_bodies.py` / `export_persephone.py`), not the WAD files: do not delete `cache/` before 033h. The WAD files are never versioned. Until each cut lands, its folder does not exist yet.

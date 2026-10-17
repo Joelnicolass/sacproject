@@ -17,7 +17,7 @@ Needs the bench switches on (debug/ai_match.gd): GroundHug.log_flight and SpikeW
   body hurt by the hit; it is not of the shooter's side unless it is the shot's target. Each takes the whole amount
   (splash ranged), once per ring: a body where two rings overlap takes both. The wave ends on frame LIFE (90).
 The bodies come from the wave's own list (`anillos ... cuerpo ...`, where they stand on the tick of the hit); the pacifist
-targets do not move. Resistances come from cache/data/creatures.json by the body's name without its number
+targets do not move. Resistances come from assets/original/data/creatures.json by the body's name without its number
 (Druid2 -> Druid); a body without one (a building) is listed with its damage as `?`.
 Port axes (x, y up, z): "seen from above" is (x, z).
 """
@@ -52,7 +52,7 @@ def rings_of(distance, effect_range):
 
 def resistances():
     here = os.path.dirname(os.path.abspath(__file__))
-    path = os.path.join(here, "..", "..", "cache", "data", "creatures.json")
+    path = os.path.join(here, "..", "..", "assets", "original", "data", "creatures.json")
     try:
         data = json.load(open(path, encoding="utf-8"))
     except OSError:

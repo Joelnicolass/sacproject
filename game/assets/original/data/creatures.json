@@ -1,0 +1,9501 @@
+{
+ "oham": {
+  "spell_type": 2,
+  "name_tag": "oham",
+  "icon": "nam6",
+  "cooldown_s": 1.0,
+  "mana_cost": 0,
+  "range": 0.0,
+  "min_casting_time_s": 0.0617,
+  "casting_time_s": 0.1235,
+  "casting_frames": 10,
+  "spell_order": 117,
+  "god": "none",
+  "model": "maho",
+  "health": 550,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 13.5,
+  "flying_speed": 0.0,
+  "melee_strength": 0,
+  "melee_accuracy": 0,
+  "melee_evasion": 500,
+  "ranged_accuracy": 0,
+  "aggressiveness": 0,
+  "sight_range": 100.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 0.75,
+   "splash_ranged": 0.75
+  },
+  "mana": 0,
+  "souls": 1,
+  "abilities": [
+   "hmba"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 3072,
+  "tag": "oham",
+  "name": "Manahoar",
+  "game_name": "Manahoar",
+  "folder": "free.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "",
+  "passive_on_damage": "hmba",
+  "stance_animation": {
+   "tag": "MAst",
+   "frames": 40,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "MAi1",
+   "frames": 53,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "MArn",
+   "frames": 18,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "MArn",
+   "frames": 18,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "MAst",
+    "frames": 40,
+    "framerate": 30,
+    "attack_ticks": []
+   },
+   {
+    "tag": "MAst",
+    "frames": 40,
+    "framerate": 30,
+    "attack_ticks": []
+   },
+   {
+    "tag": "MAst",
+    "frames": 40,
+    "framerate": 30,
+    "attack_ticks": []
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "MA00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "MA00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {}
+ },
+ "dcas": {
+  "spell_type": 2,
+  "name_tag": "dcas",
+  "icon": "cas6",
+  "cooldown_s": 1.0,
+  "mana_cost": 10,
+  "range": 0.0,
+  "min_casting_time_s": 0.0,
+  "casting_time_s": 0.0,
+  "casting_frames": 0,
+  "spell_order": 0,
+  "god": "none",
+  "model": "sacd",
+  "health": 400,
+  "regeneration_per_s": 83.3333,
+  "drain": 0.0,
+  "running_speed": 10.0,
+  "flying_speed": 10.0,
+  "melee_strength": 50,
+  "melee_accuracy": 1000,
+  "melee_evasion": 1000,
+  "ranged_accuracy": 1000,
+  "aggressiveness": 1000,
+  "sight_range": 100.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 0,
+  "souls": 0,
+  "abilities": [],
+  "passive_abilities": [],
+  "behavior_flags": 8448,
+  "tag": "dcas",
+  "name": "Sac Doctor",
+  "game_name": "Sac Doctor",
+  "folder": "@NDJ.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "SDst",
+   "frames": 11,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "SDda",
+   "frames": 166,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "SDrn",
+   "frames": 27,
+   "framerate": 30
+  },
+  "walk_animation": {},
+  "melee_animations": [
+   {
+    "tag": "SDsb",
+    "frames": 34,
+    "framerate": 30,
+    "attack_ticks": []
+   },
+   {
+    "tag": "SDpm",
+    "frames": 55,
+    "framerate": 30,
+    "attack_ticks": []
+   },
+   {
+    "tag": "SDpu",
+    "frames": 42,
+    "framerate": 30,
+    "attack_ticks": []
+   }
+  ],
+  "shoot_animations": [
+   {},
+   {}
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "hit_floor": {
+    "tag": "SDbn",
+    "frames": 85,
+    "framerate": 30
+   }
+  }
+ },
+ "saep": {
+  "spell_type": 2,
+  "name_tag": "saep",
+  "icon": "aep6",
+  "cooldown_s": 0.0,
+  "mana_cost": 0,
+  "range": 0.0,
+  "min_casting_time_s": 0.0,
+  "casting_time_s": 0.0,
+  "casting_frames": 0,
+  "spell_order": 10,
+  "god": "persephone",
+  "model": "peas",
+  "health": 500,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 7.25,
+  "flying_speed": 0.0,
+  "melee_strength": 0,
+  "melee_accuracy": 750,
+  "melee_evasion": 750,
+  "ranged_accuracy": 1000,
+  "aggressiveness": 0,
+  "sight_range": 50.0,
+  "resistances": {
+   "melee": 1.5,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 0,
+  "souls": 1,
+  "abilities": [],
+  "passive_abilities": [],
+  "behavior_flags": 256,
+  "tag": "saep",
+  "name": "Peasant",
+  "game_name": "Peasant",
+  "folder": "@NDJ.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "PEst",
+   "frames": 56,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "PEi1",
+   "frames": 34,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "PErn",
+   "frames": 32,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "PErn",
+   "frames": 32,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "PEa1",
+    "frames": 26,
+    "framerate": 30,
+    "attack_ticks": [
+     10
+    ]
+   },
+   {
+    "tag": "PEa2",
+    "frames": 46,
+    "framerate": 30,
+    "attack_ticks": [
+     17,
+     27
+    ]
+   },
+   {
+    "tag": "PEa1",
+    "frames": 26,
+    "framerate": 30,
+    "attack_ticks": [
+     10
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "PE00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "PE00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {
+   "cower": {
+    "tag": "PEcw",
+    "frames": 56,
+    "framerate": 30
+   },
+   "pull": {
+    "tag": "PEpu",
+    "frames": 445,
+    "framerate": 30
+   },
+   "work": {
+    "tag": "PEdi",
+    "frames": 198,
+    "framerate": 30
+   },
+   "talk_cower": {
+    "tag": "PEtc",
+    "frames": 56,
+    "framerate": 30
+   }
+  },
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "PEfd",
+    "frames": 25,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "PEgu",
+    "frames": 98,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "PEhf",
+    "frames": 67,
+    "framerate": 30
+   }
+  }
+ },
+ "zepa": {
+  "spell_type": 2,
+  "name_tag": "zepa",
+  "icon": "aep6",
+  "cooldown_s": 0.0,
+  "mana_cost": 0,
+  "range": 0.0,
+  "min_casting_time_s": 0.0,
+  "casting_time_s": 0.0,
+  "casting_frames": 0,
+  "spell_order": 14,
+  "god": "stratos",
+  "model": "apez",
+  "health": 500,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 7.25,
+  "flying_speed": 0.0,
+  "melee_strength": 0,
+  "melee_accuracy": 750,
+  "melee_evasion": 750,
+  "ranged_accuracy": 1000,
+  "aggressiveness": 0,
+  "sight_range": 50.0,
+  "resistances": {
+   "melee": 1.5,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 0,
+  "souls": 1,
+  "abilities": [],
+  "passive_abilities": [],
+  "behavior_flags": 256,
+  "tag": "zepa",
+  "name": "Snowman",
+  "game_name": "Snowman",
+  "folder": "@NDJ.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "PEst",
+   "frames": 56,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "PEi1",
+   "frames": 34,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "PErn",
+   "frames": 32,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "PErn",
+   "frames": 32,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "PEa1",
+    "frames": 26,
+    "framerate": 30,
+    "attack_ticks": [
+     10
+    ]
+   },
+   {
+    "tag": "PEa2",
+    "frames": 46,
+    "framerate": 30,
+    "attack_ticks": [
+     17,
+     27
+    ]
+   },
+   {
+    "tag": "PEa1",
+    "frames": 26,
+    "framerate": 30,
+    "attack_ticks": [
+     10
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "PE00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "PE00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {
+   "cower": {
+    "tag": "PEcw",
+    "frames": 56,
+    "framerate": 30
+   },
+   "pull": {
+    "tag": "PEpu",
+    "frames": 445,
+    "framerate": 30
+   },
+   "work": {
+    "tag": "PEdi",
+    "frames": 198,
+    "framerate": 30
+   },
+   "talk_cower": {
+    "tag": "PEtc",
+    "frames": 56,
+    "framerate": 30
+   }
+  },
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "PEfd",
+    "frames": 25,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "PEgu",
+    "frames": 98,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "PEhf",
+    "frames": 67,
+    "framerate": 30
+   }
+  }
+ },
+ "zepd": {
+  "spell_type": 2,
+  "name_tag": "zepd",
+  "icon": "aep6",
+  "cooldown_s": 0.0,
+  "mana_cost": 0,
+  "range": 0.0,
+  "min_casting_time_s": 0.0,
+  "casting_time_s": 0.0,
+  "casting_frames": 0,
+  "spell_order": 15,
+  "god": "charnel",
+  "model": "dpez",
+  "health": 500,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 7.25,
+  "flying_speed": 0.0,
+  "melee_strength": 0,
+  "melee_accuracy": 750,
+  "melee_evasion": 750,
+  "ranged_accuracy": 1000,
+  "aggressiveness": 0,
+  "sight_range": 50.0,
+  "resistances": {
+   "melee": 1.5,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 0,
+  "souls": 1,
+  "abilities": [],
+  "passive_abilities": [],
+  "behavior_flags": 256,
+  "tag": "zepd",
+  "name": "Zombie",
+  "game_name": "Zombie",
+  "folder": "@NDJ.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "PEst",
+   "frames": 56,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "PEi1",
+   "frames": 34,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "PErn",
+   "frames": 32,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "PErn",
+   "frames": 32,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "PEa1",
+    "frames": 26,
+    "framerate": 30,
+    "attack_ticks": [
+     10
+    ]
+   },
+   {
+    "tag": "PEa2",
+    "frames": 46,
+    "framerate": 30,
+    "attack_ticks": [
+     17,
+     27
+    ]
+   },
+   {
+    "tag": "PEa1",
+    "frames": 26,
+    "framerate": 30,
+    "attack_ticks": [
+     10
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "PE00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "PE00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {
+   "cower": {
+    "tag": "PEcw",
+    "frames": 56,
+    "framerate": 30
+   },
+   "pull": {
+    "tag": "PEpu",
+    "frames": 445,
+    "framerate": 30
+   },
+   "work": {
+    "tag": "PEdi",
+    "frames": 198,
+    "framerate": 30
+   },
+   "talk_cower": {
+    "tag": "PEtc",
+    "frames": 56,
+    "framerate": 30
+   }
+  },
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "PEfd",
+    "frames": 25,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "PEgu",
+    "frames": 98,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "PEhf",
+    "frames": 67,
+    "framerate": 30
+   }
+  }
+ },
+ "zepe": {
+  "spell_type": 2,
+  "name_tag": "zepe",
+  "icon": "aep6",
+  "cooldown_s": 0.0,
+  "mana_cost": 0,
+  "range": 0.0,
+  "min_casting_time_s": 0.0,
+  "casting_time_s": 0.0,
+  "casting_frames": 0,
+  "spell_order": 13,
+  "god": "james",
+  "model": "epez",
+  "health": 500,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 7.25,
+  "flying_speed": 0.0,
+  "melee_strength": 0,
+  "melee_accuracy": 750,
+  "melee_evasion": 750,
+  "ranged_accuracy": 1000,
+  "aggressiveness": 0,
+  "sight_range": 50.0,
+  "resistances": {
+   "melee": 1.5,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 0,
+  "souls": 1,
+  "abilities": [],
+  "passive_abilities": [],
+  "behavior_flags": 256,
+  "tag": "zepe",
+  "name": "Farmer",
+  "game_name": "Farmer",
+  "folder": "@NDJ.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "PEst",
+   "frames": 56,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "PEi1",
+   "frames": 34,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "PErn",
+   "frames": 32,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "PErn",
+   "frames": 32,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "PEa1",
+    "frames": 26,
+    "framerate": 30,
+    "attack_ticks": [
+     10
+    ]
+   },
+   {
+    "tag": "PEa2",
+    "frames": 46,
+    "framerate": 30,
+    "attack_ticks": [
+     17,
+     27
+    ]
+   },
+   {
+    "tag": "PEa1",
+    "frames": 26,
+    "framerate": 30,
+    "attack_ticks": [
+     10
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "PE00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "PE00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {
+   "cower": {
+    "tag": "PEcw",
+    "frames": 56,
+    "framerate": 30
+   },
+   "pull": {
+    "tag": "PEpu",
+    "frames": 445,
+    "framerate": 30
+   },
+   "work": {
+    "tag": "PEdi",
+    "frames": 198,
+    "framerate": 30
+   },
+   "talk_cower": {
+    "tag": "PEtc",
+    "frames": 56,
+    "framerate": 30
+   }
+  },
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "PEfd",
+    "frames": 25,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "PEgu",
+    "frames": 98,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "PEhf",
+    "frames": 67,
+    "framerate": 30
+   }
+  }
+ },
+ "zepf": {
+  "spell_type": 2,
+  "name_tag": "zepf",
+  "icon": "aep6",
+  "cooldown_s": 0.0,
+  "mana_cost": 0,
+  "range": 0.0,
+  "min_casting_time_s": 0.0,
+  "casting_time_s": 0.0,
+  "casting_frames": 0,
+  "spell_order": 12,
+  "god": "pyro",
+  "model": "fpez",
+  "health": 500,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 7.25,
+  "flying_speed": 0.0,
+  "melee_strength": 0,
+  "melee_accuracy": 750,
+  "melee_evasion": 750,
+  "ranged_accuracy": 1000,
+  "aggressiveness": 0,
+  "sight_range": 50.0,
+  "resistances": {
+   "melee": 1.5,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 0,
+  "souls": 1,
+  "abilities": [],
+  "passive_abilities": [],
+  "behavior_flags": 256,
+  "tag": "zepf",
+  "name": "Slave",
+  "game_name": "Slave",
+  "folder": "@NDJ.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "PEst",
+   "frames": 56,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "PEi1",
+   "frames": 34,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "PErn",
+   "frames": 32,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "PErn",
+   "frames": 32,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "PEa1",
+    "frames": 26,
+    "framerate": 30,
+    "attack_ticks": [
+     10
+    ]
+   },
+   {
+    "tag": "PEa2",
+    "frames": 46,
+    "framerate": 30,
+    "attack_ticks": [
+     17,
+     27
+    ]
+   },
+   {
+    "tag": "PEa1",
+    "frames": 26,
+    "framerate": 30,
+    "attack_ticks": [
+     10
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "PE00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "PE00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {
+   "cower": {
+    "tag": "PEcw",
+    "frames": 56,
+    "framerate": 30
+   },
+   "pull": {
+    "tag": "PEpu",
+    "frames": 445,
+    "framerate": 30
+   },
+   "work": {
+    "tag": "PEdi",
+    "frames": 198,
+    "framerate": 30
+   },
+   "talk_cower": {
+    "tag": "PEtc",
+    "frames": 56,
+    "framerate": 30
+   }
+  },
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "PEfd",
+    "frames": 25,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "PEgu",
+    "frames": 98,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "PEhf",
+    "frames": 67,
+    "framerate": 30
+   }
+  }
+ },
+ "tnem": {
+  "spell_type": 2,
+  "name_tag": "tnem",
+  "icon": "maf6",
+  "cooldown_s": 0.0,
+  "mana_cost": 250,
+  "range": 0.0,
+  "min_casting_time_s": 0.0,
+  "casting_time_s": 0.0,
+  "casting_frames": 0,
+  "spell_order": 0,
+  "god": "none",
+  "model": "FAmr",
+  "health": 1000,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 10.0,
+  "flying_speed": 10.0,
+  "melee_strength": 50,
+  "melee_accuracy": 1000,
+  "melee_evasion": 1000,
+  "ranged_accuracy": 1000,
+  "aggressiveness": 1000,
+  "sight_range": 100.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 2000,
+  "souls": 1,
+  "abilities": [
+   "tsg@"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 9120,
+  "tag": "tnem",
+  "name": "Zyzyx",
+  "game_name": "Zyzyx",
+  "folder": "@NDJ.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "",
+  "passive_on_damage": "tsg@",
+  "stance_animation": {
+   "tag": "FA2t",
+   "frames": 63,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "FAi1",
+   "frames": 58,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "FA2t",
+   "frames": 63,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "FA2t",
+   "frames": 63,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "FA2t",
+    "frames": 63,
+    "framerate": 30,
+    "attack_ticks": []
+   },
+   {
+    "tag": "FA2t",
+    "frames": 63,
+    "framerate": 30,
+    "attack_ticks": []
+   },
+   {
+    "tag": "FA2t",
+    "frames": 63,
+    "framerate": 30,
+    "attack_ticks": []
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "FA2t",
+    "frames": 63,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "FA2t",
+    "frames": 63,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {
+   "fly": {
+    "tag": "FAfl",
+    "frames": 43,
+    "framerate": 30
+   }
+  },
+  "stun_animations": {}
+ },
+ "tshg": {
+  "spell_type": 2,
+  "name_tag": "tshg",
+  "icon": "saep",
+  "cooldown_s": 0.0,
+  "mana_cost": 0,
+  "range": 0.0,
+  "min_casting_time_s": 0.0,
+  "casting_time_s": 0.0,
+  "casting_frames": 0,
+  "spell_order": 11,
+  "god": "persephone",
+  "model": "peas",
+  "health": 500,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 7.25,
+  "flying_speed": 0.0,
+  "melee_strength": 0,
+  "melee_accuracy": 750,
+  "melee_evasion": 750,
+  "ranged_accuracy": 1000,
+  "aggressiveness": 0,
+  "sight_range": 50.0,
+  "resistances": {
+   "melee": 1.5,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 0,
+  "souls": 1,
+  "abilities": [
+   "tsg@"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 256,
+  "tag": "tshg",
+  "name": "Ghost",
+  "game_name": "Ghost",
+  "folder": "@NDJ.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "",
+  "passive_on_damage": "tsg@",
+  "stance_animation": {
+   "tag": "PEst",
+   "frames": 56,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "PEi1",
+   "frames": 34,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "PErn",
+   "frames": 32,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "PErn",
+   "frames": 32,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "PEa1",
+    "frames": 26,
+    "framerate": 30,
+    "attack_ticks": [
+     10
+    ]
+   },
+   {
+    "tag": "PEa2",
+    "frames": 46,
+    "framerate": 30,
+    "attack_ticks": [
+     17,
+     27
+    ]
+   },
+   {
+    "tag": "PEa1",
+    "frames": 26,
+    "framerate": 30,
+    "attack_ticks": [
+     10
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "PE00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "PE00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {
+   "takeoff": {
+    "tag": "PEcw",
+    "frames": 56,
+    "framerate": 30
+   },
+   "fly": {
+    "tag": "PEpu",
+    "frames": 445,
+    "framerate": 30
+   },
+   "land": {
+    "tag": "PEp2",
+    "frames": 93,
+    "framerate": 30
+   }
+  },
+  "stun_animations": {
+   "knock": {
+    "tag": "PEfd",
+    "frames": 25,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "PEgu",
+    "frames": 98,
+    "framerate": 30
+   },
+   "fly_damage": {
+    "tag": "PEdi",
+    "frames": 198,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "PEhf",
+    "frames": 67,
+    "framerate": 30
+   }
+  }
+ },
+ "imaf": {
+  "spell_type": 2,
+  "name_tag": "imaf",
+  "icon": "maf6",
+  "cooldown_s": 0.0,
+  "mana_cost": 250,
+  "range": 0.0,
+  "min_casting_time_s": 0.0,
+  "casting_time_s": 0.0,
+  "casting_frames": 0,
+  "spell_order": 0,
+  "god": "none",
+  "model": "FAmr",
+  "health": 1000,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 10.0,
+  "flying_speed": 10.0,
+  "melee_strength": 50,
+  "melee_accuracy": 1000,
+  "melee_evasion": 1000,
+  "ranged_accuracy": 1000,
+  "aggressiveness": 1000,
+  "sight_range": 100.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 2000,
+  "souls": 1,
+  "abilities": [],
+  "passive_abilities": [],
+  "behavior_flags": 9120,
+  "tag": "imaf",
+  "name": "Familiar",
+  "game_name": "Familiar",
+  "folder": "@NDJ.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "FA2t",
+   "frames": 63,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "FAi1",
+   "frames": 58,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "FA2t",
+   "frames": 63,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "FA2t",
+   "frames": 63,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "FA2t",
+    "frames": 63,
+    "framerate": 30,
+    "attack_ticks": []
+   },
+   {
+    "tag": "FA2t",
+    "frames": 63,
+    "framerate": 30,
+    "attack_ticks": []
+   },
+   {
+    "tag": "FA2t",
+    "frames": 63,
+    "framerate": 30,
+    "attack_ticks": []
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "FA2t",
+    "frames": 63,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "FA2t",
+    "frames": 63,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {
+   "fly": {
+    "tag": "FAfl",
+    "frames": 43,
+    "framerate": 30
+   }
+  },
+  "stun_animations": {}
+ },
+ "mtsl": {
+  "spell_type": 2,
+  "name_tag": "mtsl",
+  "icon": "tne3",
+  "cooldown_s": 8.0,
+  "mana_cost": 1300,
+  "range": 0.0,
+  "min_casting_time_s": 1.2963,
+  "casting_time_s": 2.5926,
+  "casting_frames": 210,
+  "spell_order": 776,
+  "god": "persephone",
+  "model": "stmp",
+  "health": 4500,
+  "regeneration_per_s": 29.1667,
+  "drain": 0.0,
+  "running_speed": 7.0,
+  "flying_speed": 0.0,
+  "melee_strength": 600,
+  "melee_accuracy": 3000,
+  "melee_evasion": 3000,
+  "ranged_accuracy": 0,
+  "aggressiveness": 1000,
+  "sight_range": 100.0,
+  "resistances": {
+   "melee": 0.75,
+   "direct_spell": 2.0,
+   "splash_spell": 2.5,
+   "direct_ranged": 0.75,
+   "splash_ranged": 0.75
+  },
+  "mana": 500,
+  "souls": 4,
+  "abilities": [
+   "HSba"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 3072,
+  "tag": "mtsl",
+  "name": "Ent",
+  "game_name": "Ent",
+  "folder": "Clif.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "HSba",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "STst",
+   "frames": 103,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "STi1",
+   "frames": 151,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "STwk",
+   "frames": 40,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "STwk",
+   "frames": 40,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "STa1",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     19
+    ]
+   },
+   {
+    "tag": "STa2",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     16
+    ]
+   },
+   {
+    "tag": "STa3",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     16,
+     20
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "ST00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "ST00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "STfd",
+    "frames": 33,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "STgu",
+    "frames": 33,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "SThf",
+    "frames": 65,
+    "framerate": 30
+   }
+  }
+ },
+ "plfl": {
+  "spell_type": 2,
+  "name_tag": "plfl",
+  "icon": "ong3",
+  "cooldown_s": 5.0,
+  "mana_cost": 1000,
+  "range": 0.0,
+  "min_casting_time_s": 0.7407,
+  "casting_time_s": 1.4815,
+  "casting_frames": 120,
+  "spell_order": 455,
+  "god": "persephone",
+  "model": "lflp",
+  "health": 1300,
+  "regeneration_per_s": 29.1667,
+  "drain": 0.0,
+  "running_speed": 8.0,
+  "flying_speed": 0.0,
+  "melee_strength": 90,
+  "melee_accuracy": 800,
+  "melee_evasion": 800,
+  "ranged_accuracy": 150,
+  "aggressiveness": 1000,
+  "sight_range": 200.0,
+  "resistances": {
+   "melee": 4.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 200,
+  "souls": 2,
+  "abilities": [
+   "plfa"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 0,
+  "tag": "plfl",
+  "name": "Gnome",
+  "game_name": "Gnome",
+  "folder": "Clif.SCAT",
+  "ranged": true,
+  "ranged_attack": "plfa",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "FGst",
+   "frames": 61,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "FGi1",
+   "frames": 78,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "FGrn",
+   "frames": 35,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "FGrn",
+   "frames": 35,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "FGa1",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     23
+    ]
+   },
+   {
+    "tag": "FGa2",
+    "frames": 38,
+    "framerate": 30,
+    "attack_ticks": [
+     18
+    ]
+   },
+   {
+    "tag": "FGa3",
+    "frames": 29,
+    "framerate": 30,
+    "attack_ticks": [
+     13
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "FGs1",
+    "frames": 38,
+    "framerate": 30,
+    "shoot_ticks": [
+     5
+    ]
+   },
+   {
+    "tag": "FGs2",
+    "frames": 43,
+    "framerate": 30,
+    "shoot_ticks": [
+     10
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "FGfd",
+    "frames": 43,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "FGgu",
+    "frames": 47,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "FGhf",
+    "frames": 30,
+    "framerate": 30
+   }
+  }
+ },
+ "tbsh": {
+  "spell_type": 2,
+  "name_tag": "tbsh",
+  "icon": "rhs3",
+  "cooldown_s": 2.0,
+  "mana_cost": 300,
+  "range": 0.0,
+  "min_casting_time_s": 0.1852,
+  "casting_time_s": 0.3704,
+  "casting_frames": 30,
+  "spell_order": 134,
+  "god": "persephone",
+  "model": "lhbt",
+  "health": 450,
+  "regeneration_per_s": 29.1667,
+  "drain": 0.0,
+  "running_speed": 0.0,
+  "flying_speed": 15.0,
+  "melee_strength": 75,
+  "melee_accuracy": 1000,
+  "melee_evasion": 1000,
+  "ranged_accuracy": 800,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 2.0,
+   "splash_ranged": 2.0
+  },
+  "mana": 250,
+  "souls": 1,
+  "abilities": [
+   "absh",
+   "hsba"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 512,
+  "tag": "tbsh",
+  "name": "Shrike",
+  "game_name": "Shrike",
+  "folder": "Clif.SCAT",
+  "ranged": true,
+  "ranged_attack": "absh",
+  "active_ability": "hsba",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "HBst",
+   "frames": 56,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "HBi1",
+   "frames": 111,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "HBfl",
+   "frames": 56,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "HBfl",
+   "frames": 56,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "HBa1",
+    "frames": 60,
+    "framerate": 30,
+    "attack_ticks": [
+     13,
+     28
+    ]
+   },
+   {
+    "tag": "HBa2",
+    "frames": 66,
+    "framerate": 30,
+    "attack_ticks": [
+     8,
+     15,
+     24
+    ]
+   },
+   {
+    "tag": "HBa3",
+    "frames": 83,
+    "framerate": 30,
+    "attack_ticks": [
+     11,
+     29,
+     62
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "HBsh",
+    "frames": 60,
+    "framerate": 30,
+    "shoot_ticks": [
+     14
+    ]
+   },
+   {
+    "tag": "HBsh",
+    "frames": 60,
+    "framerate": 30,
+    "shoot_ticks": [
+     14
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {
+   "takeoff": {
+    "tag": "HBfl",
+    "frames": 56,
+    "framerate": 30
+   },
+   "fly": {
+    "tag": "HBfl",
+    "frames": 56,
+    "framerate": 30
+   }
+  },
+  "stun_animations": {
+   "knock": {
+    "tag": "HBfd",
+    "frames": 148,
+    "framerate": 30
+   },
+   "fly_damage": {
+    "tag": "HBdf",
+    "frames": 48,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "HBhf",
+    "frames": 148,
+    "framerate": 30
+   }
+  }
+ },
+ "lrps": {
+  "spell_type": 2,
+  "name_tag": "lrps",
+  "icon": "erg3",
+  "cooldown_s": 6.0,
+  "mana_cost": 1000,
+  "range": 0.0,
+  "min_casting_time_s": 0.9259,
+  "casting_time_s": 1.8519,
+  "casting_frames": 150,
+  "spell_order": 562,
+  "god": "persephone",
+  "model": "sprl",
+  "health": 1400,
+  "regeneration_per_s": 29.1667,
+  "drain": 0.0,
+  "running_speed": 7.5,
+  "flying_speed": 17.0,
+  "melee_strength": 350,
+  "melee_accuracy": 1500,
+  "melee_evasion": 1500,
+  "ranged_accuracy": 1000,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 0.1,
+   "direct_spell": 2.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.3,
+   "splash_ranged": 1.2
+  },
+  "mana": 300,
+  "souls": 3,
+  "abilities": [
+   "psla"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 7680,
+  "tag": "lrps",
+  "name": "Gremlin",
+  "game_name": "Gremlin",
+  "folder": "Clif.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "psla",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "SPst",
+   "frames": 51,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "SPi1",
+   "frames": 66,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "SPru",
+   "frames": 32,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "SPru",
+   "frames": 32,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "SPa1",
+    "frames": 51,
+    "framerate": 30,
+    "attack_ticks": [
+     22
+    ]
+   },
+   {
+    "tag": "SPa2",
+    "frames": 55,
+    "framerate": 30,
+    "attack_ticks": [
+     20
+    ]
+   },
+   {
+    "tag": "Spa3",
+    "frames": 59,
+    "framerate": 30,
+    "attack_ticks": [
+     27
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "LSs1",
+    "frames": 82,
+    "framerate": 20,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "LSs2",
+    "frames": 53,
+    "framerate": 45,
+    "shoot_ticks": [
+     0
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {
+   "takeoff": {
+    "tag": "SPto",
+    "frames": 32,
+    "framerate": 30
+   },
+   "fly": {
+    "tag": "SPfl",
+    "frames": 96,
+    "framerate": 30
+   },
+   "land": {
+    "tag": "SPla",
+    "frames": 87,
+    "framerate": 30
+   }
+  },
+  "stun_animations": {
+   "knock": {
+    "tag": "SPfo",
+    "frames": 57,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "SPgu",
+    "frames": 79,
+    "framerate": 30
+   },
+   "fly_damage": {
+    "tag": "SPfd",
+    "frames": 97,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "SPhf",
+    "frames": 47,
+    "framerate": 30
+   }
+  }
+ },
+ "cbab": {
+  "spell_type": 2,
+  "name_tag": "cbab",
+  "icon": "tum3",
+  "cooldown_s": 7.0,
+  "mana_cost": 1100,
+  "range": 0.0,
+  "min_casting_time_s": 1.1111,
+  "casting_time_s": 2.2222,
+  "casting_frames": 180,
+  "spell_order": 669,
+  "god": "persephone",
+  "model": "babc",
+  "health": 1900,
+  "regeneration_per_s": 29.1667,
+  "drain": 0.0,
+  "running_speed": 6.0,
+  "flying_speed": 0.0,
+  "melee_strength": 100,
+  "melee_accuracy": 2000,
+  "melee_evasion": 2000,
+  "ranged_accuracy": 1500,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 4.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.35
+  },
+  "mana": 500,
+  "souls": 3,
+  "abilities": [
+   "babt"
+  ],
+  "passive_abilities": [
+   "tum@"
+  ],
+  "behavior_flags": 0,
+  "tag": "cbab",
+  "name": "Mutant",
+  "game_name": "Mutant",
+  "folder": "Clif.SCAT",
+  "ranged": true,
+  "ranged_attack": "babt",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "GCst",
+   "frames": 58,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "GCid",
+   "frames": 58,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "GCru",
+   "frames": 34,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "GCru",
+   "frames": 34,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "GCa1",
+    "frames": 31,
+    "framerate": 30,
+    "attack_ticks": [
+     17
+    ]
+   },
+   {
+    "tag": "GCa2",
+    "frames": 53,
+    "framerate": 30,
+    "attack_ticks": [
+     23
+    ]
+   },
+   {
+    "tag": "GCal",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     25
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "GCsh",
+    "frames": 71,
+    "framerate": 30,
+    "shoot_ticks": [
+     56
+    ]
+   },
+   {
+    "tag": "GCsh",
+    "frames": 71,
+    "framerate": 30,
+    "shoot_ticks": [
+     56
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "GCfd",
+    "frames": 54,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "GCgu",
+    "frames": 37,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "GChf",
+    "frames": 14,
+    "framerate": 30
+   }
+  }
+ },
+ "grdg": {
+  "spell_type": 2,
+  "name_tag": "grdg",
+  "icon": "log3",
+  "cooldown_s": 10.0,
+  "mana_cost": 1900,
+  "range": 0.0,
+  "min_casting_time_s": 1.6667,
+  "casting_time_s": 3.3333,
+  "casting_frames": 270,
+  "spell_order": 985,
+  "god": "persephone",
+  "model": "drag",
+  "health": 5500,
+  "regeneration_per_s": 29.1667,
+  "drain": 0.0,
+  "running_speed": 10.0,
+  "flying_speed": 20.0,
+  "melee_strength": 1100,
+  "melee_accuracy": 3000,
+  "melee_evasion": 3000,
+  "ranged_accuracy": 300,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 0.75,
+   "splash_ranged": 0.75
+  },
+  "mana": 750,
+  "souls": 5,
+  "abilities": [
+   "filb"
+  ],
+  "passive_abilities": [
+   "eniv",
+   "tum@"
+  ],
+  "behavior_flags": 7680,
+  "tag": "grdg",
+  "name": "Dragon",
+  "game_name": "Dragon",
+  "folder": "Clif.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "filb",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "DGst",
+   "frames": 148,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "DGi1",
+   "frames": 149,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "DGrn",
+   "frames": 45,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "DGrn",
+   "frames": 45,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "DGa1",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     9
+    ]
+   },
+   {
+    "tag": "DGa2",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     17
+    ]
+   },
+   {
+    "tag": "DGa3",
+    "frames": 32,
+    "framerate": 30,
+    "attack_ticks": [
+     13
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "DGs1",
+    "frames": 49,
+    "framerate": 30,
+    "shoot_ticks": [
+     27
+    ]
+   },
+   {
+    "tag": "DGs2",
+    "frames": 82,
+    "framerate": 30,
+    "shoot_ticks": [
+     26
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {
+   "takeoff": {
+    "tag": "DGto",
+    "frames": 51,
+    "framerate": 30
+   },
+   "fly": {
+    "tag": "DGfl",
+    "frames": 67,
+    "framerate": 30
+   },
+   "land": {
+    "tag": "DGla",
+    "frames": 87,
+    "framerate": 30
+   }
+  },
+  "stun_animations": {
+   "knock": {
+    "tag": "DGfd",
+    "frames": 20,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "DGgu",
+    "frames": 34,
+    "framerate": 30
+   },
+   "fly_damage": {
+    "tag": "DGfg",
+    "frames": 56,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "DGhf",
+    "frames": 121,
+    "framerate": 30
+   }
+  }
+ },
+ "cara": {
+  "spell_type": 2,
+  "name_tag": "cara",
+  "icon": "acs3",
+  "cooldown_s": 3.0,
+  "mana_cost": 600,
+  "range": 0.0,
+  "min_casting_time_s": 0.3704,
+  "casting_time_s": 0.7407,
+  "casting_frames": 60,
+  "spell_order": 241,
+  "god": "persephone",
+  "model": "bugl",
+  "health": 1200,
+  "regeneration_per_s": 29.1667,
+  "drain": 0.0,
+  "running_speed": 9.0,
+  "flying_speed": 0.0,
+  "melee_strength": 100,
+  "melee_accuracy": 1300,
+  "melee_evasion": 1400,
+  "ranged_accuracy": 200,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 4.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 325,
+  "souls": 2,
+  "abilities": [
+   "slba"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 3072,
+  "tag": "cara",
+  "name": "Scarab",
+  "game_name": "Scarab",
+  "folder": "Clif.SCAT",
+  "ranged": true,
+  "ranged_attack": "slba",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "BGst",
+   "frames": 30,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "BGi1",
+   "frames": 37,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "BGrn",
+   "frames": 22,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "BGrn",
+   "frames": 22,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "BGa1",
+    "frames": 30,
+    "framerate": 30,
+    "attack_ticks": [
+     16
+    ]
+   },
+   {
+    "tag": "BGa2",
+    "frames": 53,
+    "framerate": 30,
+    "attack_ticks": [
+     27
+    ]
+   },
+   {
+    "tag": "BGa3",
+    "frames": 45,
+    "framerate": 30,
+    "attack_ticks": [
+     20
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "BGs2",
+    "frames": 44,
+    "framerate": 30,
+    "shoot_ticks": [
+     22
+    ]
+   },
+   {
+    "tag": "BGs1",
+    "frames": 35,
+    "framerate": 30,
+    "shoot_ticks": [
+     18
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "BGfd",
+    "frames": 18,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "BGgu",
+    "frames": 33,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "BGhf",
+    "frames": 18,
+    "framerate": 30
+   }
+  }
+ },
+ "amuh": {
+  "spell_type": 2,
+  "name_tag": "amuh",
+  "icon": "nar3",
+  "cooldown_s": 2.0,
+  "mana_cost": 300,
+  "range": 0.0,
+  "min_casting_time_s": 0.1852,
+  "casting_time_s": 0.3704,
+  "casting_frames": 30,
+  "spell_order": 127,
+  "god": "persephone",
+  "model": "huma",
+  "health": 800,
+  "regeneration_per_s": 29.1667,
+  "drain": 0.0,
+  "running_speed": 12.0,
+  "flying_speed": 0.0,
+  "melee_strength": 90,
+  "melee_accuracy": 800,
+  "melee_evasion": 800,
+  "ranged_accuracy": 600,
+  "aggressiveness": 1000,
+  "sight_range": 175.0,
+  "resistances": {
+   "melee": 4.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 200,
+  "souls": 1,
+  "abilities": [
+   "wobf",
+   "eesd"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 0,
+  "tag": "amuh",
+  "name": "Ranger",
+  "game_name": "Ranger",
+  "folder": "Clif.SCAT",
+  "ranged": true,
+  "ranged_attack": "wobf",
+  "active_ability": "eesd",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "HAst",
+   "frames": 37,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "HAi1",
+   "frames": 39,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "HAru",
+   "frames": 31,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "HAru",
+   "frames": 31,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "HAa1",
+    "frames": 45,
+    "framerate": 30,
+    "attack_ticks": [
+     21
+    ]
+   },
+   {
+    "tag": "HAa2",
+    "frames": 45,
+    "framerate": 30,
+    "attack_ticks": [
+     17
+    ]
+   },
+   {
+    "tag": "HAal",
+    "frames": 45,
+    "framerate": 30,
+    "attack_ticks": [
+     20
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "HAsh",
+    "frames": 58,
+    "framerate": 30,
+    "shoot_ticks": [
+     36
+    ]
+   },
+   {
+    "tag": "HAsu",
+    "frames": 50,
+    "framerate": 30,
+    "shoot_ticks": [
+     27
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "HAfo",
+    "frames": 37,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "HAgu",
+    "frames": 52,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "HAhf",
+    "frames": 67,
+    "framerate": 30
+   }
+  }
+ },
+ "lort": {
+  "spell_type": 2,
+  "name_tag": "lort",
+  "icon": "ort3",
+  "cooldown_s": 4.0,
+  "mana_cost": 700,
+  "range": 0.0,
+  "min_casting_time_s": 0.5556,
+  "casting_time_s": 1.1111,
+  "casting_frames": 90,
+  "spell_order": 348,
+  "god": "persephone",
+  "model": "ltrl",
+  "health": 1600,
+  "regeneration_per_s": 29.1667,
+  "drain": 0.0,
+  "running_speed": 8.0,
+  "flying_speed": 0.0,
+  "melee_strength": 300,
+  "melee_accuracy": 1500,
+  "melee_evasion": 1500,
+  "ranged_accuracy": 0,
+  "aggressiveness": 1000,
+  "sight_range": 100.0,
+  "resistances": {
+   "melee": 0.6,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 0.9,
+   "splash_ranged": 0.9
+  },
+  "mana": 0,
+  "souls": 2,
+  "abilities": [],
+  "passive_abilities": [],
+  "behavior_flags": 8192,
+  "tag": "lort",
+  "name": "Troll",
+  "game_name": "Troll",
+  "folder": "Clif.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "TRst",
+   "frames": 32,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "TRi1",
+   "frames": 34,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "TRrn",
+   "frames": 28,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "TRrn",
+   "frames": 28,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "TRa1",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     20,
+     26
+    ]
+   },
+   {
+    "tag": "TRa2",
+    "frames": 49,
+    "framerate": 30,
+    "attack_ticks": [
+     21
+    ]
+   },
+   {
+    "tag": "TRa1",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     20,
+     26
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "TR00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "TR00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "TRfd",
+    "frames": 12,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "TRgu",
+    "frames": 24,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "TRhf",
+    "frames": 29,
+    "framerate": 30
+   }
+  }
+ },
+ "nmuh": {
+  "spell_type": 2,
+  "name_tag": "nmuh",
+  "icon": "urd3",
+  "cooldown_s": 2.0,
+  "mana_cost": 300,
+  "range": 0.0,
+  "min_casting_time_s": 0.1852,
+  "casting_time_s": 0.3704,
+  "casting_frames": 30,
+  "spell_order": 120,
+  "god": "persephone",
+  "model": "humn",
+  "health": 800,
+  "regeneration_per_s": 29.1667,
+  "drain": 0.0,
+  "running_speed": 11.0,
+  "flying_speed": 0.0,
+  "melee_strength": 150,
+  "melee_accuracy": 1000,
+  "melee_evasion": 1000,
+  "ranged_accuracy": 0,
+  "aggressiveness": 1000,
+  "sight_range": 100.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 0.9,
+   "splash_ranged": 0.9
+  },
+  "mana": 100,
+  "souls": 1,
+  "abilities": [
+   "hsba"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 0,
+  "tag": "nmuh",
+  "name": "Druid",
+  "game_name": "Druid",
+  "folder": "Clif.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "hsba",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "HUst",
+   "frames": 76,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "HUi1",
+   "frames": 118,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "HUrn",
+   "frames": 39,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "HUrn",
+   "frames": 39,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "HUa1",
+    "frames": 24,
+    "framerate": 30,
+    "attack_ticks": [
+     15
+    ]
+   },
+   {
+    "tag": "HUa2",
+    "frames": 20,
+    "framerate": 30,
+    "attack_ticks": [
+     14
+    ]
+   },
+   {
+    "tag": "HUa3",
+    "frames": 45,
+    "framerate": 30,
+    "attack_ticks": [
+     18
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "HU00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "HU00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "HUfd",
+    "frames": 37,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "HUgu",
+    "frames": 76,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "HUhf",
+    "frames": 67,
+    "framerate": 30
+   }
+  }
+ },
+ "crpd": {
+  "spell_type": 2,
+  "name_tag": "crpd",
+  "icon": "ten1",
+  "cooldown_s": 5.0,
+  "mana_cost": 1000,
+  "range": 0.0,
+  "min_casting_time_s": 0.7407,
+  "casting_time_s": 1.4815,
+  "casting_frames": 120,
+  "spell_order": 459,
+  "god": "charnel",
+  "model": "prcy",
+  "health": 1800,
+  "regeneration_per_s": 0.0,
+  "drain": 0.5,
+  "running_speed": 7.0,
+  "flying_speed": 0.0,
+  "melee_strength": 400,
+  "melee_accuracy": 1500,
+  "melee_evasion": 1500,
+  "ranged_accuracy": 0,
+  "aggressiveness": 1000,
+  "sight_range": 100.0,
+  "resistances": {
+   "melee": 0.75,
+   "direct_spell": 2.0,
+   "splash_spell": 2.5,
+   "direct_ranged": 0.9,
+   "splash_ranged": 0.9
+  },
+  "mana": 500,
+  "souls": 2,
+  "abilities": [
+   "ifna"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 0,
+  "tag": "crpd",
+  "name": "Netherfiend",
+  "game_name": "Netherfiend",
+  "folder": "Cdea.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "ifna",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "PCst",
+   "frames": 78,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "PCi1",
+   "frames": 148,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "PCrn",
+   "frames": 60,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "PCrn",
+   "frames": 60,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "PCa1",
+    "frames": 48,
+    "framerate": 30,
+    "attack_ticks": [
+     11
+    ]
+   },
+   {
+    "tag": "PCa2",
+    "frames": 60,
+    "framerate": 30,
+    "attack_ticks": [
+     9
+    ]
+   },
+   {
+    "tag": "PCa2",
+    "frames": 60,
+    "framerate": 30,
+    "attack_ticks": [
+     9
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "PC00",
+    "frames": 2,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "PCes",
+    "frames": 117,
+    "framerate": 30,
+    "shoot_ticks": [
+     36
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "PCfd",
+    "frames": 37,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "PCgu",
+    "frames": 48,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "PChf",
+    "frames": 31,
+    "framerate": 30
+   }
+  }
+ },
+ "kacd": {
+  "spell_type": 2,
+  "name_tag": "kacd",
+  "icon": "ilb1",
+  "cooldown_s": 4.0,
+  "mana_cost": 700,
+  "range": 0.0,
+  "min_casting_time_s": 0.5556,
+  "casting_time_s": 1.1111,
+  "casting_frames": 90,
+  "spell_order": 352,
+  "god": "charnel",
+  "model": "dcak",
+  "health": 1260,
+  "regeneration_per_s": 0.0,
+  "drain": 0.5,
+  "running_speed": 7.5,
+  "flying_speed": 17.0,
+  "melee_strength": 375,
+  "melee_accuracy": 1500,
+  "melee_evasion": 1500,
+  "ranged_accuracy": 1000,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 0.1,
+   "direct_spell": 2.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.3,
+   "splash_ranged": 1.2
+  },
+  "mana": 200,
+  "souls": 2,
+  "abilities": [
+   "liba"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 7680,
+  "tag": "kacd",
+  "name": "Blight",
+  "game_name": "Blight",
+  "folder": "Cdea.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "liba",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "CKst",
+   "frames": 88,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "CKi1",
+   "frames": 95,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "CKrn",
+   "frames": 61,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "CKrn",
+   "frames": 61,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "CKa1",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     19
+    ]
+   },
+   {
+    "tag": "CKa2",
+    "frames": 48,
+    "framerate": 30,
+    "attack_ticks": [
+     12,
+     18,
+     21,
+     25
+    ]
+   },
+   {
+    "tag": "CKa3",
+    "frames": 71,
+    "framerate": 30,
+    "attack_ticks": [
+     11,
+     21,
+     40,
+     55
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "DCs1",
+    "frames": 88,
+    "framerate": 30,
+    "shoot_ticks": [
+     71
+    ]
+   },
+   {
+    "tag": "CKa2",
+    "frames": 48,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {
+   "takeoff": {
+    "tag": "CKto",
+    "frames": 26,
+    "framerate": 30
+   },
+   "fly": {
+    "tag": "CKfl",
+    "frames": 61,
+    "framerate": 30
+   },
+   "land": {
+    "tag": "CKla",
+    "frames": 28,
+    "framerate": 30
+   }
+  },
+  "stun_animations": {
+   "knock": {
+    "tag": "CKfd",
+    "frames": 98,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "CKgu",
+    "frames": 58,
+    "framerate": 30
+   },
+   "fly_damage": {
+    "tag": "Ckfg",
+    "frames": 61,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "CKhf",
+    "frames": 85,
+    "framerate": 30
+   }
+  }
+ },
+ "glsd": {
+  "spell_type": 2,
+  "name_tag": "glsd",
+  "icon": "cen1",
+  "cooldown_s": 3.0,
+  "mana_cost": 600,
+  "range": 0.0,
+  "min_casting_time_s": 0.3704,
+  "casting_time_s": 0.7407,
+  "casting_frames": 60,
+  "spell_order": 245,
+  "god": "charnel",
+  "model": "dslg",
+  "health": 1260,
+  "regeneration_per_s": 0.0,
+  "drain": 0.5,
+  "running_speed": 9.0,
+  "flying_speed": 0.0,
+  "melee_strength": 100,
+  "melee_accuracy": 1300,
+  "melee_evasion": 1400,
+  "ranged_accuracy": 400,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 4.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 325,
+  "souls": 2,
+  "abilities": [
+   "cena"
+  ],
+  "passive_abilities": [
+   "cen@"
+  ],
+  "behavior_flags": 1024,
+  "tag": "glsd",
+  "name": "Necryl",
+  "game_name": "Necryl",
+  "folder": "Cdea.SCAT",
+  "ranged": true,
+  "ranged_attack": "cena",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "SLst",
+   "frames": 98,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "SLi1",
+   "frames": 98,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "SLrn",
+   "frames": 20,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "SLrn",
+   "frames": 20,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "SLa1",
+    "frames": 23,
+    "framerate": 30,
+    "attack_ticks": [
+     13
+    ]
+   },
+   {
+    "tag": "SLa2",
+    "frames": 59,
+    "framerate": 30,
+    "attack_ticks": [
+     23
+    ]
+   },
+   {
+    "tag": "SLa3",
+    "frames": 59,
+    "framerate": 30,
+    "attack_ticks": [
+     21
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "SLs1",
+    "frames": 47,
+    "framerate": 30,
+    "shoot_ticks": [
+     17
+    ]
+   },
+   {
+    "tag": "SLs1",
+    "frames": 47,
+    "framerate": 30,
+    "shoot_ticks": [
+     17
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "SLfd",
+    "frames": 25,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "SLgu",
+    "frames": 52,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "SLhf",
+    "frames": 98,
+    "framerate": 30
+   }
+  }
+ },
+ "nomd": {
+  "spell_type": 2,
+  "name_tag": "nomd",
+  "icon": "leh1",
+  "cooldown_s": 10.0,
+  "mana_cost": 1900,
+  "range": 0.0,
+  "min_casting_time_s": 1.6667,
+  "casting_time_s": 3.3333,
+  "casting_frames": 270,
+  "spell_order": 989,
+  "god": "charnel",
+  "model": "ddmn",
+  "health": 5400,
+  "regeneration_per_s": 0.0,
+  "drain": 0.5,
+  "running_speed": 10.0,
+  "flying_speed": 20.0,
+  "melee_strength": 800,
+  "melee_accuracy": 3000,
+  "melee_evasion": 3000,
+  "ranged_accuracy": 300,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 0.75,
+   "splash_ranged": 0.75
+  },
+  "mana": 750,
+  "souls": 5,
+  "abilities": [
+   "mhba",
+   "ifna"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 5632,
+  "tag": "nomd",
+  "name": "Hellmouth",
+  "game_name": "Hellmouth",
+  "folder": "Cdea.SCAT",
+  "ranged": true,
+  "ranged_attack": "mhba",
+  "active_ability": "ifna",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "DMst",
+   "frames": 101,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "DMi1",
+   "frames": 101,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "DMrn",
+   "frames": 40,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "DMrn",
+   "frames": 40,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "DMa1",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     19
+    ]
+   },
+   {
+    "tag": "DMa1",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     19
+    ]
+   },
+   {
+    "tag": "DMa3",
+    "frames": 41,
+    "framerate": 30,
+    "attack_ticks": [
+     21
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "DMs1",
+    "frames": 85,
+    "framerate": 30,
+    "shoot_ticks": [
+     18
+    ]
+   },
+   {
+    "tag": "DMes",
+    "frames": 99,
+    "framerate": 30,
+    "shoot_ticks": [
+     46
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {
+   "takeoff": {
+    "tag": "DMto",
+    "frames": 59,
+    "framerate": 30
+   },
+   "fly": {
+    "tag": "DMfl",
+    "frames": 47,
+    "framerate": 30
+   },
+   "land": {
+    "tag": "DMla",
+    "frames": 95,
+    "framerate": 30
+   }
+  },
+  "stun_animations": {
+   "knock": {
+    "tag": "DMfd",
+    "frames": 45,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "DMgu",
+    "frames": 54,
+    "framerate": 30
+   },
+   "fly_damage": {
+    "tag": "DMfg",
+    "frames": 48,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "DMhf",
+    "frames": 57,
+    "framerate": 30
+   }
+  }
+ },
+ "nugd": {
+  "spell_type": 2,
+  "name_tag": "nugd",
+  "icon": "yts1",
+  "cooldown_s": 8.0,
+  "mana_cost": 1300,
+  "range": 0.0,
+  "min_casting_time_s": 1.2963,
+  "casting_time_s": 2.5926,
+  "casting_frames": 210,
+  "spell_order": 780,
+  "god": "charnel",
+  "model": "gund",
+  "health": 1350,
+  "regeneration_per_s": 0.0,
+  "drain": 0.5,
+  "running_speed": 8.0,
+  "flying_speed": 0.0,
+  "melee_strength": 200,
+  "melee_accuracy": 2000,
+  "melee_evasion": 2000,
+  "ranged_accuracy": 500,
+  "aggressiveness": 1000,
+  "sight_range": 200.0,
+  "resistances": {
+   "melee": 4.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 500,
+  "souls": 4,
+  "abilities": [
+   "dhga",
+   "dner",
+   "tdhg"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 0,
+  "tag": "nugd",
+  "name": "Styx",
+  "game_name": "Styx",
+  "folder": "Cdea.SCAT",
+  "ranged": true,
+  "ranged_attack": "dhga",
+  "active_ability": "dner",
+  "passive_on_damage": "tdhg",
+  "stance_animation": {
+   "tag": "GUst",
+   "frames": 28,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "GUi1",
+   "frames": 33,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "GUrn",
+   "frames": 39,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "GUrn",
+   "frames": 39,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "GUa1",
+    "frames": 61,
+    "framerate": 30,
+    "attack_ticks": [
+     24
+    ]
+   },
+   {
+    "tag": "GUa2",
+    "frames": 60,
+    "framerate": 30,
+    "attack_ticks": [
+     24,
+     39
+    ]
+   },
+   {
+    "tag": "GUa3",
+    "frames": 53,
+    "framerate": 30,
+    "attack_ticks": [
+     20,
+     32
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "GUs1",
+    "frames": 73,
+    "framerate": 30,
+    "shoot_ticks": [
+     50
+    ]
+   },
+   {
+    "tag": "GUs2",
+    "frames": 139,
+    "framerate": 30,
+    "shoot_ticks": [
+     96
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "GUfd",
+    "frames": 19,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "GUgu",
+    "frames": 26,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "GUhf",
+    "frames": 33,
+    "framerate": 30
+   }
+  }
+ },
+ "plfd": {
+  "spell_type": 2,
+  "name_tag": "plfd",
+  "icon": "aed1",
+  "cooldown_s": 5.0,
+  "mana_cost": 1000,
+  "range": 0.0,
+  "min_casting_time_s": 0.9259,
+  "casting_time_s": 1.8519,
+  "casting_frames": 150,
+  "spell_order": 566,
+  "god": "charnel",
+  "model": "dflp",
+  "health": 1170,
+  "regeneration_per_s": 0.0,
+  "drain": 0.5,
+  "running_speed": 8.0,
+  "flying_speed": 0.0,
+  "melee_strength": 90,
+  "melee_accuracy": 800,
+  "melee_evasion": 800,
+  "ranged_accuracy": 50,
+  "aggressiveness": 1000,
+  "sight_range": 200.0,
+  "resistances": {
+   "melee": 4.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 300,
+  "souls": 2,
+  "abilities": [
+   "lfda"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 0,
+  "tag": "plfd",
+  "name": "Deadeye",
+  "game_name": "Deadeye",
+  "folder": "Cdea.SCAT",
+  "ranged": true,
+  "ranged_attack": "lfda",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "FGst",
+   "frames": 61,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "FGi1",
+   "frames": 78,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "FGrn",
+   "frames": 35,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "FGrn",
+   "frames": 35,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "FGa1",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     23
+    ]
+   },
+   {
+    "tag": "FGa2",
+    "frames": 38,
+    "framerate": 30,
+    "attack_ticks": [
+     18
+    ]
+   },
+   {
+    "tag": "FGa3",
+    "frames": 29,
+    "framerate": 30,
+    "attack_ticks": [
+     13
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "FGs1",
+    "frames": 38,
+    "framerate": 30,
+    "shoot_ticks": [
+     5
+    ]
+   },
+   {
+    "tag": "FGs2",
+    "frames": 43,
+    "framerate": 30,
+    "shoot_ticks": [
+     10
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "FGfd",
+    "frames": 43,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "FGgu",
+    "frames": 47,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "FGhf",
+    "frames": 30,
+    "framerate": 30
+   }
+  }
+ },
+ "dplk": {
+  "spell_type": 2,
+  "name_tag": "dplk",
+  "icon": "laf1",
+  "cooldown_s": 2.0,
+  "mana_cost": 300,
+  "range": 0.0,
+  "min_casting_time_s": 0.1852,
+  "casting_time_s": 0.3704,
+  "casting_frames": 30,
+  "spell_order": 131,
+  "god": "charnel",
+  "model": "dklp",
+  "health": 720,
+  "regeneration_per_s": 0.0,
+  "drain": 0.5,
+  "running_speed": 12.0,
+  "flying_speed": 0.0,
+  "melee_strength": 90,
+  "melee_accuracy": 800,
+  "melee_evasion": 800,
+  "ranged_accuracy": 600,
+  "aggressiveness": 1000,
+  "sight_range": 175.0,
+  "resistances": {
+   "melee": 6.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 200,
+  "souls": 1,
+  "abilities": [
+   "dkba",
+   "dedp"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 0,
+  "tag": "dplk",
+  "name": "Fallen",
+  "game_name": "Fallen",
+  "folder": "Cdea.SCAT",
+  "ranged": true,
+  "ranged_attack": "dkba",
+  "active_ability": "dedp",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "KLst",
+   "frames": 27,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "KDi1",
+   "frames": 53,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "KDrn",
+   "frames": 24,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "KDrn",
+   "frames": 24,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "KDa1",
+    "frames": 37,
+    "framerate": 30,
+    "attack_ticks": [
+     15
+    ]
+   },
+   {
+    "tag": "KLa2",
+    "frames": 31,
+    "framerate": 30,
+    "attack_ticks": [
+     8
+    ]
+   },
+   {
+    "tag": "KLal",
+    "frames": 69,
+    "framerate": 30,
+    "attack_ticks": [
+     31,
+     56
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "KLs1",
+    "frames": 47,
+    "framerate": 30,
+    "shoot_ticks": [
+     27
+    ]
+   },
+   {
+    "tag": "KLs2",
+    "frames": 68,
+    "framerate": 30,
+    "shoot_ticks": [
+     16
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "KLfd",
+    "frames": 37,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "KLgu",
+    "frames": 19,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "KLhf",
+    "frames": 37,
+    "framerate": 30
+   }
+  }
+ },
+ "dzid": {
+  "spell_type": 2,
+  "name_tag": "dzid",
+  "icon": "ycs1",
+  "cooldown_s": 2.0,
+  "mana_cost": 300,
+  "range": 0.0,
+  "min_casting_time_s": 0.1852,
+  "casting_time_s": 0.3704,
+  "casting_frames": 30,
+  "spell_order": 124,
+  "god": "charnel",
+  "model": "ddiz",
+  "health": 540,
+  "regeneration_per_s": 0.0,
+  "drain": 0.5,
+  "running_speed": 11.0,
+  "flying_speed": 0.0,
+  "melee_strength": 250,
+  "melee_accuracy": 2000,
+  "melee_evasion": 1000,
+  "ranged_accuracy": 0,
+  "aggressiveness": 1000,
+  "sight_range": 100.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 0.9,
+   "splash_ranged": 0.9
+  },
+  "mana": 0,
+  "souls": 1,
+  "abilities": [],
+  "passive_abilities": [],
+  "behavior_flags": 0,
+  "tag": "dzid",
+  "name": "Scythe",
+  "game_name": "Scythe",
+  "folder": "Cdea.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "DZst",
+   "frames": 62,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "DDi1",
+   "frames": 62,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "DDrn",
+   "frames": 30,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "DDrn",
+   "frames": 30,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "DDa1",
+    "frames": 68,
+    "framerate": 30,
+    "attack_ticks": [
+     30
+    ]
+   },
+   {
+    "tag": "DZa2",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     4
+    ]
+   },
+   {
+    "tag": "DZa3",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     5
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "DZ00",
+    "frames": 2,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "DZ00",
+    "frames": 2,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "DZfa",
+    "frames": 97,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "DZgu",
+    "frames": 98,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "DZhf",
+    "frames": 110,
+    "framerate": 30
+   }
+  }
+ },
+ "pazb": {
+  "spell_type": 2,
+  "name_tag": "pazb",
+  "icon": "col1",
+  "cooldown_s": 2.0,
+  "mana_cost": 300,
+  "range": 0.0,
+  "min_casting_time_s": 0.1852,
+  "casting_time_s": 0.3704,
+  "casting_frames": 30,
+  "spell_order": 138,
+  "god": "charnel",
+  "model": "bugz",
+  "health": 450,
+  "regeneration_per_s": 0.0,
+  "drain": 0.875,
+  "running_speed": 0.0,
+  "flying_speed": 15.0,
+  "melee_strength": 75,
+  "melee_accuracy": 1000,
+  "melee_evasion": 1000,
+  "ranged_accuracy": 800,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 2.0,
+   "splash_ranged": 2.0
+  },
+  "mana": 250,
+  "souls": 1,
+  "abilities": [
+   "zbba"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 512,
+  "tag": "pazb",
+  "name": "Locust",
+  "game_name": "Locust",
+  "folder": "Cdea.SCAT",
+  "ranged": true,
+  "ranged_attack": "zbba",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "BZst",
+   "frames": 94,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "BZi1",
+   "frames": 96,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "BZfl",
+   "frames": 31,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "BZfl",
+   "frames": 31,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "BZa1",
+    "frames": 31,
+    "framerate": 30,
+    "attack_ticks": [
+     17
+    ]
+   },
+   {
+    "tag": "BZa2",
+    "frames": 31,
+    "framerate": 30,
+    "attack_ticks": [
+     12,
+     30
+    ]
+   },
+   {
+    "tag": "BZa3",
+    "frames": 59,
+    "framerate": 30,
+    "attack_ticks": [
+     11,
+     17,
+     27,
+     34,
+     40,
+     51
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "BZs1",
+    "frames": 31,
+    "framerate": 30,
+    "shoot_ticks": [
+     8
+    ]
+   },
+   {
+    "tag": "BZs1",
+    "frames": 31,
+    "framerate": 30,
+    "shoot_ticks": [
+     8
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {
+   "fly": {
+    "tag": "BZfl",
+    "frames": 31,
+    "framerate": 30
+   },
+   "land": {
+    "tag": "BZhv",
+    "frames": 31,
+    "framerate": 30
+   }
+  },
+  "stun_animations": {
+   "knock": {
+    "tag": "BZfd",
+    "frames": 51,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "BZfl",
+    "frames": 31,
+    "framerate": 30
+   },
+   "fly_damage": {
+    "tag": "BZdf",
+    "frames": 31,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "BZhf",
+    "frames": 43,
+    "framerate": 30
+   }
+  }
+ },
+ "ctug": {
+  "spell_type": 2,
+  "name_tag": "ctug",
+  "icon": "oba1",
+  "cooldown_s": 7.0,
+  "mana_cost": 1100,
+  "range": 0.0,
+  "min_casting_time_s": 1.1111,
+  "casting_time_s": 2.2222,
+  "casting_frames": 180,
+  "spell_order": 673,
+  "god": "charnel",
+  "model": "gutc",
+  "health": 1710,
+  "regeneration_per_s": 0.0,
+  "drain": 0.5,
+  "running_speed": 6.0,
+  "flying_speed": 0.0,
+  "melee_strength": 100,
+  "melee_accuracy": 2000,
+  "melee_evasion": 2000,
+  "ranged_accuracy": 1500,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 4.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.35
+  },
+  "mana": 500,
+  "souls": 3,
+  "abilities": [
+   "tugt"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 0,
+  "tag": "ctug",
+  "name": "Abomination",
+  "game_name": "Abomination",
+  "folder": "Cdea.SCAT",
+  "ranged": true,
+  "ranged_attack": "tugt",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "GCst",
+   "frames": 58,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "GCid",
+   "frames": 58,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "GCru",
+   "frames": 34,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "GCru",
+   "frames": 34,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "GCa1",
+    "frames": 31,
+    "framerate": 30,
+    "attack_ticks": [
+     17
+    ]
+   },
+   {
+    "tag": "GCa2",
+    "frames": 53,
+    "framerate": 30,
+    "attack_ticks": [
+     23
+    ]
+   },
+   {
+    "tag": "GCal",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     25
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "GCsh",
+    "frames": 71,
+    "framerate": 30,
+    "shoot_ticks": [
+     56
+    ]
+   },
+   {
+    "tag": "GCsh",
+    "frames": 71,
+    "framerate": 30,
+    "shoot_ticks": [
+     56
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "GCfd",
+    "frames": 54,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "GCgu",
+    "frames": 37,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "GChf",
+    "frames": 14,
+    "framerate": 30
+   }
+  }
+ },
+ "grdr": {
+  "spell_type": 2,
+  "name_tag": "grdr",
+  "icon": "ard4",
+  "cooldown_s": 10.0,
+  "mana_cost": 1900,
+  "range": 0.0,
+  "min_casting_time_s": 1.6667,
+  "casting_time_s": 3.3333,
+  "casting_frames": 270,
+  "spell_order": 986,
+  "god": "pyro",
+  "model": "fdrg",
+  "health": 4800,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 10.0,
+  "flying_speed": 20.0,
+  "melee_strength": 1000,
+  "melee_accuracy": 3000,
+  "melee_evasion": 1500,
+  "ranged_accuracy": 300,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 0.75,
+   "splash_ranged": 0.75
+  },
+  "mana": 750,
+  "souls": 5,
+  "abilities": [
+   "rdra",
+   "rifl"
+  ],
+  "passive_abilities": [
+   "goc@"
+  ],
+  "behavior_flags": 7680,
+  "tag": "grdr",
+  "name": "Phoenix",
+  "game_name": "Phoenix",
+  "folder": "Cfir.SCAT",
+  "ranged": true,
+  "ranged_attack": "rdra",
+  "active_ability": "",
+  "passive_on_damage": "rifl",
+  "stance_animation": {
+   "tag": "DFst",
+   "frames": 88,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "DFi1",
+   "frames": 89,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "DFfl",
+   "frames": 88,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "DFfl",
+   "frames": 88,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "DFa1",
+    "frames": 41,
+    "framerate": 30,
+    "attack_ticks": [
+     11,
+     22
+    ]
+   },
+   {
+    "tag": "DFa2",
+    "frames": 67,
+    "framerate": 30,
+    "attack_ticks": [
+     34
+    ]
+   },
+   {
+    "tag": "DFa3",
+    "frames": 45,
+    "framerate": 30,
+    "attack_ticks": [
+     18
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "DFs1",
+    "frames": 89,
+    "framerate": 30,
+    "shoot_ticks": [
+     22
+    ]
+   },
+   {
+    "tag": "DFs2",
+    "frames": 45,
+    "framerate": 30,
+    "shoot_ticks": [
+     18
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {
+   "fly": {
+    "tag": "DFfl",
+    "frames": 88,
+    "framerate": 30
+   }
+  },
+  "stun_animations": {
+   "fly_damage": {
+    "tag": "DFdf",
+    "frames": 68,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "DFhf",
+    "frames": 48,
+    "framerate": 30
+   }
+  }
+ },
+ "wlcf": {
+  "spell_type": 2,
+  "name_tag": "wlcf",
+  "icon": "mob4",
+  "cooldown_s": 7.0,
+  "mana_cost": 1100,
+  "range": 0.0,
+  "min_casting_time_s": 1.1111,
+  "casting_time_s": 2.2222,
+  "casting_frames": 180,
+  "spell_order": 670,
+  "god": "pyro",
+  "model": "fclw",
+  "health": 1520,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 6.0,
+  "flying_speed": 0.0,
+  "melee_strength": 125,
+  "melee_accuracy": 2000,
+  "melee_evasion": 1000,
+  "ranged_accuracy": 1500,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 4.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.35
+  },
+  "mana": 500,
+  "souls": 4,
+  "abilities": [
+   "cfba"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 2048,
+  "tag": "wlcf",
+  "name": "Bombard",
+  "game_name": "Bombard",
+  "folder": "Cfir.SCAT",
+  "ranged": true,
+  "ranged_attack": "cfba",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "CPst",
+   "frames": 53,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "CPi1",
+   "frames": 87,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "CPrn",
+   "frames": 36,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "CPrn",
+   "frames": 36,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "CPa1",
+    "frames": 54,
+    "framerate": 30,
+    "attack_ticks": [
+     26
+    ]
+   },
+   {
+    "tag": "CPa2",
+    "frames": 40,
+    "framerate": 30,
+    "attack_ticks": [
+     15
+    ]
+   },
+   {
+    "tag": "CPa3",
+    "frames": 54,
+    "framerate": 30,
+    "attack_ticks": [
+     23,
+     36
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "CPs1",
+    "frames": 62,
+    "framerate": 30,
+    "shoot_ticks": [
+     39
+    ]
+   },
+   {
+    "tag": "CPs2",
+    "frames": 78,
+    "framerate": 30,
+    "shoot_ticks": [
+     39
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "CPfd",
+    "frames": 19,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "CPgu",
+    "frames": 39,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "CPhf",
+    "frames": 53,
+    "framerate": 30
+   }
+  }
+ },
+ "kacf": {
+  "spell_type": 2,
+  "name_tag": "kacf",
+  "icon": "ryp4",
+  "cooldown_s": 6.0,
+  "mana_cost": 1000,
+  "range": 0.0,
+  "min_casting_time_s": 0.9259,
+  "casting_time_s": 1.8519,
+  "casting_frames": 150,
+  "spell_order": 563,
+  "god": "pyro",
+  "model": "fcak",
+  "health": 1120,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 7.5,
+  "flying_speed": 17.0,
+  "melee_strength": 437,
+  "melee_accuracy": 1500,
+  "melee_evasion": 750,
+  "ranged_accuracy": 1000,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 0.1,
+   "direct_spell": 2.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.3,
+   "splash_ranged": 1.2
+  },
+  "mana": 300,
+  "souls": 3,
+  "abilities": [
+   "kcfa"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 6656,
+  "tag": "kacf",
+  "name": "Pyrodactyl",
+  "game_name": "Pyrodactyl",
+  "folder": "Cfir.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "kcfa",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "CKst",
+   "frames": 88,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "CKi1",
+   "frames": 95,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "CKrn",
+   "frames": 61,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "CKrn",
+   "frames": 61,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "CKa1",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     19
+    ]
+   },
+   {
+    "tag": "CKa2",
+    "frames": 48,
+    "framerate": 30,
+    "attack_ticks": [
+     12,
+     18,
+     21,
+     25
+    ]
+   },
+   {
+    "tag": "CKa3",
+    "frames": 71,
+    "framerate": 30,
+    "attack_ticks": [
+     11,
+     21,
+     40,
+     55
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "FCs1",
+    "frames": 88,
+    "framerate": 30,
+    "shoot_ticks": [
+     40
+    ]
+   },
+   {
+    "tag": "CKa2",
+    "frames": 48,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {
+   "takeoff": {
+    "tag": "CKto",
+    "frames": 26,
+    "framerate": 30
+   },
+   "fly": {
+    "tag": "CKfl",
+    "frames": 61,
+    "framerate": 30
+   },
+   "land": {
+    "tag": "CKla",
+    "frames": 28,
+    "framerate": 30
+   }
+  },
+  "stun_animations": {
+   "knock": {
+    "tag": "CKfd",
+    "frames": 98,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "CKgu",
+    "frames": 58,
+    "framerate": 30
+   },
+   "fly_damage": {
+    "tag": "Ckfg",
+    "frames": 61,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "CKhf",
+    "frames": 85,
+    "framerate": 30
+   }
+  }
+ },
+ "nugf": {
+  "spell_type": 2,
+  "name_tag": "nugf",
+  "icon": "raw4",
+  "cooldown_s": 8.0,
+  "mana_cost": 1300,
+  "range": 0.0,
+  "min_casting_time_s": 1.2963,
+  "casting_time_s": 2.5926,
+  "casting_frames": 210,
+  "spell_order": 777,
+  "god": "pyro",
+  "model": "gunf",
+  "health": 1200,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 8.0,
+  "flying_speed": 0.0,
+  "melee_strength": 250,
+  "melee_accuracy": 2000,
+  "melee_evasion": 1000,
+  "ranged_accuracy": 1500,
+  "aggressiveness": 1000,
+  "sight_range": 200.0,
+  "resistances": {
+   "melee": 4.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 500,
+  "souls": 4,
+  "abilities": [
+   "fhga",
+   "wfhg",
+   "tfhg"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 0,
+  "tag": "nugf",
+  "name": "Warmonger",
+  "game_name": "Warmonger",
+  "folder": "Cfir.SCAT",
+  "ranged": true,
+  "ranged_attack": "fhga",
+  "active_ability": "wfhg",
+  "passive_on_damage": "tfhg",
+  "stance_animation": {
+   "tag": "GUst",
+   "frames": 28,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "GFi1",
+   "frames": 135,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "GFrn",
+   "frames": 39,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "GFrn",
+   "frames": 39,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "GFa1",
+    "frames": 36,
+    "framerate": 30,
+    "attack_ticks": [
+     19
+    ]
+   },
+   {
+    "tag": "GUa1",
+    "frames": 61,
+    "framerate": 30,
+    "attack_ticks": [
+     24
+    ]
+   },
+   {
+    "tag": "GUa1",
+    "frames": 61,
+    "framerate": 30,
+    "attack_ticks": [
+     24
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "GUs1",
+    "frames": 73,
+    "framerate": 30,
+    "shoot_ticks": [
+     50
+    ]
+   },
+   {
+    "tag": "GFs2",
+    "frames": 98,
+    "framerate": 30,
+    "shoot_ticks": [
+     75
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "hit_floor": {
+    "tag": "GUhf",
+    "frames": 33,
+    "framerate": 30
+   }
+  }
+ },
+ "zidf": {
+  "spell_type": 2,
+  "name_tag": "zidf",
+  "icon": "goc4",
+  "cooldown_s": 2.0,
+  "mana_cost": 300,
+  "range": 0.0,
+  "min_casting_time_s": 0.1852,
+  "casting_time_s": 0.3704,
+  "casting_frames": 30,
+  "spell_order": 121,
+  "god": "pyro",
+  "model": "fdzy",
+  "health": 640,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 11.0,
+  "flying_speed": 0.0,
+  "melee_strength": 187,
+  "melee_accuracy": 1000,
+  "melee_evasion": 500,
+  "ranged_accuracy": 0,
+  "aggressiveness": 1000,
+  "sight_range": 100.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 0.9,
+   "splash_ranged": 0.9
+  },
+  "mana": 0,
+  "souls": 1,
+  "abilities": [],
+  "passive_abilities": [
+   "goc@"
+  ],
+  "behavior_flags": 0,
+  "tag": "zidf",
+  "name": "Cog",
+  "game_name": "Cog",
+  "folder": "Cfir.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "DZst",
+   "frames": 62,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "DZi1",
+   "frames": 63,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "DZrn",
+   "frames": 31,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "DZrn",
+   "frames": 31,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "DZa1",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     3
+    ]
+   },
+   {
+    "tag": "DZa2",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     4
+    ]
+   },
+   {
+    "tag": "DZa3",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     5
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "DZ00",
+    "frames": 2,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "DZ00",
+    "frames": 2,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "DZfa",
+    "frames": 97,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "DZgu",
+    "frames": 98,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "DZhf",
+    "frames": 110,
+    "framerate": 30
+   }
+  }
+ },
+ "sohf": {
+  "spell_type": 2,
+  "name_tag": "sohf",
+  "icon": "ips4",
+  "cooldown_s": 2.0,
+  "mana_cost": 300,
+  "range": 0.0,
+  "min_casting_time_s": 0.1852,
+  "casting_time_s": 0.3704,
+  "casting_frames": 30,
+  "spell_order": 135,
+  "god": "pyro",
+  "model": "fhbt",
+  "health": 400,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 0.0,
+  "flying_speed": 15.0,
+  "melee_strength": 93,
+  "melee_accuracy": 1000,
+  "melee_evasion": 500,
+  "ranged_accuracy": 800,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 2.0,
+   "splash_ranged": 2.0
+  },
+  "mana": 250,
+  "souls": 1,
+  "abilities": [
+   "fhba"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 512,
+  "tag": "sohf",
+  "name": "Spitfire",
+  "game_name": "Spitfire",
+  "folder": "Cfir.SCAT",
+  "ranged": true,
+  "ranged_attack": "fhba",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "HBst",
+   "frames": 56,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "HBi1",
+   "frames": 111,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "HBfl",
+   "frames": 56,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "HBfl",
+   "frames": 56,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "HBa1",
+    "frames": 60,
+    "framerate": 30,
+    "attack_ticks": [
+     13,
+     28
+    ]
+   },
+   {
+    "tag": "HBa2",
+    "frames": 66,
+    "framerate": 30,
+    "attack_ticks": [
+     8,
+     15,
+     24
+    ]
+   },
+   {
+    "tag": "HBa3",
+    "frames": 83,
+    "framerate": 30,
+    "attack_ticks": [
+     11,
+     29,
+     62
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "HBsh",
+    "frames": 60,
+    "framerate": 30,
+    "shoot_ticks": [
+     14
+    ]
+   },
+   {
+    "tag": "HBsh",
+    "frames": 60,
+    "framerate": 30,
+    "shoot_ticks": [
+     14
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {
+   "takeoff": {
+    "tag": "HBfl",
+    "frames": 56,
+    "framerate": 30
+   },
+   "fly": {
+    "tag": "HBfl",
+    "frames": 56,
+    "framerate": 30
+   }
+  },
+  "stun_animations": {
+   "knock": {
+    "tag": "HBfd",
+    "frames": 148,
+    "framerate": 30
+   },
+   "fly_damage": {
+    "tag": "HBdf",
+    "frames": 48,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "HBhf",
+    "frames": 148,
+    "framerate": 30
+   }
+  }
+ },
+ "plff": {
+  "spell_type": 2,
+  "name_tag": "plff",
+  "icon": "myp4",
+  "cooldown_s": 5.0,
+  "mana_cost": 1000,
+  "range": 0.0,
+  "min_casting_time_s": 0.7407,
+  "casting_time_s": 1.4815,
+  "casting_frames": 120,
+  "spell_order": 456,
+  "god": "pyro",
+  "model": "fflp",
+  "health": 1040,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 8.0,
+  "flying_speed": 0.0,
+  "melee_strength": 112,
+  "melee_accuracy": 800,
+  "melee_evasion": 400,
+  "ranged_accuracy": 100,
+  "aggressiveness": 1000,
+  "sight_range": 200.0,
+  "resistances": {
+   "melee": 4.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 200,
+  "souls": 2,
+  "abilities": [
+   "lffa"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 0,
+  "tag": "plff",
+  "name": "Pyromaniac",
+  "game_name": "Pyromaniac",
+  "folder": "Cfir.SCAT",
+  "ranged": true,
+  "ranged_attack": "lffa",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "FGst",
+   "frames": 61,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "FGi1",
+   "frames": 78,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "FGrn",
+   "frames": 35,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "FGrn",
+   "frames": 35,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "FGa1",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     23
+    ]
+   },
+   {
+    "tag": "FGa2",
+    "frames": 38,
+    "framerate": 30,
+    "attack_ticks": [
+     18
+    ]
+   },
+   {
+    "tag": "FGa3",
+    "frames": 29,
+    "framerate": 30,
+    "attack_ticks": [
+     13
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "FGs1",
+    "frames": 38,
+    "framerate": 30,
+    "shoot_ticks": [
+     5
+    ]
+   },
+   {
+    "tag": "FGs2",
+    "frames": 43,
+    "framerate": 30,
+    "shoot_ticks": [
+     10
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "FGfd",
+    "frames": 43,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "FGgu",
+    "frames": 47,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "FGhf",
+    "frames": 30,
+    "framerate": 30
+   }
+  }
+ },
+ "craf": {
+  "spell_type": 2,
+  "name_tag": "craf",
+  "icon": "cit4",
+  "cooldown_s": 3.0,
+  "mana_cost": 600,
+  "range": 0.0,
+  "min_casting_time_s": 0.3704,
+  "casting_time_s": 0.7407,
+  "casting_frames": 60,
+  "spell_order": 242,
+  "god": "pyro",
+  "model": "bugf",
+  "health": 1120,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 9.0,
+  "flying_speed": 0.0,
+  "melee_strength": 125,
+  "melee_accuracy": 1300,
+  "melee_evasion": 700,
+  "ranged_accuracy": 200,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 4.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 325,
+  "souls": 2,
+  "abilities": [
+   "sfba"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 3072,
+  "tag": "craf",
+  "name": "Tickferno",
+  "game_name": "Tickferno",
+  "folder": "Cfir.SCAT",
+  "ranged": true,
+  "ranged_attack": "sfba",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "BGst",
+   "frames": 30,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "afi1",
+   "frames": 88,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "afru",
+   "frames": 21,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "afru",
+   "frames": 21,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "afa1",
+    "frames": 53,
+    "framerate": 30,
+    "attack_ticks": [
+     25
+    ]
+   },
+   {
+    "tag": "BGa2",
+    "frames": 53,
+    "framerate": 30,
+    "attack_ticks": [
+     27
+    ]
+   },
+   {
+    "tag": "BGa3",
+    "frames": 45,
+    "framerate": 30,
+    "attack_ticks": [
+     20
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "BGs2",
+    "frames": 44,
+    "framerate": 30,
+    "shoot_ticks": [
+     22
+    ]
+   },
+   {
+    "tag": "BGs1",
+    "frames": 35,
+    "framerate": 30,
+    "shoot_ticks": [
+     18
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "BGfd",
+    "frames": 18,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "BGgu",
+    "frames": 33,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "BGhf",
+    "frames": 18,
+    "framerate": 30
+   }
+  }
+ },
+ "fplk": {
+  "spell_type": 2,
+  "name_tag": "fplk",
+  "icon": "alf4",
+  "cooldown_s": 2.0,
+  "mana_cost": 300,
+  "range": 0.0,
+  "min_casting_time_s": 0.1852,
+  "casting_time_s": 0.3704,
+  "casting_frames": 30,
+  "spell_order": 128,
+  "god": "pyro",
+  "model": "fklp",
+  "health": 640,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 12.0,
+  "flying_speed": 0.0,
+  "melee_strength": 112,
+  "melee_accuracy": 800,
+  "melee_evasion": 400,
+  "ranged_accuracy": 600,
+  "aggressiveness": 1000,
+  "sight_range": 175.0,
+  "resistances": {
+   "melee": 4.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 200,
+  "souls": 1,
+  "abilities": [
+   "fkba",
+   "!nur"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 0,
+  "tag": "fplk",
+  "name": "Flame Minion",
+  "game_name": "Flame Minion",
+  "folder": "Cfir.SCAT",
+  "ranged": true,
+  "ranged_attack": "fkba",
+  "active_ability": "!nur",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "KLst",
+   "frames": 27,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "KLi1",
+   "frames": 46,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "KLru",
+   "frames": 24,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "KLru",
+   "frames": 24,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "KLa1",
+    "frames": 32,
+    "framerate": 30,
+    "attack_ticks": [
+     14
+    ]
+   },
+   {
+    "tag": "KLa2",
+    "frames": 31,
+    "framerate": 30,
+    "attack_ticks": [
+     8
+    ]
+   },
+   {
+    "tag": "KLal",
+    "frames": 69,
+    "framerate": 30,
+    "attack_ticks": [
+     31,
+     56
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "KLs1",
+    "frames": 47,
+    "framerate": 30,
+    "shoot_ticks": [
+     27
+    ]
+   },
+   {
+    "tag": "KLs2",
+    "frames": 68,
+    "framerate": 30,
+    "shoot_ticks": [
+     16
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "KLfd",
+    "frames": 37,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "KLgu",
+    "frames": 19,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "KLhf",
+    "frames": 37,
+    "framerate": 30
+   }
+  }
+ },
+ "lrtf": {
+  "spell_type": 2,
+  "name_tag": "lrtf",
+  "icon": "rif4",
+  "cooldown_s": 4.0,
+  "mana_cost": 700,
+  "range": 0.0,
+  "min_casting_time_s": 0.5556,
+  "casting_time_s": 1.1111,
+  "casting_frames": 90,
+  "spell_order": 349,
+  "god": "pyro",
+  "model": "ftrl",
+  "health": 1280,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 8.0,
+  "flying_speed": 0.0,
+  "melee_strength": 375,
+  "melee_accuracy": 1500,
+  "melee_evasion": 750,
+  "ranged_accuracy": 0,
+  "aggressiveness": 1000,
+  "sight_range": 100.0,
+  "resistances": {
+   "melee": 0.6,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 0.9,
+   "splash_ranged": 0.9
+  },
+  "mana": 0,
+  "souls": 2,
+  "abilities": [
+   "ahtf"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 0,
+  "tag": "lrtf",
+  "name": "Firefist",
+  "game_name": "Firefist",
+  "folder": "Cfir.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "",
+  "passive_on_damage": "ahtf",
+  "stance_animation": {
+   "tag": "TRst",
+   "frames": 32,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "TFi1",
+   "frames": 98,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "TFrn",
+   "frames": 24,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "TFrn",
+   "frames": 24,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "TFa1",
+    "frames": 29,
+    "framerate": 30,
+    "attack_ticks": [
+     13
+    ]
+   },
+   {
+    "tag": "TRa2",
+    "frames": 49,
+    "framerate": 30,
+    "attack_ticks": [
+     21
+    ]
+   },
+   {
+    "tag": "TRa1",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     20,
+     26
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "TR00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "TR00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "TRfd",
+    "frames": 12,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "TRgu",
+    "frames": 24,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "TRhf",
+    "frames": 29,
+    "framerate": 30
+   }
+  }
+ },
+ "grdb": {
+  "spell_type": 2,
+  "name_tag": "grdb",
+  "icon": "lis5",
+  "cooldown_s": 10.0,
+  "mana_cost": 1900,
+  "range": 0.0,
+  "min_casting_time_s": 1.6667,
+  "casting_time_s": 3.3333,
+  "casting_frames": 270,
+  "spell_order": 988,
+  "god": "stratos",
+  "model": "adrg",
+  "health": 4800,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 12.5,
+  "flying_speed": 25.0,
+  "melee_strength": 800,
+  "melee_accuracy": 3000,
+  "melee_evasion": 2700,
+  "ranged_accuracy": 300,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 0.75,
+   "splash_ranged": 0.75
+  },
+  "mana": 750,
+  "souls": 5,
+  "abilities": [
+   "rdba",
+   "!nur",
+   "gcil"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 7680,
+  "tag": "grdb",
+  "name": "Silverback",
+  "game_name": "Silverback",
+  "folder": "Cair.SCAT",
+  "ranged": true,
+  "ranged_attack": "rdba",
+  "active_ability": "!nur",
+  "passive_on_damage": "gcil",
+  "stance_animation": {
+   "tag": "ADst",
+   "frames": 97,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "ADi1",
+   "frames": 119,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "ADrn",
+   "frames": 39,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "ADrn",
+   "frames": 39,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "ADa1",
+    "frames": 58,
+    "framerate": 30,
+    "attack_ticks": [
+     22
+    ]
+   },
+   {
+    "tag": "ADa2",
+    "frames": 76,
+    "framerate": 30,
+    "attack_ticks": [
+     23
+    ]
+   },
+   {
+    "tag": "ADa3",
+    "frames": 84,
+    "framerate": 30,
+    "attack_ticks": [
+     39
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "ADs1",
+    "frames": 43,
+    "framerate": 30,
+    "shoot_ticks": [
+     26
+    ]
+   },
+   {
+    "tag": "ADs1",
+    "frames": 43,
+    "framerate": 30,
+    "shoot_ticks": [
+     26
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {
+   "takeoff": {
+    "tag": "ADto",
+    "frames": 58,
+    "framerate": 30
+   },
+   "fly": {
+    "tag": "ADfl",
+    "frames": 49,
+    "framerate": 30
+   },
+   "land": {
+    "tag": "ADla",
+    "frames": 76,
+    "framerate": 30
+   }
+  },
+  "stun_animations": {
+   "knock": {
+    "tag": "ADfd",
+    "frames": 37,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "ADgu",
+    "frames": 55,
+    "framerate": 30
+   },
+   "fly_damage": {
+    "tag": "ADda",
+    "frames": 40,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "ADhg",
+    "frames": 151,
+    "framerate": 30
+   }
+  }
+ },
+ "wlca": {
+  "spell_type": 2,
+  "name_tag": "wlca",
+  "icon": "ulf5",
+  "cooldown_s": 7.0,
+  "mana_cost": 1100,
+  "range": 0.0,
+  "min_casting_time_s": 0.7407,
+  "casting_time_s": 1.4815,
+  "casting_frames": 120,
+  "spell_order": 672,
+  "god": "stratos",
+  "model": "aclw",
+  "health": 1520,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 7.5,
+  "flying_speed": 0.0,
+  "melee_strength": 100,
+  "melee_accuracy": 2000,
+  "melee_evasion": 1800,
+  "ranged_accuracy": 1500,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 4.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.35
+  },
+  "mana": 500,
+  "souls": 4,
+  "abilities": [
+   "caba"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 2048,
+  "tag": "wlca",
+  "name": "Flurry",
+  "game_name": "Flurry",
+  "folder": "Cair.SCAT",
+  "ranged": true,
+  "ranged_attack": "caba",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "CPst",
+   "frames": 53,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "CPi1",
+   "frames": 87,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "CPrn",
+   "frames": 36,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "CPrn",
+   "frames": 36,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "CPa1",
+    "frames": 54,
+    "framerate": 30,
+    "attack_ticks": [
+     26
+    ]
+   },
+   {
+    "tag": "CPa2",
+    "frames": 40,
+    "framerate": 30,
+    "attack_ticks": [
+     15
+    ]
+   },
+   {
+    "tag": "CPa3",
+    "frames": 54,
+    "framerate": 30,
+    "attack_ticks": [
+     23,
+     36
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "CPs1",
+    "frames": 62,
+    "framerate": 30,
+    "shoot_ticks": [
+     39
+    ]
+   },
+   {
+    "tag": "CPs2",
+    "frames": 78,
+    "framerate": 30,
+    "shoot_ticks": [
+     39
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "CPfd",
+    "frames": 19,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "CPgu",
+    "frames": 39,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "CPhf",
+    "frames": 53,
+    "framerate": 30
+   }
+  }
+ },
+ "craa": {
+  "spell_type": 2,
+  "name_tag": "craa",
+  "icon": "rov5",
+  "cooldown_s": 3.0,
+  "mana_cost": 600,
+  "range": 0.0,
+  "min_casting_time_s": 0.2469,
+  "casting_time_s": 0.4938,
+  "casting_frames": 40,
+  "spell_order": 244,
+  "god": "stratos",
+  "model": "buga",
+  "health": 1120,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 11.25,
+  "flying_speed": 0.0,
+  "melee_strength": 100,
+  "melee_accuracy": 1300,
+  "melee_evasion": 1260,
+  "ranged_accuracy": 400,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 4.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 325,
+  "souls": 2,
+  "abilities": [
+   "cita"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 3072,
+  "tag": "craa",
+  "name": "Vortick",
+  "game_name": "Vortick",
+  "folder": "Cair.SCAT",
+  "ranged": true,
+  "ranged_attack": "cita",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "BAst",
+   "frames": 66,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "BAi1",
+   "frames": 75,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "BArn",
+   "frames": 26,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "BArn",
+   "frames": 26,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "BAa1",
+    "frames": 50,
+    "framerate": 30,
+    "attack_ticks": [
+     23
+    ]
+   },
+   {
+    "tag": "BAa2",
+    "frames": 66,
+    "framerate": 30,
+    "attack_ticks": []
+   },
+   {
+    "tag": "BAa3",
+    "frames": 39,
+    "framerate": 30,
+    "attack_ticks": [
+     18
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "BAs1",
+    "frames": 57,
+    "framerate": 30,
+    "shoot_ticks": [
+     24
+    ]
+   },
+   {
+    "tag": "BAs2",
+    "frames": 57,
+    "framerate": 30,
+    "shoot_ticks": [
+     26
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "BAfd",
+    "frames": 17,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "BAgu",
+    "frames": 58,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "BAhf",
+    "frames": 58,
+    "framerate": 30
+   }
+  }
+ },
+ "bobs": {
+  "spell_type": 2,
+  "name_tag": "bobs",
+  "icon": "arb5",
+  "cooldown_s": 2.0,
+  "mana_cost": 300,
+  "range": 0.0,
+  "min_casting_time_s": 0.1235,
+  "casting_time_s": 0.2469,
+  "casting_frames": 20,
+  "spell_order": 137,
+  "god": "stratos",
+  "model": "sbob",
+  "health": 400,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 0.0,
+  "flying_speed": 18.75,
+  "melee_strength": 75,
+  "melee_accuracy": 1000,
+  "melee_evasion": 900,
+  "ranged_accuracy": 600,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 2.0,
+   "splash_ranged": 2.0
+  },
+  "mana": 250,
+  "souls": 1,
+  "abilities": [
+   "bsba"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 512,
+  "tag": "bobs",
+  "name": "Brainiac",
+  "game_name": "Brainiac",
+  "folder": "Cair.SCAT",
+  "ranged": true,
+  "ranged_attack": "bsba",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "SBst",
+   "frames": 40,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "SBi1",
+   "frames": 41,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "SBfl",
+   "frames": 40,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "SBfl",
+   "frames": 40,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "SBa1",
+    "frames": 45,
+    "framerate": 30,
+    "attack_ticks": [
+     24
+    ]
+   },
+   {
+    "tag": "SBa2",
+    "frames": 60,
+    "framerate": 30,
+    "attack_ticks": [
+     21,
+     35
+    ]
+   },
+   {
+    "tag": "SBa3",
+    "frames": 41,
+    "framerate": 30,
+    "attack_ticks": [
+     35
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "SBs1",
+    "frames": 35,
+    "framerate": 30,
+    "shoot_ticks": [
+     16
+    ]
+   },
+   {
+    "tag": "SBs2",
+    "frames": 50,
+    "framerate": 30,
+    "shoot_ticks": [
+     26
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {
+   "fly": {
+    "tag": "SBfl",
+    "frames": 40,
+    "framerate": 30
+   }
+  },
+  "stun_animations": {
+   "fly_damage": {
+    "tag": "SBfg",
+    "frames": 61,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "SBhf",
+    "frames": 143,
+    "framerate": 30
+   }
+  }
+ },
+ "alab": {
+  "spell_type": 2,
+  "name_tag": "alab",
+  "icon": "uqs5",
+  "cooldown_s": 4.0,
+  "mana_cost": 700,
+  "range": 0.0,
+  "min_casting_time_s": 0.3704,
+  "casting_time_s": 0.7407,
+  "casting_frames": 60,
+  "spell_order": 351,
+  "god": "stratos",
+  "model": "bala",
+  "health": 1040,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 10.0,
+  "flying_speed": 0.0,
+  "melee_strength": 90,
+  "melee_accuracy": 800,
+  "melee_evasion": 720,
+  "ranged_accuracy": 100,
+  "aggressiveness": 1000,
+  "sight_range": 200.0,
+  "resistances": {
+   "melee": 4.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 200,
+  "souls": 2,
+  "abilities": [
+   "amba"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 2048,
+  "tag": "alab",
+  "name": "Squall",
+  "game_name": "Squall",
+  "folder": "Cair.SCAT",
+  "ranged": true,
+  "ranged_attack": "amba",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "BMst",
+   "frames": 79,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "ABa1",
+   "frames": 38,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "ABrn",
+   "frames": 16,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "ABrn",
+   "frames": 16,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "ABa1",
+    "frames": 38,
+    "framerate": 30,
+    "attack_ticks": [
+     8,
+     18
+    ]
+   },
+   {
+    "tag": "ABa2",
+    "frames": 36,
+    "framerate": 30,
+    "attack_ticks": [
+     10
+    ]
+   },
+   {
+    "tag": "ABa3",
+    "frames": 47,
+    "framerate": 30,
+    "attack_ticks": [
+     27
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "BMs1",
+    "frames": 41,
+    "framerate": 30,
+    "shoot_ticks": [
+     19
+    ]
+   },
+   {
+    "tag": "BMs1",
+    "frames": 41,
+    "framerate": 30,
+    "shoot_ticks": [
+     19
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "BMfd",
+    "frames": 19,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "ABgu",
+    "frames": 39,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "BMhf",
+    "frames": 61,
+    "framerate": 30
+   }
+  }
+ },
+ "ahcr": {
+  "spell_type": 2,
+  "name_tag": "ahcr",
+  "icon": "lys5",
+  "cooldown_s": 2.0,
+  "mana_cost": 300,
+  "range": 0.0,
+  "min_casting_time_s": 0.1235,
+  "casting_time_s": 0.2469,
+  "casting_frames": 20,
+  "spell_order": 130,
+  "god": "stratos",
+  "model": "AArc",
+  "health": 640,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 15.0,
+  "flying_speed": 0.0,
+  "melee_strength": 90,
+  "melee_accuracy": 800,
+  "melee_evasion": 720,
+  "ranged_accuracy": 500,
+  "aggressiveness": 1000,
+  "sight_range": 175.0,
+  "resistances": {
+   "melee": 4.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 200,
+  "souls": 1,
+  "abilities": [
+   "aaba",
+   "ivni"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 0,
+  "tag": "ahcr",
+  "name": "Sylph",
+  "game_name": "Sylph",
+  "folder": "Cair.SCAT",
+  "ranged": true,
+  "ranged_attack": "aaba",
+  "active_ability": "ivni",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "HAst",
+   "frames": 37,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "AAi1",
+   "frames": 107,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "AArn",
+   "frames": 34,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "AArn",
+   "frames": 34,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "AAa1",
+    "frames": 35,
+    "framerate": 30,
+    "attack_ticks": [
+     19
+    ]
+   },
+   {
+    "tag": "HAa2",
+    "frames": 45,
+    "framerate": 30,
+    "attack_ticks": [
+     17
+    ]
+   },
+   {
+    "tag": "HAal",
+    "frames": 45,
+    "framerate": 30,
+    "attack_ticks": [
+     20
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "HAsh",
+    "frames": 58,
+    "framerate": 30,
+    "shoot_ticks": [
+     36
+    ]
+   },
+   {
+    "tag": "HAsu",
+    "frames": 50,
+    "framerate": 30,
+    "shoot_ticks": [
+     27
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "HAfo",
+    "frames": 37,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "HAgu",
+    "frames": 52,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "HAhf",
+    "frames": 67,
+    "framerate": 30
+   }
+  }
+ },
+ "lbog": {
+  "spell_type": 2,
+  "name_tag": "lbog",
+  "icon": "orf5",
+  "cooldown_s": 2.0,
+  "mana_cost": 300,
+  "range": 0.0,
+  "min_casting_time_s": 0.1235,
+  "casting_time_s": 0.2469,
+  "casting_frames": 20,
+  "spell_order": 123,
+  "god": "stratos",
+  "model": "gobl",
+  "health": 640,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 13.75,
+  "flying_speed": 0.0,
+  "melee_strength": 150,
+  "melee_accuracy": 1000,
+  "melee_evasion": 900,
+  "ranged_accuracy": 0,
+  "aggressiveness": 1000,
+  "sight_range": 100.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 0.72,
+   "splash_ranged": 0.9
+  },
+  "mana": 100,
+  "souls": 1,
+  "abilities": [
+   "!nur"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 0,
+  "tag": "lbog",
+  "name": "Frostwolf",
+  "game_name": "Frostwolf",
+  "folder": "Cair.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "!nur",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "GBst",
+   "frames": 60,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "GBi1",
+   "frames": 61,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "GBrn",
+   "frames": 30,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "GBrn",
+   "frames": 30,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "GBa1",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     15
+    ]
+   },
+   {
+    "tag": "GBa2",
+    "frames": 46,
+    "framerate": 30,
+    "attack_ticks": [
+     15
+    ]
+   },
+   {
+    "tag": "GBhl",
+    "frames": 54,
+    "framerate": 30,
+    "attack_ticks": [
+     12
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "GBa1",
+    "frames": 43,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "GBa2",
+    "frames": 46,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "GBfd",
+    "frames": 25,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "GBgu",
+    "frames": 51,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "GBhf",
+    "frames": 51,
+    "framerate": 30
+   }
+  }
+ },
+ "grps": {
+  "spell_type": 2,
+  "name_tag": "grps",
+  "icon": "res5",
+  "cooldown_s": 6.0,
+  "mana_cost": 1000,
+  "range": 0.0,
+  "min_casting_time_s": 0.6173,
+  "casting_time_s": 1.2346,
+  "casting_frames": 100,
+  "spell_order": 565,
+  "god": "stratos",
+  "model": "sprg",
+  "health": 1120,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 9.37,
+  "flying_speed": 21.25,
+  "melee_strength": 350,
+  "melee_accuracy": 1500,
+  "melee_evasion": 1350,
+  "ranged_accuracy": 1000,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 0.1,
+   "direct_spell": 2.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.3,
+   "splash_ranged": 1.2
+  },
+  "mana": 300,
+  "souls": 3,
+  "abilities": [
+   "psaa"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 7680,
+  "tag": "grps",
+  "name": "Seraph",
+  "game_name": "Seraph",
+  "folder": "Cair.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "psaa",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "SPst",
+   "frames": 51,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "SPi1",
+   "frames": 66,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "SPru",
+   "frames": 32,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "SPru",
+   "frames": 32,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "SPa1",
+    "frames": 51,
+    "framerate": 30,
+    "attack_ticks": [
+     22
+    ]
+   },
+   {
+    "tag": "SPa2",
+    "frames": 55,
+    "framerate": 30,
+    "attack_ticks": [
+     20
+    ]
+   },
+   {
+    "tag": "SPa3",
+    "frames": 59,
+    "framerate": 30,
+    "attack_ticks": [
+     27
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "SPs1",
+    "frames": 102,
+    "framerate": 20,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "SPs2",
+    "frames": 53,
+    "framerate": 45,
+    "shoot_ticks": [
+     0
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {
+   "takeoff": {
+    "tag": "SPto",
+    "frames": 32,
+    "framerate": 30
+   },
+   "fly": {
+    "tag": "SPfl",
+    "frames": 96,
+    "framerate": 30
+   },
+   "land": {
+    "tag": "SPla",
+    "frames": 87,
+    "framerate": 30
+   }
+  },
+  "stun_animations": {
+   "knock": {
+    "tag": "SPfo",
+    "frames": 57,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "SPgu",
+    "frames": 79,
+    "framerate": 30
+   },
+   "fly_damage": {
+    "tag": "SPfd",
+    "frames": 97,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "SPhf",
+    "frames": 47,
+    "framerate": 30
+   }
+  }
+ },
+ "rgos": {
+  "spell_type": 2,
+  "name_tag": "rgos",
+  "icon": "ots5",
+  "cooldown_s": 5.0,
+  "mana_cost": 1000,
+  "range": 0.0,
+  "min_casting_time_s": 0.4938,
+  "casting_time_s": 0.9877,
+  "casting_frames": 80,
+  "spell_order": 458,
+  "god": "stratos",
+  "model": "sogr",
+  "health": 1280,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 9.0,
+  "flying_speed": 0.0,
+  "melee_strength": 300,
+  "melee_accuracy": 1500,
+  "melee_evasion": 1350,
+  "ranged_accuracy": 0,
+  "aggressiveness": 1000,
+  "sight_range": 100.0,
+  "resistances": {
+   "melee": 0.6,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 0.8,
+   "splash_ranged": 0.8
+  },
+  "mana": 200,
+  "souls": 2,
+  "abilities": [
+   "gsba",
+   "gcil"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 0,
+  "tag": "rgos",
+  "name": "Storm Giant",
+  "game_name": "Storm Giant",
+  "folder": "Cair.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "gsba",
+  "passive_on_damage": "gcil",
+  "stance_animation": {
+   "tag": "HUst",
+   "frames": 76,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "HUi1",
+   "frames": 118,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "OGrn",
+   "frames": 32,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "OGrn",
+   "frames": 32,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "HUa1",
+    "frames": 24,
+    "framerate": 30,
+    "attack_ticks": [
+     15
+    ]
+   },
+   {
+    "tag": "HUa2",
+    "frames": 20,
+    "framerate": 30,
+    "attack_ticks": [
+     14
+    ]
+   },
+   {
+    "tag": "HUa3",
+    "frames": 45,
+    "framerate": 30,
+    "attack_ticks": [
+     18
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "HU00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "HU00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "HUfd",
+    "frames": 37,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "HUgu",
+    "frames": 76,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "HUhf",
+    "frames": 67,
+    "framerate": 30
+   }
+  }
+ },
+ "ycrp": {
+  "spell_type": 2,
+  "name_tag": "ycrp",
+  "icon": "tey5",
+  "cooldown_s": 8.0,
+  "mana_cost": 1300,
+  "range": 0.0,
+  "min_casting_time_s": 0.8642,
+  "casting_time_s": 1.7284,
+  "casting_frames": 140,
+  "spell_order": 779,
+  "god": "stratos",
+  "model": "aprc",
+  "health": 3600,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 8.75,
+  "flying_speed": 0.0,
+  "melee_strength": 500,
+  "melee_accuracy": 3000,
+  "melee_evasion": 2700,
+  "ranged_accuracy": 0,
+  "aggressiveness": 1000,
+  "sight_range": 100.0,
+  "resistances": {
+   "melee": 0.75,
+   "direct_spell": 2.25,
+   "splash_spell": 2.75,
+   "direct_ranged": 0.75,
+   "splash_ranged": 0.75
+  },
+  "mana": 500,
+  "souls": 4,
+  "abilities": [],
+  "passive_abilities": [
+   "zerf"
+  ],
+  "behavior_flags": 0,
+  "tag": "ycrp",
+  "name": "Yeti",
+  "game_name": "Yeti",
+  "folder": "Cair.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "PCst",
+   "frames": 78,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "PCi1",
+   "frames": 148,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "PCrn",
+   "frames": 60,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "PCrn",
+   "frames": 60,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "PCa1",
+    "frames": 48,
+    "framerate": 30,
+    "attack_ticks": [
+     11
+    ]
+   },
+   {
+    "tag": "PCa2",
+    "frames": 60,
+    "framerate": 30,
+    "attack_ticks": [
+     9
+    ]
+   },
+   {
+    "tag": "PCa2",
+    "frames": 60,
+    "framerate": 30,
+    "attack_ticks": [
+     9
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "PC00",
+    "frames": 2,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "PC00",
+    "frames": 2,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "PCfd",
+    "frames": 37,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "PCgu",
+    "frames": 48,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "PChf",
+    "frames": 31,
+    "framerate": 30
+   }
+  }
+ },
+ "gard": {
+  "spell_type": 2,
+  "name_tag": "gard",
+  "icon": "ihr2",
+  "cooldown_s": 10.0,
+  "mana_cost": 1900,
+  "range": 0.0,
+  "min_casting_time_s": 1.6667,
+  "casting_time_s": 3.3333,
+  "casting_frames": 270,
+  "spell_order": 987,
+  "god": "james",
+  "model": "edmn",
+  "health": 7200,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 7.5,
+  "flying_speed": 15.0,
+  "melee_strength": 800,
+  "melee_accuracy": 3000,
+  "melee_evasion": 3300,
+  "ranged_accuracy": 300,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 0.75,
+   "splash_ranged": 0.75
+  },
+  "mana": 750,
+  "souls": 5,
+  "abilities": [
+   "hrba",
+   "HRba"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 7168,
+  "tag": "gard",
+  "name": "Rhinok",
+  "game_name": "Rhinok",
+  "folder": "Cear.SCAT",
+  "ranged": true,
+  "ranged_attack": "hrba",
+  "active_ability": "HRba",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "Eds1",
+   "frames": 118,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "Edi1",
+   "frames": 148,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "Edru",
+   "frames": 47,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "Edru",
+   "frames": 47,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "Eda1",
+    "frames": 68,
+    "framerate": 30,
+    "attack_ticks": []
+   },
+   {
+    "tag": "Eda2",
+    "frames": 45,
+    "framerate": 30,
+    "attack_ticks": []
+   },
+   {
+    "tag": "Eda3",
+    "frames": 48,
+    "framerate": 30,
+    "attack_ticks": []
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "Edsm",
+    "frames": 78,
+    "framerate": 30,
+    "shoot_ticks": [
+     45
+    ]
+   },
+   {
+    "tag": "Eds1",
+    "frames": 118,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "Edkn",
+    "frames": 55,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "Edgt",
+    "frames": 64,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "Edhf",
+    "frames": 36,
+    "framerate": 30
+   }
+  }
+ },
+ "wlce": {
+  "spell_type": 2,
+  "name_tag": "wlce",
+  "icon": "ulf2",
+  "cooldown_s": 5.0,
+  "mana_cost": 1000,
+  "range": 0.0,
+  "min_casting_time_s": 0.8642,
+  "casting_time_s": 1.7284,
+  "casting_frames": 140,
+  "spell_order": 457,
+  "god": "james",
+  "model": "eclw",
+  "health": 2280,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 4.5,
+  "flying_speed": 0.0,
+  "melee_strength": 100,
+  "melee_accuracy": 2000,
+  "melee_evasion": 2200,
+  "ranged_accuracy": 1500,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 4.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.35
+  },
+  "mana": 200,
+  "souls": 3,
+  "abilities": [
+   "crba"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 2048,
+  "tag": "wlce",
+  "name": "Flummox",
+  "game_name": "Flummox",
+  "folder": "Cear.SCAT",
+  "ranged": true,
+  "ranged_attack": "crba",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "CPst",
+   "frames": 53,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "CPi1",
+   "frames": 87,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "CPrn",
+   "frames": 36,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "CPrn",
+   "frames": 36,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "CPa1",
+    "frames": 54,
+    "framerate": 30,
+    "attack_ticks": [
+     26
+    ]
+   },
+   {
+    "tag": "CPa2",
+    "frames": 40,
+    "framerate": 30,
+    "attack_ticks": [
+     15
+    ]
+   },
+   {
+    "tag": "CPa3",
+    "frames": 54,
+    "framerate": 30,
+    "attack_ticks": [
+     23,
+     36
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "CPs1",
+    "frames": 62,
+    "framerate": 30,
+    "shoot_ticks": [
+     39
+    ]
+   },
+   {
+    "tag": "CPs2",
+    "frames": 78,
+    "framerate": 30,
+    "shoot_ticks": [
+     39
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "CPfd",
+    "frames": 19,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "CPgu",
+    "frames": 39,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "CPhf",
+    "frames": 53,
+    "framerate": 30
+   }
+  }
+ },
+ "kace": {
+  "spell_type": 2,
+  "name_tag": "kace",
+  "icon": "aci2",
+  "cooldown_s": 6.0,
+  "mana_cost": 1000,
+  "range": 0.0,
+  "min_casting_time_s": 1.0741,
+  "casting_time_s": 2.1605,
+  "casting_frames": 175,
+  "spell_order": 564,
+  "god": "james",
+  "model": "ecak",
+  "health": 1680,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 5.62,
+  "flying_speed": 12.75,
+  "melee_strength": 550,
+  "melee_accuracy": 1500,
+  "melee_evasion": 1650,
+  "ranged_accuracy": 1000,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 0.1,
+   "direct_spell": 1.7,
+   "splash_spell": 0.7,
+   "direct_ranged": 1.3,
+   "splash_ranged": 1.2
+  },
+  "mana": 300,
+  "souls": 3,
+  "abilities": [
+   "acia"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 6656,
+  "tag": "kace",
+  "name": "Ikarus",
+  "game_name": "Ikarus",
+  "folder": "Cear.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "acia",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "CKst",
+   "frames": 88,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "ECi1",
+   "frames": 118,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "ECrn",
+   "frames": 63,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "ECrn",
+   "frames": 63,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "ECa1",
+    "frames": 63,
+    "framerate": 30,
+    "attack_ticks": [
+     20
+    ]
+   },
+   {
+    "tag": "CKa2",
+    "frames": 48,
+    "framerate": 30,
+    "attack_ticks": [
+     12,
+     18,
+     21,
+     25
+    ]
+   },
+   {
+    "tag": "CKa3",
+    "frames": 71,
+    "framerate": 30,
+    "attack_ticks": [
+     11,
+     21,
+     40,
+     55
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "ECs1",
+    "frames": 96,
+    "framerate": 30,
+    "shoot_ticks": [
+     54
+    ]
+   },
+   {
+    "tag": "CKa2",
+    "frames": 48,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {
+   "takeoff": {
+    "tag": "CKto",
+    "frames": 26,
+    "framerate": 30
+   },
+   "fly": {
+    "tag": "ECfl",
+    "frames": 55,
+    "framerate": 30
+   },
+   "land": {
+    "tag": "CKla",
+    "frames": 28,
+    "framerate": 30
+   }
+  },
+  "stun_animations": {
+   "knock": {
+    "tag": "CKfd",
+    "frames": 98,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "CKgu",
+    "frames": 58,
+    "framerate": 30
+   },
+   "fly_damage": {
+    "tag": "Ckfg",
+    "frames": 61,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "CKhf",
+    "frames": 85,
+    "framerate": 30
+   }
+  }
+ },
+ "guls": {
+  "spell_type": 2,
+  "name_tag": "guls",
+  "icon": "sab2",
+  "cooldown_s": 3.0,
+  "mana_cost": 600,
+  "range": 0.0,
+  "min_casting_time_s": 0.4321,
+  "casting_time_s": 0.8642,
+  "casting_frames": 70,
+  "spell_order": 243,
+  "god": "james",
+  "model": "eslg",
+  "health": 1680,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 6.75,
+  "flying_speed": 0.0,
+  "melee_strength": 100,
+  "melee_accuracy": 1300,
+  "melee_evasion": 1540,
+  "ranged_accuracy": 400,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 4.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 325,
+  "souls": 2,
+  "abilities": [
+   "dpsf"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 1024,
+  "tag": "guls",
+  "name": "Basilisk",
+  "game_name": "Basilisk",
+  "folder": "Cear.SCAT",
+  "ranged": true,
+  "ranged_attack": "dpsf",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "SLst",
+   "frames": 98,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "SLi1",
+   "frames": 98,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "SLrn",
+   "frames": 20,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "SLrn",
+   "frames": 20,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "SLa1",
+    "frames": 23,
+    "framerate": 30,
+    "attack_ticks": [
+     13
+    ]
+   },
+   {
+    "tag": "SLa2",
+    "frames": 59,
+    "framerate": 30,
+    "attack_ticks": [
+     23
+    ]
+   },
+   {
+    "tag": "SLa3",
+    "frames": 59,
+    "framerate": 30,
+    "attack_ticks": [
+     21
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "SLEs",
+    "frames": 47,
+    "framerate": 30,
+    "shoot_ticks": [
+     17
+    ]
+   },
+   {
+    "tag": "SLEs",
+    "frames": 47,
+    "framerate": 30,
+    "shoot_ticks": [
+     17
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "SLfd",
+    "frames": 25,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "SLgu",
+    "frames": 52,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "SLhf",
+    "frames": 98,
+    "framerate": 30
+   }
+  }
+ },
+ "mtse": {
+  "spell_type": 2,
+  "name_tag": "mtse",
+  "icon": "baj2",
+  "cooldown_s": 8.0,
+  "mana_cost": 1300,
+  "range": 0.0,
+  "min_casting_time_s": 1.5062,
+  "casting_time_s": 3.0247,
+  "casting_frames": 245,
+  "spell_order": 778,
+  "god": "james",
+  "model": "estm",
+  "health": 5600,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 5.25,
+  "flying_speed": 0.0,
+  "melee_strength": 800,
+  "melee_accuracy": 3000,
+  "melee_evasion": 3300,
+  "ranged_accuracy": 0,
+  "aggressiveness": 1000,
+  "sight_range": 100.0,
+  "resistances": {
+   "melee": 0.75,
+   "direct_spell": 2.0,
+   "splash_spell": 2.5,
+   "direct_ranged": 0.75,
+   "splash_ranged": 0.75
+  },
+  "mana": 500,
+  "souls": 4,
+  "abilities": [
+   "kauq"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 3072,
+  "tag": "mtse",
+  "name": "Jabberocky",
+  "game_name": "Jabberocky",
+  "folder": "Cear.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "kauq",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "ESst",
+   "frames": 103,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "ESi1",
+   "frames": 151,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "ESwk",
+   "frames": 43,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "ESwk",
+   "frames": 43,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "ESa1",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     16
+    ]
+   },
+   {
+    "tag": "ESa2",
+    "frames": 38,
+    "framerate": 30,
+    "attack_ticks": [
+     15,
+     20
+    ]
+   },
+   {
+    "tag": "ESa3",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     16
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "ESsm",
+    "frames": 142,
+    "framerate": 30,
+    "shoot_ticks": [
+     96
+    ]
+   },
+   {
+    "tag": "ES00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "ESfd",
+    "frames": 33,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "ESgu",
+    "frames": 33,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "EShf",
+    "frames": 33,
+    "framerate": 30
+   }
+  }
+ },
+ "sohe": {
+  "spell_type": 2,
+  "name_tag": "sohe",
+  "icon": "rag2",
+  "cooldown_s": 2.0,
+  "mana_cost": 300,
+  "range": 0.0,
+  "min_casting_time_s": 0.2099,
+  "casting_time_s": 0.4321,
+  "casting_frames": 35,
+  "spell_order": 136,
+  "god": "james",
+  "model": "ehbt",
+  "health": 625,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 0.0,
+  "flying_speed": 11.25,
+  "melee_strength": 75,
+  "melee_accuracy": 1000,
+  "melee_evasion": 1100,
+  "ranged_accuracy": 800,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 1.2,
+   "splash_spell": 1.2,
+   "direct_ranged": 2.0,
+   "splash_ranged": 2.0
+  },
+  "mana": 250,
+  "souls": 1,
+  "abilities": [
+   "ehba"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 512,
+  "tag": "sohe",
+  "name": "Gargoyle",
+  "game_name": "Gargoyle",
+  "folder": "Cear.SCAT",
+  "ranged": true,
+  "ranged_attack": "ehba",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "HBst",
+   "frames": 56,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "EHi1",
+   "frames": 111,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "EHrn",
+   "frames": 55,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "EHrn",
+   "frames": 55,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "EHa1",
+    "frames": 61,
+    "framerate": 30,
+    "attack_ticks": [
+     20,
+     30
+    ]
+   },
+   {
+    "tag": "HBa2",
+    "frames": 66,
+    "framerate": 30,
+    "attack_ticks": [
+     8,
+     15,
+     24
+    ]
+   },
+   {
+    "tag": "HBa3",
+    "frames": 83,
+    "framerate": 30,
+    "attack_ticks": [
+     11,
+     29,
+     62
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "HBsh",
+    "frames": 60,
+    "framerate": 30,
+    "shoot_ticks": [
+     14
+    ]
+   },
+   {
+    "tag": "HBsh",
+    "frames": 60,
+    "framerate": 30,
+    "shoot_ticks": [
+     14
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {
+   "takeoff": {
+    "tag": "HBfl",
+    "frames": 56,
+    "framerate": 30
+   },
+   "fly": {
+    "tag": "HBfl",
+    "frames": 56,
+    "framerate": 30
+   }
+  },
+  "stun_animations": {
+   "knock": {
+    "tag": "HBfd",
+    "frames": 148,
+    "framerate": 30
+   },
+   "fly_damage": {
+    "tag": "HBdf",
+    "frames": 48,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "HBhf",
+    "frames": 148,
+    "framerate": 30
+   }
+  }
+ },
+ "llab": {
+  "spell_type": 2,
+  "name_tag": "llab",
+  "icon": "uob2",
+  "cooldown_s": 7.0,
+  "mana_cost": 1100,
+  "range": 0.0,
+  "min_casting_time_s": 1.2963,
+  "casting_time_s": 2.5926,
+  "casting_frames": 210,
+  "spell_order": 671,
+  "god": "james",
+  "model": "bale",
+  "health": 1560,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 6.0,
+  "flying_speed": 0.0,
+  "melee_strength": 90,
+  "melee_accuracy": 800,
+  "melee_evasion": 880,
+  "ranged_accuracy": 100,
+  "aggressiveness": 1000,
+  "sight_range": 200.0,
+  "resistances": {
+   "melee": 4.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 500,
+  "souls": 4,
+  "abilities": [
+   "emba"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 2048,
+  "tag": "llab",
+  "name": "Boulderdash",
+  "game_name": "Boulderdash",
+  "folder": "Cear.SCAT",
+  "ranged": true,
+  "ranged_attack": "emba",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "BMst",
+   "frames": 79,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "BMi1",
+   "frames": 39,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "BMrn",
+   "frames": 19,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "BMrn",
+   "frames": 19,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "BMa1",
+    "frames": 47,
+    "framerate": 30,
+    "attack_ticks": [
+     14
+    ]
+   },
+   {
+    "tag": "BMa2",
+    "frames": 47,
+    "framerate": 30,
+    "attack_ticks": [
+     13
+    ]
+   },
+   {
+    "tag": "BMa3",
+    "frames": 47,
+    "framerate": 30,
+    "attack_ticks": [
+     29
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "BMs1",
+    "frames": 41,
+    "framerate": 30,
+    "shoot_ticks": [
+     19
+    ]
+   },
+   {
+    "tag": "BMs1",
+    "frames": 41,
+    "framerate": 30,
+    "shoot_ticks": [
+     19
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "BMfd",
+    "frames": 19,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "BMgu",
+    "frames": 39,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "BMhf",
+    "frames": 61,
+    "framerate": 30
+   }
+  }
+ },
+ "palk": {
+  "spell_type": 2,
+  "name_tag": "palk",
+  "icon": "rae2",
+  "cooldown_s": 2.0,
+  "mana_cost": 300,
+  "range": 0.0,
+  "min_casting_time_s": 0.2099,
+  "casting_time_s": 0.4321,
+  "casting_frames": 35,
+  "spell_order": 129,
+  "god": "james",
+  "model": "eklp",
+  "health": 960,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 9.0,
+  "flying_speed": 0.0,
+  "melee_strength": 90,
+  "melee_accuracy": 800,
+  "melee_evasion": 880,
+  "ranged_accuracy": 600,
+  "aggressiveness": 1000,
+  "sight_range": 175.0,
+  "resistances": {
+   "melee": 4.0,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 200,
+  "souls": 1,
+  "abilities": [
+   "ekba",
+   "dihk"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 0,
+  "tag": "palk",
+  "name": "Earthfling",
+  "game_name": "Earthfling",
+  "folder": "Cear.SCAT",
+  "ranged": true,
+  "ranged_attack": "ekba",
+  "active_ability": "dihk",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "KLst",
+   "frames": 27,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "KEi1",
+   "frames": 83,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "KErn",
+   "frames": 24,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "KErn",
+   "frames": 24,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "KEa1",
+    "frames": 38,
+    "framerate": 30,
+    "attack_ticks": [
+     12
+    ]
+   },
+   {
+    "tag": "KLa2",
+    "frames": 31,
+    "framerate": 30,
+    "attack_ticks": [
+     8
+    ]
+   },
+   {
+    "tag": "KLal",
+    "frames": 69,
+    "framerate": 30,
+    "attack_ticks": [
+     31,
+     56
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "KLs1",
+    "frames": 47,
+    "framerate": 30,
+    "shoot_ticks": [
+     27
+    ]
+   },
+   {
+    "tag": "KLs2",
+    "frames": 68,
+    "framerate": 30,
+    "shoot_ticks": [
+     16
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "KLfd",
+    "frames": 37,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "KLgu",
+    "frames": 19,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "KLhf",
+    "frames": 37,
+    "framerate": 30
+   }
+  }
+ },
+ "raeb": {
+  "spell_type": 2,
+  "name_tag": "raeb",
+  "icon": "uat2",
+  "cooldown_s": 4.0,
+  "mana_cost": 700,
+  "range": 0.0,
+  "min_casting_time_s": 0.642,
+  "casting_time_s": 1.2963,
+  "casting_frames": 105,
+  "spell_order": 350,
+  "god": "james",
+  "model": "eber",
+  "health": 1920,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 6.0,
+  "flying_speed": 0.0,
+  "melee_strength": 200,
+  "melee_accuracy": 1500,
+  "melee_evasion": 1650,
+  "ranged_accuracy": 0,
+  "aggressiveness": 1000,
+  "sight_range": 100.0,
+  "resistances": {
+   "melee": 0.7,
+   "direct_spell": 1.0,
+   "splash_spell": 1.0,
+   "direct_ranged": 0.9,
+   "splash_ranged": 0.9
+  },
+  "mana": 0,
+  "souls": 2,
+  "abilities": [
+   "korq"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 3072,
+  "tag": "raeb",
+  "name": "Taurock",
+  "game_name": "Taurock",
+  "folder": "Cear.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "",
+  "passive_on_damage": "korq",
+  "stance_animation": {
+   "tag": "BEst",
+   "frames": 58,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "BEi1",
+   "frames": 29,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "BErn",
+   "frames": 23,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "BErn",
+   "frames": 23,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "BEa1",
+    "frames": 55,
+    "framerate": 30,
+    "attack_ticks": [
+     21
+    ]
+   },
+   {
+    "tag": "BEa2",
+    "frames": 72,
+    "framerate": 30,
+    "attack_ticks": [
+     21,
+     27,
+     34,
+     39
+    ]
+   },
+   {
+    "tag": "BEa2",
+    "frames": 72,
+    "framerate": 30,
+    "attack_ticks": [
+     21,
+     27,
+     34,
+     39
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "BE00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "BE00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "BEfd",
+    "frames": 19,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "BEgu",
+    "frames": 34,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "BEhf",
+    "frames": 54,
+    "framerate": 30
+   }
+  }
+ },
+ "ycro": {
+  "spell_type": 2,
+  "name_tag": "ycro",
+  "icon": "ort2",
+  "cooldown_s": 2.0,
+  "mana_cost": 300,
+  "range": 0.0,
+  "min_casting_time_s": 0.2099,
+  "casting_time_s": 0.4321,
+  "casting_frames": 35,
+  "spell_order": 122,
+  "god": "james",
+  "model": "eorc",
+  "health": 960,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 8.25,
+  "flying_speed": 0.0,
+  "melee_strength": 200,
+  "melee_accuracy": 1000,
+  "melee_evasion": 1100,
+  "ranged_accuracy": 0,
+  "aggressiveness": 1000,
+  "sight_range": 100.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.0,
+   "splash_spell": 0.0,
+   "direct_ranged": 0.9,
+   "splash_ranged": 0.9
+  },
+  "mana": 0,
+  "souls": 1,
+  "abilities": [],
+  "passive_abilities": [],
+  "behavior_flags": 0,
+  "tag": "ycro",
+  "name": "Trogg",
+  "game_name": "Trogg",
+  "folder": "Cear.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "HUst",
+   "frames": 76,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "HUi1",
+   "frames": 118,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "HUrn",
+   "frames": 39,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "HUrn",
+   "frames": 39,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "HUa1",
+    "frames": 24,
+    "framerate": 30,
+    "attack_ticks": [
+     15
+    ]
+   },
+   {
+    "tag": "HUa2",
+    "frames": 20,
+    "framerate": 30,
+    "attack_ticks": [
+     14
+    ]
+   },
+   {
+    "tag": "HUa3",
+    "frames": 45,
+    "framerate": 30,
+    "attack_ticks": [
+     18
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "HU00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "HU00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "HUfd",
+    "frames": 37,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "HUgu",
+    "frames": 76,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "HUhf",
+    "frames": 67,
+    "framerate": 30
+   }
+  }
+ },
+ "eafH": {
+  "spell_type": 2,
+  "name_tag": "eafH",
+  "icon": "polf",
+  "cooldown_s": 5.0,
+  "mana_cost": 1000,
+  "range": 0.0,
+  "min_casting_time_s": 0.7407,
+  "casting_time_s": 1.4815,
+  "casting_frames": 120,
+  "spell_order": 496,
+  "god": "persephone",
+  "model": "faez",
+  "health": 2600,
+  "regeneration_per_s": 29.1667,
+  "drain": 0.0,
+  "running_speed": 10.0,
+  "flying_speed": 0.0,
+  "melee_strength": 180,
+  "melee_accuracy": 800,
+  "melee_evasion": 800,
+  "ranged_accuracy": 37,
+  "aggressiveness": 1000,
+  "sight_range": 200.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 0.5,
+   "splash_ranged": 0.5
+  },
+  "mana": 400,
+  "souls": 2,
+  "abilities": [
+   "plfa"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 64,
+  "tag": "eafH",
+  "name": "Thestor",
+  "game_name": "Thestor",
+  "folder": "@HER.SCAT",
+  "ranged": true,
+  "ranged_attack": "plfa",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "FGst",
+   "frames": 61,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "FGi1",
+   "frames": 78,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "FGrn",
+   "frames": 35,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "FGrn",
+   "frames": 35,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "FGa1",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     23
+    ]
+   },
+   {
+    "tag": "FGa2",
+    "frames": 38,
+    "framerate": 30,
+    "attack_ticks": [
+     18
+    ]
+   },
+   {
+    "tag": "FGa3",
+    "frames": 29,
+    "framerate": 30,
+    "attack_ticks": [
+     13
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "FGs1",
+    "frames": 38,
+    "framerate": 30,
+    "shoot_ticks": [
+     5
+    ]
+   },
+   {
+    "tag": "FGs2",
+    "frames": 43,
+    "framerate": 30,
+    "shoot_ticks": [
+     10
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "FGfd",
+    "frames": 43,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "FGgu",
+    "frames": 47,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "FGhf",
+    "frames": 30,
+    "framerate": 30
+   }
+  }
+ },
+ "ehtH": {
+  "spell_type": 2,
+  "name_tag": "ehtH",
+  "icon": "polf",
+  "cooldown_s": 5.0,
+  "mana_cost": 1000,
+  "range": 0.0,
+  "min_casting_time_s": 0.7407,
+  "casting_time_s": 1.4815,
+  "casting_frames": 120,
+  "spell_order": 497,
+  "god": "persephone",
+  "model": "thes",
+  "health": 2600,
+  "regeneration_per_s": 29.1667,
+  "drain": 0.0,
+  "running_speed": 10.0,
+  "flying_speed": 0.0,
+  "melee_strength": 180,
+  "melee_accuracy": 800,
+  "melee_evasion": 800,
+  "ranged_accuracy": 37,
+  "aggressiveness": 1000,
+  "sight_range": 200.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 0.5,
+   "splash_ranged": 0.5
+  },
+  "mana": 400,
+  "souls": 2,
+  "abilities": [
+   "plfa"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 64,
+  "tag": "ehtH",
+  "name": "Faestus",
+  "game_name": "Faestus",
+  "folder": "@HER.SCAT",
+  "ranged": true,
+  "ranged_attack": "plfa",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "FGst",
+   "frames": 61,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "FGi1",
+   "frames": 78,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "FGrn",
+   "frames": 35,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "FGrn",
+   "frames": 35,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "FGa1",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     23
+    ]
+   },
+   {
+    "tag": "FGa2",
+    "frames": 38,
+    "framerate": 30,
+    "attack_ticks": [
+     18
+    ]
+   },
+   {
+    "tag": "FGa3",
+    "frames": 29,
+    "framerate": 30,
+    "attack_ticks": [
+     13
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "FGs1",
+    "frames": 38,
+    "framerate": 30,
+    "shoot_ticks": [
+     5
+    ]
+   },
+   {
+    "tag": "FGs2",
+    "frames": 43,
+    "framerate": 30,
+    "shoot_ticks": [
+     10
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "FGfd",
+    "frames": 43,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "FGgu",
+    "frames": 47,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "FGhf",
+    "frames": 30,
+    "framerate": 30
+   }
+  }
+ },
+ "pezH": {
+  "spell_type": 2,
+  "name_tag": "pezH",
+  "icon": "bobs",
+  "cooldown_s": 2.0,
+  "mana_cost": 300,
+  "range": 0.0,
+  "min_casting_time_s": 0.1235,
+  "casting_time_s": 0.2469,
+  "casting_frames": 20,
+  "spell_order": 205,
+  "god": "stratos",
+  "model": "sara",
+  "health": 1500,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 0.0,
+  "flying_speed": 18.75,
+  "melee_strength": 150,
+  "melee_accuracy": 1000,
+  "melee_evasion": 900,
+  "ranged_accuracy": 150,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 0.25,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "mana": 500,
+  "souls": 1,
+  "abilities": [
+   "bsba"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 576,
+  "tag": "pezH",
+  "name": "Sara Bella",
+  "game_name": "Sara Bella",
+  "folder": "@HER.SCAT",
+  "ranged": true,
+  "ranged_attack": "bsba",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "SBst",
+   "frames": 40,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "SBi1",
+   "frames": 41,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "SBfl",
+   "frames": 40,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "SBfl",
+   "frames": 40,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "SBa1",
+    "frames": 45,
+    "framerate": 30,
+    "attack_ticks": [
+     24
+    ]
+   },
+   {
+    "tag": "SBa2",
+    "frames": 60,
+    "framerate": 30,
+    "attack_ticks": [
+     21,
+     35
+    ]
+   },
+   {
+    "tag": "SBa3",
+    "frames": 41,
+    "framerate": 30,
+    "attack_ticks": [
+     35
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "SBs1",
+    "frames": 35,
+    "framerate": 30,
+    "shoot_ticks": [
+     16
+    ]
+   },
+   {
+    "tag": "SBs2",
+    "frames": 50,
+    "framerate": 30,
+    "shoot_ticks": [
+     26
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {
+   "fly": {
+    "tag": "SBfl",
+    "frames": 40,
+    "framerate": 30
+   }
+  },
+  "stun_animations": {
+   "fly_damage": {
+    "tag": "SBfg",
+    "frames": 61,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "SBhf",
+    "frames": 143,
+    "framerate": 30
+   }
+  }
+ },
+ "oohH": {
+  "spell_type": 2,
+  "name_tag": "oohH",
+  "icon": "pmts",
+  "cooldown_s": 8.0,
+  "mana_cost": 1300,
+  "range": 0.0,
+  "min_casting_time_s": 1.2963,
+  "casting_time_s": 2.5926,
+  "casting_frames": 210,
+  "spell_order": 800,
+  "god": "persephone",
+  "model": "hoom",
+  "health": 5625,
+  "regeneration_per_s": 29.1667,
+  "drain": 0.0,
+  "running_speed": 8.75,
+  "flying_speed": 0.0,
+  "melee_strength": 750,
+  "melee_accuracy": 3000,
+  "melee_evasion": 3000,
+  "ranged_accuracy": 0,
+  "aggressiveness": 1000,
+  "sight_range": 100.0,
+  "resistances": {
+   "melee": 0.187,
+   "direct_spell": 1.0,
+   "splash_spell": 1.25,
+   "direct_ranged": 0.562,
+   "splash_ranged": 0.562
+  },
+  "mana": 1000,
+  "souls": 4,
+  "abilities": [
+   "HSba"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 3136,
+  "tag": "oohH",
+  "name": "Toldor",
+  "game_name": "Toldor",
+  "folder": "@HER.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "HSba",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "STst",
+   "frames": 103,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "STi1",
+   "frames": 151,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "STwk",
+   "frames": 40,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "STwk",
+   "frames": 40,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "STa1",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     19
+    ]
+   },
+   {
+    "tag": "STa2",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     16
+    ]
+   },
+   {
+    "tag": "STa3",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     16,
+     20
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "ST00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "ST00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "STfd",
+    "frames": 33,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "STgu",
+    "frames": 33,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "SThf",
+    "frames": 65,
+    "framerate": 30
+   }
+  }
+ },
+ "ramH": {
+  "spell_type": 2,
+  "name_tag": "ramH",
+  "icon": "yzid",
+  "cooldown_s": 2.0,
+  "mana_cost": 300,
+  "range": 0.0,
+  "min_casting_time_s": 0.1852,
+  "casting_time_s": 0.3704,
+  "casting_frames": 30,
+  "spell_order": 201,
+  "god": "charnel",
+  "model": "bane",
+  "health": 1500,
+  "regeneration_per_s": 0.0,
+  "drain": 0.5,
+  "running_speed": 13.75,
+  "flying_speed": 0.0,
+  "melee_strength": 500,
+  "melee_accuracy": 2000,
+  "melee_evasion": 1000,
+  "ranged_accuracy": 0,
+  "aggressiveness": 1000,
+  "sight_range": 100.0,
+  "resistances": {
+   "melee": 0.25,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 0.45,
+   "splash_ranged": 0.45
+  },
+  "mana": 0,
+  "souls": 1,
+  "abilities": [],
+  "passive_abilities": [],
+  "behavior_flags": 64,
+  "tag": "ramH",
+  "name": "Gangrel",
+  "game_name": "Gangrel",
+  "folder": "@HER.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "DZst",
+   "frames": 62,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "DDi1",
+   "frames": 62,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "DDrn",
+   "frames": 30,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "DDrn",
+   "frames": 30,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "DDa1",
+    "frames": 68,
+    "framerate": 30,
+    "attack_ticks": [
+     30
+    ]
+   },
+   {
+    "tag": "DZa2",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     4
+    ]
+   },
+   {
+    "tag": "DZa3",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     5
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "DZ00",
+    "frames": 2,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "DZ00",
+    "frames": 2,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "DZfa",
+    "frames": 97,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "DZgu",
+    "frames": 98,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "DZhf",
+    "frames": 110,
+    "framerate": 30
+   }
+  }
+ },
+ "RAMH": {
+  "spell_type": 2,
+  "name_tag": "RAMH",
+  "icon": "yzid",
+  "cooldown_s": 2.0,
+  "mana_cost": 300,
+  "range": 0.0,
+  "min_casting_time_s": 0.1852,
+  "casting_time_s": 0.3704,
+  "casting_frames": 30,
+  "spell_order": 202,
+  "god": "charnel",
+  "model": "ban2",
+  "health": 2700,
+  "regeneration_per_s": 0.0,
+  "drain": 0.5,
+  "running_speed": 13.75,
+  "flying_speed": 0.0,
+  "melee_strength": 750,
+  "melee_accuracy": 2000,
+  "melee_evasion": 1000,
+  "ranged_accuracy": 0,
+  "aggressiveness": 1000,
+  "sight_range": 100.0,
+  "resistances": {
+   "melee": 0.25,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 0.45,
+   "splash_ranged": 0.45
+  },
+  "mana": 0,
+  "souls": 1,
+  "abilities": [],
+  "passive_abilities": [],
+  "behavior_flags": 64,
+  "tag": "RAMH",
+  "name": "Astaroth",
+  "game_name": "Astaroth",
+  "folder": "@HER.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "DZst",
+   "frames": 62,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "DDi1",
+   "frames": 62,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "DDrn",
+   "frames": 30,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "DDrn",
+   "frames": 30,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "DDa1",
+    "frames": 68,
+    "framerate": 30,
+    "attack_ticks": [
+     30
+    ]
+   },
+   {
+    "tag": "DZa2",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     4
+    ]
+   },
+   {
+    "tag": "DZa3",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     5
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "DZ00",
+    "frames": 2,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "DZ00",
+    "frames": 2,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "DZfa",
+    "frames": 97,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "DZgu",
+    "frames": 98,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "DZhf",
+    "frames": 110,
+    "framerate": 30
+   }
+  }
+ },
+ "EHTH": {
+  "spell_type": 2,
+  "name_tag": "EHTH",
+  "icon": "polf",
+  "cooldown_s": 5.0,
+  "mana_cost": 1000,
+  "range": 0.0,
+  "min_casting_time_s": 0.7407,
+  "casting_time_s": 1.4815,
+  "casting_frames": 120,
+  "spell_order": 498,
+  "god": "pyro",
+  "model": "the2",
+  "health": 2080,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 10.0,
+  "flying_speed": 0.0,
+  "melee_strength": 225,
+  "melee_accuracy": 800,
+  "melee_evasion": 400,
+  "ranged_accuracy": 25,
+  "aggressiveness": 1000,
+  "sight_range": 200.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 0.5,
+   "splash_ranged": 0.5
+  },
+  "mana": 400,
+  "souls": 2,
+  "abilities": [
+   "lffa"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 64,
+  "tag": "EHTH",
+  "name": "Faestus",
+  "game_name": "Faestus",
+  "folder": "@HER.SCAT",
+  "ranged": true,
+  "ranged_attack": "lffa",
+  "active_ability": "",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "FGst",
+   "frames": 61,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "FGi1",
+   "frames": 78,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "FGrn",
+   "frames": 35,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "FGrn",
+   "frames": 35,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "FGa1",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     23
+    ]
+   },
+   {
+    "tag": "FGa2",
+    "frames": 38,
+    "framerate": 30,
+    "attack_ticks": [
+     18
+    ]
+   },
+   {
+    "tag": "FGa3",
+    "frames": 29,
+    "framerate": 30,
+    "attack_ticks": [
+     13
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "FGs1",
+    "frames": 38,
+    "framerate": 30,
+    "shoot_ticks": [
+     5
+    ]
+   },
+   {
+    "tag": "FGs2",
+    "frames": 43,
+    "framerate": 30,
+    "shoot_ticks": [
+     10
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "FGfd",
+    "frames": 43,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "FGgu",
+    "frames": 47,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "FGhf",
+    "frames": 30,
+    "framerate": 30
+   }
+  }
+ },
+ "risH": {
+  "spell_type": 2,
+  "name_tag": "risH",
+  "icon": "gard",
+  "cooldown_s": 10.0,
+  "mana_cost": 1900,
+  "range": 0.0,
+  "min_casting_time_s": 1.6667,
+  "casting_time_s": 3.3333,
+  "casting_frames": 270,
+  "spell_order": 999,
+  "god": "persephone",
+  "model": "sirc",
+  "health": 6875,
+  "regeneration_per_s": 29.1667,
+  "drain": 0.0,
+  "running_speed": 12.5,
+  "flying_speed": 20.0,
+  "melee_strength": 1375,
+  "melee_accuracy": 3000,
+  "melee_evasion": 3000,
+  "ranged_accuracy": 75,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 0.25,
+   "direct_spell": 0.25,
+   "splash_spell": 0.25,
+   "direct_ranged": 0.562,
+   "splash_ranged": 0.562
+  },
+  "mana": 1500,
+  "souls": 5,
+  "abilities": [
+   "filb"
+  ],
+  "passive_abilities": [
+   "eniv",
+   "tum@"
+  ],
+  "behavior_flags": 3648,
+  "tag": "risH",
+  "name": "Sirocco",
+  "game_name": "Sirocco",
+  "folder": "@HER.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "filb",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "DGst",
+   "frames": 148,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "DGi1",
+   "frames": 149,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "DGrn",
+   "frames": 45,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "DGrn",
+   "frames": 45,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "DGa1",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     9
+    ]
+   },
+   {
+    "tag": "DGa2",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     17
+    ]
+   },
+   {
+    "tag": "DGa3",
+    "frames": 32,
+    "framerate": 30,
+    "attack_ticks": [
+     13
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "DGs1",
+    "frames": 49,
+    "framerate": 30,
+    "shoot_ticks": [
+     27
+    ]
+   },
+   {
+    "tag": "DGs2",
+    "frames": 82,
+    "framerate": 30,
+    "shoot_ticks": [
+     26
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {
+   "takeoff": {
+    "tag": "DGto",
+    "frames": 51,
+    "framerate": 30
+   },
+   "fly": {
+    "tag": "DGfl",
+    "frames": 67,
+    "framerate": 30
+   },
+   "land": {
+    "tag": "DGla",
+    "frames": 87,
+    "framerate": 30
+   }
+  },
+  "stun_animations": {
+   "knock": {
+    "tag": "DGfd",
+    "frames": 20,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "DGgu",
+    "frames": 34,
+    "framerate": 30
+   },
+   "fly_damage": {
+    "tag": "DGfg",
+    "frames": 56,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "DGhf",
+    "frames": 121,
+    "framerate": 30
+   }
+  }
+ },
+ "uslH": {
+  "spell_type": 2,
+  "name_tag": "uslH",
+  "icon": "ergo",
+  "cooldown_s": 5.0,
+  "mana_cost": 1000,
+  "range": 0.0,
+  "min_casting_time_s": 0.4938,
+  "casting_time_s": 0.9877,
+  "casting_frames": 80,
+  "spell_order": 503,
+  "god": "stratos",
+  "model": "surt",
+  "health": 2560,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 11.25,
+  "flying_speed": 0.0,
+  "melee_strength": 600,
+  "melee_accuracy": 1500,
+  "melee_evasion": 1350,
+  "ranged_accuracy": 0,
+  "aggressiveness": 1000,
+  "sight_range": 100.0,
+  "resistances": {
+   "melee": 0.15,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 0.4,
+   "splash_ranged": 0.4
+  },
+  "mana": 400,
+  "souls": 2,
+  "abilities": [
+   "gsba",
+   "gcil"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 64,
+  "tag": "uslH",
+  "name": "Lord Surtur",
+  "game_name": "Lord Surtur",
+  "folder": "@HER.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "gsba",
+  "passive_on_damage": "gcil",
+  "stance_animation": {
+   "tag": "HUst",
+   "frames": 76,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "HUi1",
+   "frames": 118,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "OGrn",
+   "frames": 32,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "OGrn",
+   "frames": 32,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "HUa1",
+    "frames": 24,
+    "framerate": 30,
+    "attack_ticks": [
+     15
+    ]
+   },
+   {
+    "tag": "HUa2",
+    "frames": 20,
+    "framerate": 30,
+    "attack_ticks": [
+     14
+    ]
+   },
+   {
+    "tag": "HUa3",
+    "frames": 45,
+    "framerate": 30,
+    "attack_ticks": [
+     18
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "HU00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   },
+   {
+    "tag": "HU00",
+    "frames": 1,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {},
+  "stun_animations": {
+   "knock": {
+    "tag": "HUfd",
+    "frames": 37,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "HUgu",
+    "frames": 76,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "HUhf",
+    "frames": 67,
+    "framerate": 30
+   }
+  }
+ },
+ "magH": {
+  "spell_type": 2,
+  "name_tag": "magH",
+  "icon": "kacf",
+  "cooldown_s": 6.0,
+  "mana_cost": 1000,
+  "range": 0.0,
+  "min_casting_time_s": 1.0741,
+  "casting_time_s": 2.1605,
+  "casting_frames": 175,
+  "spell_order": 604,
+  "god": "james",
+  "model": "gamm",
+  "health": 3360,
+  "regeneration_per_s": 16.6667,
+  "drain": 0.0,
+  "running_speed": 7.03,
+  "flying_speed": 12.75,
+  "melee_strength": 1100,
+  "melee_accuracy": 1500,
+  "melee_evasion": 1650,
+  "ranged_accuracy": 250,
+  "aggressiveness": 1000,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 0.025,
+   "direct_spell": 0.85,
+   "splash_spell": 0.35,
+   "direct_ranged": 0.65,
+   "splash_ranged": 0.6
+  },
+  "mana": 600,
+  "souls": 3,
+  "abilities": [
+   "acia"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 2624,
+  "tag": "magH",
+  "name": "Gammel",
+  "game_name": "Gammel",
+  "folder": "@HER.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "acia",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "CKst",
+   "frames": 88,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "ECi1",
+   "frames": 118,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "ECrn",
+   "frames": 63,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "ECrn",
+   "frames": 63,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "ECa1",
+    "frames": 63,
+    "framerate": 30,
+    "attack_ticks": [
+     20
+    ]
+   },
+   {
+    "tag": "CKa2",
+    "frames": 48,
+    "framerate": 30,
+    "attack_ticks": [
+     12,
+     18,
+     21,
+     25
+    ]
+   },
+   {
+    "tag": "CKa3",
+    "frames": 71,
+    "framerate": 30,
+    "attack_ticks": [
+     11,
+     21,
+     40,
+     55
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "ECs1",
+    "frames": 96,
+    "framerate": 30,
+    "shoot_ticks": [
+     54
+    ]
+   },
+   {
+    "tag": "CKa2",
+    "frames": 48,
+    "framerate": 30,
+    "shoot_ticks": []
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {
+   "takeoff": {
+    "tag": "CKto",
+    "frames": 26,
+    "framerate": 30
+   },
+   "fly": {
+    "tag": "ECfl",
+    "frames": 55,
+    "framerate": 30
+   },
+   "land": {
+    "tag": "CKla",
+    "frames": 28,
+    "framerate": 30
+   }
+  },
+  "stun_animations": {
+   "knock": {
+    "tag": "CKfd",
+    "frames": 98,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "CKgu",
+    "frames": 58,
+    "framerate": 30
+   },
+   "fly_damage": {
+    "tag": "Ckfg",
+    "frames": 61,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "CKhf",
+    "frames": 85,
+    "framerate": 30
+   }
+  }
+ },
+ "rdbO": {
+  "spell_type": 2,
+  "name_tag": "rdbO",
+  "icon": "gard",
+  "cooldown_s": 10.0,
+  "mana_cost": 1900,
+  "range": 0.0,
+  "min_casting_time_s": 1.6667,
+  "casting_time_s": 3.3333,
+  "casting_frames": 270,
+  "spell_order": 1008,
+  "god": "persephone",
+  "model": "baby",
+  "health": 1375,
+  "regeneration_per_s": 29.1667,
+  "drain": 0.0,
+  "running_speed": 10.0,
+  "flying_speed": 20.0,
+  "melee_strength": 1100,
+  "melee_accuracy": 750,
+  "melee_evasion": 750,
+  "ranged_accuracy": 300,
+  "aggressiveness": 250,
+  "sight_range": 150.0,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 0.75,
+   "splash_ranged": 0.75
+  },
+  "mana": 750,
+  "souls": 1,
+  "abilities": [
+   "filb"
+  ],
+  "passive_abilities": [],
+  "behavior_flags": 3072,
+  "tag": "rdbO",
+  "name": "Dragon Hatchling",
+  "game_name": "Dragon Hatchling",
+  "folder": "@Och.SCAT",
+  "ranged": false,
+  "ranged_attack": "",
+  "active_ability": "filb",
+  "passive_on_damage": "",
+  "stance_animation": {
+   "tag": "DGst",
+   "frames": 148,
+   "framerate": 30
+  },
+  "idle_animation": {
+   "tag": "DGi1",
+   "frames": 149,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "DGrn",
+   "frames": 45,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "DGrn",
+   "frames": 45,
+   "framerate": 30
+  },
+  "melee_animations": [
+   {
+    "tag": "DGa1",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     9
+    ]
+   },
+   {
+    "tag": "DGa2",
+    "frames": 43,
+    "framerate": 30,
+    "attack_ticks": [
+     17
+    ]
+   },
+   {
+    "tag": "DGa3",
+    "frames": 32,
+    "framerate": 30,
+    "attack_ticks": [
+     13
+    ]
+   }
+  ],
+  "shoot_animations": [
+   {
+    "tag": "DGs1",
+    "frames": 49,
+    "framerate": 30,
+    "shoot_ticks": [
+     27
+    ]
+   },
+   {
+    "tag": "DGs2",
+    "frames": 82,
+    "framerate": 30,
+    "shoot_ticks": [
+     26
+    ]
+   }
+  ],
+  "extra_animations": {},
+  "flight_animations": {
+   "takeoff": {
+    "tag": "DGto",
+    "frames": 51,
+    "framerate": 30
+   },
+   "fly": {
+    "tag": "DGfl",
+    "frames": 67,
+    "framerate": 30
+   },
+   "land": {
+    "tag": "DGla",
+    "frames": 87,
+    "framerate": 30
+   }
+  },
+  "stun_animations": {
+   "knock": {
+    "tag": "DGfd",
+    "frames": 20,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "DGgu",
+    "frames": 34,
+    "framerate": 30
+   },
+   "fly_damage": {
+    "tag": "DGfg",
+    "frames": 56,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "DGhf",
+    "frames": 121,
+    "framerate": 30
+   }
+  }
+ }
+}

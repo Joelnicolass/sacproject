@@ -112,6 +112,16 @@ def map_file(name):
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "assets", "original", "maps", "high_noon", name)
 
 
+def data_file(name):
+    """A game data file from assets/original/data/ (RFC-033, 033g)."""
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "assets", "original", "data", name)
+
+
+def model_file(name):
+    """A model measurement file from assets/original/models/ (RFC-033, 033c)."""
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "assets", "original", "models", name)
+
+
 def cache(name):
     return base.cache(name)
 
@@ -130,8 +140,8 @@ def flat(a, b):
 def capsule(tag):
     """(radius, height) of a creature's capsule on the ground (BodyCollider.refit): height >= 0.6, radius <= 0.45 * height."""
     try:
-        creatures = json.load(open(cache(os.path.join("data", "creatures.json")), encoding="utf-8"))
-        bodies = json.load(open(cache(os.path.join("baked", "bodies.json")), encoding="utf-8"))
+        creatures = json.load(open(data_file("creatures.json"), encoding="utf-8"))
+        bodies = json.load(open(model_file("sizes.json"), encoding="utf-8"))["bodies"]
         info = bodies[creatures[tag]["model"]]
     except (OSError, KeyError, ValueError):
         return 0.35, 1.8

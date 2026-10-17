@@ -21,6 +21,9 @@ ROOT = Path(__file__).resolve().parents[1]
 INSTALL = Path("/Users/joelsartori/Downloads/sacgame/Sacrifice/data")
 NTT_DATA = ROOT.parent / "sacengine" / "source" / "nttData.d"
 OUT = ROOT / "cache" / "data"
+## RFC-033g: with `--out DIR` the game data (creatures, wizards, spells, abilities, books, buildings) goes to DIR
+## (assets/original/data) and nothing else is written: no anim_*.json, no models, no catalog.
+ASSETS_ONLY = False
 
 FPS = 60.0
 CAST_FRAMES_PER_SECOND = 1.35 * FPS
@@ -843,11 +846,8 @@ def decode_bldg(raw: bytes, folder: str) -> dict:
     }
 
 
-def export_buildings() -> None:
-    """cache/data/buildings.json (max health, shelter flag, components of every BLDG) and the component
-    models (MRMM + texture) of the god wads under cache/look/buildings/<tag>/, added to the catalog that
-    tools/bake_bodies.gd bakes. Run it before the bake: `python3 tools/export_stats.py buildings`."""
-    OUT.mkdir(parents=True, exist_ok=True)
+def read_buildings() -> tuple[dict, dict]:
+    """Every BLDG of the god wads (tag -> entry) and the MRMM models of the BLDG_MODEL_WADS (tag -> source)."""
     buildings: dict = {}
     models: dict = {}
     for wad_name in BLDG_WADS:
@@ -863,7 +863,24 @@ def export_buildings() -> None:
                         buildings[name] = entry
                 elif ext == "MRMM" and name not in models and wad_name in BLDG_MODEL_WADS:
                     models[name] = (wad_name, odir, files, raw)
+    return buildings, models
+
+
+def write_buildings_json(buildings: dict) -> None:
+    OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "buildings.json").write_text(json.dumps(buildings, indent=1, ensure_ascii=False))
+
+
+def export_buildings() -> None:
+    """cache/data/buildings.json (max health, shelter flag, components of every BLDG) and the component
+    models (MRMM + texture) of the god wads under cache/look/buildings/<tag>/, added to the catalog that
+    tools/bake_bodies.gd bakes. Run it before the bake: `python3 tools/export_stats.py buildings`.
+    With `--out DIR` (RFC-033g) only buildings.json is written, to DIR; no models, no catalog."""
+    buildings, models = read_buildings()
+    write_buildings_json(buildings)
+    if ASSETS_ONLY:
+        print("buildings", len(buildings))
+        return
     needed = set()
     for entry in buildings.values():
         if entry["folder"].split("!")[0] not in ("JMOD.WAD",):
@@ -1055,10 +1072,13 @@ def main() -> None:
         "abilities.json": abilities,
         "books.json": books,
     }
-    outputs["anim_clips_f36.json"] = export_f36_clips(anim_index, model_paths)
-    outputs["anim_mesh_clips_f37.json"] = export_f37_mesh_clips(anim_index, model_paths, creatures, ordered_wizards, books)
+    if not ASSETS_ONLY:
+        outputs["anim_clips_f36.json"] = export_f36_clips(anim_index, model_paths)
+        outputs["anim_mesh_clips_f37.json"] = export_f37_mesh_clips(anim_index, model_paths, creatures, ordered_wizards, books)
     for filename, payload in outputs.items():
         (OUT / filename).write_text(json.dumps(payload, indent=1, ensure_ascii=False))
+    if ASSETS_ONLY:
+        write_buildings_json(read_buildings()[0])
 
     print("creatures", len(creatures), "wizards", len(wizards), "spells", len(spells), "abilities", len(abilities))
     trogg = creatures["ycro"]
@@ -1096,7 +1116,13 @@ def main() -> None:
 if __name__ == "__main__":
     import sys
 
-    if len(sys.argv) > 1 and sys.argv[1] == "buildings":
+    args = sys.argv[1:]
+    if "--out" in args:
+        at = args.index("--out")
+        OUT = Path(args[at + 1]).resolve()
+        ASSETS_ONLY = True
+        del args[at:at + 2]
+    if args and args[0] == "buildings":
         export_buildings()
     else:
         main()

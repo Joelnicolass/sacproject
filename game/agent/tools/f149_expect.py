@@ -11,7 +11,7 @@ Usage: python3 -I agent/tools/f149_expect.py <godot log of debug/f149_freeze or 
   (a Trogg 1250, not 1251); a wizard ceil(60 · 0.25 · 20) = 300.
 - Thaw (updateFreeze, 17579-17614): 150 · direct spell resistance (a Trogg 0). A broken ice shatters on the next tick
   (declared): `rompe el hielo` at tick c, `deshielo` at c + 1.
-Resistances come from cache/data/creatures.json by the body's name without its number (Druid2 -> Druid).
+Resistances come from assets/original/data/creatures.json by the body's name without its number (Druid2 -> Druid).
 Port axes (x, y up, z); the box distance is the same in any axis order.
 """
 import json
@@ -60,7 +60,7 @@ def box_distance(point, center, half):
 
 def resistances():
     here = os.path.dirname(os.path.abspath(__file__))
-    path = os.path.join(here, "..", "..", "cache", "data", "creatures.json")
+    path = os.path.join(here, "..", "..", "assets", "original", "data", "creatures.json")
     try:
         data = json.load(open(path, encoding="utf-8"))
     except OSError:

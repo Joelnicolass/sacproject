@@ -44,7 +44,7 @@ def f32(x):
 
 def resistances():
     here = os.path.dirname(os.path.abspath(__file__))
-    path = os.path.join(here, "..", "..", "cache", "data", "creatures.json")
+    path = os.path.join(here, "..", "..", "assets", "original", "data", "creatures.json")
     try:
         data = json.load(open(path, encoding="utf-8"))
     except OSError:

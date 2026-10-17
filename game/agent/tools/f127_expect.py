@@ -85,6 +85,11 @@ def map_file(name):
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "assets", "original", "maps", "high_noon", name)
 
 
+def data_file(name):
+    """A game data file from assets/original/data/ (RFC-033, 033g)."""
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "assets", "original", "data", name)
+
+
 def cache(name):
     here = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(here, "..", "..", "cache", name)
@@ -221,7 +226,7 @@ def chase(start, center, half=(0.0, 0.0, 0.0), accel=ACCEL, speed=SPEED, limit=L
 
 def resistances():
     try:
-        data = json.load(open(cache("data/creatures.json"), encoding="utf-8"))
+        data = json.load(open(data_file("creatures.json"), encoding="utf-8"))
     except OSError:
         return {}
     items = data if isinstance(data, list) else list(data.values())
@@ -294,11 +299,11 @@ def check_log(path):
     halo = [a for a in log["ability"] if a[0] == "Halo Of Earth"]
     ok &= verdict(bool(halo) and halo[0][1:] == MANA, "1. habilidad Halo Of Earth mana 750->100: %s" % str(halo[0][1:] if halo else "nada"))
     try:
-        abilities = json.load(open(cache("data/abilities.json"), encoding="utf-8"))
+        abilities = json.load(open(data_file("abilities.json"), encoding="utf-8"))
         cooldown = round(float(abilities["HRba"]["cooldown_s"]) * T)
         ok &= verdict(cooldown == COOLDOWN_TICKS, "1. enfriamiento HRba en abilities.json: %d ticks (esperado %d)" % (cooldown, COOLDOWN_TICKS))
     except (OSError, KeyError):
-        ok &= verdict(False, "1. no se pudo leer HRba de cache/data/abilities.json")
+        ok &= verdict(False, "1. no se pudo leer HRba de assets/original/data/abilities.json")
     # 2. the 6 rocks on T+1, inside the box, buried; rock 0 -> Druid1 and 1 -> Trogg2 in that same tick.
     terrain = load_terrain()
     ok &= verdict(use["tick"] == t + 1 and use["count"] == NUM_ROCKS, "2a. nacen %d rocas en el tick %d (esperado %d en T+1 = %d)" % (

@@ -1,0 +1,942 @@
+{
+ "cwa0": {
+  "spell_tag": "0awc",
+  "model": "jnwr",
+  "health": 1500,
+  "mana": 1000,
+  "running_speed": 10.0,
+  "flying_speed": 0.0,
+  "regeneration_per_s": 16.6667,
+  "melee_accuracy": 1250,
+  "melee_evasion": 1250,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "souls": 0,
+  "abilities": [],
+  "tag": "cwa0",
+  "name": "Jadugarr",
+  "game_name": "Jadugarr",
+  "folder": "@WIZ.SCAT",
+  "idle_animation": {
+   "tag": "jwi1",
+   "frames": 108,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "jwrn",
+   "frames": 44,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "jwrn",
+   "frames": 44,
+   "framerate": 30
+  },
+  "death_frames": [
+   87,
+   51,
+   154
+  ],
+  "corpse_rise_frames": 51,
+  "float_to_stance_frames": 31,
+  "stun_animations": {
+   "knock": {
+    "tag": "jwfd",
+    "frames": 29,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "jwgu",
+    "frames": 28,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "jwh2",
+    "frames": 40,
+    "framerate": 30
+   }
+  }
+ },
+ "cwa1": {
+  "spell_tag": "1awc",
+  "model": "serx",
+  "health": 1500,
+  "mana": 1000,
+  "running_speed": 10.0,
+  "flying_speed": 0.0,
+  "regeneration_per_s": 16.6667,
+  "melee_accuracy": 1250,
+  "melee_evasion": 1250,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "souls": 0,
+  "abilities": [],
+  "tag": "cwa1",
+  "name": "Seerix",
+  "game_name": "Seerix",
+  "folder": "@WIZ.SCAT",
+  "idle_animation": {
+   "tag": "sei1",
+   "frames": 88,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "seru",
+   "frames": 48,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "seru",
+   "frames": 48,
+   "framerate": 30
+  },
+  "death_frames": [
+   44,
+   118,
+   118
+  ],
+  "corpse_rise_frames": 61,
+  "float_to_stance_frames": 43,
+  "stun_animations": {
+   "knock": {
+    "tag": "sek2",
+    "frames": 34,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "segu",
+    "frames": 28,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "sehf",
+    "frames": 103,
+    "framerate": 30
+   }
+  }
+ },
+ "cwa2": {
+  "spell_tag": "2awc",
+  "model": "mrdk",
+  "health": 1500,
+  "mana": 1000,
+  "running_speed": 10.0,
+  "flying_speed": 0.0,
+  "regeneration_per_s": 16.6667,
+  "melee_accuracy": 1250,
+  "melee_evasion": 1250,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "souls": 0,
+  "abilities": [],
+  "tag": "cwa2",
+  "name": "Marduk",
+  "game_name": "Marduk",
+  "folder": "@WIZ.SCAT",
+  "idle_animation": {
+   "tag": "mdi1",
+   "frames": 69,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "mdrn",
+   "frames": 34,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "mdrn",
+   "frames": 34,
+   "framerate": 30
+  },
+  "death_frames": [
+   52,
+   65,
+   137
+  ],
+  "corpse_rise_frames": 48,
+  "float_to_stance_frames": 33,
+  "stun_animations": {
+   "knock": {
+    "tag": "mdfd",
+    "frames": 24,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "mdgu",
+    "frames": 28,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "mdhf",
+    "frames": 66,
+    "framerate": 30
+   }
+  }
+ },
+ "cwd0": {
+  "spell_tag": "0dwc",
+  "model": "xwiz",
+  "health": 1500,
+  "mana": 1000,
+  "running_speed": 10.0,
+  "flying_speed": 0.0,
+  "regeneration_per_s": 16.6667,
+  "melee_accuracy": 1250,
+  "melee_evasion": 1250,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "souls": 0,
+  "abilities": [],
+  "tag": "cwd0",
+  "name": "The Ragman",
+  "game_name": "The Ragman",
+  "folder": "@WIZ.SCAT",
+  "idle_animation": {
+   "tag": "Widl",
+   "frames": 102,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "Wrun",
+   "frames": 39,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "Wrun",
+   "frames": 39,
+   "framerate": 30
+  },
+  "death_frames": [
+   54,
+   54,
+   64
+  ],
+  "corpse_rise_frames": 60,
+  "float_to_stance_frames": 61,
+  "stun_animations": {
+   "knock": {
+    "tag": "Wflo",
+    "frames": 25,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "Wget",
+    "frames": 28,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "Wflo",
+    "frames": 25,
+    "framerate": 30
+   }
+  }
+ },
+ "cwd1": {
+  "spell_tag": "1dwc",
+  "model": "quil",
+  "health": 1500,
+  "mana": 1000,
+  "running_speed": 10.0,
+  "flying_speed": 0.0,
+  "regeneration_per_s": 16.6667,
+  "melee_accuracy": 1250,
+  "melee_evasion": 1250,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "souls": 0,
+  "abilities": [],
+  "tag": "cwd1",
+  "name": "Acheron",
+  "game_name": "Acheron",
+  "folder": "@WIZ.SCAT",
+  "idle_animation": {
+   "tag": "qui1",
+   "frames": 101,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "qurn",
+   "frames": 58,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "qurn",
+   "frames": 58,
+   "framerate": 30
+  },
+  "death_frames": [
+   101,
+   129,
+   183
+  ],
+  "corpse_rise_frames": 53,
+  "float_to_stance_frames": 53,
+  "stun_animations": {
+   "knock": {
+    "tag": "qufd",
+    "frames": 23,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "qugu",
+    "frames": 28,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "quhf",
+    "frames": 101,
+    "framerate": 30
+   }
+  }
+ },
+ "cwd2": {
+  "spell_tag": "2dwc",
+  "model": "gret",
+  "health": 1500,
+  "mana": 1000,
+  "running_speed": 10.0,
+  "flying_speed": 0.0,
+  "regeneration_per_s": 16.6667,
+  "melee_accuracy": 1250,
+  "melee_evasion": 1250,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "souls": 0,
+  "abilities": [],
+  "tag": "cwd2",
+  "name": "Sorcha",
+  "game_name": "Sorcha",
+  "folder": "@WIZ.SCAT",
+  "idle_animation": {
+   "tag": "gri1",
+   "frames": 185,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "grru",
+   "frames": 30,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "grru",
+   "frames": 30,
+   "framerate": 30
+  },
+  "death_frames": [
+   40,
+   100,
+   134
+  ],
+  "corpse_rise_frames": 40,
+  "float_to_stance_frames": 27,
+  "stun_animations": {
+   "knock": {
+    "tag": "grk2",
+    "frames": 54,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "grgu",
+    "frames": 28,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "grh1",
+    "frames": 49,
+    "framerate": 30
+   }
+  }
+ },
+ "cwe0": {
+  "spell_tag": "0ewc",
+  "model": "ABRX",
+  "health": 1500,
+  "mana": 1000,
+  "running_speed": 10.0,
+  "flying_speed": 0.0,
+  "regeneration_per_s": 16.6667,
+  "melee_accuracy": 1250,
+  "melee_evasion": 1250,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "souls": 0,
+  "abilities": [],
+  "tag": "cwe0",
+  "name": "Abraxus",
+  "game_name": "Abraxus",
+  "folder": "@WIZ.SCAT",
+  "idle_animation": {
+   "tag": "AXi1",
+   "frames": 98,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "AXru",
+   "frames": 24,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "AXru",
+   "frames": 24,
+   "framerate": 30
+  },
+  "death_frames": [
+   104,
+   98,
+   117
+  ],
+  "corpse_rise_frames": 51,
+  "float_to_stance_frames": 76,
+  "stun_animations": {
+   "knock": {
+    "tag": "AXhf",
+    "frames": 69,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "AXgu",
+    "frames": 28,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "AXhf",
+    "frames": 69,
+    "framerate": 30
+   }
+  }
+ },
+ "cwe1": {
+  "spell_tag": "1ewc",
+  "model": "sage",
+  "health": 1500,
+  "mana": 1000,
+  "running_speed": 10.0,
+  "flying_speed": 0.0,
+  "regeneration_per_s": 16.6667,
+  "melee_accuracy": 1250,
+  "melee_evasion": 1250,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "souls": 0,
+  "abilities": [],
+  "tag": "cwe1",
+  "name": "Mithras",
+  "game_name": "Mithras",
+  "folder": "@WIZ.SCAT",
+  "idle_animation": {
+   "tag": "sgi1",
+   "frames": 101,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "sgrn",
+   "frames": 31,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "sgwa",
+   "frames": 55,
+   "framerate": 30
+  },
+  "death_frames": [
+   71,
+   98,
+   148
+  ],
+  "corpse_rise_frames": 51,
+  "float_to_stance_frames": 49,
+  "stun_animations": {
+   "knock": {
+    "tag": "sgfd",
+    "frames": 31,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "sggu",
+    "frames": 28,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "sghf",
+    "frames": 53,
+    "framerate": 30
+   }
+  }
+ },
+ "cwe2": {
+  "spell_tag": "2ewc",
+  "model": "hero",
+  "health": 1500,
+  "mana": 1000,
+  "running_speed": 10.0,
+  "flying_speed": 0.0,
+  "regeneration_per_s": 16.6667,
+  "melee_accuracy": 1250,
+  "melee_evasion": 1250,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "souls": 0,
+  "abilities": [],
+  "tag": "cwe2",
+  "name": "Eldred",
+  "game_name": "Eldred",
+  "folder": "@WIZ.SCAT",
+  "idle_animation": {
+   "tag": "hei1",
+   "frames": 147,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "hern",
+   "frames": 24,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "hewa",
+   "frames": 42,
+   "framerate": 30
+  },
+  "death_frames": [
+   76,
+   58,
+   168
+  ],
+  "corpse_rise_frames": 48,
+  "float_to_stance_frames": 38,
+  "stun_animations": {
+   "knock": {
+    "tag": "hefd",
+    "frames": 26,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "hegu",
+    "frames": 28,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "hefd",
+    "frames": 26,
+    "framerate": 30
+   }
+  }
+ },
+ "cwf0": {
+  "spell_tag": "0fwc",
+  "model": "buta",
+  "health": 1500,
+  "mana": 1000,
+  "running_speed": 10.0,
+  "flying_speed": 0.0,
+  "regeneration_per_s": 16.6667,
+  "melee_accuracy": 1250,
+  "melee_evasion": 1250,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "souls": 0,
+  "abilities": [],
+  "tag": "cwf0",
+  "name": "Ambassador Buta",
+  "game_name": "Ambassador Buta",
+  "folder": "@WIZ.SCAT",
+  "idle_animation": {
+   "tag": "BUi1",
+   "frames": 51,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "BUru",
+   "frames": 30,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "BUru",
+   "frames": 30,
+   "framerate": 30
+  },
+  "death_frames": [
+   69,
+   96,
+   113
+  ],
+  "corpse_rise_frames": 51,
+  "float_to_stance_frames": 69,
+  "stun_animations": {
+   "get_up": {
+    "tag": "BUgu",
+    "frames": 25,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "BUhf",
+    "frames": 92,
+    "framerate": 30
+   }
+  }
+ },
+ "cwf1": {
+  "spell_tag": "1fwc",
+  "model": "rigl",
+  "health": 1500,
+  "mana": 1000,
+  "running_speed": 10.0,
+  "flying_speed": 0.0,
+  "regeneration_per_s": 16.6667,
+  "melee_accuracy": 1250,
+  "melee_evasion": 1250,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "souls": 0,
+  "abilities": [],
+  "tag": "cwf1",
+  "name": "Grakkus",
+  "game_name": "Grakkus",
+  "folder": "@WIZ.SCAT",
+  "idle_animation": {
+   "tag": "Widl",
+   "frames": 102,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "Wrun",
+   "frames": 39,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "Wrun",
+   "frames": 39,
+   "framerate": 30
+  },
+  "death_frames": [
+   54,
+   54,
+   64
+  ],
+  "corpse_rise_frames": 60,
+  "float_to_stance_frames": 61,
+  "stun_animations": {
+   "knock": {
+    "tag": "Wflo",
+    "frames": 25,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "Wget",
+    "frames": 28,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "Wflo",
+    "frames": 25,
+    "framerate": 30
+   }
+  }
+ },
+ "cwf2": {
+  "spell_tag": "2fwc",
+  "model": "spdr",
+  "health": 1500,
+  "mana": 1000,
+  "running_speed": 10.0,
+  "flying_speed": 0.0,
+  "regeneration_per_s": 16.6667,
+  "melee_accuracy": 1250,
+  "melee_evasion": 1250,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "souls": 0,
+  "abilities": [],
+  "tag": "cwf2",
+  "name": "Charlotte",
+  "game_name": "Charlotte",
+  "folder": "@WIZ.SCAT",
+  "idle_animation": {
+   "tag": "Spi1",
+   "frames": 398,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "Spru",
+   "frames": 27,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "Spru",
+   "frames": 27,
+   "framerate": 30
+  },
+  "death_frames": [
+   268,
+   211,
+   142
+  ],
+  "corpse_rise_frames": 28,
+  "float_to_stance_frames": 28,
+  "stun_animations": {
+   "knock": {
+    "tag": "Spkn",
+    "frames": 38,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "Spgt",
+    "frames": 28,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "Sphf",
+    "frames": 115,
+    "framerate": 30
+   }
+  }
+ },
+ "cwl0": {
+  "spell_tag": "0lwc",
+  "model": "shkt",
+  "health": 1500,
+  "mana": 1000,
+  "running_speed": 10.0,
+  "flying_speed": 0.0,
+  "regeneration_per_s": 16.6667,
+  "melee_accuracy": 1250,
+  "melee_evasion": 1250,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "souls": 0,
+  "abilities": [],
+  "tag": "cwl0",
+  "name": "Shakti",
+  "game_name": "Shakti",
+  "folder": "@WIZ.SCAT",
+  "idle_animation": {
+   "tag": "SHi1",
+   "frames": 101,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "SHrn",
+   "frames": 34,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "SHrn",
+   "frames": 34,
+   "framerate": 30
+  },
+  "death_frames": [
+   87,
+   78,
+   183
+  ],
+  "corpse_rise_frames": 40,
+  "float_to_stance_frames": 37,
+  "stun_animations": {
+   "knock": {
+    "tag": "SHfd",
+    "frames": 40,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "AA01",
+    "frames": 28,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "SHhf",
+    "frames": 53,
+    "framerate": 30
+   }
+  }
+ },
+ "cwl1": {
+  "spell_tag": "1lwc",
+  "model": "YOGO",
+  "health": 1500,
+  "mana": 1000,
+  "running_speed": 10.0,
+  "flying_speed": 0.0,
+  "regeneration_per_s": 16.6667,
+  "melee_accuracy": 1250,
+  "melee_evasion": 1250,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "souls": 0,
+  "abilities": [],
+  "tag": "cwl1",
+  "name": "Yogo",
+  "game_name": "Yogo",
+  "folder": "@WIZ.SCAT",
+  "idle_animation": {
+   "tag": "YOi1",
+   "frames": 96,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "YOru",
+   "frames": 46,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "YOru",
+   "frames": 46,
+   "framerate": 30
+  },
+  "death_frames": [
+   64,
+   64,
+   115
+  ],
+  "corpse_rise_frames": 51,
+  "float_to_stance_frames": 28,
+  "stun_animations": {
+   "knock": {
+    "tag": "YOk2",
+    "frames": 46,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "YOgu",
+    "frames": 28,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "YOhf",
+    "frames": 70,
+    "framerate": 30
+   }
+  }
+ },
+ "cwl2": {
+  "spell_tag": "2lwc",
+  "model": "brod",
+  "health": 1500,
+  "mana": 1000,
+  "running_speed": 10.0,
+  "flying_speed": 0.0,
+  "regeneration_per_s": 16.6667,
+  "melee_accuracy": 1250,
+  "melee_evasion": 1250,
+  "resistances": {
+   "melee": 1.0,
+   "direct_spell": 0.5,
+   "splash_spell": 0.5,
+   "direct_ranged": 1.0,
+   "splash_ranged": 1.0
+  },
+  "souls": 0,
+  "abilities": [],
+  "tag": "cwl2",
+  "name": "Hachimen",
+  "game_name": "Hachimen",
+  "folder": "@WIZ.SCAT",
+  "idle_animation": {
+   "tag": "bri1",
+   "frames": 182,
+   "framerate": 30
+  },
+  "run_animation": {
+   "tag": "brru",
+   "frames": 17,
+   "framerate": 30
+  },
+  "walk_animation": {
+   "tag": "brru",
+   "frames": 17,
+   "framerate": 30
+  },
+  "death_frames": [
+   58,
+   128,
+   198
+  ],
+  "corpse_rise_frames": 23,
+  "float_to_stance_frames": 23,
+  "stun_animations": {
+   "knock": {
+    "tag": "brk2",
+    "frames": 25,
+    "framerate": 30
+   },
+   "get_up": {
+    "tag": "brgu",
+    "frames": 25,
+    "framerate": 30
+   },
+   "hit_floor": {
+    "tag": "brhf",
+    "frames": 25,
+    "framerate": 30
+   }
+  }
+ }
+}

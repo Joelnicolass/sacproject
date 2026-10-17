@@ -5,7 +5,7 @@ const _SPELL_TYPE := preload("res://scenes/data/spell_type.gd")
 const _ABILITY_TYPE := preload("res://scenes/data/ability_type.gd")
 const _WIZARD_TYPE := preload("res://scenes/data/wizard_type.gd")
 
-const DATA_DIR := "res://cache/data/"
+const DATA_DIR := OriginalAssets.DATA_DIR
 const GODS: PackedStringArray = ["persephone", "pyro", "james", "stratos", "charnel"]
 
 var _creatures: Dictionary = {}
@@ -33,7 +33,7 @@ func reload() -> void:
 	var abilities := _read_json("abilities.json")
 	var wizards := _read_json("wizards.json")
 	if creatures.is_empty() or spells.is_empty() or wizards.is_empty() or books.is_empty():
-		print("GameData: faltan los datos del instalador en %s. Corré python3 tools/export_stats.py." % DATA_DIR)
+		print("GameData: faltan los datos del instalador en %s. Corré python3 tools/export_stats.py --out assets/original/data." % DATA_DIR)
 		return
 	var structure_tags := {}
 	for god in books:

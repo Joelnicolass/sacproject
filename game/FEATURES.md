@@ -2193,3 +2193,17 @@ Deuda:
 **Medición** (`MeleeAttack.log_gap`, apagado en el producto; lo enciende `ai_match` y `debug/ability_spit.gd`; línea `melee_gap A->B d= gap= vx= vz= tick=…`; `agent/tools/melee_gap_expect.py LOG…`):
 - `final_spit_melee` (Druid contra Earthfling, 1 contra 1): gap de caja mínimo 0,100 m (el reposo de `BodySeparation`), 0 cambios de signo de la velocidad de acercamiento, se asienta en el piso de `BodySeparation` (el objetivo de sacengine, d = 1,05 m, queda por dentro). PASS.
 - `s7` (3 contra 3): el gap de caja baja a -0,067 (Druid) y -0,072 (Trogg) y la velocidad de acercamiento cambia de signo cientos de veces por ventana (524 y 759 como máximo). No viene de `close_in`: con el knob en 1000 (sin acercamiento) da -0,061 / -0,108 y 409 / 682 cambios. Es el empuje de terceros cuerpos de `BodySeparation` (5 m/s, 0,08 m por tick) en la melé; el comando de `close_in` ahí es cero. Queda anotado, sin tocar `BodySeparation` (su regla es la de sacengine).
+
+### F173 — Datos de juego como assets (RFC-033, corte 033g)
+
+**Piezas:**
+- **`tools/export_stats.py --out assets/original/data`:** los 6 JSON (creatures, spells, abilities, wizards, books, buildings) versionados; con `--out` no toca la caché.
+- **Lectores por `OriginalAssets.DATA_DIR`:** `GameData`, `MapBuilding` (`ai_perception`), `debug/body_gallery.gd`, `tools/audit_body_pose.gd` y las réplicas `agent/tools/f1*_expect.py` (f129, f155 y f156 leen medidas de `models/sizes.json`).
+
+**Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-033g.md`). **Hito: la simulación ya no lee `cache/`.**
+- **Paridad:** los 6 JSON iguales byte a byte a `cache/data`.
+- **Banco:** `all fixed fixed2 stress window` sin CONTAMINATED (s7 `c5a5755a`, s7_npcs `4386b384`, s1_trivial `60fbf6d5`, f139 `4750f4d1`) y `quick` 21/21; `rules_suite` PASS.
+- **Con `cache/` renombrada:** `ai_match` headless da los mismos digests de s7 y s7_npcs, sin avisos.
+
+Deuda:
+- `anim_mesh_clips_f37.json` sigue en `cache/data`; sus lectores son solo del cliente y se van con RFC-023 (023h).

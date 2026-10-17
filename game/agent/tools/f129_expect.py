@@ -21,7 +21,7 @@ sacengine:
   numStickyBombs -= 1. movementSpeed multiplies by 0.75 ^ numStickyBombs (stats.d:122). No damage.
 - The replica integrates each of the 10 velocities the port logs with g = 20 from the origin it logs, in the port's order (move,
   then gravity: RangedShot._physics_process), against the bodies of lane S as still capsules on the real terrain (cache/high_noon_terrain.bin,
-  capsule from cache/baked/bodies.json like BodyCollider: height, radius <= 0.45 * height), and says for each one the tick (the tick
+  capsule from assets/original/models/sizes.json like BodyCollider: height, radius <= 0.45 * height), and says for each one the tick (the tick
   of the volley + steps) and the body it hits or that it touches the ground. The foe filter is the port's (RangedShot._can_hit):
   another side than the shooter's; the ally never receives one. The pick among bodies in the box is the nearest to its origin.
   Bombs that land after the tick Druid1 starts to walk (the `attack` event) are listed but not asserted: their target moves.
@@ -90,6 +90,16 @@ def map_file(name):
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "assets", "original", "maps", "high_noon", name)
 
 
+def data_file(name):
+    """A game data file from assets/original/data/ (RFC-033, 033g)."""
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "assets", "original", "data", name)
+
+
+def model_file(name):
+    """A model measurement file from assets/original/models/ (RFC-033, 033c)."""
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "assets", "original", "models", name)
+
+
 def cache(name):
     return base.cache(name)
 
@@ -108,8 +118,8 @@ def flat(a, b):
 def capsule(tag):
     """(radius, height) of a creature's capsule on the ground (BodyCollider.refit): height >= 0.6, radius <= 0.45 * height."""
     try:
-        creatures = json.load(open(cache(os.path.join("data", "creatures.json")), encoding="utf-8"))
-        bodies = json.load(open(cache(os.path.join("baked", "bodies.json")), encoding="utf-8"))
+        creatures = json.load(open(data_file("creatures.json"), encoding="utf-8"))
+        bodies = json.load(open(model_file("sizes.json"), encoding="utf-8"))["bodies"]
         info = bodies[creatures[tag]["model"]]
     except (OSError, KeyError, ValueError):
         return 0.35, 1.8

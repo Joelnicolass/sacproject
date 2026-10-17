@@ -2,7 +2,7 @@ extends Node3D
 
 ## Every baked body in rows, fitted to one cell, feet on y = 0.
 
-const CREATURES_JSON := "res://cache/data/creatures.json"
+const CREATURES_JSON := OriginalAssets.DATA_DIR + "creatures.json"
 
 @export var body_scene: PackedScene
 @export var columns := 14

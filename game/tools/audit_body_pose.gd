@@ -10,9 +10,9 @@ extends SceneTree
 
 const _OBJ := preload("res://scenes/world/obj_mesh.gd")
 
-const BOOKS := "res://cache/data/books.json"
-const CREATURES := "res://cache/data/creatures.json"
-const WIZARDS := "res://cache/data/wizards.json"
+const BOOKS := OriginalAssets.DATA_DIR + "books.json"
+const CREATURES := OriginalAssets.DATA_DIR + "creatures.json"
+const WIZARDS := OriginalAssets.DATA_DIR + "wizards.json"
 const CLIPS := "res://cache/data/anim_mesh_clips_f37.json"
 ## Walkers: feet within this distance of y = 0 with the idle clip.
 const FEET_TOLERANCE := 0.3
@@ -58,7 +58,7 @@ func _initialize() -> void:
 		if clips.has(model) and not rows.has(model):
 			rows[model] = ["actor", str(row.get("name", tag)), row]
 	if rows.is_empty():
-		push_error("POSE AUDIT: no hay books.json / wizards.json en cache/data")
+		push_error("POSE AUDIT: no hay books.json / wizards.json en assets/original/data")
 		quit(1)
 		return
 	print("model|kind|name|fly|up_y|foot|cap_h|cap_r|reach|idle_tag|posed_y(min,max)|posed_size|verdict")

@@ -222,7 +222,7 @@ func _land() -> void:
 			_body.name, target.name, result["accuracy"], result["evasion"], result["facing"], result["pending"], result["chance"], result["roll"],
 			type.melee_strength, melee_resistance_scale, result["resistance"], factor, amount, MatchClock.now()])
 	if amount > 0.0:
-		health.call("damage", amount, int(_body.get("owner_slot")))
+		LifeDrain.feed(_body, target, float(health.call("damage", amount, int(_body.get("owner_slot")))))  ## F164
 		struck.emit(target, amount, float(result["chance"]), float(result["roll"]))
 	connected.emit(target, was_frozen)
 

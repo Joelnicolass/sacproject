@@ -31,6 +31,14 @@ static func mods_of(holder: Node) -> int:
 	return int(value) if value != null else 0
 
 
+## F164: the body that fired `holder` (a RangedShot or a ShotStrike), or null when it is gone or was never set.
+static func shooter_of(holder: Node) -> Node:
+	var path: Variant = holder.get("shooter_path") if holder != null else null
+	if not path is NodePath or (path as NodePath).is_empty():
+		return null
+	return holder.get_node_or_null(path as NodePath)
+
+
 static func who(body: Node) -> String:
 	return str(body.call("display_name")) if body.has_method("display_name") else str(body.name)
 
@@ -58,6 +66,7 @@ static func land(holder: Node3D, look: ShotLook, target: Node3D, point: Vector3,
 		var direct_ranged: StringName = preload("res://scenes/world/components/health.gd").DIRECT_RANGED
 		taken = float(hit.get_node("Health").call("damage_typed", float(holder.get("damage")), direct_ranged, int(holder.get("from_slot")), false, false, mods_of(holder)))
 		preload("res://scenes/world/spells/rock_projectile.gd").report(hit, taken, direct_ranged)  ## F155: the bench reads this line
+		LifeDrain.feed(shooter_of(holder), hit, taken)  ## F164
 	for fx in look.impact_fx:
 		FxBus.broadcast(fx, point)
 	return taken

@@ -1,4 +1,6 @@
 # Features
+- Con un `deflector` (el escudo del Protector desvía el golpe a otro cuerpo), `damage_typed` devuelve el daño que tomó el que desvía y `LifeDrain.feed` cura con eso; falta confirmar contra sacengine si el original drena en ese caso.
+- El digest del banco hashea posiciones, no vida: el drenaje lo prueban `check_drain` de `f164_expect.py` y `f166_expect.py`.
 
 Fan game de Sacrifice. Arquitectura estándar. Multijugador online con servidor dedicado.
 
@@ -2155,7 +2157,7 @@ Deuda:
 
 Deuda:
 - El flujo de partículas de sangre o escombro hacia la Locust (`LocustProjectile`) es un beam provisorio.
-- El drenaje de 0,875 llega con F164 (030w-e).
+- El drenaje de 0,875 llegó con F164 (030w-e): Locust2 arranca al 50 % de vida para medirlo (`f166_expect.py`, `check_drain`).
 
 ### F170 — HUD, iconos, cursores y FX como assets (RFC-033, corte 033d)
 
@@ -2316,3 +2318,23 @@ Deuda:
 - `Burning.ignite` descarta un edificio con daño 0; sacengine lo prende igual con `setAblaze` (solo visual).
 - **Trail:** el puff no escala con el radio de la onda; los FX propios de `fhba` (`firy`) y `ehba` (`rock`) quedan para cuando haya tiempo de exportarlos.
 - **Orden fuego/golpe:** no se ve en el log (el `fuego` se imprime al terminar); lo cubre el código, no la réplica.
+
+### F164 — Drenaje de vida (RFC-030, corte 030w-e)
+
+**Sacengine:** `dealDamage` (8933-8946, la línea 8940 llama) calcula el daño que el blanco toma de verdad (con el tope de la vida que le queda) y llama a `healFromDrain` (8834-8840): un atacante vivo que es criatura cura `daño · drain` al instante, con el tope del máximo (`heal`, 8815-8817). Sacengine drena todo el daño de la criatura, también el de un disparo a distancia. Solo contra cuerpos móviles; un edificio no alimenta el drenaje. Charnel 0,5 (Scythe, Fallen, Blight, Necryl, Hellmouth, Styx, Deadeye, Netherfiend, Abomination, Gangrel, Astaroth) y Locust 0,875.
+
+**Piezas:**
+- **`LifeDrain`** (`scenes/world/units/life_drain.gd`, `static func feed(attacker, target, taken)`): la regla única. Solo actúa con `taken > 0`, un `UnitBody` vivo con `type.drain > 0`, `attacker != target` y un blanco `unit` o `wizard` (nunca `structure`). El `drain` sale de `CreatureType.drain` (Resource, sin mutar). `static var log_drain` (banco, apagado en el producto): `drena A de B daño (escala) -> vida v ganada g (tick t)`, solo si ganó algo.
+- **`Health.damage()`** devuelve el daño tomado (`float`, con el tope de la vida que queda), como `damage_typed`. Lo que emite `hit` no cambia.
+- **Tres llamadores, sin lógica propia:** `MeleeAttack._land`, la rama directa de `ShotImpact.land` (Fallen `dkba`, Locust `zbba` por `RayStrike`) y `DirectImpact._affect`. El tirador sale de `shooter_path` del holder (`ShotImpact.shooter_of`).
+- **Banco:** `debug/f164_drain.tscn`, `rules/f164_drain.tres`, `agent/tools/f164_expect.py`, caso `f164` en `run_determinism.sh` (solo fixed en `quick`) y en `det_baseline.txt` (`97cd4399`); `f166_expect.py` suma `check_drain` y Locust2 arranca al 50 % de vida.
+
+**Caso:** Scythe1 al 50 % pega a Troll1: cada golpe con cantidad > 0 le sube 0,5 · cantidad, con el tope de 540 (los golpes con la vida ya en el tope no dejan línea). Scythe2 con la vida llena no cura. Fallen1 al 50 % cura 56,25 por disparo (0,5 · 112,5). En `f166`, Locust2 cura 157,5 (0,875 · 180) y después queda al tope de 450; Locust1, cuyo rayo frena en un aliado sin daño, no cura. Filas corridas al oeste (K2/T2 en -45/-42, F1/T3 en -60/-40) para librar la jhut y un jcc2 (validado con `--lanes`).
+
+**Cierre (2026-10-17).**
+- **Digests:** `f164` `97cd4399` igual en fixed, stress y window. La base no cambió: el audit mira la vida de los blancos y no la del atacante, y ningún caso de `quick` hace que la cura cambie un resultado. `f156`, `f133` y `f166` dan los mismos digests (no hubo nada que regrabar); `f166` con Locust2 al 50 % también.
+- **Banco:** `quick` con las 24 líneas previas de la base OK; `rules_suite --fixed-fps 60` PASS. Los avisos CONTAMINATED de algunas corridas vienen de otros Godot de la máquina, no de diferencias de digest.
+- **Sin capturas:** el drenaje no tiene efecto visual en este corte (la barra de vida del atacante sube; no hay FX).
+
+Deuda (F164b):
+- Salpicadura por cuerpo (`SplashImpact`), `PoisonImpact`/`DiseaseImpact` con la cura por `rangedAttack.amount` (23523, 24360, 24879) y `Burning`. `PoisonImpact._drain` queda con su copia de la regla; pasa a `LifeDrain.feed` cuando entren los otros.

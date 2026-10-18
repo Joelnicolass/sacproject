@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="MpLobbyConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/mp_kit/lobby/mp_lobby_config.gd" id="1_cfg"]
+
+[resource]
+script = ExtResource("1_cfg")
+max_matches = 1
+match_port_min = 7710
+match_port_max = 7710
+spawn_timeout_s = 30.0
+ticket_ttl_s = 900.0
+rejoin_grace_s = 60.0
+load_timeout_s = 180.0
+idle_no_players_s = 120.0
+result_quit_delay_s = 10.0
+matches_root = "user://mp_local_server"

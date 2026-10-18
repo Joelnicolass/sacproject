@@ -1,0 +1,33 @@
+{
+ "scene": "res://scenes/ui/boot.tscn",
+ "wait_first": 1.5,
+ "steps": [
+  {"click": "%God_james"},
+  {"wait": 0.4},
+  {"click": "%Play"},
+  {"wait": 0.5},
+  {"shot": "00_menu_with_local_server.png"},
+  {"click": "%LocalServer"},
+  {"wait_until": {"node": "%CreateLocal", "visible_in_tree": true, "timeout": 10}},
+  {"shot": "01_local_door.png"},
+  {"click": "%CreateLocal"},
+  {"wait_until": {"node": "%CreateServer", "visible_in_tree": true, "timeout": 10}},
+  {"shot": "02_create_form.png"},
+  {"click": "%CreateServer"},
+  {"wait_until": {"node": "%HostInfo", "visible_in_tree": true, "timeout": 60}},
+  {"assert": {"node": "%HostAddress", "text_contains": "Dirección local"}},
+  {"assert": {"node": "%HostPort", "text_contains": "Puerto"}},
+  {"assert": {"node": "%HostCode", "text_contains": "Código"}},
+  {"wait": 0.5},
+  {"shot": "03_address_port_code.png"},
+  {"wait": 6.0},
+  {"click": "%EnterMatch"},
+  {"wait_until": {"node": "%Stats", "text_contains": "Vida", "timeout": 120}},
+  {"wait": 3.0},
+  {"shot": "04_high_noon.png"},
+  {"wait_until": {"node": "%MatchResult", "visible_in_tree": true, "timeout": 120}},
+  {"assert": {"node": "%MatchResult", "text_contains": "Victoria"}},
+  {"wait": 0.5},
+  {"shot": "05_result.png"}
+ ]
+}

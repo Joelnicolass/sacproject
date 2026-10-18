@@ -20,6 +20,8 @@ func _ready() -> void:
 	## RFC-034 034f: the player goes online through the rooms (the server is in data/net/lobby_endpoint.tres). The field
 	## for an IP and «Unirse» (direct to a dedicated or a LAN host) stay only in debug builds.
 	%Online.pressed.connect(_on_online)
+	## RFC-034 034m: «Servidor local» is a door of its own (create on this PC / join an address), visible in every build.
+	%LocalServer.pressed.connect(_on_local_server)
 	ip.visible = OS.is_debug_build()
 	%Join.visible = OS.is_debug_build()
 	%Back.pressed.connect(_show_select)
@@ -79,6 +81,9 @@ func _fill_ai_levels() -> void:
 
 func _on_online() -> void:
 	get_tree().change_scene_to_file(SacrificeFlow.LOBBY_SCENE)
+
+func _on_local_server() -> void:
+	get_tree().change_scene_to_file(SacrificeFlow.LOCAL_SERVER_SCENE)
 
 func _on_join() -> void:
 	SacrificeFlow.join_lan(ip.text)

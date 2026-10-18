@@ -13,6 +13,8 @@ var pick: Dictionary = {"wizard": "cwa0", "model": "jnwr", "god": "james"}
 var slot_picks: Dictionary = {}
 ## RFC-034 034f: the room screens (the menu's «Salas online» and where a match from a room comes back to).
 const LOBBY_SCENE := "res://scenes/ui/lobby/lobby_screen.tscn"
+## RFC-034 034m: the menu's «Servidor local» (a dedicated on the player's PC, apart from the rooms).
+const LOCAL_SERVER_SCENE := "res://scenes/ui/local_server/local_server_screen.tscn"
 
 ## RFC-034 034f: true while the match in course came from a room (`join_from_lobby`). Leaving it (the pause menu, the
 ## end of the match, a lost server) then lands in the room screens instead of the menu. Any other way to play clears it.
@@ -134,6 +136,15 @@ func join_from_lobby(host: String, p_port: int, token: String) -> Error:
 	var err := join_endpoint(host, p_port, token)
 	from_lobby = err == OK
 	return err
+
+
+## RFC-034 034m: joins a «Servidor local» (the host's own dedicated). The code is the credential of the seat. It is not a room:
+## the way out of the match goes to the menu.
+func join_local_server(host: String, p_port: int, code: String) -> Error:
+	from_lobby = false
+	slot_picks = {}
+	solo_ai_seats = []
+	return join_endpoint(host, p_port, code)
 
 
 func join_lan(ip: String) -> Error:

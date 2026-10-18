@@ -1,0 +1,71 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/local_server/local_server_screen.gd" id="1_screen"]
+[ext_resource type="PackedScene" path="res://scenes/ui/local_server/local_host_view.tscn" id="2_host"]
+[ext_resource type="PackedScene" path="res://scenes/ui/local_server/local_join_view.tscn" id="3_join"]
+
+[node name="LocalServerScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_screen")
+
+[node name="LocalMenu" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Column" type="VBoxContainer" parent="LocalMenu"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -110.0
+offset_right = 200.0
+offset_bottom = 110.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="LocalMenu/Column"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Servidor local"
+horizontal_alignment = 1
+
+[node name="CreateLocal" type="Button" parent="LocalMenu/Column"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "Crear servidor local"
+
+[node name="JoinLocal" type="Button" parent="LocalMenu/Column"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "Unirse a servidor local"
+
+[node name="LocalBack" type="Button" parent="LocalMenu/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Volver al menú"
+
+[node name="LocalHostView" parent="." instance=ExtResource("2_host")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+
+[node name="LocalJoinView" parent="." instance=ExtResource("3_join")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1

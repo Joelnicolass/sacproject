@@ -1,0 +1,69 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/local_server/local_join_view.gd" id="1_join"]
+
+[node name="LocalJoinView" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_join")
+
+[node name="Column" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = -200.0
+offset_right = 240.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="Column"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Unirse a servidor local"
+horizontal_alignment = 1
+
+[node name="JoinAddress" type="LineEdit" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "Dirección y puerto (192.168.1.5:7710)"
+
+[node name="JoinCode" type="LineEdit" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "Código que te dio el host"
+
+[node name="JoinTransport" type="OptionButton" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="JoinServer" type="Button" parent="Column"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "Unirse"
+
+[node name="JoinHelp" type="Label" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="JoinBack" type="Button" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Volver"
+
+[node name="JoinStatus" type="Label" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+autowrap_mode = 3

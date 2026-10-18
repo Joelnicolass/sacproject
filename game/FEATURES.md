@@ -2389,3 +2389,15 @@ Deuda: `Burning` (el fuego con atacante) todavía no drena.
 Deuda:
 - Las partículas propias del escudo (`spawnPhoenixShieldParticles`, tasa 3) y las 3 de fuego por quemado no existen: el puff de `fire` es chico sobre la nieve.
 - `canShield` se aproxima con `is_targetable()` y no estar muerto (no se distingue `REVIVING`/fantasma).
+
+### RFC-023 023d–023f — Mago, doctor y cautivo, fantasma, cadáver y voladoras con esqueleto (cierre 2026-10-17)
+
+- **023d:** 15 magos con `BodyRig` (paridad de 70 clips ≤ 0,37 mm), reposo `stance1`, `HandFx` y `cast_fx_shown` replicado (review APPROVE). El exportador escribe identidad para cuaterniones nulos (dcak, ecak, fcak, stmp, eber regenerados).
+- **023e:** doctor y cautivo con rig (rise, held, thrash), doctor en `stance1`; trabajos con roles prestados.
+- **023f:** cadáver con clip `death`/`fly_death` y desvanecido de 1 s (`Corpse.fade_s`, pedido del usuario; el original desaparece de golpe a los 2,5 s), fantasma por instancia (`SeeThroughLook`), roles `hover` y `fly_death`.
+- **Verificación de main sin agentes:** import sin errores, `quick` 27/27, `rules_suite` PASS. Playtest (Haiku, `agent/out/pt023def/`): fantasma, cadáver y desvanecido, f165 PASS.
+
+Deuda aceptada por el usuario:
+- La partícula de casteo de `HandFx` no cae sobre las manos (un brillo corrido del puño, otro en el aire). «No es crítico, es solo un FX.»
+- Sin captura del `thrash` del cautivo ni de las voladoras en hover; el doctor se ve completo pero la escena de captura no tiene suelo.
+- El clip de muerte puede durar más que la caída de 0,91 s; el alma sale a los 0,91 s como antes.

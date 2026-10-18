@@ -23,9 +23,8 @@ const LINT_SKIP_DIRS: Array[String] = ["look/"]
 ## Whole files allowed: the owner of chance, and selection (human input, RFC-032 §8: its sort by instance_id stays).
 const LINT_ALLOWED_FILES: Array[String] = ["match_seed.gd", "selection.gd"]
 ## Single lines allowed (file -> stripped line): generators seeded by hand from a stable number, for presentation
-## (spin of a shot) or from a seed that is already the match's (biome, props).
+## (spin of a shot) or from a seed that is already the match's (biome).
 const LINT_ALLOWED_LINES := {
-	"map_props.gd": "var rng := RandomNumberGenerator.new()",  # rng.seed = plant_seed (@export)
 	"theme_applier.gd": "var rng := RandomNumberGenerator.new()",  # rng.seed = match_seed (the biome stream)
 	"units/ranged_shot.gd": "var rng := RandomNumberGenerator.new()",  # spin of the shot, hash(name)
 	"spells/rock_projectile.gd": "var rng := RandomNumberGenerator.new()",  # spin of the rock, hash(name)

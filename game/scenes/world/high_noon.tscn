@@ -9,7 +9,7 @@
 [ext_resource type="Script" uid="uid://cm4vcossqdpt5" path="res://scenes/world/match_command.gd" id="7_match"]
 [ext_resource type="PackedScene" path="res://scenes/world/props/player_start.tscn" id="8_start"]
 [ext_resource type="PackedScene" path="res://scenes/world/props/manafount.tscn" id="9_fount"]
-[ext_resource type="PackedScene" path="res://scenes/world/props/plant.tscn" id="10_plant"]
+[ext_resource type="PackedScene" path="res://scenes/world/map/high_noon_layout.tscn" id="f196_layout"]
 [ext_resource type="Script" uid="uid://nxbcgsgrjk48" path="res://scenes/world/world_camera.gd" id="11_camera"]
 [ext_resource type="Resource" uid="uid://d1e2js08kea5i" path="res://data/match_rules.tres" id="12_rules"]
 [ext_resource type="Script" uid="uid://daosef86scnum" path="res://scenes/world/match_biome.gd" id="13_biome"]
@@ -34,7 +34,6 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/ritual_notice.tscn" id="f60_notice"]
 [ext_resource type="Script" uid="uid://bdlkj5tbi1wvh" path="res://scenes/world/nav/nav_service.gd" id="f72_nav"]
 [ext_resource type="Script" uid="uid://t8pnos2jmli" path="res://scenes/world/vision/side_vision.gd" id="f72_vision"]
-[ext_resource type="PackedScene" path="res://scenes/world/map/map_building.tscn" id="f73_building"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/peasant.tscn" id="f73_peasant"]
 [ext_resource type="Script" uid="uid://qtxfsr581l1s" path="res://scenes/world/map/map_population.gd" id="f73_population"]
 [ext_resource type="Script" uid="uid://uifgkgnynkf6" path="res://scenes/world/ai/ai_roster.gd" id="f77_roster"]
@@ -109,17 +108,9 @@ unique_name_in_owner = true
 script = ExtResource("3_visual")
 model = "peas"
 
-[node name="MapProps" type="Node3D" parent="." unique_id=693965675]
+[node name="MapProps" type="Node3D" parent="." unique_id=693965675 node_paths=PackedStringArray("plants_root")]
 script = ExtResource("6_props")
-plant_scene = ExtResource("10_plant")
-plant_models = PackedStringArray("PCF1", "PCF2", "PCF3", "PCF4", "PCG1", "PCG2", "PCW5", "PCW6", "PCW7", "PCW8", "PGL1", "PGL2", "PCC1", "PCC2")
-widget_models = {
-"JAW1": PackedStringArray("PCW7", "PCW6", "PCF4"),
-"JAW2": PackedStringArray("PCW8", "PCF3", "PCF1"),
-"JAW3": PackedStringArray("PCF1", "PCF2", "PCC1", "PCC2"),
-"JAW4": PackedStringArray("PCG2", "PCW5"),
-"JAW5": PackedStringArray("PGL1", "PGL2", "PCG1")
-}
+plants_root = NodePath("../HighNoonLayout/Plants")
 
 [node name="Starts" type="Node3D" parent="MapProps" unique_id=1503934309]
 
@@ -173,15 +164,14 @@ unit_scene = ExtResource("f25_unit")
 peasant_scene = ExtResource("f73_peasant")
 rules = ExtResource("12_rules")
 
-[node name="Buildings" type="Node3D" parent="." unique_id=1507855763]
-unique_name_in_owner = true
+[node name="HighNoonLayout" parent="." unique_id=1507855763 instance=ExtResource("f196_layout")]
 
-[node name="Population" type="Node3D" parent="." unique_id=820745689 node_paths=PackedStringArray("buildings_root", "unit_spawner")]
+[node name="Population" type="Node3D" parent="." unique_id=820745689 node_paths=PackedStringArray("buildings_root", "npc_spawns_root", "unit_spawner")]
 unique_name_in_owner = true
 script = ExtResource("f73_population")
 spawn_creatures = true
-building_scene = ExtResource("f73_building")
-buildings_root = NodePath("../Buildings")
+buildings_root = NodePath("../HighNoonLayout/Buildings")
+npc_spawns_root = NodePath("../HighNoonLayout/NpcSpawns")
 unit_spawner = NodePath("../UnitSpawner")
 
 [node name="Spells" type="Node3D" parent="." unique_id=99761749]

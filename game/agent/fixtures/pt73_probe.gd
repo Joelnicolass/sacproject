@@ -8,7 +8,7 @@ extends Node
 
 const ORDERS := preload("res://scenes/world/units/unit_orders.gd")
 const TAG := "PT73 "
-const NTTS := OriginalAssets.HIGH_NOON_NTTS
+const NTTS := "res://assets/original/maps/high_noon/ntts.json"  ## tool input only; the game reads the layout scene
 
 var _world: Node3D
 var _args: Dictionary = {}
@@ -125,7 +125,7 @@ func _case_load() -> void:
 		index += 1
 		if ["jfnt", "jaal"].has(str(row["tag"])):
 			continue
-		var node := _world.get_node_or_null("%%Buildings/Bld%03d_%s" % [index, row["tag"]]) as MapBuilding
+		var node := _world.get_node_or_null("HighNoonLayout/Buildings/Bld%03d_%s" % [index, row["tag"]]) as MapBuilding
 		if node == null:
 			missing.append("Bld%03d" % index)
 			continue
@@ -347,7 +347,7 @@ func _case_house() -> void:
 	info["souls_new"] = get_tree().get_nodes_in_group("soul").size() - souls_before
 	info["shelter_group_after"] = get_tree().get_nodes_in_group("shelter").size()
 	_out["hut"] = info
-	var wall := _world.get_node_or_null("%Buildings/Bld010_bld1")
+	var wall := _world.get_node_or_null("HighNoonLayout/Buildings/Bld010_bld1")
 	var any_wall: MapBuilding = null
 	for node in get_tree().get_nodes_in_group("map_building"):
 		if (node as MapBuilding).tag == "bld1":

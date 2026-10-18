@@ -21,6 +21,10 @@ const BUILDINGS_PATH := OriginalAssets.DATA_DIR + "buildings.json"
 ## 0 = take it from the BLDG. Debug scenes set it to test fast.
 @export var max_health_override := 0.0
 @export var owner_slot := 0
+## Turn about the vertical axis, degrees, as the NTTS stores it (positive turns Godot's y backwards). Applied in _ready
+## with the same operation the map loader used (RFC-035 R2), so the stored rotation never differs by an ULP. 0 leaves
+## the transform as the scene or the code that added the node set it.
+@export var facing_deg := 0.0
 @export_group("Collision")
 ## The body is the box of the models, smaller by this much (m) on every side, so units pass the eaves.
 ## Decision of the port (not sacengine): a little smaller than the box so units pass the eaves.
@@ -58,6 +62,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 func _ready() -> void:
+	if facing_deg != 0.0:
+		rotation.y = -deg_to_rad(facing_deg)
 	add_to_group(GROUP)
 	var record := bldg(tag)
 	if record.is_empty():

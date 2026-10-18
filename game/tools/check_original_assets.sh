@@ -13,7 +13,7 @@ trap 'rm -rf "$TMP"' EXIT
 A="$ROOT/assets/original"
 fail=0
 cmp_dir() { # name, regenerated, versioned
-  if diff -rq --exclude='*.import' --exclude='terrain.res' "$2" "$3" >"$TMP/diff.txt" 2>&1; then echo "OK    $1"; else echo "DIFF  $1"; head -5 "$TMP/diff.txt"; fail=1; fi
+  if diff -rq --exclude='*.import' --exclude='terrain.res' --exclude='sides.tres' "$2" "$3" >"$TMP/diff.txt" 2>&1; then echo "OK    $1"; else echo "DIFF  $1"; head -5 "$TMP/diff.txt"; fail=1; fi
 }
 cd "$ROOT"
 python3 -I tools/import_textures.py --out="$TMP/textures" >/dev/null && cmp_dir textures "$TMP/textures" "$A/textures" || { echo "FAIL  textures"; fail=1; }

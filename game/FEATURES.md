@@ -2684,3 +2684,23 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
 - **Pasto:** desde 035b el terreno guarda su material en la escena, y por eso el pasto se dibujaba en el editor y en las galerías sin preset. Ahora `GrassField` dibuja solo si hay un preset con `grass_enabled`.
 - **Gotcha:** si cambia `tools/terrain_import.gd` y el `.glb` no, Godot no reimporta. Hay que borrar `.godot/imported/terrain.glb-*`.
 - **Falta en el editor (usuario):** abrir `high_noon.tscn` y ver que `Terrain` es una instancia del `.glb` y se ve con tiles.
+
+### F196 — Contenido del mapa como nodos (RFC-035, corte 035d) — cerrado 2026-10-18
+
+- **Qué cambió:** `scenes/world/map/high_noon_layout.tscn` tiene los 69 `MapBuilding`, las 717 plantas y los 32 `NpcSpawn` (26 farmers en el slot 3 y 6 taurocks en el slot 4). Los bandos están en `sides.tres` (`MapSides`).
+- **Generador:** lo arma una vez `tools/bake_map_layout.gd`, que no pisa archivos sin `--force`. Con `--check` vuelve a cargar lo guardado y lo compara contra los JSON.
+- **En partida:** ya no se lee `ntts.json` ni `widgets.json` (el `grep` en `scenes/` da vacío). `MapPopulation` cuenta los edificios de la escena y hace aparecer los `NpcSpawn` en el orden del árbol.
+- **Verificación:**
+  - `--check` da CHECK PASS.
+  - El log es idéntico: `npc farmer 26 slot 3 · taurock 6 slot 4 · edificios 69 · refugios 11`.
+  - `pt73_probe load`: 69 edificios, 0 NPC adentro de un edificio y error máximo de 0,008 m.
+  - `quick` PASS sin mover digests.
+  - Capturas `biome_close` contra 035c: diferencia media menor a 0,12 sobre 255.
+- **Desvíos:**
+  - Starts y Founts siguen en `high_noon.tscn`, bajo `MapProps`. Ya eran nodos y hay unas 12 escenas de debug que dependen de esa ruta.
+  - La y de los `NpcSpawn` viene horneada. Si se mueve un spawn en el editor, hay que ajustar la y con el gizmo.
+  - Los edificios no tienen vista previa en el editor: el modelo se arma en `_ready`.
+- **Pendientes:**
+  - El generador corre como script suelto y avisa `Identifier not found: GameData`, porque no hay autoload. No afecta.
+  - `tools/check_original_assets.sh` no excluye `terrain.glb` (desde 035c).
+- **Para el usuario en el editor:** mover un edificio o una planta en `high_noon_layout.tscn` y ver que en partida aparece en el lugar nuevo.

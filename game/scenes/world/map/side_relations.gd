@@ -7,13 +7,14 @@ extends RefCounted
 ## stance is read from the first side towards the second; a side is its own ally. Slot = side + 1
 ## (players 1 and 2, Farmers 3, Taurocks 4); slot 0 is the neutral side 31, the owner of the map's houses,
 ## which has no relations and which nobody has as an enemy (High Noon: enemies 0xe and 0x7ffffffd… skip bit 31).
-## The map's rows live in `assets/original/maps/high_noon/ntts.json` (tools/import_map.py). Without the file, or for a side the file does not describe, «another slot is an
+## The map's rows live in `assets/original/maps/high_noon/sides.tres` (a MapSides, written once by
+## tools/bake_map_layout.gd, RFC-035 035d). Without the file, or for a side the file does not describe, «another slot is an
 ## enemy» (what the port did before this cut). Static and @tool: the editor and a headless run read it
 ## without autoloads, and the suite can load its own rows with set_rows().
 
 enum Stance { NEUTRAL, ALLY, ENEMY }
 
-const NTTS_PATH := OriginalAssets.HIGH_NOON_NTTS
+const SIDES_PATH := OriginalAssets.HIGH_NOON_SIDES
 const NEUTRAL_SIDE := 31
 
 static var _loaded := false
@@ -23,19 +24,19 @@ static var _assignment: Dictionary = {}
 
 
 ## Forgets what was read; the next question reads `path` again.
-static func refresh(path := NTTS_PATH) -> void:
+static func refresh(path := SIDES_PATH) -> void:
 	_loaded = true
 	_allies = {}
 	_enemies = {}
 	_assignment = {}
-	if not FileAccess.file_exists(path):
+	if not ResourceLoader.exists(path):
 		return
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
-	if parsed is Dictionary:
-		set_rows(parsed.get("sides", []))
+	var sides := load(path) as MapSides
+	if sides != null:
+		set_rows(sides.to_rows())
 
 
-## `rows`: [{id, allies, enemies, assignment}] as the exporter writes them.
+## `rows`: [{id, allies, enemies, assignment}] as MapSides.to_rows gives them.
 static func set_rows(rows: Array) -> void:
 	_loaded = true
 	_allies = {}

@@ -7,3 +7,4 @@ script = ExtResource("1_cfg")
 max_matches = 4
 match_port_min = 7800
 match_port_max = 7831
+result_quit_delay_s = 10.0

@@ -11,6 +11,12 @@ const VS_AI_SEAT := "res://data/ai/seat_vs_ai.tres"
 var pick: Dictionary = {"wizard": "cwa0", "model": "jnwr", "god": "james"}
 ## Server-validated picks by MpKit slot, replicated to clients.
 var slot_picks: Dictionary = {}
+## RFC-034 034f: the room screens (the menu's «Salas online» and where a match from a room comes back to).
+const LOBBY_SCENE := "res://scenes/ui/lobby/lobby_screen.tscn"
+
+## RFC-034 034f: true while the match in course came from a room (`join_from_lobby`). Leaving it (the pause menu, the
+## end of the match, a lost server) then lands in the room screens instead of the menu. Any other way to play clears it.
+var from_lobby: bool = false
 ## RFC-024 024f: the AI seats of the match this process simulates when the rules bring none (AiRoster reads them):
 ## «Contra la IA» in solo, or the dedicated started with --ai-slots=2 [--ai-god=pyro]. Empty = only humans.
 var solo_ai_seats: Array[AiSeat] = []
@@ -29,6 +35,11 @@ func _ready() -> void:
 	## `--world=res://debug/….tscn` on the dedicated and its clients plays a debug scene online.
 	world_path = MpBoot.user_value("world", "res://scenes/world/high_noon.tscn")
 	room_name = "High Noon"
+	## RFC-034 034f: what the player reads when a join fails or the server goes away (the kit's defaults are English).
+	joining_status = "Conectando con %s…"
+	join_fail_status = "No se pudo entrar a la partida"
+	bad_ip_status = "Dirección inválida"
+	server_lost_status = "Se terminó la partida"
 	max_players = 2
 	advertise_lan = false
 	start_when = StartWhen.DEDICATED_FIRST_CLIENT
@@ -97,12 +108,14 @@ func play_vs_ai(god: StringName = &"", chosen: MatchSetup = null) -> void:
 
 
 func _play_alone() -> void:
+	from_lobby = false
 	super.play_solo()
 	slot_picks = {MpKit.local_slot(): pick.duplicate()}
 	slot_picks_changed.emit()
 
 
 func host_lan() -> Error:
+	from_lobby = false
 	solo_ai_seats = []
 	setup = _cli_setup.copy()
 	return super.host_lan()
@@ -118,13 +131,26 @@ func return_to_boot() -> void:
 func join_from_lobby(host: String, p_port: int, token: String) -> Error:
 	slot_picks = {}
 	solo_ai_seats = []
-	return join_endpoint(host, p_port, token)
+	var err := join_endpoint(host, p_port, token)
+	from_lobby = err == OK
+	return err
 
 
 func join_lan(ip: String) -> Error:
+	from_lobby = false
 	slot_picks = {}
 	solo_ai_seats = []
 	return super.join_lan(ip)
+
+
+## RFC-034 034f: the way out of a match (pause menu, end of the match, lost server) goes to the room screens when the match
+## came from a room; the room is still there, with the result. Any other match goes to the menu.
+func _go_boot() -> void:
+	if from_lobby:
+		from_lobby = false
+		get_tree().change_scene_to_file(LOBBY_SCENE)
+		return
+	super._go_boot()
 
 
 ## Solo or server: the pick of an AI slot (AiRoster), published like a human's.

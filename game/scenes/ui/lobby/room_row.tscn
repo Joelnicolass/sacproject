@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[node name="RoomRow" type="Button"]
+custom_minimum_size = Vector2(0, 44)
+alignment = 0
+text = "Sala"

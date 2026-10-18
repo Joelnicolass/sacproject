@@ -17,6 +17,11 @@ func _ready() -> void:
 	_fill_ai_gods()
 	_fill_ai_levels()
 	%Join.pressed.connect(_on_join)
+	## RFC-034 034f: the player goes online through the rooms (the server is in data/net/lobby_endpoint.tres). The field
+	## for an IP and «Unirse» (direct to a dedicated or a LAN host) stay only in debug builds.
+	%Online.pressed.connect(_on_online)
+	ip.visible = OS.is_debug_build()
+	%Join.visible = OS.is_debug_build()
 	%Back.pressed.connect(_show_select)
 	%Options.pressed.connect(%OptionsMenu.open)
 	character_select.confirmed.connect(_on_confirmed)
@@ -71,6 +76,9 @@ func _fill_ai_levels() -> void:
 		picker.set_item_metadata(picker.item_count - 1, level)
 		if level == initial:
 			picker.select(picker.item_count - 1)
+
+func _on_online() -> void:
+	get_tree().change_scene_to_file(SacrificeFlow.LOBBY_SCENE)
 
 func _on_join() -> void:
 	SacrificeFlow.join_lan(ip.text)

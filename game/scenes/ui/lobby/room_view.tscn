@@ -1,0 +1,124 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/lobby/room_view.gd" id="1_room"]
+[ext_resource type="PackedScene" path="res://scenes/ui/lobby/seat_row.tscn" id="2_seat"]
+[ext_resource type="PackedScene" path="res://scenes/ui/lobby/chat_box.tscn" id="3_chat"]
+[ext_resource type="PackedScene" path="res://scenes/ui/character_select.tscn" id="4_select"]
+
+[node name="RoomView" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_room")
+seat_scene = ExtResource("2_seat")
+character_select_scene = ExtResource("4_select")
+
+[node name="Layout" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="Row" type="HBoxContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Left" type="VBoxContainer" parent="Layout/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="RoomTitle" type="Label" parent="Layout/Row/Left"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Sin conexión"
+
+[node name="RoomMeta" type="Label" parent="Layout/Row/Left"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="RoomPlayers" type="Label" parent="Layout/Row/Left"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="RoomState" type="Label" parent="Layout/Row/Left"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Seats" type="VBoxContainer" parent="Layout/Row/Left"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="RoomCountdown" type="Label" parent="Layout/Row/Left"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+
+[node name="RoomResult" type="Label" parent="Layout/Row/Left"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+autowrap_mode = 3
+
+[node name="Spacer" type="Control" parent="Layout/Row/Left"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Buttons" type="HBoxContainer" parent="Layout/Row/Left"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PickCharacter" type="Button" parent="Layout/Row/Left/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Elegir mago y dios"
+
+[node name="ReadyButton" type="Button" parent="Layout/Row/Left/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Estoy listo"
+
+[node name="LeaveRoom" type="Button" parent="Layout/Row/Left/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Salir de la sala"
+
+[node name="ChatBox" parent="Layout/Row" instance=ExtResource("3_chat")]
+layout_mode = 2
+
+[node name="PickOverlay" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.88)
+
+[node name="PickHolder" type="Control" parent="PickOverlay"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/lobby/seat_row.gd" id="1_seat"]
+
+[node name="SeatRow" type="HBoxContainer"]
+theme_override_constants/separation = 12
+script = ExtResource("1_seat")
+
+[node name="SeatName" type="Label" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(170, 0)
+layout_mode = 2
+text = "Asiento libre"
+
+[node name="SeatPick" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SeatReady" type="Label" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+
+[node name="Sit" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Sentarme aquí"

@@ -5,6 +5,8 @@ const _PREVIEW := preload("res://scenes/ui/wizard_preview.gd")
 signal confirmed
 
 @export var pick_button: PackedScene
+## RFC-034 034f: the confirm button says «Jugar» in the menu; the room screen says «Elegir».
+@export var confirm_text: String = "Jugar"
 
 @onready var _wizard_grid: GridContainer = %WizardGrid
 @onready var _god_row: HBoxContainer = %GodRow
@@ -26,6 +28,7 @@ func _ready() -> void:
 		_add_button(_wizard_grid, "Wizard_" + wizard.tag, wizard.display_name, _wizard_group, _on_wizard.bind(wizard.tag))
 	for god: String in GameData.gods():
 		_add_button(_god_row, "God_" + god, "Dios: %s" % god.capitalize(), _god_group, _on_god.bind(god))
+	%Play.text = confirm_text
 	%Play.pressed.connect(_on_play)
 	_on_wizard(_wizard_tag)
 	_on_god(_god)

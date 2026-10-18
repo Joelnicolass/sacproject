@@ -25,7 +25,7 @@ note = "Sac Doctor: el cuadro 0 del idle SDda (de pie, pies en y = 0) mide 2,62 
 [sub_resource type="Resource" id="Resource_aprc"]
 script = ExtResource("2_entry")
 model = "aprc"
-position_offset = Vector3(0, 0.40, 0)
+position_offset = Vector3(0, 0.4, 0)
 capsule_height = 6.71
 note = "Yeti (F112): el cuadro 0 de stance1 PCst deja la malla 0,40 m bajo el origen aunque el desplazamiento de raíz del SXSK ya sube la cadera; idle0 da lo mismo. Se sube 0,40 m (medido con tools/audit_body_pose.gd) y la cápsula mide el cuerpo entero. Causa probable: la malla respecto del desplazamiento de raíz, a revisar en RFC-023."
 
@@ -46,15 +46,15 @@ note = "Hellmouth (F112): el cuadro 0 de stance1 DMst deja la malla 1,68 m bajo 
 [sub_resource type="Resource" id="Resource_edmn"]
 script = ExtResource("2_entry")
 model = "edmn"
-position_offset = Vector3(0, 1.40, 0)
+position_offset = Vector3(0, 1.4, 0)
 capsule_height = 10.07
 note = "Rhinok (F112): el cuadro 0 de stance1 Eds1 deja la malla 1,40 m bajo el origen aunque el desplazamiento de raíz del SXSK ya sube la cadera; idle0 da lo mismo. Se sube 1,40 m (medido con tools/audit_body_pose.gd) y la cápsula mide el cuerpo entero. Causa probable: la malla respecto del desplazamiento de raíz, a revisar en RFC-023. F134: el reposo ahora juega Eds1 (stance1) entero en vez del gesto Edi1, que era lo que se veía flotar; con este alzado el mínimo de todos los cuadros es −0,30 m, dentro de C1. El alzado queda como desvío visual declarado hasta 030e2-R (REA). F135: cápsula 10,07 = p95 del tope de Eds1 (C2). No tiene clip fly: no hay cápsula de vuelo."
 
 [sub_resource type="Resource" id="Resource_fdrg"]
 script = ExtResource("2_entry")
 model = "fdrg"
-rest_hovers = true
 capsule_height = 15.21
+rest_hovers = true
 note = "Phoenix (F134): el reposo DFst (stance1) flota a propósito. Solo toca el suelo en el fondo del aleteo (−0,03 m) y en la mediana de los cuadros queda unos 2,35 m arriba. La auditoría juzga el mínimo del clip, no la mediana. Sin desplazamiento: el origen sigue en el suelo, como en sacengine. F135: cápsula 15,21 = p95 del tope de DFst (C2). Se usa el tope y no la altura de la masa (unos 9,7 m en el cuadro 0) porque la cápsula nace en el origen, en el suelo, y el cuerpo flota encima: con la masa, los 3 a 5 m de arriba quedarían afuera. En vuelo DFfl da p95 13,79, dentro de C3 con la de tierra: sin capsule_height_flying."
 
 [sub_resource type="Resource" id="Resource_adrg"]

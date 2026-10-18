@@ -6,7 +6,8 @@ extends Node
 ## The ticket has two seats. The host seat's token stays here (the host joins as a normal client with it); the other
 ## token is the rival's CODE, shown to the host to pass along with the address and the port. The dedicated only keeps
 ## the sha256 of both (`MpMatchAgent`), so a third player without the code is rejected, and a code opens one seat.
-## The rival does not choose his wizard: the host picks it for him (the ticket closes the picks, like in a room).
+## The rival chooses his own wizard and god: the ticket leaves seat 2 without a pick (`open_picks`), the rival sends it when he is
+## admitted, the dedicated checks it with the rules of the game (`SacrificeFlow`) and the world does not start until it has it.
 ## This node lives under `root` (it survives `change_scene`) and frees itself when the match ends or the host leaves.
 ## `--match-args=--flag=1,--other` adds user args to the dedicated (tests only, same hook as the room server).
 
@@ -19,8 +20,6 @@ const RIVAL_SLOT := 2
 const CODE_BYTES := 8
 const MATCH_ID_PREFIX := "local_"
 const LOOPBACK := "127.0.0.1"
-## The wizard of the rival when the host does not name one.
-const DEFAULT_RIVAL_WIZARD := "cwa1"
 
 @onready var launcher: MpMatchLauncher = %Launcher
 @onready var rules: SacrificeRoomRules = %Rules
@@ -58,11 +57,15 @@ func _ready() -> void:
 	set_process(false)
 
 
-## Launches the dedicated. `host_pick` / `rival_pick` = {wizard, god}; `transport` empty = the one of the config / flag.
+## Launches the dedicated. `host_pick` = {wizard, god}; `transport` empty = the one of the config / flag.
 ## `server_ready` comes when the dedicated listens. ERR_ALREADY_IN_USE if this node already hosts.
-func start(host_pick: Dictionary, rival_pick: Dictionary, transport: String = "", options: Dictionary = {}) -> Error:
+func start(host_pick: Dictionary, transport: String = "", options: Dictionary = {}) -> Error:
 	if hosting:
 		return ERR_ALREADY_IN_USE
+	## Not in the tree yet (added while its parent is busy, or never added): say so, do not break on Nil.
+	if not is_inside_tree() or launcher == null or launcher.config == null or rules == null:
+		push_error("LocalServerHost.start: el nodo no está en el árbol (agregalo a root y esperá un frame)")
+		return ERR_UNCONFIGURED
 	if not transport.is_empty():
 		launcher.config.transport = MpTransport.normalize(transport)
 	MpKit.transport = launcher.config.transport
@@ -71,8 +74,9 @@ func start(host_pick: Dictionary, rival_pick: Dictionary, transport: String = ""
 	match_id = "%s%s" % [MATCH_ID_PREFIX, _new_code().substr(0, 8)]
 	var ticket := rules.build_ticket([
 		{"slot": HOST_SLOT, "token": host_token, "meta": host_pick},
-		{"slot": RIVAL_SLOT, "token": rival_code, "meta": rival_pick},
+		{"slot": RIVAL_SLOT, "token": rival_code, "meta": {}},
 	], options)
+	ticket["open_picks"] = [RIVAL_SLOT]
 	var err := launcher.launch(match_id, ticket)
 	if err != OK:
 		return err

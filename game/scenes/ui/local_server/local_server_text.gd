@@ -4,8 +4,9 @@ extends RefCounted
 ## RFC-034 034m: every text of the «Servidor local» screens that is not a label of a scene. Pure functions: no node.
 
 const TITLE := "Servidor local"
-const RANDOM_GOD := "Dios del rival: Aleatorio"
-const GOD_PREFIX := "Dios del rival: %s"
+const PICK_BUTTON := "Elegir mago y dios"
+const PICK_CONFIRM := "Elegir"
+const PICK_CHOICE := "Jugás con %s · Dios: %s"
 const STARTING := "Preparando el servidor…"
 const INFO_ADDRESS := "Dirección local: %s"
 const INFO_NO_ADDRESS := "Dirección local: no encontré una (usá la de tu túnel o VPN)"
@@ -14,7 +15,7 @@ const INFO_TRANSPORT := "Transporte: %s"
 const INFO_CODE := "Código del rival: %s"
 const COPIED := "Copiado al portapapeles."
 const HELP_HOST := "Pasale a tu rival la dirección, el puerto, el transporte y el código. En la misma red alcanza con eso; desde Internet tenés que abrir el puerto o usar un túnel (guía: docs/servidor_local.md). Si cerrás el juego, se termina la partida."
-const HELP_JOIN := "Pedile al host su dirección, el puerto y el código. El host elige tu mago y tu dios. Elegí el mismo transporte que él."
+const HELP_JOIN := "Pedile al host su dirección, el puerto y el código. Elegí tu mago y tu dios antes de unirte, y elegí el mismo transporte que él."
 const CONNECTING := "Conectando con %s…"
 const WAITING_HOST := "Estás adentro. Esperando a que el host entre a la partida…"
 const BAD_ENDPOINT := "Escribí la dirección así: 192.168.1.5:7710"
@@ -30,6 +31,7 @@ const REJECTIONS := {
 	"rejected": "El código no es válido, o ya lo usa otro jugador.",
 	"slot_taken": "Ese asiento ya está ocupado.",
 	"timeout": "El servidor no respondió a tiempo.",
+	"bad_pick": "Ese mago o ese dios no es válido. Elegí de nuevo y volvé a unirte.",
 	"dropped": "No se pudo entrar. Revisá la dirección, el puerto y el transporte.",
 }
 const REJECTION_FALLBACK := "El servidor no te dejó entrar."

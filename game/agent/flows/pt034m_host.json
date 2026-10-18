@@ -20,6 +20,7 @@
   {"assert": {"node": "%HostCode", "text_contains": "Código"}},
   {"wait": 0.5},
   {"shot": "03_address_port_code.png"},
+  {"assert": {"node": "%HostHelp", "text_contains": "Pasale"}},
   {"wait": 6.0},
   {"click": "%EnterMatch"},
   {"wait_until": {"node": "%Stats", "text_contains": "Vida", "timeout": 120}},

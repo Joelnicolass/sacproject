@@ -1,7 +1,7 @@
 extends Control
 
 ## RFC-034 034m: create a «Servidor local». The host's pick comes from the menu (`SacrificeFlow.pick`); here he chooses
-## the god of the rival and the transport. «Crear» launches the dedicated on this PC (`LocalServerHost`); when it listens the
+## the transport (the rival chooses his own wizard and god when he joins). «Crear» launches the dedicated on this PC (`LocalServerHost`); when it listens the
 ## view shows the address, the port, the transport and the rival's code. «Entrar a la partida» joins it as a normal client.
 
 signal back_requested
@@ -11,7 +11,6 @@ signal back_requested
 
 var _server: LocalServerHost
 
-@onready var _rival_god: OptionButton = %RivalGod
 @onready var _transport: OptionButton = %HostTransport
 @onready var _status: Label = %HostStatus
 @onready var _info: Control = %HostInfo
@@ -19,7 +18,6 @@ var _server: LocalServerHost
 
 func _ready() -> void:
 	%HostHelp.text = LocalServerText.HELP_HOST
-	_fill_gods()
 	LocalServerText.fill_transports(_transport)
 	%CreateServer.pressed.connect(_on_create)
 	%EnterMatch.pressed.connect(_on_enter)
@@ -28,28 +26,10 @@ func _ready() -> void:
 	_show_form()
 
 
-func _fill_gods() -> void:
-	_rival_god.clear()
-	_rival_god.add_item(LocalServerText.RANDOM_GOD)
-	_rival_god.set_item_metadata(0, "")
-	for god in GameData.gods():
-		_rival_god.add_item(LocalServerText.GOD_PREFIX % god.capitalize())
-		_rival_god.set_item_metadata(_rival_god.item_count - 1, god)
-	_rival_god.select(0)
-
-
 func _show_form() -> void:
 	_info.visible = false
 	%HostForm.visible = true
 	_status.text = ""
-
-
-func _rival_pick() -> Dictionary:
-	var god: String = str(_rival_god.get_item_metadata(_rival_god.selected))
-	if god.is_empty():
-		var gods := GameData.gods()
-		god = str(gods[randi() % gods.size()])
-	return {"wizard": LocalServerHost.DEFAULT_RIVAL_WIZARD, "god": god}
 
 
 func _on_create() -> void:
@@ -63,7 +43,7 @@ func _on_create() -> void:
 	_server.server_closed.connect(_on_server_closed)
 	var host_pick := {"wizard": str(SacrificeFlow.pick.get("wizard", "")), "god": str(SacrificeFlow.pick.get("god", ""))}
 	var kind: String = str(_transport.get_item_metadata(_transport.selected))
-	var err := _server.start(host_pick, _rival_pick(), kind)
+	var err := _server.start(host_pick, kind)
 	if err != OK:
 		_server.queue_free()
 		_server = null

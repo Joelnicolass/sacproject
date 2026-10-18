@@ -218,10 +218,16 @@ func _arm_ticket_glue() -> void:
 	ticket_glue = glue
 	var metas := glue.seat_metas()
 	for slot in metas.keys():
+		## RFC-034 034m: a seat whose pick the ticket leaves open (Servidor local) sends it on admission.
+		if glue.is_pick_open(int(slot)):
+			continue
 		var chosen := sanitize_pick(metas[slot])
 		slot_picks[int(slot)] = chosen if not chosen.is_empty() else pick.duplicate()
 		print("partida %s: slot %d pick %s %s" % [glue.agent.match_id, int(slot), slot_picks[int(slot)]["model"], slot_picks[int(slot)]["god"]])
 	setup = _cli_setup.overlaid_by(glue.match_setup())
+	## The world waits for the open picks: the first admission does not start it (see `_accept_open_pick`).
+	if glue.picks_pending():
+		start_when = StartWhen.MANUAL
 
 
 func _on_slot_assigned(_slot: int) -> void:
@@ -244,6 +250,10 @@ func _store_pick(data: Dictionary, from_peer: int) -> void:
 		return
 	## The ticket closed the picks: the client that just got its slot only needs to hear them.
 	if ticket_glue != null:
+		var open_slot := MpKit.slot_for_peer(from_peer)
+		if ticket_glue.is_pick_open(open_slot):
+			_accept_open_pick(from_peer, open_slot, data)
+			return
 		_publish_picks()
 		return
 	var slot := MpKit.slot_for_peer(from_peer)
@@ -255,6 +265,22 @@ func _store_pick(data: Dictionary, from_peer: int) -> void:
 	slot_picks[slot] = chosen
 	print("slot %d pick %s %s" % [slot, chosen["model"], chosen["god"]])
 	_publish_picks()
+
+
+## RFC-034 034m: the pick of a seat the ticket left open, checked by the same rules as a room's. An invalid one is rejected (the
+## player is told `bad_pick` and may come back with the same credential and choose again). With every pick in, the world starts.
+func _accept_open_pick(from_peer: int, slot: int, data: Dictionary) -> void:
+	var chosen := sanitize_pick(data)
+	if chosen.is_empty():
+		print("partida %s: slot %d pick inválido, rechazado" % [ticket_glue.agent.match_id, slot])
+		MpKit.reject_peer(from_peer, "bad_pick")
+		return
+	slot_picks[slot] = chosen
+	ticket_glue.close_pick(slot)
+	print("partida %s: slot %d pick %s %s (elegido al entrar)" % [ticket_glue.agent.match_id, slot, chosen["model"], chosen["god"]])
+	_publish_picks()
+	if not ticket_glue.picks_pending():
+		start_match()
 
 
 func _on_peer_left(peer_id: int, slot: int) -> void:

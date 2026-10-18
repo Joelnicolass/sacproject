@@ -91,7 +91,7 @@ for _ in $(seq 1 240); do
 done
 
 if [ "$READY" = 1 ]; then
-  client rival; RIVAL=$LAST_PID
+  client rival --e2e-bad-first --e2e-wizard=cwa1 --e2e-god=pyro; RIVAL=$LAST_PID
   client intruder; INTRUDER=$LAST_PID
   wait "$HOST"; HOST_EXIT=$?
   wait "$RIVAL"; RIVAL_EXIT=$?
@@ -117,7 +117,7 @@ check() { # ok(0/1) what
 has() { grep -q "$2" "$OUT/$1.log" 2>/dev/null; echo $?; }
 check "$([ "$READY" = 1 ]; echo $?)" "the host launched the local dedicated and announced address, port and code"
 check "$(has host '^E2E LOCAL host PASS')" "the host passed all its checks (slot 1, result, the server closed itself)"
-check "$(has rival '^E2E LOCAL rival PASS')" "the rival joined with address:port and the code (slot 2) and got the result"
+check "$(has rival '^E2E LOCAL rival PASS')" "the rival: invalid pick rejected, then address:port + code + his own pick at slot 2, result with his pick at seat 2"
 check "$(has intruder '^E2E LOCAL intruder PASS')" "the third player was rejected: no credential, made-up code, the rival's code"
 check "$(has host '^servidor local resultado .*"reason":"result"')" "the local server reported the result of the match"
 check "$(grep -q 'SCRIPT ERROR' "$OUT/host.log" "$OUT/rival.log" "$OUT/intruder.log" 2>/dev/null; [ $? = 0 ] && echo 1 || echo 0)" "no SCRIPT ERROR in any log"

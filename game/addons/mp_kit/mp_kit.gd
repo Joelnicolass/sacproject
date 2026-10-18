@@ -342,6 +342,11 @@ func _on_admission_timeout(id: int) -> void:
 		_reject_peer(id, "timeout")
 
 
+## Server side: tells `id` why it is turned away and disconnects it (the glue judged something the kit cannot, e.g. an invalid pick).
+func reject_peer(id: int, reason: String) -> void:
+	_reject_peer(id, reason)
+
+
 func _reject_peer(id: int, reason: String) -> void:
 	_awaiting_ticket.erase(id)
 	if not is_server():

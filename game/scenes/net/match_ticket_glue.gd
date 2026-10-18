@@ -30,6 +30,9 @@ var _forced: bool = false
 var _holding: bool = false
 var _hold_started_ms: int = 0
 var _loaded_slots: Dictionary = {}
+## RFC-034 034m: slots whose pick the ticket leaves open (the seat chooses its own on admission). The world does not start
+## until every one is in; a seat that never sends a valid pick counts as away after `load_timeout_s`.
+var _open_picks: Dictionary = {}
 
 
 func _ready() -> void:
@@ -44,6 +47,8 @@ func _ready() -> void:
 		_seat_metas[slot] = row.get("meta", {})
 		_away_since_ms[slot] = int(agent.ticket.get("expires_ms", 0))
 	_seat_count = _seat_metas.size()
+	for slot in agent.ticket.get("open_picks", []):
+		_open_picks[int(slot)] = true
 	_setup = setup_from_ticket(agent.ticket)
 	_force_slot = int(MpBoot.user_value("force-defeat-slot", "0"))
 	_force_ticks = int(MpBoot.user_value("force-defeat-after-ticks", "0"))
@@ -62,6 +67,20 @@ func _ready() -> void:
 ## slot -> the `meta` (pick) the lobby validated for that seat. Raw: the flow sanitizes it again.
 func seat_metas() -> Dictionary:
 	return _seat_metas.duplicate(true)
+
+
+## True while the seat `slot` has not sent its (valid) pick.
+func is_pick_open(slot: int) -> bool:
+	return _open_picks.has(slot)
+
+
+## The pick of `slot` arrived and was valid.
+func close_pick(slot: int) -> void:
+	_open_picks.erase(slot)
+
+
+func picks_pending() -> bool:
+	return not _open_picks.is_empty()
 
 
 ## The options and the seed of the ticket.
@@ -93,6 +112,11 @@ func _process(_delta: float) -> void:
 			if not _loaded_slots.has(slot):
 				_away_since_ms[slot] = 0
 				print("partida %s: slot %d no cargó a tiempo, cuenta como abandono" % [agent.match_id, int(slot)])
+	if picks_pending() and _hold_started_ms > 0 and MpMatchFiles.now_ms() - _hold_started_ms > int(agent.config.load_timeout_s * 1000.0):
+		for slot in _open_picks.keys():
+			_away_since_ms[slot] = 0
+			print("partida %s: slot %d no mandó su pick a tiempo, cuenta como abandono" % [agent.match_id, int(slot)])
+		_open_picks.clear()
 	if _away_since_ms.is_empty():
 		return
 	_check_abandon()
@@ -193,6 +217,11 @@ func _check_abandon() -> void:
 
 func _report(data: Dictionary) -> void:
 	var out := data.duplicate(true)
+	## What each seat played with (JSON keys are strings): lets the clients and the tests see the picks the dedicated applied.
+	var played := {}
+	for slot in SacrificeFlow.slot_picks.keys():
+		played[str(slot)] = SacrificeFlow.slot_picks[slot]
+	out["picks"] = played
 	out["seed"] = MatchSeed.current
 	out["ticks"] = MatchClock.now()
 	print("partida %s: resultado %s" % [agent.match_id, JSON.stringify(out)])

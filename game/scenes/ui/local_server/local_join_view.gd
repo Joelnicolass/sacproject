@@ -8,7 +8,11 @@ signal back_requested
 ## Used when the text has no `:port`. Same number as `match_port_min` of data/net/lobby_config_local_server.tres.
 @export var default_port: int = 7710
 
+## The character selector of the menu, shown over this view while the rival chooses (the same scene the room screens use).
+@export var character_select_scene: PackedScene
+
 var _joining: bool = false
+var _character_select: Control
 
 @onready var _transport: OptionButton = %JoinTransport
 @onready var _status: Label = %JoinStatus
@@ -17,6 +21,8 @@ var _joining: bool = false
 func _ready() -> void:
 	%JoinHelp.text = LocalServerText.HELP_JOIN
 	LocalServerText.fill_transports(_transport)
+	%JoinPick.pressed.connect(_on_pick_pressed)
+	_show_choice()
 	%JoinServer.pressed.connect(_on_join)
 	%JoinAddress.text_submitted.connect(func(_text: String) -> void: _on_join())
 	%JoinCode.text_submitted.connect(func(_text: String) -> void: _on_join())
@@ -24,6 +30,29 @@ func _ready() -> void:
 	MpKit.admission_rejected.connect(_on_rejected)
 	MpKit.join_failed.connect(_on_join_failed)
 	MpKit.slot_assigned.connect(_on_slot_assigned)
+
+
+func _show_choice() -> void:
+	var wizard: WizardType = GameData.wizard(str(SacrificeFlow.pick.get("wizard", "")))
+	var wizard_name := wizard.display_name if wizard else str(SacrificeFlow.pick.get("model", ""))
+	%JoinChoice.text = LocalServerText.PICK_CHOICE % [wizard_name, str(SacrificeFlow.pick.get("god", "")).capitalize()]
+
+
+func _on_pick_pressed() -> void:
+	if _character_select == null:
+		_character_select = character_select_scene.instantiate() as Control
+		_character_select.set("confirm_text", LocalServerText.PICK_CONFIRM)
+		_character_select.connect("confirmed", _on_pick_confirmed)
+		%JoinPickHolder.add_child(_character_select)
+	%JoinPickOverlay.visible = true
+
+
+func _on_pick_confirmed() -> void:
+	%JoinPickOverlay.visible = false
+	if _character_select != null:
+		_character_select.queue_free()
+		_character_select = null
+	_show_choice()
 
 
 func _on_join() -> void:

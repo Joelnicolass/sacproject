@@ -87,7 +87,7 @@ PORT=$(echo "$LINE" | sed -n 's/.*puerto=\([0-9]*\).*/\1/p')
 CODE=$(echo "$LINE" | sed -n 's/.*codigo=\([0-9a-f]*\).*/\1/p')
 if [ -n "$PORT" ] && [ -n "$CODE" ]; then
   bash "$ROOT/agent/harness/godot_run.sh" "$GODOT" --headless --path "$ROOT" res://debug/net/local_server_e2e.tscn -- \
-    --no-flow --transport="$TRANSPORT" --e2e-role=rival --e2e-address="127.0.0.1:$PORT" --e2e-code="$CODE" --e2e-ready \
+    --no-flow --transport="$TRANSPORT" --e2e-role=rival --e2e-address="127.0.0.1:$PORT" --e2e-code="$CODE" --e2e-ready --e2e-wizard=cwa1 --e2e-god=pyro \
     --e2e-expect-winner=1 > "$OUT/rival.log" 2>&1 &
   RIVAL=$!
   wait "$WINDOW"; WINDOW_EXIT=$?
@@ -114,7 +114,7 @@ check "$(grep -q '^AGENT_OK' "$OUT/window.log" 2>/dev/null; echo $?)" "the flow 
 check "$(grep -q '^AGENT_FAIL\|^AGENT_STEP_ERROR' "$OUT/window.log" 2>/dev/null; [ $? = 0 ] && echo 1 || echo 0)" "the flow had no AGENT_FAIL / AGENT_STEP_ERROR"
 SHOT_COUNT=$(ls "$SHOTS"/*.png 2>/dev/null | wc -l | tr -d ' ')
 check "$([ "$SHOT_COUNT" -ge 6 ]; echo $?)" "6 captures in agent/out/pt034m/ (found $SHOT_COUNT)"
-check "$(grep -q '^E2E LOCAL rival PASS' "$OUT/rival.log" 2>/dev/null; echo $?)" "the headless rival joined with the code (slot 2) and got the result"
+check "$(grep -q '^E2E LOCAL rival PASS' "$OUT/rival.log" 2>/dev/null; echo $?)" "the headless rival joined with the code (slot 2) with his own pick and got the result"
 check "$(grep -q 'SCRIPT ERROR' "$OUT/window.log" "$OUT/rival.log" 2>/dev/null; [ $? = 0 ] && echo 1 || echo 0)" "no SCRIPT ERROR in any log"
 STRAY=$(ps -axo args= | awk -v m="match-ticket-file=$MATCHES" '$1 ~ /\/Godot$/ && index($0, m)' | wc -l | tr -d ' ')
 check "$([ "$STRAY" = 0 ]; echo $?)" "no dedicated process left ($STRAY)"

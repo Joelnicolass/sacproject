@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3]
 
 [ext_resource type="PackedScene" uid="uid://highnoonworld01" path="res://scenes/world/high_noon.tscn" id="1_world"]
-[ext_resource type="Script" path="res://scenes/world/state_tick_check.gd" id="2_check"]
-[ext_resource type="Resource" path="res://scenes/world/state_tick.tres" id="3_tick"]
+[ext_resource type="Script" path="res://debug/state_tick_check.gd" id="2_check"]
+[ext_resource type="Resource" path="res://debug/state_tick.tres" id="3_tick"]
 
 [node name="StateTick" type="Node"]
 

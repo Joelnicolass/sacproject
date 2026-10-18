@@ -19,8 +19,6 @@ extends Node3D
 ## Divergences (declared): buildings do not stop the ray (only creatures and wizards); the bolt does not keep its 64 frames of
 ## life (the look has its own): the node is freed after it strikes; the scar and the sound are not here.
 
-## Bench log (`ai_match` turns it on; off in the product).
-static var log_bolt := false
 
 const _ROCK := preload("res://scenes/world/spells/rock_projectile.gd")
 
@@ -170,7 +168,7 @@ func _name_of(body: Node) -> String:
 
 
 func _say(text: String) -> void:
-	if log_bolt:
+	if DebugLog.on(&"bolt"):
 		print(text)
 
 

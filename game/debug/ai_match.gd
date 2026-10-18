@@ -19,7 +19,6 @@ extends Node
 ## The three-clock bench is agent/run_determinism.sh (fixed, stress and window modes).
 
 const REPORT_TAG := "AI_REPORT "
-const MELEE_ATTACK := preload("res://scenes/world/units/melee_attack.gd")
 
 ## The world is put in the tree by code: its rules (and the seed) must exist before it enters.
 @export var world_scene: PackedScene
@@ -90,39 +89,13 @@ func _ready() -> void:
 	BodySeparation.use_grid = str(_args.get("sep", "grid")) != "brute"
 	BodySeparation.measure = true
 	BodySeparation.make_way = not _args.has("no-make-way")  # F177: debug switch to measure the port's make_way deviation (on in the product)
-	BodySeparation.log_push = _args.has("log-push")  # F177: attribution of the pushes of bodies in melee (off in the product)
+	if _args.has("log-push"):
+		DebugLog.enable(&"push")  # F177: attribution of the pushes of bodies in melee (off in the product)
 	add_child(_world)
 	var rain := _world.get_node_or_null("DropletRain")
 	if rain:
 		rain.set("log_hits", true)  # F148: bench logs the drops (off in the product)
-	GrowingWave.log_touches = true  # F149, F162: bench logs the Silverback's breath and the Spitfire's and Gargoyle's waves (off in the product)
-	ShotSplit.log_split = true  # F125: bench logs the Boulderdash's fan (off in the product)
-	ShotStrike.log_strikes = true  # F124: bench logs the rays and the Styx's blows (off in the product)
-	GroundHug.log_flight = true  # F151: bench logs the Rhinok's flight on the land (off in the product)
-	SpikeWave.log_spikes = true  # F151: bench logs the Rhinok's rings of spikes (off in the product)
-	ActiveAbility.log_ability = true  # R6 (030v-a): bench logs each use of an active ability (off in the product)
-	AbilityEffect.log_effects = true  # F126: bench logs the Protector (off in the product)
-	LifeShield.log_shields = true  # F126: bench logs the life shields (off in the product)
-	Firewalking.log_walk = true  # F152: bench logs the Warmonger's walk (off in the product)
-	HaloOfEarth.log_halo = true  # F127: bench logs the Rhinok's rocks (off in the product)
-	Clinging.log_cling = true  # F129: bench logs the Sticky bombs and what they slow (off in the product)
-	PaceFactors.log_pace = true  # F129: bench logs the factors of speed_factor (off in the product)
-	Pulling.log_pull = true  # F128: bench logs the pulls (off in the product)
-	BreathOfLife.log_breath = true  # F153: bench logs the Dragon's breath (off in the product)
-	LightningStrike.log_bolt = true  # F130: bench logs the Storm Giant's bolts (off in the product)
-	MiteHop.log_hop = true  # F156: bench logs the Bilemites hops (off in the product)
-	Oiled.log_oil = true  # F155: bench logs the Viscous oil (smearing, ignite, blast) (off in the product)
-	LightningCharge.log_charge = true  # F130: bench logs the Lightning Charge and the Giant's walk (off in the product)
-	MeleeOnHit.log_on_hit = true  # F158: bench logs the on-hit passives (off in the product)
-	MELEE_ATTACK.log_gap = true  # melee_gap_expect: bench logs each tick of a melee approach (off in the product)
-	MELEE_ATTACK.log_melee = true  # F130: bench logs each blow's numbers (off in the product)
-	FastRevive.log_revive = true  # F153: bench logs the fast revival (off in the product)
-	DevourGrowth.log_devour = true  # F131: bench logs what the Devour gives (off in the product)
-	Soul.log_souls = true  # F131: bench logs the souls eaten and the corpses they dissolve (off in the product)
-	QuakeWave.log_quake = true  # F132: bench logs the Jabberocky's Quake wave (off in the product)
-	LifeDrain.log_drain = true  # F164: bench logs each life drained from a blow or a direct shot (off in the product)
-	Vined.log_vines = true  # F159: bench logs the Dragon's Grasping Vines (off in the product)
-	FireShield.log_shield = true  # F163: bench logs the Phoenix shield burns (off in the product)
+	DebugLog.enable_bench()  # every bench log category but `push` (see DebugLog.BENCH); `--log=<cat>` adds more (off in the product)
 	_set_status(_rules.pending_text)
 	var wait := _rules.start_paused and not _headless and not _args.has("autostart")
 	if not wait:

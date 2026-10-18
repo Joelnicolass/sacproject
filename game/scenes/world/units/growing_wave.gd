@@ -20,15 +20,12 @@ extends ShotInFlight
 
 const _HEALTH := preload("res://scenes/world/components/health.gd")
 const _SPLASH := preload("res://scenes/world/spells/splash_damage.gd")
-const TICKS := float(MatchClock.TICKS_PER_SECOND)
+static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 
 ## sacengine final*ProjectileSize: the radius at the end of the range (m). Silverback and Spitfire 7,5, Gargoyle 6.
 @export var final_radius := 7.5
 ## A body in one of these groups takes the damage only (sacengine TargetType.building).
 @export var building_groups: Array[StringName] = [&"structure"]
-## Print the start of the wave and every body it touches. Off in the product; the bench (debug/ai_match.gd) turns it
-## on for every wave (agent/tools/f149_expect.py and f162_expect.py read it).
-static var log_touches := false
 
 ## The bodies already taken (damagedTargets): each one once in the whole flight.
 var _touched := {}
@@ -46,7 +43,7 @@ func _fly(shot: RangedShot, at: Vector3) -> void:
 	var amount := shot.damage
 	var from_slot := shot.from_slot
 	var radius := radius_at(ticks - 1, shot)
-	if ticks == 1 and log_touches:
+	if ticks == 1 and DebugLog.on(&"touches"):
 		_log_start(shot, at)
 	var intended := _intended(shot)
 	var shooter := ShotImpact.shooter_of(shot)
@@ -123,7 +120,7 @@ func _log_start(shot: RangedShot, at: Vector3) -> void:
 
 
 func _log_touch(shot: RangedShot, body: Node3D, at: Vector3, distance: float, radius: float, what: String) -> void:
-	if not log_touches:
+	if not DebugLog.on(&"touches"):
 		return
 	print("onda %s toca %s tick %d en (%.3f, %.3f, %.3f) a %.3f m radio %.3f %s: %s" % [shot.name, str(body.name),
 		ticks, at.x, at.y, at.z, distance, radius, _box_text(body), what])
@@ -146,5 +143,5 @@ static func _box_text(body: Node3D) -> String:
 
 
 func _exit_tree() -> void:
-	if ticks > 0 and log_touches:
+	if ticks > 0 and DebugLog.on(&"touches"):
 		print("onda %s %d actualizaciones, %d tocados" % [get_parent().name, ticks, _touched.size()])

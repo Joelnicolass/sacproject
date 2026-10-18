@@ -7,7 +7,7 @@ extends RefCounted
 ## (or solo) calls it; the clients get the position. Without terrain data (a bare debug scene) the land is everywhere
 ## and the ground is where the body stands.
 
-const TICKS := float(MatchClock.TICKS_PER_SECOND)
+static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 
 
 ## sacengine push(velocity): one tick of `velocity` (m/s). True when the body moved.

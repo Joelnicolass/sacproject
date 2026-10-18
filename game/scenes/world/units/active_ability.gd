@@ -24,8 +24,6 @@ const NO_ABILITY := "Sin habilidad"
 ## sacengine manaEpsilon (abilityStatus).
 const MANA_EPSILON := 0.01
 
-## R6 (030v-a): the bench log of every use (mana spent, preparation, cut). `ai_match` turns it on; off in the product.
-static var log_ability := false
 
 @export_group("Active effects")
 ## F126: which tag has an AbilityEffect scene of its own; a tag that is not there is «No implementado».
@@ -131,7 +129,7 @@ func _start_cooldown(force: bool) -> void:
 
 
 func _log_spent(before: float) -> void:
-	if log_ability:
+	if DebugLog.on(&"ability"):
 		print("habilidad %s mana %d->%d enfriamiento %d ticks" % [ability.display_name, roundi(before), roundi(_mana_left()), maxi(0, _ready_at - MatchClock.now())])
 
 
@@ -156,7 +154,7 @@ func _begin_windup(target_pos: Vector3, target: Node3D) -> String:
 	_fire_at = MatchClock.now() + ticks
 	_fire_pos = target_pos
 	_fire_target = target
-	if log_ability:
+	if DebugLog.on(&"ability"):
 		print("usando habilidad %s %s %d ticks (tick %d)" % [ability.display_name, str(_body.name), ticks, MatchClock.now()])
 	if _effect.pays_upfront:
 		var before := _mana_left()
@@ -168,7 +166,7 @@ func _begin_windup(target_pos: Vector3, target: Node3D) -> String:
 ## The preparation was cut: nothing fires. A mana paid at the start (pays_upfront) stays spent; no cooldown.
 func _cut_windup() -> void:
 	_fire_at = -1
-	if log_ability:
+	if DebugLog.on(&"ability"):
 		print("preparación cortada %s %s (tick %d)" % [ability.display_name, str(_body.name), MatchClock.now()])
 
 
@@ -181,7 +179,7 @@ func _finish_windup() -> void:
 		## Paid at the start (act(), 13495-13510): no mana check here; fire(), then the cooldown if it was 0.
 		_effect.fire(_fire_pos, target)
 		_start_cooldown(false)
-		if log_ability:
+		if DebugLog.on(&"ability"):
 			print("habilidad %s enfriamiento %d ticks (tick %d)" % [ability.display_name, maxi(0, _ready_at - MatchClock.now()), MatchClock.now()])
 		if using.is_on():
 			(_body.get_node("Afflictions") as Afflictions).mark(using, false)
@@ -189,7 +187,7 @@ func _finish_windup() -> void:
 	var before := _mana_left()
 	if _cost() > before + MANA_EPSILON:
 		## sacengine loadOnTick asks mana >= cost at the load tick (12592-12605): short of it, nothing happens and nothing is spent.
-		if log_ability:
+		if DebugLog.on(&"ability"):
 			print("preparación sin maná %s %s (tick %d)" % [ability.display_name, str(_body.name), MatchClock.now()])
 		(_body.get_node("Afflictions") as Afflictions).mark(using, false)
 		return

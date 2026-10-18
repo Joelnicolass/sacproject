@@ -32,7 +32,7 @@ extends Node3D
 signal ended
 
 const GROUP := &"divine_sight_eye"
-const TICKS := float(MatchClock.TICKS_PER_SECOND)
+static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 
 ## sacengine divineSightFlyingHeight.
 @export var flying_height := 4.0
@@ -49,8 +49,6 @@ const TICKS := float(MatchClock.TICKS_PER_SECOND)
 @export var frames_v := 4
 @export var ticks_per_frame := 8
 
-## Bench log (the F165 probe turns it on; off in the product).
-static var log_eye := false
 
 var slot := 0
 var ability: AbilityType
@@ -98,7 +96,7 @@ func _ready() -> void:
 		return
 	_born = MatchClock.now()
 	_vision = get_tree().get_first_node_in_group(SideVision.GROUP) as SideVision
-	if log_eye:
+	if DebugLog.on(&"eye"):
 		print("ojo %s de %s nace en (%.3f, %.3f, %.3f) v (%.3f, %.3f, %.3f) lado %d (cuadro %d)" % [name, _shooter_name, position.x,
 			position.y, position.z, velocity.x, velocity.y, velocity.z, slot, _born])
 
@@ -120,7 +118,7 @@ func _physics_process(_delta: float) -> void:
 	for step_frame in range(_last_frame + 1, now + 1):
 		if not _step(step_frame):
 			set_physics_process(false)
-			if log_eye:
+			if DebugLog.on(&"eye"):
 				print("ojo %s termina (cuadro %d)" % [name, MatchClock.now()])
 			ended.emit()
 			queue_free()
@@ -149,7 +147,7 @@ func _step(at_frame: int) -> bool:
 		elif float(travel - 1) * ability.speed < TICKS * ability.cast_range:
 			velocity = Vector3.ZERO
 		target = _closest_foe()
-		if target and log_eye:
+		if target and DebugLog.on(&"eye"):
 			print("ojo %s fija %s en el cuadro %d (a %.3f m)" % [name, target.name, MatchClock.now(), BodyNudge.center(target).distance_to(position)])
 	elif target != null:
 		if _alive(target):
@@ -163,7 +161,7 @@ func _step(at_frame: int) -> bool:
 			if velocity.length() > TICKS * offset.length():
 				velocity = velocity.normalized() * offset.length() * TICKS
 		else:
-			if log_eye:
+			if DebugLog.on(&"eye"):
 				print("ojo %s suelta su blanco (cuadro %d)" % [name, MatchClock.now()])
 			target = null
 			lost = true

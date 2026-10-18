@@ -8,8 +8,8 @@ extends RefCounted
 ## on the order of the nodes; it only advances when the tree is not paused. Without HighNoon (debug scenes) now()
 ## hooks itself lazily on the first read.
 
-## Ticks per second of the simulation (physics/common/physics_ticks_per_second).
-const TICKS_PER_SECOND := 60  # = physics/common/physics_ticks_per_second (project default 60); change both together
+## Ticks per second of the simulation: the project's physics/common/physics_ticks_per_second (read once at class load).
+static var TICKS_PER_SECOND: int = Engine.physics_ticks_per_second
 
 static var _ticks := 0
 static var _tree: SceneTree

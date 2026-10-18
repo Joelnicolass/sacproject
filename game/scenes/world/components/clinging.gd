@@ -20,8 +20,6 @@ const KINDS: Array[StringName] = [STICKY, MITES]
 ## The PaceFactors source of each kind.
 const SOURCES := {STICKY: &"cling_sticky", MITES: &"cling_mites"}
 
-## Bench log (`ai_match` turns it on; off in the product). StickImpact logs through it too.
-static var log_cling := false
 
 ## The body they stick to (its box places the look, its name goes in the log). Empty = the parent.
 @export var body: Node3D
@@ -78,7 +76,7 @@ func stick(kind: StringName, ticks: int, factor: float) -> bool:
 	_factors[kind] = factor
 	_refresh()
 	set_physics_process(true)
-	if log_cling:
+	if DebugLog.on(&"cling"):
 		print("pegado %s %s n=%d factor ×%.4f hasta %d (tick %d)" % [_who(), kind, ends.size(), pow(factor, ends.size()), ends.max(), MatchClock.now()])
 	return true
 
@@ -98,7 +96,7 @@ func is_clinging() -> bool:
 func clear(reason := "fin") -> void:
 	if _ends.is_empty():
 		return
-	if log_cling:
+	if DebugLog.on(&"cling"):
 		print("suelto todo %s por %s (tick %d)" % [_who(), reason, MatchClock.now()])
 	_ends.clear()
 	_refresh()
@@ -117,14 +115,14 @@ func _physics_process(_delta: float) -> void:
 		if kept.size() == ends.size():
 			continue
 		changed = true
-		if log_cling:
+		if DebugLog.on(&"cling"):
 			print("suelto %s %s n=%d->%d (tick %d)" % [_who(), kind, ends.size(), kept.size(), now])
 		_ends[kind] = kept
 	if changed:
 		_refresh()
 	if _total() == 0:
 		set_physics_process(false)
-	elif log_cling and body != null:
+	elif DebugLog.on(&"cling") and body != null:
 		var at := body.global_position
 		var pace_now := float(body.get("speed_factor")) if "speed_factor" in body else 1.0
 		print("marcha %s ×%.4f (%.4f, %.4f, %.4f) (tick %d)" % [_who(), pace_now, at.x, at.y, at.z, now])

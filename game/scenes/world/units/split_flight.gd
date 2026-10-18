@@ -12,7 +12,7 @@ extends ShotInFlight
 ## Deviation (declared): the turn is around Vector3.UP, not the shooter's own up (a ground shooter stands upright); with
 ## the port's axes it may come out mirrored, and the fan is symmetric.
 
-const TICKS := float(MatchClock.TICKS_PER_SECOND)
+static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 
 ## sacengine θ = 3.5° (state.d:24740).
 @export var angle_deg := 3.5
@@ -20,9 +20,6 @@ const TICKS := float(MatchClock.TICKS_PER_SECOND)
 @export var before_target_m := 60.0
 ## The axis the side rocks turn around.
 @export var axis := Vector3.UP
-## Print the start, the split and the end of every rock. Off in the product; the bench (debug/ai_match.gd) turns it on
-## (agent/tools/f125_expect.py reads it).
-static var log_split := false
 
 ## distanceUntilSplit; < 0 once split (or with no aim in the packet).
 var _until := -1.0
@@ -49,7 +46,7 @@ func _begin(shot: RangedShot, at: Vector3) -> void:
 	_index = int(data.get("volley_index", 0))
 	var aim := float(data.get("aim_distance", -1.0))
 	_until = maxf(0.0, aim - before_target_m) if aim >= 0.0 else -1.0
-	if log_split:
+	if DebugLog.on(&"split"):
 		_log_start(shot, at, aim)
 
 
@@ -59,7 +56,7 @@ func _split(shot: RangedShot) -> void:
 	var before := shot.velocity
 	if _index != 0:
 		shot.velocity = before.rotated(axis.normalized(), float(_index) * deg_to_rad(angle_deg))
-	if log_split:
+	if DebugLog.on(&"split"):
 		var direction := shot.velocity.normalized()
 		print("abanico ±%s° a los %.3f m: %s índice %d tick %d ángulo %.4f° visto desde arriba dir (%.5f, %.5f, %.5f) (cuadro %d)" % [
 			_comma(angle_deg), _split_at(shot), shot.name, _index, ticks, _flat_angle_deg(before, shot.velocity),
@@ -114,7 +111,7 @@ func _log_start(shot: RangedShot, at: Vector3, aim: float) -> void:
 ## The rock's last tick: where it was when it burst (or reached its range), and the body its box touches there (the log
 ## only: RangedShot decides the hit).
 func _exit_tree() -> void:
-	if ticks == 0 or not log_split:
+	if ticks == 0 or not DebugLog.on(&"split"):
 		return
 	var size := 0.7
 	var shot := get_parent() as RangedShot

@@ -37,9 +37,6 @@ extends ShotInFlight
 ## With nobody in range: v = idle_speed · uniformDirection and v.y = idle_rise.
 @export var idle_speed := 5.0
 @export var idle_rise := 10.0
-## Print every touch of the ground and the end (the bench turns it on in debug/ai_match.gd; agent/tools/f156_expect.py reads it).
-## Off in the product.
-static var log_hop := false
 
 var _rng: RandomNumberGenerator
 var _shot_name := ""
@@ -58,7 +55,7 @@ func holds_height() -> bool:
 func spent() -> bool:
 	if _stopped_at < 0 or ticks - _stopped_at < rest_ticks:
 		return false
-	if log_hop and not _released:
+	if DebugLog.on(&"hop") and not _released:
 		print("acaro %s suelto (tick %d)" % [_shot_name, MatchClock.now()])
 	_released = true
 	return true
@@ -87,7 +84,7 @@ func _fly(shot: RangedShot, at: Vector3) -> void:
 		_stopped_at = ticks
 		_rest = here
 		shot.velocity = Vector3.ZERO
-		if log_hop:
+		if DebugLog.on(&"hop"):
 			print("salto %s n=%d en %s parado (tick %d)" % [_shot_name, _touches, _vec(here), MatchClock.now()])
 		return
 	var close := _closest(shot, here, terrain)
@@ -105,7 +102,7 @@ func _fly(shot: RangedShot, at: Vector3) -> void:
 		velocity = idle_speed * _uniform_direction()
 		velocity.y = idle_rise
 	shot.velocity = velocity
-	if log_hop:
+	if DebugLog.on(&"hop"):
 		print("salto %s n=%d en %s v %s hacia %s (tick %d)" % [_shot_name, _touches, _vec(here), _vec(velocity), aim, MatchClock.now()])
 
 

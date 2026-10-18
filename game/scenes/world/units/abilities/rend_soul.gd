@@ -38,7 +38,7 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 	if not _has_authority() or user == null or strike_scene == null:
 		return false
 	if not status(target_pos, target).is_empty():
-		if log_effects:
+		if DebugLog.on(&"effects"):
 			print("reventar %s sin blanco válido (tick %d)" % [who(user), MatchClock.now()])
 		return false
 	var soul := _soul_of(target)

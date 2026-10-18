@@ -36,7 +36,7 @@ func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 	## uniformDirection() is already normalized (state.d:29106-29110); the lift is added after, then normalized again (13123).
 	var direction := (Vector3(sx, sz, sy).normalized() + Vector3(0.0, sky_lift, 0.0)).normalized()
 	var origin := center + sky_distance * direction
-	if log_effects:
+	if DebugLog.on(&"effects"):
 		print("rayo gsba %s sorteo (%.4f, %.4f, %.4f) origen %s (tick %d)" % [
 			AbilityEffect.who(user), sx, sy, sz, "(%.4f, %.4f, %.4f)" % [origin.x, origin.y, origin.z], MatchClock.now()])
 	return LightningStrike.launch(bolt_scene, self, user, origin, user, center, float(spell.damage), ability.tag if ability else "gsba") != null

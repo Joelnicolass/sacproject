@@ -38,8 +38,6 @@ var tag := ""
 ## The RangedAttack that fired it (its shot_origin() for a strike that follows the shooter). Injected by launch().
 var source: RangedAttack
 
-## Print the rays, bursts and blows. Off in the product; the bench (debug/ai_match.gd) turns it on.
-static var log_strikes := false
 
 var _born_tick := 0
 var _done_tick := 0
@@ -111,7 +109,7 @@ func shooter_name() -> String:
 
 
 func _log(line: String) -> void:
-	if log_strikes:
+	if DebugLog.on(&"strikes"):
 		print(line)
 
 

@@ -2704,3 +2704,14 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
   - El generador corre como script suelto y avisa `Identifier not found: GameData`, porque no hay autoload. No afecta.
   - `tools/check_original_assets.sh` no excluye `terrain.glb` (desde 035c).
 - **Para el usuario en el editor:** mover un edificio o una planta en `high_noon_layout.tscn` y ver que en partida aparece en el lugar nuevo.
+
+### F197 — Limpieza sin cambio de comportamiento (RFC-036, corte 036b) — cerrado 2026-10-18
+
+- **`DebugLog`** (`scenes/world/components/debug_log.gd`) reemplaza los 30 `static var log_*` del código de juego. Se activa con `--log=a,b` o `--log=all`. `ai_match` llama a `DebugLog.enable_bench()`, con las mismas categorías que antes.
+- **Nodos de chequeo:** los nodos de chequeo de ticks y órdenes pasaron de `scenes/world/` a `debug/`. `walk_step` se queda donde está: lo usa `wizard_body.tscn`.
+- **Ticks:** `MatchClock.TICKS_PER_SECOND` sale de `Engine.physics_ticks_per_second`.
+- **Verificación:**
+  - Los dos `grep` (`static var log_` y las referencias viejas) dan vacío.
+  - `quick` PASS sin mover digests.
+  - Las 5 escenas movidas cargan sin errores.
+- **Pendiente:** los estáticos de comportamiento de `body_separation.gd` se van en 036f.

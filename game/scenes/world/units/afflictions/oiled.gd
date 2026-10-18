@@ -24,10 +24,8 @@ extends Affliction
 ## Divergence (declared): in sacengine two oiled bodies blast in the order of their Oil effects (creation order); here, in the order of
 ## the scene tree. A neighbour lit by a blast may blast on the same tick or on the next one.
 
-## Bench log (`ai_match` turns it on; off in the product).
-static var log_oil := false
 
-const TICKS := float(MatchClock.TICKS_PER_SECOND)
+static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 
 ## The creature's order queue (UnitOrders), cleared every tick the oil holds. Empty on a wizard (sacengine `!isWizard`).
 @export var orders: Node
@@ -108,7 +106,7 @@ func _physics_process(_delta: float) -> void:
 		return
 	if orders != null and is_instance_valid(orders):
 		orders.call("clear")
-	if log_oil:
+	if DebugLog.on(&"oil"):
 		_say("paso (%.3f, %.3f, %.3f)" % [body.global_position.x, body.global_position.y, body.global_position.z])
 	if not can_be_oiled():
 		_finish("no se puede untar")
@@ -148,6 +146,6 @@ func _finish(reason: String) -> void:
 
 
 func _say(text: String) -> void:
-	if log_oil:
+	if DebugLog.on(&"oil"):
 		var body := _body()
 		print("aceite %s %s (tick %d)" % [AbilityEffect.who(body), text, MatchClock.now()])

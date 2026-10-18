@@ -32,10 +32,8 @@ extends Affliction
 ##
 ## Server (or solo) only: the clients get the bit and the positions. The user's own velocity is 0 while it lasts (steer).
 
-## Bench log (`ai_match` turns it on; off in the product).
-static var log_pull := false
 
-const TICKS := float(MatchClock.TICKS_PER_SECOND)
+static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 ## sacengine Pull.numShootFrames: no check while the thread flies out.
 const SHOOT_FRAMES := 20
 ## sacengine updatePull: the extra pull (25462-25481) and the lift of every pull (25485).
@@ -92,7 +90,7 @@ func start(target: Node3D, effect: Pull, loop_ticks: int, pull_frame: int) -> bo
 	_afflictions().mark(self, true)
 	set_physics_process(true)
 	_throw_thread(body)
-	if log_pull:
+	if DebugLog.on(&"pull"):
 		print("tirón %s → %s inicio blanco a %.3f m (tick %d)" % [
 			AbilityEffect.who(body), AbilityEffect.who(target), body.global_position.distance_to(target.global_position), _fired])
 	return true
@@ -159,7 +157,7 @@ func _physics_process(_delta: float) -> void:
 			tumbling.catapult(velocity, int(body.get("owner_slot")) if "owner_slot" in body else 0)
 		_window = _effect.pull_ticks
 		action = "tirón"
-		if log_pull:
+		if DebugLog.on(&"pull"):
 			print("tirón %d %s → %s v (%.4f, %.4f, %.4f) hilo (%.4f, %.4f, %.4f) aturde %s (tick %d)" % [
 				_pulls, AbilityEffect.who(body), AbilityEffect.who(_target), velocity.x, velocity.y, velocity.z,
 				thread.x, thread.y, thread.z, "sí" if stunned else "no", now])
@@ -171,7 +169,7 @@ func _physics_process(_delta: float) -> void:
 			else:
 				BodyNudge.push(_target, velocity)
 			action = "ventana"
-	if log_pull and _pulls >= 1:
+	if DebugLog.on(&"pull") and _pulls >= 1:
 		print("paso %s → %s centro (%.3f, %.3f, %.3f) hilo y %.4f caja %.4f ventana %d accion %s (tick %d)" % [
 			AbilityEffect.who(body), AbilityEffect.who(_target), target_center.x, target_center.y, target_center.z,
 			thread.y, box, checked_window, action, now])
@@ -196,7 +194,7 @@ func _finish(reason: String, box := NAN, thread_y := 0.0) -> void:
 	if is_on():
 		_afflictions().mark(self, false)
 	set_physics_process(false)
-	if log_pull:
+	if DebugLog.on(&"pull"):
 		print("tirón fin %s → %s por %s tirones %d caja %.4f hilo y %.4f ventana %d bit %d centro (%.3f, %.3f, %.3f) (tick %d)" % [
 			AbilityEffect.who(body), AbilityEffect.who(target) if target != null and is_instance_valid(target) else "?", reason,
 			_pulls, box, thread_y, _window, 1 if is_on() else 0, center.x, center.y, center.z, MatchClock.now()])

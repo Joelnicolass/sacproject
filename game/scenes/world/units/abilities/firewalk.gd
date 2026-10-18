@@ -27,6 +27,6 @@ func fire(target_pos: Vector3, _target: Node3D) -> bool:
 		return false
 	var walker := Firewalking.of(user)
 	var done := walker != null and BodyNudge.on_land(user, target_pos) and walker.walk(target_pos)
-	if log_effects:
+	if DebugLog.on(&"effects"):
 		print("firewalk %s: %s (tick %d)" % [who(user), "camina" if done else "rechazado", MatchClock.now()])
 	return true

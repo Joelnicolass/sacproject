@@ -38,6 +38,6 @@ func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 		"vx": velocity.x, "vy": velocity.y, "vz": velocity.z,
 		"slot": int(user.get("owner_slot")), "tag": ability.tag, "shooter": who(user),
 	})
-	if log_effects:
+	if DebugLog.on(&"effects"):
 		print("ojo %s de %s (tick %d)" % [eye.name if eye else "?", who(user), MatchClock.now()])
 	return eye != null

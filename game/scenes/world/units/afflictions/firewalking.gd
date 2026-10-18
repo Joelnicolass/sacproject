@@ -15,8 +15,6 @@ extends Affliction
 ## Look: Tilt (the mesh) hidden while it lasts and a `fire` trail at the body (every peer, from the replicated bit; the
 ## position is replicated). Declared: the health bar stays visible and the capsule stays on the units' layer.
 
-## Bench log (`ai_match` turns it on; off in the product).
-static var log_walk := false
 
 ## sacengine Firewalk.numFrames.
 @export var frames := 60
@@ -61,7 +59,7 @@ func walk(end: Vector3) -> bool:
 	_running = true
 	_afflictions().mark(self, true)
 	set_physics_process(true)
-	if log_walk:
+	if DebugLog.on(&"walk"):
 		print("firewalk %s inicio de (%.3f, %.3f, %.3f) a (%.3f, %.3f, %.3f) d %.2f m (tick %d)" % [
 			str(body.name), _start.x, _start.y, _start.z, end.x, end.y, end.z, _start.distance_to(end), MatchClock.now()])
 	return true
@@ -103,9 +101,9 @@ func steer(_velocity: Vector3, _delta: float) -> Vector3:
 	body.global_position = at
 	if snap and jump > snap_step:
 		snap.announce()
-	if log_walk:
+	if DebugLog.on(&"walk"):
 		print("firewalk %s cuadro %d (%.3f, %.3f, %.3f) (tick %d)" % [str(body.name), _frame, at.x, at.y, at.z, MatchClock.now()])
-	if log_walk and _frame == frames / 2 and body.has_method("is_targetable"):
+	if DebugLog.on(&"walk") and _frame == frames / 2 and body.has_method("is_targetable"):
 		print("firewalk %s oculto: is_targetable %s is_obstacle %s (tick %d)" % [
 			str(body.name), body.call("is_targetable"), body.call("is_obstacle"), MatchClock.now()])
 	return Vector3.ZERO
@@ -123,7 +121,7 @@ func _physics_process(_delta: float) -> void:
 	if _simulates() and _running and _frame >= frames:
 		_running = false
 		_afflictions().mark(self, false)
-		if log_walk and body:
+		if DebugLog.on(&"walk") and body:
 			print("firewalk %s fin (tick %d)" % [str(body.name), MatchClock.now()])
 
 

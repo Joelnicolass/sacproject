@@ -9,7 +9,7 @@ extends AbilityEffect
 ## The pending tick is MatchClock's (fire tick + 1), processed in _physics_process (priority −1, before the bodies).
 ## The shield is each body's LifeShield; its time is the hsba SPEL's duration · 60.
 
-const TICKS_PER_SECOND := MatchClock.TICKS_PER_SECOND
+static var TICKS_PER_SECOND := MatchClock.TICKS_PER_SECOND
 
 ## The SPEL of the shield it gives (`tspl "absh"` of HSba = hsba, Life Shield).
 @export var shield_tag := "hsba"
@@ -71,9 +71,9 @@ func _shield_allies() -> void:
 			verdict = "sin escudo"
 			if shield:
 				verdict = "sí" if shield.start(ticks) else "ya tenía"
-		if log_effects and distance <= radius * log_radius_factor:
+		if DebugLog.on(&"effects") and distance <= radius * log_radius_factor:
 			seen.append([distance, "%s %.1f m %s" % [who(other), distance, verdict]])
-	if log_effects:
+	if DebugLog.on(&"effects"):
 		seen.sort_custom(func(a: Array, b: Array) -> bool: return a[0] < b[0])
 		var parts := PackedStringArray()
 		for entry in seen:

@@ -8,8 +8,6 @@ extends Node
 ## type's path. The Affliction owns the rule (cooldown, roll, protection); a new on-hit passive is a new .tres.
 ## Server (or solo) only: MeleeAttack only swings there.
 
-## Bench log (`ai_match` turns it on; off in the product): one line per passive fired.
-static var log_on_hit := false
 
 @export var melee: MeleeAttack
 @export var body: UnitBody
@@ -46,7 +44,7 @@ func _on_connected(target: Node3D, was_frozen: bool) -> void:
 		if affliction == null or spell == null:
 			continue
 		var took := affliction.inflict(spell, int(body.owner_slot))
-		if log_on_hit:
+		if DebugLog.on(&"on_hit"):
 			print("pasiva %s %s → %s %s (tick %d)" % [tag, body.name, target.name, "aplicada" if took else "sin efecto", MatchClock.now()])
 
 

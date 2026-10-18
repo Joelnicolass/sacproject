@@ -46,9 +46,6 @@ const _SPLASH := preload("res://scenes/world/spells/splash_damage.gd")
 ## How long a ring's spikes stand (s). sacengine: 2/3 s, but spawned all the time on the growing circle; here a ring is
 ## one event every 15 frames, so 0,4 s (24 frames) keeps one ring standing at a time and the ring reads from above.
 @export var spike_life_s := 0.4
-## Print the start, every ring and every body each ring weighs (by node name: unique, unlike display_name). Off in the product; the bench (debug/ai_match.gd)
-## turns it on (agent/tools/f151_expect.py reads it). SpikeImpact prints by the same switch.
-static var log_spikes := false
 
 ## What SpikeImpact hands over (before begin()).
 var amount := 0.0
@@ -68,7 +65,7 @@ var _last_frame := 0
 ## SpikeImpact, once it is in the tree where the shot burst: this tick is frame 0 (sacengine hitframe).
 func begin() -> void:
 	_born = MatchClock.now()
-	if log_spikes:
+	if DebugLog.on(&"spikes"):
 		_log_start()
 
 
@@ -83,7 +80,7 @@ func _physics_process(_delta: float) -> void:
 			_ring(i, damage_frames[i])
 	_last_frame = frame
 	if frame >= life_ticks:
-		if log_spikes:
+		if DebugLog.on(&"spikes"):
 			print("anillos %s fin +%d (cuadro %d)" % [label, frame, MatchClock.now()])
 		set_physics_process(false)
 		queue_free()
@@ -101,7 +98,7 @@ func ring_bounds(i: int) -> Vector2:
 func _ring(i: int, frame: int) -> void:
 	var bounds := ring_bounds(i)
 	var center := global_position
-	if log_spikes:
+	if DebugLog.on(&"spikes"):
 		print("anillo %d/%d %s +%d de %.2f a %.2f m (cuadro %d)" % [i + 1, damage_frames.size(), label, frame, bounds.x,
 			bounds.y, MatchClock.now()])
 	_bristle(i, bounds)
@@ -115,7 +112,7 @@ func _ring(i: int, frame: int) -> void:
 		if distance < bounds.x or distance > bounds.y:
 			continue
 		var why := _excluded(body, feet)
-		if log_spikes:
+		if DebugLog.on(&"spikes"):
 			print("  anillo %d %s a %.3f m: %s" % [i + 1, body.name, distance, why if not why.is_empty() else "daño"])
 		if why.is_empty():
 			_SPLASH.hurt(body, amount, from_slot, _HEALTH.SPLASH_RANGED, 0, get_node_or_null(attacker_path) if not attacker_path.is_empty() else null)

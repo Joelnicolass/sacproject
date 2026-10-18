@@ -13,10 +13,8 @@ extends Node
 ## Divergences (declared): the creature goes back to the ground by gravity (the original tumbles it down); it is not added to
 ## the selection again (newCreatureAddToSelection); the corpse stands up with Corpse.stand_up (0.9 s), not the revive clip.
 
-## Bench log (`ai_match` turns it on; off in the product).
-static var log_revive := false
 
-const TICKS := float(MatchClock.TICKS_PER_SECOND)
+static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 
 ## Ticks of the revival (creatureStats.reviveTime 5 s · 60 / 2 when fast).
 @export var revive_ticks := 150
@@ -102,5 +100,5 @@ func _health() -> float:
 
 
 func _say(text: String) -> void:
-	if log_revive:
+	if DebugLog.on(&"revive"):
 		print(text)

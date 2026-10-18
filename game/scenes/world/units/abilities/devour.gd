@@ -35,7 +35,7 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 	if not _has_authority():
 		return false
 	if not status(target_pos, target).is_empty():
-		if log_effects:
+		if DebugLog.on(&"effects"):
 			print("devorar %s sin blanco válido (tick %d)" % [who(user), MatchClock.now()])
 		return false
 	var soul := _soul_of(target)
@@ -48,7 +48,7 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 	if _HEAL.can_heal(user):
 		var heal: Node = _HEAL.on(user)
 		heal.call("add", _heal_amount())
-		heal.set("report_each", log_effects)
+		heal.set("report_each", DebugLog.on(&"effects"))
 	return true
 
 

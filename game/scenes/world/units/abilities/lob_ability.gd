@@ -73,7 +73,7 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 			"intended": str(target.get_path()) if _is_foe(target) else "",
 			"shooter": str(user.get_path()),
 		})
-		if log_effects:
+		if DebugLog.on(&"effects"):
 			print("lob %s %s tiro %d/%d %s v (%.4f, %.4f, %.4f) origen (%.4f, %.4f, %.4f) (tick %d)" % [
 				who(user), tag, index + 1, shots, shot.name if shot else "?", velocity.x, velocity.y, velocity.z,
 				origin.x, origin.y, origin.z, tick])

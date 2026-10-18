@@ -16,10 +16,6 @@ signal struck(target: Node3D, amount: float, hit_chance: float, roll: float)
 ## Freeze) fire here (state.d:14411-14438). `was_frozen`: the target was frozen before the blow took its health.
 signal connected(target: Node3D, was_frozen: bool)
 
-## Bench log (`ai_match` turns it on; off in the product): one line per blow with the numbers the replica needs (F130).
-static var log_melee := false
-## Bench log (`ai_match` turns it on; off in the product): one `melee_gap` line per tick the attacker closes in on a target in reach.
-static var log_gap := false
 
 ## sacengine `attack`: meleeHitboxFactor.
 @export var start_factor := 0.8
@@ -88,7 +84,7 @@ func close_in(target: Node3D, pace: float, delta: float) -> Vector3:
 	var goal := maxf(foe_reach + close_in_factor * forward_factor * reach, BodySeparation.rest_distance(_body, target))
 	var excess := to_foe.length() - goal
 	var walk := Vector3.ZERO if excess <= 0.0 or delta <= 0.0 else to_foe.normalized() * minf(pace, excess / delta)
-	if log_gap:
+	if DebugLog.on(&"gap"):
 		var radius := BodySeparation.half_size(_body)
 		var foe_radius := BodySeparation.half_size(target)
 		print("melee_gap %s->%s d=%.3f gap=%.3f vx=%.3f vz=%.3f tick=%d reach=%.3f foe_reach=%.3f radius=%.3f foe_radius=%.3f axis_gap=%.3f" % [
@@ -217,7 +213,7 @@ func _land() -> void:
 	## dealDamage scales melee by rockForm and the other shields too (state.d:8962-8969).
 	var factor := health.shield_factor() * _attack_factor()
 	var amount := float(result["amount"]) * factor
-	if log_melee:
+	if DebugLog.on(&"melee"):
 		print("golpe %s → %s precisión %.1f evasión %.1f facing %.6f pendiente %.6f p %.6f tirada %.6f fuerza %d escala %.4f resistencia %.4f factor %.4f cantidad %.4f (tick %d)" % [
 			_body.name, target.name, result["accuracy"], result["evasion"], result["facing"], result["pending"], result["chance"], result["roll"],
 			type.melee_strength, melee_resistance_scale, result["resistance"], factor, amount, MatchClock.now()])

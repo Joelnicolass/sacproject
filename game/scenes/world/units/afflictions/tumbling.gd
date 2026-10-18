@@ -17,7 +17,7 @@ extends Affliction
 ## Look: Tilt rolls while it flies (Tween), as Stunned does; the mesh clips tumble/falling/hitFloor are not exported.
 ## WORKAROUND: Tween on Tilt rotation:z in place of the tumble mesh clip (disk, same as RFC-030i-a).
 
-const TICKS := float(MatchClock.TICKS_PER_SECOND)
+static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 ## A body within this of the ground stands on it (the capsule rests a hair above the land).
 const REST_M := 0.02
 

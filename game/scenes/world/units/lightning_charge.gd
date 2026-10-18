@@ -25,10 +25,8 @@ extends Node
 ## Divergences (declared): the candidates go in the order of the groups (wizards, then units), not sacengine's proximity order; a
 ## body that dies loses its charge at once; the sparks are a reserve look.
 
-## Bench log (`ai_match` turns it on; off in the product). With it on a carrier of the passive also traces its walk, charged or not.
-static var log_charge := false
 
-const TICKS := float(MatchClock.TICKS_PER_SECOND)
+static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 ## The PaceFactors source of the charge.
 const PACE_SOURCE := &"lightning_charge"
 
@@ -207,7 +205,7 @@ func _refresh() -> void:
 ## The tick runs while charged, and with the bench log on (a carrier of the passive traces its walk: its type is set after
 ## _ready, so the check is per tick).
 func _wake() -> void:
-	set_physics_process(shown or frames > 0 or log_charge)
+	set_physics_process(shown or frames > 0 or DebugLog.on(&"charge"))
 
 
 func _carries() -> bool:
@@ -217,7 +215,7 @@ func _carries() -> bool:
 
 ## Bench only: `marcha body ×pace (x, y, z)` on every tick the carrier moved, for the replica to measure the step.
 func _trace_walk() -> void:
-	if not log_charge or body == null or not _carries():
+	if not DebugLog.on(&"charge") or body == null or not _carries():
 		return
 	var at := body.global_position
 	if at == _last_walk:
@@ -244,7 +242,7 @@ func _who() -> String:
 
 
 func _say(text: String) -> void:
-	if log_charge:
+	if DebugLog.on(&"charge"):
 		print(text)
 
 

@@ -42,8 +42,6 @@ static var wizard_passes_own := true
 ## parked on their slots (debug/crowd_cases.gd, crowd_150). On: the slide, the yield and the soft contact between
 ## walkers of MakeWay (see there). Both passes run as before on the resulting velocity. Off = the original rule.
 static var make_way := true
-## Bench log (`ai_match --log-push`; off in the product): one `sep_push` line per tick for a body in CHASE or ATTACK that was pushed (F177).
-static var log_push := false
 ## On: resolve() adds its time to sep_us (the bench reports it per tick as `sep_ms`).
 static var measure := false
 static var sep_us := 0
@@ -263,7 +261,7 @@ static func _separate(body: Node3D, at: Vector3, half: float, height: float, vel
 	# The walker still slides round it and asks it to make way (MakeWay); the overlap is undone sideways.
 	if make_way and push != Vector2.ZERO and body.is_in_group(&"unit") and not MakeWay.walks(body):
 		push = _without_carry(faces, pass_two[2], nodes)
-	if log_push and push != Vector2.ZERO and body.is_in_group(&"unit") and int(body.get("mode")) in [UnitBody.Mode.CHASE, UnitBody.Mode.ATTACK]:
+	if DebugLog.on(&"push") and push != Vector2.ZERO and body.is_in_group(&"unit") and int(body.get("mode")) in [UnitBody.Mode.CHASE, UnitBody.Mode.ATTACK]:
 		_print_push(body, at, wanted, kept, push, faces, pass_two[2], nodes)
 	push = _capped(push, delta)
 	velocity.x += push.x / delta

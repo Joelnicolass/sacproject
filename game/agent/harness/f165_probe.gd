@@ -68,9 +68,9 @@ func _physics_process(_delta: float) -> void:
 		return
 	if not _armed:
 		_armed = true
-		DivineSightEye.log_eye = true
-		AbilityEffect.log_effects = true
-		ActiveAbility.log_ability = true
+		DebugLog.enable(&"eye")
+		DebugLog.enable(&"effects")
+		DebugLog.enable(&"ability")
 	if not is_instance_valid(ranger) or not is_instance_valid(foe):
 		_find_bodies()
 		return

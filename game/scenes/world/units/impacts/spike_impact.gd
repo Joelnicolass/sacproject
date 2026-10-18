@@ -33,16 +33,16 @@ func _affect(shot: Node3D, target: Node3D, point: Vector3, ability: AbilityType)
 	if target != null and is_instance_valid(target) and _ROCK.is_live_body(target):
 		hurt = target
 		center = BodyNudge.center(target)
-		if SpikeWave.log_spikes:
+		if DebugLog.on(&"spikes"):
 			print("púas %s %s choca con %s en (%.3f, %.3f, %.3f) (cuadro %d)" % [tag, shot.name, target.name, point.x,
 				point.y, point.z, MatchClock.now()])
 	elif _range_spent(shot):
 		if intended != null and _ROCK.is_live_body(intended):
 			hurt = intended
-		if SpikeWave.log_spikes:
+		if DebugLog.on(&"spikes"):
 			print("púas %s %s agota el alcance en (%.3f, %.3f, %.3f), pedido %s (cuadro %d)" % [tag, shot.name, point.x,
 				point.y, point.z, str(intended.name) + " vivo" if hurt else "nadie", MatchClock.now()])
-	elif SpikeWave.log_spikes:
+	elif DebugLog.on(&"spikes"):
 		print("púas %s %s termina sin cuerpo antes del alcance en (%.3f, %.3f, %.3f) (cuadro %d)" % [tag, shot.name, point.x,
 			point.y, point.z, MatchClock.now()])
 	center.y = BodyNudge.ground_y(shot, center)

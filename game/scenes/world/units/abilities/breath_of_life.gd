@@ -13,10 +13,8 @@ extends Node3D
 ## Divergences (declared): the breath is a golden ball with the heal trail (the original's ray and particles are not ported);
 ## the breath does not turn the caster's head (animateBreathOfLifeHead); no sound.
 
-## Bench log (`ai_match` turns it on; off in the product).
-static var log_breath := false
 
-const TICKS := float(MatchClock.TICKS_PER_SECOND)
+static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 
 ## ShotLook tag of the breath (data/shots/breath_of_life.tres). `breath_of_life` is not a SpellTag.
 @export var look_tag := "breath_of_life"
@@ -125,7 +123,7 @@ func _finish() -> void:
 
 
 func _say(text: String) -> void:
-	if log_breath:
+	if DebugLog.on(&"breath"):
 		print(text)
 
 

@@ -25,9 +25,6 @@ extends ShotInFlight
 @export var spike_radius := 2.5
 ## sacengine placeSpike(…, 2.0) on the way.
 @export var spike_height := 2.0
-## Print every tick of the flight (where the shot is and the ground under it). Off in the product; the bench
-## (debug/ai_match.gd) turns it on (agent/tools/f151_expect.py reads it).
-static var log_flight := false
 
 
 func holds_height() -> bool:
@@ -38,7 +35,7 @@ func _fly(shot: RangedShot, at: Vector3) -> void:
 	var ground := shot.ground_height(at)
 	if ground > -INF:
 		shot.global_position.y = ground + lift
-	if log_flight:
+	if DebugLog.on(&"flight"):
 		var now := shot.global_position
 		print("pegado %s tick %d en (%.3f, %.3f, %.3f) suelo %s (cuadro %d)" % [shot.name, ticks, now.x, now.y, now.z,
 			"%.3f" % ground if ground > -INF else "ninguno", MatchClock.now()])

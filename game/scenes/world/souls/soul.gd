@@ -63,8 +63,6 @@ const SPRITE_LIFT := 1.25 * 1.6
 ## sacengine uses 20 with its own tonemap; under High Noon's ACES that clips the soul to white.
 @export var energy := 2.0
 
-## Bench log (`ai_match` turns it on; off in the product): a soul being eaten and the corpse it leaves.
-static var log_souls := false
 
 var corpse: Node3D
 var collector: Node3D
@@ -167,7 +165,7 @@ func begin_devour(by: Node3D) -> void:
 	attached = false
 	corpse = null
 	state = State.DEVOURING
-	if log_souls:
+	if DebugLog.on(&"souls"):
 		print("alma %s devorando (tick %d)" % [_who, MatchClock.now()])
 	sever()
 
@@ -182,7 +180,7 @@ func sever() -> void:
 	if body == null:
 		return
 	body.call("dissolve", dead)
-	if log_souls:
+	if DebugLog.on(&"souls"):
 		print("cadáver %s disuelto (tick %d)" % [dead.name, MatchClock.now()])
 
 
@@ -196,7 +194,7 @@ func burst() -> void:
 	corpse = null
 	sever()
 	number = 0
-	if log_souls:
+	if DebugLog.on(&"souls"):
 		print("alma %s reventada (tick %d)" % [_who, MatchClock.now()])
 	queue_free()
 
@@ -293,7 +291,7 @@ func _devour_step(delta: float) -> void:
 		global_position = global_position * factor + RangedAttack.origin_of(collector) * (1.0 - factor)
 	if scaling <= 0.0:
 		number = 0
-		if log_souls:
+		if DebugLog.on(&"souls"):
 			print("alma %s devorada (tick %d)" % [_who, MatchClock.now()])
 		queue_free()
 

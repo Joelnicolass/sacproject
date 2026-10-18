@@ -11,8 +11,6 @@ extends RefCounted
 ## what the guardians took, not from the building (Health.deflected_last tells the two apart).
 ## F164c: and the fire (Burning, a DamageOverTime with the attacker's path), each update, with what it took (dealFireDamage, 9421-9427).
 
-## Bench log (`ai_match` turns it on; off in the product): one line per feeding, with the numbers the replica needs.
-static var log_drain := false
 
 ## The groups a body must be in (one of them) to feed a drain: a mobile body, never a structure.
 const FEEDING_GROUPS: Array[StringName] = [&"unit", &"wizard"]
@@ -32,7 +30,7 @@ static func feed(attacker: Node, target: Node, taken: float) -> float:
 	var before := health.current
 	health.heal(taken * creature.drain)
 	var gained := health.current - before
-	if log_drain and gained > 0.0:
+	if DebugLog.on(&"drain") and gained > 0.0:
 		print("drena %s de %s %.4f (escala %.3f) -> vida %.4f ganada %.4f (tick %d)" % [attacker.name, target.name, taken, creature.drain, health.current, gained, MatchClock.now()])
 	return gained
 

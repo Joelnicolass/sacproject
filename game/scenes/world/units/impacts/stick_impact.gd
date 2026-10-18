@@ -36,7 +36,7 @@ func _affect(shot: Node3D, target: Node3D, point: Vector3, ability: AbilityType)
 
 
 func _log(text: String) -> void:
-	if Clinging.log_cling:
+	if DebugLog.on(&"cling"):
 		print("bomba %s %s (tick %d)" % [kind, text, MatchClock.now()])
 
 

@@ -12,10 +12,8 @@ extends Node
 ## creatures carry it and ignore it. Server (or solo) only. Divergences (declared): the particles are the reserve look (FxBus `fire`
 ## on the burned body every `fire_every_ticks`); the shield ticks only on a carrier (the node sleeps on the rest).
 
-## Bench log (`ai_match` turns it on; off in the product): one line per tick a body burns.
-static var log_shield := false
 
-const TICKS := float(MatchClock.TICKS_PER_SECOND)
+static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 const GROUPS: Array[StringName] = [&"unit", &"wizard"]
 
 ## The Phoenix. Empty = the parent.
@@ -106,7 +104,7 @@ func _burn(target: Node3D, per_tick: float, mine: Array) -> void:
 	_burn_ticks[key] = count + 1
 	if not fire_fx.is_empty() and fire_every_ticks > 0 and count % fire_every_ticks == 0:
 		FxBus.broadcast(fire_fx, target.global_position + Vector3.UP * fire_height_m)
-	if log_shield and taken > 0.0:
+	if DebugLog.on(&"shield") and taken > 0.0:
 		var box := BodySeparation.box_of(target)
 		var center: Vector3 = mine[0]
 		var at := target.global_position
@@ -116,7 +114,7 @@ func _burn(target: Node3D, per_tick: float, mine: Array) -> void:
 
 
 func _log_ally(target: Node3D) -> void:
-	if log_shield and not _allies_seen.has(target.get_instance_id()):
+	if DebugLog.on(&"shield") and not _allies_seen.has(target.get_instance_id()):
 		_allies_seen[target.get_instance_id()] = true
 		print("escudo %s toca %s aliado, no quema (tick %d)" % [body.name, target.name, MatchClock.now()])
 

@@ -34,7 +34,7 @@ func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 
 ## Every peer: the shell grows when the body enters ROCK_FORM and shrinks when it leaves.
 func show_rock_form(on: bool) -> void:
-	if AbilityEffect.log_effects:
+	if DebugLog.on(&"effects"):
 		print("rockform %s %s (tick %d)" % ["abierto" if on else "cerrado", AbilityEffect.who(user), MatchClock.now()])
 	if on and _shell == null:
 		_shell = MeshInstance3D.new()

@@ -14,7 +14,7 @@ extends Node3D
 ## Divergences (declared): it ends by its time or by death only (the other modes without canShield are not modelled);
 ## there is no shieldBlocked; the bubble is a placeholder.
 
-const TICKS := float(MatchClock.TICKS_PER_SECOND)
+static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 
 ## The body it shields: its box sizes the bubble; its name goes in the log.
 @export var body: Node3D
@@ -29,8 +29,6 @@ const TICKS := float(MatchClock.TICKS_PER_SECOND)
 ## The bubble's size over the body's box (per axis). sacengine renders scale·1.4·boxSize.
 @export var bubble_scale := 1.4
 
-## Bench log (`ai_match` turns it on; off in the product).
-static var log_shields := false
 
 ## Replicated by the unit's MultiplayerSynchronizer ("LifeShield:shown"). The server writes it; every peer draws it.
 @export var shown := false:
@@ -81,7 +79,7 @@ func start(ticks: int) -> bool:
 	_until = MatchClock.now() + ticks
 	shown = true
 	set_physics_process(true)
-	if log_shields:
+	if DebugLog.on(&"shields"):
 		print("escudo %s %d ticks (tick %d)" % [_who(), ticks, MatchClock.now()])
 	return true
 
@@ -109,7 +107,7 @@ func stop(reason := "fin") -> void:
 	_until = -1
 	shown = false
 	set_physics_process(false)
-	if log_shields:
+	if DebugLog.on(&"shields"):
 		print("escudo %s %s (tick %d)" % [_who(), reason, MatchClock.now()])
 
 

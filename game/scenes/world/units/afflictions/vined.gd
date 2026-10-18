@@ -17,8 +17,6 @@ extends Affliction
 ## presentation stream of their own (MatchSeed.seed_rng), so they never move the simulation's. Declared: the vines are not
 ## sacengine's `vine` meshes (no model), and one set serves every blow (a second blow only extends the time).
 
-## Bench log (`ai_match` turns it on; off in the product).
-static var log_vines := false
 
 
 ## Vine lifetime of a creature: creature_k / max health · the SPEL's duration (s); of a wizard: wizard_factor · duration.
@@ -79,7 +77,7 @@ func grasp(spell: SpellType) -> bool:
 	_ends.append(now + ticks)
 	owner_node.mark(self, true)
 	set_physics_process(true)
-	if log_vines:
+	if DebugLog.on(&"vines"):
 		print("enredado %s durante %d (n %d) (cuadro %d)" % [str(body.name), ticks, _ends.size(), now])
 	return true
 
@@ -108,7 +106,7 @@ func _physics_process(_delta: float) -> void:
 
 
 func _say_end() -> void:
-	if log_vines:
+	if DebugLog.on(&"vines"):
 		print("enredado fin %s (n %d) (cuadro %d)" % [str(_body().name), _ends.size(), MatchClock.now()])
 
 

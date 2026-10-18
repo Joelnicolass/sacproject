@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="StateTick" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://scenes/world/state_tick.gd" id="1_tick"]
+[ext_resource type="Script" path="res://debug/state_tick.gd" id="1_tick"]
 
 [resource]
 script = ExtResource("1_tick")

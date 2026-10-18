@@ -20,8 +20,6 @@ extends Node3D
 ## Deviations (declared): the land does not bend (sacengine Quake.displacement is a render effect); the look is
 ## quake_ring.tscn (a ring of earth, MIX) plus dirt; no sound.
 
-## Bench log (`ai_match` turns it on; off in the product; agent/tools/f132_expect.py reads it).
-static var log_quake := false
 
 ## sacengine Quake.waveRange (m) and waveDur (s).
 @export var wave_range := 50.0
@@ -74,7 +72,7 @@ static func launch(scene: PackedScene, from: Node, feet: Vector3, tag: String) -
 ## Once it is in the tree where it stands: this tick is frame 0 (the shot's).
 func begin() -> void:
 	_born = MatchClock.now()
-	if log_quake:
+	if DebugLog.on(&"quake"):
 		var at := global_position
 		print("onda %s en (%.3f, %.3f, %.3f) alcance %.1f m %.2f s aturde de %.1f a %.1f m banda %.3f m por %d (cuadro %d)" % [
 			label, at.x, at.y, at.z, wave_range, wave_s, stun_min, stun_max, band_meters(), cooldown_ticks, _born])
@@ -115,7 +113,7 @@ func _step(f: int) -> void:
 	var center := global_position
 	var reach := SacFloat.f32(loc + 0.1)
 	var half_band := band_meters()
-	if log_quake:
+	if DebugLog.on(&"quake"):
 		print("onda %s paso %d radio %.3f m (cuadro %d)" % [label, f, loc, MatchClock.now()])
 	for body in SplashDamage.bodies_within(get_tree(), center, reach, null, groups):
 		var feet := body.global_position
@@ -123,7 +121,7 @@ func _step(f: int) -> void:
 		var result := "fuera de la banda"
 		if stun_min < flat and absf(flat - loc) < half_band:
 			result = _stun(body)
-		if log_quake:
+		if DebugLog.on(&"quake"):
 			print("  onda %s %s a %.3f m en planta, caja %.3f m: %s (cuadro %d)" % [label, body.name, flat,
 				SplashDamage.box_distance(body, center), result, MatchClock.now()])
 
@@ -147,7 +145,7 @@ func _explode() -> void:
 
 
 func _end(frame: int) -> void:
-	if log_quake:
+	if DebugLog.on(&"quake"):
 		print("onda %s fin paso %d (cuadro %d)" % [label, frame, MatchClock.now()])
 	set_physics_process(false)
 	queue_free()

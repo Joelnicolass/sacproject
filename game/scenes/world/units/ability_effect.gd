@@ -24,8 +24,6 @@ extends Node
 ## Ticks one animation frame lasts (sacengine updates 60 times a second, the clips run at 30).
 const FRAME_TICKS := 2
 
-## Bench log (`ai_match` turns it on; off in the product).
-static var log_effects := false
 
 ## The body that has the ability and its SPEL. Set by setup() before the node enters the tree.
 var user: Node3D

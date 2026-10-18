@@ -18,6 +18,6 @@ func status(_target_pos: Vector3, _target: Node3D) -> String:
 func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 	if not _has_authority() or user == null or wave_scene == null:
 		return false
-	if log_effects:
+	if DebugLog.on(&"effects"):
 		print("sacudida %s (tick %d)" % [who(user), MatchClock.now()])
 	return QuakeWave.launch(wave_scene, user, user.global_position, ability.tag) != null

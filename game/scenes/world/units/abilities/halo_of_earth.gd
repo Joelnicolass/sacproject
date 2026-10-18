@@ -26,10 +26,8 @@ extends Node3D
 ## particles of its own (the look's FxBus types); a rock that blows up does not make the rock after it move twice in the
 ## same tick (the swap of 19311-19313); buildings without Health do not stop a rock.
 
-## Bench log (`ai_match` turns it on; off in the product).
-static var log_halo := false
 
-const TICKS := float(MatchClock.TICKS_PER_SECOND)
+static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 
 ## SPEL of the ability when HaloOfEarthAbility does not hand one over (a scene run alone).
 @export var spell_tag := "HRba"
@@ -395,7 +393,7 @@ func _log_start(center: Vector3) -> void:
 
 
 func _say(text: String) -> void:
-	if log_halo:
+	if DebugLog.on(&"halo"):
 		print(text)
 
 

@@ -56,11 +56,11 @@ func fire(_target_pos: Vector3, target: Node3D) -> bool:
 		return false
 	var pulling := Pulling.of(user)
 	if pulling == null or frames() <= 0 or not is_live(target):
-		if Pulling.log_pull:
+		if DebugLog.on(&"pull"):
 			print("tirón %s sin blanco válido (tick %d)" % [who(user), MatchClock.now()])
 		return false
 	var hit := first_body_on_path(target)
-	if hit != target and Pulling.log_pull:
+	if hit != target and DebugLog.on(&"pull"):
 		print("tirón %s: el rayo para en %s en vez de %s (tick %d)" % [who(user), who(hit), who(target), MatchClock.now()])
 	return pulling.start(hit, self, loop_ticks(), pull_frame())
 

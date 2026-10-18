@@ -35,7 +35,7 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 	if not _has_authority() or breath_scene == null:
 		return false
 	if not status(target_pos, target).is_empty():
-		if log_effects:
+		if DebugLog.on(&"effects"):
 			print("aliento %s sin blanco válido (tick %d)" % [who(user), MatchClock.now()])
 		return false
 	var spawner := get_tree().get_first_node_in_group(&"shot_spawner")

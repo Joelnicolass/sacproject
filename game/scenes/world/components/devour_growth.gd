@@ -12,8 +12,6 @@ extends Node
 ## from it. Declared: the bulk is a scale of the mesh, not sacengine's bone bulge (placeholder).
 ## Server (or solo) only for grow().
 
-## Bench log (`ai_match` turns it on; off in the product).
-static var log_devour := false
 
 ## The body that grows (its name goes in the log). Empty = the parent.
 @export var body: Node3D
@@ -93,7 +91,7 @@ func grow(souls: int, from := "") -> void:
 		_extra += _increment / regeneration_ticks
 		_resistance *= resistance_step
 		shown += 1
-	if log_devour:
+	if DebugLog.on(&"devour"):
 		print("devora %s alma %s n %d vida %d->%d máx %d->%d incremento %.3f regeneración +%.3f/s resistencia %.4f (tick %d)" % [
 			AbilityEffect.who(body), from, souls, roundi(life), roundi(health.current), roundi(most), roundi(health.maximum),
 			_increment, _extra, _resistance, MatchClock.now()])

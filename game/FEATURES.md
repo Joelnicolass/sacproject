@@ -3107,3 +3107,9 @@ Todos fallaban por aserciones viejas; ninguno por un bug del juego.
 - `det_selftest`: SELFTEST PASS.
 - `run_pt034f` (playtest de red con ventana): PT034F PASS.
 - **RC del kit:** queda en commits locales, `rc/v0.10.0` (`ecb66dd`) y `rc/v0.10.0-spanish` (`0fa7a1d`). El push y el merge los decide el usuario. Antes hay que subir AgentKit con el módulo de determinismo a `godot-studio-playtest` `rc/v0.10.0`.
+
+**RC publicado (2026-10-18, con OK del usuario):**
+- `godot-studio-playtest`, rama `rc/v0.10.0` (`7aadf9e`): AgentKit con el módulo de determinismo.
+- `godot-studio-skills`, ramas `rc/v0.10.0` (`ecb66dd`) y `rc/v0.10.0-spanish` (`0fa7a1d`).
+- Para instalar el RC con su AgentKit: `GODOT_STUDIO_PLAYTEST_REF=rc/v0.10.0 ./install.sh`.
+- El merge a `main` y a `release/spanish` lo decide el usuario.

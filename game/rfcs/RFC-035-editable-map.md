@@ -1,6 +1,6 @@
 # RFC-035 — Mapa editable en el editor
 
-Estado: plan del tech lead (Opus), pendiente de OK. Arquitectura **estándar**. MP **online con dedicado**: no hay RPCs nuevos. La red sigue con `MultiplayerSynchronizer` y la física con `CharacterBody3D`/`move_and_slide`.
+Estado: **cerrado 2026-10-18** (035a–035j, F192–F204). Arquitectura **estándar**. MP **online con dedicado**: no hay RPCs nuevos. La red sigue con `MultiplayerSynchronizer` y la física con `CharacterBody3D`/`move_and_slide`.
 - **Pedido del usuario (2026-10-18):** «NO veo el mapa en Godot desde el editor (imagino que desde que sacamos la caché). ¿Es posible que en lugar de construir el mapa de una forma tan compleja simplemente sea un glb? ¿Nos impide algo manejarlo así? La intención es que todo el port pueda ser fácilmente modificable; es prioridad que desde el editor se pueda cambiar prácticamente todo.»
 - **Decisión del usuario (2026-10-18, vía orquestador): todo pasa a Godot y se edita en el editor.**
   - El terreno es un `.glb` y la colisión sale de su malla.

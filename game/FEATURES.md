@@ -2907,3 +2907,16 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
   - `edge_pushed_stays` y `edge_thrown_falls` PASS (en `nav_cases`, con un caso de control sin recorte que sí cae).
   - `crowd_tipi` y `crowd_rock` PASS.
   - `quick` PASS sin mover digests.
+
+### F210 — Partículas con textura en el `.tres` y piezas de UI como escenas (RFC-036, corte 036i) — cerrado 2026-10-18
+
+- **Partículas:** `ParticleType.atlas` es un `Texture2D`, en lugar de una clave de `fx.json`. `tools/migrate_particle_atlas.py` migró 45 `.tres`. En partida ya no se lee `fx.json`.
+- **UI:** `SelectionRoster` y `SpellBook` instancian `frame_piece.tscn` y `roster_plate.tscn`, con el StyleBox guardado en la escena, en lugar de armarlos por código.
+- **Verificación:**
+  - `rules_suite` PASS.
+  - `quick` PASS sin regrabar.
+  - El HUD (`f210_roster`) recortado al panel da 0,0003 y 0,0016.
+  - `f23_fx_gallery` antes/después da 0,5, 2,9 y 4,3. Entre dos corridas iguales da 0,7 a 1,0, por la aleatoriedad de las partículas. Al ojo, las capturas lado a lado son iguales.
+- **Deuda:**
+  - El flow `f24_cast` se trabó después de la segunda captura. No se investigó: puede ser que el flow esté desactualizado o un problema real.
+  - `f79_roster` falla también sin cambios, porque espera `ImageTexture`.

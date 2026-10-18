@@ -2,8 +2,8 @@
 class_name ParticleType
 extends Resource
 
-## Key in res://assets/original/fx/fx.json (the atlas is the `png` of that entry).
-@export var atlas_key: String = ""
+## Atlas sheet (h_frames x v_frames cells). Imported with mipmaps: particles shrink far away.
+@export var atlas: Texture2D
 @export var h_frames: int = 4
 @export var v_frames: int = 4
 ## Quad width and height in meters.

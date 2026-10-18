@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="ParticleType" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="ParticleType" load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
+[ext_resource type="Texture2D" uid="uid://bmg3vdsq7rluc" path="res://assets/original/fx/shrd.png" id="atlas_png"]
 
 [sub_resource type="Gradient" id="Gradient_ice"]
 offsets = PackedFloat32Array(0, 1)
@@ -11,7 +12,7 @@ gradient = SubResource("Gradient_ice")
 
 [resource]
 script = ExtResource("1_type")
-atlas_key = "shard"
+atlas = ExtResource("atlas_png")
 h_frames = 4
 v_frames = 4
 size = Vector2(1.0, 1.0)

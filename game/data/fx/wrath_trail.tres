@@ -1,10 +1,11 @@
-[gd_resource type="Resource" script_class="ParticleType" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="ParticleType" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
+[ext_resource type="Texture2D" uid="uid://sbrraa57kkou" path="res://assets/original/fx/flao.png" id="atlas_png"]
 
 [resource]
 script = ExtResource("1_type")
-atlas_key = "wrath_cast"
+atlas = ExtResource("atlas_png")
 h_frames = 3
 v_frames = 3
 size = Vector2(1.0, 1.0)

@@ -24,11 +24,13 @@ const FRAME_X := -34.0
 ## 128 units are the upper ones flipped (the art is symmetric top to bottom, six holes in all).
 const HALF_REGION := Rect2(0.0, 0.0, 63.5, 128.0)
 const HALF_WIDTH := 69.0
-const FALLBACK_COLOR := Color(0.07, 0.06, 0.05, 0.85)
 
 ## Local selection (`%Selection`).
 @export var selection: Node
 @export var cell_scene: PackedScene
+## Frame piece (a TextureRect; texture, flips and rect are set here) and the dark plate drawn when the `fram` sheet is missing.
+@export var piece_scene: PackedScene
+@export var plate_scene: PackedScene
 ## Shared HUD size (the spell book, the armed icon and the cursor read the same one).
 @export var hud_scale: HudScale = preload("res://data/ui/hud_scale.tres")
 ## Control the roster must not overlap (the spell book under it). When the shared size would make
@@ -88,6 +90,10 @@ func _get_configuration_warnings() -> PackedStringArray:
 		warnings.append("selection is empty: assign the Selection node.")
 	if cell_scene == null:
 		warnings.append("cell_scene is empty: assign roster_cell.tscn.")
+	if piece_scene == null:
+		warnings.append("piece_scene is empty: assign frame_piece.tscn.")
+	if plate_scene == null:
+		warnings.append("plate_scene is empty: assign roster_plate.tscn.")
 	var scale_warning := HudScale.socket_warning(hud_scale)
 	if not scale_warning.is_empty():
 		warnings.append(scale_warning)
@@ -132,27 +138,15 @@ func _build_frame() -> void:
 		child.queue_free()
 	var half := HudIcons.region("fram", HALF_REGION)
 	if half == null:
-		var plate := Panel.new()
-		var style := StyleBoxFlat.new()
-		style.bg_color = FALLBACK_COLOR
-		style.set_corner_radius_all(14)
-		style.border_color = Color(0.6, 0.5, 0.2)
-		style.set_border_width_all(2)
-		plate.add_theme_stylebox_override("panel", style)
-		plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		plate.position = Vector2(-4.0, 20.0)
-		plate.size = Vector2(80.0, 216.0)
-		%Frame.add_child(plate)
+		%Frame.add_child(plate_scene.instantiate())
 		return
 	for side in 2:
 		for repeat in 2:
-			var piece := TextureRect.new()
+			var piece: TextureRect = piece_scene.instantiate()
 			piece.texture = half
-			piece.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 			piece.stretch_mode = TextureRect.STRETCH_SCALE
 			piece.flip_h = side == 0
 			piece.flip_v = repeat == 1
-			piece.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			piece.position = Vector2(FRAME_X + HALF_WIDTH * side, FRAME_SIZE.y * 0.5 * repeat)
 			piece.size = Vector2(HALF_WIDTH, FRAME_SIZE.y * 0.5)
 			%Frame.add_child(piece)

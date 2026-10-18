@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/spell_book.gd" id="1_book"]
 [ext_resource type="PackedScene" path="res://scenes/ui/spell_slot.tscn" id="2_slot"]
+[ext_resource type="PackedScene" path="res://scenes/ui/frame_piece.tscn" id="3_piece"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_tab"]
 
@@ -16,6 +17,7 @@ grow_vertical = 0
 mouse_filter = 2
 script = ExtResource("1_book")
 slot_scene = ExtResource("2_slot")
+piece_scene = ExtResource("3_piece")
 
 [node name="Frame" type="Control" parent="."]
 unique_name_in_owner = true

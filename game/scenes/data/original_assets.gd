@@ -18,7 +18,6 @@ const UI_ICONS_DIR := UI_DIR + "icons/"
 const UI_HUD_DIR := UI_DIR + "hud/"
 const UI_CURSORS_DIR := UI_DIR + "cursors/"
 const UI_XMENU_DIR := UI_DIR + "xmenu/"
-const FX_CATALOG := FX_DIR + "fx.json"
 ## High Noon, the only map so far (maps/high_noon/): ground, tile index, baked light and sides. Its buildings, plants and
 ## NPC spawns are nodes of scenes/world/map/high_noon_layout.tscn; the NTTS exports only feed tools/bake_map_layout.gd.
 const HIGH_NOON_TERRAIN := MAPS_DIR + "high_noon/terrain.res"
@@ -68,10 +67,6 @@ static func ui(family: String, name: String) -> String:
 
 static func fx(tag: String) -> String:
 	return FX_DIR + tag + ".png"
-
-
-static func fx_catalog() -> String:
-	return FX_CATALOG
 
 
 ## themes/<god>: the folder with a god's tileset, sky, sun and envi.tres.

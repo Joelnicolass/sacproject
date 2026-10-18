@@ -77,7 +77,7 @@ func _apply() -> void:
 		emitting = false
 		if not _warned:
 			_warned = true
-			push_warning("SpriteEmitter: atlas '%s' is not in assets/original/fx (run tools/import_ui.py)." % type.atlas_key)
+			push_warning("SpriteEmitter: ParticleType has no atlas texture (assign `atlas`; sheets come from tools/import_ui.py).")
 		return
 	local_coords = false
 	one_shot = type.rate_per_s <= 0.0

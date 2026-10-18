@@ -1,17 +1,12 @@
 extends SceneTree
 
-## Headless probe for the manafount VFX (RFC-019c): the catalog has `manafount` and `manalith` with
-## their PNG, and the fount swaps FreeFx / ManalithFx on occupy() / release() with the occupant's
+## Headless probe for the manafount VFX (RFC-019c): both emitters have an atlas texture, and the fount swaps FreeFx / ManalithFx on occupy() / release() with the occupant's
 ## tint. Run: Godot --headless --path game --script res://debug/fount_fx_probe.gd
 
 var _failed := false
 
 
 func _initialize() -> void:
-	for key in ["manafount", "manalith"]:
-		var entry := FxAtlas.catalog_entry(key)
-		var png: String = entry.get("png", "")
-		_check("fx.json '%s' con PNG" % key, not png.is_empty() and FileAccess.file_exists(ProjectSettings.globalize_path(png)))
 	var fount: Node3D = load("res://scenes/world/props/manafount.tscn").instantiate()
 	root.add_child(fount)
 	var occupant := Node3D.new()
@@ -22,6 +17,7 @@ func _initialize() -> void:
 	await process_frame
 	var free_fx: SpriteEmitter = fount.get_node("%FreeFx")
 	var column_fx: SpriteEmitter = fount.get_node("%ManalithFx")
+	_check("FreeFx y ManalithFx con atlas", free_fx.type.atlas != null and column_fx.type.atlas != null)
 	_check("libre: FreeFx on, ManalithFx off", free_fx.is_active() and not column_fx.is_active())
 	_check("occupy ok", fount.occupy(occupant.get_path()))
 	_check("ocupado: FreeFx off, ManalithFx on", not free_fx.is_active() and column_fx.is_active())

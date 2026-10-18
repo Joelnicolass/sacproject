@@ -26,6 +26,8 @@ const FRAME_CAP_REGION := Rect2(80.5, 32.5, 47.5, 15.5)
 const TAB_TEXT: PackedStringArray = ["Criaturas", "Hechizos", "Estructuras"]
 
 @export var slot_scene: PackedScene
+## Frame piece (a TextureRect; texture, rect and rotation are set here).
+@export var piece_scene: PackedScene
 ## Shared HUD size (the roster, the armed icon and the cursor read the same one).
 @export var hud_scale: HudScale = preload("res://data/ui/hud_scale.tres")
 @export var min_frame_segments := 10
@@ -160,19 +162,15 @@ func _build_frame(count: int) -> void:
 	var piece := HudIcons.region("fram", FRAME_SEGMENT_REGION)
 	if piece:
 		for i in segments:
-			var rect := TextureRect.new()
+			var rect: TextureRect = piece_scene.instantiate()
 			rect.texture = piece
-			rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			rect.position = Vector2(SEGMENT.x * i, size.y - PAGE - SEGMENT.y)
 			rect.size = SEGMENT
 			%Frame.add_child(rect)
 	var cap_texture := HudIcons.region("fram", FRAME_CAP_REGION)
 	if cap_texture:
-		var cap := TextureRect.new()
+		var cap: TextureRect = piece_scene.instantiate()
 		cap.texture = cap_texture
-		cap.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		cap.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		cap.size = CAP
 		cap.rotation = PI * 0.5
 		cap.position = Vector2(SEGMENT.x * segments + CAP.y, size.y - CAP.x)

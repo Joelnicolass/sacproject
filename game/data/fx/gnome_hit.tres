@@ -1,10 +1,11 @@
-[gd_resource type="Resource" script_class="ParticleType" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="ParticleType" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
+[ext_resource type="Texture2D" uid="uid://c4wxuidc854kh" path="res://assets/original/fx/gsqb_a.png" id="atlas_png"]
 
 [resource]
 script = ExtResource("1_type")
-atlas_key = "gnome_hit"
+atlas = ExtResource("atlas_png")
 size = Vector2(0.5, 0.5)
 energy = 1.0
 frame_s = 0.06667

@@ -1,10 +1,11 @@
-[gd_resource type="Resource" script_class="ParticleType" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="ParticleType" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
+[ext_resource type="Texture2D" uid="uid://cewne0hm4uhlh" path="res://assets/original/fx/stem.png" id="atlas_png"]
 
 [resource]
 script = ExtResource("1_type")
-atlas_key = "steam"
+atlas = ExtResource("atlas_png")
 size = Vector2(2.0, 2.0)
 energy = 0.25
 frame_s = 0.03333

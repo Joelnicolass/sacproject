@@ -18,7 +18,6 @@ extends Node3D
 enum State { NORMAL, EMERGING, COLLECTING, REVIVING, DEVOURING }
 enum SoulColor { BLUE, RED }
 
-const _SPRITES := preload("res://scenes/fx/sprite_particles.gd")
 ## SacSoul.getMesh(color, frame/2) with frame at 30 fps: 8 cells at 15 fps (sacobject.d:1174).
 const ANIM_FPS := 15.0
 const ANIM_FRAMES := 8
@@ -57,8 +56,8 @@ const SPRITE_LIFT := 1.25 * 1.6
 @export_flags_3d_physics var ground_mask := 1
 
 @export_group("Look")
-@export_file("*.json") var catalog_path := OriginalAssets.FX_CATALOG
-@export var atlas_key := "soul"
+## Soul sprite sheet (`spir`, 4x4 frames).
+@export var atlas: Texture2D
 @export var shader: Shader = preload("res://scenes/world/souls/soul.gdshader")
 ## sacengine uses 20 with its own tonemap; under High Noon's ACES that clips the soul to white.
 @export var energy := 2.0
@@ -360,7 +359,7 @@ func _rebuild_sprites() -> void:
 func _soul_material() -> ShaderMaterial:
 	if _material:
 		return _material
-	var texture := _SPRITES.atlas_texture(atlas_key, catalog_path)
+	var texture := atlas
 	if texture == null:
 		return null
 	_material = ShaderMaterial.new()

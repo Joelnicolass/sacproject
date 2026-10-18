@@ -4,7 +4,6 @@ extends CPUParticles3D
 ## One-shot burst of atlas sprites. Frees itself when the burst ends, unless FxBus pools it.
 
 @export var type: ParticleType
-@export_file("*.json") var catalog_path: String = OriginalAssets.FX_CATALOG
 ## Owned by FxBus's pool (RFC-029 029b): it waits hidden for `replay` and hides again when the burst
 ## ends (`finished`) instead of freeing itself. Off = one burst on entering the tree, then queue_free.
 @export var pooled := false
@@ -14,7 +13,7 @@ func _ready() -> void:
 	if DisplayServer.get_name() == "headless" or type == null or type.lifetime_s <= 0.0:
 		queue_free()
 		return
-	var material := _material_for(type, catalog_path)
+	var material := FxAtlas.material_for(type)
 	if material == null:
 		queue_free()
 		return
@@ -65,21 +64,5 @@ func _configure(material: ShaderMaterial) -> void:
 	anim_speed_min = cycles
 	anim_speed_max = cycles
 	anim_offset_max = 1.0 if type.random_start_frame else 0.0
-	mesh = _quad_for(type)
+	mesh = FxAtlas.quad_for(type)
 	material_override = material
-
-
-static func atlas_texture(atlas_key: String, path: String) -> Texture2D:
-	return FxAtlas.catalog_texture(atlas_key, path)
-
-
-static func catalog_entry(atlas_key: String, path: String) -> Dictionary:
-	return FxAtlas.catalog_entry(atlas_key, path)
-
-
-static func _material_for(particle: ParticleType, path: String) -> ShaderMaterial:
-	return FxAtlas.material_for(particle, path)
-
-
-static func _quad_for(particle: ParticleType) -> QuadMesh:
-	return FxAtlas.quad_for(particle)

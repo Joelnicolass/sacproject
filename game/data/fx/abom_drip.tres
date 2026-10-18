@@ -1,10 +1,11 @@
-[gd_resource type="Resource" script_class="ParticleType" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="ParticleType" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
+[ext_resource type="Texture2D" uid="uid://3b35ml61q0gs" path="res://assets/original/fx/blud.png" id="atlas_png"]
 
 [resource]
 script = ExtResource("1_type")
-atlas_key = "blood"
+atlas = ExtResource("atlas_png")
 h_frames = 4
 v_frames = 4
 size = Vector2(0.3, 0.3)

@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/souls/soul.gd" id="1_soul"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/spir.png" id="2_atlas"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_soul"]
 properties/0/path = NodePath(".:position")
@@ -34,6 +35,7 @@ height = 2.8
 
 [node name="Soul" type="Node3D"]
 script = ExtResource("1_soul")
+atlas = ExtResource("2_atlas")
 
 [node name="Target" type="StaticBody3D" parent="."]
 collision_layer = 4

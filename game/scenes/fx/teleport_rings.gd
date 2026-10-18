@@ -21,9 +21,8 @@ const ATLAS_FRAMES := 16
 const TICKS_PER_ATLAS_FRAME := 8.0
 
 @export var rules: MatchRules
-## Entry of fx.json with the atlas of the ring.
-@export var atlas_key := "teleport_ring"
-@export_file("*.json") var catalog_path: String = OriginalAssets.FX_CATALOG
+## Atlas of the ring (`brng`, 4x4 frames).
+@export var atlas: Texture2D
 @export var rings: MultiMeshInstance3D
 
 var _going_out := true
@@ -69,7 +68,7 @@ func start(going_out: bool, feet: Vector3, width: float, height: float) -> void:
 	_spawn_z.resize(_steps)
 	for f in _steps:
 		_spawn_z[f] = ring_height(going_out, f, _steps) * height
-	var texture := SpriteParticles.atlas_texture(atlas_key, catalog_path)
+	var texture := atlas
 	if rings == null or texture == null:
 		queue_free()
 		return

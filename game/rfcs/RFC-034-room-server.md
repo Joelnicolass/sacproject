@@ -542,3 +542,6 @@ El usuario quiere la opción WebSocket porque después hará el port a web (un n
 
 ## Decisión del usuario (2026-10-18): 034g se prueba solo en local
 034g (reconexión y VPS) se verifica **localmente en la Mac**: reconexión dentro de la ventana parametrizable, abandono, salas + dedicados en 127.0.0.1, export de Linux y unidad de systemd **escritos y revisados**, pero sin desplegar. El usuario sube el build a su VPS (Vultr) y hace esa prueba él; el corte deja la guía y la checklist para eso. El criterio de 034h no incluye pruebas en el VPS.
+
+## Decisión del usuario (2026-10-18): en «Servidor local» cada jugador elige su personaje
+En una partida real cada jugador elige quién es. En «Servidor local» el rival elige su mago y su dios; su pick viaja al admitirlo con su código, el dedicado lo valida con las reglas del juego y lo aplica antes de cargar el mundo (la espera de carga espera también los picks).

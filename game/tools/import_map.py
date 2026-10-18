@@ -28,6 +28,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from import_themes import IMAGE_TEMPLATE  # noqa: E402
+from import_ui import IMPORT_TEMPLATE  # noqa: E402
 from sac_formats import png, terrain  # noqa: E402
 from sac_formats.install import MAPS  # noqa: E402
 from sac_formats.ntts import ntts_json, widgets_json  # noqa: E402
@@ -51,7 +52,7 @@ def files() -> dict:
         light[i * 3: i * 3 + 3] = lmap[i * 4: i * 4 + 3]
     return {
         "tiles.png": (png.encode(256, 256, bytes(tiles), 3, 9), "image"),
-        "light.png": (png.encode(256, 256, bytes(light), 3, 9), "image"),
+        "light.png": (png.encode(256, 256, bytes(light), 3, 9), "lossless"),
         "ntts.json": (ntts_json(SCP).encode(), None),
         "widgets.json": (widgets_json(SCP).encode(), None),
     }
@@ -73,6 +74,11 @@ def main() -> None:
             imp = path.with_name(path.name + ".import")
             if not imp.exists() and not check:
                 imp.write_text(IMAGE_TEMPLATE.format(rel=path.relative_to(OUT.parents[1]).as_posix()))
+        elif kind == "lossless":
+            imp = path.with_name(path.name + ".import")
+            if not imp.exists() and not check:
+                rel = path.relative_to(OUT.parents[1]).as_posix()
+                imp.write_text(IMPORT_TEMPLATE.format(rel=rel, mips="false").replace("compress_to=1", "compress_to=0"))
     if "--terrain-bin" in ARGS:
         Path(ARGS["--terrain-bin"]).write_bytes(terrain.hntr(SCP))
         print("terrain bin written to", ARGS["--terrain-bin"], "(next: import_terrain.gd -- --bin=...)")

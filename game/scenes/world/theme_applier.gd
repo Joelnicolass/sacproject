@@ -54,8 +54,8 @@ static func apply(theme: Resource, world_root: Node) -> Resource:
 		sun.light_color = _engine_color(resolved.sun_color)
 		sun.light_energy = resolved.sun_energy()
 	var terrain := world_root.get_node_or_null(TERRAIN_NODE)
-	if terrain and terrain.has_method("set_tileset_dir"):
-		terrain.set_tileset_dir(resolved.dir())
+	if terrain and terrain.has_method("set_classic_material") and resolved.ground_material:
+		terrain.call("set_classic_material", resolved.ground_material)
 	# Also with a null look (classic mode): a layer that was on puts the classic values back.
 	LookApplier.apply(resolved.look, world_root)
 	return resolved

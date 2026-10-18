@@ -11,7 +11,7 @@ Source: the god WADs (prsc, pyro_a, james_a, strato_a, char) and High Noon's .sc
 holds the tileset logic (LAND/MAPG, the remap of High Noon's tile ids onto every land) and the ENVI colours. Run it once; the
 result is versioned.
 
-Per god: atlas.png and edge.png (CPU images: TerrainMesh reads them as Image, exact, no mipmaps, no compression),
+Per god: atlas.png and edge.png (lossless textures: exact pixels, no mipmaps, no compression; ground_classic.tres uses them),
 skyt.png / skyb.png / sky.png (mipmapped textures: the sky sampled them with Image.generate_mipmaps()), sun.png and
 undr.png (textures without mipmaps; no consumer yet), and envi.tres (a GodEnvi: the ENVI colours, fog range and sun strength the game reads, in the order sacengine's
 renderer.d setupEnvironment gives them; the ENVI fields nobody reads stay in theme.json, not in the asset).
@@ -30,8 +30,8 @@ from sac_formats import txtr  # noqa: E402
 ROOT = Path(__file__).resolve().parents[1]
 ARGS = {a.split("=", 1)[0]: (a.split("=", 1)[1] if "=" in a else True) for a in sys.argv[1:]}
 OUT = Path(ARGS.get("--out", ROOT / "assets" / "original" / "themes"))
-# file -> "image" (CPU Image), "mips" (texture with mipmaps) or "plain" (texture without)
-KINDS = {"atlas": "image", "edge": "image", "skyt": "mips", "skyb": "mips", "sky": "mips", "sun": "plain", "undr": "plain"}
+# file -> "lossless" (texture, exact pixels, no mipmaps, never VRAM-compressed; RFC-035b), "mips" (texture with mipmaps) or "plain" (texture without)
+KINDS = {"atlas": "lossless", "edge": "lossless", "skyt": "mips", "skyb": "mips", "sky": "mips", "sun": "plain", "undr": "plain"}
 
 IMAGE_TEMPLATE = """[remap]
 
@@ -93,6 +93,9 @@ class Writer:
                 rel = path.relative_to(OUT.parent).as_posix()
                 if kind == "image":
                     imp.write_text(IMAGE_TEMPLATE.format(rel=rel))
+                elif kind == "lossless":
+                    text = IMPORT_TEMPLATE.format(rel=rel, mips="false")
+                    imp.write_text(text.replace("compress_to=1", "compress_to=0"))
                 else:
                     imp.write_text(IMPORT_TEMPLATE.format(rel=rel, mips="true" if kind == "mips" else "false"))
 

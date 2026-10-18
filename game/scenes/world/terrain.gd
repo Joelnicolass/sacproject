@@ -5,11 +5,8 @@ extends MeshInstance3D
 ## high_noon.tscn assigns it. A Terrain built from the script alone (a probe) assigns `data` itself; only the editor
 ## falls back to High Noon's (a half-built scene), with a warning. In a match, a missing `data` is an error, not a silent default.
 @export var data: MapTerrainData
-## Folder with atlas.png (16x16 MAPT grid) and edge.png: a god's themes/ folder. The light map is the map's own.
-@export_dir var tileset_dir: String = OriginalAssets.theme_dir("james")
 ## The map's tile index (256x256, tile id in R) and baked light. Imported as Image, read on the CPU.
 @export_file("*.png") var tiles_path: String = OriginalAssets.HIGH_NOON_TILES
-@export_file("*.png") var light_path: String = OriginalAssets.HIGH_NOON_LIGHT
 ## The map sits around x/z 930-1620, far from where the editor camera opens. In the editor only,
 ## the parent is shifted so the map shows at the origin. Children keep their real coordinates,
 ## and the shift is taken off while the scene is saved.
@@ -26,18 +23,6 @@ extends MeshInstance3D
 		smooth_ground = value
 		_refresh_normals()
 
-@export_group("Light map")
-## Light left on the ground where the map's baked light is black (pits, map border).
-@export_range(0.0, 2.0, 0.01) var light_base := 0.3:
-	set(value):
-		light_base = value
-		_apply_light_levels()
-## How much the baked light adds on top of light_base. Ground brightness = base + light * gain.
-@export_range(0.0, 4.0, 0.01) var light_gain := 0.55:
-	set(value):
-		light_gain = value
-		_apply_light_levels()
-
 const MISSING_TEXT := "Falta el terreno de High Noon."
 const CELL := 10.0
 const GRID := 256
@@ -52,29 +37,41 @@ var _cell_counts := PackedByteArray()
 var _mesh_arrays := []
 var _flat_normals := PackedVector3Array()
 var _smooth_normals := PackedVector3Array()
-## The atlas x light map material, and the biome's PBR ground when a look layer gives one.
+## The classic ground (the `material_override` the scene stores: a god's ground_classic.tres), and the
+## biome's PBR ground when a look layer gives one.
 var _classic_material: ShaderMaterial
 var _ground_override: Material
+## Editor only: what the scene saves while code shows another ground (a biome preview or a look layer).
+var _stored_material: Material
+var _material_swapped := false
+
+const DEFAULT_GROUND := "res://assets/original/themes/james/ground_classic.tres"
 
 
-## The ground material is rebuilt from `data` on every load. Not stored: a saved scene must not carry the
-## original map's textures (RULES.md). The mesh is stored only as a reference to a file (the baked
-## terrain_mesh.res, RFC-035a); a mesh built in memory is rebuilt on load and never written into the scene.
+## The ground material is the scene's `material_override` (ground_classic.tres, editable in the inspector).
+## The mesh is stored only as a reference to a file (the baked terrain_mesh.res, RFC-035a); a mesh built in
+## memory is rebuilt on load and never written into the scene.
 func _validate_property(property: Dictionary) -> void:
-	if property.name == "material_override" or (property.name == "mesh" and not _mesh_is_file()):
+	if property.name == "mesh" and not _mesh_is_file():
 		property.usage &= ~PROPERTY_USAGE_STORAGE
 		property.usage |= PROPERTY_USAGE_READ_ONLY
 
 
+## A biome preview or a look layer swaps `material_override` at runtime: the saved scene keeps its own.
 func _mesh_is_file() -> bool:
 	return mesh != null and not mesh.resource_path.is_empty()
 
 
 func _notification(what: int) -> void:
+	# Keep preview-only state (offset, swapped material) out of the saved scene.
 	if what == NOTIFICATION_EDITOR_PRE_SAVE:
 		_set_preview_offset(Vector3.ZERO)
+		if _material_swapped:
+			material_override = _stored_material
 	elif what == NOTIFICATION_EDITOR_POST_SAVE:
 		_apply_preview_offset()
+		if _material_swapped:
+			material_override = _ground_override if _ground_override else _classic_material
 
 
 func _ready() -> void:
@@ -370,7 +367,7 @@ func classic_material() -> ShaderMaterial:
 ## The mesh, heights and collision do not change.
 func set_ground_override(material: Material) -> void:
 	_ground_override = material
-	material_override = _ground_override if _ground_override else _classic_material
+	_show(_ground_override if _ground_override else _classic_material)
 
 
 func clear_ground_override() -> void:
@@ -396,47 +393,41 @@ func _load_image(path: String) -> Image:
 	return load(path) as Image
 
 
-## atlas.png and edge.png of a god: imported as Image (exact pixels, no mipmaps, no compression).
-func _load_image_texture(path: String) -> ImageTexture:
-	if not ResourceLoader.exists(path):
-		return null
-	var image := _load_image(path)
-	return ImageTexture.create_from_image(image) if image else null
+## A biome's classic ground (`GodTheme.ground_material`). In a match the terrain works on a copy: the grass
+## writes its paint into the classic material and the shared resource must stay as saved.
+func set_classic_material(material: ShaderMaterial) -> void:
+	_classic_material = _runtime_copy(material)
+	_show(_ground_override if _ground_override else _classic_material)
 
 
-func set_tileset_dir(dir: String) -> void:
-	tileset_dir = dir
-	if mesh:
-		_apply_ground_texture()
+func _runtime_copy(material: ShaderMaterial) -> ShaderMaterial:
+	if Engine.is_editor_hint() or material == null or material.resource_path.is_empty():
+		return material
+	return material.duplicate()
 
 
+## Shows `material`; in the editor remembers the scene's own so saving never writes a preview.
+func _show(material: Material) -> void:
+	if Engine.is_editor_hint() and not _material_swapped:
+		_stored_material = material_override
+	material_override = material
+	_material_swapped = Engine.is_editor_hint() and material != _stored_material
+
+
+## Takes the classic ground from the scene's `material_override`; a Terrain built from the script alone
+## (a probe) gets James's.
 func _apply_ground_texture() -> void:
-	var atlas := _load_image_texture(tileset_dir.path_join("atlas.png"))
-	var light := _load_image_texture(light_path)
-	if atlas == null:
+	var scene_material: ShaderMaterial = null if _material_swapped else (material_override as ShaderMaterial)
+	if Engine.is_editor_hint() and scene_material:
+		_classic_material = scene_material
+	elif _classic_material == null:
+		if scene_material == null and ResourceLoader.exists(DEFAULT_GROUND):
+			scene_material = load(DEFAULT_GROUND) as ShaderMaterial
+		_classic_material = _runtime_copy(scene_material)
+	if _classic_material == null:
 		return
-	var mat := ShaderMaterial.new()
-	mat.shader = load("res://scenes/world/sacrifice_ground.gdshader")
-	mat.set_shader_parameter("atlas", atlas)
-	var edge := _load_image_texture(tileset_dir.path_join("edge.png"))
-	if edge:
-		mat.set_shader_parameter("edge", edge)
-		mat.set_shader_parameter("has_edge", true)
-	if light:
-		mat.set_shader_parameter("lightmap", light)
-	_classic_material = mat
-	material_override = _ground_override if _ground_override else _classic_material
-	_apply_light_levels()
-
-
-## The material is rebuilt on load and is not editable, so the two levels live on the node.
-func _apply_light_levels() -> void:
-	var mat := _classic_material
-	if mat == null:
-		return
-	mat.set_shader_parameter("light_base", light_base)
-	mat.set_shader_parameter("light_gain", light_gain)
-
+	if not _material_swapped:
+		material_override = _ground_override if _ground_override else _classic_material
 
 func _add_collision() -> void:
 	if Engine.is_editor_hint():

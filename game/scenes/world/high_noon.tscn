@@ -11,49 +11,49 @@
 [ext_resource type="PackedScene" path="res://scenes/world/props/manafount.tscn" id="9_fount"]
 [ext_resource type="PackedScene" path="res://scenes/world/props/plant.tscn" id="10_plant"]
 [ext_resource type="Script" uid="uid://nxbcgsgrjk48" path="res://scenes/world/world_camera.gd" id="11_camera"]
-[ext_resource type="Resource" path="res://data/match_rules.tres" id="12_rules"]
+[ext_resource type="Resource" uid="uid://d1e2js08kea5i" path="res://data/match_rules.tres" id="12_rules"]
 [ext_resource type="Script" uid="uid://daosef86scnum" path="res://scenes/world/match_biome.gd" id="13_biome"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="14_hud"]
 [ext_resource type="PackedScene" path="res://scenes/ui/spell_book.tscn" id="15_book"]
 [ext_resource type="Script" uid="uid://c8mumq6up5ajy" path="res://scenes/world/spells/spell_spawner.gd" id="16_spawner"]
 [ext_resource type="Script" uid="uid://k8nbg7yvigvf" path="res://scenes/world/structures/structure_spawner.gd" id="17_structure_spawner"]
 [ext_resource type="PackedScene" path="res://scenes/world/structures/structure.tscn" id="18_structure"]
+[ext_resource type="Environment" path="res://data/look/env_base.tres" id="f22_env"]
+[ext_resource type="PackedScene" path="res://scenes/world/look/look_rig.tscn" id="f22_look"]
+[ext_resource type="Resource" path="res://data/look/ground/high_noon_tiles.tres" id="f22_tiles"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/unit.tscn" id="f25_unit"]
 [ext_resource type="Script" uid="uid://c3o4n6xmxkjph" path="res://scenes/world/units/unit_spawner.gd" id="f25_unit_spawner"]
 [ext_resource type="Script" uid="uid://dqkkafcm1xuke" path="res://scenes/world/orders.gd" id="f27_orders"]
-[ext_resource type="PackedScene" path="res://scenes/world/units/peasant.tscn" id="f73_peasant"]
-[ext_resource type="Script" path="res://scenes/world/map/map_population.gd" id="f73_population"]
-[ext_resource type="PackedScene" path="res://scenes/world/map/map_building.tscn" id="f73_building"]
-[ext_resource type="Script" path="res://scenes/world/nav/nav_service.gd" id="f72_nav"]
-[ext_resource type="Script" path="res://scenes/world/vision/side_vision.gd" id="f72_vision"]
 [ext_resource type="Script" uid="uid://0e71ph1e726s" path="res://scenes/world/selection.gd" id="f27_selection"]
-[ext_resource type="PackedScene" path="res://scenes/ui/selection_roster/selection_roster.tscn" id="f79_roster"]
 [ext_resource type="Script" uid="uid://dx4uvidfw53j2" path="res://scenes/world/units/shot_spawner.gd" id="f29_shots"]
 [ext_resource type="PackedScene" path="res://scenes/world/souls/soul_system.tscn" id="f30_souls"]
 [ext_resource type="PackedScene" path="res://scenes/world/sky.tscn" id="f40_sky"]
 [ext_resource type="PackedScene" path="res://scenes/world/match/match.tscn" id="f57_match"]
 [ext_resource type="PackedScene" path="res://scenes/ui/match_result.tscn" id="f57_result"]
-[ext_resource type="Script" path="res://scenes/world/command_log.gd" id="f80_log"]
-[ext_resource type="Resource" path="res://data/ui/command_cues.tres" id="f80_cues"]
-[ext_resource type="PackedScene" path="res://scenes/ui/command_cue/command_cue.tscn" id="f80_cue"]
-[ext_resource type="Script" path="res://scenes/ui/command_cue/cursor_skin.gd" id="f80_skin"]
-[ext_resource type="Script" path="res://scenes/ui/command_cue/target_probe.gd" id="f80_probe"]
-[ext_resource type="Script" path="res://scenes/world/structure_inspector.gd" id="f93_inspector"]
 [ext_resource type="PackedScene" path="res://scenes/world/sacrifice/sacrifice_system.tscn" id="f59_sacrifice"]
 [ext_resource type="PackedScene" path="res://scenes/ui/ritual_notice.tscn" id="f60_notice"]
-[ext_resource type="Environment" path="res://data/look/env_base.tres" id="f22_env"]
-[ext_resource type="Resource" path="res://data/look/quality_medium.tres" id="f22_medium"]
-[ext_resource type="PackedScene" path="res://scenes/world/look/look_rig.tscn" id="f22_look"]
-[ext_resource type="Resource" path="res://data/look/ground/high_noon_tiles.tres" id="f22_tiles"]
-[ext_resource type="Script" path="res://scenes/world/ai/ai_roster.gd" id="f77_roster"]
+[ext_resource type="Script" uid="uid://bdlkj5tbi1wvh" path="res://scenes/world/nav/nav_service.gd" id="f72_nav"]
+[ext_resource type="Script" uid="uid://t8pnos2jmli" path="res://scenes/world/vision/side_vision.gd" id="f72_vision"]
+[ext_resource type="PackedScene" path="res://scenes/world/map/map_building.tscn" id="f73_building"]
+[ext_resource type="PackedScene" path="res://scenes/world/units/peasant.tscn" id="f73_peasant"]
+[ext_resource type="Script" uid="uid://qtxfsr581l1s" path="res://scenes/world/map/map_population.gd" id="f73_population"]
+[ext_resource type="Script" uid="uid://uifgkgnynkf6" path="res://scenes/world/ai/ai_roster.gd" id="f77_roster"]
 [ext_resource type="PackedScene" path="res://scenes/world/ai/ai_side.tscn" id="f77_side"]
+[ext_resource type="PackedScene" path="res://scenes/ui/selection_roster/selection_roster.tscn" id="f79_roster"]
+[ext_resource type="PackedScene" path="res://scenes/ui/command_cue/command_cue.tscn" id="f80_cue"]
+[ext_resource type="Resource" path="res://data/ui/command_cues.tres" id="f80_cues"]
+[ext_resource type="Script" uid="uid://jpjghk5y24xa" path="res://scenes/world/command_log.gd" id="f80_log"]
+[ext_resource type="Script" uid="uid://cotfg8ie2hi8r" path="res://scenes/ui/command_cue/target_probe.gd" id="f80_probe"]
+[ext_resource type="Script" uid="uid://d13o5g6y8tngx" path="res://scenes/ui/command_cue/cursor_skin.gd" id="f80_skin"]
+[ext_resource type="Script" uid="uid://3p0kv5ypwrnt" path="res://scenes/world/structure_inspector.gd" id="f93_inspector"]
 [ext_resource type="PackedScene" path="res://scenes/ui/pause_menu/pause_menu.tscn" id="f141_pause"]
-[ext_resource type="PackedScene" path="res://scenes/ui/lobby/lobby_return.tscn" id="f183_return"]
-[ext_resource type="Script" path="res://scenes/ui/options/graphics_applier.gd" id="f142_applier"]
+[ext_resource type="Script" uid="uid://c8tyaqoovx84y" path="res://scenes/ui/options/graphics_applier.gd" id="f142_applier"]
 [ext_resource type="Resource" path="res://data/ui/graphics_prefs.tres" id="f142_prefs"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/droplet_rain.tscn" id="f148_rain"]
 [ext_resource type="Resource" path="res://assets/original/maps/high_noon/terrain.res" id="f172_terrain"]
+[ext_resource type="PackedScene" path="res://scenes/ui/lobby/lobby_return.tscn" id="f183_return"]
 [ext_resource type="ArrayMesh" path="res://assets/original/maps/high_noon/terrain_mesh.res" id="f192_terrain_mesh"]
+[ext_resource type="Material" path="res://assets/original/themes/james/ground_classic.tres" id="f194_ground"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
 bg_color = Color(1, 1, 1, 0)
@@ -65,6 +65,9 @@ rules = ExtResource("12_rules")
 [node name="Sky" parent="." unique_id=733427404 instance=ExtResource("f40_sky")]
 unique_name_in_owner = true
 background_color = Color(2.8878452e-07, 0.92139935, 0.5927794, 1)
+top_path = "res://assets/original/themes/persephone/skyt.png"
+bottom_path = "res://assets/original/themes/persephone/skyb.png"
+clouds_path = "res://assets/original/themes/persephone/sky.png"
 
 [node name="Environment" type="WorldEnvironment" parent="." unique_id=749856849]
 unique_name_in_owner = true
@@ -77,9 +80,6 @@ world_environment = NodePath("../Environment")
 terrain = NodePath("../Terrain")
 legacy_sky = NodePath("../Sky")
 tile_map = ExtResource("f22_tiles")
-
-[node name="Quality" parent="Look" index="1"]
-quality = ExtResource("f22_medium")
 
 [node name="Sun" type="DirectionalLight3D" parent="." unique_id=1176620511]
 transform = Transform3D(0.921061, -0.27935162, 0.27131036, 0, 0.6967067, 0.7173561, -0.38941833, -0.6607287, 0.6417094, 0, 0, 0)
@@ -95,8 +95,9 @@ edge_area = NodePath("../Hud/View")
 
 [node name="Terrain" type="MeshInstance3D" parent="." unique_id=1483961628]
 unique_name_in_owner = true
-script = ExtResource("2_terrain")
+material_override = ExtResource("f194_ground")
 mesh = ExtResource("f192_terrain_mesh")
+script = ExtResource("2_terrain")
 data = ExtResource("f172_terrain")
 
 [node name="Missing" type="Label3D" parent="Terrain" unique_id=430681053]
@@ -173,10 +174,10 @@ unit_scene = ExtResource("f25_unit")
 peasant_scene = ExtResource("f73_peasant")
 rules = ExtResource("12_rules")
 
-[node name="Buildings" type="Node3D" parent="."]
+[node name="Buildings" type="Node3D" parent="." unique_id=1507855763]
 unique_name_in_owner = true
 
-[node name="Population" type="Node3D" parent="." node_paths=PackedStringArray("buildings_root", "unit_spawner")]
+[node name="Population" type="Node3D" parent="." unique_id=820745689 node_paths=PackedStringArray("buildings_root", "unit_spawner")]
 unique_name_in_owner = true
 script = ExtResource("f73_population")
 spawn_creatures = true
@@ -220,13 +221,13 @@ world = NodePath("..")
 unique_name_in_owner = true
 world = NodePath("..")
 
-[node name="Nav" type="Node" parent="." node_paths=PackedStringArray("terrain", "structures")]
+[node name="Nav" type="Node" parent="." unique_id=1324434439 node_paths=PackedStringArray("terrain", "structures")]
 unique_name_in_owner = true
 script = ExtResource("f72_nav")
 terrain = NodePath("../Terrain")
 structures = NodePath("../Structures")
 
-[node name="Vision" type="Node" parent="."]
+[node name="Vision" type="Node" parent="." unique_id=1763951431]
 unique_name_in_owner = true
 script = ExtResource("f72_vision")
 
@@ -235,18 +236,15 @@ unique_name_in_owner = true
 script = ExtResource("f27_selection")
 box = NodePath("../Hud/SelectionBox")
 ground = NodePath("../Terrain")
-max_size = 0
 
 [node name="Orders" type="Node" parent="." unique_id=1688586003]
 unique_name_in_owner = true
 script = ExtResource("f27_orders")
-max_units = 0
-row_size = 12
 
 [node name="MatchCommand" type="Node" parent="." unique_id=391205645]
 script = ExtResource("7_match")
 
-[node name="Inspector" type="Node" parent="."]
+[node name="Inspector" type="Node" parent="." unique_id=459803602]
 unique_name_in_owner = true
 editor_description = "RFC-028b: la casa, el cactus o el Manalith clicado muestra su barra de vida; local, sin RPC."
 script = ExtResource("f93_inspector")
@@ -255,7 +253,7 @@ script = ExtResource("f93_inspector")
 unique_name_in_owner = true
 visible = false
 
-[node name="AiRoster" type="Node" parent="." node_paths=PackedStringArray("world", "wizard_spawner")]
+[node name="AiRoster" type="Node" parent="." unique_id=2118618212 node_paths=PackedStringArray("world", "wizard_spawner")]
 unique_name_in_owner = true
 editor_description = "RFC-024 024f: arma los asientos IA (MatchRules.ai_seats o SacrificeFlow.solo_ai_seats) solo en solo o en el servidor. Sin asientos no hace nada."
 script = ExtResource("f77_roster")
@@ -278,7 +276,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_clear")
 theme_override_styles/focus = SubResource("StyleBoxFlat_clear")
 flat = true
 
-[node name="SelectionRoster" parent="Hud" node_paths=PackedStringArray("selection", "avoid") instance=ExtResource("f79_roster")]
+[node name="SelectionRoster" parent="Hud" unique_id=1154554107 node_paths=PackedStringArray("selection", "avoid") instance=ExtResource("f79_roster")]
 unique_name_in_owner = true
 selection = NodePath("../../Selection")
 avoid = NodePath("../SpellBook")
@@ -305,19 +303,19 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 match_state = NodePath("../../Match")
 
-[node name="LobbyReturn" parent="Hud" node_paths=PackedStringArray("match_state") instance=ExtResource("f183_return")]
+[node name="LobbyReturn" parent="Hud" unique_id=803648076 node_paths=PackedStringArray("match_state") instance=ExtResource("f183_return")]
 unique_name_in_owner = true
 match_state = NodePath("../../Match")
 
 [node name="RitualNotice" parent="Hud" unique_id=1957000103 instance=ExtResource("f60_notice")]
 unique_name_in_owner = true
 
-[node name="TargetProbe" type="Node" parent="Hud" unique_id=1957000104 node_paths=PackedStringArray("world_view", "camera", "hud_controls")]
+[node name="TargetProbe" type="Node" parent="Hud" unique_id=1957000104 node_paths=PackedStringArray("world_view", "hud_controls", "camera")]
 unique_name_in_owner = true
 script = ExtResource("f80_probe")
 world_view = NodePath("../View")
-camera = NodePath("../../Camera")
 hud_controls = [NodePath("../SpellBook"), NodePath("../SelectionRoster")]
+camera = NodePath("../../Camera")
 
 [node name="CursorSkin" type="Node" parent="Hud" unique_id=1957000105 node_paths=PackedStringArray("command_log", "probe")]
 unique_name_in_owner = true
@@ -333,10 +331,10 @@ cues = ExtResource("f80_cues")
 probe = NodePath("../TargetProbe")
 skin = NodePath("../CursorSkin")
 
-[node name="PauseMenu" parent="." instance=ExtResource("f141_pause")]
+[node name="PauseMenu" parent="." unique_id=29936649 instance=ExtResource("f141_pause")]
 unique_name_in_owner = true
 
-[node name="GraphicsApplier" type="Node" parent="." node_paths=PackedStringArray("rig")]
+[node name="GraphicsApplier" type="Node" parent="." unique_id=2135902278 node_paths=PackedStringArray("rig")]
 script = ExtResource("f142_applier")
 prefs = ExtResource("f142_prefs")
 rig = NodePath("../Look")

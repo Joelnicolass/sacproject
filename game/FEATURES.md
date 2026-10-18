@@ -2648,3 +2648,17 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
   - El horneado es idempotente.
   - `quick` PASS sin mover digests.
   - El usuario confirmó que ve el mapa en el editor.
+
+### F194 — Material del suelo editable (RFC-035, corte 035b) — cerrado 2026-10-18
+
+- **Qué cambió:**
+  - Hay un `ground_classic.tres` por dios (5) y `GodTheme.ground_material` apunta a cada uno.
+  - `atlas`, `edge` y `light` son texturas sin pérdida y sin mipmaps.
+  - `Terrain` guarda el material de James en la escena. En partida, `ThemeApplier` pone el del dios de la semilla y trabaja sobre una copia.
+  - `terrain.gd` ya no arma el material por código, y `light_base`/`light_gain` viven en el `.tres`.
+  - `tools/import_themes.py` e `import_map.py` usan el tipo «lossless».
+- **Verificación:**
+  - Capturas `biome_close` antes y después, por dios: la diferencia media va de 0,04 a 0,29 sobre 255. Solo cambian las partículas animadas.
+  - `quick` PASS sin mover digests.
+  - El usuario confirmó en el editor que el material se ve y se edita.
+- **Nota:** la sonda `editor_capture.sh` no funciona (el editor queda quieto y se corta a los 120 s). La verificación del editor la hace el usuario.

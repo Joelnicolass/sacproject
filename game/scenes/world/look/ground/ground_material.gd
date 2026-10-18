@@ -35,7 +35,7 @@ static func build(ground: GroundSet, tile_ids: PackedByteArray, preset: LookQual
 static func bind_common(mat: ShaderMaterial, ground: GroundSet, tile_ids: PackedByteArray) -> void:
 	mat.set_shader_parameter("splat", splat_texture(ground.tiles, tile_ids))
 	mat.set_shader_parameter("noise_tex", _noise_texture())
-	var light := _load_image_texture(LIGHT_MAP) if ground.lightmap_tint > 0.0 else null
+	var light := load(LIGHT_MAP) as Texture2D if ground.lightmap_tint > 0.0 and ResourceLoader.exists(LIGHT_MAP) else null
 	if light:
 		mat.set_shader_parameter("lightmap", light)
 
@@ -175,9 +175,3 @@ static func _build_noise() -> void:
 	bump_image.generate_mipmaps()
 	_bump = ImageTexture.create_from_image(bump_image)
 
-
-static func _load_image_texture(path: String) -> ImageTexture:
-	if not ResourceLoader.exists(path):
-		return null
-	var image := load(path) as Image
-	return ImageTexture.create_from_image(image) if image else null

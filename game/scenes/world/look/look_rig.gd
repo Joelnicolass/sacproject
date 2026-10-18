@@ -60,16 +60,16 @@ func apply_quality(preset: LookQuality) -> void:
 	_push_quality()
 
 
-## Editor button: shows the preview god's profile through the layers, with the god's atlas under
-## the classic ground (what `ThemeApplier.apply` does in the game).
+## Editor button: shows the preview god's profile through the layers, with the god's ground material
+## under them (what `ThemeApplier.apply` does in the game). The scene never saves that material.
 func preview() -> void:
 	var god := StringName(preview_god)
 	var theme_path := "res://data/themes/%s.tres" % god
-	if terrain and terrain.has_method("set_tileset_dir") and ResourceLoader.exists(theme_path):
+	if terrain and terrain.has_method("set_classic_material") and ResourceLoader.exists(theme_path):
 		var theme: Resource = load(theme_path)
-		if theme and theme.has_method("resolved"):
-			var resolved: Resource = theme.call("resolved")
-			terrain.call("set_tileset_dir", resolved.call("dir"))
+		var ground: Variant = theme.get("ground_material") if theme else null
+		if ground is ShaderMaterial:
+			terrain.call("set_classic_material", ground)
 	apply_profile(LookApplier.profile_for(god))
 
 

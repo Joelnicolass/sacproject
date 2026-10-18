@@ -25,6 +25,9 @@ extends Resource
 @export var fog_end: float = 1600.0
 ## Remaster look of this biome (RFC-022). Empty = classic mode: nothing from data/look/ applies.
 @export var look: LookProfile
+## The classic ground of this biome (sacrifice_ground.gdshader with this god's atlas and edge and the map's
+## light map), shared by every match that rolls the god. Edit it in the inspector.
+@export var ground_material: ShaderMaterial
 
 var missing: PackedStringArray = []
 
@@ -45,7 +48,7 @@ func resolved() -> Resource:
 	return result
 
 
-## Folder with this god's images (atlas, edge, sky, skyb, skyt, sun, undr).
+## Folder with this god's images (atlas, edge, sky, skyb, skyt, sun, undr) and its ground_classic.tres.
 func dir() -> String:
 	return OriginalAssets.theme_dir(String(god))
 

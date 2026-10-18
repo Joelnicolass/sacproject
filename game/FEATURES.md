@@ -2574,3 +2574,13 @@ Deuda:
 ### Cierre 034e (F182) — 2026-10-18
 - `agent/run_034e.sh`: **E2E PASS 3 veces seguidas**, 118 checks cada una. Escenario del usuario con dedicados reales: servidor de salas, 4 clientes y **dos salas 1v1 en paralelo**, cada una con su dedicado (SalaA termina por resultado, SalaB por abandono); tickets cruzados e inventados rechazados; cada resultado llega solo a su sala; al final 0 procesos Godot y sin archivos de partida. RSS total máximo 1,3 GB con 7 procesos, ~35 s por corrida. Import sin errores; `quick` 27/27.
 - El primer FAIL («1 dedicated process left») era la prueba contándose a sí misma con `awk`; corregido en 87ec897.
+
+### F190 — Transporte WebSocket opcional en mp_kit (RFC-034, corte 034n)
+
+El usuario quiere el port a web (el navegador no abre UDP), asi que el kit elige transporte: **ENet (UDP) por defecto, WebSocket (TCP) opcional**. Todo generico dentro de `addons/mp_kit/`; el juego no cambia (mismos RPC y replicacion).
+- `MpTransport` (`mp_transport.gd`): `create_server`, `create_client` (`ws://host:port`, o una URL completa) y `port_is_free` (probe TCP o UDP). Acepta `TLSOptions` para `wss://`.
+- `MpKit.transport` (flag `--transport=ws|enet`, `host()`, `host_dedicated()` y `join()`), `MpLobbyClient.transport` (mismo flag), `MpLobbyConfig.transport` (campo `.tres` y flag; lobby y busqueda de puertos de partida) y el lanzador pasa `--transport=` al dedicado hijo (`agent_fields`).
+- Sin nombres que pisen `Object`/`Node`. README del kit: seccion «Transporte» y `wss://` con proxy inverso o `TLSOptions` para el VPS (documentado, no implementado).
+- **Prueba**: `agent/run_034d.sh` y `agent/run_034e.sh` aceptan `TRANSPORT=ws` (sin variable, ENet, igual que antes).
+
+**Pendiente (orquestador):** `--import` una vez (clase `MpTransport` nueva); correr 034d y 034e con ENet y con WS. Codigo escrito sin ejecutar Godot.

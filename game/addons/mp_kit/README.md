@@ -36,7 +36,33 @@ El autoload `MpKit` va **antes** de `MpFlow` (o tu subclase). En CI/headless dej
 2. 4.º argumento opcional: `PackedStringArray` de nombres de canal del túnel (vacío = todos permitidos).
 3. **No** metas reglas de juego en `mp_kit.gd`.
 
-Online = dedicated con IP pública y UDP abierto. En local: `godot --headless --path . -- --dedicated` y clientes a `127.0.0.1`.
+Online = dedicated con IP pública y UDP abierto (o TCP con `--transport=ws`, ver [Transporte](#transporte-enet-udp-o-websocket-tcp)). En local: `godot --headless --path . -- --dedicated` y clientes a `127.0.0.1`.
+
+## Transporte: ENet (UDP) o WebSocket (TCP)
+
+El transporte es elegible; la API, los RPC y la replicación son los mismos con los dos. `MpTransport` (`mp_transport.gd`) solo arma el `MultiplayerPeer`.
+
+| | ENet (por defecto) | WebSocket |
+|---|---|---|
+| Valor | `enet` | `ws` |
+| Protocolo | UDP | TCP (`WebSocketMultiplayerPeer`) |
+| Export web | no (el navegador no abre UDP) | si |
+| Túnel TCP (ngrok, etc.) | no | si |
+
+- **Flag**: `--transport=ws` (o `enet`). Lo leen `MpKit` (`MpKit.transport`, antes de `host()`/`host_dedicated()`/`join()`; el glue puede fijarlo a mano) y `MpLobbyClient.transport`.
+- **Servidor de salas**: `MpLobbyConfig.transport` (`.tres` o `--transport=ws`). Sirve el lobby con ese transporte, busca puertos libres de las partidas con TCP o UDP según corresponda y **se lo pasa al dedicado hijo** (`transport` está en `agent_fields`, llega como `--transport=ws`).
+- Mismo transporte en todos los procesos: cliente, servidor de salas y dedicados. Un cliente ENet no habla con un servidor WS.
+- Dentro de WebSocket el lobby y la partida usan puertos TCP; abrí TCP (no UDP) en el firewall del VPS.
+- No hay tope de clientes en el peer WS: el tope lo ponen `max_connections` (lobby) y la admisión por ticket (partida).
+
+### `wss://` (TLS) para el VPS
+
+El kit habla `ws://`. Para `wss://` hay dos caminos, sin cambiar el juego:
+
+1. **Proxy inverso (recomendado)**: nginx/Caddy termina TLS en 443 con el certificado del dominio y reenvía a los puertos WS locales (`proxy_pass http://127.0.0.1:7700;` con `Upgrade`/`Connection`). El cliente web usa `wss://juego.example.com/...`. Un puerto publico por partida es incomodo: mapeá una ruta o un subdominio por rango, o usá un puerto TLS por partida.
+2. **TLS en Godot**: `MpTransport.create_server(kind, port, max, TLSOptions.server(key, cert))` y `create_client(kind, host, port, TLSOptions.client())`. Hoy `MpKit`/lobby no los exponen; si hace falta se agrega un `@export` con el recurso de clave y certificado. En `create_client`, `host` puede ser ya una URL completa (`wss://dominio/ruta`).
+
+Probar: `TRANSPORT=ws bash agent/run_034d.sh` y `TRANSPORT=ws bash agent/run_034e.sh` (los scripts pasan `--transport=$TRANSPORT`; sin variable, ENet).
 
 ## Dos modos de servidor
 
@@ -454,7 +480,8 @@ Al Enable copia plantillas a `res://script_templates/` (CharacterBody / Node2D /
 
 | Archivo | Rol |
 |---------|-----|
-| `mp_kit.gd` | ENet + slots + RPCs de sesión + túnel Dictionary. Hijos `Rooms` / `Matchmaker`. |
+| `mp_transport.gd` | `MpTransport`: arma el peer ENet (UDP) o WebSocket (TCP) segun `--transport=enet\|ws`; `create_server`, `create_client`, `port_is_free` |
+| `mp_kit.gd` | ENet o WebSocket (`MpKit.transport`) + slots + RPCs de sesión + túnel Dictionary. Hijos `Rooms` / `Matchmaker`. |
 | `mp_ids.gd` | slot ↔ peer |
 | `mp_room_directory.gd` | hub rooms (opt-in); asiento de sala ≠ slot del hub |
 | `mp_matchmaker.gd` | cola FIFO; arma una room al llenar `party_size` |
@@ -474,7 +501,7 @@ Al Enable copia plantillas a `res://script_templates/` (CharacterBody / Node2D /
 | `lobby/mp_match_agent.gd` | `MpMatchAgent` (en el dedicado): lee `--match-ticket-file` y `--room-pid`, pone `MpKit.admission` con el hash del token, escribe `state.json` (latido) y `result.json` (`report_result(data)`), sale si muere el padre |
 | `lobby/mp_process_runner.gd` / `_stub.gd` | (pids e identidad por `ps`: validado en macOS y Linux; en Windows, mejor esfuerzo) `OS.create_process` / `is_process_running` / `kill`; el stub simula procesos sin Godot |
 | `lobby/mp_lobby_rooms.gd` | `MpLobbyRooms` (RefCounted, sin red): estados de sala `OPEN`/`COUNTDOWN`/`LAUNCHING`/`IN_MATCH`/`CLOSED`, asientos por `session_id` (`resume_grace_s`), pick opaco validado por Callable, cuenta regresiva con `tick(delta)`, lanza con `MpMatchLauncher`. Los comandos devuelven un código String ("" = ok); señales `room_changed`, `match_assigned`, `room_error`, `room_closed` |
-| `lobby/mp_lobby_server.gd` | `MpLobbyServer`: pone `MpLobbyRooms` en ENet (`lobby_port`). Valida versión, nombre, tamaño de `options`/`meta`, ritmo de chat y `hello_timeout_s`; el cliente no elige slot, puerto ni semilla. `meta_validator`, `options_validator` y `ticket_builder` los pone el juego antes de `start(config, launcher)`. Códigos de error estables (`version`, `bad_name`, `rate`, `bad_options`, `bad_meta` y los de `MpLobbyRooms`) |
+| `lobby/mp_lobby_server.gd` | `MpLobbyServer`: pone `MpLobbyRooms` en ENet o WebSocket (`lobby_port`, `MpLobbyConfig.transport`). Valida versión, nombre, tamaño de `options`/`meta`, ritmo de chat y `hello_timeout_s`; el cliente no elige slot, puerto ni semilla. `meta_validator`, `options_validator` y `ticket_builder` los pone el juego antes de `start(config, launcher)`. Códigos de error estables (`version`, `bad_name`, `rate`, `bad_options`, `bad_meta` y los de `MpLobbyRooms`) |
 | `lobby/mp_lobby_client.gd` | `MpLobbyClient`: espejo (`rooms`, `room`, `chat_log`), comandos (`create_room`, `join_room`, `join_code`, `leave_room`, `choose_seat`, `set_pick`, `set_ready`, `send_chat`, `refresh_rooms`, `resume`) y señales en pasado (`room_updated`, `countdown_started`, `match_ready(host, port, token)`, `match_finished(result)`, `error_received`...). `host` vacío en `match_ready` = el del lobby (`MpLobbyConfig.public_host`) |
 | `lobby/mp_lobby.gd` | Autoload `MpLobby` (después de `MpKit`): hijos `Server` y `Client` con un `SceneMultiplayer` propio; no toca el peer de `MpKit`. `MpLobby.start_server(config, launcher)` / `MpLobby.connect_to(host, port, nombre)`. Prueba: `agent/run_034d.sh` |
 | `lobby/mp_match_files.gd` | rutas `user://mp_matches/<id>/{ticket,state,result}.json`, JSON atómico (0600), sha256 |

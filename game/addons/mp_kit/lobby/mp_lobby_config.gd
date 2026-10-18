@@ -8,6 +8,8 @@ extends Resource
 @export_group("Lobby")
 @export var lobby_port: int = 7700
 @export var max_connections: int = 64
+## `enet` (UDP, default) or `ws` (WebSocket over TCP). Used by the lobby and forwarded to every dedicated.
+@export_enum("enet", "ws") var transport: String = "enet"
 @export var max_rooms: int = 32
 @export var seats_per_room: int = 2
 @export var proto_version: int = 1
@@ -55,7 +57,7 @@ extends Resource
 @export var matches_root: String = "user://mp_matches"
 ## Fields the launcher forwards to the dedicated as `--field-name=value`.
 @export var agent_fields: PackedStringArray = PackedStringArray([
-	"heartbeat_s", "idle_no_players_s", "rejoin_grace_s", "parent_check_s", "result_quit_delay_s",
+	"transport", "heartbeat_s", "idle_no_players_s", "rejoin_grace_s", "parent_check_s", "result_quit_delay_s",
 ])
 
 

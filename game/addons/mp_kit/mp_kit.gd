@@ -36,7 +36,10 @@ const REJECT_FLUSH_S := 0.2
 var rooms: MpRoomDirectory
 var matchmaker: MpMatchmaker
 
-var _peer: ENetMultiplayerPeer
+## `MpTransport.ENET` (default) or `MpTransport.WS`. Read from `--transport=` at startup; glue may set it
+## before `host()` / `join()`. Same API and RPCs with both.
+var transport: String = MpTransport.ENET
+var _peer: MultiplayerPeer
 var _world_ready: Dictionary = {}
 var _broadcasting_custom: bool = false
 var _pending_ticket: String = ""
@@ -44,6 +47,7 @@ var _awaiting_ticket: Dictionary = {}
 
 
 func _ready() -> void:
+	transport = MpTransport.from_flags()
 	_ensure_hub_children()
 	multiplayer.peer_connected.connect(_on_peer_connected)
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
@@ -116,11 +120,11 @@ func is_peer_world_ready(peer_id: int) -> bool:
 func host(dedicated: bool = false) -> Error:
 	leave()
 	ids.dedicated = dedicated
-	var peer := ENetMultiplayerPeer.new()
-	var err := peer.create_server(port, _enet_max_clients())
-	if err != OK:
+	var made := MpTransport.create_server(transport, port, _enet_max_clients())
+	var peer := made["peer"] as MultiplayerPeer
+	if int(made["error"]) != OK:
 		ids.dedicated = false
-		return err
+		return int(made["error"]) as Error
 	_peer = peer
 	multiplayer.multiplayer_peer = peer
 	if dedicated:
@@ -138,10 +142,10 @@ func host_dedicated() -> Error:
 ## `p_port` <= 0 uses `port`. A non-empty `ticket` is presented to the server on connect.
 func join(address: String, p_port: int = -1, ticket: String = "") -> Error:
 	leave()
-	var peer := ENetMultiplayerPeer.new()
-	var err := peer.create_client(address, p_port if p_port > 0 else port)
-	if err != OK:
-		return err
+	var made := MpTransport.create_client(transport, address, p_port if p_port > 0 else port)
+	var peer := made["peer"] as MultiplayerPeer
+	if int(made["error"]) != OK:
+		return int(made["error"]) as Error
 	_peer = peer
 	multiplayer.multiplayer_peer = peer
 	ids.reset_offline()

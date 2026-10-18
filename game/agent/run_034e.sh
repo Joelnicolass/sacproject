@@ -15,6 +15,7 @@
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 GODOT="${GODOT_BIN:-/Applications/Godot.app/Contents/MacOS/Godot}"
 LIMIT_S="${PROBE_LIMIT_S:-180}"
+TRANSPORT="${TRANSPORT:-enet}" # enet (UDP, default) or ws (WebSocket over TCP, lobby and dedicated): TRANSPORT=ws bash agent/run_034e.sh
 RSS_LIMIT_MB="${E2E_RSS_LIMIT_MB:-8192}"
 LOBBY_PORT="${E2E_LOBBY_PORT:-7706}"
 OUT="$(mktemp -d "${TMPDIR:-/tmp}/room_e2e_034e.XXXXXX")"
@@ -47,7 +48,7 @@ trap 'kill_all; kill $WATCH $MONITOR 2>/dev/null' EXIT
 
 # --- room server ---------------------------------------------------------------------------------------------------
 bash "$ROOT/agent/harness/godot_run.sh" "$GODOT" --headless --path "$ROOT" res://scenes/net/room_server.tscn -- \
-  --room-server --lobby-config=res://data/net/lobby_config_local.tres --lobby-port="$LOBBY_PORT" --max-matches=2 \
+  --room-server --transport="$TRANSPORT" --lobby-config=res://data/net/lobby_config_local.tres --lobby-port="$LOBBY_PORT" --max-matches=2 \
   --ticket-ttl-s=60 --idle-no-players-s=30 --resume-grace-s=120 --matches-root="$MATCHES" \
   --match-args=--force-defeat-slot=2,--force-defeat-after-ticks=1200 > "$OUT/server.log" 2>&1 &
 SERVER=$!
@@ -89,7 +90,7 @@ if [ "$READY" = 1 ]; then
   client() { # name, then the client flags
     local name="$1"; shift
     bash "$ROOT/agent/harness/godot_run.sh" "$GODOT" --headless --path "$ROOT" res://debug/net/room_e2e_client.tscn -- \
-      --no-flow --lobby-port="$LOBBY_PORT" --e2e-dir="$PORTS" --e2e-name="$name" "$@" > "$OUT/$name.log" 2>&1 &
+      --no-flow --transport="$TRANSPORT" --lobby-port="$LOBBY_PORT" --e2e-dir="$PORTS" --e2e-name="$name" "$@" > "$OUT/$name.log" 2>&1 &
     CLIENT_PIDS="$CLIENT_PIDS $!"
     echo "$!" >> "$OUT/clients.pids"
   }

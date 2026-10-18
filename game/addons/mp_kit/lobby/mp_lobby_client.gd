@@ -45,7 +45,9 @@ var last_error: String = ""
 var host: String = ""
 var port: int = 0
 
-var _peer: ENetMultiplayerPeer
+## `MpTransport.ENET` or `MpTransport.WS`; must equal the room server's. Default: `--transport=` flag.
+var transport: String = MpTransport.from_flags()
+var _peer: MultiplayerPeer
 var _signals_ready: bool = false
 var _countdown_end_msec: int = 0
 var _result_key: int = 0
@@ -165,10 +167,10 @@ func _ensure_signals() -> void:
 
 
 func _open() -> Error:
-	var peer := ENetMultiplayerPeer.new()
-	var err := peer.create_client(host, port)
-	if err != OK:
-		return err
+	var made := MpTransport.create_client(transport, host, port)
+	var peer := made["peer"] as MultiplayerPeer
+	if int(made["error"]) != OK:
+		return int(made["error"]) as Error
 	_peer = peer
 	multiplayer.multiplayer_peer = peer
 	link = Link.CONNECTING

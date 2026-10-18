@@ -231,10 +231,7 @@ func _free_port() -> int:
 	for port in range(config.match_port_min, config.match_port_max + 1):
 		if used.has(port):
 			continue
-		var probe := UDPServer.new()
-		var err := probe.listen(port)
-		probe.stop()
-		if err == OK:
+		if MpTransport.port_is_free(config.transport, port):
 			return port
 	return 0
 

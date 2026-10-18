@@ -1,7 +1,7 @@
 class_name MpLobbyServer
 extends Node
 
-## Room-server side of the lobby protocol. Puts `MpLobbyRooms` on the network (ENet) and validates
+## Room-server side of the lobby protocol. Puts `MpLobbyRooms` on the network (ENet or WebSocket, `config.transport`) and validates
 ## every client message: version, name, sizes, chat rate, who may do what. A client never picks a
 ## slot, a port or a seed. Nothing here knows the game: the pick (`meta`), the room `options` and the
 ## ticket are checked / built by Callables the glue sets before `start()`.
@@ -27,7 +27,7 @@ var ticket_builder: Callable = Callable()
 var rooms: MpLobbyRooms
 var config: MpLobbyConfig
 
-var _peer: ENetMultiplayerPeer
+var _peer: MultiplayerPeer
 var _active: bool = false
 var _signals_ready: bool = false
 ## peer id -> session id
@@ -69,10 +69,10 @@ func name_of_room(room_id: String) -> String:
 func start(p_config: MpLobbyConfig, launcher: MpMatchLauncher = null) -> Error:
 	stop()
 	config = p_config
-	var peer := ENetMultiplayerPeer.new()
-	var err := peer.create_server(config.lobby_port, config.max_connections)
-	if err != OK:
-		return err
+	var made := MpTransport.create_server(config.transport, config.lobby_port, config.max_connections)
+	var peer := made["peer"] as MultiplayerPeer
+	if int(made["error"]) != OK:
+		return int(made["error"]) as Error
 	rooms = MpLobbyRooms.new(config, launcher)
 	rooms.meta_validator = meta_validator
 	rooms.options_validator = options_validator

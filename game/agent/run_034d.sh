@@ -7,6 +7,7 @@
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 GODOT="${GODOT_BIN:-/Applications/Godot.app/Contents/MacOS/Godot}"
 LIMIT_S="${PROBE_LIMIT_S:-120}"
+TRANSPORT="${TRANSPORT:-enet}" # enet (UDP, default) or ws (WebSocket over TCP): TRANSPORT=ws bash agent/run_034d.sh
 OUT="${TMPDIR:-/tmp}/lobby_net_034d.$$"
 mkdir -p "$OUT"
 
@@ -17,7 +18,7 @@ descendants() { # pid -> pid and all its descendants
 }
 kill_tree() { local p; for p in $(descendants "$1" | sort -rn); do kill "$p" 2>/dev/null; done; }
 
-bash "$ROOT/agent/harness/godot_run.sh" "$GODOT" --headless --path "$ROOT" res://debug/net/lobby_net_cases.tscn -- --no-flow --role=server > "$OUT/server.log" 2>&1 &
+bash "$ROOT/agent/harness/godot_run.sh" "$GODOT" --headless --path "$ROOT" res://debug/net/lobby_net_cases.tscn -- --no-flow --role=server --transport="$TRANSPORT" > "$OUT/server.log" 2>&1 &
 SERVER=$!
 (
   sleep "$LIMIT_S"
@@ -37,7 +38,7 @@ for _ in $(seq 1 $((LIMIT_S * 2))); do
 done
 CODE=1
 if [ "$READY" = 1 ]; then
-  bash "$ROOT/agent/harness/godot_run.sh" "$GODOT" --headless --path "$ROOT" res://debug/net/lobby_net_cases.tscn -- --no-flow --role=clients > "$OUT/clients.log" 2>&1 &
+  bash "$ROOT/agent/harness/godot_run.sh" "$GODOT" --headless --path "$ROOT" res://debug/net/lobby_net_cases.tscn -- --no-flow --role=clients --transport="$TRANSPORT" > "$OUT/clients.log" 2>&1 &
   CLIENTS=$!
   echo "$CLIENTS" > "$OUT/clients.pid"
   wait "$CLIENTS"; CCODE=$?

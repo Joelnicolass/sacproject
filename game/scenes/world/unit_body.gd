@@ -215,7 +215,7 @@ func _ready() -> void:
 	_apply_type()
 	_apply_model()
 	if get_node_or_null("Tilt/Mesh"):
-		_clip_pose.call("setup", model, UnitClipRoles.for_type(type, model))
+		_clip_pose.call("setup", model)
 	if _clip_pose and _clip_pose.has_signal("clip_looped"):
 		_clip_pose.connect("clip_looped", _on_clip_looped)
 	if _flight:
@@ -476,7 +476,7 @@ func _sync_clip_pose() -> void:
 		return
 	if model.is_empty():
 		return
-	_clip_pose.call("setup", model, UnitClipRoles.for_type(type, model))
+	_clip_pose.call("setup", model)
 
 func _apply_type() -> void:
 	type = GameData.creature(creature_tag)

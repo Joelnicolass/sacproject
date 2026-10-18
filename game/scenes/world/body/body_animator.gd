@@ -1,85 +1,96 @@
 class_name BodyAnimator
 extends ClipPlayback
 
-## RFC-023 (023c): plays the clips of a creature unit by ROLE. It owns a ClipClock (role, frame, impact; no mesh, so the
-## dedicated server runs it too) and, on a client, makes the body show what the clock says: the BodyRig under the
-## visual travels to the clock's role (and seeks when it arrives late). The clock never reads the rig.
-## A model with no playable idle clip (the hybrids, which are static meshes) is not drawn by the rig: the visual shows its
-## own mesh (BodyCatalog.mesh) while the clock stays the one reading.
+## RFC-023 (023c) / RFC-036 (036g): plays the clips of a creature unit by ROLE. The body picks the role (from its replicated
+## mode) with play(); on a client this node makes the BodyRig under the visual travel to it. The animation tree of the model's
+## scene does the rest, and clip_looped is emitted when the clip the rig plays wraps.
+## A model with no baked scene (the hybrids, which are static meshes) is not drawn by the rig: the visual shows its own mesh
+## (BodyCatalog.mesh). The dedicated server loads no meshes, so it plays nothing and reports no clips and no loops; nothing in
+## the simulation depends on that.
 ## Presentation only: the simulation takes its ticks from CreatureType and never reads this node.
 
 ## The body's visual (Tilt/Mesh). Its `rig` is the BodyRig that draws the skeleton; it has the pose and the measures.
 @export var visual: BodyVisual
 
-var _clock := ClipClock.new()
 var _model := ""
-var _roles: Dictionary = {}
 var _skeletal := false
-## What the rig was told to play (the clock's role, or "idle" when it has none).
+## The role the body asked for.
+var _wanted := ""
+## What the rig was told to play (the wanted role, or "idle" when the model has no clip for it).
 var _shown_role := ""
+## Wrap detection: the role and the seconds into its clip at the last physics tick.
+var _seen_role := ""
+var _seen_pos := 0.0
 
 
-func _ready() -> void:
-	_clock.looped.connect(clip_looped.emit)
+## One tick per physics frame on a client: the clip wrapped when its position went back while the role stayed.
+func _physics_process(_delta: float) -> void:
+	var rig := _rig()
+	if not _skeletal or frozen or rig == null or not rig.is_loaded():
+		return
+	var role := rig.active_role()
+	var pos := rig.play_position()
+	if role == _seen_role and pos < _seen_pos - 0.001:
+		clip_looped.emit(role)
+	_seen_role = role
+	_seen_pos = pos
 
 
-## One tick per physics frame, on every peer. Bodies only choose the role with play(): they must not advance too.
-func _physics_process(delta: float) -> void:
-	_clock.advance(delta)
-
-
-func setup(model: String, role_to_tag: Dictionary) -> void:
-	if model == _model and role_to_tag == _roles:
+func setup(model: String) -> void:
+	if model == _model:
 		return
 	_model = model
-	_roles = role_to_tag.duplicate()
-	_clock.setup(model, _roles)
 	_choose_body()
 
 
 func play(role: String, restart := false) -> void:
 	if frozen:
 		return
-	_clock.play(role, restart)
+	_wanted = role
 	_follow(restart)
 
 
-## Plays `role` with the skeleton already on its last frame (a corpse that a late peer sees on the ground). The clock
-## starts the clip as usual: only the draw jumps to the end.
+## Plays `role` with the skeleton already on its last frame (a corpse that a late peer sees on the ground).
 func play_ended(role: String) -> void:
 	play(role, true)
 	var rig := _rig()
-	if not _skeletal or rig == null or not rig.is_loaded() or _clock.active_role().is_empty():
+	if not _skeletal or rig == null or not rig.is_loaded() or active_role().is_empty():
 		return
 	rig.play(role, true, float(rig.role_frames(role)) / maxf(rig.role_framerate(role), 1.0) + 0.5)
 
 
+## The role the body asked for, "" when the model has no clip for it.
 func active_role() -> String:
-	return _clock.active_role()
+	return _wanted if has_role(_wanted) else ""
 
 
 func has_role(role: String) -> bool:
-	return _clock.has_role(role)
-
-
-func has_clip(model: String, tag: String) -> bool:
-	return ClipClock.has_clip(model, tag)
+	var rig := _rig()
+	return _skeletal and rig != null and rig.has_role(role)
 
 
 func active_tag() -> String:
-	return _clock.active_tag()
+	var rig := _rig()
+	return rig.role_tag(active_role()) if _skeletal and rig != null and not active_role().is_empty() else ""
 
 
 func active_framerate() -> int:
-	return _clock.active_framerate()
+	var rig := _rig()
+	return int(rig.role_framerate(active_role())) if _skeletal and rig != null and not active_role().is_empty() else 0
 
 
+## Frame of the clip the rig is in (from the tree's position).
 func active_frame() -> int:
-	return _clock.active_frame()
+	var rig := _rig()
+	if not _skeletal or rig == null or active_role().is_empty():
+		return 0
+	var frames := rig.role_frames(active_role())
+	return int(rig.play_position() * rig.role_framerate(active_role())) % maxi(frames, 1)
 
 
 func impact_frame() -> int:
-	return _clock.impact_frame()
+	var rig := _rig()
+	return rig.impact_frame() if _skeletal and rig != null else -1
 
 
 ## true while the skeleton (a BodyRig) is what draws this body.
@@ -88,7 +99,6 @@ func is_skeletal() -> bool:
 
 
 func _frozen_changed() -> void:
-	_clock.frozen = frozen
 	var rig := _rig()
 	if rig != null:
 		rig.set_paused(frozen)
@@ -98,34 +108,31 @@ func _rig() -> BodyRig:
 	return visual.rig if visual != null else null
 
 
-## Skeleton or the visual's own static mesh for the model just set. The dedicated server draws neither: it keeps the clock only.
+## Skeleton or the visual's own static mesh for the model just set. The dedicated server draws neither.
 func _choose_body() -> void:
 	if not BodyCatalog.loads_meshes() or visual == null:
 		return
 	var rig := _rig()
-	var idle_tag := str(_roles.get("idle", ""))
-	_skeletal = rig != null and BodyCatalog.has_skeletal(_model) and ClipClock.has_clip(_model, idle_tag)
+	_skeletal = rig != null and BodyCatalog.has_skeletal(_model)
 	visual.use_skeleton(_skeletal)
 	if _skeletal:
 		_shown_role = ""
-		rig.set_body(_model, BodyClips.from_roles(_model, _roles))
+		rig.set_body(_model)
 		_follow()
 	elif rig != null:
-		rig.set_body("", null)
+		rig.set_body("")
 
 
-## Makes the rig show the clock's role. A role the model has no clip for rests on idle (the clock holds ""). When the
-## model has just loaded and the clock is already inside a pass, the clip starts where the clock is.
+## Makes the rig show the wanted role. A role the model has no clip for rests on idle.
 func _follow(restart := false) -> void:
 	var rig := _rig()
 	if not _skeletal or rig == null or not rig.is_loaded():
 		return
-	var role := _clock.active_role()
-	if role.is_empty():
-		role = "idle"
+	var role := _wanted if not _wanted.is_empty() else "idle"
 	if role == _shown_role and not restart:
 		return
 	var late := _shown_role.is_empty()
 	_shown_role = role
 	# A restart (or the first role after loading) starts the clip; any other change travels with the state machine's blend.
-	rig.play(role, restart or late, _clock.time_s() if late else 0.0)
+	rig.play(role, restart or late)
+	_seen_role = ""

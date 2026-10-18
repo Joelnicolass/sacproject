@@ -1,7 +1,7 @@
 extends Node
 
-## RFC-023 023c check (headless or with a window): one unit per creature model, the ClipClock reads, the animator picks
-## skeleton or the static mesh, and the roles resolve. Prints one line per model. Not a test of the simulation.
+## RFC-023 023c check (headless or with a window): one unit per creature model, the animator picks
+## skeleton or the static mesh, and the roles of the model's scene resolve. Prints one line per model. Not a test of the simulation.
 ##   godot --headless --path game res://debug/rig023c/rig023c_check.tscn [-- --models=eorc,huma]
 
 const UNIT := preload("res://scenes/world/units/unit.tscn")
@@ -28,11 +28,11 @@ func _ready() -> void:
 		await get_tree().process_frame
 		await get_tree().physics_frame
 		var anim := unit.get_node("ClipPose") as BodyAnimator
-		var roles := UnitClipRoles.for_type(type, type.model)
 		var info := unit.debug_clip_info()
 		var rig := unit.get_node("Tilt/Mesh/Rig") as BodyRig
 		print("%s\t%s\tskeletal=%s\trole=%s\ttag=%s\tfps=%s\trig_loaded=%s\troles=%d" % [
-			type.model, tag, anim.is_skeletal(), info.role, info.tag, info.fps, rig.is_loaded(), roles.size()])
+			type.model, tag, anim.is_skeletal(), info.role, info.tag, info.fps, rig.is_loaded(),
+			rig.model_root().roles().size() if rig.is_loaded() else 0])
 		if str(info.role) != "idle" and anim.has_role("idle"):
 			bad += 1
 		unit.queue_free()

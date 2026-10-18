@@ -93,7 +93,7 @@ func _ready() -> void:
 	_net_yaw = rotation.y
 	_apply_model()
 	if get_node_or_null("Tilt/Mesh") and _clip_pose.has_method("setup"):
-		_clip_pose.call("setup", model, _clip_roles())
+		_clip_pose.call("setup", model)
 	if _clip_pose.has_signal("clip_looped"):
 		_clip_pose.connect("clip_looped", _on_clip_looped)
 	_present_prev_pos = global_position
@@ -188,7 +188,7 @@ func _sync_clip_pose() -> void:
 		return
 	if model.is_empty():
 		return
-	_clip_pose.call("setup", model, _clip_roles())
+	_clip_pose.call("setup", model)
 
 func _apply_type() -> void:
 	_type = GameData.wizard(wizard_tag)
@@ -516,10 +516,6 @@ func _on_clip_looped(role: String) -> void:
 	_gesturing = role == "idle" and posmod(hash(String(name)) + _idle_loops, GESTURE_EVERY) == 0 \
 		and bool(_clip_pose.call("has_role", "gesture"))
 	_update_clip_state(_clip_flat_speed)
-
-
-func _clip_roles() -> Dictionary:
-	return UnitClipRoles.for_wizard(_type, model)
 
 
 func debug_set_clip_state(role: String) -> void:

@@ -74,7 +74,7 @@ enum Work { PUMP, LIFT, TORTURE }
 	Work.TORTURE: 0,
 }
 ## Work -> role of the BodyRig state machine that plays that slot's clip (023e). The rig has one state per role of
-## BodyClips.ROLES and the doctor has no states of its own, so each work borrows the role closest to what it does.
+## BodyModel.ROLES and the doctor has no states of its own, so each work borrows the role closest to what it does.
 @export var work_roles := {
 	Work.PUMP: &"work",
 	Work.LIFT: &"cast",
@@ -123,7 +123,7 @@ func _ready() -> void:
 	type = GameData.creature(creature_tag)
 	_fit_collision()
 	if clip_player and BodyCatalog.loads_meshes():
-		clip_player.setup(visual.model, _clip_roles())
+		clip_player.setup(visual.model)
 	health_bar.call("bind", health, owner_slot)
 	_apply_pose()
 	if MpKit.is_networked() and not MpKit.is_server():
@@ -374,23 +374,6 @@ func _apply_pose() -> void:
 	_fade = create_tween()
 	## BodyVisual.set_fade fades the rig's meshes too (transparency does not inherit).
 	_fade.tween_method(visual.set_fade, 0.0, 1.0, rules.doctor_death_s if rules else 2.0)
-
-
-## Clip roles of the BodyAnimator from the CRE8: idle, run and the role of each work (`work_roles`) with its melee slot's clip.
-func _clip_roles() -> Dictionary:
-	if type == null:
-		return {}
-	## sacengine rests on stance1 and plays idle0..3 only as gestures (state.d:7957-7992); SDda, the idle0, strolls 1,6 m
-	## from the capsule (tools/audit_skeletal_center.gd), so the doctor rests on SDst and does not gesture.
-	var rest := str(type.stance_animation.get("tag", ""))
-	if rest.is_empty() or not ClipClock.has_clip(visual.model, rest):
-		rest = str(type.idle_animation.get("tag", ""))
-	var roles := {"idle": rest, "run": str(type.run_animation.get("tag", ""))}
-	for kind: Variant in work_slots:
-		var slot := int(work_slots[kind])
-		if slot < type.melee_animations.size() and work_roles.has(kind):
-			roles[str(work_roles[kind])] = str(type.melee_animations[slot].get("tag", ""))
-	return roles
 
 
 func _play_clip() -> void:

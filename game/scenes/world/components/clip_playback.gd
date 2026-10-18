@@ -2,15 +2,15 @@
 class_name ClipPlayback
 extends Node
 
-## The contract of the node that plays the clips of a body by ROLE (idle, run, attack...): BodyAnimator (RFC-023 023c).
+## The contract of the node that plays the clips of a body by ROLE (idle, run, attack...): BodyAnimator (RFC-023 023c, RFC-036 036g).
 ## Afflictions, Stunned and the bodies talk to this and not to the animator, so a body can swap it. Presentation only:
 ## the simulation never reads it.
 
-## The active clip went past its last frame and started again (RFC-028c). Emitted on the physics tick that wraps,
-## on every peer (the clip clock runs without meshes too); the body picks the next variant from it.
+## The active clip went past its last frame and started again (RFC-028c). Emitted on the physics tick that wraps, on a
+## client (the dedicated server plays no clips); the body picks the next variant from it.
 signal clip_looped(role: String)
 
-## F137 (RFC-030i-b): the pose holds (sacengine petrified, bone.d / state.d:11631-11640): the clock stops, play() does not
+## F137 (RFC-030i-b): the pose holds (sacengine petrified, bone.d / state.d:11631-11640): the pose stops, play() does not
 ## switch the clip and the frame on the body stays. Set by its owner (Petrified) on every peer; off resumes from it.
 var frozen := false:
 	set(value):
@@ -18,13 +18,13 @@ var frozen := false:
 		_frozen_changed()
 
 
-## A player that has more to hold than its own clock (the skeleton) hooks in here.
+## A player that has a skeleton to hold hooks in here.
 func _frozen_changed() -> void:
 	pass
 
 
-## Sets the model and its role -> clip tag map.
-func setup(_model: String, _role_to_tag: Dictionary) -> void:
+## Sets the model (its scene has the role -> clip mapping).
+func setup(_model: String) -> void:
 	pass
 
 
@@ -49,11 +49,6 @@ func is_skeletal() -> bool:
 
 ## True when this model has a playable clip (more than one frame) for `role`.
 func has_role(_role: String) -> bool:
-	return false
-
-
-## True when `model` has a playable clip (more than one frame) called `tag`, whatever the roles.
-func has_clip(_model: String, _tag: String) -> bool:
 	return false
 
 

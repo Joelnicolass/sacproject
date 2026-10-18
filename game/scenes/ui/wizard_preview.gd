@@ -42,7 +42,6 @@ func _build(wizard: WizardType) -> Node3D:
 		return null
 	var rig := _RIG.instantiate() as BodyRig
 	rig.model = model
-	rig.clips = BodyClips.from_roles(model, UnitClipRoles.for_wizard(wizard, model))
 	var holder := Node3D.new()
 	holder.add_child(rig)
 	var factor := model_height / maxf(float(BodyCatalog.info(model).get("height", model_height)), 0.01)

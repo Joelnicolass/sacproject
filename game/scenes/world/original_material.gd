@@ -66,7 +66,7 @@ static func for_texture(tex: Texture2D, cutout: bool, label: String = "") -> Sta
 
 
 ## Puts the shared materials on every surface of the meshes under `root` (a model's .glb scene, which has none).
-## `surface_parts` (models/index.json): the body parts each surface merges (parts with one texture are one surface); the
+## `surface_parts` (BodyModel.surface_parts, baked from the exporter's index): the body parts each surface merges (parts with one texture are one surface); the
 ## material is the one of its first part. Empty: surface i is body part i.
 static func apply_to(root: Node, model: String, surface_parts: Array = []) -> void:
 	for node in root.find_children("*", "MeshInstance3D", true, false):

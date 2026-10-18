@@ -1,0 +1,165 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/world/body/body_model.gd" id="1_lx1g8"]
+[ext_resource type="PackedScene" path="res://assets/original/models/sage.glb" id="2_wedpn"]
+[ext_resource type="Script" path="res://scenes/world/body/clip_events.gd" id="3_tev0r"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_76pkg"]
+animation = &"sgs2"
+use_custom_timeline = true
+timeline_length = 1.6
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_341dd"]
+animation = &"sgr2"
+use_custom_timeline = true
+timeline_length = 1.6
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_hxydk"]
+animation = &"sgi1"
+use_custom_timeline = true
+timeline_length = 3.3666666666666667
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_niixm"]
+animation = &"sgst"
+use_custom_timeline = true
+timeline_length = 3.3333333333333335
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_a2sej"]
+animation = &"sgwa"
+use_custom_timeline = true
+timeline_length = 1.8333333333333333
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_vhxqy"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_jknnv"]
+xfade_time = 0.15
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_au8v4"]
+xfade_time = 0.15
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_5hyjq"]
+states/Start/position = Vector2(60, 100)
+states/cast/node = SubResource("AnimationNodeAnimation_76pkg")
+states/cast/position = Vector2(660, 40)
+states/cast_run/node = SubResource("AnimationNodeAnimation_341dd")
+states/cast_run/position = Vector2(260, 150)
+states/gesture/node = SubResource("AnimationNodeAnimation_hxydk")
+states/gesture/position = Vector2(860, 40)
+states/idle/node = SubResource("AnimationNodeAnimation_niixm")
+states/idle/position = Vector2(260, 40)
+states/run/node = SubResource("AnimationNodeAnimation_a2sej")
+states/run/position = Vector2(460, 40)
+transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_vhxqy"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_jknnv"), "idle", "cast", SubResource("AnimationNodeStateMachineTransition_jknnv"), "idle", "gesture", SubResource("AnimationNodeStateMachineTransition_jknnv"), "idle", "cast_run", SubResource("AnimationNodeStateMachineTransition_jknnv"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_jknnv"), "run", "cast", SubResource("AnimationNodeStateMachineTransition_jknnv"), "run", "gesture", SubResource("AnimationNodeStateMachineTransition_jknnv"), "run", "cast_run", SubResource("AnimationNodeStateMachineTransition_jknnv"), "cast", "idle", SubResource("AnimationNodeStateMachineTransition_au8v4"), "cast", "run", SubResource("AnimationNodeStateMachineTransition_jknnv"), "cast", "gesture", SubResource("AnimationNodeStateMachineTransition_jknnv"), "cast", "cast_run", SubResource("AnimationNodeStateMachineTransition_jknnv"), "gesture", "idle", SubResource("AnimationNodeStateMachineTransition_jknnv"), "gesture", "run", SubResource("AnimationNodeStateMachineTransition_jknnv"), "gesture", "cast", SubResource("AnimationNodeStateMachineTransition_jknnv"), "gesture", "cast_run", SubResource("AnimationNodeStateMachineTransition_jknnv"), "cast_run", "idle", SubResource("AnimationNodeStateMachineTransition_jknnv"), "cast_run", "run", SubResource("AnimationNodeStateMachineTransition_jknnv"), "cast_run", "cast", SubResource("AnimationNodeStateMachineTransition_jknnv"), "cast_run", "gesture", SubResource("AnimationNodeStateMachineTransition_jknnv")]
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_yeq30"]
+
+[node name="sage" type="Node3D" unique_id=471638423]
+script = ExtResource("1_lx1g8")
+model = "sage"
+bind_aabb = AABB(-0.532529, -1.27677, -0.781815, 1.179055, 2.313589, 1.132238)
+surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0], [8.0]]
+clips = {
+"sgi1": {
+"framerate": 30,
+"frames": 101,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"sgr2": {
+"framerate": 30,
+"frames": 48,
+"hands": [{
+"bone_name": "bone_05",
+"offset": Vector3(0, 0, 0),
+"on": true
+}, {
+"bone_name": "bone_11",
+"offset": Vector3(0, 0, 0),
+"on": true
+}]
+},
+"sgs2": {
+"framerate": 30,
+"frames": 48,
+"hands": [{
+"bone_name": "bone_05",
+"offset": Vector3(0, 0, 0),
+"on": true
+}, {
+"bone_name": "bone_11",
+"offset": Vector3(0, 0, 0),
+"on": true
+}]
+},
+"sgst": {
+"framerate": 30,
+"frames": 100,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"sgwa": {
+"framerate": 30,
+"frames": 55,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+}
+}
+
+[node name="Model" parent="." unique_id=1891952669 instance=ExtResource("2_wedpn")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="Tree" type="AnimationTree" parent="." unique_id=1854048213]
+unique_name_in_owner = true
+active = false
+root_node = NodePath("../Model")
+tree_root = SubResource("AnimationNodeStateMachine_5hyjq")
+anim_player = NodePath("../Model/AnimationPlayer")
+
+[node name="Events" type="AnimationPlayer" parent="." unique_id=37148069]
+unique_name_in_owner = true
+deterministic = true
+libraries/ = SubResource("AnimationLibrary_yeq30")
+
+[node name="ClipEvents" type="Node" parent="." unique_id=1481025515]
+unique_name_in_owner = true
+script = ExtResource("3_tev0r")

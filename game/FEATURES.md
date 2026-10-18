@@ -2866,3 +2866,31 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
   - El ajuste es caótico: `neighbor_distance` 3,0 y `time_horizon_agents` 1,0.
 - **Sin review separada:** la reemplazan las pruebas de arriba, incluida la de red.
 - **Deuda:** la columna «separation» de `run_perf027.sh` quedó vacía.
+
+### F208 — Animación editable en el editor (RFC-036, corte 036g) — cerrado 2026-10-18
+
+- **Qué hay ahora:** `scenes/world/body/models/<tag>.tscn`, una por modelo (73), generada una vez por `tools/bake_body_scenes.gd`. La raíz es un `BodyModel` (`body_model.gd`, `@tool`) con:
+  - `Model`: el `.glb` instanciado (z espejada).
+  - `Tree`: un `AnimationTree` guardado. Su `AnimationNodeStateMachine` tiene un estado **por rol** (idle, run, attack, death...) y cada estado reproduce el clip del `.glb` que ese rol usa. Ese es el mapeo rol → animación: se cambia en el editor.
+  - `Events`: un `AnimationPlayer` con una animación por clip que tiene eventos de SKEL. Una pista de método llama `ClipEvents.fire(kind)` en el cuadro de cada evento. La clave `attack` es el momento visual del impacto.
+  - En el inspector: `preview_role` (se ve el rol en el editor), `aabb_margin`, y lo horneado (`bind_aabb`, `surface_parts`, `clips` con cuadros, fps y manos).
+- **Los 11 híbridos** (`baby ban2 bane faez gamm hoom sara sirc surt the2 thes`) no tienen escena: no tienen idle de más de un cuadro y siguen siendo mallas estáticas, como antes.
+- **BodyRig y BodyVisual:** `BodyRig` instancia la escena del modelo bajo `%ModelSlot` y le pide al árbol `travel` a un rol. Ya no arma el modelo ni la librería `role/*` en tiempo de ejecución con `owner = null`. `BodyCatalog.has_skeletal` pregunta por la escena.
+- **Se borró:** `ClipClock`, `UnitClipRoles`, `BodyClips` (+ `data/bodies/clips/*.tres`) y `OriginalAssets.models_index`. La regla de qué clip usa cada rol (CreatureType, WizardType y las tres obras del Sac Doctor) se aplicó una vez en `bake_body_scenes.gd` y quedó guardada en las escenas.
+- **`index.json`:** ya no lo lee ningún script de `scenes/` ni de `debug/`. Solo `bake_body_scenes.gd` y las auditorías de `tools/` (que comparan con la exportación). Lo sigue escribiendo `tools/export_skeletal.py`.
+- **La sim no leía la animación:** `grep` de `impact_frame`, `active_frame`, `clip_looped`, `has_role` en `units/`, `spells/` y reglas: solo presentación (variante de gesto, de cower, secuencia del cautivo, tween del cadáver, `Stunned`). El dedicado no carga mallas: ahora no reproduce clips ni emite `clip_looped`, y `has_role` responde false. Los tiempos del cadáver y de `Stunned` salen de los ticks, no del clip, así que no cambian.
+- **`clip_looped`** lo emite `BodyAnimator` en el tick de física en que la posición del clip del rig retrocede (solo cliente).
+- **Cambio visual conocido:** en los clips que repiten, el último cuadro se sostiene 1/fps en lugar de mezclarse con el primero (es el cuadro a cuadro del original; el resto de la pose es igual).
+- **Verificación:**
+  - Import limpio.
+  - `agent/f208/f208_poses.tscn` (ventana): pose del esqueleto de cada (modelo, rol) a 0, 0,37 y 0,9 s, antes y después: 2010 de 2175 iguales, y las 165 distintas son todas posiciones al final o pasado el largo del clip (6 dentro del último cuadro), donde `pose_at` antes repetía y ahora sostiene.
+  - `rules_suite` PASS.
+  - `run_determinism.sh quick` PASS, los 27 digests de la base sin regrabar (la primera corrida falló solo por CONTAMINATED: había una `rules_suite` en paralelo).
+  - `f208_anim_wizard_trogg.json` (idle, run, attack): diferencia media de píxeles contra antes 0,21 / 0,06 / 0,05 de 255; `impact 15` en el ataque del Trogg viene de la pista de método. `f17_gallery.json`: 0,000 (solo muestra mallas estáticas).
+- **Sin review separada** (solo la pide el RFC para 036f, 036g y 036j; queda para el orquestador).
+
+**Cierre F208 (orquestador, 2026-10-18):**
+- `run_034e` (partida con dedicado): E2E PASS.
+- Partida real con ventana (`pt035e.json` → `agent/out/pt036g/`): AGENT_OK, sin errores, con el mago animado.
+- Sin review separada; la reemplazan las pruebas.
+- **Para el usuario en el editor:** abrir `scenes/world/body/models/eorc.tscn` (el Trogg), elegir `Tree` y previsualizar los roles.

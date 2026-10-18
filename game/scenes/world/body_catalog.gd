@@ -52,10 +52,10 @@ static func loads_meshes() -> bool:
 	return Engine.is_editor_hint() or DisplayServer.get_name() != "headless"
 
 
-## True when `model` has a skeletal asset (models/index.json): its bodies are drawn by a BodyRig. A model whose clips do
-## not include the one it rests on (the hybrids) stays a static mesh: the caller also checks it has that clip.
+## True when `model` has a baked scene (scenes/world/body/models/<tag>.tscn): its bodies are drawn by a BodyRig. A model
+## whose clips do not include the one it rests on (the hybrids) has no scene and stays a static mesh.
 static func has_skeletal(model: String) -> bool:
-	return not model.is_empty() and not BodyRig.model_info(model).is_empty()
+	return BodyModel.exists(model)
 
 
 static func has_model(model: String) -> bool:

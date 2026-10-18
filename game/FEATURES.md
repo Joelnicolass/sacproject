@@ -2523,3 +2523,6 @@ Deuda:
 - El juego no se toca en este corte (034k). `.gd.uid` de los scripts nuevos los genera el primer import.
 
 **Pendiente (orquestador):** `--import` una vez; correr `det_selftest.sh` (espera `SELFTEST PASS`).
+
+### Cierre 034j (F187) — 2026-10-18
+- `det_selftest.sh` del módulo de AgentKit: SELFTEST PASS (mismo digest en fixed, fixed2 y stress; `bless` escribe la base; base falsa → QUICK FAIL; script roto → `script_error_kill` en 1 s). Import sin errores. Sin nada de Sacrifice en `addons/agent_kit/determinism/`.

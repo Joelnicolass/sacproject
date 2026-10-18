@@ -2966,3 +2966,11 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
   - `rules_suite` PASS.
   - `quick` PASS.
 - **Abierto:** desde el minimapa todavía no se apuntan hechizos sobre almas ni edificios propios («Sin blanco»).
+
+### F215 — Cierre de RFC-037 (corte 037d) — cerrado 2026-10-18
+
+- **Partida con ventana** (`pt035e` → `agent/out/pt037d/`): AGENT_OK, sin errores. El minimapa aparece abajo a la derecha, con el terreno, la cuña de visión, el mago, el altar y el manantial.
+- **Banco:** `all` DETERMINISM PASS.
+- **Para el usuario:**
+  - comparar el tinte gris con el original;
+  - decidir si el clic en el minimapa debería mover la cámara (hoy no la mueve, como en el original).

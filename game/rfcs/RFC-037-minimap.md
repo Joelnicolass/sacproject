@@ -181,3 +181,7 @@ Orden: 037a → 037b → 037c → 037d. 037a y 037b son de presentación pura (s
 ## Decisión 2026-10-18 (orquestador, cola delegada)
 
 Se aplican las recomendaciones de todas las preguntas. El usuario puede revisarlas al volver; la más visible es P1 de 037: el clic en el minimapa no mueve la cámara, como en el original.
+
+## Cierre 2026-10-18
+
+037a–037d hechos (F212–F215). `all` PASS y partida con ventana PASS.

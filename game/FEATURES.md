@@ -2435,3 +2435,13 @@ Deuda:
 Deuda:
 - `debug/body_gallery` y las escenas con `gallery_body.tscn` ya no muestran cuerpos con esqueleto (solo híbridos y props).
 - Verificación con Godot a cargo del orquestador: import, `quick`, `rules_suite`, regresión de flows f19/f23/f32 y selector de magos.
+
+### RFC-023 cerrado (2026-10-17)
+
+- **023h:** se retiró el horneado de cuerpos animados (`ClipPosePlayer`, `anim_f37`, `--baked-bodies`, `bake_clips`, `bake_bodies`). Los 11 híbridos pasan a `.glb` estáticos en `assets/original/props/` (0 mm contra el OBJ). `sizes.json` queda como dato versionado. La auditoría de esqueletos y la referencia de sacengine se conservan, con `--ref` obligatorio.
+- **Verificación de main, sin agentes en paralelo:** import sin errores; auditoría de esqueletos PASS (≤ 30 mm); `quick` 27/27; `rules_suite` PASS; paridad de assets PASS. Banco `all` en fixed, fixed2 y stress: s7 `c5a5755a`, s7_npcs `4386b384`, s1_trivial `60fbf6d5` y f139 `e3ded3af`, iguales en los tres modos y sin CONTAMINATED.
+- **Playtest 023h** (`agent/out/pt023h/`): selector de magos con esqueleto; flows f19, f23 y f32 PASS; sin errores de script.
+
+Deuda:
+- La vista previa del selector muestra a algunos magos de espaldas (The Ragman).
+- La cámara de la partida de IA es lejana: no hay captura cercana de criaturas ni de estructuras de 023h.

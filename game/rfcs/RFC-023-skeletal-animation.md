@@ -1,6 +1,6 @@
 # RFC-023 — Animación esquelética (esqueleto real desde el original)
 
-Estado: plan del tech lead, pendiente de OK. Arquitectura **estándar**, MP **online con dedicado** (MpKit). Autoridad: PRD > FEATURES > RULES > VISUAL > RFC > este plan.
+Estado: **cerrado (2026-10-17)**, cortes 023a–023h hechos; banco `all` (fixed, fixed2, stress) PASS sin agentes en paralelo.
 Pedido: que las animaciones vivan en nodos (`Skeleton3D` / `AnimationPlayer` / `AnimationTree`) y no como mallas por cuadro en caché. Opción elegida: **A, esqueleto real**. Nada del juego original va a git: el repo guarda estructura de nodos, scripts y alias; huesos, malla, pesos, clips y texturas salen de `cache/`.
 
 ## 1. Objetivo (criterios de aceptación)

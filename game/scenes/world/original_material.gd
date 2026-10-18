@@ -53,7 +53,7 @@ static func for_label(model: String, label: String) -> StandardMaterial3D:
 	return built
 
 
-## The material of surface `part` of a skeletal model (.glb): surface i is the model's body part i.
+## The material of surface `part` of a skeletal model (.glb): surface i is the model's body part i (see apply_to for merged surfaces).
 static func for_part(model: String, part: int) -> StandardMaterial3D:
 	return for_label(model, part_label(part))
 
@@ -71,13 +71,16 @@ static func for_texture(tex: Texture2D, cutout: bool, label: String = "") -> Sta
 
 
 ## Puts the shared materials on every surface of the meshes under `root` (a model's .glb scene, which has none).
-static func apply_to(root: Node, model: String) -> void:
+## `surface_parts` (models/index.json): the body parts each surface merges (parts with one texture are one surface); the
+## material is the one of its first part. Empty: surface i is body part i.
+static func apply_to(root: Node, model: String, surface_parts: Array = []) -> void:
 	for node in root.find_children("*", "MeshInstance3D", true, false):
 		var instance := node as MeshInstance3D
 		if instance.mesh == null:
 			continue
 		for i in instance.mesh.get_surface_count():
-			var mat := for_part(model, i)
+			var part := int((surface_parts[i] as Array)[0]) if i < surface_parts.size() else i
+			var mat := for_part(model, part)
 			if mat != null:
 				instance.set_surface_override_material(i, mat)
 

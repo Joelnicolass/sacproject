@@ -2,7 +2,7 @@
 """Skeletal models (RFC-023a): saxs*.wad -> one glTF binary per model (versioned asset, WADs stay out of git).
 
 For each model writes, into the output folder (`--out`, default assets/original/models (versioned assets)):
-    <m>.glb            Skeleton3D + one skinned mesh (one primitive per body part, <= 4 influences)
+    <m>.glb            Skeleton3D + one skinned mesh (one primitive per material: body parts that share a texture are merged, <= 4 influences)
                        + every SXSK clip of the model as bone tracks (root displacement = root position track)
     <m>.glb.import     Godot import parameters (written next to the .glb)
     index.json         model -> bones, clips (frames, framerate, hands, ...), bind discrepancy, AABB
@@ -673,6 +673,8 @@ SHIFT_STEP = 5e-4
 BIND_THRESHOLD = 5e-4
 ## Vertices whose raw weights do not sum to 1 within this are reported (the game does not normalize them).
 WEIGHT_SUM_TOLERANCE = 0.002
+## Largest bind error (mm) a model may have with one bind per vertex; above it the model gets helper joints.
+MAX_ERROR_MM = 30.0
 
 
 def build_mesh_data(model: Model, exact: bool = True):
@@ -690,6 +692,7 @@ def build_mesh_data(model: Model, exact: bool = True):
     helpers = []
     unnormalized = []  # (surface, vertex before dropping, weight sum, bind distance from the root origin)
     worst, total, count = 0.0, 0.0, 0
+    residual = 0.0  # largest bind error left after the helper joints (vertices that keep an averaged bind)
     worst_per_part = []
     for mesh in model.part_meshes:
         pos, joints, weights = [], [], []
@@ -730,6 +733,7 @@ def build_mesh_data(model: Model, exact: bool = True):
                             helpers.append(hk)
                         j.append(helper_index[hk])
             else:
+                residual = max(residual, d)
                 bind = avg
                 j = [infl[i][0] for i in order]
             w = [infl[i][2] / wsum for i in order]
@@ -739,7 +743,7 @@ def build_mesh_data(model: Model, exact: bool = True):
         worst = max(worst, part_worst)
         worst_per_part.append(part_worst)
         parts.append({"pos": pos, "joints": joints, "weights": weights})
-    stats_out = {"max_mm": round(worst * 1000.0, 4), "mean_mm": round(total / max(count, 1) * 1000.0, 4),
+    stats_out = {"max_mm": round(worst * 1000.0, 4), "residual_max_mm": round(residual * 1000.0, 4), "mean_mm": round(total / max(count, 1) * 1000.0, 4),
                  "per_part_max_mm": [round(w * 1000.0, 4) for w in worst_per_part],
                  "helper_joints": len(helpers), "exact": exact, "bind_threshold_mm": BIND_THRESHOLD * 1000.0,
                  "shift_step_mm": SHIFT_STEP * 1000.0}
@@ -763,6 +767,20 @@ def winding_is_flipped(model: Model, parts) -> bool:
     return score < 0.0
 
 
+_TEXTURE_INDEX = None
+
+
+def material_key(model_tag: str, part: int):
+    """What the game draws body part `part` with: (owner, file, cutout) of textures/index.json. Parts with the same key
+    share one OriginalMaterial and so one primitive. A part with no entry stays alone."""
+    global _TEXTURE_INDEX
+    if _TEXTURE_INDEX is None:
+        path = ROOT / "assets" / "original" / "textures" / "index.json"
+        _TEXTURE_INDEX = json.loads(path.read_text())["models"] if path.exists() else {}
+    entry = _TEXTURE_INDEX.get(model_tag.lower(), {}).get("bodypart%03d" % (part + 1))
+    return (entry["owner"], entry["file"], entry["cutout"]) if entry else ("part", part)
+
+
 def write_glb(path: Path, model_tag: str, model: Model, clips: dict, exact: bool = True):
     g = Gltf()
     abs_pos = model.abs_pos()
@@ -771,10 +789,10 @@ def write_glb(path: Path, model_tag: str, model: Model, clips: dict, exact: bool
     # glTF front faces are counter-clockwise. The engine order is counter-clockwise seen from outside when
     # the cross product (b-a)x(c-a) points away from the centre, so keep it; reverse otherwise.
     reverse = winding_is_flipped(model, parts)
-    primitives = []
     lo_all = [1e30] * 3
     hi_all = [-1e30] * 3
-    dropped = []  # per surface: vertex indices (in the engine/OBJ order) that no face uses and so are not written
+    dropped = []  # per body part: vertex indices (in the engine/OBJ order) that no face uses and so are not written
+    built = []  # per body part: pos, normals, uv, joints, weights, faces (indices local to the part)
     for mesh, data in zip(model.part_meshes, parts):
         faces = [(a, c, b) if reverse else (a, b, c) for a, b, c in mesh["faces"]]
         used = sorted({i for f in faces for i in f})
@@ -784,23 +802,44 @@ def write_glb(path: Path, model_tag: str, model: Model, clips: dict, exact: bool
             faces = [tuple(remap[i] for i in f) for f in faces]
             data = {k: [v[i] for i in used] for k, v in data.items()}
             mesh = dict(mesh, vertices=[mesh["vertices"][i] for i in used])
-        normals = smooth_normals(data["pos"], faces)
-        n = len(data["pos"])
-        lo = [min(p[k] for p in data["pos"]) for k in range(3)]
-        hi = [max(p[k] for p in data["pos"]) for k in range(3)]
+        # Normals stay per body part (the seams of the engine are not welded), so merging parts changes nothing.
+        built.append({"pos": data["pos"], "nrm": smooth_normals(data["pos"], faces),
+                      "uv": [(u, v) for (_i, u, v) in mesh["vertices"]],
+                      "joints": data["joints"], "weights": data["weights"], "faces": faces})
+    # One primitive per distinct material (same texture file and cutout): parts that share one are concatenated in
+    # part order, with their own indices, weights, UVs and normals. surface_parts[s] = the body parts of surface s.
+    groups = {}
+    for pi in range(len(built)):
+        groups.setdefault(material_key(model_tag, pi), []).append(pi)
+    surface_parts = list(groups.values())
+    # The parity audit compares surface by surface against the OBJ (part order): groups must be runs of parts.
+    assert [p for m in surface_parts for p in m] == list(range(len(built))), "%s: shared materials not contiguous" % model_tag
+    part_offset = {}  # body part -> (surface, first vertex of the part inside the surface)
+    primitives = []
+    for si, members in enumerate(surface_parts):
+        cat = {"pos": [], "nrm": [], "uv": [], "joints": [], "weights": [], "faces": []}
+        for pi in members:
+            base = len(cat["pos"])
+            part_offset[pi] = (si, base)
+            for k in ("pos", "nrm", "uv", "joints", "weights"):
+                cat[k] += built[pi][k]
+            cat["faces"] += [(a + base, b + base, c + base) for a, b, c in built[pi]["faces"]]
+        n = len(cat["pos"])
+        lo = [min(p[k] for p in cat["pos"]) for k in range(3)]
+        hi = [max(p[k] for p in cat["pos"]) for k in range(3)]
         for k in range(3):
             lo_all[k], hi_all[k] = min(lo_all[k], lo[k]), max(hi_all[k], hi[k])
-        flat = [c for p in data["pos"] for c in p]
+        flat = [c for p in cat["pos"] for c in p]
         acc_pos = g.accessor(struct.pack("<%df" % len(flat), *flat), FLOAT, n, "VEC3", 34962, lo, hi)
-        flat = [c for p in normals for c in p]
+        flat = [c for p in cat["nrm"] for c in p]
         acc_nrm = g.accessor(struct.pack("<%df" % len(flat), *flat), FLOAT, n, "VEC3", 34962)
-        flat = [c for (_i, u, v) in mesh["vertices"] for c in (u, v)]
+        flat = [c for uv in cat["uv"] for c in uv]
         acc_uv = g.accessor(struct.pack("<%df" % len(flat), *flat), FLOAT, n, "VEC2", 34962)
-        flat = [c for j in data["joints"] for c in j]
+        flat = [c for j in cat["joints"] for c in j]
         acc_j = g.accessor(struct.pack("<%dH" % len(flat), *flat), USHORT, n, "VEC4", 34962)
-        flat = [c for w in data["weights"] for c in w]
+        flat = [c for w in cat["weights"] for c in w]
         acc_w = g.accessor(struct.pack("<%df" % len(flat), *flat), FLOAT, n, "VEC4", 34962)
-        flat = [i for f in faces for i in f]
+        flat = [i for f in cat["faces"] for i in f]
         if n < 65536:
             acc_i = g.accessor(struct.pack("<%dH" % len(flat), *flat), USHORT, len(flat), "SCALAR", 34963)
         else:
@@ -863,13 +902,14 @@ def write_glb(path: Path, model_tag: str, model: Model, clips: dict, exact: bool
     pack_glb(path, doc, g)
     # Written vertex numbering (unused vertices removed) for the vertices the game does not normalize.
     unnorm_out = []
-    for surface, vertex, wsum, radius in unnormalized:
-        written = vertex - sum(1 for d in dropped[surface] if d < vertex)
-        unnorm_out.append({"surface": surface, "vertex": written, "weight_sum": round(wsum, 6),
+    for part, vertex, wsum, radius in unnormalized:
+        written = vertex - sum(1 for d in dropped[part] if d < vertex)
+        surface, first = part_offset[part]
+        unnorm_out.append({"surface": surface, "vertex": first + written, "weight_sum": round(wsum, 6),
                            "predicted_err_mm": round(abs(wsum - 1.0) * radius * 1000.0, 3)})
     discrepancy["unnormalized_count"] = len(unnorm_out)
     dropped_out = dropped
-    return discrepancy, reverse, (lo_all, hi_all), dropped_out, unnorm_out
+    return discrepancy, reverse, (lo_all, hi_all), dropped_out, unnorm_out, surface_parts
 
 
 # Puts the clips back with every key (see tools/skeletal_post_import.gd).
@@ -913,7 +953,7 @@ def model_sources(tag: str, model_paths: dict, anim_index: dict):
     return files, clips
 
 
-def export_model(tag: str, out: Path, model_paths: dict, anim_index: dict, exact: bool = True):
+def export_model(tag: str, out: Path, model_paths: dict, anim_index: dict, exact=None):
     files, clip_files = model_sources(tag, model_paths, anim_index)
     key = tag.lower()
     sxmd = next(v for (n, e), v in files.items() if e == "SXMD")
@@ -933,7 +973,18 @@ def export_model(tag: str, out: Path, model_paths: dict, anim_index: dict, exact
     if len(model.bone_pos) > MAX_BONES:
         raise SystemExit("too many bones")
     out.mkdir(parents=True, exist_ok=True)
-    discrepancy, reversed_faces, (lo, hi), dropped, unnorm = write_glb(out / (tag + ".glb"), tag, model, clips, exact)
+    # Default (user decision 2026-10-17): one averaged bind per vertex, the model's own bones only. Its error is the
+    # bind discrepancy; a model above MAX_ERROR_MM gets helper joints only for the vertices over that threshold.
+    global BIND_THRESHOLD
+    saved_threshold = BIND_THRESHOLD
+    if exact is None:
+        single = build_mesh_data(model, False)[1]
+        exact = single["max_mm"] > MAX_ERROR_MM
+        BIND_THRESHOLD = max(BIND_THRESHOLD, MAX_ERROR_MM / 1000.0) if exact else BIND_THRESHOLD
+    try:
+        discrepancy, reversed_faces, (lo, hi), dropped, unnorm, surface_parts = write_glb(out / (tag + ".glb"), tag, model, clips, exact)
+    finally:
+        BIND_THRESHOLD = saved_threshold
     write_import(out / (tag + ".glb.import"))
     abs_pos = model.abs_pos()
     entry = {
@@ -947,6 +998,7 @@ def export_model(tag: str, out: Path, model_paths: dict, anim_index: dict, exact
         "faces_reversed_for_gltf": reversed_faces,
         "bind_discrepancy": discrepancy,
         "dropped_vertices": dropped,
+        "surface_parts": surface_parts,
         "unnormalized_vertices": unnorm,
         "bind_aabb": {"min": [round(c, 6) for c in lo], "max": [round(c, 6) for c in hi]},
         "skipped_clips": skipped,
@@ -957,8 +1009,8 @@ def export_model(tag: str, out: Path, model_paths: dict, anim_index: dict, exact
             for t, c in sorted(clips.items())
         },
     }
-    print("%s: %d bones, %d clips, %d skipped, bind discrepancy max %.3f mm mean %.3f mm, helper joints %d, reversed=%s"
-          % (tag, len(model.bone_pos), len(clips), len(skipped), discrepancy["max_mm"], discrepancy["mean_mm"], discrepancy["helper_joints"],
+    print("%s: %d bones, %d clips, %d skipped, bind error max %.3f mm (raw %.3f) mean %.3f mm, helper joints %d, reversed=%s"
+          % (tag, len(model.bone_pos), len(clips), len(skipped), discrepancy["residual_max_mm"], discrepancy["max_mm"], discrepancy["mean_mm"], discrepancy["helper_joints"],
              reversed_faces))
     return entry
 
@@ -967,7 +1019,8 @@ def main():
     global BIND_THRESHOLD, SHIFT_STEP
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
-    parser.add_argument("--single-bind", action="store_true", help="one averaged bind per vertex, no helper joints (inexact)")
+    parser.add_argument("--single-bind", action="store_true", help="one averaged bind per vertex for every model, whatever its error")
+    parser.add_argument("--exact", action="store_true", help="helper joints for every vertex over --bind-threshold-mm (the 1 mm parity of 023a)")
     parser.add_argument("models", nargs="*", default=DEFAULT_MODELS)
     parser.add_argument("--bind-threshold-mm", type=float, default=BIND_THRESHOLD * 1000.0)
     parser.add_argument("--shift-step-mm", type=float, default=SHIFT_STEP * 1000.0)
@@ -980,7 +1033,7 @@ def main():
     index_path = out / "index.json"
     index = json.loads(index_path.read_text()) if index_path.exists() else {}
     for tag in args.models:
-        index[tag] = export_model(tag, out, model_paths, anim_index, not args.single_bind)
+        index[tag] = export_model(tag, out, model_paths, anim_index, False if args.single_bind else (True if args.exact else None))
     out.mkdir(parents=True, exist_ok=True)
     index_path.write_text(json.dumps(index, indent=1, sort_keys=True))
 

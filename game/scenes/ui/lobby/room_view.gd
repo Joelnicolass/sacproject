@@ -165,4 +165,8 @@ func _on_pick_pressed() -> void:
 
 func _on_pick_confirmed() -> void:
 	%PickOverlay.visible = false
+	## Free the selector with the overlay: nothing of it can keep the pointer (it is built again if asked for).
+	if _character_select != null:
+		_character_select.queue_free()
+		_character_select = null
 	MpLobby.client.set_pick(SacrificeFlow.pick)

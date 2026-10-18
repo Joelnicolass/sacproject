@@ -2570,3 +2570,7 @@ Deuda:
 - Determinismo: el resultado lleva `seed` y `ticks`; no hay digest contra el banco. El plan de 034e pide `quick` igual a `det_baseline.txt` (tocan `SacrificeFlow` y `MatchSetup`): lo corre el orquestador.
 
 **Pendiente (orquestador):** `--import` una vez (clases y `.uid` nuevos); `quick --no-window` contra `det_baseline.txt`; correr `agent/run_034e.sh` (espera `E2E PASS`). Código escrito sin ejecutar Godot.
+
+### Cierre 034e (F182) — 2026-10-18
+- `agent/run_034e.sh`: **E2E PASS 3 veces seguidas**, 118 checks cada una. Escenario del usuario con dedicados reales: servidor de salas, 4 clientes y **dos salas 1v1 en paralelo**, cada una con su dedicado (SalaA termina por resultado, SalaB por abandono); tickets cruzados e inventados rechazados; cada resultado llega solo a su sala; al final 0 procesos Godot y sin archivos de partida. RSS total máximo 1,3 GB con 7 procesos, ~35 s por corrida. Import sin errores; `quick` 27/27.
+- El primer FAIL («1 dedicated process left») era la prueba contándose a sí misma con `awk`; corregido en 87ec897.

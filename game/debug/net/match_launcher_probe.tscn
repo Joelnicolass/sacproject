@@ -13,4 +13,4 @@ script = ExtResource("2_launcher")
 config = ExtResource("3_cfg")
 reap_on_ready = false
 keep_files = true
-agent_args = PackedStringArray()
+agent_args = PackedStringArray("--no-flow")

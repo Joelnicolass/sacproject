@@ -346,7 +346,7 @@ func _reject_peer(id: int, reason: String) -> void:
 	## Let the reliable RPC leave before the disconnect command.
 	var closing := multiplayer.multiplayer_peer
 	get_tree().create_timer(REJECT_FLUSH_S).timeout.connect(func() -> void:
-		if closing != null and multiplayer.multiplayer_peer == closing:
+		if closing != null and multiplayer.multiplayer_peer == closing and multiplayer.get_peers().has(id):
 			closing.disconnect_peer(id))
 
 

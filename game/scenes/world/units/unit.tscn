@@ -320,9 +320,10 @@ visual = NodePath("../Tilt/Mesh")
 script = ExtResource("5_corpse")
 pivot = NodePath("../Tilt")
 
-[node name="Captive" type="Node" parent="." node_paths=PackedStringArray("body")]
+[node name="Captive" type="Node" parent="." node_paths=PackedStringArray("body", "clip_pose")]
 script = ExtResource("f59_captive")
 body = NodePath("..")
+clip_pose = NodePath("../ClipPose")
 portal_scene = ExtResource("f59_portal")
 
 [node name="GuardianBond" type="Node" parent="." node_paths=PackedStringArray("body", "health", "orders", "ability")]

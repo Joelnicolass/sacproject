@@ -9,6 +9,8 @@ extends RefCounted
 const EXTRA_ROLES: PackedStringArray = ["cower", "talk_cower", "work"]
 const FLIGHT_ROLES: PackedStringArray = ["takeoff", "fly", "land"]
 const STUN_ROLES: PackedStringArray = ["knock", "get_up", "fly_damage"]
+## 023e: what a creature held by a Sac Doctor plays, in this order (rise, then held = float2Thrash, then thrash on a loop).
+const CAPTIVE_ROLES: PackedStringArray = ["rise", "held", "thrash"]
 
 
 ## role -> tag for `type` drawn with `model`. A role whose tag is "" has no clip: the body rests on idle.
@@ -28,7 +30,8 @@ static func for_type(type: CreatureType, model: String) -> Dictionary:
 	if type == null:
 		return roles
 	# RFC-028c peasant clips, F116 takeoff/fly/land of a hybrid flier, F120 knock/get_up/fly_damage.
-	var sets: Array = [[type.extra_animations, EXTRA_ROLES], [type.flight_animations, FLIGHT_ROLES], [type.stun_animations, STUN_ROLES]]
+	var sets: Array = [[type.extra_animations, EXTRA_ROLES], [type.flight_animations, FLIGHT_ROLES], [type.stun_animations, STUN_ROLES],
+		[type.captive_animations, CAPTIVE_ROLES]]
 	for pair: Array in sets:
 		for role: String in pair[1]:
 			var clip: Variant = (pair[0] as Dictionary).get(role, {})

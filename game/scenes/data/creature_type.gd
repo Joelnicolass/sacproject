@@ -64,6 +64,9 @@ extends Resource
 ## framerate}. Stunned lasts (knock + get_up)·2 ticks on the ground and fly_damage·2 in the air (state.d:8138-8150, 14170-14212).
 ## Peasants have no fly_damage (slot 35 is their dig).
 @export var stun_animations: Dictionary = {}
+## RFC-023 023e: what the creature plays while a Sac Doctor holds it (CreatureMode.thrashing, CRE8 slots 46, 49, 25): rise
+## (once), held (float2Thrash, once) and thrash (loop), by the same rule: role -> {tag, frames, framerate}.
+@export var captive_animations: Dictionary = {}
 
 
 func is_flying() -> bool:

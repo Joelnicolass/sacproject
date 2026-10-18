@@ -73,6 +73,13 @@ enum Work { PUMP, LIFT, TORTURE }
 	Work.LIFT: 2,
 	Work.TORTURE: 0,
 }
+## Work -> role of the BodyRig state machine that plays that slot's clip (023e). The rig has one state per role of
+## BodyClips.ROLES and the doctor has no states of its own, so each work borrows the role closest to what it does.
+@export var work_roles := {
+	Work.PUMP: &"work",
+	Work.LIFT: &"cast",
+	Work.TORTURE: &"attack",
+}
 
 @export_group("Sockets")
 @export var health: Health
@@ -80,8 +87,9 @@ enum Work { PUMP, LIFT, TORTURE }
 @export var collision: CollisionShape3D
 @export var health_bar: MeshInstance3D
 @export var states: FsmMachine
-## Plays the exported clips on `visual`. Presentation only: the dedicated server has no meshes.
-@export var clip_player: ClipPosePlayer
+## Plays the clips by role on the BodyRig under `visual` (BodyAnimator, RFC-023 023e). Presentation only: the dedicated
+## server has no meshes.
+@export var clip_player: ClipPlayback
 
 ## Multiplies the pace (Speedup-like effects).
 var speed_factor := 1.0
@@ -345,27 +353,30 @@ func _apply_pose() -> void:
 	remove_from_group(GROUP)
 	collision.set_deferred("disabled", true)
 	health_bar.visible = false
-	if visual.mesh == null:
+	if not BodyCatalog.loads_meshes():
 		return
 	if _fade:
 		_fade.kill()
 	_fade = create_tween()
-	_fade.tween_property(visual, "transparency", 1.0, rules.doctor_death_s if rules else 2.0)
+	## BodyVisual.set_fade fades the rig's meshes too (transparency does not inherit).
+	_fade.tween_method(visual.set_fade, 0.0, 1.0, rules.doctor_death_s if rules else 2.0)
 
 
-## Clip roles of the ClipPosePlayer from the CRE8: idle, run and one `work_<slot>` per melee slot.
+## Clip roles of the BodyAnimator from the CRE8: idle, run and the role of each work (`work_roles`) with its melee slot's clip.
 func _clip_roles() -> Dictionary:
 	if type == null:
 		return {}
-	var roles := {"idle": str(type.idle_animation.get("tag", "")), "run": str(type.run_animation.get("tag", ""))}
-	for slot: int in work_slots.values():
-		if slot < type.melee_animations.size():
-			roles[_work_role(slot)] = str(type.melee_animations[slot].get("tag", ""))
+	## sacengine rests on stance1 and plays idle0..3 only as gestures (state.d:7957-7992); SDda, the idle0, strolls 1,6 m
+	## from the capsule (tools/audit_skeletal_center.gd), so the doctor rests on SDst and does not gesture.
+	var rest := str(type.stance_animation.get("tag", ""))
+	if rest.is_empty() or not ClipClock.has_clip(visual.model, rest):
+		rest = str(type.idle_animation.get("tag", ""))
+	var roles := {"idle": rest, "run": str(type.run_animation.get("tag", ""))}
+	for kind: Variant in work_slots:
+		var slot := int(work_slots[kind])
+		if slot < type.melee_animations.size() and work_roles.has(kind):
+			roles[str(work_roles[kind])] = str(type.melee_animations[slot].get("tag", ""))
 	return roles
-
-
-func _work_role(slot: int) -> String:
-	return "work_%d" % slot
 
 
 func _play_clip() -> void:
@@ -373,7 +384,7 @@ func _play_clip() -> void:
 		return
 	var role := ""
 	if pose == Pose.WORKING:
-		role = _work_role(int(work_slots.get(work, -1)))
+		role = str(work_roles.get(work, ""))
 	else:
 		role = str(pose_roles.get(pose, ""))
 	if not role.is_empty():
@@ -393,7 +404,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if states == null:
 		out.append("Asigná `states` (FsmMachine con Off, Dropping, Grounded, Working, Dying).")
 	if clip_player == null:
-		out.append("Asigná `clip_player` (ClipPosePlayer): sin él el doctor queda en pose fija.")
+		out.append("Asigná `clip_player` (BodyAnimator): sin él el doctor queda en pose fija.")
 	if rules == null:
 		out.append("Asigná `rules` (MatchRules): plazos de caída, muerte y trabado.")
 	return out

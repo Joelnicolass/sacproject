@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # RFC-034 034f playtest: the room screens, with ONE window.
-#   1 room server (headless) + 1 headless second player (agent/harness/pt034f_peer, drives the same lobby client the buttons use,
+#   1 room server (headless) + 1 headless second player (agent/fixtures/pt034f_peer, drives the same lobby client the buttons use,
 #   the real room screen reacts) + 1 windowed player driven by an AgentKit flow (agent/flows/pt034f_host.json) + the dedicated that
 #   the server launches (4th process, no window).
 # The windowed player: menu -> «Salas online» -> connect -> empty list -> create «Duelo» -> room alone -> second player sits ->
@@ -95,7 +95,7 @@ if [ "$READY" = 1 ]; then
     --transport="$TRANSPORT" --lobby="127.0.0.1:$LOBBY_PORT" --fail-on-error > "$OUT/window.log" 2>&1 &
   WINDOW=$!
   # --- the headless second player ---------------------------------------------------------------------------------
-  bash "$ROOT/agent/harness/godot_run.sh" "$GODOT" --headless --path "$ROOT" res://agent/harness/pt034f_peer.tscn -- \
+  bash "$ROOT/agent/harness/godot_run.sh" "$GODOT" --headless --path "$ROOT" res://agent/fixtures/pt034f_peer.tscn -- \
     --transport="$TRANSPORT" --lobby="127.0.0.1:$LOBBY_PORT" --pt-name=Rival --pt-room=Duelo --pt-wizard=cwa1 --pt-god=pyro \
     > "$OUT/peer.log" 2>&1 &
   PEER=$!

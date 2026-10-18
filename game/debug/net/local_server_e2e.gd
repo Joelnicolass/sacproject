@@ -17,6 +17,7 @@ const FAKE_CODE := "00000000000000000000000000000000"
 const DEFAULT_PORT := 7710
 const INFO_FILE := "local.json"
 const RIVAL_IN_FILE := "rival_in.flag"
+const DONE_FILE := "done.flag"
 
 var _role: String = ""
 var _fails: int = 0
@@ -41,6 +42,7 @@ func _ready() -> void:
 	MpKit.slot_assigned.connect(func(slot: int) -> void: _slot = slot)
 	MpKit.admission_rejected.connect(func(reason: String) -> void: _rejected = reason)
 	MpKit.server_lost.connect(func() -> void: _lost = true)
+	MpKit.join_failed.connect(func() -> void: _lost = true)
 	MpKit.session_ended.connect(func(data: Dictionary) -> void: _session_ended = data)
 	MpKit.configure(7777, 2, 1)
 	match _role:
@@ -120,6 +122,7 @@ func _run_host() -> void:
 	_check(await _until(func() -> bool: return _slot != 0 or not _rejected.is_empty()), "the host gets a slot")
 	_check(_slot == LocalServerHost.HOST_SLOT, "the host has slot 1 (got %d)" % _slot)
 	_check(await _until(func() -> bool: return not _session_ended.is_empty(), 90.0), "the host gets session_ended from the dedicated")
+	_write_flag(DONE_FILE)
 	var winner := int(MpBoot.user_value("e2e-expect-winner", "1"))
 	_check(int(_session_ended.get("winner_slot", -2)) == winner, "the result winner is slot %d (got %s)" % [winner, str(_session_ended.get("winner_slot"))])
 	_check_picks(_session_ended, "host")
@@ -233,10 +236,14 @@ func _run_intruder() -> void:
 	await _expect_no_seat(host, port, "", "without any credential")
 	await _expect_no_seat(host, port, FAKE_CODE, "with a made-up code")
 	await _expect_no_seat(host, port, str(info["code"]), "with the code of the seat the rival already uses")
+	# the three attempts happened while the match was alive (the host has not seen the result yet)
+	_check(not FileAccess.file_exists("%s/%s" % [_dir(), DONE_FILE]), "the attempts were made while the match was still running")
 	_finish()
 
 
-## Joins with `credential` and expects: no slot, and the dedicated says no (a rejection, or the link closed).
+## Joins with `credential` and expects: no slot, and the dedicated says no. Both count: an explicit `admission_rejected`
+## (WebSocket has no cap; ENet with the credential wrong) or a refused / closed link without a slot (ENet: the dedicated accepts
+## as many clients as seats, so a third one never reaches the admission). Either way the third player gets nothing.
 func _expect_no_seat(host: String, port: int, credential: String, what: String) -> void:
 	_rejected = ""
 	_lost = false

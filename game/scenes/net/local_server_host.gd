@@ -100,7 +100,21 @@ func _exit_tree() -> void:
 ## While the host plays, leaving the match (menu, closed window) ends the local server.
 func _process(_delta: float) -> void:
 	if _joined and not MpKit.is_networked():
+		_on_host_gone()
+
+
+## The host's link is gone. After the match the dedicated quits by itself (`result_quit_delay_s`) and that drops the host first: if
+## `result.json` is there, that is the end of the match, not a failure. Without it, the host left a match in course: kill the dedicated.
+func _on_host_gone() -> void:
+	set_process(false)
+	var result := MpMatchFiles.read_json(MpMatchFiles.path_of(launcher.config.matches_root, match_id, MpMatchFiles.RESULT))
+	if result.is_empty():
 		stop("host_left")
+		return
+	_stopping = true
+	if launcher.active_ids().has(match_id):
+		launcher.abort(match_id, "host_left")
+	_on_ended(match_id, result)
 
 
 func _on_listening(listening_id: String, listening_port: int) -> void:
@@ -127,7 +141,7 @@ func _on_ended(ended_id: String, result: Dictionary) -> void:
 
 
 func _on_failed(failed_id: String, reason: String) -> void:
-	if failed_id != match_id:
+	if failed_id != match_id or _stopping:
 		return
 	print("servidor local fallo %s" % reason)
 	if not _closed and not _stopping:

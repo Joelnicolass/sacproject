@@ -18,7 +18,7 @@ LIMIT_S="${PROBE_LIMIT_S:-170}"
 TRANSPORT="${TRANSPORT:-enet}" # enet (UDP, default) or ws (WebSocket over TCP): TRANSPORT=ws bash agent/run_034m.sh
 RSS_LIMIT_MB="${E2E_RSS_LIMIT_MB:-6144}"
 LOCAL_PORT="${E2E_LOCAL_PORT:-7716}"
-FORCE_TICKS="${E2E_FORCE_TICKS:-2400}" # ticks after the first admission when slot 2 is defeated (the intruder needs ~15 s of match)
+FORCE_TICKS="${E2E_FORCE_TICKS:-3600}" # ticks after the first admission when slot 2 is defeated (the intruder needs up to ~40 s of match)
 OUT="$(mktemp -d "${TMPDIR:-/tmp}/local_e2e_034m.XXXXXX")"
 MATCHES="$OUT/matches"
 INFO="$OUT/info"

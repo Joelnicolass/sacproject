@@ -19,11 +19,11 @@ const GROUPS: Array[StringName] = [&"wizard", &"unit", &"structure"]
 ## Hurts every body around `center` except `direct` (which the caller already hit with the whole amount).
 ## `kind` is the Health damage kind: splash spell (Wrath, Fireball, Swarm, Steam Cloud) or splash ranged
 ## (dealSplashRangedDamageAt, state.d:9400: a creature's shot, F119). `mods`: the DamageMod bits (F155: IGNITE).
-static func deal(tree: SceneTree, center: Vector3, amount: float, radius: float, direct: Node3D, from_slot: int, kind: StringName = _HEALTH.SPLASH_SPELL, mods := 0) -> void:
+static func deal(tree: SceneTree, center: Vector3, amount: float, radius: float, direct: Node3D, from_slot: int, kind: StringName = _HEALTH.SPLASH_SPELL, mods := 0, attacker: Node = null) -> void:
 	for body in bodies_within(tree, center, radius, direct):
 		if float(body.get_node("Health").get("maximum")) <= 0.0:
 			continue
-		hurt(body, amount * maxf(0.0, 1.0 - box_distance(body, center) / radius), from_slot, kind, mods)
+		hurt(body, amount * maxf(0.0, 1.0 - box_distance(body, center) / radius), from_slot, kind, mods, attacker)
 
 
 ## The one walk of a splash (sacengine dealDamageAt's collisionTargets, state.d:9075-9088): live bodies of `groups`
@@ -46,9 +46,12 @@ static func bodies_within(tree: SceneTree, center: Vector3, radius: float, excep
 
 
 ## `mods` (F155): the DamageMod bits the hit carries (Health.IGNITE: Fireball, Steam Cloud, fkba/cfba shots, the oil's blast).
-static func hurt(body: Node3D, amount: float, from_slot: int, kind: StringName = _HEALTH.SPLASH_SPELL, mods := 0) -> void:
+## F164b: `attacker` is the creature that fired the shot (null: a spell or an effect with no drain); LifeDrain.feed gives it
+## back `taken · its drain` (sacengine dealDamage with an attacker creature, state.d:8933-8947, also on the splash walk).
+static func hurt(body: Node3D, amount: float, from_slot: int, kind: StringName = _HEALTH.SPLASH_SPELL, mods := 0, attacker: Node = null) -> void:
 	var taken := float(body.get_node("Health").call("damage_typed", amount, kind, from_slot, false, false, mods))
 	_ROCK.report(body, taken, kind)
+	LifeDrain.feed(attacker, body, taken)
 
 
 ## sacengine boxPointDistance: from the point to the body's hit box. A map building gives its model box

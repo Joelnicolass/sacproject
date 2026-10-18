@@ -55,8 +55,11 @@ func _ready() -> void:
 		_show_dissolve()
 
 
-## Where the pivot ends when the body lies (the Tween's last pose): the soul sits on it either way.
-func laid_pose(body_radius: float) -> Transform3D:
+## The pose the pivot would end in once the body lies (the Tween's last one). The pivot stays upright when a clip lays
+## the body down, so it is applied by hand there; with the Tween the pivot already holds it: identity.
+func lying_pose(body_radius: float) -> Transform3D:
+	if not clip_driven:
+		return Transform3D.IDENTITY
 	return Transform3D(Basis.from_euler(Vector3(-deg_to_rad(fall_deg), 0.0, 0.0)), Vector3(0.0, body_radius, 0.0))
 
 

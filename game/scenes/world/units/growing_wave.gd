@@ -49,6 +49,7 @@ func _fly(shot: RangedShot, at: Vector3) -> void:
 	if ticks == 1 and log_touches:
 		_log_start(shot, at)
 	var intended := _intended(shot)
+	var shooter := ShotImpact.shooter_of(shot)
 	for body in _SPLASH.bodies_within(get_tree(), at, radius):
 		var health := body.get_node_or_null("Health") as Health
 		if _touched.has(body) or health == null or health.maximum <= 0.0:
@@ -58,7 +59,7 @@ func _fly(shot: RangedShot, at: Vector3) -> void:
 		if body == intended:
 			_log_touch(shot, body, at, distance, radius, "directo")
 			var direct_states := _before(body, true, shot)
-			_SPLASH.hurt(body, amount, from_slot, _HEALTH.DIRECT_RANGED, shot.mods)
+			_SPLASH.hurt(body, amount, from_slot, _HEALTH.DIRECT_RANGED, shot.mods, shooter)
 			_after(body, true, direct_states, shot)
 			continue
 		if from_slot > 0 and _side(body) == from_slot:
@@ -66,7 +67,7 @@ func _fly(shot: RangedShot, at: Vector3) -> void:
 			continue
 		_log_touch(shot, body, at, distance, radius, "salpicadura")
 		var splash_states := _before(body, false, shot)
-		_SPLASH.hurt(body, amount * maxf(0.0, 1.0 - distance / radius), from_slot, _HEALTH.SPLASH_RANGED, shot.mods)
+		_SPLASH.hurt(body, amount * maxf(0.0, 1.0 - distance / radius), from_slot, _HEALTH.SPLASH_RANGED, shot.mods, shooter)
 		_after(body, false, splash_states, shot)
 	for touch in _touches:
 		touch.settled(shot)

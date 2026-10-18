@@ -18,6 +18,9 @@ var frame := 0
 ## Health kind (Health.DIRECT_RANGED, SPLASH_SPELL…) the damage is dealt as.
 var kind: StringName = &"splash_spell"
 var from_slot := 0
+## F164b: the creature that dealt the dose (absolute path; empty = nobody drains). Each tick it feeds LifeDrain with what the
+## dose took: sacengine's tick calls dealDamage with the attacker (poison: 23585, 9415-9419), which drains (8940).
+var attacker_path := NodePath()
 ## sacengine DamageMod.ignoreFriendly: an ally takes ×1 with friendly fire on (Health._side_factor).
 var ignore_friendly := true
 ## sacengine DamageMod.peirceShield (F123, the Pyromaniac's fire): Health skips the body's shields and states.
@@ -38,6 +41,8 @@ func step(health: Health) -> bool:
 	updates += 1
 	var dealt := health.damage_typed(per_second / float(MatchClock.TICKS_PER_SECOND), kind, from_slot, ignore_friendly, pierce_shield)
 	taken += dealt
+	if dealt > 0.0 and not attacker_path.is_empty():
+		LifeDrain.feed(health.get_node_or_null(attacker_path), health.get_parent(), dealt)
 	_dealt_since_fx += dealt
 	if fx_every_ticks > 0 and frame % fx_every_ticks == 0:
 		## Puff only if Health took it: a body it spares (own side with friendly fire off) must not look poisoned.

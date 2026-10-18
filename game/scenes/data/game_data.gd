@@ -165,6 +165,7 @@ func _make_creature(row: Dictionary) -> _CREATURE_TYPE:
 	type.flight_animations = row.get("flight_animations", {}) if row.get("flight_animations", {}) is Dictionary else {}
 	type.stun_animations = row.get("stun_animations", {}) if row.get("stun_animations", {}) is Dictionary else {}
 	type.death_animations = row.get("death_animations", {}) if row.get("death_animations", {}) is Dictionary else {}
+	type.captive_animations = row.get("captive_animations", {}) if row.get("captive_animations", {}) is Dictionary else {}
 	return type
 
 
@@ -231,9 +232,11 @@ func _make_wizard(row: Dictionary) -> _WIZARD_TYPE:
 	type.splash_spell_resistance = float(resist.get("splash_spell", 1.0))
 	type.direct_ranged_resistance = float(resist.get("direct_ranged", 1.0))
 	type.splash_ranged_resistance = float(resist.get("splash_ranged", 1.0))
+	type.stance_animation = row.get("stance_animation", {}) if row.get("stance_animation", {}) is Dictionary else {}
 	type.idle_animation = row.get("idle_animation", {}) if row.get("idle_animation", {}) is Dictionary else {}
 	type.run_animation = row.get("run_animation", {}) if row.get("run_animation", {}) is Dictionary else {}
 	type.walk_animation = row.get("walk_animation", {}) if row.get("walk_animation", {}) is Dictionary else {}
+	type.cast_animations = row.get("cast_animations", {}) if row.get("cast_animations", {}) is Dictionary else {}
 	type.death_frames = PackedInt32Array(row.get("death_frames", []))
 	type.corpse_rise_frames = int(row.get("corpse_rise_frames", 0))
 	type.float_to_stance_frames = int(row.get("float_to_stance_frames", 0))

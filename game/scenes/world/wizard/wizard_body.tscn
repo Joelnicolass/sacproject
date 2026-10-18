@@ -14,7 +14,9 @@
 [ext_resource type="Script" path="res://scenes/world/spells/caster.gd" id="10_caster"]
 [ext_resource type="Script" path="res://scenes/world/spells/summoner.gd" id="11_summoner"]
 [ext_resource type="Script" path="res://scenes/world/wizard/ghost_form.gd" id="12_ghost"]
-[ext_resource type="Script" path="res://scenes/world/components/clip_pose_player.gd" id="13_clip"]
+[ext_resource type="Script" path="res://scenes/world/body/body_animator.gd" id="13_clip"]
+[ext_resource type="PackedScene" path="res://scenes/world/body/body_rig.tscn" id="f162_rig"]
+[ext_resource type="Script" path="res://scenes/world/body/hand_fx.gd" id="d023_handfx"]
 [ext_resource type="Script" path="res://scenes/world/spells/actions/manalith_action.gd" id="14_manalith"]
 [ext_resource type="Script" path="res://scenes/world/spells/actions/desecrate_action.gd" id="15_desecrate"]
 [ext_resource type="Script" path="res://scenes/world/spells/actions/convert_action.gd" id="16_convert"]
@@ -94,6 +96,9 @@ properties/14/replication_mode = 2
 properties/15/path = NodePath("Clinging:shown")
 properties/15/spawn = true
 properties/15/replication_mode = 2
+properties/16/path = NodePath("Caster:cast_fx_shown")
+properties/16/spawn = true
+properties/16/replication_mode = 2
 
 [node name="Wizard" type="CharacterBody3D"]
 floor_max_angle = 1.4835298
@@ -105,9 +110,12 @@ god = "james"
 
 [node name="Tilt" type="Node3D" parent="."]
 
-[node name="Mesh" type="MeshInstance3D" parent="Tilt"]
+[node name="Mesh" type="MeshInstance3D" parent="Tilt" node_paths=PackedStringArray("rig")]
 script = ExtResource("3_visual")
 model = "jnwr"
+rig = NodePath("Rig")
+
+[node name="Rig" parent="Tilt/Mesh" instance=ExtResource("f162_rig")]
 
 [node name="Collision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -193,9 +201,14 @@ script = ExtResource("12_ghost")
 rules = ExtResource("7_rules")
 visual = NodePath("../Tilt/Mesh")
 
-[node name="ClipPose" type="Node" parent="." node_paths=PackedStringArray("mesh_path")]
+[node name="ClipPose" type="Node" parent="." node_paths=PackedStringArray("visual")]
 script = ExtResource("13_clip")
-mesh_path = NodePath("../Tilt/Mesh")
+visual = NodePath("../Tilt/Mesh")
+
+[node name="CastHands" type="Node" parent="." node_paths=PackedStringArray("caster", "rig")]
+script = ExtResource("d023_handfx")
+caster = NodePath("../Caster")
+rig = NodePath("../Tilt/Mesh/Rig")
 
 [node name="Afflictions" type="Node" parent="." node_paths=PackedStringArray("body", "health", "clip_pose", "look")]
 script = ExtResource("f120_afflictions")

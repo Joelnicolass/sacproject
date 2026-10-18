@@ -52,12 +52,12 @@ static func resistance_bonus_of(node: Node) -> float:
 
 ## One dose on `target` through its Poisoning; null (and a line in the log) when it has none.
 static func dose_body(target: Node, per_second: float, lifetime: int, kind: StringName, from_slot: int, infectious := false,
-		resistance_debuff := 0, regen_factor := 1.0) -> Poisoned:
+		resistance_debuff := 0, regen_factor := 1.0, attacker_path := NodePath()) -> Poisoned:
 	var poisoning := of(target)
 	if poisoning == null:
 		print("  veneno: %s no tiene Poisoning" % _who(target))
 		return null
-	return poisoning.dose(per_second, lifetime, kind, from_slot, infectious, resistance_debuff, regen_factor)
+	return poisoning.dose(per_second, lifetime, kind, from_slot, infectious, resistance_debuff, regen_factor, attacker_path)
 
 
 func _ready() -> void:
@@ -71,7 +71,7 @@ func _ready() -> void:
 ## sacengine poison() (state.d:11601-11607): adds one dose of `per_second` for `lifetime` frames (lifetime + 1 updates).
 ## `resistance_debuff` is the SPEL's `ires`, `regen_factor` its `freg`. Server (or solo) only; null elsewhere.
 func dose(per_second: float, lifetime: int, kind: StringName, from_slot: int, infectious := false, resistance_debuff := 0,
-		regen_factor := 1.0) -> Poisoned:
+		regen_factor := 1.0, attacker_path := NodePath()) -> Poisoned:
 	if not _has_authority():
 		return null
 	var regen_before := regeneration_factor()
@@ -81,6 +81,7 @@ func dose(per_second: float, lifetime: int, kind: StringName, from_slot: int, in
 	added.lifetime = maxi(0, lifetime)
 	added.kind = kind
 	added.from_slot = from_slot
+	added.attacker_path = attacker_path
 	added.ignore_friendly = true
 	added.infectious = infectious
 	added.resistance_debuff = resistance_debuff
@@ -174,7 +175,7 @@ func _spread(source: Poisoned) -> void:
 		if next == null or next.infection_cooling():
 			continue
 		var verb := "reinfectado" if next.is_poisoned() else "infectado"
-		next.dose(float(sum), left, source.kind, source.from_slot, true, source.resistance_debuff, source.regeneration_factor)
+		next.dose(float(sum), left, source.kind, source.from_slot, true, source.resistance_debuff, source.regeneration_factor, source.attacker_path)
 		next.start_infection_cooldown(left)
 		print("%s %s por %s: %d/s, %d cuadros" % [_who(other), verb, _who(body), sum, left])
 

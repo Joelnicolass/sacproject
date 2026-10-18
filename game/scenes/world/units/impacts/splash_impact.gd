@@ -30,14 +30,15 @@ func _affect(shot: Node3D, target: Node3D, point: Vector3, ability: AbilityType)
 	var from_slot := int(shot.get("from_slot"))
 	var radius := _radius(ability)
 	var mods := mods_of(shot)
+	var shooter := shooter_of(shot)
 	var direct := target if direct_hit and target and is_instance_valid(target) else null
 	print("salpicadura %s en (%.1f, %.1f, %.1f) radio %.1f m de %d" % [ability.tag if ability else "?", point.x, point.y, point.z, radius, roundi(amount)])
 	if direct and _ROCK.is_live_body(direct):
 		print("  directo %s" % who(direct))
-		_SPLASH.hurt(direct, amount, from_slot, _HEALTH.SPLASH_RANGED, mods)
+		_SPLASH.hurt(direct, amount, from_slot, _HEALTH.SPLASH_RANGED, mods, shooter)
 	for body in _SPLASH.bodies_within(get_tree(), point, radius, direct):
 		print("  %s a %.2f m" % [who(body), _SPLASH.box_distance(body, point)])
-	_SPLASH.deal(get_tree(), point, amount, radius, direct, from_slot, _HEALTH.SPLASH_RANGED, mods)
+	_SPLASH.deal(get_tree(), point, amount, radius, direct, from_slot, _HEALTH.SPLASH_RANGED, mods, shooter)
 
 
 func _radius(ability: AbilityType) -> float:

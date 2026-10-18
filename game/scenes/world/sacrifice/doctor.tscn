@@ -13,7 +13,8 @@
 [ext_resource type="Script" path="res://scenes/world/sacrifice/doctor_states/dying.gd" id="11_dying"]
 [ext_resource type="Script" path="res://addons/mp_kit/mp_replicate.gd" id="12_net"]
 [ext_resource type="Resource" path="res://data/match_rules.tres" id="13_rules"]
-[ext_resource type="Script" path="res://scenes/world/components/clip_pose_player.gd" id="14_clip"]
+[ext_resource type="Script" path="res://scenes/world/body/body_animator.gd" id="14_clip"]
+[ext_resource type="PackedScene" path="res://scenes/world/body/body_rig.tscn" id="14_rig"]
 
 [ext_resource type="Script" path="res://scenes/world/sacrifice/carry_rope.gd" id="15_rope"]
 [ext_resource type="PackedScene" path="res://scenes/fx/tether.tscn" id="16_tether"]
@@ -63,13 +64,16 @@ clip_player = NodePath("ClipPose")
 
 [node name="Pivot" type="Node3D" parent="."]
 
-[node name="Mesh" type="MeshInstance3D" parent="Pivot"]
+[node name="Mesh" type="MeshInstance3D" parent="Pivot" node_paths=PackedStringArray("rig")]
 script = ExtResource("2_visual")
 model = "sacd"
+rig = NodePath("Rig")
 
-[node name="ClipPose" type="Node" parent="."]
+[node name="Rig" parent="Pivot/Mesh" instance=ExtResource("14_rig")]
+
+[node name="ClipPose" type="Node" parent="." node_paths=PackedStringArray("visual")]
 script = ExtResource("14_clip")
-mesh_path = NodePath("../Pivot/Mesh")
+visual = NodePath("../Pivot/Mesh")
 
 [node name="Collision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)

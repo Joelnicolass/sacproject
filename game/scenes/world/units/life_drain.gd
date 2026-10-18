@@ -3,9 +3,13 @@ extends RefCounted
 
 ## F164 (RFC-030 030w-e): sacengine healFromDrain (state.d:8834-8840), called by dealDamage (8940) with the damage the
 ## target really took: a live creature heals `taken · its CRE8 drain` at once, capped at its maximum (heal, 8815-8817).
-## The one owner of the rule: the melee blow, the direct shot and the DirectImpact only call feed() with what Health
-## reported; none of them knows the drain. A building never feeds it (the target must be a unit or a wizard).
-## Not here yet (F164b): splash per body, poison and disease, Burning.
+## The one owner of the rule: the melee blow, the direct shot, the DirectImpact, the splash per body (SplashDamage.hurt) and
+## the poison (PoisonImpact's burst, each tick of a Poisoned dose) only call feed() with what Health reported; none of
+## them knows the drain. A building never feeds it (the target must be a unit or a wizard) ...
+## F164b: ... unless its guardians stood in for it. dealDamage(building, …, attacker) sends the hit to damageGuardians
+## (state.d:9193-9195, 9119-9141), which calls the creature overload (8933-8947) on each guardian: the attacker drains from
+## what the guardians took, not from the building (Health.deflected_last tells the two apart).
+## Not here yet: Burning.
 
 ## Bench log (`ai_match` turns it on; off in the product): one line per feeding, with the numbers the replica needs.
 static var log_drain := false
@@ -35,7 +39,8 @@ static func feed(attacker: Node, target: Node, taken: float) -> float:
 
 static func _feeds(target: Node) -> bool:
 	if target.is_in_group(&"structure"):
-		return false
+		var health := target.get_node_or_null("Health") as Health
+		return health != null and health.deflected_last
 	for group in FEEDING_GROUPS:
 		if target.is_in_group(group):
 			return true

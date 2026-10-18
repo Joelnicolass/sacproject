@@ -108,6 +108,23 @@
     "frames": 76,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "MArz",
+    "frames": 48,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "MA2t",
+    "frames": 24,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "MAsc",
+    "frames": 12,
+    "framerate": 30
+   }
   }
  },
  "dcas": {
@@ -203,7 +220,8 @@
     "framerate": 30
    }
   },
-  "death_animations": {}
+  "death_animations": {},
+  "captive_animations": {}
  },
  "saep": {
   "spell_type": 2,
@@ -356,7 +374,8 @@
     "frames": 66,
     "framerate": 30
    }
-  }
+  },
+  "captive_animations": {}
  },
  "zepa": {
   "spell_type": 2,
@@ -509,7 +528,8 @@
     "frames": 66,
     "framerate": 30
    }
-  }
+  },
+  "captive_animations": {}
  },
  "zepd": {
   "spell_type": 2,
@@ -662,7 +682,8 @@
     "frames": 66,
     "framerate": 30
    }
-  }
+  },
+  "captive_animations": {}
  },
  "zepe": {
   "spell_type": 2,
@@ -815,7 +836,8 @@
     "frames": 66,
     "framerate": 30
    }
-  }
+  },
+  "captive_animations": {}
  },
  "zepf": {
   "spell_type": 2,
@@ -968,7 +990,8 @@
     "frames": 66,
     "framerate": 30
    }
-  }
+  },
+  "captive_animations": {}
  },
  "tnem": {
   "spell_type": 2,
@@ -1095,7 +1118,8 @@
     "frames": 63,
     "framerate": 30
    }
-  }
+  },
+  "captive_animations": {}
  },
  "tshg": {
   "spell_type": 2,
@@ -1255,6 +1279,23 @@
     "frames": 65,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "PErz",
+    "frames": 49,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "PE2t",
+    "frames": 16,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "PEsc",
+    "frames": 20,
+    "framerate": 30
+   }
   }
  },
  "imaf": {
@@ -1380,7 +1421,8 @@
     "frames": 63,
     "framerate": 30
    }
-  }
+  },
+  "captive_animations": {}
  },
  "mtsl": {
   "spell_type": 2,
@@ -1512,6 +1554,23 @@
    "death": {
     "tag": "STd1",
     "frames": 148,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "STrz",
+    "frames": 13,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "ST2t",
+    "frames": 6,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "STsc",
+    "frames": 21,
     "framerate": 30
    }
   }
@@ -1649,6 +1708,23 @@
    "death": {
     "tag": "FGd1",
     "frames": 124,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "FGrz",
+    "frames": 13,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "FG2t",
+    "frames": 6,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "FGsc",
+    "frames": 21,
     "framerate": 30
    }
   }
@@ -1813,6 +1889,23 @@
    "fly_death": {
     "tag": "HBfi",
     "frames": 23,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "HBrz",
+    "frames": 23,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "HBft",
+    "frames": 20,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "HBsc",
+    "frames": 40,
     "framerate": 30
    }
   }
@@ -1981,6 +2074,23 @@
     "frames": 53,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "SPrz",
+    "frames": 47,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "SP2t",
+    "frames": 15,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "SPsa",
+    "frames": 12,
+    "framerate": 30
+   }
   }
  },
  "cbab": {
@@ -2123,6 +2233,23 @@
    "fly_death": {
     "tag": "GCst",
     "frames": 58,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "GCrz",
+    "frames": 58,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "GC2t",
+    "frames": 22,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "GCsa",
+    "frames": 36,
     "framerate": 30
    }
   }
@@ -2296,6 +2423,23 @@
     "frames": 93,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "DGrz",
+    "frames": 92,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "DG2t",
+    "frames": 26,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "DGsc",
+    "frames": 24,
+    "framerate": 30
+   }
   }
  },
  "cara": {
@@ -2438,6 +2582,23 @@
     "frames": 30,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "BGrz",
+    "frames": 91,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "BG2t",
+    "frames": 23,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "BGsc",
+    "frames": 21,
+    "framerate": 30
+   }
   }
  },
  "amuh": {
@@ -2576,6 +2737,23 @@
     "frames": 105,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "HAri",
+    "frames": 91,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "HA2t",
+    "frames": 26,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "HAsa",
+    "frames": 43,
+    "framerate": 30
+   }
   }
  },
  "lort": {
@@ -2707,6 +2885,23 @@
    "death": {
     "tag": "TRd1",
     "frames": 54,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "TRrz",
+    "frames": 48,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "TR2t",
+    "frames": 21,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "TRsc",
+    "frames": 20,
     "framerate": 30
    }
   }
@@ -2842,6 +3037,23 @@
     "frames": 54,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "HUrz",
+    "frames": 55,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "HU2t",
+    "frames": 26,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "HUsa",
+    "frames": 43,
+    "framerate": 30
+   }
   }
  },
  "crpd": {
@@ -2975,6 +3187,23 @@
    "death": {
     "tag": "PCd1",
     "frames": 88,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "PCrz",
+    "frames": 13,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "PC2t",
+    "frames": 6,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "PCsc",
+    "frames": 39,
     "framerate": 30
    }
   }
@@ -3149,6 +3378,23 @@
     "frames": 25,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "CKrz",
+    "frames": 13,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "Ck2t",
+    "frames": 6,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "CKsc",
+    "frames": 21,
+    "framerate": 30
+   }
   }
  },
  "glsd": {
@@ -3286,6 +3532,18 @@
    "death": {
     "tag": "SLd1",
     "frames": 81,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "held": {
+    "tag": "SL2t",
+    "frames": 21,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "SLsc",
+    "frames": 56,
     "framerate": 30
    }
   }
@@ -3457,6 +3715,23 @@
     "frames": 48,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "DMrz",
+    "frames": 48,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "DM2t",
+    "frames": 22,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "DMsa",
+    "frames": 64,
+    "framerate": 30
+   }
   }
  },
  "nugd": {
@@ -3603,6 +3878,23 @@
     "frames": 28,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "GUrz",
+    "frames": 48,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "GU2t",
+    "frames": 31,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "GUsc",
+    "frames": 50,
+    "framerate": 30
+   }
   }
  },
  "plfd": {
@@ -3738,6 +4030,23 @@
    "death": {
     "tag": "FGd1",
     "frames": 124,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "FGrz",
+    "frames": 13,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "FG2t",
+    "frames": 6,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "FGsc",
+    "frames": 21,
     "framerate": 30
    }
   }
@@ -3879,6 +4188,23 @@
     "frames": 43,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "KLrz",
+    "frames": 48,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "KL2t",
+    "frames": 26,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "KLsc",
+    "frames": 20,
+    "framerate": 30
+   }
   }
  },
  "dzid": {
@@ -4008,6 +4334,23 @@
    "death": {
     "tag": "DZd1",
     "frames": 110,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "DZrz",
+    "frames": 48,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "DZ2t",
+    "frames": 26,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "DZsc",
+    "frames": 30,
     "framerate": 30
    }
   }
@@ -4179,6 +4522,23 @@
     "frames": 24,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "BZrz",
+    "frames": 7,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "BZ2t",
+    "frames": 6,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "BZsc",
+    "frames": 29,
+    "framerate": 30
+   }
   }
  },
  "ctug": {
@@ -4319,6 +4679,23 @@
    "fly_death": {
     "tag": "GCst",
     "frames": 58,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "GCrz",
+    "frames": 58,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "GC2t",
+    "frames": 22,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "GCsa",
+    "frames": 36,
     "framerate": 30
    }
   }
@@ -4473,6 +4850,23 @@
     "frames": 35,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "DFrz",
+    "frames": 51,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "DF2t",
+    "frames": 26,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "DFsc",
+    "frames": 22,
+    "framerate": 30
+   }
   }
  },
  "wlcf": {
@@ -4609,6 +5003,23 @@
    "death": {
     "tag": "CPd1",
     "frames": 123,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "CPrz",
+    "frames": 48,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "CP2t",
+    "frames": 21,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "CPsc",
+    "frames": 37,
     "framerate": 30
    }
   }
@@ -4783,6 +5194,23 @@
     "frames": 25,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "CKrz",
+    "frames": 13,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "CKsc",
+    "frames": 21,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "CKsc",
+    "frames": 21,
+    "framerate": 30
+   }
   }
  },
  "nugf": {
@@ -4917,6 +5345,23 @@
     "frames": 28,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "GUrz",
+    "frames": 48,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "GU2t",
+    "frames": 31,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "GUsc",
+    "frames": 50,
+    "framerate": 30
+   }
   }
  },
  "zidf": {
@@ -5048,6 +5493,23 @@
    "death": {
     "tag": "DZd1",
     "frames": 110,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "DZrz",
+    "frames": 48,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "DZ2t",
+    "frames": 26,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "DZsc",
+    "frames": 30,
     "framerate": 30
    }
   }
@@ -5213,6 +5675,23 @@
     "frames": 23,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "HBrz",
+    "frames": 23,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "HBft",
+    "frames": 20,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "HBsc",
+    "frames": 40,
+    "framerate": 30
+   }
   }
  },
  "plff": {
@@ -5348,6 +5827,23 @@
    "death": {
     "tag": "FGd1",
     "frames": 124,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "FGrz",
+    "frames": 13,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "FG2t",
+    "frames": 6,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "FGsc",
+    "frames": 21,
     "framerate": 30
    }
   }
@@ -5490,6 +5986,23 @@
    "fly_death": {
     "tag": "BGst",
     "frames": 30,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "BGrz",
+    "frames": 91,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "BG2t",
+    "frames": 23,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "BGsc",
+    "frames": 21,
     "framerate": 30
    }
   }
@@ -5636,6 +6149,23 @@
     "frames": 27,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "KLrz",
+    "frames": 48,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "KL2t",
+    "frames": 26,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "KLsc",
+    "frames": 20,
+    "framerate": 30
+   }
   }
  },
  "lrtf": {
@@ -5768,6 +6298,23 @@
    "death": {
     "tag": "TRd1",
     "frames": 54,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "TRrz",
+    "frames": 48,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "TR2t",
+    "frames": 21,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "TRsc",
+    "frames": 20,
     "framerate": 30
    }
   }
@@ -5940,6 +6487,18 @@
     "frames": 19,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "held": {
+    "tag": "AD2t",
+    "frames": 26,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "ADsc",
+    "frames": 25,
+    "framerate": 30
+   }
   }
  },
  "wlca": {
@@ -6078,6 +6637,23 @@
     "frames": 123,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "CPrz",
+    "frames": 48,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "CP2t",
+    "frames": 21,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "CPsc",
+    "frames": 37,
+    "framerate": 30
+   }
   }
  },
  "craa": {
@@ -6211,6 +6787,23 @@
    "death": {
     "tag": "BAd1",
     "frames": 63,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "BArz",
+    "frames": 51,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "BA2t",
+    "frames": 22,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "BAsc",
+    "frames": 25,
     "framerate": 30
    }
   }
@@ -6362,6 +6955,23 @@
     "frames": 59,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "SBrz",
+    "frames": 51,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "SB2t",
+    "frames": 19,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "SBsc",
+    "frames": 20,
+    "framerate": 30
+   }
   }
  },
  "alab": {
@@ -6498,6 +7108,23 @@
    "death": {
     "tag": "BMd1",
     "frames": 109,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "BMrz",
+    "frames": 49,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "BM2t",
+    "frames": 37,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "BMsa",
+    "frames": 50,
     "framerate": 30
    }
   }
@@ -6638,6 +7265,23 @@
     "frames": 105,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "HAri",
+    "frames": 91,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "HA2t",
+    "frames": 26,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "HAsa",
+    "frames": 43,
+    "framerate": 30
+   }
   }
  },
  "lbog": {
@@ -6769,6 +7413,23 @@
    "death": {
     "tag": "GBd1",
     "frames": 65,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "GBrz",
+    "frames": 49,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "GB2t",
+    "frames": 26,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "GBsc",
+    "frames": 24,
     "framerate": 30
    }
   }
@@ -6937,6 +7598,23 @@
     "frames": 53,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "SPrz",
+    "frames": 47,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "SP2t",
+    "frames": 15,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "SPsa",
+    "frames": 12,
+    "framerate": 30
+   }
   }
  },
  "rgos": {
@@ -7069,6 +7747,23 @@
    "death": {
     "tag": "HUd1",
     "frames": 54,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "HUrz",
+    "frames": 55,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "HU2t",
+    "frames": 26,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "HUsa",
+    "frames": 43,
     "framerate": 30
    }
   }
@@ -7204,6 +7899,23 @@
     "frames": 88,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "PCrz",
+    "frames": 13,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "PC2t",
+    "frames": 6,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "PCsc",
+    "frames": 39,
+    "framerate": 30
+   }
   }
  },
  "gard": {
@@ -7337,6 +8049,18 @@
    "fly_death": {
     "tag": "Eds1",
     "frames": 118,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "held": {
+    "tag": "Edf2",
+    "frames": 6,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "Edsa",
+    "frames": 68,
     "framerate": 30
    }
   }
@@ -7475,6 +8199,23 @@
    "death": {
     "tag": "CPd1",
     "frames": 123,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "CPrz",
+    "frames": 48,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "CP2t",
+    "frames": 21,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "CPsc",
+    "frames": 37,
     "framerate": 30
    }
   }
@@ -7649,6 +8390,23 @@
     "frames": 25,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "CKrz",
+    "frames": 13,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "CKsc",
+    "frames": 21,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "CKsc",
+    "frames": 21,
+    "framerate": 30
+   }
   }
  },
  "guls": {
@@ -7786,6 +8544,18 @@
     "frames": 81,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "held": {
+    "tag": "SL2t",
+    "frames": 21,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "SLsc",
+    "frames": 56,
+    "framerate": 30
+   }
   }
  },
  "mtse": {
@@ -7920,6 +8690,23 @@
    "death": {
     "tag": "ESd1",
     "frames": 148,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "ES2f",
+    "frames": 72,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "ES2t",
+    "frames": 26,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "ESsc",
+    "frames": 16,
     "framerate": 30
    }
   }
@@ -8085,6 +8872,23 @@
     "frames": 23,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "HBrz",
+    "frames": 23,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "HBft",
+    "frames": 20,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "HBsc",
+    "frames": 40,
+    "framerate": 30
+   }
   }
  },
  "llab": {
@@ -8220,6 +9024,23 @@
    "death": {
     "tag": "BMd1",
     "frames": 109,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "BMrz",
+    "frames": 49,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "BM2t",
+    "frames": 37,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "BMsa",
+    "frames": 50,
     "framerate": 30
    }
   }
@@ -8366,6 +9187,23 @@
     "frames": 27,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "KLrz",
+    "frames": 48,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "KL2t",
+    "frames": 26,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "KLsc",
+    "frames": 20,
+    "framerate": 30
+   }
   }
  },
  "raeb": {
@@ -8505,6 +9343,23 @@
     "frames": 38,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "BErr",
+    "frames": 51,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "BEfl",
+    "frames": 50,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "BEsc",
+    "frames": 21,
+    "framerate": 30
+   }
   }
  },
  "ycro": {
@@ -8634,6 +9489,23 @@
    "death": {
     "tag": "HUd1",
     "frames": 54,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "HUrz",
+    "frames": 55,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "HU2t",
+    "frames": 26,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "HUsa",
+    "frames": 43,
     "framerate": 30
    }
   }
@@ -8773,6 +9645,23 @@
     "frames": 124,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "FGrz",
+    "frames": 13,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "FG2t",
+    "frames": 6,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "FGsc",
+    "frames": 21,
+    "framerate": 30
+   }
   }
  },
  "ehtH": {
@@ -8908,6 +9797,23 @@
    "death": {
     "tag": "FGd1",
     "frames": 124,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "FGrz",
+    "frames": 13,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "FG2t",
+    "frames": 6,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "FGsc",
+    "frames": 21,
     "framerate": 30
    }
   }
@@ -9059,6 +9965,23 @@
     "frames": 59,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "SBrz",
+    "frames": 51,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "SB2t",
+    "frames": 19,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "SBsc",
+    "frames": 20,
+    "framerate": 30
+   }
   }
  },
  "oohH": {
@@ -9193,6 +10116,23 @@
     "frames": 148,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "STrz",
+    "frames": 13,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "ST2t",
+    "frames": 6,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "STsc",
+    "frames": 21,
+    "framerate": 30
+   }
   }
  },
  "ramH": {
@@ -9324,6 +10264,23 @@
     "frames": 110,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "DZrz",
+    "frames": 48,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "DZ2t",
+    "frames": 26,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "DZsc",
+    "frames": 30,
+    "framerate": 30
+   }
   }
  },
  "RAMH": {
@@ -9453,6 +10410,23 @@
    "death": {
     "tag": "DZd1",
     "frames": 110,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "DZrz",
+    "frames": 48,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "DZ2t",
+    "frames": 26,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "DZsc",
+    "frames": 30,
     "framerate": 30
    }
   }
@@ -9590,6 +10564,23 @@
    "death": {
     "tag": "FGd1",
     "frames": 124,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "FGrz",
+    "frames": 13,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "FG2t",
+    "frames": 6,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "FGsc",
+    "frames": 21,
     "framerate": 30
    }
   }
@@ -9763,6 +10754,23 @@
     "frames": 93,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "DGrz",
+    "frames": 92,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "DG2t",
+    "frames": 26,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "DGsc",
+    "frames": 24,
+    "framerate": 30
+   }
   }
  },
  "uslH": {
@@ -9895,6 +10903,23 @@
    "death": {
     "tag": "HUd1",
     "frames": 54,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "HUrz",
+    "frames": 55,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "HU2t",
+    "frames": 26,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "HUsa",
+    "frames": 43,
     "framerate": 30
    }
   }
@@ -10069,6 +11094,23 @@
     "frames": 25,
     "framerate": 30
    }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "CKrz",
+    "frames": 13,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "CK2t",
+    "frames": 6,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "CKsc",
+    "frames": 21,
+    "framerate": 30
+   }
   }
  },
  "rdbO": {
@@ -10235,6 +11277,23 @@
    "fly_death": {
     "tag": "DGfi",
     "frames": 93,
+    "framerate": 30
+   }
+  },
+  "captive_animations": {
+   "rise": {
+    "tag": "DGrz",
+    "frames": 92,
+    "framerate": 30
+   },
+   "held": {
+    "tag": "DG2t",
+    "frames": 26,
+    "framerate": 30
+   },
+   "thrash": {
+    "tag": "DGsc",
+    "frames": 24,
     "framerate": 30
    }
   }

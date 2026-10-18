@@ -156,6 +156,13 @@ var _idle_loops := 0
 var _gesturing := false
 var _playing_dead := false
 var _stealth := false
+## RFC-023 023e: the clip role of a creature a Sac Doctor holds or revives (rise, held, thrash). Captive picks it on every
+## peer from the mode; "" = none. A model with no such clip rests on the role it would play anyway.
+var captive_role := "":
+	set(value):
+		captive_role = value
+		if is_node_ready():
+			_update_clip_state()
 
 @onready var _clip_pose: Node = $ClipPose
 ## Optional children (RFC-024 024b): without them the body walks and picks as it did before.
@@ -849,11 +856,9 @@ func soul_anchor() -> Vector3:
 	var visual := get_node_or_null("Tilt/Mesh")
 	if pivot == null or visual == null:
 		return global_position
-	var center := Vector3(0.0, float(visual.call("body_height")) * 0.5, 0.0)
-	# A clip lays the body down, so the pivot stays upright: the soul sits where the Tween would have left the center.
-	if bool($Corpse.get("clip_driven")):
-		return pivot.global_transform * ($Corpse.call("laid_pose", float(visual.call("body_radius"))) as Transform3D) * center
-	return pivot.global_transform * center
+	# A clip lays the body down (the pivot stays upright): the soul sits where the Tween would have left the center.
+	var lie := $Corpse.call("lying_pose", float(visual.call("body_radius"))) as Transform3D
+	return pivot.global_transform * lie * Vector3(0.0, float(visual.call("body_height")) * 0.5, 0.0)
 
 
 ## `animate` false: a peer that joins after the death gets the corpse already on the ground.
@@ -867,20 +872,14 @@ func _show_corpse(animate := true) -> void:
 	var radius := float(visual.call("body_radius")) if visual else 0.3
 	var role := _death_role()
 	if not role.is_empty():
-		if animate:
-			_clip_pose.call("play", role, true)
-		else:
-			_clip_pose.call("play_ended", role)
+		_clip_pose.call("play", role, true) if animate else _clip_pose.call("play_ended", role)
 	$Corpse.call("lay_down", self, radius, animate, not role.is_empty())
 
 
-## RFC-023f: the clip that lays the body down. "" when a Tween does it (baked meshes, the dedicated server, a model with
-## no dying clip). In the air a flier plays fly_death.
+## RFC-023f: the clip that lays the body down ("" = a Tween does: baked meshes, dedicated server, no dying clip).
 func _death_role() -> String:
-	if not bool(_clip_pose.call("is_skeletal")):
-		return ""
 	for role: String in ["fly_death" if is_flying() else "death", "death"]:
-		if _has_clip(role):
+		if bool(_clip_pose.call("is_skeletal")) and _has_clip(role):
 			return role
 	return ""
 
@@ -919,6 +918,9 @@ func _update_clip_state() -> void:
 	var held_role := "idle" if _playing_dead else _afflictions.pose_role(_clip_pose as ClipPlayback)
 	if not held_role.is_empty():
 		_clip_pose.call("play", held_role)
+		return
+	if not captive_role.is_empty() and _has_clip(captive_role):
+		_clip_pose.call("play", captive_role)
 		return
 	var flight_role := _flight_role()
 	if not flight_role.is_empty() and _has_clip(flight_role):

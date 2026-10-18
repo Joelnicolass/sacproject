@@ -61,6 +61,8 @@ var _source: Dictionary = {}
 var _role := ""
 var _missing := false
 var _batching := false
+## Which of the two hand sockets the active clip really has (a hand on the root bone is "no hand": sacengine leaves it NaN).
+var _hand_on: Array[bool] = [false, false]
 
 @onready var _slot: Node3D = %ModelSlot
 @onready var _anim: AnimationPlayer = %Anim
@@ -128,6 +130,19 @@ func skeleton() -> Skeleton3D:
 
 func is_loaded() -> bool:
 	return _model_root != null
+
+
+## World positions of the hands the active clip has (RFC-023 023d: where a wizard's casting particles go). Empty when the
+## clip has none or the model is not loaded.
+func hand_points() -> PackedVector3Array:
+	var points := PackedVector3Array()
+	if _skeleton == null:
+		return points
+	var sockets := [_hand_l, _hand_r]
+	for i in 2:
+		if _hand_on[i]:
+			points.append((sockets[i] as BoneAttachment3D).get_node("Socket").global_position)
+	return points
 
 
 ## The instanced model (null before it loads); what changes when the rig loads another one.
@@ -352,9 +367,11 @@ func _apply_hands(role: String) -> void:
 	var hands: Array = clip_info(model, clips.tag_for(role)).get("hands", [])
 	var scaling := float(model_info(model).get("scaling", 1.0))
 	var attachments := [_hand_l, _hand_r]
+	_hand_on = [false, false]
 	for i in mini(hands.size(), 2):
 		var attach: BoneAttachment3D = attachments[i]
 		var hand: Dictionary = hands[i]
+		_hand_on[i] = int(hand.get("bone", 0)) != 0
 		if attach.bone_name != str(hand["bone_name"]):
 			attach.bone_name = str(hand["bone_name"])
 		var raw: Array = hand["offset_raw"]

@@ -68,6 +68,9 @@ extends Resource
 ## RFC-023f: the dying clips (death0 at slot 19, flyDeath at 36 for a body in the air): role "death" / "fly_death" ->
 ## {tag, frames, framerate}. A role the SXSK has no clip for is left out (the corpse then tips over with a Tween).
 @export var death_animations: Dictionary = {}
+## RFC-023 023e: what the creature plays while a Sac Doctor holds it (CreatureMode.thrashing, CRE8 slots 46, 49, 25): rise
+## (once), held (float2Thrash, once) and thrash (loop), by the same rule: role -> {tag, frames, framerate}.
+@export var captive_animations: Dictionary = {}
 
 
 func is_flying() -> bool:

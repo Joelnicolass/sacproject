@@ -156,6 +156,13 @@ var _idle_loops := 0
 var _gesturing := false
 var _playing_dead := false
 var _stealth := false
+## RFC-023 023e: the clip role of a creature a Sac Doctor holds or revives (rise, held, thrash). Captive picks it on every
+## peer from the mode; "" = none. A model with no such clip rests on the role it would play anyway.
+var captive_role := "":
+	set(value):
+		captive_role = value
+		if is_node_ready():
+			_update_clip_state()
 
 @onready var _clip_pose: Node = $ClipPose
 ## Optional children (RFC-024 024b): without them the body walks and picks as it did before.
@@ -898,6 +905,9 @@ func _update_clip_state() -> void:
 	var held_role := "idle" if _playing_dead else _afflictions.pose_role(_clip_pose as ClipPlayback)
 	if not held_role.is_empty():
 		_clip_pose.call("play", held_role)
+		return
+	if not captive_role.is_empty() and _has_clip(captive_role):
+		_clip_pose.call("play", captive_role)
 		return
 	var flight_role := _flight_role()
 	if not flight_role.is_empty() and _has_clip(flight_role):

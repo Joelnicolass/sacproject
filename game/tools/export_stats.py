@@ -61,6 +61,9 @@ STUN_ANIM_SLOTS = {"knock": 9, "get_up": 10, "fly_damage": 35, "hit_floor": 8}
 ## F121 (RFC-030j): hitFloor (slot 8) too, only its length: a tumbling body that lands plays hitFloor then getUp
 ## (state.d:14175-14212). Timing only, like the rest (no mesh clip).
 WIZARD_STUN_ANIM_SLOTS = {"knock": 9, "get_up": 10, "hit_floor": 8}
+## RFC-023 023e: what a creature plays while a Sac Doctor holds it (CreatureMode.thrashing, state.d:8200-8223, 14329-14342):
+## rise (slot 46) once, float2Thrash (49, the port's `held`) once, then thrash (25) on a loop. Same rule as the flight slots.
+CAPTIVE_ANIM_SLOTS = {"rise": 46, "held": 49, "thrash": 25}
 ## SKEL event tags (`sxsk.d` translateAnimEvent): attack, shoot.
 ATTACK_EVENT = b"kcta"
 SHOOT_EVENT = b"lrba"
@@ -354,6 +357,7 @@ def decode_cre8(raw: bytes) -> dict:
         "extra_animation_tags": extra_animation_tags(raw),
         "flight_animation_tags": {role: human_tag(raw, 176 + slot * 4) for role, slot in FLIGHT_ANIM_SLOTS.items()},
         "stun_animation_tags": {role: human_tag(raw, 176 + slot * 4) for role, slot in STUN_ANIM_SLOTS.items()},
+        "captive_animation_tags": {role: human_tag(raw, 176 + slot * 4) for role, slot in CAPTIVE_ANIM_SLOTS.items()},
     })
     return entry
 
@@ -984,6 +988,8 @@ def main() -> None:
         if creature_tag in PEASANT_TAGS:
             stun_tags.pop("fly_damage", None)
         entry["stun_animations"] = flight_animations(anim_index, model_path, stun_tags, locomotion.get("stance", ""), False)
+        entry["captive_animations"] = flight_animations(
+            anim_index, model_path, entry.pop("captive_animation_tags"), locomotion.get("stance", ""), creature_tag in PEASANT_TAGS)
     for entry in wizards.values():
         entry["abilities"] = [a for a in entry["abilities"] if a]
         # Ghost timing (state.d:14000-14099): dying, deadToGhost and ghostToIdle last numFrames·updateAnimFactor ticks.

@@ -36,6 +36,7 @@ func run(host: Node3D) -> Dictionary:
 	var out := {}
 	out["guard_split"] = await _split()
 	out["guard_drain"] = await _drain()
+	out["guard_fire"] = await _fire()
 	out["guard_factors"] = await _factors()
 	out["guard_leash"] = await _leash()
 	out["guard_release"] = await _release()
@@ -129,6 +130,49 @@ func _drain() -> Dictionary:
 	structure.queue_free()
 	await _frames(2)
 	return _verdict("guard_drain", checks)
+
+
+## F164c / F162b: a Burning drains its attacker from what each update took (dealFireDamage -> dealDamage with the attacker,
+## state.d:9421-9427, 8940), and a fire of no damage on a building is made and ends on its first update (updateFire 15117-15118).
+func _fire() -> Dictionary:
+	var checks := {}
+	var structure := _structure(Vector3.ZERO)
+	var scythe := _unit(Vector3(40.0, 0.0, 10.0), 2, "dzid")
+	var victim := _unit(Vector3(10.0, 0.0, 10.0), 1)
+	await _frames(2)
+	var feeder := scythe.get_node("Health") as Health
+	feeder.current = feeder.maximum * 0.5
+	var start := feeder.current
+	var burn := Burning.ignite(victim, 120.0, 60, Health.DIRECT_RANGED, 2, 0.0, false, "", scythe)
+	checks["fire_made"] = burn != null
+	if burn != null:
+		burn.set_physics_process(false)
+		checks["fire_keeps_attacker"] = burn.attacker_path == scythe.get_path()
+		var health := victim.get_node("Health") as Health
+		var before := health.current
+		burn.step(health)
+		var took := before - health.current
+		checks["fire_took"] = took > 0.0
+		checks["fire_drains"] = absf(feeder.current - (start + took * scythe.type.drain)) < 0.001
+	var mid := feeder.current
+	var anon := Burning.ignite(victim, 120.0, 60, Health.DIRECT_RANGED, 2)
+	if anon != null:
+		anon.set_physics_process(false)
+		anon.step(victim.get_node("Health") as Health)
+	checks["fire_without_attacker_no_drain"] = anon != null and anon.attacker_path.is_empty() and is_equal_approx(feeder.current, mid)
+	var building := Burning.ignite(structure, 0.0, 30, Health.DIRECT_RANGED, 2, 0.0, false, "", scythe)
+	checks["building_fire_made"] = building != null
+	if building != null:
+		building.set_physics_process(false)
+		var structure_health := structure.get_node("Health") as Health
+		var hp := structure_health.current
+		var going := building.step(structure_health)
+		checks["building_fire_ends_first_update"] = not going and building.updates == 1 and is_equal_approx(structure_health.current, hp)
+		checks["building_fire_no_drain"] = is_equal_approx(feeder.current, mid)
+	for node in [victim, scythe, structure]:
+		node.queue_free()
+	await _frames(2)
+	return _verdict("guard_fire", checks)
 
 
 ## Attack ×1.5, spells ×0.5, ranged ×0.25, melee unchanged, heal 16.667/s on top of regeneration, no active

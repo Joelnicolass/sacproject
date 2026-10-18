@@ -27,4 +27,4 @@ func after_hit(body: Node3D, direct: bool, _before: Variant, shot: RangedShot) -
 
 
 func _ignite(body: Node3D, shot: RangedShot) -> void:
-	Burning.ignite(body, fire_damage, fire_ticks, Health.DIRECT_RANGED, shot.from_slot, 0.0, false, fire_fx)
+	Burning.ignite(body, fire_damage, fire_ticks, Health.DIRECT_RANGED, shot.from_slot, 0.0, false, fire_fx, ShotImpact.shooter_of(shot))

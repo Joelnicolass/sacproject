@@ -9,6 +9,7 @@ extends ShotImpact
 ##   bombard_impact.tscn (Bombard cfba, bombardProjectileExplosion 24518-24528): a fire of no damage for 60 frames on the
 ##     body it hit and, through the splash callback, on every body within damageRange (any side; only the look).
 ## Not here (declared): igniteBuilding (no building catches fire) and DamageMod.ignite (030r).
+## F162b: a fire of no damage now reaches a building too (it ends on its first update, as updateFire does).
 
 const _SPLASH := preload("res://scenes/world/spells/splash_damage.gd")
 
@@ -45,18 +46,19 @@ func _affect(shot: Node3D, target: Node3D, point: Vector3, ability: AbilityType)
 	if frames <= 0:
 		return
 	var direct := target if target and is_instance_valid(target) else null
+	var shooter := shooter_of(shot)
 	if direct:
-		_ignite(direct, damage, frames, from_slot, ability)
+		_ignite(direct, damage, frames, from_slot, ability, shooter)
 	var radius := _radius(ability)
 	if radius > 0.0:
 		for body in _SPLASH.bodies_within(get_tree(), point, radius, direct, splash_groups):
-			_ignite(body, damage, frames, from_slot, ability)
+			_ignite(body, damage, frames, from_slot, ability, shooter)
 
 
-func _ignite(body: Node3D, damage: float, frames: int, from_slot: int, ability: AbilityType) -> void:
+func _ignite(body: Node3D, damage: float, frames: int, from_slot: int, ability: AbilityType, shooter: Node) -> void:
 	var mana := body.get_node_or_null("ManaPool") as ManaPool
 	var drain := mana_drain_fraction * mana.maximum if mana and mana_drain_fraction > 0.0 else 0.0
-	var fire := Burning.ignite(body, damage, frames, kind, from_slot, drain, pierce_shield, fire_fx)
+	var fire := Burning.ignite(body, damage, frames, kind, from_slot, drain, pierce_shield, fire_fx, shooter)
 	if fire == null:
 		return
 	fire.fire_every_ticks = fire_every_ticks

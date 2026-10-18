@@ -2326,7 +2326,7 @@ Deuda:
 - **Capturas:** `agent/out/f162/` (`f162_spitfire.json`, `f162_gargoyle.json`, observador `agent/harness/f162_watch.gd`).
 
 Deuda:
-- `Burning.ignite` descarta un edificio con daño 0; sacengine lo prende igual con `setAblaze` (solo visual).
+- ~~`Burning.ignite` descarta un edificio con daño 0~~: saldada (F162b, abajo).
 - **Trail:** el puff no escala con el radio de la onda; los FX propios de `fhba` (`firy`) y `ehba` (`rock`) quedan para cuando haya tiempo de exportarlos.
 - **Orden fuego/golpe:** no se ve en el log (el `fuego` se imprime al terminar); lo cubre el código, no la réplica.
 
@@ -2365,7 +2365,18 @@ Deuda (F164b): hecha salvo `Burning`; ver F164b.
 
 **Cierre:** `rules_suite --fixed-fps 60` PASS (con `guard_drain`); `f164_expect`, `f122_expect`, `f166_expect` y `f156_expect` PASS. `quick`: todo igual a la base salvo dos, regrabados. `f139` (`4750f4d1` -> `e3ded3af`): la primera línea distinta del `.events` es `40 hp Necryl1 101.60` -> `101.85`, o sea el Necryl se cura con su veneno (lo que antes no hacía). `f164` (`97cd4399` -> `d2346dda`): filas nuevas de Abomination y Troll4/Troll5. Solo `fixed` en estos dos; sin capturas (lógica pura).
 
-Deuda: `Burning` (el fuego con atacante) todavía no drena.
+Deuda: ~~`Burning` (el fuego con atacante) todavía no drena~~: saldada (F164c, abajo).
+
+### F162b / F164c — Fuego sobre edificios y drenaje del fuego (RFC-030, deudas de F162 y F164b)
+
+**Sacengine:** `setAblaze` (27670-27672) solo agrega un `Fire` con el atacante; `updateFire` (15112-15130) lo corre una vez por cuadro: con daño por cuadro llama a `dealFireDamage` (9421-9427) y esa a `dealRangedDamage`/`dealSpellDamage` con el atacante, que entran por el mismo `dealDamage` que drena (8940); **sin daño y sobre un edificio hace `return false` ya en la primera actualización** (15117-15118), antes de daño, maná y partículas. O sea, el «prender» del edificio con 0 de daño (la onda del Spitfire 23042, el Bombard 24521-24527) no es visual ni daño por tick: el efecto existe una actualización y se va. Lo que prende de verdad (`igniteBuilding`, daño de fuego por cuadro, apagado a su tiempo) es solo `setAblazeWithManaDrain` (27673, el rayo del Tickferno), y eso el port ya lo hacía (Burning con daño sobre edificio).
+
+**Piezas (sin dueño nuevo):**
+- `Burning.ignite`: un `structure` ya no se descarta con daño 0; `Burning.step` lo termina en su primera actualización sin tocar `Health` (`updates = 1`). Parámetro nuevo `attacker: Node` (al final, nulo = nadie) que guarda `attacker_path` como el veneno de F164b; el tick lo alimenta `DamageOverTime.step` -> `LifeDrain.feed` (ya existía, el único dueño).
+- Llamadores: `IgniteTouch` y `BurnImpact` pasan el tirador (`ShotImpact.shooter_of`). `Oiled` no (sin atacante en el original).
+- Contenido: ningún lanzador de fuego drena hoy (Tickferno `craf`, Pyromaniac `plff`, Bombard `wlcf`, Spitfire `sohf`: drain 0), así que el drenaje del fuego no se ve en ningún caso de banco; lo cubre `rules_suite` `guard_fire` (Scythe al 50 % que prende a un Troll: cura 0,5 · lo que tomó el tick; sin atacante no cura; el fuego de un edificio sin daño termina en su primera actualización y no cura).
+
+**Banco:** `debug/rules/f162_waves.tres` suma la fila z-56 (Spitfire2 -45 ataca a Trogg5 -24; su onda vuela hasta la `jhut` de la aldea en (-14,7; -56,2) y la toca). `f162_expect.py`: tres ondas, `fuego` de Trogg1/2/5, y el edificio con `fuego … total 0.0 en 1 actualizaciones`, tocado solo por la onda de P3 (`--lanes` valida la fila 5; el suelo se omite si faltan los caches). `f123_expect.py` suma el veredicto de drenaje (ningún `drena` de Tickferno/Pyromaniac/Bombard).
 
 ### F163 — Escudo de fuego del Phoenix (RFC-030, corte 030w-f)
 

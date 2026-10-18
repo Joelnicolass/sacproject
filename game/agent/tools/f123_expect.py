@@ -50,11 +50,21 @@ def main():
     if len(sys.argv) < 2:
         return
     print("\n--- log del port ---")
+    drains = []
     with open(sys.argv[1], encoding="utf-8", errors="replace") as log:
         for line in log:
             line = line.rstrip("\n")
             if LINE.match(line) or re.match(r"^\S+ fuego ", line):
                 print(line)
+            m = re.match(r"^drena (\S+) de ", line)
+            if m:
+                drains.append(m.group(1))
+    # F164c: the fire feeds LifeDrain with its attacker (dealFireDamage -> dealDamage, state.d:9421-9427, 8940), but the Tickferno,
+    # the Pyromaniac and the Bombard have drain 0 (creatures.json: craf, plff, wlcf): healFromDrain gives nothing, so no "drena" line
+    # may name them. (A fire with a drainer is covered by rules_suite guard_fire.)
+    bad = [d for d in drains if re.match(r"(Tickferno|Pyromaniac|Bombard)\d", d)]
+    print("F123 drenaje del fuego: %s (líneas drena de los lanzadores de fuego: %s)" % ("PASS" if not bad else "FAIL", bad))
+    sys.exit(1 if bad else 0)
 
 
 if __name__ == "__main__":

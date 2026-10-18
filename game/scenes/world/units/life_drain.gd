@@ -9,7 +9,7 @@ extends RefCounted
 ## F164b: ... unless its guardians stood in for it. dealDamage(building, …, attacker) sends the hit to damageGuardians
 ## (state.d:9193-9195, 9119-9141), which calls the creature overload (8933-8947) on each guardian: the attacker drains from
 ## what the guardians took, not from the building (Health.deflected_last tells the two apart).
-## Not here yet: Burning.
+## F164c: and the fire (Burning, a DamageOverTime with the attacker's path), each update, with what it took (dealFireDamage, 9421-9427).
 
 ## Bench log (`ai_match` turns it on; off in the product): one line per feeding, with the numbers the replica needs.
 static var log_drain := false

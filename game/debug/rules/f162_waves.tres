@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BenchRules" load_steps=16 format=3]
+[gd_resource type="Resource" script_class="BenchRules" load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
 [ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
@@ -79,6 +79,27 @@ offset_z_m = -33.0
 facing_x = -1.0
 pacifist = true
 
+[sub_resource type="Resource" id="Group_P3"]
+script = ExtResource("2_group")
+tag = "sohf"
+slot = 1
+count = 1
+columns = 1
+offset_m = -45.0
+offset_z_m = -56.0
+facing_x = 1.0
+
+[sub_resource type="Resource" id="Group_W5"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 2
+count = 1
+columns = 1
+offset_m = -24.0
+offset_z_m = -56.0
+facing_x = -1.0
+pacifist = true
+
 [sub_resource type="Resource" id="Event_Attack_P1"]
 script = ExtResource("3_event")
 at_s = 0.5
@@ -113,12 +134,29 @@ label = "una onda del Gargoyle"
 slot = 2
 victim = "Gargoyle1"
 
+[sub_resource type="Resource" id="Event_Attack_P3"]
+script = ExtResource("3_event")
+at_s = 0.5
+action = "attack"
+label = "P3 ataca a W5 (la onda toca la choza)"
+slot = 1
+user = "Spitfire2"
+target = "Trogg5"
+
+[sub_resource type="Resource" id="Event_Kill_P3"]
+script = ExtResource("3_event")
+at_s = 4.0
+action = "kill"
+label = "una onda del Spitfire sobre la choza"
+slot = 2
+victim = "Spitfire2"
+
 [resource]
 script = ExtResource("1_rules")
 match_seed = 7
-groups = Array[ExtResource("2_group")]([SubResource("Group_P1"), SubResource("Group_W1"), SubResource("Group_W2"), SubResource("Group_A1"), SubResource("Group_G1"), SubResource("Group_W3"), SubResource("Group_W4")])
+groups = Array[ExtResource("2_group")]([SubResource("Group_P1"), SubResource("Group_W1"), SubResource("Group_W2"), SubResource("Group_A1"), SubResource("Group_G1"), SubResource("Group_W3"), SubResource("Group_W4"), SubResource("Group_P3"), SubResource("Group_W5")])
 anchor = Vector3(1270, 0, 1270)
 start_paused = true
-events = Array[ExtResource("3_event")]([SubResource("Event_Attack_P1"), SubResource("Event_Attack_G1"), SubResource("Event_Kill_P1"), SubResource("Event_Kill_G1")])
+events = Array[ExtResource("3_event")]([SubResource("Event_Attack_P1"), SubResource("Event_Attack_G1"), SubResource("Event_Kill_P1"), SubResource("Event_Kill_G1"), SubResource("Event_Attack_P3"), SubResource("Event_Kill_P3")])
 pending_text = "Ondas en pausa"
 ignore_annihilation = true

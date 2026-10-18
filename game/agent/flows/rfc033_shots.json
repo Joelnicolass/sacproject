@@ -226,13 +226,25 @@
    "wait": 0.2
   },
   {
-   "press": "order_menu"
+   "press": {
+    "name": "order_menu",
+    "pressed": true
+   }
   },
   {
-   "wait": 0.4
+   "wait": 0.6
   },
   {
    "shot": "hud_xmenu.png"
+  },
+  {
+   "press": {
+    "name": "order_menu",
+    "pressed": false
+   }
+  },
+  {
+   "wait": 0.3
   }
  ]
 }

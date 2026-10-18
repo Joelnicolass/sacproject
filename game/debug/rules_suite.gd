@@ -18,6 +18,7 @@ const AI_CASES := preload("res://debug/ai_cases.gd")  # 024c
 const CROWD_CASES := preload("res://debug/crowd_cases.gd")  # 027d
 const DETERMINISM_CASES := preload("res://debug/determinism_cases.gd")  # 032b
 const FORMATION_CASES := preload("res://debug/formation_cases.gd")  # 038a, 038b
+const RADIAL_CASES := preload("res://debug/radial_cases.gd")  # 038c
 
 @export var auto_run := true
 @export var max_spawned_units := 12
@@ -58,6 +59,7 @@ func _run_suite() -> void:
 	_results["friendly_fire"] = await _test_friendly_fire()  # 031a
 	_results.merge(await DETERMINISM_CASES.new().run(self))  # 032b
 	_results.merge(await FORMATION_CASES.new().run(self))  # 038a, 038b
+	_results.merge(RADIAL_CASES.new().run(self))  # 038c
 	_print_suite()
 
 

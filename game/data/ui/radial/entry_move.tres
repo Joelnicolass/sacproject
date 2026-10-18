@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="RadialEntry" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/radial/radial_entry.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/original/ui/xmenu/vom1.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"move"
+label = "Mover"
+icon = ExtResource("2")
+action = 1
+order = &"move"

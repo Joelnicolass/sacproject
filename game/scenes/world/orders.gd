@@ -87,6 +87,9 @@ func _apply(slot: int, unit_paths: PackedStringArray, command: String, point: Ve
 		return
 	if not COMMANDS.has(command):
 		return
+	## An order that carries a formation (the radial menu's pick) stores it first: the order itself already uses it.
+	if formation_id != &"":
+		_set_formation(slot, unit_paths, formation_id, unit_nodes)
 	var started := Time.get_ticks_usec()
 	var kind: int = COMMANDS[command]
 	var target := target_node if target_node != null else (get_node_or_null(target_path) as Node3D if not target_path.is_empty() else null)

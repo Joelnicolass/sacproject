@@ -1,11 +1,14 @@
+class_name MatchCommand
 extends Node
 
 ## Player input in the world (sacengine dagonBackend.d:947-1300). Left button: a spell or an
 ## order icon waiting for its target takes the click; otherwise it selects (see Selection).
-## Right click orders the selection by what is under the cursor: ground = move, enemy =
+## A right click orders the selection by what is under the cursor: ground = move, enemy =
 ## attack, corpse = guard the spot, anything else (own creature or wizard) = guard it.
+## The right button itself belongs to OrderRadial (RFC-038): a tap calls `right_at`, a hold opens the radial menu, whose
+## entries call `arm_order`, `retreat`, `use_ability` and `set_formation` here.
 ## Ctrl+R / Ctrl+A arm attack / guard for the next left click (a body, else advance / guard
-## the spot); a right click cancels an armed icon. Ctrl+Space calls every creature back to
+## the spot), the radial menu also arms move (the ground point); a right click cancels an armed icon. Ctrl+Space calls every creature back to
 ## the wizard. Ctrl+Q / Shift+B uses the selection's active ability. An armed spell or ability
 ## stays armed after a refused click, as in sacengine (dagonBackend.d:1236-1250).
 ## Nothing is drawn as text (RFC-025c): what is armed goes to %Battle (CommandLog) with the tag of its
@@ -24,7 +27,6 @@ const ORDER_TEXT := {
 	"advance": "Avance",
 	"retreat": "Retirada",
 }
-const ORDER_MENU_ORDER := ["attack", "guard", "advance", "guard_area", "retreat"]
 
 ## sacengine rectangleThreshold.
 @export var rect_threshold_px := 3.0
@@ -41,7 +43,6 @@ var _structure_index := -1
 ## Name the caster answers once the armed spell starts; until then it stays armed.
 var _cast_pending := ""
 var _ability_tag := ""
-var _menu_index := 0
 var _caster: Node
 var _left_down := false
 var _press_at := Vector2.ZERO
@@ -58,7 +59,7 @@ func _ready() -> void:
 	%SpellBook.spell_pressed.connect(_arm_spell)
 	%SpellBook.creature_pressed.connect(_summon)
 	%SpellBook.structure_pressed.connect(_arm_structure)
-	%SelectionRoster.ability_pressed.connect(_use_ability)
+	%SelectionRoster.ability_pressed.connect(use_ability)
 	%Units.child_entered_tree.connect(_on_unit_entered)
 	%Selection.changed.connect(_on_selection_changed)
 	var world := get_parent()
@@ -132,18 +133,16 @@ func _input(event: InputEvent) -> void:
 			else:
 				%Selection.select_group(i)
 			return
-	if event.is_action_pressed("order_menu", false, true):
-		_toggle_order_menu()
-	elif event.is_action_pressed("order_attack", false, true):
-		_arm_order("attack")
+	if event.is_action_pressed("order_attack", false, true):
+		arm_order("attack")
 	elif event.is_action_pressed("order_guard", false, true):
-		_arm_order("guard")
+		arm_order("guard")
 	elif event.is_action_pressed("order_retreat", false, true):
-		_retreat()
+		retreat()
 	elif event.is_action_pressed("use_ability", false, true):
-		_use_ability()
+		use_ability()
 	elif event.is_action_pressed("order_units"):
-		_right_at(_action_pointer(), true)
+		right_at(_action_pointer(), true)
 	elif event.is_action_pressed("select"):
 		_left_at(_action_pointer(), false, false)
 
@@ -160,12 +159,9 @@ func _on_view_event(event: InputEvent) -> void:
 			elif _left_down:
 				_left_down = false
 				_release_left(button)
-		elif button.button_index == MOUSE_BUTTON_RIGHT and not button.pressed:
-			if not _camera_dragged():
-				_right_at(button.position, false)
 	elif event is InputEventMouseMotion and _left_down:
 		var at := (event as InputEventMouseMotion).position
-		if not _rect and _mode.is_empty() and not _press_ctrl and not _camera_dragged():
+		if not _rect and _mode.is_empty() and not _press_ctrl and not camera_dragged():
 			_rect = absf(at.x - _press_at.x) >= rect_threshold_px or absf(at.y - _press_at.y) >= rect_threshold_px
 		if _rect:
 			%Selection.show_box(_press_at, at)
@@ -176,12 +172,13 @@ func _release_left(button: InputEventMouseButton) -> void:
 		_rect = false
 		%Selection.select_rect(_press_at, button.position, button.shift_pressed)
 		return
-	if _camera_dragged():
+	if camera_dragged():
 		return
 	_left_at(button.position, button.shift_pressed, button.ctrl_pressed)
 
 
-func _camera_dragged() -> bool:
+## True while the world camera counts the pointer as dragged (a click that ends it is not an order).
+func camera_dragged() -> bool:
 	var cam := get_node_or_null("%Camera")
 	return cam != null and cam.has_method("is_dragging") and bool(cam.call("is_dragging"))
 
@@ -269,10 +266,13 @@ func _accepts_of(action: SpellAction) -> PackedStringArray:
 	return PackedStringArray()
 
 
-## Ctrl+R / Ctrl+A only arm while no other icon waits (mouse.status == standard).
-func _arm_order(kind: String) -> void:
+## Ctrl+R / Ctrl+A only arm while no other icon waits (mouse.status == standard). The radial menu passes `replace`: its choice
+## wins over what was armed. `kind` is "attack", "guard" or "move".
+func arm_order(kind: String, replace := false) -> void:
 	if not _mode.is_empty():
-		return
+		if not replace:
+			return
+		_mode = ""
 	_mode = kind
 	_arm_order_icon(kind)
 
@@ -287,23 +287,6 @@ func _order_icon(kind: String) -> String:
 	return cues.aim_icon(kind) if cues else ""
 
 
-func _arm_menu_entry() -> void:
-	var order: String = ORDER_MENU_ORDER[_menu_index]
-	%Battle.arm("menu:%s" % order, _order_icon(order), "Menú: %s" % ORDER_TEXT.get(order, "Orden"), TargetProbe.ORDER_TARGETS)
-
-
-func _toggle_order_menu() -> void:
-	if _mode == "menu":
-		_menu_index = (_menu_index + 1) % ORDER_MENU_ORDER.size()
-		_arm_menu_entry()
-		return
-	if not _mode.is_empty():
-		return
-	_mode = "menu"
-	_menu_index = 0
-	_arm_menu_entry()
-
-
 func _left_at(screen: Vector2, shift: bool, ctrl: bool) -> void:
 	match _mode:
 		"spell":
@@ -312,12 +295,8 @@ func _left_at(screen: Vector2, shift: bool, ctrl: bool) -> void:
 			_structure_at(screen)
 		"ability":
 			_ability_at(screen)
-		"attack", "guard":
+		"attack", "guard", "move":
 			_order_icon_at(screen)
-		"menu":
-			var kind: String = ORDER_MENU_ORDER[_menu_index]
-			_mode = kind
-			_arm_order_icon(kind)
 		_:
 			var unit := _unit_under(screen)
 			var building := _building_first(screen) if unit == null else null
@@ -333,7 +312,8 @@ func _left_at(screen: Vector2, shift: bool, ctrl: bool) -> void:
 				%Inspector.clear()
 
 
-## dagonBackend.d:1215-1233: attack or guard a body; on the ground, advance or guard the spot.
+## dagonBackend.d:1215-1233: attack or guard a body; on the ground, advance or guard the spot. A move icon (radial menu)
+## goes to the ground point under the cursor.
 func _order_icon_at(screen: Vector2) -> void:
 	var body := _body_under(screen, false)
 	_order_icon_on(body, _ray_ground(screen))
@@ -342,6 +322,13 @@ func _order_icon_at(screen: Vector2) -> void:
 func _order_icon_on(body: Node3D, ground: Variant) -> void:
 	var kind := _mode
 	_mode = ""
+	if kind == "move":
+		var spot: Variant = ground if ground != null else (body.global_position if body else null)
+		if spot == null:
+			%Battle.say("Sin suelo")
+			return
+		_order("move", spot, null)
+		return
 	if body and not _is_corpse(body):
 		_order(kind, body.global_position, body)
 		return
@@ -446,7 +433,7 @@ func _cast_structure_on(spell: SpellType, body: Node3D) -> void:
 ## sacengine selectAbility (dagonBackend.d:152-178): the selection's ability (renderedSelection
 ## ability, state.d:30231). One that needs a target (requiresTarget = flags != 0) arms the next
 ## left click; any other is used at once with no target.
-func _use_ability() -> void:
+func use_ability() -> void:
 	var tag := _selection_ability()
 	if tag.is_empty():
 		return
@@ -529,23 +516,23 @@ func _ability_of(unit: Node) -> String:
 
 ## The keyboard action has no cursor: it aims through the crosshair, which the third-person
 ## camera keeps on the wizard's head, so the local wizard is skipped there.
-func _right_at(screen: Vector2, from_action: bool) -> void:
+func right_at(screen: Vector2, from_action := false, formation_id := &"") -> void:
 	if _cancel_armed():
 		return
 	var body := _body_under(screen, from_action)
 	if body:
 		if _is_corpse(body):
-			_order("guard_area", body.global_position, null)
+			_order("guard_area", body.global_position, null, formation_id)
 		elif _is_enemy(body):
-			_order("attack", body.global_position, body)
+			_order("attack", body.global_position, body, formation_id)
 		else:
-			_order("guard", body.global_position, body)
+			_order("guard", body.global_position, body, formation_id)
 		return
 	var ground: Variant = _ray_ground(screen)
 	if ground == null:
 		%Battle.say("Sin suelo")
 		return
-	_order("move", ground, null)
+	_order("move", ground, null, formation_id)
 
 
 ## A right click drops an armed icon instead of ordering. True when it did.
@@ -576,12 +563,8 @@ func _on_minimap_pointed(point: Vector3, button: int) -> void:
 			_structure_at_point(point)
 		"ability":
 			_ability_on(_body_near(point), point)
-		"attack", "guard":
+		"attack", "guard", "move":
 			_order_icon_on(_body_near(point), point)
-		"menu":
-			var kind: String = ORDER_MENU_ORDER[_menu_index]
-			_mode = kind
-			_arm_order_icon(kind)
 
 
 func _structure_at_point(point: Vector3) -> void:
@@ -622,7 +605,8 @@ func _body_near(point: Vector3, own_only := false) -> Node3D:
 	return best
 
 
-func _retreat() -> void:
+## Calls every creature back to the wizard (Ctrl+Space, the radial menu's retreat).
+func retreat() -> void:
 	var wizard := _wizard()
 	if wizard == null:
 		%Battle.say("Sin mago")
@@ -631,13 +615,59 @@ func _retreat() -> void:
 	%Battle.say("Retirada")
 
 
-func _order(kind: String, point: Vector3, target: Node3D) -> void:
+## What a right click would order where the pointer is: `ground`, `enemy`, `own` (a creature or wizard of the local side) or
+## `corpse`. The radial menu shows the matching icon in its center.
+func context_kind(screen: Vector2) -> StringName:
+	var body := _body_under(screen, false)
+	if body == null:
+		return &"ground"
+	if _is_corpse(body):
+		return &"corpse"
+	return &"enemy" if _is_enemy(body) else &"own"
+
+
+## The radial menu chose an order entry: `kind` ("attack", "guard", "move") is given at the screen point the menu opened on,
+## as an armed icon clicked there (a body, else the ground spot).
+func order_at(kind: String, screen: Vector2) -> void:
+	if not ORDER_TEXT.has(kind):
+		return
+	_mode = ""
+	_mode = kind
+	_order_icon_at(screen)
+
+
+## The radial menu chose a formation: the right click of that point (move, attack or guard by what is there) given in that
+## formation, in one order. Says the formation's name.
+func order_in_formation(id: StringName, screen: Vector2) -> void:
+	var formation: FormationType = %Orders.catalog.find(id) if %Orders.catalog else null
+	if formation == null:
+		return
+	_mode = ""
+	right_at(screen, false, id)
+	%Battle.say(formation.display_name)
+
+
+## Alt+1..8: the formation: every selected creature keeps it and nobody moves (the next order uses the one most of
+## the group has, Orders). Says the formation's name.
+func set_formation(id: StringName) -> void:
+	var formation: FormationType = %Orders.catalog.find(id) if %Orders.catalog else null
+	if formation == null:
+		return
+	var units: Array = %Selection.units()
+	if units.is_empty():
+		%Battle.say("Nadie")
+		return
+	%Orders.request(units, "formation", Vector3.ZERO, null, _camera_yaw(), id)
+	%Battle.say(formation.display_name)
+
+
+func _order(kind: String, point: Vector3, target: Node3D, formation_id := &"") -> void:
 	var units: Array = %Selection.units()
 	if units.is_empty():
 		%Battle.say("Nadie")
 		return
 	_show_ping(point)
-	%Orders.request(units, kind, point, target, _camera_yaw())
+	%Orders.request(units, kind, point, target, _camera_yaw(), formation_id)
 	%Battle.say(ORDER_TEXT.get(kind, "Orden"))
 
 

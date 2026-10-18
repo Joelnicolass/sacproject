@@ -2992,3 +2992,30 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
   - `quick` PASS.
 
 **Verificación del usuario en el editor (2026-10-18):** OK en los cuatro puntos: el terreno `.glb` en `high_noon.tscn`, un edificio movido en `high_noon_layout.tscn` que aparece en partida, las animaciones de `models/eorc.tscn` y la edición de `data/catalog/`. Cierra lo pendiente de F195, F196, F199 y F208.
+
+### F218 — Menú radial (RFC-038, corte 038c) — cerrado 2026-10-18
+### F219 — Menú radial integrado al botón derecho (RFC-038, corte 038d) — cerrado 2026-10-18
+
+- **`RadialMenu`** (`scenes/ui/radial/`, `data/ui/radial/`):
+  - tiene dos anillos con los iconos del original: las órdenes adentro y las 8 formaciones afuera;
+  - abre con escala y fundido (0,12 s) y cierra con fundido;
+  - la opción bajo el cursor crece 1,3× y brilla, se rellena su sector y una línea apunta desde el centro;
+  - en el centro aparece el nombre en español, y para las formaciones un dibujo de 8 puntos;
+  - los parámetros se ajustan con `@export` y en `RadialLayout`.
+- **`OrderRadial`** es el único dueño del botón derecho:
+  - un toque corto da la orden como antes;
+  - mantenerlo 0,25 s abre el menú en ese punto, y al soltar sobre una formación las unidades van ahí con esa formación, en un solo `submit_order`;
+  - mantener `Tab` hace lo mismo en el puntero;
+  - soltar en el centro cancela;
+  - `Alt+1` a `Alt+8` solo cambian la formación.
+- **Arreglo de F80:** se borró el ciclo de `Tab` que no hacía nada.
+- **Verificación:**
+  - `radial_layout` PASS (ángulo a opción).
+  - `RADIAL_PROBE` PASS con entrada real en `debug/orders_radial.tscn`: 8 Trogg en cuña en el punto, a 0,58 m de su lugar como máximo.
+  - `run_034e` E2E PASS.
+  - `rules_suite` PASS.
+  - `quick` PASS.
+- **Deuda:**
+  - `f80_cues_orders` y `f80_hud_text` fallan igual con el código anterior: las aserciones son viejas.
+  - `rfc033_shots` no terminó en 10 min.
+  - El menú dibuja texto con `draw_string`, a pedido del usuario.

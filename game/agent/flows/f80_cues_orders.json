@@ -173,150 +173,44 @@
    }
   },
   {
-   "press": "order_menu"
-  },
-  {
-   "wait": 0.2
-  },
-  {
-   "assert": {
-    "node": "%Battle",
-    "prop": "armed",
-    "equals": "menu:attack"
+   "press": {
+    "name": "order_menu",
+    "pressed": true
    }
   },
   {
-   "assert": {
-    "node": "%Battle",
-    "prop": "armed_icon",
-    "equals": "Matt"
-   }
+   "wait": 0.6
   },
   {
    "assert": {
-    "node": "%Battle",
-    "text_equals": "Menú: Ataque"
-   }
-  },
-  {
-   "assert": {
-    "node": "%CommandCue/Aim",
-    "visible": true
-   }
-  },
-  {
-   "press": "order_menu"
-  },
-  {
-   "wait": 0.2
-  },
-  {
-   "assert": {
-    "node": "%Battle",
-    "prop": "armed",
-    "equals": "menu:guard"
-   }
-  },
-  {
-   "assert": {
-    "node": "%Battle",
-    "prop": "armed_icon",
-    "equals": "Mgua"
-   }
-  },
-  {
-   "assert": {
-    "node": "%Battle",
-    "text_equals": "Menú: Escolta"
-   }
-  },
-  {
-   "press": "order_menu"
-  },
-  {
-   "wait": 0.2
-  },
-  {
-   "assert": {
-    "node": "%Battle",
-    "prop": "armed",
-    "equals": "menu:advance"
-   }
-  },
-  {
-   "assert": {
-    "node": "%Battle",
-    "prop": "armed_icon",
-    "equals": "Matt"
-   }
-  },
-  {
-   "press": "order_menu"
-  },
-  {
-   "wait": 0.2
-  },
-  {
-   "assert": {
-    "node": "%Battle",
-    "prop": "armed",
-    "equals": "menu:guard_area"
-   }
-  },
-  {
-   "assert": {
-    "node": "%Battle",
-    "prop": "armed_icon",
-    "equals": "Mgua"
-   }
-  },
-  {
-   "press": "order_menu"
-  },
-  {
-   "wait": 0.2
-  },
-  {
-   "assert": {
-    "node": "%Battle",
-    "prop": "armed",
-    "equals": "menu:retreat"
-   }
-  },
-  {
-   "assert": {
-    "node": "%Battle",
-    "prop": "armed_icon",
-    "equals": "zwp1"
-   }
-  },
-  {
-   "assert": {
-    "node": "%Battle",
-    "text_equals": "Menú: Retirada"
-   }
-  },
-  {
-   "assert": {
-    "node": "%CommandCue/Aim",
+    "node": "%RadialMenu",
     "visible": true
    }
   },
   {
    "assert": {
-    "node": "%CommandCue/Aim",
-    "prop": "texture",
-    "contains": "ImageTexture"
-   }
-  },
-  {
-   "print": {
-    "node": "%TargetProbe",
-    "prop": "pointer"
+    "node": "%Battle",
+    "prop": "armed",
+    "equals": ""
    }
   },
   {
    "shot": "f80_5_menu.png"
+  },
+  {
+   "press": {
+    "name": "order_menu",
+    "pressed": false
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "assert": {
+    "node": "%RadialMenu",
+    "visible": false
+   }
   },
   {
    "press": "order_units"

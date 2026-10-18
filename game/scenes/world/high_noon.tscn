@@ -58,6 +58,8 @@
 [ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="f200_bake"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap.tscn" id="f213_minimap"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="f212_bake"]
+[ext_resource type="PackedScene" path="res://scenes/ui/radial/radial_menu.tscn" id="f218_radial"]
+[ext_resource type="Script" path="res://scenes/world/order_radial.gd" id="f218_order_radial"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
 bg_color = Color(1, 1, 1, 0)
@@ -246,6 +248,14 @@ script = ExtResource("f27_orders")
 [node name="MatchCommand" type="Node" parent="." unique_id=391205645]
 script = ExtResource("7_match")
 
+[node name="OrderRadial" type="Node" parent="." node_paths=PackedStringArray("menu", "view", "command")]
+unique_name_in_owner = true
+editor_description = "RFC-038: dueño del botón derecho (toque = orden, mantener 0,25 s = menú radial), de Tab mantenido y de Alt+1..8 (formaciones). Va después de MatchCommand: ve Alt+N antes que él."
+script = ExtResource("f218_order_radial")
+menu = NodePath("../Hud/RadialMenu")
+view = NodePath("../Hud/View")
+command = NodePath("../MatchCommand")
+
 [node name="Inspector" type="Node" parent="." unique_id=459803602]
 unique_name_in_owner = true
 editor_description = "RFC-028b: la casa, el cactus o el Manalith clicado muestra su barra de vida; local, sin RPC."
@@ -308,6 +318,9 @@ camera = NodePath("../../Camera")
 terrain_bake = NodePath("../../MinimapBake")
 structures_root = NodePath("../../Structures")
 
+[node name="RadialMenu" parent="Hud" instance=ExtResource("f218_radial")]
+unique_name_in_owner = true
+
 [node name="WizardHud" parent="Hud" unique_id=1561071952 instance=ExtResource("14_hud")]
 unique_name_in_owner = true
 
@@ -326,7 +339,7 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 script = ExtResource("f80_probe")
 world_view = NodePath("../View")
-hud_controls = [NodePath("../SpellBook"), NodePath("../SelectionRoster"), NodePath("../Minimap")]
+hud_controls = [NodePath("../SpellBook"), NodePath("../SelectionRoster"), NodePath("../Minimap"), NodePath("../RadialMenu")]
 camera = NodePath("../../Camera")
 
 [node name="CursorSkin" type="Node" parent="Hud" unique_id=1957000105 node_paths=PackedStringArray("command_log", "probe")]

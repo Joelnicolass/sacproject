@@ -134,16 +134,18 @@
    "wait": 0.3
   },
   {
-   "press": "order_menu"
+   "press": {
+    "name": "order_menu",
+    "pressed": true
+   }
   },
   {
-   "wait": 0.2
+   "wait": 0.6
   },
   {
    "assert": {
-    "node": "%Battle",
-    "prop": "armed",
-    "equals": "menu:attack"
+    "node": "%RadialMenu",
+    "visible": true
    }
   },
   {
@@ -167,6 +169,15 @@
   },
   {
    "shot": "f80_hud_2_menu.png"
+  },
+  {
+   "press": {
+    "name": "order_menu",
+    "pressed": false
+   }
+  },
+  {
+   "wait": 0.3
   },
   {
    "scene": "res://debug/selection_many.tscn"

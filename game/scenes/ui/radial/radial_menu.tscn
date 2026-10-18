@@ -1,0 +1,32 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/radial/radial_menu.gd" id="1_menu"]
+[ext_resource type="Resource" path="res://data/ui/radial/orders_layout.tres" id="2_layout"]
+
+[node name="RadialMenu" type="Control" node_paths=PackedStringArray("center_rect", "rings")]
+editor_description = "RFC-038 038c: radial menu of two rings. It shows the entries of its RadialLayout and emits entry_chosen / cancelled; OrderRadial feeds it the pointer. preview_open shows it in the editor; F6 runs it alone."
+layout_mode = 3
+anchors_preset = 0
+offset_right = 248.0
+offset_bottom = 248.0
+mouse_filter = 2
+script = ExtResource("1_menu")
+layout = ExtResource("2_layout")
+center_rect = NodePath("Center")
+rings = NodePath("Rings")
+
+[node name="Center" type="TextureRect" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_left = 104.0
+offset_top = 104.0
+offset_right = 144.0
+offset_bottom = 144.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Rings" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2

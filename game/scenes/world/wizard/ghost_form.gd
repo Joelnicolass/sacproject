@@ -56,8 +56,8 @@ var desecrations := 0
 var _left := 0.0
 var _fade: Tween
 var _rng := RandomNumberGenerator.new()
-var _look_mesh: Mesh
-var _look_materials: Array[StandardMaterial3D] = []
+## RFC-023f: the see-through look of THIS body (its own meshes, or the rig's), never of the others.
+var _look := SeeThroughLook.new()
 
 @onready var _wizard: Node3D = get_parent()
 @onready var _health: Node = get_parent().get_node("Health")
@@ -66,6 +66,9 @@ var _look_materials: Array[StandardMaterial3D] = []
 
 func _ready() -> void:
 	add_to_group(GROUP)
+	_look.visual = visual
+	_look.ghost_alpha = GHOST_ALPHA
+	_look.ghost_energy = GHOST_ENERGY
 	MatchSeed.seed_rng(_rng, ["ghost", int(_wizard.get("owner_slot"))])
 	_show_stage(false)
 	if MpKit.is_networked() and not MpKit.is_server():
@@ -241,16 +244,16 @@ func _show_stage(animate: bool) -> void:
 		_fade = null
 	visual.visible = true
 	var see_through := shows_ghost() or stage == Stage.GONE
-	visual.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF if see_through else GeometryInstance3D.SHADOW_CASTING_SETTING_ON
-	_set_shadeless(shows_ghost())
+	_look.set_shadow(not see_through)
+	_look.set_shadeless(shows_ghost())
 	var ghost := 1.0 - GHOST_ALPHA
 	match stage:
 		Stage.ALIVE, Stage.DYING:
-			visual.transparency = 0.0
+			_look.set_transparency(0.0)
 		Stage.RISING:
 			_fade_to(ghost, _seconds(_type().corpse_rise_frames if _type() else 0), animate)
 		Stage.GHOST:
-			visual.transparency = ghost
+			_look.set_transparency(ghost)
 			visual.visible = _seen_by_viewer()
 		Stage.UNGHOSTING:
 			_fade_to(0.0, _seconds(_type().float_to_stance_frames if _type() else 0), animate)
@@ -264,44 +267,16 @@ func _show_stage(animate: bool) -> void:
 
 func _fade_to(transparency: float, seconds: float, animate: bool) -> void:
 	if not animate or seconds <= 0.0:
-		visual.transparency = transparency
+		_look.set_transparency(transparency)
 		return
 	_fade = visual.create_tween()
-	_fade.tween_property(visual, "transparency", transparency, seconds)
+	_fade.tween_method(_look.set_transparency, _look.transparency, transparency, seconds)
 
 
-## Energy follows the fade: 1 at alpha 1, GHOST_ENERGY at ghostAlpha.
+## Energy follows the fade: 1 at alpha 1, GHOST_ENERGY at ghostAlpha (sacengine shadelessBoneMaterialBackend).
 func _process(_delta: float) -> void:
-	if _look_materials.is_empty() or visual == null:
-		return
-	if visual.get("mesh") != _look_mesh:
-		_set_shadeless(true)
-	var progress := clampf(visual.transparency / (1.0 - GHOST_ALPHA), 0.0, 1.0)
-	var energy := lerpf(1.0, GHOST_ENERGY, progress) * energy_scale
-	for mat in _look_materials:
-		if mat:
-			mat.albedo_color = Color(energy, energy, energy, 1.0)
-
-
-## sacengine shadelessBoneMaterialBackend for the transparent pass: one unshaded copy per surface.
-func _set_shadeless(on: bool) -> void:
-	var instance := visual as MeshInstance3D
-	if instance == null:
-		return
-	for i in _look_materials.size():
-		if i < instance.get_surface_override_material_count():
-			instance.set_surface_override_material(i, null)
-	_look_materials.clear()
-	_look_mesh = null
-	if not on or instance.mesh == null:
-		return
-	_look_mesh = instance.mesh
-	for i in instance.mesh.get_surface_count():
-		var base := instance.mesh.surface_get_material(i) as StandardMaterial3D
-		var copy: StandardMaterial3D = base.duplicate() if base else StandardMaterial3D.new()
-		copy.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		instance.set_surface_override_material(i, copy)
-		_look_materials.append(copy)
+	_look.energy_scale = energy_scale
+	_look.update()
 
 
 func _seen_by_viewer() -> bool:

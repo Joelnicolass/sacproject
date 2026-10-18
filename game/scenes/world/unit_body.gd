@@ -849,7 +849,11 @@ func soul_anchor() -> Vector3:
 	var visual := get_node_or_null("Tilt/Mesh")
 	if pivot == null or visual == null:
 		return global_position
-	return pivot.global_transform * Vector3(0.0, float(visual.call("body_height")) * 0.5, 0.0)
+	var center := Vector3(0.0, float(visual.call("body_height")) * 0.5, 0.0)
+	# A clip lays the body down, so the pivot stays upright: the soul sits where the Tween would have left the center.
+	if bool($Corpse.get("clip_driven")):
+		return pivot.global_transform * ($Corpse.call("laid_pose", float(visual.call("body_radius"))) as Transform3D) * center
+	return pivot.global_transform * center
 
 
 ## `animate` false: a peer that joins after the death gets the corpse already on the ground.
@@ -861,7 +865,24 @@ func _show_corpse(animate := true) -> void:
 		_pose_tween.kill()
 	var visual := get_node_or_null("Tilt/Mesh")
 	var radius := float(visual.call("body_radius")) if visual else 0.3
-	$Corpse.call("lay_down", self, radius, animate)
+	var role := _death_role()
+	if not role.is_empty():
+		if animate:
+			_clip_pose.call("play", role, true)
+		else:
+			_clip_pose.call("play_ended", role)
+	$Corpse.call("lay_down", self, radius, animate, not role.is_empty())
+
+
+## RFC-023f: the clip that lays the body down. "" when a Tween does it (baked meshes, the dedicated server, a model with
+## no dying clip). In the air a flier plays fly_death.
+func _death_role() -> String:
+	if not bool(_clip_pose.call("is_skeletal")):
+		return ""
+	for role: String in ["fly_death" if is_flying() else "death", "death"]:
+		if _has_clip(role):
+			return role
+	return ""
 
 
 ## Server and clients: the creature left DEAD (a Convert doctor pumped it back to life): the corpse stands up.
@@ -890,7 +911,7 @@ func _update_clip_state() -> void:
 	if mode != Mode.IDLE:
 		_gesturing = false
 	_apply_cower_look()
-	if _clip_pose == null:
+	if _clip_pose == null or (mode == Mode.DEAD and bool($Corpse.get("clip_driven"))):
 		return
 	if not _debug_clip_role.is_empty():
 		_clip_pose.call("play", _debug_clip_role)
@@ -927,7 +948,7 @@ func _flight_role() -> String:
 		Flight.State.TAKEOFF:
 			return "takeoff"
 		Flight.State.FLYING:
-			return "fly"
+			return "hover" if mode == Mode.IDLE and _has_clip("hover") else "fly"
 		Flight.State.LANDING:
 			return "land"
 	return ""

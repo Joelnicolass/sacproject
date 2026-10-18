@@ -132,6 +132,9 @@ properties/17/replication_mode = 2
 properties/18/path = NodePath("DevourGrowth:shown")
 properties/18/spawn = true
 properties/18/replication_mode = 2
+properties/19/path = NodePath("Corpse:dissolving")
+properties/19/spawn = true
+properties/19/replication_mode = 2
 
 [node name="Unit" type="CharacterBody3D"]
 collision_layer = 2
@@ -316,9 +319,10 @@ collision = NodePath("../Collision")
 flight = NodePath("../Flight")
 visual = NodePath("../Tilt/Mesh")
 
-[node name="Corpse" type="Node" parent="." node_paths=PackedStringArray("pivot")]
+[node name="Corpse" type="Node" parent="." node_paths=PackedStringArray("pivot", "visual")]
 script = ExtResource("5_corpse")
 pivot = NodePath("../Tilt")
+visual = NodePath("../Tilt/Mesh")
 
 [node name="Captive" type="Node" parent="." node_paths=PackedStringArray("body")]
 script = ExtResource("f59_captive")

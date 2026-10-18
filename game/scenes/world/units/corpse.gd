@@ -10,10 +10,15 @@ signal settled
 
 ## Node that holds the mesh and tips over (feet at its origin).
 @export var pivot: Node3D
+## The body's visual (BodyVisual): the corpse fades it out at the end of its life.
+@export var visual: Node3D
 ## Physics layer of corpses: off the unit layer (2) so picks and other bodies ignore it.
 @export_flags_3d_physics var corpse_layer := 8
 ## sacengine dissolutionTime: the corpse is removed 2.5 s after its soul is taken (state.d:8368).
 @export var dissolve_s := 2.5
+## RFC-023f: the last seconds of dissolve_s the body fades out in, instead of vanishing at once. sacengine removes it
+## with no fade (it only plays a sound, state.d:14073-14078): this one is a request of the user, on top of the original.
+@export_range(0.0, 2.5, 0.05, "or_greater") var fade_s := 1.0
 
 ## Seconds the body takes to get back on its feet when a Convert doctor revives it (RFC-020e). The
 ## original `revive` animation is not exported: this is the fall played backwards.
@@ -29,15 +34,38 @@ signal settled
 
 var laid := false
 var is_settled := false
-var dissolving := false
+## Server writes it, the clients get it (unit.tscn replicates it): every peer fades the body for the last fade_s.
+@export var dissolving := false:
+	set(value):
+		if value == dissolving:
+			return
+		dissolving = value
+		if is_node_ready():
+			_show_dissolve()
+## true: a clip (the skeleton's death) lays the body down and the pivot stays upright. Only the draw changes: the
+## fall lasts the same ticks, because the soul appears when settled is emitted.
+var clip_driven := false
 
 var _stand_tween: Tween
+var _fade_tween: Tween
 
 
-func lay_down(body: CharacterBody3D, body_radius: float, animate := true) -> void:
+func _ready() -> void:
+	if dissolving:
+		_show_dissolve()
+
+
+## Where the pivot ends when the body lies (the Tween's last pose): the soul sits on it either way.
+func laid_pose(body_radius: float) -> Transform3D:
+	return Transform3D(Basis.from_euler(Vector3(-deg_to_rad(fall_deg), 0.0, 0.0)), Vector3(0.0, body_radius, 0.0))
+
+
+## `by_clip`: the death clip lays the body down; the pivot is not touched and the timer is the Tween's.
+func lay_down(body: CharacterBody3D, body_radius: float, animate := true, by_clip := false) -> void:
 	if laid:
 		return
 	laid = true
+	clip_driven = by_clip
 	if _stand_tween:
 		_stand_tween.kill()
 	body.remove_from_group("unit")
@@ -48,6 +76,17 @@ func lay_down(body: CharacterBody3D, body_radius: float, animate := true) -> voi
 		_on_settled()
 		return
 	var tilt := deg_to_rad(fall_deg)
+	if by_clip:
+		if animate:
+			var timer := pivot.create_tween()
+			timer.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
+			# The same four steps as the Tween below, so the last one ends on the same physics tick.
+			for seconds in [anticipation_s, fall_s, settle_s * 0.5, settle_s * 0.5]:
+				timer.tween_interval(seconds)
+			timer.finished.connect(_on_settled)
+		else:
+			_on_settled()
+		return
 	if not animate:
 		pivot.rotation.x = -tilt
 		pivot.position.y = body_radius
@@ -69,9 +108,12 @@ func lay_down(body: CharacterBody3D, body_radius: float, animate := true) -> voi
 func stand_up(body: CharacterBody3D, animate := true) -> void:
 	if not laid:
 		return
+	var was_clip := clip_driven
 	laid = false
 	is_settled = false
+	clip_driven = false
 	dissolving = false
+	_clear_fade()
 	body.remove_from_group("corpse")
 	body.add_to_group("unit")
 	body.collision_layer = body.get("unit_layer")
@@ -79,7 +121,7 @@ func stand_up(body: CharacterBody3D, animate := true) -> void:
 		return
 	if _stand_tween:
 		_stand_tween.kill()
-	if not animate:
+	if not animate or was_clip:
 		pivot.rotation = Vector3.ZERO
 		pivot.position = Vector3.ZERO
 		return
@@ -97,6 +139,24 @@ func dissolve(body: Node) -> void:
 	get_tree().create_timer(dissolve_s, false, true).timeout.connect(func() -> void:
 		if is_instance_valid(body):
 			body.queue_free())
+
+
+## Every peer: waits for the last fade_s of the dissolve and fades the body out (transparency 0 -> 1).
+func _show_dissolve() -> void:
+	_clear_fade()
+	if not dissolving or visual == null or fade_s <= 0.0 or not visual.has_method("set_fade"):
+		return
+	_fade_tween = visual.create_tween()
+	_fade_tween.tween_interval(maxf(dissolve_s - fade_s, 0.0))
+	_fade_tween.tween_method(func(value: float) -> void: visual.call("set_fade", value), 0.0, 1.0, minf(fade_s, dissolve_s))
+
+
+func _clear_fade() -> void:
+	if _fade_tween:
+		_fade_tween.kill()
+		_fade_tween = null
+	if visual != null and visual.has_method("set_fade"):
+		visual.call("set_fade", 0.0)
 
 
 func _on_settled() -> void:

@@ -51,6 +51,9 @@ EXTRA_ANIM_SLOTS = {"cower": 32, "pull": 33, "work": 35, "talk_cower": 37}
 PEASANT_TAGS = ("zepa", "zepd", "zepe", "zepf", "saep")
 ## F116 (RFC-030e): the flight slots of every other creature (`animations.d`: takeoff 32, fly 33, land 34).
 FLIGHT_ANIM_SLOTS = {"takeoff": 32, "fly": 33, "land": 34}
+## RFC-023f: death0 (slot 19), flyDeath (36, a peasant's pull-down) and hover (38) as clips of the skeleton.
+DEATH_ANIM_SLOTS = {"death": 19, "fly_death": 36}
+HOVER_ANIM_SLOT = 38
 ## F120 (RFC-030i-a): the stun slots (`animations.d`: knocked2Floor 9, getUp 10, flyDamage 35). sacengine stunned lasts
 ## (knocked2Floor + getUp)·updateAnimFactor ticks on the ground and flyDamage·updateAnimFactor in the air (state.d:8138-8150,
 ## 14170-14212). Only the timing is exported: the mesh clips would add ~1,6 GB to anim_f37 (5583 frames over the 52 book
@@ -354,6 +357,8 @@ def decode_cre8(raw: bytes) -> dict:
         "extra_animation_tags": extra_animation_tags(raw),
         "flight_animation_tags": {role: human_tag(raw, 176 + slot * 4) for role, slot in FLIGHT_ANIM_SLOTS.items()},
         "stun_animation_tags": {role: human_tag(raw, 176 + slot * 4) for role, slot in STUN_ANIM_SLOTS.items()},
+        "death_animation_tags": {role: human_tag(raw, 176 + slot * 4) for role, slot in DEATH_ANIM_SLOTS.items()},
+        "hover_animation_tag": human_tag(raw, 176 + HOVER_ANIM_SLOT * 4),
     })
     return entry
 
@@ -984,6 +989,13 @@ def main() -> None:
         if creature_tag in PEASANT_TAGS:
             stun_tags.pop("fly_damage", None)
         entry["stun_animations"] = flight_animations(anim_index, model_path, stun_tags, locomotion.get("stance", ""), False)
+        # RFC-023f: death0 (ground) and flyDeath (creatures that must fly) as clips; the hover pose joins the flight clips.
+        death_tags: dict = entry.pop("death_animation_tags")
+        if creature_tag in PEASANT_TAGS:
+            death_tags.pop("fly_death", None)
+        entry["death_animations"] = flight_animations(anim_index, model_path, death_tags, "", False)
+        hover = flight_animations(anim_index, model_path, {"hover": entry.pop("hover_animation_tag")}, locomotion.get("stance", ""), creature_tag in PEASANT_TAGS)
+        entry["flight_animations"].update(hover)
     for entry in wizards.values():
         entry["abilities"] = [a for a in entry["abilities"] if a]
         # Ghost timing (state.d:14000-14099): dying, deadToGhost and ghostToIdle last numFrames·updateAnimFactor ticks.

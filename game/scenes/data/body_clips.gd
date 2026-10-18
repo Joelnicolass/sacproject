@@ -9,11 +9,14 @@ extends Resource
 
 ## Roles the BodyRig state machine has a state for (body_rig.tscn). A new role needs a state there.
 ## The unit roles after "rise"/"fly" (023c): the peasant clips, the hybrid fliers' takeoff/land, the stun clips and the
-## idle gesture (sacengine plays idle0 now and then on top of the rest pose, state.d:7957-7992).
+## idle gesture (sacengine plays idle0 now and then on top of the rest pose, state.d:7957-7992); 023f adds hover (the pose
+## in the air) and fly_death.
 const ROLES: PackedStringArray = ["idle", "run", "attack", "shoot", "cast", "hit", "death", "held", "thrash", "rise", "fly",
-	"cower", "talk_cower", "work", "takeoff", "land", "knock", "get_up", "fly_damage", "gesture"]
+	"cower", "talk_cower", "work", "takeoff", "land", "knock", "get_up", "fly_damage", "gesture", "hover", "fly_death"]
 ## Roles that end by themselves and hand the body back to idle; the others loop or hold (death).
 const ONE_SHOT_ROLES: PackedStringArray = ["attack", "shoot", "cast", "hit", "rise"]
+## Roles that play once and stay on their last frame, in a body that repeats everything else (BodyClips.from_roles).
+const HOLD_ROLES: PackedStringArray = ["death", "fly_death"]
 
 ## Model tag, as in assets/original/models/index.json (eorc, jnwr...).
 @export var model := "":
@@ -36,6 +39,10 @@ static func from_roles(model_tag: String, role_to_tag: Dictionary) -> BodyClips:
 	made.model = model_tag
 	made.roles = role_to_tag.duplicate()
 	made.looping_roles = PackedStringArray(role_to_tag.keys())
+	for role in HOLD_ROLES:
+		var at := made.looping_roles.find(role)
+		if at >= 0:
+			made.looping_roles.remove_at(at)
 	return made
 
 

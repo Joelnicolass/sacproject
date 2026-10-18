@@ -164,6 +164,7 @@ func _make_creature(row: Dictionary) -> _CREATURE_TYPE:
 	type.extra_animations = row.get("extra_animations", {}) if row.get("extra_animations", {}) is Dictionary else {}
 	type.flight_animations = row.get("flight_animations", {}) if row.get("flight_animations", {}) is Dictionary else {}
 	type.stun_animations = row.get("stun_animations", {}) if row.get("stun_animations", {}) is Dictionary else {}
+	type.death_animations = row.get("death_animations", {}) if row.get("death_animations", {}) is Dictionary else {}
 	return type
 
 

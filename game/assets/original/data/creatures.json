@@ -101,7 +101,14 @@
   ],
   "extra_animations": {},
   "flight_animations": {},
-  "stun_animations": {}
+  "stun_animations": {},
+  "death_animations": {
+   "death": {
+    "tag": "MAdi",
+    "frames": 76,
+    "framerate": 30
+   }
+  }
  },
  "dcas": {
   "spell_type": 2,
@@ -195,7 +202,8 @@
     "frames": 85,
     "framerate": 30
    }
-  }
+  },
+  "death_animations": {}
  },
  "saep": {
   "spell_type": 2,
@@ -339,6 +347,13 @@
    "hit_floor": {
     "tag": "PEhf",
     "frames": 67,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "PEd1",
+    "frames": 66,
     "framerate": 30
    }
   }
@@ -487,6 +502,13 @@
     "frames": 67,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "PEd1",
+    "frames": 66,
+    "framerate": 30
+   }
   }
  },
  "zepd": {
@@ -631,6 +653,13 @@
    "hit_floor": {
     "tag": "PEhf",
     "frames": 67,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "PEd1",
+    "frames": 66,
     "framerate": 30
    }
   }
@@ -779,6 +808,13 @@
     "frames": 67,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "PEd1",
+    "frames": 66,
+    "framerate": 30
+   }
   }
  },
  "zepf": {
@@ -925,6 +961,13 @@
     "frames": 67,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "PEd1",
+    "frames": 66,
+    "framerate": 30
+   }
   }
  },
  "tnem": {
@@ -1033,9 +1076,26 @@
     "tag": "FAfl",
     "frames": 43,
     "framerate": 30
+   },
+   "hover": {
+    "tag": "FAho",
+    "frames": 59,
+    "framerate": 30
    }
   },
-  "stun_animations": {}
+  "stun_animations": {},
+  "death_animations": {
+   "death": {
+    "tag": "FA2t",
+    "frames": 63,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "FA2t",
+    "frames": 63,
+    "framerate": 30
+   }
+  }
  },
  "tshg": {
   "spell_type": 2,
@@ -1183,6 +1243,18 @@
     "frames": 67,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "PEd1",
+    "frames": 66,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "PEpd",
+    "frames": 65,
+    "framerate": 30
+   }
   }
  },
  "imaf": {
@@ -1289,9 +1361,26 @@
     "tag": "FAfl",
     "frames": 43,
     "framerate": 30
+   },
+   "hover": {
+    "tag": "FAho",
+    "frames": 59,
+    "framerate": 30
    }
   },
-  "stun_animations": {}
+  "stun_animations": {},
+  "death_animations": {
+   "death": {
+    "tag": "FA2t",
+    "frames": 63,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "FA2t",
+    "frames": 63,
+    "framerate": 30
+   }
+  }
  },
  "mtsl": {
   "spell_type": 2,
@@ -1416,6 +1505,13 @@
    "hit_floor": {
     "tag": "SThf",
     "frames": 65,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "STd1",
+    "frames": 148,
     "framerate": 30
    }
   }
@@ -1548,6 +1644,13 @@
     "frames": 30,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "FGd1",
+    "frames": 124,
+    "framerate": 30
+   }
   }
  },
  "tbsh": {
@@ -1677,6 +1780,11 @@
     "tag": "HBfl",
     "frames": 56,
     "framerate": 30
+   },
+   "hover": {
+    "tag": "HBi1",
+    "frames": 111,
+    "framerate": 30
    }
   },
   "stun_animations": {
@@ -1693,6 +1801,18 @@
    "hit_floor": {
     "tag": "HBhf",
     "frames": 148,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "HBd1",
+    "frames": 23,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "HBfi",
+    "frames": 23,
     "framerate": 30
    }
   }
@@ -1821,6 +1941,11 @@
     "tag": "SPla",
     "frames": 87,
     "framerate": 30
+   },
+   "hover": {
+    "tag": "SPhv",
+    "frames": 96,
+    "framerate": 30
    }
   },
   "stun_animations": {
@@ -1842,6 +1967,18 @@
    "hit_floor": {
     "tag": "SPhf",
     "frames": 47,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "SPd1",
+    "frames": 113,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "SPfi",
+    "frames": 53,
     "framerate": 30
    }
   }
@@ -1976,6 +2113,18 @@
     "frames": 14,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "GCdi",
+    "frames": 22,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "GCst",
+    "frames": 58,
+    "framerate": 30
+   }
   }
  },
  "grdg": {
@@ -2107,6 +2256,11 @@
     "tag": "DGla",
     "frames": 87,
     "framerate": 30
+   },
+   "hover": {
+    "tag": "DGhv",
+    "frames": 66,
+    "framerate": 30
    }
   },
   "stun_animations": {
@@ -2128,6 +2282,18 @@
    "hit_floor": {
     "tag": "DGhf",
     "frames": 121,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "DGd1",
+    "frames": 148,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "DGfi",
+    "frames": 93,
     "framerate": 30
    }
   }
@@ -2258,6 +2424,18 @@
    "hit_floor": {
     "tag": "BGhf",
     "frames": 18,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "BGd1",
+    "frames": 78,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "BGst",
+    "frames": 30,
     "framerate": 30
    }
   }
@@ -2391,6 +2569,13 @@
     "frames": 67,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "HAd1",
+    "frames": 105,
+    "framerate": 30
+   }
   }
  },
  "lort": {
@@ -2515,6 +2700,13 @@
    "hit_floor": {
     "tag": "TRhf",
     "frames": 29,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "TRd1",
+    "frames": 54,
     "framerate": 30
    }
   }
@@ -2643,6 +2835,13 @@
     "frames": 67,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "HUd1",
+    "frames": 54,
+    "framerate": 30
+   }
   }
  },
  "crpd": {
@@ -2769,6 +2968,13 @@
    "hit_floor": {
     "tag": "PChf",
     "frames": 31,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "PCd1",
+    "frames": 88,
     "framerate": 30
    }
   }
@@ -2903,6 +3109,11 @@
     "tag": "CKla",
     "frames": 28,
     "framerate": 30
+   },
+   "hover": {
+    "tag": "CKhv",
+    "frames": 61,
+    "framerate": 30
    }
   },
   "stun_animations": {
@@ -2924,6 +3135,18 @@
    "hit_floor": {
     "tag": "CKhf",
     "frames": 85,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "CKd1",
+    "frames": 98,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "CKfi",
+    "frames": 25,
     "framerate": 30
    }
   }
@@ -3058,6 +3281,13 @@
     "frames": 98,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "SLd1",
+    "frames": 81,
+    "framerate": 30
+   }
   }
  },
  "nomd": {
@@ -3187,6 +3417,11 @@
     "tag": "DMla",
     "frames": 95,
     "framerate": 30
+   },
+   "hover": {
+    "tag": "DMhv",
+    "frames": 53,
+    "framerate": 30
    }
   },
   "stun_animations": {
@@ -3208,6 +3443,18 @@
    "hit_floor": {
     "tag": "DMhf",
     "frames": 57,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "DMd1",
+    "frames": 90,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "DMfi",
+    "frames": 48,
     "framerate": 30
    }
   }
@@ -3344,6 +3591,18 @@
     "frames": 33,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "GUd1",
+    "frames": 37,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "GUst",
+    "frames": 28,
+    "framerate": 30
+   }
   }
  },
  "plfd": {
@@ -3472,6 +3731,13 @@
    "hit_floor": {
     "tag": "FGhf",
     "frames": 30,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "FGd1",
+    "frames": 124,
     "framerate": 30
    }
   }
@@ -3606,6 +3872,13 @@
     "frames": 37,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "KLd1",
+    "frames": 43,
+    "framerate": 30
+   }
   }
  },
  "dzid": {
@@ -3727,6 +4000,13 @@
    },
    "hit_floor": {
     "tag": "DZhf",
+    "frames": 110,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "DZd1",
     "frames": 110,
     "framerate": 30
    }
@@ -3859,6 +4139,11 @@
     "tag": "BZhv",
     "frames": 31,
     "framerate": 30
+   },
+   "hover": {
+    "tag": "BZhv",
+    "frames": 31,
+    "framerate": 30
    }
   },
   "stun_animations": {
@@ -3880,6 +4165,18 @@
    "hit_floor": {
     "tag": "BZhf",
     "frames": 43,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "BZd1",
+    "frames": 24,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "BZd1",
+    "frames": 24,
     "framerate": 30
    }
   }
@@ -4012,6 +4309,18 @@
     "frames": 14,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "GCdi",
+    "frames": 22,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "GCst",
+    "frames": 58,
+    "framerate": 30
+   }
   }
  },
  "grdr": {
@@ -4134,6 +4443,11 @@
     "tag": "DFfl",
     "frames": 88,
     "framerate": 30
+   },
+   "hover": {
+    "tag": "DFhv",
+    "frames": 88,
+    "framerate": 30
    }
   },
   "stun_animations": {
@@ -4145,6 +4459,18 @@
    "hit_floor": {
     "tag": "DFhf",
     "frames": 48,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "DFd1",
+    "frames": 35,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "DFd1",
+    "frames": 35,
     "framerate": 30
    }
   }
@@ -4276,6 +4602,13 @@
    "hit_floor": {
     "tag": "CPhf",
     "frames": 53,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "CPd1",
+    "frames": 123,
     "framerate": 30
    }
   }
@@ -4410,6 +4743,11 @@
     "tag": "CKla",
     "frames": 28,
     "framerate": 30
+   },
+   "hover": {
+    "tag": "CKhv",
+    "frames": 61,
+    "framerate": 30
    }
   },
   "stun_animations": {
@@ -4431,6 +4769,18 @@
    "hit_floor": {
     "tag": "CKhf",
     "frames": 85,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "CKd1",
+    "frames": 98,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "CKfi",
+    "frames": 25,
     "framerate": 30
    }
   }
@@ -4553,6 +4903,18 @@
    "hit_floor": {
     "tag": "GUhf",
     "frames": 33,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "GUd1",
+    "frames": 37,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "GUst",
+    "frames": 28,
     "framerate": 30
    }
   }
@@ -4678,6 +5040,13 @@
    },
    "hit_floor": {
     "tag": "DZhf",
+    "frames": 110,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "DZd1",
     "frames": 110,
     "framerate": 30
    }
@@ -4809,6 +5178,11 @@
     "tag": "HBfl",
     "frames": 56,
     "framerate": 30
+   },
+   "hover": {
+    "tag": "HBi1",
+    "frames": 111,
+    "framerate": 30
    }
   },
   "stun_animations": {
@@ -4825,6 +5199,18 @@
    "hit_floor": {
     "tag": "HBhf",
     "frames": 148,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "HBd1",
+    "frames": 23,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "HBfi",
+    "frames": 23,
     "framerate": 30
    }
   }
@@ -4957,6 +5343,13 @@
     "frames": 30,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "FGd1",
+    "frames": 124,
+    "framerate": 30
+   }
   }
  },
  "craf": {
@@ -5085,6 +5478,18 @@
    "hit_floor": {
     "tag": "BGhf",
     "frames": 18,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "BGd1",
+    "frames": 78,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "BGst",
+    "frames": 30,
     "framerate": 30
    }
   }
@@ -5219,6 +5624,18 @@
     "frames": 37,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "KLd1",
+    "frames": 43,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "KLst",
+    "frames": 27,
+    "framerate": 30
+   }
   }
  },
  "lrtf": {
@@ -5344,6 +5761,13 @@
    "hit_floor": {
     "tag": "TRhf",
     "frames": 29,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "TRd1",
+    "frames": 54,
     "framerate": 30
    }
   }
@@ -5476,6 +5900,11 @@
     "tag": "ADla",
     "frames": 76,
     "framerate": 30
+   },
+   "hover": {
+    "tag": "ADhv",
+    "frames": 49,
+    "framerate": 30
    }
   },
   "stun_animations": {
@@ -5497,6 +5926,18 @@
    "hit_floor": {
     "tag": "ADhg",
     "frames": 151,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "ADd1",
+    "frames": 142,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "ADfi",
+    "frames": 19,
     "framerate": 30
    }
   }
@@ -5630,6 +6071,13 @@
     "frames": 53,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "CPd1",
+    "frames": 123,
+    "framerate": 30
+   }
   }
  },
  "craa": {
@@ -5758,6 +6206,13 @@
     "frames": 58,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "BAd1",
+    "frames": 63,
+    "framerate": 30
+   }
   }
  },
  "bobs": {
@@ -5877,6 +6332,11 @@
     "tag": "SBfl",
     "frames": 40,
     "framerate": 30
+   },
+   "hover": {
+    "tag": "SBhv",
+    "frames": 40,
+    "framerate": 30
    }
   },
   "stun_animations": {
@@ -5888,6 +6348,18 @@
    "hit_floor": {
     "tag": "SBhf",
     "frames": 143,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "SBd1",
+    "frames": 59,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "SBd1",
+    "frames": 59,
     "framerate": 30
    }
   }
@@ -6021,6 +6493,13 @@
     "frames": 61,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "BMd1",
+    "frames": 109,
+    "framerate": 30
+   }
   }
  },
  "ahcr": {
@@ -6152,6 +6631,13 @@
     "frames": 67,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "HAd1",
+    "frames": 105,
+    "framerate": 30
+   }
   }
  },
  "lbog": {
@@ -6276,6 +6762,13 @@
    "hit_floor": {
     "tag": "GBhf",
     "frames": 51,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "GBd1",
+    "frames": 65,
     "framerate": 30
    }
   }
@@ -6404,6 +6897,11 @@
     "tag": "SPla",
     "frames": 87,
     "framerate": 30
+   },
+   "hover": {
+    "tag": "SPhv",
+    "frames": 96,
+    "framerate": 30
    }
   },
   "stun_animations": {
@@ -6425,6 +6923,18 @@
    "hit_floor": {
     "tag": "SPhf",
     "frames": 47,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "SPd1",
+    "frames": 113,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "SPfi",
+    "frames": 53,
     "framerate": 30
    }
   }
@@ -6554,6 +7064,13 @@
     "frames": 67,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "HUd1",
+    "frames": 54,
+    "framerate": 30
+   }
   }
  },
  "ycrp": {
@@ -6680,6 +7197,13 @@
     "frames": 31,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "PCd1",
+    "frames": 88,
+    "framerate": 30
+   }
   }
  },
  "gard": {
@@ -6801,6 +7325,18 @@
    "hit_floor": {
     "tag": "Edhf",
     "frames": 36,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "Edd1",
+    "frames": 138,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "Eds1",
+    "frames": 118,
     "framerate": 30
    }
   }
@@ -6932,6 +7468,13 @@
    "hit_floor": {
     "tag": "CPhf",
     "frames": 53,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "CPd1",
+    "frames": 123,
     "framerate": 30
    }
   }
@@ -7066,6 +7609,11 @@
     "tag": "CKla",
     "frames": 28,
     "framerate": 30
+   },
+   "hover": {
+    "tag": "EChv",
+    "frames": 61,
+    "framerate": 30
    }
   },
   "stun_animations": {
@@ -7087,6 +7635,18 @@
    "hit_floor": {
     "tag": "CKhf",
     "frames": 85,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "CKd1",
+    "frames": 98,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "CKfi",
+    "frames": 25,
     "framerate": 30
    }
   }
@@ -7219,6 +7779,13 @@
     "frames": 98,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "SLd1",
+    "frames": 81,
+    "framerate": 30
+   }
   }
  },
  "mtse": {
@@ -7346,6 +7913,13 @@
    "hit_floor": {
     "tag": "EShf",
     "frames": 33,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "ESd1",
+    "frames": 148,
     "framerate": 30
    }
   }
@@ -7476,6 +8050,11 @@
     "tag": "HBfl",
     "frames": 56,
     "framerate": 30
+   },
+   "hover": {
+    "tag": "HBi1",
+    "frames": 111,
+    "framerate": 30
    }
   },
   "stun_animations": {
@@ -7492,6 +8071,18 @@
    "hit_floor": {
     "tag": "HBhf",
     "frames": 148,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "HBd1",
+    "frames": 23,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "HBfi",
+    "frames": 23,
     "framerate": 30
    }
   }
@@ -7622,6 +8213,13 @@
    "hit_floor": {
     "tag": "BMhf",
     "frames": 61,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "BMd1",
+    "frames": 109,
     "framerate": 30
    }
   }
@@ -7756,6 +8354,18 @@
     "frames": 37,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "KLd1",
+    "frames": 43,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "KLst",
+    "frames": 27,
+    "framerate": 30
+   }
   }
  },
  "raeb": {
@@ -7888,6 +8498,13 @@
     "frames": 54,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "BEd1",
+    "frames": 38,
+    "framerate": 30
+   }
   }
  },
  "ycro": {
@@ -8010,6 +8627,13 @@
    "hit_floor": {
     "tag": "HUhf",
     "frames": 67,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "HUd1",
+    "frames": 54,
     "framerate": 30
    }
   }
@@ -8142,6 +8766,13 @@
     "frames": 30,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "FGd1",
+    "frames": 124,
+    "framerate": 30
+   }
   }
  },
  "ehtH": {
@@ -8272,6 +8903,13 @@
     "frames": 30,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "FGd1",
+    "frames": 124,
+    "framerate": 30
+   }
   }
  },
  "pezH": {
@@ -8391,6 +9029,11 @@
     "tag": "SBfl",
     "frames": 40,
     "framerate": 30
+   },
+   "hover": {
+    "tag": "SBhv",
+    "frames": 40,
+    "framerate": 30
    }
   },
   "stun_animations": {
@@ -8402,6 +9045,18 @@
    "hit_floor": {
     "tag": "SBhf",
     "frames": 143,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "SBd1",
+    "frames": 59,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "SBd1",
+    "frames": 59,
     "framerate": 30
    }
   }
@@ -8531,6 +9186,13 @@
     "frames": 65,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "STd1",
+    "frames": 148,
+    "framerate": 30
+   }
   }
  },
  "ramH": {
@@ -8655,6 +9317,13 @@
     "frames": 110,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "DZd1",
+    "frames": 110,
+    "framerate": 30
+   }
   }
  },
  "RAMH": {
@@ -8776,6 +9445,13 @@
    },
    "hit_floor": {
     "tag": "DZhf",
+    "frames": 110,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "DZd1",
     "frames": 110,
     "framerate": 30
    }
@@ -8909,6 +9585,13 @@
     "frames": 30,
     "framerate": 30
    }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "FGd1",
+    "frames": 124,
+    "framerate": 30
+   }
   }
  },
  "risH": {
@@ -9040,6 +9723,11 @@
     "tag": "DGla",
     "frames": 87,
     "framerate": 30
+   },
+   "hover": {
+    "tag": "DGhv",
+    "frames": 66,
+    "framerate": 30
    }
   },
   "stun_animations": {
@@ -9061,6 +9749,18 @@
    "hit_floor": {
     "tag": "DGhf",
     "frames": 121,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "DGd1",
+    "frames": 148,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "DGfi",
+    "frames": 93,
     "framerate": 30
    }
   }
@@ -9188,6 +9888,13 @@
    "hit_floor": {
     "tag": "HUhf",
     "frames": 67,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "HUd1",
+    "frames": 54,
     "framerate": 30
    }
   }
@@ -9322,6 +10029,11 @@
     "tag": "CKla",
     "frames": 28,
     "framerate": 30
+   },
+   "hover": {
+    "tag": "EChv",
+    "frames": 61,
+    "framerate": 30
    }
   },
   "stun_animations": {
@@ -9343,6 +10055,18 @@
    "hit_floor": {
     "tag": "CKhf",
     "frames": 85,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "CKd1",
+    "frames": 98,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "CKfi",
+    "frames": 25,
     "framerate": 30
    }
   }
@@ -9473,6 +10197,11 @@
     "tag": "DGla",
     "frames": 87,
     "framerate": 30
+   },
+   "hover": {
+    "tag": "DGhv",
+    "frames": 66,
+    "framerate": 30
    }
   },
   "stun_animations": {
@@ -9494,6 +10223,18 @@
    "hit_floor": {
     "tag": "DGhf",
     "frames": 121,
+    "framerate": 30
+   }
+  },
+  "death_animations": {
+   "death": {
+    "tag": "DGd1",
+    "frames": 148,
+    "framerate": 30
+   },
+   "fly_death": {
+    "tag": "DGfi",
+    "frames": 93,
     "framerate": 30
    }
   }

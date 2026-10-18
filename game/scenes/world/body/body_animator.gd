@@ -51,6 +51,16 @@ func play(role: String, restart := false) -> void:
 	_follow(restart)
 
 
+## Plays `role` with the skeleton already on its last frame (a corpse that a late peer sees on the ground). The clock
+## starts the clip as usual: only the draw jumps to the end.
+func play_ended(role: String) -> void:
+	play(role, true)
+	var rig := _rig()
+	if not _skeletal or rig == null or not rig.is_loaded() or _clock.active_role().is_empty():
+		return
+	rig.play(role, true, float(rig.role_frames(role)) / maxf(rig.role_framerate(role), 1.0) + 0.5)
+
+
 func active_role() -> String:
 	return _clock.active_role()
 

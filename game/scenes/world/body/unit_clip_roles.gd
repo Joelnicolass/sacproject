@@ -7,8 +7,10 @@ extends RefCounted
 
 ## Peasant, flight and stun roles come from these CreatureType dictionaries (role -> {tag, frames, framerate}).
 const EXTRA_ROLES: PackedStringArray = ["cower", "talk_cower", "work"]
-const FLIGHT_ROLES: PackedStringArray = ["takeoff", "fly", "land"]
+const FLIGHT_ROLES: PackedStringArray = ["takeoff", "fly", "land", "hover"]
 const STUN_ROLES: PackedStringArray = ["knock", "get_up", "fly_damage"]
+## RFC-023f: how it dies, on the ground and in the air.
+const DEATH_ROLES: PackedStringArray = ["death", "fly_death"]
 
 
 ## role -> tag for `type` drawn with `model`. A role whose tag is "" has no clip: the body rests on idle.
@@ -28,7 +30,7 @@ static func for_type(type: CreatureType, model: String) -> Dictionary:
 	if type == null:
 		return roles
 	# RFC-028c peasant clips, F116 takeoff/fly/land of a hybrid flier, F120 knock/get_up/fly_damage.
-	var sets: Array = [[type.extra_animations, EXTRA_ROLES], [type.flight_animations, FLIGHT_ROLES], [type.stun_animations, STUN_ROLES]]
+	var sets: Array = [[type.extra_animations, EXTRA_ROLES], [type.flight_animations, FLIGHT_ROLES], [type.stun_animations, STUN_ROLES], [type.death_animations, DEATH_ROLES]]
 	for pair: Array in sets:
 		for role: String in pair[1]:
 			var clip: Variant = (pair[0] as Dictionary).get(role, {})

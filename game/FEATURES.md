@@ -3033,3 +3033,9 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
   - Flow `f220_order_marker` con ventana: AGENT_OK. El cono rojo aparece y a los 3 s ya no está.
   - `rules_suite` PASS.
   - `quick` PASS.
+
+**Decisiones del usuario (2026-10-18):**
+- 036j va: `UnitBody` pasa a FsmKit, y se puede modificar el addon FsmKit si hace falta (el repo es del usuario).
+- 036a queda cerrado sin corte.
+- El clic en el minimapa sigue sin mover la cámara.
+- El tinte del minimapa queda cerrado; las mejoras visuales vienen después.

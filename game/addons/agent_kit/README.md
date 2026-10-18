@@ -86,6 +86,22 @@ Editor experimental: `experimental/agent-flow-editor/` (Vite, **pnpm**). No entr
 
 No es un runner de tests unitarios. No es un MCP. No es un motor de juego. El playtest no pide OK: solo escribe en `res://agent/` y no cambia reglas de negocio.
 
+## Cola de Godot (`determinism/harness/`)
+
+`godot_run.sh <comando godot...>` corre UN Godot bajo un esquema de turnos por máquina, para que varios agentes no se pisen. Genérico: sin nada de ningún juego.
+
+- **headless** (`--headless`, sin `--import`): hasta `HEADLESS_SLOTS` a la vez (3). Se ve en stderr como `headless (<ns>_godot.slot0)`.
+- **ventana**: una a la vez, con tope de `GODOT_WINDOW_MAX_S` (600 s; 0 = sin tope). Se cuenta como carga: su tiempo es informativo.
+- **`--import`**: exclusivo; espera a que no haya otro Godot (`godot_busy.sh`) y nada arranca mientras lo tiene (`import exclusivo` en stderr).
+- Turnos FIFO (tickets en `/tmp/<ns>_godot.queue`), tope global `GODOT_MAX` (4), locks que se limpian si muere el dueño. Nunca `pkill` por patrón.
+- **Preflight**: si un `class_name` de los `.gd` no está en `.godot/global_script_class_cache.cfg`, hace `--import` x2 antes (`clases sin importar`). `GODOT_RUN_NO_PREFLIGHT=1` lo apaga.
+
+Variables: `GODOT_RUN_NS` (espacio de nombres de los locks, `/tmp/<NS>_godot.*`, default `agentkit`; todos los que comparten máquina usan el mismo), `GODOT_BIN` (binario para el preflight), `HEADLESS_SLOTS`, `GODOT_MAX`, `GODOT_WINDOW_MAX_S`, `GODOT_BUSY_SCRIPT`.
+
+Un proyecto lo usa con un shim fino: `GODOT_RUN_NS=mijuego GODOT_BIN=... exec bash addons/agent_kit/determinism/harness/godot_run.sh "$@"`.
+
+Autoprueba sin Godot (comandos falsos `bash -c 'sleep N' --headless`; ~20 s, namespace propio): `bash addons/agent_kit/determinism/harness/selftest_queue.sh` → 4 × `PASS`.
+
 ## Versión
 
 0.1.4

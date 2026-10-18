@@ -2929,3 +2929,23 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
 - **Diferidos:**
   - 036a: el mago IA trabado en el Manalith; hay que revisarlo jugando.
   - 036j: la FSM; necesita el OK del usuario.
+
+### F212 — Terreno del minimapa horneado (RFC-037, corte 037a) — cerrado 2026-10-18
+### F213 — Minimapa visible (RFC-037, corte 037b) — cerrado 2026-10-18
+
+- **Horneado del terreno:** `MinimapTerrainBake` es un SubViewport con mundo propio y cámara ortográfica. Usa luz ambiente 0,7 en lugar de UNSHADED, que no existe en un export de release. Se dibuja una sola vez, con 1024 px.
+- **`Minimap`** (`scenes/ui/minimap/`, en `Hud/Minimap`):
+  - círculo abajo a la derecha con el marco `fram`, escalado con `HudScale`;
+  - gira con la cámara, y hay un knob para dejar el norte arriba;
+  - cuña de visión, iconos del atlas `mmic` (exportado con `tools/import_ui.py`) con el color de cada lado, y flechas en el borde para lo propio que queda fuera del círculo;
+  - el estilo y la vista son `.tres` en `data/ui/minimap/`.
+- **Verificación:**
+  - Flow `f037_minimap` con ventana: AGENT_OK. El icono del mago queda a 0 px de lo esperado, y el giro de la cámara se refleja en los iconos.
+  - `rules_suite` PASS.
+  - `quick` PASS.
+  - `run_034e` (dedicado): E2E PASS.
+  - Capturas en `agent/out/f037b/`.
+- **Pendientes:**
+  - La entrada (clic y zoom) es 037c.
+  - El sigilo no se replica al cliente (R2), así que el minimapa del rival mostraría a un enemigo invisible. Se resuelve en 037c o aparte.
+  - Falta comparar el tinte gris del original en 037d.

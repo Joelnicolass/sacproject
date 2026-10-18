@@ -56,6 +56,8 @@
 [ext_resource type="Script" path="res://scenes/world/nav/map_nav_region.gd" id="f200_nav_region"]
 [ext_resource type="NavigationMesh" path="res://data/nav/high_noon_nav.res" id="f200_navmesh"]
 [ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="f200_bake"]
+[ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap.tscn" id="f213_minimap"]
+[ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="f212_bake"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
 bg_color = Color(1, 1, 1, 0)
@@ -260,6 +262,10 @@ world = NodePath("..")
 wizard_spawner = NodePath("../WizardSpawner")
 side_scene = ExtResource("f77_side")
 
+[node name="MinimapBake" parent="." unique_id=1037000020 node_paths=PackedStringArray("terrain") instance=ExtResource("f212_bake")]
+unique_name_in_owner = true
+terrain = NodePath("../Terrain")
+
 [node name="Hud" type="CanvasLayer" parent="." unique_id=1419423165]
 
 [node name="View" type="Button" parent="Hud" unique_id=363790488]
@@ -294,6 +300,12 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 script = ExtResource("f80_log")
 cues = ExtResource("f80_cues")
+
+[node name="Minimap" parent="Hud" unique_id=1037000021 node_paths=PackedStringArray("camera", "terrain_bake", "structures_root") instance=ExtResource("f213_minimap")]
+unique_name_in_owner = true
+camera = NodePath("../../Camera")
+terrain_bake = NodePath("../../MinimapBake")
+structures_root = NodePath("../../Structures")
 
 [node name="WizardHud" parent="Hud" unique_id=1561071952 instance=ExtResource("14_hud")]
 unique_name_in_owner = true

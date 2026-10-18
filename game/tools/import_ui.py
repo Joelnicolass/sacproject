@@ -53,6 +53,8 @@ HUD_SHEETS = {
     "spi2": "MAIN.WAD!/bits.FLDR",
     "spir": "MAIN.WAD!/bits.FLDR",
     "fn10": "MAIN.WAD!/font.FLDR",
+    # SacHud.minimapIcons (sacobject.d:2125): the minimap icon atlas (RFC-037 037b).
+    "mmic": "MAIN.WAD!/icon.FLDR",
 }
 # SacHud mana[0..2] / health[0..2]: name of the D array -> (output file, height); all 32 wide, RGBA.
 STAT_STRIPS = {

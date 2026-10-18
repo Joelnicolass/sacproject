@@ -1,0 +1,111 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/minimap/minimap.gd" id="1_minimap"]
+[ext_resource type="Script" path="res://scenes/ui/minimap/minimap_ground.gd" id="2_ground"]
+[ext_resource type="Script" path="res://scenes/ui/minimap/minimap_markers.gd" id="3_markers"]
+[ext_resource type="PackedScene" path="res://scenes/ui/frame_piece.tscn" id="4_piece"]
+[ext_resource type="Texture2D" path="res://assets/original/ui/hud/fram.png" id="5_fram"]
+[ext_resource type="Resource" path="res://data/ui/minimap/style_set.tres" id="6_style"]
+[ext_resource type="Resource" path="res://data/ui/minimap/view.tres" id="7_view"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_disc"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 76
+corner_radius_top_right = 76
+corner_radius_bottom_right = 76
+corner_radius_bottom_left = 76
+corner_detail = 24
+anti_aliasing_size = 1.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_quarter"]
+atlas = ExtResource("5_fram")
+region = Rect2(64, 64, 64, 64)
+
+[node name="Minimap" type="Control" unique_id=1037000010 node_paths=PackedStringArray("ground", "markers")]
+editor_description = "RFC-037: circle at the bottom right. Anchored by its corner; Minimap.gd scales it with the shared HudScale. mouse_filter IGNORE until 037c adds input (then STOP)."
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -160.0
+offset_top = -160.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("1_minimap")
+ground = NodePath("Mask/Ground")
+markers = NodePath("Mask/Markers")
+style = ExtResource("6_style")
+view = ExtResource("7_view")
+
+[node name="Mask" type="Panel" parent="." unique_id=1037000011]
+clip_children = 1
+layout_mode = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 156.0
+offset_bottom = 156.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_disc")
+
+[node name="Ground" type="Control" parent="Mask" unique_id=1037000012 node_paths=PackedStringArray("minimap")]
+texture_filter = 1
+layout_mode = 0
+offset_left = -4.0
+offset_top = -4.0
+offset_right = 156.0
+offset_bottom = 156.0
+mouse_filter = 2
+script = ExtResource("2_ground")
+minimap = NodePath("../..")
+
+[node name="Markers" type="Control" parent="Mask" unique_id=1037000013 node_paths=PackedStringArray("minimap")]
+texture_filter = 1
+layout_mode = 0
+offset_left = -4.0
+offset_top = -4.0
+offset_right = 156.0
+offset_bottom = 156.0
+mouse_filter = 2
+script = ExtResource("3_markers")
+minimap = NodePath("../..")
+
+[node name="Frame" type="Control" parent="." unique_id=1037000014]
+anchors_preset = 0
+offset_right = 160.0
+offset_bottom = 160.0
+mouse_filter = 2
+
+[node name="TopLeft" parent="Frame" unique_id=1037000015 instance=ExtResource("4_piece")]
+layout_mode = 0
+offset_right = 80.0
+offset_bottom = 80.0
+texture = SubResource("AtlasTexture_quarter")
+
+[node name="TopRight" parent="Frame" unique_id=1037000016 instance=ExtResource("4_piece")]
+layout_mode = 0
+offset_left = 80.0
+offset_right = 160.0
+offset_bottom = 80.0
+texture = SubResource("AtlasTexture_quarter")
+flip_h = true
+
+[node name="BottomLeft" parent="Frame" unique_id=1037000017 instance=ExtResource("4_piece")]
+layout_mode = 0
+offset_top = 80.0
+offset_right = 80.0
+offset_bottom = 160.0
+texture = SubResource("AtlasTexture_quarter")
+flip_v = true
+
+[node name="BottomRight" parent="Frame" unique_id=1037000018 instance=ExtResource("4_piece")]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 80.0
+offset_right = 160.0
+offset_bottom = 160.0
+texture = SubResource("AtlasTexture_quarter")
+flip_h = true
+flip_v = true

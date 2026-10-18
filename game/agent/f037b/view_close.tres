@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="MinimapView" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/minimap/minimap_view.gd" id="1_view"]
+
+[resource]
+script = ExtResource("1_view")
+zoom = 0.12

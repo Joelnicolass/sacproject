@@ -117,6 +117,9 @@ func _on_peer_joined(_peer_id: int, slot: int) -> void:
 	_away_since_ms.erase(slot)
 	if _hold_started_ms == 0:
 		_hold_started_ms = MpMatchFiles.now_ms()
+	## Without the wait (`--no-load-hold`) the count of the forced defeat starts at the first admission, as before.
+	if not _holding and _first_admit_tick < 0:
+		_first_admit_tick = MatchClock.now()
 	print("partida %s: slot %d adentro" % [agent.match_id, slot])
 
 

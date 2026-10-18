@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="MpProcessRunnerStub" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/mp_kit/lobby/mp_process_runner_stub.gd" id="1_stub"]
+
+[resource]
+script = ExtResource("1_stub")

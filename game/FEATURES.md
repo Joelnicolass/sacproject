@@ -2494,3 +2494,14 @@ Deuda:
 
 Deuda:
 - Detección de pids e identidad validadas en macOS/Linux; en Windows es de mejor esfuerzo.
+
+### F180 — Estados de sala sin red (RFC-034, corte 034c)
+
+**Pieza (`addons/mp_kit/lobby/mp_lobby_rooms.gd`, sin nada de Sacrifice):** `MpLobbyRooms` (RefCounted), dueño único del estado de cada sala.
+- Estados `OPEN`, `COUNTDOWN`, `LAUNCHING`, `IN_MATCH`, `CLOSED`. Llena y todos listos y conectados → `COUNTDOWN`; dejar de estar listo, cambiar pick o slot, salir o caerse → `OPEN`; fin de cuenta → `LAUNCHING` (`MpMatchLauncher.launch`); `match_listening` → `IN_MATCH` (señal `match_assigned` por asiento con puerto y token); `match_ended` → `OPEN` con el resultado en la sala; spawn que falla, `spawn_timeout_s` o tope `max_matches` → `OPEN` + `room_error` (`spawn_failed`, `matches_cap`); latido viejo en partida → `OPEN` + `match_failed`; 0 asientos durante `empty_room_close_s` → `CLOSED`.
+- Asientos por sesión (`session_id`): una sesión caída conserva el asiento `resume_grace_s` (durante `LAUNCHING`/`IN_MATCH` no corre; el plazo empieza en el resultado).
+- El pick (`meta`) y las `options` son `Dictionary` opacos; los validan `meta_validator`, `options_validator` y arma el ticket `ticket_builder` (Callables del juego). Errores como códigos String estables. El tiempo solo avanza con `tick(delta)`.
+- Parámetros: todos de `MpLobbyConfig` (`max_rooms`, `seats_per_room`, `countdown_s`, `resume_grace_s`, `empty_room_close_s`, `max_matches`...). `data/net/lobby_config_local.tres` suma `resume_grace_s=5` y `empty_room_close_s=3`.
+- Prueba: `agent/run_034c.sh` (escena `debug/net/lobby_cases.tscn`, runner `data/net/runner_stub.tres`, sin red ni procesos).
+
+**Pendiente (orquestador):** `--import` una vez (clases nuevas) y correr `agent/run_034c.sh` (espera `LOBBY CASES PASS`). Código escrito sin ejecutar Godot.

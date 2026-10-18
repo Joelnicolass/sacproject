@@ -16,3 +16,5 @@ heartbeat_stale_s = 10.0
 idle_no_players_s = 10.0
 parent_check_s = 1.0
 result_quit_delay_s = 1.0
+resume_grace_s = 5.0
+empty_room_close_s = 3.0

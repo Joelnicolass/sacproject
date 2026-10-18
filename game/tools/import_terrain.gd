@@ -2,7 +2,7 @@ extends SceneTree
 
 ## Turns High Noon's terrain bin into assets/original/maps/high_noon/terrain.res (RFC-033, 033f).
 ## Source: the HNTR v1 bin that `python3 tools/import_map.py --terrain-bin=F` builds from the .scp (a temporary file outside the
-## repo; nothing in cache/). Same float32 and int32 values as the bin, so Terrain builds the same mesh. Idempotent: when
+## repo; nothing in the repo). Same float32 and int32 values as the bin, so Terrain builds the same mesh. Idempotent: when
 ## terrain.res already holds the same arrays nothing is written. Run once; the result is versioned.
 ## "$GODOT" --headless --path game --script res://tools/import_terrain.gd -- --bin=F [--out=res://path/terrain.res]
 

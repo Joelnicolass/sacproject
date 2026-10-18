@@ -477,3 +477,18 @@ Ya hay en LFS 109 MB de `assets/cc0` y `assets/mm`. Cada regeneración de textur
 - **`run_determinism.sh`:** `fixed` se corre siempre en la invocación (se agrega si falta) y el veredicto exige al menos 2 modos frescos por caso; con uno solo, FAIL «sin comparación». Pruebas: `f139 fixed` solo = FAIL sin comparación; un `f139_fixed` falso + `f139 stress` = PASS porque `fixed` se vuelve a correr (el falso no se usa); `s7` normal = PASS.
 - **Íconos que chocan en macOS:** cada mayúscula del tag se escribe `_` + minúscula (`HSba` → `_h_sba.png`, `hsba` → `hsba.png`). Dueño único `OriginalAssets.icon_file(tag)` (lo usa `HudIcons.icon`); `import_ui.py` espeja `icon_file`, sin el workaround `spelled`, y falla si dos nombres chocan con `lower()`; `tools/check_icon_files.gd` compara GDScript y Python en todos los tags. 12 PNG y sus `.import` renombrados con `git mv` (UIDs conservados); nuevos `_h_sba`, `_h_rba`, `_e_h_t_h`, `_r_a_m_h`; `hsba.png` y `hrba.png` ahora tienen su ícono (Life Shield, Spikey Death). Captura: `agent/out/033h/icons_life_shield_protector_spikey_halo.png` (los cuatro íconos distintos; carga por `HudIcons.icon`).
 - **Paridad:** `tools/check_original_assets.sh` → textures, props, themes, map, ui, fx, data, terrain.res OK, nombres de íconos OK, `ASSETS PARITY PASS`.
+
+## 033i: Resultado (F175)
+
+- **Sin lectores de `cache/`:** nada en `scenes`, `data`, `debug`, `addons`, `agent`, `tools` ni `project.godot` lee `cache/` ni `res://cache`. `.gitignore` conserva `cache/` ignorada. `project.godot` no tenía filtros ni `.gdignore` que la nombraran.
+- **Borrado con `git rm`:** `tools/export_persephone.py` (escribía `cache/look/persephone`; sus lectores de WAD ya eran `sac_formats`), `tools/export_bodies.py` (OBJ de cuerpos para `--bodies-from`: los 11 híbridos están versionados como `.glb` y `check_original_assets.sh` los copia tal cual) y `tools/audit_original_props.gd` (comparaba contra `cache/baked` y `cache/look`; la paridad de props la da `check_original_assets.sh` más `import_props.py --verify`).
+- **`export_stats.py`:** sin la rama de caché de `buildings` (OBJ + catálogo) ni `anim_clips_f36.json` (sin lector). Por defecto escribe en `assets/original/data` (`--out DIR` para otra carpeta); ya no hay `ASSETS_ONLY`. `export_skeletal.py` y `export_stats.py` toman `walk` de `sac_formats.wad`.
+- **Comentarios:** `obj_mesh.gd`, `rock_projectile.gd`, `import_terrain.gd`, `import_textures.py`, `check_original_assets.sh`, `run_rfc033_shots.sh`, `RULES.md`, `assets/original/README.md`, comentario de `.gitignore`.
+- **`rg -n "cache/|res://cache"`** en `game/` sin `rfcs`, `reviews`, `FEATURES.md`, `agent/out`: queda solo `changes/CHANGE-REQUEST-001.md:24` (registro histórico del pedido, no se reescribe) y `.studio/MEMORY.md` (bitácora). Ningún código.
+- **No ejecutado (regla del usuario: sin Godot):** verificación pendiente del orquestador y playtester. `cache/` no se borra (una semana de espera y OK del usuario).
+
+**Verificación (con `mv cache cache.off`, y se restaura al terminar):**
+1. `bash agent/harness/godot_run.sh "$GODOT" --headless --path game --import` dos veces: sin errores.
+2. `bash agent/run_determinism.sh quick`: los digests iguales a `det_baseline.txt`.
+3. `rules_suite` PASS (98 casos) y `bash tools/check_original_assets.sh`: `ASSETS PARITY PASS`.
+4. Playtest con ventana: `godot --path game` arranca `res://scenes/ui/boot.tscn` (menú, selección, partida); o `bash agent/run_f79.sh f79_roster_many`. Dedicado + cliente: `agent/run_pt60.sh PORT`.

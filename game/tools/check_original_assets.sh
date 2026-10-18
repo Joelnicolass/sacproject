@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # RFC-033 033h: parity of assets/original/ with the installation. Regenerates every family with its importer into a temporary
 # folder and compares with the versioned files (diff -r, the .import files excluded: Godot rewrites them). Replaces the old
-# tools/audit_original_assets.gd, which compared against cache/.
+# tools/audit_original_assets.gd, which compared against the old extraction.
 #   bash tools/check_original_assets.sh            exit 0 = every family identical
 # The terrain (a Godot Resource) is checked by import_terrain.gd, which writes nothing when the arrays are the same, and the
 # icon file names by tools/check_icon_files.gd; both go through agent/harness/godot_run.sh.

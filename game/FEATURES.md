@@ -2445,3 +2445,10 @@ Deuda:
 Deuda:
 - La vista previa del selector muestra a algunos magos de espaldas (The Ragman).
 - La cámara de la partida de IA es lejana: no hay captura cercana de criaturas ni de estructuras de 023h.
+
+### F175 — Cierre: el port sin caché (RFC-033, corte 033i)
+
+**Piezas:**
+- Ningún archivo de `scenes`, `data`, `debug`, `addons`, `agent` ni `tools` depende de `cache/`; `cache/` sigue ignorada y en disco (se borra una semana después, con OK del usuario).
+- Borrados: `tools/export_persephone.py`, `export_bodies.py` y `audit_original_props.gd`. `export_stats.py` escribe por defecto en `assets/original/data`.
+- Verificación pendiente (con `cache` renombrada a `cache.off`): `--import` x2, `quick` igual a la base, `rules_suite`, `check_original_assets.sh` y un playtest desde `boot.tscn`.

@@ -57,7 +57,8 @@ def _load(name: str, filename: str):
     return module
 
 
-ex = _load("ex", "export_persephone.py")
+sys.path.insert(0, str(ROOT / "tools"))
+from sac_formats import wad as ex  # noqa: E402  (walk)
 stats = _load("export_stats", "export_stats.py")
 
 

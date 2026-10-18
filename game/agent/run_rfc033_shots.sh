@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # RFC-033 (033a): the fixed-camera captures that every cut compares against. One window run, 1280x720, 60 fps cap.
-#   agent/run_rfc033_shots.sh base     -> agent/out/033/base   (the "before": taken with cache/, not versioned)
+#   agent/run_rfc033_shots.sh base     -> agent/out/033/base   (the "before": taken with the old extraction, not versioned)
 #   agent/run_rfc033_shots.sh after    -> agent/out/033/after  (diff against base with AgentKit: cli.sh . diff --a= --b=)
 set -u
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

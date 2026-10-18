@@ -15,7 +15,7 @@ Layout:
                                   first one (sorted); every other model points to it.
 
 Source: the installation's WAD files, read with tools/sac_formats (the only reader): the SXTX/SAXS of every body (saxs*.wad)
-and the textures of the props (joby.wad, prsc.wad, models.wad, jamesmod.wad). No cache/ involved.
+and the textures of the props (joby.wad, prsc.wad, models.wad, jamesmod.wad).
 """
 
 import io

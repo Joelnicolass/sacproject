@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-"""Creature, wizard, spell and ability stats from spells.wad. Cache only, not git.
+"""Creature, wizard, spell and ability stats from spells.wad (the installation; RFC-033).
 
 Layouts follow sacengine `spells.d` (Cre8 528, Wizd 840, Spel 314+2, Strc 64).
 Keys are SpellTags as in `nttData.d`: the raw record bytes, i.e. the WAD file name reversed.
-Writes game/cache/data/{creatures,wizards,spells,abilities,books}.json.
+Writes assets/original/data/{creatures,wizards,spells,abilities,books,buildings}.json (`--out DIR` writes somewhere else).
 """
 
-import importlib.util
 import json
 import math
 import re
@@ -19,10 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from sac_formats.bldg import read_buildings  # noqa: E402
 from sac_formats.install import INSTALL  # noqa: E402
 NTT_DATA = ROOT.parent / "sacengine" / "source" / "nttData.d"
-OUT = ROOT / "cache" / "data"
-## RFC-033g: with `--out DIR` the game data (creatures, wizards, spells, abilities, books, buildings) goes to DIR
-## (assets/original/data) and nothing else is written: no anim_*.json, no models, no catalog.
-ASSETS_ONLY = False
+OUT = ROOT / "assets" / "original" / "data"
 
 FPS = 60.0
 CAST_FRAMES_PER_SECOND = 1.35 * FPS
@@ -68,14 +64,8 @@ WIZARD_CAST_ANIM_SLOTS = {"cast": 27, "run_cast": 30}
 ## SKEL event tags (`sxsk.d` translateAnimEvent): attack, shoot.
 ATTACK_EVENT = b"kcta"
 SHOOT_EVENT = b"lrba"
-F36_MODELS = {
-    "jnwr": ["jwi1", "jwrn"],
-    "eorc": ["HUi1", "HUrn", "HUa1"],
-}
 
-spec = importlib.util.spec_from_file_location("ex", ROOT / "tools" / "export_persephone.py")
-ex = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(ex)
+from sac_formats import wad as ex  # noqa: E402  (walk)
 
 
 def tag(raw: bytes, offset: int) -> str:
@@ -479,89 +469,12 @@ def display_name(spell_tag: str, ntt: dict) -> str:
     return spell_tag
 
 
-def export_f36_clips(anim_index: dict, model_paths: dict) -> dict:
-    cache: dict = {}
-    for model, tags in F36_MODELS.items():
-        model_path = model_paths.get(model.lower(), "")
-        if not model_path:
-            continue
-        model_clips: dict = {}
-        for tag_name in tags:
-            clip = clip_pose_animation(anim_index, model_path, tag_name)
-            if clip:
-                model_clips[tag_name] = clip
-        if model_clips:
-            cache[model] = model_clips
-    return cache
-
-
 ## BLDG (RFC-024 addendum, cut 024b2). Layout follows sacengine `bldg.d`: header 128 bytes
 ## (flags, ground 8x8, maxHealth u32, 10 floats, tileset, numComponents u32 at 120) and 48 bytes per component.
 ## The BLDG reader (layout, wads) lives in tools/sac_formats/bldg.py, shared with the props importer.
-BUILDING_MODELS_DIR = ROOT / "cache" / "look" / "buildings"
-CATALOG_PATH = ROOT / "cache" / "look" / "persephone" / "catalog.json"
-
-
 def write_buildings_json(buildings: dict) -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "buildings.json").write_text(json.dumps(buildings, indent=1, ensure_ascii=False))
-
-
-def export_buildings() -> None:
-    """cache/data/buildings.json (max health, shelter flag, components of every BLDG) and the component
-    models (MRMM + texture) of the god wads under cache/look/buildings/<tag>/, added to the catalog that
-    tools/audit_original_props.gd reads (until 033i deletes cache/): `python3 tools/export_stats.py buildings`.
-    With `--out DIR` (RFC-033g) only buildings.json is written, to DIR; no models, no catalog."""
-    buildings, models = read_buildings()
-    write_buildings_json(buildings)
-    if ASSETS_ONLY:
-        print("buildings", len(buildings))
-        return
-    needed = set()
-    for entry in buildings.values():
-        if entry["folder"].split("!")[0] not in ("JMOD.WAD",):
-            continue
-        for component in entry["components"]:
-            for key in ("tag", "destroyed"):
-                if component[key]:
-                    needed.add(component[key])
-    catalog = json.loads(CATALOG_PATH.read_text()) if CATALOG_PATH.exists() else {"plants": [], "structures": [], "creatures": []}
-    prefix = "res://cache/look/buildings/"
-    catalog["structures"] = [item for item in catalog.get("structures", []) if not str(item.get("mesh", "")).startswith(prefix)]
-    known = {item["name"] for item in catalog.get("structures", [])}
-    added, missing = [], []
-    for name in sorted(needed):
-        if name in known:
-            continue
-        if name not in models:
-            missing.append(name)
-            continue
-        wad_name, odir, files, raw = models[name]
-        folder = BUILDING_MODELS_DIR / name
-        folder.mkdir(parents=True, exist_ok=True)
-        try:
-            textures = ex.obj_mrmm(raw, folder / f"{name}.obj")
-        except Exception as exc:
-            print("mrmm fail", name, exc)
-            continue
-        got = False
-        for tex in textures:
-            if ex.folder_txtr_png(files, tex, folder / f"{tex}.png"):
-                got = True
-        if not got:
-            print("sin textura", name, textures)
-            continue
-        catalog["structures"].append({
-            "name": name,
-            "mesh": f"res://cache/look/buildings/{name}/{name}.obj",
-            "texture": "",
-        })
-        added.append(name)
-    CATALOG_PATH.write_text(json.dumps(catalog, indent=2))
-    shelters = sorted(name for name, entry in buildings.items() if entry["shelter"])
-    print("buildings", len(buildings), "refugios (bit 15)", shelters)
-    print("modelos nuevos", added)
-    print("sin modelo", missing)
 
 
 def book_levels(lists: dict, god: str) -> dict:
@@ -720,12 +633,9 @@ def main() -> None:
         "abilities.json": abilities,
         "books.json": books,
     }
-    if not ASSETS_ONLY:
-        outputs["anim_clips_f36.json"] = export_f36_clips(anim_index, model_paths)
     for filename, payload in outputs.items():
         (OUT / filename).write_text(json.dumps(payload, indent=1, ensure_ascii=False))
-    if ASSETS_ONLY:
-        write_buildings_json(read_buildings()[0])
+    write_buildings_json(read_buildings()[0])
 
     print("creatures", len(creatures), "wizards", len(wizards), "spells", len(spells), "abilities", len(abilities))
     trogg = creatures["ycro"]
@@ -767,9 +677,5 @@ if __name__ == "__main__":
     if "--out" in args:
         at = args.index("--out")
         OUT = Path(args[at + 1]).resolve()
-        ASSETS_ONLY = True
         del args[at:at + 2]
-    if args and args[0] == "buildings":
-        export_buildings()
-    else:
-        main()
+    main()

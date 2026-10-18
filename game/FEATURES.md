@@ -2604,3 +2604,12 @@ El usuario quiere el port a web (el navegador no abre UDP), asi que el kit elige
 
 ### Cierre 034n (F190) — 2026-10-18
 - `MpTransport`: ENet por defecto, WebSocket con `--transport=ws` (kit, lobby, launcher y dedicados). Verificación en main: import sin errores; `run_034d.sh` LOBBY NET PASS (88) y `run_034e.sh` E2E PASS (118, dos salas con dedicados reales) **con ENet y con WebSocket**; `quick` 27/27.
+
+### Cierre 034f (F183) — 2026-10-18
+- Playtest con ventana `agent/run_pt034f.sh` (Haiku, `agent/out/pt034f/`): **PT034F PASS** en la quinta corrida. Menú con «Salas online», conectar, lista, crear sala, sala con dos jugadores, mago y dios, chat, listo, cuenta regresiva, el mundo de High Noon al entrar, banner «Victoria» con «Volver a salas» y vuelta a la sala con «Ganaste.». Sin `SCRIPT ERROR`.
+- En el camino:
+  - El arnés del segundo jugador estaba en `agent/harness/` con `.call()` y rompía todos los flows; se movió a `agent/fixtures/`.
+  - El Enter de los campos ya disparaba la acción.
+  - El intento de conexión al lobby tiene un plazo (8 s).
+  - **Bug real:** el dedicado arrancaba la simulación sin esperar a que cargaran todos. Ahora espera hasta `load_timeout_s` (60 s, parametrizable) y el que no carga cuenta como abandono.
+  - `run_034e.sh` sigue en E2E PASS con ENet y con WebSocket.

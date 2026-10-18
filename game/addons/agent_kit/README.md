@@ -102,6 +102,27 @@ Un proyecto lo usa con un shim fino: `GODOT_RUN_NS=mijuego GODOT_BIN=... exec ba
 
 Autoprueba sin Godot (comandos falsos `bash -c 'sleep N' --headless`; ~20 s, namespace propio): `bash addons/agent_kit/determinism/harness/selftest_queue.sh` → 4 × `PASS`.
 
+## Determinismo (`determinism/`)
+
+Mide que una misma corrida da el mismo resultado con relojes distintos. Genérico: sin nada de ningún juego.
+
+**En la escena del juego**
+- `DetRecorder` (Node, `class_name`): registro de líneas `"<tick> <tipo> <texto>"` con sha256 en orden. `@export keep_lines` (guarda las líneas, hace falta para `--events`), `@export self_tick` (true: cuenta ticks en su `_physics_process`; false: el dueño llama `advance()` y el orden de física no cambia), `@export position_decimals` (1). Métodos: `start()`, `stop()`, `advance()`, `record(kind, text)`, `sample(bodies)` (posiciones ordenadas por nombre), `digest()` (una vez; las llamadas siguientes repiten el valor), `write_outputs(report)` (agrega `digest`, `events`, `end_tick` y escribe `--out`/`--events`). Señal `finished(digest)`. `tick` y `line_count` son legibles.
+- `DetCli` (estático): `args()` (`--k=v` y `--flag` de `OS.get_cmdline_user_args()`), `out_path()`, `events_path()`, `absolute(path)`.
+- Nada de tiempo de pared en las líneas. Si el juego tiene un reloj propio, el dueño lo mueve con `advance()`.
+
+**Corredor**
+`bash addons/agent_kit/determinism/det_run.sh <casos.txt> CASO|all|quick|table|bless [MODO...] [--no-window]`
+- `casos.txt`: una línea `nombre|args|quick|set` (`quick`: `all` = todos los modos, `fixed` = solo referencia, vacío = fuera de quick; `set`: `all` = entra en `all`).
+- `det.cfg` junto al archivo de casos (shell): `DET_SCENE` (obligatorio), `DET_PROJECT`, `DET_OUT`, `DET_BASELINE` (líneas `caso digest`), `DET_RSS_LIMIT_KB`, `DET_LIMIT_FIXED|STRESS|WINDOW`, `DET_STRESS_FPS`, `DET_WINDOW_RES`, `DET_WINDOW_ARGS`, `GODOT_BIN`, `GODOT_RUN_NS`.
+- Modos: `fixed` (referencia), `fixed2` (repetición), `stress` (headless con `--max-fps` bajo), `window` (nunca dos ventanas a la vez).
+- Salidas por caso y modo en `DET_OUT`: `.json`, `.events`, `.log`, `.meta` (`wall_s`, `rss_max_kb`, `contaminated`, `watchdog`). Un `watchdog` distinto de `none` o `CONTAMINATED` hace fallar el veredicto.
+- Watchdog: RSS, tiempo, y **corte inmediato** (`script_error_kill`) si el log trae `Parse Error`, `Compile Error` o `Failed to load script`.
+- `quick` borra los resultados viejos de sus casos, compara el digest de `fixed` con la base (`baseline X OK|FAIL`) y exige al menos 2 modos frescos: `QUICK PASS` / `QUICK FAIL`. `bless` escribe la base desde los `fixed` actuales.
+- Tabla y veredicto: `det_report.py` (`DETERMINISM PASS|FAIL`; columnas `case, mode, sha256, end_tick, lines, vs fixed, wall (s), RSS max (MB), warnings, first different line`).
+
+**Autoprueba** (escena propia con 20 cuerpos y semilla): `perl -e 'alarm 900; exec @ARGV' bash addons/agent_kit/determinism/det_selftest.sh` -> `SELFTEST PASS`.
+
 ## Versión
 
-0.1.4
+0.1.5

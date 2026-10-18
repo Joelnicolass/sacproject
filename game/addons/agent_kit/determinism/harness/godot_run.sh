@@ -109,7 +109,7 @@ launch() {  # launch <cmd...>: start once nothing exclusive runs and fewer than 
   if [ "${is_window:-0}" = 1 ] && [ "${GODOT_WINDOW_MAX_S:-600}" -gt 0 ]; then
     ( sleep "${GODOT_WINDOW_MAX_S:-600}"
       if kill -0 $child 2>/dev/null; then
-        echo "godot_run: ventana pasó ${GODOT_WINDOW_MAX_S:-600}s, se corta: $*" >&2
+        echo "godot_run: window passed ${GODOT_WINDOW_MAX_S:-600}s, cutting it: $*" >&2
         pkill -9 -P $child 2>/dev/null; kill -9 $child 2>/dev/null
       fi ) &
     dog=$!

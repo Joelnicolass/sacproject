@@ -1,0 +1,5 @@
+# name|args|quick|set      quick: all (every mode) | fixed (reference only) | empty (not in quick)
+#                          set: all (part of `det_run.sh ... all`) | empty
+seed1|--seed=1|all|all
+seed7|--seed=7|fixed|all
+broken|--break||

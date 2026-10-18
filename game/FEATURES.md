@@ -2512,3 +2512,14 @@ Deuda:
 
 Deuda:
 - Las sondas de `debug/net/` no cortan ante un error de compilación: esperan el tope externo (120 s). Sumar el corte por error de script cuando el módulo de determinismo pase al kit (034j).
+
+### F187 — Módulo de determinismo en el kit (RFC-034, corte 034j)
+
+**Piezas (`addons/agent_kit/determinism/`, sin nada de Sacrifice):**
+- `DetRecorder` (registro de líneas + sha256, `self_tick`, `advance`, `record`, `sample`, `digest`, `write_outputs`) y `DetCli` (`--out`, `--events`, args).
+- `det_run.sh <casos> CASO|all|quick|table|bless [MODO...] [--no-window]` + `det_report.py`: modos fixed/fixed2/stress/window, base de digests del proyecto, quick que borra lo viejo y exige 2 modos frescos, watchdog de RSS/tiempo y corte inmediato por `Parse Error`/`Compile Error`/`Failed to load script` (`script_error_kill`), CONTAMINATED.
+- Config del proyecto: `det.cfg` + `det_cases.txt` junto al archivo de casos. Ejemplo y autoprueba: `example/det_selftest.tscn`, `example/det_cases.txt`, `det_selftest.sh`.
+- Desvío: las columnas de la tabla pasan a inglés sin tildes (`line`, `wall (s)`, `RSS max (MB)`, `warnings`) para que el módulo no tenga texto en español; 034k lo toma como cambio de formato, no de contenido.
+- El juego no se toca en este corte (034k). `.gd.uid` de los scripts nuevos los genera el primer import.
+
+**Pendiente (orquestador):** `--import` una vez; correr `det_selftest.sh` (espera `SELFTEST PASS`).

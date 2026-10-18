@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="MpLobbyEndpoint" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/mp_kit/lobby/mp_lobby_endpoint.gd" id="1_ep"]
+
+[resource]
+script = ExtResource("1_ep")
+host = "127.0.0.1"
+port = 7700

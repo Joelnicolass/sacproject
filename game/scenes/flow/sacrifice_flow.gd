@@ -20,6 +20,9 @@ var solo_ai_seats: Array[AiSeat] = []
 var setup := MatchSetup.new()
 ## The flags of this process (MatchSetup.from_cli), read once; every reset starts here.
 var _cli_setup := MatchSetup.new()
+## RFC-034 034e (F182): only in the dedicated a room server launched (`--match-ticket-file`). The ticket brings the picks,
+## the options and the seed, so the `pick` channel of the clients is ignored and their picks are not erased when they leave.
+var ticket_glue: MatchTicketGlue
 
 func _ready() -> void:
 	boot_path = "res://scenes/ui/boot.tscn"
@@ -33,6 +36,10 @@ func _ready() -> void:
 	_read_dedicated_ai()
 	_cli_setup = MatchSetup.from_cli()
 	setup = _cli_setup.copy()
+	## The room server (RFC-034): it never loads a world by itself.
+	if MpBoot.role() == "room-server":
+		start_when = StartWhen.MANUAL
+	_arm_ticket_glue()
 	MpKit.slot_assigned.connect(_on_slot_assigned)
 	MpKit.custom_received.connect(_on_custom_received)
 	MpKit.peer_left.connect(_on_peer_left)
@@ -107,6 +114,13 @@ func return_to_boot() -> void:
 	super.return_to_boot()
 
 
+## RFC-034 034e: joins the match process the room server assigned (`MpLobbyClient.match_ready`). The ticket is the token.
+func join_from_lobby(host: String, p_port: int, token: String) -> Error:
+	slot_picks = {}
+	solo_ai_seats = []
+	return join_endpoint(host, p_port, token)
+
+
 func join_lan(ip: String) -> Error:
 	slot_picks = {}
 	solo_ai_seats = []
@@ -153,6 +167,25 @@ func _read_dedicated_ai() -> void:
 	print("dedicado con ia en slots %s" % raw)
 
 
+## The dedicated of a room-server match: the picks, the options and the seed come from the ticket.
+func _arm_ticket_glue() -> void:
+	if MpBoot.user_value("match-ticket-file", "").is_empty():
+		return
+	var glue := MatchTicketGlue.new()
+	glue.name = "MatchTicketGlue"
+	add_child(glue)
+	if glue.agent == null or glue.agent.ticket.is_empty():
+		glue.queue_free()
+		return
+	ticket_glue = glue
+	var metas := glue.seat_metas()
+	for slot in metas.keys():
+		var chosen := sanitize_pick(metas[slot])
+		slot_picks[int(slot)] = chosen if not chosen.is_empty() else pick.duplicate()
+		print("partida %s: slot %d pick %s %s" % [glue.agent.match_id, int(slot), slot_picks[int(slot)]["model"], slot_picks[int(slot)]["god"]])
+	setup = _cli_setup.overlaid_by(glue.match_setup())
+
+
 func _on_slot_assigned(_slot: int) -> void:
 	if MpKit.is_networked() and not MpKit.is_server():
 		MpKit.send_custom(PICK_CHANNEL, pick)
@@ -171,6 +204,10 @@ func _on_custom_received(channel: StringName, data: Dictionary, from_peer: int) 
 func _store_pick(data: Dictionary, from_peer: int) -> void:
 	if not MpKit.is_server():
 		return
+	## The ticket closed the picks: the client that just got its slot only needs to hear them.
+	if ticket_glue != null:
+		_publish_picks()
+		return
 	var slot := MpKit.slot_for_peer(from_peer)
 	if slot <= 0:
 		return
@@ -184,7 +221,7 @@ func _store_pick(data: Dictionary, from_peer: int) -> void:
 
 func _on_peer_left(peer_id: int, slot: int) -> void:
 	print("peer_left peer %d slot %d" % [peer_id, slot])
-	if not slot_picks.has(slot):
+	if ticket_glue != null or not slot_picks.has(slot):
 		return
 	slot_picks.erase(slot)
 	_publish_picks()

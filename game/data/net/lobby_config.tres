@@ -4,3 +4,6 @@
 
 [resource]
 script = ExtResource("1_cfg")
+max_matches = 4
+match_port_min = 7800
+match_port_max = 7831

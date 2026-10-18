@@ -13,6 +13,9 @@ var friendly_fire := -1
 var drop_soul := -1
 ## RFC-031 031d (F143): blue souls of every wizard at the start; -1 = the rules' starting_souls.
 var starting_souls := -1
+## RFC-034 034e: the seed of the match; 0 = the rules' `match_seed` (the one who simulates draws it). The room server draws it
+## and puts it in the ticket (`--match-ticket-file`); `--match-seed=N` sets it by hand. The benches pass none.
+var match_seed := 0
 
 
 func copy() -> MatchSetup:
@@ -21,11 +24,12 @@ func copy() -> MatchSetup:
 	other.friendly_fire = friendly_fire
 	other.drop_soul = drop_soul
 	other.starting_souls = starting_souls
+	other.match_seed = match_seed
 	return other
 
 
 func is_empty() -> bool:
-	return level == 0 and friendly_fire < 0 and drop_soul < 0 and starting_souls < 0
+	return level == 0 and friendly_fire < 0 and drop_soul < 0 and starting_souls < 0 and match_seed == 0
 
 
 ## A copy of this setup where every field `over` sets wins (boot > flag: the boot's setup over the flags' one).
@@ -41,6 +45,8 @@ func overlaid_by(over: MatchSetup) -> MatchSetup:
 		merged.drop_soul = over.drop_soul
 	if over.starting_souls >= 0:
 		merged.starting_souls = over.starting_souls
+	if over.match_seed > 0:
+		merged.match_seed = over.match_seed
 	return merged
 
 
@@ -58,6 +64,8 @@ func apply_to(rules: Variant) -> Variant:
 		copy.enable_drop_soul = drop_soul == 1
 	if starting_souls >= 0:
 		copy.starting_souls = starting_souls
+	if match_seed > 0:
+		copy.match_seed = match_seed
 	return copy
 
 
@@ -91,4 +99,11 @@ static func from_cli() -> MatchSetup:
 			print("almas iniciales %d (--souls)" % setup.starting_souls)
 		else:
 			push_warning("--souls=%s: no es un número ≥ 0, se usan las de las reglas" % souls)
+	var wanted_seed := MpBoot.user_value("match-seed", "")
+	if not wanted_seed.is_empty():
+		if wanted_seed.is_valid_int() and int(wanted_seed) > 0:
+			setup.match_seed = int(wanted_seed)
+			print("semilla de la partida %d (--match-seed)" % setup.match_seed)
+		else:
+			push_warning("--match-seed=%s: no es un número > 0, se usa el de las reglas" % wanted_seed)
 	return setup

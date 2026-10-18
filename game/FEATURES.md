@@ -479,6 +479,8 @@ Partida reproducible con `match_seed`, corredor `debug/ai_match` sin ventana e i
 Hecho y cerrado (review PASS con nits N1/N2, aplicados; `reviews/REVIEW-RFC-024a.md`; playtest con ventana: el digest con ventana difería del headless porque el cadáver caía con un tween de render y el alma nacía según los fps; corregido pasando los tweens de simulación a física; digest seed 7 con ventana = headless en 4+2 corridas; `agent/out/pt024a/`). `MatchRules.match_seed` (0 = se sortea y se imprime `semilla <n>`) y `MatchSeed` (`HighNoon._enter_tree` lo abre en quien simula): siembra `UnitBody`, `GhostForm`, `GuardianTether`, `MatchBiome` (si `biome_seed` es 0) y el desempate de `BodySeparation` (generador propio, ya no `randi()` global); `seed()` global también. Corredor `debug/ai_match.tscn/.gd` + `AiAudit` (registro de eventos, posiciones a 0,1 m cada 60 s y al final, libro de almas por bando, `digest` sha256) y `debug/rules/ai_duel_seeded.tres` (`BenchRules`: 6 Trogg contra 6 Druid a 60 m, en pausa «Pendiente» con ventana). Medido: `--seed=7 --minutes=2` dos veces = mismo `digest`; `--seed=8` otro; 3,4 s reales y 206 MB de RSS; `rules_suite` PASS; `f26_duel` y `f27_orders` AGENT_OK. La pelea termina por aniquilación a los ~54 s, no a los 2 min. Falta el playtest con ventana (`agent/flows/pt024a_smoke.json` es solo un humo).
 
 ### F72 — Navegación, visión y elección de blanco (RFC-024, corte 024b)
+
+> **Reemplazado (2026-10-18, RFC-035 035h/035i):** la grilla `NavGrid` se borró; la navegación es el navmesh de Godot (F201–F203).
 Pathfinding en grilla (también para el jugador), visión por bando y puntaje de blanco de `updateTarget`.
 
 Hecho y cerrado (review: B1 jitter de guardia por blancos vistos por el bando fuera de la vista de la unidad, corregido con desvío documentado; `reviews/REVIEW-RFC-024b.md`; playtest con ventana PASS en cruce, mago, blanco, guardia, escolta y red (f78, pt60), `agent/out/pt72/`). Deuda fuera de F72: con 150 unidades, 13–17 Manahoar quedan trabadas por apiñamiento (pasa igual sin PathFollower); el mago empuja a sus criaturas al atravesar la fila; el servidor loguea «Unable to send packet» al publicar picks a un peer que ya se fue (`_on_peer_disconnected` → `_publish_picks`); los edificios construidos después de armar la grilla no la bloquean (024c). `scenes/world/nav/` (`NavGrid`: 512×512 nodos de 5 m desde `Terrain.ground_cell_counts()`, bloqueos = cilindros de colisión de manantiales y altares + 1,5 m, componentes 4-conexos por tramos y A* con `AStarGrid2D` sin cortar esquinas más enderezado; `NavService` = `%Nav` en `high_noon`, arma la grilla una vez, tope de 3 búsquedas por tick; `PathFollower` hijo de `unit.tscn` y `wizard_body.tscn`: `go_to` para órdenes y `steer_point` para la persecución, `@export repath_s` 2 s, `arrive_m`, `advance_m`), `scenes/world/vision/side_vision.gd` (`%Vision`: último tick visto por bando y entidad, 384 ticks para criaturas y marca permanente para estructuras, un observador por bando por tick, el golpeado ve a quien lo golpea; sin campo de visión ni línea de vista: «aprox.») y `scenes/world/units/target_picker.gd` (hijo de `unit.tscn`: puntaje de `updateTarget`, filtrado por visible para el bando; `UnitBody.closest_foe` delega en él). `UnitBody.walk_to`/`WizardBody.walk_to` (orden con camino) y `begin_walk` (un tramo recto); `UnitOrders` usa `walk_to`; `UnitBody.is_valid_foe_of` estático compartido. Escenas `debug/nav_cross.tscn` (+ `nav_cross.gd`, `--grid-png=`, `--overview`, `--time-scale=`), `debug/nav_wizard.tscn` (mago 2 de `match_defeat` hacia el Druid; `--nofollow` reproduce el atasco de F57, `--aggro`) y `debug/target_pick.tscn`; casos `target_score_*`, `target_pick_*`, `target_vision_*`, `nav_*` en `debug/rules_suite` (`debug/target_cases.gd`, `debug/nav_cases.gd`; la suite ahora termina sola en headless). Medido y comandos en el informe del developer; el `digest` de `ai_match` seed 7 cambia respecto de F71 (el blanco ahora sale del puntaje).
@@ -760,6 +762,8 @@ Playtest con ventana (`agent/out/pt87/`):
 - **Regresión:** `f78_many` y `perf027_first_order` dan AGENT_OK.
 
 ### F88 — Apiñamiento en BodySeparation (RFC-027, corte 027d)
+
+> **Reemplazado (2026-10-18, RFC-035 035h/035i):** la grilla `NavGrid` se borró; la navegación es el navmesh de Godot (F201–F203).
 
 **Ronda de corrección (2026-10-16), sobre `reviews/REVIEW-F88-crowding.md`.** Implementado en `scenes/world/body_separation.gd`, `scenes/world/body_grid.gd`, `scenes/world/make_way.gd` y `debug/crowd_cases.gd` (caso `crowd_150` en `rules_suite`). Es un desvío del port: con `BodySeparation.make_way` apagado vuelve la regla de sacengine (además hay que apagar `wizard_passes_own`).
 - **Paso 1, sin cambio de conducta:** se extrajo `MakeWay`, se documentó el re-archivado a mitad del tick y el «modo original» de `use_grid`, y `frame_budget` guarda y restaura las tablas. El A/B sobre clones congelados da igual en los tres casos: seed 1 `3678de90…`, `ai_duel_seeded` seed 7 `2544ee1a…` y seed 7 `--npcs` `0bc14063…`.
@@ -2796,3 +2800,20 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
   - `crowd_rock` PASS, 0 trabadas.
   - `nav_flyer` PASS.
 - **Abierto:** `crowd_tipi` sigue igual (2 trabadas unos 3,7 s, 036f).
+
+### F204 — Cierre de RFC-035 (corte 035j) — cerrado 2026-10-18
+
+- **Documentación:**
+  - RULES §Datos: el mapa y la navegación son de Godot, y ya no hay grilla propia.
+  - `assets/original/README.md`: cómo editar el terreno, el material, el contenido, la navegación y el catálogo.
+  - Notas de reemplazo en F72 y F88.
+- **Banco:** `run_determinism.sh all`, DETERMINISM PASS.
+- **Playtest con ventana** (`agent/flows/pt035j.json` en `debug/village.tscn`, orquestador; AGENT_OK, sin errores):
+  - **Orden 1** a (1300, 1260): el Hunter llega a (1299,9; 1259,9).
+  - **Orden 2** a (1420, 1340): el destino está del otro lado de un barranco. El Hunter lo rodea por la cresta y a los 10 s sigue caminando, sin trabarse.
+  - **Orden 3** hacia el tipi: avanza hasta (1480, 1334).
+  - El rehorneado en partida tarda 511 ms en un hilo.
+  - Capturas en `agent/out/pt035j/`.
+- **Abierto:**
+  - `crowd_tipi` (2 trabadas unos 3,7 s) queda para 036f.
+  - Falta confirmar en el editor lo de F199.

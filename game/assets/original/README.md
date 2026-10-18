@@ -24,3 +24,11 @@ terrain; there is no cache folder. Each importer takes `--out=DIR` to write some
 else, so the result can be compared against this folder (`diff -r --exclude='*.import'`). The WAD files are never versioned.
 The ones that lived as exporters (`export_icons`, `export_particles`, `export_tilesets`, `export_high_noon_*`) are now
 `import_ui.py`, `fx_catalog.py` (the particle numbers), `land_themes.py` (the tileset logic) and `sac_formats/{ntts,terrain}.py`.
+
+## Editar el mapa (RFC-035)
+
+- **Terreno:** el origen es `maps/high_noon/terrain.glb`. Se puede abrir en Blender, pero solo se mueve la Y: si un vértice se sale de la grilla de 10 m en X/Z, la importación falla y nombra la celda. Al importar, `tools/terrain_import.gd` genera `terrain.res` (alturas y sim), la colisión y la malla visual. Si cambia solo el script de importación, hay que borrar `.godot/imported/terrain.glb-*` para forzar la reimportación.
+- **Material del suelo:** `themes/<dios>/ground_classic.tres`, con atlas, edge, light, `light_base` y `light_gain`.
+- **Contenido:** edificios, plantas y NPC (`NpcSpawn`) están en `scenes/world/map/high_noon_layout.tscn`. Los bandos están en `maps/high_noon/sides.tres`. La y de un `NpcSpawn` hay que ajustarla a mano si se lo mueve.
+- **Navegación:** después de mover el terreno o los edificios, hay que correr `godot --headless --path game res://tools/bake_nav.tscn`. Con `-- --check` se verifica el resultado. El nodo `NavRegion` avisa en el editor si el navmesh quedó viejo. El botón «Bake» del editor no sirve, porque los edificios arman su colisión en partida.
+- **Catálogo:** criaturas, hechizos, magos, habilidades y edificios están en `data/catalog/*.tres`. Los regenera `tools/bake_catalog.gd -- --force` a partir de los JSON.

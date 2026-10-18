@@ -460,3 +460,70 @@ El banco de determinismo y sus piezas pasan al kit **junto con las salas**, porq
 - **Skill nueva** en godot-studio-skills: `godot-determinism`, que explica cuándo usarlo (red, repeticiones, regresión) y cómo.
 - **Pegamento del juego:** los casos de Sacrifice (reglas, semillas, réplicas `fNNN_expect.py`) quedan en `game/agent/`.
 - **Plan:** al arrancar el RFC, el tech lead suma los sub-cortes de determinismo (extraer, adaptar el juego, documentar en la skill), en serie con los de salas. El criterio de estabilidad del port incluye que el juego corra su banco con el módulo del kit, con los mismos digests.
+
+## 15. Determinismo al kit (plan del tech lead, 2026-10-17)
+
+Fuente: «Decisión del usuario: herramienta de determinismo al kit». Gana sobre §12 «Cambios a la simulación o al determinismo» en lo que toca a la **herramienta**; la simulación sigue sin cambiar.
+
+### 15.1 Contradicciones
+- `godot-studio-skills/install.sh:8` dice que AgentKit vive en `godot-studio-playtest` (el kit solo tiene una copia en `example/addons/agent_kit`). La decisión pone el módulo «en el kit». **Recomendado:** el código va al AgentKit del juego, se sube a `godot-studio-playtest` en `rc/v0.10.0` (AgentKit 0.2.0) y la RC de skills copia ese mismo `addons/agent_kit` en `example/`; la skill `godot-determinism` va en skills (ES/EN). Si el usuario prefiere solo skills, `install.sh` pisaría el módulo al instalar AgentKit: P7.
+- Hoy `quick` incluye el modo `window`; las reglas de flujo dicen que la ventana la corre el playtester. El runner gana un `--no-window` (headless: fixed + fixed2 + stress, siguen siendo ≥ 2 modos frescos) y el modo `window` de `s1_quick` lo corre el playtester con un comando que cierra solo.
+- No hay línea `CLOCK` en el código: el reloj del registro es el tick de física de `AiAudit` (`tick += 1` en su `_physics_process`, nodo `Audit` antes de `Runner` en `debug/ai_match.tscn`).
+
+### 15.2 Qué es genérico y qué es de Sacrifice
+| Pieza de hoy | Va a | Por qué |
+|---|---|---|
+| `AiAudit.start/record/digest`, `tick`, `keep_lines`, `sample()` (posiciones a 0,1 m ordenadas por nombre) | `DetRecorder` (kit) | Registro + sha256 por línea `"%d %s %s\n"`, sin juego |
+| `--out=`/`--events=`, escribir `.json`/`.events` (`ai_match._write`, `_absolute`) | `DetRecorder.write_outputs(report)` + `DetCli` (kit) | Contrato del runner |
+| Modos, watchdog RSS/tiempo/error de script, CONTAMINATED, `.meta`, `table`, veredicto, base, `quick` que borra lo viejo y exige 2 modos frescos | `det_run.sh` + `det_report.py` (kit) | Nada nombra casos |
+| `godot_run.sh` (FIFO, 3 headless + 1 ventana, import exclusivo, preflight `class_name`, 600 s a ventanas), `godot_busy.sh` | `addons/agent_kit/determinism/harness/` (kit) | Locks con prefijo `GODOT_RUN_NS`, binario `GODOT_BIN` |
+| Watchers de almas, IA, rituales, `sides_report`, `BenchEvents`, `BenchRules`, `ai_match` | se quedan en `scenes/world/ai/` y `debug/` | Reglas del juego |
+| Lista de casos (`case_args`), `det_baseline.txt`, `fNNN_expect.py` | se quedan en `game/agent/` | Casos de Sacrifice |
+
+### 15.3 API del módulo (`addons/agent_kit/determinism/`, cero producto)
+- **`DetRecorder` (Node, `class_name`)**: `@export var keep_lines := false`, `@export var self_tick := true` (con `false`, el dueño llama `advance()`; así el orden de física no cambia), `@export var position_decimals := 1`. Métodos: `start()`, `stop()`, `advance()`, `record(kind, text)`, `sample(bodies: Array)`, `digest() -> String` (una vez), `line_count`, `tick`, `write_outputs(report: Dictionary)` (agrega `digest`, `events`, `end_tick`; escribe `--out`/`--events` si vinieron). Señal `finished(digest)`.
+- **`DetCli` (static)**: `args() -> Dictionary` de `OS.get_cmdline_user_args()`; `out_path()`, `events_path()`, `absolute(path)`.
+- **`det_run.sh <cases_file> CASE|all|quick|table [MODE…] [--no-window]`** + `det_report.py`. Config del juego: `agent/det.cfg` (shell: `DET_SCENE`, `DET_OUT`, `DET_BASELINE`, `DET_RSS_LIMIT_KB`, límites por modo, `GODOT_BIN`, `GODOT_RUN_NS`) y `agent/det_cases.txt` (`nombre|args|quick` con `quick` = `all`, `fixed` o vacío; `all` = la columna `set=all`).
+- **`harness/godot_run.sh`, `harness/godot_busy.sh`**: los de hoy con `GODOT_RUN_NS` (default: nombre de la carpeta del proyecto), `GODOT_BIN` y `GODOT_RUN_PREFLIGHT_EXCLUDE` (hoy `cache out`).
+- **`example/det_selftest.tscn`**: 20 `RigidBody3D` en caja, semilla fija, `DetRecorder` muestrea cada 30 ticks 600 ticks y sale. Su `det_cases.txt` propio prueba el runner sin juego.
+
+### 15.4 Qué queda en `game/agent/` y adaptación del juego
+- `agent/harness/godot_run.sh` y `godot_busy.sh`: shims de 2 líneas (`GODOT_RUN_NS=sacproject exec bash res/addons/…`). Los `run_*.sh` y los agentes en curso no cambian y comparten la misma cola (`/tmp/sacproject_godot.*`).
+- `agent/run_determinism.sh`: shim que llama `det_run.sh agent/det_cases.txt "$@"` con `agent/det.cfg`. Misma CLI (`quick`, `all`, `table`, `CASE MODE…`), misma salida (`baseline X OK`, `QUICK PASS`, `DETERMINISM PASS`).
+- `AiAudit` compone un hijo `%Recorder: DetRecorder` (`self_tick = false`); `record/digest/start/stop/sample/tick/line_count` delegan. `ai_match.gd` usa `DetCli` y `recorder.write_outputs(_report)`. Sin otros cambios.
+- `agent/det_baseline.txt`, `agent/tools/fNNN_expect.py`, `debug/rules/*.tres`: sin cambios.
+
+### 15.5 Cortes nuevos (en serie con los de salas)
+Features: F186–F189 (las asigna el orquestador). Developers no ejecutan Godot; el orquestador corre lo headless y el playtester la ventana. Cada corrida de banco ≤ 5 min.
+
+| Corte | Qué | Criterio medible |
+|---|---|---|
+| **034i** Cola de Godot al kit | `harness/godot_run.sh`, `godot_busy.sh` en el módulo; shims en `agent/harness/` | Orquestador: `bash -n` de los cuatro; `quick --no-window` PASS (la cola corre ~27 Godot); dos headless a la vez aparecen como `slot0`/`slot1` en stderr; un `--import` espera (`import exclusivo`); preflight con un `class_name` borrado del cache imprime `clases sin importar`. `grep -c sacproject addons/agent_kit/determinism` = 0 |
+| **034j** `DetRecorder` + runner (kit) | `DetRecorder`, `DetCli`, `det_run.sh`, `det_report.py`, `example/det_selftest` | Orquestador: `det_run.sh <selftest cases> all fixed fixed2 stress` → `DETERMINISM PASS`; `quick` sin base fresca (base editada a mano en el scratchpad con un digest falso) da `baseline … FAIL` y `QUICK FAIL`; un caso que no compila da `script_error_kill`. `rg -n "Sacrifice\|wizard\|soul\|AiAudit\|[áéíóú]" addons/agent_kit/determinism --glob '*.gd' --glob '*.sh' --glob '*.py'` vacío |
+| **034k** Sacrifice usa el módulo | `AiAudit` + `%Recorder`, `ai_match.gd` con `DetCli`, `agent/det.cfg`, `agent/det_cases.txt`, shim `run_determinism.sh` | **Mismos digests:** (1) antes del corte el orquestador guarda `agent/out/det/s1_quick_fixed.events`; después, `cmp` byte a byte da igual. (2) `run_determinism.sh quick --no-window` → 27 × `baseline … OK` y `QUICK PASS`. (3) Playtester: `bash agent/run_determinism.sh s1_quick fixed window` (cierra solo: `--autostart --quit` + tope 600 s) → `DETERMINISM PASS`. (4) `table` imprime las mismas columnas que hoy |
+| **034l** Skill `godot-determinism` (ES/EN) | `skills/godot-determinism/SKILL.md` + `reference.md` en `rc/v0.10.0-spanish` y espejo EN en `rc/v0.10.0`; `addons/agent_kit/README.md` sección «Determinismo»; sin Godot | Review: frontmatter con `name`/`description` (cuándo: red, repeticiones, regresión); mismas secciones en ES y EN (igual cantidad de `##`); cómo cablear `DetRecorder`, escribir `det_cases.txt`, crear la base, leer `CONTAMINATED`/`watchdog`, y la regla «sin ventana en paralelo»; ningún nombre de Sacrifice |
+
+**Orden final:** 034a → 034i → 034b → 034c → 034j → 034k → 034d → 034e → 034f → 034g → 034l → 034h. La cola va primero (034b y 034e suman scripts que la usan); el banco migra antes de 034e para que todos los `quick` siguientes ya corran con el módulo.
+
+### 15.6 Criterio de estabilidad de 034h (reemplaza el de §10, se suma a lo de salas)
+En `main`, sin agentes en paralelo, antes de portar:
+- lo de salas de §10 (`run_034_soak.sh 10`, `LOBBY CASES PASS` ×3, caso de 034d ×3, playtest de 034f);
+- `run_determinism.sh quick --no-window` **3 veces seguidas** PASS con el módulo (mismos 27 digests de `det_baseline.txt`) y `all --no-window` 1 vez PASS;
+- playtester: `bash agent/run_determinism.sh s1_quick fixed window` PASS una vez sobre el `main` final;
+- `det_selftest` del módulo PASS headless;
+- los dos `rg` (mp_kit/lobby y agent_kit/determinism) vacíos.
+**Port:** `addons/mp_kit` y `addons/agent_kit` del juego iguales a los de la RC (`diff -r`, salvo README/docs); AgentKit 0.2.0 en `godot-studio-playtest` `rc/v0.10.0` (P7); skills en `rc/v0.10.0` y `rc/v0.10.0-spanish` con `godot-determinism`; el `example/` del kit corre `det_selftest` y sus casos de salas headless (1 corrida). Los merges los hace el usuario.
+
+### 15.7 Riesgos
+- **Orden de física:** si `DetRecorder` sumara el tick en su propio `_physics_process` cambiaría qué tick ve cada línea. Mitigación: `self_tick = false` y `AiAudit.advance()`; 034k lo mide con `cmp` de `.events`.
+- **`HashingContext.finish()` una sola vez:** `write_outputs` la llama; `ai_match` no debe pedir `digest()` antes.
+- **Romper la cola en vuelo:** los shims conservan rutas y prefijo; 034i corre sin otros agentes.
+- **Rutas:** el runner del kit no asume `/Applications/Godot.app`; sale de `GODOT_BIN` (`agent/det.cfg`).
+
+### 15.8 Pregunta abierta
+7. **Dónde vive el código de AgentKit.** (a) `godot-studio-playtest` `rc/v0.10.0` + copia en el `example/` de skills **[recomendado]**, porque `install.sh` instala AgentKit desde ahí; (b) solo en skills (habría que cambiar `install.sh`).
+
+## Decisión del orquestador (2026-10-17, cola delegada)
+- Se aplica la recomendación de la pregunta abierta de §15: AgentKit viene de godot-studio-playtest (`install.sh`), así que el módulo `determinism` también va a ese repo en `rc/v0.10.0`, además de la skill en godot-studio-skills (`rc/v0.10.0` y `-spanish`). El merge a las ramas principales lo decide el usuario.
+- IDs F186–F189 para 034i–034l.
+- `game/cache` se borró por pedido del usuario (2026-10-17). Ningún corte de este RFC puede depender de ella; las referencias salen de los WAD, de sacengine o del juego original con REA.

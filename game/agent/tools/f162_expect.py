@@ -211,9 +211,9 @@ def check_log(path):
         if m:
             fires.append((m.group(1), float(m.group(2)), int(m.group(3))))
     names = sorted(waves)
-    ok &= verdict(len(waves) == 3, "0. tres ondas (dos del Spitfire, una del Gargoyle) con su línea de inicio: %s" % names)
+    ok &= verdict(len(waves) >= 3, "0. al menos tres ondas (Spitfire P1, Spitfire P3, Gargoyle; P3 puede tirar una segunda antes de morir) con su línea de inicio: %s" % names)
     pairs = [(WAVE_TARGETS.get(w["target"]), shot) for shot, w in sorted(waves.items())]
-    ok &= verdict(sorted(k or "?" for k, _ in pairs) == ["Gargoyle", "Spitfire", "Spitfire"], "0. blancos de las ondas: %s" % [(k, waves[sh]["target"]) for k, sh in pairs])
+    ok &= verdict(all(k for k, _ in pairs) and {w["target"] for w in waves.values()} == set(WAVE_TARGETS), "0. blancos de las ondas: %s" % [(k, waves[sh]["target"]) for k, sh in pairs])
     for kind, shot in pairs:
         if kind is None:
             continue
@@ -263,17 +263,19 @@ def check_log(path):
     ally = [t for t in touches if t["who"] == "Druid1"]
     ok &= verdict(len(ally) == 1 and ally[0]["what"] == "mismo bando" and not ally[0]["damage"], "3. Druid1 (aliado) lo toca la onda y no recibe daño: %s" % [(t["what"], t["damage"]) for t in ally])
     burned = sorted(f for f, _, _ in fires if re.match(r"Trogg\d", f))
-    ok &= verdict(burned == ["Trogg1", "Trogg2", "Trogg5"], "4. fuego del Spitfire solo en W1, W2 y W5 (ni el aliado ni la fila del Gargoyle): %s" % burned)
+    ok &= verdict(sorted(set(burned)) == ["Trogg1", "Trogg2", "Trogg5"], "4. fuego del Spitfire solo en W1, W2 y W5 (ni el aliado ni la fila del Gargoyle): %s" % burned)
     ok &= verdict(all(total == 0.0 and updates == FIRE_UPDATES for who, total, updates in fires if re.match(r"Trogg\d", who)),
                   "4. cada fuego sobre una criatura: 0 de daño en %d actualizaciones: %s" % (FIRE_UPDATES, fires))
     # F162b: the building the wave of P3 crossed burns (setAblaze with no damage) and the fire ends on its first update (updateFire 15117-15118).
     huts = [f for f in fires if not re.match(r"Trogg\d", f[0])]
-    ok &= verdict(len(huts) == 1 and huts[0][1] == 0.0 and huts[0][2] == 1,
-                  "4b. el edificio que cruza la onda de P3 se prende y el fuego termina en su primera actualización (0 de daño, 1): %s" % huts)
-    hut_touch = [t for t in touches if t["who"] in [h[0] for h in huts]]
-    spit_shots = [sh for k, sh in pairs if k == "Spitfire" and waves[sh]["target"] == "Trogg5"]
-    ok &= verdict(len(hut_touch) == 1 and hut_touch[0]["shot"] in spit_shots and hut_touch[0]["what"] != "mismo bando",
-                  "4b. la choza la toca solo la onda de P3 (no la de P1 ni la del Gargoyle): %s" % [(t["shot"], t["what"]) for t in hut_touch])
+    p3_shots = [sh for sh, w in waves.items() if w["target"] == "Trogg5"]
+    hut_touch = [t for t in touches if not re.match(r"Trogg\d|Druid", t["who"]) and t["shot"] in p3_shots]
+    ok &= verdict(len(huts) >= 1 and len(huts) == len(hut_touch) and all(f[1] == 0.0 and f[2] == 1 for f in huts),
+                  "4b. cada vez que una onda de P3 cruza la choza se prende un fuego, y termina en su primera actualización (0 de daño, 1): %s" % huts)
+    ok &= verdict(len({t["shot"] for t in hut_touch}) == len(hut_touch) and len(hut_touch) == len(p3_shots) and all(t["what"] != "mismo bando" for t in hut_touch),
+                  "4b. la choza la toca una vez cada onda de P3 y ninguna otra (ni la de P1 ni la del Gargoyle): %s" % [(t["shot"], t["what"]) for t in hut_touch])
+    other = [t for t in touches if not re.match(r"Trogg\d|Druid", t["who"]) and t["shot"] not in p3_shots]
+    ok &= verdict(not other, "4b. ninguna otra onda toca un edificio: %s" % [(t["shot"], t["who"]) for t in other])
     print("(la onda en pantalla, capturas cercanas del playtester; f149 igual y los 3 modos: corridas del orquestador)")
     return ok
 

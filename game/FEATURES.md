@@ -2468,3 +2468,10 @@ Deuda:
 - `MpIds.bind_client(peer, slot)`, `MpFlow.StartWhen.MANUAL`, `MpFlow.join_endpoint(host, port, ticket)`, `MpLan.is_valid_hostname`, `MpBoot.role()` conoce `room-server`.
 - Sin `admission` el comportamiento es el de antes (slot por orden de conexión).
 - Verificación pendiente (orquestador): import x2, `quick` igual a `det_baseline.txt`, `rules_suite`, `run_f63_net.sh` PASS.
+
+### Cierre 034a (F178) y 034i (F186) — 2026-10-17
+- **034a:** review CHANGES_REQUESTED (los broadcasts llegaban a peers sin admitir), corregido en 324fe1b: `_broadcast_peers()` manda solo a peers con slot cuando hay `admission`. Verificación en main: import sin errores, `quick` 27/27, `rules_suite` PASS, `run_f63_net.sh` (dedicado + 3 clientes) PASS.
+- **034i:** la cola de Godot vive en `addons/agent_kit/determinism/harness/` (sin nada de sacproject; `GODOT_RUN_NS`); el juego usa shims. `selftest_queue.sh` 4/4 PASS sin Godot; `quick` 27/27 con la cola nueva.
+
+Deuda:
+- `run_f63_net.sh` falló una vez («click missed %Play» en los 3 clientes) y pasó al repetirlo: es inestable.

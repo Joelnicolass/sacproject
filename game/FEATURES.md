@@ -2412,3 +2412,15 @@ Deuda aceptada por el usuario:
 - La partícula de casteo de `HandFx` no cae sobre las manos (un brillo corrido del puño, otro en el aire). «No es crítico, es solo un FX.»
 - Sin captura del `thrash` del cautivo ni de las voladoras en hover; el doctor se ve completo pero la escena de captura no tiene suelo.
 - El clip de muerte puede durar más que la caída de 0,91 s; el alma sale a los 0,91 s como antes.
+
+### RFC-023 023g — Rendimiento del esqueleto (cierre 2026-10-17)
+
+- **Huesos mínimos (decisión del usuario: «no me preocupa tener las animaciones al detalle»):** el exportador usa un solo bind por vértice y suma huesos auxiliares solo donde el error pasaría de 30 mm (`MAX_ERROR_MM`). Mediana: 19 huesos reales + 64 auxiliares (antes `eorc` 282). Paridad aceptada: ≤ 30 mm (`tools/audit_skeletal.gd`, 5 modelos, 99 cuadros: 4–8 mm medido).
+- **Fusión de superficies por material:** hecha, pero casi no reduce (572 → 568 en 84 modelos).
+- **Medición** (`look_bench --units=150 --quick --samples=60`, vista base, ms por cuadro): low 36, medium 52, high 96, nativa 76. Antes de los huesos mínimos: medium 158 y high 1 889 (cortado a los 600 s). Llamadas de dibujo sin cambio (17 973): el costo eran los huesos.
+- **Verificación de main:** import sin errores, `quick` 27/27.
+
+Deuda:
+- La corrida horneada (`--baked-bodies`) salió un orden de magnitud más lenta y se cortó a los 600 s; no se investigó porque el horneado se retira en 023h.
+- `proceso_ms` de 47–58 ms con 150 cuerpos (animación en CPU): si hace falta, `BodyAnimLod` del plan.
+- Con todas las capas encendidas, high llega a 218 ms y 26 145 llamadas de dibujo.

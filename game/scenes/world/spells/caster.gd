@@ -41,6 +41,8 @@ const BAD_TARGET := SpellAction.BAD_TARGET
 const NOT_IMPLEMENTED := SpellAction.NOT_IMPLEMENTED
 const BUSY := "Lanzando"
 const NO_ROOM := SpellAction.NO_ROOM
+## RFC-036 036d: MatchRules.max_creatures_per_player reached.
+const CREATURE_LIMIT := "Límite de criaturas"
 
 const _HEAL_EFFECT := preload("res://scenes/world/spells/heal_effect.gd")
 const _SPEEDUP_EFFECT := preload("res://scenes/world/spells/speedup_effect.gd")
@@ -113,7 +115,24 @@ func summon_status(index: int) -> String:
 		status = NO_MANA
 	if float(spellbook.call("creature_cooldown", index)) > 0.0:
 		status = COOLING
+	if at_creature_limit():
+		status = CREATURE_LIMIT
 	return status
+
+
+## RFC-036 036d. True when the wizard's side already owns rules.max_creatures_per_player live
+## creatures (0 = no cap). Counts the creatures of the wizard's slot that are not dead, including
+## one still being summoned; the wizard itself and NPCs (slot 0) are not units of that slot.
+func at_creature_limit() -> bool:
+	var cap := rules.max_creatures_per_player if rules != null else 0
+	if cap <= 0:
+		return false
+	var slot := int(_wizard.get("owner_slot"))
+	var count := 0
+	for unit in get_tree().get_nodes_in_group(&"unit"):
+		if unit.get("owner_slot") == slot and unit.has_method("is_dead") and not unit.call("is_dead"):
+			count += 1
+	return count >= cap
 
 
 ## Can this structure entry be armed? "" = yes.

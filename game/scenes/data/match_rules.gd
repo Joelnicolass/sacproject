@@ -2,6 +2,8 @@ class_name MatchRules
 extends Resource
 
 @export var starting_souls: int = 12
+## RFC-036 036d. Live creatures a player may own at once (summons in progress count). 0 = no cap.
+@export var max_creatures_per_player: int = 0
 @export var soul_collect_distance: float = 5.0
 @export var manafount_rate: float = 33.333
 @export var manafount_radius: float = 50.0

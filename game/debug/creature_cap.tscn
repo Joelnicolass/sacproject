@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://debug/creature_cap.gd" id="1_runner"]
+[ext_resource type="PackedScene" uid="uid://highnoonworld01" path="res://scenes/world/high_noon.tscn" id="2_world"]
+[ext_resource type="Resource" path="res://debug/rules/creature_cap.tres" id="3_rules"]
+
+[node name="CreatureCap" type="Node"]
+editor_description = "RFC-036 036d (F205). Con max_creatures_per_player = 3 la cuarta convocatoria (creature_1) dice «Límite de criaturas» y no cobra mana ni almas; al morir una criatura se puede convocar otra. Sin ventana: `--headless --fixed-fps 60 res://debug/creature_cap.tscn`. Imprime CREATURE_CAP PASS/FAIL."
+script = ExtResource("1_runner")
+
+[node name="HighNoon" parent="." instance=ExtResource("2_world")]
+rules = ExtResource("3_rules")
+
+[node name="Population" parent="HighNoon"]
+spawn_creatures = false

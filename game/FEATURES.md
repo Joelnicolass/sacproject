@@ -2817,3 +2817,14 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
 - **Abierto:**
   - `crowd_tipi` (2 trabadas unos 3,7 s) queda para 036f.
   - Falta confirmar en el editor lo de F199.
+
+### F205 — Tope de criaturas por jugador (RFC-036, corte 036d) — cerrado 2026-10-18
+
+- **Qué cambió:** `MatchRules.max_creatures_per_player` (0 = sin tope, valor por defecto) se edita en el inspector.
+- **Rechazo:** `Caster.summon_status` devuelve «Límite de criaturas» antes que cualquier otro rechazo, y lo hace antes de `begin`, así que no cobra maná ni almas. La IA lo respeta porque pasa por `request_summon`.
+- **Qué cuenta:** las unidades vivas del slot del jugador, incluida la que se está convocando. No cuentan el mago, los NPC ni los muertos.
+- **El tope de selección** sigue siendo `Selection.max_size`, por escena.
+- **Verificación:**
+  - `debug/creature_cap.tscn` (tope 3): CREATURE_CAP PASS. La 4.ª convocatoria se rechaza sin gastar nada, y después de morir una criatura se puede convocar otra vez.
+  - `rules_suite` PASS.
+  - `quick` PASS sin regrabar.

@@ -36,6 +36,7 @@ const ERRORS := {
 const LOST := {
 	"connect_failed": "No se pudo conectar con las salas.",
 	"server_lost": "Se perdió la conexión con las salas.",
+	"connect_timeout": "Las salas no respondieron a tiempo. Probá de nuevo.",
 	"closed": "Se cerró la conexión con las salas.",
 }
 

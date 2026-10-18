@@ -33,6 +33,8 @@ signal error_received(code: String)
 @export var chat_keep: int = 50
 ## Used in the hello; must equal the server's `MpLobbyConfig.proto_version`.
 @export var proto_version: int = 1
+## A connection attempt that is not welcomed in this time ends with `lobby_lost("connect_timeout")`.
+@export var connect_timeout_s: float = 8.0
 
 var link: int = Link.OFFLINE
 var session_id: String = ""
@@ -48,6 +50,7 @@ var port: int = 0
 ## `MpTransport.ENET` or `MpTransport.WS`; must equal the room server's. Default: `--transport=` flag.
 var transport: String = MpTransport.from_flags()
 var _peer: MultiplayerPeer
+var _connecting_since_msec: int = 0
 var _signals_ready: bool = false
 var _countdown_end_msec: int = 0
 var _result_key: int = 0
@@ -57,6 +60,16 @@ var _last_match: Dictionary = {}
 
 func _ready() -> void:
 	_ensure_signals()
+
+
+func _process(_delta: float) -> void:
+	if link != Link.CONNECTING or _peer == null:
+		return
+	if Time.get_ticks_msec() - _connecting_since_msec < int(connect_timeout_s * 1000.0):
+		return
+	print("lobby client: timeout de %.1f s hacia %s:%d (%s)" % [connect_timeout_s, host, port, transport])
+	close_connection()
+	lobby_lost.emit("connect_timeout")
 
 
 func is_online() -> bool:
@@ -170,10 +183,13 @@ func _open() -> Error:
 	var made := MpTransport.create_client(transport, host, port)
 	var peer := made["peer"] as MultiplayerPeer
 	if int(made["error"]) != OK:
+		print("lobby client: no se pudo abrir %s:%d (%s): %s" % [host, port, transport, error_string(int(made["error"]))])
 		return int(made["error"]) as Error
 	_peer = peer
 	multiplayer.multiplayer_peer = peer
 	link = Link.CONNECTING
+	_connecting_since_msec = Time.get_ticks_msec()
+	print("lobby client: conectando a %s:%d (%s) como \"%s\"" % [host, port, transport, display_name])
 	return OK
 
 
@@ -192,6 +208,7 @@ func _on_connected() -> void:
 func _on_connection_failed() -> void:
 	if _peer == null:
 		return
+	print("lobby client: connect_failed hacia %s:%d (%s)" % [host, port, transport])
 	close_connection()
 	lobby_lost.emit("connect_failed")
 
@@ -208,6 +225,7 @@ func rpc_welcome(p_session_id: String, p_resume_token: String) -> void:
 	session_id = p_session_id
 	resume_token = p_resume_token
 	link = Link.ONLINE
+	print("lobby client: bienvenido a %s:%d" % [host, port])
 	lobby_joined.emit(session_id)
 
 

@@ -63,8 +63,10 @@ func _refresh() -> void:
 func _on_connect_requested(display_name: String, host_override: String) -> void:
 	var where := endpoint.resolved() if endpoint != null else MpLobbyEndpoint.new()
 	var host := host_override if not host_override.is_empty() else where.host
+	print("pantalla de salas: conectando a %s:%d (%s) como \"%s\"" % [host, where.port, MpLobby.client.transport, display_name])
 	var err := MpLobby.connect_to(host, where.port, display_name)
 	if err != OK:
+		print("pantalla de salas: no se pudo abrir la conexión (%s)" % error_string(err))
 		_connect_view.show_message(LobbyText.lost_text("connect_failed"))
 		return
 	_refresh()
@@ -77,6 +79,7 @@ func _on_lobby_joined(_session_id: String) -> void:
 
 
 func _on_lobby_lost(reason: String) -> void:
+	print("pantalla de salas: conexión perdida (%s)" % reason)
 	_creating = false
 	_refresh()
 	_connect_view.show_message(LobbyText.lost_text(reason))

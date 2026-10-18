@@ -2538,3 +2538,16 @@ Deuda:
 
 ### Cierre 034k (F188) — 2026-10-18
 - El juego usa el módulo de determinismo del kit (`%Recorder` en `ai_match`, `agent/det.cfg`, `agent/det_cases.txt`, `run_determinism.sh` como shim). Los `.events` de `s1_quick`, `s7`, `f139` y `f164` son **idénticos byte a byte** (`cmp`) a los del código anterior. Import sin errores; `quick --no-window` 27/27 y QUICK PASS.
+
+### F181 — Protocolo del lobby sobre ENet (RFC-034, corte 034d)
+
+**Piezas (`addons/mp_kit/lobby/`, sin nada de Sacrifice):**
+- `MpLobby` (autoload, después de `MpKit`): contenedor con los hijos `Server` y `Client` y un `SceneMultiplayer` propio (`set_multiplayer` sobre su ruta). El lobby no toca el peer de `MpKit`: el cliente puede seguir conectado al lobby mientras `MpKit.join` entra al dedicado, y el resultado le llega por el lobby. El script se puede instanciar más de una vez con otro nombre (una pila de lobby cada uno; lo usa la prueba).
+- `MpLobbyServer`: expone `MpLobbyRooms` por red (puerto `lobby_port`). Mensajes `hello`, `list_rooms`, `create_room`, `join_room`, `join_code`, `leave_room`, `set_slot`, `set_pick`, `set_ready`, `chat`, con validación del lado servidor: versión, nombre (1..`name_max_len`, sin control ni corchetes), tamaño de `options`/`meta` (`payload_max_bytes`), ritmo de chat (balde `chat_rate_per_s`/`chat_burst`) y `hello_timeout_s`. El cliente nunca elige slot, puerto ni semilla. Sesión retomable por `resume_token`. Cada miembro recibe la vista de su sala sin `session_id` ajenos; las privadas no se listan; `room_state` se agrupa por fotograma y la lista sale a `list_push_hz`. Validadores y `ticket_builder` los inyecta el pegamento.
+- `MpLobbyClient`: espejo (`rooms`, `room`, `chat_log`), comandos (`create_room`, `join_room`, `join_code`, `leave_room`, `choose_seat`, `set_pick`, `set_ready`, `send_chat`, `refresh_rooms`, `resume`) y señales en pasado (`lobby_joined`, `room_updated`, `countdown_started`, `countdown_cancelled`, `match_ready(host, port, token)`, `match_finished(result)`, `error_received`...).
+- `MpLobbyConfig` suma `hello_timeout_s`, `reject_flush_s`, `payload_max_bytes`, `public_host`; `with_cli_overrides()` acepta también campos String.
+- Nombres evitados a propósito: nada de `set_meta`, `connect`, `get`, `call` en la API pública.
+
+**Prueba:** `agent/run_034d.sh` (escena `debug/net/lobby_net_cases.tscn`): 1 proceso servidor de salas (runner stub; el propio servidor escribe `state.json`/`result.json` cuando el cliente se lo pide por archivo) y 1 proceso con 4 clientes (cada uno con su `MpLobby`). Escenario: sala A y sala B 1v1 en paralelo. Verifica: cada cliente ve solo a su rival; listo, picks, chat y cuenta regresiva de A no tocan a B (ni una actualización); A arranca y entra a su partida mientras B sigue abierta; cada sala recibe su `match_ready` con puerto y token distintos; el ticket de A no acepta el token de B y al revés (y no guarda tokens en claro); el resultado de A llega solo a A; si un cliente de A cae o sale, B no cambia; el resultado de B llega solo a B; validaciones (`not_in_room`, `bad_options`, `bad_meta`, `already_in_room`, `rate`). Sin dedicados reales (van en 034e).
+
+**Pendiente (orquestador):** `--import` una vez (clases y autoload nuevos) y correr `agent/run_034d.sh` (espera `LOBBY NET PASS`). Código escrito sin ejecutar Godot.

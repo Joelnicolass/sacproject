@@ -15,6 +15,9 @@ extends Node
 const STUCK_S := 2.0
 const PROGRESS_M := 0.5
 const LIMIT_S := 45.0
+## Gates of the navmesh backend (RFC-035 035g): every body out of MOVE by then, and 95 % of the searches under this.
+const NAVMESH_ARRIVE_S := 25.0
+const NAVMESH_P95_US := 300
 
 ## The group of the scene (orders_group.gd): it spawns the creatures.
 @export var group: Node
@@ -149,6 +152,13 @@ func _run(units: Array) -> void:
 		var deep := _deep_pairs(units)
 		report["deep_pairs"] = deep
 		ok = ok and deep == 0
+	## RFC-035 035g: the pathfinder's own numbers. With the navmesh backend its gates are part of the verdict (arrival, p95 of a search).
+	var nav := tree.get_first_node_in_group(NavService.GROUP) as NavService
+	if nav != null:
+		var p95 := nav.search_percentile_us(0.95)
+		report["nav"] = {"backend": nav.backend_name(), "searches": nav.searches, "total_us": nav.search_us_total, "p95_us": p95}
+		if nav.backend_name() == "navmesh":
+			ok = ok and ticks * dt <= NAVMESH_ARRIVE_S and p95 <= NAVMESH_P95_US
 	print("%s: %s %s" % [str(get_parent().name).to_snake_case(), "PASS" if ok else "FAIL", JSON.stringify(report)])
 	if quit_when_done:
 		tree.quit(0 if ok else 1)

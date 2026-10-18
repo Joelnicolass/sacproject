@@ -48,6 +48,12 @@ func _run() -> void:
 	if error != OK:
 		_fail("could not save %s (error %d)" % [NAV_PATH, error])
 		return
+	var regions := NavRegions.new()
+	regions.build(baked)
+	var sizes := Array(regions.sizes)
+	sizes.sort()
+	sizes.reverse()
+	print("bake_nav: %d regions, biggest (polygons): %s" % [regions.component_count, sizes.slice(0, 8)])
 	print("bake_nav: written %s (%d polygons, %d vertices, source %s)" % [
 		NAV_PATH, baked.get_polygon_count(), baked.get_vertices().size(), source_hash.substr(0, 12)])
 	get_tree().quit(0)

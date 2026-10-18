@@ -32,9 +32,8 @@ var _land := PackedByteArray()
 var _land_eroded := true
 var land_builds := 0
 
-## The box blockers of the last build: [center (x, z), half extents (x, z), cos(yaw), sin(yaw), reach], see crosses_box.
-var _boxes: Array = []
-var _box_clearance := 0.5
+## The box blockers of the last build (RFC-035 035g: the maths is NavBoxBlockers, shared with the navmesh backend).
+var box_blockers := NavBoxBlockers.new()
 
 var _comp_of_run := PackedInt32Array()
 var _run_row_start := PackedInt32Array()
@@ -55,13 +54,11 @@ func build(terrain: Node, discs: Array, margin_m := 1.5, erode_edges := true, bo
 		_land_eroded = erode_edges
 		land_builds += 1
 	open = _land.duplicate()
-	_boxes = []
-	_box_clearance = box_clearance_m
+	box_blockers.reset(box_clearance_m)
 	for disc in discs:
 		if disc.size() >= 3:
 			_block_box(disc[0], disc[1], float(disc[2]), margin_m)
-			var half: Vector2 = disc[1]
-			_boxes.append([disc[0], half, cos(float(disc[2])), sin(float(disc[2])), half.length() + box_clearance_m])
+			box_blockers.add(disc[0], disc[1], float(disc[2]))
 		else:
 			_block_disc(disc[0], float(disc[1]) + margin_m)
 	_find_components()
@@ -133,59 +130,9 @@ func line_clear(a: Vector3, b: Vector3) -> bool:
 
 
 ## True when the segment from `a` to `b` (flat) passes through a box blocker of the last build grown by
-## `box_clearance_m` on every side (slab test in the box's frame).
+## `box_clearance_m` on every side (NavBoxBlockers).
 func crosses_box(a: Vector3, b: Vector3) -> bool:
-	if _boxes.is_empty():
-		return false
-	var lo_x := minf(a.x, b.x)
-	var hi_x := maxf(a.x, b.x)
-	var lo_z := minf(a.z, b.z)
-	var hi_z := maxf(a.z, b.z)
-	for box: Array in _boxes:
-		var center: Vector2 = box[0]
-		var reach: float = box[4]
-		if center.x + reach < lo_x or center.x - reach > hi_x or center.y + reach < lo_z or center.y - reach > hi_z:
-			continue
-		var half: Vector2 = box[1]
-		var cos_y: float = box[2]
-		var sin_y: float = box[3]
-		## Into the box frame, as _block_box.
-		var ax := a.x - center.x
-		var az := a.z - center.y
-		var bx := b.x - center.x
-		var bz := b.z - center.y
-		var p := Vector2(ax * cos_y - az * sin_y, ax * sin_y + az * cos_y)
-		var q := Vector2(bx * cos_y - bz * sin_y, bx * sin_y + bz * cos_y)
-		if _segment_in_box(p, q, half + Vector2(_box_clearance, _box_clearance)):
-			return true
-	return false
-
-
-## Whether the segment p-q meets the box [-half, half] (Liang-Barsky clip).
-static func _segment_in_box(p: Vector2, q: Vector2, half: Vector2) -> bool:
-	var t0 := 0.0
-	var t1 := 1.0
-	var d := q - p
-	for axis in 2:
-		var start := p[axis]
-		var delta := d[axis]
-		var lo := -half[axis]
-		var hi := half[axis]
-		if absf(delta) < 0.000001:
-			if start < lo or start > hi:
-				return false
-			continue
-		var ta := (lo - start) / delta
-		var tb := (hi - start) / delta
-		if ta > tb:
-			var swap := ta
-			ta = tb
-			tb = swap
-		t0 = maxf(t0, ta)
-		t1 = minf(t1, tb)
-		if t0 > t1:
-			return false
-	return true
+	return box_blockers.crosses_box(a, b)
 
 
 func _grid_line_clear(a: Vector3, b: Vector3) -> bool:

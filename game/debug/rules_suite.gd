@@ -50,7 +50,7 @@ func _run_suite() -> void:
 	_results.merge(await GUARDIAN_CASES.new().run(self))  # 021b
 	_results.merge(await TELEPORT_CASES.new().run(self))  # 021c
 	_results.merge(await TARGET_CASES.new().run(self))  # 024b
-	_results.merge(NAV_CASES.new().run(self))  # 024b
+	_results.merge(await NAV_CASES.new().run(self))  # 024b
 	_results.merge(VILLAGE_CASES.new().run(self))  # 024b2
 	_results.merge(await AI_CASES.new().run(self))  # 024c
 	_results.merge(await CROWD_CASES.new().run(self))  # 027d

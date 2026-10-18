@@ -2753,3 +2753,24 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
   - `cell_size` es 1,0 y no 0,5. Hornear es barato, así que si en 035g el paso del tipi queda grueso se baja a 0,5 (cambiando también `default_cell_size`).
   - Los altares aparecen en partida y no están en el horneado (035g).
   - El botón «Bake» del editor no sirve, porque `MapBuilding` no es `@tool`. Hay que usar `tools/bake_nav.tscn`.
+
+### F201 — NavService con navmesh de Godot detrás de `backend` (RFC-035, corte 035g) — cerrado 2026-10-18
+
+- **Qué cambió:** `NavService.backend` puede ser `grid` (por defecto) o `navmesh`, y `--nav-backend=` lo cambia.
+  - Con navmesh, los caminos salen de `NavigationServer3D.query_path` sobre la región `NavRegion`, con `path_search_max_polygons = 0`.
+  - Las consultas de tierra, punto más cercano y línea libre salen del índice de polígonos de `NavRegions` (`closest_land`). El `map_get_closest_point` del servidor recorre los 10.000 polígonos y tarda unos 500 µs.
+  - Las islas de menos de 100 polígonos no cuentan como tierra.
+  - Las estructuras que aparecen en partida (altares, Manalith, edificios destruidos) disparan un rehorneado completo en un hilo, que se cambia en un tick fijo (`nav_rebake.gd`).
+- **Horneado:** `cell_size` 0,5, `agent_max_climb` 3,0, `agent_radius` 1,0. Da 10.667 polígonos, la región principal tiene 10.571 y no hay errores de unión de bordes.
+- **Configuración del proyecto:** `world/region_use_async_iterations=false`; sin eso, Godot 4.7 sincroniza las regiones varios frames tarde y las consultas devolvían vacío.
+- **Arreglos que también tocan la grilla:**
+  - Los voladores puros (`running_speed` 0, sin hijo `Flight`) van en línea recta y no planifican, también con `grid`.
+  - `nav_flyer` antes fallaba en los dos backends.
+- **Verificación con navmesh:**
+  - `rules_suite`: RULES SUITE PASS, con todos los `nav_*`.
+  - `crowd_rock`: PASS, 0 trabadas, p95 262 µs.
+  - `nav_flyer`: PASS.
+  - `s7_navmesh` fixed = fixed2: digest `5dfaa544…`.
+  - `quick` (grid): PASS.
+- **Abierto:** `crowd_tipi` con navmesh deja 2 criaturas trabadas unos 3,7 s cerca del destino. Las encierran las que ya llegaron a su lugar de la formación: es un problema de multitud (`MakeWay`), no de caminos. Con la grilla da 0. El reemplazo de `MakeWay` y `BodySeparation` por la evasión de Godot es 036f.
+- **Deuda:** `line_clear` muestrea cada 1 m, así que las líneas largas cuestan milisegundos. El p95 de `crowd_tipi` (277 µs) está cerca del tope de 300.

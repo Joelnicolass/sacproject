@@ -340,8 +340,9 @@ pause_menu={
 
 [navigation]
 
-3d/default_cell_size=1.0
+3d/default_cell_size=0.5
 world/map_use_async_iterations=false
+world/region_use_async_iterations=false
 avoidance/enable=false
 
 [shader_globals]

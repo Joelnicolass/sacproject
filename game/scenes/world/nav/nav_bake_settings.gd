@@ -1,3 +1,4 @@
+@tool
 class_name NavBakeSettings
 extends Resource
 
@@ -10,14 +11,14 @@ extends Resource
 ## The common body radius (0.5 m) plus the NavService box clearance (0.5 m), RFC-035 R7.
 @export var agent_radius := 1.0
 @export var agent_height := 2.0
-## The step of move_and_slide (floor_snap_length 0.5 m).
-@export var agent_max_climb := 0.5
+## Recast drops a span whose neighbour is more than this below (a «ledge») and does not step over more than this. The grid takes the
+## land as flat, so the navmesh must too: at 1 m cells a slope of 70 degrees rises 2.7 m per cell. 0.5 m (the step of move_and_slide)
+## cut the hills into 30 islands (F201); 3 m keeps them one piece, bodies walk those slopes (floor_max_angle 85).
+@export var agent_max_climb := 3.0
 ## Degrees. High on purpose: every ground triangle of Terrain.is_on_ground must be walkable (floor_max_angle is 85).
 @export_range(0.0, 90.0) var agent_max_slope := 85.0
 @export var region_min_size := 8.0
 @export var region_merge_size := 20.0
-## Side of a navigation tile (m). Read by NavRebake (035g); the full bake in 035f is one navmesh.
-@export var tile_size_m := 320.0
 
 
 ## Copies the numbers into `navmesh` and fixes the geometry source: static colliders of the `nav_source` group and its children.

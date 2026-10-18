@@ -310,7 +310,14 @@ func is_flying() -> bool:
 ## F116: the Flight child takes the walk to `point` by air (sacengine moveTowards, state.d:12335-12339). A flier goes
 ## straight: its waypoints are dropped.
 func _flies_to(point: Vector3) -> bool:
-	if _flight == null or not _should_simulate():
+	if not _should_simulate():
+		return false
+	## A creature that must fly has no Flight child (it is never on the ground): it always goes straight, no path on the navmesh or the grid.
+	if type != null and type.is_flying():
+		if is_instance_valid(_path_follower):
+			_path_follower.call("cancel")
+		return true
+	if _flight == null:
 		return false
 	var flat := Vector2(point.x - global_position.x, point.z - global_position.z).length()
 	if not _flight.goes_by_air(flat):

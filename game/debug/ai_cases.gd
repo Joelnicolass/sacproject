@@ -333,8 +333,8 @@ func _unit(host: Node3D, slot: int, at: Vector3) -> Node3D:
 	return unit
 
 
-## NavService (RFC-024 024c, the debt of F72/F73): a structure that appears under `structures` blocks the grid after it is built again
-## (once, two frames later), and when it leaves the nodes are free again.
+## NavService (RFC-024 024c, the debt of F72/F73): a structure that appears under `structures` blocks the pathfinder after it is built again
+## (once, two frames later), and when it leaves the spot is free again. Either backend (RFC-035 035g: `--nav-backend=navmesh`).
 func _nav_rebuild(host: Node3D) -> Dictionary:
 	var root := Node3D.new()
 	root.name = "NavRebuildCases"
@@ -342,6 +342,7 @@ func _nav_rebuild(host: Node3D) -> Dictionary:
 	terrain.name = "Terrain"
 	terrain.set_script(TERRAIN_SCRIPT)
 	terrain.set("data", load(OriginalAssets.HIGH_NOON_TERRAIN))
+	terrain.add_to_group(NavFingerprint.GROUP)
 	root.add_child(terrain)
 	var structures := Node3D.new()
 	structures.name = "Structures"
@@ -357,29 +358,30 @@ func _nav_rebuild(host: Node3D) -> Dictionary:
 		root.free()
 		return {"ok": false, "reason": "sin terreno (assets/original/maps/high_noon/terrain.res)"}
 	service.build()
+	await _nav_settle(service, host)
 	var spot := Vector3(1037.7, 15.0, 1009.9)
-	var cell := NavGrid.node_of(spot)
-	var free_before := service.grid.is_free_node(cell.x, cell.y)
+	var free_before := service.is_free_at(spot)
 	var body := StaticBody3D.new()
 	body.name = "FakeManalith"
 	body.add_to_group(&"structure")
 	var shape := CollisionShape3D.new()
 	var cylinder := CylinderShape3D.new()
 	cylinder.radius = 4.0
-	cylinder.height = 6.0
+	## Like structure.tscn: 8 m tall, centered 4 m up. A top within the agent's climb (3 m) would be walkable and connected.
+	cylinder.height = 8.0
 	shape.shape = cylinder
+	shape.position = Vector3(0.0, 4.0, 0.0)
 	body.add_child(shape)
-	body.position = spot
+	var ground: float = terrain.call("ground_height", spot.x, spot.z)
+	body.position = spot if is_nan(ground) else Vector3(spot.x, ground, spot.z)
 	structures.add_child(body)
-	for _frame in 5:
-		await host.get_tree().physics_frame
-	var blocked := not service.grid.is_free_node(cell.x, cell.y)
+	await _nav_settle(service, host)
+	var blocked := not service.is_free_at(spot)
 	var rebuilt_once := service.rebuilds == 1
 	structures.remove_child(body)
 	body.free()
-	for _frame in 5:
-		await host.get_tree().physics_frame
-	var free_again := service.grid.is_free_node(cell.x, cell.y)
+	await _nav_settle(service, host)
+	var free_again := service.is_free_at(spot)
 	var rebuilt_twice := service.rebuilds == 2
 	root.free()
 	return _verdict({
@@ -389,6 +391,18 @@ func _nav_rebuild(host: Node3D) -> Dictionary:
 		"free_after_exit": free_again,
 		"rebuilt_twice": rebuilt_twice,
 	})
+
+
+## A few ticks, and with the navmesh backend until its re-bake is swapped in (bounded: the swap is a count of ticks).
+func _nav_settle(service: NavService, host: Node3D) -> void:
+	for _frame in 5:
+		await host.get_tree().physics_frame
+	var guard := 900
+	while service.is_rebaking() and guard > 0:
+		guard -= 1
+		await host.get_tree().physics_frame
+	for _frame in 3:
+		await host.get_tree().physics_frame
 
 
 ## N3 of the review of 024c: with no souls seen (max 0) the density of the guard task is 0, not NaN (which made every guard

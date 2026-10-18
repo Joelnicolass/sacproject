@@ -219,10 +219,11 @@ navigation_mesh = ExtResource("f200_navmesh")
 script = ExtResource("f200_nav_region")
 bake_settings = ExtResource("f200_bake")
 
-[node name="Nav" type="Node" parent="." unique_id=1324434439 node_paths=PackedStringArray("terrain", "structures")]
+[node name="Nav" type="Node" parent="." unique_id=1324434439 node_paths=PackedStringArray("terrain", "region", "structures")]
 unique_name_in_owner = true
 script = ExtResource("f72_nav")
 terrain = NodePath("../Terrain")
+region = NodePath("../NavRegion")
 structures = NodePath("../Structures")
 
 [node name="Vision" type="Node" parent="." unique_id=1763951431]

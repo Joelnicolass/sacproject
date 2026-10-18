@@ -37,6 +37,8 @@ func _draw() -> void:
 	vision_direction = Vector2.ZERO
 	_arrows.clear()
 	_side_colors.clear()
+	# sacengine draws the wedge under the icons: the apex does not paint over the wizard's own icon.
+	_draw_vision()
 	var tree := get_tree()
 	for node in tree.get_nodes_in_group(&"soul"):
 		var soul := node as Soul
@@ -67,7 +69,6 @@ func _draw() -> void:
 			continue
 		_mark(wizard, style.wizard, wizard.owner_slot, true)
 	_draw_arrows()
-	_draw_vision()
 	draw_us = Time.get_ticks_usec() - started
 
 
@@ -146,10 +147,11 @@ func _draw_arrows() -> void:
 
 ## Two lines from the local wizard along where it faces, `fov_deg` apart.
 func _draw_vision() -> void:
-	if local_wizard_icon.x == INF:
-		return
 	var wizard := _local_wizard()
 	if wizard == null:
+		return
+	var apex := minimap.world_to_minimap(wizard.global_position)
+	if (apex - Vector2.ONE * minimap.radius()).length() > minimap.radius() * 1.08:
 		return
 	var facing: Vector3 = wizard.facing_flat()
 	var direction := minimap.world_dir_to_local(Vector2(facing.x, facing.z))
@@ -157,8 +159,8 @@ func _draw_vision() -> void:
 	var half_angle := deg_to_rad(minimap.style.fov_deg) * 0.5
 	var length := minimap.radius() * 2.0
 	for sign_value in [-1.0, 1.0]:
-		var end := local_wizard_icon + direction.rotated(half_angle * sign_value) * length
-		draw_line(local_wizard_icon, end, minimap.style.fov_color, minimap.style.fov_width, true)
+		var end := apex + direction.rotated(half_angle * sign_value) * length
+		draw_line(apex, end, minimap.style.fov_color, minimap.style.fov_width, true)
 
 
 func _local_wizard() -> WizardBody:

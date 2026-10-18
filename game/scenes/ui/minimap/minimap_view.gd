@@ -16,3 +16,5 @@ extends Resource
 @export var lead_factor := 3.73
 ## The map turns with the camera (up = where the camera looks). Off: north up, centered on the wizard.
 @export var heading_up := true
+## The compass gem sits this many HUD units inside the circle's edge, on the north side (sacengine 3).
+@export var compass_inset := 3.0

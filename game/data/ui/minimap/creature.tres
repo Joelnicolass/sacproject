@@ -11,4 +11,4 @@ region = Rect2(0, 13, 11, 11)
 script = ExtResource("1_style")
 arrow_texture = SubResource("arrow")
 shape = 3
-size_px = 2.5
+size_px = 2.0

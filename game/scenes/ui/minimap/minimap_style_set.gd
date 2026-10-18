@@ -17,8 +17,9 @@ extends Resource
 @export_group("Ground")
 ## Under the baked terrain (sacengine 0, 65/255, 66/255).
 @export var background_color := Color(0.0, 65.0 / 255.0, 66.0 / 255.0)
-## Multiplies the baked terrain. The bake already keeps its brightest sand under white (ambient 0.7); 1 leaves it as baked.
-@export var ground_tint := Color.WHITE
+## Multiplies the baked terrain. sacengine draws the terrain at 0.5 gray; the bake is already lit at ambient 0.7, so 0.5 / 0.7
+## lands on the same brightness. 1 leaves it as baked.
+@export var ground_tint := Color(0.714, 0.714, 0.714)
 
 @export_group("Vision wedge")
 @export var fov_color := Color(1.0, 1.0, 0.0)

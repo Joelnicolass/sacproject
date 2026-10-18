@@ -6,6 +6,6 @@
 [resource]
 script = ExtResource("1_style")
 shape = 3
-size_px = 2.5
+size_px = 2.0
 use_side_color = false
 fixed_color = Color(1, 0, 0, 1)

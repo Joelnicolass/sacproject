@@ -3113,3 +3113,17 @@ Todos fallaban por aserciones viejas; ninguno por un bug del juego.
 - `godot-studio-skills`, ramas `rc/v0.10.0` (`ecb66dd`) y `rc/v0.10.0-spanish` (`0fa7a1d`).
 - Para instalar el RC con su AgentKit: `GODOT_STUDIO_PLAYTEST_REF=rc/v0.10.0 ./install.sh`.
 - El merge a `main` y a `release/spanish` lo decide el usuario.
+
+### F223 — Minimapa más cerca del original (cerrado 2026-10-18)
+
+Referencias de sacengine: `renderer.d:4459-4760` y `minimap.d`.
+
+- **Terreno:** lleva el tinte gris 0,5 del original (`ground_tint` 0,714 sobre la luz ambiente 0,7 del horneado) y filtro lineal, así que la costa ya no se ve escalonada.
+- **Criaturas y almas:** tamaño 2,0, antes 2,5.
+- **Cuña de visión:** se dibuja antes que los iconos, así que el mago la tapa.
+- **Brújula:** apareció la gema del marco (`fram.png`), que marca el norte y gira con el mapa.
+- **Verificación:**
+  - Flow `f037_minimap` AGENT_OK: el mago queda a 0 px de lo esperado.
+  - `quick` PASS.
+  - Capturas de antes y después en `agent/out/f223/`.
+- **Fuera:** el parpadeo de alerta, los resaltados y la niebla.

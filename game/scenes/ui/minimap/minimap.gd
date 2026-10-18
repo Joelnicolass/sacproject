@@ -30,6 +30,8 @@ const GROUND_RAY_TOP := 1500.0
 @export var structures_root: Node
 @export var ground: Control
 @export var markers: Control
+## Compass gem on the frame; it rides the edge at the map's north as the map turns (sacengine minimapCompass). Empty = none.
+@export var compass: Control
 @export_group("Resources")
 @export var style: MinimapStyleSet
 @export var view: MinimapView
@@ -194,6 +196,11 @@ func _update_state() -> void:
 		y_axis = Vector2(heading.x, -heading.y) * scale_px
 	var middle := Vector2.ONE * radius()
 	_to_local = Transform2D(x_axis, y_axis, middle - Transform2D(x_axis, y_axis, Vector2.ZERO) * center_world)
+	if compass:
+		var north := world_dir_to_local(Vector2(0.0, -1.0))
+		compass.pivot_offset = compass.size * 0.5
+		compass.position = middle + north * (radius() - (view.compass_inset if view else 3.0)) - compass.pivot_offset
+		compass.rotation = atan2(north.x, -north.y)
 
 
 ## The size knob: the control keeps its bottom-right corner and grows with the shared HUD scale.

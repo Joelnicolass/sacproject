@@ -17,11 +17,15 @@ corner_radius_bottom_left = 76
 corner_detail = 24
 anti_aliasing_size = 1.0
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_compass"]
+atlas = ExtResource("5_fram")
+region = Rect2(101, 3, 21, 21)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_quarter"]
 atlas = ExtResource("5_fram")
 region = Rect2(64, 64, 64, 64)
 
-[node name="Minimap" type="Control" unique_id=1037000010 node_paths=PackedStringArray("ground", "markers")]
+[node name="Minimap" type="Control" unique_id=1037000010 node_paths=PackedStringArray("ground", "markers", "compass")]
 editor_description = "RFC-037: circle at the bottom right. Anchored by its corner; Minimap.gd scales it with the shared HudScale. mouse_filter STOP, but only over the circle (Minimap._has_point); the wheel zooms the map, M toggles it, a click gives ground_pointed."
 layout_mode = 3
 anchors_preset = 3
@@ -37,6 +41,7 @@ mouse_filter = 0
 script = ExtResource("1_minimap")
 ground = NodePath("Mask/Ground")
 markers = NodePath("Mask/Markers")
+compass = NodePath("Compass")
 style = ExtResource("6_style")
 view = ExtResource("7_view")
 
@@ -51,7 +56,7 @@ mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_disc")
 
 [node name="Ground" type="Control" parent="Mask" unique_id=1037000012 node_paths=PackedStringArray("minimap")]
-texture_filter = 1
+texture_filter = 2
 layout_mode = 0
 offset_left = -4.0
 offset_top = -4.0
@@ -109,3 +114,13 @@ offset_bottom = 160.0
 texture = SubResource("AtlasTexture_quarter")
 flip_h = true
 flip_v = true
+
+[node name="Compass" type="TextureRect" parent="." unique_id=1037000019]
+layout_mode = 0
+offset_right = 16.8
+offset_bottom = 16.8
+size_flags_horizontal = 0
+mouse_filter = 2
+texture = SubResource("AtlasTexture_compass")
+expand_mode = 1
+stretch_mode = 5

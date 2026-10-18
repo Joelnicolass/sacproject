@@ -261,7 +261,7 @@ func _reload() -> void:
 	var root := packed.instantiate() as Node3D
 	root.name = MODEL_NODE
 	_take_animations(root)
-	OriginalMaterial.apply_to(root, model)
+	OriginalMaterial.apply_to(root, model, info.get("surface_parts", []))
 	root.scale = MIRROR if mirror_z else Vector3.ONE
 	_slot.add_child(root)
 	_model_root = root

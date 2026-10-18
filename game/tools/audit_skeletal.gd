@@ -19,7 +19,8 @@ const MODELS_DIR := "res://assets/original/models"
 ## Baked per-frame OBJs, only the parity reference. Retired with RFC-023h.
 const BAKED_DIR := "res://cache/look/anim_f37"
 const DEFAULT_MODELS := ["eorc", "jnwr"]
-const TOLERANCE_MM := 1.0
+## RFC-023 023g (user decision 2026-10-17): <= 30 mm per vertex with one bind per vertex; 1 mm is no longer required.
+const TOLERANCE_MM := 30.0
 
 
 func _initialize() -> void:

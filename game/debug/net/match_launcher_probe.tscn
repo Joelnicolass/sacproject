@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://debug/net/match_launcher_probe.gd" id="1_probe"]
+[ext_resource type="Script" path="res://addons/mp_kit/lobby/mp_match_launcher.gd" id="2_launcher"]
+[ext_resource type="Resource" path="res://data/net/lobby_config_local.tres" id="3_cfg"]
+
+[node name="MatchLauncherProbe" type="Node"]
+script = ExtResource("1_probe")
+
+[node name="Launcher" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("2_launcher")
+config = ExtResource("3_cfg")
+reap_on_ready = false
+keep_files = true

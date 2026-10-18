@@ -2475,3 +2475,14 @@ Deuda:
 
 Deuda:
 - `run_f63_net.sh` falló una vez («click missed %Play» en los 3 clientes) y pasó al repetirlo: es inestable.
+
+### F179 — Lanzador de partidas y agente del dedicado (RFC-034, corte 034b)
+
+**Piezas (todas en `addons/mp_kit/lobby/`, sin nada de Sacrifice):**
+- `MpLobbyConfig` (`.tres`; `data/net/lobby_config.tres` producción, `lobby_config_local.tres` pruebas con `max_matches=1`): todos los límites y tiempos. `with_cli_overrides()` deja pisar cada campo numérico con un flag (`max_matches` -> `--max-matches=N`, `rejoin_grace_s` -> `--rejoin-grace-s=N`). Tope por defecto 99.
+- `MpMatchLauncher`: puerto libre del rango (se prueba con UDP), `launch(match_id, ticket)` (`ERR_BUSY` en el tope), `OS.create_process` vía `MpProcessRunner`, registro `user://mp_matches/registry.json`, sondeo de `state.json` / `result.json`, mata por latido viejo, `spawn_timeout_s`, `match_max_s`; `reap_orphans()` al arrancar (solo mata un pid si su `state.json` dice el mismo pid). Señales `match_listening`, `match_ended`, `match_failed`.
+- `MpMatchAgent`: lee `--match-ticket-file` y `--room-pid`, pone `MpKit.admission` con el hash del token (un uso activo, rejoin dentro de `rejoin_grace_s`), latido en `state.json`, `report_result()` -> `result.json` + `broadcast_session_ended` + quit; sale con `reason` `empty`, `ticket_expired` o `room_gone`.
+- `MpProcessRunner` (+ `MpProcessRunnerStub` para pruebas sin Godot), `MpMatchFiles` (rutas, JSON atómico 0600, sha256).
+- Prueba: `agent/run_034b.sh` (escena `debug/net/match_launcher_probe.tscn` + dedicado `match_agent_probe.tscn`).
+
+**Pendiente (orquestador):** `--import`, correr `agent/run_034b.sh` (espera `LAUNCHER PROBE PASS`), `quick` igual a la base. Sin verificar: `--log-file` en 4.7.2 (el flag es `log_file_flag` en el launcher; si no existe, vaciarlo).

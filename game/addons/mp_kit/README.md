@@ -469,6 +469,11 @@ Al Enable copia plantillas a `res://script_templates/` (CharacterBody / Node2D /
 | `mp_lan.gd` / `mp_lan_beacon.gd` | IPv4 + UDP advertise/browse |
 | `mp_authority.gd` | `accept_command`, `command_slot`, `accept_room_command`, freeze, sync |
 | `mp_world_ready.gd` | legado (no-op si hay `MpSpawner`) |
+| `lobby/mp_lobby_config.gd` | `MpLobbyConfig` (`.tres`): límites y tiempos del servidor de salas; cada campo numérico se pisa con `--nombre-con-guiones=N` (`with_cli_overrides()`). `max_matches` por defecto 99 |
+| `lobby/mp_match_launcher.gd` | `MpMatchLauncher`: un dedicado por partida (`launch(id, ticket)`, puerto libre del rango, tope `ERR_BUSY`, registro de pids, mata latido viejo / huérfanos). Señales `match_listening`, `match_ended`, `match_failed` |
+| `lobby/mp_match_agent.gd` | `MpMatchAgent` (en el dedicado): lee `--match-ticket-file` y `--room-pid`, pone `MpKit.admission` con el hash del token, escribe `state.json` (latido) y `result.json` (`report_result(data)`), sale si muere el padre |
+| `lobby/mp_process_runner.gd` / `_stub.gd` | `OS.create_process` / `is_process_running` / `kill`; el stub simula procesos sin Godot |
+| `lobby/mp_match_files.gd` | rutas `user://mp_matches/<id>/{ticket,state,result}.json`, JSON atómico (0600), sha256 |
 
 Handshake de spawn: `hold_until_world_ready` (synchronizers ocultos hasta que el spawner de ese peer avisa que está listo; Godot manda spawn + sync emparejados). Dedicated: no pawn para peer 1. No desparentes actors en glue.
 

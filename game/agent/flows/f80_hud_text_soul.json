@@ -1,0 +1,55 @@
+{
+ "scene": "res://debug/soul_pickup.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "wait": 1.5
+  },
+  {
+   "assert": {
+    "node": "%Stats",
+    "text_contains": "Almas 0"
+   }
+  },
+  {
+   "press": "drop_soul"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "assert": {
+    "node": "%Battle",
+    "text_contains": "Sin almas"
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Invalid",
+    "visible": true
+   }
+  },
+  {
+   "call": {
+    "harness": "hud_text_audit",
+    "method": "audit"
+   }
+  },
+  {
+   "assert": {
+    "node": "AgentKit/hud_text_audit",
+    "prop": "found",
+    "equals": 0
+   }
+  },
+  {
+   "print": {
+    "node": "AgentKit/hud_text_audit",
+    "prop": "list"
+   }
+  },
+  {
+   "shot": "f80_hud_4_sin_almas.png"
+  }
+ ]
+}

@@ -47,8 +47,8 @@ func _physics_process(_delta: float) -> void:
 	tick = MatchClock.now()
 	_scan()
 	for body in _rec.keys():
-		if not is_instance_valid(body):
-			continue
+		if not is_instance_valid(body) or not (body as Node).is_inside_tree():
+			continue  # freed, or out of the tree during a flow scene change
 		var r: Dictionary = _rec[body]
 		var at := (body as Node3D).global_transform.origin
 		var start: Vector3 = r["start"]

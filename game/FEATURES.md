@@ -3052,3 +3052,15 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
   - `crowd_tipi` y `crowd_rock` PASS.
   - `run_034e` E2E PASS.
   - Flow `final_separation` con ventana: AGENT_OK, idéntico al código anterior (`agent/out/pt036j*`).
+
+### F222 — Flows de prueba al día (deuda, cerrado 2026-10-18)
+
+Todos fallaban por aserciones viejas; ninguno por un bug del juego.
+
+- **`f80_cues_orders` y `f24_cast`:** el Druid quedaba detrás del mago, en el centro de la pantalla. Ahora giran la cámara y apuntan con `aim_body`. En `f24`, el `click %View` (centro de la vista) pasó a `press select`, que usa el puntero forzado.
+- **`f80_hud_text`:** se partió en 5 flows, uno por escena. Además, `pt121_watch.gd` ya no lee cuerpos que salieron del árbol. El flow único sigue fallando en el paso 36, en otro cambio de escena.
+- **`f79_roster`:** espera `CompressedTexture2D`.
+- **`f36_anim_wizard_trogg`:** en reposo, las etiquetas son `jwst` y `HUst`.
+- **`rfc033_shots`:** AGENT_OK, y el cuelgue no se reprodujo.
+- **`check_original_assets.sh`:** excluye `terrain.glb`.
+- **Resultado:** todos los flows de arriba dan AGENT_OK.

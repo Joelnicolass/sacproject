@@ -33,7 +33,7 @@ func run(host: Node3D) -> Dictionary:
 	out["ai_spell_eval_support"] = _spell_eval()
 	out["ai_capture_territory"] = _territory()
 	out["doctor_carrier_follows_path"] = _doctor_wiring()
-	out["nav_land_cache"] = _land_cache()
+	out["nav_box_blockers"] = _box_blockers()
 	out["ai_difficulty_files"] = _difficulties()
 	out["ai_profiles_by_god"] = _profiles_by_god()
 	out["ai_limited_information"] = await _limited_information(host)
@@ -334,7 +334,7 @@ func _unit(host: Node3D, slot: int, at: Vector3) -> Node3D:
 
 
 ## NavService (RFC-024 024c, the debt of F72/F73): a structure that appears under `structures` blocks the pathfinder after it is built again
-## (once, two frames later), and when it leaves the spot is free again. Either backend (RFC-035 035g: `--nav-backend=navmesh`).
+## (once, two frames later), and when it leaves the spot is free again. On the navmesh (RFC-035 035i).
 func _nav_rebuild(host: Node3D) -> Dictionary:
 	var root := Node3D.new()
 	root.name = "NavRebuildCases"
@@ -469,7 +469,7 @@ func _territory() -> Dictionary:
 	return _verdict(checks)
 
 
-## The carrier doctor has a PathFollower; the doctor of the ritual ring does not (it stands inside what the grid blocks).
+## The carrier doctor has a PathFollower; the doctor of the ritual ring does not (it stands inside what the navmesh blocks).
 func _doctor_wiring() -> Dictionary:
 	var carrier := preload("res://scenes/world/sacrifice/carrier_doctor.tscn").instantiate()
 	var ring := preload("res://scenes/world/sacrifice/ritual_doctor.tscn").instantiate()
@@ -482,29 +482,22 @@ func _doctor_wiring() -> Dictionary:
 	return _verdict(checks)
 
 
-## The free nodes of the bare ground are worked out once: a second build reuses them (the 40 ms of 52).
-func _land_cache() -> Dictionary:
-	var grid := NavGrid.new()
-	var counts := PackedByteArray()
-	counts.resize(NavGrid.TERRAIN_CELLS * NavGrid.TERRAIN_CELLS)
-	counts.fill(2)
-	var fake := FakeTerrain.new()
-	fake.counts = counts
-	grid.build(fake, [], 1.5, true)
-	grid.build(fake, [[Vector2(100.0, 100.0), 10.0]], 1.5, true)
+## NavBoxBlockers (RFC-035 035i; the land cache of the old grid went with it): a box is kept with its clearance, a line through it
+## (or grazing it within the clearance) crosses, a line clear of it does not, and `reset` forgets the boxes.
+func _box_blockers() -> Dictionary:
+	var boxes := NavBoxBlockers.new()
+	boxes.reset(0.5)
+	boxes.add(Vector2(100.0, 100.0), Vector2(4.0, 4.0), 0.0)
 	var checks := {
-		"worked_out_once": grid.land_builds == 1,
-		"second_build_blocks": not grid.is_free_at(Vector3(100.0, 0.0, 100.0)),
+		"holds_box": not boxes.is_empty(),
+		"through_crosses": boxes.crosses_box(Vector3(80.0, 0.0, 100.0), Vector3(120.0, 0.0, 100.0)),
+		"grazing_within_clearance": boxes.crosses_box(Vector3(80.0, 0.0, 104.3), Vector3(120.0, 0.0, 104.3)),
+		"clear_line_passes": not boxes.crosses_box(Vector3(80.0, 0.0, 105.0), Vector3(120.0, 0.0, 105.0)),
+		"short_of_box": not boxes.crosses_box(Vector3(80.0, 0.0, 100.0), Vector3(90.0, 0.0, 100.0)),
 	}
-	fake.free()
-	return _verdict(checks, {"land_builds": grid.land_builds})
-
-
-class FakeTerrain extends Node:
-	var counts := PackedByteArray()
-
-	func ground_cell_counts() -> PackedByteArray:
-		return counts
+	boxes.reset(0.5)
+	checks["reset_forgets"] = boxes.is_empty() and not boxes.crosses_box(Vector3(80.0, 0.0, 100.0), Vector3(120.0, 0.0, 100.0))
+	return _verdict(checks, {})
 
 
 ## 024e: the three difficulties (RFC-024 §6 024e). Normal = the original (periods 12/60/6/6/60/12, aggression 1, no delay); Easy x2,

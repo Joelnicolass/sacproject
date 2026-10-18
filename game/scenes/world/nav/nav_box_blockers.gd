@@ -1,9 +1,10 @@
 class_name NavBoxBlockers
 extends RefCounted
 
-## The box blockers of the map (the buildings), RFC-035 035g. Moved out of NavGrid (F88 round 2): the maths of «does this straight
-## line go through a building» does not depend on the grid, so the grid and the navmesh backend share it. A 5 m grid node can be free
-## while a tipi's box reaches 1 m into its square; a line that crosses a box (grown by `clearance_m`) is not clear.
+## The box blockers of the map (the buildings), RFC-035 035g. F88 round 2: «does this straight line go through a building»
+## is not something a navmesh knows (a path hugs a corner), so the boxes are kept and a line that crosses one (grown by `clearance_m`)
+## is not clear. Without it, a creature at the foot of a tipi was sent straight through the box and pressed on its face for good
+## (debug/crowd_tipi.tscn).
 
 ## One entry per box: [center (x, z), half extents (x, z), cos(yaw), sin(yaw), reach], `reach` being the radius that holds the box and the clearance.
 var boxes: Array = []
@@ -47,7 +48,7 @@ func crosses_box(a: Vector3, b: Vector3) -> bool:
 		var half: Vector2 = box[1]
 		var cos_y: float = box[2]
 		var sin_y: float = box[3]
-		## Into the box frame, as NavGrid._block_box.
+		## Into the box frame (rotated by -yaw, as a box turned `yaw` about Y).
 		var ax := a.x - center.x
 		var az := a.z - center.y
 		var bx := b.x - center.x

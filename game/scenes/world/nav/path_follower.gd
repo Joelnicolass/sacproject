@@ -18,6 +18,9 @@ extends Node
 signal path_set(points: PackedVector3Array)
 signal arrived
 
+## A pursuit keeps its path while the target stays within this (flat) of the goal it was planned for: 2 cells of 5 m (RFC-024).
+const REPATH_GOAL_M := 10.0
+
 ## The body to move: a UnitBody or a WizardBody (begin_walk / is_walking / walk_to).
 @export var body: Node3D
 ## Seconds between checks of the way and the progress (sacengine: 2 s).
@@ -152,13 +155,13 @@ func steer_point(target: Vector3) -> Vector3:
 	if _steer_left > 0.0:
 		if _steer_path.is_empty():
 			return target
-		if _flat(target, _steer_goal) < 2.0 * NavGrid.CELL_M:
+		if _flat(target, _steer_goal) < REPATH_GOAL_M:
 			return _advance_steer(here, target)
 	_steer_left = steer_check_s
 	if _nav.line_clear(here, target):
 		_steer_path = PackedVector3Array()
 		return target
-	var stale := _steer_path.is_empty() or _flat(target, _steer_goal) >= 2.0 * NavGrid.CELL_M or _steer_age >= repath_s
+	var stale := _steer_path.is_empty() or _flat(target, _steer_goal) >= REPATH_GOAL_M or _steer_age >= repath_s
 	if stale and _nav.take_search_slot():
 		searches += 1
 		_steer_path = _nav.find_path(here, target)

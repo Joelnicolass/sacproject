@@ -7,7 +7,7 @@ extends Node
 ## itself, measures and prints `NAV_CROSS {json}`, then quits.
 ##
 ## Measures: the length of the path A* gives, the time to come within `arrive_m` of the marker, the
-## longest stretch standing still, the closest approach to a manafount and the cost of the grid and of
+## longest stretch standing still, the closest approach to a manafount and the cost of the navmesh and of
 ## find_path (corner to corner and a seeded handful of others). Nothing here moves the Trogg but the order.
 
 const TAG := "NAV_CROSS "
@@ -35,6 +35,9 @@ const TAG := "NAV_CROSS "
 @export var ribbon_m := 2.0
 ## A bird's-eye camera over the map for --overview (the walker's camera otherwise).
 @export var overview_camera: Camera3D
+
+const NODES := 512
+const NODE_M := 5.0
 
 var _ticks := 0
 var _running := false
@@ -125,11 +128,11 @@ func _order(nav: NavService) -> void:
 	var started := Time.get_ticks_usec()
 	_path = nav.find_path(from, to)
 	var first_us := Time.get_ticks_usec() - started
-	_path_len = NavGrid.path_length(from, _path)
+	_path_len = NavService.path_length(from, _path)
 	_straight = Vector2(to.x - from.x, to.z - from.z).length()
-	_report["grid_ms"] = nav.grid.build_ms
-	_report["free_nodes"] = nav.grid.free_count
-	_report["regions"] = nav.grid.component_count
+	_report["build_ms"] = nav.mesh.build_ms
+	_report["polygons"] = nav.mesh.polygon_count
+	_report["regions"] = nav.mesh.regions.component_count
 	_report["same_region"] = nav.same_region(from, to)
 	_report["start_us"] = first_us
 	_report["find_us"] = _time_paths(nav)
@@ -187,14 +190,14 @@ func _time_paths(nav: NavService) -> Dictionary:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 72
 	var land: Array[Vector3] = []
-	var grid := nav.grid
 	var tries := 0
 	while land.size() < extra_paths * 2 and tries < 20000:
 		tries += 1
-		var i := rng.randi_range(0, NavGrid.SIZE - 1)
-		var j := rng.randi_range(0, NavGrid.SIZE - 1)
-		if grid.is_free_node(i, j):
-			land.append(NavGrid.node_point(Vector2i(i, j)))
+		var i := rng.randi_range(0, NODES - 1)
+		var j := rng.randi_range(0, NODES - 1)
+		var point := _node_point(Vector2i(i, j))
+		if nav.is_free_at(point):
+			land.append(point)
 	var worst := 0
 	var total := 0
 	var count := 0
@@ -204,7 +207,7 @@ func _time_paths(nav: NavService) -> Dictionary:
 		pairs.append([land[k], land[k + 1]])
 	for pair in pairs:
 		var t := Time.get_ticks_usec()
-		var path: PackedVector3Array = grid.find_path(pair[0], pair[1])
+		var path: PackedVector3Array = nav.find_path(pair[0], pair[1])
 		var us := Time.get_ticks_usec() - t
 		worst = maxi(worst, us)
 		total += us
@@ -229,19 +232,28 @@ func _dump_grid(path: String) -> void:
 	image.fill(Color(0.05, 0.05, 0.08))
 	for j in range(z0, z1):
 		for i in range(x0, x1):
-			if nav.grid.is_free_node(i, j):
+			if nav.is_free_at(_node_point(Vector2i(i, j))):
 				image.fill_rect(Rect2i((i - x0) * scale, (j - z0) * scale, scale, scale), Color(0.45, 0.5, 0.45))
 	for group in ["manafount", "altar"]:
 		for node in get_tree().get_nodes_in_group(group):
-			var at := NavGrid.node_of((node as Node3D).global_position)
+			var at := _node_of((node as Node3D).global_position)
 			image.fill_rect(Rect2i((at.x - x0) * scale - 2, (at.y - z0) * scale - 2, scale + 4, scale + 4), Color(1.0, 0.9, 0.1))
 	for point in _path:
-		var n := NavGrid.node_of(point)
+		var n := _node_of(point)
 		image.fill_rect(Rect2i((n.x - x0) * scale - 1, (n.y - z0) * scale - 1, scale + 2, scale + 2), Color(1.0, 0.2, 0.1))
 	for point in _crumbs:
-		var n := NavGrid.node_of(point)
+		var n := _node_of(point)
 		image.fill_rect(Rect2i((n.x - x0) * scale, (n.y - z0) * scale, scale, scale), Color(0.1, 0.9, 1.0))
 	image.save_png(path)
+
+
+## The 5 m lattice of the debug picture and of the seeded land points (the old grid's nodes; node (i, j) stands at world (5i, 5j)).
+func _node_of(point: Vector3) -> Vector2i:
+	return Vector2i(clampi(roundi(point.x / NODE_M), 0, NODES - 1), clampi(roundi(point.z / NODE_M), 0, NODES - 1))
+
+
+func _node_point(node: Vector2i) -> Vector3:
+	return Vector3(float(node.x) * NODE_M, 0.0, float(node.y) * NODE_M)
 
 
 func _nav() -> NavService:

@@ -1,11 +1,11 @@
 extends Node
 
 ## RFC-035 035g case (headless): a flier is ordered across the map over the central manafount, the same walk as debug/nav_cross.tscn.
-## It must not ask for a path: a flier goes in a straight line (UnitBody._flies_to drops the waypoints) whatever the backend of the
-## NavService is. PASS: it arrives within `ARRIVE_M` of the goal before `LIMIT_S`, its PathFollower never planned (searches 0) and is
+## It must not ask for a path: a flier goes in a straight line (UnitBody._flies_to drops the waypoints) whatever the NavService
+## answers. PASS: it arrives within `ARRIVE_M` of the goal before `LIMIT_S`, its PathFollower never planned (searches 0) and is
 ## not active, the NavService answered no search while it flew, it never left the straight line by more than `LATERAL_M`, and that
 ## line really goes through a manafount (else the case proves nothing). Prints `nav_flyer: PASS|FAIL {json}` and quits.
-## Run: Godot --headless --fixed-fps 60 --path game res://debug/nav_flyer.tscn [-- --nav-backend=navmesh]
+## Run: Godot --headless --fixed-fps 60 --path game res://debug/nav_flyer.tscn
 
 const ARRIVE_M := 6.0
 const LIMIT_S := 60.0
@@ -78,7 +78,7 @@ func _finish(nav: NavService, left: float, seconds: float) -> void:
 	for key in checks:
 		ok = ok and bool(checks[key])
 	var report := {"checks": checks, "left_m": snappedf(left, 0.01), "seconds": snappedf(seconds, 0.01), "worst_lateral_m": snappedf(_worst_lateral, 0.01),
-			"fount_m": snappedf(_through_m, 0.01), "backend": nav.backend_name()}
+			"fount_m": snappedf(_through_m, 0.01)}
 	print("nav_flyer: %s %s" % ["PASS" if ok else "FAIL", JSON.stringify(report)])
 	if quit_when_done:
 		get_tree().quit(0 if ok else 1)

@@ -1,9 +1,9 @@
 class_name NavRegions
 extends RefCounted
 
-## The connected components of a navmesh (RFC-035 035g): what NavGrid answers with its runs of free nodes. Two polygons that share an
+## The connected components of a navmesh (RFC-035 035g): which region two points are in. Two polygons that share an
 ## edge are one component; the ids go up in the order of the polygons, so the same navmesh always gives the same ids (no hash order
-## decides anything). `component_at` finds the polygon under a point, or the nearest one within `snap_m` (the grid's SNAP_RADIUS).
+## decides anything). `component_at` finds the polygon under a point, or the nearest one within `snap_m` (NavMeshBackend.SNAP_M).
 ## Built once from the NavigationMesh resource; the server is not asked anything.
 
 const CELL_M := 8.0

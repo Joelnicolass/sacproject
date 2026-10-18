@@ -277,7 +277,7 @@ func lowest_ground() -> float:
 
 
 ## How many land triangles each 10 m cell has: 0 a hole or the rim, 1 half a cell, 2 a full one. 256x256,
-## row-major (z * 256 + x), read from the same index as is_on_ground. NavGrid builds its free nodes from it.
+## row-major (z * 256 + x), read from the same index as is_on_ground. NavService only checks that the terrain answers it.
 func ground_cell_counts() -> PackedByteArray:
 	if _cell_counts.size() != GRID * GRID:
 		_cell_counts = PackedByteArray()

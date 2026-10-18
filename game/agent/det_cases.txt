@@ -29,4 +29,3 @@ f162|--rules=res://debug/rules/f162_waves.tres --seed=7 --minutes=0.3|fixed|
 f163|--rules=res://debug/rules/f163_phoenix_shield.tres --seed=7 --minutes=0.2|fixed|
 f177|--rules=res://debug/rules/f177_melee_group.tres --seed=7 --minutes=0.3|fixed|
 f164|--rules=res://debug/rules/f164_drain.tres --seed=7 --minutes=0.3|fixed|
-s7_navmesh|--rules=res://debug/rules/ai_duel_seeded.tres --seed=7 --minutes=2 --nav-backend=navmesh||

@@ -2784,3 +2784,15 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
   - Después de regrabar, `quick` PASS.
   - `rules_suite` con el valor por defecto: PASS.
 - **Abierto:** `crowd_tipi` (2 trabadas unos 3,7 s, ver F201). Se resuelve con la evasión de Godot en 036f.
+
+### F203 — Fuera la grilla de navegación (RFC-035, corte 035i) — cerrado 2026-10-18
+
+- **Qué se borró:** `nav_grid.gd` y el selector `backend` / `--nav-backend`. Desde ahora `NavService` tiene un solo dueño, el navmesh (`NavMeshBackend`, `NavRegions`, `NavBoxBlockers`, `NavRebake`).
+- **Pruebas que se cambiaron:** los chequeos que solo tenían sentido con la grilla pasan a probar `NavBoxBlockers` (`nav_box_corner`, `nav_box_blockers`). `nav_grid_build` pasa a llamarse `nav_build`.
+- **Verificación:**
+  - El `grep` de `NavGrid`, `AStarGrid2D` y `nav-backend` en `scenes`, `debug` y `tools` da vacío.
+  - `quick` PASS sin regrabar.
+  - `rules_suite` PASS.
+  - `crowd_rock` PASS, 0 trabadas.
+  - `nav_flyer` PASS.
+- **Abierto:** `crowd_tipi` sigue igual (2 trabadas unos 3,7 s, 036f).

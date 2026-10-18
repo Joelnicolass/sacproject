@@ -1,32 +1,26 @@
 class_name NavService
 extends Node
 
-## The world's pathfinder (RFC-024 §3.1, 024b): %Nav in high_noon. It builds the NavGrid once, after the
+## The world's pathfinder (RFC-024 §3.1, 024b): %Nav in high_noon. It takes the map's navmesh once, after the
 ## world is ready (terrain, manafounts and altars exist), and answers find_path / component_at for the
 ## player, the AI and the perception. Only where the world is simulated: a client never asks.
 ## Blockers come from the scene: the collision shapes of the nodes in `blocker_groups` (manafounts, the
 ## altars in play and the buildings of the map, RFC-024 addendum 1; `nav_blocker` is for whatever else a scene puts in the way, a
 ## pillar of the test of the Sac Doctors). Nothing here moves a body; PathFollower hands waypoints to begin_walk.
-## RFC-035 035g: `backend` picks who answers. GRID is the NavGrid above (the default, what the baselines were recorded with).
-## NAVMESH answers the same API from the baked navmesh (NavMeshBackend + NavRegions + NavBoxBlockers). The command line wins over the
-## export: `--nav-backend=navmesh` (or `grid`). With NAVMESH the engine answers from the NavigationRegion3D `region`. What the bake
+## RFC-035 035i: the navmesh is the one owner (NavMeshBackend + NavRegions + NavBoxBlockers; the 5 m grid is gone). The engine
+## answers from the NavigationRegion3D `region`. What the bake
 ## does not hold (altars, structures, nav_blocker) and a building that fell change the map: NavRebake bakes the whole navmesh again on a
 ## worker thread and the result is swapped into the region `rebake_swap_frames` physics ticks after the change (a count, so it is the
-## same tick on every machine). A missing navmesh falls back to the grid with a warning.
+## same tick on every machine). A missing navmesh leaves the service not ready (callers get the straight line) with a warning.
 
 signal built(ms: float)
 
 const GROUP := &"nav_service"
 const DEFAULT_NAVMESH := "res://data/nav/high_noon_nav.res"
 const BAKE_SETTINGS := "res://data/nav/nav_bake.tres"
-const CLI_BACKEND := "--nav-backend="
 const SEARCH_LOG_MAX := 200000
 
-enum Backend { GRID, NAVMESH }
-
 @export var terrain: MeshInstance3D
-## Who answers (see above). The default stays GRID until the navmesh is the product's pathfinder.
-@export var backend := Backend.NAVMESH
 ## The map's NavigationRegion3D (%NavRegion). Empty: the service puts one under itself with DEFAULT_NAVMESH.
 @export var region: NavigationRegion3D
 ## Physics ticks between a change and the swap of the re-baked navmesh (the bake takes a couple of seconds on a worker thread; if it
@@ -35,14 +29,10 @@ enum Backend { GRID, NAVMESH }
 ## The groups whose colliders are in the stored bake and move on their own (the buildings, the manafounts). The nodes of the other
 ## blocker groups and the built structures join the group NavFingerprint.GROUP before a re-bake so the bake sees them.
 @export var baked_groups: PackedStringArray = PackedStringArray(["manafount", "map_building"])
-## Margin added to every blocker (sacengine blockingTolerance, state.d:790).
-@export var margin_m := 1.5
-## A node needs whole land around it too (sacengine isFree asks the cells around the node).
-@export var erode_edges := true
-## A straight line must stay this far (m) from a box blocker (a building) to be clear (NavGrid.crosses_box, F88 round 2).
+## A straight line must stay this far (m) from a box blocker (a building) to be clear (NavBoxBlockers.crosses_box, F88 round 2).
 @export var box_clearance_m := 0.5
 @export var blocker_groups: PackedStringArray = PackedStringArray(["manafount", "altar", "map_building", "nav_blocker"])
-## What the players build (Manaliths, RFC-021): their collision blocks too, and the grid is built again when one
+## What the players build (Manaliths, RFC-021): their collision blocks too, and the navmesh is baked again when one
 ## appears or falls (024c; the debt of F72/F73). `structures` is the node they are put under (%Structures).
 @export var built_group: StringName = &"structure"
 @export var structures: Node
@@ -53,7 +43,6 @@ enum Backend { GRID, NAVMESH }
 @export var max_searches_per_tick := 3
 @export var build_on_ready := true
 
-var grid := NavGrid.new()
 var mesh := NavMeshBackend.new()
 var rebake: NavRebake
 ## Microseconds of the last A* search, for the report.
@@ -76,8 +65,6 @@ var _pending_signature := 0
 var _swap_at := -1
 ## A change came while a bake was running: bake again after the swap.
 var _dirty := false
-## True once the navmesh backend answers (set by build, not by the export: a missing navmesh leaves the grid).
-var _navmesh_on := false
 ## Microseconds of every search, to tell the p95 (for the report; never read by the simulation). Capped.
 var _search_log := PackedInt32Array()
 
@@ -87,7 +74,6 @@ func _ready() -> void:
 	if MpKit.is_networked() and not MpKit.is_server():
 		set_physics_process(false)
 		return
-	_read_command_line()
 	if structures != null:
 		structures.child_entered_tree.connect(_on_structure_changed.unbind(1))
 		structures.child_exiting_tree.connect(_on_structure_changed.unbind(1))
@@ -119,7 +105,7 @@ func _exit_tree() -> void:
 
 
 func is_ready() -> bool:
-	return mesh.built and mesh.is_synced() if _navmesh_on else grid.built
+	return mesh.built and mesh.is_synced()
 
 
 ## True while a re-bake is running or waits to be swapped in (the navmesh answers with the old map meanwhile).
@@ -127,32 +113,28 @@ func is_rebaking() -> bool:
 	return _swap_at >= 0 or _dirty
 
 
-func backend_name() -> String:
-	return "navmesh" if _navmesh_on else "grid"
-
-
-## `--nav-backend=grid|navmesh` of the command line (user args or engine args) wins over the export.
-func _read_command_line() -> void:
-	for arg in OS.get_cmdline_user_args() + OS.get_cmdline_args():
-		if arg.begins_with(CLI_BACKEND):
-			backend = Backend.NAVMESH if arg.substr(CLI_BACKEND.length()) == "navmesh" else Backend.GRID
+## Length of a path from `from` through `points`, flat.
+static func path_length(from: Vector3, points: PackedVector3Array) -> float:
+	var total := 0.0
+	var last := Vector2(from.x, from.z)
+	for point in points:
+		var here := Vector2(point.x, point.z)
+		total += last.distance_to(here)
+		last = here
+	return total
 
 
 ## Builds the pathfinder (again). Returns the milliseconds it took.
 func build() -> float:
 	if terrain == null or not terrain.has_method("ground_cell_counts"):
 		return 0.0
-	if backend == Backend.NAVMESH and _build_navmesh():
-		_watch_buildings()
-		return mesh.build_ms
-	grid.build(terrain, _blockers(), margin_m, erode_edges, box_clearance_m)
+	if not _build_navmesh():
+		return 0.0
 	_watch_buildings()
-	print("nav: grilla %d nodos libres, %d regiones, %.0f ms" % [grid.free_count, grid.component_count, grid.build_ms])
-	built.emit(grid.build_ms)
-	return grid.build_ms
+	return mesh.build_ms
 
 
-## A building that falls leaves no wall: the grid is built again without it (its collision is off by then).
+## A building that falls leaves no wall: the navmesh is baked again without it (its collision is off by then).
 func _watch_buildings() -> void:
 	for node in get_tree().get_nodes_in_group(MapBuilding.GROUP):
 		var building := node as MapBuilding
@@ -166,7 +148,7 @@ func _on_building_destroyed(_building: MapBuilding) -> void:
 
 
 ## First time: takes the region (or makes one with the stored navmesh) and bakes at once if something the stored bake lacks stands on the
-## map. After: a change of blockers asks for a new bake. False, with the grid left to build, when there is no navmesh to load.
+## map. After: a change of blockers asks for a new bake. False when there is no navmesh to load.
 func _build_navmesh() -> bool:
 	var entries := _blockers()
 	if mesh.built:
@@ -177,19 +159,18 @@ func _build_navmesh() -> bool:
 	if nav_region == null:
 		var stored := ResourceLoader.load(DEFAULT_NAVMESH) as NavigationMesh
 		if stored == null or stored.get_polygon_count() == 0:
-			push_warning("nav: no navmesh in %s, the grid answers" % DEFAULT_NAVMESH)
+			push_warning("nav: no navmesh in %s" % DEFAULT_NAVMESH)
 			return false
 		nav_region = NavigationRegion3D.new()
 		nav_region.name = "NavRegion"
 		nav_region.navigation_mesh = stored
 		add_child(nav_region)
 	elif nav_region.navigation_mesh == null or nav_region.navigation_mesh.get_polygon_count() == 0:
-		push_warning("nav: the region has no navmesh (run tools/bake_nav.tscn), the grid answers")
+		push_warning("nav: the region has no navmesh (run tools/bake_nav.tscn)")
 		return false
 	var settings: NavBakeSettings = nav_region.get("bake_settings") if nav_region.get("bake_settings") != null else load(BAKE_SETTINGS) as NavBakeSettings
 	rebake = NavRebake.new(settings)
 	mesh.build(nav_region, entries, box_clearance_m)
-	_navmesh_on = true
 	print("nav: navmesh %d polígonos, %d regiones, %.0f ms" % [mesh.polygon_count, mesh.regions.component_count, mesh.build_ms])
 	_request_rebake()
 	built.emit(mesh.build_ms)
@@ -256,12 +237,12 @@ func take_search_slot() -> bool:
 	return true
 
 
-## Waypoints from `from` (not included) to `to`; [to] when nothing is in the way or there is no grid.
+## Waypoints from `from` (not included) to `to`; [to] when nothing is in the way or there is no navmesh.
 func find_path(from: Vector3, to: Vector3) -> PackedVector3Array:
 	if not is_ready():
 		return PackedVector3Array([to])
 	var started := Time.get_ticks_usec()
-	var path := mesh.find_path(_grounded(from), _grounded(to)) if _navmesh_on else grid.find_path(from, to)
+	var path := mesh.find_path(_grounded(from), _grounded(to))
 	last_find_us = Time.get_ticks_usec() - started
 	search_us_total += last_find_us
 	searches += 1
@@ -278,51 +259,41 @@ func find_path(from: Vector3, to: Vector3) -> PackedVector3Array:
 func line_clear(from: Vector3, to: Vector3) -> bool:
 	if not is_ready():
 		return true
-	return mesh.line_clear(_grounded(from), _grounded(to)) if _navmesh_on else grid.line_clear(from, to)
+	return mesh.line_clear(_grounded(from), _grounded(to))
 
 
-## Whether the straight line from `from` to `to` goes through a box blocker (a building), whatever the grid says.
+## Whether the straight line from `from` to `to` goes through a box blocker (a building), whatever the navmesh says.
 func crosses_box(from: Vector3, to: Vector3) -> bool:
 	if not is_ready():
 		return false
-	return mesh.crosses_box(from, to) if _navmesh_on else grid.crosses_box(from, to)
+	return mesh.crosses_box(from, to)
 
 
 func component_at(point: Vector3) -> int:
 	if not is_ready():
 		return -1
-	return mesh.component_at(point) if _navmesh_on else grid.component_at(point)
+	return mesh.component_at(point)
 
 
 func same_region(a: Vector3, b: Vector3) -> bool:
 	if not is_ready():
 		return true
-	if _navmesh_on:
-		var ca := mesh.component_at(a)
-		return ca >= 0 and ca == mesh.component_at(b)
-	return grid.same_region(a, b)
+	var ca := mesh.component_at(a)
+	return ca >= 0 and ca == mesh.component_at(b)
 
 
-## The free land closest to `point` within about 30 m (the grid's 6 nodes), (NAN, NAN, NAN) when there is none or no pathfinder.
+## The free land closest to `point` within about 30 m, (NAN, NAN, NAN) when there is none or no pathfinder.
 func nearest_free(point: Vector3) -> Vector3:
-	var none := Vector3(NAN, NAN, NAN)
 	if not is_ready():
-		return none
-	if _navmesh_on:
-		return mesh.nearest_free(_grounded(point))
-	var node := grid.nearest_free(NavGrid.node_of(point))
-	if node.x < 0:
-		return none
-	var at := NavGrid.node_point(node)
-	at.y = point.y
-	return at
+		return Vector3(NAN, NAN, NAN)
+	return mesh.nearest_free(_grounded(point))
 
 
-## Whether `point` stands on free land (a free node of the grid; the navmesh within 0.75 m and on it).
+## Whether `point` stands on free land (on the navmesh within 0.75 m, not on an island).
 func is_free_at(point: Vector3) -> bool:
 	if not is_ready():
 		return true
-	return mesh.is_walkable(_grounded(point)) if _navmesh_on else grid.is_free_at(point)
+	return mesh.is_walkable(_grounded(point))
 
 
 ## One entry per collision shape of the blocker nodes right now (see _blockers): what a pathfinder has to go around.

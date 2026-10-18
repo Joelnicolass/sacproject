@@ -308,7 +308,7 @@ func _finish(winner: int, reason: String) -> void:
 	}
 	var nav := _world.get_tree().get_first_node_in_group(NavService.GROUP) as NavService
 	if nav != null:
-		_report["nav"] = {"backend": nav.backend_name(), "rebuilds": nav.rebuilds, "land_builds": nav.grid.land_builds, "last_build_ms": snappedf(nav.grid.build_ms, 0.1), "free_nodes": nav.grid.free_count,
+		_report["nav"] = {"rebuilds": nav.rebuilds, "last_build_ms": snappedf(nav.mesh.build_ms, 0.1), "regions": nav.mesh.regions.component_count,
 				"searches": nav.searches, "search_total_us": nav.search_us_total, "search_p95_us": nav.search_percentile_us(0.95), "navmesh_polygons": nav.mesh.polygon_count}
 	if _events != null:
 		_report["probes"] = _events.report()

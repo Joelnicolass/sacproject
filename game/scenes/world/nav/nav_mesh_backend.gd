@@ -7,7 +7,7 @@ extends RefCounted
 ## swaps the region's navigation_mesh (NavRebake, driven by NavService). Nothing hand-made blocks a path here.
 ## The map is empty until the engine has synced the region (one physics frame after it is in the tree): `is_synced` tells.
 
-## Same reach as NavGrid.SNAP_RADIUS (6 nodes of 5 m) for «the nearest walkable thing».
+## Reach (6 nodes of 5 m, as the old grid) for «the nearest walkable thing».
 const SNAP_M := 30.0
 ## A path that ends this close (flat) to the goal ends on the goal itself.
 const END_SNAP_M := 1.0

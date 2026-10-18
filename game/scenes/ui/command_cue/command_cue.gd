@@ -60,6 +60,8 @@ func _ready() -> void:
 	%Invalid.visible = false
 	%Mirror.visible = false
 	if Engine.is_editor_hint():
+		# No game pointer in the editor; TargetProbe is not a tool script.
+		set_process(false)
 		return
 	%FlashTimer.timeout.connect(_on_flash_done)
 	if command_log:

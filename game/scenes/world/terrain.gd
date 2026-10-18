@@ -57,12 +57,17 @@ var _classic_material: ShaderMaterial
 var _ground_override: Material
 
 
-## The mesh and the ground material are rebuilt from `data` on every load, also in the editor
-## preview. Not stored: a saved scene must not carry the original map or its textures (RULES.md).
+## The ground material is rebuilt from `data` on every load. Not stored: a saved scene must not carry the
+## original map's textures (RULES.md). The mesh is stored only as a reference to a file (the baked
+## terrain_mesh.res, RFC-035a); a mesh built in memory is rebuilt on load and never written into the scene.
 func _validate_property(property: Dictionary) -> void:
-	if property.name == "mesh" or property.name == "material_override":
+	if property.name == "material_override" or (property.name == "mesh" and not _mesh_is_file()):
 		property.usage &= ~PROPERTY_USAGE_STORAGE
 		property.usage |= PROPERTY_USAGE_READ_ONLY
+
+
+func _mesh_is_file() -> bool:
+	return mesh != null and not mesh.resource_path.is_empty()
 
 
 func _notification(what: int) -> void:
@@ -109,6 +114,32 @@ func _load_mesh() -> bool:
 	if not data.is_valid():
 		push_error("Terrain '%s': data is not a valid MapTerrainData (vertices, normals, indices)." % name)
 		return false
+	if not _saved_mesh_matches():
+		if not _prepare_arrays():
+			return false
+		_build_mesh()
+	_index_ground(data.vertices, data.indices)
+	_apply_ground_texture()
+	_add_collision()
+	return true
+
+
+## The mesh the scene already holds (the baked terrain_mesh.res) is shown as it is when it still matches `data`
+## and the node's smooth_ground. Otherwise it is rebuilt from `data` (with a warning when a file is stale).
+func _saved_mesh_matches() -> bool:
+	if not _mesh_is_file() or not (mesh is ArrayMesh) or mesh.get_surface_count() != 1:
+		return false
+	var fits: bool = mesh.surface_get_array_len(0) == data.vertices.size() \
+			and bool(mesh.get_meta("smooth_ground", true)) == smooth_ground
+	if not fits:
+		push_warning("Terrain '%s': %s is stale (vertices or smooth_ground differ from data); rebuilding it in memory." % [name, mesh.resource_path])
+	return fits
+
+
+## Fills _mesh_arrays and both normal sets from `data` (positions, tile colors, indices). False when `data` is unusable.
+func _prepare_arrays() -> bool:
+	if data == null or not data.is_valid():
+		return false
 	var vertices := data.vertices
 	var normals := data.normals
 	var indices := data.indices
@@ -148,25 +179,37 @@ func _load_mesh() -> bool:
 	_mesh_arrays = arrays
 	_flat_normals = normals
 	_smooth_normals = _smooth_ground_normals(vertices, indices, normals)
-	_build_mesh()
-	_index_ground(vertices, indices)
-	_apply_ground_texture()
-	_add_collision()
 	return true
 
 
-func _build_mesh() -> void:
+## The visual mesh exactly as Terrain builds it at runtime, for tools/bake_terrain_mesh.gd. Needs `data` (and
+## tiles_path / smooth_ground as the scene sets them); works on a node outside the tree. Null when `data` is unusable.
+func bake_mesh() -> ArrayMesh:
+	if not _prepare_arrays():
+		return null
+	var baked := _make_mesh()
+	baked.set_meta("smooth_ground", smooth_ground)
+	return baked
+
+
+func _make_mesh() -> ArrayMesh:
 	_mesh_arrays[Mesh.ARRAY_NORMAL] = _smooth_normals if smooth_ground else _flat_normals
 	var built := ArrayMesh.new()
 	built.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, _mesh_arrays)
-	mesh = built
+	return built
+
+
+func _build_mesh() -> void:
+	mesh = _make_mesh()
 
 
 ## smooth_ground changed: swap the normals and rebuild the mesh. Collision and the ground index
 ## are made from the positions, which do not change.
 func _refresh_normals() -> void:
 	if _mesh_arrays.is_empty():
-		return
+		# Showing the baked mesh: the arrays were never built. Build them only if the mesh already exists.
+		if mesh == null or not _prepare_arrays():
+			return
 	_build_mesh()
 
 

@@ -249,7 +249,7 @@ func leave_room(session_id: String) -> String:
 
 
 ## The seat's pick. Changing it clears that seat's ready (and cancels the countdown).
-func set_meta(session_id: String, meta: Dictionary) -> String:
+func set_seat_meta(session_id: String, meta: Dictionary) -> String:
 	var room := _room_for(session_id)
 	if room == null:
 		return "not_in_room" if _sessions.has(session_id) else "no_session"

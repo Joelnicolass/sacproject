@@ -2505,3 +2505,10 @@ Deuda:
 - Prueba: `agent/run_034c.sh` (escena `debug/net/lobby_cases.tscn`, runner `data/net/runner_stub.tres`, sin red ni procesos).
 
 **Pendiente (orquestador):** `--import` una vez (clases nuevas) y correr `agent/run_034c.sh` (espera `LOBBY CASES PASS`). Código escrito sin ejecutar Godot.
+
+### Cierre 034c (F180) — 2026-10-18
+- `agent/run_034c.sh` (headless, sin red ni procesos): LOBBY CASES PASS, 130 checks. El primer intento no compilaba: `MpLobbyRooms.set_meta` pisaba `Object.set_meta`; el orquestador lo renombró a `set_seat_meta`.
+- `MpLobbyRooms` no lo usa todavía el juego; `quick` no se corrió en este corte (no toca la simulación).
+
+Deuda:
+- Las sondas de `debug/net/` no cortan ante un error de compilación: esperan el tope externo (120 s). Sumar el corte por error de script cuando el módulo de determinismo pase al kit (034j).

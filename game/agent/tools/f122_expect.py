@@ -14,9 +14,14 @@ Model (one dose of cena on A1, A2 within 2 m of A1's box, A3 out of reach):
 --order port: the port's order (Poisoning of each body in tree order, A1 then A2; a dose given to a body whose turn has
 passed this tick runs from the next one). --order sacengine: one global list, appended doses run the same frame, a removed
 dose is swapped with the last (Effects.removePoison, 6569-6572).
+F164b: every dose also feeds its thrower (dealPoisonDamage -> dealDamage with the attacker, 23585, 9415-9419, 8933-8947: healFromDrain
+of what the tick really took, drain 0.5) and the burst feeds the whole SPEL amount (healFromDrain, 23523, 24360, 24879); the infection
+passes the attacker on (infect), so the Necryl also feeds on Druid2. `check_drain` reads the port's `drena …` lines against that.
 Prints A1's death (updates of its first dose), each dose's total and A2's health when its last dose ends, and the port's
 `veneno <body> total … en … actualizaciones vida …` lines when a log is given.
 """
+import json
+import os
 import re
 import sys
 
@@ -26,6 +31,10 @@ IRES, FREG = 1000, 0.0
 RESIST = 0.9  # Druid directRangedResistance
 COOLDOWN_EXTRA = 3 * T
 HEALTH = 800.0
+
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+FEEDS = []  # (tick, body name, what the tick took): the Necryl's drain in simulate()
 
 
 class Dose:
@@ -59,6 +68,8 @@ def step(dose, tick, log):
     bonus = 1e-3 * IRES * len(body.doses)
     dealt = min(body.health, dose.per_s / T * max(0.0, RESIST + bonus))
     body.health -= dealt
+    if dealt > 0.0:
+        FEEDS.append((tick, body.name, dealt))
     dose.taken += dealt
     if body.health <= 0.0 and body.dead_at is None:
         body.dead_at = (tick, dose.updates, dose.label)
@@ -75,6 +86,7 @@ def end(dose, log, ended):
 
 
 def simulate(order):
+    del FEEDS[:]
     a1 = Body("Druid1", HEALTH, True)
     a2 = Body("Druid2", HEALTH, True)
     bodies = [a1, a2]
@@ -127,6 +139,62 @@ def port_lines(path):
     return found
 
 
+def data():
+    root = os.path.join(HERE, "..", "..", "assets", "original", "data")
+    creatures = json.load(open(os.path.join(root, "creatures.json"), encoding="utf-8"))
+    spel = json.load(open(os.path.join(root, "abilities.json"), encoding="utf-8"))
+    return creatures, spel
+
+
+def check_drain(path):
+    """The thrower's drain on lane A (Necryl1), B (Deadeye1) and C (Hellmouth1). Returns True when everything matches."""
+    creatures, spel = data()
+    line_re = re.compile(r"drena (\S+) de (\S+) (-?\d+(?:\.\d+)?) \(escala (-?\d+(?:\.\d+)?)\) -> vida (-?\d+(?:\.\d+)?) ganada (-?\d+(?:\.\d+)?) \(tick (\d+)\)")
+    feeds = []
+    for line in open(path, encoding="utf-8", errors="replace").read().splitlines():
+        m = line_re.match(line)
+        if m:
+            feeds.append((m.group(1), m.group(2), float(m.group(3)), float(m.group(4)), float(m.group(5)), float(m.group(6)), int(m.group(7))))
+    ok = True
+
+    def verdict(good, text):
+        print("%s  %s" % ("PASS" if good else "FAIL", text))
+        return good
+
+    cases = (("Deadeye1", "plfd", "lfda"), ("Hellmouth1", "nomd", "mhba"), ("Necryl1", "glsd", "cena"))
+    for who, tag, shot in cases:
+        drain, full = float(creatures[tag]["drain"]), float(creatures[tag]["health"])
+        amount, duration = float(spel[shot]["amount"]), float(spel[shot]["duration"])
+        mine = [f for f in feeds if f[0] == who]
+        ok &= verdict(len(mine) >= 2, "%s: %d líneas de cura" % (who, len(mine)))
+        burst = mine[0] if mine else None
+        ok &= verdict(burst is not None and abs(burst[2] - amount) <= 1e-3 and abs(burst[3] - drain) <= 1e-3,
+                      "%s: la ráfaga cura con el monto entero del SPEL %s (%.0f · %.2f)" % (who, shot, amount, drain))
+        prev = None
+        for f in mine:
+            want = min(drain * f[2], full - prev) if prev is not None else None
+            if prev is not None and abs(f[5] - want) > 1e-3 and f[4] < full - 1e-3:
+                ok &= verdict(False, "%s: tick %d cura %.4f, esperado %.4f" % (who, f[6], f[5], want))
+            prev = f[4]
+        if who != "Necryl1":
+            tick = amount / duration / NERF / T * RESIST
+            ticks = [f for f in mine if abs(f[2] - amount) > 1e-3]  # a line with the whole amount is a burst (the Hellmouth fires again)
+            bad = [f for f in ticks if abs(f[2] - tick) > 1e-3]
+            ok &= verdict(not bad and len(mine) - len(ticks) >= 1, "%s: %d curas por tick de %.4f (el daño que toma el Druid), %d ráfagas%s" % (
+                who, len(ticks), tick, len(mine) - len(ticks), "" if not bad else ", distinta: %s" % (bad[0],)))
+        else:
+            # The simulation's tick 0 is the update after the burst; the Necryl dies in the scenario (the Disease kills it), so
+            # only the ticks up to its last line are compared.
+            base, last = mine[0][6] + 1, mine[-1][6]
+            for druid in ("Druid1", "Druid2"):
+                got = sorted(f[2] for f in mine[1:] if f[1] == druid)
+                want = sorted(d for t, n, d in FEEDS if n == druid and base + t <= last)
+                same = len(got) == len(want) and all(abs(a - b) <= 1e-3 for a, b in zip(got, want))
+                ok &= verdict(same, "Necryl1 de %s: %d curas por tick (simulación %d), sumas %.3f / %.3f" % (
+                    druid, len(got), len(want), sum(got), sum(want)))
+    return ok
+
+
 def main(argv):
     order = "port"
     log_path = None
@@ -154,6 +222,9 @@ def main(argv):
         print("puerto (%s):" % log_path)
         for name, total, updates, health in port_lines(log_path):
             print("  veneno %s total %.1f en %d actualizaciones vida %d" % (name, total, updates, health))
+        good = check_drain(log_path)
+        print("RESULTADO %s" % ("PASS" if good else "FAIL"))
+        sys.exit(0 if good else 1)
 
 
 if __name__ == "__main__":

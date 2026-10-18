@@ -12,11 +12,15 @@ sacengine:
   and calls healFromDrain (8834-8840): a live attacker that is a creature heals actualDamage · its CRE8 `drain` at once, and
   heal (8815-8817) stops at its maximum health. Only mobile bodies feed it (a building never does, 9193-9207).
 - The Scythe dzid and the Fallen dplk have drain 0.5; the Locust pazb 0.875 (measured in f166_expect.py). sacengine drains
-  the whole damage of the creature, also from a distance (the Fallen's dkba is a direct ranged hit). Splash and poison:
-  F164b, not here.
+  the whole damage of the creature, also from a distance (the Fallen's dkba is a direct ranged hit).
+- F164b: the splash walk (dealSplashRangedDamageAt -> dealDamageAt -> dealDamage(object, amount, radius, attacker, ...), 9053-9057,
+  9075-9089) goes through the creature overload too (8895-8913 -> 8933-8947): every body the burst really damages feeds the
+  thrower, each with the damage it took; a building does not (9193-9207). The poison (burst and ticks) is checked in f122_expect.py
+  and a building's guardians in rules_suite (guard_drain).
 Cast (anchor 1270, 1270; 0.3 min; all attack at 0.5 s, audit tick 30):
   z-80  Scythe1 (slot 1, 50 % health = 270 of 540, holds still) at -30 hits Troll1 (slot 2, pacifist) at -27.
   z-70  Scythe2 (slot 1, full health) at -45 hits Troll2 at -42 (15 m west of the plan: the jhut at -15/-56): it is at its maximum, so no feeding.
+  z-100 Abomination1 (slot 1, 50 % health = 855 of 1710, holds still) at -60 throws tugt (425, radius 10) at Troll4 at -40; Troll5, 1.5 m beside, is in the splash.
   z-90  Fallen1 (slot 1, 50 % health = 360 of 720, holds still) at -60 shoots dkba (125) at Troll3 at -40 (the plan's -25 is 2.8 m from a jcc2): 125 · 0.9 = 112.5.
 Log lines:
   golpe Scythe1 → Troll1 ... cantidad 136.0023 (tick 94)                               (MeleeAttack.log_melee)
@@ -46,8 +50,11 @@ LANES = {
     "T2": (-42.0, -70.0, 2, "Troll"),
     "F1": (-60.0, -90.0, 1, "Fallen"),
     "T3": (-40.0, -90.0, 2, "Troll"),
+    "A1": (-60.0, -100.0, 1, "Abomination"),
+    "T4": (-40.0, -100.0, 2, "Troll"),
+    "T5": (-40.0, -98.5, 2, "Troll"),
 }
-HALF_BOX = {"Scythe": 3.0, "Troll": 3.0, "Fallen": 3.0}
+HALF_BOX = {"Scythe": 3.0, "Troll": 3.0, "Fallen": 3.0, "Abomination": 3.0}
 
 
 def data():
@@ -126,8 +133,72 @@ def check_log(path):
         ok &= verdict(good, "tick %d: disparo %.2f -> cura %.3f (esperado %.3f), vida %.3f" % (
             tick, taken, gained, float(fallen["drain"]) * shot, now))
 
-    # 4. Nobody else drains here (the Trolls have no drain).
-    ok &= verdict(all(f[0] in ("Scythe1", "Fallen1") for f in feeds), "solo Scythe1 y Fallen1 aparecen en las líneas de cura")
+    # 4. Abomination1: the splash walk. Each burst lists the bodies it reaches ("<name> a <d> m", d to 2 decimals) and then the
+    # damage each took ("dano <name> <n> vida <v>"), in the same order; a Troll feeds 0.5 · what it took, a building nothing.
+    ok &= check_splash(lines, creature_amount("tugt"), float(creature("ctug")["drain"]), float(creature("ctug")["health"]), float(troll["resistances"]["splash_ranged"]))
+
+    # 5. Nobody else drains here (the Trolls have no drain).
+    ok &= verdict(all(f[0] in ("Scythe1", "Fallen1", "Abomination1") for f in feeds), "solo Scythe1, Fallen1 y Abomination1 aparecen en las líneas de cura")
+    return ok
+
+
+def creature(tag):
+    root = os.path.join(HERE, "..", "..", "assets", "original", "data")
+    return json.load(open(os.path.join(root, "creatures.json"), encoding="utf-8"))[tag]
+
+
+def creature_amount(tag):
+    root = os.path.join(HERE, "..", "..", "assets", "original", "data")
+    return json.load(open(os.path.join(root, "abilities.json"), encoding="utf-8"))[tag]
+
+
+def check_splash(lines, spel, drain, full, resist):
+    amount, radius = float(spel["amount"]), float(spel["damage_range"])
+    hp = full * 0.5
+    ok = True
+    bursts = 0
+    fed = 0
+    i = 0
+    while i < len(lines):
+        m = re.match(r"salpicadura tugt en \(.*\) radio " + NUM + r" m de (\d+)", lines[i])
+        i += 1
+        if not m:
+            continue
+        bursts += 1
+        dists = []
+        while i < len(lines) and re.match(r"  (directo )?\S+ a " + NUM + r" m", lines[i]):
+            dists.append(float(re.match(r"  \S+ a " + NUM + r" m", lines[i]).group(1)))
+            i += 1
+        hits = []
+        while i < len(lines):
+            d = re.match(r"dano (\S+) (-?\d+) vida (-?\d+)", lines[i])
+            if not d:
+                break
+            i += 1
+            feed = None
+            if i < len(lines):
+                f = re.match(r"drena Abomination1 de (\S+) " + NUM + r" \(escala " + NUM + r"\) -> vida " + NUM + r" ganada " + NUM + r" \(tick (\d+)\)", lines[i])
+                if f:
+                    feed = (f.group(1), float(f.group(2)), float(f.group(3)), float(f.group(4)), float(f.group(5)))
+                    i += 1
+            hits.append((d.group(1), int(d.group(2)), feed))
+        for n, (name, rounded, feed) in enumerate(hits):
+            if not name.startswith("Troll"):
+                ok &= verdict(feed is None, "ráfaga %d: %s (edificio) no alimenta" % (bursts, name))
+                continue
+            d = dists[n] if n < len(dists) else None
+            want = amount * max(0.0, 1.0 - d / radius) * resist if d is not None else None
+            tol = amount * resist / radius * 0.005 + 0.01
+            good = feed is not None and feed[0] == name and abs(feed[1] - rounded) <= 0.5 and (want is None or abs(feed[1] - want) <= tol)
+            if good:
+                gain = min(full, hp + drain * feed[1]) - hp
+                hp += gain
+                good = abs(feed[2] - drain) <= 1e-3 and abs(feed[4] - gain) <= TOL and abs(feed[3] - hp) <= TOL
+                fed += 1
+            ok &= verdict(good, "ráfaga %d: %s a %s m toma %s (esperado %s), cura %s -> vida %.3f" % (
+                bursts, name, "%.2f" % d if d is not None else "?", "%.3f" % feed[1] if feed else "nada",
+                "%.3f" % want if want is not None else "?", "%.3f" % feed[4] if feed else "nada", hp))
+    ok &= verdict(bursts >= 1 and fed >= 2, "Abomination1: %d ráfagas de salpicadura, %d curas por cuerpo" % (bursts, fed))
     return ok
 
 

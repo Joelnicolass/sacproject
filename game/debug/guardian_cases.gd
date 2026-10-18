@@ -35,6 +35,7 @@ func run(host: Node3D) -> Dictionary:
 	await _frames(2)
 	var out := {}
 	out["guard_split"] = await _split()
+	out["guard_drain"] = await _drain()
 	out["guard_factors"] = await _factors()
 	out["guard_leash"] = await _leash()
 	out["guard_release"] = await _release()
@@ -86,6 +87,48 @@ func _split() -> Dictionary:
 	checks["after_all_gone_building_takes"] = health.current < ground
 	structure.queue_free()
 	return _verdict("guard_split", checks)
+
+
+## F164b: a hit a building's guardians take drains the attacker from what THEY took (damageGuardians -> the creature overload of
+## dealDamage, state.d:9119-9141, 8933-8947); with no valid guardian the building takes it and nothing drains (9193-9207).
+func _drain() -> Dictionary:
+	var checks := {}
+	var structure := _structure(Vector3.ZERO)
+	var health := structure.get_node("Health") as Health
+	var scythe := _unit(Vector3(40.0, 0.0, 10.0), 2, "dzid")
+	await _frames(2)
+	var feeder := scythe.get_node("Health") as Health
+	var drain := scythe.type.drain
+	checks["scythe_drains"] = drain > 0.0
+	feeder.current = feeder.maximum * 0.5
+	var start := feeder.current
+	var taken := health.damage_typed(60.0, Health.MELEE, 2)
+	checks["unguarded_building_takes"] = taken > 0.0 and not health.deflected_last
+	checks["unguarded_building_no_drain"] = is_zero_approx(LifeDrain.feed(scythe, structure, taken)) and is_equal_approx(feeder.current, start)
+	var guards: Array[UnitBody] = []
+	for i in 2:
+		var unit := _unit(Vector3(10.0 + 3.0 * i, 0.0, 10.0), 1)
+		await _frames(1)
+		guards.append(unit)
+		GuardianBond.of(unit).bind(_post(structure))
+	taken = health.damage_typed(60.0, Health.MELEE, 2)
+	var want: float = 60.0 / GuardPost.split_divisor(2) * guards[0].get_node("Health").resistance(Health.MELEE) * 2.0
+	checks["guarded_hit_deflects"] = health.deflected_last and absf(taken - want) < 0.05
+	var gained := LifeDrain.feed(scythe, structure, taken)
+	checks["guarded_drain_from_guardians"] = absf(gained - drain * taken) < 0.001 and absf(feeder.current - (start + drain * taken)) < 0.001
+	var melee := health.damage(60.0, 2)  ## the melee path reports it too (MeleeAttack._land feeds with this)
+	checks["melee_reports_guardians_damage"] = health.deflected_last and melee > 0.0
+	taken = health.damage_typed(60.0, Health.MELEE, 2)
+	for unit in guards:
+		_post(structure).unbind(GuardianBond.of(unit))
+	var after := health.damage_typed(60.0, Health.MELEE, 2)
+	checks["unbound_building_takes_again"] = after > 0.0 and not health.deflected_last
+	for unit in guards:
+		unit.queue_free()
+	scythe.queue_free()
+	structure.queue_free()
+	await _frames(2)
+	return _verdict("guard_drain", checks)
 
 
 ## Attack ×1.5, spells ×0.5, ranged ×0.25, melee unchanged, heal 16.667/s on top of regeneration, no active
@@ -332,11 +375,11 @@ func _post(host: Node) -> GuardPost:
 	return host.get_node("GuardPost") as GuardPost
 
 
-func _unit(at: Vector3, slot: int) -> UnitBody:
-	var type := GameData.creature(TAG)
+func _unit(at: Vector3, slot: int, tag := TAG) -> UnitBody:
+	var type := GameData.creature(tag)
 	var unit := UNIT_SCENE.instantiate() as UnitBody
 	unit.owner_slot = slot
-	unit.creature_tag = TAG
+	unit.creature_tag = tag
 	unit.model = str(type.model) if type else ""
 	unit.rules = RULES
 	unit.idle_aggro = false

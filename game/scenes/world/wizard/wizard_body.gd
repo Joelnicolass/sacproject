@@ -293,6 +293,18 @@ func is_walking() -> bool:
 	return _walking
 
 
+## RFC-034 034g (F184): the player's link dropped. The wizard keeps its place, health and creatures but takes no step: no held
+## key (`_net_forward`) and no walk order go on without a player. It answers to the player again when he comes back.
+func stand_still() -> void:
+	_net_forward = 0.0
+	var follower := get_node_or_null("PathFollower")
+	if follower != null and follower.has_method("cancel"):
+		follower.call("cancel")
+	if _walking:
+		_walking = false
+		walk_changed.emit(false)
+
+
 func begin_walk(goal: Vector3) -> void:
 	_goal = goal
 	if _walking:

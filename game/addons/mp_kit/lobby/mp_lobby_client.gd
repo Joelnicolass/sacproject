@@ -10,8 +10,11 @@ enum Link { OFFLINE, CONNECTING, ONLINE }
 
 ## The server accepted us (new session or resumed).
 signal lobby_joined(session_id: String)
-## The connection ended or never opened. `reason`: connect_failed, server_lost, closed.
+## The connection ended or never opened. `reason`: connect_failed, server_lost, connect_timeout, closed, resume_window
+## (`auto_resume` gave up). With `auto_resume` a drop is not reported until the window is over: see `lobby_resuming`.
 signal lobby_lost(reason: String)
+## `auto_resume`: the link dropped and the client is trying to come back with its token. `attempt` counts the tries (0 = the drop).
+signal lobby_resuming(attempt: int)
 ## The server refused the hello (version, bad_name, timeout). The link is closed.
 signal rejected(code: String)
 signal room_list_received(rows: Array)
@@ -35,6 +38,11 @@ signal error_received(code: String)
 @export var proto_version: int = 1
 ## A connection attempt that is not welcomed in this time ends with `lobby_lost("connect_timeout")`.
 @export var connect_timeout_s: float = 8.0
+## After a drop, come back by itself with the saved token (same session, same seat) instead of reporting `lobby_lost`.
+@export var auto_resume: bool = false
+## How long it keeps trying. Match the server's `MpLobbyConfig.resume_grace_s`: after that the server forgets the seat.
+@export var resume_window_s: float = 120.0
+@export var resume_retry_s: float = 2.0
 
 var link: int = Link.OFFLINE
 var session_id: String = ""
@@ -51,6 +59,10 @@ var port: int = 0
 var transport: String = MpTransport.from_flags()
 var _peer: MultiplayerPeer
 var _connecting_since_msec: int = 0
+## 0 = not resuming; otherwise the msec after which the client gives up.
+var _resume_deadline_msec: int = 0
+var _resume_next_msec: int = 0
+var _resume_attempts: int = 0
 var _signals_ready: bool = false
 var _countdown_end_msec: int = 0
 var _result_key: int = 0
@@ -63,17 +75,24 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	if link != Link.CONNECTING or _peer == null:
+	var now := Time.get_ticks_msec()
+	if link == Link.CONNECTING and _peer != null:
+		if now - _connecting_since_msec >= int(connect_timeout_s * 1000.0):
+			print("lobby client: timeout de %.1f s hacia %s:%d (%s)" % [connect_timeout_s, host, port, transport])
+			_drop()
+			_lose("connect_timeout")
 		return
-	if Time.get_ticks_msec() - _connecting_since_msec < int(connect_timeout_s * 1000.0):
-		return
-	print("lobby client: timeout de %.1f s hacia %s:%d (%s)" % [connect_timeout_s, host, port, transport])
-	close_connection()
-	lobby_lost.emit("connect_timeout")
+	if link == Link.OFFLINE and is_resuming() and now >= _resume_next_msec:
+		_resume_step(now)
 
 
 func is_online() -> bool:
 	return link == Link.ONLINE
+
+
+## True while `auto_resume` is trying to get the session back.
+func is_resuming() -> bool:
+	return _resume_deadline_msec > 0
 
 
 ## Seconds left of the room countdown (0 if none).
@@ -119,7 +138,13 @@ func resume() -> Error:
 	return _open()
 
 
+## Closes the link on purpose: `auto_resume` stops too.
 func close_connection() -> void:
+	_resume_deadline_msec = 0
+	_drop()
+
+
+func _drop() -> void:
 	_ensure_signals()
 	link = Link.OFFLINE
 	if _peer == null:
@@ -209,21 +234,50 @@ func _on_connection_failed() -> void:
 	if _peer == null:
 		return
 	print("lobby client: connect_failed hacia %s:%d (%s)" % [host, port, transport])
-	close_connection()
-	lobby_lost.emit("connect_failed")
+	_drop()
+	_lose("connect_failed")
 
 
 func _on_server_disconnected() -> void:
 	if _peer == null:
 		return
-	close_connection()
-	lobby_lost.emit("server_lost")
+	var was_online := link == Link.ONLINE
+	_drop()
+	if was_online and auto_resume and not resume_token.is_empty() and not is_resuming():
+		_resume_deadline_msec = Time.get_ticks_msec() + int(resume_window_s * 1000.0)
+		_resume_next_msec = Time.get_ticks_msec()
+		_resume_attempts = 0
+		print("lobby client: se cayó el lobby, vuelve con el mismo asiento por %.0f s" % resume_window_s)
+		lobby_resuming.emit(0)
+		return
+	_lose("server_lost")
+
+
+## A failed try: while resuming it only waits for the next one; otherwise the link is lost.
+func _lose(reason: String) -> void:
+	if is_resuming():
+		_resume_next_msec = Time.get_ticks_msec() + int(resume_retry_s * 1000.0)
+		return
+	lobby_lost.emit(reason)
+
+
+func _resume_step(now: int) -> void:
+	if now >= _resume_deadline_msec:
+		_resume_deadline_msec = 0
+		print("lobby client: se acabó la ventana de reconexión")
+		lobby_lost.emit("resume_window")
+		return
+	_resume_attempts += 1
+	_resume_next_msec = now + int(resume_retry_s * 1000.0)
+	lobby_resuming.emit(_resume_attempts)
+	_open()
 
 
 @rpc("authority", "call_remote", "reliable")
 func rpc_welcome(p_session_id: String, p_resume_token: String) -> void:
 	session_id = p_session_id
 	resume_token = p_resume_token
+	_resume_deadline_msec = 0
 	link = Link.ONLINE
 	print("lobby client: bienvenido a %s:%d" % [host, port])
 	lobby_joined.emit(session_id)

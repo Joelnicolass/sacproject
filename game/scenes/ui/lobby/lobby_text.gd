@@ -8,6 +8,7 @@ const OFFLINE := "Sin conexión"
 const CONNECTING := "Conectando con las salas…"
 const NO_ROOMS := "No hay salas abiertas. Creá una."
 const ENTERING_MATCH := "Entrando a la partida…"
+const RESUMING := "Se perdió la conexión. Volviendo a las salas…"
 const FREE_SEAT := "Asiento libre"
 
 const ERRORS := {
@@ -38,6 +39,7 @@ const LOST := {
 	"server_lost": "Se perdió la conexión con las salas.",
 	"connect_timeout": "Las salas no respondieron a tiempo. Probá de nuevo.",
 	"closed": "Se cerró la conexión con las salas.",
+	"resume_window": "No se pudo volver a las salas a tiempo. Conectate de nuevo.",
 }
 
 const STATES := {

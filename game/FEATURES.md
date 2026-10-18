@@ -3064,3 +3064,21 @@ Todos fallaban por aserciones viejas; ninguno por un bug del juego.
 - **`rfc033_shots`:** AGENT_OK, y el cuelgue no se reprodujo.
 - **`check_original_assets.sh`:** excluye `terrain.glb`.
 - **Resultado:** todos los flows de arriba dan AGENT_OK.
+
+### F184 — Reconexión, límites y VPS (RFC-034, corte 034g) — cerrado 2026-10-18
+
+- **Lobby:** `MpLobbyClient.auto_resume` vuelve solo dentro de `resume_window_s` (120 s), con el mismo asiento y la misma sala.
+- **Dedicado:** el jugador que se va vuelve con su ticket dentro de `rejoin_grace_s` al mismo slot. Mientras tanto, su mago queda quieto (`stand_still`) y sus criaturas y su altar siguen en el mundo. Pasado ese tiempo, la partida termina por abandono.
+- **Token:** un tercer cliente con el ticket de alguien conectado queda rechazado.
+- **UI:** botón «Volver a la partida».
+- **Despliegue (escrito, sin desplegar):** `tools/deploy/room_server.service` (systemd), `tools/deploy/README.md` (export, puertos, firewall y checklist del VPS) y el preset `dedicated_server` de Linux. Es un export normal, porque el mismo binario es el servidor de salas y cada partida.
+- **Verificación:**
+  - `run_034g.sh` con ENet y con WS: E2E REJOIN PASS.
+  - `run_034e` (ENet y WS) y `run_034m`: PASS.
+  - `rules_suite` PASS.
+  - `quick` PASS.
+  - **Export (orquestador):** `--export-pack dedicated_server` genera un `.pck` de 247 MB. Con `--main-pack ... -- --room-server`, fuera del proyecto, arranca, imprime «salas listo puerto 7700» y escucha por UDP en el 7700, sin errores.
+- **Para el usuario en el VPS:**
+  - el binario de Linux en sí;
+  - ver al mago y las criaturas después de volver, en un cliente con ventana;
+  - una conexión medio abierta puede ocupar el slot hasta el timeout de ENet.

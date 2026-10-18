@@ -32,6 +32,10 @@ func _ready() -> void:
 	_list_view.back_requested.connect(_on_menu)
 	_create_view.cancelled.connect(_on_create_cancelled)
 	var client := MpLobby.client
+	## RFC-034 034g (F184): a drop of the lobby (also during a match) is not the end: the client comes back with its token and
+	## keeps its seat for the server's `resume_grace_s`.
+	client.auto_resume = true
+	client.lobby_resuming.connect(_on_lobby_resuming)
 	client.lobby_joined.connect(_on_lobby_joined)
 	client.lobby_lost.connect(_on_lobby_lost)
 	client.rejected.connect(_on_rejected)
@@ -57,7 +61,7 @@ func _refresh() -> void:
 			view = _list_view
 	for candidate: Control in [_connect_view, _list_view, _create_view, _room_view]:
 		candidate.visible = candidate == view
-	_connect_view.set_busy(client.link == MpLobbyClient.Link.CONNECTING)
+	_connect_view.set_busy(client.link == MpLobbyClient.Link.CONNECTING or client.is_resuming())
 
 
 func _on_connect_requested(display_name: String, host_override: String) -> void:
@@ -83,6 +87,11 @@ func _on_lobby_lost(reason: String) -> void:
 	_creating = false
 	_refresh()
 	_connect_view.show_message(LobbyText.lost_text(reason))
+
+
+func _on_lobby_resuming(_attempt: int) -> void:
+	_refresh()
+	_connect_view.show_message(LobbyText.RESUMING)
 
 
 func _on_rejected(code: String) -> void:

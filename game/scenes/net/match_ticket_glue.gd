@@ -10,6 +10,10 @@ extends Node
 ## The match does not start until every seat of the ticket has loaded its world: the tree stays paused (so `MatchClock`
 ## and the whole simulation wait) from the start of the process until each seat sent `world_ready`. A seat that has not
 ## loaded `load_timeout_s` after the first admission counts as away for good (`abandon`). A slow client never misses the start.
+## RFC-034 034g (F184): a seat that drops keeps its slot for `rejoin_grace_s`. The kit lets the same ticket back in (a third
+## client with that ticket, or the same one after the grace, is turned away). The world keeps the seat's state meanwhile: the
+## wizard stands still where it was, its creatures and altar go on, and the match is not paused for the seat. The log tells it
+## (`slot N mago … (al irse)` / `(al volver)`) so a run can compare both.
 ## Test hook, not a rule: `--force-defeat-slot=N --force-defeat-after-ticks=T` defeats slot N T ticks after the
 ## first player was admitted, so a run ends without playing the match out.
 
@@ -30,6 +34,8 @@ var _forced: bool = false
 var _holding: bool = false
 var _hold_started_ms: int = 0
 var _loaded_slots: Dictionary = {}
+## Slots admitted at least once: a second admission is a rejoin.
+var _admitted_slots: Dictionary = {}
 ## RFC-034 034m: slots whose pick the ticket leaves open (the seat chooses its own on admission). The world does not start
 ## until every one is in; a seat that never sends a valid pick counts as away after `load_timeout_s`.
 var _open_picks: Dictionary = {}
@@ -139,6 +145,11 @@ func _on_peer_joined(_peer_id: int, slot: int) -> void:
 	if not _seat_metas.has(slot):
 		return
 	_away_since_ms.erase(slot)
+	if _admitted_slots.has(slot):
+		print("partida %s: slot %d volvió" % [agent.match_id, slot])
+		print(_slot_state(slot, "al volver"))
+		return
+	_admitted_slots[slot] = true
 	if _hold_started_ms == 0:
 		_hold_started_ms = MpMatchFiles.now_ms()
 	## Without the wait (`--no-load-hold`) the count of the forced defeat starts at the first admission, as before.
@@ -172,6 +183,22 @@ func _on_peer_left(_peer_id: int, slot: int) -> void:
 		return
 	_away_since_ms[slot] = MpMatchFiles.now_ms()
 	print("partida %s: slot %d se fue" % [agent.match_id, slot])
+	print(_slot_state(slot, "al irse"))
+
+
+## One log line with what the world holds for `slot`: its wizard (where it stands) and its living creatures.
+func _slot_state(slot: int, when: String) -> String:
+	var wizard := "sin mago"
+	for node in get_tree().get_nodes_in_group("wizard"):
+		if int(node.get("owner_slot")) == slot and node is Node3D:
+			var at := (node as Node3D).global_position
+			wizard = "mago en %.1f %.1f" % [at.x, at.z]
+			break
+	var creatures := 0
+	for node in get_tree().get_nodes_in_group("unit"):
+		if int(node.get("owner_slot")) == slot and not node.is_queued_for_deletion():
+			creatures += 1
+	return "partida %s: slot %d %s, %d criaturas (%s)" % [agent.match_id, slot, wizard, creatures, when]
 
 
 func _on_node_added(node: Node) -> void:

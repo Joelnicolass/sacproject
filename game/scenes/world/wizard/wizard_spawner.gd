@@ -10,9 +10,28 @@ extends MpSlotSpawner
 
 
 func _ready() -> void:
+	## RFC-034 034g (F184): in a room's match (the dedicated has a ticket) a player who drops may come back to the same slot
+	## (`rejoin_grace_s`): his wizard, creatures and altar stay in the world, the wizard standing still. The match decides the
+	## rest: past the grace the slot loses (MatchTicketGlue).
+	if not MpBoot.user_value("match-ticket-file", "").is_empty():
+		despawn_on_leave = false
 	super._ready()
+	if not despawn_on_leave and MpKit.is_networked() and MpKit.is_server():
+		MpKit.peer_left.connect(_on_slot_peer_away)
 	if MpKit.is_networked() and MpKit.is_server():
 		_spawn_ready_peers()
+
+
+func _exit_tree() -> void:
+	if MpKit.peer_left.is_connected(_on_slot_peer_away):
+		MpKit.peer_left.disconnect(_on_slot_peer_away)
+	super._exit_tree()
+
+
+func _on_slot_peer_away(_peer_id: int, slot: int) -> void:
+	var wizard := pawn_for(slot) as WizardBody
+	if is_instance_valid(wizard):
+		wizard.stand_still()
 
 
 func _spawn_ready_peers() -> void:

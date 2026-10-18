@@ -2,6 +2,7 @@ extends Node
 
 ## RFC-034 034e: the scene the VPS runs (and the tests, with a local config):
 ## `godot --headless --path game res://scenes/net/room_server.tscn -- --room-server [--lobby-config=res://…tres] [--max-matches=2]`
+## (or, as in an export, without the scene: the boot sends a `--room-server` process here)
 ## It puts the kit's pieces together: the launcher (one dedicated process per match), the rules of Sacrifice
 ## (picks, options, ticket) and the lobby server. Every number is a flag of `MpLobbyConfig` (`--lobby-port=7700`, …).
 ## It prints one line per event so a log tells the story: `salas listo puerto N`, `partida <id> sala "x" puerto P semilla S`,
@@ -28,7 +29,10 @@ func _enter_tree() -> void:
 
 func _ready() -> void:
 	if launcher.base_args.is_empty():
-		launcher.base_args = PackedStringArray(["--headless", "--path", ProjectSettings.globalize_path("res://")])
+		## RFC-034 034g: an exported binary carries its project (no `--path`); from the editor's binary it needs the folder.
+		launcher.base_args = PackedStringArray(["--headless"])
+		if not OS.has_feature("template"):
+			launcher.base_args.append_array(PackedStringArray(["--path", ProjectSettings.globalize_path("res://")]))
 	## `--match-args=--flag=1,--other` adds user args to every dedicated this server launches (tests only).
 	var extra := MpBoot.user_value("match-args", "")
 	if not extra.is_empty():

@@ -22,6 +22,7 @@ func _ready() -> void:
 	%PickCharacter.pressed.connect(_on_pick_pressed)
 	%ReadyButton.pressed.connect(_on_ready_pressed)
 	%LeaveRoom.pressed.connect(_on_leave)
+	%RejoinMatch.pressed.connect(_on_rejoin)
 	%PickOverlay.visible = false
 	var client := MpLobby.client
 	client.room_updated.connect(_on_room)
@@ -52,6 +53,7 @@ func _refresh() -> void:
 	%PickCharacter.disabled = not inside
 	%ReadyButton.disabled = not inside
 	%LeaveRoom.disabled = not inside
+	%RejoinMatch.visible = false
 	if not inside:
 		%RoomTitle.text = LobbyText.OFFLINE
 		%RoomMeta.text = ""
@@ -76,6 +78,9 @@ func _refresh() -> void:
 	_set_rows(seats)
 	%PickCharacter.disabled = not open
 	%ReadyButton.disabled = state > MpLobbyRooms.State.COUNTDOWN
+	## RFC-034 034g (F184): the match runs and this player is out of it (a drop): the same ticket takes the same slot back
+	## while the dedicated allows it (`rejoin_grace_s`); past that the server turns the player away.
+	%RejoinMatch.visible = state == MpLobbyRooms.State.IN_MATCH and not MpKit.is_networked() and not client.last_match().is_empty()
 	var mine := _my_seat(room)
 	var is_ready := bool(mine.get("ready", false))
 	%ReadyButton.text = "Ya no estoy listo" if is_ready else "Estoy listo"
@@ -148,6 +153,13 @@ func _on_sit(seat: int) -> void:
 func _on_ready_pressed() -> void:
 	var mine := _my_seat(MpLobby.client.room)
 	MpLobby.client.set_ready(not bool(mine.get("ready", false)))
+
+
+func _on_rejoin() -> void:
+	var last := MpLobby.client.last_match()
+	if last.is_empty():
+		return
+	SacrificeFlow.join_from_lobby(str(last["host"]), int(last["port"]), str(last["token"]))
 
 
 func _on_leave() -> void:

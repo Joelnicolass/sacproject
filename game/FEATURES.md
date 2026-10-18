@@ -2828,3 +2828,11 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
   - `debug/creature_cap.tscn` (tope 3): CREATURE_CAP PASS. La 4.ª convocatoria se rechaza sin gastar nada, y después de morir una criatura se puede convocar otra vez.
   - `rules_suite` PASS.
   - `quick` PASS sin regrabar.
+
+### F206 — Fuera SacFloat (RFC-036, corte 036e) — cerrado 2026-10-18
+
+- **Qué se borró:** `sac_float.gd`. `Affliction.cc_ticks` y `QuakeWave` usan los floats de GDScript.
+- **Verificación:**
+  - El `grep` de `SacFloat` da vacío.
+  - `rules_suite` PASS, sin adaptar casos.
+  - `quick` PASS. Cambió el digest de `f149` (congelamiento) por float64: `bf28b3fd` → `8a2bcf47`. Antes de regrabar dio el mismo digest en fixed y fixed2.

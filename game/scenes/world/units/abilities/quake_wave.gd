@@ -92,16 +92,16 @@ func _physics_process(_delta: float) -> void:
 	_last_frame = frame
 
 
-## waveLoc of frame `f`, float32 step by step: waveRange·(float(frame)/updateFPS)/waveDur.
+## waveLoc of frame `f`: waveRange·(float(frame)/updateFPS)/waveDur.
 func wave_at(f: int) -> float:
 	var ticks := float(MatchClock.TICKS_PER_SECOND)
-	return SacFloat.f32(SacFloat.f32(wave_range * SacFloat.f32(float(f) / ticks)) / wave_s)
+	return wave_range * (float(f) / ticks) / wave_s
 
 
 ## The half-width of the stunned band (m): 1.5·waveRange/(waveDur·updateFPS).
 func band_meters() -> float:
 	var ticks := float(MatchClock.TICKS_PER_SECOND)
-	return SacFloat.f32(SacFloat.f32(band * wave_range) / SacFloat.f32(wave_s * ticks))
+	return band * wave_range / (wave_s * ticks)
 
 
 func _step(f: int) -> void:
@@ -111,7 +111,7 @@ func _step(f: int) -> void:
 	if not (stun_min < loc and loc < stun_max):
 		return
 	var center := global_position
-	var reach := SacFloat.f32(loc + 0.1)
+	var reach := loc + 0.1
 	var half_band := band_meters()
 	if DebugLog.on(&"quake"):
 		print("onda %s paso %d radio %.3f m (cuadro %d)" % [label, f, loc, MatchClock.now()])

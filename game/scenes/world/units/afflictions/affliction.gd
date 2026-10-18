@@ -21,15 +21,15 @@ func inflict(_spell: SpellType, _from_slot: int) -> bool:
 
 
 ## sacengine's crowd-control lifetime (Freeze 10701-10702, Grasping Vines 10806): cast(int)ceil(updateFPS · duration), duration =
-## (wizard ? 0.25 : 1000 / max health) · the SPEL's duration, every step in float32 (SacFloat.f32, no epsilon: 60 · (1000 / 960 · 20) is
-## 1250 there and 1250.0000000000002 in a double). 0 for a creature with no health.
+## (wizard ? 0.25 : 1000 / max health) · the SPEL's duration. Plain GDScript floats (RFC-036e): a tick of difference from
+## sacengine's float32 is accepted. 0 for a creature with no health.
 static func cc_ticks(wizard: bool, max_health: float, spell_duration: float, creature_k := 1000.0, wizard_factor := 0.25) -> int:
-	var seconds := SacFloat.f32(SacFloat.f32(wizard_factor) * SacFloat.f32(spell_duration))
+	var seconds := wizard_factor * spell_duration
 	if not wizard:
 		if max_health <= 0.0:
 			return 0
-		seconds = SacFloat.f32(SacFloat.f32(SacFloat.f32(creature_k) / SacFloat.f32(max_health)) * SacFloat.f32(spell_duration))
-	return ceili(SacFloat.f32(float(MatchClock.TICKS_PER_SECOND) * seconds))
+		seconds = creature_k / max_health * spell_duration
+	return ceili(float(MatchClock.TICKS_PER_SECOND) * seconds)
 
 
 ## The clip role the body plays while it is on ("" = it does not say).

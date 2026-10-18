@@ -19,9 +19,7 @@ extends Affliction
 ## updates after the hit); the ice is a tint of Afflictions.look (frozen.tres look_tint), not the `frez` cube.
 
 const _HEALTH := preload("res://scenes/world/components/health.gd")
-## sacengine computes the duration in float32 (REVIEW-030k-b N6): 60 · (1000 / 960 · 20) is 1250 there and
-## 1250.0000000000002 in a double (a Trogg 1250, not 1251), and 60 · (1000 / 1500 · 20) is 801 there, not 800 (Sara
-## Bella, Gangrel). So the port rounds every step to float32 (SacFloat.f32) as sacengine does, no epsilon.
+## The duration uses plain floats (RFC-036e): it may differ by one tick from sacengine (a Trogg 1251, not 1250).
 
 ## sacengine maxFreezeCooldown = 10·updateFPS (state.d:10709).
 @export var max_cooldown_ticks := 600

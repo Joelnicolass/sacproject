@@ -19,6 +19,14 @@ extends Resource
 @export var countdown_s: float = 5.0
 @export var empty_room_close_s: float = 120.0
 @export var resume_grace_s: float = 120.0
+## A connected peer that does not say hello in this time is dropped.
+@export var hello_timeout_s: float = 5.0
+## Seconds between a rejection message and the disconnect (lets the message leave).
+@export var reject_flush_s: float = 0.2
+## Largest `options` / `meta` Dictionary a client may send (var_to_bytes size).
+@export var payload_max_bytes: int = 2048
+## Address sent to the clients for the match processes. Empty = the address they used for the lobby.
+@export var public_host: String = ""
 
 @export_group("Matches")
 ## Matches alive at once on this machine. Each match is one dedicated process.
@@ -72,4 +80,6 @@ func with_cli_overrides() -> MpLobbyConfig:
 			TYPE_FLOAT:
 				if raw.is_valid_float():
 					out.set(field, raw.to_float())
+			TYPE_STRING:
+				out.set(field, raw)
 	return out

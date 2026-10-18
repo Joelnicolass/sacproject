@@ -445,3 +445,11 @@ game/
    - (a) No en este RFC: spawn por partida, medir el arranque en el VPS y abrir un corte si pasa de 10 s **[recomendado]**. El diseño con `ticket.json` ya lo permite.
    - (b) Pool de 1 desde 034b.
 6. **Topes del VPS.** `max_matches = 4` (cada dedicado headless usa ~0,3-1 GB) con 32 puertos: (a) así, ajustable en `lobby_config.tres` **[recomendado]**; (b) otro número según el VPS que tenga el usuario.
+
+## Decisiones del usuario (2026-10-17, preguntas de §14)
+1. El campo de IP del arranque queda solo en builds de debug.
+2. Reconexión a la partida con el mismo token dentro de una ventana de 60 s.
+3. Abandono: si no vuelve dentro de esa ventana, pierde. La ventana es **fácilmente parametrizable**: `@export` en `MpLobbyConfig` (`.tres`) y flag de línea de comando del dedicado, sin tocar código.
+4. VPS: el corte deja el export y la guía; la prueba en el VPS la hace el usuario.
+5. Sin pool de dedicados precalentados por ahora.
+6. Tope de partidas por VPS: **99 por defecto**, parametrizable (`MpLobbyConfig.max_matches` y flag `--max-matches`). En local, las corridas de prueba siguen con tope 1 por la regla de Godot de la Mac.

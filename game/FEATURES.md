@@ -3091,3 +3091,19 @@ Todos fallaban por aserciones viejas; ninguno por un bug del juego.
 - **README:** la sección «Determinismo» va en `example/addons/agent_kit/README.md`; en inglés el README se creó nuevo.
 - **Chequeo:** el `grep` de nombres de Sacrifice da vacío.
 - **Pendiente para 034h:** copiar el módulo `determinism/` y `mp_kit` al kit, y corregir `install.sh`.
+
+### F185 — Estabilidad y port de mp_kit 0.7.0 al kit como RC (RFC-034, corte 034h, parte del servidor de salas) — cerrado 2026-10-18
+
+- **Soak:** `agent/run_034_soak.sh [N] ["enet ws"]` corre `run_034e.sh` (dos salas 1v1 en paralelo, dos dedicados reales) y `run_034g.sh` (reconexión) con ENet y WS, de a uno, con puerto de lobby rotativo, tope externo de 300 s por corrida (kill por pid) y chequeo de procesos Godot nuevos y carpetas temporales que sobren.
+- **Fuga al kit:** se sacó la mención de Sacrifice en `lobby/mp_lobby_config.gd` y se pasaron a inglés dos `print` de `mp_lobby_client.gd`. `rg` de nombres del juego en `addons/mp_kit` queda vacío (solo `Godot`, `godot-studio` en `plugin.cfg`).
+- **Docs:** `addons/mp_kit/README.md` suma «Servidor de salas» (admisión y tickets, salas, `MpMatchLauncher`, ENet/WS, reconexión, despliegue) y se borra «un proceso Godot por partida» de «Qué no hacer». `plugin.cfg` 0.7.0; RULES §Stack al día.
+- **Kit (local, sin subir):** `godot-studio-skills/rc-v0.10.0` (`ecb66dd`) y `rc-v0.10.0-spanish` (`0fa7a1d`): `mp_kit` en `addons/` y `example/addons/`, `determinism/` en `example/addons/agent_kit/`, README ES/EN, skill `godot-mp-kit` e `install.sh`.
+- **Pendiente:** playtest de 034f sobre el `main` final, `quick` x3 y `det_selftest` (los pide §15.6, no este corte); escena mínima de salas en el `example/` del kit; subir AgentKit 0.2.0 a `godot-studio-playtest`; los push los hace el usuario.
+
+
+**Cierre de F185 y RFC-034 (orquestador, 2026-10-18):** criterio de estabilidad de §15.6 completo.
+- `run_034_soak.sh 3`: 12 de 12 corridas en PASS (034e y 034g, con ENet y con WS), sin huérfanos.
+- `quick` 3 de 3 en PASS.
+- `det_selftest`: SELFTEST PASS.
+- `run_pt034f` (playtest de red con ventana): PT034F PASS.
+- **RC del kit:** queda en commits locales, `rc/v0.10.0` (`ecb66dd`) y `rc/v0.10.0-spanish` (`0fa7a1d`). El push y el merge los decide el usuario. Antes hay que subir AgentKit con el módulo de determinismo a `godot-studio-playtest` `rc/v0.10.0`.

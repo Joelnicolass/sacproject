@@ -6,7 +6,7 @@ Producto: juego Godot 4. Checks de web, SQL, auth y negocio: no aplican.
 
 - Godot 4.7.2 (`/Applications/Godot.app`, binario `/Applications/Godot.app/Contents/MacOS/Godot`). Verificado con `--version`.
 - GDScript.
-- MpKit 0.6.0 (`plugin.cfg`); RFC-034 la lleva a 0.7.0 dentro del juego hasta el RC del kit. No meter reglas de Sacrifice en el addon. Si el plugin necesita un arreglo, se edita: el autor es el mismo del juego y el cambio se sube después a `godot-studio-skills`.
+- MpKit 0.7.0 (`plugin.cfg`, RFC-034; el RC del kit es `rc/v0.10.0`). No meter reglas de Sacrifice en el addon. Si el plugin necesita un arreglo, se edita: el autor es el mismo del juego y el cambio se sube después a `godot-studio-skills`.
 
 ## Arquitectura
 

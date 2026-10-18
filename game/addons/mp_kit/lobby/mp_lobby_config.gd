@@ -40,7 +40,7 @@ extends Resource
 ## How long a dropped player may come back with the same token.
 @export var rejoin_grace_s: float = 60.0
 ## How long the game may hold a match for every seat to load its world (counted from the first admission). The game
-## decides what a seat that did not load means (Sacrifice: it counts as an abandon). The kit only carries the number.
+## decides what a seat that did not load means (for example, counting it as an abandon). The kit only carries the number.
 @export var load_timeout_s: float = 60.0
 @export var heartbeat_s: float = 2.0
 @export var heartbeat_stale_s: float = 10.0

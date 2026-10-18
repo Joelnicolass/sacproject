@@ -545,3 +545,7 @@ El usuario quiere la opción WebSocket porque después hará el port a web (un n
 
 ## Decisión del usuario (2026-10-18): en «Servidor local» cada jugador elige su personaje
 En una partida real cada jugador elige quién es. En «Servidor local» el rival elige su mago y su dios; su pick viaja al admitirlo con su código, el dedicado lo valida con las reglas del juego y lo aplica antes de cargar el mundo (la espera de carga espera también los picks).
+
+## Cierre 2026-10-18
+
+Hechos todos los cortes, de 034a a 034n. El criterio de §15.6 se cumple: soak 12 de 12, `quick` 3 de 3, selftest y PT034F en PASS. El RC del kit queda en commits locales y falta el push del usuario.

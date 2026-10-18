@@ -247,7 +247,7 @@ func _on_server_disconnected() -> void:
 		_resume_deadline_msec = Time.get_ticks_msec() + int(resume_window_s * 1000.0)
 		_resume_next_msec = Time.get_ticks_msec()
 		_resume_attempts = 0
-		print("lobby client: se cayó el lobby, vuelve con el mismo asiento por %.0f s" % resume_window_s)
+		print("lobby client: the lobby dropped, resuming with the same seat for %.0f s" % resume_window_s)
 		lobby_resuming.emit(0)
 		return
 	_lose("server_lost")
@@ -264,7 +264,7 @@ func _lose(reason: String) -> void:
 func _resume_step(now: int) -> void:
 	if now >= _resume_deadline_msec:
 		_resume_deadline_msec = 0
-		print("lobby client: se acabó la ventana de reconexión")
+		print("lobby client: the resume window ended")
 		lobby_lost.emit("resume_window")
 		return
 	_resume_attempts += 1

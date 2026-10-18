@@ -2920,3 +2920,12 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
 - **Deuda:**
   - El flow `f24_cast` se trabó después de la segunda captura. No se investigó: puede ser que el flow esté desactualizado o un problema real.
   - `f79_roster` falla también sin cambios, porque espera `ImageTexture`.
+
+### F211 — Cierre de RFC-036 (corte 036k) — cerrado 2026-10-18
+
+- **RULES §Fidelidad:** evasión, animación por escena, catálogo y partículas en `.tres`.
+- **Banco:** `all` DETERMINISM PASS.
+- **Playtest con ventana:** partida Solo contra la IA en High Noon (`agent/out/pt036k/`), AGENT_OK y sin errores.
+- **Diferidos:**
+  - 036a: el mago IA trabado en el Manalith; hay que revisarlo jugando.
+  - 036j: la FSM; necesita el OK del usuario.

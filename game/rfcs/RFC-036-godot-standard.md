@@ -184,3 +184,14 @@ game/
 Se aplican las recomendaciones P1–P4. Se arranca por 036a.
 
 **036a diferido (2026-10-18, usuario).** Una escena de prueba con la IA a 12, 25 y 40 m de la fuente, sin arreglo, no reprodujo el mago trabado: nunca quedó inmovilizado. Por decisión del usuario no se corrige ahora. Se revisa en una partida contra la IA cuando 035i deje la navegación con navmesh, y se abre un corte solo si se vuelve a ver.
+
+## Cierre 2026-10-18 (036k)
+
+- **Hechos:** 036b–036i (F197, F198, F205–F210).
+- **Diferidos:**
+  - 036a se revisa jugando contra la IA, ahora que la navegación es el navmesh.
+  - 036j (`UnitBody` a FsmKit) espera el OK del usuario (P3).
+- **Verificación:**
+  - RULES §Fidelidad actualizada.
+  - `all` DETERMINISM PASS.
+  - Partida con ventana (`pt035e` → `agent/out/pt036k/`): AGENT_OK, sin errores.

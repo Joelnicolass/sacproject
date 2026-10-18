@@ -2526,3 +2526,12 @@ Deuda:
 
 ### Cierre 034j (F187) — 2026-10-18
 - `det_selftest.sh` del módulo de AgentKit: SELFTEST PASS (mismo digest en fixed, fixed2 y stress; `bless` escribe la base; base falsa → QUICK FAIL; script roto → `script_error_kill` en 1 s). Import sin errores. Sin nada de Sacrifice en `addons/agent_kit/determinism/`.
+
+### F188 — Sacrifice usa el módulo de determinismo (RFC-034, corte 034k)
+
+- `AiAudit` delega reloj, líneas y sha256 en un `%Recorder` (`DetRecorder`, `self_tick = false`; `AiAudit._physics_process` llama `recorder.advance()` donde sumaba `tick`). `tick`, `running`, `lines`, `line_count` y `keep_lines` leen del recorder; sin `Recorder` en la escena (p. ej. `AiAudit.new()` de `pt73_probe`) crea uno propio. Formato de línea y hash sin cambios.
+- `debug/ai_match.gd` lee args con `DetCli.args()` y escribe JSON (`--out`) y líneas (`--events`) con `recorder.write_outputs(_report)`; se borraron `_write`, `_absolute` y `_parse_args`. `debug/ai_match.tscn` y `agent/fixtures/pt024a/ai_match_cam.tscn` llevan el nodo `Audit/Recorder`.
+- `agent/det.cfg`, `agent/det_cases.txt` (29 casos con sus args; `quick` = `s1_quick` en todos los modos + 26 en `fixed`; `all` = s7, s7_npcs, s1_trivial, f139). `agent/run_determinism.sh` queda como shim a `det_run.sh` con la misma interfaz. `agent/det_baseline.txt` no cambia.
+- Cambio de formato aceptado: columnas de la tabla en inglés (034j). Digests y `.events` no pueden cambiar.
+
+**Pendiente (orquestador):** `--import` una vez; verificar con `cmp` del `.events` antes/después y `quick`/`all` contra la base.

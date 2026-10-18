@@ -1,15 +1,23 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://debug/ai_match.gd" id="1_runner"]
 [ext_resource type="PackedScene" path="res://scenes/world/high_noon.tscn" id="2_world"]
 [ext_resource type="Resource" path="res://debug/rules/ai_duel_seeded.tres" id="3_rules"]
 [ext_resource type="Script" path="res://scenes/world/ai/ai_audit.gd" id="4_audit"]
+[ext_resource type="Script" path="res://addons/agent_kit/determinism/det_recorder.gd" id="9_recorder"]
 [ext_resource type="PackedScene" path="res://scenes/world/ai/ai_side.tscn" id="5_side"]
 
 [node name="AiMatch" type="Node"]
 
-[node name="Audit" type="Node" parent="."]
+[node name="Audit" type="Node" parent="." node_paths=PackedStringArray("recorder")]
 script = ExtResource("4_audit")
+recorder = NodePath("Recorder")
+
+[node name="Recorder" type="Node" parent="Audit"]
+unique_name_in_owner = true
+script = ExtResource("9_recorder")
+self_tick = false
+position_decimals = 1
 
 [node name="BenchCamera" type="Camera3D" parent="."]
 far = 20000.0

@@ -68,7 +68,7 @@ var _seats_text := ""
 
 
 func _ready() -> void:
-	_args = _parse_args(OS.get_cmdline_user_args())
+	_args = DetCli.args()
 	_headless = DisplayServer.get_name() == "headless"
 	_minutes = float(_args.get("minutes", default_minutes))
 	_max_ticks = int(round(_minutes * 60.0 * 60.0))
@@ -346,10 +346,8 @@ func _finish(winner: int, reason: String) -> void:
 		_report["shelters"] = pop.get("shelters", 0)
 	var text := JSON.stringify(_report)
 	print(REPORT_TAG + text)
-	if str(_args.get("out", "")).ends_with(".json"):
-		_write(_absolute(str(_args["out"])), JSON.stringify(_report, "\t"))
-	if _args.has("events"):
-		_write(_absolute(str(_args["events"])), "\n".join(audit.lines) + "\n")
+	## The kit's recorder writes the JSON (--out=) and the lines (--events=); digest, events and end_tick are already in the report.
+	audit.recorder.write_outputs(_report)
 	_set_status("Terminado · semilla %d" % MatchSeed.current)
 	if _headless or _args.has("quit"):
 		get_tree().quit()
@@ -562,36 +560,6 @@ func _frame_camera() -> void:
 	camera.global_position = center + camera_offset
 	camera.look_at(center, Vector3.UP)
 	camera.current = true
-
-
-func _write(path: String, text: String) -> void:
-	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
-	var file := FileAccess.open(path, FileAccess.WRITE)
-	if file == null:
-		push_error("no se pudo escribir %s" % path)
-		return
-	file.store_string(text)
-
-
-## Relative paths are relative to the project, as in the command of RFC-024 §5.2.
-func _absolute(path: String) -> String:
-	if path.is_absolute_path():
-		return path
-	return ProjectSettings.globalize_path("res://").path_join(path)
-
-
-static func _parse_args(raw: PackedStringArray) -> Dictionary:
-	var out := {}
-	for arg in raw:
-		if not arg.begins_with("--"):
-			continue
-		var body := arg.substr(2)
-		var cut := body.find("=")
-		if cut < 0:
-			out[body] = true
-		else:
-			out[body.substr(0, cut)] = body.substr(cut + 1)
-	return out
 
 
 ## BenchRules.ai_start_near_altar_of: the AI wizards start `ai_start_distance_m` from the altar of that slot (ai_endgame: the AI

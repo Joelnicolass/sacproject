@@ -8,16 +8,27 @@ extends Node
 ## side. 024c: the AI's columns: every request its port makes (summons with the mana and souls before and after, casts,
 ## the reasons the game refused one), the mana that comes in by source, the orders, what the perception knows.
 
+## RFC-034 034k: the lines, the clock and the sha256 live in the kit's recorder (self_tick off: this node moves the clock
+## in its own _physics_process, so the order of the physics step does not change). Without one in the scene it makes its own.
+@export var recorder: DetRecorder
+
 ## Physics ticks since start(); the clock of every line.
-var tick := 0
-var running := false
+var tick: int:
+	get: return recorder.tick if recorder != null else 0
+var running: bool:
+	get: return recorder != null and recorder.running
 ## Also keep every line (for the debug file and to find where two runs part ways).
-@export var keep_lines := false
+var keep_lines: bool:
+	get: return recorder.keep_lines if recorder != null else false
+	set(value):
+		_ensure_recorder()
+		recorder.keep_lines = value
 
-var lines := PackedStringArray()
-var line_count := 0
+var lines: PackedStringArray:
+	get: return recorder.lines if recorder != null else PackedStringArray()
+var line_count: int:
+	get: return recorder.line_count if recorder != null else 0
 
-var _ctx := HashingContext.new()
 var _sides: Dictionary = {}
 ## Per slot: how the next gain of the purse is booked, set by the signal that announces it just before.
 var _gain_kind: Dictionary = {}
@@ -40,22 +51,31 @@ var _rituals: Array[Dictionary] = []
 var _checkpoints: Dictionary = {}
 
 
+func _ready() -> void:
+	_ensure_recorder()
+
+
+func _ensure_recorder() -> void:
+	if recorder == null:
+		recorder = DetRecorder.new()
+		recorder.name = "Recorder"
+		add_child(recorder)
+	recorder.self_tick = false
+
+
 func start() -> void:
-	tick = 0
-	line_count = 0
-	lines = PackedStringArray()
-	_ctx.start(HashingContext.HASH_SHA256)
-	running = true
+	_ensure_recorder()
+	recorder.start()
 
 
 func stop() -> void:
-	running = false
+	recorder.stop()
 
 
 func _physics_process(_delta: float) -> void:
 	if not running:
 		return
-	tick += 1
+	recorder.advance()
 	if tick % 30 == 0:
 		for slot in _perceptions.keys():
 			var perception: AiPerception = _perceptions[slot]
@@ -65,19 +85,13 @@ func _physics_process(_delta: float) -> void:
 
 ## One line of the record: the tick, a kind and the text.
 func record(kind: String, text: String) -> void:
-	if not running:
-		return
-	var line := "%d %s %s" % [tick, kind, text]
-	_ctx.update(line.to_utf8_buffer())
-	_ctx.update(PackedByteArray([10]))
-	line_count += 1
-	if keep_lines:
-		lines.append(line)
+	if recorder != null:
+		recorder.record(kind, text)
 
 
 ## Sha256 of the lines so far. It finishes the context, so call it once, at the end.
 func digest() -> String:
-	return _ctx.finish().hex_encode()
+	return recorder.digest()
 
 
 ## RFC-024 024d: the structures that go up (the Manaliths of each side, with the tick) and the rituals (Desecrate: when it began, when
@@ -299,10 +313,7 @@ func set_extra(slot: int, key: String, value: Variant) -> void:
 
 ## Positions rounded to 0.1 m of the bodies, sorted by name.
 func sample(bodies: Array) -> void:
-	var sorted: Array = bodies.filter(func(body) -> bool: return is_instance_valid(body))
-	sorted.sort_custom(func(a: Node, b: Node) -> bool: return String(a.name) < String(b.name))
-	for body: Node3D in sorted:
-		record("pos", "%s %s" % [body.name, _fmt(body.global_position)])
+	recorder.sample(bodies)
 
 
 ## The counters per side, for the report. `now` of the ledger is read from the purse.

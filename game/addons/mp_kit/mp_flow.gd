@@ -12,6 +12,7 @@ signal world_changed(id: StringName)
 enum StartWhen {
 	LISTEN_IMMEDIATE, ## host_lan() enters the world now
 	DEDICATED_FIRST_CLIENT, ## dedicated enters when the first client joins
+	MANUAL, ## the flow never loads the world by itself; glue calls start_match()/goto_world()
 }
 
 @export var boot_scene: PackedScene
@@ -120,6 +121,23 @@ func join_lan(ip: String) -> Error:
 		_set_status(bad_ip_status)
 		return ERR_INVALID_PARAMETER
 	var err := MpKit.join(trimmed)
+	if err != OK:
+		_set_status(join_fail_status)
+		return err
+	_set_status(joining_status % trimmed)
+	return OK
+
+
+## Join a dedicated by host (IPv4 or name) and port; `ticket` is presented for admission.
+func join_endpoint(host: String, p_port: int, ticket: String = "") -> Error:
+	var trimmed := host.strip_edges()
+	if not MpLan.is_valid_ipv4(trimmed) and not MpLan.is_valid_hostname(trimmed):
+		_set_status(bad_ip_status)
+		return ERR_INVALID_PARAMETER
+	if p_port < 1 or p_port > 65535:
+		_set_status(bad_ip_status)
+		return ERR_INVALID_PARAMETER
+	var err := MpKit.join(trimmed, p_port, ticket)
 	if err != OK:
 		_set_status(join_fail_status)
 		return err

@@ -2,6 +2,23 @@ class_name MpLan
 extends RefCounted
 
 
+## DNS-style name: dot-separated labels of letters, digits and inner hyphens.
+static func is_valid_hostname(value: String) -> bool:
+	if value.is_empty() or value.length() > 253:
+		return false
+	for label in value.split("."):
+		if label.is_empty() or label.length() > 63:
+			return false
+		if label.begins_with("-") or label.ends_with("-"):
+			return false
+		for i in label.length():
+			var c := label.unicode_at(i)
+			var ok := (c >= 48 and c <= 57) or (c >= 65 and c <= 90) or (c >= 97 and c <= 122) or c == 45
+			if not ok:
+				return false
+	return true
+
+
 static func is_valid_ipv4(value: String) -> bool:
 	var parts := value.split(".")
 	if parts.size() != 4:

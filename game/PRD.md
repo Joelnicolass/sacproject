@@ -6,10 +6,10 @@ Juego de escritorio en Godot 4. Fan game personal de Sacrifice (Shiny, 2000), no
 
 - Arquitectura: estándar. Escenas y scripts juntos. Sin `src/domain/`.
 - 3D.
-- Multijugador: **online, servidor dedicado** en el mismo proyecto. `MpKit.host_dedicated()`. El peer 1 no es un jugador. Los clientes hacen `join(ip)`.
-- Desarrollo local: servidor `--headless -- --dedicated` y clientes a `127.0.0.1`. El VPS es el mismo binario con IP pública y UDP abierto.
-- Sin Steam, sin WebRTC, sin un proceso por partida.
-- Sin fork de Godot. Sin fork de `addons/mp_kit`.
+- Multijugador: online con **servidor de salas** (Godot headless, mismo proyecto, `--room-server`) que lanza **un dedicado por partida** (`host_dedicated()`, el de hoy) en un puerto del VPS. El peer 1 del dedicado no es un jugador. El cliente se conecta al lobby de `data/net/lobby_endpoint.tres`; no escribe la IP. (RFC-034; hasta que 034e cierre, el camino directo `join(ip)` sigue vigente.)
+- Desarrollo local: `res://scenes/net/room_server.tscn -- --room-server` y clientes al lobby `127.0.0.1:7700`; el servidor de salas lanza los dedicados en `127.0.0.1:7800+`. El VPS corre el mismo binario y abre UDP 7700 y 7800-7831. El dedicado directo (`--headless -- --dedicated`) queda para pruebas de humo y el banco.
+- Sin Steam ni WebRTC. Un proceso dedicado por partida (decisión del 2026-10-17: el estado global de la simulación no admite varias partidas por proceso).
+- Sin fork de Godot. Sin fork de `addons/mp_kit`. El servidor de salas es genérico del kit; se sube a `godot-studio-skills` como RC cuando sea estable (RFC-034).
 - Blender no entra en el primer corte. Las mallas salen de sacengine.
 
 ## Fantasía

@@ -68,6 +68,20 @@ func assign_client(peer_id: int) -> int:
 	return 0
 
 
+## Fixed slot (ticket admission). False if out of range or taken by another peer.
+func bind_client(peer_id: int, slot: int) -> bool:
+	if slot < first_client_slot() or slot > max_players:
+		return false
+	var current := int(_peer_of_slot.get(slot, 0))
+	if current != 0 and current != peer_id:
+		return false
+	var existing := int(_slot_of_peer.get(peer_id, 0))
+	if existing != 0 and existing != slot:
+		return false
+	bind(slot, peer_id)
+	return true
+
+
 func occupied_slots() -> Array[int]:
 	var slots: Array[int] = []
 	for key in _peer_of_slot.keys():

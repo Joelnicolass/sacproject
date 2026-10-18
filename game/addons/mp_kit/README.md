@@ -49,6 +49,21 @@ Mismo ENet, **mismo proyecto** que los clientes:
 
 1P: **no** llames `host()`. `MpKit.leave()` deja `OfflineMultiplayerPeer`.
 
+### Admisión por ticket (opcional)
+
+Sin `MpKit.admission` el slot se asigna por orden de conexión (todo lo de arriba). Con `admission` puesta en el servidor, un peer nuevo no recibe slot hasta presentar un ticket:
+
+```gdscript
+# servidor: el Callable devuelve el slot (1..max_players) o 0 para rechazar
+MpKit.admission = func(peer_id: int, ticket: String) -> int: return my_table.get(ticket, 0)
+MpKit.admission_timeout_s = 5.0   # sin ticket en ese tiempo: afuera
+# cliente
+MpKit.join(host, port, ticket)    # o MpFlow.join_endpoint(host, port, ticket)
+MpKit.admission_rejected.connect(func(reason: String): ...)
+```
+
+El kit no interpreta el ticket. Slot ocupado: rechazo `slot_taken`; sin ticket a tiempo: `timeout`. `MpFlow.StartWhen.MANUAL`: el flow no carga el mundo solo (el pegamento llama `start_match()`/`goto_world()`). `MpBoot.role()` devuelve `"room-server"` con `--room-server`.
+
 Varias partidas a la vez en **un** dedicated: [Salas hub y cola](#salas-hub-y-cola-opcional). Un match a la vez: no hace falta tocar eso.
 
 ## Mapa mental

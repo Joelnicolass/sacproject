@@ -6,7 +6,7 @@ Producto: juego Godot 4. Checks de web, SQL, auth y negocio: no aplican.
 
 - Godot 4.7.2 (`/Applications/Godot.app`, binario `/Applications/Godot.app/Contents/MacOS/Godot`). Verificado con `--version`.
 - GDScript.
-- MpKit 0.5.0. No meter reglas de Sacrifice en el addon. Si el plugin necesita un arreglo, se edita: el autor es el mismo del juego y el cambio se sube después a `godot-studio-skills`.
+- MpKit 0.6.0 (`plugin.cfg`); RFC-034 la lleva a 0.7.0 dentro del juego hasta el RC del kit. No meter reglas de Sacrifice en el addon. Si el plugin necesita un arreglo, se edita: el autor es el mismo del juego y el cambio se sube después a `godot-studio-skills`.
 
 ## Arquitectura
 
@@ -16,7 +16,7 @@ Autoload: `MpKit` antes que `SacrificeFlow`.
 
 ## Red
 
-Online = dedicado. `host_dedicated()` en el proceso dedicado. Los clientes solo `join(ip)`. `play_solo()` no abre servidor. El host LAN no es el camino de internet.
+Online = servidor de salas + dedicado por partida. El dedicado admite solo con ticket (`MpKit.admission`; sin `admission` queda el modo directo `join(ip)` de hoy, para pruebas y banco). Los clientes no escriben IP: `MpLobby` + `join_endpoint`. `play_solo()` no abre servidor. El host LAN no es el camino de internet. Lo genérico de salas vive en `addons/mp_kit/lobby/` sin textos ni reglas de Sacrifice; validadores, opciones y resultado van en `scenes/net/`.
 
 Puntuación, textos y victoria viven fuera de `addons/mp_kit`.
 

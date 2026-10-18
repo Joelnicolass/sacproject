@@ -2460,3 +2460,11 @@ Deuda:
 
 Deuda:
 - La partida con ventana sin caché no tiene captura (el playtester abrió el juego sin una escena que cierre sola y se lo cortó); la simulación sin caché la cubren `quick` y `rules_suite`.
+
+### F178 — Admisión por ticket en el núcleo de `mp_kit` (RFC-034, corte 034a)
+
+**Piezas:**
+- `MpKit.join(address, p_port := -1, ticket := "")`; `MpKit.admission` (Callable `(peer_id, ticket) -> slot`), `admission_timeout_s`, `rpc_present_ticket`, `rpc_admission_rejected`, señal `admission_rejected(reason)`.
+- `MpIds.bind_client(peer, slot)`, `MpFlow.StartWhen.MANUAL`, `MpFlow.join_endpoint(host, port, ticket)`, `MpLan.is_valid_hostname`, `MpBoot.role()` conoce `room-server`.
+- Sin `admission` el comportamiento es el de antes (slot por orden de conexión).
+- Verificación pendiente (orquestador): import x2, `quick` igual a `det_baseline.txt`, `rules_suite`, `run_f63_net.sh` PASS.

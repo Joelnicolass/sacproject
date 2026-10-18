@@ -54,6 +54,9 @@ static func find_in_tree(from: Node) -> MpFlow:
 
 
 func _ready() -> void:
+	## `--no-flow`: tools and probes that use MpKit directly; the flow never reacts to it.
+	if MpBoot.user_flag("no-flow"):
+		return
 	_pick_world_from_args()
 	var port := int(MpBoot.user_value("mp-port", "7777"))
 	MpKit.configure(port, max_players, host_slot, custom_channels)

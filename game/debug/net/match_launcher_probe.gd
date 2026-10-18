@@ -25,7 +25,7 @@ var _spawned_pids: Array[int] = []
 
 
 func _ready() -> void:
-	get_tree().create_timer(TOTAL_TIMEOUT_S).timeout.connect(func() -> void: _fail("global timeout"))
+	_arm_watchdog()
 	launcher.base_args = PackedStringArray(["--headless", "--path", ProjectSettings.globalize_path("res://"), CHILD_SCENE])
 	launcher.match_listening.connect(func(_id: String, port: int) -> void: _listening_port = port)
 	launcher.match_ended.connect(func(_id: String, result: Dictionary) -> void: _ended = result)
@@ -97,6 +97,23 @@ func _run() -> void:
 	_cleanup()
 	print("LAUNCHER PROBE PASS")
 	get_tree().quit(0)
+
+
+## Lives under the root, so a scene change cannot free it. Captures no node of the probe.
+func _arm_watchdog() -> void:
+	var tree := get_tree()
+	var pids := _spawned_pids
+	var timer := Timer.new()
+	timer.one_shot = true
+	timer.wait_time = TOTAL_TIMEOUT_S
+	timer.timeout.connect(func() -> void:
+		print("LAUNCHER PROBE FAIL: global timeout")
+		for pid in pids:
+			if MpProcessRunner.pid_alive(pid):
+				OS.kill(pid)
+		tree.quit(1))
+	tree.root.add_child.call_deferred(timer)
+	timer.start.call_deferred()
 
 
 func _check(ok: bool, what: String) -> void:

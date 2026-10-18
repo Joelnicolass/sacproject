@@ -2486,3 +2486,11 @@ Deuda:
 - Prueba: `agent/run_034b.sh` (escena `debug/net/match_launcher_probe.tscn` + dedicado `match_agent_probe.tscn`).
 
 **Pendiente (orquestador):** `--import`, correr `agent/run_034b.sh` (espera `LAUNCHER PROBE PASS`), `quick` igual a la base. Sin verificar: `--log-file` en 4.7.2 (el flag es `log_file_flag` en el launcher; si no existe, vaciarlo).
+
+### Cierre 034b (F179) — 2026-10-17
+- Sonda `agent/run_034b.sh` (headless, tope interno y externo): LAUNCHER PROBE PASS 4 veces seguidas (huérfano matado con identidad verificada, tope de partidas por flag y `ERR_BUSY`, ticket sin token en disco, falso rechazado, real al slot del ticket, `session_ended`, `result.json`, sin procesos ni registro al final). `quick` 27/27 y `run_f63_net.sh` PASS.
+- Review CHANGES_REQUESTED (identidad del pid en `reap_orphans`, flags del launcher), corregida en 755db1f.
+- En el camino: el dedicado lanzado por la sonda cargaba el mundo del juego y reemplazaba su escena; ahora `MpFlow` respeta `--no-flow`.
+
+Deuda:
+- Detección de pids e identidad validadas en macOS/Linux; en Windows es de mejor esfuerzo.

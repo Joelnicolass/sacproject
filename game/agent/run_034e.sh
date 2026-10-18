@@ -25,6 +25,7 @@ mkdir -p "$MATCHES" "$PORTS"
 export HEADLESS_SLOTS="${HEADLESS_SLOTS:-5}"
 export GODOT_MAX="${GODOT_MAX:-9}"
 START_S=$SECONDS
+EXIT_WAIT_S=10 # grace for the dedicated to exit after the last result
 
 descendants() { # pid -> pid and all its descendants
   local p="$1" c
@@ -103,7 +104,7 @@ if [ "$READY" = 1 ]; then
   for p in $CLIENT_PIDS; do wait "$p"; done
   # the server closes the two matches by itself: wait until no dedicated and no match folder is left
   for _ in $(seq 1 40); do
-    left=$(ps -axo args= | awk -v m="match-ticket-file=$MATCHES" 'index($0, m)' | wc -l | tr -d ' ')
+    left=$(ps -axo args= | awk -v m="match-ticket-file=$MATCHES" '$1 ~ /\/Godot$/ && index($0, m)' | wc -l | tr -d ' ')
     dirs=$(find "$MATCHES" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
     [ "$left" = 0 ] && [ "$dirs" = 0 ] && break
     sleep 0.5
@@ -200,8 +201,13 @@ check(left == [], "no match folder or file left (%s)" % left)
 sys.exit(1 if fails else 0)
 PYEOF
 VERDICT=$?
-STRAY=$(ps -axo args= | awk -v m="match-ticket-file=$MATCHES" 'index($0, m)' | wc -l | tr -d ' ')
-if [ "$STRAY" = 0 ]; then echo "PASS no dedicated process left"; else echo "FAIL $STRAY dedicated process left"; VERDICT=1; fi
+# the dedicated may still be exiting (result delay): wait up to EXIT_WAIT_S for them, then it is a FAIL and they are killed
+for _ in $(seq 1 $((EXIT_WAIT_S * 2))); do
+  STRAY=$(ps -axo args= | awk -v m="match-ticket-file=$MATCHES" '$1 ~ /\/Godot$/ && index($0, m)' | wc -l | tr -d ' ')
+  [ "$STRAY" = 0 ] && break
+  sleep 0.5
+done
+if [ "$STRAY" = 0 ]; then echo "PASS no dedicated process left"; else echo "FAIL $STRAY dedicated process still alive after ${EXIT_WAIT_S}s"; VERDICT=1; fi
 kill_all
 sleep 1
 STRAY=$(ps -axo args= | awk -v m="$OUT" 'index($0, m)' | grep -c Godot)

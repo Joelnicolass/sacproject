@@ -328,3 +328,52 @@ Cada corte usa a lo sumo 1 Godot headless (export) y nunca abre ventana de Godot
 - **P7. ¿Qué navegadores?** (a) Chrome, Edge y Firefox de escritorio son el objetivo; Safari, «mejor esfuerzo» **[recomendado]**.
 - **P8. Endpoint web.** (a) Campos `web_*` en el mismo `lobby_endpoint.tres` **[recomendado]**: una sola instancia. (b) Un `lobby_endpoint_web.tres` aparte, elegido por plataforma en el glue.
 - **P9. ¿Qué metas de tamaño?** (a) `.pck` ≤ 120 MB y descarga con brotli ≤ 80 MB para la v1 web; se ajustan con la tabla de 039a **[recomendado]**. (b) Ir directo a ≤ 50 MB (probablemente exige 039h).
+
+---
+
+## Enmienda 2026-10-18 (decisión del usuario): red P2P con WebRTC
+
+Esta enmienda **reemplaza §3 (Red), P2, P3, P4, P8 y los cortes 039f y 039g**. Lo demás del RFC sigue igual: el renderer Compatibility, el preset liviano, el achique de texturas solo en web y la prueba en el navegador. Todo el trabajo va en la rama `web-port`; `main` queda para escritorio.
+
+### R1. Modelo
+- **Host en el navegador.** El navegador que crea la partida es la autoridad: corre la simulación y la IA, igual que «Servidor local» en escritorio. El invitado se conecta a él.
+- **Transporte:** `WebRTCMultiplayerPeer`, que viene en el export web de Godot. `mp_kit` suma `MpTransport.WEBRTC`, y lo genérico va al kit. Las RPC, `submit_order` y `MultiplayerSynchronizer` no cambian.
+- **Dedicados:** quedan para escritorio. En web no se lanzan procesos Godot por partida.
+
+### R2. Señalización: servidor Node en Railway
+- **Qué hace:** solo señalización y salas simples. Crea la sala, da un código y empareja host e invitado. Reenvía la oferta, la respuesta y los candidatos ICE hasta que conectan, y después no pasa tráfico de juego.
+- **Qué no hace:** no tiene reglas del juego. El protocolo es genérico y queda documentado en el kit, para cualquier juego.
+- **TLS:** Railway da `wss://` automático en `*.up.railway.app`, así que no hace falta dominio ni Caddy. Más adelante se puede usar un dominio propio.
+- **Dónde vive:** recomendado en un repo aparte (`godot-studio-signaling`), referenciado desde el kit. P-W3.
+
+### R3. NAT: STUN y TURN
+- **STUN:** público y gratuito.
+- **TURN:** Cloudflare Realtime TURN, que tiene plan gratuito. Hay que verificar los límites actuales antes de usarlo. Cubre el 10–20 % de redes que no conectan directo.
+- **Credenciales:** las credenciales TURN son temporales y las emite el servidor de señalización. La clave de Cloudflare vive en las variables de entorno de Railway y nunca en el cliente.
+- **Respaldo:** si Cloudflare no sirve, Metered tiene plan gratuito, o `coturn` en el VPS de Vultr.
+
+### R4. Juego cruzado navegador ↔ escritorio (después)
+El escritorio suma el plugin `webrtc-native` y usa la misma señalización. Así un jugador en el navegador y otro en escritorio juegan juntos. Va en un corte aparte, al final.
+
+### R5. Riesgos
+- **CPU del host:** el navegador corre la simulación, la IA y el render sin threads. 039c lo mide.
+- **El host se va:** la partida termina; solo el invitado puede reconectarse. Se le avisa al invitado.
+- **Ventaja del host:** 0 ms de latencia y la posibilidad de hacer trampa. Se acepta para jugar con amigos; no sirve para ranking.
+- **Railway** cobra por uso; el plan lo evalúa el usuario. **Cloudflare:** hay que confirmar los límites del plan gratuito.
+
+### R6. Cortes de red (reemplazan 039f y 039g)
+| Corte | Qué | Chequeo |
+|---|---|---|
+| **039f** | `MpTransport.WEBRTC` en `mp_kit` (host e invitado), con un adaptador de señalización inyectable | Dos procesos de escritorio en local con `webrtc-native` y una señalización local de prueba juegan contra la IA hasta el resultado. `run_034e` (ENet y WS) y `quick` siguen en PASS |
+| **039g** | Servidor de señalización en Node (repo aparte): salas con código, reenvío y credenciales TURN; con tests en Node | Tests de Node en PASS; dos clientes de prueba se emparejan; el código vence; sala llena → rechazo |
+| **039h** | Flujo web: menú «Crear partida / Unirse con código», con el host en el navegador | Dos pestañas en local contra la señalización local juegan hasta el resultado; capturas |
+| **039i** | Despliegue en Railway y TURN de Cloudflare (lo hace el usuario con una guía) | Dos navegadores en redes distintas conectan; uno fuerza el relé TURN |
+| **039j** | Juego cruzado con escritorio (`webrtc-native`) | Navegador y escritorio juegan hasta el resultado |
+
+La carga perezosa por dios (la 039h vieja) pasa a ser **039k**, y solo si no se llega a la meta de tamaño.
+
+### R7. Preguntas
+- **P-W1. ¿El PRD dice «escritorio y web» y online web por WebRTC P2P?** Recomendado: sí.
+- **P-W2. ¿TURN de Cloudflare como primera opción?** Sí; hay que confirmar los límites del plan gratuito.
+- **P-W3. ¿Dónde vive el servidor Node?** Recomendado: en un repo aparte del kit.
+- **P-W4. ¿Hace falta lobby público o alcanza con códigos para amigos?** Recomendado: códigos primero, y el lobby público después.

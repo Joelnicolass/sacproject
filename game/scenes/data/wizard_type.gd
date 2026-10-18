@@ -15,6 +15,8 @@ extends Resource
 @export var splash_spell_resistance: float = 1.0
 @export var direct_ranged_resistance: float = 1.0
 @export var splash_ranged_resistance: float = 1.0
+## RFC-023 023d: the rest pose (stance1, WIZD slot 0). idle_animation (idle0) is the gesture played now and then on top of it.
+@export var stance_animation: Dictionary = {}
 ## idle0/run/walk from SXSK/SKEL: locomotion/idle timing for local pose playback.
 @export var idle_animation: Dictionary = {}
 @export var run_animation: Dictionary = {}
@@ -27,3 +29,6 @@ extends Resource
 ## F138 (RFC-030i-c): knock and get_up clips (WIZD slots 9, 10), role -> {tag, frames, framerate}, like
 ## CreatureType.stun_animations. A stunned wizard lies (knock + get_up)·2 ticks (state.d:8138-8146, 14170-14212).
 @export var stun_animations: Dictionary = {}
+## RFC-023 023d: the spellcast loops, role -> {tag, frames, framerate}: `cast` (standing, WIZD slot 27) and `run_cast` (moving,
+## slot 30). Presentation only: the cast lasts what the spell says, not the clip.
+@export var cast_animations: Dictionary = {}

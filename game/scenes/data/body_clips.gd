@@ -9,9 +9,10 @@ extends Resource
 
 ## Roles the BodyRig state machine has a state for (body_rig.tscn). A new role needs a state there.
 ## The unit roles after "rise"/"fly" (023c): the peasant clips, the hybrid fliers' takeoff/land, the stun clips and the
-## idle gesture (sacengine plays idle0 now and then on top of the rest pose, state.d:7957-7992).
+## idle gesture (sacengine plays idle0 now and then on top of the rest pose, state.d:7957-7992), and "cast_run": the wizard's
+## spellcast loop while it walks ("cast" is the standing one, 023d).
 const ROLES: PackedStringArray = ["idle", "run", "attack", "shoot", "cast", "hit", "death", "held", "thrash", "rise", "fly",
-	"cower", "talk_cower", "work", "takeoff", "land", "knock", "get_up", "fly_damage", "gesture"]
+	"cower", "talk_cower", "work", "takeoff", "land", "knock", "get_up", "fly_damage", "gesture", "cast_run"]
 ## Roles that end by themselves and hand the body back to idle; the others loop or hold (death).
 const ONE_SHOT_ROLES: PackedStringArray = ["attack", "shoot", "cast", "hit", "rise"]
 

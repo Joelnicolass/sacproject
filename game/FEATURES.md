@@ -2974,3 +2974,19 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
 - **Para el usuario:**
   - comparar el tinte gris con el original;
   - decidir si el clic en el minimapa debería mover la cámara (hoy no la mueve, como en el original).
+
+### F216 — Formaciones como Resources (RFC-038, corte 038a) — cerrado 2026-10-18
+### F217 — Formación guardada en el servidor (RFC-038, corte 038b) — cerrado 2026-10-18
+
+- **Formaciones:** los scripts `RowFormation`, `ArcFormation` y `WedgeFormation`, más 8 `.tres` en `data/orders/`: line, flank_left, flank_right, phalanx, semicircle, circle, wedge y skirmish. Todas están en `formations.tres` (`FormationCatalog`). `line.tres` reproduce exactamente el `_formation` de antes.
+- **Servidor:**
+  - El comando `"formation"` valida el id contra el catálogo y lo guarda en el `UnitOrders` de cada criatura. No mueve a nadie.
+  - La orden siguiente usa la formación que tiene la mayoría del grupo; si hay empate, gana la que va primero en el catálogo.
+  - `submit_order` suma el argumento `formation_id`.
+  - La IA sigue en línea.
+- **Verificación:**
+  - `formation_slots` PASS: line es idéntica, y las otras 7 se comparan contra las fórmulas de `getFormationOffsets`.
+  - `formation_server` PASS: con cuña, cada unidad queda a 1 m o menos de su lugar, y gana la mayoría.
+  - `run_034e` E2E PASS.
+  - `rules_suite` PASS.
+  - `quick` PASS.

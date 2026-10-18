@@ -33,6 +33,9 @@ var point := Vector3.ZERO
 ## Formation slot (right, forward) in meters, turned by `facing` (getTargetPosition, state.d:391).
 var offset := Vector2.ZERO
 var facing := 0.0
+## The formation this creature keeps (RFC-038); the group's next order uses the one most of its creatures have. Server only,
+## not replicated.
+var formation_id: StringName = &"line"
 
 var _think_left := 0.0
 

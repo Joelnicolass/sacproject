@@ -2,11 +2,14 @@ extends Node
 
 ## RTS orders, server-authoritative (sacengine Command → ObjectState.applyOrder, state.d:29140).
 ## The owner calls request(); a client sends submit_order and the server checks every unit's
-## owner_slot. The selection keeps the line formation (Formation.init, getFormationOffsets
-## state.d:417) turned by the camera facing; units are matched to slots greedily by distance
-## (state.d:29205). Retreat orders every creature of the side, not the selection (state.d:29174).
+## owner_slot. The selection stands in the formation most of its creatures keep (RFC-038: Formation, getFormationOffsets
+## state.d:417; the default is the line) turned by the camera facing; units are matched to slots greedily by distance
+## (state.d:29205). The "formation" command stores a formation on each creature and moves nobody. Retreat orders every creature of the side, not the selection (state.d:29174).
 
 const UnitOrders := preload("res://scenes/world/units/unit_orders.gd")
+
+## Not a UnitOrders.Command: it stores a formation on the creatures and moves nobody.
+const FORMATION_COMMAND := "formation"
 
 const COMMANDS := {
 	"move": UnitOrders.Command.MOVE,
@@ -17,11 +20,10 @@ const COMMANDS := {
 	"retreat": UnitOrders.Command.RETREAT,
 }
 
+## The formations the server accepts (a Resource never travels over the network, only its id).
+@export var catalog: FormationCatalog = preload("res://data/orders/formations.tres")
 ## 0 = no limit (RFC-025); the original cuts at numCreaturesInGroup = 12.
 @export var max_units := 0
-## The line formation breaks into rows of this many units; the next rows stand behind the first,
-## `spacing` apart (an extension: sacengine only has the 12-unit line). 0 = a single line.
-@export var row_size := 12
 ## getFormationOffsets: unitDistance = min(1.25·max(size) + 0.85, 10).
 @export var spacing_per_size := 1.25
 @export var spacing_base := 0.85
@@ -35,24 +37,25 @@ const COMMANDS := {
 @export var log_ai_orders := false
 
 
-## Owner side. `facing` is the camera yaw (forward = (sin, 0, cos)).
-func request(units: Array, command: String, point: Vector3, target: Node3D, facing: float) -> void:
+## Owner side. `facing` is the camera yaw (forward = (sin, 0, cos)). `formation_id` only matters for "formation".
+func request(units: Array, command: String, point: Vector3, target: Node3D, facing: float, formation_id := &"") -> void:
 	var paths := _paths_of(units)
 	var target_path := str(target.get_path()) if target else ""
 	if MpAuthority.should_send_command():
-		submit_order.rpc_id(MpAuthority.SERVER_PEER, paths, command, point, target_path, facing)
+		submit_order.rpc_id(MpAuthority.SERVER_PEER, paths, command, point, target_path, facing, formation_id)
 		return
-	_apply(MpKit.local_slot(), paths, command, point, target_path, facing)
+	_apply(MpKit.local_slot(), paths, command, point, target_path, facing, formation_id)
 
 
 ## The orders of a side that has no peer behind it (the AI, RFC-024 024c): server or solo only, no RPC. It is
 ## `request` with the slot given instead of read from MpKit.local_slot(); _apply still checks that every unit
 ## belongs to `slot`, so the AI can order exactly what a human of that slot could.
-func apply_for(slot: int, units: Array, command: String, point: Vector3, target: Node3D, facing := 0.0) -> void:
+## The AI does not choose formations (RFC-038 P5): its creatures keep the line.
+func apply_for(slot: int, units: Array, command: String, point: Vector3, target: Node3D, facing := 0.0, formation_id := &"") -> void:
 	if slot <= 0 or (MpKit.is_networked() and not MpKit.is_server()):
 		return
 	## The nodes go straight in: the AI orders thousands of times per match and the roundtrip through NodePaths cost half of each order.
-	_apply(slot, PackedStringArray(), command, point, "", facing, units, target)
+	_apply(slot, PackedStringArray(), command, point, "", facing, formation_id, units, target)
 
 
 static func _paths_of(units: Array) -> PackedStringArray:
@@ -64,11 +67,11 @@ static func _paths_of(units: Array) -> PackedStringArray:
 
 
 @rpc("any_peer", "call_remote", "reliable")
-func submit_order(unit_paths: PackedStringArray, command: String, target_pos: Vector3, target_path: String, facing: float) -> void:
+func submit_order(unit_paths: PackedStringArray, command: String, target_pos: Vector3, target_path: String, facing: float, formation_id: StringName) -> void:
 	var slot := MpAuthority.command_slot(self)
 	if slot <= 0:
 		return
-	_apply(slot, unit_paths, command, target_pos, target_path, facing)
+	_apply(slot, unit_paths, command, target_pos, target_path, facing, formation_id)
 
 
 ## Microseconds the last _apply took, and the last formation (rows, widest row in meters),
@@ -78,7 +81,10 @@ var last_rows := 0
 var last_width := 0.0
 
 
-func _apply(slot: int, unit_paths: PackedStringArray, command: String, point: Vector3, target_path: String, facing: float, unit_nodes: Array = [], target_node: Node3D = null) -> void:
+func _apply(slot: int, unit_paths: PackedStringArray, command: String, point: Vector3, target_path: String, facing: float, formation_id: StringName, unit_nodes: Array = [], target_node: Node3D = null) -> void:
+	if command == FORMATION_COMMAND:
+		_set_formation(slot, unit_paths, formation_id, unit_nodes)
+		return
 	if not COMMANDS.has(command):
 		return
 	var started := Time.get_ticks_usec()
@@ -90,12 +96,14 @@ func _apply(slot: int, unit_paths: PackedStringArray, command: String, point: Ve
 	var units := _own_units(slot, unit_paths, target, kind, unit_nodes)
 	if units.is_empty():
 		return
-	var slots := _formation(units, kind, target)
+	var formation := _majority_formation(units)
+	var slots := _formation(formation, units, kind, target)
 	var spots: Array[Vector3] = []
 	for offset in slots:
 		spots.append(_spot(kind, point, target, offset, facing))
 	var yaw := _yaw_of(target) if kind == UnitOrders.Command.GUARD and target else facing
-	var matched := _match(units, spots) if last_rows <= 1 else _match_rows(units, slots, yaw)
+	var row_size := formation.match_row_size(units.size())
+	var matched := _match(units, spots) if last_rows <= 1 or row_size <= 0 else _match_rows(units, slots, yaw, row_size)
 	var retarget := kind == UnitOrders.Command.ATTACK and target != null and target.is_in_group("unit")
 	for i in units.size():
 		var unit: Node3D = units[i]
@@ -111,6 +119,33 @@ func _apply(slot: int, unit_paths: PackedStringArray, command: String, point: Ve
 	last_apply_us = Time.get_ticks_usec() - started
 	if log_orders and (unit_nodes.is_empty() or log_ai_orders):
 		print("orden %s %d" % [command, units.size()])
+
+
+## "formation": keeps `formation_id` on each creature of the slot that was asked for. Nobody moves; an id the catalog does
+## not know changes nothing.
+func _set_formation(slot: int, unit_paths: PackedStringArray, formation_id: StringName, unit_nodes: Array) -> void:
+	if catalog == null or not catalog.has_id(formation_id):
+		return
+	for unit in _own_units(slot, unit_paths, null, UnitOrders.Command.MOVE, unit_nodes):
+		unit.get_node("Orders").set("formation_id", formation_id)
+	if log_orders and (unit_nodes.is_empty() or log_ai_orders):
+		print("orden formation %s" % formation_id)
+
+
+## The formation most of the group keeps; a tie goes to the one first in the catalog (the original's order).
+func _majority_formation(units: Array[Node3D]) -> FormationType:
+	var counts := {}
+	for unit in units:
+		var id: StringName = unit.get_node("Orders").get("formation_id")
+		counts[id] = int(counts.get(id, 0)) + 1
+	var best: FormationType = catalog.default_formation()
+	var best_count := 0
+	for formation in catalog.formations:
+		var count := int(counts.get(formation.id, 0))
+		if count > best_count:
+			best = formation
+			best_count = count
+	return best
 
 
 func _retreat(slot: int) -> void:
@@ -152,33 +187,20 @@ func _can_order(unit: Node, slot: int) -> bool:
 	return not unit.call("is_dead") and not unit.call("is_summoning") and unit.has_node("Orders")
 
 
-## Formation.line offsets (right, forward). Guarding a body flanks it (state.d:429).
-func _formation(units: Array[Node3D], kind: int, target: Node3D) -> Array[Vector2]:
+## The slots (right, forward) of `formation` for the group. Guarding or attacking a body changes them (state.d:429).
+func _formation(formation: FormationType, units: Array[Node3D], kind: int, target: Node3D) -> Array[Vector2]:
 	var size := 0.0
 	for unit in units:
 		size = maxf(size, 2.0 * _half_size(unit))
+	## getFormationOffsets: unitDistance = min(1.25·max(size) + 0.85, 10).
 	var spacing := minf(spacing_per_size * size + spacing_base, max_spacing)
-	var target_half := _half_size(target) if target else 0.0
 	var around := 0.0
 	if target:
-		around = maxf(0.5 * (spacing_per_size * spacing + target_half), spacing)
+		around = maxf(0.5 * (spacing_per_size * spacing + _half_size(target)), spacing)
 	var total := units.size()
-	var per_row := total if row_size <= 0 else mini(row_size, total)
-	last_rows = ceili(float(total) / float(maxi(per_row, 1)))
-	last_width = (per_row - 1) * spacing
-	var slots: Array[Vector2] = []
-	for i in total:
-		var row := floori(float(i) / per_row)
-		var col := i % per_row
-		var n := mini(per_row, total - row * per_row)
-		var x := -0.5 * (n - 1) * spacing + spacing * col
-		if row == 0 and around > 0.0 and kind == UnitOrders.Command.GUARD:
-			if n % 2 == 1:
-				x += -around if 2 * col < n + 1 else around - spacing
-			else:
-				x += -(around - 0.5 * spacing) if 2 * col < n else around - 0.5 * spacing
-		slots.append(Vector2(x, -row * spacing))
-	return slots
+	last_rows = formation.row_count(total)
+	last_width = formation.row_width(total, spacing)
+	return formation.slots(total, spacing, around, kind)
 
 
 func _spot(kind: int, point: Vector3, target: Node3D, offset: Vector2, facing: float) -> Vector3:
@@ -227,12 +249,12 @@ func _match(units: Array[Node3D], spots: Array[Vector3]) -> PackedInt32Array:
 	return result
 
 
-## The rows of a formation larger than one line (the port's extension, `row_size`): sacengine matches one line of at most
+## The rows of a formation larger than one line (the port's extension, `RowFormation.row_size`): sacengine matches one line of at most
 ## numCreaturesInGroup = 12 greedily (state.d:29205), and greedy over 150 bodies crossed the formation: the front of the
 ## crowd took the back rows and everyone else walked through the bodies already parked, which carried them off their slots
 ## (F88 round 3, debug/crowd_rock.tscn). Here the units furthest along `yaw` take the front row, the next ones the row
 ## behind, and so on; inside a row they keep their order across (left to right). No two paths cross. Ties go by index.
-func _match_rows(units: Array[Node3D], slots: Array[Vector2], yaw: float) -> PackedInt32Array:
+func _match_rows(units: Array[Node3D], slots: Array[Vector2], yaw: float, row_size: int) -> PackedInt32Array:
 	var n := units.size()
 	var result := PackedInt32Array()
 	result.resize(n)

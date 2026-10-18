@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="ArcFormation" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/orders/arc_formation.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"circle"
+display_name = "Círculo"
+arc_deg = 360.0

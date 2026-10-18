@@ -2728,3 +2728,13 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
   - Las claves de los diccionarios quedan en orden alfabético. Si alguna lógica recorre esos diccionarios dependiendo del orden, cambiaría; `quick` y `rules_suite` no lo muestran.
   - Los tipos ahora son instancias compartidas: nada debe mutarlos en runtime.
   - Los tags que solo difieren en mayúsculas llevan el sufijo `_2` en el nombre de archivo.
+
+### F199 — Cierre del mapa editable sin navegación (RFC-035, corte 035e) — cerrado 2026-10-18
+
+- **`run_determinism.sh all`:** DETERMINISM PASS en fixed, stress y window, contra la base de hoy.
+- **Playtest con ventana** (`agent/flows/pt035e.json`, Haiku): boot → Solo contra la IA → High Noon, unos 2 min de partida. AGENT_OK, sin `SCRIPT ERROR` ni `Failed to load`; solo los avisos de fugas al salir, que ya estaban.
+- **Capturas** (`agent/out/pt035e/`): el orquestador las miró y se ven el suelo con su tema, las casas, las plantas, el altar y el mago caminando. A los farmers no se los distingue de lejos, pero el log de carga los cuenta (26).
+- **Para el usuario en el editor:**
+  - abrir `high_noon.tscn` y ver el terreno instanciado del `.glb` con sus tiles;
+  - en `high_noon_layout.tscn`, mover un edificio o una planta y ver que en partida aparece en el lugar nuevo;
+  - abrir un `.tres` de `data/catalog/creatures/` y ver que se edita.

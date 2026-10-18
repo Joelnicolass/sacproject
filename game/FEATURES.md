@@ -2774,3 +2774,13 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
   - `quick` (grid): PASS.
 - **Abierto:** `crowd_tipi` con navmesh deja 2 criaturas trabadas unos 3,7 s cerca del destino. Las encierran las que ya llegaron a su lugar de la formación: es un problema de multitud (`MakeWay`), no de caminos. Con la grilla da 0. El reemplazo de `MakeWay` y `BodySeparation` por la evasión de Godot es 036f.
 - **Deuda:** `line_clear` muestrea cada 1 m, así que las líneas largas cuestan milisegundos. El p95 de `crowd_tipi` (277 µs) está cerca del tope de 300.
+
+### F202 — El navmesh pasa a ser la navegación por defecto (RFC-035, corte 035h) — cerrado 2026-10-18
+
+- **Qué cambió:** `NavService.backend` = `NAVMESH` por defecto.
+- **Base regrabada una vez** (`det_baseline.txt`, 8 casos), sin ceremonia, según RULES §Fidelidad y pruebas. Cambiaron `s7`, `s1_quick`, `f125`, `f129`, `f130`, `f132` y `f155`; la causa es el pathfinder nuevo.
+- **Verificación:**
+  - Antes de regrabar, cada caso dio el mismo digest en todos sus modos. `s1_quick` dio igual en fixed, stress y window, y `s7` coincide con `s7_navmesh` (fixed = fixed2).
+  - Después de regrabar, `quick` PASS.
+  - `rules_suite` con el valor por defecto: PASS.
+- **Abierto:** `crowd_tipi` (2 trabadas unos 3,7 s, ver F201). Se resuelve con la evasión de Godot en 036f.

@@ -26,7 +26,7 @@ enum Backend { GRID, NAVMESH }
 
 @export var terrain: MeshInstance3D
 ## Who answers (see above). The default stays GRID until the navmesh is the product's pathfinder.
-@export var backend := Backend.GRID
+@export var backend := Backend.NAVMESH
 ## The map's NavigationRegion3D (%NavRegion). Empty: the service puts one under itself with DEFAULT_NAVMESH.
 @export var region: NavigationRegion3D
 ## Physics ticks between a change and the swap of the re-baked navmesh (the bake takes a couple of seconds on a worker thread; if it

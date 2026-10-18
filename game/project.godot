@@ -338,6 +338,12 @@ pause_menu={
 ]
 }
 
+[navigation]
+
+3d/default_cell_size=1.0
+world/map_use_async_iterations=false
+avoidance/enable=false
+
 [shader_globals]
 
 fx_soft_particles={

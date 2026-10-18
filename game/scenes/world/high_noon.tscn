@@ -53,6 +53,9 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/lobby/lobby_return.tscn" id="f183_return"]
 [ext_resource type="PackedScene" path="res://assets/original/maps/high_noon/terrain.glb" id="f195_terrain_glb"]
 [ext_resource type="Material" path="res://assets/original/themes/james/ground_classic.tres" id="f194_ground"]
+[ext_resource type="Script" path="res://scenes/world/nav/map_nav_region.gd" id="f200_nav_region"]
+[ext_resource type="NavigationMesh" path="res://data/nav/high_noon_nav.res" id="f200_navmesh"]
+[ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="f200_bake"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
 bg_color = Color(1, 1, 1, 0)
@@ -92,7 +95,7 @@ script = ExtResource("11_camera")
 ground = NodePath("../Terrain")
 edge_area = NodePath("../Hud/View")
 
-[node name="Terrain" parent="." unique_id=1483961628 instance=ExtResource("f195_terrain_glb")]
+[node name="Terrain" parent="." unique_id=1483961628 groups=["nav_source"] instance=ExtResource("f195_terrain_glb")]
 unique_name_in_owner = true
 material_override = ExtResource("f194_ground")
 script = ExtResource("2_terrain")
@@ -209,6 +212,12 @@ world = NodePath("..")
 [node name="Match" parent="." unique_id=1957000101 node_paths=PackedStringArray("world") instance=ExtResource("f57_match")]
 unique_name_in_owner = true
 world = NodePath("..")
+
+[node name="NavRegion" type="NavigationRegion3D" parent="." unique_id=1200200200]
+unique_name_in_owner = true
+navigation_mesh = ExtResource("f200_navmesh")
+script = ExtResource("f200_nav_region")
+bake_settings = ExtResource("f200_bake")
 
 [node name="Nav" type="Node" parent="." unique_id=1324434439 node_paths=PackedStringArray("terrain", "structures")]
 unique_name_in_owner = true

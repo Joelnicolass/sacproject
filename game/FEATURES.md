@@ -2738,3 +2738,18 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
   - abrir `high_noon.tscn` y ver el terreno instanciado del `.glb` con sus tiles;
   - en `high_noon_layout.tscn`, mover un edificio o una planta y ver que en partida aparece en el lugar nuevo;
   - abrir un `.tres` de `data/catalog/creatures/` y ver que se edita.
+
+### F200 — Navmesh horneado y versionado, todavía sin uso (RFC-035, corte 035f) — cerrado 2026-10-18
+
+- **Qué cambió:** se agregó `NavRegion` (`MapNavRegion`, `NavigationRegion3D` `@tool`) en `high_noon.tscn`, con `data/nav/high_noon_nav.res` y `data/nav/nav_bake.tres`. Lo hornea `tools/bake_nav.tscn`, que corre como escena para que existan los autoloads y las colisiones. Las fuentes son el grupo `nav_source`: el terreno, los edificios del layout y las fuentes de maná.
+- **Hash de la fuente:** queda guardado en el navmesh. Si cambia el mapa, el nodo muestra un aviso en el editor.
+- **Configuración del proyecto:** `default_cell_size` 1,0, iteraciones síncronas y evasión apagada.
+- **Verificación:**
+  - El horneado tarda unos 2 s y usa 174 MB: 8526 polígonos.
+  - `--check` dos veces seguidas da CHECK PASS con el mismo hash.
+  - El dedicado imprime `nav: navmesh 8526 polígonos`.
+  - `quick` PASS: NavService sigue usando NavGrid.
+- **Desvíos:**
+  - `cell_size` es 1,0 y no 0,5. Hornear es barato, así que si en 035g el paso del tipi queda grueso se baja a 0,5 (cambiando también `default_cell_size`).
+  - Los altares aparecen en partida y no están en el horneado (035g).
+  - El botón «Bake» del editor no sirve, porque `MapBuilding` no es `@tool`. Hay que usar `tools/bake_nav.tscn`.

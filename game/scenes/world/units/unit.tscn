@@ -1,4 +1,4 @@
-[gd_scene load_steps=72 format=3]
+[gd_scene load_steps=85 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/unit_body.gd" id="1_body"]
 [ext_resource type="PackedScene" path="res://scenes/world/body_avoidance.tscn" id="f207_avoid"]
@@ -63,6 +63,19 @@
 [ext_resource type="Script" path="res://scenes/world/units/afflictions/firewalking.gd" id="f152_firewalking"]
 [ext_resource type="Resource" path="res://data/afflictions/firewalking.tres" id="f152_firewalking_type"]
 [ext_resource type="Script" path="res://scenes/world/units/poisoning.gd" id="f122_poisoning"]
+[ext_resource type="Script" path="res://addons/fsm_kit/fsm_machine.gd" id="f221_machine"]
+[ext_resource type="Script" path="res://scenes/world/units/states/unit_state.gd" id="f221_base"]
+[ext_resource type="Script" path="res://scenes/world/units/states/idle_state.gd" id="f221_idle"]
+[ext_resource type="Script" path="res://scenes/world/units/states/move_state.gd" id="f221_move"]
+[ext_resource type="Script" path="res://scenes/world/units/states/chase_state.gd" id="f221_chase"]
+[ext_resource type="Script" path="res://scenes/world/units/states/attack_state.gd" id="f221_attack"]
+[ext_resource type="Script" path="res://scenes/world/units/states/dead_state.gd" id="f221_dead"]
+[ext_resource type="Script" path="res://scenes/world/units/states/summoning_state.gd" id="f221_summoning"]
+[ext_resource type="Script" path="res://scenes/world/units/states/shoot_state.gd" id="f221_shoot"]
+[ext_resource type="Script" path="res://scenes/world/units/states/rock_form_state.gd" id="f221_rock_form"]
+[ext_resource type="Script" path="res://scenes/world/units/states/cower_state.gd" id="f221_cower"]
+[ext_resource type="Script" path="res://scenes/world/units/unit_air.gd" id="f221_air"]
+[ext_resource type="Script" path="res://scenes/world/units/unit_clips.gd" id="f221_clips"]
 [ext_resource type="Script" path="res://scenes/world/look/stone_look.gd" id="f137_stone_look"]
 [ext_resource type="Shader" path="res://scenes/world/look/stone.gdshader" id="f137_stone_shader"]
 
@@ -359,5 +372,64 @@ replication_config = SubResource("SceneReplicationConfig_unit")
 
 [node name="Avoidance" parent="." node_paths=PackedStringArray("body") instance=ExtResource("f207_avoid")]
 body = NodePath("..")
+
+[node name="Air" type="Node" parent="." node_paths=PackedStringArray("body")]
+script = ExtResource("f221_air")
+body = NodePath("..")
+
+[node name="Clips" type="Node" parent="." node_paths=PackedStringArray("body")]
+script = ExtResource("f221_clips")
+body = NodePath("..")
+
+[node name="States" type="Node" parent="." node_paths=PackedStringArray("initial_state", "actor")]
+script = ExtResource("f221_machine")
+initial_state = NodePath("Idle")
+actor = NodePath("..")
+run_process = false
+run_physics = false
+run_unhandled_input = false
+
+[node name="Idle" type="Node" parent="States"]
+script = ExtResource("f221_idle")
+
+[node name="Move" type="Node" parent="States"]
+script = ExtResource("f221_move")
+mode = 1
+
+[node name="Chase" type="Node" parent="States"]
+script = ExtResource("f221_chase")
+mode = 2
+
+[node name="Attack" type="Node" parent="States"]
+script = ExtResource("f221_attack")
+mode = 3
+
+[node name="Dead" type="Node" parent="States"]
+script = ExtResource("f221_dead")
+mode = 4
+
+[node name="Summoning" type="Node" parent="States"]
+script = ExtResource("f221_summoning")
+mode = 5
+
+[node name="Shoot" type="Node" parent="States"]
+script = ExtResource("f221_shoot")
+mode = 6
+
+[node name="RockForm" type="Node" parent="States"]
+script = ExtResource("f221_rock_form")
+mode = 7
+
+[node name="Held" type="Node" parent="States"]
+script = ExtResource("f221_base")
+mode = 8
+
+[node name="Reviving" type="Node" parent="States"]
+script = ExtResource("f221_base")
+mode = 9
+
+[node name="Cower" type="Node" parent="States"]
+script = ExtResource("f221_cower")
+mode = 10
 
 [connection signal="solved" from="Avoidance" to="." method="_on_avoided"]

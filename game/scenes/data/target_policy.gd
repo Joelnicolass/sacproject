@@ -11,9 +11,9 @@ extends Resource
 @export var tag := ""
 
 
-## Whether `body` may keep `node` as its target (UnitBody._is_valid_foe). `ordered`: the body is under an order.
+## Whether `body` may keep `node` as its target (UnitBody.accepts_target). `ordered`: the body is under an order.
 func accepts(body: UnitBody, node: Variant, ordered: bool) -> bool:
-	return UnitBody.is_valid_foe_of(body.owner_slot, node, body, not ordered)
+	return TargetRules.is_valid_foe_of(body.owner_slot, node, body, not ordered)
 
 
 ## The target `body` picks by itself around `center` (UnitBody.closest_foe); `within`: the candidates must lie within

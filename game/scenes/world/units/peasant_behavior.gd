@@ -132,7 +132,7 @@ func closest_scare() -> Node3D:
 	var best_d := scare_distance
 	for group in scare_groups:
 		for node in get_tree().get_nodes_in_group(group):
-			if not UnitBody.is_valid_foe_of(body.owner_slot, node, body, false):
+			if not TargetRules.is_valid_foe_of(body.owner_slot, node, body, false):
 				continue
 			var other := node as Node3D
 			var slot := int(other.get("owner_slot"))

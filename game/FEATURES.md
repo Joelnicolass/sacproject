@@ -3039,3 +3039,16 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
 - 036a queda cerrado sin corte.
 - El clic en el minimapa sigue sin mover la cámara.
 - El tinte del minimapa queda cerrado; las mejoras visuales vienen después.
+
+### F221 — `UnitBody` con FsmKit (RFC-036, corte 036j) — cerrado 2026-10-18
+
+- **Estados:** los modos son nodos `UnitState` (FsmKit) bajo `unit.tscn/States`, uno por script en `scenes/world/units/states/`: Idle, Move, Chase, Attack, Shoot, Cower, RockForm, Summoning, Dead, Held y Reviving. Las transiciones son por nombre de nodo.
+- **Modo replicado:** `UnitBody.mode` sigue siendo la propiedad replicada y el único escritor, y su setter mueve la máquina. `physics_update` corre solo en el peer que simula, en el mismo punto del paso de física, así que no cambia el orden.
+- **Piezas separadas:** `UnitAir` (vuelo), `UnitClips` (animación) y `TargetRules` (`is_valid_foe_of`).
+- **Tamaño:** `unit_body.gd` pasa de 1068 a 720 líneas. Lo que queda es la API pública y el paso de física.
+- **Verificación:**
+  - `rules_suite` PASS.
+  - `quick` PASS sin regrabar.
+  - `crowd_tipi` y `crowd_rock` PASS.
+  - `run_034e` E2E PASS.
+  - Flow `final_separation` con ventana: AGENT_OK, idéntico al código anterior (`agent/out/pt036j*`).

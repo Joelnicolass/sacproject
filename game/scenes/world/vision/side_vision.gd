@@ -107,7 +107,7 @@ func observe(observer: Node3D) -> void:
 				continue
 			## The manafounts are neutral buildings: sacengine marks every building in sight, not only the enemy's, and the AI needs it
 			## to learn that a fount was taken (RFC-024 024d: its status is refreshed only on what the side has seen).
-			if other.is_in_group("manafount") or UnitBody.is_valid_foe_of(slot, other, observer):
+			if other.is_in_group("manafount") or TargetRules.is_valid_foe_of(slot, other, observer):
 				mark(slot, other)
 
 

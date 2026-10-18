@@ -114,7 +114,7 @@ func pick(center: Vector3, threshold := 0.25, ref_range := 100.0, within := INF)
 	var best_distance := INF
 	for group in body.target_groups:
 		for node in get_tree().get_nodes_in_group(group):
-			if not UnitBody.is_valid_foe_of(slot, node, body):
+			if not TargetRules.is_valid_foe_of(slot, node, body):
 				continue
 			var other := node as Node3D
 			var from_body := _flat(here, other.global_position)
@@ -145,13 +145,13 @@ func pick(center: Vector3, threshold := 0.25, ref_range := 100.0, within := INF)
 	return best
 
 
-## Whether the body may keep `node` as its target (UnitBody._is_valid_foe): the active policy's rule, or a foe
+## Whether the body may keep `node` as its target (UnitBody.accepts_target): the active policy's rule, or a foe
 ## (by stance unless `ordered`) as before policies.
 func accepts(node: Variant, ordered: bool) -> bool:
 	var policy := active()
 	if policy != null:
 		return policy.accepts(body, node, ordered)
-	return UnitBody.is_valid_foe_of(body.owner_slot, node, body, not ordered)
+	return TargetRules.is_valid_foe_of(body.owner_slot, node, body, not ordered)
 
 
 ## The policy for the body's ranged attack, or null (the default rules).

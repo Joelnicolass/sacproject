@@ -77,10 +77,10 @@ func _foe_rules() -> Dictionary:
 	var farmer := _unit(PEASANT_SCENE, 3, Vector3(10.0, 0.0, 0.0), "zepe")
 	var house := _house("jhut", Vector3(0.0, 0.0, 30.0))
 	var checks := {
-		"farmer_is_foe": UnitBody.is_valid_foe_of(1, farmer, trogg),
-		"house_not_by_stance": not UnitBody.is_valid_foe_of(1, house, trogg),
-		"house_by_order": UnitBody.is_valid_foe_of(1, house, trogg, false),
-		"not_own_side": not UnitBody.is_valid_foe_of(3, farmer, farmer),
+		"farmer_is_foe": TargetRules.is_valid_foe_of(1, farmer, trogg),
+		"house_not_by_stance": not TargetRules.is_valid_foe_of(1, house, trogg),
+		"house_by_order": TargetRules.is_valid_foe_of(1, house, trogg, false),
+		"not_own_side": not TargetRules.is_valid_foe_of(3, farmer, farmer),
 		"picks_farmer": trogg.closest_foe(Vector3.ZERO) == farmer or trogg.closest_foe(Vector3.ZERO) == null,
 		"farmer_picks_none": farmer.closest_foe(farmer.global_position) == null,
 	}

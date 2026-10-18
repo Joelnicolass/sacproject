@@ -21,7 +21,7 @@ extends Node3D
 ##   refresh_ticks ticks (the cells stay lit for that long).
 ## Ends at the lifetime. It survives the death of the one who cast it.
 ## Divergences (declared): (1) frontOfAIQueue: sacengine looks for the target only on the ticks its creature is at the front of the
-## side's AI queue; the eye looks every tick. (2) The target is a valid foe by UnitBody.is_valid_foe_of (no stealth, no rock, no
+## side's AI queue; the eye looks every tick. (2) The target is a valid foe by TargetRules.is_valid_foe_of (no stealth, no rock, no
 ## corpse), the port's one definition. (3) The sight has no terrain line of sight (SideVision's own approximation) and its refresh
 ## starts at the first flying tick, not at (id + frame) % 30.
 ## Look (SacDivineSight, renderer.d:882-891 and 3517-3530): the sprite `scri` (4x4 sheet, 16 frames) on a 2.5 x 2.25 m billboard,
@@ -186,7 +186,7 @@ func _closest_foe() -> Node3D:
 	for group in target_groups:
 		for node in get_tree().get_nodes_in_group(group):
 			var body := node as Node3D
-			if body == null or not UnitBody.is_valid_foe_of(slot, body):
+			if body == null or not TargetRules.is_valid_foe_of(slot, body):
 				continue
 			var distance := BodyNudge.center(body).distance_to(position)
 			if distance <= ability.cast_range and (best == null or distance < best_distance):

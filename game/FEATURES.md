@@ -2424,3 +2424,14 @@ Deuda:
 - La corrida horneada (`--baked-bodies`) salió un orden de magnitud más lenta y se cortó a los 600 s; no se investigó porque el horneado se retira en 023h.
 - `proceso_ms` de 47–58 ms con 150 cuerpos (animación en CPU): si hace falta, `BodyAnimLod` del plan.
 - Con todas las capas encendidas, high llega a 218 ms y 26 145 llamadas de dibujo.
+
+### RFC-023 023h — Retiro del horneado (cierre 2026-10-17)
+
+- **Fuera:** `ClipPosePlayer`, `cache/look/anim_f37` y `anim_mesh_clips_f37.json` como entrada del juego, el flag `--baked-bodies`, `BodyCatalog.BAKED_DIR`/`clip_frame_path`, `bake_clips.gd`, `bake_bodies.gd`, la exportación por cuadro de `export_stats.py`, los oráculos de cuadros horneados (`audit_skeletal.gd`, `audit_body_pose.gd`, `audit_unit_parity.py`, `export_skeletal_reference.py`) y los comparadores horneado/esqueleto de `debug/`.
+- **Híbridos:** los 11 (faez, thes, the2, sara, hoom, bane, ban2, sirc, surt, gamm, baby) son `.glb` estáticos en `assets/original/props/` (geometría idéntica al OBJ horneado, 0,0 mm; fuente `import_props.py --bodies-from`). El selector de magos dibuja un `BodyRig`.
+- **`sizes.json`:** dato versionado sin generador (calcularlo del `.glb` no da los mismos números y movería cápsulas y digests).
+- **Pendiente (033i, con OK del usuario):** borrar `cache/`; `audit_original_props.gd`, `export_persephone.py`, `export_bodies.py` y la rama de caché de `export_buildings` se van con ella.
+
+Deuda:
+- `debug/body_gallery` y las escenas con `gallery_body.tscn` ya no muestran cuerpos con esqueleto (solo híbridos y props).
+- Verificación con Godot a cargo del orquestador: import, `quick`, `rules_suite`, regresión de flows f19/f23/f32 y selector de magos.

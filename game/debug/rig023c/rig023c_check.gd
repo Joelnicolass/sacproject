@@ -1,7 +1,7 @@
 extends Node
 
 ## RFC-023 023c check (headless or with a window): one unit per creature model, the ClipClock reads, the animator picks
-## skeleton or baked, and the roles resolve. Prints one line per model. Not a test of the simulation.
+## skeleton or the static mesh, and the roles resolve. Prints one line per model. Not a test of the simulation.
 ##   godot --headless --path game res://debug/rig023c/rig023c_check.tscn [-- --models=eorc,huma]
 
 const UNIT := preload("res://scenes/world/units/unit.tscn")

@@ -3,27 +3,16 @@ class_name BodyCatalog
 extends RefCounted
 
 ## Bodies and props: sizes, pose and meshes by model tag.
-## Sizes come from assets/original/models/sizes.json (tools/import_props.py), props are the .glb of
-## assets/original/props/ (RFC-033 033c), bodies are still the meshes baked by tools/bake_bodies.gd until RFC-023.
+## Sizes come from assets/original/models/sizes.json (tools/import_props.py), static meshes (props, and the hybrid bodies
+## that no clip animates) are the .glb of assets/original/props/ (RFC-033 033c, RFC-023 023h). Animated bodies are drawn by
+## a BodyRig from assets/original/models/ and have no mesh here.
 ## On top of them go the hand corrections in data/bodies/pose_overrides.tres (turn, offset,
 ## scale, capsule). Nothing else corrects a pose: the sizes JSON is never edited by hand.
 ## Static and @tool: the editor has no autoloads, so BodyVisual reads the assets through here.
 ## The headless server reads sizes only, never a mesh.
 
-## Baked body meshes (bodies/<m>.res) and clip frames: only until RFC-023 / 033i.
-const BAKED_DIR := "res://cache/baked/"
-## Clip frames baked by tools/bake_clips.gd (RFC-027 027h): one geometry .res per frame OBJ, same relative path.
-const CLIPS_SUBDIR := "clips/"
-const LOOK_DIR := "res://cache/look/"
 const OVERRIDES_PATH := "res://data/bodies/pose_overrides.tres"
 
-## Models whose skeleton did not close against the original frame by frame (tools/audit_skeletal.gd, RFC-023 023c): they
-## keep the baked per-frame meshes. Empty while every exported model closes; the list is in the RFC's 023c result.
-const SKELETAL_FALLBACK: PackedStringArray = []
-
-## -1 unknown, 0 off, 1 on: the `--baked-bodies` user argument.
-static var _baked_forced := -1
-static var _dir := BAKED_DIR
 static var _loaded := false
 static var _bodies: Dictionary = {}
 static var _props: Dictionary = {}
@@ -32,10 +21,9 @@ static var _overrides: BodyPoseOverrides
 static var _infos: Dictionary = {}
 
 
-## Forgets everything read so far. Call after baking again, or to point at another folder.
+## Forgets everything read so far. Call after importing again.
 ## Not named reload(): that is Script.reload() and a static call would hit it instead.
-static func refresh(dir := BAKED_DIR) -> void:
-	_dir = dir if dir.ends_with("/") else dir + "/"
+static func refresh() -> void:
 	_loaded = false
 	_bodies = {}
 	_props = {}
@@ -64,19 +52,10 @@ static func loads_meshes() -> bool:
 	return Engine.is_editor_hint() or DisplayServer.get_name() != "headless"
 
 
-## True when `model` has a skeletal asset (models/index.json) that is not in SKELETAL_FALLBACK: its bodies are drawn by a
-## BodyRig. A model with no clip of its own still stays baked: the caller also checks it has the clip it rests on.
+## True when `model` has a skeletal asset (models/index.json): its bodies are drawn by a BodyRig. A model whose clips do
+## not include the one it rests on (the hybrids) stays a static mesh: the caller also checks it has that clip.
 static func has_skeletal(model: String) -> bool:
-	return not model.is_empty() and not baked_bodies_forced() and not SKELETAL_FALLBACK.has(model) \
-		and not BodyRig.model_info(model).is_empty()
-
-
-## The `--baked-bodies` user argument draws every body from the baked per-frame meshes, as before RFC-023: to compare the
-## two looks and to measure the old cost in the same build. Until RFC-023h retires the baked meshes.
-static func baked_bodies_forced() -> bool:
-	if _baked_forced < 0:
-		_baked_forced = 1 if OS.get_cmdline_user_args().has("--baked-bodies") else 0
-	return _baked_forced == 1
+	return not model.is_empty() and not BodyRig.model_info(model).is_empty()
 
 
 static func has_model(model: String) -> bool:
@@ -84,8 +63,8 @@ static func has_model(model: String) -> bool:
 	return _bodies.has(model) or _props.has(model)
 
 
-## Baked measures plus the capsule corrections: height, height_flying, radius and reach are final.
-## A scale in the override scales the baked capsule too; capsule_* replaces it.
+## Measures (sizes.json) plus the capsule corrections: height, height_flying, radius and reach are final.
+## A scale in the override scales the measured capsule too; capsule_* replaces it.
 static func info(model: String) -> Dictionary:
 	_ensure()
 	if _infos.has(model):
@@ -107,7 +86,7 @@ static func info(model: String) -> Dictionary:
 	return data
 
 
-## Bodies first, then props, in the order of the baked files.
+## Bodies first, then props, in the order of sizes.json.
 static func models() -> PackedStringArray:
 	_ensure()
 	var out := PackedStringArray()
@@ -120,19 +99,13 @@ static func models() -> PackedStringArray:
 	return out
 
 
+## The static mesh of a prop or a hybrid body; null for a body that a BodyRig draws (it has no static mesh).
 static func mesh(model: String) -> Mesh:
 	if not loads_meshes() or model.is_empty():
 		return null
-	_ensure()
 	if _meshes.has(model):
 		return _meshes[model]
-	var loaded: Mesh = null
-	if _bodies.has(model):
-		var path := _dir + "bodies/%s.res" % model
-		if ResourceLoader.exists(path):
-			loaded = ResourceLoader.load(path) as Mesh
-	else:
-		loaded = _prop_mesh(model)
+	var loaded := _prop_mesh(model)
 	_meshes[model] = loaded
 	return loaded
 
@@ -160,19 +133,11 @@ static func _prop_mesh(model: String) -> Mesh:
 	return found
 
 
-## Where tools/bake_clips.gd leaves the baked frame of a clip OBJ (res://cache/look/X.obj -> <baked>/clips/X.res).
-## Empty for a path outside cache/look/. Only a path: the file may not exist (cache not baked yet).
-static func clip_frame_path(obj_path: String) -> String:
-	if not obj_path.begins_with(LOOK_DIR):
-		return ""
-	return _dir + CLIPS_SUBDIR + obj_path.trim_prefix(LOOK_DIR).get_basename() + ".res"
-
-
-## Local transform that stands the baked mesh upright with its origin on the ground.
-## Bodies baked from an idle frame need no lift (foot_offset 0); older bind-pose bodies lift by it.
+## Local transform that stands the static mesh upright with its origin on the ground.
+## Bodies measured from an idle frame need no lift (foot_offset 0); bind-pose bodies lift by it.
 ## Buildings and plants keep the sacengine origin (stand_on_feet off). The override goes on top.
-## `skeletal`: a BodyRig draws the body (RFC-023 023c). A body that was baked from the bind pose (no pose_source: the
-## peasants, Zyzyx) was turned upright and lifted by foot_offset to stand; its clips already stand on the ground, so the
+## `skeletal`: a BodyRig draws the body (RFC-023 023c). A body measured from the bind pose (no pose_source: the
+## peasants, Zyzyx) was measured turned upright and lifted by foot_offset to stand; its clips already stand on the ground, so the
 ## skeleton does not take either. Only the hand overrides apply.
 static func pose(model: String, stand_on_feet := true, skeletal := false) -> Transform3D:
 	var data := info(model)

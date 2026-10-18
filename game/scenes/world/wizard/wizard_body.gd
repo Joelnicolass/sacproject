@@ -63,8 +63,6 @@ var _seat_left := 0
 var _stats_ready := false
 var _since_damage := INF
 var _last_health := 0.0
-var _mesh_base_pos := Vector3.ZERO
-var _mesh_base_rot := Vector3.ZERO
 var _type: WizardType
 var _present_prev_pos := Vector3.ZERO
 var _present_prev_ready := false
@@ -93,12 +91,8 @@ func _ready() -> void:
 	look_yaw = rotation.y
 	_net_yaw = rotation.y
 	_apply_model()
-	var mesh := get_node_or_null("Tilt/Mesh") as Node3D
-	if mesh:
-		_mesh_base_pos = mesh.position
-		_mesh_base_rot = mesh.rotation
-		if _clip_pose.has_method("setup"):
-			_clip_pose.call("setup", model, _clip_roles(), _mesh_base_pos, _mesh_base_rot)
+	if get_node_or_null("Tilt/Mesh") and _clip_pose.has_method("setup"):
+		_clip_pose.call("setup", model, _clip_roles())
 	if _clip_pose.has_signal("clip_looped"):
 		_clip_pose.connect("clip_looped", _on_clip_looped)
 	_present_prev_pos = global_position
@@ -193,7 +187,7 @@ func _sync_clip_pose() -> void:
 		return
 	if model.is_empty():
 		return
-	_clip_pose.call("setup", model, _clip_roles(), _mesh_base_pos, _mesh_base_rot)
+	_clip_pose.call("setup", model, _clip_roles())
 
 func _apply_type() -> void:
 	_type = GameData.wizard(wizard_tag)
@@ -215,10 +209,6 @@ func _apply_model() -> void:
 	if visual == null or model.is_empty() or not visual.has_method("show_model"):
 		return
 	visual.call("show_model", model)
-	var mesh := visual as Node3D
-	if mesh:
-		_mesh_base_pos = mesh.position
-		_mesh_base_rot = mesh.rotation
 	_sync_clip_pose()
 	_fit_shape()
 

@@ -3,8 +3,6 @@ extends Node
 ## Autoload facade over BodyCatalog, kept for the scripts that already call BodyLibrary.
 ## New code, and anything that runs in the editor, uses BodyCatalog directly.
 
-const BAKED_DIR := BodyCatalog.BAKED_DIR
-
 
 func loads_meshes() -> bool:
 	return BodyCatalog.loads_meshes()

@@ -71,18 +71,8 @@ static func for_wizard(type: WizardType, model: String) -> Dictionary:
 ## F134 / RFC-023: the clip a creature stands in at rest. sacengine plays stance1 at the start of every idle loop
 ## (frame 0 -> stance1, or stance2 when damaged); idle0..3 are gestures. A model with no stance1 clip rests on idle0.
 static func _rest_tag(type: CreatureType, model: String, idle_tag: String) -> String:
-	if not BodyCatalog.has_skeletal(model):
-		return _baked_rest_tag(model, idle_tag)
 	var stance := str(type.stance_animation.get("tag", "")) if type else ""
 	if stance.is_empty() or stance == idle_tag or not ClipClock.has_clip(model, stance):
 		return idle_tag
 	return stance
 
-
-## The baked bodies (no skeleton for the model, or `--baked-bodies`): the old rule, F134. The body was baked from
-## BodyCatalog's pose_source (stance1 for book creatures of level 2+, idle0 below); the idle role plays that clip.
-static func _baked_rest_tag(model: String, idle_tag: String) -> String:
-	var rest := str(BodyCatalog.info(model).get("pose_source", ""))
-	if rest.is_empty() or rest == idle_tag:
-		return idle_tag
-	return rest if ClipClock.has_clip(model, rest) else idle_tag

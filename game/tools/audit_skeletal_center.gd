@@ -1,7 +1,7 @@
 extends SceneTree
 
 ## RFC-023 023e: where a skeletal body stands over its capsule. For every clip of the model, at frames 0 / middle / last,
-## the posed vertices (CPU skinning, as audit_skeletal.gd) go through the game's axes (z mirrored, BodyRig) and the pose
+## the posed vertices (CPU skinning) go through the game's axes (z mirrored, BodyRig) and the pose
 ## the BodyVisual applies (BodyCatalog.pose, skeletal), and the horizontal distance of the body to the capsule axis
 ## (x = z = 0 of the body) is printed: of the centroid of the vertices (the torso weighs most) and of the AABB centre
 ## (arms and tools stretch it). Headless: "$GODOT" --headless --path game --script res://tools/audit_skeletal_center.gd

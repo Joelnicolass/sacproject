@@ -3,18 +3,15 @@ extends RefCounted
 
 ## RFC-023 (023c): the logical clock of the clip a body plays: role, tag, frame, framerate and impact frame, with no
 ## mesh and no node. It runs the same on the dedicated server and on a client; the visual (BodyRig) READS it and
-## travels/seeks to what it says, never the other way round. It replaces the headless clock ClipPosePlayer used to
-## carry. Presentation only: the simulation takes its ticks from CreatureType and never reads this.
-## Clip data (frames, framerate, impact) comes from assets/original/models/index.json; a model that is not there yet
-## falls back to the clip list the baked player reads (cache/data/anim_mesh_clips_f37.json) until RFC-023h retires it.
+## travels/seeks to what it says, never the other way round. Presentation only: the simulation takes its ticks from
+## CreatureType and never reads this.
+## Clip data (frames, framerate, impact) comes from assets/original/models/index.json; a model that is not there has no clips.
 
 ## The active clip went past its last frame and started again. Emitted by advance() on the tick that wraps.
 signal looped(role: String)
 
 ## model -> tag -> {frames, framerate, impact}; filled on first use, shared by every clock.
 static var _data: Dictionary = {}
-static var _fallback: Dictionary = {}
-static var _fallback_loaded := false
 
 ## Holds the clip: advance() does nothing and play() does not switch (a petrified body).
 var frozen := false
@@ -110,9 +107,7 @@ static func clip_data(model: String, tag: String) -> Dictionary:
 static func _model_data(model: String) -> Dictionary:
 	if _data.has(model):
 		return _data[model]
-	var made := _from_index(model) if BodyCatalog.has_skeletal(model) else {}
-	if made.is_empty():
-		made = _from_baked_list(model)
+	var made := _from_index(model)
 	_data[model] = made
 	return made
 
@@ -129,25 +124,6 @@ static func _from_index(model: String) -> Dictionary:
 				impact = mini(int(event["frame"]), frames - 1)
 				break
 		made[tag] = {"frames": frames, "framerate": int(clip.get("framerate", 30)), "impact": impact}
-	return made
-
-
-## Models the skeleton does not draw (no asset, did not close, or `--baked-bodies`): the clip list of the baked player.
-static func _from_baked_list(model: String) -> Dictionary:
-	if not _fallback_loaded:
-		_fallback_loaded = true
-		var path := "res://cache/data/anim_mesh_clips_f37.json"
-		if FileAccess.file_exists(path):
-			var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
-			if parsed is Dictionary:
-				_fallback = parsed
-	var made: Dictionary = {}
-	var clips: Dictionary = _fallback.get(model, {})
-	for tag: String in clips:
-		var clip: Dictionary = clips[tag]
-		var impact: Array = clip.get("impact_frames", [])
-		made[tag] = {"frames": int(clip.get("frames", 0)), "framerate": int(clip.get("framerate", 30)),
-			"impact": int(impact[0]) if not impact.is_empty() else -1}
 	return made
 
 

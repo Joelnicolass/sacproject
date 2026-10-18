@@ -2,10 +2,9 @@
 class_name ClipPlayback
 extends Node
 
-## The contract of the node that plays the clips of a body by ROLE (idle, run, attack...): the baked player of the
-## per-frame meshes (ClipPosePlayer) and the skeletal one (BodyAnimator, RFC-023 023c). Afflictions, Stunned and the
-## bodies talk to this and not to either, so a body can swap one for the other. Presentation only: the simulation
-## never reads it.
+## The contract of the node that plays the clips of a body by ROLE (idle, run, attack...): BodyAnimator (RFC-023 023c).
+## Afflictions, Stunned and the bodies talk to this and not to the animator, so a body can swap it. Presentation only:
+## the simulation never reads it.
 
 ## The active clip went past its last frame and started again (RFC-028c). Emitted on the physics tick that wraps,
 ## on every peer (the clip clock runs without meshes too); the body picks the next variant from it.
@@ -19,13 +18,13 @@ var frozen := false:
 		_frozen_changed()
 
 
-## A player that has more to hold than its own clock (the skeleton, a baked player under it) hooks in here.
+## A player that has more to hold than its own clock (the skeleton) hooks in here.
 func _frozen_changed() -> void:
 	pass
 
 
-## Sets the model, its role -> clip tag map and the pose the body is drawn from.
-func setup(_model: String, _role_to_tag: Dictionary, _mesh_base_pos: Vector3, _mesh_base_rot: Vector3) -> void:
+## Sets the model and its role -> clip tag map.
+func setup(_model: String, _role_to_tag: Dictionary) -> void:
 	pass
 
 
@@ -42,7 +41,7 @@ func active_role() -> String:
 	return ""
 
 
-## true while a skeleton (a BodyRig) is what draws the body; the baked meshes answer false (RFC-023f: the corpse lets the
+## true while a skeleton (a BodyRig) is what draws the body; a static mesh answers false (RFC-023f: the corpse lets the
 ## clip lay it down only when it is a skeleton).
 func is_skeletal() -> bool:
 	return false

@@ -5,7 +5,6 @@ extends StaticBody3D
 const _MANA_SOURCE := preload("res://scenes/world/mana_source.gd")
 const MANALITH := "htlm"
 const FALLBACK_STRUCTURE_MODEL := "mana"
-const CLIP_CACHE_PATH := "res://cache/data/anim_mesh_clips_f37.json"
 ## sacengine BLDG regeneration for manalith/shrine is 75 per minute (1.25 per second).
 const MANALITH_REGEN_PER_S := 1.25
 ## Matches the original structure's long time-to-kill in fights.
@@ -29,11 +28,8 @@ const MANALITH_MAX_HEALTH := 3000.0
 
 var _regen_per_s := 0.0
 var _released := false
-var _clip_cache: Dictionary = {}
-var _clip_cache_loaded := false
 
 @onready var _health: Node = $Health
-@onready var _clip_pose: Node = $ClipPose
 
 
 func _ready() -> void:
@@ -56,30 +52,16 @@ func _exit_tree() -> void:
 	_release_manafount()
 
 
-func _sync_clip_pose() -> void:
-	if _clip_pose == null or not _clip_pose.has_method("setup"):
-		return
-	var visible_model := _resolved_model()
-	if visible_model.is_empty():
-		return
-	_clip_pose.call("setup", visible_model, _clip_roles(), Vector3.ZERO, Vector3.ZERO)
-
-func _clip_roles() -> Dictionary:
-	var tag := _first_clip_tag(_resolved_model())
-	return {"idle": tag} if not tag.is_empty() else {}
-
 func _apply_model() -> void:
 	var mesh := get_node_or_null("Mesh")
 	if mesh == null or not mesh.has_method("show_model"):
 		return
 	var visible_model := _resolved_model()
 	if visible_model.is_empty():
-		push_warning("Structure model '%s' is missing from cache/baked. Visual uses placeholder." % model)
+		push_warning("Structure model '%s' is missing from assets/original/models/sizes.json. Visual uses placeholder." % model)
 		mesh.call("show_model", model)
-		_sync_clip_pose()
 		return
 	mesh.call("show_model", visible_model)
-	_sync_clip_pose()
 	var height := float(mesh.call("body_height"))
 	var radius := maxf(1.0, float(mesh.call("body_radius")))
 	var col := get_node_or_null("Collision") as CollisionShape3D
@@ -193,33 +175,3 @@ func _release_manafount() -> void:
 
 func _manafount() -> Node:
 	return get_node_or_null(manafount_path) if not manafount_path.is_empty() else null
-
-
-func _first_clip_tag(model_tag: String) -> String:
-	if model_tag.is_empty():
-		return ""
-	_load_clip_cache()
-	var by_model: Dictionary = _clip_cache.get(model_tag, {})
-	if by_model.is_empty():
-		return ""
-	var tags := by_model.keys()
-	tags.sort()
-	for raw_tag: Variant in tags:
-		var tag := str(raw_tag)
-		var clip: Dictionary = by_model.get(tag, {})
-		var frames := int(clip.get("frames", 0))
-		var frame_objs: Array = clip.get("frame_objs", [])
-		if frames > 1 and not frame_objs.is_empty():
-			return tag
-	return ""
-
-
-func _load_clip_cache() -> void:
-	if _clip_cache_loaded:
-		return
-	_clip_cache_loaded = true
-	if not FileAccess.file_exists(CLIP_CACHE_PATH):
-		return
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(CLIP_CACHE_PATH))
-	if parsed is Dictionary:
-		_clip_cache = parsed

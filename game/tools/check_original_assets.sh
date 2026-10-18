@@ -17,7 +17,8 @@ cmp_dir() { # name, regenerated, versioned
 }
 cd "$ROOT"
 python3 -I tools/import_textures.py --out="$TMP/textures" >/dev/null && cmp_dir textures "$TMP/textures" "$A/textures" || { echo "FAIL  textures"; fail=1; }
-python3 -I tools/import_props.py --out="$TMP/props" >/dev/null && cmp_dir props "$TMP/props" "$A/props" || { echo "FAIL  props"; fail=1; }
+# The static bodies need the OBJ of sacengine's saveObj, which is no installation input: they are versioned data (023h).
+python3 -I tools/import_props.py --out="$TMP/props" >/dev/null && for m in $(python3 -I tools/import_props.py --list-static); do cp "$A/props/$m.glb" "$TMP/props/"; done && cmp_dir props "$TMP/props" "$A/props" || { echo "FAIL  props"; fail=1; }
 python3 -I tools/import_themes.py --out="$TMP/themes" >/dev/null && cmp_dir themes "$TMP/themes" "$A/themes" || { echo "FAIL  themes"; fail=1; }
 python3 -I tools/import_map.py --out="$TMP/map" --terrain-bin="$TMP/terrain.bin" >/dev/null && cmp_dir map "$TMP/map" "$A/maps/high_noon" || { echo "FAIL  map"; fail=1; }
 python3 -I tools/import_ui.py --out="$TMP/ui" >/dev/null && { cmp_dir ui "$TMP/ui/ui" "$A/ui"; cmp_dir fx "$TMP/ui/fx" "$A/fx"; } || { echo "FAIL  ui/fx"; fail=1; }

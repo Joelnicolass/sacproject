@@ -53,7 +53,7 @@ func _on_wizard(tag: String) -> void:
 	_wizard_name.text = wizard.display_name
 	_wizard_stats.text = "Vida %d · Maná %d" % [wizard.health, wizard.mana]
 	if not MpBoot.is_dedicated_process():
-		_preview.show_model(wizard.model)
+		_preview.show_wizard(wizard)
 
 
 func _on_god(god: String) -> void:

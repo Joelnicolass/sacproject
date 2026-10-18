@@ -1,5 +1,10 @@
 extends SubViewportContainer
 
+## The wizard of the character select, turning on a pivot. Each wizard is its BodyRig (the same skeletal body the match
+## draws) resting on its idle clip.
+
+const _RIG := preload("res://scenes/world/body/body_rig.tscn")
+
 @export var spin_speed: float = 0.5
 @export var model_height: float = 2.0
 @export var model_rotation: Vector3 = Vector3.ZERO
@@ -14,7 +19,8 @@ func _process(delta: float) -> void:
 	_pivot.rotate_y(spin_speed * delta)
 
 
-func show_model(model: String) -> void:
+func show_wizard(wizard: WizardType) -> void:
+	var model := wizard.model
 	if model == _model:
 		return
 	_model = model
@@ -22,33 +28,24 @@ func show_model(model: String) -> void:
 		(_shown[key] as Node3D).visible = key == model
 	if _shown.has(model) or model.is_empty():
 		return
-	var visual := _build(model)
-	if visual == null:
+	var holder := _build(wizard)
+	if holder == null:
 		return
-	_pivot.add_child(visual)
-	_fit(visual)
-	_shown[model] = visual
+	_pivot.add_child(holder)
+	_shown[model] = holder
 
 
-## The baked body of BodyLibrary (the same mesh the match draws). RFC-023 replaces it with the .glb.
-func _build(model: String) -> MeshInstance3D:
-	var baked := BodyLibrary.mesh(model)
-	if baked == null:
+## A holder with the BodyRig of the wizard under the pose BodyVisual gives it in the match, scaled to model_height.
+func _build(wizard: WizardType) -> Node3D:
+	var model := wizard.model
+	if not BodyCatalog.has_skeletal(model):
 		return null
-	var instance := MeshInstance3D.new()
-	instance.mesh = baked
-	return instance
-
-
-func _fit(visual: MeshInstance3D) -> void:
-	if visual.mesh == null:
-		return
-	var turn := Basis.from_euler(model_rotation)
-	var fix: Array = BodyLibrary.info(_model).get("upright_fix", [0.0, 0.0, 0.0])
-	turn = turn * Basis.from_euler(Vector3(float(fix[0]), float(fix[1]), float(fix[2])) * PI / 180.0)
-	var box: AABB = Transform3D(turn, Vector3.ZERO) * visual.mesh.get_aabb()
-	if box.size.y <= 0.001:
-		return
-	var factor := model_height / box.size.y
-	var center := box.get_center() * factor
-	visual.transform = Transform3D(turn.scaled(Vector3.ONE * factor), Vector3(-center.x, -box.position.y * factor, -center.z))
+	var rig := _RIG.instantiate() as BodyRig
+	rig.model = model
+	rig.clips = BodyClips.from_roles(model, UnitClipRoles.for_wizard(wizard, model))
+	var holder := Node3D.new()
+	holder.add_child(rig)
+	var factor := model_height / maxf(float(BodyCatalog.info(model).get("height", model_height)), 0.01)
+	var pose := BodyCatalog.pose(model, true, true)
+	holder.transform = Transform3D(Basis.from_euler(model_rotation) * pose.basis.scaled(Vector3.ONE * factor), pose.origin * factor)
+	return holder

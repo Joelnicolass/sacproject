@@ -9,13 +9,9 @@ Writes game/cache/data/{creatures,wizards,spells,abilities,books}.json.
 import importlib.util
 import json
 import math
-import os
 import re
-import shutil
 import struct
-import subprocess
 import sys
-import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -56,8 +52,7 @@ DEATH_ANIM_SLOTS = {"death": 19, "fly_death": 36}
 HOVER_ANIM_SLOT = 38
 ## F120 (RFC-030i-a): the stun slots (`animations.d`: knocked2Floor 9, getUp 10, flyDamage 35). sacengine stunned lasts
 ## (knocked2Floor + getUp)·updateAnimFactor ticks on the ground and flyDamage·updateAnimFactor in the air (state.d:8138-8150,
-## 14170-14212). Only the timing is exported: the mesh clips would add ~1,6 GB to anim_f37 (5583 frames over the 52 book
-## creatures), so Stunned falls back to a Tween on Tilt (RFC-030i-a risk). Slot 35 is a peasant's dig: peasants have no fly_damage.
+## 14170-14212). Only the timing is exported. Slot 35 is a peasant's dig: peasants have no fly_damage.
 STUN_ANIM_SLOTS = {"knock": 9, "get_up": 10, "fly_damage": 35, "hit_floor": 8}
 ## F138 (RFC-030i-c): a wizard walks only, so only knock and get_up. The fasterStandupTimes fix (sacobject.d:844-874)
 ## swaps hitFloor (slot 8) for knocked2Floor on seven wizards; neither slot 9 nor 10 changes, so the stun length doesn't.
@@ -77,9 +72,6 @@ F36_MODELS = {
     "jnwr": ["jwi1", "jwrn"],
     "eorc": ["HUi1", "HUrn", "HUa1"],
 }
-ENGINE = ROOT.parent / "sacengine" / "3d"
-MAP = "/Users/joelsartori/Downloads/sacgame/Sacrifice/maps/(2) High Noon.scp"
-ANIM_OUT = ROOT / "cache" / "look" / "anim_f37"
 
 spec = importlib.util.spec_from_file_location("ex", ROOT / "tools" / "export_persephone.py")
 ex = importlib.util.module_from_spec(spec)
@@ -503,321 +495,6 @@ def export_f36_clips(anim_index: dict, model_paths: dict) -> dict:
     return cache
 
 
-def _best_anim(anim_index: dict, model_path: str, anim_tag: str) -> tuple[bytes, bytes | None] | None:
-    best, best_len = None, -1
-    for path, raw, skel in anim_index.get(anim_tag.lower(), []):
-        common = 0
-        for a, b in zip(path, model_path):
-            if a != b:
-                break
-            common += 1
-        if common >= best_len:
-            best, best_len = (raw, skel), common
-    return best
-
-
-def _export_all_frames(sxmd: Path, sxsk: Path, out_dir: Path) -> bool:
-    """Runs sacengine export-all-frames (app.d:493-511) and waits for the SXSK frame count of OBJs.
-
-    After writing the frames sacengine goes on to load the map and run the game, so it never exits by itself:
-    once every frame is on disk and the last one stopped growing, the process is stopped. 120 s at most.
-    """
-    out_dir.mkdir(parents=True, exist_ok=True)
-    try:
-        expected = struct.unpack_from("<H", sxsk.read_bytes(), 2)[0]
-    except (OSError, struct.error):
-        expected = 0
-    cmd = [
-        str(ENGINE),
-        "--ignore-settings",
-        "--num-slots=2",
-        MAP,
-        str(sxmd),
-        str(sxsk),
-        f"export-all-frames:{out_dir}",
-    ]
-    proc = subprocess.Popen(
-        cmd,
-        cwd=str(ENGINE.parent),
-        env={**os.environ, "DYLD_LIBRARY_PATH": "/opt/homebrew/lib"},
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
-    deadline = time.monotonic() + 120.0
-    last_size = -1
-    done = False
-    try:
-        while time.monotonic() < deadline:
-            if proc.poll() is not None:
-                done = proc.returncode == 0
-                break
-            if expected > 0 and (out_dir / f"{expected - 1}.obj").exists():
-                size = (out_dir / f"{expected - 1}.obj").stat().st_size
-                if size > 0 and size == last_size:
-                    done = True
-                    break
-                last_size = size
-            time.sleep(0.5)
-    finally:
-        if proc.poll() is None:
-            proc.terminate()
-            try:
-                proc.wait(timeout=10)
-            except subprocess.TimeoutExpired:
-                proc.kill()
-                proc.wait()
-    frames = _sorted_frame_objs(out_dir)
-    ok = done and expected > 0 and len(frames) == expected and _vertex_count(frames[-1]) == _vertex_count(frames[0]) > 0
-    if not ok:
-        _clear_frames(out_dir)
-    return ok
-
-
-def _vertex_count(obj: Path) -> int:
-    try:
-        return sum(1 for line in obj.read_text().splitlines() if line.startswith("v "))
-    except OSError:
-        return 0
-
-
-def _clear_frames(clip_dir: Path) -> None:
-    """Removes the frame OBJs and the displacement marker of a clip (its SXSK, SKEL and textures stay)."""
-    for obj in _sorted_frame_objs(clip_dir):
-        obj.unlink(missing_ok=True)
-    (clip_dir / DISPLACEMENT_FIXED).unlink(missing_ok=True)
-
-
-DISPLACEMENT_FIXED = ".displacement_fixed"
-
-
-def _fix_frame_displacement(model_dir: Path, model: str, sxsk: bytes, clip_dir: Path, frames: list[Path]) -> None:
-    """Moves each exported frame by the displacement the game really uses.
-
-    sacengine's export-all-frames (saxs.d:313-314) adds the raw displacement with only z scaled by the model
-    zfactor. The game (sxsk.d:128-139, frameOffset) scales the whole vector by zfactor / referenceHeight.
-    The two agree only when referenceHeight is 1, so some clips (Frostwolf: +25 m) come out far from the ground.
-    corrected - raw, in sacengine axes (x, y, z up) with d = SXSK frame displacement (before fromSXMD):
-        x: -s*d0*(r-1)   y: -s*d2*(r-1)   z: s*d1*(r-zfactor)   r = zfactor/referenceHeight
-    saveObj writes (x, z, -y). A marker file stops a second pass from moving the frames twice.
-    """
-    marker = clip_dir / DISPLACEMENT_FIXED
-    if marker.exists():
-        return
-    try:
-        sxmd = (model_dir / f"{model}.SXMD").read_bytes()
-        saxs = (model_dir / f"{model}.SAXS").read_bytes()
-        zfactor = struct.unpack_from("<f", sxmd, 8)[0]
-        scaling = struct.unpack_from("<f", saxs, 0)[0]
-        reference = struct.unpack_from("<f", sxsk, 4)[0]
-        count = struct.unpack_from("<H", sxsk, 2)[0]
-    except (OSError, struct.error):
-        return
-    if not (reference > 0.0 and zfactor > 0.0) or count != len(frames):
-        return
-    ratio = zfactor / reference
-    for index, obj in enumerate(frames):
-        _unknown, d0, d1, d2, _offset = struct.unpack_from("<hhhhI", sxsk, 12 + 12 * index)
-        dx = -scaling * d0 * (ratio - 1.0)
-        dy = -scaling * d2 * (ratio - 1.0)
-        dz = scaling * d1 * (ratio - zfactor)
-        delta = (dx, dz, -dy)
-        if max(abs(c) for c in delta) < 0.005:
-            continue
-        out = []
-        for line in obj.read_text().splitlines():
-            if line.startswith("v "):
-                x, y, z = (float(c) for c in line.split()[1:4])
-                line = "v %.10f %.10f %.10f" % (x + delta[0], y + delta[1], z + delta[2])
-            out.append(line)
-        obj.write_text("\n".join(out) + "\n")
-    marker.write_text("1")
-
-
-def _impact_frames_from_skel(skel: bytes | None, frames: int) -> list[int]:
-    if not skel or len(skel) < 140:
-        return []
-    result: list[int] = []
-    for i in range(min(u32(skel, 8), 8)):
-        if skel[16 + 12 * i : 20 + 12 * i] == ATTACK_EVENT:
-            result.append(min(u32(skel, 12 + 12 * i), max(frames - 1, 0)))
-    return sorted(set(result))
-
-
-def _sorted_frame_objs(folder: Path) -> list[Path]:
-    frames: list[Path] = []
-    for obj in folder.glob("*.obj"):
-        try:
-            int(obj.stem)
-            frames.append(obj)
-        except ValueError:
-            continue
-    return sorted(frames, key=lambda path: int(path.stem))
-
-
-def _res_path(path: Path) -> str:
-    return "res://" + str(path.relative_to(ROOT)).replace("\\", "/")
-
-
-## Game actors that are not in any book: their CRE8 tags. They are exported with every clip they
-## own (idle, walk, run and all the melee slots), and baked/audited like the roster.
-## dcas = the Sac Doctor (stab, pumpCorpse and the carry animations).
-GAME_ACTOR_CREATURES = ("dcas",)
-## F112 (RFC-030a): book creatures from this wizard level up also export their stance1 clip, and
-## tools/bake_bodies.gd bakes a body from stance1 frame 0 whenever that clip is exported. The 16 of level <= 1
-## keep their idle0 body until RFC-023 moves everyone to stance1.
-STANCE_POSE_MIN_LEVEL = 2
-## Map villagers (RFC-028c, F94): Farmer and Taurock. Exported with idle, walk, run, attack0 and the
-## `extra_animations` the port plays (cower, talk_cower, work). Not `pull` (PEpu, 445 frames): nothing plays it.
-NPC_ANIM_CREATURES = ("zepe", "raeb")
-NPC_EXTRA_ROLES = ("cower", "talk_cower", "work")
-
-
-def _collect_mesh_clip_tags(creatures: dict, wizards: dict, books: dict) -> dict:
-    tags_by_model: dict[str, set[str]] = {}
-    ## The cache key is the real model tag (AArc, ABRX, YOGO): ClipPosePlayer looks it up as written.
-    for row in wizards.values():
-        model = str(row.get("model", ""))
-        if not model:
-            continue
-        for key in ("idle_animation", "walk_animation", "run_animation"):
-            clip = row.get(key, {})
-            if not isinstance(clip, dict):
-                continue
-            tag_name = str(clip.get("tag", ""))
-            if tag_name:
-                tags_by_model.setdefault(model, set()).add(tag_name)
-    ## Every creature of every book (F112: Manahoar + the 10 of each god), from the books built in this run.
-    summonable_tags: set[str] = set()
-    for entry in books.values():
-        summonable_tags.update(str(raw_tag) for raw_tag in entry.get("creatures", []) if raw_tag)
-    if not summonable_tags:
-        raise RuntimeError("No summonable creatures found for the F37 clip export (empty books).")
-    min_level: dict[str, int] = {}
-    for entry in books.values():
-        for raw_tag, level in entry.get("levels", {}).items():
-            min_level[raw_tag] = min(int(level), min_level.get(raw_tag, 99))
-    for tag in sorted(summonable_tags):
-        row = creatures.get(tag, {})
-        model = str(row.get("model", ""))
-        if not model:
-            continue
-        keys = ["idle_animation", "walk_animation", "run_animation"]
-        if min_level.get(tag, 0) >= STANCE_POSE_MIN_LEVEL:
-            keys.append("stance_animation")
-        for key in keys:
-            clip = row.get(key, {})
-            if not isinstance(clip, dict):
-                continue
-            tag_name = str(clip.get("tag", ""))
-            if tag_name:
-                tags_by_model.setdefault(model, set()).add(tag_name)
-        melee_list = row.get("melee_animations", [])
-        if isinstance(melee_list, list) and melee_list:
-            melee0 = melee_list[0] if isinstance(melee_list[0], dict) else {}
-            attack_tag = str(melee0.get("tag", ""))
-            if attack_tag:
-                tags_by_model.setdefault(model, set()).add(attack_tag)
-        shoot_list = row.get("shoot_animations", [])
-        if isinstance(shoot_list, list) and shoot_list:
-            shoot0 = shoot_list[0] if isinstance(shoot_list[0], dict) else {}
-            shoot_tag = str(shoot0.get("tag", ""))
-            if shoot_tag and shoot_tag[-2:] != "00":
-                tags_by_model.setdefault(model, set()).add(shoot_tag)
-        ## F116: the hybrid fliers' takeoff, fly and land.
-        flight = row.get("flight_animations", {})
-        if isinstance(flight, dict):
-            for clip in flight.values():
-                tag_name = str(clip.get("tag", "")) if isinstance(clip, dict) else ""
-                if tag_name:
-                    tags_by_model.setdefault(model, set()).add(tag_name)
-    for actor_tag in GAME_ACTOR_CREATURES:
-        row = creatures.get(actor_tag, {})
-        model = str(row.get("model", ""))
-        if not model:
-            continue
-        clips = [row.get(key, {}) for key in ("idle_animation", "walk_animation", "run_animation")]
-        clips += [m for m in row.get("melee_animations", []) if isinstance(m, dict)]
-        for clip in clips:
-            tag_name = str(clip.get("tag", "")) if isinstance(clip, dict) else ""
-            if tag_name:
-                tags_by_model.setdefault(model, set()).add(tag_name)
-    for npc_tag in NPC_ANIM_CREATURES:
-        row = creatures.get(npc_tag, {})
-        model = str(row.get("model", ""))
-        if not model:
-            continue
-        clips = [row.get(key, {}) for key in ("idle_animation", "walk_animation", "run_animation")]
-        melee_list = row.get("melee_animations", [])
-        if isinstance(melee_list, list) and melee_list:
-            clips.append(melee_list[0])
-        extra = row.get("extra_animations", {})
-        if isinstance(extra, dict):
-            clips += [extra.get(role, {}) for role in NPC_EXTRA_ROLES]
-        for clip in clips:
-            tag_name = str(clip.get("tag", "")) if isinstance(clip, dict) else ""
-            if tag_name:
-                tags_by_model.setdefault(model, set()).add(tag_name)
-    return tags_by_model
-
-
-def export_f37_mesh_clips(anim_index: dict, model_paths: dict, creatures: dict, wizards: dict, books: dict) -> dict:
-    cache: dict = {}
-    ANIM_OUT.mkdir(parents=True, exist_ok=True)
-    for model, tags_set in _collect_mesh_clip_tags(creatures, wizards, books).items():
-        tags = sorted(tags_set)
-        model_dir = ROOT / "cache" / "look" / "bodies" / model
-        sxmd = model_dir / f"{model}.SXMD"
-        model_path = model_paths.get(model.lower(), "")
-        if not sxmd.exists() or not model_path:
-            continue
-        model_cache: dict = {}
-        for tag_name in tags:
-            picked = _best_anim(anim_index, model_path, tag_name)
-            if picked is None:
-                continue
-            sxsk_raw, skel_raw = picked
-            clip_dir = ANIM_OUT / model.lower() / tag_name
-            clip_dir.mkdir(parents=True, exist_ok=True)
-            sxsk_path = clip_dir / f"{tag_name}.SXSK"
-            sxsk_path.write_bytes(sxsk_raw)
-            if skel_raw:
-                (clip_dir / f"{tag_name}.SKEL").write_bytes(skel_raw)
-            for texture in model_dir.glob("*.tga"):
-                dst = clip_dir / texture.name
-                if not dst.exists():
-                    shutil.copy2(texture, dst)
-            expected = u16(sxsk_raw, 2)
-            frame_files = _sorted_frame_objs(clip_dir)
-            if frame_files and len(frame_files) != expected:
-                ## A partial export from an earlier run: start the clip again.
-                print("clip parcial, se re-exporta", model, tag_name, len(frame_files), "/", expected)
-                _clear_frames(clip_dir)
-                frame_files = []
-            if not frame_files:
-                if not _export_all_frames(sxmd, sxsk_path, clip_dir):
-                    print("clip fallido", model, tag_name)
-                    _clear_frames(clip_dir)
-                    continue
-                frame_files = _sorted_frame_objs(clip_dir)
-            if len(frame_files) != expected:
-                _clear_frames(clip_dir)
-                continue
-            _fix_frame_displacement(model_dir, model, sxsk_raw, clip_dir, frame_files)
-            framerate = 30
-            if skel_raw and len(skel_raw) >= 12:
-                framerate = max(1, u32(skel_raw, 4))
-            model_cache[tag_name] = {
-                "tag": tag_name,
-                "frames": len(frame_files),
-                "framerate": framerate,
-                "impact_frames": _impact_frames_from_skel(skel_raw, len(frame_files)),
-                "frame_objs": [_res_path(obj) for obj in frame_files],
-            }
-        if model_cache:
-            cache[model] = model_cache
-    return cache
-
-
 ## BLDG (RFC-024 addendum, cut 024b2). Layout follows sacengine `bldg.d`: header 128 bytes
 ## (flags, ground 8x8, maxHealth u32, 10 floats, tileset, numComponents u32 at 120) and 48 bytes per component.
 ## The BLDG reader (layout, wads) lives in tools/sac_formats/bldg.py, shared with the props importer.
@@ -833,7 +510,7 @@ def write_buildings_json(buildings: dict) -> None:
 def export_buildings() -> None:
     """cache/data/buildings.json (max health, shelter flag, components of every BLDG) and the component
     models (MRMM + texture) of the god wads under cache/look/buildings/<tag>/, added to the catalog that
-    tools/bake_bodies.gd bakes. Run it before the bake: `python3 tools/export_stats.py buildings`.
+    tools/audit_original_props.gd reads (until 033i deletes cache/): `python3 tools/export_stats.py buildings`.
     With `--out DIR` (RFC-033g) only buildings.json is written, to DIR; no models, no catalog."""
     buildings, models = read_buildings()
     write_buildings_json(buildings)
@@ -1045,7 +722,6 @@ def main() -> None:
     }
     if not ASSETS_ONLY:
         outputs["anim_clips_f36.json"] = export_f36_clips(anim_index, model_paths)
-        outputs["anim_mesh_clips_f37.json"] = export_f37_mesh_clips(anim_index, model_paths, creatures, ordered_wizards, books)
     for filename, payload in outputs.items():
         (OUT / filename).write_text(json.dumps(payload, indent=1, ensure_ascii=False))
     if ASSETS_ONLY:

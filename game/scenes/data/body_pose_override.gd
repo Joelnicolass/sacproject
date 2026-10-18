@@ -2,9 +2,9 @@
 class_name BodyPoseOverride
 extends Resource
 
-## One hand correction for one baked model: turn, offset, scale and capsule.
-## Lives in data/bodies/pose_overrides.tres, which is committed. A new bake does not touch it.
-## BodyCatalog adds it on top of what tools/bake_bodies.gd measured.
+## One hand correction for one model: turn, offset, scale and capsule.
+## Lives in data/bodies/pose_overrides.tres, which is committed.
+## BodyCatalog adds it on top of the measures in assets/original/models/sizes.json.
 
 ## Model tag (eorc, jnwr, pcfn...).
 @export var model := "":
@@ -51,7 +51,7 @@ extends Resource
 
 @export_group("Reposo")
 ## The rest clip (pose_source) floats on purpose: its frames only touch the ground at the bottom of the beat
-## (Phoenix). tools/audit_body_pose.gd then judges the lowest point of the clip, not its median.
+## (Phoenix): the lowest point of the clip is what stands on the ground, not its median.
 @export var rest_hovers := false:
 	set(value):
 		rest_hovers = value

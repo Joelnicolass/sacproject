@@ -1,11 +1,10 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/structures/structure_body.gd" id="1_body"]
 [ext_resource type="Script" path="res://scenes/world/body_visual.gd" id="2_visual"]
 [ext_resource type="Script" path="res://scenes/world/mana_source.gd" id="3_source"]
 [ext_resource type="Resource" path="res://data/match_rules.tres" id="4_rules"]
 [ext_resource type="Script" path="res://scenes/world/components/health.gd" id="5_health"]
-[ext_resource type="Script" path="res://scenes/world/components/clip_pose_player.gd" id="6_clip"]
 [ext_resource type="Script" path="res://scenes/world/guardian/guard_post.gd" id="7_post"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/unit_health_bar.tscn" id="8_bar"]
 
@@ -56,10 +55,6 @@ script = ExtResource("7_post")
 host = NodePath("..")
 attach_height = 15.0
 health = NodePath("../Health")
-
-[node name="ClipPose" type="Node" parent="." node_paths=PackedStringArray("mesh_path")]
-script = ExtResource("6_clip")
-mesh_path = NodePath("../Mesh")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_structure")

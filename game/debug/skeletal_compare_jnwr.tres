@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="SkeletalCompareSetup" format=3]
-
-[ext_resource type="Script" path="res://debug/skeletal_compare_setup.gd" id="1_setup"]
-
-[resource]
-script = ExtResource("1_setup")
-model = "jnwr"
-role = "cast"
-stepped = false

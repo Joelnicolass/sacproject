@@ -11,7 +11,7 @@ All paths stored inside index.json are relative to the output folder.
 Format knowledge comes from reading sacengine's saxs.d / sxmd.d / sxsk.d / skel.d (GPL-3, read only);
 this file is written independently from the layout and does not copy its code.
 
-Axes: the baked OBJs of cache/look/anim_f37 (sacengine saveObj) are (x, z, -y) of the engine axes, where the
+Axes: the OBJs of sacengine's saveObj are (x, z, -y) of the engine axes, where the
 engine axes are fromSXMD(v) = (-x, -z, y). In the OBJ space a raw SXMD vector (x, y, z) is therefore
 (-x, y, z) and a raw SXSK quaternion (x, y, z, w) is (-x, y, z, w). Lengths are scaled by SAXS `scaling`.
 Root displacement of a frame (game rule, sxsk.d frameOffset) = scaling * zfactor/referenceHeight * (-d0, d1, d2).

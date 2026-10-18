@@ -3,7 +3,7 @@ extends SceneTree
 ## RFC-033 (033c) parity audit of the static models: for every prop, the mesh the game now loads from
 ## assets/original/props/<name>.glb (BodyCatalog.mesh) equals the one it used to build, vertex by vertex:
 ##   - the baked cache/baked/props/<name>.res (what BodyCatalog loaded before), and
-##   - ObjMesh.build() of the OBJ in cache/look (what bake_bodies.gd baked from).
+##   - ObjMesh.build() of the OBJ in cache/look (what the retired bake_bodies.gd baked from).
 ## Per prop: surfaces, surface names, triangle corners (position in mm, uv, normal), winding, shared materials.
 ## Deleted in 033i, together with cache/.
 ##   bash agent/harness/godot_run.sh "$GODOT" --headless --path game --script res://tools/audit_original_props.gd

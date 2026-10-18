@@ -6,27 +6,30 @@ carries the label as its name (Godot names the surface after it; OriginalMateria
 top by that name). The geometry is the one the game used to build with ObjMesh.build (scenes/world/obj_mesh.gd):
 winding checked against the file normals, plants drawn on both sides with their own normals. Written into Godot's
 clockwise winding mirrored for glTF (the importer flips it back), so the vertices that reach the game are the same.
-Also copies the body and prop measurements to assets/original/models/sizes.json (the dedicated server reads them
-without meshes; the values are copied, never recomputed).
+Also writes the hybrid bodies of RFC-023 023c (STATIC_BODIES, no clip animates them) as static props: their bind-pose
+OBJ (`--bodies-from=DIR`, DIR/<m>/<m>.obj) with z mirrored (the game's axes, ObjMesh.MIRROR_Z): the geometry
+the game baked these bodies from, vertex by vertex. The skeletal .glb is not the source: its bind pose differs from that OBJ
+by up to several cm. The WAD files give no such OBJ (sacengine's saveObj makes it), so they are left alone without the flag.
 
   python3 tools/import_props.py            # write
   python3 tools/import_props.py --check    # report what would change, write nothing
-  python3 tools/import_props.py --verify   # read the written .glb files back and compare them with the OBJ (mm)
+  python3 tools/import_props.py --list-static   # the names of the static bodies (tools/check_original_assets.sh skips them)
+  python3 tools/import_props.py --verify   # read the written .glb files back and compare them with the OBJ (mm; the static bodies with `--bodies-from`)
 
 Source: the installation's WAD files, read with tools/sac_formats (joby.wad, prsc.wad, models.wad, jamesmod.wad): the model
 is built in memory as the OBJ text it has always been imported from (5 decimals), so the vertices are the same. Run it once;
 the result is versioned. An existing .glb.import is never touched (it carries the UID). Deterministic: a second run writes
 nothing.
 
-sizes.json is the one thing the WAD cannot give: those measurements come out of the posed body meshes that tools/bake_bodies.gd
-measures (RFC-023 will derive them from the .glb). It is copied only on request, `--sizes-from=cache/baked`, and left alone
-otherwise.
+assets/original/models/sizes.json (the measurements the dedicated server reads without meshes) is not written here: since
+RFC-023 023h it is a versioned datum (its generator, tools/bake_bodies.gd, was retired with the baked bodies).
 """
 
 import json
 import math
 import struct
 import sys
+import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -38,7 +41,13 @@ from sac_formats import props as propslib  # noqa: E402
 ROOT = Path(__file__).resolve().parents[1]
 ARGS = {a.split("=", 1)[0]: (a.split("=", 1)[1] if "=" in a else True) for a in sys.argv[1:]}
 OUT = Path(ARGS.get("--out", ROOT / "assets" / "original" / "props"))
-SIZES = ROOT / "assets" / "original" / "models" / "sizes.json"
+## RFC-023 023h: where the bind-pose OBJ of the static bodies is (<dir>/<model>/<model>.obj, sacengine's saveObj). Only needed
+## to (re)write those 11 files; the result is versioned. Without it they are left alone.
+BODIES_FROM = Path(ARGS["--bodies-from"]) if "--bodies-from" in ARGS else None
+
+## RFC-023 023h: bodies drawn as a static bind-pose mesh because no clip of their skeleton is the one their creature rests on
+## (the hybrids of 023c, with a single clip). Everything else in models/ is drawn by a BodyRig.
+STATIC_BODIES = ("faez", "thes", "the2", "sara", "hoom", "bane", "ban2", "sirc", "surt", "gamm", "baby")
 
 ## Area share of near-horizontal faces above which a plant lies on the ground (ObjMesh.GROUND_WIDGET_RATIO).
 GROUND_WIDGET_RATIO = 0.7
@@ -249,6 +258,23 @@ def read_glb(path: Path):
     return out
 
 
+def static_body_surfaces(model: str):
+    """ObjMesh.build(<model>.obj, {MIRROR_Z}): the bind-pose OBJ of sacengine's saveObj (x, z, -y) drawn with z mirrored.
+    The OBJ is the one the game baked these bodies from before 023h, so the geometry is the same vertex by vertex."""
+    surfaces, has_normals = parse_obj((BODIES_FROM / model / (model + ".obj")).read_text())
+    mirrored = [(label, [(x, y, f32(-z)) for x, y, z in verts], uvs, [(x, y, f32(-z)) for x, y, z in normals])
+                for label, verts, uvs, normals in surfaces]
+    flip = needs_flip(mirrored, has_normals)
+    out = []
+    for label, verts, uvs, normals in mirrored:
+        if not verts:
+            continue
+        if flip:
+            verts, uvs, normals = swap_triangles(verts), swap_triangles(uvs), swap_triangles(normals)
+        out.append((label, verts, uvs, normals))
+    return out
+
+
 def verify() -> None:
     items = propslib.all_props()
     worst = {"position (mm)": 0.0, "uv": 0.0, "normal": 0.0}
@@ -268,53 +294,61 @@ def verify() -> None:
                 worst["uv"] = max(worst["uv"], math.dist(a, b))
             for a, b in zip(g[3], w[3]):
                 worst["normal"] = max(worst["normal"], math.dist(a, b))
-    print("verify: %d props, %d with a different shape; worst error %s" % (len(items), bad, worst))
+    for model in STATIC_BODIES if BODIES_FROM else ():
+        want = static_body_surfaces(model)
+        got = read_glb(OUT / (model + ".glb"))
+        if len(got) != len(want) or any(g[0] != w[0] or len(g[1]) != len(w[1]) for g, w in zip(got, want)):
+            print("MISMATCH shape", model)
+            bad += 1
+            continue
+        for g, w in zip(got, want):
+            for a, b in zip(g[1], w[1]):
+                worst["position (mm)"] = max(worst["position (mm)"], 1000.0 * math.dist(a, b))
+    print("verify: %d props and %d static bodies, %d with a different shape; worst error %s" % (
+        len(items), len(STATIC_BODIES) if BODIES_FROM else 0, bad, worst))
     sys.exit(1 if bad or worst["position (mm)"] > 0.01 else 0)
 
 
+def write_if_changed(target: Path, name: str, surfaces, check: bool) -> tuple:
+    """Writes one prop .glb (and its .import when new). Returns (bytes, written?)."""
+    with tempfile.TemporaryDirectory() as tmp:
+        scratch = Path(tmp) / "x.glb"
+        write_prop(scratch, name, surfaces)
+        data = scratch.read_bytes()
+    changed = not (target.exists() and target.read_bytes() == data)
+    if changed and not check:
+        OUT.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(data)
+    imp = target.with_name(target.name + ".import")
+    if not imp.exists() and not check:
+        imp.write_text(import_params(animation=False, exact=True, tangents=False))
+    return len(data), changed
+
+
 def main() -> None:
+    if "--list-static" in ARGS:
+        print(" ".join(STATIC_BODIES))
+        return
     if "--verify" in ARGS:
         verify()
     check = "--check" in ARGS
     items = propslib.all_props()
     written = kept = 0
     total = 0
-    import tempfile
     for item in items:
-        name = item.name
         surfaces = build_surfaces(item.obj, item.foliage)
-        assert surfaces, name
-        target = OUT / (name + ".glb")
-        with tempfile.TemporaryDirectory() as tmp:
-            scratch = Path(tmp) / "x.glb"
-            write_prop(scratch, name, surfaces)
-            data = scratch.read_bytes()
-        total += len(data)
-        if target.exists() and target.read_bytes() == data:
-            kept += 1
-        else:
-            written += 1
-            if not check:
-                OUT.mkdir(parents=True, exist_ok=True)
-                target.write_bytes(data)
-        imp = target.with_name(target.name + ".import")
-        if not imp.exists() and not check:
-            imp.write_text(import_params(animation=False, exact=True, tangents=False))
-    note = "sizes.json untouched"
-    if "--sizes-from" in ARGS:
-        baked = Path(ARGS["--sizes-from"])
-        sizes = {
-            "bodies": json.loads((baked / "bodies.json").read_text()),
-            "props": json.loads((baked / "props.json").read_text()),
-        }
-        text = json.dumps(sizes, indent=1) + "\n"
-        changed = not (SIZES.exists() and SIZES.read_text() == text)
-        if changed and not check:
-            SIZES.parent.mkdir(parents=True, exist_ok=True)
-            SIZES.write_text(text)
-        note = "sizes.json %s: %d bodies, %d props" % ("changed" if changed else "unchanged", len(sizes["bodies"]), len(sizes["props"]))
-    print("props %d (%d written, %d unchanged), %.2f MB of .glb; %s%s" % (
-        len(items), written, kept, total / 1e6, note, " [check]" if check else ""))
+        assert surfaces, item.name
+        size, changed = write_if_changed(OUT / (item.name + ".glb"), item.name, surfaces, check)
+        total += size
+        written += changed
+        kept += not changed
+    bodies_written = 0
+    for model in STATIC_BODIES if BODIES_FROM else ():
+        size, changed = write_if_changed(OUT / (model + ".glb"), model, static_body_surfaces(model), check)
+        total += size
+        bodies_written += changed
+    print("props %d (%d written, %d unchanged); static bodies %d (%d written); %.2f MB of .glb%s" % (
+        len(items), written, kept, len(STATIC_BODIES) if BODIES_FROM else 0, bodies_written, total / 1e6, " [check]" if check else ""))
 
 
 if __name__ == "__main__":

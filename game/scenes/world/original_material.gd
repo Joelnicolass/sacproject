@@ -23,13 +23,8 @@ static func part_label(part: int) -> String:
 	return "bodypart%03d" % (part + 1)
 
 
-## The model a mesh file belongs to: <model>/<model>.obj (bodies, buildings), <name>.obj (plants) or
-## anim_f37/<model>/<clip>/N.obj (clip frames).
+## The model a mesh file belongs to: <model>/<model>.obj (bodies, buildings) or <name>.obj (plants).
 static func model_of(obj_path: String) -> String:
-	var dirs := obj_path.get_base_dir().split("/")
-	var at := dirs.find("anim_f37")
-	if at >= 0 and at + 1 < dirs.size():
-		return dirs[at + 1]
 	return obj_path.get_file().get_basename()
 
 

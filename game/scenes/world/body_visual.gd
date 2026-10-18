@@ -2,14 +2,14 @@
 class_name BodyVisual
 extends MeshInstance3D
 
-## Shows a baked body or prop from BodyCatalog. Feet on local y = 0.
+## Shows a static body or prop from BodyCatalog; an animated body is drawn by its BodyRig (`rig`) and has no mesh here. Feet on local y = 0.
 ## This node owns its mesh and its transform (the model pose): the editor saves neither.
 ## To place a model, move a parent Node3D, not this node.
 
 ## The model, its pose or its capsule were just applied (a new `model`, or an edit in pose_overrides.tres).
 signal posed
 
-## Built from the cache on every load, so the editor must not write them to the scene.
+## Built from the assets on every load, so the editor must not write them to the scene.
 const _UNSAVED: PackedStringArray = ["mesh", "transform"]
 const _LOCKED: PackedStringArray = ["mesh", "position", "rotation", "scale"]
 
@@ -24,7 +24,7 @@ const _LOCKED: PackedStringArray = ["mesh", "position", "rotation", "scale"]
 		_refresh_in_editor()
 @export var placeholder_height := 1.8
 
-## The skeletal body (BodyRig, RFC-023 023c) that hangs under this node and draws instead of the baked mesh. It inherits
+## The skeletal body (BodyRig, RFC-023 023c) that hangs under this node and draws instead of the static mesh. It inherits
 ## this node's transform (the pose, the capsule scale, DevourGrowth). Set by the body's clip animator; null otherwise.
 @export var rig: BodyRig
 
@@ -68,7 +68,7 @@ func show_model(tag: String) -> void:
 	_apply()
 
 
-## true: the rig draws and this node's own mesh goes away; false: the baked mesh is shown again (a model with no .glb).
+## true: the rig draws and this node's own mesh goes away; false: the static mesh is shown again (a hybrid, or a model with no .glb).
 func use_skeleton(on: bool) -> void:
 	if on == _skeletal:
 		return
@@ -114,9 +114,11 @@ func _apply() -> void:
 	_watch()
 	transform = BodyCatalog.pose(model, stand_on_feet, _skeletal)
 	if BodyCatalog.loads_meshes() and not _skeletal:
-		var baked := BodyCatalog.mesh(model)
-		if baked:
-			mesh = baked
+		var found := BodyCatalog.mesh(model)
+		if found:
+			mesh = found
+		elif BodyCatalog.has_skeletal(model):
+			mesh = null
 		else:
 			_placeholder()
 	posed.emit()

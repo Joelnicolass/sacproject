@@ -141,8 +141,6 @@ var _since_damage := INF
 var _seat_left := 0
 var _stats_ready := false
 var _last_health := 0.0
-var _mesh_base_pos := Vector3.ZERO
-var _mesh_base_rot := Vector3.ZERO
 var _pose_tween: Tween
 var _rng := RandomNumberGenerator.new()
 var _debug_clip_role := ""
@@ -213,11 +211,8 @@ func _ready() -> void:
 	collision_mask = ground_mask
 	_apply_type()
 	_apply_model()
-	var mesh := get_node_or_null("Tilt/Mesh") as Node3D
-	if mesh:
-		_mesh_base_pos = mesh.position
-		_mesh_base_rot = mesh.rotation
-		_clip_pose.call("setup", model, UnitClipRoles.for_type(type, model), _mesh_base_pos, _mesh_base_rot)
+	if get_node_or_null("Tilt/Mesh"):
+		_clip_pose.call("setup", model, UnitClipRoles.for_type(type, model))
 	if _clip_pose and _clip_pose.has_signal("clip_looped"):
 		_clip_pose.connect("clip_looped", _on_clip_looped)
 	if _flight:
@@ -471,7 +466,7 @@ func _sync_clip_pose() -> void:
 		return
 	if model.is_empty():
 		return
-	_clip_pose.call("setup", model, UnitClipRoles.for_type(type, model), _mesh_base_pos, _mesh_base_rot)
+	_clip_pose.call("setup", model, UnitClipRoles.for_type(type, model))
 
 func _apply_type() -> void:
 	type = GameData.creature(creature_tag)
@@ -497,8 +492,6 @@ func _apply_model() -> void:
 	if visual == null or model.is_empty():
 		return
 	visual.call("show_model", model)
-	_mesh_base_pos = visual.position
-	_mesh_base_rot = visual.rotation
 	_sync_clip_pose()
 	# The capsule is BodyCollider's (F135): the only writer of the Collision shape.
 	var height := float(visual.call("body_height"))

@@ -122,7 +122,7 @@ func _ready() -> void:
 	type = GameData.creature(creature_tag)
 	_fit_collision()
 	if clip_player and BodyCatalog.loads_meshes():
-		clip_player.setup(visual.model, _clip_roles(), visual.position, visual.rotation)
+		clip_player.setup(visual.model, _clip_roles())
 	health_bar.call("bind", health, owner_slot)
 	_apply_pose()
 	if MpKit.is_networked() and not MpKit.is_server():

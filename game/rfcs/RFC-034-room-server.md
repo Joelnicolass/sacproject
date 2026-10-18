@@ -527,3 +527,9 @@ En `main`, sin agentes en paralelo, antes de portar:
 - Se aplica la recomendación de la pregunta abierta de §15: AgentKit viene de godot-studio-playtest (`install.sh`), así que el módulo `determinism` también va a ese repo en `rc/v0.10.0`, además de la skill en godot-studio-skills (`rc/v0.10.0` y `-spanish`). El merge a las ramas principales lo decide el usuario.
 - IDs F186–F189 para 034i–034l.
 - `game/cache` se borró por pedido del usuario (2026-10-17). Ningún corte de este RFC puede depender de ella; las referencias salen de los WAD, de sacengine o del juego original con REA.
+
+## Pedido del usuario (2026-10-18): dos salas 1v1 en paralelo
+Escenario obligatorio de prueba: **un servidor de salas, cuatro clientes, una sala 1v1 y otra sala 1v1**, con estados independientes (nada se mezcla de una partida a la otra: jugadores visibles, listo, picks, cuenta regresiva, `match_ready`, tickets, puertos, desconexiones y resultado).
+- **034d:** a nivel protocolo, con el runner stub (sin dedicados reales).
+- **034e:** de punta a punta con **dos dedicados reales** en paralelo (7 procesos headless: salas + 4 clientes + 2 dedicados). En local se sube el tope de partidas a 2 solo para esta prueba (`--max-matches=2`) y se controla RSS total; sin ventanas. Criterio: cada dedicado admite solo los tickets de su sala, cada partida termina con su propio resultado, y al final no queda ningún proceso ni archivo de partida.
+- 034h exige este escenario 3 veces seguidas para el port al kit.

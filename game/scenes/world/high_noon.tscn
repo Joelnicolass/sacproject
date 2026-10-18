@@ -89,13 +89,14 @@ tile_map = ExtResource("f22_tiles")
 transform = Transform3D(0.921061, -0.27935162, 0.27131036, 0, 0.6967067, 0.7173561, -0.38941833, -0.6607287, 0.6417094, 0, 0, 0)
 shadow_enabled = true
 
-[node name="Camera" type="Camera3D" parent="." unique_id=1948599183 node_paths=PackedStringArray("ground", "edge_area")]
+[node name="Camera" type="Camera3D" parent="." unique_id=1948599183 node_paths=PackedStringArray("ground", "edge_area", "wheel_blockers")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.7, 0.7, 0, -0.7, 0.7, 0, 18, 18)
 far = 20000.0
 script = ExtResource("11_camera")
 ground = NodePath("../Terrain")
 edge_area = NodePath("../Hud/View")
+wheel_blockers = [NodePath("../Hud/Minimap")]
 
 [node name="Terrain" parent="." unique_id=1483961628 groups=["nav_source"] instance=ExtResource("f195_terrain_glb")]
 unique_name_in_owner = true
@@ -325,7 +326,7 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 script = ExtResource("f80_probe")
 world_view = NodePath("../View")
-hud_controls = [NodePath("../SpellBook"), NodePath("../SelectionRoster")]
+hud_controls = [NodePath("../SpellBook"), NodePath("../SelectionRoster"), NodePath("../Minimap")]
 camera = NodePath("../../Camera")
 
 [node name="CursorSkin" type="Node" parent="Hud" unique_id=1957000105 node_paths=PackedStringArray("command_log", "probe")]

@@ -28,6 +28,8 @@ const ORDER_MENU_ORDER := ["attack", "guard", "advance", "guard_area", "retreat"
 
 ## sacengine rectangleThreshold.
 @export var rect_threshold_px := 3.0
+## A click on the minimap finds a body within this many minimap units of it (meters = units × the minimap zoom).
+@export var minimap_pick_units := 3.0
 
 var _mode := "":
 	set(value):
@@ -52,6 +54,7 @@ func _ready() -> void:
 	%Battle.say("Mago")
 	_prepare_ping()
 	%View.gui_input.connect(_on_view_event)
+	%Minimap.ground_pointed.connect(_on_minimap_pointed)
 	%SpellBook.spell_pressed.connect(_arm_spell)
 	%SpellBook.creature_pressed.connect(_summon)
 	%SpellBook.structure_pressed.connect(_arm_structure)
@@ -332,13 +335,16 @@ func _left_at(screen: Vector2, shift: bool, ctrl: bool) -> void:
 
 ## dagonBackend.d:1215-1233: attack or guard a body; on the ground, advance or guard the spot.
 func _order_icon_at(screen: Vector2) -> void:
+	var body := _body_under(screen, false)
+	_order_icon_on(body, _ray_ground(screen))
+
+
+func _order_icon_on(body: Node3D, ground: Variant) -> void:
 	var kind := _mode
 	_mode = ""
-	var body := _body_under(screen, false)
 	if body and not _is_corpse(body):
 		_order(kind, body.global_position, body)
 		return
-	var ground: Variant = _ray_ground(screen)
 	if ground == null:
 		%Battle.say("Sin suelo")
 		return
@@ -346,14 +352,16 @@ func _order_icon_at(screen: Vector2) -> void:
 
 
 func _cast_at(screen: Vector2) -> void:
+	_cast_on(_body_under(screen, false), _ray_ground(screen))
+
+
+func _cast_on(body: Node3D, ground: Variant) -> void:
 	var book: Node = _caster.get("spellbook") if _caster and is_instance_valid(_caster) else null
 	var spell: SpellType = book.call("spell_at", _spell_index) if book else null
 	if spell == null:
 		_mode = ""
 		%Battle.say("Mago")
 		return
-	var body := _body_under(screen, false)
-	var ground: Variant = _ray_ground(screen)
 	var point: Vector3 = body.global_position if body else (ground if ground != null else Vector3.ZERO)
 	if body == null and ground == null:
 		%Battle.say("Sin blanco")
@@ -407,19 +415,22 @@ func _structure_at(screen: Vector2) -> void:
 		return
 	match action.pick:
 		SpellAction.Pick.GROUND:
-			var ground: Variant = _ray_ground(screen)
-			if ground == null:
-				%Battle.say("Sin suelo")
-				return
-			_show_ping(ground)
-			_cast_pending = spell.display_name
-			_caster.call("request_structure", _structure_index, ground)
+			_structure_on_ground(spell, _ray_ground(screen))
 		SpellAction.Pick.OWN_UNIT:
 			_cast_structure_on(spell, _unit_under(screen))
 		SpellAction.Pick.SOUL:
 			_cast_structure_on(spell, _soul_under(screen))
 		SpellAction.Pick.OWN_BUILDING:
 			_cast_structure_on(spell, _building_under(screen))
+
+
+func _structure_on_ground(spell: SpellType, ground: Variant) -> void:
+	if ground == null:
+		%Battle.say("Sin suelo")
+		return
+	_show_ping(ground)
+	_cast_pending = spell.display_name
+	_caster.call("request_structure", _structure_index, ground)
 
 
 ## A structure tab spell that aims at a body: the server checks the body is valid (own, in range…).
@@ -455,7 +466,10 @@ func _ability_at(screen: Vector2) -> void:
 		body = _soul_under(screen)
 		if body == null:
 			body = _corpse_under(screen)
-	var ground: Variant = _ray_ground(screen)
+	_ability_on(body, _ray_ground(screen))
+
+
+func _ability_on(body: Node3D, ground: Variant) -> void:
 	if body == null and ground == null:
 		%Battle.say("Sin blanco")
 		return
@@ -516,9 +530,7 @@ func _ability_of(unit: Node) -> String:
 ## The keyboard action has no cursor: it aims through the crosshair, which the third-person
 ## camera keeps on the wizard's head, so the local wizard is skipped there.
 func _right_at(screen: Vector2, from_action: bool) -> void:
-	if not _mode.is_empty():
-		_mode = ""
-		_on_selection_changed(%Selection.units())
+	if _cancel_armed():
 		return
 	var body := _body_under(screen, from_action)
 	if body:
@@ -534,6 +546,80 @@ func _right_at(screen: Vector2, from_action: bool) -> void:
 		%Battle.say("Sin suelo")
 		return
 	_order("move", ground, null)
+
+
+## A right click drops an armed icon instead of ordering. True when it did.
+func _cancel_armed() -> bool:
+	if _mode.is_empty():
+		return false
+	_mode = ""
+	_on_selection_changed(%Selection.units())
+	return true
+
+
+## RFC-037 037c: the minimap is another surface to point at. It only gives a ground point (no ray): a right click orders
+## the selection there, a left click with an icon armed aims it there (a body near the point, else the spot).
+## A left click with nothing armed does nothing (P2): the original keeps the camera on the wizard and has no box here.
+func _on_minimap_pointed(point: Vector3, button: int) -> void:
+	if get_tree().get_first_node_in_group("walk_order") or WorldInput.blocked(self):
+		return
+	if button == MOUSE_BUTTON_RIGHT:
+		if not _cancel_armed():
+			_order("move", point, null)
+		return
+	if button != MOUSE_BUTTON_LEFT:
+		return
+	match _mode:
+		"spell":
+			_cast_on(_body_near(point), point)
+		"structure":
+			_structure_at_point(point)
+		"ability":
+			_ability_on(_body_near(point), point)
+		"attack", "guard":
+			_order_icon_on(_body_near(point), point)
+		"menu":
+			var kind: String = ORDER_MENU_ORDER[_menu_index]
+			_mode = kind
+			_arm_order_icon(kind)
+
+
+func _structure_at_point(point: Vector3) -> void:
+	var book: Node = _caster.get("spellbook") if _caster and is_instance_valid(_caster) else null
+	var spell: SpellType = book.call("structure_at", _structure_index) if book else null
+	var action: SpellAction = _caster.call("structure_action", _structure_index) if spell else null
+	if action == null:
+		_mode = ""
+		%Battle.say("Mago" if spell == null else "No implementado")
+		return
+	match action.pick:
+		SpellAction.Pick.GROUND:
+			_structure_on_ground(spell, point)
+		SpellAction.Pick.OWN_UNIT:
+			_cast_structure_on(spell, _body_near(point, true))
+		_:
+			%Battle.say("Sin blanco")
+
+
+## The body (wizard or creature, not a corpse) closest to a world point and within `minimap_pick_units` HUD units of the
+## minimap at its current zoom; an enemy that cannot be targeted (stealth) is not found. `own_only`: only the local side's.
+func _body_near(point: Vector3, own_only := false) -> Node3D:
+	var reach := minimap_pick_units * float(%Minimap.zoom)
+	var best: Node3D = null
+	var best_distance := reach
+	for node in get_tree().get_nodes_in_group("unit") + get_tree().get_nodes_in_group("wizard"):
+		var body := node as Node3D
+		if body == null or not Attackable.is_body(body) or _is_corpse(body):
+			continue
+		if own_only and _is_enemy(body):
+			continue
+		if _is_enemy(body) and body.has_method("is_targetable") and not bool(body.call("is_targetable")):
+			continue
+		var distance := Vector2(body.global_position.x - point.x, body.global_position.z - point.z).length()
+		if distance < best_distance:
+			best_distance = distance
+			best = body
+	return best
 
 
 func _retreat() -> void:

@@ -155,7 +155,16 @@ var _cower_loops := 0
 var _idle_loops := 0
 var _gesturing := false
 var _playing_dead := false
-var _stealth := false
+## Replicated (unit.tscn, ON_CHANGE) so a client hides an enemy in stealth on the minimap (RFC-037). The server stays the
+## only writer (`set_stealth`); the setter applies the 3D fade on every peer.
+var _stealth := false:
+	set(value):
+		if _stealth == value:
+			return
+		_stealth = value
+		if is_node_ready():
+			_apply_stealth_look()
+			_update_clip_state()
 ## RFC-023 023e: the clip role of a creature a Sac Doctor holds or revives (rise, held, thrash). Captive picks it on every
 ## peer from the mode; "" = none. A model with no such clip rests on the role it would play anyway.
 var captive_role := "":
@@ -234,6 +243,8 @@ func _ready() -> void:
 		_show_corpse(false)
 	elif mode == Mode.ROCK_FORM:
 		_apply_rock_form()
+	if _stealth:
+		_apply_stealth_look()
 	_update_clip_state()
 	if MpKit.is_networked() and not MpKit.is_server():
 		return
@@ -446,10 +457,12 @@ func set_stealth(on: bool) -> void:
 	if _stealth == on:
 		return
 	_stealth = on
+
+
+func _apply_stealth_look() -> void:
 	var visual := get_node_or_null("Tilt/Mesh") as BodyVisual
 	if visual:
-		visual.set_fade(0.75 if on else 0.0)
-	_update_clip_state()
+		visual.set_fade(0.75 if _stealth else 0.0)
 
 
 func clear_special_states() -> void:

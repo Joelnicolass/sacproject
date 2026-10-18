@@ -2949,3 +2949,20 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
   - La entrada (clic y zoom) es 037c.
   - El sigilo no se replica al cliente (R2), así que el minimapa del rival mostraría a un enemigo invisible. Se resuelve en 037c o aparte.
   - Falta comparar el tinte gris del original en 037d.
+
+### F214 — Entrada del minimapa y sigilo replicado (RFC-037, corte 037c) — cerrado 2026-10-18
+
+- **Entrada:**
+  - La rueda sobre el círculo hace zoom en el minimapa y no en el mundo (`WorldCamera.wheel_blockers`).
+  - `M` (`minimap_toggle`) muestra y oculta el minimapa.
+  - El clic derecho da la orden de mover ahí, por `Orders.request` y `submit_order`.
+  - El clic izquierdo con algo armado apunta ahí o al cuerpo más cercano. Sin nada armado no hace nada.
+  - El clic no mueve la cámara (P1, como el original).
+- **Sigilo:** `_stealth` se replica (`unit.tscn`, ON_CHANGE). El setter aplica el desvanecido en cada peer, y en el cliente el enemigo con sigilo deja de ser apuntable y desaparece del minimapa.
+- **Verificación:**
+  - `MINIMAP_INPUT PASS`. El grupo ordenado desde el minimapa queda a 0,09 m del punto.
+  - `run_034e` E2E PASS.
+  - Prueba de sigilo en red (`agent/f037c/stealth_net.tscn`): AGENT_OK. No se probó contra el código viejo.
+  - `rules_suite` PASS.
+  - `quick` PASS.
+- **Abierto:** desde el minimapa todavía no se apuntan hechizos sobre almas ni edificios propios («Sin blanco»).

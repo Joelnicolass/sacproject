@@ -4,7 +4,8 @@ extends Control
 
 ## RFC-037: the circle at the bottom right of the HUD (sacengine renderMinimap). It builds the frame's state (center, turn,
 ## zoom) and hands it to its children: `Ground` draws the baked terrain, `Markers` the icons. It knows no unit type.
-## Local presentation: nothing is replicated and no order starts here (037c adds input).
+## Local presentation: nothing is replicated. Input (037c): the wheel over the circle zooms the map, `M` shows or hides it, and a
+## click gives a ground point (`ground_pointed`); MatchCommand turns it into an order or an aim, so no order starts here.
 ##
 ## Everything is laid out in HUD units (sized by the shared `hud_scale`, like SpellBook and SelectionRoster) and
 ## `scale` grows it from the bottom-right corner. Heading up (the default) turns the map with the camera so up is where
@@ -14,6 +15,12 @@ extends Control
 
 ## `Minimap.zoom` changed (037c wheel).
 signal zoom_changed(zoom: float)
+## A mouse button was released over the circle on the ground at `point` (world; y is the ground height there).
+## The camera does not jump: in Sacrifice it always follows the wizard.
+signal ground_pointed(point: Vector3, button: int)
+
+## Height the ground ray starts from (meters); the map is far lower.
+const GROUND_RAY_TOP := 1500.0
 
 @export_group("Sockets")
 ## The world camera (WorldCamera). Reads its turn and the wizard it follows.
@@ -62,6 +69,7 @@ func _ready() -> void:
 	if MpKit.local_slot() <= 0:
 		visible = false
 		set_process(false)
+		set_process_unhandled_input(false)
 		return
 	get_viewport().size_changed.connect(_fit_screen)
 	if hud_scale:
@@ -78,6 +86,55 @@ func _process(_delta: float) -> void:
 		ground.queue_redraw()
 	if markers:
 		markers.queue_redraw()
+
+
+## The wheel zooms the map and a button gives a ground point. The event is consumed here (`mouse_filter` STOP over the circle).
+func _gui_input(event: InputEvent) -> void:
+	if WorldInput.blocked(self):
+		return
+	if event.is_action_pressed(&"minimap_zoom_in") or event.is_action_pressed(&"minimap_zoom_out"):
+		var notches := 1.0
+		if event is InputEventMouseButton and (event as InputEventMouseButton).factor > 0.0:
+			notches = (event as InputEventMouseButton).factor
+		var step := pow(view.zoom_step if view else 1.15, notches)
+		set_zoom(zoom / step if event.is_action_pressed(&"minimap_zoom_in") else zoom * step)
+		accept_event()
+	elif event is InputEventMouseButton and not (event as InputEventMouseButton).pressed:
+		var button := event as InputEventMouseButton
+		if button.button_index != MOUSE_BUTTON_LEFT and button.button_index != MOUSE_BUTTON_RIGHT:
+			return
+		var ground: Variant = _ground_at(local_to_world(button.position))
+		if ground != null:
+			ground_pointed.emit(ground, button.button_index)
+		accept_event()
+
+
+## Only the circle takes the mouse; the corners of the square around it belong to the world.
+func _has_point(point: Vector2) -> bool:
+	return point.distance_to(Vector2.ONE * radius()) <= radius()
+
+
+## True when a screen position is over the circle (the world camera asks before it zooms).
+func covers(screen: Vector2) -> bool:
+	return is_visible_in_tree() and _has_point(get_global_transform().affine_inverse() * screen)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if Engine.is_editor_hint() or WorldInput.blocked(self):
+		return
+	if event.is_action_pressed(&"minimap_toggle", false, true):
+		visible = not visible
+		get_viewport().set_input_as_handled()
+
+
+## The ground point under a world x/z: a ray straight down on the ground layer. Null when there is none (off the map).
+func _ground_at(xz: Vector2) -> Variant:
+	if camera == null or not camera.is_inside_tree() or camera.get_world_3d() == null:
+		return null
+	var query := PhysicsRayQueryParameters3D.create(Vector3(xz.x, GROUND_RAY_TOP, xz.y), Vector3(xz.x, -GROUND_RAY_TOP, xz.y))
+	query.collision_mask = 1
+	var hit := camera.get_world_3d().direct_space_state.intersect_ray(query)
+	return null if hit.is_empty() else hit.get("position")
 
 
 ## Radius of the circle in HUD units.

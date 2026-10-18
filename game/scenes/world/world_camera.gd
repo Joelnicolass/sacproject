@@ -7,6 +7,9 @@ extends Camera3D
 @export var ground: Node3D
 ## Edges only scroll while the pointer hovers this control (the HUD bar is excluded).
 @export var edge_area: Control
+## The wheel does not zoom the world while the pointer is over one of these (the minimap zooms itself). A control with a
+## `covers(screen)` method (Minimap: its circle) decides by that; any other counts by its rectangle.
+@export var wheel_blockers: Array[Control] = []
 
 @export_group("Edges")
 @export var edge_px := 100.0
@@ -102,6 +105,8 @@ func _input(event: InputEvent) -> void:
 		if button.pressed and button.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE]:
 			_dragged = false
 			_drag_travel = 0.0
+		elif button.pressed and button.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN] and _wheel_blocked(button.position):
+			pass
 		elif button.pressed and button.button_index == MOUSE_BUTTON_WHEEL_UP:
 			_nudge_zoom(-wheel_step * _wheel_factor(button))
 		elif button.pressed and button.button_index == MOUSE_BUTTON_WHEEL_DOWN:
@@ -117,6 +122,18 @@ func _input(event: InputEvent) -> void:
 			_drag_travel += motion.relative.length()
 			if _drag_travel > drag_px:
 				_dragged = true
+
+
+func _wheel_blocked(screen: Vector2) -> bool:
+	for blocker in wheel_blockers:
+		if blocker == null or not blocker.is_visible_in_tree():
+			continue
+		if blocker.has_method(&"covers"):
+			if bool(blocker.call(&"covers", screen)):
+				return true
+		elif Rect2(Vector2.ZERO, blocker.size).has_point(blocker.get_global_transform().affine_inverse() * screen):
+			return true
+	return false
 
 
 func _wheel_factor(button: InputEventMouseButton) -> float:

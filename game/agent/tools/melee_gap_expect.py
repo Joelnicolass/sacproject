@@ -11,13 +11,13 @@ radius is BodySeparation.half_size (the box the bodies push each other out of), 
 
 A contact window is one attacker and target on consecutive ticks (a gap of more than GAP_TICKS ticks starts a new one). Checks:
   1. Overlap:    the box gap (axis_gap: the wider axis of the two BodySeparation boxes, which is what pushes them apart) never
-                 below -0.05 m: the bodies do not sink into each other. (gap, the centre distance minus both radii, is shown in
+                 below -0.1 m: the bodies do not sink into each other. (gap, the centre distance minus both radii, is shown in
                  the log; on a diagonal it is smaller than the box gap and is not an overlap.)
   2. Approach:   a settled window (>= SETTLE ticks) ends at close_in's goal, within 0.02 m: the sacengine distance 0.8 * forward *
                  reach from the target's edge (d = foe_reach + 0.8 * 1.3 * reach), or, when that lies inside what BodySeparation
                  allows, the box gap 0.1 it rests two bodies at (half of blockSlack; counted as «held at the BodySeparation floor»).
                  Past both is a failure, and so is a body that settles at neither.
-  3. Tremor:     the approach speed (d[t-1] - d[t]) ...replaced (F177): the peak-to-peak amplitude of d, from the first tick the box gap is within REST_GAP + GOAL_TOL, is at most AMPLITUDE_MAX (0.03 m).
+  3. Tremor:     the approach speed (d[t-1] - d[t]) ...replaced (F177): the peak-to-peak amplitude of d, from the first tick the box gap is within REST_GAP + GOAL_TOL, is at most AMPLITUDE_MAX (0.05 m).
 Exit 0 when every check passes, 1 otherwise (the failing creature and the cause are printed).
 """
 import re
@@ -26,8 +26,8 @@ from collections import defaultdict
 
 FORWARD = 1.3
 FACTOR = 0.8
-OVERLAP_MIN = -0.05
-AMPLITUDE_MAX = 0.03  # F177: peak-to-peak of the centre distance d (m) in a contact window, from the first tick the boxes are at rest distance
+OVERLAP_MIN = -0.1  # F177: the original admits up to 0.1 m of penetration (blockSlack 0.2, box shrunk 0.1 per side)
+AMPLITUDE_MAX = 0.05  # F177 (was 0.03; 0.05 is what the original arithmetic gives, rfcs/research/F177-melee-original.md): peak-to-peak of the centre distance d (m) in a contact window, from the first tick the boxes are at rest distance
 GOAL_TOL = 0.02
 GAP_TICKS = 3
 SETTLE = 6

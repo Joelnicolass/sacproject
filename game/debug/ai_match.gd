@@ -89,6 +89,7 @@ func _ready() -> void:
 		roster.set("enabled", false)
 	BodySeparation.use_grid = str(_args.get("sep", "grid")) != "brute"
 	BodySeparation.measure = true
+	BodySeparation.make_way = not _args.has("no-make-way")  # F177: debug switch to measure the port's make_way deviation (on in the product)
 	BodySeparation.log_push = _args.has("log-push")  # F177: attribution of the pushes of bodies in melee (off in the product)
 	add_child(_world)
 	var rain := _world.get_node_or_null("DropletRain")

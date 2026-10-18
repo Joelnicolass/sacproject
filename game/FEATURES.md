@@ -2258,8 +2258,19 @@ Deuda:
 
 **Deuda.**
 - La aritmética de la separación es la misma que la de sacengine (`positionAfterCollision`, empuje entero por cuerpo sobre la foto del cuadro); no se midió que el original tiemble igual. Medir 3 contra 3 en el original con REA.
-- El port agrega `make_way`/`MakeWay.slide`, que el original no tiene; en `f177` el ciclo de 3 ticks del Trogg4 pasa por su deslizamiento. Medir con `make_way` apagado.
+- (Hecho, ver «Medición con make_way apagado».) El original no se pudo medir (no corre en esta máquina); queda como deducción de sacengine.
 - Si se reabre: A con `1 / (k + 1)` o un empuje con memoria; ambos cambian los digests de todo caso con dos cuerpos en contacto.
+
+**Medición con `make_way` apagado (2026-10-17).** Interruptor de debug `ai_match --no-make-way` (`BodySeparation.make_way = false`; apagado por defecto, digests sin cambio: s7 `c5a5755a`). Mismas semillas y logs (`log_gap`), `melee_gap_expect.py` y cambios de sentido de `d` por ventana (umbral 2 mm):
+
+| caso | make_way | caja mínima (m) | amplitud pico a pico máx. (m) | cambios de sentido por ventana (máx.) |
+|---|---|---|---|---|
+| f177 | on | 0,017 | 0,166 (Druid) / 0,083 (Trogg) | 411 |
+| f177 | off | 0,017 | 0,166 / 0,105 | 568 |
+| s7 | on | -0,072 | 0,445 / 0,412 | 767 |
+| s7 | off | -0,067 | 0,157 / 0,245 | 750 |
+
+**Decisión.** Sin `make_way` el temblor **no baja**: los cambios de sentido y el temblor local (desvío de `d` respecto de sus vecinos en 2 ticks, 0,16-0,21 m) quedan iguales, y el piso de caja también. Lo único que baja es la amplitud de s7 (0,445 a 0,245), que es deriva lenta de pares empujados, no temblor. La causa es la aritmética heredada de sacengine (empuje entero sobre la foto del cuadro), no el desvío del port. No se toca la separación. Criterio de `melee_gap_expect.py` aflojado a lo que admite el original: superposición de caja >= -0,1 m y amplitud <= 0,05 m. Con ese criterio: la superposición **cumple** en `s7` y `f177`; la amplitud **no cumple** (f177: 2 ventanas; s7: 16), porque incluye la deriva de pares empujados durante cientos de ticks. Ese incumplimiento queda como medición abierta del caso, sin arreglo propuesto: separar deriva de temblor necesitaría medir en el original.
 
 ### F173 — Datos de juego como assets (RFC-033, corte 033g)
 

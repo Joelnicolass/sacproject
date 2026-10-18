@@ -146,6 +146,7 @@ func join_lan(ip: String) -> Error:
 ## RFC-034 034f: the way out of a match (pause menu, end of the match, lost server) goes to the room screens when the match
 ## came from a room; the room is still there, with the result. Any other match goes to the menu.
 func _go_boot() -> void:
+	print("flujo: salida de la partida, desde sala: %s" % from_lobby)
 	if from_lobby:
 		from_lobby = false
 		get_tree().change_scene_to_file(LOBBY_SCENE)

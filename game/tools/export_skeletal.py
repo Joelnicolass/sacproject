@@ -604,7 +604,12 @@ def parse_clip(sxsk: bytes, skel: bytes | None, model: Model):
         frame = []
         for b in range(num_bones):
             x, y, z, w = struct.unpack_from("<hhhh", sxsk, offset + 8 * b)
-            n = math.sqrt(x * x + y * y + z * z + w * w) or 1.0
+            n = math.sqrt(x * x + y * y + z * z + w * w)
+            if n == 0.0:
+                # A bone with no rotation in the SXSK (all four shorts zero). sacengine's dlib normalize() turns a
+                # zero vector into (0, 0, 0, 1), the identity; glTF needs a unit quaternion.
+                frame.append((0.0, 0.0, 0.0, 1.0))
+                continue
             frame.append((-x / n, y / n, z / n, w / n))  # OBJ space, normalized
         rots.append(frame)
     # Keep neighbouring quaternions in the same hemisphere so interpolation takes the short way.

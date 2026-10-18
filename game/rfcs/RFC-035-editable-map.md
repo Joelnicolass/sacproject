@@ -276,3 +276,5 @@ Se aplican las recomendaciones de §P: P1 sin segundo regrabado (leer los buffer
 ## Enmienda 2026-10-18 (RULES §Fidelidad y pruebas)
 
 Se bajan los gates de digests. Donde el plan dice «`quick` igual», «no puede mover ningún digest» o «regrabado único con informe», vale esto: `quick` corre en cada corte, y si un digest cambia por el corte se regraba la base con una línea de causa en el F. Los cortes no necesitan una review separada salvo 035g (cambio de navegación). Se quitan P1 (ya no hace falta evitar un segundo regrabado), `--nav-trace` y el informe de 035h. Se mantienen los gates funcionales: mapa visible en el editor, ida y vuelta del glb, conteos de NPC y edificios, `bake_nav --check`, rendimiento y que no se traben las criaturas.
+
+Ajuste del mismo día (usuario): **035a a 035e mantienen «`quick` igual»**. Es un refactor sin cambio de comportamiento, así que un digest movido ahí es un bug, no se regraba. La flexibilidad de regrabar vale solo para la navegación (035g a 035i).

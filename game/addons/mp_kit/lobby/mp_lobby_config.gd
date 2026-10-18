@@ -33,6 +33,8 @@ extends Resource
 @export var heartbeat_stale_s: float = 10.0
 @export var idle_no_players_s: float = 60.0
 @export var match_max_s: float = 7200.0
+## A leftover process is killed at startup only if its heartbeat is newer than this.
+@export var reap_heartbeat_max_s: float = 30.0
 
 @export_group("Processes")
 ## The launcher polls state.json / result.json this often.

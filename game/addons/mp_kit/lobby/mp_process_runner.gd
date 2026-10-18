@@ -2,6 +2,8 @@ class_name MpProcessRunner
 extends Resource
 
 ## Process access for the launcher. Real by default; `MpProcessRunnerStub` simulates it.
+## Pid detection and identity checks (`ps`) are validated on macOS and Linux; on Windows they are
+## best effort (identity is not checked).
 
 
 func spawn(executable: String, args: PackedStringArray) -> int:
@@ -23,6 +25,16 @@ static func pid_alive(pid: int) -> bool:
 		return false
 	var stat := str(out[0]).strip_edges() if not out.is_empty() else ""
 	return not stat.is_empty() and not stat.begins_with("Z")
+
+
+## True if the live process command line contains `needle` (guards against a recycled pid).
+func command_contains(pid: int, needle: String) -> bool:
+	if OS.get_name() == "Windows":
+		return is_running(pid)
+	var out: Array = []
+	if OS.execute("ps", PackedStringArray(["-o", "command=", "-p", str(pid)]), out) != 0 or out.is_empty():
+		return false
+	return str(out[0]).contains(needle)
 
 
 func kill(pid: int) -> void:

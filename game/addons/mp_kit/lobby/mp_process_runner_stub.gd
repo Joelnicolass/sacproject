@@ -36,6 +36,10 @@ func is_running(pid: int) -> bool:
 	return true
 
 
+func command_contains(pid: int, _needle: String) -> bool:
+	return is_running(pid)
+
+
 func kill(pid: int) -> void:
 	killed.append(pid)
 	_alive.erase(pid)

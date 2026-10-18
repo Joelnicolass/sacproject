@@ -44,16 +44,19 @@ func _ready() -> void:
 func _run() -> void:
 	var root := launcher.config.matches_root
 	# 1. orphan from a previous run: registry says so, state.json agrees, the process still runs
-	var orphan_pid := OS.create_process("/bin/sleep", PackedStringArray(["300"]))
+	var needle := "--match-ticket-file=%s" % MpMatchFiles.path_of(root, ORPHAN_ID, MpMatchFiles.TICKET)
+	var orphan_pid := OS.create_process("/bin/bash", PackedStringArray(["-c", "exec -a \"$0\" sleep 300", needle]))
 	_spawned_pids.append(orphan_pid)
 	_check(orphan_pid > 0, "dummy orphan spawned")
 	MpMatchFiles.ensure_dir(MpMatchFiles.dir_of(root, ORPHAN_ID))
-	MpMatchFiles.write_json(MpMatchFiles.path_of(root, ORPHAN_ID, MpMatchFiles.STATE), {"pid": orphan_pid})
+	MpMatchFiles.write_json(MpMatchFiles.path_of(root, ORPHAN_ID, MpMatchFiles.STATE), {"pid": orphan_pid, "heartbeat_ms": MpMatchFiles.now_ms()})
 	MpMatchFiles.write_json(MpMatchFiles.registry_path(root), {"matches": {ORPHAN_ID: {"pid": orphan_pid, "port": 0}}})
 	_check(launcher.reap_orphans() == 1, "reap_orphans killed the leftover")
 	_check(await _until(func() -> bool: return not MpProcessRunner.pid_alive(orphan_pid), 3.0), "orphan process is gone")
 
-	# 2. launch one match, the cap holds the second
+	# 2. launch one match, the cap holds the second (`--max-matches=2` reaches the launcher)
+	_check(launcher.config.max_matches == 2, "--max-matches=2 reached the launcher config")
+	launcher.config.max_matches = 1
 	var token := MpMatchFiles.new_token()
 	var ticket := {"world": "probe", "seats": [{"slot": SEAT_SLOT, "token": token, "meta": {"name": "probe"}}]}
 	_check(launcher.launch(MATCH_ID, ticket) == OK, "launch OK")

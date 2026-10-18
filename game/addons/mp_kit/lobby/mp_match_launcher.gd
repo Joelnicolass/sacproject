@@ -35,6 +35,7 @@ func _ready() -> void:
 		runner = MpProcessRunner.new()
 	if config == null:
 		config = MpLobbyConfig.new()
+	config = config.with_cli_overrides()
 	MpMatchFiles.ensure_dir(config.matches_root)
 	if reap_on_ready:
 		reap_orphans()
@@ -123,7 +124,8 @@ func abort(match_id: String, reason: String) -> void:
 
 
 ## Kills what is in the registry and still runs (previous run). Returns how many were killed.
-## Only a pid whose state.json says the same pid is killed, so a reused pid is not touched.
+## A pid is killed only if its state.json has the same pid and a recent heartbeat, and the live
+## command line is this match's dedicated (`--match-ticket-file=<its ticket>`): a reused pid is left alone.
 func reap_orphans() -> int:
 	var killed := 0
 	var root := config.matches_root
@@ -132,8 +134,8 @@ func reap_orphans() -> int:
 	for match_id in entries.keys():
 		var pid := int((entries[match_id] as Dictionary).get("pid", 0))
 		var state := MpMatchFiles.read_json(MpMatchFiles.path_of(root, str(match_id), MpMatchFiles.STATE))
-		if runner.is_running(pid) and int(state.get("pid", -1)) == pid:
-			runner.kill(pid)
+		var fresh := MpMatchFiles.now_ms() - int(state.get("heartbeat_ms", 0)) <= int(config.reap_heartbeat_max_s * 1000.0)
+		if fresh and int(state.get("pid", -1)) == pid and _kill_verified(pid, str(match_id)):
 			killed += 1
 		if MpMatchFiles.is_valid_id(str(match_id)) and not keep_files:
 			MpMatchFiles.remove_dir(MpMatchFiles.dir_of(root, str(match_id)))
@@ -160,7 +162,7 @@ func _poll_match(match_id: String, now: int) -> void:
 		if int(m["result_seen_ms"]) == 0:
 			m["result_seen_ms"] = now
 		elif now - int(m["result_seen_ms"]) > int((config.result_quit_delay_s + config.parent_check_s) * 1000.0):
-			runner.kill(pid)
+			_kill_verified(pid, match_id)
 		return
 	if not running:
 		_fail(match_id, "exited")
@@ -186,8 +188,7 @@ func _finish(match_id: String, result: Dictionary) -> void:
 
 func _fail(match_id: String, reason: String) -> void:
 	var pid := int(_matches[match_id]["pid"])
-	if runner.is_running(pid):
-		runner.kill(pid)
+	_kill_verified(pid, match_id)
 	_release(match_id)
 	match_failed.emit(match_id, reason)
 
@@ -212,6 +213,15 @@ func _build_args(match_id: String, port: int, ticket_path: String) -> PackedStri
 	for field in config.agent_fields:
 		args.append("%s=%s" % [MpLobbyConfig.flag_for(field), str(config.get(field))])
 	return args
+
+
+## Kills `pid` only if it still is the dedicated of `match_id`. True if it was killed.
+func _kill_verified(pid: int, match_id: String) -> bool:
+	var needle := "--match-ticket-file=%s" % MpMatchFiles.path_of(config.matches_root, match_id, MpMatchFiles.TICKET)
+	if runner.is_running(pid) and runner.command_contains(pid, needle):
+		runner.kill(pid)
+		return true
+	return false
 
 
 func _free_port() -> int:

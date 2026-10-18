@@ -13,7 +13,7 @@ descendants() { # pid -> pid and all its descendants
   for c in $(pgrep -P "$p" 2>/dev/null); do descendants "$c"; done
 }
 
-bash "$ROOT/agent/harness/godot_run.sh" "$GODOT" --headless --path "$ROOT" res://debug/net/match_launcher_probe.tscn -- --no-flow &
+bash "$ROOT/agent/harness/godot_run.sh" "$GODOT" --headless --path "$ROOT" res://debug/net/match_launcher_probe.tscn -- --no-flow --max-matches=2 &
 RUN=$!
 (
   sleep "$LIMIT_S"

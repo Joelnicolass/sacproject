@@ -3082,3 +3082,12 @@ Todos fallaban por aserciones viejas; ninguno por un bug del juego.
   - el binario de Linux en sí;
   - ver al mago y las criaturas después de volver, en un cliente con ventana;
   - una conexión medio abierta puede ocupar el slot hasta el timeout de ENet.
+
+### F189 — Skill `godot-determinism` en español e inglés (RFC-034, corte 034l) — cerrado 2026-10-18
+
+- **Dónde está:** en clones locales nuevos del kit, sin subir. `godot-studio-skills/rc-v0.10.0` en la rama `rc/v0.10.0` (commit `9a4030d`) y `rc-v0.10.0-spanish` en la rama `rc/v0.10.0-spanish` (commit `69acb77`).
+- **Qué agrega:** `skills/godot-determinism/SKILL.md`, con 13 secciones iguales en los dos idiomas, y `reference.md`, con 11.
+- **Política:** enseña la versión liviana de RULES §Fidelidad: `quick` en cada corte, `bless` cuando el cambio es intencional y fixed = fixed2 en cada caso movido.
+- **README:** la sección «Determinismo» va en `example/addons/agent_kit/README.md`; en inglés el README se creó nuevo.
+- **Chequeo:** el `grep` de nombres de Sacrifice da vacío.
+- **Pendiente para 034h:** copiar el módulo `determinism/` y `mp_kit` al kit, y corregir `install.sh`.

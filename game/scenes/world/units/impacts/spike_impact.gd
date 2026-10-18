@@ -47,7 +47,7 @@ func _affect(shot: Node3D, target: Node3D, point: Vector3, ability: AbilityType)
 			point.y, point.z, MatchClock.now()])
 	center.y = BodyNudge.ground_y(shot, center)
 	if hurt:
-		_SPLASH.hurt(hurt, amount, from_slot, _HEALTH.SPLASH_RANGED)
+		_SPLASH.hurt(hurt, amount, from_slot, _HEALTH.SPLASH_RANGED, 0, shooter_of(shot))
 	_start_wave(shot, center, amount, from_slot, intended, hurt, ability, "%s %s" % [tag, shot.name])
 
 
@@ -76,6 +76,8 @@ func _start_wave(shot: Node3D, center: Vector3, amount: float, from_slot: int, i
 	wave.from_slot = from_slot
 	wave.intended = intended
 	wave.touched = hurt
+	var shooter := shooter_of(shot)
+	wave.attacker_path = shooter.get_path() if shooter != null else NodePath()
 	wave.label = label
 	shot.get_parent().add_child(wave)
 	wave.global_position = center

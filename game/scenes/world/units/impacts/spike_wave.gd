@@ -53,6 +53,8 @@ static var log_spikes := false
 ## What SpikeImpact hands over (before begin()).
 var amount := 0.0
 var from_slot := 0
+## F164b: the creature that fired the shot, as an absolute path (the shot may be gone); its drain feeds on every ring.
+var attacker_path := NodePath()
 ## The shot's target (sacengine intendedTarget) and the body the shot hurt (actualTarget), or null.
 var intended: Node3D
 var touched: Node3D
@@ -116,7 +118,7 @@ func _ring(i: int, frame: int) -> void:
 		if log_spikes:
 			print("  anillo %d %s a %.3f m: %s" % [i + 1, body.name, distance, why if not why.is_empty() else "daño"])
 		if why.is_empty():
-			_SPLASH.hurt(body, amount, from_slot, _HEALTH.SPLASH_RANGED)
+			_SPLASH.hurt(body, amount, from_slot, _HEALTH.SPLASH_RANGED, 0, get_node_or_null(attacker_path) if not attacker_path.is_empty() else null)
 
 
 ## One SpikeField event that fills ring i's strip (presentation, every peer).

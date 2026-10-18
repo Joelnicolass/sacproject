@@ -87,14 +87,16 @@ func is_full() -> bool:
 
 ## A hit whose caller already applied the body's damage_factor and resistance (melee, rituals). The states the body is
 ## in still scale it (_state_factor, REVIEW-F139 N5).
-## F164: returns the damage taken (capped at the health left, like damage_typed); 0 when nothing reached the body or a
-## deflector took it. LifeDrain.feed reads it; callers that ignore it do not change.
+## F164: returns the damage taken (capped at the health left, like damage_typed); 0 when nothing reached the body. With a
+## deflector, the damage its stand-ins took (F164b). LifeDrain.feed reads it; callers that ignore it do not change.
 func damage(amount: float, from_slot: int = 0) -> float:
+	deflected_last = false
 	if not _has_authority() or amount <= 0.0 or is_dead() or not _can_be_damaged():
 		return 0.0
 	## A caller that does not say the kind (melee, rituals) is asked as melee.
-	if not is_nan(_deflect(amount, MELEE, from_slot)):
-		return 0.0
+	var passed := _deflect(amount, MELEE, from_slot)
+	if not is_nan(passed):
+		return passed
 	## Before F139 this path did not look at the side; with no MatchState it still does not.
 	var side := _side_factor(from_slot, false, 1.0)
 	if side <= 0.0:
@@ -125,6 +127,7 @@ func _hit(amount: float, from_slot: int) -> void:
 ## `pierce_shield` (sacengine DamageMod.peirceShield, state.d:8962-8969): the body's shields and states (damage_factor:
 ## Rockform, Life Shield; _state_factor: petrified) do not scale it. The Pyromaniac's fire (F123).
 func damage_typed(amount: float, kind: StringName, from_slot: int = 0, ignore_friendly := false, pierce_shield := false, mods := 0) -> float:
+	deflected_last = false
 	if not _has_authority() or amount <= 0.0 or is_dead() or not _can_be_damaged():
 		return 0.0
 	var passed := _deflect(amount, kind, from_slot)
@@ -175,6 +178,9 @@ func _base_resistance(kind: StringName) -> float:
 
 
 var _deflecting := false
+## F164b: the last hit was taken by the deflector's stand-ins (a building's guardians), not by this body. They are
+## creatures, so the attacker drains from what they took (sacengine damageGuardians, state.d:9119-9141): LifeDrain reads it.
+var deflected_last := false
 ## F139: the match's MatchState, found on the first hit between allies (group `match_state`).
 var _match: MatchState
 
@@ -225,6 +231,7 @@ func _deflect(amount: float, kind: StringName, from_slot: int) -> float:
 	_deflecting = true
 	var taken: float = deflector.deflect(amount, kind, from_slot)
 	_deflecting = false
+	deflected_last = not is_nan(taken)
 	return taken
 
 

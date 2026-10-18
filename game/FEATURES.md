@@ -1,5 +1,5 @@
 # Features
-- Con un `deflector` (el escudo del Protector desvía el golpe a otro cuerpo), `damage_typed` devuelve el daño que tomó el que desvía y `LifeDrain.feed` cura con eso; falta confirmar contra sacengine si el original drena en ese caso.
+- Con un `deflector` (el escudo del Protector desvía el golpe a otro cuerpo), `damage_typed` devuelve el daño que tomó el que desvía y `LifeDrain.feed` cura con eso; el original sí drena con el daño de los guardianes (F164b).
 - El digest del banco hashea posiciones, no vida: el drenaje lo prueban `check_drain` de `f164_expect.py` y `f166_expect.py`.
 
 Fan game de Sacrifice. Arquitectura estándar. Multijugador online con servidor dedicado.
@@ -2336,8 +2336,25 @@ Deuda:
 - **Banco:** `quick` con las 24 líneas previas de la base OK; `rules_suite --fixed-fps 60` PASS. Los avisos CONTAMINATED de algunas corridas vienen de otros Godot de la máquina, no de diferencias de digest.
 - **Sin capturas:** el drenaje no tiene efecto visual en este corte (la barra de vida del atacante sube; no hay FX).
 
-Deuda (F164b):
-- Salpicadura por cuerpo (`SplashImpact`), `PoisonImpact`/`DiseaseImpact` con la cura por `rangedAttack.amount` (23523, 24360, 24879) y `Burning`. `PoisonImpact._drain` queda con su copia de la regla; pasa a `LifeDrain.feed` cuando entren los otros.
+Deuda (F164b): hecha salvo `Burning`; ver F164b.
+
+### F164b — Drenaje de la salpicadura, del veneno y de los guardianes (RFC-030, corte 030w-e, deuda de F164)
+
+**Sacengine:** la salpicadura y el veneno llegan al mismo `dealDamage` de criatura que el golpe directo (`dealDamage(objeto, daño, radio, atacante, …)` 9053-9057 -> 8895-8913 -> 8933-8947, que llama a `healFromDrain` en 8940): cada cuerpo que la ráfaga daña de verdad alimenta al lanzador con lo que tomó (`dealDamageAt`, 9075-9089). El veneno cura dos veces: al estallar, `healFromDrain(atacante, rangedAttack.amount)` con el monto entero del SPEL sin mirar lo que toma el blanco (23523, 24360, 24879), y en cada tick de la dosis, porque `updatePoison` llama a `dealPoisonDamage` con el atacante (23585, 9415-9419) y eso entra por 8933 con lo que el tick tomó; la infección pasa el atacante, así que el Necryl también se cura de los contagiados.
+
+**Deflector (la deuda de F164):** el escudo no es del Protector sino la guardia de un edificio (`GuardPost`). En sacengine `dealDamage(edificio, …, atacante)` manda el golpe a `damageGuardians` (9193-9195, 9119-9141), que llama a la sobrecarga de criatura (8933) en cada guardián: el original **sí drena**, con el daño que tomaron los guardianes (suma), no con el del edificio. Sin guardián válido el edificio lo toma y no drena (9193-9207).
+
+**Piezas:**
+- `LifeDrain` sigue siendo el único dueño (`feed`). Un blanco `structure` alimenta solo si `Health.deflected_last` (nuevo: el último golpe lo tomaron los que desvían). `Health.damage` ahora devuelve el daño de los guardianes cuando desvía (antes 0).
+- `SplashDamage.hurt`/`deal` reciben `attacker` y llaman a `LifeDrain.feed`; lo pasan `SplashImpact`, `SpikeImpact` (+ `SpikeWave.attacker_path`) y `GrowingWave`. Los hechizos de mago no lo pasan (sin drenaje).
+- `PoisonImpact._drain` se borra: llama a `LifeDrain.feed(shooter, target, amount)` y también en la rama de edificio. `DamageOverTime.attacker_path` (ruta absoluta del lanzador, vacía = nadie) alimenta cada tick; `Poisoning.dose`/`dose_body` y la infección lo pasan.
+- Grep: ninguna otra parte cura por drenaje (`Health.heal` solo lo llaman `LifeDrain`, regeneración, curas y el guardián).
+
+**Banco:** `f164_drain` suma la fila z-100 (Abomination1 `ctug` al 50 % lanza `tugt` a Troll4 con Troll5 al lado): `f164_expect.py` rehace cada cuerpo de la ráfaga (425·(1-d/10)·0,9, d del log) y la cura 0,5·tomado, el edificio no cura. `f122_expect.py` suma `check_drain`: ráfaga con el monto entero, ticks de Deadeye/Hellmouth y la secuencia exacta del Necryl contra su simulación (hasta que muere). `rules_suite` suma `guard_drain` (guardianes drenan, edificio sin guardia no, `damage` informa).
+
+**Cierre:** `rules_suite --fixed-fps 60` PASS (con `guard_drain`); `f164_expect`, `f122_expect`, `f166_expect` y `f156_expect` PASS. `quick`: todo igual a la base salvo dos, regrabados. `f139` (`4750f4d1` -> `e3ded3af`): la primera línea distinta del `.events` es `40 hp Necryl1 101.60` -> `101.85`, o sea el Necryl se cura con su veneno (lo que antes no hacía). `f164` (`97cd4399` -> `d2346dda`): filas nuevas de Abomination y Troll4/Troll5. Solo `fixed` en estos dos; sin capturas (lógica pura).
+
+Deuda: `Burning` (el fuego con atacante) todavía no drena.
 
 ### F163 — Escudo de fuego del Phoenix (RFC-030, corte 030w-f)
 

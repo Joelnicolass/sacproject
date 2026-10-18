@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/spell_type.gd" id="1_p0kkg"]
+
+[resource]
+script = ExtResource("1_p0kkg")
+tag = "tpre"
+display_name = "Erupt"
+mana_cost = 800
+cast_range = 125.0
+cooldown_s = 30.0
+casting_time_s = 1.1111
+spell_order = 452
+speed = 30.0
+damage = 600
+amount2 = 600
+damage_range = 15.0
+effect_range = 75.0
+flags = 16413
+flags1 = 16448
+structures = PackedStringArray()

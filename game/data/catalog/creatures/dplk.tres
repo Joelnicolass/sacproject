@@ -1,0 +1,119 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/creature_type.gd" id="1_wsjns"]
+
+[resource]
+script = ExtResource("1_wsjns")
+tag = "dplk"
+display_name = "Fallen"
+god = "charnel"
+model = "dklp"
+health = 720
+drain = 0.5
+running_speed = 12.0
+melee_strength = 90
+melee_accuracy = 800
+melee_evasion = 800
+ranged_accuracy = 600
+aggressiveness = 1000
+sight_range = 175.0
+melee_resistance = 6.0
+mana = 200
+mana_cost = 300
+souls = 1
+cooldown_s = 2.0
+casting_time_s = 0.3704
+spell_order = 131
+ability_tags = PackedStringArray("dkba", "dedp")
+stance_animation = {
+"framerate": 30.0,
+"frames": 27.0,
+"tag": "KLst"
+}
+idle_animation = {
+"framerate": 30.0,
+"frames": 53.0,
+"tag": "KDi1"
+}
+run_animation = {
+"framerate": 30.0,
+"frames": 24.0,
+"tag": "KDrn"
+}
+walk_animation = {
+"framerate": 30.0,
+"frames": 24.0,
+"tag": "KDrn"
+}
+melee_animations = Array[Dictionary]([{
+"attack_ticks": [15.0],
+"framerate": 30.0,
+"frames": 37.0,
+"tag": "KDa1"
+}, {
+"attack_ticks": [8.0],
+"framerate": 30.0,
+"frames": 31.0,
+"tag": "KLa2"
+}, {
+"attack_ticks": [31.0, 56.0],
+"framerate": 30.0,
+"frames": 69.0,
+"tag": "KLal"
+}])
+is_ranged = true
+ranged_attack_tag = "dkba"
+active_ability_tag = "dedp"
+passive_abilities = PackedStringArray()
+shoot_animations = Array[Dictionary]([{
+"framerate": 30.0,
+"frames": 47.0,
+"shoot_ticks": [27.0],
+"tag": "KLs1"
+}, {
+"framerate": 30.0,
+"frames": 68.0,
+"shoot_ticks": [16.0],
+"tag": "KLs2"
+}])
+stun_animations = {
+"get_up": {
+"framerate": 30.0,
+"frames": 19.0,
+"tag": "KLgu"
+},
+"hit_floor": {
+"framerate": 30.0,
+"frames": 37.0,
+"tag": "KLhf"
+},
+"knock": {
+"framerate": 30.0,
+"frames": 37.0,
+"tag": "KLfd"
+}
+}
+death_animations = {
+"death": {
+"framerate": 30.0,
+"frames": 43.0,
+"tag": "KLd1"
+}
+}
+captive_animations = {
+"held": {
+"framerate": 30.0,
+"frames": 26.0,
+"tag": "KL2t"
+},
+"rise": {
+"framerate": 30.0,
+"frames": 48.0,
+"tag": "KLrz"
+},
+"thrash": {
+"framerate": 30.0,
+"frames": 20.0,
+"tag": "KLsc"
+}
+}

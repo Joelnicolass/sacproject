@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_bftol"]
+
+[resource]
+script = ExtResource("1_bftol")
+tag = "arch"
+is_prop = true
+box = PackedFloat64Array(-15.708, -15.14, -15.73, 76.17, 70.958, 31.66)
+foot_offset = 15.14
+height = 70.958
+radius = 11.081
+reach = 38.085
+upright_fix = PackedFloat64Array(0, 0, 0)

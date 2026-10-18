@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/ability_type.gd" id="1_rr0cv"]
+
+[resource]
+script = ExtResource("1_rr0cv")
+tag = "ehba"
+display_name = "Hail of Earth"
+mana_cost = 16
+cast_range = 40.0
+cooldown_s = 2.5
+casting_time_s = 1.8519
+speed = 36.0
+damage = 125
+amount2 = 125
+flags = 16405
+flags1 = 16417
+flags2 = 16777216
+args = {
+"fang": 5.0,
+"ttex": "rock"
+}

@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="BuildingType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/building_type.gd" id="1_joaj7"]
+
+[resource]
+script = ExtResource("1_joaj7")
+tag = "mar1"
+flags = 2147492040
+ground = true
+max_health = 20000.0
+tileset = "char"
+folder = "joby.WAD!/ch_a.FLDR"
+components = Array[Dictionary]([{
+"destroyed": "mr1x",
+"facing": 0.0,
+"kind": "BASE",
+"spell": "",
+"tag": "mar1",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+}])

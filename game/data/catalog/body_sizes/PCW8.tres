@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_wwrqt"]
+
+[resource]
+script = ExtResource("1_wwrqt")
+tag = "PCW8"
+is_prop = true
+box = PackedFloat64Array(-0.496, -0.028, -0.674, 1.052, 0.58, 1.251)
+foot_offset = 0.028
+height = 0.58
+radius = 0.368
+reach = 0.625
+upright_fix = PackedFloat64Array(0, 0, 0)

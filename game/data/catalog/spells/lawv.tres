@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/spell_type.gd" id="1_78y2m"]
+
+[resource]
+script = ExtResource("1_78y2m")
+tag = "lawv"
+display_name = "Vinewall"
+mana_cost = 1500
+cast_range = 100.0
+cooldown_s = 80.0
+casting_time_s = 3.7037
+spell_order = 768
+effect_range = 55.0
+duration = 50.0
+flags = 90117
+flags1 = 16448
+flags2 = 33554432
+structures = PackedStringArray()

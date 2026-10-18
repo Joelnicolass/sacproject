@@ -2715,3 +2715,16 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
   - `quick` PASS sin mover digests.
   - Las 5 escenas movidas cargan sin errores.
 - **Pendiente:** los estáticos de comportamiento de `body_separation.gd` se van en 036f.
+
+### F198 — Catálogo del juego en `.tres` (RFC-036, corte 036c) — cerrado 2026-10-18
+
+- **Qué cambió:** `tools/bake_catalog.gd` hornea los JSON en `data/catalog/`, un `.tres` por tipo: 71 criaturas, 53 hechizos, 15 magos, 63 habilidades, 196 edificios y 201 tamaños. `game_catalog.tres` los reúne.
+- **En partida:** `GameData` lee el catálogo, y `MapBuilding` y `BodyCatalog` leen `BuildingType` y `BodySize`. Ningún JSON del catálogo se lee desde `scenes/`. Daño, maná y demás valores se editan en el inspector.
+- **Verificación:**
+  - `debug/catalog_cases.gd`: CATALOG PASS, todos los valores iguales al JSON. El `.tres` de texto ordena las claves de los diccionarios y el chequeo compara el conjunto de claves.
+  - `quick` PASS sin mover digests.
+  - `rules_suite` PASS.
+- **Riesgos:**
+  - Las claves de los diccionarios quedan en orden alfabético. Si alguna lógica recorre esos diccionarios dependiendo del orden, cambiaría; `quick` y `rules_suite` no lo muestran.
+  - Los tipos ahora son instancias compartidas: nada debe mutarlos en runtime.
+  - Los tags que solo difieren en mayúsculas llevan el sufijo `_2` en el nombre de archivo.

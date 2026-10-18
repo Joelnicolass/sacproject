@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="BuildingType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/building_type.gd" id="1_aho5i"]
+
+[resource]
+script = ExtResource("1_aho5i")
+tag = "sic3"
+flags = 2147483656
+ground = true
+tileset = "ST_A"
+folder = "SMOD.WAD!/bild.FLDR"
+components = Array[Dictionary]([{
+"destroyed": "",
+"facing": 0.0,
+"kind": "BASE",
+"spell": "",
+"tag": "sic3",
+"x": 0.0,
+"y": 0.0,
+"z": -10.0
+}])

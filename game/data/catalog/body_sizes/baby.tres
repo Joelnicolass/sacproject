@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_472q7"]
+
+[resource]
+script = ExtResource("1_472q7")
+tag = "baby"
+box = PackedFloat64Array(-1.403, -0.808, -1.405, 2.806, 1.471, 2.44)
+foot_offset = 0.808
+height = 1.471
+radius = 0.854
+reach = 1.403
+upright_fix = PackedFloat64Array(0, 0, 0)
+upright_checked = true
+has_upright_checked = true

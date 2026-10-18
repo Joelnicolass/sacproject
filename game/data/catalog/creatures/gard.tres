@@ -1,0 +1,123 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/creature_type.gd" id="1_ng7lu"]
+
+[resource]
+script = ExtResource("1_ng7lu")
+tag = "gard"
+display_name = "Rhinok"
+god = "james"
+model = "edmn"
+health = 7200
+regeneration_per_s = 16.6667
+running_speed = 7.5
+flying_speed = 15.0
+melee_strength = 800
+melee_accuracy = 3000
+melee_evasion = 3300
+ranged_accuracy = 300
+aggressiveness = 1000
+sight_range = 150.0
+direct_spell_resistance = 0.5
+splash_spell_resistance = 0.5
+direct_ranged_resistance = 0.75
+splash_ranged_resistance = 0.75
+mana = 750
+mana_cost = 1900
+souls = 5
+cooldown_s = 10.0
+casting_time_s = 3.3333
+spell_order = 987
+ability_tags = PackedStringArray("hrba", "HRba")
+stance_animation = {
+"framerate": 30.0,
+"frames": 118.0,
+"tag": "Eds1"
+}
+idle_animation = {
+"framerate": 30.0,
+"frames": 148.0,
+"tag": "Edi1"
+}
+run_animation = {
+"framerate": 30.0,
+"frames": 47.0,
+"tag": "Edru"
+}
+walk_animation = {
+"framerate": 30.0,
+"frames": 47.0,
+"tag": "Edru"
+}
+melee_animations = Array[Dictionary]([{
+"attack_ticks": [],
+"framerate": 30.0,
+"frames": 68.0,
+"tag": "Eda1"
+}, {
+"attack_ticks": [],
+"framerate": 30.0,
+"frames": 45.0,
+"tag": "Eda2"
+}, {
+"attack_ticks": [],
+"framerate": 30.0,
+"frames": 48.0,
+"tag": "Eda3"
+}])
+is_ranged = true
+ranged_attack_tag = "hrba"
+active_ability_tag = "HRba"
+passive_abilities = PackedStringArray()
+shoot_animations = Array[Dictionary]([{
+"framerate": 30.0,
+"frames": 78.0,
+"shoot_ticks": [45.0],
+"tag": "Edsm"
+}, {
+"framerate": 30.0,
+"frames": 118.0,
+"shoot_ticks": [],
+"tag": "Eds1"
+}])
+stun_animations = {
+"get_up": {
+"framerate": 30.0,
+"frames": 64.0,
+"tag": "Edgt"
+},
+"hit_floor": {
+"framerate": 30.0,
+"frames": 36.0,
+"tag": "Edhf"
+},
+"knock": {
+"framerate": 30.0,
+"frames": 55.0,
+"tag": "Edkn"
+}
+}
+death_animations = {
+"death": {
+"framerate": 30.0,
+"frames": 138.0,
+"tag": "Edd1"
+},
+"fly_death": {
+"framerate": 30.0,
+"frames": 118.0,
+"tag": "Eds1"
+}
+}
+captive_animations = {
+"held": {
+"framerate": 30.0,
+"frames": 6.0,
+"tag": "Edf2"
+},
+"thrash": {
+"framerate": 30.0,
+"frames": 68.0,
+"tag": "Edsa"
+}
+}

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_wocbc"]
+
+[resource]
+script = ExtResource("1_wocbc")
+tag = "pct4"
+is_prop = true
+box = PackedFloat64Array(-9.865, -4.968, -8.689, 23.933, 37.14, 18.53)
+foot_offset = 4.968
+height = 37.14
+radius = 6.486
+reach = 11.966
+upright_fix = PackedFloat64Array(0, 0, 0)

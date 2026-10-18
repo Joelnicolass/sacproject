@@ -1,0 +1,69 @@
+[gd_resource type="Resource" script_class="WizardType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/wizard_type.gd" id="1_p8fh3"]
+
+[resource]
+script = ExtResource("1_p8fh3")
+tag = "cwe0"
+spell_tag = "0ewc"
+display_name = "Abraxus"
+model = "ABRX"
+health = 1500
+mana = 1000
+running_speed = 10.0
+regeneration_per_s = 16.6667
+melee_evasion = 1250
+direct_spell_resistance = 0.5
+splash_spell_resistance = 0.5
+stance_animation = {
+"framerate": 30.0,
+"frames": 97.0,
+"tag": "AXs1"
+}
+idle_animation = {
+"framerate": 30.0,
+"frames": 98.0,
+"tag": "AXi1"
+}
+run_animation = {
+"framerate": 30.0,
+"frames": 24.0,
+"tag": "AXru"
+}
+walk_animation = {
+"framerate": 30.0,
+"frames": 24.0,
+"tag": "AXru"
+}
+death_frames = PackedInt32Array(104, 98, 117)
+corpse_rise_frames = 51
+float_to_stance_frames = 76
+stun_animations = {
+"get_up": {
+"framerate": 30.0,
+"frames": 28.0,
+"tag": "AXgu"
+},
+"hit_floor": {
+"framerate": 30.0,
+"frames": 69.0,
+"tag": "AXhf"
+},
+"knock": {
+"framerate": 30.0,
+"frames": 69.0,
+"tag": "AXhf"
+}
+}
+cast_animations = {
+"cast": {
+"framerate": 30.0,
+"frames": 45.0,
+"tag": "AXsl"
+},
+"run_cast": {
+"framerate": 30.0,
+"frames": 48.0,
+"tag": "AXrl"
+}
+}

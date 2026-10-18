@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="BuildingType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/building_type.gd" id="1_b32cc"]
+
+[resource]
+script = ExtResource("1_b32cc")
+tag = "sta5"
+flags = 128
+max_health = 1000.0
+tileset = "ethr"
+folder = "joby.WAD!/ethr.FLDR"
+components = Array[Dictionary]([{
+"destroyed": "st5x",
+"facing": 0.0,
+"kind": "BASE",
+"spell": "port",
+"tag": "st5a",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+}, {
+"destroyed": "",
+"facing": 0.0,
+"kind": "HEAD",
+"spell": "",
+"tag": "st5b",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+}])

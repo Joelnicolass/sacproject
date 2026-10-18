@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_llf03"]
+
+[resource]
+script = ExtResource("1_llf03")
+tag = "pcsh"
+is_prop = true
+box = PackedFloat64Array(-11.232, -4.441, -9.299, 22.628, 25.991, 18.582)
+foot_offset = 4.441
+height = 25.991
+radius = 6.504
+reach = 11.314
+upright_fix = PackedFloat64Array(0, 0, 0)

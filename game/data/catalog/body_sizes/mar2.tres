@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_c11li"]
+
+[resource]
+script = ExtResource("1_c11li")
+tag = "mar2"
+is_prop = true
+box = PackedFloat64Array(-7.349, -5.13, -7.123, 14.689, 30.873, 17.76)
+foot_offset = 5.13
+height = 30.873
+radius = 5.141
+reach = 8.88
+upright_fix = PackedFloat64Array(0, 0, 0)

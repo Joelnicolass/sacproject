@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/ability_type.gd" id="1_htwxq"]
+
+[resource]
+script = ExtResource("1_htwxq")
+tag = "korq"
+display_name = "Taurock Passive"
+cast_range = 100.0

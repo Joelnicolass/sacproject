@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_iaryf"]
+
+[resource]
+script = ExtResource("1_iaryf")
+tag = "lflp"
+box = PackedFloat64Array(-1.035, -0.024, -0.432, 1.556, 1.946, 1.711)
+height = 1.922
+radius = 0.545
+reach = 0.856
+upright_fix = PackedFloat64Array(0, 0, 0)
+pose_source = "FGst"

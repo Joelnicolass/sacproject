@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_palxp"]
+
+[resource]
+script = ExtResource("1_palxp")
+tag = "PCF3"
+is_prop = true
+box = PackedFloat64Array(-0.275, -0.118, -0.367, 0.729, 0.602, 0.753)
+foot_offset = 0.118
+height = 0.602
+radius = 0.255
+reach = 0.377
+upright_fix = PackedFloat64Array(0, 0, 0)

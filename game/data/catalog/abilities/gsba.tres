@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/ability_type.gd" id="1_kp0mk"]
+
+[resource]
+script = ExtResource("1_kp0mk")
+tag = "gsba"
+display_name = "Call lightning"
+mana_cost = 50
+flags1 = 24592
+flags2 = 8912896

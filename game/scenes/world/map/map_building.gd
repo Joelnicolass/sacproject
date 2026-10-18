@@ -2,7 +2,7 @@ class_name MapBuilding
 extends StaticBody3D
 
 ## A building of the map (RFC-024 addendum 1, 024b2): the houses, fences and decorations of the NTTS. Its
-## BLDG (assets/original/data/buildings.json, tools/export_stats.py buildings) says its components (the models), its
+## BLDG (BuildingType in data/catalog/buildings/, baked by tools/bake_catalog.gd) says its components (the models), its
 ## maximum health and whether peasants shelter in it (bit 15). With max health > 0 it has a Health and can
 ## be destroyed; with 0 it is indestructible (the console says so once per tag). A destroyed building gives no
 ## souls (sacengine destroy only adds the collapse, state.d:8376-8380): it just goes away on every peer.
@@ -14,7 +14,6 @@ signal destroyed(building: MapBuilding)
 
 const GROUP := &"map_building"
 const SHELTER_GROUP := &"shelter"
-const BUILDINGS_PATH := OriginalAssets.DATA_DIR + "buildings.json"
 
 ## BLDG tag, in the order the WAD names use (jhut, jwg1, jcc1).
 @export var tag := ""
@@ -67,7 +66,7 @@ func _ready() -> void:
 	add_to_group(GROUP)
 	var record := bldg(tag)
 	if record.is_empty():
-		push_warning("MapBuilding: el BLDG «%s» no está en assets/original/data/buildings.json; relleno gris." % tag)
+		push_warning("MapBuilding: el BLDG «%s» no está en data/catalog/game_catalog.tres; relleno gris." % tag)
 	max_health = max_health_override if max_health_override > 0.0 else float(record.get("max_health", 0.0))
 	shelter = bool(record.get("shelter", false))
 	ground = bool(record.get("ground", false))
@@ -90,14 +89,14 @@ func _ready() -> void:
 	_place_bar()
 
 
-## The BLDG record of `name`, {} when the cache has none.
+## The BLDG record of `name` (BuildingType.to_record), {} when the catalog has none.
 static func bldg(name: String) -> Dictionary:
 	if not _bldgs_loaded:
 		_bldgs_loaded = true
-		if FileAccess.file_exists(BUILDINGS_PATH):
-			var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(BUILDINGS_PATH))
-			if parsed is Dictionary:
-				_bldgs = parsed
+		var catalog := GameCatalog.shared()
+		if catalog:
+			for building in catalog.buildings:
+				_bldgs[building.tag] = building.to_record()
 	return _bldgs.get(name, {})
 
 

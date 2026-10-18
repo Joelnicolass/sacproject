@@ -3,11 +3,11 @@ class_name BodyCatalog
 extends RefCounted
 
 ## Bodies and props: sizes, pose and meshes by model tag.
-## Sizes come from assets/original/models/sizes.json (tools/import_props.py), static meshes (props, and the hybrid bodies
+## Sizes come from the BodySize .tres of data/catalog/body_sizes/ (GameCatalog, baked by tools/bake_catalog.gd), static meshes (props, and the hybrid bodies
 ## that no clip animates) are the .glb of assets/original/props/ (RFC-033 033c, RFC-023 023h). Animated bodies are drawn by
 ## a BodyRig from assets/original/models/ and have no mesh here.
 ## On top of them go the hand corrections in data/bodies/pose_overrides.tres (turn, offset,
-## scale, capsule). Nothing else corrects a pose: the sizes JSON is never edited by hand.
+## scale, capsule). Nothing else corrects a pose: the baked sizes are never edited for a pose.
 ## Static and @tool: the editor has no autoloads, so BodyVisual reads the assets through here.
 ## The headless server reads sizes only, never a mesh.
 
@@ -63,7 +63,7 @@ static func has_model(model: String) -> bool:
 	return _bodies.has(model) or _props.has(model)
 
 
-## Measures (sizes.json) plus the capsule corrections: height, height_flying, radius and reach are final.
+## Measures (BodySize) plus the capsule corrections: height, height_flying, radius and reach are final.
 ## A scale in the override scales the measured capsule too; capsule_* replaces it.
 static func info(model: String) -> Dictionary:
 	_ensure()
@@ -86,7 +86,13 @@ static func info(model: String) -> Dictionary:
 	return data
 
 
-## Bodies first, then props, in the order of sizes.json.
+## The baked measures of `model` before any pose correction ({} when unknown): box, foot_offset, height, radius, reach, upright_fix.
+static func measured(model: String) -> Dictionary:
+	_ensure()
+	return _bodies.get(model, _props.get(model, {}))
+
+
+## Bodies first, then props, in the order of the catalog.
 static func models() -> PackedStringArray:
 	_ensure()
 	var out := PackedStringArray()
@@ -160,9 +166,11 @@ static func _ensure() -> void:
 	if _loaded:
 		return
 	_loaded = true
-	var sizes := _read_json(OriginalAssets.sizes())
-	_bodies = sizes.get("bodies", {})
-	_props = sizes.get("props", {})
+	var catalog := GameCatalog.shared()
+	if catalog == null:
+		return
+	for size in catalog.body_sizes:
+		(_props if size.is_prop else _bodies)[size.tag] = size.to_record()
 
 
 static func _on_overrides_changed() -> void:
@@ -179,10 +187,3 @@ static func _vector(value: Variant, fallback: Vector3) -> Vector3:
 	if value is Array and value.size() >= 3:
 		return Vector3(float(value[0]), float(value[1]), float(value[2]))
 	return fallback
-
-
-static func _read_json(path: String) -> Dictionary:
-	if not FileAccess.file_exists(path):
-		return {}
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
-	return parsed if typeof(parsed) == TYPE_DICTIONARY else {}

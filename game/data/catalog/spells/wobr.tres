@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/spell_type.gd" id="1_be8e0"]
+
+[resource]
+script = ExtResource("1_be8e0")
+tag = "wobr"
+display_name = "Rainbow"
+mana_cost = 300
+cast_range = 100.0
+cooldown_s = 10.0
+casting_time_s = 0.3704
+spell_order = 450
+damage = 600
+amount2 = 3000
+damage_range = 5.0
+effect_range = 50.0
+flags = 4101
+flags1 = 32866
+structures = PackedStringArray()

@@ -1,0 +1,63 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/creature_type.gd" id="1_k2kp5"]
+
+[resource]
+script = ExtResource("1_k2kp5")
+tag = "dcas"
+display_name = "Sac Doctor"
+god = "none"
+model = "sacd"
+health = 400
+regeneration_per_s = 83.3333
+running_speed = 10.0
+flying_speed = 10.0
+melee_strength = 50
+melee_accuracy = 1000
+melee_evasion = 1000
+ranged_accuracy = 1000
+aggressiveness = 1000
+sight_range = 100.0
+mana_cost = 10
+cooldown_s = 1.0
+ability_tags = PackedStringArray()
+stance_animation = {
+"framerate": 30.0,
+"frames": 11.0,
+"tag": "SDst"
+}
+idle_animation = {
+"framerate": 30.0,
+"frames": 166.0,
+"tag": "SDda"
+}
+run_animation = {
+"framerate": 30.0,
+"frames": 27.0,
+"tag": "SDrn"
+}
+melee_animations = Array[Dictionary]([{
+"attack_ticks": [],
+"framerate": 30.0,
+"frames": 34.0,
+"tag": "SDsb"
+}, {
+"attack_ticks": [],
+"framerate": 30.0,
+"frames": 55.0,
+"tag": "SDpm"
+}, {
+"attack_ticks": [],
+"framerate": 30.0,
+"frames": 42.0,
+"tag": "SDpu"
+}])
+passive_abilities = PackedStringArray()
+shoot_animations = Array[Dictionary]([{}, {}])
+stun_animations = {
+"hit_floor": {
+"framerate": 30.0,
+"frames": 85.0,
+"tag": "SDbn"
+}
+}

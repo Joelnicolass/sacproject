@@ -1,0 +1,154 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/creature_type.gd" id="1_cbtr8"]
+
+[resource]
+script = ExtResource("1_cbtr8")
+tag = "magH"
+display_name = "Gammel"
+god = "james"
+model = "gamm"
+health = 3360
+regeneration_per_s = 16.6667
+running_speed = 7.03
+flying_speed = 12.75
+melee_strength = 1100
+melee_accuracy = 1500
+melee_evasion = 1650
+ranged_accuracy = 250
+aggressiveness = 1000
+sight_range = 150.0
+melee_resistance = 0.025
+direct_spell_resistance = 0.85
+splash_spell_resistance = 0.35
+direct_ranged_resistance = 0.65
+splash_ranged_resistance = 0.6
+mana = 600
+mana_cost = 1000
+souls = 3
+cooldown_s = 6.0
+casting_time_s = 2.1605
+spell_order = 604
+ability_tags = PackedStringArray("acia")
+stance_animation = {
+"framerate": 30.0,
+"frames": 88.0,
+"tag": "CKst"
+}
+idle_animation = {
+"framerate": 30.0,
+"frames": 118.0,
+"tag": "ECi1"
+}
+run_animation = {
+"framerate": 30.0,
+"frames": 63.0,
+"tag": "ECrn"
+}
+walk_animation = {
+"framerate": 30.0,
+"frames": 63.0,
+"tag": "ECrn"
+}
+melee_animations = Array[Dictionary]([{
+"attack_ticks": [20.0],
+"framerate": 30.0,
+"frames": 63.0,
+"tag": "ECa1"
+}, {
+"attack_ticks": [12.0, 18.0, 21.0, 25.0],
+"framerate": 30.0,
+"frames": 48.0,
+"tag": "CKa2"
+}, {
+"attack_ticks": [11.0, 21.0, 40.0, 55.0],
+"framerate": 30.0,
+"frames": 71.0,
+"tag": "CKa3"
+}])
+active_ability_tag = "acia"
+passive_abilities = PackedStringArray()
+shoot_animations = Array[Dictionary]([{
+"framerate": 30.0,
+"frames": 96.0,
+"shoot_ticks": [54.0],
+"tag": "ECs1"
+}, {
+"framerate": 30.0,
+"frames": 48.0,
+"shoot_ticks": [],
+"tag": "CKa2"
+}])
+flight_animations = {
+"fly": {
+"framerate": 30.0,
+"frames": 55.0,
+"tag": "ECfl"
+},
+"hover": {
+"framerate": 30.0,
+"frames": 61.0,
+"tag": "EChv"
+},
+"land": {
+"framerate": 30.0,
+"frames": 28.0,
+"tag": "CKla"
+},
+"takeoff": {
+"framerate": 30.0,
+"frames": 26.0,
+"tag": "CKto"
+}
+}
+stun_animations = {
+"fly_damage": {
+"framerate": 30.0,
+"frames": 61.0,
+"tag": "Ckfg"
+},
+"get_up": {
+"framerate": 30.0,
+"frames": 58.0,
+"tag": "CKgu"
+},
+"hit_floor": {
+"framerate": 30.0,
+"frames": 85.0,
+"tag": "CKhf"
+},
+"knock": {
+"framerate": 30.0,
+"frames": 98.0,
+"tag": "CKfd"
+}
+}
+death_animations = {
+"death": {
+"framerate": 30.0,
+"frames": 98.0,
+"tag": "CKd1"
+},
+"fly_death": {
+"framerate": 30.0,
+"frames": 25.0,
+"tag": "CKfi"
+}
+}
+captive_animations = {
+"held": {
+"framerate": 30.0,
+"frames": 6.0,
+"tag": "CK2t"
+},
+"rise": {
+"framerate": 30.0,
+"frames": 13.0,
+"tag": "CKrz"
+},
+"thrash": {
+"framerate": 30.0,
+"frames": 21.0,
+"tag": "CKsc"
+}
+}

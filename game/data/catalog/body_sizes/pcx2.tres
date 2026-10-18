@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_0e27s"]
+
+[resource]
+script = ExtResource("1_0e27s")
+tag = "pcx2"
+is_prop = true
+box = PackedFloat64Array(-3.379, -3.935, -3.621, 6.875, 6.898, 7.208)
+foot_offset = 3.935
+height = 6.898
+radius = 2.406
+reach = 3.604
+upright_fix = PackedFloat64Array(0, 0, 0)

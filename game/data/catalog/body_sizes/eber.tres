@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_kckfr"]
+
+[resource]
+script = ExtResource("1_kckfr")
+tag = "eber"
+box = PackedFloat64Array(-1.447, 0.257, -2.194, 2.818, 2.697, 4.75)
+height = 2.954
+radius = 0.986
+reach = 2.375
+upright_fix = PackedFloat64Array(0, 0, 0)
+pose_source = "BEst"

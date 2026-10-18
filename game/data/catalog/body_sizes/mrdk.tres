@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_xnoq2"]
+
+[resource]
+script = ExtResource("1_xnoq2")
+tag = "mrdk"
+box = PackedFloat64Array(-1.675, -0.118, -2.623, 3.008, 4.12, 4.034)
+height = 4.002
+radius = 1.053
+reach = 2.017
+upright_fix = PackedFloat64Array(0, 0, 0)
+pose_source = "mdi1"

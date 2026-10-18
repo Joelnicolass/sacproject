@@ -2,7 +2,6 @@ extends Node3D
 
 ## Every baked body in rows, fitted to one cell, feet on y = 0.
 
-const CREATURES_JSON := OriginalAssets.DATA_DIR + "creatures.json"
 
 @export var body_scene: PackedScene
 @export var columns := 14
@@ -76,11 +75,7 @@ func _names() -> Dictionary:
 	var names := {}
 	for wizard in GameData.wizards():
 		names[wizard.model] = wizard.display_name
-	if FileAccess.file_exists(CREATURES_JSON):
-		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(CREATURES_JSON))
-		if typeof(parsed) == TYPE_DICTIONARY:
-			for tag: String in parsed:
-				var type = GameData.creature(tag)
-				if type and not names.has(type.model):
-					names[type.model] = type.display_name
+	for type in GameData.all_creatures():
+		if not names.has(type.model):
+			names[type.model] = type.display_name
 	return names

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/spell_type.gd" id="1_qv2nt"]
+
+[resource]
+script = ExtResource("1_qv2nt")
+tag = "dnws"
+display_name = "Soul Wind"
+mana_cost = 500
+cast_range = 100.0
+cooldown_s = 2.0
+casting_time_s = 0.4938
+spell_order = 559
+damage = 400
+amount2 = 400
+effect_range = 30.0
+flags = 4098
+structures = PackedStringArray()

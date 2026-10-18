@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_wrhoa"]
+
+[resource]
+script = ExtResource("1_wrhoa")
+tag = "bld1"
+is_prop = true
+box = PackedFloat64Array(-3.827, -9.108, -3.154, 8.345, 29.427, 6.127)
+foot_offset = 9.108
+height = 29.427
+radius = 2.144
+reach = 4.172
+upright_fix = PackedFloat64Array(0, 0, 0)

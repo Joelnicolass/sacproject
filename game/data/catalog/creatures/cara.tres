@@ -1,0 +1,123 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/creature_type.gd" id="1_alftt"]
+
+[resource]
+script = ExtResource("1_alftt")
+tag = "cara"
+display_name = "Scarab"
+god = "persephone"
+model = "bugl"
+health = 1200
+regeneration_per_s = 29.1667
+running_speed = 9.0
+melee_strength = 100
+melee_accuracy = 1300
+melee_evasion = 1400
+ranged_accuracy = 200
+aggressiveness = 1000
+sight_range = 150.0
+melee_resistance = 4.0
+mana = 325
+mana_cost = 600
+souls = 2
+cooldown_s = 3.0
+casting_time_s = 0.7407
+spell_order = 241
+ability_tags = PackedStringArray("slba")
+stance_animation = {
+"framerate": 30.0,
+"frames": 30.0,
+"tag": "BGst"
+}
+idle_animation = {
+"framerate": 30.0,
+"frames": 37.0,
+"tag": "BGi1"
+}
+run_animation = {
+"framerate": 30.0,
+"frames": 22.0,
+"tag": "BGrn"
+}
+walk_animation = {
+"framerate": 30.0,
+"frames": 22.0,
+"tag": "BGrn"
+}
+melee_animations = Array[Dictionary]([{
+"attack_ticks": [16.0],
+"framerate": 30.0,
+"frames": 30.0,
+"tag": "BGa1"
+}, {
+"attack_ticks": [27.0],
+"framerate": 30.0,
+"frames": 53.0,
+"tag": "BGa2"
+}, {
+"attack_ticks": [20.0],
+"framerate": 30.0,
+"frames": 45.0,
+"tag": "BGa3"
+}])
+is_ranged = true
+ranged_attack_tag = "slba"
+passive_abilities = PackedStringArray()
+shoot_animations = Array[Dictionary]([{
+"framerate": 30.0,
+"frames": 44.0,
+"shoot_ticks": [22.0],
+"tag": "BGs2"
+}, {
+"framerate": 30.0,
+"frames": 35.0,
+"shoot_ticks": [18.0],
+"tag": "BGs1"
+}])
+stun_animations = {
+"get_up": {
+"framerate": 30.0,
+"frames": 33.0,
+"tag": "BGgu"
+},
+"hit_floor": {
+"framerate": 30.0,
+"frames": 18.0,
+"tag": "BGhf"
+},
+"knock": {
+"framerate": 30.0,
+"frames": 18.0,
+"tag": "BGfd"
+}
+}
+death_animations = {
+"death": {
+"framerate": 30.0,
+"frames": 78.0,
+"tag": "BGd1"
+},
+"fly_death": {
+"framerate": 30.0,
+"frames": 30.0,
+"tag": "BGst"
+}
+}
+captive_animations = {
+"held": {
+"framerate": 30.0,
+"frames": 23.0,
+"tag": "BG2t"
+},
+"rise": {
+"framerate": 30.0,
+"frames": 91.0,
+"tag": "BGrz"
+},
+"thrash": {
+"framerate": 30.0,
+"frames": 21.0,
+"tag": "BGsc"
+}
+}

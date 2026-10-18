@@ -91,7 +91,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if model.is_empty():
 		warnings.append("Elegí un modelo en `model` para ver este visual.")
 	elif not BodyCatalog.has_model(model):
-		warnings.append("El modelo «%s» no está en assets/original/models/sizes.json. Se muestra el relleno." % model)
+		warnings.append("El modelo «%s» no está en data/catalog/body_sizes/ (BodySize). Se muestra el relleno." % model)
 	return warnings
 
 

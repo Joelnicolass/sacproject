@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/ability_type.gd" id="1_5xkgb"]
+
+[resource]
+script = ExtResource("1_5xkgb")
+tag = "psaa"
+display_name = "Cage pull"
+mana_cost = 60
+cast_range = 50.0
+cooldown_s = 6.0
+casting_time_s = 4.4444
+speed = 30.0
+flags = 8197
+flags1 = 6177
+flags2 = 8388608
+args = {
+"fSPa": 255.0,
+"ffps": 15.0,
+"fjit": 3.0,
+"iadd": 1.0,
+"tstx": "eweb",
+"ttex": "ltng",
+"ttyp": "litn"
+}

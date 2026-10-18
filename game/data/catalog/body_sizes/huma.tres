@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_4gri3"]
+
+[resource]
+script = ExtResource("1_4gri3")
+tag = "huma"
+box = PackedFloat64Array(-0.335, -0.036, -0.599, 0.837, 1.754, 1.619)
+height = 1.718
+radius = 0.293
+reach = 0.81
+upright_fix = PackedFloat64Array(0, 0, 0)
+pose_source = "HAi1"

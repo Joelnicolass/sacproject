@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/spell_type.gd" id="1_jgq3y"]
+
+[resource]
+script = ExtResource("1_jgq3y")
+tag = "laeh"
+display_name = "Heal"
+mana_cost = 300
+cast_range = 100.0
+cooldown_s = 1.0
+casting_time_s = 0.3704
+spell_order = 136
+damage = 1000
+amount2 = 1000
+flags = 4101
+flags1 = 32800
+structures = PackedStringArray()

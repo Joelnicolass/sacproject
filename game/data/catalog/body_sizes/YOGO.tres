@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_t4nhr"]
+
+[resource]
+script = ExtResource("1_t4nhr")
+tag = "YOGO"
+box = PackedFloat64Array(-1.066, -0.013, -1.577, 1.611, 2.986, 2.663)
+height = 2.974
+radius = 0.564
+reach = 1.332
+upright_fix = PackedFloat64Array(0, 0, 0)
+pose_source = "YOi1"

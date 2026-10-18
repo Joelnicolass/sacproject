@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/ability_type.gd" id="1_ia8sg"]
+
+[resource]
+script = ExtResource("1_ia8sg")
+tag = "othg"
+display_name = "othg"
+mana_cost = 10
+cast_range = 100.0
+cooldown_s = 1.25
+casting_time_s = 0.0741
+args = {
+"iadd": 1.0,
+"tptx": "elec",
+"ttyp": "elec"
+}

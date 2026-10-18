@@ -1,0 +1,39 @@
+[gd_resource type="Resource" script_class="BuildingType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/building_type.gd" id="1_c6u1q"]
+
+[resource]
+script = ExtResource("1_c6u1q")
+tag = "pmag"
+flags = 128
+max_health = 6000.0
+tileset = "PY_A"
+folder = "PMOD.WAD!/bild.FLDR"
+components = Array[Dictionary]([{
+"destroyed": "mpil",
+"facing": 0.0,
+"kind": "BASE",
+"spell": "",
+"tag": "mpil",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+}, {
+"destroyed": "",
+"facing": 0.0,
+"kind": "BRAK",
+"spell": "mfrb",
+"tag": "mbra",
+"x": 19.0,
+"y": 0.0,
+"z": 69.0
+}, {
+"destroyed": "",
+"facing": 0.0,
+"kind": "GUN!",
+"spell": "mfry",
+"tag": "mgun",
+"x": 19.12,
+"y": 0.0,
+"z": 82.404
+}])

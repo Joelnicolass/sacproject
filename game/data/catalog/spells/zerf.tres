@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/spell_type.gd" id="1_oxxll"]
+
+[resource]
+script = ExtResource("1_oxxll")
+tag = "zerf"
+display_name = "Freeze"
+mana_cost = 400
+cast_range = 100.0
+cooldown_s = 20.0
+casting_time_s = 0.7407
+spell_order = 346
+damage = 150
+amount2 = 150
+duration = 20.0
+flags = 8197
+flags1 = 2080
+structures = PackedStringArray()

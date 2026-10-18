@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/ability_type.gd" id="1_lqgvu"]
+
+[resource]
+script = ExtResource("1_lqgvu")
+tag = "HSba"
+display_name = "Protector"
+mana_cost = 300
+cooldown_s = 20.0
+casting_time_s = 14.8148
+effect_range = 30.0
+duration = 20.0
+flags1 = 1104
+flags2 = 524288
+args = {
+"tspl": "absh"
+}

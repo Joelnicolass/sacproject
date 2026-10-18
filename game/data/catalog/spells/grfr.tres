@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/spell_type.gd" id="1_6i3i4"]
+
+[resource]
+script = ExtResource("1_6i3i4")
+tag = "grfr"
+display_name = "Rain Of Frogs"
+mana_cost = 1000
+cast_range = 100.0
+cooldown_s = 50.0
+casting_time_s = 2.4691
+spell_order = 556
+damage = 90
+amount2 = 90
+damage_range = 5.0
+effect_range = 50.0
+duration = 20.0
+flags = 16413
+flags1 = 16448
+flags2 = 33554432
+structures = PackedStringArray()

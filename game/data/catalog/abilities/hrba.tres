@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/ability_type.gd" id="1_wlfml"]
+
+[resource]
+script = ExtResource("1_wlfml")
+tag = "hrba"
+display_name = "Spikey Death"
+mana_cost = 50
+cast_range = 40.0
+cooldown_s = 4.0
+casting_time_s = 2.963
+speed = 60.0
+damage = 500
+amount2 = 500
+effect_range = 30.0
+flags = 81941
+flags1 = 16480
+flags2 = 16777216

@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="BuildingType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/building_type.gd" id="1_pb2lk"]
+
+[resource]
+script = ExtResource("1_pb2lk")
+tag = "cat6"
+flags = 2147492040
+ground = true
+max_health = 1000.0
+tileset = "char"
+folder = "joby.WAD!/ch_a.FLDR"
+components = Array[Dictionary]([{
+"destroyed": "ctx2",
+"facing": 0.0,
+"kind": "BASE",
+"spell": "",
+"tag": "cat6",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+}])

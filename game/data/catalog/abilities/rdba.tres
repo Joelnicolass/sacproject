@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/ability_type.gd" id="1_6jppg"]
+
+[resource]
+script = ExtResource("1_6jppg")
+tag = "rdba"
+display_name = "Icy Breath"
+mana_cost = 50
+cast_range = 40.0
+cooldown_s = 4.0
+casting_time_s = 2.963
+speed = 36.0
+damage = 500
+amount2 = 500
+effect_range = 5.0
+duration = 5.0
+flags = 16405
+flags1 = 18529
+flags2 = 16777216
+args = {
+"ttex": "icec",
+"ttx1": "cold",
+"ttx2": "cst0"
+}

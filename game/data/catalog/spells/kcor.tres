@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/spell_type.gd" id="1_thy2d"]
+
+[resource]
+script = ExtResource("1_thy2d")
+tag = "kcor"
+display_name = "Rock"
+mana_cost = 300
+cast_range = 125.0
+cooldown_s = 8.0
+casting_time_s = 0.7407
+spell_order = 132
+speed = 30.0
+acceleration = 3.0
+damage = 650
+amount2 = 650
+duration = 10.0
+flags = 8213
+flags1 = 16449
+structures = PackedStringArray()

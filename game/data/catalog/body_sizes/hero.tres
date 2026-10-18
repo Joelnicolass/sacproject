@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_ecuvu"]
+
+[resource]
+script = ExtResource("1_ecuvu")
+tag = "hero"
+box = PackedFloat64Array(-0.475, -0.004, -0.883, 1.125, 1.872, 1.367)
+height = 1.868
+radius = 0.394
+reach = 0.684
+upright_fix = PackedFloat64Array(0, 0, 0)
+pose_source = "hei1"

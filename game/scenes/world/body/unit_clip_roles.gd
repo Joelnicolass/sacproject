@@ -1,7 +1,7 @@
 class_name UnitClipRoles
 extends RefCounted
 
-## RFC-023 (023c): which clip tag a creature unit plays for each ROLE, read from its CreatureType (creatures.json). The
+## RFC-023 (023c): which clip tag a creature unit plays for each ROLE, read from its CreatureType (data/catalog/creatures/). The
 ## unit body hands this map to its BodyAnimator; the roles are the ones BodyClips.ROLES has a state for.
 ## Presentation only: the simulation takes its ticks from CreatureType and never reads these tags.
 

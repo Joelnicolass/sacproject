@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_asqs1"]
+
+[resource]
+script = ExtResource("1_asqs1")
+tag = "shkt"
+box = PackedFloat64Array(-0.662, -0.031, -0.652, 1.284, 2.381, 1.274)
+height = 2.35
+radius = 0.446
+reach = 0.642
+upright_fix = PackedFloat64Array(0, 0, 0)
+pose_source = "SHi1"

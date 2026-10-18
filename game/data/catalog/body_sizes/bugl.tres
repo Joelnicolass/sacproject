@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_0lhha"]
+
+[resource]
+script = ExtResource("1_0lhha")
+tag = "bugl"
+box = PackedFloat64Array(-1.206, -0.087, -0.775, 2.422, 1.156, 2.005)
+height = 1.07
+radius = 0.702
+reach = 1.211
+upright_fix = PackedFloat64Array(0, 0, 0)
+pose_source = "BGst"

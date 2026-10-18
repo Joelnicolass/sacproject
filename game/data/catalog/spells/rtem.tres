@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/spell_type.gd" id="1_on802"]
+
+[resource]
+script = ExtResource("1_on802")
+tag = "rtem"
+display_name = "Bombardment"
+mana_cost = 1500
+cast_range = 150.0
+cooldown_s = 70.0
+casting_time_s = 3.9506
+spell_order = 772
+speed = 60.0
+damage = 400
+amount2 = 400
+damage_range = 5.0
+effect_range = 50.0
+duration = 20.0
+flags = 16413
+flags1 = 16448
+flags2 = 33554432
+structures = PackedStringArray()

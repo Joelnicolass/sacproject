@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/ability_type.gd" id="1_k35cg"]
+
+[resource]
+script = ExtResource("1_k35cg")
+tag = "amba"
+display_name = "Gale Force"
+mana_cost = 13
+cast_range = 150.0
+cooldown_s = 7.0
+casting_time_s = 5.1852
+speed = 60.0
+damage = 520
+amount2 = 520
+flags = 16405
+flags1 = 16417
+flags2 = 16777216
+args = {
+"fpsh": 8.0,
+"igap": 10.0,
+"thit": "push",
+"tmov": "norm",
+"tsnd": "flap",
+"ttex": "sqll",
+"ttyp": "tube"
+}

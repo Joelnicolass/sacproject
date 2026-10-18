@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_2sr34"]
+
+[resource]
+script = ExtResource("1_2sr34")
+tag = "eclw"
+box = PackedFloat64Array(-2.275, 0.095, -3.07, 4.699, 3.483, 5.126)
+height = 3.579
+radius = 1.645
+reach = 2.563
+upright_fix = PackedFloat64Array(0, 0, 0)
+pose_source = "CPst"

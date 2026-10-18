@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_jqsab"]
+
+[resource]
+script = ExtResource("1_jqsab")
+tag = "pcru"
+is_prop = true
+box = PackedFloat64Array(-6.799, -0.134, -7.12, 13.589, 7.643, 14.288)
+foot_offset = 0.134
+height = 7.643
+radius = 4.756
+reach = 7.144
+upright_fix = PackedFloat64Array(0, 0, 0)

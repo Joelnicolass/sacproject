@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/ability_type.gd" id="1_f3kq1"]
+
+[resource]
+script = ExtResource("1_f3kq1")
+tag = "psla"
+display_name = "Web pull"
+mana_cost = 60
+cast_range = 50.0
+cooldown_s = 6.0
+casting_time_s = 4.4444
+speed = 30.0
+flags = 8197
+flags1 = 6176
+flags2 = 8388608
+args = {
+"fSPa": 255.0,
+"fSPs": 4.0,
+"iSP#": 64.0,
+"iadd": 0.0,
+"tSPK": "gend",
+"ttex": "cord",
+"ttyp": "web!"
+}

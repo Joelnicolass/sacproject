@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_pulv8"]
+
+[resource]
+script = ExtResource("1_pulv8")
+tag = "rigl"
+box = PackedFloat64Array(-0.461, -0.078, -0.801, 0.93, 2.489, 1.471)
+height = 2.411
+radius = 0.325
+reach = 0.735
+upright_fix = PackedFloat64Array(0, 0, 0)
+pose_source = "Widl"

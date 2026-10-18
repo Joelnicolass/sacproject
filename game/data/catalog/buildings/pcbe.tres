@@ -1,0 +1,93 @@
+[gd_resource type="Resource" script_class="BuildingType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/building_type.gd" id="1_vf882"]
+
+[resource]
+script = ExtResource("1_vf882")
+tag = "pcbe"
+flags = 2147483648
+ground = true
+tileset = "prsc"
+folder = "joby.WAD!/prsc.FLDR"
+components = Array[Dictionary]([{
+"destroyed": "",
+"facing": 0.0,
+"kind": "BASE",
+"spell": "",
+"tag": "pcb1",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+}, {
+"destroyed": "",
+"facing": 0.0,
+"kind": "plt1",
+"spell": "",
+"tag": "pcb2",
+"x": 0.0,
+"y": -60.0,
+"z": 0.0
+}, {
+"destroyed": "",
+"facing": 90.0,
+"kind": "plt2",
+"spell": "",
+"tag": "pcb2",
+"x": 60.0,
+"y": 0.0,
+"z": 0.0
+}, {
+"destroyed": "",
+"facing": 180.0,
+"kind": "plt3",
+"spell": "",
+"tag": "pcb2",
+"x": 0.0,
+"y": 60.0,
+"z": 0.0
+}, {
+"destroyed": "",
+"facing": -90.0,
+"kind": "plt4",
+"spell": "",
+"tag": "pcb2",
+"x": -60.0,
+"y": 0.0,
+"z": 0.0
+}, {
+"destroyed": "",
+"facing": 0.0,
+"kind": "lef1",
+"spell": "",
+"tag": "pcb3",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+}, {
+"destroyed": "",
+"facing": 90.0,
+"kind": "lef2",
+"spell": "",
+"tag": "pcb3",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+}, {
+"destroyed": "",
+"facing": 180.0,
+"kind": "lef3",
+"spell": "",
+"tag": "pcb3",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+}, {
+"destroyed": "",
+"facing": 270.0,
+"kind": "lef4",
+"spell": "",
+"tag": "pcb3",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+}])

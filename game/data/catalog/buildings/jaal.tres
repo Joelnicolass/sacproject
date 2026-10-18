@@ -1,0 +1,66 @@
+[gd_resource type="Resource" script_class="BuildingType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/building_type.gd" id="1_kcpic"]
+
+[resource]
+script = ExtResource("1_kcpic")
+tag = "jaal"
+flags = 2147488775
+ground = true
+tileset = "JA_A"
+folder = "JMOD.WAD!/bild.FLDR"
+components = Array[Dictionary]([{
+"destroyed": "",
+"facing": 0.0,
+"kind": "BASE",
+"spell": "",
+"tag": "jpit",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+}, {
+"destroyed": "",
+"facing": 225.0,
+"kind": "PIL1",
+"spell": "",
+"tag": "jpil",
+"x": 20.0,
+"y": 20.0,
+"z": 0.0
+}, {
+"destroyed": "",
+"facing": 315.0,
+"kind": "PIL2",
+"spell": "",
+"tag": "jpil",
+"x": -20.0,
+"y": 20.0,
+"z": 0.0
+}, {
+"destroyed": "",
+"facing": 135.0,
+"kind": "PIL3",
+"spell": "",
+"tag": "jpil",
+"x": 20.0,
+"y": -20.0,
+"z": 0.0
+}, {
+"destroyed": "",
+"facing": 45.0,
+"kind": "PIL4",
+"spell": "",
+"tag": "jpil",
+"x": -20.0,
+"y": -20.0,
+"z": 0.0
+}, {
+"destroyed": "",
+"facing": 0.0,
+"kind": "TOP!",
+"spell": "",
+"tag": "jrng",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+}])

@@ -58,7 +58,7 @@ func _apply_model() -> void:
 		return
 	var visible_model := _resolved_model()
 	if visible_model.is_empty():
-		push_warning("Structure model '%s' is missing from assets/original/models/sizes.json. Visual uses placeholder." % model)
+		push_warning("Structure model '%s' is missing from data/catalog/body_sizes/ (BodySize). Visual uses placeholder." % model)
 		mesh.call("show_model", model)
 		return
 	mesh.call("show_model", visible_model)

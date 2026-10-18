@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_nbwq4"]
+
+[resource]
+script = ExtResource("1_nbwq4")
+tag = "pcta"
+is_prop = true
+box = PackedFloat64Array(-37.953, -5.197, -8.42, 75.831, 46.531, 16.837)
+foot_offset = 5.197
+height = 46.531
+radius = 5.893
+reach = 37.916
+upright_fix = PackedFloat64Array(0, 0, 0)

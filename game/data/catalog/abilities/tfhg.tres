@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/ability_type.gd" id="1_h7wmf"]
+
+[resource]
+script = ExtResource("1_h7wmf")
+tag = "tfhg"
+display_name = "tfhg"
+args = {
+"tptx": "firy",
+"ttyp": "flam"
+}

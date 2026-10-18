@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/spell_type.gd" id="1_5fpfd"]
+
+[resource]
+script = ExtResource("1_5fpfd")
+tag = "rwsp"
+display_name = "Protective Swarm"
+mana_cost = 400
+cooldown_s = 50.0
+casting_time_s = 0.9877
+spell_order = 242
+speed = 45.0
+damage = 75
+amount2 = 100
+effect_range = 5.0
+duration = 40.0
+flags1 = 1040
+structures = PackedStringArray()

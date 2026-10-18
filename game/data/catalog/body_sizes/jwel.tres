@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_kpisr"]
+
+[resource]
+script = ExtResource("1_kpisr")
+tag = "jwel"
+is_prop = true
+box = PackedFloat64Array(-1.426, -0.438, -2.628, 2.853, 4.211, 4.536)
+foot_offset = 0.438
+height = 4.211
+radius = 0.999
+reach = 2.268
+upright_fix = PackedFloat64Array(0, 0, 0)

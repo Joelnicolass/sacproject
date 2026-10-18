@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/ability_type.gd" id="1_3svju"]
+
+[resource]
+script = ExtResource("1_3svju")
+tag = "dpsf"
+display_name = "Basilisk gaze"
+mana_cost = 21
+cast_range = 110.0
+cooldown_s = 8.0
+casting_time_s = 5.9259
+speed = 48.0
+damage = 150
+amount2 = 150
+flags = 16405
+flags1 = 2081
+flags2 = 16777216
+args = {
+"ttex": "gaze"
+}

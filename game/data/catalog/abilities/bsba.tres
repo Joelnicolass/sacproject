@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/ability_type.gd" id="1_lg71a"]
+
+[resource]
+script = ExtResource("1_lg71a")
+tag = "bsba"
+display_name = "Wind Gust"
+mana_cost = 16
+cast_range = 90.0
+cooldown_s = 2.25
+casting_time_s = 1.6667
+speed = 36.0
+damage = 200
+amount2 = 200
+flags = 16405
+flags1 = 16417
+flags2 = 16777216
+args = {
+"flif": 1.0,
+"frad": 0.375,
+"thit": "ko__",
+"ttex": "mind",
+"ttyp": "tube"
+}

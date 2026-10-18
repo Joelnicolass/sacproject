@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_2je5f"]
+
+[resource]
+script = ExtResource("1_2je5f")
+tag = "spdr"
+box = PackedFloat64Array(-1.402, -0.028, -1.025, 2.803, 1.639, 2.092)
+height = 1.611
+radius = 0.732
+reach = 1.401
+upright_fix = PackedFloat64Array(0, 0, 0)
+pose_source = "Spi1"

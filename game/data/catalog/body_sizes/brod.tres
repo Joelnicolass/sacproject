@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_e37mo"]
+
+[resource]
+script = ExtResource("1_e37mo")
+tag = "brod"
+box = PackedFloat64Array(-1.149, 0.009, -0.28, 2.4, 1.119, 0.999)
+height = 1.128
+radius = 0.35
+reach = 1.2
+upright_fix = PackedFloat64Array(0, 0, 0)
+pose_source = "bri1"

@@ -1,0 +1,119 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/creature_type.gd" id="1_3qucp"]
+
+[resource]
+script = ExtResource("1_3qucp")
+tag = "oohH"
+display_name = "Toldor"
+god = "persephone"
+model = "hoom"
+health = 5625
+regeneration_per_s = 29.1667
+running_speed = 8.75
+melee_strength = 750
+melee_accuracy = 3000
+melee_evasion = 3000
+aggressiveness = 1000
+sight_range = 100.0
+melee_resistance = 0.187
+splash_spell_resistance = 1.25
+direct_ranged_resistance = 0.562
+splash_ranged_resistance = 0.562
+mana = 1000
+mana_cost = 1300
+souls = 4
+cooldown_s = 8.0
+casting_time_s = 2.5926
+spell_order = 800
+ability_tags = PackedStringArray("HSba")
+stance_animation = {
+"framerate": 30.0,
+"frames": 103.0,
+"tag": "STst"
+}
+idle_animation = {
+"framerate": 30.0,
+"frames": 151.0,
+"tag": "STi1"
+}
+run_animation = {
+"framerate": 30.0,
+"frames": 40.0,
+"tag": "STwk"
+}
+walk_animation = {
+"framerate": 30.0,
+"frames": 40.0,
+"tag": "STwk"
+}
+melee_animations = Array[Dictionary]([{
+"attack_ticks": [19.0],
+"framerate": 30.0,
+"frames": 43.0,
+"tag": "STa1"
+}, {
+"attack_ticks": [16.0],
+"framerate": 30.0,
+"frames": 43.0,
+"tag": "STa2"
+}, {
+"attack_ticks": [16.0, 20.0],
+"framerate": 30.0,
+"frames": 43.0,
+"tag": "STa3"
+}])
+active_ability_tag = "HSba"
+passive_abilities = PackedStringArray()
+shoot_animations = Array[Dictionary]([{
+"framerate": 30.0,
+"frames": 1.0,
+"shoot_ticks": [],
+"tag": "ST00"
+}, {
+"framerate": 30.0,
+"frames": 1.0,
+"shoot_ticks": [],
+"tag": "ST00"
+}])
+stun_animations = {
+"get_up": {
+"framerate": 30.0,
+"frames": 33.0,
+"tag": "STgu"
+},
+"hit_floor": {
+"framerate": 30.0,
+"frames": 65.0,
+"tag": "SThf"
+},
+"knock": {
+"framerate": 30.0,
+"frames": 33.0,
+"tag": "STfd"
+}
+}
+death_animations = {
+"death": {
+"framerate": 30.0,
+"frames": 148.0,
+"tag": "STd1"
+}
+}
+captive_animations = {
+"held": {
+"framerate": 30.0,
+"frames": 6.0,
+"tag": "ST2t"
+},
+"rise": {
+"framerate": 30.0,
+"frames": 13.0,
+"tag": "STrz"
+},
+"thrash": {
+"framerate": 30.0,
+"frames": 21.0,
+"tag": "STsc"
+}
+}

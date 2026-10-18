@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_p7d8d"]
+
+[resource]
+script = ExtResource("1_p7d8d")
+tag = "pcr5"
+is_prop = true
+box = PackedFloat64Array(-7.021, -3.479, -5.48, 12.854, 11.642, 11.344)
+foot_offset = 3.479
+height = 11.642
+radius = 3.97
+reach = 6.427
+upright_fix = PackedFloat64Array(0, 0, 0)

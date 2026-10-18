@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/spell_type.gd" id="1_7lwf7"]
+
+[resource]
+script = ExtResource("1_7lwf7")
+tag = "htlm"
+display_name = "Manalith"
+mana_cost = 800
+cast_range = 20.0
+cooldown_s = 10.0
+casting_time_s = 11.1111
+spell_order = 100
+flags = 2064
+is_structure = true
+structures = PackedStringArray("mana", "pyma", "jman", "stam", "cama")

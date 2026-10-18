@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/spell_type.gd" id="1_x8etr"]
+
+[resource]
+script = ExtResource("1_x8etr")
+tag = "ivob"
+display_name = "Bovine Intervention"
+mana_cost = 1800
+cast_range = 100.0
+cooldown_s = 80.0
+casting_time_s = 4.4444
+spell_order = 876
+damage = 3000
+amount2 = 3000
+flags = 8196
+flags1 = 16416
+flags2 = 33554432
+structures = PackedStringArray()

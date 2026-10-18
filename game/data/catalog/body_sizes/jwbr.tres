@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_b5odp"]
+
+[resource]
+script = ExtResource("1_b5odp")
+tag = "jwbr"
+is_prop = true
+box = PackedFloat64Array(-8.374, -4.333, -8.128, 16.295, 31.197, 17.461)
+foot_offset = 4.333
+height = 31.197
+radius = 5.703
+reach = 8.731
+upright_fix = PackedFloat64Array(0, 0, 0)

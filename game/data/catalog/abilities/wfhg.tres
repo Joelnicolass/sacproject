@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/ability_type.gd" id="1_28vyt"]
+
+[resource]
+script = ExtResource("1_28vyt")
+tag = "wfhg"
+display_name = "Firewalk"
+mana_cost = 250
+cast_range = 200.0
+cooldown_s = 10.0
+casting_time_s = 7.4074
+speed = 60.0
+damage_range = 10.0
+flags = 16384
+flags1 = 16
+flags2 = 8650752

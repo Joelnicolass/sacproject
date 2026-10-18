@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="BuildingType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/building_type.gd" id="1_lubp3"]
+
+[resource]
+script = ExtResource("1_lubp3")
+tag = "sta3"
+flags = 128
+max_health = 1000.0
+tileset = "ethr"
+folder = "joby.WAD!/ethr.FLDR"
+components = Array[Dictionary]([{
+"destroyed": "st3x",
+"facing": 0.0,
+"kind": "BASE",
+"spell": "port",
+"tag": "st3a",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+}, {
+"destroyed": "",
+"facing": 0.0,
+"kind": "HEAD",
+"spell": "",
+"tag": "st3b",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+}])

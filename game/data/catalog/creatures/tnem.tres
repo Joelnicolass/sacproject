@@ -1,0 +1,97 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/creature_type.gd" id="1_d43oa"]
+
+[resource]
+script = ExtResource("1_d43oa")
+tag = "tnem"
+display_name = "Zyzyx"
+god = "none"
+model = "FAmr"
+health = 1000
+regeneration_per_s = 16.6667
+running_speed = 10.0
+flying_speed = 10.0
+melee_strength = 50
+melee_accuracy = 1000
+melee_evasion = 1000
+ranged_accuracy = 1000
+aggressiveness = 1000
+sight_range = 100.0
+mana = 2000
+mana_cost = 250
+souls = 1
+ability_tags = PackedStringArray("tsg@")
+stance_animation = {
+"framerate": 30.0,
+"frames": 63.0,
+"tag": "FA2t"
+}
+idle_animation = {
+"framerate": 30.0,
+"frames": 58.0,
+"tag": "FAi1"
+}
+run_animation = {
+"framerate": 30.0,
+"frames": 63.0,
+"tag": "FA2t"
+}
+walk_animation = {
+"framerate": 30.0,
+"frames": 63.0,
+"tag": "FA2t"
+}
+melee_animations = Array[Dictionary]([{
+"attack_ticks": [],
+"framerate": 30.0,
+"frames": 63.0,
+"tag": "FA2t"
+}, {
+"attack_ticks": [],
+"framerate": 30.0,
+"frames": 63.0,
+"tag": "FA2t"
+}, {
+"attack_ticks": [],
+"framerate": 30.0,
+"frames": 63.0,
+"tag": "FA2t"
+}])
+passive_on_damage = "tsg@"
+passive_abilities = PackedStringArray()
+shoot_animations = Array[Dictionary]([{
+"framerate": 30.0,
+"frames": 63.0,
+"shoot_ticks": [],
+"tag": "FA2t"
+}, {
+"framerate": 30.0,
+"frames": 63.0,
+"shoot_ticks": [],
+"tag": "FA2t"
+}])
+flight_animations = {
+"fly": {
+"framerate": 30.0,
+"frames": 43.0,
+"tag": "FAfl"
+},
+"hover": {
+"framerate": 30.0,
+"frames": 59.0,
+"tag": "FAho"
+}
+}
+death_animations = {
+"death": {
+"framerate": 30.0,
+"frames": 63.0,
+"tag": "FA2t"
+},
+"fly_death": {
+"framerate": 30.0,
+"frames": 63.0,
+"tag": "FA2t"
+}
+}

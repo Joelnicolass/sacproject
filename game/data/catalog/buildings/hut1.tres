@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="BuildingType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/building_type.gd" id="1_d8exw"]
+
+[resource]
+script = ExtResource("1_d8exw")
+tag = "hut1"
+flags = 2147524800
+shelter = true
+ground = true
+max_health = 5000.0
+tileset = "prsc"
+folder = "joby.WAD!/prsc.FLDR"
+components = Array[Dictionary]([{
+"destroyed": "pcx3",
+"facing": 0.0,
+"kind": "BASE",
+"spell": "",
+"tag": "huta",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+}])

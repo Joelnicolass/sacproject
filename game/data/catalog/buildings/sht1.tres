@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="BuildingType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/building_type.gd" id="1_bplfd"]
+
+[resource]
+script = ExtResource("1_bplfd")
+tag = "sht1"
+flags = 2147524800
+shelter = true
+ground = true
+max_health = 5000.0
+tileset = "ST_A"
+folder = "SMOD.WAD!/bild.FLDR"
+components = Array[Dictionary]([{
+"destroyed": "",
+"facing": 0.0,
+"kind": "BASE",
+"spell": "",
+"tag": "sht1",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+}])

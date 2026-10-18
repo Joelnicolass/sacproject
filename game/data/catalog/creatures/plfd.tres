@@ -1,0 +1,118 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/creature_type.gd" id="1_1joh7"]
+
+[resource]
+script = ExtResource("1_1joh7")
+tag = "plfd"
+display_name = "Deadeye"
+god = "charnel"
+model = "dflp"
+health = 1170
+drain = 0.5
+running_speed = 8.0
+melee_strength = 90
+melee_accuracy = 800
+melee_evasion = 800
+ranged_accuracy = 50
+aggressiveness = 1000
+sight_range = 200.0
+melee_resistance = 4.0
+mana = 300
+mana_cost = 1000
+souls = 2
+cooldown_s = 5.0
+casting_time_s = 1.8519
+spell_order = 566
+ability_tags = PackedStringArray("lfda")
+stance_animation = {
+"framerate": 30.0,
+"frames": 61.0,
+"tag": "FGst"
+}
+idle_animation = {
+"framerate": 30.0,
+"frames": 78.0,
+"tag": "FGi1"
+}
+run_animation = {
+"framerate": 30.0,
+"frames": 35.0,
+"tag": "FGrn"
+}
+walk_animation = {
+"framerate": 30.0,
+"frames": 35.0,
+"tag": "FGrn"
+}
+melee_animations = Array[Dictionary]([{
+"attack_ticks": [23.0],
+"framerate": 30.0,
+"frames": 43.0,
+"tag": "FGa1"
+}, {
+"attack_ticks": [18.0],
+"framerate": 30.0,
+"frames": 38.0,
+"tag": "FGa2"
+}, {
+"attack_ticks": [13.0],
+"framerate": 30.0,
+"frames": 29.0,
+"tag": "FGa3"
+}])
+is_ranged = true
+ranged_attack_tag = "lfda"
+passive_abilities = PackedStringArray()
+shoot_animations = Array[Dictionary]([{
+"framerate": 30.0,
+"frames": 38.0,
+"shoot_ticks": [5.0],
+"tag": "FGs1"
+}, {
+"framerate": 30.0,
+"frames": 43.0,
+"shoot_ticks": [10.0],
+"tag": "FGs2"
+}])
+stun_animations = {
+"get_up": {
+"framerate": 30.0,
+"frames": 47.0,
+"tag": "FGgu"
+},
+"hit_floor": {
+"framerate": 30.0,
+"frames": 30.0,
+"tag": "FGhf"
+},
+"knock": {
+"framerate": 30.0,
+"frames": 43.0,
+"tag": "FGfd"
+}
+}
+death_animations = {
+"death": {
+"framerate": 30.0,
+"frames": 124.0,
+"tag": "FGd1"
+}
+}
+captive_animations = {
+"held": {
+"framerate": 30.0,
+"frames": 6.0,
+"tag": "FG2t"
+},
+"rise": {
+"framerate": 30.0,
+"frames": 13.0,
+"tag": "FGrz"
+},
+"thrash": {
+"framerate": 30.0,
+"frames": 21.0,
+"tag": "FGsc"
+}
+}

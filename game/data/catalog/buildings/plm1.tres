@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="BuildingType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/building_type.gd" id="1_1o0w2"]
+
+[resource]
+script = ExtResource("1_1o0w2")
+tag = "plm1"
+flags = 2147492040
+ground = true
+max_health = 1000.0
+tileset = "PY_A"
+folder = "PMOD.WAD!/bild.FLDR"
+components = Array[Dictionary]([{
+"destroyed": "",
+"facing": 0.0,
+"kind": "BASE",
+"spell": "",
+"tag": "plm1",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+}])

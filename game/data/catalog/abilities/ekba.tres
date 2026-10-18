@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/ability_type.gd" id="1_av7gt"]
+
+[resource]
+script = ExtResource("1_av7gt")
+tag = "ekba"
+display_name = "Spit rock"
+mana_cost = 5
+cast_range = 75.0
+cooldown_s = 1.5
+casting_time_s = 1.1111
+speed = 42.0
+damage = 120
+amount2 = 120
+flags = 16405
+flags1 = 16418
+flags2 = 16777216
+args = {
+"inum": 48.0,
+"tRT1": "dirt",
+"tsha": "rock"
+}

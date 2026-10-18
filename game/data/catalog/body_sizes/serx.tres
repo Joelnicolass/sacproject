@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_srujp"]
+
+[resource]
+script = ExtResource("1_srujp")
+tag = "serx"
+box = PackedFloat64Array(-0.481, -0.039, -1.156, 0.974, 2.087, 2.125)
+height = 2.048
+radius = 0.341
+reach = 1.063
+upright_fix = PackedFloat64Array(0, 0, 0)
+pose_source = "sei1"

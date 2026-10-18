@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_crpct"]
+
+[resource]
+script = ExtResource("1_crpct")
+tag = "fdrg"
+box = PackedFloat64Array(-4.808, 3.258, -5.508, 11.346, 9.699, 9.962)
+height = 12.957
+radius = 3.487
+reach = 5.673
+upright_fix = PackedFloat64Array(0, 0, 0)
+pose_source = "DFst"

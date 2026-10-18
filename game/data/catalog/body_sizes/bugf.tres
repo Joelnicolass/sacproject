@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_2tegf"]
+
+[resource]
+script = ExtResource("1_2tegf")
+tag = "bugf"
+box = PackedFloat64Array(-1.137, 0.035, -0.731, 2.26, 1.16, 2.021)
+height = 1.195
+radius = 0.708
+reach = 1.13
+upright_fix = PackedFloat64Array(0, 0, 0)
+pose_source = "BGst"

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/ability_type.gd" id="1_7gu62"]
+
+[resource]
+script = ExtResource("1_7gu62")
+tag = "tum@"
+display_name = "Healing Shower"
+damage_range = 30.0
+effect_range = 30.0
+flags = 16409
+flags1 = 32864
+args = {
+"fSPa": 255.0,
+"iSP#": 64.0,
+"tSPK": "prbw"
+}

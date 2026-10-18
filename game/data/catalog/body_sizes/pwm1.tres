@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_vf2c4"]
+
+[resource]
+script = ExtResource("1_vf2c4")
+tag = "pwm1"
+is_prop = true
+box = PackedFloat64Array(-28.361, -6.438, -16.684, 57.033, 68.525, 33.367)
+foot_offset = 6.438
+height = 68.525
+radius = 11.678
+reach = 28.516
+upright_fix = PackedFloat64Array(0, 0, 0)

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/ability_type.gd" id="1_7f6xw"]
+
+[resource]
+script = ExtResource("1_7f6xw")
+tag = "ivni"
+display_name = "Stealth"
+mana_cost = 50
+cooldown_s = 5.0
+casting_time_s = 3.7037
+flags1 = 8208
+flags2 = 8912896

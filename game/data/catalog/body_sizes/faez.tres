@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_tklq7"]
+
+[resource]
+script = ExtResource("1_tklq7")
+tag = "faez"
+box = PackedFloat64Array(-0.956, -1.372, -0.576, 1.778, 2.933, 1.439)
+foot_offset = 1.372
+height = 2.933
+radius = 0.504
+reach = 0.889
+upright_fix = PackedFloat64Array(0, 0, 0)
+has_upright_checked = true

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_3tpht"]
+
+[resource]
+script = ExtResource("1_3tpht")
+tag = "prt1"
+is_prop = true
+box = PackedFloat64Array(-13.748, -4.259, -13.607, 27.498, 59.003, 27.216)
+foot_offset = 4.259
+height = 59.003
+radius = 9.526
+reach = 13.749
+upright_fix = PackedFloat64Array(0, 0, 0)

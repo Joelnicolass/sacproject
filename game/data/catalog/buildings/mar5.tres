@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="BuildingType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/building_type.gd" id="1_2atbu"]
+
+[resource]
+script = ExtResource("1_2atbu")
+tag = "mar5"
+flags = 2147492040
+ground = true
+max_health = 20000.0
+tileset = "ST_A"
+folder = "SMOD.WAD!/bild.FLDR"
+components = Array[Dictionary]([{
+"destroyed": "mr5x",
+"facing": 0.0,
+"kind": "BASE",
+"spell": "",
+"tag": "mar5",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+}])

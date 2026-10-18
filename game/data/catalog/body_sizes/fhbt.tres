@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_tevyi"]
+
+[resource]
+script = ExtResource("1_tevyi")
+tag = "fhbt"
+box = PackedFloat64Array(-2.071, -0.057, -1.419, 4.161, 3.221, 2.206)
+height = 3.164
+radius = 0.772
+reach = 2.081
+upright_fix = PackedFloat64Array(0, 0, 0)
+pose_source = "HBi1"

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/ability_type.gd" id="1_5onl8"]
+
+[resource]
+script = ExtResource("1_5onl8")
+tag = "hmba"
+display_name = "Manahoar channelling"
+cast_range = 40.0
+cooldown_s = 1.0
+args = {
+"fbnd": 758.5,
+"fz": 0.0
+}

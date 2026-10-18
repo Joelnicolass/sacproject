@@ -4,7 +4,7 @@ extends Resource
 
 ## One hand correction for one model: turn, offset, scale and capsule.
 ## Lives in data/bodies/pose_overrides.tres, which is committed.
-## BodyCatalog adds it on top of the measures in assets/original/models/sizes.json.
+## BodyCatalog adds it on top of the measures in data/catalog/body_sizes/.
 
 ## Model tag (eorc, jnwr, pcfn...).
 @export var model := "":

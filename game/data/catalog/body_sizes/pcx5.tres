@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_nui57"]
+
+[resource]
+script = ExtResource("1_nui57")
+tag = "pcx5"
+is_prop = true
+box = PackedFloat64Array(-9.023, -5.08, -9.01, 18.045, 12.024, 18.045)
+foot_offset = 5.08
+height = 12.024
+radius = 6.316
+reach = 9.023
+upright_fix = PackedFloat64Array(0, 0, 0)

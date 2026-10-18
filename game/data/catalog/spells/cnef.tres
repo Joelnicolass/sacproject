@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/spell_type.gd" id="1_kkw63"]
+
+[resource]
+script = ExtResource("1_kkw63")
+tag = "cnef"
+display_name = "Fence"
+mana_cost = 1400
+cast_range = 100.0
+cooldown_s = 60.0
+casting_time_s = 2.4691
+spell_order = 770
+damage = 625
+amount2 = 625
+effect_range = 55.0
+duration = 35.0
+flags = 90117
+flags1 = 16448
+flags2 = 33554432
+structures = PackedStringArray()

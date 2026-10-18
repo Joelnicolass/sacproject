@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_5syen"]
+
+[resource]
+script = ExtResource("1_5syen")
+tag = "babc"
+box = PackedFloat64Array(-1.166, -0.026, -1.212, 2.721, 3.405, 2.615)
+height = 3.379
+radius = 0.915
+reach = 1.361
+upright_fix = PackedFloat64Array(0, 0, 0)
+pose_source = "GCst"

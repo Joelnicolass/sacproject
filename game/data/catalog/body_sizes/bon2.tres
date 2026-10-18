@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_qigsx"]
+
+[resource]
+script = ExtResource("1_qigsx")
+tag = "bon2"
+is_prop = true
+box = PackedFloat64Array(-1.571, -1.433, -2.367, 2.731, 9.685, 3.396)
+foot_offset = 1.433
+height = 9.685
+radius = 0.956
+reach = 1.698
+upright_fix = PackedFloat64Array(0, 0, 0)

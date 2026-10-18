@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_8age5"]
+
+[resource]
+script = ExtResource("1_8age5")
+tag = "gret"
+box = PackedFloat64Array(-0.389, -0.009, -0.409, 1.123, 2.278, 0.834)
+height = 2.269
+radius = 0.292
+reach = 0.562
+upright_fix = PackedFloat64Array(0, 0, 0)
+pose_source = "gri1"

@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/ability_type.gd" id="1_jymld"]
+
+[resource]
+script = ExtResource("1_jymld")
+tag = "dhga"
+display_name = "Styx Shoot"
+mana_cost = 33
+cast_range = 50.0
+cooldown_s = 2.0
+casting_time_s = 1.4815
+speed = 60.0
+acceleration = 12.0
+damage = 500
+amount2 = 450
+damage_range = 10.0
+effect_range = 10.0
+flags = 16405
+flags1 = 16417
+flags2 = 16777216
+args = {
+"fSPa": 255.0,
+"iSP+": 0.0,
+"iXS+": 2.0,
+"iadd": 0.0,
+"tSPK": "styx",
+"tptx": "firy",
+"ttex": "ltn2"
+}

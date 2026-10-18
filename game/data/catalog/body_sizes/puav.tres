@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_32sup"]
+
+[resource]
+script = ExtResource("1_32sup")
+tag = "puav"
+is_prop = true
+box = PackedFloat64Array(-13.177, -5.044, -9.266, 28.61, 70.048, 16.879)
+foot_offset = 5.044
+height = 70.048
+radius = 5.908
+reach = 14.305
+upright_fix = PackedFloat64Array(0, 0, 0)

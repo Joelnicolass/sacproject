@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_pohip"]
+
+[resource]
+script = ExtResource("1_pohip")
+tag = "jcc2"
+is_prop = true
+box = PackedFloat64Array(-0.633, -0.177, -1.261, 1.284, 5.789, 2.657)
+foot_offset = 0.177
+height = 5.789
+radius = 0.449
+reach = 1.329
+upright_fix = PackedFloat64Array(0, 0, 0)

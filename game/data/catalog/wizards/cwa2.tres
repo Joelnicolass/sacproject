@@ -1,0 +1,69 @@
+[gd_resource type="Resource" script_class="WizardType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/wizard_type.gd" id="1_q8i18"]
+
+[resource]
+script = ExtResource("1_q8i18")
+tag = "cwa2"
+spell_tag = "2awc"
+display_name = "Marduk"
+model = "mrdk"
+health = 1500
+mana = 1000
+running_speed = 10.0
+regeneration_per_s = 16.6667
+melee_evasion = 1250
+direct_spell_resistance = 0.5
+splash_spell_resistance = 0.5
+stance_animation = {
+"framerate": 30.0,
+"frames": 60.0,
+"tag": "mdst"
+}
+idle_animation = {
+"framerate": 30.0,
+"frames": 69.0,
+"tag": "mdi1"
+}
+run_animation = {
+"framerate": 30.0,
+"frames": 34.0,
+"tag": "mdrn"
+}
+walk_animation = {
+"framerate": 30.0,
+"frames": 34.0,
+"tag": "mdrn"
+}
+death_frames = PackedInt32Array(52, 65, 137)
+corpse_rise_frames = 48
+float_to_stance_frames = 33
+stun_animations = {
+"get_up": {
+"framerate": 30.0,
+"frames": 28.0,
+"tag": "mdgu"
+},
+"hit_floor": {
+"framerate": 30.0,
+"frames": 66.0,
+"tag": "mdhf"
+},
+"knock": {
+"framerate": 30.0,
+"frames": 24.0,
+"tag": "mdfd"
+}
+}
+cast_animations = {
+"cast": {
+"framerate": 30.0,
+"frames": 57.0,
+"tag": "mds2"
+},
+"run_cast": {
+"framerate": 30.0,
+"frames": 35.0,
+"tag": "mdr2"
+}
+}

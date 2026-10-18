@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_tjvnx"]
+
+[resource]
+script = ExtResource("1_tjvnx")
+tag = "surt"
+box = PackedFloat64Array(-1.279, -3.249, -2.783, 2.49, 6.664, 3.69)
+foot_offset = 3.249
+height = 6.664
+radius = 0.871
+reach = 1.845
+upright_fix = PackedFloat64Array(90, 0, 0)
+has_upright_checked = true

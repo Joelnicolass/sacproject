@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/ability_type.gd" id="1_4f6w3"]
+
+[resource]
+script = ExtResource("1_4f6w3")
+tag = "plfa"
+display_name = "Shoot"
+mana_cost = 13
+cast_range = 120.0
+cooldown_s = 7.0
+casting_time_s = 5.1852
+speed = 60.0
+damage = 600
+amount2 = 600
+flags = 16405
+flags1 = 16417
+flags2 = 16777216
+args = {
+"fMFt": 0.4,
+"fMFx": 1.5,
+"fMFz": 2.0,
+"fSPa": 255.0,
+"fSPs": 0.1,
+"iMFr": 1.0,
+"tMFL": "gmfl",
+"tSPK": "gsqb"
+}

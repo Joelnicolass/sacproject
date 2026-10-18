@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_kwyq0"]
+
+[resource]
+script = ExtResource("1_kwyq0")
+tag = "jcc1"
+is_prop = true
+box = PackedFloat64Array(-2.143, -0.225, -0.514, 4.576, 9.115, 1.045)
+foot_offset = 0.225
+height = 9.115
+radius = 0.366
+reach = 2.288
+upright_fix = PackedFloat64Array(0, 0, 0)

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_yumkd"]
+
+[resource]
+script = ExtResource("1_yumkd")
+tag = "adrg"
+box = PackedFloat64Array(-8.238, -0.021, -4.474, 16.954, 6.924, 8.111)
+height = 6.903
+radius = 2.839
+reach = 8.477
+upright_fix = PackedFloat64Array(0, 0, 0)
+pose_source = "ADst"

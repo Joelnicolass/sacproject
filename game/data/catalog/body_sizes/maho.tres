@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/body_size.gd" id="1_b7vsq"]
+
+[resource]
+script = ExtResource("1_b7vsq")
+tag = "maho"
+box = PackedFloat64Array(-0.86, -0.018, -0.581, 1.61, 1.507, 0.883)
+height = 1.489
+radius = 0.309
+reach = 0.805
+upright_fix = PackedFloat64Array(0, 0, 0)
+pose_source = "MAi1"

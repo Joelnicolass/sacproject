@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="Script" path="res://scenes/data/spell_type.gd" id="1_gq1a0"]
+
+[resource]
+script = ExtResource("1_gq1a0")
+tag = "ndrg"
+display_name = "Guardian"
+mana_cost = 300
+cast_range = 40.0
+cooldown_s = 2.0
+casting_time_s = 1.1111
+spell_order = 125
+flags = 1835012
+flags1 = 8224
+flags2 = 256
+is_structure = true
+structures = PackedStringArray()

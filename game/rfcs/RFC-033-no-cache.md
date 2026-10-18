@@ -1,6 +1,6 @@
 # RFC-033 — Port sin caché
 
-Estado: plan del tech lead (Opus), pendiente de OK. Arquitectura **estándar**. MP online con dedicado: sin RPC nuevas ni cambios en `addons/mp_kit`.
+Estado: **cerrado (2026-10-17)**, cortes 033a–033i hechos; el juego y la simulación funcionan con `cache/` renombrada.
 - **Pedido del usuario (2026-10-17):** «Hay que migrar todo. Modelos estáticos y texturas son simples de migrar». La versión final del port no depende de `game/cache/` (6,4 GB, ignorada por git). No hay nada repetido cientos de veces.
 - **Decisiones previas:** `RULES.md` §Datos y el final de `RFC-023-skeletal-animation.md`:
   - los assets finales van a `game/assets/original/`, con git LFS para `.glb` y `.png`;

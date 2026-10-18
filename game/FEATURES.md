@@ -2452,3 +2452,11 @@ Deuda:
 - Ningún archivo de `scenes`, `data`, `debug`, `addons`, `agent` ni `tools` depende de `cache/`; `cache/` sigue ignorada y en disco (se borra una semana después, con OK del usuario).
 - Borrados: `tools/export_persephone.py`, `export_bodies.py` y `audit_original_props.gd`. `export_stats.py` escribe por defecto en `assets/original/data`.
 - Verificación pendiente (con `cache` renombrada a `cache.off`): `--import` x2, `quick` igual a la base, `rules_suite`, `check_original_assets.sh` y un playtest desde `boot.tscn`.
+
+### RFC-033 cerrado (2026-10-17)
+
+- **Verificación con `cache/` renombrada a `cache.off`, sin agentes en paralelo:** paridad de assets desde los WAD PASS; import ×2 sin errores de script y sin referencias a `res://cache`; `quick` 27/27; `rules_suite` PASS. Playtest (`agent/out/pt033i/`): menú y selección de mago con ventana, flow AGENT_OK, sin «Failed to load» ni `res://cache` en los logs.
+- La carpeta `cache/` volvió a su lugar. Se borra una semana después, con OK del usuario.
+
+Deuda:
+- La partida con ventana sin caché no tiene captura (el playtester abrió el juego sin una escena que cierre sola y se lo cortó); la simulación sin caché la cubren `quick` y `rules_suite`.

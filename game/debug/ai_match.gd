@@ -67,6 +67,8 @@ func _ready() -> void:
 	_args = DetCli.args()
 	_headless = DisplayServer.get_name() == "headless"
 	_minutes = float(_args.get("minutes", default_minutes))
+	# --follow=N: in a window, the camera follows wizard N (watching only; the sim does not change).
+	follow_slot = int(_args.get("follow", follow_slot))
 	_max_ticks = int(round(_minutes * 60.0 * 60.0))
 	_sample_ticks = maxi(1, int(round(float(_args.get("sample-s", sample_every_s)) * 60.0)))
 	_rules = _load_rules()

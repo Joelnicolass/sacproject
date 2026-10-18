@@ -251,7 +251,10 @@ func _expect_no_seat(host: String, port: int, credential: String, what: String) 
 	if MpKit.join(host, port, credential) != OK:
 		_check(false, "%s: join starts" % what)
 		return
-	var answered := await _until(func() -> bool: return not _rejected.is_empty() or _lost, REJECT_S)
-	_check(answered and _slot == 0, "a third player %s is rejected (%s)" % [what, _rejected if not _rejected.is_empty() else "link closed"])
+	# ENet with a full dedicated may not answer at all before REJECT_S (the connect attempt just times out): what counts is
+	# that the third player never gets a slot.
+	var answered := await _until(func() -> bool: return not _rejected.is_empty() or _lost or _slot != 0, REJECT_S)
+	var how := _rejected if not _rejected.is_empty() else ("link closed" if _lost else "no answer, no slot")
+	_check(_slot == 0, "a third player %s is rejected (%s)" % [what, how])
 	MpKit.leave()
 	await get_tree().create_timer(0.3).timeout

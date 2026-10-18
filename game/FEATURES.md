@@ -2629,3 +2629,8 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
 **Playtest (1 ventana):** `bash agent/run_pt034m.sh`: el host con ventana por `agent/flows/pt034m_host.json` (menú, «Servidor local», crear, pantalla con dirección/puerto/código, entrar, High Noon, «Victoria») y el rival headless que toma el puerto y el código del log del host. Capturas en `agent/out/pt034m/`. Imprime `PT034M PASS` / `PT034M FAIL`.
 
 **Pendiente (orquestador):** `--import` una vez (clases `LocalServerHost`, `LocalServerEndpoint`, `LocalServerText`; `.uid` nuevos); `run_034m.sh` con ENet y con `TRANSPORT=ws`; `quick` igual a `det_baseline.txt` (toca `SacrificeFlow` y `boot.tscn`); correr el playtest. Código y escenas escritos sin ejecutar Godot.
+
+### Cierre 034m (F191) — 2026-10-18
+- «Servidor local»: el host lanza un dedicado en su PC (ticket de 2 asientos, código de 16 hex para el rival, solo su sha256 en disco); el **rival elige su mago y su dios** (decisión del usuario), el dedicado valida el pick (`bad_pick` si no existe) y no crea el mundo hasta tener todos.
+- `agent/run_034m.sh`: E2E LOCAL PASS, 44 checks, 2/2 con ENet y 1/1 con WebSocket: el asiento 2 juega con el pick del rival, un pick inválido se rechaza, un tercero sin credencial / con código inventado / con el código del rival no consigue asiento mientras la partida sigue viva, el servidor local cierra con el resultado y no quedan procesos. `quick` 27/27; `run_034e.sh` PASS.
+- Con ENet el dedicado acepta tantas conexiones como asientos: un tercero ni llega a la admisión (sin respuesta y sin asiento); con WebSocket recibe `admission_rejected`. El orquestador ajustó la prueba para aceptar las dos formas.

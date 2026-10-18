@@ -31,6 +31,8 @@ var admission: Callable = Callable()
 var admission_timeout_s: float = 5.0
 ## Tickets longer than this are rejected without reaching `admission`.
 const TICKET_MAX_LEN := 512
+## Seconds between the rejection RPC and the disconnect.
+const REJECT_FLUSH_S := 0.2
 var rooms: MpRoomDirectory
 var matchmaker: MpMatchmaker
 
@@ -341,7 +343,11 @@ func _reject_peer(id: int, reason: String) -> void:
 	if not is_server():
 		return
 	rpc_admission_rejected.rpc_id(id, reason)
-	multiplayer.multiplayer_peer.disconnect_peer(id)
+	## Let the reliable RPC leave before the disconnect command.
+	var closing := multiplayer.multiplayer_peer
+	get_tree().create_timer(REJECT_FLUSH_S).timeout.connect(func() -> void:
+		if closing != null and multiplayer.multiplayer_peer == closing:
+			closing.disconnect_peer(id))
 
 
 func _on_connected_to_server() -> void:
@@ -356,6 +362,11 @@ func _on_connection_failed() -> void:
 
 func _on_server_disconnected() -> void:
 	if _peer == null:
+		return
+	## Dropped while still waiting for a slot: a rejection whose RPC did not arrive.
+	if not _pending_ticket.is_empty() and ids.local_slot == 0:
+		leave()
+		admission_rejected.emit("dropped")
 		return
 	leave()
 	server_lost.emit()

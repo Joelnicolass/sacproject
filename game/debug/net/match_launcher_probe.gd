@@ -21,6 +21,8 @@ var _rejected_reason: String = ""
 var _slot: int = 0
 var _session_ended: Dictionary = {}
 var _done: bool = false
+var _net_log: PackedStringArray = PackedStringArray()
+var _failed: bool = false
 var _spawned_pids: Array[int] = []
 
 
@@ -31,6 +33,9 @@ func _ready() -> void:
 	launcher.match_ended.connect(func(_id: String, result: Dictionary) -> void: _ended = result)
 	launcher.match_failed.connect(func(_id: String, reason: String) -> void: _failed_reason = reason)
 	MpKit.admission_rejected.connect(func(reason: String) -> void: _rejected_reason = reason)
+	MpKit.join_failed.connect(func() -> void: _net_log.append("join_failed"))
+	MpKit.server_lost.connect(func() -> void: _net_log.append("server_lost"))
+	multiplayer.connected_to_server.connect(func() -> void: _net_log.append("connected_to_server"))
 	MpKit.slot_assigned.connect(func(slot: int) -> void: _slot = slot)
 	MpKit.session_ended.connect(func(data: Dictionary) -> void: _session_ended = data)
 	_run()
@@ -129,9 +134,24 @@ func _fail(what: String) -> void:
 	if _done:
 		return
 	_done = true
+	_failed = true
 	print("LAUNCHER PROBE FAIL: ", what)
+	print("client events: ", _net_log, " slot=", _slot, " rejected=", _rejected_reason)
+	_print_child_log()
 	_cleanup()
 	get_tree().quit(1)
+
+
+func _print_child_log() -> void:
+	var root := launcher.config.matches_root
+	for file in [MpMatchFiles.LOG, MpMatchFiles.STATE]:
+		var path := MpMatchFiles.path_of(root, MATCH_ID, file)
+		if not FileAccess.file_exists(path):
+			print("(no %s; flag %s may not exist on this build)" % [file, launcher.log_file_flag])
+			continue
+		var lines := FileAccess.get_file_as_string(path).split("\n")
+		print("--- %s (last 40 lines) ---" % file)
+		print("\n".join(lines.slice(maxi(0, lines.size() - 40))))
 
 
 func _cleanup() -> void:
@@ -142,6 +162,8 @@ func _cleanup() -> void:
 		if MpProcessRunner.pid_alive(pid):
 			OS.kill(pid)
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(MpMatchFiles.registry_path(launcher.config.matches_root)))
+	if _failed:
+		return ## keep user://mp_matches/ to inspect (the next run starts clean)
 	MpMatchFiles.remove_dir(MpMatchFiles.dir_of(launcher.config.matches_root, MATCH_ID))
 	MpMatchFiles.remove_dir(MpMatchFiles.dir_of(launcher.config.matches_root, ORPHAN_ID))
 

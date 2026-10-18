@@ -64,6 +64,9 @@ WIZARD_STUN_ANIM_SLOTS = {"knock": 9, "get_up": 10, "hit_floor": 8}
 ## RFC-023 023e: what a creature plays while a Sac Doctor holds it (CreatureMode.thrashing, state.d:8200-8223, 14329-14342):
 ## rise (slot 46) once, float2Thrash (49, the port's `held`) once, then thrash (25) on a loop. Same rule as the flight slots.
 CAPTIVE_ANIM_SLOTS = {"rise": 46, "held": 49, "thrash": 25}
+## RFC-023 023d: the spellcast loops of a wizard (`animations.d`: spellcast 27 standing, runSpellcast 30 running). The start and
+## end clips (26/28, 29/31) are not exported: the port plays the loop while the Caster casts.
+WIZARD_CAST_ANIM_SLOTS = {"cast": 27, "run_cast": 30}
 ## SKEL event tags (`sxsk.d` translateAnimEvent): attack, shoot.
 ATTACK_EVENT = b"kcta"
 SHOOT_EVENT = b"lrba"
@@ -381,6 +384,7 @@ def decode_wizd(raw: bytes) -> dict:
         "float_to_stance_tag": human_tag(raw, FLOAT_TO_STANCE_OFFSET),
         "locomotion_animation_tags": locomotion_animation_tags(raw),
         "stun_animation_tags": {role: human_tag(raw, 176 + slot * 4) for role, slot in WIZARD_STUN_ANIM_SLOTS.items()},
+        "cast_animation_tags": {role: human_tag(raw, 176 + slot * 4) for role, slot in WIZARD_CAST_ANIM_SLOTS.items()},
     }
 
 
@@ -995,9 +999,12 @@ def main() -> None:
         # Ghost timing (state.d:14000-14099): dying, deadToGhost and ghostToIdle last numFrames·updateAnimFactor ticks.
         model_path = model_paths.get(entry["model"].lower(), "")
         locomotion: dict = entry.pop("locomotion_animation_tags", {})
+        entry["stance_animation"] = clip_animation(anim_index, model_path, locomotion.get("stance", ""))
         entry["idle_animation"] = clip_animation(anim_index, model_path, locomotion.get("idle", ""))
         entry["run_animation"] = clip_animation(anim_index, model_path, locomotion.get("run", ""))
         entry["walk_animation"] = clip_animation(anim_index, model_path, locomotion.get("walk", ""))
+        entry["cast_animations"] = flight_animations(
+            anim_index, model_path, entry.pop("cast_animation_tags"), locomotion.get("stance", ""), False)
         entry["death_frames"] = [
             melee_animation(anim_index, model_path, anim_tag).get("frames", 0) for anim_tag in entry.pop("death_animation_tags")
         ]

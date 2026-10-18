@@ -246,11 +246,11 @@ func _show_stage(animate: bool) -> void:
 	var ghost := 1.0 - GHOST_ALPHA
 	match stage:
 		Stage.ALIVE, Stage.DYING:
-			visual.transparency = 0.0
+			_set_transparency(0.0)
 		Stage.RISING:
 			_fade_to(ghost, _seconds(_type().corpse_rise_frames if _type() else 0), animate)
 		Stage.GHOST:
-			visual.transparency = ghost
+			_set_transparency(ghost)
 			visual.visible = _seen_by_viewer()
 		Stage.UNGHOSTING:
 			_fade_to(0.0, _seconds(_type().float_to_stance_frames if _type() else 0), animate)
@@ -264,10 +264,19 @@ func _show_stage(animate: bool) -> void:
 
 func _fade_to(transparency: float, seconds: float, animate: bool) -> void:
 	if not animate or seconds <= 0.0:
-		visual.transparency = transparency
+		_set_transparency(transparency)
 		return
 	_fade = visual.create_tween()
-	_fade.tween_property(visual, "transparency", transparency, seconds)
+	_fade.tween_method(_set_transparency, visual.transparency, transparency, seconds)
+
+
+## RFC-023 023d: a BodyVisual fades its skeleton too (GeometryInstance3D.transparency does not inherit); any other visual just
+## takes the value.
+func _set_transparency(value: float) -> void:
+	if visual.has_method("set_fade"):
+		visual.call("set_fade", value)
+	else:
+		visual.transparency = value
 
 
 ## Energy follows the fade: 1 at alpha 1, GHOST_ENERGY at ghostAlpha.

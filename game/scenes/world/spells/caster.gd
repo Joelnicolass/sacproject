@@ -12,6 +12,8 @@ extends Node
 ## Caster does the common part and asks the action to check, begin, finish and cancel.
 
 signal feedback(text: String)
+## The cast particle that is showing changed: "" when the wizard is not casting (RFC-023 023d). Every peer emits it.
+signal cast_fx_changed(type_name: String)
 
 const SPEEDUP := "pups"
 const HEAL := "laeh"
@@ -58,9 +60,17 @@ var _point := Vector3.ZERO
 var _frames_left := 0
 var _drain_left := 0
 var _drain_per_frame := 0.0
-var _fx_left := 0.0
 ## The action whose cast is running, or null.
 var _active: SpellAction
+
+## RFC-023 023d: the ParticleType name of the cast in progress ("" while idle). The server sets it and it is replicated, so
+## the wizard's hands (HandFx) play the god's casting particle and the body its spellcast pose on every peer. Presentation only.
+@export var cast_fx_shown := "":
+	set(value):
+		if value == cast_fx_shown:
+			return
+		cast_fx_shown = value
+		cast_fx_changed.emit(value)
 
 @onready var _wizard: Node3D = get_parent()
 
@@ -365,13 +375,12 @@ func _start(entry: Resource, target: Node3D, point: Vector3) -> void:
 	_frames_left = frames
 	_drain_left = mini(frames, ceili(cost * FPS / rules.cast_drain_per_s))
 	_drain_per_frame = cost / float(maxi(_drain_left, 1))
-	_fx_left = 0.0
 	spellbook.call("apply_cooldown", str(entry.get("tag")))
 	var verb := "convoca" if entry is CreatureType else "lanza"
 	print("%s %s slot %d" % [verb, str(entry.get("display_name")), int(_wizard.get("owner_slot"))])
 
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	if _entry == null:
 		return
 	if not wizard_can_cast():
@@ -380,10 +389,7 @@ func _physics_process(delta: float) -> void:
 	if _drain_left > 0:
 		_drain_left -= 1
 		_spend(_drain_per_frame)
-	_fx_left -= delta
-	if _fx_left <= 0.0:
-		_fx_left = 0.5
-		FxBus.broadcast(_cast_fx(), _wizard.global_position + Vector3.UP)
+	cast_fx_shown = _cast_fx()
 	_frames_left -= 1
 	if _frames_left <= 0:
 		_finish()
@@ -400,6 +406,7 @@ func _interrupt() -> void:
 		_active = null
 	_entry = null
 	_target = null
+	cast_fx_shown = ""
 
 
 func _finish() -> void:
@@ -407,6 +414,7 @@ func _finish() -> void:
 	var target := _target if is_instance_valid(_target) else null
 	_entry = null
 	_target = null
+	cast_fx_shown = ""
 	if entry is CreatureType:
 		var text := str(summoner.call("finish", target, entry))
 		if not text.is_empty():

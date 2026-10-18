@@ -48,6 +48,8 @@ signal pick_changed
 const REST_FACING := Vector3(0.0, 0.0, 1.0)
 const TURN_RATE := PI
 const MANA_SOURCE := preload("res://scenes/world/mana_source.gd")
+## RFC-023 (023d): 1 rest loop in GESTURE_EVERY ends in the idle0 gesture (sacengine rolls 1 in 5), like the units.
+const GESTURE_EVERY := 5
 
 var move_speed: float = 0.0
 ## Speedup sets it on the server (or solo); the pace is multiplied by it.
@@ -68,12 +70,18 @@ var _present_prev_pos := Vector3.ZERO
 var _present_prev_ready := false
 var _present_flat_speed := 0.0
 var _debug_clip_role := ""
+var _idle_loops := 0
+var _gesturing := false
+## The speed the last _update_clip_state saw (a gesture that ends re-picks the pose with it).
+var _clip_flat_speed := 0.0
 
 @onready var health: Node = $Health
 @onready var mana: Node = $ManaPool
 @onready var souls: Node = $SoulPurse
 @onready var ghost: Node = $GhostForm
 @onready var _clip_pose: Node = $ClipPose
+## The cast in progress as every peer sees it: `cast_fx_shown` is replicated, so the pose follows it on a client too.
+@onready var _caster: Node = $Caster
 ## F138 (RFC-030i-c): the one owner of «held» (stunned, petrified); walking, turning, casting and summoning ask it.
 @onready var _afflictions: Afflictions = $Afflictions
 
@@ -91,6 +99,8 @@ func _ready() -> void:
 		_mesh_base_rot = mesh.rotation
 		if _clip_pose.has_method("setup"):
 			_clip_pose.call("setup", model, _clip_roles(), _mesh_base_pos, _mesh_base_rot)
+	if _clip_pose.has_signal("clip_looped"):
+		_clip_pose.connect("clip_looped", _on_clip_looped)
 	_present_prev_pos = global_position
 	_present_prev_ready = true
 	if MpKit.is_networked() and not MpKit.is_server():
@@ -469,28 +479,43 @@ func _present_pose(delta: float) -> void:
 
 
 func _update_clip_state(flat_speed: float) -> void:
+	_clip_flat_speed = flat_speed
 	if _clip_pose == null:
 		return
 	if not _debug_clip_role.is_empty():
 		_clip_pose.call("play", _debug_clip_role)
 		return
-	var held_role := _afflictions.pose_role(_clip_pose as ClipPosePlayer)
+	var held_role := _afflictions.pose_role(_clip_pose as ClipPlayback)
 	if not held_role.is_empty():
 		_clip_pose.call("play", held_role)
 		return
 	var moving := flat_speed > 0.1 and bool(ghost.call("can_move"))
+	# RFC-023 023d: the spellcast loop while the Caster casts (the server says so, it is replicated), standing or walking.
+	if not str(_caster.get("cast_fx_shown")).is_empty():
+		_gesturing = false
+		_clip_pose.call("play", "cast_run" if moving else "cast")
+		return
+	if moving:
+		_gesturing = false
+	elif _gesturing and bool(_clip_pose.call("has_role", "gesture")):
+		_clip_pose.call("play", "gesture")
+		return
 	_clip_pose.call("play", "run" if moving else "idle")
 
 
+## A rest loop ended: sacengine rolls a gesture after each stance loop; here (hash(name) + loops) % 5, the same on every peer
+## and every run. The gesture ends and the body goes back to the rest pose.
+func _on_clip_looped(role: String) -> void:
+	if role != "idle" and role != "gesture":
+		return
+	_idle_loops += 1
+	_gesturing = role == "idle" and posmod(hash(String(name)) + _idle_loops, GESTURE_EVERY) == 0 \
+		and bool(_clip_pose.call("has_role", "gesture"))
+	_update_clip_state(_clip_flat_speed)
+
+
 func _clip_roles() -> Dictionary:
-	var idle_tag := str(_type.idle_animation.get("tag", "")) if _type else ""
-	var run: Dictionary = _type.walk_animation if _type else {}
-	if int(run.get("frames", 0)) <= 1 and _type:
-		run = _type.run_animation
-	return {
-		"idle": idle_tag,
-		"run": str(run.get("tag", "")),
-	}
+	return UnitClipRoles.for_wizard(_type, model)
 
 
 func debug_set_clip_state(role: String) -> void:

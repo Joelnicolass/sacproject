@@ -11,6 +11,8 @@ const FLIGHT_ROLES: PackedStringArray = ["takeoff", "fly", "land"]
 const STUN_ROLES: PackedStringArray = ["knock", "get_up", "fly_damage"]
 ## 023e: what a creature held by a Sac Doctor plays, in this order (rise, then held = float2Thrash, then thrash on a loop).
 const CAPTIVE_ROLES: PackedStringArray = ["rise", "held", "thrash"]
+## Wizards only (WizardType.cast_animations: cast, run_cast).
+const CAST_ROLES: PackedStringArray = ["cast", "cast_run"]
 
 
 ## role -> tag for `type` drawn with `model`. A role whose tag is "" has no clip: the body rests on idle.
@@ -35,6 +37,29 @@ static func for_type(type: CreatureType, model: String) -> Dictionary:
 	for pair: Array in sets:
 		for role: String in pair[1]:
 			var clip: Variant = (pair[0] as Dictionary).get(role, {})
+			var tag := str((clip as Dictionary).get("tag", "")) if clip is Dictionary else ""
+			if not tag.is_empty():
+				roles[role] = tag
+	return roles
+
+
+## RFC-023 (023d): role -> tag for a wizard drawn with `model`: the rest pose (stance1) with the idle0 gesture on top, the run
+## loop and the two spellcast loops (standing `cast`, walking `cast_run`). A role whose tag is "" has no clip: the body rests on idle.
+static func for_wizard(type: WizardType, model: String) -> Dictionary:
+	var idle_tag := str(type.idle_animation.get("tag", "")) if type else ""
+	var stance := str(type.stance_animation.get("tag", "")) if type else ""
+	var rest_tag := idle_tag
+	if BodyCatalog.has_skeletal(model) and not stance.is_empty() and stance != idle_tag and ClipClock.has_clip(model, stance):
+		rest_tag = stance
+	var run: Dictionary = type.walk_animation if type else {}
+	if int(run.get("frames", 0)) <= 1 and type:
+		run = type.run_animation
+	var roles := {"idle": rest_tag, "run": str(run.get("tag", ""))}
+	if BodyCatalog.has_skeletal(model) and rest_tag != idle_tag and not idle_tag.is_empty():
+		roles["gesture"] = idle_tag
+	if type != null:
+		for role: String in CAST_ROLES:
+			var clip: Variant = type.cast_animations.get("run_cast" if role == "cast_run" else role, {})
 			var tag := str((clip as Dictionary).get("tag", "")) if clip is Dictionary else ""
 			if not tag.is_empty():
 				roles[role] = tag

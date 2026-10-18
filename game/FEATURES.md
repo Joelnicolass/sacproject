@@ -2990,3 +2990,5 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
   - `run_034e` E2E PASS.
   - `rules_suite` PASS.
   - `quick` PASS.
+
+**Verificación del usuario en el editor (2026-10-18):** OK en los cuatro puntos: el terreno `.glb` en `high_noon.tscn`, un edificio movido en `high_noon_layout.tscn` que aparece en partida, las animaciones de `models/eorc.tscn` y la edición de `data/catalog/`. Cierra lo pendiente de F195, F196, F199 y F208.

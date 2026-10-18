@@ -28,6 +28,14 @@ const ORDER_TEXT := {
 	"retreat": "Retirada",
 }
 
+## state.d:29261-29264: the cone's color by order.
+const ORDER_TONE := {
+	"attack": OrderMarker.Tone.RED,
+	"advance": OrderMarker.Tone.RED,
+	"guard": OrderMarker.Tone.BLUE,
+	"guard_area": OrderMarker.Tone.BLUE,
+}
+
 ## sacengine rectangleThreshold.
 @export var rect_threshold_px := 3.0
 ## A click on the minimap finds a body within this many minimap units of it (meters = units × the minimap zoom).
@@ -53,7 +61,6 @@ var _rect := false
 func _ready() -> void:
 	add_to_group("match_command")
 	%Battle.say("Mago")
-	_prepare_ping()
 	%View.gui_input.connect(_on_view_event)
 	%Minimap.ground_pointed.connect(_on_minimap_pointed)
 	%SpellBook.spell_pressed.connect(_arm_spell)
@@ -74,17 +81,6 @@ func _connect_soul_messages() -> void:
 	var souls := get_tree().get_first_node_in_group("soul_system")
 	if souls and souls.has_signal("message"):
 		souls.message.connect(%Battle.say)
-
-
-func _prepare_ping() -> void:
-	var pole := CylinderMesh.new()
-	pole.top_radius = 0.35
-	pole.bottom_radius = 0.35
-	pole.height = 1.4
-	%Ping.mesh = pole
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(0.92, 0.28, 0.08)
-	%Ping.material_override = mat
 
 
 func _on_local_wizard(wizard: Node3D) -> void:
@@ -666,7 +662,7 @@ func _order(kind: String, point: Vector3, target: Node3D, formation_id := &"") -
 	if units.is_empty():
 		%Battle.say("Nadie")
 		return
-	_show_ping(point)
+	_show_ping(point, ORDER_TONE.get(kind, OrderMarker.Tone.WHITE))
 	%Orders.request(units, kind, point, target, _camera_yaw(), formation_id)
 	%Battle.say(ORDER_TEXT.get(kind, "Orden"))
 
@@ -680,9 +676,10 @@ func _on_selection_changed(units: Array) -> void:
 		%Battle.say("Mago")
 
 
-func _show_ping(point: Vector3) -> void:
-	%Ping.global_position = point + Vector3(0.0, 0.15, 0.0)
-	%Ping.visible = true
+## The one entry for the mark an order (or a cast) leaves at `point`: sacengine's command cone, local only.
+## Orders tint it like sacengine (guard blue, attack and advance red, the rest white).
+func _show_ping(point: Vector3, tone: OrderMarker.Tone = OrderMarker.Tone.WHITE) -> void:
+	%Ping.play(point, tone)
 
 
 ## The camera's debug pointer when set (AgentKit flows), else the crosshair.

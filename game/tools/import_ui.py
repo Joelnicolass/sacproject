@@ -66,7 +66,11 @@ STAT_STRIPS = {
     "healthBottomData": ("stat_health_bottom", 6),
 }
 # Sprites decoded from the install here: tag -> (wad, folder).
-EXTRA_FX = {"scri": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR")}
+EXTRA_FX = {
+    "scri": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
+    # The order marker's cone texture (SacCommandCone, sacobject.d:4483-4505), F220.
+    "aura": ("main.wad", "MAIN.WAD!/bits.FLDR"),
+}
 
 IMPORT_TEMPLATE = """[remap]
 

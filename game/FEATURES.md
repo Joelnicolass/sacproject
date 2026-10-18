@@ -3019,3 +3019,17 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
   - `f80_cues_orders` y `f80_hud_text` fallan igual con el código anterior: las aserciones son viejas.
   - `rfc033_shots` no terminó en 10 min.
   - El menú dibuja texto con `draw_string`, a pedido del usuario.
+
+### F220 — Marcador de orden del original (cerrado 2026-10-18)
+
+- **Qué cambió:** se fue el cilindro naranja de depuración. `OrderMarker` (`scenes/fx/order_marker.{tscn,gd,gdshader}`) reproduce el «command cone» del original: un cono aditivo con la textura `aura`, más 8 capas blancas que giran.
+- **Cómo se ve:** dura 0,5 s. Al desaparecer se ensancha de 1 a 3 en horizontal y de 1 a 1,25 en vertical. Es blanco por defecto, rojo para atacar o avanzar y azul para guardia.
+- **Fuentes en sacengine:** `state.d:29261`, `sacobject.d:4483`, `renderer.d:3690`.
+- **Detalles:**
+  - No es humo ni partículas: en el original es una malla.
+  - Se agregó `aura` a `tools/import_ui.py`.
+  - El nodo se sigue llamando `%Ping`, porque lo usan varios flows.
+- **Verificación:**
+  - Flow `f220_order_marker` con ventana: AGENT_OK. El cono rojo aparece y a los 3 s ya no está.
+  - `rules_suite` PASS.
+  - `quick` PASS.

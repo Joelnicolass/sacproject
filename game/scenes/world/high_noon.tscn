@@ -60,6 +60,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="f212_bake"]
 [ext_resource type="PackedScene" path="res://scenes/ui/radial/radial_menu.tscn" id="f218_radial"]
 [ext_resource type="Script" path="res://scenes/world/order_radial.gd" id="f218_order_radial"]
+[ext_resource type="PackedScene" path="res://scenes/fx/order_marker.tscn" id="f220_marker"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
 bg_color = Color(1, 1, 1, 0)
@@ -261,9 +262,8 @@ unique_name_in_owner = true
 editor_description = "RFC-028b: la casa, el cactus o el Manalith clicado muestra su barra de vida; local, sin RPC."
 script = ExtResource("f93_inspector")
 
-[node name="Ping" type="MeshInstance3D" parent="." unique_id=1174697680]
+[node name="Ping" parent="." instance=ExtResource("f220_marker")]
 unique_name_in_owner = true
-visible = false
 
 [node name="AiRoster" type="Node" parent="." unique_id=2118618212 node_paths=PackedStringArray("world", "wizard_spawner")]
 unique_name_in_owner = true

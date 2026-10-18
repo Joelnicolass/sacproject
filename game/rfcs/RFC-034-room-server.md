@@ -453,3 +453,10 @@ game/
 4. VPS: el corte deja el export y la guía; la prueba en el VPS la hace el usuario.
 5. Sin pool de dedicados precalentados por ahora.
 6. Tope de partidas por VPS: **99 por defecto**, parametrizable (`MpLobbyConfig.max_matches` y flag `--max-matches`). En local, las corridas de prueba siguen con tope 1 por la regla de Godot de la Mac.
+
+## Decisión del usuario (2026-10-17): herramienta de determinismo al kit, en el mismo RFC
+El banco de determinismo y sus piezas pasan al kit **junto con las salas**, porque las dos cosas tocan el kit y salen en la misma RC (`rc/v0.10.0` + `-spanish`):
+- **Código:** módulo de AgentKit `addons/agent_kit/determinism/`, genérico y sin nada de Sacrifice. Incluye el registro de eventos con su digest por tick, el runner de modos (fixed, fixed2, stress, window), la base de digests, `quick`/`all` (descarta resultados viejos y exige al menos 2 modos frescos), los topes de RSS, tiempo y error de script, la cola de Godot por turnos con import automático (`godot_run.sh`) y el tope de las ventanas.
+- **Skill nueva** en godot-studio-skills: `godot-determinism`, que explica cuándo usarlo (red, repeticiones, regresión) y cómo.
+- **Pegamento del juego:** los casos de Sacrifice (reglas, semillas, réplicas `fNNN_expect.py`) quedan en `game/agent/`.
+- **Plan:** al arrancar el RFC, el tech lead suma los sub-cortes de determinismo (extraer, adaptar el juego, documentar en la skill), en serie con los de salas. El criterio de estabilidad del port incluye que el juego corra su banco con el módulo del kit, con los mismos digests.

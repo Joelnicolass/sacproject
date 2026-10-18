@@ -108,7 +108,7 @@ func _process(delta: float) -> void:
 	_parent_accum += delta
 	if _parent_accum >= config.parent_check_s:
 		_parent_accum = 0.0
-		if _room_pid > 0 and not OS.is_process_running(_room_pid):
+		if _room_pid > 0 and not MpProcessRunner.pid_alive(_room_pid):
 			report_result({"reason": "room_gone"})
 			return
 	_check_idle()

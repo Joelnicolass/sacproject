@@ -21,6 +21,7 @@ var _rejected_reason: String = ""
 var _slot: int = 0
 var _session_ended: Dictionary = {}
 var _done: bool = false
+var _spawned_pids: Array[int] = []
 
 
 func _ready() -> void:
@@ -39,12 +40,13 @@ func _run() -> void:
 	var root := launcher.config.matches_root
 	# 1. orphan from a previous run: registry says so, state.json agrees, the process still runs
 	var orphan_pid := OS.create_process("/bin/sleep", PackedStringArray(["300"]))
+	_spawned_pids.append(orphan_pid)
 	_check(orphan_pid > 0, "dummy orphan spawned")
 	MpMatchFiles.ensure_dir(MpMatchFiles.dir_of(root, ORPHAN_ID))
 	MpMatchFiles.write_json(MpMatchFiles.path_of(root, ORPHAN_ID, MpMatchFiles.STATE), {"pid": orphan_pid})
 	MpMatchFiles.write_json(MpMatchFiles.registry_path(root), {"matches": {ORPHAN_ID: {"pid": orphan_pid, "port": 0}}})
 	_check(launcher.reap_orphans() == 1, "reap_orphans killed the leftover")
-	_check(await _until(func() -> bool: return not OS.is_process_running(orphan_pid), 3.0), "orphan process is gone")
+	_check(await _until(func() -> bool: return not MpProcessRunner.pid_alive(orphan_pid), 3.0), "orphan process is gone")
 
 	# 2. launch one match, the cap holds the second
 	var token := MpMatchFiles.new_token()
@@ -52,6 +54,7 @@ func _run() -> void:
 	_check(launcher.launch(MATCH_ID, ticket) == OK, "launch OK")
 	_check(launcher.launch("probe_m2", ticket) == ERR_BUSY, "second launch is ERR_BUSY (max_matches)")
 	var child_pid := launcher.pid_of(MATCH_ID)
+	_spawned_pids.append(child_pid)
 	var ticket_text := FileAccess.get_file_as_string(MpMatchFiles.path_of(root, MATCH_ID, MpMatchFiles.TICKET))
 	_check(not ticket_text.contains(token), "ticket.json has no plain token")
 	_check(ticket_text.contains(MpMatchFiles.sha256(token)), "ticket.json has the token hash")
@@ -81,7 +84,7 @@ func _run() -> void:
 	_check(_failed_reason.is_empty(), "no match_failed (%s)" % _failed_reason)
 
 	# 7. no leftovers
-	_check(await _until(func() -> bool: return not OS.is_process_running(child_pid), 5.0), "dedicated process exited")
+	_check(await _until(func() -> bool: return not MpProcessRunner.pid_alive(child_pid), 5.0), "dedicated process exited")
 	var out: Array = []
 	var code := OS.execute("pgrep", PackedStringArray(["-f", MATCH_ID]), out)
 	_check(code == 1, "pgrep finds no process for %s (exit %d)" % [MATCH_ID, code])
@@ -118,6 +121,10 @@ func _cleanup() -> void:
 	for id in launcher.active_ids():
 		launcher.abort(id, "probe_cleanup")
 	MpKit.leave()
+	for pid in _spawned_pids:
+		if MpProcessRunner.pid_alive(pid):
+			OS.kill(pid)
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(MpMatchFiles.registry_path(launcher.config.matches_root)))
 	MpMatchFiles.remove_dir(MpMatchFiles.dir_of(launcher.config.matches_root, MATCH_ID))
 	MpMatchFiles.remove_dir(MpMatchFiles.dir_of(launcher.config.matches_root, ORPHAN_ID))
 

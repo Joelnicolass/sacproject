@@ -539,3 +539,6 @@ Además de las salas del VPS, el juego ofrece una opción **separada** llamada �
 
 ## Decisión del usuario (2026-10-18): transporte WebSocket (034n)
 El usuario quiere la opción WebSocket porque después hará el port a web (un navegador no puede usar UDP crudo). Corte nuevo **034n**: transporte elegible en `mp_kit`, **ENet (UDP) por defecto** y **WebSocket (TCP) opcional** (`WebSocketMultiplayerPeer`), por `MpLobbyConfig`/flag `--transport=ws|enet`, genérico y con la misma API (RPC y replicación sin cambios). Lo usan el servidor de salas, los dedicados y «Servidor local» (034m; con WS sirve un túnel TCP como ngrok). Criterio: la prueba de dos salas 1v1 en paralelo (034d/034e) pasa con los dos transportes; `quick` igual. Queda preparado para el port a web (cliente web contra el mismo servidor de salas y dedicados); TLS (`wss://`) se documenta para el VPS.
+
+## Decisión del usuario (2026-10-18): 034g se prueba solo en local
+034g (reconexión y VPS) se verifica **localmente en la Mac**: reconexión dentro de la ventana parametrizable, abandono, salas + dedicados en 127.0.0.1, export de Linux y unidad de systemd **escritos y revisados**, pero sin desplegar. El usuario sube el build a su VPS (Vultr) y hace esa prueba él; el corte deja la guía y la checklist para eso. El criterio de 034h no incluye pruebas en el VPS.

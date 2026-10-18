@@ -62,7 +62,7 @@ MpKit.join(host, port, ticket)    # o MpFlow.join_endpoint(host, port, ticket)
 MpKit.admission_rejected.connect(func(reason: String): ...)
 ```
 
-El kit no interpreta el ticket. Slot ocupado: rechazo `slot_taken`; sin ticket a tiempo: `timeout`. `MpFlow.StartWhen.MANUAL`: el flow no carga el mundo solo (el pegamento llama `start_match()`/`goto_world()`). `MpBoot.role()` devuelve `"room-server"` con `--room-server`.
+El kit no interpreta el ticket. Motivos de rechazo: `rejected` (el Callable dio 0 o el ticket pasa de `TICKET_MAX_LEN`), `slot_taken` (slot ocupado por otro peer) y `timeout` (sin ticket a tiempo). Con `admission`, `push_snapshot`, `broadcast_load_world`, `broadcast_session_ended` y `broadcast_custom` llegan solo a peers con slot. Ojo: un `MultiplayerSpawner`/synchronizer del juego replica a **todos** los peers conectados, también a los que esperan ticket; limitalo con visibilidad por peer (`set_visibility_for` / `add_visibility_filter`) para que solo vean los peers con slot. `MpFlow.StartWhen.MANUAL`: el flow no carga el mundo solo (el pegamento llama `start_match()`/`goto_world()`). `MpBoot.role()` devuelve `"room-server"` con `--room-server`.
 
 Varias partidas a la vez en **un** dedicated: [Salas hub y cola](#salas-hub-y-cola-opcional). Un match a la vez: no hace falta tocar eso.
 

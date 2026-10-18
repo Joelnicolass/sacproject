@@ -29,6 +29,8 @@ var ids: MpIds = MpIds.new()
 var admission: Callable = Callable()
 ## Seconds a new peer may stay without presenting a ticket (only with `admission` set).
 var admission_timeout_s: float = 5.0
+## Tickets longer than this are rejected without reaching `admission`.
+const TICKET_MAX_LEN := 512
 var rooms: MpRoomDirectory
 var matchmaker: MpMatchmaker
 
@@ -179,7 +181,8 @@ func request_world_ready() -> void:
 func push_snapshot(data: Dictionary) -> void:
 	if not is_server():
 		return
-	rpc_snapshot.rpc(data)
+	for peer_id in _broadcast_peers():
+		rpc_snapshot.rpc_id(peer_id, data)
 
 
 func push_snapshot_to(peer_id: int, data: Dictionary) -> void:
@@ -193,7 +196,8 @@ func broadcast_load_world() -> void:
 	if not is_server():
 		return
 	_world_ready.clear()
-	rpc_load_world.rpc()
+	for peer_id in _broadcast_peers():
+		rpc_load_world.rpc_id(peer_id)
 
 
 func load_world_to(peer_id: int) -> void:
@@ -206,7 +210,8 @@ func load_world_to(peer_id: int) -> void:
 func broadcast_session_ended(data: Dictionary) -> void:
 	if not is_server():
 		return
-	rpc_session_ended.rpc(data)
+	for peer_id in _broadcast_peers():
+		rpc_session_ended.rpc_id(peer_id, data)
 
 
 func is_custom_channel_allowed(channel: StringName) -> bool:
@@ -246,7 +251,8 @@ func broadcast_custom(channel: StringName, data: Dictionary) -> void:
 	_broadcasting_custom = true
 	var payload: Dictionary = data.duplicate(true)
 	custom_received.emit(channel, payload, 1)
-	rpc_custom_from_server.rpc(String(channel), payload)
+	for peer_id in _broadcast_peers():
+		rpc_custom_from_server.rpc_id(peer_id, String(channel), payload)
 	_broadcasting_custom = false
 
 
@@ -269,6 +275,15 @@ func _ensure_hub_children() -> void:
 		matchmaker = MpMatchmaker.new()
 		matchmaker.name = "Matchmaker"
 		add_child(matchmaker)
+
+
+## Peers that may receive broadcasts. With `admission` set, only those that already have a slot.
+func _broadcast_peers() -> PackedInt32Array:
+	var out := PackedInt32Array()
+	for peer_id in multiplayer.get_peers():
+		if not admission.is_valid() or ids.slot_for_peer(peer_id) != 0:
+			out.append(peer_id)
+	return out
 
 
 func _enet_max_clients() -> int:
@@ -359,6 +374,9 @@ func rpc_present_ticket(ticket: String) -> void:
 		return
 	var sender := multiplayer.get_remote_sender_id()
 	if not _awaiting_ticket.has(sender):
+		return
+	if ticket.length() > TICKET_MAX_LEN:
+		_reject_peer(sender, "rejected")
 		return
 	var slot := int(admission.call(sender, ticket))
 	if slot <= 0:

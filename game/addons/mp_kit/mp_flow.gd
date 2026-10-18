@@ -36,6 +36,9 @@ enum StartWhen {
 @export var server_lost_status: String = "Lost the server"
 @export var dedicated_status: String = "Dedicated on port %d"
 
+const PORT_MIN := 1
+const PORT_MAX := 65535
+
 var match_running: bool = false
 
 var _lan: MpLanBeacon
@@ -134,7 +137,7 @@ func join_endpoint(host: String, p_port: int, ticket: String = "") -> Error:
 	if not MpLan.is_valid_ipv4(trimmed) and not MpLan.is_valid_hostname(trimmed):
 		_set_status(bad_ip_status)
 		return ERR_INVALID_PARAMETER
-	if p_port < 1 or p_port > 65535:
+	if p_port < PORT_MIN or p_port > PORT_MAX:
 		_set_status(bad_ip_status)
 		return ERR_INVALID_PARAMETER
 	var err := MpKit.join(trimmed, p_port, ticket)

@@ -11,8 +11,7 @@ extends Node
 ##   physics_frame to the next inside the same frame, and the TIME_PHYSICS_PROCESS monitor, the
 ##   longest step of a second), the script process (from SceneTree.process_frame to this node's _process,
 ##   last too: highest process_priority), the CPU side of the render (RenderingServer frame_pre_draw to
-##   frame_post_draw), the counters the game already has (BodySeparation.sep_us,
-##   TargetPicker.total_us, SideVision.total_us, AiSide.tick_ms, Orders.last_apply_us), draws,
+##   frame_post_draw), the counters the game already has (TargetPicker.total_us, SideVision.total_us, AiSide.tick_ms, Orders.last_apply_us), draws,
 ##   primitives, objects, VRAM and RSS.
 ## Then the render by subtraction (Metal reports no GPU time): the base with the tree paused, and the
 ## frame running live without grass, without health bars, without sun shadows and without the bodies'
@@ -87,7 +86,6 @@ class Recorder:
 	var script_proc := PackedFloat32Array()
 	var render_cpu := PackedFloat32Array()
 	var full_tick := PackedFloat32Array()
-	var sep_us := 0
 	var tick_count := 0
 	var limit := 0
 
@@ -100,7 +98,6 @@ func _ready() -> void:
 		if arg.begins_with("--perf-run="):
 			run_index = int(arg.get_slice("=", 1))
 	_uncap(bench_uncapped)
-	BodySeparation.measure = true
 	get_tree().physics_frame.connect(_on_tick_began)
 	get_tree().process_frame.connect(func() -> void: _process_began = Time.get_ticks_usec())
 	RenderingServer.frame_pre_draw.connect(func() -> void: _draw_began = Time.get_ticks_usec())
@@ -138,12 +135,8 @@ func _physics_process(_delta: float) -> void:
 	if get_tree().paused or _recorders.is_empty():
 		return
 	var spent := (Time.get_ticks_usec() - _tick_began) / 1000.0
-	var sep := 0
-	if runner == null:
-		sep = BodySeparation.take_us()
 	for r in _recorders:
 		r.script_tick.append(spent)
-		r.sep_us += sep
 		r.tick_count += 1
 
 
@@ -215,26 +208,11 @@ func _case_row(case: String) -> Dictionary:
 func _window(frames: int) -> Recorder:
 	var rec := Recorder.new()
 	rec.limit = frames
-	if runner != null:
-		rec.set_meta("sep_from", _runner_sep().size())
-	else:
-		BodySeparation.take_us()
 	_recorders.append(rec)
 	while not rec.full():
 		await get_tree().process_frame
 	_recorders.erase(rec)
-	if runner != null:
-		var sep := _runner_sep()
-		var total := 0.0
-		for i in range(int(rec.get_meta("sep_from")), sep.size()):
-			total += sep[i]
-		rec.sep_us = int(total * 1000.0)
 	return rec
-
-
-func _runner_sep() -> PackedFloat32Array:
-	var sep: Variant = runner.get("_sep_ms")
-	return sep if sep is PackedFloat32Array else PackedFloat32Array()
 
 
 ## The match: a capped record of the whole run plus uncapped windows at match_marks.
@@ -247,7 +225,6 @@ func _match() -> void:
 		await get_tree().process_frame
 	phase = "match"
 	var whole := Recorder.new()
-	var whole_sep_from := _runner_sep().size()
 	var whole_tick_from := _match_tick()
 	_recorders.append(whole)
 	var max_ticks := int(runner.get("_max_ticks"))
@@ -293,11 +270,6 @@ func _match() -> void:
 		if not _memory_ok():
 			return
 	_recorders.erase(whole)
-	var sep_all := _runner_sep()
-	var sep_total := 0.0
-	for i in range(whole_sep_from, sep_all.size()):
-		sep_total += sep_all[i]
-	whole.sep_us = int(sep_total * 1000.0)
 	## Per-tick counters of the whole match are over every tick, the windows' ones included.
 	var whole_frames_ticks := whole.tick_count
 	whole.tick_count = _match_tick() - whole_tick_from
@@ -312,7 +284,6 @@ func _match() -> void:
 		row["digest"] = (report as Dictionary).get("digest", "")
 		row["end_tick"] = (report as Dictionary).get("end_tick", 0)
 		row["runner_tick_ms"] = (report as Dictionary).get("tick_ms", {})
-		row["runner_sep_ms"] = (report as Dictionary).get("sep_ms", {})
 	_emit("match", row)
 
 
@@ -389,7 +360,6 @@ func _counters_delta(before: Dictionary, rec: Recorder) -> Dictionary:
 	var orders := world.get_node_or_null("%Orders") if world else null
 	return {
 		"ticks": rec.tick_count,
-		"separation": _r(rec.sep_us / 1000.0 / ticks),
 		"target_picker": _r(picker_us / 1000.0 / ticks),
 		"vision": _r(vision_us / 1000.0 / ticks),
 		"ai_sides": _r(ai_ms / ticks),
@@ -504,14 +474,9 @@ func _sweeps() -> Dictionary:
 			bodies.append(node)
 	if bodies.is_empty():
 		return {"bodies": 0}
-	var sep_was := BodySeparation.sep_us
-	# RFC-027 027d review N3: the resolve sweep would leave make_way requests and sides behind.
-	var make_way_was := MakeWay.snapshot()
 	var out := {"bodies": bodies.size()}
-	for part in ["resolve", "obstacles_brute", "clip", "ground_guard", "move_and_slide"]:
+	for part in ["clip", "ground_guard", "move_and_slide"]:
 		out[part] = _sweep(bodies, part)
-	BodySeparation.sep_us = sep_was
-	MakeWay.restore(make_way_was)
 	return out
 
 
@@ -524,10 +489,6 @@ func _sweep(bodies: Array[CharacterBody3D], part: String) -> float:
 	for k in sweep_reps:
 		for b in bodies:
 			match part:
-				"resolve":
-					BodySeparation.resolve(b, Vector3(1, 0, 0), delta)
-				"obstacles_brute":
-					BodySeparation._obstacles(b)
 				"clip":
 					b.call("_update_clip_state")
 					var clip := b.get_node_or_null("ClipPose")

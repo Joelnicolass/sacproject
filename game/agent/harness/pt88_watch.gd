@@ -1,6 +1,6 @@
 extends Node
 
-## Read-only observer for the F88 playtest (crowding in BodySeparation). It never moves, orders or selects
+## Read-only observer for the F88 playtest (crowding in the avoidance). It never moves, orders or selects
 ## anything: it only reads where bodies are and aims the world camera's debug pointer (what `select` and
 ## `order_units` use), like selection_probe.
 ##

@@ -20,7 +20,7 @@ const UnitOrders := preload("res://scenes/world/units/unit_orders.gd")
 ## sacengine retreat/guard of a wizard stops this far from the body it goes to (shiny.d:2376, `ntt+0x2e4 + 10.0`).
 const WIZARD_STOP_M := 10.0
 ## Two positions are «the same order» within this squared distance. sacengine compares them exactly (shiny.d:2398); in the port a
-## body rests with a jitter of centimeters (BodySeparation, the ground), so the exact test would re-issue the order of every
+## body rests with a jitter of centimeters (BodyAvoidance, the ground), so the exact test would re-issue the order of every
 ## follower every 12 ticks. 1 m² = 1 m («aprox.»).
 const SAME_POS_SQ := 1.0
 

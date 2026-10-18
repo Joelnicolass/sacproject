@@ -343,7 +343,8 @@ pause_menu={
 3d/default_cell_size=0.5
 world/map_use_async_iterations=false
 world/region_use_async_iterations=false
-avoidance/enable=false
+avoidance/thread_model/avoidance_use_multiple_threads=false
+avoidance/thread_model/avoidance_use_high_priority_threads=false
 
 [shader_globals]
 

@@ -9,7 +9,6 @@ extends Node
 ##
 ## Options after `--`: rules, seed (0 = drawn), minutes, out (a .json path; AgentKit's own --out folder is ignored), events (the lines of the record),
 ## sample-s (seconds between position samples, 10 by default), npcs (the map's villagers on the field even if the rules say no),
-## sep=brute (the old pair loop of BodySeparation, to compare its cost with the grid),
 ## difficulties=easy,normal (the difficulty of each AI seat in order, 024e), souls=N (starting souls of every wizard: read by
 ## MatchSetup.from_cli, its one owner since RFC-031 031d, and applied by HighNoon to the world's copy of these rules),
 ## autostart (skip the pause with a window), quit (quit at the end with a window). Headless it starts
@@ -50,8 +49,6 @@ var _finished := false
 var _started_usec := 0
 var _last_usec := 0
 var _tick_ms := PackedFloat32Array()
-var _sep_ms := PackedFloat32Array()
-var _sep_bodies := 0
 var _group_slots: Array[int] = []
 var _watched: Array[Node3D] = []
 var _report: Dictionary = {}
@@ -86,11 +83,6 @@ func _ready() -> void:
 	var roster := _world.get_node_or_null("%AiRoster")
 	if roster:
 		roster.set("enabled", false)
-	BodySeparation.use_grid = str(_args.get("sep", "grid")) != "brute"
-	BodySeparation.measure = true
-	BodySeparation.make_way = not _args.has("no-make-way")  # F177: debug switch to measure the port's make_way deviation (on in the product)
-	if _args.has("log-push"):
-		DebugLog.enable(&"push")  # F177: attribution of the pushes of bodies in melee (off in the product)
 	add_child(_world)
 	var rain := _world.get_node_or_null("DropletRain")
 	if rain:
@@ -212,7 +204,6 @@ func _begin() -> void:
 	for slot in _sides:
 		var side: AiSide = _sides[slot]
 		side.active = side.seat.start_active
-	BodySeparation.take_us()
 	audit.start()
 	_started_usec = Time.get_ticks_usec()
 	_last_usec = _started_usec
@@ -228,10 +219,8 @@ func _physics_process(_delta: float) -> void:
 	var now := Time.get_ticks_usec()
 	_tick_ms.append(float(now - _last_usec) / 1000.0)
 	_last_usec = now
-	_sep_ms.append(float(BodySeparation.take_us()) / 1000.0)
 	if _checkpoint_ticks.has(audit.tick):
 		audit.checkpoint(str(audit.tick / 3600))
-	_sep_bodies += get_tree().get_nodes_in_group("unit").size() + get_tree().get_nodes_in_group("wizard").size()
 	if audit.tick > 0 and audit.tick % _sample_ticks == 0:
 		audit.sample(_watched)
 	var verdict := _verdict()
@@ -300,8 +289,6 @@ func _finish(winner: int, reason: String) -> void:
 		"sides": audit.sides_report(),
 		"wall_s": snappedf(wall_s, 0.01),
 		"tick_ms": _tick_stats(),
-		"sep_ms": _sep_stats(),
-		"separation": "grid" if BodySeparation.use_grid else "brute",
 		"npc_alive_end": audit.npc_alive(),
 		"checkpoints": audit.checkpoints(),
 		"mem_static_mb": snappedf(Performance.get_monitor(Performance.MEMORY_STATIC) / 1048576.0, 0.1),
@@ -339,23 +326,6 @@ func _tick_stats() -> Dictionary:
 		"mean": snappedf(total / sorted.size(), 0.001),
 		"p99": snappedf(sorted[int(sorted.size() * 0.99)], 0.001),
 		"max": snappedf(sorted[sorted.size() - 1], 0.001),
-	}
-
-
-## `sep_ms` (BodySeparation.resolve summed over a tick): the mean, p99 and max over the run and the mean bodies.
-func _sep_stats() -> Dictionary:
-	if _sep_ms.is_empty():
-		return {}
-	var sorted := _sep_ms.duplicate()
-	sorted.sort()
-	var total := 0.0
-	for value in sorted:
-		total += value
-	return {
-		"mean": snappedf(total / sorted.size(), 0.001),
-		"p99": snappedf(sorted[int(sorted.size() * 0.99)], 0.001),
-		"max": snappedf(sorted[sorted.size() - 1], 0.001),
-		"bodies_mean": snappedf(float(_sep_bodies) / sorted.size(), 0.1),
 	}
 
 

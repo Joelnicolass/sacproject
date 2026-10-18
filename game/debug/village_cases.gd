@@ -1,11 +1,12 @@
 extends RefCounted
 
 ## RFC-024 addendum 1 (024b2) cases of rules_suite: the sides of the SIDS, who may attack whom, a house with
-## its health and its shelter, the peasant's choice (cower, stand, flee), the grudge of the herd and the grid of
-## BodySeparation against the old loop. `run(host)` puts its bodies under `host` and removes them at the end.
+## its health and its shelter, the peasant's choice (cower, stand, flee), the grudge of the herd and the avoidance agent of
+## a body (its box and its priority). `run(host)` puts its bodies under `host` and removes them at the end.
 ## The bodies do not simulate (physics off); the cases call the same functions the physics tick does.
 
 const UNIT_SCENE := preload("res://scenes/world/units/unit.tscn")
+const WIZARD_SCENE := preload("res://scenes/world/wizard/wizard_body.tscn")
 const PEASANT_SCENE := preload("res://scenes/world/units/peasant.tscn")
 const BUILDING_SCENE := preload("res://scenes/world/map/map_building.tscn")
 const RULES := preload("res://data/match_rules.tres")
@@ -175,32 +176,41 @@ func _grudge() -> Dictionary:
 	return _verdict(checks, {})
 
 
-## 36 bodies at seeded positions (30 in a 14 m square, 6 far away; no ties): the grid and the old loop give the same velocity to every one.
+## The avoidance agent of a body is its box: a ycro and an nmuh (different radii) each give the agent their BodyBox half
+## size and height, a body that walks gets the moving priority, one that stands the idle priority and a fixed one the top,
+## and a wizard is above a creature.
 func _separation() -> Dictionary:
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 24
-	var bodies: Array[UnitBody] = []
-	for k in 36:
-		var tag := "ycro" if k % 3 != 0 else "nmuh"
-		var at := Vector3(rng.randf_range(0.0, 14.0), 0.0, rng.randf_range(0.0, 14.0)) if k < 30 else Vector3(rng.randf_range(300.0, 500.0), 0.0, rng.randf_range(0.0, 200.0))
-		bodies.append(_unit(UNIT_SCENE, 1 + k % 2, at, tag))
-	var same := 0
-	var moved := 0
-	var worst := 0.0
-	for body in bodies:
-		var velocity := Vector3(rng.randf_range(-8.0, 8.0), 0.0, rng.randf_range(-8.0, 8.0))
-		BodySeparation.use_grid = false
-		var brute := BodySeparation.resolve(body, velocity, 1.0 / 60.0)
-		BodySeparation.use_grid = true
-		var grid := BodySeparation.resolve(body, velocity, 1.0 / 60.0)
-		worst = maxf(worst, (brute - grid).length())
-		if (brute - grid).length() <= 0.0000001:
-			same += 1
-		if (brute - velocity).length() > 0.0001:
-			moved += 1
-	for body in bodies:
-		body.free()
-	return _verdict({"all_equal": same == bodies.size(), "pushed_some": moved >= 3}, {"same": same, "moved": moved, "worst": worst})
+	var small := _unit(UNIT_SCENE, 1, Vector3(0.0, 0.0, 0.0), "ycro")
+	var big := _unit(UNIT_SCENE, 1, Vector3(10.0, 0.0, 0.0), "nmuh")
+	var checks := {}
+	var radii := []
+	for body in [small, big]:
+		var agent := body.get_node("Avoidance") as BodyAvoidance
+		checks["steers_%s" % body.creature_tag] = agent.steer(Vector3(1.0, 0.0, 0.0))
+		checks["radius_%s" % body.creature_tag] = is_equal_approx(agent.radius, BodyBox.half_size(body)) \
+				and is_equal_approx(agent.height, BodyBox.body_height(body))
+		checks["moving_%s" % body.creature_tag] = is_equal_approx(agent.avoidance_priority, agent.moving_priority) \
+				and is_equal_approx(agent.max_speed, 1.0)
+		radii.append(agent.radius)
+	checks["radii_differ"] = not is_equal_approx(float(radii[0]), float(radii[1]))
+	var agent_small := small.get_node("Avoidance") as BodyAvoidance
+	agent_small.steer(Vector3.ZERO)
+	checks["idle_yields"] = is_equal_approx(agent_small.avoidance_priority, agent_small.idle_priority) \
+			and is_equal_approx(agent_small.max_speed, agent_small.yield_speed) and agent_small.idle_priority < agent_small.moving_priority
+	agent_small.steer(Vector3(1.0, 0.0, 0.0), true)
+	checks["fixed_on_top"] = is_equal_approx(agent_small.avoidance_priority, 1.0)
+	var wizard := WIZARD_SCENE.instantiate() as WizardBody
+	wizard.owner_slot = 1
+	wizard.position = Vector3(20.0, 0.0, 0.0)
+	wizard.set_physics_process(false)
+	_root.add_child(wizard)
+	var wizard_agent := wizard.get_node("Avoidance") as BodyAvoidance
+	checks["wizard_above_creature"] = wizard_agent.moving_priority > agent_small.moving_priority \
+			and wizard_agent.idle_priority > agent_small.idle_priority
+	wizard.free()
+	small.free()
+	big.free()
+	return _verdict(checks, {"radii": radii})
 
 
 func _unit(scene: PackedScene, slot: int, at: Vector3, tag: String) -> UnitBody:

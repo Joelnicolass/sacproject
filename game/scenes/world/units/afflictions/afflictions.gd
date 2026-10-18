@@ -95,7 +95,7 @@ func pins() -> bool:
 
 
 ## sacengine effects.fixed (push, catapult and the walk do nothing, state.d:8588-8590): a petrified or frozen body, or a pinned one.
-## The one answer to «can this body be moved from outside?» (BodyNudge, BodySeparation).
+## The one answer to «can this body be moved from outside?» (BodyNudge, BodyAvoidance).
 func fixed() -> bool:
 	return immobilized() or pins()
 
@@ -154,7 +154,7 @@ func cc_protected() -> bool:
 
 ## Server: the body's velocity for this tick, as the states that are on say (F121: a Tumbling body flies its ballistic
 ## path, sacengine CreatureMovement.tumbling). With none, `velocity` as it came. The body calls it once per tick, after
-## its own gravity and before BodySeparation and move_and_slide.
+## its own gravity and before BodyAvoidance and move_and_slide.
 func steer(velocity: Vector3, delta: float) -> Vector3:
 	if shown == 0:
 		return velocity

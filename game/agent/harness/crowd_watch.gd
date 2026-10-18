@@ -1,6 +1,6 @@
 extends Node
 
-## Read-only observer of a crowd of creatures (F87 playtest: BodySeparation on the march and at
+## Read-only observer of a crowd of creatures (F87 playtest: the avoidance on the march and at
 ## arrival). Never moves, orders or selects anything; it only reads where the bodies are.
 ##
 ##   sample(slot = -1)  one line about the creatures of `slot` (-1 = every slot):

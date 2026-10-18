@@ -105,7 +105,7 @@ func _burn(target: Node3D, per_tick: float, mine: Array) -> void:
 	if not fire_fx.is_empty() and fire_every_ticks > 0 and count % fire_every_ticks == 0:
 		FxBus.broadcast(fire_fx, target.global_position + Vector3.UP * fire_height_m)
 	if DebugLog.on(&"shield") and taken > 0.0:
-		var box := BodySeparation.box_of(target)
+		var box := BodyBox.box_of(target)
 		var center: Vector3 = mine[0]
 		var at := target.global_position
 		print("escudo %s quema %s %.4f vida %.4f (tick %d) maná %.3f caja (%.3f, %.3f, %.3f) ± (%.3f, %.3f, %.3f) otro (%.3f, %.3f, %.3f) ± (%.3f, %.3f)" % [
@@ -121,14 +121,14 @@ func _log_ally(target: Node3D) -> void:
 
 ## (center, half width, half height) of the Phoenix's box, scaled about the center.
 func _scaled_box() -> Array:
-	var box := BodySeparation.box_of(body)
+	var box := BodyBox.box_of(body)
 	var at := body.global_position
 	return [Vector3(at.x, at.y + box.y * 0.5, at.z), box.x * box_scale, box.y * 0.5 * box_scale]
 
 
 ## Whether the target's box (feet at its position, its height up) meets the scaled one; touching is not meeting.
 func _meets(mine: Array, target: Node3D) -> bool:
-	var box := BodySeparation.box_of(target)
+	var box := BodyBox.box_of(target)
 	var center: Vector3 = mine[0]
 	var half: float = mine[1] + box.x
 	var at := target.global_position

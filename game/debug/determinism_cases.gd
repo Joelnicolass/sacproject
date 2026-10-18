@@ -9,13 +9,15 @@ extends RefCounted
 ##   (rand*, randomize, seed, shuffle, pick_random), makes a RandomNumberGenerator that MatchSeed does not seed, or sorts
 ##   by instance_id. Presentation and seeded-by-hand exceptions are an explicit list (LINT_*). lint(root) takes any
 ##   folder, so a sabotaged copy outside the project can prove it fails.
-## - make_way_pause (032d): a MakeWay request (HOLD_TICKS) survives 120 ticks of pause and runs out after HOLD_TICKS
-##   of play.
+## - avoidance_pause (032d, 036f): a body steered by BodyAvoidance gets its answer once; the 120 ticks of pause bring no
+##   second answer (the server keeps stepping, the stale velocity is not applied) and the body does not move; in play
+##   it is answered again each tick it steers.
 ## - vortex_life (032d): a RedVortex with max_life_s 1.0 is freed after 60 ticks (±1) of the match.
 ## `run(host)` adds its own wizard under `host` and removes it at the end. rules_suite has no HighNoon: MatchClock hooks
 ## itself lazily on the first now().
 
 const WIZARD_SCENE := preload("res://scenes/world/wizard/wizard_body.tscn")
+const AVOIDANCE_SCENE := preload("res://scenes/world/body_avoidance.tscn")
 const VORTEX_SCENE := preload("res://scenes/world/sacrifice/red_vortex.tscn")
 const SIM_ROOT := "res://scenes/world"
 ## Paths (relative to the root) skipped by sim_rng_lint: presentation folders and files.
@@ -54,7 +56,7 @@ func run(host: Node3D) -> Dictionary:
 	out["spellbook_cadence"] = await _cadence(book)
 	out["match_clock_pause"] = await _pause(book)
 	out["sim_rng_lint"] = _verdict("sim_rng_lint", lint(SIM_ROOT))
-	out["make_way_pause"] = await _make_way_pause()
+	out["avoidance_pause"] = await _avoidance_pause()
 	out["vortex_life"] = await _vortex_life()
 	_root.queue_free()
 	return out
@@ -191,31 +193,38 @@ static func _code_of(line: String) -> String:
 	return line
 
 
-## A request to make way (HOLD_TICKS) on a still body: it holds through PAUSE_TICKS of pause (MatchClock stands still)
-## and runs out after HOLD_TICKS of play.
-func _make_way_pause() -> Dictionary:
+## A body steered once (BodyAvoidance.steer) is answered once, in the same physics step; during PAUSE_TICKS of pause
+## (the tree stops, the navigation server does not) it gets no other answer and stands still; steering again in play
+## is answered again.
+func _avoidance_pause() -> Dictionary:
 	var checks := {}
 	var tree := _host.get_tree()
-	var saved := MakeWay.snapshot()
-	var body := Node3D.new()
-	body.name = "MakeWayProbe"
-	_root.add_child(body)
-	var away := Vector2(MakeWay.YIELD_SPEED, 0.0)
-	var now := MatchClock.now()
-	MakeWay._asks[body.get_instance_id()] = [away, now + MakeWay.HOLD_TICKS, now, 0.0]
+	var probe := CharacterBody3D.new()
+	probe.name = "AvoidanceProbe"
+	_root.add_child(probe)
+	probe.global_position = Vector3(0.0, 40.0, 0.0)
+	var agent := AVOIDANCE_SCENE.instantiate() as BodyAvoidance
+	agent.body = probe
+	probe.add_child(agent)
+	var answers := [0]
+	agent.solved.connect(func(flat: Vector3) -> void:
+		answers[0] += 1
+		probe.global_position += flat / 60.0)
+	await _ticks(2)
+	checks["steers"] = agent.steer(Vector3(2.0, 0.0, 0.0))
+	await _ticks(1)
+	checks["answered_once"] = answers[0] == 1
+	var after_answer := probe.global_position
 	tree.paused = true
 	await _ticks(PAUSE_TICKS)
 	tree.paused = false
-	var held := MakeWay.with_yield(body, Vector3.ZERO, 1.0 / 60.0)
-	checks["now_moved_in_pause"] = MatchClock.now() - now
-	checks["held_after_pause"] = is_equal_approx(held.x, away.x) and is_zero_approx(held.z)
-	await _ticks(MakeWay.HOLD_TICKS + 2)
-	var gone := MakeWay.with_yield(body, Vector3.ZERO, 1.0 / 60.0)
-	checks["runs_out_in_play"] = gone == Vector3.ZERO
-	checks["pause_does_not_count"] = int(checks["now_moved_in_pause"]) == 0
-	MakeWay.restore(saved)
-	body.queue_free()
-	return _verdict("make_way_pause", checks)
+	checks["no_answer_in_pause"] = answers[0] == 1
+	checks["stands_still_in_pause"] = probe.global_position == after_answer
+	checks["steers_again_in_play"] = agent.steer(Vector3(2.0, 0.0, 0.0))
+	await _ticks(1)
+	checks["answered_in_play"] = answers[0] == 2
+	probe.queue_free()
+	return _verdict("avoidance_pause", checks)
 
 
 ## A RedVortex with max_life_s VORTEX_LIFE_S: the tick it asks to be freed, counted from the tick it entered.

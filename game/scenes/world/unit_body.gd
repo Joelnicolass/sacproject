@@ -139,6 +139,8 @@ var _goal := Vector3.ZERO
 var _scan_left := 0.0
 var _since_damage := INF
 var _seat_left := 0
+## Whether the body flew when this physics step began (the avoidance ends the step later in it).
+var _airborne_step := false
 var _stats_ready := false
 var _last_health := 0.0
 var _pose_tween: Tween
@@ -170,6 +172,7 @@ var captive_role := "":
 @onready var _flight: Flight = get_node_or_null("Flight")
 ## F120 (RFC-030i): the one owner of «can it act?» (stunned, petrified). Held, the body neither thinks nor turns.
 @onready var _afflictions: Afflictions = $Afflictions
+@onready var _avoidance: BodyAvoidance = $Avoidance
 
 
 ## Before it enters the tree: the summon cast has just started.
@@ -586,12 +589,27 @@ func _physics_process(delta: float) -> void:
 		velocity.x = 0.0
 		velocity.z = 0.0
 	velocity = _afflictions.steer(velocity, delta)  ## F121: a thrown body (Tumbling) flies its own ballistic path.
-	if is_obstacle() and not _afflictions.fixed():
-		velocity = BodySeparation.resolve(self, velocity, delta)
+	_airborne_step = airborne
+	## RFC-036 036f: the engine's avoidance steers the body around the others; the step ends in _on_avoided, this same
+	## physics step, with the velocity it gives back.
+	if is_obstacle() and _avoidance.steer(velocity, _afflictions.fixed()):
+		return
+	_finish_step()
+
+
+## The velocity (x, z) the avoidance gave back: the second half of the physics step of the body.
+func _on_avoided(flat_velocity: Vector3) -> void:
+	velocity.x = flat_velocity.x
+	velocity.z = flat_velocity.z
+	_finish_step()
+
+
+func _finish_step() -> void:
+	var airborne := _airborne_step
 	if _flight != null and _flight.is_airborne():
 		_cap_air_pace()
 	if not airborne:
-		velocity = GroundGuard.keep_on_ground(self, velocity, delta)
+		velocity = GroundGuard.keep_on_ground(self, velocity, get_physics_process_delta_time())
 	var before := global_position
 	move_and_slide()
 	if not airborne:
@@ -601,7 +619,7 @@ func _physics_process(delta: float) -> void:
 	_update_clip_state()
 
 
-## F116: a hybrid in the air keeps its flying pace; the push of BodySeparation turns its heading but does not add to
+## F116: a hybrid in the air keeps its flying pace; the avoidance turns its heading but does not add to
 ## it (sacengine caps the air speed at speedInAir, state.d:14742-14751).
 func _cap_air_pace() -> void:
 	var pace := move_speed * speed_factor

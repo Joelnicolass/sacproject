@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/body_avoidance.gd" id="1_avoidance"]
+
+[node name="Avoidance" type="NavigationAgent3D"]
+avoidance_enabled = false
+neighbor_distance = 3.0
+max_neighbors = 10
+time_horizon_agents = 1.0
+time_horizon_obstacles = 0.0
+script = ExtResource("1_avoidance")

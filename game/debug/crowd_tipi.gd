@@ -35,7 +35,7 @@ const NAVMESH_P95_US := 300
 @export var slot_m := 2.0
 ## Pairs closer than this x (radius a + radius b) at the end are sunk; < 0 = no check.
 @export var deep_ratio := -1.0
-## Seconds the case waits after the last arrival before the end checks (returns of MakeWay).
+## Seconds the case waits after the last arrival before the end checks (the units that made way settle).
 @export var settle_s := 0.0
 
 var _started := false

@@ -164,6 +164,8 @@ Hecho: `Selection` (`scenes/world/selection.gd`, `%Selection` en `high_noon.tscn
 
 Empuje entre cuerpos (pulido final): `BodySeparation` (`scenes/world/body_separation.gd`) reproduce `positionAfterCollision` (`state.d:14446-14564`) antes de `move_and_slide`, en criaturas y magos (`MovingObject`). Primero bloquea el paso contra la caja de cada obstáculo achicada 0.1 por lado (`blockSlack` 0.2), por el eje de menor solapamiento. Después suma los solapamientos con la caja agrandada 0.1 y empuja hasta 5 m/s (`collisionFixupSpeed`, `stats.d:161`). Los empates se sortean. Obstáculos según `isObstacle` (112-126): no los muertos ni los que se están convocando; el fantasma sí. La caja es `max(radio, alcance)` del horneado, la misma de la formación (sacengine usa las cajas por hueso, que no se exportan). Con Ctrl+Espacio los 4 Trogg rodean al mago sin encimarse (1.1–2.2 m entre ellos) y siguen separados al caminar (`agent/flows/final_separation.json`).
 
+> **Reemplazado (2026-10-18, RFC-036 036f, F207):** `BodySeparation`, `BodyGrid` y `MakeWay` se borraron; la separación es la evasión de Godot (`BodyAvoidance`, NavigationAgent3D).
+
 ### F28 — Daño de hechizos
 Rock hace 650 de daño por la resistencia; el Trogg es inmune. Wrath hace 550 en radio 5.
 
@@ -2836,3 +2838,31 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
   - El `grep` de `SacFloat` da vacío.
   - `rules_suite` PASS, sin adaptar casos.
   - `quick` PASS. Cambió el digest de `f149` (congelamiento) por float64: `bf28b3fd` → `8a2bcf47`. Antes de regrabar dio el mismo digest en fixed y fixed2.
+
+### F207 — Evasión de Godot en lugar del empuje propio (RFC-036, corte 036f) — cerrado 2026-10-18
+
+- **Qué se borró:** `BodySeparation`, `BodyGrid` y `MakeWay`, unas 850 líneas copiadas de `positionAfterCollision`.
+- **Qué lo reemplaza:**
+  - Cada criatura, mago y doctor tiene un hijo `Avoidance` (`body_avoidance.tscn`, NavigationAgent3D). El radio y la altura salen de la caja de antes (`BodyBox`).
+  - Prioridad: el mago vale 0,9 cuando se mueve y 0,75 quieto. Una criatura vale 0,5 caminando y 0,25 quieta. Congelados y petrificados valen 1,0. Esto reemplaza `wizard_passes_own`.
+  - `velocity_computed` pasa a `move_and_slide` en el mismo paso de física.
+- **Configuración del proyecto:** la evasión corre en el hilo principal (`avoidance_use_multiple_threads=false`), para ser determinista.
+- **Verificación:**
+  - `rules_suite` PASS.
+  - `crowd_tipi` PASS: 0 trabadas en 19,05 s (antes, 2 trabadas en 20,85 s).
+  - `crowd_rock` PASS: 11,5 s.
+  - `crowd_150`: +1,6 % de tiempo.
+  - `escort_jam`: 6 de 6 tramos, y el mago no retrocede.
+  - `retreat_spacing` (Ctrl+Espacio con 4 Trogg): 1,39 m entre ellos.
+  - `run_034e` (partida con dedicado): E2E PASS.
+  - Flow `final_separation` con ventana: AGENT_OK.
+  - `quick`: PASS después de regrabar 15 casos por la evasión, cada uno igual en fixed y fixed2 antes de regrabar.
+- **Cambios de comportamiento:**
+  - Las criaturas que se corren para dejar pasar no vuelven a su lugar: quedan desplazadas hasta unos 1,1 m. Los `crowd_return*` ahora miden `stay_near` (3,5 m).
+  - La distancia de reposo pasa a ser `r_a + r_b`, sin los 0,1 m de holgura de antes.
+- **Gotchas de Godot 4.7.2:**
+  - `NavigationAgent3D.velocity` no entrega nada; hay que usar `NavigationServer3D.agent_set_velocity`.
+  - En modo `--script` no se emite `velocity_computed`.
+  - El ajuste es caótico: `neighbor_distance` 3,0 y `time_horizon_agents` 1,0.
+- **Sin review separada:** la reemplazan las pruebas de arriba, incluida la de red.
+- **Deuda:** la columna «separation» de `run_perf027.sh` quedó vacía.

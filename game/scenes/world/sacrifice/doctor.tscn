@@ -1,6 +1,7 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/sacrifice/doctor_body.gd" id="1_body"]
+[ext_resource type="PackedScene" path="res://scenes/world/body_avoidance.tscn" id="f207_avoid"]
 [ext_resource type="Script" path="res://scenes/world/body_visual.gd" id="2_visual"]
 [ext_resource type="Script" path="res://scenes/world/components/health.gd" id="3_health"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/unit_health_bar.tscn" id="4_bar"]
@@ -131,3 +132,8 @@ sync_properties = PackedStringArray()
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_doctor")
+
+[node name="Avoidance" parent="." node_paths=PackedStringArray("body") instance=ExtResource("f207_avoid")]
+body = NodePath("..")
+
+[connection signal="solved" from="Avoidance" to="." method="_on_avoided"]

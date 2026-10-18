@@ -80,13 +80,13 @@ func close_in(target: Node3D, pace: float, delta: float) -> Vector3:
 	var to_foe := target.global_position - _body.global_position
 	to_foe.y = 0.0
 	var foe_reach := float(profile_of(target).get("reach", 0.35))
-	## The goal never lies inside the distance BodySeparation leaves two bodies at (it would push the walker back every tick).
-	var goal := maxf(foe_reach + close_in_factor * forward_factor * reach, BodySeparation.rest_distance(_body, target))
+	## The goal never lies inside the distance the avoidance leaves two bodies at (it would steer the walker back every tick).
+	var goal := maxf(foe_reach + close_in_factor * forward_factor * reach, BodyBox.rest_distance(_body, target))
 	var excess := to_foe.length() - goal
 	var walk := Vector3.ZERO if excess <= 0.0 or delta <= 0.0 else to_foe.normalized() * minf(pace, excess / delta)
 	if DebugLog.on(&"gap"):
-		var radius := BodySeparation.half_size(_body)
-		var foe_radius := BodySeparation.half_size(target)
+		var radius := BodyBox.half_size(_body)
+		var foe_radius := BodyBox.half_size(target)
 		print("melee_gap %s->%s d=%.3f gap=%.3f vx=%.3f vz=%.3f tick=%d reach=%.3f foe_reach=%.3f radius=%.3f foe_radius=%.3f axis_gap=%.3f" % [
 			_body.name, target.name, to_foe.length(), to_foe.length() - radius - foe_radius, walk.x, walk.z, MatchClock.now(), reach, foe_reach, radius, foe_radius,
 			maxf(absf(to_foe.x), absf(to_foe.z)) - radius - foe_radius])

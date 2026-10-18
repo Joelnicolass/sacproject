@@ -6,14 +6,14 @@ extends RefCounted
 ## every category). Gameplay asks `DebugLog.on(&"melee")` before printing; it never decides what to print.
 ##
 ## Categories (what the bench lines come from):
-##   push (BodySeparation sep_push), gap/melee (MeleeAttack), on_hit (MeleeOnHit), drain (LifeDrain), charge (LightningCharge),
+##   gap/melee (MeleeAttack), on_hit (MeleeOnHit), drain (LifeDrain), charge (LightningCharge),
 ##   shield (FireShield), shields (LifeShield), effects (AbilityEffect and friends), ability (ActiveAbility), eye (DivineSightEye),
 ##   touches (GrowingWave), flight (GroundHug), split (ShotSplit), strikes (ShotStrike), spikes (SpikeWave/SpikeImpact),
 ##   oil (Oiled and OilImpact), walk (Firewalking), vines (Vined), pull (Pulling), breath (BreathOfLife), quake (QuakeWave),
 ##   bolt (LightningStrike), halo (HaloOfEarth), devour (DevourGrowth), pace (PaceFactors), revive (FastRevive),
 ##   cling (Clinging, StickImpact), souls (Soul), hop (MiteHop).
 
-## Every category except `push`, which stays opt-in (`ai_match --log-push` or `--log=push`) because it is one line per body per tick.
+## Every category.
 const BENCH: Array[StringName] = [
 	&"gap", &"melee", &"on_hit", &"drain", &"charge", &"shield", &"shields", &"effects", &"ability", &"touches",
 	&"flight", &"split", &"strikes", &"spikes", &"oil", &"walk", &"vines", &"pull", &"breath", &"quake", &"bolt",

@@ -12,20 +12,16 @@ extends RefCounted
 
 ## 0 until a match begins: rng() and seed_rng() then randomize (the one place with that fallback).
 static var current := 0
-## Ties of BodySeparation (state.uniform(2)). Not the global RNG, so effects that call randf() do not
-## move the simulation.
-static var separation := RandomNumberGenerator.new()
 
 
 ## Takes `rules.match_seed`, or draws one when it is 0 (or there are no rules), seeds the global RNG (presentation)
-## and the separation stream, prints `semilla <n>` and returns it.
+## prints `semilla <n>` and returns it.
 static func begin(rules: Variant) -> int:
 	var wanted := int((rules as MatchRules).match_seed) if rules is MatchRules else 0
 	if wanted == 0:
 		wanted = maxi(1, int(randi() & 0x7fffffff))
 	current = wanted
 	seed(derive(["presentation"]))
-	separation.seed = derive(["separation"])
 	print("semilla %d" % wanted)
 	return wanted
 

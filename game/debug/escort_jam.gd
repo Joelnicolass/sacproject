@@ -9,8 +9,10 @@ extends Node
 ##
 ##   godot --headless --path game --fixed-fps 60 res://debug/escort_jam.tscn -- --count=8
 ##
-## Options after `--`: count (escort size; 0 = control without escort), tag (creature tag), out (a .json path), trace,
-## own-push (BodySeparation.wizard_passes_own off: the rule of sacengine, the wizard is pushed by his own creatures).
+## Options after `--`: count (escort size; 0 = control without escort), tag (creature tag), out (a .json path), trace.
+## RFC-036 036f: the wizard is above his creatures in the avoidance (BodyAvoidance priority), so his own escort does not
+## push him back: per leg `back_m` is the most he lost of the ground he had gained toward the goal; the report is `ok`
+## when no leg goes back more than `back_max_m`.
 
 const REPORT_TAG := "ESCORT_JAM "
 
@@ -31,6 +33,8 @@ const REPORT_TAG := "ESCORT_JAM "
 @export var window_s := 1.0
 @export var jam_moved_m := 0.6
 @export var settle_frames := 4
+## The most (m) a leg may lose of the ground gained toward its goal.
+@export var back_max_m := 1.0
 
 var _args := {}
 var _wizard: Node3D
@@ -48,6 +52,7 @@ var _jam_max_s := 0.0
 var _results: Array = []
 var _leg_start := Vector3.ZERO
 var _min_left := INF
+var _back_m := 0.0
 var _running := false
 
 
@@ -59,8 +64,6 @@ func _ready() -> void:
 		escort_count = int(_args["count"])
 	if _args.has("tag"):
 		escort_tag = str(_args["tag"])
-	## --own-push: the original rule (the wizard is pushed by his own creatures too), to compare.
-	BodySeparation.wizard_passes_own = not _args.has("own-push")
 	world.local_wizard_changed.connect(func(_w: Node3D) -> void: _start.call_deferred())
 	if world.call("local_wizard"):
 		_start.call_deferred()
@@ -116,6 +119,7 @@ func _next_leg() -> void:
 	_jam_max_s = 0.0
 	_leg_start = _wizard.global_position
 	_min_left = INF
+	_back_m = 0.0
 	_wizard.call("request_walk", _goal)
 
 
@@ -139,13 +143,14 @@ func _physics_process(_delta: float) -> void:
 			_trace()
 	var left := _flat(_wizard.global_position, _goal)
 	_min_left = minf(_min_left, left)
+	_back_m = maxf(_back_m, left - _min_left)
 	var arrived := left <= arrive_m
 	var timeout := _leg_ticks * tick_s >= leg_timeout_s
 	if arrived or timeout:
 		_results.append({
 			"leg": _leg, "turn_deg": legs[_leg].x, "meters": legs[_leg].y, "arrived": arrived,
 			"seconds": snappedf(_leg_ticks * tick_s, 0.01), "left_m": snappedf(left, 0.1),
-			"jam_s": _jam_s, "jam_max_s": _jam_max_s, "min_left_m": snappedf(_min_left, 0.1),
+			"jam_s": _jam_s, "jam_max_s": _jam_max_s, "min_left_m": snappedf(_min_left, 0.1), "back_m": snappedf(_back_m, 0.01),
 			"from": _fmt(_leg_start), "goal": _fmt(_goal), "end": _fmt(_wizard.global_position),
 			"walking_end": bool(_wizard.call("is_walking")), "escort_within_8m": _escort_near(8.0),
 		})
@@ -159,13 +164,15 @@ func _finish() -> void:
 	var total_s := 0.0
 	var total_jam := 0.0
 	var arrived := 0
+	var back_worst := 0.0
 	for row: Dictionary in _results:
+		back_worst = maxf(back_worst, float(row["back_m"]))
 		total_s += float(row["seconds"])
 		total_jam += float(row["jam_s"])
 		arrived += 1 if bool(row["arrived"]) else 0
 	var report := {
 		"escort": escort_count, "tag": escort_tag, "legs": _results, "arrived": arrived, "of": legs.size(),
-		"total_s": snappedf(total_s, 0.01), "jam_s": total_jam,
+		"total_s": snappedf(total_s, 0.01), "jam_s": total_jam, "back_worst_m": back_worst, "ok": back_worst <= back_max_m,
 	}
 	var text := JSON.stringify(report)
 	print(REPORT_TAG + text)

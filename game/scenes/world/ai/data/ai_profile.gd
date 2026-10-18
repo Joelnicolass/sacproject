@@ -43,7 +43,7 @@ const DIR := "res://data/ai"
 ## shiny.d:3433: dx²+dy² <= 10000). Según [S].
 @export var record_near_m := 100.0
 ## Followers of a record's leader hold where they stand once they are within this of him (orderPosRadius radius, shiny.d:3419; the
-## original passes 0). Deviation of the port: its bodies push each other (BodySeparation), so followers pressed onto the
+## original passes 0). Deviation of the port: its bodies steer around each other (BodyAvoidance), so followers pressed onto the
 ## wizard's own spot shoved him off his altar (measured: 70 m in 3 min). 8 m keeps them around him.
 @export var follow_radius_m := 8.0
 ## A creature (or the wizard) on guard of a body or structure stops this far from it and fights from there: the retreat order of the

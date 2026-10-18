@@ -107,9 +107,10 @@ var _fade: Tween
 ## The carrier doctors have one (carrier_doctor.tscn): they walk by waypoints around pillars and buildings (RFC-024 024d,
 ## the debt of F73). The ritual doctors do not: they stand on the ring of the altar, inside what the grid blocks.
 @onready var _path_follower: Node = get_node_or_null("PathFollower")
+@onready var _avoidance: BodyAvoidance = $Avoidance
 
 
-## The Fsm states and the StuckGuard read the model through here (BodySeparation, melee reach).
+## The Fsm states and the StuckGuard read the model through here (BodyBox, melee reach).
 var model: String:
 	get:
 		return visual.model if visual else ""
@@ -282,7 +283,7 @@ func regenerate(delta: float) -> void:
 		health.heal(type.regeneration_per_s * delta)
 
 
-## Gravity, separation from the other bodies, the ground guard and move_and_slide, as UnitBody.
+## Gravity, the avoidance around the other bodies, the ground guard and move_and_slide, as UnitBody.
 ## `horizontal` is the wanted velocity on x/z.
 func advance_on_ground(horizontal: Vector3, delta: float) -> void:
 	if is_on_floor():
@@ -291,9 +292,22 @@ func advance_on_ground(horizontal: Vector3, delta: float) -> void:
 		velocity.y -= gravity() * delta
 	velocity.x = horizontal.x
 	velocity.z = horizontal.z
-	if is_obstacle():
-		velocity = BodySeparation.resolve(self, velocity, delta)
-	velocity = GroundGuard.keep_on_ground(self, velocity, delta)
+	## RFC-036 036f: the engine's avoidance steers the body around the others; the step ends in _on_avoided, this same
+	## physics step.
+	if is_obstacle() and _avoidance.steer(velocity):
+		return
+	_finish_step()
+
+
+## The velocity (x, z) the avoidance gave back: the second half of the step of advance_on_ground.
+func _on_avoided(flat_velocity: Vector3) -> void:
+	velocity.x = flat_velocity.x
+	velocity.z = flat_velocity.z
+	_finish_step()
+
+
+func _finish_step() -> void:
+	velocity = GroundGuard.keep_on_ground(self, velocity, get_physics_process_delta_time())
 	var before := global_position
 	move_and_slide()
 	GroundGuard.hold_on_ground(self, before)

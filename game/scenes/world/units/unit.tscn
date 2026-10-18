@@ -1,6 +1,7 @@
-[gd_scene load_steps=71 format=3]
+[gd_scene load_steps=72 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/unit_body.gd" id="1_body"]
+[ext_resource type="PackedScene" path="res://scenes/world/body_avoidance.tscn" id="f207_avoid"]
 [ext_resource type="PackedScene" path="res://scenes/world/components/pace_factors.tscn" id="f129_pace"]
 [ext_resource type="PackedScene" path="res://scenes/world/components/clinging.tscn" id="f129_cling"]
 [ext_resource type="PackedScene" path="res://scenes/world/components/devour_growth.tscn" id="f131_growth"]
@@ -352,3 +353,8 @@ net = NodePath("../Net")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_unit")
+
+[node name="Avoidance" parent="." node_paths=PackedStringArray("body") instance=ExtResource("f207_avoid")]
+body = NodePath("..")
+
+[connection signal="solved" from="Avoidance" to="." method="_on_avoided"]

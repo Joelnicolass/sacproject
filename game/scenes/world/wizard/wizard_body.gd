@@ -82,6 +82,7 @@ var _clip_flat_speed := 0.0
 @onready var _caster: Node = $Caster
 ## F138 (RFC-030i-c): the one owner of «held» (stunned, petrified); walking, turning, casting and summoning ask it.
 @onready var _afflictions: Afflictions = $Afflictions
+@onready var _avoidance: BodyAvoidance = $Avoidance
 
 
 func _ready() -> void:
@@ -128,7 +129,7 @@ func is_guard_target() -> bool:
 	return ghost.call("is_guard_target")
 
 
-## BodySeparation: a ghost still pushes and is pushed (state.d:117, 125).
+## A ghost still steers around the others and they around it (state.d:117, 125).
 func is_obstacle() -> bool:
 	return ghost.call("is_obstacle")
 
@@ -393,9 +394,22 @@ func _physics_process(delta: float) -> void:
 	_since_damage += delta
 	_regenerate(delta)
 	velocity = _afflictions.steer(velocity, delta)  ## F121: a thrown wizard (Tumbling) flies its own ballistic path.
-	if is_obstacle() and not _afflictions.fixed():
-		velocity = BodySeparation.resolve(self, velocity, delta)
-	velocity = GroundGuard.keep_on_ground(self, velocity, delta)
+	## RFC-036 036f: the engine's avoidance steers the body around the others (a wizard is above his creatures); the step
+	## ends in _on_avoided, this same physics step.
+	if is_obstacle() and _avoidance.steer(velocity, _afflictions.fixed()):
+		return
+	_finish_step()
+
+
+## The velocity (x, z) the avoidance gave back: the second half of the physics step of the body.
+func _on_avoided(flat_velocity: Vector3) -> void:
+	velocity.x = flat_velocity.x
+	velocity.z = flat_velocity.z
+	_finish_step()
+
+
+func _finish_step() -> void:
+	velocity = GroundGuard.keep_on_ground(self, velocity, get_physics_process_delta_time())
 	var before := global_position
 	move_and_slide()
 	GroundGuard.hold_on_ground(self, before)

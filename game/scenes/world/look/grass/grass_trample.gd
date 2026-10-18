@@ -119,6 +119,6 @@ func _scan(tree: SceneTree, space: Node3D, center: Vector2, radius_m: float, gro
 	_radius.clear()
 	_last_drop.clear()
 	for body in found:
-		_radius.append(maxf(BodySeparation.half_size(body), 0.25) * radius_scale)
+		_radius.append(maxf(BodyBox.half_size(body), 0.25) * radius_scale)
 		var local := space.to_local(body.global_position)
 		_last_drop.append(drops.get(body.get_instance_id(), Vector2(local.x, local.z)))

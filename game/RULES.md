@@ -35,3 +35,12 @@ Textos de pantalla en español. Nombres de archivos y de nodos en inglés.
 ## IA
 
 La IA es un jugador más. Todo lo que hace pasa por un solo puerto que llama a lo mismo que el humano (`request_cast`, `request_summon`, `Orders`): paga maná y almas y respeta enfriamientos y alcance. Sin bonificación de recursos ni trampa, en ninguna dificultad. Existe solo en el proceso que simula (solo o dedicado) y no agrega RPC. Vive fuera de `addons/mp_kit`. Las partidas con IA son reproducibles con `match_seed`.
+
+## Fidelidad y pruebas
+
+Desde el 2026-10-18 (decisión del usuario), hasta la v1 estable:
+
+- Godot estándar antes que el original. Navegación, física y animación usan lo del motor, con tolerancia amplia. Del original se copia solo lo que se nota al jugar: números de daño, hechizos y reglas. No hace falta ser 100 % fiel.
+- El banco de determinismo es una prueba de humo, no un contrato byte a byte. `quick` corre en cada corte. Si un digest cambia por un cambio hecho a propósito, se regraba la base y se anota una línea en el F. Sin informe de primer tick distinto ni los 4 modos. `all` queda para el cierre de un RFC.
+- Los cortes chicos son developer y verificación del orquestador, sin review separada. La review queda para cambios grandes de comportamiento o arquitectura.
+- La exactitud byte a byte se puede retomar después de la v1.

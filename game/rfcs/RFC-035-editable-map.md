@@ -272,3 +272,7 @@ No hay tests automáticos nuevos fuera de los casos headless de `debug/` y el ba
 
 ## Decisiones del orquestador (2026-10-18, cola delegada)
 Se aplican las recomendaciones de §P: P1 sin segundo regrabado (leer los buffers con `GLTFDocument` si el importador reordena); P2 plantas como nodos, `MultiMesh` solo si la escena tarda más de 2 s en abrir; P3 tiles más chicos si el re-horneado pasa de 30 ms; P4 un solo navmesh salvo que falle el tipi. Los `.import` pasados a VRAM por el editor ya se revirtieron (1748b773).
+
+## Enmienda 2026-10-18 (RULES §Fidelidad y pruebas)
+
+Se bajan los gates de digests. Donde el plan dice «`quick` igual», «no puede mover ningún digest» o «regrabado único con informe», vale esto: `quick` corre en cada corte, y si un digest cambia por el corte se regraba la base con una línea de causa en el F. Los cortes no necesitan una review separada salvo 035g (cambio de navegación). Se quitan P1 (ya no hace falta evitar un segundo regrabado), `--nav-trace` y el informe de 035h. Se mantienen los gates funcionales: mapa visible en el editor, ida y vuelta del glb, conteos de NPC y edificios, `bake_nav --check`, rendimiento y que no se traben las criaturas.

@@ -7,6 +7,9 @@ extends Node
 ## - the result of the match (MatchState) is reported to the agent, which writes result.json and tells the clients;
 ## - a slot that stays away more than `rejoin_grace_s` loses (`abandon`); with everybody away the match is `empty`.
 ## The pick channel of the clients is ignored (SacrificeFlow): the pick was closed in the lobby.
+## The match does not start until every seat of the ticket has loaded its world: the tree stays paused (so `MatchClock`
+## and the whole simulation wait) from the start of the process until each seat sent `world_ready`. A seat that has not
+## loaded `load_timeout_s` after the first admission counts as away for good (`abandon`). A slow client never misses the start.
 ## Test hook, not a rule: `--force-defeat-slot=N --force-defeat-after-ticks=T` defeats slot N T ticks after the
 ## first player was admitted, so a run ends without playing the match out.
 
@@ -23,6 +26,10 @@ var _first_admit_tick: int = -1
 var _force_slot: int = 0
 var _force_ticks: int = 0
 var _forced: bool = false
+## True while the simulation waits for the seats to load (the tree is paused by this node).
+var _holding: bool = false
+var _hold_started_ms: int = 0
+var _loaded_slots: Dictionary = {}
 
 
 func _ready() -> void:
@@ -42,6 +49,12 @@ func _ready() -> void:
 	_force_ticks = int(MpBoot.user_value("force-defeat-after-ticks", "0"))
 	MpKit.peer_joined.connect(_on_peer_joined)
 	MpKit.peer_left.connect(_on_peer_left)
+	MpKit.client_world_ready.connect(_on_world_ready)
+	## ALWAYS: this node and its agent (heartbeat, idle, result) keep working while the simulation waits.
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	## `--no-load-hold` (tests whose clients never load the world, like run_034e) skips the wait.
+	_holding = not MpBoot.user_flag("no-load-hold")
+	get_tree().paused = _holding
 	get_tree().node_added.connect(_on_node_added)
 	print("partida %s: ticket con %d asientos, semilla %d, nivel %d" % [agent.match_id, _seat_count, _setup.match_seed, _setup.level])
 
@@ -72,7 +85,15 @@ static func setup_from_ticket(ticket: Dictionary) -> MatchSetup:
 
 
 func _process(_delta: float) -> void:
-	if agent == null or agent.finished or _away_since_ms.is_empty():
+	if agent == null or agent.finished:
+		return
+	if _holding and _hold_started_ms > 0 and MpMatchFiles.now_ms() - _hold_started_ms > int(agent.config.load_timeout_s * 1000.0):
+		_end_hold("tiempo de carga vencido")
+		for slot in _seat_metas.keys():
+			if not _loaded_slots.has(slot):
+				_away_since_ms[slot] = 0
+				print("partida %s: slot %d no cargó a tiempo, cuenta como abandono" % [agent.match_id, int(slot)])
+	if _away_since_ms.is_empty():
 		return
 	_check_abandon()
 
@@ -94,9 +115,29 @@ func _on_peer_joined(_peer_id: int, slot: int) -> void:
 	if not _seat_metas.has(slot):
 		return
 	_away_since_ms.erase(slot)
-	if _first_admit_tick < 0:
-		_first_admit_tick = MatchClock.now()
+	if _hold_started_ms == 0:
+		_hold_started_ms = MpMatchFiles.now_ms()
 	print("partida %s: slot %d adentro" % [agent.match_id, slot])
+
+
+## A client finished loading its world. With every seat loaded the simulation starts, for all at the same tick 0.
+func _on_world_ready(peer_id: int) -> void:
+	var slot := MpKit.slot_for_peer(peer_id)
+	if not _seat_metas.has(slot) or _loaded_slots.has(slot):
+		return
+	_loaded_slots[slot] = true
+	print("partida %s: slot %d cargó el mundo (%d/%d)" % [agent.match_id, slot, _loaded_slots.size(), _seat_count])
+	if _loaded_slots.size() == _seat_count:
+		_end_hold("todos cargaron")
+
+
+func _end_hold(why: String) -> void:
+	if not _holding:
+		return
+	_holding = false
+	get_tree().paused = false
+	_first_admit_tick = MatchClock.now()
+	print("partida %s: la simulación arranca (%s)" % [agent.match_id, why])
 
 
 func _on_peer_left(_peer_id: int, slot: int) -> void:

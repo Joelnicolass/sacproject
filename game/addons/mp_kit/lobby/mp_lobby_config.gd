@@ -39,6 +39,9 @@ extends Resource
 @export var ticket_ttl_s: float = 60.0
 ## How long a dropped player may come back with the same token.
 @export var rejoin_grace_s: float = 60.0
+## How long the game may hold a match for every seat to load its world (counted from the first admission). The game
+## decides what a seat that did not load means (Sacrifice: it counts as an abandon). The kit only carries the number.
+@export var load_timeout_s: float = 60.0
 @export var heartbeat_s: float = 2.0
 @export var heartbeat_stale_s: float = 10.0
 @export var idle_no_players_s: float = 60.0
@@ -57,7 +60,7 @@ extends Resource
 @export var matches_root: String = "user://mp_matches"
 ## Fields the launcher forwards to the dedicated as `--field-name=value`.
 @export var agent_fields: PackedStringArray = PackedStringArray([
-	"transport", "heartbeat_s", "idle_no_players_s", "rejoin_grace_s", "parent_check_s", "result_quit_delay_s",
+	"transport", "heartbeat_s", "idle_no_players_s", "rejoin_grace_s", "load_timeout_s", "parent_check_s", "result_quit_delay_s",
 ])
 
 

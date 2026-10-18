@@ -50,7 +50,7 @@ trap 'kill_all; kill $WATCH $MONITOR 2>/dev/null' EXIT
 bash "$ROOT/agent/harness/godot_run.sh" "$GODOT" --headless --path "$ROOT" res://scenes/net/room_server.tscn -- \
   --room-server --transport="$TRANSPORT" --lobby-config=res://data/net/lobby_config_local.tres --lobby-port="$LOBBY_PORT" --max-matches=2 \
   --ticket-ttl-s=60 --idle-no-players-s=30 --resume-grace-s=120 --matches-root="$MATCHES" \
-  --match-args=--force-defeat-slot=2,--force-defeat-after-ticks=1200 > "$OUT/server.log" 2>&1 &
+  --match-args=--force-defeat-slot=2,--force-defeat-after-ticks=1200,--no-load-hold > "$OUT/server.log" 2>&1 &
 SERVER=$!
 
 ( # external timeout

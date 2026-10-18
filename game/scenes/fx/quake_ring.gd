@@ -59,7 +59,7 @@ func _redraw() -> void:
 	var outer := radius + width * 0.5
 	var tint := color
 	tint.a *= (1.0 - progress * progress)
-	var terrain := GroundGuard.terrain_of(self)
+	var terrain := FallCheck.terrain_of(self)
 	var center := global_position
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)

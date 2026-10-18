@@ -381,7 +381,7 @@ func _on_reached_site(errand: CarryErrand) -> void:
 
 
 func _terrain() -> Node:
-	return GroundGuard.terrain_of(self)
+	return FallCheck.terrain_of(self)
 
 
 func _on_ground(point: Vector3) -> bool:

@@ -475,7 +475,7 @@ func _sweeps() -> Dictionary:
 	if bodies.is_empty():
 		return {"bodies": 0}
 	var out := {"bodies": bodies.size()}
-	for part in ["clip", "ground_guard", "move_and_slide"]:
+	for part in ["clip", "edge_clamp", "move_and_slide"]:
 		out[part] = _sweep(bodies, part)
 	return out
 
@@ -494,9 +494,9 @@ func _sweep(bodies: Array[CharacterBody3D], part: String) -> float:
 					var clip := b.get_node_or_null("ClipPose")
 					if clip:
 						clip.call("advance", delta)
-				"ground_guard":
-					GroundGuard.keep_on_ground(b, Vector3(1, 0, 0), delta)
-					GroundGuard.has_fallen(b)
+				"edge_clamp":
+					EdgeClamp.clamp_velocity(b, Vector3(1, 0, 0), delta)
+					FallCheck.has_fallen(b)
 				"move_and_slide":
 					b.move_and_slide()
 	var spent := (Time.get_ticks_usec() - started) / 1000.0 / sweep_reps

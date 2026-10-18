@@ -59,7 +59,7 @@ func finish(wizard: WizardBody, spell: SpellType, target: Node3D) -> String:
 	var destination := _destination
 	_has_destination = false
 	var radius := spell.effect_range
-	var terrain := GroundGuard.terrain_of(wizard)
+	var terrain := FallCheck.terrain_of(wizard)
 	var on_ground := _on_ground_of(terrain)
 	var froms := PackedVector3Array()
 	var tos := PackedVector3Array()
@@ -117,7 +117,7 @@ func travelers(wizard: WizardBody, radius: float) -> Array[Node3D]:
 
 
 func _landing(start: Vector3, building: Node3D, radius: float) -> Vector3:
-	var terrain := GroundGuard.terrain_of(building)
+	var terrain := FallCheck.terrain_of(building)
 	var spot := TeleportMath.landing(start, building.global_position, radius, _on_ground_of(terrain))
 	spot.y = _land_y(terrain, spot, building.global_position.y)
 	return spot

@@ -39,7 +39,7 @@ func _run(wizard: CharacterBody3D) -> void:
 	var tree := get_tree()
 	for _i in 30:
 		await tree.physics_frame
-	var ground := float(GroundGuard.terrain_of(wizard).call("ground_height", start.x, start.z))
+	var ground := float(FallCheck.terrain_of(wizard).call("ground_height", start.x, start.z))
 	wizard.global_position = Vector3(start.x, ground + 0.1, start.z)
 	wizard.velocity = Vector3.ZERO
 	## The camera's yaw and the wizard's facing need not share a zero: turn the camera until facing_flat is the heading.

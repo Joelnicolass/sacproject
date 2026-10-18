@@ -7,6 +7,7 @@ extends RefCounted
 ## RFC-035 035i: the navmesh is the only backend. `nav_box_corner` checks the box blockers (NavBoxBlockers, the maths a building's
 ## corner needs); `nav_rebake_ms` is the cost of baking the whole navmesh again (gate REBAKE_MS).
 
+const EDGE_CASES := preload("res://debug/edge_cases.gd")  # 036h
 const TERRAIN_SCRIPT := preload("res://scenes/world/terrain.gd")
 const FOUNT_AT := Vector3(1270.0, 10.0, 1270.0)
 const FOUNT_RADIUS := 3.6
@@ -77,6 +78,7 @@ func run(host: Node3D) -> Dictionary:  # a coroutine: it waits for physics frame
 	out["nav_goal_off_land"] = _off_land()
 	out["nav_line_clear"] = _line_clear()
 	out["nav_box_corner"] = _box_corner()
+	out.merge(await EDGE_CASES.new().run(_root, _terrain, _service))  # 036h
 	out["nav_rebake_ms"] = _rebake()
 	_root.free()
 	return out

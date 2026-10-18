@@ -29,7 +29,7 @@ func _physics_process(delta: float) -> void:
 		return
 	var rules := ritual.rules
 	var center := ritual.center()
-	var terrain := GroundGuard.terrain_of(self)
+	var terrain := FallCheck.terrain_of(self)
 	var seen: Dictionary = {}
 	for group in GROUPS:
 		for node in get_tree().get_nodes_in_group(group):

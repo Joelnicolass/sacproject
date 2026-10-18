@@ -21,7 +21,7 @@ var _elapsed := 0.0
 
 func _physics_process(delta: float) -> void:
 	var wizard: Node3D = world.call("local_wizard") if world else null
-	var terrain := GroundGuard.terrain_of(world)
+	var terrain := FallCheck.terrain_of(world)
 	if wizard == null or terrain == null:
 		return
 	if not _started:

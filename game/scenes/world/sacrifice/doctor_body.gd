@@ -307,11 +307,9 @@ func _on_avoided(flat_velocity: Vector3) -> void:
 
 
 func _finish_step() -> void:
-	velocity = GroundGuard.keep_on_ground(self, velocity, get_physics_process_delta_time())
-	var before := global_position
+	velocity = EdgeClamp.clamp_velocity(self, velocity, get_physics_process_delta_time())
 	move_and_slide()
-	GroundGuard.hold_on_ground(self, before)
-	if GroundGuard.has_fallen(self):
+	if FallCheck.has_fallen(self):
 		kill()
 
 

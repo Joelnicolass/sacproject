@@ -609,12 +609,9 @@ func _finish_step() -> void:
 	if _flight != null and _flight.is_airborne():
 		_cap_air_pace()
 	if not airborne:
-		velocity = GroundGuard.keep_on_ground(self, velocity, get_physics_process_delta_time())
-	var before := global_position
+		velocity = EdgeClamp.clamp_velocity(self, velocity, get_physics_process_delta_time())
 	move_and_slide()
-	if not airborne:
-		GroundGuard.hold_on_ground(self, before)
-	if not airborne and GroundGuard.has_fallen(self):
+	if not airborne and FallCheck.has_fallen(self):
 		_gib_fallen()
 	_update_clip_state()
 

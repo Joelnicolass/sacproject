@@ -409,11 +409,9 @@ func _on_avoided(flat_velocity: Vector3) -> void:
 
 
 func _finish_step() -> void:
-	velocity = GroundGuard.keep_on_ground(self, velocity, get_physics_process_delta_time())
-	var before := global_position
+	velocity = EdgeClamp.clamp_velocity(self, velocity, get_physics_process_delta_time())
 	move_and_slide()
-	GroundGuard.hold_on_ground(self, before)
-	if GroundGuard.has_fallen(self):
+	if FallCheck.has_fallen(self):
 		_return_to_altar()
 	_update_clip_state(Vector2(velocity.x, velocity.z).length())
 
@@ -455,7 +453,7 @@ func _return_to_altar() -> void:
 		return
 	_walking = false
 	velocity = Vector3.ZERO
-	global_position = GroundGuard.altar_return_spot(self, best.global_position) - Vector3.UP * feet_drop()
+	global_position = FallCheck.altar_return_spot(self, best.global_position) - Vector3.UP * feet_drop()
 	print("mago %d volvio al altar" % owner_slot)
 
 

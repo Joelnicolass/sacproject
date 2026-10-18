@@ -48,7 +48,7 @@ func snap() -> void:
 		return
 	# Terrain-local = map coordinates. In the editor the scene root is shifted (terrain.gd).
 	var at := terrain.to_local(body.global_position)
-	# terrain.gd has no class_name: untyped call, as GroundGuard does.
+	# terrain.gd has no class_name: untyped call, as FallCheck does.
 	var height := float(terrain.call("ground_height", at.x, at.z))
 	if is_nan(height):
 		return

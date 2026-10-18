@@ -278,7 +278,7 @@ func _touching(rock: Rock) -> Node3D:
 
 
 func _under_land(at: Vector3) -> bool:
-	var terrain := GroundGuard.terrain_of(self)
+	var terrain := FallCheck.terrain_of(self)
 	return terrain != null and bool(terrain.call("is_on_ground", at.x, at.z)) and at.y < float(terrain.call("ground_height", at.x, at.z))
 
 

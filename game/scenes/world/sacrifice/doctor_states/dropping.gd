@@ -34,5 +34,5 @@ func physics_update(delta: float) -> void:
 	if body.is_on_floor():
 		body.velocity = Vector3.ZERO
 		_bounce_left = body.rules.doctor_bounce_s if body.rules else 1.0
-	elif GroundGuard.has_fallen(body):
+	elif FallCheck.has_fallen(body):
 		body.kill()

@@ -2894,3 +2894,16 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
 - Partida real con ventana (`pt035e.json` → `agent/out/pt036g/`): AGENT_OK, sin errores, con el mago animado.
 - Sin review separada; la reemplazan las pruebas.
 - **Para el usuario en el editor:** abrir `scenes/world/body/models/eorc.tscn` (el Trogg), elegir `Tree` y previsualizar los roles.
+
+### F209 — Fuera GroundGuard (RFC-036, corte 036h) — cerrado 2026-10-18
+
+- **Qué se borró:** `GroundGuard`, la copia de `moveOnGround` con 8 deslizamientos y restauración de posición.
+- **Qué lo reemplaza:** `EdgeClamp.clamp_velocity` corre antes de `move_and_slide`. Primero consulta el terreno, una búsqueda O(1). Solo si el paso siguiente cae en un hueco, lo recorta al punto de tierra del navmesh más cercano.
+- **Tumbling:** los cuerpos lanzados no se recortan, así que siguen cayendo y muriendo.
+- **`FallCheck`** conserva `has_fallen`, `terrain_of` y `altar_return_spot`.
+- **Verificación:**
+  - El `grep` de `GroundGuard` da vacío.
+  - `rules_suite` PASS.
+  - `edge_pushed_stays` y `edge_thrown_falls` PASS (en `nav_cases`, con un caso de control sin recorte que sí cae).
+  - `crowd_tipi` y `crowd_rock` PASS.
+  - `quick` PASS sin mover digests.

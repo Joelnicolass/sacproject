@@ -2584,3 +2584,6 @@ El usuario quiere el port a web (el navegador no abre UDP), asi que el kit elige
 - **Prueba**: `agent/run_034d.sh` y `agent/run_034e.sh` aceptan `TRANSPORT=ws` (sin variable, ENet, igual que antes).
 
 **Pendiente (orquestador):** `--import` una vez (clase `MpTransport` nueva); correr 034d y 034e con ENet y con WS. Codigo escrito sin ejecutar Godot.
+
+### Cierre 034n (F190) — 2026-10-18
+- `MpTransport`: ENet por defecto, WebSocket con `--transport=ws` (kit, lobby, launcher y dedicados). Verificación en main: import sin errores; `run_034d.sh` LOBBY NET PASS (88) y `run_034e.sh` E2E PASS (118, dos salas con dedicados reales) **con ENet y con WebSocket**; `quick` 27/27.

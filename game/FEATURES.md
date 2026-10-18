@@ -2535,3 +2535,6 @@ Deuda:
 - Cambio de formato aceptado: columnas de la tabla en inglés (034j). Digests y `.events` no pueden cambiar.
 
 **Pendiente (orquestador):** `--import` una vez; verificar con `cmp` del `.events` antes/después y `quick`/`all` contra la base.
+
+### Cierre 034k (F188) — 2026-10-18
+- El juego usa el módulo de determinismo del kit (`%Recorder` en `ai_match`, `agent/det.cfg`, `agent/det_cases.txt`, `run_determinism.sh` como shim). Los `.events` de `s1_quick`, `s7`, `f139` y `f164` son **idénticos byte a byte** (`cmp`) a los del código anterior. Import sin errores; `quick --no-window` 27/27 y QUICK PASS.

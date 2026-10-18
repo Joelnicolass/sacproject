@@ -49,8 +49,8 @@ const DEFAULT_GROUND := "res://assets/original/themes/james/ground_classic.tres"
 
 
 ## The ground material is the scene's `material_override` (ground_classic.tres, editable in the inspector).
-## The mesh is stored only as a reference to a file (the baked terrain_mesh.res, RFC-035a); a mesh built in
-## memory is rebuilt on load and never written into the scene.
+## The mesh comes from the instanced terrain.glb (RFC-035c); a mesh built in memory is rebuilt on load and never
+## written into the scene.
 func _validate_property(property: Dictionary) -> void:
 	if property.name == "mesh" and not _mesh_is_file():
 		property.usage &= ~PROPERTY_USAGE_STORAGE
@@ -121,7 +121,7 @@ func _load_mesh() -> bool:
 	return true
 
 
-## The mesh the scene already holds (the baked terrain_mesh.res) is shown as it is when it still matches `data`
+## The mesh the scene already holds (the instanced terrain.glb) is shown as it is when it still matches `data`
 ## and the node's smooth_ground. Otherwise it is rebuilt from `data` (with a warning when a file is stale).
 func _saved_mesh_matches() -> bool:
 	if not _mesh_is_file() or not (mesh is ArrayMesh) or mesh.get_surface_count() != 1:
@@ -179,14 +179,14 @@ func _prepare_arrays() -> bool:
 	return true
 
 
-## The visual mesh exactly as Terrain builds it at runtime, for tools/bake_terrain_mesh.gd. Needs `data` (and
-## tiles_path / smooth_ground as the scene sets them); works on a node outside the tree. Null when `data` is unusable.
-func bake_mesh() -> ArrayMesh:
+## The visual mesh arrays exactly as Terrain builds them at runtime (positions, normals as smooth_ground says, tile
+## COLOR, indices), for tools/terrain_glb_export.gd. Needs `data` (and tiles_path / smooth_ground as the scene sets
+## them); works on a node outside the tree. Empty when `data` is unusable.
+func bake_arrays() -> Array:
 	if not _prepare_arrays():
-		return null
-	var baked := _make_mesh()
-	baked.set_meta("smooth_ground", smooth_ground)
-	return baked
+		return []
+	_mesh_arrays[Mesh.ARRAY_NORMAL] = _smooth_normals if smooth_ground else _flat_normals
+	return _mesh_arrays.duplicate()
 
 
 func _make_mesh() -> ArrayMesh:
@@ -429,12 +429,12 @@ func _apply_ground_texture() -> void:
 	if not _material_swapped:
 		material_override = _ground_override if _ground_override else _classic_material
 
+
+## The imported terrain.glb brings its own "Collision" (tools/terrain_import.gd); a Terrain built from the script
+## alone (a probe) builds it from its mesh.
 func _add_collision() -> void:
-	if Engine.is_editor_hint():
+	if Engine.is_editor_hint() or get_node_or_null("Collision") != null:
 		return
-	var existing := get_node_or_null("Collision")
-	if existing:
-		existing.free()
 	var body := StaticBody3D.new()
 	body.name = "Collision"
 	var shape_node := CollisionShape3D.new()

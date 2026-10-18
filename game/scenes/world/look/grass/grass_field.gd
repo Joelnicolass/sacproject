@@ -167,7 +167,8 @@ func _refresh() -> void:
 		return
 	if DisplayServer.get_name() == "headless":
 		return
-	if _preset != null and not _preset.grass_enabled:
+	# Grass is off unless a quality preset turns it on (the editor has no preset).
+	if _preset == null or not _preset.grass_enabled:
 		return
 	var terrain := _rig.terrain if _rig else null
 	if terrain == null or not terrain.has_method("tile_ids"):

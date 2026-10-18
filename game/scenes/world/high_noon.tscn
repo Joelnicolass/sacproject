@@ -52,7 +52,7 @@
 [ext_resource type="PackedScene" path="res://scenes/world/units/droplet_rain.tscn" id="f148_rain"]
 [ext_resource type="Resource" path="res://assets/original/maps/high_noon/terrain.res" id="f172_terrain"]
 [ext_resource type="PackedScene" path="res://scenes/ui/lobby/lobby_return.tscn" id="f183_return"]
-[ext_resource type="ArrayMesh" path="res://assets/original/maps/high_noon/terrain_mesh.res" id="f192_terrain_mesh"]
+[ext_resource type="PackedScene" path="res://assets/original/maps/high_noon/terrain.glb" id="f195_terrain_glb"]
 [ext_resource type="Material" path="res://assets/original/themes/james/ground_classic.tres" id="f194_ground"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
@@ -93,10 +93,9 @@ script = ExtResource("11_camera")
 ground = NodePath("../Terrain")
 edge_area = NodePath("../Hud/View")
 
-[node name="Terrain" type="MeshInstance3D" parent="." unique_id=1483961628]
+[node name="Terrain" parent="." unique_id=1483961628 instance=ExtResource("f195_terrain_glb")]
 unique_name_in_owner = true
 material_override = ExtResource("f194_ground")
-mesh = ExtResource("f192_terrain_mesh")
 script = ExtResource("2_terrain")
 data = ExtResource("f172_terrain")
 

@@ -2662,3 +2662,25 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
   - `quick` PASS sin mover digests.
   - El usuario confirmó en el editor que el material se ve y se edita.
 - **Nota:** la sonda `editor_capture.sh` no funciona (el editor queda quieto y se corta a los 120 s). La verificación del editor la hace el usuario.
+
+### F195 — Terreno como `terrain.glb` (RFC-035, corte 035c) — cerrado 2026-10-18
+
+- **Qué cambió:**
+  - `assets/original/maps/high_noon/terrain.glb` es la verdad del suelo, editable en Blender (solo la Y; mover en X/Z o cambiar la topología falla el import).
+  - `tools/terrain_import.gd` (post-import) lee los buffers del glb sin `ImporterMesh`, valida la grilla de 10 m nombrando la celda, deriva `terrain.res` y agrega `Collision` (trimesh en el orden de los índices).
+  - `high_noon.tscn` instancia el glb en `Terrain`. Se quitan `terrain_mesh.res` y `tools/bake_terrain_mesh.gd`.
+  - `tools/terrain_glb_export.gd` escribe el glb una sola vez desde `terrain.res`; no pisa sin `--force`.
+- **Pendiente de verificar (el orquestador corre Godot):** exportar, importar, `debug/terrain_bake_cases.gd`, `quick` sin mover digests.
+
+**Cierre de F195 (orquestador):**
+- **Datos:** `terrain.res` sale del `.glb` sin cambios. La importación no lo reescribe.
+- **Pruebas sin ventana:** `TERRAIN_BAKE PASS`.
+  - La colisión es igual.
+  - Un vértice movido en X falla nombrando la celda.
+  - Subir 5 m en Y cambia `ground_height` 5 m.
+- **Malla visual:** el post-import la arma desde los datos con el mismo código del juego. El importador de glTF alteraba COLOR_0 (tile y uv) y el suelo salía lavado.
+- **Capturas `biome_close`:** se comparó 035b contra 035c, ambas con el pasto apagado. La diferencia media va de 0,008 a 0,06 sobre 255.
+- **`quick`:** PASS.
+- **Pasto:** desde 035b el terreno guarda su material en la escena, y por eso el pasto se dibujaba en el editor y en las galerías sin preset. Ahora `GrassField` dibuja solo si hay un preset con `grass_enabled`.
+- **Gotcha:** si cambia `tools/terrain_import.gd` y el `.glb` no, Godot no reimporta. Hay que borrar `.godot/imported/terrain.glb-*`.
+- **Falta en el editor (usuario):** abrir `high_noon.tscn` y ver que `Terrain` es una instancia del `.glb` y se ve con tiles.

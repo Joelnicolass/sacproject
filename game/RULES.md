@@ -25,6 +25,8 @@ Autoload: `MpKit` antes que `SacrificeFlow`.
 
 Online = servidor de salas + dedicado por partida. El dedicado admite solo con ticket (`MpKit.admission`; sin `admission` queda el modo directo `join(ip)` de hoy, para pruebas y banco). Los clientes no escriben IP: `MpLobby` + `join_endpoint`. `play_solo()` no abre servidor. El host LAN no es el camino de internet. Lo genérico de salas vive en `addons/mp_kit/lobby/` sin textos ni reglas de Sacrifice; validadores, opciones y resultado van en `scenes/net/`.
 
+El mapa y el modo de una partida en red los elige la sala y viajan en el ticket (`world`, `mode`). El cliente los recibe del dedicado; nunca los elige él. Un modo es un `GameMode` `.tres` en `data/modes/` (RFC-049); los equipos no entran al kit: para el kit son asientos y nada más.
+
 Puntuación, textos y victoria viven fuera de `addons/mp_kit`.
 
 ## Datos
@@ -41,7 +43,7 @@ Textos de pantalla en español. Nombres de archivos y de nodos en inglés.
 
 ## IA
 
-La IA es un jugador más. Todo lo que hace pasa por un solo puerto que llama a lo mismo que el humano (`request_cast`, `request_summon`, `Orders`): paga maná y almas y respeta enfriamientos y alcance. Sin bonificación de recursos ni trampa, en ninguna dificultad. Existe solo en el proceso que simula (solo o dedicado) y no agrega RPC. Vive fuera de `addons/mp_kit`. Las partidas con IA son reproducibles con `match_seed`.
+La IA es un jugador más. Todo lo que hace pasa por un solo puerto que llama a lo mismo que el humano (`request_cast`, `request_summon`, `Orders`): paga maná y almas y respeta enfriamientos y alcance. Sin bonificación de recursos ni trampa, en ninguna dificultad. Existe solo en el proceso que simula (solo o dedicado) y no agrega RPC. Vive fuera de `addons/mp_kit`. Las partidas con IA son reproducibles con `match_seed`. Un asiento IA de sala es un asiento sin token (un bot del kit, siempre listo); el dedicado lo sienta con `AiRoster` (RFC-049).
 
 ## Fidelidad y pruebas
 

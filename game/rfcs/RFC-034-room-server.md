@@ -414,6 +414,8 @@ game/
 - Export web y WebSocket. Espectadores. Chat dentro de la partida.
 - Cambios a la simulación o al determinismo.
 
+Nota (2026-10-19): RFC-049 trajo dos de estas cosas. Las salas tienen los asientos de su modo (hasta 4 en el juego; el kit admite hasta `max_seats_per_room`, 8) y el anfitrión puede poner una IA en un asiento libre (bot sin token). High Noon sigue con dos inicios: el 2v2 se juega en un mapa de 4 (`winter_wonder`, o `test_flat4` con `--room-test-maps`).
+
 ## 13. Cómo verifica un humano
 
 1. **Inspector:** abrir `data/net/lobby_config.tres` y `lobby_config_local.tres`: los mismos campos, con otros números. Ninguno se pisa en `_ready`.

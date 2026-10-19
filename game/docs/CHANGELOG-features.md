@@ -3291,11 +3291,46 @@ Agregar o cambiar un hechizo de combate ya no toca `caster.gd`.
 - Abandono por equipo: el asiento que pasa más de `rejoin_grace_s` afuera pierde (el mundo lo derrota con `DefeatRule`) y la partida sigue hasta que queda un equipo; el resultado de ese cierre es `abandon` con `winner_slots` del equipo entero. Con todos los humanos afuera es `empty`; sin mundo todavía, cuenta los equipos del modo. 1v1 igual que antes (`run_034e`). `--force-defeat-slot` acepta varios (`3+4` o `3,4`).
 - `LobbyText.result_text` mira `winner_slots`; textos `LOBBY_ERR_NOT_HOST` y `LOBBY_ERR_BAD_BOT`. `lobby_cases`: asientos por modo, anfitrión, bots, ticket con 2 filas con token y 2 `ai_seats`, el agente no admite filas sin token.
 
-### F296 — 2v2 de punta a punta por la sala (RFC-049, corte 049g) — escrito, e2e pendiente de correr
+### F296 — 2v2 de punta a punta por la sala (RFC-049, corte 049g) — cerrado 2026-10-19
 
 - `agent/runs/run_049g.sh`: fase A, sala `Sala2v2` (2v2 sobre `test_flat4`) con cuatro clientes humanos (servidor + 4 clientes + dedicado = 6 procesos): cada uno en el slot de su asiento, Dani entra tarde al dedicado y la partida lo espera, Beto sale y vuelve con su ticket al mismo slot 2, Cris (slot 3) se va y a los 5 s `bando 3 derrotado` con la partida en marcha, Dani (slot 4) se va y el resultado es `{winner_slots [1,2], reason "abandon"}`; los cuatro lo reciben en la sala y el texto de la sala dice ganó/perdió por slot. Fase B, `Sala2mas2`: dos humanos y dos bots (el anfitrión los pone en los asientos 3 y 4), `ia slot 3/4 lista`, derrota forzada de 3 y 4 (`--force-defeat-slot=3+4`) y `winner_slots [1,2]` con `reason "result"`. Un servidor de salas por fase; mismo tope de RSS, matado por pid y reloj externo (240 s por fase, contados desde que el servidor está arriba: esperar turno en la cola de Godot no cuenta). Verifica orden de eventos, un resultado por partida, sin carpetas ni procesos restantes.
 - `room_e2e_client.gd`: `--e2e-peers`, `--e2e-mode`, `--e2e-world`, `--e2e-seats`, `--e2e-seat`, `--e2e-bot-seats/-gods`, `--e2e-lobby-delay-s`, `--e2e-world-ready`, `--e2e-rejoin-after-s`, `--e2e-expect-winners`. El pegamento imprime `mapa M modo X, N IA` y acepta varios slots en `--force-defeat-slot` con `+`.
 - Estado: código escrito; el e2e no se pudo correr (la cola compartida de Godot quedó trabada por otro worktree), lo corre el orquestador.
+- Cierre: con los ganchos rápidos de F350 (orden de asientos por evento, plazos cortos) `run_049g.sh` pasa.
+
+### F290 — La sala elige el mapa (RFC-049, corte 049a) — cerrado 2026-10-19
+
+- Choque de id: EF-25 (`match_command.gd` partido) también se registró como F290 el mismo día. Los ids no se renumeran: las dos entradas quedan con F290 y se distinguen por el RFC.
+- `SacrificeFlow._apply_match_choice` es el único que llama `MapCatalog.use`: Solo y «Contra la IA» toman el mapa del boot, el dedicado con ticket toma `world` (revalidado: un mapa desconocido da `bad_ticket` y el dedicado sale), el dedicado directo `--map`. Los clientes reciben `{map}` en el snapshot antes de cargar el mundo. `return_to_boot` vuelve al mapa por defecto.
+- `MapPicker` (`scenes/ui/map_picker/`) en el boot, en crear sala y en «Servidor local»: lista los mapas `room_selectable`; los de prueba con `--room-test-maps` (o, en el boot, en un build de debug). Una sala con un `world` inválido da `bad_options`.
+- Humo: `agent/runs/run_049a.sh` (servidor de salas, dos clientes que cargan el mundo y un dedicado en `test_flat`).
+
+### F291 — Modo de juego y equipos en la simulación (RFC-049, corte 049b) — cerrado 2026-10-19
+
+- `GameMode` (`scenes/match/game_mode.gd`) y `GameModeCatalog` (`data/modes/mode_catalog.tres`, `--mode=<tag>`): `1v1` (por defecto), `2v2` (`[0,0,1,1]`), `ffa3`, `ffa4`. Un modo nuevo es un `.tres`.
+- `SideRelations`: capa de equipos sobre los SIDS (solo con aliados o más de dos asientos; el 1v1 no la instala), `team_of()`, asiento por `assignment & 31`.
+- `MatchState`: `mark_seated` (lo llama `WizardSpawner`), `sides()` son los asientos con mago, `winner_slots`, `winner_team`, `won()`. `DefeatRule`: gana el último equipo en pie, también el aliado que cayó antes (P3).
+- `debug/match/team_cases.tscn` dentro de `rules_suite`. `quick` sin regrabar.
+
+### F292 — Reglas entre aliados por postura (RFC-049, corte 049c) — cerrado 2026-10-19
+
+- Fuego amigo por postura (`Health`: ×0 apagado, ×0,5 encendido, ×1 contra enemigo); almas con prioridad propia > aliada > neutral > enemiga; solo se profanan altares enemigos (convertir el cadáver de un aliado sigue permitido, como en sacengine); el manahoar cuenta los manalitos aliados; `SideVision` marca también a los aliados con `MatchRules.allied_vision` (nuevo, `true`).
+- Presentación: barra de vida con color de aliado; el minimapa muestra siempre a los aliados, con flecha de borde.
+- `team_cases` con los casos de aliados. `quick` sin regrabar.
+
+### F297 — Pantallas de equipos y modos (RFC-049, corte 049h) — cerrado 2026-10-19
+
+- `ModePicker`, `AiGodPicker` y `AiDifficultyPicker` reutilizables; `MapPicker` filtra por el modo elegido (socket `mode_picker`).
+- Boot: modo y mapa para Solo y «Contra la IA». Crear sala: modo y mapa. Sala: `SeatList` agrupa los asientos por equipo (`team_group.tscn`); el anfitrión ve «Agregar IA» / «Quitar IA» y, arriba, el dios y la dificultad de la IA nueva; una fila de IA muestra su dios y su dificultad.
+- La meta del bot es `{god, difficulty}`: la valida `SacrificeRoomRules`, viaja en los `ai_seats` del ticket y el dedicado la convierte en `AiSeat`.
+- «Servidor local»: modo, mapa y, por asiento, una persona o una IA; un código por cada asiento de persona (`LocalServerHost.start(..., ai_seats)`).
+- `MatchResultBanner`: «Victoria» si ganó el equipo del jugador, con la línea «Ganó el equipo de …». Textos nuevos en `data/i18n/strings.csv`.
+- Chequeo sin ventana: `debug/ui/team_screens_check.tscn`. La prueba visual va en F298.
+
+### F298 — Cierre de RFC-049 (corte 049i) — pendiente playtest
+
+- Guías: `docs/HOWTO.md` («Un mapa» con `test_flat4`, «Un modo», «Jugar 2 contra 2»). PRD, FEATURES y RULES al día; `changes/CHANGE-REQUEST-004.md`.
+- Falta: el playtest con ventana (sala 2v2 en `test_flat4` con un humano headless y dos IA, resultado del equipo en la sala; «Contra la IA» 2v2 arranca con tres IA) y `run_determinism.sh all --no-window`. Los corre el orquestador.
 ### F335-F336 — Icono y variantes de golpe de las criaturas propias (RFC-051)
 
 - **F335** Icono del HUD: `CreatureType.icon` (Texture2D); `HudIcons.icon(tag)` mira `icon`, luego `assets/custom/icons/<tag>.png` y por último el del original (sin depender de datos del original). Si el PNG no existe, `new_creature.gd` (también `--sync`) lo renderiza con un SubViewport propio (`tools/bake/creature_icon_render.gd`: pose de idle, cámara sobre el AABB, 32x32, disco oscuro y aro dorado); un PNG existente no se pisa (`--icon` lo rehace, `--no-icon` lo salta). Necesita renderer: desde `--headless` avisa y no escribe; `tools/bake/creature_icon.gd -- <tag>` lo hace con ventana, y las entradas del plugin abren una ventana chica. El validador avisa (warning) si falta.

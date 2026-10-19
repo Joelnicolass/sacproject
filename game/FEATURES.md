@@ -21,6 +21,17 @@ Estados: **Hecho** (cerrado y probado), **Parcial** (anda, con deuda anotada), *
 - Lo genérico vive en `addons/mp_kit`; el glue de Sacrifice en `scenes/net/`. RFC-034.
 - **Pendiente.** Port web (rama `web-port`, RFC-039).
 
+### Modos y equipos (RFC-049)
+- **Hecho.** La sala elige el mapa: la opción `world` viaja en el ticket al dedicado y los clientes la reciben en el snapshot; Solo, «Contra la IA» y «Servidor local» también eligen mapa. F290 (049a; el id lo comparte con EF-25, ver el registro).
+- **Hecho.** Modos como Resource (`data/modes/`: `1v1` por defecto, `2v2`, `ffa3`, `ffa4`), equipos en la simulación (`SideRelations`), victoria del último equipo en pie (`winner_slots`). F291.
+- **Hecho.** Reglas entre aliados por postura: fuego amigo, almas, profanar solo altares enemigos, manahoar con manalitos aliados, visión aliada (`MatchRules.allied_vision`). F292.
+- **Hecho.** Mapa de prueba `test_flat4` (4 asientos), validador de inicios contra modos y banco `s2v2_flat4` / `sffa4_flat4`. F293.
+- **Hecho.** `max_players` por modo, `--ai-slots` con varios slots, «Contra la IA» llena con IA los demás asientos. F294.
+- **Hecho.** Sala con asientos por modo, anfitrión y asientos IA (kit genérico, ticket v2, abandono por equipo). F295.
+- **Hecho.** 2v2 de punta a punta por la sala (`run_049g.sh`: cuatro humanos, y dos humanos más dos IA). F296.
+- **Hecho.** Pantallas: selector de modo (boot, sala, servidor local), asientos por equipo con «Agregar IA» / «Quitar IA», servidor local con un código por asiento, banner con la línea del equipo. F297.
+- **Pendiente playtest.** Cierre: playtest con ventana de una sala 2v2 y `all --no-window`. Guías en `docs/HOWTO.md` («Un mapa», «Un modo», «Jugar 2 contra 2»). F298.
+
 ### Mundo y mapa
 - **Hecho.** High Noon como `terrain.glb` editable, suelo PBR, aldeas, edificios, plantas y NPC como nodos de la escena, rotación en el transform, referencias tipadas (`MapBuilding.building`, `NpcSpawn.creature`). F4, F17, F48, F52, F68, F73, F172, F192-F196, F199, F240, F241.
 - **Hecho.** Navegación con navmesh de Godot horneado y versionado por hash, sin grilla propia. F200-F204.

@@ -93,7 +93,38 @@ bash agent/runs/run_050_maps.sh <tag>                                           
 
 Después de importar, `map.tscn` y `<tag>.tres` se editan a mano (la escena es la verdad). Ojo con `--force`: pisa lo editado. Las plantas de un mapa que no es de James quedan vacías hasta tener los modelos de sus widgets. `room_selectable = false` en la definición lo saca de las salas.
 
-**Hacer uno a mano:** copiá `scenes/map/maps/test_flat/` y armá el terreno en Blender (`terrain.glb`).
+**Hacer uno a mano** (ejemplo: `test_flat4`, el mapa de prueba de 4 asientos, en `scenes/map/maps/test_flat4/`):
+
+1. Copiá la carpeta de un mapa parecido (`test_flat/` o `test_flat4/`) a `scenes/map/maps/<tag>/`. El terreno puede ser propio (`terrain.glb` de Blender) o una referencia al de otro mapa: `test_flat4` usa el `terrain.res` de `test_flat` sin copiarlo.
+2. En `map.tscn`, un `PlayerStart` por asiento bajo `MapProps/Starts` (`Start1`…`Start4`, con `slot` 1..N sin repetir) y su altar; los manantiales bajo `MapProps/Founts`. En `test_flat4`, los asientos 1 y 2 están del mismo lado y 3 y 4 enfrente, porque el `2v2` junta 1+2 contra 3+4.
+3. `sides.tres`: un bando de jugador por asiento (`assignment` 1..N, enemigos de todos). Los equipos no van acá: los pone el modo.
+4. `<tag>.tres` (`MapDefinition`): `tag`, `display_name`, `map_scene_path`, `sides`, `terrain_path`, `nav_path` y `player_starts` (= cantidad de `PlayerStart`). `room_selectable = false` si es solo de prueba (las salas lo ofrecen con `--room-test-maps`).
+5. Sumalo a `data/maps/map_catalog.tres`, horneá el navmesh (`bake_nav.tscn -- --map=<tag>`) y corré el validador: falla si los `PlayerStart` no coinciden con `player_starts`.
+
+Un mapa solo aparece en un modo si tiene un inicio por asiento: High Noon (2) ofrece `1v1`; `winter_wonder` y `test_flat4` (4) ofrecen también `2v2`, `ffa3` y `ffa4`.
+
+## Un modo
+
+Un modo (cuántos asientos, de qué equipo es cada uno, cómo se gana) es un `GameMode` `.tres` en `data/modes/`. No lleva código.
+
+1. Duplicá uno parecido (por ejemplo `2v2.tres`) y llamalo `<tag>.tres`.
+2. En el inspector: `tag` (el de `--mode=<tag>` y de la sala), `display_name` (una clave de `data/i18n/strings.csv`, como `MODE_2V2`; agregá la tuya con su texto), `team_of_seat` (el equipo de cada asiento, el 1 primero: `[0,1]` es 1 contra 1, `[0,0,1,1]` es 2 contra 2, `[0,1,2]` tres contra todos; los equipos van de 0 sin huecos) y `room_selectable`.
+3. Sumalo a `modes` en `data/modes/mode_catalog.tres`.
+4. Corré el validador. Avisa si ningún mapa tiene inicios para todos los asientos del modo; sin ese mapa, las pantallas no lo ofrecen.
+
+Para probarlo sin pantallas: `--map=test_flat4 --mode=<tag>`.
+
+## Jugar 2 contra 2
+
+Hace falta un mapa de 4 asientos: `winter_wonder`, o `test_flat4` para probar.
+
+- **Solo, contra la IA:** en el boot elegí el modo «2 contra 2» y el mapa, y pulsá «Contra la IA». La IA juega tu aliado y los dos rivales (su dios sale del selector «Dios de la IA»). En un build de debug el boot ofrece también los mapas de prueba.
+- **En una sala:** levantá el servidor de salas (para los mapas de prueba, con `--room-test-maps`):
+  ```bash
+  $G --headless --path . res://scenes/net/room_server.tscn -- --room-server --lobby-config=res://data/net/lobby_config_local.tres --room-test-maps
+  ```
+  En el editor, **Debug > Customize Run Instances** con 2 instancias y F5. A pulsa «Salas online», crea una sala con modo «2 contra 2» y el mapa. B se sienta en el asiento 2 (mismo equipo). A, que es el anfitrión, elige dios y dificultad en «IA nueva:» y pulsa «Agregar IA» en los asientos 3 y 4. Los dos marcan «Listo». Al terminar, la sala dice «Ganó tu equipo» o «Ganó el otro equipo». Cambiarse de equipo es cambiarse de asiento.
+- **Servidor local:** en «Servidor local» → «Crear servidor local», elegí modo y mapa y, por cada asiento que no es el tuyo, una persona o una IA. Cada asiento de persona tiene su código: pasale a cada uno el suyo, con la dirección y el puerto.
 
 ## Cambiar el balance
 

@@ -1,6 +1,6 @@
 # RFC-049 — Equipos (2v2) y mapa elegido por la sala
 
-Estado: plan del tech lead (Opus), pendiente de OK. Arquitectura **estándar** (RULES §Arquitectura). MP **online con dedicado por partida** (RFC-034): no cambia el modelo. Solo crecen los asientos, se agregan los equipos y el mapa de la sala llega al dedicado.
+Estado: 049a–049h hechos (F290–F297); 049i (F298) con las guías y los documentos al día, pendiente del playtest con ventana y de `all --no-window`. Plan del tech lead (Opus). Arquitectura **estándar** (RULES §Arquitectura). MP **online con dedicado por partida** (RFC-034): no cambia el modelo. Solo crecen los asientos, se agregan los equipos y el mapa de la sala llega al dedicado.
 
 - **Pedido del usuario (2026-10-19):** «2v2 completo y que la sala elija el mapa en red».
 - **Features:** F290–F298 (049a–049i). Las asigna el orquestador. La última en uso es F282.

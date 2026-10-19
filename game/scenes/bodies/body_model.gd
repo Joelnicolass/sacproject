@@ -24,6 +24,8 @@ const ONE_SHOT_ROLES: PackedStringArray = ["attack", "shoot", "cast", "hit", "ri
 ## Roles that play once and stay on their last frame; every other role repeats.
 const HOLD_ROLES: PackedStringArray = ["death", "fly_death"]
 const SCENE_DIR := "res://scenes/bodies/models/"
+## Frames per second of a clip the `clips` table does not list (glTF animations carry none; Godot imports them at 30).
+const DEFAULT_FRAMERATE := 30
 const PLAYBACK := &"parameters/playback"
 
 ## Model tag (eorc, jnwr...). Filled by the bake: BodyCatalog and the rig find the scene by it.
@@ -125,8 +127,18 @@ func roles() -> PackedStringArray:
 	return out
 
 
+## The facts of clip `tag`. A clip the table does not list (RFC-051: the role was pointed at another clip of the .glb in the
+## inspector) is read from the .glb's own animation: frames = length x framerate, the framerate being the animation's step
+## (30 when it has none). Without hands.
 func clip_data(tag: String) -> Dictionary:
-	return clips.get(tag, {})
+	if clips.has(tag):
+		return clips[tag]
+	var player := clip_player()
+	if player == null or not player.has_animation(tag):
+		return {}
+	var animation := player.get_animation(tag)
+	var rate := roundi(1.0 / animation.step) if animation.step > 0.0 else DEFAULT_FRAMERATE
+	return {"frames": roundi(animation.length * rate), "framerate": rate, "hands": []}
 
 
 func frames_of(tag: String) -> int:

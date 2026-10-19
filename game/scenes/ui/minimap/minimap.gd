@@ -185,7 +185,8 @@ func _update_state() -> void:
 		var eye := Vector2(camera.global_position.x, camera.global_position.z)
 		target = eye
 		var followed: Variant = camera.get("follow") if "follow" in camera else null
-		if followed is Node3D and (followed as Node3D).is_inside_tree():
+		# The followed wizard can be freed (e.g. after MpKit.leave()) before the camera drops it.
+		if is_instance_valid(followed) and followed is Node3D and (followed as Node3D).is_inside_tree():
 			target = Vector2((followed as Node3D).global_position.x, (followed as Node3D).global_position.z)
 		var lead := eye.distance_to(target) * (view.lead_factor if view else 0.0)
 		center_world = target + heading * lead if (view and view.heading_up) else target

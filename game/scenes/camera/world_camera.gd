@@ -150,7 +150,7 @@ func _process(delta: float) -> void:
 	if current and not WorldInput.blocked(self):
 		_steer(delta)
 	_settle_zoom(delta)
-	if follow and "look_yaw" in follow:
+	if is_instance_valid(follow) and "look_yaw" in follow:
 		follow.set("look_yaw", yaw)
 	_place()
 
@@ -209,7 +209,7 @@ func _settle_zoom(delta: float) -> void:
 
 
 func _place() -> void:
-	if follow == null or not follow.is_inside_tree():
+	if not is_instance_valid(follow) or not follow.is_inside_tree():
 		return
 	var h := maxf(_subject_height(), min_subject_height)
 	var base_distance := maxf(distance_base + distance_per_height * h, min_distance)

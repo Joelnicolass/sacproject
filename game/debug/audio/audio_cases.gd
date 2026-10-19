@@ -4,7 +4,7 @@ extends Node
 ## - open (`--audio-probe --user-settings=user://t_audio.cfg`): gate, prefs, SoundBus, original-set and body-set cases;
 ## - closed (plain headless, `--dedicated`, `--room-server`): gate cases and the closed SoundEmitter3D (nothing built,
 ##   nothing loaded).
-## Both modes also run the FX sound cases (052d) for their gate.
+## Both modes also run the FX sound cases (052d) and the voice cases (052e) for their gate.
 ## Prints `<case>: PASS|FAIL` and `AUDIO CASES PASS|FAIL (n)`; headless quits with 0 / 1.
 ## Watchdog: past `timeout_s` it prints `AUDIO CASES FAIL timeout` and quits 1. The case scripts are loaded at run time
 ## (not preloaded), so one that fails to compile still ends in a FAIL line instead of a runner without a script.
@@ -16,6 +16,7 @@ const BUS_CASES := "res://debug/audio/sound_bus_cases.gd"
 const ORIGINAL_CASES := "res://debug/audio/original_sets_cases.gd"
 const BODY_CASES := "res://debug/audio/body_sounds_cases.gd"
 const FX_CASES := "res://debug/audio/fx_sounds_cases.gd"
+const VOICE_CASES := "res://debug/audio/voice_cases.gd"
 
 ## Real seconds (not game time: --fixed-fps would stretch a game-time timer).
 @export var timeout_s := 20.0
@@ -54,6 +55,11 @@ func _run() -> void:
 			results["fx_sounds_cases"] = {"ok": false, "reason": "no compila"}
 		elif expect == "closed":
 			results.merge(await fx.run(self, false))
+		var voices := _cases(VOICE_CASES)
+		if voices == null:
+			results["voice_cases"] = {"ok": false, "reason": "no compila"}
+		elif expect == "closed":
+			results.merge(await voices.run(self, false))
 		if expect == "open":
 			var prefs := _cases(PREFS_CASES)
 			var bus := _cases(BUS_CASES)
@@ -74,6 +80,8 @@ func _run() -> void:
 				results.merge(body.run(self))
 			if fx != null:
 				results.merge(await fx.run(self, true))
+			if voices != null:
+				results.merge(await voices.run(self, true))
 	if _done:
 		return
 	_done = true

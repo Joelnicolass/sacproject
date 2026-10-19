@@ -20,6 +20,8 @@ extends Node
 ##   the 3D budget: pooled 3D voices + loops never pass `pool_3d_size`. A claim with the budget full takes the pooled
 ##   voice of the lowest priority (if not above its own); `max_loops_3d` caps the loops alone.
 ## - `listener`: the node the player hears from (ListenerFocus sets it); emitters measure their range from it.
+## RFC-052 052e (F364): `play_on` plays a cue on a voice channel's own player (CommandVoice, AdvisorVoice); the channel
+## decides what cuts what, the bus only draws the variant, configures and logs.
 
 const PREFS_PATH := AudioPrefs.SHARED_PATH
 ## SoundLibrary path of the FX sound table (data/audio/fx_sounds.tres, data/audio/custom/fx_sounds.tres).
@@ -43,6 +45,8 @@ var _voices_3d: Array[_Voice] = []
 var _voices_2d: Array[_Voice] = []
 ## SoundEmitter3D players holding a loop.
 var _loops: Array[_Voice] = []
+## Voice channel players that went through play_on (stop_all stops them too).
+var _channels: Array[AudioStreamPlayer] = []
 ## SoundCue -> clock of its last play.
 var _last_play: Dictionary = {}
 var _clock := 0.0
@@ -137,6 +141,38 @@ func play_3d(cue: SoundCue, at: Vector3, emitter: StringName = &"", event: Strin
 ## A cue with no position (UI, voices, music stingers).
 func play_2d(cue: SoundCue, emitter: StringName = &"", event: StringName = &"") -> bool:
 	return _request(cue, false, Vector3.ZERO, emitter, event)
+
+
+## A cue on a player the caller owns: a voice channel (CommandVoice, AdvisorVoice, 052e) that says one line at a time and
+## decides itself what cuts what. The player is stopped and reconfigured (a variant and a pitch from this bus's generator);
+## it does not count in the 2D pool, the cue's `cooldown_s` still applies. False (and a log entry) when it was dropped.
+func play_on(player: AudioStreamPlayer, cue: SoundCue, emitter: StringName = &"", event: StringName = &"") -> bool:
+	if not _started or _closed or cue == null or player == null:
+		return false
+	if cue.is_silent():
+		sound_log.add(emitter, event, null, false, &"silent")
+		return false
+	if cue.cooldown_s > 0.0 and _last_play.has(cue) and _clock - float(_last_play[cue]) < cue.cooldown_s:
+		sound_log.add(emitter, event, null, false, &"cooldown")
+		return false
+	if not _channels.has(player):
+		for i in range(_channels.size() - 1, -1, -1):
+			if not is_instance_valid(_channels[i]):
+				_channels.remove_at(i)
+		_channels.append(player)
+	var stream := _draw_stream(cue)
+	player.stop()
+	_configure(player, cue, stream, false)
+	player.play()
+	_last_play[cue] = _clock
+	sound_log.add(emitter, event, stream, true)
+	return true
+
+
+## A request a voice channel turned down before it reached a player (queue full, a repeated line): a log entry only.
+func log_dropped(emitter: StringName, event: StringName, reason: StringName) -> void:
+	if _started:
+		sound_log.add(emitter, event, null, false, reason)
 
 
 ## The cue of `event` in `sound_set` (or its fallback) at `at`; a missing set or cue is silence, without a log entry.
@@ -236,6 +272,9 @@ func stop_all() -> void:
 		if is_instance_valid(voice.player):
 			voice.player.stop()
 	_loops.clear()
+	for player in _channels:
+		if is_instance_valid(player):
+			player.stop()
 
 
 ## stop_all() and nothing plays or claims after it: a run about to quit (the audio server needs a moment to let go of

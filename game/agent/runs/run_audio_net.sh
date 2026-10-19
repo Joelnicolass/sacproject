@@ -4,6 +4,8 @@
 #   client:    debug/audio/audio_net_client.tscn with `--audio-probe` joins it; the server summons a duel next to its wizard and the
 #              client's SoundLog must get summon, swing, damaged and death of the creatures, and fx: the server then
 #              broadcasts an FX (blood) and the client hears it through FxBus.played and FxSoundMap (052d).
+#              052e: the client asks for a spell nobody has; the server's refusal (bad_target) comes back through the cast feedback
+#              RPC and the client's advisor says it (advice).
 # Both run inside ONE group reservation of the Godot queue, with --fixed-fps (NET_FPS, 600); every wait is on a log line or real
 # seconds. Watchdog LIMIT_S kills them by pid and descendants (no pkill). UDP port 7861 by default (E2E_PORT).
 # Extra user args go to the client (e.g. --audio-no-original). Prints the counts and AUDIO NET PASS / AUDIO NET FAIL (exit 0 / 1).

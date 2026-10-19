@@ -39,6 +39,8 @@ La tabla vive en `SoundEvent` (`CREATURE_CODES`, `WORLD_CODES`, `UI_CODES`, en `
 |---|---|---|
 | `Xcnt` | `selected` | lo seleccionaste |
 | `Xcnf` | `ack` | acusa una orden de moverse |
+| `Xcat` | `attack_ack` | acusa una orden de atacar (052e: `CommandVoice` la busca por alias; el horneado deja la clave `Xcat`) |
+| `Xann` | `annoyed` | lo molestaste (052e: alias, clave `Xann`) |
 | `Xatt` | `swing` | golpe cuerpo a cuerpo |
 | `Xdam` | `damaged` | recibe daño |
 | `Xdie` | `death` | muere |
@@ -53,8 +55,6 @@ El mago además emite `ghost` al levantarse como fantasma; el original no trae s
 
 Un código sin evento todavía queda con su código como clave, y lo mapea un corte posterior. Algunos ejemplos:
 
-- `Xcat`: acusa una orden de atacar.
-- `Xann`: lo molestaste.
 - `Xres`: rescatado.
 - `Xhit`: impacto del golpe, en `fist`.
 - `Xstn`: aturdido.
@@ -63,7 +63,7 @@ Un código sin evento todavía queda con su código como clave, y lo mapea un co
 - `attU`, `movG`, `grdM`…: órdenes.
 - `fcir`…: formaciones.
 - En `spel`: `Xfbl` y los demás hechizos, y `A*` para el ambiente.
-- En `advi`: `dese`, `lowm`, `watt` y los demás avisos.
+- En `advi`: los avisos del consejero (tabla de abajo).
 
 ## El audio del original
 
@@ -93,3 +93,26 @@ Solo se importan el inglés y las voces que nombra algún set de escaramuza. La 
 | `fountain_loop`, `manalith_loop`, `altar_loop` | `ambi/font`, `mlth`, `afir` | bucles de los edificios |
 
 `summon` no tiene clave a propósito: la invocación ya suena por `UnitSounds`. Los tres bucles se importan con `edit/loop_mode=2` (adelante) en su `.import`, así suenan sin hueco.
+
+## El consejero (`advisor.tres`, 052e)
+
+`AdvisorVoice` usa las claves del set `advi` tal cual. Cada código es un `SAMP` `_a_dNN` (la tabla del original, `AdvisorHelpSound`). Prioridad: 0 rechazo, 1 importante, 2 crucial (`priorities`); silencio entre dos avisos iguales: `cooldowns` (los del original).
+
+| Código | Qué dice | Lo dispara | Prioridad | Silencio |
+|---|---|---|---|---|
+| `lowm` | poco maná | rechazo `no_mana` | 0 | 5 s |
+| `nred` | no está listo | rechazo `cooling` | 0 | 2 s |
+| `orng` | fuera de alcance | rechazo `out_of_range` | 0 | 2 s |
+| `invl` | blanco inválido | rechazos `bad_target`, `no_target` | 0 | 2 s |
+| `spir` | faltan almas | rechazo `no_souls` | 0 | 2 s |
+| `ealt` | hay que estar cerca del altar enemigo | rechazo `far_from_altar` | 0 | 2 s |
+| `watt` | atacan a tu mago | baja la vida del mago local | 1 | 15 s |
+| `whlt` | poca vida | el mago local queda bajo el 25 % | 2 | 5 s |
+| `uatt` | atacan a tus criaturas | baja la vida de una criatura propia | 1 | 15 s |
+| `cdie` | mueren tus criaturas | una criatura propia llega a 0 | 1 | 5 s |
+| `bdam` | atacan un edificio | baja la vida de un edificio propio (grupo `structure`) | 2 | 5 s |
+| `bdst` | edificio en ruinas | un edificio propio llega a 0 | 1 | 1 s |
+| `dese` | profanan tu altar | empieza un ritual de profanación sobre tu altar | 2 | 5 s |
+| `sacc` | sacrificio completo | termina completo un ritual que lanzaste | 1 | 2 s |
+
+Sin evento todavía (no hay uno que encaje limpio): `slaw` (el ejército masacrado), `ewiz` (un mago enemigo se acerca a tu altar), `sawe` (enemigo a la vista), `gib!` (caen los enemigos), `mhor` y `mlth` (sin manahoars, sin manalitos), `audi` (alguien pide audiencia), `mana` (otra toma de `lowm`). Los rechazos `casting`, `occupied`, `no_altar`, `no_fount`, `far_from_building`, `no_ground`, `nobody`, `no_wizard`, `no_ability`, `not_implemented` y `creature_limit` no dicen nada.

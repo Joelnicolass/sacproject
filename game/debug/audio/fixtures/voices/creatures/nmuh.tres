@@ -1,0 +1,39 @@
+[gd_resource type="Resource" script_class="SoundSet" load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" path="res://debug/audio/fixtures/custom_sounds/creatures/fixture/death_1.wav" id="3_a"]
+[ext_resource type="AudioStream" path="res://debug/audio/fixtures/custom_sounds/creatures/fixture/death_2.wav" id="4_b"]
+
+[sub_resource type="Resource" id="Resource_selected"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("3_a"), ExtResource("4_b")])
+bus = &"Voice"
+max_voices = 0
+
+[sub_resource type="Resource" id="Resource_ack"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("3_a"), ExtResource("4_b")])
+bus = &"Voice"
+max_voices = 0
+
+[sub_resource type="Resource" id="Resource_Xcat"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("3_a"), ExtResource("4_b")])
+bus = &"Voice"
+max_voices = 0
+
+[sub_resource type="Resource" id="Resource_Xann"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("3_a"), ExtResource("4_b")])
+bus = &"Voice"
+max_voices = 0
+
+[resource]
+script = ExtResource("1_set")
+cues = Dictionary[StringName, ExtResource("2_cue")]({
+&"selected": SubResource("Resource_selected"),
+&"ack": SubResource("Resource_ack"),
+&"Xcat": SubResource("Resource_Xcat"),
+&"Xann": SubResource("Resource_Xann")
+})

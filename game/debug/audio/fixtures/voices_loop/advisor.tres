@@ -1,0 +1,87 @@
+[gd_resource type="Resource" script_class="SoundSet" format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" path="res://debug/audio/fixtures/beep_a.tres" id="3_loop"]
+
+[sub_resource type="Resource" id="Resource_lowm"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("3_loop")])
+bus = &"Voice"
+max_voices = 0
+
+[sub_resource type="Resource" id="Resource_orng"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("3_loop")])
+bus = &"Voice"
+max_voices = 0
+
+[sub_resource type="Resource" id="Resource_invl"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("3_loop")])
+bus = &"Voice"
+max_voices = 0
+
+[sub_resource type="Resource" id="Resource_watt"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("3_loop")])
+bus = &"Voice"
+max_voices = 0
+
+[sub_resource type="Resource" id="Resource_whlt"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("3_loop")])
+bus = &"Voice"
+max_voices = 0
+
+[sub_resource type="Resource" id="Resource_uatt"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("3_loop")])
+bus = &"Voice"
+max_voices = 0
+
+[sub_resource type="Resource" id="Resource_cdie"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("3_loop")])
+bus = &"Voice"
+max_voices = 0
+
+[sub_resource type="Resource" id="Resource_bdam"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("3_loop")])
+bus = &"Voice"
+max_voices = 0
+
+[sub_resource type="Resource" id="Resource_bdst"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("3_loop")])
+bus = &"Voice"
+max_voices = 0
+
+[sub_resource type="Resource" id="Resource_dese"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("3_loop")])
+bus = &"Voice"
+max_voices = 0
+
+[sub_resource type="Resource" id="Resource_sacc"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("3_loop")])
+bus = &"Voice"
+max_voices = 0
+
+[resource]
+script = ExtResource("1_set")
+cues = Dictionary[StringName, ExtResource("2_cue")]({
+&"lowm": SubResource("Resource_lowm"),
+&"orng": SubResource("Resource_orng"),
+&"invl": SubResource("Resource_invl"),
+&"watt": SubResource("Resource_watt"),
+&"whlt": SubResource("Resource_whlt"),
+&"uatt": SubResource("Resource_uatt"),
+&"cdie": SubResource("Resource_cdie"),
+&"bdam": SubResource("Resource_bdam"),
+&"bdst": SubResource("Resource_bdst"),
+&"dese": SubResource("Resource_dese"),
+&"sacc": SubResource("Resource_sacc")
+})

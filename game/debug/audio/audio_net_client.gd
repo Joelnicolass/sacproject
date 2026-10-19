@@ -6,7 +6,12 @@ extends Node
 ## Needs `--audio-probe` (a headless process has no audio otherwise). The sets come from the fixtures first
 ## (debug/audio/fixtures/lab/: the duel's ycro and plfl sound without the original); `--audio-no-original` leaves only them.
 ## 052d: `fx` counts the FX sounds (FxBus.played of a broadcast FX -> FxSoundMap; the emitter is the FX name).
-## Flags: --e2e-name, --mp-port (the kit), --audio-events=summon,swing,damaged,death,fx (each needs a played entry of a creature, fx of an FX),
+## 052e: `advice` counts the advisor's lines. The client asks its wizard's Caster for a spell it does not have (`REFUSED_TAG`),
+## once a second until one is heard: the server answers with a Refusal key (bad_target) through the feedback RPC every cast
+## already has, CommandLog says it and AdvisorVoice speaks (`invl`). The advisor's set is the original's, else the fixture
+## of debug/audio/fixtures/voices/ (searched last).
+## Flags: --e2e-name, --mp-port (the kit), --audio-events=summon,swing,damaged,death,fx,advice (each needs a played entry of a
+## creature, fx of an FX, advice of the advisor),
 ## --e2e-timeout-s=N (real seconds, 60 by default), --e2e-linger-s=N (real seconds to keep running after MpKit.leave(); 0 by default).
 ## Prints `AUDIO_NET <event> <count>` and `AUDIO_NET PASS|FAIL`; exit 0 / 1. Like dedicated_client, the main scene starts a twin
 ## under `root` (loading the world frees the main scene).
@@ -15,6 +20,9 @@ const LOCAL_HOST := "127.0.0.1"
 const RUNNER_META := "audio_net_client_runner"
 const FIXTURE_ROOT := "res://debug/audio/fixtures/lab/"
 const EMPTY_ROOT := "res://debug/audio/fixtures/empty/"
+const VOICES_ROOT := "res://debug/audio/fixtures/voices/"
+## A spell tag no spellbook has: the server refuses it (Refusal.BAD_TARGET).
+const REFUSED_TAG := "zzzz"
 
 var _name := ""
 var _seen := {}
@@ -42,16 +50,21 @@ func _run() -> void:
 		roots.append(EMPTY_ROOT)
 	else:
 		roots.append_array(SoundLibrary.DEFAULT_ROOTS)
+	roots.append(VOICES_ROOT)
 	SoundLibrary.roots = roots
 	SoundLibrary.clear_cache()
-	var wanted := MpBoot.user_value("audio-events", "summon,swing,damaged,death,fx").split(",", false)
+	var wanted := MpBoot.user_value("audio-events", "summon,swing,damaged,death,fx,advice").split(",", false)
 	for event in wanted:
 		_counts[StringName(event)] = 0
 	if SacrificeFlow.join_lan(LOCAL_HOST) != OK:
 		_finish(false, "no se pudo unir")
 		return
 	var end := Time.get_ticks_msec() + int(float(MpBoot.user_value("e2e-timeout-s", "60")) * 1000.0)
+	var next_refusal := 0
 	while Time.get_ticks_msec() < end:
+		if _counts.has(SoundEvent.ADVICE) and _counts[SoundEvent.ADVICE] == 0 and Time.get_ticks_msec() >= next_refusal:
+			next_refusal = Time.get_ticks_msec() + 1000
+			_ask_refused_cast()
 		_collect()
 		if _counts.values().all(func(n: int) -> bool: return n > 0):
 			break
@@ -65,6 +78,16 @@ func _run() -> void:
 		extra[event] = int(extra.get(event, 0)) + 1
 	print("AUDIO_NET todos %s" % extra)
 	_finish(_counts.values().all(func(n: int) -> bool: return n > 0), "faltan eventos" if not _counts.values().all(func(n: int) -> bool: return n > 0) else "")
+
+
+## Asks the local wizard's Caster for a spell nobody has; the server's answer is a refusal (052e).
+func _ask_refused_cast() -> void:
+	for wizard in get_tree().get_nodes_in_group(&"wizard"):
+		if wizard.has_method("is_local") and wizard.call("is_local"):
+			var caster := wizard.get_node_or_null("Caster") as Caster
+			if caster != null:
+				caster.request_cast(REFUSED_TAG, (wizard as Node3D).global_position, null)
+			return
 
 
 ## Played entries of a creature (not the wizard) since the last look; the ring holds 64, the look is every frame.

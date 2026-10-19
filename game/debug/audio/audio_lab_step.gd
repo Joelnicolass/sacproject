@@ -15,15 +15,20 @@ enum Expect {
 	IF_SET,
 }
 
-## Node of the lab (path from its root): "Original", "Custom", "Wizard"; "." for the FX actions; "Fountain", "Altar".
+## Node of the lab (path from its root): "Original", "Custom", "Wizard"; "." for the FX actions; "Fountain", "Altar";
+## "Building" (052e).
 @export var target: NodePath
 ## What the lab does: summon, swing, shoot, damaged, death (units); cast, damaged, death, ghost (the wizard);
 ## fx, puff, beam, scene (FxBus with `arg`, 052d); spawn (`arg` a projectile scene, 052d); loop, occupy, release (the
-## target's SoundEmitter3D loops; a manafount's Manalith on and off, 052d).
+## target's SoundEmitter3D loops; a manafount's Manalith on and off, 052d); select (the target alone in the Selection),
+## order (`arg` a command of Orders.requested for the target), refuse (`arg` a Refusal key said on the CommandLog), hit (a
+## tenth of the target's Health off: a building), ritual (`arg` desecrate: a Desecrate on the local altar starts; complete:
+## the lab's ritual ends completed), 052e.
 @export var action: StringName
 ## The action's argument: an FX name, a beam type, a scene path.
 @export var arg := ""
-## The emitter the log entry must have; empty = the target's node name (an FX sounds as its FX name).
+## The emitter the log entry must have; empty = the target's node name (an FX sounds as its FX name; an advisor line as
+## its code, event `advice`).
 @export var emitter: StringName
 ## The SoundEvent the step looks for in the log.
 @export var event: StringName

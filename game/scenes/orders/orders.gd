@@ -8,6 +8,10 @@ extends Node
 
 const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 
+## The local player asked for an order (request(), the owner side, before it is sent or applied). Presentation only
+## (CommandVoice, RFC-052 052e); the AI's apply_for and the server's submit_order do not emit it.
+signal requested(units: Array, command: String)
+
 ## Not a UnitOrders.Command: it stores a formation on the creatures and moves nobody.
 const FORMATION_COMMAND := "formation"
 
@@ -39,6 +43,7 @@ const COMMANDS := {
 
 ## Owner side. `facing` is the camera yaw (forward = (sin, 0, cos)). `formation_id` only matters for "formation".
 func request(units: Array, command: String, point: Vector3, target: Node3D, facing: float, formation_id := &"") -> void:
+	requested.emit(units, command)
 	var paths := _paths_of(units)
 	var target_path := str(target.get_path()) if target else ""
 	if MpAuthority.should_send_command():

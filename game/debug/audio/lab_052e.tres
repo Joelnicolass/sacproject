@@ -1,0 +1,143 @@
+[gd_resource type="Resource" script_class="AudioLabScript" format=3]
+
+[ext_resource type="Script" path="res://debug/audio/audio_lab_script.gd" id="1_script"]
+[ext_resource type="Script" path="res://debug/audio/audio_lab_step.gd" id="2_step"]
+
+[sub_resource type="Resource" id="Step_00"]
+script = ExtResource("2_step")
+target = NodePath("Original")
+action = &"select"
+event = &"selected"
+expect = 2
+
+[sub_resource type="Resource" id="Step_01"]
+script = ExtResource("2_step")
+target = NodePath("Original")
+action = &"select"
+event = &"selected"
+expect = 2
+wait_s = 0.6
+
+[sub_resource type="Resource" id="Step_02"]
+script = ExtResource("2_step")
+target = NodePath("Original")
+action = &"select"
+event = &"selected"
+expect = 2
+wait_s = 0.6
+
+[sub_resource type="Resource" id="Step_03"]
+script = ExtResource("2_step")
+target = NodePath("Original")
+action = &"select"
+event = &"annoyed"
+expect = 2
+wait_s = 0.6
+
+[sub_resource type="Resource" id="Step_04"]
+script = ExtResource("2_step")
+target = NodePath("Original")
+action = &"order"
+arg = "move"
+event = &"ack"
+expect = 2
+wait_s = 0.4
+
+[sub_resource type="Resource" id="Step_05"]
+script = ExtResource("2_step")
+target = NodePath("Original")
+action = &"order"
+arg = "attack"
+event = &"attack_ack"
+expect = 2
+wait_s = 0.4
+
+[sub_resource type="Resource" id="Step_06"]
+script = ExtResource("2_step")
+target = NodePath("Original")
+action = &"select"
+event = &"selected"
+expect = 2
+wait_s = 0.6
+
+[sub_resource type="Resource" id="Step_07"]
+script = ExtResource("2_step")
+target = NodePath("Original")
+action = &"select"
+event = &"selected"
+expect = 1
+
+[sub_resource type="Resource" id="Step_08"]
+script = ExtResource("2_step")
+target = NodePath("Original")
+action = &"order"
+arg = "retreat"
+event = &"ack"
+expect = 1
+wait_s = 0.4
+
+[sub_resource type="Resource" id="Step_09"]
+script = ExtResource("2_step")
+target = NodePath(".")
+action = &"refuse"
+arg = "no_mana"
+emitter = &"lowm"
+event = &"advice"
+expect = 2
+
+[sub_resource type="Resource" id="Step_10"]
+script = ExtResource("2_step")
+target = NodePath("Wizard")
+action = &"damaged"
+emitter = &"watt"
+event = &"advice"
+expect = 2
+
+[sub_resource type="Resource" id="Step_11"]
+script = ExtResource("2_step")
+target = NodePath(".")
+action = &"refuse"
+arg = "out_of_range"
+emitter = &"orng"
+event = &"advice"
+expect = 1
+
+[sub_resource type="Resource" id="Step_12"]
+script = ExtResource("2_step")
+target = NodePath("Wizard")
+action = &"damaged"
+emitter = &"watt"
+event = &"advice"
+expect = 1
+
+[sub_resource type="Resource" id="Step_13"]
+script = ExtResource("2_step")
+target = NodePath(".")
+action = &"refuse"
+arg = "Mago"
+event = &"advice"
+expect = 1
+
+[sub_resource type="Resource" id="Step_14"]
+script = ExtResource("2_step")
+target = NodePath(".")
+action = &"ritual"
+arg = "desecrate"
+emitter = &"dese"
+event = &"advice"
+expect = 2
+
+[sub_resource type="Resource" id="Step_15"]
+script = ExtResource("2_step")
+target = NodePath("Building")
+action = &"hit"
+emitter = &"bdam"
+event = &"advice"
+expect = 1
+
+[resource]
+script = ExtResource("1_script")
+cut = "052e"
+roots = PackedStringArray("res://debug/audio/fixtures/lab/")
+fallback_roots = PackedStringArray("res://debug/audio/fixtures/voices/")
+steps = Array[ExtResource("2_step")]([SubResource("Step_00"), SubResource("Step_01"), SubResource("Step_02"), SubResource("Step_03"), SubResource("Step_04"), SubResource("Step_05"), SubResource("Step_06"), SubResource("Step_07"), SubResource("Step_08"), SubResource("Step_09"), SubResource("Step_10"), SubResource("Step_11"), SubResource("Step_12"), SubResource("Step_13"), SubResource("Step_14"), SubResource("Step_15")])

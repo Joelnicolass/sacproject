@@ -8,6 +8,10 @@ extends RefCounted
 # Units and wizards (052c).
 const SELECTED := &"selected"
 const ACK := &"ack"
+## The order acknowledged is an attack or an advance (052e: CommandVoice; the original's `Xcat`).
+const ATTACK_ACK := &"attack_ack"
+## Selected again and again (052e: CommandVoice; the original's `Xann`).
+const ANNOYED := &"annoyed"
 const SWING := &"swing"
 const SHOOT := &"shoot"
 const DAMAGED := &"damaged"
@@ -30,7 +34,7 @@ const SACRIFICE_END := &"sacrifice_end"
 const SOUL := &"soul"
 
 const ALL: Array[StringName] = [
-	SELECTED, ACK, SWING, SHOOT, DAMAGED, DEATH, SUMMON, INCANTATION, GHOST, FOOT,
+	SELECTED, ACK, ATTACK_ACK, ANNOYED, SWING, SHOOT, DAMAGED, DEATH, SUMMON, INCANTATION, GHOST, FOOT,
 	CAST, FX, LOOP, ADVICE, CLICK, SACRIFICE_ROUND, SACRIFICE_END, SOUL,
 ]
 

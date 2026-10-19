@@ -13,6 +13,10 @@ extends Node3D
 ## 052d: the FX actions call FxBus as a peer does when a broadcast arrives (fx, puff, beam, scene); `spawn` instances a
 ## projectile scene (frozen) and frees it after the look; `loop` restarts the loops of the target's SoundEmitter3D nodes;
 ## `occupy`/`release` put a Manalith on the Fountain and take it off.
+## 052e: the player's voices. `select` leaves the target alone in the lab's Selection (CommandVoice hears Selection.changed),
+## `order` emits Orders.requested for it as OrderCommand's request does, `refuse` says a Refusal key on the CommandLog
+## (AdvisorVoice), `hit` takes a tenth of a building's Health and `ritual` starts a Desecrate on the local altar or ends it
+## completed (AdvisorWatch). An advisor line is looked up as emitter = its code, event `advice`.
 
 const SCRIPT_FLAG := "audio-script"
 const NO_ORIGINAL_FLAG := "audio-no-original"
@@ -24,6 +28,14 @@ const IF_SET := 2
 
 @export_file("*.tres") var script_path := "res://debug/audio/lab_052c.tres"
 @export var label: Label
+@export_group("Voices (052e)")
+@export var selection: Node
+@export var orders: Node
+@export var command_log: CommandLog
+@export var command_voice: CommandVoice
+@export var advisor: AdvisorVoice
+@export var advisor_watch: AdvisorWatch
+@export_group("")
 ## Real seconds (game time would stretch under --fixed-fps).
 @export var timeout_s := 20.0
 ## Process frames between an action and the look at the log.
@@ -64,6 +76,7 @@ func _start() -> void:
 		roots.append(EMPTY_ROOT)
 	else:
 		roots.append_array(SoundLibrary.DEFAULT_ROOTS)
+	roots.append_array(PackedStringArray(_lab.get("fallback_roots")) if _lab.get("fallback_roots") != null else PackedStringArray())
 	SoundLibrary.roots = roots
 	SoundLibrary.clear_cache()
 	## The emitters resolved their cues on entering the tree, with the default roots.
@@ -114,7 +127,7 @@ func _run_step() -> void:
 	var event := StringName(step.get("event"))
 	var action := StringName(step.get("action"))
 	var arg := str(step.get("arg"))
-	var expected_cue: Variant = _expected_cue(body, action, arg, event)
+	var expected_cue: Variant = _expected_cue(body, action, arg, event, StringName(step.get("emitter")))
 	if body == null or (expected_cue is bool and not expected_cue):
 		_report(false, event, "sin nodo %s" % step.get("target"))
 		_busy = false
@@ -141,10 +154,16 @@ func _run_step() -> void:
 
 
 ## The cue the step's emitter has for `event` now (a SoundCue), null when it has none, false when the target cannot do it.
-func _expected_cue(body: Node3D, action: StringName, arg: String, event: StringName) -> Variant:
+func _expected_cue(body: Node3D, action: StringName, arg: String, event: StringName, emitter: StringName = &"") -> Variant:
 	if body == null:
 		return false
+	if event == SoundEvent.ADVICE:
+		if advisor == null:
+			return false
+		return advisor.cue_for(advisor.code_for_refusal(StringName(arg)) if action == &"refuse" else emitter)
 	match action:
+		&"select", &"order":
+			return command_voice.cue_for(body, event) if command_voice != null else false
 		&"fx":
 			return SoundBus.fx_cue(FxBus.KIND_BURST, arg)
 		&"puff":
@@ -184,6 +203,30 @@ func _act(body: Node3D, action: StringName, arg := "") -> bool:
 			for emitter in _emitters_of(body):
 				emitter.restart()
 			return true
+		&"select":
+			if selection == null:
+				return false
+			selection.call("select_only", [body])
+			return true
+		&"order":
+			if orders == null:
+				return false
+			orders.emit_signal("requested", [body], arg)
+			return true
+		&"refuse":
+			if command_log == null:
+				return false
+			command_log.say(arg)
+			return true
+		&"hit":
+			var health := body.get_node_or_null("Health") as Health
+			if health == null or advisor_watch == null:
+				return false
+			advisor_watch.scan()
+			_hit(health)
+			return true
+		&"ritual":
+			return _ritual(arg)
 		&"occupy", &"release":
 			if not body.has_method("occupy"):
 				return false
@@ -239,6 +282,40 @@ func _hurt(health: Health) -> void:
 		health.maximum = full
 		health.current = full
 	health.current = maxf(health.current - full * 0.1, full * 0.05)
+
+
+## A tenth of the bar off, never to 0 (whatever the bar: a building's may be 1).
+func _hit(health: Health) -> void:
+	if health.maximum <= 0.0:
+		health.maximum = 100.0
+		health.current = 100.0
+	health.current = maxf(health.current - health.maximum * 0.1, health.maximum * 0.05)
+
+
+## 052e: `desecrate` adds a Desecrate ritual (frozen) on the local side's altar, cast by the local side; `complete` ends it
+## completed. AdvisorWatch looks at once (it would on its next scan).
+func _ritual(arg: String) -> bool:
+	if advisor_watch == null:
+		return false
+	match arg:
+		"desecrate":
+			var ritual := Ritual.new()
+			ritual.name = "LabRitual"
+			ritual.process_mode = Node.PROCESS_MODE_DISABLED
+			ritual.kind = Ritual.Kind.DESECRATE
+			ritual.target_slot = MpKit.local_slot()
+			ritual.caster_slot = MpKit.local_slot()
+			add_child(ritual)
+			ritual.phase = Ritual.Phase.SETUP
+		"complete":
+			var ritual := get_node_or_null("LabRitual") as Ritual
+			if ritual == null:
+				return false
+			ritual.outcome = Ritual.Outcome.COMPLETED
+		_:
+			return false
+	advisor_watch.scan()
+	return true
 
 
 ## A projectile scene of `path`, frozen, at the target (its SoundEmitter3D plays on entering the tree). Freed after the look.

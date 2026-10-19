@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://debug/audio/audio_lab.gd" id="1_lab"]
 [ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="2_unit"]
@@ -6,6 +6,14 @@
 [ext_resource type="Script" path="res://scenes/audio/listener_focus.gd" id="4_listener"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="5_fount"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/altar.tscn" id="6_altar"]
+[ext_resource type="PackedScene" path="res://scenes/structures/structure.tscn" id="7_structure"]
+[ext_resource type="Script" path="res://scenes/orders/selection.gd" id="8_selection"]
+[ext_resource type="Script" path="res://scenes/orders/orders.gd" id="9_orders"]
+[ext_resource type="Script" path="res://scenes/orders/command_log.gd" id="10_log"]
+[ext_resource type="Resource" path="res://data/ui/command_cues.tres" id="11_cues"]
+[ext_resource type="Script" path="res://scenes/audio/command_voice.gd" id="12_command_voice"]
+[ext_resource type="Script" path="res://scenes/audio/advisor_voice.gd" id="13_advisor"]
+[ext_resource type="Script" path="res://scenes/audio/advisor_watch.gd" id="14_watch"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(40, 1, 40)
@@ -16,10 +24,16 @@ size = Vector2(40, 40)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
 albedo_color = Color(0.32, 0.3, 0.26, 1)
 
-[node name="AudioLab" type="Node3D" node_paths=PackedStringArray("label")]
-editor_description = "RFC-052 (F360+). Laboratorio de audio: dos criaturas (una con set del original, nmuh; una propia, testmonster), un mago y el oyente en una cámara fija. Los cuerpos están quietos; el lab mueve su estado replicado y los hijos *Sounds suenan. F6 y la acción debug_audio_event (J) recorre los pasos del lab_<corte>.tres. Desde 052d también un manantial (Fountain) y un altar (Altar) con sus bucles, y los pasos de FX (FxBus), proyectiles y bucles del lab_052d.tres. Sin ventana: --headless -- --audio-probe --audio-script[=res://debug/audio/lab_052c.tres] [--audio-no-original]."
+[node name="AudioLab" type="Node3D" node_paths=PackedStringArray("label", "selection", "orders", "command_log", "command_voice", "advisor", "advisor_watch")]
+editor_description = "RFC-052 (F360+). Laboratorio de audio: dos criaturas (una con set del original, nmuh; una propia, testmonster), un mago y el oyente en una cámara fija. Los cuerpos están quietos; el lab mueve su estado replicado y los hijos *Sounds suenan. F6 y la acción debug_audio_event (J) recorre los pasos del lab_<corte>.tres. Desde 052d también un manantial (Fountain) y un altar (Altar) con sus bucles, y los pasos de FX (FxBus), proyectiles y bucles del lab_052d.tres. Desde 052e, las voces del jugador: Selection, Orders y CommandLog de laboratorio, CommandVoice, AdvisorVoice con su AdvisorWatch y un edificio propio (Building); pasos del lab_052e.tres. Sin ventana: --headless -- --audio-probe --audio-script[=res://debug/audio/lab_052c.tres] [--audio-no-original]."
 script = ExtResource("1_lab")
 label = NodePath("Overlay/LastEvent")
+selection = NodePath("Selection")
+orders = NodePath("Orders")
+command_log = NodePath("Battle")
+command_voice = NodePath("CommandVoice")
+advisor = NodePath("AdvisorVoice")
+advisor_watch = NodePath("AdvisorVoice/AdvisorWatch")
 
 [node name="Camera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.94, 0.34, 0, -0.34, 0.94, 0, 3.5, 9)
@@ -69,6 +83,35 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -6)
 [node name="Altar" parent="." instance=ExtResource("6_altar")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -14)
 owner_slot = 1
+
+[node name="Building" parent="." instance=ExtResource("7_structure")]
+process_mode = 4
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 6)
+owner_slot = 1
+
+[node name="Selection" type="Node" parent="."]
+script = ExtResource("8_selection")
+
+[node name="Orders" type="Node" parent="."]
+script = ExtResource("9_orders")
+
+[node name="Battle" type="Node" parent="."]
+script = ExtResource("10_log")
+cues = ExtResource("11_cues")
+
+[node name="CommandVoice" type="Node" parent="." node_paths=PackedStringArray("selection", "orders")]
+script = ExtResource("12_command_voice")
+selection = NodePath("../Selection")
+orders = NodePath("../Orders")
+
+[node name="AdvisorVoice" type="Node" parent="." node_paths=PackedStringArray("command_log")]
+script = ExtResource("13_advisor")
+command_log = NodePath("../Battle")
+
+[node name="AdvisorWatch" type="Node" parent="AdvisorVoice" node_paths=PackedStringArray("advisor", "wizard")]
+script = ExtResource("14_watch")
+advisor = NodePath("..")
+wizard = NodePath("../../Wizard")
 
 [node name="Overlay" type="CanvasLayer" parent="."]
 

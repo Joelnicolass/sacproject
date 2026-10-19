@@ -24,16 +24,14 @@ const SPAWN_SCENE := "res://scenes/map/npc_spawn.tscn"
 const PLANT_SCENE := "res://scenes/map/props/plant.tscn"
 const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain.gd"
 
-## The altar and the manafount of each land (BuildingType flags 0x80001407 and 0x80002810), RFC-050. Rows the scene places by
-## hand (Starts, Founts): not buildings of the layout. Same lists as tools/import/scaffold_map.py.
-const ALTAR_TAGS: PackedStringArray = ["jaal", "ca_a", "pyal", "stal", "alt1"]
-const FOUNT_TAGS: PackedStringArray = ["jfnt", "cafn", "pfon", "stmf", "font"]
+## The altar and the manafount of each land (PlantClears, shared with bake_flora_map). Rows the scene places by hand
+## (Starts, Founts): not buildings of the layout.
+const ALTAR_TAGS := PlantClears.ALTAR_TAGS
+const FOUNT_TAGS := PlantClears.FOUNT_TAGS
 const NEUTRAL_SIDE := 31
 ## Meters above the land where a creature is put.
 const SPAWN_LIFT := 0.2
 const PLANT_SEED := 17
-const ALTAR_CLEAR := 40.0
-const FOUNT_CLEAR := 6.0
 ## Models of a widget tag (JAW1…, James land; the look is Persephone). RFC-050: the widget models of the other lands (CAH1, SAW1,
 ## PYA1…) are imported as props under their own tag (tools/import/import_props.py PLANT_WADS) but not listed here yet: their
 ## widgets.json rows give 10k-16k plants per map, too many for one MeshInstance3D each (that needs batching first). A tag that is
@@ -165,14 +163,7 @@ func _plan_buildings(structures: Array) -> Array:
 
 
 func _plan_plants(widgets: Dictionary, structures: Array) -> Array:
-	var altars: Array[Vector2] = []
-	var founts: Array[Vector2] = []
-	for row: Dictionary in structures:
-		var at := Vector2(float(row["x"]), float(row["z"]))
-		if ALTAR_TAGS.has(str(row["tag"])):
-			altars.append(at)
-		elif FOUNT_TAGS.has(str(row["tag"])):
-			founts.append(at)
+	var clears := PlantClears.from_structures(structures)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = PLANT_SEED
 	var rows := []
@@ -187,7 +178,7 @@ func _plan_plants(widgets: Dictionary, structures: Array) -> Array:
 			var model: String = models[rng.randi() % models.size()]
 			var x := float(row[0])
 			var z := float(row[1])
-			if not _land.is_on_ground(x, z) or not _is_clear(x, z, altars, founts):
+			if not clears.accepts(_land, x, z):
 				continue
 			rows.append({
 				"name": "Plant%d" % rows.size(),
@@ -197,17 +188,6 @@ func _plan_plants(widgets: Dictionary, structures: Array) -> Array:
 				"yaw": float(row[2]),
 			})
 	return rows
-
-
-func _is_clear(x: float, z: float, altars: Array[Vector2], founts: Array[Vector2]) -> bool:
-	# Same arithmetic as the old MapProps._flat_distance: the difference of the doubles, then a Vector2.
-	for altar in altars:
-		if Vector2(x - altar.x, z - altar.y).length() < ALTAR_CLEAR:
-			return false
-	for fount in founts:
-		if Vector2(x - fount.x, z - fount.y).length() < FOUNT_CLEAR:
-			return false
-	return true
 
 
 func _plan_npcs(creatures: Array) -> Array:

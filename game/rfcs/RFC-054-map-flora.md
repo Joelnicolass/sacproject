@@ -1,9 +1,10 @@
 # RFC-054: Flora de los mapas
 
-Estado: plan del tech lead, sin implementar. Cortes 054a–054g (F379–F385) y cierre 054z (F386).
-Nota de IDs: RFC-053 §16 sumó el corte 053i como F379. Antes de 054a, el orquestador corre los F de este RFC a F380–F387 en FEATURES (los IDs son append-only).
+Estado: en curso. Hecho: 054a (F380). Cortes 054a–054g (F380–F386) y cierre 054z (F387).
+Nota de IDs: RFC-053 §16 sumó el corte 053i como F379, así que este RFC usa F380–F387 (los IDs son append-only): 054a F380, 054b F381, 054c F382, 054d F383, 054e F384, 054f F385, 054g F386, 054z F387.
+Decisiones de §14 (aceptadas por el usuario el 2026-10-19): celda de 8 m; importar los JAW1–5 reales (054d); un solo interruptor «Vegetación»; sin sombras de plantas; edición por rehorneado + `VegetationClear`; `trees.tres` nace vacío; 054g solo si el usuario lo pide.
 
-**El problema.** En `widgets.json`, peaks, roads y winter_wonder tienen 13.029, 16.331 y 12.696 plantas. El bake no puede plantarlas: con un `MeshInstance3D` por planta salían `.tscn` de 3–5 MB, y se revirtió. High Noon y Peasantville sí tienen plantas, pero como 718 y 1531 nodos `Plant`, con modelos prestados de Persephone.
+**El problema.** En `widgets.json`, peaks, roads y winter_wonder tienen 13.029, 16.331 y 12.696 plantas. El bake no puede plantarlas: con un `MeshInstance3D` por planta salían `.tscn` de 3–5 MB, y se revirtió. High Noon y Peasantville sí tienen plantas, pero como 717 y 1530 nodos `Plant`, con modelos prestados de Persephone.
 
 **Decisiones del usuario (2026-10-19):**
 - **Posiciones aproximadas.** Las posiciones no tienen que ser exactas («No necesitamos que todo sea exactamente igual»). Manda la composición general del original.
@@ -166,7 +167,7 @@ El pincel de densidad y `FloraPatch` quedan para otro RFC.
 ### 4.8 High Noon y Peasantville
 
 - **Modelos:** se importan los JAW1–5 de `james_a.wad`.
-- **Layouts:** salen los nodos `Plants` (718 y 1531, unos 270 KB y 580 KB).
+- **Layouts:** salen los nodos `Plants` (717 y 1530, unos 270 KB y 580 KB).
 - **`bake_map_layout`** deja de plantar y desaparece `WIDGET_MODELS`.
 - **`MapProps`** deja de usar `plants_root`.
 - **`bake_nav`** pierde la línea 99; el hash no cambia.
@@ -264,7 +265,7 @@ Comando headless común: `godot --headless --path game res://debug/look/flora_ca
   - El editor muestra las plantas.
 - **054d: JAW1–5 y migración de High Noon y Peasantville.** Con ventana.
   - Pruebas: `bake_map_layout --check`, `bake_nav --check` (hash igual) y `quick` igual.
-  - `total()` da 718 en high_noon y 1531 en peasantville.
+  - `total()` da 717 en high_noon y 1530 en peasantville (medido en 054a; antes decía 718 y 1531).
   - Captura comparada contra la de antes.
 - **054e: presupuesto.** Con ventana; los criterios son los de §8.
 - **054f: Opciones y plugin.** Con ventana corta.

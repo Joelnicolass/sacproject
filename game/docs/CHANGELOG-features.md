@@ -3352,3 +3352,7 @@ Agregar o cambiar un hechizo de combate ya no toca `caster.gd`.
 
 - Hecho: `run_determinism.sh all --no-window` igual, sin regrabar.
 - Falta: la partida solo de 5 min con ventana (ningún bus satura, sin `FAIL`) y los playtests con ventana de 052a, 052c, 052f y 052g. Los corre el orquestador.
+
+### F380-F387 — Flora de los mapas (RFC-054, cortes 054a-054z) — en curso
+
+- **F380** (054a) `FloraMap` (`scenes/look/vegetation/flora_map.gd`: celda de 8 m, 320 × 320, un `PackedByteArray` por tag, tope 255) y `FloraPlacement` (funciones puras: `instance_count` con redondeo estocástico por el hash de la celda, `cell_instances` con offset, giro y escala del hash de `(semilla, tag, tx, tz, i)`; los offsets se estratifican por los dígitos en base 4 del índice, así que cualquier prefijo cubre la celda). `tools/bake/bake_flora_map.gd` (`--map=<tag>` o `--all`, `--check`) con `FloraMapBuilder` y `PlantClears` (los claros, compartidos con `bake_map_layout`). Plantas: peaks 11370, roads 15903, winter_wonder 9706, high_noon 717 y peasantville 1530 (las mismas que los nodos `Plant` de sus layouts); archivos de 4,4 a 11,1 KB, fuera de LFS. «Sacrifice: Hornear flora» en el plugin. Prueba: `debug/look/flora_cases.tscn` (`flora_total`, `flora_size`, `flora_seed`, `flora_half`, `flora_prefix`), `FLORA CASES PASS`. Sin cambios en el runtime: los `Plants` de los layouts quedan hasta 054d.

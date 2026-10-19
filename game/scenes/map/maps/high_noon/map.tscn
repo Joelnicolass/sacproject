@@ -17,6 +17,7 @@
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/high_noon/nav.res" id="f200_navmesh"]
 [ext_resource type="Script" uid="uid://brj6glypovhy8" path="res://scenes/map/nav/map_nav_region.gd" id="f200_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="f212_bake"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/jfnt.tres" id="fbldg_jfnt"]
 
 [node name="Map" type="Node3D" unique_id=1044000001 node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings_root", "npc_spawns_root")]
 script = ExtResource("1_root")
@@ -81,18 +82,23 @@ faces = NodePath("../../Founts/FountWest")
 
 [node name="FountCenter" parent="MapProps/Founts" unique_id=1897756010 instance=ExtResource("9_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1270, 10, 1270)
+building = ExtResource("fbldg_jfnt")
 
 [node name="FountEast" parent="MapProps/Founts" unique_id=646644486 instance=ExtResource("9_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1520, 16.1, 1450)
+building = ExtResource("fbldg_jfnt")
 
 [node name="FountSouth" parent="MapProps/Founts" unique_id=351329644 instance=ExtResource("9_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1080, 16.2, 1490)
+building = ExtResource("fbldg_jfnt")
 
 [node name="FountNorth" parent="MapProps/Founts" unique_id=1492753983 instance=ExtResource("9_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1450, 13.7, 1070)
+building = ExtResource("fbldg_jfnt")
 
 [node name="FountWest" parent="MapProps/Founts" unique_id=1824358006 instance=ExtResource("9_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1030, 21, 1110)
+building = ExtResource("fbldg_jfnt")
 
 [node name="HighNoonLayout" parent="." unique_id=1507855763 instance=ExtResource("f196_layout")]
 

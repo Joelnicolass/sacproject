@@ -1,3 +1,4 @@
+@tool
 class_name ManafountBody
 extends StaticBody3D
 
@@ -7,6 +8,19 @@ extends StaticBody3D
 ## every peer with its manafount_path, so occupy()/release() run on clients and a late joiner sees
 ## the right state. The dedicated process draws nothing (SpriteEmitter.set_active is a no-op there).
 ## RFC-052 052d: the jet loops `fountain_loop` and the Manalith `manalith_loop` (SoundEmitter3D, silent with the gate closed).
+## The model is the BASE component of `building`, the BLDG the map's NTTS row names (jfnt James, cafn Charnel, pfon Pyro,
+## stmf Stratos, font Persephone = pcfn). Visual only: the collision and the source are the same for every land.
+
+## Drawn when `building` is empty or has no BASE component: the Persephone fountain.
+const FALLBACK_MODEL := "pcfn"
+
+## The fountain's BLDG (data/catalog/buildings/<tag>.tres): drag the land's fountain here; the model shows in the editor.
+@export var building: BuildingType:
+	set(value):
+		building = value
+		if is_node_ready():
+			_show_model()
+@export var visual: BodyVisual
 
 var _occupied_by := NodePath()
 var _source_rate := 0.0
@@ -18,6 +32,10 @@ var _source_rate := 0.0
 
 
 func _ready() -> void:
+	_show_model()
+	# The editor only shows the model; none of the game runs there.
+	if Engine.is_editor_hint():
+		return
 	add_to_group("manafount")
 	var source := _source()
 	if source:
@@ -26,6 +44,27 @@ func _ready() -> void:
 	_manalith_fx.set_active(false)
 	_fount_sound.set_active(true)
 	_manalith_sound.set_active(false)
+
+
+## The model of this fountain: the BASE component of its BLDG, else FALLBACK_MODEL.
+func model() -> String:
+	if building != null:
+		for component in building.components:
+			if str(component.get("kind", "")) == "BASE" and not str(component.get("tag", "")).is_empty():
+				return str(component["tag"])
+	return FALLBACK_MODEL
+
+
+func _show_model() -> void:
+	update_configuration_warnings()
+	if visual != null and visual.model != model():
+		visual.show_model(model())
+
+
+func _get_configuration_warnings() -> PackedStringArray:
+	if visual == null:
+		return PackedStringArray(["Asigná `visual` (el BodyVisual de la fuente)."])
+	return PackedStringArray()
 
 
 func is_free() -> bool:

@@ -17,6 +17,7 @@
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/winter_wonder/nav.res" id="15_navmesh"]
 [ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="17_minimap"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/stmf.tres" id="fbldg_stmf"]
 
 [node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings_root", "npc_spawns_root")]
 script = ExtResource("1_root")
@@ -91,33 +92,43 @@ faces = NodePath("../../Founts/Fount09")
 
 [node name="Fount01" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1330, 23.7, 1070)
+building = ExtResource("fbldg_stmf")
 
 [node name="Fount02" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1360, 39.9, 1720)
+building = ExtResource("fbldg_stmf")
 
 [node name="Fount03" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 660, 32.9, 1460)
+building = ExtResource("fbldg_stmf")
 
 [node name="Fount04" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 760, 49.4, 1880)
+building = ExtResource("fbldg_stmf")
 
 [node name="Fount05" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 810, 49.5, 970)
+building = ExtResource("fbldg_stmf")
 
 [node name="Fount06" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 920, 32.2, 1450)
+building = ExtResource("fbldg_stmf")
 
 [node name="Fount07" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2050, 45.6, 1420)
+building = ExtResource("fbldg_stmf")
 
 [node name="Fount08" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1800, 41.6, 1420)
+building = ExtResource("fbldg_stmf")
 
 [node name="Fount09" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1710, 49.1, 960)
+building = ExtResource("fbldg_stmf")
 
 [node name="Fount10" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1770, 36, 1840)
+building = ExtResource("fbldg_stmf")
 
 [node name="WinterWonderLayout" parent="." instance=ExtResource("13_layout")]
 

@@ -253,6 +253,12 @@ def map_tscn(ntts: dict, seats: list) -> str:
         return y
 
     out = [MAP_HEAD.format(tag=TAG, layout=layout)]
+    # The BLDG each fount row names (its BASE component is the model ManafountBody draws), right after the head's resources.
+    fount_bldgs = sorted({row["tag"] for row in founts})
+    cut = out[0].index("\n\n[node ")
+    out[0] = out[0][:cut] + "".join(
+        '\n[ext_resource type="Resource" path="res://data/catalog/buildings/%s.tres" id="fbldg_%s"]' % (t, t)
+        for t in fount_bldgs) + out[0][cut:]
     starts = []
     for altar in sorted(altars, key=lambda a: seats.index(a["side"])):
         slot = seats.index(altar["side"]) + 1
@@ -270,7 +276,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, {x}, {y}, {z})
         out.append("""
 [node name="{name}" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, {x}, {y}, {z})
-""".format(name=name, x=fmt(row["x"]), y=fmt(y_of(row)), z=fmt(row["z"])))
+building = ExtResource("fbldg_{bldg}")
+""".format(name=name, x=fmt(row["x"]), y=fmt(y_of(row)), z=fmt(row["z"]), bldg=row["tag"]))
     out.append(MAP_TAIL.format(layout=layout))
     return "".join(out)
 

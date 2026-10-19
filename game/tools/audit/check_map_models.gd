@@ -7,7 +7,14 @@ extends Node
 ## assets/original/props/<model>.glb with a mesh whose every surface gets a texture from OriginalMaterial.
 ## That is what MapBuilding's "sin modelo horneado" warning reports, checked here headless, where the warning is never
 ## printed (BodyCatalog.loads_meshes() is false without a display). Prints MAP MODELS PASS / MAP MODELS FAIL; exit 0 / 1.
+## Every manafount draws its land's model: the BASE component of the BLDG of the NTTS fount row at its spot (jfnt, cafn, pfon,
+## stmf; font = pcfn), and ManafountBody.FALLBACK_MODEL on a map without an NTTS (test_flat).
 ## "$GODOT" --headless --path game res://tools/audit/check_map_models.tscn -- --map=peaks
+
+
+const LAYOUT_BAKE := preload("res://tools/bake/bake_map_layout.gd")
+## A fount node and its NTTS row are the same spot (scaffold_map places one on the other).
+const FOUNT_ROW_MAX_M := 1.0
 
 
 func _ready() -> void:
@@ -31,7 +38,7 @@ func _run() -> void:
 			if users.size() < 3:
 				users.append(str(root.get_path_to(visual)))
 			models[visual.model] = users
-	var problems: Array[String] = []
+	var problems: Array[String] = _fount_problems(map, root)
 	var tags := models.keys()
 	tags.sort()
 	for model: String in tags:
@@ -40,6 +47,58 @@ func _run() -> void:
 			problems.append("%s: %s (used by %s)" % [model, why, ", ".join(models[model])])
 	root.queue_free()
 	_finish(map, tags.size(), problems)
+
+
+## Each ManafountBody shows the model its NTTS row's BLDG names (FALLBACK_MODEL without an NTTS); one line per mismatch.
+func _fount_problems(map: MapDefinition, root: Node) -> Array[String]:
+	var rows: Array = []
+	if not map.ntts_path.is_empty():
+		var ntts: Variant = JSON.parse_string(FileAccess.get_file_as_string(map.ntts_path))
+		if not ntts is Dictionary:
+			return ["%s does not parse" % map.ntts_path]
+		for row: Dictionary in (ntts as Dictionary).get("structures", []):
+			if LAYOUT_BAKE.FOUNT_TAGS.has(str(row.get("tag", ""))):
+				rows.append(row)
+	var problems: Array[String] = []
+	var counted := 0
+	for node in root.find_children("*", "", true, false):
+		var fount := node as ManafountBody
+		if fount == null:
+			continue
+		counted += 1
+		var shown := fount.visual.model if fount.visual != null else ""
+		var expected := ManafountBody.FALLBACK_MODEL
+		if not rows.is_empty():
+			var at := Vector2(fount.global_position.x, fount.global_position.z)
+			var best: Dictionary = {}
+			for row: Dictionary in rows:
+				if best.is_empty() or at.distance_to(_row_xz(row)) < at.distance_to(_row_xz(best)):
+					best = row
+			if at.distance_to(_row_xz(best)) > FOUNT_ROW_MAX_M:
+				problems.append("fount %s: no NTTS fount row at its spot" % root.get_path_to(fount))
+				continue
+			expected = _base_model(TypeRef.building(str(best["tag"])))
+		if shown != expected:
+			problems.append("fount %s: shows '%s', its land's fountain is '%s'" % [root.get_path_to(fount), shown, expected])
+	if counted == 0:
+		problems.append("fount count: the scene has no ManafountBody")
+	elif not rows.is_empty() and counted != rows.size():
+		problems.append("fount count: %d in the scene, %d rows in %s" % [counted, rows.size(), map.ntts_path])
+	print("%s founts: %d checked" % [map.tag, counted])
+	return problems
+
+
+func _row_xz(row: Dictionary) -> Vector2:
+	return Vector2(float(row["x"]), float(row["z"]))
+
+
+## The BASE component of a BLDG (what ManafountBody.model() draws), FALLBACK_MODEL when it has none.
+func _base_model(building: BuildingType) -> String:
+	if building != null:
+		for component in building.components:
+			if str(component.get("kind", "")) == "BASE":
+				return str(component.get("tag", ""))
+	return ManafountBody.FALLBACK_MODEL
 
 
 ## Why `model` would show the placeholder (or an untextured mesh); "" when it has everything.

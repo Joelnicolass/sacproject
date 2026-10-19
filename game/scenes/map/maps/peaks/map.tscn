@@ -17,6 +17,7 @@
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/peaks/nav.res" id="15_navmesh"]
 [ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="17_minimap"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/cafn.tres" id="fbldg_cafn"]
 
 [node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings_root", "npc_spawns_root")]
 script = ExtResource("1_root")
@@ -81,18 +82,23 @@ faces = NodePath("../../Founts/Fount04")
 
 [node name="Fount01" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1230, 2, 1320)
+building = ExtResource("fbldg_cafn")
 
 [node name="Fount02" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1220, 14.1, 1130)
+building = ExtResource("fbldg_cafn")
 
 [node name="Fount03" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1370, 28.8, 1310)
+building = ExtResource("fbldg_cafn")
 
 [node name="Fount04" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1090, 31.3, 1320)
+building = ExtResource("fbldg_cafn")
 
 [node name="Fount05" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1260, 10.1, 1500)
+building = ExtResource("fbldg_cafn")
 
 [node name="PeaksLayout" parent="." instance=ExtResource("13_layout")]
 

@@ -42,7 +42,8 @@ func _ready() -> void:
 	join_fail_status = tr("UI_FLOW_JOIN_FAIL")
 	bad_ip_status = tr("UI_FLOW_BAD_IP")
 	server_lost_status = tr("UI_FLOW_SERVER_LOST")
-	max_players = 2
+	## RFC-049 049e (F294): the seats of the mode (`--mode=`, 1v1 by default) are the places of the match. The AI seats narrow it.
+	max_players = _mode_seats()
 	advertise_lan = false
 	start_when = StartWhen.DEDICATED_FIRST_CLIENT
 	## Before super._ready(): MpKit.configure takes max_players there, so the one human gets slot 1 and the AI keeps slot 2.
@@ -102,11 +103,14 @@ func play_solo(chosen: MatchSetup = null) -> void:
 	_play_alone()
 
 
-## «Contra la IA»: solo, with the AI in slot 2. `god` empty = drawn when the match starts. `chosen` is the boot's setup
+## «Contra la IA»: solo, with the AI in every seat but the player's (slot 2 in a 1v1; with a mode, slots 2..seats: in a 2v2 the
+## player has an AI ally and two AI foes). `god` empty = drawn when the match starts. `chosen` is the boot's setup
 ## (GameplayPrefs + the level of %AiLevel, 1-9 for both wizards, 030d); its fields win over the flags.
 func play_vs_ai(god: StringName = &"", chosen: MatchSetup = null) -> void:
-	solo_ai_seats = [_vs_ai_seat(god)]
 	setup = _cli_setup.overlaid_by(chosen)
+	## The map and the mode are decided now (the same call that runs when the world loads, idempotent) to know how many seats there are.
+	_apply_match_choice()
+	solo_ai_seats = _vs_ai_seats(god, GameModeCatalog.active_seats())
 	_play_alone()
 
 
@@ -155,6 +159,12 @@ func _apply_match_choice() -> void:
 		GameModeCatalog.reset()
 	else:
 		GameModeCatalog.use(mode)
+	## RFC-049 049d (F293): a mode needs a start for each of its seats. If the map has fewer, the match plays the default mode.
+	var chosen_mode := GameModeCatalog.active()
+	if not MapCatalog.active().fits(chosen_mode):
+		push_error("SacrificeFlow: el modo '%s' pide %d asientos y el mapa '%s' tiene %d; se juega '%s'." % [
+			chosen_mode.tag, chosen_mode.seats(), MapCatalog.current_tag(), MapCatalog.active().player_starts, GameModeCatalog.DEFAULT_TAG])
+		GameModeCatalog.use(GameModeCatalog.DEFAULT_TAG)
 
 
 ## The map of the match goes to the clients before the order to load the world (the same reliable channel keeps the order).
@@ -245,33 +255,55 @@ func set_ai_pick(slot: int, chosen: Dictionary) -> void:
 		slot_picks_changed.emit()
 
 
-func _vs_ai_seat(god: StringName) -> AiSeat:
+func _vs_ai_seat(god: StringName, slot := 2) -> AiSeat:
 	var seat := (load(VS_AI_SEAT) as AiSeat).duplicate() as AiSeat
 	## An unknown god is drawn by AiRoster (GameData is not ready yet when the dedicated reads its flags).
 	if god != &"":
 		seat.god = god
+	seat.slot = slot
 	return seat
 
 
-## --ai-slots=2 [--ai-god=pyro] on the dedicated (RFC-024 §4). Only slot 2 for now (High Noon has two starts).
+## One AI seat for each slot from 2 to `seats`.
+func _vs_ai_seats(god: StringName, seats: int) -> Array[AiSeat]:
+	var found: Array[AiSeat] = []
+	for slot in range(2, maxi(seats, 2) + 1):
+		found.append(_vs_ai_seat(god, slot))
+	return found
+
+
+## The seats of the mode of this process (`--mode=`, else 1v1).
+func _mode_seats() -> int:
+	return GameModeCatalog.active_seats()
+
+
+## --ai-slots=2,3,4 [--ai-god=pyro] on the dedicated (RFC-024 §4, 049e). Several slots, each inside the seats of the mode. The humans
+## take the lowest slots, so the AI slots have to be the tail of the seats; `max_players` is the first AI slot - 1 (the seats an AI
+## holds are never admitted to a person).
 func _read_dedicated_ai() -> void:
 	if not MpBoot.is_dedicated_process():
 		return
 	var raw := MpBoot.user_value("ai-slots", "")
 	if raw.is_empty():
 		return
-	var seats: Array[AiSeat] = []
+	var slots: Array[int] = []
 	for part in raw.split(",", false):
-		var seat := _vs_ai_seat(StringName(MpBoot.user_value("ai-god", "")))
-		seat.slot = int(part)
-		if seat.slot >= 2 and seat.slot <= max_players:
-			seats.append(seat)
-	if seats.is_empty():
-		push_warning("--ai-slots=%s: ningún slot válido" % raw)
+		var slot := int(part)
+		if slot >= 2 and slot <= max_players and not slots.has(slot):
+			slots.append(slot)
+	if slots.is_empty():
+		push_warning("--ai-slots=%s: ningún slot válido (van de 2 a %d, los asientos del modo)" % [raw, max_players])
 		return
+	slots.sort()
+	var tail := slots.size() == max_players - slots[0] + 1
+	if not tail:
+		push_warning("--ai-slots=%s: los slots IA tendrían que ser la cola de los %d asientos; los humanos toman los más bajos" % [raw, max_players])
+	var seats: Array[AiSeat] = []
+	for slot in slots:
+		seats.append(_vs_ai_seat(StringName(MpBoot.user_value("ai-god", "")), slot))
 	solo_ai_seats = seats
-	max_players = seats[0].slot - 1
-	print("dedicado con ia en slots %s" % raw)
+	max_players = slots[0] - 1
+	print("dedicado con ia en slots %s" % str(slots))
 
 
 ## The dedicated of a room-server match: the picks, the options and the seed come from the ticket.

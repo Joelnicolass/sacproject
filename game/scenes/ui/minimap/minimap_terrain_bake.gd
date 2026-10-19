@@ -73,6 +73,17 @@ func _bake_when_ready() -> void:
 	await bake()
 
 
+## Editor button: draws the ground again and shows it in `preview`, to see what the minimap will get after changing
+## the terrain mesh or `resolution`. The game bakes by itself at every launch; nothing is saved.
+@export_tool_button("Re-hornear minimapa", "Reload") var rebake_in_editor := _rebake_in_editor
+
+
+func _rebake_in_editor() -> void:
+	if preview:
+		preview.visible = true
+	await bake()
+
+
 ## Frames the mesh and renders it once. Awaitable: it returns after the image is drawn.
 func bake() -> void:
 	if viewport == null or ground == null or camera == null:

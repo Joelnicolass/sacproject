@@ -73,4 +73,4 @@ Estados: **Hecho** (cerrado y probado), **Parcial** (anda, con deuda anotada), *
 
 ## Won't (este corte)
 
-Campaña, audio original, Steam, fork de Godot, fork de MpKit. El port web está planeado aparte (RFC-039).
+Campaña, Steam, fork de Godot, fork de MpKit. El port web está planeado aparte (RFC-039).

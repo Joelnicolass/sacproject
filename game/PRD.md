@@ -18,7 +18,7 @@ Dos magos en High Noon. Cada uno manda desde su cliente, o uno de los dos lo con
 
 ## Fuera del primer corte
 
-Campaña, hechizos de nivel 2 en adelante y el Shrine (las criaturas completas por nivel sí entran: RFC-030, CHANGE-REQUEST-002), audio original, export web, arte nuevo, modificar el motor de Godot. Más de un rival IA, alianzas y los modos `slaughter`, `domination` y `soul-harvest` de sacengine tampoco entran en el modo solo.
+Campaña, hechizos de nivel 2 en adelante y el Shrine (las criaturas completas por nivel sí entran: RFC-030, CHANGE-REQUEST-002), export web (el audio entra con RFC-052, CHANGE-REQUEST-003), arte nuevo, modificar el motor de Godot. Más de un rival IA, alianzas y los modos `slaughter`, `domination` y `soul-harvest` de sacengine tampoco entran en el modo solo.
 
 ## Slice jugable
 

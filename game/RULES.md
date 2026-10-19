@@ -13,8 +13,8 @@ Producto: juego Godot 4. Checks de web, SQL, auth y negocio: no aplican.
 Estándar. Escenas en `scenes/`. Sin `src/domain/`.
 
 Estructura por dominio (RFC-048). Cada carpeta tiene su `README.md`.
-- `scenes/<dominio>/`: código y escenas del producto (`ai`, `bodies`, `camera`, `components`, `core`, `fx`, `gods`, `look`, `map`, `match`, `net`, `orders`, `sacrifice`, `souls`, `spells`, `structures`, `ui`, `units`, `wizards`). Nada suelto en la raíz de `scenes/`.
-- `data/`: Resources `.tres` por tipo (`data/catalog/<tipo>/`, `gods/`, `look/`, `nav/`, `maps/`...).
+- `scenes/<dominio>/`: código y escenas del producto (`ai`, `audio`, `bodies`, `camera`, `components`, `core`, `fx`, `gods`, `look`, `map`, `match`, `net`, `orders`, `sacrifice`, `souls`, `spells`, `structures`, `ui`, `units`, `wizards`). Nada suelto en la raíz de `scenes/`.
+- `data/`: Resources `.tres` por tipo (`data/catalog/<tipo>/`, `gods/`, `look/`, `nav/`, `maps/`, `audio/`...).
 - `debug/<dominio>/`: escenas y reglas de desarrollo (`suite/` = casos del banco, `rules/` = `MatchRules` de prueba). No entra en el export.
 - `tools/`: `import/`, `bake/`, `audit/`, `material/`, `deploy/`. `agent/`: `runs/`, `flows/`, `fixtures/`, `harness/`, `scripts/`. Ni `scenes/` ni `data/` nombran `res://debug|agent|tools`.
 - Las mudanzas de rutas se hacen con `tools/move_map.py` y un CSV (`--check --lint` debe dar 0). Los commits de mudanza están en `.git-blame-ignore-revs`.

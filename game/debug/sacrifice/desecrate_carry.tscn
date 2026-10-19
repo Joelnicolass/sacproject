@@ -9,7 +9,7 @@
 [node name="HighNoon" parent="." instance=ExtResource("1_world")]
 rules = ExtResource("2_rules")
 
-[node name="Start2" parent="HighNoon/MapProps/Starts" index="1"]
+[node name="Start2" parent="HighNoon/Map/MapProps/Starts" index="1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1500, 16.9, 1480)
 
 [node name="Camera" parent="HighNoon"]

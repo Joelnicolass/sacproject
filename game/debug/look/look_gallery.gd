@@ -78,7 +78,7 @@ func _settle() -> void:
 	_show_biome()
 	_show_camera()
 	if freeze_sky:
-		var sky := world.get_node_or_null("Sky")
+		var sky := world.get_node_or_null("Map/Sky")
 		if sky:
 			sky.set_process(false)
 
@@ -140,7 +140,7 @@ func _toggle_layer(index: int) -> void:
 
 
 func _rig() -> LookRig:
-	return world.get_node_or_null("Look") as LookRig
+	return world.get_node_or_null("Map/Look") as LookRig
 
 
 ## Feet on the terrain: the scene sets x and z, the terrain gives y.

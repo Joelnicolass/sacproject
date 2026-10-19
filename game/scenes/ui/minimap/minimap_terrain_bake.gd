@@ -17,7 +17,7 @@ signal baked
 @export var terrain: MeshInstance3D
 @export_group("Parts")
 @export var viewport: SubViewport
-## The mesh drawn (terrain.glb with the classic ground material: the minimap never shows a biome's PBR ground).
+## The mesh drawn: the map's terrain mesh (`terrain`) with the classic ground material (the minimap never shows a biome's PBR ground).
 @export var ground: MeshInstance3D
 @export var camera: Camera3D
 ## Shown only when this scene runs alone.

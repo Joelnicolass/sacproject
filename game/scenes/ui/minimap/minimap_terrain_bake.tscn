@@ -1,7 +1,6 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/minimap/minimap_terrain_bake.gd" id="1_bake"]
-[ext_resource type="PackedScene" path="res://assets/original/maps/high_noon/terrain.glb" id="2_terrain"]
 [ext_resource type="Material" path="res://assets/original/themes/james/ground_classic.tres" id="3_ground"]
 
 [sub_resource type="Environment" id="Environment_ambient"]
@@ -26,7 +25,7 @@ msaa_3d = 0
 size = Vector2i(1024, 1024)
 render_target_update_mode = 0
 
-[node name="Ground" parent="Viewport" unique_id=1037000003 instance=ExtResource("2_terrain")]
+[node name="Ground" type="MeshInstance3D" parent="Viewport" unique_id=1037000003]
 material_override = ExtResource("3_ground")
 
 [node name="Camera" type="Camera3D" parent="Viewport" unique_id=1037000004]

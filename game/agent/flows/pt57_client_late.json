@@ -8,7 +8,7 @@
     { "wait": 2.5 },
     { "print": { "node": "%MatchResult", "prop": "visible" } },
     { "print": { "node": "%MatchResult", "prop": "text" } },
-    { "print": { "node": "HighNoon/MapProps/Starts/Start2/Altar", "prop": "state" } },
+    { "print": { "node": "HighNoon/Map/MapProps/Starts/Start2/Altar", "prop": "state" } },
     { "shot": "pt57_late_b.png" },
     { "assert": { "node": "%MatchResult", "text_contains": "Derrota" } }
   ]

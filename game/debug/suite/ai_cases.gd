@@ -341,7 +341,7 @@ func _nav_rebuild(host: Node3D) -> Dictionary:
 	var terrain := MeshInstance3D.new()
 	terrain.name = "Terrain"
 	terrain.set_script(TERRAIN_SCRIPT)
-	terrain.set("data", load(OriginalAssets.HIGH_NOON_TERRAIN))
+	terrain.set("data", load(MapCatalog.active().terrain_path))
 	terrain.add_to_group(NavFingerprint.GROUP)
 	root.add_child(terrain)
 	var structures := Node3D.new()

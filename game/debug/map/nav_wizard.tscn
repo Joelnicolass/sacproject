@@ -10,7 +10,7 @@
 [node name="HighNoon" parent="." instance=ExtResource("1_world")]
 rules = ExtResource("2_rules")
 
-[node name="Altar" parent="HighNoon/MapProps/Starts/Start2" index="0"]
+[node name="Altar" parent="HighNoon/Map/MapProps/Starts/Start2" index="0"]
 state = 2
 
 [node name="Camera" parent="HighNoon"]
@@ -46,7 +46,7 @@ status_label = NodePath("../Overlay/Status")
 foe = NodePath("../Executioner")
 arrive_m = 5.0
 
-[editable path="HighNoon/MapProps/Starts/Start2"]
+[editable path="HighNoon/Map/MapProps/Starts/Start2"]
 
 [node name="Population" parent="HighNoon"]
 spawn_creatures = false

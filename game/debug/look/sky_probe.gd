@@ -1,6 +1,6 @@
 extends Node
 
-@export var sky_path: NodePath = ^"../HighNoon/Sky"
+@export var sky_path: NodePath = ^"../HighNoon/Map/Sky"
 
 
 func _input(event: InputEvent) -> void:

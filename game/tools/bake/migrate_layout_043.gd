@@ -1,6 +1,6 @@
 extends Node
 
-## RFC-043 043a/043b, one time, on the text of high_noon_layout.tscn (so the diff of the scene is only what changes):
+## RFC-043 043a/043b, one time, on the text of maps/high_noon/layout.tscn (so the diff of the scene is only what changes):
 ##  - 043a: a building or spawn with a `facing_deg` line gets the turn in its own saved transform, the same operation the game ran
 ##    in _ready (rotation.y = -deg_to_rad(facing_deg)); every `facing_deg` line is removed.
 ##  - 043b: a `tag = "x"` line becomes a reference to data/catalog/buildings/x.tres (`building`, under Buildings) or
@@ -9,7 +9,7 @@ extends Node
 ## "$GODOT" --headless --path game res://tools/bake/migrate_layout_043.tscn
 ## Check it with res://tools/audit/check_layout_transforms.tscn (its baseline was taken before the migration).
 
-const LAYOUT := "res://scenes/map/high_noon_layout.tscn"
+const LAYOUT := "res://scenes/map/maps/high_noon/layout.tscn"
 const KINDS := {
 	"Buildings": {"property": "building", "folder": "res://data/catalog/buildings/"},
 	"NpcSpawns": {"property": "creature", "folder": "res://data/catalog/creatures/"},

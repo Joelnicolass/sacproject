@@ -6,8 +6,6 @@ extends Node
 ## (`options_validator`) and how the ticket of a match is built (`ticket_builder`). Nothing here opens a
 ## socket or starts a process.
 
-## The only world a room can play for now.
-const WORLDS: PackedStringArray = ["high_noon"]
 const LEVEL_MIN := 1
 const LEVEL_MAX := 9
 ## Same hard range as GameplayPrefs.
@@ -17,6 +15,11 @@ const SEED_MAX := 0x7fffffff
 const OPTION_KEYS: PackedStringArray = ["world", "level", "friendly_fire", "drop_soul", "starting_souls"]
 
 var _rng := RandomNumberGenerator.new()
+
+
+## The worlds a room can play: the maps of data/maps/map_catalog.tres that rooms offer (RFC-044).
+static func worlds() -> PackedStringArray:
+	return MapCatalog.shared().room_tags()
 
 
 func _ready() -> void:
@@ -48,7 +51,7 @@ func are_options_valid(options: Dictionary) -> bool:
 func clean_options(options: Dictionary) -> Dictionary:
 	var out := {}
 	var world: Variant = options.get("world")
-	if world is String and WORLDS.has(world):
+	if world is String and worlds().has(world):
 		out["world"] = world
 	var level: Variant = options.get("level")
 	if level is int and level >= LEVEL_MIN and level <= LEVEL_MAX:
@@ -75,7 +78,7 @@ func build_ticket(seats: Array, options: Dictionary) -> Dictionary:
 		})
 	var clean := clean_options(options)
 	return {
-		"world": str(clean.get("world", WORLDS[0])),
+		"world": str(clean.get("world", worlds()[0])),
 		"options": clean,
 		"seed": _rng.randi_range(1, SEED_MAX),
 		"seats": rows,

@@ -2,10 +2,10 @@
   "scene": "res://scenes/match/high_noon.tscn",
   "wait_first": 0.6,
   "steps": [
-    { "print": { "node": "MapProps/Plant8", "prop": "mesh.resource_path" } },
-    { "print": { "node": "MapProps/Plant8", "prop": "scale" } },
-    { "print": { "node": "MapProps/Plant8", "prop": "material_override" } },
-    { "print": { "node": "MapProps/Plant8", "prop": "mesh._surfaces" } },
-    { "print": { "node": "MapProps/Plant3", "prop": "mesh._surfaces" } }
+    { "print": { "node": "Map/MapProps/Plant8", "prop": "mesh.resource_path" } },
+    { "print": { "node": "Map/MapProps/Plant8", "prop": "scale" } },
+    { "print": { "node": "Map/MapProps/Plant8", "prop": "material_override" } },
+    { "print": { "node": "Map/MapProps/Plant8", "prop": "mesh._surfaces" } },
+    { "print": { "node": "Map/MapProps/Plant3", "prop": "mesh._surfaces" } }
   ]
 }

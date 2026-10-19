@@ -86,7 +86,7 @@ func _start() -> void:
 	ThemeApplier.apply(ThemeApplier.theme_for(god), world)
 	_fill_units()
 	_fill_emitters()
-	var sky := world.get_node_or_null("Sky")
+	var sky := world.get_node_or_null("Map/Sky")
 	if sky:
 		sky.set_process(false)
 	view_camera.global_position = Vector3(center.x, 30.0, center.y - 40.0)
@@ -109,7 +109,7 @@ func _start() -> void:
 
 
 func _measure_all() -> void:
-	var rig := world.get_node_or_null("Look") as LookRig
+	var rig := world.get_node_or_null("Map/Look") as LookRig
 	var layer_count := rig.layer_nodes().size() if rig else 0
 	_set_layers(rig, layer_count, -1)
 	await _measure_case("nativa", _native(), "todas_apagadas")
@@ -154,7 +154,7 @@ func _native() -> LookQuality:
 
 
 func _measure_case(preset_name: String, quality: LookQuality, layers: String) -> void:
-	var rig := world.get_node_or_null("Look") as LookRig
+	var rig := world.get_node_or_null("Map/Look") as LookRig
 	if rig:
 		rig.apply_quality(quality)
 	QualityApplier.apply_to(get_viewport(), quality)

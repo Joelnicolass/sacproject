@@ -1,7 +1,7 @@
 class_name NavService
 extends Node
 
-## The world's pathfinder (RFC-024 §3.1, 024b): %Nav in high_noon. It takes the map's navmesh once, after the
+## The world's pathfinder (RFC-024 §3.1, 024b): %Nav in the match. It takes the map's navmesh once, after the
 ## world is ready (terrain, manafounts and altars exist), and answers find_path / component_at for the
 ## player, the AI and the perception. Only where the world is simulated: a client never asks.
 ## Blockers come from the scene: the collision shapes of the nodes in `blocker_groups` (manafounts, the
@@ -16,12 +16,11 @@ extends Node
 signal built(ms: float)
 
 const GROUP := &"nav_service"
-const DEFAULT_NAVMESH := "res://data/nav/high_noon_nav.res"
 const BAKE_SETTINGS := "res://data/nav/nav_bake.tres"
 const SEARCH_LOG_MAX := 200000
 
 @export var terrain: MeshInstance3D
-## The map's NavigationRegion3D (%NavRegion). Empty: the service puts one under itself with DEFAULT_NAVMESH.
+## The map's NavigationRegion3D (MapRoot.nav_region). Empty: the service puts one under itself with the navmesh of the active map.
 @export var region: NavigationRegion3D
 ## Physics ticks between a change and the swap of the re-baked navmesh (the bake takes a couple of seconds on a worker thread; if it
 ## is not done by then the swap waits for it). A count, never a clock.
@@ -157,9 +156,10 @@ func _build_navmesh() -> bool:
 		return true
 	var nav_region := region
 	if nav_region == null:
-		var stored := ResourceLoader.load(DEFAULT_NAVMESH) as NavigationMesh
+		var nav_path := MapCatalog.active().nav_path
+		var stored := ResourceLoader.load(nav_path) as NavigationMesh if not nav_path.is_empty() else null
 		if stored == null or stored.get_polygon_count() == 0:
-			push_warning("nav: no navmesh in %s" % DEFAULT_NAVMESH)
+			push_warning("nav: no navmesh in %s" % nav_path)
 			return false
 		nav_region = NavigationRegion3D.new()
 		nav_region.name = "NavRegion"

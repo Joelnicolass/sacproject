@@ -1,13 +1,312 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene format=3]
 
-[ext_resource type="Script" path="res://scenes/match/match_state.gd" id="1_state"]
-[ext_resource type="Script" path="res://scenes/match/defeat_rule.gd" id="2_rule"]
-[ext_resource type="Resource" path="res://data/match_rules.tres" id="3_rules"]
+[ext_resource type="Script" uid="uid://chaq34qan04i8" path="res://scenes/match/match_world.gd" id="1_world"]
+[ext_resource type="Script" uid="uid://ot34p6tw0si5" path="res://scenes/bodies/body_visual.gd" id="3_visual"]
+[ext_resource type="Script" uid="uid://l3u0mgrbc72j" path="res://scenes/wizards/wizard_spawner.gd" id="4_spawner"]
+[ext_resource type="PackedScene" path="res://scenes/wizards/wizard_body.tscn" id="5_wizard"]
+[ext_resource type="Script" uid="uid://cm4vcossqdpt5" path="res://scenes/orders/match_command.gd" id="7_match"]
+[ext_resource type="Script" uid="uid://nxbcgsgrjk48" path="res://scenes/camera/world_camera.gd" id="11_camera"]
+[ext_resource type="Resource" uid="uid://d1e2js08kea5i" path="res://data/match_rules.tres" id="12_rules"]
+[ext_resource type="Script" uid="uid://daosef86scnum" path="res://scenes/match/match_biome.gd" id="13_biome"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud/hud.tscn" id="14_hud"]
+[ext_resource type="PackedScene" path="res://scenes/ui/spell_book/spell_book.tscn" id="15_book"]
+[ext_resource type="Script" uid="uid://c8mumq6up5ajy" path="res://scenes/spells/spell_spawner.gd" id="16_spawner"]
+[ext_resource type="Script" uid="uid://k8nbg7yvigvf" path="res://scenes/structures/structure_spawner.gd" id="17_structure_spawner"]
+[ext_resource type="PackedScene" path="res://scenes/structures/structure.tscn" id="18_structure"]
+[ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="f25_unit"]
+[ext_resource type="Script" uid="uid://c3o4n6xmxkjph" path="res://scenes/units/unit_spawner.gd" id="f25_unit_spawner"]
+[ext_resource type="Script" uid="uid://dqkkafcm1xuke" path="res://scenes/orders/orders.gd" id="f27_orders"]
+[ext_resource type="Script" uid="uid://0e71ph1e726s" path="res://scenes/orders/selection.gd" id="f27_selection"]
+[ext_resource type="Script" uid="uid://dx4uvidfw53j2" path="res://scenes/units/attacks/shot_spawner.gd" id="f29_shots"]
+[ext_resource type="PackedScene" path="res://scenes/souls/soul_system.tscn" id="f30_souls"]
+[ext_resource type="PackedScene" path="res://scenes/match/match_state.tscn" id="f57_match"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud/match_result.tscn" id="f57_result"]
+[ext_resource type="PackedScene" path="res://scenes/sacrifice/sacrifice_system.tscn" id="f59_sacrifice"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud/ritual_notice.tscn" id="f60_notice"]
+[ext_resource type="Script" uid="uid://bdlkj5tbi1wvh" path="res://scenes/map/nav/nav_service.gd" id="f72_nav"]
+[ext_resource type="Script" uid="uid://t8pnos2jmli" path="res://scenes/units/targeting/side_vision.gd" id="f72_vision"]
+[ext_resource type="PackedScene" path="res://scenes/units/peasant.tscn" id="f73_peasant"]
+[ext_resource type="Script" uid="uid://qtxfsr581l1s" path="res://scenes/map/map_population.gd" id="f73_population"]
+[ext_resource type="Script" uid="uid://uifgkgnynkf6" path="res://scenes/ai/ai_roster.gd" id="f77_roster"]
+[ext_resource type="PackedScene" path="res://scenes/ai/ai_side.tscn" id="f77_side"]
+[ext_resource type="PackedScene" path="res://scenes/ui/selection_roster/selection_roster.tscn" id="f79_roster"]
+[ext_resource type="PackedScene" path="res://scenes/ui/command_cue/command_cue.tscn" id="f80_cue"]
+[ext_resource type="Resource" path="res://data/ui/command_cues.tres" id="f80_cues"]
+[ext_resource type="Script" uid="uid://jpjghk5y24xa" path="res://scenes/orders/command_log.gd" id="f80_log"]
+[ext_resource type="Script" uid="uid://cotfg8ie2hi8r" path="res://scenes/ui/command_cue/target_probe.gd" id="f80_probe"]
+[ext_resource type="Script" uid="uid://d13o5g6y8tngx" path="res://scenes/ui/command_cue/cursor_skin.gd" id="f80_skin"]
+[ext_resource type="Script" uid="uid://3p0kv5ypwrnt" path="res://scenes/structures/structure_inspector.gd" id="f93_inspector"]
+[ext_resource type="PackedScene" path="res://scenes/ui/pause_menu/pause_menu.tscn" id="f141_pause"]
+[ext_resource type="Script" uid="uid://c8tyaqoovx84y" path="res://scenes/ui/options/graphics_applier.gd" id="f142_applier"]
+[ext_resource type="Resource" path="res://data/ui/graphics_prefs.tres" id="f142_prefs"]
+[ext_resource type="PackedScene" path="res://scenes/units/attacks/droplet_rain.tscn" id="f148_rain"]
+[ext_resource type="PackedScene" path="res://scenes/ui/lobby/lobby_return.tscn" id="f183_return"]
+[ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap.tscn" id="f213_minimap"]
+[ext_resource type="Script" uid="uid://bw6hj2y4y367k" path="res://scenes/orders/order_radial.gd" id="f218_order_radial"]
+[ext_resource type="PackedScene" path="res://scenes/ui/radial/radial_menu.tscn" id="f218_radial"]
+[ext_resource type="PackedScene" path="res://scenes/fx/order_marker.tscn" id="f220_marker"]
 
-[node name="Match" type="Node"]
-script = ExtResource("1_state")
-rules = ExtResource("3_rules")
 
-[node name="Defeat" type="Node" parent="." node_paths=PackedStringArray("match_state")]
-script = ExtResource("2_rule")
-match_state = NodePath("..")
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
+bg_color = Color(1, 1, 1, 0)
+
+
+[node name="HighNoon" type="Node3D" unique_id=741096982]
+script = ExtResource("1_world")
+rules = ExtResource("12_rules")
+
+
+[node name="Camera" type="Camera3D" parent="." unique_id=1948599183 node_paths=PackedStringArray("edge_area", "wheel_blockers")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.7, 0.7, 0, -0.7, 0.7, 0, 18, 18)
+far = 20000.0
+script = ExtResource("11_camera")
+edge_area = NodePath("../Hud/View")
+wheel_blockers = [NodePath("../Hud/Minimap")]
+
+
+[node name="Creature" type="MeshInstance3D" parent="." unique_id=2147282153]
+unique_name_in_owner = true
+script = ExtResource("3_visual")
+model = "peas"
+
+
+[node name="Wizards" type="Node3D" parent="." unique_id=322085300]
+unique_name_in_owner = true
+
+
+[node name="WizardSpawner" type="MultiplayerSpawner" parent="." unique_id=506358298]
+spawn_path = NodePath("../Wizards")
+script = ExtResource("4_spawner")
+pawn_scene = ExtResource("5_wizard")
+actor_name_prefix = "Wizard"
+
+
+[node name="MatchBiome" type="Node" parent="." unique_id=1771451217 node_paths=PackedStringArray("world")]
+script = ExtResource("13_biome")
+world = NodePath("..")
+
+
+[node name="Units" type="Node3D" parent="." unique_id=1921753883]
+unique_name_in_owner = true
+
+
+[node name="UnitSpawner" type="MultiplayerSpawner" parent="." unique_id=928255093]
+spawn_path = NodePath("../Units")
+script = ExtResource("f25_unit_spawner")
+unit_scene = ExtResource("f25_unit")
+peasant_scene = ExtResource("f73_peasant")
+rules = ExtResource("12_rules")
+
+
+[node name="Population" type="Node3D" parent="." unique_id=820745689 node_paths=PackedStringArray("unit_spawner")]
+unique_name_in_owner = true
+script = ExtResource("f73_population")
+spawn_creatures = true
+unit_spawner = NodePath("../UnitSpawner")
+
+
+[node name="Spells" type="Node3D" parent="." unique_id=99761749]
+unique_name_in_owner = true
+
+
+[node name="Structures" type="Node3D" parent="." unique_id=771314657]
+unique_name_in_owner = true
+
+
+[node name="StructureSpawner" type="MultiplayerSpawner" parent="." unique_id=687306311]
+spawn_path = NodePath("../Structures")
+script = ExtResource("17_structure_spawner")
+structure_scene = ExtResource("18_structure")
+rules = ExtResource("12_rules")
+
+
+[node name="SpellSpawner" type="MultiplayerSpawner" parent="." unique_id=1184984889]
+spawn_path = NodePath("../Spells")
+script = ExtResource("16_spawner")
+
+
+[node name="DropletRain" parent="." unique_id=1480148148 instance=ExtResource("f148_rain")]
+
+
+[node name="Shots" type="Node3D" parent="." unique_id=529699962]
+unique_name_in_owner = true
+
+
+[node name="ShotSpawner" type="MultiplayerSpawner" parent="." unique_id=2135793793]
+spawn_path = NodePath("../Shots")
+script = ExtResource("f29_shots")
+
+
+[node name="SoulSystem" parent="." unique_id=277566274 node_paths=PackedStringArray("world") instance=ExtResource("f30_souls")]
+world = NodePath("..")
+
+
+[node name="SacrificeSystem" parent="." unique_id=956844796 node_paths=PackedStringArray("world") instance=ExtResource("f59_sacrifice")]
+unique_name_in_owner = true
+world = NodePath("..")
+
+
+[node name="Match" parent="." unique_id=1957000101 node_paths=PackedStringArray("world") instance=ExtResource("f57_match")]
+unique_name_in_owner = true
+world = NodePath("..")
+
+
+[node name="Nav" type="Node" parent="." unique_id=1324434439 node_paths=PackedStringArray("structures")]
+unique_name_in_owner = true
+script = ExtResource("f72_nav")
+structures = NodePath("../Structures")
+
+
+[node name="Vision" type="Node" parent="." unique_id=1763951431]
+unique_name_in_owner = true
+script = ExtResource("f72_vision")
+
+
+[node name="Selection" type="Node" parent="." unique_id=1294781756 node_paths=PackedStringArray("box")]
+unique_name_in_owner = true
+script = ExtResource("f27_selection")
+box = NodePath("../Hud/SelectionBox")
+
+
+[node name="Orders" type="Node" parent="." unique_id=1688586003]
+unique_name_in_owner = true
+script = ExtResource("f27_orders")
+
+
+[node name="MatchCommand" type="Node" parent="." unique_id=391205645]
+script = ExtResource("7_match")
+
+
+[node name="OrderRadial" type="Node" parent="." unique_id=901968895 node_paths=PackedStringArray("menu", "view", "command")]
+unique_name_in_owner = true
+editor_description = "RFC-038: dueño del botón derecho (toque = orden, mantener 0,25 s = menú radial), de Tab mantenido y de Alt+1..8 (formaciones). Va después de MatchCommand: ve Alt+N antes que él."
+script = ExtResource("f218_order_radial")
+menu = NodePath("../Hud/RadialMenu")
+view = NodePath("../Hud/View")
+command = NodePath("../MatchCommand")
+
+
+[node name="Inspector" type="Node" parent="." unique_id=459803602]
+unique_name_in_owner = true
+editor_description = "RFC-028b: la casa, el cactus o el Manalith clicado muestra su barra de vida; local, sin RPC."
+script = ExtResource("f93_inspector")
+
+
+[node name="Ping" parent="." unique_id=1292527434 instance=ExtResource("f220_marker")]
+unique_name_in_owner = true
+
+
+[node name="AiRoster" type="Node" parent="." unique_id=2118618212 node_paths=PackedStringArray("world", "wizard_spawner")]
+unique_name_in_owner = true
+editor_description = "RFC-024 024f: arma los asientos IA (MatchRules.ai_seats o SacrificeFlow.solo_ai_seats) solo en solo o en el servidor. Sin asientos no hace nada."
+script = ExtResource("f77_roster")
+world = NodePath("..")
+wizard_spawner = NodePath("../WizardSpawner")
+side_scene = ExtResource("f77_side")
+
+
+[node name="Hud" type="CanvasLayer" parent="." unique_id=1419423165]
+
+
+[node name="View" type="Button" parent="Hud" unique_id=363790488]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_clear")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_clear")
+theme_override_styles/hover = SubResource("StyleBoxFlat_clear")
+theme_override_styles/focus = SubResource("StyleBoxFlat_clear")
+flat = true
+
+
+[node name="SelectionRoster" parent="Hud" unique_id=1154554107 node_paths=PackedStringArray("selection", "avoid") instance=ExtResource("f79_roster")]
+unique_name_in_owner = true
+selection = NodePath("../../Selection")
+avoid = NodePath("../SpellBook")
+
+
+[node name="SelectionBox" type="ReferenceRect" parent="Hud" unique_id=2145779674]
+unique_name_in_owner = true
+visible = false
+mouse_filter = 2
+border_color = Color(1, 1, 1, 1)
+editor_only = false
+
+
+[node name="SpellBook" parent="Hud" unique_id=1866160798 instance=ExtResource("15_book")]
+unique_name_in_owner = true
+
+
+[node name="Battle" type="Node" parent="Hud" unique_id=1054612398]
+unique_name_in_owner = true
+script = ExtResource("f80_log")
+cues = ExtResource("f80_cues")
+
+
+[node name="Minimap" parent="Hud" unique_id=1037000021 node_paths=PackedStringArray("camera", "structures_root") instance=ExtResource("f213_minimap")]
+unique_name_in_owner = true
+camera = NodePath("../../Camera")
+structures_root = NodePath("../../Structures")
+
+
+[node name="RadialMenu" parent="Hud" unique_id=834462750 instance=ExtResource("f218_radial")]
+unique_name_in_owner = true
+visible = false
+offset_right = 280.0
+offset_bottom = 280.0
+pivot_offset = Vector2(140, 140)
+
+
+[node name="WizardHud" parent="Hud" unique_id=1561071952 instance=ExtResource("14_hud")]
+unique_name_in_owner = true
+
+
+[node name="MatchResult" parent="Hud" unique_id=1957000102 node_paths=PackedStringArray("match_state") instance=ExtResource("f57_result")]
+unique_name_in_owner = true
+match_state = NodePath("../../Match")
+
+
+[node name="LobbyReturn" parent="Hud" unique_id=803648076 node_paths=PackedStringArray("match_state") instance=ExtResource("f183_return")]
+unique_name_in_owner = true
+match_state = NodePath("../../Match")
+
+
+[node name="RitualNotice" parent="Hud" unique_id=1957000103 instance=ExtResource("f60_notice")]
+unique_name_in_owner = true
+
+
+[node name="TargetProbe" type="Node" parent="Hud" unique_id=1957000104 node_paths=PackedStringArray("world_view", "hud_controls", "camera")]
+unique_name_in_owner = true
+script = ExtResource("f80_probe")
+world_view = NodePath("../View")
+hud_controls = [NodePath("../SpellBook"), NodePath("../SelectionRoster"), NodePath("../Minimap"), NodePath("../RadialMenu")]
+camera = NodePath("../../Camera")
+
+
+[node name="CursorSkin" type="Node" parent="Hud" unique_id=1957000105 node_paths=PackedStringArray("command_log", "probe")]
+unique_name_in_owner = true
+script = ExtResource("f80_skin")
+cues = ExtResource("f80_cues")
+command_log = NodePath("../Battle")
+probe = NodePath("../TargetProbe")
+
+
+[node name="CommandCue" parent="Hud" unique_id=1957000106 node_paths=PackedStringArray("command_log", "probe", "skin") instance=ExtResource("f80_cue")]
+unique_name_in_owner = true
+command_log = NodePath("../Battle")
+cues = ExtResource("f80_cues")
+probe = NodePath("../TargetProbe")
+skin = NodePath("../CursorSkin")
+
+
+[node name="PauseMenu" parent="." unique_id=29936649 instance=ExtResource("f141_pause")]
+unique_name_in_owner = true
+
+
+[node name="GraphicsApplier" type="Node" parent="." unique_id=2135902278]
+script = ExtResource("f142_applier")
+prefs = ExtResource("f142_prefs")

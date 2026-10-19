@@ -2,11 +2,12 @@
 extends MeshInstance3D
 
 ## The map's raw ground (assets/original/maps/<map>/terrain.res). Everything else is derived from it on load.
-## high_noon.tscn assigns it. A Terrain built from the script alone (a probe) assigns `data` itself; only the editor
+## The map scene assigns it. A Terrain built from the script alone (a probe) assigns `data` itself; only the editor
 ## falls back to High Noon's (a half-built scene), with a warning. In a match, a missing `data` is an error, not a silent default.
 @export var data: MapTerrainData
-## The map's tile index (256x256, tile id in R) and baked light. Imported as Image, read on the CPU.
-@export_file("*.png") var tiles_path: String = OriginalAssets.HIGH_NOON_TILES
+## The map's tile index (256x256, tile id in R). Imported as Image, read on the CPU. Empty = the active map's
+## (MapDefinition.tiles_path), which may have none.
+@export_file("*.png") var tiles_path: String = ""
 ## The map sits around x/z 930-1620, far from where the editor camera opens. In the editor only,
 ## the parent is shifted so the map shows at the origin. Children keep their real coordinates,
 ## and the shift is taken off while the scene is saved.
@@ -23,7 +24,7 @@ extends MeshInstance3D
 		smooth_ground = value
 		_refresh_normals()
 
-const MISSING_TEXT := "Falta el terreno de High Noon."
+const MISSING_TEXT := "Falta el terreno del mapa."
 const CELL := 10.0
 const GRID := 256
 
@@ -102,9 +103,10 @@ func _set_preview_offset(offset: Vector3) -> void:
 
 
 func _load_mesh() -> bool:
-	if data == null and Engine.is_editor_hint() and ResourceLoader.exists(OriginalAssets.HIGH_NOON_TERRAIN):
-		push_warning("Terrain.data is empty: the editor shows High Noon's ground. Assign data in the scene.")
-		data = load(OriginalAssets.HIGH_NOON_TERRAIN) as MapTerrainData
+	var fallback := MapCatalog.active().terrain_path
+	if data == null and Engine.is_editor_hint() and not fallback.is_empty() and ResourceLoader.exists(fallback):
+		push_warning("Terrain.data is empty: the editor shows the ground of '%s'. Assign data in the scene." % MapCatalog.active().tag)
+		data = load(fallback) as MapTerrainData
 	if data == null:
 		push_error("Terrain '%s' has no data (MapTerrainData): assign it in the scene." % name)
 		return false
@@ -375,7 +377,7 @@ func clear_ground_override() -> void:
 
 
 func _tile_ids() -> PackedByteArray:
-	var image := _load_image(tiles_path)
+	var image := _load_image(tiles_path if not tiles_path.is_empty() else MapCatalog.active().tiles_path)
 	if image == null:
 		return PackedByteArray()
 	var ids := PackedByteArray()
@@ -388,7 +390,7 @@ func _tile_ids() -> PackedByteArray:
 
 ## A PNG imported as Image (importer="image": exact pixels, no sRGB, no mipmaps, no compression).
 func _load_image(path: String) -> Image:
-	if not ResourceLoader.exists(path):
+	if path.is_empty() or not ResourceLoader.exists(path):
 		return null
 	return load(path) as Image
 

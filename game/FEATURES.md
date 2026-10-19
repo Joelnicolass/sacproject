@@ -3186,3 +3186,20 @@ Agregar o cambiar un hechizo de combate ya no toca `caster.gd`.
 - Solo `git mv` más reescritura de rutas con `tools/move_map.py` y `tools/move_map/048.csv` (idempotente; `--check --lint` limpio). Sin renombres de archivo, `class_name` ni nodo.
 - README por carpeta de primer nivel y por dominio de `scenes/`; RULES.md §Arquitectura describe el árbol; `debug/*` y `script_templates/*` quedan fuera del export dedicado; `.git-blame-ignore-revs` lista los commits de mudanza.
 - Verificación por corte: import x2 sin errores, escenas principales abren, `rules_suite` PASS, `quick` sin regrabar, e2e en k y l.
+
+### F260 — Partida y mapa separados (RFC-044, corte 044a) — cerrado 2026-10-19
+
+- `high_noon.tscn` (64 nodos) se partió en `scenes/match/match.tscn` (sistemas, HUD, cámara; no nombra ningún mapa) y `scenes/map/maps/high_noon/map.tscn` (cielo, look, terreno, layout, navegación, `Starts`/`Founts`, bake del minimapa), cuya raíz es un `MapRoot` con enchufes (`terrain`, `nav_region`, `starts`, `look`, `minimap_bake`, `buildings_root`, `npc_spawns_root`).
+- `match_world.gd` (antes `high_noon.gd`) pone el mapa como primer hijo `Map` en `_enter_tree` y conecta Camera, Selection, Nav, WizardSpawner, Population, Minimap y GraphicsApplier a los enchufes antes de que cualquiera esté listo. `scenes/match/high_noon.tscn` queda como escena heredada de `match.tscn` con el mapa de High Noon ya puesto (las de `debug/` la instancian y editan `HighNoon/Map/...`). Con otro `--map=` el mapa de la escena se reemplaza.
+- La raíz sigue llamándose `HighNoon` (los benches y flows la nombran); el nodo `Match` pasó a `match_state.tscn`. Mismo mapa, mismo comportamiento: `bake_nav --check` PASS sin re-hornear (los nombres internos del mapa no cambiaron, así que la huella es la misma).
+
+### F261 — `MapDefinition` por mapa (RFC-044, corte 044b) — cerrado 2026-10-19
+
+- `MapDefinition` (`.tres` junto a la escena del mapa) nombra escena, bandos, terreno, tiles, luz, navmesh, asientos (`player_starts`), imagen y entradas del horneado; `MapCatalog` (`data/maps/map_catalog.tres`) las lista y `MapCatalog.active()` es la del proceso (`--map=<tag>`, High Noon por defecto).
+- Las rutas `HIGH_NOON_*` de `OriginalAssets` desaparecieron: `SideRelations`, `NavService`, `GroundMaterial`, `Terrain`, `SacrificeRoomRules.worlds()` y las herramientas leen de la definición activa. `bake_nav` y `bake_map_layout` aceptan `-- --map=<tag>`.
+- El bake del minimapa toma la malla del `Terrain` del mapa (ya no trae el glb de High Noon adentro).
+
+### F262 — Asientos y bandos (RFC-044, corte 044c) — cerrado 2026-10-19
+
+- `SideRelations` separa asiento de bando: los asientos son los primeros `player_starts` slots y toman los bandos que un jugador puede tomar (assignment != 0); los bandos de NPC vienen después. Con dos asientos da lo de siempre (Farmers = slot 3, Taurocks = slot 4); un mapa de cuatro asientos pone sus NPC desde el slot 5.
+- **Fuera:** `SacrificeFlow.max_players` sigue en 2 (leer `MapCatalog` desde ese autoload dejaba scripts sin liberar en el import); el 2v2 completo (lobby, colores, HUD) es de otro RFC.

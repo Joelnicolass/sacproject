@@ -362,7 +362,7 @@
   },
   {
    "print": {
-    "node": "HighNoon/MapProps/Starts/Start2/Altar",
+    "node": "HighNoon/Map/MapProps/Starts/Start2/Altar",
     "prop": "state"
    }
   },

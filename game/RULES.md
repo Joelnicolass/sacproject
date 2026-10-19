@@ -14,7 +14,7 @@ Estándar. Escenas en `scenes/`. Sin `src/domain/`.
 
 Estructura por dominio (RFC-048). Cada carpeta tiene su `README.md`.
 - `scenes/<dominio>/`: código y escenas del producto (`ai`, `bodies`, `camera`, `components`, `core`, `fx`, `gods`, `look`, `map`, `match`, `net`, `orders`, `sacrifice`, `souls`, `spells`, `structures`, `ui`, `units`, `wizards`). Nada suelto en la raíz de `scenes/`.
-- `data/`: Resources `.tres` por tipo (`data/catalog/<tipo>/`, `gods/`, `look/`, `nav/`...).
+- `data/`: Resources `.tres` por tipo (`data/catalog/<tipo>/`, `gods/`, `look/`, `nav/`, `maps/`...).
 - `debug/<dominio>/`: escenas y reglas de desarrollo (`suite/` = casos del banco, `rules/` = `MatchRules` de prueba). No entra en el export.
 - `tools/`: `import/`, `bake/`, `audit/`, `material/`, `deploy/`. `agent/`: `runs/`, `flows/`, `fixtures/`, `harness/`, `scripts/`. Ni `scenes/` ni `data/` nombran `res://debug|agent|tools`.
 - Las mudanzas de rutas se hacen con `tools/move_map.py` y un CSV (`--check --lint` debe dar 0). Los commits de mudanza están en `.git-blame-ignore-revs`.
@@ -33,7 +33,7 @@ La instalación de Sacrifice se lee en local. Los WAD no se commitean nunca.
 
 Desde el 2026-10-17 (decisión del usuario, RFC-023), los assets finales del port se versionan en `game/assets/original/` con git LFS: cada modelo es un `.glb` con su esqueleto y todas sus animaciones, uno por modelo, sin copias por cuadro. El port no depende de ninguna caché: todo sale de `assets/original/` (RFC-033).
 
-sacengine aporta los números del juego (daño, hechizos, reglas). El mapa se edita en Godot (RFC-035): el terreno es `terrain.glb`, el contenido son nodos de `high_noon_layout.tscn` y la navegación es un navmesh de Godot (`NavigationRegion3D`, `data/nav/high_noon_nav.res`, horneado con `tools/bake/bake_nav.tscn`). No hay grilla propia de caminos. En Godot el movimiento usa el motor: `CharacterBody3D`, `move_and_slide`, colisión y gravedad. No se reescribe un integrador ni un rayo de pies al lado de eso. El dedicado, cuando hay red, es quien mueve el cuerpo. El cliente manda la orden y pinta.
+sacengine aporta los números del juego (daño, hechizos, reglas). El mapa se edita en Godot (RFC-035): el terreno es `terrain.glb`, el contenido son nodos del `layout.tscn` del mapa y la navegación es un navmesh de Godot (`NavigationRegion3D`, `nav.res` junto al mapa, horneado con `tools/bake/bake_nav.tscn`). Un mapa es una carpeta `scenes/map/maps/<tag>/` con su `map.tscn` y su `MapDefinition` `.tres`, listado en `data/maps/map_catalog.tres` (RFC-044); `--map=<tag>` lo elige, sin tocar código. No hay grilla propia de caminos. En Godot el movimiento usa el motor: `CharacterBody3D`, `move_and_slide`, colisión y gravedad. No se reescribe un integrador ni un rayo de pies al lado de eso. El dedicado, cuando hay red, es quien mueve el cuerpo. El cliente manda la orden y pinta.
 
 ## Idioma
 

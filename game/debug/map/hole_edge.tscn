@@ -13,7 +13,7 @@ rules = ExtResource("2_rules")
 [node name="Camera" parent="HighNoon"]
 debug_pointer = Vector2(640, 360)
 
-[node name="Start1" parent="HighNoon/MapProps/Starts" node_paths=PackedStringArray("faces")]
+[node name="Start1" parent="HighNoon/Map/MapProps/Starts" node_paths=PackedStringArray("faces")]
 faces = NodePath("../../../../HoleSide")
 
 [node name="WizardSpawner" parent="HighNoon"]

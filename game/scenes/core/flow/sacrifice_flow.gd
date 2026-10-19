@@ -35,7 +35,7 @@ var ticket_glue: MatchTicketGlue
 func _ready() -> void:
 	boot_path = "res://scenes/core/boot.tscn"
 	## `--world=res://debug/….tscn` on the dedicated and its clients plays a debug scene online.
-	world_path = MpBoot.user_value("world", "res://scenes/match/high_noon.tscn")
+	world_path = MpBoot.user_value("world", "res://scenes/match/match.tscn")
 	room_name = "High Noon"
 	## RFC-034 034f: what the player reads when a join fails or the server goes away (the kit's defaults are English).
 	joining_status = "Conectando con %s…"

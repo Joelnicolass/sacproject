@@ -18,9 +18,9 @@
     { "press": { "name": "turn_right", "hold": 1.0 } },
     { "print": { "node": "%Wizards/Wizard1", "prop": "rotation" } },
     { "shot": "f17_world_turn_right.png" },
-    { "print": { "node": "MapProps/Plant0", "prop": "global_position" } },
-    { "print": { "node": "MapProps/Plant39", "prop": "global_position" } },
-    { "print": { "node": "MapProps/Founts/FountWest", "prop": "global_position" } },
-    { "print": { "node": "MapProps/Starts/Start2/Altar", "prop": "global_position" } }
+    { "print": { "node": "Map/MapProps/Plant0", "prop": "global_position" } },
+    { "print": { "node": "Map/MapProps/Plant39", "prop": "global_position" } },
+    { "print": { "node": "Map/MapProps/Founts/FountWest", "prop": "global_position" } },
+    { "print": { "node": "Map/MapProps/Starts/Start2/Altar", "prop": "global_position" } }
   ]
 }

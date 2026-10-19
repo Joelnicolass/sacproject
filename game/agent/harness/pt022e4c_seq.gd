@@ -46,7 +46,7 @@ func _process(delta: float) -> void:
 	_t += delta
 	if not _preset.is_empty() and not _preset_done and _t > 3.0:
 		_preset_done = true
-		var rig = get_tree().current_scene.get_node_or_null("HighNoon/Look")
+		var rig = get_tree().current_scene.get_node_or_null("HighNoon/Map/Look")
 		var q := load("res://data/look/quality_%s.tres" % _preset)
 		if rig and q:
 			rig.apply_quality(q)

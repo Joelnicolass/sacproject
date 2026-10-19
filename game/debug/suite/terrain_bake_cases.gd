@@ -22,7 +22,7 @@ var _failed := 0
 
 func _initialize() -> void:
 	var glb := OriginalAssets.map("high_noon", "terrain.glb")
-	var current := load(OriginalAssets.HIGH_NOON_TERRAIN) as MapTerrainData
+	var current := load(MapCatalog.active().terrain_path) as MapTerrainData
 	# debug/map/terrain_reference.res is a frozen copy of the committed (original) terrain.res: neither the import
 	# nor the glb may drift from it.
 	var reference := load(REFERENCE) as MapTerrainData
@@ -68,7 +68,7 @@ func _round_trip(current: MapTerrainData) -> void:
 func _scene_instance(current: MapTerrainData) -> void:
 	var glb := OriginalAssets.map("high_noon", "terrain.glb")
 	var world: Node = (load(WORLD_SCENE) as PackedScene).instantiate()
-	var scene_terrain := world.get_node_or_null("Terrain") as MeshInstance3D
+	var scene_terrain := world.get_node_or_null("Map/Terrain") as MeshInstance3D
 	_check("scene_terrain_found", scene_terrain != null)
 	if scene_terrain == null:
 		world.free()

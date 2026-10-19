@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="MapCatalog" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/map/map_catalog.gd" id="1_catalog"]
+[ext_resource type="Script" path="res://scenes/map/map_definition.gd" id="2_def"]
+[ext_resource type="Resource" path="res://scenes/map/maps/high_noon/high_noon.tres" id="3_high_noon"]
+
+[resource]
+script = ExtResource("1_catalog")
+maps = Array[ExtResource("2_def")]([ExtResource("3_high_noon")])

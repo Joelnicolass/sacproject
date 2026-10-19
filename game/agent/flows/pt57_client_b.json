@@ -32,13 +32,13 @@
   },
   {
    "print": {
-    "node": "HighNoon/MapProps/Starts/Start1/Altar",
+    "node": "HighNoon/Map/MapProps/Starts/Start1/Altar",
     "prop": "state"
    }
   },
   {
    "print": {
-    "node": "HighNoon/MapProps/Starts/Start2/Altar",
+    "node": "HighNoon/Map/MapProps/Starts/Start2/Altar",
     "prop": "state"
    }
   },

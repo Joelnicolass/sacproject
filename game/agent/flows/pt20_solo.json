@@ -18,8 +18,8 @@
     { "print": { "node": "%Wizards/Wizard1/Tilt/Mesh", "prop": "model" } },
     { "print": { "node": "%Wizards/Wizard1", "prop": "owner_slot" } },
     { "print": { "node": "%Wizards/Wizard1", "prop": "global_position" } },
-    { "print": { "node": "MapProps/Starts/Start1", "prop": "global_position" } },
-    { "print": { "node": "MapProps/Founts/FountEast", "prop": "global_position" } },
+    { "print": { "node": "Map/MapProps/Starts/Start1", "prop": "global_position" } },
+    { "print": { "node": "Map/MapProps/Founts/FountEast", "prop": "global_position" } },
     { "print": { "node": "MatchBiome", "prop": "god" } },
     { "assert": { "node": "%Title", "text_equals": "Seerix · Persephone" } },
     { "assert": { "node": "%Stats", "text_equals": "Vida 1950/1950 · Maná 1900/1900 · Almas 12" } },
@@ -39,8 +39,8 @@
     { "press": { "name": "turn_left", "hold": 0.5 } },
     { "wait": 0.8 },
     { "shot": "pt20_solo_turn_side.png" },
-    { "print": { "node": "MapProps/Plant0", "prop": "model" } },
-    { "print": { "node": "MapProps/Plant0", "prop": "global_position" } },
-    { "print": { "node": "MapProps/Plant39", "prop": "global_position" } }
+    { "print": { "node": "Map/MapProps/Plant0", "prop": "model" } },
+    { "print": { "node": "Map/MapProps/Plant0", "prop": "global_position" } },
+    { "print": { "node": "Map/MapProps/Plant39", "prop": "global_position" } }
   ]
 }

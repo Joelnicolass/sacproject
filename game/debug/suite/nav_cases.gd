@@ -30,7 +30,7 @@ func run(host: Node3D) -> Dictionary:  # a coroutine: it waits for physics frame
 	_terrain = MeshInstance3D.new()
 	_terrain.name = "Terrain"
 	_terrain.set_script(TERRAIN_SCRIPT)
-	_terrain.set("data", load(OriginalAssets.HIGH_NOON_TERRAIN))
+	_terrain.set("data", load(MapCatalog.active().terrain_path))
 	_terrain.add_to_group(NavFingerprint.GROUP)
 	_root.add_child(_terrain)
 	var fount := StaticBody3D.new()

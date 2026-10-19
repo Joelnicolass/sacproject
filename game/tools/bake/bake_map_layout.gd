@@ -1,8 +1,9 @@
 extends SceneTree
 
-## One-time tool (RFC-035 035d): writes High Noon's content as nodes. From then on the scene is the source of truth and
+## One-time tool (RFC-035 035d): writes a map's content as nodes (High Noon, or `--map=<tag>` after `--`, RFC-044 044b: the
+## inputs and outputs are the paths of its MapDefinition). From then on the scene is the source of truth and
 ## nothing reads ntts.json or widgets.json at runtime; those two files are only this tool's input.
-##   scenes/map/high_noon_layout.tscn   Buildings (MapBuilding), Plants (Plant), NpcSpawns (NpcSpawn)
+##   scenes/map/maps/high_noon/layout.tscn   Buildings (MapBuilding), Plants (Plant), NpcSpawns (NpcSpawn)
 ##   assets/original/maps/high_noon/sides.tres   MapSides
 ## It does what the old runtime code did, in the same order and with the same arithmetic, so the match digests do not move:
 ##  - buildings: the order of `structures`, names `Bld%03d_<tag>` (the index counts the hand-placed founts and altars too),
@@ -17,9 +18,6 @@ extends SceneTree
 ## Needs the project imported once, so the class names (MapSides, NpcSpawn, MapBuilding) are registered. Import again after
 ## writing, so the editor knows the new scene.
 
-const NTTS_PATH := "res://assets/original/maps/high_noon/ntts.json"
-const WIDGETS_PATH := "res://assets/original/maps/high_noon/widgets.json"
-const LAYOUT_OUT := "res://scenes/map/high_noon_layout.tscn"
 const BUILDING_SCENE := "res://scenes/map/map_building.tscn"
 const SPAWN_SCENE := "res://scenes/map/npc_spawn.tscn"
 const PLANT_SCENE := "res://scenes/map/props/plant.tscn"
@@ -48,12 +46,14 @@ const WIDGET_MODELS := {
 const FALLBACK_MODELS: Array = ["PCF1", "PCF2", "PCF3", "PCF4", "PCG1", "PCG2", "PCW5", "PCW6", "PCW7", "PCW8", "PGL1", "PGL2", "PCC1", "PCC2"]
 
 var _terrain: MeshInstance3D
+var _map: MapDefinition
 var _failures: Array[String] = []
 
 
 func _initialize() -> void:
-	var out := LAYOUT_OUT
-	var sides_out := OriginalAssets.HIGH_NOON_SIDES
+	_map = MapCatalog.active()
+	var out := _map.layout_scene_path
+	var sides_out := _map.sides.resource_path if _map.sides != null else ""
 	var force := false
 	var check := false
 	for argument in OS.get_cmdline_user_args():
@@ -65,10 +65,14 @@ func _initialize() -> void:
 			force = true
 		elif argument == "--check":
 			check = true
-	var ntts := _read_json(NTTS_PATH)
-	var widgets := _read_json(WIDGETS_PATH)
+	if out.is_empty() or sides_out.is_empty():
+		push_error("bake_map_layout: the map '%s' has no layout_scene_path or sides in its MapDefinition (or pass --out and --sides-out)." % _map.tag)
+		quit(1)
+		return
+	var ntts := _read_json(_map.ntts_path)
+	var widgets := _read_json(_map.widgets_path)
 	if ntts.is_empty() or widgets.is_empty():
-		push_error("bake_map_layout: missing or empty %s or %s." % [NTTS_PATH, WIDGETS_PATH])
+		push_error("bake_map_layout: missing or empty %s or %s." % [_map.ntts_path, _map.widgets_path])
 		quit(1)
 		return
 	if not _make_terrain():
@@ -109,9 +113,9 @@ func _read_json(path: String) -> Dictionary:
 
 ## A Terrain with only its ground index, to ask is_on_ground and ground_height as the game does.
 func _make_terrain() -> bool:
-	var data := load(OriginalAssets.HIGH_NOON_TERRAIN) as MapTerrainData
+	var data := load(_map.terrain_path) as MapTerrainData if not _map.terrain_path.is_empty() else null
 	if data == null or not data.is_valid():
-		push_error("bake_map_layout: %s is missing or invalid." % OriginalAssets.HIGH_NOON_TERRAIN)
+		push_error("bake_map_layout: %s is missing or invalid." % _map.terrain_path)
 		return false
 	_terrain = MeshInstance3D.new()
 	_terrain.set_script(load(TERRAIN_SCRIPT))

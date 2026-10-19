@@ -7,41 +7,50 @@ extends RefCounted
 ## stance is read from the first side towards the second; a side is its own ally. Slot = side + 1
 ## (players 1 and 2, Farmers 3, Taurocks 4); slot 0 is the neutral side 31, the owner of the map's houses,
 ## which has no relations and which nobody has as an enemy (High Noon: enemies 0xe and 0x7ffffffd… skip bit 31).
-## The map's rows live in `assets/original/maps/high_noon/sides.tres` (a MapSides, written once by
-## tools/bake/bake_map_layout.gd, RFC-035 035d). Without the file, or for a side the file does not describe, «another slot is an
+## RFC-044 044c: that is the rule for High Noon, which has two seats. A seat (a player slot) and a side of the map are
+## different things: the seats are the first `MapDefinition.player_starts` slots and take the sides players can take
+## (assignment != 0) in order; the sides no player takes (NPCs) come after the seats. With two seats this is the old
+## slot = side + 1, so a map with four seats puts its NPCs in slots 5 and up instead of on the seats of players 3 and 4.
+## The map's rows live in its MapDefinition (`sides`, a MapSides, written once by
+## tools/bake/bake_map_layout.gd, RFC-035 035d). Without them, or for a side the file does not describe, «another slot is an
 ## enemy» (what the port did before this cut). Static and @tool: the editor and a headless run read it
 ## without autoloads, and the suite can load its own rows with set_rows().
 
 enum Stance { NEUTRAL, ALLY, ENEMY }
 
-const SIDES_PATH := OriginalAssets.HIGH_NOON_SIDES
 const NEUTRAL_SIDE := 31
 
 static var _loaded := false
 static var _allies: Dictionary = {}
 static var _enemies: Dictionary = {}
 static var _assignment: Dictionary = {}
+## The tag of the map the rows come from; empty when they were set by hand (set_rows).
+static var _rows_tag: StringName = &""
+## Side ids a player can take (assignment != 0), in order: seat k is `_seat_sides[k - 1]`.
+static var _seat_sides: Array[int] = []
+## Side ids no player takes and that are not the neutral one, in order: NPC k is the slot `seats + k + 1`.
+static var _npc_sides: Array[int] = []
+## MapDefinition.player_starts of the map the rows were read for (the hot paths ask it all the time).
+static var _seat_count := 2
 
 
-## Forgets what was read; the next question reads `path` again.
-static func refresh(path := SIDES_PATH) -> void:
-	_loaded = true
-	_allies = {}
-	_enemies = {}
-	_assignment = {}
-	if not ResourceLoader.exists(path):
-		return
-	var sides := load(path) as MapSides
-	if sides != null:
-		set_rows(sides.to_rows())
+## Forgets what was read; the next question reads the sides of the active map (MapDefinition.sides) again.
+static func refresh() -> void:
+	var map := MapCatalog.active()
+	_seat_count = map.player_starts
+	set_rows(map.sides.to_rows() if map.sides != null else [])
+	_rows_tag = map.tag
 
 
 ## `rows`: [{id, allies, enemies, assignment}] as MapSides.to_rows gives them.
 static func set_rows(rows: Array) -> void:
 	_loaded = true
+	_rows_tag = &""
 	_allies = {}
 	_enemies = {}
 	_assignment = {}
+	_seat_sides = []
+	_npc_sides = []
 	for row: Variant in rows:
 		if not row is Dictionary:
 			continue
@@ -49,14 +58,44 @@ static func set_rows(rows: Array) -> void:
 		_allies[id] = int(row.get("allies", 0))
 		_enemies[id] = int(row.get("enemies", 0))
 		_assignment[id] = int(row.get("assignment", 0))
+		if id == NEUTRAL_SIDE:
+			continue
+		if _assignment[id] != 0:
+			_seat_sides.append(id)
+		else:
+			_npc_sides.append(id)
+	_seat_sides.sort()
+	_npc_sides.sort()
 
 
 static func side_of(slot: int) -> int:
-	return slot - 1 if slot > 0 else NEUTRAL_SIDE
+	if slot <= 0:
+		return NEUTRAL_SIDE
+	_ensure()
+	var seats := seat_count()
+	if slot <= seats:
+		return _seat_sides[slot - 1] if slot - 1 < _seat_sides.size() else slot - 1
+	var npc := slot - seats - 1
+	return _npc_sides[npc] if npc < _npc_sides.size() else slot - 1
 
 
 static func slot_of(side: int) -> int:
-	return side + 1 if side != NEUTRAL_SIDE else 0
+	if side == NEUTRAL_SIDE:
+		return 0
+	_ensure()
+	var seat := _seat_sides.find(side)
+	if seat >= 0 and seat < seat_count():
+		return seat + 1
+	var npc := _npc_sides.find(side)
+	if npc >= 0:
+		return seat_count() + npc + 1
+	return side + 1
+
+
+## The player seats of the map being played (MapDefinition.player_starts).
+static func seat_count() -> int:
+	_ensure()
+	return _seat_count
 
 
 ## True when the map describes both sides (otherwise the old rule applies).
@@ -92,5 +131,6 @@ static func is_npc_slot(slot: int) -> bool:
 
 
 static func _ensure() -> void:
-	if not _loaded:
+	# The rows of the map are read again when the active map changes (MapCatalog.use); rows set by hand stay.
+	if not _loaded or (_rows_tag != &"" and _rows_tag != MapCatalog.current_tag()):
 		refresh()

@@ -9,7 +9,7 @@ extends Node
 
 func _ready() -> void:
 	await get_tree().create_timer(at_s).timeout
-	var rig := world.get_node_or_null("Look")
+	var rig := world.get_node_or_null("Map/Look")
 	var grass: GrassSet = rig.profile.grass if rig and rig.profile else null
 	if grass == null or grass.palette == null:
 		print("RFC022E4_EDIT no palette")

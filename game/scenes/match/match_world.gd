@@ -2,7 +2,15 @@ extends Node3D
 
 signal local_wizard_changed(wizard: Node3D)
 
+## RFC-044: the match is map-agnostic. The map is the child `Map` (a MapRoot): the one the scene already holds
+## (scenes/match/high_noon.tscn) or, when there is none or `--map=<tag>` asks for another, the scene of the active
+## MapDefinition. The systems below are bound to its sockets before any of them is ready.
+const MAP_NODE := "Map"
+
 @export var rules: MatchRules
+
+## The map of this match (set in _enter_tree).
+var map: MapRoot
 
 var _entered_ms := 0
 var _local_wizard: Node3D
@@ -17,6 +25,41 @@ func _enter_tree() -> void:
 	if not MpKit.is_networked() or MpKit.is_server():
 		rules = SacrificeFlow.setup.apply_to(rules)
 		MatchSeed.begin(rules)
+	_attach_map()
+
+
+## Puts the active map first among the children (it is ready before the systems that read it) and binds the systems.
+func _attach_map() -> void:
+	var definition := MapCatalog.active()
+	map = get_node_or_null(MAP_NODE) as MapRoot
+	if map != null and not definition.map_scene_path.is_empty() and map.scene_file_path != definition.map_scene_path:
+		remove_child(map)
+		map.free()
+		map = null
+	if map == null:
+		var packed := definition.load_scene()
+		map = packed.instantiate() as MapRoot if packed != null else null
+		if map == null:
+			push_error("Match: the map '%s' has no MapRoot; the match cannot start." % definition.tag)
+			return
+		map.name = MAP_NODE
+		add_child(map)
+		move_child(map, 0)
+	_bind_map()
+
+
+## The sockets of the map into the exports of the systems that need its parts.
+func _bind_map() -> void:
+	%Camera.set("ground", map.terrain)
+	%Selection.set("ground", map.terrain)
+	%Nav.set("terrain", map.terrain)
+	%Nav.set("region", map.nav_region)
+	var spawner := $WizardSpawner as MultiplayerSpawner
+	spawner.set("spawn_points", spawner.get_path_to(map.starts))
+	%Population.set("buildings_root", map.buildings_root)
+	%Population.set("npc_spawns_root", map.npc_spawns_root)
+	%Minimap.set("terrain_bake", map.minimap_bake)
+	$GraphicsApplier.set("rig", map.look)
 
 
 func _ready() -> void:

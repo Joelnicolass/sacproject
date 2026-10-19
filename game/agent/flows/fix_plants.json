@@ -4,7 +4,7 @@
   "steps": [
     { "wait": 0.5 },
     { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },
-    { "print": { "node": "HighNoon/MapProps/Plant0", "prop": "position" } },
+    { "print": { "node": "HighNoon/Map/MapProps/Plant0", "prop": "position" } },
     { "shot": "plants_00_spawn.png" },
     { "press": { "name": "turn_left", "hold": 1.2 } },
     { "wait": 0.3 },

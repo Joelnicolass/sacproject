@@ -12,7 +12,7 @@
     { "call": { "harness": "wizard_travel", "method": "set_pointer_world", "args": [1520, 5, 1450] } },
     { "press": "select" },
     { "wait_until": { "node": "%Structures/Structure1", "timeout": 14 } },
-    { "print": { "node": "HighNoon/MapProps/Founts/FountEast/ManaSource", "prop": "rate" } },
+    { "print": { "node": "HighNoon/Map/MapProps/Founts/FountEast/ManaSource", "prop": "rate" } },
     { "shot": "pt35_manalith_lifecycle.png" }
   ]
 }

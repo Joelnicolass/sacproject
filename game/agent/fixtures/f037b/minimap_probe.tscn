@@ -14,7 +14,7 @@
 unique_name_in_owner = true
 script = ExtResource("2_probe")
 minimap = NodePath("../OrdersGroup/HighNoon/Hud/Minimap")
-bake = NodePath("../OrdersGroup/HighNoon/MinimapBake")
+bake = NodePath("../OrdersGroup/HighNoon/Map/MinimapBake")
 terrain_button = NodePath("../Agent/TerrainButton")
 bake_view = NodePath("../Agent/BakeView")
 
@@ -54,7 +54,7 @@ offset_bottom = 410.0
 grow_horizontal = 1
 grow_vertical = 1
 camera = NodePath("../../OrdersGroup/HighNoon/Camera")
-terrain_bake = NodePath("../../OrdersGroup/HighNoon/MinimapBake")
+terrain_bake = NodePath("../../OrdersGroup/HighNoon/Map/MinimapBake")
 structures_root = NodePath("../../OrdersGroup/HighNoon/Structures")
 view = ExtResource("4_close")
 
@@ -72,6 +72,6 @@ offset_bottom = 410.0
 grow_horizontal = 1
 grow_vertical = 1
 camera = NodePath("../../OrdersGroup/HighNoon/Camera")
-terrain_bake = NodePath("../../OrdersGroup/HighNoon/MinimapBake")
+terrain_bake = NodePath("../../OrdersGroup/HighNoon/Map/MinimapBake")
 structures_root = NodePath("../../OrdersGroup/HighNoon/Structures")
 view = ExtResource("5_north")

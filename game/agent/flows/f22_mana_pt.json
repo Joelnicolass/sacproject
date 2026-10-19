@@ -3,8 +3,8 @@
   "wait_first": 1.5,
   "steps": [
     { "wait": 2.2 },
-    { "print": { "node": "/root/ManaFount/HighNoon/MapProps/Founts/FountEast", "prop": "global_position" } },
-    { "print": { "node": "/root/ManaFount/HighNoon/MapProps/Starts/Start1", "prop": "global_position" } },
+    { "print": { "node": "/root/ManaFount/HighNoon/Map/MapProps/Founts/FountEast", "prop": "global_position" } },
+    { "print": { "node": "/root/ManaFount/HighNoon/Map/MapProps/Starts/Start1", "prop": "global_position" } },
     { "print": { "node": "%Wizards/Wizard1", "prop": "global_position" } },
     { "print": { "node": "%Wizards/Wizard1/ManaPool", "prop": "current" } },
     { "print": { "node": "%Stats", "prop": "text" } },

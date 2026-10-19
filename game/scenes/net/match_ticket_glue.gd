@@ -141,13 +141,13 @@ static func world_is_valid(ticket: Dictionary) -> bool:
 	return GameModeCatalog.map_fits_mode(StringName(world), StringName(mode))
 
 
-## RFC-049 049f: the bots of the ticket as [{slot, god}] (a v1 ticket has none).
+## RFC-049 049f: the bots of the ticket as [{slot, god, difficulty}] (a v1 ticket has none; an empty difficulty plays Normal).
 func ai_seats() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	if agent == null:
 		return out
 	for row in agent.ticket.get("ai_seats", []):
-		out.append({"slot": int(row["slot"]), "god": str(row.get("god", ""))})
+		out.append({"slot": int(row["slot"]), "god": str(row.get("god", "")), "difficulty": str(row.get("difficulty", ""))})
 	return out
 
 

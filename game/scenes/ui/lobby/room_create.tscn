@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/lobby/room_create.gd" id="1_create"]
 [ext_resource type="Script" path="res://scenes/ui/map_picker/map_picker.gd" id="2_map_picker"]
+[ext_resource type="Script" path="res://scenes/ui/mode_picker/mode_picker.gd" id="3_mode_picker"]
 
 [node name="RoomCreate" type="Control"]
 layout_mode = 3
@@ -21,9 +22,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -200.0
-offset_top = -170.0
+offset_top = -195.0
 offset_right = 200.0
-offset_bottom = 170.0
+offset_bottom = 195.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -47,10 +48,16 @@ text = "UI_ROOM_CREATE_ROOM_PRIVATE"
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="RoomMap" type="OptionButton" parent="Column"]
+[node name="RoomMode" type="OptionButton" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("3_mode_picker")
+
+[node name="RoomMap" type="OptionButton" parent="Column" node_paths=PackedStringArray("mode_picker")]
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("2_map_picker")
+mode_picker = NodePath("../RoomMode")
 
 [node name="CreateConfirm" type="Button" parent="Column"]
 unique_name_in_owner = true

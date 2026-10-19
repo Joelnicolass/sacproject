@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/ui/hud/match_result.gd" id="1_banner"]
 
-[node name="MatchResult" type="Label" groups=["hud_text_allowed"]]
+[node name="MatchResult" type="Label" groups=["hud_text_allowed"] node_paths=PackedStringArray("team_label")]
 visible = false
 anchors_preset = 5
 anchor_left = 0.5
@@ -20,3 +20,23 @@ text = "UI_MATCH_RESULT_MATCH_RESULT"
 horizontal_alignment = 1
 vertical_alignment = 1
 script = ExtResource("1_banner")
+team_label = NodePath("TeamLine")
+
+[node name="TeamLine" type="Label" parent="." groups=["hud_text_allowed"]]
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 4.0
+offset_bottom = 48.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 28
+text = "UI_RESULT_TEAM"
+horizontal_alignment = 1
+vertical_alignment = 1

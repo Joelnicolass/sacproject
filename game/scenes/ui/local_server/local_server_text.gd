@@ -13,6 +13,8 @@ const INFO_NO_ADDRESS := "LOCAL_INFO_NO_ADDRESS"
 const INFO_PORT := "LOCAL_INFO_PORT"
 const INFO_TRANSPORT := "LOCAL_INFO_TRANSPORT"
 const INFO_CODE := "LOCAL_INFO_CODE"
+const INFO_SEAT_CODE := "LOCAL_INFO_SEAT_CODE"
+const INFO_NO_CODE := "LOCAL_INFO_NO_CODE"
 const COPIED := "LOCAL_COPIED"
 const HELP_HOST := "LOCAL_HELP_HOST"
 const HELP_JOIN := "LOCAL_HELP_JOIN"
@@ -43,6 +45,20 @@ const START_ERRORS := {
 	"match_max": "LOCAL_START_ERR_MATCH_MAX",
 }
 const START_ERROR_FALLBACK := "LOCAL_START_ERROR_FALLBACK"
+
+
+## RFC-049 049h: the codes to pass along, one line per seat for a person ({slot: code}); one seat keeps the 1v1 line.
+static func codes_text(codes: Dictionary) -> String:
+	if codes.is_empty():
+		return UiText.t(INFO_NO_CODE)
+	if codes.size() == 1:
+		return UiText.t(INFO_CODE) % str(codes.values()[0])
+	var slots := codes.keys()
+	slots.sort()
+	var lines := PackedStringArray()
+	for slot in slots:
+		lines.append(UiText.t(INFO_SEAT_CODE) % [int(slot), str(codes[slot])])
+	return "\n".join(lines)
 
 
 static func transport_name(kind: String) -> String:

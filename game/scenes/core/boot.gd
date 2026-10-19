@@ -21,7 +21,6 @@ func _ready() -> void:
 	SacrificeFlow.status_changed.connect(_on_status)
 	%Solo.pressed.connect(_on_solo)
 	%VsAi.pressed.connect(_on_vs_ai)
-	_fill_ai_gods()
 	_fill_ai_levels()
 	%Join.pressed.connect(_on_join)
 	## RFC-034 034f: the player goes online through the rooms (the server is in data/net/lobby_endpoint.tres). The field
@@ -50,11 +49,10 @@ func _on_confirmed() -> void:
 func _on_solo() -> void:
 	SacrificeFlow.play_solo(_setup(0))
 
-## «Contra la IA» (RFC-024 024f): solo with the AI in slot 2; the god of %AiGod, or drawn with «Aleatorio».
+## «Contra la IA» (RFC-024 024f): solo with the AI in every other seat of the mode; the god of %AiGod, or drawn with «Aleatorio».
 func _on_vs_ai() -> void:
-	var picker: OptionButton = %AiGod
 	var level: OptionButton = %AiLevel
-	SacrificeFlow.play_vs_ai(StringName(str(picker.get_item_metadata(picker.selected))), _setup(int(level.get_item_metadata(level.selected))))
+	SacrificeFlow.play_vs_ai((%AiGod as AiGodPicker).selected_god(), _setup(int(level.get_item_metadata(level.selected))))
 
 ## The match this boot creates: Options → Jugabilidad and `level` (0 = the rules'). Without prefs, only the level.
 func _setup(level: int) -> MatchSetup:
@@ -67,17 +65,9 @@ func _setup(level: int) -> MatchSetup:
 		setup.level = level
 	## RFC-049 049a: the map of %MapPicker (SacrificeFlow plays it).
 	setup.map_tag = (%MapPicker as MapPicker).selected_tag()
+	## RFC-049 049h: and the mode of %ModePicker (in «Contra la IA» the AI takes every other seat).
+	setup.mode_tag = (%ModePicker as ModePicker).selected_tag()
 	return setup
-
-func _fill_ai_gods() -> void:
-	var picker: OptionButton = %AiGod
-	picker.clear()
-	picker.add_item(tr("UI_BOOT_RIVAL_RANDOM"))
-	picker.set_item_metadata(0, "")
-	for god in GameData.gods():
-		picker.add_item(tr("UI_BOOT_RIVAL") % GameData.god(god).display_name)
-		picker.set_item_metadata(picker.item_count - 1, god)
-	picker.select(0)
 
 ## RFC-030 030d (F115): the level of both wizards in «Contra la IA», 1-9; default = the product rules (9).
 func _fill_ai_levels() -> void:

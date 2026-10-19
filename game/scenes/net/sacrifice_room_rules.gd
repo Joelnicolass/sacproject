@@ -15,7 +15,7 @@ const SEED_MAX := 0x7fffffff
 const OPTION_KEYS: PackedStringArray = ["world", "mode", "level", "friendly_fire", "drop_soul", "starting_souls"]
 ## RFC-049 049f: version of the ticket this builds (2 = `mode` and `ai_seats`). The dedicated reads a ticket without them as a 1v1.
 const TICKET_VERSION := 2
-const BOT_KEYS: PackedStringArray = ["god"]
+const BOT_KEYS: PackedStringArray = ["god", "difficulty"]
 
 ## RFC-049 049a: also accept the maps that exist to test the game (`room_selectable = false`). Tests only: the server of the
 ## rooms starts with `--room-test-maps` to turn it on; production rooms offer only the selectable maps.
@@ -50,13 +50,16 @@ func is_valid_pick(meta: Dictionary) -> bool:
 	return not SacrificeFlow.sanitize_pick(meta).is_empty()
 
 
-## RFC-049 049f: a bot seat's `meta`: only a god (empty = drawn when the match starts, else one the game has). The AI plays at the
-## default difficulty until the room screens (049h) let the host choose one.
+## RFC-049 049f: a bot seat's `meta`: a god (empty = drawn when the match starts, else one the game has). 049h: and a `difficulty`
+## (AiSeat.DIFFICULTY_TAGS; empty or missing = Normal).
 func is_valid_bot(meta: Dictionary) -> bool:
 	for key in meta.keys():
 		if not BOT_KEYS.has(str(key)):
 			return false
 	var god: Variant = meta.get("god", "")
+	var difficulty: Variant = meta.get("difficulty", "")
+	if not (difficulty is String and (String(difficulty).is_empty() or AiSeat.DIFFICULTY_TAGS.has(String(difficulty)))):
+		return false
 	return god is String and (String(god).is_empty() or GameData.gods().has(String(god)))
 
 
@@ -102,7 +105,7 @@ func clean_options(options: Dictionary) -> Dictionary:
 
 ## `seats`: [{slot, session_id, token, meta}] as MpLobbyRooms hands them, plus bot seats `{slot, bot: true, meta}`. The slot is the
 ## seat index + 1, the pick is sanitized again, and the seed is drawn here: no client ever chooses it.
-## RFC-049 049f (ticket v2): `seats` keeps only the rows with a token (the humans); the bots go to `ai_seats` [{slot, god}], and
+## RFC-049 049f (ticket v2): `seats` keeps only the rows with a token (the humans); the bots go to `ai_seats` [{slot, god, difficulty}], and
 ## the ticket names the `mode`.
 func build_ticket(seats: Array, options: Dictionary) -> Dictionary:
 	var rows: Array = []
@@ -110,7 +113,8 @@ func build_ticket(seats: Array, options: Dictionary) -> Dictionary:
 	for seat in seats:
 		var row: Dictionary = seat
 		if bool(row.get("bot", false)):
-			ai_seats.append({"slot": int(row["slot"]), "god": str((row.get("meta", {}) as Dictionary).get("god", ""))})
+			var bot_meta: Dictionary = row.get("meta", {})
+			ai_seats.append({"slot": int(row["slot"]), "god": str(bot_meta.get("god", "")), "difficulty": str(bot_meta.get("difficulty", ""))})
 			continue
 		rows.append({
 			"slot": int(row["slot"]), "token": str(row["token"]),

@@ -26,3 +26,15 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_SEAT_ROW_SIT"
+
+[node name="AddBot" type="Button" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "UI_SEAT_ADD_BOT"
+
+[node name="RemoveBot" type="Button" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "UI_SEAT_REMOVE_BOT"

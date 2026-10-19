@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/local_server/local_seat_row.gd" id="1_row"]
+[ext_resource type="Script" path="res://scenes/ui/ai_picker/ai_difficulty_picker.gd" id="2_choice"]
+
+[node name="LocalSeatRow" type="HBoxContainer"]
+theme_type_variation = &"HBoxRow"
+script = ExtResource("1_row")
+
+[node name="SeatLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI_LOCAL_SEAT_LABEL"
+
+[node name="SeatChoice" type="OptionButton" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("2_choice")
+offer_human = true
+item_text = "UI_LOCAL_SEAT_AI"

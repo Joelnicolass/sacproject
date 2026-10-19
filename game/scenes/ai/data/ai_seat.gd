@@ -22,6 +22,16 @@ extends Resource
 
 
 const NORMAL := "res://data/ai/difficulty_normal.tres"
+## RFC-049 049h (F297): the difficulties a room or a screen names by tag (`difficulty` of a bot seat); each is data/ai/difficulty_<tag>.tres.
+const DIFFICULTY_TAGS: PackedStringArray = ["easy", "normal", "hard"]
+const DIFFICULTY_PATH := "res://data/ai/difficulty_%s.tres"
+
+
+## The difficulty with that tag; null for an empty or unknown tag (the seat then plays Normal).
+static func difficulty_of(tag: String) -> AiDifficulty:
+	if not DIFFICULTY_TAGS.has(tag):
+		return null
+	return load(DIFFICULTY_PATH % tag) as AiDifficulty
 
 
 ## The difficulty of the seat, Normal when it has none.

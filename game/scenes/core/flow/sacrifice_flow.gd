@@ -331,7 +331,12 @@ func _arm_ticket_glue() -> bool:
 		max_players = ticket_seats
 	var ai_found: Array[AiSeat] = []
 	for row in glue.ai_seats():
-		ai_found.append(_vs_ai_seat(StringName(str(row["god"])), int(row["slot"])))
+		var bot := _vs_ai_seat(StringName(str(row["god"])), int(row["slot"]))
+		## RFC-049 049h: the difficulty the host chose in the room (empty = the seat's own, Normal).
+		var difficulty := AiSeat.difficulty_of(str(row.get("difficulty", "")))
+		if difficulty != null:
+			bot.difficulty = difficulty
+		ai_found.append(bot)
 	if not ai_found.is_empty():
 		solo_ai_seats = ai_found
 		var slots: Array[int] = []

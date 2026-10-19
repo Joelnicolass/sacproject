@@ -241,7 +241,8 @@ func _run() -> void:
 			_check(got == want_winners, "%s result winner_slots is %s (got %s)" % [_name, str(want_winners), str(got)])
 		winner = want_winners[0]
 		var won := want_winners.has(want_slot)
-		var text_key := ("LOBBY_RESULT_WON" if won else "LOBBY_RESULT_LOST") + ("_ABANDON" if reason == "abandon" else "")
+		var prefix := "LOBBY_RESULT_TEAM_" if want_winners.size() >= 2 else "LOBBY_RESULT_"
+		var text_key := prefix + ("WON" if won else "LOST") + ("_ABANDON" if reason == "abandon" else "")
 		_check(LobbyText.result_text(_lobby_result, want_slot) == UiText.t(text_key), "%s: the room says %s" % [_name, text_key])
 	_check(int(result.get("winner_slot", -2)) == winner, "%s result winner is slot %d (got %s)" % [_name, winner, str(result.get("winner_slot"))])
 	_check(str(result.get("reason", "")) == reason, "%s result reason is %s (got %s)" % [_name, reason, str(result.get("reason"))])

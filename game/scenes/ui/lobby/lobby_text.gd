@@ -74,6 +74,16 @@ static func pick_text(meta: Dictionary) -> String:
 	return UiText.t("LOBBY_PICK_FORMAT") % [wizard_name, str(meta.get("god", "?")).capitalize()]
 
 
+## RFC-049 049h (F297): «Dios: X · Normal» of a bot seat's meta ({god, difficulty}); an empty god is drawn when the match starts.
+static func bot_text(meta: Dictionary) -> String:
+	var god := str(meta.get("god", ""))
+	var god_name := UiText.t("LOBBY_BOT_RANDOM_GOD")
+	if not god.is_empty():
+		var data: GodType = GameData.god(god)
+		god_name = data.display_name if data != null else god.capitalize()
+	return UiText.t("LOBBY_BOT_FORMAT") % [god_name, AiDifficultyPicker.difficulty_name(str(meta.get("difficulty", "normal")))]
+
+
 ## What a result says to the player in `my_slot` (0 = not in the match). `result` is the Dictionary the dedicated
 ## reports: winner_slot, winner_slots (the whole winning team; RFC-049 049f), reason ("result", "abandon", "empty").
 static func result_text(result: Dictionary, my_slot: int) -> String:
@@ -87,6 +97,8 @@ static func result_text(result: Dictionary, my_slot: int) -> String:
 	if winners.is_empty():
 		winners = [winner]
 	var won := my_slot > 0 and (winners.has(my_slot) or winners.has(float(my_slot)))
+	## RFC-049 049h: a winning team of two or more speaks of teams («Ganó tu equipo»).
+	var prefix := "LOBBY_RESULT_TEAM_" if winners.size() >= 2 else "LOBBY_RESULT_"
 	if reason == "abandon":
-		return UiText.t("LOBBY_RESULT_WON_ABANDON") if won else UiText.t("LOBBY_RESULT_LOST_ABANDON")
-	return UiText.t("LOBBY_RESULT_WON") if won else UiText.t("LOBBY_RESULT_LOST")
+		return UiText.t(prefix + ("WON_ABANDON" if won else "LOST_ABANDON"))
+	return UiText.t(prefix + ("WON" if won else "LOST"))

@@ -4,15 +4,14 @@ extends Control
 ## the chat, and the result of the last match. It only reads the mirror of `MpLobby.client` and sends its commands.
 ## The wizard and god come from the same selector the menu uses (`character_select.tscn`, built the first time it is
 ## asked for). A player who never opens it takes the pick the menu left in `SacrificeFlow.pick`.
+## RFC-049 049h (F297): the seats are a SeatList (grouped by team in a mode with allies); the host sees «Agregar IA» / «Quitar IA» on
+## the seats and, above them, the god and the difficulty of the bot he adds (%BotOptions).
 ## Run alone (F6) it says «Sin conexión».
 
-## One row per seat.
-@export var seat_scene: PackedScene
 @export var character_select_scene: PackedScene
 ## What the selector's button says here (in the menu it says «Jugar»).
 @export var pick_confirm_text := "UI_ROOM_VIEW_PICK_CONFIRM"
 
-var _seat_rows: Array[Node] = []
 var _character_select: Control
 ## The room whose seat already got the menu's pick (once per room).
 var _auto_picked_room := ""
@@ -24,6 +23,10 @@ func _ready() -> void:
 	%LeaveRoom.pressed.connect(_on_leave)
 	%RejoinMatch.pressed.connect(_on_rejoin)
 	%PickOverlay.visible = false
+	var seat_list: SeatList = %Seats
+	seat_list.sit_requested.connect(_on_sit)
+	seat_list.bot_add_requested.connect(_on_add_bot)
+	seat_list.bot_remove_requested.connect(_on_remove_bot)
 	var client := MpLobby.client
 	client.room_updated.connect(_on_room)
 	client.room_left.connect(_refresh)
@@ -61,7 +64,8 @@ func _refresh() -> void:
 		%RoomState.text = ""
 		%RoomCountdown.text = ""
 		%RoomResult.text = ""
-		_set_rows([])
+		%BotOptions.visible = false
+		(%Seats as SeatList).show_room({}, false)
 		%PickOverlay.visible = false
 		return
 	%RoomTitle.text = str(room["name"])
@@ -75,7 +79,8 @@ func _refresh() -> void:
 	var state := int(room["state"])
 	%RoomState.text = LobbyText.state_text(state)
 	var open := state == MpLobbyRooms.State.OPEN
-	_set_rows(seats)
+	(%Seats as SeatList).show_room(room, client.is_host())
+	%BotOptions.visible = open and client.is_host()
 	%PickCharacter.disabled = not open
 	%ReadyButton.disabled = state > MpLobbyRooms.State.COUNTDOWN
 	## RFC-034 034g (F184): the match runs and this player is out of it (a drop): the same ticket takes the same slot back
@@ -109,6 +114,13 @@ func _meta_text(room: Dictionary) -> String:
 	if bool(room["private"]) and room.has("code"):
 		parts.append(tr("UI_ROOM_VIEW_CODE") % str(room["code"]))
 	var options: Dictionary = room["options"]
+	## RFC-049 049h: the mode and the map the room was created with.
+	var mode := GameModeCatalog.shared().find(StringName(str(options.get("mode", GameModeCatalog.DEFAULT_TAG))))
+	if mode != null:
+		parts.append(tr("UI_ROOM_VIEW_MODE") % tr(mode.display_name))
+	var map := MapCatalog.shared().find(StringName(str(options.get("world", MapCatalog.DEFAULT_TAG))))
+	if map != null:
+		parts.append(tr("UI_ROOM_VIEW_MAP") % map.display_name)
 	if options.has("level"):
 		parts.append(tr("UI_ROOM_VIEW_LEVEL") % int(options["level"]))
 	return " · ".join(parts)
@@ -131,23 +143,21 @@ func _auto_pick(room: Dictionary, mine: Dictionary, open: bool) -> void:
 	MpLobby.client.set_pick(SacrificeFlow.pick)
 
 
-func _set_rows(seats: Array) -> void:
-	while _seat_rows.size() > seats.size():
-		var extra: Node = _seat_rows.pop_back()
-		extra.queue_free()
-	while _seat_rows.size() < seats.size():
-		var row := seat_scene.instantiate()
-		row.sit_requested.connect(_on_sit)
-		%Seats.add_child(row)
-		_seat_rows.append(row)
-	var open := not MpLobby.client.room.is_empty() and int(MpLobby.client.room["state"]) == MpLobbyRooms.State.OPEN
-	for i in seats.size():
-		var seat: Dictionary = seats[i]
-		(_seat_rows[i] as Node).call(&"show_seat", seat, open and not bool(seat.get("you", false)))
-
-
 func _on_sit(seat: int) -> void:
 	MpLobby.client.choose_seat(seat)
+
+
+## RFC-049 049h: the host puts a bot with the god and the difficulty of %BotOptions in a free seat.
+func _on_add_bot(seat: int) -> void:
+	var meta := {
+		"god": String((%BotGod as AiGodPicker).selected_god()),
+		"difficulty": (%BotDifficulty as AiDifficultyPicker).selected_difficulty(),
+	}
+	MpLobby.client.set_seat_bot(seat, meta)
+
+
+func _on_remove_bot(seat: int) -> void:
+	MpLobby.client.clear_seat_bot(seat)
 
 
 func _on_ready_pressed() -> void:

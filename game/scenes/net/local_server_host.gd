@@ -10,6 +10,9 @@ extends Node
 ## admitted, the dedicated checks it with the rules of the game (`SacrificeFlow`) and the world does not start until it has it.
 ## This node lives under `root` (it survives `change_scene`) and frees itself when the match ends or the host leaves.
 ## `--match-args=--flag=1,--other` adds user args to the dedicated (tests only, same hook as the room server).
+## RFC-049 049h (F297): the options carry the map (`world`) and the mode (`mode`); the ticket has one seat per seat of the mode. The host
+## is seat 1; each other seat is an AI (`ai_seats` of `start`, {slot: {god, difficulty}}) or a person with a code of its own
+## (`codes`, {slot: code}). `rival_code` is the code of the lowest seat for a person (the only one in a 1v1).
 
 signal server_ready(address: String, port: int, code: String)
 signal server_failed(reason: String)
@@ -30,6 +33,8 @@ var port: int = 0
 ## LAN address to give to the rival (empty if this PC has none; the loopback still works for the host).
 var address: String = ""
 var rival_code: String = ""
+## Code of each seat for a person (slot -> code); the host's seat is not in it.
+var codes: Dictionary = {}
 ## The host's own credential: it joins `LOOPBACK:port` with it.
 var host_token: String = ""
 var hosting: bool = false
@@ -57,9 +62,11 @@ func _ready() -> void:
 	set_process(false)
 
 
-## Launches the dedicated. `host_pick` = {wizard, god}; `transport` empty = the one of the config / flag.
-## `server_ready` comes when the dedicated listens. ERR_ALREADY_IN_USE if this node already hosts.
-func start(host_pick: Dictionary, transport: String = "", options: Dictionary = {}) -> Error:
+## Launches the dedicated. `host_pick` = {wizard, god}; `transport` empty = the one of the config / flag; `options` the room options
+## (`world`, `mode`…); `ai_seats` {slot: {god, difficulty}} the seats an AI plays (slot 1 is the host's and never an AI).
+## `server_ready` comes when the dedicated listens. ERR_ALREADY_IN_USE if this node already hosts; ERR_INVALID_PARAMETER for options
+## or an AI seat the rules refuse (a map with fewer starts than the mode, an unknown god).
+func start(host_pick: Dictionary, transport: String = "", options: Dictionary = {}, ai_seats: Dictionary = {}) -> Error:
 	if hosting:
 		return ERR_ALREADY_IN_USE
 	## Not in the tree yet (added while its parent is busy, or never added): say so, do not break on Nil.
@@ -68,15 +75,27 @@ func start(host_pick: Dictionary, transport: String = "", options: Dictionary = 
 		return ERR_UNCONFIGURED
 	if not transport.is_empty():
 		launcher.config.transport = MpTransport.normalize(transport)
+	if not rules.are_options_valid(options):
+		push_error("LocalServerHost.start: opciones inválidas %s" % JSON.stringify(options))
+		return ERR_INVALID_PARAMETER
+	for slot in ai_seats.keys():
+		if int(slot) <= HOST_SLOT or not rules.is_valid_bot(ai_seats[slot]):
+			push_error("LocalServerHost.start: asiento IA inválido %s" % str(slot))
+			return ERR_INVALID_PARAMETER
 	MpKit.transport = launcher.config.transport
 	host_token = _new_code()
-	rival_code = _new_code()
+	codes = {}
+	var seats: Array = [{"slot": HOST_SLOT, "token": host_token, "meta": host_pick}]
+	for slot in range(RIVAL_SLOT, rules.seat_count_for(options) + 1):
+		if ai_seats.has(slot):
+			seats.append({"slot": slot, "bot": true, "meta": ai_seats[slot]})
+			continue
+		codes[slot] = _new_code()
+		seats.append({"slot": slot, "token": codes[slot], "meta": {}})
+	rival_code = str(codes[codes.keys().min()]) if not codes.is_empty() else ""
 	match_id = "%s%s" % [MATCH_ID_PREFIX, _new_code().substr(0, 8)]
-	var ticket := rules.build_ticket([
-		{"slot": HOST_SLOT, "token": host_token, "meta": host_pick},
-		{"slot": RIVAL_SLOT, "token": rival_code, "meta": {}},
-	], options)
-	ticket["open_picks"] = [RIVAL_SLOT]
+	var ticket := rules.build_ticket(seats, options)
+	ticket["open_picks"] = codes.keys()
 	var err := launcher.launch(match_id, ticket)
 	if err != OK:
 		return err
@@ -123,8 +142,8 @@ func _on_listening(listening_id: String, listening_port: int) -> void:
 	port = listening_port
 	address = MpLan.get_local_ipv4()
 	## One line for the logs and the tests: the same three things the screen shows.
-	print("servidor local listo direccion=%s puerto=%d transporte=%s codigo=%s" % [
-		address, port, launcher.config.transport, rival_code])
+	print("servidor local listo direccion=%s puerto=%d transporte=%s codigo=%s asientos=%s" % [
+		address, port, launcher.config.transport, rival_code, ",".join(PackedStringArray(codes.keys().map(str)))])
 	server_ready.emit(address, port, rival_code)
 
 

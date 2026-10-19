@@ -1,7 +1,9 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/lobby/room_view.gd" id="1_room"]
-[ext_resource type="PackedScene" path="res://scenes/ui/lobby/seat_row.tscn" id="2_seat"]
+[ext_resource type="PackedScene" path="res://scenes/ui/lobby/seat_list.tscn" id="2_seats"]
+[ext_resource type="Script" path="res://scenes/ui/ai_picker/ai_god_picker.gd" id="5_god"]
+[ext_resource type="Script" path="res://scenes/ui/ai_picker/ai_difficulty_picker.gd" id="6_difficulty"]
 [ext_resource type="PackedScene" path="res://scenes/ui/lobby/chat_box.tscn" id="3_chat"]
 [ext_resource type="PackedScene" path="res://scenes/ui/character_select/character_select.tscn" id="4_select"]
 
@@ -13,7 +15,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_room")
-seat_scene = ExtResource("2_seat")
 character_select_scene = ExtResource("4_select")
 
 [node name="Layout" type="MarginContainer" parent="."]
@@ -52,8 +53,29 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Seats" type="VBoxContainer" parent="Layout/Row/Left"]
-theme_type_variation = &"VBoxGroup"
+[node name="BotOptions" type="HBoxContainer" parent="Layout/Row/Left"]
+theme_type_variation = &"HBoxRow"
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="BotLabel" type="Label" parent="Layout/Row/Left/BotOptions"]
+layout_mode = 2
+text = "UI_ROOM_VIEW_BOT_OPTIONS"
+
+[node name="BotGod" type="OptionButton" parent="Layout/Row/Left/BotOptions"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("5_god")
+
+[node name="BotDifficulty" type="OptionButton" parent="Layout/Row/Left/BotOptions"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("6_difficulty")
+
+[node name="Seats" parent="Layout/Row/Left" instance=ExtResource("2_seats")]
 unique_name_in_owner = true
 layout_mode = 2
 

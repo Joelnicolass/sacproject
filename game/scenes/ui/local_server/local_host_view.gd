@@ -3,11 +3,15 @@ extends Control
 ## RFC-034 034m: create a «Servidor local». The host's pick comes from the menu (`SacrificeFlow.pick`); here he chooses
 ## the transport (the rival chooses his own wizard and god when he joins). «Crear» launches the dedicated on this PC (`LocalServerHost`); when it listens the
 ## view shows the address, the port, the transport and the rival's code. «Entrar a la partida» joins it as a normal client.
+## RFC-049 049h (F297): the host also chooses the mode and the map (the map picker lists the maps that fit the mode) and, for each
+## seat but his, a person or an AI (one `seat_row_scene` per seat, rebuilt when the mode changes); each seat for a person gets a code.
 
 signal back_requested
 
 ## The server node (launcher + the rules of Sacrifice), added to `root` so it outlives this screen.
 @export var host_scene: PackedScene
+## One row per seat besides the host's (local_seat_row.tscn).
+@export var seat_row_scene: PackedScene
 
 var _server: LocalServerHost
 
@@ -23,6 +27,8 @@ func _ready() -> void:
 	%EnterMatch.pressed.connect(_on_enter)
 	%CopyInfo.pressed.connect(_on_copy)
 	%HostBack.pressed.connect(_on_back)
+	(%HostMode as ModePicker).item_selected.connect(_on_mode_selected)
+	_build_seats()
 	_show_form()
 
 
@@ -48,7 +54,10 @@ func _on_create() -> void:
 	var world := (%HostMap as MapPicker).selected_tag()
 	if world != &"":
 		options["world"] = String(world)
-	var err := _server.start(host_pick, kind, options)
+	var mode := (%HostMode as ModePicker).selected_tag()
+	if mode != &"":
+		options["mode"] = String(mode)
+	var err := _server.start(host_pick, kind, options, ai_seats())
 	if err != OK:
 		_server.queue_free()
 		_server = null
@@ -62,9 +71,39 @@ func _on_server_ready(address: String, port: int, code: String) -> void:
 	%HostAddress.text = LocalServerText.address_text(address)
 	%HostPort.text = tr(LocalServerText.INFO_PORT) % port
 	%HostTransportInfo.text = tr(LocalServerText.INFO_TRANSPORT) % LocalServerText.transport_name(MpKit.transport)
-	%HostCode.text = tr(LocalServerText.INFO_CODE) % code
+	## RFC-049 049h: one code per seat for a person (`code` is the first one).
+	%HostCode.text = LocalServerText.codes_text(_server.codes) if _server != null else tr(LocalServerText.INFO_CODE) % code
 	_info.visible = true
 	_status.text = ""
+
+
+func _on_mode_selected(_index: int) -> void:
+	_build_seats()
+
+
+## One row per seat of the chosen mode besides the host's (seat 1).
+func _build_seats() -> void:
+	var holder: Control = %HostSeats
+	for child in holder.get_children():
+		holder.remove_child(child)
+		child.queue_free()
+	var mode := GameModeCatalog.shared().find((%HostMode as ModePicker).selected_tag())
+	if mode == null:
+		return
+	for slot in range(LocalServerHost.RIVAL_SLOT, mode.seats() + 1):
+		var row := seat_row_scene.instantiate() as LocalSeatRow
+		holder.add_child(row)
+		row.show_slot(slot, mode.team_of(slot))
+
+
+## {slot: meta} of the seats an AI plays.
+func ai_seats() -> Dictionary:
+	var out := {}
+	for row in %HostSeats.get_children():
+		var meta := (row as LocalSeatRow).ai_meta()
+		if not meta.is_empty():
+			out[(row as LocalSeatRow).slot] = meta
+	return out
 
 
 func _on_server_failed(reason: String) -> void:
@@ -88,7 +127,7 @@ func _on_enter() -> void:
 func _on_copy() -> void:
 	if _server == null:
 		return
-	var text := tr("UI_LOCAL_HOST_COPY_FORMAT") % [LocalServerEndpoint.format(_server.address, _server.port), _server.rival_code]
+	var text := tr("UI_LOCAL_HOST_COPY_FORMAT") % [LocalServerEndpoint.format(_server.address, _server.port), LocalServerText.codes_text(_server.codes)]
 	DisplayServer.clipboard_set(text)
 	_status.text = tr(LocalServerText.COPIED)
 

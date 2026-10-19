@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://bootsacrifice01"]
+[gd_scene load_steps=12 format=3 uid="uid://bootsacrifice01"]
 
 [ext_resource type="Script" path="res://scenes/core/boot.gd" id="1_boot"]
 [ext_resource type="PackedScene" path="res://scenes/ui/character_select/character_select.tscn" id="2_select"]
@@ -8,6 +8,8 @@
 [ext_resource type="Resource" path="res://data/ui/graphics_prefs.tres" id="6_prefs"]
 [ext_resource type="Resource" path="res://data/ui/gameplay_prefs.tres" id="7_gameplay"]
 [ext_resource type="Script" path="res://scenes/ui/map_picker/map_picker.gd" id="8_map_picker"]
+[ext_resource type="Script" path="res://scenes/ui/mode_picker/mode_picker.gd" id="9_mode_picker"]
+[ext_resource type="Script" path="res://scenes/ui/ai_picker/ai_god_picker.gd" id="10_god_picker"]
 
 [node name="Boot" type="Control"]
 layout_mode = 3
@@ -35,9 +37,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -160.0
-offset_top = -280.0
+offset_top = -300.0
 offset_right = 160.0
-offset_bottom = 280.0
+offset_bottom = 300.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -64,6 +66,7 @@ text = "UI_BOOT_VS_AI"
 [node name="AiGod" type="OptionButton" parent="Column"]
 unique_name_in_owner = true
 layout_mode = 2
+script = ExtResource("10_god_picker")
 
 [node name="AiLevelRow" type="HBoxContainer" parent="Column"]
 layout_mode = 2
@@ -78,11 +81,18 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="MapPicker" type="OptionButton" parent="Column"]
+[node name="ModePicker" type="OptionButton" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("9_mode_picker")
+offer_test_maps = true
+
+[node name="MapPicker" type="OptionButton" parent="Column" node_paths=PackedStringArray("mode_picker")]
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("8_map_picker")
 offer_test_maps = true
+mode_picker = NodePath("../ModePicker")
 
 [node name="Online" type="Button" parent="Column"]
 unique_name_in_owner = true

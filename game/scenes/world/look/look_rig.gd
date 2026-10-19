@@ -11,10 +11,9 @@ extends Node
 signal profile_applied(profile: LookProfile)
 signal layer_toggled(index: int, enabled: bool)
 
-const GODS: Array[StringName] = [&"persephone", &"pyro", &"james", &"stratos", &"charnel"]
-
 @export_group("Editor preview")
-@export_enum("persephone", "pyro", "james", "stratos", "charnel") var preview_god: String = "persephone"
+## One of the gods of data/gods/ (the inspector lists them: see `_validate_property`).
+@export var preview_god: String = "persephone"
 @export_tool_button("Vista previa del bioma") var _preview_action: Callable = preview
 
 @export_group("Sockets")
@@ -45,6 +44,16 @@ func _ready() -> void:
 		_push_quality()
 
 
+func _validate_property(property: Dictionary) -> void:
+	if property.name != "preview_god":
+		return
+	var tags := PackedStringArray()
+	for type in GameCatalog.shared().gods:
+		tags.append(type.tag)
+	property.hint = PROPERTY_HINT_ENUM
+	property.hint_string = ",".join(tags)
+
+
 func apply_profile(new_profile: LookProfile) -> void:
 	profile = new_profile
 	for layer in _look_layers():
@@ -64,10 +73,10 @@ func apply_quality(preset: LookQuality) -> void:
 ## under them (what `ThemeApplier.apply` does in the game). The scene never saves that material.
 func preview() -> void:
 	var god := StringName(preview_god)
-	var theme_path := "res://data/themes/%s.tres" % god
-	if terrain and terrain.has_method("set_classic_material") and ResourceLoader.exists(theme_path):
-		var theme: Resource = load(theme_path)
-		var ground: Variant = theme.get("ground_material") if theme else null
+	var type := GameCatalog.shared().god(String(god))
+	var theme := type.load_theme() if type != null else null
+	if terrain and terrain.has_method("set_classic_material") and theme != null:
+		var ground: Variant = theme.ground_material
 		if ground is ShaderMaterial:
 			terrain.call("set_classic_material", ground)
 	apply_profile(LookApplier.profile_for(god))

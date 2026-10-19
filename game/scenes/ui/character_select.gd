@@ -27,7 +27,7 @@ func _ready() -> void:
 	for wizard: WizardType in GameData.wizards():
 		_add_button(_wizard_grid, "Wizard_" + wizard.tag, wizard.display_name, _wizard_group, _on_wizard.bind(wizard.tag))
 	for god: String in GameData.gods():
-		_add_button(_god_row, "God_" + god, "Dios: %s" % god.capitalize(), _god_group, _on_god.bind(god))
+		_add_button(_god_row, "God_" + god, "Dios: %s" % GameData.god(god).display_name, _god_group, _on_god.bind(god))
 	%Play.text = confirm_text
 	%Play.pressed.connect(_on_play)
 	_on_wizard(_wizard_tag)

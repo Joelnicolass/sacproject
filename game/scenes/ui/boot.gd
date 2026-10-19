@@ -71,7 +71,7 @@ func _fill_ai_gods() -> void:
 	picker.add_item("Rival: Aleatorio")
 	picker.set_item_metadata(0, "")
 	for god in GameData.gods():
-		picker.add_item("Rival: %s" % god.capitalize())
+		picker.add_item("Rival: %s" % GameData.god(god).display_name)
 		picker.set_item_metadata(picker.item_count - 1, god)
 	picker.select(0)
 

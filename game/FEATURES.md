@@ -3153,3 +3153,13 @@ Agregar o cambiar un hechizo de combate ya no toca `caster.gd`.
 - **`SpellType.action`:** `@export var action: PackedScene` nuevo (default vacío). Si el mago no tiene un hijo para el tag, `Caster.action_for` instancia esa escena. Un hechizo nuevo es un `.tres` más una escena. Todavía no se cargó en ningún `.tres` del catálogo, para no chocar con el cambio de carga del catálogo.
 - **041i:** proyectiles y efectos como `.tscn` (`rock_projectile`, `wrath_strike`, `fireball_projectile`, `swarm_projectile`, `heal_effect`, `speedup_effect`). `SpellSpawner` (`class_name`) los toma de `projectiles`, un `Dictionary[String, PackedScene]` exportado, con `spawn_projectile(kind, data)`; ya no hay `script.new()`. Base `SpellProjectile` con `setup()`.
 - **Verificación:** import limpio; `rules_suite` PASS; `quick` sin regrabar.
+
+### F250 — RFC-042a: dioses y libros como Resources (2026-10-19)
+
+- **`GodType`** (`data/gods/<dios>.tres`, uno por dios): etiqueta, nombre, `sort_order`, `ai_profile`, libro tipado y rutas al tema, al look y a la partícula de lanzamiento (rutas y no referencias: cargar la ficha no arrastra las texturas de los cinco biomas).
+- **Libro tipado**: `GodBook` (`Array[CreatureType]`, `Array[SpellType]` para hechizos y estructuras) y `BookUnlock` (criatura o hechizo y nivel). Reemplaza el Diccionario de `data/catalog/books.tres` (borrado junto con `GodBooks`). Mismas listas, mismo orden.
+- **Descubrimiento**: `GameCatalog` escanea `data/gods/` (orden `sort_order`, luego tag: persephone, pyro, james, stratos, charnel, el que usan el sorteo de bioma y el índice de `SpellType.structures`). Desaparecen las 4 listas `GODS` y el `@export_enum` de `look_rig.gd` (ahora lista del escaneo).
+- **Lectores**: `GameData.book/gods/god/creature_level`, `ThemeApplier`, `LookApplier`, `AiProfile.for_god`, `Caster._cast_fx`, selección de personaje y menú de rival (nombre de `display_name`).
+- **Validador** (`debug/catalog_cases.gd`): archivo con el nombre del tag, tema y look existentes y del dios, perfil de IA, y que cada fila y desbloqueo del libro sea un archivo del catálogo, sin repetidos.
+- **Prueba de aceptación** `debug/god_edit_cases.tscn`: agregar EHTH a `creatures` de `data/gods/pyro.tres` cambia el libro que ofrece el juego (11 a 12) y se restaura.
+- **042b (ficha de criatura sin animación)**: no se hizo. En runtime se leen `idle_animation` (stunned), `melee_animations` (melee_attack), `shoot_animations` (ability_effect, ranged_attack, pull), `stun_animations` y `flight_animations` (stunned, creature_type). `stance`, `run`, `walk`, `extra`, `death` y `captive` no se leen en runtime pero son la entrada de `tools/bake_body_scenes.gd`.

@@ -47,7 +47,7 @@ func prepare() -> void:
 func think(wizard: AiTrack, cmd: int, record: AiRecord) -> int:
 	if not wizard.is_valid():
 		return 0
-	if bool(wizard.node.call("is_ghost")):
+	if (wizard.node as WizardBody).is_ghost():
 		return _ghost(wizard, cmd, record)
 	## A cast decided and waiting its delay (Easy, 024e): he stands as if casting and orders nothing else (else he walked on toward
 	## the fount and stood on it when the Manalith left: «Sin lugar»).
@@ -147,7 +147,7 @@ func cast_cached_in_range(wizard: AiTrack, fount: AiTrack) -> int:
 	var shrine: SpellType = wizard.shrine_spell
 	if shrine == null or wizard.threat >= profile.build_threat_cap:
 		return 0
-	if not fount.is_valid() or not bool(fount.node.call("is_free")):
+	if not fount.is_valid() or not (fount.node as ManafountBody).is_free():
 		return 0
 	var r := float(shrine.cast_range)
 	r = r * r * 1.399999976158142 * 25.0
@@ -187,7 +187,7 @@ func _ghost(wizard: AiTrack, cmd: int, record: AiRecord) -> int:
 static func target_alive(t: AiTrack) -> bool:
 	if t == null or not t.is_valid():
 		return false
-	return not (t.node.has_method("is_dead") and bool(t.node.call("is_dead")))
+	return not (t.node.has_method("is_dead") and bool(t.node.call("is_dead")))  # dynamic: unit, structure and doctor bodies answer it
 
 
 ## wizSpellRebuild (shiny.d:2610-2636): the book of the wizard in the lists the phases read.
@@ -198,21 +198,21 @@ func rebuild_spells(wizard: AiTrack) -> void:
 	wizard.shrine_spell = null
 	wizard.convert_spell = null
 	wizard.desecrate_spell = null
-	var book := wizard.node.get_node("Spellbook")
-	for i in int(book.call("creature_count")):
-		var type: CreatureType = book.call("creature_at", i)
+	var book := wizard.node.get_node("Spellbook") as Spellbook
+	for i in book.creature_count():
+		var type := book.creature_at(i)
 		if type == null:
 			continue
 		if type.tag == AiPerception.MAHO_TAG:
 			wizard.manahoar_spell = type
 		else:
 			wizard.summons.append({"tag": type.tag, "type": type, "acc": perception.tag_acc(type.tag)})
-	for i in int(book.call("size")):
-		var spell: SpellType = book.call("spell_at", i)
+	for i in book.size():
+		var spell := book.spell_at(i)
 		if spell != null and AiSpellEval.wants_acc(spell):
 			wizard.spell_accs.append({"spell": spell, "fn": AiSpellEval.rating_fn(spell)})
-	for i in int(book.call("structure_count")):
-		var spell: SpellType = book.call("structure_at", i)
+	for i in book.structure_count():
+		var spell := book.structure_at(i)
 		if spell == null:
 			continue
 		if wizard.shrine_spell == null and (spell.flags & (1 << 11)) != 0:
@@ -227,28 +227,28 @@ func rebuild_spells(wizard: AiTrack) -> void:
 ## lightCanCast (shiny.d:3174-3199): mana, souls, cooldown and a free wizard. The mana test is the Caster's own (cost <= mana
 ## + epsilon; sacengine rounds with ftol), so the AI never asks for what the Caster would answer «Sin maná».
 func light_can_cast(wizard: AiTrack, spell: Resource) -> bool:
-	var node := wizard.node
-	if not bool(node.call("can_cast")):
+	var node := wizard.node as WizardBody
+	if not node.can_cast():
 		return false
 	## a cast decided and waiting its delay (Easy, 024e) keeps him busy like one being cast
 	if port != null and port.cast_pending():
 		return false
-	var caster := node.get_node("Caster")
-	if bool(caster.call("is_casting")):
+	var caster := node.get_node("Caster") as Caster
+	if caster.is_casting():
 		return false
-	var book := node.get_node("Spellbook")
+	var book := node.get_node("Spellbook") as Spellbook
 	var cooldown := 0.0
 	if spell is CreatureType:
 		var purse := node.get_node_or_null("SoulPurse")
 		if (purse != null and int(purse.get("count")) < (spell as CreatureType).souls) or purse == null:
 			return false
-		cooldown = float(book.call("creature_cooldown", int(book.call("creature_index_of", (spell as CreatureType).tag))))
+		cooldown = book.creature_cooldown(book.creature_index_of((spell as CreatureType).tag))
 	elif spell is SpellType:
 		var tag := (spell as SpellType).tag
 		if bool((spell as SpellType).is_structure):
-			cooldown = float(book.call("structure_cooldown", int(book.call("structure_index_of", tag))))
+			cooldown = book.structure_cooldown(book.structure_index_of(tag))
 		else:
-			cooldown = float(book.call("cooldown", int(book.call("index_of", tag))))
+			cooldown = book.cooldown(book.index_of(tag))
 	else:
 		return false
 	if cooldown > 0.0:
@@ -308,7 +308,7 @@ func execute_best_cast(wizard: AiTrack, check_only: bool) -> int:
 			i += 1
 			continue
 		if obj != null:
-			if target != null and target.kind == AiTrack.Kind.WIZ and bool(target.node.call("is_ghost")):
+			if target != null and target.kind == AiTrack.Kind.WIZ and (target.node as WizardBody).is_ghost():
 				i += 1
 				continue
 			var range_m := float(e["range"])

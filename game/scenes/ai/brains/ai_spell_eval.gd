@@ -84,7 +84,7 @@ func can_cast_on(caster: AiTrack, target: AiTrack, spell: SpellType) -> bool:
 		return true
 	if flags & 0x1f:
 		if flags & (1 << 11):  # onlyManafounts
-			return target.node.is_in_group(&"manafount") and bool(target.node.call("is_free"))
+			return target.node is ManafountBody and (target.node as ManafountBody).is_free()
 		if (flags & (1 << 12)) != 0 and perception.relation_of(target.node) > 1:  # onlyAlly: CREATURE::IsFriendly
 			return false
 		if flags & (1 << 13):  # disallowAlly
@@ -181,7 +181,7 @@ func _speedup(target: AiTrack) -> float:
 	var base := 0.0
 	var goal := Vector3.ZERO
 	if target.kind == AiTrack.Kind.WIZ:
-		if target.ord_state != 34 or not bool(target.node.call("is_walking")):
+		if target.ord_state != 34 or not (target.node as WizardBody).is_walking():
 			return 0.0
 		base = 40.0
 		goal = target.ord_pos

@@ -1,3 +1,4 @@
+class_name ManafountBody
 extends StaticBody3D
 
 ## One map manafount. While free it feeds mana to everyone in range and shows the jet; once a

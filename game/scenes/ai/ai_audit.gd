@@ -402,7 +402,7 @@ func npc_alive() -> Dictionary:
 		var key: String = _npc_kind.get(id, "npc")
 		if not alive.has(key):
 			alive[key] = 0
-		if unit != null and is_instance_valid(unit) and not bool((unit as Node).call("is_dead")):
+		if unit != null and is_instance_valid(unit) and unit is UnitBody and not (unit as UnitBody).is_dead():
 			alive[key] += 1
 	return alive
 

@@ -123,7 +123,7 @@ func _apply(slot: int, unit_paths: PackedStringArray, command: String, point: Ve
 				foe = target
 		var order_point := target.global_position if target else point
 		var order_facing := _yaw_of(target) if kind == UnitOrders.Command.GUARD and target else facing
-		unit.get_node("Orders").call("give", kind, foe, order_point, slots[index], order_facing)
+		(unit.get_node("Orders") as UnitOrders).give(kind as UnitOrders.Command, foe, order_point, slots[index], order_facing)
 	last_apply_us = Time.get_ticks_usec() - started
 	if log_orders and (unit_nodes.is_empty() or log_ai_orders):
 		print("orden %s %d" % [command, units.size()])
@@ -165,7 +165,7 @@ func _retreat(slot: int) -> void:
 		return
 	for unit in get_tree().get_nodes_in_group("unit"):
 		if _can_order(unit, slot):
-			unit.get_node("Orders").call("give", UnitOrders.Command.RETREAT, wizard, wizard.global_position, Vector2.ZERO, 0.0)
+			(unit.get_node("Orders") as UnitOrders).give(UnitOrders.Command.RETREAT, wizard, wizard.global_position, Vector2.ZERO, 0.0)
 
 
 ## canOrder (state.d:1140) plus sacengine order(): pacifists refuse attack and advance.
@@ -192,7 +192,8 @@ func _own_units(slot: int, unit_paths: PackedStringArray, target: Node3D, kind: 
 func _can_order(unit: Node, slot: int) -> bool:
 	if not unit.is_in_group("unit") or int(unit.get("owner_slot")) != slot:
 		return false
-	return not unit.call("is_dead") and not unit.call("is_summoning") and unit.has_node("Orders")
+	var body := unit as UnitBody
+	return body != null and not body.is_dead() and not body.is_summoning() and body.has_node("Orders")
 
 
 ## The slots (right, forward) of `formation` for the group. Guarding or attacking a body changes them (state.d:429).
@@ -293,7 +294,7 @@ func _closest_enemy_creature(unit: Node3D, spot: Vector3) -> Node3D:
 	var best: Node3D = null
 	var best_d := retarget_range
 	for node in get_tree().get_nodes_in_group("unit"):
-		if not unit.call("is_foe", node):
+		if not (unit as UnitBody).is_foe(node):
 			continue
 		var d := spot.distance_to((node as Node3D).global_position)
 		if d <= best_d:
@@ -310,7 +311,7 @@ static func _half_size(body: Node3D) -> float:
 
 
 static func _yaw_of(node: Node3D) -> float:
-	if node.has_method("facing_flat"):
+	if node.has_method("facing_flat"):  # dynamic: unit, wizard and doctor bodies all face
 		var ahead: Vector3 = node.call("facing_flat")
 		return atan2(ahead.x, ahead.z)
 	return node.rotation.y

@@ -139,7 +139,7 @@ func refresh_group(group: AiGroup) -> void:
 static func alive(t: AiTrack) -> bool:
 	if not t.is_valid():
 		return false
-	if t.kind != AiTrack.Kind.WIZ and t.node.has_method("is_dead") and bool(t.node.call("is_dead")):
+	if t.kind != AiTrack.Kind.WIZ and t.node.has_method("is_dead") and bool(t.node.call("is_dead")):  # dynamic: unit and structure bodies answer it
 		return false
 	return true
 

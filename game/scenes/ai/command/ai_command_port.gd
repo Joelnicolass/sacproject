@@ -17,6 +17,8 @@ extends Node
 ## requests that took the real body or position of an unseen one (only Hard, like the original's startCasting on the entity).
 
 const UnitOrders := preload("res://scenes/units/unit_orders.gd")
+## orders.gd has no class_name (other scripts preload it).
+const _ORDERS := preload("res://scenes/orders/orders.gd")
 ## sacengine retreat/guard of a wizard stops this far from the body it goes to (shiny.d:2376, `ntt+0x2e4 + 10.0`).
 const WIZARD_STOP_M := 10.0
 ## Two positions are «the same order» within this squared distance. sacengine compares them exactly (shiny.d:2398); in the port a
@@ -28,7 +30,7 @@ const SAME_POS_SQ := 1.0
 @export var perception: AiPerception
 
 var slot := 0
-var wizard: Node3D
+var wizard: WizardBody
 var orders: Node
 var caster: Caster
 var orders_issued := 0
@@ -237,7 +239,7 @@ func order_if_changed(t: AiTrack, ostate: int, target: AiTrack, pos: Variant) ->
 			if (pos as Vector3) == t.cur_pos:
 				reason += " hold"
 			if t.kind != AiTrack.Kind.WIZ:
-				reason += " walking" if bool(t.node.call("is_walking")) else " still"
+				reason += " walking" if (t.node as UnitBody).is_walking() else " still"
 	var key := "%s %d %s" % [AiTrack.Kind.keys()[t.kind], ostate, reason]
 	var goal: Vector3
 	if delay_ticks > 0:
@@ -304,7 +306,7 @@ func _has_live_order(t: AiTrack) -> bool:
 		return true
 	if t.kind == AiTrack.Kind.WIZ:
 		## still walking, or standing at the spot he was sent to (a retained, completed order)
-		return bool(t.node.call("is_walking")) or t.cur_pos.distance_squared_to(t.ord_pos) <= 4.0
+		return (t.node as WizardBody).is_walking() or t.cur_pos.distance_squared_to(t.ord_pos) <= 4.0
 	var orders_node := t.node.get_node_or_null("Orders")
 	return orders_node != null and int(orders_node.get("command")) != UnitOrders.Command.NONE
 
@@ -323,7 +325,7 @@ func _issue(t: AiTrack, ostate: int, target: AiTrack, pos: Variant) -> Vector3:
 				goal = t.cur_pos
 		if audit != null:
 			audit.record("order", "slot %d wizard walk %s" % [slot, AiAudit.fmt(goal)])
-		wizard.call("request_walk", goal)
+		wizard.request_walk(goal)
 		orders_issued += 1
 		return goal
 	var command := ""
@@ -365,7 +367,7 @@ func _issue(t: AiTrack, ostate: int, target: AiTrack, pos: Variant) -> Vector3:
 	if audit != null:
 		audit.record("order", "slot %d %s %s %s" % [slot, t.node.name, command, AiAudit.fmt(point)])
 	orders_issued += 1
-	orders.call("apply_for", slot, [t.node], command, point, goal_node)
+	(orders as _ORDERS).apply_for(slot, [t.node], command, point, goal_node)
 	return point
 
 

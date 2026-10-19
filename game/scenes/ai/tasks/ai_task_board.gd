@@ -53,11 +53,11 @@ func claim_pass() -> void:
 static func claimable(t: AiTrack) -> bool:
 	if not t.is_valid() or t.node.is_in_group(&"doctor"):
 		return false
-	if t.node.has_method("is_dead") and bool(t.node.call("is_dead")):
+	if t.node.has_method("is_dead") and bool(t.node.call("is_dead")):  # dynamic: unit and structure bodies answer it
 		return false
-	if t.node.has_method("is_summoning") and bool(t.node.call("is_summoning")):
+	if t.node is UnitBody and (t.node as UnitBody).is_summoning():
 		return false
-	if t.node.has_method("is_taken") and bool(t.node.call("is_taken")):
+	if t.node is UnitBody and (t.node as UnitBody).is_taken():
 		return false
 	return true
 

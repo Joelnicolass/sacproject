@@ -70,7 +70,7 @@ func has(unit: Variant) -> bool:
 ## (Ctrl+Q) and the roster's ability icon both read it, so they never disagree.
 func ability_tag() -> String:
 	for unit in units():
-		if not unit.has_method("request_ability"):
+		if not unit is UnitBody:
 			continue
 		var type: CreatureType = unit.get("type")
 		if type and not type.active_ability_tag.is_empty():
@@ -110,7 +110,7 @@ func can_select(unit: Variant) -> bool:
 		return false
 	if int(unit.get("owner_slot")) != MpKit.local_slot() or MpKit.local_slot() <= 0:
 		return false
-	return not unit.call("is_dead")
+	return unit is UnitBody and not (unit as UnitBody).is_dead()
 
 
 ## Left click on a creature (already known to be under the cursor).
@@ -292,9 +292,9 @@ func _prune() -> bool:
 
 func _mark(list: Array, on: bool) -> void:
 	for unit in list:
-		var bar: Node = (unit as Node).get_node_or_null("HealthBar")
-		if bar and bar.has_method("set_selected"):
-			bar.call("set_selected", on)
+		var bar := (unit as Node).get_node_or_null("HealthBar") as UnitHealthBar
+		if bar:
+			bar.set_selected(on)
 
 
 ## CreatureGroup.addFront for each of `front` (kept in order), dropping the oldest past max_size.
@@ -353,8 +353,8 @@ func _same_type_near(unit: Node3D) -> Array:
 
 
 func _center(unit: Node3D) -> Vector3:
-	var visual := unit.get_node_or_null("Tilt/Mesh")
-	var height := float(visual.call("body_height")) if visual and visual.has_method("body_height") else 1.8
+	var visual := unit.get_node_or_null("Tilt/Mesh") as BodyVisual
+	var height := visual.body_height() if visual else 1.8
 	return unit.global_position + Vector3.UP * height * 0.5
 
 

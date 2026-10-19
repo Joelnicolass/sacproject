@@ -72,7 +72,7 @@ func _min_mana(t: AiTrack) -> int:
 
 
 static func _respawning(t: AiTrack) -> bool:
-	return t.kind == AiTrack.Kind.WIZ and bool(t.node.call("is_ghost"))
+	return t.kind == AiTrack.Kind.WIZ and (t.node as WizardBody).is_ghost()
 
 
 ## findBestCaptureTarget (shiny.d:2518-2545, 0x485a40): among the own and ally bodies and structures that are READY (a Manahoar that

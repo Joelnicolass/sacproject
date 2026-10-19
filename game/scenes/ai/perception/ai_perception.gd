@@ -192,7 +192,7 @@ func _should_track(node: Node3D, kind: AiTrack.Kind) -> bool:
 
 
 static func _is_dead(node: Node) -> bool:
-	return node.has_method("is_dead") and bool(node.call("is_dead"))
+	return node.has_method("is_dead") and bool(node.call("is_dead"))  # dynamic: unit and structure bodies answer it
 
 
 func _setup(t: AiTrack) -> void:
@@ -260,7 +260,7 @@ func _status_of_structure(t: AiTrack) -> void:
 	var bfl := _bldg_flags(t.node)
 	var top_free := true
 	if t.node.is_in_group(&"manafount"):
-		top_free = bool(t.node.call("is_free"))
+		top_free = (t.node as ManafountBody).is_free()
 		if (bfl & 0x10) and top_free:
 			t.status |= AiTrack.UNBUILT
 		else:
@@ -287,10 +287,10 @@ func _rate(t: AiTrack) -> void:
 	var ts: Dictionary
 	if t.kind == AiTrack.Kind.WIZ:
 		ts = AiRater.WIZARD_STATS
-		var book := node.get_node_or_null("Spellbook")
+		var book := node.get_node_or_null("Spellbook") as Spellbook
 		if book != null:
-			for i in int(book.call("size")):
-				spells.append(book.call("spell_at", i))
+			for i in book.size():
+				spells.append(book.spell_at(i))
 	else:
 		var type := node.get("type") as CreatureType
 		if type == null:
@@ -455,11 +455,8 @@ func _update_node(t: AiTrack, dt: int) -> void:
 
 ## manahoarAbilityEnabled: it works while it is not dead, not being summoned and not held.
 static func _maho_ready(node: Node) -> bool:
-	if node.has_method("is_dead") and node.call("is_dead"):
-		return false
-	if node.has_method("is_summoning") and node.call("is_summoning"):
-		return false
-	return not (node.has_method("is_taken") and node.call("is_taken"))
+	var unit := node as UnitBody
+	return unit == null or not (unit.is_dead() or unit.is_summoning() or unit.is_taken())
 
 
 ## discover (shiny.d:1373-1400) for what it does here: bodies it has seen get the «seen» flag so updateBase follows
@@ -472,7 +469,7 @@ func discover() -> void:
 			continue
 		if t.flags & AiTrack.OWN:
 			continue
-		if t.kind == AiTrack.Kind.WIZ and bool(t.node.call("is_ghost")):
+		if t.kind == AiTrack.Kind.WIZ and (t.node as WizardBody).is_ghost():
 			_erase(t)
 			continue
 		if _is_dead(t.node):

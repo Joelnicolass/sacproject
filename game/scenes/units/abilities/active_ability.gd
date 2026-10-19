@@ -14,12 +14,12 @@ extends Node
 ## Implemented from the active book roster: every ability has an AbilityEffect scene of its own (ability_catalog.tres). F133 (030v-b):
 ## the last three, Rockform (dihk), Play Dead (dedp) and Stealth (ivni), left the `match` that lived here; this node only checks and pays.
 
-const COOLING := "Enfriando"
-const NO_MANA := "Sin maná"
-const OUT_OF_RANGE := "Fuera de alcance"
-const BAD_TARGET := "Blanco inválido"
-const NOT_IMPLEMENTED := "No implementado"
-const NO_ABILITY := "Sin habilidad"
+const COOLING := Refusal.COOLING
+const NO_MANA := Refusal.NO_MANA
+const OUT_OF_RANGE := Refusal.OUT_OF_RANGE
+const BAD_TARGET := Refusal.BAD_TARGET
+const NOT_IMPLEMENTED := Refusal.NOT_IMPLEMENTED
+const NO_ABILITY := Refusal.NO_ABILITY
 
 ## sacengine manaEpsilon (abilityStatus).
 const MANA_EPSILON := 0.01

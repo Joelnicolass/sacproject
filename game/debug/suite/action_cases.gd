@@ -64,7 +64,7 @@ func _action_lookup(host: Node3D) -> Dictionary:
 		without = without and caster.structure_status(at) == SpellAction.NOT_IMPLEMENTED and caster.structure_action(at) == null
 	checks["others_not_implemented"] = without
 	checks["unknown_tag_null"] = caster.action_for("zzzz") == null
-	checks["not_implemented_text"] = SpellAction.NOT_IMPLEMENTED == "No implementado"
+	checks["not_implemented_key"] = SpellAction.NOT_IMPLEMENTED == &"not_implemented"
 	var bare := SpellAction.new()
 	checks["bare_warns"] = bare._get_configuration_warnings().size() == 2
 	bare.free()

@@ -106,7 +106,7 @@ def check_log(path):
     lines = open(path, encoding="utf-8", errors="replace").read().splitlines()
     ok = True
     bench = f131.read_bench(lines, "Styx1")
-    for tick, text in ((120, "Fuera de alcance"), (126, "Blanco inválido")):
+    for tick, text in ((120, "out_of_range"), (126, "bad_target")):
         got = [t for t, tk in bench if tk == tick]
         ok &= verdict(bool(got) and got[0] == text, "1. rechazo a los %d: %s (esperado «%s»)" % (tick, got, text))
     using = [(int(m.group(1)), int(m.group(2))) for m in (re.search(r"usando habilidad Rend Soul Styx1 (\d+) ticks \(tick (\d+)\)", l) for l in lines) if m]

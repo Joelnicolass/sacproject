@@ -306,7 +306,7 @@
   {
    "assert": {
     "node": "%Battle",
-    "text_equals": "Enfriando"
+    "text_equals": "cooling"
    }
   },
   {

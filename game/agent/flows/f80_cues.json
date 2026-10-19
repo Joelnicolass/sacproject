@@ -247,7 +247,7 @@
   {
    "assert": {
     "node": "%Battle",
-    "text_equals": "Blanco inválido"
+    "text_equals": "bad_target"
    }
   },
   {

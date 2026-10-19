@@ -11,7 +11,7 @@ extends SpellAction
 ## Doctor, one that is already a guardian (exclusion_tags «ndrg») nor a captive. The beam, the damage
 ## split and the factors live in GuardianTether, GuardPost and GuardianBond, not here.
 
-const FAR_FROM_BUILDING := "Lejos de un edificio propio"
+const FAR_FROM_BUILDING := Refusal.FAR_FROM_BUILDING
 
 ## Numbers of the guardian (arm radius). Obligatory.
 @export var rules: MatchRules

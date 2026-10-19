@@ -20,7 +20,7 @@
   {
    "assert": {
     "node": "%Battle",
-    "text_contains": "Sin almas"
+    "text_contains": "no_souls"
    }
   },
   {

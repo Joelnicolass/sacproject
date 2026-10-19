@@ -26,7 +26,7 @@
     { "assert": { "node": "%Battle", "text_equals": "Elegí el blanco" } },
     { "click": "%View" },
     { "wait": 0.35 },
-    { "assert": { "node": "%Battle", "text_equals": "Blanco inválido" } },
+    { "assert": { "node": "%Battle", "text_equals": "bad_target" } },
     { "shot": "f17diag_f14_spell.png" }
   ]
 }

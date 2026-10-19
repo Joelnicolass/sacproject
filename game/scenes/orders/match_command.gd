@@ -95,7 +95,8 @@ func _on_local_wizard(wizard: Node3D) -> void:
 
 
 func _on_feedback(text: String) -> void:
-	if (_mode == "spell" or _mode == "structure") and not _cast_pending.is_empty() and text == _cast_pending:
+	## The answer to the pending cast is the one that is not a refusal (by key, never by the spell's words).
+	if (_mode == "spell" or _mode == "structure") and not _cast_pending.is_empty() and not %Battle.is_reason(text):
 		_mode = ""
 		_cast_pending = ""
 	%Battle.say(text)
@@ -183,7 +184,7 @@ func camera_dragged() -> bool:
 func _summon(index: int) -> void:
 	%SpellBook.show_tab(_SPELL_BOOK.Tab.CREATURE)
 	if _caster == null or not is_instance_valid(_caster):
-		%Battle.say("Sin mago")
+		%Battle.say(Refusal.NO_WIZARD)
 		return
 	if not _caster.wizard_can_cast():
 		return
@@ -203,7 +204,7 @@ func _summon(index: int) -> void:
 func _arm_spell(index: int) -> void:
 	%SpellBook.show_tab(_SPELL_BOOK.Tab.SPELL)
 	if _caster == null or not is_instance_valid(_caster):
-		%Battle.say("Sin mago")
+		%Battle.say(Refusal.NO_WIZARD)
 		return
 	if not _caster.wizard_can_cast():
 		return
@@ -226,7 +227,7 @@ func _arm_spell(index: int) -> void:
 func _arm_structure(index: int) -> void:
 	%SpellBook.show_tab(_SPELL_BOOK.Tab.STRUCTURE)
 	if _caster == null or not is_instance_valid(_caster):
-		%Battle.say("Sin mago")
+		%Battle.say(Refusal.NO_WIZARD)
 		return
 	if not _caster.wizard_can_cast():
 		return
@@ -239,7 +240,7 @@ func _arm_structure(index: int) -> void:
 		return
 	var action: SpellAction = _caster.structure_action(index)
 	if action == null:
-		%Battle.say("No implementado")
+		%Battle.say(Refusal.NOT_IMPLEMENTED)
 		return
 	_mode = "structure"
 	_structure_index = index
@@ -321,7 +322,7 @@ func _order_icon_on(body: Node3D, ground: Variant) -> void:
 	if kind == "move":
 		var spot: Variant = ground if ground != null else (body.global_position if body else null)
 		if spot == null:
-			%Battle.say("Sin suelo")
+			%Battle.say(Refusal.NO_GROUND)
 			return
 		_order("move", spot, null)
 		return
@@ -329,7 +330,7 @@ func _order_icon_on(body: Node3D, ground: Variant) -> void:
 		_order(kind, body.global_position, body)
 		return
 	if ground == null:
-		%Battle.say("Sin suelo")
+		%Battle.say(Refusal.NO_GROUND)
 		return
 	_order("advance" if kind == "attack" else "guard_area", ground, null)
 
@@ -347,10 +348,10 @@ func _cast_on(body: Node3D, ground: Variant) -> void:
 		return
 	var point: Vector3 = body.global_position if body else (ground if ground != null else Vector3.ZERO)
 	if body == null and ground == null:
-		%Battle.say("Sin blanco")
+		%Battle.say(Refusal.NO_TARGET)
 		return
 	_show_ping(point)
-	_cast_pending = spell.display_name
+	_cast_pending = spell.tag
 	_caster.request_cast(spell.tag, point, body)
 
 
@@ -394,7 +395,7 @@ func _structure_at(screen: Vector2) -> void:
 	var action: SpellAction = _caster.structure_action(_structure_index)
 	if action == null:
 		_mode = ""
-		%Battle.say("No implementado")
+		%Battle.say(Refusal.NOT_IMPLEMENTED)
 		return
 	match action.pick:
 		SpellAction.Pick.GROUND:
@@ -409,20 +410,20 @@ func _structure_at(screen: Vector2) -> void:
 
 func _structure_on_ground(spell: SpellType, ground: Variant) -> void:
 	if ground == null:
-		%Battle.say("Sin suelo")
+		%Battle.say(Refusal.NO_GROUND)
 		return
 	_show_ping(ground)
-	_cast_pending = spell.display_name
+	_cast_pending = spell.tag
 	_caster.request_structure(_structure_index, ground)
 
 
 ## A structure tab spell that aims at a body: the server checks the body is valid (own, in range…).
 func _cast_structure_on(spell: SpellType, body: Node3D) -> void:
 	if body == null:
-		%Battle.say("Sin blanco")
+		%Battle.say(Refusal.NO_TARGET)
 		return
 	_show_ping(body.global_position)
-	_cast_pending = spell.display_name
+	_cast_pending = spell.tag
 	_caster.request_cast(spell.tag, body.global_position, body)
 
 
@@ -454,7 +455,7 @@ func _ability_at(screen: Vector2) -> void:
 
 func _ability_on(body: Node3D, ground: Variant) -> void:
 	if body == null and ground == null:
-		%Battle.say("Sin blanco")
+		%Battle.say(Refusal.NO_TARGET)
 		return
 	var point: Vector3 = body.global_position if body else ground
 	if _apply_ability(_ability_tag, point, body):
@@ -526,7 +527,7 @@ func right_at(screen: Vector2, from_action := false, formation_id := &"") -> voi
 		return
 	var ground: Variant = _ray_ground(screen)
 	if ground == null:
-		%Battle.say("Sin suelo")
+		%Battle.say(Refusal.NO_GROUND)
 		return
 	_order("move", ground, null, formation_id)
 
@@ -569,7 +570,7 @@ func _structure_at_point(point: Vector3) -> void:
 	var action: SpellAction = _caster.structure_action(_structure_index) if spell else null
 	if action == null:
 		_mode = ""
-		%Battle.say("Mago" if spell == null else "No implementado")
+		%Battle.say("Mago" if spell == null else Refusal.NOT_IMPLEMENTED)
 		return
 	match action.pick:
 		SpellAction.Pick.GROUND:
@@ -577,7 +578,7 @@ func _structure_at_point(point: Vector3) -> void:
 		SpellAction.Pick.OWN_UNIT:
 			_cast_structure_on(spell, _body_near(point, true))
 		_:
-			%Battle.say("Sin blanco")
+			%Battle.say(Refusal.NO_TARGET)
 
 
 ## The body (wizard or creature, not a corpse) closest to a world point and within `minimap_pick_units` HUD units of the
@@ -605,7 +606,7 @@ func _body_near(point: Vector3, own_only := false) -> Node3D:
 func retreat() -> void:
 	var wizard := _wizard()
 	if wizard == null:
-		%Battle.say("Sin mago")
+		%Battle.say(Refusal.NO_WIZARD)
 		return
 	%Orders.request([], "retreat", wizard.global_position, wizard, _camera_yaw())
 	%Battle.say("Retirada")
@@ -651,7 +652,7 @@ func set_formation(id: StringName) -> void:
 		return
 	var units: Array = %Selection.units()
 	if units.is_empty():
-		%Battle.say("Nadie")
+		%Battle.say(Refusal.NOBODY)
 		return
 	%Orders.request(units, "formation", Vector3.ZERO, null, _camera_yaw(), id)
 	%Battle.say(formation.display_name)
@@ -660,7 +661,7 @@ func set_formation(id: StringName) -> void:
 func _order(kind: String, point: Vector3, target: Node3D, formation_id := &"") -> void:
 	var units: Array = %Selection.units()
 	if units.is_empty():
-		%Battle.say("Nadie")
+		%Battle.say(Refusal.NOBODY)
 		return
 	_show_ping(point, ORDER_TONE.get(kind, OrderMarker.Tone.WHITE))
 	%Orders.request(units, kind, point, target, _camera_yaw(), formation_id)

@@ -364,14 +364,14 @@ func request_ability(target_pos: Vector3, foe: Node3D = null) -> String:
 
 func ability_status(target_pos: Vector3, foe: Node3D = null) -> String:
 	if mode == Mode.DEAD or mode == Mode.SUMMONING or is_taken() or afflictions.holds():
-		return "Blanco inválido"
+		return ActiveAbility.BAD_TARGET
 	return str($ActiveAbility.call("status", target_pos, foe))
 
 
 ## Server or solo: sacengine useAbility. "" = used.
 func use_ability(target_pos: Vector3, foe: Node3D = null) -> String:
 	if mode == Mode.DEAD or mode == Mode.SUMMONING or is_taken() or afflictions.holds():
-		return "Blanco inválido"
+		return ActiveAbility.BAD_TARGET
 	return str($ActiveAbility.call("use", target_pos, foe))
 
 

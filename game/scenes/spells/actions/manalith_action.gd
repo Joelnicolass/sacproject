@@ -7,7 +7,7 @@ extends SpellAction
 ## needs room for the model and puts the structure up when the casting time ends. The click is
 ## the ground; the fount decides where the structure stands.
 
-const NO_FOUNT := "Sin fuente"
+const NO_FOUNT := Refusal.NO_FOUNT
 ## sacengine: the fount a click picks is the closest free one within this distance of the point.
 const POINT_FOUNT_RANGE := 20.0
 

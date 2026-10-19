@@ -81,7 +81,7 @@ VEC = r"\(" + NUM + r", " + NUM + r", " + NUM + r"\)"
 KINDS = {
     "web": {
         "ability": "Web pull", "user": "Gremlin1", "target": "Druid1", "frames": 82,
-        "uses": 2, "ends_by": "cerca", "bench": {"Blanco inválido": [18, 21], "Fuera de alcance": [24], "ok": [30]},
+        "uses": 2, "ends_by": "cerca", "bench": {"bad_target": [18, 21], "out_of_range": [24], "ok": [30]},
     },
     "cage": {
         "ability": "Cage pull", "user": "Seraph1", "target": "Druid5", "frames": 102,

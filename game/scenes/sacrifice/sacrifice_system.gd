@@ -23,8 +23,8 @@ const CARRIER := preload("res://scenes/sacrifice/carrier_doctor.tscn")
 const RITUAL_DOCTOR := preload("res://scenes/sacrifice/ritual_doctor.tscn")
 const RITUAL := preload("res://scenes/sacrifice/ritual.tscn")
 const VORTEX := preload("res://scenes/sacrifice/red_vortex.tscn")
-const NO_ALTAR := "Sin altar"
-const FAR_FROM_ALTAR := "Lejos del altar enemigo"
+const NO_ALTAR := Refusal.NO_ALTAR
+const FAR_FROM_ALTAR := Refusal.FAR_FROM_ALTAR
 const BAD_TARGET := SpellAction.BAD_TARGET
 ## The vortex outlives the cast by this much if nobody frees it.
 const VORTEX_GRACE_S := 1.0

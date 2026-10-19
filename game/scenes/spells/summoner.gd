@@ -5,7 +5,7 @@ extends Node
 ## creature in front of the wizard, translucent, when the cast starts; finish() spends the
 ## souls and lets it act, or removes it when the souls are gone. Server or solo only.
 
-const NO_SOULS := "Sin almas"
+const NO_SOULS := Refusal.NO_SOULS
 
 ## sacengine spawnPosition: first try ahead_m in front of the wizard, then these
 ## (side, ahead) offsets, then a ring of fallback_radius around it.

@@ -11,8 +11,8 @@ extends Resource
 @export var aim_icons: Dictionary = {}
 ## The icon that flashes on a refusal (sacCursor.invalidTargetIconTexture).
 @export var refused_icon := ""
-## Words the server or the click handler answer with when something is refused -> cue. The same
-## strings as the constants in SpellAction, Caster, ActiveAbility and MatchCommand.
+## Refusal key (`Refusal`, a StringName like `&"no_mana"`) -> cue. A key mapped to &"" is a known reason that
+## flashes nothing. Never the words on screen: those are translated.
 @export var refusals: Dictionary = {}
 ## What lies under the pointer -> cursor while nothing is armed (state.d cursor(), showIcon=false).
 @export var free_cursors: Dictionary = {}
@@ -22,9 +22,14 @@ extends Resource
 @export var hud_cursor := ""
 
 
-## The cue a message means: `refused` or &"" (unknown words only reach CommandLog.text).
+## True when `text` is a refusal key this set knows (with or without a cue).
+func has_reason(text: String) -> bool:
+	return refusals.has(StringName(text))
+
+
+## The cue a message means: `refused` or &"" (unknown messages only reach CommandLog.text).
 func cue_for(text: String) -> StringName:
-	return StringName(refusals.get(text, &""))
+	return StringName(refusals.get(StringName(text), &""))
 
 
 ## Aim icon tag for an order kind, or "".

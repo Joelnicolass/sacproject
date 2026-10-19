@@ -32,7 +32,7 @@
     { "shot": "f25_3_walk.png" },
     { "press": "creature_2" },
     { "wait": 0.1 },
-    { "assert": { "node": "%Battle", "text_equals": "Enfriando" } },
+    { "assert": { "node": "%Battle", "text_equals": "cooling" } },
     { "wait": 2.8 },
     { "press": "creature_1" },
     { "wait": 0.4 },

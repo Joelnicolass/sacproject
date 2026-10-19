@@ -5,7 +5,7 @@ extends Node
 ## dies a new summon works. Drives Caster.request_summon, the call the creature_1 action makes.
 ## Prints `CREATURE_CAP PASS` or `CREATURE_CAP FAIL <reason>` and quits.
 
-const LIMIT_TEXT := "Límite de criaturas"
+const LIMIT_TEXT := "creature_limit"
 const SLOT := 1
 const MAX_WAIT_FRAMES := 1800
 

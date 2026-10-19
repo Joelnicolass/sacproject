@@ -18,7 +18,7 @@ enum Stance { OWN, NEUTRAL, ENEMY }
 
 const SOUL_SCENE := preload("res://scenes/souls/soul.tscn")
 const _SOUL := preload("res://scenes/souls/soul.gd")
-const NO_SOULS := "Sin almas"
+const NO_SOULS := Refusal.NO_SOULS
 ## Where a soul comes from (adenda 1, ledger `by_origin`): the dead of the map's NPC sides, any other creature,
 ## and the soul a wizard dropped with P.
 const ORIGIN_NPC := &"npc"

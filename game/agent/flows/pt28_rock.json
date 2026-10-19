@@ -46,7 +46,7 @@
     { "shot": "pt28_7_after_hit.png" },
     { "press": "spell_2" },
     { "wait": 0.1 },
-    { "assert": { "node": "%Battle", "text_equals": "Enfriando" } },
+    { "assert": { "node": "%Battle", "text_equals": "cooling" } },
     { "wait": 8.0 },
     { "repeat": {
         "times": 40,
@@ -79,7 +79,7 @@
     { "assert": { "node": "%Battle", "text_equals": "Elegí el blanco" } },
     { "click": "%View" },
     { "wait": 0.2 },
-    { "assert": { "node": "%Battle", "text_equals": "Blanco inválido" } },
+    { "assert": { "node": "%Battle", "text_equals": "bad_target" } },
     { "print": { "node": "%Stats", "prop": "text" } },
     { "shot": "pt28_10_ground_invalid.png" },
     { "wait": 1.0 },

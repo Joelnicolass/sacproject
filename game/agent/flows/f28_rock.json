@@ -31,7 +31,7 @@
     { "shot": "f28_3_druid_hit.png" },
     { "press": "spell_2" },
     { "wait": 0.1 },
-    { "assert": { "node": "%Battle", "text_equals": "Enfriando" } },
+    { "assert": { "node": "%Battle", "text_equals": "cooling" } },
     { "wait": 8.0 },
     { "repeat": {
         "times": 40,
@@ -61,7 +61,7 @@
     { "assert": { "node": "%Battle", "text_equals": "Elegí el blanco" } },
     { "click": "%View" },
     { "wait": 0.2 },
-    { "assert": { "node": "%Battle", "text_equals": "Blanco inválido" } },
+    { "assert": { "node": "%Battle", "text_equals": "bad_target" } },
     { "print": { "node": "%Stats", "prop": "text" } },
     { "assert": { "node": "%HitLog", "text_contains": "Trogg 960/960" } },
     { "shot": "f28_5_ground_invalid.png" },

@@ -194,7 +194,7 @@ def read_log(path):
         m = re.search(r"firewalk (\S+) oculto: is_targetable (\w+) is_obstacle (\w+)", line)
         if m:
             log["hidden"].setdefault(m.group(1), (m.group(2), m.group(3)))
-        m = re.search(r"(Warmonger\d+).*Fuera de alcance|Fuera de alcance.*(Warmonger\d+)", line)
+        m = re.search(r"(Warmonger\d+).*out_of_range|out_of_range.*(Warmonger\d+)", line)
         if m:
             log["refused"].add(m.group(1) or m.group(2))
         m = re.search(r"preparaci[oó]n cortada.*?(Warmonger\d+)|(Warmonger\d+).*preparaci[oó]n cortada", line)

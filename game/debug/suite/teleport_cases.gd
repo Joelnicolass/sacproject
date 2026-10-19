@@ -211,7 +211,7 @@ func _cast() -> Dictionary:
 	checks["mana_spent"] = mana_before - float(mana.get("current")) > 700.0
 	var index := int(book.call("structure_index_of", "elet"))
 	checks["cooldown_after"] = float(book.call("structure_cooldown", index)) > 10.0
-	checks["cooling_answer"] = str(caster.call("_try_cast", "elet", building.global_position, building.get_path())) == "Enfriando"
+	checks["cooling_answer"] = str(caster.call("_try_cast", "elet", building.global_position, building.get_path())) == SpellAction.COOLING
 	## The wizard dies in the middle: nobody moves.
 	var mortal := _wizard(Vector3(0.0, 0.0, 450.0))
 	mortal.owner_slot = 1

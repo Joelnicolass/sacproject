@@ -30,7 +30,7 @@
     { "press": "spell_3" },
     { "wait": 0.1 },
     { "print": { "node": "%Battle", "prop": "text" } },
-    { "assert": { "node": "%Battle", "text_equals": "Sin maná" } },
+    { "assert": { "node": "%Battle", "text_equals": "no_mana" } },
     { "press": "spell_1" },
     { "wait": 0.1 },
     { "print": { "node": "%Battle", "prop": "text" } },

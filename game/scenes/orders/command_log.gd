@@ -40,6 +40,11 @@ func disarm() -> void:
 	armed_changed.emit("", "")
 
 
+## True when `message` is a refusal key (a reason the server gave), not the name of what started.
+func is_reason(message: String) -> bool:
+	return cues != null and cues.has_reason(message)
+
+
 ## A message for the log. A refusal also becomes a cue (CommandCue flashes `ncst`).
 func say(message: String) -> void:
 	text = message

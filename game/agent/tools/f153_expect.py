@@ -65,7 +65,7 @@ TOL_TICKS = 1
 TOL_RISE_M = 0.05
 CLEAR_STRUCTURE_M = 11.0
 CLEAR_WIDGET_M = 6.0
-BENCH_TICKS = {"Blanco inválido": 84, "Fuera de alcance": 90, "ok": 96}
+BENCH_TICKS = {"bad_target": 84, "out_of_range": 90, "ok": 96}
 LANES = {
     "Dragon1": (-10.0, -45.0, 1),
     "Druid1": (15.0, -45.0, 1),
@@ -224,7 +224,7 @@ def check_log(path):
     reasons = {}
     for _, reason, tick in log["bench"]:
         reasons[reason] = tick
-    for reason in ("Blanco inválido", "Fuera de alcance"):
+    for reason in ("bad_target", "out_of_range"):
         tick = reasons.get(reason)
         ok &= verdict(tick is not None and abs(tick - BENCH_TICKS[reason]) <= TOL_TICKS,
                       "1. «%s» en el tick %s (esperado %d ± %d)" % (reason, tick, BENCH_TICKS[reason], TOL_TICKS))

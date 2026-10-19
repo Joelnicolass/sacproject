@@ -13,12 +13,12 @@ extends Node
 
 enum Pick { GROUND, OWN_UNIT, SOUL, OWN_BUILDING }
 
-const NO_MANA := "Sin maná"
-const COOLING := "Enfriando"
-const OUT_OF_RANGE := "Fuera de alcance"
-const BAD_TARGET := "Blanco inválido"
-const NOT_IMPLEMENTED := "No implementado"
-const NO_ROOM := "Sin lugar"
+const NO_MANA := Refusal.NO_MANA
+const COOLING := Refusal.COOLING
+const OUT_OF_RANGE := Refusal.OUT_OF_RANGE
+const BAD_TARGET := Refusal.BAD_TARGET
+const NOT_IMPLEMENTED := Refusal.NOT_IMPLEMENTED
+const NO_ROOM := Refusal.OCCUPIED
 
 
 ## Where a cast lands, or why it cannot start (`status` != "").

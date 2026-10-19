@@ -189,7 +189,7 @@ def check_log(path):
     ok &= verdict(bool(cut) and abs(cut[0] - (T_ORDER + 30 + CLOCK)) <= TOL_TICKS, "5. preparación cortada en T2+30=%d (+%d del reloj): %s" % (T_ORDER + 30 + CLOCK, CLOCK, cut[:2]))
     j2_shake = [l for l in lines if re.search(r"sacudida Jabberocky2", l)]
     ok &= verdict(not j2_shake, "5. J2 no sacude ni queda en enfriamiento: %s" % j2_shake[:1])
-    for user, tick, text in (("Jabberocky2", 198, "Sin maná"), ("Jabberocky1", 240, "Enfriando")):
+    for user, tick, text in (("Jabberocky2", 198, "no_mana"), ("Jabberocky1", 240, "cooling")):
         got = [t for t, tk in f131.read_bench(lines, user) if tk == tick]
         ok &= verdict(bool(got) and got[0] == text, "5. %s a los %d: %s (esperado «%s»)" % (user, tick, got, text))
     print("(el anillo de tierra y el polvo: capturas del playtester, cerca porque el pasto tapa)")

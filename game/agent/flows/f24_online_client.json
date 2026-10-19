@@ -18,7 +18,7 @@
     { "print": { "node": "%Stats", "prop": "text" } },
     { "press": "spell_3" },
     { "wait": 0.1 },
-    { "assert": { "node": "%Battle", "text_equals": "Enfriando" } },
+    { "assert": { "node": "%Battle", "text_equals": "cooling" } },
     { "shot": "f24_online.png" }
   ]
 }

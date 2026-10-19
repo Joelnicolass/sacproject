@@ -73,7 +73,7 @@ RANGE_HELLMOUTH = 17.9
 # (user, soul, planned flat distance, inside the user's range)
 REACH = (("N1", "V1", 4.0, True), ("N1", "V1b", 4.0, True), ("N1", "V2", 4.0, True), ("N1", "V3", 15.0, False),
          ("H1", "V4", 10.0, True))
-ORDERS = {"N1": [(120, "V2", "Blanco inválido"), (126, "V3", "Fuera de alcance"), (132, "V1", "ok"), (216, "V1b", "ok")],
+ORDERS = {"N1": [(120, "V2", "bad_target"), (126, "V3", "out_of_range"), (132, "V1", "ok"), (216, "V1b", "ok")],
           "H1": [(144, "V4", "ok")]}
 ATTACK_V5 = 300
 WINDUP = {"N1": 72, "H1": 92}
@@ -245,7 +245,7 @@ def check_log(path):
     lines = open(path, encoding="utf-8", errors="replace").read().splitlines()
     ok = True
     bench = read_bench(lines, "Netherfiend1")
-    want = {120: "Blanco inválido", 126: "Fuera de alcance"}
+    want = {120: "bad_target", 126: "out_of_range"}
     for tick, text in want.items():
         got = [t for t, tk in bench if tk == tick]
         ok &= verdict(bool(got) and got[0] == text, "1. rechazo a los %d: %s (esperado «%s»)" % (tick, got, text))

@@ -23,7 +23,7 @@
     { "press": "spell_3" },
     { "wait": 0.1 },
     { "print": { "node": "%Battle", "prop": "text" } },
-    { "assert": { "node": "%Battle", "text_equals": "Enfriando" } },
+    { "assert": { "node": "%Battle", "text_equals": "cooling" } },
     { "wait": 1.0 },
     { "print": { "node": "%Stats", "prop": "text" } }
   ]

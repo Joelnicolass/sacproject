@@ -46,8 +46,8 @@ BIG_STRUCT = {"jhut": 16.0}
 # (user, tick) -> result of the bench line
 RESULTS = [
     ("Druid1", 18, "ok"), ("FlameMinion1", 24, "ok"), ("Earthfling1", 30, "ok"), ("Fallen1", 36, "ok"), ("Sylph1", 42, "ok"),
-    ("Druid1", 48, "Enfriando"), ("Ranger1", 60, "ok"), ("Earthfling1", 72, "Enfriando"), ("Earthfling1", 120, "Blanco inválido"),
-    ("Fallen1", 132, "Blanco inválido"), ("FlameMinion1", 144, "Enfriando"),
+    ("Druid1", 48, "cooling"), ("Ranger1", 60, "ok"), ("Earthfling1", 72, "cooling"), ("Earthfling1", 120, "bad_target"),
+    ("Fallen1", 132, "bad_target"), ("FlameMinion1", 144, "cooling"),
 ]
 # ability -> (mana before, mana after, cooldown ticks), in the order they are applied
 SPENT = [("Life Shield", 100, 50, 1200), ("Run Away", 200, 150, 600), ("Rockform", 200, 187, 60), ("Play Dead", 200, 200, 0),

@@ -13,23 +13,24 @@ aim_icons = {
 &"retreat": "zwp1"
 }
 refusals = {
-"Sin maná": &"refused",
-"Enfriando": &"refused",
-"Fuera de alcance": &"refused",
-"Blanco inválido": &"refused",
-"Sin lugar": &"refused",
-"Lanzando": &"refused",
-"Sin almas": &"refused",
-"Sin fuente": &"refused",
-"Lejos de un edificio propio": &"refused",
-"Sin altar": &"refused",
-"Lejos del altar enemigo": &"refused",
-"Sin blanco": &"refused",
-"Sin suelo": &"refused",
-"No implementado": &"refused",
-"Sin habilidad": &"refused",
-"Nadie": &"refused",
-"Sin mago": &"refused"
+&"no_mana": &"refused",
+&"cooling": &"refused",
+&"out_of_range": &"refused",
+&"bad_target": &"refused",
+&"occupied": &"refused",
+&"casting": &"refused",
+&"no_souls": &"refused",
+&"no_fount": &"refused",
+&"far_from_building": &"refused",
+&"no_altar": &"refused",
+&"far_from_altar": &"refused",
+&"no_target": &"refused",
+&"no_ground": &"refused",
+&"not_implemented": &"refused",
+&"no_ability": &"refused",
+&"nobody": &"refused",
+&"no_wizard": &"refused",
+&"creature_limit": &""
 }
 free_cursors = {
 &"none": "Cnor",

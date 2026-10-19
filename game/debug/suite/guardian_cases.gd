@@ -320,7 +320,7 @@ func _action() -> Dictionary:
 	checks["no_warnings"] = action != null and action._get_configuration_warnings().is_empty()
 	checks["armed_in_tab"] = caster.structure_status(int(caster.get("spellbook").structure_index_of("ndrg"))) == GuardianAction.FAR_FROM_BUILDING
 	await _frames(2)
-	checks["far_from_building"] = action.arm_status(wizard, spell) == "Lejos de un edificio propio"
+	checks["far_from_building"] = action.arm_status(wizard, spell) == GuardianAction.FAR_FROM_BUILDING
 	var near_post := _structure(Vector3(500.0, 0.0, 49.0))
 	var far_post := _structure(Vector3(500.0, 0.0, -300.0))
 	var enemy_post := _structure(Vector3(500.0, 0.0, 5.0), 2)

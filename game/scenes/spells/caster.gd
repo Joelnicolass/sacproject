@@ -22,15 +22,15 @@ const MANA_EPSILON := 0.01
 ## sacengine SacSpell: manaCost = max(1, manaCost).
 const MIN_MANA_COST := 1.0
 const NO_MANA := SpellAction.NO_MANA
-const NO_SOULS := "Sin almas"
+const NO_SOULS := Refusal.NO_SOULS
 const COOLING := SpellAction.COOLING
 const OUT_OF_RANGE := SpellAction.OUT_OF_RANGE
 const BAD_TARGET := SpellAction.BAD_TARGET
 const NOT_IMPLEMENTED := SpellAction.NOT_IMPLEMENTED
-const BUSY := "Lanzando"
+const BUSY := Refusal.CASTING
 const NO_ROOM := SpellAction.NO_ROOM
 ## RFC-036 036d: MatchRules.max_creatures_per_player reached.
-const CREATURE_LIMIT := "Límite de criaturas"
+const CREATURE_LIMIT := Refusal.CREATURE_LIMIT
 
 @export var rules: MatchRules
 @export var spellbook: Spellbook

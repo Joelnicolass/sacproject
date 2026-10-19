@@ -4,7 +4,7 @@ extends RefCounted
 ## wizard under ritual (GhostForm). `run(host)` adds its own bodies under `host` and removes them.
 
 const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
-const ALTAR_SCENE := preload("res://scenes/world/props/altar.tscn")
+const ALTAR_SCENE := preload("res://scenes/map/props/altar.tscn")
 const RULES := preload("res://data/match_rules.tres")
 const GOD := "james"
 

@@ -1,9 +1,9 @@
 [gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
-[ext_resource type="Script" path="res://scenes/world/mana_source.gd" id="2_source"]
+[ext_resource type="Script" path="res://scenes/map/props/mana_source.gd" id="2_source"]
 [ext_resource type="Resource" path="res://data/match_rules.tres" id="3_rules"]
-[ext_resource type="Script" path="res://scenes/world/props/manafount_body.gd" id="4_body"]
+[ext_resource type="Script" path="res://scenes/map/props/manafount_body.gd" id="4_body"]
 [ext_resource type="PackedScene" path="res://scenes/fx/sprite_emitter.tscn" id="5_emitter"]
 [ext_resource type="Resource" path="res://data/fx/manafount.tres" id="7_free"]
 [ext_resource type="Resource" path="res://data/fx/manalith.tres" id="8_column"]

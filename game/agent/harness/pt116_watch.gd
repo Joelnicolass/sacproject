@@ -19,7 +19,7 @@ extends Node
 ##   unfollow()
 ## Props for wait_until: tracked, flying_now, airborne_seen, takeoff_seen, landed, settled.
 
-const _TERRAIN := preload("res://scenes/world/terrain.gd")
+const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 const _NAMES := ["GROUND", "TAKEOFF", "FLYING", "LANDING"]
 
 var tracked := 0

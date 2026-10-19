@@ -9,7 +9,7 @@ extends SceneTree
 ## "$GODOT" --headless --path game --script res://debug/terrain_bake_cases.gd
 ## Needs terrain.glb imported once (godot --headless --path game --import) and git showing terrain.res unchanged.
 
-const TERRAIN_SCRIPT := "res://scenes/world/terrain.gd"
+const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain.gd"
 const WORLD_SCENE := "res://scenes/match/high_noon.tscn"
 const GlbImport := preload("res://tools/terrain_import.gd")
 const GlbExport := preload("res://tools/terrain_glb_export.gd")

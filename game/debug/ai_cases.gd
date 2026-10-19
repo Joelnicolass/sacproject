@@ -7,12 +7,12 @@ extends RefCounted
 ## (Python struct round trips), so a slip in the port does not copy into the expectation.
 
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
-const ORDERS_SCRIPT := preload("res://scenes/world/orders.gd")
+const ORDERS_SCRIPT := preload("res://scenes/orders/orders.gd")
 const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 const RULES := preload("res://data/match_rules.tres")
 const TOL := 0.0005
-const AI_DIR := "res://scenes/world/ai"
-const TERRAIN_SCRIPT := preload("res://scenes/world/terrain.gd")
+const AI_DIR := "res://scenes/ai"
+const TERRAIN_SCRIPT := preload("res://scenes/map/terrain/terrain.gd")
 
 
 func run(host: Node3D) -> Dictionary:

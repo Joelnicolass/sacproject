@@ -2,7 +2,7 @@ extends StaticBody3D
 
 ## One placed structure instance (server-spawned, replicated through StructureSpawner).
 
-const _MANA_SOURCE := preload("res://scenes/world/mana_source.gd")
+const _MANA_SOURCE := preload("res://scenes/map/props/mana_source.gd")
 const MANALITH := "htlm"
 const FALLBACK_STRUCTURE_MODEL := "mana"
 ## sacengine BLDG regeneration for manalith/shrine is 75 per minute (1.25 per second).

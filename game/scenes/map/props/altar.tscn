@@ -1,11 +1,11 @@
 [gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
-[ext_resource type="Script" path="res://scenes/world/mana_source.gd" id="2_source"]
+[ext_resource type="Script" path="res://scenes/map/props/mana_source.gd" id="2_source"]
 [ext_resource type="Resource" path="res://data/match_rules.tres" id="3_rules"]
-[ext_resource type="Script" path="res://scenes/world/props/altar.gd" id="4_altar"]
-[ext_resource type="Script" path="res://scenes/world/props/ritual_site.gd" id="5_site"]
-[ext_resource type="Script" path="res://scenes/world/props/altar_collapse.gd" id="6_collapse"]
+[ext_resource type="Script" path="res://scenes/map/props/altar.gd" id="4_altar"]
+[ext_resource type="Script" path="res://scenes/map/props/ritual_site.gd" id="5_site"]
+[ext_resource type="Script" path="res://scenes/map/props/altar_collapse.gd" id="6_collapse"]
 [ext_resource type="Script" path="res://scenes/spells/guardian/guard_post.gd" id="7_post"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_base"]

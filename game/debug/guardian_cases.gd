@@ -7,9 +7,9 @@ extends RefCounted
 
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
 const STRUCTURE_SCENE := preload("res://scenes/structures/structure.tscn")
-const ALTAR_SCENE := preload("res://scenes/world/props/altar.tscn")
+const ALTAR_SCENE := preload("res://scenes/map/props/altar.tscn")
 const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
-const SELECTION := preload("res://scenes/world/selection.gd")
+const SELECTION := preload("res://scenes/orders/selection.gd")
 const RULES := preload("res://data/match_rules.tres")
 const GOD := "james"
 const TAG := "nmuh"

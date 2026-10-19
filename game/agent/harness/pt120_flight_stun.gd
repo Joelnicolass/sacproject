@@ -7,7 +7,7 @@ extends Node
 ##   godot --headless --path game --fixed-fps 60 res://agent/fixtures/pt120_flight_stun.tscn
 
 const _ORDERS := preload("res://scenes/units/unit_orders.gd")
-const _TERRAIN := preload("res://scenes/world/terrain.gd")
+const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 const FAR_M := 150.0
 const STATES := ["GROUND", "TAKEOFF", "FLYING", "LANDING"]
 

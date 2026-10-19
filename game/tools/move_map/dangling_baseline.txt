@@ -55,6 +55,7 @@ res://other/models
 res://path/terrain.glb
 res://path/terrain.res
 res://rules.tres
+res://scenes/match/arena.tscn
 res://scenes/world/arena.tscn
 res://scenes/world/match.tscn
 res://tools/audit_body_pose.gd

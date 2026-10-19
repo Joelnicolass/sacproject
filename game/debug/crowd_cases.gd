@@ -9,7 +9,7 @@ extends RefCounted
 ## `run(host)` puts its floor and bodies under `host` and frees them at the end.
 
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
-const ORDERS_SCRIPT := preload("res://scenes/world/orders.gd")
+const ORDERS_SCRIPT := preload("res://scenes/orders/orders.gd")
 const RULES := preload("res://data/match_rules.tres")
 
 const TAGS: PackedStringArray = ["ycro", "oham", "palk"]

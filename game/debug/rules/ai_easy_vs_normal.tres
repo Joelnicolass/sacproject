@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="BenchRules" load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
-[ext_resource type="Script" path="res://scenes/world/ai/data/ai_seat.gd" id="2_seat"]
+[ext_resource type="Script" path="res://scenes/ai/data/ai_seat.gd" id="2_seat"]
 [ext_resource type="Resource" path="res://data/ai/difficulty_easy.tres" id="3_easy"]
 [ext_resource type="Resource" path="res://data/ai/difficulty_normal.tres" id="4_normal"]
 

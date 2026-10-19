@@ -9,7 +9,7 @@ extends Node
 ##   report()                   state of the Warmongers: using ability, firewalking, mesh shown, targetable, obstacle.
 ## Props: tick, rel (ticks since the bench started: Enter).
 
-const _TERRAIN := preload("res://scenes/world/terrain.gd")
+const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 const BODIES := ["Warmonger1", "Warmonger2", "Warmonger3"]
 
 var tick := 0

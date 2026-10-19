@@ -12,7 +12,7 @@ extends Node
 ## Lanes are z offsets from the center (1270, 1270): -45 Cog, 0 Necryl, +45 Mutant. Timed snapshots +1..+6 s.
 ## Props for wait_until: units, deaths, captured.
 
-const _TERRAIN := preload("res://scenes/world/terrain.gd")
+const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 const CENTER := Vector2(1270.0, 1270.0)
 const CLOUD_TAGS := {"zidf": "goc@", "glsd": "cen@", "cbab": "tum@"}
 const OUT_DIR := "res://agent/out/pt118"

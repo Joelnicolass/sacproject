@@ -33,7 +33,7 @@ func _derive_height() -> Image:
 	if data == null:
 		return null
 	var helper := MeshInstance3D.new()
-	helper.set_script(load("res://scenes/world/terrain.gd"))
+	helper.set_script(load("res://scenes/map/terrain/terrain.gd"))
 	helper.set("data", data)
 	add_child(helper)
 	helper.remove_from_group("terrain")

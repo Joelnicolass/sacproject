@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scenes/world/map/npc_spawn.gd" id="1_spawn"]
+[ext_resource type="Script" path="res://scenes/map/npc_spawn.gd" id="1_spawn"]
 
 [node name="NpcSpawn" type="Marker3D"]
 gizmo_extents = 3.0

@@ -7,7 +7,7 @@ var _failed := false
 
 
 func _initialize() -> void:
-	var fount: Node3D = load("res://scenes/world/props/manafount.tscn").instantiate()
+	var fount: Node3D = load("res://scenes/map/props/manafount.tscn").instantiate()
 	root.add_child(fount)
 	var occupant := Node3D.new()
 	occupant.name = "Manalith"

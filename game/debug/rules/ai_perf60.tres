@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
 [ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
-[ext_resource type="Script" path="res://scenes/world/ai/data/ai_seat.gd" id="3_seat"]
+[ext_resource type="Script" path="res://scenes/ai/data/ai_seat.gd" id="3_seat"]
 [ext_resource type="Script" path="res://debug/bench_structure.gd" id="4_structure"]
 
 ; RFC-024 024e (adenda §6): rendimiento de la IA. IA contra IA (Normal y Normal; otras con --difficulties=hard,hard), 30 criaturas

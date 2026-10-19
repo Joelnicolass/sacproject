@@ -11,7 +11,7 @@ extends Node
 ## rising (half of the get-up) and up (20 frames after); lane B: the cluster 40 frames after the first stun there.
 ## Props for wait_until: done (true once lane A has 3 Druids back in the fight and lane B 3 stuns, or 2400 frames).
 
-const _TERRAIN := preload("res://scenes/world/terrain.gd")
+const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 const CENTER_Z := 1270.0
 const OUT_DIR := "res://agent/out/pt120"
 const LIMIT_FRAMES := 2400

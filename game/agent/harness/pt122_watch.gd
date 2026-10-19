@@ -8,7 +8,7 @@ extends Node
 ##   report()                  one line per Druid and per shooter.
 ## Props: tick, shots, d1..d5_hp, d1..d5_pois (0/1), d1..d5_dead (0/1), d1_pois_tick, d2_pois_tick, d1_dead_tick.
 
-const _TERRAIN := preload("res://scenes/world/terrain.gd")
+const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 const NAMES := ["Druid1", "Druid2", "Druid3", "Druid4", "Druid5"]
 const SHOOTERS := ["Necryl1", "Deadeye1", "Hellmouth1"]
 

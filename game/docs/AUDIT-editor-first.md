@@ -81,10 +81,10 @@ Autoridad: decisión del usuario (este pedido) > PRD > FEATURES > RULES > VISUAL
 
 | Archivo | Líneas | `func` | `.call`/`has_method` | Responsabilidades mezcladas |
 |---|---|---|---|---|
-| `scenes/world/match_command.gd` | 795 | 59 | 30 | atajos, selección por clic, armado de hechizo, estructura, habilidad, órdenes, minimapa, raycasts, textos `ORDER_TEXT` (l. 20-27) |
+| `scenes/orders/match_command.gd` | 795 | 59 | 30 | atajos, selección por clic, armado de hechizo, estructura, habilidad, órdenes, minimapa, raycasts, textos `ORDER_TEXT` (l. 20-27) |
 | `scenes/look/grass/grass_field.gd` | 740 | 48 | 6 | pasto (diferido al final por decisión del usuario) |
 | `scenes/units/unit_body.gd` | 720 | 69 | 29 | física, setup de 15 componentes por `$X.call("setup")` (l. 208-222, 469-491), modo replicado `enum Mode` (l. 30) **además** de los 11 `FsmState` |
-| `scenes/world/ai/perception/ai_perception.gd` | 701 | 47 | 8 | percepción de la IA (regla; queda) |
+| `scenes/ai/perception/ai_perception.gd` | 701 | 47 | 8 | percepción de la IA (regla; queda) |
 | `scenes/spells/caster.gd` | 647 | 45 | 40 | validación, cobro, 7 hechizos fijos, spawn de efectos |
 | `scenes/wizards/wizard_body.gd` | 547 | 45 | 39 | — |
 | `scenes/sacrifice/sacrifice_system.gd` | 489 | 34 | 2 | (bien: `@tool` y warnings) |
@@ -95,7 +95,7 @@ Autoridad: decisión del usuario (este pedido) > PRD > FEATURES > RULES > VISUAL
 - **Autoloads (7):** `MpKit`, `MpLobby` y `AgentKit` vienen del addon y está bien. `SacrificeFlow` (296 líneas) es el flujo y la elección local, y está bien. `GameData` es catálogo y libros; aceptable, pero podría ser un `static` de `GameCatalog`. `FxBus` (281 líneas) es un pool de partículas; aceptable. **`BodyLibrary` es una fachada legacy de 24 líneas**: su propio doc dice que el código nuevo usa `BodyCatalog`, y tiene 22 usos.
 - **Estado estático:** `side_relations.gd:20-23` (bandos del mapa), `match_seed.gd:14`, `match_clock.gd:14-15`, `map_building.gd:46-48`, `body_catalog.gd:16-21`. Un proceso por partida lo tolera; dos mundos en el mismo proceso, no (un editor con preview, o tests en paralelo).
 - **Debug y banco en producto:** `DebugLog` aparece 88 veces en 43 archivos; está bien (un solo interruptor). Pero quedan **210 `print(` en `scenes/`**, 46 de ellos en español (`high_noon.gd:23 "en high noon slot"`, `l. 29 "mundo listo"`). Hay chequeos `get_first_node_in_group("walk_order")` de una escena de debug dentro de `match_command.gd:107,547` y `order_radial.gd:54`, y acciones de debug en el InputMap (`check_tick`, `debug_anim_cycle`, `fx_*` ×5). **`debug/*` no está en `exclude_filter`** (`export_presets.cfg:11`), así que las 140 escenas de debug viajan en el export.
-- **Código muerto:** el barrido de scripts sin referencia dio solo `scenes/world/terrain_probe.gd` (29) y `scenes/bodies/obj_mesh.gd` (217). Hay poco código muerto, y eso es bueno.
+- **Código muerto:** el barrido de scripts sin referencia dio solo `scenes/map/terrain/terrain_probe.gd` (29) y `scenes/bodies/obj_mesh.gd` (217). Hay poco código muerto, y eso es bueno.
 - **Carpetas:** `scenes/world/` tiene 34 scripts sueltos en la raíz (`body_*`, `match_*`, `orders.gd`, `selection.gd`, `sky.gd`…) junto a subcarpetas temáticas. `scenes/data/` guarda Resources de tipo, pero se llama igual que `data/` (instancias).
 
 ### 3.5 Descubribilidad y docs

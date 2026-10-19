@@ -9,7 +9,7 @@ extends Node
 ##   report()                   life of the targets and mana of the shooters.
 ## Props: tick, rel (ticks since the bench started: Enter).
 
-const _TERRAIN := preload("res://scenes/world/terrain.gd")
+const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 const TARGETS := ["Druid5", "Druid6", "Druid7", "Druid8", "Druid9", "Druid10", "Druid11"]
 const SHOOTERS := ["Rhinok1"]
 

@@ -9,7 +9,7 @@ extends Node
 ## "$GODOT" --headless --path game res://tools/migrate_layout_043.tscn
 ## Check it with res://tools/check_layout_transforms.tscn (its baseline was taken before the migration).
 
-const LAYOUT := "res://scenes/world/map/high_noon_layout.tscn"
+const LAYOUT := "res://scenes/map/high_noon_layout.tscn"
 const KINDS := {
 	"Buildings": {"property": "building", "folder": "res://data/catalog/buildings/"},
 	"NpcSpawns": {"property": "creature", "folder": "res://data/catalog/creatures/"},

@@ -12,7 +12,7 @@ extends Node
 ## Props for wait_until: units, bursts (lanes whose first shot burst), captured.
 
 const _SHOT := preload("res://scenes/units/attacks/ranged_shot.gd")
-const _TERRAIN := preload("res://scenes/world/terrain.gd")
+const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 const CENTER_Z := 1270.0
 const OUT_DIR := "res://agent/out/pt119"
 const AFTER := {2: "hit_a", 8: "hit_b", 20: "hit_c"}

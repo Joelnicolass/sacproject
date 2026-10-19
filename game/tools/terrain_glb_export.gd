@@ -7,7 +7,7 @@ extends SceneTree
 ## "$GODOT" --headless --path game --script res://tools/terrain_glb_export.gd [-- --out=res://path/terrain.glb] [--force]
 ## Needs the project imported once (tiles.png is read as an Image). Then import again so the editor builds the scene.
 
-const TERRAIN_SCRIPT := "res://scenes/world/terrain.gd"
+const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain.gd"
 const GlbImport := preload("res://tools/terrain_import.gd")
 
 

@@ -8,7 +8,7 @@ extends RefCounted
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
 const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
 const PEASANT_SCENE := preload("res://scenes/units/peasant.tscn")
-const BUILDING_SCENE := preload("res://scenes/world/map/map_building.tscn")
+const BUILDING_SCENE := preload("res://scenes/map/map_building.tscn")
 const RULES := preload("res://data/match_rules.tres")
 const GROUP := "village_cases"
 

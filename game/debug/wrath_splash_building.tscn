@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="PackedScene" path="res://debug/rock_hit.tscn" id="1_base"]
-[ext_resource type="PackedScene" path="res://scenes/world/map/map_building.tscn" id="2_building"]
+[ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="2_building"]
 
 [node name="WrathSplashBuilding" instance=ExtResource("1_base")]
 

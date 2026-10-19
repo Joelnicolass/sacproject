@@ -29,7 +29,7 @@ GAME = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REPO = os.path.dirname(GAME)
 TEXT_EXT = ('.gd', '.tscn', '.tres', '.gdshader', '.gdshaderinc', '.godot', '.cfg', '.json', '.txt', '.sh', '.py',
             '.md', '.service', '.import')
-SKIP_PREFIX = ('.studio/', 'rfcs/', 'reviews/', 'changes/', 'agent/out/', 'addons/', 'tools/move_map/', 'tools/move_map.py')
+SKIP_PREFIX = ('docs/AUDIT-editor-first.md', '.studio/', 'rfcs/', 'reviews/', 'changes/', 'agent/out/', 'addons/', 'tools/move_map/', 'tools/move_map.py')
 EXTRA_FILES = ('../README.md', '../.gitattributes', '../.gitignore')
 MAX_BYTES = 20 * 1024 * 1024
 DANGLING_BASELINE = os.path.join(GAME, 'tools', 'move_map', 'dangling_baseline.txt')
@@ -338,6 +338,13 @@ def cmd_check(args, rows, dirs):
             for m in rx.finditer(t):
                 line = t.count('\n', 0, m.start()) + 1
                 fails.append(f'old path {m.group(2)} still in {p}:{line}')
+        # binary resources (.res/.scn) keep ext_resource paths that the text rewrite cannot reach: tools/move_map/patch_res.py
+        for p in sorted(tset):
+            if p.endswith(('.res', '.scn')) and os.path.getsize(os.path.join(GAME, p)) < MAX_BYTES:
+                with open(os.path.join(GAME, p), 'rb') as bf:
+                    bt = bf.read().decode('latin-1')
+                for m in rx.finditer(bt):
+                    fails.append(f'old path {m.group(2)} inside binary {p} (use tools/move_map/patch_res.py)')
     for name, a in dirs:
         if name == '@forbid' and a[1] in done:
             for p, t in texts.items():

@@ -9,7 +9,7 @@ extends Node
 ##   report()                   one line per target: frozen episodes (ticks, flat drift, strikes while frozen, ice overrides).
 ## Props: tick, rel, trogg1_frozen, druid1_frozen, druid2_frozen (0/1).
 
-const _TERRAIN := preload("res://scenes/world/terrain.gd")
+const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 const FROZEN_BIT := 1 << 3
 const NAMES := ["Trogg1", "Druid1", "Druid2"]
 

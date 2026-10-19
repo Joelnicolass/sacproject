@@ -9,7 +9,7 @@ extends Node
 ##   report()                   life and shield (shown, bubble scale, ticks left) of every body of the lane.
 ## Props: tick, rel (ticks since the bench started: Enter).
 
-const _TERRAIN := preload("res://scenes/world/terrain.gd")
+const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 const BODIES := ["Ent1", "Druid1", "Druid2", "Druid3", "Druid4", "Gnome1"]
 
 var tick := 0

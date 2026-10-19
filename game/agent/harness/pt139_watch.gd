@@ -17,7 +17,7 @@ const _SHOT := preload("res://scenes/units/attacks/ranged_shot.gd")
 const _FIREBALL := preload("res://scenes/spells/fireball_projectile.gd")
 const _POISONED := preload("res://scenes/units/status/poisoned.gd")
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
-const _TERRAIN := preload("res://scenes/world/terrain.gd")
+const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 
 var units := 0
 var clouds := 0

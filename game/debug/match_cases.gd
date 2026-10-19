@@ -4,7 +4,7 @@ extends RefCounted
 ## needed: the clocks are advanced by hand with MatchState.tick().
 ## `run(host)` builds small worlds under `host` and removes them when it ends.
 
-const ALTAR_SCENE := preload("res://scenes/world/props/altar.tscn")
+const ALTAR_SCENE := preload("res://scenes/map/props/altar.tscn")
 const MATCH_SCENE := preload("res://scenes/match/match.tscn")
 const BANNER_SCENE := preload("res://scenes/ui/hud/match_result.tscn")
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")

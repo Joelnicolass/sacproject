@@ -8,7 +8,7 @@ extends RefCounted
 ## corner needs); `nav_rebake_ms` is the cost of baking the whole navmesh again (gate REBAKE_MS).
 
 const EDGE_CASES := preload("res://debug/edge_cases.gd")  # 036h
-const TERRAIN_SCRIPT := preload("res://scenes/world/terrain.gd")
+const TERRAIN_SCRIPT := preload("res://scenes/map/terrain/terrain.gd")
 const FOUNT_AT := Vector3(1270.0, 10.0, 1270.0)
 const FOUNT_RADIUS := 3.6
 const START1 := Vector3(1504.9, 17.0, 1540.5)

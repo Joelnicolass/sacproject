@@ -9,7 +9,7 @@ extends RefCounted
 ## every unit within SLOT_M of its slot once it has walked.
 
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
-const ORDERS_SCRIPT := preload("res://scenes/world/orders.gd")
+const ORDERS_SCRIPT := preload("res://scenes/orders/orders.gd")
 const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 const RULES := preload("res://data/match_rules.tres")
 const CATALOG := preload("res://data/orders/formations.tres")

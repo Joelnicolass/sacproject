@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="AiProfile" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://scenes/world/ai/data/ai_profile.gd" id="1_profile"]
+[ext_resource type="Script" path="res://scenes/ai/data/ai_profile.gd" id="1_profile"]
 
 ; Los numeros de la IA original, version comercial (Sacrifice.exe): todos los `beta*` de
 ; sacengine/source/bots/shiny.d en falso (shiny.d:381-412). Cada linea cita `shiny.d:linea`.

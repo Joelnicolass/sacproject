@@ -5,7 +5,7 @@ extends RefCounted
 ##   move it, and the Spellbook has no _process.
 ## - match_clock_pause: SceneTree.physics_frame keeps coming while the tree is paused, but now() stands still (and so
 ##   does a running cooldown); unpaused, it counts one per frame again.
-## - sim_rng_lint (032c): no script of the simulation (scenes/world/**, without look/) draws from the global RNG
+## - sim_rng_lint (032c): no script of the simulation (scenes/**, without the presentation and glue folders in LINT_SKIP_DIRS) draws from the global RNG
 ##   (rand*, randomize, seed, shuffle, pick_random), makes a RandomNumberGenerator that MatchSeed does not seed, or sorts
 ##   by instance_id. Presentation and seeded-by-hand exceptions are an explicit list (LINT_*). lint(root) takes any
 ##   folder, so a sabotaged copy outside the project can prove it fails.
@@ -19,16 +19,16 @@ extends RefCounted
 const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
 const AVOIDANCE_SCENE := preload("res://scenes/units/movement/body_avoidance.tscn")
 const VORTEX_SCENE := preload("res://scenes/sacrifice/red_vortex.tscn")
-const SIM_ROOT := "res://scenes/world"
+const SIM_ROOT := "res://scenes"
 ## Paths (relative to the root) skipped by sim_rng_lint: presentation folders and files.
-const LINT_SKIP_DIRS: Array[String] = ["look/"]
+const LINT_SKIP_DIRS: Array[String] = ["look/", "ui/", "fx/", "net/", "core/", "gods/"]
 ## Whole files allowed: the owner of chance, and selection (human input, RFC-032 §8: its sort by instance_id stays).
-const LINT_ALLOWED_FILES: Array[String] = ["match_seed.gd", "selection.gd"]
+const LINT_ALLOWED_FILES: Array[String] = ["match/match_seed.gd", "orders/selection.gd"]
 ## Single lines allowed (file -> stripped line): generators seeded by hand from a stable number, for presentation
 ## (spin of a shot) or from a seed that is already the match's (biome).
 const LINT_ALLOWED_LINES := {
 	"theme_applier.gd": "var rng := RandomNumberGenerator.new()",  # rng.seed = match_seed (the biome stream)
-	"units/ranged_shot.gd": "var rng := RandomNumberGenerator.new()",  # spin of the shot, hash(name)
+	"units/attacks/ranged_shot.gd": "var rng := RandomNumberGenerator.new()",  # spin of the shot, hash(name)
 	"spells/rock_projectile.gd": "var rng := RandomNumberGenerator.new()",  # spin of the rock, hash(name)
 }
 const VORTEX_LIFE_S := 1.0

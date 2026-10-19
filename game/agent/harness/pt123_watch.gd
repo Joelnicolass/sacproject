@@ -8,7 +8,7 @@ extends Node
 ##   report()                  one line per target.
 ## Props: tick, shots, <target>_fire (0/1) for Druid1 (lane A), Trogg1 (lane B), Druid2..4 (lane C).
 
-const _TERRAIN := preload("res://scenes/world/terrain.gd")
+const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 const NAMES := ["Druid1", "Trogg1", "Druid2", "Druid3", "Druid4"]
 
 var tick := 0

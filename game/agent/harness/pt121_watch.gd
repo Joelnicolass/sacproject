@@ -11,7 +11,7 @@ extends Node
 ## Props (of the focused lane, sticky): tick, moved_max (m from start, flat), air_now, air_seen, air_h (max m above
 ## start), landed, risen, spread (max flat distance from the lane centroid).
 
-const _TERRAIN := preload("res://scenes/world/terrain.gd")
+const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 
 var tick := 0
 var moved_max := 0.0

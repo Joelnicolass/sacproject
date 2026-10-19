@@ -2,7 +2,7 @@ extends SceneTree
 
 ## One-time tool (RFC-035 035d): writes High Noon's content as nodes. From then on the scene is the source of truth and
 ## nothing reads ntts.json or widgets.json at runtime; those two files are only this tool's input.
-##   scenes/world/map/high_noon_layout.tscn   Buildings (MapBuilding), Plants (Plant), NpcSpawns (NpcSpawn)
+##   scenes/map/high_noon_layout.tscn   Buildings (MapBuilding), Plants (Plant), NpcSpawns (NpcSpawn)
 ##   assets/original/maps/high_noon/sides.tres   MapSides
 ## It does what the old runtime code did, in the same order and with the same arithmetic, so the match digests do not move:
 ##  - buildings: the order of `structures`, names `Bld%03d_<tag>` (the index counts the hand-placed founts and altars too),
@@ -19,11 +19,11 @@ extends SceneTree
 
 const NTTS_PATH := "res://assets/original/maps/high_noon/ntts.json"
 const WIDGETS_PATH := "res://assets/original/maps/high_noon/widgets.json"
-const LAYOUT_OUT := "res://scenes/world/map/high_noon_layout.tscn"
-const BUILDING_SCENE := "res://scenes/world/map/map_building.tscn"
-const SPAWN_SCENE := "res://scenes/world/map/npc_spawn.tscn"
-const PLANT_SCENE := "res://scenes/world/props/plant.tscn"
-const TERRAIN_SCRIPT := "res://scenes/world/terrain.gd"
+const LAYOUT_OUT := "res://scenes/map/high_noon_layout.tscn"
+const BUILDING_SCENE := "res://scenes/map/map_building.tscn"
+const SPAWN_SCENE := "res://scenes/map/npc_spawn.tscn"
+const PLANT_SCENE := "res://scenes/map/props/plant.tscn"
+const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain.gd"
 const ROOT_NAME := "HighNoonLayout"
 
 ## Rows the scene places by hand (Starts, Founts): not buildings of the layout.

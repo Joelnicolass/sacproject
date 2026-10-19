@@ -47,7 +47,7 @@ signal pick_changed
 
 const REST_FACING := Vector3(0.0, 0.0, 1.0)
 const TURN_RATE := PI
-const MANA_SOURCE := preload("res://scenes/world/mana_source.gd")
+const MANA_SOURCE := preload("res://scenes/map/props/mana_source.gd")
 ## RFC-023 (023d): 1 rest loop in GESTURE_EVERY ends in the idle0 gesture (sacengine rolls 1 in 5), like the units.
 const GESTURE_EVERY := 5
 

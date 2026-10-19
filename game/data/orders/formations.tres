@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="FormationCatalog" load_steps=11 format=3]
 
-[ext_resource type="Script" path="res://scenes/world/orders/formation_catalog.gd" id="0"]
-[ext_resource type="Script" path="res://scenes/world/orders/formation_type.gd" id="9"]
+[ext_resource type="Script" path="res://scenes/orders/formations/formation_catalog.gd" id="0"]
+[ext_resource type="Script" path="res://scenes/orders/formations/formation_type.gd" id="9"]
 [ext_resource type="Resource" path="res://data/orders/line.tres" id="1"]
 [ext_resource type="Resource" path="res://data/orders/flank_left.tres" id="2"]
 [ext_resource type="Resource" path="res://data/orders/flank_right.tres" id="3"]

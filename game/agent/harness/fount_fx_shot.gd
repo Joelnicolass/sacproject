@@ -27,7 +27,7 @@ func _initialize() -> void:
 	var light := DirectionalLight3D.new()
 	light.rotation_degrees = Vector3(-50, 30, 0)
 	world.add_child(light)
-	var scene: PackedScene = load("res://scenes/world/props/manafount.tscn")
+	var scene: PackedScene = load("res://scenes/map/props/manafount.tscn")
 	var founts: Array[Node3D] = []
 	for i in 3:
 		var fount: Node3D = scene.instantiate()

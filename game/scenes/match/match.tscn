@@ -5,6 +5,15 @@
 [ext_resource type="Script" uid="uid://l3u0mgrbc72j" path="res://scenes/wizards/wizard_spawner.gd" id="4_spawner"]
 [ext_resource type="PackedScene" path="res://scenes/wizards/wizard_body.tscn" id="5_wizard"]
 [ext_resource type="Script" uid="uid://cm4vcossqdpt5" path="res://scenes/orders/match_command.gd" id="7_match"]
+[ext_resource type="Script" path="res://scenes/orders/command/pointer_ray.gd" id="ef25_pointer_ray"]
+[ext_resource type="Script" path="res://scenes/orders/command/command_feedback.gd" id="ef25_command_feedback"]
+[ext_resource type="Script" path="res://scenes/orders/command/armed_command.gd" id="ef25_armed_command"]
+[ext_resource type="Script" path="res://scenes/orders/command/spell_command.gd" id="ef25_spell_command"]
+[ext_resource type="Script" path="res://scenes/orders/command/ability_command.gd" id="ef25_ability_command"]
+[ext_resource type="Script" path="res://scenes/orders/command/order_command.gd" id="ef25_order_command"]
+[ext_resource type="Script" path="res://scenes/orders/command/group_keys.gd" id="ef25_group_keys"]
+[ext_resource type="Script" path="res://scenes/orders/command/command_input.gd" id="ef25_command_input"]
+[ext_resource type="Script" path="res://scenes/orders/command/minimap_pointing.gd" id="ef25_minimap_pointing"]
 [ext_resource type="Script" uid="uid://nxbcgsgrjk48" path="res://scenes/camera/world_camera.gd" id="11_camera"]
 [ext_resource type="Resource" uid="uid://d1e2js08kea5i" path="res://data/match_rules.tres" id="12_rules"]
 [ext_resource type="Script" uid="uid://daosef86scnum" path="res://scenes/match/match_biome.gd" id="13_biome"]
@@ -174,8 +183,66 @@ unique_name_in_owner = true
 script = ExtResource("f27_orders")
 
 
-[node name="MatchCommand" type="Node" parent="." unique_id=391205645]
+[node name="MatchCommand" type="Node" parent="." unique_id=391205645 node_paths=PackedStringArray("ray", "armed", "orders", "abilities")]
 script = ExtResource("7_match")
+ray = NodePath("PointerRay")
+armed = NodePath("ArmedCommand")
+orders = NodePath("OrderCommand")
+abilities = NodePath("AbilityCommand")
+
+
+[node name="PointerRay" type="Node" parent="MatchCommand" unique_id=1625250101]
+script = ExtResource("ef25_pointer_ray")
+
+
+[node name="CommandFeedback" type="Node" parent="MatchCommand" unique_id=1625258020]
+script = ExtResource("ef25_command_feedback")
+
+
+[node name="ArmedCommand" type="Node" parent="MatchCommand" unique_id=1625265939 node_paths=PackedStringArray("feedback")]
+script = ExtResource("ef25_armed_command")
+feedback = NodePath("../CommandFeedback")
+
+[node name="SpellCommand" type="Node" parent="MatchCommand" unique_id=1625273858 node_paths=PackedStringArray("armed", "ray", "feedback")]
+script = ExtResource("ef25_spell_command")
+armed = NodePath("../ArmedCommand")
+ray = NodePath("../PointerRay")
+feedback = NodePath("../CommandFeedback")
+
+[node name="AbilityCommand" type="Node" parent="MatchCommand" unique_id=1625281777 node_paths=PackedStringArray("armed", "ray", "feedback")]
+script = ExtResource("ef25_ability_command")
+armed = NodePath("../ArmedCommand")
+ray = NodePath("../PointerRay")
+feedback = NodePath("../CommandFeedback")
+
+[node name="OrderCommand" type="Node" parent="MatchCommand" unique_id=1625289696 node_paths=PackedStringArray("armed", "ray", "feedback")]
+script = ExtResource("ef25_order_command")
+armed = NodePath("../ArmedCommand")
+ray = NodePath("../PointerRay")
+feedback = NodePath("../CommandFeedback")
+
+[node name="GroupKeys" type="Node" parent="MatchCommand" unique_id=1625297615]
+script = ExtResource("ef25_group_keys")
+
+
+[node name="CommandInput" type="Node" parent="MatchCommand" unique_id=1625305534 node_paths=PackedStringArray("armed", "ray", "spells", "abilities", "orders", "group_keys")]
+script = ExtResource("ef25_command_input")
+armed = NodePath("../ArmedCommand")
+ray = NodePath("../PointerRay")
+spells = NodePath("../SpellCommand")
+abilities = NodePath("../AbilityCommand")
+orders = NodePath("../OrderCommand")
+group_keys = NodePath("../GroupKeys")
+
+[node name="MinimapPointing" type="Node" parent="MatchCommand" unique_id=1625313453 node_paths=PackedStringArray("armed", "ray", "spells", "abilities", "orders")]
+script = ExtResource("ef25_minimap_pointing")
+armed = NodePath("../ArmedCommand")
+ray = NodePath("../PointerRay")
+spells = NodePath("../SpellCommand")
+abilities = NodePath("../AbilityCommand")
+orders = NodePath("../OrderCommand")
+
+
 
 
 [node name="OrderRadial" type="Node" parent="." unique_id=901968895 node_paths=PackedStringArray("menu", "view", "command")]

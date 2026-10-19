@@ -3233,3 +3233,8 @@ Agregar o cambiar un hechizo de combate ya no toca `caster.gd`.
 
 - `scenes/map/maps/test_flat/`: un cuadrado plano de 600 m (`terrain.res` de `tools/bake/make_flat_terrain.gd`), dos altares, un manantial, su `MapDefinition` y su navmesh (28 polígonos, `bake_nav -- --map=test_flat`). Sin edificios ni habitantes; `room_selectable = false`.
 - Prueba de que un segundo mapa no pide código: `--map=test_flat` y listo. Humo: `bash agent/runs/run_044d.sh` corre IA contra IA 0,5 min sobre él (`debug/rules/map_test_flat.tres`) y exige `AI_REPORT`, el navmesh del mapa y ningún error.
+
+### F290 — `match_command.gd` partido por composición (EF-25) — cerrado 2026-10-19
+
+- `MatchCommand` (796 líneas) pasa a ser un coordinador de ~70 líneas con la misma API pública (`right_at`, `arm_order`, `order_at`, `order_in_formation`, `set_formation`, `retreat`, `use_ability`, `context_kind`, `camera_dragged`). Sus hijos viven en `scenes/orders/command/`: `CommandInput` (teclas y botón izquierdo), `MinimapPointing`, `ArmedCommand` (qué espera su blanco), `SpellCommand`, `AbilityCommand`, `OrderCommand`, `PointerRay` (pantalla a suelo/cuerpo), `GroupKeys` y `CommandFeedback` (ping y línea en `%Battle`).
+- Sin `.call`/`has_method`: los cuerpos se preguntan por tipo (`UnitBody`, `WizardBody`, `DoctorBody`). Comportamiento idéntico; los textos de orden (`ORDER_TEXT`) y los colores del cono (`ORDER_TONE`) quedaron en `CommandFeedback`.

@@ -195,20 +195,33 @@ static func splash_loss(body: Node3D, point: Vector3, spell: SpellType, from_slo
 
 
 ## f489af0 (shiny.d:2873-2884) Heal: worth of the target x the part of its health the spell would give back. Not on an enemy and not
-## on one with a heal running (hasActiveHeal).
+## on one with a heal running (hasActiveHeal). RFC-053 053c (F372): nor on a body at or over `heal_below_ratio` of its health, nor on
+## one that misses less than `heal_min_missing`, nor on one still being summoned (the original heals whatever is not full).
 func _heal(spell: SpellType, target: AiTrack) -> float:
 	if target.kind == AiTrack.Kind.NONE or target.kind == AiTrack.Kind.STR:
 		return 0.0
 	if target.flags & AiTrack.ENEMY:
 		return 0.0
-	if target.node.get_node_or_null("HealEffect") != null:
+	if target.node.get_node_or_null(HealEffect.NODE_NAME) != null:
+		return 0.0
+	if target.node is UnitBody and (target.node as UnitBody).is_summoning():
 		return 0.0
 	var hp := perception.health_of(target)
 	if hp.y == 0:
 		return 0.0
 	var missing := hp.y - hp.x
+	if float(hp.x) >= tactics.heal_below_ratio * float(hp.y) or float(missing) < tactics.heal_min_missing:
+		return 0.0
 	var healed := mini(spell.damage, missing)
 	return AiField.f32(target.sort_key() * AiField.safediv(float(healed), float(hp.y)))
+
+
+## F372: whether a queued Heal on `target` still rates over 0 with the health the side knows now (the queue can be 16 ticks old).
+## Any other spell answers true.
+func still_worth(spell: Resource, target: AiTrack) -> bool:
+	if not (spell is SpellType) or target == null or rating_fn(spell as SpellType) != FN_HEAL:
+		return true
+	return _heal(spell as SpellType, target) > 0.0
 
 
 ## f489c40 (shiny.d:2893-2916) Speedup: worth of the target x (its distance to where its order goes)² / base². A creature that

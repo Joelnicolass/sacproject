@@ -23,7 +23,7 @@ func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:
 			continue
 		var distance := wizard.extrap_pos.distance_to(foe.extrap_pos)
 		var w := AiField.attack_weight(distance, thr, foe.status, false)
-		if is_passive_npc(foe.node):
+		if TargetRules.is_passive_npc(foe.node):
 			w *= brain.tactics.npc_passive_weight
 		w = AiField.f32(w)
 		if w == 0.0:
@@ -42,10 +42,3 @@ func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:
 		return
 	var entry := AiCastQueue.make(0, AiField.f32(AiField.safediv(best * w3[0], total)), best_track, found["spell"], float(found["range"]), found["obj"])
 	AiCastQueue.enqueue(wizard.cast_queue, entry)
-
-
-## A body of an NPC slot that never picks a fight: aggressiveness 0 (TargetPicker.is_passive) or a peasant (PeasantBehavior).
-static func is_passive_npc(node: Node3D) -> bool:
-	if node == null or not SideRelations.is_npc_slot(AiPerception.owner_slot_of(node)):
-		return false
-	return TargetPicker.is_passive(node) or node.get_node_or_null("PeasantBehavior") is PeasantBehavior

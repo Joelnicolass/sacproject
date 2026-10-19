@@ -34,6 +34,23 @@ static func is_valid_foe_of(slot: int, node: Variant, me: Node = null, by_stance
 	return health != null and health.maximum > 0.0 and not health.is_dead()
 
 
+## Whether `node` is a creature that never picks a fight: CRE8 aggressiveness 0 (isPacifist, sacobject.d:84) or a peasant, whose
+## PeasantBehavior child never attacks whatever its data says. One owner (F372): TargetPicker weighs these `passive_weight`.
+static func is_passive(node: Node) -> bool:
+	if not node is UnitBody:
+		return false
+	var type := (node as UnitBody).type
+	return (type != null and type.aggressiveness <= 0) or node.get_node_or_null("PeasantBehavior") is PeasantBehavior
+
+
+## A passive body (is_passive) of an NPC slot (SideRelations.is_npc_slot): a Farmer of the map. AttackPhase weighs these
+## AiTactics.npc_passive_weight; hostile NPC (Taurocks) are not passive and count as any foe.
+static func is_passive_npc(node: Node) -> bool:
+	if node == null or not is_instance_valid(node) or not "owner_slot" in node:
+		return false
+	return SideRelations.is_npc_slot(int(node.get("owner_slot"))) and is_passive(node)
+
+
 ## The closest foe of `body` within its sight range of `center`, over the groups it targets (a body with no TargetPicker).
 static func closest_in_sight(body: UnitBody, center: Vector3) -> Node3D:
 	var best: Node3D = null

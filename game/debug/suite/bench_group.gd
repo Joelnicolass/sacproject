@@ -44,6 +44,9 @@ extends Resource
 ## F370: where "move" and "guard_area" point, X and Z in meters from the group's center (anchor + offset_m, offset_z_m).
 ## Zero: the group's own center.
 @export var order_point := Vector2.ZERO
+## F372: each body enters the field being summoned (UnitBody.begin_summon, as a summon cast does) and stays so: translucent, no
+## orders, not a target, until something ends it. No wizard's cast does here.
+@export var summoning := false
 
 
 ## The name of the group for BenchExpect.

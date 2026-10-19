@@ -41,6 +41,7 @@ func run(host: Node3D) -> Dictionary:
 	out["ai_forget_checked"] = await _forget_checked(host)
 	out["ai_own_splash"] = await _own_splash(host)
 	out["ai_tactics_by_difficulty"] = _tactics()
+	out["ai_heal_threshold"] = await _heal_threshold(host)
 	return out
 
 
@@ -730,3 +731,56 @@ func _tactics() -> Dictionary:
 		checks[tag] = ok
 	checks["null_is_normal"] = AiDifficulty.new().tactics_or_normal().resource_path == AiTactics.NORMAL
 	return _verdict(checks, seen)
+
+
+## RFC-053 053c (F372): Heal rates 0 on a body at or over heal_below_ratio (Normal 0.6) of its health, on one that misses less than
+## heal_min_missing (100), on one being summoned and on one with a heal running; a Trogg (960) at 30 % rates over 0.
+func _heal_threshold(host: Node3D) -> Dictionary:
+	var perception := AiPerception.new()
+	perception.name = "AiCasesPerception4"
+	perception.profile = load("res://data/ai/profile_original.tres")
+	perception.slot = 2
+	host.add_child(perception)
+	var trogg: UnitBody = UNIT_SCENE.instantiate()
+	trogg.name = "AiCasesHealTrogg"
+	trogg.position = Vector3(1100.0, 0.0, 1100.0)
+	trogg.owner_slot = 2
+	trogg.creature_tag = "ycro"
+	trogg.rules = RULES
+	trogg.idle_aggro = false
+	host.add_child(trogg)
+	await host.get_tree().process_frame
+	var eval := AiSpellEval.new(perception, null, null, perception.profile)
+	var heal := GameData.spell("laeh") as SpellType
+	var track := perception.add_node(trogg, &"event")
+	var checks := {"tracked": track != null}
+	var scores := {}
+	if track != null:
+		track.cached_rate = 1.0
+		var health := trogg.get_node("Health") as Health
+		for fraction: float in [0.3, 0.55, 0.6, 0.95, 1.0]:
+			health.current = health.maximum * fraction
+			scores[str(fraction)] = eval._heal(heal, track)
+		checks["low_heals"] = float(scores["0.3"]) > 0.0 and float(scores["0.55"]) > 0.0
+		checks["at_threshold_zero"] = float(scores["0.6"]) == 0.0
+		checks["above_threshold_zero"] = float(scores["0.95"]) == 0.0 and float(scores["1.0"]) == 0.0
+		checks["still_worth_follows"] = not eval.still_worth(heal, track) and eval.still_worth(GameData.spell("kcor"), track)
+		var loose := eval.tactics.duplicate() as AiTactics
+		loose.heal_below_ratio = 1.0
+		eval.tactics = loose
+		health.current = health.maximum - 50.0
+		scores["missing_50"] = eval._heal(heal, track)
+		checks["min_missing_zero"] = float(scores["missing_50"]) == 0.0
+		eval.tactics = AiTactics.or_normal(null)
+		health.current = health.maximum * 0.3
+		trogg.begin_summon()
+		scores["summoning"] = eval._heal(heal, track)
+		trogg.finish_summon()
+		checks["summoning_zero"] = float(scores["summoning"]) == 0.0
+		HealEffect.on(trogg)
+		scores["healing"] = eval._heal(heal, track)
+		checks["heal_running_zero"] = float(scores["healing"]) == 0.0
+	for node: Node in [perception, trogg]:
+		node.queue_free()
+	await host.get_tree().process_frame
+	return _verdict(checks, scores)

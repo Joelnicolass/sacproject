@@ -17,12 +17,15 @@ extends Resource
 ##   uncast   ... at most `max_count` attack spells on bodies of `object` during the whole run (decided with the rest).
 ##   unharmed bodies of `object` take at most `max_count` damage in all from the slot of `subject` during the whole run.
 ##   burst    at most `max_count` plays of the FX `fx` within `near_m` (to its hit box, SplashDamage.box_distance) of a body of `object` during the whole run.
+## F372 (053c): with `spell` (a tag, e.g. laeh) «cast» and «uncast» count the casts of that spell only, whatever its kind, and with
+## an empty `object` the ones on any body:
+##   first_cast  the first cast of `spell` (or attack spell) of the slot of `subject` within `within_s` goes to a body of `object`.
 ## `from`: start = the tick the bench starts; hurt = the first tick the subject body takes damage; near = the first tick a
 ## body of `object` is within `near_m` (flat) of the subject body. The value printed is the seconds (the slowest body with
 ## «all», the fastest with «any») or the count.
 
 @export var check := "expect"
-@export_enum("picked", "struck", "hurt", "dropped", "spared", "cast", "uncast", "unharmed", "burst") var kind := "picked"
+@export_enum("picked", "struck", "hurt", "dropped", "spared", "cast", "uncast", "unharmed", "burst", "first_cast") var kind := "picked"
 @export var subject := ""
 @export var object := ""
 @export_enum("all", "any") var quantifier := "all"
@@ -33,3 +36,8 @@ extends Resource
 @export var max_count := 0
 ## F371: the FX name a «burst» criterion counts (FxBus.played), e.g. wrath_explosion1.
 @export var fx := ""
+## F372: the spell tag «cast», «uncast» and «first_cast» count (empty: every attack spell).
+@export var spell := ""
+## F372: a «spared», «uncast», «unharmed» or «burst» row is not decided (and keeps the run going) before this many seconds:
+## «0 Heals in 30 s» watches the whole 30 s even once every other row is decided. 0: decided with the rest.
+@export var watch_s := 0.0

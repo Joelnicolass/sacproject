@@ -6,6 +6,7 @@ extends RefCounted
 ## bodies do not simulate (physics off), only their positions and the picker/vision answers matter.
 
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
+const PEASANT_SCENE := preload("res://scenes/units/peasant.tscn")
 const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 const RULES := preload("res://data/match_rules.tres")
 const TOL := 0.0001
@@ -39,6 +40,7 @@ func run(host: Node3D) -> Dictionary:
 	out["target_zero_health_no_foe"] = _zero_health()
 	out["target_explicit_attack_only"] = _explicit_attack()
 	out["target_passive_weight"] = _passive_weight()
+	out["target_peasant_is_passive_npc"] = _peasant_passive()
 	out["target_futile_skipped"] = _futile_skipped()
 	out["target_melee_height"] = _melee_height()
 	out["target_guard_no_jitter"] = await _guard()
@@ -326,7 +328,7 @@ func _passive_weight() -> Dictionary:
 	var whole := picker.pick(Vector3.ZERO)
 	picker.passive_weight = 0.5
 	var checks := {
-		"passive": TargetPicker.is_passive(farmer),
+		"passive": TargetRules.is_passive(farmer),
 		"foe_wins_halved": halved == set["foes"][0],
 		"farmer_score": _same(farmer_score, pow(1.0 - 0.075, 2.0) * 1.25 * 0.5),
 		"farmer_wins_whole": whole == farmer,
@@ -334,6 +336,37 @@ func _passive_weight() -> Dictionary:
 	farmer.free()
 	_clean(set)
 	return _verdict(checks, {"farmer_score": farmer_score})
+
+
+## F372: one owner of «a passive NPC» (TargetRules): a Farmer of the map (peasant scene, slot 3 of High Noon) is one even with an
+## aggressiveness of 1000 (its PeasantBehavior never attacks); a pacifist of a player slot is passive but no NPC; a Trogg is neither.
+func _peasant_passive() -> Dictionary:
+	SideRelations.refresh()
+	var farmer: UnitBody = PEASANT_SCENE.instantiate()
+	farmer.name = "Farmer3"
+	farmer.creature_tag = "zepe"
+	farmer.owner_slot = 3
+	farmer.rules = RULES
+	_root.add_child(farmer)
+	farmer.set_physics_process(false)
+	var angry := farmer.type.duplicate() as CreatureType
+	angry.aggressiveness = 1000
+	farmer.type = angry
+	var trogg := _unit(1, Vector3(5.0, 0.0, 0.0), "Trogg")
+	var calm := _unit(2, Vector3(10.0, 0.0, 0.0), "Calm", "nmuh")
+	var calm_type := calm.type.duplicate() as CreatureType
+	calm_type.aggressiveness = 0
+	calm.type = calm_type
+	var checks := {
+		"npc_slot": SideRelations.is_npc_slot(3),
+		"farmer_passive": TargetRules.is_passive(farmer),
+		"farmer_passive_npc": TargetRules.is_passive_npc(farmer),
+		"trogg_not_passive": not TargetRules.is_passive(trogg) and not TargetRules.is_passive_npc(trogg),
+		"pacifist_player_not_npc": TargetRules.is_passive(calm) and not TargetRules.is_passive_npc(calm),
+	}
+	for node: Node in [farmer, trogg, calm]:
+		node.free()
+	return _verdict(checks, {})
 
 
 ## F370: a target TargetFutility banned is passed over until the ban ends.

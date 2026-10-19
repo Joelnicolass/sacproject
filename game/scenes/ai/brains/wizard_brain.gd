@@ -38,6 +38,8 @@ var tactics: AiTactics
 ## F371: casts held back for want of a clear line (he walked closer) and for the burst they would take from his own bodies.
 var line_walks := 0
 var splash_vetoes := 0
+## F372: queued Heals skipped because the body no longer needs them.
+var heal_skips := 0
 ## F371: the walk toward a target he has no clear line to (its track id and where he was sent), kept while he walks to it.
 var _line_target := 0
 var _line_goal := Vector3.ZERO
@@ -319,6 +321,11 @@ func execute_best_cast(wizard: AiTrack, check_only: bool) -> int:
 				i += 1
 				continue
 		if target != null and not target_alive(target):
+			i += 1
+			continue
+		## F372 (RFC-053 053c): a Heal is scored again against the health the side knows now; one no longer needed is skipped.
+		if target != null and not eval.still_worth(spell, target):
+			heal_skips += 1
 			i += 1
 			continue
 		if obj != null:

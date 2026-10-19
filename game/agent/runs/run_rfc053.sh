@@ -3,6 +3,7 @@
 # bench's wall-clock watchdog (--watchdog-s, 20 s by default).
 #   053a (F370)  debug/units/f370_targets.tscn with f370_guard_reacts, f370_indestructible and f370_futile_stun.
 #   053b (F371)  debug/ai/f371_ai_targets.tscn with f371_wrath_blocker and f371_npc (the AI's line of fire, own splash, no spells on NPC).
+#   053c (F372)  debug/ai/f372_ai_heal.tscn with f372_ai_heal (Heal only below the threshold, not on a summoning body; at most 2 in 30 s).
 #   053h (F377)  agent/runs/run_f377.sh (the emitters outside the tree).
 #   053a_sides   the SIDES line (SideRelations.stance(1|2, 0) and (1|2, 3)) on peaks and peasantville (diagnostic, no verdict).
 # Usage: bash agent/runs/run_rfc053.sh CUT [GODOT_BIN]
@@ -46,6 +47,9 @@ case "$CUT" in
       case_run "f371_$variant" res://debug/ai/f371_ai_targets.tscn --rules="res://debug/rules/f371_$variant.tres" ${RFC053_ARGS:-}
     done
     ;;
+  053c)
+    case_run f372_ai_heal res://debug/ai/f372_ai_heal.tscn --rules=res://debug/rules/f372_ai_heal.tres ${RFC053_ARGS:-}
+    ;;
   053h)
     bash "$ROOT/agent/runs/run_f377.sh" "$GODOT_BIN" || FAIL=1
     ;;
@@ -54,7 +58,7 @@ case "$CUT" in
     sides_run peasantville
     ;;
   *)
-    echo "corte desconocido: $CUT (053a, 053a_sides, 053b, 053h)"
+    echo "corte desconocido: $CUT (053a, 053a_sides, 053b, 053c, 053h)"
     exit 2
     ;;
 esac

@@ -16,7 +16,7 @@ extends Node
 ## the anchor and would otherwise take any foe the side has seen at any range, making the unit leave and
 ## come back over and over. Missing («aprox.»): the DangerGrid factor (needs area spells to
 ## paint danger) and the raging case. The scarab is a TargetPolicy (F136).
-## RFC-053 053a (F370): a passive body (CRE8 aggressiveness 0: Farmers) weighs `passive_weight` (a deviation: the original weighs
+## RFC-053 053a (F370): a passive body (TargetRules.is_passive: aggressiveness 0 or a peasant) weighs `passive_weight` (a deviation: the original weighs
 ## them as any foe, and creatures stuck on villagers read as «they do not attack»); a melee-only walker skips flyers above its
 ## swing (maxTargetHeight, state.d:12879, 28774); a target TargetFutility banned is skipped.
 ## Where the world has no SideVision (a bare body in a test), "visible" is "within its sight range".
@@ -144,7 +144,7 @@ func pick(center: Vector3, threshold := 0.25, ref_range := 100.0, within := INF)
 			if distance > within:
 				continue
 			var value := score(distance, ref_range, other.is_in_group("structure"), other.get_instance_id() == last_attacker_id, other == body.target, near_slope, far_factor, creature_weight, last_attacker_weight, current_weight)
-			if is_passive(other):
+			if TargetRules.is_passive(other):
 				value *= passive_weight
 			if value <= threshold:
 				continue
@@ -169,14 +169,6 @@ func accepts(node: Variant, explicit: bool) -> bool:
 	if policy != null:
 		return policy.accepts(body, node, explicit)
 	return TargetRules.is_valid_foe_of(body.owner_slot, node, body, not explicit)
-
-
-## F370: a creature that never picks a fight (CRE8 aggressiveness 0, isPacifist sacobject.d:84): a Farmer.
-static func is_passive(node: Node3D) -> bool:
-	if not node is UnitBody:
-		return false
-	var other_type := (node as UnitBody).type
-	return other_type != null and other_type.aggressiveness <= 0
 
 
 ## Whether the body's TargetFutility banned `node`.

@@ -54,9 +54,14 @@ func is_done() -> bool:
 	if not has_expects():
 		return false
 	for row in _rows:
-		if not row["decided"] and not PASSIVE.has((row["expect"] as BenchExpect).kind):
+		if not row["decided"] and (not PASSIVE.has((row["expect"] as BenchExpect).kind) or _watching(row)):
 			return false
 	return true
+
+
+## F372: a passive row whose `watch_s` has not passed yet (it keeps the run going and is not decided).
+func _watching(row: Dictionary) -> bool:
+	return _tick < MatchClock.ticks_for((row["expect"] as BenchExpect).watch_s)
 
 
 ## F371: the casts the AI's port starts (AiAudit.cast_noted), for «cast» and «uncast».
@@ -205,8 +210,12 @@ func _poll(row: Dictionary) -> void:
 				_decide(row, false, "nunca")
 			return
 		"spared", "uncast", "unharmed", "burst":
-			if is_done_except(row):
+			if is_done_except(row) and not _watching(row):
 				_decide(row, _count_of(row) <= expect.max_count, _count_text(row))
+			return
+		"first_cast":
+			if _tick > window:
+				_decide(row, false, "nunca")
 			return
 		"cast":
 			var first := int(row["first_tick"])
@@ -281,20 +290,30 @@ func is_done_except(row: Dictionary) -> bool:
 	return true
 
 
-## F371: a cast of the AI's port. Only attack spells count (AiSpellEval.ATTACK_MASK) on a body of `object`.
+## F371: a cast of the AI's port. Only attack spells count (AiSpellEval.ATTACK_MASK) on a body of `object`. F372: a row with a
+## `spell` counts the casts of that spell only, whatever its kind, and with an empty `object` on any body; «first_cast» is decided
+## by the first one.
 func _on_cast(slot: int, tag: String, target: Node) -> void:
 	if not _started or _finished:
 		return
 	var spell := GameData.spell(tag)
 	var attack := spell != null and AiSpellEval.accepts(spell, AiSpellEval.ATTACK_MASK)
 	print("EXPECT_NOTE cast slot %d %s -> %s%s (tick %d)" % [slot, tag, target.name if target != null else "-", "" if attack else " (no ataque)", _tick])
-	if not attack or target == null:
+	if target == null:
 		return
 	for row in _rows:
 		var expect: BenchExpect = row["expect"]
-		if row["decided"] or not (expect.kind == "cast" or expect.kind == "uncast"):
+		if row["decided"] or not (expect.kind == "cast" or expect.kind == "uncast" or expect.kind == "first_cast"):
 			continue
-		if slot != _slot_of(expect.subject) or not _of(expect.object).has(target):
+		if slot != _slot_of(expect.subject):
+			continue
+		if (expect.spell.is_empty() and not attack) or (not expect.spell.is_empty() and expect.spell != tag):
+			continue
+		var on_object := _of(expect.object).has(target)
+		if expect.kind == "first_cast":
+			_decide(row, on_object, "%s %s" % [_seconds(_tick), target.name])
+			continue
+		if not on_object and not (expect.object.is_empty() and not expect.spell.is_empty()):
 			continue
 		row["count"] = int(row["count"]) + 1
 		if expect.kind == "cast" and int(row["count"]) >= expect.min_count and int(row["first_tick"]) < 0:

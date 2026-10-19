@@ -177,6 +177,7 @@ func _prepare() -> void:
 				"tag": group.tag, "label": label, "slot": group.slot,
 				"x": x, "y": (0.0 if is_nan(ground) else ground) + 0.2, "z": z,
 				"yaw": yaw, "npc": group.npc, "peasant": group.npc and PeasantBehavior.is_peasant_tag(group.tag),
+				"summoning": group.summoning,
 			})
 			if group.pacifist and unit.get("type") is CreatureType:
 				var calm := (unit.get("type") as CreatureType).duplicate() as CreatureType
@@ -287,6 +288,7 @@ func _finish(winner: int, reason: String) -> void:
 		## F371: casts held back for want of a clear line (walked closer) and for the burst on own bodies.
 		audit.set_extra(int(slot), "ai_line_walks", side.brain.line_walks)
 		audit.set_extra(int(slot), "ai_splash_vetoes", side.brain.splash_vetoes)
+		audit.set_extra(int(slot), "ai_heal_skips", side.brain.heal_skips)
 		## 024e: the difficulty and what the side read of bodies it did not see (0 without perfect information).
 		audit.set_extra(int(slot), "difficulty", {
 			"name": side.difficulty.display_name, "file": side.difficulty.resource_path,

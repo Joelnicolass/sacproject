@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bootsacrifice01"]
+[gd_scene load_steps=10 format=3 uid="uid://bootsacrifice01"]
 
 [ext_resource type="Script" path="res://scenes/core/boot.gd" id="1_boot"]
 [ext_resource type="PackedScene" path="res://scenes/ui/character_select/character_select.tscn" id="2_select"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://scenes/ui/options/graphics_applier.gd" id="5_applier"]
 [ext_resource type="Resource" path="res://data/ui/graphics_prefs.tres" id="6_prefs"]
 [ext_resource type="Resource" path="res://data/ui/gameplay_prefs.tres" id="7_gameplay"]
+[ext_resource type="Script" path="res://scenes/ui/map_picker/map_picker.gd" id="8_map_picker"]
 
 [node name="Boot" type="Control"]
 layout_mode = 3
@@ -76,6 +77,12 @@ text = "UI_BOOT_AI_LEVEL_LABEL"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="MapPicker" type="OptionButton" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("8_map_picker")
+offer_test_maps = true
 
 [node name="Online" type="Button" parent="Column"]
 unique_name_in_owner = true

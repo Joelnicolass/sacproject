@@ -58,11 +58,15 @@ func _on_vs_ai() -> void:
 
 ## The match this boot creates: Options → Jugabilidad and `level` (0 = the rules'). Without prefs, only the level.
 func _setup(level: int) -> MatchSetup:
+	var setup: MatchSetup
 	if gameplay_prefs:
-		return gameplay_prefs.to_setup(level)
-	push_warning("Boot: falta gameplay_prefs; la partida usa las reglas y los flags.")
-	var setup := MatchSetup.new()
-	setup.level = level
+		setup = gameplay_prefs.to_setup(level)
+	else:
+		push_warning("Boot: falta gameplay_prefs; la partida usa las reglas y los flags.")
+		setup = MatchSetup.new()
+		setup.level = level
+	## RFC-049 049a: the map of %MapPicker (SacrificeFlow plays it).
+	setup.map_tag = (%MapPicker as MapPicker).selected_tag()
 	return setup
 
 func _fill_ai_gods() -> void:

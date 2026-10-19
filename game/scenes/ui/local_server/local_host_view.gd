@@ -43,7 +43,12 @@ func _on_create() -> void:
 	_server.server_closed.connect(_on_server_closed)
 	var host_pick := {"wizard": str(SacrificeFlow.pick.get("wizard", "")), "god": str(SacrificeFlow.pick.get("god", ""))}
 	var kind: String = str(_transport.get_item_metadata(_transport.selected))
-	var err := _server.start(host_pick, kind)
+	## RFC-049 049a: the map of the match goes in the ticket like a room's `world` option.
+	var options := {}
+	var world := (%HostMap as MapPicker).selected_tag()
+	if world != &"":
+		options["world"] = String(world)
+	var err := _server.start(host_pick, kind, options)
 	if err != OK:
 		_server.queue_free()
 		_server = null

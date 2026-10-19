@@ -52,7 +52,8 @@ func _ready() -> void:
 	## The room server (RFC-034): it never loads a world by itself.
 	if MpBoot.role() == "room-server":
 		start_when = StartWhen.MANUAL
-	_arm_ticket_glue()
+	if not _arm_ticket_glue():
+		return
 	MpKit.slot_assigned.connect(_on_slot_assigned)
 	MpKit.custom_received.connect(_on_custom_received)
 	MpKit.peer_left.connect(_on_peer_left)
@@ -126,7 +127,53 @@ func host_lan() -> Error:
 func return_to_boot() -> void:
 	solo_ai_seats = []
 	setup = _cli_setup.copy()
+	MapCatalog.reset()
 	super.return_to_boot()
+
+
+## RFC-049 049a (F290): THE place where a match gets its map. Nobody else calls `MapCatalog.use` in the product. It runs right
+## before the world loads, in the process that simulates (solo, «Contra la IA», the dedicated): the map the setup carries (the boot's
+## choice, or the ticket's `world`), else `--map`, else the default. A client does not choose: the dedicated tells it (snapshot).
+func _apply_match_choice() -> void:
+	if MpKit.is_networked() and not MpKit.is_server():
+		return
+	var tag := setup.map_tag
+	if tag != &"" and MapCatalog.shared().find(tag) == null:
+		push_error("SacrificeFlow: no hay mapa '%s'; se usa el de --map o el de siempre." % tag)
+		tag = &""
+	if tag == &"":
+		MapCatalog.reset()
+	else:
+		MapCatalog.use(tag)
+
+
+## The map of the match goes to the clients before the order to load the world (the same reliable channel keeps the order).
+func snapshot_for_joiner() -> Dictionary:
+	var snap := super.snapshot_for_joiner()
+	snap["map"] = String(MapCatalog.current_tag())
+	return snap
+
+
+func _on_flow_snapshot(data: Dictionary) -> void:
+	super._on_flow_snapshot(data)
+	var raw := str(data.get("map", ""))
+	if raw.is_empty() or (MpKit.is_networked() and MpKit.is_server()):
+		return
+	if MapCatalog.shared().find(StringName(raw)) == null:
+		push_error("SacrificeFlow: el servidor mandó el mapa '%s' y este cliente no lo tiene." % raw)
+		return
+	MapCatalog.use(StringName(raw))
+	print("mapa de la partida %s (del servidor)" % raw)
+
+
+func _begin_match() -> void:
+	_apply_match_choice()
+	super._begin_match()
+
+
+func goto_world() -> void:
+	_apply_match_choice()
+	super.goto_world()
 
 
 ## RFC-034 034e: joins the match process the room server assigned (`MpLobbyClient.match_ready`). The ticket is the token.
@@ -157,6 +204,7 @@ func join_lan(ip: String) -> Error:
 ## RFC-034 034f: the way out of a match (pause menu, end of the match, lost server) goes to the room screens when the match
 ## came from a room; the room is still there, with the result. Any other match goes to the menu.
 func _go_boot() -> void:
+	MapCatalog.reset()
 	print("flujo: salida de la partida, desde sala: %s" % from_lobby)
 	if from_lobby:
 		from_lobby = false
@@ -206,15 +254,22 @@ func _read_dedicated_ai() -> void:
 
 
 ## The dedicated of a room-server match: the picks, the options and the seed come from the ticket.
-func _arm_ticket_glue() -> void:
+## Returns false when the ticket is not usable (a map the catalog does not have): the result `bad_ticket` is reported and the
+## process quits, so `_ready` must stop there.
+func _arm_ticket_glue() -> bool:
 	if MpBoot.user_value("match-ticket-file", "").is_empty():
-		return
+		return true
 	var glue := MatchTicketGlue.new()
 	glue.name = "MatchTicketGlue"
 	add_child(glue)
 	if glue.agent == null or glue.agent.ticket.is_empty():
 		glue.queue_free()
-		return
+		return true
+	if not MatchTicketGlue.world_is_valid(glue.agent.ticket):
+		push_error("partida %s: bad_ticket, el ticket pide el mapa '%s' y no existe" % [glue.agent.match_id, str(glue.agent.ticket.get("world", ""))])
+		glue.agent.report_result({"winner_slot": 0, "defeated_slots": [], "reason": "bad_ticket"})
+		get_tree().quit(1)
+		return false
 	ticket_glue = glue
 	var metas := glue.seat_metas()
 	for slot in metas.keys():
@@ -228,6 +283,7 @@ func _arm_ticket_glue() -> void:
 	## The world waits for the open picks: the first admission does not start it (see `_accept_open_pick`).
 	if glue.picks_pending():
 		start_when = StartWhen.MANUAL
+	return true
 
 
 func _on_slot_assigned(_slot: int) -> void:

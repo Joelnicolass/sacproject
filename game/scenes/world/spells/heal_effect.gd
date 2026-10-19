@@ -1,9 +1,12 @@
+class_name HealEffect
 extends Node
 
 ## sacengine heal(): `amount` health at healSpeed per second, spread over
 ## ceil(amount / healSpeed * 60) frames. Stops early when the bar is full. A second Heal
 ## adds its frames and keeps the higher rate. Server (or solo) only; Health is replicated.
 
+## Loaded when needed: the scene holds this script, so a preload would be cyclic.
+const _SCENE_PATH := "res://scenes/world/spells/heal_effect.tscn"
 const NODE_NAME := "HealEffect"
 ## sacengine healSpeed.
 const HEAL_SPEED := 240.0
@@ -35,7 +38,7 @@ static func can_heal(body: Node) -> bool:
 static func on(target: Node) -> Node:
 	var effect: Node = target.get_node_or_null(NODE_NAME)
 	if effect == null:
-		effect = load("res://scenes/world/spells/heal_effect.gd").new()
+		effect = (load(_SCENE_PATH) as PackedScene).instantiate()
 		effect.name = NODE_NAME
 		target.add_child(effect)
 	return effect

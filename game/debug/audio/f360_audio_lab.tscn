@@ -1,0 +1,74 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://debug/audio/audio_lab.gd" id="1_lab"]
+[ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="2_unit"]
+[ext_resource type="PackedScene" path="res://scenes/wizards/wizard_body.tscn" id="3_wizard"]
+[ext_resource type="Script" path="res://scenes/audio/listener_focus.gd" id="4_listener"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(40, 1, 40)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_floor"]
+size = Vector2(40, 40)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
+albedo_color = Color(0.32, 0.3, 0.26, 1)
+
+[node name="AudioLab" type="Node3D" node_paths=PackedStringArray("label")]
+editor_description = "RFC-052 (F360+). Laboratorio de audio: dos criaturas (una con set del original, nmuh; una propia, testmonster), un mago y el oyente en una cámara fija. Los cuerpos están quietos; el lab mueve su estado replicado y los hijos *Sounds suenan. F6 y la acción debug_audio_event (J) recorre los pasos del lab_<corte>.tres. Sin ventana: --headless -- --audio-probe --audio-script[=res://debug/audio/lab_052c.tres] [--audio-no-original]."
+script = ExtResource("1_lab")
+label = NodePath("Overlay/LastEvent")
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.94, 0.34, 0, -0.34, 0.94, 0, 3.5, 9)
+current = true
+
+[node name="ListenerFocus" type="AudioListener3D" parent="." node_paths=PackedStringArray("camera")]
+script = ExtResource("4_listener")
+camera = NodePath("../Camera")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.87, -0.35, 0.35, 0, 0.71, 0.71, -0.5, -0.61, 0.61, 0, 8, 0)
+
+[node name="Floor" type="StaticBody3D" parent="."]
+
+[node name="Shape" type="CollisionShape3D" parent="Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_floor")
+
+[node name="Mesh" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("PlaneMesh_floor")
+surface_material_override/0 = SubResource("StandardMaterial3D_floor")
+
+[node name="Original" parent="." instance=ExtResource("2_unit")]
+process_mode = 4
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 0)
+creature_tag = "nmuh"
+owner_slot = 1
+idle_aggro = false
+
+[node name="Custom" parent="." instance=ExtResource("2_unit")]
+process_mode = 4
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 0)
+creature_tag = "testmonster"
+owner_slot = 2
+idle_aggro = false
+
+[node name="Wizard" parent="." instance=ExtResource("3_wizard")]
+process_mode = 4
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+wizard_tag = "cwa0"
+model = "jnwr"
+god = "james"
+
+[node name="Overlay" type="CanvasLayer" parent="."]
+
+[node name="LastEvent" type="Label" parent="Overlay"]
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 1000.0
+offset_bottom = 140.0
+text = "Laboratorio de audio"
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6

@@ -54,6 +54,7 @@
 [ext_resource type="Script" uid="uid://bw6hj2y4y367k" path="res://scenes/orders/order_radial.gd" id="f218_order_radial"]
 [ext_resource type="PackedScene" path="res://scenes/ui/radial/radial_menu.tscn" id="f218_radial"]
 [ext_resource type="PackedScene" path="res://scenes/fx/order_marker.tscn" id="f220_marker"]
+[ext_resource type="Script" path="res://scenes/audio/listener_focus.gd" id="a052_listener"]
 
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
@@ -377,3 +378,9 @@ unique_name_in_owner = true
 [node name="GraphicsApplier" type="Node" parent="." unique_id=2135902278]
 script = ExtResource("f142_applier")
 prefs = ExtResource("f142_prefs")
+
+
+[node name="ListenerFocus" type="AudioListener3D" parent="." node_paths=PackedStringArray("world", "camera")]
+script = ExtResource("a052_listener")
+world = NodePath("..")
+camera = NodePath("../Camera")

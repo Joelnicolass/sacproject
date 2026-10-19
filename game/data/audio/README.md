@@ -32,6 +32,8 @@ Si un set nombra un archivo que no está (por ejemplo, un clon sin el audio del 
 
 ## Códigos SSET → eventos
 
+La tabla vive en `SoundEvent` (`CREATURE_CODES`, `WORLD_CODES`, `UI_CODES`, en `scenes/audio/sound_event.gd`); el horneado y el juego leen los mismos nombres.
+
 | Código | Evento (`SoundEvent`) | Qué es en el original |
 |---|---|---|
 | `Xcnt` | `selected` | lo seleccionaste |
@@ -45,6 +47,8 @@ Si un set nombra un archivo que no está (por ejemplo, un clon sin el audio del 
 | `spir` (`spel`) | `soul` | alma |
 | `SUMN` (`spel`) | `summon` | invocación |
 | `clik` (`ifac`) | `click` | clic de botón |
+
+El mago además emite `ghost` al levantarse como fantasma; el original no trae sonido para eso (ni para la muerte del mago), así que suena solo con un set propio. `shoot` no tiene código: `UnitSounds` usa el `swing` del set (`aliases`), y un set de cuerpo a cuerpo sin `swing` (`fist`, `stab`) usa su `Xhit`.
 
 Un código sin evento todavía queda con su código como clave, y lo mapea un corte posterior. Algunos ejemplos:
 

@@ -1,7 +1,7 @@
 extends Node
 
 ## RFC-052 052a (F360): runner of the audio cases. `--expect-gate=open|closed` says what this process must see:
-## - open (`--audio-probe --user-settings=user://t_audio.cfg`): gate, prefs, SoundBus and original-set cases;
+## - open (`--audio-probe --user-settings=user://t_audio.cfg`): gate, prefs, SoundBus, original-set and body-set cases;
 ## - closed (plain headless, `--dedicated`, `--room-server`): gate cases only (nothing built, nothing loaded).
 ## Prints `<case>: PASS|FAIL` and `AUDIO CASES PASS|FAIL (n)`; headless quits with 0 / 1.
 ## Watchdog: past `timeout_s` it prints `AUDIO CASES FAIL timeout` and quits 1. The case scripts are loaded at run time
@@ -12,6 +12,7 @@ const GATE_CASES := "res://debug/audio/audio_gate_cases.gd"
 const PREFS_CASES := "res://debug/audio/audio_prefs_cases.gd"
 const BUS_CASES := "res://debug/audio/sound_bus_cases.gd"
 const ORIGINAL_CASES := "res://debug/audio/original_sets_cases.gd"
+const BODY_CASES := "res://debug/audio/body_sounds_cases.gd"
 
 ## Real seconds (not game time: --fixed-fps would stretch a game-time timer).
 @export var timeout_s := 20.0
@@ -58,6 +59,11 @@ func _run() -> void:
 				results["original_sets_cases"] = {"ok": false, "reason": "no compila"}
 			else:
 				results.merge(original.run(self))
+			var body := _cases(BODY_CASES)
+			if body == null:
+				results["body_sounds_cases"] = {"ok": false, "reason": "no compila"}
+			else:
+				results.merge(body.run(self))
 	if _done:
 		return
 	_done = true

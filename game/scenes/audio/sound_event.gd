@@ -14,6 +14,8 @@ const DAMAGED := &"damaged"
 const DEATH := &"death"
 const SUMMON := &"summon"
 const INCANTATION := &"incantation"
+## A wizard rises as a ghost (GhostForm RISING).
+const GHOST := &"ghost"
 const FOOT := &"foot"
 # Spells and FX (052d).
 const CAST := &"cast"
@@ -28,6 +30,29 @@ const SACRIFICE_END := &"sacrifice_end"
 const SOUL := &"soul"
 
 const ALL: Array[StringName] = [
-	SELECTED, ACK, SWING, SHOOT, DAMAGED, DEATH, SUMMON, INCANTATION, FOOT,
+	SELECTED, ACK, SWING, SHOOT, DAMAGED, DEATH, SUMMON, INCANTATION, GHOST, FOOT,
 	CAST, FX, LOOP, ADVICE, CLICK, SACRIFICE_ROUND, SACRIFICE_END, SOUL,
 ]
+
+## The original's SSET type codes that have an event (data/audio/README.md has the table). tools/bake/bake_sound_sets.gd
+## writes these as the keys of the baked sets; a code that is not here keeps its code as the key (`Xhit`, `Xcat`, `TNT1`...).
+## Creature, wizard and melee sets.
+const CREATURE_CODES := {
+	"Xcnt": SELECTED,   # clicked / selected
+	"Xcnf": ACK,        # order acknowledged (move)
+	"Xatt": SWING,      # melee swing
+	"Xdam": DAMAGED,
+	"Xdie": DEATH,
+	"Xinc": INCANTATION,
+}
+## The `spel` set (world.tres).
+const WORLD_CODES := {
+	"Xsac": SACRIFICE_ROUND,
+	"Xgib": SACRIFICE_END,
+	"spir": SOUL,
+	"SUMN": SUMMON,
+}
+## The `ifac` set (ui.tres).
+const UI_CODES := {
+	"clik": CLICK,
+}

@@ -15,7 +15,7 @@ extends SceneTree
 ##   From your own sounds, assets/custom/sounds/<kind>/<tag>/<event>[_n].{ogg,wav,mp3}, into data/audio/custom/<kind>/<tag>.tres
 ##   (searched first: yours win over the original's). Every file of one event is a variant of its cue.
 ##
-## The SSET type codes become SoundEvent names (TYPE_EVENTS, WORLD_EVENTS, UI_EVENTS; data/audio/README.md has the table).
+## The SSET type codes become SoundEvent names (SoundEvent.CREATURE_CODES, WORLD_CODES, UI_CODES; data/audio/README.md has the table).
 ## A code without an event keeps its code as the key (`Xcat`, `TNT1`, `grp3`, `Awnd`...): later cuts map them.
 ## Human edits are safe: an existing .tres is left alone; `--force` rewrites (and throws away what you edited).
 ## The streams are referenced by path and not loaded: the bake works before the editor imports the audio.
@@ -35,26 +35,11 @@ const CUE_SCRIPT := "res://scenes/audio/sound_cue.gd"
 const NO_SET := ["", "cre8"]
 const STREAM_EXTENSIONS := ["ogg", "wav", "mp3"]
 
-## Creature, wizard and melee sets: SSET type -> SoundEvent.
-const TYPE_EVENTS := {
-	"Xcnt": &"selected",   # clicked / selected
-	"Xcnf": &"ack",        # order acknowledged (move)
-	"Xatt": &"swing",      # melee swing (the melee set)
-	"Xdam": &"damaged",
-	"Xdie": &"death",
-	"Xinc": &"incantation",
-}
-## The `spel` set.
-const WORLD_EVENTS := {
-	"Xsac": &"sacrifice_round",
-	"Xgib": &"sacrifice_end",
-	"spir": &"soul",
-	"SUMN": &"summon",
-}
-## The `ifac` set.
-const UI_EVENTS := {
-	"clik": &"click",
-}
+## SSET type -> SoundEvent: the tables live in SoundEvent (one owner; the game and the bake read the same names).
+const _EVENTS := preload("res://scenes/audio/sound_event.gd")
+const TYPE_EVENTS := _EVENTS.CREATURE_CODES
+const WORLD_EVENTS := _EVENTS.WORLD_CODES
+const UI_EVENTS := _EVENTS.UI_CODES
 ## Events a voice says; the rest of a custom creature's sounds go to SFX.
 const VOICE_EVENTS := [&"selected", &"ack", &"incantation", &"advice"]
 

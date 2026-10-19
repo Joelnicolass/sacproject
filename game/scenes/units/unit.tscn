@@ -1,4 +1,4 @@
-[gd_scene load_steps=85 format=3]
+[gd_scene load_steps=86 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/unit_body.gd" id="1_body"]
 [ext_resource type="PackedScene" path="res://scenes/units/movement/body_avoidance.tscn" id="f207_avoid"]
@@ -83,6 +83,7 @@
 [ext_resource type="Script" path="res://scenes/units/afflictions/vined.gd" id="f159_vined"]
 [ext_resource type="Resource" path="res://data/afflictions/vined.tres" id="f159_vined_type"]
 [ext_resource type="Resource" path="res://data/afflictions/oiled.tres" id="f155_oiled_type"]
+[ext_resource type="Script" path="res://scenes/audio/unit_sounds.gd" id="a052_sounds"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_unit"]
 radius = 0.3
@@ -431,5 +432,10 @@ mode = 9
 [node name="Cower" type="Node" parent="States"]
 script = ExtResource("f221_cower")
 mode = 10
+
+[node name="UnitSounds" type="Node" parent="." node_paths=PackedStringArray("body", "health")]
+script = ExtResource("a052_sounds")
+body = NodePath("..")
+health = NodePath("../Health")
 
 [connection signal="solved" from="Avoidance" to="." method="_on_avoided"]

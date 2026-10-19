@@ -23,6 +23,11 @@ signal held_changed(held: bool)
 ## Held or being revived by a Sac Doctor (true) or neither (false). The Captive child keeps the group
 ## and the collision.
 signal taken_changed(taken: bool)
+## Presentation (RFC-052 052c): emitted on every peer from the setters of the replicated `swings`, `shots` and `mode`, after
+## what the setter already did, so a listener (UnitSounds) never changes the order of the simulation.
+signal swung
+signal shot_started
+signal mode_changed(was: Mode, now: Mode)
 
 ## HELD: taken by a Sac Doctor (RFC-020c). REVIVING: a Convert doctor is pumping its corpse back to life
 ## (RFC-020e, sacengine convertReviving). COWER: a peasant far from any shelter crouches (sacengine cower, RFC-024
@@ -63,6 +68,8 @@ const REST_FACING := Vector3(0.0, 0.0, 1.0)
 			held_changed.emit(mode == Mode.HELD)
 		if is_node_ready():
 			_update_clip_state()
+		if mode != was:
+			mode_changed.emit(was, mode)
 
 ## Bumped on every swing so clients play the lunge too.
 @export var swings := 0:
@@ -70,12 +77,14 @@ const REST_FACING := Vector3(0.0, 0.0, 1.0)
 		swings = value
 		if is_node_ready():
 			_clips.lunge()
+			swung.emit()
 ## Bumped when a shot starts (shoot0), for the same cue on clients.
 @export var shots := 0:
 	set(value):
 		shots = value
 		if is_node_ready():
 			_clips.lunge()
+			shot_started.emit()
 
 @export_flags_3d_physics var unit_layer := 2
 @export_flags_3d_physics var ground_mask := 1

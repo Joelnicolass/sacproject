@@ -15,7 +15,7 @@ extends Node
 ## icon, CommandCue draws it on the cursor and a refusal flashes `ncst`; the words only stay in
 ## `%Battle.text` for the log and the flows.
 
-const _SPELL_BOOK := preload("res://scenes/ui/spell_book.gd")
+const _SPELL_BOOK := preload("res://scenes/ui/spell_book/spell_book.gd")
 const SPELL_KEYS := 11
 const CREATURE_KEYS := 11
 const GROUP_KEYS := ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]

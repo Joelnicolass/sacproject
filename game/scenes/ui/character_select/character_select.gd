@@ -1,6 +1,6 @@
 extends Control
 
-const _PREVIEW := preload("res://scenes/ui/wizard_preview.gd")
+const _PREVIEW := preload("res://scenes/ui/character_select/wizard_preview.gd")
 
 signal confirmed
 

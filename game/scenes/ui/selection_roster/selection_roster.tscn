@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/ui/selection_roster/selection_roster.gd" id="1_roster"]
 [ext_resource type="PackedScene" path="res://scenes/ui/selection_roster/roster_cell.tscn" id="2_cell"]
-[ext_resource type="PackedScene" path="res://scenes/ui/frame_piece.tscn" id="3_piece"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud/frame_piece.tscn" id="3_piece"]
 [ext_resource type="PackedScene" path="res://scenes/ui/selection_roster/roster_plate.tscn" id="4_plate"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ability"]

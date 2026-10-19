@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/ui/lobby/room_view.gd" id="1_room"]
 [ext_resource type="PackedScene" path="res://scenes/ui/lobby/seat_row.tscn" id="2_seat"]
 [ext_resource type="PackedScene" path="res://scenes/ui/lobby/chat_box.tscn" id="3_chat"]
-[ext_resource type="PackedScene" path="res://scenes/ui/character_select.tscn" id="4_select"]
+[ext_resource type="PackedScene" path="res://scenes/ui/character_select/character_select.tscn" id="4_select"]
 
 [node name="RoomView" type="Control"]
 layout_mode = 3

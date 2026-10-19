@@ -5,7 +5,7 @@
 @require-empty scenes/world/ h
 @require-empty scenes/data/ h
 @require-empty scenes/flow/ d
-@require-empty-flat scenes/ui/ c
+@require-empty-flat scenes/ui/ d
 @require-empty-flat debug/ i
 @forbid scenes/world/ h
 @forbid scenes/data/ h

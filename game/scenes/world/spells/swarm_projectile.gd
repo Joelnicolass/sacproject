@@ -1,4 +1,4 @@
-extends Node3D
+extends SpellProjectile
 
 ## Charnel Insect Swarm (sacengine castSwarm/updateSwarm, state.d:10576, 17011).
 ## Guided projectile with smaller hit box, higher cruise height and splash spell damage.

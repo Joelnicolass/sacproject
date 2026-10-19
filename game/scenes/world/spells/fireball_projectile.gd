@@ -1,4 +1,4 @@
-extends Node3D
+extends SpellProjectile
 
 ## Pyro Fireball (sacengine castFireball/updateFireball, state.d:10519-10528, 16682-16700).
 ## Guided projectile with flying height 0.5 m and splash spell damage on impact.

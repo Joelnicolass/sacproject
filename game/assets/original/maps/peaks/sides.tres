@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="MapSides" format=3]
+
+[ext_resource type="Script" path="res://scenes/map/map_sides.gd" id="1_sides"]
+
+[resource]
+script = ExtResource("1_sides")
+ids = PackedInt64Array(0, 1, 31)
+allies = PackedInt64Array(0, 2, 0)
+enemies = PackedInt64Array(2, 2147483645, 0)
+assignment = PackedInt64Array(33, 2, 0)
+colors = PackedInt64Array(2, 1, 0)

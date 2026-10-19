@@ -3,14 +3,14 @@ extends SceneTree
 ## One-time tool (RFC-035 035d): writes a map's content as nodes (High Noon, or `--map=<tag>` after `--`, RFC-044 044b: the
 ## inputs and outputs are the paths of its MapDefinition). From then on the scene is the source of truth and
 ## nothing reads ntts.json or widgets.json at runtime; those two files are only this tool's input.
-##   scenes/map/maps/high_noon/layout.tscn   Buildings (MapBuilding), Plants (Plant), NpcSpawns (NpcSpawn)
-##   assets/original/maps/high_noon/sides.tres   MapSides
+##   scenes/map/maps/<tag>/layout.tscn   Buildings (MapBuilding), Plants (Plant), NpcSpawns (NpcSpawn); the root is "<Tag>Layout" (HighNoonLayout)
+##   assets/original/maps/<tag>/sides.tres   MapSides
 ## It does what the old runtime code did, in the same order and with the same arithmetic, so the match digests do not move:
 ##  - buildings: the order of `structures`, names `Bld%03d_<tag>` (the index counts the hand-placed founts and altars too),
 ##    y = ground_height(x, z), the NTTS facing saved as the node's own rotation (rotation.y = -deg_to_rad(facing), RFC-043); the ones off the land are left out with a warning;
 ##  - plants: the sacengine placeWidgets walk (sorted tags, one RNG draw per row, seed 17), skipped over holes and near
-##    an altar (40 m) or a manafount (6 m); the founts and altars are the `jfnt` and `jaal` rows of the NTTS, the same spots
-##    as Starts and Founts in high_noon.tscn;
+##    an altar (40 m) or a manafount (6 m); the founts and altars are the rows of the NTTS with the tags of ALTAR_TAGS and
+##    FOUNT_TAGS (`jaal`/`jfnt` for James, one pair per land), the same spots as Starts and Founts in the map scene;
 ##  - NPCs: the order of `creatures`; position y = ground + 0.2 m (the feet settle by themselves).
 ## Idempotent: it refuses to overwrite a file that exists (the scene may have been edited). --force overwrites.
 ## "$GODOT" --headless --path game --script res://tools/bake/bake_map_layout.gd [-- --force] [--out=res://...tscn] [--sides-out=res://...tres]
@@ -22,19 +22,19 @@ const BUILDING_SCENE := "res://scenes/map/map_building.tscn"
 const SPAWN_SCENE := "res://scenes/map/npc_spawn.tscn"
 const PLANT_SCENE := "res://scenes/map/props/plant.tscn"
 const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain.gd"
-const ROOT_NAME := "HighNoonLayout"
 
-## Rows the scene places by hand (Starts, Founts): not buildings of the layout.
-const HAND_PLACED: PackedStringArray = ["jfnt", "jaal"]
-const FOUNT_TAG := "jfnt"
-const ALTAR_TAG := "jaal"
+## The altar and the manafount of each land (BuildingType flags 0x80001407 and 0x80002810), RFC-050. Rows the scene places by
+## hand (Starts, Founts): not buildings of the layout. Same lists as tools/import/scaffold_map.py.
+const ALTAR_TAGS: PackedStringArray = ["jaal", "ca_a", "pyal", "stal", "alt1"]
+const FOUNT_TAGS: PackedStringArray = ["jfnt", "cafn", "pfon", "stmf", "font"]
 const NEUTRAL_SIDE := 31
 ## Meters above the land where a creature is put.
 const SPAWN_LIFT := 0.2
 const PLANT_SEED := 17
 const ALTAR_CLEAR := 40.0
 const FOUNT_CLEAR := 6.0
-## Models of a widget tag (JAW1…). The map is James land; the look is Persephone.
+## Models of a widget tag (JAW1…, James land; the look is Persephone). RFC-050: the widget models of the other lands (CAH1, SAW1,
+## PYA1…) are not imported yet, so a tag that is not here plants nothing (the old fallback put Persephone flowers on a Charnel map).
 const WIDGET_MODELS := {
 	"JAW1": ["PCW7", "PCW6", "PCF4"],
 	"JAW2": ["PCW8", "PCF3", "PCF1"],
@@ -42,9 +42,9 @@ const WIDGET_MODELS := {
 	"JAW4": ["PCG2", "PCW5"],
 	"JAW5": ["PGL1", "PGL2", "PCG1"],
 }
-## For a widget tag missing from WIDGET_MODELS.
-const FALLBACK_MODELS: Array = ["PCF1", "PCF2", "PCF3", "PCF4", "PCG1", "PCG2", "PCW5", "PCW6", "PCW7", "PCW8", "PGL1", "PGL2", "PCC1", "PCC2"]
 
+## Name of the layout root: "HighNoonLayout" for high_noon, "PeaksLayout" for peaks (the map scene names the same node).
+var _root_name := ""
 var _terrain: MeshInstance3D
 var _map: MapDefinition
 var _failures: Array[String] = []
@@ -52,6 +52,7 @@ var _failures: Array[String] = []
 
 func _initialize() -> void:
 	_map = MapCatalog.active()
+	_root_name = String(_map.tag).to_pascal_case() + "Layout"
 	var out := _map.layout_scene_path
 	var sides_out := _map.sides.resource_path if _map.sides != null else ""
 	var force := false
@@ -140,7 +141,7 @@ func _plan_buildings(structures: Array) -> Array:
 	for row: Dictionary in structures:
 		var tag := str(row["tag"])
 		index += 1
-		if HAND_PLACED.has(tag):
+		if ALTAR_TAGS.has(tag) or FOUNT_TAGS.has(tag):
 			continue
 		var x := float(row["x"])
 		var z := float(row["z"])
@@ -162,9 +163,9 @@ func _plan_plants(widgets: Dictionary, structures: Array) -> Array:
 	var founts: Array[Vector2] = []
 	for row: Dictionary in structures:
 		var at := Vector2(float(row["x"]), float(row["z"]))
-		if str(row["tag"]) == ALTAR_TAG:
+		if ALTAR_TAGS.has(str(row["tag"])):
 			altars.append(at)
-		elif str(row["tag"]) == FOUNT_TAG:
+		elif FOUNT_TAGS.has(str(row["tag"])):
 			founts.append(at)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = PLANT_SEED
@@ -172,8 +173,9 @@ func _plan_plants(widgets: Dictionary, structures: Array) -> Array:
 	var tags := widgets.keys()
 	tags.sort()
 	for tag in tags:
-		var models: Array = WIDGET_MODELS.get(tag, FALLBACK_MODELS)
+		var models: Array = WIDGET_MODELS.get(tag, [])
 		if models.is_empty():
+			print("bake_map_layout: widget %s has no model yet (%d rows); no plants for it" % [tag, widgets[tag].size()])
 			continue
 		for row in widgets[tag]:
 			var model: String = models[rng.randi() % models.size()]
@@ -224,7 +226,7 @@ func _plan_npcs(creatures: Array) -> Array:
 
 func _write_layout(plan: Dictionary, out: String) -> Error:
 	var root := Node3D.new()
-	root.name = ROOT_NAME
+	root.name = _root_name
 	var buildings := _group(root, "Buildings")
 	var plants := _group(root, "Plants")
 	var spawns := _group(root, "NpcSpawns")

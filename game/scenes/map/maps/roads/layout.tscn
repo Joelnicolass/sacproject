@@ -1,0 +1,1509 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_j1g3o"]
+[ext_resource type="Script" path="res://scenes/map/map_building.gd" id="2_d7y0r"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/pcmf.tres" id="3_ee01b"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/pht1.tres" id="4_si63f"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/pht2.tres" id="5_101pr"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/plm1.tres" id="6_amacq"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/plm2.tres" id="7_l5m8v"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/plm3.tres" id="8_uvwwf"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/pmv1.tres" id="9_vo4x3"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/pmv2.tres" id="10_hm7o2"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/prc1.tres" id="11_4rlp0"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/prc2.tres" id="12_d5hgw"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/pwhr.tres" id="13_14w31"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/pyft.tres" id="14_lqji5"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/pyst.tres" id="15_704yy"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/pyt1.tres" id="16_44x4g"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/pyt2.tres" id="17_u1v5e"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/pyt3.tres" id="18_sxcja"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/pyt4.tres" id="19_gdukr"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/pyt5.tres" id="20_tftlv"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/pyt6.tres" id="21_wnc2i"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/vbl1.tres" id="22_5ooqa"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/vbl2.tres" id="23_txck4"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/vbl3.tres" id="24_1a778"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/vbl4.tres" id="25_ydvkq"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/vbl5.tres" id="26_gun5m"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/vbl6.tres" id="27_ctjls"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/vbl7.tres" id="28_bw5n4"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/vbl8.tres" id="29_y4t3u"]
+[ext_resource type="PackedScene" path="res://scenes/map/npc_spawn.tscn" id="30_8gdwk"]
+[ext_resource type="Script" path="res://scenes/map/npc_spawn.gd" id="31_whxxq"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/zepf.tres" id="32_mdkvd"]
+
+[node name="RoadsLayout" type="Node3D" unique_id=1756730285]
+
+[node name="Buildings" type="Node3D" parent="." unique_id=1669426570]
+
+[node name="Bld009_pcmf" type="StaticBody3D" parent="Buildings" unique_id=1852508782 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1230, 13.100009, 960)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("3_ee01b")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld010_pcmf" type="StaticBody3D" parent="Buildings" unique_id=693887477 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1000, 14.1, 1530)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("3_ee01b")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld011_pht1" type="StaticBody3D" parent="Buildings" unique_id=45838904 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(0.9238795, 0, -0.38268346, 0, 1, 0, 0.38268346, 0, 0.9238795, 990.031, 11.9003105, 1403.485)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("4_si63f")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld012_pht1" type="StaticBody3D" parent="Buildings" unique_id=1613065411 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(0.38268343, 0, 0.9238795, 0, 1, 0, -0.9238795, 0, 0.38268343, 938.866, 11.364013, 1415.627)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("4_si63f")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld013_pht1" type="StaticBody3D" parent="Buildings" unique_id=255829200 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(-0.9238816, 0, 0.38267842, 0, 1, 0, -0.38267842, 0, -0.9238816, 983.409, 13.768179, 1529.368)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("4_si63f")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld014_pht1" type="StaticBody3D" parent="Buildings" unique_id=1286660900 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(-0.3826834, 0, 0.92387956, 0, 1, 0, -0.92387956, 0, -0.3826834, 940.475, 12.48729, 1487.304)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("4_si63f")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld015_pht1" type="StaticBody3D" parent="Buildings" unique_id=2065266 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(-0.9238795, 0, 0.3826835, 0, 1, 0, -0.3826835, 0, -0.9238795, 980.901, 13.709009, 1546.636)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("4_si63f")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld016_pht1" type="StaticBody3D" parent="Buildings" unique_id=593388871 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(-0.9238816, 0, -0.38267842, 0, 1, 0, 0.38267842, 0, -0.9238816, 1014.749, 14.6039915, 1536.673)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("4_si63f")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld017_pht1" type="StaticBody3D" parent="Buildings" unique_id=1494739923 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(0.38268343, 0, -0.9238795, 0, 1, 0, 0.9238795, 0, 0.38268343, 1280.549, 12.075643, 993.347)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("4_si63f")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld018_pht1" type="StaticBody3D" parent="Buildings" unique_id=651521234 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(-0.70711064, 0, -0.7071029, 0, 1, 0, 0.7071029, 0, -0.70711064, 1051.838, 14.841497, 1473.303)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("4_si63f")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld019_pht1" type="StaticBody3D" parent="Buildings" unique_id=1374248596 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(0.9238795, 0, -0.38268346, 0, 1, 0, 0.38268346, 0, 0.9238795, 1262.296, 13.80616, 955.42)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("4_si63f")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld020_pht1" type="StaticBody3D" parent="Buildings" unique_id=1542677736 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(-0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, -0.70710677, 1246.212, 10.295627, 1062.633)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("4_si63f")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld021_pht1" type="StaticBody3D" parent="Buildings" unique_id=1381782540 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 1273.27, 12.174341, 985.682)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("4_si63f")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld022_pht2" type="StaticBody3D" parent="Buildings" unique_id=1561878970 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(0.9238795, 0, -0.38268346, 0, 1, 0, 0.38268346, 0, 0.9238795, 1252.154, 13.860618, 953.928)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("5_101pr")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld023_pht2" type="StaticBody3D" parent="Buildings" unique_id=196288484 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(-0.9238816, 0, -0.38267842, 0, 1, 0, 0.38267842, 0, -0.9238816, 1021.106, 15.575591, 1511.289)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("5_101pr")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld024_pht2" type="StaticBody3D" parent="Buildings" unique_id=1519891012 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 997.181, 13.94362, 1550.758)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("5_101pr")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld025_pht2" type="StaticBody3D" parent="Buildings" unique_id=1460455057 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 973.828, 11.763739, 1397.094)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("5_101pr")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld026_pht2" type="StaticBody3D" parent="Buildings" unique_id=1332724627 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 1289.134, 11.537045, 1011.85)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("5_101pr")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld027_plm1" type="StaticBody3D" parent="Buildings" unique_id=1600669468 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 930, 18.199997, 1020)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("6_amacq")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld028_plm1" type="StaticBody3D" parent="Buildings" unique_id=351051857 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1230, 8.599999, 1090)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("6_amacq")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld029_plm1" type="StaticBody3D" parent="Buildings" unique_id=1286489758 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 920, 24.100006, 1280)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("6_amacq")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld030_plm1" type="StaticBody3D" parent="Buildings" unique_id=1079927742 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1670, 29.599997, 1500)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("6_amacq")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld031_plm1" type="StaticBody3D" parent="Buildings" unique_id=1730825639 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 900, 41.00001, 790)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("6_amacq")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld032_plm1" type="StaticBody3D" parent="Buildings" unique_id=203207005 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1310, 13.999992, 1020)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("6_amacq")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld033_plm1" type="StaticBody3D" parent="Buildings" unique_id=2087635578 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1090, 16.70001, 1520)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("6_amacq")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld034_plm1" type="StaticBody3D" parent="Buildings" unique_id=1985839372 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 930, 10.600003, 1420)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("6_amacq")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld035_plm2" type="StaticBody3D" parent="Buildings" unique_id=2017185316 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 880, 27.500002, 1320)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("7_l5m8v")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld036_plm2" type="StaticBody3D" parent="Buildings" unique_id=453636621 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 920, 18.999998, 1060)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("7_l5m8v")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld037_plm2" type="StaticBody3D" parent="Buildings" unique_id=1680050251 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 890, 33.700005, 810)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("7_l5m8v")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld038_plm2" type="StaticBody3D" parent="Buildings" unique_id=308807529 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1380, 42.699993, 1500)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("7_l5m8v")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld039_plm2" type="StaticBody3D" parent="Buildings" unique_id=568147153 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1220, 14.300001, 930)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("7_l5m8v")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld040_plm2" type="StaticBody3D" parent="Buildings" unique_id=1506391529 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 950, 12.900002, 1520)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("7_l5m8v")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld041_plm2" type="StaticBody3D" parent="Buildings" unique_id=413005198 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1670, 38.600006, 1430)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("7_l5m8v")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld042_plm3" type="StaticBody3D" parent="Buildings" unique_id=1974307735 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 990, 12.2, 1390)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("8_uvwwf")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld043_plm3" type="StaticBody3D" parent="Buildings" unique_id=795221056 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 900, 15.400001, 1040)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("8_uvwwf")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld044_plm3" type="StaticBody3D" parent="Buildings" unique_id=1824114847 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1330, 26.899952, 970)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("8_uvwwf")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld045_plm3" type="StaticBody3D" parent="Buildings" unique_id=1971826545 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 870, 37.99998, 790)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("8_uvwwf")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld046_plm3" type="StaticBody3D" parent="Buildings" unique_id=491262666 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1290, 15.400007, 950)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("8_uvwwf")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld047_plm3" type="StaticBody3D" parent="Buildings" unique_id=372614308 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1640, 35.5, 1420)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("8_uvwwf")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld048_plm3" type="StaticBody3D" parent="Buildings" unique_id=1195411328 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 880, 30.29999, 1280)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("8_uvwwf")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld049_pmv1" type="StaticBody3D" parent="Buildings" unique_id=126542605 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1130, 9.300002, 1360)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("9_vo4x3")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld050_pmv1" type="StaticBody3D" parent="Buildings" unique_id=594635004 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1150, 8.8, 1160)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("9_vo4x3")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld051_pmv1" type="StaticBody3D" parent="Buildings" unique_id=673898605 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1360, 16.200008, 1200)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("9_vo4x3")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld052_pmv1" type="StaticBody3D" parent="Buildings" unique_id=1138831947 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 890, 10.200003, 930)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("9_vo4x3")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld053_pmv2" type="StaticBody3D" parent="Buildings" unique_id=1203738315 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1380, 19.800014, 1210)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("10_hm7o2")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld054_pmv2" type="StaticBody3D" parent="Buildings" unique_id=2011958498 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 860, 10.699996, 950)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("10_hm7o2")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld055_pmv2" type="StaticBody3D" parent="Buildings" unique_id=744586396 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1120, 8.2, 1380)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("10_hm7o2")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld056_prc1" type="StaticBody3D" parent="Buildings" unique_id=766511610 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 754.071, 5.1991625, 1137.132)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("11_4rlp0")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld057_prc1" type="StaticBody3D" parent="Buildings" unique_id=2034716829 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1199.245, 19.26946, 1298.795)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("11_4rlp0")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld058_prc2" type="StaticBody3D" parent="Buildings" unique_id=695278091 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 768.109, 15.930158, 1020.754)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("12_d5hgw")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld059_prc2" type="StaticBody3D" parent="Buildings" unique_id=605717989 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1204.372, 16.099108, 1279.699)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("12_d5hgw")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld060_pwhr" type="StaticBody3D" parent="Buildings" unique_id=1279268269 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1018.446, 12.320972, 1407.747)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("13_14w31")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld061_pwhr" type="StaticBody3D" parent="Buildings" unique_id=270176339 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 1248.962, 9.06556, 1080.92)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("13_14w31")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld062_pwhr" type="StaticBody3D" parent="Buildings" unique_id=1224725634 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(0.9238795, 0, 0.38268346, 0, 1, 0, -0.38268346, 0, 0.9238795, 950.085, 13.00255, 1506.05)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("13_14w31")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld063_pwhr" type="StaticBody3D" parent="Buildings" unique_id=1626333571 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(-0.3826834, 0, -0.92387956, 0, 1, 0, 0.92387956, 0, -0.3826834, 1233.58, 13.7839, 945.038)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("13_14w31")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld066_pyft" type="StaticBody3D" parent="Buildings" unique_id=642734676 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1051.419, 17.017498, 1512.181)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("14_lqji5")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld067_pyst" type="StaticBody3D" parent="Buildings" unique_id=1143559911 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 921.673, 9.474219, 1445.711)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("15_704yy")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld068_pyst" type="StaticBody3D" parent="Buildings" unique_id=749421418 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1300.543, 13.197743, 916.629)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("15_704yy")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld069_pyt1" type="StaticBody3D" parent="Buildings" unique_id=1420686396 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1090.654, 15.875768, 1511.659)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("16_44x4g")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld070_pyt1" type="StaticBody3D" parent="Buildings" unique_id=292242315 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 938.948, 12.321202, 1402.3)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("16_44x4g")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld071_pyt1" type="StaticBody3D" parent="Buildings" unique_id=1240046747 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1084.347, 26.666437, 1106.286)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("16_44x4g")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld072_pyt2" type="StaticBody3D" parent="Buildings" unique_id=402913854 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 897.452, 28.17092, 1327.62)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("17_u1v5e")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld073_pyt2" type="StaticBody3D" parent="Buildings" unique_id=2125733524 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1165.921, 19.231165, 907.007)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("17_u1v5e")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld074_pyt2" type="StaticBody3D" parent="Buildings" unique_id=305367589 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1088.294, 17.113478, 1162.281)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("17_u1v5e")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld075_pyt2" type="StaticBody3D" parent="Buildings" unique_id=1142796780 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1191.135, 16.39441, 922.545)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("17_u1v5e")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld076_pyt3" type="StaticBody3D" parent="Buildings" unique_id=1925087948 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1099.113, 27.631622, 1093.615)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("18_sxcja")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld077_pyt3" type="StaticBody3D" parent="Buildings" unique_id=1525884461 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1540.514, 60.465363, 1221.105)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("18_sxcja")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld078_pyt3" type="StaticBody3D" parent="Buildings" unique_id=187274202 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 904.182, 27.76374, 1346.178)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("18_sxcja")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld079_pyt4" type="StaticBody3D" parent="Buildings" unique_id=1531579443 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 927.459, 30.04856, 1333.411)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("19_gdukr")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld080_pyt4" type="StaticBody3D" parent="Buildings" unique_id=716193960 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1540.57, 58.125954, 1241.485)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("19_gdukr")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld081_pyt4" type="StaticBody3D" parent="Buildings" unique_id=1423315999 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1086.198, 30.628199, 1090.582)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("19_gdukr")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld082_pyt4" type="StaticBody3D" parent="Buildings" unique_id=606393277 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1487.781, 36.400284, 1385.119)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("19_gdukr")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld083_pyt4" type="StaticBody3D" parent="Buildings" unique_id=916435165 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1169.143, 18.985481, 907.359)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("19_gdukr")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld084_pyt4" type="StaticBody3D" parent="Buildings" unique_id=670459049 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 999.749, 12.929353, 1385.581)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("19_gdukr")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld085_pyt5" type="StaticBody3D" parent="Buildings" unique_id=1109333302 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1078.664, 21.501183, 1133.323)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("20_tftlv")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld086_pyt5" type="StaticBody3D" parent="Buildings" unique_id=815988405 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1541.262, 59.384594, 1232.156)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("20_tftlv")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld087_pyt6" type="StaticBody3D" parent="Buildings" unique_id=1876095887 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1169.946, 19.428, 903.136)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("21_wnc2i")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld088_pyt6" type="StaticBody3D" parent="Buildings" unique_id=664191132 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1538.729, 59.32427, 1233.035)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("21_wnc2i")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld089_pyt6" type="StaticBody3D" parent="Buildings" unique_id=1125051294 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1498.348, 37.167534, 1381.683)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("21_wnc2i")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld090_pyt6" type="StaticBody3D" parent="Buildings" unique_id=1862210838 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 932.315, 10.852963, 1435.179)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("21_wnc2i")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld091_pyt6" type="StaticBody3D" parent="Buildings" unique_id=18809148 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1089.982, 23.089918, 1120.799)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("21_wnc2i")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld092_vbl1" type="StaticBody3D" parent="Buildings" unique_id=654852259 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(0.38268343, 0, 0.9238795, 0, 1, 0, -0.9238795, 0, 0.38268343, 786.445, 16.123907, 1050.75)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("22_5ooqa")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld093_vbl1" type="StaticBody3D" parent="Buildings" unique_id=1062951440 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 783.123, 10.854297, 1108.259)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("22_5ooqa")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld094_vbl1" type="StaticBody3D" parent="Buildings" unique_id=1641658098 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1203.353, 13.520981, 1266.128)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("22_5ooqa")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld095_vbl2" type="StaticBody3D" parent="Buildings" unique_id=1463511894 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1375.119, 42.250122, 1502.122)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("23_txck4")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld096_vbl2" type="StaticBody3D" parent="Buildings" unique_id=428114674 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 782.02, 15.37976, 1015.352)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("23_txck4")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld097_vbl2" type="StaticBody3D" parent="Buildings" unique_id=1404440087 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1066.817, 15.770987, 1469.866)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("23_txck4")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld098_vbl3" type="StaticBody3D" parent="Buildings" unique_id=2077310604 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1388.196, 44.745914, 1478.607)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("24_1a778")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld099_vbl3" type="StaticBody3D" parent="Buildings" unique_id=208268056 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1191.415, 19.985352, 1308.146)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("24_1a778")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld100_vbl3" type="StaticBody3D" parent="Buildings" unique_id=2042165519 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1070.189, 15.452397, 1464.508)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("24_1a778")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld101_vbl4" type="StaticBody3D" parent="Buildings" unique_id=28967795 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1367.277, 41.72415, 1506.968)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("25_ydvkq")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld102_vbl4" type="StaticBody3D" parent="Buildings" unique_id=1149684764 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 757.133, 6.3257627, 1118.435)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("25_ydvkq")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld103_vbl4" type="StaticBody3D" parent="Buildings" unique_id=718528297 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1187.212, 15.811841, 1282.338)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("25_ydvkq")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld104_vbl5" type="StaticBody3D" parent="Buildings" unique_id=111316071 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1186.988, 17.593035, 1291.667)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("26_gun5m")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld105_vbl5" type="StaticBody3D" parent="Buildings" unique_id=1637029753 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1539.577, 60.243645, 1224.19)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("26_gun5m")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld106_vbl6" type="StaticBody3D" parent="Buildings" unique_id=285200472 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1536.494, 60.129734, 1223.687)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("27_ctjls")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld107_vbl6" type="StaticBody3D" parent="Buildings" unique_id=370949214 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1492.136, 36.728157, 1383.856)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("27_ctjls")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld108_vbl7" type="StaticBody3D" parent="Buildings" unique_id=2084102593 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1175.246, 18.892044, 1313.833)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("28_bw5n4")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld109_vbl7" type="StaticBody3D" parent="Buildings" unique_id=973224090 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1541.326, 59.012173, 1234.775)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("28_bw5n4")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld110_vbl7" type="StaticBody3D" parent="Buildings" unique_id=1649133137 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1495.656, 36.946304, 1384.962)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("28_bw5n4")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld111_vbl8" type="StaticBody3D" parent="Buildings" unique_id=1422994744 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1538.851, 58.887447, 1236.19)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("29_y4t3u")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld112_vbl8" type="StaticBody3D" parent="Buildings" unique_id=18236171 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1485.125, 36.153503, 1379.613)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("29_y4t3u")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Bld113_vbl8" type="StaticBody3D" parent="Buildings" unique_id=643386516 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_j1g3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1166.727, 15.0796385, 1280.737)
+collision_mask = 0
+script = ExtResource("2_d7y0r")
+building = ExtResource("29_y4t3u")
+max_health_override = 0.0
+owner_slot = 0
+collision_inset = 0.5
+visuals = NodePath("Visuals")
+collision = NodePath("Collision")
+sync = NodePath("Sync")
+health_bar = NodePath("HealthBar")
+
+[node name="Plants" type="Node3D" parent="." unique_id=651418791]
+
+[node name="NpcSpawns" type="Node3D" parent="." unique_id=757838673]
+
+[node name="Npc01_zepf" type="Marker3D" parent="NpcSpawns" unique_id=1249384676 instance=ExtResource("30_8gdwk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1246.893, 13.965678, 958.828)
+gizmo_extents = 3.0
+script = ExtResource("31_whxxq")
+creature = ExtResource("32_mdkvd")
+side = 2
+ntts_id = 119
+
+[node name="Npc02_zepf" type="Marker3D" parent="NpcSpawns" unique_id=30135224 instance=ExtResource("30_8gdwk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1043.438, 14.487237, 1472.585)
+gizmo_extents = 3.0
+script = ExtResource("31_whxxq")
+creature = ExtResource("32_mdkvd")
+side = 2
+ntts_id = 129
+
+[node name="Npc03_zepf" type="Marker3D" parent="NpcSpawns" unique_id=1564449970 instance=ExtResource("30_8gdwk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1046.974, 14.416738, 1467.966)
+gizmo_extents = 3.0
+script = ExtResource("31_whxxq")
+creature = ExtResource("32_mdkvd")
+side = 2
+ntts_id = 128
+
+[node name="Npc04_zepf" type="Marker3D" parent="NpcSpawns" unique_id=996410833 instance=ExtResource("30_8gdwk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1005.053, 14.747749, 1514.563)
+gizmo_extents = 3.0
+script = ExtResource("31_whxxq")
+creature = ExtResource("32_mdkvd")
+side = 2
+ntts_id = 127
+
+[node name="Npc05_zepf" type="Marker3D" parent="NpcSpawns" unique_id=1260541354 instance=ExtResource("30_8gdwk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1009.386, 14.84007, 1524.103)
+gizmo_extents = 3.0
+script = ExtResource("31_whxxq")
+creature = ExtResource("32_mdkvd")
+side = 2
+ntts_id = 126
+
+[node name="Npc06_zepf" type="Marker3D" parent="NpcSpawns" unique_id=562363778 instance=ExtResource("30_8gdwk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 995.78, 14.26107, 1521.233)
+gizmo_extents = 3.0
+script = ExtResource("31_whxxq")
+creature = ExtResource("32_mdkvd")
+side = 2
+ntts_id = 125
+
+[node name="Npc07_zepf" type="Marker3D" parent="NpcSpawns" unique_id=1525246242 instance=ExtResource("30_8gdwk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 992.387, 14.15748, 1521.413)
+gizmo_extents = 3.0
+script = ExtResource("31_whxxq")
+creature = ExtResource("32_mdkvd")
+side = 2
+ntts_id = 124
+
+[node name="Npc08_zepf" type="Marker3D" parent="NpcSpawns" unique_id=2028182436 instance=ExtResource("30_8gdwk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 955.747, 13.190129, 1490.886)
+gizmo_extents = 3.0
+script = ExtResource("31_whxxq")
+creature = ExtResource("32_mdkvd")
+side = 2
+ntts_id = 123
+
+[node name="Npc09_zepf" type="Marker3D" parent="NpcSpawns" unique_id=118438433 instance=ExtResource("30_8gdwk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 952.299, 13.068971, 1488.719)
+gizmo_extents = 3.0
+script = ExtResource("31_whxxq")
+creature = ExtResource("32_mdkvd")
+side = 2
+ntts_id = 122
+
+[node name="Npc10_zepf" type="Marker3D" parent="NpcSpawns" unique_id=1855846756 instance=ExtResource("30_8gdwk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1248.806, 10.702378, 1055.624)
+gizmo_extents = 3.0
+script = ExtResource("31_whxxq")
+creature = ExtResource("32_mdkvd")
+side = 2
+ntts_id = 121
+
+[node name="Npc11_zepf" type="Marker3D" parent="NpcSpawns" unique_id=1808214718 instance=ExtResource("30_8gdwk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1249.883, 13.916049, 959.309)
+gizmo_extents = 3.0
+script = ExtResource("31_whxxq")
+creature = ExtResource("32_mdkvd")
+side = 2
+ntts_id = 120
+
+[node name="Npc12_zepf" type="Marker3D" parent="NpcSpawns" unique_id=1050942560 instance=ExtResource("30_8gdwk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1267.605, 10.48035, 1029.15)
+gizmo_extents = 3.0
+script = ExtResource("31_whxxq")
+creature = ExtResource("32_mdkvd")
+side = 2
+ntts_id = 115
+
+[node name="Npc13_zepf" type="Marker3D" parent="NpcSpawns" unique_id=931951036 instance=ExtResource("30_8gdwk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1266.098, 11.7754545, 987.868)
+gizmo_extents = 3.0
+script = ExtResource("31_whxxq")
+creature = ExtResource("32_mdkvd")
+side = 2
+ntts_id = 118
+
+[node name="Npc14_zepf" type="Marker3D" parent="NpcSpawns" unique_id=2141264798 instance=ExtResource("30_8gdwk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1266.675, 11.666464, 989.591)
+gizmo_extents = 3.0
+script = ExtResource("31_whxxq")
+creature = ExtResource("32_mdkvd")
+side = 2
+ntts_id = 117
+
+[node name="Npc15_zepf" type="Marker3D" parent="NpcSpawns" unique_id=744534453 instance=ExtResource("30_8gdwk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1263.126, 10.53062, 1034.434)
+gizmo_extents = 3.0
+script = ExtResource("31_whxxq")
+creature = ExtResource("32_mdkvd")
+side = 2
+ntts_id = 114
+
+[node name="Npc16_zepf" type="Marker3D" parent="NpcSpawns" unique_id=504466108 instance=ExtResource("30_8gdwk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1280.453, 11.089048, 1014.672)
+gizmo_extents = 3.0
+script = ExtResource("31_whxxq")
+creature = ExtResource("32_mdkvd")
+side = 2
+ntts_id = 116

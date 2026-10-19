@@ -1,0 +1,14 @@
+[remap]
+
+importer="image"
+type="Image"
+uid="uid://cbtl2hvdwo6g4"
+path="res://.godot/imported/tiles.png-dca0b6f52a9cca40898aec8690d32f78.image"
+
+[deps]
+
+source_file="res://assets/original/maps/peaks/tiles.png"
+dest_files=["res://.godot/imported/tiles.png-dca0b6f52a9cca40898aec8690d32f78.image"]
+
+[params]
+

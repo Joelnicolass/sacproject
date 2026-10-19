@@ -1,52 +1,99 @@
 #!/usr/bin/env python3
-"""Import High Noon's map files to assets/original/maps/high_noon/.
+"""Import one multiplayer map of the installation to assets/original/maps/<tag>/ (High Noon without arguments).
 
-RFC-033 (033f, from the .scp in 033h). Writes only assets/original/maps/high_noon/. Deterministic and idempotent: a second run
-writes nothing, and an existing .png.import is never touched (it carries the UID).
+RFC-033 (033f, from the .scp in 033h); RFC-050 made the map a parameter. Writes only assets/original/maps/<tag>/. Deterministic and
+idempotent: a second run writes nothing, and an existing .png.import is never touched (it carries the UID).
 
-  python3 tools/import/import_map.py                    # tiles.png, light.png, ntts.json, widgets.json
+  python3 tools/import/import_map.py                    # High Noon: tiles.png, light.png, ntts.json, widgets.json
+  python3 tools/import/import_map.py --map=Peaks        # another map: the name of "(2) Peaks.scp"; the tag is "peaks"
+  python3 tools/import/import_map.py --map=WinterWonder # tag "winter_wonder" (camel case is split); --tag=X overrides it
+  python3 tools/import/import_map.py --list             # every .scp of the installation with its player seats, size and content
   python3 tools/import/import_map.py --check            # report what would change, write nothing
   python3 tools/import/import_map.py --out=DIR          # write there instead (to compare with the versioned ones)
   python3 tools/import/import_map.py --terrain-bin=F    # also write the HNTR mesh bin to F (see below)
 
-Source: "(2) High Noon.scp" of the installation, read with tools/import/sac_formats:
-  TMAP   the map's tile index, 256x256, tile id in the R channel   -> tiles.png
+The Godot side of a new map (MapDefinition, map.tscn, catalog entry) is tools/import/scaffold_map.py; the whole sequence is in
+rfcs/RFC-050-original-maps.md.
+
+Source: "(N) <name>.scp" of the installation, read with tools/import/sac_formats:
+  TMAP   the map's tile index, 256x256, tile id in the R channel   -> tiles.png (in James's tile ids: land_themes.map_tiles)
   LMAP   the baked light of the ground                              -> light.png
   NTTS   creatures, structures and widgets, SIDS the sides          -> ntts.json, widgets.json
   HMAP   the height map and cliff walls                             -> HNTR bin -> terrain.res
 terrain.res is made in two steps because only Godot writes a Resource: this script builds the HNTR v1 bin (vertices, normals,
 indices) at --terrain-bin (a temporary file, not in the repo) and then
-  "$GODOT" --headless --path game --script res://tools/bake/import_terrain.gd -- --bin=F
+  "$GODOT" --headless --path game --script res://tools/bake/import_terrain.gd -- [--map=<tag>] --bin=F
 turns it into a MapTerrainData. Run both once; the result is versioned.
 
 tiles.png and light.png are imported as Image (importer="image": exact pixels, no sRGB, no mipmaps, no compression):
 tiles.png is an index and must not go through mipmaps or compression; the game reads both on the CPU.
 """
 
+import re
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import land_themes  # noqa: E402
 from import_themes import IMAGE_TEMPLATE  # noqa: E402
 from import_ui import IMPORT_TEMPLATE  # noqa: E402
 from sac_formats import png, terrain  # noqa: E402
 from sac_formats.install import MAPS  # noqa: E402
-from sac_formats.ntts import ntts_json, widgets_json  # noqa: E402
+from sac_formats.ntts import ntts_json, read_entities, read_sides, widgets_json  # noqa: E402
 from sac_formats.wad import extract  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 ARGS = {a.split("=", 1)[0]: (a.split("=", 1)[1] if "=" in a else True) for a in sys.argv[1:]}
-OUT = Path(ARGS.get("--out", ROOT / "assets" / "original" / "maps" / "high_noon"))
-SCP = MAPS / "(2) High Noon.scp"
+
+
+def find_scp(name: str) -> Path:
+    """"High Noon", "(2) High Noon" or "high_noon" -> the .scp of the installation (case and separators ignored)."""
+    def key(text: str) -> str:
+        return re.sub(r"[^a-z0-9]", "", re.sub(r"^\(\d\)\s*", "", text).lower())
+    wanted = key(name)
+    found = [p for p in sorted(MAPS.glob("*.scp")) if key(p.stem) == wanted]
+    if len(found) != 1:
+        sys.exit("import_map: '%s' matches %d maps of %s" % (name, len(found), MAPS))
+    return found[0]
+
+
+def display_name(scp: Path) -> str:
+    """"(2) High Noon" -> "High Noon"; "(4) WinterWonder" -> "Winter Wonder"."""
+    name = re.sub(r"^\(\d\)\s*", "", scp.stem).replace("'", "")
+    return re.sub(r"(?<=[a-z])(?=[A-Z])", " ", name)
+
+
+def tag_of(scp: Path) -> str:
+    return re.sub(r"[^a-z0-9]+", "_", display_name(scp).lower()).strip("_")
+
+
+SCP = find_scp(str(ARGS.get("--map", "High Noon")))
+TAG = str(ARGS.get("--tag", tag_of(SCP)))
+OUT = Path(ARGS.get("--out", ROOT / "assets" / "original" / "maps" / TAG))
+
+
+def listing() -> None:
+    """Every map of the installation: seats (sides a player takes), land size and what it holds."""
+    print("%-24s %-9s %5s %9s %6s %6s  %s" % ("map", "land", "seats", "land cells", "bldgs", "creat", "sides (assignment)"))
+    for scp in sorted(MAPS.glob("*.scp")):
+        grid = terrain.load_grid(scp)[0]
+        cells = sum(1 for row in grid for void in row if not void)
+        structures, creatures = read_entities(extract(scp, "", "NTTS"))
+        sides = read_sides(extract(scp, "", "SIDS"))
+        seats = [s for s in sides if s["assignment"] & 31]
+        print("%-24s %-9s %5d %9d %6d %6d  %s" % (scp.stem, land_themes.map_god(scp), len(seats), cells, len(structures),
+                                                   len(creatures), [s["assignment"] for s in sides]))
 
 
 def files() -> dict:
     """destination -> (bytes, import kind or None)."""
-    tmap = extract(SCP, "", "TMAP")
+    tmap, missed, _ = land_themes.map_tiles(SCP)
+    if missed:
+        print("import_map: %d cells have a tile with no James equivalent (kept as they are)" % missed, file=sys.stderr)
     lmap = extract(SCP, "", "LMAP")
     tiles = bytearray(256 * 256 * 3)
     light = bytearray(256 * 256 * 3)
-    for i, tile in enumerate(tmap[512: 512 + 256 * 256]):
+    for i, tile in enumerate(tmap):
         tiles[i * 3: i * 3 + 3] = bytes((tile, tile, tile))
     for i in range(256 * 256):
         light[i * 3: i * 3 + 3] = lmap[i * 4: i * 4 + 3]
@@ -59,6 +106,9 @@ def files() -> dict:
 
 
 def main() -> None:
+    if "--list" in ARGS:
+        listing()
+        return
     check = "--check" in ARGS
     written = kept = 0
     for name, (data, kind) in files().items():

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="MapDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/map/map_definition.gd" id="1_def"]
+[ext_resource type="Resource" path="res://assets/original/maps/peaks/sides.tres" id="2_sides"]
+
+[resource]
+script = ExtResource("1_def")
+tag = &"peaks"
+display_name = "Peaks"
+map_scene_path = "res://scenes/map/maps/peaks/map.tscn"
+sides = ExtResource("2_sides")
+terrain_path = "res://assets/original/maps/peaks/terrain.res"
+tiles_path = "res://assets/original/maps/peaks/tiles.png"
+light_path = "res://assets/original/maps/peaks/light.png"
+nav_path = "res://scenes/map/maps/peaks/nav.res"
+player_starts = 2
+layout_scene_path = "res://scenes/map/maps/peaks/layout.tscn"
+ntts_path = "res://assets/original/maps/peaks/ntts.json"
+widgets_path = "res://assets/original/maps/peaks/widgets.json"

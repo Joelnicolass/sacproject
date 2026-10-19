@@ -1,0 +1,113 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/map/map_root.gd" id="1_root"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain.gd" id="2_terrain"]
+[ext_resource type="Script" path="res://scenes/map/props/map_props.gd" id="3_props"]
+[ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="4_start"]
+[ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="5_fount"]
+[ext_resource type="Environment" path="res://data/look/env_base.tres" id="6_env"]
+[ext_resource type="PackedScene" path="res://scenes/look/sky/sky.tscn" id="7_sky"]
+[ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="8_look"]
+[ext_resource type="Resource" path="res://data/look/ground/high_noon_tiles.tres" id="9_tiles"]
+[ext_resource type="Resource" path="res://assets/original/maps/peasantville/terrain.res" id="10_data"]
+[ext_resource type="Material" path="res://assets/original/themes/james/ground_classic.tres" id="11_ground"]
+[ext_resource type="PackedScene" path="res://assets/original/maps/peasantville/terrain.glb" id="12_glb"]
+[ext_resource type="PackedScene" path="res://scenes/map/maps/peasantville/layout.tscn" id="13_layout"]
+[ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="14_bake"]
+[ext_resource type="NavigationMesh" path="res://scenes/map/maps/peasantville/nav.res" id="15_navmesh"]
+[ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
+[ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="17_minimap"]
+
+[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings_root", "npc_spawns_root")]
+script = ExtResource("1_root")
+terrain = NodePath("Terrain")
+nav_region = NodePath("NavRegion")
+starts = NodePath("MapProps/Starts")
+look = NodePath("Look")
+minimap_bake = NodePath("MinimapBake")
+buildings_root = NodePath("PeasantvilleLayout/Buildings")
+npc_spawns_root = NodePath("PeasantvilleLayout/NpcSpawns")
+
+[node name="Sky" parent="." instance=ExtResource("7_sky")]
+unique_name_in_owner = true
+background_color = Color(2.8878452e-07, 0.92139935, 0.5927794, 1)
+top_path = "res://assets/original/themes/persephone/skyt.png"
+bottom_path = "res://assets/original/themes/persephone/skyb.png"
+clouds_path = "res://assets/original/themes/persephone/sky.png"
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+unique_name_in_owner = true
+environment = ExtResource("6_env")
+
+[node name="Look" parent="." node_paths=PackedStringArray("sun", "world_environment", "terrain", "legacy_sky") instance=ExtResource("8_look")]
+unique_name_in_owner = true
+sun = NodePath("../Sun")
+world_environment = NodePath("../Environment")
+terrain = NodePath("../Terrain")
+legacy_sky = NodePath("../Sky")
+tile_map = ExtResource("9_tiles")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.921061, -0.27935162, 0.27131036, 0, 0.6967067, 0.7173561, -0.38941833, -0.6607287, 0.6417094, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Terrain" parent="." groups=["nav_source"] instance=ExtResource("12_glb")]
+unique_name_in_owner = true
+material_override = ExtResource("11_ground")
+script = ExtResource("2_terrain")
+data = ExtResource("10_data")
+
+[node name="Missing" type="Label3D" parent="Terrain"]
+visible = false
+text = "UI_MAP_MISSING"
+font_size = 48
+
+[node name="MapProps" type="Node3D" parent="." node_paths=PackedStringArray("plants_root")]
+script = ExtResource("3_props")
+plants_root = NodePath("../PeasantvilleLayout/Plants")
+
+[node name="Starts" type="Node3D" parent="MapProps"]
+
+[node name="Start1" parent="MapProps/Starts" node_paths=PackedStringArray("faces") instance=ExtResource("4_start")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1690, 0.6, 1370)
+faces = NodePath("../../Founts/Fount03")
+
+[node name="Start2" parent="MapProps/Starts" node_paths=PackedStringArray("faces") instance=ExtResource("4_start")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2230, 10.3, 1620)
+slot = 2
+faces = NodePath("../../Founts/Fount04")
+
+[node name="Founts" type="Node3D" parent="MapProps"]
+
+[node name="Fount01" parent="MapProps/Founts" instance=ExtResource("5_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2060, 18.6, 1250)
+
+[node name="Fount02" parent="MapProps/Founts" instance=ExtResource("5_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1730, 4.2, 1470)
+
+[node name="Fount03" parent="MapProps/Founts" instance=ExtResource("5_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1780, 2, 1320)
+
+[node name="Fount04" parent="MapProps/Founts" instance=ExtResource("5_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2140, 5.5, 1670)
+
+[node name="Fount05" parent="MapProps/Founts" instance=ExtResource("5_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2200, 9.5, 1510)
+
+[node name="Fount06" parent="MapProps/Founts" instance=ExtResource("5_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1980, 48.6, 1470)
+
+[node name="Fount07" parent="MapProps/Founts" instance=ExtResource("5_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1830, 8.1, 1750)
+
+[node name="PeasantvilleLayout" parent="." instance=ExtResource("13_layout")]
+
+[node name="NavRegion" type="NavigationRegion3D" parent="."]
+unique_name_in_owner = true
+navigation_mesh = ExtResource("15_navmesh")
+script = ExtResource("16_nav_region")
+bake_settings = ExtResource("14_bake")
+
+[node name="MinimapBake" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("17_minimap")]
+unique_name_in_owner = true
+terrain = NodePath("../Terrain")

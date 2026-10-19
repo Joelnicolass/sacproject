@@ -3238,3 +3238,26 @@ Agregar o cambiar un hechizo de combate ya no toca `caster.gd`.
 
 - `MatchCommand` (796 líneas) pasa a ser un coordinador de ~70 líneas con la misma API pública (`right_at`, `arm_order`, `order_at`, `order_in_formation`, `set_formation`, `retreat`, `use_ability`, `context_kind`, `camera_dragged`). Sus hijos viven en `scenes/orders/command/`: `CommandInput` (teclas y botón izquierdo), `MinimapPointing`, `ArmedCommand` (qué espera su blanco), `SpellCommand`, `AbilityCommand`, `OrderCommand`, `PointerRay` (pantalla a suelo/cuerpo), `GroupKeys` y `CommandFeedback` (ping y línea en `%Battle`).
 - Sin `.call`/`has_method`: los cuerpos se preguntan por tipo (`UnitBody`, `WizardBody`, `DoctorBody`). Comportamiento idéntico; los textos de orden (`ORDER_TEXT`) y los colores del cono (`ORDER_TONE`) quedaron en `CommandFeedback`.
+### F320 — Importar un mapa del original por parámetro (RFC-050) — cerrado 2026-10-19
+
+- `import_map.py --map=<Nombre>` (High Noon sin argumento, byte a byte igual; `--list` muestra los 31 mapas con asientos, tamaño y contenido), `terrain.py` busca el HMAP por etiqueta en vez de un desplazamiento fijo, `scaffold_map.py` escribe `sides.tres`, la `MapDefinition`, `map.tscn` (un `PlayerStart` por altar a su altura de suelo, un `Fount` por manantial) y la entrada del catálogo. `bake_map_layout` pone la raíz `<Tag>Layout` y reconoce altar y manantial de las cinco tierras; `import_terrain.gd` escribe en el `terrain_path` del mapa activo.
+- Suelo: las baldosas de un mapa de otra tierra pasan a los ids de James por rol (`land_themes.map_tiles`, el mismo `land_remap` de los temas) y `import_themes.py` suma esos ids a los atlas de los otros dioses sin mover los de High Noon (cambian solo cuatro `atlas.png`). WORKAROUND: el original lee cada mapa en su tierra.
+- `bake_map_layout` ya no pone flores de Persephone donde el widget no tiene modelo (Charnel, Pyro, Stratos): ese mapa queda sin plantas hasta importar los modelos. WORKAROUND.
+- `terrain_import.gd` toma el `tiles.png` junto al glb: antes pedía `tiles_path` a un `Terrain` vacío y el glb no se importaba desde cero (ni el de High Noon).
+- Auditoría nueva `tools/audit/check_map_starts.tscn -- --map=<tag>` (los inicios caen en tierra y en una misma región del navmesh) y humo `agent/runs/run_050_maps.sh <tag>`. `check_original_assets.sh` compara también los demás mapas. High Noon: `bake_nav --check` y `bake_map_layout --check` PASS sin re-hornear.
+
+### F321 — Mapa Peaks (RFC-050) — cerrado 2026-10-19
+
+- `peaks` (`(2) Peaks.scp`, tierra Charnel): el más chico de los 31, 0,13 km², 2 asientos, 5 manantiales, 32 edificios, sin criaturas ni plantas. Navmesh de 2.555 polígonos en una región. `room_selectable = true`.
+
+### F322 — Mapa Peasantville (RFC-050) — cerrado 2026-10-19
+
+- `peasantville` (tierra James): 0,54 km², 2 asientos, 142 edificios, 53 aldeanos (bando 2), 1.530 plantas. Navmesh de 10.999 polígonos (región mayor 9.744; los inicios en ella).
+
+### F323 — Mapa Roads (RFC-050) — cerrado 2026-10-19
+
+- `roads` (tierra Pyro): 0,60 km², 2 asientos, 103 edificios, 16 criaturas, sin plantas. Navmesh de 10.398 polígonos (región mayor 10.372).
+
+### F324 — Mapa WinterWonder para 2v2 (RFC-050) — cerrado 2026-10-19
+
+- `winter_wonder` (tierra Stratos, nieve): 3,85 km², el más grande de los 31 con 4 asientos; 78 edificios, 17 criaturas (bando NPC 4), 10 manantiales, sin plantas. `terrain.glb` de 13 MB. Navmesh de 44.332 polígonos en dos regiones; los 4 inicios caen en la de 20.020. `player_starts = 4`; el 2v2 jugado es RFC-049 (hasta entonces se juega 1 contra 1 en los asientos 1 y 2).

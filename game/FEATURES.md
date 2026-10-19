@@ -3127,3 +3127,20 @@ Referencias de sacengine: `renderer.d:4459-4760` y `minimap.d`.
   - `quick` PASS.
   - Capturas de antes y después en `agent/out/f223/`.
 - **Fuera:** el parpadeo de alerta, los resaltados y la niebla.
+
+### F240 — El editor muestra el mapa real: rotación en el transform (RFC-043, corte 043a) — cerrado 2026-10-19
+
+- **Rotación:** los 9 edificios con `facing_deg` guardan el giro en su propio transform, y `facing_deg` se borró de `MapBuilding`, `NpcSpawn` y del hash del navmesh. El gizmo de rotación manda.
+- **Vista previa:** `MapBuilding` es `@tool` y muestra sus modelos en el editor (las mismas partes que arma el juego, sin dueño, no se guardan). No corre nada de juego.
+- **`NpcSpawn.yaw()`:** lee el giro del marcador con `atan2`, porque `get_euler().y` se invierte pasados 90°.
+- **Herramientas:** `tools/migrate_layout_043.gd` (una vez, sobre el texto de la escena) y `tools/check_layout_transforms.tscn` contra `tools/layout_transforms_baseline.json`.
+- **Verificación:**
+  - Transforms: PASS, 101 nodos (69 edificios y 32 spawns), diferencia máxima 5e-12 (tolerancia 1e-4).
+  - Navmesh re-horneado (mismo tamaño, 10667 polígonos); `bake_nav --check` PASS dos veces.
+  - Layout: npc 32 · edificios 69 · refugios 11.
+
+### F241 — Referencias tipadas en el mapa (RFC-043, corte 043b) — cerrado 2026-10-19
+
+- `MapBuilding.building: BuildingType` y `NpcSpawn.creature: CreatureType`, arrastrables desde `data/catalog/<tipo>/<tag>.tres`.
+- `tag` es una propiedad derivada; su setter busca el tipo con `TypeRef` (primero el archivo del tipo, después la lista del `GameCatalog`), así que el código y las escenas viejas que nombran un tag siguen andando.
+- **Fuera:** `UnitBody`, `DoctorBody` y `PlayerStart` (resto de EF-13) y el botón «Hornear navmesh» (EF-15).

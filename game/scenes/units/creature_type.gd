@@ -6,6 +6,9 @@ extends Resource
 @export var display_name: String = ""
 @export var god: String = ""
 @export var model: String = ""
+## F335: the HUD icon (the roster, the book). Empty: HudIcons looks for assets/custom/icons/<tag>.png (tools/bake/new_creature.gd draws
+## one from the model) and then for the original's. A creature of your own can set it here, in the inspector.
+@export var icon: Texture2D
 @export var health: int = 0
 @export var regeneration_per_s: float = 0.0
 ## CRE8 `drain` (file word / 1000): the AI's rater adds 2x drain to the regeneration (shiny.d:241 `fillStats`).

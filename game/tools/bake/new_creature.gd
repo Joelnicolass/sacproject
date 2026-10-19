@@ -19,7 +19,14 @@ extends SceneTree
 ## prefix (`Armature|Run`): idle, run (or walk), attack, shoot, cast, hit, death, fly, takeoff, land, hover, knock, get_up...
 ## The impact moment of a clip is in its name: `attack_at45` = at 45 % of the clip, `attack_f18` = at frame 18. Without one it is
 ## the middle (50 %). Both are editable afterwards: the "attack" key of the Events animation in the model scene.
+## Attack variants (F336): clips named `attack`, `attack2`, `attack3` (or `attack_a`, `attack_b`, `attack_c`; each with its own `_atNN`/`_fNN`
+## impact) become up to three melee swings, the slots 0, 1 and 2 of `melee_animations`. The rules pick the slot 0 or the slot 1 at random
+## for each swing; the slot 2 is the one against a target well below (a downward blow). Each swing plays its own clip.
+## The HUD icon (F335): `assets/custom/icons/<tag>.png` if it exists (yours, never overwritten); else one is drawn from the model (the idle
+## pose, the camera framing its box) with tools/bake/creature_icon_render.gd. Drawing needs a renderer: from a headless run it is skipped (a note
+## says so) and `Godot --path . --script res://tools/bake/creature_icon.gd -- <tag>` (with a window) makes it afterwards.
 ## Options: --name="Display name"  --god=<god tag>  --fps=<n> (default: the animation's own step, 30)  --force  --sync
+##          --icon (draw the icon again even if the PNG exists)  --no-icon (do not draw one)
 
 const TEMPLATE := "res://data/templates/creature.tres"
 const MODEL_DIR := "res://assets/custom/models/"
@@ -69,6 +76,9 @@ const FALLBACKS := {"shoot": ["attack"], "hover": ["fly"], "fly_death": ["death"
 ## The fallbacks of these roles only make sense for a body that flies.
 const FLIGHT_FALLBACKS: PackedStringArray = ["hover", "fly_death", "fly_damage"]
 
+## Role of each melee slot (CreatureType.melee_animations): the rules pick 0 or 1 at random, 2 is the downward blow.
+const ATTACK_ROLES: PackedStringArray = ["attack", "attack2", "attack3"]
+
 ## CreatureType dictionary -> roles it holds (the rules read these; the key is the role).
 const SETS := {
 	"stun_animations": ["knock", "get_up", "fly_damage"],
@@ -81,7 +91,10 @@ const SETS := {
 var _force := false
 var _sync := false
 var _fps_arg := 0
+var _icon := false
+var _no_icon := false
 var _job: Callable
+var _started := false
 
 
 func _initialize() -> void:
@@ -94,6 +107,10 @@ func _initialize() -> void:
 			_force = true
 		elif arg == "--sync":
 			_sync = true
+		elif arg == "--icon":
+			_icon = true
+		elif arg == "--no-icon":
+			_no_icon = true
 		elif arg.begins_with("--fps="):
 			_fps_arg = int(arg.get_slice("=", 1))
 		elif arg.begins_with("--name="):
@@ -117,9 +134,15 @@ func _initialize() -> void:
 
 
 func _process(_delta: float) -> bool:
-	if _job.is_valid():
-		quit(int(_job.call()))
-	return true
+	if _job.is_valid() and not _started:
+		_started = true
+		_run_job()
+	return false
+
+
+func _run_job() -> void:
+	var code: int = await _job.call()
+	quit(code)
 
 
 # --- create ------------------------------------------------------------------------------------------------------------
@@ -183,7 +206,8 @@ func _create(tag: String, glb_path: String, display: String, god: String) -> int
 	if wrote.has(type_path) and _fill_from_scene(tag) != OK:
 		return 1
 
-	_report(tag, clips, found, measure, wrote, kept, god)
+	var icon := await _make_icon(tag, str(roles["idle"]))
+	_report(tag, clips, found, measure, wrote, kept, god, icon)
 	return 0
 
 
@@ -218,10 +242,24 @@ func _roles(clips: Dictionary) -> Dictionary:
 			impacts[name] = clampf(float(info["impact_frame"]) / float(clips[name]["frames"]), 0.0, 1.0)
 	var roles := {}
 	var taken := {}
+	# The melee swings first: a variant (`attack2`) must not be taken for the plain `attack`.
+	var swings := {}
+	for name: String in clips:
+		var variant := int(parsed[name]["variant"])
+		if variant < 0:
+			continue
+		var rank := _score(parsed[name]["tokens"], parsed[name]["flat"], ["attack"])
+		if not swings.has(variant) or rank > swings[variant]["rank"]:
+			swings[variant] = {"name": name, "rank": rank}
+	for variant: int in swings:
+		roles[ATTACK_ROLES[variant]] = swings[variant]["name"]
+		taken[swings[variant]["name"]] = true
+	if not roles.has("attack") and not swings.is_empty():
+		roles["attack"] = roles[ATTACK_ROLES[swings.keys().min()]]  # only an `attack2`: it is the creature's attack
 	for rule: Array in RULES:
 		var role: String = rule[0]
 		var groups: Array = rule[1]
-		if groups.is_empty():
+		if groups.is_empty() or roles.has(role):
 			continue
 		var best := ""
 		var best_score := -1
@@ -249,7 +287,9 @@ func _roles(clips: Dictionary) -> Dictionary:
 	return {"roles": roles, "impacts": impacts, "unused": unused}
 
 
-## The lower-case name without its decorations: tokens, the flat (no separators) form and the impact if the name has one.
+## The lower-case name without its decorations: tokens, the flat (no separators) form, the impact if the name has one and, for a
+## melee clip, its `variant` (0 attack, 1 attack2, 2 attack3; -1 for any other clip). Tokens and flat are those of the name without the
+## variant suffix.
 func _parse(name: String) -> Dictionary:
 	var text := name.to_lower()
 	if text.contains("|"):
@@ -265,15 +305,45 @@ func _parse(name: String) -> Dictionary:
 		else:
 			impact = clampf(float(mark.get_string(2)) / 100.0, 0.0, 1.0)
 		text = text.substr(0, mark.get_start())
-	regex.compile("[_\\-\\. ]+\\d{1,3}$")
+	regex.compile("\\.\\d{3}$")
 	text = regex.sub(text, "")  # Blender's `.001`
+	var variant := -1
+	# `attack2`, `attack_3`, `attack_b`: the suffix tells which swing of the creature it is.
+	regex.compile("^(.*[a-z])[_\\-\\. ]*([123abc])$")
+	var suffix := regex.search(text)
+	if suffix != null:
+		var base := _tokens_of(suffix.get_string(1))
+		if _is_attack(base, "".join(base)):
+			variant = "1a2b3c".find(suffix.get_string(2)) >> 1
+			text = suffix.get_string(1)
+	regex.compile("[_\\-\\. ]+\\d{1,3}$")
+	text = regex.sub(text, "")  # a numbered copy (`idle_01`)
 	regex.compile("[_\\-\\. ]*loop$")
 	text = regex.sub(text, "")
+	var tokens := _tokens_of(text)
+	var flat := "".join(tokens)
+	if variant < 0 and _is_attack(tokens, flat):
+		variant = 0
+	return {"tokens": tokens, "flat": flat, "impact": impact, "impact_frame": impact_frame, "variant": variant}
+
+
+func _tokens_of(text: String) -> PackedStringArray:
 	var tokens := PackedStringArray()
+	var regex := RegEx.new()
 	regex.compile("[a-z]+|\\d+")
 	for found in regex.search_all(text):
 		tokens.append(found.get_string())
-	return {"tokens": tokens, "flat": "".join(tokens), "impact": impact, "impact_frame": impact_frame}
+	return tokens
+
+
+## A name that is a melee swing and nothing else (`fly_attack` or `death_attack` are not).
+func _is_attack(tokens: PackedStringArray, flat: String) -> bool:
+	if _score(tokens, flat, ["attack"]) < 0:
+		return false
+	for rule: Array in RULES:
+		if rule[0] != "attack" and not (rule[1] as Array).is_empty() and _score(tokens, flat, rule[1]) >= 0:
+			return false
+	return true
 
 
 ## -1: the clip is not this role's. Higher is a closer name: the name IS a word, then its first token is, then any token is.
@@ -448,11 +518,11 @@ func _machine(roles: Dictionary, clips: Dictionary) -> AnimationNodeStateMachine
 	return machine
 
 
-## One small animation per clip a role plays: a method track with ClipEvents.fire(kind) at the impact. attack -> "attack",
-## shoot -> "shoot", cast -> "cast". No mark in the name = the middle of the clip.
+## One small animation per clip a role plays: a method track with ClipEvents.fire(kind) at the impact. attack, attack2 and
+## attack3 -> "attack", shoot -> "shoot", cast -> "cast". No mark in the name = the middle of the clip.
 func _events_library(roles: Dictionary, clips: Dictionary, impacts: Dictionary) -> AnimationLibrary:
 	var library := AnimationLibrary.new()
-	for role in ["attack", "shoot", "cast"]:
+	for role in ["attack", "attack2", "attack3", "shoot", "cast"]:
 		if not roles.has(role):
 			continue
 		var tag: String = roles[role]
@@ -464,7 +534,7 @@ func _events_library(roles: Dictionary, clips: Dictionary, impacts: Dictionary) 
 		animation.loop_mode = Animation.LOOP_NONE
 		var track := animation.add_track(Animation.TYPE_METHOD)
 		animation.track_set_path(track, NodePath("ClipEvents"))
-		animation.track_insert_key(track, seconds * float(impacts.get(tag, DEFAULT_IMPACT)), {"method": &"fire", "args": [role]})
+		animation.track_insert_key(track, seconds * float(impacts.get(tag, DEFAULT_IMPACT)), {"method": &"fire", "args": ["attack" if role.begins_with("attack") else role]})
 		library.add_animation(StringName(tag), animation)
 	return library
 
@@ -478,6 +548,8 @@ func _sync_creature(tag: String) -> int:
 	var code := _fill_from_scene(tag)
 	if code == OK:
 		print("NEW_CREATURE synced %s: the clip facts of data/catalog/creatures/%s.tres follow scenes/bodies/models/%s.tscn" % [tag, tag, tag])
+		var type := ResourceLoader.load(CREATURES_DIR + tag + ".tres", "", ResourceLoader.CACHE_MODE_REPLACE) as CreatureType
+		print("NEW_CREATURE icon: %s" % await _make_icon(tag, str(type.idle_animation.get("tag", ""))))
 	return code
 
 
@@ -502,9 +574,15 @@ func _fill_from_scene(tag: String) -> int:
 	type.walk_animation = run
 	type.melee_animations = [] as Array[Dictionary]
 	if roles.has("attack"):
-		var attack := _clip(model, "attack")
-		attack["attack_ticks"] = [_impact_frame(model, "attack")]
-		type.melee_animations.append(attack)
+		# The slot 1 is the second of the random pair: without an `attack2` but with an `attack3`, it repeats the attack.
+		var slots: Array[String] = ["attack", "attack2" if roles.has("attack2") else ("attack" if roles.has("attack3") else "")]
+		if roles.has("attack3"):
+			slots.append("attack3")
+		for role in slots:
+			if not role.is_empty():
+				var swing := _clip(model, role)
+				swing["attack_ticks"] = [_impact_frame(model, role)]
+				type.melee_animations.append(swing)
 	type.shoot_animations = [] as Array[Dictionary]
 	if roles.has("shoot"):
 		var shoot := _clip(model, "shoot")
@@ -545,9 +623,18 @@ func _impact_frame(model: BodyModel, role: String) -> float:
 	return float(model.frames_of(tag)) * DEFAULT_IMPACT
 
 
+# --- icon ---------------------------------------------------------------------------------------------------------------
+
+## Draws assets/custom/icons/<tag>.png when it is missing (or `--icon`), keeps yours when it is there. Returns what happened.
+func _make_icon(tag: String, idle_clip: String) -> String:
+	if _no_icon:
+		return "skipped (--no-icon)"
+	return await CreatureIconRender.ensure(root, tag, idle_clip, _icon)
+
+
 # --- output ------------------------------------------------------------------------------------------------------------
 
-func _report(tag: String, clips: Dictionary, found: Dictionary, measure: Dictionary, wrote: PackedStringArray, kept: PackedStringArray, god: String) -> void:
+func _report(tag: String, clips: Dictionary, found: Dictionary, measure: Dictionary, wrote: PackedStringArray, kept: PackedStringArray, god: String, icon: String) -> void:
 	var roles: Dictionary = found["roles"]
 	var lines := PackedStringArray()
 	for role in BodyModel.ROLES:
@@ -567,6 +654,7 @@ func _report(tag: String, clips: Dictionary, found: Dictionary, measure: Diction
 	var box: AABB = measure["aabb"]
 	print("NEW_CREATURE size: height %.2f, box %.2f x %.2f" % [box.size.y, box.size.x, box.size.z])
 	print("NEW_CREATURE wrote: %s" % ", ".join(wrote))
+	print("NEW_CREATURE icon: %s" % icon)
 	if not kept.is_empty():
 		print("NEW_CREATURE kept (exist; --force rewrites them, --sync refreshes the clip facts only): %s" % ", ".join(kept))
 	print("NEW_CREATURE next: put data/catalog/creatures/%s.tres in the book of %s (data/gods/%s.tres > book > creatures, and a line in unlocks), then run the catalog validator." % [tag, god if not god.is_empty() else "a god", god if not god.is_empty() else "<god>"])

@@ -16,6 +16,9 @@ const HUD_DIR := OriginalAssets.UI_HUD_DIR
 const CURSOR_DIR := OriginalAssets.UI_CURSORS_DIR
 const XMENU_DIR := OriginalAssets.UI_XMENU_DIR
 
+## F335: the icons of the creatures of your own (tools/bake/new_creature.gd writes one from the model; a PNG put here wins).
+const CUSTOM_ICON_DIR := "res://assets/custom/icons/"
+
 static var icon_dir := ICON_DIR
 static var hud_dir := HUD_DIR
 static var cursor_dir := CURSOR_DIR
@@ -28,14 +31,31 @@ static var _xmenu: Dictionary = {}
 static var _scaled: Dictionary = {}
 
 
-## The CRE8/SPEL icon of `tag` (file name by `OriginalAssets.icon_file`) (a creature, spell or ability), or null.
+## The icon of `tag` (a creature, spell or ability), or null. A creature of your own: its `icon` field, else
+## assets/custom/icons/<tag>.png (F335); the original's CRE8/SPEL icon (file name by `OriginalAssets.icon_file`) otherwise.
 static func icon(tag: String) -> Texture2D:
 	if tag.is_empty():
 		return null
 	var key := icon_dir + tag
 	if not _icons.has(key):
-		_icons[key] = _load_png(icon_dir + OriginalAssets.icon_file(tag))
+		var found := _custom(tag)
+		_icons[key] = found if found != null else _load_png(icon_dir + OriginalAssets.icon_file(tag))
 	return _icons[key]
+
+
+## The icon a creature of your own brings, or null: `CreatureType.icon`, then assets/custom/icons/<tag>.png.
+static func _custom(tag: String) -> Texture2D:
+	var type := GameData.creature(tag)
+	if type != null and type.icon != null:
+		return type.icon
+	var path := CUSTOM_ICON_DIR + tag + ".png"
+	if ResourceLoader.exists(path):
+		return load(path) as Texture2D
+	# Written a moment ago by the tool and not imported yet: read the file itself.
+	if FileAccess.file_exists(path):
+		var image := Image.load_from_file(ProjectSettings.globalize_path(path))
+		return ImageTexture.create_from_image(image) if image != null and not image.is_empty() else null
+	return null
 
 
 ## A whole HUD sheet (`tabs`, `page`, `fram`, `spi2`), or null.

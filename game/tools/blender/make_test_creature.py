@@ -2,6 +2,7 @@
 
 Also the smallest example of what a model for `tools/bake/new_creature.gd` looks like: one armature, one skinned mesh and
 one ACTION per role, named after the role (idle, run, attack, death). `attack_at45` puts the impact at 45 % of the clip (`attack_f18`: at frame 18).
+A second swing is `attack2_at60` (50 frames, the impact at 60 % = frame 30); `attack3` would be the downward one.
 
 Run (from game/):
   /Applications/Blender.app/Contents/MacOS/Blender --background --python tools/blender/make_test_creature.py -- assets/custom/models/testmonster.glb
@@ -124,6 +125,12 @@ make_action("attack_at45", 40, {
     "spine": [(0, Z, Z), (12, (-25, 0, 0), Z), (18, (35, 0, 0), Z), (40, Z, Z)],
     "arm.L": [(0, Z, Z), (12, (80, 0, 0), Z), (18, (-70, 0, 0), Z), (40, Z, Z)],
     "arm.R": [(0, Z, Z), (12, (80, 0, 0), Z), (18, (-70, 0, 0), Z), (40, Z, Z)],
+})
+# The second swing: an overhead chop, longer, the impact at 60 % (frame 30).
+make_action("attack2_at60", 50, {
+    "spine": [(0, Z, Z), (20, (30, 0, 0), Z), (30, (-45, 0, 0), Z), (50, Z, Z)],
+    "arm.L": [(0, Z, Z), (20, (150, 0, 0), Z), (30, (10, 0, 0), Z), (50, Z, Z)],
+    "arm.R": [(0, Z, Z), (20, (150, 0, 0), Z), (30, (10, 0, 0), Z), (50, Z, Z)],
 })
 make_action("death", 36, {
     "hips": [(0, Z, (0, 0, 0)), (36, (-90, 0, 0), (0, 0.6, -0.6))],

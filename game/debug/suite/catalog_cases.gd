@@ -243,6 +243,23 @@ func _check_custom_model(creature: CreatureType) -> void:
 			_report("creatures/%s: the clip \"%s\" is not in %s.glb (run new_creature.gd --sync %s)" % [_file(creature), tag, creature.model, creature.model])
 	if creature.idle_animation.is_empty():
 		_report("creatures/%s: no idle_animation (a custom creature needs an idle clip)" % _file(creature))
+	# F336: the melee swings are the slots of melee_animations (attack, attack2, attack3 of the model); each lands on a frame of its clip.
+	if creature.melee_animations.size() > 3:
+		_report("creatures/%s: %d melee_animations, the rules use 3 at most (attack, attack2, attack3)" % [_file(creature), creature.melee_animations.size()])
+	for index in creature.melee_animations.size():
+		var swing: Dictionary = creature.melee_animations[index]
+		var frames := int(swing.get("frames", 0))
+		var ticks: Array = swing.get("attack_ticks", [])
+		if frames <= 0:
+			_report("creatures/%s: melee_animations[%d] has no clip (run new_creature.gd --sync %s)" % [_file(creature), index, creature.model])
+		elif ticks.is_empty():
+			_report("creatures/%s: melee_animations[%d] (%s) has no attack_ticks (the blow would land on the last frame)" % [_file(creature), index, swing.get("tag", "")])
+		else:
+			for tick in ticks:
+				if float(tick) < 0.0 or float(tick) > float(frames):
+					_report("creatures/%s: melee_animations[%d] (%s) lands on frame %s, the clip has %d" % [_file(creature), index, swing.get("tag", ""), tick, frames])
+	if creature.icon == null and not ResourceLoader.exists("res://assets/custom/icons/%s.png" % creature.model):
+		print("CATALOG warning: creatures/%s has no HUD icon (assets/custom/icons/%s.png or CreatureType.icon; new_creature.gd draws one with a window)" % [_file(creature), creature.model])
 	root.free()
 
 

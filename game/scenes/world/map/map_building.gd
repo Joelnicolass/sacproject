@@ -66,7 +66,7 @@ func _ready() -> void:
 	add_to_group(GROUP)
 	var record := bldg(tag)
 	if record.is_empty():
-		push_warning("MapBuilding: el BLDG «%s» no está en data/catalog/game_catalog.tres; relleno gris." % tag)
+		push_warning("MapBuilding: el BLDG «%s» no está en data/catalog/buildings/; relleno gris." % tag)
 	max_health = max_health_override if max_health_override > 0.0 else float(record.get("max_health", 0.0))
 	shelter = bool(record.get("shelter", false))
 	ground = bool(record.get("ground", false))

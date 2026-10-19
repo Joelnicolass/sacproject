@@ -3127,3 +3127,20 @@ Referencias de sacengine: `renderer.d:4459-4760` y `minimap.d`.
   - `quick` PASS.
   - Capturas de antes y después en `agent/out/f223/`.
 - **Fuera:** el parpadeo de alerta, los resaltados y la niebla.
+
+### F224 — El catálogo se lee de los `.tres` sueltos (RFC-040, corte 040a) — cerrado
+### F225 — Validador de contenido (RFC-040, corte 040b) — cerrado
+
+- **Una sola fuente de verdad:** `GameCatalog` recorre `data/catalog/{creatures,spells,wizards,abilities,buildings,body_sizes}/*.tres` y los ordena por tag. Se borró `game_catalog.tres` (346 KB, tenía los 599 tipos embebidos y por eso editar un archivo suelto no tenía efecto).
+- **Agregar contenido:** basta con soltar un `.tres` en la carpeta; no hay que registrarlo.
+- **Libros:** están en `data/catalog/books.tres` (`GodBooks`).
+- **`bake_catalog.gd`:** escribe solo los archivos sueltos y, sin `--force`, no pisa las ediciones.
+- **Prueba de aceptación** (`debug/catalog_edit_cases.tscn`): la vida de EHTH pasa de 2080 a 14425 en su `.tres`, el juego lee el valor nuevo y después se restaura.
+- **Validador** (`debug/catalog_cases.gd`):
+  - revisa referencias, tags duplicados, rangos, nombres de archivo y `BodySize`;
+  - un cambio de balance da PASS;
+  - un archivo roto da FAIL nombrando archivo y campo.
+- **Verificación:**
+  - `quick` PASS sin regrabar.
+  - `rules_suite` PASS.
+- **Conocido:** `tsg@`, una referencia colgante que ya estaba en los datos originales, queda en la lista permitida.

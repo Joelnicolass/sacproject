@@ -1,7 +1,7 @@
 extends Node
 
-## The game's types (creatures, spells, wizards, abilities, god books), read from data/catalog/game_catalog.tres
-## (RFC-036 036c). The types are shared Resources: read them, never write them. Edit them in the inspector.
+## The game's types (creatures, spells, wizards, abilities, god books), read from the files of data/catalog/
+## through GameCatalog (RFC-040). The types are shared Resources: read them, never write them. Edit the .tres in the inspector.
 
 const _CREATURE_TYPE := preload("res://scenes/data/creature_type.gd")
 const _SPELL_TYPE := preload("res://scenes/data/spell_type.gd")
@@ -22,16 +22,17 @@ func _ready() -> void:
 	reload()
 
 
-func reload() -> void:
+## Rebuilds the lookups from the catalog; `from_disk` rescans the folders and rereads the files first.
+func reload(from_disk := false) -> void:
 	_creatures.clear()
 	_spells.clear()
 	_abilities.clear()
 	_wizards.clear()
 	_wizards_by_tag.clear()
 	_books.clear()
-	var catalog := GameCatalog.shared()
-	if catalog == null or catalog.creatures.is_empty() or catalog.spells.is_empty() or catalog.wizards.is_empty() or catalog.books.is_empty():
-		print("GameData: falta %s. Corré tools/bake_catalog.gd." % GameCatalog.PATH)
+	var catalog := GameCatalog.shared(from_disk)
+	if catalog.creatures.is_empty() or catalog.spells.is_empty() or catalog.wizards.is_empty() or catalog.books.is_empty():
+		print("GameData: data/catalog/ está vacío o incompleto. Corré tools/bake_catalog.gd.")
 		return
 	for type in catalog.creatures:
 		_creatures[type.tag] = type

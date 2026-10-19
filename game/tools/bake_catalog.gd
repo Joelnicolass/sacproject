@@ -1,37 +1,38 @@
 extends SceneTree
 
-## One-time tool (RFC-036 036c): writes the game's catalog as .tres. From then on the .tres are the source of truth and
-## nothing reads creatures.json, spells.json, wizards.json, abilities.json, books.json, buildings.json or sizes.json at
-## runtime; those files are only this tool's input.
+## Seed tool (RFC-036 036c, RFC-040 040a): writes the game's catalog as one .tres per type. From then on those files are the
+## source of truth and the only thing the game reads: GameCatalog scans the folders, so there is no list to keep. The JSON
+## files (creatures.json, spells.json, wizards.json, abilities.json, books.json, buildings.json, sizes.json) are only this
+## tool's input.
 ##   data/catalog/creatures/<tag>.tres    CreatureType
 ##   data/catalog/spells/<tag>.tres       SpellType
 ##   data/catalog/wizards/<tag>.tres      WizardType
 ##   data/catalog/abilities/<tag>.tres    AbilityType
 ##   data/catalog/buildings/<tag>.tres    BuildingType
 ##   data/catalog/body_sizes/<tag>.tres   BodySize
-##   data/catalog/game_catalog.tres       GameCatalog: the lists (in the JSON order) and the books
-## The values are built by tools/catalog_builder.gd, the same code debug/catalog_cases.gd uses to prove the .tres say what
-## the JSON says. File names are the tags; two tags that differ only by case get a numeric suffix (macOS is case-insensitive).
-## Idempotent: it refuses to run when the catalog exists (the .tres may have been edited). --force overwrites.
+##   data/catalog/books.tres              GodBooks: the god -> creatures/spells mapping
+## The values are built by tools/catalog_builder.gd. File names are the tags; two tags that differ only by case get a
+## numeric suffix (macOS is case-insensitive). It never embeds types in another file.
+## Human edits are safe: without --force a file that already exists is left alone and only missing ones are written.
+## --force overwrites everything with the JSON values.
 ## "$GODOT" --headless --path game --script res://tools/bake_catalog.gd [-- --force]
 ## Import the project before (so the class names are registered) and again after (so the editor knows the new files).
 ## No autoloads here: everything is preloaded by path.
 
 const _BUILDER := preload("res://tools/catalog_builder.gd")
-const _CATALOG := preload("res://scenes/data/game_catalog.gd")
+const _GOD_BOOKS := preload("res://scenes/data/god_books.gd")
 
 const OUT_DIR := "res://data/catalog/"
-const CATALOG_PATH := OUT_DIR + "game_catalog.tres"
+const BOOKS_PATH := OUT_DIR + "books.tres"
 
+var _force := false
+var _written := 0
+var _kept := 0
 var _failures: Array[String] = []
 
 
 func _initialize() -> void:
-	var force := OS.get_cmdline_user_args().has("--force")
-	if FileAccess.file_exists(CATALOG_PATH) and not force:
-		print("bake_catalog: %s exists; the .tres may have been edited. Use -- --force to overwrite." % CATALOG_PATH)
-		quit(0)
-		return
+	_force = OS.get_cmdline_user_args().has("--force")
 	var dir := _BUILDER.DATA_DIR
 	var books := _BUILDER.read_json(dir + "books.json")
 	var creatures := _BUILDER.read_json(dir + "creatures.json")
@@ -45,45 +46,48 @@ func _initialize() -> void:
 		push_error("bake_catalog: missing or empty JSON under %s or %s." % [dir, _BUILDER.SIZES_PATH])
 		quit(1)
 		return
-	var catalog = _CATALOG.new()
 	var structures: Dictionary = _BUILDER.structure_tags(books)
 	var taken := {}
 	for tag in creatures:
-		catalog.creatures.append(_save(_BUILDER.make_creature(creatures[tag]), "creatures", tag, taken))
+		_save(_BUILDER.make_creature(creatures[tag]), "creatures", tag, taken)
 	for tag in spells:
-		catalog.spells.append(_save(_BUILDER.make_spell(spells[tag], structures.has(tag)), "spells", tag, taken))
+		_save(_BUILDER.make_spell(spells[tag], structures.has(tag)), "spells", tag, taken)
 	for tag in wizards:
-		catalog.wizards.append(_save(_BUILDER.make_wizard(wizards[tag]), "wizards", tag, taken))
+		_save(_BUILDER.make_wizard(wizards[tag]), "wizards", tag, taken)
 	for tag in abilities:
-		catalog.abilities.append(_save(_BUILDER.make_ability(abilities[tag]), "abilities", tag, taken))
+		_save(_BUILDER.make_ability(abilities[tag]), "abilities", tag, taken)
 	for tag in buildings:
-		catalog.buildings.append(_save(_BUILDER.make_building(tag, buildings[tag]), "buildings", tag, taken))
+		_save(_BUILDER.make_building(tag, buildings[tag]), "buildings", tag, taken)
 	for kind in ["bodies", "props"]:
 		var group: Dictionary = sizes.get(kind, {})
 		for tag in group:
-			catalog.body_sizes.append(_save(_BUILDER.make_body_size(tag, group[tag], kind == "props"), "body_sizes", tag, taken))
-	catalog.books = books
-	var status := ResourceSaver.save(catalog, CATALOG_PATH)
-	if status != OK:
-		_failures.append("%s (error %d)" % [CATALOG_PATH, status])
-	print("bake_catalog: creatures %d spells %d wizards %d abilities %d buildings %d body sizes %d" % [
-		catalog.creatures.size(), catalog.spells.size(), catalog.wizards.size(), catalog.abilities.size(),
-		catalog.buildings.size(), catalog.body_sizes.size()])
+			_save(_BUILDER.make_body_size(tag, group[tag], kind == "props"), "body_sizes", tag, taken)
+	var god_books = _GOD_BOOKS.new()
+	god_books.books = books
+	_save_to(god_books, BOOKS_PATH)
+	print("bake_catalog: wrote %d files, kept %d existing%s" % [_written, _kept, "" if _force else " (use -- --force to overwrite)"])
 	for failure in _failures:
 		push_error("bake_catalog: could not save " + failure)
 	print("bake_catalog: %s" % ("FAIL" if not _failures.is_empty() else "done"))
 	quit(1 if not _failures.is_empty() else 0)
 
 
-## Saves `type` as data/catalog/<folder>/<tag>.tres and returns it, now backed by that file (so the catalog references it).
-func _save(type: Resource, folder: String, tag: String, taken: Dictionary) -> Resource:
+## Saves `type` as data/catalog/<folder>/<tag>.tres.
+func _save(type: Resource, folder: String, tag: String, taken: Dictionary) -> void:
 	var directory := OUT_DIR + folder + "/"
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(directory))
-	var path := directory + _file_name(tag, folder, taken) + ".tres"
-	var status := ResourceSaver.save(type, path, ResourceSaver.FLAG_CHANGE_PATH)
+	_save_to(type, directory + _file_name(tag, folder, taken) + ".tres")
+
+
+func _save_to(resource: Resource, path: String) -> void:
+	if FileAccess.file_exists(path) and not _force:
+		_kept += 1
+		return
+	var status := ResourceSaver.save(resource, path)
 	if status != OK:
 		_failures.append("%s (error %d)" % [path, status])
-	return type
+	else:
+		_written += 1
 
 
 ## The tag as a file name; a case-insensitive repeat inside the same folder gets _2, _3…

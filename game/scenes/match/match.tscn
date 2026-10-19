@@ -58,6 +58,9 @@
 [ext_resource type="Script" path="res://scenes/audio/command_voice.gd" id="a052_command_voice"]
 [ext_resource type="Script" path="res://scenes/audio/advisor_voice.gd" id="a052_advisor"]
 [ext_resource type="Script" path="res://scenes/audio/advisor_watch.gd" id="a052_advisor_watch"]
+[ext_resource type="Script" path="res://scenes/audio/combat_gauge.gd" id="a052_gauge"]
+[ext_resource type="PackedScene" path="res://scenes/audio/music_director.tscn" id="a052_music"]
+[ext_resource type="PackedScene" path="res://scenes/audio/ambience_director.tscn" id="a052_ambience"]
 
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
@@ -403,3 +406,17 @@ command_log = NodePath("../Hud/Battle")
 script = ExtResource("a052_advisor_watch")
 advisor = NodePath("..")
 world = NodePath("../..")
+
+[node name="CombatGauge" type="Node" parent="." node_paths=PackedStringArray("world")]
+editor_description = "RFC-052 052f: la intensidad del combate cerca del oyente (criaturas en ATTACK/SHOOT a menos de radius_m) con histéresis, más el daño al mago local en los últimos wizard_damage_s. Solo lee estado replicado."
+script = ExtResource("a052_gauge")
+world = NodePath("..")
+
+[node name="MusicDirector" parent="." node_paths=PackedStringArray("biome", "gauge", "match_state", "camera") instance=ExtResource("a052_music")]
+biome = NodePath("../MatchBiome")
+gauge = NodePath("../CombatGauge")
+match_state = NodePath("../Match")
+camera = NodePath("../Camera")
+
+[node name="AmbienceDirector" parent="." node_paths=PackedStringArray("biome") instance=ExtResource("a052_ambience")]
+biome = NodePath("../MatchBiome")

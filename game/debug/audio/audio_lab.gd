@@ -17,6 +17,12 @@ extends Node3D
 ## `order` emits Orders.requested for it as OrderCommand's request does, `refuse` says a Refusal key on the CommandLog
 ## (AdvisorVoice), `hit` takes a tenth of a building's Health and `ritual` starts a Desecrate on the local altar or ends it
 ## completed (AdvisorWatch). An advisor line is looked up as emitter = its code, event `advice`.
+## 052f: the music. A CombatGauge (on the wizard, short hold), a MusicDirector (music/james) and a MatchState (no
+## DefeatRule: the death steps must not end the match). `battle` pins the gauge, `ritual convert`/`desecrate`/`complete`
+## start and end a ritual next to the camera, `result won` ends the match, `god` changes the set; the wizard's `damaged`
+## keeps the battle on. A music entry is emitter `music`, event = the mood (MusicMood).
+## 052g: the ambience (AmbienceDirector, ambience/james): `bed`, `ambient`, `god`, and `wait` with `from_wait` (a one-shot
+## of the set's interval). An ambience entry is emitter `ambience`, event `bed` or `ambient`.
 
 const SCRIPT_FLAG := "audio-script"
 const NO_ORIGINAL_FLAG := "audio-no-original"
@@ -35,6 +41,11 @@ const IF_SET := 2
 @export var command_voice: CommandVoice
 @export var advisor: AdvisorVoice
 @export var advisor_watch: AdvisorWatch
+@export_group("Music and ambience (052f, 052g)")
+@export var music: MusicDirector
+@export var ambience: AmbienceDirector
+@export var gauge: CombatGauge
+@export var match_state: MatchState
 @export_group("")
 ## Real seconds (game time would stretch under --fixed-fps).
 @export var timeout_s := 20.0
@@ -82,6 +93,11 @@ func _start() -> void:
 	## The emitters resolved their cues on entering the tree, with the default roots.
 	for node in find_children("*", "SoundEmitter3D", true, false):
 		(node as SoundEmitter3D).restart()
+	## So did the directors (052f, 052g).
+	if music != null:
+		music.use_set(music.set_path)
+	if ambience != null:
+		ambience.use_set(ambience.set_path)
 	SoundBus.reseed(5200)
 	SoundBus.sound_log.clear()
 	print("AUDIO_LAB %s: %d pasos, raíces %s" % [_lab.get("cut"), _lab.get("steps").size(), roots])
@@ -119,11 +135,12 @@ func _run_step() -> void:
 	var step: Resource = _lab.get("steps")[_next]
 	_next += 1
 	var wait_s := float(step.get("wait_s"))
+	var before := SoundBus.sound_log.entries().size()
 	if wait_s > 0.0:
 		var until := BodySounds.game_seconds() + wait_s
 		while BodySounds.game_seconds() < until:
 			await get_tree().physics_frame
-	var body := get_node_or_null(step.get("target") as NodePath) as Node3D
+	var body := get_node_or_null(step.get("target") as NodePath)
 	var event := StringName(step.get("event"))
 	var action := StringName(step.get("action"))
 	var arg := str(step.get("arg"))
@@ -134,12 +151,15 @@ func _run_step() -> void:
 		return
 	var expect := int(step.get("expect"))
 	if expect == IF_SET:
-		expect = PLAYED if expected_cue is SoundCue else SILENT
+		expect = PLAYED if expected_cue is SoundCue or expected_cue is AudioStream else SILENT
 	var emitter := StringName(step.get("emitter"))
 	if emitter.is_empty():
 		emitter = StringName(body.name)
-	var before := SoundBus.sound_log.entries().size()
+	if not bool(step.get("from_wait")):
+		before = SoundBus.sound_log.entries().size()
 	var acted := _act(body, action, arg)
+	if music != null and action in [&"ritual", &"result", &"damaged"]:
+		music.look()
 	for _i in settle_frames:
 		await get_tree().process_frame
 	_free_spawned()
@@ -154,9 +174,13 @@ func _run_step() -> void:
 
 
 ## The cue the step's emitter has for `event` now (a SoundCue), null when it has none, false when the target cannot do it.
-func _expected_cue(body: Node3D, action: StringName, arg: String, event: StringName, emitter: StringName = &"") -> Variant:
+func _expected_cue(body: Node, action: StringName, arg: String, event: StringName, emitter: StringName = &"") -> Variant:
 	if body == null:
 		return false
+	if emitter == MusicDirector.EMITTER:
+		return _music_expected(action, arg, event)
+	if emitter == AmbienceDirector.EMITTER:
+		return _ambience_expected(action, arg, event)
 	if event == SoundEvent.ADVICE:
 		if advisor == null:
 			return false
@@ -181,24 +205,88 @@ func _expected_cue(body: Node3D, action: StringName, arg: String, event: StringN
 	return sounds.cue_for(event) if sounds != null else false
 
 
+## 052f: a track of the mood `event` in the set the director has (or will have after `god`), null when it has none.
+func _music_expected(action: StringName, arg: String, event: StringName) -> Variant:
+	if music == null:
+		return false
+	var music_set := music.music_set
+	if action == &"god":
+		music_set = music.resolve("music/%s" % arg)
+	if music_set == null:
+		return null
+	var tracks := music_set.tracks(event)
+	return tracks[0] if not tracks.is_empty() else null
+
+
+## 052g: the bed cue (bed, god) or a one-shot cue (ambient, wait) the director has, null when it has none.
+func _ambience_expected(action: StringName, arg: String, event: StringName) -> Variant:
+	if ambience == null:
+		return false
+	if event == SoundEvent.BED:
+		var ambience_set := ambience.ambience_set
+		if action == &"god":
+			ambience_set = SoundLibrary.find("ambience/%s" % arg) as AmbienceSet
+		var bed := ambience_set.bed if ambience_set != null else null
+		return bed if bed != null and not bed.is_silent() else null
+	var cues := AmbienceDirector.one_shot_cues(ambience.ambience_set)
+	return cues[0] if not cues.is_empty() else null
+
+
 ## Drives the replicated state the *Sounds child listens to, as a client would receive it; the FX actions call FxBus as
 ## a peer does when a broadcast arrives.
-func _act(body: Node3D, action: StringName, arg := "") -> bool:
+func _act(body: Node, action: StringName, arg := "") -> bool:
+	## Where an FX or a projectile goes: the target's position (a director has none).
+	var spot := (body as Node3D).global_position if body is Node3D else Vector3.ZERO
 	match action:
+		&"music":
+			if body != music:
+				return false
+			if arg == "restart":
+				music.restart()
+			else:
+				music.look()
+			return true
+		&"battle":
+			if gauge == null:
+				return false
+			gauge.force(float(arg) if arg.is_valid_float() else 1.0)
+			return true
+		&"result":
+			return _result(arg)
+		&"god":
+			if body == music:
+				music.use_god(StringName(arg))
+				return true
+			if body == ambience:
+				ambience.use_god(StringName(arg))
+				return true
+			return false
+		&"bed":
+			if body != ambience:
+				return false
+			ambience.restart_bed()
+			return true
+		&"ambient":
+			if body != ambience:
+				return false
+			ambience.play_one_shot()
+			return true
+		&"wait":
+			return true
 		&"fx":
-			FxBus.play(arg, body.global_position + Vector3.UP)
+			FxBus.play(arg, spot + Vector3.UP)
 			return true
 		&"puff":
-			FxBus.play_puff(arg, body.global_position + Vector3.UP)
+			FxBus.play_puff(arg, spot + Vector3.UP)
 			return true
 		&"beam":
-			FxBus.play_beam(arg, body.global_position + Vector3.UP * 4.0, body.global_position)
+			FxBus.play_beam(arg, spot + Vector3.UP * 4.0, spot)
 			return true
 		&"scene":
-			FxBus.play_scene(arg, body.global_position, {})
+			FxBus.play_scene(arg, spot, {})
 			return true
 		&"spawn":
-			return _spawn(body, arg)
+			return body is Node3D and _spawn(body as Node3D, arg)
 		&"loop":
 			for emitter in _emitters_of(body):
 				emitter.restart()
@@ -298,12 +386,16 @@ func _ritual(arg: String) -> bool:
 	if advisor_watch == null:
 		return false
 	match arg:
-		"desecrate":
+		"desecrate", "convert":
 			var ritual := Ritual.new()
 			ritual.name = "LabRitual"
 			ritual.process_mode = Node.PROCESS_MODE_DISABLED
-			ritual.kind = Ritual.Kind.DESECRATE
-			ritual.target_slot = MpKit.local_slot()
+			if arg == "desecrate":
+				ritual.kind = Ritual.Kind.DESECRATE
+				ritual.target_slot = MpKit.local_slot()
+			else:
+				ritual.kind = Ritual.Kind.CONVERT
+				ritual.target_slot = MpKit.local_slot() + 1
 			ritual.caster_slot = MpKit.local_slot()
 			add_child(ritual)
 			ritual.phase = Ritual.Phase.SETUP
@@ -312,9 +404,21 @@ func _ritual(arg: String) -> bool:
 			if ritual == null:
 				return false
 			ritual.outcome = Ritual.Outcome.COMPLETED
+			advisor_watch.scan()
+			## Its name is free for the next ritual of the script (052f starts more than one).
+			ritual.name = "LabRitualDone"
+			return true
 		_:
 			return false
 	advisor_watch.scan()
+	return true
+
+
+## 052f: `won` ends the lab's MatchState with the local side as the winner (once: a match has one result).
+func _result(arg: String) -> bool:
+	if match_state == null or arg != "won":
+		return false
+	match_state.end_match(MpKit.local_slot())
 	return true
 
 

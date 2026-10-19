@@ -47,6 +47,10 @@ lab lab_052d res://debug/audio/lab_052d.tres
 lab lab_052d_no_original res://debug/audio/lab_052d.tres --audio-no-original
 lab lab_052e res://debug/audio/lab_052e.tres
 lab lab_052e_no_original res://debug/audio/lab_052e.tres --audio-no-original
+lab lab_052f res://debug/audio/lab_052f.tres
+lab lab_052f_no_original res://debug/audio/lab_052f.tres --audio-no-original
+lab lab_052g res://debug/audio/lab_052g.tres
+lab lab_052g_no_original res://debug/audio/lab_052g.tres --audio-no-original
 echo "logs: $OUT"
 if [ "$FAIL" = 0 ]; then echo "AUDIO RUN PASS"; else echo "AUDIO RUN FAIL"; fi
 exit $FAIL

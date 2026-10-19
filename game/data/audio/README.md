@@ -20,6 +20,8 @@ Si un set nombra un archivo que no está (por ejemplo, un clon sin el audio del 
 | `advisor.tres` | los avisos del consejero, bus `Voice` | set `advi` |
 | `ui.tres` | clics de menú, volver, menú X, subir de nivel | set `ifac` |
 | `fx_sounds.tres` | `FxSoundMap`: nombre de FX de `FxBus` → cue, y las claves de los `SoundEmitter3D` | a mano (052d), sobre los `SAMP` del original |
+| `music/<dios>.tres`, `music/common.tres`, `music/menu.tres` | `MusicSet`: `calm` del dios (`<dios>_normal`) con `fallback` a `common` (battle 1-5, sacrifice 1, sacrifice victory/losing, victory y defeat theme); el menú toca `menu` y guarda God Realm en `extras` | a mano (052f), sobre los MP3 |
+| `ambience/<dios>.tres` | `AmbienceSet`: fondo en bucle y códigos `A*` de `spel` | a mano (052g) |
 | `custom/<tipo>/<tag>.tres` | los tuyos | `assets/custom/sounds/<tipo>/<tag>/` |
 
 `<archivo>` es el nombre del `.tres` de esa criatura en `data/catalog/` (`EHTH` → `EHTH_2`, porque macOS ve `EHTH` y `ehtH` como el mismo archivo) o el tag si el catálogo no la tiene. Los nombres de set con mayúsculas se escriben con `_` + minúscula (`Hfae` → `_hfae`).
@@ -116,3 +118,17 @@ Solo se importan el inglés y las voces que nombra algún set de escaramuza. La 
 | `sacc` | sacrificio completo | termina completo un ritual que lanzaste | 1 | 2 s |
 
 Sin evento todavía (no hay uno que encaje limpio): `slaw` (el ejército masacrado), `ewiz` (un mago enemigo se acerca a tu altar), `sawe` (enemigo a la vista), `gib!` (caen los enemigos), `mhor` y `mlth` (sin manahoars, sin manalitos), `audi` (alguien pide audiencia), `mana` (otra toma de `lowm`). Los rechazos `casting`, `occupied`, `no_altar`, `no_fount`, `far_from_building`, `no_ground`, `nobody`, `no_wizard`, `no_ability`, `not_implemented` y `creature_limit` no dicen nada.
+
+## Música y ambiente (052f, 052g)
+
+Los MP3 que suenan en bucle (`<dios>_normal`, `battle_*`, `sacrifice_*`, `menu`, `god_realm`) tienen `loop=true` en su `.import`; `victory_theme` y `defeat_theme` suenan una vez. `music_mood_cases` (`original_loops`) lo verifica.
+
+| Dios | Sueltos (`A*` de `spel`) | Fondo en bucle |
+|---|---|---|
+| `james` | `AjaN`, `AjaU` | — |
+| `persephone` | `ApeC` | — |
+| `pyro` | `Avul` | `pyro/lava` |
+| `stratos` | `AstU`, `Astr` | `ambi/rain` |
+| `charnel` | `AchC`, `AchN`, `AchU` | `ambi/rain` |
+
+El original no trae un fondo por dios; los fondos son `SAMP` que ningún set usa como suelto (`rain`, `lava`), porque un WAV con `loop_mode=2` tocado como suelto no terminaría nunca. Para otro fondo, poné un `bed` en `custom/ambience/<dios>.tres` con un WAV propio en bucle.

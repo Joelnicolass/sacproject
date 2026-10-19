@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://bootsacrifice01"]
+[gd_scene load_steps=13 format=3 uid="uid://bootsacrifice01"]
 
 [ext_resource type="Script" path="res://scenes/core/boot.gd" id="1_boot"]
 [ext_resource type="PackedScene" path="res://scenes/ui/character_select/character_select.tscn" id="2_select"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://scenes/ui/map_picker/map_picker.gd" id="8_map_picker"]
 [ext_resource type="Script" path="res://scenes/ui/mode_picker/mode_picker.gd" id="9_mode_picker"]
 [ext_resource type="Script" path="res://scenes/ui/ai_picker/ai_god_picker.gd" id="10_god_picker"]
+[ext_resource type="PackedScene" path="res://scenes/audio/music_director.tscn" id="11_music"]
 
 [node name="Boot" type="Control"]
 layout_mode = 3
@@ -136,3 +137,9 @@ unique_name_in_owner = true
 [node name="GraphicsApplier" type="Node" parent="."]
 script = ExtResource("5_applier")
 prefs = ExtResource("6_prefs")
+
+[node name="MusicDirector" parent="." instance=ExtResource("11_music")]
+editor_description = "RFC-052 052f: la música del menú (data/audio/music/menu.tres), siempre en calma. Sin audio no crea nada."
+set_path = "music/menu"
+fallback_path = ""
+menu = true

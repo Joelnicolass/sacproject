@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="MusicSet" format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/music_set.gd" id="1_set"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/music/james_normal.mp3" id="2_m"]
+[ext_resource type="Resource" path="res://data/audio/music/common.tres" id="3_fb"]
+
+[resource]
+script = ExtResource("1_set")
+calm = Array[AudioStream]([ExtResource("2_m")])
+fallback = ExtResource("3_fb")

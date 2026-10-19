@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/music_director.gd" id="1_director"]
+
+[node name="MusicDirector" type="Node"]
+editor_description = "RFC-052 052f: la música. Dos reproductores con fundido cruzado (bus Music); el humor lo decide MusicMood con CombatGauge (gauge), MatchState (match_state) y los rituales. El set sale de set_path o del dios de biome (MatchBiome). Sin audio (dedicado, headless) no crea nada."
+script = ExtResource("1_director")

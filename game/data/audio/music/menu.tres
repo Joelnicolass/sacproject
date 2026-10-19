@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="MusicSet" format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/music_set.gd" id="1_set"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/music/menu.mp3" id="2_m"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/music/god_realm.mp3" id="3_m"]
+
+[resource]
+script = ExtResource("1_set")
+calm = Array[AudioStream]([ExtResource("2_m")])
+extras = Array[AudioStream]([ExtResource("3_m")])

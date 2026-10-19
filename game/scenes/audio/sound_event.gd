@@ -32,10 +32,14 @@ const CLICK := &"click"
 const SACRIFICE_ROUND := &"sacrifice_round"
 const SACRIFICE_END := &"sacrifice_end"
 const SOUL := &"soul"
+# Ambience (052g): the god's bed loop and a one-shot around the listener (emitter `ambience`). The music logs its mood
+# (MusicMood: calm, battle...) as the event, emitter `music` (052f).
+const BED := &"bed"
+const AMBIENT := &"ambient"
 
 const ALL: Array[StringName] = [
 	SELECTED, ACK, ATTACK_ACK, ANNOYED, SWING, SHOOT, DAMAGED, DEATH, SUMMON, INCANTATION, GHOST, FOOT,
-	CAST, FX, LOOP, ADVICE, CLICK, SACRIFICE_ROUND, SACRIFICE_END, SOUL,
+	CAST, FX, LOOP, ADVICE, CLICK, SACRIFICE_ROUND, SACRIFICE_END, SOUL, BED, AMBIENT,
 ]
 
 ## The original's SSET type codes that have an event (data/audio/README.md has the table). tools/bake/bake_sound_sets.gd

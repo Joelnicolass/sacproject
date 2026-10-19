@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/ambience_director.gd" id="1_director"]
+
+[node name="AmbienceDirector" type="Node"]
+editor_description = "RFC-052 052g: el ambiente del dios. Fondo en bucle (bus Ambience) y sueltos 3D al azar alrededor del oyente (los códigos A* del set spel). El set sale de set_path o del dios de biome (MatchBiome). Sin audio (dedicado, headless) no crea nada."
+script = ExtResource("1_director")

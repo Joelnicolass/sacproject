@@ -10,7 +10,11 @@ extends Node
 ## once a second until one is heard: the server answers with a Refusal key (bad_target) through the feedback RPC every cast
 ## already has, CommandLog says it and AdvisorVoice speaks (`invl`). The advisor's set is the original's, else the fixture
 ## of debug/audio/fixtures/voices/ (searched last).
-## Flags: --e2e-name, --mp-port (the kit), --audio-events=summon,swing,damaged,death,fx,advice (each needs a played entry of a
+## 052f: `battle` (optional: not in the default events, so it never fails the run; `AUDIO_NET todos` shows it) counts the
+## music's mood: the duel next to the local wizard puts its CombatGauge (match.tscn) over `enter`
+## from the replicated modes, and its MusicDirector logs emitter `music`, event `battle`. The music sets are the original's,
+## else the fixture's common set (debug/audio/fixtures/music/, searched last).
+## Flags: --e2e-name, --mp-port (the kit), --audio-events=summon,swing,damaged,death,fx,advice[,battle] (each needs a played entry of a
 ## creature, fx of an FX, advice of the advisor),
 ## --e2e-timeout-s=N (real seconds, 60 by default), --e2e-linger-s=N (real seconds to keep running after MpKit.leave(); 0 by default).
 ## Prints `AUDIO_NET <event> <count>` and `AUDIO_NET PASS|FAIL`; exit 0 / 1. Like dedicated_client, the main scene starts a twin
@@ -21,6 +25,7 @@ const RUNNER_META := "audio_net_client_runner"
 const FIXTURE_ROOT := "res://debug/audio/fixtures/lab/"
 const EMPTY_ROOT := "res://debug/audio/fixtures/empty/"
 const VOICES_ROOT := "res://debug/audio/fixtures/voices/"
+const MUSIC_ROOT := "res://debug/audio/fixtures/music/"
 ## A spell tag no spellbook has: the server refuses it (Refusal.BAD_TARGET).
 const REFUSED_TAG := "zzzz"
 
@@ -51,6 +56,7 @@ func _run() -> void:
 	else:
 		roots.append_array(SoundLibrary.DEFAULT_ROOTS)
 	roots.append(VOICES_ROOT)
+	roots.append(MUSIC_ROOT)
 	SoundLibrary.roots = roots
 	SoundLibrary.clear_cache()
 	var wanted := MpBoot.user_value("audio-events", "summon,swing,damaged,death,fx,advice").split(",", false)

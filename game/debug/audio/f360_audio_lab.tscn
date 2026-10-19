@@ -14,6 +14,11 @@
 [ext_resource type="Script" path="res://scenes/audio/command_voice.gd" id="12_command_voice"]
 [ext_resource type="Script" path="res://scenes/audio/advisor_voice.gd" id="13_advisor"]
 [ext_resource type="Script" path="res://scenes/audio/advisor_watch.gd" id="14_watch"]
+[ext_resource type="Script" path="res://scenes/match/match_state.gd" id="15_match"]
+[ext_resource type="Resource" path="res://data/match_rules.tres" id="16_rules"]
+[ext_resource type="Script" path="res://scenes/audio/combat_gauge.gd" id="17_gauge"]
+[ext_resource type="PackedScene" path="res://scenes/audio/music_director.tscn" id="18_music"]
+[ext_resource type="PackedScene" path="res://scenes/audio/ambience_director.tscn" id="19_ambience"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(40, 1, 40)
@@ -24,8 +29,8 @@ size = Vector2(40, 40)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
 albedo_color = Color(0.32, 0.3, 0.26, 1)
 
-[node name="AudioLab" type="Node3D" node_paths=PackedStringArray("label", "selection", "orders", "command_log", "command_voice", "advisor", "advisor_watch")]
-editor_description = "RFC-052 (F360+). Laboratorio de audio: dos criaturas (una con set del original, nmuh; una propia, testmonster), un mago y el oyente en una cámara fija. Los cuerpos están quietos; el lab mueve su estado replicado y los hijos *Sounds suenan. F6 y la acción debug_audio_event (J) recorre los pasos del lab_<corte>.tres. Desde 052d también un manantial (Fountain) y un altar (Altar) con sus bucles, y los pasos de FX (FxBus), proyectiles y bucles del lab_052d.tres. Desde 052e, las voces del jugador: Selection, Orders y CommandLog de laboratorio, CommandVoice, AdvisorVoice con su AdvisorWatch y un edificio propio (Building); pasos del lab_052e.tres. Sin ventana: --headless -- --audio-probe --audio-script[=res://debug/audio/lab_052c.tres] [--audio-no-original]."
+[node name="AudioLab" type="Node3D" node_paths=PackedStringArray("label", "selection", "orders", "command_log", "command_voice", "advisor", "advisor_watch", "music", "ambience", "gauge", "match_state")]
+editor_description = "RFC-052 (F360+). Laboratorio de audio: dos criaturas (una con set del original, nmuh; una propia, testmonster), un mago y el oyente en una cámara fija. Los cuerpos están quietos; el lab mueve su estado replicado y los hijos *Sounds suenan. F6 y la acción debug_audio_event (J) recorre los pasos del lab_<corte>.tres. Desde 052d también un manantial (Fountain) y un altar (Altar) con sus bucles, y los pasos de FX (FxBus), proyectiles y bucles del lab_052d.tres. Desde 052e, las voces del jugador: Selection, Orders y CommandLog de laboratorio, CommandVoice, AdvisorVoice con su AdvisorWatch y un edificio propio (Building); pasos del lab_052e.tres. Desde 052f, la música: CombatGauge sobre el mago (hold corto), MusicDirector (music/james) y un MatchState sin DefeatRule; pasos del lab_052f.tres. Desde 052g, el ambiente: AmbienceDirector (ambience/james); pasos del lab_052g.tres. Sin ventana: --headless -- --audio-probe --audio-script[=res://debug/audio/lab_052c.tres] [--audio-no-original]."
 script = ExtResource("1_lab")
 label = NodePath("Overlay/LastEvent")
 selection = NodePath("Selection")
@@ -34,6 +39,10 @@ command_log = NodePath("Battle")
 command_voice = NodePath("CommandVoice")
 advisor = NodePath("AdvisorVoice")
 advisor_watch = NodePath("AdvisorVoice/AdvisorWatch")
+music = NodePath("MusicDirector")
+ambience = NodePath("AmbienceDirector")
+gauge = NodePath("CombatGauge")
+match_state = NodePath("Match")
 
 [node name="Camera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.94, 0.34, 0, -0.34, 0.94, 0, 3.5, 9)
@@ -112,6 +121,27 @@ command_log = NodePath("../Battle")
 script = ExtResource("14_watch")
 advisor = NodePath("..")
 wizard = NodePath("../../Wizard")
+
+[node name="Match" type="Node" parent="." node_paths=PackedStringArray("world")]
+process_mode = 4
+editor_description = "MatchState sin DefeatRule: el paso result won termina la partida; las muertes del lab no."
+script = ExtResource("15_match")
+rules = ExtResource("16_rules")
+world = NodePath("..")
+
+[node name="CombatGauge" type="Node" parent="." node_paths=PackedStringArray("wizard")]
+script = ExtResource("17_gauge")
+wizard = NodePath("../Wizard")
+hold_s = 0.5
+
+[node name="MusicDirector" parent="." node_paths=PackedStringArray("gauge", "match_state", "camera") instance=ExtResource("18_music")]
+set_path = "music/james"
+gauge = NodePath("../CombatGauge")
+match_state = NodePath("../Match")
+camera = NodePath("../Camera")
+
+[node name="AmbienceDirector" parent="." instance=ExtResource("19_ambience")]
+set_path = "ambience/james"
 
 [node name="Overlay" type="CanvasLayer" parent="."]
 

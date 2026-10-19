@@ -22,6 +22,8 @@ extends Node
 ## - `listener`: the node the player hears from (ListenerFocus sets it); emitters measure their range from it.
 ## RFC-052 052e (F364): `play_on` plays a cue on a voice channel's own player (CommandVoice, AdvisorVoice); the channel
 ## decides what cuts what, the bus only draws the variant, configures and logs.
+## RFC-052 052f (F365): `log_played` and `adopt_channel` for a player that picks its own stream (MusicDirector draws the
+## battle track with its own generator and crossfades two players): the entry goes to the log and stop_all stops it.
 
 const PREFS_PATH := AudioPrefs.SHARED_PATH
 ## SoundLibrary path of the FX sound table (data/audio/fx_sounds.tres, data/audio/custom/fx_sounds.tres).
@@ -167,6 +169,23 @@ func play_on(player: AudioStreamPlayer, cue: SoundCue, emitter: StringName = &""
 	_last_play[cue] = _clock
 	sound_log.add(emitter, event, stream, true)
 	return true
+
+
+## A stream a player of the caller's started on its own (MusicDirector): a played entry only.
+func log_played(emitter: StringName, event: StringName, stream: AudioStream) -> void:
+	if _started:
+		sound_log.add(emitter, event, stream, true)
+
+
+## A player of the caller's that stop_all() (and shutdown()) stops too.
+func adopt_channel(player: AudioStreamPlayer) -> void:
+	if _started and player != null and not _channels.has(player):
+		_channels.append(player)
+
+
+## False before start (gate closed) and after shutdown(): nothing may start playing.
+func can_play() -> bool:
+	return _started and not _closed
 
 
 ## A request a voice channel turned down before it reached a player (queue full, a repeated line): a log entry only.

@@ -1,7 +1,8 @@
 extends Node
 
 ## RFC-051 (F330+): a creature of the user's own, made from a Blender .glb with tools/bake/new_creature.gd, plays a whole life in a
-## match. `testmonster` (assets/custom/models/testmonster.glb, made by tools/blender/make_test_creature.py) is in the book of Pyro.
+## match. `testmonster` (assets/custom/models/testmonster.glb, made by tools/blender/make_test_creature.py) is NOT in any real book:
+## this test adds it to the in-memory book of Pyro before the wizard reads it (the file data/gods/pyro.tres stays as it is).
 ##   1. the wizard summons it from the book;
 ##   2. it walks to a MOVE order (the rules read its run speed, no clip data needed);
 ##   3. it attacks a dummy: the blow lands at the impact the glb's name carries (`attack_at45` = 45 % of 40 frames = 0.6 s),
@@ -58,12 +59,21 @@ func _mine() -> UnitBody:
 	return null
 
 
+## The test creature goes into the in-memory book of GOD (the resource is shared by the process; the process ends with the test).
+func _add_to_book() -> void:
+	var creature := GameData.creature(TAG)
+	var god := GameData.god(GOD)
+	if creature != null and god != null and god.book != null and not god.book.creatures.has(creature):
+		god.book.creatures.append(creature)
+
+
 func _run() -> void:
 	await _frames(30)
 	var wizard := _wizard()
 	if wizard == null:
 		_fail("no wizard in slot %d" % SLOT)
 		return
+	_add_to_book()
 	wizard.set("god", GOD)
 	await _frames(2)
 	var caster = wizard.get_node("Caster")

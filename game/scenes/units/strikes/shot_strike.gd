@@ -13,7 +13,7 @@ extends Node3D
 ## Same names as RangedShot, so a ShotImpact reads either: damage, from_slot, velocity, ability, target_path,
 ## shooter_path.
 
-const _ROCK := preload("res://scenes/world/spells/rock_projectile.gd")
+const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 const _MELEE := preload("res://scenes/units/attacks/melee_attack.gd")
 
 ## Already scaled by the shooter (attack_factor).

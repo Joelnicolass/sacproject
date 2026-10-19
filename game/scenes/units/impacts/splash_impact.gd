@@ -14,8 +14,8 @@ extends ShotImpact
 ## match's friendly fire, the shooter included if it stands in the radius (state.d:9077).
 
 const _HEALTH := preload("res://scenes/components/health.gd")
-const _SPLASH := preload("res://scenes/world/spells/splash_damage.gd")
-const _ROCK := preload("res://scenes/world/spells/rock_projectile.gd")
+const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
+const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
 enum RadiusSource { DAMAGE_RANGE, EFFECT_RANGE }
 

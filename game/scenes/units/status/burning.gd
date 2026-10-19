@@ -19,7 +19,7 @@ extends DamageOverTime
 ## physics tick and frees itself when DamageOverTime.step() says it is over. Server (or solo) only: BurnImpact makes it
 ## there; the look goes through FxBus.
 
-const _ROCK := preload("res://scenes/world/spells/rock_projectile.gd")
+const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
 ## Mana drained per update (sacengine manaDrainPerFrame).
 var mana_drain_per_tick := 0.0

@@ -4,7 +4,7 @@ extends RefCounted
 ## No physics frames: the checks call the action and the Caster directly.
 ## `run(host)` builds a wizard and stubs under `host` and removes them when it ends.
 
-const WIZARD_SCENE := preload("res://scenes/world/wizard/wizard_body.tscn")
+const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
 const GOD := "james"
 ## Tabs of the Structures tab with no action yet: none (Desecrate has one since RFC-020c, Convert since RFC-020e, Guardian since RFC-021b, Teleport since RFC-021c).
 const WITHOUT_ACTION: Array[String] = []

@@ -3,7 +3,7 @@ extends RefCounted
 ## RFC-020b cases of rules_suite: the Sac Doctor measured in simulated physics frames, not computed.
 ## `run(host)` adds its own floor and bodies under `host` and removes them when it ends.
 
-const DOCTOR_SCENE := preload("res://scenes/world/sacrifice/doctor.tscn")
+const DOCTOR_SCENE := preload("res://scenes/sacrifice/doctor.tscn")
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
 const RULES := preload("res://data/match_rules.tres")
 ## Direct spells of Caster (kcor Rock, oalf Wrath, brif Fireball, ntil Lightning, mrws Swarm).

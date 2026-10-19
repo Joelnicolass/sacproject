@@ -5,7 +5,7 @@ extends Node3D
 ##   godot --path game --max-fps 60 --resolution 1280x720 res://debug/rig023d/rig023d_cast.tscn -- --out=/abs/dir [--wizard=cwa0] [--fx=cast_james]
 ## Steps: rest pose, casting (standing) three times 0.4 s apart, casting (walking), rest again.
 
-const WIZARD := preload("res://scenes/world/wizard/wizard_body.tscn")
+const WIZARD := preload("res://scenes/wizards/wizard_body.tscn")
 
 var _out := ""
 var _tag := "cwa0"

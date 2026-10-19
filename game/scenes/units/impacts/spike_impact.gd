@@ -17,8 +17,8 @@ extends ShotImpact
 ## dealRangedDamage applies its own friendly-fire rule there too (state.d:8961).
 
 const _HEALTH := preload("res://scenes/components/health.gd")
-const _SPLASH := preload("res://scenes/world/spells/splash_damage.gd")
-const _ROCK := preload("res://scenes/world/spells/rock_projectile.gd")
+const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
+const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
 @export var wave_scene: PackedScene
 

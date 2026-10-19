@@ -7,11 +7,11 @@ extends RefCounted
 ## them when it ends. No network: the server paths run as solo.
 
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
-const DOCTOR_SCENE := preload("res://scenes/world/sacrifice/doctor.tscn")
-const SYSTEM_SCENE := preload("res://scenes/world/sacrifice/sacrifice_system.tscn")
-const SOUL_SYSTEM_SCENE := preload("res://scenes/world/souls/soul_system.tscn")
+const DOCTOR_SCENE := preload("res://scenes/sacrifice/doctor.tscn")
+const SYSTEM_SCENE := preload("res://scenes/sacrifice/sacrifice_system.tscn")
+const SOUL_SYSTEM_SCENE := preload("res://scenes/souls/soul_system.tscn")
 const ALTAR_SCENE := preload("res://scenes/world/props/altar.tscn")
-const WIZARD_SCENE := preload("res://scenes/world/wizard/wizard_body.tscn")
+const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
 const RULES := preload("res://data/match_rules.tres")
 const GOD := "james"
 ## Frames a scenario may take before it counts as stuck (60 per simulated second).

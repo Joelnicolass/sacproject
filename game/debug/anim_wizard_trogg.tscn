@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://debug/anim_wizard_trogg.gd" id="1_debug"]
-[ext_resource type="PackedScene" path="res://scenes/world/wizard/wizard_body.tscn" id="2_wizard"]
+[ext_resource type="PackedScene" path="res://scenes/wizards/wizard_body.tscn" id="2_wizard"]
 [ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="3_unit"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ground"]

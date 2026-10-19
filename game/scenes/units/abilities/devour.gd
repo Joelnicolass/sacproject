@@ -11,7 +11,7 @@ extends AbilityEffect
 ## its own), NORMAL or EMERGING (devourSoul), within the length of the eater's box measured in 2D (useAbilityDistance 12474,
 ## moveWithinRange2D 12526-12529). Declared: the creature does not walk closer or turn (sacengine does); out of range is refused.
 
-const _HEAL := preload("res://scenes/world/spells/heal_effect.gd")
+const _HEAL := preload("res://scenes/spells/heal_effect.gd")
 
 ## Multiplies the length of the box (|(2·reach, height, 2·reach)| of the body's melee_profile).
 @export var reach_factor := 1.0

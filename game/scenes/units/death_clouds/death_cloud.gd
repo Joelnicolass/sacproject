@@ -7,7 +7,7 @@ extends Node3D
 ## on the bodies around the dead one's center, plays its puff through FxBus (clients see it there) and frees itself.
 ## Server (or solo) only. The variants override _affect(); the numbers come from the SPEL of `ability`.
 
-const _SPLASH := preload("res://scenes/world/spells/splash_damage.gd")
+const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 
 ## Bodies a cloud may touch: creatures and wizards (sacengine movingObjects). SteamCloud also hits buildings itself.
 const GROUPS: Array[StringName] = [&"wizard", &"unit"]

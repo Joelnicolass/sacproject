@@ -3,7 +3,7 @@ extends RefCounted
 ## RFC-020d cases of rules_suite: the ring of doctors, the numbers of the ritual (SacrificeMath) and the
 ## wizard under ritual (GhostForm). `run(host)` adds its own bodies under `host` and removes them.
 
-const WIZARD_SCENE := preload("res://scenes/world/wizard/wizard_body.tscn")
+const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
 const ALTAR_SCENE := preload("res://scenes/world/props/altar.tscn")
 const RULES := preload("res://data/match_rules.tres")
 const GOD := "james"

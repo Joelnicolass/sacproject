@@ -5,7 +5,7 @@ extends Node3D
 ## Prints the role of both rigs at every shot. One PNG per moment.
 
 const UNIT := preload("res://scenes/units/unit.tscn")
-const DOCTOR := preload("res://scenes/world/sacrifice/doctor.tscn")
+const DOCTOR := preload("res://scenes/sacrifice/doctor.tscn")
 
 var _out := ""
 var _doctor: DoctorBody

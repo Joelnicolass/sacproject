@@ -85,9 +85,9 @@ Autoridad: decisión del usuario (este pedido) > PRD > FEATURES > RULES > VISUAL
 | `scenes/look/grass/grass_field.gd` | 740 | 48 | 6 | pasto (diferido al final por decisión del usuario) |
 | `scenes/units/unit_body.gd` | 720 | 69 | 29 | física, setup de 15 componentes por `$X.call("setup")` (l. 208-222, 469-491), modo replicado `enum Mode` (l. 30) **además** de los 11 `FsmState` |
 | `scenes/world/ai/perception/ai_perception.gd` | 701 | 47 | 8 | percepción de la IA (regla; queda) |
-| `scenes/world/spells/caster.gd` | 647 | 45 | 40 | validación, cobro, 7 hechizos fijos, spawn de efectos |
-| `scenes/world/wizard/wizard_body.gd` | 547 | 45 | 39 | — |
-| `scenes/world/sacrifice/sacrifice_system.gd` | 489 | 34 | 2 | (bien: `@tool` y warnings) |
+| `scenes/spells/caster.gd` | 647 | 45 | 40 | validación, cobro, 7 hechizos fijos, spawn de efectos |
+| `scenes/wizards/wizard_body.gd` | 547 | 45 | 39 | — |
+| `scenes/sacrifice/sacrifice_system.gd` | 489 | 34 | 2 | (bien: `@tool` y warnings) |
 
 - **Cadenas en lugar de tipos:** `.call("is_dead")` ×32, `"is_targetable"` ×17, `"setup"` ×15, `"facing_flat"` ×15 y `"display_name"` ×15. `caster.gd:91-116` hace `spellbook.call("spell_at", index)` porque `spellbook.gd` no tiene `class_name` y el socket es `@export var spellbook: Node`. GDScript 4.7 admite referencias cíclicas entre `class_name`, así que ya no hay motivo técnico.
 - **Service locator por grupos:** hay 36 `get_first_node_in_group` con texto suelto (`"spell_spawner"` ×4 en `caster.gd:497-566`, `"shot_spawner"` ×7 en abilities, `"match_state"`). No hay constantes para los nombres de grupo.

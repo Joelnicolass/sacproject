@@ -19,7 +19,7 @@ extends ShotInFlight
 ## nobody; sacengine takes a body whose box holds the point.
 
 const _HEALTH := preload("res://scenes/components/health.gd")
-const _SPLASH := preload("res://scenes/world/spells/splash_damage.gd")
+const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 
 ## sacengine final*ProjectileSize: the radius at the end of the range (m). Silverback and Spitfire 7,5, Gargoyle 6.

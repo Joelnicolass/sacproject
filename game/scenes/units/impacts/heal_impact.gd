@@ -7,8 +7,8 @@ extends ShotImpact
 ## building either. heal() with the infinite amount of slba (sacspell.d:211): maxHealth at 240/s, satAdd (10443-10458),
 ## the same rule as the Healing Shower (HealEffect.heal_full).
 
-const _SPLASH := preload("res://scenes/world/spells/splash_damage.gd")
-const _HEAL := preload("res://scenes/world/spells/heal_effect.gd")
+const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
+const _HEAL := preload("res://scenes/spells/heal_effect.gd")
 
 ## sacengine movingObjects: creatures and wizards.
 @export var groups: Array[StringName] = [&"wizard", &"unit"]

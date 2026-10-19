@@ -471,8 +471,8 @@ func _territory() -> Dictionary:
 
 ## The carrier doctor has a PathFollower; the doctor of the ritual ring does not (it stands inside what the navmesh blocks).
 func _doctor_wiring() -> Dictionary:
-	var carrier := preload("res://scenes/world/sacrifice/carrier_doctor.tscn").instantiate()
-	var ring := preload("res://scenes/world/sacrifice/ritual_doctor.tscn").instantiate()
+	var carrier := preload("res://scenes/sacrifice/carrier_doctor.tscn").instantiate()
+	var ring := preload("res://scenes/sacrifice/ritual_doctor.tscn").instantiate()
 	var checks := {
 		"carrier_has_follower": carrier.get_node_or_null("PathFollower") != null,
 		"ring_has_none": ring.get_node_or_null("PathFollower") == null,

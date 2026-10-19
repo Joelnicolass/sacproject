@@ -21,7 +21,7 @@ extends Node3D
 ## `spike_life_s` (shorter than sacengine's 2/3 s, so one ring stands at a time).
 
 const _HEALTH := preload("res://scenes/components/health.gd")
-const _SPLASH := preload("res://scenes/world/spells/splash_damage.gd")
+const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 
 ## sacengine damageFrames (15−1, 30−1, 45−1, 60−1, 90−1).
 @export var damage_frames: PackedInt32Array = PackedInt32Array([14, 29, 44, 59, 89])

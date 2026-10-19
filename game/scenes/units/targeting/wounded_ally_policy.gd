@@ -7,7 +7,7 @@ extends TargetPolicy
 ## it never picks a foe. Under an order it keeps the foe it was told to attack, as any creature (attack, 12849-12855).
 ## A wounded ally stays a valid target until its bar is full, then the body drops it and stops shooting.
 
-const _HEAL := preload("res://scenes/world/spells/heal_effect.gd")
+const _HEAL := preload("res://scenes/spells/heal_effect.gd")
 
 ## Groups of the bodies it may heal: sacengine movingObjects (wizards and creatures).
 @export var groups: Array[StringName] = [&"wizard", &"unit"]

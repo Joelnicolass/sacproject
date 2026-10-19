@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="BuildingType" format=3]
 
-[ext_resource type="Script" path="res://scenes/data/building_type.gd" id="1_qgrgf"]
+[ext_resource type="Script" path="res://scenes/structures/building_type.gd" id="1_qgrgf"]
 
 [resource]
 script = ExtResource("1_qgrgf")

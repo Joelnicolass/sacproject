@@ -6,7 +6,7 @@ extends Control
 ## viewer's color. What lies beyond the circle shows as an arrow at the edge only for your things and for wizards.
 ## Presentation only: the fog of war does not exist in the port, so everything shows.
 
-const STRUCTURE_BODY := preload("res://scenes/world/structures/structure_body.gd")
+const STRUCTURE_BODY := preload("res://scenes/structures/structure_body.gd")
 
 @export var minimap: Minimap
 

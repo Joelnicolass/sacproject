@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="WalkStep" load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://scenes/world/walk_step.gd" id="1_step"]
-
-[resource]
-script = ExtResource("1_step")
-plane_distance = 5.25
-frame_count = 49
-ticks_per_second = 60.0

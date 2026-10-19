@@ -2,7 +2,7 @@ extends Node3D
 
 const ALTAR_SCENE := preload("res://scenes/world/props/altar.tscn")
 const MANA_SCENE := preload("res://scenes/world/props/manafount.tscn")
-const WIZARD_SCENE := preload("res://scenes/world/wizard/wizard_body.tscn")
+const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
 const MATCH_RULES := preload("res://data/match_rules.tres")
 const DIRECT_SPELL := &"direct_spell"

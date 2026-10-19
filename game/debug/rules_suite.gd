@@ -1,7 +1,7 @@
 extends Node3D
 
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
-const STRUCTURE_SCENE := preload("res://scenes/world/structures/structure.tscn")
+const STRUCTURE_SCENE := preload("res://scenes/structures/structure.tscn")
 const RULES := preload("res://data/match_rules.tres")
 const DOCTOR_CASES := preload("res://debug/doctor_cases.gd")  # 020b
 const MATCH_CASES := preload("res://debug/match_cases.gd")  # 020a

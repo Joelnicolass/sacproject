@@ -7,8 +7,8 @@ extends ShotImpact
 ## direct target, which is 0 here, 9075-9089). The walk is SplashDamage's; each body's Afflictions/Stunned decides.
 ## Wizards too (F138, RFC-030i-c: wizard_body.tscn has Afflictions/Stunned). A body with no Stunned is named in the log.
 
-const _SPLASH := preload("res://scenes/world/spells/splash_damage.gd")
-const _ROCK := preload("res://scenes/world/spells/rock_projectile.gd")
+const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
+const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
 ## sacengine stunCooldownFrames = 8·updateFPS.
 @export var cooldown_ticks := 480

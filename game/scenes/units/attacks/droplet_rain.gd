@@ -16,7 +16,7 @@ extends Node3D
 ## it is added: one shape query per drop per tick, no ray.
 
 const _HEALTH := preload("res://scenes/components/health.gd")
-const _ROCK := preload("res://scenes/world/spells/rock_projectile.gd")
+const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 const GROUP := &"droplet_rain"
 
 ## Bodies (creatures, wizards, structures) the drop can touch.

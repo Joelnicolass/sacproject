@@ -11,7 +11,7 @@ extends ShotImpact
 ## Not here (declared): igniteBuilding (no building catches fire) and DamageMod.ignite (030r).
 ## F162b: a fire of no damage now reaches a building too (it ends on its first update, as updateFire does).
 
-const _SPLASH := preload("res://scenes/world/spells/splash_damage.gd")
+const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 
 enum Amount { SHOT, NONE }
 enum Lifetime { ABILITY_DURATION, FIXED }

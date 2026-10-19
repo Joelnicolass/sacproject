@@ -6,7 +6,7 @@
 [ext_resource type="Script" path="res://scenes/world/props/altar.gd" id="4_altar"]
 [ext_resource type="Script" path="res://scenes/world/props/ritual_site.gd" id="5_site"]
 [ext_resource type="Script" path="res://scenes/world/props/altar_collapse.gd" id="6_collapse"]
-[ext_resource type="Script" path="res://scenes/world/guardian/guard_post.gd" id="7_post"]
+[ext_resource type="Script" path="res://scenes/spells/guardian/guard_post.gd" id="7_post"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_base"]
 height = 3.2

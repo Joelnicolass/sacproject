@@ -1,0 +1,18 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/sacrifice/red_vortex.gd" id="1_vortex"]
+[ext_resource type="Resource" path="res://data/fx/red_vortex.tres" id="2_effect"]
+[ext_resource type="PackedScene" path="res://scenes/fx/portal_disc.tscn" id="3_disc"]
+[ext_resource type="Resource" path="res://data/fx/portal_red.tres" id="4_look"]
+
+[node name="RedVortex" type="Node3D" node_paths=PackedStringArray("disc")]
+script = ExtResource("1_vortex")
+disc = NodePath("Disc")
+effect = ExtResource("2_effect")
+
+[node name="Disc" parent="." instance=ExtResource("3_disc")]
+look = ExtResource("4_look")
+radius = Vector2(2.5, 2.5)
+open_s = 2.0
+close_s = 1.0
+free_when_closed = true

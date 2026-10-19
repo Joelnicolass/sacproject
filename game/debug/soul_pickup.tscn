@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://highnoonworld01" path="res://scenes/match/high_noon.tscn" id="1_world"]
 [ext_resource type="Resource" path="res://debug/rules/soul_pickup.tres" id="2_rules"]
-[ext_resource type="PackedScene" path="res://scenes/world/souls/soul.tscn" id="3_soul"]
+[ext_resource type="PackedScene" path="res://scenes/souls/soul.tscn" id="3_soul"]
 
 [node name="SoulPickup" type="Node"]
 

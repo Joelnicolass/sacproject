@@ -18,7 +18,7 @@ extends Node
 @export var creature_brain: CreatureBrain
 @export var profile: AiProfile
 
-const CASTER := preload("res://scenes/world/spells/caster.gd")
+const CASTER := preload("res://scenes/spells/caster.gd")
 
 var rng := AiRand.new()
 var eval: AiSpellEval

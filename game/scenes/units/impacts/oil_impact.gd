@@ -7,7 +7,7 @@ extends ShotImpact
 ## the oil: this node only asks it to start. The shot itself bursts on any creature but its shooter or on the ground (ShotLook.hits_every_side).
 ## Look: the shot's impact_fx (oil_splash). Not here (declared): the scar on the ground (25604 TODO).
 
-const _SPLASH := preload("res://scenes/world/spells/splash_damage.gd")
+const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 
 ## The groups of bodies that can be oiled (canBeOiled: creatures and wizards; a building cannot).
 @export var groups: Array[StringName] = [&"wizard", &"unit"]

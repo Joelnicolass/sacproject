@@ -20,7 +20,7 @@ extends Node3D
 ## life (the look has its own): the node is freed after it strikes; the scar and the sound are not here.
 
 
-const _ROCK := preload("res://scenes/world/spells/rock_projectile.gd")
+const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
 ## Ticks from the order to the damage (Lightning.travelDelay).
 @export var travel_ticks := 12

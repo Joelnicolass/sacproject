@@ -108,7 +108,7 @@ func _is_foe(target: Node3D) -> bool:
 		return false
 	if int(target.get("owner_slot")) == int(user.get("owner_slot")):
 		return false
-	return preload("res://scenes/world/spells/rock_projectile.gd").is_live_body(target)
+	return preload("res://scenes/spells/rock_projectile.gd").is_live_body(target)
 
 
 func _accuracy() -> float:

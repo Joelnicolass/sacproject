@@ -6,7 +6,7 @@ extends ShotImpact
 ## as a child, so an impact scene can push or spin a vortex and still hit. A building takes it too; the ground nothing.
 
 const _HEALTH := preload("res://scenes/components/health.gd")
-const _ROCK := preload("res://scenes/world/spells/rock_projectile.gd")
+const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
 
 func _affect(shot: Node3D, target: Node3D, _point: Vector3, _ability: AbilityType) -> void:

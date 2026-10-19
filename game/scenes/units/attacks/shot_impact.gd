@@ -61,11 +61,11 @@ static func land(holder: Node3D, look: ShotLook, target: Node3D, point: Vector3,
 		else:
 			node.free()
 			push_warning("ShotImpact.land: el impacto de %s no es un ShotImpact." % holder.name)
-	elif hit and preload("res://scenes/world/spells/rock_projectile.gd").is_live_body(hit):
+	elif hit and preload("res://scenes/spells/rock_projectile.gd").is_live_body(hit):
 		## Local preloads: the variants (SplashImpact, DirectImpact, …) already name theirs _HEALTH and _ROCK.
 		var direct_ranged: StringName = preload("res://scenes/components/health.gd").DIRECT_RANGED
 		taken = float(hit.get_node("Health").call("damage_typed", float(holder.get("damage")), direct_ranged, int(holder.get("from_slot")), false, false, mods_of(holder)))
-		preload("res://scenes/world/spells/rock_projectile.gd").report(hit, taken, direct_ranged)  ## F155: the bench reads this line
+		preload("res://scenes/spells/rock_projectile.gd").report(hit, taken, direct_ranged)  ## F155: the bench reads this line
 		LifeDrain.feed(shooter_of(holder), hit, taken)  ## F164
 	for fx in look.impact_fx:
 		FxBus.broadcast(fx, point)

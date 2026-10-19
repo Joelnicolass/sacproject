@@ -7,7 +7,7 @@ extends DeathCloud
 ## A body already full is skipped (canHeal); one already healing adds the frames (satAdd, state.d:10455).
 ## Sirocco (risH) has tum@ too.
 
-const _HEAL := preload("res://scenes/world/spells/heal_effect.gd")
+const _HEAL := preload("res://scenes/spells/heal_effect.gd")
 
 
 func _affect(center: Vector3) -> void:

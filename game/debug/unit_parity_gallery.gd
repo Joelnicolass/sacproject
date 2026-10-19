@@ -1,8 +1,8 @@
 extends Node3D
 
-const WIZARD_SCENE := preload("res://scenes/world/wizard/wizard_body.tscn")
+const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
-const STRUCTURE_SCENE := preload("res://scenes/world/structures/structure.tscn")
+const STRUCTURE_SCENE := preload("res://scenes/structures/structure.tscn")
 const RULES := preload("res://data/match_rules.tres")
 
 @export var wizard_tags: PackedStringArray = ["cwa0", "cwa1", "cwa2", "cwa3", "cwa4", "cwa5"]

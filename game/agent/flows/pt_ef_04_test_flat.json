@@ -1,0 +1,42 @@
+{
+  "scene": "res://scenes/match/match.tscn",
+  "wait_first": 2.0,
+  "steps": [
+    {
+      "wait": 3.0
+    },
+    {
+      "print": {
+        "node": "/root/HighNoon/Map",
+        "prop": "scene_file_path"
+      }
+    },
+    {
+      "print": {
+        "node": "%Wizards/Wizard1",
+        "prop": "global_position"
+      }
+    },
+    {
+      "shot": "pt_ef_04_a_test_flat_start.png"
+    },
+    {
+      "wait": 20.0
+    },
+    {
+      "shot": "pt_ef_04_b_test_flat_t20.png"
+    },
+    {
+      "wait": 20.0
+    },
+    {
+      "shot": "pt_ef_04_c_test_flat_t40.png"
+    },
+    {
+      "wait": 20.0
+    },
+    {
+      "shot": "pt_ef_04_d_test_flat_t60.png"
+    }
+  ]
+}

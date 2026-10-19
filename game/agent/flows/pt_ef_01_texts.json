@@ -1,0 +1,159 @@
+{
+  "scene": "res://scenes/core/boot.tscn",
+  "wait_first": 1.0,
+  "steps": [
+    {
+      "shot": "pt_ef_01_a_char_select.png"
+    },
+    {
+      "print": {
+        "node": "%Choice",
+        "prop": "text"
+      }
+    },
+    {
+      "print": {
+        "node": "%Book",
+        "prop": "text"
+      }
+    },
+    {
+      "print": {
+        "node": "%WizardName",
+        "prop": "text"
+      }
+    },
+    {
+      "print": {
+        "node": "%WizardStats",
+        "prop": "text"
+      }
+    },
+    {
+      "print": {
+        "node": "%Play",
+        "prop": "text"
+      }
+    },
+    {
+      "click": "%Wizard_cwa1"
+    },
+    {
+      "click": "%God_persephone"
+    },
+    {
+      "wait": 0.4
+    },
+    {
+      "print": {
+        "node": "%WizardName",
+        "prop": "text"
+      }
+    },
+    {
+      "print": {
+        "node": "%WizardStats",
+        "prop": "text"
+      }
+    },
+    {
+      "print": {
+        "node": "%Book",
+        "prop": "text"
+      }
+    },
+    {
+      "shot": "pt_ef_01_b_char_selected.png"
+    },
+    {
+      "click": "%Play"
+    },
+    {
+      "print": {
+        "node": "%Choice",
+        "prop": "text"
+      }
+    },
+    {
+      "print": {
+        "node": "%Solo",
+        "prop": "text"
+      }
+    },
+    {
+      "print": {
+        "node": "%VsAi",
+        "prop": "text"
+      }
+    },
+    {
+      "print": {
+        "node": "%Online",
+        "prop": "text"
+      }
+    },
+    {
+      "print": {
+        "node": "%LocalServer",
+        "prop": "text"
+      }
+    },
+    {
+      "print": {
+        "node": "%Join",
+        "prop": "text"
+      }
+    },
+    {
+      "print": {
+        "node": "%Back",
+        "prop": "text"
+      }
+    },
+    {
+      "print": {
+        "node": "%Options",
+        "prop": "text"
+      }
+    },
+    {
+      "shot": "pt_ef_01_c_main_menu.png"
+    },
+    {
+      "click": "%Options"
+    },
+    {
+      "wait": 0.6
+    },
+    {
+      "print": {
+        "node": "%RulesNote",
+        "prop": "text"
+      }
+    },
+    {
+      "print": {
+        "node": "%HudValue",
+        "prop": "text"
+      }
+    },
+    {
+      "shot": "pt_ef_01_d_options_graphics.png"
+    },
+    {
+      "click": "%CloseOptions"
+    },
+    {
+      "shot": "pt_ef_01_e_back_main_menu.png"
+    },
+    {
+      "click": "%Online"
+    },
+    {
+      "wait": 2.0
+    },
+    {
+      "shot": "pt_ef_01_f_lobby_or_online.png"
+    }
+  ]
+}

@@ -1,0 +1,139 @@
+{
+  "scene": "res://scenes/core/boot.tscn",
+  "wait_first": 1.0,
+  "steps": [
+    {
+      "click": "%Wizard_cwa1"
+    },
+    {
+      "wait": 0.5
+    },
+    {
+      "click": "%God_persephone"
+    },
+    {
+      "wait": 0.4
+    },
+    {
+      "click": "%Play"
+    },
+    {
+      "wait": 0.4
+    },
+    {
+      "click": "%VsAi"
+    },
+    {
+      "wait_until": {
+        "node": "%Stats",
+        "text_contains": "Vida",
+        "timeout": 20
+      }
+    },
+    {
+      "wait": 1.5
+    },
+    {
+      "print": {
+        "node": "%Stats",
+        "prop": "text"
+      }
+    },
+    {
+      "shot": "pt_ef_02_a_match_start_hud.png"
+    },
+    {
+      "press": "creature_1"
+    },
+    {
+      "wait": 1.0
+    },
+    {
+      "print": {
+        "node": "%Stats",
+        "prop": "text"
+      }
+    },
+    {
+      "shot": "pt_ef_02_b_after_creature1.png"
+    },
+    {
+      "wait": 3.0
+    },
+    {
+      "press": "spell_3"
+    },
+    {
+      "wait": 0.2
+    },
+    {
+      "print": {
+        "node": "%Battle",
+        "prop": "text"
+      }
+    },
+    {
+      "press": "select"
+    },
+    {
+      "wait": 0.3
+    },
+    {
+      "print": {
+        "node": "%Battle",
+        "prop": "text"
+      }
+    },
+    {
+      "shot": "pt_ef_02_c_spell_cast.png"
+    },
+    {
+      "wait": 25.0
+    },
+    {
+      "print": {
+        "node": "%Stats",
+        "prop": "text"
+      }
+    },
+    {
+      "shot": "pt_ef_02_d_t30.png"
+    },
+    {
+      "wait": 30.0
+    },
+    {
+      "print": {
+        "node": "%Stats",
+        "prop": "text"
+      }
+    },
+    {
+      "shot": "pt_ef_02_e_t60.png"
+    },
+    {
+      "wait": 30.0
+    },
+    {
+      "print": {
+        "node": "%Stats",
+        "prop": "text"
+      }
+    },
+    {
+      "shot": "pt_ef_02_f_t90.png"
+    },
+    {
+      "wait": 30.0
+    },
+    {
+      "print": {
+        "node": "%Stats",
+        "prop": "text"
+      }
+    },
+    {
+      "shot": "pt_ef_02_g_t120.png"
+    }
+  ]
+}

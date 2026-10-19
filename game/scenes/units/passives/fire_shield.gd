@@ -13,7 +13,6 @@ extends Node
 ## on the burned body every `fire_every_ticks`); the shield ticks only on a carrier (the node sleeps on the rest).
 
 
-static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 const GROUPS: Array[StringName] = [&"unit", &"wizard"]
 
 ## The Phoenix. Empty = the parent.
@@ -75,7 +74,7 @@ func _physics_process(_delta: float) -> void:
 	var fire := GameData.spell(spell)
 	if fire == null:
 		return
-	var per_tick := float(fire.damage) / TICKS
+	var per_tick := float(fire.damage) / MatchClock.TICKS_PER_SECOND_F
 	var mine := _scaled_box()
 	var burned := false
 	for group in GROUPS:

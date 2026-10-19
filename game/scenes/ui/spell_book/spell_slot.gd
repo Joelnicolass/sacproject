@@ -1,3 +1,4 @@
+class_name SpellSlot
 extends Button
 
 ## One page of the book, as sacengine renderSpellbook draws it (renderer.d:4912-4975): the tab's

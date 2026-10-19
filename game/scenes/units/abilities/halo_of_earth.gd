@@ -27,7 +27,6 @@ extends Node3D
 ## same tick (the swap of 19311-19313); buildings without Health do not stop a rock.
 
 
-static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 
 ## SPEL of the ability when HaloOfEarthAbility does not hand one over (a scene run alone).
 @export var spell_tag := "HRba"
@@ -191,7 +190,7 @@ func _update(rock: Rock, center: Vector3) -> bool:
 		var seen := _target_center(rock)
 		var distance := seen - rock.position
 		rock.velocity = _cap(rock.velocity + distance.normalized() * ability.acceleration, distance)
-		rock.position += rock.velocity / TICKS
+		rock.position += rock.velocity / MatchClock.TICKS_PER_SECOND_F
 		if distance.length() < arrive_distance:
 			_explode(rock, rock.target, "llegada")
 			return false
@@ -223,7 +222,7 @@ func _orbit(rock: Rock, center: Vector3) -> void:
 		rock.from_tangent = rock.to_tangent
 		rock.to_point = _in_ball(orbit_radius)
 		rock.to_tangent = _direction() * orbit_tangent
-	rock.progress += orbit_speed / TICKS
+	rock.progress += orbit_speed / MatchClock.TICKS_PER_SECOND_F
 	rock.position = _hermite(rock.from_point, rock.from_tangent, rock.to_point, rock.to_tangent, rock.progress) + center
 
 
@@ -253,8 +252,8 @@ func _direction() -> Vector3:
 func _cap(velocity: Vector3, distance: Vector3) -> Vector3:
 	if velocity.length() > ability.speed:
 		velocity = velocity.normalized() * ability.speed
-	if velocity.length() > TICKS * distance.length():
-		velocity = velocity.normalized() * distance.length() * TICKS
+	if velocity.length() > MatchClock.TICKS_PER_SECOND_F * distance.length():
+		velocity = velocity.normalized() * distance.length() * MatchClock.TICKS_PER_SECOND_F
 	return velocity
 
 

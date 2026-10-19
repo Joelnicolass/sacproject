@@ -36,7 +36,7 @@ func _physics_process(_delta: float) -> void:
 		_end(body)
 		return
 	if BodyNudge.push(body, push):
-		_moved += push.length() / BodyNudge.TICKS
+		_moved += push.length() / MatchClock.TICKS_PER_SECOND_F
 	_done += 1
 	if _done >= duration_ticks:
 		_end(body)

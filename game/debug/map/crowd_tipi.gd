@@ -167,7 +167,7 @@ func _deep_pairs(units: Array) -> int:
 	var deep := 0
 	var radii := PackedFloat64Array()
 	for unit: Node3D in units:
-		radii.append(float(BodyLibrary.info(str(unit.get("model"))).get("radius", 0.35)))
+		radii.append(float(BodyCatalog.info(str(unit.get("model"))).get("radius", 0.35)))
 	for i in units.size():
 		for j in range(i + 1, units.size()):
 			if _flat(units[i]).distance_to(_flat(units[j])) < deep_ratio * (radii[i] + radii[j]):

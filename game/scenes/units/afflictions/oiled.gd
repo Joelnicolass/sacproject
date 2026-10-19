@@ -25,7 +25,6 @@ extends Affliction
 ## the scene tree. A neighbour lit by a blast may blast on the same tick or on the next one.
 
 
-static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 
 ## The creature's order queue (UnitOrders), cleared every tick the oil holds. Empty on a wizard (sacengine `!isWizard`).
 @export var orders: Node

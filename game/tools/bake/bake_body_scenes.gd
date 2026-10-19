@@ -3,8 +3,9 @@ extends SceneTree
 ## RFC-036 (036g, F208): writes scenes/bodies/models/<tag>.tscn, one per skeletal model of assets/original/models/.
 ## Each scene is a BodyModel: the .glb instanced as "Model" (z mirrored, like the baked meshes), an AnimationTree whose state
 ## machine has one state per ROLE playing the model's clip for it, and an "Events" AnimationPlayer whose method tracks fire
-## the clip's SKEL events (the "attack" key is the impact). After this runs the scenes are edited in the editor; running it
-## again overwrites them.
+## the clip's SKEL events (the "attack" key is the impact). After this runs the scenes are edited in the editor, so a plain
+## run writes only the MISSING scenes and keeps the existing ones ("wrote N, kept M"). `--force` rebuilds every scene and
+## throws away the edits made in the editor.
 ##
 ## Which clip each role plays is the rule the game used to apply at run time (UnitClipRoles): the creature's CreatureType
 ## (data/catalog/creatures/), the wizard's WizardType (data/catalog/wizards/) and the Sac Doctor's three works. It lives here
@@ -36,6 +37,8 @@ const GRID_ORIGIN := Vector2(260.0, 40.0)
 const GRID_COLUMNS := 4
 
 var _index: Dictionary = {}
+## --force: rebuild the scenes that already exist (the edits made in the editor are lost) and delete the stale ones.
+var _force := false
 
 
 func _init() -> void:
@@ -45,9 +48,11 @@ func _init() -> void:
 		quit(1)
 		return
 	_index = parsed
+	_force = OS.get_cmdline_user_args().has("--force")
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUT_DIR))
 	var maps := _role_maps()
 	var made := PackedStringArray()
+	var kept := PackedStringArray()
 	var skipped := PackedStringArray()
 	var models: Array = _index.keys()
 	models.sort()
@@ -55,12 +60,17 @@ func _init() -> void:
 		var roles := _playable(model, maps.get(model, {}))
 		if not roles.has("idle"):
 			skipped.append(model)
-			_remove_stale(model)
+			if _force:
+				_remove_stale(model)
+			continue
+		if not _force and FileAccess.file_exists(OUT_DIR + model + ".tscn"):
+			kept.append(model)
 			continue
 		if _bake(model, roles):
 			made.append(model)
 		else:
 			skipped.append(model)
+	print("BAKE_BODY_SCENES wrote %d, kept %d%s" % [made.size(), kept.size(), " (--force)" if _force else " (existing scenes untouched; --force rebuilds them)"])
 	print("BAKE_BODY_SCENES made=%d skipped=%d" % [made.size(), skipped.size()])
 	print("BAKE_BODY_SCENES skipped (no playable idle: they stay static meshes): %s" % ", ".join(skipped))
 	quit(0)

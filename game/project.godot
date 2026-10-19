@@ -22,7 +22,6 @@ GameData="*res://scenes/core/catalog/game_data.gd"
 SacrificeFlow="*res://scenes/core/flow/sacrifice_flow.gd"
 AgentKit="*res://addons/agent_kit/agent_kit.gd"
 FxBus="*res://scenes/fx/fx_bus.gd"
-BodyLibrary="*res://scenes/bodies/body_library.gd"
 
 [display]
 
@@ -31,7 +30,7 @@ window/size/viewport_height=720
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/mp_kit/plugin.cfg", "res://addons/agent_kit/plugin.cfg", "res://addons/fsm_kit/plugin.cfg")
+enabled=PackedStringArray("res://addons/mp_kit/plugin.cfg", "res://addons/agent_kit/plugin.cfg", "res://addons/fsm_kit/plugin.cfg", "res://addons/sacrifice_tools/plugin.cfg")
 
 [input]
 

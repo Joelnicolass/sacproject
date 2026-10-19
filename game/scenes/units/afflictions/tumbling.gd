@@ -17,7 +17,6 @@ extends Affliction
 ## Look: Tilt rolls while it flies (Tween), as Stunned does; the mesh clips tumble/falling/hitFloor are not exported.
 ## WORKAROUND: Tween on Tilt rotation:z in place of the tumble mesh clip (disk, same as RFC-030i-a).
 
-static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 ## A body within this of the ground stands on it (the capsule rests a hair above the land).
 const REST_M := 0.02
 
@@ -129,7 +128,7 @@ func steer(_velocity: Vector3, _delta: float) -> Vector3:
 		if velocity.y < 0.0:
 			velocity.y = 0.0
 	elif _lifted_tick < MatchClock.now():
-		velocity.y -= falling_acceleration / TICKS
+		velocity.y -= falling_acceleration / MatchClock.TICKS_PER_SECOND_F
 	velocity.x *= damp_xz
 	velocity.z *= damp_xz
 	velocity.y *= damp_y
@@ -154,7 +153,7 @@ func _physics_process(_delta: float) -> void:
 		print("%s deja el tumbo en el ápice %.2f m (cuadro %d)" % [str(body.call("display_name")), _apex - _from_ground, MatchClock.now()])
 		_afflictions().mark(self, false)
 		return
-	if BodyNudge.on_land(body, at) and at.y + velocity.y / TICKS <= BodyNudge.ground_y(body, at) + REST_M:
+	if BodyNudge.on_land(body, at) and at.y + velocity.y / MatchClock.TICKS_PER_SECOND_F <= BodyNudge.ground_y(body, at) + REST_M:
 		_land(body, at, "suelo")
 	elif body is CharacterBody3D and (body as CharacterBody3D).is_on_floor():
 		## REVIEW-F121 B1: it rests on a building or on another body (sacengine positionAfterCollision stops it on top,

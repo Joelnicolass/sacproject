@@ -29,7 +29,7 @@ const MANALITH_MAX_HEALTH := 3000.0
 var _regen_per_s := 0.0
 var _released := false
 
-@onready var _health: Node = $Health
+@onready var _health: Health = $Health
 
 
 func _ready() -> void:
@@ -83,16 +83,16 @@ func _place_bar() -> void:
 
 
 func _fallback_model() -> String:
-	if BodyLibrary.has_model(FALLBACK_STRUCTURE_MODEL):
+	if BodyCatalog.has_model(FALLBACK_STRUCTURE_MODEL):
 		return FALLBACK_STRUCTURE_MODEL
 	return model
 
 
 func _resolved_model() -> String:
-	if BodyLibrary.has_model(model):
+	if BodyCatalog.has_model(model):
 		return model
 	var fallback := _fallback_model()
-	if BodyLibrary.has_model(fallback):
+	if BodyCatalog.has_model(fallback):
 		return fallback
 	return ""
 
@@ -125,27 +125,23 @@ func _apply_health() -> void:
 	if spell_tag == MANALITH:
 		max_health = MANALITH_MAX_HEALTH
 		_regen_per_s = MANALITH_REGEN_PER_S
-	if _health.has_method("setup"):
-		_health.call("setup", max_health)
-	else:
-		_health.set("maximum", max_health)
-		_health.set("current", max_health)
+	_health.setup(max_health)
 
 
 func _physics_process(delta: float) -> void:
 	if _health == null or _regen_per_s <= 0.0:
 		return
-	if bool(_health.call("is_dead")) or bool(_health.call("is_full")):
+	if _health.is_dead() or _health.is_full():
 		return
-	_health.call("heal", _regen_per_s * delta)
+	_health.heal(_regen_per_s * delta)
 
 
 func is_targetable() -> bool:
-	return _health != null and not bool(_health.call("is_dead"))
+	return _health != null and not _health.is_dead()
 
 
 func is_dead() -> bool:
-	return _health != null and bool(_health.call("is_dead"))
+	return _health != null and _health.is_dead()
 
 
 func _on_died(_from_slot: int) -> void:

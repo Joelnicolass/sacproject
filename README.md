@@ -91,7 +91,7 @@ godot --headless --path game -- --room-server
 
 ## Cómo se hizo el port
 
-El port se armó por etapas. Cada cambio grande tiene su RFC en [`game/rfcs/`](game/rfcs/) y su registro en [`game/FEATURES.md`](game/FEATURES.md).
+El port se armó por etapas. Cada cambio grande tiene su RFC en [`game/rfcs/`](game/rfcs/) y su registro en [`game/docs/CHANGELOG-features.md`](game/docs/CHANGELOG-features.md) (el estado actual por área está en [`game/FEATURES.md`](game/FEATURES.md)). Para agregar contenido, mirá [`game/docs/HOWTO.md`](game/docs/HOWTO.md).
 
 1. **Extraer los datos del original.** Los importadores de [`game/tools/`](game/tools/) leen los WAD de una instalación local de Sacrifice:
    - modelos, con su esqueleto y todas sus animaciones, a `.glb`;

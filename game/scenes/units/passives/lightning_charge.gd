@@ -26,7 +26,6 @@ extends Node
 ## body that dies loses its charge at once; the sparks are a reserve look.
 
 
-static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 ## The PaceFactors source of the charge.
 const PACE_SOURCE := &"lightning_charge"
 
@@ -135,12 +134,12 @@ func _simulate() -> void:
 		_say("carga %s fin (tick %d)" % [_who(), MatchClock.now()])
 		_refresh()
 		return
-	ramp = minf(ramp + 1.0 / TICKS, 1.0)
+	ramp = minf(ramp + 1.0 / MatchClock.TICKS_PER_SECOND_F, 1.0)
 	var spell := GameData.ability(tag)
 	if spell == null or frames < spell.damage:
 		return
 	var rng := MatchSeed.rng(["charge", _who(), MatchClock.now()])
-	if rng.randf() < ramp / TICKS:
+	if rng.randf() < ramp / MatchClock.TICKS_PER_SECOND_F:
 		_discharge(rng, spell)
 
 
@@ -229,7 +228,7 @@ func _trace_walk() -> void:
 func _spark() -> void:
 	if body == null or spark_fx.is_empty():
 		return
-	var chance := 1.0 - exp(-spark_rate / TICKS)
+	var chance := 1.0 - exp(-spark_rate / MatchClock.TICKS_PER_SECOND_F)
 	if _look_rng.randf() > chance:
 		return
 	var box := BodyNudge.box(body)

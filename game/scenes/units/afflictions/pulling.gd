@@ -33,7 +33,6 @@ extends Affliction
 ## Server (or solo) only: the clients get the bit and the positions. The user's own velocity is 0 while it lasts (steer).
 
 
-static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 ## sacengine Pull.numShootFrames: no check while the thread flies out.
 const SHOOT_FRAMES := 20
 ## sacengine updatePull: the extra pull (25462-25481) and the lift of every pull (25485).
@@ -151,7 +150,7 @@ func _physics_process(_delta: float) -> void:
 	var action := "nada"
 	if pull_now:
 		_pulls += 1
-		velocity.y += LIFT_FACTOR * _fall_acceleration(tumbling) / TICKS
+		velocity.y += LIFT_FACTOR * _fall_acceleration(tumbling) / MatchClock.TICKS_PER_SECOND_F
 		var stunned := _stun()
 		if tumbling != null:
 			tumbling.catapult(velocity, int(body.get("owner_slot")) if "owner_slot" in body else 0)

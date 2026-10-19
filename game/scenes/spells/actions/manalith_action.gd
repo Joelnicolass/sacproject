@@ -89,7 +89,7 @@ func _structure_model(wizard: WizardBody, spell: SpellType) -> String:
 
 
 func _can_place(point: Vector3, model: String) -> bool:
-	var radius := maxf(1.0, float(BodyLibrary.info(model).get("radius", 4.0)))
+	var radius := maxf(1.0, float(BodyCatalog.info(model).get("radius", 4.0)))
 	for group in ["wizard", "unit", "structure"]:
 		for node in get_tree().get_nodes_in_group(group):
 			if not node is Node3D or not is_instance_valid(node):

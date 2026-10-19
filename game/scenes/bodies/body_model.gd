@@ -3,7 +3,8 @@ class_name BodyModel
 extends Node3D
 
 ## RFC-036 (036g, F208): the root of scenes/bodies/models/<tag>.tscn, one per skeletal model of the original game.
-## The scene is generated once by tools/bake/bake_body_scenes.gd and edited in the editor from then on:
+## The scene is generated once by tools/bake/bake_body_scenes.gd (it only writes the missing ones; `--force` rebuilds and
+## discards editor edits) and edited in the editor from then on:
 ##   Model       the .glb of assets/original/models/ (skeleton, skinned mesh and every clip of the model), drawn with the
 ##               game's axes (z mirrored, like the baked meshes).
 ##   Tree        the AnimationTree whose AnimationNodeStateMachine has one state PER ROLE (idle, run, attack...). Each
@@ -12,7 +13,8 @@ extends Node3D
 ##   Events      an AnimationPlayer with one small animation per clip tag that has SKEL events: a method track calls
 ##               ClipEvents.fire(kind) at the frame of each event (the "attack" key is the visual impact moment).
 ## Open the scene and press play on the Tree (or set `preview_role` here) to see a role move.
-## Presentation only: the simulation never reads it. A BodyRig instances this scene under its ModelSlot.
+## The game DOES load it, for the visuals: a BodyRig instances this scene under its ModelSlot, and the clip table and the
+## ClipEvents come from it. The simulation and the rules do not depend on it (they never read a pose or a clip).
 
 ## Roles the state machine of a model scene can have a state for. A new role is a new state in the scenes (and here).
 const ROLES: PackedStringArray = ["idle", "run", "attack", "shoot", "cast", "hit", "death", "held", "thrash", "rise", "fly",
@@ -175,5 +177,10 @@ func _dress() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if model.is_empty():
-		warnings.append("`model` is empty: regenerate the scene with tools/bake/bake_body_scenes.gd.")
+		warnings.append("`model` está vacío: hornealo con tools/bake/bake_body_scenes.gd (Project > Tools > Sacrifice).")
+	elif scene_file_path.is_empty() == false and scene_file_path.get_file().get_basename() != model:
+		warnings.append("El archivo se llama «%s» pero `model` es «%s»: el juego busca la escena por `model`." % [
+			scene_file_path.get_file().get_basename(), model])
+	if clips.is_empty():
+		warnings.append("`clips` está vacío: el cuerpo no sabe sus cuadros ni su framerate. Hornealo de nuevo con --force (pisa tus cambios).")
 	return warnings

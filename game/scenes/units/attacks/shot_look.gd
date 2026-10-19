@@ -6,7 +6,7 @@ extends Resource
 
 const LOOKS_DIR := "res://data/shots/"
 
-## Baked model (BodyLibrary); empty = a ball of fallback_radius.
+## Baked model (BodyCatalog); empty = a ball of fallback_radius.
 @export var model := ""
 @export var model_scale := 1.0
 ## Side of the hit box in meters.

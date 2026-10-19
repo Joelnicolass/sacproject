@@ -39,7 +39,7 @@ func show_rock_form(on: bool) -> void:
 	if on and _shell == null:
 		_shell = MeshInstance3D.new()
 		_shell.name = "RockShell"
-		_shell.mesh = BodyLibrary.mesh(rock_model)
+		_shell.mesh = BodyCatalog.mesh(rock_model)
 		if _shell.mesh == null:
 			var ball := SphereMesh.new()
 			_shell.mesh = ball

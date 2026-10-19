@@ -5,7 +5,8 @@ extends Node
 ## creature does when its record asks it to think. First, `autoCapture`: a body with mana that dropped to its minimum goes to
 ## the best source it knows (a ready Manahoar of its side, weighed x1000, or an own mana building) and stays by it. Then, by the
 ## command of the record: guard (1) stays by the target and fights what comes (ostate 5, radius `retreat_hold_m`), capture (2)
-## goes to the anchor of the record (orderInteract: move there, then guard it or advance), idle (a number no brain reads) nothing,
+## goes to the anchor of the record (orderInteract: move there, then guard it or advance), focus (3, F373) attacks the record's target,
+## idle (a number no brain reads) nothing,
 ## since the record's leader or the creature's own aggression decide. The wizard calls it when he has nothing to cast, as
 ## the original does.
 
@@ -31,6 +32,11 @@ func think(t: AiTrack, cmd: int, record: AiRecord) -> int:
 			## thaum: (1 - value6c) * 160, with value6c the wizard's threat (a creature's is 0).
 			var reach := AiField.f32((1.0 - t.value_6c()) * (profile.interact_reach_m if profile != null else 160.0))
 			port.order_interact(t, record.anchor, record.target, reach)
+			return 1
+		FocusTask.COMMAND:
+			## RFC-053 053d (F373): attack the target the side committed to, the order of a human's right click (ostate 6).
+			if record.target != null and AiWizardBrain.target_alive(record.target):
+				port.order_if_changed(t, 6, record.target, null)
 			return 1
 	return 1
 

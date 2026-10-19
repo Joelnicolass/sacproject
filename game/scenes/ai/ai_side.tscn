@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scenes/ai/ai_side.gd" id="1_ai_side"]
 [ext_resource type="Script" path="res://scenes/ai/perception/ai_perception.gd" id="2_perception"]
@@ -16,6 +16,7 @@
 [ext_resource type="Script" path="res://scenes/ai/brains/phases/convert_phase.gd" id="14_convert"]
 [ext_resource type="Script" path="res://scenes/ai/tasks/capture_task.gd" id="15_capture"]
 [ext_resource type="Script" path="res://scenes/ai/brains/manahoar_brain.gd" id="16_maho"]
+[ext_resource type="Script" path="res://scenes/ai/tasks/focus_task.gd" id="17_focus"]
 [ext_resource type="Resource" path="res://data/ai/profile_original.tres" id="99_profile"]
 
 [node name="AiSide" type="Node" node_paths=PackedStringArray("perception", "stance", "groups", "board", "brain", "creature_brain", "port")]
@@ -69,8 +70,9 @@ port = NodePath("../Port")
 creature_brain = NodePath("../CreatureBrain")
 profile = ExtResource("99_profile")
 
-[node name="AttackPhase" type="Node" parent="Brain"]
+[node name="AttackPhase" type="Node" parent="Brain" node_paths=PackedStringArray("focus")]
 script = ExtResource("8_attack")
+focus = NodePath("../../Tasks/FocusTask")
 
 [node name="SupportPhase" type="Node" parent="Brain"]
 script = ExtResource("13_support")
@@ -91,6 +93,9 @@ creature_brain = NodePath("../CreatureBrain")
 maho_brain = NodePath("../ManahoarBrain")
 port = NodePath("../Port")
 profile = ExtResource("99_profile")
+
+[node name="FocusTask" type="Node" parent="Tasks"]
+script = ExtResource("17_focus")
 
 [node name="CaptureTask" type="Node" parent="Tasks"]
 script = ExtResource("15_capture")

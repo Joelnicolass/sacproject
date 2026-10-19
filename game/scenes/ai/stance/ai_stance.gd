@@ -127,6 +127,28 @@ func influence(category: int, at: Vector3, near: float, far: float, acc: PackedF
 	return AiField.safediv(souls_w, float(recs[category].souls_all))
 
 
+## RFC-053 053d (F373): the strength of the bodies of `category` within `radius` (flat) of `at`, as the side knows them: each body's
+## rate (AiRater, the number the groups add) times the fraction of its health the side believes it has. Creatures only: the wizards
+## fight with spells, and the rater weighs a wizard like eight Rangers (WIZARD_STATS), so with them in the sum the brawl of the
+## creatures did not count (measured in f373: 4 Rangers and their wizard against a wizard and a Scarab, 1.12; without the AI's
+## wizard, 0.43). The enemy wizard's danger is the side's threat (update_threat).
+func local_strength(category: int, at: Vector3, radius: float) -> float:
+	var sum := 0.0
+	var radius_sq := radius * radius
+	for t: AiTrack in perception.bodies(category):
+		if t.kind == AiTrack.Kind.WIZ or not AiGroups.alive(t):
+			continue
+		var pos := perception.pos_of(t)
+		var dx := pos.x - at.x
+		var dz := pos.z - at.z
+		if dx * dx + dz * dz > radius_sq:
+			continue
+		var health := perception.health_of(t)
+		var fraction := clampf(float(health.x) / float(health.y), 0.0, 1.0) if health.y > 0 else 1.0
+		sum += t.cached_rate * fraction
+	return sum
+
+
 ## updateWiz (shiny.d:1061-1085): the threat of the wizard track, every 8 ticks of its age.
 func update_threat(wizard: AiTrack) -> void:
 	if wizard == null or not (wizard.flags & AiTrack.OWN) or wizard.age < wizard.threat_tick:

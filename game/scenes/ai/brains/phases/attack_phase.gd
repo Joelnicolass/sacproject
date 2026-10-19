@@ -10,6 +10,12 @@ extends AiPhase
 ## PeasantBehavior never attacks) weighs AiTactics.npc_passive_weight more (0 in every difficulty: «la IA no los caza a propósito»,
 ## PRD). Measured in f371_npc before the change: the first replan took a Farmer at 20 m (threat 0.000, enemy_ratio 0.167) with the
 ## Druid at 40 m in range, and Wrath went to it. Hostile NPC (Taurocks) still count as any foe.
+## RFC-053 053d (F373): the target the side committed to (FocusTask.committed) weighs AiTactics.commit_weight more, so the wizard's
+## spells go where his creatures were sent, replan after replan; an enemy healer the side sees near that target (AiKillEstimate.
+## healer_near; the target itself when it heals) weighs healer_weight more. Measured in f373_ai_finish before the change: each replan took the closest foe again.
+
+## The focus of the side (optional: without it nothing is committed).
+@export var focus: FocusTask
 
 
 func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:
@@ -18,6 +24,8 @@ func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:
 	var total := 0.0
 	var best_track: AiTrack
 	var thr := AiField.attack_reach(wizard.threat, profile.attack_coefficient)
+	var committed := focus.committed() if focus != null else null
+	var committed_at := brain.perception.pos_of(committed) if committed != null else Vector3.ZERO
 	for foe: AiTrack in brain.perception.bodies(3):
 		if not AiWizardBrain.target_alive(foe):
 			continue
@@ -25,6 +33,12 @@ func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:
 		var w := AiField.attack_weight(distance, thr, foe.status, false)
 		if TargetRules.is_passive_npc(foe.node):
 			w *= brain.tactics.npc_passive_weight
+		if committed != null:
+			if foe == committed:
+				w *= brain.tactics.commit_weight
+			## a healer by the committed target (the target itself when it heals) keeps it standing
+			if AiKillEstimate.healer_near(brain.perception, foe, committed_at):
+				w *= brain.tactics.healer_weight
 		w = AiField.f32(w)
 		if w == 0.0:
 			continue

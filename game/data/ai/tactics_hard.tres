@@ -21,3 +21,4 @@ focus_kill_window_s = 20.0
 focus_power_ratio = 1.2
 focus_radius_m = 60.0
 focus_max_members = 8
+focus_wizard_worth = 4.0

@@ -102,10 +102,35 @@ func finish() -> bool:
 
 func _of(label: String) -> Array:
 	var found: Array = []
-	for body: Variant in _bodies.get(label, []):
-		if body != null and is_instance_valid(body):
-			found.append(body)
+	## F373: «a|b» names the bodies of both labels.
+	for part in label.split("|", false):
+		for body: Variant in _bodies.get(part, []):
+			if body != null and is_instance_valid(body) and not found.has(body):
+				found.append(body)
 	return found
+
+
+## F373: the body is down: freed, its health at 0, or a wizard dying or a ghost.
+static func _is_down(body: Variant) -> bool:
+	if body == null or not is_instance_valid(body) or (body as Node).is_queued_for_deletion():
+		return true
+	var health := (body as Node).get_node_or_null("Health") as Health
+	if health != null and health.is_dead():
+		return true
+	return body is WizardBody and ((body as WizardBody).is_ghost() or not (body as WizardBody).is_targetable())
+
+
+## F373: the first tick a body of `label` was seen down (-1: none yet). Bodies are taken at begin, so a freed one still counts.
+func _down_tick(row: Dictionary, key: String, label: String) -> int:
+	var known: int = row.get(key, -1)
+	if known >= 0:
+		return known
+	for part in label.split("|", false):
+		for body: Variant in _bodies.get(part, []):
+			if _is_down(body):
+				row[key] = _tick
+				return _tick
+	return -1
 
 
 func _wire(row: Dictionary) -> void:
@@ -217,6 +242,22 @@ func _poll(row: Dictionary) -> void:
 			if _tick > window:
 				_decide(row, false, "nunca")
 			return
+		"killed":
+			var down := _down_tick(row, "down_object", expect.object)
+			if down >= 0:
+				_decide(row, down <= window, _seconds(down))
+			elif _tick > window:
+				_decide(row, false, "nunca")
+			return
+		"died_before":
+			var object_down := _down_tick(row, "down_object", expect.object)
+			var subject_down := _down_tick(row, "down_subject", expect.subject)
+			if object_down >= 0 or subject_down >= 0:
+				var first_ok := object_down >= 0 and (subject_down < 0 or object_down < subject_down)
+				_decide(row, first_ok, "%s %s / %s %s" % [expect.object, _seconds(object_down) if object_down >= 0 else "-", expect.subject, _seconds(subject_down) if subject_down >= 0 else "-"])
+			elif _tick > window:
+				_decide(row, false, "nadie")
+			return
 		"cast":
 			var first := int(row["first_tick"])
 			if first >= 0:
@@ -265,6 +306,22 @@ func _poll(row: Dictionary) -> void:
 			times.append(window + 1)
 		else:
 			pending = true
+	if expect.quantifier == "at_least":
+		var in_time: Array[int] = []
+		for t in times:
+			if t <= window:
+				in_time.append(t)
+		in_time.sort()
+		var open := 0
+		for id in row["per"]:
+			var entry: Dictionary = row["per"][id]
+			if int(entry["picked"]) < 0 and not (int(entry["from"]) >= 0 and _tick - int(entry["from"]) > window):
+				open += 1
+		if in_time.size() >= expect.min_count:
+			_decide(row, true, "%d/%d %s" % [in_time.size(), row["per"].size(), _seconds(in_time[expect.min_count - 1])])
+		elif in_time.size() + open < expect.min_count:
+			_decide(row, false, "%d/%d" % [in_time.size(), row["per"].size()])
+		return
 	var any := expect.quantifier == "any"
 	if any:
 		var best := -1

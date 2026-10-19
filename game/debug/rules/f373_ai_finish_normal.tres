@@ -1,0 +1,83 @@
+[gd_resource type="Resource" script_class="BenchRules" load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://debug/suite/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://debug/suite/bench_group.gd" id="2_group"]
+[ext_resource type="Script" path="res://scenes/ai/data/ai_seat.gd" id="3_seat"]
+[ext_resource type="Script" path="res://debug/suite/bench_expect.gd" id="4_expect"]
+[ext_resource type="Resource" path="res://data/ai/difficulty_normal.tres" id="5_difficulty"]
+
+; RFC-053 053d (F373). Linea base medida en 2660b36c (sin FocusTask), semilla 1: Normal no mata al mago en 600 s, Easy 387,18 s, Hard 157,27 s.
+; Criterio: Normal <= 300 s (50 % de los 600 s que la linea base no alcanzo). Easy >= Normal >= Hard lo compara agent/runs/run_rfc053.sh 053d.
+
+[sub_resource type="Resource" id="Seat_persephone"]
+script = ExtResource("3_seat")
+slot = 2
+wizard = "cwa0"
+god = &"persephone"
+difficulty = ExtResource("5_difficulty")
+
+[sub_resource type="Resource" id="Group_rangers"]
+script = ExtResource("2_group")
+tag = "amuh"
+slot = 2
+count = 4
+columns = 4
+offset_z_m = 84.0
+facing_x = 1.0
+label = "rangers"
+
+[sub_resource type="Resource" id="Group_charlotte"]
+script = ExtResource("2_group")
+tag = "cara"
+slot = 1
+count = 1
+columns = 1
+offset_m = 12.0
+offset_z_m = 30.0
+facing_x = -1.0
+label = "charlotte"
+
+[sub_resource type="Resource" id="Expect_kill"]
+script = ExtResource("4_expect")
+check = "mago_cae"
+kind = "killed"
+object = "wizard1"
+within_s = 300.0
+
+[sub_resource type="Resource" id="Expect_focus"]
+script = ExtResource("4_expect")
+check = "3_de_4_rangers_al_mago_o_charlotte_10s"
+kind = "picked"
+subject = "rangers"
+object = "wizard1|charlotte"
+quantifier = "at_least"
+within_s = 10.0
+min_count = 3
+
+[sub_resource type="Resource" id="Expect_order"]
+script = ExtResource("4_expect")
+check = "charlotte_cae_primero"
+kind = "died_before"
+subject = "wizard1"
+object = "charlotte"
+within_s = 600.0
+
+[resource]
+script = ExtResource("1_rules")
+biome_god = &"persephone"
+starting_souls = 0
+match_seed = 1
+groups = Array[ExtResource("2_group")]([SubResource("Group_rangers"), SubResource("Group_charlotte")])
+anchor = Vector3(1270, 0, 1270)
+start_paused = true
+ignore_annihilation = true
+ai_seats = Array[ExtResource("3_seat")]([SubResource("Seat_persephone")])
+ai_start_at_anchor = true
+ai_start_offset = Vector2(0, 80)
+human_start_at_anchor = true
+human_start_offset = Vector2(0, 30)
+human_health_fraction = 0.4
+expects = Array[ExtResource("4_expect")]([SubResource("Expect_kill"), SubResource("Expect_focus"), SubResource("Expect_order")])
+trace_labels = PackedStringArray("wizard1", "charlotte")
+trace_every_s = 2.0
+pending_text = "F373 remate normal"

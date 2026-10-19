@@ -7,7 +7,8 @@ extends Node
 ## brain reads. A task is a child of AiTaskBoard: take it out and that kind of work is no longer done.
 
 ## shiny.d:98 TaskKind.
-enum Kind { IDLE = 0, GUARD = 1, CAPTURE = 2 }
+## FOCUS (RFC-053 053d) is not in the original.
+enum Kind { IDLE = 0, GUARD = 1, CAPTURE = 2, FOCUS = 3 }
 
 @export var board: AiTaskBoard
 
@@ -19,7 +20,7 @@ func kind() -> Kind:
 	return Kind.IDLE
 
 
-## taskCmd (shiny.d:1412-1418): capture 2, guard 1, idle 0x64692e70 (a number no brain reads).
+## taskCmd (shiny.d:1412-1418): capture 2, guard 1, idle 0x64692e70 (a number no brain reads); FocusTask 3 (F373).
 func command() -> int:
 	return 0x64692e70
 

@@ -54,3 +54,8 @@ extends MatchRules
 ## so a scene can put buildings and groups around the wizard.
 @export var ai_start_at_anchor := false
 @export var ai_start_offset := Vector2.ZERO
+## F373 (RFC-053 053d): the human wizard (slot 1) starts at `human_start_offset` meters (X, Z) from `anchor`, warped the same way,
+## with `human_health_fraction` of his health (1 = full; written once, before the record starts).
+@export var human_start_at_anchor := false
+@export var human_start_offset := Vector2.ZERO
+@export_range(0.01, 1.0, 0.01) var human_health_fraction := 1.0

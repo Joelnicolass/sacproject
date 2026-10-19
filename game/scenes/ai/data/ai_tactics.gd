@@ -45,6 +45,8 @@ const NORMAL := "res://data/ai/tactics_normal.tres"
 @export_range(0.0, 500.0, 5.0) var focus_radius_m := 60.0
 ## Creatures a focus claims at most.
 @export_range(0, 32) var focus_max_members := 6
+## What an enemy wizard is worth among the candidates of a focus, in souls (a creature is worth its souls): killing him stops his casts.
+@export_range(0.0, 20.0, 0.5) var focus_wizard_worth := 4.0
 
 
 ## `tactics` or, when null, the Normal one.

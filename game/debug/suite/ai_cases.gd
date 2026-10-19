@@ -42,6 +42,7 @@ func run(host: Node3D) -> Dictionary:
 	out["ai_own_splash"] = await _own_splash(host)
 	out["ai_tactics_by_difficulty"] = _tactics()
 	out["ai_heal_threshold"] = await _heal_threshold(host)
+	out["ai_kill_estimate"] = _kill_estimate()
 	return out
 
 
@@ -784,3 +785,27 @@ func _heal_threshold(host: Node3D) -> Dictionary:
 		node.queue_free()
 	await host.get_tree().process_frame
 	return _verdict(checks, scores)
+
+
+## RFC-053 053d (F373): AiKillEstimate, by hand from the catalog. Ranger (amuh, Fire bow wobf: 120, cooldown 1.5 s; first shoot clip HAsh
+## 58 frames at 30, shot at frame 36): a shot every max(58/30, 36/30 + 1.5) = 2.7 s, 120 / 2.7 = 44.444 per second to a body of
+## resistance 1. Scarab (cara, Healing web slba: cooldown 6 s; clip BGs2 44 frames, shot at 22): a web every max(44/30, 22/30 + 6) =
+## 6.7333 s that heals the whole bar at 240/s: 1500 / 6.7333 = 222.77 per second to a 1500 wizard, 240 at most. seconds = health /
+## (dps - healing), INF when the healing keeps up.
+func _kill_estimate() -> Dictionary:
+	var ranger := GameData.creature("amuh")
+	var scarab := GameData.creature("cara")
+	var checks := {}
+	checks["seconds_net"] = _near(AiKillEstimate.seconds(1200.0, 300.0, 60.0), 5.0)
+	checks["seconds_dead"] = AiKillEstimate.seconds(0.0, 0.0, 10.0) == 0.0
+	checks["seconds_outhealed"] = is_inf(AiKillEstimate.seconds(600.0, 50.0, 60.0))
+	checks["ranger_period"] = _near(AiKillEstimate.shot_period(ranger, GameData.ability("wobf")), 2.7)
+	checks["ranger_dps"] = _near(AiKillEstimate.dps_of(ranger, scarab), 44.4444)
+	checks["ranger_not_healer"] = not AiKillEstimate.is_healer(ranger) and AiKillEstimate.heal_rate_of(ranger, 1500.0) == 0.0
+	checks["scarab_healer"] = AiKillEstimate.is_healer(scarab) and AiKillEstimate.shot_heals("slba")
+	checks["scarab_heal_wizard"] = _near(AiKillEstimate.heal_rate_of(scarab, 1500.0), 222.772)
+	checks["scarab_heal_capped"] = _near(AiKillEstimate.heal_rate_of(scarab, 3000.0), 240.0)
+	## four Rangers against a 1500 wizard healed by a Scarab: 177.78 < 222.77, they never kill him
+	checks["four_rangers_outhealed"] = is_inf(AiKillEstimate.seconds(1500.0, 4.0 * AiKillEstimate.dps_of(ranger, null), AiKillEstimate.heal_rate_of(scarab, 1500.0)))
+	return _verdict(checks, {"ranger_dps": AiKillEstimate.dps_of(ranger, scarab), "heal": AiKillEstimate.heal_rate_of(scarab, 1500.0),
+		"period": AiKillEstimate.shot_period(ranger, GameData.ability("wobf"))})

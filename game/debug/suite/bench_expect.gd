@@ -20,15 +20,21 @@ extends Resource
 ## F372 (053c): with `spell` (a tag, e.g. laeh) «cast» and «uncast» count the casts of that spell only, whatever its kind, and with
 ## an empty `object` the ones on any body:
 ##   first_cast  the first cast of `spell` (or attack spell) of the slot of `subject` within `within_s` goes to a body of `object`.
+## F373 (053d), the finish:
+##   killed       a body of `object` goes down (its health reaches 0, a wizard dying or a ghost, or freed) within `within_s` of the
+##                start. The value is the seconds: the time to kill.
+##   died_before  a body of `object` goes down before any body of `subject` does (decided by the first of them to go down).
+## «picked» with the quantifier `at_least`: at least `min_count` bodies of `subject` take a body of `object` within `within_s`.
+## A label may name several groups with «|» (`wizard1|charlotte`).
 ## `from`: start = the tick the bench starts; hurt = the first tick the subject body takes damage; near = the first tick a
 ## body of `object` is within `near_m` (flat) of the subject body. The value printed is the seconds (the slowest body with
 ## «all», the fastest with «any») or the count.
 
 @export var check := "expect"
-@export_enum("picked", "struck", "hurt", "dropped", "spared", "cast", "uncast", "unharmed", "burst", "first_cast") var kind := "picked"
+@export_enum("picked", "struck", "hurt", "dropped", "spared", "cast", "uncast", "unharmed", "burst", "first_cast", "killed", "died_before") var kind := "picked"
 @export var subject := ""
 @export var object := ""
-@export_enum("all", "any") var quantifier := "all"
+@export_enum("all", "any", "at_least") var quantifier := "all"
 @export_enum("start", "hurt", "near") var from := "start"
 @export var near_m := 25.0
 @export var within_s := 3.0

@@ -213,6 +213,9 @@ func _prepare() -> void:
 	audit.watch_world(_world)
 	_start_ais()
 	_events = BenchEvents.new(_world, audit, _sides, _rules)
+	## F373: every wizard is also `wizard<slot>` for the judge (the human one, slot 1, has no seat).
+	for wizard in get_tree().get_nodes_in_group("wizard"):
+		_labeled["wizard%d" % int(wizard.get("owner_slot"))] = [wizard]
 	if judge != null:
 		judge.begin(_rules, _labeled)
 		judge.listen_audit(audit)
@@ -289,6 +292,10 @@ func _finish(winner: int, reason: String) -> void:
 		audit.set_extra(int(slot), "ai_line_walks", side.brain.line_walks)
 		audit.set_extra(int(slot), "ai_splash_vetoes", side.brain.splash_vetoes)
 		audit.set_extra(int(slot), "ai_heal_skips", side.brain.heal_skips)
+		## F373: the commitments of the focus (FocusTask) and the last one («name kill_s score»).
+		var focus := side.board.get_node_or_null("FocusTask") as FocusTask
+		if focus != null:
+			audit.set_extra(int(slot), "ai_focus", {"commits": focus.commits, "last": focus.last_commit})
 		## 024e: the difficulty and what the side read of bodies it did not see (0 without perfect information).
 		audit.set_extra(int(slot), "difficulty", {
 			"name": side.difficulty.display_name, "file": side.difficulty.resource_path,
@@ -583,6 +590,11 @@ func _frame_camera() -> void:
 func _move_ai_wizards() -> void:
 	if _rules.human_start_near_altar_of > 0:
 		_warp_near_altar(_wizard_of(1), _rules.human_start_near_altar_of, _rules.human_start_distance_m)
+	if _rules.human_start_at_anchor:
+		_warp_to_anchor(_wizard_of(1), _rules.human_start_offset)
+	if _rules.human_health_fraction < 1.0 and _wizard_of(1) != null:
+		var health := _wizard_of(1).get_node("Health") as Health
+		health.current = health.maximum * _rules.human_health_fraction
 	if _rules.ai_start_at_anchor:
 		var terrain := _world.get_node("Map/Terrain")
 		for seat in _rules.ai_seats:
@@ -597,6 +609,16 @@ func _move_ai_wizards() -> void:
 	for seat in _rules.ai_seats:
 		if seat.slot != _rules.ai_start_near_altar_of:
 			_warp_near_altar(_wizard_of(seat.slot), _rules.ai_start_near_altar_of, _rules.ai_start_distance_m)
+
+
+## F373: `wizard` warped to `offset` meters (X, Z) from the anchor, on the ground, like a Teleport.
+func _warp_to_anchor(wizard: Node3D, offset: Vector2) -> void:
+	if wizard == null:
+		return
+	var x := _rules.anchor.x + offset.x
+	var z := _rules.anchor.z + offset.y
+	var ground := float(_world.get_node("Map/Terrain").call("ground_height", x, z))
+	wizard.call("warp_to", Vector3(x, 0.0 if is_nan(ground) else ground, z))
 
 
 ## The wizard is warped `distance_m` from the altar of `altar_slot`, on his side of it, like a Teleport.

@@ -13,6 +13,7 @@ extends RefCounted
 ##   bolt (LightningStrike), halo (HaloOfEarth), devour (DevourGrowth), pace (PaceFactors), revive (FastRevive),
 ##   cling (Clinging, StickImpact), souls (Soul), hop (MiteHop), targets (TargetFutility).
 ## Off even in the bench (only `--log=`): ai_attack (AttackPhase: threat, enemy_ratio and the target of each replan, F371).
+## ai_focus (FocusTask: each commitment with its kill seconds and score, F373).
 
 ## Every category.
 const BENCH: Array[StringName] = [

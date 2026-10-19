@@ -7,11 +7,15 @@ extends VBoxContainer
 ## - In a match it is read only: it shows the rules of this match from MatchState (the server's on a client, through the
 ##   snapshot) and says who decides them. It never reads the preferences there.
 ## CheckButton (like Gráficos) and SpinBox: AgentKit drives them with click / range.
+## RFC-053 053f (F375): below, the player's combat feel (FeelPrefs): «Sacudida de cámara» 0-100 % (0 = off), «Números de daño»
+## and «Info al pasar el puntero». A local preference, so it is editable in a match too, and saved at once.
 
 ## Tab title in the OptionsMenu.
 @export var tab_title := "UI_OPTIONS_TAB_GAMEPLAY"
 ## The shared instance (data/ui/gameplay_prefs.tres).
 @export var prefs: GameplayPrefs
+## The shared instance (data/ui/feel_prefs.tres).
+@export var feel: FeelPrefs
 ## The group MatchState joins (one per match).
 @export var match_state_group: StringName = &"match_state"
 
@@ -33,7 +37,14 @@ func _ready() -> void:
 	souls.value_changed.connect(_on_starting_souls)
 	prefs.changed.connect(_sync)
 	visibility_changed.connect(_sync)
+	if feel:
+		%ShakeScale.value_changed.connect(_on_shake_scale)
+		%DamageNumbers.toggled.connect(feel.set_damage_numbers)
+		%HoverInfo.toggled.connect(feel.set_hover_info)
+		feel.changed.connect(_sync_feel)
+		visibility_changed.connect(_sync_feel)
 	_sync()
+	_sync_feel()
 
 
 ## In a match: the MatchState of the tree (cached while it lives).
@@ -95,3 +106,24 @@ func _on_starting_souls(value: float) -> void:
 		_sync()
 		return
 	prefs.set_starting_souls(roundi(value))
+
+
+## The feel rows show the preference (never the match's: it is the player's own), without echoing it back.
+func _sync_feel() -> void:
+	if feel == null:
+		for row: Control in [%ShakeScale.get_parent(), %DamageNumbers, %HoverInfo]:
+			row.visible = false
+		return
+	_syncing = true
+	(%ShakeScale as HSlider).value = roundf(feel.shake_scale() * 100.0)
+	_syncing = false
+	(%ShakeValue as Label).text = "%d %%" % roundi(feel.shake_scale() * 100.0)
+	%DamageNumbers.set_pressed_no_signal(feel.damage_numbers())
+	%HoverInfo.set_pressed_no_signal(feel.hover_info())
+
+
+func _on_shake_scale(value: float) -> void:
+	if _syncing or feel == null:
+		return
+	feel.set_shake_scale(value / 100.0)
+	(%ShakeValue as Label).text = "%d %%" % roundi(value)

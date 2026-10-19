@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ShakeMap" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/shake_map.gd" id="1_map"]
+
+[resource]
+script = ExtResource("1_map")
+trauma_by_fx = Dictionary[StringName, float]({
+&"wrath_explosion1": 0.45,
+&"wrath_explosion2": 0.25,
+&"quake_ring": 0.5
+})
+full_within_m = 8.0
+max_distance_m = 40.0

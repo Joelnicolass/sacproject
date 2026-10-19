@@ -1,13 +1,15 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/options/gameplay_tab.gd" id="1_tab"]
 [ext_resource type="Resource" path="res://data/ui/gameplay_prefs.tres" id="2_prefs"]
+[ext_resource type="Resource" path="res://data/ui/feel_prefs.tres" id="3_feel"]
 
 [node name="GameplayTab" type="VBoxContainer"]
 theme_type_variation = &"VBoxForm"
 custom_minimum_size = Vector2(360, 0)
 script = ExtResource("1_tab")
 prefs = ExtResource("2_prefs")
+feel = ExtResource("3_feel")
 
 [node name="FriendlyFire" type="CheckButton" parent="."]
 unique_name_in_owner = true
@@ -44,3 +46,42 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.75, 0.75, 0.75, 1)
 text = "UI_GAMEPLAY_TAB_RULES_NOTE"
 autowrap_mode = 3
+
+[node name="FeelSeparator" type="HSeparator" parent="."]
+layout_mode = 2
+
+[node name="ShakeRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="ShakeLabel" type="Label" parent="ShakeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI_GAMEPLAY_TAB_SHAKE"
+
+[node name="ShakeScale" type="HSlider" parent="ShakeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 100.0
+step = 5.0
+value = 50.0
+rounded = true
+
+[node name="ShakeValue" type="Label" parent="ShakeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+text = "50 %"
+horizontal_alignment = 2
+
+[node name="DamageNumbers" type="CheckButton" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_GAMEPLAY_TAB_DAMAGE_NUMBERS"
+
+[node name="HoverInfo" type="CheckButton" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_GAMEPLAY_TAB_HOVER_INFO"

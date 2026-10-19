@@ -62,6 +62,8 @@
 [ext_resource type="PackedScene" path="res://scenes/audio/music_director.tscn" id="a052_music"]
 [ext_resource type="PackedScene" path="res://scenes/audio/ambience_director.tscn" id="a052_ambience"]
 [ext_resource type="PackedScene" path="res://scenes/ui/target_info/target_info_panel.tscn" id="f374_info"]
+[ext_resource type="PackedScene" path="res://scenes/camera/camera_shake.tscn" id="f375_shake"]
+[ext_resource type="PackedScene" path="res://scenes/fx/damage_numbers.tscn" id="f375_numbers"]
 
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
@@ -73,13 +75,21 @@ script = ExtResource("1_world")
 rules = ExtResource("12_rules")
 
 
-[node name="Camera" type="Camera3D" parent="." unique_id=1948599183 node_paths=PackedStringArray("edge_area", "wheel_blockers")]
+[node name="Camera" type="Camera3D" parent="." unique_id=1948599183 node_paths=PackedStringArray("edge_area", "wheel_blockers", "shake")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.7, 0.7, 0, -0.7, 0.7, 0, 18, 18)
 far = 20000.0
 script = ExtResource("11_camera")
 edge_area = NodePath("../Hud/View")
 wheel_blockers = [NodePath("../Hud/Minimap")]
+shake = NodePath("CameraShake")
+
+
+[node name="CameraShake" parent="Camera" instance=ExtResource("f375_shake")]
+
+
+[node name="DamageNumbers" parent="." node_paths=PackedStringArray("camera") instance=ExtResource("f375_numbers")]
+camera = NodePath("../Camera")
 
 
 [node name="Creature" type="MeshInstance3D" parent="." unique_id=2147282153]

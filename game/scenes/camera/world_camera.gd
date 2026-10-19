@@ -10,6 +10,8 @@ extends Camera3D
 ## The wheel does not zoom the world while the pointer is over one of these (the minimap zooms itself). A control with a
 ## `covers(screen)` method (Minimap: its circle) decides by that; any other counts by its rectangle.
 @export var wheel_blockers: Array[Control] = []
+## RFC-053 053f: the shake this camera adds on top of its placement (a CameraShake child). Empty: no shake.
+@export var shake: CameraShake
 
 @export_group("Edges")
 @export var edge_px := 100.0
@@ -230,7 +232,13 @@ func _place() -> void:
 	view_pitch_deg = clampf(offset_deg + free_pitch_deg, -look_up_max_deg, look_down_max_deg)
 	var down := deg_to_rad(view_pitch_deg)
 	var view := ahead * cos(down) + Vector3.DOWN * sin(down)
-	global_transform = Transform3D(Basis.looking_at(view, Vector3.UP), spot + Vector3.UP * eye_lift)
+	var look := Basis.looking_at(view, Vector3.UP)
+	var eye := spot + Vector3.UP * eye_lift
+	# The shake only computes; the camera composes it last, so it never feeds back into the follow.
+	if shake != null and is_instance_valid(shake):
+		eye += look * shake.offset()
+		look = look.rotated(look.z.normalized(), shake.roll())
+	global_transform = Transform3D(look, eye)
 
 
 func _subject_height() -> float:

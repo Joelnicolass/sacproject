@@ -1,0 +1,202 @@
+@tool
+class_name DamageNumbers
+extends Node3D
+
+## RFC-053 053f (F375): floating damage numbers. Presentation only: no RPC, no sim writes, no RNG; nothing in a headless or
+## dedicated process (`run_headless` lets a check run it). FeelPrefs.damage_numbers turns them off.
+## - It hears every Health that enters the tree (SceneTree.node_added) whose body is in `body_groups`, and reads its
+##   `changed` signal (every peer has it): a drop in `current` is damage.
+## - Only bodies the local player sees: visible in the tree, inside `camera`'s frustum and within `max_distance_m` of it.
+## - Hits on the same body within `merge_s` add up in one number (no spam). At most `pool_size` numbers at once: a hit with
+##   none free is dropped.
+## - A number rises `rise_m` over `life_s` and fades out over the last `fade_s`; then it goes back to the pool (hidden).
+## The look of a number is the `number_scene` Label3D (scenes/fx/damage_number.tscn); `own_color` tints the local side's bodies.
+
+## Group a check counts (see `is_active`).
+const GROUP := &"feel_presentation"
+
+@export var prefs: FeelPrefs
+## The camera of the local player (WorldCamera).
+@export var camera: Camera3D
+@export var number_scene: PackedScene = preload("res://scenes/fx/damage_number.tscn")
+@export var body_groups: PackedStringArray = PackedStringArray(["unit", "wizard", "structure", "map_building", "doctor"])
+@export_range(1, 256) var pool_size := 48
+@export var merge_s := 0.15
+@export var life_s := 0.9
+@export var fade_s := 0.35
+@export var rise_m := 1.4
+## Over the body's head (BodyVisual height, else `default_height_m`).
+@export var head_gap_m := 0.4
+@export var default_height_m := 2.0
+@export var max_distance_m := 90.0
+## Damage below this is not shown (a sliver of poison or a rounding).
+@export var min_amount := 1.0
+## The local side's bodies (the player's own losses) read in this color; empty alpha keeps the scene's.
+@export var own_color := Color(1.0, 0.42, 0.32, 1.0)
+## Debug: run in a headless process too (the --feel-script check). The product leaves it off.
+@export var run_headless := false
+
+var _active := false
+## Label3D of the pool not in use.
+var _free: Array[Label3D] = []
+## Live numbers: Label3D -> {body, amount, age, base}.
+var _live: Dictionary = {}
+## Health -> its last `current`.
+var _last: Dictionary = {}
+## Health -> the bound callable connected to its `changed`.
+var _bound: Dictionary = {}
+## Body -> the Label3D it is adding to, while younger than merge_s.
+var _merging: Dictionary = {}
+var _base_color := Color.WHITE
+
+
+func _ready() -> void:
+	add_to_group(GROUP)
+	_active = not Engine.is_editor_hint() and (run_headless or not _presentation_off())
+	set_process(_active)
+	if not _active:
+		return
+	for i in pool_size:
+		var label := number_scene.instantiate() as Label3D
+		label.visible = false
+		add_child(label)
+		_free.append(label)
+	if not _free.is_empty():
+		_base_color = _free[0].modulate
+	get_tree().node_added.connect(_on_node_added)
+	for group in body_groups:
+		for body in get_tree().get_nodes_in_group(group):
+			var health := body.get_node_or_null("Health") as Health
+			if health:
+				_watch(health)
+
+
+## False in headless and dedicated processes (unless `run_headless`): no pool, no listeners.
+func is_active() -> bool:
+	return _active
+
+
+## Numbers on screen now (checks read it).
+func live_count() -> int:
+	return _live.size()
+
+
+## The text of the live numbers (checks read it).
+func live_texts() -> PackedStringArray:
+	var texts := PackedStringArray()
+	for label: Label3D in _live:
+		texts.append(label.text)
+	return texts
+
+
+func _on_node_added(node: Node) -> void:
+	if node is Health:
+		_watch.call_deferred(node)
+
+
+func _watch(health: Health) -> void:
+	if not is_instance_valid(health) or _last.has(health) or not _is_body(health.get_parent()):
+		return
+	_last[health] = health.current
+	var listener := _on_health_changed.bind(health)
+	_bound[health] = listener
+	health.changed.connect(listener)
+	health.tree_exiting.connect(_forget.bind(health), CONNECT_ONE_SHOT)
+
+
+func _forget(health: Health) -> void:
+	_last.erase(health)
+	var listener: Variant = _bound.get(health)
+	_bound.erase(health)
+	if listener is Callable and is_instance_valid(health) and health.changed.is_connected(listener):
+		health.changed.disconnect(listener)
+
+
+func _is_body(node: Node) -> bool:
+	if node == null:
+		return false
+	for group in body_groups:
+		if node.is_in_group(group):
+			return true
+	return false
+
+
+func _on_health_changed(current: float, _maximum: float, health: Health) -> void:
+	var lost := float(_last.get(health, current)) - current
+	_last[health] = current
+	if lost < min_amount or (prefs != null and not prefs.damage_numbers()):
+		return
+	var body := health.get_parent() as Node3D
+	if body == null or not _seen(body):
+		return
+	_show(body, lost)
+
+
+func _seen(body: Node3D) -> bool:
+	if not body.is_visible_in_tree():
+		return false
+	if camera == null or not camera.is_inside_tree():
+		return true
+	var at := _head(body)
+	return camera.global_position.distance_to(at) <= max_distance_m and camera.is_position_in_frustum(at)
+
+
+func _show(body: Node3D, amount: float) -> void:
+	var merging: Label3D = _merging.get(body)
+	if merging != null and _live.has(merging) and float(_live[merging]["age"]) < merge_s:
+		_live[merging]["amount"] = float(_live[merging]["amount"]) + amount
+		merging.text = str(roundi(float(_live[merging]["amount"])))
+		return
+	if _free.is_empty():
+		return
+	var label: Label3D = _free.pop_back()
+	var base := _head(body)
+	_live[label] = {"body": body, "amount": amount, "age": 0.0, "base": base}
+	_merging[body] = label
+	label.text = str(roundi(amount))
+	var own := "owner_slot" in body and int(body.get("owner_slot")) == MpKit.local_slot()
+	label.modulate = own_color if own and own_color.a > 0.0 else _base_color
+	label.global_position = base
+	label.visible = true
+
+
+func _process(delta: float) -> void:
+	for label: Label3D in _live.keys():
+		var entry: Dictionary = _live[label]
+		var age := float(entry["age"]) + delta
+		entry["age"] = age
+		if age >= life_s:
+			_release(label, entry)
+			continue
+		var t := age / life_s
+		# Slow in, slow out: fast at first, settling at the top (ease out).
+		label.global_position = (entry["base"] as Vector3) + Vector3.UP * rise_m * (1.0 - pow(1.0 - t, 2.0))
+		var color := label.modulate
+		color.a = clampf((life_s - age) / maxf(fade_s, 0.001), 0.0, 1.0)
+		label.modulate = color
+		var outline := label.outline_modulate
+		outline.a = color.a
+		label.outline_modulate = outline
+
+
+func _release(label: Label3D, entry: Dictionary) -> void:
+	_live.erase(label)
+	var body: Variant = entry.get("body")
+	if _merging.get(body) == label:
+		_merging.erase(body)
+	label.visible = false
+	_free.append(label)
+
+
+func _head(body: Node3D) -> Vector3:
+	var height := default_height_m
+	for path in [^"Tilt/Mesh", ^"Mesh"]:
+		var visual := body.get_node_or_null(path) as BodyVisual
+		if visual != null:
+			height = visual.body_height()
+			break
+	return body.global_position + Vector3.UP * (height + head_gap_m)
+
+
+static func _presentation_off() -> bool:
+	return DisplayServer.get_name() == "headless" or MpKit.is_dedicated()

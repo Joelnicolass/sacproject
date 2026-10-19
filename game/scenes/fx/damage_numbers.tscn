@@ -1,0 +1,11 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/damage_numbers.gd" id="1_numbers"]
+[ext_resource type="Resource" path="res://data/ui/feel_prefs.tres" id="2_prefs"]
+[ext_resource type="PackedScene" path="res://scenes/fx/damage_number.tscn" id="3_number"]
+
+[node name="DamageNumbers" type="Node3D"]
+editor_description = "RFC-053 053f: números de daño flotantes (Health.changed de los cuerpos que ve el jugador). Pool de Label3D; nada en headless ni dedicado."
+script = ExtResource("1_numbers")
+prefs = ExtResource("2_prefs")
+number_scene = ExtResource("3_number")

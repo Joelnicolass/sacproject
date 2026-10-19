@@ -6,68 +6,51 @@
 #      forced defeats and `partida terminada, gana el equipo 0: slots [1, 2]`; Ana must read winner_slots [1, 2] from the replicated state.
 #   2. «Contra la IA» with the mode (`debug/net/vs_ai_mode.tscn`, flags --mode=2v2 --map=test_flat4): AI in slots 2, 3 and 4, slot 2
 #      the ally of the player, 3 and 4 foes.
-# Processes: dedicated + 2 clients (step 1), one solo (step 2); all through the Godot queue. Own watchdog: LIMIT_S (240 s) kills them
+# Processes: dedicated + 2 clients (step 1), one solo (step 2, it starts at the same time: it needs nothing from step 1).
+# F350: all of them run inside ONE group reservation of the Godot queue (agent/harness/godot_group.sh), started directly, with --fixed-fps (NET_FPS,
+# 600); the waits are on log lines or real seconds (Ana lingers E2E_LINGER_S, Beto waits E2E_REJECT_WAIT_S). Own watchdog: LIMIT_S kills them
 # by pid and descendants (no pkill). UDP port 7849 by default (E2E_PORT).
 # Prints the checks and E2E PASS / E2E FAIL (exit 0 / 1). Needs `--import` once first (new class_names).
-. "$(dirname "$0")/../harness/env.sh"
-GODOT="$GODOT_BIN"
-LIMIT_S="${PROBE_LIMIT_S:-240}"
+. "$(dirname "$0")/../harness/net_e2e.sh"
+net_group 4 "$@"
+TAG="E2E"
+LIMIT_S="${PROBE_LIMIT_S:-120}"
+PROC_MAX=5
 PORT="${E2E_PORT:-7849}"
-FORCE_TICKS="${E2E_FORCE_TICKS:-1200}"
+FORCE_TICKS="${E2E_FORCE_TICKS:-300}"
+LINGER_S="${E2E_LINGER_S:-5}"
+REJECT_WAIT_S="${E2E_REJECT_WAIT_S:-3}"
 WORLD="res://debug/net/forced_defeat_match.tscn"
 OUT="$(mktemp -d "${TMPDIR:-/tmp}/run_049e.XXXXXX")"
 START_S=$SECONDS
 
-descendants() { # pid -> pid and all its descendants
-  local p="$1" c
-  echo "$p"
-  for c in $(pgrep -P "$p" 2>/dev/null); do descendants "$c"; done
-}
-kill_tree() { local p; for p in $(descendants "$1" | sort -rn); do kill "$p" 2>/dev/null; done; }
-kill_all() {
-  local p
-  for p in $(cat "$OUT/pids" 2>/dev/null); do [ -n "$p" ] && kill_tree "$p"; done
-}
-trap 'kill_all; kill $WATCH 2>/dev/null' EXIT
-( sleep "$LIMIT_S"; echo "E2E FAIL: external timeout ${LIMIT_S}s" > "$OUT/timeout.flag"; kill_all ) &
-WATCH=$!
+kill_all() { kill_pids; }
+trap 'kill_all; net_stop' EXIT
+net_guard
 
-run_godot() { # name, then the arguments of Godot; the pid is in LAST_PID
-  local name="$1"; shift
-  bash "$ROOT/agent/harness/godot_run.sh" "$GODOT" --headless --path "$ROOT" "$@" > "$OUT/$name.log" 2>&1 &
-  LAST_PID=$!
-  echo "$LAST_PID" >> "$OUT/pids"
-}
+# --- 2 (started first, it runs next to step 1). «Contra la IA» with a mode ------------------------------------------------
+gd "$OUT/solo.log" "${FPS_FLAGS[@]}" res://debug/net/vs_ai_mode.tscn -- --mode=2v2 --map=test_flat4 --e2e-seats=4
+SOLO=$LAST_PID
 
 # --- 1. the dedicated with three AI ----------------------------------------------------------------------------------
-run_godot server --fixed-fps 60 -- --dedicated --mp-port="$PORT" --map=test_flat4 --mode=2v2 --ai-slots=2,3,4 \
+gd "$OUT/server.log" "${FPS_FLAGS[@]}" -- --dedicated --mp-port="$PORT" --map=test_flat4 --mode=2v2 --ai-slots=2,3,4 \
   --world="$WORLD" --force-defeat-slot=3,4 --force-defeat-after-ticks="$FORCE_TICKS"
 SERVER=$LAST_PID
 READY=0
-for _ in $(seq 1 240); do
-  if grep -q "dedicated listo" "$OUT/server.log" 2>/dev/null; then READY=1; break; fi
-  kill -0 "$SERVER" 2>/dev/null || break
-  sleep 0.5
-done
+wait_line "$OUT/server.log" "dedicated listo" "$SERVER" 30 && READY=1
 if [ "$READY" = 1 ]; then
-  run_godot Ana res://debug/net/dedicated_client.tscn -- --mp-port="$PORT" --world="$WORLD" --e2e-name=Ana --e2e-expect-slot=1 \
-    --e2e-expect-mode=2v2 --e2e-expect-winners=1,2 --e2e-timeout-s=150 --e2e-linger-s=40
+  gd "$OUT/Ana.log" "${FPS_FLAGS[@]}" res://debug/net/dedicated_client.tscn -- --mp-port="$PORT" --world="$WORLD" --e2e-name=Ana --e2e-expect-slot=1 \
+    --e2e-expect-mode=2v2 --e2e-expect-winners=1,2 --e2e-timeout-s=60 --e2e-linger-s="$LINGER_S"
   ANA=$LAST_PID
-  for _ in $(seq 1 120); do
-    grep -q "PASS Ana gets a slot" "$OUT/Ana.log" 2>/dev/null && break
-    kill -0 "$ANA" 2>/dev/null || break
-    sleep 0.5
-  done
-  run_godot Beto res://debug/net/dedicated_client.tscn -- --mp-port="$PORT" --world="$WORLD" --e2e-name=Beto --e2e-expect-reject
+  wait_line "$OUT/Ana.log" "PASS Ana gets a slot" "$ANA" 60
+  gd "$OUT/Beto.log" "${FPS_FLAGS[@]}" res://debug/net/dedicated_client.tscn -- --mp-port="$PORT" --world="$WORLD" --e2e-name=Beto --e2e-expect-reject \
+    --e2e-reject-wait-s="$REJECT_WAIT_S"
   BETO=$LAST_PID
   wait "$ANA"; wait "$BETO"
 fi
 kill_tree "$SERVER"
 wait "$SERVER" 2>/dev/null
-
-# --- 2. «Contra la IA» with a mode ---------------------------------------------------------------------------------------
-run_godot solo --fixed-fps 60 res://debug/net/vs_ai_mode.tscn -- --mode=2v2 --map=test_flat4 --e2e-seats=4
-wait "$LAST_PID"
+wait "$SOLO"
 
 # --- verdict -------------------------------------------------------------------------------------------------------
 echo "--- server ---"; grep -E "^(dedicado|dedicated listo|ia slot|derrota forzada|partida terminada|bando|modo|mapa|SCRIPT ERROR|ERROR)" "$OUT/server.log" | head -n 40
@@ -106,13 +89,13 @@ check(not any("SCRIPT ERROR" in l for l in solo), "no SCRIPT ERROR in the solo l
 sys.exit(1 if fails else 0)
 PYEOF
 VERDICT=$?
-kill_all
-sleep 1
-STRAY=$(ps -axo args= | awk -v m="$PORT" 'index($0, "--mp-port=" m)' | grep -c Godot)
+kill_all 2>/dev/null
+wait_gone "--mp-port=$PORT" 5
+STRAY=$(godots_with "--mp-port=$PORT")
 if [ "$STRAY" != 0 ]; then echo "FAIL $STRAY Godot process of this run still alive after the kill"; VERDICT=1; else echo "PASS no Godot process left"; fi
 [ "$READY" = 1 ] || { echo "E2E FAIL: the dedicated did not announce its port"; VERDICT=1; }
 [ -s "$OUT/timeout.flag" ] && { cat "$OUT/timeout.flag"; VERDICT=1; }
-kill $WATCH 2>/dev/null
+net_stop
 echo "$((SECONDS - START_S)) s"
 if [ "$VERDICT" = 0 ]; then echo "E2E PASS"; rm -rf "$OUT"; else echo "E2E FAIL (logs in $OUT)"; fi
 exit "$VERDICT"

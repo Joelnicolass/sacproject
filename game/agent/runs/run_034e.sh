@@ -2,100 +2,63 @@
 # RFC-034 034e: end to end, headless, with the real room server and TWO real dedicated processes in parallel.
 # 7 Godot processes: 1 room server (--room-server, --max-matches=2) + 4 lobby clients + 2 dedicated matches that the
 # server launches by itself. Two 1v1 rooms at once:
-#   SalaA: Ana (creator, joins the dedicated 2 s late) + Aldo; the match ends by a forced defeat of slot 2 -> winner 1, "result".
-#   SalaB: Beto (creator, leaves the dedicated 1 s after joining) + Bruno; the match ends by abandon -> winner 2, "abandon".
+#   SalaA: Ana (creator, joins the dedicated late) + Aldo; the match ends by a forced defeat of slot 2 -> winner 1, "result".
+#   SalaB: Beto (creator, leaves the dedicated soon after joining) + Bruno; the match ends by abandon -> winner 2, "abandon".
 # Also: Aldo tries his ticket on SalaB's dedicated and Bruno his on SalaA's (rejected), and each one a made-up ticket on his own.
 # Then it checks the logs: each dedicated admitted only the tickets of its room, picks/options/seed are those of the
 # ticket, each match ended with its own result and that result reached only its room, and nothing is left behind.
 # The clients do not load the world (--no-flow): the dedicated simulates the real match.
-# Closes by itself: nodes under root with internal timeouts (150 s); this script kills the server, the clients and the
-# dedicated (by pid and descendants, no pkill) at LIMIT_S (180 s), or if the total RSS passes RSS_LIMIT_MB.
+# F350: all 7 processes run inside ONE group reservation of the Godot queue (agent/harness/godot_group.sh) and are started directly (the
+# dedicated are children of the server); caps: LIMIT_S wall, E2E_RSS_LIMIT_MB total RSS, 8 processes. The waits are on log lines. The grace,
+# the countdown, the poll and the quit delay are CLI flags of the config. The ORDER of the two matches (Bruno joins before Beto's abandon,
+# every player joins before the forced defeat) depends on wall time, so the dedicated run in real time (no --fixed-fps): the defeat comes
+# E2E_FORCE_TICKS (420 = 7 s) ticks after the first player sat, the abandon about 3 s after Beto joined.
 # Prints the checks, the max total RSS of the Godot processes of this project, and E2E PASS / E2E FAIL (exit 0 / 1).
 # Needs `--import` once first (new class_names). Uses UDP 7706 (lobby) and 7800-7803 (matches); files go in a temp folder.
-. "$(dirname "$0")/../harness/env.sh"
-GODOT="$GODOT_BIN"
-LIMIT_S="${PROBE_LIMIT_S:-180}"
+. "$(dirname "$0")/../harness/net_e2e.sh"
+net_group 7 "$@"
+TAG="E2E"
+LIMIT_S="${PROBE_LIMIT_S:-120}"
+PROC_MAX=8
 TRANSPORT="${TRANSPORT:-enet}" # enet (UDP, default) or ws (WebSocket over TCP, lobby and dedicated): TRANSPORT=ws bash agent/runs/run_034e.sh
-RSS_LIMIT_MB="${E2E_RSS_LIMIT_MB:-8192}"
 LOBBY_PORT="${E2E_LOBBY_PORT:-7706}"
+FORCE_TICKS="${E2E_FORCE_TICKS:-420}"
 OUT="$(mktemp -d "${TMPDIR:-/tmp}/room_e2e_034e.XXXXXX")"
 MATCHES="$OUT/matches"
 PORTS="$OUT/ports"
 mkdir -p "$MATCHES" "$PORTS"
-# Five processes go through the queue (server + 4 clients); the two dedicated are children of the server and skip it.
-export HEADLESS_SLOTS="${HEADLESS_SLOTS:-5}"
-export GODOT_MAX="${GODOT_MAX:-9}"
 START_S=$SECONDS
 EXIT_WAIT_S=10 # grace for the dedicated to exit after the last result
 
-descendants() { # pid -> pid and all its descendants
-  local p="$1" c
-  echo "$p"
-  for c in $(pgrep -P "$p" 2>/dev/null); do descendants "$c"; done
-}
-kill_tree() { local p; for p in $(descendants "$1" | sort -rn); do kill "$p" 2>/dev/null; done; }
 kill_stray() { # dedicated of this run that lost their parent
   local p
   for p in $(ps -axo pid=,args= | awk -v m="match-ticket-file=$MATCHES" '$2 ~ /\/Godot$/ && index($0, m) {print $1}'); do kill "$p" 2>/dev/null; done
 }
-CLIENT_PIDS=""
-kill_all() { # the clients' pids live in a file so the background watchers (subshells) see them too
-  local p
-  for p in $(cat "$OUT/clients.pids" 2>/dev/null) $SERVER; do [ -n "$p" ] && kill_tree "$p"; done
-  kill_stray
-}
-trap 'kill_all; kill $WATCH $MONITOR 2>/dev/null' EXIT
+kill_all() { kill_pids; kill_stray; }
+trap 'kill_all; net_stop' EXIT
+net_guard
 
 # --- room server ---------------------------------------------------------------------------------------------------
-bash "$ROOT/agent/harness/godot_run.sh" "$GODOT" --headless --path "$ROOT" res://scenes/net/room_server.tscn -- \
+gd "$OUT/server.log" res://scenes/net/room_server.tscn -- \
   --room-server --transport="$TRANSPORT" --lobby-config=res://data/net/lobby_config_local.tres --lobby-port="$LOBBY_PORT" --max-matches=2 \
   --ticket-ttl-s=60 --idle-no-players-s=30 --resume-grace-s=120 --matches-root="$MATCHES" \
-  --match-args=--force-defeat-slot=2,--force-defeat-after-ticks=1200,--no-load-hold > "$OUT/server.log" 2>&1 &
-SERVER=$!
-
-( # external timeout
-  sleep "$LIMIT_S"
-  if kill -0 "$SERVER" 2>/dev/null; then
-    echo "E2E FAIL: external timeout ${LIMIT_S}s" > "$OUT/timeout.flag"
-    kill_all
-  fi
-) &
-WATCH=$!
-
-( # total RSS of the Godot processes of this project, and a brake for the machine
-  max=0; maxn=0
-  while :; do
-    read -r tot n < <(ps -axo rss=,args= | awk -v root="$ROOT" '$2 ~ /\/Godot$/ && index($0, root) {s += $1; c++} END {print s + 0, c + 0}')
-    [ "$tot" -gt "$max" ] && max=$tot
-    [ "$n" -gt "$maxn" ] && maxn=$n
-    echo "$max $maxn" > "$OUT/rss.max"
-    if [ $((tot / 1024)) -gt "$RSS_LIMIT_MB" ]; then
-      echo "E2E FAIL: RSS $((tot / 1024)) MB over the limit ($RSS_LIMIT_MB MB)" > "$OUT/timeout.flag"
-      kill_all
-    fi
-    sleep 1
-  done
-) &
-MONITOR=$!
-
+  --countdown-s=0.2 --poll-s=0.1 --heartbeat-s=0.5 --parent-check-s=0.5 --rejoin-grace-s=2 --result-quit-delay-s=0.5 \
+  --match-args=--force-defeat-slot=2,--force-defeat-after-ticks="$FORCE_TICKS",--no-load-hold
+SERVER=$LAST_PID
 READY=0
-for _ in $(seq 1 240); do
-  if grep -q "^salas listo puerto" "$OUT/server.log" 2>/dev/null; then READY=1; break; fi
-  kill -0 "$SERVER" 2>/dev/null || break
-  sleep 0.5
-done
+wait_line "$OUT/server.log" "^salas listo puerto" "$SERVER" 30 && READY=1
 
 CODE=1
 if [ "$READY" = 1 ]; then
+  CLIENT_PIDS=""
   client() { # name, then the client flags
     local name="$1"; shift
-    bash "$ROOT/agent/harness/godot_run.sh" "$GODOT" --headless --path "$ROOT" res://debug/net/room_e2e_client.tscn -- \
-      --no-flow --transport="$TRANSPORT" --lobby-port="$LOBBY_PORT" --e2e-dir="$PORTS" --e2e-name="$name" "$@" > "$OUT/$name.log" 2>&1 &
-    CLIENT_PIDS="$CLIENT_PIDS $!"
-    echo "$!" >> "$OUT/clients.pids"
+    gd "$OUT/$name.log" res://debug/net/room_e2e_client.tscn -- \
+      --no-flow --transport="$TRANSPORT" --lobby-port="$LOBBY_PORT" --e2e-dir="$PORTS" --e2e-name="$name" "$@"
+    CLIENT_PIDS="$CLIENT_PIDS $LAST_PID"
   }
   client Ana   --e2e-room=SalaA --e2e-peer=Aldo --e2e-create --e2e-level=2 --e2e-room-tag=A \
-    --e2e-wizard=cwa0 --e2e-model=jnwr --e2e-god=james --e2e-join-delay-s=2 --e2e-expect-winner=1 --e2e-expect-reason=result
+    --e2e-wizard=cwa0 --e2e-model=jnwr --e2e-god=james --e2e-join-delay-s=1 --e2e-expect-winner=1 --e2e-expect-reason=result
   client Aldo  --e2e-room=SalaA --e2e-peer=Ana --e2e-room-tag=A --e2e-cross-tag=B \
     --e2e-wizard=cwa1 --e2e-model=serx --e2e-god=pyro --e2e-expect-winner=1 --e2e-expect-reason=result
   client Beto  --e2e-room=SalaB --e2e-peer=Bruno --e2e-create --e2e-level=3 --e2e-room-tag=B \
@@ -104,12 +67,8 @@ if [ "$READY" = 1 ]; then
     --e2e-wizard=cwd0 --e2e-model=xwiz --e2e-god=charnel --e2e-expect-winner=2 --e2e-expect-reason=abandon
   for p in $CLIENT_PIDS; do wait "$p"; done
   # the server closes the two matches by itself: wait until no dedicated and no match folder is left
-  for _ in $(seq 1 40); do
-    left=$(ps -axo args= | awk -v m="match-ticket-file=$MATCHES" '$1 ~ /\/Godot$/ && index($0, m)' | wc -l | tr -d ' ')
-    dirs=$(find "$MATCHES" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
-    [ "$left" = 0 ] && [ "$dirs" = 0 ] && break
-    sleep 0.5
-  done
+  wait_gone "match-ticket-file=$MATCHES" "$EXIT_WAIT_S"
+  for _ in $(seq 1 100); do [ -z "$(find "$MATCHES" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)" ] && break; sleep 0.1; done
 fi
 
 # --- verdict -------------------------------------------------------------------------------------------------------
@@ -203,20 +162,16 @@ sys.exit(1 if fails else 0)
 PYEOF
 VERDICT=$?
 # the dedicated may still be exiting (result delay): wait up to EXIT_WAIT_S for them, then it is a FAIL and they are killed
-for _ in $(seq 1 $((EXIT_WAIT_S * 2))); do
-  STRAY=$(ps -axo args= | awk -v m="match-ticket-file=$MATCHES" '$1 ~ /\/Godot$/ && index($0, m)' | wc -l | tr -d ' ')
-  [ "$STRAY" = 0 ] && break
-  sleep 0.5
-done
-if [ "$STRAY" = 0 ]; then echo "PASS no dedicated process left"; else echo "FAIL $STRAY dedicated process still alive after ${EXIT_WAIT_S}s"; VERDICT=1; fi
-kill_all
-sleep 1
-STRAY=$(ps -axo args= | awk -v m="$OUT" 'index($0, m)' | grep -c Godot)
+if wait_gone "match-ticket-file=$MATCHES" "$EXIT_WAIT_S"; then echo "PASS no dedicated process left"; else echo "FAIL dedicated process still alive after ${EXIT_WAIT_S}s"; VERDICT=1; fi
+kill_tree "$SERVER"; wait "$SERVER" 2>/dev/null
+kill_all 2>/dev/null
+wait_gone "$OUT" 5
+STRAY=$(godots_with "$OUT")
 if [ "$STRAY" != 0 ]; then echo "FAIL $STRAY Godot process of this run still alive after the kill"; VERDICT=1; fi
 read -r RSS_KB PROCS < "$OUT/rss.max" 2>/dev/null
 echo "RSS max total: $(( ${RSS_KB:-0} / 1024 )) MB, at most ${PROCS:-0} Godot processes at once, $((SECONDS - START_S)) s"
 if [ -s "$OUT/timeout.flag" ]; then cat "$OUT/timeout.flag"; VERDICT=1; fi
 [ "$READY" = 1 ] || { echo "E2E FAIL: the room server did not announce its port"; VERDICT=1; }
-kill $WATCH $MONITOR 2>/dev/null
+net_stop
 if [ "$VERDICT" = 0 ]; then echo "E2E PASS"; rm -rf "$OUT"; else echo "E2E FAIL (logs in $OUT)"; fi
 exit "$VERDICT"

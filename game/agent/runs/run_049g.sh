@@ -12,135 +12,91 @@
 #      The ticket has 2 rows with a token and 2 ai_seats; the dedicated seats the AI (`ia slot 3 lista`, `ia slot 4 lista`) and the
 #      forced defeat of 3 and 4 gives winner_slots [1,2], reason "result".
 # Checks the logs: slots per the ticket, the picks, the order of the events, one result per match, nothing left behind.
-# Closes by itself: the clients have internal timeouts (150 s); this script kills the server, the clients and the dedicated (by pid
-# and descendants, no pkill) at LIMIT_S (240 s per phase, counted from the room server being up), or if the total RSS passes RSS_LIMIT_MB.
+# F350: all the processes run inside ONE group reservation of the Godot queue (agent/harness/godot_group.sh), started directly. The seats fill in
+# order by an EVENT (a joiner enters when the room already holds N seats: --e2e-join-when-used), not by wall-clock delays (the old delays raced with the
+# startup of the processes: it never passed). Phase A (ordering, grace) runs in real time with short delays and a 2 s grace; phase B (no ordering) runs
+# its dedicated with --fixed-fps. Closes by itself: the clients have internal timeouts (150 s); this script kills the server, the clients and the
+# dedicated (by pid and descendants, no pkill) at LIMIT_S per phase, or if the total RSS passes the cap.
 # Prints the checks, the max total RSS of the Godot processes of this project, and E2E PASS / E2E FAIL (exit 0 / 1).
 # Needs `--import` once first (new class_names). Uses UDP 7709 (lobby) and 7800-7803 (matches); files go in a temp folder.
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-GODOT="${GODOT_BIN:-/Applications/Godot.app/Contents/MacOS/Godot}"
-LIMIT_S="${PROBE_LIMIT_S:-240}"
+. "$(dirname "$0")/../harness/net_e2e.sh"
+net_group 6 "$@"
+TAG="E2E"
+LIMIT_S="${PROBE_LIMIT_S:-120}"
+PROC_MAX=7
 TRANSPORT="${TRANSPORT:-enet}"
-RSS_LIMIT_MB="${E2E_RSS_LIMIT_MB:-8192}"
 LOBBY_PORT="${E2E_LOBBY_PORT:-7709}"
+REJOIN_GRACE_S="${E2E_REJOIN_GRACE_S:-2}"
 OUT="$(mktemp -d "${TMPDIR:-/tmp}/room_e2e_049g.XXXXXX")"
 mkdir -p "$OUT/A/matches" "$OUT/B/matches" "$OUT/ports"
-# Five processes go through the queue (server + 4 clients); the dedicated is a child of the server and skips it.
-export HEADLESS_SLOTS="${HEADLESS_SLOTS:-5}"
-export GODOT_MAX="${GODOT_MAX:-9}"
 START_S=$SECONDS
 EXIT_WAIT_S=10 # grace for the dedicated to exit after the last result
 
-descendants() { # pid -> pid and all its descendants
-  local p="$1" c
-  echo "$p"
-  for c in $(pgrep -P "$p" 2>/dev/null); do descendants "$c"; done
-}
-kill_tree() { local p; for p in $(descendants "$1" | sort -rn); do kill "$p" 2>/dev/null; done; }
 kill_stray() { # dedicated of this run that lost their parent
   local p
   for p in $(ps -axo pid=,args= | awk -v m="match-ticket-file=$OUT" '$2 ~ /\/Godot$/ && index($0, m) {print $1}'); do kill "$p" 2>/dev/null; done
 }
-kill_all() { # the pids live in a file so the background watchers (subshells) see them too
-  local p
-  for p in $(cat "$OUT/pids" 2>/dev/null); do [ -n "$p" ] && kill_tree "$p"; done
-  kill_stray
-}
-trap 'kill_all; kill $WATCH $MONITOR 2>/dev/null' EXIT
-
-WATCH=0
-arm_watch() { # the external timeout of a phase starts when its room server is up (waiting in the Godot queue does not count)
-  [ "$WATCH" != 0 ] && kill "$WATCH" 2>/dev/null
-  (
-    sleep "$LIMIT_S"
-    echo "E2E FAIL: external timeout ${LIMIT_S}s" > "$OUT/timeout.flag"
-    kill_all
-  ) &
-  WATCH=$!
-}
-
-( # total RSS of the Godot processes of this project, and a brake for the machine
-  max=0; maxn=0
-  while :; do
-    read -r tot n < <(ps -axo rss=,args= | awk -v root="$ROOT" '$2 ~ /\/Godot$/ && index($0, root) {s += $1; c++} END {print s + 0, c + 0}')
-    [ "$tot" -gt "$max" ] && max=$tot
-    [ "$n" -gt "$maxn" ] && maxn=$n
-    echo "$max $maxn" > "$OUT/rss.max"
-    if [ $((tot / 1024)) -gt "$RSS_LIMIT_MB" ]; then
-      echo "E2E FAIL: RSS $((tot / 1024)) MB over the limit ($RSS_LIMIT_MB MB)" > "$OUT/timeout.flag"
-      kill_all
-    fi
-    sleep 1
-  done
-) &
-MONITOR=$!
+kill_all() { kill_pids; kill_stray; }
+trap 'kill_all; net_stop' EXIT
+net_guard
 
 start_server() { # phase, then the extra flags of the room server
   local phase="$1"; shift
-  bash "$ROOT/agent/harness/godot_run.sh" "$GODOT" --headless --path "$ROOT" res://scenes/net/room_server.tscn -- \
+  gd "$OUT/$phase/server.log" res://scenes/net/room_server.tscn -- \
     --room-server --room-test-maps --transport="$TRANSPORT" --lobby-config=res://data/net/lobby_config_local.tres \
     --lobby-port="$LOBBY_PORT" --max-matches=1 --ticket-ttl-s=60 --idle-no-players-s=30 --resume-grace-s=120 \
-    --matches-root="$OUT/$phase/matches" "$@" > "$OUT/$phase/server.log" 2>&1 &
-  SERVER=$!
-  echo "$SERVER" >> "$OUT/pids"
+    --countdown-s=0.2 --poll-s=0.1 --heartbeat-s=0.5 --parent-check-s=0.5 --result-quit-delay-s=1 \
+    --matches-root="$OUT/$phase/matches" "$@"
+  SERVER=$LAST_PID
 }
 
 wait_ready() { # phase
   READY=0
-  for _ in $(seq 1 1800); do # up to 15 min: the server may wait its turn in the Godot queue
-    if grep -q "^salas listo puerto" "$OUT/$1/server.log" 2>/dev/null; then READY=1; arm_watch; break; fi
-    kill -0 "$SERVER" 2>/dev/null || break
-    sleep 0.5
-  done
+  wait_line "$OUT/$1/server.log" "^salas listo puerto" "$SERVER" 30 && READY=1
 }
 
 client() { # phase, name, then the client flags
   local phase="$1" name="$2"; shift 2
-  bash "$ROOT/agent/harness/godot_run.sh" "$GODOT" --headless --path "$ROOT" res://debug/net/room_e2e_client.tscn -- \
-    --no-flow --transport="$TRANSPORT" --lobby-port="$LOBBY_PORT" --e2e-dir="$OUT/ports" --e2e-name="$name" "$@" > "$OUT/$phase/$name.log" 2>&1 &
-  PHASE_PIDS="$PHASE_PIDS $!"
-  echo "$!" >> "$OUT/pids"
+  gd "$OUT/$phase/$name.log" res://debug/net/room_e2e_client.tscn -- \
+    --no-flow --transport="$TRANSPORT" --lobby-port="$LOBBY_PORT" --e2e-dir="$OUT/ports" --e2e-name="$name" "$@"
+  PHASE_PIDS="$PHASE_PIDS $LAST_PID"
 }
 
 settle() { # phase: the server closes the match by itself; wait until no dedicated and no match folder is left
-  local left dirs
-  for _ in $(seq 1 40); do
-    left=$(ps -axo args= | awk -v m="match-ticket-file=$OUT/$1/matches" '$1 ~ /\/Godot$/ && index($0, m)' | wc -l | tr -d ' ')
-    dirs=$(find "$OUT/$1/matches" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
-    [ "$left" = 0 ] && [ "$dirs" = 0 ] && break
-    sleep 0.5
-  done
+  wait_gone "match-ticket-file=$OUT/$1/matches" "$EXIT_WAIT_S"
+  for _ in $(seq 1 100); do [ -z "$(find "$OUT/$1/matches" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)" ] && break; sleep 0.1; done
 }
 
 # --- phase A: four humans -------------------------------------------------------------------------------------------
 PHASE_PIDS=""
-start_server A
+start_server A --rejoin-grace-s="$REJOIN_GRACE_S"
 wait_ready A
 READY_A=$READY
 if [ "$READY_A" = 1 ]; then
   COMMON="--e2e-room=Sala2v2 --e2e-seats=4 --e2e-world-ready --e2e-expect-winners=1,2 --e2e-expect-reason=abandon"
   client A Ana  $COMMON --e2e-create --e2e-mode=2v2 --e2e-world=test_flat4 --e2e-level=2 --e2e-peers=Beto,Cris,Dani --e2e-seat=0 \
     --e2e-wizard=cwa0 --e2e-model=jnwr --e2e-god=james
-  client A Beto $COMMON --e2e-peers=Ana,Cris,Dani --e2e-seat=1 --e2e-lobby-delay-s=2 --e2e-leave-after-s=8 --e2e-rejoin-after-s=2 \
+  client A Beto $COMMON --e2e-peers=Ana,Cris,Dani --e2e-seat=1 --e2e-join-when-used=1 --e2e-leave-after-s=4 --e2e-rejoin-after-s=0.8 \
     --e2e-wizard=cwa1 --e2e-model=serx --e2e-god=pyro
-  client A Cris $COMMON --e2e-peers=Ana,Beto,Dani --e2e-seat=2 --e2e-lobby-delay-s=4 --e2e-leave-after-s=12 \
+  client A Cris $COMMON --e2e-peers=Ana,Beto,Dani --e2e-seat=2 --e2e-join-when-used=2 --e2e-leave-after-s=5 \
     --e2e-wizard=cwa2 --e2e-model=mrdk --e2e-god=stratos
-  client A Dani $COMMON --e2e-peers=Ana,Beto,Cris --e2e-seat=3 --e2e-lobby-delay-s=6 --e2e-join-delay-s=6 --e2e-leave-after-s=16 \
+  client A Dani $COMMON --e2e-peers=Ana,Beto,Cris --e2e-seat=3 --e2e-join-when-used=3 --e2e-join-delay-s=2 --e2e-leave-after-s=8 \
     --e2e-wizard=cwd0 --e2e-model=xwiz --e2e-god=charnel
   for p in $PHASE_PIDS; do wait "$p"; done
   settle A
 fi
 kill_tree "$SERVER"; wait "$SERVER" 2>/dev/null; kill_stray
 
-# --- phase B: two humans + two bots -----------------------------------------------------------------------------------
+# --- phase B: two humans + two bots (no ordering to keep: the dedicated runs with --fixed-fps) -----------------------
 PHASE_PIDS=""
-start_server B --match-args=--force-defeat-slot=3+4,--force-defeat-after-ticks=600
+start_server B --match-engine-args="--fixed-fps,$NET_FPS" --match-args=--force-defeat-slot=3+4,--force-defeat-after-ticks=300
 wait_ready B
 READY_B=$READY
 if [ "$READY_B" = 1 ]; then
   COMMON="--e2e-room=Sala2mas2 --e2e-seats=4 --e2e-world-ready --e2e-expect-winners=1,2 --e2e-expect-reason=result"
   client B Ana  $COMMON --e2e-create --e2e-mode=2v2 --e2e-world=test_flat4 --e2e-level=2 --e2e-peers=Beto --e2e-seat=0 \
     --e2e-bot-seats=2,3 --e2e-bot-gods=pyro, --e2e-wizard=cwa0 --e2e-model=jnwr --e2e-god=james
-  client B Beto $COMMON --e2e-peers=Ana --e2e-seat=1 --e2e-lobby-delay-s=2 --e2e-wizard=cwa1 --e2e-model=serx --e2e-god=pyro
+  client B Beto $COMMON --e2e-peers=Ana --e2e-seat=1 --e2e-join-when-used=3 --e2e-wizard=cwa1 --e2e-model=serx --e2e-god=pyro
   for p in $PHASE_PIDS; do wait "$p"; done
   settle B
 fi
@@ -292,20 +248,15 @@ sys.exit(1 if fails else 0)
 PYEOF
 VERDICT=$?
 # the dedicated may still be exiting (result delay): wait up to EXIT_WAIT_S for them, then it is a FAIL and they are killed
-for _ in $(seq 1 $((EXIT_WAIT_S * 2))); do
-  STRAY=$(ps -axo args= | awk -v m="match-ticket-file=$OUT" '$1 ~ /\/Godot$/ && index($0, m)' | wc -l | tr -d ' ')
-  [ "$STRAY" = 0 ] && break
-  sleep 0.5
-done
-if [ "$STRAY" = 0 ]; then echo "PASS no dedicated process left"; else echo "FAIL $STRAY dedicated process still alive after ${EXIT_WAIT_S}s"; VERDICT=1; fi
-kill_all
-sleep 1
-STRAY=$(ps -axo args= | awk -v m="$OUT" 'index($0, m)' | grep -c Godot)
+if wait_gone "match-ticket-file=$OUT" "$EXIT_WAIT_S"; then echo "PASS no dedicated process left"; else echo "FAIL dedicated process still alive after ${EXIT_WAIT_S}s"; VERDICT=1; fi
+kill_all 2>/dev/null
+wait_gone "$OUT" 5
+STRAY=$(godots_with "$OUT")
 if [ "$STRAY" != 0 ]; then echo "FAIL $STRAY Godot process of this run still alive after the kill"; VERDICT=1; else echo "PASS no Godot process left"; fi
 read -r RSS_KB PROCS < "$OUT/rss.max" 2>/dev/null
 echo "RSS max total: $(( ${RSS_KB:-0} / 1024 )) MB, at most ${PROCS:-0} Godot processes at once, $((SECONDS - START_S)) s"
 if [ -s "$OUT/timeout.flag" ]; then cat "$OUT/timeout.flag"; VERDICT=1; fi
 [ "$READY_A" = 1 ] && [ "$READY_B" = 1 ] || { echo "E2E FAIL: a room server did not announce its port"; VERDICT=1; }
-kill $WATCH $MONITOR 2>/dev/null
+net_stop
 if [ "$VERDICT" = 0 ]; then echo "E2E PASS"; rm -rf "$OUT"; else echo "E2E FAIL (logs in $OUT)"; fi
 exit "$VERDICT"

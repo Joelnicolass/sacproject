@@ -20,14 +20,6 @@ stretch_time_scale = false
 start_offset = 0.0
 loop_mode = 1
 
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_0754m"]
-animation = &"mdi1"
-use_custom_timeline = true
-timeline_length = 2.3
-stretch_time_scale = false
-start_offset = 0.0
-loop_mode = 1
-
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_xelb4"]
 animation = &"mdst"
 use_custom_timeline = true
@@ -61,13 +53,11 @@ states/cast/node = SubResource("AnimationNodeAnimation_8gr5r")
 states/cast/position = Vector2(660, 40)
 states/cast_run/node = SubResource("AnimationNodeAnimation_hhx2e")
 states/cast_run/position = Vector2(260, 150)
-states/gesture/node = SubResource("AnimationNodeAnimation_0754m")
-states/gesture/position = Vector2(860, 40)
 states/idle/node = SubResource("AnimationNodeAnimation_xelb4")
 states/idle/position = Vector2(260, 40)
 states/run/node = SubResource("AnimationNodeAnimation_1jcyg")
 states/run/position = Vector2(460, 40)
-transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_v44ok"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_eqjso"), "idle", "cast", SubResource("AnimationNodeStateMachineTransition_eqjso"), "idle", "gesture", SubResource("AnimationNodeStateMachineTransition_eqjso"), "idle", "cast_run", SubResource("AnimationNodeStateMachineTransition_eqjso"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_eqjso"), "run", "cast", SubResource("AnimationNodeStateMachineTransition_eqjso"), "run", "gesture", SubResource("AnimationNodeStateMachineTransition_eqjso"), "run", "cast_run", SubResource("AnimationNodeStateMachineTransition_eqjso"), "cast", "idle", SubResource("AnimationNodeStateMachineTransition_48liq"), "cast", "run", SubResource("AnimationNodeStateMachineTransition_eqjso"), "cast", "gesture", SubResource("AnimationNodeStateMachineTransition_eqjso"), "cast", "cast_run", SubResource("AnimationNodeStateMachineTransition_eqjso"), "gesture", "idle", SubResource("AnimationNodeStateMachineTransition_eqjso"), "gesture", "run", SubResource("AnimationNodeStateMachineTransition_eqjso"), "gesture", "cast", SubResource("AnimationNodeStateMachineTransition_eqjso"), "gesture", "cast_run", SubResource("AnimationNodeStateMachineTransition_eqjso"), "cast_run", "idle", SubResource("AnimationNodeStateMachineTransition_eqjso"), "cast_run", "run", SubResource("AnimationNodeStateMachineTransition_eqjso"), "cast_run", "cast", SubResource("AnimationNodeStateMachineTransition_eqjso"), "cast_run", "gesture", SubResource("AnimationNodeStateMachineTransition_eqjso")]
+transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_v44ok"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_eqjso"), "idle", "cast", SubResource("AnimationNodeStateMachineTransition_eqjso"), "idle", "cast_run", SubResource("AnimationNodeStateMachineTransition_eqjso"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_eqjso"), "run", "cast", SubResource("AnimationNodeStateMachineTransition_eqjso"), "run", "cast_run", SubResource("AnimationNodeStateMachineTransition_eqjso"), "cast", "idle", SubResource("AnimationNodeStateMachineTransition_48liq"), "cast", "run", SubResource("AnimationNodeStateMachineTransition_eqjso"), "cast", "cast_run", SubResource("AnimationNodeStateMachineTransition_eqjso"), "cast_run", "idle", SubResource("AnimationNodeStateMachineTransition_eqjso"), "cast_run", "run", SubResource("AnimationNodeStateMachineTransition_eqjso"), "cast_run", "cast", SubResource("AnimationNodeStateMachineTransition_eqjso")]
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_86v7u"]
 

@@ -1,0 +1,834 @@
+[gd_resource type="Resource" script_class="BenchRules" load_steps=81 format=3]
+
+[ext_resource type="Script" path="res://debug/suite/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://debug/suite/bench_group.gd" id="2_group"]
+[ext_resource type="Script" path="res://debug/suite/bench_event.gd" id="3_event"]
+[ext_resource type="Script" path="res://debug/suite/bench_expect.gd" id="4_expect"]
+[ext_resource type="Script" path="res://debug/suite/bench_building.gd" id="5_building"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/grv3.tres" id="6_grv3"]
+
+[sub_resource type="Resource" id="Group_00_AArc"]
+script = ExtResource("2_group")
+tag = "ahcr"
+slot = 1
+count = 1
+columns = 1
+offset_m = -40.0
+offset_z_m = 45.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_01_FAmr"]
+script = ExtResource("2_group")
+tag = "imaf"
+slot = 1
+count = 1
+columns = 1
+offset_m = -30.0
+offset_z_m = 45.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_02_aclw"]
+script = ExtResource("2_group")
+tag = "wlca"
+slot = 1
+count = 1
+columns = 1
+offset_m = -20.0
+offset_z_m = 45.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_03_adrg"]
+script = ExtResource("2_group")
+tag = "grdb"
+slot = 1
+count = 1
+columns = 1
+offset_m = -10.0
+offset_z_m = 45.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_04_apez"]
+script = ExtResource("2_group")
+tag = "zepa"
+slot = 1
+count = 1
+columns = 1
+offset_m = 0.0
+offset_z_m = 45.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_05_aprc"]
+script = ExtResource("2_group")
+tag = "ycrp"
+slot = 1
+count = 1
+columns = 1
+offset_m = 10.0
+offset_z_m = 45.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_06_babc"]
+script = ExtResource("2_group")
+tag = "cbab"
+slot = 1
+count = 1
+columns = 1
+offset_m = 20.0
+offset_z_m = 45.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_07_baby"]
+script = ExtResource("2_group")
+tag = "rdbO"
+slot = 1
+count = 1
+columns = 1
+offset_m = 30.0
+offset_z_m = 45.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_08_bala"]
+script = ExtResource("2_group")
+tag = "alab"
+slot = 1
+count = 1
+columns = 1
+offset_m = 40.0
+offset_z_m = 45.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_09_bale"]
+script = ExtResource("2_group")
+tag = "llab"
+slot = 1
+count = 1
+columns = 1
+offset_m = -40.0
+offset_z_m = 55.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_10_ban2"]
+script = ExtResource("2_group")
+tag = "RAMH"
+slot = 1
+count = 1
+columns = 1
+offset_m = -30.0
+offset_z_m = 55.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_11_bane"]
+script = ExtResource("2_group")
+tag = "ramH"
+slot = 1
+count = 1
+columns = 1
+offset_m = -20.0
+offset_z_m = 55.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_12_buga"]
+script = ExtResource("2_group")
+tag = "craa"
+slot = 1
+count = 1
+columns = 1
+offset_m = -10.0
+offset_z_m = 55.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_13_bugf"]
+script = ExtResource("2_group")
+tag = "craf"
+slot = 1
+count = 1
+columns = 1
+offset_m = 0.0
+offset_z_m = 55.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_14_bugl"]
+script = ExtResource("2_group")
+tag = "cara"
+slot = 1
+count = 1
+columns = 1
+offset_m = 10.0
+offset_z_m = 55.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_15_bugz"]
+script = ExtResource("2_group")
+tag = "pazb"
+slot = 1
+count = 1
+columns = 1
+offset_m = 20.0
+offset_z_m = 55.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_16_dcak"]
+script = ExtResource("2_group")
+tag = "kacd"
+slot = 1
+count = 1
+columns = 1
+offset_m = 30.0
+offset_z_m = 55.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_17_ddiz"]
+script = ExtResource("2_group")
+tag = "dzid"
+slot = 1
+count = 1
+columns = 1
+offset_m = 40.0
+offset_z_m = 55.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_18_ddmn"]
+script = ExtResource("2_group")
+tag = "nomd"
+slot = 1
+count = 1
+columns = 1
+offset_m = -40.0
+offset_z_m = 65.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_19_dflp"]
+script = ExtResource("2_group")
+tag = "plfd"
+slot = 1
+count = 1
+columns = 1
+offset_m = -30.0
+offset_z_m = 65.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_20_dklp"]
+script = ExtResource("2_group")
+tag = "dplk"
+slot = 1
+count = 1
+columns = 1
+offset_m = -20.0
+offset_z_m = 65.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_21_dpez"]
+script = ExtResource("2_group")
+tag = "zepd"
+slot = 1
+count = 1
+columns = 1
+offset_m = -10.0
+offset_z_m = 65.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_22_drag"]
+script = ExtResource("2_group")
+tag = "grdg"
+slot = 1
+count = 1
+columns = 1
+offset_m = 0.0
+offset_z_m = 65.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_23_dslg"]
+script = ExtResource("2_group")
+tag = "glsd"
+slot = 1
+count = 1
+columns = 1
+offset_m = 10.0
+offset_z_m = 65.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_24_eber"]
+script = ExtResource("2_group")
+tag = "raeb"
+slot = 1
+count = 1
+columns = 1
+offset_m = 20.0
+offset_z_m = 65.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_25_ecak"]
+script = ExtResource("2_group")
+tag = "kace"
+slot = 1
+count = 1
+columns = 1
+offset_m = 30.0
+offset_z_m = 65.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_26_eclw"]
+script = ExtResource("2_group")
+tag = "wlce"
+slot = 1
+count = 1
+columns = 1
+offset_m = 40.0
+offset_z_m = 65.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_27_edmn"]
+script = ExtResource("2_group")
+tag = "gard"
+slot = 1
+count = 1
+columns = 1
+offset_m = -40.0
+offset_z_m = 75.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_28_ehbt"]
+script = ExtResource("2_group")
+tag = "sohe"
+slot = 1
+count = 1
+columns = 1
+offset_m = -30.0
+offset_z_m = 75.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_29_eklp"]
+script = ExtResource("2_group")
+tag = "palk"
+slot = 1
+count = 1
+columns = 1
+offset_m = -20.0
+offset_z_m = 75.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_30_eorc"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 1
+count = 1
+columns = 1
+offset_m = -10.0
+offset_z_m = 75.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_31_epez"]
+script = ExtResource("2_group")
+tag = "zepe"
+slot = 1
+count = 1
+columns = 1
+offset_m = 0.0
+offset_z_m = 75.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_32_eslg"]
+script = ExtResource("2_group")
+tag = "guls"
+slot = 1
+count = 1
+columns = 1
+offset_m = 10.0
+offset_z_m = 75.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_33_estm"]
+script = ExtResource("2_group")
+tag = "mtse"
+slot = 1
+count = 1
+columns = 1
+offset_m = 20.0
+offset_z_m = 75.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_34_faez"]
+script = ExtResource("2_group")
+tag = "eafH"
+slot = 1
+count = 1
+columns = 1
+offset_m = 30.0
+offset_z_m = 75.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_35_fcak"]
+script = ExtResource("2_group")
+tag = "kacf"
+slot = 1
+count = 1
+columns = 1
+offset_m = 40.0
+offset_z_m = 75.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_36_fclw"]
+script = ExtResource("2_group")
+tag = "wlcf"
+slot = 1
+count = 1
+columns = 1
+offset_m = -40.0
+offset_z_m = 85.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_37_fdrg"]
+script = ExtResource("2_group")
+tag = "grdr"
+slot = 1
+count = 1
+columns = 1
+offset_m = -30.0
+offset_z_m = 85.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_38_fdzy"]
+script = ExtResource("2_group")
+tag = "zidf"
+slot = 1
+count = 1
+columns = 1
+offset_m = -20.0
+offset_z_m = 85.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_39_fflp"]
+script = ExtResource("2_group")
+tag = "plff"
+slot = 1
+count = 1
+columns = 1
+offset_m = -10.0
+offset_z_m = 85.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_40_fhbt"]
+script = ExtResource("2_group")
+tag = "sohf"
+slot = 1
+count = 1
+columns = 1
+offset_m = 0.0
+offset_z_m = 85.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_41_fklp"]
+script = ExtResource("2_group")
+tag = "fplk"
+slot = 1
+count = 1
+columns = 1
+offset_m = 10.0
+offset_z_m = 85.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_42_fpez"]
+script = ExtResource("2_group")
+tag = "zepf"
+slot = 1
+count = 1
+columns = 1
+offset_m = 20.0
+offset_z_m = 85.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_43_ftrl"]
+script = ExtResource("2_group")
+tag = "lrtf"
+slot = 1
+count = 1
+columns = 1
+offset_m = 30.0
+offset_z_m = 85.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_44_gamm"]
+script = ExtResource("2_group")
+tag = "magH"
+slot = 1
+count = 1
+columns = 1
+offset_m = 40.0
+offset_z_m = 85.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_45_gobl"]
+script = ExtResource("2_group")
+tag = "lbog"
+slot = 1
+count = 1
+columns = 1
+offset_m = -40.0
+offset_z_m = 95.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_46_gund"]
+script = ExtResource("2_group")
+tag = "nugd"
+slot = 1
+count = 1
+columns = 1
+offset_m = -30.0
+offset_z_m = 95.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_47_gunf"]
+script = ExtResource("2_group")
+tag = "nugf"
+slot = 1
+count = 1
+columns = 1
+offset_m = -20.0
+offset_z_m = 95.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_48_gutc"]
+script = ExtResource("2_group")
+tag = "ctug"
+slot = 1
+count = 1
+columns = 1
+offset_m = -10.0
+offset_z_m = 95.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_49_hoom"]
+script = ExtResource("2_group")
+tag = "oohH"
+slot = 1
+count = 1
+columns = 1
+offset_m = 0.0
+offset_z_m = 95.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_50_huma"]
+script = ExtResource("2_group")
+tag = "amuh"
+slot = 1
+count = 1
+columns = 1
+offset_m = 10.0
+offset_z_m = 95.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_51_humn"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 1
+count = 1
+columns = 1
+offset_m = 20.0
+offset_z_m = 95.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_52_lflp"]
+script = ExtResource("2_group")
+tag = "plfl"
+slot = 1
+count = 1
+columns = 1
+offset_m = 30.0
+offset_z_m = 95.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_53_lhbt"]
+script = ExtResource("2_group")
+tag = "tbsh"
+slot = 1
+count = 1
+columns = 1
+offset_m = 40.0
+offset_z_m = 95.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_54_ltrl"]
+script = ExtResource("2_group")
+tag = "lort"
+slot = 1
+count = 1
+columns = 1
+offset_m = -40.0
+offset_z_m = 105.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_55_maho"]
+script = ExtResource("2_group")
+tag = "oham"
+slot = 1
+count = 1
+columns = 1
+offset_m = -30.0
+offset_z_m = 105.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_56_peas"]
+script = ExtResource("2_group")
+tag = "saep"
+slot = 1
+count = 1
+columns = 1
+offset_m = -20.0
+offset_z_m = 105.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_57_prcy"]
+script = ExtResource("2_group")
+tag = "crpd"
+slot = 1
+count = 1
+columns = 1
+offset_m = -10.0
+offset_z_m = 105.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_58_sacd"]
+script = ExtResource("2_group")
+tag = "dcas"
+slot = 1
+count = 1
+columns = 1
+offset_m = 0.0
+offset_z_m = 105.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_59_sara"]
+script = ExtResource("2_group")
+tag = "pezH"
+slot = 1
+count = 1
+columns = 1
+offset_m = 10.0
+offset_z_m = 105.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_60_sbob"]
+script = ExtResource("2_group")
+tag = "bobs"
+slot = 1
+count = 1
+columns = 1
+offset_m = 20.0
+offset_z_m = 105.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_61_sirc"]
+script = ExtResource("2_group")
+tag = "risH"
+slot = 1
+count = 1
+columns = 1
+offset_m = 30.0
+offset_z_m = 105.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_62_sogr"]
+script = ExtResource("2_group")
+tag = "rgos"
+slot = 1
+count = 1
+columns = 1
+offset_m = 40.0
+offset_z_m = 105.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_63_sprg"]
+script = ExtResource("2_group")
+tag = "grps"
+slot = 1
+count = 1
+columns = 1
+offset_m = -40.0
+offset_z_m = 115.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_64_sprl"]
+script = ExtResource("2_group")
+tag = "lrps"
+slot = 1
+count = 1
+columns = 1
+offset_m = -30.0
+offset_z_m = 115.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_65_stmp"]
+script = ExtResource("2_group")
+tag = "mtsl"
+slot = 1
+count = 1
+columns = 1
+offset_m = -20.0
+offset_z_m = 115.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_66_surt"]
+script = ExtResource("2_group")
+tag = "uslH"
+slot = 1
+count = 1
+columns = 1
+offset_m = -10.0
+offset_z_m = 115.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_67_testmonster"]
+script = ExtResource("2_group")
+tag = "testmonster"
+slot = 1
+count = 1
+columns = 1
+offset_m = 0.0
+offset_z_m = 115.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_68_the2"]
+script = ExtResource("2_group")
+tag = "EHTH"
+slot = 1
+count = 1
+columns = 1
+offset_m = 10.0
+offset_z_m = 115.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_69_thes"]
+script = ExtResource("2_group")
+tag = "ehtH"
+slot = 1
+count = 1
+columns = 1
+offset_m = 20.0
+offset_z_m = 115.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_grave_neighbor"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 1
+count = 1
+columns = 1
+offset_m = 0.0
+offset_z_m = 127.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Expect_run_still"]
+script = ExtResource("4_expect")
+check = "run_quieto_0s"
+kind = "probe"
+subject = "field"
+watch_s = 60.0
+measure = "run_still"
+max_value = 0.0
+
+[sub_resource type="Resource" id="Expect_cycles"]
+script = ExtResource("4_expect")
+check = "ciclos_sin_enemigo_0"
+kind = "probe"
+subject = "field"
+watch_s = 60.0
+measure = "idle_cycles"
+max_value = 0.0
+
+[sub_resource type="Resource" id="Expect_gesture"]
+script = ExtResource("4_expect")
+check = "gesto_raiz_0_1m"
+kind = "probe"
+subject = "field"
+watch_s = 60.0
+measure = "gesture_root"
+max_value = 0.1
+
+[sub_resource type="Resource" id="Building_grave"]
+script = ExtResource("5_building")
+building = ExtResource("6_grv3")
+slot = 0
+offset = Vector2(2.5, 127)
+label = "grave"
+
+[resource]
+script = ExtResource("1_rules")
+groups = Array[ExtResource("2_group")]([SubResource("Group_00_AArc"), SubResource("Group_01_FAmr"), SubResource("Group_02_aclw"), SubResource("Group_03_adrg"), SubResource("Group_04_apez"), SubResource("Group_05_aprc"), SubResource("Group_06_babc"), SubResource("Group_07_baby"), SubResource("Group_08_bala"), SubResource("Group_09_bale"), SubResource("Group_10_ban2"), SubResource("Group_11_bane"), SubResource("Group_12_buga"), SubResource("Group_13_bugf"), SubResource("Group_14_bugl"), SubResource("Group_15_bugz"), SubResource("Group_16_dcak"), SubResource("Group_17_ddiz"), SubResource("Group_18_ddmn"), SubResource("Group_19_dflp"), SubResource("Group_20_dklp"), SubResource("Group_21_dpez"), SubResource("Group_22_drag"), SubResource("Group_23_dslg"), SubResource("Group_24_eber"), SubResource("Group_25_ecak"), SubResource("Group_26_eclw"), SubResource("Group_27_edmn"), SubResource("Group_28_ehbt"), SubResource("Group_29_eklp"), SubResource("Group_30_eorc"), SubResource("Group_31_epez"), SubResource("Group_32_eslg"), SubResource("Group_33_estm"), SubResource("Group_34_faez"), SubResource("Group_35_fcak"), SubResource("Group_36_fclw"), SubResource("Group_37_fdrg"), SubResource("Group_38_fdzy"), SubResource("Group_39_fflp"), SubResource("Group_40_fhbt"), SubResource("Group_41_fklp"), SubResource("Group_42_fpez"), SubResource("Group_43_ftrl"), SubResource("Group_44_gamm"), SubResource("Group_45_gobl"), SubResource("Group_46_gund"), SubResource("Group_47_gunf"), SubResource("Group_48_gutc"), SubResource("Group_49_hoom"), SubResource("Group_50_huma"), SubResource("Group_51_humn"), SubResource("Group_52_lflp"), SubResource("Group_53_lhbt"), SubResource("Group_54_ltrl"), SubResource("Group_55_maho"), SubResource("Group_56_peas"), SubResource("Group_57_prcy"), SubResource("Group_58_sacd"), SubResource("Group_59_sara"), SubResource("Group_60_sbob"), SubResource("Group_61_sirc"), SubResource("Group_62_sogr"), SubResource("Group_63_sprg"), SubResource("Group_64_sprl"), SubResource("Group_65_stmp"), SubResource("Group_66_surt"), SubResource("Group_67_testmonster"), SubResource("Group_68_the2"), SubResource("Group_69_thes"), SubResource("Group_grave_neighbor")])
+anchor = Vector3(1270, 0, 1270)
+start_paused = true
+match_seed = 1
+ignore_annihilation = true
+buildings = Array[ExtResource("5_building")]([SubResource("Building_grave")])
+expects = Array[ExtResource("4_expect")]([SubResource("Expect_run_still"), SubResource("Expect_cycles"), SubResource("Expect_gesture")])
+pending_text = "F376 reposo: una criatura de cada modelo, sin enemigos"

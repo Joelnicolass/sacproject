@@ -6,11 +6,11 @@ extends Node
 ## It only listens (signals of the bodies) and reads: it never changes the simulation, so a bench with it keeps its digest.
 ## The runner (debug/ai/ai_match.gd) calls begin() once the field is ready, step() every tick and finish() at the end; with
 ## criteria it ends the run as soon as is_done(). BenchRules.trace_labels print TRACE lines (health, mode, target) every
-## trace_every_s, for diagnostics. Debug code.
+## trace_every_s, for diagnostics. F376: its BenchProbe children measure the «probe» rows (IdleTruthProbe). Debug code.
 
 const PREFIX := "EXPECT "
 ## The kinds decided at the end (or once every other one is): they count what must not happen.
-const PASSIVE: Array[String] = ["spared", "uncast", "unharmed", "burst"]
+const PASSIVE: Array[String] = ["spared", "uncast", "unharmed", "burst", "probe"]
 
 var _rules: BenchRules
 var _bodies: Dictionary = {}
@@ -19,6 +19,7 @@ var _tick := 0
 var _trace_ticks := 30
 var _started := false
 var _finished := false
+var _probes: Array[BenchProbe] = []
 
 
 ## `bodies`: label -> Array[Node3D] (the groups and buildings of the rules).
@@ -27,6 +28,10 @@ func begin(rules: BenchRules, bodies: Dictionary) -> void:
 	_bodies = bodies
 	_started = true
 	_trace_ticks = maxi(1, MatchClock.ticks_for(rules.trace_every_s))
+	for child in get_children():
+		if child is BenchProbe:
+			_probes.append(child as BenchProbe)
+			(child as BenchProbe).begin(bodies)
 	print("SIDES mapa %s · stance(1,0) %s · stance(2,0) %s · stance(1,3) %s · stance(2,3) %s" % [
 		MapCatalog.current_tag(), _stance(1, 0), _stance(2, 0), _stance(1, 3), _stance(2, 3)])
 	for label in rules.trace_labels:
@@ -74,6 +79,8 @@ func step(tick: int) -> void:
 	if not _started or _finished:
 		return
 	_tick = tick
+	for probe in _probes:
+		probe.step(tick)
 	for row in _rows:
 		if not row["decided"]:
 			_poll(row)
@@ -90,7 +97,7 @@ func finish() -> bool:
 		if not row["decided"]:
 			var expect: BenchExpect = row["expect"]
 			if PASSIVE.has(expect.kind):
-				_decide(row, _count_of(row) <= expect.max_count, _count_text(row))
+				_decide_passive(row)
 			else:
 				_decide(row, false, "sin_dato")
 	var ok := true
@@ -234,9 +241,9 @@ func _poll(row: Dictionary) -> void:
 			elif _tick > window:
 				_decide(row, false, "nunca")
 			return
-		"spared", "uncast", "unharmed", "burst":
+		"spared", "uncast", "unharmed", "burst", "probe":
 			if is_done_except(row) and not _watching(row):
-				_decide(row, _count_of(row) <= expect.max_count, _count_text(row))
+				_decide_passive(row)
 			return
 		"first_cast":
 			if _tick > window:
@@ -407,6 +414,23 @@ static func _count_of(row: Dictionary) -> float:
 static func _count_text(row: Dictionary) -> String:
 	var value: Variant = row["count"]
 	return "%.1f" % float(value) if value is float else str(value)
+
+
+## A passive row: its count against max_count, or (F376) its probe's number against max_value, then the probe's notes.
+func _decide_passive(row: Dictionary) -> void:
+	var expect: BenchExpect = row["expect"]
+	if expect.kind != "probe":
+		_decide(row, _count_of(row) <= expect.max_count, _count_text(row))
+		return
+	for probe in _probes:
+		if probe.measures(expect.measure):
+			var bodies := _of(expect.subject)
+			var value := probe.value_of(expect, bodies)
+			_decide(row, value <= expect.max_value + 1e-6, "%.2f (max %.2f)" % [value, expect.max_value])
+			for line in probe.notes_of(expect, bodies):
+				print("EXPECT_NOTE %s %s" % [expect.check, line])
+			return
+	_decide(row, false, "sin_sonda")
 
 
 func _decide(row: Dictionary, ok: bool, value: String) -> void:

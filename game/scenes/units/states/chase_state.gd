@@ -3,6 +3,24 @@ extends UnitState
 
 ## CHASE: toward the attack target; starts the melee swing or the shot when in range. Without an order it gives up
 ## beyond the sight range.
+## F376 (RFC-053 053g): a chase that does not move (turning in place, held by the avoidance, under a flier it cannot reach)
+## shows the rest clip instead of `run` on the spot once its flat speed stays under `still_speed` for `still_after_s`. Only the
+## clip: measured on every peer from the body's real displacement, the simulation never reads it.
+
+## Below this flat speed (m/s) the chase is standing.
+@export var still_speed := 0.1
+## Seconds standing before the clip turns to idle (a turn at the start of a chase still runs).
+@export var still_after_s := 0.2
+
+var _still_ticks := 0
+var _seen_frame := -1
+var _last_position := Vector3.ZERO
+
+
+func enter() -> void:
+	_still_ticks = 0
+	_seen_frame = -1
+	super.enter()
 
 
 func physics_update(delta: float) -> void:
@@ -42,4 +60,19 @@ func physics_update(delta: float) -> void:
 
 
 func clip_role() -> String:
-	return "run"
+	_watch_pace()
+	return "idle" if _still_ticks > MatchClock.ticks_for(still_after_s) else "run"
+
+
+## Once per physics frame: how long the body has stood (its flat displacement since the last frame under still_speed).
+func _watch_pace() -> void:
+	var frame := Engine.get_physics_frames()
+	if frame == _seen_frame:
+		return
+	var at := body.global_position
+	if _seen_frame >= 0:
+		var frames := maxi(1, frame - _seen_frame)
+		var speed := Vector2(at.x - _last_position.x, at.z - _last_position.z).length() * MatchClock.TICKS_PER_SECOND_F / frames
+		_still_ticks = _still_ticks + frames if speed < still_speed else 0
+	_seen_frame = frame
+	_last_position = at

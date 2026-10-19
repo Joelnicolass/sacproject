@@ -1,0 +1,49 @@
+[gd_resource type="Resource" script_class="BenchRules" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://debug/suite/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://debug/suite/bench_group.gd" id="2_group"]
+[ext_resource type="Script" path="res://debug/suite/bench_expect.gd" id="4_expect"]
+
+[sub_resource type="Resource" id="Group_melee"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 1
+count = 1
+columns = 1
+offset_m = 0.0
+offset_z_m = 80.0
+facing_x = 1.0
+label = "field"
+
+[sub_resource type="Resource" id="Group_flyer"]
+script = ExtResource("2_group")
+tag = "bobs"
+slot = 2
+count = 1
+columns = 1
+offset_m = 1.5
+offset_z_m = 80.0
+facing_x = -1.0
+holds_still = true
+label = "flyer"
+
+[sub_resource type="Resource" id="Expect_run_still"]
+script = ExtResource("4_expect")
+check = "run_quieto_bajo_volador_0_2s"
+kind = "probe"
+subject = "field"
+watch_s = 30.0
+measure = "run_still"
+max_value = 0.2
+
+[resource]
+script = ExtResource("1_rules")
+groups = Array[ExtResource("2_group")]([SubResource("Group_melee"), SubResource("Group_flyer")])
+anchor = Vector3(1270, 0, 1270)
+start_paused = true
+match_seed = 1
+ignore_annihilation = true
+expects = Array[ExtResource("4_expect")]([SubResource("Expect_run_still")])
+trace_labels = PackedStringArray("field")
+trace_every_s = 1.0
+pending_text = "F376 volador: un Trogg debajo de un Brainiac que no alcanza"

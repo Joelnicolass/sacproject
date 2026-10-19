@@ -9,6 +9,9 @@
 #   053e (F374)  debug/ui/f374_target_info.tscn (the info box: delay, texts, bar, pinned building, inside the screen), TARGET_INFO PASS.
 #   053f (F375)  debug/fx/f375_hit_feel.tscn --feel-script (camera shake and damage numbers), FEEL PASS; then --feel-match (a real
 #                headless match: no CameraShake / DamageNumbers active), FEEL PASS.
+#   053g (F376)  debug/units/f376_idle_truth.tscn with f376_quiet (one creature of each model, 60 s, no foes: no `run` on the spot,
+#                no Idle→Chase→Idle, no gesture that slides the root over 0,1 m) and f376_flyer (a Trogg under a Brainiac it cannot
+#                reach: at most 0,2 s of `run` on the spot). IdleTruthProbe; quiet has a 90 s watchdog (about 25 s of wall).
 #   053h (F377)  agent/runs/run_f377.sh (the emitters outside the tree).
 #   rfc053_bad_rules  ai_match with a --rules file that does not exist: EXPECT DONE FAIL rules and exit 1 at once (the bench's own guard).
 #   053a_sides   the SIDES line (SideRelations.stance(1|2, 0) and (1|2, 3)) on peaks and peasantville (diagnostic, no verdict).
@@ -87,6 +90,10 @@ case "$CUT" in
     verdict_run f375_feel_script FEEL res://debug/fx/f375_hit_feel.tscn --feel-script --user-settings=user://rfc053_feel_check.cfg
     verdict_run f375_feel_match FEEL res://debug/fx/f375_hit_feel.tscn --feel-match --user-settings=user://rfc053_feel_check.cfg
     ;;
+  053g)
+    case_run f376_quiet res://debug/units/f376_idle_truth.tscn --rules=res://debug/rules/f376_quiet.tres --minutes=1.05 --watchdog-s=90
+    case_run f376_flyer res://debug/units/f376_idle_truth.tscn --rules=res://debug/rules/f376_flyer.tres --minutes=0.55
+    ;;
   053h)
     bash "$ROOT/agent/runs/run_f377.sh" "$GODOT_BIN" || FAIL=1
     ;;
@@ -104,7 +111,7 @@ case "$CUT" in
     sides_run peasantville
     ;;
   *)
-    echo "corte desconocido: $CUT (053a, 053a_sides, 053b, 053c, 053d, 053e, 053f, 053h, rfc053_bad_rules)"
+    echo "corte desconocido: $CUT (053a, 053a_sides, 053b, 053c, 053d, 053e, 053f, 053g, 053h, rfc053_bad_rules)"
     exit 2
     ;;
 esac

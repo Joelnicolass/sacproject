@@ -24,6 +24,11 @@ extends Resource
 ##   killed       a body of `object` goes down (its health reaches 0, a wizard dying or a ghost, or freed) within `within_s` of the
 ##                start. The value is the seconds: the time to kill.
 ##   died_before  a body of `object` goes down before any body of `subject` does (decided by the first of them to go down).
+## F376 (053g), a number a BenchProbe child of the ExpectJudge measures (IdleTruthProbe):
+##   probe        the probe's `measure` over the bodies of `subject` stays at most `max_value` during the whole run (decided with
+##                the rest, like «spared»; `watch_s` keeps it open). run_still: seconds of `run` without moving, the worst body;
+##                idle_cycles: Idle→Chase→Idle per minute with no foe in sight, the worst body; gesture_root: meters the root of
+##                the `gesture` clip slides, the worst model.
 ## «picked» with the quantifier `at_least`: at least `min_count` bodies of `subject` take a body of `object` within `within_s`.
 ## A label may name several groups with «|» (`wizard1|charlotte`).
 ## `from`: start = the tick the bench starts; hurt = the first tick the subject body takes damage; near = the first tick a
@@ -31,7 +36,7 @@ extends Resource
 ## «all», the fastest with «any») or the count.
 
 @export var check := "expect"
-@export_enum("picked", "struck", "hurt", "dropped", "spared", "cast", "uncast", "unharmed", "burst", "first_cast", "killed", "died_before") var kind := "picked"
+@export_enum("picked", "struck", "hurt", "dropped", "spared", "cast", "uncast", "unharmed", "burst", "first_cast", "killed", "died_before", "probe") var kind := "picked"
 @export var subject := ""
 @export var object := ""
 @export_enum("all", "any", "at_least") var quantifier := "all"
@@ -47,3 +52,6 @@ extends Resource
 ## F372: a «spared», «uncast», «unharmed» or «burst» row is not decided (and keeps the run going) before this many seconds:
 ## «0 Heals in 30 s» watches the whole 30 s even once every other row is decided. 0: decided with the rest.
 @export var watch_s := 0.0
+## F376: the measurement a «probe» row asks for (BenchProbe.measures) and its limit (seconds, cycles per minute, meters).
+@export var measure := ""
+@export var max_value := 0.0

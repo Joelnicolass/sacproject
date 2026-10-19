@@ -33,6 +33,10 @@ const DOCTOR_MODEL := "sacd"
 const DOCTOR_SLOT_ROLES := {1: "work", 2: "cast", 0: "attack"}
 
 const XFADE_S := 0.15
+## F376 (RFC-053 053g): a rest gesture whose root or hip slides more than this on the ground (ClipSlide) reads as a step on the
+## spot, so the model gets no `gesture` role. debug/units/f376_idle_truth.tscn measures every scene against the same limit.
+## A scene that is kept (no --force) and still has the gesture is printed: remove its `gesture` state in the editor.
+const MAX_GESTURE_SLIDE_M := 0.1
 const GRID := Vector2(200.0, 110.0)
 const GRID_ORIGIN := Vector2(260.0, 40.0)
 const GRID_COLUMNS := 4
@@ -59,6 +63,7 @@ func _init() -> void:
 	models.sort()
 	for model: String in models:
 		var roles := _playable(model, maps.get(model, {}))
+		_drop_sliding_gesture(model, roles)
 		if not roles.has("idle"):
 			skipped.append(model)
 			if _force:
@@ -182,6 +187,25 @@ func _has_clip(model: String, tag: String) -> bool:
 
 func _clip(model: String, tag: String) -> Dictionary:
 	return ((_index.get(model, {}) as Dictionary).get("clips", {}) as Dictionary).get(tag, {})
+
+
+## F376: takes `gesture` out of `roles` when its clip slides the body more than MAX_GESTURE_SLIDE_M.
+func _drop_sliding_gesture(model: String, roles: Dictionary) -> void:
+	if not roles.has("gesture"):
+		return
+	var glb := load(GLB_DIR + model + ".glb") as PackedScene
+	var instance := glb.instantiate() if glb != null else null
+	if instance == null:
+		return
+	var rig := ClipSlide.rig_of(instance)
+	var tag := str(roles["gesture"])
+	if not rig.is_empty() and (rig[0] as AnimationPlayer).has_animation(tag):
+		var slide := float(ClipSlide.measure(rig[0], rig[1], (rig[0] as AnimationPlayer).get_animation(tag))["slide"])
+		if slide > MAX_GESTURE_SLIDE_M:
+			roles.erase("gesture")
+			var kept := FileAccess.file_exists(OUT_DIR + model + ".tscn") and FileAccess.get_file_as_string(OUT_DIR + model + ".tscn").contains("states/gesture/node")
+			print("BAKE_BODY_SCENES no gesture %s: %s slides %.2f m%s" % [model, tag, slide, " (the kept scene still has it: remove its gesture state)" if kept and not _force else ""])
+	instance.free()
 
 
 # --- scene -------------------------------------------------------------------------------------------------------------

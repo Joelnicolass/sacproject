@@ -138,8 +138,8 @@ func _refresh_visible() -> void:
 	if _book and is_instance_valid(_book):
 		has_entries = _book.creature_count() + _book.size() + _book.structure_count() > 0
 	var wizard_allows := true
-	if _wizard and is_instance_valid(_wizard) and _wizard.has_method("spellbook_visible"):
-		wizard_allows = bool(_wizard.call("spellbook_visible"))
+	if _wizard is WizardBody and is_instance_valid(_wizard):
+		wizard_allows = (_wizard as WizardBody).spellbook_visible()
 	visible = has_entries and wizard_allows
 
 

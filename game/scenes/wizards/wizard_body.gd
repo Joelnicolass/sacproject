@@ -76,7 +76,7 @@ var _clip_flat_speed := 0.0
 @onready var health: Node = $Health
 @onready var mana: Node = $ManaPool
 @onready var souls: Node = $SoulPurse
-@onready var ghost: Node = $GhostForm
+@onready var ghost: GhostForm = $GhostForm
 @onready var _clip_pose: Node = $ClipPose
 ## The cast in progress as every peer sees it: `cast_fx_shown` is replicated, so the pose follows it on a client too.
 @onready var _caster: Caster = $Caster
@@ -144,11 +144,11 @@ func can_take_mana() -> bool:
 
 
 func can_collect_souls() -> bool:
-	return ghost.call("can_collect_souls")
+	return ghost.can_collect_souls()
 
 
 func spellbook_visible() -> bool:
-	return ghost.call("spellbook_visible")
+	return ghost.spellbook_visible()
 
 
 ## Its WizardType: Afflictions/Stunned reads the stun clips from it.

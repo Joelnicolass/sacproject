@@ -19,6 +19,9 @@ var match_seed := 0
 ## RFC-049 049a (F290): the map of the match (a tag of the MapCatalog); empty = the one of `--map` or the default. It is not a rule of
 ## the round: `apply_to` and `is_empty` ignore it. SacrificeFlow._apply_match_choice is the only one that turns it into `MapCatalog.use`.
 var map_tag: StringName = &""
+## RFC-049 049b (F291): the game mode of the match (a tag of the GameModeCatalog); empty = the one of `--mode` or 1v1. Like `map_tag` it is not a
+## rule of the round; SacrificeFlow._apply_match_choice is the only one that turns it into `GameModeCatalog.use`.
+var mode_tag: StringName = &""
 
 
 func copy() -> MatchSetup:
@@ -29,6 +32,7 @@ func copy() -> MatchSetup:
 	other.starting_souls = starting_souls
 	other.match_seed = match_seed
 	other.map_tag = map_tag
+	other.mode_tag = mode_tag
 	return other
 
 
@@ -53,6 +57,8 @@ func overlaid_by(over: MatchSetup) -> MatchSetup:
 		merged.match_seed = over.match_seed
 	if over.map_tag != &"":
 		merged.map_tag = over.map_tag
+	if over.mode_tag != &"":
+		merged.mode_tag = over.mode_tag
 	return merged
 
 

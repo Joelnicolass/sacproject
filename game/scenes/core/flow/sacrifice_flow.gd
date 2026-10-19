@@ -128,10 +128,12 @@ func return_to_boot() -> void:
 	solo_ai_seats = []
 	setup = _cli_setup.copy()
 	MapCatalog.reset()
+	GameModeCatalog.reset()
 	super.return_to_boot()
 
 
-## RFC-049 049a (F290): THE place where a match gets its map. Nobody else calls `MapCatalog.use` in the product. It runs right
+## RFC-049 049a (F290) / 049b (F291): THE place where a match gets its map and its mode. Nobody else calls `MapCatalog.use` or
+## `GameModeCatalog.use` in the product. It runs right
 ## before the world loads, in the process that simulates (solo, «Contra la IA», the dedicated): the map the setup carries (the boot's
 ## choice, or the ticket's `world`), else `--map`, else the default. A client does not choose: the dedicated tells it (snapshot).
 func _apply_match_choice() -> void:
@@ -145,19 +147,37 @@ func _apply_match_choice() -> void:
 		MapCatalog.reset()
 	else:
 		MapCatalog.use(tag)
+	var mode := setup.mode_tag
+	if mode != &"" and GameModeCatalog.shared().find(mode) == null:
+		push_error("SacrificeFlow: no hay modo '%s'; se usa el de --mode o el de siempre." % mode)
+		mode = &""
+	if mode == &"":
+		GameModeCatalog.reset()
+	else:
+		GameModeCatalog.use(mode)
 
 
 ## The map of the match goes to the clients before the order to load the world (the same reliable channel keeps the order).
 func snapshot_for_joiner() -> Dictionary:
 	var snap := super.snapshot_for_joiner()
 	snap["map"] = String(MapCatalog.current_tag())
+	snap["mode"] = String(GameModeCatalog.current_tag())
 	return snap
 
 
 func _on_flow_snapshot(data: Dictionary) -> void:
 	super._on_flow_snapshot(data)
+	if MpKit.is_networked() and MpKit.is_server():
+		return
+	var mode_raw := str(data.get("mode", ""))
+	if not mode_raw.is_empty():
+		if GameModeCatalog.shared().find(StringName(mode_raw)) == null:
+			push_error("SacrificeFlow: el servidor mandó el modo '%s' y este cliente no lo tiene." % mode_raw)
+		else:
+			GameModeCatalog.use(StringName(mode_raw))
+			print("modo de la partida %s (del servidor)" % mode_raw)
 	var raw := str(data.get("map", ""))
-	if raw.is_empty() or (MpKit.is_networked() and MpKit.is_server()):
+	if raw.is_empty():
 		return
 	if MapCatalog.shared().find(StringName(raw)) == null:
 		push_error("SacrificeFlow: el servidor mandó el mapa '%s' y este cliente no lo tiene." % raw)
@@ -205,6 +225,7 @@ func join_lan(ip: String) -> Error:
 ## came from a room; the room is still there, with the result. Any other match goes to the menu.
 func _go_boot() -> void:
 	MapCatalog.reset()
+	GameModeCatalog.reset()
 	print("flujo: salida de la partida, desde sala: %s" % from_lobby)
 	if from_lobby:
 		from_lobby = false

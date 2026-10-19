@@ -186,12 +186,15 @@ var _match: MatchState
 
 
 ## F139 (RFC-031 §3.2): the one place that decides how much of a hit from `from_slot` this body takes for its side.
-## Another side, or no side (0): ×1. The same side: 0 with friendly fire off (state.d:8961); with it on, ×1 if the hit
+## Another side, or no side (0): ×1. The same side, or an ally by the stance (RFC-049 049c: 2v2 teams): 0 with friendly fire off (state.d:8961); with it on, ×1 if the hit
 ## ignores it (poison, state.d:9415-9419) and the match's ally_damage_factor otherwise (state.d:9005, 28892-28899).
 ## The rule is the one MatchState took from the world's rules. With no MatchState (a harness) it is `unruled`: the
 ## behaviour each caller had before F139 (damage_typed 0, damage ×1).
 func _side_factor(from_slot: int, ignore_friendly: bool, unruled: float) -> float:
-	if from_slot <= 0 or from_slot != _owner_slot():
+	if from_slot <= 0:
+		return 1.0
+	var owner_slot := _owner_slot()
+	if from_slot != owner_slot and SideRelations.stance(from_slot, owner_slot) != SideRelations.Stance.ALLY:
 		return 1.0
 	var state := _match_state()
 	if state == null:

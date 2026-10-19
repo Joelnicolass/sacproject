@@ -44,6 +44,9 @@ const PERMANENT := 1000000
 @export var wizard_sight_m := 100.0
 ## Ticks between purges of the marks of bodies that no longer exist.
 @export var purge_ticks := 600
+## RFC-049 049c: the rules that say if the allies share what they see (MatchRules.allied_vision). Empty = the ones of the world that
+## holds this node (its `rules`), else shared.
+@export var rules: MatchRules
 
 var tick := 0
 ## Wall-clock microseconds of the last tick and their sum, for the report (never read by the simulation).
@@ -111,10 +114,25 @@ func observe(observer: Node3D) -> void:
 				mark(slot, other)
 
 
-## `side` saw `node` now (buildings for good).
+## `side` saw `node` now (buildings for good). With allied vision (sacengine markAsVisible, state.d:29658-29665) its allies saw it too.
 func mark(side: int, node: Node3D) -> void:
 	if side <= 0 or node == null:
 		return
+	_mark_one(side, node)
+	if _allied_vision():
+		for ally in SideRelations.allies_of(side):
+			_mark_one(ally, node)
+
+
+func _allied_vision() -> bool:
+	var source: Variant = rules
+	if source == null:
+		var holder := get_parent()
+		source = holder.get("rules") if holder != null else null
+	return not source is MatchRules or (source as MatchRules).allied_vision
+
+
+func _mark_one(side: int, node: Node3D) -> void:
 	if not _seen.has(side):
 		_seen[side] = {}
 	var permanent := node.is_in_group("structure") or node.is_in_group("manafount")

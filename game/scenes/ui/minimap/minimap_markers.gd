@@ -49,20 +49,20 @@ func _draw() -> void:
 	for node in tree.get_nodes_in_group(&"manafount"):
 		_mark(node as Node3D, style.manafount, 0, false)
 	for node in tree.get_nodes_in_group(&"altar"):
-		_mark(node as Node3D, style.altar, int(node.get("owner_slot")), int(node.get("owner_slot")) == slot)
+		_mark(node as Node3D, style.altar, int(node.get("owner_slot")), _is_mine(int(node.get("owner_slot")), slot))
 	var built: Array[Node] = minimap.structures_root.get_children() if minimap.structures_root else []
 	for node in built:
 		if not _is_manalith(node):
 			continue
 		var owner_slot := int(node.get("owner_slot"))
-		if owner_slot != slot and not bool(node.call("is_targetable")):
+		if not _is_mine(owner_slot, slot) and not bool(node.call("is_targetable")):
 			continue
-		_mark(node as Node3D, style.manalith, owner_slot, owner_slot == slot)
+		_mark(node as Node3D, style.manalith, owner_slot, _is_mine(owner_slot, slot))
 	for node in tree.get_nodes_in_group(&"unit"):
 		var unit := node as UnitBody
 		if unit == null or not _unit_shows(unit, slot):
 			continue
-		_mark(unit, style.creature, unit.owner_slot, unit.owner_slot == slot)
+		_mark(unit, style.creature, unit.owner_slot, _is_mine(unit.owner_slot, slot))
 	for node in tree.get_nodes_in_group(&"wizard"):
 		var wizard := node as WizardBody
 		if wizard == null or not _wizard_shows(wizard, slot):
@@ -77,14 +77,20 @@ func _is_manalith(node: Node) -> bool:
 	return "spell_tag" in node and str(node.get("spell_tag")) == STRUCTURE_BODY.MANALITH
 
 
+## RFC-049 049c: the local slot and its allies (allied vision: sacengine minimapVisibleToSide shows what the allies see; the port has no
+## fog, so what changes is that an ally is shown always, with the arrow at the edge for its buildings, renderer.d:4641-4643).
+func _is_mine(owner_slot: int, slot: int) -> bool:
+	return owner_slot == slot or (owner_slot > 0 and slot > 0 and SideRelations.stance(slot, owner_slot) == SideRelations.Stance.ALLY)
+
+
 func _unit_shows(unit: UnitBody, slot: int) -> bool:
-	if unit.owner_slot == slot:
+	if _is_mine(unit.owner_slot, slot):
 		return not unit.is_dead()
 	return unit.is_targetable()
 
 
 func _wizard_shows(wizard: WizardBody, slot: int) -> bool:
-	return wizard.owner_slot == slot or wizard.is_targetable()
+	return _is_mine(wizard.owner_slot, slot) or wizard.is_targetable()
 
 
 ## Draws `node`'s icon, or queues its arrow when it lies past the circle and `arrow_ok` (or the kind shows arrows for all).

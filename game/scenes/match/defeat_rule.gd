@@ -113,15 +113,25 @@ func _on_altar_state_changed(altar: Altar, state: Altar.State) -> void:
 		defeat(altar.owner_slot)
 
 
-## One side left among the ones that own an altar wins; none left, a match with no winner.
+## One team left among the seated sides that own an altar wins (RFC-049 049b: sacengine getNewVictories, state.d:30483-30492:
+## no enemy side alive in altarSides); none left, a match with no winner. The winners are the whole team, also the ally that
+## fell earlier (P3). With every slot its own team (1v1) this is the old «one side left wins».
 func _decide_winner() -> void:
 	if match_state.has_result():
 		return
+	var sides := match_state.sides()
 	var alive: Array[int] = []
-	for slot in match_state.sides():
+	var teams: Dictionary = {}
+	for slot in sides:
 		if not match_state.is_defeated(slot):
 			alive.append(slot)
-	if alive.size() == 1:
-		match_state.end_match(alive[0])
-	elif alive.is_empty():
+			teams[SideRelations.team_of(slot)] = true
+	if alive.is_empty():
 		match_state.end_match(0)
+	elif teams.size() == 1:
+		var winners: Array[int] = []
+		var team: int = teams.keys()[0]
+		for slot in sides:
+			if SideRelations.team_of(slot) == team:
+				winners.append(slot)
+		match_state.end_match_team(winners)

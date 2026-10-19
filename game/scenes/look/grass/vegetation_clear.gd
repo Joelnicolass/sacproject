@@ -8,6 +8,8 @@ extends Node3D
 ## Presentation only: it has no effect in a dedicated or headless process.
 
 const GROUP := &"vegetation_clear"
+## Every vegetation layer (GrassField, later FloraField) joins it and answers `clears_changed()` (RFC-054 054b).
+const FIELD_GROUP := &"vegetation_field"
 
 @export_range(0.0, 100.0, 0.5, "suffix:m") var radius_m := 6.0:
 	set(value):
@@ -37,4 +39,4 @@ func _notification(what: int) -> void:
 
 func _notify_changed() -> void:
 	if is_inside_tree():
-		get_tree().call_group(&"grass_field", &"clears_changed")
+		get_tree().call_group(FIELD_GROUP, &"clears_changed")

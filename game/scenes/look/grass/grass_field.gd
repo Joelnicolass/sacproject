@@ -21,10 +21,7 @@ const HEIGHT_TEXELS := GrassHeight.SIZE
 ## The ground's color is baked finer (1.25 m per texel): in the distance fade a blade takes the color of
 ## the ground right where it stands, so what is left of it does not stand out from the ground's detail.
 const GROUND_TEXELS := 2048
-## A cell stays until its rect is this far past the radius; new cells start at `radius + 1`.
-const KEEP_MARGIN_M := 6.0
 const FAR_SEED := 7022
-const TIER_HYSTERESIS_M := 4.0
 ## Fraction of the radius where the grass is gone (see `fade_end` in grass.gdshader); cells are only
 ## made up to it.
 const FADE_END := 0.85
@@ -63,6 +60,8 @@ var _material: ShaderMaterial
 ## One MultiMesh per tier (TIER_BLEND.size() transition tiers + the far one) and the distance where each starts.
 var _tier_meshes: Array[MultiMesh] = []
 var _tier_starts := PackedFloat32Array()
+## Which cells exist and their tiers (RFC-054 054b: shared with the other vegetation layers); `_cells` holds the nodes.
+var _ring := CellRing.new(CELL_M, MAP_CELLS)
 var _cells := {}
 var _mask := GrassMask.new()
 var _trample := GrassTrample.new()
@@ -82,6 +81,7 @@ var _mesh_key := ""
 
 func _ready() -> void:
 	add_to_group(&"grass_field")
+	add_to_group(&"vegetation_field")
 	visibility_changed.connect(_refresh)
 	set_process(false)
 
@@ -493,6 +493,7 @@ func _build_meshes() -> void:
 	_tier_meshes.append(_multimesh(GrassBladeMesh.build(1), counts.y, buffer.slice(0, counts.y * 16)))
 	_tier_starts.append(near_r * FAR_START_FACTOR)
 	_material.set_shader_parameter("far_ratio", ratio)
+	_ring.tier_starts = _tier_starts
 	_mesh_key = _mesh_key_now()
 	_check_rings(counts, near_r)
 
@@ -529,7 +530,8 @@ func _process(delta: float) -> void:
 	var radius := float(_preset_value(&"grass_radius_m", 45.0)) * FADE_END
 	var cam_local := to_local(camera.global_position)
 	var forward := (global_transform.basis.inverse() * -camera.global_transform.basis.z).normalized()
-	var target := _field_center(cam_local, forward, float(_preset_value(&"grass_near_radius_m", 15.0)))
+	var ground_y := _height_at(cam_local.x, cam_local.z)
+	var target := CellRing.field_center(cam_local, forward, float(_preset_value(&"grass_near_radius_m", 15.0)), ground_y)
 	if _has_center:
 		_center = _center.lerp(target, 1.0 - exp(-delta * center_follow_rate))
 	else:
@@ -538,85 +540,27 @@ func _process(delta: float) -> void:
 	_material.set_shader_parameter("field_center", _center)
 	_material.set_shader_parameter("camera_xz", Vector2(cam_local.x, cam_local.z))
 	_material.set_shader_parameter("camera_y", cam_local.y)
-	var fade_center := _fade_center(cam_local, forward)
+	var fade_center := CellRing.fade_center(cam_local, forward, ground_y)
 	_material.set_shader_parameter("fade_center", fade_center)
 	_update_cells(radius, fade_center)
 	_update_clears(delta)
 	_update_trample(delta, radius)
 
 
-## The ground point the camera looks at, no farther than the field can use: low cameras get a
-## center ahead of them (so the ring covers what they see), high ones look straight at it.
-func _field_center(cam_local: Vector3, forward: Vector3, near_radius: float) -> Vector2:
-	var flat := Vector2(forward.x, forward.z)
-	var above := maxf(cam_local.y - _height_at(cam_local.x, cam_local.z), 0.0)
-	var reach := near_radius * 0.9 + above * 0.5
-	if forward.y < -0.02 and flat.length() > 0.001:
-		reach = minf(reach, above * flat.length() / -forward.y)
-	var here := Vector2(cam_local.x, cam_local.z)
-	return here + flat.normalized() * reach if flat.length() > 0.001 else here
-
-
-## A cell exists while it is inside the radius around the fade center (the shader fades the grass by
-## the distance to it); its tier (how many blades) goes by the distance to the field's center,
-## like the density in the shader.
-## The point the distance fade is measured from: under the camera, led toward where it looks by the
-## camera's height over the ground (never past the ground point it looks at). A game camera (a few
-## meters up) fades around itself, so turning does not move the fade; a high RTS camera fades around
-## what it looks at.
-func _fade_center(cam_local: Vector3, forward: Vector3) -> Vector2:
-	var flat := Vector2(forward.x, forward.z)
-	var here := Vector2(cam_local.x, cam_local.z)
-	if flat.length() <= 0.001:
-		return here
-	var above := maxf(cam_local.y - _height_at(cam_local.x, cam_local.z), 0.0)
-	var reach := above
-	if forward.y < -0.02:
-		reach = minf(reach, above * flat.length() / -forward.y)
-	return here + flat.normalized() * reach
-
-
+## A cell exists while it is inside the radius around the fade center (the shader fades the grass by the distance to
+## it); its tier (how many blades) goes by the distance to the field's center, like the density in the shader.
 func _update_cells(radius: float, eye: Vector2) -> void:
-	var first := Vector2i((eye - Vector2.ONE * (radius + 2.0)) / CELL_M)
-	var last := Vector2i((eye + Vector2.ONE * (radius + 2.0)) / CELL_M)
-	for iz in range(maxi(first.y - 1, 0), mini(last.y + 1, MAP_CELLS - 1) + 1):
-		for ix in range(maxi(first.x - 1, 0), mini(last.x + 1, MAP_CELLS - 1) + 1):
-			var key := Vector2i(ix, iz)
-			if _cells.has(key):
-				continue
-			if _rect_distance(key, eye) <= radius + 1.0:
-				_add_cell(key, _tier_for(_rect_distance(key, _center), 0))
-	for key in _cells.keys():
+	var changes := _ring.update(radius, eye, _center)
+	for key: Vector2i in changes["added"]:
+		_add_cell(key, _ring.tier_of(key))
+	for key: Vector2i in changes["removed"]:
 		var node: MultiMeshInstance3D = _cells[key]
-		var d := _rect_distance(key, _center)
-		if _rect_distance(key, eye) > radius + KEEP_MARGIN_M:
-			_cells.erase(key)
-			node.queue_free()
-			continue
-		var tier: int = node.get_meta(&"tier")
-		var wanted := _tier_for(d, tier)
-		if wanted != tier:
-			node.set_meta(&"tier", wanted)
-			_assign_mesh(node)
-
-
-## Tier of a cell at rect distance `d` (0 = the nearest). `current` adds hysteresis (4 m) so a
-## cell does not flip back and forth: it enters an outer tier only TIER_HYSTERESIS_M past its start.
-func _tier_for(d: float, current: int) -> int:
-	var tier := 0
-	for i in range(1, _tier_starts.size()):
-		var start := _tier_starts[i] + (TIER_HYSTERESIS_M if current < i else 0.0)
-		if d <= start:
-			break
-		tier = i
-	return tier
-
-
-func _rect_distance(key: Vector2i, from: Vector2) -> float:
-	var low := Vector2(key) * CELL_M
-	var dx := maxf(maxf(low.x - from.x, from.x - (low.x + CELL_M)), 0.0)
-	var dz := maxf(maxf(low.y - from.y, from.y - (low.y + CELL_M)), 0.0)
-	return sqrt(dx * dx + dz * dz)
+		_cells.erase(key)
+		node.queue_free()
+	for key: Vector2i in changes["retiered"]:
+		var node: MultiMeshInstance3D = _cells[key]
+		node.set_meta(&"tier", _ring.tier_of(key))
+		_assign_mesh(node)
 
 
 func _add_cell(key: Vector2i, tier: int) -> void:
@@ -646,6 +590,7 @@ func _free_cells() -> void:
 		if is_instance_valid(node):
 			node.queue_free()
 	_cells.clear()
+	_ring.clear()
 
 
 func _update_clears(delta: float) -> void:
@@ -676,13 +621,7 @@ func _update_trample(delta: float, radius: float) -> void:
 
 
 func _camera() -> Camera3D:
-	if Engine.is_editor_hint():
-		if not follow_editor_camera or not Engine.has_singleton(&"EditorInterface"):
-			return null
-		var editor: Object = Engine.get_singleton(&"EditorInterface")
-		var viewport: SubViewport = editor.call("get_editor_viewport_3d", 0)  # dynamic: EditorInterface does not exist in an exported game
-		return viewport.get_camera_3d() if viewport else null
-	return get_viewport().get_camera_3d()
+	return CellRing.view_camera(self, follow_editor_camera)
 
 
 ## Baked land height under a map position (nearest texel; 0 off the map).

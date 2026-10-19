@@ -1,13 +1,12 @@
 class_name IdleState
 extends UnitState
 
-## IDLE (idle + patrol): regenerates and, with no order, scans for the closest enemy every `scan_interval_s`
-## (sacengine patrol, state.d:13029). The rest loop ends in the idle gesture 1 time in GESTURE_EVERY (RFC-023,
+## IDLE (idle + patrol): regenerates. The scan for an enemy with no order (sacengine patrol, state.d:13029) is
+## TargetRefresh's (F370), which also runs while the body fights. The rest loop ends in the idle gesture 1 time in GESTURE_EVERY (RFC-023,
 ## sacengine's 1/5, state.d:7957-7992), picked as (hash(name) + loops) % 5: the same on every peer, no randi().
 
 const GESTURE_EVERY := 5
 
-var _scan_left := 0.0
 var _loops := 0
 var _gesturing := false
 
@@ -19,16 +18,6 @@ func exit() -> void:
 
 func physics_update(delta: float) -> void:
 	body.regenerate(delta)
-	if body.ordered or not body.idle_aggro:
-		return
-	_scan_left -= delta
-	if _scan_left > 0.0:
-		return
-	_scan_left = body.scan_interval_s
-	var foe := body.closest_foe(body.global_position)
-	if foe:
-		body.target = foe
-		transition(&"Chase")
 
 
 ## "work" for a calm peasant (PeasantBehavior), then the gesture, else the CRE8 idle0.

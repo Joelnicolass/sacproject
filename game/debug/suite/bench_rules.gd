@@ -33,6 +33,15 @@ extends MatchRules
 ## first tick two creatures of the AI fight foes).
 @export var probe := ""
 
+@export_group("Criterios (053a)")
+## F370: buildings of the map put on the field (a gravestone next to the guards).
+@export var buildings: Array[BenchBuilding] = []
+## F370: what ExpectJudge measures; with any, the run ends once every one is decided and prints EXPECT DONE.
+@export var expects: Array[BenchExpect] = []
+## F370: labels whose bodies ExpectJudge prints every `trace_every_s` (health, mode, target): the diagnostic lines TRACE.
+@export var trace_labels: PackedStringArray = PackedStringArray()
+@export var trace_every_s := 0.5
+
 @export_group("Final (024d)")
 ## > 0: the AI wizards start `ai_start_distance_m` from the altar of that slot (ai_endgame).
 @export var ai_start_near_altar_of := 0

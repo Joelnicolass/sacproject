@@ -7,7 +7,8 @@ extends RefCounted
 
 ## Whether `node` is a creature, wizard or structure that a body of player `slot` may fight (`me` is that
 ## body, never its own foe).
-## `by_stance`: also ask SideRelations (the SIDS of the map) whether the body's side is an enemy of `slot`.
+## `by_stance`: also ask SideRelations (the SIDS of the map) whether the body's side is an enemy of `slot`. Only the target
+## of an explicit ATTACK order is asked without it (UnitBody.accepts_target, F370).
 static func is_valid_foe_of(slot: int, node: Variant, me: Node = null, by_stance := true) -> bool:
 	if node == null or not is_instance_valid(node) or node == me or not node is Node3D:
 		return false
@@ -27,8 +28,10 @@ static func is_valid_foe_of(slot: int, node: Variant, me: Node = null, by_stance
 		return false
 	if by_stance and not SideRelations.is_enemy(slot, other_slot):
 		return false
+	## sacengine isValidAttackTarget / canDamage (state.d:12426-12432, 9091): a body of health 0 (a gravestone, a fence) can
+	## not be damaged, so it is no foe, by stance or not (F370). Shots still hit it: that is physics.
 	var health := other.get_node_or_null("Health") as Health
-	return health != null and not health.is_dead()
+	return health != null and health.maximum > 0.0 and not health.is_dead()
 
 
 ## The closest foe of `body` within its sight range of `center`, over the groups it targets (a body with no TargetPicker).

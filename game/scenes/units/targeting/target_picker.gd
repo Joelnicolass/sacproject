@@ -15,7 +15,10 @@ extends Node
 ## candidates must also lie within that distance of the anchor, because patrolAround's threshold is ~0 at
 ## the anchor and would otherwise take any foe the side has seen at any range, making the unit leave and
 ## come back over and over. Missing («aprox.»): the DangerGrid factor (needs area spells to
-## paint danger), the melee reach/height filter `maxTargetHeight` and the raging case. The scarab is a TargetPolicy (F136).
+## paint danger) and the raging case. The scarab is a TargetPolicy (F136).
+## RFC-053 053a (F370): a passive body (CRE8 aggressiveness 0: Farmers) weighs `passive_weight` (a deviation: the original weighs
+## them as any foe, and creatures stuck on villagers read as «they do not attack»); a melee-only walker skips flyers above its
+## swing (maxTargetHeight, state.d:12879, 28774); a target TargetFutility banned is skipped.
 ## Where the world has no SideVision (a bare body in a test), "visible" is "within its sight range".
 
 signal picked(target: Node3D)
@@ -35,6 +38,13 @@ signal picked(target: Node3D)
 @export var current_weight := 1.3
 ## enum maxDist (state.d:12964).
 @export var max_query_m := 5120.0
+## F370: a passive body (aggressiveness 0) is worth this much (not in sacengine). 1 = as any foe.
+@export var passive_weight := 0.5
+## F370: maxTargetHeight: a creature with no ranged attack that walks skips bodies whose feet are higher over the ground than
+## the top of its swing (MeleeAttack.height).
+@export var melee_height_filter := true
+## F370: the futile targets of the body (optional: without it nothing is banned).
+@export var futility: TargetFutility
 ## Keep what each pick weighed in last_scores (probes and the debug scene). Off in a match.
 @export var record_scores := false
 ## F136 (RFC-030h2): target rules by ranged attack (data/targeting/<tag>.tres). The one whose tag is the body's
@@ -109,6 +119,7 @@ func pick(center: Vector3, threshold := 0.25, ref_range := 100.0, within := INF)
 	var radius := minf(max_query_m, _flat(here, center) + score_cutoff(threshold, ref_range))
 	var vision := _find_vision()
 	var sight := body.type.sight_range if body.type else 0.0
+	var max_height := _max_target_height()
 	var best: Node3D = null
 	var best_score := -1.0
 	var best_distance := INF
@@ -117,6 +128,10 @@ func pick(center: Vector3, threshold := 0.25, ref_range := 100.0, within := INF)
 			if not TargetRules.is_valid_foe_of(slot, node, body):
 				continue
 			var other := node as Node3D
+			if futility != null and futility.is_banned(other):
+				continue
+			if max_height < INF and _height_above_ground(other) > max_height:
+				continue
 			var from_body := _flat(here, other.global_position)
 			if from_body > radius:
 				continue
@@ -129,6 +144,8 @@ func pick(center: Vector3, threshold := 0.25, ref_range := 100.0, within := INF)
 			if distance > within:
 				continue
 			var value := score(distance, ref_range, other.is_in_group("structure"), other.get_instance_id() == last_attacker_id, other == body.target, near_slope, far_factor, creature_weight, last_attacker_weight, current_weight)
+			if is_passive(other):
+				value *= passive_weight
 			if value <= threshold:
 				continue
 			if record_scores:
@@ -146,12 +163,41 @@ func pick(center: Vector3, threshold := 0.25, ref_range := 100.0, within := INF)
 
 
 ## Whether the body may keep `node` as its target (UnitBody.accepts_target): the active policy's rule, or a foe
-## (by stance unless `ordered`) as before policies.
-func accepts(node: Variant, ordered: bool) -> bool:
+## (by stance unless `explicit`: the target of an explicit ATTACK order) as before policies.
+func accepts(node: Variant, explicit: bool) -> bool:
 	var policy := active()
 	if policy != null:
-		return policy.accepts(body, node, ordered)
-	return TargetRules.is_valid_foe_of(body.owner_slot, node, body, not ordered)
+		return policy.accepts(body, node, explicit)
+	return TargetRules.is_valid_foe_of(body.owner_slot, node, body, not explicit)
+
+
+## F370: a creature that never picks a fight (CRE8 aggressiveness 0, isPacifist sacobject.d:84): a Farmer.
+static func is_passive(node: Node3D) -> bool:
+	if not node is UnitBody:
+		return false
+	var other_type := (node as UnitBody).type
+	return other_type != null and other_type.aggressiveness <= 0
+
+
+## Whether the body's TargetFutility banned `node`.
+func is_banned(node: Variant) -> bool:
+	return futility != null and futility.is_banned(node)
+
+
+## maxTargetHeight (state.d:12879): INF for a flyer or a body with a ranged attack, else the top of its swing.
+func _max_target_height() -> float:
+	if not melee_height_filter or body.type == null or not body.type.ranged_attack_tag.is_empty() or body.is_flying():
+		return INF
+	var melee := body.get_node_or_null("MeleeAttack") as MeleeAttack
+	return melee.height if melee != null else INF
+
+
+## How high the feet of `node` are over the ground (a flying creature; 0 for anything else).
+static func _height_above_ground(node: Node3D) -> float:
+	if not node is UnitBody or not (node as UnitBody).is_flying():
+		return 0.0
+	var unit := node as UnitBody
+	return unit.global_position.y - unit.air.ground_height(unit.global_position)
 
 
 ## The policy for the body's ranged attack, or null (the default rules).

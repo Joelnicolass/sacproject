@@ -162,12 +162,12 @@ func _lost_target() -> void:
 	_walk(spot)
 
 
-## patrolAround, then moveTo / moveWithinRange: defend `center` while within `leash` of it.
+## patrolAround, then moveTo / moveWithinRange: defend `center` while within `leash` of it. F370: the picker is asked again
+## every think (patrolAround calls updateTarget each turn, state.d:13007); the current target weighs x1.3 there, so it is
+## kept unless something better (or nothing: a futile target) comes up. Before, a target in sight was held blindly.
 func _hold(center: Vector3, leash: float, stop_within: float) -> void:
 	if _flat(_body.global_position, center) <= leash:
-		## The body's target may already be freed (a corpse that faded): check before typing it.
-		var current: Variant = _body.target
-		var foe: Node3D = current as Node3D if _in_sight(current, center) else _acquire(center, leash)
+		var foe: Node3D = _acquire(center, leash)
 		if foe:
 			_engage(foe)
 			return
@@ -199,14 +199,6 @@ func _engage(foe: Node3D) -> void:
 
 func _walk(spot: Vector3) -> void:
 	_body.walk_to(spot)
-
-
-## is_foe: a foe by the rules of orders, not the body's kept target (a Scarab's wounded ally fails here and is picked again).
-func _in_sight(foe: Variant, center: Vector3) -> bool:
-	if not _body.is_foe(foe):
-		return false
-	var sight: float = _body.type.sight_range if _body.type else 0.0
-	return _flat((foe as Node3D).global_position, center) <= sight
 
 
 ## `node` is a Variant: an order's target may be freed while the order stands, and a freed object

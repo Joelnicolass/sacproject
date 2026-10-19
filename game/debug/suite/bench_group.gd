@@ -23,6 +23,7 @@ extends Resource
 ## "attack_unit" (F136): the group is ordered to attack the creature of `order_slot` closest to its first body.
 ## "ability" (F137): each body uses its active ability on itself when the clock starts (Rockform).
 ## "advance_altar": the group is ordered (Orders.apply_for, like a human's) to advance to the altar of `order_slot`.
+## "move" / "guard_area" (F370): the group is ordered to walk to / to hold `order_point` (from the group's own center).
 @export var order := ""
 @export var order_slot := 2
 ## F148: "attack_unit" picks the creature of `order_slot` farthest from the group's first body instead of the closest
@@ -36,3 +37,15 @@ extends Resource
 ## F131: each body never picks a foe by itself (UnitBody.idle_aggro off): it stays where the bench put it until an order (an `attack`
 ## event) sends it. A body that still has aggressiveness: unlike a pacifist it obeys «attack».
 @export var holds_still := false
+## F370: the name BenchExpect calls this group by (subject / object). Empty: the tag.
+@export var label := ""
+## F370: a creature of the map (UnitSpawner.spawn_map_creature): a peasant tag gets the peasant scene, and it joins `npc`.
+@export var npc := false
+## F370: where "move" and "guard_area" point, X and Z in meters from the group's center (anchor + offset_m, offset_z_m).
+## Zero: the group's own center.
+@export var order_point := Vector2.ZERO
+
+
+## The name of the group for BenchExpect.
+func key() -> String:
+	return label if not label.is_empty() else tag

@@ -93,7 +93,6 @@ const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 @export var seat_attempts := 12
 ## sacengine stats.d:104: ground creatures turn at π rad/s.
 @export var turn_rate := PI
-@export var scan_interval_s := 0.25
 ## sacengine regenerates only in idle and not during a damage animation (state.d:1429).
 @export var regen_pause_s := 0.5
 @export var target_groups: PackedStringArray = PackedStringArray(["unit", "wizard", "structure", "doctor"])
@@ -161,6 +160,8 @@ var _by_mode := {}
 ## Optional children (RFC-024 024b): without them the body walks and picks as it did before.
 @onready var path_follower: PathFollower = get_node_or_null("PathFollower")
 @onready var _target_picker: TargetPicker = get_node_or_null("TargetPicker")
+## F370: the order the body is under (is_attack_order_on). Without it the body is never under an explicit ATTACK.
+@onready var _orders: UnitOrders = get_node_or_null("Orders")
 ## F116 (RFC-030e): takes off, flies and lands a hybrid flier. Without it every hybrid walks.
 @onready var flight: Flight = get_node_or_null("Flight")
 ## F120 (RFC-030i): the one owner of «can it act?» (stunned, petrified). Held, the body neither thinks nor turns.
@@ -448,8 +449,19 @@ func can_take_mana() -> bool:
 
 
 ## A foe by the rules of orders (Orders retarget, UnitOrders); not the target this body keeps (accepts_target, its TargetPolicy).
+## F370: by stance, except the target of an explicit ATTACK order.
 func is_foe(node: Variant) -> bool:
-	return TargetRules.is_valid_foe_of(owner_slot, node, self, not ordered)
+	return TargetRules.is_valid_foe_of(owner_slot, node, self, not is_attack_order_on(node))
+
+
+## F370: `node` is the target of this body's explicit ATTACK order (a click, the AI's port): the one body it fights without
+## asking the stance (a neutral house attacked on purpose).
+func is_attack_order_on(node: Variant) -> bool:
+	if not ordered or node == null or not is_instance_valid(node):
+		return false
+	if not is_instance_valid(_orders) or _orders.command != UnitOrders.Command.ATTACK or not is_instance_valid(_orders.target):
+		return false
+	return _orders.target == node
 
 
 func _health() -> Health:
@@ -645,10 +657,17 @@ func closest_foe(center: Vector3, threshold := 0.25, ref_range := 100.0, within 
 	return TargetRules.closest_in_sight(self, center)
 
 
-## The target this body keeps, by its TargetPolicy (F136); without one, a foe: under an order any body not of the own side
-## (isValidAttackTarget), else a stance enemy (isValidEnemyAttackTarget, state.d:12442).
+## The target this body keeps, by its TargetPolicy (F136); without one, a foe: the target of an explicit ATTACK order is any body
+## not of the own side (isValidAttackTarget), anything else a stance enemy (isValidEnemyAttackTarget, state.d:12442). F370: before,
+## every order dropped the stance, so a guard kept any body of another slot (a gravestone of the map, a neutral house).
 func accepts_target(node: Variant) -> bool:
-	return _target_picker.accepts(node, ordered) if is_instance_valid(_target_picker) else TargetRules.is_valid_foe_of(owner_slot, node, self, not ordered)
+	var explicit := is_attack_order_on(node)
+	return _target_picker.accepts(node, explicit) if is_instance_valid(_target_picker) else TargetRules.is_valid_foe_of(owner_slot, node, self, not explicit)
+
+
+## F370: the picker's TargetFutility banned `node` (it would not lose health). False without them.
+func is_futile(node: Variant) -> bool:
+	return is_instance_valid(_target_picker) and _target_picker.is_banned(node)
 
 
 func _on_health_changed(current: float, _maximum: float) -> void:

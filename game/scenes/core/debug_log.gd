@@ -11,13 +11,13 @@ extends RefCounted
 ##   touches (GrowingWave), flight (GroundHug), split (ShotSplit), strikes (ShotStrike), spikes (SpikeWave/SpikeImpact),
 ##   oil (Oiled and OilImpact), walk (Firewalking), vines (Vined), pull (Pulling), breath (BreathOfLife), quake (QuakeWave),
 ##   bolt (LightningStrike), halo (HaloOfEarth), devour (DevourGrowth), pace (PaceFactors), revive (FastRevive),
-##   cling (Clinging, StickImpact), souls (Soul), hop (MiteHop).
+##   cling (Clinging, StickImpact), souls (Soul), hop (MiteHop), targets (TargetFutility).
 
 ## Every category.
 const BENCH: Array[StringName] = [
 	&"gap", &"melee", &"on_hit", &"drain", &"charge", &"shield", &"shields", &"effects", &"ability", &"touches",
 	&"flight", &"split", &"strikes", &"spikes", &"oil", &"walk", &"vines", &"pull", &"breath", &"quake", &"bolt",
-	&"halo", &"devour", &"pace", &"revive", &"cling", &"souls", &"hop",
+	&"halo", &"devour", &"pace", &"revive", &"cling", &"souls", &"hop", &"targets",
 ]
 
 static var _on: Dictionary = {}

@@ -11,9 +11,10 @@ extends Resource
 @export var tag := ""
 
 
-## Whether `body` may keep `node` as its target (UnitBody.accepts_target). `ordered`: the body is under an order.
-func accepts(body: UnitBody, node: Variant, ordered: bool) -> bool:
-	return TargetRules.is_valid_foe_of(body.owner_slot, node, body, not ordered)
+## Whether `body` may keep `node` as its target (UnitBody.accepts_target). `explicit`: `node` is the target of an explicit
+## ATTACK order (a click, the AI's port), the one target taken without asking the stance (F370).
+func accepts(body: UnitBody, node: Variant, explicit: bool) -> bool:
+	return TargetRules.is_valid_foe_of(body.owner_slot, node, body, not explicit)
 
 
 ## The target `body` picks by itself around `center` (UnitBody.closest_foe); `within`: the candidates must lie within

@@ -1,0 +1,125 @@
+[gd_resource type="Resource" script_class="BenchRules" load_steps=17 format=3]
+
+[ext_resource type="Script" path="res://debug/suite/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://debug/suite/bench_group.gd" id="2_group"]
+[ext_resource type="Script" path="res://debug/suite/bench_event.gd" id="3_event"]
+[ext_resource type="Script" path="res://debug/suite/bench_expect.gd" id="4_expect"]
+[ext_resource type="Script" path="res://debug/suite/bench_building.gd" id="5_building"]
+[ext_resource type="Resource" path="res://data/catalog/buildings/grv3.tres" id="6_grv3"]
+
+[sub_resource type="Resource" id="Group_shooter"]
+script = ExtResource("2_group")
+tag = "tbsh"
+slot = 1
+count = 1
+columns = 1
+offset_m = -10.0
+offset_z_m = 80.0
+facing_x = 1.0
+label = "shooter"
+
+[sub_resource type="Resource" id="Group_farmer"]
+script = ExtResource("2_group")
+tag = "zepe"
+slot = 3
+count = 1
+columns = 1
+offset_m = 0.0
+offset_z_m = 80.0
+facing_x = -1.0
+npc = true
+label = "farmer"
+
+[sub_resource type="Resource" id="Group_enemy"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 2
+count = 1
+columns = 1
+offset_m = 50.0
+offset_z_m = 80.0
+facing_x = -1.0
+holds_still = true
+label = "enemy"
+
+[sub_resource type="Resource" id="Group_locked"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 1
+count = 1
+columns = 1
+offset_m = -3.0
+offset_z_m = -80.0
+facing_x = 1.0
+label = "locked"
+
+[sub_resource type="Resource" id="Group_farmer_b"]
+script = ExtResource("2_group")
+tag = "zepe"
+slot = 3
+count = 1
+columns = 1
+offset_m = -1.5
+offset_z_m = -80.0
+facing_x = -1.0
+npc = true
+label = "farmer_b"
+
+[sub_resource type="Resource" id="Group_attacker"]
+script = ExtResource("2_group")
+tag = "nmuh"
+slot = 2
+count = 1
+columns = 1
+offset_m = 42.0
+offset_z_m = -80.0
+facing_x = -1.0
+holds_still = true
+label = "attacker"
+
+[sub_resource type="Resource" id="Event_attack"]
+script = ExtResource("3_event")
+at_s = 0.1
+action = "attack"
+label = "el Druid ataca al Trogg encerrado"
+slot = 2
+user = "Druid2"
+target = "Trogg1"
+
+[sub_resource type="Resource" id="Expect_drop"]
+script = ExtResource("4_expect")
+check = "suelta_granjero_7s"
+kind = "dropped"
+subject = "shooter"
+object = "farmer"
+within_s = 7.0
+
+[sub_resource type="Resource" id="Expect_enemy"]
+script = ExtResource("4_expect")
+check = "golpea_enemigo_25s"
+kind = "hurt"
+subject = "shooter"
+object = "enemy"
+within_s = 25.0
+
+[sub_resource type="Resource" id="Expect_switch"]
+script = ExtResource("4_expect")
+check = "cambia_al_atacante_1s"
+kind = "picked"
+subject = "locked"
+object = "attacker"
+from = "hurt"
+within_s = 1.0
+
+[resource]
+script = ExtResource("1_rules")
+groups = Array[ExtResource("2_group")]([SubResource("Group_shooter"), SubResource("Group_farmer"), SubResource("Group_enemy"), SubResource("Group_locked"), SubResource("Group_farmer_b"), SubResource("Group_attacker")])
+anchor = Vector3(1270, 0, 1270)
+start_paused = true
+match_seed = 1
+events = Array[ExtResource("3_event")]([SubResource("Event_attack")])
+ignore_annihilation = true
+expects = Array[ExtResource("4_expect")]([SubResource("Expect_drop"), SubResource("Expect_enemy"), SubResource("Expect_switch")])
+trace_labels = PackedStringArray("farmer", "shooter", "enemy")
+trace_every_s = 0.5
+pending_text = "F370 granjero"

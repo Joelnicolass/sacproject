@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://debug/ai/ai_match.tscn" id="1_match"]
+[ext_resource type="Resource" path="res://debug/rules/f370_guard_reacts.tres" id="2_rules"]
+
+[node name="F370Targets" instance=ExtResource("1_match")]
+editor_description = "RFC-053 053a (F370): blancos válidos y criaturas que reaccionan. Tres variantes de reglas (cambiar default_rules del Runner, o --rules= sin ventana): f370_guard_reacts.tres (3 Troggs quietos y 3 con guard_area; un Ranger enemigo se acerca con «mover» hasta ~16 m: los 6 lo eligen antes de 1 s y cada grupo le pega antes de 3 s desde que está a 25 m), f370_indestructible.tres (una lápida grv3 de vida 0 entre 3 Troggs con guard_area y un Druid quieto a 25 m: 0 golpes a cuerpos de vida máxima 0 y el Druid recibe un golpe antes de 5 s), f370_futile_stun.tres (carril A: un Shrike que aturde, un Farmer a 10 m y un Druid quieto a 60 m: suelta al granjero antes de 7 s desde que deja de bajar de vida (TargetFutility, ventana de 6 s) y le pega al Druid antes de 25 s; carril B: un Trogg sobre un Farmer y un Druid que lo ataca: cambia al Druid antes de 1 s desde el primer golpe). Imprime EXPECT PASS|FAIL y EXPECT DONE. Con ventana: Enter (check_tick)."
+
+[node name="Runner" parent="." index="3"]
+default_rules = ExtResource("2_rules")
+camera_offset = Vector3(0, 45, 70)
+camera_target_offset = Vector3(0, 0, 80)
+default_minutes = 0.5

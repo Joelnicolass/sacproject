@@ -11,7 +11,8 @@ extends Node
 ## sample-s (seconds between position samples, 10 by default), npcs (the map's villagers on the field even if the rules say no),
 ## difficulties=easy,normal (the difficulty of each AI seat in order, 024e), souls=N (starting souls of every wizard: read by
 ## MatchSetup.from_cli, its one owner since RFC-031 031d, and applied by HighNoon to the world's copy of these rules),
-## autostart (skip the pause with a window), quit (quit at the end with a window). Headless it starts
+## autostart (skip the pause with a window), quit (quit at the end with a window), watchdog-s=N (F370: quit with exit code 1 after N
+## seconds of wall clock, whatever the run is doing; 0 = none). Headless it starts
 ## and quits by itself; with a window it waits in «Pendiente» for check_tick (Enter) and stays on screen.
 ## Determinism (RFC-032): the digest is indexed by audit.tick, but while it waits for Enter the world already runs,
 ## so a window run is comparable with headless only with --autostart (ventana comparable solo con --autostart).
@@ -27,6 +28,10 @@ const REPORT_TAG := "AI_REPORT "
 @export var camera: Camera3D
 ## RFC-024 024c: the scene of an AI side (AiSide), put on the seats of the rules.
 @export var ai_side_scene: PackedScene
+## F370 (RFC-053 §4): measures BenchRules.expects and prints EXPECT lines. Optional: without it the criteria are not judged.
+@export var judge: ExpectJudge
+## F370: the scene of a BenchBuilding (scenes/map/map_building.tscn).
+@export var building_scene: PackedScene
 @export var default_minutes := 2.0
 @export var sample_every_s := 10.0
 @export var settle_frames := 4
@@ -61,6 +66,10 @@ var _orders_at_start: Array = []
 var _checkpoint_ticks: Array[int] = []
 ## «IA 1 Fácil · IA 2 Normal»: the difficulty of each AI seat, on the status label (the debug HUD of 024e).
 var _seats_text := ""
+## F370: label -> Array[Node3D], the bodies of each BenchGroup / BenchBuilding, for the judge.
+var _labeled: Dictionary = {}
+## F370: wall-clock limit in msec (0 = none).
+var _watchdog_at := 0
 
 
 func _ready() -> void:
@@ -72,6 +81,9 @@ func _ready() -> void:
 	_max_ticks = int(round(_minutes * 60.0 * 60.0))
 	_sample_ticks = maxi(1, int(round(float(_args.get("sample-s", sample_every_s)) * 60.0)))
 	_rules = _load_rules()
+	var watchdog_s := float(_args.get("watchdog-s", 0.0))
+	if watchdog_s > 0.0:
+		_watchdog_at = Time.get_ticks_msec() + int(watchdog_s * 1000.0)
 	for minute in str(_args.get("checkpoints", "6,10")).split(",", false):
 		_checkpoint_ticks.append(int(round(float(minute) * 3600.0)))
 	audit.keep_lines = _args.has("events")
@@ -141,6 +153,7 @@ func _prepare() -> void:
 	if not _rules.ai_seats.is_empty():
 		await _seat_ais()
 	_place_structures()
+	_place_buildings(terrain)
 	for group in _rules.groups:
 		if not _group_slots.has(group.slot):
 			_group_slots.append(group.slot)
@@ -163,7 +176,7 @@ func _prepare() -> void:
 			var unit: Node3D = spawner.call("spawn_unit", {
 				"tag": group.tag, "label": label, "slot": group.slot,
 				"x": x, "y": (0.0 if is_nan(ground) else ground) + 0.2, "z": z,
-				"yaw": yaw,
+				"yaw": yaw, "npc": group.npc, "peasant": group.npc and PeasantBehavior.is_peasant_tag(group.tag),
 			})
 			if group.pacifist and unit.get("type") is CreatureType:
 				var calm := (unit.get("type") as CreatureType).duplicate() as CreatureType
@@ -177,7 +190,10 @@ func _prepare() -> void:
 			audit.watch_unit(unit)
 			_watched.append(unit)
 			made.append(unit)
-		if group.order in ["advance_altar", "attack_structure", "attack_unit", "ability"]:
+		var known: Array = _labeled.get(group.key(), [])
+		known.append_array(made)
+		_labeled[group.key()] = known
+		if group.order in ["advance_altar", "attack_structure", "attack_unit", "ability", "move", "guard_area"]:
 			_orders_at_start.append([group, made])
 	for wizard in get_tree().get_nodes_in_group("wizard"):
 		var purse := wizard.get_node_or_null("SoulPurse")
@@ -196,6 +212,8 @@ func _prepare() -> void:
 	audit.watch_world(_world)
 	_start_ais()
 	_events = BenchEvents.new(_world, audit, _sides, _rules)
+	if judge != null:
+		judge.begin(_rules, _labeled)
 
 
 ## The clock starts: the orders of the scene, the AI sides, the record.
@@ -218,6 +236,8 @@ func _physics_process(_delta: float) -> void:
 		return
 	if _events != null:
 		_events.step(audit.tick)
+	if judge != null:
+		judge.step(audit.tick)
 	var now := Time.get_ticks_usec()
 	_tick_ms.append(float(now - _last_usec) / 1000.0)
 	_last_usec = now
@@ -246,6 +266,8 @@ func _verdict() -> Array:
 			return [alive[0], "annihilation"]
 	if audit.tick >= _max_ticks:
 		return [0, "time"]
+	if judge != null and judge.is_done():
+		return [0, "expects"]
 	return []
 
 
@@ -312,8 +334,9 @@ func _finish(winner: int, reason: String) -> void:
 	## The kit's recorder writes the JSON (--out=) and the lines (--events=); digest, events and end_tick are already in the report.
 	audit.recorder.write_outputs(_report)
 	_set_status("Terminado · semilla %d" % MatchSeed.current)
+	var passed := judge.finish() if judge != null else true
 	if _headless or _args.has("quit"):
-		get_tree().quit()
+		get_tree().quit(0 if passed else 1)
 
 
 func _tick_stats() -> Dictionary:
@@ -332,6 +355,13 @@ func _tick_stats() -> Dictionary:
 
 
 func _process(_delta: float) -> void:
+	if _watchdog_at > 0 and not _finished and Time.get_ticks_msec() > _watchdog_at:
+		_watchdog_at = 0
+		print("ai_match: vigilante de pared, se corta a los %s s" % str(_args.get("watchdog-s")))
+		if judge != null and judge.has_expects():
+			print(ExpectJudge.PREFIX + "DONE FAIL watchdog")
+		get_tree().quit(1)
+		return
 	if _running and follow_slot > 0 and camera != null and not _headless:
 		var target := _wizard_of(follow_slot)
 		if target != null:
@@ -394,6 +424,28 @@ func _place_structures() -> void:
 		})
 
 
+## F370: the BenchBuilding of the rules, on the ground at their offset from the anchor (a map building like the layout's).
+func _place_buildings(terrain: Node) -> void:
+	for entry in _rules.buildings:
+		if building_scene == null or entry.building == null:
+			push_warning("ai_match: falta la escena o el BLDG de un BenchBuilding")
+			continue
+		var building := building_scene.instantiate() as MapBuilding
+		building.building = entry.building
+		building.owner_slot = entry.slot
+		building.max_health_override = entry.max_health_override
+		building.name = "Bench_%s" % entry.key()
+		var x := _rules.anchor.x + entry.offset.x
+		var z := _rules.anchor.z + entry.offset.y
+		var ground := float(terrain.call("ground_height", x, z))
+		building.position = Vector3(x, 0.0 if is_nan(ground) else ground, z)
+		building.rotation.y = deg_to_rad(entry.yaw_deg)
+		_world.add_child(building)
+		var known: Array = _labeled.get(entry.key(), [])
+		known.append(building)
+		_labeled[entry.key()] = known
+
+
 func _wizard_of(slot: int) -> Node3D:
 	for wizard in get_tree().get_nodes_in_group("wizard"):
 		if int(wizard.get("owner_slot")) == slot:
@@ -428,6 +480,13 @@ func _near_spot(group: BenchGroup, index: int, terrain: Node) -> Vector4:
 
 
 func _order_advance(group: BenchGroup, units: Array[Node3D]) -> void:
+	if group.order == "move" or group.order == "guard_area":
+		## F370: walk to / hold `order_point` from the group's center (Orders.apply_for, like a click on the ground).
+		var center := Vector3(_rules.anchor.x + group.offset_m + group.order_point.x, 0.0, _rules.anchor.z + group.offset_z_m + group.order_point.y)
+		var ground := float(_world.get_node("Map/Terrain").call("ground_height", center.x, center.z))
+		center.y = 0.0 if is_nan(ground) else ground
+		_world.get_node("%Orders").call("apply_for", group.slot, units, group.order, center, null, 0.0)
+		return
 	if group.order == "ability":
 		## F137: each body uses its active ability on itself when the clock starts (an Earthfling's Rockform), like a click.
 		for unit in units:

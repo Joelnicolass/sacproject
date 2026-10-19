@@ -36,6 +36,11 @@ func run(host: Node3D) -> Dictionary:
 	out["target_vision_expiry"] = _vision_expiry()
 	out["target_attacker_wiring"] = _wiring()
 	out["target_pacifist"] = _pacifist()
+	out["target_zero_health_no_foe"] = _zero_health()
+	out["target_explicit_attack_only"] = _explicit_attack()
+	out["target_passive_weight"] = _passive_weight()
+	out["target_futile_skipped"] = _futile_skipped()
+	out["target_melee_height"] = _melee_height()
 	out["target_guard_no_jitter"] = await _guard()
 	_root.free()
 	return out
@@ -265,6 +270,103 @@ func _pacifist() -> Dictionary:
 	farmer.free()
 	foe.free()
 	return _verdict(checks, {})
+
+
+## F370: a body whose Health maximum is 0 (a gravestone) is no foe, by stance or not; one with health is.
+func _zero_health() -> Dictionary:
+	var trogg := _unit(1, Vector3.ZERO, "Hitter")
+	var grave := _unit(2, Vector3(5.0, 0.0, 0.0), "Grave")
+	var health := grave.get_node("Health") as Health
+	health.maximum = 0.0
+	health.current = 0.0
+	var checks := {
+		"zero_by_stance": not TargetRules.is_valid_foe_of(1, grave, trogg, true),
+		"zero_without_stance": not TargetRules.is_valid_foe_of(1, grave, trogg, false),
+		"not_dead": not health.is_dead(),
+	}
+	health.maximum = 100.0
+	health.current = 100.0
+	checks["with_health"] = TargetRules.is_valid_foe_of(1, grave, trogg, false)
+	trogg.free()
+	grave.free()
+	return _verdict(checks, {})
+
+
+## F370: a body of the neutral slot 0 is no foe of a body under a guard order; it is the target of an explicit ATTACK order.
+func _explicit_attack() -> Dictionary:
+	var trogg := _unit(1, Vector3.ZERO, "Guard")
+	var house := _unit(0, Vector3(5.0, 0.0, 0.0), "House")
+	var orders := trogg.get_node("Orders")
+	orders.call("give", UnitOrders.Command.GUARD_AREA, null, Vector3.ZERO, Vector2.ZERO, 0.0)
+	var guarded := trogg.is_foe(house) or trogg.accepts_target(house)
+	orders.set("command", UnitOrders.Command.ATTACK)
+	orders.set("target", house)
+	var attacked := trogg.is_foe(house) and trogg.accepts_target(house) and trogg.is_attack_order_on(house)
+	orders.call("clear")
+	var checks := {
+		"neutral_stance": SideRelations.stance(1, 0) == SideRelations.Stance.NEUTRAL,
+		"guard_ignores_neutral": not guarded,
+		"attack_order_takes_it": attacked,
+		"cleared_drops_it": not trogg.accepts_target(house),
+	}
+	trogg.free()
+	house.free()
+	return _verdict(checks, {})
+
+
+## F370: a passive body (aggressiveness 0) weighs passive_weight: a Farmer at 10 m (0.7656·1.25·0.5 = 0.4785) loses to a
+## foe at 30 m (0.6006·1.25 = 0.7508); with weight 1 the Farmer (0.957) wins.
+func _passive_weight() -> Dictionary:
+	var set := _scene(Vector3.ZERO, [Vector3(30.0, 0.0, 0.0)])
+	var picker: TargetPicker = set["picker"]
+	var farmer := _unit(3, Vector3(10.0, 0.0, 0.0), "Farmer", "zepe")
+	var halved := picker.pick(Vector3.ZERO)
+	var farmer_score := _score_of(picker, farmer)
+	picker.passive_weight = 1.0
+	var whole := picker.pick(Vector3.ZERO)
+	picker.passive_weight = 0.5
+	var checks := {
+		"passive": TargetPicker.is_passive(farmer),
+		"foe_wins_halved": halved == set["foes"][0],
+		"farmer_score": _same(farmer_score, pow(1.0 - 0.075, 2.0) * 1.25 * 0.5),
+		"farmer_wins_whole": whole == farmer,
+	}
+	farmer.free()
+	_clean(set)
+	return _verdict(checks, {"farmer_score": farmer_score})
+
+
+## F370: a target TargetFutility banned is passed over until the ban ends.
+func _futile_skipped() -> Dictionary:
+	var set := _scene(Vector3.ZERO, [Vector3(10.0, 0.0, 0.0), Vector3(40.0, 0.0, 0.0)])
+	var picker: TargetPicker = set["picker"]
+	var body: UnitBody = set["body"]
+	var near: Node3D = set["foes"][0]
+	var before := picker.pick(Vector3.ZERO)
+	picker.futility.ban(near)
+	var after := picker.pick(Vector3.ZERO)
+	var checks := {
+		"has_futility": picker.futility != null,
+		"near_first": before == near,
+		"banned_skipped": after == set["foes"][1],
+		"body_sees_ban": body.is_futile(near),
+	}
+	_clean(set)
+	return _verdict(checks, {})
+
+
+## F370 maxTargetHeight: a melee walker (Trogg) reaches up to the top of its swing; a flyer and a shooter have no limit.
+func _melee_height() -> Dictionary:
+	var trogg := _unit(1, Vector3.ZERO, "Melee")
+	var shooter := _unit(1, Vector3(3.0, 0.0, 0.0), "Shooter", "amuh")
+	var limit: float = trogg.get_node("TargetPicker").call("_max_target_height")
+	var checks := {
+		"melee_finite": limit < INF and _same(limit, (trogg.get_node("MeleeAttack") as MeleeAttack).height),
+		"shooter_unlimited": is_inf(float(shooter.get_node("TargetPicker").call("_max_target_height"))),
+	}
+	trogg.free()
+	shooter.free()
+	return _verdict(checks, {"melee_limit_m": limit})
 
 
 ## A GUARD_AREA unit at its anchor with a foe the side sees 150 m away (an ally stands next to the foe): it does

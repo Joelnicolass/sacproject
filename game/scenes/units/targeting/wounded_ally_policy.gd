@@ -4,7 +4,7 @@ extends TargetPolicy
 ## F136 (RFC-030h2): the Scarab (slba, Healing web). sacengine updateTarget (state.d:12949-12958): by itself it takes the
 ## creature of its own side with the lowest relative health that is not full (lowestHealthCreatureInRange, 28828-28842:
 ## a moving object, not itself, valid), first within its ranged attack's range of the center and then within its sight;
-## it never picks a foe. Under an order it keeps the foe it was told to attack, as any creature (attack, 12849-12855).
+## it never picks a foe. Under an ATTACK order it keeps the foe it was told to attack, as any creature (attack, 12849-12855).
 ## A wounded ally stays a valid target until its bar is full, then the body drops it and stops shooting.
 
 const _HEAL := preload("res://scenes/spells/heal_effect.gd")
@@ -13,8 +13,8 @@ const _HEAL := preload("res://scenes/spells/heal_effect.gd")
 @export var groups: Array[StringName] = [&"wizard", &"unit"]
 
 
-func accepts(body: UnitBody, node: Variant, ordered: bool) -> bool:
-	if ordered and super.accepts(body, node, ordered):
+func accepts(body: UnitBody, node: Variant, explicit: bool) -> bool:
+	if explicit and super.accepts(body, node, explicit):
 		return true
 	return is_patient(body, node)
 

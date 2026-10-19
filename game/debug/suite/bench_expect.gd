@@ -1,0 +1,28 @@
+class_name BenchExpect
+extends Resource
+
+## One criterion of a bench scene (RFC-053 §4, F370): what ExpectJudge measures and prints as
+## `EXPECT PASS|FAIL <check> <value>`. Bodies are named by the `label` of their BenchGroup / BenchBuilding (or its tag).
+##   picked   each body of `subject` (all) or one (any) takes a body of `object` as its target within `within_s` of `from`.
+##   struck   each (all) or one (any) body of `subject` strikes or shoots bodies of `object` at least `min_count` times within
+##            `within_s` of `from` (a blow that lands, UnitBody.struck; a shot that leaves, RangedAttack.fired).
+##   hurt     a body of `object` takes damage from the slot of `subject` within `within_s` of `from` (Health.hit).
+##   dropped  each body of `subject` (all) or one (any) that had a body of `object` as its target stops having it within
+##            `within_s` of the later of the tick it took it and the last tick that body of `object` lost health (`from` is
+##            ignored): «it lets go of a target that stopped going down».
+##   spared   bodies of `subject` (any body when empty) strike or shoot bodies of `object` (any body of health maximum 0 when
+##            empty) at most `max_count` times during the whole run. Decided when every other criterion is.
+## `from`: start = the tick the bench starts; hurt = the first tick the subject body takes damage; near = the first tick a
+## body of `object` is within `near_m` (flat) of the subject body. The value printed is the seconds (the slowest body with
+## «all», the fastest with «any») or the count.
+
+@export var check := "expect"
+@export_enum("picked", "struck", "hurt", "dropped", "spared") var kind := "picked"
+@export var subject := ""
+@export var object := ""
+@export_enum("all", "any") var quantifier := "all"
+@export_enum("start", "hurt", "near") var from := "start"
+@export var near_m := 25.0
+@export var within_s := 3.0
+@export var min_count := 1
+@export var max_count := 0

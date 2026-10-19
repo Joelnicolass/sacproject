@@ -10,8 +10,8 @@ const ITEMS := [
 	{"title": "Sacrifice: Re-hornear navmesh", "args": ["res://tools/bake/bake_nav.tscn"], "rescan": true},
 	{"title": "Sacrifice: Hornear modelos que faltan", "args": ["--script", "res://tools/bake/bake_body_scenes.gd"], "rescan": true},
 	# RFC-051: asks for a .glb of assets/custom/models/ and passes it to the tool.
-	{"title": "Sacrifice: Nueva criatura desde modelo…", "args": ["--script", "res://tools/bake/new_creature.gd", "--"], "rescan": true, "pick": "glb"},
-	{"title": "Sacrifice: Sincronizar criatura con su modelo…", "args": ["--script", "res://tools/bake/new_creature.gd", "--", "--sync"], "rescan": true, "pick": "glb"},
+	{"title": "Sacrifice: Nueva criatura desde modelo…", "args": ["--script", "res://tools/bake/new_creature.gd", "--"], "rescan": true, "pick": "glb", "window": true},
+	{"title": "Sacrifice: Sincronizar criatura con su modelo…", "args": ["--script", "res://tools/bake/new_creature.gd", "--", "--sync"], "rescan": true, "pick": "glb", "window": true},
 ]
 const CUSTOM_MODELS := "res://assets/custom/models/"
 
@@ -71,7 +71,9 @@ func _run(item: Dictionary) -> void:
 			_picker.current_dir = CUSTOM_MODELS
 		_picker.popup_file_dialog()
 		return
-	var args: PackedStringArray = ["--headless", "--path", ProjectSettings.globalize_path("res://")]
+	# F335: the creature tools draw the HUD icon, which needs a renderer: they open a small window that closes by itself.
+	var args: PackedStringArray = ["--resolution", "256x256"] if item.get("window", false) else ["--headless"]
+	args.append_array(["--path", ProjectSettings.globalize_path("res://")])
 	args.append_array(PackedStringArray(item["args"]))
 	var started := OS.execute_with_pipe(OS.get_executable_path(), args)
 	if started.is_empty():

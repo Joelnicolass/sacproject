@@ -42,6 +42,11 @@ melee_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 40,
 "tag": "attack_at45"
+}, {
+"attack_ticks": [30.0],
+"framerate": 30.0,
+"frames": 50,
+"tag": "attack2_at60"
 }])
 passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{

@@ -5,28 +5,31 @@ extends Node
 ## this test adds it to the in-memory book of Pyro before the wizard reads it (the file data/gods/pyro.tres stays as it is).
 ##   1. the wizard summons it from the book;
 ##   2. it walks to a MOVE order (the rules read its run speed, no clip data needed);
-##   3. it attacks a dummy: the blow lands at the impact the glb's name carries (`attack_at45` = 45 % of 40 frames = 0.6 s),
-##      not at the end of the clip nor at the default middle, and the dummy loses health;
+##   3. it fights a dummy that does not die: the swings play both melee variants of the model (`attack_at45` and `attack2_at60`, F336)
+##      and each blow lands at the impact its clip's name carries (45 % of 40 frames = 0.6 s; 60 % of 50 frames = 1.0 s), not at the end of
+##      the clip nor at the default middle; the dummy loses health;
+##   3b. its HUD icon (F335, assets/custom/icons/testmonster.png) is what HudIcons gives the roster and the book, 32 x 32, not the original's;
 ##   4. it dies and its corpse settles;
 ##   5. its model scene maps the roles to the .glb clips and the death role really lays the skeleton down (the rig is inert on a
 ##      headless run, so the scene is driven by hand, the way BodyRig drives it).
 ## Nothing here reads assets/original/models/index.json. Prints CUSTOM_CREATURE PASS or CUSTOM_CREATURE FAIL <reason>.
-## Sin ventana: `--headless --fixed-fps 60 res://debug/units/custom_creature.tscn`.
+## Sin ventana: `--headless --fixed-fps 600 res://debug/units/custom_creature.tscn`.
 
 const TAG := "testmonster"
 const GOD := "pyro"
 const SLOT := 1
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
+const SPELL_BOOK := preload("res://scenes/ui/spell_book/spell_book.gd")
 const MAX_WAIT_FRAMES := 1800
 ## UnitOrders.Command (the enum of a script with no class_name).
 const ORDER_MOVE := 1
 const ORDER_ATTACK := 2
-## The blow lands this many seconds after the swing starts: attack_ticks [18] at 30 fps. A tick of tolerance each way.
-const IMPACT_S := 0.6
+## The blow lands this many seconds after the swing starts, by variant: attack_ticks [18] of the 30 fps `attack_at45`, [30] of `attack2_at60`.
+const IMPACT_S: Array[float] = [0.6, 1.0]
 const IMPACT_TOLERANCE_S := 0.08
 
-var _swing_start_tick := -1
-var _hit_ticks: Array[int] = []
+## One entry per swing of the fight: {index: the melee slot it played, start: frame it started, hit: frame its blow landed or -1}.
+var _swings: Array[Dictionary] = []
 var _frame := 0
 
 
@@ -99,14 +102,19 @@ func _run() -> void:
 		"scene_exists": BodyModel.exists(TAG),
 		"size_height": absf(float(info.get("height", 0.0)) - 2.0) < 0.05,
 		"size_reach": absf(float(info.get("reach", 0.0)) - 0.475) < 0.01,
-		"melee_clip": type != null and type.melee_animations.size() == 1 and int(type.melee_animations[0]["frames"]) == 40
-			and absf(float(type.melee_animations[0]["attack_ticks"][0]) - 18.0) < 0.01,
+		"melee_clips": type != null and type.melee_animations.size() == 2 and int(type.melee_animations[0]["frames"]) == 40
+			and absf(float(type.melee_animations[0]["attack_ticks"][0]) - 18.0) < 0.01
+			and int(type.melee_animations[1]["frames"]) == 50 and absf(float(type.melee_animations[1]["attack_ticks"][0]) - 30.0) < 0.01,
 		"death_clip": type != null and int(type.death_animations.get("death", {}).get("frames", 0)) == 36,
 	}
 	for key in checks:
 		if not checks[key]:
 			_fail("summoned creature: %s" % key)
 			return
+	var icon := _icon_verdict()
+	if not icon.is_empty():
+		_fail(icon)
+		return
 	print("CUSTOM_CREATURE summoned %s (%s) at frame %d, hp %.0f" % [unit.display_name(), TAG, _frame, unit.get_node("Health").current])
 
 	# 2. Walk to an order.
@@ -127,31 +135,45 @@ func _run() -> void:
 		_fail("it did not walk to the order (%.1f m of 12)" % travelled)
 		return
 
-	# 3. Attack a dummy; the blow lands at the impact.
+	# 3. Fight a dummy that does not die. Every swing is recorded: the slot of melee_animations it plays and when its blow lands.
 	var dummy := _dummy(unit.global_position + Vector3(2.5, 0.0, 0.0))
 	await _frames(5)
 	var dummy_health: Health = dummy.get_node("Health")
+	dummy_health.setup(1.0e7)
 	var before := dummy_health.current
 	var melee: MeleeAttack = unit.find_children("*", "MeleeAttack", true, false)[0]
-	melee.connected.connect(func(_target: Node3D, _frozen: bool) -> void: _hit_ticks.append(_frame))
+	melee.connected.connect(func(_target: Node3D, _frozen: bool) -> void:
+		if not _swings.is_empty() and int(_swings[-1]["hit"]) < 0:
+			_swings[-1]["hit"] = _frame)
 	orders.give(ORDER_ATTACK, dummy, dummy.global_position, Vector2.ZERO, 0.0)
-	var swinging_was := false
-	for _i in MAX_WAIT_FRAMES:
+	var was_swinging := false
+	for _i in MAX_WAIT_FRAMES * 3:
 		await _frames(1)
-		if melee.is_swinging() and not swinging_was:
-			swinging_was = true
-			if _swing_start_tick < 0:
-				_swing_start_tick = _frame
-		if not _hit_ticks.is_empty() and dummy_health.current < before:
+		var swinging := melee.is_swinging()
+		if swinging and not was_swinging:
+			_swings.append({"index": melee.swing_index(), "start": _frame, "hit": -1})
+		was_swinging = swinging
+		if _landed(0) >= 1 and _landed(1) >= 1:
 			break
-	if _hit_ticks.is_empty() or _swing_start_tick < 0:
-		_fail("no blow landed (swung %s, hits %d, dummy %.0f of %.0f)" % [swinging_was, _hit_ticks.size(), dummy_health.current, before])
+	for index in 2:
+		var times := PackedStringArray()
+		for swing in _swings:
+			if int(swing["index"]) == index and int(swing["hit"]) >= 0:
+				times.append("%.3f" % (float(int(swing["hit"]) - int(swing["start"])) / 60.0))
+		print("CUSTOM_CREATURE variant %d (%s): %d swings, %d blows landed, after the swing started (s): %s (impact %.2f s)" % [
+			index, type.melee_animations[index]["tag"], _count(index), _landed(index), ", ".join(times), IMPACT_S[index]])
+	if _landed(0) < 1 or _landed(1) < 1:
+		_fail("both melee variants must land a blow (swings %d of the first, %d of the second; blows %d and %d; dummy %.0f of %.0f)" % [
+			_count(0), _count(1), _landed(0), _landed(1), dummy_health.current, before])
 		return
-	var after_s := float(_hit_ticks[0] - _swing_start_tick) / 60.0
-	print("CUSTOM_CREATURE blow landed %.3f s after the swing started (impact %.2f s), dummy %.0f -> %.0f" % [after_s, IMPACT_S, before, dummy_health.current])
-	if absf(after_s - IMPACT_S) > IMPACT_TOLERANCE_S:
-		_fail("the blow landed at %.3f s, the impact is at %.2f s" % [after_s, IMPACT_S])
-		return
+	for swing in _swings:
+		if int(swing["hit"]) < 0:
+			continue
+		var index := int(swing["index"])
+		var after_s := float(int(swing["hit"]) - int(swing["start"])) / 60.0
+		if absf(after_s - IMPACT_S[index]) > IMPACT_TOLERANCE_S:
+			_fail("the blow of variant %d landed at %.3f s, its impact is at %.2f s" % [index, after_s, IMPACT_S[index]])
+			return
 	if dummy_health.current >= before:
 		_fail("the dummy lost no health")
 		return
@@ -174,6 +196,46 @@ func _run() -> void:
 	get_tree().quit(0)
 
 
+## Swings of the fight that played melee slot `index`.
+func _count(index: int) -> int:
+	var count := 0
+	for swing in _swings:
+		if int(swing["index"]) == index:
+			count += 1
+	return count
+
+
+## Blows that landed from a swing of slot `index`.
+func _landed(index: int) -> int:
+	var count := 0
+	for swing in _swings:
+		if int(swing["index"]) == index and int(swing["hit"]) >= 0:
+			count += 1
+	return count
+
+
+## F335: the roster and the book ask HudIcons for the creature's tag. A creature of your own with assets/custom/icons/<tag>.png (or an
+## `icon` in its type) gets that picture: a 32 x 32 image with something drawn on it. "" when it is fine.
+func _icon_verdict() -> String:
+	var texture := HudIcons.icon(TAG)
+	if texture == null:
+		return "HudIcons.icon(%s) is null (assets/custom/icons/%s.png missing?)" % [TAG, TAG]
+	if SPELL_BOOK.icon_for(TAG) != texture:
+		return "the book shows another icon than HudIcons.icon"
+	var image := texture.get_image()
+	if image == null or image.get_width() != 32 or image.get_height() != 32:
+		return "the icon is not 32 x 32"
+	var opaque := 0
+	for y in 32:
+		for x in 32:
+			if image.get_pixel(x, y).a > 0.5:
+				opaque += 1
+	print("CUSTOM_CREATURE icon: %s, %d x %d, %d of 1024 pixels drawn (book and roster read HudIcons.icon)" % [texture.resource_path, image.get_width(), image.get_height(), opaque])
+	if opaque < 300 or opaque > 900:
+		return "the icon looks empty or flat (%d of 1024 pixels drawn)" % opaque
+	return ""
+
+
 ## A creature of the original to be hit (health from its type, no aggro, never fights back).
 func _dummy(at: Vector3) -> UnitBody:
 	var type := GameData.creature("raeb")
@@ -193,7 +255,7 @@ func _model_scene() -> String:
 	var model := packed.instantiate() as BodyModel
 	add_child(model)
 	await _frames(2)
-	var mapping := {"idle": "idle", "run": "run", "attack": "attack_at45", "shoot": "attack_at45", "death": "death"}
+	var mapping := {"idle": "idle", "run": "run", "attack": "attack_at45", "attack2": "attack2_at60", "shoot": "attack_at45", "death": "death"}
 	for role: String in mapping:
 		if model.tag_for(role) != mapping[role]:
 			model.queue_free()
@@ -205,6 +267,13 @@ func _model_scene() -> String:
 		var got := "%d of %d" % [model.impact_frame("attack_at45"), model.frames_of("attack_at45")]
 		model.queue_free()
 		return "attack impact %s, expected 18 of 40" % got
+	if model.has_role("attack3"):
+		model.queue_free()
+		return "the model has a state for attack3 and no clip for it"
+	if model.impact_frame("attack2_at60") != 30 or model.frames_of("attack2_at60") != 50:
+		var second := "%d of %d" % [model.impact_frame("attack2_at60"), model.frames_of("attack2_at60")]
+		model.queue_free()
+		return "attack2 impact %s, expected 30 of 50" % second
 	var skeleton := model.skeleton()
 	var hips := skeleton.find_bone("hips")
 	var tree := model.tree()

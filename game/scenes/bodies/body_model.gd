@@ -17,10 +17,11 @@ extends Node3D
 ## ClipEvents come from it. The simulation and the rules do not depend on it (they never read a pose or a clip).
 
 ## Roles the state machine of a model scene can have a state for. A new role is a new state in the scenes (and here).
-const ROLES: PackedStringArray = ["idle", "run", "attack", "shoot", "cast", "hit", "death", "held", "thrash", "rise", "fly",
+## attack2 and attack3 (F336) are the other swings of a creature of your own: the slots 1 and 2 of CreatureType.melee_animations.
+const ROLES: PackedStringArray = ["idle", "run", "attack", "attack2", "attack3", "shoot", "cast", "hit", "death", "held", "thrash", "rise", "fly",
 	"cower", "talk_cower", "work", "takeoff", "land", "knock", "get_up", "fly_damage", "gesture", "cast_run", "hover", "fly_death"]
 ## Roles that end by themselves and hand the body back to idle (the bake gives them the to-idle transition).
-const ONE_SHOT_ROLES: PackedStringArray = ["attack", "shoot", "cast", "hit", "rise"]
+const ONE_SHOT_ROLES: PackedStringArray = ["attack", "attack2", "attack3", "shoot", "cast", "hit", "rise"]
 ## Roles that play once and stay on their last frame; every other role repeats.
 const HOLD_ROLES: PackedStringArray = ["death", "fly_death"]
 const SCENE_DIR := "res://scenes/bodies/models/"

@@ -5,7 +5,7 @@
 [ext_resource type="Resource" path="res://debug/rules/custom_creature.tres" id="3_rules"]
 
 [node name="CustomCreature" type="Node"]
-editor_description = "RFC-051 (F330). Una criatura propia (testmonster, hecha en Blender con tools/bake/new_creature.gd) se convoca del libro de Pyro, camina a una orden, pega en el momento del impacto del .glb, muere y su rol de muerte tumba el esqueleto. Sin ventana: `--headless --fixed-fps 60 res://debug/units/custom_creature.tscn`. Imprime CUSTOM_CREATURE PASS/FAIL."
+editor_description = "RFC-051 (F330). Una criatura propia (testmonster, hecha en Blender con tools/bake/new_creature.gd) se convoca del libro de Pyro, camina a una orden, pega en el momento del impacto del .glb, muere y su rol de muerte tumba el esqueleto. Sin ventana: `--headless --fixed-fps 600 res://debug/units/custom_creature.tscn`. Imprime CUSTOM_CREATURE PASS/FAIL."
 script = ExtResource("1_runner")
 
 [node name="HighNoon" parent="." instance=ExtResource("2_world")]

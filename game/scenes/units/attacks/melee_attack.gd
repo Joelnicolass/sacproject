@@ -46,6 +46,7 @@ var _body: Node3D
 var _rng: RandomNumberGenerator
 var _target: Node3D
 var _anim: Dictionary = {}
+var _index := 0
 var _elapsed := 0.0
 var _next_tick := 0
 
@@ -61,6 +62,11 @@ func setup(body: Node3D, creature: CreatureType, body_reach: float, body_height:
 
 func is_swinging() -> bool:
 	return not _anim.is_empty()
+
+
+## F336: the slot of `melee_animations` the swing in course (or the last one) plays: 0 attack, 1 attack2, 2 attack3 (the downward one).
+func swing_index() -> int:
+	return _index
 
 
 func cancel() -> void:
@@ -227,14 +233,17 @@ func _pick_animation(target: Node3D) -> Dictionary:
 	var own_mid := _body.global_position.y + height * 0.5
 	var foe_mid := target.global_position.y + float(profile_of(target).get("height", 1.8)) * 0.5
 	if foe_mid + downward_threshold < own_mid and not _animation(2).is_empty():
+		_index = 2
 		return _animation(2)
-	var choices: Array[Dictionary] = []
+	var choices: Array[int] = []
 	for index in 2:
 		if not _animation(index).is_empty():
-			choices.append(_animation(index))
+			choices.append(index)
 	if choices.is_empty():
+		_index = 0
 		return FALLBACK_ANIMATION
-	return choices[_rng.randi() % choices.size()]
+	_index = choices[_rng.randi() % choices.size()]
+	return _animation(_index)
 
 
 func _animation(index: int) -> Dictionary:

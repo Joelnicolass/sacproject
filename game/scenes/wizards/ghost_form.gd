@@ -60,7 +60,7 @@ var _rng := RandomNumberGenerator.new()
 var _look := SeeThroughLook.new()
 
 @onready var _wizard: Node3D = get_parent()
-@onready var _health: Node = get_parent().get_node("Health")
+@onready var _health: Health = get_parent().get_node("Health")
 @onready var _mana: Node = get_parent().get_node("ManaPool")
 
 
@@ -167,9 +167,9 @@ func _physics_process(delta: float) -> void:
 		Stage.GHOST:
 			## A ritual on the altar brings the ghost back to the body so it can be drained and killed
 			## (sacengine state.d:13959-13962); with at least 1 life so it does not die on the way.
-			if desecrations > 0 and float(_health.get("current")) < 1.0:
-				_health.set("current", 1.0)
-			if desecrations > 0 or _health.call("is_full"):
+			if desecrations > 0 and _health.current < 1.0:
+				_health.current = 1.0
+			if desecrations > 0 or _health.is_full():
 				_enter(Stage.UNGHOSTING, _seconds(_type().float_to_stance_frames if _type() else 0))
 		Stage.UNGHOSTING:
 			_left -= delta
@@ -195,7 +195,7 @@ func _after_dying() -> void:
 
 func _on_mana_given(amount: float) -> void:
 	if stage == Stage.GHOST and rules:
-		_health.call("heal", rules.ghost_health_per_mana * amount)
+		_health.heal(rules.ghost_health_per_mana * amount)
 
 
 func _enter(next: Stage, seconds: float) -> void:

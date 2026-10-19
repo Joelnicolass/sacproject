@@ -71,7 +71,7 @@ func finish(wizard: WizardBody, spell: SpellType, target: Node3D) -> String:
 		var spot := TeleportMath.carried(body.global_position, start, destination, flying, on_ground)
 		spot.y = _land_y(terrain, spot, destination.y)
 		froms.append(_feet_of(body))
-		body.call("warp_to", spot)
+		body.call("warp_to", spot)  # dynamic: a unit or a wizard warps
 		tos.append(_feet_of(body))
 		widths.append(2.0 * float(info.get("radius", 0.4)))
 		heights.append(float(info.get("height", 1.8)))
@@ -125,14 +125,14 @@ func _landing(start: Vector3, building: Node3D, radius: float) -> Vector3:
 
 ## The land under a spot (the terrain, never the first collision from above: that is a pillar or a roof),
 ## or `fallback` where there is no terrain data.
-func _land_y(terrain: Node, spot: Vector3, fallback: float) -> float:
+func _land_y(terrain: Terrain, spot: Vector3, fallback: float) -> float:
 	if terrain == null:
 		return fallback
-	var height := float(terrain.call("ground_height", spot.x, spot.z))
+	var height := terrain.ground_height(spot.x, spot.z)
 	return fallback if is_nan(height) else height
 
 
-func _on_ground_of(terrain: Node) -> Callable:
+func _on_ground_of(terrain: Terrain) -> Callable:
 	if terrain == null:
 		return Callable()
 	return Callable(terrain, "is_on_ground")
@@ -140,7 +140,7 @@ func _on_ground_of(terrain: Node) -> Callable:
 
 ## Where the feet of a body are (the origin of a wizard is higher: his capsule).
 func _feet_of(body: Node3D) -> Vector3:
-	return body.global_position + Vector3.UP * (float(body.call("feet_drop")) if body.has_method("feet_drop") else 0.0)
+	return body.global_position + Vector3.UP * ((body as WizardBody).feet_drop() if body is WizardBody else 0.0)
 
 
 ## Server or solo: every peer shows the same burst at the origin and at the destination of each body.

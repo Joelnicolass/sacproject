@@ -24,21 +24,21 @@ var report_each := false
 var frames_left := 0
 var _healed := 0.0
 var per_frame := 0.0
-var _health: Node
+var _health: Health
 var _fx_left := 0.0
 
 
 ## sacengine canHeal: alive and not full.
 static func can_heal(body: Node) -> bool:
-	var health := body.get_node_or_null("Health")
-	return health != null and not health.call("is_dead") and not health.call("is_full")
+	var health := body.get_node_or_null("Health") as Health
+	return health != null and not health.is_dead() and not health.is_full()
 
 
 ## The HealEffect of `target`, made if it has none (one per body; a second heal adds to it).
-static func on(target: Node) -> Node:
-	var effect: Node = target.get_node_or_null(NODE_NAME)
+static func on(target: Node) -> HealEffect:
+	var effect := target.get_node_or_null(NODE_NAME) as HealEffect
 	if effect == null:
-		effect = (load(_SCENE_PATH) as PackedScene).instantiate()
+		effect = (load(_SCENE_PATH) as PackedScene).instantiate() as HealEffect
 		effect.name = NODE_NAME
 		target.add_child(effect)
 	return effect
@@ -51,9 +51,9 @@ static func heal_full(body: Node, report_end := false) -> Node:
 	if not can_heal(body):
 		return null
 	var effect := on(body)
-	effect.call("add", float(body.get_node("Health").get("maximum")))
+	effect.add((body.get_node("Health") as Health).maximum)
 	if report_end:
-		effect.set("report_end", true)
+		effect.report_end = true
 	return effect
 
 
@@ -65,16 +65,16 @@ func add(amount: float) -> void:
 
 
 func _ready() -> void:
-	_health = get_parent().get_node_or_null("Health")
+	_health = get_parent().get_node_or_null("Health") as Health
 
 
 func _physics_process(delta: float) -> void:
 	frames_left -= 1
-	if _health == null or frames_left < 0 or _health.call("is_dead"):
+	if _health == null or frames_left < 0 or _health.is_dead():
 		_end()
 		return
-	var before := float(_health.get("current"))
-	_health.call("heal", per_frame)
+	var before := _health.current
+	_health.heal(per_frame)
 	_healed += float(_health.get("current")) - before
 	if report_each:
 		print("cura %s +%.3f vida %.1f (tick %d)" % [get_parent().name, float(_health.get("current")) - before, float(_health.get("current")), MatchClock.now()])
@@ -82,13 +82,13 @@ func _physics_process(delta: float) -> void:
 	if _fx_left <= 0.0:
 		_fx_left = fx_interval_s
 		FxBus.broadcast("heal", (get_parent() as Node3D).global_position + Vector3.UP)
-	if _health.call("is_full"):
+	if _health.is_full():
 		_end()
 
 
 func _end() -> void:
 	if report_end and _health != null:
 		var body := get_parent()
-		var who := str(body.call("display_name")) if body.has_method("display_name") else str(body.name)
+		var who := str(body.call("display_name")) if body.has_method("display_name") else str(body.name)  # dynamic: unit, wizard and doctor bodies name themselves
 		print("cura %s total %d vida %d" % [who, roundi(_healed), roundi(float(_health.get("current")))])
 	queue_free()

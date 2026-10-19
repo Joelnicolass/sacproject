@@ -30,7 +30,7 @@ func check(wizard: WizardBody, spell: SpellType, point: Vector3, _picked: Node3D
 	if fount == null:
 		aim.status = NO_FOUNT
 		return aim
-	var anchor: Variant = fount.call("anchor") if fount.has_method("anchor") else fount.global_position
+	var anchor: Variant = fount.call("anchor") if fount.has_method("anchor") else fount.global_position  # dynamic: ManafountBody or the suite's StubFount
 	aim.point = anchor if anchor is Vector3 else fount.global_position
 	aim.status = standing_status(funds, wizard, spell, aim.point)
 	if aim.status.is_empty() and not _can_place(aim.point, _structure_model(wizard, spell)):
@@ -56,9 +56,9 @@ func finish(wizard: WizardBody, spell: SpellType, _target: Node3D) -> String:
 	if spawner == null:
 		return ""
 	var fount := get_node_or_null(fount_path)
-	if fount == null or not fount.has_method("is_free") or not bool(fount.call("is_free")):
+	if fount == null or not fount.has_method("is_free") or not bool(fount.call("is_free")):  # dynamic: ManafountBody or the suite's StubFount
 		return NO_FOUNT
-	spawner.call("spawn_structure", {
+	spawner.call("spawn_structure", {  # dynamic: StructureSpawner or the suite's StubSpawner
 		"x": point.x, "y": point.y, "z": point.z,
 		"yaw": wizard.rotation.y,
 		"slot": wizard.owner_slot,
@@ -106,9 +106,9 @@ func _closest_free_manafount(point: Vector3, max_distance := POINT_FOUNT_RANGE) 
 		if not node is Node3D or not is_instance_valid(node):
 			continue
 		var fount := node as Node3D
-		if fount.has_method("is_free") and not bool(fount.call("is_free")):
+		if fount.has_method("is_free") and not bool(fount.call("is_free")):  # dynamic: ManafountBody or the suite's StubFount
 			continue
-		var anchor: Variant = fount.call("anchor") if fount.has_method("anchor") else fount.global_position
+		var anchor: Variant = fount.call("anchor") if fount.has_method("anchor") else fount.global_position  # dynamic: ManafountBody or the suite's StubFount
 		var at: Vector3 = anchor if anchor is Vector3 else fount.global_position
 		var d := at.distance_to(point)
 		if d <= max_distance and d < best_d:

@@ -56,7 +56,7 @@ var _active: SpellAction
 		cast_fx_shown = value
 		cast_fx_changed.emit(value)
 
-@onready var _wizard: Node3D = get_parent()
+@onready var _wizard: WizardBody = get_parent()
 
 
 func is_casting() -> bool:
@@ -65,7 +65,7 @@ func is_casting() -> bool:
 
 ## sacengine canCast (state.d:9520): only an idle or moving wizard, not a dying or ghost one.
 func wizard_can_cast() -> bool:
-	return not _wizard.has_method("can_cast") or bool(_wizard.call("can_cast"))
+	return _wizard.can_cast()
 
 
 ## Can the spell be armed? (sacengine selectSpell: mana, then cooldown.) "" = yes.
@@ -112,7 +112,7 @@ func at_creature_limit() -> bool:
 	var slot := int(_wizard.get("owner_slot"))
 	var count := 0
 	for unit in get_tree().get_nodes_in_group(&"unit"):
-		if unit.get("owner_slot") == slot and unit.has_method("is_dead") and not unit.call("is_dead"):
+		if unit.get("owner_slot") == slot and unit is UnitBody and not (unit as UnitBody).is_dead():
 			count += 1
 	return count >= cap
 
@@ -444,6 +444,6 @@ func _souls() -> int:
 
 
 func _spend(amount: float) -> void:
-	var pool := _wizard.get_node_or_null("ManaPool")
+	var pool := _wizard.get_node_or_null("ManaPool") as ManaPool
 	if pool:
-		pool.call("spend", minf(amount, float(pool.get("current"))))
+		pool.spend(minf(amount, pool.current))

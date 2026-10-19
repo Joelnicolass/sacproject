@@ -73,11 +73,11 @@ var _gesturing := false
 ## The speed the last _update_clip_state saw (a gesture that ends re-picks the pose with it).
 var _clip_flat_speed := 0.0
 
-@onready var health: Node = $Health
-@onready var mana: Node = $ManaPool
-@onready var souls: Node = $SoulPurse
+@onready var health: Health = $Health
+@onready var mana: ManaPool = $ManaPool
+@onready var souls: SoulPurse = $SoulPurse
 @onready var ghost: GhostForm = $GhostForm
-@onready var _clip_pose: Node = $ClipPose
+@onready var _clip_pose: ClipPlayback = $ClipPose
 ## The cast in progress as every peer sees it: `cast_fx_shown` is replicated, so the pose follows it on a client too.
 @onready var _caster: Caster = $Caster
 ## F138 (RFC-030i-c): the one owner of «held» (stunned, petrified); walking, turning, casting and summoning ask it.
@@ -92,8 +92,8 @@ func _ready() -> void:
 	look_yaw = rotation.y
 	_net_yaw = rotation.y
 	_apply_model()
-	if get_node_or_null("Tilt/Mesh") and _clip_pose.has_method("setup"):
-		_clip_pose.call("setup", model)
+	if get_node_or_null("Tilt/Mesh"):
+		_clip_pose.setup(model)
 	if _clip_pose.has_signal("clip_looped"):
 		_clip_pose.connect("clip_looped", _on_clip_looped)
 	_present_prev_pos = global_position
@@ -117,30 +117,30 @@ func is_local() -> bool:
 
 ## Creatures and spells only pick a living wizard: not one dying or a ghost (GhostForm).
 func is_targetable() -> bool:
-	return ghost.call("is_targetable")
+	return ghost.is_targetable()
 
 
 func is_ghost() -> bool:
-	return ghost.call("is_ghost")
+	return ghost.is_ghost()
 
 
 ## Escorts and retreats keep following a ghost (GhostForm.is_guard_target).
 func is_guard_target() -> bool:
-	return ghost.call("is_guard_target")
+	return ghost.is_guard_target()
 
 
 ## A ghost still steers around the others and they around it (state.d:117, 125).
 func is_obstacle() -> bool:
-	return ghost.call("is_obstacle")
+	return ghost.is_obstacle()
 
 
 ## sacengine canCast: idle or moving; a stunned or petrified wizard is neither (Caster cuts a cast in progress).
 func can_cast() -> bool:
-	return ghost.call("can_cast") and not _afflictions.holds()
+	return ghost.can_cast() and not _afflictions.holds()
 
 
 func can_take_mana() -> bool:
-	return ghost.call("can_take_mana")
+	return ghost.can_take_mana()
 
 
 func can_collect_souls() -> bool:
@@ -184,11 +184,11 @@ func _apply_pick() -> void:
 
 
 func _sync_clip_pose() -> void:
-	if not is_inside_tree() or _clip_pose == null or not _clip_pose.has_method("setup"):
+	if not is_inside_tree() or _clip_pose == null:
 		return
 	if model.is_empty():
 		return
-	_clip_pose.call("setup", model)
+	_clip_pose.setup(model)
 
 func _apply_type() -> void:
 	_type = GameData.wizard(wizard_tag)
@@ -206,21 +206,21 @@ func _apply_type() -> void:
 	mana.setup(_type.mana + level_mana_bonus)
 
 func _apply_model() -> void:
-	var visual := get_node_or_null("Tilt/Mesh")
-	if visual == null or model.is_empty() or not visual.has_method("show_model"):
+	var visual := get_node_or_null("Tilt/Mesh") as BodyVisual
+	if visual == null or model.is_empty():
 		return
-	visual.call("show_model", model)
+	visual.show_model(model)
 	_sync_clip_pose()
 	_fit_shape()
 
 func _fit_shape() -> void:
-	var visual := get_node_or_null("Tilt/Mesh")
+	var visual := get_node_or_null("Tilt/Mesh") as BodyVisual
 	var col := get_node_or_null("Collision") as CollisionShape3D
-	if visual == null or col == null or not visual.has_method("body_height"):
+	if visual == null or col == null:
 		return
 	var capsule := CapsuleShape3D.new()
-	capsule.height = maxf(float(visual.call("body_height")), 0.6)
-	capsule.radius = minf(float(visual.call("body_radius")), capsule.height * 0.45)
+	capsule.height = maxf(visual.body_height(), 0.6)
+	capsule.radius = minf(visual.body_radius(), capsule.height * 0.45)
 	col.shape = capsule
 	col.position = Vector3(0.0, capsule.height * 0.5, 0.0)
 
@@ -282,9 +282,9 @@ func request_walk(goal: Vector3) -> void:
 ## An order-level walk (RFC-024 024b): by the waypoints of the PathFollower child, or straight (begin_walk)
 ## when the body has none. request_walk and the server side of submit_walk call this.
 func walk_to(goal: Vector3) -> void:
-	var follower := get_node_or_null("PathFollower")
+	var follower := get_node_or_null("PathFollower") as PathFollower
 	if follower != null:
-		follower.call("go_to", goal)
+		follower.go_to(goal)
 	else:
 		begin_walk(goal)
 
@@ -297,9 +297,9 @@ func is_walking() -> bool:
 ## key (`_net_forward`) and no walk order go on without a player. It answers to the player again when he comes back.
 func stand_still() -> void:
 	_net_forward = 0.0
-	var follower := get_node_or_null("PathFollower")
-	if follower != null and follower.has_method("cancel"):
-		follower.call("cancel")
+	var follower := get_node_or_null("PathFollower") as PathFollower
+	if follower != null:
+		follower.cancel()
 	if _walking:
 		_walking = false
 		walk_changed.emit(false)
@@ -369,7 +369,7 @@ func _physics_process(delta: float) -> void:
 	var pace := move_speed
 	if pace <= 0.0 and step:
 		pace = step.speed()
-	pace *= speed_factor * float(ghost.call("speed_factor"))
+	pace *= speed_factor * ghost.speed_factor()
 	var forward := 0.0
 	var yaw := look_yaw
 	if MpKit.is_networked():
@@ -379,7 +379,7 @@ func _physics_process(delta: float) -> void:
 		forward = _read_forward()
 	## Held (F138): it neither walks nor turns, and a walk order waits for it (state.d:93-145, 1140-1142).
 	var held := _afflictions.holds()
-	if held or not ghost.call("can_move"):
+	if held or not ghost.can_move():
 		forward = 0.0
 		_walking = _walking and held
 		yaw = rotation.y
@@ -431,7 +431,7 @@ func _finish_step() -> void:
 ## sacengine updateCreatureStats (state.d:14400-14403): regeneration · mana/maxMana per second,
 ## only while standing (idle, not casting) and not just hit (isRegenerating, state.d:1429).
 func _regenerate(delta: float) -> void:
-	if not can_cast() or _since_damage < regen_pause_s or health.call("is_full"):
+	if not can_cast() or _since_damage < regen_pause_s or health.is_full():
 		return
 	if not is_zero_approx(velocity.x) or not is_zero_approx(velocity.z):
 		return
@@ -441,9 +441,9 @@ func _regenerate(delta: float) -> void:
 	var type: WizardType = GameData.wizard(wizard_tag)
 	if type == null:
 		return
-	var full := float(mana.get("maximum"))
-	var factor := 1.0 if full <= 0.0 else float(mana.get("current")) / full
-	health.call("regenerate", type.regeneration_per_s * factor * delta)
+	var full := mana.maximum
+	var factor := 1.0 if full <= 0.0 else mana.current / full
+	health.regenerate(type.regeneration_per_s * factor * delta)
 
 
 func _on_health_changed(current: float, _maximum: float) -> void:
@@ -481,7 +481,7 @@ func _present_pose(delta: float) -> void:
 	_present_prev_pos = to
 	var flat_delta := Vector2(to.x - from.x, to.z - from.z).length()
 	var sampled_speed := flat_delta / delta
-	var pace := maxf(move_speed * speed_factor * float(ghost.call("speed_factor")), 0.001)
+	var pace := maxf(move_speed * speed_factor * ghost.speed_factor(), 0.001)
 	sampled_speed = clampf(sampled_speed, 0.0, pace * 1.6)
 	var rise := clampf(delta * 20.0, 0.0, 1.0)
 	var fall := clampf(delta * 6.0, 0.0, 1.0)
@@ -497,24 +497,24 @@ func _update_clip_state(flat_speed: float) -> void:
 	if _clip_pose == null:
 		return
 	if not _debug_clip_role.is_empty():
-		_clip_pose.call("play", _debug_clip_role)
+		_clip_pose.play(_debug_clip_role)
 		return
-	var held_role := _afflictions.pose_role(_clip_pose as ClipPlayback)
+	var held_role := _afflictions.pose_role(_clip_pose)
 	if not held_role.is_empty():
-		_clip_pose.call("play", held_role)
+		_clip_pose.play(held_role)
 		return
-	var moving := flat_speed > 0.1 and bool(ghost.call("can_move"))
+	var moving := flat_speed > 0.1 and ghost.can_move()
 	# RFC-023 023d: the spellcast loop while the Caster casts (the server says so, it is replicated), standing or walking.
 	if not _caster.cast_fx_shown.is_empty():
 		_gesturing = false
-		_clip_pose.call("play", "cast_run" if moving else "cast")
+		_clip_pose.play("cast_run" if moving else "cast")
 		return
 	if moving:
 		_gesturing = false
-	elif _gesturing and bool(_clip_pose.call("has_role", "gesture")):
-		_clip_pose.call("play", "gesture")
+	elif _gesturing and _clip_pose.has_role("gesture"):
+		_clip_pose.play("gesture")
 		return
-	_clip_pose.call("play", "run" if moving else "idle")
+	_clip_pose.play("run" if moving else "idle")
 
 
 ## A rest loop ended: sacengine rolls a gesture after each stance loop; here (hash(name) + loops) % 5, the same on every peer
@@ -524,7 +524,7 @@ func _on_clip_looped(role: String) -> void:
 		return
 	_idle_loops += 1
 	_gesturing = role == "idle" and posmod(hash(String(name)) + _idle_loops, GESTURE_EVERY) == 0 \
-		and bool(_clip_pose.call("has_role", "gesture"))
+		and _clip_pose.has_role("gesture")
 	_update_clip_state(_clip_flat_speed)
 
 
@@ -539,9 +539,9 @@ func debug_clear_clip_state() -> void:
 
 func debug_clip_info() -> Dictionary:
 	return {
-		"role": _clip_pose.call("active_role") if _clip_pose else "",
-		"tag": _clip_pose.call("active_tag") if _clip_pose else "",
-		"frame": _clip_pose.call("active_frame") if _clip_pose else 0,
-		"fps": _clip_pose.call("active_framerate") if _clip_pose else 0,
-		"impact_frame": _clip_pose.call("impact_frame") if _clip_pose else -1,
+		"role": _clip_pose.active_role() if _clip_pose else "",
+		"tag": _clip_pose.active_tag() if _clip_pose else "",
+		"frame": _clip_pose.active_frame() if _clip_pose else 0,
+		"fps": _clip_pose.active_framerate() if _clip_pose else 0,
+		"impact_frame": _clip_pose.impact_frame() if _clip_pose else -1,
 	}

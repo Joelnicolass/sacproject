@@ -25,7 +25,7 @@ const NO_SOULS := Refusal.NO_SOULS
 @export var blocker_groups: PackedStringArray = PackedStringArray(["unit", "wizard"])
 @export_flags_3d_physics var ground_mask := 1
 
-@onready var _wizard: Node3D = get_parent()
+@onready var _wizard: WizardBody = get_parent()
 
 
 func can_summon(type: CreatureType) -> bool:
@@ -33,14 +33,14 @@ func can_summon(type: CreatureType) -> bool:
 
 
 func begin(type: CreatureType) -> Node3D:
-	var spawner := get_tree().get_first_node_in_group("unit_spawner")
+	var spawner := get_tree().get_first_node_in_group("unit_spawner") as UnitSpawner
 	if spawner == null:
 		return null
 	var at := spawn_point()
-	var unit: Node3D = spawner.call("spawn_unit", {
+	var unit: Node3D = spawner.spawn_unit({
 		"tag": type.tag,
 		"label": type.display_name,
-		"slot": int(_wizard.get("owner_slot")),
+		"slot": _wizard.owner_slot,
 		"x": at.x, "y": at.y, "z": at.z,
 		"yaw": _wizard.rotation.y,
 		"summoning": true,
@@ -54,18 +54,16 @@ func begin(type: CreatureType) -> Node3D:
 func finish(unit: Node3D, type: CreatureType) -> String:
 	if unit == null or not is_instance_valid(unit):
 		return ""
-	var purse := _wizard.get_node_or_null("SoulPurse")
-	if purse == null or not bool(purse.call("spend", type.souls)):
+	var purse := _wizard.get_node_or_null("SoulPurse") as SoulPurse
+	if purse == null or not purse.spend(type.souls):
 		unit.queue_free()
 		return NO_SOULS
-	unit.call("finish_summon")
+	(unit as UnitBody).finish_summon()
 	return ""
 
 
 func spawn_point() -> Vector3:
-	var ahead := Vector3(0.0, 0.0, 1.0)
-	if _wizard.has_method("facing_flat"):
-		ahead = _wizard.call("facing_flat")
+	var ahead := _wizard.facing_flat()
 	var side := Vector3(ahead.z, 0.0, -ahead.x)
 	var origin := _wizard.global_position
 	var first: Variant = _ground_at(origin + ahead * ahead_m)

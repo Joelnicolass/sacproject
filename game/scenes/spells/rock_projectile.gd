@@ -139,7 +139,7 @@ func _cast_step() -> void:
 ## sacengine rockCastingPosition: ahead of the caster, past the front of its hit box.
 static func cast_position(caster: Node3D) -> Vector3:
 	var ahead := Vector3(0.0, 0.0, 1.0)
-	if caster.has_method("facing_flat"):
+	if caster.has_method("facing_flat"):  # dynamic: unit, wizard and doctor bodies all face
 		ahead = caster.call("facing_flat")
 	var model := str(caster.get("model")) if "model" in caster else ""
 	var front := float(BodyCatalog.info(model).get("reach", 0.5))
@@ -250,17 +250,17 @@ static func pick_body(from: Node3D, shape: Shape3D, at: Vector3, skip: Node, slo
 static func is_live_body(body: Node) -> bool:
 	if not Attackable.is_body(body):
 		return false
-	if body.has_method("is_targetable") and not body.call("is_targetable"):
+	if body.has_method("is_targetable") and not body.call("is_targetable"):  # dynamic: unit, wizard, structure and doctor bodies answer it
 		return false
-	var health := body.get_node_or_null("Health")
-	return health != null and not health.call("is_dead")
+	var health := body.get_node_or_null("Health") as Health
+	return health != null and not health.is_dead()
 
 
 ## sacengine rockExplosion: dealSpellDamage(target, …, DamageMod.none) = direct spell damage.
 func _burst(target: Node3D) -> void:
 	if target and is_instance_valid(target) and is_live_body(target):
-		var health := target.get_node("Health")
-		var taken := float(health.call("damage_typed", damage, _HEALTH.DIRECT_SPELL, from_slot))
+		var health := target.get_node("Health") as Health
+		var taken := health.damage_typed(damage, _HEALTH.DIRECT_SPELL, from_slot)
 		report(target, taken, _HEALTH.DIRECT_SPELL)
 	FxBus.broadcast("rock", global_position)
 	FxBus.broadcast("dirt", global_position)
@@ -269,9 +269,10 @@ func _burst(target: Node3D) -> void:
 
 
 static func report(target: Node3D, taken: float, kind: StringName) -> void:
-	var health := target.get_node("Health")
-	var who := str(target.call("display_name")) if target.has_method("display_name") and not DebugLog.on(&"oil") else str(target.name)  ## F155: the bench tells apart bodies of the same kind
-	var line := "dano %s %d vida %d" % [who, roundi(taken), roundi(float(health.get("current")))]
-	if taken <= 0.0 and float(health.call("resistance", kind)) <= 0.0:
+	var health := target.get_node("Health") as Health
+	## F155: the bench tells apart bodies of the same kind.
+	var who := str(target.call("display_name")) if target.has_method("display_name") and not DebugLog.on(&"oil") else str(target.name)  # dynamic: unit, wizard and doctor bodies name themselves
+	var line := "dano %s %d vida %d" % [who, roundi(taken), roundi(health.current)]
+	if taken <= 0.0 and health.resistance(kind) <= 0.0:
 		line += " (inmune)"
 	print(line)

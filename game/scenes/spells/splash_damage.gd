@@ -49,7 +49,7 @@ static func bodies_within(tree: SceneTree, center: Vector3, radius: float, excep
 ## F164b: `attacker` is the creature that fired the shot (null: a spell or an effect with no drain); LifeDrain.feed gives it
 ## back `taken · its drain` (sacengine dealDamage with an attacker creature, state.d:8933-8947, also on the splash walk).
 static func hurt(body: Node3D, amount: float, from_slot: int, kind: StringName = _HEALTH.SPLASH_SPELL, mods := 0, attacker: Node = null) -> void:
-	var taken := float(body.get_node("Health").call("damage_typed", amount, kind, from_slot, false, false, mods))
+	var taken := (body.get_node("Health") as Health).damage_typed(amount, kind, from_slot, false, false, mods)
 	_ROCK.report(body, taken, kind)
 	LifeDrain.feed(attacker, body, taken)
 
@@ -59,8 +59,8 @@ static func hurt(body: Node3D, amount: float, from_slot: int, kind: StringName =
 ## the original measures against a world AABB, so a turned house keeps its corners here. A capsule
 ## (creatures, wizards) is its axis-aligned box; a cylinder (placed structures) too.
 static func box_distance(body: Node3D, point: Vector3) -> float:
-	if body.has_method("hit_box"):
-		var box: AABB = body.call("hit_box")
+	if body is MapBuilding:
+		var box := (body as MapBuilding).hit_box()
 		return _outside(body.global_transform.affine_inverse() * point - (box.position + box.size * 0.5), box.size * 0.5)
 	var col := body.get_node_or_null("Collision") as CollisionShape3D
 	if col == null or col.shape == null:

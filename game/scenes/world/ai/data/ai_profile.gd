@@ -95,9 +95,9 @@ const DIR := "res://data/ai"
 @export var interact_reach_m := 160.0
 
 
-## The profile of a god (data/ai/profile_<god>.tres), or the original when the god has none.
+## The profile of a god (the `ai_profile` of data/gods/<god>.tres), or the original when the god has none.
 static func for_god(god_name: StringName) -> AiProfile:
-	var path := DIR.path_join("profile_%s.tres" % god_name)
-	if not String(god_name).is_empty() and ResourceLoader.exists(path):
-		return load(path) as AiProfile
+	var type := GameCatalog.shared().god(String(god_name))
+	if type != null and type.ai_profile != null:
+		return type.ai_profile
 	return load(DIR.path_join("profile_original.tres")) as AiProfile

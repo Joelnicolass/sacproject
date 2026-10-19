@@ -8,6 +8,7 @@ extends Resource
 ## Types are read-only at runtime.
 
 const DIR := "res://data/catalog/"
+const GODS_DIR := "res://data/gods/"
 
 var creatures: Array[CreatureType] = []
 var spells: Array[SpellType] = []
@@ -16,8 +17,8 @@ var abilities: Array[AbilityType] = []
 var buildings: Array[BuildingType] = []
 ## Bodies and props together; `BodySize.is_prop` tells them apart.
 var body_sizes: Array[BodySize] = []
-## god -> {creatures, spells, structures, levels}, from data/catalog/books.tres.
-var books: Dictionary = {}
+## The gods of data/gods/<tag>.tres (RFC-042), by sort_order then tag. Each carries its theme, look, AI profile and typed book.
+var gods: Array[GodType] = []
 
 static var _shared: GameCatalog
 
@@ -38,11 +39,7 @@ func scan(reload_from_disk := false) -> void:
 	abilities.assign(_load_folder("abilities", AbilityType, reload_from_disk))
 	buildings.assign(_load_folder("buildings", BuildingType, reload_from_disk))
 	body_sizes.assign(_load_folder("body_sizes", BodySize, reload_from_disk))
-	books = {}
-	if ResourceLoader.exists(GodBooks.PATH):
-		var file := ResourceLoader.load(GodBooks.PATH, "", ResourceLoader.CACHE_MODE_REPLACE if reload_from_disk else ResourceLoader.CACHE_MODE_REUSE) as GodBooks
-		if file:
-			books = file.books
+	gods.assign(_load_gods(reload_from_disk))
 
 
 ## The .tres file names (with extension) of a catalog folder, sorted.
@@ -53,6 +50,30 @@ static func files_in(folder: String) -> PackedStringArray:
 			names.append(entry)
 	names.sort()
 	return names
+
+
+## The god of a tag, or null.
+func god(tag: String) -> GodType:
+	for type in gods:
+		if type.tag == tag:
+			return type
+	return null
+
+
+func _load_gods(reload_from_disk: bool) -> Array:
+	var mode := ResourceLoader.CACHE_MODE_REPLACE if reload_from_disk else ResourceLoader.CACHE_MODE_REUSE
+	var found: Array = []
+	for entry in ResourceLoader.list_directory(GODS_DIR):
+		if not entry.ends_with(".tres"):
+			continue
+		var type := ResourceLoader.load(GODS_DIR + entry, "", mode) as GodType
+		if type == null:
+			push_warning("GameCatalog: gods/%s is not a GodType; skipped." % entry)
+			continue
+		found.append(type)
+	found.sort_custom(func(a: GodType, b: GodType) -> bool:
+		return a.sort_order < b.sort_order if a.sort_order != b.sort_order else a.tag < b.tag)
+	return found
 
 
 func _load_folder(folder: String, script: Script, reload_from_disk: bool) -> Array:

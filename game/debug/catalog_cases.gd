@@ -4,7 +4,8 @@ extends SceneTree
 ## a number in a data/catalog/<folder>/<tag>.tres is allowed. It checks that the content is coherent.
 ##   - every file is a type of its folder, named after its tag (a case-only repeat gets _2, _3...)
 ##   - no duplicate tags in a folder
-##   - every tag that books and abilities mention exists
+##   - every tag that abilities mention exists
+##   - every god (RFC-042) has theme, look, AI profile and a typed book whose rows are files of the catalog
 ##   - every creature and wizard has its BodySize
 ##   - the numbers are sane (health > 0, costs >= 0, ...)
 ## Failures name the file: "creatures/xyz.tres: health = -5". Prints CATALOG PASS or CATALOG FAIL.
@@ -53,11 +54,11 @@ func _initialize() -> void:
 	_check_ranges("buildings", _catalog.buildings, BUILDING_RANGES)
 	_check_ranges("body_sizes", _catalog.body_sizes, BODY_RANGES)
 	_check_references(tags)
-	_check_books(tags)
+	_check_gods(tags)
 	_check_bodies(tags)
-	print("CATALOG creatures %d spells %d wizards %d abilities %d buildings %d body sizes %d books %d" % [
+	print("CATALOG creatures %d spells %d wizards %d abilities %d buildings %d body sizes %d gods %d" % [
 		_catalog.creatures.size(), _catalog.spells.size(), _catalog.wizards.size(), _catalog.abilities.size(),
-		_catalog.buildings.size(), _catalog.body_sizes.size(), _catalog.books.size()])
+		_catalog.buildings.size(), _catalog.body_sizes.size(), _catalog.gods.size()])
 	print("CATALOG PASS" if _failures == 0 else "CATALOG FAIL (%d problems)" % _failures)
 	quit(0 if _failures == 0 else 1)
 
@@ -116,23 +117,79 @@ func _check_references(tags: Dictionary) -> void:
 					_report("creatures/%s: %s = \"%s\" is not an ability or a spell" % [_file(creature), property, tag])
 
 
-func _check_books(tags: Dictionary) -> void:
-	if _catalog.books.is_empty():
-		_report("books.tres: no books (missing or empty)")
+func _check_gods(tags: Dictionary) -> void:
+	if _catalog.gods.is_empty():
+		_report("gods/: no gods (missing or empty)")
 		return
-	for god: String in _catalog.books:
-		var entry: Dictionary = _catalog.books[god]
-		var places := {"creatures": "creatures", "spells": "spells", "structures": "spells"}
-		for list: String in places:
-			for tag: String in entry.get(list, []):
-				if not tags[places[list]].has(tag):
-					_report("books.tres: %s.%s has \"%s\", which is not in %s/" % [god, list, tag, places[list]])
-		var levels: Dictionary = entry.get("levels", {})
-		for tag: String in levels:
-			if not tags["creatures"].has(tag) and not tags["spells"].has(tag):
-				_report("books.tres: %s.levels has \"%s\", which is no creature or spell" % [god, tag])
-			elif float(levels[tag]) < 0.0:
-				_report("books.tres: %s.levels[%s] = %s" % [god, tag, str(levels[tag])])
+	var seen := {}
+	for god in _catalog.gods:
+		var file := god.resource_path.get_file()
+		if god.tag.is_empty() or file != god.tag + ".tres":
+			_report("gods/%s: the file is not named after the tag \"%s\"" % [file, god.tag])
+		if seen.has(god.tag):
+			_report("gods/%s: the tag \"%s\" is repeated" % [file, god.tag])
+		seen[god.tag] = true
+		if god.display_name.is_empty():
+			_report("gods/%s: no display_name" % file)
+		_check_god_file(file, "theme", god.theme_path, god.tag)
+		_check_god_file(file, "look", god.look_path, god.tag)
+		if not god.cast_fx_path.is_empty() and not ResourceLoader.exists(god.cast_fx_path):
+			_report("gods/%s: cast_fx_path \"%s\" does not exist" % [file, god.cast_fx_path])
+		if god.ai_profile == null:
+			_report("gods/%s: no ai_profile" % file)
+		elif str(god.ai_profile.god) != god.tag:
+			_report("gods/%s: the ai_profile is of \"%s\"" % [file, god.ai_profile.god])
+		if god.book == null:
+			_report("gods/%s: no book" % file)
+			continue
+		_check_book(file, god.book, tags)
+
+
+func _check_book(file: String, book: GodBook, tags: Dictionary) -> void:
+	var lists := {"creatures": [book.creatures, "creatures"], "spells": [book.spells, "spells"], "structures": [book.structures, "spells"]}
+	for list: String in lists:
+		var seen := {}
+		for type: Resource in lists[list][0]:
+			if type == null:
+				_report("gods/%s: book.%s has an empty row" % [file, list])
+				continue
+			var tag := str(type.get("tag"))
+			if not tags[lists[list][1]].has(tag) or type != _catalog_type(lists[list][1], tag):
+				_report("gods/%s: book.%s has \"%s\", which is not a file of %s/" % [file, list, tag, lists[list][1]])
+			if seen.has(tag):
+				_report("gods/%s: book.%s repeats \"%s\"" % [file, list, tag])
+			seen[tag] = true
+	var unlocked := {}
+	for unlock in book.unlocks:
+		if unlock == null or unlock.type == null:
+			_report("gods/%s: book.unlocks has an empty line" % file)
+			continue
+		var tag := unlock.tag()
+		var folder := "creatures" if unlock.type is CreatureType else "spells"
+		if not tags[folder].has(tag) or unlock.type != _catalog_type(folder, tag):
+			_report("gods/%s: book.unlocks has \"%s\", which is no creature or spell of the catalog" % [file, tag])
+		if unlocked.has(tag):
+			_report("gods/%s: book.unlocks repeats \"%s\"" % [file, tag])
+		unlocked[tag] = true
+		if unlock.level < 0 or unlock.level > 9:
+			_report("gods/%s: book.unlocks[%s] = %d" % [file, tag, unlock.level])
+
+
+## The theme or look file exists and is of this god (read as text: loading it would load the biome's textures).
+func _check_god_file(file: String, what: String, path: String, tag: String) -> void:
+	if path.is_empty() or not FileAccess.file_exists(path):
+		_report("gods/%s: %s_path \"%s\" does not exist" % [file, what, path])
+		return
+	if not FileAccess.get_file_as_string(path).contains('god = &"%s"' % tag):
+		_report("gods/%s: %s_path \"%s\" is not of \"%s\"" % [file, what, path, tag])
+
+
+## The catalog's own type of a tag, to tell a book that points to the catalog file from one holding a stray copy.
+func _catalog_type(folder: String, tag: String) -> Resource:
+	for type: Resource in (_catalog.creatures if folder == "creatures" else _catalog.spells):
+		if type.tag == tag:
+			return type
+	return null
 
 
 func _check_bodies(tags: Dictionary) -> void:

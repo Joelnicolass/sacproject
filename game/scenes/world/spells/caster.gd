@@ -470,7 +470,8 @@ func _cast_fx() -> String:
 		return "dirt_cast"
 	if _entry is SpellType and (_entry as SpellType).tag == WRATH:
 		return "wrath_cast"
-	return "cast_%s" % _cast_god()
+	var god_type: GodType = GameCatalog.shared().god(_cast_god())
+	return god_type.cast_fx_name() if god_type != null else "cast_%s" % _cast_god()
 
 
 ## sacengine animateCreatureCasting: the creature's god, else the wizard's.

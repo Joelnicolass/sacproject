@@ -65,7 +65,7 @@ func _on_custom_received(channel: StringName, data: Dictionary, from_peer: int) 
 	if channel != CHANNEL or _is_authority() or from_peer != MpAuthority.SERVER_PEER:
 		return
 	var received := StringName(str(data.get("god", "")))
-	if not ThemeApplier.GODS.has(received):
+	if not ThemeApplier.has_theme(received):
 		return
 	god = received
 	print("bioma %s" % god)

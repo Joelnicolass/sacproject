@@ -1,11 +1,9 @@
 extends RefCounted
 
-## Applies a GodTheme (res://data/themes/<god>.tres) to a High Noon world.
+## Applies a GodTheme (the `theme` of data/gods/<god>.tres) to a High Noon world.
 ## Online: the dedicated server calls pick_random(match_seed) once per match and
 ## replicates theme.god; every peer then calls apply(theme_for(god), world).
 
-const GODS: Array[StringName] = [&"persephone", &"pyro", &"james", &"stratos", &"charnel"]
-const THEME_DIR := "res://data/themes"
 const SKY_NODE := ^"Sky"
 const ENVIRONMENT_NODE := ^"Environment"
 const SUN_NODE := ^"Sun"
@@ -13,22 +11,23 @@ const TERRAIN_NODE := ^"Terrain"
 
 
 static func has_theme(god: StringName) -> bool:
-	return ResourceLoader.exists(THEME_DIR.path_join("%s.tres" % god))
+	return theme_for(god) != null
 
 
 static func theme_for(god: StringName) -> Resource:
-	var path := THEME_DIR.path_join("%s.tres" % god)
-	if not ResourceLoader.exists(path):
-		return null
-	return load(path)
+	var type := GameCatalog.shared().god(String(god))
+	return type.load_theme() if type != null else null
 
 
 ## The god a match seed picks, without loading its theme (the dedicated server only needs the name,
 ## and a theme now pulls in the biome's look: ground textures).
 static func pick_god(match_seed: int) -> StringName:
+	var gods := GameCatalog.shared().gods
+	if gods.is_empty():
+		return &""
 	var rng := RandomNumberGenerator.new()
 	rng.seed = match_seed
-	return GODS[rng.randi_range(0, GODS.size() - 1)]
+	return StringName(gods[rng.randi_range(0, gods.size() - 1)].tag)
 
 
 static func pick_random(match_seed: int) -> Resource:

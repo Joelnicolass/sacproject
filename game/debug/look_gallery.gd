@@ -46,7 +46,7 @@ var _quality_index := -1
 
 func _ready() -> void:
 	_register_actions()
-	_god_index = maxi(0, ThemeApplier.GODS.find(start_god))
+	_god_index = maxi(0, GameData.gods().find(start_god))
 	if hide_hud:
 		var hud := world.get_node_or_null("Hud") as CanvasLayer
 		if hud:
@@ -59,7 +59,7 @@ func _ready() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(&"debug_next_biome"):
-		_god_index = (_god_index + 1) % ThemeApplier.GODS.size()
+		_god_index = (_god_index + 1) % GameData.gods().size()
 		_show_biome()
 	elif event.is_action_pressed(&"debug_next_camera"):
 		_camera_index = (_camera_index + 1) % camera_markers.get_child_count()
@@ -95,7 +95,7 @@ func _hide_if_particles(node: Node) -> void:
 
 
 func _show_biome() -> void:
-	var god := ThemeApplier.GODS[_god_index]
+	var god := GameData.gods()[_god_index]
 	var theme: Resource = ThemeApplier.theme_for(god)
 	if theme == null:
 		print("bioma %s sin tema" % god)
@@ -158,7 +158,7 @@ func _report() -> void:
 	var rig := _rig()
 	var quality := "nativa" if _quality_index < 0 else String(QUALITY_IDS[_quality_index])
 	print("look %s cam %d capas %d calidad %s" % [
-		ThemeApplier.GODS[_god_index], _camera_index, rig.layer_mask() if rig else 0, quality])
+		GameData.gods()[_god_index], _camera_index, rig.layer_mask() if rig else 0, quality])
 
 
 func _register_actions() -> void:

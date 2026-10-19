@@ -10,7 +10,8 @@ extends SceneTree
 ##   data/catalog/abilities/<tag>.tres    AbilityType
 ##   data/catalog/buildings/<tag>.tres    BuildingType
 ##   data/catalog/body_sizes/<tag>.tres   BodySize
-##   data/catalog/books.tres              GodBooks: the god -> creatures/spells mapping
+## The gods and their books are NOT written here: they are authored in data/gods/<god>.tres (RFC-042). books.json only tells
+## which spells are structures.
 ## The values are built by tools/catalog_builder.gd. File names are the tags; two tags that differ only by case get a
 ## numeric suffix (macOS is case-insensitive). It never embeds types in another file.
 ## Human edits are safe: without --force a file that already exists is left alone and only missing ones are written.
@@ -20,10 +21,8 @@ extends SceneTree
 ## No autoloads here: everything is preloaded by path.
 
 const _BUILDER := preload("res://tools/catalog_builder.gd")
-const _GOD_BOOKS := preload("res://scenes/data/god_books.gd")
 
 const OUT_DIR := "res://data/catalog/"
-const BOOKS_PATH := OUT_DIR + "books.tres"
 
 var _force := false
 var _written := 0
@@ -62,9 +61,6 @@ func _initialize() -> void:
 		var group: Dictionary = sizes.get(kind, {})
 		for tag in group:
 			_save(_BUILDER.make_body_size(tag, group[tag], kind == "props"), "body_sizes", tag, taken)
-	var god_books = _GOD_BOOKS.new()
-	god_books.books = books
-	_save_to(god_books, BOOKS_PATH)
 	print("bake_catalog: wrote %d files, kept %d existing%s" % [_written, _kept, "" if _force else " (use -- --force to overwrite)"])
 	for failure in _failures:
 		push_error("bake_catalog: could not save " + failure)

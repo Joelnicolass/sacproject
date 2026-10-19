@@ -15,7 +15,7 @@ var _index := 0
 
 
 func _ready() -> void:
-	_index = maxi(0, ThemeApplier.GODS.find(start_god))
+	_index = maxi(0, GameData.gods().find(start_god))
 	_show.call_deferred()
 	if close_at.x >= 0.0:
 		_frame_close.call_deferred()
@@ -23,7 +23,7 @@ func _ready() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("check_tick"):
-		_index = (_index + 1) % ThemeApplier.GODS.size()
+		_index = (_index + 1) % GameData.gods().size()
 		_show()
 
 
@@ -41,7 +41,7 @@ func _frame_close() -> void:
 
 
 func _show() -> void:
-	var god := ThemeApplier.GODS[_index]
+	var god := GameData.gods()[_index]
 	var theme := ThemeApplier.theme_for(god)
 	if theme == null:
 		print("bioma %s sin tema" % god)

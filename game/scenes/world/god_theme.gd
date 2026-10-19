@@ -1,3 +1,4 @@
+class_name GodTheme
 extends Resource
 
 ## Land look of one god. The committed .tres keeps engine knobs and neutral defaults; the ENVI colours

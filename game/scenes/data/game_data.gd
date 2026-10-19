@@ -8,14 +8,14 @@ const _SPELL_TYPE := preload("res://scenes/data/spell_type.gd")
 const _ABILITY_TYPE := preload("res://scenes/data/ability_type.gd")
 const _WIZARD_TYPE := preload("res://scenes/data/wizard_type.gd")
 
-const GODS: PackedStringArray = ["persephone", "pyro", "james", "stratos", "charnel"]
-
 var _creatures: Dictionary = {}
 var _spells: Dictionary = {}
 var _abilities: Dictionary = {}
 var _wizards: Array = []
 var _wizards_by_tag: Dictionary = {}
-var _books: Dictionary = {}
+var _gods: Array[GodType] = []
+var _gods_by_tag: Dictionary = {}
+var _god_tags := PackedStringArray()
 
 
 func _ready() -> void:
@@ -29,9 +29,11 @@ func reload(from_disk := false) -> void:
 	_abilities.clear()
 	_wizards.clear()
 	_wizards_by_tag.clear()
-	_books.clear()
+	_gods.clear()
+	_gods_by_tag.clear()
+	_god_tags = PackedStringArray()
 	var catalog := GameCatalog.shared(from_disk)
-	if catalog.creatures.is_empty() or catalog.spells.is_empty() or catalog.wizards.is_empty() or catalog.books.is_empty():
+	if catalog.creatures.is_empty() or catalog.spells.is_empty() or catalog.wizards.is_empty() or catalog.gods.is_empty():
 		print("GameData: data/catalog/ está vacío o incompleto. Corré tools/bake_catalog.gd.")
 		return
 	for type in catalog.creatures:
@@ -43,7 +45,10 @@ func reload(from_disk := false) -> void:
 	for type in catalog.wizards:
 		_wizards.append(type)
 		_wizards_by_tag[type.tag] = type
-	_books = catalog.books
+	for type in catalog.gods:
+		_gods.append(type)
+		_gods_by_tag[type.tag] = type
+		_god_tags.append(type.tag)
 
 
 func is_loaded() -> bool:
@@ -74,32 +79,25 @@ func wizards() -> Array:
 	return _wizards.duplicate()
 
 
+## The tags of the gods, in the order of data/gods/ (sort_order, then tag).
 func gods() -> PackedStringArray:
-	return GODS
+	return _god_tags
+
+
+func god(tag: String) -> GodType:
+	return _gods_by_tag.get(tag)
 
 
 ## The god's book up to a wizard level, like sacengine `getSpells` (state.d:29512): entries of a higher
-## level are left out. The default 1 is the book the game has used so far (F112). A book without
-## "levels" (an older cache) gives every entry.
-func book(god: String, max_level := 1) -> Dictionary:
-	var creatures: Array[_CREATURE_TYPE] = []
-	var spells: Array[_SPELL_TYPE] = []
-	var structures: Array[_SPELL_TYPE] = []
-	var entry: Dictionary = _books.get(god, {})
-	var levels: Dictionary = entry.get("levels", {})
-	for tag in entry.get("creatures", []):
-		if _creatures.has(tag) and int(levels.get(tag, 0)) <= max_level:
-			creatures.append(_creatures[tag])
-	for tag in entry.get("spells", []):
-		if _spells.has(tag) and int(levels.get(tag, 0)) <= max_level:
-			spells.append(_spells[tag])
-	for tag in entry.get("structures", []):
-		if _spells.has(tag) and int(levels.get(tag, 0)) <= max_level:
-			structures.append(_spells[tag])
-	return {"creatures": creatures, "spells": spells, "structures": structures}
+## level are left out. The default 1 is the book the game has used so far (F112).
+func book(god_tag: String, max_level := 1) -> Dictionary:
+	var type: GodType = _gods_by_tag.get(god_tag)
+	if type == null or type.book == null:
+		return {"creatures": [] as Array[_CREATURE_TYPE], "spells": [] as Array[_SPELL_TYPE], "structures": [] as Array[_SPELL_TYPE]}
+	return type.book.up_to(max_level)
 
 
 ## Wizard level at which `tag` enters the god's book (computeDefaultSpells), or -1 if it is not in it.
-func creature_level(god: String, tag: String) -> int:
-	var levels: Dictionary = _books.get(god, {}).get("levels", {})
-	return int(levels.get(tag, -1))
+func creature_level(god_tag: String, tag: String) -> int:
+	var type: GodType = _gods_by_tag.get(god_tag)
+	return type.book.level_of(tag) if type != null and type.book != null else -1

@@ -9,7 +9,6 @@
 [ext_resource type="Script" uid="uid://cm4vcossqdpt5" path="res://scenes/world/match_command.gd" id="7_match"]
 [ext_resource type="PackedScene" path="res://scenes/world/props/player_start.tscn" id="8_start"]
 [ext_resource type="PackedScene" path="res://scenes/world/props/manafount.tscn" id="9_fount"]
-[ext_resource type="PackedScene" path="res://scenes/world/map/high_noon_layout.tscn" id="f196_layout"]
 [ext_resource type="Script" uid="uid://nxbcgsgrjk48" path="res://scenes/world/world_camera.gd" id="11_camera"]
 [ext_resource type="Resource" uid="uid://d1e2js08kea5i" path="res://data/match_rules.tres" id="12_rules"]
 [ext_resource type="Script" uid="uid://daosef86scnum" path="res://scenes/world/match_biome.gd" id="13_biome"]
@@ -51,15 +50,16 @@
 [ext_resource type="PackedScene" path="res://scenes/world/units/droplet_rain.tscn" id="f148_rain"]
 [ext_resource type="Resource" path="res://assets/original/maps/high_noon/terrain.res" id="f172_terrain"]
 [ext_resource type="PackedScene" path="res://scenes/ui/lobby/lobby_return.tscn" id="f183_return"]
-[ext_resource type="PackedScene" path="res://assets/original/maps/high_noon/terrain.glb" id="f195_terrain_glb"]
-[ext_resource type="Material" path="res://assets/original/themes/james/ground_classic.tres" id="f194_ground"]
-[ext_resource type="Script" path="res://scenes/world/nav/map_nav_region.gd" id="f200_nav_region"]
-[ext_resource type="NavigationMesh" path="res://data/nav/high_noon_nav.res" id="f200_navmesh"]
+[ext_resource type="Material" uid="uid://b6pd04js5lq4t" path="res://assets/original/themes/james/ground_classic.tres" id="f194_ground"]
+[ext_resource type="PackedScene" uid="uid://c7w6ppe7anbdd" path="res://assets/original/maps/high_noon/terrain.glb" id="f195_terrain_glb"]
+[ext_resource type="PackedScene" path="res://scenes/world/map/high_noon_layout.tscn" id="f196_layout"]
 [ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="f200_bake"]
-[ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap.tscn" id="f213_minimap"]
+[ext_resource type="NavigationMesh" path="res://data/nav/high_noon_nav.res" id="f200_navmesh"]
+[ext_resource type="Script" uid="uid://brj6glypovhy8" path="res://scenes/world/nav/map_nav_region.gd" id="f200_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="f212_bake"]
+[ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap.tscn" id="f213_minimap"]
+[ext_resource type="Script" uid="uid://bw6hj2y4y367k" path="res://scenes/world/order_radial.gd" id="f218_order_radial"]
 [ext_resource type="PackedScene" path="res://scenes/ui/radial/radial_menu.tscn" id="f218_radial"]
-[ext_resource type="Script" path="res://scenes/world/order_radial.gd" id="f218_order_radial"]
 [ext_resource type="PackedScene" path="res://scenes/fx/order_marker.tscn" id="f220_marker"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
@@ -249,7 +249,7 @@ script = ExtResource("f27_orders")
 [node name="MatchCommand" type="Node" parent="." unique_id=391205645]
 script = ExtResource("7_match")
 
-[node name="OrderRadial" type="Node" parent="." node_paths=PackedStringArray("menu", "view", "command")]
+[node name="OrderRadial" type="Node" parent="." unique_id=901968895 node_paths=PackedStringArray("menu", "view", "command")]
 unique_name_in_owner = true
 editor_description = "RFC-038: dueño del botón derecho (toque = orden, mantener 0,25 s = menú radial), de Tab mantenido y de Alt+1..8 (formaciones). Va después de MatchCommand: ve Alt+N antes que él."
 script = ExtResource("f218_order_radial")
@@ -262,7 +262,7 @@ unique_name_in_owner = true
 editor_description = "RFC-028b: la casa, el cactus o el Manalith clicado muestra su barra de vida; local, sin RPC."
 script = ExtResource("f93_inspector")
 
-[node name="Ping" parent="." instance=ExtResource("f220_marker")]
+[node name="Ping" parent="." unique_id=1292527434 instance=ExtResource("f220_marker")]
 unique_name_in_owner = true
 
 [node name="AiRoster" type="Node" parent="." unique_id=2118618212 node_paths=PackedStringArray("world", "wizard_spawner")]
@@ -318,8 +318,12 @@ camera = NodePath("../../Camera")
 terrain_bake = NodePath("../../MinimapBake")
 structures_root = NodePath("../../Structures")
 
-[node name="RadialMenu" parent="Hud" instance=ExtResource("f218_radial")]
+[node name="RadialMenu" parent="Hud" unique_id=834462750 instance=ExtResource("f218_radial")]
 unique_name_in_owner = true
+visible = false
+offset_right = 280.0
+offset_bottom = 280.0
+pivot_offset = Vector2(140, 140)
 
 [node name="WizardHud" parent="Hud" unique_id=1561071952 instance=ExtResource("14_hud")]
 unique_name_in_owner = true

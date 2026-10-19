@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="MinimapMarkerStyle" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="MinimapMarkerStyle" format=3 uid="uid://ckrsi7bha1dl"]
 
-[ext_resource type="Script" path="res://scenes/ui/minimap/minimap_marker_style.gd" id="1_style"]
-[ext_resource type="Texture2D" path="res://assets/original/ui/hud/mmic.png" id="2_sheet"]
+[ext_resource type="Script" uid="uid://dnqu3jv7aacv2" path="res://scenes/ui/minimap/minimap_marker_style.gd" id="1_style"]
+[ext_resource type="Texture2D" uid="uid://dsl6d31cqsdm2" path="res://assets/original/ui/hud/mmic.png" id="2_sheet"]
 
 [sub_resource type="AtlasTexture" id="tex"]
 atlas = ExtResource("2_sheet")

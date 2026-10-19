@@ -12,7 +12,7 @@ const META_SOURCE := &"source_hash"
 
 
 ## SHA-256 of what the bake reads, taken from the nodes as the scene stores them (before any _ready, so the editor and the
-## tool see the same thing): the numbers, and per `nav_source` node its path, local transform, tag and facing; the
+## tool see the same thing): the numbers, and per `nav_source` node its path, local transform (the turn is in it) and tag; the
 ## terrain glb by its bytes. `root` is the map root (the parent of the NavigationRegion3D).
 ## It does not cover the box sizes the catalog gives a building: bake again after changing a model.
 static func source_hash(root: Node, settings: NavBakeSettings) -> String:
@@ -36,7 +36,6 @@ static func _describe(node: Node, path: String) -> String:
 	if node3d != null:
 		parts.append(var_to_bytes(node3d.transform).hex_encode())
 	parts.append(str(node.get("tag")))
-	parts.append(str(node.get("facing_deg")))
 	var source := node.scene_file_path
 	if source.ends_with(".glb") and FileAccess.file_exists(source):
 		parts.append(FileAccess.get_sha256(source))

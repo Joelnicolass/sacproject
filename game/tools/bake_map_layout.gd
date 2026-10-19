@@ -6,7 +6,7 @@ extends SceneTree
 ##   assets/original/maps/high_noon/sides.tres   MapSides
 ## It does what the old runtime code did, in the same order and with the same arithmetic, so the match digests do not move:
 ##  - buildings: the order of `structures`, names `Bld%03d_<tag>` (the index counts the hand-placed founts and altars too),
-##    y = ground_height(x, z), `facing_deg` as the NTTS says; the ones off the land are left out with a warning;
+##    y = ground_height(x, z), the NTTS facing saved as the node's own rotation (rotation.y = -deg_to_rad(facing), RFC-043); the ones off the land are left out with a warning;
 ##  - plants: the sacengine placeWidgets walk (sorted tags, one RNG draw per row, seed 17), skipped over holes and near
 ##    an altar (40 m) or a manafount (6 m); the founts and altars are the `jfnt` and `jaal` rows of the NTTS, the same spots
 ##    as Starts and Founts in high_noon.tscn;
@@ -231,8 +231,8 @@ func _write_layout(plan: Dictionary, out: String) -> Error:
 		var node := _instance(building_scene, buildings, root, row["name"])
 		node.set("tag", row["tag"])
 		node.set("owner_slot", row["owner_slot"])
-		node.set("facing_deg", row["facing"])
 		node.position = row["position"]
+		node.rotation.y = -deg_to_rad(float(row["facing"]))
 	for row: Dictionary in plan["plants"]:
 		var node := _instance(plant_scene, plants, root, row["name"])
 		node.set("model", row["model"])
@@ -242,9 +242,9 @@ func _write_layout(plan: Dictionary, out: String) -> Error:
 		var node := _instance(spawn_scene, spawns, root, row["name"])
 		node.set("tag", row["tag"])
 		node.set("side", row["side"])
-		node.set("facing_deg", row["facing"])
 		node.set("ntts_id", row["ntts_id"])
 		node.position = row["position"]
+		node.rotation.y = -deg_to_rad(float(row["facing"]))
 	var packed := PackedScene.new()
 	var error := packed.pack(root)
 	root.free()
@@ -282,12 +282,13 @@ func _check(plan: Dictionary, ntts: Dictionary, layout_path: String, sides_path:
 	else:
 		_check_children(root, "Buildings", plan["buildings"], func(node: Node3D, row: Dictionary) -> bool:
 			return node.get("tag") == row["tag"] and node.get("owner_slot") == row["owner_slot"] \
-				and Vector3(0.0, -deg_to_rad(float(node.get("facing_deg"))), 0.0) == Vector3(0.0, -deg_to_rad(row["facing"]), 0.0))
+				and node.basis.is_equal_approx(Basis.from_euler(Vector3(0.0, -deg_to_rad(float(row["facing"])), 0.0))))
 		_check_children(root, "Plants", plan["plants"], func(node: Node3D, row: Dictionary) -> bool:
 			return node.get("model") == row["model"] and node.basis.is_equal_approx(Basis.from_euler(Vector3(0.0, row["yaw"], 0.0))))
 		_check_children(root, "NpcSpawns", plan["npcs"], func(node: Node3D, row: Dictionary) -> bool:
 			return node.get("tag") == row["tag"] and node.get("side") == row["side"] \
-				and node.get("ntts_id") == row["ntts_id"] and node.get("facing_deg") == row["facing"])
+				and node.get("ntts_id") == row["ntts_id"] \
+				and is_equal_approx(wrapf((node as NpcSpawn).yaw() + deg_to_rad(float(row["facing"])), -PI, PI), 0.0))
 		var shelters := 0
 		for node in root.get_node("Buildings").get_children():
 			if MapBuilding.bldg(str(node.get("tag"))).get("shelter", false):

@@ -1,3 +1,4 @@
+@tool
 class_name MapBuilding
 extends StaticBody3D
 
@@ -15,15 +16,16 @@ signal destroyed(building: MapBuilding)
 const GROUP := &"map_building"
 const SHELTER_GROUP := &"shelter"
 
-## BLDG tag, in the order the WAD names use (jhut, jwg1, jcc1).
-@export var tag := ""
+## The BLDG (BuildingType in data/catalog/buildings/); drag its .tres here. Its tag is in the order the WAD names use (jhut, jwg1, jcc1).
+## The node's own transform is the truth: move and turn it with the gizmo; the model shows in the editor.
+@export var building: BuildingType:
+	set(value):
+		building = value
+		if is_node_ready():
+			_refresh_preview()
 ## 0 = take it from the BLDG. Debug scenes set it to test fast.
 @export var max_health_override := 0.0
 @export var owner_slot := 0
-## Turn about the vertical axis, degrees, as the NTTS stores it (positive turns Godot's y backwards). Applied in _ready
-## with the same operation the map loader used (RFC-035 R2), so the stored rotation never differs by an ULP. 0 leaves
-## the transform as the scene or the code that added the node set it.
-@export var facing_deg := 0.0
 @export_group("Collision")
 ## The body is the box of the models, smaller by this much (m) on every side, so units pass the eaves.
 ## Decision of the port (not sacengine): a little smaller than the box so units pass the eaves.
@@ -43,6 +45,14 @@ var shelter := false
 ## The BLDG has the ground flag: the land is changed under it, and it has no body of its own.
 var ground := false
 
+## BLDG tag, derived from `building` ("" when none). Setting it looks the type up (TypeRef), for code and old scenes that
+## still name a tag; the reference is what is saved.
+var tag: String:
+	get:
+		return building.tag if building != null else ""
+	set(value):
+		building = TypeRef.building(value)
+
 static var _bldgs: Dictionary = {}
 static var _bldgs_loaded := false
 static var _announced: Dictionary = {}
@@ -57,14 +67,18 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if visuals == null or health == null or collision == null:
 		warnings.append("Asigná visuals, health y collision.")
+	if building == null:
+		warnings.append("Elegí un edificio en `building`.")
 	return warnings
 
 
 func _ready() -> void:
-	if facing_deg != 0.0:
-		rotation.y = -deg_to_rad(facing_deg)
+	# The editor only shows the model; none of the game runs there.
+	if Engine.is_editor_hint():
+		_refresh_preview()
+		return
 	add_to_group(GROUP)
-	var record := bldg(tag)
+	var record := _record()
 	if record.is_empty():
 		push_warning("MapBuilding: el BLDG «%s» no está en data/catalog/buildings/; relleno gris." % tag)
 	max_health = max_health_override if max_health_override > 0.0 else float(record.get("max_health", 0.0))
@@ -87,6 +101,23 @@ func _ready() -> void:
 	_build_visuals(record)
 	health.changed.connect(_on_health_changed)
 	_place_bar()
+
+
+## The record of this building's type: from the reference itself, else by the tag.
+func _record() -> Dictionary:
+	return building.to_record() if building != null else bldg(tag)
+
+
+## Editor only: the models of the BLDG where the game puts them (the same parts), unsaved (no owner), no collision, no health.
+func _refresh_preview() -> void:
+	update_configuration_warnings()
+	if visuals == null:
+		return
+	for child in visuals.get_children():
+		visuals.remove_child(child)
+		child.queue_free()
+	if building != null:
+		_add_parts(_record())
 
 
 ## The BLDG record of `name` (BuildingType.to_record), {} when the catalog has none.
@@ -131,6 +162,14 @@ func melee_profile() -> Dictionary:
 ## shapes the same collision as a client. Sac axes (x, y, z up) are Godot (x, z, y); a facing in degrees
 ## about the sac z turns Godot's y backwards.
 func _build_visuals(record: Dictionary) -> void:
+	var box_info := _add_parts(record)
+	if not _missing.is_empty() and BodyCatalog.loads_meshes():
+		push_warning("MapBuilding %s: sin modelo horneado de %s; se muestra el relleno." % [tag, ", ".join(_missing)])
+	_shape_collision(box_info["box"], box_info["any"])
+
+
+## Adds one holder with its model per component under `visuals`; returns the merged box of the baked sizes.
+func _add_parts(record: Dictionary) -> Dictionary:
 	var components: Array = record.get("components", [{"tag": tag, "x": 0.0, "y": 0.0, "z": 0.0, "facing": 0.0}])
 	var box := AABB()
 	var any := false
@@ -157,9 +196,7 @@ func _build_visuals(record: Dictionary) -> void:
 			var placed: AABB = holder.transform * BodyCatalog.pose(model, false) * local
 			box = placed if not any else box.merge(placed)
 			any = true
-	if not _missing.is_empty() and BodyCatalog.loads_meshes():
-		push_warning("MapBuilding %s: sin modelo horneado de %s; se muestra el relleno." % [tag, ", ".join(_missing)])
-	_shape_collision(box, any)
+	return {"box": box, "any": any}
 
 
 func _shape_collision(box: AABB, has_box: bool) -> void:

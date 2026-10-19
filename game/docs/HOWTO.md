@@ -6,12 +6,32 @@ Después de cualquier cambio de contenido, corré el validador (último apartado
 
 ## Una criatura
 
+Para una criatura que no existe en el original, andá directo a «Crear una criatura propia desde Blender». Estos pasos son para las del catálogo.
+
 1. Duplicá un hermano en `data/catalog/creatures/` (por ejemplo `ahcr.tres`) y llamalo `<tag>.tres`. El nombre del archivo es el `tag`.
 2. En el inspector: `tag`, `display_name`, `god`, `model` (el tag del modelo de `assets/original/models/<model>.glb`), vida, velocidad, resistencias, `ability_tags` y las animaciones.
 3. El tamaño del cuerpo va en `data/catalog/body_sizes/<model>.tres` (`BodySize`: caja, `height`, `radius`, `reach`). Si el modelo ya lo usa otra criatura, ya existe.
 4. La escena del modelo es `scenes/bodies/models/<model>.tscn`. Si falta, hornéala: **Project > Tools > Sacrifice: Hornear modelos que faltan** (o `tools/bake/bake_body_scenes.gd`). Solo escribe los que faltan; lo que ya editaste no se pisa. Ahí se cambia qué clip toca cada rol (`AnimationTree`).
 5. Para que el jugador la pueda convocar, ponela en el libro del dios: `data/gods/<dios>.tres` → `book` → `creatures` (y una línea en `unlocks` con el nivel de mago en que entra).
 6. Las habilidades: `ability_tags` apunta a `data/catalog/abilities/`; la lógica de cada una es un nodo en `scenes/units/abilities/`.
+
+## Crear una criatura propia desde Blender
+
+Un enemigo o personaje nuevo no necesita nada del juego original (ni `index.json` ni los WAD): sale de un `.glb`.
+
+1. **Modelar y animar.** Una armature con el mesh skinneado y **una acción por animación**, nombradas por rol (mayúsculas, separadores y el `.001` de Blender no importan):
+   `idle` (obligatoria), `run` (o `walk`), `attack`, `shoot`, `cast`, `hit`, `death`, `fly`, `takeoff`, `land`, `hover`, `knock`, `get_up`. Un rol sin clip se resuelve solo (`walk`→`run`, `shoot`→`attack`, `hit` y lo que falte→`idle`; sin `death` el cuerpo cae con un Tween).
+   El **momento del golpe** va en el nombre: `attack_at45` = al 45 % del clip, `attack_f18` = en el cuadro 18; sin marca es la mitad (50 %). (Blender no exporta marcadores a glTF.) Hacé que mire hacia **-Y** en Blender (queda hacia +Z, como el juego) y que los pies estén en Z = 0.
+2. **Exportar** a `game/assets/custom/models/<tag>.glb` (File > Export > glTF 2.0, formato GLB, *Animation* > modo **Actions**; el nombre del archivo es el `tag`: minúsculas, sin espacios). Abrí el proyecto en el editor una vez (o `$G --headless --path . --import`) para que Godot lo importe. Ejemplo completo: `tools/blender/make_test_creature.py`.
+3. **Crear la criatura**: **Project > Tools > Sacrifice: Nueva criatura desde modelo…** y elegí el `.glb`; o por consola:
+   ```bash
+   $G --headless --path . --script res://tools/bake/new_creature.gd -- <tag> --name="Nombre" --god=pyro
+   ```
+   Escribe tres archivos y **no pisa ninguno que exista** (`--force` rehace los tres): `scenes/bodies/models/<tag>.tscn` (el modelo con su `AnimationTree` y el evento del golpe), `data/catalog/body_sizes/<tag>.tres` (caja, alto, radio y alcance medidos del mesh) y `data/catalog/creatures/<tag>.tres` (stats de `data/templates/creature.tres` más los datos de los clips). Imprime qué clip tomó cada rol y cuáles no usó.
+4. **Ajustar en el inspector.** Stats, costo de maná y almas, `display_name` en el `.tres` de la criatura; tamaño en el `body_sizes` (`reach` es hasta dónde llega el golpe). Qué clip toca cada rol: los estados del `AnimationTree` de la escena del modelo (si cambiás el clip de un estado, poné su `timeline_length` en los segundos del clip nuevo); el cuadro del golpe: la tecla `attack` de la animación del reproductor `Events`. Si tocaste roles o el golpe, **Project > Tools > Sacrifice: Sincronizar criatura con su modelo…** (o `new_creature.gd -- <tag> --sync`) vuelve a leer la escena y actualiza los tiempos que usan las reglas (golpe, disparo, aturdimiento, vuelo); tus stats no se tocan.
+5. **Ponerla en un libro**: `data/gods/<dios>.tres` → `book` → `creatures` (arrastrá el `.tres`) y una línea en `unlocks` con el nivel de mago. Corré el validador: `CATALOG PASS` (también avisa si un clip nombrado no existe en el `.glb`).
+
+Prueba de punta a punta (criatura de Blender, convocada, camina, pega en el golpe y muere): `$G --headless --fixed-fps 60 --path . res://debug/units/custom_creature.tscn` imprime `CUSTOM_CREATURE PASS`.
 
 ## Un hechizo
 

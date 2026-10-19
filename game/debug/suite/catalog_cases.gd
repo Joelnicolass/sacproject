@@ -197,6 +197,8 @@ func _check_bodies(tags: Dictionary) -> void:
 	for creature: CreatureType in _catalog.creatures:
 		if not sizes.has(creature.model):
 			_report("creatures/%s: model = \"%s\" has no body_sizes/ file" % [_file(creature), creature.model])
+	for creature: CreatureType in _catalog.creatures:
+		_check_custom_model(creature)
 	for wizard: WizardType in _catalog.wizards:
 		if not sizes.has(wizard.model):
 			_report("wizards/%s: model = \"%s\" has no body_sizes/ file" % [_file(wizard), wizard.model])
@@ -205,6 +207,40 @@ func _check_bodies(tags: Dictionary) -> void:
 			_report("body_sizes/%s: box has %d numbers, it needs 6" % [_file(size), size.box.size()])
 		if not size.upright_fix.is_empty() and size.upright_fix.size() != 3:
 			_report("body_sizes/%s: upright_fix has %d numbers, it needs 3" % [_file(size), size.upright_fix.size()])
+
+
+## RFC-051: a creature whose model is a .glb of assets/custom/models/ has its model scene, and every clip its fields name is a
+## clip of that .glb (the fields are filled by tools/bake/new_creature.gd; `--sync` refreshes them after the scene is edited).
+func _check_custom_model(creature: CreatureType) -> void:
+	var glb_path := "res://assets/custom/models/%s.glb" % creature.model
+	if creature.model.is_empty() or not ResourceLoader.exists(glb_path):
+		return
+	if not BodyModel.exists(creature.model):
+		_report("creatures/%s: model \"%s\" has no scenes/bodies/models/%s.tscn (tools/bake/new_creature.gd makes it)" % [_file(creature), creature.model, creature.model])
+		return
+	var scene := load(glb_path) as PackedScene
+	var root := scene.instantiate() if scene != null else null
+	var players: Array = root.find_children("*", "AnimationPlayer", true, false) if root != null else []
+	if players.is_empty():
+		_report("creatures/%s: %s has no animations" % [_file(creature), glb_path])
+		if root != null:
+			root.free()
+		return
+	var player := players[0] as AnimationPlayer
+	var clips: Array[Dictionary] = [creature.idle_animation, creature.run_animation, creature.walk_animation]
+	clips.append_array(creature.melee_animations)
+	clips.append_array(creature.shoot_animations)
+	for table: Dictionary in [creature.stun_animations, creature.death_animations, creature.flight_animations,
+			creature.captive_animations, creature.extra_animations]:
+		for role: String in table:
+			clips.append(table[role])
+	for clip in clips:
+		var tag := str(clip.get("tag", ""))
+		if not tag.is_empty() and not player.has_animation(tag):
+			_report("creatures/%s: the clip \"%s\" is not in %s.glb (run new_creature.gd --sync %s)" % [_file(creature), tag, creature.model, creature.model])
+	if creature.idle_animation.is_empty():
+		_report("creatures/%s: no idle_animation (a custom creature needs an idle clip)" % _file(creature))
+	root.free()
 
 
 func _file(type: Resource) -> String:

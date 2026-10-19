@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://debug/units/custom_creature.gd" id="1_runner"]
+[ext_resource type="PackedScene" uid="uid://highnoonworld01" path="res://scenes/match/high_noon.tscn" id="2_world"]
+[ext_resource type="Resource" path="res://debug/rules/custom_creature.tres" id="3_rules"]
+
+[node name="CustomCreature" type="Node"]
+editor_description = "RFC-051 (F330). Una criatura propia (testmonster, hecha en Blender con tools/bake/new_creature.gd) se convoca del libro de Pyro, camina a una orden, pega en el momento del impacto del .glb, muere y su rol de muerte tumba el esqueleto. Sin ventana: `--headless --fixed-fps 60 res://debug/units/custom_creature.tscn`. Imprime CUSTOM_CREATURE PASS/FAIL."
+script = ExtResource("1_runner")
+
+[node name="HighNoon" parent="." instance=ExtResource("2_world")]
+rules = ExtResource("3_rules")
+
+[node name="Population" parent="HighNoon"]
+spawn_creatures = false

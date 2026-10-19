@@ -1,3 +1,4 @@
+class_name Summoner
 extends Node
 
 ## Creature summons of a wizard (sacengine spawn / updateCreatureCasting). begin() puts the

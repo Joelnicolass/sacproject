@@ -79,7 +79,7 @@ var _clip_flat_speed := 0.0
 @onready var ghost: Node = $GhostForm
 @onready var _clip_pose: Node = $ClipPose
 ## The cast in progress as every peer sees it: `cast_fx_shown` is replicated, so the pose follows it on a client too.
-@onready var _caster: Node = $Caster
+@onready var _caster: Caster = $Caster
 ## F138 (RFC-030i-c): the one owner of «held» (stunned, petrified); walking, turning, casting and summoning ask it.
 @onready var _afflictions: Afflictions = $Afflictions
 @onready var _avoidance: BodyAvoidance = $Avoidance
@@ -435,8 +435,8 @@ func _regenerate(delta: float) -> void:
 		return
 	if not is_zero_approx(velocity.x) or not is_zero_approx(velocity.z):
 		return
-	var caster := get_node_or_null("Caster")
-	if caster and caster.call("is_casting"):
+	var caster := get_node_or_null("Caster") as Caster
+	if caster and caster.is_casting():
 		return
 	var type: WizardType = GameData.wizard(wizard_tag)
 	if type == null:
@@ -505,7 +505,7 @@ func _update_clip_state(flat_speed: float) -> void:
 		return
 	var moving := flat_speed > 0.1 and bool(ghost.call("can_move"))
 	# RFC-023 023d: the spellcast loop while the Caster casts (the server says so, it is replicated), standing or walking.
-	if not str(_caster.get("cast_fx_shown")).is_empty():
+	if not _caster.cast_fx_shown.is_empty():
 		_gesturing = false
 		_clip_pose.call("play", "cast_run" if moving else "cast")
 		return

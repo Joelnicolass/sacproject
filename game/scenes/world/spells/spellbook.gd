@@ -1,3 +1,4 @@
+class_name Spellbook
 extends Node
 
 ## Book of a wizard: the god's creatures and spells up to the wizard's level (getSpells, state.d:29512) in one

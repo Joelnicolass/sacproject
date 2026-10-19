@@ -1,3 +1,4 @@
+class_name Caster
 extends Node
 
 ## Casts the wizard's book (sacengine startCasting). The owner calls request_cast() or
@@ -50,8 +51,8 @@ const _ROCK := preload("res://scenes/world/spells/rock_projectile.gd")
 const _HEALTH := preload("res://scenes/world/components/health.gd")
 
 @export var rules: MatchRules
-@export var spellbook: Node
-@export var summoner: Node
+@export var spellbook: Spellbook
+@export var summoner: Summoner
 ## Holds the SpellAction children (Manalith…). Without it, or without the child, the spell answers «No implementado».
 @export var actions: Node
 
@@ -88,7 +89,7 @@ func wizard_can_cast() -> bool:
 
 ## Can the spell be armed? (sacengine selectSpell: mana, then cooldown.) "" = yes.
 func arm_status(index: int) -> String:
-	var spell: SpellType = spellbook.call("spell_at", index)
+	var spell := spellbook.spell_at(index)
 	if spell == null:
 		return BAD_TARGET
 	if not IMPLEMENTED.has(spell.tag):
@@ -96,24 +97,24 @@ func arm_status(index: int) -> String:
 	var status := ""
 	if _cost(spell) > _mana() + MANA_EPSILON:
 		status = NO_MANA
-	if float(spellbook.call("cooldown", index)) > 0.0:
+	if spellbook.cooldown(index) > 0.0:
 		status = COOLING
 	return status
 
 
 ## Can the creature be summoned now? (sacengine spellStatus: souls, mana, then cooldown.) "" = yes.
 func summon_status(index: int) -> String:
-	var type: CreatureType = spellbook.call("creature_at", index)
+	var type := spellbook.creature_at(index)
 	if type == null:
 		return BAD_TARGET
-	if summoner == null or not summoner.call("can_summon", type):
+	if summoner == null or not summoner.can_summon(type):
 		return NOT_IMPLEMENTED
 	var status := ""
 	if type.souls > _souls():
 		status = NO_SOULS
 	elif _cost(type) > _mana() + MANA_EPSILON:
 		status = NO_MANA
-	if float(spellbook.call("creature_cooldown", index)) > 0.0:
+	if spellbook.creature_cooldown(index) > 0.0:
 		status = COOLING
 	if at_creature_limit():
 		status = CREATURE_LIMIT
@@ -137,7 +138,7 @@ func at_creature_limit() -> bool:
 
 ## Can this structure entry be armed? "" = yes.
 func structure_status(index: int) -> String:
-	var spell: SpellType = spellbook.call("structure_at", index)
+	var spell := spellbook.structure_at(index)
 	if spell == null or not bool(spell.is_structure):
 		return BAD_TARGET
 	var action := action_for(spell.tag)
@@ -176,7 +177,7 @@ func action_status(tag: String, point: Vector3, picked: Node3D) -> String:
 
 ## The action of an entry of the structures tab, or null.
 func structure_action(index: int) -> SpellAction:
-	var spell: SpellType = spellbook.call("structure_at", index)
+	var spell := spellbook.structure_at(index)
 	return action_for(spell.tag) if spell != null else null
 
 
@@ -262,8 +263,8 @@ func _tell_owner(text: String) -> void:
 
 ## Server or solo. Returns the spell name when it starts, or the reason it did not.
 func _try_cast(tag: String, point: Vector3, path: NodePath) -> String:
-	var index := int(spellbook.call("index_of", tag))
-	var spell: SpellType = spellbook.call("spell_at", index)
+	var index := spellbook.index_of(tag)
+	var spell := spellbook.spell_at(index)
 	if not wizard_can_cast():
 		return ""
 	var action := action_for(tag)
@@ -289,7 +290,7 @@ func _try_cast(tag: String, point: Vector3, path: NodePath) -> String:
 		status = BAD_TARGET
 	elif _wizard.global_position.distance_to(target.global_position if target else point) > spell.cast_range:
 		status = OUT_OF_RANGE
-	if float(spellbook.call("cooldown", index)) > 0.0:
+	if spellbook.cooldown(index) > 0.0:
 		status = COOLING
 	if not status.is_empty():
 		return status
@@ -307,8 +308,8 @@ func _try_cast(tag: String, point: Vector3, path: NodePath) -> String:
 
 ## Server or solo. Returns the creature name when the summon starts, or the reason it did not.
 func _try_summon(tag: String) -> String:
-	var index := int(spellbook.call("creature_index_of", tag))
-	var type: CreatureType = spellbook.call("creature_at", index)
+	var index := spellbook.creature_index_of(tag)
+	var type := spellbook.creature_at(index)
 	if not wizard_can_cast():
 		return ""
 	if type == null:
@@ -318,7 +319,7 @@ func _try_summon(tag: String) -> String:
 	var status := summon_status(index)
 	if not status.is_empty():
 		return status
-	var unit: Node3D = summoner.call("begin", type)
+	var unit := summoner.begin(type)
 	if unit == null:
 		return NO_ROOM
 	_start(type, unit, unit.global_position)
@@ -327,7 +328,7 @@ func _try_summon(tag: String) -> String:
 
 ## Server or solo. Returns the structure name when the cast starts.
 func _try_structure(index: int, point: Vector3) -> String:
-	var spell: SpellType = spellbook.call("structure_at", index)
+	var spell := spellbook.structure_at(index)
 	if not wizard_can_cast():
 		return ""
 	if spell == null or not bool(spell.is_structure):
@@ -394,7 +395,7 @@ func _start(entry: Resource, target: Node3D, point: Vector3) -> void:
 	_frames_left = frames
 	_drain_left = mini(frames, ceili(cost * FPS / rules.cast_drain_per_s))
 	_drain_per_frame = cost / float(maxi(_drain_left, 1))
-	spellbook.call("apply_cooldown", str(entry.get("tag")))
+	spellbook.apply_cooldown(str(entry.get("tag")))
 	var verb := "convoca" if entry is CreatureType else "lanza"
 	print("%s %s slot %d" % [verb, str(entry.get("display_name")), int(_wizard.get("owner_slot"))])
 
@@ -435,7 +436,7 @@ func _finish() -> void:
 	_target = null
 	cast_fx_shown = ""
 	if entry is CreatureType:
-		var text := str(summoner.call("finish", target, entry))
+		var text := summoner.finish(target, entry)
 		if not text.is_empty():
 			_tell_owner(text)
 		return
@@ -606,9 +607,9 @@ func _lightning_origin() -> Vector3:
 
 ## The spell of the book by tag, from either tab, or null.
 func _spell_of(tag: String) -> SpellType:
-	var spell: SpellType = spellbook.call("structure_by_tag", tag)
+	var spell := spellbook.structure_by_tag(tag)
 	if spell == null:
-		spell = spellbook.call("spell_by_tag", tag)
+		spell = spellbook.spell_by_tag(tag)
 	return spell
 
 
@@ -617,11 +618,11 @@ func _funds(spell: SpellType) -> String:
 	var status := ""
 	if _cost(spell) > _mana() + MANA_EPSILON:
 		status = NO_MANA
-	var index := int(spellbook.call("structure_index_of", spell.tag))
-	var cooldown := float(spellbook.call("structure_cooldown", index)) if index >= 0 else 0.0
+	var index := spellbook.structure_index_of(spell.tag)
+	var cooldown := spellbook.structure_cooldown(index) if index >= 0 else 0.0
 	if index < 0:
-		index = int(spellbook.call("index_of", spell.tag))
-		cooldown = float(spellbook.call("cooldown", index)) if index >= 0 else 0.0
+		index = spellbook.index_of(spell.tag)
+		cooldown = spellbook.cooldown(index) if index >= 0 else 0.0
 	if cooldown > 0.0:
 		status = COOLING
 	return status

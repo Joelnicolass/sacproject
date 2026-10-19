@@ -30,7 +30,7 @@ const SAME_POS_SQ := 1.0
 var slot := 0
 var wizard: Node3D
 var orders: Node
-var caster: Node
+var caster: Caster
 var orders_issued := 0
 ## Diagnostic for the report: issued orders by «kind ostate reason» -> [count, microseconds]. «changed»: another ostate or
 ## target; «moved<3/<10/…»: the same order to a spot that moved (meters; «hold»: the body's own spot; «walking»/«still»:
@@ -63,8 +63,8 @@ func bind(side_slot: int, wizard_body: Node3D, orders_node: Node) -> void:
 	slot = side_slot
 	wizard = wizard_body
 	orders = orders_node
-	caster = wizard_body.get_node("Caster")
-	caster.connect("feedback", _on_feedback)
+	caster = wizard_body.get_node("Caster") as Caster
+	caster.feedback.connect(_on_feedback)
 	var spawner := get_tree().get_first_node_in_group("unit_spawner")
 	if spawner != null:
 		_units_root = spawner.get_node(spawner.spawn_path)
@@ -178,17 +178,17 @@ func _start_casting(spell: Resource, target: AiTrack, point: Vector3) -> String:
 			return ""
 		unseen_target_reads += 1
 	if is_summon:
-		caster.call("request_summon", tag)
+		caster.request_summon(tag)
 	elif spell is SpellType and bool((spell as SpellType).is_structure) and target != null and target.is_valid():
 		## Convert and Desecrate click a soul or a creature (the structures tab gives the spell, the click the target): the same
 		## `request_cast` a human's click makes. A structure with no target (Manalith: the ground) goes by its entry of the tab.
-		caster.call("request_cast", tag, target.node.global_position, target.node)
+		caster.request_cast(tag, target.node.global_position, target.node)
 	elif spell is SpellType and bool((spell as SpellType).is_structure):
-		var book := wizard.get_node("Spellbook")
-		caster.call("request_structure", int(book.call("structure_index_of", tag)), point)
+		var book := wizard.get_node("Spellbook") as Spellbook
+		caster.request_structure(book.structure_index_of(tag), point)
 	else:
 		var node: Node3D = target.node if target != null and target.is_valid() else null
-		caster.call("request_cast", tag, node.global_position if node != null else point, node)
+		caster.request_cast(tag, node.global_position if node != null else point, node)
 	var answer := _answers[0] if not _answers.is_empty() else ""
 	var name := str(spell.get("display_name"))
 	var started := answer == name

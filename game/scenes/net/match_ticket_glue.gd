@@ -63,7 +63,8 @@ func _ready() -> void:
 	for slot in agent.ticket.get("open_picks", []):
 		_open_picks[int(slot)] = true
 	_setup = setup_from_ticket(agent.ticket)
-	for part in MpBoot.user_value("force-defeat-slot", "").split(",", false):
+	## `--match-args=` splits on commas, so a list of slots there is written `3+4`.
+	for part in MpBoot.user_value("force-defeat-slot", "").replace("+", ",").split(",", false):
 		if int(part) > 0:
 			_force_slots.append(int(part))
 	_force_ticks = int(MpBoot.user_value("force-defeat-after-ticks", "0"))
@@ -77,6 +78,9 @@ func _ready() -> void:
 	get_tree().paused = _holding
 	get_tree().node_added.connect(_on_node_added)
 	print("partida %s: ticket con %d asientos, semilla %d, nivel %d" % [agent.match_id, _seat_count, _setup.match_seed, _setup.level])
+	print("partida %s: mapa %s modo %s, %d IA" % [
+		agent.match_id, str(agent.ticket.get("world", MapCatalog.DEFAULT_TAG)), str(agent.ticket.get("mode", GameModeCatalog.DEFAULT_TAG)),
+		ai_seats().size()])
 
 
 ## slot -> the `meta` (pick) the lobby validated for that seat. Raw: the flow sanitizes it again.

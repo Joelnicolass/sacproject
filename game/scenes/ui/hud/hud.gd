@@ -5,7 +5,7 @@ extends Control
 ## (GhostForm) as text under it. `%Stats` keeps the old «Vida/Maná/Almas» line as an undrawn readout
 ## for the flows. The selection lives in SelectionRoster (RFC-025).
 
-const STATS_TEXT := "Vida %d/%d · Maná %d/%d · Almas %d"
+const STATS_TEXT := "UI_HUD_STATS_FORMAT"
 
 var _wizard: Node
 
@@ -66,7 +66,7 @@ func _refresh() -> void:
 	if _wizard == null:
 		return
 	%Title.text = "%s · %s" % [_wizard.display_name(), str(_wizard.god).capitalize()]
-	%Stats.text = STATS_TEXT % [
+	%Stats.text = tr(STATS_TEXT) % [
 		roundi(_wizard.health.current), roundi(_wizard.health.maximum),
 		roundi(_wizard.mana.current), roundi(_wizard.mana.maximum),
 		_wizard.souls.count,

@@ -17,7 +17,7 @@ layout_mode = 2
 [node name="QualityLabel" type="Label" parent="QualityRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Calidad"
+text = "UI_GRAPHICS_TAB_QUALITY_LABEL"
 
 [node name="QualityPick" type="OptionButton" parent="QualityRow"]
 unique_name_in_owner = true
@@ -27,12 +27,12 @@ size_flags_horizontal = 3
 [node name="Fullscreen" type="CheckButton" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Pantalla completa"
+text = "UI_GRAPHICS_TAB_FULLSCREEN"
 
 [node name="VSync" type="CheckButton" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
-text = "VSync"
+text = "UI_GRAPHICS_TAB_VSYNC"
 
 [node name="MaxFpsRow" type="HBoxContainer" parent="."]
 layout_mode = 2
@@ -40,7 +40,7 @@ layout_mode = 2
 [node name="MaxFpsLabel" type="Label" parent="MaxFpsRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Límite de FPS"
+text = "UI_GRAPHICS_TAB_MAX_FPS_LABEL"
 
 [node name="MaxFpsPick" type="OptionButton" parent="MaxFpsRow"]
 unique_name_in_owner = true
@@ -53,7 +53,7 @@ layout_mode = 2
 [node name="HudLabel" type="Label" parent="HudRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Tamaño del HUD"
+text = "UI_GRAPHICS_TAB_HUD_LABEL"
 
 [node name="HudSize" type="HSlider" parent="HudRow"]
 unique_name_in_owner = true

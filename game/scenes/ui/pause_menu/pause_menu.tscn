@@ -41,7 +41,7 @@ theme_override_constants/separation = 12
 [node name="PauseTitle" type="Label" parent="Dim/PausePanel/Column"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Pausa"
+text = "UI_PAUSE_MENU_PAUSE_TITLE"
 horizontal_alignment = 1
 
 [node name="Main" type="VBoxContainer" parent="Dim/PausePanel/Column"]
@@ -52,17 +52,17 @@ theme_override_constants/separation = 12
 [node name="Continue" type="Button" parent="Dim/PausePanel/Column/Main"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Continuar"
+text = "UI_PAUSE_MENU_CONTINUE"
 
 [node name="Options" type="Button" parent="Dim/PausePanel/Column/Main"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Opciones"
+text = "UI_PAUSE_MENU_OPTIONS"
 
 [node name="Quit" type="Button" parent="Dim/PausePanel/Column/Main"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Salir al menú"
+text = "UI_PAUSE_MENU_QUIT"
 
 [node name="Confirm" type="VBoxContainer" parent="Dim/PausePanel/Column"]
 unique_name_in_owner = true
@@ -72,19 +72,19 @@ theme_override_constants/separation = 12
 
 [node name="Question" type="Label" parent="Dim/PausePanel/Column/Confirm"]
 layout_mode = 2
-text = "¿Dejar la partida y volver al menú?"
+text = "UI_PAUSE_MENU_QUESTION"
 horizontal_alignment = 1
 autowrap_mode = 3
 
 [node name="ConfirmQuit" type="Button" parent="Dim/PausePanel/Column/Confirm"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Salir"
+text = "UI_PAUSE_MENU_CONFIRM_QUIT"
 
 [node name="CancelQuit" type="Button" parent="Dim/PausePanel/Column/Confirm"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Volver"
+text = "UI_PAUSE_MENU_CANCEL_QUIT"
 
 [node name="OptionsMenu" parent="." instance=ExtResource("2_options")]
 unique_name_in_owner = true

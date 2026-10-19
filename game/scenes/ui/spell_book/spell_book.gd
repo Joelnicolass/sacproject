@@ -23,7 +23,7 @@ const SELECTOR_REGION := Rect2(49, 48, 46, 48)
 const PAGE_REGIONS: Array[Rect2] = [Rect2(0, 0, 32, 32), Rect2(32, 0, 32, 32), Rect2(0, 32, 32, 32)]
 const FRAME_SEGMENT_REGION := Rect2(64, 40, 16, 8)
 const FRAME_CAP_REGION := Rect2(80.5, 32.5, 47.5, 15.5)
-const TAB_TEXT: PackedStringArray = ["Criaturas", "Hechizos", "Estructuras"]
+const TAB_TEXT: PackedStringArray = ["UI_BOOK_TAB_CREATURES", "UI_BOOK_TAB_SPELLS", "UI_BOOK_TAB_STRUCTURES"]
 
 @export var slot_scene: PackedScene
 ## Frame piece (a TextureRect; texture, rect and rotation are set here).
@@ -54,7 +54,7 @@ func _ready() -> void:
 	for i in tabs.size():
 		var texture := HudIcons.region("tabs", TAB_REGIONS[i])
 		tabs[i].icon = texture
-		tabs[i].text = "" if texture else TAB_TEXT[i]
+		tabs[i].text = "" if texture else tr(TAB_TEXT[i])
 		tabs[i].pressed.connect(show_tab.bind(i))
 	%TabSelector.texture = HudIcons.region("tabs", SELECTOR_REGION)
 	get_viewport().size_changed.connect(_fit_screen)
@@ -218,7 +218,7 @@ static func key_label(action: String) -> String:
 		if event is InputEventKey:
 			var key := event as InputEventKey
 			var code := key.keycode if key.keycode != KEY_NONE else key.physical_keycode
-			var text := "Espacio" if code == KEY_SPACE else OS.get_keycode_string(code)
+			var text := UiText.t("UI_KEY_SPACE") if code == KEY_SPACE else OS.get_keycode_string(code)
 			if key.alt_pressed:
 				text = "Alt+" + text
 			if key.shift_pressed:

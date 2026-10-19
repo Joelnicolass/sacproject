@@ -5,10 +5,10 @@ extends HBoxContainer
 
 signal sit_requested(seat: int)
 
-const READY_TEXT := "Listo"
-const NOT_READY_TEXT := "Esperando"
+const READY_TEXT := "UI_SEAT_READY"
+const NOT_READY_TEXT := "UI_SEAT_WAITING"
 const YOU_SUFFIX := " (vos)"
-const AWAY_SUFFIX := " (sin conexión)"
+const AWAY_SUFFIX := "UI_SEAT_AWAY_SUFFIX"
 
 var _seat: int = -1
 
@@ -23,7 +23,7 @@ func show_seat(seat: Dictionary, can_sit: bool) -> void:
 	_seat = int(seat["seat"])
 	var is_free := bool(seat["free"])
 	if is_free:
-		%SeatName.text = LobbyText.FREE_SEAT
+		%SeatName.text = tr(LobbyText.FREE_SEAT)
 		%SeatPick.text = ""
 		%SeatReady.text = ""
 		%Sit.visible = true
@@ -31,10 +31,10 @@ func show_seat(seat: Dictionary, can_sit: bool) -> void:
 		return
 	var suffix := YOU_SUFFIX if bool(seat["you"]) else ""
 	if not bool(seat["connected"]):
-		suffix += AWAY_SUFFIX
+		suffix += " " + tr(AWAY_SUFFIX)
 	%SeatName.text = str(seat["name"]) + suffix
 	%SeatPick.text = LobbyText.pick_text(seat["meta"])
-	%SeatReady.text = READY_TEXT if bool(seat["ready"]) else NOT_READY_TEXT
+	%SeatReady.text = tr(READY_TEXT) if bool(seat["ready"]) else tr(NOT_READY_TEXT)
 	%Sit.visible = false
 
 

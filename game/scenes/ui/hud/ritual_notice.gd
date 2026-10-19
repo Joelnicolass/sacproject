@@ -8,9 +8,9 @@ extends Label
 ## everybody) for a few seconds when one ends. Nothing on the dedicated server (slot 0). `%Battle` is
 ## taken by the next order, this has its own place. Remove the node and the notices are gone.
 
-@export var profaning_text := "Están profanando tu altar"
-@export var interrupted_text := "Ritual interrumpido"
-@export var profaned_text := "Altar profanado"
+@export var profaning_text := "UI_RITUAL_PROFANING"
+@export var interrupted_text := "UI_RITUAL_INTERRUPTED"
+@export var profaned_text := "UI_RITUAL_PROFANED"
 @export var flash_s := 4.0
 
 var _flash_left := 0.0
@@ -47,7 +47,7 @@ func _process(delta: float) -> void:
 	if _flash_left > 0.0:
 		text = _flash_text
 	elif profaning:
-		text = profaning_text
+		text = tr(profaning_text)
 	else:
 		text = ""
 	visible = not text.is_empty()
@@ -57,9 +57,9 @@ func _announce(ritual: Ritual, slot: int) -> void:
 	if ritual.outcome == Ritual.Outcome.COMPLETED:
 		if ritual.kind != Ritual.Kind.DESECRATE:
 			return
-		_flash_text = profaned_text
+		_flash_text = tr(profaned_text)
 	elif slot == ritual.caster_slot or slot == ritual.target_slot:
-		_flash_text = interrupted_text
+		_flash_text = tr(interrupted_text)
 	else:
 		return
 	_flash_left = flash_s

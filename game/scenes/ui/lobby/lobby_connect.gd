@@ -6,7 +6,7 @@ extends Control
 signal connect_requested(display_name: String, host_override: String)
 signal back_requested
 
-const NAME_PREFIX := "Jugador"
+const NAME_PREFIX := "UI_LOBBY_PLAYER_PREFIX"
 const NAME_SUFFIX_RANGE := 1000
 
 @export var name_max_len: int = 24
@@ -15,12 +15,12 @@ const NAME_SUFFIX_RANGE := 1000
 func _ready() -> void:
 	%PlayerName.max_length = name_max_len
 	if %PlayerName.text.is_empty():
-		%PlayerName.text = "%s%03d" % [NAME_PREFIX, randi() % NAME_SUFFIX_RANGE]
+		%PlayerName.text = "%s%03d" % [tr(NAME_PREFIX), randi() % NAME_SUFFIX_RANGE]
 	%IpRow.visible = OS.is_debug_build()
 	%ConnectButton.pressed.connect(_on_connect)
 	%PlayerName.text_submitted.connect(_on_name_submitted)
 	%ConnectBack.pressed.connect(back_requested.emit)
-	%ConnectStatus.text = LobbyText.OFFLINE
+	%ConnectStatus.text = tr(LobbyText.OFFLINE)
 
 
 ## A line under the buttons («Sin conexión», the reason a link was lost…).
@@ -32,7 +32,7 @@ func set_busy(busy: bool) -> void:
 	%ConnectButton.disabled = busy
 	%PlayerName.editable = not busy
 	if busy:
-		%ConnectStatus.text = LobbyText.CONNECTING
+		%ConnectStatus.text = tr(LobbyText.CONNECTING)
 
 
 func _on_connect() -> void:

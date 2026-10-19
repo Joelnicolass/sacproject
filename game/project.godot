@@ -392,6 +392,11 @@ pause_menu={
 ]
 }
 
+[internationalization]
+
+locale/fallback="es"
+locale/translations=PackedStringArray("res://data/i18n/strings.es.translation")
+
 [navigation]
 
 world/map_use_async_iterations=false

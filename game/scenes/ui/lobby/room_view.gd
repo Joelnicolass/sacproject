@@ -10,7 +10,7 @@ extends Control
 @export var seat_scene: PackedScene
 @export var character_select_scene: PackedScene
 ## What the selector's button says here (in the menu it says «Jugar»).
-@export var pick_confirm_text := "Elegir"
+@export var pick_confirm_text := "UI_ROOM_VIEW_PICK_CONFIRM"
 
 var _seat_rows: Array[Node] = []
 var _character_select: Control
@@ -55,7 +55,7 @@ func _refresh() -> void:
 	%LeaveRoom.disabled = not inside
 	%RejoinMatch.visible = false
 	if not inside:
-		%RoomTitle.text = LobbyText.OFFLINE
+		%RoomTitle.text = tr(LobbyText.OFFLINE)
 		%RoomMeta.text = ""
 		%RoomPlayers.text = ""
 		%RoomState.text = ""
@@ -71,7 +71,7 @@ func _refresh() -> void:
 	for seat: Dictionary in seats:
 		if not bool(seat["free"]):
 			used += 1
-	%RoomPlayers.text = "Jugadores: %d/%d" % [used, seats.size()]
+	%RoomPlayers.text = tr("UI_ROOM_VIEW_PLAYERS") % [used, seats.size()]
 	var state := int(room["state"])
 	%RoomState.text = LobbyText.state_text(state)
 	var open := state == MpLobbyRooms.State.OPEN
@@ -83,7 +83,7 @@ func _refresh() -> void:
 	%RejoinMatch.visible = state == MpLobbyRooms.State.IN_MATCH and not MpKit.is_networked() and not client.last_match().is_empty()
 	var mine := _my_seat(room)
 	var is_ready := bool(mine.get("ready", false))
-	%ReadyButton.text = "Ya no estoy listo" if is_ready else "Estoy listo"
+	%ReadyButton.text = tr("UI_ROOM_VIEW_NOT_READY") if is_ready else tr("UI_ROOM_VIEW_READY")
 	## The last match's result, until the next one starts.
 	%RoomResult.text = LobbyText.result_text(room["last_result"], client.my_seat() + 1) if state != MpLobbyRooms.State.LAUNCHING and state != MpLobbyRooms.State.IN_MATCH else ""
 	_auto_pick(room, mine, open)
@@ -95,11 +95,11 @@ func _show_progress(room: Dictionary) -> void:
 	var state := int(room["state"])
 	match state:
 		MpLobbyRooms.State.COUNTDOWN:
-			%RoomCountdown.text = "La partida empieza en %d…" % ceili(MpLobby.client.countdown_remaining())
+			%RoomCountdown.text = tr("UI_ROOM_VIEW_COUNTDOWN") % ceili(MpLobby.client.countdown_remaining())
 		MpLobbyRooms.State.LAUNCHING:
-			%RoomCountdown.text = "Preparando la partida…"
+			%RoomCountdown.text = tr("UI_ROOM_VIEW_LAUNCHING")
 		MpLobbyRooms.State.IN_MATCH:
-			%RoomCountdown.text = "Partida en curso"
+			%RoomCountdown.text = tr("UI_ROOM_VIEW_IN_MATCH")
 		_:
 			%RoomCountdown.text = ""
 
@@ -107,10 +107,10 @@ func _show_progress(room: Dictionary) -> void:
 func _meta_text(room: Dictionary) -> String:
 	var parts := PackedStringArray()
 	if bool(room["private"]) and room.has("code"):
-		parts.append("Código: %s" % str(room["code"]))
+		parts.append(tr("UI_ROOM_VIEW_CODE") % str(room["code"]))
 	var options: Dictionary = room["options"]
 	if options.has("level"):
-		parts.append("Nivel de los magos: %d" % int(options["level"]))
+		parts.append(tr("UI_ROOM_VIEW_LEVEL") % int(options["level"]))
 	return " · ".join(parts)
 
 

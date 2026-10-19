@@ -38,10 +38,10 @@ func _ready() -> void:
 	world_path = MpBoot.user_value("world", "res://scenes/match/match.tscn")
 	room_name = "High Noon"
 	## RFC-034 034f: what the player reads when a join fails or the server goes away (the kit's defaults are English).
-	joining_status = "Conectando con %s…"
-	join_fail_status = "No se pudo entrar a la partida"
-	bad_ip_status = "Dirección inválida"
-	server_lost_status = "Se terminó la partida"
+	joining_status = tr("UI_FLOW_JOINING")
+	join_fail_status = tr("UI_FLOW_JOIN_FAIL")
+	bad_ip_status = tr("UI_FLOW_BAD_IP")
+	server_lost_status = tr("UI_FLOW_SERVER_LOST")
 	max_players = 2
 	advertise_lan = false
 	start_when = StartWhen.DEDICATED_FIRST_CLIENT

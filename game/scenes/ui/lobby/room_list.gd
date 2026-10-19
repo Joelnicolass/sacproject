@@ -37,9 +37,9 @@ func _fill(rows: Array) -> void:
 		holder.remove_child(child)
 		child.queue_free()
 	if not MpLobby.client.is_online():
-		%ListStatus.text = LobbyText.OFFLINE
+		%ListStatus.text = tr(LobbyText.OFFLINE)
 		return
-	%ListStatus.text = "" if not rows.is_empty() else LobbyText.NO_ROOMS
+	%ListStatus.text = "" if not rows.is_empty() else tr(LobbyText.NO_ROOMS)
 	for row: Dictionary in rows:
 		var button := row_scene.instantiate() as Button
 		var used := int(row["seats_used"])

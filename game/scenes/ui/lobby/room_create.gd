@@ -9,7 +9,7 @@ signal cancelled
 const LEVEL_MIN := 1
 const LEVEL_MAX := 9
 ## Item 0 of the level picker: no `level` option, the rules decide.
-const LEVEL_RULES_TEXT := "Nivel: el de las reglas"
+const LEVEL_RULES_TEXT := "UI_ROOM_CREATE_LEVEL_RULES"
 
 @export var name_max_len: int = 24
 
@@ -27,10 +27,10 @@ func _ready() -> void:
 func _fill_levels() -> void:
 	var picker: OptionButton = %RoomLevel
 	picker.clear()
-	picker.add_item(LEVEL_RULES_TEXT)
+	picker.add_item(tr(LEVEL_RULES_TEXT))
 	picker.set_item_metadata(0, 0)
 	for level in range(LEVEL_MIN, LEVEL_MAX + 1):
-		picker.add_item("Nivel %d" % level)
+		picker.add_item(tr("UI_ROOM_CREATE_LEVEL") % level)
 		picker.set_item_metadata(picker.item_count - 1, level)
 	picker.select(0)
 
@@ -38,7 +38,7 @@ func _fill_levels() -> void:
 func _refresh() -> void:
 	var online := MpLobby.client.is_online()
 	%CreateConfirm.disabled = not online
-	%CreateStatus.text = "" if online else LobbyText.OFFLINE
+	%CreateStatus.text = "" if online else tr(LobbyText.OFFLINE)
 
 
 func _on_lost(_reason: String) -> void:

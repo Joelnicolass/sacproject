@@ -16,8 +16,8 @@ signal closed
 const OPEN_GROUP := WorldInput.MODAL
 
 ## Title alone (the match is paused) and online (it is not).
-@export var paused_title := "Pausa"
-@export var online_title := "Partida en curso"
+@export var paused_title := "UI_PAUSE_MENU_PAUSED"
+@export var online_title := "UI_PAUSE_MENU_ONLINE"
 
 ## True when this menu paused the tree, so only it unpauses it.
 var _paused_here := false
@@ -48,7 +48,7 @@ func open() -> void:
 		return
 	add_to_group(OPEN_GROUP)
 	var online := MpKit.is_networked()
-	%PauseTitle.text = online_title if online else paused_title
+	%PauseTitle.text = tr(online_title if online else paused_title)
 	_show_confirm(false)
 	%Dim.visible = true
 	if not online and not get_tree().paused:

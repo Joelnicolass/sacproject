@@ -44,7 +44,7 @@ data = ExtResource("8_terrain_data")
 
 [node name="Missing" type="Label3D" parent="Terrain" unique_id=1044100006]
 visible = false
-text = "Falta el terreno del mapa."
+text = "UI_MAP_MISSING_2"
 font_size = 48
 
 [node name="MapProps" type="Node3D" parent="." unique_id=1044100007]

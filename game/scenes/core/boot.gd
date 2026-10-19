@@ -43,7 +43,7 @@ func _show_select() -> void:
 func _on_confirmed() -> void:
 	var wizard: WizardType = GameData.wizard(str(SacrificeFlow.pick.get("wizard", "")))
 	var wizard_name := wizard.display_name if wizard else str(SacrificeFlow.pick.get("model", ""))
-	%Choice.text = "%s · Dios: %s" % [wizard_name, str(SacrificeFlow.pick.get("god", "")).capitalize()]
+	%Choice.text = tr("UI_BOOT_CHOICE") % [wizard_name, str(SacrificeFlow.pick.get("god", "")).capitalize()]
 	character_select.visible = false
 	column.visible = true
 
@@ -68,10 +68,10 @@ func _setup(level: int) -> MatchSetup:
 func _fill_ai_gods() -> void:
 	var picker: OptionButton = %AiGod
 	picker.clear()
-	picker.add_item("Rival: Aleatorio")
+	picker.add_item(tr("UI_BOOT_RIVAL_RANDOM"))
 	picker.set_item_metadata(0, "")
 	for god in GameData.gods():
-		picker.add_item("Rival: %s" % GameData.god(god).display_name)
+		picker.add_item(tr("UI_BOOT_RIVAL") % GameData.god(god).display_name)
 		picker.set_item_metadata(picker.item_count - 1, god)
 	picker.select(0)
 

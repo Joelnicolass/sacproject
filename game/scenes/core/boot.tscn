@@ -42,7 +42,7 @@ theme_override_constants/separation = 12
 
 [node name="Title" type="Label" parent="Column"]
 layout_mode = 2
-text = "Sacrifice"
+text = "UI_BOOT_TITLE"
 horizontal_alignment = 1
 
 [node name="Choice" type="Label" parent="Column"]
@@ -53,12 +53,12 @@ horizontal_alignment = 1
 [node name="Solo" type="Button" parent="Column"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Jugar solo"
+text = "UI_BOOT_SOLO"
 
 [node name="VsAi" type="Button" parent="Column"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Contra la IA"
+text = "UI_BOOT_VS_AI"
 
 [node name="AiGod" type="OptionButton" parent="Column"]
 unique_name_in_owner = true
@@ -70,7 +70,7 @@ layout_mode = 2
 [node name="AiLevelLabel" type="Label" parent="Column/AiLevelRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Nivel del mago"
+text = "UI_BOOT_AI_LEVEL_LABEL"
 
 [node name="AiLevel" type="OptionButton" parent="Column/AiLevelRow"]
 unique_name_in_owner = true
@@ -80,33 +80,33 @@ size_flags_horizontal = 3
 [node name="Online" type="Button" parent="Column"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Salas online"
+text = "UI_BOOT_ONLINE"
 
 [node name="LocalServer" type="Button" parent="Column"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Servidor local"
+text = "UI_BOOT_LOCAL_SERVER"
 
 [node name="Ip" type="LineEdit" parent="Column"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "127.0.0.1"
-placeholder_text = "IP del servidor"
+placeholder_text = "UI_BOOT_IP_HINT"
 
 [node name="Join" type="Button" parent="Column"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Unirse"
+text = "UI_BOOT_JOIN"
 
 [node name="Back" type="Button" parent="Column"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Cambiar personaje"
+text = "UI_BOOT_BACK"
 
 [node name="Options" type="Button" parent="Column"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Opciones"
+text = "UI_BOOT_OPTIONS"
 
 [node name="Status" type="Label" parent="Column"]
 unique_name_in_owner = true

@@ -6,9 +6,9 @@ extends Label
 ## Hidden while the match goes on and on the dedicated server (it has no player).
 
 @export var match_state: MatchState
-@export var victory_text := "Victoria"
-@export var defeat_text := "Derrota"
-@export var draw_text := "Fin de partida"
+@export var victory_text := "UI_RESULT_VICTORY"
+@export var defeat_text := "UI_RESULT_DEFEAT"
+@export var draw_text := "UI_RESULT_DRAW"
 
 
 func _ready() -> void:
@@ -32,10 +32,10 @@ func text_for(slot: int) -> String:
 	if match_state == null or not match_state.has_result() or slot <= 0:
 		return ""
 	if slot == match_state.winner_slot:
-		return victory_text
+		return tr(victory_text)
 	if match_state.is_defeated(slot):
-		return defeat_text
-	return draw_text
+		return tr(defeat_text)
+	return tr(draw_text)
 
 
 func _refresh() -> void:

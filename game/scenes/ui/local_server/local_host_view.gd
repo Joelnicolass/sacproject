@@ -17,7 +17,7 @@ var _server: LocalServerHost
 
 
 func _ready() -> void:
-	%HostHelp.text = LocalServerText.HELP_HOST
+	%HostHelp.text = tr(LocalServerText.HELP_HOST)
 	LocalServerText.fill_transports(_transport)
 	%CreateServer.pressed.connect(_on_create)
 	%EnterMatch.pressed.connect(_on_enter)
@@ -47,17 +47,17 @@ func _on_create() -> void:
 	if err != OK:
 		_server.queue_free()
 		_server = null
-		_status.text = LocalServerText.FAILED_START
+		_status.text = tr(LocalServerText.FAILED_START)
 		return
 	%HostForm.visible = false
-	_status.text = LocalServerText.STARTING
+	_status.text = tr(LocalServerText.STARTING)
 
 
 func _on_server_ready(address: String, port: int, code: String) -> void:
 	%HostAddress.text = LocalServerText.address_text(address)
-	%HostPort.text = LocalServerText.INFO_PORT % port
-	%HostTransportInfo.text = LocalServerText.INFO_TRANSPORT % LocalServerText.transport_name(MpKit.transport)
-	%HostCode.text = LocalServerText.INFO_CODE % code
+	%HostPort.text = tr(LocalServerText.INFO_PORT) % port
+	%HostTransportInfo.text = tr(LocalServerText.INFO_TRANSPORT) % LocalServerText.transport_name(MpKit.transport)
+	%HostCode.text = tr(LocalServerText.INFO_CODE) % code
 	_info.visible = true
 	_status.text = ""
 
@@ -77,15 +77,15 @@ func _on_enter() -> void:
 		return
 	var err := SacrificeFlow.join_local_server(LocalServerHost.LOOPBACK, _server.port, _server.host_token)
 	if err != OK:
-		_status.text = LocalServerText.FAILED_START
+		_status.text = tr(LocalServerText.FAILED_START)
 
 
 func _on_copy() -> void:
 	if _server == null:
 		return
-	var text := "%s  código: %s" % [LocalServerEndpoint.format(_server.address, _server.port), _server.rival_code]
+	var text := tr("UI_LOCAL_HOST_COPY_FORMAT") % [LocalServerEndpoint.format(_server.address, _server.port), _server.rival_code]
 	DisplayServer.clipboard_set(text)
-	_status.text = LocalServerText.COPIED
+	_status.text = tr(LocalServerText.COPIED)
 
 
 func _on_back() -> void:

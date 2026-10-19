@@ -3,4 +3,4 @@
 [node name="PickButton" type="Button"]
 custom_minimum_size = Vector2(148, 40)
 toggle_mode = true
-text = "Opción"
+text = "UI_PICK_BUTTON_PICK_BUTTON"

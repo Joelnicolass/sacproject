@@ -59,7 +59,7 @@ data = ExtResource("f172_terrain")
 
 [node name="Missing" type="Label3D" parent="Terrain" unique_id=430681053]
 visible = false
-text = "Falta el terreno de High Noon."
+text = "UI_MAP_MISSING"
 font_size = 48
 
 [node name="MapProps" type="Node3D" parent="." unique_id=693965675 node_paths=PackedStringArray("plants_root")]

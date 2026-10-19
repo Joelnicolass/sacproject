@@ -6,7 +6,7 @@ signal confirmed
 
 @export var pick_button: PackedScene
 ## RFC-034 034f: the confirm button says «Jugar» in the menu; the room screen says «Elegir».
-@export var confirm_text: String = "Jugar"
+@export var confirm_text: String = "UI_CHARACTER_SELECT_PLAY"
 
 @onready var _wizard_grid: GridContainer = %WizardGrid
 @onready var _god_row: HBoxContainer = %GodRow
@@ -27,8 +27,8 @@ func _ready() -> void:
 	for wizard: WizardType in GameData.wizards():
 		_add_button(_wizard_grid, "Wizard_" + wizard.tag, wizard.display_name, _wizard_group, _on_wizard.bind(wizard.tag))
 	for god: String in GameData.gods():
-		_add_button(_god_row, "God_" + god, "Dios: %s" % GameData.god(god).display_name, _god_group, _on_god.bind(god))
-	%Play.text = confirm_text
+		_add_button(_god_row, "God_" + god, tr("UI_CHARACTER_SELECT_GOD_BUTTON") % GameData.god(god).display_name, _god_group, _on_god.bind(god))
+	%Play.text = tr(confirm_text)
 	%Play.pressed.connect(_on_play)
 	_on_wizard(_wizard_tag)
 	_on_god(_god)
@@ -50,11 +50,11 @@ func _on_wizard(tag: String) -> void:
 	_press("Wizard_" + tag)
 	var wizard: WizardType = GameData.wizard(tag)
 	if wizard == null:
-		_wizard_name.text = "Faltan los datos del instalador."
+		_wizard_name.text = tr("UI_CHARACTER_SELECT_NO_DATA")
 		_wizard_stats.text = ""
 		return
 	_wizard_name.text = wizard.display_name
-	_wizard_stats.text = "Vida %d · Maná %d" % [wizard.health, wizard.mana]
+	_wizard_stats.text = tr("UI_CHARACTER_SELECT_WIZARD_STATS") % [wizard.health, wizard.mana]
 	if not MpBoot.is_dedicated_process():
 		_preview.show_wizard(wizard)
 
@@ -70,9 +70,9 @@ func _on_god(god: String) -> void:
 	for spell: SpellType in book.get("spells", []):
 		spells.append(spell.display_name)
 	if creatures.is_empty() and spells.is_empty():
-		_book.text = "Sin libro: faltan los datos del instalador."
+		_book.text = tr("UI_CHARACTER_SELECT_NO_BOOK")
 		return
-	_book.text = "Criaturas: %s\nHechizos: %s" % [", ".join(creatures), ", ".join(spells)]
+	_book.text = tr("UI_CHARACTER_SELECT_BOOK") % [", ".join(creatures), ", ".join(spells)]
 
 
 func _press(unique: String) -> void:

@@ -3,4 +3,4 @@
 [node name="RoomRow" type="Button"]
 custom_minimum_size = Vector2(0, 44)
 alignment = 0
-text = "Sala"
+text = "UI_ROOM_ROW_ROOM_ROW"

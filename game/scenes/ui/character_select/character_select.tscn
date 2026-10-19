@@ -30,7 +30,7 @@ theme_override_constants/separation = 10
 [node name="Title" type="Label" parent="Row/Choices"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "Elegí tu mago"
+text = "UI_CHARACTER_SELECT_TITLE"
 
 [node name="WizardGrid" type="GridContainer" parent="Row/Choices"]
 unique_name_in_owner = true
@@ -42,7 +42,7 @@ columns = 5
 [node name="GodTitle" type="Label" parent="Row/Choices"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "Elegí tu dios"
+text = "UI_CHARACTER_SELECT_GOD_TITLE"
 
 [node name="GodRow" type="HBoxContainer" parent="Row/Choices"]
 unique_name_in_owner = true
@@ -52,7 +52,7 @@ theme_override_constants/separation = 8
 [node name="BookTitle" type="Label" parent="Row/Choices"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "Libro inicial"
+text = "UI_CHARACTER_SELECT_BOOK_TITLE"
 
 [node name="Book" type="Label" parent="Row/Choices"]
 unique_name_in_owner = true
@@ -88,4 +88,4 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "Jugar"
+text = "UI_CHARACTER_SELECT_PLAY"

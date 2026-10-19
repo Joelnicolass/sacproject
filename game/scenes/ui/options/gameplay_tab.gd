@@ -9,7 +9,7 @@ extends VBoxContainer
 ## CheckButton (like Gráficos) and SpinBox: AgentKit drives them with click / range.
 
 ## Tab title in the OptionsMenu.
-@export var tab_title := "Jugabilidad"
+@export var tab_title := "UI_OPTIONS_TAB_GAMEPLAY"
 ## The shared instance (data/ui/gameplay_prefs.tres).
 @export var prefs: GameplayPrefs
 ## The group MatchState joins (one per match).

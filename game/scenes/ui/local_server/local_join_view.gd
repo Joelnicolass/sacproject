@@ -19,7 +19,7 @@ var _character_select: Control
 
 
 func _ready() -> void:
-	%JoinHelp.text = LocalServerText.HELP_JOIN
+	%JoinHelp.text = tr(LocalServerText.HELP_JOIN)
 	LocalServerText.fill_transports(_transport)
 	%JoinPick.pressed.connect(_on_pick_pressed)
 	_show_choice()
@@ -35,13 +35,13 @@ func _ready() -> void:
 func _show_choice() -> void:
 	var wizard: WizardType = GameData.wizard(str(SacrificeFlow.pick.get("wizard", "")))
 	var wizard_name := wizard.display_name if wizard else str(SacrificeFlow.pick.get("model", ""))
-	%JoinChoice.text = LocalServerText.PICK_CHOICE % [wizard_name, str(SacrificeFlow.pick.get("god", "")).capitalize()]
+	%JoinChoice.text = tr(LocalServerText.PICK_CHOICE) % [wizard_name, str(SacrificeFlow.pick.get("god", "")).capitalize()]
 
 
 func _on_pick_pressed() -> void:
 	if _character_select == null:
 		_character_select = character_select_scene.instantiate() as Control
-		_character_select.set("confirm_text", LocalServerText.PICK_CONFIRM)
+		_character_select.set("confirm_text", tr(LocalServerText.PICK_CONFIRM))
 		_character_select.connect("confirmed", _on_pick_confirmed)
 		%JoinPickHolder.add_child(_character_select)
 	%JoinPickOverlay.visible = true
@@ -60,19 +60,19 @@ func _on_join() -> void:
 		return
 	var target := LocalServerEndpoint.parse(%JoinAddress.text, default_port)
 	if not bool(target["ok"]):
-		_status.text = LocalServerText.BAD_ENDPOINT
+		_status.text = tr(LocalServerText.BAD_ENDPOINT)
 		return
 	var code := LocalServerEndpoint.clean_code(%JoinCode.text)
 	if code.is_empty():
-		_status.text = LocalServerText.BAD_CODE
+		_status.text = tr(LocalServerText.BAD_CODE)
 		return
 	MpKit.transport = str(_transport.get_item_metadata(_transport.selected))
 	var err := SacrificeFlow.join_local_server(str(target["host"]), int(target["port"]), code)
 	if err != OK:
-		_status.text = LocalServerText.BAD_ENDPOINT
+		_status.text = tr(LocalServerText.BAD_ENDPOINT)
 		return
 	_set_joining(true)
-	_status.text = LocalServerText.CONNECTING % LocalServerEndpoint.format(str(target["host"]), int(target["port"]))
+	_status.text = tr(LocalServerText.CONNECTING) % LocalServerEndpoint.format(str(target["host"]), int(target["port"]))
 
 
 func _set_joining(joining: bool) -> void:
@@ -91,4 +91,4 @@ func _on_join_failed() -> void:
 
 
 func _on_slot_assigned(_slot: int) -> void:
-	_status.text = LocalServerText.WAITING_HOST
+	_status.text = tr(LocalServerText.WAITING_HOST)

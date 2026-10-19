@@ -16,7 +16,7 @@ func _ready() -> void:
 	for i in tabs.get_tab_count():
 		var title: Variant = tabs.get_tab_control(i).get("tab_title")
 		if title != null:
-			tabs.set_tab_title(i, str(title))
+			tabs.set_tab_title(i, tr(str(title)))
 
 
 func is_open() -> bool:

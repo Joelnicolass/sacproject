@@ -7,12 +7,12 @@ extends VBoxContainer
 ## OptionButton, CheckButton and HSlider only: AgentKit drives them with select / click / range (no popups needed).
 
 ## Tab title in the OptionsMenu.
-@export var tab_title := "Gráficos"
+@export var tab_title := "UI_OPTIONS_TAB_GRAPHICS"
 ## Shared instances (data/ui/graphics_prefs.tres, data/ui/hud_scale.tres).
 @export var prefs: GraphicsPrefs
 @export var hud_scale: HudScale
 ## Text of the FPS cap 0.
-@export var no_cap_text := "Sin tope"
+@export var no_cap_text := "UI_GRAPHICS_NO_CAP"
 @export var hud_value_format := "%d %%"
 
 
@@ -40,7 +40,7 @@ func _fill() -> void:
 	var fps: OptionButton = %MaxFpsPick
 	fps.clear()
 	for cap in prefs.max_fps_choices:
-		fps.add_item(no_cap_text if cap <= 0 else str(cap))
+		fps.add_item(tr(no_cap_text) if cap <= 0 else str(cap))
 		fps.set_item_metadata(fps.item_count - 1, cap)
 	var slider: HSlider = %HudSize
 	slider.min_value = hud_scale.min_scale

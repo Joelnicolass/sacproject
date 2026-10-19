@@ -1,0 +1,8 @@
+class_name UiText
+extends RefCounted
+
+## Translated text for code that has no node to call `tr()` on (RFC-045b): the static text modules (LobbyText,
+## LocalServerText). Keys live in data/i18n/strings.csv; Spanish is the default locale.
+
+static func t(key: StringName) -> String:
+	return TranslationServer.translate(key)

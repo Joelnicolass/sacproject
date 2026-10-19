@@ -29,18 +29,18 @@ theme_override_constants/separation = 12
 [node name="Title" type="Label" parent="Column"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "Crear sala"
+text = "UI_ROOM_CREATE_TITLE"
 horizontal_alignment = 1
 
 [node name="RoomName" type="LineEdit" parent="Column"]
 unique_name_in_owner = true
 layout_mode = 2
-placeholder_text = "Nombre de la sala (vacío: tu nombre)"
+placeholder_text = "UI_ROOM_CREATE_ROOM_NAME_HINT"
 
 [node name="RoomPrivate" type="CheckBox" parent="Column"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Sala privada (solo con código)"
+text = "UI_ROOM_CREATE_ROOM_PRIVATE"
 
 [node name="RoomLevel" type="OptionButton" parent="Column"]
 unique_name_in_owner = true
@@ -50,16 +50,16 @@ layout_mode = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-text = "Crear"
+text = "UI_ROOM_CREATE_CREATE_CONFIRM"
 
 [node name="CreateCancel" type="Button" parent="Column"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Cancelar"
+text = "UI_ROOM_CREATE_CREATE_CANCEL"
 
 [node name="CreateStatus" type="Label" parent="Column"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Sin conexión"
+text = "UI_ROOM_CREATE_CREATE_STATUS"
 horizontal_alignment = 1
 autowrap_mode = 3

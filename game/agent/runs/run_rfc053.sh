@@ -6,7 +6,11 @@
 #   053c (F372)  debug/ai/f372_ai_heal.tscn with f372_ai_heal (Heal only below the threshold, not on a summoning body; at most 2 in 30 s).
 #   053d (F373)  debug/ai/f373_ai_finish.tscn with f373_ai_finish_{easy,normal,hard} (the finish: time to kill, the Rangers on the wizard
 #                or the Charlotte, she falls first), 10 min each at most; then Easy >= Normal >= Hard in time to kill.
+#   053e (F374)  debug/ui/f374_target_info.tscn (the info box: delay, texts, bar, pinned building, inside the screen), TARGET_INFO PASS.
+#   053f (F375)  debug/fx/f375_hit_feel.tscn --feel-script (camera shake and damage numbers), FEEL PASS; then --feel-match (a real
+#                headless match: no CameraShake / DamageNumbers active), FEEL PASS.
 #   053h (F377)  agent/runs/run_f377.sh (the emitters outside the tree).
+#   rfc053_bad_rules  ai_match with a --rules file that does not exist: EXPECT DONE FAIL rules and exit 1 at once (the bench's own guard).
 #   053a_sides   the SIDES line (SideRelations.stance(1|2, 0) and (1|2, 3)) on peaks and peasantville (diagnostic, no verdict).
 # Usage: bash agent/runs/run_rfc053.sh CUT [GODOT_BIN]
 # Prints each case's EXPECT lines and EXPECT DONE, then RFC053 <cut> PASS / FAIL (exit 0 / 1).
@@ -30,6 +34,17 @@ case_run() { # name, scene, then the user args after --
   grep -E "^(EXPECT |EXPECT_NOTE|SIDES)" "$OUT/$name.log"
   grep -E "SCRIPT ERROR|^ERROR:" "$OUT/$name.log" | head -10
   [ "$code" = 0 ] && [ "$done_line" = "EXPECT DONE PASS" ] || FAIL=1
+}
+
+verdict_run() { # name, prefix of the verdict lines, scene, then the user args after --
+  local name="$1" prefix="$2" scene="$3"; shift 3
+  local started=$SECONDS
+  bash "$RUN" "$GODOT_BIN" --headless --path "$ROOT" --fixed-fps 600 --quit-after 60000 "$scene" -- "$@" > "$OUT/$name.log" 2>&1
+  local code=$?
+  echo "--- $name (exit $code, $((SECONDS - started)) s) ---"
+  grep -E "^$prefix" "$OUT/$name.log"
+  grep -E "SCRIPT ERROR|^ERROR:" "$OUT/$name.log" | head -10
+  [ "$code" = 0 ] && grep -qE "^$prefix PASS$" "$OUT/$name.log" || FAIL=1
 }
 
 sides_run() { # map tag
@@ -65,15 +80,31 @@ case "$CUT" in
       FAIL=1
     fi
     ;;
+  053e)
+    verdict_run f374_target_info TARGET_INFO res://debug/ui/f374_target_info.tscn --check
+    ;;
+  053f)
+    verdict_run f375_feel_script FEEL res://debug/fx/f375_hit_feel.tscn --feel-script --user-settings=user://rfc053_feel_check.cfg
+    verdict_run f375_feel_match FEEL res://debug/fx/f375_hit_feel.tscn --feel-match --user-settings=user://rfc053_feel_check.cfg
+    ;;
   053h)
     bash "$ROOT/agent/runs/run_f377.sh" "$GODOT_BIN" || FAIL=1
+    ;;
+  rfc053_bad_rules)
+    started=$SECONDS
+    bash "$RUN" "$GODOT_BIN" --headless --path "$ROOT" --fixed-fps 600 res://debug/units/f370_targets.tscn -- --seed=1 \
+      --minutes=0.5 --watchdog-s="$WATCHDOG_S" --rules=res://debug/rules/does_not_exist.tres > "$OUT/bad_rules.log" 2>&1
+    code=$?
+    echo "--- bad_rules (exit $code, $((SECONDS - started)) s) ---"
+    grep -E "^(EXPECT |ai_match)" "$OUT/bad_rules.log"
+    [ "$code" = 1 ] && grep -qE "^EXPECT DONE FAIL rules$" "$OUT/bad_rules.log" || FAIL=1
     ;;
   053a_sides)
     sides_run peaks
     sides_run peasantville
     ;;
   *)
-    echo "corte desconocido: $CUT (053a, 053a_sides, 053b, 053c, 053d, 053h)"
+    echo "corte desconocido: $CUT (053a, 053a_sides, 053b, 053c, 053d, 053e, 053f, 053h, rfc053_bad_rules)"
     exit 2
     ;;
 esac

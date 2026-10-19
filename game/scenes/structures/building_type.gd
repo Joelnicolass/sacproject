@@ -7,6 +7,8 @@ extends Resource
 ## Never mutated at runtime: HP lives in the building's Health node.
 
 @export var tag := ""
+## RFC-053 053e (F374): the name the info panel shows («Casa», «Lápida»). Empty: the generic «Edificio».
+@export var display_name := ""
 @export var flags := 0
 ## Peasants shelter in it (bit 15).
 @export var shelter := false

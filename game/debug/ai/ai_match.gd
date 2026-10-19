@@ -74,6 +74,10 @@ var _watchdog_at := 0
 
 func _ready() -> void:
 	_args = DetCli.args()
+	# The wall-clock watchdog starts before anything else can fail (a rules file that does not load, F373).
+	var watchdog_s := float(_args.get("watchdog-s", 0.0))
+	if watchdog_s > 0.0:
+		_watchdog_at = Time.get_ticks_msec() + int(watchdog_s * 1000.0)
 	_headless = DisplayServer.get_name() == "headless"
 	_minutes = float(_args.get("minutes", default_minutes))
 	# --follow=N: in a window, the camera follows wizard N (watching only; the sim does not change).
@@ -81,9 +85,13 @@ func _ready() -> void:
 	_max_ticks = int(round(_minutes * 60.0 * 60.0))
 	_sample_ticks = maxi(1, int(round(float(_args.get("sample-s", sample_every_s)) * 60.0)))
 	_rules = _load_rules()
-	var watchdog_s := float(_args.get("watchdog-s", 0.0))
-	if watchdog_s > 0.0:
-		_watchdog_at = Time.get_ticks_msec() + int(watchdog_s * 1000.0)
+	if _rules == null:
+		_finished = true
+		print("ai_match: no se pudo cargar las reglas %s" % str(_args.get("rules", "(default_rules vacío)")))
+		print(ExpectJudge.PREFIX + "DONE FAIL rules")
+		set_process(false)
+		get_tree().quit(1)
+		return
 	for minute in str(_args.get("checkpoints", "6,10")).split(",", false):
 		_checkpoint_ticks.append(int(round(float(minute) * 3600.0)))
 	audit.keep_lines = _args.has("events")
@@ -116,8 +124,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		_start()
 
 
+## Null when the file is missing or is not a BenchRules.
 func _load_rules() -> BenchRules:
-	var loaded: Variant = load(str(_args["rules"])) if _args.has("rules") else default_rules
+	var loaded: Resource = default_rules
+	if _args.has("rules"):
+		var path := str(_args["rules"])
+		loaded = load(path) if ResourceLoader.exists(path) else null
+	if not loaded is BenchRules:
+		return null
 	var rules := (loaded as BenchRules).duplicate() as BenchRules
 	if _args.has("seed"):
 		rules.match_seed = int(_args["seed"])

@@ -61,6 +61,7 @@
 [ext_resource type="Script" path="res://scenes/audio/combat_gauge.gd" id="a052_gauge"]
 [ext_resource type="PackedScene" path="res://scenes/audio/music_director.tscn" id="a052_music"]
 [ext_resource type="PackedScene" path="res://scenes/audio/ambience_director.tscn" id="a052_ambience"]
+[ext_resource type="PackedScene" path="res://scenes/ui/target_info/target_info_panel.tscn" id="f374_info"]
 
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
@@ -375,6 +376,13 @@ command_log = NodePath("../Battle")
 cues = ExtResource("f80_cues")
 probe = NodePath("../TargetProbe")
 skin = NodePath("../CursorSkin")
+
+
+[node name="TargetInfoPanel" parent="Hud" node_paths=PackedStringArray("probe", "inspector") instance=ExtResource("f374_info")]
+unique_name_in_owner = true
+editor_description = "RFC-053 053e: la caja del original junto al puntero (0,5 s sobre un cuerpo); el edificio clicado queda fijo. Local, sin RPC."
+probe = NodePath("../TargetProbe")
+inspector = NodePath("../../Inspector")
 
 
 [node name="PauseMenu" parent="." unique_id=29936649 instance=ExtResource("f141_pause")]

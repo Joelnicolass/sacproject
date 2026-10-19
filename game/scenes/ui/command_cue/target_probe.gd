@@ -7,8 +7,12 @@ extends Node
 ## sacengine `cursor()` (state.d:30830): `none` (sky), `ground`, `corpse`, `own_unit`,
 ## `neutral_unit`, `enemy_unit`, `own_building`, `neutral_building`, `enemy_building`, `own_soul`,
 ## `soul`, plus `hud` when the pointer is over a control that is not the world view.
+## RFC-053 053e (F374): it is also the one owner of «which body is under the pointer» (`hovered`): the soul, the corpse, the
+## building, the altar, the manafount or the creature the ray found, or null (sky, plain ground, HUD). TargetInfoPanel reads it.
 
 signal kind_changed(kind: StringName)
+## The body under the pointer changed (null: none). Emitted on the sample that saw the change.
+signal hovered_changed(node: Node)
 
 const NONE := &"none"
 const GROUND := &"ground"
@@ -36,7 +40,11 @@ const ORDER_TARGETS: PackedStringArray = [
 var kind: StringName = NONE
 ## Where it was sampled (screen pixels).
 var pointer := Vector2(-1.0, -1.0)
+## Body under the pointer at the last sample (a Soul, not its target area), or null.
+var hovered: Node
 var _since := 0.0
+## What the last _classify found (its body), before `hovered` takes it.
+var _picked: Node
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -60,10 +68,16 @@ func _process(delta: float) -> void:
 ## Reads the pointer now (the cursor and the cue also call it when an order is armed).
 func sample() -> void:
 	pointer = pointer_now()
+	_picked = null
 	var next := _classify(pointer)
 	if next != kind:
 		kind = next
 		kind_changed.emit(kind)
+	if hovered != null and not is_instance_valid(hovered):
+		hovered = null
+	if _picked != hovered:
+		hovered = _picked
+		hovered_changed.emit(hovered)
 
 
 ## The pointer right now: the camera's forced one, else the mouse.
@@ -101,15 +115,22 @@ func _classify(screen: Vector2) -> StringName:
 	var node := body as Node
 	if node.is_in_group("soul_target"):
 		var soul := node.get_parent()
+		_picked = soul
 		return &"own_soul" if soul != null and _slot_of(soul) == MpKit.local_slot() else &"soul"
 	if node.is_in_group("corpse"):
+		_picked = node
 		return &"corpse"
 	if node.is_in_group("structure") or node.is_in_group(Altar.GROUP):
+		_picked = node
 		return _with_owner(node, "building")
 	if Attackable.is_body(node):
+		_picked = node
 		if node.has_method("is_dead") and bool(node.call("is_dead")):  # dynamic: unit, structure and doctor bodies answer it
 			return &"corpse"
 		return _with_owner(node, "unit")
+	# A manafount is ground for the cursor (an order lands on it), but the info panel names it.
+	if node is ManafountBody:
+		_picked = node
 	return GROUND
 
 
@@ -126,8 +147,8 @@ func _over_hud(screen: Vector2) -> bool:
 			var local := control.get_global_transform().affine_inverse() * screen
 			if Rect2(Vector2.ZERO, control.size).has_point(local):
 				return true
-	var hovered := get_viewport().gui_get_hovered_control()
-	return hovered != null and hovered != world_view
+	var under := get_viewport().gui_get_hovered_control()
+	return under != null and under != world_view
 
 
 static func _slot_of(node: Node) -> int:

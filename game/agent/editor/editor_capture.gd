@@ -1,7 +1,7 @@
 @tool
 extends Node
 
-## RFC-035 editor probe. An autoload that exists only while agent/editor_capture.sh runs (a temporary override.cfg).
+## RFC-035 editor probe. An autoload that exists only while agent/scripts/editor_capture.sh runs (a temporary override.cfg).
 ## It opens a scene in the editor, waits, frames the 3D viewport on the terrain, writes
 ## agent/out/035/editor_<step>.png and editor_<step>.json, prints one EDITOR_CAPTURE line per step and quits.
 ## With --reload it then reloads terrain.gd (what a git pull or an agent edit does to a @tool script) and repeats as step "reload".

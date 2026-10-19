@@ -1,6 +1,6 @@
 extends Node
 
-## RFC-034 034m. One headless player of the «Servidor local» test (`agent/run_034m.sh`). No screens: the real nodes of the game
+## RFC-034 034m. One headless player of the «Servidor local» test (`agent/runs/run_034m.sh`). No screens: the real nodes of the game
 ## (`LocalServerHost`, `LocalServerEndpoint`, `MpKit`) do what the buttons do. The clients do not load the world (`--no-flow`).
 ## `--e2e-role=host`: starts the local server (launches the dedicated), publishes address/port/code in `--e2e-dir/local.json`
 ##   (or just prints them), joins with its own credential (slot 1), waits for the result and for the server to close itself.

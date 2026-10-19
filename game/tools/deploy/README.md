@@ -1,6 +1,6 @@
 # Despliegue del servidor de salas (RFC-034, corte 034g)
 
-Estos archivos están **escritos y revisados, no desplegados**. La prueba real en el VPS (Vultr) la hacés vos; en la Mac se verificó todo en `127.0.0.1` (`agent/run_034g.sh`, `run_034e.sh`, `run_034m.sh`).
+Estos archivos están **escritos y revisados, no desplegados**. La prueba real en el VPS (Vultr) la hacés vos; en la Mac se verificó todo en `127.0.0.1` (`agent/runs/run_034g.sh`, `run_034e.sh`, `run_034m.sh`).
 
 ## Qué corre en el VPS
 

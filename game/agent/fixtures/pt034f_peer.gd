@@ -1,6 +1,6 @@
 extends Node
 
-## RFC-034 034f playtest (agent/run_pt034f.sh): the second player, headless. It is the main scene of that process
+## RFC-034 034f playtest (agent/runs/run_pt034f.sh): the second player, headless. It is the main scene of that process
 ## and hands itself over at once: a copy of this script stays as a child of root (it survives the scene changes)
 ## and the real room screen (`lobby_screen.tscn`) becomes the current scene. The screen does everything a person
 ## sees: it reacts to `match_ready` by joining the match, loads High Noon, and comes back to the room when the match

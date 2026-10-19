@@ -1,5 +1,5 @@
 {
- "scene": "res://agent/f038d/radial_probe.tscn",
+ "scene": "res://agent/fixtures/f038d/radial_probe.tscn",
  "wait_first": 2.0,
  "steps": [
   {

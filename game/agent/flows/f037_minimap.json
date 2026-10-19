@@ -1,5 +1,5 @@
 {
- "scene": "res://agent/f037b/minimap_probe.tscn",
+ "scene": "res://agent/fixtures/f037b/minimap_probe.tscn",
  "wait_first": 2.0,
  "steps": [
   {

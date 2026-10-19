@@ -43,4 +43,4 @@ Si usás un túnel, la dirección que muestra la pantalla es la local: reemplaza
 
 - `scenes/net/local_server_host.tscn` (`LocalServerHost`): lanza el dedicado con `MpMatchLauncher` (`data/net/lobby_config_local_server.tres`, un asiento por jugador, ticket de dos asientos), genera las credenciales y avisa cuando escucha.
 - El dedicado es el mismo de las salas (`MatchTicketGlue` + `MpMatchAgent`); admite solo los hashes del ticket.
-- Prueba: `bash agent/run_034m.sh` (headless, host + rival + intruso). Con `TRANSPORT=ws`, por TCP.
+- Prueba: `bash agent/runs/run_034m.sh` (headless, host + rival + intruso). Con `TRANSPORT=ws`, por TCP.

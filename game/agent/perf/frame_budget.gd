@@ -110,7 +110,7 @@ func _input(event: InputEvent) -> void:
 		_ordered = true
 
 
-## Only the fps cap: Metal ignores a vsync change at run time, so agent/run_perf027.sh starts Godot with
+## Only the fps cap: Metal ignores a vsync change at run time, so agent/runs/run_perf027.sh starts Godot with
 ## --disable-vsync (window.vsync in the output says what the run had).
 func _uncap(on: bool) -> void:
 	Engine.max_fps = 0 if on else 60

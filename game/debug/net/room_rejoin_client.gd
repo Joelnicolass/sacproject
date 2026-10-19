@@ -1,6 +1,6 @@
 extends Node
 
-## RFC-034 034g (F184). One headless process of `agent/run_034g.sh`: reconnection through the real room server, no screen.
+## RFC-034 034g (F184). One headless process of `agent/runs/run_034g.sh`: reconnection through the real room server, no screen.
 ## `--e2e-role=a`: creates the room; drops the lobby and resumes it (by hand, then by `auto_resume`) with the same seat; plays;
 ##   drops the dedicated while the intruder tries its ticket, and comes back with the same ticket into the same slot.
 ## `--e2e-role=b`: joins the room; sits in the dedicated after A is back, leaves for good, waits past `rejoin_grace_s` and is turned away.

@@ -1,6 +1,6 @@
 extends Node
 
-## RFC-034 034e. One headless player of the end-to-end test (`agent/run_034e.sh`): it goes through the room
+## RFC-034 034e. One headless player of the end-to-end test (`agent/runs/run_034e.sh`): it goes through the room
 ## server like a person would, with the real autoloads of the game and no screen.
 ## lobby (MpLobby.client): connect, create the room (or join it by name), pick, ready, wait for `match_ready`;
 ## match (MpKit): join the dedicated with the ticket, take the slot, wait for the result.

@@ -1,8 +1,0 @@
-[gd_scene format=3]
-
-[ext_resource type="PackedScene" path="res://agent/f037b/minimap_probe_many.tscn" id="1_probe"]
-
-[node name="MinimapProbeAuto" instance=ExtResource("1_probe")]
-
-[node name="Probe" parent="."]
-auto_report = true

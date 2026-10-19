@@ -1,0 +1,12 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://debug/orders/orders_group.tscn" id="1_group"]
+[ext_resource type="Script" path="res://agent/fixtures/f037c/minimap_input_probe.gd" id="2_probe"]
+
+[node name="MinimapInputProbe" type="Node"]
+
+[node name="OrdersGroup" parent="." instance=ExtResource("1_group")]
+
+[node name="Probe" type="Node" parent="." node_paths=PackedStringArray("world")]
+script = ExtResource("2_probe")
+world = NodePath("../OrdersGroup/HighNoon")

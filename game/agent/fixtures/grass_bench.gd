@@ -8,8 +8,8 @@ extends Node
 ## A and B, so the sky, props and the wizard cancel in the metrics. Also saves what the metrics need
 ## to mask by geometry (the baked height map, the baked zone data, the camera of every shot) and the
 ## primitives of the frame in A and B. The sweep walks and turns the camera in `sweep_steps` frames
-## to look for pop. `agent/grass_bench_metrics.py` reads it all.
-## Run: agent/run_rfc022e4.sh rfc022e4c_bench_pyro.json <outdir> [--preset=low|medium|high]
+## to look for pop. `agent/scripts/grass_bench_metrics.py` reads it all.
+## Run: agent/runs/run_rfc022e4.sh rfc022e4c_bench_pyro.json <outdir> [--preset=low|medium|high]
 ## (it quits by itself).
 
 const OUT_SIZE := Vector2i(1152, 648)

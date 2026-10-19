@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://debug/fx/f377_fount_exit.gd" id="1_case"]
+[ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="2_fount"]
+[ext_resource type="PackedScene" path="res://scenes/structures/structure.tscn" id="3_structure"]
+[ext_resource type="Script" path="res://debug/fx/f377_drawing_emitter.gd" id="4_emitter"]
+
+[node name="F377FountExit" type="Node" node_paths=PackedStringArray("world", "fount", "manalith", "exit_fount")]
+script = ExtResource("1_case")
+world = NodePath("World")
+fount = NodePath("World/Fount")
+manalith = NodePath("World/Manalith")
+exit_fount = NodePath("World/ExitManalith/ExitFount")
+
+[node name="World" type="Node3D" parent="."]
+
+[node name="Fount" parent="World" instance=ExtResource("2_fount")]
+
+[node name="FreeFx" parent="World/Fount" index="3"]
+script = ExtResource("4_emitter")
+
+[node name="ManalithFx" parent="World/Fount" index="4"]
+script = ExtResource("4_emitter")
+
+[node name="Manalith" parent="World" instance=ExtResource("3_structure")]
+owner_slot = 1
+spell_tag = "htlm"
+manafount_path = NodePath("../Fount")
+
+[node name="ExitManalith" parent="World" instance=ExtResource("3_structure")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, 0)
+owner_slot = 2
+spell_tag = "htlm"
+manafount_path = NodePath("ExitFount")
+
+[node name="ExitFount" parent="World/ExitManalith" instance=ExtResource("2_fount")]
+
+[node name="FreeFx" parent="World/ExitManalith/ExitFount" index="3"]
+script = ExtResource("4_emitter")
+
+[node name="ManalithFx" parent="World/ExitManalith/ExitFount" index="4"]
+script = ExtResource("4_emitter")

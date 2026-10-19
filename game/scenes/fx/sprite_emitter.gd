@@ -11,7 +11,7 @@ extends CPUParticles3D
 		if type != null and type.changed.is_connected(_apply):
 			type.changed.disconnect(_apply)
 		type = value
-		if type != null:
+		if type != null and not type.changed.is_connected(_apply):
 			type.changed.connect(_apply)
 		if is_node_ready():
 			_apply()
@@ -36,14 +36,27 @@ func _ready() -> void:
 	set_active(start_active)
 
 
+## RFC-053 053h (F377): a set_active() that came while out of the tree (a Manalith released in its _exit_tree after the
+## fount already left) is applied here.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_ENTER_TREE:
+		_apply_active()
+
+
 func _get_configuration_warnings() -> PackedStringArray:
 	return PackedStringArray(["Falta el ParticleType."]) if type == null else PackedStringArray()
 
 
-## The only switch outside code should use: a dedicated process stays off.
+## The only switch outside code should use: a dedicated process stays off. Out of the tree it only stores the state
+## (turning CPUParticles3D on reads the global transform); entering the tree applies it.
 func set_active(active: bool) -> void:
 	_active = active
-	emitting = active and not _is_headless()
+	if is_inside_tree():
+		_apply_active()
+
+
+func _apply_active() -> void:
+	emitting = _active and not _is_headless()
 
 
 ## What the state asks for; `emitting` is also off in a dedicated process.

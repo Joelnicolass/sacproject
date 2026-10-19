@@ -123,7 +123,7 @@
    "shot": "lab_legacy_heal_6.png"
   },
   {
-   "scene": "res://debug/vfx_lab.tscn"
+   "scene": "res://debug/fx/vfx_lab.tscn"
   },
   {
    "wait": 6.0

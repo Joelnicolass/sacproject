@@ -7,7 +7,7 @@ extends RefCounted
 ## hash([seed, ...parts]) for the few that need a bare number. The stable id is a node name or a slot, never an
 ## instance_id (it differs between a window and headless). The global RNG (randf, randi, shuffle, pick_random) is for
 ## presentation only: begin seeds it from its own stream, so no simulation stream moves when an effect draws from it
-## (debug/determinism_cases.gd sim_rng_lint). Reproducible with the same binary on the same machine; not across
+## (debug/suite/determinism_cases.gd sim_rng_lint). Reproducible with the same binary on the same machine; not across
 ## architectures.
 
 ## 0 until a match begins: rng() and seed_rng() then randomize (the one place with that fallback).

@@ -1,6 +1,6 @@
 extends Node
 
-## Observation helper for the F113 playtest (RFC-030 030b, bench res://debug/f111_bestiary.tscn).
+## Observation helper for the F113 playtest (RFC-030 030b, bench res://debug/units/f111_bestiary.tscn).
 ## Never moves an actor, never changes a rule, never calls into the product to act. It only:
 ##   start()        listens to signals: own creatures' hits/shots, enemy deaths, souls; times frames after a summon.
 ##   book()         read-only line: the wizard's book (count + tags) and the HUD creature cells.

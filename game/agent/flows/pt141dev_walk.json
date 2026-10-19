@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/walk_order.tscn",
+ "scene": "res://debug/orders/walk_order.tscn",
  "wait_first": 1.2,
  "steps": [
   {"press": "order_units"},

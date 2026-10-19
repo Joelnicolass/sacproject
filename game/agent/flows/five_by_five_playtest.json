@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/five_by_five_arena.tscn",
+  "scene": "res://debug/map/five_by_five_arena.tscn",
   "wait_first": 1.2,
   "steps": [
     { "assert": { "node": "%ArenaLog", "text_contains": "CHECK world=5 altars=2 mana=1" } },

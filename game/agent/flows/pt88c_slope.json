@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/wizard_slope.tscn",
+ "scene": "res://debug/wizards/wizard_slope.tscn",
  "wait_first": 0.5,
  "steps": [
   {

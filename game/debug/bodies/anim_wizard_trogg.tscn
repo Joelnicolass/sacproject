@@ -1,0 +1,71 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://debug/bodies/anim_wizard_trogg.gd" id="1_debug"]
+[ext_resource type="PackedScene" path="res://scenes/wizards/wizard_body.tscn" id="2_wizard"]
+[ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="3_unit"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
+size = Vector3(80, 1, 80)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ground"]
+size = Vector3(80, 1, 80)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
+albedo_color = Color(0.176471, 0.25098, 0.145098, 1)
+roughness = 1.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0, 0, 0, 0.55)
+
+[node name="AnimWizardTrogg" type="Node3D"]
+script = ExtResource("1_debug")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation = Vector3(-0.9, 0.5, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.907868, -0.17903, 0.378505, 0, 0.904477, 0.426513, -0.419251, -0.387242, 0.82116, 0, 9.5, 15)
+current = true
+
+[node name="Ground" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("BoxShape3D_ground")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("BoxMesh_ground")
+material_override = SubResource("StandardMaterial3D_ground")
+position = Vector3(0, -0.5, 0)
+
+[node name="Wizard" parent="." instance=ExtResource("2_wizard")]
+position = Vector3(-2.4, 0, 0)
+owner_slot = 0
+wizard_tag = "cwa0"
+model = "jnwr"
+
+[node name="Trogg" parent="." instance=ExtResource("3_unit")]
+position = Vector3(2.4, 0, 0)
+owner_slot = 2
+creature_tag = "ycro"
+model = "eorc"
+mode = 0
+idle_aggro = false
+
+[node name="Hud" type="CanvasLayer" parent="."]
+
+[node name="Panel" type="Panel" parent="Hud"]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 520.0
+offset_bottom = 116.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Debug" type="Label" parent="Hud"]
+unique_name_in_owner = true
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 510.0
+offset_bottom = 106.0
+text = "cycle idle"
+theme_override_font_sizes/font_size = 18

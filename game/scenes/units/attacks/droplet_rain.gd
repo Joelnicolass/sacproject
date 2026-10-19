@@ -28,7 +28,7 @@ const GROUP := &"droplet_rain"
 ## Most drops alive at once; past it a new drop is not added (counted in `over_cap`).
 @export var max_drops := 1024
 ## Prints one `gota <body> <taken> vida <current>` line per hit (bench and debug scenes read it).
-## Debug log (hits and the summary at exit). Off in the product; debug/ai_match.gd turns it on.
+## Debug log (hits and the summary at exit). Off in the product; debug/ai/ai_match.gd turns it on.
 @export var log_hits := false
 
 ## Totals of the match, for the bench and the debug scenes.

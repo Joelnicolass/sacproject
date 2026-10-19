@@ -5,7 +5,7 @@ creature / SPEL data, next to what the port logged.
 Usage: python3 -I agent/tools/f164_expect.py [godot log of debug/f164_drain (rules debug/rules/f164_drain.tres)]
        python3 -I agent/tools/f164_expect.py --lanes     (only the lane check against the map caches)
 
-Needs the bench switches on (debug/ai_match.gd): MeleeAttack.log_melee, LifeDrain.log_drain.
+Needs the bench switches on (debug/ai/ai_match.gd): MeleeAttack.log_melee, LifeDrain.log_drain.
 
 sacengine:
 - dealDamage (state.d:8933-8946) works out the damage the target really takes (actualDamage, capped at the health it has left)

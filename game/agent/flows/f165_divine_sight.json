@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/f165_divine_sight.tscn",
+ "scene": "res://debug/units/f165_divine_sight.tscn",
  "wait_first": 2.0,
  "steps": [
   {

@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/nav_cross.tscn",
+  "scene": "res://debug/map/nav_cross.tscn",
   "wait_first": 2.0,
   "steps": [
     {

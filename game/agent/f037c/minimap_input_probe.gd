@@ -1,6 +1,6 @@
 extends Node
 
-## RFC-037 037c checks, headless, on debug/orders_group.tscn. Drives real input events through the viewport:
+## RFC-037 037c checks, headless, on debug/orders/orders_group.tscn. Drives real input events through the viewport:
 ##   1. wheel over the circle zooms the map and not the camera; wheel on the world (and on the square's corner) zooms the camera
 ##   2. M hides and shows the minimap
 ##   3. a left click with nothing armed does nothing; a right click orders the selected group to a point ahead of the wizard

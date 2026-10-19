@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://debug/ai/ai_match.tscn" id="1_match"]
+[ext_resource type="Resource" path="res://debug/rules/ai_guard.tres" id="2_rules"]
+
+[node name="AiGuard" instance=ExtResource("1_match")]
+editor_description = "RFC-024 024d (F75). Defensa de un Manalith: 4 Rangers del slot 1 aparecen a 110 m del mago IA con la orden de atacar el Manalith del slot 2 (Orders.apply_for); 4 Troggs de la IA estan junto a su mago. Mide el primer golpe al Manalith y cuando dos criaturas de la IA persiguen o pegan a los Rangers (criterio: en <= 5 s). Arranca en «IA en pausa»; Enter la pone en marcha. Sin ventana: `--headless --fixed-fps 60 res://debug/ai/ai_guard.tscn -- --seed=1 --minutes=2`."
+
+[node name="Runner" parent="." index="3"]
+default_rules = ExtResource("2_rules")
+camera_offset = Vector3(-18, 13, -22)
+follow_slot = 2

@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/f156_mites.tscn",
+ "scene": "res://debug/units/f156_mites.tscn",
  "wait_first": 2.0,
  "steps": [
   {

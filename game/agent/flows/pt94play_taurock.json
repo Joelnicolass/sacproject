@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/village.tscn",
+ "scene": "res://debug/map/village.tscn",
  "wait_first": 1.0,
  "steps": [
   {
@@ -188,7 +188,7 @@
    }
   },
   {
-   "scene": "res://debug/village_taurock.tscn"
+   "scene": "res://debug/map/village_taurock.tscn"
   },
   {
    "wait": 1.0
@@ -632,7 +632,7 @@
    "shot": "t16_taurock.png"
   },
   {
-   "scene": "res://debug/nav_cross.tscn"
+   "scene": "res://debug/map/nav_cross.tscn"
   },
   {
    "wait": 2.0

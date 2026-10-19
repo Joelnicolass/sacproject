@@ -42,7 +42,7 @@ func _initialize() -> void:
 ##    counter-clockwise; Godot's importer and the post-import both swap them back);
 ##  - NORMAL = the smooth visual normal Terrain shows, COLOR_0 = tile id and local uv (alpha 0 on walls);
 ##  - _FLAT_NORMAL = data.normals, which the post-import reads back into MapTerrainData.
-## Also used by debug/terrain_bake_cases.gd for its edited copies.
+## Also used by debug/suite/terrain_bake_cases.gd for its edited copies.
 static func export_data(data: MapTerrainData, out: String) -> Error:
 	var terrain := MeshInstance3D.new()
 	terrain.set_script(load(TERRAIN_SCRIPT))

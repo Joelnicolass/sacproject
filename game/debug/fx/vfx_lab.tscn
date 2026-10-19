@@ -1,0 +1,30 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://debug/look/look_gallery.tscn" id="1_gallery"]
+[ext_resource type="Script" path="res://debug/fx/fx_gallery.gd" id="2_fx"]
+[ext_resource type="PackedScene" path="res://scenes/fx/sprite_emitter.tscn" id="3_emitter"]
+[ext_resource type="Resource" path="res://debug/fx/heal_slow.tres" id="4_heal_slow"]
+
+[node name="VfxLab" instance=ExtResource("1_gallery")]
+classic = false
+
+[node name="fx" type="Marker3D" parent="Cameras"]
+transform = Transform3D(1, 0, 0, 0, 0.986, 0.164, 0, -0.164, 0.986, 1500, 21, 1560)
+metadata/fov = 60.0
+
+[node name="Emitter" parent="."]
+start_active = false
+
+[node name="FxSlots" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1500, 15.7, 1530)
+script = ExtResource("2_fx")
+columns = 9
+spacing = 4.0
+
+[node name="Slots" type="Node3D" parent="FxSlots"]
+unique_name_in_owner = true
+
+[node name="HealSlow" parent="." instance=ExtResource("3_emitter")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1508, 18.5, 1550)
+type = ExtResource("4_heal_slow")
+start_active = true

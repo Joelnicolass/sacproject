@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/f117_splash.tscn",
+ "scene": "res://debug/units/f117_splash.tscn",
  "wait_first": 2.0,
  "steps": [
   { "wait_until": { "node": "Overlay/Status", "text_contains": "Enter", "timeout": 60 } },

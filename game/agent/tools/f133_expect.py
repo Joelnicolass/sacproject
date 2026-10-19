@@ -7,7 +7,7 @@ before; this script checks the result of each event and the mana and cooldown li
 Usage: python3 -I agent/tools/f133_expect.py [godot log of debug/f133_legacy_abilities (rules debug/rules/f133_legacy_abilities.tres)]
        python3 -I agent/tools/f133_expect.py --lanes     (only the lane check against the map files)
 
-Needs the bench switches on (debug/ai_match.gd): ActiveAbility.log_ability and AbilityEffect.log_effects.
+Needs the bench switches on (debug/ai/ai_match.gd): ActiveAbility.log_ability and AbilityEffect.log_effects.
 
 Cast (anchor 1270, 1270; row z-80, away from the jhut at 1239/1300): slot 1 holds still: Druid1 -45, Ranger1 -40, FlameMinion1 -35,
 Earthfling1 -30, Fallen1 -25; slot 2: Sylph1 -10 (pacifist). Mana and cooldown are the SPELs' (cooldown_s · 60, mana_cost).

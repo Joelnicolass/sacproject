@@ -90,7 +90,7 @@ def full():
             s += [shot("c12_ronda%d.png" % i)]
     s += [{"wait": 2.0}, probe(), shot("c13_fin.png")]
     s += [{"print": {"node": "%Stats", "prop": "text"}}]
-    return {"scene": "res://debug/convert_ritual.tscn", "wait_first": 1.0, "steps": s}
+    return {"scene": "res://debug/sacrifice/convert_ritual.tscn", "wait_first": 1.0, "steps": s}
 
 
 def pump_kill():
@@ -106,7 +106,7 @@ def pump_kill():
     s += [view("victim", 14.0, 5.0, 150.0), {"wait": 3.0}, probe(), shot("p04_muere_otra_vez.png")]
     s += [view("soul", 8.0, 3.0, 150.0), {"wait": 4.0}, probe(), shot("p05_alma_vuelve.png")]
     s += [{"print": {"node": "%Stats", "prop": "text"}}]
-    return {"scene": "res://debug/convert_pump_kill.tscn", "wait_first": 1.0, "steps": s}
+    return {"scene": "res://debug/sacrifice/convert_pump_kill.tscn", "wait_first": 1.0, "steps": s}
 
 
 def carry_kill():
@@ -123,7 +123,7 @@ def carry_kill():
     s += [view("victim", 14.0, 5.0, 150.0), {"wait": 2.5}, probe(), shot("k05_suelta.png")]
     s += [{"wait": 1.0}, probe()]
     s += [{"print": {"node": "%Stats", "prop": "text"}}]
-    return {"scene": "res://debug/convert_carry_kill.tscn", "wait_first": 1.0, "steps": s}
+    return {"scene": "res://debug/sacrifice/convert_carry_kill.tscn", "wait_first": 1.0, "steps": s}
 
 
 def online_a():

@@ -255,7 +255,7 @@ func _match(units: Array[Node3D], spots: Array[Vector3]) -> PackedInt32Array:
 ## The rows of a formation larger than one line (the port's extension, `RowFormation.row_size`): sacengine matches one line of at most
 ## numCreaturesInGroup = 12 greedily (state.d:29205), and greedy over 150 bodies crossed the formation: the front of the
 ## crowd took the back rows and everyone else walked through the bodies already parked, which carried them off their slots
-## (F88 round 3, debug/crowd_rock.tscn). Here the units furthest along `yaw` take the front row, the next ones the row
+## (F88 round 3, debug/map/crowd_rock.tscn). Here the units furthest along `yaw` take the front row, the next ones the row
 ## behind, and so on; inside a row they keep their order across (left to right). No two paths cross. Ties go by index.
 func _match_rows(units: Array[Node3D], slots: Array[Vector2], yaw: float, row_size: int) -> PackedInt32Array:
 	var n := units.size()

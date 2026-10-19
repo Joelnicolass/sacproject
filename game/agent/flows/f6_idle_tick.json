@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/idle_tick.tscn",
+  "scene": "res://debug/suite/idle_tick.tscn",
   "wait_first": 0.8,
   "steps": [
     { "print": { "node": "%Verdict", "prop": "text" } },

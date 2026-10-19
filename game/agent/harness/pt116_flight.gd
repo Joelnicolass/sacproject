@@ -1,7 +1,7 @@
 extends Node
 
 ## Developer probe of F116 (RFC-030e), headless, mounted by res://agent/fixtures/pt116_flight.tscn next to an instance of
-## res://debug/f114_flyers.tscn. Gives every own creature the order a player's right click gives (Orders.give MOVE), first
+## res://debug/units/f114_flyers.tscn. Gives every own creature the order a player's right click gives (Orders.give MOVE), first
 ## 150 m east, then 5 m, and logs each Flight state change, the height over the ground, the pace
 ## in the air and the clip role. Quits at the end.
 ##   godot --headless --path game --fixed-fps 60 res://agent/fixtures/pt116_flight.tscn

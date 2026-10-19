@@ -9,7 +9,7 @@ Usage: python3 -I agent/tools/f154_expect.py [godot log of debug/f128_pull (rule
        python3 -I agent/tools/f154_expect.py --schedule  (the tick table of the cage pull)
        python3 -I agent/tools/f154_expect.py --flight x y z vx vy vz   (a ballistic body thrown from the land at (x, y, z))
 
-Needs the bench switch on (debug/ai_match.gd): Pulling.log_pull.
+Needs the bench switch on (debug/ai/ai_match.gd): Pulling.log_pull.
 
 sacengine:
 - SPs1 has 102 frames and its load tick `liba` is frame 27: the user prepares 54 ticks (mana 300->240, no cooldown), the clip loops

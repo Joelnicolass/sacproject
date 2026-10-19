@@ -6,7 +6,7 @@ Usage: python3 -I agent/tools/f153_expect.py [godot log of the lane D scene (deb
        python3 -I agent/tools/f153_expect.py --lanes     (only the lane check against the map files)
        python3 -I agent/tools/f153_expect.py --model D   (the flight and the revival of a breath that flies D meters)
 
-Needs the bench switch on (debug/ai_match.gd): BreathOfLife.log_breath and FastRevive.log_revive.
+Needs the bench switch on (debug/ai/ai_match.gd): BreathOfLife.log_breath and FastRevive.log_revive.
 
 sacengine:
 - useAbility → shoot (13470-13493): startUsingAbility with shoot2 (DGs2, tick 26 at 30 fps → 52 ticks); at the shoot tick

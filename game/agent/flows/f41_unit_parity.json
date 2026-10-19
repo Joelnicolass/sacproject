@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/unit_parity_gallery.tscn",
+  "scene": "res://debug/bodies/unit_parity_gallery.tscn",
   "wait_first": 1.2,
   "steps": [
     { "wait": 1.0 },

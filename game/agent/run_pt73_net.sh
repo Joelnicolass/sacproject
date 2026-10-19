@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# usage: run_pt73_net.sh PORT -- dedicated on debug/village_net.tscn + client A, then (A gone, hut already fallen) a late client.
+# usage: run_pt73_net.sh PORT -- dedicated on debug/net/village_net.tscn + client A, then (A gone, hut already fallen) a late client.
 # Never more than two Godot processes: the server and one client.
 set -u
 export GODOT=/Users/joelsartori/Development/sacproject/game/agent/harness/godot60.sh
 ROOT=/Users/joelsartori/Development/sacproject/game
 PORT="${1:-7781}"
 OUT="$ROOT/agent/out/pt73/net"
-WORLD=res://debug/village_net.tscn
+WORLD=res://debug/net/village_net.tscn
 mkdir -p "$OUT"; cd "$ROOT"
 "$GODOT" --headless --path "$ROOT" -- --dedicated --mp-port="$PORT" --world="$WORLD" > "$OUT/server.log" 2>&1 &
 SERVER=$!

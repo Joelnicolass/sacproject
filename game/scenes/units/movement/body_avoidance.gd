@@ -7,7 +7,7 @@ extends NavigationAgent3D
 ## server answers in the same physics step (after every _physics_process) through `solved`, and the body moves with that
 ## velocity (move_and_slide). The radius is the body's box (BodyBox); the bodies do not collide by physics, only steer.
 ## Who gives way is the priority: a body that walks is above one that stands (the settled units of a formation make way
-## for the walkers) and a wizard is above his creatures (his own army never pushes him back: debug/escort_jam.tscn).
+## for the walkers) and a wizard is above his creatures (his own army never pushes him back: debug/orders/escort_jam.tscn).
 ## Deterministic: the avoidance runs in the physics step on one thread (project.godot [navigation]) and the agents
 ## are stepped in the order they were registered.
 

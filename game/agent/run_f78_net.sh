@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# usage: run_f78_net.sh PORT  -- dedicated + one client on debug/selection_many.tscn (RFC-025, F78).
+# usage: run_f78_net.sh PORT  -- dedicated + one client on debug/orders/selection_many.tscn (RFC-025, F78).
 # The client selects 150 creatures and orders a move; the server log must show "orden move 150"
 # and "150 de 150 con orden".
 set -u
@@ -8,7 +8,7 @@ export GODOT
 ROOT=/Users/joelsartori/Development/sacproject/game
 PORT="${1:-7777}"
 OUT="$ROOT/agent/out/f78"
-WORLD=res://debug/selection_many.tscn
+WORLD=res://debug/orders/selection_many.tscn
 mkdir -p "$OUT"
 cd "$ROOT"
 "$GODOT" --headless --path "$ROOT" -- --dedicated --mp-port="$PORT" --world="$WORLD" > "$OUT/server.log" 2>&1 &

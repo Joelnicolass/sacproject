@@ -1,7 +1,7 @@
 extends Node
 
 ## Read-only observer for the F138 developer check (RFC-030 030i-c, wizards stunned and petrified) on
-## res://debug/f138_wizard_cc.tscn. It never moves, orders, damages or spawns anything. Tolerates a null scene.
+## res://debug/units/f138_wizard_cc.tscn. It never moves, orders, damages or spawns anything. Tolerates a null scene.
 ##   arm()     connects to the wizards present (group "wizard").
 ##   report()  per wizard: every held episode (bits, frames, drift, yaw change, casting ticks, stone overrides, frozen
 ##             clip, tilt), the damage factor and the hurts taken while stone, and the first cast after each episode.

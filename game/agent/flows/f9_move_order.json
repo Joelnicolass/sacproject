@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/move_order.tscn",
+  "scene": "res://debug/orders/move_order.tscn",
   "wait_first": 0.8,
   "steps": [
     { "print": { "node": "%Verdict", "prop": "text" } },

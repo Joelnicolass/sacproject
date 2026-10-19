@@ -36,7 +36,7 @@ static func enable(category: StringName) -> void:
 	_on[category] = true
 
 
-## The categories the bench (debug/ai_match.gd) always had on.
+## The categories the bench (debug/ai/ai_match.gd) always had on.
 static func enable_bench() -> void:
 	for category in BENCH:
 		_on[category] = true

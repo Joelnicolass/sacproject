@@ -1,0 +1,46 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://debug/ai/ai_match.gd" id="1_runner"]
+[ext_resource type="PackedScene" path="res://scenes/match/high_noon.tscn" id="2_world"]
+[ext_resource type="Resource" path="res://debug/rules/ai_duel_seeded.tres" id="3_rules"]
+[ext_resource type="Script" path="res://scenes/ai/ai_audit.gd" id="4_audit"]
+[ext_resource type="Script" path="res://addons/agent_kit/determinism/det_recorder.gd" id="9_recorder"]
+[ext_resource type="PackedScene" path="res://scenes/ai/ai_side.tscn" id="5_side"]
+
+[node name="AiMatch" type="Node"]
+
+[node name="Audit" type="Node" parent="." node_paths=PackedStringArray("recorder")]
+script = ExtResource("4_audit")
+recorder = NodePath("Recorder")
+
+[node name="Recorder" type="Node" parent="Audit"]
+unique_name_in_owner = true
+script = ExtResource("9_recorder")
+self_tick = false
+position_decimals = 1
+
+[node name="BenchCamera" type="Camera3D" parent="."]
+far = 20000.0
+
+[node name="Overlay" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="Status" type="Label" parent="Overlay"]
+offset_left = 24.0
+offset_top = 80.0
+offset_right = 900.0
+offset_bottom = 150.0
+mouse_filter = 2
+text = "Pendiente"
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+
+[node name="Runner" type="Node" parent="." node_paths=PackedStringArray("audit", "status_label", "camera")]
+script = ExtResource("1_runner")
+world_scene = ExtResource("2_world")
+default_rules = ExtResource("3_rules")
+ai_side_scene = ExtResource("5_side")
+audit = NodePath("../Audit")
+status_label = NodePath("../Overlay/Status")
+camera = NodePath("../BenchCamera")

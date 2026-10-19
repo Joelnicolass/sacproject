@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/f149_freeze.tscn",
+ "scene": "res://debug/units/f149_freeze.tscn",
  "wait_first": 2.0,
  "steps": [
   {

@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/summon_unit.tscn",
+  "scene": "res://debug/units/summon_unit.tscn",
   "wait_first": 2.0,
   "steps": [
     { "wait_until": { "node": "%Stats", "text_contains": "Vida", "timeout": 10 } },

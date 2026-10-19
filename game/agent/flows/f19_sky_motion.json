@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/sky_motion.tscn",
+  "scene": "res://debug/look/sky_motion.tscn",
   "wait_first": 2.0,
   "steps": [
     { "press": "check_tick" },

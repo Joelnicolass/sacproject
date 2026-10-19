@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/anim_wizard_trogg.tscn",
+  "scene": "res://debug/bodies/anim_wizard_trogg.tscn",
   "wait_first": 1.2,
   "steps": [
     { "wait_until": { "node": "%Debug", "text_contains": "cycle idle", "timeout": 6 } },

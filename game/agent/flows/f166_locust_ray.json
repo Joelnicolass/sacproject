@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/f166_locust_ray.tscn",
+ "scene": "res://debug/units/f166_locust_ray.tscn",
  "wait_first": 1.5,
  "steps": [
   {"assert": {"node": "Overlay/Status", "text_contains": "pausa"}},

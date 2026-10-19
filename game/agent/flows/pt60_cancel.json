@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/ritual_cancel.tscn",
+ "scene": "res://debug/sacrifice/ritual_cancel.tscn",
  "wait_first": 1.0,
  "steps": [
   {

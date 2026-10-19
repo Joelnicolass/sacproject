@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/nav_wizard.tscn",
+  "scene": "res://debug/map/nav_wizard.tscn",
   "wait_first": 2.0,
   "steps": [
     { "assert": { "node": "Overlay/Status", "text_contains": "Pendiente" } },

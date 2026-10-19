@@ -1,7 +1,7 @@
 extends Node
 
 ## Developer probe of F120 (RFC-030i-a, N1), headless, mounted by res://agent/fixtures/pt120_flight_stun.tscn next to an
-## instance of res://debug/f114_flyers.tscn. Two hybrid fliers of slot 1: the Blight is ordered 150 m east and stunned
+## instance of res://debug/units/f114_flyers.tscn. Two hybrid fliers of slot 1: the Blight is ordered 150 m east and stunned
 ## once it flies 3 m up (then ordered again while stunned); the Seraph is stunned on the ground and then ordered 150 m
 ## east (a walk that would take off). Logs the Flight states seen while stunned, the height drift and the flat drift.
 ##   godot --headless --path game --fixed-fps 60 res://agent/fixtures/pt120_flight_stun.tscn

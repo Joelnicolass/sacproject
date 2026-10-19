@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/f162_waves.tscn",
+ "scene": "res://debug/units/f162_waves.tscn",
  "wait_first": 2.0,
  "steps": [
   { "wait_until": { "node": "Overlay/Status", "text_contains": "Enter", "timeout": 60 } },

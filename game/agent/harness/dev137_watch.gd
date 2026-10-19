@@ -1,6 +1,6 @@
 extends Node
 
-## Read-only observer for the F137 developer check (RFC-030 030i-b, Basilisk petrify) on res://debug/f137_petrify.tscn.
+## Read-only observer for the F137 developer check (RFC-030 030i-b, Basilisk petrify) on res://debug/units/f137_petrify.tscn.
 ## It never moves, orders, damages or spawns anything. Tolerates a null scene.
 ##   arm()     connects to the units present (group "unit").
 ##   report()  per unit: petrified episodes (frames, drift, clip frame changes, stone overrides, min height over the

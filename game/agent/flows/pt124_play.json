@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/f124_bolts.tscn",
+ "scene": "res://debug/units/f124_bolts.tscn",
  "wait_first": 2.0,
  "steps": [
   {

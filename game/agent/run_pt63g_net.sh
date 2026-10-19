@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # usage: run_f63_net.sh PORT -- dedicated + client A (casts Manalith then Guardian) + client B (watches) + late client C,
-# all on debug/guardian_manalith.tscn (RFC-021b).
+# all on debug/spells/guardian_manalith.tscn (RFC-021b).
 set -u
 GODOT=/Applications/Godot.app/Contents/MacOS/Godot
 export GODOT
 ROOT=/Users/joelsartori/Development/sacproject/game
 PORT="$1"
 OUT="$ROOT/agent/out/pt63g/net"
-WORLD=res://debug/guardian_manalith.tscn
+WORLD=res://debug/spells/guardian_manalith.tscn
 mkdir -p "$OUT"
 cd "$ROOT"
 "$GODOT" --headless --path "$ROOT" -- --dedicated --mp-port="$PORT" --world=$WORLD > "$OUT/server.log" 2>&1 &

@@ -55,7 +55,7 @@ func finish() -> NavigationMesh:
 	return out if out != null and out.get_polygon_count() > 0 else null
 
 
-## Parse and bake on the calling thread (the check of debug/nav_cases.gd measures this). Null when it came out empty.
+## Parse and bake on the calling thread (the check of debug/suite/nav_cases.gd measures this). Null when it came out empty.
 func bake_now(root: Node) -> NavigationMesh:
 	if not start(root):
 		return null

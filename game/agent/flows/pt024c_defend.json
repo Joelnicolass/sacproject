@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/ai_defend.tscn",
+  "scene": "res://debug/ai/ai_defend.tscn",
   "wait_first": 2.0,
   "steps": [
     { "assert": { "node": "Overlay/Status", "text_contains": "IA en pausa" } },

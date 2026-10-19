@@ -8,12 +8,12 @@ PORT="$1"
 OUT="$ROOT/agent/out/pt63"
 mkdir -p "$OUT"
 cd "$ROOT"
-"$GODOT" --headless --path "$ROOT" -- --dedicated --mp-port="$PORT" --world=res://debug/structure_siege.tscn > "$OUT/server.log" 2>&1 &
+"$GODOT" --headless --path "$ROOT" -- --dedicated --mp-port="$PORT" --world=res://debug/map/structure_siege.tscn > "$OUT/server.log" 2>&1 &
 SERVER=$!
 echo "$SERVER" > "$OUT/server.pid"
 for _ in $(seq 1 80); do grep -q "dedicated listo" "$OUT/server.log" && break; sleep 0.25; done
 launch() { # flow log
-  addons/agent_kit/cli.sh "$ROOT" flow --flow="$1" --out=res://agent/out/pt63 --fail-on-error --mp-port="$PORT" --world=res://debug/structure_siege.tscn > "$OUT/$2.log" 2>&1 &
+  addons/agent_kit/cli.sh "$ROOT" flow --flow="$1" --out=res://agent/out/pt63 --fail-on-error --mp-port="$PORT" --world=res://debug/map/structure_siege.tscn > "$OUT/$2.log" 2>&1 &
   LP=$!
 }
 for TRY in 1 2 3; do launch pt63_client_a.json a; A=$LP; sleep 6; grep -q "click missed" "$OUT/a.log" || break; done

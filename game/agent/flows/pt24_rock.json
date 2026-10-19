@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/cast_heal.tscn",
+  "scene": "res://debug/spells/cast_heal.tscn",
   "wait_first": 2.0,
   "steps": [
     { "wait_until": { "node": "%Stats", "text_contains": "Vida", "timeout": 10 } },

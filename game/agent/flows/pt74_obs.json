@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/ai_summon.tscn",
+ "scene": "res://debug/ai/ai_summon.tscn",
  "wait_first": 2.0,
  "steps": [
   {

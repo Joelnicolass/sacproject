@@ -2,10 +2,10 @@ extends Node
 
 ## Read-only (RFC-029 029b playtest): counts FxBus's pool from its children (`<type>_<n>`, visible while
 ## playing, hidden when idle). Plays nothing, moves no actor, edits no rule. The trail count is printed
-## by debug/rock_hit.gd (`fx_trail <n>`); the CPU cost by debug/fx_pool_bench.tscn.
+## by debug/units/rock_hit.gd (`fx_trail <n>`); the CPU cost by debug/fx/fx_pool_bench.tscn.
 ## Flows assert on the properties below (`prop` of /root/AgentKit/fx_pool_probe), never on a node name.
 
-const _POOL := preload("res://debug/fx_pool_count.gd")
+const _POOL := preload("res://debug/fx/fx_pool_count.gd")
 
 ## Emitters playing now (visible), all types.
 var playing: int:

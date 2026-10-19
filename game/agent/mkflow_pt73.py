@@ -43,7 +43,7 @@ village = [
     {"print": {"node": "%Stats", "prop": "text"}},
     {"shot": "v04_alma_roja.png"},
 ]
-flow("pt73_village", "res://debug/village.tscn", village)
+flow("pt73_village", "res://debug/map/village.tscn", village)
 
 cower = [
     {"wait_until": {"node": "HighNoon/Units/Hunter", "timeout": 30}},
@@ -108,7 +108,7 @@ cower = [
     call("since_gain", "convert"),
     {"shot": "c06_almas_1.png"},
 ]
-flow("pt73_cower", "res://debug/village_cower.tscn", cower)
+flow("pt73_cower", "res://debug/map/village_cower.tscn", cower)
 
 taurock = [
     {"wait_until": {"node": "HighNoon/Units/Hunter", "timeout": 30}},
@@ -136,5 +136,5 @@ taurock = [
     call("taurock"),
     {"shot": "t04_lucha_5s.png"},
 ]
-flow("pt73_taurock", "res://debug/village_taurock.tscn", taurock)
+flow("pt73_taurock", "res://debug/map/village_taurock.tscn", taurock)
 print("ok")

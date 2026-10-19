@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/ritual_push.tscn",
+ "scene": "res://debug/sacrifice/ritual_push.tscn",
  "wait_first": 1.0,
  "steps": [
   {

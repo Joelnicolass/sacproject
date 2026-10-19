@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/biome_gallery_close.tscn",
+ "scene": "res://debug/look/biome_gallery_close.tscn",
  "wait_first": 5.0,
  "steps": [
   {

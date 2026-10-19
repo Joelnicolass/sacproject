@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://debug/vfx_lab.tscn" id="1_lab"]
+[ext_resource type="PackedScene" path="res://debug/fx/vfx_lab.tscn" id="1_lab"]
 [ext_resource type="Script" path="res://agent/perf/frame_budget.gd" id="2_budget"]
 
 [node name="PerfF95" type="Node"]

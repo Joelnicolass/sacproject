@@ -1,9 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="PackedScene" path="res://debug/orders_group.tscn" id="1_group"]
-
-[node name="OrdersRadial" instance=ExtResource("1_group")]
-
-[node name="Group" parent="." index="3"]
-own_count = 8
-foe_gap_m = 60.0

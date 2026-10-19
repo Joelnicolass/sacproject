@@ -7,7 +7,7 @@ Usage: python3 -I agent/tools/f128_expect.py [godot log of debug/f128_pull (rule
        python3 -I agent/tools/f128_expect.py --lanes     (only the lane check against the map files)
        python3 -I agent/tools/f128_expect.py --schedule  (the tick table of a pull, no log)
 
-Needs the bench switch on (debug/ai_match.gd): Pulling.log_pull.
+Needs the bench switch on (debug/ai/ai_match.gd): Pulling.log_pull.
 
 sacengine:
 - useAbility → shoot (13470-13493): startUsingAbility with shoot1 (LSs1, 82 frames; the SPEL has no lrba, the load tick

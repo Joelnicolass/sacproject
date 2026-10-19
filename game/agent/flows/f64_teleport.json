@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/teleport_home.tscn",
+ "scene": "res://debug/spells/teleport_home.tscn",
  "wait_first": 2.0,
  "steps": [
   {"wait_until": {"node": "%Stats", "text_contains": "Vida", "timeout": 15}},

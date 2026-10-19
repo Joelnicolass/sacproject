@@ -1,4 +1,4 @@
-{"scene":"res://debug/desecrate_ritual.tscn","wait_first":1.0,"steps":[
+{"scene":"res://debug/sacrifice/desecrate_ritual.tscn","wait_first":1.0,"steps":[
 {"wait_until":{"node":"%Stats","text_contains":"Vida","timeout":20}},{"wait":1.0},
 {"print":{"node":"%Wizards/Wizard1","prop":"global_position"}},
 {"print":{"node":"%Wizards/Wizard2","prop":"global_position"}},

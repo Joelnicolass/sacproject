@@ -8,7 +8,7 @@ Usage: python3 -I agent/tools/f131_expect.py [godot log of debug/f131_devour_ren
        python3 -I agent/tools/f131_expect.py --lanes     (only the lane check against the map files)
        python3 -I agent/tools/f131_expect.py --numbers   (the figures of the replica and the tick table, no log)
 
-Needs the bench switches on (debug/ai_match.gd): AbilityEffect.log_effects and MeleeAttack.log_melee.
+Needs the bench switches on (debug/ai/ai_match.gd): AbilityEffect.log_effects and MeleeAttack.log_melee.
 
 sacengine:
 - useAbility → shoot (13463-13561): Devour takes shoot1 (PCes c36 Netherfiend: 72 ticks; DMes c46 Hellmouth: 92). Mana cost 0 and

@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/roster_hit.tscn",
+ "scene": "res://debug/units/roster_hit.tscn",
  "wait_first": 2.0,
  "steps": [
   {

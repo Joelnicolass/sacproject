@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/body_gallery.tscn",
+ "scene": "res://debug/bodies/body_gallery.tscn",
  "wait_first": 6.0,
  "steps": [
   {
@@ -48,7 +48,7 @@
    "shot": "body_gallery_right.png"
   },
   {
-   "scene": "res://debug/fx_gallery.tscn"
+   "scene": "res://debug/fx/fx_gallery.tscn"
   },
   {
    "wait": 3.0
@@ -177,7 +177,7 @@
    "shot": "look_gallery_horizon.png"
   },
   {
-   "scene": "res://debug/orders_group.tscn"
+   "scene": "res://debug/orders/orders_group.tscn"
   },
   {
    "wait_until": {

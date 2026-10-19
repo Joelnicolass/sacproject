@@ -1,12 +1,12 @@
 {
- "scene": "res://debug/fx_light_steal.tscn",
+ "scene": "res://debug/fx/fx_light_steal.tscn",
  "wait_first": 1.0,
  "steps": [
   {
    "wait": 0.5
   },
   {
-   "scene": "res://debug/vfx_lab.tscn"
+   "scene": "res://debug/fx/vfx_lab.tscn"
   },
   {
    "wait": 6.0

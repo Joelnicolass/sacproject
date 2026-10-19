@@ -1,0 +1,52 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="PackedScene" uid="uid://cvgikgwb1sifg" path="res://scenes/match/high_noon.tscn" id="1_world"]
+[ext_resource type="Resource" path="res://debug/rules/match_defeat.tres" id="2_rules"]
+[ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="3_unit"]
+[ext_resource type="Script" path="res://debug/map/nav_cross.gd" id="4_runner"]
+
+[node name="NavWizard" type="Node"]
+
+[node name="HighNoon" parent="." instance=ExtResource("1_world")]
+rules = ExtResource("2_rules")
+
+[node name="Altar" parent="HighNoon/MapProps/Starts/Start2" index="0"]
+state = 2
+
+[node name="Camera" parent="HighNoon"]
+start_zoom = 0.45
+
+[node name="Executioner" parent="." instance=ExtResource("3_unit")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1028, 30, 1140)
+creature_tag = "nmuh"
+owner_slot = 1
+rng_seed = 20
+target_groups = PackedStringArray("wizard")
+
+[node name="Overlay" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="Status" type="Label" parent="Overlay"]
+offset_left = 24.0
+offset_top = 80.0
+offset_right = 900.0
+offset_bottom = 150.0
+mouse_filter = 2
+text = "Pendiente"
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+
+[node name="Runner" type="Node" parent="." node_paths=PackedStringArray("world", "goal", "status_label", "foe")]
+script = ExtResource("4_runner")
+world = NodePath("../HighNoon")
+wizard_slot = 2
+goal = NodePath("../Executioner")
+status_label = NodePath("../Overlay/Status")
+foe = NodePath("../Executioner")
+arrive_m = 5.0
+
+[editable path="HighNoon/MapProps/Starts/Start2"]
+
+[node name="Population" parent="HighNoon"]
+spawn_creatures = false

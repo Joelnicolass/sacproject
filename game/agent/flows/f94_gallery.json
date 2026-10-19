@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/npc_anim_gallery.tscn",
+ "scene": "res://debug/bodies/npc_anim_gallery.tscn",
  "wait_first": 1.5,
  "steps": [
   {
@@ -206,7 +206,7 @@
    "wait": 0.4
   },
   {
-   "scene": "res://debug/unit_parity_gallery.tscn"
+   "scene": "res://debug/bodies/unit_parity_gallery.tscn"
   },
   {
    "wait": 2.0

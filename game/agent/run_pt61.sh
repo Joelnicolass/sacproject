@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# usage: run_pt61.sh PORT  -- dedicated + client A (slot 1) en debug/convert_ritual.tscn: Convert completo en red
+# usage: run_pt61.sh PORT  -- dedicated + client A (slot 1) en debug/sacrifice/convert_ritual.tscn: Convert completo en red
 set -u
 GODOT=/Applications/Godot.app/Contents/MacOS/Godot
 export GODOT
 ROOT=/Users/joelsartori/Development/sacproject/game
 PORT="$1"
 OUT="$ROOT/agent/out/pt61"
-WORLD=res://debug/convert_ritual.tscn
+WORLD=res://debug/sacrifice/convert_ritual.tscn
 mkdir -p "$OUT"
 cd "$ROOT"
 "$GODOT" --headless --path "$ROOT" -- --dedicated --mp-port="$PORT" --world=$WORLD > "$OUT/net_server.log" 2>&1 &

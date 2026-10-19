@@ -21,7 +21,7 @@ extends Node
 ##
 ## Cases: "still" (as the scene starts), "moving" (waits for the order_units action: the flow presses
 ## check_tick and order_units, see agent/flows/perf027_many.json) and "match" (the `runner` of
-## debug/ai_match.tscn: windows at 25/50/75 % of the match, the subtraction after the middle one, and the
+## debug/ai/ai_match.tscn: windows at 25/50/75 % of the match, the subtraction after the middle one, and the
 ## frame of the whole match at the normal cap). `phase` tells the flow where it is.
 ##
 ## Output: one line `PERF_TABLE <json>` per case and agent/out/perf027/<label>_r<run>.md (--perf-run=N).
@@ -47,7 +47,7 @@ extends Node
 @export var sweep_reps := 5
 ## Frames of each live layer-off window (and of the live base it is compared with).
 @export var subtract_frames := 60
-## The ai_match runner (debug/ai_match.tscn) for the "match" case.
+## The ai_match runner (debug/ai/ai_match.tscn) for the "match" case.
 @export var runner: Node
 @export var match_marks: PackedFloat32Array = [0.25, 0.5, 0.75]
 ## Which match window (index in match_marks) gets the subtraction.

@@ -1,0 +1,98 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://debug/fx/fx_pool_bench.gd" id="1_bench"]
+[ext_resource type="Script" path="res://scenes/fx/fx_trail.gd" id="2_trail"]
+
+[node name="FxPoolBench" type="Node3D"]
+editor_description = "RFC-029 029b. Con ventana: 4 wraths, 4 ekbas y 4 rocas en vuelo con su FxTrail; imprime el pico del pool por tipo contra su tope (pool_max), el pool a los 4 s y el costo de FxBus.play (estelas ≤ 50 us, explosión de wrath ≤ 0,5 ms). `-- --quit` sale al final."
+script = ExtResource("1_bench")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 9, 16)
+
+[node name="Flyers" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="Wrath1" type="Node3D" parent="Flyers"]
+
+[node name="Trail" type="Node3D" parent="Flyers/Wrath1"]
+script = ExtResource("2_trail")
+type_name = "wrath_trail"
+interval_s = 0.0333333
+
+[node name="Ekba1" type="Node3D" parent="Flyers"]
+
+[node name="Trail" type="Node3D" parent="Flyers/Ekba1"]
+script = ExtResource("2_trail")
+type_name = "spit_trail"
+interval_s = 0.0166667
+
+[node name="Rock1" type="Node3D" parent="Flyers"]
+
+[node name="Trail" type="Node3D" parent="Flyers/Rock1"]
+script = ExtResource("2_trail")
+type_name = "rock_trail"
+interval_s = 0.0333333
+
+[node name="Wrath2" type="Node3D" parent="Flyers"]
+
+[node name="Trail" type="Node3D" parent="Flyers/Wrath2"]
+script = ExtResource("2_trail")
+type_name = "wrath_trail"
+interval_s = 0.0333333
+
+[node name="Ekba2" type="Node3D" parent="Flyers"]
+
+[node name="Trail" type="Node3D" parent="Flyers/Ekba2"]
+script = ExtResource("2_trail")
+type_name = "spit_trail"
+interval_s = 0.0166667
+
+[node name="Rock2" type="Node3D" parent="Flyers"]
+
+[node name="Trail" type="Node3D" parent="Flyers/Rock2"]
+script = ExtResource("2_trail")
+type_name = "rock_trail"
+interval_s = 0.0333333
+
+[node name="Wrath3" type="Node3D" parent="Flyers"]
+
+[node name="Trail" type="Node3D" parent="Flyers/Wrath3"]
+script = ExtResource("2_trail")
+type_name = "wrath_trail"
+interval_s = 0.0333333
+
+[node name="Ekba3" type="Node3D" parent="Flyers"]
+
+[node name="Trail" type="Node3D" parent="Flyers/Ekba3"]
+script = ExtResource("2_trail")
+type_name = "spit_trail"
+interval_s = 0.0166667
+
+[node name="Rock3" type="Node3D" parent="Flyers"]
+
+[node name="Trail" type="Node3D" parent="Flyers/Rock3"]
+script = ExtResource("2_trail")
+type_name = "rock_trail"
+interval_s = 0.0333333
+
+[node name="Wrath4" type="Node3D" parent="Flyers"]
+
+[node name="Trail" type="Node3D" parent="Flyers/Wrath4"]
+script = ExtResource("2_trail")
+type_name = "wrath_trail"
+interval_s = 0.0333333
+
+[node name="Ekba4" type="Node3D" parent="Flyers"]
+
+[node name="Trail" type="Node3D" parent="Flyers/Ekba4"]
+script = ExtResource("2_trail")
+type_name = "spit_trail"
+interval_s = 0.0166667
+
+[node name="Rock4" type="Node3D" parent="Flyers"]
+
+[node name="Trail" type="Node3D" parent="Flyers/Rock4"]
+script = ExtResource("2_trail")
+type_name = "rock_trail"
+interval_s = 0.0333333

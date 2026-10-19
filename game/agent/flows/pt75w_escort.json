@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/escort_jam.tscn",
+ "scene": "res://debug/orders/escort_jam.tscn",
  "wait_first": 3.0,
  "steps": [
   {

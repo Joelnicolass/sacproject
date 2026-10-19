@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/structure_siege.tscn",
+ "scene": "res://debug/map/structure_siege.tscn",
  "wait_first": 2.0,
  "steps": [
   {

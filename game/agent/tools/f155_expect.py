@@ -7,7 +7,7 @@ Usage: python3 -I agent/tools/f155_expect.py [godot log of debug/f155_oil (rules
        python3 -I agent/tools/f155_expect.py --lanes     (only the lane check against the map files)
        python3 -I agent/tools/f155_expect.py --schedule  (the tick table, no log)
 
-Needs the bench switches on (debug/ai_match.gd): AbilityEffect.log_effects (the `lob` line) and Oiled.log_oil.
+Needs the bench switches on (debug/ai/ai_match.gd): AbilityEffect.log_effects (the `lob` line) and Oiled.log_oil.
 
 sacengine:
 - useAbility → shoot!true (13463-13493): startUsingAbility with shoot1 (CKa2, 48 frames at 30 fps, no `lrba`: the shoot tick is the

@@ -10,5 +10,5 @@ def solo(scene,tag,n):
         if i==11: s+=[view("doctor1",14.0,4.0,200.0,3.0)]
         if i==19: s+=[view("altar",100.0,55.0,20.0,10.0)]
     return {"scene":scene,"wait_first":1.0,"steps":s}
-json.dump(solo("res://debug/ritual_push.tscn","push",30),open("flows/pt60c_push.json","w"),indent=1)
-json.dump(solo("res://debug/ritual_cancel.tscn","canc",30),open("flows/pt60c_cancel.json","w"),indent=1)
+json.dump(solo("res://debug/sacrifice/ritual_push.tscn","push",30),open("flows/pt60c_push.json","w"),indent=1)
+json.dump(solo("res://debug/sacrifice/ritual_cancel.tscn","canc",30),open("flows/pt60c_cancel.json","w"),indent=1)

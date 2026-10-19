@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/data_book.tscn",
+  "scene": "res://debug/catalog/data_book.tscn",
   "wait_first": 0.8,
   "steps": [
     { "print": { "node": "%Book", "prop": "text" } },

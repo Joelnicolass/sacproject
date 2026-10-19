@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="BenchRules" load_steps=6 format=3]
 
-[ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
-[ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
+[ext_resource type="Script" path="res://debug/suite/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://debug/suite/bench_group.gd" id="2_group"]
 
 [sub_resource type="Resource" id="Group_druid_foe"]
 script = ExtResource("2_group")

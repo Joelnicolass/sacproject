@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/desecrate_carry.tscn",
+ "scene": "res://debug/sacrifice/desecrate_carry.tscn",
  "wait_first": 1.0,
  "steps": [
   {

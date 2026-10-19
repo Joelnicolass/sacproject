@@ -6,7 +6,7 @@ Usage: python3 -I agent/tools/f130_expect.py [godot log of debug/f130_lightning 
        python3 -I agent/tools/f130_expect.py --lanes     (only the lane check against the map files)
        python3 -I agent/tools/f130_expect.py --numbers   (the figures of the replica, no log)
 
-Needs the bench switches on (debug/ai_match.gd): LightningStrike.log_bolt, LightningCharge.log_charge, PaceFactors.log_pace,
+Needs the bench switches on (debug/ai/ai_match.gd): LightningStrike.log_bolt, LightningCharge.log_charge, PaceFactors.log_pace,
 AbilityEffect.log_effects and MeleeAttack.log_melee (phase 2 of 030s-a).
 
 sacengine:

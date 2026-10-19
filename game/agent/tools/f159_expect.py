@@ -8,7 +8,7 @@ Usage: python3 -I agent/tools/f159_expect.py [godot log of debug/f132_quake_onhi
        python3 -I agent/tools/f159_expect.py --lanes     (only the lane check against the map files)
        python3 -I agent/tools/f159_expect.py --numbers   (the figures of the replica, no log)
 
-Needs the bench switches on (debug/ai_match.gd): MeleeAttack.log_melee, the vine lines of Vined (new) and the watcher of
+Needs the bench switches on (debug/ai/ai_match.gd): MeleeAttack.log_melee, the vine lines of Vined (new) and the watcher of
 agent/harness/pt159_watch.gd (new, one line per tick of JV).
 
 sacengine:

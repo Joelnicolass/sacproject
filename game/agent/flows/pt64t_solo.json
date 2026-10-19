@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/teleport_home.tscn",
+ "scene": "res://debug/spells/teleport_home.tscn",
  "steps": [
   {
    "wait_until": {

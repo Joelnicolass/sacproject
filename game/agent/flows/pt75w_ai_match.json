@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/ai_vs_trivial.tscn",
+ "scene": "res://debug/ai/ai_vs_trivial.tscn",
  "wait_first": 3.0,
  "steps": [
   {

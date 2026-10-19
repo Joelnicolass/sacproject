@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://debug/orders_group.tscn" id="1_group"]
+[ext_resource type="PackedScene" path="res://debug/orders/orders_group.tscn" id="1_group"]
 [ext_resource type="Script" path="res://agent/f037b/minimap_probe.gd" id="2_probe"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap.tscn" id="3_minimap"]
 [ext_resource type="Resource" path="res://agent/f037b/view_close.tres" id="4_close"]

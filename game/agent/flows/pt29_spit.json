@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/ability_spit.tscn",
+  "scene": "res://debug/units/ability_spit.tscn",
   "wait_first": 0.3,
   "steps": [
     {

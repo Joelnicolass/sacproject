@@ -1,7 +1,7 @@
 extends RefCounted
 
 ## Builds the catalog types from the original JSON rows (RFC-036 036c). Used by tools/bake_catalog.gd to write the .tres
-## and by debug/catalog_cases.gd to prove the .tres say the same. Preloaded by path (no class_name): both callers
+## and by debug/suite/catalog_cases.gd to prove the .tres say the same. Preloaded by path (no class_name): both callers
 ## run as --script, without autoloads and possibly before the class cache knows this file.
 
 const _CREATURE_TYPE := preload("res://scenes/units/creature_type.gd")

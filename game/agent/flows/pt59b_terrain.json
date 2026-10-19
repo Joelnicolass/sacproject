@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/biome_pick.tscn",
+ "scene": "res://debug/look/biome_pick.tscn",
  "wait_first": 2.0,
  "steps": [
   {

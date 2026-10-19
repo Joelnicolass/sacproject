@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/fx_gallery.tscn",
+  "scene": "res://debug/fx/fx_gallery.tscn",
   "wait_first": 0.95,
   "steps": [
     {

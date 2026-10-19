@@ -1,0 +1,40 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" uid="uid://highnoonworld01" path="res://scenes/match/high_noon.tscn" id="1_world"]
+[ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="2_unit"]
+[ext_resource type="Script" path="res://debug/units/rock_hit.gd" id="3_hit"]
+
+[node name="RockHit" type="Node"]
+
+[node name="Targets" type="Node" parent="." node_paths=PackedStringArray("world", "arena", "log_label")]
+script = ExtResource("3_hit")
+world = NodePath("../HighNoon")
+unit_scene = ExtResource("2_unit")
+arena = NodePath("../Arena")
+log_label = NodePath("../Overlay/HitLog")
+
+[node name="HighNoon" parent="." instance=ExtResource("1_world")]
+
+[node name="Camera" parent="HighNoon"]
+debug_pointer = Vector2(640, 360)
+
+[node name="Arena" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="Overlay" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="HitLog" type="Label" parent="Overlay"]
+unique_name_in_owner = true
+offset_left = 24.0
+offset_top = 80.0
+offset_right = 900.0
+offset_bottom = 170.0
+mouse_filter = 2
+text = "Blancos"
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+
+[node name="Population" parent="HighNoon"]
+spawn_creatures = false

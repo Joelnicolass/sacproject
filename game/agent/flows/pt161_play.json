@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/f161_stun_shots.tscn",
+ "scene": "res://debug/units/f161_stun_shots.tscn",
  "wait_first": 2.0,
  "steps": [
   {"press": {"name": "check_tick", "hold": 0.05}},

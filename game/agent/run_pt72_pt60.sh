@@ -6,7 +6,7 @@ export GODOT
 ROOT=/Users/joelsartori/Development/sacproject/game
 PORT="$1"
 OUT="$ROOT/agent/out/pt72/pt60"
-WORLD=res://debug/desecrate_ritual.tscn
+WORLD=res://debug/sacrifice/desecrate_ritual.tscn
 mkdir -p "$OUT"
 cd "$ROOT"
 "$GODOT" --headless --path "$ROOT" -- --dedicated --mp-port="$PORT" --world=$WORLD > "$OUT/full_server.log" 2>&1 &

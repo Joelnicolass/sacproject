@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/village_taurock.tscn",
+ "scene": "res://debug/map/village_taurock.tscn",
  "wait_first": 1.0,
  "steps": [
   {

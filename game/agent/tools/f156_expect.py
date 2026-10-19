@@ -11,7 +11,7 @@ Lane N (B1 of the review: the `spent()` branch): Blight2 (slot 1) alone at (+45,
 the ground 38 m from it, with nobody within 15 m of that ground: every mite hops 5 times to nobody, the 5th touch stops it and it is
 freed exactly 30 ticks later (the shot is gone: no more hops, no stick).
 
-Needs the bench switches on (debug/ai_match.gd): AbilityEffect.log_effects, Clinging.log_cling, PaceFactors.log_pace and MiteHop.log_hop.
+Needs the bench switches on (debug/ai/ai_match.gd): AbilityEffect.log_effects, Clinging.log_cling, PaceFactors.log_pace and MiteHop.log_hop.
 
 sacengine:
 - useAbility -> shoot!true (13463-13493): the body prepares (liba has no `lrba` in the export: the last frame of its clip, 94 ticks like

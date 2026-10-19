@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/f148_droplets.tscn",
+ "scene": "res://debug/units/f148_droplets.tscn",
  "wait_first": 2.0,
  "steps": [
   {

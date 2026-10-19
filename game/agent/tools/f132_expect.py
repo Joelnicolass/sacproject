@@ -8,7 +8,7 @@ Usage: python3 -I agent/tools/f132_expect.py [godot log of debug/f132_quake_onhi
        python3 -I agent/tools/f132_expect.py --lanes     (only the lane check against the map files)
        python3 -I agent/tools/f132_expect.py --numbers   (the wave table and the tick table, no log)
 
-Needs the bench switches on (debug/ai_match.gd): QuakeWave.log_quake and AbilityEffect.log_effects.
+Needs the bench switches on (debug/ai/ai_match.gd): QuakeWave.log_quake and AbilityEffect.log_effects.
 
 sacengine:
 - useAbility → act() (13495-13510): shoot0 (ESsm c96: 192 ticks), the mana (300) is paid when it starts, so 500 -> 200 at T; at

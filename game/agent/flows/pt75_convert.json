@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/ai_convert.tscn",
+ "scene": "res://debug/ai/ai_convert.tscn",
  "wait_first": 3.0,
  "steps": [
   {

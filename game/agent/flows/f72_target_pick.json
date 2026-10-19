@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/target_pick.tscn",
+  "scene": "res://debug/units/target_pick.tscn",
   "wait_first": 2.5,
   "steps": [
     { "assert": { "node": "Overlay/Status", "text_contains": "Pendiente" } },

@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/mana_fount.tscn",
+  "scene": "res://debug/map/mana_fount.tscn",
   "wait_first": 1.5,
   "steps": [
     { "wait": 2.2 },

@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/biome_gallery.tscn",
+  "scene": "res://debug/look/biome_gallery.tscn",
   "wait_first": 2.0,
   "steps": [
     { "shot": "f32_persephone.png" },

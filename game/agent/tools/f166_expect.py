@@ -5,7 +5,7 @@ state.d and the SPEL data, next to what the port logged.
 Usage: python3 -I agent/tools/f166_expect.py [godot log of debug/f166_locust_ray (rules debug/rules/f166_locust_ray.tres)]
        python3 -I agent/tools/f166_expect.py --lanes     (only the lane check against the map caches)
 
-Needs the bench switches on (debug/ai_match.gd): ShotStrike.log_strikes, LifeDrain.log_drain (F164).
+Needs the bench switches on (debug/ai/ai_match.gd): ShotStrike.log_strikes, LifeDrain.log_drain (F164).
 
 sacengine:
 - locustShoot (11527-11531) creates a LocustShoot; updateLocustShoot (22992-23005) acts in that same frame: collideRay from the

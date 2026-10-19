@@ -7,7 +7,7 @@ Usage: python3 -I agent/tools/f157_expect.py [godot log of debug/f131_devour_ren
        python3 -I agent/tools/f157_expect.py --lanes     (only the lane check against the map files)
        python3 -I agent/tools/f157_expect.py --numbers   (the figures of the replica and the tick table, no log)
 
-Needs the bench switches on (debug/ai_match.gd): AbilityEffect.log_effects, plus the splash lines of SplashImpact.
+Needs the bench switches on (debug/ai/ai_match.gd): AbilityEffect.log_effects, plus the splash lines of SplashImpact.
 
 sacengine:
 - rendShoot (13226-13230) adds the effect only if canRend (13219-13225); mana (100) and the cooldown (10 s = 600) are paid whether or

@@ -1,6 +1,6 @@
 extends Node
 
-## Read-only observer for the F138 playtest (RFC-030 030i-c) on res://debug/f138_wizard_cc.tscn. Never moves, orders,
+## Read-only observer for the F138 playtest (RFC-030 030i-c) on res://debug/units/f138_wizard_cc.tscn. Never moves, orders,
 ## damages or spawns anything. Tolerates a null scene. Watches the wizard of slot 2 (Marduk) only.
 ##   arm()     finds the wizard.
 ##   phase     "" | "stun1" | "stone" | "stun2" | "back" for the flow's shots (back = acted after the last hold).

@@ -5,7 +5,7 @@ Usage:
   python3 -I agent/tools/f151_expect.py <godot log of the f125/f151 bench case>
   python3 -I agent/tools/f151_expect.py --tabla [effect_range]     the rings alone (distance -> ring -> frame)
 
-Needs the bench switches on (debug/ai_match.gd): GroundHug.log_flight and SpikeWave.log_spikes.
+Needs the bench switches on (debug/ai/ai_match.gd): GroundHug.log_flight and SpikeWave.log_spikes.
 
 - Flight (updateRhinokProjectile, phase moving, state.d:24963-24974): every tick the shot is back on the land; the port
   flies `LIFT` m over it (declared): |y - (land + 0.05)| <= 0.06.

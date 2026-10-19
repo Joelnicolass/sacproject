@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/village_cower.tscn",
+ "scene": "res://debug/map/village_cower.tscn",
  "wait_first": 1.0,
  "steps": [
   {

@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/convert_pump_kill.tscn",
+ "scene": "res://debug/sacrifice/convert_pump_kill.tscn",
  "wait_first": 1.0,
  "steps": [
   {

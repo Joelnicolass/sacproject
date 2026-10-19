@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/ability_spit_melee.tscn",
+  "scene": "res://debug/units/ability_spit_melee.tscn",
   "wait_first": 1.2,
   "steps": [
     { "assert": { "node": "%SpitLog", "text_contains": "Earthfling" } },

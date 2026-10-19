@@ -3,12 +3,12 @@ extends Node
 ## F165 (RFC-030): what the AgentKit flow agent/flows/f165_divine_sight.json reads of the Divine Sight eye. It does not play: the flow
 ## clicks the Ranger's ability button like a player; this node only watches every physics tick and keeps numbers the flow can
 ## assert on (properties, read with {"assert": {"node": "AgentKit/f165_probe", "prop": ...}}). AgentKit mounts every script of this
-## folder under its autoload on each flow run, so this one stays inert unless the scene is debug/f165_divine_sight.tscn. Nothing here
+## folder under its autoload on each flow run, so this one stays inert unless the scene is debug/units/f165_divine_sight.tscn. Nothing here
 ## is read by the game.
 ##
-## Own side = 1 (the Ranger), foe side = 2 (the still Druid), as debug/ability_spit.gd spawns them.
+## Own side = 1 (the Ranger), foe side = 2 (the still Druid), as debug/units/ability_spit.gd spawns them.
 
-const SCENE := "res://debug/f165_divine_sight.tscn"
+const SCENE := "res://debug/units/f165_divine_sight.tscn"
 const SIDE := 1
 const FOE_SIDE := 2
 

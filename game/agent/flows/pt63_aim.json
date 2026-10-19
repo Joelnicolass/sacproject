@@ -1,4 +1,4 @@
-{ "scene": "res://debug/doctor_bench.tscn", "wait_first": 1.5,
+{ "scene": "res://debug/sacrifice/doctor_bench.tscn", "wait_first": 1.5,
  "steps": [
   { "press": { "name": "turn_left", "hold": 0.5 } },
   { "wait": 0.4 },

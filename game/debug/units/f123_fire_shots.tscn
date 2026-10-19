@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://debug/ai/ai_match.tscn" id="1_match"]
+[ext_resource type="Resource" path="res://debug/rules/f123_fire_shots.tres" id="2_rules"]
+
+[node name="F123FireShots" instance=ExtResource("1_match")]
+editor_description = "RFC-030 030l (F123). Disparos de fuego, desde el manantial central (1270, 1270), semilla 7. Tiradores propios con orden de atacar; blancos enemigos pacifistas. Carril A (z +80): un Tickferno (craf, Heat ray sfba) contra Druid1 a 40 m (fuego 237 en 60 cuadros + la mitad de su maná). Carril B (z +140): un Pyromaniac (plff, lffa) contra un Trogg a 50 m (fuego 960 en 300 cuadros, peirceShield, sin daño directo). Carril C (z +200): una Bombard (wlcf, cfba balística) contra tres Druids a 25 m, separados 3 m (a 60 m, hacia +x o −x, los Druids caen al vacío) (575 de salpicadura y fuego visual de 60 cuadros). Cada tirador muere después de su primer disparo. Sin IA de magos. Enter (check_tick) arranca. Log: `fuego <tag> a <cuerpo>: …`, `fuego <cuerpo> total … en … actualizaciones vida … [maná -… (queda …)]`, `salpicadura cfba …`."
+
+[node name="Runner" parent="." index="3"]
+default_rules = ExtResource("2_rules")
+camera_offset = Vector3(0, 30, 45)
+default_minutes = 0.5

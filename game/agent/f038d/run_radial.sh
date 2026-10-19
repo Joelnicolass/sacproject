@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# F219 (RFC-038 038d): one windowed run of agent/flows/f038d_radial.json (right tap / hold, Tab hold, Alt+3 on debug/orders_radial.tscn).
+# F219 (RFC-038 038d): one windowed run of agent/flows/f038d_radial.json (right tap / hold, Tab hold, Alt+3 on debug/orders/orders_radial.tscn).
 # Call it through the Godot lock:  bash agent/harness/godot_run.sh bash agent/f038d/run_radial.sh [WxH]
 # Default 1280x720, 60 fps cap, RSS watchdog 2.5 GB, ends by itself (flow timeout 420 s, kill at 540 s). Out: agent/out/f038d.
 set -u

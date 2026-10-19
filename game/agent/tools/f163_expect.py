@@ -6,7 +6,7 @@ Usage: python3 -I agent/tools/f163_expect.py [godot log of debug/f163_phoenix_sh
        python3 -I agent/tools/f163_expect.py --lanes     (only the lane check against the map caches)
        python3 -I agent/tools/f163_expect.py --numbers   (the figures of the replica, no log)
 
-Needs the bench switch on (debug/ai_match.gd): FireShield.log_shield. Lines read:
+Needs the bench switch on (debug/ai/ai_match.gd): FireShield.log_shield. Lines read:
   escudo <fuente> quema <cuerpo> <daño> vida <vida> (tick N) maná M caja (cx, cy, cz) ± (hx, hy, hz) otro (x, y, z) ± (half, height)
   escudo <fuente> toca <cuerpo> aliado, no quema (tick N)
 

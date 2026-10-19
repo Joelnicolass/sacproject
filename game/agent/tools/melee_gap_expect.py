@@ -2,7 +2,7 @@
 """Melee approach check (MeleeAttack.close_in, sacengine `attack`, state.d:12857-12862) on the numbers the port logged.
 
 Usage: python3 -I agent/tools/melee_gap_expect.py LOG [LOG...]     (the Godot log of the final_spit_melee flow, the log of
-       the s7 bench case: agent/out/det/s7_fixed.log). Needs MeleeAttack.log_gap on (debug/ai_match.gd and debug/ability_spit.gd).
+       the s7 bench case: agent/out/det/s7_fixed.log). Needs MeleeAttack.log_gap on (debug/ai/ai_match.gd and debug/units/ability_spit.gd).
        python3 -I agent/tools/melee_gap_expect.py --table LOG...  also prints the per-creature table.
 
 Log line (one per tick an attacker in ATTACK has its target in reach):

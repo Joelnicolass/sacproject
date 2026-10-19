@@ -1,6 +1,6 @@
 extends Node
 
-## Read-only observer for the F137 playtest (RFC-030 030i-b, Basilisk petrify) on res://debug/f137_petrify.tscn.
+## Read-only observer for the F137 playtest (RFC-030 030i-b, Basilisk petrify) on res://debug/units/f137_petrify.tscn.
 ## It never moves, orders, damages, petrifies or spawns anything: it polls each unit's Afflictions.shown, listens to
 ## UnitBody.struck and Health.hit / hurt, and re-frames the screen camera (as a player scrolling the view) to save the
 ## rendered viewport. Tolerates a null scene.

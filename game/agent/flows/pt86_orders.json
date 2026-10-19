@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/selection_many.tscn",
+  "scene": "res://debug/orders/selection_many.tscn",
   "wait_first": 2.5,
   "steps": [
     { "wait_until": { "node": "%OrdersLog", "text_contains": "Druid 800/800", "timeout": 25 } },

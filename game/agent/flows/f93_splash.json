@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/wrath_splash_building.tscn",
+  "scene": "res://debug/spells/wrath_splash_building.tscn",
   "wait_first": 1.5,
   "steps": [
     { "wait_until": { "node": "%HitLog", "text_contains": "jcc2_1 1000/1000", "timeout": 15 } },

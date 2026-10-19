@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/melee_duel.tscn",
+  "scene": "res://debug/units/melee_duel.tscn",
   "wait_first": 1.2,
   "steps": [
     { "shot": "pt53_duel_start.png" },

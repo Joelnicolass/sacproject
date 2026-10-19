@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/guardian_altar.tscn",
+ "scene": "res://debug/spells/guardian_altar.tscn",
  "steps": [
   {
    "wait_until": {

@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/vfx_lab.tscn",
+ "scene": "res://debug/fx/vfx_lab.tscn",
  "wait_first": 6.0,
  "steps": [
   {

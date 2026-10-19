@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/ai_endgame_human.tscn",
+ "scene": "res://debug/ai/ai_endgame_human.tscn",
  "wait_first": 3.0,
  "steps": [
   {

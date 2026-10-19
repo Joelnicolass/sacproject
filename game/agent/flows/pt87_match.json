@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/ai_match.tscn",
+  "scene": "res://debug/ai/ai_match.tscn",
   "wait_first": 3.0,
   "steps": [
     {

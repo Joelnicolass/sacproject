@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://debug/units/ability_spit.tscn" id="1_base"]
+
+[node name="F165DivineSight" instance=ExtResource("1_base")]
+editor_description = "RFC-030 F165. El Ranger (amuh, lado 1) quieto con el Divine Sight, y un Druid quieto del lado 2 a 60 m delante. Se juega como jugador: el Ranger queda seleccionado y se hace clic en el botón de habilidad (agent/flows/f165_divine_sight.json). agent/harness/f165_probe.gd (montado por AgentKit) solo anota números del ojo para el flow."
+
+[node name="Spit" parent="." index="4"]
+shooter_tag = "amuh"
+shooter_idle = true
+gap_m = 60.0

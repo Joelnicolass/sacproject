@@ -10,7 +10,7 @@ def a(n,p,v): return {"assert":{"node":n,"prop":p,"equals":v}}
 wait_hud={"wait_until":{"node":"%OrdersLog","text_contains":"Druid 800/800","timeout":40}}
 tick=[{"press":"check_tick"},{"wait":0.5}]
 # A: 4 trogg
-w("pt79_group",  "res://debug/orders_group.tscn",[wait_hud,{"wait":0.5},
+w("pt79_group",  "res://debug/orders/orders_group.tscn",[wait_hud,{"wait":0.5},
  a(R,"count",0),{"shot":"a0_empty.png"},*tick,a(R,"count",4),{"shot":"a1_four.png"},
  cl(2),{"wait":0.4},a("%Selection","count",1),{"shot":"a2_click_cell2.png"},
  *tick,a("%Selection","count",4),
@@ -21,7 +21,7 @@ w("pt79_group",  "res://debug/orders_group.tscn",[wait_hud,{"wait":0.5},
  {"call":{"harness":"selection_probe","method":"aim_empty"}},{"press":"select"},{"wait":0.6},
  a("%Selection","count",0),a(R,"count",0),a(R,"cells_shown",0),{"shot":"a5_world_deselect.png"}])
 # B: 150
-w("pt79_many","res://debug/selection_many.tscn",[wait_hud,{"wait":1.0},a(R,"count",0),{"shot":"b0_empty.png"},
+w("pt79_many","res://debug/orders/selection_many.tscn",[wait_hud,{"wait":1.0},a(R,"count",0),{"shot":"b0_empty.png"},
  {"press":"check_tick"},{"wait_until":{"node":R,"prop":"count","equals":150,"timeout":10}},{"wait":0.6},
  a(R,"mode","group"),a(R,"cells_shown",3),a(C+"1/Count","text","50") if False else {"assert":{"node":C+"1/Count","text_equals":"50"}},
  {"shot":"b1_grouped150.png"},
@@ -38,9 +38,9 @@ for i in range(1,5):
     st+=[{"wait":2.5},{"print":{"node":R,"prop":"min_health"}},
       *[{"print":{"node":f"{C}{k}","prop":"health_fraction"}} for k in range(1,5)],
       {"shot":f"c{i}_t{i}.png"}]
-w("pt79_hit","res://debug/roster_hit.tscn",st)
+w("pt79_hit","res://debug/units/roster_hit.tscn",st)
 # D: ability
-w("pt79_ability","res://debug/ability_spit.tscn",[{"wait":0.5},a(R,"count",1),
+w("pt79_ability","res://debug/units/ability_spit.tscn",[{"wait":0.5},a(R,"count",1),
  {"print":{"node":"Arena/Palk1/ManaPool","prop":"current"}},{"shot":"d0_before.png"},
  {"click":R+"/Ability"},{"wait":0.8},
  {"print":{"node":"Arena/Palk1/ManaPool","prop":"current"}},{"shot":"d1_after.png"}],first=1.2)

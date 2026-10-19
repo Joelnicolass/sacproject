@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/hole_edge.tscn",
+ "scene": "res://debug/map/hole_edge.tscn",
  "wait_first": 1.0,
  "steps": [
   {

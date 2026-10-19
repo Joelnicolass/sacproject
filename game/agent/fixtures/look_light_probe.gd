@@ -1,4 +1,4 @@
-extends "res://debug/look_gallery.gd"
+extends "res://debug/look/look_gallery.gd"
 
 ## Measurement helper (agent only): prints where each gallery body is on screen
 ## (`LOOKPROBE <cam> <body> <x> <y>`, pixels of the 1280x720 capture) when the camera changes.

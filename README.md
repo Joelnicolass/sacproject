@@ -76,7 +76,7 @@ En el menú: **Cambiar personaje** para elegir mago y dios, y **Jugar solo** o *
 ### Mirar una partida IA contra IA
 
 ```bash
-godot --path game res://debug/ai_match.tscn -- --rules=res://debug/rules/ai_duel_seeded.tres --seed=7 --minutes=10 --npcs --follow=1 --autostart
+godot --path game res://debug/ai/ai_match.tscn -- --rules=res://debug/rules/ai_duel_seeded.tres --seed=7 --minutes=10 --npcs --follow=1 --autostart
 ```
 
 `--follow=2` sigue al otro mago, y con otro `--seed` la partida sale distinta.
@@ -144,7 +144,7 @@ cd game && bash agent/run_determinism.sh quick
 ```
 
 ```bash
-godot --headless --fixed-fps 60 --path game res://debug/rules_suite.tscn
+godot --headless --fixed-fps 60 --path game res://debug/suite/rules_suite.tscn
 ```
 
 ## En camino

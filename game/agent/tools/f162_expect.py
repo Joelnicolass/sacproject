@@ -7,7 +7,7 @@ Usage: python3 -I agent/tools/f162_expect.py [godot log of debug/f162_waves (rul
        python3 -I agent/tools/f162_expect.py --lanes     (only the lane check against the map caches)
        python3 -I agent/tools/f162_expect.py --numbers   (the figures of the replica, no log)
 
-Needs the bench switch on (debug/ai_match.gd): GrowingWave.log_touches. Lines read:
+Needs the bench switch on (debug/ai/ai_match.gd): GrowingWave.log_touches. Lines read:
   onda ShotN tick 1 en (x, y, z) dir (…) paso … radio final R en F ticks a <blanco> (cuadro N)
   onda ShotN toca <cuerpo> tick N en (…) a D m radio r caja (cx, cy, cz) ± (hx, hy, hz): directo|salpicadura|mismo bando
   dano <cuerpo> <daño> vida <vida>

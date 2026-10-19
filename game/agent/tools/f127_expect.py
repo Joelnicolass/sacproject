@@ -7,7 +7,7 @@ Usage: python3 -I agent/tools/f127_expect.py [godot log of debug/f127_halo_breat
        python3 -I agent/tools/f127_expect.py --chase px py pz cx cy cz [hx hy hz]
                                                          (one rock's chase from a point to a still center, with the target's half box)
 
-Needs the bench switch on (debug/ai_match.gd): HaloOfEarth.log_halo (and AbilityEffect.log_effects is not needed).
+Needs the bench switch on (debug/ai/ai_match.gd): HaloOfEarth.log_halo (and AbilityEffect.log_effects is not needed).
 
 sacengine:
 - useAbility → haloOfEarth (13232-13236): applies at once; apply() drains the mana (Rhinok 750, HRba 650: 750->100) and

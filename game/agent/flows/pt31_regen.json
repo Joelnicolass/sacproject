@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/wizard_ghost.tscn",
+  "scene": "res://debug/wizards/wizard_ghost.tscn",
   "wait_first": 0.3,
   "steps": [
     { "wait_until": { "node": "%GhostState", "visible": true, "timeout": 20 } },

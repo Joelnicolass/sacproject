@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/body_gallery.tscn",
+  "scene": "res://debug/bodies/body_gallery.tscn",
   "wait_first": 3.0,
   "steps": [
     { "shot": "f17_gallery_before.png" },

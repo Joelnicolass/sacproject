@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/melee_duel.tscn",
+  "scene": "res://debug/units/melee_duel.tscn",
   "wait_first": 0.2,
   "steps": [
     { "wait_until": { "node": "%DuelLog", "text_contains": "Druid", "timeout": 15 } },

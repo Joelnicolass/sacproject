@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/rock_hit.tscn",
+ "scene": "res://debug/units/rock_hit.tscn",
  "wait_first": 1.5,
  "steps": [
   {

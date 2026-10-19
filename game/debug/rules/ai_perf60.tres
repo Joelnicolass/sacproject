@@ -1,9 +1,9 @@
 [gd_resource type="Resource" script_class="BenchRules" load_steps=8 format=3]
 
-[ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
-[ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
+[ext_resource type="Script" path="res://debug/suite/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://debug/suite/bench_group.gd" id="2_group"]
 [ext_resource type="Script" path="res://scenes/ai/data/ai_seat.gd" id="3_seat"]
-[ext_resource type="Script" path="res://debug/bench_structure.gd" id="4_structure"]
+[ext_resource type="Script" path="res://debug/suite/bench_structure.gd" id="4_structure"]
 
 ; RFC-024 024e (adenda §6): rendimiento de la IA. IA contra IA (Normal y Normal; otras con --difficulties=hard,hard), 30 criaturas
 ; por bando puestas junto a su mago (60 en el campo), 12 almas y mana lleno con un Manalith cada uno (la IA convoca, convierte y

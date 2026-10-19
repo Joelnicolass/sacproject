@@ -1,6 +1,6 @@
 extends Node
 
-## RFC-038 038d window probe on debug/orders_radial.tscn (8 own Troggs). Drives REAL input through the viewport (mouse buttons,
+## RFC-038 038d window probe on debug/orders/orders_radial.tscn (8 own Troggs). Drives REAL input through the viewport (mouse buttons,
 ## motion, keys) and reads the result: it never calls the product's own methods to give an order.
 ##   1. a right TAP (< hold_s) orders a move: the group ends at the point and the radial menu never opens
 ##   2. a right HOLD opens the radial menu; moving to the Cuña wedge highlights it; releasing gives the move order to the PRESS point in
@@ -145,7 +145,7 @@ func _worst_off_slot(units: Array) -> float:
 	return worst
 
 
-## The offsets the creatures were given are, as a set, the slots of the formation (same check as debug/formation_cases.gd).
+## The offsets the creatures were given are, as a set, the slots of the formation (same check as debug/suite/formation_cases.gd).
 func _offsets_are(units: Array, formation_id: StringName) -> bool:
 	var orders: Node = world.get_node("%Orders")
 	var size := 0.0

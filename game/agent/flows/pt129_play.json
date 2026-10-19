@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/f129_lobs.tscn",
+ "scene": "res://debug/units/f129_lobs.tscn",
  "wait_first": 2.0,
  "steps": [
   {

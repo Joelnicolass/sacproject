@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/soul_pickup.tscn",
+ "scene": "res://debug/sacrifice/soul_pickup.tscn",
  "wait_first": 2.0,
  "steps": [
   {

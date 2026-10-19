@@ -1,6 +1,6 @@
 extends Node
 
-## Read-only observer for the F120 playtest (RFC-030 030i-a, Flummox stun) on res://debug/f118_stun.tscn. It never
+## Read-only observer for the F120 playtest (RFC-030 030i-a, Flummox stun) on res://debug/units/f118_stun.tscn. It never
 ## moves, orders, damages or spawns anything: it polls each unit's Afflictions (holds / shown), listens to UnitBody.struck
 ## and Health.hurt, and re-frames the screen camera (like a player scrolling the view) to save the rendered viewport.
 ##

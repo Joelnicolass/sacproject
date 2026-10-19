@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3]
 
-[ext_resource type="PackedScene" path="res://debug/orders_radial.tscn" id="1_radial"]
+[ext_resource type="PackedScene" path="res://debug/orders/orders_radial.tscn" id="1_radial"]
 [ext_resource type="Script" path="res://agent/f038d/radial_probe.gd" id="2_probe"]
 
 [node name="RadialProbe" type="Node"]

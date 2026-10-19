@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/camera_edges.tscn",
+  "scene": "res://debug/camera/camera_edges.tscn",
   "wait_first": 1.6,
   "steps": [
     { "print": { "node": "%Camera", "prop": "yaw" } },

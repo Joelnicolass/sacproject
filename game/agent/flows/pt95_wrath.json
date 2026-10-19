@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/wrath_splash.tscn",
+ "scene": "res://debug/spells/wrath_splash.tscn",
  "wait_first": 1.5,
  "steps": [
   {

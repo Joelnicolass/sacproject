@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/village.tscn",
+  "scene": "res://debug/map/village.tscn",
   "wait_first": 1.0,
   "steps": [
     { "wait_until": { "node": "HighNoon/Units/Hunter", "timeout": 30 } },

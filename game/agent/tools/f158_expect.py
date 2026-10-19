@@ -7,7 +7,7 @@ Usage: python3 -I agent/tools/f158_expect.py [godot log of debug/f132_quake_onhi
        python3 -I agent/tools/f158_expect.py --lanes     (only the lane check against the map files)
        python3 -I agent/tools/f158_expect.py --numbers   (the figures of the replica, no log)
 
-Needs the bench switches on (debug/ai_match.gd): MeleeAttack.log_melee and the freeze line of Affliction.inflict (new).
+Needs the bench switches on (debug/ai/ai_match.gd): MeleeAttack.log_melee and the freeze line of Affliction.inflict (new).
 
 sacengine:
 - updateCreatureAttack (14411-14438): on every attack tick with a target, even when the damage roll fails, canFreeze = !frozen before

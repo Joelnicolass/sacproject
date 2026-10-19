@@ -7,7 +7,7 @@ Usage: python3 -I agent/tools/f129_expect.py [godot log of debug/f129_lobs (rule
        python3 -I agent/tools/f129_expect.py --lanes     (only the lane check against the map files)
        python3 -I agent/tools/f129_expect.py --schedule  (the tick table, no log)
 
-Needs the bench switches on (debug/ai_match.gd): AbilityEffect.log_effects, Clinging.log_cling and PaceFactors.log_pace.
+Needs the bench switches on (debug/ai/ai_match.gd): AbilityEffect.log_effects, Clinging.log_cling and PaceFactors.log_pace.
 
 sacengine:
 - useAbility → shoot!true (13463-13493): startUsingAbility with shoot1 (CKa2, 48 frames at 30 fps, no `lrba`: the shoot tick is

@@ -1,0 +1,29 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://debug/look/look_bench.gd" id="1_bench"]
+[ext_resource type="PackedScene" path="res://scenes/match/high_noon.tscn" id="2_world"]
+[ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="3_unit"]
+[ext_resource type="PackedScene" path="res://scenes/fx/sprite_emitter.tscn" id="4_emitter"]
+
+[node name="LookBench" type="Node" node_paths=PackedStringArray("world", "view_camera", "units", "emitters")]
+script = ExtResource("1_bench")
+world = NodePath("HighNoon")
+view_camera = NodePath("ViewCamera")
+units = NodePath("Units")
+emitters = NodePath("Emitters")
+unit_scene = ExtResource("3_unit")
+emitter_scene = ExtResource("4_emitter")
+
+[node name="HighNoon" parent="." instance=ExtResource("2_world")]
+
+[node name="ViewCamera" type="Camera3D" parent="."]
+current = true
+fov = 60.0
+far = 20000.0
+
+[node name="Units" type="Node3D" parent="."]
+
+[node name="Emitters" type="Node3D" parent="."]
+
+[node name="Population" parent="HighNoon"]
+spawn_creatures = false

@@ -1,5 +1,5 @@
 {
-  "scene": "res://debug/doctor_bench.tscn",
+  "scene": "res://debug/sacrifice/doctor_bench.tscn",
   "wait_first": 1.0,
   "steps": [
     { "print": { "node": "%Camera", "prop": "rotation_degrees" } },

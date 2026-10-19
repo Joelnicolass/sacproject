@@ -100,7 +100,7 @@ extends Resource
 ## creature: full speed at `ritual_push_inner`, falling to `ritual_push_edge_speed` at the edge.
 ## sacengine values: 20 m, 5 m, 20 m/s and 0 at the edge (state.d:16051, 8614-8628). The push ends
 ## exactly where the doctors stand, so melee creatures can reach a doctor and cancel the ritual
-## (measured in debug/ritual_push.tscn). The user decided to keep it that way (2026-10-13),
+## (measured in debug/sacrifice/ritual_push.tscn). The user decided to keep it that way (2026-10-13),
 ## although the original ReadMe speaks of a barrier that keeps melee attackers out.
 @export var ritual_push_radius: float = 20.0
 @export var ritual_push_inner: float = 5.0

@@ -1,9 +1,9 @@
 [gd_resource type="Resource" script_class="BenchRules" load_steps=10 format=3]
 
-[ext_resource type="Script" path="res://debug/bench_rules.gd" id="1_rules"]
-[ext_resource type="Script" path="res://debug/bench_group.gd" id="2_group"]
+[ext_resource type="Script" path="res://debug/suite/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://debug/suite/bench_group.gd" id="2_group"]
 [ext_resource type="Script" path="res://scenes/ai/data/ai_seat.gd" id="3_seat"]
-[ext_resource type="Script" path="res://debug/bench_structure.gd" id="4_structure"]
+[ext_resource type="Script" path="res://debug/suite/bench_structure.gd" id="4_structure"]
 [ext_resource type="Resource" path="res://data/ai/profile_original.tres" id="5_profile"]
 
 [sub_resource type="Resource" id="Seat_james"]

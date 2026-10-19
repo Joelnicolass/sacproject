@@ -1,5 +1,5 @@
 {
- "scene": "res://debug/f110_bestiary_gallery.tscn",
+ "scene": "res://debug/units/f110_bestiary_gallery.tscn",
  "wait_first": 6.0,
  "steps": [
   {

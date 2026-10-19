@@ -50,3 +50,7 @@ extends MatchRules
 ## the human desecrates the AI).
 @export var human_start_near_altar_of := 0
 @export var human_start_distance_m := 40.0
+## F371 (RFC-053 053b): the AI wizards start at `ai_start_offset` meters (X, Z) from `anchor`, on the ground (warped like a Teleport),
+## so a scene can put buildings and groups around the wizard.
+@export var ai_start_at_anchor := false
+@export var ai_start_offset := Vector2.ZERO

@@ -53,9 +53,14 @@ static func ally_or_self(wizard: Node3D, picked: Node3D) -> Node3D:
 
 ## Where a thrown ball leaves: the front of the wizard's hit box, at hand height (there are no hand bones).
 static func hand_origin(wizard: WizardBody) -> Vector3:
+	return hand_origin_facing(wizard, wizard.facing_flat())
+
+
+## The same spot with the wizard turned to `facing` (flat, unit): the AI asks where the ball will leave once he turns to his target.
+static func hand_origin_facing(wizard: WizardBody, facing: Vector3) -> Vector3:
 	var info := BodyCatalog.info(str(wizard.get("model")))
 	var at := wizard.global_position + Vector3.UP * float(info.get("height", 1.8)) * HAND_HEIGHT
-	at += wizard.facing_flat() * float(info.get("reach", 0.5))
+	at += facing * float(info.get("reach", 0.5))
 	return at
 
 

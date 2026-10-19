@@ -37,6 +37,10 @@ extends Resource
 ## see). Deviation of the port in Normal (decision of the user, 2026-10-15); Hard = the original.
 @export var perfect_information := false
 
+@export_group("Sensatez (RFC-053)")
+## The thresholds and weights of the AI's common sense (clear line, own splash, heal discipline, focus). Empty: tactics_normal.tres.
+@export var tactics: AiTactics
+
 @export_group("Recursos")
 ## RULES.md «IA»: the AI has no bonus of resources in any difficulty. Locked at 0 (RFC-024 §3.3) unless the user decides otherwise:
 ## any other value is refused when the resource is loaded. Nothing in the game reads it.
@@ -65,6 +69,11 @@ func scaled_periods(periods: PackedInt32Array) -> PackedInt32Array:
 	for period in periods:
 		out.append(maxi(1, int(floor(float(period) * period_scale + 0.0001))))
 	return out
+
+
+## The tactics this difficulty plays with (Normal's when it names none).
+func tactics_or_normal() -> AiTactics:
+	return AiTactics.or_normal(tactics)
 
 
 ## Physics ticks of `summon_interval_s` at `ticks_per_second`.

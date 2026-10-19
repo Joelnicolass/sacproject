@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="AiTactics" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/ai/data/ai_tactics.gd" id="1_tactics"]
+
+; Facil: cura mas tarde (0,45), compromiso corto (3 s, 3 criaturas), sin peso extra al curador.
+; RFC-053 §7 y §9: los numeros que el original no tiene (sensatez de la IA). Sin trampa: solo eligen que hace con lo que su bando sabe.
+
+[resource]
+script = ExtResource("1_tactics")
+heal_below_ratio = 0.45
+heal_min_missing = 100.0
+los_check = true
+los_retry_factor = 0.5
+own_splash_max_ratio = 0.1
+own_splash_counts_wizard = true
+npc_passive_weight = 0.0
+healer_weight = 1.0
+commit_weight = 1.5
+commit_hold_s = 3.0
+focus_kill_window_s = 20.0
+focus_power_ratio = 1.2
+focus_radius_m = 60.0
+focus_max_members = 3

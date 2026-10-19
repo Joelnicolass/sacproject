@@ -9,6 +9,8 @@ extends Node
 ## trace_every_s, for diagnostics. Debug code.
 
 const PREFIX := "EXPECT "
+## The kinds decided at the end (or once every other one is): they count what must not happen.
+const PASSIVE: Array[String] = ["spared", "uncast", "unharmed", "burst"]
 
 var _rules: BenchRules
 var _bodies: Dictionary = {}
@@ -52,9 +54,15 @@ func is_done() -> bool:
 	if not has_expects():
 		return false
 	for row in _rows:
-		if not row["decided"] and (row["expect"] as BenchExpect).kind != "spared":
+		if not row["decided"] and not PASSIVE.has((row["expect"] as BenchExpect).kind):
 			return false
 	return true
+
+
+## F371: the casts the AI's port starts (AiAudit.cast_noted), for «cast» and «uncast».
+func listen_audit(audit: AiAudit) -> void:
+	if audit != null and not audit.cast_noted.is_connected(_on_cast):
+		audit.cast_noted.connect(_on_cast)
 
 
 func step(tick: int) -> void:
@@ -76,8 +84,8 @@ func finish() -> bool:
 	for row in _rows:
 		if not row["decided"]:
 			var expect: BenchExpect = row["expect"]
-			if expect.kind == "spared":
-				_decide(row, int(row["count"]) <= expect.max_count, str(row["count"]))
+			if PASSIVE.has(expect.kind):
+				_decide(row, _count_of(row) <= expect.max_count, _count_text(row))
 			else:
 				_decide(row, false, "sin_dato")
 	var ok := true
@@ -115,6 +123,14 @@ func _wire(row: Dictionary) -> void:
 			var health := body.get_node_or_null("Health") as Health
 			if health != null:
 				health.hit.connect(_on_object_hit.bind(row, slot).unbind(1))
+	if expect.kind == "unharmed":
+		var slot := _slot_of(expect.subject)
+		for body: Node3D in _of(expect.object):
+			var health := body.get_node_or_null("Health") as Health
+			if health != null:
+				health.hit.connect(_on_unharmed_hit.bind(row, slot, body).unbind(1))
+	if expect.kind == "burst" and not FxBus.played.is_connected(_on_fx):
+		FxBus.played.connect(_on_fx)
 	if expect.kind == "dropped":
 		for body: Node3D in _of(expect.object):
 			var health := body.get_node_or_null("Health") as Health
@@ -188,9 +204,16 @@ func _poll(row: Dictionary) -> void:
 			elif _tick > window:
 				_decide(row, false, "nunca")
 			return
-		"spared":
+		"spared", "uncast", "unharmed", "burst":
 			if is_done_except(row):
-				_decide(row, int(row["count"]) <= expect.max_count, str(row["count"]))
+				_decide(row, _count_of(row) <= expect.max_count, _count_text(row))
+			return
+		"cast":
+			var first := int(row["first_tick"])
+			if first >= 0:
+				_decide(row, first <= window, _seconds(first))
+			elif _tick > window:
+				_decide(row, false, "nunca (%d)" % int(row["count"]))
 			return
 	var objects := _of(expect.object)
 	var times: Array[int] = []
@@ -253,9 +276,61 @@ func _poll(row: Dictionary) -> void:
 ## Every criterion but `row` is decided (a «spared» waits for them).
 func is_done_except(row: Dictionary) -> bool:
 	for other in _rows:
-		if other != row and not other["decided"] and (other["expect"] as BenchExpect).kind != "spared":
+		if other != row and not other["decided"] and not PASSIVE.has((other["expect"] as BenchExpect).kind):
 			return false
 	return true
+
+
+## F371: a cast of the AI's port. Only attack spells count (AiSpellEval.ATTACK_MASK) on a body of `object`.
+func _on_cast(slot: int, tag: String, target: Node) -> void:
+	if not _started or _finished:
+		return
+	var spell := GameData.spell(tag)
+	var attack := spell != null and AiSpellEval.accepts(spell, AiSpellEval.ATTACK_MASK)
+	print("EXPECT_NOTE cast slot %d %s -> %s%s (tick %d)" % [slot, tag, target.name if target != null else "-", "" if attack else " (no ataque)", _tick])
+	if not attack or target == null:
+		return
+	for row in _rows:
+		var expect: BenchExpect = row["expect"]
+		if row["decided"] or not (expect.kind == "cast" or expect.kind == "uncast"):
+			continue
+		if slot != _slot_of(expect.subject) or not _of(expect.object).has(target):
+			continue
+		row["count"] = int(row["count"]) + 1
+		if expect.kind == "cast" and int(row["count"]) >= expect.min_count and int(row["first_tick"]) < 0:
+			row["first_tick"] = _tick
+
+
+func _on_unharmed_hit(amount: float, from_slot: int, row: Dictionary, slot: int, body: Node3D) -> void:
+	if row["decided"] or _finished or amount <= 0.0 or from_slot != slot:
+		return
+	row["count"] = float(row["count"]) + amount
+	print("EXPECT_NOTE %s %s pierde %.1f del slot %d (tick %d)" % [(row["expect"] as BenchExpect).check, body.name, amount, from_slot, _tick])
+
+
+## F371: an FX played somewhere; a «burst» row counts the ones of its `fx` near a body of its `object`.
+func _on_fx(_kind: StringName, fx_name: String, at: Vector3) -> void:
+	if not _started or _finished:
+		return
+	for row in _rows:
+		var expect: BenchExpect = row["expect"]
+		if row["decided"] or expect.kind != "burst" or fx_name != expect.fx:
+			continue
+		for body: Node3D in _of(expect.object):
+			var d := SplashDamage.box_distance(body, at)
+			if d <= expect.near_m:
+				row["count"] = int(row["count"]) + 1
+				print("EXPECT_NOTE %s %s a %.1f m de %s (tick %d)" % [expect.check, fx_name, d, body.name, _tick])
+				break
+
+
+static func _count_of(row: Dictionary) -> float:
+	return float(row["count"])
+
+
+static func _count_text(row: Dictionary) -> String:
+	var value: Variant = row["count"]
+	return "%.1f" % float(value) if value is float else str(value)
 
 
 func _decide(row: Dictionary, ok: bool, value: String) -> void:

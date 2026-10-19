@@ -19,6 +19,10 @@ extends Node
 @export var profile: AiProfile
 
 const CASTER := preload("res://scenes/spells/caster.gd")
+## F371: what _shot_check answers.
+const SHOT_OK := 0
+const SHOT_WALKED := 1
+const SHOT_VETOED := 2
 
 var rng := AiRand.new()
 var eval: AiSpellEval
@@ -29,6 +33,14 @@ var summon_interval_ticks := 0
 var mana_reserve := 0.0
 ## The port tick of the last summon he started (the summon interval counts from it).
 var _last_summon_tick := -1000000
+## RFC-053 (F371): the common sense of the difficulty (AiSide.setup sets it; Normal's until then).
+var tactics: AiTactics
+## F371: casts held back for want of a clear line (he walked closer) and for the burst they would take from his own bodies.
+var line_walks := 0
+var splash_vetoes := 0
+## F371: the walk toward a target he has no clear line to (its track id and where he was sent), kept while he walks to it.
+var _line_target := 0
+var _line_goal := Vector3.ZERO
 
 
 func _ready() -> void:
@@ -40,7 +52,9 @@ func _ready() -> void:
 
 ## Called by AiSide.setup once the profile is set.
 func prepare() -> void:
+	tactics = AiTactics.or_normal(tactics)
 	eval = AiSpellEval.new(perception, stance, groups, profile)
+	eval.tactics = tactics
 
 
 ## wizBrain (shiny.d:3303-3387). Returns 1 when it gave an order or cast, 2 when it started a capture cast, 0 when it had nothing to do.
@@ -334,7 +348,13 @@ func execute_best_cast(wizard: AiTrack, check_only: bool) -> int:
 		if target != null and not port.can_aim(target):
 			i += 1
 			continue
-		## sacengine checks the line of fire and sight here (shiny.d:3254-3270); the port has none yet («aprox.»).
+		## F371: the line of fire and sight (shiny.d:3254-3270) and the burst on his own bodies.
+		var shot := _shot_check(wizard, target, spell, check_only)
+		if shot == SHOT_WALKED and not check_only:
+			return 1
+		if shot != SHOT_OK:
+			i += 1
+			continue
 		var point := obj.cur_pos if obj != null else wizard.cur_pos
 		port.start_casting(spell, target, point)
 		casts_started += 1
@@ -343,3 +363,40 @@ func execute_best_cast(wizard: AiTrack, check_only: bool) -> int:
 		queue.remove_at(i)
 		return 1
 	return 0
+
+
+## F371 (RFC-053 053b): an attack spell on a body goes only with a clear line; without one the wizard walks `los_retry_factor` of the way
+## to the target and tries again (shiny.d:3262). A splash spell (Wrath, Fireball, Swarm) is held back when its burst, where it would
+## really burst (the blocker if any, else the target), takes more than `own_splash_max_ratio` of the health of an own body. Returns
+## SHOT_OK (cast), SHOT_WALKED (no clear line: sent closer, but not when `check_only`) or SHOT_VETOED (skip the entry).
+func _shot_check(wizard: AiTrack, target: AiTrack, spell: Resource, check_only: bool) -> int:
+	if not (spell is SpellType) or target == null or not target.is_valid() or target.node == wizard.node:
+		return SHOT_OK
+	var type := spell as SpellType
+	if type.is_structure or not AiSpellEval.accepts(type, AiSpellEval.ATTACK_MASK):
+		return SHOT_OK
+	var body := wizard.node as WizardBody
+	var splash := AiLineOfFire.is_splash(body, type)
+	if not tactics.los_check and not splash:
+		return SHOT_OK
+	var line := AiLineOfFire.trace(body, target.node, type)
+	var blocker: Node3D = line["blocker"]
+	if tactics.los_check and blocker != null:
+		if not check_only:
+			_walk_for_line(wizard, target)
+		return SHOT_WALKED
+	_line_target = 0
+	if splash and eval.own_splash(line["point"], type, blocker if blocker != null else target.node) > tactics.own_splash_max_ratio:
+		splash_vetoes += 1
+		return SHOT_VETOED
+	return SHOT_OK
+
+
+## Walks `los_retry_factor` of the distance to where the side knows the target; while he walks to that spot it is not moved.
+func _walk_for_line(wizard: AiTrack, target: AiTrack) -> void:
+	var walking := (wizard.node as WizardBody).is_walking()
+	if _line_target != target.id or not walking or wizard.cur_pos.distance_squared_to(_line_goal) <= 4.0:
+		_line_goal = wizard.cur_pos.lerp(target.cur_pos, tactics.los_retry_factor)
+		_line_target = target.id
+	line_walks += 1
+	port.order_go_to(wizard, 2, _line_goal)

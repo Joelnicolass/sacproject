@@ -12,6 +12,7 @@ extends RefCounted
 ##   oil (Oiled and OilImpact), walk (Firewalking), vines (Vined), pull (Pulling), breath (BreathOfLife), quake (QuakeWave),
 ##   bolt (LightningStrike), halo (HaloOfEarth), devour (DevourGrowth), pace (PaceFactors), revive (FastRevive),
 ##   cling (Clinging, StickImpact), souls (Soul), hop (MiteHop), targets (TargetFutility).
+## Off even in the bench (only `--log=`): ai_attack (AttackPhase: threat, enemy_ratio and the target of each replan, F371).
 
 ## Every category.
 const BENCH: Array[StringName] = [

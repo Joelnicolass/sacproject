@@ -39,6 +39,8 @@ func run(host: Node3D) -> Dictionary:
 	out["ai_limited_information"] = await _limited_information(host)
 	out["ai_convert_reserved_soul"] = _reserved_soul()
 	out["ai_forget_checked"] = await _forget_checked(host)
+	out["ai_own_splash"] = await _own_splash(host)
+	out["ai_tactics_by_difficulty"] = _tactics()
 	return out
 
 
@@ -657,3 +659,74 @@ func _forget_checked(host: Node3D) -> Dictionary:
 	for node: Node in [vision, perception, foe, mine]:
 		node.queue_free()
 	return _verdict(checks, {"sight": sight, "tracked": t != null})
+
+
+## RFC-053 053b (F371): what a Wrath (oalf: 550, damage_range 5 m) bursting at a point would take from an own body, by
+## SplashDamage's formula and the side factor (friendly fire on, ×0.5). By hand for a Ranger (amuh, 800 health, capsule radius r):
+## at 1 m from its feet, box distance 1 - r, so 550·(1 - (1 - r)/5)·0.5/800 > 0.27 > own_splash_max_ratio 0.1 (veto); at 15 m it
+## is past the 5 m: 0. With friendly fire off the own body takes 0 (Health._side_factor).
+func _own_splash(host: Node3D) -> Dictionary:
+	var state := MatchState.new()
+	state.name = "AiCasesMatchState"
+	host.add_child(state)
+	state.friendly_fire = true
+	state.ally_damage_factor = 0.5
+	var perception := AiPerception.new()
+	perception.name = "AiCasesPerception3"
+	perception.profile = load("res://data/ai/profile_original.tres")
+	perception.slot = 2
+	host.add_child(perception)
+	var type := GameData.creature("amuh")
+	var ranger: Node3D = UNIT_SCENE.instantiate()
+	ranger.name = "AiCasesRanger"
+	ranger.position = Vector3(1100.0, 0.0, 1100.0)
+	ranger.set("owner_slot", 2)
+	ranger.set("creature_tag", "amuh")
+	ranger.set("model", str(type.model))
+	ranger.set("rules", RULES)
+	ranger.set("idle_aggro", false)
+	host.add_child(ranger)
+	await host.get_tree().process_frame
+	var eval := AiSpellEval.new(perception, null, null, perception.profile)
+	var wrath := GameData.spell("oalf")
+	var checks := {"tracked": perception.add_node(ranger, &"event") != null}
+	var at := ranger.global_position
+	var near := eval.own_splash(at + Vector3(1.0, 0.0, 0.0), wrath)
+	var far := eval.own_splash(at + Vector3(15.0, 0.0, 0.0), wrath)
+	checks["one_state"] = host.get_tree().get_nodes_in_group(&"match_state").size() == 1
+	checks["near_over_threshold"] = near > eval.tactics.own_splash_max_ratio and near > 0.27
+	checks["far_zero"] = far == 0.0
+	checks["direct_whole"] = _near(AiSpellEval.splash_loss(ranger, at + Vector3(15.0, 0.0, 0.0), wrath, 2, true), 550.0 * 0.5 / 800.0)
+	state.friendly_fire = false
+	var off := eval.own_splash(at + Vector3(1.0, 0.0, 0.0), wrath)
+	checks["friendly_fire_off_zero"] = off == 0.0
+	for node: Node in [state, perception, ranger]:
+		node.queue_free()
+	await host.get_tree().process_frame
+	return _verdict(checks, {"near": near, "far": far, "off": off})
+
+
+## RFC-053 §7, §9: one AiTactics per difficulty, wired into its AiDifficulty; a difficulty with none plays Normal's.
+func _tactics() -> Dictionary:
+	var checks := {}
+	var expected := {
+		"easy": {"heal_below_ratio": 0.45, "healer_weight": 1.0, "commit_hold_s": 3.0, "focus_max_members": 3},
+		"normal": {"heal_below_ratio": 0.6, "healer_weight": 2.0, "commit_hold_s": 6.0, "focus_max_members": 6},
+		"hard": {"heal_below_ratio": 0.7, "healer_weight": 3.0, "commit_hold_s": 8.0, "focus_max_members": 8},
+	}
+	var seen := {}
+	for tag: String in expected:
+		var difficulty: AiDifficulty = load("res://data/ai/difficulty_%s.tres" % tag)
+		var tactics := difficulty.tactics_or_normal() if difficulty != null else null
+		var ok := tactics != null and tactics.resource_path == "res://data/ai/tactics_%s.tres" % tag
+		if ok:
+			for key: String in expected[tag]:
+				ok = ok and _near(float(tactics.get(key)), float(expected[tag][key]))
+			ok = ok and tactics.los_check and _near(tactics.los_retry_factor, 0.5) and _near(tactics.own_splash_max_ratio, 0.1) \
+				and tactics.own_splash_counts_wizard and tactics.npc_passive_weight == 0.0 and tactics.heal_min_missing == 100.0 \
+				and _near(tactics.commit_weight, 1.5) and tactics.focus_kill_window_s == 20.0 and _near(tactics.focus_power_ratio, 1.2) \
+				and tactics.focus_radius_m == 60.0
+			seen[tag] = {"heal": tactics.heal_below_ratio, "healer": tactics.healer_weight, "hold": tactics.commit_hold_s, "members": tactics.focus_max_members}
+		checks[tag] = ok
+	checks["null_is_normal"] = AiDifficulty.new().tactics_or_normal().resource_path == AiTactics.NORMAL
+	return _verdict(checks, seen)

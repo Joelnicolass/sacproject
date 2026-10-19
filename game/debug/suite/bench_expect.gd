@@ -12,12 +12,17 @@ extends Resource
 ##            ignored): «it lets go of a target that stopped going down».
 ##   spared   bodies of `subject` (any body when empty) strike or shoot bodies of `object` (any body of health maximum 0 when
 ##            empty) at most `max_count` times during the whole run. Decided when every other criterion is.
+## F371 (053b), the AI's casts and bursts. `subject` names the AI wizard (`ai<slot>`, the runner's label) or any body of its slot:
+##   cast     the slot of `subject` starts at least `min_count` attack spells on bodies of `object` within `within_s` of the start.
+##   uncast   ... at most `max_count` attack spells on bodies of `object` during the whole run (decided with the rest).
+##   unharmed bodies of `object` take at most `max_count` damage in all from the slot of `subject` during the whole run.
+##   burst    at most `max_count` plays of the FX `fx` within `near_m` (to its hit box, SplashDamage.box_distance) of a body of `object` during the whole run.
 ## `from`: start = the tick the bench starts; hurt = the first tick the subject body takes damage; near = the first tick a
 ## body of `object` is within `near_m` (flat) of the subject body. The value printed is the seconds (the slowest body with
 ## «all», the fastest with «any») or the count.
 
 @export var check := "expect"
-@export_enum("picked", "struck", "hurt", "dropped", "spared") var kind := "picked"
+@export_enum("picked", "struck", "hurt", "dropped", "spared", "cast", "uncast", "unharmed", "burst") var kind := "picked"
 @export var subject := ""
 @export var object := ""
 @export_enum("all", "any") var quantifier := "all"
@@ -26,3 +31,5 @@ extends Resource
 @export var within_s := 3.0
 @export var min_count := 1
 @export var max_count := 0
+## F371: the FX name a «burst» criterion counts (FxBus.played), e.g. wrath_explosion1.
+@export var fx := ""

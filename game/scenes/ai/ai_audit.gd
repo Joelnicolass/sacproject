@@ -12,6 +12,9 @@ extends Node
 ## in its own _physics_process, so the order of the physics step does not change). Without one in the scene it makes its own.
 @export var recorder: DetRecorder
 
+## F371 (RFC-053): a cast the port started (not a summon), for the criteria of a bench (ExpectJudge). Reading it changes nothing.
+signal cast_noted(slot: int, tag: String, target: Node)
+
 ## Physics ticks since start(); the clock of every line.
 var tick: int:
 	get: return recorder.tick if recorder != null else 0
@@ -292,6 +295,7 @@ func note_request(slot: int, tag: String, display: String, started: bool, answer
 	else:
 		(side["casts"] as Array).append({"tick": tick, "tag": tag, "target": str(target.name) if target != null else "", "at_mana": snappedf(float(before["mana"]), 0.001)})
 		record("cast", "slot %d %s -> %s" % [slot, tag, str(target.name) if target != null else "-"])
+		cast_noted.emit(slot, tag, target)
 
 
 func _on_summoned(entry: Dictionary, slot: int, _unit: Node) -> void:

@@ -185,6 +185,12 @@ var deflected_last := false
 var _match: MatchState
 
 
+## RFC-053 053b: the side factor a typed hit (damage_typed: a spell, a splash) from `from_slot` gets on this body. The AI reads it to
+## foresee what its own burst would take from its own bodies (AiSpellEval.own_splash); it changes nothing.
+func side_factor(from_slot: int) -> float:
+	return _side_factor(from_slot, false, 0.0)
+
+
 ## F139 (RFC-031 §3.2): the one place that decides how much of a hit from `from_slot` this body takes for its side.
 ## Another side, or no side (0): ×1. The same side, or an ally by the stance (RFC-049 049c: 2v2 teams): 0 with friendly fire off (state.d:8961); with it on, ×1 if the hit
 ## ignores it (poison, state.d:9415-9419) and the match's ally_damage_factor otherwise (state.d:9005, 28892-28899).

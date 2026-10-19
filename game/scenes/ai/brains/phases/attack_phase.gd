@@ -6,6 +6,10 @@ extends AiPhase
 ## x0.5 if it is not aggressive, x1/3 if it has no ready ability, x10 a Sac Doctor) is the target, and the book's attack
 ## with the best score against it is queued with the score `best * w3[0] / total`.
 ## It uses what the AI KNOWS: an enemy it has not seen stays where it was when taken in.
+## RFC-053 053b (F371): a passive NPC (a body of an NPC slot that never picks a fight: CRE8 aggressiveness 0, or a peasant, whose
+## PeasantBehavior never attacks) weighs AiTactics.npc_passive_weight more (0 in every difficulty: «la IA no los caza a propósito»,
+## PRD). Measured in f371_npc before the change: the first replan took a Farmer at 20 m (threat 0.000, enemy_ratio 0.167) with the
+## Druid at 40 m in range, and Wrath went to it. Hostile NPC (Taurocks) still count as any foe.
 
 
 func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:
@@ -19,6 +23,8 @@ func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:
 			continue
 		var distance := wizard.extrap_pos.distance_to(foe.extrap_pos)
 		var w := AiField.attack_weight(distance, thr, foe.status, false)
+		if is_passive_npc(foe.node):
+			w *= brain.tactics.npc_passive_weight
 		w = AiField.f32(w)
 		if w == 0.0:
 			continue
@@ -26,6 +32,9 @@ func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:
 			best = w
 			best_track = foe
 		total = AiField.f32(total + w)
+	if DebugLog.on(&"ai_attack"):
+		print("ai_attack slot %d threat %.3f enemy_ratio %.3f best %s w %.3f total %.3f" % [brain.perception.slot, wizard.threat,
+			brain.stance.enemy_ratio(), best_track.node.name if best_track != null and best_track.is_valid() else "-", best, total])
 	if total == 0.0 or best_track == null:
 		return
 	var found := brain.eval.find_best(wizard, best_track, AiSpellEval.ATTACK_MASK)
@@ -33,3 +42,10 @@ func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:
 		return
 	var entry := AiCastQueue.make(0, AiField.f32(AiField.safediv(best * w3[0], total)), best_track, found["spell"], float(found["range"]), found["obj"])
 	AiCastQueue.enqueue(wizard.cast_queue, entry)
+
+
+## A body of an NPC slot that never picks a fight: aggressiveness 0 (TargetPicker.is_passive) or a peasant (PeasantBehavior).
+static func is_passive_npc(node: Node3D) -> bool:
+	if node == null or not SideRelations.is_npc_slot(AiPerception.owner_slot_of(node)):
+		return false
+	return TargetPicker.is_passive(node) or node.get_node_or_null("PeasantBehavior") is PeasantBehavior

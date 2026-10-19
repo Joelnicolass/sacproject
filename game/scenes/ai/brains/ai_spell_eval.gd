@@ -30,6 +30,8 @@ var perception: AiPerception
 var stance: AiStance
 var groups: AiGroups
 var profile: AiProfile
+## RFC-053: the common sense of the difficulty (set by AiWizardBrain.prepare; Normal's until then).
+var tactics: AiTactics = AiTactics.or_normal(null)
 
 
 func _init(p_perception: AiPerception, p_stance: AiStance, p_groups: AiGroups, p_profile: AiProfile) -> void:
@@ -110,7 +112,7 @@ func rate(caster: AiTrack, spell: SpellType, target: AiTrack, dist_scaled: float
 		FN_SINGLE:
 			return _single(spell, target)
 		FN_AREA:
-			return _area(spell, target)
+			return _area(spell, target, target.cur_pos)
 		FN_HEAL:
 			return _heal(spell, target)
 		FN_SPEEDUP:
@@ -129,8 +131,11 @@ func _single(spell: SpellType, target: AiTrack) -> float:
 
 
 ## f489860 (shiny.d:2843-2847) over aoeSpellBase (shiny.d:2742-2754): the worth of the target, plus the worth of the enemy
-## groups the area would hit and minus the own and ally ones.
-func _area(spell: SpellType, target: AiTrack) -> float:
+## groups the area would hit and minus the own and ally ones. `point` is where it bursts. RFC-053 053b: an own or ally group counts
+## by its members within the area of `point` (the nearest one gives the distance), not by its center: a Ranger at 1 m of the burst
+## weighs even if the rest of its group stands far. The only casts the wizard releases burst on the target (AiLineOfFire: a blocked
+## shot walks instead), so the rating's `point` is the target.
+func _area(spell: SpellType, target: AiTrack, point: Vector3) -> float:
 	var er := spell.effect_range
 	var dr := spell.damage_range
 	var rr := dr if dr > er else er
@@ -140,7 +145,7 @@ func _area(spell: SpellType, target: AiTrack) -> float:
 	var amount := spell.damage
 	for category in [0, 1, 3]:
 		for group: AiGroup in groups.list(category):
-			var d2 := group.center.distance_squared_to(target.cur_pos)
+			var d2 := group.center.distance_squared_to(point) if category == 3 else _nearest_member_d2(group, point)
 			if d2 > r2:
 				continue
 			var group_rate := AiRater.rate(group.acc)
@@ -150,6 +155,43 @@ func _area(spell: SpellType, target: AiTrack) -> float:
 			var e := AiField.f32(AiField.safediv(float(hit), float(group.health_sum2)) * group_rate)
 			base = AiField.f32(e + base) if category == 3 else AiField.f32(base - e)
 	return base
+
+
+## The squared distance from `point` to the nearest member of `group` (INF with none).
+static func _nearest_member_d2(group: AiGroup, point: Vector3) -> float:
+	var best := INF
+	for member in group.members:
+		if member != null and member.is_valid():
+			best = minf(best, member.cur_pos.distance_squared_to(point))
+	return best
+
+
+## RFC-053 053b: the largest fraction of its maximum health any own body would lose to a burst of `spell` at `point` (SplashDamage:
+## the body it bursts on, `direct`, takes the whole amount; the rest amount·(1 − d/damage_range) by the distance to their hit box;
+## the side factor of Health, so with friendly fire off an own body loses 0). The wizard counts when the tactics say so. Own bodies
+## only: the side knows them.
+func own_splash(point: Vector3, spell: SpellType, direct: Node3D = null) -> float:
+	var worst := 0.0
+	for own: AiTrack in perception.bodies(0):
+		if not own.is_valid():
+			continue
+		if own.kind == AiTrack.Kind.WIZ and not tactics.own_splash_counts_wizard:
+			continue
+		worst = maxf(worst, splash_loss(own.node, point, spell, perception.slot, own.node == direct))
+	return worst
+
+
+## What a burst of `spell` at `point` from `from_slot` takes from `body`, as a fraction of its maximum health.
+static func splash_loss(body: Node3D, point: Vector3, spell: SpellType, from_slot: int, direct := false) -> float:
+	var health := body.get_node_or_null("Health") as Health
+	if health == null or health.maximum <= 0.0:
+		return 0.0
+	var amount := float(spell.damage)
+	if not direct:
+		if spell.damage_range <= 0.0:
+			return 0.0
+		amount *= maxf(0.0, 1.0 - SplashDamage.box_distance(body, point) / spell.damage_range)
+	return amount * health.side_factor(from_slot) / health.maximum
 
 
 ## f489af0 (shiny.d:2873-2884) Heal: worth of the target x the part of its health the spell would give back. Not on an enemy and not

@@ -214,6 +214,7 @@ func _prepare() -> void:
 	_events = BenchEvents.new(_world, audit, _sides, _rules)
 	if judge != null:
 		judge.begin(_rules, _labeled)
+		judge.listen_audit(audit)
 
 
 ## The clock starts: the orders of the scene, the AI sides, the record.
@@ -283,6 +284,9 @@ func _finish(winner: int, reason: String) -> void:
 		audit.set_extra(int(slot), "ai_orders", side.port.orders_issued)
 		audit.set_extra(int(slot), "ai_order_stats", side.port.order_stats)
 		audit.set_extra(int(slot), "ai_casts_started", side.brain.casts_started)
+		## F371: casts held back for want of a clear line (walked closer) and for the burst on own bodies.
+		audit.set_extra(int(slot), "ai_line_walks", side.brain.line_walks)
+		audit.set_extra(int(slot), "ai_splash_vetoes", side.brain.splash_vetoes)
 		## 024e: the difficulty and what the side read of bodies it did not see (0 without perfect information).
 		audit.set_extra(int(slot), "difficulty", {
 			"name": side.difficulty.display_name, "file": side.difficulty.resource_path,
@@ -404,6 +408,11 @@ func _seat_ais() -> void:
 	for _frame in settle_frames + 16:
 		await get_tree().physics_frame
 	_move_ai_wizards()
+	## F371: the judge names the AI wizard of each seat `ai<slot>` (BenchExpect.subject).
+	for seat in _rules.ai_seats:
+		var wizard := _wizard_of(seat.slot)
+		if wizard != null:
+			_labeled["ai%d" % seat.slot] = [wizard]
 
 
 func _place_structures() -> void:
@@ -572,6 +581,15 @@ func _frame_camera() -> void:
 func _move_ai_wizards() -> void:
 	if _rules.human_start_near_altar_of > 0:
 		_warp_near_altar(_wizard_of(1), _rules.human_start_near_altar_of, _rules.human_start_distance_m)
+	if _rules.ai_start_at_anchor:
+		var terrain := _world.get_node("Map/Terrain")
+		for seat in _rules.ai_seats:
+			var x := _rules.anchor.x + _rules.ai_start_offset.x
+			var z := _rules.anchor.z + _rules.ai_start_offset.y
+			var ground := float(terrain.call("ground_height", x, z))
+			var wizard := _wizard_of(seat.slot)
+			if wizard != null:
+				wizard.call("warp_to", Vector3(x, 0.0 if is_nan(ground) else ground, z))
 	if _rules.ai_start_near_altar_of <= 0:
 		return
 	for seat in _rules.ai_seats:

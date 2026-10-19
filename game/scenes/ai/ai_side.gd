@@ -96,6 +96,8 @@ func setup(world_node: Node3D, wizard_body: Node3D, ai_seat: AiSeat) -> void:
 	port.delay_ticks = difficulty.delay_ticks(Engine.physics_ticks_per_second)
 	brain.summon_interval_ticks = difficulty.summon_interval_ticks(Engine.physics_ticks_per_second)
 	brain.mana_reserve = difficulty.mana_reserve
+	## RFC-053: the common sense of the difficulty (clear line, own splash, heal discipline, focus).
+	brain.tactics = difficulty.tactics_or_normal()
 	port.can_cast = brain.cast_refusal
 	brain.prepare()
 	port.bind(slot, wizard, world.get_node("%Orders"))

@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://debug/ai/ai_match.tscn" id="1_match"]
+[ext_resource type="Resource" path="res://debug/rules/f371_wrath_blocker.tres" id="2_rules"]
+
+[node name="F371AiTargets" instance=ExtResource("1_match")]
+editor_description = "RFC-053 053b (F371): la IA elige bien donde tirar. Dos variantes de reglas (cambiar default_rules del Runner, o --rules= sin ventana): f371_wrath_blocker.tres (mago IA Persephone con Wrath; una lapida grv3 a 6 m entre el y un Druid quieto a 25 m; un Ranger propio a 1 m de la lapida; fuego amigo x0,5: 0 dano propio, 0 Wrath a menos de 2 m de la lapida y el Druid recibe un Wrath antes de 20 s, despues de acercarse), f371_npc.tres (mago IA con 3 Farmers a 20 m y un Druid a 40 m del otro lado: 0 hechizos de ataque a los granjeros y al menos 1 al Druid antes de 15 s). Imprime EXPECT PASS|FAIL y EXPECT DONE. Con ventana: Enter (check_tick)."
+
+[node name="Runner" parent="." index="3"]
+default_rules = ExtResource("2_rules")
+camera_offset = Vector3(0, 30, 45)
+camera_target_offset = Vector3(10, 0, 80)
+default_minutes = 0.5
+follow_slot = 2

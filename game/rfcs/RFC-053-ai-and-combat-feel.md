@@ -390,3 +390,18 @@ Este apéndice manda sobre lo anterior donde no coincidan.
 - **Preguntas que se suman:**
   - **Números de daño flotantes:** apagados por defecto, con una opción para prenderlos.
   - **Reexportar las animaciones de daño (flinch, 053f2) con la instalación del original:** recomendado, porque es lo que más se nota del original al pegar.
+
+## 16. Decisiones del usuario (2026-10-19)
+
+Esta sección manda sobre todo lo anterior.
+
+1. **Panel de información:** aparece al pasar el puntero (0,5 s), como el original. El edificio clicado queda fijo en el panel.
+2. **Sacudida de cámara:** solo con golpes al mago local y explosiones grandes cerca. Arranca al 50 %, ajustable de 0 a 100 % en Opciones → Jugabilidad.
+3. **Números de daño flotantes: SÍ.** Entran en 053f (`DamageNumbers`, con pool de `Label3D`). Opción para apagarlos en Opciones → Jugabilidad, prendidos por defecto. Son solo presentación: leen `Health.changed` y no existen en dedicado ni headless.
+4. **Destello, gesto de daño y borde rojo: NO por ahora.** El usuario no los eligió: `HitFlash`, 053f2 (flinch) y el aviso de borde quedan fuera de 053f.
+5. **Corte nuevo 053i, suavizar VFX y luces (F379).** «Los vfx se cortan bruscamente, y la iluminación también. No es prioridad, pero si se puede hacer algo simple para que no se sienta tan duro.»
+   - Fundidos de salida para las partículas que terminan de golpe y para las luces de hechizos o FX que se apagan de golpe (energía con Tween, o `fade` al liberar, en `FxBus`/`SpriteEmitter`/las luces de FX).
+   - Es solo presentación y el banco no cambia.
+   - Prueba con ventana: comparar antes y después en el lab de FX.
+   - Va al final, después de 053g.
+6. **Granjeros y Normal:** se aplican las recomendaciones de §14 y §15. Los granjeros siguen siendo enemigos, con prioridad baja, la regla de futilidad y sin hechizos de la IA sobre ellos. Normal queda como «los números del original más las reglas de sensatez», registrado en `changes/CHANGE-REQUEST-005.md`.

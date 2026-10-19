@@ -3203,3 +3203,8 @@ Agregar o cambiar un hechizo de combate ya no toca `caster.gd`.
 
 - `SideRelations` separa asiento de bando: los asientos son los primeros `player_starts` slots y toman los bandos que un jugador puede tomar (assignment != 0); los bandos de NPC vienen después. Con dos asientos da lo de siempre (Farmers = slot 3, Taurocks = slot 4); un mapa de cuatro asientos pone sus NPC desde el slot 5.
 - **Fuera:** `SacrificeFlow.max_players` sigue en 2 (leer `MapCatalog` desde ese autoload dejaba scripts sin liberar en el import); el 2v2 completo (lobby, colores, HUD) es de otro RFC.
+
+### F263 — Mapa de prueba `test_flat` (RFC-044, corte 044d) — cerrado 2026-10-19
+
+- `scenes/map/maps/test_flat/`: un cuadrado plano de 600 m (`terrain.res` de `tools/bake/make_flat_terrain.gd`), dos altares, un manantial, su `MapDefinition` y su navmesh (28 polígonos, `bake_nav -- --map=test_flat`). Sin edificios ni habitantes; `room_selectable = false`.
+- Prueba de que un segundo mapa no pide código: `--map=test_flat` y listo. Humo: `bash agent/runs/run_044d.sh` corre IA contra IA 0,5 min sobre él (`debug/rules/map_test_flat.tres`) y exige `AI_REPORT`, el navmesh del mapa y ningún error.

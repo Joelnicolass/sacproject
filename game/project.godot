@@ -18,9 +18,9 @@ config/features=PackedStringArray("4.7", "Forward Plus")
 
 MpKit="*res://addons/mp_kit/mp_kit.gd"
 MpLobby="*res://addons/mp_kit/lobby/mp_lobby.gd"
+GameData="*res://scenes/data/game_data.gd"
 SacrificeFlow="*res://scenes/flow/sacrifice_flow.gd"
 AgentKit="*res://addons/agent_kit/agent_kit.gd"
-GameData="*res://scenes/data/game_data.gd"
 FxBus="*res://scenes/fx/fx_bus.gd"
 BodyLibrary="*res://scenes/world/body_library.gd"
 

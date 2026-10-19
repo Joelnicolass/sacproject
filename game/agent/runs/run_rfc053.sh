@@ -13,6 +13,8 @@
 #                no Idle→Chase→Idle, no gesture that slides the root over 0,1 m) and f376_flyer (a Trogg under a Brainiac it cannot
 #                reach: at most 0,2 s of `run` on the spot). IdleTruthProbe; quiet has a 90 s watchdog (about 25 s of wall).
 #   053h (F377)  agent/runs/run_f377.sh (the emitters outside the tree).
+#   053i (F379)  debug/fx/f379_fx_fade.tscn (lights and bursts end with a fade: spark, hand_off, quality, bursts, freed),
+#                FX_FADE PASS; then debug/fx/fx_light_steal.tscn (the light pool's priorities still hold), fx_robo total ok.
 #   rfc053_bad_rules  ai_match with a --rules file that does not exist: EXPECT DONE FAIL rules and exit 1 at once (the bench's own guard).
 #   053a_sides   the SIDES line (SideRelations.stance(1|2, 0) and (1|2, 3)) on peaks and peasantville (diagnostic, no verdict).
 # Usage: bash agent/runs/run_rfc053.sh CUT [GODOT_BIN]
@@ -97,6 +99,16 @@ case "$CUT" in
   053h)
     bash "$ROOT/agent/runs/run_f377.sh" "$GODOT_BIN" || FAIL=1
     ;;
+  053i)
+    verdict_run f379_fx_fade FX_FADE res://debug/fx/f379_fx_fade.tscn
+    started=$SECONDS
+    bash "$RUN" "$GODOT_BIN" --headless --path "$ROOT" --fixed-fps 600 --quit-after 6000 res://debug/fx/fx_light_steal.tscn > "$OUT/fx_light_steal.log" 2>&1
+    code=$?
+    echo "--- fx_light_steal (exit $code, $((SECONDS - started)) s) ---"
+    grep -E "^fx_robo" "$OUT/fx_light_steal.log"
+    grep -E "SCRIPT ERROR|^ERROR:" "$OUT/fx_light_steal.log" | head -10
+    [ "$code" = 0 ] && grep -qE "^fx_robo total ok$" "$OUT/fx_light_steal.log" || FAIL=1
+    ;;
   rfc053_bad_rules)
     started=$SECONDS
     bash "$RUN" "$GODOT_BIN" --headless --path "$ROOT" --fixed-fps 600 res://debug/units/f370_targets.tscn -- --seed=1 \
@@ -111,7 +123,7 @@ case "$CUT" in
     sides_run peasantville
     ;;
   *)
-    echo "corte desconocido: $CUT (053a, 053a_sides, 053b, 053c, 053d, 053e, 053f, 053g, 053h, rfc053_bad_rules)"
+    echo "corte desconocido: $CUT (053a, 053a_sides, 053b, 053c, 053d, 053e, 053f, 053g, 053h, 053i, rfc053_bad_rules)"
     exit 2
     ;;
 esac

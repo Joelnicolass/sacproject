@@ -9,6 +9,8 @@ extends LookLayer
 ## A light that loses its place while still lit (stolen, or its emitter played again elsewhere) does not
 ## go out at once: its node fades out on its own for `fade_out_s` and the new light takes a spare node.
 ## Fading nodes do not count for the cap; at most `max_fading` at a time (beyond that it is cut).
+## RFC-053 053i (F379): a light the quality cap takes away fades out the same way instead of going dark at once, and no
+## light falls faster than `min_decay_s`.
 ## Classic mode (null profile) and a hidden layer give no light. Presentation only: the rig, and this
 ## layer with it, is freed in a headless or dedicated process.
 
@@ -23,9 +25,11 @@ const GROUP := &"fx_light_pool"
 ## Closer than this to the camera counts as this distance in the priority (no division by ~0).
 @export_range(0.5, 50.0, 0.5, "suffix:m") var min_priority_distance_m: float = 4.0
 ## Most lights fading out at once after losing their place. 0 = they are cut, as before.
-@export_range(0, 16) var max_fading: int = 4
+@export_range(0, 16) var max_fading: int = 8
 ## Seconds a light that lost its place takes to go from its energy to 0.
-@export_range(0.02, 1.0, 0.01, "suffix:s") var fade_out_s: float = 0.1
+@export_range(0.02, 1.0, 0.01, "suffix:s") var fade_out_s: float = 0.3
+## Shortest fall from the peak to 0 of any light (FxLightSpec.envelope); a spec's longer decay_s is kept.
+@export_range(0.0, 1.0, 0.01, "suffix:s") var min_decay_s: float = 0.3
 
 var _max_lights := -1
 var _enabled := false
@@ -64,7 +68,7 @@ func apply_look(profile: LookProfile, _rig: LookRig) -> void:
 func apply_quality(preset: LookQuality) -> void:
 	_max_lights = preset.fx_max_lights if preset else fallback_max_lights
 	while _slots.size() > _max_lights:
-		_end(_weakest(_camera()))
+		_retire(_weakest(_camera()))
 	while _free.size() + _slots.size() + _fading.size() > _max_lights + max_fading and not _free.is_empty():
 		_free.pop_back().queue_free()
 
@@ -129,10 +133,10 @@ func _process(delta: float) -> void:
 	for i in range(_slots.size() - 1, -1, -1):
 		var slot := _slots[i]
 		slot.t += delta
-		if slot.t >= slot.spec.total_s():
+		if slot.t >= slot.spec.total_s(min_decay_s):
 			_end(slot)
 			continue
-		slot.light.light_energy = slot.spec.energy * slot.spec.envelope(slot.t)
+		slot.light.light_energy = slot.spec.energy * slot.spec.envelope(slot.t, min_decay_s)
 	for i in range(_fading.size() - 1, -1, -1):
 		var fade: Dictionary = _fading[i]
 		fade["t"] += delta
@@ -142,7 +146,8 @@ func _process(delta: float) -> void:
 			light.visible = false
 			_free.append(light)
 			continue
-		light.light_energy = fade["from"] * (1.0 - fade["t"] / fade_out_s)
+		# Ease out (quadratic): the drop is fast while bright and gentle near dark, where the eye sees it most.
+		light.light_energy = fade["from"] * pow(1.0 - fade["t"] / fade_out_s, 2.0)
 	if _slots.is_empty() and _fading.is_empty():
 		set_process(false)
 
@@ -182,8 +187,21 @@ func _place(slot: _Slot) -> void:
 	light.light_color = slot.spec.color
 	light.omni_range = slot.spec.range_m
 	light.omni_attenuation = slot.spec.attenuation
-	light.light_energy = slot.spec.energy * slot.spec.envelope(0.0)
+	light.light_energy = slot.spec.energy * slot.spec.envelope(0.0, min_decay_s)
 	light.visible = true
+
+
+## The slot leaves the lights on now; its node, still lit, fades out on its own (or is cut beyond `max_fading`).
+func _retire(slot: _Slot) -> void:
+	if slot == null:
+		return
+	_slots.erase(slot)
+	if slot.light.visible and slot.light.light_energy > 0.0 and _fading.size() < max_fading:
+		_fading.append({"light": slot.light, "from": slot.light.light_energy, "t": 0.0})
+		set_process(true)
+	else:
+		slot.light.visible = false
+		_free.append(slot.light)
 
 
 func _end(slot: _Slot) -> void:
@@ -225,7 +243,7 @@ func _weakest(camera: Camera3D) -> _Slot:
 ## Level a slot competes with: its peak (1.0) while it is still rising, so a light born this frame
 ## (envelope ~0) is not the weakest one; afterwards, where its fade is.
 func _level(slot: _Slot) -> float:
-	return 1.0 if slot.t < slot.spec.attack_s else slot.spec.envelope(slot.t)
+	return 1.0 if slot.t < slot.spec.attack_s else slot.spec.envelope(slot.t, min_decay_s)
 
 
 func _priority(spec: FxLightSpec, level: float, at: Vector3, camera: Camera3D) -> float:

@@ -117,41 +117,10 @@ func _apply() -> void:
 	anim_speed_min = cycles
 	anim_speed_max = cycles
 	anim_offset_max = 1.0 if type.random_start_frame else 0.0
-	color_ramp = _alpha_ramp()
-	scale_amount_curve = _scale_curve()
+	color_ramp = type.alpha_ramp(type.alpha_max)
+	scale_amount_curve = type.scale_curve()
 	mesh = FxAtlas.quad_for(type)
 	material_override = material
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	var reach := type.speed_max * type.lifetime_s + type.size.x + type.emission_radius
 	visibility_aabb = AABB(Vector3(-reach, -reach, -reach), Vector3(reach, reach, reach) * 2.0)
-
-
-## sacengine getAlpha: min(alpha_max, (time_left / fade_s)^2) over the normalised life.
-func _alpha_ramp() -> Gradient:
-	var ramp := Gradient.new()
-	var offsets := PackedFloat32Array()
-	var colors := PackedColorArray()
-	for i in 13:
-		var t := float(i) / 12.0
-		var left := type.lifetime_s * (1.0 - t)
-		var alpha := type.alpha_max
-		if type.fade_s > 0.0:
-			alpha = minf(type.alpha_max, pow(left / type.fade_s, 2.0))
-		offsets.append(t)
-		colors.append(Color(1.0, 1.0, 1.0, alpha))
-	ramp.offsets = offsets
-	ramp.colors = colors
-	return ramp
-
-
-## sacengine getScale: min(1, time_left / scale_fade_s).
-func _scale_curve() -> Curve:
-	if type.scale_fade_s <= 0.0:
-		return null
-	var curve := Curve.new()
-	curve.add_point(Vector2(0.0, minf(1.0, type.lifetime_s / type.scale_fade_s)))
-	var knee := 1.0 - type.scale_fade_s / type.lifetime_s
-	if knee > 0.0:
-		curve.add_point(Vector2(knee, 1.0))
-	curve.add_point(Vector2(1.0, 0.0))
-	return curve

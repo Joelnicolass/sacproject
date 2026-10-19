@@ -2,6 +2,9 @@
 class_name ParticleType
 extends Resource
 
+## Points of the alpha ramp over a particle's life (alpha_ramp).
+const RAMP_POINTS := 25
+
 ## Atlas sheet (h_frames x v_frames cells). Imported with mipmaps: particles shrink far away.
 @export var atlas: Texture2D
 @export var h_frames: int = 4
@@ -62,6 +65,40 @@ extends Resource
 ## Light each burst gives off, from the rig's FxLightLayer pool (capped by the preset's
 ## `fx_max_lights`). Empty = no light.
 @export var light: FxLightSpec
+
+
+## sacengine getAlpha over the normalised life (RFC-053 053i shares it between SpriteEmitter and SpriteParticles):
+## min(`cap`, (time_left / fade)^2), fade = `fade_s`, or `fallback_fade_s` (at most half the life) when the type has none
+## (0 = no fade: the sprite keeps `cap` to its last frame and vanishes).
+func alpha_ramp(cap: float, fallback_fade_s := 0.0) -> Gradient:
+	var fade := fade_s if fade_s > 0.0 else minf(fallback_fade_s, lifetime_s * 0.5)
+	var ramp := Gradient.new()
+	var offsets := PackedFloat32Array()
+	var colors := PackedColorArray()
+	for i in RAMP_POINTS:
+		var t := float(i) / float(RAMP_POINTS - 1)
+		var left := lifetime_s * (1.0 - t)
+		var alpha := cap
+		if fade > 0.0:
+			alpha = minf(cap, pow(left / fade, 2.0))
+		offsets.append(t)
+		colors.append(Color(1.0, 1.0, 1.0, alpha))
+	ramp.offsets = offsets
+	ramp.colors = colors
+	return ramp
+
+
+## sacengine getScale: min(1, time_left / scale_fade_s). Null when the type keeps its size.
+func scale_curve() -> Curve:
+	if scale_fade_s <= 0.0:
+		return null
+	var curve := Curve.new()
+	curve.add_point(Vector2(0.0, minf(1.0, lifetime_s / scale_fade_s)))
+	var knee := 1.0 - scale_fade_s / lifetime_s
+	if knee > 0.0:
+		curve.add_point(Vector2(knee, 1.0))
+	curve.add_point(Vector2(1.0, 0.0))
+	return curve
 
 
 func cycle_s() -> float:

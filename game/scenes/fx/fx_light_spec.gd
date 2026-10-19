@@ -35,14 +35,16 @@ func light_up(tree: SceneTree, source: Object, at: Vector3) -> void:
 		pool.flash(source, self, at)
 
 
-func total_s() -> float:
-	return attack_s + decay_s
+## `min_decay_s` (RFC-053 053i): the fall never takes less than this (FxLightLayer.min_decay_s), so a short spark does not read
+## as a light switched off.
+func total_s(min_decay_s := 0.0) -> float:
+	return attack_s + maxf(decay_s, min_decay_s)
 
 
 ## 0..1 of `energy` at `t` seconds since the burst.
-func envelope(t: float) -> float:
-	if t < 0.0 or t >= total_s():
+func envelope(t: float, min_decay_s := 0.0) -> float:
+	if t < 0.0 or t >= total_s(min_decay_s):
 		return 0.0
 	if t < attack_s:
 		return t / attack_s
-	return pow(1.0 - (t - attack_s) / decay_s, decay_power)
+	return pow(1.0 - (t - attack_s) / maxf(decay_s, min_decay_s), decay_power)

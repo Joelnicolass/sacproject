@@ -12,6 +12,7 @@ grow_vertical = 2
 script = ExtResource("1_create")
 
 [node name="Column" type="VBoxContainer" parent="."]
+theme_type_variation = &"VBoxMenu"
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -24,11 +25,10 @@ offset_right = 200.0
 offset_bottom = 170.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 12
 
 [node name="Title" type="Label" parent="Column"]
+theme_type_variation = &"LabelTitle"
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 text = "UI_ROOM_CREATE_TITLE"
 horizontal_alignment = 1
 

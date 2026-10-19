@@ -1,8 +1,6 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/spell_book/spell_slot.gd" id="1_slot"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_slot"]
 
 [sub_resource type="Gradient" id="Gradient_solid"]
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)
@@ -13,13 +11,9 @@ width = 32
 height = 32
 
 [node name="SpellSlot" type="Button"]
+theme_type_variation = &"ButtonBare"
 custom_minimum_size = Vector2(32, 32)
 focus_mode = 0
-theme_override_styles/normal = SubResource("StyleBoxEmpty_slot")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_slot")
-theme_override_styles/pressed = SubResource("StyleBoxEmpty_slot")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_slot")
-theme_override_styles/disabled = SubResource("StyleBoxEmpty_slot")
 script = ExtResource("1_slot")
 
 [node name="Page" type="TextureRect" parent="."]

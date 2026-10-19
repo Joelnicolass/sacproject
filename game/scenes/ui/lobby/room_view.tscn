@@ -17,25 +17,22 @@ seat_scene = ExtResource("2_seat")
 character_select_scene = ExtResource("4_select")
 
 [node name="Layout" type="MarginContainer" parent="."]
+theme_type_variation = &"MarginScreen"
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 24
-theme_override_constants/margin_right = 24
-theme_override_constants/margin_bottom = 24
 
 [node name="Row" type="HBoxContainer" parent="Layout"]
+theme_type_variation = &"HBoxColumns"
 layout_mode = 2
-theme_override_constants/separation = 24
 
 [node name="Left" type="VBoxContainer" parent="Layout/Row"]
+theme_type_variation = &"VBoxForm"
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
 
 [node name="RoomTitle" type="Label" parent="Layout/Row/Left"]
 unique_name_in_owner = true
@@ -56,19 +53,19 @@ unique_name_in_owner = true
 layout_mode = 2
 
 [node name="Seats" type="VBoxContainer" parent="Layout/Row/Left"]
+theme_type_variation = &"VBoxGroup"
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 8
 
 [node name="RoomCountdown" type="Label" parent="Layout/Row/Left"]
+theme_type_variation = &"LabelTitle"
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 
 [node name="RoomResult" type="Label" parent="Layout/Row/Left"]
+theme_type_variation = &"LabelHeading"
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
 autowrap_mode = 3
 
 [node name="Spacer" type="Control" parent="Layout/Row/Left"]
@@ -76,8 +73,8 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="Buttons" type="HBoxContainer" parent="Layout/Row/Left"]
+theme_type_variation = &"HBoxRow"
 layout_mode = 2
-theme_override_constants/separation = 8
 
 [node name="PickCharacter" type="Button" parent="Layout/Row/Left/Buttons"]
 unique_name_in_owner = true

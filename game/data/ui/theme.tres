@@ -1,0 +1,71 @@
+[gd_resource type="Theme" load_steps=4 format=3]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_bare"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_menu"]
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+bg_color = Color(0.12, 0.12, 0.13, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_plate"]
+bg_color = Color(0.07, 0.06, 0.05, 0.85)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.6, 0.5, 0.2, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[resource]
+LabelTitle/base_type = &"Label"
+LabelTitle/font_sizes/font_size = 24
+LabelHeading/base_type = &"Label"
+LabelHeading/font_sizes/font_size = 20
+LabelOutline/base_type = &"Label"
+LabelOutline/colors/font_outline_color = Color(0, 0, 0, 1)
+LabelOutline/constants/outline_size = 4
+LabelOutlineHeavy/base_type = &"Label"
+LabelOutlineHeavy/colors/font_outline_color = Color(0, 0, 0, 1)
+LabelOutlineHeavy/constants/outline_size = 6
+ButtonLarge/base_type = &"Button"
+ButtonLarge/font_sizes/font_size = 20
+ButtonBare/base_type = &"Button"
+ButtonBare/styles/disabled = SubResource("StyleBoxEmpty_bare")
+ButtonBare/styles/focus = SubResource("StyleBoxEmpty_bare")
+ButtonBare/styles/hover = SubResource("StyleBoxEmpty_bare")
+ButtonBare/styles/normal = SubResource("StyleBoxEmpty_bare")
+ButtonBare/styles/pressed = SubResource("StyleBoxEmpty_bare")
+VBoxMenu/base_type = &"VBoxContainer"
+VBoxMenu/constants/separation = 12
+VBoxForm/base_type = &"VBoxContainer"
+VBoxForm/constants/separation = 10
+VBoxGroup/base_type = &"VBoxContainer"
+VBoxGroup/constants/separation = 8
+VBoxList/base_type = &"VBoxContainer"
+VBoxList/constants/separation = 6
+HBoxRow/base_type = &"HBoxContainer"
+HBoxRow/constants/separation = 8
+HBoxTight/base_type = &"HBoxContainer"
+HBoxTight/constants/separation = 6
+HBoxColumns/base_type = &"HBoxContainer"
+HBoxColumns/constants/separation = 24
+HBoxFlush/base_type = &"HBoxContainer"
+HBoxFlush/constants/separation = 0
+MarginScreen/base_type = &"MarginContainer"
+MarginScreen/constants/margin_bottom = 24
+MarginScreen/constants/margin_left = 24
+MarginScreen/constants/margin_right = 24
+MarginScreen/constants/margin_top = 24
+PanelMenu/base_type = &"PanelContainer"
+PanelMenu/styles/panel = SubResource("StyleBoxFlat_menu")
+PanelPlate/base_type = &"Panel"
+PanelPlate/styles/panel = SubResource("StyleBoxFlat_plate")

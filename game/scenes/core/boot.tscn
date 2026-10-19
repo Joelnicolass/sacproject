@@ -24,6 +24,7 @@ unique_name_in_owner = true
 layout_mode = 1
 
 [node name="Column" type="VBoxContainer" parent="."]
+theme_type_variation = &"VBoxMenu"
 unique_name_in_owner = true
 visible = false
 layout_mode = 1
@@ -38,7 +39,6 @@ offset_right = 160.0
 offset_bottom = 280.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 12
 
 [node name="Title" type="Label" parent="Column"]
 layout_mode = 2

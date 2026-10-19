@@ -25,22 +25,20 @@ script = ExtResource("3_readout")
 text = "UI_HUD_STATS"
 
 [node name="Title" type="Label" parent="." groups=["hud_text_allowed"]]
+theme_type_variation = &"LabelOutlineHeavy"
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 24
 text = "UI_HUD_TITLE"
 horizontal_alignment = 2
 
 [node name="GhostState" type="Label" parent="." groups=["hud_text_allowed"]]
+theme_type_variation = &"LabelOutlineHeavy"
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.7, 0.85, 1, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 22
 text = "UI_HUD_GHOST_STATE"
 horizontal_alignment = 2

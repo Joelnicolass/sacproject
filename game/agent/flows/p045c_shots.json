@@ -1,0 +1,123 @@
+{
+ "scene": "res://scenes/core/boot.tscn",
+ "wait_first": 1.0,
+ "steps": [
+  {
+   "scene": "res://scenes/core/boot.tscn"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "boot.png"
+  },
+  {
+   "scene": "res://scenes/ui/character_select/character_select.tscn"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "charselect.png"
+  },
+  {
+   "scene": "res://scenes/ui/lobby/room_list.tscn"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "roomlist.png"
+  },
+  {
+   "scene": "res://scenes/ui/lobby/room_view.tscn"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "roomview.png"
+  },
+  {
+   "scene": "res://scenes/ui/lobby/room_create.tscn"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "lobbycreate.png"
+  },
+  {
+   "scene": "res://scenes/ui/lobby/lobby_connect.tscn"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "lobbyconnect.png"
+  },
+  {
+   "scene": "res://scenes/ui/local_server/local_server_screen.tscn"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "localserver.png"
+  },
+  {
+   "scene": "res://scenes/ui/local_server/local_host_view.tscn"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "localhost.png"
+  },
+  {
+   "scene": "res://scenes/ui/options/options_menu.tscn"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "options.png"
+  },
+  {
+   "scene": "res://scenes/ui/pause_menu/pause_menu.tscn"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "pause.png"
+  },
+  {
+   "scene": "res://scenes/ui/hud/hud.tscn"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "hudscene.png"
+  },
+  {
+   "scene": "res://scenes/ui/spell_book/spell_book.tscn"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "spellbook.png"
+  },
+  {
+   "scene": "res://scenes/match/high_noon.tscn"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "shot": "hud.png"
+  }
+ ]
+}

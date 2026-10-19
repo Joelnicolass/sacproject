@@ -34,9 +34,9 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Column" type="VBoxContainer" parent="Dim/PausePanel"]
+theme_type_variation = &"VBoxMenu"
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_constants/separation = 12
 
 [node name="PauseTitle" type="Label" parent="Dim/PausePanel/Column"]
 unique_name_in_owner = true
@@ -45,9 +45,9 @@ text = "UI_PAUSE_MENU_PAUSE_TITLE"
 horizontal_alignment = 1
 
 [node name="Main" type="VBoxContainer" parent="Dim/PausePanel/Column"]
+theme_type_variation = &"VBoxMenu"
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 12
 
 [node name="Continue" type="Button" parent="Dim/PausePanel/Column/Main"]
 unique_name_in_owner = true
@@ -65,10 +65,10 @@ layout_mode = 2
 text = "UI_PAUSE_MENU_QUIT"
 
 [node name="Confirm" type="VBoxContainer" parent="Dim/PausePanel/Column"]
+theme_type_variation = &"VBoxMenu"
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-theme_override_constants/separation = 12
 
 [node name="Question" type="Label" parent="Dim/PausePanel/Column/Confirm"]
 layout_mode = 2

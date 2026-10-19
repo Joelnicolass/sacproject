@@ -58,6 +58,7 @@ mouse_filter = 2
 color = Color(0, 0.376471, 0.752941, 1)
 
 [node name="Count" type="Label" parent="."]
+theme_type_variation = &"LabelOutline"
 unique_name_in_owner = true
 visible = false
 layout_mode = 0
@@ -66,8 +67,6 @@ offset_top = 19.0
 offset_right = 34.0
 offset_bottom = 32.0
 mouse_filter = 2
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 11
 text = "0"
 horizontal_alignment = 2

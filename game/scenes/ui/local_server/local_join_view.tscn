@@ -14,6 +14,7 @@ script = ExtResource("1_join")
 character_select_scene = ExtResource("2_select")
 
 [node name="Column" type="VBoxContainer" parent="."]
+theme_type_variation = &"VBoxForm"
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -26,11 +27,10 @@ offset_right = 240.0
 offset_bottom = 240.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 10
 
 [node name="Title" type="Label" parent="Column"]
+theme_type_variation = &"LabelTitle"
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 text = "UI_LOCAL_JOIN_VIEW_TITLE"
 horizontal_alignment = 1
 

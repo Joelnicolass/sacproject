@@ -32,6 +32,10 @@ window/size/viewport_height=720
 
 enabled=PackedStringArray("res://addons/mp_kit/plugin.cfg", "res://addons/agent_kit/plugin.cfg", "res://addons/fsm_kit/plugin.cfg", "res://addons/sacrifice_tools/plugin.cfg")
 
+[gui]
+
+theme/custom="res://data/ui/theme.tres"
+
 [input]
 
 check_tick={

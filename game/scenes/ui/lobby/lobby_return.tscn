@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scenes/ui/lobby/lobby_return.gd" id="1_return"]
 
 [node name="LobbyReturn" type="VBoxContainer" groups=["hud_text_allowed"]]
+theme_type_variation = &"VBoxGroup"
 visible = false
 anchors_preset = 5
 anchor_left = 0.5
@@ -12,7 +13,6 @@ offset_top = 200.0
 offset_right = 160.0
 offset_bottom = 280.0
 grow_horizontal = 2
-theme_override_constants/separation = 8
 script = ExtResource("1_return")
 
 [node name="LobbyResult" type="Label" parent="." groups=["hud_text_allowed"]]
@@ -26,8 +26,8 @@ horizontal_alignment = 1
 autowrap_mode = 3
 
 [node name="LobbyReturnButton" type="Button" parent="." groups=["hud_text_allowed"]]
+theme_type_variation = &"ButtonLarge"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
 text = "UI_LOBBY_RETURN_LOBBY_RETURN_BUTTON"

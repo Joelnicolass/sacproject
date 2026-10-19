@@ -14,6 +14,7 @@ script = ExtResource("1_host")
 host_scene = ExtResource("2_server")
 
 [node name="Column" type="VBoxContainer" parent="."]
+theme_type_variation = &"VBoxForm"
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -26,18 +27,17 @@ offset_right = 240.0
 offset_bottom = 230.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 10
 
 [node name="Title" type="Label" parent="Column"]
+theme_type_variation = &"LabelTitle"
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 text = "UI_LOCAL_HOST_VIEW_TITLE"
 horizontal_alignment = 1
 
 [node name="HostForm" type="VBoxContainer" parent="Column"]
+theme_type_variation = &"VBoxForm"
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 10
 
 [node name="HostTransport" type="OptionButton" parent="Column/HostForm"]
 unique_name_in_owner = true
@@ -50,10 +50,10 @@ layout_mode = 2
 text = "UI_LOCAL_HOST_VIEW_CREATE_SERVER"
 
 [node name="HostInfo" type="VBoxContainer" parent="Column"]
+theme_type_variation = &"VBoxList"
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-theme_override_constants/separation = 6
 
 [node name="HostAddress" type="Label" parent="Column/HostInfo"]
 unique_name_in_owner = true

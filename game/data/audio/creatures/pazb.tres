@@ -1,0 +1,77 @@
+[gd_resource type="Resource" script_class="SoundSet" format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_3lfcx"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/locu/_l_o_c5.ogg" id="2_xed21"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/locu/_l_o_c6.ogg" id="3_rt3xm"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/locu/_l_o_c7.ogg" id="4_e5w7t"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/locu/_l_o_c8.ogg" id="5_r87u4"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/locu/_l_o_c_d.ogg" id="6_yje0o"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/locu/_l_o_c_e.ogg" id="7_3yico"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/locu/_l_o_c_b.ogg" id="8_knx0j"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/locu/_l_o_c_c.ogg" id="9_cswag"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/locu/_l_o_c9.ogg" id="10_0m55y"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/locu/_l_o_c_a.ogg" id="11_ficb3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/locu/_l_o_c2.ogg" id="12_tyxvi"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/locu/_l_o_c3.ogg" id="13_ng2wl"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/locu/_l_o_c4.ogg" id="14_f21ao"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/locu/_l_o_c_f.ogg" id="15_xlh0e"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/locu/_l_o_c_g.ogg" id="16_8a1x6"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/locu/_l_o_c_h.ogg" id="17_vh30c"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/locu/_l_o_c_i.ogg" id="18_d6hgd"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/locu/_l_o_c1.ogg" id="19_ku3fb"]
+[ext_resource type="Resource" path="res://data/audio/melee/fist.tres" id="20_od0gv"]
+[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="21_p8jok"]
+
+[sub_resource type="Resource" id="Resource_61eg1"]
+script = ExtResource("1_3lfcx")
+streams = Array[AudioStream]([ExtResource("2_xed21"), ExtResource("3_rt3xm"), ExtResource("4_e5w7t"), ExtResource("5_r87u4")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Resource_52ujc"]
+script = ExtResource("1_3lfcx")
+streams = Array[AudioStream]([ExtResource("6_yje0o"), ExtResource("7_3yico")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Resource_w7qx2"]
+script = ExtResource("1_3lfcx")
+streams = Array[AudioStream]([ExtResource("8_knx0j"), ExtResource("9_cswag")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Resource_xuxyy"]
+script = ExtResource("1_3lfcx")
+streams = Array[AudioStream]([ExtResource("10_0m55y"), ExtResource("11_ficb3")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Resource_egctt"]
+script = ExtResource("1_3lfcx")
+streams = Array[AudioStream]([ExtResource("12_tyxvi"), ExtResource("13_ng2wl"), ExtResource("14_f21ao")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Resource_20vid"]
+script = ExtResource("1_3lfcx")
+streams = Array[AudioStream]([ExtResource("15_xlh0e"), ExtResource("16_8a1x6"), ExtResource("17_vh30c")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Resource_1cu0y"]
+script = ExtResource("1_3lfcx")
+streams = Array[AudioStream]([ExtResource("18_d6hgd")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Resource_xglmp"]
+script = ExtResource("1_3lfcx")
+streams = Array[AudioStream]([ExtResource("19_ku3fb")])
+bus = &"Voice"
+
+[resource]
+script = ExtResource("21_p8jok")
+cues = Dictionary[StringName, ExtResource("1_3lfcx")]({
+&"Xann": SubResource("Resource_61eg1"),
+&"Xcat": SubResource("Resource_w7qx2"),
+&"Xres": SubResource("Resource_xglmp"),
+&"ack": SubResource("Resource_xuxyy"),
+&"damaged": SubResource("Resource_20vid"),
+&"death": SubResource("Resource_1cu0y"),
+&"selected": SubResource("Resource_egctt"),
+&"swing": SubResource("Resource_52ujc")
+})
+fallback = ExtResource("20_od0gv")

@@ -1,0 +1,77 @@
+[gd_resource type="Resource" script_class="SoundSet" format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_tdm1g"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/yeti/_y_e_t5.ogg" id="2_em00h"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/yeti/_y_e_t6.ogg" id="3_68lae"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/yeti/_y_e_t7.ogg" id="4_llw0w"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/yeti/_y_e_t8.ogg" id="5_qbjjy"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/yeti/_y_e_t_d.ogg" id="6_ny1c8"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/yeti/_y_e_t_e.ogg" id="7_etnh0"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/yeti/_y_e_t_b.ogg" id="8_by6o2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/yeti/_y_e_t_c.ogg" id="9_mlqhg"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/yeti/_y_e_t9.ogg" id="10_dg4j3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/yeti/_y_e_t_a.ogg" id="11_pkuut"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/yeti/_y_e_t2.ogg" id="12_w0lup"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/yeti/_y_e_t3.ogg" id="13_siafy"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/yeti/_y_e_t4.ogg" id="14_aqis5"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/yeti/_y_e_t_f.ogg" id="15_neu0s"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/yeti/_y_e_t_g.ogg" id="16_a1eec"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/yeti/_y_e_t_h.ogg" id="17_5qw3p"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/yeti/_y_e_t_j.ogg" id="18_0im5f"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/yeti/_y_e_t1.ogg" id="19_xv8sn"]
+[ext_resource type="Resource" path="res://data/audio/melee/fist.tres" id="20_dgvlr"]
+[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="21_t4hrh"]
+
+[sub_resource type="Resource" id="Resource_wjhb7"]
+script = ExtResource("1_tdm1g")
+streams = Array[AudioStream]([ExtResource("2_em00h"), ExtResource("3_68lae"), ExtResource("4_llw0w"), ExtResource("5_qbjjy")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Resource_dyxgo"]
+script = ExtResource("1_tdm1g")
+streams = Array[AudioStream]([ExtResource("6_ny1c8"), ExtResource("7_etnh0")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Resource_4n1hc"]
+script = ExtResource("1_tdm1g")
+streams = Array[AudioStream]([ExtResource("8_by6o2"), ExtResource("9_mlqhg")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Resource_ro48u"]
+script = ExtResource("1_tdm1g")
+streams = Array[AudioStream]([ExtResource("10_dg4j3"), ExtResource("11_pkuut")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Resource_264pt"]
+script = ExtResource("1_tdm1g")
+streams = Array[AudioStream]([ExtResource("12_w0lup"), ExtResource("13_siafy"), ExtResource("14_aqis5")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Resource_tp7n1"]
+script = ExtResource("1_tdm1g")
+streams = Array[AudioStream]([ExtResource("15_neu0s"), ExtResource("16_a1eec"), ExtResource("17_5qw3p")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Resource_k1fcd"]
+script = ExtResource("1_tdm1g")
+streams = Array[AudioStream]([ExtResource("18_0im5f")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Resource_1x2kp"]
+script = ExtResource("1_tdm1g")
+streams = Array[AudioStream]([ExtResource("19_xv8sn")])
+bus = &"Voice"
+
+[resource]
+script = ExtResource("21_t4hrh")
+cues = Dictionary[StringName, ExtResource("1_tdm1g")]({
+&"Xann": SubResource("Resource_wjhb7"),
+&"Xcat": SubResource("Resource_4n1hc"),
+&"Xres": SubResource("Resource_1x2kp"),
+&"ack": SubResource("Resource_ro48u"),
+&"damaged": SubResource("Resource_tp7n1"),
+&"death": SubResource("Resource_k1fcd"),
+&"selected": SubResource("Resource_264pt"),
+&"swing": SubResource("Resource_dyxgo")
+})
+fallback = ExtResource("20_dgvlr")

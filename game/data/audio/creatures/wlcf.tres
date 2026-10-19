@@ -1,0 +1,83 @@
+[gd_resource type="Resource" script_class="SoundSet" format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_r8un3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bma1.ogg" id="2_vaphq"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bma2.ogg" id="3_h8max"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bma3.ogg" id="4_svyq4"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bma4.ogg" id="5_uyixt"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bma5.ogg" id="6_yiigi"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bma6.ogg" id="7_mblos"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bma7.ogg" id="8_mbjxd"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bm_a4.ogg" id="9_n5mqx"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bm_a5.ogg" id="10_d8hh4"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bm_a1.ogg" id="11_mwd02"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bm_a2.ogg" id="12_ommcj"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bm_a3.ogg" id="13_cjxxl"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bm_c1.ogg" id="14_pik6i"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bm_c2.ogg" id="15_ccodc"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bm_c3.ogg" id="16_lr61x"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bm_c4.ogg" id="17_d1wm2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bmc1.ogg" id="18_o5v5o"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bmc2.ogg" id="19_3rpl8"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bmc3.ogg" id="20_al3y7"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bmd1.ogg" id="21_xofue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bmd2.ogg" id="22_oe7c0"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bmd3.ogg" id="23_fle2p"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bm_d1.ogg" id="24_ncmye"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/bomb/_bmr1.ogg" id="25_fjfpf"]
+[ext_resource type="Resource" path="res://data/audio/melee/fist.tres" id="26_ksiqb"]
+[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="27_hdtul"]
+
+[sub_resource type="Resource" id="Resource_yfl7u"]
+script = ExtResource("1_r8un3")
+streams = Array[AudioStream]([ExtResource("2_vaphq"), ExtResource("3_h8max"), ExtResource("4_svyq4"), ExtResource("5_uyixt"), ExtResource("6_yiigi"), ExtResource("7_mblos"), ExtResource("8_mbjxd")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Resource_pibix"]
+script = ExtResource("1_r8un3")
+streams = Array[AudioStream]([ExtResource("9_n5mqx"), ExtResource("10_d8hh4")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Resource_751hq"]
+script = ExtResource("1_r8un3")
+streams = Array[AudioStream]([ExtResource("11_mwd02"), ExtResource("12_ommcj"), ExtResource("13_cjxxl")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Resource_tm506"]
+script = ExtResource("1_r8un3")
+streams = Array[AudioStream]([ExtResource("14_pik6i"), ExtResource("15_ccodc"), ExtResource("16_lr61x"), ExtResource("17_d1wm2")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Resource_pi86y"]
+script = ExtResource("1_r8un3")
+streams = Array[AudioStream]([ExtResource("18_o5v5o"), ExtResource("19_3rpl8"), ExtResource("20_al3y7")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Resource_qy8at"]
+script = ExtResource("1_r8un3")
+streams = Array[AudioStream]([ExtResource("21_xofue"), ExtResource("22_oe7c0"), ExtResource("23_fle2p")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Resource_dhq8d"]
+script = ExtResource("1_r8un3")
+streams = Array[AudioStream]([ExtResource("24_ncmye")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Resource_qxwvo"]
+script = ExtResource("1_r8un3")
+streams = Array[AudioStream]([ExtResource("25_fjfpf")])
+bus = &"Voice"
+
+[resource]
+script = ExtResource("27_hdtul")
+cues = Dictionary[StringName, ExtResource("1_r8un3")]({
+&"Xann": SubResource("Resource_yfl7u"),
+&"Xcat": SubResource("Resource_751hq"),
+&"Xres": SubResource("Resource_qxwvo"),
+&"ack": SubResource("Resource_tm506"),
+&"damaged": SubResource("Resource_qy8at"),
+&"death": SubResource("Resource_dhq8d"),
+&"selected": SubResource("Resource_pi86y"),
+&"swing": SubResource("Resource_pibix")
+})
+fallback = ExtResource("26_ksiqb")

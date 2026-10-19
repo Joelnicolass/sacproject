@@ -31,7 +31,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 func text_for(slot: int) -> String:
 	if match_state == null or not match_state.has_result() or slot <= 0:
 		return ""
-	if slot == match_state.winner_slot:
+	if slot == match_state.winner_slot or match_state.won(slot):
 		return tr(victory_text)
 	if match_state.is_defeated(slot):
 		return tr(defeat_text)

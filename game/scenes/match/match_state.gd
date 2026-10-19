@@ -24,8 +24,16 @@ const FALLBACK_COLLAPSE_S := 11.0
 ## Node whose subtree holds the altars of this match (the world).
 @export var world: Node
 
-## 0 while the match has no winner.
+## 0 while the match has no winner. With teams (RFC-049 049b) it is the lowest slot of the winning team, kept for the room
+## and the banner; `winner_slots` is the whole team and `won(slot)` the question to ask.
 var winner_slot := 0
+## RFC-049 049b (F291): every slot of the team that won (even an ally that fell before: P3), empty while there is no winner.
+var winner_slots: Array[int] = []
+## The team (SideRelations.team_of) of the winners; 0 with no winner.
+var winner_team := 0
+## RFC-049 049b: the slots with a wizard seated (human or AI), marked by WizardSpawner on the authority. Only they count for the
+## victory (sacengine altarSides, state.d:31493); the altar of an empty seat stays in the map and does not count (P4).
+var seated_slots: Array[int] = []
 var defeated_slots: Array[int] = []
 ## True once the match has a result, with or without a winner.
 var ended := false
@@ -110,14 +118,29 @@ func has_standing_altar(slot: int) -> bool:
 	return false
 
 
-## The slots that own an altar (sacengine altarSides, state.d:30494-30500), in order.
+## The slots that own an altar and have a wizard seated (sacengine altarSides, state.d:30494-30500, 31493-31514), in order. A world
+## where nobody was ever marked (a bench with no WizardSpawner) keeps every owner of an altar, as before 049b.
 func sides() -> Array[int]:
 	var found: Array[int] = []
 	for altar in altars():
 		if altar.owner_slot > 0 and not found.has(altar.owner_slot):
-			found.append(altar.owner_slot)
+			if seated_slots.is_empty() or seated_slots.has(altar.owner_slot):
+				found.append(altar.owner_slot)
 	found.sort()
 	return found
+
+
+## Authority: a wizard sat in `slot` (WizardSpawner._place). Idempotent.
+func mark_seated(slot: int) -> void:
+	if slot <= 0 or seated_slots.has(slot):
+		return
+	seated_slots.append(slot)
+	seated_slots.sort()
+	publish()
+
+
+func is_seated(slot: int) -> bool:
+	return seated_slots.has(slot)
 
 
 func is_defeated(slot: int) -> bool:
@@ -126,6 +149,11 @@ func is_defeated(slot: int) -> bool:
 
 func has_result() -> bool:
 	return ended
+
+
+## The slot is on the winning team (with or without having fallen earlier). False while there is no result.
+func won(slot: int) -> bool:
+	return ended and slot > 0 and winner_slots.has(slot)
 
 
 ## Server (or solo): the friendly fire of this match from the world's rules (never from `rules` of this node, RFC-031
@@ -185,7 +213,28 @@ func end_match(winner: int) -> void:
 		return
 	ended = true
 	winner_slot = winner
+	winner_slots.assign([winner] if winner > 0 else [])
+	winner_team = SideRelations.team_of(winner) if winner > 0 else 0
 	print("partida terminada, gana el slot %d" % winner)
+	result_changed.emit()
+	publish()
+
+
+## Server (or solo): the match is over and the team of `slots` (the living ones that were left, plus the allies that fell before) won.
+## `winner_slot` is the lowest of them. With one slot it is the same as end_match(slot).
+func end_match_team(slots: Array[int]) -> void:
+	if not is_authority() or ended:
+		return
+	if slots.size() <= 1:
+		end_match(slots[0] if slots.size() == 1 else 0)
+		return
+	var team: Array[int] = slots.duplicate()
+	team.sort()
+	ended = true
+	winner_slots.assign(team)
+	winner_slot = team[0]
+	winner_team = SideRelations.team_of(team[0])
+	print("partida terminada, gana el equipo %d: slots %s" % [winner_team, str(team)])
 	result_changed.emit()
 	publish()
 
@@ -223,6 +272,7 @@ func to_snapshot() -> Dictionary:
 		})
 	return {
 		"altars": entries, "defeated": defeated_slots.duplicate(), "winner": winner_slot, "ended": ended,
+		"winners": winner_slots.duplicate(), "winner_team": winner_team, "seated": seated_slots.duplicate(),
 		"friendly_fire": friendly_fire, "ally_damage_factor": ally_damage_factor,
 		"drop_soul": drop_soul, "starting_souls": starting_souls,
 	}
@@ -259,11 +309,20 @@ func apply_snapshot(data: Dictionary) -> void:
 		if not defeated_slots.has(int(slot)):
 			defeated_slots.append(int(slot))
 			side_defeated.emit(int(slot))
+	for slot in data.get("seated", []):
+		if not seated_slots.has(int(slot)):
+			seated_slots.append(int(slot))
+	seated_slots.sort()
 	var now_ended := bool(data.get("ended", false))
 	var now_winner := int(data.get("winner", 0))
-	if now_ended != ended or now_winner != winner_slot:
+	var now_winners: Array[int] = []
+	for slot in data.get("winners", [now_winner] if now_winner > 0 else []):
+		now_winners.append(int(slot))
+	if now_ended != ended or now_winner != winner_slot or now_winners != winner_slots:
 		ended = now_ended
 		winner_slot = now_winner
+		winner_slots.assign(now_winners)
+		winner_team = int(data.get("winner_team", 0))
 		result_changed.emit()
 
 

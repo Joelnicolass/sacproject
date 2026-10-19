@@ -19,6 +19,7 @@ const CROWD_CASES := preload("res://debug/suite/crowd_cases.gd")  # 027d
 const DETERMINISM_CASES := preload("res://debug/suite/determinism_cases.gd")  # 032b
 const FORMATION_CASES := preload("res://debug/suite/formation_cases.gd")  # 038a, 038b
 const RADIAL_CASES := preload("res://debug/suite/radial_cases.gd")  # 038c
+const TEAM_CASES := preload("res://debug/match/team_cases.gd")  # 049b, 049c
 
 @export var auto_run := true
 @export var max_spawned_units := 12
@@ -60,6 +61,7 @@ func _run_suite() -> void:
 	_results.merge(await DETERMINISM_CASES.new().run(self))  # 032b
 	_results.merge(await FORMATION_CASES.new().run(self))  # 038a, 038b
 	_results.merge(RADIAL_CASES.new().run(self))  # 038c
+	_results.merge(await TEAM_CASES.new().run(self))  # 049b, 049c
 	_print_suite()
 
 

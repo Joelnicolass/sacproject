@@ -11,6 +11,9 @@ extends RefCounted
 ## different things: the seats are the first `MapDefinition.player_starts` slots and take the sides players can take
 ## (assignment != 0) in order; the sides no player takes (NPCs) come after the seats. With two seats this is the old
 ## slot = side + 1, so a map with four seats puts its NPCs in slots 5 and up instead of on the seats of players 3 and 4.
+## RFC-049 049b (F291): on top of the SIDS goes the team overlay of the game mode, as sacengine stanceSettings does after seating the
+## wizards: two seats of the mode are allies when they share a team and enemies when they do not; NPCs and houses keep the SIDS.
+## The overlay is installed only when the mode has allies or more than two seats, so 1v1 follows the old path untouched.
 ## The map's rows live in its MapDefinition (`sides`, a MapSides, written once by
 ## tools/bake/bake_map_layout.gd, RFC-035 035d). Without them, or for a side the file does not describe, «another slot is an
 ## enemy» (what the port did before this cut). Static and @tool: the editor and a headless run read it
@@ -32,6 +35,9 @@ static var _seat_sides: Array[int] = []
 static var _npc_sides: Array[int] = []
 ## MapDefinition.player_starts of the map the rows were read for (the hot paths ask it all the time).
 static var _seat_count := 2
+## Team overlay (RFC-049 049b): the mode it was read for, and the team of each seat (seat 1 first). Empty = not installed.
+static var _mode_tag: StringName = &""
+static var _team_of_seat: PackedInt32Array = PackedInt32Array()
 
 
 ## Forgets what was read; the next question reads the sides of the active map (MapDefinition.sides) again.
@@ -40,10 +46,12 @@ static func refresh() -> void:
 	_seat_count = map.player_starts
 	set_rows(map.sides.to_rows() if map.sides != null else [])
 	_rows_tag = map.tag
+	_install_mode()
 
 
-## `rows`: [{id, allies, enemies, assignment}] as MapSides.to_rows gives them.
-static func set_rows(rows: Array) -> void:
+## `rows`: [{id, allies, enemies, assignment}] as MapSides.to_rows gives them. `seats` >= 0 also sets the seat count (a suite
+## that writes its own rows says how many are players); -1 keeps the one of the last map.
+static func set_rows(rows: Array, seats := -1) -> void:
 	_loaded = true
 	_rows_tag = &""
 	_allies = {}
@@ -64,8 +72,45 @@ static func set_rows(rows: Array) -> void:
 			_seat_sides.append(id)
 		else:
 			_npc_sides.append(id)
-	_seat_sides.sort()
+	## sacengine multiplayerSide(i): the seat is the side whose `assignment & 31` is i + 1, not the n-th by id.
+	_seat_sides.sort_custom(_before_by_seat)
 	_npc_sides.sort()
+	if seats >= 0:
+		_seat_count = seats
+	_install_mode()
+
+
+static func _before_by_seat(a: int, b: int) -> bool:
+	var seat_a := int(_assignment[a]) & 31
+	var seat_b := int(_assignment[b]) & 31
+	return seat_a < seat_b if seat_a != seat_b else a < b
+
+
+## Reads the active mode and installs (or clears) the team overlay.
+static func _install_mode() -> void:
+	_mode_tag = GameModeCatalog.current_tag()
+	_team_of_seat = PackedInt32Array()
+	var mode := GameModeCatalog.active()
+	if mode != null and (mode.has_allies() or mode.seats() > 2):
+		_team_of_seat = mode.team_of_seat.duplicate()
+
+
+## True when the team overlay of a mode with allies or more than two seats is on.
+static func has_teams() -> bool:
+	_ensure()
+	return not _team_of_seat.is_empty()
+
+
+## The seat of the mode this slot occupies (the slots 1..min(mode seats, map seats)), or false.
+static func _in_mode(slot: int) -> bool:
+	return slot >= 1 and slot <= _team_of_seat.size() and slot <= _seat_count
+
+
+## The team of a slot: the mode's for a seat of the mode, else `-slot` (its own team: NPCs, the neutral side, or no overlay).
+## With `-slot` for everybody (1v1) the team rules give back the old «every slot for itself».
+static func team_of(slot: int) -> int:
+	_ensure()
+	return _team_of_seat[slot - 1] if _in_mode(slot) else -slot
 
 
 static func side_of(slot: int) -> int:
@@ -108,6 +153,8 @@ static func stance(from_slot: int, to_slot: int) -> Stance:
 	if from_slot == to_slot:
 		return Stance.ALLY
 	_ensure()
+	if _in_mode(from_slot) and _in_mode(to_slot):
+		return Stance.ALLY if _team_of_seat[from_slot - 1] == _team_of_seat[to_slot - 1] else Stance.ENEMY
 	if not knows(from_slot, to_slot):
 		return Stance.ENEMY
 	var from_side := side_of(from_slot)
@@ -134,3 +181,5 @@ static func _ensure() -> void:
 	# The rows of the map are read again when the active map changes (MapCatalog.use); rows set by hand stay.
 	if not _loaded or (_rows_tag != &"" and _rows_tag != MapCatalog.current_tag()):
 		refresh()
+	elif _mode_tag != GameModeCatalog.current_tag():
+		_install_mode()

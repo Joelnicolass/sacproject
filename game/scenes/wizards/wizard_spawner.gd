@@ -42,6 +42,11 @@ func _spawn_ready_peers() -> void:
 
 func _place(pawn: Node, slot: int) -> void:
 	pawn.set("owner_slot", slot)
+	## RFC-049 049b: a wizard sat in this seat; only the seated sides count for the victory (human or AI, on the authority).
+	if not MpKit.is_networked() or MpKit.is_server():
+		var match_state := get_tree().get_first_node_in_group(&"match_state") as MatchState
+		if match_state != null:
+			match_state.mark_seated(slot)
 	var rules: Variant = owner.get("rules") if owner else null
 	if rules is MatchRules:
 		var match_rules := rules as MatchRules

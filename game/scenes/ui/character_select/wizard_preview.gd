@@ -3,7 +3,7 @@ extends SubViewportContainer
 ## The wizard of the character select, turning on a pivot. Each wizard is its BodyRig (the same skeletal body the match
 ## draws) resting on its idle clip.
 
-const _RIG := preload("res://scenes/world/body/body_rig.tscn")
+const _RIG := preload("res://scenes/bodies/body_rig.tscn")
 
 @export var spin_speed: float = 0.5
 @export var model_height: float = 2.0

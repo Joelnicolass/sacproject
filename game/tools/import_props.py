@@ -3,7 +3,7 @@
 
 RFC-033 (033c). One .glb per model, no textures: one primitive per OBJ material label, with a glTF material that only
 carries the label as its name (Godot names the surface after it; OriginalMaterial puts the shared textured material on
-top by that name). The geometry is the one the game used to build with ObjMesh.build (scenes/world/obj_mesh.gd):
+top by that name). The geometry is the one the game used to build with ObjMesh.build (scenes/bodies/obj_mesh.gd):
 winding checked against the file normals, plants drawn on both sides with their own normals. Written into Godot's
 clockwise winding mirrored for glTF (the importer flips it back), so the vertices that reach the game are the same.
 Also writes the hybrid bodies of RFC-023 023c (STATIC_BODIES, no clip animates them) as static props: their bind-pose

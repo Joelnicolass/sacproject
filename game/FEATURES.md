@@ -319,7 +319,7 @@ Abrir una escena con un modelo horneado lo muestra en el editor, y el altar tien
 
 Criterio: abrir `res://scenes/world/props/altar.tscn` en el editor muestra base, techo y 4 pilares en las esquinas, sin `SCRIPT ERROR`. `model` en el inspector es un desplegable. Guardar no deja malla ni pose en el archivo. No hay acción de InputMap: es un corte de editor.
 
-Hecho: `BodyCatalog` (`scenes/world/body_catalog.gd`, `@tool`, estático) lee `cache/baked` sin depender de autoloads; `BodyLibrary` queda como su fachada y los 14 scripts que la usan no cambiaron. `BodyVisual` usa el catálogo, ofrece los 155 tags en un desplegable y en el editor no guarda `mesh` ni su `transform`. En `altar.tscn` cada pilar es `Pillar (Node3D) > Visual`: antes `BodyVisual` pisaba su propia posición y los cuatro se dibujaban en el centro, también en partida. `ClipPosePlayer` apaga su `_physics_process` en el editor (vaciaba la malla del manantial). `sky.gd` no guarda su transform. Review: `reviews/REVIEW-RFC-018a.md` (PASS). Probado en editor headless (malla en los 8 visuales, pilares en ±20, re-guardado sin datos embebidos), en runtime headless (314 casos de pose iguales al script anterior, 8 escenas debug sin errores) y en un dedicado real (0 mallas cargadas). No se vio en el editor con interfaz. El primer Ctrl+S de una escena escrita a mano cambia el formato (`uid=`, `unique_id=`), no los datos. Regla: un `BodyVisual` no se coloca; se coloca su padre. Pendiente: `plant.tscn` tiene el `BodyVisual` como raíz (va en 018d); el gizmo todavía puede mover un visual aunque no se guarde; `node_paths=` sobre `mesh_path` en `unit.tscn`, `wizard_body.tscn` y `structure.tscn`; F17 dice «cuerpos 84 de pie 84» y la galería lista 155 porque incluye props.
+Hecho: `BodyCatalog` (`scenes/bodies/body_catalog.gd`, `@tool`, estático) lee `cache/baked` sin depender de autoloads; `BodyLibrary` queda como su fachada y los 14 scripts que la usan no cambiaron. `BodyVisual` usa el catálogo, ofrece los 155 tags en un desplegable y en el editor no guarda `mesh` ni su `transform`. En `altar.tscn` cada pilar es `Pillar (Node3D) > Visual`: antes `BodyVisual` pisaba su propia posición y los cuatro se dibujaban en el centro, también en partida. `ClipPosePlayer` apaga su `_physics_process` en el editor (vaciaba la malla del manantial). `sky.gd` no guarda su transform. Review: `reviews/REVIEW-RFC-018a.md` (PASS). Probado en editor headless (malla en los 8 visuales, pilares en ±20, re-guardado sin datos embebidos), en runtime headless (314 casos de pose iguales al script anterior, 8 escenas debug sin errores) y en un dedicado real (0 mallas cargadas). No se vio en el editor con interfaz. El primer Ctrl+S de una escena escrita a mano cambia el formato (`uid=`, `unique_id=`), no los datos. Regla: un `BodyVisual` no se coloca; se coloca su padre. Pendiente: `plant.tscn` tiene el `BodyVisual` como raíz (va en 018d); el gizmo todavía puede mover un visual aunque no se guarde; `node_paths=` sobre `mesh_path` en `unit.tscn`, `wizard_body.tscn` y `structure.tscn`; F17 dice «cuerpos 84 de pie 84» y la galería lista 155 porque incluye props.
 
 ### F48 — Inicios y manantiales como nodos de la escena (RFC-018b)
 El mapa muestra en el editor dónde inicia cada jugador y dónde están las fuentes, y se mueven con el gizmo.
@@ -2104,7 +2104,7 @@ Deuda:
 
 **Piezas:**
 - **`tools/import_textures.py`** (+ `tools/sac_formats/textures.py`): 670 PNG únicos con el chroma aplicado en `assets/original/textures/` (73 MB, LFS) e `index.json` (modelo + etiqueta → PNG).
-- **`OriginalMaterial`** (`scenes/world/original_material.gd`): único dueño de los materiales de modelos originales; `apply_to` sirve para los `.glb` de RFC-023.
+- **`OriginalMaterial`** (`scenes/bodies/original_material.gd`): único dueño de los materiales de modelos originales; `apply_to` sirve para los `.glb` de RFC-023.
 - **Migrados a `assets/`:** `ObjMesh`, `ClipPosePlayer._baked_frame`, `wizard.gd`, `bake_clips`, `bake_bodies`, `audit_body_pose`.
 
 **Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-033b.md`).
@@ -2869,7 +2869,7 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
 
 ### F208 — Animación editable en el editor (RFC-036, corte 036g) — cerrado 2026-10-18
 
-- **Qué hay ahora:** `scenes/world/body/models/<tag>.tscn`, una por modelo (73), generada una vez por `tools/bake_body_scenes.gd`. La raíz es un `BodyModel` (`body_model.gd`, `@tool`) con:
+- **Qué hay ahora:** `scenes/bodies/models/<tag>.tscn`, una por modelo (73), generada una vez por `tools/bake_body_scenes.gd`. La raíz es un `BodyModel` (`body_model.gd`, `@tool`) con:
   - `Model`: el `.glb` instanciado (z espejada).
   - `Tree`: un `AnimationTree` guardado. Su `AnimationNodeStateMachine` tiene un estado **por rol** (idle, run, attack, death...) y cada estado reproduce el clip del `.glb` que ese rol usa. Ese es el mapeo rol → animación: se cambia en el editor.
   - `Events`: un `AnimationPlayer` con una animación por clip que tiene eventos de SKEL. Una pista de método llama `ClipEvents.fire(kind)` en el cuadro de cada evento. La clave `attack` es el momento visual del impacto.
@@ -2893,7 +2893,7 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
 - `run_034e` (partida con dedicado): E2E PASS.
 - Partida real con ventana (`pt035e.json` → `agent/out/pt036g/`): AGENT_OK, sin errores, con el mago animado.
 - Sin review separada; la reemplazan las pruebas.
-- **Para el usuario en el editor:** abrir `scenes/world/body/models/eorc.tscn` (el Trogg), elegir `Tree` y previsualizar los roles.
+- **Para el usuario en el editor:** abrir `scenes/bodies/models/eorc.tscn` (el Trogg), elegir `Tree` y previsualizar los roles.
 
 ### F209 — Fuera GroundGuard (RFC-036, corte 036h) — cerrado 2026-10-18
 

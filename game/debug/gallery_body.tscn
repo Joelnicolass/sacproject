@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3]
 
-[ext_resource type="Script" path="res://scenes/world/body_visual.gd" id="1_visual"]
+[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
 [ext_resource type="Script" path="res://debug/capsule_preview.gd" id="2_capsule"]
 
 [node name="GalleryBody" type="Node3D"]

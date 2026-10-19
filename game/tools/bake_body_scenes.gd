@@ -1,6 +1,6 @@
 extends SceneTree
 
-## RFC-036 (036g, F208): writes scenes/world/body/models/<tag>.tscn, one per skeletal model of assets/original/models/.
+## RFC-036 (036g, F208): writes scenes/bodies/models/<tag>.tscn, one per skeletal model of assets/original/models/.
 ## Each scene is a BodyModel: the .glb instanced as "Model" (z mirrored, like the baked meshes), an AnimationTree whose state
 ## machine has one state per ROLE playing the model's clip for it, and an "Events" AnimationPlayer whose method tracks fire
 ## the clip's SKEL events (the "attack" key is the impact). After this runs the scenes are edited in the editor; running it
@@ -16,7 +16,7 @@ extends SceneTree
 
 const INDEX := "res://assets/original/models/index.json"
 const GLB_DIR := "res://assets/original/models/"
-const OUT_DIR := "res://scenes/world/body/models/"
+const OUT_DIR := "res://scenes/bodies/models/"
 const CREATURES_DIR := "res://data/catalog/creatures/"
 const WIZARDS_DIR := "res://data/catalog/wizards/"
 

@@ -1,0 +1,416 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_model.gd" id="1_7q2nl"]
+[ext_resource type="PackedScene" path="res://assets/original/models/adrg.glb" id="2_i8bk6"]
+[ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_gap6i"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_m1bdr"]
+animation = &"ADa1"
+use_custom_timeline = true
+timeline_length = 1.9333333333333333
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_8l8jt"]
+animation = &"ADd1"
+use_custom_timeline = true
+timeline_length = 4.733333333333333
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 0
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_s6g3m"]
+animation = &"ADfl"
+use_custom_timeline = true
+timeline_length = 1.6333333333333333
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_vksom"]
+animation = &"ADda"
+use_custom_timeline = true
+timeline_length = 1.3333333333333333
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_xm7vc"]
+animation = &"ADfi"
+use_custom_timeline = true
+timeline_length = 0.6333333333333333
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 0
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_6gfo0"]
+animation = &"ADi1"
+use_custom_timeline = true
+timeline_length = 3.966666666666667
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_dpb4q"]
+animation = &"ADgu"
+use_custom_timeline = true
+timeline_length = 1.8333333333333333
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_qpy56"]
+animation = &"AD2t"
+use_custom_timeline = true
+timeline_length = 0.8666666666666667
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_mghyv"]
+animation = &"ADhv"
+use_custom_timeline = true
+timeline_length = 1.6333333333333333
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_88nru"]
+animation = &"ADst"
+use_custom_timeline = true
+timeline_length = 3.2333333333333334
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_lhmtk"]
+animation = &"ADfd"
+use_custom_timeline = true
+timeline_length = 1.2333333333333334
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_o2m4k"]
+animation = &"ADla"
+use_custom_timeline = true
+timeline_length = 2.533333333333333
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_i2sxu"]
+animation = &"ADrn"
+use_custom_timeline = true
+timeline_length = 1.3
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ke4da"]
+animation = &"ADto"
+use_custom_timeline = true
+timeline_length = 1.9333333333333333
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_kysne"]
+animation = &"ADsc"
+use_custom_timeline = true
+timeline_length = 0.8333333333333334
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_mcnsv"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_o7apk"]
+xfade_time = 0.15
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_xpp5x"]
+xfade_time = 0.15
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_nige8"]
+states/Start/position = Vector2(60, 100)
+states/attack/node = SubResource("AnimationNodeAnimation_m1bdr")
+states/attack/position = Vector2(660, 40)
+states/death/node = SubResource("AnimationNodeAnimation_8l8jt")
+states/death/position = Vector2(860, 40)
+states/fly/node = SubResource("AnimationNodeAnimation_s6g3m")
+states/fly/position = Vector2(660, 150)
+states/fly_damage/node = SubResource("AnimationNodeAnimation_vksom")
+states/fly_damage/position = Vector2(860, 260)
+states/fly_death/node = SubResource("AnimationNodeAnimation_xm7vc")
+states/fly_death/position = Vector2(660, 370)
+states/gesture/node = SubResource("AnimationNodeAnimation_6gfo0")
+states/gesture/position = Vector2(260, 370)
+states/get_up/node = SubResource("AnimationNodeAnimation_dpb4q")
+states/get_up/position = Vector2(660, 260)
+states/held/node = SubResource("AnimationNodeAnimation_qpy56")
+states/held/position = Vector2(260, 150)
+states/hover/node = SubResource("AnimationNodeAnimation_mghyv")
+states/hover/position = Vector2(460, 370)
+states/idle/node = SubResource("AnimationNodeAnimation_88nru")
+states/idle/position = Vector2(260, 40)
+states/knock/node = SubResource("AnimationNodeAnimation_lhmtk")
+states/knock/position = Vector2(460, 260)
+states/land/node = SubResource("AnimationNodeAnimation_o2m4k")
+states/land/position = Vector2(260, 260)
+states/run/node = SubResource("AnimationNodeAnimation_i2sxu")
+states/run/position = Vector2(460, 40)
+states/takeoff/node = SubResource("AnimationNodeAnimation_ke4da")
+states/takeoff/position = Vector2(860, 150)
+states/thrash/node = SubResource("AnimationNodeAnimation_kysne")
+states/thrash/position = Vector2(460, 150)
+transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_mcnsv"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_o7apk"), "idle", "attack", SubResource("AnimationNodeStateMachineTransition_o7apk"), "idle", "death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "idle", "held", SubResource("AnimationNodeStateMachineTransition_o7apk"), "idle", "thrash", SubResource("AnimationNodeStateMachineTransition_o7apk"), "idle", "fly", SubResource("AnimationNodeStateMachineTransition_o7apk"), "idle", "takeoff", SubResource("AnimationNodeStateMachineTransition_o7apk"), "idle", "land", SubResource("AnimationNodeStateMachineTransition_o7apk"), "idle", "knock", SubResource("AnimationNodeStateMachineTransition_o7apk"), "idle", "get_up", SubResource("AnimationNodeStateMachineTransition_o7apk"), "idle", "fly_damage", SubResource("AnimationNodeStateMachineTransition_o7apk"), "idle", "gesture", SubResource("AnimationNodeStateMachineTransition_o7apk"), "idle", "hover", SubResource("AnimationNodeStateMachineTransition_o7apk"), "idle", "fly_death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_o7apk"), "run", "attack", SubResource("AnimationNodeStateMachineTransition_o7apk"), "run", "death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "run", "held", SubResource("AnimationNodeStateMachineTransition_o7apk"), "run", "thrash", SubResource("AnimationNodeStateMachineTransition_o7apk"), "run", "fly", SubResource("AnimationNodeStateMachineTransition_o7apk"), "run", "takeoff", SubResource("AnimationNodeStateMachineTransition_o7apk"), "run", "land", SubResource("AnimationNodeStateMachineTransition_o7apk"), "run", "knock", SubResource("AnimationNodeStateMachineTransition_o7apk"), "run", "get_up", SubResource("AnimationNodeStateMachineTransition_o7apk"), "run", "fly_damage", SubResource("AnimationNodeStateMachineTransition_o7apk"), "run", "gesture", SubResource("AnimationNodeStateMachineTransition_o7apk"), "run", "hover", SubResource("AnimationNodeStateMachineTransition_o7apk"), "run", "fly_death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "attack", "idle", SubResource("AnimationNodeStateMachineTransition_xpp5x"), "attack", "run", SubResource("AnimationNodeStateMachineTransition_o7apk"), "attack", "death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "attack", "held", SubResource("AnimationNodeStateMachineTransition_o7apk"), "attack", "thrash", SubResource("AnimationNodeStateMachineTransition_o7apk"), "attack", "fly", SubResource("AnimationNodeStateMachineTransition_o7apk"), "attack", "takeoff", SubResource("AnimationNodeStateMachineTransition_o7apk"), "attack", "land", SubResource("AnimationNodeStateMachineTransition_o7apk"), "attack", "knock", SubResource("AnimationNodeStateMachineTransition_o7apk"), "attack", "get_up", SubResource("AnimationNodeStateMachineTransition_o7apk"), "attack", "fly_damage", SubResource("AnimationNodeStateMachineTransition_o7apk"), "attack", "gesture", SubResource("AnimationNodeStateMachineTransition_o7apk"), "attack", "hover", SubResource("AnimationNodeStateMachineTransition_o7apk"), "attack", "fly_death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "death", "idle", SubResource("AnimationNodeStateMachineTransition_o7apk"), "death", "run", SubResource("AnimationNodeStateMachineTransition_o7apk"), "death", "attack", SubResource("AnimationNodeStateMachineTransition_o7apk"), "death", "held", SubResource("AnimationNodeStateMachineTransition_o7apk"), "death", "thrash", SubResource("AnimationNodeStateMachineTransition_o7apk"), "death", "fly", SubResource("AnimationNodeStateMachineTransition_o7apk"), "death", "takeoff", SubResource("AnimationNodeStateMachineTransition_o7apk"), "death", "land", SubResource("AnimationNodeStateMachineTransition_o7apk"), "death", "knock", SubResource("AnimationNodeStateMachineTransition_o7apk"), "death", "get_up", SubResource("AnimationNodeStateMachineTransition_o7apk"), "death", "fly_damage", SubResource("AnimationNodeStateMachineTransition_o7apk"), "death", "gesture", SubResource("AnimationNodeStateMachineTransition_o7apk"), "death", "hover", SubResource("AnimationNodeStateMachineTransition_o7apk"), "death", "fly_death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "held", "idle", SubResource("AnimationNodeStateMachineTransition_o7apk"), "held", "run", SubResource("AnimationNodeStateMachineTransition_o7apk"), "held", "attack", SubResource("AnimationNodeStateMachineTransition_o7apk"), "held", "death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "held", "thrash", SubResource("AnimationNodeStateMachineTransition_o7apk"), "held", "fly", SubResource("AnimationNodeStateMachineTransition_o7apk"), "held", "takeoff", SubResource("AnimationNodeStateMachineTransition_o7apk"), "held", "land", SubResource("AnimationNodeStateMachineTransition_o7apk"), "held", "knock", SubResource("AnimationNodeStateMachineTransition_o7apk"), "held", "get_up", SubResource("AnimationNodeStateMachineTransition_o7apk"), "held", "fly_damage", SubResource("AnimationNodeStateMachineTransition_o7apk"), "held", "gesture", SubResource("AnimationNodeStateMachineTransition_o7apk"), "held", "hover", SubResource("AnimationNodeStateMachineTransition_o7apk"), "held", "fly_death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "thrash", "idle", SubResource("AnimationNodeStateMachineTransition_o7apk"), "thrash", "run", SubResource("AnimationNodeStateMachineTransition_o7apk"), "thrash", "attack", SubResource("AnimationNodeStateMachineTransition_o7apk"), "thrash", "death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "thrash", "held", SubResource("AnimationNodeStateMachineTransition_o7apk"), "thrash", "fly", SubResource("AnimationNodeStateMachineTransition_o7apk"), "thrash", "takeoff", SubResource("AnimationNodeStateMachineTransition_o7apk"), "thrash", "land", SubResource("AnimationNodeStateMachineTransition_o7apk"), "thrash", "knock", SubResource("AnimationNodeStateMachineTransition_o7apk"), "thrash", "get_up", SubResource("AnimationNodeStateMachineTransition_o7apk"), "thrash", "fly_damage", SubResource("AnimationNodeStateMachineTransition_o7apk"), "thrash", "gesture", SubResource("AnimationNodeStateMachineTransition_o7apk"), "thrash", "hover", SubResource("AnimationNodeStateMachineTransition_o7apk"), "thrash", "fly_death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly", "idle", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly", "run", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly", "attack", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly", "death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly", "held", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly", "thrash", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly", "takeoff", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly", "land", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly", "knock", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly", "get_up", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly", "fly_damage", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly", "gesture", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly", "hover", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly", "fly_death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "takeoff", "idle", SubResource("AnimationNodeStateMachineTransition_o7apk"), "takeoff", "run", SubResource("AnimationNodeStateMachineTransition_o7apk"), "takeoff", "attack", SubResource("AnimationNodeStateMachineTransition_o7apk"), "takeoff", "death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "takeoff", "held", SubResource("AnimationNodeStateMachineTransition_o7apk"), "takeoff", "thrash", SubResource("AnimationNodeStateMachineTransition_o7apk"), "takeoff", "fly", SubResource("AnimationNodeStateMachineTransition_o7apk"), "takeoff", "land", SubResource("AnimationNodeStateMachineTransition_o7apk"), "takeoff", "knock", SubResource("AnimationNodeStateMachineTransition_o7apk"), "takeoff", "get_up", SubResource("AnimationNodeStateMachineTransition_o7apk"), "takeoff", "fly_damage", SubResource("AnimationNodeStateMachineTransition_o7apk"), "takeoff", "gesture", SubResource("AnimationNodeStateMachineTransition_o7apk"), "takeoff", "hover", SubResource("AnimationNodeStateMachineTransition_o7apk"), "takeoff", "fly_death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "land", "idle", SubResource("AnimationNodeStateMachineTransition_o7apk"), "land", "run", SubResource("AnimationNodeStateMachineTransition_o7apk"), "land", "attack", SubResource("AnimationNodeStateMachineTransition_o7apk"), "land", "death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "land", "held", SubResource("AnimationNodeStateMachineTransition_o7apk"), "land", "thrash", SubResource("AnimationNodeStateMachineTransition_o7apk"), "land", "fly", SubResource("AnimationNodeStateMachineTransition_o7apk"), "land", "takeoff", SubResource("AnimationNodeStateMachineTransition_o7apk"), "land", "knock", SubResource("AnimationNodeStateMachineTransition_o7apk"), "land", "get_up", SubResource("AnimationNodeStateMachineTransition_o7apk"), "land", "fly_damage", SubResource("AnimationNodeStateMachineTransition_o7apk"), "land", "gesture", SubResource("AnimationNodeStateMachineTransition_o7apk"), "land", "hover", SubResource("AnimationNodeStateMachineTransition_o7apk"), "land", "fly_death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "knock", "idle", SubResource("AnimationNodeStateMachineTransition_o7apk"), "knock", "run", SubResource("AnimationNodeStateMachineTransition_o7apk"), "knock", "attack", SubResource("AnimationNodeStateMachineTransition_o7apk"), "knock", "death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "knock", "held", SubResource("AnimationNodeStateMachineTransition_o7apk"), "knock", "thrash", SubResource("AnimationNodeStateMachineTransition_o7apk"), "knock", "fly", SubResource("AnimationNodeStateMachineTransition_o7apk"), "knock", "takeoff", SubResource("AnimationNodeStateMachineTransition_o7apk"), "knock", "land", SubResource("AnimationNodeStateMachineTransition_o7apk"), "knock", "get_up", SubResource("AnimationNodeStateMachineTransition_o7apk"), "knock", "fly_damage", SubResource("AnimationNodeStateMachineTransition_o7apk"), "knock", "gesture", SubResource("AnimationNodeStateMachineTransition_o7apk"), "knock", "hover", SubResource("AnimationNodeStateMachineTransition_o7apk"), "knock", "fly_death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "get_up", "idle", SubResource("AnimationNodeStateMachineTransition_o7apk"), "get_up", "run", SubResource("AnimationNodeStateMachineTransition_o7apk"), "get_up", "attack", SubResource("AnimationNodeStateMachineTransition_o7apk"), "get_up", "death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "get_up", "held", SubResource("AnimationNodeStateMachineTransition_o7apk"), "get_up", "thrash", SubResource("AnimationNodeStateMachineTransition_o7apk"), "get_up", "fly", SubResource("AnimationNodeStateMachineTransition_o7apk"), "get_up", "takeoff", SubResource("AnimationNodeStateMachineTransition_o7apk"), "get_up", "land", SubResource("AnimationNodeStateMachineTransition_o7apk"), "get_up", "knock", SubResource("AnimationNodeStateMachineTransition_o7apk"), "get_up", "fly_damage", SubResource("AnimationNodeStateMachineTransition_o7apk"), "get_up", "gesture", SubResource("AnimationNodeStateMachineTransition_o7apk"), "get_up", "hover", SubResource("AnimationNodeStateMachineTransition_o7apk"), "get_up", "fly_death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_damage", "idle", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_damage", "run", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_damage", "attack", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_damage", "death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_damage", "held", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_damage", "thrash", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_damage", "fly", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_damage", "takeoff", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_damage", "land", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_damage", "knock", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_damage", "get_up", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_damage", "gesture", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_damage", "hover", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_damage", "fly_death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "gesture", "idle", SubResource("AnimationNodeStateMachineTransition_o7apk"), "gesture", "run", SubResource("AnimationNodeStateMachineTransition_o7apk"), "gesture", "attack", SubResource("AnimationNodeStateMachineTransition_o7apk"), "gesture", "death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "gesture", "held", SubResource("AnimationNodeStateMachineTransition_o7apk"), "gesture", "thrash", SubResource("AnimationNodeStateMachineTransition_o7apk"), "gesture", "fly", SubResource("AnimationNodeStateMachineTransition_o7apk"), "gesture", "takeoff", SubResource("AnimationNodeStateMachineTransition_o7apk"), "gesture", "land", SubResource("AnimationNodeStateMachineTransition_o7apk"), "gesture", "knock", SubResource("AnimationNodeStateMachineTransition_o7apk"), "gesture", "get_up", SubResource("AnimationNodeStateMachineTransition_o7apk"), "gesture", "fly_damage", SubResource("AnimationNodeStateMachineTransition_o7apk"), "gesture", "hover", SubResource("AnimationNodeStateMachineTransition_o7apk"), "gesture", "fly_death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "hover", "idle", SubResource("AnimationNodeStateMachineTransition_o7apk"), "hover", "run", SubResource("AnimationNodeStateMachineTransition_o7apk"), "hover", "attack", SubResource("AnimationNodeStateMachineTransition_o7apk"), "hover", "death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "hover", "held", SubResource("AnimationNodeStateMachineTransition_o7apk"), "hover", "thrash", SubResource("AnimationNodeStateMachineTransition_o7apk"), "hover", "fly", SubResource("AnimationNodeStateMachineTransition_o7apk"), "hover", "takeoff", SubResource("AnimationNodeStateMachineTransition_o7apk"), "hover", "land", SubResource("AnimationNodeStateMachineTransition_o7apk"), "hover", "knock", SubResource("AnimationNodeStateMachineTransition_o7apk"), "hover", "get_up", SubResource("AnimationNodeStateMachineTransition_o7apk"), "hover", "fly_damage", SubResource("AnimationNodeStateMachineTransition_o7apk"), "hover", "gesture", SubResource("AnimationNodeStateMachineTransition_o7apk"), "hover", "fly_death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_death", "idle", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_death", "run", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_death", "attack", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_death", "death", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_death", "held", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_death", "thrash", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_death", "fly", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_death", "takeoff", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_death", "land", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_death", "knock", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_death", "get_up", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_death", "fly_damage", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_death", "gesture", SubResource("AnimationNodeStateMachineTransition_o7apk"), "fly_death", "hover", SubResource("AnimationNodeStateMachineTransition_o7apk")]
+
+[sub_resource type="Animation" id="Animation_noyax"]
+length = 1.9333333333333333
+loop_mode = 1
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ClipEvents")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.73333335),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["attack"],
+"method": &"fire"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_rgys3"]
+_data = {
+&"ADa1": SubResource("Animation_noyax")
+}
+
+[node name="adrg" type="Node3D" unique_id=1754530696]
+script = ExtResource("1_7q2nl")
+model = "adrg"
+bind_aabb = AABB(-10.352123, -2.735702, -5.120929, 20.710245, 6.315527, 8.370101)
+surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0], [8.0], [9.0]]
+clips = {
+"AD2t": {
+"framerate": 30,
+"frames": 26,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"ADa1": {
+"framerate": 30,
+"frames": 58,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"ADd1": {
+"framerate": 30,
+"frames": 142,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"ADda": {
+"framerate": 30,
+"frames": 40,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"ADfd": {
+"framerate": 30,
+"frames": 37,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"ADfi": {
+"framerate": 30,
+"frames": 19,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"ADfl": {
+"framerate": 30,
+"frames": 49,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"ADgu": {
+"framerate": 30,
+"frames": 55,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"ADhv": {
+"framerate": 30,
+"frames": 49,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"ADi1": {
+"framerate": 30,
+"frames": 119,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"ADla": {
+"framerate": 30,
+"frames": 76,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"ADrn": {
+"framerate": 30,
+"frames": 39,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"ADsc": {
+"framerate": 30,
+"frames": 25,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"ADst": {
+"framerate": 30,
+"frames": 97,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"ADto": {
+"framerate": 30,
+"frames": 58,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+}
+}
+
+[node name="Model" parent="." unique_id=1654047354 instance=ExtResource("2_i8bk6")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="Tree" type="AnimationTree" parent="." unique_id=620403932]
+unique_name_in_owner = true
+active = false
+root_node = NodePath("../Model")
+tree_root = SubResource("AnimationNodeStateMachine_nige8")
+anim_player = NodePath("../Model/AnimationPlayer")
+
+[node name="Events" type="AnimationPlayer" parent="." unique_id=1460914200]
+unique_name_in_owner = true
+deterministic = true
+libraries/ = SubResource("AnimationLibrary_rgys3")
+
+[node name="ClipEvents" type="Node" parent="." unique_id=1393309955]
+unique_name_in_owner = true
+script = ExtResource("3_gap6i")

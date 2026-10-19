@@ -1,0 +1,459 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_model.gd" id="1_owh71"]
+[ext_resource type="PackedScene" path="res://assets/original/models/peas.glb" id="2_s0fn7"]
+[ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_15jcw"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_tmk65"]
+animation = &"PEa1"
+use_custom_timeline = true
+timeline_length = 0.8666666666666667
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_3e3cx"]
+animation = &"PEcw"
+use_custom_timeline = true
+timeline_length = 1.8666666666666667
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_8u6ck"]
+animation = &"PEd1"
+use_custom_timeline = true
+timeline_length = 2.2
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 0
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_jnc4s"]
+animation = &"PEpu"
+use_custom_timeline = true
+timeline_length = 14.833333333333334
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_s8ipn"]
+animation = &"PEdi"
+use_custom_timeline = true
+timeline_length = 6.6
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ywwnb"]
+animation = &"PEpd"
+use_custom_timeline = true
+timeline_length = 2.1666666666666665
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 0
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_aot5e"]
+animation = &"PEi1"
+use_custom_timeline = true
+timeline_length = 1.1333333333333333
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_2fw5n"]
+animation = &"PEgu"
+use_custom_timeline = true
+timeline_length = 3.2666666666666666
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_vrcug"]
+animation = &"PE2t"
+use_custom_timeline = true
+timeline_length = 0.5333333333333333
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_mkwdh"]
+animation = &"PEst"
+use_custom_timeline = true
+timeline_length = 1.8666666666666667
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ok4p0"]
+animation = &"PEfd"
+use_custom_timeline = true
+timeline_length = 0.8333333333333334
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_07i1f"]
+animation = &"PEp2"
+use_custom_timeline = true
+timeline_length = 3.1
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_8mimn"]
+animation = &"PErz"
+use_custom_timeline = true
+timeline_length = 1.6333333333333333
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_jmaf3"]
+animation = &"PErn"
+use_custom_timeline = true
+timeline_length = 1.0666666666666667
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_jb6dl"]
+animation = &"PEcw"
+use_custom_timeline = true
+timeline_length = 1.8666666666666667
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_lkyhj"]
+animation = &"PEtc"
+use_custom_timeline = true
+timeline_length = 1.8666666666666667
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_qk0vf"]
+animation = &"PEsc"
+use_custom_timeline = true
+timeline_length = 0.6666666666666666
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_o02mk"]
+animation = &"PEdi"
+use_custom_timeline = true
+timeline_length = 6.6
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_f1ypu"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_hjbys"]
+xfade_time = 0.15
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_gfo11"]
+xfade_time = 0.15
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_bl6ku"]
+states/Start/position = Vector2(60, 100)
+states/attack/node = SubResource("AnimationNodeAnimation_tmk65")
+states/attack/position = Vector2(660, 40)
+states/cower/node = SubResource("AnimationNodeAnimation_3e3cx")
+states/cower/position = Vector2(260, 260)
+states/death/node = SubResource("AnimationNodeAnimation_8u6ck")
+states/death/position = Vector2(860, 40)
+states/fly/node = SubResource("AnimationNodeAnimation_jnc4s")
+states/fly/position = Vector2(860, 150)
+states/fly_damage/node = SubResource("AnimationNodeAnimation_s8ipn")
+states/fly_damage/position = Vector2(860, 370)
+states/fly_death/node = SubResource("AnimationNodeAnimation_ywwnb")
+states/fly_death/position = Vector2(460, 480)
+states/gesture/node = SubResource("AnimationNodeAnimation_aot5e")
+states/gesture/position = Vector2(260, 480)
+states/get_up/node = SubResource("AnimationNodeAnimation_2fw5n")
+states/get_up/position = Vector2(660, 370)
+states/held/node = SubResource("AnimationNodeAnimation_vrcug")
+states/held/position = Vector2(260, 150)
+states/idle/node = SubResource("AnimationNodeAnimation_mkwdh")
+states/idle/position = Vector2(260, 40)
+states/knock/node = SubResource("AnimationNodeAnimation_ok4p0")
+states/knock/position = Vector2(460, 370)
+states/land/node = SubResource("AnimationNodeAnimation_07i1f")
+states/land/position = Vector2(260, 370)
+states/rise/node = SubResource("AnimationNodeAnimation_8mimn")
+states/rise/position = Vector2(660, 150)
+states/run/node = SubResource("AnimationNodeAnimation_jmaf3")
+states/run/position = Vector2(460, 40)
+states/takeoff/node = SubResource("AnimationNodeAnimation_jb6dl")
+states/takeoff/position = Vector2(860, 260)
+states/talk_cower/node = SubResource("AnimationNodeAnimation_lkyhj")
+states/talk_cower/position = Vector2(460, 260)
+states/thrash/node = SubResource("AnimationNodeAnimation_qk0vf")
+states/thrash/position = Vector2(460, 150)
+states/work/node = SubResource("AnimationNodeAnimation_o02mk")
+states/work/position = Vector2(660, 260)
+transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_f1ypu"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_hjbys"), "idle", "attack", SubResource("AnimationNodeStateMachineTransition_hjbys"), "idle", "death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "idle", "held", SubResource("AnimationNodeStateMachineTransition_hjbys"), "idle", "thrash", SubResource("AnimationNodeStateMachineTransition_hjbys"), "idle", "rise", SubResource("AnimationNodeStateMachineTransition_hjbys"), "idle", "fly", SubResource("AnimationNodeStateMachineTransition_hjbys"), "idle", "cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "idle", "talk_cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "idle", "work", SubResource("AnimationNodeStateMachineTransition_hjbys"), "idle", "takeoff", SubResource("AnimationNodeStateMachineTransition_hjbys"), "idle", "land", SubResource("AnimationNodeStateMachineTransition_hjbys"), "idle", "knock", SubResource("AnimationNodeStateMachineTransition_hjbys"), "idle", "get_up", SubResource("AnimationNodeStateMachineTransition_hjbys"), "idle", "fly_damage", SubResource("AnimationNodeStateMachineTransition_hjbys"), "idle", "gesture", SubResource("AnimationNodeStateMachineTransition_hjbys"), "idle", "fly_death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_hjbys"), "run", "attack", SubResource("AnimationNodeStateMachineTransition_hjbys"), "run", "death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "run", "held", SubResource("AnimationNodeStateMachineTransition_hjbys"), "run", "thrash", SubResource("AnimationNodeStateMachineTransition_hjbys"), "run", "rise", SubResource("AnimationNodeStateMachineTransition_hjbys"), "run", "fly", SubResource("AnimationNodeStateMachineTransition_hjbys"), "run", "cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "run", "talk_cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "run", "work", SubResource("AnimationNodeStateMachineTransition_hjbys"), "run", "takeoff", SubResource("AnimationNodeStateMachineTransition_hjbys"), "run", "land", SubResource("AnimationNodeStateMachineTransition_hjbys"), "run", "knock", SubResource("AnimationNodeStateMachineTransition_hjbys"), "run", "get_up", SubResource("AnimationNodeStateMachineTransition_hjbys"), "run", "fly_damage", SubResource("AnimationNodeStateMachineTransition_hjbys"), "run", "gesture", SubResource("AnimationNodeStateMachineTransition_hjbys"), "run", "fly_death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "attack", "idle", SubResource("AnimationNodeStateMachineTransition_gfo11"), "attack", "run", SubResource("AnimationNodeStateMachineTransition_hjbys"), "attack", "death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "attack", "held", SubResource("AnimationNodeStateMachineTransition_hjbys"), "attack", "thrash", SubResource("AnimationNodeStateMachineTransition_hjbys"), "attack", "rise", SubResource("AnimationNodeStateMachineTransition_hjbys"), "attack", "fly", SubResource("AnimationNodeStateMachineTransition_hjbys"), "attack", "cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "attack", "talk_cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "attack", "work", SubResource("AnimationNodeStateMachineTransition_hjbys"), "attack", "takeoff", SubResource("AnimationNodeStateMachineTransition_hjbys"), "attack", "land", SubResource("AnimationNodeStateMachineTransition_hjbys"), "attack", "knock", SubResource("AnimationNodeStateMachineTransition_hjbys"), "attack", "get_up", SubResource("AnimationNodeStateMachineTransition_hjbys"), "attack", "fly_damage", SubResource("AnimationNodeStateMachineTransition_hjbys"), "attack", "gesture", SubResource("AnimationNodeStateMachineTransition_hjbys"), "attack", "fly_death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "death", "idle", SubResource("AnimationNodeStateMachineTransition_hjbys"), "death", "run", SubResource("AnimationNodeStateMachineTransition_hjbys"), "death", "attack", SubResource("AnimationNodeStateMachineTransition_hjbys"), "death", "held", SubResource("AnimationNodeStateMachineTransition_hjbys"), "death", "thrash", SubResource("AnimationNodeStateMachineTransition_hjbys"), "death", "rise", SubResource("AnimationNodeStateMachineTransition_hjbys"), "death", "fly", SubResource("AnimationNodeStateMachineTransition_hjbys"), "death", "cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "death", "talk_cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "death", "work", SubResource("AnimationNodeStateMachineTransition_hjbys"), "death", "takeoff", SubResource("AnimationNodeStateMachineTransition_hjbys"), "death", "land", SubResource("AnimationNodeStateMachineTransition_hjbys"), "death", "knock", SubResource("AnimationNodeStateMachineTransition_hjbys"), "death", "get_up", SubResource("AnimationNodeStateMachineTransition_hjbys"), "death", "fly_damage", SubResource("AnimationNodeStateMachineTransition_hjbys"), "death", "gesture", SubResource("AnimationNodeStateMachineTransition_hjbys"), "death", "fly_death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "held", "idle", SubResource("AnimationNodeStateMachineTransition_hjbys"), "held", "run", SubResource("AnimationNodeStateMachineTransition_hjbys"), "held", "attack", SubResource("AnimationNodeStateMachineTransition_hjbys"), "held", "death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "held", "thrash", SubResource("AnimationNodeStateMachineTransition_hjbys"), "held", "rise", SubResource("AnimationNodeStateMachineTransition_hjbys"), "held", "fly", SubResource("AnimationNodeStateMachineTransition_hjbys"), "held", "cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "held", "talk_cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "held", "work", SubResource("AnimationNodeStateMachineTransition_hjbys"), "held", "takeoff", SubResource("AnimationNodeStateMachineTransition_hjbys"), "held", "land", SubResource("AnimationNodeStateMachineTransition_hjbys"), "held", "knock", SubResource("AnimationNodeStateMachineTransition_hjbys"), "held", "get_up", SubResource("AnimationNodeStateMachineTransition_hjbys"), "held", "fly_damage", SubResource("AnimationNodeStateMachineTransition_hjbys"), "held", "gesture", SubResource("AnimationNodeStateMachineTransition_hjbys"), "held", "fly_death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "thrash", "idle", SubResource("AnimationNodeStateMachineTransition_hjbys"), "thrash", "run", SubResource("AnimationNodeStateMachineTransition_hjbys"), "thrash", "attack", SubResource("AnimationNodeStateMachineTransition_hjbys"), "thrash", "death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "thrash", "held", SubResource("AnimationNodeStateMachineTransition_hjbys"), "thrash", "rise", SubResource("AnimationNodeStateMachineTransition_hjbys"), "thrash", "fly", SubResource("AnimationNodeStateMachineTransition_hjbys"), "thrash", "cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "thrash", "talk_cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "thrash", "work", SubResource("AnimationNodeStateMachineTransition_hjbys"), "thrash", "takeoff", SubResource("AnimationNodeStateMachineTransition_hjbys"), "thrash", "land", SubResource("AnimationNodeStateMachineTransition_hjbys"), "thrash", "knock", SubResource("AnimationNodeStateMachineTransition_hjbys"), "thrash", "get_up", SubResource("AnimationNodeStateMachineTransition_hjbys"), "thrash", "fly_damage", SubResource("AnimationNodeStateMachineTransition_hjbys"), "thrash", "gesture", SubResource("AnimationNodeStateMachineTransition_hjbys"), "thrash", "fly_death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "rise", "idle", SubResource("AnimationNodeStateMachineTransition_gfo11"), "rise", "run", SubResource("AnimationNodeStateMachineTransition_hjbys"), "rise", "attack", SubResource("AnimationNodeStateMachineTransition_hjbys"), "rise", "death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "rise", "held", SubResource("AnimationNodeStateMachineTransition_hjbys"), "rise", "thrash", SubResource("AnimationNodeStateMachineTransition_hjbys"), "rise", "fly", SubResource("AnimationNodeStateMachineTransition_hjbys"), "rise", "cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "rise", "talk_cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "rise", "work", SubResource("AnimationNodeStateMachineTransition_hjbys"), "rise", "takeoff", SubResource("AnimationNodeStateMachineTransition_hjbys"), "rise", "land", SubResource("AnimationNodeStateMachineTransition_hjbys"), "rise", "knock", SubResource("AnimationNodeStateMachineTransition_hjbys"), "rise", "get_up", SubResource("AnimationNodeStateMachineTransition_hjbys"), "rise", "fly_damage", SubResource("AnimationNodeStateMachineTransition_hjbys"), "rise", "gesture", SubResource("AnimationNodeStateMachineTransition_hjbys"), "rise", "fly_death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly", "idle", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly", "run", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly", "attack", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly", "death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly", "held", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly", "thrash", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly", "rise", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly", "cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly", "talk_cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly", "work", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly", "takeoff", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly", "land", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly", "knock", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly", "get_up", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly", "fly_damage", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly", "gesture", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly", "fly_death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "cower", "idle", SubResource("AnimationNodeStateMachineTransition_hjbys"), "cower", "run", SubResource("AnimationNodeStateMachineTransition_hjbys"), "cower", "attack", SubResource("AnimationNodeStateMachineTransition_hjbys"), "cower", "death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "cower", "held", SubResource("AnimationNodeStateMachineTransition_hjbys"), "cower", "thrash", SubResource("AnimationNodeStateMachineTransition_hjbys"), "cower", "rise", SubResource("AnimationNodeStateMachineTransition_hjbys"), "cower", "fly", SubResource("AnimationNodeStateMachineTransition_hjbys"), "cower", "talk_cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "cower", "work", SubResource("AnimationNodeStateMachineTransition_hjbys"), "cower", "takeoff", SubResource("AnimationNodeStateMachineTransition_hjbys"), "cower", "land", SubResource("AnimationNodeStateMachineTransition_hjbys"), "cower", "knock", SubResource("AnimationNodeStateMachineTransition_hjbys"), "cower", "get_up", SubResource("AnimationNodeStateMachineTransition_hjbys"), "cower", "fly_damage", SubResource("AnimationNodeStateMachineTransition_hjbys"), "cower", "gesture", SubResource("AnimationNodeStateMachineTransition_hjbys"), "cower", "fly_death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "talk_cower", "idle", SubResource("AnimationNodeStateMachineTransition_hjbys"), "talk_cower", "run", SubResource("AnimationNodeStateMachineTransition_hjbys"), "talk_cower", "attack", SubResource("AnimationNodeStateMachineTransition_hjbys"), "talk_cower", "death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "talk_cower", "held", SubResource("AnimationNodeStateMachineTransition_hjbys"), "talk_cower", "thrash", SubResource("AnimationNodeStateMachineTransition_hjbys"), "talk_cower", "rise", SubResource("AnimationNodeStateMachineTransition_hjbys"), "talk_cower", "fly", SubResource("AnimationNodeStateMachineTransition_hjbys"), "talk_cower", "cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "talk_cower", "work", SubResource("AnimationNodeStateMachineTransition_hjbys"), "talk_cower", "takeoff", SubResource("AnimationNodeStateMachineTransition_hjbys"), "talk_cower", "land", SubResource("AnimationNodeStateMachineTransition_hjbys"), "talk_cower", "knock", SubResource("AnimationNodeStateMachineTransition_hjbys"), "talk_cower", "get_up", SubResource("AnimationNodeStateMachineTransition_hjbys"), "talk_cower", "fly_damage", SubResource("AnimationNodeStateMachineTransition_hjbys"), "talk_cower", "gesture", SubResource("AnimationNodeStateMachineTransition_hjbys"), "talk_cower", "fly_death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "work", "idle", SubResource("AnimationNodeStateMachineTransition_hjbys"), "work", "run", SubResource("AnimationNodeStateMachineTransition_hjbys"), "work", "attack", SubResource("AnimationNodeStateMachineTransition_hjbys"), "work", "death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "work", "held", SubResource("AnimationNodeStateMachineTransition_hjbys"), "work", "thrash", SubResource("AnimationNodeStateMachineTransition_hjbys"), "work", "rise", SubResource("AnimationNodeStateMachineTransition_hjbys"), "work", "fly", SubResource("AnimationNodeStateMachineTransition_hjbys"), "work", "cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "work", "talk_cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "work", "takeoff", SubResource("AnimationNodeStateMachineTransition_hjbys"), "work", "land", SubResource("AnimationNodeStateMachineTransition_hjbys"), "work", "knock", SubResource("AnimationNodeStateMachineTransition_hjbys"), "work", "get_up", SubResource("AnimationNodeStateMachineTransition_hjbys"), "work", "fly_damage", SubResource("AnimationNodeStateMachineTransition_hjbys"), "work", "gesture", SubResource("AnimationNodeStateMachineTransition_hjbys"), "work", "fly_death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "takeoff", "idle", SubResource("AnimationNodeStateMachineTransition_hjbys"), "takeoff", "run", SubResource("AnimationNodeStateMachineTransition_hjbys"), "takeoff", "attack", SubResource("AnimationNodeStateMachineTransition_hjbys"), "takeoff", "death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "takeoff", "held", SubResource("AnimationNodeStateMachineTransition_hjbys"), "takeoff", "thrash", SubResource("AnimationNodeStateMachineTransition_hjbys"), "takeoff", "rise", SubResource("AnimationNodeStateMachineTransition_hjbys"), "takeoff", "fly", SubResource("AnimationNodeStateMachineTransition_hjbys"), "takeoff", "cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "takeoff", "talk_cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "takeoff", "work", SubResource("AnimationNodeStateMachineTransition_hjbys"), "takeoff", "land", SubResource("AnimationNodeStateMachineTransition_hjbys"), "takeoff", "knock", SubResource("AnimationNodeStateMachineTransition_hjbys"), "takeoff", "get_up", SubResource("AnimationNodeStateMachineTransition_hjbys"), "takeoff", "fly_damage", SubResource("AnimationNodeStateMachineTransition_hjbys"), "takeoff", "gesture", SubResource("AnimationNodeStateMachineTransition_hjbys"), "takeoff", "fly_death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "land", "idle", SubResource("AnimationNodeStateMachineTransition_hjbys"), "land", "run", SubResource("AnimationNodeStateMachineTransition_hjbys"), "land", "attack", SubResource("AnimationNodeStateMachineTransition_hjbys"), "land", "death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "land", "held", SubResource("AnimationNodeStateMachineTransition_hjbys"), "land", "thrash", SubResource("AnimationNodeStateMachineTransition_hjbys"), "land", "rise", SubResource("AnimationNodeStateMachineTransition_hjbys"), "land", "fly", SubResource("AnimationNodeStateMachineTransition_hjbys"), "land", "cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "land", "talk_cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "land", "work", SubResource("AnimationNodeStateMachineTransition_hjbys"), "land", "takeoff", SubResource("AnimationNodeStateMachineTransition_hjbys"), "land", "knock", SubResource("AnimationNodeStateMachineTransition_hjbys"), "land", "get_up", SubResource("AnimationNodeStateMachineTransition_hjbys"), "land", "fly_damage", SubResource("AnimationNodeStateMachineTransition_hjbys"), "land", "gesture", SubResource("AnimationNodeStateMachineTransition_hjbys"), "land", "fly_death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "knock", "idle", SubResource("AnimationNodeStateMachineTransition_hjbys"), "knock", "run", SubResource("AnimationNodeStateMachineTransition_hjbys"), "knock", "attack", SubResource("AnimationNodeStateMachineTransition_hjbys"), "knock", "death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "knock", "held", SubResource("AnimationNodeStateMachineTransition_hjbys"), "knock", "thrash", SubResource("AnimationNodeStateMachineTransition_hjbys"), "knock", "rise", SubResource("AnimationNodeStateMachineTransition_hjbys"), "knock", "fly", SubResource("AnimationNodeStateMachineTransition_hjbys"), "knock", "cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "knock", "talk_cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "knock", "work", SubResource("AnimationNodeStateMachineTransition_hjbys"), "knock", "takeoff", SubResource("AnimationNodeStateMachineTransition_hjbys"), "knock", "land", SubResource("AnimationNodeStateMachineTransition_hjbys"), "knock", "get_up", SubResource("AnimationNodeStateMachineTransition_hjbys"), "knock", "fly_damage", SubResource("AnimationNodeStateMachineTransition_hjbys"), "knock", "gesture", SubResource("AnimationNodeStateMachineTransition_hjbys"), "knock", "fly_death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "get_up", "idle", SubResource("AnimationNodeStateMachineTransition_hjbys"), "get_up", "run", SubResource("AnimationNodeStateMachineTransition_hjbys"), "get_up", "attack", SubResource("AnimationNodeStateMachineTransition_hjbys"), "get_up", "death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "get_up", "held", SubResource("AnimationNodeStateMachineTransition_hjbys"), "get_up", "thrash", SubResource("AnimationNodeStateMachineTransition_hjbys"), "get_up", "rise", SubResource("AnimationNodeStateMachineTransition_hjbys"), "get_up", "fly", SubResource("AnimationNodeStateMachineTransition_hjbys"), "get_up", "cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "get_up", "talk_cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "get_up", "work", SubResource("AnimationNodeStateMachineTransition_hjbys"), "get_up", "takeoff", SubResource("AnimationNodeStateMachineTransition_hjbys"), "get_up", "land", SubResource("AnimationNodeStateMachineTransition_hjbys"), "get_up", "knock", SubResource("AnimationNodeStateMachineTransition_hjbys"), "get_up", "fly_damage", SubResource("AnimationNodeStateMachineTransition_hjbys"), "get_up", "gesture", SubResource("AnimationNodeStateMachineTransition_hjbys"), "get_up", "fly_death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_damage", "idle", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_damage", "run", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_damage", "attack", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_damage", "death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_damage", "held", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_damage", "thrash", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_damage", "rise", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_damage", "fly", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_damage", "cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_damage", "talk_cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_damage", "work", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_damage", "takeoff", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_damage", "land", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_damage", "knock", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_damage", "get_up", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_damage", "gesture", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_damage", "fly_death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "gesture", "idle", SubResource("AnimationNodeStateMachineTransition_hjbys"), "gesture", "run", SubResource("AnimationNodeStateMachineTransition_hjbys"), "gesture", "attack", SubResource("AnimationNodeStateMachineTransition_hjbys"), "gesture", "death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "gesture", "held", SubResource("AnimationNodeStateMachineTransition_hjbys"), "gesture", "thrash", SubResource("AnimationNodeStateMachineTransition_hjbys"), "gesture", "rise", SubResource("AnimationNodeStateMachineTransition_hjbys"), "gesture", "fly", SubResource("AnimationNodeStateMachineTransition_hjbys"), "gesture", "cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "gesture", "talk_cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "gesture", "work", SubResource("AnimationNodeStateMachineTransition_hjbys"), "gesture", "takeoff", SubResource("AnimationNodeStateMachineTransition_hjbys"), "gesture", "land", SubResource("AnimationNodeStateMachineTransition_hjbys"), "gesture", "knock", SubResource("AnimationNodeStateMachineTransition_hjbys"), "gesture", "get_up", SubResource("AnimationNodeStateMachineTransition_hjbys"), "gesture", "fly_damage", SubResource("AnimationNodeStateMachineTransition_hjbys"), "gesture", "fly_death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_death", "idle", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_death", "run", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_death", "attack", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_death", "death", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_death", "held", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_death", "thrash", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_death", "rise", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_death", "fly", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_death", "cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_death", "talk_cower", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_death", "work", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_death", "takeoff", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_death", "land", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_death", "knock", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_death", "get_up", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_death", "fly_damage", SubResource("AnimationNodeStateMachineTransition_hjbys"), "fly_death", "gesture", SubResource("AnimationNodeStateMachineTransition_hjbys")]
+
+[sub_resource type="Animation" id="Animation_rlk0c"]
+length = 0.8666666666666667
+loop_mode = 1
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ClipEvents")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.33333334),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["attack"],
+"method": &"fire"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_yr4vi"]
+_data = {
+&"PEa1": SubResource("Animation_rlk0c")
+}
+
+[node name="peas" type="Node3D" unique_id=1418664059]
+script = ExtResource("1_owh71")
+model = "peas"
+bind_aabb = AABB(-0.403654, -0.222168, -0.7512, 0.814324, 0.478206, 1.7310541)
+surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0]]
+clips = {
+"PE2t": {
+"framerate": 30,
+"frames": 16,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"PEa1": {
+"framerate": 30,
+"frames": 26,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"PEcw": {
+"framerate": 30,
+"frames": 56,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"PEd1": {
+"framerate": 30,
+"frames": 66,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"PEdi": {
+"framerate": 30,
+"frames": 198,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"PEfd": {
+"framerate": 30,
+"frames": 25,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"PEgu": {
+"framerate": 30,
+"frames": 98,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"PEi1": {
+"framerate": 30,
+"frames": 34,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"PEp2": {
+"framerate": 30,
+"frames": 93,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"PEpd": {
+"framerate": 30,
+"frames": 65,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"PEpu": {
+"framerate": 30,
+"frames": 445,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"PErn": {
+"framerate": 30,
+"frames": 32,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"PErz": {
+"framerate": 30,
+"frames": 49,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"PEsc": {
+"framerate": 30,
+"frames": 20,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"PEst": {
+"framerate": 30,
+"frames": 56,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"PEtc": {
+"framerate": 30,
+"frames": 56,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+}
+}
+
+[node name="Model" parent="." unique_id=1053341117 instance=ExtResource("2_s0fn7")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="Tree" type="AnimationTree" parent="." unique_id=2026369799]
+unique_name_in_owner = true
+active = false
+root_node = NodePath("../Model")
+tree_root = SubResource("AnimationNodeStateMachine_bl6ku")
+anim_player = NodePath("../Model/AnimationPlayer")
+
+[node name="Events" type="AnimationPlayer" parent="." unique_id=438751505]
+unique_name_in_owner = true
+deterministic = true
+libraries/ = SubResource("AnimationLibrary_yr4vi")
+
+[node name="ClipEvents" type="Node" parent="." unique_id=1640908711]
+unique_name_in_owner = true
+script = ExtResource("3_15jcw")

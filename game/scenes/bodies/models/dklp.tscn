@@ -1,0 +1,301 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_model.gd" id="1_0aqw3"]
+[ext_resource type="PackedScene" path="res://assets/original/models/dklp.glb" id="2_2jfbk"]
+[ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_el4yr"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_n35o3"]
+animation = &"KDa1"
+use_custom_timeline = true
+timeline_length = 1.2333333333333334
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_l3yp7"]
+animation = &"KLd1"
+use_custom_timeline = true
+timeline_length = 1.4333333333333333
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 0
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_7umhu"]
+animation = &"KDi1"
+use_custom_timeline = true
+timeline_length = 1.7666666666666666
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_dat1f"]
+animation = &"KLgu"
+use_custom_timeline = true
+timeline_length = 0.6333333333333333
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_7y6rl"]
+animation = &"KL2t"
+use_custom_timeline = true
+timeline_length = 0.8666666666666667
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_r3gal"]
+animation = &"KLst"
+use_custom_timeline = true
+timeline_length = 0.9
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ovjlk"]
+animation = &"KLfd"
+use_custom_timeline = true
+timeline_length = 1.2333333333333334
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_tqtx1"]
+animation = &"KLrz"
+use_custom_timeline = true
+timeline_length = 1.6
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ktvgo"]
+animation = &"KDrn"
+use_custom_timeline = true
+timeline_length = 0.8
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_x68px"]
+animation = &"KLsc"
+use_custom_timeline = true
+timeline_length = 0.6666666666666666
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_6hppv"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_jiba2"]
+xfade_time = 0.15
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_cd0ei"]
+xfade_time = 0.15
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_755vq"]
+states/Start/position = Vector2(60, 100)
+states/attack/node = SubResource("AnimationNodeAnimation_n35o3")
+states/attack/position = Vector2(660, 40)
+states/death/node = SubResource("AnimationNodeAnimation_l3yp7")
+states/death/position = Vector2(860, 40)
+states/gesture/node = SubResource("AnimationNodeAnimation_7umhu")
+states/gesture/position = Vector2(460, 260)
+states/get_up/node = SubResource("AnimationNodeAnimation_dat1f")
+states/get_up/position = Vector2(260, 260)
+states/held/node = SubResource("AnimationNodeAnimation_7y6rl")
+states/held/position = Vector2(260, 150)
+states/idle/node = SubResource("AnimationNodeAnimation_r3gal")
+states/idle/position = Vector2(260, 40)
+states/knock/node = SubResource("AnimationNodeAnimation_ovjlk")
+states/knock/position = Vector2(860, 150)
+states/rise/node = SubResource("AnimationNodeAnimation_tqtx1")
+states/rise/position = Vector2(660, 150)
+states/run/node = SubResource("AnimationNodeAnimation_ktvgo")
+states/run/position = Vector2(460, 40)
+states/thrash/node = SubResource("AnimationNodeAnimation_x68px")
+states/thrash/position = Vector2(460, 150)
+transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_6hppv"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_jiba2"), "idle", "attack", SubResource("AnimationNodeStateMachineTransition_jiba2"), "idle", "death", SubResource("AnimationNodeStateMachineTransition_jiba2"), "idle", "held", SubResource("AnimationNodeStateMachineTransition_jiba2"), "idle", "thrash", SubResource("AnimationNodeStateMachineTransition_jiba2"), "idle", "rise", SubResource("AnimationNodeStateMachineTransition_jiba2"), "idle", "knock", SubResource("AnimationNodeStateMachineTransition_jiba2"), "idle", "get_up", SubResource("AnimationNodeStateMachineTransition_jiba2"), "idle", "gesture", SubResource("AnimationNodeStateMachineTransition_jiba2"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_jiba2"), "run", "attack", SubResource("AnimationNodeStateMachineTransition_jiba2"), "run", "death", SubResource("AnimationNodeStateMachineTransition_jiba2"), "run", "held", SubResource("AnimationNodeStateMachineTransition_jiba2"), "run", "thrash", SubResource("AnimationNodeStateMachineTransition_jiba2"), "run", "rise", SubResource("AnimationNodeStateMachineTransition_jiba2"), "run", "knock", SubResource("AnimationNodeStateMachineTransition_jiba2"), "run", "get_up", SubResource("AnimationNodeStateMachineTransition_jiba2"), "run", "gesture", SubResource("AnimationNodeStateMachineTransition_jiba2"), "attack", "idle", SubResource("AnimationNodeStateMachineTransition_cd0ei"), "attack", "run", SubResource("AnimationNodeStateMachineTransition_jiba2"), "attack", "death", SubResource("AnimationNodeStateMachineTransition_jiba2"), "attack", "held", SubResource("AnimationNodeStateMachineTransition_jiba2"), "attack", "thrash", SubResource("AnimationNodeStateMachineTransition_jiba2"), "attack", "rise", SubResource("AnimationNodeStateMachineTransition_jiba2"), "attack", "knock", SubResource("AnimationNodeStateMachineTransition_jiba2"), "attack", "get_up", SubResource("AnimationNodeStateMachineTransition_jiba2"), "attack", "gesture", SubResource("AnimationNodeStateMachineTransition_jiba2"), "death", "idle", SubResource("AnimationNodeStateMachineTransition_jiba2"), "death", "run", SubResource("AnimationNodeStateMachineTransition_jiba2"), "death", "attack", SubResource("AnimationNodeStateMachineTransition_jiba2"), "death", "held", SubResource("AnimationNodeStateMachineTransition_jiba2"), "death", "thrash", SubResource("AnimationNodeStateMachineTransition_jiba2"), "death", "rise", SubResource("AnimationNodeStateMachineTransition_jiba2"), "death", "knock", SubResource("AnimationNodeStateMachineTransition_jiba2"), "death", "get_up", SubResource("AnimationNodeStateMachineTransition_jiba2"), "death", "gesture", SubResource("AnimationNodeStateMachineTransition_jiba2"), "held", "idle", SubResource("AnimationNodeStateMachineTransition_jiba2"), "held", "run", SubResource("AnimationNodeStateMachineTransition_jiba2"), "held", "attack", SubResource("AnimationNodeStateMachineTransition_jiba2"), "held", "death", SubResource("AnimationNodeStateMachineTransition_jiba2"), "held", "thrash", SubResource("AnimationNodeStateMachineTransition_jiba2"), "held", "rise", SubResource("AnimationNodeStateMachineTransition_jiba2"), "held", "knock", SubResource("AnimationNodeStateMachineTransition_jiba2"), "held", "get_up", SubResource("AnimationNodeStateMachineTransition_jiba2"), "held", "gesture", SubResource("AnimationNodeStateMachineTransition_jiba2"), "thrash", "idle", SubResource("AnimationNodeStateMachineTransition_jiba2"), "thrash", "run", SubResource("AnimationNodeStateMachineTransition_jiba2"), "thrash", "attack", SubResource("AnimationNodeStateMachineTransition_jiba2"), "thrash", "death", SubResource("AnimationNodeStateMachineTransition_jiba2"), "thrash", "held", SubResource("AnimationNodeStateMachineTransition_jiba2"), "thrash", "rise", SubResource("AnimationNodeStateMachineTransition_jiba2"), "thrash", "knock", SubResource("AnimationNodeStateMachineTransition_jiba2"), "thrash", "get_up", SubResource("AnimationNodeStateMachineTransition_jiba2"), "thrash", "gesture", SubResource("AnimationNodeStateMachineTransition_jiba2"), "rise", "idle", SubResource("AnimationNodeStateMachineTransition_cd0ei"), "rise", "run", SubResource("AnimationNodeStateMachineTransition_jiba2"), "rise", "attack", SubResource("AnimationNodeStateMachineTransition_jiba2"), "rise", "death", SubResource("AnimationNodeStateMachineTransition_jiba2"), "rise", "held", SubResource("AnimationNodeStateMachineTransition_jiba2"), "rise", "thrash", SubResource("AnimationNodeStateMachineTransition_jiba2"), "rise", "knock", SubResource("AnimationNodeStateMachineTransition_jiba2"), "rise", "get_up", SubResource("AnimationNodeStateMachineTransition_jiba2"), "rise", "gesture", SubResource("AnimationNodeStateMachineTransition_jiba2"), "knock", "idle", SubResource("AnimationNodeStateMachineTransition_jiba2"), "knock", "run", SubResource("AnimationNodeStateMachineTransition_jiba2"), "knock", "attack", SubResource("AnimationNodeStateMachineTransition_jiba2"), "knock", "death", SubResource("AnimationNodeStateMachineTransition_jiba2"), "knock", "held", SubResource("AnimationNodeStateMachineTransition_jiba2"), "knock", "thrash", SubResource("AnimationNodeStateMachineTransition_jiba2"), "knock", "rise", SubResource("AnimationNodeStateMachineTransition_jiba2"), "knock", "get_up", SubResource("AnimationNodeStateMachineTransition_jiba2"), "knock", "gesture", SubResource("AnimationNodeStateMachineTransition_jiba2"), "get_up", "idle", SubResource("AnimationNodeStateMachineTransition_jiba2"), "get_up", "run", SubResource("AnimationNodeStateMachineTransition_jiba2"), "get_up", "attack", SubResource("AnimationNodeStateMachineTransition_jiba2"), "get_up", "death", SubResource("AnimationNodeStateMachineTransition_jiba2"), "get_up", "held", SubResource("AnimationNodeStateMachineTransition_jiba2"), "get_up", "thrash", SubResource("AnimationNodeStateMachineTransition_jiba2"), "get_up", "rise", SubResource("AnimationNodeStateMachineTransition_jiba2"), "get_up", "knock", SubResource("AnimationNodeStateMachineTransition_jiba2"), "get_up", "gesture", SubResource("AnimationNodeStateMachineTransition_jiba2"), "gesture", "idle", SubResource("AnimationNodeStateMachineTransition_jiba2"), "gesture", "run", SubResource("AnimationNodeStateMachineTransition_jiba2"), "gesture", "attack", SubResource("AnimationNodeStateMachineTransition_jiba2"), "gesture", "death", SubResource("AnimationNodeStateMachineTransition_jiba2"), "gesture", "held", SubResource("AnimationNodeStateMachineTransition_jiba2"), "gesture", "thrash", SubResource("AnimationNodeStateMachineTransition_jiba2"), "gesture", "rise", SubResource("AnimationNodeStateMachineTransition_jiba2"), "gesture", "knock", SubResource("AnimationNodeStateMachineTransition_jiba2"), "gesture", "get_up", SubResource("AnimationNodeStateMachineTransition_jiba2")]
+
+[sub_resource type="Animation" id="Animation_wiqx7"]
+length = 1.2333333333333334
+loop_mode = 1
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ClipEvents")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.5),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["attack"],
+"method": &"fire"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_17hls"]
+_data = {
+&"KDa1": SubResource("Animation_wiqx7")
+}
+
+[node name="dklp" type="Node3D" unique_id=481018325]
+script = ExtResource("1_0aqw3")
+model = "dklp"
+bind_aabb = AABB(-0.46656, -0.744403, -0.390322, 0.938583, 1.747928, 0.582604)
+surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0]]
+clips = {
+"KDa1": {
+"framerate": 30,
+"frames": 37,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"KDi1": {
+"framerate": 30,
+"frames": 53,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"KDrn": {
+"framerate": 30,
+"frames": 24,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"KL2t": {
+"framerate": 30,
+"frames": 26,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"KLd1": {
+"framerate": 30,
+"frames": 43,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"KLfd": {
+"framerate": 30,
+"frames": 37,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"KLgu": {
+"framerate": 30,
+"frames": 19,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"KLrz": {
+"framerate": 30,
+"frames": 48,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"KLsc": {
+"framerate": 30,
+"frames": 20,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"KLst": {
+"framerate": 30,
+"frames": 27,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+}
+}
+
+[node name="Model" parent="." unique_id=880341602 instance=ExtResource("2_2jfbk")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="Tree" type="AnimationTree" parent="." unique_id=1381996972]
+unique_name_in_owner = true
+active = false
+root_node = NodePath("../Model")
+tree_root = SubResource("AnimationNodeStateMachine_755vq")
+anim_player = NodePath("../Model/AnimationPlayer")
+
+[node name="Events" type="AnimationPlayer" parent="." unique_id=850251673]
+unique_name_in_owner = true
+deterministic = true
+libraries/ = SubResource("AnimationLibrary_17hls")
+
+[node name="ClipEvents" type="Node" parent="." unique_id=26619424]
+unique_name_in_owner = true
+script = ExtResource("3_el4yr")

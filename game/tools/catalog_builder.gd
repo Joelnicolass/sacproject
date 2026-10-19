@@ -9,7 +9,7 @@ const _SPELL_TYPE := preload("res://scenes/data/spell_type.gd")
 const _ABILITY_TYPE := preload("res://scenes/data/ability_type.gd")
 const _WIZARD_TYPE := preload("res://scenes/data/wizard_type.gd")
 const _BUILDING_TYPE := preload("res://scenes/data/building_type.gd")
-const _BODY_SIZE := preload("res://scenes/data/body_size.gd")
+const _BODY_SIZE := preload("res://scenes/bodies/body_size.gd")
 
 const DATA_DIR := "res://assets/original/data/"
 const SIZES_PATH := "res://assets/original/models/sizes.json"

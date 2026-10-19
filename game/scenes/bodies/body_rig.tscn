@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_rig.gd" id="1_rig"]
+
+[node name="BodyRig" type="Node3D"]
+script = ExtResource("1_rig")
+
+[node name="ModelSlot" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="HandL" type="BoneAttachment3D" parent="."]
+unique_name_in_owner = true
+
+[node name="Socket" type="Node3D" parent="HandL"]
+
+[node name="HandR" type="BoneAttachment3D" parent="."]
+unique_name_in_owner = true
+
+[node name="Socket" type="Node3D" parent="HandR"]

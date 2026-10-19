@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="BodyPoseOverrides" format=3 uid="uid://d2se2jkoqwi7d"]
 
-[ext_resource type="Script" uid="uid://b40ejvc8kw2hn" path="res://scenes/data/body_pose_overrides.gd" id="1_list"]
-[ext_resource type="Script" uid="uid://dfb27edjlkgjl" path="res://scenes/data/body_pose_override.gd" id="2_entry"]
+[ext_resource type="Script" uid="uid://b40ejvc8kw2hn" path="res://scenes/bodies/body_pose_overrides.gd" id="1_list"]
+[ext_resource type="Script" uid="uid://dfb27edjlkgjl" path="res://scenes/bodies/body_pose_override.gd" id="2_entry"]
 
 [sub_resource type="Resource" id="Resource_pcfn"]
 script = ExtResource("2_entry")

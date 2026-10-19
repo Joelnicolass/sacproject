@@ -31,7 +31,7 @@ UNIT_ROLE_DICTS = ("extra_animations", "flight_animations", "stun_animations")
 
 
 def unit_clip_tags() -> dict:
-    """model -> clip tags the units of that model play (the roles of scenes/world/body/unit_clip_roles.gd)."""
+    """model -> clip tags the units of that model play (the roles of scenes/bodies/unit_clip_roles.gd)."""
     creatures = json.loads((ROOT / "assets" / "original" / "data" / "creatures.json").read_text())
     found: dict = {}
     for entry in creatures.values():

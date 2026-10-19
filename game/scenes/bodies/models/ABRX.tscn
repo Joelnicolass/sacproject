@@ -1,0 +1,165 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_model.gd" id="1_gw84j"]
+[ext_resource type="PackedScene" path="res://assets/original/models/ABRX.glb" id="2_hxbhe"]
+[ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_mykw3"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_uwvvd"]
+animation = &"AXsl"
+use_custom_timeline = true
+timeline_length = 1.5
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_xyygp"]
+animation = &"AXrl"
+use_custom_timeline = true
+timeline_length = 1.6
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_nu2ru"]
+animation = &"AXi1"
+use_custom_timeline = true
+timeline_length = 3.2666666666666666
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_3oojn"]
+animation = &"AXs1"
+use_custom_timeline = true
+timeline_length = 3.2333333333333334
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_fygh8"]
+animation = &"AXru"
+use_custom_timeline = true
+timeline_length = 0.8
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_8or3j"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_lgt36"]
+xfade_time = 0.15
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_xhg1f"]
+xfade_time = 0.15
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_qog3j"]
+states/Start/position = Vector2(60, 100)
+states/cast/node = SubResource("AnimationNodeAnimation_uwvvd")
+states/cast/position = Vector2(660, 40)
+states/cast_run/node = SubResource("AnimationNodeAnimation_xyygp")
+states/cast_run/position = Vector2(260, 150)
+states/gesture/node = SubResource("AnimationNodeAnimation_nu2ru")
+states/gesture/position = Vector2(860, 40)
+states/idle/node = SubResource("AnimationNodeAnimation_3oojn")
+states/idle/position = Vector2(260, 40)
+states/run/node = SubResource("AnimationNodeAnimation_fygh8")
+states/run/position = Vector2(460, 40)
+transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_8or3j"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_lgt36"), "idle", "cast", SubResource("AnimationNodeStateMachineTransition_lgt36"), "idle", "gesture", SubResource("AnimationNodeStateMachineTransition_lgt36"), "idle", "cast_run", SubResource("AnimationNodeStateMachineTransition_lgt36"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_lgt36"), "run", "cast", SubResource("AnimationNodeStateMachineTransition_lgt36"), "run", "gesture", SubResource("AnimationNodeStateMachineTransition_lgt36"), "run", "cast_run", SubResource("AnimationNodeStateMachineTransition_lgt36"), "cast", "idle", SubResource("AnimationNodeStateMachineTransition_xhg1f"), "cast", "run", SubResource("AnimationNodeStateMachineTransition_lgt36"), "cast", "gesture", SubResource("AnimationNodeStateMachineTransition_lgt36"), "cast", "cast_run", SubResource("AnimationNodeStateMachineTransition_lgt36"), "gesture", "idle", SubResource("AnimationNodeStateMachineTransition_lgt36"), "gesture", "run", SubResource("AnimationNodeStateMachineTransition_lgt36"), "gesture", "cast", SubResource("AnimationNodeStateMachineTransition_lgt36"), "gesture", "cast_run", SubResource("AnimationNodeStateMachineTransition_lgt36"), "cast_run", "idle", SubResource("AnimationNodeStateMachineTransition_lgt36"), "cast_run", "run", SubResource("AnimationNodeStateMachineTransition_lgt36"), "cast_run", "cast", SubResource("AnimationNodeStateMachineTransition_lgt36"), "cast_run", "gesture", SubResource("AnimationNodeStateMachineTransition_lgt36")]
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_isaxj"]
+
+[node name="ABRX" type="Node3D" unique_id=2105494230]
+script = ExtResource("1_gw84j")
+model = "ABRX"
+bind_aabb = AABB(-0.448727, -1.209852, -0.165051, 0.916817, 2.001368, 0.691026)
+surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0]]
+clips = {
+"AXi1": {
+"framerate": 30,
+"frames": 98,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"AXrl": {
+"framerate": 30,
+"frames": 48,
+"hands": [{
+"bone_name": "bone_15",
+"offset": Vector3(0, 0, 0),
+"on": true
+}, {
+"bone_name": "bone_19",
+"offset": Vector3(0, 0, 0),
+"on": true
+}]
+},
+"AXru": {
+"framerate": 30,
+"frames": 24,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"AXs1": {
+"framerate": 30,
+"frames": 97,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"AXsl": {
+"framerate": 30,
+"frames": 45,
+"hands": [{
+"bone_name": "bone_15",
+"offset": Vector3(0, 0, 0),
+"on": true
+}, {
+"bone_name": "bone_19",
+"offset": Vector3(0, 0, 0),
+"on": true
+}]
+}
+}
+
+[node name="Model" parent="." unique_id=1071059118 instance=ExtResource("2_hxbhe")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="Tree" type="AnimationTree" parent="." unique_id=1380727081]
+unique_name_in_owner = true
+active = false
+root_node = NodePath("../Model")
+tree_root = SubResource("AnimationNodeStateMachine_qog3j")
+anim_player = NodePath("../Model/AnimationPlayer")
+
+[node name="Events" type="AnimationPlayer" parent="." unique_id=2017587451]
+unique_name_in_owner = true
+deterministic = true
+libraries/ = SubResource("AnimationLibrary_isaxj")
+
+[node name="ClipEvents" type="Node" parent="." unique_id=44657070]
+unique_name_in_owner = true
+script = ExtResource("3_mykw3")

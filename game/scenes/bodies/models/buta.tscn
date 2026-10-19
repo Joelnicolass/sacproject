@@ -1,0 +1,165 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_model.gd" id="1_8y6wo"]
+[ext_resource type="PackedScene" path="res://assets/original/models/buta.glb" id="2_xxp4r"]
+[ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_ui1lq"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_uy5lb"]
+animation = &"BUsl"
+use_custom_timeline = true
+timeline_length = 1.7
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_gt1fr"]
+animation = &"BUrl"
+use_custom_timeline = true
+timeline_length = 1.0
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_hf56n"]
+animation = &"BUi1"
+use_custom_timeline = true
+timeline_length = 1.7
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_dxefr"]
+animation = &"BUs1"
+use_custom_timeline = true
+timeline_length = 1.6666666666666667
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_47558"]
+animation = &"BUru"
+use_custom_timeline = true
+timeline_length = 1.0
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_0a0ek"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ngqre"]
+xfade_time = 0.15
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_mhn1p"]
+xfade_time = 0.15
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_wcysk"]
+states/Start/position = Vector2(60, 100)
+states/cast/node = SubResource("AnimationNodeAnimation_uy5lb")
+states/cast/position = Vector2(660, 40)
+states/cast_run/node = SubResource("AnimationNodeAnimation_gt1fr")
+states/cast_run/position = Vector2(260, 150)
+states/gesture/node = SubResource("AnimationNodeAnimation_hf56n")
+states/gesture/position = Vector2(860, 40)
+states/idle/node = SubResource("AnimationNodeAnimation_dxefr")
+states/idle/position = Vector2(260, 40)
+states/run/node = SubResource("AnimationNodeAnimation_47558")
+states/run/position = Vector2(460, 40)
+transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_0a0ek"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "idle", "cast", SubResource("AnimationNodeStateMachineTransition_ngqre"), "idle", "gesture", SubResource("AnimationNodeStateMachineTransition_ngqre"), "idle", "cast_run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_ngqre"), "run", "cast", SubResource("AnimationNodeStateMachineTransition_ngqre"), "run", "gesture", SubResource("AnimationNodeStateMachineTransition_ngqre"), "run", "cast_run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "cast", "idle", SubResource("AnimationNodeStateMachineTransition_mhn1p"), "cast", "run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "cast", "gesture", SubResource("AnimationNodeStateMachineTransition_ngqre"), "cast", "cast_run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "gesture", "idle", SubResource("AnimationNodeStateMachineTransition_ngqre"), "gesture", "run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "gesture", "cast", SubResource("AnimationNodeStateMachineTransition_ngqre"), "gesture", "cast_run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "cast_run", "idle", SubResource("AnimationNodeStateMachineTransition_ngqre"), "cast_run", "run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "cast_run", "cast", SubResource("AnimationNodeStateMachineTransition_ngqre"), "cast_run", "gesture", SubResource("AnimationNodeStateMachineTransition_ngqre")]
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_3f4ba"]
+
+[node name="buta" type="Node3D" unique_id=363707560]
+script = ExtResource("1_8y6wo")
+model = "buta"
+bind_aabb = AABB(-1.411924, -0.92901, -0.80306, 2.834439, 2.350586, 1.450975)
+surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0], [8.0]]
+clips = {
+"BUi1": {
+"framerate": 30,
+"frames": 51,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"BUrl": {
+"framerate": 30,
+"frames": 30,
+"hands": [{
+"bone_name": "bone_06",
+"offset": Vector3(0, 0, 0),
+"on": true
+}, {
+"bone_name": "bone_11",
+"offset": Vector3(0, 0, 0),
+"on": true
+}]
+},
+"BUru": {
+"framerate": 30,
+"frames": 30,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"BUs1": {
+"framerate": 30,
+"frames": 50,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"BUsl": {
+"framerate": 30,
+"frames": 51,
+"hands": [{
+"bone_name": "bone_06",
+"offset": Vector3(0, 0, 0),
+"on": true
+}, {
+"bone_name": "bone_11",
+"offset": Vector3(0, 0, 0),
+"on": true
+}]
+}
+}
+
+[node name="Model" parent="." unique_id=115261741 instance=ExtResource("2_xxp4r")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="Tree" type="AnimationTree" parent="." unique_id=1223755351]
+unique_name_in_owner = true
+active = false
+root_node = NodePath("../Model")
+tree_root = SubResource("AnimationNodeStateMachine_wcysk")
+anim_player = NodePath("../Model/AnimationPlayer")
+
+[node name="Events" type="AnimationPlayer" parent="." unique_id=496176702]
+unique_name_in_owner = true
+deterministic = true
+libraries/ = SubResource("AnimationLibrary_3f4ba")
+
+[node name="ClipEvents" type="Node" parent="." unique_id=1258296770]
+unique_name_in_owner = true
+script = ExtResource("3_ui1lq")

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://chaq34qan04i8" path="res://scenes/match/high_noon.gd" id="1_world"]
 [ext_resource type="Script" uid="uid://cnbnjgq6ehkv7" path="res://scenes/world/terrain.gd" id="2_terrain"]
-[ext_resource type="Script" uid="uid://ot34p6tw0si5" path="res://scenes/world/body_visual.gd" id="3_visual"]
+[ext_resource type="Script" uid="uid://ot34p6tw0si5" path="res://scenes/bodies/body_visual.gd" id="3_visual"]
 [ext_resource type="Script" uid="uid://l3u0mgrbc72j" path="res://scenes/world/wizard/wizard_spawner.gd" id="4_spawner"]
 [ext_resource type="PackedScene" path="res://scenes/world/wizard/wizard_body.tscn" id="5_wizard"]
 [ext_resource type="Script" uid="uid://bahus244cwp1m" path="res://scenes/world/map_props.gd" id="6_props"]

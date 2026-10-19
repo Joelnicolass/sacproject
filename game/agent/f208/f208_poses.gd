@@ -5,7 +5,7 @@ extends Node3D
 ## files must match line by line. Window run (headless loads no meshes). Output: res://agent/out/f208/poses_<phase>.txt.
 
 const TIMES := [0.0, 0.37, 0.9]
-const RIG_SCENE := preload("res://scenes/world/body/body_rig.tscn")
+const RIG_SCENE := preload("res://scenes/bodies/body_rig.tscn")
 
 
 func _ready() -> void:

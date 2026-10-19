@@ -1,6 +1,6 @@
 """Texture helpers shared by the importers: TGA/PNG sources to PNG, and the colour key stored in a model's limb records.
 
-Written from the file layouts (the offsets below are the ones scenes/world/obj_mesh.gd used to read at runtime).
+Written from the file layouts (the offsets below are the ones scenes/bodies/obj_mesh.gd used to read at runtime).
 """
 
 import hashlib

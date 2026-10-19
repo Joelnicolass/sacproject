@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/world/sacrifice/doctor_body.gd" id="1_body"]
 [ext_resource type="PackedScene" path="res://scenes/world/body_avoidance.tscn" id="f207_avoid"]
-[ext_resource type="Script" path="res://scenes/world/body_visual.gd" id="2_visual"]
+[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="2_visual"]
 [ext_resource type="Script" path="res://scenes/world/components/health.gd" id="3_health"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/unit_health_bar.tscn" id="4_bar"]
 [ext_resource type="Script" path="res://scenes/world/sacrifice/stuck_guard.gd" id="5_guard"]
@@ -14,8 +14,8 @@
 [ext_resource type="Script" path="res://scenes/world/sacrifice/doctor_states/dying.gd" id="11_dying"]
 [ext_resource type="Script" path="res://addons/mp_kit/mp_replicate.gd" id="12_net"]
 [ext_resource type="Resource" path="res://data/match_rules.tres" id="13_rules"]
-[ext_resource type="Script" path="res://scenes/world/body/body_animator.gd" id="14_clip"]
-[ext_resource type="PackedScene" path="res://scenes/world/body/body_rig.tscn" id="14_rig"]
+[ext_resource type="Script" path="res://scenes/bodies/body_animator.gd" id="14_clip"]
+[ext_resource type="PackedScene" path="res://scenes/bodies/body_rig.tscn" id="14_rig"]
 
 [ext_resource type="Script" path="res://scenes/world/sacrifice/carry_rope.gd" id="15_rope"]
 [ext_resource type="PackedScene" path="res://scenes/fx/tether.tscn" id="16_tether"]

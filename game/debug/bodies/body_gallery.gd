@@ -13,7 +13,7 @@ var _bodies: Array[Node3D] = []
 
 func _ready() -> void:
 	var names := _names()
-	var models := BodyLibrary.models()
+	var models := BodyCatalog.models()
 	models.sort()
 	for i in models.size():
 		var model := models[i]
@@ -37,7 +37,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _fit(body: Node3D, model: String) -> void:
-	var info := BodyLibrary.info(model)
+	var info := BodyCatalog.info(model)
 	var height := maxf(float(info.get("height", 1.0)), 0.01)
 	var reach := maxf(float(info.get("reach", 0.5)), 0.01)
 	var factor := minf(display_height / height, cell.x * 0.45 / reach)
@@ -48,7 +48,7 @@ func _fit(body: Node3D, model: String) -> void:
 
 
 func _report() -> void:
-	if not BodyLibrary.loads_meshes():
+	if not BodyCatalog.loads_meshes():
 		print("cuerpos %d sin mallas en headless" % _bodies.size())
 		return
 	var standing := 0
@@ -60,7 +60,7 @@ func _report() -> void:
 			continue
 		var box := visual.global_transform * visual.mesh.get_aabb()
 		var grounded := absf(box.position.y) < 0.05
-		var checked := bool(BodyLibrary.info(String(body.name)).get("upright_checked", false))
+		var checked := bool(BodyCatalog.info(String(body.name)).get("upright_checked", false))
 		var upright := checked or box.size.y * 1.6 >= box.size.z
 		if grounded and upright:
 			standing += 1

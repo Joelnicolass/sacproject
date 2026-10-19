@@ -14,7 +14,6 @@ extends Node3D
 ## the breath does not turn the caster's head (animateBreathOfLifeHead); no sound.
 
 
-static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 
 ## ShotLook tag of the breath (data/shots/breath_of_life.tres). `breath_of_life` is not a SpellTag.
 @export var look_tag := "breath_of_life"
@@ -72,10 +71,10 @@ func _physics_process(_delta: float) -> void:
 		_say("aliento %s pierde el blanco (tick %d)" % [_who, MatchClock.now()])
 		_finish()
 		return
-	var velocity := TICKS * (BodyNudge.center(corpse) - _position)
+	var velocity := MatchClock.TICKS_PER_SECOND_F * (BodyNudge.center(corpse) - _position)
 	if velocity.length() > ability.speed:
 		velocity = velocity.normalized() * ability.speed
-	_position += velocity / TICKS
+	_position += velocity / MatchClock.TICKS_PER_SECOND_F
 	if _shot != null and is_instance_valid(_shot):
 		_shot.global_position = _position
 	if velocity.length() < arrive_speed:

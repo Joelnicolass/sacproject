@@ -69,7 +69,7 @@ func setup(data: Dictionary) -> void:
 func _add_visual() -> void:
 	var visual := MeshInstance3D.new()
 	visual.name = "Mesh"
-	visual.mesh = BodyLibrary.mesh(look.model) if not look.model.is_empty() else null
+	visual.mesh = BodyCatalog.mesh(look.model) if not look.model.is_empty() else null
 	if visual.mesh == null:
 		var ball := SphereMesh.new()
 		ball.radius = look.fallback_radius

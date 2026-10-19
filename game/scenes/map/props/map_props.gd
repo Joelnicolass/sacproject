@@ -20,5 +20,5 @@ func _enter_tree() -> void:
 
 
 func _ready() -> void:
-	if plants_root != null and not BodyLibrary.loads_meshes():
+	if plants_root != null and not BodyCatalog.loads_meshes():
 		plants_root.queue_free()

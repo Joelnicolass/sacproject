@@ -53,7 +53,7 @@ static func ally_or_self(wizard: Node3D, picked: Node3D) -> Node3D:
 
 ## Where a thrown ball leaves: the front of the wizard's hit box, at hand height (there are no hand bones).
 static func hand_origin(wizard: Node3D) -> Vector3:
-	var info := BodyLibrary.info(str(wizard.get("model")))
+	var info := BodyCatalog.info(str(wizard.get("model")))
 	var at := wizard.global_position + Vector3.UP * float(info.get("height", 1.8)) * HAND_HEIGHT
 	if wizard.has_method("facing_flat"):
 		at += (wizard.call("facing_flat") as Vector3) * float(info.get("reach", 0.5))

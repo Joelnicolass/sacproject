@@ -73,7 +73,7 @@ func setup(data: Dictionary) -> void:
 func _add_visual() -> void:
 	var visual := MeshInstance3D.new()
 	visual.name = "Mesh"
-	visual.mesh = BodyLibrary.mesh(MODEL)
+	visual.mesh = BodyCatalog.mesh(MODEL)
 	if visual.mesh == null:
 		var ball := SphereMesh.new()
 		ball.radius = HALF_SIZE
@@ -142,7 +142,7 @@ static func cast_position(caster: Node3D) -> Vector3:
 	if caster.has_method("facing_flat"):
 		ahead = caster.call("facing_flat")
 	var model := str(caster.get("model")) if "model" in caster else ""
-	var front := float(BodyLibrary.info(model).get("reach", 0.5))
+	var front := float(BodyCatalog.info(model).get("reach", 0.5))
 	return caster.global_position + ahead * (front + CAST_AHEAD)
 
 

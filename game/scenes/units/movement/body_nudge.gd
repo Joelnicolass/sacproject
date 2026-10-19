@@ -7,12 +7,11 @@ extends RefCounted
 ## (or solo) calls it; the clients get the position. Without terrain data (a bare debug scene) the land is everywhere
 ## and the ground is where the body stands.
 
-static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 
 
 ## sacengine push(velocity): one tick of `velocity` (m/s). True when the body moved.
 static func push(body: Node3D, velocity: Vector3) -> bool:
-	return slide(body, velocity / TICKS)
+	return slide(body, velocity / MatchClock.TICKS_PER_SECOND_F)
 
 
 ## The step `offset` of sacengine push / the implosion's slide. True when the body moved.

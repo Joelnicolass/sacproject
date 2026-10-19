@@ -32,7 +32,6 @@ extends Node3D
 signal ended
 
 const GROUP := &"divine_sight_eye"
-static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 
 ## sacengine divineSightFlyingHeight.
 @export var flying_height := 4.0
@@ -127,7 +126,7 @@ func _physics_process(_delta: float) -> void:
 
 
 func lifetime_ticks() -> int:
-	return rising_ticks + roundi(ability.duration * TICKS) if ability else rising_ticks
+	return rising_ticks + roundi(ability.duration * MatchClock.TICKS_PER_SECOND_F) if ability else rising_ticks
 
 
 ## updateDivineSight: false when the eye is over.
@@ -142,9 +141,9 @@ func _step(at_frame: int) -> bool:
 	var flying := flying_height
 	if target == null and not lost:
 		var travel := frame - rising_ticks
-		if float(travel) * ability.speed < TICKS * ability.cast_range:
+		if float(travel) * ability.speed < MatchClock.TICKS_PER_SECOND_F * ability.cast_range:
 			velocity = velocity.normalized() * ability.speed
-		elif float(travel - 1) * ability.speed < TICKS * ability.cast_range:
+		elif float(travel - 1) * ability.speed < MatchClock.TICKS_PER_SECOND_F * ability.cast_range:
 			velocity = Vector3.ZERO
 		target = _closest_foe()
 		if target and DebugLog.on(&"eye"):
@@ -158,21 +157,21 @@ func _step(at_frame: int) -> bool:
 			velocity += offset.normalized() * ability.acceleration
 			if velocity.length() > ability.speed:
 				velocity = velocity.normalized() * ability.speed
-			if velocity.length() > TICKS * offset.length():
-				velocity = velocity.normalized() * offset.length() * TICKS
+			if velocity.length() > MatchClock.TICKS_PER_SECOND_F * offset.length():
+				velocity = velocity.normalized() * offset.length() * MatchClock.TICKS_PER_SECOND_F
 		else:
 			if DebugLog.on(&"eye"):
 				print("ojo %s suelta su blanco (cuadro %d)" % [name, MatchClock.now()])
 			target = null
 			lost = true
-	var next := position + velocity / TICKS
+	var next := position + velocity / MatchClock.TICKS_PER_SECOND_F
 	var land := _height(position)
 	if next.y < land + flying:
 		var pushed := velocity
-		pushed.y += (land + flying - next.y) * TICKS
+		pushed.y += (land + flying - next.y) * MatchClock.TICKS_PER_SECOND_F
 		if pushed.length() > ability.speed:
 			pushed = pushed.normalized() * ability.speed
-		next = position + pushed / TICKS
+		next = position + pushed / MatchClock.TICKS_PER_SECOND_F
 	position = next
 	if _vision and (frame - rising_ticks) % refresh_ticks == 0:
 		_vision.update_vision(slot, position, ability.effect_range)

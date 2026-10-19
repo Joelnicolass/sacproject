@@ -14,7 +14,6 @@ extends Node
 ## the selection again (newCreatureAddToSelection); the corpse stands up with Corpse.stand_up (0.9 s), not the revive clip.
 
 
-static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 
 ## Ticks of the revival (creatureStats.reviveTime 5 s · 60 / 2 when fast).
 @export var revive_ticks := 150

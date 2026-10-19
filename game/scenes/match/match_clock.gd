@@ -10,6 +10,8 @@ extends RefCounted
 
 ## Ticks per second of the simulation: the project's physics/common/physics_ticks_per_second (read once at class load).
 static var TICKS_PER_SECOND: int = Engine.physics_ticks_per_second
+## The same, as a float: the per-tick formulas divide by it (an int there would be an integer division).
+static var TICKS_PER_SECOND_F: float = float(Engine.physics_ticks_per_second)
 
 static var _ticks := 0
 static var _tree: SceneTree

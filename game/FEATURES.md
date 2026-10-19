@@ -67,7 +67,7 @@ Estados: **Hecho** (cerrado y probado), **Parcial** (anda, con deuda anotada), *
 - **Hecho.** Catálogo en `.tres` por tipo (`data/catalog/`), sin JSON en runtime, validador de contenido (`debug/suite/catalog_cases.gd`). F173, F198, F224, F225.
 - **Hecho.** Sin caché de instalación: todo es asset del repo (LFS). F167-F175.
 - **Hecho.** Carpetas por dominio con README en cada una. F251.
-- **Hecho.** Plugin «Sacrifice» del editor (Project > Tools: validar, re-hornear navmesh, hornear modelos que faltan), `bake_body_scenes` que no pisa lo editado, guías en `docs/HOWTO.md`. F270-F275.
+- **Hecho.** Plugin «Sacrifice» del editor (Project > Tools: validar, re-hornear navmesh, hornear modelos que faltan), `bake_body_scenes` que no pisa lo editado, guías en `docs/HOWTO.md`. F270-F274.
 
 ## Won't (este corte)
 

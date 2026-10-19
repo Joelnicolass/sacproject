@@ -187,7 +187,7 @@ static func profile_of(target: Node3D) -> Dictionary:
 	if target.has_method("melee_profile"):
 		return target.call("melee_profile")
 	var model := str(target.get("model")) if "model" in target else ""
-	var info := BodyLibrary.info(model)
+	var info := BodyCatalog.info(model)
 	var result := {
 		"evasion": 0.0,
 		"resistance": 1.0,

@@ -34,9 +34,9 @@ const TAB_TEXT: PackedStringArray = ["Criaturas", "Hechizos", "Estructuras"]
 
 var tab: int = Tab.CREATURE
 
-var _book: Node
+var _book: Spellbook
 var _wizard: Node
-var _slots: Array[Node] = []
+var _slots: Array[SpellSlot] = []
 
 
 ## Shown only when the script runs in the editor (@tool); kept for the shared-size check.
@@ -64,7 +64,7 @@ func _ready() -> void:
 
 
 func bind(wizard: Node) -> void:
-	var book := wizard.get_node_or_null("Spellbook") if wizard else null
+	var book := wizard.get_node_or_null("Spellbook") as Spellbook if wizard else null
 	if wizard != _wizard:
 		var ghost := _ghost_of(_wizard)
 		if ghost and ghost.stage_changed.is_connected(_on_stage_changed):
@@ -97,9 +97,9 @@ func _rebuild() -> void:
 		%Slots.remove_child(child)
 		child.queue_free()
 	_slots.clear()
-	var creatures: int = _book.call("creature_count") if _book else 0
-	var spells: int = _book.call("size") if _book else 0
-	var structures: int = _book.call("structure_count") if _book else 0
+	var creatures: int = _book.creature_count() if _book else 0
+	var spells: int = _book.size() if _book else 0
+	var structures: int = _book.structure_count() if _book else 0
 	var page := HudIcons.region("page", PAGE_REGIONS[tab])
 	var spirit := HudIcons.sheet("spi2")
 	var count := 0
@@ -111,18 +111,18 @@ func _rebuild() -> void:
 		Tab.STRUCTURE:
 			count = structures
 	for i in count:
-		var slot: Node = slot_scene.instantiate()
+		var slot := slot_scene.instantiate() as SpellSlot
 		%Slots.add_child(slot)
-		slot.call("set_spirit", spirit)
+		slot.set_spirit(spirit)
 		if tab == Tab.CREATURE:
-			var creature: CreatureType = _book.call("creature_at", i)
+			var creature := _book.creature_at(i)
 			slot.name = "Creature%d" % (i + 1)
-			slot.call("show_creature", creature, key_label("creature_%d" % (i + 1)), page, icon_for(creature.tag))
+			slot.show_creature(creature, key_label("creature_%d" % (i + 1)), page, icon_for(creature.tag))
 			slot.pressed.connect(creature_pressed.emit.bind(i))
 		else:
-			var spell: SpellType = _book.call("structure_at", i) if tab == Tab.STRUCTURE else _book.call("spell_at", i)
+			var spell := _book.structure_at(i) if tab == Tab.STRUCTURE else _book.spell_at(i)
 			slot.name = "Structure%d" % (i + 1) if tab == Tab.STRUCTURE else "Spell%d" % (i + 1)
-			slot.call("show_spell", spell, key_label("spell_%d" % (i + 1)), page, icon_for(spell.tag))
+			slot.show_spell(spell, key_label("spell_%d" % (i + 1)), page, icon_for(spell.tag))
 			if tab == Tab.STRUCTURE:
 				slot.pressed.connect(structure_pressed.emit.bind(i))
 			else:
@@ -136,7 +136,7 @@ func _rebuild() -> void:
 func _refresh_visible() -> void:
 	var has_entries := false
 	if _book and is_instance_valid(_book):
-		has_entries = int(_book.call("creature_count")) + int(_book.call("size")) + int(_book.call("structure_count")) > 0
+		has_entries = _book.creature_count() + _book.size() + _book.structure_count() > 0
 	var wizard_allows := true
 	if _wizard and is_instance_valid(_wizard) and _wizard.has_method("spellbook_visible"):
 		wizard_allows = bool(_wizard.call("spellbook_visible"))
@@ -197,13 +197,13 @@ func _process(_delta: float) -> void:
 		souls = int(purse.get("count")) if purse else 0
 	for i in _slots.size():
 		var slot := _slots[i]
-		slot.call("show_readiness", mana, souls)
+		slot.show_readiness(mana, souls)
 		if tab == Tab.CREATURE:
-			slot.call("show_cooldown", _book.call("creature_cooldown", i), _book.call("creature_max_cooldown", i))
+			slot.show_cooldown(_book.creature_cooldown(i), _book.creature_max_cooldown(i))
 		elif tab == Tab.STRUCTURE:
-			slot.call("show_cooldown", _book.call("structure_cooldown", i), _book.call("structure_max_cooldown", i))
+			slot.show_cooldown(_book.structure_cooldown(i), _book.structure_max_cooldown(i))
 		else:
-			slot.call("show_cooldown", _book.call("cooldown", i), _book.call("max_cooldown", i))
+			slot.show_cooldown(_book.cooldown(i), _book.max_cooldown(i))
 
 
 ## The CRE8/SPEL icon exported by tools/import/import_ui.py, or null.

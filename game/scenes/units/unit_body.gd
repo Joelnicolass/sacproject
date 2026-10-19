@@ -259,7 +259,7 @@ func facing_flat() -> Vector3:
 
 
 func melee_profile() -> Dictionary:
-	var info := BodyLibrary.info(model)
+	var info := BodyCatalog.info(model)
 	return {
 		"evasion": float(type.melee_evasion) if type else 0.0,
 		"resistance": type.melee_resistance if type else 1.0,
@@ -487,7 +487,7 @@ func _apply_model() -> void:
 
 
 func _setup_melee() -> void:
-	var info := BodyLibrary.info(model)
+	var info := BodyCatalog.info(model)
 	$MeleeAttack.call("setup", self, type, float(info.get("reach", 0.35)), float(info.get("height", 1.8)), _rng)
 
 

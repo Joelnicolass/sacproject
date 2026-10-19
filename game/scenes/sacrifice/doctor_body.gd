@@ -255,7 +255,7 @@ func facing_flat() -> Vector3:
 
 ## Defense and size for MeleeAttack.profile_of: evasion and resistance of the CRE8, size of `sacd`.
 func melee_profile() -> Dictionary:
-	var info := BodyLibrary.info(model)
+	var info := BodyCatalog.info(model)
 	return {
 		"evasion": float(type.melee_evasion) if type else 0.0,
 		"resistance": type.melee_resistance if type else 1.0,

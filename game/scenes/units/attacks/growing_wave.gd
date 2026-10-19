@@ -20,7 +20,6 @@ extends ShotInFlight
 
 const _HEALTH := preload("res://scenes/components/health.gd")
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
-static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 
 ## sacengine final*ProjectileSize: the radius at the end of the range (m). Silverback and Spitfire 7,5, Gargoyle 6.
 @export var final_radius := 7.5
@@ -78,7 +77,7 @@ func radius_at(frame: int, shot: RangedShot) -> float:
 	var speed := ability.speed if ability else shot.velocity.length()
 	if speed <= 0.0 or reach <= 0.0 or not is_finite(reach):
 		return 0.0
-	return final_radius * float(frame) / (TICKS * reach / speed)
+	return final_radius * float(frame) / (MatchClock.TICKS_PER_SECOND_F * reach / speed)
 
 
 func _intended(shot: RangedShot) -> Node:
@@ -115,7 +114,7 @@ func _log_start(shot: RangedShot, at: Vector3) -> void:
 	var direction := velocity.normalized()
 	var target := _intended(shot)
 	print("onda %s tick 1 en (%.3f, %.3f, %.3f) dir (%.5f, %.5f, %.5f) paso %.4f radio final %.2f en %.4f ticks a %s (cuadro %d)" % [
-		shot.name, at.x, at.y, at.z, direction.x, direction.y, direction.z, velocity.length() / TICKS, final_radius,
+		shot.name, at.x, at.y, at.z, direction.x, direction.y, direction.z, velocity.length() / MatchClock.TICKS_PER_SECOND_F, final_radius,
 		final_radius / maxf(radius_at(1, shot), 0.000001), str(target.name) if target else "nadie", MatchClock.now()])
 
 

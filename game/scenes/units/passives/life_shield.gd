@@ -14,7 +14,6 @@ extends Node3D
 ## Divergences (declared): it ends by its time or by death only (the other modes without canShield are not modelled);
 ## there is no shieldBlocked; the bubble is a placeholder.
 
-static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 
 ## The body it shields: its box sizes the bubble; its name goes in the log.
 @export var body: Node3D
@@ -69,7 +68,7 @@ func start_for(ability: AbilityType) -> bool:
 
 
 static func ticks_for(ability: AbilityType) -> int:
-	return roundi((ability.duration if ability else 20.0) * TICKS)
+	return roundi((ability.duration if ability else 20.0) * MatchClock.TICKS_PER_SECOND_F)
 
 
 ## Server (or solo). sacengine lifeShield: false (nothing changes) when a shield is already on.
@@ -132,7 +131,7 @@ func _show(on: bool) -> void:
 		bubble.scale = Vector3.ONE * 0.01
 		bubble.visible = true
 	_tween = bubble.create_tween()
-	_tween.tween_property(bubble, "scale", full if on else Vector3.ONE * 0.01, grow_ticks / TICKS)
+	_tween.tween_property(bubble, "scale", full if on else Vector3.ONE * 0.01, grow_ticks / MatchClock.TICKS_PER_SECOND_F)
 	if not on:
 		_tween.tween_callback(bubble.hide)
 

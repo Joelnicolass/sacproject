@@ -12,7 +12,6 @@ extends ShotInFlight
 ## Deviation (declared): the turn is around Vector3.UP, not the shooter's own up (a ground shooter stands upright); with
 ## the port's axes it may come out mirrored, and the fan is symmetric.
 
-static var TICKS := float(MatchClock.TICKS_PER_SECOND)
 
 ## sacengine θ = 3.5° (state.d:24740).
 @export var angle_deg := 3.5
@@ -66,7 +65,7 @@ func _split(shot: RangedShot) -> void:
 ## sacengine decrements distanceUntilSplit by rangedAttack.speed/updateFPS; without a SPEL, by the shot's own speed.
 func _step_m(shot: RangedShot) -> float:
 	var speed := shot.ability.speed if shot.ability else shot.velocity.length()
-	return speed / TICKS
+	return speed / MatchClock.TICKS_PER_SECOND_F
 
 
 ## The distance the packet asked to split at (for the log): max(0, aim_distance − before_target_m).

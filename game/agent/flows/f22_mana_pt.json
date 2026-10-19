@@ -59,7 +59,7 @@
     { "assert": { "node": "%ManaProbe", "text_contains": "sin fuente" } },
     { "shot": "f22pt_07_walked_away.png" },
 
-    { "scene": "res://scenes/world/high_noon.tscn" },
+    { "scene": "res://scenes/match/high_noon.tscn" },
     { "wait": 3.0 },
     { "print": { "node": "%Wizards/Wizard1", "prop": "global_position" } },
     { "print": { "node": "%Wizards/Wizard1/ManaPool", "prop": "current" } },

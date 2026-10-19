@@ -13,4 +13,4 @@ for i in range(10):
     s+=[{"wait":4.0},call("probe")]
     if i in (1,5): s+=[{"shot":"t05_ritual_%d.png"%i}]
 s+=[{"wait":6.0},call("probe"),{"print":{"node":"%Stats","prop":"text"}},{"shot":"t06_fin.png"}]
-json.dump({"scene":"res://scenes/ui/boot.tscn","wait_first":1.0,"steps":s},open("flows/pt61b_b.json","w"),indent=1)
+json.dump({"scene":"res://scenes/core/boot.tscn","wait_first":1.0,"steps":s},open("flows/pt61b_b.json","w"),indent=1)

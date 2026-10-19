@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://bootsacrifice01"]
 
-[ext_resource type="Script" path="res://scenes/ui/boot.gd" id="1_boot"]
+[ext_resource type="Script" path="res://scenes/core/boot.gd" id="1_boot"]
 [ext_resource type="PackedScene" path="res://scenes/ui/character_select/character_select.tscn" id="2_select"]
 [ext_resource type="Resource" path="res://data/match_rules.tres" id="3_rules"]
 [ext_resource type="PackedScene" path="res://scenes/ui/options/options_menu.tscn" id="4_options"]

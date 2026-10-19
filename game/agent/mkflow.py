@@ -22,6 +22,6 @@ def full(who):
         s+=[{"wait":2.0},snap(),{"shot":f"{who}2{i:02d}_altar.png"}]
     s+=[{"wait_until":{"node":"%MatchResult","visible_in_tree":True,"timeout":60}},snap(),{"shot":f"{who}90_resultado.png"},{"wait":2.0},snap(),{"shot":f"{who}91_resultado2.png"}]
     return s
-def wrap(steps): return {"scene":"res://scenes/ui/boot.tscn","wait_first":1.0,"steps":steps}
+def wrap(steps): return {"scene":"res://scenes/core/boot.tscn","wait_first":1.0,"steps":steps}
 json.dump(wrap(full("a")),open("flows/pt60_full_a.json","w"),indent=1)
 json.dump(wrap(full("b")),open("flows/pt60_full_b.json","w"),indent=1)

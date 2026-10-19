@@ -8,7 +8,7 @@ extends Node
 ## Lives in agent/editor/, not agent/harness/: it reads the editor, not a match, so the harness rules do not apply.
 ## User args (after `--`): --scene=res://...  --out=res://agent/out/035  --frames=N  --reload
 
-const DEFAULT_SCENE := "res://scenes/world/high_noon.tscn"
+const DEFAULT_SCENE := "res://scenes/match/high_noon.tscn"
 const TERRAIN_SCRIPT := "res://scenes/world/terrain.gd"
 const COUNTED := ["Buildings", "Plants", "NpcSpawns"]
 

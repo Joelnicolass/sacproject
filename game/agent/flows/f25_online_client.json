@@ -1,5 +1,5 @@
 {
-  "scene": "res://scenes/ui/boot.tscn",
+  "scene": "res://scenes/core/boot.tscn",
   "wait_first": 0.8,
   "steps": [
     { "click": "%Play" },

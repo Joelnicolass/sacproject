@@ -10,7 +10,7 @@ extends Node
 ## Needs the project imported once (class names NavFingerprint, NavBakeSettings, MapNavRegion). Import again after writing.
 ## It builds the map nodes as the dedicated server does (buildings shape their boxes in _ready) but does not run the world.
 
-const WORLD_SCENE := "res://scenes/world/high_noon.tscn"
+const WORLD_SCENE := "res://scenes/match/high_noon.tscn"
 const SETTINGS_PATH := "res://data/nav/nav_bake.tres"
 const NAV_PATH := "res://data/nav/high_noon_nav.res"
 ## Children of the world that feed the bake, and the manafounts under MapProps.

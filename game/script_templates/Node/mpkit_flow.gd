@@ -5,7 +5,7 @@ extends MpFlow
 
 
 func _ready() -> void:
-	boot_path = "res://scenes/ui/boot.tscn"
+	boot_path = "res://scenes/core/boot.tscn"
 	add_world(&"main", "res://scenes/world/match.tscn")
 	# add_world(&"arena", "res://scenes/world/arena.tscn")
 	super._ready()

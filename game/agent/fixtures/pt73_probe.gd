@@ -20,7 +20,7 @@ func _ready() -> void:
 	var rules := (load("res://debug/rules/village.tres") as VillageRules).duplicate() as VillageRules
 	rules.pause_npcs = false
 	rules.match_seed = int(_args.get("seed", 73))
-	_world = (load("res://scenes/world/high_noon.tscn") as PackedScene).instantiate()
+	_world = (load("res://scenes/match/high_noon.tscn") as PackedScene).instantiate()
 	_world.set("rules", rules)
 	add_child(_world)
 	_run.call_deferred()

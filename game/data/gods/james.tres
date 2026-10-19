@@ -1,8 +1,8 @@
 [gd_resource type="Resource" script_class="GodType" load_steps=64 format=3]
 
-[ext_resource type="Script" path="res://scenes/data/god_type.gd" id="1_gtype"]
-[ext_resource type="Script" path="res://scenes/data/god_book.gd" id="2_gbook"]
-[ext_resource type="Script" path="res://scenes/data/book_unlock.gd" id="3_unl"]
+[ext_resource type="Script" path="res://scenes/gods/god_type.gd" id="1_gtype"]
+[ext_resource type="Script" path="res://scenes/gods/god_book.gd" id="2_gbook"]
+[ext_resource type="Script" path="res://scenes/gods/book_unlock.gd" id="3_unl"]
 [ext_resource type="Script" path="res://scenes/data/creature_type.gd" id="4_cre"]
 [ext_resource type="Script" path="res://scenes/data/spell_type.gd" id="5_spe"]
 [ext_resource type="Resource" path="res://data/ai/profile_james.tres" id="6_ai"]

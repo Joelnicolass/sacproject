@@ -1,5 +1,5 @@
 {
-  "scene": "res://scenes/ui/boot.tscn",
+  "scene": "res://scenes/core/boot.tscn",
   "wait_first": 2.5,
   "steps": [
     { "click": "%Wizard_cwa1" },

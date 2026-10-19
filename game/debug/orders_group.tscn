@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3]
 
-[ext_resource type="PackedScene" uid="uid://highnoonworld01" path="res://scenes/world/high_noon.tscn" id="1_world"]
+[ext_resource type="PackedScene" uid="uid://highnoonworld01" path="res://scenes/match/high_noon.tscn" id="1_world"]
 [ext_resource type="Resource" path="res://debug/rules/orders_group.tres" id="2_rules"]
 [ext_resource type="PackedScene" path="res://scenes/world/units/unit.tscn" id="3_unit"]
 [ext_resource type="Script" path="res://debug/orders_group.gd" id="4_group"]

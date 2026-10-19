@@ -4,7 +4,7 @@ Assets extracted from the original game's installation, in Godot-native formats 
 
 Only the importers in `tools/` write here, one per family. The game never writes here. What is edited by hand lives in `data/`. Importers are idempotent (deterministic output, no timestamps) and never touch an existing `.import` (it carries the UID).
 
-The paths are owned by `scenes/data/original_assets.gd` (`OriginalAssets`). Nothing else spells `res://assets/original/`.
+The paths are owned by `scenes/core/catalog/original_assets.gd` (`OriginalAssets`). Nothing else spells `res://assets/original/`.
 
 | Folder | What | Importer | Cut |
 |---|---|---|---|

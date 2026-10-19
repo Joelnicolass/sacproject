@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://debug/doctor_path.gd" id="1_runner"]
-[ext_resource type="PackedScene" path="res://scenes/world/high_noon.tscn" id="2_world"]
+[ext_resource type="PackedScene" path="res://scenes/match/high_noon.tscn" id="2_world"]
 [ext_resource type="Resource" path="res://debug/rules/doctor_path.tres" id="3_rules"]
 
 [node name="DoctorPath" type="Node"]

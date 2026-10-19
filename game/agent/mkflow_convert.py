@@ -146,7 +146,7 @@ def online_a():
         if i in (1, 4):
             s += [shot("o06_ritual_%d.png" % i)]
     s += [{"wait": 4.0}, probe(), {"print": {"node": "%Stats", "prop": "text"}}, shot("o07_fin.png")]
-    return {"scene": "res://scenes/ui/boot.tscn", "wait_first": 1.0, "steps": s}
+    return {"scene": "res://scenes/core/boot.tscn", "wait_first": 1.0, "steps": s}
 
 
 json.dump(full(), open("flows/rfc020e_convert_solo.json", "w"), indent=1)

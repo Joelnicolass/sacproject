@@ -1,5 +1,5 @@
 {
-  "scene": "res://scenes/world/high_noon.tscn",
+  "scene": "res://scenes/match/high_noon.tscn",
   "wait_first": 3.0,
   "steps": [
     { "print": { "node": "%Wizards/Wizard1", "prop": "position" } },

@@ -14,7 +14,7 @@ Criterio: headless `-- --dedicated` queda en marcha y escribe `dedicated listo p
 ### F2 — Unirse por IP
 El cliente escribe una IPv4 y entra al mundo cuando el dedicado abre la partida.
 
-Criterio: un cliente a `127.0.0.1` carga `res://scenes/world/high_noon.tscn` y muestra un slot mayor que 0. Hecho: la captura lee «Slot 1».
+Criterio: un cliente a `127.0.0.1` carga `res://scenes/match/high_noon.tscn` y muestra un slot mayor que 0. Hecho: la captura lee «Slot 1».
 
 ### F3 — Jugar solo
 No llama a `host()`. Carga el mismo mundo en local.
@@ -69,12 +69,12 @@ Criterio: con el dedicado en marcha, un cliente entra a High Noon, pulsa `order_
 ### F15 — Cámara, WASD, cielo de Persephone
 El mago camina con W A S D. El mouse gira la cámara (arrastre con el botón derecho o el central, y el borde de la pantalla). El cielo, las plantas y las estructuras salen del tileset de Persephone, no del de James. El cielo no muestra el anillo de corte de la textura.
 
-Criterio: en `res://scenes/world/high_noon.tscn`, mantener `move_forward` un segundo mueve a James. La captura del cielo no muestra un corte circular ni paneles verticales. Se ven plantas y estructuras de Persephone con textura. Hecho: James pasa de (1275, 11.9, 1275) a (1280.3, 12.8, 1283.2). El cielo es el de Persephone, de una sola vuelta. El manalito y los arcos tienen la piedra y el brillo azul.
+Criterio: en `res://scenes/match/high_noon.tscn`, mantener `move_forward` un segundo mueve a James. La captura del cielo no muestra un corte circular ni paneles verticales. Se ven plantas y estructuras de Persephone con textura. Hecho: James pasa de (1275, 11.9, 1275) a (1280.3, 12.8, 1283.2). El cielo es el de Persephone, de una sola vuelta. El manalito y los arcos tienen la piedra y el brillo azul.
 
 ### F13 — Partida mínima al estilo Sacrifice
 La cámara sigue al mago. El clic en el suelo lo manda ahí. El libro de abajo tiene Convocar y Rayo: primero el hechizo, después el suelo. La criatura convocada queda elegida y el clic siguiente la manda a ese punto.
 
-Criterio: en `res://scenes/world/high_noon.tscn` se ve al mago caminar hacia el clic, un campesino aparecer en el suelo elegido, caminar cuando se le ordena, y un rayo salir hacia el blanco.
+Criterio: en `res://scenes/match/high_noon.tscn` se ve al mago caminar hacia el clic, un campesino aparecer en el suelo elegido, caminar cuando se le ordena, y un rayo salir hacia el blanco.
 
 ## Núcleo de juego (RFC-016)
 
@@ -203,7 +203,7 @@ El servidor elige un dios al azar. Cambian el cielo y el suelo.
 
 Criterio: en `res://debug/biome_pick.tscn`, con Pyro forzado se ven el cielo y el suelo de Pyro, y los clientes imprimen el mismo bioma.
 
-Hecho (parcial): `tools/export_tilesets.py` saca el cielo, el atlas del suelo y los colores del ENVI de los 5 dioses; `GodTheme` (`data/themes/*.tres`) y `ThemeApplier` los aplican, y `res://debug/biome_gallery.tscn` los recorre con Enter. Sorteo y réplica: `MatchBiome` (`scenes/world/match_biome.gd`) sortea en el servidor (o en solo) con `ThemeApplier.pick_random(semilla)` e imprime `bioma <dios> semilla <n>`. Manda `theme.god` a cada cliente por el canal `biome` de MpKit cuando ese cliente tiene el mundo listo. Cada cliente imprime `bioma <dios>` y lo aplica. `MatchRules.biome_god` y `biome_seed` lo fijan. En `res://debug/biome_pick.tscn` (`debug/rules/biome_pyro.tres`) se ven el cielo y el suelo de Pyro (`agent/out/f32_biome_pick.png`). Con el dedicado y dos clientes, los tres imprimieron el mismo bioma (stratos). High Noon usa ACES con exposición 0.85.
+Hecho (parcial): `tools/export_tilesets.py` saca el cielo, el atlas del suelo y los colores del ENVI de los 5 dioses; `GodTheme` (`data/themes/*.tres`) y `ThemeApplier` los aplican, y `res://debug/biome_gallery.tscn` los recorre con Enter. Sorteo y réplica: `MatchBiome` (`scenes/match/match_biome.gd`) sortea en el servidor (o en solo) con `ThemeApplier.pick_random(semilla)` e imprime `bioma <dios> semilla <n>`. Manda `theme.god` a cada cliente por el canal `biome` de MpKit cuando ese cliente tiene el mundo listo. Cada cliente imprime `bioma <dios>` y lo aplica. `MatchRules.biome_god` y `biome_seed` lo fijan. En `res://debug/biome_pick.tscn` (`debug/rules/biome_pyro.tres`) se ven el cielo y el suelo de Pyro (`agent/out/f32_biome_pick.png`). Con el dedicado y dos clientes, los tres imprimieron el mismo bioma (stratos). High Noon usa ACES con exposición 0.85.
 
 Suelo por bioma (pulido final): sacengine no cambia la tierra de un mapa. El tileset sale del LEVL (`levl.d:43-52`); cada índice del TMAP lee el `NNNN.MAPT` de esa carpeta (`sacmap.d:192-195, 688-704, 861`) y un MAPT que falta queda en blanco (695). High Noon es de James, y con otro dios el mismo índice es otra cosa: las manchas azules eran agua y transiciones de Persephone (50, 208-219) puestas por «el índice más cercano». Ahora `export_tilesets.py` lee los grupos `MGnn.MAPG` de cada tierra (`maps.d:55-76`). Los grupos base tienen una banda de altura normalizada; los de transición (byte 32) nombran dos grupos base y traen 12 baldosas. Cada baldosa de James va a la de la otra tierra con el mismo papel. Los grupos base usan un mapeo que respeta el orden de alturas y deja fundidas la mayor cantidad posible de celdas de transición del mapa; si empatan, gana la banda más cercana. Un grupo con banda de ancho 0 (MG05 `[1,1,1,1]`) toma el destino del grupo con el que más limita. La transición se decide por qué grupo base muestra cada esquina de 16×16 (casi todos los sets dan 12 firmas distintas). Si aun así falta el par, va la baldosa base de la mayoría de las esquinas; en High Noon ya no queda ninguna así. Las paredes del vacío usan el `edge.png` del tema, como `sacmap.d`. `theme.json` guarda `atlas_groups` y `atlas_remap`. James no cambia (atlas idéntico). WORKAROUND: el original nunca hace esto; ver el comentario en `export_atlas`.
 
@@ -271,7 +271,7 @@ Criterio:
 - `high_noon.tscn` expone Sky/Environment como nodos editables en escena (sin perder la aplicación por bioma); abrir la escena en el editor muestra cielo, entorno y tunables sin depender de creación ad-hoc en `_ready`.
 - Las partículas definidas en `data/fx/*.tres` se disparan en todos los eventos ya implementados del loop (cast, summon, heal/speedup, ranged impact, fireball/wrath/rock/swarm y habilidades activas), con verificación en `res://debug/fx_gallery.tscn` + playtest.
 - Las habilidades/poderes de criaturas del roster activo dejan de responder “No implementado” cuando ya existe lógica equivalente en el original y datos en `GameData`; los casos no implementables aún deben responder motivo explícito y quedar listados en el panel debug.
-- Parseo headless sin `SCRIPT ERROR` y playtest de `res://debug/unit_parity_gallery.tscn` + `res://scenes/world/high_noon.tscn` con evidencia de cada criterio.
+- Parseo headless sin `SCRIPT ERROR` y playtest de `res://debug/unit_parity_gallery.tscn` + `res://scenes/match/high_noon.tscn` con evidencia de cada criterio.
 
 Hecho: se agregó `res://debug/unit_parity_gallery.tscn` para auditar en una sola escena magos/criaturas/estructuras con ciclo de clips (`idle/run/attack`), metadata de playback (`role/tag/frame/fps`) y verificación rápida de pose/orientación. `high_noon.tscn` ahora incluye `%Sky` y `%Environment` como nodos persistentes de escena (editables en el inspector) y `high_noon.gd` dejó de instanciarlos dinámicamente en runtime. `body_visual.gd` soporta correcciones de pose/escala por modelo desde datos (`rotation_offset`, `position_offset`, `model_scale`) para tuning en cache sin hardcode por actor. `structure.tscn` incorpora `ClipPose` y `structure_body.gd` reproduce el primer clip real disponible del modelo cuando existe en `anim_mesh_clips_f37.json`. `debug/fx_gallery.gd` completa automáticamente slots faltantes desde `data/fx/*.tres`, dejando cubierta la matriz de partículas del cache. `active_ability.gd` dejó de limitarse a Rockform y ahora implementa las habilidades activas del roster actual (`!nur` Run Away, `dedp` Play Dead, `ivni` Stealth, `hsba` Life Shield, `eesd` Divine Sight, además de `dihk` Rockform), con validación de cooldown/maná/rango, efectos de estado y disparo de FX asociados.
 
@@ -303,7 +303,7 @@ Hecho: `debug/rules_suite.gd` (antes `multiplayer_suite`) arma las piezas en una
 ### F43 — Higiene del mundo (Fase 0 de AUDIT-2026-10-12)
 `high_noon.tscn` no lleva datos del juego original y guardarla en el editor no los vuelve a meter.
 
-Criterio: `scenes/world/high_noon.tscn` pesa menos de 100 KB y ningún `.tscn` ni `.tres` contiene `PackedByteArray`. `res://scenes/world/high_noon.tscn` en headless imprime `mundo listo` sin `ERROR`. No hay acción de InputMap: es un corte de archivos.
+Criterio: `scenes/match/high_noon.tscn` pesa menos de 100 KB y ningún `.tscn` ni `.tres` contiene `PackedByteArray`. `res://scenes/match/high_noon.tscn` en headless imprime `mundo listo` sin `ERROR`. No hay acción de InputMap: es un corte de archivos.
 
 Hecho: `terrain.gd` quita `PROPERTY_USAGE_STORAGE` a `mesh` y `material_override` en `_validate_property` (quedan de solo lectura en el inspector) y ya no mueve el nodo raíz en el editor. La escena pasó de 5,2 MB a 9,5 KB; `Terrain` queda en el origen, donde ya lo dejaba el runtime. Se borraron `_configure_environment()` y el `@export` `tonemap_exposure`, que nadie leía. `RULES.md` apunta a `/Applications/Godot.app`. Review: `reviews/REVIEW-F43.md` (PASS). Probado en headless, en siete escenas debug y en un dedicado real; el guardado se probó con `--headless --editor`, no con Ctrl+S en la interfaz. Sin recentrado, en el editor hay que encuadrar `Terrain` con F. Se quedan `%Creature`, `wizard.gd` y `tick_order.gd` (los usan los flows f7–f10, `wizard_preview.gd` y los `.tres` de tick). Pendiente: mover los checks F6–F10 a `debug/`; las 24 escenas que referencian High Noon con el uid viejo `uid://highnoonworld01` (hoy resuelven por ruta).
 
@@ -324,7 +324,7 @@ Hecho: `BodyCatalog` (`scenes/world/body_catalog.gd`, `@tool`, estático) lee `c
 ### F48 — Inicios y manantiales como nodos de la escena (RFC-018b)
 El mapa muestra en el editor dónde inicia cada jugador y dónde están las fuentes, y se mueven con el gizmo.
 
-Criterio: abrir `res://scenes/world/high_noon.tscn` en el editor muestra 2 inicios (altar, mago translúcido en el punto de aparición, cartel «Jugador 1» / «Jugador 2») y 5 manantiales con su modelo. Arrastrar `MapProps/Founts/FountCenter` lo deja apoyado en el suelo. Con F6 el mago aparece donde estaba el fantasma. No hay acción de InputMap nueva.
+Criterio: abrir `res://scenes/match/high_noon.tscn` en el editor muestra 2 inicios (altar, mago translúcido en el punto de aparición, cartel «Jugador 1» / «Jugador 2») y 5 manantiales con su modelo. Arrastrar `MapProps/Founts/FountCenter` lo deja apoyado en el suelo. Con F6 el mago aparece donde estaba el fantasma. No hay acción de InputMap nueva.
 
 Hecho: `PlayerStart` (`props/player_start.tscn`: `slot`, `faces`, `wizard_distance`, `spawn_spot()`, vista previa solo de editor) y `GroundSnap` (`components/ground_snap.gd`, apoya a su padre con `terrain.ground_height`; se apaga con `enabled` o quitando el hijo). `high_noon.tscn` tiene `MapProps/Starts/Start1..2` y `MapProps/Founts/FountCenter|East|South|North|West`, en las posiciones del mapa original: son 5 manantiales, antes había 2. `map_props.gd` ya no instancia altares ni manantiales; baja `rules` a los `ManaSource` en `_enter_tree`. `wizard_spawner.gd` pide `spawn_spot()` al inicio de su slot. Review: `reviews/REVIEW-RFC-018b.md`. Probado en headless: posición y giro de los magos iguales a antes en 7 escenas; maná en los 5 manantiales y altar solo a su dueño; dedicado con dos clientes sin errores; editor headless con avisos, apoyo en el suelo y re-guardado sin datos. Guardado real desde el editor (2026-10-12 21:13): la escena pesa 10,4 KB, sin malla, sin vista previa y sin posición en la raíz. En ese guardado `Start2` había quedado en (1498, 1328) y `Start1` corrido 5 cm: era una prueba del usuario y se restauraron las posiciones originales. Pendiente: 4 flows con rutas viejas (`pt35_manalith_lifecycle`, `pt20_solo`, `f17_world`, `f22_mana_pt`); el altar no guarda `owner_slot` porque no tiene script, así que Desecrate responde «Blanco inválido» (lo arregla 017a).
 
@@ -413,7 +413,7 @@ Con ventana. Flows `agent/flows/pt63_*.json`, lanzador `agent/run_pt63.sh`, capt
 ### F52 — Suelo suavizado y lightmap del mapa (RFC-019a)
 El terreno ya no muestra los triángulos: las laderas se leen como una superficie continua.
 
-Criterio: en `res://scenes/world/high_noon.tscn` (o `res://debug/biome_pick.tscn` para un bioma fijo), con `move_forward` y la cámara, las laderas no muestran facetas triangulares y el borde contra el acantilado sigue neto. En el editor, destildar `Terrain.smooth_ground` vuelve al facetado en el momento; `light_base` y `light_gain` (grupo «Light map» de `Terrain`) cambian el brillo del suelo en vivo.
+Criterio: en `res://scenes/match/high_noon.tscn` (o `res://debug/biome_pick.tscn` para un bioma fijo), con `move_forward` y la cámara, las laderas no muestran facetas triangulares y el borde contra el acantilado sigue neto. En el editor, destildar `Terrain.smooth_ground` vuelve al facetado en el momento; `light_base` y `light_gain` (grupo «Light map» de `Terrain`) cambian el brillo del suelo en vivo.
 
 Hecho (review con una corrección aplicada; playtest con ventana pendiente): `terrain.gd` iguala la normal de los vértices de suelo que comparten posición, como `generateNormals` de sacengine (`sacmap.d:720-744`: suma de productos cruz ponderada por área); las paredes conservan su normal plana. Sonda `debug/terrain_normals_probe.gd`: 3 174 posiciones de suelo, antes 29 con normal única, ahora 3 174; paredes planas 1 016 de 1 016; con `smooth_ground` apagado vuelve a 29. Colisión, `ground_height` e `is_on_ground` idénticos (220 puntos). `sacrifice_ground.gdshader` muestreaba el lightmap con `VERTEX` en espacio de vista y leía casi siempre negro: ahora usa la coordenada de mapa del vértice (no depende de la cámara ni del recentrado de la vista previa del editor). Las dos constantes pasaron a `light_base` 0,3 y `light_gain` 0,55, elegidas para conservar el brillo anterior (queda entre 1 y 7 % más claro). Review: `reviews/REVIEW-RFC-019a.md`; su bloqueante (los dos valores no eran editables porque el material se regenera del caché) lo corrigió el orquestador con dos `@export_range` en `Terrain` que sobreviven al cambio de bioma. Capturas del developer con ventana (pyro): las facetas desaparecen en laderas y crestas; sin costuras ni manchas nuevas. El paso del lightmap casi no se nota: en este mapa es casi blanco en tierra firme. Visto en las capturas y previo a este corte: un rectángulo negro grande delante del cielo desde ciertos ángulos, sin identificar.
 
@@ -702,7 +702,7 @@ Hecho; review NEEDS WORK corregida (`reviews/REVIEW-F112-bestiary-data.md`), fal
 - `tools/export_stats.py`: `books.json` con las 11 criaturas y `"levels"`. Exporta `stance1` (slot 0) a `stance_animation` en `creatures.json` (nueva clave en las 71) y su clip para las criaturas de nivel ≥ 2 (`STANCE_POSE_MIN_LEVEL`). `_export_all_frames` corta sacengine al tener todos los cuadros del SXSK y borra los OBJ parciales; al reusar un clip exige la cantidad de cuadros del SXSK.
 - `tools/bake_bodies.gd`: hornea esas 35 desde el cuadro 0 de `stance1`; las 16 de nivel ≤ 1 siguen desde `idle0` hasta RFC-023.
 - `tools/audit_unit_parity.py`: cubre las 51 y compara cada clip contra su SXSK. `tools/audit_body_pose.gd` mide el clip del horneado (`pose_source`).
-- `scenes/data/game_data.gd`: `book(god, max_level := 1)` y `creature_level`. `debug/unit_parity_gallery.gd`: `max_level` y `row_per_god`.
+- `scenes/core/catalog/game_data.gd`: `book(god, max_level := 1)` y `creature_level`. `debug/unit_parity_gallery.gd`: `max_level` y `row_per_god`.
 
 Digest seed 7: sin NPC `d0cd7283…` igual en todas las corridas. Con NPC, `08551430…` igual hasta antes del re-horneado de esta ronda. Después da `ac6b9176…`: el horneado tomó el clip nuevo del Farmer (`epez`, de 028c, exportado a las 04:12), y con la entrada vieja de `epez` vuelve a `08551430…`. El cuerpo del Taurock no lo cambia. Disco: `cache/look/anim_f37` pasó de ~1,6 a ~3,8 GB; los clips `stance1` de esta ronda suman ~0,7 GB más. `bodies.json`: las 32 entradas posadas de antes siguen idénticas.
 
@@ -728,7 +728,7 @@ Todo esto pasa a RFC-023, junto con la causa de raíz (la malla respecto del des
 El nivel del mago es una regla de partida: `MatchRules.wizard_level` (1–9, default 1 en el script) → `WizardSpawner._place` → `wizard_body.level` (replicado como `god`) → `Spellbook._rebuild` con clave (dios, nivel) → `GameData.book(god, level)`. El libro muestra solo lo de nivel ≤ el del mago (sacengine `getSpells`); lo de nivel superior no se dibuja y el servidor lo rechaza («Blanco inválido»). Criterio: `res://debug/f111_bestiary.tscn` (F6, Enter, `creature_5`…`creature_8`, clic derecho sobre una enemiga).
 
 Hecho; review NEEDS WORK con ronda de datos (`reviews/REVIEW-F113-wizard-level.md`), falta playtest. Cambios:
-- `scenes/data/match_rules.gd` (grupo «Libro»), `scenes/world/wizard/wizard_body.gd` y `.tscn` (`level`), `wizard_spawner.gd`, `scenes/world/spells/spellbook.gd` (TODO N2: un cambio de nivel borra los cooldowns; se resuelve con la XP).
+- `scenes/match/match_rules.gd` (grupo «Libro»), `scenes/world/wizard/wizard_body.gd` y `.tscn` (`level`), `wizard_spawner.gd`, `scenes/world/spells/spellbook.gd` (TODO N2: un cambio de nivel borra los cooldowns; se resuelve con la XP).
 - Banco: `debug/bench_rules.gd` (`human_god`), `debug/ai_match.gd` (`_apply_human_god` antes de poblar), `debug/f111_bestiary.tscn`, `debug/rules/f111_bestiary_<dios>.tres` ×5 (nivel 9, 60 almas, maná lleno) y `f111_level3_james.tres`. Enemigas: las nuevas de nivel 2 y 3 del dios, quietas en el anchor (1454, 1601), a unos 80 m al noroeste del mago del slot 1; el camino no pasa por el atasco de (1488, 1511).
 
 Medido:
@@ -1122,7 +1122,7 @@ Deuda:
 
 ### F140 — MatchSetup, flag del dedicado y la regla en los clientes (RFC-031, corte 031a2)
 
-`MatchSetup` (`scenes/flow/match_setup.gd`, RefCounted) reemplaza a `level_override` y `_cli_level`.
+`MatchSetup` (`scenes/core/flow/match_setup.gd`, RefCounted) reemplaza a `level_override` y `_cli_level`.
 - `from_cli()` lee `--level=N` y `--friendly-fire` / `--no-friendly-fire` (`app.d:333-355`).
 - `apply_to(rules)` devuelve un `duplicate()` con los overrides. Si no hay overrides, devuelve el mismo objeto.
 - `HighNoon._enter_tree` lo aplica en la autoridad antes de `MatchSeed.begin`.
@@ -1358,7 +1358,7 @@ Todo pasa por `godot_run.sh`. Un vigía mide RSS y tiempo y marca `CONTAMINATED`
 ### F145 — MatchClock y enfriamientos por tick (RFC-032, corte 032b)
 
 **Qué cambia:**
-- **`MatchClock`** (`scenes/world/match_clock.gd`, estático) es el único reloj de la simulación. Se engancha a `SceneTree.physics_frame`, no avanza en pausa y se reinicia en `HighNoon._enter_tree`.
+- **`MatchClock`** (`scenes/match/match_clock.gd`, estático) es el único reloj de la simulación. Se engancha a `SceneTree.physics_frame`, no avanza en pausa y se reinicia en `HighNoon._enter_tree`.
 - **`Spellbook`** guarda `_ready_tick`, con `cooldown = (ready − now)/60`, y ya no tiene `_process`. Cada cliente convierte el RPC a su propio `now`.
 - **`rules_suite`** suma los casos `spellbook_cadence` y `match_clock_pause` (`debug/determinism_cases.gd`).
 - **Banco `run_determinism.sh quick`** (para cortes intermedios, unos 2 minutos): corre `s1_quick` en los 3 modos y `s7`/`f139` en fixed contra `agent/det_baseline.txt`.
@@ -2090,7 +2090,7 @@ Deuda:
 
 **Piezas:**
 - **LFS** para `.res` y `.exr` de `assets/original/`; `.gdignore` en `agent/out/` y `cache/look/anim_f37/`, así Godot deja de importar salidas de prueba y cuadros horneados.
-- **`OriginalAssets`** (`scenes/data/original_assets.gd`): único dueño de las rutas de los assets originales; todavía sin consumidores.
+- **`OriginalAssets`** (`scenes/core/catalog/original_assets.gd`): único dueño de las rutas de los assets originales; todavía sin consumidores.
 - **Capturas base** con cámara fija: `bash agent/run_rfc033_shots.sh base|after`, en `agent/out/033/` (fuera de git).
 
 **Cierre (2026-10-17).** Review APPROVE (`reviews/REVIEW-RFC-033a.md`). `quick` igual a la base. El `.gdignore` de `anim_f37` no rompe la animación: esos OBJ se leen con `FileAccess`, no con `ResourceLoader`.
@@ -2713,7 +2713,7 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
 
 ### F197 — Limpieza sin cambio de comportamiento (RFC-036, corte 036b) — cerrado 2026-10-18
 
-- **`DebugLog`** (`scenes/world/components/debug_log.gd`) reemplaza los 30 `static var log_*` del código de juego. Se activa con `--log=a,b` o `--log=all`. `ai_match` llama a `DebugLog.enable_bench()`, con las mismas categorías que antes.
+- **`DebugLog`** (`scenes/core/debug_log.gd`) reemplaza los 30 `static var log_*` del código de juego. Se activa con `--log=a,b` o `--log=all`. `ai_match` llama a `DebugLog.enable_bench()`, con las mismas categorías que antes.
 - **Nodos de chequeo:** los nodos de chequeo de ticks y órdenes pasaron de `scenes/world/` a `debug/`. `walk_step` se queda donde está: lo usa `wizard_body.tscn`.
 - **Ticks:** `MatchClock.TICKS_PER_SECOND` sale de `Engine.physics_ticks_per_second`.
 - **Verificación:**

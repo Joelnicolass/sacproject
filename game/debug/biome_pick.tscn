@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3]
 
-[ext_resource type="PackedScene" uid="uid://highnoonworld01" path="res://scenes/world/high_noon.tscn" id="1_world"]
+[ext_resource type="PackedScene" uid="uid://highnoonworld01" path="res://scenes/match/high_noon.tscn" id="1_world"]
 [ext_resource type="Resource" path="res://debug/rules/biome_pyro.tres" id="2_rules"]
 
 [node name="BiomePick" type="Node"]

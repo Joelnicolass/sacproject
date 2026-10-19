@@ -1,5 +1,5 @@
 {
-  "scene": "res://scenes/world/high_noon.tscn",
+  "scene": "res://scenes/match/high_noon.tscn",
   "wait_first": 1.4,
   "steps": [
     { "assert": { "node": "%SpellBook", "visible": true } },

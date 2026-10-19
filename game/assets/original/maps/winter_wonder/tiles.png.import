@@ -1,0 +1,14 @@
+[remap]
+
+importer="image"
+type="Image"
+uid="uid://i85vun0ihcdw"
+path="res://.godot/imported/tiles.png-5d8a3eeefd43186619c42fa1e0626c38.image"
+
+[deps]
+
+source_file="res://assets/original/maps/winter_wonder/tiles.png"
+dest_files=["res://.godot/imported/tiles.png-5d8a3eeefd43186619c42fa1e0626c38.image"]
+
+[params]
+

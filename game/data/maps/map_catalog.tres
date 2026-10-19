@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="MapCatalog" load_steps=8 format=3]
+[gd_resource type="Resource" script_class="MapCatalog" load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scenes/map/map_catalog.gd" id="1_catalog"]
 [ext_resource type="Script" path="res://scenes/map/map_definition.gd" id="2_def"]
@@ -7,7 +7,8 @@
 [ext_resource type="Resource" path="res://scenes/map/maps/peaks/peaks.tres" id="5_peaks"]
 [ext_resource type="Resource" path="res://scenes/map/maps/peasantville/peasantville.tres" id="6_peasantville"]
 [ext_resource type="Resource" path="res://scenes/map/maps/roads/roads.tres" id="7_roads"]
+[ext_resource type="Resource" path="res://scenes/map/maps/winter_wonder/winter_wonder.tres" id="8_winter_wonder"]
 
 [resource]
 script = ExtResource("1_catalog")
-maps = Array[ExtResource("2_def")]([ExtResource("3_high_noon"), ExtResource("4_test_flat"), ExtResource("5_peaks"), ExtResource("6_peasantville"), ExtResource("7_roads")])
+maps = Array[ExtResource("2_def")]([ExtResource("3_high_noon"), ExtResource("4_test_flat"), ExtResource("5_peaks"), ExtResource("6_peasantville"), ExtResource("7_roads"), ExtResource("8_winter_wonder")])

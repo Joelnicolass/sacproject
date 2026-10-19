@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="MapDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/map/map_definition.gd" id="1_def"]
+[ext_resource type="Resource" path="res://assets/original/maps/winter_wonder/sides.tres" id="2_sides"]
+
+[resource]
+script = ExtResource("1_def")
+tag = &"winter_wonder"
+display_name = "Winter Wonder"
+map_scene_path = "res://scenes/map/maps/winter_wonder/map.tscn"
+sides = ExtResource("2_sides")
+terrain_path = "res://assets/original/maps/winter_wonder/terrain.res"
+tiles_path = "res://assets/original/maps/winter_wonder/tiles.png"
+light_path = "res://assets/original/maps/winter_wonder/light.png"
+nav_path = "res://scenes/map/maps/winter_wonder/nav.res"
+player_starts = 4
+layout_scene_path = "res://scenes/map/maps/winter_wonder/layout.tscn"
+ntts_path = "res://assets/original/maps/winter_wonder/ntts.json"
+widgets_path = "res://assets/original/maps/winter_wonder/widgets.json"

@@ -24,6 +24,13 @@
 [ext_resource type="Script" path="res://scenes/world/spells/actions/guardian_action.gd" id="17_guardian"]
 [ext_resource type="Script" path="res://scenes/world/spells/actions/teleport_action.gd" id="18_teleport"]
 [ext_resource type="PackedScene" path="res://scenes/fx/teleport_rings.tscn" id="19_rings"]
+[ext_resource type="PackedScene" path="res://scenes/world/spells/actions/pups_action.tscn" id="a041_pups"]
+[ext_resource type="PackedScene" path="res://scenes/world/spells/actions/heal_action.tscn" id="a041_heal"]
+[ext_resource type="PackedScene" path="res://scenes/world/spells/actions/rock_action.tscn" id="a041_rock"]
+[ext_resource type="PackedScene" path="res://scenes/world/spells/actions/wrath_action.tscn" id="a041_wrath"]
+[ext_resource type="PackedScene" path="res://scenes/world/spells/actions/fireball_action.tscn" id="a041_fireball"]
+[ext_resource type="PackedScene" path="res://scenes/world/spells/actions/lightning_action.tscn" id="a041_lightning"]
+[ext_resource type="PackedScene" path="res://scenes/world/spells/actions/swarm_action.tscn" id="a041_swarm"]
 [ext_resource type="Script" path="res://scenes/world/warp_snap.gd" id="warp_snap"]
 [ext_resource type="Script" path="res://scenes/world/nav/path_follower.gd" id="f72_follower"]
 [ext_resource type="Script" path="res://scenes/world/units/afflictions/afflictions.gd" id="f120_afflictions"]
@@ -196,6 +203,20 @@ tag = "elet"
 pick = 3
 prompt = "Elegí un edificio propio"
 rings_scene = ExtResource("19_rings")
+
+[node name="Pups" parent="Caster/Actions" instance=ExtResource("a041_pups")]
+
+[node name="Heal" parent="Caster/Actions" instance=ExtResource("a041_heal")]
+
+[node name="Rock" parent="Caster/Actions" instance=ExtResource("a041_rock")]
+
+[node name="Wrath" parent="Caster/Actions" instance=ExtResource("a041_wrath")]
+
+[node name="Fireball" parent="Caster/Actions" instance=ExtResource("a041_fireball")]
+
+[node name="Lightning" parent="Caster/Actions" instance=ExtResource("a041_lightning")]
+
+[node name="Swarm" parent="Caster/Actions" instance=ExtResource("a041_swarm")]
 
 [node name="GhostForm" type="Node" parent="." node_paths=PackedStringArray("visual")]
 script = ExtResource("12_ghost")

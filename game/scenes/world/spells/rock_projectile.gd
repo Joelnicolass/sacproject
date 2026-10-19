@@ -1,4 +1,4 @@
-extends Node3D
+extends SpellProjectile
 
 ## James' Rock (sacengine state.d:10541-10561, 16707-16855). While the wizard casts it rises
 ## out of the ground ahead of him (rockCastingPosition, buried 1 m). Then it flies at its

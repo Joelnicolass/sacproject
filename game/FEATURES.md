@@ -3144,3 +3144,12 @@ Referencias de sacengine: `renderer.d:4459-4760` y `minimap.d`.
   - `quick` PASS sin regrabar.
   - `rules_suite` PASS.
 - **Conocido:** `tsg@`, una referencia colgante que ya estaba en los datos originales, queda en la lista permitida.
+### F230 — Hechizos y proyectiles como escenas (RFC-041, cerrado 2026-10-19)
+
+Agregar o cambiar un hechizo de combate ya no toca `caster.gd`.
+
+- **041a:** `class_name` en `Caster`, `Spellbook` y `Summoner`; sockets y llamadas tipadas (`match_command`, `hand_fx`, `ai_command_port`, `wizard_body`, `wizard_brain`) en lugar de `call()`.
+- **041b..h:** los 7 hechizos de combate son `SpellAction` bajo `Caster/Actions`, una escena cada uno en `scenes/world/spells/actions/`: `pups_action` (Speedup), `heal_action`, `rock_action`, `wrath_action`, `fireball_action`, `swarm_action` y `lightning_action`. Wrath, Fireball y Swarm comparten `thrown_action.gd`. La base `AimedAction` tiene los chequeos comunes (enfriamiento y maná, blanco válido, alcance) y `SpellAction` ganó el gancho `started()`, que corre justo después de arrancar el cast. Se borraron `IMPLEMENTED`, las constantes de tag y todas las ramas `spell.tag ==` de `Caster`.
+- **`SpellType.action`:** `@export var action: PackedScene` nuevo (default vacío). Si el mago no tiene un hijo para el tag, `Caster.action_for` instancia esa escena. Un hechizo nuevo es un `.tres` más una escena. Todavía no se cargó en ningún `.tres` del catálogo, para no chocar con el cambio de carga del catálogo.
+- **041i:** proyectiles y efectos como `.tscn` (`rock_projectile`, `wrath_strike`, `fireball_projectile`, `swarm_projectile`, `heal_effect`, `speedup_effect`). `SpellSpawner` (`class_name`) los toma de `projectiles`, un `Dictionary[String, PackedScene]` exportado, con `spawn_projectile(kind, data)`; ya no hay `script.new()`. Base `SpellProjectile` con `setup()`.
+- **Verificación:** import limpio; `rules_suite` PASS; `quick` sin regrabar.

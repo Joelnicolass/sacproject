@@ -51,7 +51,7 @@ var _structure_index := -1
 ## Name the caster answers once the armed spell starts; until then it stays armed.
 var _cast_pending := ""
 var _ability_tag := ""
-var _caster: Node
+var _caster: Caster
 var _left_down := false
 var _press_at := Vector2.ZERO
 var _press_ctrl := false
@@ -84,7 +84,7 @@ func _connect_soul_messages() -> void:
 
 
 func _on_local_wizard(wizard: Node3D) -> void:
-	var caster := wizard.get_node_or_null("Caster") if wizard else null
+	var caster := wizard.get_node_or_null("Caster") as Caster if wizard else null
 	if caster == _caster:
 		return
 	if _caster and is_instance_valid(_caster):
@@ -185,18 +185,18 @@ func _summon(index: int) -> void:
 	if _caster == null or not is_instance_valid(_caster):
 		%Battle.say("Sin mago")
 		return
-	if not bool(_caster.call("wizard_can_cast")):
+	if not _caster.wizard_can_cast():
 		return
-	var book: Node = _caster.get("spellbook")
-	if index >= int(book.call("creature_count")):
+	var book: Spellbook = _caster.spellbook
+	if index >= book.creature_count():
 		return
 	_mode = ""
-	var status := str(_caster.call("summon_status", index))
+	var status := _caster.summon_status(index)
 	if not status.is_empty():
 		%Battle.say(status)
 		return
-	var type: CreatureType = book.call("creature_at", index)
-	_caster.call("request_summon", type.tag)
+	var type: CreatureType = book.creature_at(index)
+	_caster.request_summon(type.tag)
 
 
 ## sacengine selectSpell: an unaffordable or cooling spell is not armed.
@@ -205,19 +205,19 @@ func _arm_spell(index: int) -> void:
 	if _caster == null or not is_instance_valid(_caster):
 		%Battle.say("Sin mago")
 		return
-	if not bool(_caster.call("wizard_can_cast")):
+	if not _caster.wizard_can_cast():
 		return
-	var book: Node = _caster.get("spellbook")
-	if index >= int(book.call("size")):
+	var book: Spellbook = _caster.spellbook
+	if index >= book.size():
 		return
-	var status := str(_caster.call("arm_status", index))
+	var status := _caster.arm_status(index)
 	if not status.is_empty():
 		%Battle.say(status)
 		return
 	_mode = "spell"
 	_spell_index = index
 	_cast_pending = ""
-	var armed_spell: SpellType = book.call("spell_at", index)
+	var armed_spell: SpellType = book.spell_at(index)
 	%Battle.arm("spell", armed_spell.tag if armed_spell else "", "Elegí el blanco")
 
 
@@ -228,23 +228,23 @@ func _arm_structure(index: int) -> void:
 	if _caster == null or not is_instance_valid(_caster):
 		%Battle.say("Sin mago")
 		return
-	if not bool(_caster.call("wizard_can_cast")):
+	if not _caster.wizard_can_cast():
 		return
-	var book: Node = _caster.get("spellbook")
-	if index >= int(book.call("structure_count")):
+	var book: Spellbook = _caster.spellbook
+	if index >= book.structure_count():
 		return
-	var status := str(_caster.call("structure_status", index))
+	var status := _caster.structure_status(index)
 	if not status.is_empty():
 		%Battle.say(status)
 		return
-	var action: SpellAction = _caster.call("structure_action", index)
+	var action: SpellAction = _caster.structure_action(index)
 	if action == null:
 		%Battle.say("No implementado")
 		return
 	_mode = "structure"
 	_structure_index = index
 	_cast_pending = ""
-	var armed_structure: SpellType = book.call("structure_at", index)
+	var armed_structure: SpellType = book.structure_at(index)
 	%Battle.arm("structure", armed_structure.tag if armed_structure else action.tag, action.prompt, _accepts_of(action))
 
 
@@ -339,8 +339,8 @@ func _cast_at(screen: Vector2) -> void:
 
 
 func _cast_on(body: Node3D, ground: Variant) -> void:
-	var book: Node = _caster.get("spellbook") if _caster and is_instance_valid(_caster) else null
-	var spell: SpellType = book.call("spell_at", _spell_index) if book else null
+	var book: Spellbook = _caster.spellbook if _caster and is_instance_valid(_caster) else null
+	var spell: SpellType = book.spell_at(_spell_index) if book else null
 	if spell == null:
 		_mode = ""
 		%Battle.say("Mago")
@@ -351,7 +351,7 @@ func _cast_on(body: Node3D, ground: Variant) -> void:
 		return
 	_show_ping(point)
 	_cast_pending = spell.display_name
-	_caster.call("request_cast", spell.tag, point, body)
+	_caster.request_cast(spell.tag, point, body)
 
 
 func _soul_under(screen: Vector2) -> Node3D:
@@ -385,13 +385,13 @@ func _building_first(screen: Vector2) -> Node3D:
 
 
 func _structure_at(screen: Vector2) -> void:
-	var book: Node = _caster.get("spellbook") if _caster and is_instance_valid(_caster) else null
-	var spell: SpellType = book.call("structure_at", _structure_index) if book else null
+	var book: Spellbook = _caster.spellbook if _caster and is_instance_valid(_caster) else null
+	var spell: SpellType = book.structure_at(_structure_index) if book else null
 	if spell == null:
 		_mode = ""
 		%Battle.say("Mago")
 		return
-	var action: SpellAction = _caster.call("structure_action", _structure_index)
+	var action: SpellAction = _caster.structure_action(_structure_index)
 	if action == null:
 		_mode = ""
 		%Battle.say("No implementado")
@@ -413,7 +413,7 @@ func _structure_on_ground(spell: SpellType, ground: Variant) -> void:
 		return
 	_show_ping(ground)
 	_cast_pending = spell.display_name
-	_caster.call("request_structure", _structure_index, ground)
+	_caster.request_structure(_structure_index, ground)
 
 
 ## A structure tab spell that aims at a body: the server checks the body is valid (own, in range…).
@@ -423,7 +423,7 @@ func _cast_structure_on(spell: SpellType, body: Node3D) -> void:
 		return
 	_show_ping(body.global_position)
 	_cast_pending = spell.display_name
-	_caster.call("request_cast", spell.tag, body.global_position, body)
+	_caster.request_cast(spell.tag, body.global_position, body)
 
 
 ## sacengine selectAbility (dagonBackend.d:152-178): the selection's ability (renderedSelection
@@ -564,9 +564,9 @@ func _on_minimap_pointed(point: Vector3, button: int) -> void:
 
 
 func _structure_at_point(point: Vector3) -> void:
-	var book: Node = _caster.get("spellbook") if _caster and is_instance_valid(_caster) else null
-	var spell: SpellType = book.call("structure_at", _structure_index) if book else null
-	var action: SpellAction = _caster.call("structure_action", _structure_index) if spell else null
+	var book: Spellbook = _caster.spellbook if _caster and is_instance_valid(_caster) else null
+	var spell: SpellType = book.structure_at(_structure_index) if book else null
+	var action: SpellAction = _caster.structure_action(_structure_index) if spell else null
 	if action == null:
 		_mode = ""
 		%Battle.say("Mago" if spell == null else "No implementado")

@@ -1,3 +1,4 @@
+class_name SpeedupEffect
 extends Node
 
 ## sacengine speedUp: on a wizard it lasts duration * 0.2 + 0.5 s, on a creature

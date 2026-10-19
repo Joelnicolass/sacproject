@@ -8,7 +8,7 @@ extends Node
 ## presentation: nothing here reads or writes the simulation, and a dedicated server (no meshes) plays nothing.
 
 ## Emits `cast_fx_changed(type_name)` and holds `cast_fx_shown` (Caster).
-@export var caster: Node
+@export var caster: Caster
 ## The wizard's skeleton: where the hands are.
 @export var rig: BodyRig
 ## Seconds between two bursts while the cast lasts (the first one is at once).
@@ -28,8 +28,8 @@ func _ready() -> void:
 	if not BodyCatalog.loads_meshes() or caster == null:
 		set_process(false)
 		return
-	caster.connect("cast_fx_changed", _on_cast_fx_changed)
-	_on_cast_fx_changed(str(caster.get("cast_fx_shown")))
+	caster.cast_fx_changed.connect(_on_cast_fx_changed)
+	_on_cast_fx_changed(caster.cast_fx_shown)
 
 
 func _process(delta: float) -> void:

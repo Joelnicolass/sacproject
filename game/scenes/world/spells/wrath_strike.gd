@@ -1,4 +1,4 @@
-extends Node3D
+extends SpellProjectile
 
 ## Persephone's Wrath (sacengine state.d:10493-10506, 16386-16581). A ball of light leaves the
 ## caster's hands and flies at its target (accelerateTowards, 0.5 m over the ground). It

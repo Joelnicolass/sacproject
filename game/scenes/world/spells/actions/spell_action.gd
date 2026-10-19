@@ -76,6 +76,12 @@ func begin(_wizard: WizardBody, _spell: SpellType, _aim: Aim) -> void:
 	pass
 
 
+## Right after the common part started the cast (cooldown applied, `frames` of casting counted): a spell that
+## launches something while it casts (Rock, Fireball, Speedup) does it here.
+func started(_wizard: WizardBody, _spell: SpellType, _aim: Aim, _frames: int) -> void:
+	pass
+
+
 ## The casting time ended with the wizard alive. Returns something to tell the owner, or "".
 func finish(_wizard: WizardBody, _spell: SpellType, _target: Node3D) -> String:
 	return ""

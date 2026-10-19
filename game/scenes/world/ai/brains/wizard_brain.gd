@@ -266,9 +266,9 @@ func cast_refusal(wizard: AiTrack, spell: Resource, target: AiTrack, point: Vect
 		return "lightCanCast"
 	if not (spell is SpellType and bool((spell as SpellType).is_structure)):
 		return ""
-	var caster := wizard.node.get_node("Caster")
+	var caster := wizard.node.get_node("Caster") as Caster
 	var picked: Node3D = target.node if target != null and target.is_valid() else null
-	return str(caster.call("action_status", (spell as SpellType).tag, point, picked))
+	return caster.action_status((spell as SpellType).tag, point, picked)
 
 
 ## Adenda 1.3: the summon interval of the difficulty has passed since his last summon (always true with interval 0).

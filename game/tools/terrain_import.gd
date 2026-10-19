@@ -46,7 +46,7 @@ func _post_import(scene: Node) -> Object:
 	terrain.transform = Transform3D.IDENTITY
 	# The importer may convert or reorder COLOR_0 (tile id + uv): the glb only supplies positions. The visual mesh is
 	# the one Terrain builds from the data at runtime, so it is identical by construction.
-	var visual := _runtime_mesh(data)
+	var visual := _runtime_mesh(data, _tiles_for(source))
 	if visual == null:
 		push_error("terrain import %s: could not build the visual mesh (is tiles.png imported yet?)." % source)
 		return null
@@ -68,12 +68,13 @@ func _write_data(data: MapTerrainData, out: String) -> void:
 
 
 ## Terrain's own arrays (tile COLOR, smooth normals) through terrain.gd, so there is a single code path.
-func _runtime_mesh(data: MapTerrainData) -> ArrayMesh:
+func _runtime_mesh(data: MapTerrainData, tiles_path: String) -> ArrayMesh:
 	var builder := MeshInstance3D.new()
 	builder.set_script(load(TERRAIN_SCRIPT))
 	builder.set("data", data)
+	builder.set("tiles_path", tiles_path)
 	var arrays: Array = []
-	if load(builder.get("tiles_path")) != null:
+	if not tiles_path.is_empty() and load(tiles_path) != null:
 		arrays = builder.call("bake_arrays")
 	var smooth: bool = builder.get("smooth_ground")
 	builder.free()
@@ -296,3 +297,16 @@ static func _read_indices(json: Dictionary, bin: PackedByteArray, accessor_id: i
 		else:
 			result[i] = bin[at]
 	return result
+
+
+## The tile map of the map whose terrain lives next to `source`: its MapDefinition says it, else a tiles.png beside the
+## glb. Import runs before any map is active (fresh clone, no cache), so the active map can't be asked.
+func _tiles_for(source: String) -> String:
+	var folder := source.get_base_dir()
+	var catalog := load("res://data/maps/map_catalog.tres") as MapCatalog
+	if catalog != null:
+		for definition in catalog.maps:
+			if definition != null and definition.terrain_path.get_base_dir() == folder and not definition.tiles_path.is_empty():
+				return definition.tiles_path
+	var beside := folder.path_join("tiles.png")
+	return beside if ResourceLoader.exists(beside) else ""

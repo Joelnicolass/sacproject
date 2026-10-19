@@ -50,29 +50,14 @@ static func _at(root: String, rel: String) -> Resource:
 	return _cache[path]
 
 
-## True when every file `path` depends on exists (read from the file, nothing is loaded). A baked set names streams of
-## assets/original/audio/, which a clone may not have.
+## True when every file `path` depends on exists (read from the file, nothing is loaded; ResourceDeps).
 static func has_dependencies(path: String) -> bool:
-	for dep_path in dependency_paths(path):
-		if dep_path.is_empty() or not ResourceLoader.exists(dep_path):
-			return false
-	return true
+	return ResourceDeps.all_exist(path)
 
 
-## The res:// paths `path` depends on (ext_resources), read from the file without loading it. A uid the project does not
-## know gives an empty entry.
+## The res:// paths `path` depends on (ResourceDeps.paths).
 static func dependency_paths(path: String) -> PackedStringArray:
-	var out := PackedStringArray()
-	for dependency in ResourceLoader.get_dependencies(path):
-		var dep_path := ""
-		for part in dependency.split("::"):
-			if part.begins_with("res://"):
-				dep_path = part
-		if dep_path.is_empty() and dependency.begins_with("uid://"):
-			var id := ResourceUID.text_to_id(dependency.get_slice("::", 0))
-			dep_path = ResourceUID.get_id_path(id) if ResourceUID.has_id(id) else ""
-		out.append(dep_path)
-	return out
+	return ResourceDeps.paths(path)
 
 
 ## The SoundSet of `rel` ("creatures/zomb"), or null.

@@ -13,6 +13,7 @@ Port no oficial de **Sacrifice** (Shiny Entertainment, 2000) a **Godot 4.7**, he
 - **71 criaturas** con esqueleto y animaciones, **53 hechizos**, Manalith, teletransporte y estructuras.
 - **Interfaz del original:** libro de hechizos, panel de selección, cursores e iconos.
 - **Minimapa** que gira con la cámara y tiene brújula. Con un clic derecho en el minimapa se da una orden.
+- **Sonido del original:** efectos 3D, voces de criaturas, magos y consejero, música por dios (calma, batalla, sacrificio, victoria) y ambiente, con volumen por bus en Opciones → Sonido. Los sonidos propios van en `game/assets/custom/sounds/` (ver `game/docs/HOWTO.md`).
 - **Menú radial de órdenes y 8 formaciones.** Se mantiene el clic derecho, se elige la formación y se suelta: las unidades van ahí en esa formación.
 - **Multijugador con autoridad del servidor:**
   - servidor de salas con lobby y un servidor dedicado por partida;
@@ -165,11 +166,12 @@ Las rutas son relativas a `game/`.
 | `tools/import/import_themes.py` | **Sí** | `assets/original/themes/<dios>/` (suelo, cielo, luz) |
 | `tools/import/import_ui.py` | **Sí** | `assets/original/ui/` y `assets/original/fx/` (HUD, iconos, cursores, partículas) |
 | `tools/import/import_map.py` (incluye `--list`) | **Sí** | `assets/original/maps/<tag>/` (tiles, luz, entidades, terreno) |
+| `tools/import/import_audio.py` | **Sí** | `assets/original/audio/` (efectos, voces y música) + `index.json`. Ya está en el repo (LFS) |
 | `tools/audit/check_original_assets.sh` | **Sí** | Paridad de `assets/original/` con el original (`ASSETS PARITY PASS/FAIL`) |
 | `tools/import/scaffold_map.py` | No: usa lo que ya dejó `import_map.py` | `sides.tres`, `MapDefinition`, `map.tscn`, entrada del catálogo |
 | `tools/import/classify_ground_tiles.py`, `sample_grass_palette.py` | No: usan `assets/original/` | `high_noon_tiles.tres`, paleta de pasto propuesta |
-| `tools/bake/*` (navmesh, catálogo, `bake_body_scenes`, `new_creature`, terreno) | No: `bake_body_scenes` usa los `.glb` y `index.json` del repo; `import_terrain.gd` lee el `.bin` que escribe `import_map.py` | Escenas, `.tres` y navmesh |
-| Menú **Project > Tools > Sacrifice** | Solo «Listar mapas del original» (lleva «(requiere juego original)» en el menú) | Salida en un diálogo |
+| `tools/bake/*` (navmesh, catálogo, `bake_body_scenes`, `new_creature`, `bake_sound_sets`, terreno) | No: `bake_body_scenes` usa los `.glb` y `index.json` del repo; `import_terrain.gd` lee el `.bin` que escribe `import_map.py` | Escenas, `.tres` y navmesh |
+| Menú **Project > Tools > Sacrifice** | Solo «Listar mapas del original» e «Importar audio del original» (llevan «(requiere juego original)» en el menú) | Salida en un diálogo |
 
 Estas herramientas leen los `.wad` y los `.scp` del juego instalado; **el original no viene en el repo** (es el juego comercial). Si falta, imprimen un mensaje en español que explica qué carpeta hace falta y cómo indicarla, y terminan con error. Todas empiezan su encabezado y su `--help` con «Requiere el juego original instalado (SAC_INSTALL)» o con «No necesita el juego original».
 

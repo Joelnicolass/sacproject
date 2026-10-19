@@ -336,7 +336,7 @@ func _check_audio() -> void:
 		sets += 1
 		var own := path.begins_with(AUDIO_CUSTOM_DIR)
 		var file := path.trim_prefix(AUDIO_DIR)
-		for dep in SoundLibrary.dependency_paths(path):
+		for dep in ResourceDeps.paths(path):
 			if dep.is_empty():
 				_report("audio/%s: names a uid the project does not know" % file)
 				continue

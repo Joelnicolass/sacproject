@@ -82,6 +82,13 @@ Estados: **Hecho** (cerrado y probado), **Parcial** (anda, con deuda anotada), *
 - **Hecho.** Plugin «Sacrifice» del editor (Project > Tools: validar, re-hornear navmesh, hornear modelos que faltan), `bake_body_scenes` que no pisa lo editado, guías en `docs/HOWTO.md`. F270-F274.
 - **Hecho.** Criaturas propias desde un `.glb` de Blender (`assets/custom/models/`): `tools/bake/new_creature.gd` (y la entrada «Nueva criatura desde modelo…» del plugin) saca roles, tiempos, golpe y tamaño del propio `.glb`, sin datos del original. F330-F334.
 
+### Sonido (RFC-052)
+- **Hecho.** Buses (Master > Music, SFX, Voice, Ambience), Opciones → Sonido y `SoundBus` con pools, límites y azar propio; nada en el dedicado ni en headless. F360.
+- **Hecho.** Importador del audio del original (`tools/import/import_audio.py`, versionado por LFS) y sets horneados en `data/audio/`. F361.
+- **Hecho.** Sonidos de criaturas y magos, FX, hechizos y edificios en bucle, voces del jugador y del consejero, música por dios con batalla y sacrificio, ambiente, clics de la UI y sacrificio. F362-F367.
+- **Hecho.** Sonidos propios sin el original: `assets/custom/sounds/<tipo>/<tag>/<evento>_N.wav|ogg` → «Hornear sonidos» (y «Nueva criatura desde modelo…») → `data/audio/custom/`. F368.
+- **Pendiente.** Cierre: el banco `all` igual; falta la partida de 5 min con ventana. F369.
+
 ## Won't (este corte)
 
 Campaña, Steam, fork de Godot, fork de MpKit. El port web está planeado aparte (RFC-039).

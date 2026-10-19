@@ -31,8 +31,23 @@ Un enemigo o personaje nuevo no necesita nada del juego original (ni `index.json
    Escribe tres archivos y **no pisa ninguno que exista** (`--force` rehace los tres): `scenes/bodies/models/<tag>.tscn` (el modelo con su `AnimationTree` y el evento del golpe), `data/catalog/body_sizes/<tag>.tres` (caja, alto, radio y alcance medidos del mesh) y `data/catalog/creatures/<tag>.tres` (stats de `data/templates/creature.tres` más los datos de los clips). Además dibuja el **icono del HUD** (libro y selección): si existe `assets/custom/icons/<tag>.png` lo usa tal cual (nunca lo pisa; es tuyo, 32×32), si no lo renderiza del modelo (pose de idle, cámara sobre su caja, disco oscuro con aro dorado) y lo guarda ahí. Dibujar necesita ventana: desde el plugin se abre sola un instante; por consola, quitá `--headless` (`--resolution 256x256`) o corré después `$G --path . --script res://tools/bake/creature_icon.gd -- <tag>` (`--force` lo rehace). También podés asignar una textura al campo `icon` de la criatura en el inspector (gana a todo). `--icon` lo redibuja en `new_creature.gd`; `--no-icon` lo salta. Imprime qué clip tomó cada rol y cuáles no usó.
 4. **Ajustar en el inspector.** Stats, costo de maná y almas, `display_name` en el `.tres` de la criatura; tamaño en el `body_sizes` (`reach` es hasta dónde llega el golpe). Qué clip toca cada rol: los estados del `AnimationTree` de la escena del modelo (si cambiás el clip de un estado, poné su `timeline_length` en los segundos del clip nuevo); el cuadro del golpe: la tecla `attack` de la animación del reproductor `Events`. Si tocaste roles o el golpe, **Project > Tools > Sacrifice: Sincronizar criatura con su modelo…** (o `new_creature.gd -- <tag> --sync`) vuelve a leer la escena y actualiza los tiempos que usan las reglas (golpe, disparo, aturdimiento, vuelo); tus stats no se tocan.
 5. **Ponerla en un libro**: `data/gods/<dios>.tres` → `book` → `creatures` (arrastrá el `.tres`) y una línea en `unlocks` con el nivel de mago. Corré el validador: `CATALOG PASS` (también avisa si un clip nombrado no existe en el `.glb`).
+6. **Sonidos** (opcional): dejá `death_1.wav`, `swing_1.wav`… en `assets/custom/sounds/creatures/<tag>/` antes del paso 3, o después con «Hornear sonidos». Ver «Sonidos propios».
 
 Prueba de punta a punta (criatura de Blender, convocada, camina, pega en el golpe y muere): `$G --headless --fixed-fps 600 --path . res://debug/units/custom_creature.tscn` imprime `CUSTOM_CREATURE PASS` (cuenta qué variante de golpe usó cada swing y cuándo cayó, y mira el icono).
+
+## Sonidos propios
+
+No necesitan nada del juego original. Funcionan para cualquier criatura (también una tuya de Blender), mago o set.
+
+1. **Dejá los archivos** (`.ogg` o `.wav`) en `assets/custom/sounds/<tipo>/<tag>/<evento>[_n].ogg`. Por ejemplo, `assets/custom/sounds/creatures/mibicho/death_1.wav` y `swing_1.wav`. `<tipo>` es `creatures` o `wizards`, y `<tag>` es el de la criatura o el mago. Cada archivo del mismo evento es una variante (`death_1`, `death_2`…), y el juego elige una al azar.
+2. **Nombres de evento** (los de `SoundEvent`, en `scenes/audio/sound_event.gd`):
+   - Criatura: `summon` (al invocarla), `swing` (golpe), `shoot` (disparo; sin él usa `swing`), `damaged` (recibe daño), `death`, `selected` (la elegís), `ack` (acusa moverse), `attack_ack` (acusa atacar), `annoyed` (la elegiste muchas veces).
+   - Mago: `incantation` (lanza), `damaged`, `death`, `ghost` (se levanta como fantasma).
+   - `selected`, `ack`, `attack_ack`, `annoyed` e `incantation` van al bus `Voice`; el resto, a `SFX`. Un nombre que no está en la lista se hornea igual, pero el juego no lo toca, y el horneado avisa.
+3. **Hornear:** **Project > Tools > Sacrifice: Hornear sonidos** (o `$G --headless --path . --script res://tools/bake/bake_sound_sets.gd -- --only=custom`). Escribe `data/audio/custom/<tipo>/<tag>.tres`, que gana sobre el del original. No pisa uno que exista: `--force` lo rehace y pierde lo que editaste. Si la criatura es nueva, «Nueva criatura desde modelo…» hornea su carpeta `creatures/<tag>/` de una vez.
+4. **Revisar:** abrí el `.tres` en el inspector. Hay un cue por evento, y ▶ en un stream lo toca. Ahí se ajustan volumen, `cooldown_s` y `max_voices`. En el juego, el lab `debug/audio/f360_audio_lab.tscn` (F6 y la acción `debug_audio_event`) muestra cada evento que suena y su archivo. Sin ventana, la prueba es `bash agent/runs/run_audio_cases.sh`; el caso `lab_052i` hornea dos `.wav` de prueba para `testmonster` y los toca.
+
+Más detalle (sonidos de FX, música y ambiente por dios): `data/audio/README.md`.
 
 ## Un hechizo
 
@@ -179,13 +194,23 @@ Las rutas son relativas a `game/`.
 | `tools/import/import_themes.py` | **Sí** | `assets/original/themes/<dios>/` (suelo, cielo, luz) |
 | `tools/import/import_ui.py` | **Sí** | `assets/original/ui/` y `assets/original/fx/` (HUD, iconos, cursores, partículas) |
 | `tools/import/import_map.py` (incluye `--list`) | **Sí** | `assets/original/maps/<tag>/` (tiles, luz, entidades, terreno) |
+| `tools/import/import_audio.py` | **Sí** | `assets/original/audio/` (efectos WAV, voces Ogg o WAV sin ffmpeg, música MP3) + `index.json`. Ya está en el repo (LFS) |
 | `tools/audit/check_original_assets.sh` | **Sí** | Paridad de `assets/original/` con el original (`ASSETS PARITY PASS/FAIL`) |
 | `tools/import/scaffold_map.py` | No: usa lo que ya dejó `import_map.py` | `sides.tres`, `MapDefinition`, `map.tscn`, entrada del catálogo |
 | `tools/import/classify_ground_tiles.py`, `sample_grass_palette.py` | No: usan `assets/original/` | `high_noon_tiles.tres`, paleta de pasto propuesta |
-| `tools/bake/*` (navmesh, catálogo, `bake_body_scenes`, `new_creature`, terreno) | No: `bake_body_scenes` usa los `.glb` y `index.json` del repo; `import_terrain.gd` lee el `.bin` que escribe `import_map.py` | Escenas, `.tres` y navmesh |
-| Menú **Project > Tools > Sacrifice** | Solo «Listar mapas del original» (lleva «(requiere juego original)» en el menú) | Salida en un diálogo |
+| `tools/bake/*` (navmesh, catálogo, `bake_body_scenes`, `new_creature`, `bake_sound_sets`, terreno) | No: `bake_body_scenes` usa los `.glb` y `index.json` del repo; `import_terrain.gd` lee el `.bin` que escribe `import_map.py` | Escenas, `.tres` y navmesh |
+| Menú **Project > Tools > Sacrifice** | Solo «Listar mapas del original» e «Importar audio del original» (llevan «(requiere juego original)» en el menú) | Salida en un diálogo |
 
 Estas herramientas leen los `.wad` y los `.scp` del juego instalado; **el original no viene en el repo** (es el juego comercial). Si falta, imprimen un mensaje en español que explica qué carpeta hace falta y cómo indicarla, y terminan con error. Todas empiezan su encabezado y su `--help` con «Requiere el juego original instalado (SAC_INSTALL)» o con «No necesita el juego original».
+
+### Importar el audio del original
+
+Casi nadie lo necesita: el audio ya importado está en el repo por Git LFS (`assets/original/audio/`: efectos WAV, voces Ogg, música MP3), con sus sets horneados en `data/audio/`. Solo se vuelve a correr si cambia el importador.
+
+1. Necesita el juego original instalado. Indicá la carpeta con los `.wad` como en «Configurar rutas»: `SAC_INSTALL`, `tools/import/local.cfg` o **Editor Settings > sacrifice > original_install_path**.
+2. **Project > Tools > Sacrifice: Importar audio del original** (o `python3 tools/import/import_audio.py`; `--check` muestra qué cambiaría sin escribir).
+3. Las voces se comprimen a Ogg con ffmpeg. Sin ffmpeg en el `PATH`, avisa y las guarda en WAV (pesan unas cuatro veces más). `--codec=wav` las pide en WAV a propósito.
+4. Después, «Hornear sonidos» escribe los sets que falten. El horneado ya no necesita el original: lee `assets/original/audio/index.json`.
 
 ### Configurar rutas
 

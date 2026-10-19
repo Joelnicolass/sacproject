@@ -43,3 +43,5 @@ enum Expect {
 ## Look at the log from before the wait, not from the action: what a director did on its own while the lab waited (the
 ## battle that ends after `hold_s`, a one-shot of the ambience's interval), 052f.
 @export var from_wait := false
+## 052i: with PLAYED, the stream of the entry must contain this text (`testmonster/swing_1.wav`: the file a bake took).
+@export var stream_has := ""

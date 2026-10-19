@@ -3,7 +3,8 @@
 #   open    --audio-probe on an isolated settings file (user://t_audio.cfg): gate, AudioPrefs and SoundBus cases;
 #   closed  plain headless, --dedicated and --room-server (both with --no-flow: the flow would host or load a world): nothing built nor loaded;
 #   lab     the audio lab (debug/audio/f360_audio_lab.tscn) with each lab_<cut>.tres, with the original's sets and without them
-#           (--audio-no-original: SoundLibrary sees only the fixtures and an empty root).
+#           (--audio-no-original: SoundLibrary sees only the fixtures and an empty root);
+#   052i    the bake of your own sounds (bake_sound_sets, new_creature) on two fixture files, then lab_052i.
 # Each run has the scene watchdog (20 s real time) and --quit-after 30000 frames as a second stop.
 # Usage: bash agent/runs/run_audio_cases.sh [GODOT_BIN]
 # Prints each mode's AUDIO CASES line, the AudioStreamRandomizer finding and AUDIO RUN PASS / FAIL (exit 0 / 1).
@@ -53,6 +54,29 @@ lab lab_052g res://debug/audio/lab_052g.tres
 lab lab_052g_no_original res://debug/audio/lab_052g.tres --audio-no-original
 lab lab_052h res://debug/audio/lab_052h.tres
 lab lab_052h_no_original res://debug/audio/lab_052h.tres --audio-no-original
+
+# RFC-052 052i (F368): your own sounds, with nothing of the original. Two fixture .wav files
+# (debug/audio/fixtures/custom_sounds/creatures/testmonster/death_1.wav, swing_1.wav) -> bake_sound_sets (as «Hornear sonidos»,
+# --only=custom, --force into user://bake_052i/) -> the lab plays them (lab_052i.tres looks in user://bake_052i/ first, then in the
+# committed bake debug/audio/fixtures/custom_baked/). new_creature bakes the same folder for testmonster (into user://, nothing
+# of the repo changes: the creature's files exist and are kept).
+tool() { # name, expected line (grep -E), then the args after --path
+  local name="$1" expect="$2"; shift 2
+  bash "$RUN" "$GODOT_BIN" --headless --path "$ROOT" "$@" > "$OUT/$name.log" 2>&1
+  local code=$?
+  local line; line=$(grep -E "$expect" "$OUT/$name.log" | tail -1)
+  echo "$name: ${line:-sin resultado} (exit $code)"
+  grep -E "SCRIPT ERROR|ERROR:" "$OUT/$name.log" | head -20
+  [ "$code" = 0 ] && [ -n "$line" ] || FAIL=1
+}
+tool bake_052i "^bake_sound_sets: wrote user://bake_052i/creatures/testmonster.tres$" \
+  --script res://tools/bake/bake_sound_sets.gd -- --only=custom --force \
+  --custom=res://debug/audio/fixtures/custom_sounds/ --out-custom=user://bake_052i/
+tool new_creature_052i "^NEW_CREATURE sounds (wrote|kept[^:]*): user://new_creature_052i/creatures/testmonster.tres$" \
+  --script res://tools/bake/new_creature.gd -- testmonster --no-icon \
+  --sounds=res://debug/audio/fixtures/custom_sounds/ --sounds-out=user://new_creature_052i/
+lab lab_052i res://debug/audio/lab_052i.tres
+lab lab_052i_no_original res://debug/audio/lab_052i.tres --audio-no-original
 echo "logs: $OUT"
 if [ "$FAIL" = 0 ]; then echo "AUDIO RUN PASS"; else echo "AUDIO RUN FAIL"; fi
 exit $FAIL

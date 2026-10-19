@@ -26,14 +26,19 @@ extends SceneTree
 ## The HUD icon (F335): `assets/custom/icons/<tag>.png` if it exists (yours, never overwritten); else one is drawn from the model (the idle
 ## pose, the camera framing its box) with tools/bake/creature_icon_render.gd. Drawing needs a renderer: from a headless run it is skipped (a note
 ## says so) and `Godot --path . --script res://tools/bake/creature_icon.gd -- <tag>` (with a window) makes it afterwards.
+## Sounds (RFC-052 052i, F368): when assets/custom/sounds/creatures/<tag>/ exists, its files (`death_1.wav`, `swing_1.ogg`...: the
+## event names of SoundEvent) become data/audio/custom/creatures/<tag>.tres, the set the game finds for the creature. Never over an
+## existing one (`--force` rewrites it). Also with `--sync`. Without that folder the creature is silent (or uses the shared sounds).
 ## Options: --name="Display name"  --god=<god tag>  --fps=<n> (default: the animation's own step, 30)  --force  --sync
 ##          --icon (draw the icon again even if the PNG exists)  --no-icon (do not draw one)
+##          --sounds=res://dir/ --sounds-out=res://dir/ (another source / target for the sounds, e.g. a fixture)
 
 const TEMPLATE := "res://data/templates/creature.tres"
 const MODEL_DIR := "res://assets/custom/models/"
 const SCENE_DIR := "res://scenes/bodies/models/"
 const CREATURES_DIR := "res://data/catalog/creatures/"
 const SIZES_DIR := "res://data/catalog/body_sizes/"
+const SoundSetWriter := preload("res://tools/bake/sound_set_writer.gd")
 
 const XFADE_S := 0.15
 const GRID := Vector2(200.0, 110.0)
@@ -94,6 +99,8 @@ var _sync := false
 var _fps_arg := 0
 var _icon := false
 var _no_icon := false
+var _sounds_src: String = SoundSetWriter.CUSTOM_SRC
+var _sounds_out: String = SoundSetWriter.CUSTOM_OUT
 var _job: Callable
 var _started := false
 
@@ -112,6 +119,10 @@ func _initialize() -> void:
 			_icon = true
 		elif arg == "--no-icon":
 			_no_icon = true
+		elif arg.begins_with("--sounds="):
+			_sounds_src = arg.get_slice("=", 1)
+		elif arg.begins_with("--sounds-out="):
+			_sounds_out = arg.get_slice("=", 1)
 		elif arg.begins_with("--fps="):
 			_fps_arg = int(arg.get_slice("=", 1))
 		elif arg.begins_with("--name="):
@@ -209,7 +220,7 @@ func _create(tag: String, glb_path: String, display: String, god: String) -> int
 
 	var icon := await _make_icon(tag, str(roles["idle"]))
 	_report(tag, clips, found, measure, wrote, kept, god, icon)
-	return 0
+	return _bake_sounds(tag)
 
 
 func _may_write(path: String) -> bool:
@@ -551,6 +562,7 @@ func _sync_creature(tag: String) -> int:
 		print("NEW_CREATURE synced %s: the clip facts of data/catalog/creatures/%s.tres follow scenes/bodies/models/%s.tscn" % [tag, tag, tag])
 		var type := ResourceLoader.load(CREATURES_DIR + tag + ".tres", "", ResourceLoader.CACHE_MODE_REPLACE) as CreatureType
 		print("NEW_CREATURE icon: %s" % await _make_icon(tag, str(type.idle_animation.get("tag", ""))))
+		code = _bake_sounds(tag)
 	return code
 
 
@@ -631,6 +643,31 @@ func _make_icon(tag: String, idle_clip: String) -> String:
 	if _no_icon:
 		return "skipped (--no-icon)"
 	return await CreatureIconRender.ensure(root, tag, idle_clip, _icon)
+
+
+# --- sounds (RFC-052 052i) ----------------------------------------------------------------------------------------------
+
+## The creature's SoundSet from `_sounds_src`/creatures/<tag>/ (tools/bake/sound_set_writer.gd, the same as «Hornear sonidos»).
+func _bake_sounds(tag: String) -> int:
+	var folder := _sounds_src.path_join("creatures").path_join(tag)
+	if not DirAccess.dir_exists_absolute(folder):
+		print("NEW_CREATURE sounds: none (put <event>_1.wav or .ogg in %s/: %s)" % [folder, SoundSetWriter.event_help()])
+		return OK
+	var writer := SoundSetWriter.new()
+	writer.force = _force
+	var path := writer.bake_folder("creatures", tag, _sounds_src, _sounds_out)
+	for file in writer.unknown:
+		print("NEW_CREATURE sounds note: %s is not an event the game plays. Events: %s" % [file, SoundSetWriter.event_help()])
+	if not writer.failures.is_empty():
+		push_error("new_creature: could not save the sounds: %s" % ", ".join(writer.failures))
+		return 1
+	if path.is_empty():
+		print("NEW_CREATURE sounds: %s has no .ogg or .wav" % folder)
+	elif writer.written.has(path):
+		print("NEW_CREATURE sounds wrote: %s" % path)
+	else:
+		print("NEW_CREATURE sounds kept (exists; --force rewrites it): %s" % path)
+	return OK
 
 
 # --- output ------------------------------------------------------------------------------------------------------------

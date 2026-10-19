@@ -27,4 +27,6 @@ Sonido del juego (RFC-052). Todo es del cliente: ninguna RPC nueva, nada escribe
 
 Buses: `default_bus_layout.tres` (Master > Music, SFX, Voice, Ambience). Opciones → Sonido: `scenes/ui/options/audio_tab.tscn`.
 
+- Sonidos propios (052i): `assets/custom/sounds/<tipo>/<tag>/<evento>[_n].{ogg,wav}` → «Hornear sonidos» → `data/audio/custom/` (ver `data/audio/README.md`). `ResourceDeps` lee las dependencias de un `.tres` sin cargarlo (lo usan `SoundLibrary` y el validador del catálogo).
+
 Agregar uno nuevo: un nodo `*Sounds`/`*Voice`/`*Director` que pasa estado replicado o señales locales a un `SoundEvent` y llama a `SoundBus`. Pruebas: `debug/audio/` (`bash agent/runs/run_audio_cases.sh`, que también corre el lab `debug/audio/f360_audio_lab.tscn` con cada `lab_<corte>.tres`, con y sin el original).

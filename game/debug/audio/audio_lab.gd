@@ -27,6 +27,9 @@ extends Node3D
 ## (`arg` open) or cancels (cancel) the radial menu (MenuSounds: `menu_open`, `menu_back`), `ritual_phase` sets the lab
 ## Ritual's replicated phase (`arg` shoot, wait...) and `ritual_end` its outcome (`arg` completed, aborted), as a client
 ## receives them (RitualSounds); `collect` puts the lab Soul in COLLECTING (SoulSounds).
+## 052i: your own sounds. lab_052i.tres plays the testmonster set baked by tools/bake/bake_sound_sets.gd from two fixture
+## files (debug/audio/fixtures/custom_sounds/creatures/testmonster/) into debug/audio/fixtures/custom_baked/; `stream_has`
+## checks the file that sounded.
 
 const SCRIPT_FLAG := "audio-script"
 const NO_ORIGINAL_FLAG := "audio-no-original"
@@ -173,7 +176,12 @@ func _run_step() -> void:
 	if not acted:
 		_report(false, event, "acción desconocida %s" % step.get("action"))
 	elif expect == PLAYED:
-		_report(not found.is_empty(), event, str(found.get("stream", "-")) if not found.is_empty() else "no sonó (%s)" % body.name)
+		var stream_has := str(step.get("stream_has")) if step.get("stream_has") != null else ""
+		var stream := str(found.get("stream", "-"))
+		if not found.is_empty() and not stream_has.is_empty() and not stream.contains(stream_has):
+			_report(false, event, "sonó %s y no %s" % [stream, stream_has])
+		else:
+			_report(not found.is_empty(), event, stream if not found.is_empty() else "no sonó (%s)" % body.name)
 	else:
 		_report(found.is_empty(), event, "-" if found.is_empty() else "sonó y no debía: %s" % found.get("stream"))
 	_busy = false

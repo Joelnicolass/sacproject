@@ -12,8 +12,10 @@ extends SceneTree
 ##     ui.tres                 the `ifac` set (menu clicks, back, X menu, level up)
 ##   <file> is the name of the creature's (wizard's) .tres in data/catalog/ (EHTH -> EHTH_2: macOS sees EHTH and ehtH as one
 ##   file), or the tag when the catalog has none.
-##   From your own sounds, assets/custom/sounds/<kind>/<tag>/<event>[_n].{ogg,wav,mp3}, into data/audio/custom/<kind>/<tag>.tres
-##   (searched first: yours win over the original's). Every file of one event is a variant of its cue.
+##   From your own sounds, assets/custom/sounds/<kind>/<tag>/<event>[_n].{ogg,wav}, into data/audio/custom/<kind>/<file>.tres
+##   (searched first: yours win over the original's). Every file of one event is a variant of its cue; the event names are
+##   SoundEvent.ALL (a file named otherwise is baked under its own key and noted). Needs nothing of the original. The writing
+##   is tools/bake/sound_set_writer.gd (also used by tools/bake/new_creature.gd).
 ##
 ## The SSET type codes become SoundEvent names (SoundEvent.CREATURE_CODES, WORLD_CODES, UI_CODES; data/audio/README.md has the table).
 ## A code without an event keeps its code as the key (`Xcat`, `TNT1`, `grp3`, `Awnd`...): later cuts map them.
@@ -27,46 +29,41 @@ extends SceneTree
 const INDEX := "res://assets/original/audio/index.json"
 const AUDIO_ROOT := "res://assets/original/audio/"
 const OUT_DIR := "res://data/audio/"
-const CUSTOM_SRC := "res://assets/custom/sounds/"
-const CUSTOM_OUT := "res://data/audio/custom/"
-const CATALOG_DIR := "res://data/catalog/"
-const SET_SCRIPT := "res://scenes/audio/sound_set.gd"
-const CUE_SCRIPT := "res://scenes/audio/sound_cue.gd"
-const NO_SET := ["", "cre8"]
-const STREAM_EXTENSIONS := ["ogg", "wav", "mp3"]
+const SoundSetWriter := preload("res://tools/bake/sound_set_writer.gd")
 
 ## SSET type -> SoundEvent: the tables live in SoundEvent (one owner; the game and the bake read the same names).
 const _EVENTS := preload("res://scenes/audio/sound_event.gd")
 const TYPE_EVENTS := _EVENTS.CREATURE_CODES
 const WORLD_EVENTS := _EVENTS.WORLD_CODES
 const UI_EVENTS := _EVENTS.UI_CODES
-## Events a voice says; the rest of a custom creature's sounds go to SFX.
-const VOICE_EVENTS := [&"selected", &"ack", &"incantation", &"advice"]
 
-var _force := false
-var _written := 0
-var _kept := 0
+var _writer := SoundSetWriter.new()
 var _failures: Array[String] = []
-var _set_script: Script
-var _cue_script: Script
-var _streams := {}
 
 
 func _initialize() -> void:
 	var args := OS.get_cmdline_user_args()
-	_force = args.has("--force")
+	_writer.force = args.has("--force")
 	var only := _arg(args, "--only", "")
-	_set_script = load(SET_SCRIPT)
-	_cue_script = load(CUE_SCRIPT)
-	if _set_script == null or _cue_script == null:
+	if not _writer.is_ready():
 		push_error("bake_sound_sets: SoundSet / SoundCue scripts missing")
 		quit(1)
 		return
 	if only != "custom":
 		_bake_original()
 	if only != "original":
-		_bake_custom(_arg(args, "--custom", CUSTOM_SRC), _arg(args, "--out-custom", CUSTOM_OUT))
-	print("bake_sound_sets: wrote %d files, kept %d existing%s" % [_written, _kept, "" if _force else " (use -- --force to overwrite)"])
+		var source := _arg(args, "--custom", SoundSetWriter.CUSTOM_SRC)
+		if DirAccess.dir_exists_absolute(source):
+			var from := _writer.written.size()
+			_writer.bake_custom(source, _arg(args, "--out-custom", SoundSetWriter.CUSTOM_OUT))
+			for i in range(from, _writer.written.size()):
+				print("bake_sound_sets: wrote " + _writer.written[i])
+		else:
+			print("bake_sound_sets: no %s (no sounds of your own)" % source)
+	for path in _writer.unknown:
+		print("bake_sound_sets: note: %s is not an event the game plays (baked under its own name). Events: %s" % [path, SoundSetWriter.event_help()])
+	print("bake_sound_sets: wrote %d files, kept %d existing%s" % [_writer.written.size(), _writer.kept.size(), "" if _writer.force else " (use -- --force to overwrite)"])
+	_failures.append_array(Array(_writer.failures))
 	for failure in _failures:
 		push_error("bake_sound_sets: could not save " + failure)
 	print("bake_sound_sets: %s" % ("FAIL" if not _failures.is_empty() else "done"))
@@ -90,9 +87,9 @@ func _bake_original() -> void:
 			for i in range(1, names.size()):
 				var name: String = names[i]
 				if not melee.has(name) and sets.has(name):
-					melee[name] = _save_set(_make_set(sets[name], TYPE_EVENTS), OUT_DIR + "melee/%s.tres" % _file_stem(name))
+					melee[name] = _writer.save_set(_make_set(sets[name], TYPE_EVENTS), OUT_DIR + "melee/%s.tres" % _file_stem(name))
 	for kind: String in users:
-		var files := _catalog_files(kind)
+		var files := SoundSetWriter.catalog_files(kind)
 		var taken := {}
 		for file: String in files.values():
 			taken[file.to_lower()] = true
@@ -106,15 +103,15 @@ func _bake_original() -> void:
 				sound_set.fallback = melee.get(names[1])
 			if sound_set.cues.is_empty() and sound_set.fallback == null:
 				continue
-			_save_set(sound_set, OUT_DIR + "%s/%s.tres" % [kind, files.get(tag, _free_name(tag, taken))])
-	_save_set(_make_set(sets.get("spel", {}), WORLD_EVENTS), OUT_DIR + "world.tres")
-	_save_set(_make_set(sets.get("advi", {}), {}, &"Voice"), OUT_DIR + "advisor.tres")
-	_save_set(_make_set(sets.get("ifac", {}), UI_EVENTS), OUT_DIR + "ui.tres")
+			_writer.save_set(sound_set, OUT_DIR + "%s/%s.tres" % [kind, files.get(tag, _free_name(tag, taken))])
+	_writer.save_set(_make_set(sets.get("spel", {}), WORLD_EVENTS), OUT_DIR + "world.tres")
+	_writer.save_set(_make_set(sets.get("advi", {}), {}, &"Voice"), OUT_DIR + "advisor.tres")
+	_writer.save_set(_make_set(sets.get("ifac", {}), UI_EVENTS), OUT_DIR + "ui.tres")
 
 
 ## A SoundSet from one SSET of the index ({type: [file under audio/]}).
 func _make_set(types: Dictionary, events: Dictionary, bus: StringName = &"") -> Resource:
-	var sound_set: Resource = _set_script.new()
+	var sound_set: Resource = _writer.new_set()
 	var keys := types.keys()
 	keys.sort()
 	for code: String in keys:
@@ -122,19 +119,10 @@ func _make_set(types: Dictionary, events: Dictionary, bus: StringName = &"") -> 
 		var key: StringName = events.get(code, StringName(code))
 		if sound_set.cues.has(key):
 			continue
-		var cue := _make_cue(files.map(func(rel: String) -> String: return AUDIO_ROOT + rel))
+		var cue: Resource = _writer.make_cue(files.map(func(rel: String) -> String: return AUDIO_ROOT + rel))
 		cue.bus = bus if not bus.is_empty() else _bus_for(code, files)
 		sound_set.cues[key] = cue
 	return sound_set
-
-
-func _make_cue(paths: Array) -> Resource:
-	var cue: Resource = _cue_script.new()
-	var streams: Array[AudioStream] = []
-	for path: String in paths:
-		streams.append(_stream_ref(path))
-	cue.streams = streams
-	return cue
 
 
 ## The original's voices go to Voice, its ambience (types A*, folder ambi) to Ambience, the rest to SFX.
@@ -145,88 +133,6 @@ static func _bus_for(code: String, files: Array) -> StringName:
 	if code.begins_with("A") or first.begins_with("sfx/ambi/"):
 		return &"Ambience"
 	return &"SFX"
-
-
-## A stream that only carries its path: saved as an ext_resource, never loaded here (the audio may not be imported yet).
-## One object per path (a path holds one resource; several cues share a file).
-func _stream_ref(path: String) -> AudioStream:
-	if _streams.has(path):
-		return _streams[path]
-	var stream: AudioStream
-	match path.get_extension():
-		"ogg":
-			stream = AudioStreamOggVorbis.new()
-		"mp3":
-			stream = AudioStreamMP3.new()
-		_:
-			stream = AudioStreamWAV.new()
-	stream.resource_path = path
-	_streams[path] = stream
-	return stream
-
-
-func _bake_custom(source: String, out: String) -> void:
-	if not DirAccess.dir_exists_absolute(source):
-		print("bake_sound_sets: no %s (no sounds of your own)" % source)
-		return
-	for kind in DirAccess.get_directories_at(source):
-		for tag in DirAccess.get_directories_at(source.path_join(kind)):
-			var folder := source.path_join(kind).path_join(tag)
-			var events := {}
-			var files := Array(DirAccess.get_files_at(folder))
-			files.sort()
-			for file: String in files:
-				if file.get_extension().to_lower() not in STREAM_EXTENSIONS:
-					continue
-				var event := _event_of(file.get_basename())
-				events[event] = events.get(event, []) + [folder.path_join(file)]
-			if events.is_empty():
-				continue
-			var sound_set: Resource = _set_script.new()
-			for event: StringName in events:
-				var cue := _make_cue(events[event])
-				cue.bus = &"Voice" if event in VOICE_EVENTS else &"SFX"
-				sound_set.cues[event] = cue
-			_save_set(sound_set, out.path_join(kind).path_join(tag + ".tres"))
-
-
-## "death_2" -> &"death", "swing" -> &"swing".
-static func _event_of(stem: String) -> StringName:
-	var cut := stem.rfind("_")
-	if cut > 0 and stem.substr(cut + 1).is_valid_int():
-		return StringName(stem.substr(0, cut))
-	return StringName(stem)
-
-
-## Saves `sound_set` at `path` unless it exists (then the existing one is returned, so a fallback keeps pointing at it).
-func _save_set(sound_set: Resource, path: String) -> Resource:
-	if FileAccess.file_exists(path) and not _force:
-		_kept += 1
-		return load(path)
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(path.get_base_dir()))
-	var status := ResourceSaver.save(sound_set, path)
-	if status != OK:
-		_failures.append("%s (error %d)" % [path, status])
-		return null
-	sound_set.take_over_path(path)
-	_written += 1
-	return sound_set
-
-
-## {tag: file stem} of data/catalog/<kind>/*.tres (read as text: only the `tag = "..."` line).
-static func _catalog_files(kind: String) -> Dictionary:
-	var out := {}
-	var dir := CATALOG_DIR + kind + "/"
-	if not DirAccess.dir_exists_absolute(dir):
-		return out
-	for file in DirAccess.get_files_at(dir):
-		if file.get_extension() != "tres":
-			continue
-		for line in FileAccess.get_file_as_string(dir + file).split("\n"):
-			if line.begins_with("tag = \""):
-				out[line.trim_prefix("tag = \"").trim_suffix("\"")] = file.get_basename()
-				break
-	return out
 
 
 ## A file name for a tag the catalog has not got; a case-insensitive repeat gets _2, _3...

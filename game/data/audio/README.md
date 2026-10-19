@@ -29,7 +29,10 @@ Si un set nombra un archivo que no está (por ejemplo, un clon sin el audio del 
 ## Cómo se hornean
 
 - **Original:** `tools/import/import_audio.py` (necesita el juego original instalado) escribe `assets/original/audio/` e `index.json`. Después, `tools/bake/bake_sound_sets.gd` («Hornear sonidos» en Project > Tools) escribe estos `.tres`. El horneado no necesita el original: lee `index.json`.
-- **Propios:** poné `.ogg` o `.wav` en `assets/custom/sounds/<tipo>/<tag>/<evento>[_n].ogg` (por ejemplo `creatures/mibicho/death_1.ogg` y `death_2.ogg`) y corré «Hornear sonidos». Cada archivo de un evento es una variante del mismo cue. Los eventos `selected`, `ack`, `incantation` y `advice` van al bus `Voice`; el resto, a `SFX`.
+- **Propios (052i, no necesitan el original):** poné `.ogg` o `.wav` en `assets/custom/sounds/<tipo>/<tag>/<evento>[_n].ogg` (por ejemplo `creatures/mibicho/death_1.ogg` y `death_2.ogg`) y corré «Hornear sonidos» (`bake_sound_sets.gd -- --only=custom`). «Nueva criatura desde modelo…» (`new_creature.gd`) hornea también la carpeta `creatures/<tag>/` de la criatura que crea. Cada archivo de un evento es una variante del mismo cue. Para una criatura o un mago, el `.tres` se llama como su archivo del catálogo (igual que los del original).
+  - Eventos válidos (`SoundEvent.ALL`): criatura `summon`, `swing`, `shoot`, `damaged`, `death`, `selected`, `ack`, `attack_ack`, `annoyed`; mago `incantation`, `damaged`, `death`, `ghost`. Los demás (`cast`, `fx`, `loop`, `advice`, `click`, `menu_open`, `menu_back`, `sacrifice_round`, `sacrifice_end`, `soul`, `bed`, `ambient`, `foot`) son de otros emisores. Un nombre fuera de la lista se hornea igual y el horneado avisa.
+  - `selected`, `ack`, `attack_ack`, `annoyed`, `incantation` y `advice` van al bus `Voice`; el resto, a `SFX`.
+  - Los dos horneados escriben con `tools/bake/sound_set_writer.gd`. Prueba: `lab_052i.tres` en `bash agent/runs/run_audio_cases.sh` (dos `.wav` de `debug/audio/fixtures/custom_sounds/creatures/testmonster/`).
 - Ninguno pisa un `.tres` que ya existe. Con `-- --force` se reescribe y se pierde lo que editaste a mano.
 - Un set propio nunca nombra `assets/original/` (lo valida `debug/suite/catalog_cases.gd`).
 

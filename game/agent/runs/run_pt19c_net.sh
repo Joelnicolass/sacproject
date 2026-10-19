@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
+. "$(dirname "$0")/../harness/env.sh"
 # usage: run_f54c.sh PORT  -- dedicated + client A + client B on structure_siege, then late-join B2
 set -u
-GODOT=/Applications/Godot.app/Contents/MacOS/Godot
+GODOT="$GODOT_BIN"
 export GODOT
-ROOT=/Users/joelsartori/Development/sacproject/game
 PORT="$1"
 OUT="$ROOT/agent/out/pt19c/net"
 mkdir -p "$OUT"

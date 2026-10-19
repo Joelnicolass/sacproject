@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
+. "$(dirname "$0")/../harness/env.sh"
 # usage: run_pt61.sh PORT  -- dedicated + client A (slot 1) en debug/sacrifice/convert_ritual.tscn: Convert completo en red
 set -u
-GODOT=/Applications/Godot.app/Contents/MacOS/Godot
+GODOT="$GODOT_BIN"
 export GODOT
-ROOT=/Users/joelsartori/Development/sacproject/game
 PORT="$1"
 OUT="$ROOT/agent/out/pt61"
 WORLD=res://debug/sacrifice/convert_ritual.tscn

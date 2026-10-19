@@ -2,7 +2,7 @@
 # usage: run_pt84.sh FLOW TAG RES SCALE  -- one windowed flow at RES (e.g. 1280x720) and --hud-scale=SCALE
 # ("" = no argument, the default). 60 fps cap, RSS watchdog (kills at 2.5 GB). Out: agent/out/pt84/TAG.
 set -u
-ROOT=/Users/joelsartori/Development/sacproject/game
+. "$(dirname "$0")/../harness/env.sh"
 export GODOT="$ROOT/agent/harness/godot60_res.sh"
 export PT_RES="$3"
 OUT="$ROOT/agent/out/pt84/$2"; mkdir -p "$OUT"

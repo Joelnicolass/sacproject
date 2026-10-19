@@ -4,7 +4,7 @@
 # Under AgentKit the preferences are sandboxed (UserSettings.sandboxed: defaults, nothing written, GraphicsApplier inert).
 # The pt142 flows that apply or persist graphics need --user-settings=user://pt142_settings.cfg as an extra user arg
 # (it replaced --apply-graphics in F143).
-ROOT=/Users/joelsartori/Development/sacproject/game
+. "$(dirname "$0")/../harness/env.sh"
 cd "$ROOT"
 OUT=agent/out/pt142/$2
 mkdir -p "$OUT"

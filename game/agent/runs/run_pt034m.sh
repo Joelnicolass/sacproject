@@ -8,8 +8,8 @@
 # Captures: agent/out/pt034m/. Closes by itself: the flow and the rival have internal timeouts; this script kills the window, the
 # rival and the dedicated (by pid and descendants, no pkill) at LIMIT_S (240 s), or if the total RSS passes RSS_LIMIT_MB.
 # Needs `--import` once first (new class_names). Uses UDP (TCP with TRANSPORT=ws) port 7717. Prints PT034M PASS / PT034M FAIL.
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-GODOT="${GODOT_BIN:-/Applications/Godot.app/Contents/MacOS/Godot}"
+. "$(dirname "$0")/../harness/env.sh"
+GODOT="$GODOT_BIN"
 LIMIT_S="${PROBE_LIMIT_S:-240}"
 TRANSPORT="${TRANSPORT:-enet}"
 RSS_LIMIT_MB="${PT_RSS_LIMIT_MB:-6144}"

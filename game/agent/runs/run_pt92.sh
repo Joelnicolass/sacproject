@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # usage: run_pt92.sh FLOW TAG RES  -- one windowed flow at RES, 60 fps cap, RSS watchdog 2.5 GB. Out: agent/out/pt92/TAG
 set -u
-ROOT=/Users/joelsartori/Development/sacproject/game
+. "$(dirname "$0")/../harness/env.sh"
 export GODOT="$ROOT/agent/harness/godot60_res.sh"
 export PT_RES="$3"
 OUT="$ROOT/agent/out/pt92/$2"; mkdir -p "$OUT"

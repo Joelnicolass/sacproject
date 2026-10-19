@@ -5,8 +5,8 @@
 #   bash agent/runs/run_050_maps.sh peaks            (needs `--import` once)
 # A map with four seats is played 1 vs 1 on seats 1 and 2 (the 2v2 mode is RFC-049).
 # Has its own watchdog (LIMIT_S, 900 s by default) that kills ITS Godot by pid. Goes through the Godot queue (godot_run.sh).
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-GODOT="${GODOT_BIN:-/Applications/Godot.app/Contents/MacOS/Godot}"
+. "$(dirname "$0")/../harness/env.sh"
+GODOT="$GODOT_BIN"
 LIMIT_S="${PROBE_LIMIT_S:-900}"
 MAP="${1:?usage: run_050_maps.sh <map tag>}"
 OUT="$(mktemp -d "${TMPDIR:-/tmp}/map_smoke_050.XXXXXX")"

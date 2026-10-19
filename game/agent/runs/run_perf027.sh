@@ -8,8 +8,8 @@
 # Watchdog: kills the run at RSS > 2.5 GB or after its time limit; writes CONTAMINATED in the log if another
 # test Godot shows up during the run (discard that run). Logs: agent/out/perf027/<case>_r<RUN>.log.
 set -u
-ROOT=/Users/joelsartori/Development/sacproject/game
-BIN=/Applications/Godot.app/Contents/MacOS/Godot
+. "$(dirname "$0")/../harness/env.sh"
+BIN="$GODOT_BIN"
 OUT="$ROOT/agent/out/perf027"
 
 # Used as GODOT by AgentKit's cli.sh: the same binary with --print-fps (the control of the wall frame).

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Creature, wizard, spell and ability stats from spells.wad (the installation; RFC-033).
+"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+
+Creature, wizard, spell and ability stats from spells.wad (the installation; RFC-033).
 
 Layouts follow sacengine `spells.d` (Cre8 528, Wizd 840, Spel 314+2, Strc 64).
 Keys are SpellTags as in `nttData.d`: the raw record bytes, i.e. the WAD file name reversed.

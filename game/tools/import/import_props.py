@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Import the original's static models (buildings, BLDG components, plants) to assets/original/props/ as .glb.
+"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+
+Import the original's static models (buildings, BLDG components, plants) to assets/original/props/ as .glb.
 
 RFC-033 (033c). One .glb per model, no textures: one primitive per OBJ material label, with a glTF material that only
 carries the label as its name (Godot names the surface after it; OriginalMaterial puts the shared textured material on

@@ -3,8 +3,8 @@
 # checks that it ran on that map and printed no error. Exit 0 / 1, prints SMOKE PASS / SMOKE FAIL.
 #   bash agent/runs/run_044d.sh            (needs `--import` once)
 # Has its own watchdog (LIMIT_S, 600 s by default) that kills ITS Godot by pid. Goes through the Godot queue (godot_run.sh).
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-GODOT="${GODOT_BIN:-/Applications/Godot.app/Contents/MacOS/Godot}"
+. "$(dirname "$0")/../harness/env.sh"
+GODOT="$GODOT_BIN"
 LIMIT_S="${PROBE_LIMIT_S:-600}"
 MAP="${SMOKE_MAP:-test_flat}"
 OUT="$(mktemp -d "${TMPDIR:-/tmp}/map_smoke_044d.XXXXXX")"

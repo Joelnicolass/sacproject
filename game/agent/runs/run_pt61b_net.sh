@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # usage: run_pt61b_net.sh PORT  -- dedicado + A (lanza Convert) + B (se une tarde, durante el acarreo)
-GODOT=/Applications/Godot.app/Contents/MacOS/Godot; export GODOT
-ROOT=/Users/joelsartori/Development/sacproject/game; PORT="$1"
+
+. "$(dirname "$0")/../harness/env.sh"; PORT="$1"; GODOT="$GODOT_BIN"; export GODOT
 OUT="$ROOT/agent/out/pt61b/net2"; WORLD=res://debug/sacrifice/convert_ritual.tscn
 mkdir -p "$OUT"; cd "$ROOT"
 "$GODOT" --headless --path "$ROOT" -- --dedicated --mp-port="$PORT" --world=$WORLD > "$OUT/server.log" 2>&1 &

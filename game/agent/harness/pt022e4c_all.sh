@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-cd /Users/joelsartori/Development/sacproject/game/agent
+cd "$(dirname "$0")/.."
 R=./harness/pt022e4c_run.sh
 $R pt022e4c_rts_pyro.json rts_pyro_med
 $R pt022e4c_rts_pyro.json rts_pyro_low --pt-preset=low

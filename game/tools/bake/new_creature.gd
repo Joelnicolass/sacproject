@@ -1,5 +1,6 @@
 extends SceneTree
 
+## No necesita el juego original; usa los modelos y datos ya importados en assets/original (versionados).
 ## RFC-051: a creature of your own from a .glb (Blender, or anything that exports glTF with a skeleton and animations).
 ## Nothing here reads the original game's data (assets/original/models/index.json, the WADs): the clips, their length, the
 ## impact moment and the size all come from the .glb itself.

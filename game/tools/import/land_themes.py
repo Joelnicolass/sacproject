@@ -1,4 +1,6 @@
-"""Per-god land look (sky, ground atlas, ENVI colors) from the local install.
+"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+
+Per-god land look (sky, ground atlas, ENVI colors) from the local install.
 
 Layout follows sacengine sacmap.d: the LAND folder of each god holds LAND.PALT,
 0000-0255.MAPT, the ENVI and the sky textures it names (SKY_ is read by its
@@ -13,9 +15,11 @@ from collections import Counter
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from sac_formats.install import INSTALL as DATA, MAPS  # noqa: E402
+from sac_formats.install import INSTALL as DATA, MAPS, require_maps  # noqa: E402
 from sac_formats.txtr import folder_texture  # noqa: E402
 from sac_formats.wad import extract, walk  # noqa: E402
+
+require_maps()
 
 MAP = MAPS / "(2) High Noon.scp"
 # Land High Noon's LEVL names (levl.d detectTileset); its TMAP ids index this land's MAPTs.

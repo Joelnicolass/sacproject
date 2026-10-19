@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
+. "$(dirname "$0")/../harness/env.sh"
 # usage: run_f63_net.sh PORT -- dedicated + client A (casts Manalith then Guardian) + client B (watches) + late client C,
 # all on debug/spells/guardian_manalith.tscn (RFC-021b).
 set -u
-GODOT=/Applications/Godot.app/Contents/MacOS/Godot
+GODOT="$GODOT_BIN"
 export GODOT
-ROOT=/Users/joelsartori/Development/sacproject/game
 PORT="$1"
 OUT="$ROOT/agent/out/pt63g/net"
 WORLD=res://debug/spells/guardian_manalith.tscn

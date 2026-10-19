@@ -2,12 +2,12 @@
 # usage: run_f79_net.sh FLOW PORT  -- dedicated (default world) + one client flow (RFC-025b, flows online migrados).
 # Two processes of the same test: only starts when NO other test Godot runs; kills both past 2.5 GB RSS each.
 set -u
-ROOT=/Users/joelsartori/Development/sacproject/game
+. "$(dirname "$0")/../harness/env.sh"
 FLOW="$1"; PORT="${2:-7781}"
 OUT="$ROOT/agent/out/f79_net"; mkdir -p "$OUT"
 if ps -axo command | grep "Godot.app/Contents/MacOS/Godot" | grep -v grep | grep -qv -- "--editor"; then echo "otro Godot de prueba, no arranco"; exit 3; fi
 cd "$ROOT"
-G=/Applications/Godot.app/Contents/MacOS/Godot
+G="$GODOT_BIN"
 "$G" --headless --max-fps 60 --path "$ROOT" -- --dedicated --mp-port="$PORT" > "$OUT/$FLOW.server.log" 2>&1 &
 SERVER=$!
 for _ in $(seq 1 80); do grep -q "dedicado listo" "$OUT/$FLOW.server.log" && break; sleep 0.25; done

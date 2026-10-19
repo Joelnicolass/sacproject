@@ -4,8 +4,8 @@
 #   run_pt141.sh net PORT       headless dedicated (--max-fps 60) + client A (pt141_net_a); client B (pt141_net_b)
 #                               starts once A's log shows its menu open. RSS watchdog 2.5 GB. Out: agent/out/pt141/.
 set -u
-ROOT=/Users/joelsartori/Development/sacproject/game
-BIN=/Applications/Godot.app/Contents/MacOS/Godot
+. "$(dirname "$0")/../harness/env.sh"
+BIN="$GODOT_BIN"
 export GODOT="$ROOT/agent/harness/godot60_res.sh"
 export PT_RES=1280x720
 OUT="$ROOT/agent/out/pt141"; mkdir -p "$OUT"; cd "$ROOT"

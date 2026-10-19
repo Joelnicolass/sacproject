@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
+. "$(dirname "$0")/../harness/env.sh"
 # usage: run_rfc022e4.sh FLOW OUTDIR [extra godot user args]  -- one Godot with window, 60 fps cap, killed above 2.5 GB
-G=/Applications/Godot.app/Contents/MacOS/Godot
-ROOT=/Users/joelsartori/Development/sacproject/game
+G="$GODOT_BIN"
 cd "$ROOT"
 mkdir -p "agent/out/rfc022e4/$2"
 $G --path . --resolution 1152x648 --max-fps 60 -- --agent=flow --flow="$1" --out="res://agent/out/rfc022e4/$2" "${@:3}" > "agent/out/rfc022e4/$2.log" 2>&1 &

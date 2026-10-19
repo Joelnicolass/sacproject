@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""The Godot side of an imported map (RFC-050): the files a map needs besides its assets.
+"""No necesita el juego original: usa los assets ya importados en assets/original (versionados).
+
+The Godot side of an imported map (RFC-050): the files a map needs besides its assets.
 
   python3 tools/import/scaffold_map.py --map=Peaks            # write what is missing, list what it wrote
   python3 tools/import/scaffold_map.py --map=Peaks --force    # overwrite map.tscn and the definition (they are hand-edited afterwards)

@@ -2,7 +2,7 @@
 # usage: run_pt113.sh FLOW [--flag=value ...]  -- F113 playtest: one windowed flow, 60 fps cap, --fail-on-error,
 # RSS watchdog 2.5 GB. Waits (max 20 min) until godot_busy.sh passes three times in a row. Out: agent/out/pt113play/.
 set -u
-ROOT=/Users/joelsartori/Development/sacproject/game
+. "$(dirname "$0")/../harness/env.sh"
 export GODOT="$ROOT/agent/harness/godot60.sh"
 OUT="$ROOT/agent/out/pt113play"; mkdir -p "$OUT"
 cd "$ROOT"

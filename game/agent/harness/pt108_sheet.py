@@ -2,7 +2,7 @@
 usage: python3 -I pt108_sheet.py  (reads agent/out/pt108, writes agent/out/pt108/sheet_<god>.png)"""
 import os
 from PIL import Image, ImageDraw
-OUT = "/Users/joelsartori/Development/sacproject/game/agent/out/pt108"
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "out", "pt108")
 W, H = 426, 240
 
 def row(paths, label):

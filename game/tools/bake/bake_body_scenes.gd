@@ -1,5 +1,6 @@
 extends SceneTree
 
+## No necesita el juego original; usa los modelos ya importados en assets/original (los .glb y su index.json).
 ## RFC-036 (036g, F208): writes scenes/bodies/models/<tag>.tscn, one per skeletal model of assets/original/models/.
 ## Each scene is a BodyModel: the .glb instanced as "Model" (z mirrored, like the baked meshes), an AnimationTree whose state
 ## machine has one state per ROLE playing the model's clip for it, and an "Events" AnimationPlayer whose method tracks fire

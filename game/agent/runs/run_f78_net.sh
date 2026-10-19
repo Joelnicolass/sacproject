@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
+. "$(dirname "$0")/../harness/env.sh"
 # usage: run_f78_net.sh PORT  -- dedicated + one client on debug/orders/selection_many.tscn (RFC-025, F78).
 # The client selects 150 creatures and orders a move; the server log must show "orden move 150"
 # and "150 de 150 con orden".
 set -u
-GODOT=/Applications/Godot.app/Contents/MacOS/Godot
+GODOT="$GODOT_BIN"
 export GODOT
-ROOT=/Users/joelsartori/Development/sacproject/game
 PORT="${1:-7777}"
 OUT="$ROOT/agent/out/f78"
 WORLD=res://debug/orders/selection_many.tscn

@@ -1,5 +1,6 @@
 extends SceneTree
 
+## No necesita el juego original; usa los modelos y datos ya importados en assets/original (versionados).
 ## Writes a map's ground (High Noon, or `--map=<tag>`) as assets/original/maps/<tag>/terrain.glb (RFC-035c). Run it once: from then on the glb is
 ## the source of truth (edit it in Blender) and terrain.res is derived from it by tools/terrain_import.gd on import.
 ## The file holds the vertex and index order of terrain.res, the visual normals and COLOR (tile id and local uv,

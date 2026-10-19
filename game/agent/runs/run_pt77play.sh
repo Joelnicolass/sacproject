@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # usage: [STRICT=] run_pt77play.sh FLOW (STRICT= empty drops --fail-on-error) [extra --key=value...] -- one windowed Godot at 60 fps; log in agent/out/pt77play/FLOW.log; RSS watchdog 2.5 GB.
-ROOT=/Users/joelsartori/Development/sacproject/game
+. "$(dirname "$0")/../harness/env.sh"
 export GODOT="$ROOT/agent/harness/godot60.sh"
 FLOW="$1"; shift
 OUT="$ROOT/agent/out/pt77play"

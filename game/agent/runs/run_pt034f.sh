@@ -11,8 +11,8 @@
 # (by pid and descendants, no pkill) at LIMIT_S (240 s), or if the total RSS passes RSS_LIMIT_MB.
 # Needs `--import` once first (new class_names). Uses UDP 7712 (lobby) and 7800-7803 (matches).
 # Prints the checks and PT034F PASS / PT034F FAIL (exit 0 / 1).
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-GODOT="${GODOT_BIN:-/Applications/Godot.app/Contents/MacOS/Godot}"
+. "$(dirname "$0")/../harness/env.sh"
+GODOT="$GODOT_BIN"
 LIMIT_S="${PROBE_LIMIT_S:-240}"
 TRANSPORT="${TRANSPORT:-enet}" # enet (UDP, default) or ws (TCP)
 RSS_LIMIT_MB="${PT_RSS_LIMIT_MB:-6144}"

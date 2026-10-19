@@ -1,5 +1,6 @@
 extends SceneTree
 
+## No necesita el juego original; usa los modelos y datos ya importados en assets/original (versionados).
 ## Seed tool (RFC-036 036c, RFC-040 040a): writes the game's catalog as one .tres per type. From then on those files are the
 ## source of truth and the only thing the game reads: GameCatalog scans the folders, so there is no list to keep. The JSON
 ## files (creatures.json, spells.json, wizards.json, abilities.json, books.json, buildings.json, sizes.json) are only this

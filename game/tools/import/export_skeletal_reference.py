@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Parity reference for tools/audit/audit_skeletal.gd (RFC-023a): sacengine's own OBJ export of every clip of a model.
+"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+
+Parity reference for tools/audit/audit_skeletal.gd (RFC-023a): sacengine's own OBJ export of every clip of a model.
 
 Runs the sacengine binary (read only, never modified) with `export-all-frames:` (app.d) for each clip of each
 model, adds the displacement correction the game applies (referenceHeight, sxsk.d frameOffset; without the

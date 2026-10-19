@@ -3,11 +3,11 @@
 # Call it through the Godot lock:  bash agent/harness/godot_run.sh bash agent/fixtures/f038d/run_radial.sh [WxH]
 # Default 1280x720, 60 fps cap, RSS watchdog 2.5 GB, ends by itself (flow timeout 420 s, kill at 540 s). Out: agent/out/f038d.
 set -u
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+. "$(dirname "$0")/../../harness/env.sh"
 RES="${1:-1280x720}"
 OUT="$ROOT/agent/out/f038d"; mkdir -p "$OUT"
 cd "$ROOT"
-/Applications/Godot.app/Contents/MacOS/Godot --path "$ROOT" --resolution "$RES" --max-fps 60 -- --agent=flow --flow="f038d_radial.json" --out="res://agent/out/f038d" --fail-on-error > "$OUT/f038d.log" 2>&1 &
+"$GODOT_BIN" --path "$ROOT" --resolution "$RES" --max-fps 60 -- --agent=flow --flow="f038d_radial.json" --out="res://agent/out/f038d" --fail-on-error > "$OUT/f038d.log" 2>&1 &
 P=$!
 ( s=0; while kill -0 $P 2>/dev/null; do
     r=$(ps -o rss= -p $P | tr -d ' '); [ -n "$r" ] && [ "$r" -gt 2500000 ] && { echo "RSS $r kill" >> "$OUT/f038d.log"; kill -9 $P; }

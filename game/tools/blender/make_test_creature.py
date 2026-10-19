@@ -1,10 +1,12 @@
-"""RFC-051: a throwaway creature to prove the custom creature pipeline (assets/custom/models/testmonster.glb).
+"""No necesita el juego original (genera su propio modelo).
+
+RFC-051: a throwaway creature to prove the custom creature pipeline (assets/custom/models/testmonster.glb).
 
 Also the smallest example of what a model for `tools/bake/new_creature.gd` looks like: one armature, one skinned mesh and
 one ACTION per role, named after the role (idle, run, attack, death). `attack_at45` puts the impact at 45 % of the clip (`attack_f18`: at frame 18).
 
-Run (from game/):
-  /Applications/Blender.app/Contents/MacOS/Blender --background --python tools/blender/make_test_creature.py -- assets/custom/models/testmonster.glb
+Run (from game/; BLENDER_BIN is blender in the PATH or your install, see agent/harness/env.sh):
+  "$BLENDER_BIN" --background --python tools/blender/make_test_creature.py -- assets/custom/models/testmonster.glb
 
 The creature faces -Y in Blender (the glTF exporter turns that into +Z, the way the game faces).
 """

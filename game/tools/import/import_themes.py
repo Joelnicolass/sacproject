@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Import the five gods' land look (tileset, sky, sun, ENVI colours) to assets/original/themes/<god>/.
+"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+
+Import the five gods' land look (tileset, sky, sun, ENVI colours) to assets/original/themes/<god>/.
 
 RFC-033 (033e). Writes only assets/original/themes/. Deterministic and idempotent: a second run writes nothing, and an
 existing .png.import is never touched (it carries the UID).

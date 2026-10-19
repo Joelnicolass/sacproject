@@ -12,8 +12,8 @@
 # dedicated (by pid and descendants, no pkill) at LIMIT_S (180 s), or if the total RSS passes RSS_LIMIT_MB.
 # Prints the checks, the max total RSS of the Godot processes of this project, and E2E PASS / E2E FAIL (exit 0 / 1).
 # Needs `--import` once first (new class_names). Uses UDP 7706 (lobby) and 7800-7803 (matches); files go in a temp folder.
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-GODOT="${GODOT_BIN:-/Applications/Godot.app/Contents/MacOS/Godot}"
+. "$(dirname "$0")/../harness/env.sh"
+GODOT="$GODOT_BIN"
 LIMIT_S="${PROBE_LIMIT_S:-180}"
 TRANSPORT="${TRANSPORT:-enet}" # enet (UDP, default) or ws (WebSocket over TCP, lobby and dedicated): TRANSPORT=ws bash agent/runs/run_034e.sh
 RSS_LIMIT_MB="${E2E_RSS_LIMIT_MB:-8192}"

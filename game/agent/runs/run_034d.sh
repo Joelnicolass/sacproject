@@ -4,8 +4,8 @@
 # Closes by itself (internal timeouts 90 s / 80 s); this script also kills both and their descendants (by pid) at 120 s.
 # Prints LOBBY NET PASS / FAIL and exits 0 / 1. Needs `--import` once first (new class_names).
 # Uses UDP 7705 (lobby) and user://mp_lobby_net/. The launcher's port range is only probed (the stub opens nothing).
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-GODOT="${GODOT_BIN:-/Applications/Godot.app/Contents/MacOS/Godot}"
+. "$(dirname "$0")/../harness/env.sh"
+GODOT="$GODOT_BIN"
 LIMIT_S="${PROBE_LIMIT_S:-120}"
 TRANSPORT="${TRANSPORT:-enet}" # enet (UDP, default) or ws (WebSocket over TCP): TRANSPORT=ws bash agent/runs/run_034d.sh
 OUT="${TMPDIR:-/tmp}/lobby_net_034d.$$"

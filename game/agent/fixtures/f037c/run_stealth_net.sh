@@ -3,10 +3,10 @@
 # stealth; the client flow f037c_stealth_net.json must see it first visible, then hidden (is_targetable false) with the 3D fade.
 # Call: bash agent/harness/godot_run.sh bash agent/fixtures/f037c/run_stealth_net.sh [PORT]   (a dedicated + a client = 2 headless Godots)
 set -u
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+. "$(dirname "$0")/../../harness/env.sh"
 PORT="${1:-7791}"
 OUT="$ROOT/agent/out/f037c"; mkdir -p "$OUT"
-G=/Applications/Godot.app/Contents/MacOS/Godot
+G="$GODOT_BIN"
 WORLD=res://agent/fixtures/f037c/stealth_net.tscn
 cd "$ROOT"
 "$G" --headless --max-fps 60 --path "$ROOT" -- --dedicated --mp-port="$PORT" --world="$WORLD" > "$OUT/stealth.server.log" 2>&1 &

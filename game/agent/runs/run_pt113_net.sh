@@ -2,7 +2,7 @@
 # usage: run_pt113_net.sh FLOW PORT  -- F113 online regression at level 1: headless dedicated server + one windowed
 # client flow (both 60 fps cap, RSS watchdog 2.5 GB). Waits until godot_busy.sh passes three times. Out: agent/out/pt113play/net/.
 set -u
-ROOT=/Users/joelsartori/Development/sacproject/game
+. "$(dirname "$0")/../harness/env.sh"
 export GODOT="$ROOT/agent/harness/godot60.sh"
 FLOW="$1"; PORT="${2:-7831}"
 OUT="$ROOT/agent/out/pt113play/net"; mkdir -p "$OUT"
@@ -14,7 +14,7 @@ for i in $(seq 1 100); do
   [ $i -eq 100 ] && { echo "ABORT busy"; exit 2; }
   sleep 10
 done
-/Applications/Godot.app/Contents/MacOS/Godot --max-fps 60 --headless --path "$ROOT" -- --dedicated --mp-port="$PORT" > "$OUT/$FLOW.server.log" 2>&1 &
+"$GODOT_BIN" --max-fps 60 --headless --path "$ROOT" -- --dedicated --mp-port="$PORT" > "$OUT/$FLOW.server.log" 2>&1 &
 SERVER=$!
 for _ in $(seq 1 120); do grep -q "listo puerto" "$OUT/$FLOW.server.log" && break; sleep 0.25; done
 addons/agent_kit/cli.sh "$ROOT" flow --flow="$ROOT/agent/flows/$FLOW.json" --out=res://agent/out/pt113play/net --mp-port="$PORT" --fail-on-error > "$OUT/$FLOW.client.log" 2>&1 &

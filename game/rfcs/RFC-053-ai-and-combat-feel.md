@@ -374,3 +374,19 @@ Referencias de sacengine (solo descripción, sin copiar código):
 - `state.d`: 7957-7992, 8780-8806, 9091, 12426-12446, 12879.
 - `bots/shiny.d`: 3246-3270.
 - `renderer.d`: 66 y 5036-5230.
+
+## 15. Revisión del tech lead (2026-10-19, con la corrección de los granjeros)
+
+Este apéndice manda sobre lo anterior donde no coincidan.
+
+- **053a suma dos causas más de «mis criaturas no atacan»:**
+  1. **Retener sin mirar bandos.** `UnitBody.is_foe` usa `by_stance = not ordered`, así que bajo cualquier orden `UnitOrders._hold` retiene como blanco cualquier cuerpo de otro slot.
+     - **Arreglo:** lo que elige el picker se filtra siempre por bando. Sin filtro de bando solo queda el blanco de una orden ATTACK explícita. `_hold` vuelve a preguntarle al picker (el blanco actual pesa ×1,3) en lugar de retener.
+  2. **Elegir blanco una sola vez.** Solo `IdleState` elige blanco. El original vuelve a elegir en cada turno, también mientras pelea (patrol → `updateTarget`, state.d:13674).
+     - **Arreglo:** nuevo `TargetRefresh`, hijo de `unit.tscn`. Cada `interval_s` (0,25) vuelve a preguntarle al picker en Idle, Chase, Attack y Shoot sin orden. El último atacante pesa ×1,2. El escaneo de `IdleState` se muda acá (un dueño).
+- **Diagnóstico del Farmer.** Primer paso de 053a: registrar su vida cada 0,5 s y anotar en el F por qué 150 por disparo no mata 500 de vida. Puede ser la regeneración, la protección del petrificado (`Health._state_factor`) o el enfriamiento del aturdimiento.
+- **053b, granjeros y amenaza.** El peso de los NPC pasivos (`passive_npc_weight`) solo se aplica si `f371_npc` mide que la IA les tira hechizos teniendo otro enemigo al alcance, o que la amenaza con solo granjeros cerca da 0,2 o más. Si no, no se toca, porque es fiel al original.
+- **053g, tercera salida.** Si la sonda no encuentra pasos en el lugar ni gestos que muevan la raíz, se suman los gestos `idle1` e `idle3` (el original alterna los tres) sin cambiar la frecuencia.
+- **Preguntas que se suman:**
+  - **Números de daño flotantes:** apagados por defecto, con una opción para prenderlos.
+  - **Reexportar las animaciones de daño (flinch, 053f2) con la instalación del original:** recomendado, porque es lo que más se nota del original al pegar.

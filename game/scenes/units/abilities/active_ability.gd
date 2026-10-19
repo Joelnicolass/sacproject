@@ -33,8 +33,8 @@ var ability: AbilityType
 ## A guardian has no active ability (activeAbility, state.d:1414). GuardianBond sets it.
 var locked := false
 
-var _body: Node3D
-var _mana: Node
+var _body: UnitBody
+var _mana: ManaPool
 ## MatchClock tick at which the cooldown ends (0 = ready).
 var _ready_at := 0
 ## F152: the preparation. MatchClock tick at which the effect fires (-1 = none) and the target it was ordered on.
@@ -45,7 +45,7 @@ var _fire_target: Node3D
 var _effect: AbilityEffect
 
 
-func setup(body: Node3D, creature: CreatureType, mana: Node) -> void:
+func setup(body: UnitBody, creature: CreatureType, mana: ManaPool) -> void:
 	_body = body
 	_mana = mana
 	ability = GameData.ability(creature.active_ability_tag) if creature and not creature.active_ability_tag.is_empty() else null
@@ -119,7 +119,7 @@ func use(target_pos: Vector3, target: Node3D) -> String:
 
 ## Charges the mana.
 func _pay() -> void:
-	_mana.call("spend", _cost())
+	_mana.spend(_cost())
 
 
 ## Starts the cooldown (`force`, or only if it was 0: state.d:12746-12748).
@@ -207,4 +207,4 @@ func show_rock_form(on: bool) -> void:
 
 
 func _mana_left() -> float:
-	return float(_mana.get("current")) if _mana else 0.0
+	return _mana.current if _mana else 0.0

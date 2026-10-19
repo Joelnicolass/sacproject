@@ -181,11 +181,9 @@ func sight_of(observer: Node3D) -> float:
 
 ## Alive, summoned and not held: what sacengine requiresAI(mode) lets look.
 func _can_look(body: Node3D) -> bool:
-	if body.has_method("is_dead") and body.call("is_dead"):
+	if body.has_method("is_dead") and body.call("is_dead"):  # dynamic: unit, structure and doctor bodies answer it
 		return false
-	if body.has_method("is_summoning") and body.call("is_summoning"):
-		return false
-	if body.has_method("is_taken") and body.call("is_taken"):
+	if body is UnitBody and ((body as UnitBody).is_summoning() or (body as UnitBody).is_taken()):
 		return false
 	return true
 

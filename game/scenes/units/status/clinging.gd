@@ -169,8 +169,8 @@ func _fit(kind: StringName, scene: PackedScene, count: int) -> void:
 func _place(kind_index: int, index: int) -> Vector3:
 	var reach := 0.35
 	var height := 1.8
-	if body != null and body.has_method("melee_profile"):
-		var profile: Dictionary = body.call("melee_profile")
+	if body is UnitBody:
+		var profile := (body as UnitBody).melee_profile()
 		reach = float(profile.get("reach", reach))
 		height = float(profile.get("height", height))
 	var angle := (float(index) + 0.5 * float(kind_index)) * 2.39996323

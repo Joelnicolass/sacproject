@@ -12,11 +12,11 @@ const FALL_DEPTH := 25.0
 const ALTAR_RETURN_DISTANCE := 15.0
 
 
-static func terrain_of(node: Node) -> Node:
+static func terrain_of(node: Node) -> Terrain:
 	if node == null or not node.is_inside_tree():
 		return null
-	var terrain := node.get_tree().get_first_node_in_group(TERRAIN_GROUP)
-	if terrain == null or not terrain.call("has_ground_data"):
+	var terrain := node.get_tree().get_first_node_in_group(TERRAIN_GROUP) as Terrain
+	if terrain == null or not terrain.has_ground_data():
 		return null
 	return terrain
 
@@ -27,9 +27,9 @@ static func has_fallen(body: Node3D) -> bool:
 	if terrain == null:
 		return false
 	var at := body.global_position
-	if terrain.call("is_on_ground", at.x, at.z):
+	if terrain.is_on_ground(at.x, at.z):
 		return false
-	return at.y < float(terrain.call("lowest_ground")) - FALL_DEPTH
+	return at.y < terrain.lowest_ground() - FALL_DEPTH
 
 
 ## sacengine getTeleportPosition (state.d:10215): ALTAR_RETURN_DISTANCE from the altar toward
@@ -42,9 +42,9 @@ static func altar_return_spot(body: Node3D, altar: Vector3) -> Vector3:
 	var terrain := terrain_of(body)
 	if terrain == null:
 		return spot
-	if not terrain.call("is_on_ground", spot.x, spot.z):
+	if not terrain.is_on_ground(spot.x, spot.z):
 		spot = altar
-	var height := float(terrain.call("ground_height", spot.x, spot.z))
+	var height := terrain.ground_height(spot.x, spot.z)
 	if not is_nan(height):
 		spot.y = height
 	return spot

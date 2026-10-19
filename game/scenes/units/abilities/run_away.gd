@@ -25,7 +25,6 @@ func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 	speed.name = SpeedupEffect.NODE_NAME
 	speed.start(maxf(ability.duration, min_duration_s))
 	user.add_child(speed)
-	if user.has_method("halt"):
-		user.call("halt")
+	user.halt()
 	FxBus.broadcast("speedup", user.global_position + Vector3.UP)
 	return true

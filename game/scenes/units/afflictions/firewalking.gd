@@ -103,9 +103,9 @@ func steer(_velocity: Vector3, _delta: float) -> Vector3:
 		snap.announce()
 	if DebugLog.on(&"walk"):
 		print("firewalk %s cuadro %d (%.3f, %.3f, %.3f) (tick %d)" % [str(body.name), _frame, at.x, at.y, at.z, MatchClock.now()])
-	if DebugLog.on(&"walk") and _frame == frames / 2 and body.has_method("is_targetable"):
+	if DebugLog.on(&"walk") and _frame == frames / 2 and body is UnitBody:
 		print("firewalk %s oculto: is_targetable %s is_obstacle %s (tick %d)" % [
-			str(body.name), body.call("is_targetable"), body.call("is_obstacle"), MatchClock.now()])
+			str(body.name), (body as UnitBody).is_targetable(), (body as UnitBody).is_obstacle(), MatchClock.now()])
 	return Vector3.ZERO
 
 

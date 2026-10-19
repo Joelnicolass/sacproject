@@ -57,5 +57,10 @@ func _body() -> Node3D:
 	return owner_node.body if owner_node else null
 
 
+## The body's name for the log.
+func _body_name() -> String:
+	return str(_body().call("display_name"))  # dynamic: the body is a unit or a wizard
+
+
 func _simulates() -> bool:
 	return not MpKit.is_networked() or MpKit.is_server()

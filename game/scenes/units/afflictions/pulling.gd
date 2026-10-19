@@ -35,6 +35,8 @@ extends Affliction
 
 ## sacengine Pull.numShootFrames: no check while the thread flies out.
 const SHOOT_FRAMES := 20
+## unit_orders.gd has no class_name (other scripts preload it).
+const _ORDERS := preload("res://scenes/units/unit_orders.gd")
 ## sacengine updatePull: the extra pull (25462-25481) and the lift of every pull (25485).
 const OUTWARD_RADIUS_FACTOR := 1.05
 const OUTWARD_SPEED := 1.5
@@ -83,9 +85,9 @@ func start(target: Node3D, effect: Pull, loop_ticks: int, pull_frame: int) -> bo
 	_window = 0
 	_radius = INF
 	_running = true
-	var orders := body.get_node_or_null("Orders")
+	var orders := body.get_node_or_null("Orders") as _ORDERS
 	if orders:
-		orders.call("clear")
+		orders.clear()
 	_afflictions().mark(self, true)
 	set_physics_process(true)
 	_throw_thread(body)
@@ -223,7 +225,7 @@ static func _fall_acceleration(tumbling: Tumbling) -> float:
 
 
 static func _forward(body: Node3D) -> Vector3:
-	if body.has_method("facing_flat"):
+	if body.has_method("facing_flat"):  # dynamic: unit, wizard and doctor bodies all face
 		return body.call("facing_flat")
 	var flat := -body.global_basis.z
 	flat.y = 0.0

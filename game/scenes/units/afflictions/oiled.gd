@@ -25,6 +25,8 @@ extends Affliction
 ## the scene tree. A neighbour lit by a blast may blast on the same tick or on the next one.
 
 
+## unit_orders.gd has no class_name (other scripts preload it).
+const _ORDERS := preload("res://scenes/units/unit_orders.gd")
 
 ## The creature's order queue (UnitOrders), cleared every tick the oil holds. Empty on a wizard (sacengine `!isWizard`).
 @export var orders: Node
@@ -104,7 +106,7 @@ func _physics_process(_delta: float) -> void:
 		_finish("vencido")
 		return
 	if orders != null and is_instance_valid(orders):
-		orders.call("clear")
+		(orders as _ORDERS).clear()
 	if DebugLog.on(&"oil"):
 		_say("paso (%.3f, %.3f, %.3f)" % [body.global_position.x, body.global_position.y, body.global_position.z])
 	if not can_be_oiled():

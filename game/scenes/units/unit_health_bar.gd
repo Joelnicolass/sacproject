@@ -1,3 +1,4 @@
+class_name UnitHealthBar
 extends MeshInstance3D
 
 ## Floating bar over a body. Green for the local slot, red for anyone else. Reads the
@@ -15,18 +16,18 @@ extends MeshInstance3D
 ## for a body without health (maximum ≤ 0).
 @export var only_when_selected := false
 
-var _health: Node
+var _health: Health
 var _own := false
 var _selected := false
 
 
-func bind(health: Node, owner_slot: int) -> void:
+func bind(health: Health, owner_slot: int) -> void:
 	if _health and _health.changed.is_connected(_on_changed):
 		_health.changed.disconnect(_on_changed)
 	_health = health
 	if _health:
 		_health.changed.connect(_on_changed)
-		_on_changed(float(_health.get("current")), float(_health.get("maximum")))
+		_on_changed(_health.current, _health.maximum)
 	set_owner_slot(owner_slot)
 
 
@@ -48,7 +49,7 @@ func place_above(body_height: float) -> void:
 
 
 func _refresh_visible() -> void:
-	var dead := _health != null and bool(_health.call("is_dead"))
+	var dead := _health != null and _health.is_dead()
 	if only_when_selected:
 		var alive := _health != null and float(_health.get("maximum")) > 0.0 and not dead
 		visible = alive and _selected

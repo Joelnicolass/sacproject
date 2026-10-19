@@ -161,7 +161,7 @@ func can_be_poisoned() -> bool:
 	if body is UnitBody:
 		var unit := body as UnitBody
 		return not unit.is_dead() and not unit.is_summoning() and not unit.is_taken()
-	return not body.has_method("is_targetable") or bool(body.call("is_targetable"))
+	return not body.has_method("is_targetable") or bool(body.call("is_targetable"))  # dynamic: a wizard (or another body) answers it
 
 
 func _spread(source: Poisoned) -> void:

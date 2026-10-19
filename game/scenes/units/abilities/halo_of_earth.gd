@@ -278,7 +278,7 @@ func _touching(rock: Rock) -> Node3D:
 
 func _under_land(at: Vector3) -> bool:
 	var terrain := FallCheck.terrain_of(self)
-	return terrain != null and bool(terrain.call("is_on_ground", at.x, at.z)) and at.y < float(terrain.call("ground_height", at.x, at.z))
+	return terrain != null and terrain.is_on_ground(at.x, at.z) and at.y < terrain.ground_height(at.x, at.z)
 
 
 ## The target search of a free rock (updateHaloOfEarth, 19296-19316).
@@ -376,7 +376,7 @@ func _valid(body: Node3D) -> bool:
 
 ## isValidAttackTarget: valid and not hidden from the foe.
 func _attackable(body: Node3D) -> bool:
-	return _valid(body) and (not body.has_method("is_targetable") or bool(body.call("is_targetable")))
+	return _valid(body) and (not body.has_method("is_targetable") or bool(body.call("is_targetable")))  # dynamic: unit, wizard, structure and doctor bodies answer it
 
 
 static func _slot_of(body: Node) -> int:

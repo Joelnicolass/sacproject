@@ -16,9 +16,9 @@ static func clamp_velocity(body: Node3D, velocity: Vector3, delta: float) -> Vec
 		return velocity
 	var at := body.global_position
 	var step := Vector2(velocity.x, velocity.z) * delta
-	if step.length_squared() < 0.0000001 or not terrain.call("is_on_ground", at.x, at.z):
+	if step.length_squared() < 0.0000001 or not terrain.is_on_ground(at.x, at.z):
 		return velocity
-	if terrain.call("is_on_ground", at.x + step.x, at.z + step.y):
+	if terrain.is_on_ground(at.x + step.x, at.z + step.y):
 		return velocity
 	var tumbling := BodyNudge.tumbling_of(body)
 	if tumbling != null and tumbling.is_on():

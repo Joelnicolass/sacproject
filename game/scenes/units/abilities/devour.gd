@@ -46,15 +46,15 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 	if growth != null:
 		growth.grow(number, from)
 	if _HEAL.can_heal(user):
-		var heal: Node = _HEAL.on(user)
-		heal.call("add", _heal_amount())
-		heal.set("report_each", DebugLog.on(&"effects"))
+		var heal := _HEAL.on(user) as HealEffect
+		heal.add(_heal_amount())
+		heal.report_each = DebugLog.on(&"effects")
 	return true
 
 
 ## How far the eater reaches: the length of its box.
 func reach() -> float:
-	var profile: Dictionary = user.call("melee_profile") if user.has_method("melee_profile") else {}
+	var profile := user.melee_profile()
 	var half := float(profile.get("reach", 0.35))
 	return reach_factor * Vector3(2.0 * half, float(profile.get("height", 1.8)), 2.0 * half).length()
 

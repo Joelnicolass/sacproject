@@ -21,5 +21,5 @@ func physics_update(delta: float) -> void:
 
 
 func _show(on: bool) -> void:
-	body.get_node("ActiveAbility").call("show_rock_form", on)
+	(body.get_node("ActiveAbility") as ActiveAbility).show_rock_form(on)
 	body.get_node("Health").set("damage_factor", ROCK_FORM_DAMAGE if on else 1.0)

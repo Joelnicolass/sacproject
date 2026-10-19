@@ -37,11 +37,11 @@ func is_patient(body: UnitBody, node: Variant) -> bool:
 		return false
 	if int(other.get("owner_slot")) != body.owner_slot or not _in_groups(other):
 		return false
-	if other.has_method("is_summoning") and other.call("is_summoning"):
+	if other is UnitBody and (other as UnitBody).is_summoning():
 		return false
-	if other.has_method("is_rock_form") and other.call("is_rock_form"):
+	if other is UnitBody and (other as UnitBody).is_rock_form():
 		return false
-	if other.has_method("is_targetable") and not other.call("is_targetable"):
+	if other.has_method("is_targetable") and not other.call("is_targetable"):  # dynamic: unit, wizard, structure and doctor bodies answer it
 		return false
 	return _HEAL.can_heal(other)
 

@@ -121,10 +121,10 @@ static func is_live(node: Node) -> bool:
 		return false
 	if not node.is_in_group(&"unit") and not node.is_in_group(&"wizard"):
 		return false
-	if node.has_method("is_targetable") and not bool(node.call("is_targetable")):
+	if node.has_method("is_targetable") and not bool(node.call("is_targetable")):  # dynamic: a unit or a wizard
 		return false
-	var health := node.get_node_or_null("Health")
-	return health == null or not bool(health.call("is_dead"))
+	var health := node.get_node_or_null("Health") as Health
+	return health == null or not health.is_dead()
 
 
 ## Where the thread leaves: the user's shot origin (sacengine shotPosition), else its center.

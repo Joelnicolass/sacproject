@@ -58,7 +58,7 @@ func stun_with_cooldown(cooldown_ticks: int) -> bool:
 	_cooldown = cooldown_ticks
 	_from_fall = false
 	_afflictions().mark(self, true)
-	print("aturdido %s durante %d (cuadro %d)" % [str(body.call("display_name")), _total, MatchClock.now()])
+	print("aturdido %s durante %d (cuadro %d)" % [_body_name(), _total, MatchClock.now()])
 	return true
 
 
@@ -70,7 +70,7 @@ func fall_down() -> void:
 		return
 	_from_fall = true
 	_afflictions().mark(self, true)
-	print("aturdido tras caer %s durante %d (hit_floor + get_up) (cuadro %d)" % [str(body.call("display_name")), _total, MatchClock.now()])
+	print("aturdido tras caer %s durante %d (hit_floor + get_up) (cuadro %d)" % [_body_name(), _total, MatchClock.now()])
 
 
 ## Server (or solo): sacengine damageStun as the end of a petrification calls it (state.d:23732-23739, 8569-8577): the
@@ -95,9 +95,9 @@ func clip_role() -> String:
 ## canStun (state.d:8546-8553), with the port's names: a live, targetable creature (not summoning, held by a doctor,
 ## playing dead or dead) that is not a rock.
 func _body_allows(body: Node3D) -> bool:
-	if body.has_method("is_rock_form") and body.call("is_rock_form"):
+	if body is UnitBody and (body as UnitBody).is_rock_form():
 		return false
-	return not body.has_method("is_targetable") or bool(body.call("is_targetable"))
+	return not body.has_method("is_targetable") or bool(body.call("is_targetable"))  # dynamic: a unit or a wizard
 
 
 func _physics_process(_delta: float) -> void:
@@ -106,7 +106,7 @@ func _physics_process(_delta: float) -> void:
 	if is_on():
 		_elapsed += 1
 		if _simulates() and _elapsed >= _total:
-			print("%s se levanta (cuadro %d)" % [str(_body().call("display_name")), MatchClock.now()])
+			print("%s se levanta (cuadro %d)" % [_body_name(), MatchClock.now()])
 			_afflictions().mark(self, false)
 	if _cooldown <= 0 and not is_on():
 		set_physics_process(false)
@@ -128,7 +128,7 @@ func _measure() -> void:
 	var body := _body()
 	var type := _clip_type(body)
 	var clips: Dictionary = type.get("stun_animations") if type else {}
-	_airborne = body != null and body.has_method("is_flying") and bool(body.call("is_flying"))
+	_airborne = body is UnitBody and (body as UnitBody).is_flying()
 	var knock := _frames(clips, "hit_floor" if _from_fall else "knock")
 	var up := _frames(clips, "get_up")
 	if _from_fall:
@@ -147,8 +147,8 @@ func _measure() -> void:
 ## F138: a body that says its clip data (a wizard: its WizardType; it has no `type`, which other readers take for a
 ## creature's), else its CreatureType.
 static func _clip_type(body: Node3D) -> Resource:
-	if body and body.has_method("clip_type"):
-		return body.call("clip_type")
+	if body is WizardBody:
+		return (body as WizardBody).clip_type()
 	return body.get("type") as CreatureType if body else null
 
 
@@ -183,7 +183,7 @@ func _play_fallback(on: bool) -> void:
 		_tween.tween_property(tilt, "rotation:z", deg_to_rad(air_sway_deg), rest_s * 0.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 		_tween.tween_property(tilt, "rotation:z", 0.0, rest_s * 0.7).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 		return
-	var radius := float(visual.call("body_radius")) if visual and visual.has_method("body_radius") else 0.0
+	var radius := (visual as BodyVisual).body_radius() if visual is BodyVisual else 0.0
 	var down_s := minf(fall_s, knock_s)
 	if down_s > 0.0:
 		_tween.tween_property(tilt, "rotation:z", deg_to_rad(fall_deg), down_s).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)

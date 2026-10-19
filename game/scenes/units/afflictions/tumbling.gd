@@ -79,7 +79,7 @@ func catapult(push: Vector3, side: int) -> bool:
 	set_physics_process(true)
 	var box := BodyNudge.box(body)
 	print("tumbo %s desde (%.2f, %.2f, %.2f) suelo %.2f v (%.3f, %.3f, %.3f) caja (%.2f, %.2f, %.2f) centro +%.2f (cuadro %d)" % [
-		str(body.call("display_name")), _from.x, _from.y, _from.z, _from_ground, push.x, push.y, push.z, box.size.x * 0.5,
+		_body_name(), _from.x, _from.y, _from.z, _from_ground, push.x, push.y, push.z, box.size.x * 0.5,
 		box.size.y * 0.5, box.size.z * 0.5, box.get_center().y - _from.y, MatchClock.now()])
 	return true
 
@@ -114,7 +114,7 @@ func _body_allows(body: Node3D) -> bool:
 		return false
 	var unit := body as UnitBody
 	if unit == null:
-		return not body.has_method("is_targetable") or bool(body.call("is_targetable"))
+		return not body.has_method("is_targetable") or bool(body.call("is_targetable"))  # dynamic: a wizard (or another body) answers it
 	var flight := unit.get_node_or_null("Flight") as Flight
 	if flight and flight.state == Flight.State.LANDING:
 		return false
@@ -150,7 +150,7 @@ func _physics_process(_delta: float) -> void:
 	if velocity.y > 0.0:
 		return
 	if _hybrid(body):
-		print("%s deja el tumbo en el ápice %.2f m (cuadro %d)" % [str(body.call("display_name")), _apex - _from_ground, MatchClock.now()])
+		print("%s deja el tumbo en el ápice %.2f m (cuadro %d)" % [_body_name(), _apex - _from_ground, MatchClock.now()])
 		_afflictions().mark(self, false)
 		return
 	if BodyNudge.on_land(body, at) and at.y + velocity.y / MatchClock.TICKS_PER_SECOND_F <= BodyNudge.ground_y(body, at) + REST_M:
@@ -175,7 +175,7 @@ func _land(body: Node3D, at: Vector3, on: String) -> void:
 	var damage := maxf(0.0, -velocity.y - fall_damage_limit) * fall_damage_factor
 	var flat := Vector2(at.x - _from.x, at.z - _from.z)
 	print("aterriza %s sobre %s en (%.2f, %.2f, %.2f) a %.2f m (dx %.2f, dz %.2f) tras %d ticks, ápice %.2f m, vz %.2f, caída %.1f (cuadro %d)" % [
-		str(body.call("display_name")), on, at.x, at.y, at.z, flat.length(), flat.x, flat.y, _ticks, _apex - _from_ground,
+		_body_name(), on, at.x, at.y, at.z, flat.length(), flat.x, flat.y, _ticks, _apex - _from_ground,
 		velocity.y, damage, MatchClock.now()])
 	velocity = Vector3.ZERO
 	## Stunned first, so the body stays held through the hand-over (held_changed does not blink).

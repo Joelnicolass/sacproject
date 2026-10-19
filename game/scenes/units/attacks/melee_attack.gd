@@ -182,7 +182,7 @@ func roll_damage(target: Node3D, anim: Dictionary) -> Dictionary:
 
 
 static func facing_of(node: Node3D) -> Vector3:
-	if node.has_method("facing_flat"):
+	if node.has_method("facing_flat"):  # dynamic: unit, wizard and doctor bodies all face
 		return node.call("facing_flat")
 	var ahead := Vector3(0.0, 0.0, 1.0).rotated(Vector3.UP, node.global_rotation.y)
 	return Vector3(ahead.x, 0.0, ahead.z).normalized()
@@ -190,7 +190,7 @@ static func facing_of(node: Node3D) -> Vector3:
 
 ## Defense and size of any target: a UnitBody answers melee_profile(); a wizard reads WIZD.
 static func profile_of(target: Node3D) -> Dictionary:
-	if target.has_method("melee_profile"):
+	if target.has_method("melee_profile"):  # dynamic: unit, doctor and building bodies answer it
 		return target.call("melee_profile")
 	var model := str(target.get("model")) if "model" in target else ""
 	var info := BodyCatalog.info(model)
@@ -224,7 +224,7 @@ func _land() -> void:
 			_body.name, target.name, result["accuracy"], result["evasion"], result["facing"], result["pending"], result["chance"], result["roll"],
 			type.melee_strength, melee_resistance_scale, result["resistance"], factor, amount, MatchClock.now()])
 	if amount > 0.0:
-		LifeDrain.feed(_body, target, float(health.call("damage", amount, int(_body.get("owner_slot")))))  ## F164
+		LifeDrain.feed(_body, target, health.damage(amount, int(_body.get("owner_slot"))))  ## F164
 		struck.emit(target, amount, float(result["chance"]), float(result["roll"]))
 	connected.emit(target, was_frozen)
 

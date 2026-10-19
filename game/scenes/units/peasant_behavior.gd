@@ -146,10 +146,12 @@ func closest_scare() -> Node3D:
 
 
 static func _stands(place: Node3D) -> bool:
-	if place.has_method("is_sheltering"):
-		return bool(place.call("is_sheltering"))
-	if place.has_method("is_standing"):
-		return bool(place.call("is_standing"))
+	if place is MapBuilding:
+		return (place as MapBuilding).is_sheltering()
+	if place is Altar:
+		return (place as Altar).is_standing()
+	if place is RitualSite:
+		return (place as RitualSite).is_standing()
 	return true
 
 

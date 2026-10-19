@@ -128,7 +128,7 @@ func _log_touch(shot: RangedShot, body: Node3D, at: Vector3, distance: float, ra
 ## The hit box SplashDamage measures against, for the log (a capsule, cylinder or box under Collision, axis-aligned).
 static func _box_text(body: Node3D) -> String:
 	var col := body.get_node_or_null("Collision") as CollisionShape3D
-	if body.has_method("hit_box") or col == null or col.shape == null or col.shape is BoxShape3D:
+	if body is MapBuilding or col == null or col.shape == null or col.shape is BoxShape3D:
 		return "caja ?"
 	var half := Vector3(0.3, 0.9, 0.3)
 	if col.shape is CapsuleShape3D:

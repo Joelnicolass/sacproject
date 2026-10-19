@@ -36,12 +36,12 @@ static func fixed(body: Node) -> bool:
 
 ## In the air on its own (a flier), not thrown.
 static func airborne(body: Node3D) -> bool:
-	return body.has_method("is_flying") and bool(body.call("is_flying"))
+	return body is UnitBody and (body as UnitBody).is_flying()
 
 
 static func on_land(body: Node3D, at: Vector3) -> bool:
 	var terrain := FallCheck.terrain_of(body)
-	return terrain == null or bool(terrain.call("is_on_ground", at.x, at.z))
+	return terrain == null or terrain.is_on_ground(at.x, at.z)
 
 
 ## The land height under `at`; where the body stands when there is none.
@@ -49,7 +49,7 @@ static func ground_y(body: Node3D, at: Vector3) -> float:
 	var terrain := FallCheck.terrain_of(body)
 	if terrain == null:
 		return body.global_position.y
-	var height := float(terrain.call("ground_height", at.x, at.z))
+	var height := terrain.ground_height(at.x, at.z)
 	return body.global_position.y if is_nan(height) else height
 
 
@@ -107,10 +107,10 @@ static func _alive(body: Node3D) -> bool:
 		return false
 	if body is UnitBody and ((body as UnitBody).mode == UnitBody.Mode.SUMMONING or (body as UnitBody).is_taken()):
 		return false
-	if not body is UnitBody and body.has_method("is_targetable") and not body.call("is_targetable"):
+	if not body is UnitBody and body.has_method("is_targetable") and not body.call("is_targetable"):  # dynamic: wizard, structure and doctor bodies answer it
 		return false
-	var health := body.get_node_or_null("Health")
-	return health != null and not health.call("is_dead")
+	var health := body.get_node_or_null("Health") as Health
+	return health != null and not health.is_dead()
 
 
 ## The Tumbling state of `body`, or null (a body without one cannot be thrown).

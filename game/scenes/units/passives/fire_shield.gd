@@ -177,7 +177,7 @@ func _present(node: Node) -> bool:
 	var mode: int = node.get("mode")
 	if mode == UnitBody.Mode.DEAD or mode == UnitBody.Mode.SUMMONING or mode == UnitBody.Mode.REVIVING:
 		return false
-	return not (node.has_method("is_taken") and bool(node.call("is_taken")))
+	return not (node is UnitBody and (node as UnitBody).is_taken())
 
 
 func _has_authority() -> bool:

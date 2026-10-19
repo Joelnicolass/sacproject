@@ -1,3 +1,4 @@
+class_name UnitManaSupport
 extends Node3D
 
 ## Server-authoritative mana support aura for units like Manahoar (hmba).
@@ -10,10 +11,10 @@ extends Node3D
 @export var source_ability_tag := "hmba"
 @export var target_groups: PackedStringArray = PackedStringArray(["wizard", "unit"])
 
-var _body: Node3D
+var _body: UnitBody
 
 
-func setup(body: Node3D, creature: CreatureType, slot: int, match_rules: MatchRules) -> void:
+func setup(body: UnitBody, creature: CreatureType, slot: int, match_rules: MatchRules) -> void:
 	_body = body
 	owner_slot = slot
 	rules = match_rules
@@ -28,9 +29,9 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if not enabled or _body == null:
 		return
-	if _body.has_method("is_dead") and _body.call("is_dead"):
+	if _body.is_dead():
 		return
-	if _body.has_method("is_summoning") and _body.call("is_summoning"):
+	if _body.is_summoning():
 		return
 	var rate := _rate_from_manaliths()
 	if rate <= 0.0:
@@ -45,11 +46,11 @@ func _physics_process(delta: float) -> void:
 				continue
 			if target.global_position.distance_to(global_position) > radius:
 				continue
-			if target.has_method("can_take_mana") and not target.call("can_take_mana"):
+			if target.has_method("can_take_mana") and not target.call("can_take_mana"):  # dynamic: a unit or a wizard
 				continue
-			var pool := target.get_node_or_null("ManaPool")
+			var pool := target.get_node_or_null("ManaPool") as ManaPool
 			if pool:
-				pool.call("add", rate * delta, &"manahoar")
+				pool.add(rate * delta, &"manahoar")
 
 
 func _rate_from_manaliths() -> float:

@@ -19,7 +19,7 @@ var _shell_tween: Tween
 
 
 func status(_target_pos: Vector3, _target: Node3D) -> String:
-	if user.call("is_rock_form"):
+	if user.is_rock_form():
 		return ActiveAbility.BAD_TARGET
 	return ""
 
@@ -27,7 +27,7 @@ func status(_target_pos: Vector3, _target: Node3D) -> String:
 func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 	if not _has_authority():
 		return false
-	user.call("enter_rock_form")
+	user.enter_rock_form()
 	FxBus.broadcast("rock_emerge", user.global_position + Vector3.UP * 0.5)
 	return true
 
@@ -50,7 +50,7 @@ func show_rock_form(on: bool) -> void:
 		user.add_child(_shell)
 	if _shell == null:
 		return
-	var profile: Dictionary = user.call("melee_profile")
+	var profile := user.melee_profile()
 	var reach := float(profile.get("reach", 0.35))
 	var height := float(profile.get("height", 1.8))
 	var full := rock_scale_factor * Vector3(2.0 * reach, height, 2.0 * reach).length()

@@ -52,7 +52,7 @@ func _affect(shot: Node3D, target: Node3D, point: Vector3, ability: AbilityType)
 
 
 func _range_spent(shot: Node3D) -> bool:
-	return shot.has_method("range_spent") and bool(shot.call("range_spent"))
+	return shot is RangedShot and (shot as RangedShot).range_spent()
 
 
 func _intended(shot: Node3D) -> Node3D:

@@ -1,3 +1,4 @@
+class_name Corpse
 extends Node
 
 ## Turns the dead body into a corpse that stays on the map, as sacengine corpses do until
@@ -147,19 +148,19 @@ func dissolve(body: Node) -> void:
 ## Every peer: waits for the last fade_s of the dissolve and fades the body out (transparency 0 -> 1).
 func _show_dissolve() -> void:
 	_clear_fade()
-	if not dissolving or visual == null or fade_s <= 0.0 or not visual.has_method("set_fade"):
+	if not dissolving or fade_s <= 0.0 or not visual is BodyVisual:
 		return
 	_fade_tween = visual.create_tween()
 	_fade_tween.tween_interval(maxf(dissolve_s - fade_s, 0.0))
-	_fade_tween.tween_method(func(value: float) -> void: visual.call("set_fade", value), 0.0, 1.0, minf(fade_s, dissolve_s))
+	_fade_tween.tween_method(func(value: float) -> void: (visual as BodyVisual).set_fade(value), 0.0, 1.0, minf(fade_s, dissolve_s))
 
 
 func _clear_fade() -> void:
 	if _fade_tween:
 		_fade_tween.kill()
 		_fade_tween = null
-	if visual != null and visual.has_method("set_fade"):
-		visual.call("set_fade", 0.0)
+	if visual is BodyVisual:
+		(visual as BodyVisual).set_fade(0.0)
 
 
 func _on_settled() -> void:

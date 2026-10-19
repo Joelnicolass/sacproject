@@ -69,7 +69,7 @@ func flies_to(point: Vector3) -> bool:
 	## A creature that must fly has no Flight child (it is never on the ground): it always goes straight, no path on the navmesh or the grid.
 	if type != null and type.is_flying():
 		if is_instance_valid(follower):
-			follower.call("cancel")
+			follower.cancel()
 		return true
 	if flight == null:
 		return false
@@ -77,7 +77,7 @@ func flies_to(point: Vector3) -> bool:
 	if not flight.goes_by_air(flat):
 		return false
 	if is_instance_valid(follower):
-		follower.call("cancel")
+		follower.cancel()
 	return true
 
 
@@ -89,8 +89,8 @@ func reroute() -> void:
 		return
 	var final_goal := body.walk_goal()
 	var follower := body.path_follower
-	if is_instance_valid(follower) and bool(follower.call("is_active")):
-		final_goal = follower.get("goal")
+	if is_instance_valid(follower) and follower.is_active():
+		final_goal = follower.goal
 	if flies_to(final_goal):
 		body.set_walk_goal(final_goal)
 

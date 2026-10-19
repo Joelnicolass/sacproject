@@ -57,5 +57,5 @@ func _make(data: Variant) -> Node3D:
 	unit.position = Vector3(float(info["x"]), float(info["y"]), float(info["z"]))
 	unit.rotation.y = float(info.get("yaw", 0.0))
 	if bool(info.get("summoning", false)):
-		unit.call("begin_summon")
+		(unit as UnitBody).begin_summon()
 	return unit

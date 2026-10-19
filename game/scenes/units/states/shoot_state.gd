@@ -5,8 +5,8 @@ extends UnitState
 
 
 func physics_update(delta: float) -> void:
-	var ranged := body.get_node("RangedAttack")
+	var ranged := body.get_node("RangedAttack") as RangedAttack
 	if body.accepts_target(body.target):
-		body.turn_toward(ranged.call("aim_direction", body.target), delta)
-	if not ranged.call("advance", delta):
+		body.turn_toward(ranged.aim_direction(body.target), delta)
+	if not ranged.advance(delta):
 		transition(&"Chase")

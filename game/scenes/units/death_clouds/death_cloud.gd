@@ -43,4 +43,4 @@ func bodies_within(center: Vector3, radius: float) -> Array[Node3D]:
 
 
 static func who(body: Node) -> String:
-	return str(body.call("display_name")) if body.has_method("display_name") else str(body.name)
+	return str(body.call("display_name")) if body.has_method("display_name") else str(body.name)  # dynamic: unit, wizard and doctor bodies name themselves

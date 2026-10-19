@@ -26,7 +26,7 @@ func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 	if spawner == null:
 		push_warning("DivineSight: no hay ShotSpawner en el mundo.")
 		return false
-	var ahead: Vector3 = user.call("facing_flat")
+	var ahead := user.facing_flat()
 	var at := user.global_position + spawn_ahead * ahead
 	at.y = RangedShot.land_height(user, at)
 	if at.y == -INF:

@@ -145,8 +145,8 @@ static func _rank(body: Node3D, from_slot: int) -> int:
 
 func _hit(target: Node3D, amount: float, from_slot: int) -> void:
 	hits += 1
-	var health := target.get_node("Health")
-	var taken := float(health.call("damage_typed", amount, _HEALTH.DIRECT_RANGED, from_slot))
+	var health := target.get_node("Health") as Health
+	var taken := health.damage_typed(amount, _HEALTH.DIRECT_RANGED, from_slot)
 	if log_hits:
 		print("gota %s %.2f vida %.2f" % [ShotImpact.who(target), taken, float(health.get("current"))])
 

@@ -12,6 +12,6 @@ const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 func _affect(shot: Node3D, target: Node3D, _point: Vector3, _ability: AbilityType) -> void:
 	if target == null or not is_instance_valid(target) or not _ROCK.is_live_body(target):
 		return
-	var taken := float(target.get_node("Health").call("damage_typed", float(shot.get("damage")), _HEALTH.DIRECT_RANGED, int(shot.get("from_slot")), false, false, mods_of(shot)))
+	var taken := (target.get_node("Health") as Health).damage_typed(float(shot.get("damage")), _HEALTH.DIRECT_RANGED, int(shot.get("from_slot")), false, false, mods_of(shot))
 	print("  directo %s %.1f" % [who(target), taken])
 	LifeDrain.feed(shooter_of(shot), target, taken)  ## F164

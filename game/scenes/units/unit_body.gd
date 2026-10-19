@@ -35,6 +35,8 @@ signal mode_changed(was: Mode, now: Mode)
 enum Mode { IDLE, MOVE, CHASE, ATTACK, DEAD, SUMMONING, SHOOT, ROCK_FORM, HELD, REVIVING, COWER }
 
 const REST_FACING := Vector3(0.0, 0.0, 1.0)
+## unit_orders.gd has no class_name (other scripts preload it as UnitOrders).
+const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 
 ## CreatureType tag (CRE8 SpellTag) read from GameData.
 @export var creature_tag := "ycro":
@@ -51,9 +53,9 @@ const REST_FACING := Vector3(0.0, 0.0, 1.0)
 @export var owner_slot := 0:
 	set(value):
 		owner_slot = value
-		var bar := get_node_or_null("HealthBar")
+		var bar := get_node_or_null("HealthBar") as UnitHealthBar
 		if bar:
-			bar.call("set_owner_slot", owner_slot)
+			bar.set_owner_slot(owner_slot)
 @export var mode: Mode = Mode.IDLE:
 	set(value):
 		var was := mode
@@ -152,13 +154,13 @@ var captive_role := "":
 		if is_node_ready():
 			_update_clip_state()
 
-@onready var clip_pose: Node = $ClipPose
+@onready var clip_pose: ClipPlayback = $ClipPose
 ## RFC-036 036j: the machine of the modes; `_by_mode` finds the state of a `mode` value.
 @onready var _states: FsmMachine = $States
 var _by_mode := {}
 ## Optional children (RFC-024 024b): without them the body walks and picks as it did before.
-@onready var path_follower: Node = get_node_or_null("PathFollower")
-@onready var _target_picker: Node = get_node_or_null("TargetPicker")
+@onready var path_follower: PathFollower = get_node_or_null("PathFollower")
+@onready var _target_picker: TargetPicker = get_node_or_null("TargetPicker")
 ## F116 (RFC-030e): takes off, flies and lands a hybrid flier. Without it every hybrid walks.
 @onready var flight: Flight = get_node_or_null("Flight")
 ## F120 (RFC-030i): the one owner of «can it act?» (stunned, petrified). Held, the body neither thinks nor turns.
@@ -214,21 +216,21 @@ func _ready() -> void:
 	_apply_type()
 	_apply_model()
 	if get_node_or_null("Tilt/Mesh"):
-		clip_pose.call("setup", model)
+		clip_pose.setup(model)
 	if clip_pose and clip_pose.has_signal("clip_looped"):
 		clip_pose.connect("clip_looped", _on_clip_looped)
 	if flight:
 		flight.state_changed.connect(_on_flight_changed)
 	var health := _health()
 	health.changed.connect(_on_health_changed)
-	$HealthBar.call("bind", health, owner_slot)
+	($HealthBar as UnitHealthBar).bind(health, owner_slot)
 	$MeleeAttack.struck.connect(_on_struck)
 	afflictions.held_changed.connect(cancel_attacks.unbind(1))
-	$RangedAttack.call("setup", self, type, $ManaPool, $MeleeAttack, _rng)
-	$ActiveAbility.call("setup", self, type, $ManaPool)
-	var mana_support := get_node_or_null("ManaSupport")
-	if mana_support and mana_support.has_method("setup"):
-		mana_support.call("setup", self, type, owner_slot, rules)
+	($RangedAttack as RangedAttack).setup(self, type, $ManaPool as ManaPool, $MeleeAttack as MeleeAttack, _rng)
+	($ActiveAbility as ActiveAbility).setup(self, type, $ManaPool as ManaPool)
+	var mana_support := get_node_or_null("ManaSupport") as UnitManaSupport
+	if mana_support:
+		mana_support.setup(self, type, owner_slot, rules)
 	## The machine began in Idle; a body born in another mode (a late join, a summon) takes its state without the enter.
 	if _by_mode.has(mode):
 		_states.current = _by_mode[mode]
@@ -295,7 +297,7 @@ func walk_to(point: Vector3) -> void:
 		begin_walk(point)
 		return
 	if is_instance_valid(path_follower):
-		path_follower.call("go_to", point)
+		path_follower.go_to(point)
 	else:
 		begin_walk(point)
 
@@ -319,9 +321,9 @@ func warp_to(point: Vector3) -> void:
 	global_position = Vector3(point.x, point.y + above, point.z)
 	velocity = Vector3.ZERO
 	halt()
-	var orders := get_node_or_null("Orders")
+	var orders := get_node_or_null("Orders") as UnitOrders
 	if orders != null:
-		orders.call("warped")
+		orders.warped()
 	var snap := get_node_or_null("WarpSnap") as WarpSnap
 	if snap != null:
 		snap.announce()
@@ -374,14 +376,14 @@ func request_ability(target_pos: Vector3, foe: Node3D = null) -> String:
 func ability_status(target_pos: Vector3, foe: Node3D = null) -> String:
 	if mode == Mode.DEAD or mode == Mode.SUMMONING or is_taken() or afflictions.holds():
 		return ActiveAbility.BAD_TARGET
-	return str($ActiveAbility.call("status", target_pos, foe))
+	return ($ActiveAbility as ActiveAbility).status(target_pos, foe)
 
 
 ## Server or solo: sacengine useAbility. "" = used.
 func use_ability(target_pos: Vector3, foe: Node3D = null) -> String:
 	if mode == Mode.DEAD or mode == Mode.SUMMONING or is_taken() or afflictions.holds():
 		return ActiveAbility.BAD_TARGET
-	return str($ActiveAbility.call("use", target_pos, foe))
+	return ($ActiveAbility as ActiveAbility).use(target_pos, foe)
 
 
 @rpc("any_peer", "call_remote", "reliable")
@@ -395,9 +397,9 @@ func submit_ability(payload: Dictionary) -> void:
 
 ## sacengine rockForm (state.d:13052): drops its order and target and stands as a rock.
 func enter_rock_form() -> void:
-	var orders := get_node_or_null("Orders")
+	var orders := get_node_or_null("Orders") as UnitOrders
 	if orders:
-		orders.call("clear")
+		orders.clear()
 	target = null
 	cancel_attacks()
 	mode = Mode.ROCK_FORM
@@ -450,16 +452,16 @@ func is_foe(node: Variant) -> bool:
 	return TargetRules.is_valid_foe_of(owner_slot, node, self, not ordered)
 
 
-func _health() -> Node:
+func _health() -> Health:
 	return $Health
 
 
 func _sync_clip_pose() -> void:
-	if not is_inside_tree() or clip_pose == null or not clip_pose.has_method("setup"):
+	if not is_inside_tree() or clip_pose == null:
 		return
 	if model.is_empty():
 		return
-	clip_pose.call("setup", model)
+	clip_pose.setup(model)
 
 func _apply_type() -> void:
 	type = GameData.creature(creature_tag)
@@ -475,29 +477,29 @@ func _init_stats() -> void:
 	if type == null or _stats_ready:
 		return
 	_stats_ready = true
-	_health().call("setup", float(type.health))
+	_health().setup(float(type.health))
 	_last_health = float(type.health)
-	$ManaPool.call("setup", float(type.mana))
+	($ManaPool as ManaPool).setup(float(type.mana))
 
 
 func _apply_model() -> void:
-	var visual := get_node_or_null("Tilt/Mesh")
+	var visual := get_node_or_null("Tilt/Mesh") as BodyVisual
 	if visual == null or model.is_empty():
 		return
-	visual.call("show_model", model)
+	visual.show_model(model)
 	_sync_clip_pose()
 	# The capsule is BodyCollider's (F135): the only writer of the Collision shape.
-	var height := float(visual.call("body_height"))
-	var bar := get_node_or_null("HealthBar")
+	var height := visual.body_height()
+	var bar := get_node_or_null("HealthBar") as UnitHealthBar
 	if bar:
-		bar.call("place_above", height)
+		bar.place_above(height)
 	if is_node_ready():
 		_setup_melee()
 
 
 func _setup_melee() -> void:
 	var info := BodyCatalog.info(model)
-	$MeleeAttack.call("setup", self, type, float(info.get("reach", 0.35)), float(info.get("height", 1.8)), _rng)
+	($MeleeAttack as MeleeAttack).setup(self, type, float(info.get("reach", 0.35)), float(info.get("height", 1.8)), _rng)
 
 
 func _physics_process(delta: float) -> void:
@@ -592,13 +594,13 @@ func _gib_fallen() -> void:
 ## sacengine updateCreatureStats (state.d:14400-14403): regeneration · mana/maxMana (1 without mana).
 func regenerate(delta: float) -> void:
 	var health := _health()
-	if type == null or _since_damage < regen_pause_s or health.call("is_full"):
+	if type == null or _since_damage < regen_pause_s or health.is_full():
 		return
-	var mana := $ManaPool
-	var full := float(mana.get("maximum"))
-	var factor := 1.0 if full <= 0.0 else float(mana.get("current")) / full
-	health.call("regenerate", (type.regeneration_per_s + DevourGrowth.extra_regeneration_of(self)) * factor * delta)
-	_last_health = float(health.get("current"))
+	var mana := $ManaPool as ManaPool
+	var full := mana.maximum
+	var factor := 1.0 if full <= 0.0 else mana.current / full
+	health.regenerate((type.regeneration_per_s + DevourGrowth.extra_regeneration_of(self)) * factor * delta)
+	_last_health = health.current
 
 
 ## The goal of begin_walk, which the Move state steers to.
@@ -613,8 +615,8 @@ func set_walk_goal(goal: Vector3) -> void:
 func cancel_attacks() -> void:
 	if mode == Mode.ROCK_FORM and simulates() and afflictions.breaks_special_modes():
 		mode = Mode.IDLE  ## F137: petrified ends Rockform (state.d:11631-11640); Afflictions.held_changed calls here.
-	$MeleeAttack.call("cancel")
-	$RangedAttack.call("cancel")
+	($MeleeAttack as MeleeAttack).cancel()
+	($RangedAttack as RangedAttack).cancel()
 	_clips.cancel_lunge()
 
 
@@ -639,14 +641,14 @@ func closest_foe(center: Vector3, threshold := 0.25, ref_range := 100.0, within 
 	if type == null or type.aggressiveness <= 0:
 		return null
 	if is_instance_valid(_target_picker):
-		return _target_picker.call("pick", center, threshold, ref_range, within)
+		return _target_picker.pick(center, threshold, ref_range, within)
 	return TargetRules.closest_in_sight(self, center)
 
 
 ## The target this body keeps, by its TargetPolicy (F136); without one, a foe: under an order any body not of the own side
 ## (isValidAttackTarget), else a stance enemy (isValidEnemyAttackTarget, state.d:12442).
 func accepts_target(node: Variant) -> bool:
-	return _target_picker.call("accepts", node, ordered) if is_instance_valid(_target_picker) else TargetRules.is_valid_foe_of(owner_slot, node, self, not ordered)
+	return _target_picker.accepts(node, ordered) if is_instance_valid(_target_picker) else TargetRules.is_valid_foe_of(owner_slot, node, self, not ordered)
 
 
 func _on_health_changed(current: float, _maximum: float) -> void:
@@ -667,12 +669,12 @@ func _on_died(_from_slot: int) -> void:
 ## sacengine soulPosition: the body center (of the laid corpse once it has fallen).
 func soul_anchor() -> Vector3:
 	var pivot := get_node_or_null("Tilt") as Node3D
-	var visual := get_node_or_null("Tilt/Mesh")
+	var visual := get_node_or_null("Tilt/Mesh") as BodyVisual
 	if pivot == null or visual == null:
 		return global_position
 	# A clip lays the body down (the pivot stays upright): the soul sits where the Tween would have left the center.
-	var lie := $Corpse.call("lying_pose", float(visual.call("body_radius"))) as Transform3D
-	return pivot.global_transform * lie * Vector3(0.0, float(visual.call("body_height")) * 0.5, 0.0)
+	var lie := ($Corpse as Corpse).lying_pose(visual.body_radius())
+	return pivot.global_transform * lie * Vector3(0.0, visual.body_height() * 0.5, 0.0)
 
 
 func _update_clip_state() -> void:
@@ -708,7 +710,7 @@ func idle_role() -> String:
 
 
 func has_clip(role: String) -> bool:
-	return clip_pose != null and bool(clip_pose.call("has_role", role))
+	return clip_pose != null and clip_pose.has_role(role)
 
 
 ## A clip looped: the state of the mode decides what plays next (the idle gesture, the talk-cower).

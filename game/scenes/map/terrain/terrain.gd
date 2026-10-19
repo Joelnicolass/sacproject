@@ -1,4 +1,5 @@
 @tool
+class_name Terrain
 extends MeshInstance3D
 
 ## The map's raw ground (assets/original/maps/<map>/terrain.res). Everything else is derived from it on load.

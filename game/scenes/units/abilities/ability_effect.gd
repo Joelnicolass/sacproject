@@ -26,11 +26,11 @@ const FRAME_TICKS := 2
 
 
 ## The body that has the ability and its SPEL. Set by setup() before the node enters the tree.
-var user: Node3D
+var user: UnitBody
 var ability: AbilityType
 
 
-func setup(body: Node3D, type: AbilityType) -> void:
+func setup(body: UnitBody, type: AbilityType) -> void:
 	user = body
 	ability = type
 
@@ -44,7 +44,7 @@ func _ready() -> void:
 ## it has no such clip (or the flag is off). The one owner of the lookup: Firewalk (shoot1) and Breath of life (shoot2).
 func windup() -> int:
 	if windup_from_clip:
-		var type: CreatureType = user.get("type") if user else null
+		var type: CreatureType = user.type if user else null
 		if type and type.shoot_animations.size() > windup_clip:
 			var clip: Dictionary = type.shoot_animations[windup_clip]
 			var ticks: Array = clip.get("shoot_ticks", [])

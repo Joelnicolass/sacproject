@@ -14,21 +14,21 @@ static func is_valid_foe_of(slot: int, node: Variant, me: Node = null, by_stance
 	var other := node as Node3D
 	if not other.is_inside_tree() or other.is_in_group("corpse") or not "owner_slot" in other:
 		return false
-	if other.has_method("is_summoning") and other.call("is_summoning"):
+	if other is UnitBody and (other as UnitBody).is_summoning():
 		return false
 	## sacengine isVisibleToAI (state.d:93): a rock is not a target.
-	if other.has_method("is_rock_form") and other.call("is_rock_form"):
+	if other is UnitBody and (other as UnitBody).is_rock_form():
 		return false
 	## sacengine isValidAttackTarget (state.d:138): not a dying or ghost wizard.
-	if other.has_method("is_targetable") and not other.call("is_targetable"):
+	if other.has_method("is_targetable") and not other.call("is_targetable"):  # dynamic: unit, wizard, structure and doctor bodies answer it
 		return false
 	var other_slot := int(other.get("owner_slot"))
 	if other_slot == slot:
 		return false
 	if by_stance and not SideRelations.is_enemy(slot, other_slot):
 		return false
-	var health := other.get_node_or_null("Health")
-	return health != null and not health.call("is_dead")
+	var health := other.get_node_or_null("Health") as Health
+	return health != null and not health.is_dead()
 
 
 ## The closest foe of `body` within its sight range of `center`, over the groups it targets (a body with no TargetPicker).

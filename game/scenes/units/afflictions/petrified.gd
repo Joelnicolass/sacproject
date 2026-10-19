@@ -35,7 +35,7 @@ func petrify(lifetime_ticks: int) -> bool:
 	if body == null or lifetime_ticks <= 0 or not can_be_immobilized(body):
 		return false
 	if _afflictions().cc_protected():
-		print("  petrificar: %s protegido" % str(body.call("display_name")))
+		print("  petrificar: %s protegido" % _body_name())
 		return false
 	if not _afflictions().admit(self):
 		return false
@@ -44,7 +44,7 @@ func petrify(lifetime_ticks: int) -> bool:
 	_start_frame = MatchClock.now()
 	_afflictions().mark(self, true)
 	set_physics_process(true)
-	print("petrificado %s durante %d (cuadro %d)" % [str(body.call("display_name")), _lifetime, _start_frame])
+	print("petrificado %s durante %d (cuadro %d)" % [_body_name(), _lifetime, _start_frame])
 	return true
 
 
@@ -54,7 +54,7 @@ func petrify(lifetime_ticks: int) -> bool:
 static func can_be_immobilized(body: Node3D) -> bool:
 	var unit := body as UnitBody
 	if unit == null:
-		return body.has_method("is_targetable") and bool(body.call("is_targetable"))
+		return body.has_method("is_targetable") and bool(body.call("is_targetable"))  # dynamic: a wizard (or another body) answers it
 	return not unit.is_dead() and not unit.is_taken() and unit.mode != UnitBody.Mode.SUMMONING
 
 
@@ -75,7 +75,7 @@ func _end() -> void:
 	set_physics_process(false)
 	var body := _body()
 	_afflictions().mark(self, false)
-	print("%s deja de ser piedra (cuadro %d)" % [str(body.call("display_name")), MatchClock.now()])
+	print("%s deja de ser piedra (cuadro %d)" % [_body_name(), MatchClock.now()])
 	if stunned:
 		stunned.knock(knock_cooldown_ticks)
 	_burst_rocks()
@@ -84,7 +84,7 @@ func _end() -> void:
 ## removePetrification (state.d:23740-23753): the rocks fly at every end, the stun only when it can still be stunned.
 func _burst_rocks() -> void:
 	var body := _body()
-	var height := float(visual.call("body_height")) if visual and visual.has_method("body_height") else 1.0
+	var height := (visual as BodyVisual).body_height() if visual is BodyVisual else 1.0
 	FxBus.broadcast(rocks_fx, body.global_position + Vector3.UP * height * 0.5)
 
 

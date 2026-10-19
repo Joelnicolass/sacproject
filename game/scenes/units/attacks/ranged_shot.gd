@@ -217,10 +217,10 @@ func _can_hit(body: Node3D, intended: Node, shooter: Node) -> bool:
 static func _is_live_body(body: Node) -> bool:
 	if not Attackable.is_body(body):
 		return false
-	if body.has_method("is_targetable") and not body.call("is_targetable"):
+	if body.has_method("is_targetable") and not body.call("is_targetable"):  # dynamic: unit, wizard, structure and doctor bodies answer it
 		return false
-	var health := body.get_node_or_null("Health")
-	return health != null and not health.call("is_dead")
+	var health := body.get_node_or_null("Health") as Health
+	return health != null and not health.is_dead()
 
 
 ## sacengine getHeight: the top of the land or of a building (structures, altars, manafounts: layer 1) under `at`, wizards

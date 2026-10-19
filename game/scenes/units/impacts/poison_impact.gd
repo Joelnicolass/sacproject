@@ -28,10 +28,10 @@ func _affect(shot: Node3D, target: Node3D, _point: Vector3, ability: AbilityType
 		return
 	var from_slot := int(shot.get("from_slot"))
 	if _is_building(target):
-		var health := target.get_node_or_null("Health")
+		var health := target.get_node_or_null("Health") as Health
 		if health:
 			## A building with guardians sends the hit to them (dealRangedDamage, 9369): the shooter drains from what they took.
-			LifeDrain.feed(shooter_of(shot), target, float(health.call("damage_typed", float(shot.get("damage")), _HEALTH.DIRECT_RANGED, from_slot)))
+			LifeDrain.feed(shooter_of(shot), target, health.damage_typed(float(shot.get("damage")), _HEALTH.DIRECT_RANGED, from_slot))
 		return
 	if ability == null or ability.duration <= 0.0:
 		return

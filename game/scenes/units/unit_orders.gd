@@ -39,7 +39,7 @@ var formation_id: StringName = &"line"
 
 var _think_left := 0.0
 
-@onready var _body: Node3D = get_parent()
+@onready var _body: UnitBody = get_parent()
 
 
 func give(order_command: Command, order_target: Node3D, order_point: Vector3, order_offset: Vector2, order_facing: float) -> void:
@@ -55,14 +55,14 @@ func give(order_command: Command, order_target: Node3D, order_point: Vector3, or
 	offset = order_offset
 	facing = order_facing
 	_think_left = 0.0
-	_body.set("ordered", command != Command.NONE)
+	_body.ordered = command != Command.NONE
 	match command:
 		Command.MOVE:
-			_body.call("walk_to", anchor())
+			_body.walk_to(anchor())
 		Command.ATTACK:
-			_body.call("engage", target)
+			_body.engage(target)
 		Command.NONE:
-			_body.call("halt")
+			_body.halt()
 		_:
 			_think()
 
@@ -77,7 +77,7 @@ func _is_repeat(order_command: Command, order_target: Node3D) -> bool:
 func clear() -> void:
 	command = Command.NONE
 	target = null
-	_body.set("ordered", false)
+	_body.ordered = false
 
 
 ## Teleport (sacengine teleport, state.d:10260-10261): the creature loses its orders unless it is
@@ -104,18 +104,18 @@ func anchor() -> Vector3:
 func _physics_process(delta: float) -> void:
 	if command == Command.NONE:
 		return
-	if _body.call("is_dead"):
+	if _body.is_dead():
 		clear()
 		return
 	match command:
 		Command.MOVE:
-			if _body.get("mode") != UnitBody.Mode.MOVE:
+			if _body.mode != UnitBody.Mode.MOVE:
 				clear()
 			return
 		Command.ATTACK:
-			if _body.call("is_foe", target):
-				if _body.get("target") != target:
-					_body.call("engage", target)
+			if _body.is_foe(target):
+				if _body.target != target:
+					_body.engage(target)
 				return
 	_think_left -= delta
 	if _think_left > 0.0:
@@ -141,7 +141,7 @@ func _think() -> void:
 		Command.RETREAT:
 			if not _guardable(target):
 				clear()
-				_body.call("halt")
+				_body.halt()
 				return
 			_hold(target.global_position, guard_range, _radius_of(target) + retreat_distance)
 
@@ -150,14 +150,14 @@ func _think() -> void:
 ## spot and drop the order (`goto case CommandType.move`).
 func _lost_target() -> void:
 	target = null
-	var foe: Node3D = _body.call("closest_foe", _body.global_position)
+	var foe: Node3D = _body.closest_foe(_body.global_position)
 	if foe:
 		_engage(foe)
 		return
 	var spot := anchor()
 	if _flat(_body.global_position, spot) <= arrive_distance:
 		clear()
-		_body.call("halt")
+		_body.halt()
 		return
 	_walk(spot)
 
@@ -166,14 +166,14 @@ func _lost_target() -> void:
 func _hold(center: Vector3, leash: float, stop_within: float) -> void:
 	if _flat(_body.global_position, center) <= leash:
 		## The body's target may already be freed (a corpse that faded): check before typing it.
-		var current: Variant = _body.get("target")
+		var current: Variant = _body.target
 		var foe: Node3D = current as Node3D if _in_sight(current, center) else _acquire(center, leash)
 		if foe:
 			_engage(foe)
 			return
 	if _flat(_body.global_position, center) <= stop_within:
-		if _body.get("mode") != UnitBody.Mode.IDLE:
-			_body.call("halt")
+		if _body.mode != UnitBody.Mode.IDLE:
+			_body.halt()
 		return
 	_walk(center)
 
@@ -184,28 +184,28 @@ func _hold(center: Vector3, leash: float, stop_within: float) -> void:
 ## is ~0 and any foe the side has seen would be taken, then dropped as the threshold rises: jitter).
 func _acquire(center: Vector3, leash: float) -> Node3D:
 	if is_inf(leash):
-		return _body.call("closest_foe", center, 0.25, 150.0)
+		return _body.closest_foe(center, 0.25, 150.0)
 	var threshold := minf(100.0, _flat(_body.global_position, center)) * 0.01
-	var sight: float = _body.get("type").sight_range if _body.get("type") else 0.0
-	return _body.call("closest_foe", center, threshold, 100.0, sight)
+	var sight: float = _body.type.sight_range if _body.type else 0.0
+	return _body.closest_foe(center, threshold, 100.0, sight)
 
 
 func _engage(foe: Node3D) -> void:
-	var mode: int = _body.get("mode")
-	if _body.get("target") == foe and (mode == UnitBody.Mode.CHASE or mode == UnitBody.Mode.ATTACK):
+	var mode: int = _body.mode
+	if _body.target == foe and (mode == UnitBody.Mode.CHASE or mode == UnitBody.Mode.ATTACK):
 		return
-	_body.call("engage", foe)
+	_body.engage(foe)
 
 
 func _walk(spot: Vector3) -> void:
-	_body.call("walk_to", spot)
+	_body.walk_to(spot)
 
 
 ## is_foe: a foe by the rules of orders, not the body's kept target (a Scarab's wounded ally fails here and is picked again).
 func _in_sight(foe: Variant, center: Vector3) -> bool:
-	if not _body.call("is_foe", foe):
+	if not _body.is_foe(foe):
 		return false
-	var sight: float = _body.get("type").sight_range if _body.get("type") else 0.0
+	var sight: float = _body.type.sight_range if _body.type else 0.0
 	return _flat((foe as Node3D).global_position, center) <= sight
 
 
@@ -215,10 +215,10 @@ func _alive(node: Variant) -> bool:
 	var live := _live(node)
 	if live == null:
 		return false
-	if live.has_method("is_dead") and live.call("is_dead"):
+	if live.has_method("is_dead") and live.call("is_dead"):  # dynamic: any body (unit, structure, doctor) answers is_dead
 		return false
-	var health := live.get_node_or_null("Health")
-	return health == null or not health.call("is_dead")
+	var health := live.get_node_or_null("Health") as Health
+	return health == null or not health.is_dead()
 
 
 ## sacengine isValidGuardTarget (state.d:145-151, used by guard 13016 and retreat 13687): a dying
@@ -227,8 +227,8 @@ func _guardable(node: Variant) -> bool:
 	var live := _live(node)
 	if live == null:
 		return false
-	if live.has_method("is_guard_target"):
-		return bool(live.call("is_guard_target"))
+	if live is WizardBody:
+		return (live as WizardBody).is_guard_target()
 	return _alive(live)
 
 
@@ -245,7 +245,7 @@ static func _flat(a: Vector3, b: Vector3) -> float:
 
 
 static func _yaw_of(node: Node3D) -> float:
-	if node.has_method("facing_flat"):
+	if node.has_method("facing_flat"):  # dynamic: unit, wizard and doctor bodies all face
 		var ahead: Vector3 = node.call("facing_flat")
 		return atan2(ahead.x, ahead.z)
 	return node.rotation.y

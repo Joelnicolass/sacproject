@@ -48,9 +48,9 @@ const BALLISTIC: PackedStringArray = ["ekba", "fkba", "dkba", "aaba", "wobf", "b
 var attack: AbilityType
 var type: CreatureType
 
-var _body: Node3D
-var _mana: Node
-var _melee: Node
+var _body: UnitBody
+var _mana: ManaPool
+var _melee: MeleeAttack
 var _rng: RandomNumberGenerator
 var _cooldown := 0.0
 var _target: Node3D
@@ -59,7 +59,7 @@ var _elapsed := 0.0
 var _next_tick := 0
 
 
-func setup(body: Node3D, creature: CreatureType, mana: Node, melee: Node, rng: RandomNumberGenerator) -> void:
+func setup(body: UnitBody, creature: CreatureType, mana: ManaPool, melee: MeleeAttack, rng: RandomNumberGenerator) -> void:
 	_body = body
 	type = creature
 	_mana = mana
@@ -107,9 +107,9 @@ func shoot_range() -> float:
 func prefers(target: Node3D) -> bool:
 	if attack == null or target == null:
 		return false
-	if "owner_slot" in target and int(target.get("owner_slot")) == int(_body.get("owner_slot")):
+	if "owner_slot" in target and int(target.get("owner_slot")) == _body.owner_slot:
 		return true
-	if _melee == null or not _melee.call("in_reach", target, float(_melee.get("start_factor"))):
+	if _melee == null or not _melee.in_reach(target, _melee.start_factor):
 		return true
 	return _box_gap(target) > melee_distance
 
@@ -123,8 +123,8 @@ func aim(target: Node3D) -> Step:
 		return Step.APPROACH
 	var to := predicted - _body.global_position
 	to.y = 0.0
-	var turn_rate := float(_body.get("turn_rate"))
-	var facing: Vector3 = _body.call("facing_flat")
+	var turn_rate := _body.turn_rate
+	var facing: Vector3 = _body.facing_flat()
 	if to.length_squared() > 0.000001 and facing.angle_to(to.normalized()) > facing_frames * turn_rate / FPS:
 		return Step.HOLD
 	if _cooldown > 0.0 or _mana_left() < _mana_cost():
@@ -137,7 +137,7 @@ func aim(target: Node3D) -> Step:
 func aim_direction(target: Node3D) -> Vector3:
 	var to := _predicted(target) - _body.global_position
 	to.y = 0.0
-	return to.normalized() if to.length_squared() > 0.000001 else _body.call("facing_flat")
+	return to.normalized() if to.length_squared() > 0.000001 else _body.facing_flat()
 
 
 ## Advances shoot0 by delta. Returns false once the animation has ended.
@@ -183,7 +183,7 @@ func _shoot_tick(tick_count: int) -> void:
 	if before < cost:
 		return
 	_fire(target)
-	_mana.call("spend", cost)
+	_mana.spend(cost)
 	if _cooldown <= 0.0:
 		_cooldown = attack.cooldown_s
 	fired.emit(target, float(attack.damage), before, _mana_left())
@@ -191,14 +191,14 @@ func _shoot_tick(tick_count: int) -> void:
 
 func _fire(target: Node3D) -> void:
 	var look := ShotLook.for_tag(attack.tag)
-	var spawner := get_tree().get_first_node_in_group("shot_spawner")
+	var spawner := get_tree().get_first_node_in_group("shot_spawner") as ShotSpawner
 	if look.strike == null and spawner == null:
 		push_warning("RangedAttack: no hay ShotSpawner en el mundo.")
 		return
 	var origin := shot_origin()
 	var predicted := _predicted(target)
 	var offset := predicted - origin
-	var direction: Vector3 = offset.normalized() if offset.length_squared() > 0.000001 else _body.call("facing_flat")
+	var direction: Vector3 = offset.normalized() if offset.length_squared() > 0.000001 else _body.facing_flat()
 	var ballistic := BALLISTIC.has(attack.tag)
 	var gravity := float(FALLING_ACCELERATION.get(attack.tag, DEFAULT_FALLING)) if ballistic else 0.0
 	if ballistic:
@@ -212,7 +212,7 @@ func _fire(target: Node3D) -> void:
 		"x": origin.x, "y": origin.y, "z": origin.z,
 		"vx": velocity.x, "vy": velocity.y, "vz": velocity.z,
 		"damage": float(attack.damage) * _attack_factor(),
-		"slot": int(_body.get("owner_slot")),
+		"slot": _body.owner_slot,
 		"gravity": gravity,
 		"max_distance": INF if ballistic else attack.cast_range * look.range_factor,
 		"target": str(target.get_path()),
@@ -231,7 +231,7 @@ func _fire(target: Node3D) -> void:
 		var shot := data.duplicate()  # a new Dictionary per shot: the spawner writes its name
 		shot["volley_index"] = index
 		shot["aim_distance"] = offset.length()
-		spawner.call("spawn_shot", shot)
+		spawner.spawn_shot(shot)
 
 
 ## F124 (RFC-030 030m): a ShotStrike (ShotLook.strike) in place of a flying shot: the Gnome's ray, the Styx's blow.
@@ -290,7 +290,7 @@ func _box_point(target: Node3D) -> Vector3:
 
 func _box_gap(target: Node3D) -> float:
 	var d := target.global_position - _body.global_position
-	var own := float(_body.call("melee_profile").get("reach", 0.35))
+	var own := float(_body.melee_profile().get("reach", 0.35))
 	return maxf(0.0, Vector2(d.x, d.z).length() - own - float(_profile(target).get("reach", 0.35)))
 
 
@@ -312,7 +312,7 @@ func _center(target: Node3D) -> Vector3:
 
 
 func _profile(target: Node3D) -> Dictionary:
-	return _melee.call("profile_of", target) if _melee else {}
+	return MeleeAttack.profile_of(target) if _melee else {}
 
 
 func _mana_cost() -> float:
@@ -321,17 +321,16 @@ func _mana_cost() -> float:
 
 
 func _mana_left() -> float:
-	return float(_mana.get("current")) if _mana else 0.0
+	return _mana.current if _mana else 0.0
 
 
 static func _is_live(body: Node) -> bool:
-	if body.has_method("is_targetable") and not body.call("is_targetable"):
+	if body.has_method("is_targetable") and not body.call("is_targetable"):  # dynamic: unit, wizard, structure and doctor bodies answer it
 		return false
-	var health := body.get_node_or_null("Health")
-	return health != null and not health.call("is_dead")
+	var health := body.get_node_or_null("Health") as Health
+	return health != null and not health.is_dead()
 
 
-## sacengine attackDamageFactor (state.d:8884): a guardian hits harder. 1 for a body without the property.
+## sacengine attackDamageFactor (state.d:8884): a guardian hits harder (UnitBody.attack_factor).
 func _attack_factor() -> float:
-	var factor: Variant = _body.get("attack_factor")
-	return maxf(0.0, float(factor)) if factor != null else 1.0
+	return maxf(0.0, _body.attack_factor)

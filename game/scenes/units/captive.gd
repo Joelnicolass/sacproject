@@ -25,6 +25,8 @@ const UNIT_GROUP := &"unit"
 ## RFC-023 023e: the clips of a held creature, in order (sacengine thrashing, state.d:8200-8223, 14329-14342): it rises,
 ## floats into the thrash and then thrashes in the ring until it is let go. A revived corpse (REVIVING) only rises.
 const HELD_SEQUENCE: PackedStringArray = ["rise", "held", "thrash"]
+## unit_orders.gd has no class_name (other scripts preload it).
+const _ORDERS := preload("res://scenes/units/unit_orders.gd")
 
 @export var body: UnitBody
 ## The body's clip player (ClipPose). The captive asks it which of its clips the model has and hears the loops end.
@@ -82,10 +84,9 @@ func take(by: DoctorBody) -> bool:
 		return false
 	if not body.is_reviving():
 		body.halt()
-	## unit_orders.gd has no class_name: it is existing code, called by its name.
-	var orders := body.get_node_or_null("Orders")
+	var orders := body.get_node_or_null("Orders") as _ORDERS
 	if orders:
-		orders.call("clear")
+		orders.clear()
 	holder = by
 	by.carried = body.get_path()
 	body.mode = UnitBody.Mode.HELD
@@ -128,9 +129,9 @@ func revive(min_health: float, fraction: float) -> bool:
 	var health := body.get_node_or_null("Health") as Health
 	if health == null:
 		return false
-	var orders := body.get_node_or_null("Orders")
+	var orders := body.get_node_or_null("Orders") as _ORDERS
 	if orders:
-		orders.call("clear")
+		orders.clear()
 	health.current = SacrificeMath.revive_health(health.maximum, min_health, fraction)
 	body.velocity = Vector3.ZERO
 	body.mode = UnitBody.Mode.REVIVING

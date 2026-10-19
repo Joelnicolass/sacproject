@@ -189,7 +189,7 @@ func _shatter() -> void:
 	var immune := health != null and taken <= 0.0 and health.resistance(_HEALTH.DIRECT_SPELL) <= 0.0
 	print("deshielo %s %d de hechizo vida %d%s (cuadro %d)" % [str(body.name), roundi(taken),
 		roundi(health.current) if health else 0, " (inmune)" if immune else "", MatchClock.now()])
-	var height := float(visual.call("body_height")) if visual and visual.has_method("body_height") else 1.0
+	var height := (visual as BodyVisual).body_height() if visual is BodyVisual else 1.0
 	FxBus.broadcast(shards_fx, body.global_position + Vector3.UP * height * 0.5)
 
 

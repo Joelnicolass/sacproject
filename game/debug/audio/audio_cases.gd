@@ -2,7 +2,9 @@ extends Node
 
 ## RFC-052 052a (F360): runner of the audio cases. `--expect-gate=open|closed` says what this process must see:
 ## - open (`--audio-probe --user-settings=user://t_audio.cfg`): gate, prefs, SoundBus, original-set and body-set cases;
-## - closed (plain headless, `--dedicated`, `--room-server`): gate cases only (nothing built, nothing loaded).
+## - closed (plain headless, `--dedicated`, `--room-server`): gate cases and the closed SoundEmitter3D (nothing built,
+##   nothing loaded).
+## Both modes also run the FX sound cases (052d) for their gate.
 ## Prints `<case>: PASS|FAIL` and `AUDIO CASES PASS|FAIL (n)`; headless quits with 0 / 1.
 ## Watchdog: past `timeout_s` it prints `AUDIO CASES FAIL timeout` and quits 1. The case scripts are loaded at run time
 ## (not preloaded), so one that fails to compile still ends in a FAIL line instead of a runner without a script.
@@ -13,6 +15,7 @@ const PREFS_CASES := "res://debug/audio/audio_prefs_cases.gd"
 const BUS_CASES := "res://debug/audio/sound_bus_cases.gd"
 const ORIGINAL_CASES := "res://debug/audio/original_sets_cases.gd"
 const BODY_CASES := "res://debug/audio/body_sounds_cases.gd"
+const FX_CASES := "res://debug/audio/fx_sounds_cases.gd"
 
 ## Real seconds (not game time: --fixed-fps would stretch a game-time timer).
 @export var timeout_s := 20.0
@@ -46,6 +49,11 @@ func _run() -> void:
 			results["audio_gate_cases"] = {"ok": false, "reason": "no compila"}
 		else:
 			results.merge(await gate.run(self, expect == "open"))
+		var fx := _cases(FX_CASES)
+		if fx == null:
+			results["fx_sounds_cases"] = {"ok": false, "reason": "no compila"}
+		elif expect == "closed":
+			results.merge(await fx.run(self, false))
 		if expect == "open":
 			var prefs := _cases(PREFS_CASES)
 			var bus := _cases(BUS_CASES)
@@ -64,6 +72,8 @@ func _run() -> void:
 				results["body_sounds_cases"] = {"ok": false, "reason": "no compila"}
 			else:
 				results.merge(body.run(self))
+			if fx != null:
+				results.merge(await fx.run(self, true))
 	if _done:
 		return
 	_done = true

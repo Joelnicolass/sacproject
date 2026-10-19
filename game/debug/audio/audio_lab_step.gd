@@ -15,10 +15,16 @@ enum Expect {
 	IF_SET,
 }
 
-## Node of the lab (path from its root): "Original", "Custom", "Wizard".
+## Node of the lab (path from its root): "Original", "Custom", "Wizard"; "." for the FX actions; "Fountain", "Altar".
 @export var target: NodePath
-## What the lab does: summon, swing, shoot, damaged, death (units); cast, damaged, death, ghost (the wizard).
+## What the lab does: summon, swing, shoot, damaged, death (units); cast, damaged, death, ghost (the wizard);
+## fx, puff, beam, scene (FxBus with `arg`, 052d); spawn (`arg` a projectile scene, 052d); loop, occupy, release (the
+## target's SoundEmitter3D loops; a manafount's Manalith on and off, 052d).
 @export var action: StringName
+## The action's argument: an FX name, a beam type, a scene path.
+@export var arg := ""
+## The emitter the log entry must have; empty = the target's node name (an FX sounds as its FX name).
+@export var emitter: StringName
 ## The SoundEvent the step looks for in the log.
 @export var event: StringName
 @export var expect: Expect = Expect.PLAYED

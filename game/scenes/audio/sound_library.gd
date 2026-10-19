@@ -23,12 +23,31 @@ static func find(rel: String) -> Resource:
 	if not AudioGate.is_open() or rel.is_empty():
 		return null
 	for root in roots:
-		var path := root.path_join(rel + ".tres")
-		if not _cache.has(path):
-			_cache[path] = ResourceLoader.load(path) if ResourceLoader.exists(path) and has_dependencies(path) else null
-		if _cache[path] != null:
-			return _cache[path]
+		var found := _at(root, rel)
+		if found != null:
+			return found
 	return null
+
+
+## Every root's resource of `rel`, in root order (empty when the gate is closed or no root has it). A table looked up
+## key by key (FxSoundMap) takes the first root that answers the key, so a custom one overrides only what it names.
+static func find_all(rel: String) -> Array[Resource]:
+	var out: Array[Resource] = []
+	if not AudioGate.is_open() or rel.is_empty():
+		return out
+	for root in roots:
+		var found := _at(root, rel)
+		if found != null:
+			out.append(found)
+	return out
+
+
+## The resource of `rel` under `root` (cached), or null when it does not exist or names a missing file.
+static func _at(root: String, rel: String) -> Resource:
+	var path := root.path_join(rel + ".tres")
+	if not _cache.has(path):
+		_cache[path] = ResourceLoader.load(path) if ResourceLoader.exists(path) and has_dependencies(path) else null
+	return _cache[path]
 
 
 ## True when every file `path` depends on exists (read from the file, nothing is loaded). A baked set names streams of

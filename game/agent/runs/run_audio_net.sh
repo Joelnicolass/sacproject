@@ -2,7 +2,8 @@
 # RFC-052 052c (F362): the creature sounds also play on a REMOTE client of a dedicated server, deduced from replicated state.
 #   dedicated: `--dedicated --map=test_flat --world=res://debug/audio/audio_net_match.tscn` (its gate is closed: no audio);
 #   client:    debug/audio/audio_net_client.tscn with `--audio-probe` joins it; the server summons a duel next to its wizard and the
-#              client's SoundLog must get summon, swing, damaged and death of the creatures.
+#              client's SoundLog must get summon, swing, damaged and death of the creatures, and fx: the server then
+#              broadcasts an FX (blood) and the client hears it through FxBus.played and FxSoundMap (052d).
 # Both run inside ONE group reservation of the Godot queue, with --fixed-fps (NET_FPS, 600); every wait is on a log line or real
 # seconds. Watchdog LIMIT_S kills them by pid and descendants (no pkill). UDP port 7861 by default (E2E_PORT).
 # Extra user args go to the client (e.g. --audio-no-original). Prints the counts and AUDIO NET PASS / AUDIO NET FAIL (exit 0 / 1).

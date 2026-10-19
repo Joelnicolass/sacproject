@@ -39,6 +39,8 @@ const MANA_GROUP := &"mana_source"
 ## Where a ritual can be held on this altar.
 @export var site: RitualSite
 @export var collapse: AltarCollapse
+## RFC-052 052d: the altar's loop (`altar_loop`), on while the altar is not destroyed. Optional.
+@export var loop_sound: SoundEmitter3D
 
 var _standing_layer := 1
 var _collapse_total := 0.0
@@ -106,6 +108,8 @@ func _apply() -> void:
 	if mana_source:
 		mana_source.process_mode = Node.PROCESS_MODE_INHERIT if alive else Node.PROCESS_MODE_DISABLED
 		_set_group(mana_source, MANA_GROUP, alive)
+	if loop_sound:
+		loop_sound.set_active(alive)
 	if collapse:
 		if state == State.COLLAPSING:
 			collapse.play(_collapse_total, _collapse_elapsed)

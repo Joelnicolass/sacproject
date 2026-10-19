@@ -2,6 +2,20 @@ extends Node
 
 ## Autoload FxBus. Plays ParticleType bursts by name (res://data/fx/<name>.tres) from a pool of
 ## SpriteParticles per type (RFC-029 029b): a play reuses an idle emitter instead of instancing one.
+## RFC-052 052d (F363): every play, beam and scene emits `played` on the peer that draws it (also headless, before the
+## headless guard, so an --audio-probe process hears it): SoundBus turns it into a sound through FxSoundMap. Local only,
+## never an RPC: a broadcast reaches every peer through the RPCs that already exist.
+
+## What was played: `kind` is one of the KIND_* constants, `fx_name` the type name (a beam type, or the scene path for
+## KIND_SCENE), `at` where (the middle of a beam).
+signal played(kind: StringName, fx_name: String, at: Vector3)
+
+## A burst of `play`.
+const KIND_BURST := &"burst"
+## A puff of a trail or of a repeated presentation (`play_puff`): many per second, never a sound of its own.
+const KIND_PUFF := &"puff"
+const KIND_BEAM := &"beam"
+const KIND_SCENE := &"scene"
 
 const SPRITE_PARTICLES := preload("res://scenes/fx/sprite_particles.tscn")
 const TYPES_DIR := "res://data/fx/"
@@ -51,6 +65,18 @@ func next_particle_seed() -> int:
 
 ## `dir` is not applied: the burst goes in its type's direction (it already did before the pool).
 func play(type_name: String, at: Vector3, _dir := Vector3.UP) -> void:
+	played.emit(KIND_BURST, type_name, at)
+	_burst(type_name, at)
+
+
+## A puff of a trail (FxTrail) or of a repeated presentation: drawn like `play`, but `played` says KIND_PUFF, so a type
+## that also has a sound as a burst ("heal", "fire") does not sound thirty times a second.
+func play_puff(type_name: String, at: Vector3) -> void:
+	played.emit(KIND_PUFF, type_name, at)
+	_burst(type_name, at)
+
+
+func _burst(type_name: String, at: Vector3) -> void:
 	if _is_headless():
 		return
 	var emitter := _take(type_name)
@@ -169,6 +195,7 @@ const BEAM_TYPES_DIR := "res://data/fx/beams/"
 ## With `follow`, the end keeps its offset from that node while it lives. A type without `scene`
 ## gives only its flash at `to`.
 func play_beam(type_name: String, from: Vector3, to: Vector3, follow: Node3D = null) -> void:
+	played.emit(KIND_BEAM, type_name, from.lerp(to, 0.5))
 	if _is_headless():
 		return
 	var type := beam_type(type_name)
@@ -258,6 +285,7 @@ func broadcast_scene(scene_path: String, at: Vector3, params: Dictionary) -> voi
 
 
 func play_scene(scene_path: String, at: Vector3, params: Dictionary) -> void:
+	played.emit(KIND_SCENE, scene_path, at)
 	if _is_headless() or not scene_path.begins_with("res://"):
 		return
 	if not _scenes.has(scene_path):

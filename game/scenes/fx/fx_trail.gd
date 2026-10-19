@@ -54,5 +54,5 @@ func _process(delta: float) -> void:
 	for i in owed:
 		## The last puff is here; earlier ones step back along this frame's path.
 		var at := from.lerp(here, float(i + 1) / float(owed))
-		FxBus.play(type_name, at)
+		FxBus.play_puff(type_name, at)
 		puffed.emit(at)

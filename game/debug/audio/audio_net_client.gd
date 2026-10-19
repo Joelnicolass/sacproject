@@ -5,8 +5,9 @@ extends Node
 ## only receives replicated state (mode, swings, shots, Health), so every entry proves a sound deduced on a remote peer.
 ## Needs `--audio-probe` (a headless process has no audio otherwise). The sets come from the fixtures first
 ## (debug/audio/fixtures/lab/: the duel's ycro and plfl sound without the original); `--audio-no-original` leaves only them.
-## Flags: --e2e-name, --mp-port (the kit), --audio-events=summon,swing,damaged,death (each needs a played entry of a creature),
-## --e2e-timeout-s=N (real seconds, 60 by default).
+## 052d: `fx` counts the FX sounds (FxBus.played of a broadcast FX -> FxSoundMap; the emitter is the FX name).
+## Flags: --e2e-name, --mp-port (the kit), --audio-events=summon,swing,damaged,death,fx (each needs a played entry of a creature, fx of an FX),
+## --e2e-timeout-s=N (real seconds, 60 by default), --e2e-linger-s=N (real seconds to keep running after MpKit.leave(); 0 by default).
 ## Prints `AUDIO_NET <event> <count>` and `AUDIO_NET PASS|FAIL`; exit 0 / 1. Like dedicated_client, the main scene starts a twin
 ## under `root` (loading the world frees the main scene).
 
@@ -43,7 +44,7 @@ func _run() -> void:
 		roots.append_array(SoundLibrary.DEFAULT_ROOTS)
 	SoundLibrary.roots = roots
 	SoundLibrary.clear_cache()
-	var wanted := MpBoot.user_value("audio-events", "summon,swing,damaged,death").split(",", false)
+	var wanted := MpBoot.user_value("audio-events", "summon,swing,damaged,death,fx").split(",", false)
 	for event in wanted:
 		_counts[StringName(event)] = 0
 	if SacrificeFlow.join_lan(LOCAL_HOST) != OK:
@@ -86,9 +87,12 @@ func _finish(ok: bool, reason: String) -> void:
 		return
 	_finished = true
 	print("AUDIO_NET %s %s%s" % [_name, "PASS" if ok else "FAIL", "" if reason.is_empty() else " " + reason])
-	SoundBus.stop_all()
+	SoundBus.shutdown()
 	var release_at := Time.get_ticks_msec() + 200
 	while Time.get_ticks_msec() < release_at:
 		await get_tree().process_frame
 	MpKit.leave()
+	var linger_until := Time.get_ticks_msec() + int(float(MpBoot.user_value("e2e-linger-s", "0")) * 1000.0)
+	while Time.get_ticks_msec() < linger_until:
+		await get_tree().process_frame
 	get_tree().quit(0 if ok else 1)

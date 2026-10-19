@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_emitter_3d.gd" id="1_emitter"]
+
+[node name="SoundEmitter3D" type="AudioStreamPlayer3D"]
+editor_description = "RFC-052 052d (F363). Sonido de un nodo del mundo: `cue` es una clave de `source` (data/audio/fx_sounds.tres), no un stream; se resuelve solo con el AudioGate abierto. Sin `loop`: suena una vez al entrar al árbol, por el pool 3D de SoundBus. Con `loop`: suena en bucle en este player mientras esté `active` y a menos de `max_distance_m` del oyente."
+bus = &"SFX"
+script = ExtResource("1_emitter")

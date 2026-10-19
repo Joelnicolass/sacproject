@@ -5,12 +5,15 @@ extends StaticBody3D
 ## occupant's slot) replaces the jet, until that structure is removed. The Manalith is spawned on
 ## every peer with its manafount_path, so occupy()/release() run on clients and a late joiner sees
 ## the right state. The dedicated process draws nothing (SpriteEmitter.set_active is a no-op there).
+## RFC-052 052d: the jet loops `fountain_loop` and the Manalith `manalith_loop` (SoundEmitter3D, silent with the gate closed).
 
 var _occupied_by := NodePath()
 var _source_rate := 0.0
 
 @onready var _free_fx: SpriteEmitter = %FreeFx
 @onready var _manalith_fx: SpriteEmitter = %ManalithFx
+@onready var _fount_sound: SoundEmitter3D = %FountSound
+@onready var _manalith_sound: SoundEmitter3D = %ManalithSound
 
 
 func _ready() -> void:
@@ -20,6 +23,8 @@ func _ready() -> void:
 		_source_rate = float(source.get("rate"))
 	_free_fx.set_active(true)
 	_manalith_fx.set_active(false)
+	_fount_sound.set_active(true)
+	_manalith_sound.set_active(false)
 
 
 func is_free() -> bool:
@@ -59,6 +64,8 @@ func _set_active(active: bool) -> void:
 		_manalith_fx.set_tint(SideColors.mana_color(slot), SideColors.mana_energy_scale(slot))
 	_free_fx.set_active(active)
 	_manalith_fx.set_active(not active)
+	_fount_sound.set_active(active)
+	_manalith_sound.set_active(not active)
 
 
 func _occupant_slot() -> int:

@@ -5,7 +5,8 @@ extends AudioListener3D
 ## RFC-052 052c (F362): where the player hears from. The camera flies high over the field, so attenuating from it would
 ## make everything far; the listener sits on the local wizard (MatchWorld.local_wizard_changed) and turns with the camera,
 ## so left and right stay the screen's. Before the wizard arrives (or without one) it sits on the camera.
-## With the AudioGate closed (dedicated, room server, headless) it does nothing.
+## With the AudioGate closed (dedicated, room server, headless) it does nothing. It is SoundBus.listener: the loops of the
+## SoundEmitter3D nodes measure their range from it (052d).
 
 ## Emits `local_wizard_changed(wizard)` and answers `local_wizard()` (MatchWorld). Optional: the lab sets `target` instead.
 @export var world: Node
@@ -29,7 +30,13 @@ func _ready() -> void:
 		if target == null and world.has_method("local_wizard"):
 			target = world.call("local_wizard") as Node3D
 	make_current()
+	SoundBus.listener = self
 	_follow()
+
+
+func _exit_tree() -> void:
+	if not Engine.is_editor_hint() and SoundBus.listener == self:
+		SoundBus.listener = null
 
 
 func _process(_delta: float) -> void:

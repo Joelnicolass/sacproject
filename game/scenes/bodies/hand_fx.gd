@@ -63,7 +63,7 @@ func _burst() -> bool:
 			return false
 		points.append(body.global_position + Vector3.UP * fallback_height)
 	for point in points:
-		FxBus.play(_type, point)
+		FxBus.play_puff(_type, point)
 	return true
 
 

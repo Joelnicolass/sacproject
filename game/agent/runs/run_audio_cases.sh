@@ -43,6 +43,8 @@ lab() { # RFC-052 052c+: the audio lab with a lab_<cut>.tres, then the user args
 }
 lab lab_052c res://debug/audio/lab_052c.tres
 lab lab_052c_no_original res://debug/audio/lab_052c.tres --audio-no-original
+lab lab_052d res://debug/audio/lab_052d.tres
+lab lab_052d_no_original res://debug/audio/lab_052d.tres --audio-no-original
 echo "logs: $OUT"
 if [ "$FAIL" = 0 ]; then echo "AUDIO RUN PASS"; else echo "AUDIO RUN FAIL"; fi
 exit $FAIL

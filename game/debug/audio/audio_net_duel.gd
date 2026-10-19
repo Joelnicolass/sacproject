@@ -5,16 +5,22 @@ extends Node
 ## his wizard (`--audio-duel=ycro,plfl`: slot 1 and slot 2), ends the summon after `summon_ticks`, cuts their health to
 ## `duel_health` and makes them fight. Every sound the client then hears comes from the replicated state (mode, swings, shots,
 ## Health): nothing here is sent to the client. Only the authority acts; not in the product.
+## 052d: then it broadcasts `fx_name` through FxBus (the RPC every FX already uses) `fx_times` times, one every
+## `fx_every_ticks`, between the two creatures: the client hears it through FxBus.played and FxSoundMap.
 
 @export var summon_ticks := 90
 @export var duel_health := 150.0
 @export var gap_m := 4.0
 @export var ahead_m := 6.0
+@export var fx_name := "blood"
+@export var fx_times := 4
+@export var fx_every_ticks := 30
 
 var _tags: PackedStringArray = []
 var _units: Array[Node3D] = []
 var _armed_tick := -1
 var _phase := 0
+var _fx_sent := 0
 
 
 func _ready() -> void:
@@ -22,7 +28,7 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if _phase >= 3 or (MpKit.is_networked() and not MpKit.is_server()) or _tags.size() < 2:
+	if _phase >= 4 or (MpKit.is_networked() and not MpKit.is_server()) or _tags.size() < 2:
 		return
 	var state := get_tree().get_first_node_in_group(&"match_state") as MatchState
 	if state == null:
@@ -46,7 +52,19 @@ func _physics_process(_delta: float) -> void:
 				_units[0].call("engage", _units[1])
 				_units[1].call("engage", _units[0])
 				print("duelo de audio: %s contra %s" % [_units[0].name, _units[1].name])
+			_armed_tick = MatchClock.now()
 			_phase = 3
+		3:
+			if MatchClock.now() - _armed_tick < fx_every_ticks:
+				return
+			_armed_tick = MatchClock.now()
+			var wizard := _wizard(1)
+			if wizard != null:
+				FxBus.broadcast(fx_name, wizard.global_position + Vector3.UP)
+			_fx_sent += 1
+			if _fx_sent >= fx_times:
+				print("duelo de audio: %d FX %s" % [_fx_sent, fx_name])
+				_phase = 4
 
 
 func _wizard(slot: int) -> Node3D:

@@ -1,9 +1,11 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://debug/audio/audio_lab.gd" id="1_lab"]
 [ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="2_unit"]
 [ext_resource type="PackedScene" path="res://scenes/wizards/wizard_body.tscn" id="3_wizard"]
 [ext_resource type="Script" path="res://scenes/audio/listener_focus.gd" id="4_listener"]
+[ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="5_fount"]
+[ext_resource type="PackedScene" path="res://scenes/map/props/altar.tscn" id="6_altar"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(40, 1, 40)
@@ -15,7 +17,7 @@ size = Vector2(40, 40)
 albedo_color = Color(0.32, 0.3, 0.26, 1)
 
 [node name="AudioLab" type="Node3D" node_paths=PackedStringArray("label")]
-editor_description = "RFC-052 (F360+). Laboratorio de audio: dos criaturas (una con set del original, nmuh; una propia, testmonster), un mago y el oyente en una cámara fija. Los cuerpos están quietos; el lab mueve su estado replicado y los hijos *Sounds suenan. F6 y la acción debug_audio_event (J) recorre los pasos del lab_<corte>.tres. Sin ventana: --headless -- --audio-probe --audio-script[=res://debug/audio/lab_052c.tres] [--audio-no-original]."
+editor_description = "RFC-052 (F360+). Laboratorio de audio: dos criaturas (una con set del original, nmuh; una propia, testmonster), un mago y el oyente en una cámara fija. Los cuerpos están quietos; el lab mueve su estado replicado y los hijos *Sounds suenan. F6 y la acción debug_audio_event (J) recorre los pasos del lab_<corte>.tres. Desde 052d también un manantial (Fountain) y un altar (Altar) con sus bucles, y los pasos de FX (FxBus), proyectiles y bucles del lab_052d.tres. Sin ventana: --headless -- --audio-probe --audio-script[=res://debug/audio/lab_052c.tres] [--audio-no-original]."
 script = ExtResource("1_lab")
 label = NodePath("Overlay/LastEvent")
 
@@ -60,6 +62,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
 wizard_tag = "cwa0"
 model = "jnwr"
 god = "james"
+
+[node name="Fountain" parent="." instance=ExtResource("5_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -6)
+
+[node name="Altar" parent="." instance=ExtResource("6_altar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -14)
+owner_slot = 1
 
 [node name="Overlay" type="CanvasLayer" parent="."]
 

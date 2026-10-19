@@ -3186,3 +3186,28 @@ Agregar o cambiar un hechizo de combate ya no toca `caster.gd`.
 - Solo `git mv` más reescritura de rutas con `tools/move_map.py` y `tools/move_map/048.csv` (idempotente; `--check --lint` limpio). Sin renombres de archivo, `class_name` ni nodo.
 - README por carpeta de primer nivel y por dominio de `scenes/`; RULES.md §Arquitectura describe el árbol; `debug/*` y `script_templates/*` quedan fuera del export dedicado; `.git-blame-ignore-revs` lista los commits de mudanza.
 - Verificación por corte: import x2 sin errores, escenas principales abren, `rules_suite` PASS, `quick` sin regrabar, e2e en k y l.
+
+### F270 — `bake_body_scenes` no pisa lo editado (RFC-046) — cerrado 2026-10-19
+
+- `tools/bake/bake_body_scenes.gd` escribe solo las escenas de `scenes/bodies/models/` que faltan y deja las que existen («BAKE_BODY_SCENES wrote N, kept M»). `-- --force` rehace todas y borra las de modelos sin `idle` (pisa los cambios hechos en el editor). `OUT_DIR` apuntaba al path viejo `scenes/world/body/models/` y se corrigió.
+- La cabecera de `BodyModel` decía «Presentation only: the simulation never reads it»: el juego SÍ la carga para lo visual (`BodyRig` la instancia); lo que no depende de ella es la simulación y las reglas. `BodyModel` avisa en el inspector si `model` no coincide con el nombre del archivo o si `clips` está vacío.
+- Verificación: sin `--force` escribe 0 y conserva 73.
+
+### F271 — Plugin «Sacrifice» y botón de minimapa (RFC-046, EF-15) — cerrado 2026-10-19
+
+- `addons/sacrifice_tools/` (excluido del export): en Project > Tools, «Validar catálogo» (`debug/suite/catalog_cases.gd`), «Re-hornear navmesh» (`tools/bake/bake_nav.tscn`) y «Hornear modelos que faltan». Cada uno lanza un Godot headless hijo y muestra la salida en un diálogo; las herramientas por consola siguen igual.
+- `MinimapTerrainBake` tiene el botón «Re-hornear minimapa» (`@export_tool_button`): vuelve a dibujar el terreno en `preview`; nada se guarda (el juego lo hornea en cada arranque).
+
+### F272 — Guías (RFC-046, EF-30) — cerrado 2026-10-19
+
+- `docs/HOWTO.md`: agregar criatura, hechizo, dios, edificio, NPC, FX; mapa queda como esqueleto hasta que cierre RFC-044; cambiar balance; correr pruebas y validador.
+
+### F273 — FEATURES partido (RFC-046, EF-32) — cerrado 2026-10-19
+
+- `FEATURES.md` es el estado actual por área; este archivo es el registro completo (movido sin cambios, con F270 en adelante agregadas al final).
+
+### F274 — Código muerto y llamadas por nombre (RFC-046, EF-06, EF-24) — cerrado 2026-10-19
+
+- Fuera el autoload `BodyLibrary` (fachada de `BodyCatalog`, 17 archivos pasan a `BodyCatalog`) y `obj_mesh.gd` (sin referencias).
+- `static var TICKS := float(MatchClock.TICKS_PER_SECOND)` repetido en 13 archivos se reemplaza por `MatchClock.TICKS_PER_SECOND_F`.
+- `SpellBook` (UI) y `StructureBody` llaman por tipo (`Spellbook`, `SpellSlot`, `Health`) en vez de `.call("…")`.

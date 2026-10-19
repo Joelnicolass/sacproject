@@ -16,6 +16,9 @@ var starting_souls := -1
 ## RFC-034 034e: the seed of the match; 0 = the rules' `match_seed` (the one who simulates draws it). The room server draws it
 ## and puts it in the ticket (`--match-ticket-file`); `--match-seed=N` sets it by hand. The benches pass none.
 var match_seed := 0
+## RFC-049 049a (F290): the map of the match (a tag of the MapCatalog); empty = the one of `--map` or the default. It is not a rule of
+## the round: `apply_to` and `is_empty` ignore it. SacrificeFlow._apply_match_choice is the only one that turns it into `MapCatalog.use`.
+var map_tag: StringName = &""
 
 
 func copy() -> MatchSetup:
@@ -25,6 +28,7 @@ func copy() -> MatchSetup:
 	other.drop_soul = drop_soul
 	other.starting_souls = starting_souls
 	other.match_seed = match_seed
+	other.map_tag = map_tag
 	return other
 
 
@@ -47,6 +51,8 @@ func overlaid_by(over: MatchSetup) -> MatchSetup:
 		merged.starting_souls = over.starting_souls
 	if over.match_seed > 0:
 		merged.match_seed = over.match_seed
+	if over.map_tag != &"":
+		merged.map_tag = over.map_tag
 	return merged
 
 

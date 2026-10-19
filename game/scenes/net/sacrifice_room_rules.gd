@@ -14,16 +14,23 @@ const SOULS_MAX := 200
 const SEED_MAX := 0x7fffffff
 const OPTION_KEYS: PackedStringArray = ["world", "level", "friendly_fire", "drop_soul", "starting_souls"]
 
+## RFC-049 049a: also accept the maps that exist to test the game (`room_selectable = false`). Tests only: the server of the
+## rooms starts with `--room-test-maps` to turn it on; production rooms offer only the selectable maps.
+@export var include_test_maps := false
+
 var _rng := RandomNumberGenerator.new()
 
 
-## The worlds a room can play: the maps of data/maps/map_catalog.tres that rooms offer (RFC-044).
-static func worlds() -> PackedStringArray:
-	return MapCatalog.shared().room_tags()
+## The worlds a room can play: the maps of data/maps/map_catalog.tres that rooms offer (RFC-044), plus the test maps if asked.
+func worlds() -> PackedStringArray:
+	var catalog := MapCatalog.shared()
+	return catalog.all_tags() if include_test_maps else catalog.room_tags()
 
 
 func _ready() -> void:
 	_rng.randomize()
+	if MpBoot.user_flag("room-test-maps"):
+		include_test_maps = true
 
 
 ## Installs the three Callables on the lobby server.

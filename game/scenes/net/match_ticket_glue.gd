@@ -106,7 +106,15 @@ static func setup_from_ticket(ticket: Dictionary) -> MatchSetup:
 		setup.drop_soul = 1 if bool(options["drop_soul"]) else 0
 	setup.starting_souls = int(options.get("starting_souls", -1))
 	setup.match_seed = int(ticket.get("seed", 0))
+	setup.map_tag = StringName(str(ticket.get("world", "")))
 	return setup
+
+
+## RFC-049 049a: the dedicated checks the map of the ticket again (the room server already did): a ticket without `world` plays
+## the default map; one that names a map the catalog does not have is a `bad_ticket`.
+static func world_is_valid(ticket: Dictionary) -> bool:
+	var world := str(ticket.get("world", ""))
+	return world.is_empty() or MapCatalog.shared().find(StringName(world)) != null
 
 
 func _process(_delta: float) -> void:

@@ -73,3 +73,12 @@ func room_tags() -> PackedStringArray:
 		if definition != null and definition.room_selectable:
 			tags.append(String(definition.tag))
 	return tags
+
+
+## RFC-049 049a: every tag, the test maps included (a room server started with `--room-test-maps`, the debug boot).
+func all_tags() -> PackedStringArray:
+	var tags := PackedStringArray()
+	for definition in maps:
+		if definition != null:
+			tags.append(String(definition.tag))
+	return tags

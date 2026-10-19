@@ -3,7 +3,7 @@ shader_type spatial;
 render_mode cull_disabled;
 
 // Splat, zone rules and macro drift shared with the grass (grass.gdshader).
-#include "res://scenes/world/look/ground/ground_common.gdshaderinc"
+#include "res://scenes/look/ground/ground_common.gdshaderinc"
 
 // Ground of a biome: up to four PBR layers blended by the original map's zones (splat), slope,
 // altitude and height maps. Maps by map coordinates (the mesh stores them in local vertex space,

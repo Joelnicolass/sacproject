@@ -48,7 +48,7 @@ source_file="res://assets/original/{rel}"
 
 ENVI_HEAD = """[gd_resource type="Resource" script_class="GodEnvi" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://scenes/world/god_envi.gd" id="1_envi"]
+[ext_resource type="Script" path="res://scenes/look/theme/god_envi.gd" id="1_envi"]
 
 [resource]
 script = ExtResource("1_envi")

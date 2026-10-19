@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://gksgujlai7yw" path="res://debug/grass_lab.gd" id="1_lab"]
 [ext_resource type="Script" uid="uid://dvl2wg4u7mur4" path="res://debug/grass_lab_ground.gd" id="2_ground"]
-[ext_resource type="PackedScene" path="res://scenes/world/look/look_rig.tscn" id="3_rig"]
+[ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="3_rig"]
 [ext_resource type="PackedScene" path="res://debug/gallery_body.tscn" id="4_body"]
 [ext_resource type="Environment" path="res://data/look/env_base.tres" id="5_env"]
 

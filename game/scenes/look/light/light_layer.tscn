@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scenes/world/look/light/light_layer.gd" id="1_layer"]
-[ext_resource type="PackedScene" path="res://scenes/world/look/light/fill_light.tscn" id="2_fill"]
+[ext_resource type="Script" path="res://scenes/look/light/light_layer.gd" id="1_layer"]
+[ext_resource type="PackedScene" path="res://scenes/look/light/fill_light.tscn" id="2_fill"]
 
 [node name="LightLayer" type="Node3D" node_paths=PackedStringArray("fill")]
 script = ExtResource("1_layer")

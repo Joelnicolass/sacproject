@@ -1,6 +1,6 @@
 [gd_resource type="Resource" load_steps=5 format=3]
 
-[ext_resource type="Script" path="res://scenes/world/god_theme.gd" id="1_theme"]
+[ext_resource type="Script" path="res://scenes/look/theme/god_theme.gd" id="1_theme"]
 
 [ext_resource type="Resource" path="res://data/look/charnel.tres" id="2_look"]
 

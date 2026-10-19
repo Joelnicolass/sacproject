@@ -1,7 +1,7 @@
 shader_type spatial;
 render_mode unshaded, blend_add, cull_disabled, depth_draw_never, shadows_disabled, fog_disabled;
 
-#include "res://scenes/world/look/sky/sky_view.gdshaderinc"
+#include "res://scenes/look/sky/sky_view.gdshaderinc"
 
 uniform vec3 sun_dir = vec3(0.0, 0.6, 0.8);
 uniform vec3 sun_color = vec3(0.0);

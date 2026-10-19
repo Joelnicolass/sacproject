@@ -82,7 +82,7 @@ Autoridad: decisión del usuario (este pedido) > PRD > FEATURES > RULES > VISUAL
 | Archivo | Líneas | `func` | `.call`/`has_method` | Responsabilidades mezcladas |
 |---|---|---|---|---|
 | `scenes/world/match_command.gd` | 795 | 59 | 30 | atajos, selección por clic, armado de hechizo, estructura, habilidad, órdenes, minimapa, raycasts, textos `ORDER_TEXT` (l. 20-27) |
-| `scenes/world/look/grass/grass_field.gd` | 740 | 48 | 6 | pasto (diferido al final por decisión del usuario) |
+| `scenes/look/grass/grass_field.gd` | 740 | 48 | 6 | pasto (diferido al final por decisión del usuario) |
 | `scenes/world/unit_body.gd` | 720 | 69 | 29 | física, setup de 15 componentes por `$X.call("setup")` (l. 208-222, 469-491), modo replicado `enum Mode` (l. 30) **además** de los 11 `FsmState` |
 | `scenes/world/ai/perception/ai_perception.gd` | 701 | 47 | 8 | percepción de la IA (regla; queda) |
 | `scenes/world/spells/caster.gd` | 647 | 45 | 40 | validación, cobro, 7 hechizos fijos, spawn de efectos |

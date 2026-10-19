@@ -5,7 +5,7 @@ extends RefCounted
 ## layers. Everything built here is runtime-only (zone mask from the map, noise): none of it is
 ## stored in a scene.
 
-const SHADER := preload("res://scenes/world/look/ground/ground_pbr.gdshader")
+const SHADER := preload("res://scenes/look/ground/ground_pbr.gdshader")
 const NOISE_SIZE := 256
 const LIGHT_MAP := OriginalAssets.HIGH_NOON_LIGHT
 

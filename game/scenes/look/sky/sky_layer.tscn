@@ -1,8 +1,8 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scenes/world/look/sky/sky_layer.gd" id="1_layer"]
-[ext_resource type="PackedScene" path="res://scenes/world/look/sky/sky_discs.tscn" id="2_discs"]
-[ext_resource type="PackedScene" path="res://scenes/world/look/sky/sky_swirl.tscn" id="3_swirl"]
+[ext_resource type="Script" path="res://scenes/look/sky/sky_layer.gd" id="1_layer"]
+[ext_resource type="PackedScene" path="res://scenes/look/sky/sky_discs.tscn" id="2_discs"]
+[ext_resource type="PackedScene" path="res://scenes/look/sky/sky_swirl.tscn" id="3_swirl"]
 
 [node name="SkyLayer" type="Node3D" node_paths=PackedStringArray("pieces", "swirl")]
 script = ExtResource("1_layer")

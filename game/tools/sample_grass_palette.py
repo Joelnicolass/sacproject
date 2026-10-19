@@ -76,7 +76,7 @@ def write_palette(god: str, mid: tuple, tip: tuple) -> str:
         text = re.sub(r"color_tip = Color\([^)]*\)", "color_tip = " + fmt(tip), text)
     else:
         text = ('[gd_resource type="Resource" script_class="GrassPalette" load_steps=2 format=3]\n\n'
-                '[ext_resource type="Script" path="res://scenes/world/look/grass/grass_palette.gd" id="1_p"]\n\n'
+                '[ext_resource type="Script" path="res://scenes/look/grass/grass_palette.gd" id="1_p"]\n\n'
                 '[resource]\nscript = ExtResource("1_p")\n'
                 f"color_mid = {fmt(mid)}\ncolor_tip = {fmt(tip)}\n")
     open(path, "w").write(text)

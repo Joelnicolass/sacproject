@@ -2,7 +2,7 @@ extends Node
 
 ## check_tick cycles the god themes over the High Noon world.
 
-const ThemeApplier := preload("res://scenes/world/theme_applier.gd")
+const ThemeApplier := preload("res://scenes/look/theme/theme_applier.gd")
 
 @export var world_path: NodePath = ^"HighNoon"
 @export var start_god: StringName = &"persephone"

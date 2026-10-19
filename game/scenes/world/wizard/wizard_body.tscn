@@ -43,8 +43,8 @@
 [ext_resource type="Script" path="res://scenes/world/units/afflictions/frozen.gd" id="f149_frozen"]
 [ext_resource type="Resource" path="res://data/afflictions/frozen.tres" id="f149_frozen_type"]
 [ext_resource type="Script" path="res://scenes/world/units/poisoning.gd" id="f122_poisoning"]
-[ext_resource type="Script" path="res://scenes/world/look/stone_look.gd" id="f137_stone_look"]
-[ext_resource type="Shader" path="res://scenes/world/look/stone.gdshader" id="f137_stone_shader"]
+[ext_resource type="Script" path="res://scenes/look/stone_look.gd" id="f137_stone_look"]
+[ext_resource type="Shader" path="res://scenes/look/stone.gdshader" id="f137_stone_shader"]
 
 [ext_resource type="Script" path="res://scenes/world/units/afflictions/oiled.gd" id="f155_oiled"]
 [ext_resource type="Script" path="res://scenes/world/units/afflictions/vined.gd" id="f159_vined"]

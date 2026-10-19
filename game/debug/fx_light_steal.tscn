@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://debug/fx_light_steal.gd" id="1_steal"]
-[ext_resource type="PackedScene" path="res://scenes/world/look/fx/fx_light_layer.tscn" id="2_layer"]
+[ext_resource type="PackedScene" path="res://scenes/look/fx/fx_light_layer.tscn" id="2_layer"]
 [ext_resource type="Resource" path="res://data/fx/lights/wrath_burst.tres" id="3_strong"]
 [ext_resource type="Resource" path="res://data/fx/lights/rock_spark.tres" id="4_weak"]
 [ext_resource type="Resource" path="res://data/look/quality_medium.tres" id="5_quality"]

@@ -76,8 +76,8 @@
 [ext_resource type="Script" path="res://scenes/world/units/states/cower_state.gd" id="f221_cower"]
 [ext_resource type="Script" path="res://scenes/world/units/unit_air.gd" id="f221_air"]
 [ext_resource type="Script" path="res://scenes/world/units/unit_clips.gd" id="f221_clips"]
-[ext_resource type="Script" path="res://scenes/world/look/stone_look.gd" id="f137_stone_look"]
-[ext_resource type="Shader" path="res://scenes/world/look/stone.gdshader" id="f137_stone_shader"]
+[ext_resource type="Script" path="res://scenes/look/stone_look.gd" id="f137_stone_look"]
+[ext_resource type="Shader" path="res://scenes/look/stone.gdshader" id="f137_stone_shader"]
 
 [ext_resource type="Script" path="res://scenes/world/units/afflictions/oiled.gd" id="f155_oiled"]
 [ext_resource type="Script" path="res://scenes/world/units/afflictions/vined.gd" id="f159_vined"]

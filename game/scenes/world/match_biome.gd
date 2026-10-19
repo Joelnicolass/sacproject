@@ -6,7 +6,7 @@ extends Node
 
 signal applied(god: StringName)
 
-const ThemeApplier := preload("res://scenes/world/theme_applier.gd")
+const ThemeApplier := preload("res://scenes/look/theme/theme_applier.gd")
 const CHANNEL := &"biome"
 
 @export var world: Node3D

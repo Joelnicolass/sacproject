@@ -5,7 +5,7 @@ extends Node
 ## Debug-only actions are registered here (not in project.godot): F1 next biome, F2 next camera,
 ## F3 next quality, KP1..KP8 toggle layer N. Prints `look <god> cam <n> capas <mask> calidad <q>`.
 
-const ThemeApplier := preload("res://scenes/world/theme_applier.gd")
+const ThemeApplier := preload("res://scenes/look/theme/theme_applier.gd")
 const QUALITY_DIR := "res://data/look"
 const QUALITY_IDS: Array[StringName] = [&"low", &"medium", &"high"]
 const ACTIONS := {

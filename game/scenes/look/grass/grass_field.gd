@@ -12,8 +12,8 @@ extends LookLayer
 ## are internal children and never reach a saved scene. In a dedicated or headless process the
 ## rig is freed, so this never exists there. In the editor it follows the viewport camera.
 
-const SHADER := preload("res://scenes/world/look/grass/grass.gdshader")
-const BAKE_SHADER := preload("res://scenes/world/look/grass/grass_bake.gdshader")
+const SHADER := preload("res://scenes/look/grass/grass.gdshader")
+const BAKE_SHADER := preload("res://scenes/look/grass/grass_bake.gdshader")
 const CELL_M := 16.0
 const MAP_M := GrassHeight.MAP_M
 const MAP_CELLS := 160

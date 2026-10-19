@@ -18,8 +18,8 @@ uniform float light_gain : hint_range(0.0, 4.0, 0.01) = 0.55;
 // The far grass paint (022e4): where the grass grows the ground takes the color of the field, so far
 // from the camera it fades into it. `GrassField` fills it; grass_paint_amount 0 (the default) = this
 // shader is the same as before. The zone mask comes from the map's TileLayerMap.
-#include "res://scenes/world/look/ground/zone_splat.gdshaderinc"
-#include "res://scenes/world/look/ground/grass_paint.gdshaderinc"
+#include "res://scenes/look/ground/zone_splat.gdshaderinc"
+#include "res://scenes/look/ground/grass_paint.gdshaderinc"
 
 // Map coordinates of the fragment. The terrain mesh is stored in map coordinates, so the local
 // vertex is used: the light map stays put when the editor preview shifts the scene root.

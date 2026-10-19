@@ -8,7 +8,7 @@
 shader_type spatial;
 render_mode unshaded, blend_mix, cull_disabled, depth_draw_never, shadows_disabled, fog_disabled;
 
-#include "res://scenes/world/look/sky/sky_view.gdshaderinc"
+#include "res://scenes/look/sky/sky_view.gdshaderinc"
 
 uniform sampler2D clouds : source_color, filter_linear_mipmap, repeat_enable;
 uniform sampler2D band : source_color, filter_linear_mipmap, repeat_enable;

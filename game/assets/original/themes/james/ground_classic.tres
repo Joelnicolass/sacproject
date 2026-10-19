@@ -1,6 +1,6 @@
 [gd_resource type="ShaderMaterial" format=3 uid="uid://b6pd04js5lq4t"]
 
-[ext_resource type="Shader" uid="uid://dm6d6avgxiv6w" path="res://scenes/world/sacrifice_ground.gdshader" id="1_shader"]
+[ext_resource type="Shader" uid="uid://dm6d6avgxiv6w" path="res://scenes/look/ground/sacrifice_ground.gdshader" id="1_shader"]
 [ext_resource type="Texture2D" uid="uid://c31cap7mrp5bg" path="res://assets/original/themes/james/atlas.png" id="2_atlas"]
 [ext_resource type="Texture2D" uid="uid://d2q28r7av4gl1" path="res://assets/original/themes/james/edge.png" id="3_edge"]
 [ext_resource type="Texture2D" uid="uid://wnq88lxvflp6" path="res://assets/original/maps/high_noon/light.png" id="4_light"]

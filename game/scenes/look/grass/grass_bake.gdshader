@@ -13,7 +13,7 @@ shader_type canvas_item;
 // the slope from the baked height map. The color of the ground is not here: it is rendered
 // from the terrain itself (GrassField), so it is whatever the ground shows.
 
-#include "res://scenes/world/look/ground/zone_splat.gdshaderinc"
+#include "res://scenes/look/ground/zone_splat.gdshaderinc"
 
 uniform sampler2D height_tex : filter_linear, repeat_disable, hint_default_black;
 uniform float height_texel_m = 2.5;

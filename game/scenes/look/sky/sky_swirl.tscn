@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scenes/world/look/sky/sky_swirl.gd" id="1_s"]
-[ext_resource type="Shader" path="res://scenes/world/look/sky/sky_swirl.gdshader" id="2_sh"]
+[ext_resource type="Script" path="res://scenes/look/sky/sky_swirl.gd" id="1_s"]
+[ext_resource type="Shader" path="res://scenes/look/sky/sky_swirl.gdshader" id="2_sh"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_p"]
 render_priority = -91

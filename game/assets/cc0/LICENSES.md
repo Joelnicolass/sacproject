@@ -27,5 +27,5 @@ License text: https://creativecommons.org/publicdomain/zero/1.0/ (ambientCG: htt
 
 | What | Author / source | License | Where |
 |---|---|---|---|
-| Two-tap offset technique against texture repetition ("Texture Repetition") | Inigo Quilez, https://iquilezles.org/articles/texturerepetition (c) 2017 | MIT (text in the shader header) | `scenes/world/look/ground/ground_pbr.gdshader` (`tap_stochastic`) |
-| Grass technique: geometry blades around the camera, density falling with distance, ground of the same color, wind waves that lighten the tips; cells around the camera, curved normals, color by tuft | Nintendo CEDEC 2017 (BotW); E. Wohllaib, GDC 2021 (Ghost of Tsushima); 2Retr0/GodotGrass (MIT) | ideas only, no code copied (CC BY-SA hexaquo series not used) | `scenes/world/look/grass/grass.gdshader` (header) |
+| Two-tap offset technique against texture repetition ("Texture Repetition") | Inigo Quilez, https://iquilezles.org/articles/texturerepetition (c) 2017 | MIT (text in the shader header) | `scenes/look/ground/ground_pbr.gdshader` (`tap_stochastic`) |
+| Grass technique: geometry blades around the camera, density falling with distance, ground of the same color, wind waves that lighten the tips; cells around the camera, curved normals, color by tuft | Nintendo CEDEC 2017 (BotW); E. Wohllaib, GDC 2021 (Ghost of Tsushima); 2Retr0/GodotGrass (MIT) | ideas only, no code copied (CC BY-SA hexaquo series not used) | `scenes/look/grass/grass.gdshader` (header) |

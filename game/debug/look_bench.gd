@@ -8,7 +8,7 @@ extends Node
 
 enum Run { MEASURE, CAPTURE }
 
-const ThemeApplier := preload("res://scenes/world/theme_applier.gd")
+const ThemeApplier := preload("res://scenes/look/theme/theme_applier.gd")
 const QUALITY_DIR := "res://data/look"
 const PRESET_IDS: Array[StringName] = [&"low", &"medium", &"high"]
 const MODE_NAMES := {

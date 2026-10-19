@@ -87,4 +87,4 @@ vec3 ground_lightmap_mul(vec2 xz) {
 }
 
 // The far grass paint (shared with the classic ground).
-#include "res://scenes/world/look/ground/grass_paint.gdshaderinc"
+#include "res://scenes/look/ground/grass_paint.gdshaderinc"

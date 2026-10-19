@@ -1,4 +1,5 @@
 @tool
+class_name SkySwirl
 extends SkyPiece
 
 ## Swirl sky (the "new" sky): the original's palette and textures with depth. Its textures are

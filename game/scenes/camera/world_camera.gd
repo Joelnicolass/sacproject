@@ -128,8 +128,8 @@ func _wheel_blocked(screen: Vector2) -> bool:
 	for blocker in wheel_blockers:
 		if blocker == null or not blocker.is_visible_in_tree():
 			continue
-		if blocker.has_method(&"covers"):
-			if bool(blocker.call(&"covers", screen)):
+		if blocker is Minimap:
+			if (blocker as Minimap).covers(screen):
 				return true
 		elif Rect2(Vector2.ZERO, blocker.size).has_point(blocker.get_global_transform().affine_inverse() * screen):
 			return true
@@ -235,8 +235,8 @@ func _place() -> void:
 
 func _subject_height() -> float:
 	for child in follow.get_children():
-		if child.has_method("body_height"):
-			return float(child.call("body_height"))
+		if child is BodyVisual:
+			return (child as BodyVisual).body_height()
 	return min_subject_height
 
 

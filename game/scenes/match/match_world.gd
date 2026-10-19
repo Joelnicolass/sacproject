@@ -1,3 +1,4 @@
+class_name MatchWorld
 extends Node3D
 
 signal local_wizard_changed(wizard: Node3D)
@@ -88,7 +89,7 @@ func _on_wizard_entered(node: Node) -> void:
 
 
 func _check_local(node: Node) -> void:
-	if not node.has_method("is_local") or not node.call("is_local"):
+	if not node is WizardBody or not (node as WizardBody).is_local():
 		return
 	_local_wizard = node as Node3D
 	%Camera.set_follow(_local_wizard)

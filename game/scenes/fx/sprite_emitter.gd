@@ -60,7 +60,7 @@ func set_tint(base: Color, energy_scale := 1.0) -> void:
 ## draws from the global RNG the simulation uses (RFC-029 029a, H1). In the editor there is no FxBus.
 func _take_seed() -> void:
 	var bus := get_node_or_null(^"/root/FxBus")
-	if bus != null and bus.has_method(&"next_particle_seed"):
+	if bus != null and bus.has_method(&"next_particle_seed"):  # dynamic: FxBus is an autoload without a class_name, absent in the editor
 		seed = bus.next_particle_seed()
 
 

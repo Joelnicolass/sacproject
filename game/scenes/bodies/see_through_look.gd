@@ -32,8 +32,8 @@ func set_transparency(value: float) -> void:
 	transparency = value
 	if visual == null:
 		return
-	if visual.has_method("set_fade"):
-		visual.call("set_fade", value)
+	if visual is BodyVisual:
+		(visual as BodyVisual).set_fade(value)
 	else:
 		visual.transparency = value
 

@@ -61,7 +61,7 @@ func _physics_process(delta: float) -> void:
 			var body := node as Node3D
 			if body == null or not reaches(body):
 				continue
-			if body.has_method("can_take_mana") and not body.call("can_take_mana"):
+			if body.has_method("can_take_mana") and not body.call("can_take_mana"):  # dynamic: a unit or a wizard
 				continue
 			var pool := body.get_node_or_null("ManaPool")
 			if pool:

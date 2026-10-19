@@ -32,11 +32,11 @@ func inspect(body: Node3D) -> bool:
 		return true
 	clear()
 	var bar := _bar_of(body)
-	var health := body.get_node_or_null("Health") if body else null
-	if bar == null or health == null or float(health.get("maximum")) <= 0.0 or bool(health.call("is_dead")):
+	var health := body.get_node_or_null("Health") as Health if body else null
+	if bar == null or health == null or health.maximum <= 0.0 or health.is_dead():
 		return false
 	inspected = body
-	bar.call("set_selected", true)
+	bar.set_selected(true)
 	health.changed.connect(_on_health_changed)
 	body.tree_exiting.connect(clear)
 	inspected_changed.emit(inspected)
@@ -51,7 +51,7 @@ func clear() -> void:
 	if is_instance_valid(body):
 		var bar := _bar_of(body)
 		if bar:
-			bar.call("set_selected", false)
+			bar.set_selected(false)
 		var health := body.get_node_or_null("Health")
 		if health and health.changed.is_connected(_on_health_changed):
 			health.changed.disconnect(_on_health_changed)
@@ -80,12 +80,11 @@ func _fraction() -> float:
 
 
 func _on_health_changed(_current: float, _maximum: float) -> void:
-	if inspected and is_instance_valid(inspected) and bool(inspected.get_node("Health").call("is_dead")):
+	if inspected and is_instance_valid(inspected) and (inspected.get_node("Health") as Health).is_dead():
 		clear()
 
 
-func _bar_of(body: Node3D) -> Node3D:
+func _bar_of(body: Node3D) -> UnitHealthBar:
 	if body == null or not is_instance_valid(body):
 		return null
-	var bar := body.get_node_or_null(NodePath(bar_name)) as Node3D
-	return bar if bar and bar.has_method("set_selected") else null
+	return body.get_node_or_null(NodePath(bar_name)) as UnitHealthBar

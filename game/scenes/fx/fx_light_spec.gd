@@ -30,9 +30,9 @@ const POOL_GROUP := &"fx_light_pool"
 ## Asks the rig's FxLightLayer for this light at `at`, keyed by `source` (the same source again restarts
 ## its light). The one way effects borrow a light (SpriteParticles, BeamFx, FxBus).
 func light_up(tree: SceneTree, source: Object, at: Vector3) -> void:
-	var pool := tree.get_first_node_in_group(POOL_GROUP) if tree != null else null
+	var pool := tree.get_first_node_in_group(POOL_GROUP) as FxLightLayer if tree != null else null
 	if pool != null:
-		pool.call(&"flash", source, self, at)
+		pool.flash(source, self, at)
 
 
 func total_s() -> float:

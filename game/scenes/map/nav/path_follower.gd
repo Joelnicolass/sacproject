@@ -87,7 +87,7 @@ func next_point() -> Vector3:
 
 ## An order to walk to `goal`. The same goal while the walk goes on is a no-op (the order layer repeats it).
 func go_to(target: Vector3) -> void:
-	var same := active and Vector2(target.x, target.z).distance_to(Vector2(goal.x, goal.z)) < 0.5 and bool(body.call("is_walking"))
+	var same := active and Vector2(target.x, target.z).distance_to(Vector2(goal.x, goal.z)) < 0.5 and _body_walking()
 	if same:
 		return
 	if _retarget(target):
@@ -106,7 +106,7 @@ func _physics_process(delta: float) -> void:
 	_steer_age += delta
 	if not active:
 		return
-	if not bool(body.call("is_walking")):
+	if not _body_walking():
 		var arrived_at_goal := _flat(body.global_position, goal) <= arrive_m
 		cancel()
 		if arrived_at_goal:
@@ -121,7 +121,7 @@ func _physics_process(delta: float) -> void:
 		waypoints.remove_at(0)
 		changed = true
 	if changed:
-		body.call("begin_walk", waypoints[0])
+		_begin_leg(waypoints[0])
 	_check_left -= delta
 	if _check_left > 0.0:
 		return
@@ -183,7 +183,7 @@ func _advance_steer(here: Vector3, target: Vector3) -> Vector3:
 ## The walk goes on toward a goal close to `target`: the last leg goes to `target` if its line is clear. No search,
 ## and the progress check keeps its count (a stuck body still searches again after `repath_s`).
 func _retarget(target: Vector3) -> bool:
-	if retarget_m <= 0.0 or not active or _waiting or waypoints.is_empty() or not bool(body.call("is_walking")):
+	if retarget_m <= 0.0 or not active or _waiting or waypoints.is_empty() or not _body_walking():
 		return false
 	if _flat(target, goal) >= retarget_m or not _nav_ready():
 		return false
@@ -194,7 +194,7 @@ func _retarget(target: Vector3) -> bool:
 	goal = target
 	waypoints[last] = target
 	if last == 0:
-		body.call("begin_walk", target)
+		_begin_leg(target)
 	return true
 
 
@@ -202,12 +202,12 @@ func _retarget(target: Vector3) -> bool:
 func _plan() -> void:
 	if not _nav_ready():
 		waypoints = PackedVector3Array([goal])
-		body.call("begin_walk", goal)
+		_begin_leg(goal)
 		return
 	if not _nav.take_search_slot():
 		# Too many searches this tick: go straight meanwhile, the path comes on a later tick.
 		_waiting = true
-		body.call("begin_walk", goal)
+		_begin_leg(goal)
 		return
 	_waiting = false
 	searches += 1
@@ -215,7 +215,7 @@ func _plan() -> void:
 	if waypoints.is_empty():
 		waypoints = PackedVector3Array([goal])
 	path_set.emit(waypoints)
-	body.call("begin_walk", waypoints[0])
+	_begin_leg(waypoints[0])
 
 
 func _nav_ready() -> bool:
@@ -232,3 +232,12 @@ func _pace() -> float:
 
 static func _flat(a: Vector3, b: Vector3) -> float:
 	return Vector2(a.x - b.x, a.z - b.z).length()
+
+
+## The body walks one straight leg: a unit, a wizard or a Sac Doctor (no common class).
+func _begin_leg(point: Vector3) -> void:
+	body.call("begin_walk", point)  # dynamic: unit, wizard and doctor bodies walk
+
+
+func _body_walking() -> bool:
+	return bool(body.call("is_walking"))  # dynamic: unit, wizard and doctor bodies walk

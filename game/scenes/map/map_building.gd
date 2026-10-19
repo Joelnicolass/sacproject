@@ -218,10 +218,10 @@ func _shape_collision(box: AABB, has_box: bool) -> void:
 func _place_bar() -> void:
 	if health_bar == null:
 		return
-	health_bar.call("bind", health, owner_slot)
+	health_bar.call("bind", health, owner_slot)  # dynamic: `--script` tools (bake_map_layout) load this file; UnitHealthBar names the MpKit autoload
 	var center := _box.position + _box.size * 0.5
 	health_bar.position = Vector3(center.x, 0.0, center.z)
-	health_bar.call("place_above", _box.position.y + _box.size.y)
+	health_bar.call("place_above", _box.position.y + _box.size.y)  # dynamic: as above, no UnitHealthBar in a `--script` tool
 
 
 ## Every peer: the server's Health reaches the clients through the synchronizer.

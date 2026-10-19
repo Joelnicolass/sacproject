@@ -55,7 +55,7 @@ func _draw() -> void:
 		if not _is_manalith(node):
 			continue
 		var owner_slot := int(node.get("owner_slot"))
-		if not _is_mine(owner_slot, slot) and not bool(node.call("is_targetable")):
+		if not _is_mine(owner_slot, slot) and not (node as STRUCTURE_BODY).is_targetable():
 			continue
 		_mark(node as Node3D, style.manalith, owner_slot, _is_mine(owner_slot, slot))
 	for node in tree.get_nodes_in_group(&"unit"):

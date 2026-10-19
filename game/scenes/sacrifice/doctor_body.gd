@@ -33,7 +33,7 @@ enum Work { PUMP, LIFT, TORTURE }
 	set(value):
 		owner_slot = value
 		if is_node_ready() and health_bar:
-			health_bar.call("set_owner_slot", owner_slot)
+			(health_bar as UnitHealthBar).set_owner_slot(owner_slot)
 @export var pose: Pose = Pose.IDLE:
 	set(value):
 		pose = value
@@ -106,7 +106,7 @@ var _killer_slot := 0
 var _fade: Tween
 ## The carrier doctors have one (carrier_doctor.tscn): they walk by waypoints around pillars and buildings (RFC-024 024d,
 ## the debt of F73). The ritual doctors do not: they stand on the ring of the altar, inside what the grid blocks.
-@onready var _path_follower: Node = get_node_or_null("PathFollower")
+@onready var _path_follower: PathFollower = get_node_or_null("PathFollower")
 @onready var _avoidance: BodyAvoidance = $Avoidance
 
 
@@ -124,7 +124,7 @@ func _ready() -> void:
 	_fit_collision()
 	if clip_player and BodyCatalog.loads_meshes():
 		clip_player.setup(visual.model)
-	health_bar.call("bind", health, owner_slot)
+	(health_bar as UnitHealthBar).bind(health, owner_slot)
 	_apply_pose()
 	if MpKit.is_networked() and not MpKit.is_server():
 		return
@@ -161,11 +161,11 @@ func walk_to(point: Vector3) -> void:
 	if pose == Pose.DYING or pose == Pose.FALLING:
 		return
 	if is_instance_valid(_path_follower):
-		var follower_goal: Variant = _path_follower.get("goal")
-		if _walking and bool(_path_follower.call("is_active")) and follower_goal is Vector3 \
+		var follower_goal := _path_follower.goal
+		if _walking and _path_follower.is_active() \
 				and Vector2(point.x - follower_goal.x, point.z - follower_goal.z).length() < repath_goal_m:
 			return
-		_path_follower.call("go_to", point)
+		_path_follower.go_to(point)
 	else:
 		begin_walk(point)
 
@@ -184,7 +184,7 @@ func stop() -> void:
 	if pose == Pose.DYING or pose == Pose.FALLING:
 		return
 	if is_instance_valid(_path_follower):
-		_path_follower.call("cancel")
+		_path_follower.cancel()
 	stand()
 
 
@@ -336,7 +336,7 @@ func _fit_collision() -> void:
 	capsule.radius = minf(visual.body_radius(), capsule.height * 0.45)
 	collision.shape = capsule
 	collision.position = Vector3(0.0, capsule.height * 0.5, 0.0)
-	health_bar.call("place_above", height)
+	(health_bar as UnitHealthBar).place_above(height)
 
 
 func _on_health_died(from_slot: int) -> void:

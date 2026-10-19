@@ -71,7 +71,7 @@ func _refresh() -> void:
 		roundi(_wizard.mana.current), roundi(_wizard.mana.maximum),
 		_wizard.souls.count,
 	]
-	%GhostState.visible = bool(_wizard.ghost.call("shows_ghost"))
+	%GhostState.visible = (_wizard as WizardBody).ghost.shows_ghost()
 	%WizardStats.show_values(
 		_fraction(_wizard.health.current, _wizard.health.maximum),
 		_fraction(_wizard.mana.current, _wizard.mana.maximum),

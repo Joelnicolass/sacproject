@@ -79,7 +79,7 @@ func _compare(root: Node3D) -> bool:
 			var node3d := node as Node3D
 			var have := _row(node3d.transform, NAN)
 			if group_name == "NpcSpawns":
-				have[12] = float(node.call("yaw"))
+				have[12] = (node as NpcSpawn).yaw()
 			for k in 13:
 				var delta := absf(float(want[k]) - float(have[k]))
 				if group_name == "NpcSpawns" and k == 12:

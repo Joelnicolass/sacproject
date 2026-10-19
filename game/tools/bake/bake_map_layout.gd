@@ -49,6 +49,8 @@ const WIDGET_MODELS := {
 ## Name of the layout root: "HighNoonLayout" for high_noon, "PeaksLayout" for peaks (the map scene names the same node).
 var _root_name := ""
 var _terrain: MeshInstance3D
+## `_terrain` once it carries terrain.gd.
+var _land: Terrain
 var _map: MapDefinition
 var _failures: Array[String] = []
 
@@ -124,7 +126,8 @@ func _make_terrain() -> bool:
 	_terrain = MeshInstance3D.new()
 	_terrain.set_script(load(TERRAIN_SCRIPT))
 	_terrain.set("data", data)
-	_terrain.call("_index_ground", data.vertices, data.indices)
+	_land = _terrain as Terrain
+	_land._index_ground(data.vertices, data.indices)
 	return true
 
 
@@ -148,7 +151,7 @@ func _plan_buildings(structures: Array) -> Array:
 			continue
 		var x := float(row["x"])
 		var z := float(row["z"])
-		if not _terrain.call("is_on_ground", x, z):
+		if not _land.is_on_ground(x, z):
 			push_warning("bake_map_layout: %s (%.0f, %.0f) falls off the land; left out" % [tag, x, z])
 			continue
 		rows.append({
@@ -156,7 +159,7 @@ func _plan_buildings(structures: Array) -> Array:
 			"tag": tag,
 			"owner_slot": SideRelations.slot_of(int(row.get("side", NEUTRAL_SIDE))),
 			"facing": float(row.get("facing", 0.0)),
-			"position": Vector3(x, float(_terrain.call("ground_height", x, z)), z),
+			"position": Vector3(x, _land.ground_height(x, z), z),
 		})
 	return rows
 
@@ -184,12 +187,12 @@ func _plan_plants(widgets: Dictionary, structures: Array) -> Array:
 			var model: String = models[rng.randi() % models.size()]
 			var x := float(row[0])
 			var z := float(row[1])
-			if not _terrain.call("is_on_ground", x, z) or not _is_clear(x, z, altars, founts):
+			if not _land.is_on_ground(x, z) or not _is_clear(x, z, altars, founts):
 				continue
 			rows.append({
 				"name": "Plant%d" % rows.size(),
 				"model": model,
-				"position": Vector3(x, float(_terrain.call("ground_height", x, z)), z),
+				"position": Vector3(x, _land.ground_height(x, z), z),
 				# The NTTS angle looks like degrees but sacengine reads it as radians (state.d:31352).
 				"yaw": float(row[2]),
 			})
@@ -215,7 +218,7 @@ func _plan_npcs(creatures: Array) -> Array:
 		var tag := str(row["tag"])
 		var x := float(row["x"])
 		var z := float(row["z"])
-		var ground := float(_terrain.call("ground_height", x, z))
+		var ground := _land.ground_height(x, z)
 		rows.append({
 			"name": "Npc%02d_%s" % [index, tag],
 			"tag": tag,

@@ -30,7 +30,7 @@ static func rest_distance(a: Node3D, b: Node3D) -> float:
 static func is_obstacle(body: Node) -> bool:
 	if body == null or not is_instance_valid(body) or not body.is_inside_tree():
 		return false
-	if body.has_method("is_obstacle"):
+	if body.has_method("is_obstacle"):  # dynamic: unit, wizard and doctor bodies answer it
 		return bool(body.call("is_obstacle"))
 	return true
 

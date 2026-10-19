@@ -256,7 +256,7 @@ func heal(amount: float) -> void:
 ## sacengine canDamage (state.d:8916-8923): a wizard's ghost takes no damage while it heals.
 func _can_be_damaged() -> bool:
 	var body := get_parent()
-	return body == null or not body.has_method("is_targetable") or bool(body.call("is_targetable"))
+	return body == null or not body.has_method("is_targetable") or bool(body.call("is_targetable"))  # dynamic: any body that owns a Health answers it
 
 
 func _owner_slot() -> int:

@@ -176,11 +176,11 @@ func _battle() -> bool:
 
 
 func _result() -> MusicMood.Result:
-	var state := match_state if match_state != null else get_tree().get_first_node_in_group(&"match_state")
-	if state == null or not state.has_method("has_result"):
+	var state := (match_state if match_state != null else get_tree().get_first_node_in_group(&"match_state")) as MatchState
+	if state == null:
 		return MusicMood.Result.NONE
 	var slot := MpKit.local_slot()
-	return MusicMood.result_of(bool(state.call("has_result")), bool(state.call("won", slot)), slot)
+	return MusicMood.result_of(state.has_result(), state.won(slot), slot)
 
 
 func _desecration() -> MusicMood.Desecration:

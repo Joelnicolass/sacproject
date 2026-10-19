@@ -295,7 +295,7 @@ func play_scene(scene_path: String, at: Vector3, params: Dictionary) -> void:
 	if packed == null or parent == null:
 		return
 	var node := packed.instantiate() as Node3D
-	if node == null or not node.has_method("play"):
+	if node == null or not node.has_method("play"):  # dynamic: the root of any FX scene answers play(params)
 		if node:
 			node.free()
 		return

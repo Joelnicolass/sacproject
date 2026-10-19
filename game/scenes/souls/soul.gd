@@ -184,10 +184,10 @@ func sever() -> void:
 	_remains = null
 	if dead == null or not is_instance_valid(dead):
 		return
-	var body := dead.get_node_or_null("Corpse")
+	var body := dead.get_node_or_null("Corpse") as Corpse
 	if body == null:
 		return
-	body.call("dissolve", dead)
+	body.dissolve(dead)
 	if DebugLog.on(&"souls"):
 		print("cadáver %s disuelto (tick %d)" % [dead.name, MatchClock.now()])
 
@@ -249,7 +249,7 @@ func _follow_corpse() -> void:
 		attached = false
 		corpse = null
 		return
-	global_position = corpse.call("soul_anchor") if corpse.has_method("soul_anchor") else corpse.global_position
+	global_position = (corpse as UnitBody).soul_anchor() if corpse is UnitBody else corpse.global_position
 
 
 ## Without ground under it (terrain not built yet) it stays put; sacengine drops off-map souls.

@@ -79,16 +79,16 @@ func _refresh() -> void:
 		_restore()
 		return
 	if _material == null:
-		_material = GroundMaterial.build(_ground, terrain.call("tile_ids"), _preset)
+		_material = GroundMaterial.build(_ground, terrain.call("tile_ids"), _preset)  # dynamic: Terrain or the grass lab's GrassLabGround (debug/look) answers it
 	else:
 		GroundMaterial.update(_material, _ground, _preset)
-	terrain.call("set_ground_override", _material)
+	terrain.call("set_ground_override", _material)  # dynamic: Terrain or the grass lab's GrassLabGround (debug/look) answers it
 
 
 func _restore() -> void:
 	var terrain := _rig.terrain if _rig else null
 	if terrain:
-		terrain.call("clear_ground_override")
+		terrain.call("clear_ground_override")  # dynamic: Terrain or the grass lab's GrassLabGround (debug/look) answers it
 
 
 func _exit_tree() -> void:

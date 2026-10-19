@@ -383,13 +383,13 @@ func _on_reached_site(errand: CarryErrand) -> void:
 		_waiting.append(errand)
 
 
-func _terrain() -> Node:
+func _terrain() -> Terrain:
 	return FallCheck.terrain_of(self)
 
 
 func _on_ground(point: Vector3) -> bool:
 	var terrain := _terrain()
-	return terrain == null or bool(terrain.call("is_on_ground", point.x, point.z))
+	return terrain == null or terrain.is_on_ground(point.x, point.z)
 
 
 ## Land height under the point; without ground data (a bare test world) the point's own height.
@@ -397,7 +397,7 @@ func _ground_y(point: Vector3) -> float:
 	var terrain := _terrain()
 	if terrain == null:
 		return point.y
-	var y := float(terrain.call("ground_height", point.x, point.z))
+	var y := terrain.ground_height(point.x, point.z)
 	return point.y if is_nan(y) else y
 
 

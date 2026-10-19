@@ -107,7 +107,7 @@ func _classify(screen: Vector2) -> StringName:
 	if node.is_in_group("structure") or node.is_in_group(Altar.GROUP):
 		return _with_owner(node, "building")
 	if Attackable.is_body(node):
-		if node.has_method("is_dead") and bool(node.call("is_dead")):
+		if node.has_method("is_dead") and bool(node.call("is_dead")):  # dynamic: unit, structure and doctor bodies answer it
 			return &"corpse"
 		return _with_owner(node, "unit")
 	return GROUND

@@ -75,10 +75,10 @@ func preview() -> void:
 	var god := StringName(preview_god)
 	var type := GameCatalog.shared().god(String(god))
 	var theme := type.load_theme() if type != null else null
-	if terrain and terrain.has_method("set_classic_material") and theme != null:
+	if terrain is Terrain and theme != null:
 		var ground: Variant = theme.ground_material
 		if ground is ShaderMaterial:
-			terrain.call("set_classic_material", ground)
+			(terrain as Terrain).set_classic_material(ground)
 	apply_profile(LookApplier.profile_for(god))
 
 
@@ -125,7 +125,7 @@ func _is_presentationless() -> bool:
 	if DisplayServer.get_name() == "headless":
 		return true
 	var kit := get_node_or_null("/root/MpKit")
-	return kit != null and kit.has_method("is_dedicated") and bool(kit.call("is_dedicated"))
+	return kit != null and kit.has_method("is_dedicated") and bool(kit.call("is_dedicated"))  # dynamic: the MpKit autoload has no class_name and is absent in the editor
 
 
 func _get_configuration_warnings() -> PackedStringArray:

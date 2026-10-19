@@ -20,7 +20,7 @@ static func from_terrain(terrain: Object) -> Image:
 	land.resize(SIZE * SIZE)
 	for y in SIZE:
 		for x in SIZE:
-			var found: float = terrain.call("ground_height", (x + 0.5) * texel, (y + 0.5) * texel)
+			var found: float = terrain.call("ground_height", (x + 0.5) * texel, (y + 0.5) * texel)  # dynamic: Terrain or the grass lab's GrassLabGround (debug/look) answers it
 			var at := y * SIZE + x
 			if is_nan(found):
 				heights[at] = NAN

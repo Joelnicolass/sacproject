@@ -53,7 +53,7 @@ func play(params: Dictionary) -> void:
 		var radius := sqrt(lerpf(inner * inner, outer * outer, rng.randf()))
 		var base := center + Vector3(cos(angle), 0.0, sin(angle)) * radius
 		if terrain != null:
-			var land := float(terrain.call("ground_height", base.x, base.z))
+			var land := terrain.ground_height(base.x, base.z)
 			if is_nan(land):
 				continue
 			base.y = land

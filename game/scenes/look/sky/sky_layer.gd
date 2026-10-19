@@ -55,7 +55,7 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_EDITOR_PRE_SAVE:
 		_restore()
 		if swirl:
-			swirl.call("clear_legacy")
+			(swirl as SkySwirl).clear_legacy()
 			swirl.visible = false
 		if _rig and _rig.legacy_sky:
 			_rig.legacy_sky.visible = true
@@ -139,7 +139,7 @@ func _apply_legacy_sky() -> void:
 	legacy.visible = not swirl_on
 	if not swirl_on or swirl == null:
 		if swirl:
-			swirl.call("clear_legacy")
+			(swirl as SkySwirl).clear_legacy()
 		return
 	var clouds := legacy.get_node_or_null("%Clouds") as MeshInstance3D
 	var top := legacy.get_node_or_null("%Top") as MeshInstance3D
@@ -147,7 +147,7 @@ func _apply_legacy_sky() -> void:
 		return
 	var cloud_material := clouds.material_override as ShaderMaterial
 	var band_material := top.material_override as ShaderMaterial
-	swirl.call("bind_legacy", cloud_material.get_shader_parameter("clouds"), band_material.get_shader_parameter("band"),
+	(swirl as SkySwirl).bind_legacy(cloud_material.get_shader_parameter("clouds"), band_material.get_shader_parameter("band"),
 		legacy.get("background_color"), float(legacy.get("energy")), float(legacy.get("cloud_alpha")))
 
 

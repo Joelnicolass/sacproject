@@ -75,7 +75,7 @@ func _runtime_mesh(data: MapTerrainData, tiles_path: String) -> ArrayMesh:
 	builder.set("tiles_path", tiles_path)
 	var arrays: Array = []
 	if not tiles_path.is_empty() and load(tiles_path) != null:
-		arrays = builder.call("bake_arrays")
+		arrays = builder.call("bake_arrays")  # dynamic: a post-import script; it names no class_name it may run before (load + set_script)
 	var smooth: bool = builder.get("smooth_ground")
 	builder.free()
 	if arrays.is_empty():

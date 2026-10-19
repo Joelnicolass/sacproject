@@ -79,11 +79,11 @@ func _redraw() -> void:
 
 
 ## A point of the ring in world space, on the land (a hole keeps the center's height).
-func _point(terrain: Node, center: Vector3, radius: float, angle: float) -> Vector3:
+func _point(terrain: Terrain, center: Vector3, radius: float, angle: float) -> Vector3:
 	var p := center + Vector3(cos(angle), 0.0, sin(angle)) * radius
 	p.y = center.y
 	if terrain != null:
-		var land := float(terrain.call("ground_height", p.x, p.z))
+		var land := terrain.ground_height(p.x, p.z)
 		if not is_nan(land):
 			p.y = land
 	p.y += lift

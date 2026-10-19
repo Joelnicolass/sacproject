@@ -14,6 +14,6 @@ static func profile_for(god: StringName) -> LookProfile:
 
 ## A null profile is the classic mode: layers put the classic look back.
 static func apply(profile: LookProfile, world_root: Node) -> void:
-	var rig := world_root.get_node_or_null(RIG_NODE)
-	if rig and rig.has_method("apply_profile"):
-		rig.call("apply_profile", profile)
+	var rig := world_root.get_node_or_null(RIG_NODE) as LookRig
+	if rig:
+		rig.apply_profile(profile)

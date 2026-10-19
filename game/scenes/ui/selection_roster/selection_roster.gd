@@ -18,6 +18,8 @@ extends Control
 signal ability_pressed
 
 ## renderer.d:4410: the frame quad is 138×256 units, drawn from x = -34.
+## selection.gd has no class_name (other scripts preload it).
+const _SELECTION := preload("res://scenes/orders/selection.gd")
 const FRAME_SIZE := Vector2(138.0, 256.0)
 const FRAME_X := -34.0
 ## Half of the frame texture (u -63.5/128 … 63.5/128, mirrored around x = 35) over v 0…2: the lower
@@ -114,7 +116,7 @@ func _ready() -> void:
 	_build_frame()
 	if selection:
 		selection.changed.connect(_on_selection_changed)
-		_on_selection_changed(selection.call("units"))
+		_on_selection_changed((selection as _SELECTION).units())
 	_update_visible()
 
 
@@ -222,7 +224,7 @@ func _ensure_cells(needed: int) -> void:
 
 
 func _show_ability() -> void:
-	ability_tag = selection.call("ability_tag") if selection else ""
+	ability_tag = (selection as _SELECTION).ability_tag() if selection else ""
 	var button: Button = %Ability
 	button.visible = not ability_tag.is_empty()
 	if ability_tag.is_empty():
@@ -243,9 +245,9 @@ func _on_cell_activated(cell: RosterCell, shift: bool, ctrl: bool) -> void:
 	if mode == "unit" and ctrl and not shift:
 		members = _units.filter(func(unit: Variant) -> bool: return is_instance_valid(unit) and str(unit.get("creature_tag")) == cell.tag)
 	if shift:
-		selection.call("remove", members)
+		(selection as _SELECTION).remove(members)
 	else:
-		selection.call("select_only", members)
+		(selection as _SELECTION).select_only(members)
 
 
 func _on_refresh() -> void:
@@ -275,7 +277,7 @@ func _summary() -> String:
 
 
 static func _name_of(unit: Node) -> String:
-	return str(unit.call("display_name")) if unit.has_method("display_name") else str(unit.get("creature_tag"))
+	return (unit as UnitBody).display_name() if unit is UnitBody else str(unit.get("creature_tag"))
 
 
 static func _unit_tooltip(unit: Node) -> String:

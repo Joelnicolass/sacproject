@@ -185,13 +185,13 @@ func complete() -> void:
 		var at := creature.global_position
 		FxBus.broadcast("blood", at)
 		var caster := _wizard_of(caster_slot)
-		var purse := caster.get_node_or_null("SoulPurse") if caster else null
+		var purse := caster.get_node_or_null("SoulPurse") as SoulPurse if caster else null
 		if purse != null:
 			if kind == Kind.CONVERT:
 				var system := get_tree().get_first_node_in_group(SacrificeSystem.GROUP) as SacrificeSystem
 				if system != null:
 					system.announce_conversion(caster_slot, souls, creature)
-			purse.call("add", souls)
+			purse.add(souls)
 		creature.queue_free()
 	if kind == Kind.CONVERT:
 		print("ritual convert: completo, %d almas para el slot %d" % [souls, caster_slot])

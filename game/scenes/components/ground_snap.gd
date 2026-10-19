@@ -48,8 +48,7 @@ func snap() -> void:
 		return
 	# Terrain-local = map coordinates. In the editor the scene root is shifted (terrain.gd).
 	var at := terrain.to_local(body.global_position)
-	# terrain.gd has no class_name: untyped call, as FallCheck does.
-	var height := float(terrain.call("ground_height", at.x, at.z))
+	var height := terrain.ground_height(at.x, at.z)
 	if is_nan(height):
 		return
 	var rest := terrain.to_global(Vector3(at.x, height + offset, at.z))
@@ -63,9 +62,9 @@ func snap() -> void:
 
 
 ## The terrain of the same scene: the one that hangs from an ancestor of this node.
-func _terrain() -> Node3D:
+func _terrain() -> Terrain:
 	for node in get_tree().get_nodes_in_group(TERRAIN_GROUP):
-		var terrain := node as Node3D
+		var terrain := node as Terrain
 		if terrain and terrain.get_parent() and terrain.get_parent().is_ancestor_of(self):
 			return terrain
 	return null

@@ -57,8 +57,8 @@ func _ready() -> void:
 	if world != null:
 		if world.has_signal("local_wizard_changed"):
 			world.connect("local_wizard_changed", bind_wizard)
-		if wizard == null and world.has_method("local_wizard"):
-			wizard = world.call("local_wizard") as Node3D
+		if wizard == null and world is MatchWorld:
+			wizard = (world as MatchWorld).local_wizard()
 	if wizard != null:
 		bind_wizard(wizard)
 

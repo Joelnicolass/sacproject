@@ -40,7 +40,7 @@ func _physics_process(delta: float) -> void:
 			_push(body, center, rules, terrain, delta)
 
 
-func _push(body: CharacterBody3D, center: Vector3, rules: MatchRules, terrain: Node, delta: float) -> void:
+func _push(body: CharacterBody3D, center: Vector3, rules: MatchRules, terrain: Terrain, delta: float) -> void:
 	var flat := Vector3(body.global_position.x - center.x, 0.0, body.global_position.z - center.z)
 	var distance := (body.global_position + Vector3.UP - center).length()
 	if flat.length_squared() < 0.000001 or distance >= rules.ritual_push_radius:
@@ -52,10 +52,10 @@ func _push(body: CharacterBody3D, center: Vector3, rules: MatchRules, terrain: N
 	var step := flat.normalized() * speed * delta
 	var target := body.global_position + step
 	if terrain != null:
-		if not terrain.call("is_on_ground", target.x, target.z):
+		if not terrain.is_on_ground(target.x, target.z):
 			return
 		if body.is_on_floor():
-			step.y = float(terrain.call("ground_height", target.x, target.z)) - body.global_position.y
+			step.y = terrain.ground_height(target.x, target.z) - body.global_position.y
 	body.move_and_collide(step)
 
 

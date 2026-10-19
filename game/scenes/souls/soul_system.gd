@@ -85,8 +85,8 @@ func drop_soul(slot: int) -> bool:
 	var wizard := _wizard_for(slot)
 	if wizard == null:
 		return false
-	var purse := wizard.get_node_or_null("SoulPurse")
-	if purse == null or not purse.call("spend", 1):
+	var purse := wizard.get_node_or_null("SoulPurse") as SoulPurse
+	if purse == null or not purse.spend(1):
 		return false
 	var at := wizard.global_position
 	spawn_soul({"x": at.x, "y": at.y, "z": at.z, "number": 1, "owner_slot": slot, "dropped": true, "origin": String(ORIGIN_WIZARD)})
@@ -112,7 +112,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if WorldInput.blocked(self):
 		return
-	if world == null or world.call("local_wizard") == null:
+	var match_world := world as MatchWorld
+	if match_world == null or match_world.local_wizard() == null:
 		return
 	get_viewport().set_input_as_handled()
 	request_drop()
@@ -142,7 +143,7 @@ func _try_collect(soul: Node3D, wizards: Array[Node], reach: float) -> void:
 		if wizard == null or not _can_collect(wizard):
 			continue
 		var slot := int(wizard.get("owner_slot"))
-		if not soul.call("can_be_collected_by", slot):
+		if not (soul as Soul).can_be_collected_by(slot):
 			continue
 		var d := _center(wizard) - soul.global_position
 		if Vector2(d.x, d.z).length_squared() > reach * reach or absf(d.y) > reach:
@@ -163,10 +164,11 @@ func _try_collect(soul: Node3D, wizards: Array[Node], reach: float) -> void:
 		tied = false
 	if best == null or tied:
 		return
-	soul.call("begin_collect", best, int(best.get("owner_slot")))
-	soul_collected.emit(int(best.get("owner_slot")), int(soul.get("number")), soul.origin)
-	best.get_node("SoulPurse").call("add", int(soul.get("number")))
-	soul.call("sever")
+	var collected := soul as Soul
+	collected.begin_collect(best, int(best.get("owner_slot")))
+	soul_collected.emit(int(best.get("owner_slot")), collected.number, collected.origin)
+	(best.get_node("SoulPurse") as SoulPurse).add(collected.number)
+	collected.sever()
 
 
 func _stance(soul: Node3D, slot: int) -> Stance:
@@ -182,10 +184,10 @@ func _stance(soul: Node3D, slot: int) -> Stance:
 func _can_collect(wizard: Node3D) -> bool:
 	if wizard.get_node_or_null("SoulPurse") == null:
 		return false
-	if wizard.has_method("can_collect_souls") and not wizard.call("can_collect_souls"):
+	if wizard is WizardBody and not (wizard as WizardBody).can_collect_souls():
 		return false
-	var health := wizard.get_node_or_null("Health")
-	return health == null or not health.call("is_dead")
+	var health := wizard.get_node_or_null("Health") as Health
+	return health == null or not health.is_dead()
 
 
 func _center(wizard: Node3D) -> Vector3:
@@ -233,15 +235,15 @@ static func origin_of(unit: Node) -> StringName:
 func _spawn_on_corpse(unit: Node3D, slot: int, count: int) -> void:
 	if not is_instance_valid(unit) or not unit.is_inside_tree():
 		return
-	var at: Vector3 = unit.call("soul_anchor")
+	var at := (unit as UnitBody).soul_anchor()
 	var soul := spawn_soul({"x": at.x, "y": at.y, "z": at.z, "number": count, "owner_slot": slot, "attached": true, "origin": String(origin_of(unit))})
 	if soul:
 		soul.set("corpse", unit)
 
 
 func _make(data: Variant) -> Node:
-	var soul: Node3D = SOUL_SCENE.instantiate()
-	soul.call("setup", data)
+	var soul := SOUL_SCENE.instantiate() as Soul
+	soul.setup(data)
 	return soul
 
 

@@ -49,7 +49,7 @@ static func export_data(data: MapTerrainData, out: String) -> Error:
 	var terrain := MeshInstance3D.new()
 	terrain.set_script(load(TERRAIN_SCRIPT))
 	terrain.set("data", data)
-	var arrays: Array = terrain.call("bake_arrays")
+	var arrays := (terrain as Terrain).bake_arrays()
 	terrain.free()
 	if arrays.is_empty():
 		return ERR_INVALID_DATA

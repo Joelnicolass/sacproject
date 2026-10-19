@@ -27,8 +27,8 @@ func _ready() -> void:
 	if world != null:
 		if world.has_signal("local_wizard_changed"):
 			world.connect("local_wizard_changed", _on_local_wizard_changed)
-		if target == null and world.has_method("local_wizard"):
-			target = world.call("local_wizard") as Node3D
+		if target == null and world is MatchWorld:
+			target = (world as MatchWorld).local_wizard()
 	make_current()
 	SoundBus.listener = self
 	_follow()

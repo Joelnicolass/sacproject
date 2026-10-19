@@ -125,7 +125,7 @@ static func path_length(from: Vector3, points: PackedVector3Array) -> float:
 
 ## Builds the pathfinder (again). Returns the milliseconds it took.
 func build() -> float:
-	if terrain == null or not terrain.has_method("ground_cell_counts"):
+	if not terrain is Terrain:
 		return 0.0
 	if not _build_navmesh():
 		return 0.0
@@ -251,7 +251,7 @@ func find_path(from: Vector3, to: Vector3) -> PackedVector3Array:
 	if path.is_empty():
 		return PackedVector3Array([to])
 	for k in path.size():
-		var ground: float = terrain.call("ground_height", path[k].x, path[k].z) if terrain else NAN
+		var ground: float = (terrain as Terrain).ground_height(path[k].x, path[k].z) if terrain else NAN
 		path[k].y = from.y if is_nan(ground) else ground
 	return path
 
@@ -312,7 +312,7 @@ func search_percentile_us(fraction: float) -> int:
 
 ## `point` at the height of the ground under it (the navmesh is asked in 3D); the point itself off the land.
 func _grounded(point: Vector3) -> Vector3:
-	var ground: float = terrain.call("ground_height", point.x, point.z) if terrain else NAN
+	var ground: float = (terrain as Terrain).ground_height(point.x, point.z) if terrain else NAN
 	if is_nan(ground):
 		return point
 	return Vector3(point.x, ground, point.z)

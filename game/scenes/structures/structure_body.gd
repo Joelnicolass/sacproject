@@ -42,7 +42,7 @@ func _ready() -> void:
 	if _health:
 		_health.died.connect(_on_died)
 	if health_bar and _health:
-		health_bar.call("bind", _health, owner_slot)
+		(health_bar as UnitHealthBar).bind(_health, owner_slot)
 		_place_bar()
 	if spell_tag == MANALITH:
 		_claim_manafount()
@@ -53,17 +53,17 @@ func _exit_tree() -> void:
 
 
 func _apply_model() -> void:
-	var mesh := get_node_or_null("Mesh")
-	if mesh == null or not mesh.has_method("show_model"):
+	var mesh := get_node_or_null("Mesh") as BodyVisual
+	if mesh == null:
 		return
 	var visible_model := _resolved_model()
 	if visible_model.is_empty():
 		push_warning("Structure model '%s' is missing from data/catalog/body_sizes/ (BodySize). Visual uses placeholder." % model)
-		mesh.call("show_model", model)
+		mesh.show_model(model)
 		return
-	mesh.call("show_model", visible_model)
-	var height := float(mesh.call("body_height"))
-	var radius := maxf(1.0, float(mesh.call("body_radius")))
+	mesh.show_model(visible_model)
+	var height := mesh.body_height()
+	var radius := maxf(1.0, mesh.body_radius())
 	var col := get_node_or_null("Collision") as CollisionShape3D
 	if col == null:
 		return
@@ -79,7 +79,7 @@ func _place_bar() -> void:
 	var col := get_node_or_null("Collision") as CollisionShape3D
 	if health_bar == null or col == null or not (col.shape is CylinderShape3D):
 		return
-	health_bar.call("place_above", col.position.y + (col.shape as CylinderShape3D).height * 0.5)
+	(health_bar as UnitHealthBar).place_above(col.position.y + (col.shape as CylinderShape3D).height * 0.5)
 
 
 func _fallback_model() -> String:
@@ -154,8 +154,8 @@ func _claim_manafount() -> void:
 	if fount == null:
 		return
 	var path := get_path()
-	if fount.has_method("occupy"):
-		fount.call("occupy", path)
+	if fount is ManafountBody:
+		(fount as ManafountBody).occupy(path)
 
 
 func _release_manafount() -> void:
@@ -165,8 +165,8 @@ func _release_manafount() -> void:
 	var fount := _manafount()
 	if fount == null:
 		return
-	if fount.has_method("release"):
-		fount.call("release", get_path())
+	if fount is ManafountBody:
+		(fount as ManafountBody).release(get_path())
 
 
 func _manafount() -> Node:

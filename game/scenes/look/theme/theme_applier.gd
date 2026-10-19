@@ -4,6 +4,8 @@ extends RefCounted
 ## Online: the dedicated server calls pick_random(match_seed) once per match and
 ## replicates theme.god; every peer then calls apply(theme_for(god), world).
 
+## sky.gd has no class_name.
+const _SKY := preload("res://scenes/look/sky/sky.gd")
 const SKY_NODE := ^"Sky"
 const ENVIRONMENT_NODE := ^"Environment"
 const SUN_NODE := ^"Sun"
@@ -43,8 +45,8 @@ static func apply(theme: Resource, world_root: Node) -> Resource:
 	var sky := world_root.get_node_or_null(SKY_NODE)
 	if sky:
 		sky.set("background_color", resolved.background_color)
-		if sky.has_method("set_textures"):
-			sky.call("set_textures", resolved.file("skyt.png"), resolved.file("skyb.png"), resolved.file("sky.png"))
+		if sky is _SKY:
+			(sky as _SKY).set_textures(resolved.file("skyt.png"), resolved.file("skyb.png"), resolved.file("sky.png"))
 	var world_env := world_root.get_node_or_null(ENVIRONMENT_NODE) as WorldEnvironment
 	if world_env and world_env.environment:
 		# The base Environment is a shared .tres: work on a copy so the resource is never mutated.
@@ -56,8 +58,8 @@ static func apply(theme: Resource, world_root: Node) -> Resource:
 		sun.light_color = _engine_color(resolved.sun_color)
 		sun.light_energy = resolved.sun_energy()
 	var terrain := world_root.get_node_or_null(TERRAIN_NODE)
-	if terrain and terrain.has_method("set_classic_material") and resolved.ground_material:
-		terrain.call("set_classic_material", resolved.ground_material)
+	if terrain is Terrain and resolved.ground_material:
+		(terrain as Terrain).set_classic_material(resolved.ground_material)
 	# Also with a null look (classic mode): a layer that was on puts the classic values back.
 	LookApplier.apply(resolved.look, world_root)
 	return resolved

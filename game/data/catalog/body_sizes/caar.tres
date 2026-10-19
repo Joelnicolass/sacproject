@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_e2a6x"]
+
+[resource]
+script = ExtResource("1_e2a6x")
+tag = "caar"
+is_prop = true
+box = PackedFloat64Array(-45.461, 17.887, -43.352, 90.8, 17.427, 89.973)
+foot_offset = -17.887
+height = 17.427
+radius = 31.491
+reach = 45.4
+upright_fix = PackedFloat64Array(0, 0, 0)

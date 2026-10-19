@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_b0yje"]
+
+[resource]
+script = ExtResource("1_b0yje")
+tag = "cpwx"
+is_prop = true
+box = PackedFloat64Array(-8.637, -6.205, -8.66, 17.345, 10.891, 17.345)
+foot_offset = 6.205
+height = 10.891
+radius = 6.071
+reach = 8.673
+upright_fix = PackedFloat64Array(0, 0, 0)

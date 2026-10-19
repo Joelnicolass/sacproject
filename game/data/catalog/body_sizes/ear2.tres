@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_mihr4"]
+
+[resource]
+script = ExtResource("1_mihr4")
+tag = "ear2"
+is_prop = true
+box = PackedFloat64Array(-22.568, -30.116, -22.568, 167.756, 242.992, 45.136)
+foot_offset = 30.116
+height = 242.992
+radius = 15.797
+reach = 83.878
+upright_fix = PackedFloat64Array(0, 0, 0)

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_keduk"]
+
+[resource]
+script = ExtResource("1_keduk")
+tag = "st4a"
+is_prop = true
+box = PackedFloat64Array(-21.713, -0.408, 0.213, 43.476, 55.385, 28.813)
+foot_offset = 0.408
+height = 55.385
+radius = 10.085
+reach = 21.738
+upright_fix = PackedFloat64Array(0, 0, 0)

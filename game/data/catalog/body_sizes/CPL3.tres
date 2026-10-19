@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_ixe7t"]
+
+[resource]
+script = ExtResource("1_ixe7t")
+tag = "CPL3"
+is_prop = true
+box = PackedFloat64Array(-1.221, 0.09, -1.488, 2.527, 0.514, 2.402)
+foot_offset = -0.09
+height = 0.514
+radius = 0.841
+reach = 1.264
+upright_fix = PackedFloat64Array(0, 0, 0)

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_km0g5"]
+
+[resource]
+script = ExtResource("1_km0g5")
+tag = "caap"
+is_prop = true
+box = PackedFloat64Array(-5.402, -5.98, -5.583, 11.146, 27.902, 11.067)
+foot_offset = 5.98
+height = 27.902
+radius = 3.874
+reach = 5.573
+upright_fix = PackedFloat64Array(0, 0, 0)

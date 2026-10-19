@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_7x7rd"]
+
+[resource]
+script = ExtResource("1_7x7rd")
+tag = "cab2"
+is_prop = true
+box = PackedFloat64Array(-19.029, -3.135, -5.99, 38.06, 35.044, 10.375)
+foot_offset = 3.135
+height = 35.044
+radius = 3.631
+reach = 19.03
+upright_fix = PackedFloat64Array(0, 0, 0)

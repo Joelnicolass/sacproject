@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_26ivg"]
+
+[resource]
+script = ExtResource("1_26ivg")
+tag = "ear1"
+is_prop = true
+box = PackedFloat64Array(-152.529, -121.587, -153.644, 1569.612, 1557.815, 307.288)
+foot_offset = 121.587
+height = 1557.815
+radius = 107.551
+reach = 784.806
+upright_fix = PackedFloat64Array(0, 0, 0)

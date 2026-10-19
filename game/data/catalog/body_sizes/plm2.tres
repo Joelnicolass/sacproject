@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_6m8gw"]
+
+[resource]
+script = ExtResource("1_6m8gw")
+tag = "plm2"
+is_prop = true
+box = PackedFloat64Array(-24.772, -2.553, -25.993, 56.522, 52.061, 48.45)
+foot_offset = 2.553
+height = 52.061
+radius = 16.958
+reach = 28.261
+upright_fix = PackedFloat64Array(0, 0, 0)

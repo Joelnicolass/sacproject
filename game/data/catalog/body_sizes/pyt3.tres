@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_xs6yl"]
+
+[resource]
+script = ExtResource("1_xs6yl")
+tag = "pyt3"
+is_prop = true
+box = PackedFloat64Array(-1.474, -0.279, -0.947, 2.152, 6.804, 3.915)
+foot_offset = 0.279
+height = 6.804
+radius = 0.753
+reach = 1.958
+upright_fix = PackedFloat64Array(0, 0, 0)

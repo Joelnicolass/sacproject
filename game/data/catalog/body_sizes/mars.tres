@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_4erut"]
+
+[resource]
+script = ExtResource("1_4erut")
+tag = "mars"
+is_prop = true
+box = PackedFloat64Array(-7.352, -2.25, -6.545, 23.823, 32.136, 13.087)
+foot_offset = 2.25
+height = 32.136
+radius = 4.58
+reach = 11.912
+upright_fix = PackedFloat64Array(0, 0, 0)

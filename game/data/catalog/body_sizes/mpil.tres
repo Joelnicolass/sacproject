@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_m0r26"]
+
+[resource]
+script = ExtResource("1_m0r26")
+tag = "mpil"
+is_prop = true
+box = PackedFloat64Array(-20.012, -12.253, -11.399, 47.718, 81.203, 22.798)
+foot_offset = 12.253
+height = 81.203
+radius = 7.979
+reach = 23.859
+upright_fix = PackedFloat64Array(0, 0, 0)

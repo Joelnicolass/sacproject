@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_foxg4"]
+
+[resource]
+script = ExtResource("1_foxg4")
+tag = "chs1"
+is_prop = true
+box = PackedFloat64Array(-19.556, -18.065, -11.33, 48.004, 62.311, 22.691)
+foot_offset = 18.065
+height = 62.311
+radius = 7.942
+reach = 24.002
+upright_fix = PackedFloat64Array(0, 0, 0)

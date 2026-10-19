@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_mm2e5"]
+
+[resource]
+script = ExtResource("1_mm2e5")
+tag = "SAW6"
+is_prop = true
+box = PackedFloat64Array(-0.249, 0.001, -0.219, 0.501, 0.18, 0.423)
+foot_offset = -0.001
+height = 0.18
+radius = 0.2
+reach = 0.25
+upright_fix = PackedFloat64Array(0, 0, 0)

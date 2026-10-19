@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_cfs3b"]
+
+[resource]
+script = ExtResource("1_cfs3b")
+tag = "stc3"
+is_prop = true
+box = PackedFloat64Array(-1.471, -0.236, -1.677, 4.309, 1.26, 3.006)
+foot_offset = 0.236
+height = 1.26
+radius = 1.052
+reach = 2.155
+upright_fix = PackedFloat64Array(0, 0, 0)

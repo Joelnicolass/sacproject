@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_28j38"]
+
+[resource]
+script = ExtResource("1_28j38")
+tag = "cat8"
+is_prop = true
+box = PackedFloat64Array(-20.314, -5.987, -19.201, 44.336, 36.463, 37.923)
+foot_offset = 5.987
+height = 36.463
+radius = 13.273
+reach = 22.168
+upright_fix = PackedFloat64Array(0, 0, 0)

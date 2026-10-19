@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_ewstx"]
+
+[resource]
+script = ExtResource("1_ewstx")
+tag = "pyrg"
+is_prop = true
+box = PackedFloat64Array(-43.99, 17.153, -44.224, 88.889, 12.7, 88.893)
+foot_offset = -17.153
+height = 12.7
+radius = 31.111
+reach = 44.446
+upright_fix = PackedFloat64Array(0, 0, 0)

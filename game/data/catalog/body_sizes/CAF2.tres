@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_fkcq8"]
+
+[resource]
+script = ExtResource("1_fkcq8")
+tag = "CAF2"
+is_prop = true
+box = PackedFloat64Array(-0.278, -0.031, -0.186, 0.572, 0.4, 0.508)
+foot_offset = 0.031
+height = 0.4
+radius = 0.2
+reach = 0.286
+upright_fix = PackedFloat64Array(0, 0, 0)

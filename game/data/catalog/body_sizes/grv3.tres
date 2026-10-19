@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_l4p6q"]
+
+[resource]
+script = ExtResource("1_l4p6q")
+tag = "grv3"
+is_prop = true
+box = PackedFloat64Array(-0.763, -0.756, -0.479, 1.594, 2.295, 1.045)
+foot_offset = 0.756
+height = 2.295
+radius = 0.366
+reach = 0.797
+upright_fix = PackedFloat64Array(0, 0, 0)

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_yhiui"]
+
+[resource]
+script = ExtResource("1_yhiui")
+tag = "pyu1"
+is_prop = true
+box = PackedFloat64Array(-8.55, -1.448, -8.88, 17.572, 39.87, 17.572)
+foot_offset = 1.448
+height = 39.87
+radius = 6.15
+reach = 8.786
+upright_fix = PackedFloat64Array(0, 0, 0)

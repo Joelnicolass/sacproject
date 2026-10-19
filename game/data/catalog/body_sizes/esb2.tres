@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_ev3lu"]
+
+[resource]
+script = ExtResource("1_ev3lu")
+tag = "esb2"
+is_prop = true
+box = PackedFloat64Array(-930.978, 5.388, -932.097, 1864.195, 1257.216, 1864.195)
+foot_offset = -5.388
+height = 1257.216
+radius = 652.468
+reach = 932.098
+upright_fix = PackedFloat64Array(0, 0, 0)

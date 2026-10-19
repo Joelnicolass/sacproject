@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_0aocr"]
+
+[resource]
+script = ExtResource("1_0aocr")
+tag = "esb_"
+is_prop = true
+box = PackedFloat64Array(-582.305, 100, -568.164, 1140.174, 1067.865, 1134.509)
+foot_offset = -100.0
+height = 1067.865
+radius = 397.078
+reach = 570.087
+upright_fix = PackedFloat64Array(0, 0, 0)

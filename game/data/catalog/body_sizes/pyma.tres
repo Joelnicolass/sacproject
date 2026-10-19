@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_be2gs"]
+
+[resource]
+script = ExtResource("1_be2gs")
+tag = "pyma"
+is_prop = true
+box = PackedFloat64Array(-7.507, -0.339, -6.728, 12.269, 19.863, 13.497)
+foot_offset = 0.339
+height = 19.863
+radius = 4.294
+reach = 6.748
+upright_fix = PackedFloat64Array(0, 0, 0)

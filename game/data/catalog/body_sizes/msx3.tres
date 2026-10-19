@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_wuhqx"]
+
+[resource]
+script = ExtResource("1_wuhqx")
+tag = "msx3"
+is_prop = true
+box = PackedFloat64Array(-7.359, -2.25, -7.841, 16.123, 16.169, 17.658)
+foot_offset = 2.25
+height = 16.169
+radius = 5.643
+reach = 8.829
+upright_fix = PackedFloat64Array(0, 0, 0)

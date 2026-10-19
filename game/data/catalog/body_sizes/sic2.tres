@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_of8nj"]
+
+[resource]
+script = ExtResource("1_of8nj")
+tag = "sic2"
+is_prop = true
+box = PackedFloat64Array(-3.381, -13.774, -3.774, 6.666, 42.941, 7.643)
+foot_offset = 13.774
+height = 42.941
+radius = 2.333
+reach = 3.821
+upright_fix = PackedFloat64Array(0, 0, 0)

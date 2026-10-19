@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_odv2h"]
+
+[resource]
+script = ExtResource("1_odv2h")
+tag = "pht2"
+is_prop = true
+box = PackedFloat64Array(-7.665, -0.809, -4.379, 14.845, 10.337, 9.007)
+foot_offset = 0.809
+height = 10.337
+radius = 3.152
+reach = 7.423
+upright_fix = PackedFloat64Array(0, 0, 0)

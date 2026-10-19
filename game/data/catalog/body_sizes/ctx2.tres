@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_ddiju"]
+
+[resource]
+script = ExtResource("1_ddiju")
+tag = "ctx2"
+is_prop = true
+box = PackedFloat64Array(-4.393, -5.994, -4.282, 8.803, 11.176, 8.576)
+foot_offset = 5.994
+height = 11.176
+radius = 3.002
+reach = 4.401
+upright_fix = PackedFloat64Array(0, 0, 0)

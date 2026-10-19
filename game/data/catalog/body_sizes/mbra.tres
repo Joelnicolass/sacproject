@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_nfg71"]
+
+[resource]
+script = ExtResource("1_nfg71")
+tag = "mbra"
+is_prop = true
+box = PackedFloat64Array(-9.696, -3.214, -2.705, 19.392, 19.091, 5.115)
+foot_offset = 3.214
+height = 19.091
+radius = 1.79
+reach = 9.696
+upright_fix = PackedFloat64Array(0, 0, 0)

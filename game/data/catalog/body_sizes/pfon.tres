@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_os5is"]
+
+[resource]
+script = ExtResource("1_os5is")
+tag = "pfon"
+is_prop = true
+box = PackedFloat64Array(-1.757, -0.222, -1.739, 3.516, 1.691, 3.503)
+foot_offset = 0.222
+height = 1.691
+radius = 1.226
+reach = 1.758
+upright_fix = PackedFloat64Array(0, 0, 0)

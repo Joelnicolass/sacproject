@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_seyy8"]
+
+[resource]
+script = ExtResource("1_seyy8")
+tag = "sfc2"
+is_prop = true
+box = PackedFloat64Array(-16.233, -0.423, -20.072, 31.29, 12.249, 31.263)
+foot_offset = 0.423
+height = 12.249
+radius = 10.942
+reach = 15.645
+upright_fix = PackedFloat64Array(0, 0, 0)

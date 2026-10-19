@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_7fj8e"]
+
+[resource]
+script = ExtResource("1_7fj8e")
+tag = "vbl4"
+is_prop = true
+box = PackedFloat64Array(-5.256, -2.663, -4.698, 10.754, 19.065, 12.558)
+foot_offset = 2.663
+height = 19.065
+radius = 3.764
+reach = 6.279
+upright_fix = PackedFloat64Array(0, 0, 0)

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_4tf5b"]
+
+[resource]
+script = ExtResource("1_4tf5b")
+tag = "CAC4"
+is_prop = true
+box = PackedFloat64Array(-0.174, -0.007, -0.019, 0.347, 0.301, 0.23)
+foot_offset = 0.007
+height = 0.301
+radius = 0.2
+reach = 0.173
+upright_fix = PackedFloat64Array(0, 0, 0)

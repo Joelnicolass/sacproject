@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_f6cg4"]
+
+[resource]
+script = ExtResource("1_f6cg4")
+tag = "pht1"
+is_prop = true
+box = PackedFloat64Array(-5.448, -0.068, -5.837, 10.512, 9.769, 8.975)
+foot_offset = 0.068
+height = 9.769
+radius = 3.141
+reach = 5.256
+upright_fix = PackedFloat64Array(0, 0, 0)

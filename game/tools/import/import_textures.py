@@ -17,7 +17,7 @@ Layout:
                                   first one (sorted); every other model points to it.
 
 Source: the installation's WAD files, read with tools/import/sac_formats (the only reader): the SXTX/SAXS of every body (saxs*.wad)
-and the textures of the props (joby.wad, prsc.wad, models.wad, jamesmod.wad).
+and the textures of the props (the WADs tools/import/sac_formats/props.py reads: god, land and models WADs).
 """
 
 import io

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_dkxx4"]
+
+[resource]
+script = ExtResource("1_dkxx4")
+tag = "mbx3"
+is_prop = true
+box = PackedFloat64Array(-7.899, -1.965, -7.899, 15.799, 7.412, 15.799)
+foot_offset = 1.965
+height = 7.412
+radius = 5.53
+reach = 7.9
+upright_fix = PackedFloat64Array(0, 0, 0)

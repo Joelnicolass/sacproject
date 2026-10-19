@@ -10,8 +10,6 @@ from . import wad as wadlib
 from .install import INSTALL
 
 BLDG_WADS = ("joby.wad", "pyromod.wad", "jamesmod.wad", "stratmod.wad")
-## Models are read only for the land the map is built with (High Noon is James).
-BLDG_MODEL_WADS = ("jamesmod.wad",)
 BLDG_SHELTER = 1 << 15
 BLDG_GROUND = 1 << 31
 BLDG_HEADER = 128
@@ -61,7 +59,8 @@ def decode_bldg(raw: bytes, folder: str) -> dict:
 
 
 def read_buildings():
-    """Every BLDG of the god WADs (tag -> entry) and the MRMM models of the BLDG_MODEL_WADS (tag -> (wad, folder, files, raw))."""
+    """Every BLDG of the god WADs (tag -> entry) and every MRMM model of those WADs (tag -> (wad, folder, files, raw)).
+    A tag is kept from the first WAD of BLDG_WADS that has it (no BLDG model tag appears in two of them)."""
     buildings: dict = {}
     models: dict = {}
     for wad_name in BLDG_WADS:
@@ -75,6 +74,6 @@ def read_buildings():
                     entry = decode_bldg(raw, odir)
                     if entry:
                         buildings[name] = entry
-                elif ext == "MRMM" and name not in models and wad_name in BLDG_MODEL_WADS:
+                elif ext == "MRMM" and name not in models:
                     models[name] = (wad_name, odir, files, raw)
     return buildings, models

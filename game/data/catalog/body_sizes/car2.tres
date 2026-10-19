@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_4xprj"]
+
+[resource]
+script = ExtResource("1_4xprj")
+tag = "car2"
+is_prop = true
+box = PackedFloat64Array(-8.45, -12.292, -8.744, 38.381, 39.925, 17.504)
+foot_offset = 12.292
+height = 39.925
+radius = 6.126
+reach = 19.191
+upright_fix = PackedFloat64Array(0, 0, 0)

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_dxco4"]
+
+[resource]
+script = ExtResource("1_dxco4")
+tag = "e2ux"
+is_prop = true
+box = PackedFloat64Array(-69.342, -18.751, -49.442, 138.705, 144.075, 114.097)
+foot_offset = 18.751
+height = 144.075
+radius = 39.934
+reach = 69.353
+upright_fix = PackedFloat64Array(0, 0, 0)

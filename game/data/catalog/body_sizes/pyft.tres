@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_3p66o"]
+
+[resource]
+script = ExtResource("1_3p66o")
+tag = "pyft"
+is_prop = true
+box = PackedFloat64Array(-15.362, 0.019, -15.333, 30.723, 28.67, 30.668)
+foot_offset = -0.019
+height = 28.67
+radius = 10.734
+reach = 15.362
+upright_fix = PackedFloat64Array(0, 0, 0)

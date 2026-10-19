@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_suwel"]
+
+[resource]
+script = ExtResource("1_suwel")
+tag = "CAH3"
+is_prop = true
+box = PackedFloat64Array(-0.198, -0.037, -0.208, 0.327, 1.188, 0.222)
+foot_offset = 0.037
+height = 1.188
+radius = 0.2
+reach = 0.164
+upright_fix = PackedFloat64Array(0, 0, 0)

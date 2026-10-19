@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_norcb"]
+
+[resource]
+script = ExtResource("1_norcb")
+tag = "mgun"
+is_prop = true
+box = PackedFloat64Array(-7.254, -6.366, -11.11, 14.507, 12.564, 31.567)
+foot_offset = 6.366
+height = 12.564
+radius = 5.078
+reach = 15.783
+upright_fix = PackedFloat64Array(0, 0, 0)

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_h2wmx"]
+
+[resource]
+script = ExtResource("1_h2wmx")
+tag = "st5x"
+is_prop = true
+box = PackedFloat64Array(-24.885, -8.398, -5.488, 49.772, 34.339, 52.112)
+foot_offset = 8.398
+height = 34.339
+radius = 17.42
+reach = 26.056
+upright_fix = PackedFloat64Array(0, 0, 0)

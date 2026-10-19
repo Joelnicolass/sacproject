@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_sq3kd"]
+
+[resource]
+script = ExtResource("1_sq3kd")
+tag = "parc"
+is_prop = true
+box = PackedFloat64Array(-26.164, -9.15, -5.506, 52.075, 40.292, 11.012)
+foot_offset = 9.15
+height = 40.292
+radius = 3.854
+reach = 26.037
+upright_fix = PackedFloat64Array(0, 0, 0)

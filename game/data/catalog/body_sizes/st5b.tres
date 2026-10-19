@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_m3fk4"]
+
+[resource]
+script = ExtResource("1_m3fk4")
+tag = "st5b"
+is_prop = true
+box = PackedFloat64Array(-16.459, 23.337, 2.321, 32.983, 35.376, 34.051)
+foot_offset = -23.337
+height = 35.376
+radius = 11.544
+reach = 17.025
+upright_fix = PackedFloat64Array(0, 0, 0)

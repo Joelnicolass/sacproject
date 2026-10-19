@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_scvv3"]
+
+[resource]
+script = ExtResource("1_scvv3")
+tag = "sfc1"
+is_prop = true
+box = PackedFloat64Array(-28.45, -0.736, -23.5, 61.007, 21.314, 51.972)
+foot_offset = 0.736
+height = 21.314
+radius = 18.19
+reach = 30.503
+upright_fix = PackedFloat64Array(0, 0, 0)

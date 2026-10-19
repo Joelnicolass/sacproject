@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_oo8dq"]
+
+[resource]
+script = ExtResource("1_oo8dq")
+tag = "cmfp"
+is_prop = true
+box = PackedFloat64Array(-10.695, 19.831, -42.461, 22.804, 64.603, 52.057)
+foot_offset = -19.831
+height = 64.603
+radius = 7.982
+reach = 26.029
+upright_fix = PackedFloat64Array(0, 0, 0)

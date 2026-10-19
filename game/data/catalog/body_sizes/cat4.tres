@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_4g36k"]
+
+[resource]
+script = ExtResource("1_4g36k")
+tag = "cat4"
+is_prop = true
+box = PackedFloat64Array(-4.87, -5.12, -4.747, 9.756, 18.862, 9.505)
+foot_offset = 5.12
+height = 18.862
+radius = 3.327
+reach = 4.878
+upright_fix = PackedFloat64Array(0, 0, 0)

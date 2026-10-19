@@ -35,7 +35,9 @@ const PLANT_SEED := 17
 const ALTAR_CLEAR := 40.0
 const FOUNT_CLEAR := 6.0
 ## Models of a widget tag (JAW1…, James land; the look is Persephone). RFC-050: the widget models of the other lands (CAH1, SAW1,
-## PYA1…) are not imported yet, so a tag that is not here plants nothing (the old fallback put Persephone flowers on a Charnel map).
+## PYA1…) are imported as props under their own tag (tools/import/import_props.py PLANT_WADS) but not listed here yet: their
+## widgets.json rows give 10k-16k plants per map, too many for one MeshInstance3D each (that needs batching first). A tag that is
+## not here plants nothing (the old fallback put Persephone flowers on a Charnel map).
 const WIDGET_MODELS := {
 	"JAW1": ["PCW7", "PCW6", "PCF4"],
 	"JAW2": ["PCW8", "PCF3", "PCF1"],

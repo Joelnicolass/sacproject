@@ -36,6 +36,11 @@ extends Resource
 @export_file("*.json") var widgets_path := ""
 
 
+## RFC-049 049d (F293): the map has a start for every seat of the mode (`player_starts >= seats`). A 2v2 does not fit High Noon.
+func fits(mode: GameMode) -> bool:
+	return mode != null and player_starts >= mode.seats()
+
+
 func load_scene() -> PackedScene:
 	if map_scene_path.is_empty() or not ResourceLoader.exists(map_scene_path):
 		push_error("Map '%s': the scene '%s' does not exist." % [tag, map_scene_path])

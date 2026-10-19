@@ -8,6 +8,8 @@ extends SceneTree
 ##   - every god (RFC-042) has theme, look, AI profile and a typed book whose rows are files of the catalog
 ##   - every creature and wizard has its BodySize
 ##   - the numbers are sane (health > 0, costs >= 0, ...)
+##   - (RFC-049 049d) every map has as many PlayerStart (slots 1..N, no repeats) as its `player_starts`, and every mode has
+##     teams 0..T-1 without gaps and a map with `player_starts >= seats`; a mode no room map can host is only a warning
 ## Failures name the file: "creatures/xyz.tres: health = -5". Prints CATALOG PASS or CATALOG FAIL.
 ## "$GODOT" --headless --path game --script res://debug/suite/catalog_cases.gd
 ## No autoloads: the catalog is read through GameCatalog, the same scan the game does.
@@ -56,6 +58,7 @@ func _initialize() -> void:
 	_check_references(tags)
 	_check_gods(tags)
 	_check_bodies(tags)
+	_check_maps_and_modes()
 	print("CATALOG creatures %d spells %d wizards %d abilities %d buildings %d body sizes %d gods %d" % [
 		_catalog.creatures.size(), _catalog.spells.size(), _catalog.wizards.size(), _catalog.abilities.size(),
 		_catalog.buildings.size(), _catalog.body_sizes.size(), _catalog.gods.size()])
@@ -241,6 +244,60 @@ func _check_custom_model(creature: CreatureType) -> void:
 	if creature.idle_animation.is_empty():
 		_report("creatures/%s: no idle_animation (a custom creature needs an idle clip)" % _file(creature))
 	root.free()
+
+
+## RFC-049 049d (F293): maps against modes. The starts are counted in the SceneState of the map scene (no instancing: this runs
+## without autoloads), as the nodes that instance player_start.tscn, with their `slot` (1 when the scene leaves the default).
+func _check_maps_and_modes() -> void:
+	var maps := MapCatalog.shared()
+	for definition in maps.maps:
+		if definition == null:
+			continue
+		var scene := definition.load_scene()
+		if scene == null:
+			_report("maps/%s: the scene '%s' does not load" % [definition.tag, definition.map_scene_path])
+			continue
+		var slots := _start_slots(scene.get_state())
+		var expected: Array[int] = []
+		for slot in range(1, definition.player_starts + 1):
+			expected.append(slot)
+		var found := slots.duplicate()
+		found.sort()
+		if found != expected:
+			_report("maps/%s: player_starts = %d but the scene has starts in the slots %s" % [definition.tag, definition.player_starts, str(found)])
+	var modes := GameModeCatalog.shared()
+	for mode in modes.modes:
+		if mode == null:
+			continue
+		if mode.team_of_seat.is_empty():
+			_report("modes/%s: no seats" % mode.tag)
+			continue
+		var teams := {}
+		for team in mode.team_of_seat:
+			teams[team] = true
+		for team in range(teams.size()):
+			if not teams.has(team):
+				_report("modes/%s: the teams are not 0..T-1 (team %d is missing)" % [mode.tag, team])
+				break
+		if modes.map_tags_for(mode, maps).is_empty():
+			_report("modes/%s: %d seats and no map has that many starts" % [mode.tag, mode.seats()])
+		elif mode.room_selectable and modes.map_tags_for(mode, maps, true).is_empty():
+			print("CATALOG warning: modes/%s has no map a room can offer (only test maps)" % mode.tag)
+
+
+## The `slot` of every node of the scene that instances scenes/map/props/player_start.tscn.
+func _start_slots(state: SceneState) -> Array[int]:
+	var slots: Array[int] = []
+	for index in state.get_node_count():
+		var instance := state.get_node_instance(index)
+		if instance == null or instance.resource_path != "res://scenes/map/props/player_start.tscn":
+			continue
+		var slot := 1
+		for property in state.get_node_property_count(index):
+			if state.get_node_property_name(index, property) == &"slot":
+				slot = int(state.get_node_property_value(index, property))
+		slots.append(slot)
+	return slots
 
 
 func _file(type: Resource) -> String:

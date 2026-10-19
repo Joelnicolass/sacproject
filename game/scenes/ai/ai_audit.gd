@@ -347,6 +347,7 @@ func _on_hurt(amount: float, kind: StringName, from_slot: int, unit: Node) -> vo
 	if amount > 0.0 and from_slot > 0:
 		_side(from_slot)["hits_dealt"] += 1
 		_side(from_slot)["damage_dealt"] = snappedf(float(_side(from_slot)["damage_dealt"]) + amount, 0.01)
+		_note_ally_hit(from_slot, unit)
 	record("hurt", "%s %.2f %s from %d" % [unit.name, amount, kind, from_slot])
 
 
@@ -355,7 +356,16 @@ func _on_struck(target: Node3D, amount: float, hit_chance: float, roll: float, u
 	var slot := int(unit.get("owner_slot"))
 	_side(slot)["hits_dealt"] += 1
 	_side(slot)["damage_dealt"] = snappedf(float(_side(slot)["damage_dealt"]) + amount, 0.01)
+	_note_ally_hit(slot, target)
 	record("struck", "%s -> %s %.2f p%.3f r%.3f" % [unit.name, target.name, amount, hit_chance, roll])
+
+
+## RFC-049 049d (F293): a hit of `from_slot` on a body of an ALLY seat (another slot of its team). A report counter only: no line of
+## the record, so the digest does not change. With teams on and friendly fire on, a bench of AI expects 0.
+func _note_ally_hit(from_slot: int, target: Node) -> void:
+	var slot := int(target.get("owner_slot")) if target != null else 0
+	if slot > 0 and slot != from_slot and SideRelations.stance(from_slot, slot) == SideRelations.Stance.ALLY:
+		_side(from_slot)["ally_hits"] += 1
 
 
 ## Every drop of health, whatever took it.
@@ -431,6 +441,7 @@ func _side(slot: int) -> Dictionary:
 			"units_start": 0,
 			"deaths": 0,
 			"hits_dealt": 0,
+			"ally_hits": 0,
 			"damage_dealt": 0.0,
 			"damage_taken": 0.0,
 			"summons": [],

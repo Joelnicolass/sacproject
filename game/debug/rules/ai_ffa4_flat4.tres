@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="BenchRules" load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://debug/suite/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://scenes/ai/data/ai_seat.gd" id="2_seat"]
+[ext_resource type="Resource" path="res://data/ai/difficulty_normal.tres" id="3_normal"]
+
+; RFC-049 049d (F293): cuatro IA Normal cada una por su lado en test_flat4 (run with --map=test_flat4 --mode=ffa4). Banco sffa4_flat4.
+
+[sub_resource type="Resource" id="Seat_1"]
+script = ExtResource("2_seat")
+slot = 1
+wizard = "cwa0"
+god = &"james"
+difficulty = ExtResource("3_normal")
+
+[sub_resource type="Resource" id="Seat_2"]
+script = ExtResource("2_seat")
+slot = 2
+wizard = "cwa0"
+god = &"pyro"
+difficulty = ExtResource("3_normal")
+
+[sub_resource type="Resource" id="Seat_3"]
+script = ExtResource("2_seat")
+slot = 3
+wizard = "cwa0"
+god = &"stratos"
+difficulty = ExtResource("3_normal")
+
+[sub_resource type="Resource" id="Seat_4"]
+script = ExtResource("2_seat")
+slot = 4
+wizard = "cwa0"
+god = &"charnel"
+difficulty = ExtResource("3_normal")
+
+[resource]
+script = ExtResource("1_rules")
+starting_souls = 12
+biome_god = &"james"
+match_seed = 7
+anchor = Vector3(1300, 0, 1300)
+start_paused = true
+ai_seats = Array[ExtResource("2_seat")]([SubResource("Seat_1"), SubResource("Seat_2"), SubResource("Seat_3"), SubResource("Seat_4")])
+pending_text = "Todos contra todos de IA en el mapa de prueba de 4"
+ignore_annihilation = true

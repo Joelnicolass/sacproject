@@ -29,3 +29,5 @@ f162|--rules=res://debug/rules/f162_waves.tres --seed=7 --minutes=0.3|fixed|
 f163|--rules=res://debug/rules/f163_phoenix_shield.tres --seed=7 --minutes=0.2|fixed|
 f177|--rules=res://debug/rules/f177_melee_group.tres --seed=7 --minutes=0.3|fixed|
 f164|--rules=res://debug/rules/f164_drain.tres --seed=7 --minutes=0.3|fixed|
+s2v2_flat4|--rules=res://debug/rules/ai_2v2_flat4.tres --map=test_flat4 --mode=2v2 --seed=7 --minutes=1.5|fixed|
+sffa4_flat4|--rules=res://debug/rules/ai_ffa4_flat4.tres --map=test_flat4 --mode=ffa4 --seed=7 --minutes=1.5||all

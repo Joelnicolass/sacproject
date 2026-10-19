@@ -1,6 +1,6 @@
 # Materiales procedurales (Material Maker)
 
-Flujo: editar `src/<nombre>.ptex` (Material Maker, o JSON a mano/script) -> `tools/mm_export.sh <nombre> [--size 1024]` -> `assets/mm/<nombre>/{albedo,normal,orm}.png` (Git LFS) -> se referencian desde el `.tres` de la capa de suelo.
+Flujo: editar `src/<nombre>.ptex` (Material Maker, o JSON a mano/script) -> `tools/material/mm_export.sh <nombre> [--size 1024]` -> `assets/mm/<nombre>/{albedo,normal,orm}.png` (Git LFS) -> se referencian desde el `.tres` de la capa de suelo.
 
 - `orm.png`: R = oclusion (AO), G = rugosidad, B = metalico. Normal en convencion OpenGL (Godot).
 - Resolucion: la define el parametro `size` (log2; 11 = 2048) del nodo `Material` y `param0` del nodo `normal_map`. `--size N` los reescribe en una copia temporal sin tocar el `.ptex`.

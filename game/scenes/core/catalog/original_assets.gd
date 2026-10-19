@@ -19,7 +19,7 @@ const UI_HUD_DIR := UI_DIR + "hud/"
 const UI_CURSORS_DIR := UI_DIR + "cursors/"
 const UI_XMENU_DIR := UI_DIR + "xmenu/"
 ## High Noon, the only map so far (maps/high_noon/): ground, tile index, baked light and sides. Its buildings, plants and
-## NPC spawns are nodes of scenes/map/high_noon_layout.tscn; the NTTS exports only feed tools/bake_map_layout.gd.
+## NPC spawns are nodes of scenes/map/high_noon_layout.tscn; the NTTS exports only feed tools/bake/bake_map_layout.gd.
 const HIGH_NOON_TERRAIN := MAPS_DIR + "high_noon/terrain.res"
 const HIGH_NOON_TILES := MAPS_DIR + "high_noon/tiles.png"
 const HIGH_NOON_LIGHT := MAPS_DIR + "high_noon/light.png"
@@ -35,7 +35,7 @@ static func textures(model: String) -> String:
 	return TEXTURES_DIR + model + "/"
 
 
-## textures/index.json: which texture each model's material label uses (see tools/import_textures.py).
+## textures/index.json: which texture each model's material label uses (see tools/import/import_textures.py).
 static func texture_index() -> String:
 	return TEXTURES_DIR + "index.json"
 
@@ -50,8 +50,8 @@ static func model(name: String) -> String:
 
 ## The file name of an icon tag in `ui/icons/`: every capital letter is written as `_` + lower case (`HSba` -> `_h_sba.png`,
 ## `hsba` -> `hsba.png`, `!nur` -> `!nur.png`). The original has tags that differ only in case (Life Shield `hsba`, Protector
-## `HSba`) and macOS and Windows see them as one file. tools/import_ui.py `icon_file` is the same function; the importer fails
-## on a clash and tools/check_icon_files.gd compares both on every tag.
+## `HSba`) and macOS and Windows see them as one file. tools/import/import_ui.py `icon_file` is the same function; the importer fails
+## on a clash and tools/audit/check_icon_files.gd compares both on every tag.
 static func icon_file(tag: String) -> String:
 	var name := ""
 	for i in tag.length():

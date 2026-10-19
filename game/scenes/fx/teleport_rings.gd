@@ -7,7 +7,7 @@ extends Node3D
 ## a ring is born each frame at a height that moves in steps along the body (up_steps / down_steps), lives
 ## `teleport_ring_s`, rises a little, shrinks with sqrt(1 - age) and glows with 20 * scale². One MultiMesh draws them all;
 ## it frees itself when the last ring is gone. Presentation: it is never created on the dedicated server.
-## The atlas `brng` comes from the local install through tools/import_ui.py (assets/original/fx).
+## The atlas `brng` comes from the local install through tools/import/import_ui.py (assets/original/fx).
 
 const TICKS_PER_S := 60.0
 ## Where the ring height jumps, as (frame as a fraction of the effect, change in body heights): state.d:16078-16091.

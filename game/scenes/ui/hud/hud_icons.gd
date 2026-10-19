@@ -1,7 +1,7 @@
 class_name HudIcons
 extends RefCounted
 
-## Images the HUD draws from res://assets/original/ui/ (RFC-033d; `tools/import_ui.py` writes them, LFS). The
+## Images the HUD draws from res://assets/original/ui/ (RFC-033d; `tools/import/import_ui.py` writes them, LFS). The
 ## 32×32 CRE8/SPEL icons and the HUD sheets (tabs, page, fram, spi2) are imported textures read with `load()`.
 ## Every lookup returns null when the file is missing, so each view draws its own fallback.
 ##

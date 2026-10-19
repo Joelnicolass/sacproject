@@ -2,7 +2,7 @@ class_name GodTheme
 extends Resource
 
 ## Land look of one god. The committed .tres keeps engine knobs and neutral defaults; the ENVI colours
-## come from `envi` (assets/original/themes/<god>/envi.tres, tools/import_themes.py) and the images
+## come from `envi` (assets/original/themes/<god>/envi.tres, tools/import/import_themes.py) and the images
 ## from OriginalAssets.theme_dir(god).
 
 @export var god: StringName = &"james"

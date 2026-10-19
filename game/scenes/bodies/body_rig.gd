@@ -287,5 +287,5 @@ func _apply_hands(role: String) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if _missing:
-		warnings.append("No scene %s: bake it with tools/bake_body_scenes.gd (a model with no playable idle clip is a static mesh)." % BodyModel.scene_path(model))
+		warnings.append("No scene %s: bake it with tools/bake/bake_body_scenes.gd (a model with no playable idle clip is a static mesh)." % BodyModel.scene_path(model))
 	return warnings

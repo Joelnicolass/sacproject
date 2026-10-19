@@ -6,7 +6,7 @@ extends RefCounted
 ## (spell_order / 100), at most 5 levels, with integer division. The Basilisk casts in 19/20 of its frames.
 ## With no bonus (and not the Basilisk) it is the exported casting_time_s untouched.
 
-## sacengine `frames/(1.35f*60.0f)`; tools/export_stats.py CAST_FRAMES_PER_SECOND.
+## sacengine `frames/(1.35f*60.0f)`; tools/import/export_stats.py CAST_FRAMES_PER_SECOND.
 const FRAMES_PER_SECOND := 1.35 * 60.0
 const MAX_BONUS := 5
 const BASILISK := "guls"

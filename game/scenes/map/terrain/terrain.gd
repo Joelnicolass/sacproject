@@ -180,7 +180,7 @@ func _prepare_arrays() -> bool:
 
 
 ## The visual mesh arrays exactly as Terrain builds them at runtime (positions, normals as smooth_ground says, tile
-## COLOR, indices), for tools/terrain_glb_export.gd. Needs `data` (and tiles_path / smooth_ground as the scene sets
+## COLOR, indices), for tools/bake/terrain_glb_export.gd. Needs `data` (and tiles_path / smooth_ground as the scene sets
 ## them); works on a node outside the tree. Empty when `data` is unusable.
 func bake_arrays() -> Array:
 	if not _prepare_arrays():

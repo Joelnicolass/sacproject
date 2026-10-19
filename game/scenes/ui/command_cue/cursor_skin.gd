@@ -42,7 +42,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if not scale_warning.is_empty():
 		warnings.append(scale_warning)
 	if HudIcons.cursor("Cnor") == null:
-		warnings.append("Faltan assets/original/ui/cursors: corré tools/import_ui.py. Sin eso queda el cursor del sistema.")
+		warnings.append("Faltan assets/original/ui/cursors: corré tools/import/import_ui.py. Sin eso queda el cursor del sistema.")
 	return warnings
 
 

@@ -34,7 +34,7 @@ func reload(from_disk := false) -> void:
 	_god_tags = PackedStringArray()
 	var catalog := GameCatalog.shared(from_disk)
 	if catalog.creatures.is_empty() or catalog.spells.is_empty() or catalog.wizards.is_empty() or catalog.gods.is_empty():
-		print("GameData: data/catalog/ está vacío o incompleto. Corré tools/bake_catalog.gd.")
+		print("GameData: data/catalog/ está vacío o incompleto. Corré tools/bake/bake_catalog.gd.")
 		return
 	for type in catalog.creatures:
 		_creatures[type.tag] = type

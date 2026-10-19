@@ -2,7 +2,7 @@
 class_name FxAtlas
 extends RefCounted
 
-## Atlases of the particle importer (tools/import_ui.py) by TXTR tag (ParticleType holds its own Texture2D): `res://assets/original/fx/<tag>.png` (RFC-033d), imported
+## Atlases of the particle importer (tools/import/import_ui.py) by TXTR tag (ParticleType holds its own Texture2D): `res://assets/original/fx/<tag>.png` (RFC-033d), imported
 ## textures read with `load()`. Static and @tool so the editor and a headless run can use it without autoloads. A missing
 ## file is null: the caller draws its own fill and warns.
 

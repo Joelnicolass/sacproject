@@ -3,7 +3,7 @@ class_name BodyCatalog
 extends RefCounted
 
 ## Bodies and props: sizes, pose and meshes by model tag.
-## Sizes come from the BodySize .tres of data/catalog/body_sizes/ (GameCatalog, baked by tools/bake_catalog.gd), static meshes (props, and the hybrid bodies
+## Sizes come from the BodySize .tres of data/catalog/body_sizes/ (GameCatalog, baked by tools/bake/bake_catalog.gd), static meshes (props, and the hybrid bodies
 ## that no clip animates) are the .glb of assets/original/props/ (RFC-033 033c, RFC-023 023h). Animated bodies are drawn by
 ## a BodyRig from assets/original/models/ and have no mesh here.
 ## On top of them go the hand corrections in data/bodies/pose_overrides.tres (turn, offset,

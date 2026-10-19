@@ -5,7 +5,7 @@ extends Resource
 ## The SIDS of a map (RFC-035 035d): who is allied or enemy of whom, and which sides a player can take.
 ## One entry per side, the four arrays are parallel. `allies` and `enemies` are bit masks over the side ids
 ## (sacengine sids.d); `assignment` 0 is a side no player takes (the Farmers and the Taurocks of High Noon).
-## SideRelations reads it. It is written once by tools/bake_map_layout.gd and edited in the inspector from then on.
+## SideRelations reads it. It is written once by tools/bake/bake_map_layout.gd and edited in the inspector from then on.
 
 @export var ids := PackedInt64Array()
 @export var allies := PackedInt64Array()
@@ -28,7 +28,7 @@ func to_rows() -> Array:
 	return rows
 
 
-## Builds the resource from the exporter's rows (tools/bake_map_layout.gd).
+## Builds the resource from the exporter's rows (tools/bake/bake_map_layout.gd).
 static func from_rows(rows: Array) -> MapSides:
 	var sides := MapSides.new()
 	for row: Variant in rows:

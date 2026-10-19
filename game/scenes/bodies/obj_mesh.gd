@@ -1,6 +1,6 @@
 extends RefCounted
 
-## Reads OBJ files (the ones tools/import_props.py --bodies-from takes, sacengine saveObj). One surface per usemtl, named after its label.
+## Reads OBJ files (the ones tools/import/import_props.py --bodies-from takes, sacengine saveObj). One surface per usemtl, named after its label.
 ## Godot draws clockwise faces; the winding is checked against the file normals.
 ## Materials come from OriginalMaterial (textures of assets/original/textures/), never from files beside the OBJ.
 

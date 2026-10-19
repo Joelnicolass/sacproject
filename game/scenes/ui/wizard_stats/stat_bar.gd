@@ -5,7 +5,7 @@ extends Control
 ## 32×96-unit frame: a 32×68 area from y = 14 filled from the bottom by the `mid` strip, capped by the
 ## 4-unit `top` strip above the fill and the 6-unit `bottom` strip below it (both drawn even when empty,
 ## as in sacengine). The strips are `<strip_prefix>_{top,mid,bottom}.png` of assets/original/ui/hud
-## (tools/import_ui.py); without them the fill is a flat `fallback_color` rectangle.
+## (tools/import/import_ui.py); without them the fill is a flat `fallback_color` rectangle.
 
 ## Name prefix of the three strips in assets/original/ui/hud (`stat_mana`, `stat_health`).
 @export var strip_prefix := "stat_mana"

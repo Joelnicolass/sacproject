@@ -166,7 +166,7 @@ func _build_navmesh() -> bool:
 		nav_region.navigation_mesh = stored
 		add_child(nav_region)
 	elif nav_region.navigation_mesh == null or nav_region.navigation_mesh.get_polygon_count() == 0:
-		push_warning("nav: the region has no navmesh (run tools/bake_nav.tscn)")
+		push_warning("nav: the region has no navmesh (run tools/bake/bake_nav.tscn)")
 		return false
 	var settings: NavBakeSettings = nav_region.get("bake_settings") if nav_region.get("bake_settings") != null else load(BAKE_SETTINGS) as NavBakeSettings
 	rebake = NavRebake.new(settings)

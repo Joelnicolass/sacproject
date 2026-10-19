@@ -3,7 +3,7 @@ class_name TileLayerMap
 extends Resource
 
 ## Which `GroundSet` slot paints each of the original map's 256 tile ids. It belongs to the map,
-## not to a biome: the zones (open ground, paths, edges) are the original's. `tools/classify_ground_tiles.py`
+## not to a biome: the zones (open ground, paths, edges) are the original's. `tools/import/classify_ground_tiles.py`
 ## writes the first version from the average color of each tile; edit by hand to correct it.
 
 ## 255 = the tile paints nothing (the layer's own rules decide).

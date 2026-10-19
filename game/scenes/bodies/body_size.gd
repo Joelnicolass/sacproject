@@ -3,7 +3,7 @@ class_name BodySize
 extends Resource
 
 ## The measures of one body or prop (RFC-036 036c): box, capsule radius, height, reach and the turn that stands the mesh up.
-## Baked once by tools/bake_catalog.gd into data/catalog/body_sizes/<tag>.tres; BodyCatalog reads it through GameCatalog.
+## Baked once by tools/bake/bake_catalog.gd into data/catalog/body_sizes/<tag>.tres; BodyCatalog reads it through GameCatalog.
 ## The hand corrections of a pose are not here: they go on top, in data/bodies/pose_overrides.tres.
 
 @export var tag := ""

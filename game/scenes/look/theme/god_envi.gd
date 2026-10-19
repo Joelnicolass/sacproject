@@ -2,7 +2,7 @@ class_name GodEnvi
 extends Resource
 
 ## The ENVI record of one god's land (sacengine envi.d), as the colours Godot needs. One per god in
-## assets/original/themes/<god>/envi.tres, written by tools/import_themes.py; GodTheme reads it. Only what the game reads is here
+## assets/original/themes/<god>/envi.tres, written by tools/import/import_themes.py; GodTheme reads it. Only what the game reads is here
 ## (the other ENVI fields stay in the exporter's theme.json until something needs them).
 ## Colours are linear values (renderer.d setupEnvironment formulas), not sRGB.
 

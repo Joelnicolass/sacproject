@@ -16,7 +16,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _show() -> void:
 	if not GameData.is_loaded():
-		_book.text = "Faltan los datos: corré tools/export_stats.py"
+		_book.text = "Faltan los datos: corré tools/import/export_stats.py"
 		print(_book.text)
 		return
 	var lines := PackedStringArray()

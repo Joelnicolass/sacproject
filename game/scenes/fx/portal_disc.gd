@@ -57,7 +57,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if look == null:
 		warnings.append("Asigná en `look` el PortalLook (data/fx/portal_blue.tres o portal_red.tres).")
 	elif _missing:
-		warnings.append("Falta el atlas `%s.png` o `%s.png` en assets/original/fx/ (tools/import_ui.py): se dibuja un relleno." % [look.rim_tag, look.center_tag])
+		warnings.append("Falta el atlas `%s.png` o `%s.png` en assets/original/fx/ (tools/import/import_ui.py): se dibuja un relleno." % [look.rim_tag, look.center_tag])
 	return warnings
 
 

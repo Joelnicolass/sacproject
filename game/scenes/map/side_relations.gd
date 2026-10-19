@@ -8,7 +8,7 @@ extends RefCounted
 ## (players 1 and 2, Farmers 3, Taurocks 4); slot 0 is the neutral side 31, the owner of the map's houses,
 ## which has no relations and which nobody has as an enemy (High Noon: enemies 0xe and 0x7ffffffd… skip bit 31).
 ## The map's rows live in `assets/original/maps/high_noon/sides.tres` (a MapSides, written once by
-## tools/bake_map_layout.gd, RFC-035 035d). Without the file, or for a side the file does not describe, «another slot is an
+## tools/bake/bake_map_layout.gd, RFC-035 035d). Without the file, or for a side the file does not describe, «another slot is an
 ## enemy» (what the port did before this cut). Static and @tool: the editor and a headless run read it
 ## without autoloads, and the suite can load its own rows with set_rows().
 

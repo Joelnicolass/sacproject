@@ -3,7 +3,7 @@ class_name BodyModel
 extends Node3D
 
 ## RFC-036 (036g, F208): the root of scenes/bodies/models/<tag>.tscn, one per skeletal model of the original game.
-## The scene is generated once by tools/bake_body_scenes.gd and edited in the editor from then on:
+## The scene is generated once by tools/bake/bake_body_scenes.gd and edited in the editor from then on:
 ##   Model       the .glb of assets/original/models/ (skeleton, skinned mesh and every clip of the model), drawn with the
 ##               game's axes (z mirrored, like the baked meshes).
 ##   Tree        the AnimationTree whose AnimationNodeStateMachine has one state PER ROLE (idle, run, attack...). Each
@@ -175,5 +175,5 @@ func _dress() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if model.is_empty():
-		warnings.append("`model` is empty: regenerate the scene with tools/bake_body_scenes.gd.")
+		warnings.append("`model` is empty: regenerate the scene with tools/bake/bake_body_scenes.gd.")
 	return warnings

@@ -3,7 +3,7 @@ class_name BuildingType
 extends Resource
 
 ## A BLDG of the original (RFC-036 036c): what a map building is made of and how much it takes to destroy it.
-## Baked once by tools/bake_catalog.gd into data/catalog/buildings/<tag>.tres; MapBuilding reads it through GameCatalog.
+## Baked once by tools/bake/bake_catalog.gd into data/catalog/buildings/<tag>.tres; MapBuilding reads it through GameCatalog.
 ## Never mutated at runtime: HP lives in the building's Health node.
 
 @export var tag := ""

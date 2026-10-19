@@ -12,7 +12,7 @@ extends SceneTree
 const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain.gd"
 const WORLD_SCENE := "res://scenes/match/high_noon.tscn"
 const GlbImport := preload("res://tools/terrain_import.gd")
-const GlbExport := preload("res://tools/terrain_glb_export.gd")
+const GlbExport := preload("res://tools/bake/terrain_glb_export.gd")
 const REFERENCE := "res://debug/map/terrain_reference.res"
 const EDIT_X := 3.0
 const LIFT_Y := 5.0

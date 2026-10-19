@@ -26,7 +26,7 @@ La instalación de Sacrifice se lee en local. Los WAD no se commitean nunca.
 
 Desde el 2026-10-17 (decisión del usuario, RFC-023), los assets finales del port se versionan en `game/assets/original/` con git LFS: cada modelo es un `.glb` con su esqueleto y todas sus animaciones, uno por modelo, sin copias por cuadro. El port no depende de ninguna caché: todo sale de `assets/original/` (RFC-033).
 
-sacengine aporta los números del juego (daño, hechizos, reglas). El mapa se edita en Godot (RFC-035): el terreno es `terrain.glb`, el contenido son nodos de `high_noon_layout.tscn` y la navegación es un navmesh de Godot (`NavigationRegion3D`, `data/nav/high_noon_nav.res`, horneado con `tools/bake_nav.tscn`). No hay grilla propia de caminos. En Godot el movimiento usa el motor: `CharacterBody3D`, `move_and_slide`, colisión y gravedad. No se reescribe un integrador ni un rayo de pies al lado de eso. El dedicado, cuando hay red, es quien mueve el cuerpo. El cliente manda la orden y pinta.
+sacengine aporta los números del juego (daño, hechizos, reglas). El mapa se edita en Godot (RFC-035): el terreno es `terrain.glb`, el contenido son nodos de `high_noon_layout.tscn` y la navegación es un navmesh de Godot (`NavigationRegion3D`, `data/nav/high_noon_nav.res`, horneado con `tools/bake/bake_nav.tscn`). No hay grilla propia de caminos. En Godot el movimiento usa el motor: `CharacterBody3D`, `move_and_slide`, colisión y gravedad. No se reescribe un integrador ni un rayo de pies al lado de eso. El dedicado, cuando hay red, es quien mueve el cuerpo. El cliente manda la orden y pinta.
 
 ## Idioma
 

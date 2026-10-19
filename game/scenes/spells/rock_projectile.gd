@@ -21,7 +21,7 @@ const ARRIVE_DISTANCE := 0.25
 const BURY_DEPTH := 1.0
 ## sacengine rockCastingPosition: 1.5 m past the front of the caster's hit box.
 const CAST_AHEAD := 1.5
-## MODL.WAD rock.MRMM (tools/import_props.py), drawn at scale 1.
+## MODL.WAD rock.MRMM (tools/import/import_props.py), drawn at scale 1.
 const MODEL := "rock"
 ## sacengine makeRock: spins 2π·[0.2, 0.8] rad/s around a random axis.
 const SPIN_MIN := 0.2

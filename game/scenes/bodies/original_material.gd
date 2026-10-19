@@ -3,7 +3,7 @@ extends RefCounted
 
 ## RFC-033 (033b): the one place that builds the material of a model from the original game.
 ## One StandardMaterial3D per texture file, shared by every mesh and clip frame that uses it.
-## Textures are the PNGs of assets/original/textures/ (importer: tools/import_textures.py), with the colour key
+## Textures are the PNGs of assets/original/textures/ (importer: tools/import/import_textures.py), with the colour key
 ## already in the alpha channel; textures/index.json says which texture each model's material label uses and
 ## whether it has transparent texels (cutout).
 ## A material is never edited after it is built: do not mutate what these functions return.
@@ -41,7 +41,7 @@ static func for_label(model: String, label: String) -> StandardMaterial3D:
 		return _materials[key]
 	var tex := load(path) as Texture2D
 	if tex == null:
-		push_warning("OriginalMaterial: missing texture %s (%s / %s); run tools/import_textures.py" % [path, model, label])
+		push_warning("OriginalMaterial: missing texture %s (%s / %s); run tools/import/import_textures.py" % [path, model, label])
 		return null
 	var built := for_texture(tex, cutout, label)
 	_materials[key] = built

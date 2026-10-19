@@ -3,7 +3,7 @@ class_name MapBuilding
 extends StaticBody3D
 
 ## A building of the map (RFC-024 addendum 1, 024b2): the houses, fences and decorations of the NTTS. Its
-## BLDG (BuildingType in data/catalog/buildings/, baked by tools/bake_catalog.gd) says its components (the models), its
+## BLDG (BuildingType in data/catalog/buildings/, baked by tools/bake/bake_catalog.gd) says its components (the models), its
 ## maximum health and whether peasants shelter in it (bit 15). With max health > 0 it has a Health and can
 ## be destroyed; with 0 it is indestructible (the console says so once per tag). A destroyed building gives no
 ## souls (sacengine destroy only adds the collapse, state.d:8376-8380): it just goes away on every peer.

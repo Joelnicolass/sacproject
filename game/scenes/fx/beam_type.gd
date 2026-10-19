@@ -10,7 +10,7 @@ extends Resource
 
 ## Drawing of the beam. Empty = no bolt: only the flash (`light`) at the end.
 @export var scene: PackedScene
-## Atlas tag of res://assets/original/fx/ (tools/import_ui.py). sacengine `ltn2`; `elec` also fits.
+## Atlas tag of res://assets/original/fx/ (tools/import/import_ui.py). sacengine `ltn2`; `elec` also fits.
 @export var atlas_tag := "ltn2"
 @export_range(1, 8) var h_frames := 4
 @export_range(1, 8) var v_frames := 4
@@ -39,7 +39,7 @@ extends Resource
 @export_group("Look")
 enum Blend { ADD, MIX }
 ## ADD: the atlas adds light (sacengine; the spell bolts). MIX: the atlas is a straight-alpha overlay (*_a.png of
-## tools/import_ui.py) drawn over the scene, for a glow that has to keep its hue over the snow (the Gnome's
+## tools/import/import_ui.py) drawn over the scene, for a glow that has to keep its hue over the snow (the Gnome's
 ## flame, F124); its alpha times the brightness (clamped to 1) is the coverage.
 @export var blend := Blend.ADD
 ## Brightness pulse 0.375 + 14.625 · (0.5 + 0.25 cos 7a + 0.25 sin 11a), a = π · t / life

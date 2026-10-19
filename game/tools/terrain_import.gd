@@ -6,7 +6,7 @@ extends EditorScenePostImport
 ##  2. validates the 10 m grid and fails the import naming the bad cell;
 ##  3. writes terrain.res (MapTerrainData) next to the glb, only when it changed;
 ##  4. returns the mesh instance as the scene root, its mesh rebuilt by Terrain from the data, with a trimesh Collision child (faces in index order).
-## The static helpers are shared with tools/terrain_glb_export.gd and debug/suite/terrain_bake_cases.gd.
+## The static helpers are shared with tools/bake/terrain_glb_export.gd and debug/suite/terrain_bake_cases.gd.
 
 const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain.gd"
 const GLB_MAGIC := 0x46546C67

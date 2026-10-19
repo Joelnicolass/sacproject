@@ -4,7 +4,7 @@ extends Node3D
 ## F151 (RFC-030 030n-b): the Rhinok's spikes, sacengine Spike (state.d:3875-3885; updateSpike 20473-20478; placeSpike
 ## 25008-25015), drawn as renderer.d:2627-2638 draws them: SacSpike (sacobject.d:2984-2994), the mesh of
 ## makeSpikeMesh(32, 0.6, 0.75, 0.3, 0.25) (a ring of radius 0.3 on the ground, 0.25 at 0.75, the tip at 1) with the
-## texture jspk (shwn.WAD jams/text, tools/fx_catalog.py). Model matrix: translate · scale(s, s, s·d.z) · shear(d.x/d.z,
+## texture jspk (shwn.WAD jams/text, tools/import/fx_catalog.py). Model matrix: translate · scale(s, s, s·d.z) · shear(d.x/d.z,
 ## d.y/d.z), that is the spike's axis is s·d, d = ((0, 0, height) + a point of the disk of radius `tilt`) · U(0.85, 1.15);
 ## s = 1 − (2·t/lifetime − 1)²: it rises out of the ground and sinks back in 2/3 s.
 ## One event (FxBus.broadcast_scene, one RPC) is many spikes: `count` of them drawn evenly over the area of the annulus

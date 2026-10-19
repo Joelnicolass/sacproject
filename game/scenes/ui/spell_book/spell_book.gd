@@ -206,7 +206,7 @@ func _process(_delta: float) -> void:
 			slot.call("show_cooldown", _book.call("cooldown", i), _book.call("max_cooldown", i))
 
 
-## The CRE8/SPEL icon exported by tools/import_ui.py, or null.
+## The CRE8/SPEL icon exported by tools/import/import_ui.py, or null.
 static func icon_for(spell_tag: String) -> Texture2D:
 	return HudIcons.icon(spell_tag)
 

@@ -4,7 +4,7 @@ extends Resource
 ## Look of a flat ring + glowing center that faces the camera (sacengine SacVortex, sacobject.d:4045-4108,
 ## renderer.d:222-239). One .tres per colour: data/fx/portal_blue.tres (the carried creature's ring),
 ## data/fx/portal_red.tres (the Sac Doctor's vortex). The atlases are the 4x4 TXTRs of MAIN.WAD
-## imported to res://assets/original/fx/<tag>.png (tools/import_ui.py).
+## imported to res://assets/original/fx/<tag>.png (tools/import/import_ui.py).
 
 ## Atlas tag of the ring (rim): `ltn2` blue, `vtx1` red.
 @export var rim_tag := "ltn2"

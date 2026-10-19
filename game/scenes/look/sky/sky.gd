@@ -112,7 +112,7 @@ func _bind(mesh: MeshInstance3D, uniform: String, path: String) -> void:
 	material.set_shader_parameter(uniform, texture)
 
 
-## The imported sky texture (mipmapped, see tools/import_themes.py); null when the path is not there.
+## The imported sky texture (mipmapped, see tools/import/import_themes.py); null when the path is not there.
 func _load_png(path: String) -> Texture2D:
 	if not ResourceLoader.exists(path):
 		return null

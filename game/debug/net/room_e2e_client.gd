@@ -11,7 +11,7 @@ extends Node
 ## --e2e-leave-after-s --e2e-expect-winner --e2e-expect-reason --lobby-port.
 ## RFC-049 049g (rooms with teams): --e2e-peers=A,B,C (all the other humans; replaces --e2e-peer) --e2e-mode=2v2 --e2e-world=test_flat4
 ## (room options of the creator) --e2e-bot-seats=2,3 [--e2e-bot-gods=pyro,] (the creator, as host, puts bots in those seats)
-## --e2e-seats=4 (the seats of the room) --e2e-lobby-delay-s (waits before looking for the room, so the seats fill in order)
+## --e2e-seats=4 (the seats of the room) --e2e-join-when-used=N (a joiner enters when N seats of the room are taken, so the seats fill in order) --e2e-lobby-delay-s (waits before looking for the room)
 ## --e2e-world-ready (says the world is loaded after getting the slot, so the dedicated seats the wizard and starts the match)
 ## --e2e-rejoin-after-s (with --e2e-leave-after-s: comes back with the same ticket and must get the same slot)
 ## --e2e-expect-winners=1,2 (the whole winning team, in the dedicated's result and in the room's).
@@ -135,11 +135,14 @@ func _run() -> void:
 		if lobby_delay > 0.0:
 			await get_tree().create_timer(lobby_delay).timeout
 		var joined := false
-		for _i in 80:
+		## F350: with --e2e-join-when-used=N the client joins when the room already holds N seats taken (bots count), so the seats fill in
+		## order whatever the startup jitter of the processes is (no wall-clock delay between the clients).
+		var want_used := int(MpBoot.user_value("e2e-join-when-used", "-1"))
+		for _i in 400:
 			client.refresh_rooms()
-			await get_tree().create_timer(0.5).timeout
+			await get_tree().create_timer(0.2).timeout
 			for row: Dictionary in client.rooms:
-				if str(row["name"]) == room_name and not joined:
+				if str(row["name"]) == room_name and not joined and (want_used < 0 or int(row.get("seats_used", 0)) == want_used):
 					joined = true
 					client.join_room(str(row["id"]))
 			if joined:

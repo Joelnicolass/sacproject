@@ -18,7 +18,9 @@ extends Node
 ## wizard stands still where it was, its creatures and altar go on, and the match is not paused for the seat. The log tells it
 ## (`slot N mago … (al irse)` / `(al volver)`) so a run can compare both.
 ## Test hook, not a rule: `--force-defeat-slot=N[,M…] --force-defeat-after-ticks=T` defeats those slots T ticks after the
-## first player was admitted, so a run ends without playing the match out.
+## first player was admitted, so a run ends without playing the match out. `--force-defeat-when-file=PATH` (F350) defeats them as soon
+## as that file exists (after the first admission), so a test that must keep the match alive until some other process finishes does not
+## depend on how many ticks per second the machine runs.
 
 ## The agent of the kit (admission, heartbeat, result.json). Null if the ticket was not usable.
 var agent: MpMatchAgent
@@ -32,6 +34,7 @@ var _match_state: MatchState
 var _first_admit_tick: int = -1
 var _force_slots: Array[int] = []
 var _force_ticks: int = 0
+var _force_file: String = ""
 var _forced: bool = false
 ## True while the simulation waits for the seats to load (the tree is paused by this node).
 var _holding: bool = false
@@ -68,6 +71,7 @@ func _ready() -> void:
 		if int(part) > 0:
 			_force_slots.append(int(part))
 	_force_ticks = int(MpBoot.user_value("force-defeat-after-ticks", "0"))
+	_force_file = MpBoot.user_value("force-defeat-when-file", "")
 	MpKit.peer_joined.connect(_on_peer_joined)
 	MpKit.peer_left.connect(_on_peer_left)
 	MpKit.client_world_ready.connect(_on_world_ready)
@@ -172,9 +176,12 @@ func _process(_delta: float) -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if _forced or _force_slots.is_empty() or _force_ticks <= 0 or _first_admit_tick < 0 or _match_state == null:
+	if _forced or _force_slots.is_empty() or (_force_ticks <= 0 and _force_file.is_empty()) or _first_admit_tick < 0 or _match_state == null:
 		return
-	if MatchClock.now() - _first_admit_tick < _force_ticks:
+	if _force_file.is_empty():
+		if MatchClock.now() - _first_admit_tick < _force_ticks:
+			return
+	elif not FileAccess.file_exists(_force_file):
 		return
 	var rule := _defeat_rule()
 	if rule == null:

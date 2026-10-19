@@ -6,18 +6,20 @@ extends Node
 ##   (or just prints them), joins with its own credential (slot 1), waits for the result and for the server to close itself.
 ## `--e2e-role=rival`: reads local.json (or `--e2e-address=host:port --e2e-code=…`), joins with the code (slot 2), waits for the result.
 ## `--e2e-role=intruder`: without credential, with a made-up code, and with the code of the seat the rival already uses: three rejections.
-## Other flags: --e2e-ready (rival: say world_ready) --e2e-bad-first (rival: invalid pick first) --e2e-wizard --e2e-god (the rival's pick) --e2e-expect-winner --e2e-expect-reason --e2e-god (rival's god) --e2e-transport.
+## Other flags: --e2e-reject-s=N (how long a rejection is waited for, 12 by default; F350) --e2e-ready (rival: say world_ready) --e2e-bad-first (rival: invalid pick first) --e2e-wizard --e2e-god (the rival's pick) --e2e-expect-winner --e2e-expect-reason --e2e-god (rival's god) --e2e-transport.
 ## Prints `PASS …` / `FAIL …` per check and `E2E LOCAL <role> PASS|FAIL`; exit 0 / 1.
 
 const HOST_SCENE := "res://scenes/net/local_server_host.tscn"
 const GLOBAL_TIMEOUT_S := 150.0
 const STEP_S := 40.0
-const REJECT_S := 12.0
+const DEFAULT_REJECT_S := 12.0
 const FAKE_CODE := "00000000000000000000000000000000"
 const DEFAULT_PORT := 7710
 const INFO_FILE := "local.json"
 const RIVAL_IN_FILE := "rival_in.flag"
 const DONE_FILE := "done.flag"
+## F350: the intruder writes it when its three attempts are over; the test dedicated can defeat a slot on it (`--force-defeat-when-file`).
+const INTRUDER_DONE_FILE := "intruder_done.flag"
 
 var _role: String = ""
 var _fails: int = 0
@@ -178,7 +180,7 @@ func _run_rival() -> void:
 	if MpBoot.user_flag("e2e-bad-first"):
 		SacrificeFlow.pick = {"wizard": "cwa1", "model": "serx", "god": "no_such_god"}
 		_check(MpKit.join(str(target["host"]), int(target["port"]), code) == OK, "the rival joins with an invalid pick")
-		_check(await _until(func() -> bool: return _rejected == "bad_pick", REJECT_S), "the invalid pick is rejected (%s)" % _rejected)
+		_check(await _until(func() -> bool: return _rejected == "bad_pick", _reject_s()), "the invalid pick is rejected (%s)" % _rejected)
 		_check(_slot == LocalServerHost.RIVAL_SLOT, "the rival got his slot before the pick was judged (%d)" % _slot)
 		_rejected = ""
 		_slot = 0
@@ -212,6 +214,10 @@ func _check_picks(result: Dictionary, who: String) -> void:
 	_check(str(one.get("god", "")) == "james", "%s: seat 1 kept the host's pick (got %s)" % [who, str(one)])
 
 
+func _reject_s() -> float:
+	return float(MpBoot.user_value("e2e-reject-s", str(DEFAULT_REJECT_S)))
+
+
 func _write_flag(name: String) -> void:
 	if _dir().is_empty():
 		return
@@ -238,6 +244,7 @@ func _run_intruder() -> void:
 	await _expect_no_seat(host, port, str(info["code"]), "with the code of the seat the rival already uses")
 	# the three attempts happened while the match was alive (the host has not seen the result yet)
 	_check(not FileAccess.file_exists("%s/%s" % [_dir(), DONE_FILE]), "the attempts were made while the match was still running")
+	_write_flag(INTRUDER_DONE_FILE)
 	_finish()
 
 
@@ -251,9 +258,9 @@ func _expect_no_seat(host: String, port: int, credential: String, what: String) 
 	if MpKit.join(host, port, credential) != OK:
 		_check(false, "%s: join starts" % what)
 		return
-	# ENet with a full dedicated may not answer at all before REJECT_S (the connect attempt just times out): what counts is
+	# ENet with a full dedicated may not answer at all before the reject wait (the connect attempt just times out): what counts is
 	# that the third player never gets a slot.
-	var answered := await _until(func() -> bool: return not _rejected.is_empty() or _lost or _slot != 0, REJECT_S)
+	var answered := await _until(func() -> bool: return not _rejected.is_empty() or _lost or _slot != 0, _reject_s())
 	var how := _rejected if not _rejected.is_empty() else ("link closed" if _lost else "no answer, no slot")
 	_check(_slot == 0, "a third player %s is rejected (%s)" % [what, how])
 	MpKit.leave()

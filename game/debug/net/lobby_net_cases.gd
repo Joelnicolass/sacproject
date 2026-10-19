@@ -19,8 +19,8 @@ const LOCAL_HOST := "127.0.0.1"
 const SERVER_TIMEOUT_S := 90.0
 const CLIENT_TIMEOUT_S := 80.0
 const STEP_TIMEOUT_S := 15.0
-const SETTLE_S := 0.6
-const HEARTBEAT_REFRESH_S := 0.5
+const SETTLE_S := 0.35 # above the list push period (0.25 s): a negative check still sees a push if one was coming
+const HEARTBEAT_REFRESH_S := 0.2
 const RESULT_WINNER_SLOT := 1
 const BURST_MESSAGES := 8
 

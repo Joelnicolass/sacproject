@@ -33,6 +33,11 @@ func _ready() -> void:
 		launcher.base_args = PackedStringArray(["--headless"])
 		if not OS.has_feature("template"):
 			launcher.base_args.append_array(PackedStringArray(["--path", ProjectSettings.globalize_path("res://")]))
+	## `--match-engine-args=--fixed-fps,600` adds ENGINE args (before the `--`) to every dedicated: the tests run the match without waiting
+	## for real time (F350). Comma-separated; a flag with a value is two items.
+	var engine_extra := MpBoot.user_value("match-engine-args", "")
+	if not engine_extra.is_empty():
+		launcher.base_args.append_array(engine_extra.split(",", false))
 	## `--match-args=--flag=1,--other` adds user args to every dedicated this server launches (tests only).
 	var extra := MpBoot.user_value("match-args", "")
 	if not extra.is_empty():

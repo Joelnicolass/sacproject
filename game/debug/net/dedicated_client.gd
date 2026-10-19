@@ -6,7 +6,8 @@ extends Node
 ## Flags: --e2e-name --mp-port (the kit reads it) --e2e-expect-slot=N (the slot it must get) --e2e-expect-reject (it must NOT get a
 ## slot: the dedicated has no place for it) --e2e-expect-winners=1,2 (the winner_slots the match must end with)
 ## --e2e-expect-mode=2v2 (the mode the server sent) --e2e-timeout-s=N (how long to wait for the result, 150 by default) --e2e-linger-s=N (stay connected N seconds after the result,
-## so a second client can try the place that is taken; 0 by default).
+## so a second client can try the place that is taken; 0 by default) --e2e-reject-wait-s=N (with --e2e-expect-reject: how long it waits before
+## checking it has no slot, 15 by default). Both waits are real seconds.
 ## Prints `PASS …` / `FAIL …` per check and `E2E CLIENT <name> PASS|FAIL`; exit 0 / 1.
 
 const LOCAL_HOST := "127.0.0.1"
@@ -58,6 +59,11 @@ func _until(cond: Callable, timeout_s: float = STEP_S) -> bool:
 	return cond.call()
 
 
+## F350: waits real seconds (the process may run with `--fixed-fps`, where a SceneTree timer is simulated time).
+func _wait_wall(seconds: float) -> void:
+	await _until(func() -> bool: return false, seconds)
+
+
 func _state() -> MatchState:
 	return get_tree().get_first_node_in_group(&"match_state") as MatchState
 
@@ -65,7 +71,7 @@ func _state() -> MatchState:
 func _run() -> void:
 	_check(SacrificeFlow.join_lan(LOCAL_HOST) == OK, "%s joins the dedicated" % _name)
 	if MpBoot.user_flag("e2e-expect-reject"):
-		await get_tree().create_timer(15.0).timeout
+		await _wait_wall(float(MpBoot.user_value("e2e-reject-wait-s", "15")))
 		_check(_slot == 0 and _state() == null, "%s is left out: no slot, no world (slot %d)" % [_name, _slot])
 		_finish()
 		return
@@ -91,6 +97,6 @@ func _run() -> void:
 			_check(state.winner_slots == winners, "%s: the winners are %s (got %s)" % [_name, str(winners), str(state.winner_slots)])
 	var linger := float(MpBoot.user_value("e2e-linger-s", "0"))
 	if linger > 0.0:
-		await get_tree().create_timer(linger).timeout
+		await _wait_wall(linger)
 	MpKit.leave()
 	_finish()

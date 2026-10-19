@@ -13,7 +13,7 @@ const GLOBAL_TIMEOUT_S := 150.0
 const STEP_S := 40.0
 const REJECT_S := 8.0
 ## The wizard needs a moment in the dedicated before the drop, so the state it keeps is the one of a spawned wizard.
-const SETTLE_S := 3.0
+const SETTLE_S := 1.0
 
 var _name: String = ""
 var _role: String = ""
@@ -158,11 +158,11 @@ func _run_player() -> void:
 
 	if creator:
 		_check(await _until(func() -> bool: return _exists("c.done"), 60.0), "the intruder finished its attempt")
-		await get_tree().create_timer(1.0).timeout
+		await get_tree().create_timer(0.5).timeout
 		_check(MpKit.is_networked() and MpKit.local_slot() == want_slot, "%s still holds slot %d after the intruder's attempt" % [_name, want_slot])
 		MpKit.leave()
 		print("E2E_LEFT %s" % _name)
-		await get_tree().create_timer(2.0).timeout
+		await get_tree().create_timer(0.8).timeout
 		_check(await _join_match(want_slot), "%s comes back with the same ticket to slot %d" % [_name, want_slot])
 		print("E2E_BACK %s slot=%d" % [_name, _slot])
 		_write("a.back", "1")
@@ -198,7 +198,7 @@ func _lobby_resume_cases() -> void:
 	var seat := client.my_seat()
 	var room_id := str(client.room.get("id", ""))
 	client.close_connection()
-	await get_tree().create_timer(1.5).timeout
+	await get_tree().create_timer(0.8).timeout
 	_check(client.resume() == OK, "resume() opens the link again")
 	_check(await _until(func() -> bool: return client.is_online() and not client.room.is_empty()), "the lobby is back (by hand)")
 	_check(client.session_id == sid, "same session after resume()")

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="SoundSet" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" path="res://debug/audio/fixtures/beep_a.tres" id="3_a"]
+[ext_resource type="AudioStream" path="res://debug/audio/fixtures/beep_b.tres" id="4_b"]
+
+[sub_resource type="Resource" id="Resource_death"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("3_a"), ExtResource("4_b")])
+pitch_jitter = 0.1
+
+[resource]
+script = ExtResource("1_set")
+cues = Dictionary[StringName, ExtResource("2_cue")]({
+&"death": SubResource("Resource_death")
+})

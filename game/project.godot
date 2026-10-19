@@ -14,6 +14,10 @@ config/name="Sacrifice"
 run/main_scene="res://scenes/core/boot.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 
+[audio]
+
+buses/default_bus_layout="res://default_bus_layout.tres"
+
 [autoload]
 
 MpKit="*res://addons/mp_kit/mp_kit.gd"
@@ -22,6 +26,7 @@ GameData="*res://scenes/core/catalog/game_data.gd"
 SacrificeFlow="*res://scenes/core/flow/sacrifice_flow.gd"
 AgentKit="*res://addons/agent_kit/agent_kit.gd"
 FxBus="*res://scenes/fx/fx_bus.gd"
+SoundBus="*res://scenes/audio/sound_bus.gd"
 
 [display]
 

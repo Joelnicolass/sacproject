@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/options/options_menu.gd" id="1_menu"]
 [ext_resource type="PackedScene" path="res://scenes/ui/options/graphics_tab.tscn" id="2_graphics"]
 [ext_resource type="PackedScene" path="res://scenes/ui/options/gameplay_tab.tscn" id="3_gameplay"]
+[ext_resource type="PackedScene" path="res://scenes/ui/options/audio_tab.tscn" id="4_audio"]
 
 [node name="OptionsMenu" type="CanvasLayer"]
 process_mode = 3
@@ -57,6 +58,11 @@ metadata/_tab_index = 0
 visible = false
 layout_mode = 2
 metadata/_tab_index = 1
+
+[node name="AudioTab" parent="Dim/Panel/Column/OptionTabs" instance=ExtResource("4_audio")]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 2
 
 [node name="CloseOptions" type="Button" parent="Dim/Panel/Column"]
 unique_name_in_owner = true

@@ -1,0 +1,76 @@
+extends Node
+
+## RFC-052 052a (F360): runner of the audio cases. `--expect-gate=open|closed` says what this process must see:
+## - open (`--audio-probe --user-settings=user://t_audio.cfg`): gate, prefs and SoundBus cases;
+## - closed (plain headless, `--dedicated`, `--room-server`): gate cases only (nothing built, nothing loaded).
+## Prints `<case>: PASS|FAIL` and `AUDIO CASES PASS|FAIL (n)`; headless quits with 0 / 1.
+## Watchdog: past `timeout_s` it prints `AUDIO CASES FAIL timeout` and quits 1. The case scripts are loaded at run time
+## (not preloaded), so one that fails to compile still ends in a FAIL line instead of a runner without a script.
+## agent/runs/run_audio_cases.sh runs every mode.
+
+const GATE_CASES := "res://debug/audio/audio_gate_cases.gd"
+const PREFS_CASES := "res://debug/audio/audio_prefs_cases.gd"
+const BUS_CASES := "res://debug/audio/sound_bus_cases.gd"
+
+## Real seconds (not game time: --fixed-fps would stretch a game-time timer).
+@export var timeout_s := 20.0
+
+var _done := false
+
+
+func _ready() -> void:
+	_watchdog()
+	_run.call_deferred()
+
+
+func _watchdog() -> void:
+	var limit := Time.get_ticks_msec() + int(timeout_s * 1000.0)
+	while not _done:
+		await get_tree().process_frame
+		if Time.get_ticks_msec() > limit and not _done:
+			_done = true
+			print("AUDIO CASES FAIL timeout")
+			get_tree().quit(1)
+
+
+func _run() -> void:
+	var expect := MpBoot.user_value("expect-gate", "")
+	var results := {}
+	if expect not in ["open", "closed"]:
+		results["expect_gate_arg"] = {"ok": false, "reason": "falta --expect-gate=open|closed"}
+	else:
+		var gate := _cases(GATE_CASES)
+		if gate == null:
+			results["audio_gate_cases"] = {"ok": false, "reason": "no compila"}
+		else:
+			results.merge(await gate.run(self, expect == "open"))
+		if expect == "open":
+			var prefs := _cases(PREFS_CASES)
+			var bus := _cases(BUS_CASES)
+			if prefs == null or bus == null:
+				results["audio_cases_compile"] = {"ok": false, "reason": "un script de casos no compila"}
+			else:
+				results.merge(prefs.run(self))
+				results.merge(await bus.run(self))
+	if _done:
+		return
+	_done = true
+	var failures := 0
+	print("== Audio cases (gate %s) ==" % expect)
+	for name in results:
+		var item: Dictionary = results[name]
+		var ok := bool(item.get("ok", false))
+		print("%s: %s" % [name, "PASS" if ok else "FAIL"])
+		if not ok:
+			failures += 1
+			print("  %s" % item)
+	print("AUDIO CASES PASS" if failures == 0 else "AUDIO CASES FAIL (%d)" % failures)
+	if DisplayServer.get_name() == "headless":
+		get_tree().quit(0 if failures == 0 else 1)
+
+
+static func _cases(path: String) -> Object:
+	var script := load(path) as GDScript
+	if script == null or not script.can_instantiate():
+		return null
+	return script.new()

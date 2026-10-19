@@ -30,6 +30,7 @@ const LINT_ALLOWED_LINES := {
 	"theme_applier.gd": "var rng := RandomNumberGenerator.new()",  # rng.seed = match_seed (the biome stream)
 	"units/attacks/ranged_shot.gd": "var rng := RandomNumberGenerator.new()",  # spin of the shot, hash(name)
 	"spells/rock_projectile.gd": "var rng := RandomNumberGenerator.new()",  # spin of the rock, hash(name)
+	"audio/sound_bus.gd": "var _rng := RandomNumberGenerator.new()",  # RFC-052: own generator, seeded with rng_seed
 }
 const VORTEX_LIFE_S := 1.0
 const PAUSE_TICKS := 120

@@ -113,6 +113,9 @@ func closest_enemy_altar(slot: int, from: Vector3, max_range := INF) -> Altar:
 		var altar := node as Altar
 		if altar == null or not altar.is_standing() or altar.owner_slot <= 0 or altar.owner_slot == slot:
 			continue
+		## RFC-049 049c: only an altar of an enemy (the altar of an ally is not a target of Desecrate).
+		if not SideRelations.is_enemy(slot, altar.owner_slot):
+			continue
 		var d := Vector2(altar.global_position.x - from.x, altar.global_position.z - from.z).length()
 		if d <= best_d:
 			best_d = d

@@ -60,7 +60,9 @@ func _rate_from_manaliths() -> float:
 		return 0.0
 	var total := 0.0
 	for node in get_tree().get_nodes_in_group("structure"):
-		if int(node.get("owner_slot")) != owner_slot:
+		## RFC-049 049c: the manaliths of the allies count too (state.d:28598-28606).
+		var structure_slot := int(node.get("owner_slot"))
+		if structure_slot != owner_slot and SideRelations.stance(owner_slot, structure_slot) != SideRelations.Stance.ALLY:
 			continue
 		if str(node.get("spell_tag")) != "htlm":
 			continue

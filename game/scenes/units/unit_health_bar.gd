@@ -6,6 +6,8 @@ extends MeshInstance3D
 
 @export var own_color := Color(0.2, 0.85, 0.25)
 @export var enemy_color := Color(0.9, 0.18, 0.12)
+## RFC-049 049c: the bar of an ally of the local slot (2v2), apart from the own green and the enemy red.
+@export var ally_color := Color(0.25, 0.6, 0.95)
 ## Meters above the top of the body.
 @export var lift := 0.45
 @export var own_only_when_selected := true
@@ -29,8 +31,10 @@ func bind(health: Node, owner_slot: int) -> void:
 
 
 func set_owner_slot(owner_slot: int) -> void:
-	_own = owner_slot > 0 and owner_slot == MpKit.local_slot()
-	set_instance_shader_parameter("fill_color", own_color if _own else enemy_color)
+	var local := MpKit.local_slot()
+	_own = owner_slot > 0 and owner_slot == local
+	var ally := not _own and owner_slot > 0 and local > 0 and SideRelations.stance(local, owner_slot) == SideRelations.Stance.ALLY
+	set_instance_shader_parameter("fill_color", own_color if _own else (ally_color if ally else enemy_color))
 	_refresh_visible()
 
 

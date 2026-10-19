@@ -13,6 +13,7 @@ const SOUL_SYSTEM_SCENE := preload("res://scenes/souls/soul_system.tscn")
 const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
 const STRUCTURE_SCENE := preload("res://scenes/structures/structure.tscn")
 const GOD := "james"
+const MANA_SUPPORT := preload("res://scenes/units/unit_mana_support.gd")
 
 ## 4 player sides (assignment 1-4, each an enemy of the rest) and one NPC side (assignment 0), enemy of all: as the (4) maps of the original.
 const SEATS := 4
@@ -29,6 +30,26 @@ func run(host: Node3D) -> Dictionary:
 	out["team_victory_ffa4"] = _victory_ffa4(host)
 	out["team_victory_1v1"] = _victory_1v1(host)
 	out["team_snapshot"] = _snapshot(host)
+	## 049c: the rules between allies. A floor and the systems the cases need live in `_root`.
+	_root = Node3D.new()
+	_root.name = "TeamRules"
+	var floor_body := StaticBody3D.new()
+	floor_body.collision_layer = 1
+	var shape := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = Vector3(800.0, 2.0, 800.0)
+	shape.shape = box
+	shape.position = Vector3(0.0, -1.0, 0.0)
+	floor_body.add_child(shape)
+	_root.add_child(floor_body)
+	host.add_child(_root)
+	await _frames(2)
+	out["team_friendly_fire"] = await _friendly_fire()
+	out["team_souls"] = await _souls()
+	out["team_sacrifice"] = await _sacrifice()
+	out["team_manahoar"] = _manahoar()
+	out["team_vision"] = _vision()
+	_root.free()
 	_restore()
 	return out
 
@@ -132,6 +153,181 @@ func _snapshot(host: Node3D) -> Dictionary:
 	checks["seated"] = (client[0] as MatchState).seated_slots == [1, 2, 3, 4]
 	_free(server)
 	_free(client)
+	return _verdict(checks)
+
+
+## Friendly fire between allies (Health._side_factor asks the stance): off ×0, on ×0.5 between seats 1 and 2 of a 2v2, always ×1
+## against seat 3; in 1v1 (no overlay) seat 2 is a foe, ×1.
+func _friendly_fire() -> Dictionary:
+	_use_mode(&"2v2")
+	var checks := {}
+	var state := MatchState.new()
+	state.world = _root
+	state.rules = RULES
+	_root.add_child(state)
+	state.friendly_fire = false
+	var ally := _unit(Vector3(0.0, 0.1, 60.0), 1)
+	var health := ally.get_node("Health") as Health
+	health.setup(5000.0)
+	checks["off_ally_splash"] = health.damage_typed(100.0, Health.SPLASH_SPELL, 2) == 0.0
+	var before := health.current
+	health.damage(100.0, 2)
+	checks["off_ally_melee"] = health.current == before
+	checks["off_own_side"] = health.damage_typed(100.0, Health.SPLASH_SPELL, 1) == 0.0
+	checks["off_enemy_taken"] = health.damage_typed(100.0, Health.SPLASH_SPELL, 3) > 0.0
+	state.friendly_fire = true
+	state.ally_damage_factor = 0.5
+	var enemy_hit := health.damage_typed(100.0, Health.SPLASH_SPELL, 3)
+	var ally_hit := health.damage_typed(100.0, Health.SPLASH_SPELL, 2)
+	checks["on_ally_half"] = enemy_hit > 0.0 and absf(ally_hit / enemy_hit - 0.5) <= 0.005
+	before = health.current
+	health.damage(100.0, 2)
+	checks["on_ally_melee_half"] = absf((before - health.current) - 50.0) <= 0.01
+	_use_mode(&"1v1")
+	state.friendly_fire = false
+	checks["1v1_seat2_is_a_foe"] = health.damage_typed(100.0, Health.SPLASH_SPELL, 2) > 0.0
+	ally.free()
+	state.free()
+	return _verdict(checks)
+
+
+## Free souls: own > ally > neutral > enemy among the wizards that can take it (CollectStance), and the closest breaks a tie
+## inside a stance. A free soul of seat 2 goes to seat 1 (ally) rather than to the closer wizard of seat 3.
+func _souls() -> Dictionary:
+	_use_mode(&"2v2")
+	var checks := {}
+	var system := SOUL_SYSTEM_SCENE.instantiate() as SoulSystem
+	_root.add_child(system)
+	var own := system.spawn_soul({"x": 0.0, "y": 0.0, "z": 0.0, "number": 1, "owner_slot": 1, "dropped": true, "emerging": false})
+	var ally := system.spawn_soul({"x": 0.0, "y": 0.0, "z": 0.0, "number": 1, "owner_slot": 2, "dropped": true, "emerging": false})
+	var neutral := system.spawn_soul({"x": 0.0, "y": 0.0, "z": 0.0, "number": 1, "owner_slot": 0, "dropped": true, "emerging": false})
+	var enemy := system.spawn_soul({"x": 0.0, "y": 0.0, "z": 0.0, "number": 1, "owner_slot": 3, "dropped": true, "emerging": false})
+	checks["stance_own"] = system._stance(own, 1) == SoulSystem.Stance.OWN
+	checks["stance_ally"] = system._stance(ally, 1) == SoulSystem.Stance.ALLY
+	checks["stance_neutral"] = system._stance(neutral, 1) == SoulSystem.Stance.NEUTRAL
+	checks["stance_enemy"] = system._stance(enemy, 1) == SoulSystem.Stance.ENEMY
+	checks["priority_order"] = SoulSystem.Stance.OWN < SoulSystem.Stance.ALLY and SoulSystem.Stance.ALLY < SoulSystem.Stance.NEUTRAL \
+		and SoulSystem.Stance.NEUTRAL < SoulSystem.Stance.ENEMY
+	for soul in [own, ally, neutral, enemy]:
+		soul.free()
+	## Real competition: wizards of seat 3 (2 m away) and seat 1 (4 m away) for a free soul that seat 2 dropped.
+	var near_foe := _wizard(Vector3(2.0, 0.0, 200.0), 3)
+	var far_friend := _wizard(Vector3(-4.0, 0.0, 200.0), 1)
+	await _frames(2)
+	var soul := system.spawn_soul({"x": 0.0, "y": 0.0, "z": 200.0, "number": 1, "owner_slot": 2, "dropped": true, "emerging": false})
+	await _frames(6)
+	checks["ally_wizard_takes_it"] = soul.state != Soul.State.NORMAL and soul.collector_slot == 1
+	## In 1v1 the same two wizards are both foes of seat 2: the closer one (seat 3) wins as before.
+	_use_mode(&"1v1")
+	if is_instance_valid(soul):
+		soul.free()
+	await _frames(2)
+	var soul_b := system.spawn_soul({"x": 0.0, "y": 0.0, "z": 200.0, "number": 1, "owner_slot": 2, "dropped": true, "emerging": false})
+	await _frames(6)
+	checks["1v1_closest_takes_it"] = soul_b.state != Soul.State.NORMAL and soul_b.collector_slot == 3
+	for node in [near_foe, far_friend, system]:
+		if is_instance_valid(node):
+			node.free()
+	if is_instance_valid(soul_b):
+		soul_b.free()
+	return _verdict(checks)
+
+
+## Desecrate needs an enemy altar (an allied one is not a target); Convert takes the corpse of an ally too, as the original
+## does (its soul is red for the other seat, sacengine color() state.d:1622-1630, and nothing else excludes an ally: P10).
+func _sacrifice() -> Dictionary:
+	_use_mode(&"2v2")
+	var checks := {}
+	var system := SYSTEM_SCENE.instantiate() as SacrificeSystem
+	system.rules = RULES
+	_root.add_child(system)
+	var souls := SOUL_SYSTEM_SCENE.instantiate()
+	_root.add_child(souls)
+	var from := Vector3(0.0, 0.0, -200.0)
+	var ally_altar := _altar(2, from + Vector3(0.0, 0.0, 30.0))
+	checks["ally_altar_not_a_target"] = system.closest_enemy_altar(1, from) == null
+	checks["ally_altar_status"] = system.altar_status(1, from) == SacrificeSystem.NO_ALTAR
+	var enemy_altar := _altar(3, from + Vector3(0.0, 0.0, 60.0))
+	checks["enemy_altar_is_a_target"] = system.closest_enemy_altar(1, from) == enemy_altar
+	checks["closest_skips_ally"] = system.closest_enemy_altar(1, from + Vector3(0.0, 0.0, 28.0)) == enemy_altar
+	_use_mode(&"1v1")
+	checks["1v1_altar_of_seat2_is_enemy"] = system.closest_enemy_altar(1, from) == ally_altar
+	_use_mode(&"2v2")
+	ally_altar.free()
+	enemy_altar.free()
+	var corpse_ally := _unit(Vector3(0.0, 0.1, 12.0), 2)
+	var corpse_foe := _unit(Vector3(10.0, 0.1, 12.0), 3)
+	var corpse_own := _unit(Vector3(-10.0, 0.1, 12.0), 1)
+	await _frames(20)
+	for body in [corpse_ally, corpse_foe, corpse_own]:
+		body.get_node("Health").damage(99999.0, 4)
+	await _frames(120)
+	var soul_ally := _soul_of(corpse_ally)
+	var soul_foe := _soul_of(corpse_foe)
+	var soul_own := _soul_of(corpse_own)
+	var found := soul_ally != null and soul_foe != null and soul_own != null
+	checks["souls_on_corpses"] = found
+	if found:
+		await _until(func() -> bool: return soul_ally.state == Soul.State.NORMAL and soul_foe.state == Soul.State.NORMAL and soul_own.state == Soul.State.NORMAL, 400)
+		checks["convert_enemy_corpse"] = system.convert_status(1, soul_foe) == ""
+		checks["convert_ally_corpse"] = system.convert_status(1, soul_ally) == ""
+		checks["convert_own_corpse_refused"] = system.convert_status(1, soul_own) == SacrificeSystem.BAD_TARGET
+	for node in [corpse_ally, corpse_foe, corpse_own, souls, system]:
+		if is_instance_valid(node):
+			node.free()
+	return _verdict(checks)
+
+
+## The Manahoar adds the rate of the manaliths of its allies too (state.d:28598-28606), not those of a foe.
+func _manahoar() -> Dictionary:
+	_use_mode(&"2v2")
+	var checks := {}
+	var support: Node3D = MANA_SUPPORT.new()
+	support.rules = RULES
+	support.owner_slot = 1
+	support.enabled = true
+	support.position = Vector3(0.0, 0.0, 400.0)
+	_root.add_child(support)
+	checks["no_manalith_no_rate"] = support._rate_from_manaliths() == 0.0
+	var foe := _manalith(3, Vector3(0.0, 0.0, 420.0))
+	checks["foe_manalith_ignored"] = support._rate_from_manaliths() == 0.0
+	var friend := _manalith(2, Vector3(0.0, 0.0, 420.0))
+	var with_ally: float = support._rate_from_manaliths()
+	checks["ally_manalith_counts"] = with_ally > 0.0
+	var own := _manalith(1, Vector3(0.0, 0.0, 420.0))
+	checks["own_adds_up"] = absf(support._rate_from_manaliths() - 2.0 * with_ally) <= 0.001
+	_use_mode(&"1v1")
+	checks["1v1_seat2_manalith_ignored"] = absf(support._rate_from_manaliths() - with_ally) <= 0.001
+	for node in [foe, friend, own, support]:
+		node.free()
+	return _verdict(checks)
+
+
+## What a side sees is marked for its allies too when the match allows it (MatchRules.allied_vision).
+func _vision() -> Dictionary:
+	_use_mode(&"2v2")
+	var checks := {}
+	var vision := SideVision.new()
+	var rules := RULES.duplicate() as MatchRules
+	vision.rules = rules
+	_root.add_child(vision)
+	var seen := _unit(Vector3(0.0, 0.1, -300.0), 3)
+	rules.allied_vision = true
+	vision.mark(1, seen)
+	checks["seen_by_marker"] = vision.last_seen_tick(1, seen) >= 0
+	checks["shared_with_ally"] = vision.last_seen_tick(2, seen) >= 0
+	checks["not_shared_with_foe"] = vision.last_seen_tick(3, seen) < 0 and vision.last_seen_tick(4, seen) < 0
+	var other := _unit(Vector3(5.0, 0.1, -300.0), 3)
+	rules.allied_vision = false
+	vision.mark(1, other)
+	checks["off_not_shared"] = vision.last_seen_tick(1, other) >= 0 and vision.last_seen_tick(2, other) < 0
+	_use_mode(&"1v1")
+	rules.allied_vision = true
+	var third := _unit(Vector3(10.0, 0.1, -300.0), 3)
+	vision.mark(1, third)
+	checks["1v1_not_shared"] = vision.last_seen_tick(2, third) < 0
+	for node in [seen, other, third, vision]:
+		node.free()
 	return _verdict(checks)
 
 

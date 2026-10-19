@@ -166,6 +166,16 @@ static func stance(from_slot: int, to_slot: int) -> Stance:
 	return Stance.NEUTRAL
 
 
+## The seats that are allies of `slot` (not itself): who shares its sight (MatchRules.allied_vision). Empty in a 1v1.
+static func allies_of(slot: int) -> Array[int]:
+	var found: Array[int] = []
+	_ensure()
+	for other in range(1, _seat_count + 1):
+		if other != slot and stance(slot, other) == Stance.ALLY:
+			found.append(other)
+	return found
+
+
 static func is_enemy(from_slot: int, to_slot: int) -> bool:
 	return stance(from_slot, to_slot) == Stance.ENEMY
 

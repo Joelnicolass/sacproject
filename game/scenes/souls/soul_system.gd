@@ -13,8 +13,8 @@ signal soul_spawned(soul: Node3D)
 ## on SacrificeSystem.souls_converted.
 signal soul_collected(slot: int, count: int, origin: StringName)
 
-## Collect priority (state.d:14926): own side first, then souls with no side, then the enemy's.
-enum Stance { OWN, NEUTRAL, ENEMY }
+## Collect priority (state.d:14926, CollectStance): own side first, then an ally's (RFC-049 049c), then souls with no side, then the enemy's.
+enum Stance { OWN, ALLY, NEUTRAL, ENEMY }
 
 const SOUL_SCENE := preload("res://scenes/souls/soul.tscn")
 const _SOUL := preload("res://scenes/souls/soul.gd")
@@ -173,7 +173,9 @@ func _stance(soul: Node3D, slot: int) -> Stance:
 	var soul_slot := int(soul.get("owner_slot"))
 	if soul_slot == 0:
 		return Stance.NEUTRAL
-	return Stance.OWN if soul_slot == slot else Stance.ENEMY
+	if soul_slot == slot:
+		return Stance.OWN
+	return Stance.ALLY if SideRelations.stance(soul_slot, slot) == SideRelations.Stance.ALLY else Stance.ENEMY
 
 
 ## Dying and ghost wizards do not collect (canCollectSouls, state.d:243).

@@ -171,6 +171,10 @@ extends Resource
 @export var mana_per_level: float = 100.0
 
 @export_group("Daño entre aliados")
+# RFC-049 049c (F292)
+## sacengine option alliedVision (options.d:95): what a side sees is marked for its allies too (markAsVisible, state.d:29658-29665).
+## Only matters when a mode has allies (2v2); in a 1v1 nobody is an ally.
+@export var allied_vision: bool = true
 # RFC-031 031a (F139)
 ## sacengine option friendlyFire (options.d:98). Off: a body takes nothing from its own side (dealDamage returns 0 for an ally,
 ## state.d:8961). On: it takes `ally_damage_factor` of every hit of its own side, melee, shot, spell, splash, cloud and

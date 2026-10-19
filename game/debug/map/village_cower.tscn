@@ -8,5 +8,5 @@
 [node name="HighNoon" parent="." index="0"]
 rules = ExtResource("2_rules")
 
-[node name="Start1" parent="HighNoon/MapProps/Starts"]
+[node name="Start1" parent="HighNoon/Map/MapProps/Starts"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1085, 25.5, 1090)

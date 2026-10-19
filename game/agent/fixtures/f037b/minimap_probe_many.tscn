@@ -11,7 +11,7 @@
 unique_name_in_owner = true
 script = ExtResource("2_probe")
 minimap = NodePath("../OrdersGroup/HighNoon/Hud/Minimap")
-bake = NodePath("../OrdersGroup/HighNoon/MinimapBake")
+bake = NodePath("../OrdersGroup/HighNoon/Map/MinimapBake")
 terrain_button = NodePath("../Agent/TerrainButton")
 bake_view = NodePath("../Agent/BakeView")
 

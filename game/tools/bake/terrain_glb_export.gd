@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Writes High Noon's ground as assets/original/maps/high_noon/terrain.glb (RFC-035c). Run it once: from then on the glb is
+## Writes a map's ground (High Noon, or `--map=<tag>`) as assets/original/maps/<tag>/terrain.glb (RFC-035c). Run it once: from then on the glb is
 ## the source of truth (edit it in Blender) and terrain.res is derived from it by tools/terrain_import.gd on import.
 ## The file holds the vertex and index order of terrain.res, the visual normals and COLOR (tile id and local uv,
 ## alpha 0 on cliff walls), plus the flat data normals. Refuses to overwrite an existing glb without --force.
@@ -12,7 +12,8 @@ const GlbImport := preload("res://tools/terrain_import.gd")
 
 
 func _initialize() -> void:
-	var out := OriginalAssets.map("high_noon", "terrain.glb")
+	var map := MapCatalog.active()
+	var out := OriginalAssets.map(String(map.tag), "terrain.glb")
 	var force := false
 	for argument in OS.get_cmdline_user_args():
 		if argument.begins_with("--out="):
@@ -23,9 +24,9 @@ func _initialize() -> void:
 		push_error("%s already exists and is now the source of truth. Pass --force to overwrite it." % out)
 		quit(1)
 		return
-	var data := load(OriginalAssets.HIGH_NOON_TERRAIN) as MapTerrainData
+	var data := load(map.terrain_path) as MapTerrainData if not map.terrain_path.is_empty() else null
 	if data == null:
-		push_error("Missing %s." % OriginalAssets.HIGH_NOON_TERRAIN)
+		push_error("Missing %s." % map.terrain_path)
 		quit(1)
 		return
 	var error := export_data(data, out)

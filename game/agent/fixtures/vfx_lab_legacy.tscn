@@ -5,5 +5,5 @@
 
 [node name="VfxLabLegacy" instance=ExtResource("1_lab")]
 
-[node name="Quality" parent="HighNoon/Look" index="1"]
+[node name="Quality" parent="HighNoon/Map/Look" index="1"]
 quality = ExtResource("2_legacy")

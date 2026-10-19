@@ -136,7 +136,7 @@ func _prepare() -> void:
 	_prepared = true
 	for _frame in settle_frames:
 		await get_tree().physics_frame
-	var terrain := _world.get_node("Terrain")
+	var terrain := _world.get_node("Map/Terrain")
 	var spawner := _world.get_node("UnitSpawner")
 	if not _rules.ai_seats.is_empty():
 		await _seat_ais()
@@ -379,7 +379,7 @@ func _seat_ais() -> void:
 func _place_structures() -> void:
 	var spawner := _world.get_tree().get_first_node_in_group("structure_spawner")
 	for structure in _rules.structures:
-		var fount := _world.get_node_or_null("MapProps/Founts/" + structure.fount)
+		var fount := _world.get_node_or_null("Map/MapProps/Founts/" + structure.fount)
 		var wizard := _wizard_of(structure.slot)
 		if fount == null or wizard == null or spawner == null:
 			push_warning("ai_match: no se pudo poner la estructura %s en %s" % [structure.spell_tag, structure.fount])
@@ -500,7 +500,7 @@ func _on_unit_entered(node: Node) -> void:
 func _frame_camera() -> void:
 	if camera == null or _headless:
 		return
-	var terrain := _world.get_node("Terrain")
+	var terrain := _world.get_node("Map/Terrain")
 	var ground := float(terrain.call("ground_height", _rules.anchor.x, _rules.anchor.z))
 	var center := Vector3(_rules.anchor.x, 0.0 if is_nan(ground) else ground, _rules.anchor.z) + camera_target_offset
 	camera.global_position = center + camera_offset

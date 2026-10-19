@@ -63,7 +63,7 @@ func _npc(label: String) -> UnitBody:
 
 
 func _hunter(at: Vector3) -> UnitBody:
-	var ground := float(_world.get_node("Terrain").call("ground_height", at.x, at.z))
+	var ground := float(_world.get_node("Map/Terrain").call("ground_height", at.x, at.z))
 	var unit: UnitBody = _world.get_node("UnitSpawner").call("spawn_unit", {
 		"tag": "nmuh", "label": "Druid", "slot": 1, "x": at.x, "y": (0.0 if is_nan(ground) else ground) + 0.2, "z": at.z, "yaw": 0.0})
 	unit.name = "Hunter"
@@ -125,7 +125,7 @@ func _case_load() -> void:
 		index += 1
 		if ["jfnt", "jaal"].has(str(row["tag"])):
 			continue
-		var node := _world.get_node_or_null("HighNoonLayout/Buildings/Bld%03d_%s" % [index, row["tag"]]) as MapBuilding
+		var node := _world.get_node_or_null("Map/HighNoonLayout/Buildings/Bld%03d_%s" % [index, row["tag"]]) as MapBuilding
 		if node == null:
 			missing.append("Bld%03d" % index)
 			continue
@@ -293,7 +293,7 @@ func _case_taurock() -> void:
 
 ## A point `gap` meters from `origin` on the land: the first of eight directions whose point has ground.
 func _ground_spot(origin: Vector3, gap: float) -> Vector3:
-	var terrain := _world.get_node("Terrain")
+	var terrain := _world.get_node("Map/Terrain")
 	for k in 8:
 		var angle := TAU * k / 8.0
 		var at := origin + Vector3(cos(angle), 0.0, sin(angle)) * gap
@@ -347,7 +347,7 @@ func _case_house() -> void:
 	info["souls_new"] = get_tree().get_nodes_in_group("soul").size() - souls_before
 	info["shelter_group_after"] = get_tree().get_nodes_in_group("shelter").size()
 	_out["hut"] = info
-	var wall := _world.get_node_or_null("HighNoonLayout/Buildings/Bld010_bld1")
+	var wall := _world.get_node_or_null("Map/HighNoonLayout/Buildings/Bld010_bld1")
 	var any_wall: MapBuilding = null
 	for node in get_tree().get_nodes_in_group("map_building"):
 		if (node as MapBuilding).tag == "bld1":
@@ -362,13 +362,13 @@ func _case_house() -> void:
 
 
 func _case_ground() -> void:
-	var terrain := _world.get_node("Terrain")
+	var terrain := _world.get_node("Map/Terrain")
 	var out := []
 	for z in [1060, 1080, 1100, 1120, 1140]:
 		for x in [1000, 1030, 1060, 1090, 1120]:
 			out.append([x, z, terrain.call("is_on_ground", x, z), snappedf(float(terrain.call("ground_height", x, z)), 0.1)])
 	_out["grid"] = out
-	var start := _world.get_node("MapProps/Starts/Start1")
+	var start := _world.get_node("Map/MapProps/Starts/Start1")
 	_out["start1"] = [start.global_position.x, start.global_position.y, start.global_position.z]
 	var altar := start.get_node_or_null("Altar")
 	_out["altar_children"] = start.get_children().map(func(n: Node) -> String: return n.name)
@@ -405,7 +405,7 @@ func _case_convert() -> void:
 	for pair in [["Farmer3", Vector3(1507.0, 0.0, 1525.0)], ["Taurock2", Vector3(1480.0, 0.0, 1520.0)]]:
 		var body := _npc(pair[0])
 		var spot: Vector3 = pair[1]
-		spot.y = float(_world.get_node("Terrain").call("ground_height", spot.x, spot.z))
+		spot.y = float(_world.get_node("Map/Terrain").call("ground_height", spot.x, spot.z))
 		body.warp_to(spot)
 		body.get_node("Health").call("damage", 9999.0, 1)
 	await _ticks(300)

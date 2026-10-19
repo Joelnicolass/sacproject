@@ -1,0 +1,108 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/map/map_root.gd" id="1_root"]
+[ext_resource type="Script" uid="uid://cnbnjgq6ehkv7" path="res://scenes/map/terrain/terrain.gd" id="2_terrain"]
+[ext_resource type="Script" uid="uid://bahus244cwp1m" path="res://scenes/map/props/map_props.gd" id="6_props"]
+[ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="8_start"]
+[ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="9_fount"]
+[ext_resource type="Environment" path="res://data/look/env_base.tres" id="f22_env"]
+[ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="f22_look"]
+[ext_resource type="Resource" path="res://data/look/ground/high_noon_tiles.tres" id="f22_tiles"]
+[ext_resource type="PackedScene" path="res://scenes/look/sky/sky.tscn" id="f40_sky"]
+[ext_resource type="Resource" path="res://assets/original/maps/high_noon/terrain.res" id="f172_terrain"]
+[ext_resource type="Material" uid="uid://b6pd04js5lq4t" path="res://assets/original/themes/james/ground_classic.tres" id="f194_ground"]
+[ext_resource type="PackedScene" uid="uid://c7w6ppe7anbdd" path="res://assets/original/maps/high_noon/terrain.glb" id="f195_terrain_glb"]
+[ext_resource type="PackedScene" path="res://scenes/map/maps/high_noon/layout.tscn" id="f196_layout"]
+[ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="f200_bake"]
+[ext_resource type="NavigationMesh" path="res://scenes/map/maps/high_noon/nav.res" id="f200_navmesh"]
+[ext_resource type="Script" uid="uid://brj6glypovhy8" path="res://scenes/map/nav/map_nav_region.gd" id="f200_nav_region"]
+[ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="f212_bake"]
+
+[node name="Map" type="Node3D" unique_id=1044000001 node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings_root", "npc_spawns_root")]
+script = ExtResource("1_root")
+terrain = NodePath("Terrain")
+nav_region = NodePath("NavRegion")
+starts = NodePath("MapProps/Starts")
+look = NodePath("Look")
+minimap_bake = NodePath("MinimapBake")
+buildings_root = NodePath("HighNoonLayout/Buildings")
+npc_spawns_root = NodePath("HighNoonLayout/NpcSpawns")
+
+[node name="Sky" parent="." unique_id=733427404 instance=ExtResource("f40_sky")]
+unique_name_in_owner = true
+background_color = Color(2.8878452e-07, 0.92139935, 0.5927794, 1)
+top_path = "res://assets/original/themes/persephone/skyt.png"
+bottom_path = "res://assets/original/themes/persephone/skyb.png"
+clouds_path = "res://assets/original/themes/persephone/sky.png"
+
+[node name="Environment" type="WorldEnvironment" parent="." unique_id=749856849]
+unique_name_in_owner = true
+environment = ExtResource("f22_env")
+
+[node name="Look" parent="." unique_id=1022000001 node_paths=PackedStringArray("sun", "world_environment", "terrain", "legacy_sky") instance=ExtResource("f22_look")]
+unique_name_in_owner = true
+sun = NodePath("../Sun")
+world_environment = NodePath("../Environment")
+terrain = NodePath("../Terrain")
+legacy_sky = NodePath("../Sky")
+tile_map = ExtResource("f22_tiles")
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=1176620511]
+transform = Transform3D(0.921061, -0.27935162, 0.27131036, 0, 0.6967067, 0.7173561, -0.38941833, -0.6607287, 0.6417094, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Terrain" parent="." unique_id=1483961628 groups=["nav_source"] instance=ExtResource("f195_terrain_glb")]
+unique_name_in_owner = true
+material_override = ExtResource("f194_ground")
+script = ExtResource("2_terrain")
+data = ExtResource("f172_terrain")
+
+[node name="Missing" type="Label3D" parent="Terrain" unique_id=430681053]
+visible = false
+text = "Falta el terreno de High Noon."
+font_size = 48
+
+[node name="MapProps" type="Node3D" parent="." unique_id=693965675 node_paths=PackedStringArray("plants_root")]
+script = ExtResource("6_props")
+plants_root = NodePath("../HighNoonLayout/Plants")
+
+[node name="Starts" type="Node3D" parent="MapProps" unique_id=1503934309]
+
+[node name="Start1" parent="MapProps/Starts" unique_id=966119700 node_paths=PackedStringArray("faces") instance=ExtResource("8_start")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1500, 16.9, 1570)
+faces = NodePath("../../Founts/FountEast")
+
+[node name="Start2" parent="MapProps/Starts" unique_id=1542996342 node_paths=PackedStringArray("faces") instance=ExtResource("8_start")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1040, 15.1, 980)
+slot = 2
+faces = NodePath("../../Founts/FountWest")
+
+[node name="Founts" type="Node3D" parent="MapProps" unique_id=52088304]
+
+[node name="FountCenter" parent="MapProps/Founts" unique_id=1897756010 instance=ExtResource("9_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1270, 10, 1270)
+
+[node name="FountEast" parent="MapProps/Founts" unique_id=646644486 instance=ExtResource("9_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1520, 16.1, 1450)
+
+[node name="FountSouth" parent="MapProps/Founts" unique_id=351329644 instance=ExtResource("9_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1080, 16.2, 1490)
+
+[node name="FountNorth" parent="MapProps/Founts" unique_id=1492753983 instance=ExtResource("9_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1450, 13.7, 1070)
+
+[node name="FountWest" parent="MapProps/Founts" unique_id=1824358006 instance=ExtResource("9_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1030, 21, 1110)
+
+[node name="HighNoonLayout" parent="." unique_id=1507855763 instance=ExtResource("f196_layout")]
+
+[node name="NavRegion" type="NavigationRegion3D" parent="." unique_id=1200200200]
+unique_name_in_owner = true
+navigation_mesh = ExtResource("f200_navmesh")
+script = ExtResource("f200_nav_region")
+bake_settings = ExtResource("f200_bake")
+
+[node name="MinimapBake" parent="." unique_id=1037000020 node_paths=PackedStringArray("terrain") instance=ExtResource("f212_bake")]
+unique_name_in_owner = true
+terrain = NodePath("../Terrain")
+

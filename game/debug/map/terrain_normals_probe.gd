@@ -12,7 +12,7 @@ const WALL_AREA := 0.01
 func _initialize() -> void:
 	var terrain := MeshInstance3D.new()
 	terrain.set_script(load(TERRAIN_SCRIPT))
-	terrain.set("data", load(OriginalAssets.HIGH_NOON_TERRAIN))
+	terrain.set("data", load(MapCatalog.active().terrain_path))
 	root.add_child(terrain)
 	await process_frame
 	if terrain.mesh == null:

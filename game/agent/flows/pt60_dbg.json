@@ -2,8 +2,8 @@
 {"wait_until":{"node":"%Stats","text_contains":"Vida","timeout":20}},{"wait":1.0},
 {"print":{"node":"%Wizards/Wizard1","prop":"global_position"}},
 {"print":{"node":"%Wizards/Wizard2","prop":"global_position"}},
-{"print":{"node":"HighNoon/MapProps/Starts/Start2/Altar","prop":"global_position"}},
-{"print":{"node":"HighNoon/MapProps/Starts/Start2","prop":"global_position"}},
-{"print":{"node":"HighNoon/MapProps/Starts/Start1/Altar","prop":"global_position"}},
+{"print":{"node":"HighNoon/Map/MapProps/Starts/Start2/Altar","prop":"global_position"}},
+{"print":{"node":"HighNoon/Map/MapProps/Starts/Start2","prop":"global_position"}},
+{"print":{"node":"HighNoon/Map/MapProps/Starts/Start1/Altar","prop":"global_position"}},
 {"print":{"node":"Offering","prop":"global_position"}},
 {"shot":"dbg.png"}]}

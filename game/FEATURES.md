@@ -25,7 +25,7 @@ Estados: **Hecho** (cerrado y probado), **Parcial** (anda, con deuda anotada), *
 - **Hecho.** High Noon como `terrain.glb` editable, suelo PBR, aldeas, edificios, plantas y NPC como nodos de la escena, rotación en el transform, referencias tipadas (`MapBuilding.building`, `NpcSpawn.creature`). F4, F17, F48, F52, F68, F73, F172, F192-F196, F199, F240, F241.
 - **Hecho.** Navegación con navmesh de Godot horneado y versionado por hash, sin grilla propia. F200-F204.
 - **Hecho.** Biomas y temas de dioses. F32, F171.
-- **En curso.** RFC-044 parte `high_noon.tscn` en partida + mapa.
+- **Hecho.** RFC-044: `match.tscn` (sistemas, HUD, cámara) carga un mapa de `scenes/map/maps/<mapa>/` según su `MapDefinition` (`data/maps/`); `--map=<tag>`. Mapa de prueba `test_flat` sin tocar código. F260-F263.
 
 ### Cámara, órdenes y entrada
 - **Hecho.** Cámara original, InputMap, selección sin tope, órdenes RTS, formaciones como Resources, menú radial en el botón derecho, marcador de orden del original. F15, F18, F27, F78, F216-F220.

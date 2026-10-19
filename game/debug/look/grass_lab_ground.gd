@@ -29,7 +29,7 @@ func _ready() -> void:
 
 ## The grass height as the game derives it: from a throw-away Terrain built from the map's data.
 func _derive_height() -> Image:
-	var data := load(OriginalAssets.HIGH_NOON_TERRAIN) as MapTerrainData
+	var data := load(MapCatalog.active().terrain_path) as MapTerrainData
 	if data == null:
 		return null
 	var helper := MeshInstance3D.new()

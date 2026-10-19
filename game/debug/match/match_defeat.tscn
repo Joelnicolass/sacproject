@@ -9,7 +9,7 @@
 [node name="HighNoon" parent="." instance=ExtResource("1_world")]
 rules = ExtResource("2_rules")
 
-[node name="Altar" parent="HighNoon/MapProps/Starts/Start2" index="0"]
+[node name="Altar" parent="HighNoon/Map/MapProps/Starts/Start2" index="0"]
 state = 2
 
 [node name="Executioner" parent="." instance=ExtResource("3_unit")]
@@ -19,7 +19,7 @@ owner_slot = 1
 rng_seed = 20
 target_groups = PackedStringArray("wizard")
 
-[editable path="HighNoon/MapProps/Starts/Start2"]
+[editable path="HighNoon/Map/MapProps/Starts/Start2"]
 
 [node name="Population" parent="HighNoon"]
 spawn_creatures = false

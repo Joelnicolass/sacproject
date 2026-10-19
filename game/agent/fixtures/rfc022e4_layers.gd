@@ -12,7 +12,7 @@ extends Node
 
 func _ready() -> void:
 	await get_tree().create_timer(delay).timeout
-	var rig := world.get_node_or_null("Look")
+	var rig := world.get_node_or_null("Map/Look")
 	if rig == null:
 		print("RFC022E4 no rig")
 		return

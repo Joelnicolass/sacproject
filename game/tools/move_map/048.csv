@@ -57,7 +57,7 @@ scenes/flow/,scenes/core/flow/,d
 scenes/ui/boot.gd,scenes/core/boot.gd,d
 scenes/ui/boot.tscn,scenes/core/boot.tscn,d
 scenes/world/components/debug_log.gd,scenes/core/debug_log.gd,d
-scenes/world/high_noon.gd,scenes/match/high_noon.gd,d
+scenes/world/high_noon.gd,scenes/match/match_world.gd,d
 scenes/world/high_noon.tscn,scenes/match/high_noon.tscn,d
 scenes/world/match/,scenes/match/,d
 scenes/world/match_biome.gd,scenes/match/match_biome.gd,d

@@ -896,7 +896,7 @@
   },
   {
    "print": {
-    "node": "MapProps/Starts/Start2/Altar",
+    "node": "Map/MapProps/Starts/Start2/Altar",
     "prop": "state"
    }
   },

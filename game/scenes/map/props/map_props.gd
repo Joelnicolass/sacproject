@@ -9,10 +9,16 @@ extends Node3D
 @export var plants_root: Node3D
 
 
-## Debug scenes swap `rules` on the scene root. The mana sources of the map read theirs in
-## _ready, so they get the root's rules here, before any child is ready.
+## Debug scenes swap `rules` on the match root. The mana sources of the map read theirs in
+## _ready, so they get the match's rules here, before any child is ready. The match is the closest ancestor with
+## `rules` (the map is its child); a map opened alone has none and its sources keep theirs.
 func _enter_tree() -> void:
-	var rules: Variant = owner.get("rules") if owner else null
+	var rules: Variant = null
+	var ancestor := get_parent()
+	while ancestor != null and not ancestor.get("rules") is MatchRules:
+		ancestor = ancestor.get_parent()
+	if ancestor != null:
+		rules = ancestor.get("rules")
 	if not rules is MatchRules:
 		return
 	for source in find_children("ManaSource", "Node3D", true, false):

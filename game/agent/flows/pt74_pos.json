@@ -10,19 +10,19 @@
   },
   {
    "print": {
-    "node": "Runner/HighNoon/MapProps/Founts/FountWest",
+    "node": "Runner/HighNoon/Map/MapProps/Founts/FountWest",
     "prop": "global_position"
    }
   },
   {
    "print": {
-    "node": "Runner/HighNoon/MapProps/Starts/Start2",
+    "node": "Runner/HighNoon/Map/MapProps/Starts/Start2",
     "prop": "global_position"
    }
   },
   {
    "print": {
-    "node": "Runner/HighNoon/MapProps/Starts/Start1",
+    "node": "Runner/HighNoon/Map/MapProps/Starts/Start1",
     "prop": "global_position"
    }
   },

@@ -54,7 +54,7 @@ func _start() -> void:
 		await get_tree().physics_frame
 	var rule := rules()
 	var focus := _focus_point(rule)
-	var terrain := world.get_node("Terrain")
+	var terrain := world.get_node("Map/Terrain")
 	var spot := focus + Vector3(rule.from_direction.x, 0.0, rule.from_direction.y).normalized() * rule.wizard_distance_m
 	spot.y = _ground(terrain, spot.x, spot.z)
 	wizard.global_position = spot

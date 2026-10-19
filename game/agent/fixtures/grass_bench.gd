@@ -81,7 +81,7 @@ func _ready() -> void:
 
 func _run() -> void:
 	await _wait(settle_s)
-	var rig := world.get_node_or_null("Look")
+	var rig := world.get_node_or_null("Map/Look")
 	_field = get_tree().get_first_node_in_group("grass_field")
 	_terrain = get_tree().get_first_node_in_group("terrain")
 	_wizard = get_tree().get_first_node_in_group("local_wizard") as Node3D
@@ -150,7 +150,7 @@ func _freeze() -> void:
 	var classic: Variant = _terrain.call("classic_material") if _terrain.has_method("classic_material") else null
 	if classic:
 		(classic as ShaderMaterial).set_shader_parameter("grass_time_override", 1.0)
-	var sky := world.get_node_or_null("Sky")
+	var sky := world.get_node_or_null("Map/Sky")
 	if sky:
 		sky.set_process(false)
 	if _no_ssao:

@@ -9,7 +9,7 @@ extends Node
 ##   spawn of the saved scene (its stored transform, no _ready) against the baseline, at TOLERANCE.
 ## The baseline is kept in tools/audit/layout_transforms_baseline.json so the check can be run again later.
 
-const LAYOUT := "res://scenes/map/high_noon_layout.tscn"
+const LAYOUT := "res://scenes/map/maps/high_noon/layout.tscn"
 const BASELINE := "res://tools/audit/layout_transforms_baseline.json"
 const GROUPS: PackedStringArray = ["Buildings", "NpcSpawns"]
 const TOLERANCE := 1e-4

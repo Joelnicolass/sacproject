@@ -5,7 +5,7 @@ extends RefCounted
 ## `run(host)` builds small worlds under `host` and removes them when it ends.
 
 const ALTAR_SCENE := preload("res://scenes/map/props/altar.tscn")
-const MATCH_SCENE := preload("res://scenes/match/match.tscn")
+const MATCH_SCENE := preload("res://scenes/match/match_state.tscn")
 const BANNER_SCENE := preload("res://scenes/ui/hud/match_result.tscn")
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
 const RULES := preload("res://data/match_rules.tres")

@@ -34,8 +34,11 @@ static func pick_random(match_seed: int) -> Resource:
 	return theme_for(pick_god(match_seed))
 
 
-## Returns the theme with its ENVI colours, as applied.
+## Returns the theme with its ENVI colours, as applied. `world_root` is the match (its `map` holds the sky, the sun, the
+## environment, the ground and the look rig, RFC-044) or a map root itself.
 static func apply(theme: Resource, world_root: Node) -> Resource:
+	if world_root.get("map") is Node:
+		world_root = world_root.get("map")
 	var resolved: Resource = theme.resolved()
 	var sky := world_root.get_node_or_null(SKY_NODE)
 	if sky:

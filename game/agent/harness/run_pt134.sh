@@ -2,7 +2,7 @@
 # usage: agent/harness/godot_run.sh agent/harness/run_pt134.sh FLOW -- F134 playtest: one windowed flow,
 # 60 fps cap, 1280x720, --fail-on-error, RSS watchdog 2.5 GB. Out: agent/out/pt134/.
 set -u
-ROOT=/Users/joelsartori/Development/sacproject/game
+. "$(dirname "$0")/../harness/env.sh"
 export GODOT="$ROOT/agent/harness/godot60_res.sh"
 export PT_RES=1280x720
 OUT="$ROOT/agent/out/pt134"; mkdir -p "$OUT"

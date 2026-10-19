@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # usage: run_pt78.sh FLOW  -- one windowed flow, 60 fps cap, RSS watchdog (kills at 2.5 GB).
 set -u
-ROOT=/Users/joelsartori/Development/sacproject/game
+. "$(dirname "$0")/../harness/env.sh"
 export GODOT="$ROOT/agent/harness/godot60.sh"
 OUT="$ROOT/agent/out/pt78"; mkdir -p "$OUT"
 cd "$ROOT"

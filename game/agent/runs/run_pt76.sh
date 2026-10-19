@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # usage: run_pt76.sh FLOW [extra --key=value...] -- waits until no other Godot runs (godot_busy.sh, 3 checks),
 # then one windowed Godot at 60 fps with --fail-on-error; log in agent/out/pt76/FLOW.log; RSS watchdog 2.5 GB.
-ROOT=/Users/joelsartori/Development/sacproject/game
+. "$(dirname "$0")/../harness/env.sh"
 export GODOT="$ROOT/agent/harness/godot60.sh"
 FLOW="$1"; shift
 OUT="$ROOT/agent/out/pt76"

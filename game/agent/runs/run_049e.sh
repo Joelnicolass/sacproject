@@ -9,8 +9,8 @@
 # Processes: dedicated + 2 clients (step 1), one solo (step 2); all through the Godot queue. Own watchdog: LIMIT_S (240 s) kills them
 # by pid and descendants (no pkill). UDP port 7849 by default (E2E_PORT).
 # Prints the checks and E2E PASS / E2E FAIL (exit 0 / 1). Needs `--import` once first (new class_names).
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-GODOT="${GODOT_BIN:-/Applications/Godot.app/Contents/MacOS/Godot}"
+. "$(dirname "$0")/../harness/env.sh"
+GODOT="$GODOT_BIN"
 LIMIT_S="${PROBE_LIMIT_S:-240}"
 PORT="${E2E_PORT:-7849}"
 FORCE_TICKS="${E2E_FORCE_TICKS:-1200}"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # usage: run_022e4b.sh FLOW OUTNAME [extra user args] -- AgentKit flow, one Godot with window at 60 fps, --fail-on-error.
 # Waits until agent/harness/godot_busy.sh sees no other test Godot; killed above 2.5 GB or after RUN_LOOPS*2 s.
-ROOT=/Users/joelsartori/Development/sacproject/game
+. "$(dirname "$0")/../harness/env.sh"
 cd "$ROOT"
 until agent/harness/godot_busy.sh >/dev/null; do sleep 5; done
 OUT=agent/out/rfc022e4b/$2

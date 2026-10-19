@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""The particle atlases and their catalog (sacobject.d SacParticle / SacSoul): which TXTR of which WAD folder, and the
+"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+
+The particle atlases and their catalog (sacobject.d SacParticle / SacSoul): which TXTR of which WAD folder, and the
 per-type numbers (size, energy, delay, gravity, lifetime) the game reads from fx.json.
 
 Data and helpers only; tools/import/import_ui.py writes assets/original/fx/ with them. The TXTR is read by tools/sac_formats.

@@ -12,8 +12,8 @@
 # descendants, no pkill) at LIMIT_S (170 s), or if the total RSS passes RSS_LIMIT_MB.
 # Needs `--import` once first (new class_names). Uses UDP (or TCP with TRANSPORT=ws) port 7716 (LOCAL_PORT). Files go in a temp folder.
 # Prints the checks and E2E LOCAL PASS / E2E LOCAL FAIL (exit 0 / 1).
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-GODOT="${GODOT_BIN:-/Applications/Godot.app/Contents/MacOS/Godot}"
+. "$(dirname "$0")/../harness/env.sh"
+GODOT="$GODOT_BIN"
 LIMIT_S="${PROBE_LIMIT_S:-170}"
 TRANSPORT="${TRANSPORT:-enet}" # enet (UDP, default) or ws (WebSocket over TCP): TRANSPORT=ws bash agent/runs/run_034m.sh
 RSS_LIMIT_MB="${E2E_RSS_LIMIT_MB:-6144}"

@@ -12,8 +12,8 @@
 # (by pid and descendants, no pkill) at LIMIT_S (240 s), or if the total RSS passes RSS_LIMIT_MB.
 # Prints the checks and E2E PASS / E2E FAIL (exit 0 / 1). Needs `--import` once first (new class_names). UDP 7706 (lobby),
 # 7800-7803 (matches), 7810 (hand-made ticket); files go in a temp folder.
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-GODOT="${GODOT_BIN:-/Applications/Godot.app/Contents/MacOS/Godot}"
+. "$(dirname "$0")/../harness/env.sh"
+GODOT="$GODOT_BIN"
 LIMIT_S="${PROBE_LIMIT_S:-240}"
 RSS_LIMIT_MB="${E2E_RSS_LIMIT_MB:-6144}"
 LOBBY_PORT="${E2E_LOBBY_PORT:-7706}"

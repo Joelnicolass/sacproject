@@ -1,5 +1,6 @@
 extends Node
 
+## No necesita el juego original; usa los modelos y datos ya importados en assets/original (versionados).
 ## RFC-043 043a/043b, one time, on the text of maps/high_noon/layout.tscn (so the diff of the scene is only what changes):
 ##  - 043a: a building or spawn with a `facing_deg` line gets the turn in its own saved transform, the same operation the game ran
 ##    in _ready (rotation.y = -deg_to_rad(facing_deg)); every `facing_deg` line is removed.

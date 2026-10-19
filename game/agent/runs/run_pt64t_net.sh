@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
+. "$(dirname "$0")/../harness/env.sh"
 # usage: run_f64_net.sh PORT -- dedicated + client A (casts Teleport) + client B (watches), on debug/spells/teleport_home.tscn (RFC-021c).
 set -u
-GODOT=/Applications/Godot.app/Contents/MacOS/Godot
+GODOT="$GODOT_BIN"
 export GODOT
-ROOT=/Users/joelsartori/Development/sacproject/game
 PORT="$1"
 OUT="$ROOT/agent/out/pt64t/net"
 WORLD=res://debug/spells/teleport_home.tscn

@@ -42,13 +42,13 @@ func release() -> void:
 	_hold = false
 
 
-## `out` is an absolute folder; names f64_<n>_<what>.png.
+## `out` is a folder (absolute, or res:// / user://); names f64_<n>_<what>.png.
 ## `watch` is the name of the node whose jump is looked for (a peer's wizard); empty = the local wizard.
 func arm(out: String, watch: String = "") -> void:
 	_watch_name = watch
 	_armed = true
-	_out = out
-	DirAccess.make_dir_recursive_absolute(out)
+	_out = ProjectSettings.globalize_path(out)
+	DirAccess.make_dir_recursive_absolute(_out)
 
 
 func report() -> String:

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # usage: run_pt75w.sh FLOW [extra --key=value...] -- one windowed Godot at 60 fps; log in agent/out/pt75w/FLOW.log
 # A watchdog kills the run if RSS passes 2.5 GB.
-ROOT=/Users/joelsartori/Development/sacproject/game
+. "$(dirname "$0")/../harness/env.sh"
 export GODOT="$ROOT/agent/harness/godot60.sh"
 FLOW="$1"; shift
 OUT="$ROOT/agent/out/pt75w"

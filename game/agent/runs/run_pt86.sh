@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # usage: run_pt86.sh FLOW   -- one windowed flow, 60 fps cap, --fail-on-error, RSS watchdog 2.5 GB. Out: agent/out/pt86/.
 set -u
-ROOT=/Users/joelsartori/Development/sacproject/game
+. "$(dirname "$0")/../harness/env.sh"
 export GODOT="$ROOT/agent/harness/godot60.sh"
 OUT="$ROOT/agent/out/pt86"; mkdir -p "$OUT"
 cd "$ROOT"

@@ -5,7 +5,7 @@
   {"wait_until": {"node": "%Stats", "text_contains": "Vida", "timeout": 15}},
   {"wait": 1.0},
   {"call": {"harness": "teleport_watch", "method": "report", "args": []}},
-  {"call": {"harness": "teleport_watch", "method": "arm", "args": ["/Users/joelsartori/Development/sacproject/game/agent/out/f64"]}},
+  {"call": {"harness": "teleport_watch", "method": "arm", "args": ["res://agent/out/f64"]}},
   {"shot": "f64_before.png"},
   {"click": "%SpellBook/Tabs/StructureTab"},
   {"wait": 0.2},

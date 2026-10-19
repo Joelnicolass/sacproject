@@ -1,5 +1,6 @@
 extends Node
 
+## No necesita el juego original; usa los modelos y datos ya importados en assets/original (versionados).
 ## Bakes the map's navmesh headless (RFC-035 035f): the static colliders of the `nav_source` nodes of the map scene (the
 ## terrain trimesh, the buildings, the manafounts) with the numbers of data/nav/nav_bake.tres, into the `nav_path` of its
 ## MapDefinition. The map is `--map=<tag>` after `--` (High Noon without it; RFC-044 044b).

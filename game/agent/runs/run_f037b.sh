@@ -3,12 +3,12 @@
 # Call it through the Godot lock:  bash agent/harness/godot_run.sh bash agent/runs/run_f037b.sh [OUTNAME] [WxH]
 # Default 1280x720, 60 fps cap, RSS watchdog 2.5 GB. Out: agent/out/<OUTNAME>; log in <OUTNAME>/f037_minimap.log.
 set -u
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+. "$(dirname "$0")/../harness/env.sh"
 NAME="${1:-f037b}"
 RES="${2:-1280x720}"
 OUT="$ROOT/agent/out/$NAME"; mkdir -p "$OUT"
 cd "$ROOT"
-/Applications/Godot.app/Contents/MacOS/Godot --path "$ROOT" --resolution "$RES" --max-fps 60 -- --agent=flow --flow="f037_minimap.json" --out="res://agent/out/$NAME" --fail-on-error > "$OUT/f037_minimap.log" 2>&1 &
+"$GODOT_BIN" --path "$ROOT" --resolution "$RES" --max-fps 60 -- --agent=flow --flow="f037_minimap.json" --out="res://agent/out/$NAME" --fail-on-error > "$OUT/f037_minimap.log" 2>&1 &
 P=$!
 ( while kill -0 $P 2>/dev/null; do
     r=$(ps -o rss= -p $P | tr -d ' '); [ -n "$r" ] && [ "$r" -gt 2500000 ] && { echo "RSS $r kill" >> "$OUT/f037_minimap.log"; kill -9 $P; }

@@ -26,7 +26,7 @@
     "harness": "teleport_watch",
     "method": "arm",
     "args": [
-     "/Users/joelsartori/Development/sacproject/game/agent/out/pt64t/net",
+     "res://agent/out/pt64t/net",
      "Wizard1"
     ]
    }

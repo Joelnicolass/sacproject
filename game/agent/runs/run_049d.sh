@@ -6,8 +6,8 @@
 #   bash agent/runs/run_049d.sh            (needs `--import` once)
 #   SMOKE_MAP=test_flat4 SMOKE_NAV="navmesh 110 pol" bash agent/runs/run_049d.sh
 # Has its own watchdog (LIMIT_S, 600 s by default) that kills ITS Godot by pid. Goes through the Godot queue (godot_run.sh).
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-GODOT="${GODOT_BIN:-/Applications/Godot.app/Contents/MacOS/Godot}"
+. "$(dirname "$0")/../harness/env.sh"
+GODOT="$GODOT_BIN"
 LIMIT_S="${PROBE_LIMIT_S:-600}"
 MAP="${SMOKE_MAP:-winter_wonder}"
 NAV="${SMOKE_NAV:-navmesh 44332 pol}"

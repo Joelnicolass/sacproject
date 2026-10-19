@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
+. "$(dirname "$0")/../harness/env.sh"
 # usage: pt022e4c_run.sh FLOW OUTNAME [extra user args]. One Godot with window, 60 fps, killed >2.5 GB.
 # Waits while any other non-editor Godot is running.
-G=/Applications/Godot.app/Contents/MacOS/Godot
-ROOT=/Users/joelsartori/Development/sacproject/game
+G="$GODOT_BIN"
 cd "$ROOT"
-while ps -axo command | grep -E "^/Applications/Godot.app/Contents/MacOS/Godot" | grep -v -e "--editor" | grep -q .; do sleep 3; done
+while ps -axo command | grep -E "^[^ ]*/Godot( |$)" | grep -v -e "--editor" | grep -q .; do sleep 3; done
 mkdir -p "agent/out/pt022e4c/$2"
 $G --path . --resolution 1280x720 --max-fps 60 -- --agent=flow --flow="$1" --out="res://agent/out/pt022e4c/$2" --fail-on-error "${@:3}" > "agent/out/pt022e4c/$2.log" 2>&1 &
 PID=$!

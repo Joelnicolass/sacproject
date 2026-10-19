@@ -1,5 +1,6 @@
 extends SceneTree
 
+## No necesita el juego original; usa los modelos y datos ya importados en assets/original (versionados).
 ## One-time tool (RFC-035 035d): writes a map's content as nodes (High Noon, or `--map=<tag>` after `--`, RFC-044 044b: the
 ## inputs and outputs are the paths of its MapDefinition). From then on the scene is the source of truth and
 ## nothing reads ntts.json or widgets.json at runtime; those two files are only this tool's input.

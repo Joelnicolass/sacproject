@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Skeletal models (RFC-023a): saxs*.wad -> one glTF binary per model (versioned asset, WADs stay out of git).
+"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+
+Skeletal models (RFC-023a): saxs*.wad -> one glTF binary per model (versioned asset, WADs stay out of git).
 
 For each model writes, into the output folder (`--out`, default assets/original/models (versioned assets)):
     <m>.glb            Skeleton3D + one skinned mesh (one primitive per material: body parts that share a texture are merged, <= 4 influences)

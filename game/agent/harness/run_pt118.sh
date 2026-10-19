@@ -3,8 +3,8 @@
 #   run_pt118.sh flows FLOW...   windowed flows one after another (60 fps cap, 1280x720, --fail-on-error)
 # RSS watchdog 2.5 GB on every Godot. Out: agent/out/pt118/.
 set -u
-ROOT=/Users/joelsartori/Development/sacproject/game
-BIN=/Applications/Godot.app/Contents/MacOS/Godot
+. "$(dirname "$0")/../harness/env.sh"
+BIN="$GODOT_BIN"
 export GODOT="$ROOT/agent/harness/godot60_res.sh"
 export PT_RES=1280x720
 OUT="$ROOT/agent/out/pt118"; mkdir -p "$OUT"; cd "$ROOT"

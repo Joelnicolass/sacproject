@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # usage: pt108_run.sh FLOW OUTNAME [extra user args] -- playtest F108: one Godot with window, 60 fps, --fail-on-error.
 # Before launching, godot_busy.sh must report clear three times in a row. Killed above 2.5 GB or after RUN_LOOPS*2 s.
-ROOT=/Users/joelsartori/Development/sacproject/game
+. "$(dirname "$0")/../harness/env.sh"
 cd "$ROOT"
 clear=0
 while [ $clear -lt 3 ]; do

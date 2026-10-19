@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # usage: run_pt77_net.sh PORT -- dedicated with --ai-slots=2 (headless) + one windowed client (slot 1). Two processes, never more.
 set -u
-export GODOT=/Users/joelsartori/Development/sacproject/game/agent/harness/godot60.sh
-ROOT=/Users/joelsartori/Development/sacproject/game
+. "$(dirname "$0")/../harness/env.sh"
+export GODOT=$ROOT/agent/harness/godot60.sh
 PORT="${1:-7787}"
 OUT="$ROOT/agent/out/pt77/net"
 mkdir -p "$OUT"; cd "$ROOT"

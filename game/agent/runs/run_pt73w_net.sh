@@ -2,8 +2,8 @@
 # usage: run_pt73_net.sh PORT -- dedicated on debug/net/village_net.tscn + client A, then (A gone, hut already fallen) a late client.
 # Never more than two Godot processes: the server and one client.
 set -u
-export GODOT=/Users/joelsartori/Development/sacproject/game/agent/harness/godot60.sh
-ROOT=/Users/joelsartori/Development/sacproject/game
+. "$(dirname "$0")/../harness/env.sh"
+export GODOT=$ROOT/agent/harness/godot60.sh
 PORT="${1:-7781}"
 OUT="$ROOT/agent/out/pt73w/net"
 WORLD=res://debug/net/village_net.tscn

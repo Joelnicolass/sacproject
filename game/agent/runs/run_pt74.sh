@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # usage: run_pt74.sh FLOW -- one windowed Godot at 60 fps; log in agent/out/pt74/FLOW.log
-ROOT=/Users/joelsartori/Development/sacproject/game
+. "$(dirname "$0")/../harness/env.sh"
 export GODOT="$ROOT/agent/harness/godot60.sh"
 FLOW="$1"
 mkdir -p "$ROOT/agent/out/pt74"

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Import the original's 2D art (HUD, spell icons, cursors, X menu, particle atlases) to assets/original/{ui,fx}/.
+"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+
+Import the original's 2D art (HUD, spell icons, cursors, X menu, particle atlases) to assets/original/{ui,fx}/.
 
 RFC-033 (033d, from the WAD in 033h). Writes only assets/original/ui/{icons,hud,cursors,xmenu}/ and assets/original/fx/.
 Deterministic and idempotent: a second run writes nothing, and an existing .png.import is never touched (it carries the UID).

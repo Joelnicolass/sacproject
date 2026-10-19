@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""One-time migration (RFC-036 036i, A11): ParticleType .tres files swap `atlas_key = "<fx.json key>"` for a
+"""No necesita el juego original: usa los assets ya importados en assets/original (versionados).
+
+One-time migration (RFC-036 036i, A11): ParticleType .tres files swap `atlas_key = "<fx.json key>"` for a
 `atlas` Texture2D ext_resource (the `png` of that fx.json entry). fx.json stays a tool-side catalog only.
 Run from game/: python3 tools/import/migrate_particle_atlas.py"""
 import json, re, sys

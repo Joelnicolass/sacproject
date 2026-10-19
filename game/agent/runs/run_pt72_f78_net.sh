@@ -3,9 +3,9 @@
 # The client selects 150 creatures and orders a move; the server log must show "orden move 150"
 # and "150 de 150 con orden".
 set -u
-GODOT=/Users/joelsartori/Development/sacproject/game/agent/harness/godot60.sh
+. "$(dirname "$0")/../harness/env.sh"
+GODOT=$ROOT/agent/harness/godot60.sh
 export GODOT
-ROOT=/Users/joelsartori/Development/sacproject/game
 PORT="${1:-7777}"
 OUT="$ROOT/agent/out/pt72/f78_net"
 WORLD=res://debug/orders/selection_many.tscn

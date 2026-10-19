@@ -7,7 +7,7 @@
 #                                  stops when both clients end.
 # RSS watchdog 2.5 GB on every Godot. Out: agent/out/pt143/.
 set -u
-ROOT=/Users/joelsartori/Development/sacproject/game
+. "$(dirname "$0")/../harness/env.sh"
 export GODOT="$ROOT/agent/harness/godot60_res.sh"
 export PT_RES=1280x720
 OUT="$ROOT/agent/out/pt143"; mkdir -p "$OUT"; cd "$ROOT"
@@ -19,7 +19,7 @@ watch_rss() { # $1 pid to follow, $2 log
 }
 if [ "${1:-}" = "--net" ]; then
   PORT="$2"; FLAGS="$3"; C1="$4"; C2="$5"; DELAY="$6"
-  /Applications/Godot.app/Contents/MacOS/Godot --headless --max-fps 60 --path "$ROOT" -- --dedicated --mp-port="$PORT" $FLAGS > "$OUT/net_server.log" 2>&1 &
+  "$GODOT_BIN" --headless --max-fps 60 --path "$ROOT" -- --dedicated --mp-port="$PORT" $FLAGS > "$OUT/net_server.log" 2>&1 &
   SV=$!
   for _ in $(seq 1 160); do grep -q "listo puerto" "$OUT/net_server.log" && break; sleep 0.25; done
   "$ROOT/addons/agent_kit/cli.sh" "$ROOT" flow --flow="$ROOT/agent/flows/$C1.json" --out=res://agent/out/pt143 --fail-on-error --mp-port="$PORT" > "$OUT/$C1.log" 2>&1 &

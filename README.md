@@ -57,6 +57,8 @@ godot --path game
 
 En el menú: **Cambiar personaje** para elegir mago y dios, y **Jugar solo** o **Contra la IA**.
 
+**Jugar NO necesita el juego original instalado:** los modelos, texturas, mapas e interfaz ya están en `game/assets/original/` (por LFS). El original solo hace falta para las herramientas que reimportan desde él (ver [Herramientas que necesitan el juego original](#herramientas-que-necesitan-el-juego-original)).
+
 ### Controles principales
 
 | Acción | Tecla |
@@ -93,7 +95,7 @@ godot --headless --path game -- --room-server
 
 El port se armó por etapas. Cada cambio grande tiene su RFC en [`game/rfcs/`](game/rfcs/) y su registro en [`game/docs/CHANGELOG-features.md`](game/docs/CHANGELOG-features.md) (el estado actual por área está en [`game/FEATURES.md`](game/FEATURES.md)). Para agregar contenido, mirá [`game/docs/HOWTO.md`](game/docs/HOWTO.md).
 
-1. **Extraer los datos del original.** Los importadores de [`game/tools/`](game/tools/) leen los WAD de una instalación local de Sacrifice:
+1. **Extraer los datos del original.** Los importadores de [`game/tools/`](game/tools/) leen los WAD de una instalación local de Sacrifice (que cada quien tiene que tener; ver [Configurar rutas](#configurar-rutas)):
    - modelos, con su esqueleto y todas sus animaciones, a `.glb`;
    - texturas, terreno, edificios, efectos e interfaz;
    - las estadísticas de criaturas, hechizos, magos y edificios.
@@ -145,6 +147,55 @@ cd game && bash agent/run_determinism.sh quick
 
 ```bash
 godot --headless --fixed-fps 60 --path game res://debug/suite/rules_suite.tscn
+```
+
+## Herramientas que necesitan el juego original
+
+Las rutas son relativas a `game/`.
+
+| Herramienta | ¿Necesita el original? | Qué produce |
+|---|---|---|
+| Jugar (F5), `godot --path game`, el servidor de salas | **No** | Nada: los assets ya están en `game/assets/original/` (LFS) |
+| Pruebas: `agent/run_determinism.sh`, `rules_suite`, `agent/runs/*.sh`, flows de AgentKit | **No** | PASS/FAIL, capturas en `agent/out/` |
+| `tools/import/export_stats.py` | **Sí** | `assets/original/data/*.json` (estadísticas de criaturas, hechizos, magos, edificios) |
+| `tools/import/export_skeletal.py` | **Sí** | `assets/original/models/*.glb` + `index.json` (esqueleto y animaciones) |
+| `tools/import/export_skeletal_reference.py` | **Sí** | OBJ de referencia en `agent/out/skeletal_ref/` (no se versiona) |
+| `tools/import/import_textures.py` | **Sí** | `assets/original/textures/*.png` |
+| `tools/import/import_props.py` | **Sí** | `assets/original/props/*.glb` (edificios y plantas) |
+| `tools/import/import_themes.py` | **Sí** | `assets/original/themes/<dios>/` (suelo, cielo, luz) |
+| `tools/import/import_ui.py` | **Sí** | `assets/original/ui/` y `assets/original/fx/` (HUD, iconos, cursores, partículas) |
+| `tools/import/import_map.py` (incluye `--list`) | **Sí** | `assets/original/maps/<tag>/` (tiles, luz, entidades, terreno) |
+| `tools/audit/check_original_assets.sh` | **Sí** | Paridad de `assets/original/` con el original (`ASSETS PARITY PASS/FAIL`) |
+| `tools/import/scaffold_map.py` | No: usa lo que ya dejó `import_map.py` | `sides.tres`, `MapDefinition`, `map.tscn`, entrada del catálogo |
+| `tools/import/classify_ground_tiles.py`, `sample_grass_palette.py` | No: usan `assets/original/` | `high_noon_tiles.tres`, paleta de pasto propuesta |
+| `tools/bake/*` (navmesh, catálogo, `bake_body_scenes`, `new_creature`, terreno) | No: `bake_body_scenes` usa los `.glb` y `index.json` del repo; `import_terrain.gd` lee el `.bin` que escribe `import_map.py` | Escenas, `.tres` y navmesh |
+| Menú **Project > Tools > Sacrifice** | Solo «Listar mapas del original» (lleva «(requiere juego original)» en el menú) | Salida en un diálogo |
+
+Estas herramientas leen los `.wad` y los `.scp` del juego instalado; **el original no viene en el repo** (es el juego comercial). Si falta, imprimen un mensaje en español que explica qué carpeta hace falta y cómo indicarla, y terminan con error. Todas empiezan su encabezado y su `--help` con «Requiere el juego original instalado (SAC_INSTALL)» o con «No necesita el juego original».
+
+### Configurar rutas
+
+**El juego original** (solo para las herramientas de la tabla de arriba). Hace falta la carpeta que contiene los `.wad` (por ejemplo `spells.wad`, `models.wad`, `main.wad`), normalmente llamada `data`, con la carpeta `maps/` (los `.scp`) al lado. Se busca en este orden, sin ninguna ruta por defecto:
+
+1. Variable de entorno `SAC_INSTALL` (la carpeta con los `.wad`) o `SAC_ROOT` (la raíz del juego, la que tiene `data/` y `maps/`). `SAC_MAPS` es opcional si `maps/` está en otro lado.
+2. Archivo `game/tools/import/local.cfg` (no se versiona): copiá `local.cfg.example` y completá `SAC_INSTALL=`.
+3. Desde el editor de Godot: **Editor > Editor Settings > sacrifice > original_install_path**. El plugin «Sacrifice» la pasa como `SAC_INSTALL` a los procesos que lanza.
+
+Lugares típicos de la instalación: GOG en Windows (`C:\GOG Games\Sacrifice\data`), Steam en Windows (`...\steamapps\common\Sacrifice\data`), y en macOS o Linux la carpeta `drive_c/.../Sacrifice/data` dentro del prefijo de Wine o de la botella de CrossOver. Se valida que la carpeta tenga `spells.wad`, `models.wad` y `main.wad`.
+
+```bash
+export SAC_INSTALL="/ruta/a/Sacrifice/data"
+cd game && python3 tools/import/import_map.py --list
+```
+
+**Godot y Blender** (los scripts de `game/agent/` y `game/tools/`). Todos leen `agent/harness/env.sh`, que calcula la raíz del proyecto desde su propia ubicación y elige:
+
+- `GODOT_BIN`: la variable de entorno si está; si no, `godot` del `PATH`; si no, el de macOS (`/Applications/Godot.app/Contents/MacOS/Godot`).
+- `BLENDER_BIN`: la variable de entorno si está; si no, `blender` del `PATH`; si no, el de macOS (`/Applications/Blender.app/Contents/MacOS/Blender`).
+
+```bash
+export GODOT_BIN="/ruta/a/Godot_v4.7.2"   # opcional si godot está en el PATH
+export BLENDER_BIN="/ruta/a/blender"      # solo para tools/blender/ y la criatura propia desde Blender
 ```
 
 ## En camino

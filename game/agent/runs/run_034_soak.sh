@@ -9,7 +9,7 @@
 # Caps: each run has an external cap (RUN_CAP_S, default 300 s) enforced here by pid (and descendants); the scripts
 # also carry their own internal caps. Never pkill/killall: only pids that this script started or that it found new.
 # Prints one summary line per run and SOAK PASS / SOAK FAIL (exit 0 / 1). Needs `--import` once first.
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+. "$(dirname "$0")/../harness/env.sh"
 N="${1:-3}"
 TRANSPORTS="${2:-enet ws}"
 RUN_CAP_S="${SOAK_RUN_CAP_S:-300}"

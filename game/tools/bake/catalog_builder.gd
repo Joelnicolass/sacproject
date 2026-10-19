@@ -1,5 +1,6 @@
 extends RefCounted
 
+## No necesita el juego original; usa los modelos y datos ya importados en assets/original (versionados).
 ## Builds the catalog types from the original JSON rows (RFC-036 036c). Used by tools/bake/bake_catalog.gd to write the .tres
 ## and by debug/suite/catalog_cases.gd to prove the .tres say the same. Preloaded by path (no class_name): both callers
 ## run as --script, without autoloads and possibly before the class cache knows this file.

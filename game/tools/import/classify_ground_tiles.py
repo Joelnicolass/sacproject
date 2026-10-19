@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Writes data/look/ground/high_noon_tiles.tres (TileLayerMap) from the average color of each
+"""No necesita el juego original: usa los assets ya importados en assets/original (versionados).
+
+Writes data/look/ground/high_noon_tiles.tres (TileLayerMap) from the average color of each
 tile of Persephone's atlas: green = open ground (slot 0, grass), pale grey = the pale rings
 and paths (slot 3), in between = the transition tiles around them (slot 2, soil).
 Slot numbers are positions in the biome's GroundSet. Correct the result by hand if a tile is wrong.

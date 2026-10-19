@@ -3,7 +3,7 @@
 #   agent/runs/run_rfc033_shots.sh base     -> agent/out/033/base   (the "before": taken with the old extraction, not versioned)
 #   agent/runs/run_rfc033_shots.sh after    -> agent/out/033/after  (diff against base with AgentKit: cli.sh . diff --a= --b=)
 set -u
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+. "$(dirname "$0")/../harness/env.sh"
 TAG="${1:-after}"
 OUT="$ROOT/agent/out/033/$TAG"; mkdir -p "$OUT"
 export GODOT="$ROOT/agent/harness/godot60_res.sh" PT_RES=1280x720

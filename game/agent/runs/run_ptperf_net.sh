@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
+. "$(dirname "$0")/../harness/env.sh"
 # usage: run_pt60.sh PORT  -- dedicated + client A (slot 1, casts Desecrate) + client B (slot 2, watches, Rock on the doctor)
 set -u
-GODOT=/Applications/Godot.app/Contents/MacOS/Godot
+GODOT="$GODOT_BIN"
 export GODOT
-ROOT=/Users/joelsartori/Development/sacproject/game
 PORT="$1"
 OUT="$ROOT/agent/out/ptperf/net"
 WORLD=res://debug/sacrifice/desecrate_ritual.tscn

@@ -3,8 +3,8 @@
 # Closes by itself (internal timeout 90 s); this script also kills the probe and its descendants (by pid) at 120 s.
 # Prints LAUNCHER PROBE PASS / FAIL and exits 0 / 1. Needs `--import` once first (new class_names).
 # Uses ports 7800-7803 (UDP) and user://mp_matches/.
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-GODOT="${GODOT_BIN:-/Applications/Godot.app/Contents/MacOS/Godot}"
+. "$(dirname "$0")/../harness/env.sh"
+GODOT="$GODOT_BIN"
 LIMIT_S="${PROBE_LIMIT_S:-120}"
 
 descendants() { # pid -> pid and all its descendants

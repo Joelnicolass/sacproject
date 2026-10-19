@@ -1,5 +1,6 @@
 extends SceneTree
 
+## No necesita el juego original; usa los modelos y datos ya importados en assets/original (versionados).
 ## RFC-044 044d: writes the ground of the test map (test_flat): a flat square of land in the middle of the 2560 m grid,
 ## nothing around it. A MapTerrainData like the importer's, so Terrain treats it as any other ground.
 ## "$GODOT" --headless --path game --script res://tools/bake/make_flat_terrain.gd [-- --out=res://...res --cells=60 --from=100 --height=10]

@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Requiere el juego original instalado (SAC_INSTALL): compara assets/original/ con lo que salga de importar desde el original.
+# Sin el original no se puede correr (jugar y el resto de las herramientas no lo necesitan). Ver tools/import/local.cfg.example.
 # RFC-033 033h: parity of assets/original/ with the installation. Regenerates every family with its importer into a temporary
 # folder and compares with the versioned files (diff -r, the .import files excluded: Godot rewrites them). Replaces the old
 # tools/audit_original_assets.gd, which compared against the old extraction.
@@ -6,8 +8,11 @@
 # The terrain (a Godot Resource) is checked by import_terrain.gd, which writes nothing when the arrays are the same, and the
 # icon file names by tools/audit/check_icon_files.gd; both go through agent/harness/godot_run.sh.
 set -u
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-GODOT=${GODOT:-/Applications/Godot.app/Contents/MacOS/Godot}
+case "${1:-}" in -h|--help) head -n 3 "$0" | tail -n 2 | cut -c3-; exit 0 ;; esac
+. "$(dirname "$0")/../../agent/harness/env.sh"
+GODOT="${GODOT:-$GODOT_BIN}"
+# Fails early (status 2) with the explanation in Spanish when the original install is missing or invalid.
+python3 -I -c 'import sys; sys.path.insert(0, sys.argv[1]); import sac_formats.install' "$ROOT/tools/import" || exit 2
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 A="$ROOT/assets/original"

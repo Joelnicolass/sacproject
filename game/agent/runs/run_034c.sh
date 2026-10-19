@@ -2,8 +2,8 @@
 # RFC-034 034c: headless cases of MpLobbyRooms (no network, no processes: stub runner).
 # Closes by itself (internal timeout 30 s); this script also kills the run and its descendants (by pid) at 120 s.
 # Prints LOBBY CASES PASS / FAIL and exits 0 / 1. Needs `--import` once first (new class_names).
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-GODOT="${GODOT_BIN:-/Applications/Godot.app/Contents/MacOS/Godot}"
+. "$(dirname "$0")/../harness/env.sh"
+GODOT="$GODOT_BIN"
 LIMIT_S="${PROBE_LIMIT_S:-120}"
 
 descendants() { # pid -> pid and all its descendants

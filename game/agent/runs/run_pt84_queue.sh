@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # usage: run_pt84_queue.sh "FLOW TAG RES SCALE" ...  -- before each run waits until no other Godot
 # (except the user's --editor) is running, then runs it with run_pt84.sh. One process at a time.
-H=/Users/joelsartori/Development/sacproject/game/agent
+H="$(cd "$(dirname "$0")/.." && pwd)"
 for job in "$@"; do
   set -- $job
   until "$H/harness/godot_busy.sh" >/dev/null; do sleep 10; done

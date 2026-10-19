@@ -3,7 +3,7 @@
 #   run_pt120.sh FLOW[:extra,args] ...   windowed flows one after another (60 fps cap, 1280x720, --fail-on-error).
 # RSS watchdog 2.5 GB. Out: agent/out/pt120/.
 set -u
-ROOT=/Users/joelsartori/Development/sacproject/game
+. "$(dirname "$0")/../harness/env.sh"
 export GODOT="$ROOT/agent/harness/godot60_res.sh"
 export PT_RES=1280x720
 OUT="$ROOT/agent/out/pt120"; mkdir -p "$OUT"; cd "$ROOT"

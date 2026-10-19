@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Proposes a biome's GrassPalette from the color of its original ground (RFC-022e §11, 022e4b).
+"""No necesita el juego original: usa los assets ya importados en assets/original (versionados).
+
+Proposes a biome's GrassPalette from the color of its original ground (RFC-022e §11, 022e4b).
 
 Ground color = mean of the slot-0 tiles (grass tiles of data/look/ground/high_noon_tiles.tres) of the
 god's atlas (assets/original/themes/<god>/atlas.png), weighted by how often each tile is used on the map

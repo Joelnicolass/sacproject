@@ -5,7 +5,7 @@ extends Node3D
 ## RFC-036 (036g, F208): the root of scenes/bodies/models/<tag>.tscn, one per skeletal model of the original game.
 ## The scene is generated once by tools/bake/bake_body_scenes.gd (it only writes the missing ones; `--force` rebuilds and
 ## discards editor edits) and edited in the editor from then on:
-##   Model       the .glb of assets/original/models/ (skeleton, skinned mesh and every clip of the model), drawn with the
+##   Model       the .glb of assets/original/models/ (or of assets/custom/models/: RFC-051; skeleton, skinned mesh and every clip of the model), drawn with the
 ##               game's axes (z mirrored, like the baked meshes).
 ##   Tree        the AnimationTree whose AnimationNodeStateMachine has one state PER ROLE (idle, run, attack...). Each
 ##               state plays the clip (tag) of the .glb that role uses: this is the role -> animation mapping. Change a

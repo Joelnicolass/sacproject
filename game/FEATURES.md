@@ -68,6 +68,7 @@ Estados: **Hecho** (cerrado y probado), **Parcial** (anda, con deuda anotada), *
 - **Hecho.** Sin caché de instalación: todo es asset del repo (LFS). F167-F175.
 - **Hecho.** Carpetas por dominio con README en cada una. F251.
 - **Hecho.** Plugin «Sacrifice» del editor (Project > Tools: validar, re-hornear navmesh, hornear modelos que faltan), `bake_body_scenes` que no pisa lo editado, guías en `docs/HOWTO.md`. F270-F274.
+- **Hecho.** Criaturas propias desde un `.glb` de Blender (`assets/custom/models/`): `tools/bake/new_creature.gd` (y la entrada «Nueva criatura desde modelo…» del plugin) saca roles, tiempos, golpe y tamaño del propio `.glb`, sin datos del original. F330-F334.
 
 ## Won't (este corte)
 

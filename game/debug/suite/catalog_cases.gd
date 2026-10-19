@@ -10,6 +10,9 @@ extends SceneTree
 ##   - the numbers are sane (health > 0, costs >= 0, ...)
 ##   - (RFC-049 049d) every map has as many PlayerStart (slots 1..N, no repeats) as its `player_starts`, and every mode has
 ##     teams 0..T-1 without gaps and a map with `player_starts >= seats`; a mode no room map can host is only a warning
+##   - (RFC-052 052b) every sound set of data/audio/ names files that exist; a set of your own (data/audio/custom/) never
+##     names the original's audio (assets/original/, data/audio/original/). Without the original's import
+##     (assets/original/audio/index.json) its files are not checked, only counted.
 ## Failures name the file: "creatures/xyz.tres: health = -5". Prints CATALOG PASS or CATALOG FAIL.
 ## "$GODOT" --headless --path game --script res://debug/suite/catalog_cases.gd
 ## No autoloads: the catalog is read through GameCatalog, the same scan the game does.
@@ -59,6 +62,7 @@ func _initialize() -> void:
 	_check_gods(tags)
 	_check_bodies(tags)
 	_check_maps_and_modes()
+	_check_audio()
 	print("CATALOG creatures %d spells %d wizards %d abilities %d buildings %d body sizes %d gods %d" % [
 		_catalog.creatures.size(), _catalog.spells.size(), _catalog.wizards.size(), _catalog.abilities.size(),
 		_catalog.buildings.size(), _catalog.body_sizes.size(), _catalog.gods.size()])
@@ -315,6 +319,51 @@ func _start_slots(state: SceneState) -> Array[int]:
 				slot = int(state.get_node_property_value(index, property))
 		slots.append(slot)
 	return slots
+
+
+const AUDIO_DIR := "res://data/audio/"
+const AUDIO_CUSTOM_DIR := "res://data/audio/custom/"
+const ORIGINAL_AUDIO := "res://assets/original/audio/"
+const ORIGINAL_ONLY: PackedStringArray = ["res://assets/original/", "res://data/audio/original/"]
+
+
+## RFC-052 052b: the files the sets of data/audio/ reference (read without loading the sets).
+func _check_audio() -> void:
+	var imported := FileAccess.file_exists(ORIGINAL_AUDIO + "index.json")
+	var sets := 0
+	var unchecked := 0
+	for path in _tres_under(AUDIO_DIR):
+		sets += 1
+		var own := path.begins_with(AUDIO_CUSTOM_DIR)
+		var file := path.trim_prefix(AUDIO_DIR)
+		for dep in SoundLibrary.dependency_paths(path):
+			if dep.is_empty():
+				_report("audio/%s: names a uid the project does not know" % file)
+				continue
+			if dep.begins_with("res://data/audio/original/"):
+				_report("audio/%s: names %s (data/audio/original/ no longer exists)" % [file, dep])
+			if own:
+				for prefix in ORIGINAL_ONLY:
+					if dep.begins_with(prefix):
+						_report("audio/%s: a set of your own names the original's %s" % [file, dep])
+			if dep.begins_with(ORIGINAL_AUDIO) and not imported:
+				unchecked += 1
+			elif not ResourceLoader.exists(dep):
+				_report("audio/%s: %s does not exist" % [file, dep])
+	print("CATALOG audio sets %d%s" % [sets, "" if unchecked == 0 else
+		" (%d files of the original's audio not checked: assets/original/audio/ is not imported)" % unchecked])
+
+
+static func _tres_under(dir: String) -> PackedStringArray:
+	var out := PackedStringArray()
+	if not DirAccess.dir_exists_absolute(dir):
+		return out
+	for sub in DirAccess.get_directories_at(dir):
+		out.append_array(_tres_under(dir.path_join(sub)))
+	for file in DirAccess.get_files_at(dir):
+		if file.get_extension() == "tres":
+			out.append(dir.path_join(file))
+	return out
 
 
 func _file(type: Resource) -> String:

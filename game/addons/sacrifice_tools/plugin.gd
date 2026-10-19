@@ -13,12 +13,18 @@ const ITEMS := [
 	# RFC-051: asks for a .glb of assets/custom/models/ and passes it to the tool.
 	{"title": "Sacrifice: Nueva criatura desde modelo…", "args": ["--script", "res://tools/bake/new_creature.gd", "--"], "rescan": true, "pick": "glb", "window": true},
 	{"title": "Sacrifice: Sincronizar criatura con su modelo…", "args": ["--script", "res://tools/bake/new_creature.gd", "--", "--sync"], "rescan": true, "pick": "glb", "window": true},
+	# RFC-052 052b / 052i: the SoundSets of data/audio/ from assets/original/audio/index.json and assets/custom/sounds/.
+	{"title": "Sacrifice: Hornear sonidos", "args": ["--script", "res://tools/bake/bake_sound_sets.gd"], "rescan": true,
+		"about": "Crea los sets de sonido (data/audio/*.tres) que faltan: los del original desde assets/original/audio/ (ya importado) y los tuyos desde assets/custom/sounds/<tipo>/<tag>/<evento>_N.ogg|wav (van a data/audio/custom/ y ganan). No pisa los existentes."},
 ]
 # Entries with "original": true read the ORIGINAL game (not in the repo); their label says so. "exe": the command is that program
 # (not this Godot) and "args" are paths relative to the project. SETTING_INSTALL is passed to every child process as SAC_INSTALL.
 const ITEMS_ORIGINAL := [
 	{"title": "Sacrifice: Listar mapas del original", "exe": "python3", "args": ["tools/import/import_map.py", "--list"], "rescan": false,
 		"original": true, "about": "Lista los mapas (.scp) del juego original instalado."},
+	# RFC-052 052b: sounds.wad, local/sfx_english.wad and music/*.mp3 -> assets/original/audio/ (voices as Ogg; needs ffmpeg).
+	{"title": "Sacrifice: Importar audio del original", "exe": "python3", "args": ["tools/import/import_audio.py"], "rescan": true,
+		"original": true, "about": "Lee sounds.wad, local/sfx_english.wad y music/*.mp3 del juego original instalado y escribe assets/original/audio/ (efectos WAV, voces Ogg con ffmpeg, música MP3). Solo inglés y solo las voces de escaramuza. Después corré «Hornear sonidos»."},
 ]
 const CUSTOM_MODELS := "res://assets/custom/models/"
 const SETTING_INSTALL := "sacrifice/original_install_path"

@@ -24,6 +24,3 @@ game/agent/out/*
 # Ruta local al juego original (tools/import/local.cfg.example)
 game/tools/import/local.cfg
 
-# Audio del original (RFC-052 §14.1): lo escribe tools/import/import_audio.py y sus sets horneados; no se versiona.
-game/assets/original/audio/
-game/data/audio/original/

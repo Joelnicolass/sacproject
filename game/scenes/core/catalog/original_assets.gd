@@ -14,6 +14,12 @@ const FX_DIR := ROOT + "fx/"
 const THEMES_DIR := ROOT + "themes/"
 const MAPS_DIR := ROOT + "maps/"
 const DATA_DIR := ROOT + "data/"
+## RFC-052 052b: written by tools/import/import_audio.py (sfx/<folder>/<file>.wav, voice/<folder>/<file>.ogg,
+## music/<slug>.mp3, index.json). The baked sets in data/audio/ name these files; nothing reads the index at run time.
+const AUDIO_DIR := ROOT + "audio/"
+const AUDIO_SFX_DIR := AUDIO_DIR + "sfx/"
+const AUDIO_VOICE_DIR := AUDIO_DIR + "voice/"
+const AUDIO_MUSIC_DIR := AUDIO_DIR + "music/"
 const UI_ICONS_DIR := UI_DIR + "icons/"
 const UI_HUD_DIR := UI_DIR + "hud/"
 const UI_CURSORS_DIR := UI_DIR + "cursors/"
@@ -86,3 +92,18 @@ static func map(map_name: String, file: String) -> String:
 ## A game data file: data/<name>.json (creatures, spells, abilities, wizards, books, buildings).
 static func data(name: String) -> String:
 	return DATA_DIR + name + ".json"
+
+
+## audio/index.json: the original's sound sets (SSET -> type -> files), who uses which set, SAMP name -> file.
+static func audio_index() -> String:
+	return AUDIO_DIR + "index.json"
+
+
+## A file of the audio import by its path under audio/ ("sfx/ambi/afir.wav"), as index.json lists them.
+static func audio(rel: String) -> String:
+	return AUDIO_DIR + rel
+
+
+## A music track: music/<slug>.mp3 ("james_normal", "battle_1", "god_realm").
+static func music(slug: String) -> String:
+	return AUDIO_MUSIC_DIR + slug + ".mp3"

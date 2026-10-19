@@ -2,14 +2,15 @@ class_name SoundLibrary
 extends RefCounted
 
 ## RFC-052 052a (F360): resolves a sound tag to its .tres and caches it. The one place that loads audio sets.
-## - Looks in data/audio/ first (the sets made by hand or baked from assets/custom/, versioned; they win), then in
-##   data/audio/original/ (baked from the original's import; not versioned, may be missing). A tag in neither is null
-##   and silent: no warning, the game runs without the original.
+## - Looks in data/audio/custom/ first (baked from assets/custom/sounds/ or made by hand; they win), then in data/audio/
+##   (baked from the original's import in assets/original/audio/). A tag in neither is null and silent: no warning.
+## - A set whose streams are missing (the original's audio not imported or not pulled) is skipped without loading it, so
+##   the loader prints nothing; the next root is tried. The game runs silent without the original.
 ## - With the AudioGate closed (dedicated, room server, headless) it returns null and loads nothing.
 ## - `rel` is the path under a root without the extension: "creatures/zomb", "wizards/cwa0", "ui", "music/james".
 ## Later cuts add MusicSet and AmbienceSet through `find`; nothing here knows the game's tags.
 
-const DEFAULT_ROOTS: PackedStringArray = ["res://data/audio/", "res://data/audio/original/"]
+const DEFAULT_ROOTS: PackedStringArray = ["res://data/audio/custom/", "res://data/audio/"]
 
 ## Where `find` looks, in order. The cases point it at a fixture folder and reset it.
 static var roots: PackedStringArray = DEFAULT_ROOTS
@@ -24,10 +25,35 @@ static func find(rel: String) -> Resource:
 	for root in roots:
 		var path := root.path_join(rel + ".tres")
 		if not _cache.has(path):
-			_cache[path] = ResourceLoader.load(path) if ResourceLoader.exists(path) else null
+			_cache[path] = ResourceLoader.load(path) if ResourceLoader.exists(path) and has_dependencies(path) else null
 		if _cache[path] != null:
 			return _cache[path]
 	return null
+
+
+## True when every file `path` depends on exists (read from the file, nothing is loaded). A baked set names streams of
+## assets/original/audio/, which a clone may not have.
+static func has_dependencies(path: String) -> bool:
+	for dep_path in dependency_paths(path):
+		if dep_path.is_empty() or not ResourceLoader.exists(dep_path):
+			return false
+	return true
+
+
+## The res:// paths `path` depends on (ext_resources), read from the file without loading it. A uid the project does not
+## know gives an empty entry.
+static func dependency_paths(path: String) -> PackedStringArray:
+	var out := PackedStringArray()
+	for dependency in ResourceLoader.get_dependencies(path):
+		var dep_path := ""
+		for part in dependency.split("::"):
+			if part.begins_with("res://"):
+				dep_path = part
+		if dep_path.is_empty() and dependency.begins_with("uid://"):
+			var id := ResourceUID.text_to_id(dependency.get_slice("::", 0))
+			dep_path = ResourceUID.get_id_path(id) if ResourceUID.has_id(id) else ""
+		out.append(dep_path)
+	return out
 
 
 ## The SoundSet of `rel` ("creatures/zomb"), or null.

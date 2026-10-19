@@ -3179,3 +3179,10 @@ Agregar o cambiar un hechizo de combate ya no toca `caster.gd`.
 - `MapBuilding.building: BuildingType` y `NpcSpawn.creature: CreatureType`, arrastrables desde `data/catalog/<tipo>/<tag>.tres`.
 - `tag` es una propiedad derivada; su setter busca el tipo con `TypeRef` (primero el archivo del tipo, después la lista del `GameCatalog`), así que el código y las escenas viejas que nombran un tag siguen andando.
 - **Fuera:** `UnitBody`, `DoctorBody` y `PlayerStart` (resto de EF-13) y el botón «Hornear navmesh» (EF-15).
+
+### F251 — Estructura de carpetas por dominio (RFC-048, cortes a–l) — cerrado 2026-10-19
+
+- `scenes/` pasó de `world/`, `data/`, `flow/` y archivos sueltos a 19 dominios (`ai`, `bodies`, `core`, `map`, `match`, `spells`, `units`, `ui`…); `debug/` a 16 carpetas por dominio; `tools/` a `import/ bake/ audit/ material/ deploy/`; `agent/` a `runs/ scripts/ fixtures/`.
+- Solo `git mv` más reescritura de rutas con `tools/move_map.py` y `tools/move_map/048.csv` (idempotente; `--check --lint` limpio). Sin renombres de archivo, `class_name` ni nodo.
+- README por carpeta de primer nivel y por dominio de `scenes/`; RULES.md §Arquitectura describe el árbol; `debug/*` y `script_templates/*` quedan fuera del export dedicado; `.git-blame-ignore-revs` lista los commits de mudanza.
+- Verificación por corte: import x2 sin errores, escenas principales abren, `rules_suite` PASS, `quick` sin regrabar, e2e en k y l.

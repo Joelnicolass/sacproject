@@ -32,6 +32,8 @@ const ERRORS := {
 	"matches_cap": "LOBBY_ERR_MATCHES_CAP",
 	"spawn_failed": "LOBBY_ERR_SPAWN_FAILED",
 	"match_failed": "LOBBY_ERR_MATCH_FAILED",
+	"not_host": "LOBBY_ERR_NOT_HOST",
+	"bad_bot": "LOBBY_ERR_BAD_BOT",
 }
 
 const LOST := {
@@ -73,7 +75,7 @@ static func pick_text(meta: Dictionary) -> String:
 
 
 ## What a result says to the player in `my_slot` (0 = not in the match). `result` is the Dictionary the dedicated
-## reports: winner_slot, reason ("result", "abandon", "empty").
+## reports: winner_slot, winner_slots (the whole winning team; RFC-049 049f), reason ("result", "abandon", "empty").
 static func result_text(result: Dictionary, my_slot: int) -> String:
 	if result.is_empty():
 		return ""
@@ -81,7 +83,10 @@ static func result_text(result: Dictionary, my_slot: int) -> String:
 	var reason := str(result.get("reason", "result"))
 	if reason == "empty" or winner <= 0:
 		return UiText.t("LOBBY_RESULT_NO_WINNER")
-	var won := my_slot > 0 and winner == my_slot
+	var winners: Array = result.get("winner_slots", [])
+	if winners.is_empty():
+		winners = [winner]
+	var won := my_slot > 0 and (winners.has(my_slot) or winners.has(float(my_slot)))
 	if reason == "abandon":
 		return UiText.t("LOBBY_RESULT_WON_ABANDON") if won else UiText.t("LOBBY_RESULT_LOST_ABANDON")
 	return UiText.t("LOBBY_RESULT_WON") if won else UiText.t("LOBBY_RESULT_LOST")

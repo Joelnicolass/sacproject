@@ -35,7 +35,7 @@ signal error_received(code: String)
 @export var server_node: Node
 @export var chat_keep: int = 50
 ## Used in the hello; must equal the server's `MpLobbyConfig.proto_version`.
-@export var proto_version: int = 1
+@export var proto_version: int = 2
 ## A connection attempt that is not welcomed in this time ends with `lobby_lost("connect_timeout")`.
 @export var connect_timeout_s: float = 8.0
 ## After a drop, come back by itself with the saved token (same session, same seat) instead of reporting `lobby_lost`.
@@ -100,6 +100,14 @@ func countdown_remaining() -> float:
 	if _countdown_end_msec <= 0:
 		return 0.0
 	return maxf(0.0, float(_countdown_end_msec - Time.get_ticks_msec()) / 1000.0)
+
+
+## We are the host of our room (the one that may put or take bots).
+func is_host() -> bool:
+	for seat: Dictionary in room.get("seats", []):
+		if bool(seat.get("you", false)):
+			return bool(seat.get("host", false))
+	return false
 
 
 ## Our seat in the current room, -1 if none.
@@ -187,6 +195,16 @@ func set_pick(pick: Dictionary) -> void:
 
 func set_ready(on: bool) -> void:
 	_send(&"rpc_set_ready", [on])
+
+
+## Host only: puts a bot in a free seat. `pick` is opaque (the server's `bot_validator` decides).
+func set_seat_bot(seat: int, pick: Dictionary = {}) -> void:
+	_send(&"rpc_set_seat_bot", [seat, pick])
+
+
+## Host only: frees a bot seat.
+func clear_seat_bot(seat: int) -> void:
+	_send(&"rpc_clear_seat_bot", [seat])
 
 
 func send_chat(text: String) -> void:

@@ -6,7 +6,7 @@ extends Node
 ## slot, a port or a seed. Nothing here knows the game: the pick (`meta`), the room `options` and the
 ## ticket are checked / built by Callables the glue sets before `start()`.
 ## Lives under a `MpLobby` container (own `SceneMultiplayer`, so it never clashes with `MpKit`).
-## Error codes sent to the client: version, bad_name, timeout, bad_text, rate, bad_options, bad_meta
+## Error codes sent to the client: version, bad_name, timeout, bad_text, rate, bad_options, bad_meta, bad_bot, not_host
 ## and every code of `MpLobbyRooms`.
 
 ## A session said hello (new or resumed).
@@ -23,6 +23,10 @@ var meta_validator: Callable = Callable()
 var options_validator: Callable = Callable()
 ## (seats: Array[Dictionary], options: Dictionary) -> Dictionary
 var ticket_builder: Callable = Callable()
+## (options: Dictionary) -> int, the seats of a room made with these options (default `config.seats_per_room`).
+var seat_count_for: Callable = Callable()
+## (meta: Dictionary) -> bool, the meta of a bot seat.
+var bot_validator: Callable = Callable()
 
 var rooms: MpLobbyRooms
 var config: MpLobbyConfig
@@ -77,6 +81,8 @@ func start(p_config: MpLobbyConfig, launcher: MpMatchLauncher = null) -> Error:
 	rooms.meta_validator = meta_validator
 	rooms.options_validator = options_validator
 	rooms.ticket_builder = ticket_builder
+	rooms.seat_count_for = seat_count_for
+	rooms.bot_validator = bot_validator
 	rooms.room_changed.connect(_on_room_changed)
 	rooms.room_closed.connect(_on_room_closed)
 	rooms.match_assigned.connect(_on_match_assigned)
@@ -301,6 +307,25 @@ func rpc_set_pick(meta: Dictionary) -> void:
 
 
 @rpc("any_peer", "call_remote", "reliable")
+func rpc_set_seat_bot(seat: int, meta: Dictionary) -> void:
+	var sid := _sid()
+	if sid.is_empty():
+		return
+	if not _payload_ok(meta):
+		_reply_code("bad_bot")
+		return
+	_reply_code(rooms.set_seat_bot(sid, seat, meta))
+
+
+@rpc("any_peer", "call_remote", "reliable")
+func rpc_clear_seat_bot(seat: int) -> void:
+	var sid := _sid()
+	if sid.is_empty():
+		return
+	_reply_code(rooms.clear_seat_bot(sid, seat))
+
+
+@rpc("any_peer", "call_remote", "reliable")
 func rpc_set_ready(on: bool) -> void:
 	var sid := _sid()
 	if sid.is_empty():
@@ -386,7 +411,7 @@ func _take_chat_token(sid: String) -> bool:
 func _member_peers(room_id: String) -> Array[int]:
 	var out: Array[int] = []
 	for seat: Dictionary in rooms.snapshot(room_id).get("seats", []):
-		if bool(seat["free"]):
+		if bool(seat["free"]) or bool(seat["bot"]):
 			continue
 		var peer_id := peer_of(str(seat["session_id"]))
 		if peer_id != 0:
@@ -411,9 +436,15 @@ func _view(room_id: String, sid: String) -> Dictionary:
 		if bool(seat["free"]):
 			seats.append({"seat": seat["seat"], "free": true})
 			continue
+		if bool(seat["bot"]):
+			seats.append({
+				"seat": seat["seat"], "free": false, "bot": true, "name": "", "meta": seat["meta"],
+				"ready": true, "connected": true, "host": false, "you": false,
+			})
+			continue
 		seats.append({
-			"seat": seat["seat"], "free": false, "name": seat["name"], "meta": seat["meta"],
-			"ready": seat["ready"], "connected": seat["connected"], "you": str(seat["session_id"]) == sid,
+			"seat": seat["seat"], "free": false, "bot": false, "name": seat["name"], "meta": seat["meta"],
+			"ready": seat["ready"], "connected": seat["connected"], "host": seat["host"], "you": str(seat["session_id"]) == sid,
 		})
 	var view := {
 		"id": room_id, "name": name_of_room(room_id), "state": snap["state"], "options": snap["options"],
@@ -427,7 +458,7 @@ func _view(room_id: String, sid: String) -> Dictionary:
 
 func _push_room(room_id: String) -> void:
 	for seat: Dictionary in rooms.snapshot(room_id).get("seats", []):
-		if bool(seat["free"]):
+		if bool(seat["free"]) or bool(seat["bot"]):
 			continue
 		var sid := str(seat["session_id"])
 		var peer_id := peer_of(sid)

@@ -11,8 +11,12 @@ extends Resource
 ## `enet` (UDP, default) or `ws` (WebSocket over TCP). Used by the lobby and forwarded to every dedicated.
 @export_enum("enet", "ws") var transport: String = "enet"
 @export var max_rooms: int = 32
+## Seats of a room when the game does not say otherwise (`MpLobbyRooms.seat_count_for` unset).
 @export var seats_per_room: int = 2
-@export var proto_version: int = 1
+## Upper bound for the seats a room may have, whatever `seat_count_for` answers.
+@export var max_seats_per_room: int = 8
+## 2: rooms with a host and bot seats (`set_seat_bot`), and a seat count that depends on the room options.
+@export var proto_version: int = 2
 @export var chat_max_len: int = 200
 @export var chat_rate_per_s: float = 1.0
 @export var chat_burst: int = 3

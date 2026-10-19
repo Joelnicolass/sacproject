@@ -5,7 +5,10 @@ extends Node
 ## SacrificeFlow instances it only in that process. It gives the match agent (kit) its Sacrifice meaning:
 ## - the ticket becomes what the match needs: the pick of each slot, the options (MatchSetup) and the seed;
 ## - the result of the match (MatchState) is reported to the agent, which writes result.json and tells the clients;
-## - a slot that stays away more than `rejoin_grace_s` loses (`abandon`); with everybody away the match is `empty`.
+## - a slot that stays away more than `rejoin_grace_s` loses (`abandon`): the world defeats it and the match goes on until one
+##   team is left (RFC-049 049f); with everybody away the match is `empty`. With two seats and no allies this is the old 1v1 rule.
+## - RFC-049 049f (ticket v2): `seats` has only the humans (rows with a token); the bots are `ai_seats` [{slot, god}], which
+##   SacrificeFlow seats as AI. The match waits for the humans only. `mode` names the game mode.
 ## The pick channel of the clients is ignored (SacrificeFlow): the pick was closed in the lobby.
 ## The match does not start until every seat of the ticket has loaded its world: the tree stays paused (so `MatchClock`
 ## and the whole simulation wait) from the start of the process until each seat sent `world_ready`. A seat that has not
@@ -14,7 +17,7 @@ extends Node
 ## client with that ticket, or the same one after the grace, is turned away). The world keeps the seat's state meanwhile: the
 ## wizard stands still where it was, its creatures and altar go on, and the match is not paused for the seat. The log tells it
 ## (`slot N mago … (al irse)` / `(al volver)`) so a run can compare both.
-## Test hook, not a rule: `--force-defeat-slot=N --force-defeat-after-ticks=T` defeats slot N T ticks after the
+## Test hook, not a rule: `--force-defeat-slot=N[,M…] --force-defeat-after-ticks=T` defeats those slots T ticks after the
 ## first player was admitted, so a run ends without playing the match out.
 
 ## The agent of the kit (admission, heartbeat, result.json). Null if the ticket was not usable.
@@ -27,7 +30,7 @@ var _away_since_ms: Dictionary = {}
 var _seat_count: int = 0
 var _match_state: MatchState
 var _first_admit_tick: int = -1
-var _force_slot: int = 0
+var _force_slots: Array[int] = []
 var _force_ticks: int = 0
 var _forced: bool = false
 ## True while the simulation waits for the seats to load (the tree is paused by this node).
@@ -39,6 +42,10 @@ var _admitted_slots: Dictionary = {}
 ## RFC-034 034m: slots whose pick the ticket leaves open (the seat chooses its own on admission). The world does not start
 ## until every one is in; a seat that never sends a valid pick counts as away after `load_timeout_s`.
 var _open_picks: Dictionary = {}
+## Slots already defeated for staying away past the grace (the world was told once).
+var _abandoned: Dictionary = {}
+## True while `_check_abandon` defeats a seat: a result that comes out of it is an `abandon`.
+var _abandoning: bool = false
 
 
 func _ready() -> void:
@@ -56,7 +63,9 @@ func _ready() -> void:
 	for slot in agent.ticket.get("open_picks", []):
 		_open_picks[int(slot)] = true
 	_setup = setup_from_ticket(agent.ticket)
-	_force_slot = int(MpBoot.user_value("force-defeat-slot", "0"))
+	for part in MpBoot.user_value("force-defeat-slot", "").split(",", false):
+		if int(part) > 0:
+			_force_slots.append(int(part))
 	_force_ticks = int(MpBoot.user_value("force-defeat-after-ticks", "0"))
 	MpKit.peer_joined.connect(_on_peer_joined)
 	MpKit.peer_left.connect(_on_peer_left)
@@ -107,14 +116,36 @@ static func setup_from_ticket(ticket: Dictionary) -> MatchSetup:
 	setup.starting_souls = int(options.get("starting_souls", -1))
 	setup.match_seed = int(ticket.get("seed", 0))
 	setup.map_tag = StringName(str(ticket.get("world", "")))
+	setup.mode_tag = StringName(str(ticket.get("mode", "")))
 	return setup
 
 
 ## RFC-049 049a: the dedicated checks the map of the ticket again (the room server already did): a ticket without `world` plays
 ## the default map; one that names a map the catalog does not have is a `bad_ticket`.
+## RFC-049 049f: the same for the `mode` (a ticket without it is a 1v1, a v1 ticket), and the map must fit it.
 static func world_is_valid(ticket: Dictionary) -> bool:
 	var world := str(ticket.get("world", ""))
-	return world.is_empty() or MapCatalog.shared().find(StringName(world)) != null
+	if not world.is_empty() and MapCatalog.shared().find(StringName(world)) == null:
+		return false
+	var mode := str(ticket.get("mode", ""))
+	if not mode.is_empty() and GameModeCatalog.seats_of(StringName(mode)) == 0:
+		return false
+	return GameModeCatalog.map_fits_mode(StringName(world), StringName(mode))
+
+
+## RFC-049 049f: the bots of the ticket as [{slot, god}] (a v1 ticket has none).
+func ai_seats() -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	if agent == null:
+		return out
+	for row in agent.ticket.get("ai_seats", []):
+		out.append({"slot": int(row["slot"]), "god": str(row.get("god", ""))})
+	return out
+
+
+## The mode tag of the ticket ("" = 1v1).
+func mode_tag() -> StringName:
+	return StringName(str(agent.ticket.get("mode", ""))) if agent != null else &""
 
 
 func _process(_delta: float) -> void:
@@ -137,16 +168,26 @@ func _process(_delta: float) -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if _forced or _force_slot <= 0 or _force_ticks <= 0 or _first_admit_tick < 0 or _match_state == null:
+	if _forced or _force_slots.is_empty() or _force_ticks <= 0 or _first_admit_tick < 0 or _match_state == null:
 		return
 	if MatchClock.now() - _first_admit_tick < _force_ticks:
 		return
+	var rule := _defeat_rule()
+	if rule == null:
+		return
 	_forced = true
+	for slot in _force_slots:
+		print("partida %s: derrota forzada del slot %d (prueba)" % [agent.match_id, slot])
+		rule.defeat(slot)
+
+
+func _defeat_rule() -> DefeatRule:
+	if _match_state == null:
+		return null
 	for child in _match_state.get_children():
 		if child is DefeatRule:
-			print("partida %s: derrota forzada del slot %d (prueba)" % [agent.match_id, _force_slot])
-			(child as DefeatRule).defeat(_force_slot)
-			return
+			return child as DefeatRule
+	return null
 
 
 func _on_peer_joined(_peer_id: int, slot: int) -> void:
@@ -222,32 +263,73 @@ func _on_result_changed() -> void:
 	var defeated: Array = []
 	for slot in _match_state.defeated_slots:
 		defeated.append(slot)
+	var winners: Array = []
+	for slot in _match_state.winner_slots:
+		winners.append(slot)
+	## The abandon of a seat defeated the last team standing against the winners: the room reads it as an abandon.
 	_report({
-		"winner_slot": _match_state.winner_slot, "defeated_slots": defeated, "reason": "result",
+		"winner_slot": _match_state.winner_slot, "winner_slots": winners, "defeated_slots": defeated,
+		"reason": "abandon" if _abandoning else "result",
 	})
 
 
-## A slot away for more than `rejoin_grace_s` is defeated. The one left standing wins; with all of them gone,
-## the match is `empty` and has no winner. A slot that is away but still inside the grace keeps the match open.
+## A slot away for more than `rejoin_grace_s` loses (RFC-049 049f): the world defeats it and the match goes on until one team is
+## left (the rule of the mode decides, as for any defeat). The result of that is an `abandon`. With every human gone the match is
+## `empty` and has no winner. A slot that is away but still inside the grace keeps the match open; with nobody present the match
+## waits for the first of them. Before the world exists (a seat that never loaded) the teams of the mode are counted here.
 func _check_abandon() -> void:
 	var now := MpMatchFiles.now_ms()
 	var grace_ms := int(agent.config.rejoin_grace_s * 1000.0)
-	var gone: Array = []
+	var gone: Array[int] = []
 	for slot in _away_since_ms.keys():
 		if now - int(_away_since_ms[slot]) > grace_ms:
 			gone.append(int(slot))
-	if gone.is_empty() or gone.size() < _away_since_ms.size():
+	if gone.is_empty():
 		return
 	gone.sort()
-	var present := _seat_count - _away_since_ms.size()
-	if present == 1:
-		var winner := 0
-		for slot in _seat_metas.keys():
-			if not _away_since_ms.has(slot):
-				winner = int(slot)
-		_report({"winner_slot": winner, "defeated_slots": gone, "reason": "abandon"})
-	elif present == 0:
-		_report({"winner_slot": 0, "defeated_slots": gone, "reason": "empty"})
+	if gone.size() == _seat_count:
+		_report({"winner_slot": 0, "winner_slots": [], "defeated_slots": gone, "reason": "empty"})
+		return
+	if _away_since_ms.size() == _seat_count:
+		return
+	var fresh: Array[int] = []
+	for slot in gone:
+		if not _abandoned.has(slot):
+			fresh.append(slot)
+	if fresh.is_empty():
+		return
+	var rule := _defeat_rule()
+	if rule == null:
+		for slot in fresh:
+			_abandoned[slot] = true
+		_report_abandon_without_world()
+		return
+	_abandoning = true
+	for slot in fresh:
+		_abandoned[slot] = true
+		print("partida %s: slot %d abandonó y pierde" % [agent.match_id, slot])
+		rule.defeat(slot)
+	_abandoning = false
+
+
+## No world yet: the seats that did not abandon (humans and AI) decide by the teams of the mode.
+func _report_abandon_without_world() -> void:
+	var tag := mode_tag()
+	var total := maxi(GameModeCatalog.seats_of(tag), _seat_count + ai_seats().size())
+	var teams: Dictionary = {}
+	for slot in range(1, total + 1):
+		if not _abandoned.has(slot):
+			teams[GameModeCatalog.team_of_slot(tag, slot)] = true
+	if teams.size() != 1:
+		return
+	var team: int = teams.keys()[0]
+	var winners: Array = []
+	for slot in range(1, total + 1):
+		if GameModeCatalog.team_of_slot(tag, slot) == team:
+			winners.append(slot)
+	var defeated: Array = _abandoned.keys()
+	defeated.sort()
+	_report({"winner_slot": winners[0], "winner_slots": winners, "defeated_slots": defeated, "reason": "abandon"})
 
 
 func _report(data: Dictionary) -> void:

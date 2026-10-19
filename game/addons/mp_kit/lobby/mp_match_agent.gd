@@ -6,6 +6,7 @@ extends Node
 ## ends, and quits when nobody is left or the room server (`--room-pid`) is gone.
 ## The glue starts the dedicated host (MpKit.host_dedicated) and calls `report_result()`.
 ## The agent never sees the plain token: it compares sha256(presented) with the ticket.
+## Rows of the ticket without `token_sha256` (bot seats) are ignored: they are never admitted.
 
 signal ticket_loaded(ticket: Dictionary)
 signal result_reported(data: Dictionary)
@@ -52,6 +53,9 @@ func start(ticket_path: String = "") -> bool:
 	_started_ms = MpMatchFiles.now_ms()
 	for seat in ticket["seats"]:
 		var row: Dictionary = seat
+		## A row without a token hash (a bot seat) is never admitted.
+		if str(row.get("token_sha256", "")).is_empty():
+			continue
 		_seats[int(row["slot"])] = {
 			"sha": str(row["token_sha256"]), "meta": row.get("meta", {}),
 			"used": false, "peer": 0, "left_ms": 0,

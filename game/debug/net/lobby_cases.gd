@@ -37,6 +37,10 @@ func _ready() -> void:
 	_case_empty_close()
 	_case_in_match_rules()
 	_case_private_code()
+	_case_seats_by_mode()
+	_case_host_and_bots()
+	_case_bots_in_ticket()
+	_case_sacrifice_glue()
 	_cleanup()
 	if _fails == 0:
 		print("LOBBY CASES PASS")
@@ -324,6 +328,174 @@ func _case_private_code() -> void:
 	_check(_rooms.join_code("b", "WRONG") == "no_room", "wrong code: no_room")
 	_check(_rooms.join_code("b", code) == "", "right code joins")
 	_check(_rooms.room_of("b") == r, "joined the right room")
+
+
+## RFC-049 049f: the seats of a room come from the options (`seat_count_for`); the config says 2 and caps at `max_seats_per_room`.
+func _case_seats_by_mode() -> void:
+	_check(CONFIG.proto_version == 2, "proto_version is 2")
+	_fresh({"max_seats_per_room": 6})
+	_rooms.seat_count_for = func(o: Dictionary) -> int: return int(o.get("seats", 0))
+	_rooms.connect_session("a", "Ana")
+	_rooms.connect_session("b", "Beto")
+	_rooms.connect_session("c", "Cris")
+	_check(_rooms.create_room("a", {"seats": 4}) == "", "create a 4-seat room")
+	var r4 := _rooms.room_of("a")
+	_check(_rooms.snapshot(r4)["seats"].size() == 4, "the room has 4 seats (the options say so)")
+	_check(_rooms.create_room("b", {"seats": 0}) == "bad_options", "0 seats: bad_options")
+	_check(_rooms.create_room("b", {"seats": 20}) == "", "20 seats asked")
+	_check(_rooms.snapshot(_rooms.room_of("b"))["seats"].size() == 6, "the cap max_seats_per_room wins (6)")
+	_rooms.seat_count_for = Callable()
+	_check(_rooms.create_room("c", {}) == "", "no callable: create ok")
+	_check(_rooms.snapshot(_rooms.room_of("c"))["seats"].size() == 2, "no callable: seats_per_room (2)")
+
+
+## RFC-049 049f: the creator is the host and fills free seats with bots; a bot is occupied and always ready.
+func _case_host_and_bots() -> void:
+	_fresh()
+	_rooms.seat_count_for = func(_o: Dictionary) -> int: return 4
+	_rooms.bot_validator = func(m: Dictionary) -> bool: return str(m.get("tag", "")) != "bad"
+	for sid in ["a", "b", "c", "d"]:
+		_rooms.connect_session(sid, sid)
+	_rooms.create_room("a", {"level": 1})
+	var r := _rooms.room_of("a")
+	_check(_rooms.host_of(r) == "a", "the creator is the host")
+	_rooms.join_room("b", r)
+	_check(_rooms.set_seat_bot("b", 2, {"tag": "x"}) == "not_host", "a guest cannot put a bot: not_host")
+	_check(_rooms.clear_seat_bot("b", 2) == "not_host", "a guest cannot take a bot: not_host")
+	_check(_rooms.set_seat_bot("zz", 2) == "no_session", "bot without session: no_session")
+	_check(_rooms.set_seat_bot("d", 2) == "not_in_room", "bot without room: not_in_room")
+	_check(_rooms.set_seat_bot("a", 9, {"tag": "x"}) == "bad_seat", "bot out of range: bad_seat")
+	_check(_rooms.set_seat_bot("a", 1, {"tag": "x"}) == "seat_taken", "bot on a human seat: seat_taken")
+	_check(_rooms.set_seat_bot("a", 2, {"tag": "bad"}) == "bad_bot", "bot validator rejects: bad_bot")
+	_check(_rooms.set_seat_bot("a", 2, {"tag": "x"}) == "", "host puts a bot in seat 2")
+	_check(_rooms.set_seat_bot("a", 3, {"tag": "y"}) == "", "host puts a bot in seat 3")
+	var seats: Array = _rooms.snapshot(r)["seats"]
+	_check(bool(seats[2]["bot"]) and not bool(seats[2]["free"]) and bool(seats[2]["ready"]) and str(seats[3]["meta"]["tag"]) == "y", "a bot seat is occupied, ready and keeps its meta")
+	_check(bool(seats[0]["host"]) and not bool(seats[1]["host"]), "the snapshot marks the host")
+	_check(_rooms.join_room("c", r) == "room_full", "humans + bots fill the room: room_full")
+	_check(_rooms.set_slot("b", 2) == "seat_taken", "a human cannot sit on a bot seat: seat_taken")
+	_check(_rooms.clear_seat_bot("a", 0) == "bad_seat", "taking a bot from a human seat: bad_seat")
+	_rooms.set_seat_meta("a", {"pick": "x"})
+	_rooms.set_seat_meta("b", {"pick": "y"})
+	_rooms.set_ready("a", true)
+	_check(_rooms.state_of(r) == MpLobbyRooms.State.OPEN, "one human ready, the other not: OPEN")
+	_rooms.set_ready("b", true)
+	_check(_rooms.state_of(r) == MpLobbyRooms.State.COUNTDOWN, "2 humans ready + 2 bots: COUNTDOWN")
+	_check(_rooms.clear_seat_bot("a", 3) == "", "the host takes a bot out during the COUNTDOWN")
+	_check(_rooms.state_of(r) == MpLobbyRooms.State.OPEN, "changing a bot cancels the countdown")
+	_check(bool(_rooms.snapshot(r)["seats"][3]["free"]), "the freed seat is free")
+	_check(_rooms.join_room("c", r) == "", "a human takes the freed seat")
+	_check(_rooms.seat_of("c") == 3, "the joiner is in seat 3")
+	_rooms.leave_room("c")
+	_rooms.set_seat_bot("a", 3, {"tag": "y"})
+	# the host leaves: the other human leads, the bots stay
+	_check(_rooms.leave_room("a") == "", "the host leaves")
+	_check(_rooms.host_of(r) == "b", "the host passes to the other human")
+	_check(_rooms.set_seat_bot("b", 0, {"tag": "z"}) == "", "the new host puts a bot")
+	_check(_rooms.set_seat_bot("a", 1, {"tag": "x"}) == "not_in_room", "the old host is out of the room")
+	_rooms.leave_room("b")
+	_check(_rooms.host_of(r) == "" and _rooms.snapshot(r)["seats"].all(func(x: Dictionary) -> bool: return bool(x["free"])), "nobody left: no host and no bots")
+	# a host that expires (away past the grace) passes the lead too
+	_rooms.join_room("c", r)
+	_rooms.join_room("d", r)
+	_check(_rooms.host_of(r) == "c", "the first seated human is the host of an empty room")
+	_rooms.disconnect_session("c")
+	_rooms.tick(CONFIG.resume_grace_s + 1.0)
+	_check(_rooms.host_of(r) == "d", "the host expires: the lead goes to the other human")
+
+
+## RFC-049 049f: bot rows go to the ticket without a token; the agent never admits them.
+func _case_bots_in_ticket() -> void:
+	_fresh()
+	_rooms.seat_count_for = func(_o: Dictionary) -> int: return 4
+	for sid in ["a", "b"]:
+		_rooms.connect_session(sid, sid)
+	_rooms.create_room("a", {"level": 1})
+	var r := _rooms.room_of("a")
+	_rooms.join_room("b", r)
+	_rooms.set_seat_bot("a", 2, {"tag": "p"})
+	_rooms.set_seat_bot("a", 3, {"tag": "q"})
+	_rooms.set_seat_meta("a", {"pick": "x"})
+	_rooms.set_seat_meta("b", {"pick": "y"})
+	_rooms.set_ready("a", true)
+	_rooms.set_ready("b", true)
+	_rooms.tick(CONFIG.countdown_s + 0.1)
+	_check(_rooms.state_of(r) == MpLobbyRooms.State.LAUNCHING, "2 humans + 2 bots launch")
+	var mid := _rooms.match_id_of(r)
+	_write_state(mid, true, MpMatchFiles.now_ms())
+	_launcher.poll()
+	_check(_assigned.size() == 2, "match_assigned only for the 2 humans")
+	var ticket := MpMatchFiles.read_json(MpMatchFiles.path_of(ROOT, mid, MpMatchFiles.TICKET))
+	var seats: Array = ticket.get("seats", [])
+	_check(seats.size() == 4, "the ticket has 4 rows (default builder)")
+	var hashed := 0
+	var bots := 0
+	for row: Dictionary in seats:
+		if row.has("token_sha256"):
+			hashed += 1
+		if bool(row.get("bot", false)) and not row.has("token_sha256") and not row.has("token"):
+			bots += 1
+	_check(hashed == 2 and bots == 2, "2 rows with a token hash and 2 bot rows without one")
+	_check(int(seats[3].get("slot", 0)) == 4 and str(seats[3]["meta"].get("tag", "")) == "q", "a bot row keeps its slot and meta")
+	var agent := MpMatchAgent.new()
+	agent.auto_start = false
+	agent.config = _rooms_config()
+	add_child(agent)
+	_check(agent.start(MpMatchFiles.path_of(ROOT, mid, MpMatchFiles.TICKET)), "the agent loads the ticket")
+	var human_token := str(_assigned[0]["token"])
+	_check(int(MpKit.admission.call(11, human_token)) == 1, "the agent admits a human token into its slot")
+	_check(int(MpKit.admission.call(12, "")) == 0, "an empty token is never admitted")
+	_check(agent.connected_slots().is_empty() and agent.seat_meta(3).is_empty() and agent.seat_meta(4).is_empty(), "bot seats are not seats of the agent")
+	MpKit.admission = Callable()
+	agent.queue_free()
+
+
+## RFC-049 049f: the Sacrifice rules over the same rooms: 2v2 has 4 seats, 1v1 keeps 2, a mode must fit its map, bots go to `ai_seats`.
+func _case_sacrifice_glue() -> void:
+	_fresh()
+	var rules := SacrificeRoomRules.new()
+	rules.include_test_maps = true
+	_rooms.options_validator = rules.are_options_valid
+	_rooms.ticket_builder = rules.build_ticket
+	_rooms.seat_count_for = rules.seat_count_for
+	_rooms.bot_validator = rules.is_valid_bot
+	_rooms.meta_validator = rules.is_valid_pick
+	for sid in ["a", "b", "c", "d"]:
+		_rooms.connect_session(sid, sid)
+	_check(_rooms.create_room("a", {"mode": "ffa4", "world": "high_noon"}) == "bad_options", "ffa4 on high_noon: bad_options")
+	_check(_rooms.create_room("a", {"mode": "2v2"}) == "bad_options", "2v2 without a map (high_noon by default): bad_options")
+	_check(_rooms.create_room("a", {"mode": "nope", "world": "test_flat4"}) == "bad_options", "an unknown mode: bad_options")
+	_check(_rooms.create_room("a", {"mode": "2v2", "world": "test_flat4"}) == "", "2v2 on test_flat4")
+	var r := _rooms.room_of("a")
+	_check(_rooms.snapshot(r)["seats"].size() == 4, "a 2v2 room has 4 seats")
+	_check(_rooms.create_room("b", {"mode": "1v1"}) == "", "1v1 room")
+	_check(_rooms.snapshot(_rooms.room_of("b"))["seats"].size() == 2, "a 1v1 room keeps 2 seats")
+	_check(_rooms.create_room("c", {}) == "", "a room with no mode")
+	_check(_rooms.snapshot(_rooms.room_of("c"))["seats"].size() == 2, "no mode: 2 seats")
+	_check(_rooms.set_seat_bot("a", 2, {"god": "nope"}) == "bad_bot", "a bot with an unknown god: bad_bot")
+	_check(_rooms.set_seat_bot("a", 2, {"level": 3}) == "bad_bot", "a bot with an unknown key: bad_bot")
+	_check(_rooms.set_seat_bot("a", 2, {}) == "", "a bot with no god (drawn later)")
+	_check(_rooms.set_seat_bot("a", 3, {"god": "pyro"}) == "", "a bot with pyro")
+	_check(_rooms.join_room("d", r) == "", "the second human joins")
+	_rooms.set_seat_meta("a", {"wizard": "cwa0", "god": "james"})
+	_rooms.set_seat_meta("d", {"wizard": "cwa1", "god": "stratos"})
+	_rooms.set_ready("a", true)
+	_rooms.set_ready("d", true)
+	_check(_rooms.state_of(r) == MpLobbyRooms.State.COUNTDOWN, "2 humans ready + 2 bots: COUNTDOWN")
+	_rooms.tick(CONFIG.countdown_s + 0.1)
+	var mid := _rooms.match_id_of(r)
+	var ticket := MpMatchFiles.read_json(MpMatchFiles.path_of(ROOT, mid, MpMatchFiles.TICKET))
+	var seats: Array = ticket.get("seats", [])
+	var ai: Array = ticket.get("ai_seats", [])
+	_check(seats.size() == 2 and seats.all(func(x: Dictionary) -> bool: return x.has("token_sha256")), "the ticket has 2 rows with a token")
+	_check(ai.size() == 2 and int(ai[0]["slot"]) == 3 and str(ai[0]["god"]) == "" and int(ai[1]["slot"]) == 4 and str(ai[1]["god"]) == "pyro", "the ticket has 2 ai_seats (slots 3, 4)")
+	_check(str(ticket.get("mode", "")) == "2v2" and str(ticket.get("world", "")) == "test_flat4" and int(ticket.get("ticket_version", 0)) == 2, "ticket v2: mode and world")
+	_check(MatchTicketGlue.world_is_valid(ticket), "the dedicated accepts that ticket")
+	_check(not MatchTicketGlue.world_is_valid({"world": "high_noon", "mode": "2v2"}), "the dedicated turns away 2v2 on high_noon")
+	_check(not MatchTicketGlue.world_is_valid({"mode": "nope"}), "the dedicated turns away an unknown mode")
+	_check(MatchTicketGlue.world_is_valid({"world": "high_noon"}), "a v1 ticket (no mode) is a 1v1")
+	_check(String(MatchTicketGlue.setup_from_ticket(ticket).mode_tag) == "2v2", "the setup of the ticket carries the mode")
+	rules.free()
 
 
 # --- helpers ---------------------------------------------------------------------------

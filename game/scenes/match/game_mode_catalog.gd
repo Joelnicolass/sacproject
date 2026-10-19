@@ -53,6 +53,31 @@ static func active_seats() -> int:
 	return mode.seats() if mode != null else 2
 
 
+## RFC-049 049f: seats of the mode with that tag (empty = the default mode); 0 if there is no such mode. Plain ints and bools, for
+## callers that must not name GameMode (autoloads, the room glue).
+static func seats_of(tag: StringName) -> int:
+	var mode := shared().find(DEFAULT_TAG if tag == &"" else tag)
+	return mode.seats() if mode != null else 0
+
+
+## Team of `slot` (1-based) in the mode with that tag (empty = default); an unknown mode or slot gives `-slot`, every one for itself.
+static func team_of_slot(tag: StringName, slot: int) -> int:
+	var mode := shared().find(DEFAULT_TAG if tag == &"" else tag)
+	return mode.team_of(slot) if mode != null else -slot
+
+
+## True when the mode with that tag exists and rooms offer it.
+static func is_room_mode(tag: StringName) -> bool:
+	return shared().room_tags().has(String(tag))
+
+
+## True when the map has a start for each seat of the mode. Empty tags are the defaults (High Noon, 1v1); an unknown tag is false.
+static func map_fits_mode(map_tag: StringName, mode_tag: StringName) -> bool:
+	var definition := MapCatalog.shared().find(MapCatalog.DEFAULT_TAG if map_tag == &"" else map_tag)
+	var mode := shared().find(DEFAULT_TAG if mode_tag == &"" else mode_tag)
+	return definition != null and mode != null and definition.fits(mode)
+
+
 ## Plays the mode with that tag from now on.
 static func use(tag: StringName) -> void:
 	_active_tag = tag

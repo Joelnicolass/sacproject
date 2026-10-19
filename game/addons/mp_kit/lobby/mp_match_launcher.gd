@@ -94,7 +94,9 @@ func launch(match_id: String, ticket: Dictionary) -> Error:
 	var seats: Array = []
 	for seat in full.get("seats", []):
 		var row: Dictionary = (seat as Dictionary).duplicate()
-		row["token_sha256"] = MpMatchFiles.sha256(str(row.get("token", "")))
+		## A row without a token (a bot seat) has no hash: nobody can be admitted into it.
+		if not str(row.get("token", "")).is_empty():
+			row["token_sha256"] = MpMatchFiles.sha256(str(row["token"]))
 		row.erase("token")
 		seats.append(row)
 	full["seats"] = seats

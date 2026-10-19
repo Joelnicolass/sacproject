@@ -324,6 +324,20 @@ func _arm_ticket_glue() -> bool:
 		get_tree().quit(1)
 		return false
 	ticket_glue = glue
+	## RFC-049 049f (ticket v2): the seats are those of the ticket's mode (the humans take the slots of their tokens, so the
+	## transport has room for all of them), and the bots of the ticket are the AI seats of this match.
+	var ticket_seats := GameModeCatalog.seats_of(glue.mode_tag())
+	if ticket_seats > 0:
+		max_players = ticket_seats
+	var ai_found: Array[AiSeat] = []
+	for row in glue.ai_seats():
+		ai_found.append(_vs_ai_seat(StringName(str(row["god"])), int(row["slot"])))
+	if not ai_found.is_empty():
+		solo_ai_seats = ai_found
+		var slots: Array[int] = []
+		for seat in ai_found:
+			slots.append(seat.slot)
+		print("partida %s: ia en slots %s (del ticket)" % [glue.agent.match_id, str(slots)])
 	var metas := glue.seat_metas()
 	for slot in metas.keys():
 		## RFC-034 034m: a seat whose pick the ticket leaves open (Servidor local) sends it on admission.

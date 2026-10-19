@@ -46,7 +46,7 @@ func _post_import(scene: Node) -> Object:
 	terrain.transform = Transform3D.IDENTITY
 	# The importer may convert or reorder COLOR_0 (tile id + uv): the glb only supplies positions. The visual mesh is
 	# the one Terrain builds from the data at runtime, so it is identical by construction.
-	var visual := _runtime_mesh(data)
+	var visual := _runtime_mesh(data, source.get_base_dir().path_join("tiles.png"))
 	if visual == null:
 		push_error("terrain import %s: could not build the visual mesh (is tiles.png imported yet?)." % source)
 		return null
@@ -67,13 +67,15 @@ func _write_data(data: MapTerrainData, out: String) -> void:
 		push_error("terrain import: could not write %s (error %d)." % [out, error])
 
 
-## Terrain's own arrays (tile COLOR, smooth normals) through terrain.gd, so there is a single code path.
-func _runtime_mesh(data: MapTerrainData) -> ArrayMesh:
+## Terrain's own arrays (tile COLOR, smooth normals) through terrain.gd, so there is a single code path. The tile index
+## is the `tiles.png` next to the glb (RFC-050: the import has no active map to ask, and each map has its own).
+func _runtime_mesh(data: MapTerrainData, tiles_path: String) -> ArrayMesh:
 	var builder := MeshInstance3D.new()
 	builder.set_script(load(TERRAIN_SCRIPT))
 	builder.set("data", data)
+	builder.set("tiles_path", tiles_path)
 	var arrays: Array = []
-	if load(builder.get("tiles_path")) != null:
+	if ResourceLoader.exists(tiles_path):
 		arrays = builder.call("bake_arrays")
 	var smooth: bool = builder.get("smooth_ground")
 	builder.free()

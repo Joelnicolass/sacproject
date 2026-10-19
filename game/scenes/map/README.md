@@ -13,6 +13,8 @@ El mapa: layout, edificios, spawns de NPC, terreno, navegacion (`nav/`), props (
 3. Hornear el navmesh: `bake_nav.tscn` de tools/bake con `-- --map=<tag>`.
 4. Jugarlo: `--map=<tag>` (por ejemplo `res://scenes/match/match.tscn -- --map=test_flat`).
 
+Los mapas del original (High Noon, `peaks`, `peasantville`, `roads`, `winter_wonder`) se importan con `tools/import/import_map.py` y `scaffold_map.py`: el paso a paso está en `docs/HOWTO.md` («Un mapa») y la lista de los 31 en `rfcs/RFC-050-original-maps.md`.
+
 `test_flat` es el mapa de prueba: un cuadrado plano de 600 m, dos altares y un manantial. Sin edificios ni habitantes.
 
 Agregar uno nuevo: poner el script y la escena aca, componer con nodos hijos y `@export` (nada de herencia profunda), y los datos de tipo en `data/` como `.tres`. Las pruebas de este dominio van en `debug/map/`.

@@ -6,6 +6,7 @@ literal name, like sacengine does). tools/import/import_themes.py writes assets/
 """
 
 import itertools
+import json
 import struct
 import sys
 from collections import Counter
@@ -221,8 +222,11 @@ def base_mapping(source: dict, target: dict, tmap: bytes, by_corners: dict) -> d
     return mapping
 
 
-def land_remap(source: dict, target: dict, tmap: bytes) -> tuple:
-    """High Noon tile id -> MAPT index of another land with the same role, and the base group map."""
+def land_remap(source: dict, target: dict, tmap: bytes, extra: frozenset = frozenset()) -> tuple:
+    """Tile id of the source land -> MAPT index of the target land with the same role, and the base group map.
+
+    The base group map is decided by `tmap` alone (High Noon's cells for the themes). `extra` are more ids (the ones other maps
+    use) that take that same group map, so adding a map never moves what an id already maps to."""
     by_corners = {}
     for tile, (number, _, corners) in sorted(target["signatures"].items()):
         is_base = "band" in target["groups"][number]
@@ -231,7 +235,7 @@ def land_remap(source: dict, target: dict, tmap: bytes) -> tuple:
         by_corners.setdefault(corners, []).append(tile)
     base_map = base_mapping(source, target, tmap, by_corners)
     remap = {}
-    for tile in sorted(set(tmap)):
+    for tile in sorted(set(tmap) | set(extra)):
         signature = source["signatures"].get(tile)
         if signature is None:
             continue
@@ -263,7 +267,7 @@ def land_tiles(folder: dict) -> dict | None:
     }
 
 
-def build_atlas(folder: dict, tmap: bytes, map_land: dict | None) -> dict:
+def build_atlas(folder: dict, tmap: bytes, map_land: dict | None, extra: frozenset = frozenset()) -> dict:
     """16x16 grid of 64x64 MAPT, like terrain.gd / sacrifice_ground.gdshader expect."""
     land = land_tiles(folder)
     if land is None:
@@ -281,7 +285,7 @@ def build_atlas(folder: dict, tmap: bytes, map_land: dict | None) -> dict:
     remap = {}
     groups = {}
     if map_land is not None:
-        remap, groups = land_remap(map_land, land, tmap)
+        remap, groups = land_remap(map_land, land, tmap, extra)
     atlas = bytearray(1024 * 1024 * 4)
     for index in range(256):
         source = remap.get(index, index if map_land is None else None)
@@ -295,7 +299,7 @@ def build_atlas(folder: dict, tmap: bytes, map_land: dict | None) -> dict:
             out = ((oy + y) * 1024 + ox) * 4
             for x, color in enumerate(row):
                 atlas[out + 4 * x : out + 4 * x + 4] = palt[3 * color : 3 * color + 3] + b"\xff"
-    unmapped = sorted(used - set(remap)) if map_land is not None else sorted(used - present)
+    unmapped = sorted((used | set(extra)) - set(remap)) if map_land is not None else sorted(used - present)
     return {
         "ok": True,
         "image": (1024, 1024, bytes(atlas)),
@@ -306,7 +310,7 @@ def build_atlas(folder: dict, tmap: bytes, map_land: dict | None) -> dict:
     }
 
 
-def build_god(god: str, wad_name: str, land: str, sun_strength: float, tmap: bytes, map_land: dict | None):
+def build_god(god: str, wad_name: str, land: str, sun_strength: float, tmap: bytes, map_land: dict | None, extra: frozenset = frozenset()):
     """({png name: (width, height, RGBA)}, theme dict with the ENVI colours)."""
     folder = land_folder(DATA / wad_name, land)
     missing = []
@@ -331,7 +335,7 @@ def build_god(god: str, wad_name: str, land: str, sun_strength: float, tmap: byt
             images[filename] = found
         else:
             missing.append(filename)
-    atlas = build_atlas(folder, tmap, map_land)
+    atlas = build_atlas(folder, tmap, map_land, extra)
     if atlas["ok"]:
         images["atlas.png"] = atlas["image"]
     else:
@@ -349,12 +353,55 @@ def build_god(god: str, wad_name: str, land: str, sun_strength: float, tmap: byt
     return images, theme
 
 
+# The land each map's LEVL names, by the last four bytes of the LEVL reversed (levl.d detectTileset), in lower case.
+LEVL_LAND = {"ja_a": "james", "py_a": "pyro", "st_a": "stratos", "char": "charnel", "prsc": "persephone"}
+
+
+def map_god(scp: Path) -> str:
+    """The god whose land (tileset) the map is made of."""
+    return LEVL_LAND[extract(scp, "", "LEVL")[-4:][::-1].decode("latin1").lower()]
+
+
+def god_land(god: str) -> dict | None:
+    wad_name, land, _ = GODS[god]
+    return land_tiles(land_folder(DATA / wad_name, land))
+
+
+def map_tiles(scp: Path) -> tuple:
+    """(the map's 256x256 tile ids in James's tileset, the number of cells whose id found no James tile, the number of cells).
+
+    The ground atlases index James's MAPTs (the themes remap them onto the other lands). A map of another land (Charnel, Pyro,
+    Stratos) is moved onto James with the same land_remap the themes use, by role, so the ground of every map is read the same way.
+    WORKAROUND: the original reads each map in its own land; ids that find no James tile keep their number (they paint a tile
+    of another role, or none)."""
+    tmap = bytes(extract(scp, "", "TMAP")[512: 512 + 256 * 256])
+    god = map_god(scp)
+    if god == MAP_GOD:
+        return tmap, 0, len(tmap)
+    remap, _ = land_remap(god_land(god), god_land(MAP_GOD), tmap)
+    missed = sum(1 for tile in tmap if tile not in remap)
+    return bytes(remap.get(tile, tile) for tile in tmap), missed, len(tmap)
+
+
+def imported_maps() -> list:
+    """The .scp of every map under assets/original/maps/ except High Noon (the base of the themes), by the `map` of its ntts.json."""
+    folder = Path(__file__).resolve().parents[2] / "assets" / "original" / "maps"
+    found = []
+    for ntts in sorted(folder.glob("*/ntts.json")):
+        scp = MAPS / json.loads(ntts.read_text())["map"]
+        if scp != MAP and scp.exists():
+            found.append(scp)
+    return found
+
+
 def build_all() -> dict:
-    """{god: (images, theme)} for the five gods; High Noon's tile ids are remapped onto every land that is not James's."""
+    """{god: (images, theme)} for the five gods; High Noon's tile ids (and the ones of the other imported maps) are remapped
+    onto every land that is not James's. The other maps only add ids: High Noon's tiles map as before."""
     tmap = extract(MAP, "", "TMAP")[512: 512 + 256 * 256]
+    extra = frozenset(tile for scp in imported_maps() for tile in set(map_tiles(scp)[0]))
     wad_name, land, _ = GODS[MAP_GOD]
     map_land = land_tiles(land_folder(DATA / wad_name, land))
     return {
-        god: build_god(god, wad_name, land, sun_strength, tmap, None if god == MAP_GOD else map_land)
+        god: build_god(god, wad_name, land, sun_strength, tmap, None if god == MAP_GOD else map_land, extra)
         for god, (wad_name, land, sun_strength) in GODS.items()
     }

@@ -21,6 +21,13 @@ python3 -I tools/import/import_textures.py --out="$TMP/textures" >/dev/null && c
 python3 -I tools/import/import_props.py --out="$TMP/props" >/dev/null && for m in $(python3 -I tools/import/import_props.py --list-static); do cp "$A/props/$m.glb" "$TMP/props/"; done && cmp_dir props "$TMP/props" "$A/props" || { echo "FAIL  props"; fail=1; }
 python3 -I tools/import/import_themes.py --out="$TMP/themes" >/dev/null && cmp_dir themes "$TMP/themes" "$A/themes" || { echo "FAIL  themes"; fail=1; }
 python3 -I tools/import/import_map.py --out="$TMP/map" --terrain-bin="$TMP/terrain.bin" >/dev/null && cmp_dir map "$TMP/map" "$A/maps/high_noon" || { echo "FAIL  map"; fail=1; }
+# RFC-050: the other imported maps (their ntts.json names the .scp they came from); their terrain.res is checked by import_terrain.gd below only for High Noon.
+for ntts in "$A"/maps/*/ntts.json; do
+  tag="$(basename "$(dirname "$ntts")")"
+  [ "$tag" = high_noon ] && continue
+  scp="$(python3 -I -c 'import json,sys; print(json.load(open(sys.argv[1]))["map"][:-4])' "$ntts")"
+  python3 -I tools/import/import_map.py --map="$scp" --tag="$tag" --out="$TMP/map_$tag" >/dev/null && cmp_dir "map $tag" "$TMP/map_$tag" "$A/maps/$tag" || { echo "FAIL  map $tag"; fail=1; }
+done
 python3 -I tools/import/import_ui.py --out="$TMP/ui" >/dev/null && { cmp_dir ui "$TMP/ui/ui" "$A/ui"; cmp_dir fx "$TMP/ui/fx" "$A/fx"; } || { echo "FAIL  ui/fx"; fail=1; }
 python3 -I tools/import/export_stats.py --out "$TMP/data" >/dev/null 2>&1 && cmp_dir data "$TMP/data" "$A/data" || { echo "FAIL  data"; fail=1; }
 if bash agent/harness/godot_run.sh "$GODOT" --headless --path "$ROOT" --script res://tools/bake/import_terrain.gd -- --bin="$TMP/terrain.bin" 2>&1 | grep -q "0 written, 1 unchanged"; then echo "OK    terrain.res"; else echo "DIFF  terrain.res"; fail=1; fi

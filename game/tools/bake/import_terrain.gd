@@ -1,22 +1,22 @@
 extends SceneTree
 
-## Turns High Noon's terrain bin into assets/original/maps/high_noon/terrain.res (RFC-033, 033f).
-## Source: the HNTR v1 bin that `python3 tools/import/import_map.py --terrain-bin=F` builds from the .scp (a temporary file outside the
+## Turns a map's terrain bin (High Noon, or `--map=<tag>`: RFC-050) into the `terrain_path` of its MapDefinition (RFC-033, 033f).
+## Source: the HNTR v1 bin that `python3 tools/import/import_map.py [--map=Name] --terrain-bin=F` builds from the .scp (a temporary file outside the
 ## repo; nothing in the repo). Same float32 and int32 values as the bin, so Terrain builds the same mesh. Idempotent: when
 ## terrain.res already holds the same arrays nothing is written. Run once; the result is versioned.
-## "$GODOT" --headless --path game --script res://tools/bake/import_terrain.gd -- --bin=F [--out=res://path/terrain.res]
+## "$GODOT" --headless --path game --script res://tools/bake/import_terrain.gd -- --bin=F [--map=<tag>] [--out=res://path/terrain.res]
 
 
 func _initialize() -> void:
 	var source := ""
-	var out := OriginalAssets.map("high_noon", "terrain.res")
+	var out := MapCatalog.active().terrain_path
 	for argument in OS.get_cmdline_user_args():
 		if argument.begins_with("--bin="):
 			source = argument.substr(6)
 		elif argument.begins_with("--out="):
 			out = argument.substr(6)
 	if source.is_empty():
-		push_error("Falta --bin=<high_noon_terrain.bin> (python3 tools/import/import_map.py --terrain-bin=F).")
+		push_error("Falta --bin=<terrain.bin> (python3 tools/import/import_map.py --terrain-bin=F).")
 		quit(2)
 		return
 	var data := _read_bin(source)

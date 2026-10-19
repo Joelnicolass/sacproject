@@ -50,7 +50,29 @@ Un hechizo son dos cosas: el dato y, si tiene procedimiento propio, una escena.
 
 ## Un mapa
 
-Pendiente: lo está dejando listo el RFC-044 (separar `high_noon.tscn` en partida y mapa). Cuando cierre, esta sección dice qué escena duplicar, qué nodos lleva (terreno, edificios, `NpcSpawns`, navegación) y cómo se hornea el navmesh. Mientras tanto: `rfcs/RFC-044-*.md` y `scenes/map/README.md`.
+Un mapa es una carpeta `scenes/map/maps/<tag>/` con su `map.tscn` (raíz `MapRoot`), su `MapDefinition` `<tag>.tres`, el `layout.tscn` (edificios, plantas, NPC) y el `nav.res`; sus datos del original van en `assets/original/maps/<tag>/`. `data/maps/map_catalog.tres` lo lista y `--map=<tag>` lo elige. Más en `scenes/map/README.md`.
+
+**Importar uno del original** (RFC-050; la lista de los 31 con asientos y tamaño: `python3 tools/import/import_map.py --list`). Desde `game/`, con la instalación local; `G` es el binario de Godot y `<Nombre>` el del `.scp` sin el `(N)`, por ejemplo `Peaks` o `WinterWonder` (el tag sale solo: `winter_wonder`).
+
+```bash
+G=/Applications/Godot.app/Contents/MacOS/Godot
+python3 tools/import/import_map.py --map=<Nombre> --terrain-bin=/tmp/<tag>.bin   # tiles, luz, ntts, widgets + el bin del terreno
+python3 tools/import/scaffold_map.py --map=<Nombre>                              # sides, MapDefinition, map.tscn, catálogo
+python3 tools/import/import_themes.py                                            # suma los ids de baldosa del mapa a los atlas de los otros dioses
+bash agent/harness/godot_run.sh $G --headless --path . --script res://tools/bake/import_terrain.gd -- --map=<tag> --bin=/tmp/<tag>.bin
+bash agent/harness/godot_run.sh $G --headless --path . --import                  # importa tiles.png (lo lee el glb)
+bash agent/harness/godot_run.sh $G --headless --path . --script res://tools/bake/terrain_glb_export.gd -- --map=<tag> --force
+bash agent/harness/godot_run.sh $G --headless --path . --script res://tools/bake/bake_map_layout.gd -- --map=<tag> --force
+bash agent/harness/godot_run.sh $G --headless --path . --import                  # una vez más: terrain.glb y layout.tscn
+bash agent/harness/godot_run.sh $G --headless --path . res://tools/bake/bake_nav.tscn -- --map=<tag>
+bash agent/harness/godot_run.sh $G --headless --path . res://tools/bake/bake_nav.tscn -- --map=<tag> --check   # dos veces
+bash agent/harness/godot_run.sh $G --headless --path . res://tools/audit/check_map_starts.tscn -- --map=<tag>  # los inicios caen en tierra y en una misma región
+bash agent/runs/run_050_maps.sh <tag>                                            # humo: IA contra IA 0,5 min
+```
+
+Después de importar, `map.tscn` y `<tag>.tres` se editan a mano (la escena es la verdad). Ojo con `--force`: pisa lo editado. Las plantas de un mapa que no es de James quedan vacías hasta tener los modelos de sus widgets. `room_selectable = false` en la definición lo saca de las salas.
+
+**Hacer uno a mano:** copiá `scenes/map/maps/test_flat/` y armá el terreno en Blender (`terrain.glb`).
 
 ## Cambiar el balance
 

@@ -26,6 +26,7 @@ Estados: **Hecho** (cerrado y probado), **Parcial** (anda, con deuda anotada), *
 - **Hecho.** Navegación con navmesh de Godot horneado y versionado por hash, sin grilla propia. F200-F204.
 - **Hecho.** Biomas y temas de dioses. F32, F171.
 - **Hecho.** RFC-044: `match.tscn` (sistemas, HUD, cámara) carga un mapa de `scenes/map/maps/<mapa>/` según su `MapDefinition` (`data/maps/`); `--map=<tag>`. Mapa de prueba `test_flat` sin tocar código. F260-F263.
+- **Hecho.** RFC-050: mapas del original por parámetro (`import_map.py --map=`, `scaffold_map.py`): `peaks`, `peasantville`, `roads` (chicos, 1v1) y `winter_wonder` (grande, 4 asientos para el 2v2). F320-F324.
 
 ### Cámara, órdenes y entrada
 - **Hecho.** Cámara original, InputMap, selección sin tope, órdenes RTS, formaciones como Resources, menú radial en el botón derecho, marcador de orden del original. F15, F18, F27, F78, F216-F220.

@@ -23,6 +23,10 @@ extends Node3D
 ## keeps the battle on. A music entry is emitter `music`, event = the mood (MusicMood).
 ## 052g: the ambience (AmbienceDirector, ambience/james): `bed`, `ambient`, `god`, and `wait` with `from_wait` (a one-shot
 ## of the set's interval). An ambience entry is emitter `ambience`, event `bed` or `ambient`.
+## 052h: the UI and the sacrifice. `press` emits a button's `pressed` (SoundBus clicks it: event `click`), `menu` opens
+## (`arg` open) or cancels (cancel) the radial menu (MenuSounds: `menu_open`, `menu_back`), `ritual_phase` sets the lab
+## Ritual's replicated phase (`arg` shoot, wait...) and `ritual_end` its outcome (`arg` completed, aborted), as a client
+## receives them (RitualSounds); `collect` puts the lab Soul in COLLECTING (SoulSounds).
 
 const SCRIPT_FLAG := "audio-script"
 const NO_ORIGINAL_FLAG := "audio-no-original"
@@ -31,6 +35,8 @@ const EMPTY_ROOT := "res://debug/audio/fixtures/empty/"
 const PLAYED := 0
 const SILENT := 1
 const IF_SET := 2
+## 052h: the `menu` action's argument -> the RadialMenu signal it ends in.
+const MENU_SIGNALS := {"open": &"opened", "cancel": &"cancelled"}
 
 @export_file("*.tres") var script_path := "res://debug/audio/lab_052c.tres"
 @export var label: Label
@@ -186,6 +192,11 @@ func _expected_cue(body: Node, action: StringName, arg: String, event: StringNam
 			return false
 		return advisor.cue_for(advisor.code_for_refusal(StringName(arg)) if action == &"refuse" else emitter)
 	match action:
+		&"press":
+			return SoundBus.ui_cue_for(body as BaseButton) if body is BaseButton else false
+		&"menu":
+			var menu_sounds := body.get_node_or_null("MenuSounds") as MenuSounds
+			return menu_sounds.cue_for(MENU_SIGNALS.get(arg, &"")) if menu_sounds != null else false
 		&"select", &"order":
 			return command_voice.cue_for(body, event) if command_voice != null else false
 		&"fx":
@@ -315,6 +326,38 @@ func _act(body: Node, action: StringName, arg := "") -> bool:
 			return true
 		&"ritual":
 			return _ritual(arg)
+		&"press":
+			if not body is BaseButton:
+				return false
+			(body as BaseButton).pressed.emit()
+			return true
+		&"menu":
+			var radial := body as RadialMenu
+			if radial == null or not MENU_SIGNALS.has(arg):
+				return false
+			if arg == "open":
+				radial.open_at(Vector2(400.0, 300.0))
+			else:
+				radial.cancel()
+			return true
+		&"ritual_phase":
+			var ritual := body as Ritual
+			if ritual == null or not Ritual.Phase.has(arg.to_upper()):
+				return false
+			ritual.phase = Ritual.Phase[arg.to_upper()]
+			return true
+		&"ritual_end":
+			var ended := body as Ritual
+			if ended == null or not Ritual.Outcome.has(arg.to_upper()):
+				return false
+			ended.outcome = Ritual.Outcome[arg.to_upper()]
+			return true
+		&"collect":
+			var soul := body as Soul
+			if soul == null:
+				return false
+			soul.state = Soul.State.COLLECTING
+			return true
 		&"occupy", &"release":
 			if not body.has_method("occupy"):
 				return false

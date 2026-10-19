@@ -7,9 +7,17 @@ extends Node
 ## Health): nothing here is sent to the client. Only the authority acts; not in the product.
 ## 052d: then it broadcasts `fx_name` through FxBus (the RPC every FX already uses) `fx_times` times, one every
 ## `fx_every_ticks`, between the two creatures: the client hears it through FxBus.played and FxSoundMap.
+## 052f: the fight first lasts `battle_hold_ms` of REAL time with `battle_health` (nobody dies), and only then the health drops
+## to `duel_health`. With --fixed-fps the dedicated runs far faster than real time, so a short duel would end between two
+## frames of the client (it then gets the whole fight in one burst of state, and its CombatGauge, which samples every
+## 0.25 s, never sees two creatures fighting at once). Holding the fight in real time lets the client measure it.
 
 @export var summon_ticks := 90
 @export var duel_health := 150.0
+## Health while the fight is held (high: nobody dies before the hold ends).
+@export var battle_health := 100000.0
+## Real milliseconds the fight is held before the health drops to `duel_health`.
+@export var battle_hold_ms := 3000
 @export var gap_m := 4.0
 @export var ahead_m := 6.0
 @export var fx_name := "blood"
@@ -21,6 +29,7 @@ var _units: Array[Node3D] = []
 var _armed_tick := -1
 var _phase := 0
 var _fx_sent := 0
+var _hold_until := 0
 
 
 func _ready() -> void:
@@ -28,7 +37,7 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if _phase >= 4 or (MpKit.is_networked() and not MpKit.is_server()) or _tags.size() < 2:
+	if _phase >= 5 or (MpKit.is_networked() and not MpKit.is_server()) or _tags.size() < 2:
 		return
 	var state := get_tree().get_first_node_in_group(&"match_state") as MatchState
 	if state == null:
@@ -45,16 +54,25 @@ func _physics_process(_delta: float) -> void:
 				for unit in _units:
 					if is_instance_valid(unit):
 						unit.call("finish_summon")
-						(unit.get_node("Health") as Health).current = duel_health
+						(unit.get_node("Health") as Health).current = battle_health
 				_phase = 2
 		2:
 			if _units.size() == 2 and is_instance_valid(_units[0]) and is_instance_valid(_units[1]):
 				_units[0].call("engage", _units[1])
 				_units[1].call("engage", _units[0])
 				print("duelo de audio: %s contra %s" % [_units[0].name, _units[1].name])
-			_armed_tick = MatchClock.now()
+			_hold_until = Time.get_ticks_msec() + battle_hold_ms
 			_phase = 3
 		3:
+			if Time.get_ticks_msec() < _hold_until:
+				return
+			for unit in _units:
+				if is_instance_valid(unit):
+					(unit.get_node("Health") as Health).current = duel_health
+			print("duelo de audio: fin de la pelea sostenida")
+			_armed_tick = MatchClock.now()
+			_phase = 4
+		4:
 			if MatchClock.now() - _armed_tick < fx_every_ticks:
 				return
 			_armed_tick = MatchClock.now()
@@ -64,7 +82,7 @@ func _physics_process(_delta: float) -> void:
 			_fx_sent += 1
 			if _fx_sent >= fx_times:
 				print("duelo de audio: %d FX %s" % [_fx_sent, fx_name])
-				_phase = 4
+				_phase = 5
 
 
 func _wizard(slot: int) -> Node3D:

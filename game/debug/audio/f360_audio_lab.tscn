@@ -19,6 +19,10 @@
 [ext_resource type="Script" path="res://scenes/audio/combat_gauge.gd" id="17_gauge"]
 [ext_resource type="PackedScene" path="res://scenes/audio/music_director.tscn" id="18_music"]
 [ext_resource type="PackedScene" path="res://scenes/audio/ambience_director.tscn" id="19_ambience"]
+[ext_resource type="PackedScene" path="res://scenes/sacrifice/ritual.tscn" id="20_ritual"]
+[ext_resource type="PackedScene" path="res://scenes/souls/soul.tscn" id="21_soul"]
+[ext_resource type="PackedScene" path="res://scenes/ui/spell_book/spell_slot.tscn" id="22_slot"]
+[ext_resource type="PackedScene" path="res://scenes/ui/radial/radial_menu.tscn" id="23_radial"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(40, 1, 40)
@@ -30,7 +34,7 @@ size = Vector2(40, 40)
 albedo_color = Color(0.32, 0.3, 0.26, 1)
 
 [node name="AudioLab" type="Node3D" node_paths=PackedStringArray("label", "selection", "orders", "command_log", "command_voice", "advisor", "advisor_watch", "music", "ambience", "gauge", "match_state")]
-editor_description = "RFC-052 (F360+). Laboratorio de audio: dos criaturas (una con set del original, nmuh; una propia, testmonster), un mago y el oyente en una cámara fija. Los cuerpos están quietos; el lab mueve su estado replicado y los hijos *Sounds suenan. F6 y la acción debug_audio_event (J) recorre los pasos del lab_<corte>.tres. Desde 052d también un manantial (Fountain) y un altar (Altar) con sus bucles, y los pasos de FX (FxBus), proyectiles y bucles del lab_052d.tres. Desde 052e, las voces del jugador: Selection, Orders y CommandLog de laboratorio, CommandVoice, AdvisorVoice con su AdvisorWatch y un edificio propio (Building); pasos del lab_052e.tres. Desde 052f, la música: CombatGauge sobre el mago (hold corto), MusicDirector (music/james) y un MatchState sin DefeatRule; pasos del lab_052f.tres. Desde 052g, el ambiente: AmbienceDirector (ambience/james); pasos del lab_052g.tres. Sin ventana: --headless -- --audio-probe --audio-script[=res://debug/audio/lab_052c.tres] [--audio-no-original]."
+editor_description = "RFC-052 (F360+). Laboratorio de audio: dos criaturas (una con set del original, nmuh; una propia, testmonster), un mago y el oyente en una cámara fija. Los cuerpos están quietos; el lab mueve su estado replicado y los hijos *Sounds suenan. F6 y la acción debug_audio_event (J) recorre los pasos del lab_<corte>.tres. Desde 052d también un manantial (Fountain) y un altar (Altar) con sus bucles, y los pasos de FX (FxBus), proyectiles y bucles del lab_052d.tres. Desde 052e, las voces del jugador: Selection, Orders y CommandLog de laboratorio, CommandVoice, AdvisorVoice con su AdvisorWatch y un edificio propio (Building); pasos del lab_052e.tres. Desde 052f, la música: CombatGauge sobre el mago (hold corto), MusicDirector (music/james) y un MatchState sin DefeatRule; pasos del lab_052f.tres. Desde 052g, el ambiente: AmbienceDirector (ambience/james); pasos del lab_052g.tres. Desde 052h, la UI y el sacrificio: un botón (UiButton), uno con meta no_ui_sound (MutedButton), una casilla del libro (SpellButton, Iclk), el menú X (Radial, con MenuSounds), un ritual de Convertir quieto (SacrificeRitual, con RitualSounds; slots 9 para que el consejero no hable) y un alma quieta (Soul, con SoulSounds); pasos del lab_052h.tres. Sin ventana: --headless -- --audio-probe --audio-script[=res://debug/audio/lab_052c.tres] [--audio-no-original]."
 script = ExtResource("1_lab")
 label = NodePath("Overlay/LastEvent")
 selection = NodePath("Selection")
@@ -143,6 +147,17 @@ camera = NodePath("../Camera")
 [node name="AmbienceDirector" parent="." instance=ExtResource("19_ambience")]
 set_path = "ambience/james"
 
+[node name="SacrificeRitual" parent="." instance=ExtResource("20_ritual")]
+process_mode = 4
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)
+kind = 1
+caster_slot = 9
+target_slot = 9
+
+[node name="Soul" parent="." instance=ExtResource("21_soul")]
+process_mode = 4
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 3)
+
 [node name="Overlay" type="CanvasLayer" parent="."]
 
 [node name="LastEvent" type="Label" parent="Overlay"]
@@ -154,3 +169,27 @@ text = "Laboratorio de audio"
 theme_override_font_sizes/font_size = 20
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 6
+
+[node name="UiButton" type="Button" parent="Overlay"]
+offset_left = 24.0
+offset_top = 160.0
+offset_right = 160.0
+offset_bottom = 192.0
+text = "Botón"
+
+[node name="MutedButton" type="Button" parent="Overlay"]
+offset_left = 24.0
+offset_top = 200.0
+offset_right = 160.0
+offset_bottom = 232.0
+text = "Botón mudo"
+metadata/no_ui_sound = true
+
+[node name="SpellButton" parent="Overlay" instance=ExtResource("22_slot")]
+offset_left = 24.0
+offset_top = 240.0
+offset_right = 56.0
+offset_bottom = 272.0
+
+[node name="Radial" parent="Overlay" instance=ExtResource("23_radial")]
+visible = false

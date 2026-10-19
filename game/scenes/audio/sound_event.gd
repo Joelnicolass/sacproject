@@ -28,6 +28,9 @@ const LOOP := &"loop"
 # Advisor and UI (052e, 052h).
 const ADVICE := &"advice"
 const CLICK := &"click"
+## A menu opened / closed on nothing (052h: MenuSounds on the radial X menu).
+const MENU_OPEN := &"menu_open"
+const MENU_BACK := &"menu_back"
 # Sacrifice (052h).
 const SACRIFICE_ROUND := &"sacrifice_round"
 const SACRIFICE_END := &"sacrifice_end"
@@ -39,7 +42,7 @@ const AMBIENT := &"ambient"
 
 const ALL: Array[StringName] = [
 	SELECTED, ACK, ATTACK_ACK, ANNOYED, SWING, SHOOT, DAMAGED, DEATH, SUMMON, INCANTATION, GHOST, FOOT,
-	CAST, FX, LOOP, ADVICE, CLICK, SACRIFICE_ROUND, SACRIFICE_END, SOUL, BED, AMBIENT,
+	CAST, FX, LOOP, ADVICE, CLICK, MENU_OPEN, MENU_BACK, SACRIFICE_ROUND, SACRIFICE_END, SOUL, BED, AMBIENT,
 ]
 
 ## The original's SSET type codes that have an event (data/audio/README.md has the table). tools/bake/bake_sound_sets.gd

@@ -4,8 +4,8 @@ extends Node
 ## - open (`--audio-probe --user-settings=user://t_audio.cfg`): gate, prefs, SoundBus, original-set and body-set cases;
 ## - closed (plain headless, `--dedicated`, `--room-server`): gate cases and the closed SoundEmitter3D (nothing built,
 ##   nothing loaded).
-## Both modes also run the FX sound cases (052d), the voice cases (052e) and the music and ambience cases (052f, 052g) for
-## their gate.
+## Both modes also run the FX sound cases (052d), the voice cases (052e) and the music and ambience cases (052f, 052g) and
+## the UI and sacrifice cases (052h) for their gate.
 ## Prints `<case>: PASS|FAIL` and `AUDIO CASES PASS|FAIL (n)`; headless quits with 0 / 1.
 ## Watchdog: past `timeout_s` it prints `AUDIO CASES FAIL timeout` and quits 1. The case scripts are loaded at run time
 ## (not preloaded), so one that fails to compile still ends in a FAIL line instead of a runner without a script.
@@ -19,6 +19,7 @@ const BODY_CASES := "res://debug/audio/body_sounds_cases.gd"
 const FX_CASES := "res://debug/audio/fx_sounds_cases.gd"
 const VOICE_CASES := "res://debug/audio/voice_cases.gd"
 const MUSIC_CASES := "res://debug/audio/music_mood_cases.gd"
+const UI_SACRIFICE_CASES := "res://debug/audio/ui_sacrifice_cases.gd"
 
 ## Real seconds (not game time: --fixed-fps would stretch a game-time timer).
 @export var timeout_s := 20.0
@@ -67,6 +68,11 @@ func _run() -> void:
 			results["music_mood_cases"] = {"ok": false, "reason": "no compila"}
 		elif expect == "closed":
 			results.merge(await music.run(self, false))
+		var ui_sacrifice := _cases(UI_SACRIFICE_CASES)
+		if ui_sacrifice == null:
+			results["ui_sacrifice_cases"] = {"ok": false, "reason": "no compila"}
+		elif expect == "closed":
+			results.merge(await ui_sacrifice.run(self, false))
 		if expect == "open":
 			var prefs := _cases(PREFS_CASES)
 			var bus := _cases(BUS_CASES)
@@ -91,6 +97,8 @@ func _run() -> void:
 				results.merge(await voices.run(self, true))
 			if music != null:
 				results.merge(await music.run(self, true))
+			if ui_sacrifice != null:
+				results.merge(await ui_sacrifice.run(self, true))
 	if _done:
 		return
 	_done = true

@@ -24,10 +24,17 @@ extends Node
 ## decides what cuts what, the bus only draws the variant, configures and logs.
 ## RFC-052 052f (F365): `log_played` and `adopt_channel` for a player that picks its own stream (MusicDirector draws the
 ## battle track with its own generator and crossfades two players): the entry goes to the log and stop_all stops it.
+## RFC-052 052h (F367): UI clicks. Every BaseButton that enters the tree (SceneTree.node_added) plays, on `pressed`, the
+## cue `ui_click_key` of the `ui_set` set (ui.tres: `click`, the original's Mcl1-4) on the 2D pool; emitter = the button's
+## name, event `click` (the buttons already in the tree at start too). A button with meta `ui_sound` (a StringName key) plays that key instead (the spell book's slots:
+## `Iclk`, the in-game click); one with meta `no_ui_sound` (any value but false) plays nothing. The metas are read on press.
 
 const PREFS_PATH := AudioPrefs.SHARED_PATH
 ## SoundLibrary path of the FX sound table (data/audio/fx_sounds.tres, data/audio/custom/fx_sounds.tres).
 const FX_MAP := "fx_sounds"
+## 052h: metas a BaseButton may carry (read on press).
+const META_NO_UI_SOUND := &"no_ui_sound"
+const META_UI_SOUND := &"ui_sound"
 
 @export_range(1, 128) var pool_3d_size := 32
 @export_range(1, 64) var pool_2d_size := 8
@@ -35,6 +42,9 @@ const FX_MAP := "fx_sounds"
 @export_range(1, 1024) var log_capacity := 64
 ## Loops playing at once (SoundEmitter3D: fountains, manaliths, altars); they also count in `pool_3d_size`.
 @export_range(0, 64) var max_loops_3d := 8
+## 052h: SoundLibrary path of the UI set and the key a plain button press plays ("" = no button clicks).
+@export var ui_set := "ui"
+@export var ui_click_key: StringName = SoundEvent.CLICK
 
 ## Null while the gate is closed.
 var sound_log: SoundLog
@@ -92,6 +102,10 @@ func _ready() -> void:
 		prefs.changed.connect(apply_prefs)
 		apply_prefs()
 	FxBus.played.connect(_on_fx_played)
+	get_tree().node_added.connect(_on_node_added)
+	## The main scene entered the tree with the autoloads, before this _ready: its buttons are already there.
+	for node in get_tree().root.find_children("*", "BaseButton", true, false):
+		_on_node_added(node)
 
 
 func _process(delta: float) -> void:
@@ -390,6 +404,33 @@ func _configure(player: Node, cue: SoundCue, stream: AudioStream, in_3d: bool) -
 		var p3: AudioStreamPlayer3D = player
 		p3.max_distance = cue.max_distance_m
 		p3.unit_size = cue.unit_size
+
+
+## The cue a press of `button` plays now (its `ui_sound` meta or `ui_click_key` in `ui_set`), or null (gate closed,
+## `no_ui_sound`, no set, no cue). The lab asks it to know what to expect.
+func ui_cue_for(button: BaseButton) -> SoundCue:
+	if not _started or button == null or ui_set.is_empty():
+		return null
+	if button.has_meta(META_NO_UI_SOUND) and button.get_meta(META_NO_UI_SOUND) != false:
+		return null
+	var key := StringName(button.get_meta(META_UI_SOUND, ui_click_key))
+	return lookup(ui_set, key)
+
+
+## A BaseButton entered the tree: its presses click (052h). Bound to the button; the connection goes with it.
+func _on_node_added(node: Node) -> void:
+	var button := node as BaseButton
+	if button == null:
+		return
+	var on_press := _on_button_pressed.bind(button)
+	if not button.pressed.is_connected(on_press):
+		button.pressed.connect(on_press)
+
+
+func _on_button_pressed(button: BaseButton) -> void:
+	var cue := ui_cue_for(button) if is_instance_valid(button) else null
+	if cue != null:
+		play_2d(cue, StringName(button.name), SoundEvent.CLICK)
 
 
 ## FxBus.played: the FX's cue at the FX (emitter = the FX name, event = fx). No cue: silence, no entry.

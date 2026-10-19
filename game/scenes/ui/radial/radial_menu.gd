@@ -11,6 +11,8 @@ extends Control
 ## with `draw_string`, not a Label: the HUD text audit (RFC-025c) counts Controls with text.
 ## Run alone (F6) it opens in the middle of the window, follows the mouse and prints the entry chosen by a click.
 
+## The menu opened (open_at). RFC-052 052h: MenuSounds listens.
+signal opened
 ## The pointer moved onto `entry` (null: onto nothing).
 signal hovered_changed(entry: RadialEntry)
 ## The pointer was released on `entry` and the menu closed.
@@ -134,6 +136,7 @@ func open_at(screen: Vector2, center_icon: Texture2D = null) -> void:
 		_tween.tween_property(self, "modulate:a", 1.0, open_s)
 		_tween.tween_property(self, "scale", Vector2.ONE * _factor, open_s)
 	queue_redraw()
+	opened.emit()
 
 
 ## The pointer is at `screen` (pixels): highlights what it is on and returns it.

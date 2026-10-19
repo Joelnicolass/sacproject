@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scenes/souls/soul.gd" id="1_soul"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/spir.png" id="2_atlas"]
+[ext_resource type="Script" path="res://scenes/audio/soul_sounds.gd" id="a052_soul_sounds"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_soul"]
 properties/0/path = NodePath(".:position")
@@ -47,3 +48,8 @@ shape = SubResource("CapsuleShape3D_target")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_soul")
+
+[node name="SoulSounds" type="Node" parent="." node_paths=PackedStringArray("soul")]
+editor_description = "RFC-052 052h: el alma suena (spir) cuando un mago la toma (state pasa a COLLECTING, replicado). Sin audio (dedicado, headless) no hace nada."
+script = ExtResource("a052_soul_sounds")
+soul = NodePath("..")

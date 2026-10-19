@@ -51,7 +51,8 @@ La tabla vive en `SoundEvent` (`CREATURE_CODES`, `WORLD_CODES`, `UI_CODES`, en `
 | `Xgib` (`spel`) | `sacrifice_end` | final del sacrificio |
 | `spir` (`spel`) | `soul` | alma |
 | `SUMN` (`spel`) | `summon` | invocación |
-| `clik` (`ifac`) | `click` | clic de botón |
+| `clik` (`ifac`) | `click` | clic de botón (`Mcl1-4`; 052h: `SoundBus`) |
+| `Iclk`, `Ibak`, `XMNU` (`ifac`) | (clave tal cual) | clic de la interfaz en partida (libro), volver, menú X (052h: meta `ui_sound`, `MenuSounds`) |
 
 El mago además emite `ghost` al levantarse como fantasma; el original no trae sonido para eso (ni para la muerte del mago), así que suena solo con un set propio. `shoot` no tiene código: `UnitSounds` usa el `swing` del set (`aliases`), y un set de cuerpo a cuerpo sin `swing` (`fist`, `stab`) usa su `Xhit`.
 

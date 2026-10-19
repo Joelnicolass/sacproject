@@ -18,6 +18,9 @@ extends Node3D
 enum State { NORMAL, EMERGING, COLLECTING, REVIVING, DEVOURING }
 enum SoulColor { BLUE, RED }
 
+## The state changed (every peer: the setter runs on the replicated value too). RFC-052 052h: SoulSounds listens.
+signal state_changed(was: State, now: State)
+
 ## SacSoul.getMesh(color, frame/2) with frame at 30 fps: 8 cells at 15 fps (sacobject.d:1174).
 const ANIM_FPS := 15.0
 const ANIM_FRAMES := 8
@@ -41,7 +44,13 @@ const SPRITE_LIFT := 1.25 * 1.6
 @export var collector_slot := 0
 ## Dropped with P: creature orders will not target it (sacengine `dropped`).
 @export var dropped := false
-@export var state: State = State.NORMAL
+@export var state: State = State.NORMAL:
+	set(value):
+		if state == value:
+			return
+		var was := state
+		state = value
+		state_changed.emit(was, value)
 @export var scaling := 1.0
 
 @export_group("Motion")

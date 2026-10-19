@@ -10,11 +10,12 @@ extends Node
 ## once a second until one is heard: the server answers with a Refusal key (bad_target) through the feedback RPC every cast
 ## already has, CommandLog says it and AdvisorVoice speaks (`invl`). The advisor's set is the original's, else the fixture
 ## of debug/audio/fixtures/voices/ (searched last).
-## 052f: `battle` (optional: not in the default events, so it never fails the run; `AUDIO_NET todos` shows it) counts the
-## music's mood: the duel next to the local wizard puts its CombatGauge (match.tscn) over `enter`
-## from the replicated modes, and its MusicDirector logs emitter `music`, event `battle`. The music sets are the original's,
+## 052f: `battle` (a default event: the run fails without it) counts the music's mood: the duel next to the local wizard,
+## held in real time (audio_net_duel `battle_hold_ms`), puts its CombatGauge (match.tscn) over `enter` from the replicated
+## modes, and its MusicDirector logs emitter `music`, event `battle`. The music sets are the original's,
 ## else the fixture's common set (debug/audio/fixtures/music/, searched last).
-## Flags: --e2e-name, --mp-port (the kit), --audio-events=summon,swing,damaged,death,fx,advice[,battle] (each needs a played entry of a
+## --audio-net-trace prints every change of the creatures (mode, swings, shots, position) and the gauge (diagnosis).
+## Flags: --e2e-name, --mp-port (the kit), --audio-events=summon,swing,damaged,death,fx,advice,battle (each needs a played entry of a
 ## creature, fx of an FX, advice of the advisor),
 ## --e2e-timeout-s=N (real seconds, 60 by default), --e2e-linger-s=N (real seconds to keep running after MpKit.leave(); 0 by default).
 ## Prints `AUDIO_NET <event> <count>` and `AUDIO_NET PASS|FAIL`; exit 0 / 1. Like dedicated_client, the main scene starts a twin
@@ -33,6 +34,8 @@ var _name := ""
 var _seen := {}
 var _counts := {}
 var _finished := false
+var _next_trace := 0
+var _last_trace := ""
 
 
 func _ready() -> void:
@@ -59,7 +62,7 @@ func _run() -> void:
 	roots.append(MUSIC_ROOT)
 	SoundLibrary.roots = roots
 	SoundLibrary.clear_cache()
-	var wanted := MpBoot.user_value("audio-events", "summon,swing,damaged,death,fx,advice").split(",", false)
+	var wanted := MpBoot.user_value("audio-events", "summon,swing,damaged,death,fx,advice,battle").split(",", false)
 	for event in wanted:
 		_counts[StringName(event)] = 0
 	if SacrificeFlow.join_lan(LOCAL_HOST) != OK:
@@ -72,6 +75,8 @@ func _run() -> void:
 			next_refusal = Time.get_ticks_msec() + 1000
 			_ask_refused_cast()
 		_collect()
+		if MpBoot.user_flag("audio-net-trace") and Time.get_ticks_msec() >= _next_trace:
+			_trace()
 		if _counts.values().all(func(n: int) -> bool: return n > 0):
 			break
 		await get_tree().process_frame
@@ -125,3 +130,31 @@ func _finish(ok: bool, reason: String) -> void:
 	while Time.get_ticks_msec() < linger_until:
 		await get_tree().process_frame
 	get_tree().quit(0 if ok else 1)
+
+
+## `--audio-net-trace`: where the listener, the local wizard and every creature are, and what the gauge measures.
+func _trace() -> void:
+	var state := ""
+	for node in get_tree().get_nodes_in_group(&"unit"):
+		var unit := node as UnitBody
+		if unit != null:
+			state += "|%s %d %d %d %s" % [unit.name, unit.mode, unit.swings, unit.shots, unit.global_position.round()]
+	var g := get_tree().root.find_child("CombatGauge", true, false) as CombatGauge
+	if g != null:
+		state += "|g %.2f" % g.intensity
+	if state == _last_trace:
+		return
+	_last_trace = state
+	print("AUDIO_NET trace f=%d ms=%d %s" % [Engine.get_process_frames(), Time.get_ticks_msec(), state])
+	if Time.get_ticks_msec() < _next_trace:
+		return
+	_next_trace = Time.get_ticks_msec() + 2000
+	var gauge := get_tree().root.find_child("CombatGauge", true, false) as CombatGauge
+	var wiz := "-"
+	for wizard in get_tree().get_nodes_in_group(&"wizard"):
+		wiz += " %s slot=%s local=%s at=%s" % [wizard.name, wizard.get("owner_slot"), wizard.call("is_local") if wizard.has_method("is_local") else "?", (wizard as Node3D).global_position.round()]
+	print("AUDIO_NET trace local_slot=%d listener=%s gauge=%s %s" % [MpKit.local_slot(), SoundBus.listener_position().round(), "%.2f battle=%s" % [gauge.intensity, gauge.is_battle()] if gauge != null else "none", wiz])
+	for node in get_tree().get_nodes_in_group(&"unit"):
+		var unit := node as UnitBody
+		if unit != null:
+			print("AUDIO_NET trace   %s slot=%d at=%s mode=%d swings=%d shots=%d" % [unit.name, unit.owner_slot, unit.global_position.round(), unit.mode, unit.swings, unit.shots])

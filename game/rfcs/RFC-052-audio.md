@@ -145,7 +145,7 @@ game/
 │   ├── music/<god>.tres, music/menu.tres          MusicSet
 │   └── ambience/<god>.tres                        AmbienceSet
 ├── data/ui/audio_prefs.tres                 NUEVO
-├── assets/original/audio/                   NUEVO (lo escribe el importador; ver §14.1)
+├── assets/original/audio/                   NUEVO (lo escribe el importador; LFS, ver §14.1)
 │   ├── sfx/<carpeta>/<nombre>.wav, voice/<carpeta>/<nombre>.wav, music/<slug>.mp3
 │   └── index.json                           sets SSET y tipos -> sets
 ├── assets/custom/sounds/<kind>/<tag>/<event>[_n].{ogg,wav}   NUEVO (convención para contenido propio)
@@ -265,13 +265,16 @@ Reglas para todos los cortes:
 
 ## 14. Decisiones (las tomó el orquestador; el usuario puede cambiarlas)
 
-1. **Audio importado del original: no se versiona por ahora.**
-   - `assets/original/audio/` va en `.gitignore`. Cada uno lo importa con `import_audio.py` desde su instalación, como el resto de las herramientas del original.
-   - Son unos 230 MB, el repo es público y la decisión de LFS está diferida por el usuario.
-   - Si después se decide versionarlo, se agrega a LFS sin tocar código.
-   - Un `.tres` con un `ext_resource` a un archivo que no existe da error de carga. Por eso los sets que salen del original se hornean en `data/audio/original/`, que también va en `.gitignore`.
-   - `SoundLibrary` busca primero en `data/audio/` (sets propios, versionados, que ganan) y después en `data/audio/original/`.
-   - Lo que sí se versiona: los sets propios de `data/audio/`, el fixture de prueba y `ui.tres`, `world.tres` y `music/menu.tres` vacíos, como plantillas.
+1. **El audio importado del original se versiona por Git LFS.** Decisión del usuario, 2026-10-19.
+   - Pesa unos 103 MB:
+     - efectos: 388 WAV PCM16, 34 MB;
+     - voces de escaramuza en inglés: 2481 archivos en Ogg Vorbis q4, 42 MB (en WAV serían 168 MB);
+     - música: los 17 MP3 completos, campaña incluida, 27 MB.
+   - No entran los diálogos de campaña ni otros idiomas.
+   - El MP3 se descarta para efectos y bucles: agrega 50 ms de silencio al principio.
+   - Para comprimir, el importador usa ffmpeg (`--codec`). Si no lo encuentra, guarda WAV y avisa. Solo lo necesita quien importa.
+   - Los sets del original se hornean versionados en `data/audio/`. Los propios van en `data/audio/custom/`, que tiene prioridad.
+   - Un set cuyos streams faltan (por ejemplo, en un clon sin LFS) se saltea con `SoundLibrary.has_dependencies()`, sin error.
 2. **Sin el original suena silencio**, no sonidos de relleno.
 3. **Bajo AgentKit, `Master` en 0** salvo con `--audio-on`.
 4. **La música de batalla se activa por cualquiera de dos condiciones:** intensidad cerca del oyente, o daño al mago local en los últimos 120 s, como el original.

@@ -7,33 +7,20 @@ extends Node
 ## without mana). Creatures check souls, mana, then cooldown, and need no target: the
 ## Summoner puts them in front of the wizard when the cast starts. Starting sets every
 ## cooldown, then mana drains at cast_drain_per_s during the casting frames.
-## Speedup works at once; Heal, Wrath and creatures when the casting time ends. Rock rises
-## out of the ground while casting and flies when it ends.
-## A spell with its own procedure (Manalith…) is a SpellAction child of `actions`, found by tag:
-## Caster does the common part and asks the action to check, begin, finish and cancel.
+## Every spell of the book (combat or structure) is a SpellAction child of `actions`, found by tag (RFC-041):
+## Caster does the common part and asks the action to check, begin, start, finish and cancel. A creature needs
+## no action: the Summoner puts it in front of the wizard when the cast starts and finishes it when it ends.
 
 signal feedback(text: String)
 ## The cast particle that is showing changed: "" when the wizard is not casting (RFC-023 023d). Every peer emits it.
 signal cast_fx_changed(type_name: String)
 
-const SPEEDUP := "pups"
-const HEAL := "laeh"
-const ROCK := "kcor"
-const WRATH := "oalf"
-const FIREBALL := "brif"
-const LIGHTNING := "ntil"
-const SWARM := "mrws"
-const IMPLEMENTED: PackedStringArray = [SPEEDUP, HEAL, ROCK, WRATH, FIREBALL, LIGHTNING, SWARM]
 ## sacengine updateFPS: casting and drain are counted in frames.
 const FPS := 60.0
 ## sacengine manaEpsilon.
 const MANA_EPSILON := 0.01
 ## sacengine SacSpell: manaCost = max(1, manaCost).
 const MIN_MANA_COST := 1.0
-## Hands of a wizard, as a fraction of the body height (Wrath leaves from there).
-const HAND_HEIGHT := 0.65
-## BeamType of the Lightning strike (res://data/fx/beams/), RFC-029 029d.
-const LIGHTNING_BEAM := "lightning"
 const NO_MANA := SpellAction.NO_MANA
 const NO_SOULS := "Sin almas"
 const COOLING := SpellAction.COOLING
@@ -45,21 +32,15 @@ const NO_ROOM := SpellAction.NO_ROOM
 ## RFC-036 036d: MatchRules.max_creatures_per_player reached.
 const CREATURE_LIMIT := "Límite de criaturas"
 
-const _HEAL_EFFECT := preload("res://scenes/world/spells/heal_effect.gd")
-const _SPEEDUP_EFFECT := preload("res://scenes/world/spells/speedup_effect.gd")
-const _ROCK := preload("res://scenes/world/spells/rock_projectile.gd")
-const _HEALTH := preload("res://scenes/world/components/health.gd")
-
 @export var rules: MatchRules
 @export var spellbook: Spellbook
 @export var summoner: Summoner
-## Holds the SpellAction children (Manalith…). Without it, or without the child, the spell answers «No implementado».
+## Holds the SpellAction children. Without it, or without the child, the spell answers «No implementado».
 @export var actions: Node
 
 ## SpellType or CreatureType being cast.
 var _entry: Resource
 var _target: Node3D
-var _point := Vector3.ZERO
 var _frames_left := 0
 var _drain_left := 0
 var _drain_per_frame := 0.0
@@ -92,7 +73,7 @@ func arm_status(index: int) -> String:
 	var spell := spellbook.spell_at(index)
 	if spell == null:
 		return BAD_TARGET
-	if not IMPLEMENTED.has(spell.tag):
+	if action_for(spell.tag) == null:
 		return NOT_IMPLEMENTED
 	var status := ""
 	if _cost(spell) > _mana() + MANA_EPSILON:
@@ -150,14 +131,23 @@ func structure_status(index: int) -> String:
 	return _funds(spell)
 
 
-## The action that answers to `tag`, or null (the spell is not implemented).
+## The action that answers to `tag`, or null (the spell is not implemented). A child of `actions` wins; else the
+## scene in the SpellType's `action` is instanced under `actions` the first time (RFC-041).
 func action_for(tag: String) -> SpellAction:
 	if actions == null:
 		return null
 	for child in actions.get_children():
 		if child is SpellAction and not child.is_queued_for_deletion() and (child as SpellAction).tag == tag:
 			return child
-	return null
+	var spell := _spell_of(tag)
+	if spell == null or spell.action == null:
+		return null
+	var made := spell.action.instantiate() as SpellAction
+	if made == null:
+		return null
+	made.tag = tag
+	actions.add_child(made)
+	return made
 
 
 ## Read only: what a cast of the spell `tag` that has an action (Manalith, Convert, Desecrate, Guardian, Teleport) would answer now at
@@ -263,47 +253,17 @@ func _tell_owner(text: String) -> void:
 
 ## Server or solo. Returns the spell name when it starts, or the reason it did not.
 func _try_cast(tag: String, point: Vector3, path: NodePath) -> String:
-	var index := spellbook.index_of(tag)
-	var spell := spellbook.spell_at(index)
 	if not wizard_can_cast():
 		return ""
 	var action := action_for(tag)
-	if action != null:
-		var entry_spell := _spell_of(tag)
-		if entry_spell == null:
-			return BAD_TARGET
-		if is_casting():
-			return BUSY
-		return _try_action(action, entry_spell, point, path)
+	if action == null:
+		return NOT_IMPLEMENTED if spellbook.spell_by_tag(tag) != null else BAD_TARGET
+	var spell := _spell_of(tag)
 	if spell == null:
 		return BAD_TARGET
-	if not IMPLEMENTED.has(tag):
-		return NOT_IMPLEMENTED
 	if is_casting():
 		return BUSY
-	var picked := get_node_or_null(path) as Node3D if not path.is_empty() else null
-	var target := _resolve_target(spell, picked)
-	var status := ""
-	if _cost(spell) > _mana() + MANA_EPSILON:
-		status = NO_MANA
-	elif target == null:
-		status = BAD_TARGET
-	elif _wizard.global_position.distance_to(target.global_position if target else point) > spell.cast_range:
-		status = OUT_OF_RANGE
-	if spellbook.cooldown(index) > 0.0:
-		status = COOLING
-	if not status.is_empty():
-		return status
-	_start(spell, target, point)
-	if spell.tag == SPEEDUP:
-		_speed_up(target, spell)
-	elif spell.tag == ROCK:
-		_raise_rock(spell, target)
-	elif spell.tag == FIREBALL:
-		_throw_fireball(spell, target)
-	elif spell.tag == SWARM:
-		_throw_swarm(spell, target)
-	return spell.display_name
+	return _try_action(action, spell, point, path)
 
 
 ## Server or solo. Returns the creature name when the summon starts, or the reason it did not.
@@ -322,7 +282,7 @@ func _try_summon(tag: String) -> String:
 	var unit := summoner.begin(type)
 	if unit == null:
 		return NO_ROOM
-	_start(type, unit, unit.global_position)
+	_start(type, unit)
 	return type.display_name
 
 
@@ -354,26 +314,9 @@ func _try_action(action: SpellAction, spell: SpellType, point: Vector3, path: No
 		return aim.status
 	action.begin(wizard, spell, aim)
 	_active = action
-	_start(spell, aim.target, aim.point)
+	var frames := _start(spell, aim.target)
+	action.started(wizard, spell, aim, frames)
 	return spell.display_name
-
-
-## Speedup and Heal go to a friendly wizard or creature, else to the caster. Rock and Wrath
-## (SPEL flags 8213: wizards, creatures, structures, disallowAlly; no targetGround, so
-## sacspell.d isApplicable rejects the ground) need a living enemy body under the cursor.
-func _resolve_target(spell: SpellType, picked: Node3D) -> Node3D:
-	if spell.tag == ROCK or spell.tag == WRATH or spell.tag == FIREBALL or spell.tag == LIGHTNING or spell.tag == SWARM:
-		return picked if picked and not _is_ally(picked) and _ROCK.is_live_body(picked) else null
-	var body: Node3D = picked if picked and _is_ally(picked) else null
-	if picked == null:
-		body = _wizard
-	if body == null:
-		return null
-	if spell.tag == HEAL and body.get_node_or_null("Health") == null:
-		return null
-	if spell.tag == SPEEDUP and _SPEEDUP_EFFECT.duration_s(body, spell) < 0.0:
-		return null
-	return body
 
 
 func _wizard_level() -> int:
@@ -381,23 +324,20 @@ func _wizard_level() -> int:
 	return int(value) if value != null else 1
 
 
-func _is_ally(body: Node) -> bool:
-	return body == _wizard or int(body.get("owner_slot") if "owner_slot" in body else 0) == int(_wizard.get("owner_slot"))
-
-
-func _start(entry: Resource, target: Node3D, point: Vector3) -> void:
+## Takes the cast: counts the casting frames and the drain, sets the cooldowns. Returns the casting frames.
+func _start(entry: Resource, target: Node3D) -> int:
 	## RFC-030 030c: the wizard level shortens the cast (CastTime, sacspell.d castingTime).
 	var frames := floori(FPS * CastTime.seconds(entry, _wizard_level()))
 	var cost := _cost(entry)
 	_entry = entry
 	_target = target
-	_point = point
 	_frames_left = frames
 	_drain_left = mini(frames, ceili(cost * FPS / rules.cast_drain_per_s))
 	_drain_per_frame = cost / float(maxi(_drain_left, 1))
 	spellbook.apply_cooldown(str(entry.get("tag")))
 	var verb := "convoca" if entry is CreatureType else "lanza"
 	print("%s %s slot %d" % [verb, str(entry.get("display_name")), int(_wizard.get("owner_slot"))])
+	return frames
 
 
 func _physics_process(_delta: float) -> void:
@@ -447,30 +387,13 @@ func _finish() -> void:
 		var text := action.finish(_wizard as WizardBody, spell, target)
 		if not text.is_empty():
 			_tell_owner(text)
-		return
-	if spell.tag == HEAL and target and _HEAL_EFFECT.can_heal(target):
-		var effect: Node = target.get_node_or_null(_HEAL_EFFECT.NODE_NAME)
-		if effect == null:
-			effect = _HEAL_EFFECT.new()
-			effect.name = _HEAL_EFFECT.NODE_NAME
-			target.add_child(effect)
-		effect.call("add", float(spell.damage))
-		print("cura %d a %s" % [spell.damage, target.name])
-	elif spell.tag == WRATH:
-		_throw_wrath(spell, target)
-	elif spell.tag == LIGHTNING:
-		_strike_lightning(spell, target)
 
 
-## sacengine animateRockCasting throws dirt and animateWrathCasting its own sparks
-## (state.d:16386, 16707); the rest use the god's casting particle.
+## The cast particle of the action (Rock throws dirt, Wrath its own sparks: state.d:16386, 16707); the rest
+## use the god's casting particle.
 func _cast_fx() -> String:
 	if _active != null and not _active.cast_fx.is_empty():
 		return _active.cast_fx
-	if _entry is SpellType and (_entry as SpellType).tag == ROCK:
-		return "dirt_cast"
-	if _entry is SpellType and (_entry as SpellType).tag == WRATH:
-		return "wrath_cast"
 	return "cast_%s" % _cast_god()
 
 
@@ -480,129 +403,6 @@ func _cast_god() -> String:
 	if god.is_empty() or god == "none":
 		god = str(_wizard.get("god"))
 	return god
-
-
-func _speed_up(target: Node3D, spell: SpellType) -> void:
-	var seconds := _SPEEDUP_EFFECT.duration_s(target, spell)
-	if seconds < 0.0:
-		return
-	var effect: Node = _SPEEDUP_EFFECT.new()
-	effect.name = _SPEEDUP_EFFECT.NODE_NAME
-	effect.call("start", seconds)
-	target.add_child(effect)
-	FxBus.broadcast("speedup", target.global_position + Vector3.UP)
-
-
-## sacengine castRock: the rock rises out of the ground during the casting frames, then flies.
-func _raise_rock(spell: SpellType, target: Node3D) -> void:
-	var spawner := get_tree().get_first_node_in_group("spell_spawner")
-	if spawner == null:
-		return
-	var at := _ROCK.cast_position(_wizard)
-	var aim := _ROCK.body_center(target)
-	spawner.call("spawn_rock", {
-		"x": at.x, "y": at.y, "z": at.z,
-		"tx": aim.x, "ty": aim.y, "tz": aim.z,
-		"target": str(target.get_path()),
-		"caster": str(_wizard.get_path()),
-		"slot": int(_wizard.get("owner_slot")),
-		"speed": spell.speed,
-		"acceleration": spell.acceleration,
-		"damage": float(spell.damage),
-		"cast_frames": _frames_left,
-	})
-
-
-## sacengine updateWrathCasting: the ball leaves from the hands when the casting ends.
-## There are no hand bones here: front of the hit box, at hand height.
-func _throw_wrath(spell: SpellType, target: Node3D) -> void:
-	var spawner := get_tree().get_first_node_in_group("spell_spawner")
-	if spawner == null:
-		return
-	var info := BodyLibrary.info(str(_wizard.get("model")))
-	var at := _wizard.global_position + Vector3.UP * float(info.get("height", 1.8)) * HAND_HEIGHT
-	if _wizard.has_method("facing_flat"):
-		at += (_wizard.call("facing_flat") as Vector3) * float(info.get("reach", 0.5))
-	var aim := _ROCK.body_center(target) if target else _point
-	spawner.call("spawn_wrath", {
-		"x": at.x, "y": at.y, "z": at.z,
-		"tx": aim.x, "ty": aim.y, "tz": aim.z,
-		"target": str(target.get_path()) if target else "",
-		"caster": str(_wizard.get_path()),
-		"slot": int(_wizard.get("owner_slot")),
-		"speed": spell.speed,
-		"acceleration": spell.acceleration,
-		"damage": float(spell.damage),
-		"damage_range": spell.damage_range,
-	})
-
-
-## sacengine castFireball / updateFireball: same guided spell family as Wrath/Rock, but with
-## fireball size 0.5, flying height 0.5 and splash damage at impact.
-func _throw_fireball(spell: SpellType, target: Node3D) -> void:
-	var spawner := get_tree().get_first_node_in_group("spell_spawner")
-	if spawner == null:
-		return
-	var info := BodyLibrary.info(str(_wizard.get("model")))
-	var at := _wizard.global_position + Vector3.UP * float(info.get("height", 1.8)) * HAND_HEIGHT
-	if _wizard.has_method("facing_flat"):
-		at += (_wizard.call("facing_flat") as Vector3) * float(info.get("reach", 0.5))
-	var aim := _ROCK.body_center(target) if target else _point
-	spawner.call("spawn_fireball", {
-		"x": at.x, "y": at.y, "z": at.z,
-		"tx": aim.x, "ty": aim.y, "tz": aim.z,
-		"target": str(target.get_path()) if target else "",
-		"caster": str(_wizard.get_path()),
-		"slot": int(_wizard.get("owner_slot")),
-		"speed": spell.speed,
-		"acceleration": spell.acceleration,
-		"damage": float(spell.damage),
-		"damage_range": spell.damage_range,
-	})
-
-
-## sacengine castSwarm / updateSwarm: guided projectile with lower hit size and higher
-## flying height than Fireball.
-func _throw_swarm(spell: SpellType, target: Node3D) -> void:
-	var spawner := get_tree().get_first_node_in_group("spell_spawner")
-	if spawner == null:
-		return
-	var info := BodyLibrary.info(str(_wizard.get("model")))
-	var at := _wizard.global_position + Vector3.UP * float(info.get("height", 1.8)) * HAND_HEIGHT
-	if _wizard.has_method("facing_flat"):
-		at += (_wizard.call("facing_flat") as Vector3) * float(info.get("reach", 0.5))
-	var aim := _ROCK.body_center(target) if target else _point
-	spawner.call("spawn_swarm", {
-		"x": at.x, "y": at.y, "z": at.z,
-		"tx": aim.x, "ty": aim.y, "tz": aim.z,
-		"target": str(target.get_path()) if target else "",
-		"caster": str(_wizard.get_path()),
-		"slot": int(_wizard.get("owner_slot")),
-		"speed": spell.speed,
-		"acceleration": spell.acceleration,
-		"damage": float(spell.damage),
-		"damage_range": spell.damage_range,
-	})
-
-
-## sacengine castLightning / lightning: instant strike to a valid target.
-func _strike_lightning(spell: SpellType, target: Node3D) -> void:
-	if target == null or not _ROCK.is_live_body(target):
-		return
-	## F130: DamageMod.lightning, which charges a Storm Giant (state.d:9017-9022).
-	var taken := float(target.get_node("Health").call("damage_typed", float(spell.damage), _HEALTH.DIRECT_SPELL, int(_wizard.get("owner_slot")), false, false, _HEALTH.LIGHTNING))
-	_ROCK.report(target, taken, _HEALTH.DIRECT_SPELL)
-	FxBus.broadcast_beam(LIGHTNING_BEAM, _lightning_origin(), _ROCK.body_center(target), target)
-
-
-## sacengine updateLightningCasting (state.d:16322-16341): the bolt starts 0.5 above the top of the
-## wizard's hitbox and 0.75 ahead of its front. Presentation only.
-func _lightning_origin() -> Vector3:
-	var info := BodyLibrary.info(str(_wizard.get("model")))
-	var at := _wizard.global_position + Vector3.UP * (float(info.get("height", 1.8)) + 0.5)
-	if _wizard.has_method("facing_flat"):
-		at += (_wizard.call("facing_flat") as Vector3) * (float(info.get("reach", 0.5)) + 0.75)
-	return at
 
 
 ## The spell of the book by tag, from either tab, or null.

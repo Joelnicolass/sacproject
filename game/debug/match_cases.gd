@@ -7,7 +7,7 @@ extends RefCounted
 const ALTAR_SCENE := preload("res://scenes/world/props/altar.tscn")
 const MATCH_SCENE := preload("res://scenes/match/match.tscn")
 const BANNER_SCENE := preload("res://scenes/ui/hud/match_result.tscn")
-const UNIT_SCENE := preload("res://scenes/world/units/unit.tscn")
+const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
 const RULES := preload("res://data/match_rules.tres")
 
 

@@ -8,9 +8,9 @@ extends RefCounted
 ## or a foreign creature changes nothing; the next order uses the group's majority (ties: catalog order); a wedge order puts
 ## every unit within SLOT_M of its slot once it has walked.
 
-const UNIT_SCENE := preload("res://scenes/world/units/unit.tscn")
+const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
 const ORDERS_SCRIPT := preload("res://scenes/world/orders.gd")
-const UnitOrders := preload("res://scenes/world/units/unit_orders.gd")
+const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 const RULES := preload("res://data/match_rules.tres")
 const CATALOG := preload("res://data/orders/formations.tres")
 

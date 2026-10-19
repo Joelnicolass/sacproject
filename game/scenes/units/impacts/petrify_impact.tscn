@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/impacts/petrify_impact.gd" id="1_petrify"]
+
+[node name="PetrifyImpact" type="Node"]
+editor_description = "Basilisk dpsf (updateBasiliskProjectile, state.d:23686-23725): petrifica solo al cuerpo tocado, sin daño. Dura min(10, 10000/vida máx) s en una criatura y 2,5 s en un mago (los magos todavía no tienen Petrified: quedan en el log hasta 030i-c)."
+script = ExtResource("1_petrify")

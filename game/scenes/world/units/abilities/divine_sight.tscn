@@ -1,9 +1,0 @@
-[gd_scene load_steps=3 format=3]
-
-[ext_resource type="Script" path="res://scenes/world/units/abilities/divine_sight.gd" id="1_sight"]
-[ext_resource type="PackedScene" path="res://scenes/world/units/abilities/divine_sight_eye.tscn" id="2_eye"]
-
-[node name="DivineSight" type="Node"]
-editor_description = "F133/F165 (RFC-030): efecto propio del Divine Sight del Ranger (eesd). ActiveAbility lo instancia como \"Effect\" desde data/abilities/ability_catalog.tres. Sin blanco ni preparación: lanza el ojo (divine_sight_eye.tscn) 2 m delante del usuario, hacia donde mira, a la velocidad del SPEL (30 m/s). Maná 50 y enfriamiento 25 s los cobra ActiveAbility."
-script = ExtResource("1_sight")
-eye_scene = ExtResource("2_eye")

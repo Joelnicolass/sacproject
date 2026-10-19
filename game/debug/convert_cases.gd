@@ -6,7 +6,7 @@ extends RefCounted
 ## the four ways the doctor can die. `run(host)` adds its own floor and bodies under `host` and removes
 ## them when it ends. No network: the server paths run as solo.
 
-const UNIT_SCENE := preload("res://scenes/world/units/unit.tscn")
+const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
 const DOCTOR_SCENE := preload("res://scenes/world/sacrifice/doctor.tscn")
 const SYSTEM_SCENE := preload("res://scenes/world/sacrifice/sacrifice_system.tscn")
 const SOUL_SYSTEM_SCENE := preload("res://scenes/world/souls/soul_system.tscn")

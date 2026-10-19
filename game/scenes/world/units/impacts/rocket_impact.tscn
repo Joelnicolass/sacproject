@@ -1,8 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://scenes/world/units/impacts/burn_impact.gd" id="1_burn"]
-
-[node name="RocketImpact" type="Node"]
-editor_description = "Cohete del Pyromaniac (lffa, updatePyromaniacRocket, state.d:24314-24321): fuego de amount en duración·60 cuadros (ranged directo) con peirceShield, sin daño directo. Criatura, mago o edificio."
-script = ExtResource("1_burn")
-pierce_shield = true

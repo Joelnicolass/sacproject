@@ -10,7 +10,7 @@ extends RefCounted
 ## Fireball and Swarm (RFC-028b). Wizards and creatures go first, in the order of their groups, so the
 ## damage they take is the same as before buildings joined.
 
-const _HEALTH := preload("res://scenes/world/components/health.gd")
+const _HEALTH := preload("res://scenes/components/health.gd")
 const _ROCK := preload("res://scenes/world/spells/rock_projectile.gd")
 
 const GROUPS: Array[StringName] = [&"wizard", &"unit", &"structure"]

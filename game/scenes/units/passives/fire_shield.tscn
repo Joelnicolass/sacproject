@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/passives/fire_shield.gd" id="1_shield"]
+
+[node name="FireShield" type="Node"]
+editor_description = "F163 (RFC-030 030w-f): el Escudo del Phoenix (rifl), runPhoenixPassive de sacengine. Cada tick, si el cuerpo lleva la pasiva, quema (hechizo directo mrff.amount/60, atravesando escudos) a todo cuerpo móvil que no es aliado y cuya caja toca la propia ×1,5; el maná se toca solo si el SPEL pide (rifl: 0). Edificios no. El padre asigna body, health y mana; los demás cuerpos lo llevan y lo ignoran."
+script = ExtResource("1_shield")

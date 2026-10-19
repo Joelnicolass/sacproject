@@ -4,7 +4,7 @@ extends Node
 ## skeleton or the static mesh, and the roles of the model's scene resolve. Prints one line per model. Not a test of the simulation.
 ##   godot --headless --path game res://debug/rig023c/rig023c_check.tscn [-- --models=eorc,huma]
 
-const UNIT := preload("res://scenes/world/units/unit.tscn")
+const UNIT := preload("res://scenes/units/unit.tscn")
 
 
 func _ready() -> void:

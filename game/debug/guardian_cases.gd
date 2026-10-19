@@ -5,7 +5,7 @@ extends RefCounted
 ## ends, what GuardianAction accepts and how the selection treats a guardian. No network: the server
 ## paths run as solo. `run(host)` adds its own floor and bodies under `host` and removes them at the end.
 
-const UNIT_SCENE := preload("res://scenes/world/units/unit.tscn")
+const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
 const STRUCTURE_SCENE := preload("res://scenes/world/structures/structure.tscn")
 const ALTAR_SCENE := preload("res://scenes/world/props/altar.tscn")
 const WIZARD_SCENE := preload("res://scenes/world/wizard/wizard_body.tscn")

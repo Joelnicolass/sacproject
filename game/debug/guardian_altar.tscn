@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://highnoonworld01" path="res://scenes/match/high_noon.tscn" id="1_world"]
 [ext_resource type="Resource" path="res://debug/rules/guardian.tres" id="2_rules"]
-[ext_resource type="PackedScene" path="res://scenes/world/units/unit.tscn" id="3_unit"]
+[ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="3_unit"]
 
 [node name="GuardianAltar" type="Node"]
 editor_description = "RFC-021b (F63). High Noon con debug/rules/guardian.tres. El mago 1 nace a ~30 m de su altar (cabe en los 50 m de Guardian). Dos Rangers propios (Guard1, Guard2) a 10 m del mago y, frente a cada uno, un Ranger enemigo (ShooterA, ShooterB). Maná lleno, nadie atado. Estructuras, spell_2 y clic sobre Guard1: queda atado al altar, sale de la selección y se ve el haz. Tras ~20 s (cada Ranger dispara cada ~9 s) Guard2 debe estar mucho más herido que Guard1 (recibe x0,25 de los disparos). Sirve en solo: el mago local es el slot 1; los enemigos son del slot 2."

@@ -1,7 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="PackedScene" path="res://scenes/world/units/impacts/poison_impact.tscn" id="1_poison"]
-
-[node name="DiseaseImpact" instance=ExtResource("1_poison")]
-editor_description = "Disease del Necryl (cena, updateNecrylProjectile, state.d:23515-23527): la dosis es contagiosa (Poison.infectuous) y lleva ires 1000 / freg 0 del SPEL."
-infectious = true

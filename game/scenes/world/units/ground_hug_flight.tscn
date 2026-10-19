@@ -1,7 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://scenes/world/units/ground_hug_flight.gd" id="1_hug"]
-
-[node name="GroundHugFlight" type="Node"]
-editor_description = "Vuelo del Rhinok (hrba, updateRhinokProjectile fase moving, state.d:24963-24974): en cada tick el disparo vuelve al suelo (suelo + 0,05 m) antes de buscar su cuerpo con la caja de 5 m; púas visuales rock_emerge en un disco de 2,5 m."
-script = ExtResource("1_hug")

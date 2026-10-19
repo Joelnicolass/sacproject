@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/impacts/implosion.gd" id="1_implosion"]
+
+[node name="Implosion" type="Node3D"]
+process_physics_priority = -1
+editor_description = "Flurry caba (FlurryImplosion, state.d:4868-4876, 24619-24672): encoge de effectRange a 0 en duration y atrae a todo cuerpo móvil hacia el centro."
+script = ExtResource("1_implosion")

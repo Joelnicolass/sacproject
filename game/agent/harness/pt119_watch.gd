@@ -11,7 +11,7 @@ extends Node
 ## One capture every 2 frames (frame camera, then save). Files: agent/out/pt119/<tag>_<label>.png.
 ## Props for wait_until: units, bursts (lanes whose first shot burst), captured.
 
-const _SHOT := preload("res://scenes/world/units/ranged_shot.gd")
+const _SHOT := preload("res://scenes/units/attacks/ranged_shot.gd")
 const _TERRAIN := preload("res://scenes/world/terrain.gd")
 const CENTER_Z := 1270.0
 const OUT_DIR := "res://agent/out/pt119"

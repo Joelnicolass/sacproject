@@ -4,9 +4,9 @@ extends RefCounted
 ## and by debug/catalog_cases.gd to prove the .tres say the same. Preloaded by path (no class_name): both callers
 ## run as --script, without autoloads and possibly before the class cache knows this file.
 
-const _CREATURE_TYPE := preload("res://scenes/data/creature_type.gd")
+const _CREATURE_TYPE := preload("res://scenes/units/creature_type.gd")
 const _SPELL_TYPE := preload("res://scenes/data/spell_type.gd")
-const _ABILITY_TYPE := preload("res://scenes/data/ability_type.gd")
+const _ABILITY_TYPE := preload("res://scenes/units/abilities/ability_type.gd")
 const _WIZARD_TYPE := preload("res://scenes/data/wizard_type.gd")
 const _BUILDING_TYPE := preload("res://scenes/data/building_type.gd")
 const _BODY_SIZE := preload("res://scenes/bodies/body_size.gd")

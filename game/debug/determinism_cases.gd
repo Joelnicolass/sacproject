@@ -17,7 +17,7 @@ extends RefCounted
 ## itself lazily on the first now().
 
 const WIZARD_SCENE := preload("res://scenes/world/wizard/wizard_body.tscn")
-const AVOIDANCE_SCENE := preload("res://scenes/world/body_avoidance.tscn")
+const AVOIDANCE_SCENE := preload("res://scenes/units/movement/body_avoidance.tscn")
 const VORTEX_SCENE := preload("res://scenes/world/sacrifice/red_vortex.tscn")
 const SIM_ROOT := "res://scenes/world"
 ## Paths (relative to the root) skipped by sim_rng_lint: presentation folders and files.

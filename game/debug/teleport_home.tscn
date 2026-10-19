@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://highnoonworld01" path="res://scenes/match/high_noon.tscn" id="1_world"]
 [ext_resource type="Resource" path="res://debug/rules/teleport.tres" id="2_rules"]
-[ext_resource type="PackedScene" path="res://scenes/world/units/unit.tscn" id="3_unit"]
+[ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="3_unit"]
 
 [node name="TeleportHome" type="Node"]
 editor_description = "RFC-021c (F64). High Noon con debug/rules/teleport.tres. El mago 1 nace a 80 m de su altar (WizardSpawner.toward_fount) con el altar a la vista. Pack1..3 (Rangers propios) a unos 6-8 m del mago, Stray (propio) a 60 m. Maná lleno. Estructuras, spell_5 (Teleport) y clic sobre el altar propio: tras el casteo (1,23 s) el mago y Pack1..3 aparecen a 30 m del altar, del lado desde el que venían y en la misma formación; Stray no se mueve; la casilla enfría unos 17 s. Sirve en solo, y en dedicado + dos clientes (slot 1 lanza, slot 2 mira)."

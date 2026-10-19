@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://agent/perf/side_probe.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/match/high_noon.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://scenes/world/units/unit.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="3"]
 
 [node name="SideProbe" type="Node" node_paths=PackedStringArray("world", "units", "view_camera")]
 script = ExtResource("1")

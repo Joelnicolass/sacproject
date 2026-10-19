@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/rockform.gd" id="1_rock"]
+
+[node name="Rockform" type="Node"]
+editor_description = "F133 (RFC-030 030v-b): efecto propio del Rockform del Earthfling (dihk). ActiveAbility lo instancia como \"Effect\" desde data/abilities/ability_catalog.tres. Entra en roca en el tick de la orden y lleva el caparazón (show_rock_form, todos los peers)."
+script = ExtResource("1_rock")

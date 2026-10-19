@@ -5,7 +5,7 @@ extends Node3D
 ##   godot --path game --max-fps 60 --resolution 1280x720 res://debug/rig023f/rig023f_shots.tscn -- --out=/abs/dir
 ## The ghost is a Trogg dressed by SeeThroughLook (the look GhostForm gives a wizard) next to another Trogg that stays opaque.
 
-const UNIT := preload("res://scenes/world/units/unit.tscn")
+const UNIT := preload("res://scenes/units/unit.tscn")
 
 var _out := ""
 var _looks: Array[SeeThroughLook] = []

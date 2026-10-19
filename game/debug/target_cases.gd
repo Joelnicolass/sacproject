@@ -5,8 +5,8 @@ extends RefCounted
 ## `run(host)` puts its bodies under `host` and removes them at the end. Nothing here needs a floor: the
 ## bodies do not simulate (physics off), only their positions and the picker/vision answers matter.
 
-const UNIT_SCENE := preload("res://scenes/world/units/unit.tscn")
-const UnitOrders := preload("res://scenes/world/units/unit_orders.gd")
+const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
+const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 const RULES := preload("res://data/match_rules.tres")
 const TOL := 0.0001
 ## The bodies of these cases live in their own group so bodies left by other cases never count.

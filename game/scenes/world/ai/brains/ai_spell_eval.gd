@@ -1,7 +1,7 @@
 class_name AiSpellEval
 extends RefCounted
 
-const UnitOrders := preload("res://scenes/world/units/unit_orders.gd")
+const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 
 ## How a wizard rates a spell on a target (shiny.d:2799-2923 `rateSpellAcc`, 2925-2951 `findBestSpell`; RFC-024 §3.1).
 ## 024c rates the attack spells of the five books: the single-target ones (`f489780`: Rock, Lightning, Insect Swarm) and

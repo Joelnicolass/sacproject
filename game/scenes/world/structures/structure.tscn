@@ -4,9 +4,9 @@
 [ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="2_visual"]
 [ext_resource type="Script" path="res://scenes/world/mana_source.gd" id="3_source"]
 [ext_resource type="Resource" path="res://data/match_rules.tres" id="4_rules"]
-[ext_resource type="Script" path="res://scenes/world/components/health.gd" id="5_health"]
+[ext_resource type="Script" path="res://scenes/components/health.gd" id="5_health"]
 [ext_resource type="Script" path="res://scenes/world/guardian/guard_post.gd" id="7_post"]
-[ext_resource type="PackedScene" path="res://scenes/world/units/unit_health_bar.tscn" id="8_bar"]
+[ext_resource type="PackedScene" path="res://scenes/units/unit_health_bar.tscn" id="8_bar"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_structure"]
 height = 8.0

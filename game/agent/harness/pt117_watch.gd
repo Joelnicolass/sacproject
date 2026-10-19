@@ -13,7 +13,7 @@ extends Node
 ##   report()  prints the totals.
 ## Props for wait_until: units, taurock_hits (blows taken by a raeb), firefist_hits (blows dealt by a lrtf).
 
-const _MA := preload("res://scenes/world/units/melee_attack.gd")
+const _MA := preload("res://scenes/units/attacks/melee_attack.gd")
 
 var units := 0
 var taurock_hits := 0

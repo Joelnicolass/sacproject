@@ -25,7 +25,7 @@ signal released
 ## Group of bodies that cannot be moved by Teleport or Guardian (RFC-021 risk 3).
 const ROOTED := &"rooted"
 const SELECTION_GROUP := &"selection"
-const _ORDERS := preload("res://scenes/world/units/unit_orders.gd")
+const _ORDERS := preload("res://scenes/units/unit_orders.gd")
 ## Height of the creature's center over its feet, for the leash distance (the original measures from the center).
 const CENTER_HEIGHT := 0.9
 

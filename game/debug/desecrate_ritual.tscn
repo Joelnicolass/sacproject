@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://cvgikgwb1sifg" path="res://scenes/match/high_noon.tscn" id="1_world"]
 [ext_resource type="Resource" path="res://debug/rules/desecrate.tres" id="2_rules"]
-[ext_resource type="PackedScene" path="res://scenes/world/units/unit.tscn" id="3_unit"]
+[ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="3_unit"]
 
 [node name="DesecrateRitual" type="Node"]
 editor_description = "Dedicado y dos clientes (slot 1 lanza, slot 2 mira). Start2 va a (1500, 16.9, 1480) y el mago 2 aparece a 12 m del altar (Start2.wizard_distance): a 30 m cae sobre un pilar del altar y queda a 38 m de altura."

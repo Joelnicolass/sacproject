@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/timed_state_ability.gd" id="1_timed"]
+
+[node name="Stealth" type="Node"]
+editor_description = "F133 (RFC-030 030v-b): efecto propio del Stealth del Sylph (ivni). ActiveAbility lo instancia como \"Effect\" desde data/abilities/ability_catalog.tres. UnitBody.set_stealth por la duración del SPEL (mínimo 5 s), contada en ticks."
+script = ExtResource("1_timed")
+body_setter = &"set_stealth"
+min_duration_s = 5.0
+fx = &"spit_trail"
+fx_height = 1.0

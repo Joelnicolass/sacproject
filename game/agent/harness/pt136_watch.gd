@@ -12,7 +12,7 @@ extends Node
 ## and 12 frames after each lane's wounded ally reaches full (bar_full).
 ## Props for wait_until: units, bursts, captured, a_full, b_full, c_struck.
 
-const _SHOT := preload("res://scenes/world/units/ranged_shot.gd")
+const _SHOT := preload("res://scenes/units/attacks/ranged_shot.gd")
 const _TERRAIN := preload("res://scenes/world/terrain.gd")
 const CENTER_Z := 1270.0
 const OUT_DIR := "res://agent/out/pt136"

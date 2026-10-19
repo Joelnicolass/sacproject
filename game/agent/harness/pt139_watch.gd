@@ -13,9 +13,9 @@ extends Node
 ##                               Fireball the box distance of each body and the side ratio; per shot its line.
 ## Props for wait_until: units, clouds, doses, doses_done, fireballs, shots, shots_gone, ally_hits.
 
-const _SHOT := preload("res://scenes/world/units/ranged_shot.gd")
+const _SHOT := preload("res://scenes/units/attacks/ranged_shot.gd")
 const _FIREBALL := preload("res://scenes/world/spells/fireball_projectile.gd")
-const _POISONED := preload("res://scenes/world/units/poisoned.gd")
+const _POISONED := preload("res://scenes/units/status/poisoned.gd")
 const _SPLASH := preload("res://scenes/world/spells/splash_damage.gd")
 const _TERRAIN := preload("res://scenes/world/terrain.gd")
 

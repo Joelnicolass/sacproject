@@ -50,7 +50,7 @@ Autoridad: decisión del usuario (este pedido) > PRD > FEATURES > RULES > VISUAL
 | **Edificio** | Nodo `map_building.tscn` en `high_noon_layout.tscn` con `tag` (String) + `BuildingType` en el catálogo | 1–2 | Sí, con trampas | `tag` se escribe a mano (`map_building.gd:19`); **la rotación es `facing_deg` y pisa el gizmo** (`map_building.gd:63-65`; 69 edificios con `facing_deg`, transform identidad); no es `@tool`, así que no se ve rotado |
 | **Mapa** | Duplicar `high_noon.tscn` (64 nodos, con sistemas y HUD), crear un layout, terreno glb, `sides.tres`, nav horneado, luz | 6+ y código | No | Rutas `HIGH_NOON_*` en 6 scripts (ver §3.8); `bake_nav.gd` y `bake_map_layout.gd` apuntan a High Noon |
 | **NPC** | Nodo `npc_spawn.tscn` en el layout con `tag` y `side` (`npc_spawn.gd:10-19`) | 1 | Sí | `tag` como texto; `side` es un número SIDS, no un slot |
-| **Habilidad** | Escena bajo `scenes/world/units/abilities/` + entrada en `data/abilities/ability_catalog.tres` | 2 | **Sí** (si el efecto existe) | Bien resuelto: es el modelo a copiar |
+| **Habilidad** | Escena bajo `scenes/units/abilities/` + entrada en `data/abilities/ability_catalog.tres` | 2 | **Sí** (si el efecto existe) | Bien resuelto: es el modelo a copiar |
 | **FX (partícula)** | `.tres` en `data/fx/` (60) y `FxBus.play("nombre")` desde código | 1 + código | A medias | El disparo se hace por nombre en código (71 llamadas `FxBus.`); en el dato no hay un socket «fx de muerte/impacto» |
 | **Sonido** | — | — | **No existe** | 0 `AudioStream` en `scenes/`, no hay `default_bus_layout`, 0 archivos de audio. PRD l. 21 lo deja fuera de alcance |
 | **Pantalla de UI** | `.tscn` nuevo + ruta en `sacrifice_flow.gd:15-38` (constantes) | 2 | Casi | No hay `Theme`: 133 `theme_override` sueltos en `.tscn`; los textos están fijos en español |
@@ -83,7 +83,7 @@ Autoridad: decisión del usuario (este pedido) > PRD > FEATURES > RULES > VISUAL
 |---|---|---|---|---|
 | `scenes/world/match_command.gd` | 795 | 59 | 30 | atajos, selección por clic, armado de hechizo, estructura, habilidad, órdenes, minimapa, raycasts, textos `ORDER_TEXT` (l. 20-27) |
 | `scenes/look/grass/grass_field.gd` | 740 | 48 | 6 | pasto (diferido al final por decisión del usuario) |
-| `scenes/world/unit_body.gd` | 720 | 69 | 29 | física, setup de 15 componentes por `$X.call("setup")` (l. 208-222, 469-491), modo replicado `enum Mode` (l. 30) **además** de los 11 `FsmState` |
+| `scenes/units/unit_body.gd` | 720 | 69 | 29 | física, setup de 15 componentes por `$X.call("setup")` (l. 208-222, 469-491), modo replicado `enum Mode` (l. 30) **además** de los 11 `FsmState` |
 | `scenes/world/ai/perception/ai_perception.gd` | 701 | 47 | 8 | percepción de la IA (regla; queda) |
 | `scenes/world/spells/caster.gd` | 647 | 45 | 40 | validación, cobro, 7 hechizos fijos, spawn de efectos |
 | `scenes/world/wizard/wizard_body.gd` | 547 | 45 | 39 | — |

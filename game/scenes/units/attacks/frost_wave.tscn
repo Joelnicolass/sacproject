@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/attacks/growing_wave.gd" id="1_wave"]
+[ext_resource type="Script" path="res://scenes/units/attacks/freeze_touch.gd" id="2_touch"]
+
+[node name="FrostWave" type="Node"]
+script = ExtResource("1_wave")
+
+[node name="FreezeTouch" type="Node" parent="."]
+script = ExtResource("2_touch")

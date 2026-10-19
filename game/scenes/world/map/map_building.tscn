@@ -1,8 +1,8 @@
 [gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/map/map_building.gd" id="1_building"]
-[ext_resource type="Script" path="res://scenes/world/components/health.gd" id="2_health"]
-[ext_resource type="PackedScene" path="res://scenes/world/units/unit_health_bar.tscn" id="3_bar"]
+[ext_resource type="Script" path="res://scenes/components/health.gd" id="2_health"]
+[ext_resource type="PackedScene" path="res://scenes/units/unit_health_bar.tscn" id="3_bar"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_building"]
 size = Vector3(4, 4, 4)

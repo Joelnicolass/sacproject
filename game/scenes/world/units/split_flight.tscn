@@ -1,7 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://scenes/world/units/split_flight.gd" id="1_split"]
-
-[node name="SplitFlight" type="Node"]
-editor_description = "Abanico del Boulderdash (emba, updateBoulderdashProjectile, state.d:24729-24755): a max(0, apuntado − 60) m del origen las piedras laterales (volley_index ±1) giran ±3,5° alrededor del «arriba»; la del medio sigue recta."
-script = ExtResource("1_split")

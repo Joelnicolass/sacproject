@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/status/pace_factors.gd" id="1_pace"]
+
+[node name="PaceFactors" type="Node"]
+editor_description = "F129 (RFC-030 030r-a): dueño único de body.speed_factor. Speedup, Sticky bombs y Blight mites le dan un factor por fuente; escribe el producto solo cuando cambia. Solo servidor."
+script = ExtResource("1_pace")

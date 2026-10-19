@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://cvgikgwb1sifg" path="res://scenes/match/high_noon.tscn" id="1_world"]
 [ext_resource type="Resource" path="res://debug/rules/convert.tres" id="2_rules"]
-[ext_resource type="PackedScene" path="res://scenes/world/units/unit.tscn" id="3_unit"]
+[ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="3_unit"]
 
 [node name="ConvertPumpKill" type="Node"]
 editor_description = "SOLO (un proceso). Igual que convert_ritual y ademas Guard1..4 (Druid slot 2, solo atacan el grupo doctor) a 40 m de Victim, del lado opuesto al mago: matan al Sac Doctor mientras bombea (10 s). Resultado esperado: Victim vuelve a morir, el alma roja reaparece y sigue Almas 0."

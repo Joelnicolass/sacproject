@@ -8,7 +8,7 @@ extends SpellProjectile
 ## it hit as direct spell damage (rockExplosion, state.d:16784).
 ## The server (or solo) moves it; clients get the position and play the trail locally.
 
-const _HEALTH := preload("res://scenes/world/components/health.gd")
+const _HEALTH := preload("res://scenes/components/health.gd")
 
 ## sacengine rockWarmupTime = updateFPS / 4.
 const WARMUP_FRAMES := 15

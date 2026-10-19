@@ -4,7 +4,7 @@ extends Node3D
 ##   godot --path game --max-fps 60 --resolution 1280x720 res://debug/rig023e/rig023e_shots.tscn -- --out=/abs/dir
 ## Prints the role of both rigs at every shot. One PNG per moment.
 
-const UNIT := preload("res://scenes/world/units/unit.tscn")
+const UNIT := preload("res://scenes/units/unit.tscn")
 const DOCTOR := preload("res://scenes/world/sacrifice/doctor.tscn")
 
 var _out := ""

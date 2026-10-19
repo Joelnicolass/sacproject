@@ -1,8 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://scenes/world/units/abilities/halo_of_earth.gd" id="1_halo"]
-
-[node name="HaloOfEarth" type="Node3D"]
-process_physics_priority = -1
-editor_description = "F127 (RFC-030 030p-a): coordinador del Halo of Earth del Rhinok (HRba). HaloOfEarthAbility lo agrega al contenedor de disparos, solo en el servidor. Simula las 6 rocas (órbita, blanco, persecución, choque y vida) y mueve sus RangedShot (look halo_rock). Knobs: spawn_box_scale, ground_grace_ticks, life_ticks. Se libera cuando explotan todas."
-script = ExtResource("1_halo")

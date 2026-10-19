@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/impacts/pushback.gd" id="1_push"]
+
+[node name="Pushback" type="Node"]
+process_physics_priority = -1
+editor_description = "Squall amba (Pushback, state.d:4768-4776, 24017-24031): 22,5 m/s por 40 ticks a lo largo del disparo; prioridad −1 (los efectos van antes que las criaturas)."
+script = ExtResource("1_push")

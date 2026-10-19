@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://cvgikgwb1sifg" path="res://scenes/match/high_noon.tscn" id="1_world"]
 [ext_resource type="Resource" path="res://debug/rules/convert.tres" id="2_rules"]
-[ext_resource type="PackedScene" path="res://scenes/world/units/unit.tscn" id="3_unit"]
+[ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="3_unit"]
 
 [node name="ConvertCarryKill" type="Node"]
 editor_description = "SOLO (un proceso). El mago nace a 120 m del altar (WizardSpawner.toward_fount) y Victim esta a 136 m del altar, 6 m al costado de la recta para no chocar con el manantial. Killer1..2 matan a Victim (alma roja). Guard1..6 (Druid slot 2, solo atacan el grupo doctor) en linea a 30 m del altar, a mas de 100 m del cadaver: no ven al doctor durante el bombeo, solo cuando arranca el acarreo. Resultado esperado: Victim suelta, viva, owner_slot 2, grupo unit y sigue Almas 0. Ojo: Killer1..2 vuelven a atacar a Victim apenas la ven (grupo victim)."

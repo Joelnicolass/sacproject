@@ -4,10 +4,10 @@ extends RefCounted
 ## and what TeleportAction accepts, plus a whole cast through the Caster. No network: the server paths run as
 ## solo. `run(host)` adds its own floor and bodies under `host` and removes them at the end.
 
-const UNIT_SCENE := preload("res://scenes/world/units/unit.tscn")
+const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
 const STRUCTURE_SCENE := preload("res://scenes/world/structures/structure.tscn")
 const WIZARD_SCENE := preload("res://scenes/world/wizard/wizard_body.tscn")
-const UNIT_ORDERS := preload("res://scenes/world/units/unit_orders.gd")
+const UNIT_ORDERS := preload("res://scenes/units/unit_orders.gd")
 const RULES := preload("res://data/match_rules.tres")
 const GOD := "james"
 const TAG := "nmuh"

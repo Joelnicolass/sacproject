@@ -1,10 +1,10 @@
 [gd_scene load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://scenes/world/sacrifice/doctor_body.gd" id="1_body"]
-[ext_resource type="PackedScene" path="res://scenes/world/body_avoidance.tscn" id="f207_avoid"]
+[ext_resource type="PackedScene" path="res://scenes/units/movement/body_avoidance.tscn" id="f207_avoid"]
 [ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="2_visual"]
-[ext_resource type="Script" path="res://scenes/world/components/health.gd" id="3_health"]
-[ext_resource type="PackedScene" path="res://scenes/world/units/unit_health_bar.tscn" id="4_bar"]
+[ext_resource type="Script" path="res://scenes/components/health.gd" id="3_health"]
+[ext_resource type="PackedScene" path="res://scenes/units/unit_health_bar.tscn" id="4_bar"]
 [ext_resource type="Script" path="res://scenes/world/sacrifice/stuck_guard.gd" id="5_guard"]
 [ext_resource type="Script" path="res://addons/fsm_kit/fsm_machine.gd" id="6_machine"]
 [ext_resource type="Script" path="res://addons/fsm_kit/fsm_state.gd" id="7_state"]

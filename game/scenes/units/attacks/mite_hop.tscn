@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/attacks/mite_hop.gd" id="1_hop"]
+
+[node name="MiteHop" type="Node"]
+editor_description = "F156 (RFC-030 030s-b): vuelo del ácaro de los Bilemites (liba, updateBlightMite, state.d:25271-25340). En cada toque de suelo suma un salto: hacia la criatura más cercana a 15 m (prefiere el blanco pedido) con v = 4,5·dir + 0,5·uniformDirection, o al azar con v = 5·uniformDirection y vz 10 si no hay nadie. Al 5.º toque se para y RangedShot lo libera a los 30 ticks (ShotInFlight.spent)."
+script = ExtResource("1_hop")

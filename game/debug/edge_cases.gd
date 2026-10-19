@@ -5,7 +5,7 @@ extends RefCounted
 ## drive without the clamp goes over: the control) and `edge_thrown_falls` (a unit thrown over the edge by a Tumbling falls and
 ## dies, has_fallen). The edge is found on the real map: land that is free on the navmesh with a hole `HOLE_M` wide ahead.
 
-const UNIT_SCENE := preload("res://scenes/world/units/unit.tscn")
+const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
 const RULES := preload("res://data/match_rules.tres")
 const SCAN_FROM := 300.0
 const SCAN_TO := 2000.0

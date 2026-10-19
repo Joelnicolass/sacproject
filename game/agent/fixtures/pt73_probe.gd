@@ -6,7 +6,7 @@ extends Node
 ## Cases: load, passive, flee, cower, grudge, taurock, souls, house, respawn. The world is the product; the probe
 ## only places a Druid slot 1 (Hunter) and kills what a case needs killed (Health.damage), like the playtests do.
 
-const ORDERS := preload("res://scenes/world/units/unit_orders.gd")
+const ORDERS := preload("res://scenes/units/unit_orders.gd")
 const TAG := "PT73 "
 const NTTS := "res://assets/original/maps/high_noon/ntts.json"  ## tool input only; the game reads the layout scene
 

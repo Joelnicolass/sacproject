@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/pull_thread.gd" id="1_thread"]
+
+[sub_resource type="StandardMaterial3D" id="Material_bolt"]
+transparency = 1
+blend_mode = 0
+shading_mode = 0
+cull_mode = 2
+albedo_color = Color(0.1, 0.3, 0.95, 1)
+
+[node name="CageThread" type="Node3D"]
+editor_description = "F154 (RFC-030 030q-b): hilo del Cage pull del Seraph (renderer.d:1931-1946). Un rayo con forma de jaula: LightningBolt de 10 tramos, 2,5 m de dispersión, que cambia de forma cada 6 cuadros y crece de la nada a pleno en 0,5 s. Misma escena de código que el Web pull (pull_thread.gd). En MIX. Color liso: falta la textura ltng del exportador."
+script = ExtResource("1_thread")
+width = 0.1
+fins = 3
+jitter = 2.5
+segments = 10
+reshape_ticks = 6
+ramp_ticks = 30
+
+[node name="Strand" type="MeshInstance3D" parent="."]
+unique_name_in_owner = true
+top_level = true
+cast_shadow = 0
+material_override = SubResource("Material_bolt")

@@ -3,9 +3,9 @@ extends Node
 ## The game's types (creatures, spells, wizards, abilities, god books), read from the files of data/catalog/
 ## through GameCatalog (RFC-040). The types are shared Resources: read them, never write them. Edit the .tres in the inspector.
 
-const _CREATURE_TYPE := preload("res://scenes/data/creature_type.gd")
+const _CREATURE_TYPE := preload("res://scenes/units/creature_type.gd")
 const _SPELL_TYPE := preload("res://scenes/data/spell_type.gd")
-const _ABILITY_TYPE := preload("res://scenes/data/ability_type.gd")
+const _ABILITY_TYPE := preload("res://scenes/units/abilities/ability_type.gd")
 const _WIZARD_TYPE := preload("res://scenes/data/wizard_type.gd")
 
 var _creatures: Dictionary = {}

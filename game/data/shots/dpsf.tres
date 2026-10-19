@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="ShotLook" load_steps=3 format=3]
 
-[ext_resource type="Script" path="res://scenes/world/units/shot_look.gd" id="1_look"]
-[ext_resource type="PackedScene" path="res://scenes/world/units/impacts/petrify_impact.tscn" id="2_impact"]
+[ext_resource type="Script" path="res://scenes/units/attacks/shot_look.gd" id="1_look"]
+[ext_resource type="PackedScene" path="res://scenes/units/impacts/petrify_impact.tscn" id="2_impact"]
 
 [resource]
 script = ExtResource("1_look")

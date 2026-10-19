@@ -4,7 +4,7 @@ extends RefCounted
 ## (Captive) and what Desecrate accepts (SacrificeSystem + DesecrateAction). `run(host)` adds its own
 ## floor and bodies under `host` and removes them when it ends.
 
-const UNIT_SCENE := preload("res://scenes/world/units/unit.tscn")
+const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
 const DOCTOR_SCENE := preload("res://scenes/world/sacrifice/doctor.tscn")
 const SYSTEM_SCENE := preload("res://scenes/world/sacrifice/sacrifice_system.tscn")
 const ALTAR_SCENE := preload("res://scenes/world/props/altar.tscn")

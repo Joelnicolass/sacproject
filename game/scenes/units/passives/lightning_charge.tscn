@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/passives/lightning_charge.gd" id="1_charge"]
+[ext_resource type="PackedScene" path="res://scenes/units/abilities/lightning_strike.tscn" id="2_bolt"]
+
+[node name="LightningCharge" type="Node"]
+editor_description = "F130 (RFC-030 030s-a): la carga de rayo (gcil) del Storm Giant, dueña de cuántos cuadros lleva el cuerpo, de la rampa de las descargas y de lo que multiplica (paso ×1,5 por PaceFactors, golpe y precisión ×1,5 por melee_factor). absorb() carga f·daño y deja el 25 %; cada tick cargado puede descargar un LightningStrike gcil (250) a un cuerpo a ≤ 30 m o al suelo, y gasta 125 cuadros. shown se replica para las chispas. El padre asigna body y pace."
+script = ExtResource("1_charge")
+bolt_scene = ExtResource("2_bolt")

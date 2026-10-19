@@ -5,9 +5,9 @@ extends RefCounted
 ## a body (its box and its priority). `run(host)` puts its bodies under `host` and removes them at the end.
 ## The bodies do not simulate (physics off); the cases call the same functions the physics tick does.
 
-const UNIT_SCENE := preload("res://scenes/world/units/unit.tscn")
+const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
 const WIZARD_SCENE := preload("res://scenes/world/wizard/wizard_body.tscn")
-const PEASANT_SCENE := preload("res://scenes/world/units/peasant.tscn")
+const PEASANT_SCENE := preload("res://scenes/units/peasant.tscn")
 const BUILDING_SCENE := preload("res://scenes/world/map/map_building.tscn")
 const RULES := preload("res://data/match_rules.tres")
 const GROUP := "village_cases"

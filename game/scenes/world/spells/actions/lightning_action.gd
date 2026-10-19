@@ -4,7 +4,7 @@ extends AimedAction
 ## Lightning (ntil): an instant strike on a living enemy when the casting ends (sacengine castLightning).
 ## The bolt is a BeamType drawn by FxBus; the damage is DamageMod.lightning, which charges a Storm Giant.
 
-const _HEALTH := preload("res://scenes/world/components/health.gd")
+const _HEALTH := preload("res://scenes/components/health.gd")
 
 ## BeamType of the strike (res://data/fx/beams/), RFC-029 029d.
 @export var beam := "lightning"

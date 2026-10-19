@@ -1,7 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="PackedScene" path="res://scenes/world/units/impacts/splash_impact.tscn" id="1_splash"]
-
-[node name="RendBlastImpact" instance=ExtResource("1_splash")]
-editor_description = "Rend Soul dner (updateRendShoot, state.d:25867-25890): dealSplashRangedDamageAt(0, …, damageRange 40). Nadie recibe el golpe entero: la caída va de 2500 en el centro a 0 a 40 m, por la distancia a la caja, a cualquier bando por la regla de Health, edificios incluidos."
-direct_hit = false

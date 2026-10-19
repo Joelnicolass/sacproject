@@ -6,7 +6,7 @@ extends Node
 ## state.d:417; the default is the line) turned by the camera facing; units are matched to slots greedily by distance
 ## (state.d:29205). The "formation" command stores a formation on each creature and moves nobody. Retreat orders every creature of the side, not the selection (state.d:29174).
 
-const UnitOrders := preload("res://scenes/world/units/unit_orders.gd")
+const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 
 ## Not a UnitOrders.Command: it stores a formation on the creatures and moves nobody.
 const FORMATION_COMMAND := "formation"

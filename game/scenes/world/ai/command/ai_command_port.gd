@@ -16,7 +16,7 @@ extends Node
 ## side does not see now (the human cannot click it): an order goes to where it was seen last. `unseen_target_reads` counts the
 ## requests that took the real body or position of an unseen one (only Hard, like the original's startCasting on the entity).
 
-const UnitOrders := preload("res://scenes/world/units/unit_orders.gd")
+const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 ## sacengine retreat/guard of a wizard stops this far from the body it goes to (shiny.d:2376, `ntt+0x2e4 + 10.0`).
 const WIZARD_STOP_M := 10.0
 ## Two positions are «the same order» within this squared distance. sacengine compares them exactly (shiny.d:2398); in the port a

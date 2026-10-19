@@ -4,7 +4,7 @@ extends Resource
 ## A formation of a group order (RFC-038, sacengine Formation / getFormationOffsets, state.d:417). A type resource: it
 ## never changes during a match; the formation a creature keeps is a StringName on its UnitOrders.
 
-const UnitOrders := preload("res://scenes/world/units/unit_orders.gd")
+const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 
 @export var id: StringName = &""
 ## UI text (Spanish).

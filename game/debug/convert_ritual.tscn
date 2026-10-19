@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://cvgikgwb1sifg" path="res://scenes/match/high_noon.tscn" id="1_world"]
 [ext_resource type="Resource" path="res://debug/rules/convert.tres" id="2_rules"]
-[ext_resource type="PackedScene" path="res://scenes/world/units/unit.tscn" id="3_unit"]
+[ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="3_unit"]
 
 [node name="ConvertRitual" type="Node"]
 editor_description = "SOLO (un proceso, sin dedicado). Convert no tiene mago blanco: el blanco es la criatura, asi que un solo mago basta. Killer1 y Killer2 (Druid slot 1, solo atacan el grupo victim) matan a Victim (Druid slot 2, quieta) y dejan un alma roja; hay que esperar ~15 s hasta que el alma deje de aparecer (EMERGING 3 s). Despues: pestana Estructuras, spell_3, clic sobre el alma. starting_souls = 0: se ve Almas 0 y despues Almas 1. Online: --world en el dedicado y el cliente A es el slot 1; no unir un cliente B si no hace falta."

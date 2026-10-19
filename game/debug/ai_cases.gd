@@ -6,9 +6,9 @@ extends RefCounted
 ## The values were computed apart from the GDScript, with the formulas of the D file written again in float32 arithmetic
 ## (Python struct round trips), so a slip in the port does not copy into the expectation.
 
-const UNIT_SCENE := preload("res://scenes/world/units/unit.tscn")
+const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
 const ORDERS_SCRIPT := preload("res://scenes/world/orders.gd")
-const UnitOrders := preload("res://scenes/world/units/unit_orders.gd")
+const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 const RULES := preload("res://data/match_rules.tres")
 const TOL := 0.0005
 const AI_DIR := "res://scenes/world/ai"

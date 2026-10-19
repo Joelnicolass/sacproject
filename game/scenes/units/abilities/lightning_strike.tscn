@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/lightning_strike.gd" id="1_bolt"]
+
+[node name="LightningStrike" type="Node3D"]
+process_physics_priority = -1
+editor_description = "F130 (RFC-030 030s-a): un rayo del `lightning` de sacengine. CallLightning (gsba) y las descargas de LightningCharge (gcil) lo agregan al contenedor de disparos, solo en el servidor. Rebota en el primer cuerpo del camino (retarget, sin contar al tirador) y a los travel_ticks hace el daño de hechizo directo con el mod LIGHTNING; el look es FxBus.broadcast_beam. Se libera al pegar."
+script = ExtResource("1_bolt")

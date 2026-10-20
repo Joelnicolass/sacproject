@@ -1,3 +1,5 @@
+[English](servidor_local.en.md) | **Español**
+
 # Servidor local
 
 Una partida 1 contra 1 que corre en tu propia PC, sin pasar por las «Salas online» ni por el VPS. Vos sos el host: el juego lanza un servidor dedicado en tu máquina (el mismo código que usa el VPS) y entrás como un jugador más. Tu rival se une con una dirección, un puerto y un código.

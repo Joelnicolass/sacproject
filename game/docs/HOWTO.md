@@ -1,3 +1,5 @@
+[English](HOWTO.en.md) | **Español**
+
 # Cómo agregar y cambiar cosas
 
 Guía corta. Todas las rutas son desde `game/`. Regla general: el contenido son `.tres` en `data/` (un archivo por tipo, se edita en el inspector) y el comportamiento son escenas y nodos en `scenes/<dominio>/`. Nada de `match tag` en código. Cada carpeta tiene su `README.md`.

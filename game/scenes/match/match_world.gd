@@ -66,7 +66,11 @@ func _bind_map() -> void:
 
 
 func _ready() -> void:
-	print("en high noon slot ", MpKit.local_slot())
+	var definition := MapCatalog.active()
+	var map_name := "?"
+	if definition:
+		map_name = definition.display_name if not definition.display_name.is_empty() else String(definition.tag)
+	print("en %s slot %d" % [map_name, MpKit.local_slot()])
 	var match_state := get_node_or_null("%Match") as MatchState
 	if match_state:
 		match_state.result_changed.connect(_on_result_changed)

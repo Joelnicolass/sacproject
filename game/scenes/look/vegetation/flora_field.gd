@@ -31,6 +31,9 @@ const CLEAR_POLL_S := 1.0
 			_refresh()
 ## Editor only: the plants follow the 3D viewport camera (turn off to freeze them).
 @export var follow_editor_camera := true
+## Main-thread time per frame for every layer together (054e, F384): past it the finished cells wait for the next frame.
+## The planning itself runs on WorkerThreadPool tasks (in the editor, on the main thread inside this same budget).
+@export_range(0.1, 8.0, 0.1, "suffix:ms") var build_budget_ms := 1.0
 
 var _planters: Array[MeshPlanter] = []
 var _signature := ""
@@ -38,6 +41,10 @@ var _clears_dirty := true
 var _clear_timer := 0.0
 var _watching: Array[Resource] = []
 var _bound_rig: LookRig
+## Main-thread microseconds of the planters (ring + applying cells) in the last frame, and the worst frame since the
+## planters were made.
+var _last_frame_us := 0
+var _worst_frame_us := 0
 
 
 func _ready() -> void:
@@ -116,8 +123,13 @@ func _refresh() -> void:
 		return
 	_free_planters()
 	_signature = signature
+	_last_frame_us = 0
+	_worst_frame_us = 0
 	for layer in layers:
-		_planters.append(MeshPlanter.new(layer["config"], layer["quality"], rig.flora_map, terrain, self))
+		var planter := MeshPlanter.new(layer["config"], layer["quality"], rig.flora_map, terrain, self)
+		# The editor reloads tool scripts under a running task: plan on the main thread there.
+		planter.threaded = not Engine.is_editor_hint()
+		_planters.append(planter)
 	_clears_dirty = true
 	set_process(not _planters.is_empty())
 
@@ -154,8 +166,12 @@ func _process(delta: float) -> void:
 	if camera == null:
 		return
 	_update_clears(delta)
+	var started := Time.get_ticks_usec()
+	var deadline := started + int(build_budget_ms * 1000.0)
 	for planter in _planters:
-		planter.update(camera.global_position)
+		planter.update(camera.global_position, deadline)
+	_last_frame_us = Time.get_ticks_usec() - started
+	_worst_frame_us = maxi(_worst_frame_us, _last_frame_us)
 
 
 func _update_clears(delta: float) -> void:
@@ -249,14 +265,9 @@ func pending_count() -> int:
 	return sum
 
 
-## Worst frame of building so far, and the last one (microseconds, every layer).
+## Main-thread time of the planters (microseconds, every layer): x the last frame, y the worst since they were made.
 func build_us() -> Vector2i:
-	var worst := 0
-	var last := 0
-	for planter in _planters:
-		worst = maxi(worst, planter.worst_frame_build_us)
-		last += planter.last_frame_build_us
-	return Vector2i(last, worst)
+	return Vector2i(_last_frame_us, _worst_frame_us)
 
 
 func planters() -> Array[MeshPlanter]:

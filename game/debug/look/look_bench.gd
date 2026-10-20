@@ -7,7 +7,8 @@ extends Node
 ## Mode CAPTURE writes one crop per scale mode under agent/out/rfc022/022a/ to look for ghosting.
 ## RFC-054 054e (cases flora_peaks / flora_roads): `--flora` with `--map=peaks` or `--map=roads` measures the high preset
 ## over the map's densest flora, with the Flora layer off and on (frame mean and p95, draw calls, primitives, VRAM,
-## RSS, plants drawn, nodes and the worst build frame). No extra views: the frame time is the measure.
+## RSS, plants drawn, nodes and `peor_armado_ms`: the worst main-thread time of the planters in one frame, ring plus
+## applying finished cells; the planning runs on worker threads since 054e F384). No extra views: the frame time is the measure.
 ##   godot --path game res://debug/look/look_bench.tscn -- --map=peaks --flora
 
 enum Run { MEASURE, CAPTURE }
@@ -229,10 +230,10 @@ func _measure_flora() -> void:
 			draws += Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)
 			prims += Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME)
 		var build := field.build_us()
-		print("bench flora_%s flora %s frame_ms %.2f p95_ms %.2f draw %.0f prim %.0f vram_mb %.0f rss_mb %.0f plantas %d nodos %d celdas %d peor_armado_ms %.2f" % [
+		print("bench flora_%s flora %s frame_ms %.2f p95_ms %.2f draw %.0f prim %.0f vram_mb %.0f rss_mb %.0f plantas %d nodos %d celdas %d peor_armado_ms %.2f pendientes %d" % [
 			map_tag, "si" if on else "no", _mean(frames), _p95(frames), draws / sample_frames, prims / sample_frames,
 			Performance.get_monitor(Performance.RENDER_VIDEO_MEM_USED) / 1048576.0, OS.get_static_memory_usage() / 1048576.0,
-			field.instance_count(), field.node_count(), field.cell_count(), build.y / 1000.0])
+			field.instance_count(), field.node_count(), field.cell_count(), build.y / 1000.0, field.pending_count()])
 
 
 ## Map point (x, z) at the center of the 32 m cell with the most plants.

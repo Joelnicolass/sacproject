@@ -13,5 +13,6 @@ extends Resource
 @export_range(0.0, 2.0, 0.05) var density_scale := 1.0
 ## Off: no species of the layer casts a shadow, whatever its own `cast_shadow` says.
 @export var shadows := false
-## Most cells (32 m) built in one frame; the nearest go first.
+## Most cells (32 m) planned at once on worker threads; the nearest go first. Applying them is bounded by
+## FloraField.build_budget_ms.
 @export_range(1, 16) var max_builds_per_frame := 2

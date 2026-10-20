@@ -268,10 +268,22 @@ func is_on_ground(x: float, z: float) -> bool:
 
 ## Land height under (x, z) in world units, NAN over a hole (sacmap.d getGroundHeight).
 func ground_height(x: float, z: float) -> float:
-	var id := _triangle_at(x, z)
+	return height_in(x, z, _ground, _cell_triangles)
+
+
+## A Callable(x, z) -> float that answers like ground_height from a snapshot of the ground index taken now (the packed
+## arrays are copy-on-write: a later re-index does not touch it). It reads no node, so a WorkerThreadPool task may call it.
+func height_sampler() -> Callable:
+	return Terrain.height_in.bind(_ground, _cell_triangles)
+
+
+## ground_height over a given ground index (`ground`: three vertices per land triangle; `cells`: two triangle ids per
+## 10 m cell). Pure and static: the one implementation behind ground_height and height_sampler.
+static func height_in(x: float, z: float, ground: PackedVector3Array, cells: PackedInt32Array) -> float:
+	var id := triangle_in(x, z, ground, cells)
 	if id < 0:
 		return NAN
-	var plane := Plane(_ground[id * 3], _ground[id * 3 + 1], _ground[id * 3 + 2])
+	var plane := Plane(ground[id * 3], ground[id * 3 + 1], ground[id * 3 + 2])
 	return (plane.d - plane.normal.x * x - plane.normal.z * z) / plane.normal.y
 
 
@@ -323,7 +335,11 @@ func _index_ground(vertices: PackedVector3Array, indices: PackedInt32Array) -> v
 
 
 func _triangle_at(x: float, z: float) -> int:
-	if _ground.is_empty():
+	return triangle_in(x, z, _ground, _cell_triangles)
+
+
+static func triangle_in(x: float, z: float, ground: PackedVector3Array, cells: PackedInt32Array) -> int:
+	if ground.is_empty():
 		return -1
 	var cell_x := int(floor(x / CELL))
 	var cell_z := int(floor(z / CELL))
@@ -331,19 +347,19 @@ func _triangle_at(x: float, z: float) -> int:
 		return -1
 	var at := Vector2(x, z)
 	for k in 2:
-		var id := _cell_triangles[(cell_z * GRID + cell_x) * 2 + k]
+		var id := cells[(cell_z * GRID + cell_x) * 2 + k]
 		if id < 0:
 			continue
-		if _inside(id, at):
+		if _inside(ground, id, at):
 			return id
 	return -1
 
 
 ## Edges count as inside, like sacmap.d isInside (cross >= 0), with either winding.
-func _inside(id: int, at: Vector2) -> bool:
-	var a := _ground[id * 3]
-	var b := _ground[id * 3 + 1]
-	var c := _ground[id * 3 + 2]
+static func _inside(ground: PackedVector3Array, id: int, at: Vector2) -> bool:
+	var a := ground[id * 3]
+	var b := ground[id * 3 + 1]
+	var c := ground[id * 3 + 2]
 	var s0 := _flat_cross(a, b, at)
 	var s1 := _flat_cross(b, c, at)
 	var s2 := _flat_cross(c, a, at)
@@ -351,7 +367,7 @@ func _inside(id: int, at: Vector2) -> bool:
 	return (s0 >= -tol and s1 >= -tol and s2 >= -tol) or (s0 <= tol and s1 <= tol and s2 <= tol)
 
 
-func _flat_cross(a: Vector3, b: Vector3, at: Vector2) -> float:
+static func _flat_cross(a: Vector3, b: Vector3, at: Vector2) -> float:
 	return (b.x - a.x) * (at.y - a.z) - (b.z - a.z) * (at.x - a.x)
 
 

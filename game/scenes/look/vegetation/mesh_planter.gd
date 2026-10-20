@@ -9,8 +9,15 @@ extends RefCounted
 ##   Terrain.ground_height, and an instance off the ground or inside a VegetationClear is dropped (the clear's edge thins
 ##   them by a hash). Final transform: T·R·S·BodyCatalog.pose(model, false). Meshes and materials are BodyCatalog's,
 ##   shared by every cell.
-## - At most `max_builds_per_frame` cells per frame, the nearest first. A cell that leaves the ring is hidden and kept in
-##   an LRU cache of CACHE_SIZE cells; coming back shows it again without a rebuild.
+## - Threads (054e, F384): `plan_cell` runs on a WorkerThreadPool task, at most `max_builds_per_frame` cells at once, the
+##   nearest first. A task gets copies of what it reads (the groups without meshes, the clears, a Terrain.height_sampler
+##   snapshot) and touches no node. The main thread only makes the MultiMeshInstance3D from the finished buffers
+##   (`multimesh.buffer`, no per-instance call), while the frame's deadline (FloraField.build_budget_ms) lasts; the rest
+##   wait for the next frame. A result is applied in any order but its bytes depend only on the cell, so the order of
+##   completion never shows. A cell that left the ring, or whose clears changed, while it was planned is dropped (and, if
+##   still wanted, planned again). `threaded = false` (the editor) plans on the main thread inside the same budget.
+## - A cell that leaves the ring is hidden and kept in an LRU cache of CACHE_SIZE cells; coming back shows it again
+##   without a rebuild. A clear that touches a shown cell keeps its old nodes until the new plan is applied.
 ## - LOD: the tier of a cell (CellRing, by ground distance to the camera) sets `visible_instance_count` to the first
 ##   `tier_fractions[tier]` of its instances. Each species ends at a camera distance (the radius or its visibility_end_m):
 ##   a dithered distance fade on a copy of its material (one per species, shared by its cells; the mesh's own material is
@@ -44,8 +51,12 @@ var _map_inverse := Transform3D.IDENTITY
 var _ring := CellRing.new(CELL_M, MAP_CELLS)
 ## Built cells inside the ring: Vector2i -> Array of MultiMeshInstance3D.
 var _cells := {}
-## Cells inside the ring still to build.
+## Cells inside the ring still to plan (never one with a job in flight).
 var _pending: Array[Vector2i] = []
+## Cells being planned: Vector2i -> PlanJob.
+var _jobs := {}
+## Plan on WorkerThreadPool tasks (false: on the main thread, inside the frame's budget).
+var threaded := true
 var _pending_sorted := true
 ## Cells out of the ring, hidden: Vector2i -> nodes; `_cache_order` oldest first.
 var _cache := {}
@@ -54,10 +65,37 @@ var _cache_order: Array[Vector2i] = []
 var _clears := PackedVector4Array()
 var _eye := Vector2.ZERO
 var _radius := 0.0
-## Microseconds spent building in the last frame, and the worst frame so far.
-var last_frame_build_us := 0
-var worst_frame_build_us := 0
+## Cells applied (nodes made) so far, and plans dropped because their cell left the ring or its clears changed.
 var built_cells := 0
+var dropped_plans := 0
+
+
+## One cell planned off the main thread. Holds copies of its inputs; `run` (the task) writes only `buffers`.
+class PlanJob:
+	extends RefCounted
+	var key: Vector2i
+	var config: VegetationLayerConfig
+	var flora: FloraMap
+	var groups: Array[Dictionary]
+	var density: float
+	var height: Callable
+	var clears: PackedVector4Array
+	var task_id := -1
+	## Set on the main thread: the clears changed while it was planned (its result is stale).
+	var stale := false
+	var buffers: Array[PackedFloat32Array] = []
+
+	func run() -> void:
+		buffers = MeshPlanter.plan_cell(config, flora, groups, density, key, height, clears)
+
+	func done() -> bool:
+		return task_id < 0 or WorkerThreadPool.is_task_completed(task_id)
+
+	## Blocks until the task ended and releases it (every task must be waited once).
+	func finish() -> void:
+		if task_id >= 0:
+			WorkerThreadPool.wait_for_task_completion(task_id)
+			task_id = -1
 
 
 func _init(layer: VegetationLayerConfig, preset: VegetationQuality, map: FloraMap, land: Terrain, owner_node: Node3D) -> void:
@@ -116,6 +154,15 @@ static func _group(tag: String, index: int, model: String, entry: VegetationSpec
 		"cast_shadow": entry.cast_shadow if entry else false,
 		"visibility_end_m": entry.visibility_end_m if entry else 0.0,
 	}
+
+
+## The groups as a task may read them: the plain fields plan_cell uses, no mesh or material.
+static func plan_groups(layer_groups: Array[Dictionary]) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for group in layer_groups:
+		out.append({"tag": group["tag"], "tag_index": group["tag_index"], "pose": group["pose"],
+			"scale_range": group["scale_range"], "weight": group["weight"]})
+	return out
 
 
 ## Camera distance where a species is gone: the layer radius, or the species' own end if nearer.
@@ -257,8 +304,9 @@ static func _fade_material(mesh: Mesh, end_m: float, fade_m: float) -> Material:
 	return copy
 
 
-## Brings the ring to the camera (`camera_global`) and builds up to the budget. Call once per frame.
-func update(camera_global: Vector3) -> void:
+## Brings the ring to the camera (`camera_global`), applies finished plans until `deadline_us` (Time.get_ticks_usec) and
+## starts new ones. Call once per frame.
+func update(camera_global: Vector3, deadline_us: int) -> void:
 	var cam := _map_inverse * camera_global
 	var ground := terrain.ground_height(cam.x, cam.z)
 	var above := maxf(cam.y - (ground if not is_nan(ground) else terrain.lowest_ground()), 0.0)
@@ -269,7 +317,7 @@ func update(camera_global: Vector3) -> void:
 	for key: Vector2i in changes["added"]:
 		if _cache.has(key):
 			_restore(key)
-		else:
+		elif not _jobs.has(key):
 			_pending.append(key)
 			_pending_sorted = false
 	for key: Vector2i in changes["removed"]:
@@ -277,10 +325,12 @@ func update(camera_global: Vector3) -> void:
 			_stash(key)
 		else:
 			_pending.erase(key)
+		# A job in flight for it is dropped when it ends (_apply_finished checks the ring).
 	for key: Vector2i in changes["retiered"]:
 		if _cells.has(key):
 			_apply_tier(_cells[key], _ring.tier_of(key))
-	_build_some()
+	_apply_finished(deadline_us)
+	_start_plans(deadline_us)
 
 
 ## The clears changed (map coordinates): the cells they touched (before or after) are built again.
@@ -300,10 +350,12 @@ func set_clears(clears: PackedVector4Array) -> void:
 			_free_nodes(_cache[key])
 			_cache.erase(key)
 			_cache_order.erase(key)
-	for key: Vector2i in _cells.keys():
+	for key: Vector2i in _jobs.keys():
 		if _touches(key, touched):
-			_free_nodes(_cells[key])
-			_cells.erase(key)
+			(_jobs[key] as PlanJob).stale = true
+	for key: Vector2i in _cells.keys():
+		# The old nodes stay until the new plan replaces them (no hole while it is planned).
+		if _touches(key, touched) and not _jobs.has(key) and not _pending.has(key):
 			_pending.append(key)
 			_pending_sorted = false
 
@@ -315,8 +367,43 @@ func _touches(key: Vector2i, touched: PackedVector4Array) -> bool:
 	return false
 
 
-func _build_some() -> void:
-	last_frame_build_us = 0
+## Applies the finished plans, the nearest first, while the deadline lasts (always one, so a slow frame still moves).
+func _apply_finished(deadline_us: int) -> void:
+	if _jobs.is_empty():
+		return
+	var ready: Array[Vector2i] = []
+	for key: Vector2i in _jobs:
+		if (_jobs[key] as PlanJob).done():
+			ready.append(key)
+	if ready.size() > 1:
+		var eye := _eye
+		var ring := _ring
+		ready.sort_custom(func(a: Vector2i, b: Vector2i) -> bool: return ring.rect_distance(a, eye) < ring.rect_distance(b, eye))
+	var applied := 0
+	for key in ready:
+		var job: PlanJob = _jobs[key]
+		if not job.stale and _ring.has(key):
+			if applied > 0 and Time.get_ticks_usec() >= deadline_us:
+				break
+			applied += 1
+		_jobs.erase(key)
+		job.finish()
+		if job.stale or not _ring.has(key):
+			dropped_plans += 1
+			if _ring.has(key) and not _pending.has(key):
+				_pending.append(key)
+				_pending_sorted = false
+			continue
+		var nodes := _make_nodes(key, job.buffers)
+		if _cells.has(key):
+			_free_nodes(_cells[key])
+		_cells[key] = nodes
+		built_cells += 1
+
+
+## Starts plans for the nearest pending cells, up to max_builds_per_frame in flight. Without threads the plan is made
+## here and applied right away, while the deadline lasts (always one per frame).
+func _start_plans(deadline_us: int) -> void:
 	if _pending.is_empty():
 		return
 	if not _pending_sorted:
@@ -324,19 +411,31 @@ func _build_some() -> void:
 		var ring := _ring
 		_pending.sort_custom(func(a: Vector2i, b: Vector2i) -> bool: return ring.rect_distance(a, eye) > ring.rect_distance(b, eye))
 		_pending_sorted = true
-	var started := Time.get_ticks_usec()
-	for i in quality.max_builds_per_frame:
-		if _pending.is_empty():
+	var height := terrain.height_sampler()
+	var plain := plan_groups(groups)
+	var made := 0
+	while not _pending.is_empty() and _jobs.size() < quality.max_builds_per_frame:
+		if not threaded and made > 0 and Time.get_ticks_usec() >= deadline_us:
 			break
-		var key: Vector2i = _pending.pop_back()
-		_cells[key] = _build(key)
-		built_cells += 1
-	last_frame_build_us = Time.get_ticks_usec() - started
-	worst_frame_build_us = maxi(worst_frame_build_us, last_frame_build_us)
+		var job := PlanJob.new()
+		job.key = _pending.pop_back()
+		job.config = config
+		job.flora = flora
+		job.groups = plain
+		job.density = quality.density_scale
+		job.height = height
+		job.clears = _clears
+		_jobs[job.key] = job
+		if threaded:
+			job.task_id = WorkerThreadPool.add_task(job.run, false, "flora cell")
+		else:
+			job.run()
+			made += 1
+			_apply_finished(deadline_us)
 
 
-func _build(key: Vector2i) -> Array:
-	var buffers := plan_cell(config, flora, groups, quality.density_scale, key, terrain.ground_height, _clears)
+## The nodes of a planned cell: one MultiMeshInstance3D per species with instances, filled from its buffer in one copy.
+func _make_nodes(key: Vector2i, buffers: Array[PackedFloat32Array]) -> Array:
 	var nodes := []
 	var cell_xform := map_xform * Transform3D(Basis.IDENTITY, Vector3(key.x * CELL_M, 0.0, key.y * CELL_M))
 	var tier := _ring.tier_of(key)
@@ -403,8 +502,11 @@ func _free_nodes(nodes: Array) -> void:
 			node.queue_free()
 
 
-## Frees every node (shown and cached) and forgets the ring.
+## Frees every node (shown and cached) and forgets the ring. Waits for the plans in flight (a few ms at most).
 func clear() -> void:
+	for key in _jobs:
+		(_jobs[key] as PlanJob).finish()
+	_jobs.clear()
 	for key in _cells:
 		_free_nodes(_cells[key])
 	for key in _cache:
@@ -421,8 +523,9 @@ func cell_count() -> int:
 	return _cells.size()
 
 
+## Cells still to plan or being planned.
 func pending_count() -> int:
-	return _pending.size()
+	return _pending.size() + _jobs.size()
 
 
 func node_count() -> int:

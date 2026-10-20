@@ -18,6 +18,7 @@
 [ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="17_minimap"]
 [ext_resource type="Resource" path="res://data/catalog/buildings/pfon.tres" id="fbldg_pfon"]
+[ext_resource type="Resource" path="res://scenes/map/maps/roads/flora.res" id="flora_map"]
 
 [node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings_root", "npc_spawns_root")]
 script = ExtResource("1_root")
@@ -47,6 +48,7 @@ world_environment = NodePath("../Environment")
 terrain = NodePath("../Terrain")
 legacy_sky = NodePath("../Sky")
 tile_map = ExtResource("9_tiles")
+flora_map = ExtResource("flora_map")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.921061, -0.27935162, 0.27131036, 0, 0.6967067, 0.7173561, -0.38941833, -0.6607287, 0.6417094, 0, 0, 0)

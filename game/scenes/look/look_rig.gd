@@ -29,6 +29,9 @@ signal layer_toggled(index: int, enabled: bool)
 ## Which `GroundSet` slot paints each of the map's tile ids. The classic ground (a biome without a
 ## PBR `GroundSet`) uses it so the grass knows where it grows; it belongs to the map, not to a biome.
 @export var tile_map: TileLayerMap
+## How many plants of the original stand in each 8 m cell of this map (RFC-054: scenes/map/maps/<tag>/flora.res, baked by
+## tools/bake/bake_flora_map.gd). The Flora layer draws it; empty = no plants.
+@export var flora_map: FloraMap
 
 var profile: LookProfile
 ## Last preset handed to `apply_quality` (or the one the Quality socket holds).

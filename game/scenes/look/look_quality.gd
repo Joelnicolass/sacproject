@@ -71,3 +71,15 @@ extends Resource
 @export var fx_frame_blend: bool = true
 ## Most effect lights on at once (RFC-029 029c, FxLightLayer): shadowless OmniLight3D. 0 = none.
 @export_range(0, 64) var fx_max_lights: int = 8
+
+@export_group("Vegetación (RFC-054)")
+## One entry per mesh vegetation layer (FloraField), by the layer's id. A layer without an entry is not drawn.
+@export var vegetation: Array[VegetationQuality] = []
+
+
+## The entry of vegetation layer `id`, or null (the layer is not drawn in this preset).
+func vegetation_for(id: StringName) -> VegetationQuality:
+	for entry in vegetation:
+		if entry and entry.layer_id == id:
+			return entry
+	return null

@@ -5,6 +5,10 @@ extends Node
 ##   preset x scale mode (all layers off), then each layer alone and all layers on at each
 ##   preset's own mode. Exits when done. Run with a window (a headless process has no GPU time).
 ## Mode CAPTURE writes one crop per scale mode under agent/out/rfc022/022a/ to look for ghosting.
+## RFC-054 054e (cases flora_peaks / flora_roads): `--flora` with `--map=peaks` or `--map=roads` measures the high preset
+## over the map's densest flora, with the Flora layer off and on (frame mean and p95, draw calls, primitives, VRAM,
+## RSS, plants drawn, nodes and the worst build frame). No extra views: the frame time is the measure.
+##   godot --path game res://debug/look/look_bench.tscn -- --map=peaks --flora
 
 enum Run { MEASURE, CAPTURE }
 
@@ -45,6 +49,8 @@ const CREATURE_TAGS: Array[String] = ["ycro", "amuh"]
 @export var out_dir := "res://agent/out/rfc022/022a"
 ## Biome the map shows (the world would roll a random one, and the layers need its profile).
 @export var god: StringName = &"persephone"
+## RFC-054 054e: measure the Flora layer (see the header).
+@export var flora := false
 
 var _viewport_rid: RID
 var _presets: Array[LookQuality] = []
@@ -63,6 +69,9 @@ func _ready() -> void:
 			god = StringName(arg.get_slice("=", 1))
 		elif arg == "--quick":
 			quick = true
+		elif arg == "--flora":
+			flora = true
+			extra_views = 0
 		elif arg == "--capture":
 			run = Run.CAPTURE
 		elif arg.begins_with("--samples="):
@@ -99,7 +108,9 @@ func _start() -> void:
 	var size: Vector2i = get_viewport().size
 	print("bench ventana %dx%d gpu %s render %s" % [
 		size.x, size.y, RenderingServer.get_video_adapter_name(), RenderingServer.get_current_rendering_method()])
-	if run == Run.CAPTURE:
+	if flora:
+		await _measure_flora()
+	elif run == Run.CAPTURE:
 		await _capture_modes()
 	else:
 		await _measure_all()
@@ -184,6 +195,62 @@ func _measure_case(preset_name: String, quality: LookQuality, layers: String) ->
 		preset_name, MODE_NAMES[quality.scaling_mode], quality.scale, internal.x, internal.y, layers,
 		views, 1000.0 / fps, 1000.0 / fps / views, _mean(cpu), _mean(process), fps,
 		draws / sample_frames, prims / sample_frames, vram / 1048576.0, MODE_NAMES[applied.mode]])
+
+
+## RFC-054 054e: the high preset, all layers on, over the densest 32 m cell of the map's FloraMap; Flora off, then on.
+func _measure_flora() -> void:
+	var rig := world.get_node_or_null("Map/Look") as LookRig
+	var field := rig.get_node_or_null("Layers/Flora") as FloraField if rig else null
+	if field == null or rig.flora_map == null:
+		print("bench flora: el mapa no tiene capa Flora o FloraMap")
+		return
+	var high := _presets[2]
+	var spot := _densest(rig.flora_map)
+	var terrain := rig.terrain as Terrain
+	var ground := terrain.ground_height(spot.x, spot.y) if terrain else 0.0
+	ground = 0.0 if is_nan(ground) else ground
+	view_camera.global_position = Vector3(spot.x, ground + 6.0, spot.y - 30.0)
+	view_camera.look_at(Vector3(spot.x, ground, spot.y), Vector3.UP)
+	var map_tag := String(MapCatalog.active().tag)
+	for on in [false, true]:
+		field.visible = on
+		rig.apply_quality(high)
+		QualityApplier.apply_to(get_viewport(), high)
+		await _frames(warmup_frames)
+		var frames := PackedFloat32Array()
+		var draws := 0.0
+		var prims := 0.0
+		var last := Time.get_ticks_usec()
+		for i in sample_frames:
+			await RenderingServer.frame_post_draw
+			var now := Time.get_ticks_usec()
+			frames.append((now - last) / 1000.0)
+			last = now
+			draws += Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)
+			prims += Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME)
+		var build := field.build_us()
+		print("bench flora_%s flora %s frame_ms %.2f p95_ms %.2f draw %.0f prim %.0f vram_mb %.0f rss_mb %.0f plantas %d nodos %d celdas %d peor_armado_ms %.2f" % [
+			map_tag, "si" if on else "no", _mean(frames), _p95(frames), draws / sample_frames, prims / sample_frames,
+			Performance.get_monitor(Performance.RENDER_VIDEO_MEM_USED) / 1048576.0, OS.get_static_memory_usage() / 1048576.0,
+			field.instance_count(), field.node_count(), field.cell_count(), build.y / 1000.0])
+
+
+## Map point (x, z) at the center of the 32 m cell with the most plants.
+func _densest(map: FloraMap) -> Vector2:
+	var per := MeshPlanter.DATA_PER_CELL
+	var best := Vector2i.ZERO
+	var best_sum := -1
+	for cz in MeshPlanter.MAP_CELLS:
+		for cx in MeshPlanter.MAP_CELLS:
+			var sum := 0
+			for t in map.tags.size():
+				for dz in per:
+					for dx in per:
+						sum += map.count_at(t, cx * per + dx, cz * per + dz)
+			if sum > best_sum:
+				best_sum = sum
+				best = Vector2i(cx, cz)
+	return (Vector2(best) + Vector2(0.5, 0.5)) * MeshPlanter.CELL_M
 
 
 func _capture_modes() -> void:

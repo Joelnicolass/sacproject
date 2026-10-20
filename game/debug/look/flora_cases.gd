@@ -1,13 +1,16 @@
 extends Node
 
 ## RFC-054 (F380-F387): runner of the headless flora cases. 054a: flora_map_cases.gd (the baked FloraMaps and
-## FloraPlacement); 054b: cell_ring_cases.gd (CellRing against the golden of GrassField's old ring).
+## FloraPlacement); 054b: cell_ring_cases.gd (CellRing against the golden of GrassField's old ring); 054c:
+## flora_field_cases.gd (FloraField and MeshPlanter; `-- --dedicated --no-flow` runs its map case as the dedicated server: without
+## --no-flow MpFlow would replace this scene with the world).
+## A case script may declare `var tree: SceneTree` (the runner sets it) and make `run` a coroutine.
 ##   godot --headless --path game --quit-after 60000 res://debug/look/flora_cases.tscn
 ## Prints `<case>: PASS|FAIL` and `FLORA CASES PASS|FAIL (n)`; headless quits with 0 / 1.
 ## Watchdog: past `timeout_s` of wall time it prints `FLORA CASES FAIL timeout` and quits 1. The case scripts are loaded
 ## at run time (not preloaded), so one that fails to compile ends in a FAIL line instead of a runner without a script.
 
-const CASES := ["res://debug/look/flora_map_cases.gd", "res://debug/look/cell_ring_cases.gd"]
+const CASES := ["res://debug/look/flora_map_cases.gd", "res://debug/look/cell_ring_cases.gd", "res://debug/look/flora_field_cases.gd"]
 
 ## Real seconds (not game time: --fixed-fps would stretch a game-time timer).
 @export var timeout_s := 20.0
@@ -38,7 +41,11 @@ func _run() -> void:
 		if script == null or not script.can_instantiate():
 			results[path.get_file().get_basename()] = {"ok": false, "reason": "no compila"}
 			continue
-		results.merge(script.new().run())
+		var instance: Object = script.new()
+		if "tree" in instance:
+			instance.set("tree", get_tree())
+		var result: Dictionary = await instance.call("run")
+		results.merge(result)
 		# A frame between scripts so the watchdog can speak.
 		await get_tree().process_frame
 		if _done:

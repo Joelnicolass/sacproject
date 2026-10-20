@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://debug/look/flora_lab.gd" id="1_lab"]
+[ext_resource type="Resource" path="res://debug/look/flora_lab_peaks_high.tres" id="2_setup"]
+
+[node name="FloraLab" type="Node" node_paths=PackedStringArray("camera", "label")]
+script = ExtResource("1_lab")
+setup = ExtResource("2_setup")
+camera = NodePath("Camera")
+label = NodePath("Hud/Metrics")
+
+[node name="Camera" type="Camera3D" parent="."]
+fov = 60.0
+far = 4000.0
+
+[node name="Hud" type="CanvasLayer" parent="."]
+
+[node name="Metrics" type="Label" parent="Hud"]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 900.0
+offset_bottom = 80.0

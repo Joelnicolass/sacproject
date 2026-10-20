@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://scenes/look/sky/sky_layer.tscn" id="5_sky"]
 [ext_resource type="PackedScene" path="res://scenes/look/grass/grass_layer.tscn" id="6_grass"]
 [ext_resource type="PackedScene" path="res://scenes/look/fx/fx_light_layer.tscn" id="7_fx_light"]
+[ext_resource type="PackedScene" path="res://scenes/look/vegetation/flora_layer.tscn" id="8_flora"]
 
 [node name="Look" type="Node" node_paths=PackedStringArray("layers", "quality")]
 script = ExtResource("1_rig")
@@ -24,6 +25,9 @@ quality = NodePath("Quality")
 [node name="Grass" parent="Layers" instance=ExtResource("6_grass")]
 
 [node name="FxLight" parent="Layers" instance=ExtResource("7_fx_light")]
+
+[node name="Flora" parent="Layers" node_paths=PackedStringArray("rig") instance=ExtResource("8_flora")]
+rig = NodePath("../..")
 
 [node name="Quality" type="Node" parent="."]
 script = ExtResource("2_quality")

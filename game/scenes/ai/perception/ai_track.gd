@@ -64,6 +64,10 @@ var record: AiRecord
 var ord_state := 0
 var ord_target := 0
 var ord_pos := Vector3.ZERO
+## A body that went to a mana source because its mana fell to its minimum (CreatureBrain.auto_capture) stays by it until it holds
+## AiTactics.mana_refill_ratio of its pool: without it the wizard left the altar the tick he had enough for one spell, cast it on the
+## way and walked back (the back and forth on the same spot).
+var refilling := false
 ## Wizard only: the creatures it may summon, rated against the field (wizSpellRebuild, shiny.d:2610), and the cast queue.
 var summons: Array = []
 var spell_accs: Array = []

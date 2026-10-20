@@ -10,6 +10,11 @@ extends AiPhase
 ## the Manahoar) the wizard can pay in souls with the best score `rateWithBase(creature, field) x (1 - cost/pool)` is
 ## forced. The Manaliths count because the pool is maxMana x Manaliths: with none, the original summons nothing (so a
 ## match starts with its Manalith, see debug/ai_summon). The «field» is the quirky mix of acc1 and acc2 (see AiStance).
+## RFC-053 (deviation): in the BLOCK2 test the hostile NPC around the wizard weigh AiTactics.npc_summon_threat_weight (0 in every
+## difficulty): measured in ai_easy_vs_normal seed 7 with NPC, two Taurocks by the East fount kept the Easy wizard's threat at
+## 0.64-0.86 for minutes, so he never summoned again while his souls piled up («se queda quieta con muchas almas»). And the pool
+## counts at least AiTactics.summon_min_manaliths Manaliths (1): in the same match the Taurocks broke both Manaliths and neither side
+## could summon again (BLOCK1, the Manahoar, still needs a Manalith to channel: unchanged).
 
 
 func run(wizard: AiTrack, _w3: Array[float], _record: AiRecord) -> void:
@@ -22,6 +27,7 @@ func run(wizard: AiTrack, _w3: Array[float], _record: AiRecord) -> void:
 		return
 	## Adenda 1.3: the difficulty's own pace (Easy): no summon before its interval has passed. Normal and Hard: always over.
 	if not brain.summon_interval_over():
+		_note(wizard, "intervalo")
 		return
 	var stance := brain.stance
 	var randv := brain.rng.unit()
@@ -39,10 +45,12 @@ func run(wizard: AiTrack, _w3: Array[float], _record: AiRecord) -> void:
 				if ready == 0 or AiField.safediv(float(deficit), float(manaliths * ready)) > profile.emergency_mana_ratio:
 					AiCastQueue.enqueue(wizard.cast_queue, AiCastQueue.make(AiCastQueue.FORCED, 0.0, null, wizard.manahoar_spell, 0.0, null))
 					return
-	if not (wizard.threat < profile.summon_threat_cap):
+	if not (_summon_threat(wizard) < profile.summon_threat_cap):
+		_note(wizard, "amenaza %.2f (para convocar %.2f)" % [wizard.threat, _summon_threat(wizard)])
 		return
-	var pool := max_mana * manaliths
+	var pool := max_mana * maxi(manaliths, brain.tactics.summon_min_manaliths if brain.tactics != null else 0)
 	if pool == 0 or wizard.summons.is_empty():
+		_note(wizard, "sin pozo (manalitos %d)" % manaliths)
 		return
 	var best_score := 0.0
 	var best_spell: CreatureType
@@ -62,5 +70,21 @@ func run(wizard: AiTrack, _w3: Array[float], _record: AiRecord) -> void:
 		if best_spell == null or best_score < score:
 			best_score = AiField.f32(score)
 			best_spell = type
+	_note(wizard, "elige %s, almas %d" % [best_spell.tag if best_spell != null else "-", souls])
 	if best_spell != null:
 		AiCastQueue.enqueue(wizard.cast_queue, AiCastQueue.make(AiCastQueue.FORCED, 0.0, null, best_spell, 0.0, null))
+
+
+## The threat BLOCK2 compares with summon_threat_cap: the wizard's threat less the share of it that hostile NPC make, by
+## (1 - npc_summon_threat_weight).
+func _summon_threat(wizard: AiTrack) -> float:
+	var weight := brain.tactics.npc_summon_threat_weight if brain.tactics != null else 1.0
+	if weight >= 1.0 or wizard.threat <= 0.0:
+		return wizard.threat
+	var share := brain.stance.npc_share(wizard.extrap_pos, brain.profile.threat_far)
+	return AiField.f32(wizard.threat * (1.0 - share * (1.0 - weight)))
+
+
+func _note(wizard: AiTrack, why: String) -> void:
+	if DebugLog.on(&"ai_summon"):
+		print("ai_summon slot %d tick %d %s" % [brain.perception.slot, brain.port.now_tick(), why])

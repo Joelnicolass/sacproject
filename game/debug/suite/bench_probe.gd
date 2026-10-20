@@ -16,6 +16,11 @@ func step(_tick: int) -> void:
 	pass
 
 
+## The AI's audit (its requests), when the bench has one. Called once after begin().
+func listen_audit(_audit: AiAudit) -> void:
+	pass
+
+
 func measures(_measure: String) -> bool:
 	return false
 

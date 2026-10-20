@@ -15,6 +15,8 @@
 #   053h (F377)  agent/runs/run_f377.sh (the emitters outside the tree).
 #   053i (F379)  debug/fx/f379_fx_fade.tscn (lights and bursts end with a fade: spark, hand_off, quality, bursts, freed),
 #                FX_FADE PASS; then debug/fx/fx_light_steal.tscn (the light pool's priorities still hold), fx_robo total ok.
+#   053_osc      debug/ai/ai_oscillation.tscn with ai_osc_seed7 (Easy vs Normal, seed 7, NPC, 4 min; OscillationProbe): no back and
+#                forth of the wizards, the Easy wizard's goal not A-B-A, no rich idle, summons with souls and mana, at most 2 futile spells.
 #   rfc053_bad_rules  ai_match with a --rules file that does not exist: EXPECT DONE FAIL rules and exit 1 at once (the bench's own guard).
 #   053a_sides   the SIDES line (SideRelations.stance(1|2, 0) and (1|2, 3)) on peaks and peasantville (diagnostic, no verdict).
 # Usage: bash agent/runs/run_rfc053.sh CUT [GODOT_BIN]
@@ -109,6 +111,10 @@ case "$CUT" in
     grep -E "SCRIPT ERROR|^ERROR:" "$OUT/fx_light_steal.log" | head -10
     [ "$code" = 0 ] && grep -qE "^fx_robo total ok$" "$OUT/fx_light_steal.log" || FAIL=1
     ;;
+  053_osc)
+    case_run ai_osc_seed7 res://debug/ai/ai_oscillation.tscn --rules=res://debug/rules/ai_osc_seed7.tres --seed=7 --minutes=4.1 \
+      --watchdog-s=170
+    ;;
   rfc053_bad_rules)
     started=$SECONDS
     bash "$RUN" "$GODOT_BIN" --headless --path "$ROOT" --fixed-fps 600 res://debug/units/f370_targets.tscn -- --seed=1 \
@@ -123,7 +129,7 @@ case "$CUT" in
     sides_run peasantville
     ;;
   *)
-    echo "corte desconocido: $CUT (053a, 053a_sides, 053b, 053c, 053d, 053e, 053f, 053g, 053h, 053i, rfc053_bad_rules)"
+    echo "corte desconocido: $CUT (053a, 053a_sides, 053_osc, 053b, 053c, 053d, 053e, 053f, 053g, 053h, 053i, rfc053_bad_rules)"
     exit 2
     ;;
 esac

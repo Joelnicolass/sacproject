@@ -4,7 +4,7 @@ Divine Sight eesd) on debug/f133_legacy_abilities, next to what the port logged.
 before and after the abilities move to the AbilityCatalog (the digest in agent/det_baseline.txt was recorded first, with the code of
 before; this script checks the result of each event and the mana and cooldown lines, which the digest does not see: it hashes positions).
 
-Usage: python3 -I agent/tools/f133_expect.py [godot log of debug/f133_legacy_abilities (rules debug/rules/f133_legacy_abilities.tres)]
+Usage: python3 -I agent/tools/f133_expect.py [godot log of debug/f133_legacy_abilities (rules debug/rules/f133_legacy_abilities.tres), run with --log=pace]
        python3 -I agent/tools/f133_expect.py --lanes     (only the lane check against the map files)
 
 Needs the bench switches on (debug/ai/ai_match.gd): ActiveAbility.log_ability and AbilityEffect.log_effects.

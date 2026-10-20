@@ -14,6 +14,9 @@ extends Node
 @export var perception: AiPerception
 @export var profile: AiProfile
 
+## RFC-053: the common sense of the difficulty (AiSide.setup sets it). Null: the original autoCapture, no refill band.
+var tactics: AiTactics
+
 
 ## t4oBrain (shiny.d:2557-2570). Returns 1 when it handled the case.
 func think(t: AiTrack, cmd: int, record: AiRecord) -> int:
@@ -50,13 +53,20 @@ func auto_capture(t: AiTrack) -> int:
 	var pair := AiGroups._mana_pair(t)
 	if pair.y == 0:
 		return 0
-	if pair.x > _min_mana(t) and not _respawning(t):
+	if pair.x <= _min_mana(t) or _respawning(t):
+		t.refilling = true
+	elif not t.refilling or pair.x >= refill_until(t, pair.y):
+		t.refilling = false
 		return 0
 	var found := find_best_capture_target(t.cur_pos, profile.mana_seek_m if profile != null else 3620.0)
 	if found.is_empty():
 		return 0
 	var source: AiTrack = found["node"]
 	var radius := float(found["radius"])
+	if DebugLog.on(&"ai_order") and t.kind == AiTrack.Kind.WIZ:
+		print("ai_order slot %d %s auto_capture mana %d/%d min %d hasta %d fuente %s a %.1f m" % [perception.slot, t.node.name, pair.x, pair.y,
+			_min_mana(t), refill_until(t, pair.y),
+			source.node.name, t.cur_pos.distance_to(source.cur_pos)])
 	if radius * radius < t.cur_pos.distance_squared_to(source.cur_pos):
 		port.order_if_changed(t, 5, source, null)
 	return 1
@@ -75,6 +85,13 @@ func _min_mana(t: AiTrack) -> int:
 				@warning_ignore("integer_division")
 				return 5 * AiRater.ftol(float((head as CreatureType).mana_cost)) / 4
 	return AiRater.ftol(t.min_mana_cost)
+
+
+## The mana a body that went to refill holds before it leaves the source: AiTactics.mana_refill_ratio of its pool, never under its
+## minimum + 1 (with no tactics or a ratio of 0: the minimum + 1, the original's «above the minimum»).
+func refill_until(t: AiTrack, max_mana: int) -> int:
+	var ratio := tactics.mana_refill_ratio if tactics != null else 0.0
+	return maxi(_min_mana(t) + 1, AiRater.ftol(float(max_mana) * ratio))
 
 
 static func _respawning(t: AiTrack) -> bool:

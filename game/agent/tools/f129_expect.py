@@ -3,7 +3,7 @@
 from state.d and the SPEL data, next to what the port logged. The terrain, the caches and the Terrain class are those of
 f128_expect.py (loaded from the same folder).
 
-Usage: python3 -I agent/tools/f129_expect.py [godot log of debug/f129_lobs (rules debug/rules/f129_lobs.tres)]
+Usage: python3 -I agent/tools/f129_expect.py [godot log of debug/f129_lobs (rules debug/rules/f129_lobs.tres), run with --log=pace]
        python3 -I agent/tools/f129_expect.py --lanes     (only the lane check against the map files)
        python3 -I agent/tools/f129_expect.py --schedule  (the tick table, no log)
 

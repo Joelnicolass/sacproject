@@ -73,6 +73,8 @@ func _watching(row: Dictionary) -> bool:
 func listen_audit(audit: AiAudit) -> void:
 	if audit != null and not audit.cast_noted.is_connected(_on_cast):
 		audit.cast_noted.connect(_on_cast)
+		for probe in _probes:
+			probe.listen_audit(audit)
 
 
 func step(tick: int) -> void:

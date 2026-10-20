@@ -14,6 +14,8 @@ extends Node
 
 ## F371 (RFC-053): a cast the port started (not a summon), for the criteria of a bench (ExpectJudge). Reading it changes nothing.
 signal cast_noted(slot: int, tag: String, target: Node)
+## Every request of the port the Caster started, summons included (diagnostic, for the bench probes).
+signal request_noted(slot: int, tag: String, target: Node, is_summon: bool)
 
 ## Physics ticks since start(); the clock of every line.
 var tick: int:
@@ -277,6 +279,7 @@ func note_request(slot: int, tag: String, display: String, started: bool, answer
 		table[reason] = int(table.get(reason, 0)) + 1
 		record("reject", "slot %d %s %s" % [slot, tag, reason])
 		return
+	request_noted.emit(slot, tag, target, is_summon)
 	if is_summon:
 		var type := GameData.creature(tag)
 		var entry := {

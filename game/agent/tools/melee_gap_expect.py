@@ -80,7 +80,7 @@ def check(paths, table):
     for path in paths:
         rows = parse(path)
         if not rows:
-            failures.append("%s: no melee_gap lines (is MeleeAttack.log_gap on?)" % path)
+            failures.append("%s: no melee_gap lines (run with --log=gap)" % path)
             continue
         for w in windows(rows):
             kind = w[0]["a"].rstrip("0123456789")

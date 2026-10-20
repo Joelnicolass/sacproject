@@ -241,6 +241,9 @@ func order_if_changed(t: AiTrack, ostate: int, target: AiTrack, pos: Variant) ->
 			if t.kind != AiTrack.Kind.WIZ:
 				reason += " walking" if (t.node as UnitBody).is_walking() else " still"
 	var key := "%s %d %s" % [AiTrack.Kind.keys()[t.kind], ostate, reason]
+	if DebugLog.on(&"ai_order"):
+		print("ai_order tick %d slot %d %s ost %d->%d %s goal %s" % [_tick, slot, t.node.name, t.ord_state, ostate, reason,
+			AiAudit.fmt((pos as Vector3) if pos != null else (target.cur_pos if target != null else t.cur_pos))])
 	var goal: Vector3
 	if delay_ticks > 0:
 		## The order waits its delay; a newer decision for the same body replaces it and keeps its time (else a body whose anchor

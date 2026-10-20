@@ -43,6 +43,10 @@ var heal_skips := 0
 ## F371: the walk toward a target he has no clear line to (its track id and where he was sent), kept while he walks to it.
 var _line_target := 0
 var _line_goal := Vector3.ZERO
+## RFC-053: the attack spells on bodies (track id -> [the health the side knew at the last cast, tick its ban ends or 0]).
+var _attack_marks: Dictionary = {}
+## Diagnostic: bodies banned as futile spell targets.
+var futile_bans := 0
 
 
 func _ready() -> void:
@@ -365,6 +369,7 @@ func execute_best_cast(wizard: AiTrack, check_only: bool) -> int:
 		var point := obj.cur_pos if obj != null else wizard.cur_pos
 		port.start_casting(spell, target, point)
 		casts_started += 1
+		_note_attack_cast(spell, target)
 		if spell is CreatureType:
 			_last_summon_tick = port.now_tick()
 		queue.remove_at(i)
@@ -407,3 +412,39 @@ func _walk_for_line(wizard: AiTrack, target: AiTrack) -> void:
 		_line_target = target.id
 	line_walks += 1
 	port.order_go_to(wizard, 2, _line_goal)
+
+
+## RFC-053: a body the side's attack spells do not bring down is not a spell target until its ban ends.
+func spell_futile(target: AiTrack) -> bool:
+	var mark: Array = _attack_marks.get(target.id, [])
+	if mark.is_empty() or int(mark[1]) == 0:
+		return false
+	if port.now_tick() < int(mark[1]):
+		return true
+	_attack_marks.erase(target.id)
+	return false
+
+
+## An attack spell started on a body: if what it lost since the last one (the health the side knows), spell_kill_max_casts times over,
+## would not bring it down, it is banned for spell_futile_forget_s.
+func _note_attack_cast(spell: Resource, target: AiTrack) -> void:
+	if tactics == null or tactics.spell_futile_forget_s <= 0.0 or target == null or not target.is_body():
+		return
+	if not (spell is SpellType) or (spell as SpellType).is_structure or not AiSpellEval.accepts(spell as SpellType, AiSpellEval.ATTACK_MASK):
+		return
+	var health := perception.health_of(target)
+	var mark: Array = _attack_marks.get(target.id, [])
+	if DebugLog.on(&"ai_attack"):
+		print("ai_attack slot %d hechizo %s sobre %s: vida conocida %d de %d, antes %s, ve %s" % [perception.slot, (spell as SpellType).tag,
+			target.node.name, health.x, health.y, str(mark[0]) if not mark.is_empty() else "-", str(perception.knows_live(target))])
+	if not mark.is_empty() and health.y > 0 and (int(mark[0]) - health.x) * tactics.spell_kill_max_casts < health.x:
+		mark[1] = port.now_tick() + MatchClock.ticks_for(tactics.spell_futile_forget_s)
+		futile_bans += 1
+		if DebugLog.on(&"ai_attack"):
+			print("ai_attack slot %d hechizo inutil sobre %s: vida %d antes %d de %d" % [perception.slot, target.node.name, health.x,
+				int(mark[0]), health.y])
+	else:
+		mark = [health.x, 0]
+	mark[0] = health.x
+	_attack_marks[target.id] = mark
+

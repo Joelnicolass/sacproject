@@ -48,6 +48,29 @@ const NORMAL := "res://data/ai/tactics_normal.tres"
 ## What an enemy wizard is worth among the candidates of a focus, in souls (a creature is worth its souls): killing him stops his casts.
 @export_range(0.0, 20.0, 0.5) var focus_wizard_worth := 4.0
 
+@export_group("Recarga de maná")
+## A body that went to a mana source with its mana at its minimum stays by it until it holds this fraction of its pool (the original
+## leaves as soon as it is over the minimum: one spell on the way and back again, the back and forth on the same spot). 0: the original.
+@export_range(0.0, 1.0, 0.05) var mana_refill_ratio := 0.5
+
+@export_group("Hechizo inútil")
+## An attack spell on a body whose loss since the side's last attack spell on it, repeated this many times, would not bring it down
+## (it regenerates between casts: a Taurock under a Rock every 19 s loses 100-200 of its 1920 net) bans that body as a spell target
+## for spell_futile_forget_s.
+@export_range(1, 20) var spell_kill_max_casts := 3
+## Seconds a futile spell target stays banned. 0: never banned (the original).
+@export_range(0.0, 120.0, 1.0) var spell_futile_forget_s := 30.0
+
+@export_group("NPC hostiles")
+## How much the hostile NPC near the wizard (Taurocks of an NPC slot) count in the threat that stops his summons (shiny.d:3139 «threat
+## < 0.6»): 1 = the original, every enemy alike; 0 = the camp of a village never keeps him from raising the army that clears it.
+@export_range(0.0, 1.0, 0.05) var npc_summon_threat_weight := 0.0
+
+@export_group("Convocar sin Manalito")
+## The pool of mana the summon score reads is max mana x Manaliths (shiny.d:3140) and with none the original summons nothing: a
+## wizard whose Manalith the Taurocks broke never raised an army again with a full purse. The pool counts at least this many. 0: the original.
+@export_range(0, 4) var summon_min_manaliths := 1
+
 
 ## `tactics` or, when null, the Normal one.
 static func or_normal(tactics: AiTactics) -> AiTactics:

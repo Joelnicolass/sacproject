@@ -149,6 +149,28 @@ func local_strength(category: int, at: Vector3, radius: float) -> float:
 	return sum
 
 
+## RFC-053: the share of the enemy strength within `radius` (flat) of `at` that belongs to NPC slots (Taurocks of a village), by the
+## rates of the bodies the side knows (creatures and wizards, each by its known health). 0 with no enemy there.
+func npc_share(at: Vector3, radius: float) -> float:
+	var npc := 0.0
+	var all := 0.0
+	var radius_sq := radius * radius
+	for t: AiTrack in perception.bodies(3):
+		if not AiGroups.alive(t):
+			continue
+		var pos := perception.pos_of(t)
+		var dx := pos.x - at.x
+		var dz := pos.z - at.z
+		if dx * dx + dz * dz > radius_sq:
+			continue
+		var health := perception.health_of(t)
+		var rate := t.cached_rate * (clampf(float(health.x) / float(health.y), 0.0, 1.0) if health.y > 0 else 1.0)
+		all += rate
+		if SideRelations.is_npc_slot(AiPerception.owner_slot_of(t.node)):
+			npc += rate
+	return npc / all if all > 0.0 else 0.0
+
+
 ## updateWiz (shiny.d:1061-1085): the threat of the wizard track, every 8 ticks of its age.
 func update_threat(wizard: AiTrack) -> void:
 	if wizard == null or not (wizard.flags & AiTrack.OWN) or wizard.age < wizard.threat_tick:

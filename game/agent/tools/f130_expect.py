@@ -2,7 +2,7 @@
 """F130 (RFC-030 030s-a): what sacengine would do with the Storm Giant's Call lightning (gsba) and Lightning Charge (gcil) on
 lanes L and K of debug/f130_lightning, replicated from state.d and the SPEL data, next to what the port logged.
 
-Usage: python3 -I agent/tools/f130_expect.py [godot log of debug/f130_lightning (rules debug/rules/f130_lightning.tres)]
+Usage: python3 -I agent/tools/f130_expect.py [godot log of debug/f130_lightning (rules debug/rules/f130_lightning.tres), run with --log=pace]
        python3 -I agent/tools/f130_expect.py --lanes     (only the lane check against the map files)
        python3 -I agent/tools/f130_expect.py --numbers   (the figures of the replica, no log)
 

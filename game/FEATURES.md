@@ -70,7 +70,7 @@ Estados: **Hecho** (cerrado y probado), **Parcial** (anda, con deuda anotada), *
 
 ### FX y apariencia
 - **Hecho.** Partículas de sprite con pool, luces de efectos, rayos, shader moderno, cielo, pasto en James/Stratos/Charnel (apagado provisorio en los presets). F23, F54, F65-F69, F95-F98, F108, F210.
-- **Parcial.** Flora de los mapas (RFC-054, F380-F387). Hecho: `FloraMap` horneado por mapa (`scenes/map/maps/<mapa>/flora.res`, «Hornear flora») y `FloraPlacement` determinista; `CellRing` compartido con el pasto; `FloraField` (`Look/Layers/Flora`) dibuja las plantas del original en los cinco mapas, también en el editor; High Noon y Peasantville con sus JAW1–5 reales y sin nodos `Plants`. F380, F381, F382, F383. Falta: Opciones y el presupuesto.
+- **Parcial.** Flora de los mapas (RFC-054, F380-F387). Hecho: `FloraMap` horneado por mapa (`scenes/map/maps/<mapa>/flora.res`, «Hornear flora») y `FloraPlacement` determinista; `CellRing` compartido con el pasto; `FloraField` (`Look/Layers/Flora`) dibuja las plantas del original en los cinco mapas, también en el editor; High Noon y Peasantville con sus JAW1–5 reales y sin nodos `Plants`. Opciones → Gráficos → «Vegetación» la apaga. F380, F381, F382, F383, F385. Falta: el presupuesto (054e, con ventana).
 
 ### Determinismo y pruebas
 - **Hecho.** `MatchClock` por tick, un dueño del azar, plazos en ticks de partida, banco de determinismo (`agent/run_determinism.sh quick|all`) y `rules_suite` sin ventana. F6-F11, F42, F144-F147, F187, F188.

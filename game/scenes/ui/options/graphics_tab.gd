@@ -1,8 +1,8 @@
 class_name GraphicsTab
 extends VBoxContainer
 
-## RFC-031 031c (F142): Options → Gráficos. Quality (one of the GraphicsPrefs presets), fullscreen, VSync, the FPS cap
-## and the HUD size. Every control writes the shared preference at once; the GraphicsApplier of the running scene and
+## RFC-031 031c (F142): Options → Gráficos. Quality (one of the GraphicsPrefs presets), fullscreen, VSync, the FPS cap,
+## the vegetation switch (RFC-054 054f) and the HUD size. Every control writes the shared preference at once; the GraphicsApplier of the running scene and
 ## the HUD nodes listen to `changed`, so the change shows live. The controls also follow changes made elsewhere.
 ## OptionButton, CheckButton and HSlider only: AgentKit drives them with select / click / range (no popups needed).
 
@@ -26,6 +26,7 @@ func _ready() -> void:
 	%MaxFpsPick.item_selected.connect(_on_max_fps)
 	%Fullscreen.toggled.connect(prefs.set_fullscreen)
 	%VSync.toggled.connect(prefs.set_vsync)
+	%Vegetation.toggled.connect(prefs.set_vegetation_enabled)
 	%HudSize.value_changed.connect(_on_hud_size)
 	prefs.changed.connect(_sync)
 	hud_scale.changed.connect(_sync)
@@ -54,6 +55,7 @@ func _sync() -> void:
 	_select_meta(%MaxFpsPick, prefs.max_fps())
 	%Fullscreen.set_pressed_no_signal(prefs.fullscreen())
 	%VSync.set_pressed_no_signal(prefs.vsync())
+	%Vegetation.set_pressed_no_signal(prefs.vegetation_enabled())
 	%HudSize.set_value_no_signal(hud_scale.get_scale())
 	%HudValue.text = hud_value_format % roundi(hud_scale.get_scale() * 100.0)
 

@@ -5,6 +5,7 @@ extends Resource
 ## RFC-031 031c (F142): the player's graphics choice, a local preference (not a match rule).
 ## - The quality is one of `presets` (the existing LookQuality .tres); this resource never copies their fields.
 ## - VSync, fullscreen and the FPS cap are the window's.
+## - «Vegetación» (RFC-054 054f): off, the mesh vegetation layers (FloraField) draw nothing whatever the preset says.
 ## - It lives in `user://settings.cfg` `[graphics]` through UserSettings. `--quality=low|medium|high` on the command
 ##   line wins for one run and is not saved.
 ## - First run: `default_quality` (medium), VSync on, windowed, no cap. The Mac safety rule: nothing here raises the
@@ -22,6 +23,7 @@ const ARG := "--quality="
 @export var default_quality: StringName = &"medium"
 @export var default_vsync := true
 @export var default_fullscreen := false
+@export var default_vegetation := true
 ## 0 = no cap.
 @export_range(0, 360) var default_max_fps := 0
 ## FPS caps the menu offers (0 = «Sin tope»).
@@ -34,6 +36,7 @@ var _stored_quality: StringName
 var _vsync := true
 var _fullscreen := false
 var _max_fps := 0
+var _vegetation := true
 
 
 ## The preset in use (command line, then the settings file, then `default_quality`).
@@ -60,6 +63,18 @@ func fullscreen() -> bool:
 func max_fps() -> int:
 	_ensure_loaded()
 	return _max_fps
+
+
+func vegetation_enabled() -> bool:
+	_ensure_loaded()
+	return _vegetation
+
+
+func set_vegetation_enabled(on: bool) -> void:
+	if on == vegetation_enabled():
+		return
+	_vegetation = on
+	_commit()
 
 
 func set_quality(id: StringName) -> void:
@@ -116,6 +131,7 @@ func _commit() -> void:
 			"vsync": _vsync,
 			"fullscreen": _fullscreen,
 			"max_fps": _max_fps,
+			"vegetation": _vegetation,
 		})
 	emit_changed()
 
@@ -128,6 +144,7 @@ func _ensure_loaded() -> void:
 	_vsync = default_vsync
 	_fullscreen = default_fullscreen
 	_max_fps = default_max_fps
+	_vegetation = default_vegetation
 	if Engine.is_editor_hint():
 		return
 	var stored_quality := StringName(str(UserSettings.read_value(SECTION, "quality", String(default_quality))))
@@ -137,6 +154,7 @@ func _ensure_loaded() -> void:
 		push_warning("GraphicsPrefs: [%s] quality = %s no es un preset; se usa %s." % [SECTION, stored_quality, default_quality])
 	_vsync = _read_bool("vsync", default_vsync)
 	_fullscreen = _read_bool("fullscreen", default_fullscreen)
+	_vegetation = _read_bool("vegetation", default_vegetation)
 	var fps: Variant = UserSettings.read_value(SECTION, "max_fps", default_max_fps)
 	_max_fps = maxi(int(fps), 0) if typeof(fps) in [TYPE_INT, TYPE_FLOAT] else default_max_fps
 	_stored_quality = _quality

@@ -1,6 +1,6 @@
 # RFC-054: Flora de los mapas
 
-Estado: en curso. Hecho: 054a (F380), 054b (F381), 054c (F382) y 054d (F383). Cortes 054a–054g (F380–F386) y cierre 054z (F387).
+Estado: en curso. Hecho: 054a (F380), 054b (F381), 054c (F382), 054d (F383) y 054f (F385). Cortes 054a–054g (F380–F386) y cierre 054z (F387).
 Nota de IDs: RFC-053 §16 sumó el corte 053i como F379, así que este RFC usa F380–F387 (los IDs son append-only): 054a F380, 054b F381, 054c F382, 054d F383, 054e F384, 054f F385, 054g F386, 054z F387.
 Decisiones de §14 (aceptadas por el usuario el 2026-10-19): celda de 8 m; importar los JAW1–5 reales (054d); un solo interruptor «Vegetación»; sin sombras de plantas; edición por rehorneado + `VegetationClear`; `trees.tres` nace vacío; 054g solo si el usuario lo pide.
 

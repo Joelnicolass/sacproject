@@ -6,7 +6,8 @@ extends LookLayer
 ## `configs` (original_plants.tres: the plants of the original; trees.tres: empty), each drawing the map's FloraMap
 ## (`LookRig.flora_map`, set in the map.tscn) around the camera: the 3D viewport's in the editor, the game's when playing.
 ## How much each layer draws comes from the quality preset (`LookQuality.vegetation_for(config.id)`; the editor uses
-## `editor_quality`); a preset without an entry for a layer, the node hidden or a map without a FloraMap draws nothing.
+## `editor_quality`); a preset without an entry for a layer, the rig's «Vegetación» switch off (GraphicsPrefs), the node
+## hidden or a map without a FloraMap draws nothing.
 ## Presentation only: no collision, no RPC, no shared RNG. Every node it makes is an internal child, never saved. In a
 ## dedicated or headless process the rig is freed, and this never builds anything there either.
 ## A `VegetationClear` that moves calls `clears_changed` (group `vegetation_field`): only the cells it touches are rebuilt.
@@ -36,6 +37,7 @@ var _signature := ""
 var _clears_dirty := true
 var _clear_timer := 0.0
 var _watching: Array[Resource] = []
+var _bound_rig: LookRig
 
 
 func _ready() -> void:
@@ -80,11 +82,11 @@ func preset() -> LookQuality:
 	return rig.quality_preset if rig else null
 
 
-## The layers this field draws with the current rig and preset: [{config, quality}]. The process kind (headless,
+## The layers this field draws with the current rig, preset and switch: [{config, quality}]. The process kind (headless,
 ## dedicated) is not part of it: `presentationless` stops the building on top.
 func active_layers() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
-	if rig == null or rig.flora_map == null:
+	if rig == null or rig.flora_map == null or not rig.vegetation_enabled:
 		return out
 	var current := preset()
 	if current == null:
@@ -102,6 +104,7 @@ func active_layers() -> Array[Dictionary]:
 func _refresh() -> void:
 	if not is_inside_tree():
 		return
+	_bind_rig()
 	var layers: Array[Dictionary] = []
 	if is_visible_in_tree() and not presentationless():
 		layers = active_layers()
@@ -117,6 +120,20 @@ func _refresh() -> void:
 		_planters.append(MeshPlanter.new(layer["config"], layer["quality"], rig.flora_map, terrain, self))
 	_clears_dirty = true
 	set_process(not _planters.is_empty())
+
+
+func _bind_rig() -> void:
+	if _bound_rig == rig:
+		return
+	if is_instance_valid(_bound_rig) and _bound_rig.vegetation_toggled.is_connected(_on_vegetation_toggled):
+		_bound_rig.vegetation_toggled.disconnect(_on_vegetation_toggled)
+	_bound_rig = rig
+	if rig and not rig.vegetation_toggled.is_connected(_on_vegetation_toggled):
+		rig.vegetation_toggled.connect(_on_vegetation_toggled)
+
+
+func _on_vegetation_toggled(_enabled: bool) -> void:
+	_refresh()
 
 
 ## What the planters depend on: a change of it rebuilds them.

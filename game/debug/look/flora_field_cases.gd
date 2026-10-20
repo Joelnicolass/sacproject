@@ -9,6 +9,8 @@ extends RefCounted
 ##   FloraMap.total() (only the spots that fall off the land are lost), the same floats twice, every instance on the
 ##   ground. The counts and the planning time per cell are in the result (for 054e).
 ## - flora_clear: no instance inside a clear; its edge thins them.
+## - flora_switch (054f): with the rig's «Vegetación» switch off (GraphicsPrefs.vegetation_enabled through
+##   GraphicsApplier) the field has no layer and no cell; on, the layer comes back. The shared prefs start on.
 ## - flora_presets: the original_plants entry of each preset is the RFC-054 §4.4 table, and no plant casts a shadow.
 
 const CONFIG_PATH := "res://data/look/vegetation/original_plants.tres"
@@ -33,6 +35,7 @@ func run() -> Dictionary:
 	results["flora_plan"] = _plan()
 	results["flora_clear"] = _clear()
 	results["flora_presets"] = _presets()
+	results["flora_switch"] = await _switch()
 	return results
 
 
@@ -257,3 +260,38 @@ func _presets() -> Dictionary:
 	if trees == null or trees.density_source != VegetationLayerConfig.DensitySource.NONE:
 		wrong["trees"] = "no es NONE"
 	return {"ok": wrong.is_empty(), "wrong": wrong}
+
+
+func _switch() -> Dictionary:
+	var map := MapCatalog.shared().find(&"roads")
+	var land := PlantClears.land_of(map)
+	var rig := LookRig.new()
+	rig.terrain = land
+	rig.flora_map = load(FloraMapBuilder.path_of(map)) as FloraMap
+	rig.quality_preset = load("res://data/look/quality_high.tres") as LookQuality
+	var field := FloraField.new()
+	field.rig = rig
+	field.configs = [load(CONFIG_PATH) as VegetationLayerConfig]
+	tree.root.add_child(field)
+	await tree.process_frame
+	var on_before := field.active_layers().size()
+	rig.set_vegetation_enabled(false)
+	for i in SETTLE_FRAMES:
+		await tree.process_frame
+	var off_layers := field.active_layers().size()
+	var off_cells := field.cell_count()
+	var off_meshes := count_multimeshes(field)
+	rig.set_vegetation_enabled(true)
+	await tree.process_frame
+	var on_after := field.active_layers().size()
+	field.queue_free()
+	rig.free()
+	land.free()
+	await tree.process_frame
+	var prefs := load(GraphicsPrefs.SHARED_PATH) as GraphicsPrefs
+	var result := {
+		"on_before": on_before, "off_layers": off_layers, "off_cells": off_cells, "off_multimesh": off_meshes,
+		"on_after": on_after, "prefs_default_on": prefs != null and prefs.default_vegetation,
+	}
+	result["ok"] = on_before == 1 and off_layers == 0 and off_cells == 0 and off_meshes == 0 and on_after == 1 and result["prefs_default_on"]
+	return result

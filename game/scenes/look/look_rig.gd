@@ -10,6 +10,8 @@ extends Node
 
 signal profile_applied(profile: LookProfile)
 signal layer_toggled(index: int, enabled: bool)
+## The player's «Vegetación» switch changed (RFC-054 054f); the vegetation layers listen.
+signal vegetation_toggled(enabled: bool)
 
 @export_group("Editor preview")
 ## One of the gods of data/gods/ (the inspector lists them: see `_validate_property`).
@@ -36,6 +38,9 @@ signal layer_toggled(index: int, enabled: bool)
 var profile: LookProfile
 ## Last preset handed to `apply_quality` (or the one the Quality socket holds).
 var quality_preset: LookQuality
+## The player's «Vegetación» switch (GraphicsPrefs, through GraphicsApplier): off, the mesh vegetation draws nothing
+## whatever the preset says. On by default (the editor, debug scenes).
+var vegetation_enabled := true
 
 
 func _ready() -> void:
@@ -70,6 +75,13 @@ func apply_quality(preset: LookQuality) -> void:
 	if quality:
 		quality.quality = preset
 	_push_quality()
+
+
+func set_vegetation_enabled(on: bool) -> void:
+	if on == vegetation_enabled:
+		return
+	vegetation_enabled = on
+	vegetation_toggled.emit(on)
 
 
 ## Editor button: shows the preview god's profile through the layers, with the god's ground material

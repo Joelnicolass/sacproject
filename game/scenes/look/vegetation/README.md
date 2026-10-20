@@ -10,7 +10,7 @@ Motor compartido de la vegetación (RFC-054): lo que usan el pasto y la flora de
 - `vegetation_layer_config.gd` (`VegetationLayerConfig`), `vegetation_species.gd` (`VegetationSpecies`): una capa de mallas y sus especies (`data/look/vegetation/original_plants.tres`, `trees.tres` vacío). `density_source`: `MAP_TAGS` (cada tag del `FloraMap` dibuja el prop de su nombre), `MAP_TAG`, `NONE`, `BAKED` (054g, todavía no dibuja). Sombras apagadas por especie.
 - `vegetation_quality.gd` (`VegetationQuality`): cuánto dibuja una capa en un preset (`LookQuality.vegetation`, por `layer_id`). Sin entrada, la capa no se dibuja.
 - `mesh_planter.gd` (`MeshPlanter`): celdas de 32 m (4 × 4 del `FloraMap`) con un `MultiMeshInstance3D` por especie, internos y nunca guardados. Arma como mucho `max_builds_per_frame` por cuadro, caché LRU de 64, LOD por prefijo (`visible_instance_count`) y fin por distancia con fundido.
-- `flora_field.gd` (`FloraField`, `LookLayer @tool`, `flora_layer.tscn` en `Look/Layers/Flora`): un `MeshPlanter` por config. Lee el `FloraMap` de `LookRig.flora_map` (lo fija cada `map.tscn`). En el editor usa `editor_quality` (medio) y la cámara del viewport.
+- `flora_field.gd` (`FloraField`, `LookLayer @tool`, `flora_layer.tscn` en `Look/Layers/Flora`): un `MeshPlanter` por config. Lee el `FloraMap` de `LookRig.flora_map` (lo fija cada `map.tscn`). En el editor usa `editor_quality` (medio) y la cámara del viewport. El interruptor «Vegetación» de Opciones → Gráficos (`GraphicsPrefs.vegetation_enabled`, por `GraphicsApplier` a `LookRig.set_vegetation_enabled`) la apaga sin importar el preset.
 
 Laboratorio con ventana: `res://debug/look/flora_lab.tscn` (`check_tick` pasa de pose; `-- --setup=roads_low`).
 

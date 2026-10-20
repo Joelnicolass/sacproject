@@ -7,7 +7,8 @@ extends Node
 ##   instances the world (look_bench, biome_gallery with F6) keeps its own window settings and preset.
 ## - Window: fullscreen or windowed, VSync and `Engine.max_fps`. An engine flag of this run (`--max-fps`,
 ##   `--disable-vsync`, `-f`/`--fullscreen`, `-w`/`--windowed`) wins over the preference and is left alone.
-## - Quality: `rig.apply_quality(preset)` in a match (the world has a rig; the boot has none).
+## - Quality: `rig.apply_quality(preset)` in a match (the world has a rig; the boot has none), and the «Vegetación»
+##   switch: `rig.set_vegetation_enabled` (RFC-054 054f).
 ## - Inert in everything (window and preset) in the editor, in a headless process, in the dedicated server and under
 ##   AgentKit (`--agent=…` in the user args): user://settings.cfg is shared by the player and the agents' runs, so a
 ##   test never inherits the player's choice (no VSync off / no cap in a playtest). The rule is UserSettings.sandboxed():
@@ -37,10 +38,12 @@ func apply() -> void:
 	if not _owns_scene():
 		return
 	_apply_window()
-	var line := "gráficos: %s · vsync %s · pantalla completa %s · tope %s" % [
+	var line := "gráficos: %s · vsync %s · pantalla completa %s · tope %s · vegetación %s" % [
 		prefs.quality_id(), _yes(prefs.vsync()), _yes(prefs.fullscreen()),
-		str(prefs.max_fps()) if prefs.max_fps() > 0 else "no",
+		str(prefs.max_fps()) if prefs.max_fps() > 0 else "no", _yes(prefs.vegetation_enabled()),
 	]
+	if _has_rig():
+		rig.set_vegetation_enabled(prefs.vegetation_enabled())
 	var preset := prefs.quality()
 	if _has_rig() and preset and rig.quality_preset != preset:
 		var started := Time.get_ticks_usec()

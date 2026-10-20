@@ -1,8 +1,8 @@
 class_name PlantClears
 extends RefCounted
 
-## The clearings of a map's widgets.json plants, shared by bake_map_layout (the Plant nodes) and bake_flora_map (the
-## FloraMap, RFC-054 054a): no plant within ALTAR_CLEAR of an altar or FOUNT_CLEAR of a manafount. The altars and founts
+## The clearings of a map's widgets.json plants, used by bake_flora_map (the FloraMap, RFC-054 054a; until 054d also by
+## bake_map_layout's Plant nodes): no plant within ALTAR_CLEAR of an altar or FOUNT_CLEAR of a manafount. The altars and founts
 ## are the NTTS structures with the tags of ALTAR_TAGS and FOUNT_TAGS (`jaal`/`jfnt` for James, one pair per land), the
 ## same spots as Starts and Founts in the map scene. A plant must also stand on the land (Terrain.is_on_ground).
 

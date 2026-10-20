@@ -96,9 +96,6 @@ func _bake(settings: NavBakeSettings) -> NavigationMesh:
 		part.get_parent().remove_child(part)
 		bake_root.add_child(part)
 	world.free()
-	var plants: Node = layout.get_node_or_null("Plants") if layout != null else null
-	if plants != null:
-		plants.free()
 	# The tree is entered once: the terrain builds its Collision, the buildings shape their boxes in _ready.
 	add_child(bake_root)
 	await get_tree().physics_frame

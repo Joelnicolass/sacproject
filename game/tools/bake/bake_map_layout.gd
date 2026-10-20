@@ -3,15 +3,13 @@ extends SceneTree
 ## No necesita el juego original; usa los modelos y datos ya importados en assets/original (versionados).
 ## One-time tool (RFC-035 035d): writes a map's content as nodes (High Noon, or `--map=<tag>` after `--`, RFC-044 044b: the
 ## inputs and outputs are the paths of its MapDefinition). From then on the scene is the source of truth and
-## nothing reads ntts.json or widgets.json at runtime; those two files are only this tool's input.
-##   scenes/map/maps/<tag>/layout.tscn   Buildings (MapBuilding), Plants (Plant), NpcSpawns (NpcSpawn); the root is "<Tag>Layout" (HighNoonLayout)
+## nothing reads ntts.json at runtime; it is only this tool's input. The plants (widgets.json) are not nodes since RFC-054
+## 054d: tools/bake/bake_flora_map.gd bakes them into the map's FloraMap and the Flora layer draws them.
+##   scenes/map/maps/<tag>/layout.tscn   Buildings (MapBuilding), NpcSpawns (NpcSpawn); the root is "<Tag>Layout" (HighNoonLayout)
 ##   assets/original/maps/<tag>/sides.tres   MapSides
 ## It does what the old runtime code did, in the same order and with the same arithmetic, so the match digests do not move:
 ##  - buildings: the order of `structures`, names `Bld%03d_<tag>` (the index counts the hand-placed founts and altars too),
 ##    y = ground_height(x, z), the NTTS facing saved as the node's own rotation (rotation.y = -deg_to_rad(facing), RFC-043); the ones off the land are left out with a warning;
-##  - plants: the sacengine placeWidgets walk (sorted tags, one RNG draw per row, seed 17), skipped over holes and near
-##    an altar (40 m) or a manafount (6 m); the founts and altars are the rows of the NTTS with the tags of ALTAR_TAGS and
-##    FOUNT_TAGS (`jaal`/`jfnt` for James, one pair per land), the same spots as Starts and Founts in the map scene;
 ##  - NPCs: the order of `creatures`; position y = ground + 0.2 m (the feet settle by themselves).
 ## Idempotent: it refuses to overwrite a file that exists (the scene may have been edited). --force overwrites.
 ## "$GODOT" --headless --path game --script res://tools/bake/bake_map_layout.gd [-- --force] [--out=res://...tscn] [--sides-out=res://...tres]
@@ -21,28 +19,15 @@ extends SceneTree
 
 const BUILDING_SCENE := "res://scenes/map/map_building.tscn"
 const SPAWN_SCENE := "res://scenes/map/npc_spawn.tscn"
-const PLANT_SCENE := "res://scenes/map/props/plant.tscn"
 const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain.gd"
 
-## The altar and the manafount of each land (PlantClears, shared with bake_flora_map). Rows the scene places by hand
+## The altar and the manafount of each land (PlantClears). Rows the scene places by hand
 ## (Starts, Founts): not buildings of the layout.
 const ALTAR_TAGS := PlantClears.ALTAR_TAGS
 const FOUNT_TAGS := PlantClears.FOUNT_TAGS
 const NEUTRAL_SIDE := 31
 ## Meters above the land where a creature is put.
 const SPAWN_LIFT := 0.2
-const PLANT_SEED := 17
-## Models of a widget tag (JAW1…, James land; the look is Persephone). RFC-050: the widget models of the other lands (CAH1, SAW1,
-## PYA1…) are imported as props under their own tag (tools/import/import_props.py PLANT_WADS) but not listed here yet: their
-## widgets.json rows give 10k-16k plants per map, too many for one MeshInstance3D each (that needs batching first). A tag that is
-## not here plants nothing (the old fallback put Persephone flowers on a Charnel map).
-const WIDGET_MODELS := {
-	"JAW1": ["PCW7", "PCW6", "PCF4"],
-	"JAW2": ["PCW8", "PCF3", "PCF1"],
-	"JAW3": ["PCF1", "PCF2", "PCC1", "PCC2"],
-	"JAW4": ["PCG2", "PCW5"],
-	"JAW5": ["PGL1", "PGL2", "PCG1"],
-}
 
 ## Name of the layout root: "HighNoonLayout" for high_noon, "PeaksLayout" for peaks (the map scene names the same node).
 var _root_name := ""
@@ -74,15 +59,14 @@ func _initialize() -> void:
 		quit(1)
 		return
 	var ntts := _read_json(_map.ntts_path)
-	var widgets := _read_json(_map.widgets_path)
-	if ntts.is_empty() or widgets.is_empty():
-		push_error("bake_map_layout: missing or empty %s or %s." % [_map.ntts_path, _map.widgets_path])
+	if ntts.is_empty():
+		push_error("bake_map_layout: missing or empty %s." % _map.ntts_path)
 		quit(1)
 		return
 	if not _make_terrain():
 		quit(1)
 		return
-	var plan := _plan(ntts, widgets)
+	var plan := _plan(ntts)
 	if check:
 		_check(plan, ntts, out, sides_out)
 		_terrain.free()
@@ -103,8 +87,8 @@ func _initialize() -> void:
 		push_error("bake_map_layout: could not write the files (error %d)." % error)
 		quit(1)
 		return
-	print("bake_map_layout: written %s (buildings %d · plants %d · npc %d) and %s" % [
-		out, plan["buildings"].size(), plan["plants"].size(), plan["npcs"].size(), sides_out])
+	print("bake_map_layout: written %s (buildings %d · npc %d) and %s" % [
+		out, plan["buildings"].size(), plan["npcs"].size(), sides_out])
 	quit(0)
 
 
@@ -129,12 +113,11 @@ func _make_terrain() -> bool:
 	return true
 
 
-## What goes into the scene, in tree order: {buildings, plants, npcs}, each an Array of Dictionary.
-func _plan(ntts: Dictionary, widgets: Dictionary) -> Dictionary:
+## What goes into the scene, in tree order: {buildings, npcs}, each an Array of Dictionary.
+func _plan(ntts: Dictionary) -> Dictionary:
 	var structures: Array = ntts.get("structures", [])
 	return {
 		"buildings": _plan_buildings(structures),
-		"plants": _plan_plants(widgets, structures),
 		"npcs": _plan_npcs(ntts.get("creatures", [])),
 	}
 
@@ -162,34 +145,6 @@ func _plan_buildings(structures: Array) -> Array:
 	return rows
 
 
-func _plan_plants(widgets: Dictionary, structures: Array) -> Array:
-	var clears := PlantClears.from_structures(structures)
-	var rng := RandomNumberGenerator.new()
-	rng.seed = PLANT_SEED
-	var rows := []
-	var tags := widgets.keys()
-	tags.sort()
-	for tag in tags:
-		var models: Array = WIDGET_MODELS.get(tag, [])
-		if models.is_empty():
-			print("bake_map_layout: widget %s has no model yet (%d rows); no plants for it" % [tag, widgets[tag].size()])
-			continue
-		for row in widgets[tag]:
-			var model: String = models[rng.randi() % models.size()]
-			var x := float(row[0])
-			var z := float(row[1])
-			if not clears.accepts(_land, x, z):
-				continue
-			rows.append({
-				"name": "Plant%d" % rows.size(),
-				"model": model,
-				"position": Vector3(x, _land.ground_height(x, z), z),
-				# The NTTS angle looks like degrees but sacengine reads it as radians (state.d:31352).
-				"yaw": float(row[2]),
-			})
-	return rows
-
-
 func _plan_npcs(creatures: Array) -> Array:
 	var rows := []
 	var index := 0
@@ -214,10 +169,8 @@ func _write_layout(plan: Dictionary, out: String) -> Error:
 	var root := Node3D.new()
 	root.name = _root_name
 	var buildings := _group(root, "Buildings")
-	var plants := _group(root, "Plants")
 	var spawns := _group(root, "NpcSpawns")
 	var building_scene := load(BUILDING_SCENE) as PackedScene
-	var plant_scene := load(PLANT_SCENE) as PackedScene
 	var spawn_scene := load(SPAWN_SCENE) as PackedScene
 	for row: Dictionary in plan["buildings"]:
 		var node := _instance(building_scene, buildings, root, row["name"])
@@ -225,11 +178,6 @@ func _write_layout(plan: Dictionary, out: String) -> Error:
 		node.set("owner_slot", row["owner_slot"])
 		node.position = row["position"]
 		node.rotation.y = -deg_to_rad(float(row["facing"]))
-	for row: Dictionary in plan["plants"]:
-		var node := _instance(plant_scene, plants, root, row["name"])
-		node.set("model", row["model"])
-		node.position = row["position"]
-		node.rotation.y = row["yaw"]
 	for row: Dictionary in plan["npcs"]:
 		var node := _instance(spawn_scene, spawns, root, row["name"])
 		node.set("tag", row["tag"])
@@ -275,8 +223,8 @@ func _check(plan: Dictionary, ntts: Dictionary, layout_path: String, sides_path:
 		_check_children(root, "Buildings", plan["buildings"], func(node: Node3D, row: Dictionary) -> bool:
 			return node.get("tag") == row["tag"] and node.get("owner_slot") == row["owner_slot"] \
 				and node.basis.is_equal_approx(Basis.from_euler(Vector3(0.0, -deg_to_rad(float(row["facing"])), 0.0))))
-		_check_children(root, "Plants", plan["plants"], func(node: Node3D, row: Dictionary) -> bool:
-			return node.get("model") == row["model"] and node.basis.is_equal_approx(Basis.from_euler(Vector3(0.0, row["yaw"], 0.0))))
+		if root.get_node_or_null("Plants") != null:
+			_fail("Plants still in the layout (RFC-054 054d: the Flora layer draws the plants)")
 		_check_children(root, "NpcSpawns", plan["npcs"], func(node: Node3D, row: Dictionary) -> bool:
 			return node.get("tag") == row["tag"] and node.get("side") == row["side"] \
 				and node.get("ntts_id") == row["ntts_id"] \
@@ -285,9 +233,8 @@ func _check(plan: Dictionary, ntts: Dictionary, layout_path: String, sides_path:
 		for node in root.get_node("Buildings").get_children():
 			if MapBuilding.bldg(str(node.get("tag"))).get("shelter", false):
 				shelters += 1
-		print("layout: npc %d · edificios %d · refugios %d · plantas %d" % [
-			root.get_node("NpcSpawns").get_child_count(), root.get_node("Buildings").get_child_count(), shelters,
-			root.get_node("Plants").get_child_count()])
+		print("layout: npc %d · edificios %d · refugios %d" % [
+			root.get_node("NpcSpawns").get_child_count(), root.get_node("Buildings").get_child_count(), shelters])
 		root.free()
 	var sides := load(sides_path) as MapSides
 	if sides == null:
@@ -308,7 +255,7 @@ func _check(plan: Dictionary, ntts: Dictionary, layout_path: String, sides_path:
 			print("bake_map_layout: FAIL %s" % failure)
 
 
-## `same` returns true when the node fits its row. Position is compared exactly (float32 equal), plants aside from the yaw.
+## `same` returns true when the node fits its row. Position is compared exactly (float32 equal).
 func _check_children(root: Node, group_name: String, rows: Array, same: Callable) -> void:
 	var parent := root.get_node_or_null(group_name)
 	if parent == null:

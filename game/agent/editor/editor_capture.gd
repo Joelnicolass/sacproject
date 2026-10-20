@@ -10,7 +10,7 @@ extends Node
 
 const DEFAULT_SCENE := "res://scenes/match/high_noon.tscn"
 const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain.gd"
-const COUNTED := ["Buildings", "Plants", "NpcSpawns"]
+const COUNTED := ["Buildings", "NpcSpawns"]
 
 var _scene := DEFAULT_SCENE
 var _out := "res://agent/out/035"
@@ -79,6 +79,9 @@ func _capture(step: String) -> void:
 		for node_name in COUNTED:
 			var holder := root.find_child(node_name, true, false)
 			report[node_name.to_snake_case() + "_children"] = holder.get_child_count() if holder else -1
+		# RFC-054 054d: the plants are no longer nodes; the Flora layer draws them around the viewport camera.
+		var flora := root.find_child("Flora", true, false) as FloraField
+		report["flora_instances"] = flora.instance_count() if flora else -1
 	_frame_viewport(aabb)
 	await _wait_frames(20)
 	var image := EditorInterface.get_editor_viewport_3d(0).get_texture().get_image()

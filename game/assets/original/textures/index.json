@@ -2738,6 +2738,41 @@
     "owner": "jau2"
    }
   },
+  "jaw1": {
+   "plant": {
+    "cutout": true,
+    "file": "plant",
+    "owner": "JAW1"
+   }
+  },
+  "jaw2": {
+   "plant": {
+    "cutout": true,
+    "file": "plant",
+    "owner": "JAW2"
+   }
+  },
+  "jaw3": {
+   "plant": {
+    "cutout": true,
+    "file": "plant",
+    "owner": "JAW3"
+   }
+  },
+  "jaw4": {
+   "plant": {
+    "cutout": true,
+    "file": "plant",
+    "owner": "JAW4"
+   }
+  },
+  "jaw5": {
+   "plant": {
+    "cutout": true,
+    "file": "plant",
+    "owner": "JAW5"
+   }
+  },
   "jcc1": {
    "M000": {
     "cutout": false,

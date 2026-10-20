@@ -433,6 +433,4 @@ collision = NodePath("Collision")
 sync = NodePath("Sync")
 health_bar = NodePath("HealthBar")
 
-[node name="Plants" type="Node3D" parent="." unique_id=1753620829]
-
 [node name="NpcSpawns" type="Node3D" parent="." unique_id=1633705534]

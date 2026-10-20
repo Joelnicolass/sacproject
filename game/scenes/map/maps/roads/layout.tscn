@@ -1376,8 +1376,6 @@ collision = NodePath("Collision")
 sync = NodePath("Sync")
 health_bar = NodePath("HealthBar")
 
-[node name="Plants" type="Node3D" parent="." unique_id=651418791]
-
 [node name="NpcSpawns" type="Node3D" parent="." unique_id=757838673]
 
 [node name="Npc01_zepf" type="Marker3D" parent="NpcSpawns" unique_id=1249384676 instance=ExtResource("30_8gdwk")]

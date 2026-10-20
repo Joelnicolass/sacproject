@@ -2,7 +2,7 @@
 """Which models the game can draw without a baked asset (the grey placeholder) or with a borrowed one.
 
 Reads only versioned files: data/catalog (BuildingType components, SpellType structures, CreatureType/WizardType models),
-the maps of assets/original/maps (widgets.json, ntts.json), tools/bake/bake_map_layout.gd (WIDGET_MODELS),
+the maps of assets/original/maps (widgets.json, ntts.json),
 scenes/map/props/manafount.tscn, the model constants of scenes/, assets/original/models/sizes.json, assets/original/props,
 assets/original/textures/index.json and scenes/bodies/models. With SAC_INSTALL set it also names the WAD each missing
 model comes from, and lists the spell models of models.wad that nothing in the game references.
@@ -76,20 +76,12 @@ for path in sorted((ROOT / "scenes").rglob("*.gd")):
     for model in re.findall(r'(?:MODEL|_model) := "(\w{4})"', path.read_text()):
         rows.append((model, "spell/prop", status(model), str(path.relative_to(ROOT))))
 
-# Plants: the widgets of every imported map, through bake_map_layout.gd's WIDGET_MODELS.
-bake = (ROOT / "tools/bake/bake_map_layout.gd").read_text()
-mapping = {k: re.findall(r'"(\w+)"', v) for k, v in re.findall(r'"(\w+)": \[([^\]]*)\]', bake)}
+# Plants: the widgets of every imported map. The Flora layer (RFC-054, original_plants.tres: MAP_TAGS) draws each tag with
+# the prop of its own name.
 for widgets in sorted((ROOT / "assets/original/maps").glob("*/widgets.json")):
     land_map = widgets.parent.name
     for widget in sorted(json.loads(widgets.read_text())):
-        models = mapping.get(widget, [])
-        if not models:
-            own = status(widget)
-            rows.append((widget, "plant", "not planted" if own == "ok" else own, land_map))
-        elif models != [widget]:
-            rows.append((widget, "plant", "borrowed " + "/".join(models), land_map))
-        else:
-            rows.append((widget, "plant", status(widget), land_map))
+        rows.append((widget, "plant", status(widget), land_map))
 
 # Manafounts: one scene for every map; each land's own fount model is a BuildingType component (see the buildings above).
 fount = field((ROOT / "scenes/map/props/manafount.tscn").read_text(), "model")

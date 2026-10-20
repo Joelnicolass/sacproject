@@ -18,6 +18,7 @@
 [ext_resource type="Script" uid="uid://brj6glypovhy8" path="res://scenes/map/nav/map_nav_region.gd" id="f200_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="f212_bake"]
 [ext_resource type="Resource" path="res://data/catalog/buildings/jfnt.tres" id="fbldg_jfnt"]
+[ext_resource type="Resource" path="res://scenes/map/maps/high_noon/flora.res" id="flora_map"]
 
 [node name="Map" type="Node3D" unique_id=1044000001 node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings_root", "npc_spawns_root")]
 script = ExtResource("1_root")
@@ -47,6 +48,7 @@ world_environment = NodePath("../Environment")
 terrain = NodePath("../Terrain")
 legacy_sky = NodePath("../Sky")
 tile_map = ExtResource("f22_tiles")
+flora_map = ExtResource("flora_map")
 
 [node name="Sun" type="DirectionalLight3D" parent="." unique_id=1176620511]
 transform = Transform3D(0.921061, -0.27935162, 0.27131036, 0, 0.6967067, 0.7173561, -0.38941833, -0.6607287, 0.6417094, 0, 0, 0)
@@ -63,9 +65,8 @@ visible = false
 text = "UI_MAP_MISSING"
 font_size = 48
 
-[node name="MapProps" type="Node3D" parent="." unique_id=693965675 node_paths=PackedStringArray("plants_root")]
+[node name="MapProps" type="Node3D" parent="." unique_id=693965675]
 script = ExtResource("6_props")
-plants_root = NodePath("../HighNoonLayout/Plants")
 
 [node name="Starts" type="Node3D" parent="MapProps" unique_id=1503934309]
 

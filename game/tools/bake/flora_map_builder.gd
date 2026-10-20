@@ -2,7 +2,7 @@ class_name FloraMapBuilder
 extends RefCounted
 
 ## RFC-054 054a (F380): a map's FloraMap from its widgets.json, its ntts.json (the clearings) and its terrain. Every row
-## that bake_map_layout would plant (PlantClears.accepts: on the land, outside the altar's 40 m and the fount's 6 m)
+## that bake_map_layout used to plant as nodes until RFC-054 054d (PlantClears.accepts: on the land, outside the altar's 40 m and the fount's 6 m)
 ## adds one to its 8 m cell; the rest is left out. Used by tools/bake/bake_flora_map.gd (write and --check) and by
 ## debug/look/flora_cases.gd.
 

@@ -9,10 +9,9 @@ from dataclasses import dataclass, field
 from . import bldg, models, txtr, wad
 from .install import INSTALL
 
-## Land WADs whose WIDG models are imported as plants: Persephone (prsc), Charnel (char), Pyro (pyro_a), Stratos (strato_a).
-## James (james_a.wad, JAW1-5) is left out on purpose: the High Noon look draws Persephone's plants for those tags
-## (tools/bake/bake_map_layout.gd WIDGET_MODELS).
-PLANT_WADS = ("prsc.wad", "char.wad", "pyro_a.wad", "strato_a.wad")
+## Land WADs whose WIDG models are imported as plants: Persephone (prsc), Charnel (char), Pyro (pyro_a), Stratos (strato_a)
+## and James (james_a, JAW1-5 since RFC-054 054d: High Noon and Peasantville draw their own plants, no longer Persephone's).
+PLANT_WADS = ("prsc.wad", "char.wad", "pyro_a.wad", "strato_a.wad", "james_a.wad")
 
 ## Spell models of models.wad (renderer.d loads them from MODL.WAD!/<tag>.MRMC/<tag>.MRMM).
 SPELL_MODELS = ("rock",)

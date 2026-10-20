@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_om24e"]
+
+[resource]
+script = ExtResource("1_om24e")
+tag = "JAW3"
+is_prop = true
+box = PackedFloat64Array(-1.177, -0.454, -0.863, 2.093, 1.767, 2.138)
+foot_offset = 0.454
+height = 1.767
+radius = 0.733
+reach = 1.069
+upright_fix = PackedFloat64Array(0, 0, 0)

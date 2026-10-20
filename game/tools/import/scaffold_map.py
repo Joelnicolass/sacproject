@@ -214,9 +214,8 @@ visible = false
 text = "UI_MAP_MISSING"
 font_size = 48
 
-[node name="MapProps" type="Node3D" parent="." node_paths=PackedStringArray("plants_root")]
+[node name="MapProps" type="Node3D" parent="."]
 script = ExtResource("3_props")
-plants_root = NodePath("../{layout}/Plants")
 
 [node name="Starts" type="Node3D" parent="MapProps"]
 """

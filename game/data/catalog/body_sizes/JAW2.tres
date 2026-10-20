@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BodySize" format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_size.gd" id="1_lmw5v"]
+
+[resource]
+script = ExtResource("1_lmw5v")
+tag = "JAW2"
+is_prop = true
+box = PackedFloat64Array(-1.404, -0.469, -1.161, 3.127, 2.376, 2.662)
+foot_offset = 0.469
+height = 2.376
+radius = 0.932
+reach = 1.564
+upright_fix = PackedFloat64Array(0, 0, 0)

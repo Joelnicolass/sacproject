@@ -348,3 +348,51 @@ No hay `HeightMapShape3D` y el original tiene paredes verticales: un heightfield
 
 ### 12.7 Preguntas abiertas nuevas
 P6 ¿el cargado muere al caer aunque estuviera vivo (Desecrate)? Recomendación: sí por defecto, apagable. P7 ¿los `.tres` del catálogo pasan a nombres humanos (`trogg.tres`)? Recomendación: sí en 055c1. P8 ¿lint en pre-commit o solo reviewer? Recomendación: reviewer primero.
+
+## 13. Prioridad: deprecar el 1 a 1 primero, contenido nuevo después (2026-10-23)
+
+El usuario marcó dos huecos: (1) el plan no prioriza construir el juego para que un humano lo modifique, deprecando lo que se hizo como calco del motor original; (2) el ambiente y el bioma no estaban mapeados.
+
+### 13.1 Regla de prioridad
+1. **Fase 1 (refactor) va antes que cualquier contenido nuevo.** Ningún hechizo, edificio, clima o asset nuevo entra sobre un sistema que todavía es 1 a 1: primero se rehace el sistema, después se le agrega contenido.
+2. **Cada corte borra su parte 1 a 1.** Un corte no está cerrado si el código viejo sigue vivo al lado del nuevo. El reviewer lo verifica contra el registro de §13.2.
+3. **Se mide la salida del original.** Además del lint (C9 encabezados que citan el original: 372; C13 lecturas del original en runtime: 47), se cuenta en cada corte el total de líneas que citan sacengine en `scenes/` (hoy 1 439 en 280 archivos). Meta al cerrar la fase 1: C13 = 0, C9 < 50, citas < 300 y solo en una línea `## Ref:` al final.
+
+### 13.2 Registro de deprecación (sistemas calcados del original)
+
+| Sistema 1 a 1 hoy | Por qué limita | Reemplazo Godot | Corte |
+|---|---|---|---|
+| Muerte por Tween rígido; el cadáver no cae | Voladores en el aire; el alma depende de un Tween | `Corpse` por ticks + `CorpseLook` + ragdoll | 055a (en curso) |
+| Cielo: `GodEnvi` pisado por `import_themes.py`, 3 escritores del `Environment` | ~30 archivos para cambiar un cielo | `LookProfile` único, un dueño | 055b |
+| `original_material.gd` parsea `index.json` en runtime; 47 lecturas del original | El juego depende del formato original | Materiales horneados como `.tres` | 055b/055c |
+| `SideVision`: una criatura por bando por tick, memoria de 384 ticks | Nadie entiende cómo «ve» una unidad | `Vision` (`Area3D`) por unidad | 055c |
+| `UnitBody.Mode` replicado como puente a la FSM; 750 líneas | God file de 12 responsabilidades | Componentes hijos + FSM sola | 055c |
+| `CreatureType` de 44 campos, clips en `Dictionary`, nombres del WAD (`ycro`) | Ilegible en el inspector | Sub-recursos con nombre, `trogg.tres`, `AnimationLibrary` | 055c |
+| Ataques que copian `state.d` (`ranged_attack.gd`, 26 citas) | Un arma nueva exige leer el original | `Weapons/` con escenas `Weapon` enchufables | 055c |
+| Aldeanos con la regla de 50 m de sacengine | Parecen quietos | FSM visible `Idle/Work/Flee/Cower` | 055c |
+| `BuildingType` con `flags/folder/components`; `Layout` instanciado y caché `bldg()` | No se ve ni se mueve en el editor | Escena por edificio, nodos en `map.tscn` | 055d |
+| `FloraMap` de bytes desde `widgets.json` | Números sin sentido para un humano | `FloraLayer` (PNG pintable) + `VegetationPatch` | 055d |
+| Terreno: triángulos crudos con 5 representaciones | Imposible deformar o esculpir | `TerrainShape` único dueño | 055d-t |
+| `SpellType.flags/flags1`; IA que despacha por tag; `AimedAction` con herencia de 2 | Un hechizo nuevo toca 13 archivos | Campos con nombre, `ai_role`, `Aim` como hijo, proyectil `PackedScene` | 055e |
+| `AiPerception` (698 líneas, 32 citas), cerebros por tag | La IA no se puede ajustar sin leer sacengine | Percepción que escucha `Vision`; tácticas en `.tres` | **055f (nuevo)** |
+| `SacrificeSystem` (492) + `Ritual` (311) + `DoctorBody` (406) | Ritual y doctor calcados | Ritual como FSM con nodos y `.tres` | **055g (nuevo)** |
+| Herramientas de bake del original (`bake_catalog`, `bake_map_layout`, `bake_flora_map`…) | Re-correrlas borra ediciones humanas | Borrar o congelar en `tools/import/legacy/` | Con 055c/055d |
+| `MpKit.` en 86 archivos | La red está en todas partes | Wrapper de casos de uso | Fase 3 |
+
+### 13.3 Ambiente y bioma (contenido nuevo, después del refactor del look)
+Verificado: el formato de ambiente del original solo trae niebla por mapa (`sacengine/source/envi.d:58-65`); no hay día y noche ni lluvia. Todo esto es contenido nuevo, diseñado como juego moderno. El mapa tutorial no está importado (solo existe en el instalador original).
+
+| Pedido del usuario | Dónde | Forma Godot (borrador) |
+|---|---|---|
+| Día y noche | **RFC-058 Ambiente** | Nodo `TimeOfDay` en el mapa: `cycle_s`, `Curve`/`Gradient` de sol y cielo; escribe solo a través del dueño de 055b |
+| Lluvia, tormentas, clima | RFC-058 | Nodo `Weather` con estados (`Clear/Rain/Storm/Fog`) como `.tres`; `GPUParticles3D` que siguen a la cámara; rayos de tormenta como luz + sonido; presentación solamente |
+| Insectos, polen, luciérnagas, partículas del entorno | RFC-058 | Nodo `AmbientLife` con emisores por bioma, `VisibleOnScreenEnabler3D` para el costo |
+| Luces en hechizos, magos y unidades | 055b | `OmniLight3D` como hijo configurable, con tope global |
+| Bioma de Persephone rico y verde como el tutorial: árboles, arcos, terreno sinuoso | **RFC-059 Bioma Persephone** | 1) investigar el tutorial en el instalador (`tools/import`, sin datos en el runtime); 2) kit de props propio en Blender (árboles, arcos, rocas) como `BiomeProp` de 055d; 3) especies de `VegetationPatch`; 4) paleta en `LookProfile`; 5) terreno esculpido con `TerrainShape` |
+
+### 13.4 Orden final
+| Fase | Cortes |
+|---|---|
+| 1. Refactor (prioridad) | 055a muerte → 055b look → 055c unidades → 055d mapa + terreno → 055e mago y hechizos → 055f IA → 055g ritual y doctor |
+| 2. Contenido sobre la base limpia | RFC-058 ambiente → RFC-059 bioma Persephone → RFC-056 estructuras → los 41 hechizos (checklist de 055e) → RFC-057 terreno deformable |
+| 3. Multijugador como wrapper | Refactor de MpKit |

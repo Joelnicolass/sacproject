@@ -20,10 +20,12 @@ Fecha: 2026-10-23. La v1 del port está en `main` (`840be169`). Este plan cubre 
 | 12 | Faltan estructuras | Falta | RFC propio después del corte C, porque las estructuras son edificios con comportamiento. |
 | 13 | Hechizos que deforman el terreno (volcán, tornado) | Falta | RFC propio al final: terreno deformable con recálculo de colisión y navmesh. |
 | 14 | Faltan luces en hechizos, unidades y habilidades | Falta | Corte E, look: cada hechizo, unidad y mago lleva su `OmniLight3D` como nodo hijo, configurable en el inspector. |
-| 15 | Bioma de Persephone más rico: verde, árboles, arcos | Falta | Corte E con assets nuevos. Hoy sale amarronado. |
-| 16 | Insectos, partículas, lluvia, día y noche, clima | Falta | RFC de clima y ambiente, después del corte E. |
+| 15 | Bioma de Persephone más rico: verde, árboles, arcos | Falta | RFC-059 Bioma Persephone (tutorial como referencia, kit propio en Blender), fase 2. |
+| 16 | Insectos, partículas, lluvia, día y noche, clima | Falta | RFC-058 Ambiente (`TimeOfDay`, `Weather`, `AmbientLife`), fase 2. Ver RFC-055 §13.3. |
 
 ## 2. Orden propuesto
+
+**Actualizado 2026-10-23:** el orden vigente y el registro de deprecación del 1 a 1 están en `rfcs/RFC-055-human-first-refactor.md` §13. El refactor va antes que cualquier contenido nuevo.
 
 ### Fase 0: parches cortos, esta semana
 Sin refactor, cada uno en un commit. Son los puntos 2, 3, 4 y 5, y si molesta, el 10.

@@ -1,0 +1,24 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
+[ext_resource type="Script" path="res://scenes/structures/building_footprint.gd" id="2_footprint"]
+[ext_resource type="Script" path="res://scenes/look/grass/vegetation_clear.gd" id="3_clear"]
+
+[node name="CharnelChs1" type="Node3D"]
+
+[node name="Base" type="Node3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Base"]
+script = ExtResource("1_visual")
+model = "chs1"
+stand_on_feet = false
+
+[node name="Footprint" type="Node3D" parent="."]
+script = ExtResource("2_footprint")
+hit_box = AABB(-19.556, -18.065, -11.33, 48.004, 62.311005, 22.691)
+inset = 0.5
+
+[node name="VegetationClear" type="Node3D" parent="."]
+position = Vector3(4.446001, 0, 0.015500069)
+script = ExtResource("3_clear")
+radius_m = 27.55

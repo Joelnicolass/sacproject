@@ -7,22 +7,14 @@ extends RefCounted
 ## First the type's own file (data/catalog/<kind>/<tag>.tres, one source of truth), then the list of the saved GameCatalog, so it
 ## works whichever of the two the catalog is loaded from. Types are read-only: never mutate what it returns.
 
-const BUILDINGS_FOLDER := "res://data/catalog/buildings/"
 const CREATURES_FOLDER := "res://data/catalog/creatures/"
 
 
 static func building(tag: String) -> BuildingType:
 	if tag.is_empty():
 		return null
-	var found := _from_file(BUILDINGS_FOLDER, tag) as BuildingType
-	if found != null:
-		return found
 	var catalog := GameCatalog.shared()
-	if catalog != null:
-		for candidate in catalog.buildings:
-			if candidate.tag == tag:
-				return candidate
-	return null
+	return catalog.building(tag) if catalog != null else null
 
 
 static func creature(tag: String) -> CreatureType:

@@ -1,0 +1,31 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
+[ext_resource type="Script" path="res://scenes/structures/building_footprint.gd" id="2_footprint"]
+[ext_resource type="Script" path="res://scenes/look/grass/vegetation_clear.gd" id="3_clear"]
+
+[node name="EtherSta2" type="Node3D"]
+
+[node name="Base" type="Node3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Base"]
+script = ExtResource("1_visual")
+model = "st2a"
+stand_on_feet = false
+
+[node name="Head" type="Node3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Head"]
+script = ExtResource("1_visual")
+model = "st2b"
+stand_on_feet = false
+
+[node name="Footprint" type="Node3D" parent="."]
+script = ExtResource("2_footprint")
+hit_box = AABB(-22.322, -2.857, 0.447, 43.536, 49.505, 39.966)
+inset = 0.5
+
+[node name="VegetationClear" type="Node3D" parent="."]
+position = Vector3(-0.55400085, 0, 20.43)
+script = ExtResource("3_clear")
+radius_m = 30.55

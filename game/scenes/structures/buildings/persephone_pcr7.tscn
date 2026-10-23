@@ -1,0 +1,24 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
+[ext_resource type="Script" path="res://scenes/structures/building_footprint.gd" id="2_footprint"]
+[ext_resource type="Script" path="res://scenes/look/grass/vegetation_clear.gd" id="3_clear"]
+
+[node name="PersephonePcr7" type="Node3D"]
+
+[node name="Base" type="Node3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Base"]
+script = ExtResource("1_visual")
+model = "pcr7"
+stand_on_feet = false
+
+[node name="Footprint" type="Node3D" parent="."]
+script = ExtResource("2_footprint")
+hit_box = AABB(-4.979, -1.063, -3.042, 10.051, 5.818, 6.135)
+inset = 0.5
+
+[node name="VegetationClear" type="Node3D" parent="."]
+position = Vector3(0.04649973, 0, 0.02550006)
+script = ExtResource("3_clear")
+radius_m = 6.890000000000001

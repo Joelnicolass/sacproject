@@ -1,0 +1,31 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
+[ext_resource type="Script" path="res://scenes/structures/building_footprint.gd" id="2_footprint"]
+[ext_resource type="Script" path="res://scenes/look/grass/vegetation_clear.gd" id="3_clear"]
+
+[node name="PyroDyno" type="Node3D"]
+
+[node name="Base" type="Node3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Base"]
+script = ExtResource("1_visual")
+model = "dybd"
+stand_on_feet = false
+
+[node name="Top" type="Node3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Top"]
+script = ExtResource("1_visual")
+model = "dypt"
+stand_on_feet = false
+
+[node name="Footprint" type="Node3D" parent="."]
+script = ExtResource("2_footprint")
+hit_box = AABB(-9.067, -9.629, -18.192, 18.259, 68.514, 36.388)
+inset = 0.5
+
+[node name="VegetationClear" type="Node3D" parent="."]
+position = Vector3(0.0625, 0, 0.0020008087)
+script = ExtResource("3_clear")
+radius_m = 21.36

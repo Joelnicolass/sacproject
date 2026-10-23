@@ -1,0 +1,24 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
+[ext_resource type="Script" path="res://scenes/structures/building_footprint.gd" id="2_footprint"]
+[ext_resource type="Script" path="res://scenes/look/grass/vegetation_clear.gd" id="3_clear"]
+
+[node name="StratosSfor" type="Node3D"]
+
+[node name="Base" type="Node3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Base"]
+script = ExtResource("1_visual")
+model = "sfor"
+stand_on_feet = false
+
+[node name="Footprint" type="Node3D" parent="."]
+script = ExtResource("2_footprint")
+hit_box = AABB(-24.592, -6.529, -23.065, 59.164, 156.266, 57.564003)
+inset = 0.5
+
+[node name="VegetationClear" type="Node3D" parent="."]
+position = Vector3(4.9900017, 0, 5.717001)
+script = ExtResource("3_clear")
+radius_m = 42.27

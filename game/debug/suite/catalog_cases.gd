@@ -84,9 +84,11 @@ func _check_folder(folder: String, types: Array) -> Dictionary:
 		if seen.has(type.tag):
 			_report("%s/%s: duplicate tag \"%s\" (also in %s)" % [folder, file, type.tag, seen[type.tag]])
 		seen[type.tag] = file
+		if folder == "buildings" and (type as BuildingType).scene == null:
+			_report("buildings/%s: no scene of parts" % file)
 		var base: String = type.tag.validate_filename()
 		var stem: String = file.get_basename()
-		if stem != base and not _is_case_repeat(stem, base):
+		if folder != "buildings" and stem != base and not _is_case_repeat(stem, base):
 			_report("%s/%s: tag = \"%s\", the file should be %s.tres" % [folder, file, type.tag, base])
 	var tags := {}
 	for tag: String in seen:

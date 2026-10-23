@@ -36,7 +36,7 @@ SCENES = ROOT / "scenes" / "map" / "maps" / TAG
 CATALOG = ROOT / "data" / "maps" / "map_catalog.tres"
 FORCE = "--force" in ARGS
 
-# The altar and the manafount of each land (flags 0x80001407 and 0x80002810 in data/catalog/buildings/). Same lists as
+# The altar and the manafount of each land (flags 0x80001407 and 0x80002810 in data/buildings/). Same lists as
 # tools/bake/bake_map_layout.gd: those rows are PlayerStart and Manafount nodes of the map scene, not buildings of the layout.
 ALTAR_TAGS = ("jaal", "ca_a", "pyal", "stal", "alt1")
 FOUNT_TAGS = ("jfnt", "cafn", "pfon", "stmf", "font")

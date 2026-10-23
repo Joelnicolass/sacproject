@@ -14,7 +14,7 @@ extends StaticBody3D
 ## Drawn when `building` is empty or has no parts: the Persephone fountain.
 const FALLBACK_MODEL := "pcfn"
 
-## The fountain's BLDG (data/catalog/buildings/<tag>.tres): drag the land's fountain here; the model shows in the editor.
+## The fountain's BLDG (data/buildings/<name>.tres): drag the land's fountain here; the model shows in the editor.
 @export var building: BuildingType:
 	set(value):
 		building = value

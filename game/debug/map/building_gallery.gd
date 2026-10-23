@@ -6,7 +6,6 @@ extends Node3D
 ## Run: Godot --path game res://debug/map/building_gallery.tscn (F6); headless with `quit_when_done` it prints one line.
 
 const NAMES_CSV := "res://tools/migrate/d1_building_names.csv"
-const TYPE_DIR := "res://data/catalog/buildings/"
 
 @export var building_scene: PackedScene
 @export var camera: Camera3D
@@ -22,7 +21,7 @@ func _ready() -> void:
 	var missing := PackedStringArray()
 	for i in rows.size():
 		var row: PackedStringArray = rows[i]
-		var type := load("%s%s.tres" % [TYPE_DIR, row[0]]) as BuildingType
+		var type := TypeRef.building(row[0])
 		if type == null:
 			missing.append(row[0])
 			continue

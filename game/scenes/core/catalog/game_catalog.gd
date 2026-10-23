@@ -9,12 +9,17 @@ extends Resource
 
 const DIR := "res://data/catalog/"
 const GODS_DIR := "res://data/gods/"
+## Buildings are named for humans (james_hut.tres); the tag is a field inside.
+const BUILDINGS_DIR := "res://data/buildings/"
 
 var creatures: Array[CreatureType] = []
 var spells: Array[SpellType] = []
 var wizards: Array[WizardType] = []
 var abilities: Array[AbilityType] = []
 var buildings: Array[BuildingType] = []
+## Tags that two building files claim (the catalog test fails on them).
+var duplicate_building_tags := PackedStringArray()
+var _building_by_tag: Dictionary = {}
 ## Bodies and props together; `BodySize.is_prop` tells them apart.
 var body_sizes: Array[BodySize] = []
 ## The gods of data/gods/<tag>.tres (RFC-042), by sort_order then tag. Each carries its theme, look, AI profile and typed book.
@@ -38,18 +43,39 @@ func scan(reload_from_disk := false) -> void:
 	wizards.assign(_load_folder("wizards", WizardType, reload_from_disk))
 	abilities.assign(_load_folder("abilities", AbilityType, reload_from_disk))
 	buildings.assign(_load_folder("buildings", BuildingType, reload_from_disk))
+	_index_buildings()
 	body_sizes.assign(_load_folder("body_sizes", BodySize, reload_from_disk))
 	gods.assign(_load_gods(reload_from_disk))
+
+
+## The folder of a catalog kind: data/catalog/<kind>/, except the buildings.
+static func dir_of(folder: String) -> String:
+	return BUILDINGS_DIR if folder == "buildings" else DIR + folder + "/"
 
 
 ## The .tres file names (with extension) of a catalog folder, sorted.
 static func files_in(folder: String) -> PackedStringArray:
 	var names := PackedStringArray()
-	for entry in ResourceLoader.list_directory(DIR + folder + "/"):
+	for entry in ResourceLoader.list_directory(dir_of(folder)):
 		if entry.ends_with(".tres"):
 			names.append(entry)
 	names.sort()
 	return names
+
+
+## The building of a tag, or null.
+func building(tag: String) -> BuildingType:
+	return _building_by_tag.get(tag)
+
+
+func _index_buildings() -> void:
+	_building_by_tag.clear()
+	duplicate_building_tags.clear()
+	for type in buildings:
+		if _building_by_tag.has(type.tag):
+			duplicate_building_tags.append(type.tag)
+			push_error("GameCatalog: two buildings claim the tag \"%s\" (%s and %s)." % [type.tag, _building_by_tag[type.tag].resource_path, type.resource_path])
+		_building_by_tag[type.tag] = type
 
 
 ## The god of a tag, or null.
@@ -80,7 +106,7 @@ func _load_folder(folder: String, script: Script, reload_from_disk: bool) -> Arr
 	var mode := ResourceLoader.CACHE_MODE_REPLACE if reload_from_disk else ResourceLoader.CACHE_MODE_REUSE
 	var found: Array = []
 	for file in files_in(folder):
-		var type := ResourceLoader.load(DIR + folder + "/" + file, "", mode)
+		var type := ResourceLoader.load(dir_of(folder) + file, "", mode)
 		if type == null or type.get_script() != script:
 			push_warning("GameCatalog: %s/%s is not a %s; skipped." % [folder, file, script.get_global_name()])
 			continue

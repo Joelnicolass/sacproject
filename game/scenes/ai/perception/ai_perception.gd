@@ -21,7 +21,7 @@ signal forced(bits: int)
 signal tracked(track: AiTrack)
 signal untracked(track: AiTrack)
 
-## BLDG header flags of the structures the AI looks at (data/catalog/buildings/: altars `ca_a`…, founts `jfnt`…,
+## BLDG header flags of the structures the AI looks at (data/buildings/: altars `ca_a`…, founts `jfnt`…,
 ## Manaliths `jman`…; equal for the five gods). The word `unknown1[3]` that gates READY is not exported: READY is
 ## given to a mana structure with no structure on top («aprox.»).
 const BLDG_ALTAR := 0x1407

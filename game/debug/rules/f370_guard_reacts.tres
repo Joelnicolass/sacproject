@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://debug/suite/bench_event.gd" id="3_event"]
 [ext_resource type="Script" path="res://debug/suite/bench_expect.gd" id="4_expect"]
 [ext_resource type="Script" path="res://debug/suite/bench_building.gd" id="5_building"]
-[ext_resource type="Resource" path="res://data/catalog/buildings/grv3.tres" id="6_grv3"]
+[ext_resource type="Resource" path="res://data/buildings/charnel_grave_3.tres" id="6_grv3"]
 
 [sub_resource type="Resource" id="Group_quiet"]
 script = ExtResource("2_group")

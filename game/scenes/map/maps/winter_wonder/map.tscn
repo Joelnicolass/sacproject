@@ -16,7 +16,7 @@
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/winter_wonder/nav.res" id="15_navmesh"]
 [ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="17_minimap"]
-[ext_resource type="Resource" path="res://data/catalog/buildings/stmf.tres" id="fbldg_stmf"]
+[ext_resource type="Resource" path="res://data/buildings/stratos_fountain.tres" id="fbldg_stmf"]
 [ext_resource type="Resource" path="res://scenes/map/maps/winter_wonder/flora.res" id="flora_map"]
 
 [node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings_root", "npc_spawns_root")]

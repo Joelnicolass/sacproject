@@ -16,7 +16,7 @@
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/high_noon/nav.res" id="f200_navmesh"]
 [ext_resource type="Script" uid="uid://brj6glypovhy8" path="res://scenes/map/nav/map_nav_region.gd" id="f200_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="f212_bake"]
-[ext_resource type="Resource" path="res://data/catalog/buildings/jfnt.tres" id="fbldg_jfnt"]
+[ext_resource type="Resource" path="res://data/buildings/james_fountain.tres" id="fbldg_jfnt"]
 [ext_resource type="Resource" path="res://scenes/map/maps/high_noon/flora.res" id="flora_map"]
 
 [node name="Map" type="Node3D" unique_id=1044000001 node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings_root", "npc_spawns_root")]

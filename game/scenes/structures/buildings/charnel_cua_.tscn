@@ -1,0 +1,95 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
+[ext_resource type="Script" path="res://scenes/structures/building_footprint.gd" id="2_footprint"]
+
+[node name="CharnelCua" type="Node3D"]
+
+[node name="Base" type="Node3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Base"]
+script = ExtResource("1_visual")
+model = "cuab"
+stand_on_feet = false
+
+[node name="Pil1" type="Node3D" parent="."]
+position = Vector3(20, 0, 20)
+rotation = Vector3(0, -4.712389, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Pil1"]
+script = ExtResource("1_visual")
+model = "cuap"
+stand_on_feet = false
+
+[node name="Tub1" type="Node3D" parent="."]
+position = Vector3(-40, 0, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Tub1"]
+script = ExtResource("1_visual")
+model = "cuat"
+stand_on_feet = false
+
+[node name="Top" type="Node3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Top"]
+script = ExtResource("1_visual")
+model = "cuar"
+stand_on_feet = false
+
+[node name="Pil2" type="Node3D" parent="."]
+position = Vector3(-20, 0, 20)
+
+[node name="Mesh" type="MeshInstance3D" parent="Pil2"]
+script = ExtResource("1_visual")
+model = "cuap"
+stand_on_feet = false
+
+[node name="Tub2" type="Node3D" parent="."]
+position = Vector3(40, 0, 0)
+rotation = Vector3(0, -3.1415927, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Tub2"]
+script = ExtResource("1_visual")
+model = "cuat"
+stand_on_feet = false
+
+[node name="Pil3" type="Node3D" parent="."]
+position = Vector3(20, 0, -20)
+rotation = Vector3(0, -3.1415927, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Pil3"]
+script = ExtResource("1_visual")
+model = "cuap"
+stand_on_feet = false
+
+[node name="Pil4" type="Node3D" parent="."]
+position = Vector3(-20, 0, -20)
+rotation = Vector3(0, -1.5707964, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Pil4"]
+script = ExtResource("1_visual")
+model = "cuap"
+stand_on_feet = false
+
+[node name="Tub3" type="Node3D" parent="."]
+position = Vector3(0, 0, -40)
+rotation = Vector3(0, -1.5707964, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Tub3"]
+script = ExtResource("1_visual")
+model = "cuat"
+stand_on_feet = false
+
+[node name="Tub4" type="Node3D" parent="."]
+position = Vector3(0, 0, 40)
+rotation = Vector3(0, -4.712389, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Tub4"]
+script = ExtResource("1_visual")
+model = "cuat"
+stand_on_feet = false
+
+[node name="Footprint" type="Node3D" parent="."]
+script = ExtResource("2_footprint")
+hit_box = AABB(-2, 0, -2, 4, 4, 4)
+inset = 0.5

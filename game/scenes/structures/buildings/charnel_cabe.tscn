@@ -1,0 +1,84 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
+[ext_resource type="Script" path="res://scenes/structures/building_footprint.gd" id="2_footprint"]
+
+[node name="CharnelCabe" type="Node3D"]
+
+[node name="Base" type="Node3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Base"]
+script = ExtResource("1_visual")
+model = "cab1"
+stand_on_feet = false
+
+[node name="Plt1" type="Node3D" parent="."]
+position = Vector3(0, 0, -60)
+
+[node name="Mesh" type="MeshInstance3D" parent="Plt1"]
+script = ExtResource("1_visual")
+model = "cab2"
+stand_on_feet = false
+
+[node name="Plt2" type="Node3D" parent="."]
+position = Vector3(60, 0, 0)
+rotation = Vector3(0, -1.5707964, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Plt2"]
+script = ExtResource("1_visual")
+model = "cab2"
+stand_on_feet = false
+
+[node name="Plt3" type="Node3D" parent="."]
+position = Vector3(0, 0, 60)
+rotation = Vector3(0, -3.1415927, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Plt3"]
+script = ExtResource("1_visual")
+model = "cab2"
+stand_on_feet = false
+
+[node name="Plt4" type="Node3D" parent="."]
+position = Vector3(-60, 0, 0)
+rotation = Vector3(0, 1.5707964, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Plt4"]
+script = ExtResource("1_visual")
+model = "cab2"
+stand_on_feet = false
+
+[node name="Lef1" type="Node3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Lef1"]
+script = ExtResource("1_visual")
+model = "cab3"
+stand_on_feet = false
+
+[node name="Lef2" type="Node3D" parent="."]
+rotation = Vector3(0, -1.5707964, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Lef2"]
+script = ExtResource("1_visual")
+model = "cab3"
+stand_on_feet = false
+
+[node name="Lef3" type="Node3D" parent="."]
+rotation = Vector3(0, -3.1415927, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Lef3"]
+script = ExtResource("1_visual")
+model = "cab3"
+stand_on_feet = false
+
+[node name="Lef4" type="Node3D" parent="."]
+rotation = Vector3(0, -4.712389, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Lef4"]
+script = ExtResource("1_visual")
+model = "cab3"
+stand_on_feet = false
+
+[node name="Footprint" type="Node3D" parent="."]
+script = ExtResource("2_footprint")
+hit_box = AABB(-2, 0, -2, 4, 4, 4)
+inset = 0.5

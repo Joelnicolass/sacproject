@@ -1,20 +1,44 @@
-[gd_resource type="Resource" script_class="SkyLook" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="SkyLook" format=3]
 
-[ext_resource type="Script" path="res://scenes/look/sky/sky_look.gd" id="1_s"]
+[ext_resource type="Shader" path="res://scenes/look/sky/sacrifice_sky.gdshader" id="1_2xyu4"]
+[ext_resource type="Texture2D" path="res://data/look/sky/aurora_gradient.tres" id="2_ebrgk"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/persephone/skyb.png" id="3_yy0cy"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/persephone/sky.png" id="4_jwwaj"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/persephone/skyt.png" id="5_n3j26"]
+[ext_resource type="Script" path="res://scenes/look/sky/sky_look.gd" id="6_hirsd"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7gcis"]
+shader = ExtResource("1_2xyu4")
+shader_parameter/background_color = Color(0.7843, 1, 0.9804, 1)
+shader_parameter/energy = 1.7
+shader_parameter/top_texture = ExtResource("5_n3j26")
+shader_parameter/bottom_texture = ExtResource("3_yy0cy")
+shader_parameter/rotation_period_s = 512.0
+shader_parameter/clouds_texture = ExtResource("4_jwwaj")
+shader_parameter/cloud_period_s = 64.0
+shader_parameter/cloud_alpha = 1.0
+shader_parameter/ambient_top_color = Color(0.22, 0.45, 0.62, 1)
+shader_parameter/ambient_horizon_color = Color(0.7, 0.84, 0.88, 1)
+shader_parameter/ambient_ground_color = Color(0.22, 0.2, 0.14, 1)
+shader_parameter/ambient_energy = 1.0
+shader_parameter/ambient_curve = 0.2
+shader_parameter/aurora_strength = 0.0
+shader_parameter/aurora_gradient = ExtResource("2_ebrgk")
+shader_parameter/sun_color = Color(1, 0.92, 0.72, 1)
+shader_parameter/sun_radius_deg = 1.7
+shader_parameter/halo_color = Color(1, 0.7, 0.4, 1)
+shader_parameter/halo_power = 14.0
+shader_parameter/moon_color = Color(0.75, 0.82, 1, 1)
+shader_parameter/moon_radius_deg = 3.0
+shader_parameter/moon_azimuth_deg = -40.0
+shader_parameter/moon_elevation_deg = 40.0
 
 [resource]
-script = ExtResource("1_s")
+script = ExtResource("6_hirsd")
 label = "Cielo de Persephone: atardecer dorado"
-top_color = Color(0.22, 0.45, 0.62, 1)
-horizon_color = Color(0.7, 0.84, 0.88, 1)
-ground_color = Color(0.22, 0.2, 0.14, 1)
+material = SubResource("ShaderMaterial_7gcis")
 ambient_sky_contribution = 0.55
-fog_aerial_perspective = 0.0
+fog_color = Color(0.59256, 0.77068, 0.85112, 1)
+fog_begin_m = 0.0
+fog_end_m = 1500.0
 haze_tint = Color(0.88, 0.95, 1, 1)
-sun_color = Color(1, 0.92, 0.72, 1)
-sun_intensity = 0.0
-sun_radius_deg = 1.7
-halo_color = Color(1, 0.7, 0.4, 1)
-halo_strength = 0.0
-halo_power = 14.0
-fog_horizon_mix = 0.6

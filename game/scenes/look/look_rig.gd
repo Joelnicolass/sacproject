@@ -3,14 +3,15 @@ class_name LookRig
 extends Node
 
 ## Holds the look layers of a map: one line in the world scene (`%Look`). Each layer is a packed
-## scene under `Layers`; removing one removes that layer. Presentation only: a dedicated or
-## headless process frees the whole rig. No autoloads, so it also runs in the editor.
-## It carries the profile, the quality preset and the map nodes layers act on (sun, Environment).
-## Layers are `LookLayer` nodes: the rig hands them the profile and the preset.
+## scene or a node under `Layers`; removing one removes that layer. It also holds the world's sun and
+## Environment inside their layers, and the empty slots time of day and weather will fill.
+## The rig hands every `LookLayer` the profile and the quality preset; the layer works out its own
+## object from them. Presentation only: a dedicated or headless process frees the whole rig.
+## No autoloads, so it also runs in the editor.
 
 signal profile_applied(profile: LookProfile)
 signal layer_toggled(index: int, enabled: bool)
-## The player's «Vegetación» switch changed (RFC-054 054f); the vegetation layers listen.
+## The player's «Vegetación» switch changed; the vegetation layers listen.
 signal vegetation_toggled(enabled: bool)
 
 @export_group("Editor preview")
@@ -21,18 +22,15 @@ signal vegetation_toggled(enabled: bool)
 @export_group("Sockets")
 @export var layers: Node
 @export var quality: QualityApplier
-## Map nodes the light layer drives; set where the rig is instanced in the world scene.
-@export var sun: DirectionalLight3D
-@export var world_environment: WorldEnvironment
+## The sun layer, for tools that turn the sun by hand.
+@export var sun_layer: SunLayer
 ## The map's terrain (a `terrain.gd` MeshInstance3D) the ground layer gives its material to.
 @export var terrain: MeshInstance3D
-## The map's original sky (`sky.tscn`): the sky layer keeps it (Legacy) or swaps it (Swirl).
-@export var legacy_sky: Node3D
 ## Which `GroundSet` slot paints each of the map's tile ids. The classic ground (a biome without a
 ## PBR `GroundSet`) uses it so the grass knows where it grows; it belongs to the map, not to a biome.
 @export var tile_map: TileLayerMap
-## How many plants of the original stand in each 8 m cell of this map (RFC-054: scenes/map/maps/<tag>/flora.res, baked by
-## tools/bake/bake_flora_map.gd). The Flora layer draws it; empty = no plants.
+## How many plants of the original stand in each 8 m cell of this map (scenes/map/maps/<tag>/flora.res).
+## The Flora layer draws it; empty = no plants.
 @export var flora_map: FloraMap
 
 var profile: LookProfile
@@ -84,17 +82,11 @@ func set_vegetation_enabled(on: bool) -> void:
 	vegetation_toggled.emit(on)
 
 
-## Editor button: shows the preview god's profile through the layers, with the god's ground material
-## under them (what `ThemeApplier.apply` does in the game). The scene never saves that material.
+## Editor button: shows the preview god's profile through the layers. The scene never saves it.
 func preview() -> void:
-	var god := StringName(preview_god)
-	var type := GameCatalog.shared().god(String(god))
-	var theme := type.load_theme() if type != null else null
-	if terrain is Terrain and theme != null:
-		var ground: Variant = theme.ground_material
-		if ground is ShaderMaterial:
-			(terrain as Terrain).set_classic_material(ground)
-	apply_profile(LookApplier.profile_for(god))
+	var type := GameCatalog.shared().god(preview_god)
+	if type != null:
+		apply_profile(type.look)
 
 
 func _push_quality() -> void:
@@ -147,8 +139,6 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if layers == null:
 		warnings.append("Falta el socket Layers.")
-	if sun == null or world_environment == null:
-		warnings.append("Faltan los sockets Sun / World Environment: la capa de luz no actua sin ellos.")
 	if terrain == null:
 		warnings.append("Falta el socket Terrain: la capa de suelo no actua sin el.")
 	return warnings

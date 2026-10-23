@@ -37,6 +37,10 @@ extends Resource
 ## Screen-space indirect light: high preset only.
 @export var ssil_enabled: bool = false
 
+@export_group("Glow")
+## Bloom of the bright parts (the biome's GlowLook). Off in low: it is a full-screen blur chain.
+@export var glow_enabled: bool = true
+
 @export_group("Ground (022c)")
 ## How many of the GroundSet's layers are drawn (the first ones): 2 = grass and rock only.
 @export_range(1, 4) var ground_layers: int = 4

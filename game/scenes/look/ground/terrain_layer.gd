@@ -2,13 +2,16 @@
 class_name TerrainLayer
 extends LookLayer
 
-## Ground layer of the rig: gives the map's terrain the biome's `GroundSet` as a PBR material
-## (`ground_pbr.gdshader`). Hiding the node, a null profile or a profile without ground puts the
-## classic atlas x light map ground back. Heights and collision are untouched (the mesh is the
-## same). The material and the zone mask are rebuilt from the map on every load and never saved.
+## Ground layer of the rig: the only writer of the map's terrain material. It gives the terrain the biome's
+## classic ground (`ground_classic`: atlas x light map) and, over it, the `GroundSet` as a PBR material
+## (`ground_pbr.gdshader`). Hiding the node, a null profile or a profile without ground shows the classic
+## one. Heights and collision are untouched (the mesh is the same). The materials and the zone mask are
+## rebuilt from the map on every load and never saved.
 
 var _rig: LookRig
 var _ground: GroundSet
+var _classic: ShaderMaterial
+var _classic_given: ShaderMaterial
 var _preset: LookQuality
 var _material: ShaderMaterial
 var _watching: Array[Resource] = []
@@ -21,7 +24,8 @@ func _ready() -> void:
 func apply_look(profile: LookProfile, rig: LookRig) -> void:
 	_rig = rig
 	_preset = rig.quality_preset
-	_set_ground(profile.ground as GroundSet if profile else null)
+	_classic = profile.ground_classic if profile else null
+	_set_ground(profile.ground if profile else null)
 
 
 func apply_quality(preset: LookQuality) -> void:
@@ -75,6 +79,10 @@ func _refresh() -> void:
 	var terrain := _rig.terrain if _rig else null
 	if terrain == null:
 		return
+	# The terrain keeps a private copy of the classic material (the grass paints into it): hand it over once per material.
+	if terrain is Terrain and _classic != null and _classic != _classic_given:
+		(terrain as Terrain).set_classic_material(_classic)
+		_classic_given = _classic
 	if _ground == null or not is_visible_in_tree():
 		_restore()
 		return

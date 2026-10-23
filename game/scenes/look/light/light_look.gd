@@ -4,8 +4,8 @@ extends Resource
 
 ## Light of one biome: sun, shadows, fill, ambient, exposure and SSAO. One `.tres` per god
 ## (`data/look/light/<god>_light.tres`); a night is another `.tres`. Nothing here is score or copy.
-## Applied by `LightLayer` over the sun and the Environment of the map, and put back when the
-## layer is switched off. Values are absolute (not relative to the classic ENVI numbers).
+## SunLayer reads the sun, shadow and fill parts; EnvironmentLayer reads the ambient, exposure and
+## screen-space parts. Fog belongs to the SkyLook.
 
 @export var label: String = ""
 
@@ -43,12 +43,6 @@ extends Resource
 ## Where the fill comes from, as an angle around the sun's azimuth (180 = from the opposite side).
 @export_range(-180.0, 180.0, 1.0, "degrees") var fill_azimuth_offset_deg: float = 180.0
 @export_range(5.0, 89.0, 1.0, "degrees") var fill_elevation_deg: float = 30.0
-
-@export_group("Fog (until 022f)")
-## Volumetric fog density. The engine default (0.05 over 64 m) buries the whole game camera
-## view in a white veil once the sun is bright: keep it near 0.01 (light haze).
-@export_range(0.0, 0.1, 0.001) var volumetric_density: float = 0.01
-@export_range(16.0, 512.0, 1.0, "suffix:m") var volumetric_length: float = 64.0
 
 @export_group("Ambient")
 @export var ambient_color: Color = Color(0.55, 0.65, 0.85)

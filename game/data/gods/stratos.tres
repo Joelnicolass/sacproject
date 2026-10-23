@@ -1,10 +1,11 @@
-[gd_resource type="Resource" script_class="GodType" load_steps=64 format=3]
+[gd_resource type="Resource" script_class="GodType" load_steps=65 format=3]
 
 [ext_resource type="Script" path="res://scenes/gods/god_type.gd" id="1_gtype"]
 [ext_resource type="Script" path="res://scenes/gods/god_book.gd" id="2_gbook"]
 [ext_resource type="Script" path="res://scenes/gods/book_unlock.gd" id="3_unl"]
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="4_cre"]
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="5_spe"]
+[ext_resource type="Resource" path="res://data/look/stratos.tres" id="99_look"]
 [ext_resource type="Resource" path="res://data/ai/profile_stratos.tres" id="6_ai"]
 [ext_resource type="Resource" path="res://data/catalog/creatures/oham.tres" id="7_c_oham"]
 [ext_resource type="Resource" path="res://data/catalog/creatures/lbog.tres" id="8_c_lbog"]
@@ -179,7 +180,6 @@ script = ExtResource("1_gtype")
 tag = "stratos"
 display_name = "Stratos"
 sort_order = 3
-theme_path = "res://data/themes/stratos.tres"
-look_path = "res://data/look/stratos.tres"
+look = ExtResource("99_look")
 ai_profile = ExtResource("6_ai")
 book = SubResource("Book_1")

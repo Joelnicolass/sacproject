@@ -2,32 +2,55 @@
 
 [ext_resource type="Script" path="res://scenes/look/look_rig.gd" id="1_rig"]
 [ext_resource type="Script" path="res://scenes/look/quality_applier.gd" id="2_quality"]
-[ext_resource type="PackedScene" path="res://scenes/look/light/light_layer.tscn" id="3_light"]
-[ext_resource type="PackedScene" path="res://scenes/look/ground/terrain_layer.tscn" id="4_ground"]
-[ext_resource type="PackedScene" path="res://scenes/look/sky/sky_layer.tscn" id="5_sky"]
-[ext_resource type="PackedScene" path="res://scenes/look/grass/grass_layer.tscn" id="6_grass"]
-[ext_resource type="PackedScene" path="res://scenes/look/fx/fx_light_layer.tscn" id="7_fx_light"]
-[ext_resource type="PackedScene" path="res://scenes/look/vegetation/flora_layer.tscn" id="8_flora"]
+[ext_resource type="Script" path="res://scenes/look/light/sun_layer.gd" id="3_sun_layer"]
+[ext_resource type="PackedScene" path="res://scenes/look/light/fill_light.tscn" id="4_fill"]
+[ext_resource type="PackedScene" path="res://scenes/look/ground/terrain_layer.tscn" id="5_ground"]
+[ext_resource type="Script" path="res://scenes/look/sky/environment_layer.gd" id="6_environment_layer"]
+[ext_resource type="Environment" path="res://data/look/env_base.tres" id="7_env"]
+[ext_resource type="PackedScene" path="res://scenes/look/grass/grass_layer.tscn" id="8_grass"]
+[ext_resource type="PackedScene" path="res://scenes/look/fx/fx_light_layer.tscn" id="9_fx_light"]
+[ext_resource type="PackedScene" path="res://scenes/look/vegetation/flora_layer.tscn" id="10_flora"]
 
-[node name="Look" type="Node" node_paths=PackedStringArray("layers", "quality")]
+[node name="Look" type="Node" node_paths=PackedStringArray("layers", "quality", "sun_layer")]
 script = ExtResource("1_rig")
 layers = NodePath("Layers")
 quality = NodePath("Quality")
+sun_layer = NodePath("Layers/Sun")
 
 [node name="Layers" type="Node" parent="."]
 
-[node name="Light" parent="Layers" instance=ExtResource("3_light")]
+[node name="Sun" type="Node3D" parent="Layers" node_paths=PackedStringArray("sun", "fill")]
+script = ExtResource("3_sun_layer")
+sun = NodePath("Sun")
+fill = NodePath("Fill")
 
-[node name="Ground" parent="Layers" instance=ExtResource("4_ground")]
+[node name="Sun" type="DirectionalLight3D" parent="Layers/Sun"]
+unique_name_in_owner = true
+shadow_enabled = true
 
-[node name="Sky" parent="Layers" instance=ExtResource("5_sky")]
+[node name="Fill" parent="Layers/Sun" instance=ExtResource("4_fill")]
+unique_name_in_owner = true
 
-[node name="Grass" parent="Layers" instance=ExtResource("6_grass")]
+[node name="Ground" parent="Layers" instance=ExtResource("5_ground")]
 
-[node name="FxLight" parent="Layers" instance=ExtResource("7_fx_light")]
+[node name="Environment" type="Node3D" parent="Layers" node_paths=PackedStringArray("world_environment")]
+script = ExtResource("6_environment_layer")
+world_environment = NodePath("WorldEnvironment")
 
-[node name="Flora" parent="Layers" node_paths=PackedStringArray("rig") instance=ExtResource("8_flora")]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Layers/Environment"]
+unique_name_in_owner = true
+environment = ExtResource("7_env")
+
+[node name="Grass" parent="Layers" instance=ExtResource("8_grass")]
+
+[node name="FxLight" parent="Layers" instance=ExtResource("9_fx_light")]
+
+[node name="Flora" parent="Layers" node_paths=PackedStringArray("rig") instance=ExtResource("10_flora")]
 rig = NodePath("../..")
+
+[node name="TimeOfDay" type="Node" parent="."]
+
+[node name="Weather" type="Node" parent="."]
 
 [node name="Quality" type="Node" parent="."]
 script = ExtResource("2_quality")

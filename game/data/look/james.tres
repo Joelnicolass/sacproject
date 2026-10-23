@@ -1,16 +1,17 @@
-[gd_resource type="Resource" script_class="LookProfile" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="LookProfile" format=3]
 
-[ext_resource type="Script" uid="uid://cc2j8npemwosk" path="res://scenes/look/look_profile.gd" id="1_p"]
+[ext_resource type="Resource" path="res://data/look/glow/james_glow.tres" id="1_ehq6w"]
+[ext_resource type="Script" path="res://scenes/look/look_profile.gd" id="1_p"]
 [ext_resource type="Resource" path="res://data/look/light/james_light.tres" id="2_light"]
-
+[ext_resource type="Material" path="res://assets/original/themes/james/ground_classic.tres" id="3_gfkoj"]
 [ext_resource type="Resource" path="res://data/look/sky/james_sky.tres" id="9_sky"]
-
 [ext_resource type="Resource" path="res://data/look/grass/james_grass.tres" id="10_grass"]
 
 [resource]
 script = ExtResource("1_p")
-god = &"james"
-label = "James"
-light = ExtResource("2_light")
+display_name = "James"
 sky = ExtResource("9_sky")
+light = ExtResource("2_light")
+glow = ExtResource("1_ehq6w")
+ground_classic = ExtResource("3_gfkoj")
 grass = ExtResource("10_grass")

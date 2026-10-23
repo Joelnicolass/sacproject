@@ -14,4 +14,3 @@ fill_energy = 0.25
 ambient_color = Color(0.753, 0.817, 0.978, 1)
 ambient_energy = 0.55
 tonemap_exposure = 1.0
-volumetric_density = 0.01

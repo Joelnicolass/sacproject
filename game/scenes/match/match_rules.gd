@@ -22,9 +22,9 @@ extends Resource
 @export var cast_drain_per_s: float = 500.0
 @export var extra_cooldown_s: float = 1.5
 @export var other_spell_cooldown_s: float = 1.0
-## Empty: the server draws a god theme per match. Debug rules force one.
+## Empty: the server draws a god per match. Debug rules force one.
 @export var biome_god: StringName = &""
-## 0: random seed per match. Otherwise ThemeApplier.pick_random(biome_seed). With a match_seed
+## 0: random seed per match. Otherwise BiomeRules.pick_god(biome_seed). With a match_seed
 ## and biome_seed 0 the biome follows the match seed (MatchSeed.derive).
 @export var biome_seed: int = 0
 ## RFC-024 §5.1. 0: the match draws one and prints `semilla <n>`. Otherwise every source of

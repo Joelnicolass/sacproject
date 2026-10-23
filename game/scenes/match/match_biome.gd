@@ -1,15 +1,14 @@
 extends Node
 
-## F32: the server (or solo) draws one god theme per match and sends theme.god to each
-## client on the MpKit custom channel once that client's world is ready. Every peer with
-## a screen applies it with ThemeApplier after the world's _ready (sky and environment exist).
+## The land of the match: the server (or solo) draws one god per match (BiomeRules) and sends it to each client on
+## the MpKit custom channel once that client's world is ready. Every peer with a screen then hands that god's look
+## to the map's LookRig, after the world's _ready (the rig exists).
 
 signal applied(god: StringName)
 
-const ThemeApplier := preload("res://scenes/look/theme/theme_applier.gd")
 const CHANNEL := &"biome"
 
-@export var world: Node3D
+@export var world: MatchWorld
 
 var god: StringName = &""
 var _world_ready := false
@@ -39,20 +38,20 @@ func _is_authority() -> bool:
 
 
 func _draw() -> void:
-	var rules: Variant = world.get("rules") if world else null
+	var rules: MatchRules = world.rules if world else null
 	var forced: StringName = &""
 	var match_seed := 0
-	if rules is MatchRules:
-		forced = (rules as MatchRules).biome_god
-		match_seed = (rules as MatchRules).biome_seed
+	if rules:
+		forced = rules.biome_god
+		match_seed = rules.biome_seed
 	if match_seed == 0:
 		match_seed = MatchSeed.rng(["biome"]).seed  # the biome stream of the match (randomized without one)
-	var picked: StringName = forced if forced != &"" and ThemeApplier.has_theme(forced) else ThemeApplier.pick_god(match_seed)
-	if not ThemeApplier.has_theme(picked):
-		print("bioma sin tema")
+	var picked := BiomeRules.choose(forced, match_seed)
+	if not BiomeRules.has_look(picked):
+		if DebugLog.on(&"biome"): print("bioma sin look")
 		return
 	god = picked
-	print("bioma %s semilla %d" % [god, match_seed])
+	if DebugLog.on(&"biome"): print("bioma %s semilla %d" % [god, match_seed])
 
 
 func _send_to(peer_id: int) -> void:
@@ -65,10 +64,10 @@ func _on_custom_received(channel: StringName, data: Dictionary, from_peer: int) 
 	if channel != CHANNEL or _is_authority() or from_peer != MpAuthority.SERVER_PEER:
 		return
 	var received := StringName(str(data.get("god", "")))
-	if not ThemeApplier.has_theme(received):
+	if not BiomeRules.has_look(received):
 		return
 	god = received
-	print("bioma %s" % god)
+	if DebugLog.on(&"biome"): print("bioma %s" % god)
 	_apply()
 
 
@@ -80,8 +79,7 @@ func _on_world_ready() -> void:
 func _apply() -> void:
 	if not _world_ready or god == &"" or world == null or MpKit.is_dedicated():
 		return
-	var theme := ThemeApplier.theme_for(god)
-	if theme == null:
-		return
-	ThemeApplier.apply(theme, world)
+	var rig := world.map.look if world.map else null
+	if is_instance_valid(rig) and not rig.is_queued_for_deletion():
+		rig.apply_profile(GameCatalog.shared().god(String(god)).look)
 	applied.emit(god)

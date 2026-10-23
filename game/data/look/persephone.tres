@@ -1,16 +1,17 @@
-[gd_resource type="Resource" script_class="LookProfile" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="LookProfile" format=3]
 
-[ext_resource type="Script" uid="uid://cc2j8npemwosk" path="res://scenes/look/look_profile.gd" id="1_p"]
+[ext_resource type="Resource" path="res://data/look/glow/persephone_glow.tres" id="1_e3s6b"]
+[ext_resource type="Script" path="res://scenes/look/look_profile.gd" id="1_p"]
 [ext_resource type="Resource" path="res://data/look/light/persephone_light.tres" id="2_light"]
-
+[ext_resource type="Material" path="res://assets/original/themes/persephone/ground_classic.tres" id="3_04iut"]
 [ext_resource type="Resource" path="res://data/look/sky/persephone_sky.tres" id="9_sky"]
-
 [ext_resource type="Resource" path="res://data/look/grass/persephone_grass.tres" id="10_grass"]
 
 [resource]
 script = ExtResource("1_p")
-god = &"persephone"
-label = "Pradera de Persephone"
-light = ExtResource("2_light")
+display_name = "Pradera de Persephone"
 sky = ExtResource("9_sky")
+light = ExtResource("2_light")
+glow = ExtResource("1_e3s6b")
+ground_classic = ExtResource("3_04iut")
 grass = ExtResource("10_grass")

@@ -81,15 +81,7 @@ func spawn_point() -> Vector3:
 
 
 func _ground_at(at: Vector3) -> Variant:
-	var query := PhysicsRayQueryParameters3D.create(at + Vector3.UP * 500.0, at + Vector3.DOWN * 500.0)
-	query.collision_mask = ground_mask
-	var skip: Array[RID] = []
-	for wizard in get_tree().get_nodes_in_group("wizard"):
-		if wizard is CollisionObject3D:
-			skip.append((wizard as CollisionObject3D).get_rid())
-	query.exclude = skip
-	var hit := _wizard.get_world_3d().direct_space_state.intersect_ray(query)
-	return null if hit.is_empty() else hit.get("position")
+	return GroundRay.surface_point(_wizard, at, ground_mask, GroundRay.wizard_rids(get_tree()))
 
 
 func _is_clear(spot: Vector3) -> bool:

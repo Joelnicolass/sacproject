@@ -322,11 +322,7 @@ static func gravity() -> float:
 
 
 func _ground_height(at: Vector3) -> float:
-	var query := PhysicsRayQueryParameters3D.create(at + Vector3.UP * 500.0, at + Vector3.DOWN * 500.0)
-	query.collision_mask = 1
-	query.exclude = [get_rid()]
-	var hit := get_world_3d().direct_space_state.intersect_ray(query)
-	return float(hit.position.y) if not hit.is_empty() else at.y
+	return GroundRay.surface_y(self, at, 1, [get_rid()], at.y)
 
 
 func _fit_collision() -> void:

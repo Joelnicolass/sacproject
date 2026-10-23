@@ -342,14 +342,11 @@ func _should_simulate() -> bool:
 
 func _seat() -> void:
 	var at := global_position
-	var query := PhysicsRayQueryParameters3D.create(at + Vector3.UP * 500.0, at + Vector3.DOWN * 500.0)
-	query.collision_mask = ground_mask
-	query.exclude = [get_rid()]
-	var hit := get_world_3d().direct_space_state.intersect_ray(query)
+	var ground := GroundRay.surface_y(self, at, ground_mask, [get_rid()], NAN)
 	_seat_left -= 1
-	if hit.is_empty():
+	if is_nan(ground):
 		return
-	global_position.y = float(hit.position.y) - feet_drop()
+	global_position.y = ground - feet_drop()
 	velocity = Vector3.ZERO
 	_seat_left = 0
 

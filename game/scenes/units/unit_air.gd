@@ -14,11 +14,11 @@ var seat_left := 0
 func seat() -> bool:
 	if seat_left <= 0:
 		return false
-	var hit := _ray(body.global_position)
+	var ground_y := ground_height(body.global_position)
 	seat_left -= 1
-	if hit.is_empty():
+	if is_nan(ground_y):
 		return true
-	body.global_position.y = float(hit.position.y)
+	body.global_position.y = ground_y
 	body.velocity = Vector3.ZERO
 	seat_left = 0
 	return true
@@ -26,8 +26,7 @@ func seat() -> bool:
 
 ## The ground height under `at` (NAN off the map).
 func ground_height(at: Vector3) -> float:
-	var hit := _ray(at)
-	return float(hit.position.y) if not hit.is_empty() else NAN
+	return GroundRay.surface_y(body, at, body.ground_mask, [body.get_rid()], NAN)
 
 
 ## A creature that must fly keeps `flying_height` over the ground.
@@ -93,10 +92,3 @@ func reroute() -> void:
 		final_goal = follower.goal
 	if flies_to(final_goal):
 		body.set_walk_goal(final_goal)
-
-
-func _ray(at: Vector3) -> Dictionary:
-	var query := PhysicsRayQueryParameters3D.create(at + Vector3.UP * 500.0, at + Vector3.DOWN * 500.0)
-	query.collision_mask = body.ground_mask
-	query.exclude = [body.get_rid()]
-	return body.get_world_3d().direct_space_state.intersect_ray(query)

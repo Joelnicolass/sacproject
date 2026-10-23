@@ -271,26 +271,13 @@ func _follow_corpse() -> void:
 ## Without ground under it (terrain not built yet) it stays put; sacengine drops off-map souls.
 func _settle(delta: float) -> void:
 	var at := global_position
-	var query := PhysicsRayQueryParameters3D.create(at + Vector3.UP * 500.0, at + Vector3.DOWN * 500.0)
-	query.collision_mask = ground_mask
-	query.exclude = _wizard_rids()
-	var hit := get_world_3d().direct_space_state.intersect_ray(query)
-	if hit.is_empty():
+	var ground := GroundRay.surface_y(self, at, ground_mask, GroundRay.wizard_rids(get_tree()), NAN)
+	if is_nan(ground):
 		return
-	var ground := float(hit.position.y)
 	if at.y > ground:
 		global_position.y = maxf(at.y - fall_speed * delta, ground)
 	else:
 		global_position.y = ground
-
-
-## Wizards share the ground layer.
-func _wizard_rids() -> Array[RID]:
-	var rids: Array[RID] = []
-	for body in get_tree().get_nodes_in_group("wizard"):
-		if body is CollisionObject3D:
-			rids.append((body as CollisionObject3D).get_rid())
-	return rids
 
 
 func _collect_step(delta: float) -> void:

@@ -133,10 +133,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _ground_at(xz: Vector2) -> Variant:
 	if camera == null or not camera.is_inside_tree() or camera.get_world_3d() == null:
 		return null
-	var query := PhysicsRayQueryParameters3D.create(Vector3(xz.x, GROUND_RAY_TOP, xz.y), Vector3(xz.x, -GROUND_RAY_TOP, xz.y))
-	query.collision_mask = 1
-	var hit := camera.get_world_3d().direct_space_state.intersect_ray(query)
-	return null if hit.is_empty() else hit.get("position")
+	return GroundRay.surface_point(camera, Vector3(xz.x, 0.0, xz.y), 1, [], GROUND_RAY_TOP)
 
 
 ## Radius of the circle in HUD units.

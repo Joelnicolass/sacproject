@@ -201,19 +201,7 @@ static func body_center(body: Node3D) -> Vector3:
 
 
 func _ground_height(at: Vector3) -> float:
-	var query := PhysicsRayQueryParameters3D.create(at + Vector3.UP * 500.0, at + Vector3.DOWN * 500.0)
-	query.collision_mask = 1
-	query.exclude = _body_rids()
-	var hit := get_world_3d().direct_space_state.intersect_ray(query)
-	return float(hit.position.y) if not hit.is_empty() else -INF
-
-
-func _body_rids() -> Array[RID]:
-	var rids: Array[RID] = []
-	for body in get_tree().get_nodes_in_group("wizard"):
-		if body is CollisionObject3D:
-			rids.append((body as CollisionObject3D).get_rid())
-	return rids
+	return GroundRay.surface_y(self, at, 1, GroundRay.wizard_rids(get_tree()), -INF)
 
 
 ## sacengine rockCollisionTarget / collisionTarget (state.d:16431, 16777): every living body in

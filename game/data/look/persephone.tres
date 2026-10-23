@@ -7,11 +7,19 @@
 [ext_resource type="Resource" path="res://data/look/sky/persephone_sky.tres" id="9_sky"]
 [ext_resource type="Resource" path="res://data/look/grass/persephone_grass.tres" id="10_grass"]
 
+[sub_resource type="Gradient" id="Gradient_grade"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(0, 0, 0, 1, 0.47, 0.56, 0.44, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_grade"]
+gradient = SubResource("Gradient_grade")
+
 [resource]
 script = ExtResource("1_p")
 display_name = "Pradera de Persephone"
 sky = ExtResource("9_sky")
 light = ExtResource("2_light")
 glow = ExtResource("1_e3s6b")
+grade = SubResource("GradientTexture1D_grade")
 ground_classic = ExtResource("3_04iut")
 grass = ExtResource("10_grass")

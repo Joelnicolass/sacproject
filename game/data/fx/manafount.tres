@@ -7,7 +7,7 @@
 script = ExtResource("1_type")
 atlas = ExtResource("atlas_png")
 size = Vector2(6, 6)
-energy = 2.0
+energy = 3.5
 frame_s = 0.03333
 lifetime_s = 2.67
 gravity = 15.0

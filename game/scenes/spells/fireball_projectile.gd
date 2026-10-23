@@ -51,7 +51,7 @@ func _add_visual() -> void:
 	mat.albedo_color = Color(1.0, 0.45, 0.1, 1.0)
 	mat.emission_enabled = true
 	mat.emission = Color(1.0, 0.3, 0.05, 1.0)
-	mat.emission_energy_multiplier = 2.5
+	mat.emission_energy_multiplier = 4.0
 	visual.material_override = mat
 	add_child(visual)
 

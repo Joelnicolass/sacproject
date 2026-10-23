@@ -20,8 +20,7 @@ var _watched: Array[Resource] = []
 
 
 func _ready() -> void:
-	if world_environment:
-		_base = world_environment.environment
+	_base = world_environment.environment if world_environment else null
 	visibility_changed.connect(_refresh)
 
 
@@ -70,6 +69,7 @@ func _refresh() -> void:
 	_write_fog(_profile.sky)
 	if _profile.light:
 		_write_light(_profile.light)
+	_env.adjustment_color_correction = _profile.grade
 	_write_glow(_profile.glow)
 
 

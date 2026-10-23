@@ -4,7 +4,8 @@ render_mode unshaded, blend_mix, depth_draw_never, cull_disabled, shadows_disabl
 // sacengine soul material (dagonBackend.d createMaterial(SacSoul)): shadeless, transparent,
 // no depth write. One atlas cell per instance, always facing the camera.
 uniform sampler2D atlas : source_color, filter_linear_mipmap, repeat_disable;
-uniform float energy = 2.0;
+// Above the glow threshold of every biome (data/look/glow/), so souls bloom.
+uniform float energy = 3.5;
 uniform int h_frames = 4;
 uniform int v_frames = 4;
 instance uniform int frame = 0;

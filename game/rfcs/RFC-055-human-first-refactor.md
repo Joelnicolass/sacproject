@@ -278,3 +278,73 @@ Lo que se queda como escena plana: todo el look, la UI, los mapas. No se crea `s
 - **P5.** ¿Clean formal? No ahora (§6). Si el usuario lo decide, se edita RULES primero.
 
 Fuera de alcance: refactor de MpKit (diferido), deformación de terreno (RFC propio), port web (RFC-039), pasto.
+
+## 12. Addendum 2026-10-23: segunda ronda de análisis
+
+Decisiones del usuario: estándar con tres capas aceptado (no Clean formal). Nada se afirma del original sin sacengine o REA. Investigación: `research/055R-original-reference.md` (original) y `research/055R-codebase-readability.md` (codebase y convenciones).
+
+### 12.1 Corrección del inventario
+`scenes/` tiene 480 `.gd` y 53 033 líneas; los addons suman aparte 51 `.gd` y 7 624 líneas. Sin `class_name`: 54 (no 72).
+
+### 12.2 Lo que faltaba mapear (medido)
+- Hechizos: el original tiene 53 no criatura y 51 criaturas (`nttData.d:1243-1258`). El port tiene los 53 `.tres` pero solo 12 lanzables (7 neutrales/estructura sin Shrine, y el nivel 1 de cada dios). Faltan 41: Shrine y los niveles 2 a 8 de los cinco dioses. Checklist en 055e.
+- Edificios: 196 tipos con modelo; los mapas usan 82; Shrine tiene modelo y datos pero no acción. Checklist en 055d.
+- Terreno: deforman Volcano (permanente), Bombardment (permanente), Erupt (temporal), Bore (temporal) y Quake del Jabberocky. El original: base + Δh por vértice en 256×256 cada 10 m; el pathfinding solo reacciona a agujeros. El port tiene 5 representaciones del suelo sin dueño (datos, malla, trimesh, navmesh, derivados) y 42 llamadas a `ground_height()` en 25 archivos.
+- Doctor muerto cargando: el original suelta la criatura viva y aturdida (`state.d:15776-15779`). El usuario pide que caiga y su alma quede donde aterriza: gana el usuario («que no sea un 1 a 1»), con `MatchRules.carried_dies_when_dropped` apagable.
+- Giro: en el original la criatura siempre avanza hacia donde mira, gira también para esquivar (π rad/s), nunca camina hacia atrás. El bug del port: `_on_avoided` reemplaza la velocidad después del giro.
+- Aldeanos: el port ya implementa huida a refugio ≤50 m o agacharse. Revisar por qué el usuario no lo vio.
+
+### 12.3 Orden actualizado
+
+| Orden | Corte | Letra PLAN-v2 | Cambio |
+|---|---|---|---|
+| 0 | **055-0** `CONVENTIONS.md` + `tools/lint/conventions.sh` + baseline con ratchet + plantilla de README por sistema | — | Nuevo, medio día, sin tocar la sim |
+| 1 | **055a** muerte + doctor que muere cargando | A | Se agrega §12.4 |
+| 2 | 055b look y cielo con un dueño | E (parte) | Igual |
+| 3 | 055c unidades c1–c4 + `Locomotion` compartido con el mago | B | `Vision` y `Locomotion` cierran el recorrido (a) |
+| 4 | 055d mapa + checklist de edificios + **055d-t** `TerrainShape` como único dueño de alturas | C | Prerrequisito de la deformación |
+| 5 | 055e mago y libro + checklist de los 41 hechizos | D | Cierra el recorrido (b) |
+| 6 | RFC-056 estructuras · RFC-057 terreno deformable · clima | Fase 2 | Volcán y tornado son `SpellAction`, por eso van después de 055e |
+
+Benchmark de legibilidad (archivos que un recién llegado toca o lee): visión +5 m hoy 13 → meta 2; hechizo nuevo hoy 13 → meta 3; mover un edificio hoy 7 → meta 2.
+
+### 12.4 Doctor que muere cargando (cambios al árbol de §5.3)
+```
+Unit
+├── Captive            [~] release(reason: Release) — CARRIER_DIED → asks DeathRules
+├── Corpse             [~] begin_fall(DROP_FROM_AIR) also for a carried body
+└── (rest as in §5.3)
+scenes/units/death_rules.gd            [+] static on_carrier_lost(kind, alive, dies_on_drop) -> {LAND_ALIVE, DROP_DEAD}
+scenes/sacrifice/carry_errand.gd       [~] release_creature(Captive.Release.CARRIER_DIED)
+scenes/sacrifice/errand_states/{haul,approach,pump}.gd [~] doctor_died() → one single call (today 3 paths)
+MatchRules                             [~] @export var carried_dies_when_dropped := true
+debug/units/death_carrier_rules.tres   [+] the doctor is killed mid-haul at tick N
+```
+Flujo: con `DROP_DEAD` el cuerpo pasa a `DEAD` en el aire, el gate de gravedad de 055a lo baja en ticks hasta `is_on_floor()`, `Corpse.settled` avisa y `SoulSystem` crea el alma en `soul_anchor()`, donde aterrizó. Sin RPC nuevas: `mode` ya se replica.
+
+### 12.5 Terreno deformable (RFC-057, boceto)
+```
+Map
+├── Terrain : Node3D                 [~] only assembles
+│   ├── Shape : TerrainShape         [+] the ONE owner of heights: base + Deform grid (Δh per vertex). ground_height() lives here
+│   ├── Chunks : TerrainChunk ×N     [+] MeshInstance3D + StaticBody3D/ConcavePolygonShape3D, rebuilt only if touched
+│   └── DeformLog : Node             [+] SIM: replicated stamps {tick, brush_id, pos}, applied in tick order on every peer
+├── NavRegion (MapNavRegion)         [~] listens Shape.changed(rect) → NavRebake swapped at a chosen tick (exists)
+Volcano.tscn (spawned by VolcanoAction)
+├── TerrainStamp                     [+] @export brush: TerrainBrush (.tres: radius_m, height_m, grow_s, profile: Curve)
+└── Lava / Smoke / OmniLight3D       presentation
+scenes/map/terrain/terrain_brush_rules.gd [+] static Δh(distance, brush, t)
+```
+No hay `HeightMapShape3D` y el original tiene paredes verticales: un heightfield puro no alcanza. El estampado es estado de la sim; malla y flora son presentación.
+
+### 12.6 Primera semana (1 developer a la vez)
+| Día | Corte | Archivos |
+|---|---|---|
+| 1 | 055-0 | `CONVENTIONS.md`, `tools/lint/conventions.sh`, `tools/lint/baseline.txt`, README «quién habla con quién» en units/spells/map, línea en RULES |
+| 2 | 055a-1 | `corpse.gd`, `unit_body.gd` (gate), `dead_state.gd`, `reviving_state.gd`, `unit_health_bar.gd`, `death_rules.gd`, `debug/units/death_ragdoll.tscn` + 2 `.tres`; regrabar quick |
+| 3 | 055a-1b | `captive.gd`, `carry_errand.gd`, `errand_states/*`, `MatchRules.carried_dies_when_dropped`, `death_carrier_rules.tres`; regrabar quick |
+| 4 | 055a-2 | `corpse_look.gd`, `tipping_fall.gd`, `soul` Rise, `unit.tscn` |
+| 5 | 055a-3 | `bake_ragdolls.gd` sobre 5 modelos, `ragdoll_driver.gd`, galería; el tech lead escribe el árbol de 055b |
+
+### 12.7 Preguntas abiertas nuevas
+P6 ¿el cargado muere al caer aunque estuviera vivo (Desecrate)? Recomendación: sí por defecto, apagable. P7 ¿los `.tres` del catálogo pasan a nombres humanos (`trogg.tres`)? Recomendación: sí en 055c1. P8 ¿lint en pre-commit o solo reviewer? Recomendación: reviewer primero.

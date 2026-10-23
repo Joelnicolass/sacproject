@@ -2,7 +2,7 @@ keys,es,en
 UI_BOOT_TITLE,Sacrifice,
 UI_BOOT_SOLO,Jugar solo,
 UI_BOOT_VS_AI,Contra la IA,
-UI_BOOT_AI_LEVEL_LABEL,Nivel del mago,
+UI_BOOT_AI_LEVEL_LABEL,Dificultad de la IA (1-9),
 UI_BOOT_ONLINE,Salas online,
 UI_BOOT_LOCAL_SERVER,Servidor local,
 UI_BOOT_IP_HINT,IP del servidor,

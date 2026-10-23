@@ -54,16 +54,6 @@ unique_name_in_owner = true
 layout_mode = 2
 horizontal_alignment = 1
 
-[node name="Solo" type="Button" parent="Column"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "UI_BOOT_SOLO"
-
-[node name="VsAi" type="Button" parent="Column"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "UI_BOOT_VS_AI"
-
 [node name="AiGod" type="OptionButton" parent="Column"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -94,6 +84,16 @@ layout_mode = 2
 script = ExtResource("8_map_picker")
 offer_test_maps = true
 mode_picker = NodePath("../ModePicker")
+
+[node name="Solo" type="Button" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_BOOT_SOLO"
+
+[node name="VsAi" type="Button" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_BOOT_VS_AI"
 
 [node name="Online" type="Button" parent="Column"]
 unique_name_in_owner = true

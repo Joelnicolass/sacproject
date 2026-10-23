@@ -12,7 +12,8 @@ script = ExtResource("3_grudge")
 body = NodePath("..")
 health = NodePath("../Health")
 
-[node name="PeasantBehavior" type="Node" parent="." node_paths=PackedStringArray("body", "grudge")]
+[node name="PeasantBehavior" type="Node" parent="." node_paths=PackedStringArray("body", "grudge", "health")]
 script = ExtResource("2_behavior")
 body = NodePath("..")
 grudge = NodePath("../GrudgeMemory")
+health = NodePath("../Health")

@@ -16,6 +16,8 @@ const TAGS: PackedStringArray = ["zepa", "zepd", "zepe", "zepf", "saep"]
 
 @export var body: UnitBody
 @export var grudge: GrudgeMemory
+## Where the hits come from: a hit starts the panic.
+@export var health: Health
 @export_group("Distances (sacengine state.d:13610-13611)")
 ## shelterDistance: how far a shelter may be for the peasant to dare to stand.
 @export var shelter_distance := 50.0
@@ -29,6 +31,11 @@ const TAGS: PackedStringArray = ["zepa", "zepd", "zepe", "zepf", "saep"]
 @export var think_interval_s := 0.25
 ## Bodies that scare it.
 @export var scare_groups: PackedStringArray = PackedStringArray(["unit", "wizard", "doctor"])
+@export_group("Panic")
+## A hit makes the peasant run from whoever hit it, near or far, with or without a shelter.
+@export var panic_s := 4.0
+## How far the panic leg reaches before it re-decides (longer than a calm flee: it is running for its life).
+@export var panic_leg_m := 40.0
 @export_group("Look (RFC-028c)")
 ## Decision of the port: «working the fields» is in sacengine's peasant FSM with no rule decompiled, so a calm
 ## peasant (standing near a shelter with no scare, mode IDLE) plays `work_role` instead of its idle clip.
@@ -41,6 +48,8 @@ const TAGS: PackedStringArray = ["zepa", "zepd", "zepe", "zepf", "saep"]
 var state := &"stand"
 
 var _left := 0.0
+var _panic_left := 0.0
+var _panic_from := 0
 
 
 static func is_peasant_tag(tag: String) -> bool:
@@ -55,6 +64,9 @@ func _ready() -> void:
 		body.set_idle_role(work_role)
 	if MpKit.is_networked() and not MpKit.is_server():
 		set_physics_process(false)
+		return
+	if health != null:
+		health.hit.connect(_on_hit)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -67,11 +79,21 @@ func _get_configuration_warnings() -> PackedStringArray:
 func _physics_process(delta: float) -> void:
 	if body == null or not _free_to_act():
 		return
+	_panic_left = maxf(_panic_left - delta, 0.0)
 	_left -= delta
 	if _left > 0.0:
 		return
 	_left = think_interval_s
 	think()
+
+
+## A hit from another side: run for `panic_s`, whatever the distance (the calm rule only sees 50 m).
+func _on_hit(_amount: float, from_slot: int, _was_full: bool) -> void:
+	if body == null or body.is_dead() or from_slot == int(body.owner_slot):
+		return
+	_panic_from = from_slot
+	_panic_left = panic_s
+	_left = 0.0
 
 
 ## Only an idle, walking or cowering peasant thinks; a dead, held or revived one is somebody else's.
@@ -85,6 +107,8 @@ func _free_to_act() -> bool:
 
 
 func think() -> void:
+	if _panic_left > 0.0 and _panic():
+		return
 	if closest_shelter() == null:
 		state = &"cower"
 		body.start_cower()
@@ -103,6 +127,37 @@ func think() -> void:
 	if away.length_squared() < 0.0001:
 		away = Vector3(sin(body.rotation.y), 0.0, cos(body.rotation.y))
 	body.begin_walk(body.global_position + away.normalized() * flee_leg_m)
+
+
+## Runs straight away from the closest body of the side that hit it. False when none is left to run from.
+func _panic() -> bool:
+	var threat := _closest_of_slot(_panic_from)
+	if threat == null:
+		return false
+	state = &"flee"
+	if body.is_cowering():
+		body.halt()
+	var away := body.global_position - threat.global_position
+	away.y = 0.0
+	if away.length_squared() < 0.0001:
+		away = Vector3(sin(body.rotation.y), 0.0, cos(body.rotation.y))
+	body.begin_walk(body.global_position + away.normalized() * panic_leg_m)
+	return true
+
+
+func _closest_of_slot(slot: int) -> Node3D:
+	var best: Node3D = null
+	var best_d := INF
+	for group in scare_groups:
+		for node in get_tree().get_nodes_in_group(group):
+			var other := node as Node3D
+			if other == null or int(other.get("owner_slot")) != slot:
+				continue
+			var d := _flat(other.global_position)
+			if d < best_d:
+				best_d = d
+				best = other
+	return best
 
 
 ## sacengine closestPeasantShelterInRange (state.d:28850): a standing shelter of a side that is not an

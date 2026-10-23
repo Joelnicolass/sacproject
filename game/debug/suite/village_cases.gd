@@ -205,7 +205,12 @@ func _hit_flees() -> Dictionary:
 	for tick in TICKS:
 		cower_behavior._physics_process(delta)
 		cower._physics_process(delta)
-	checks["no_shelter_cowers_in_place"] = cower.is_cowering() and absf(cower.global_position.x - 300.0) < 0.5
+	checks["no_shelter_panics_first"] = cower_behavior.state == &"flee" and cower.mode == UnitBody.Mode.MOVE
+	cower_behavior._panic_left = 0.0
+	for tick in TICKS:
+		cower_behavior._physics_process(delta)
+		cower._physics_process(delta)
+	checks["no_shelter_cowers_after_panic"] = cower.is_cowering()
 	runner.free()
 	hunter.free()
 	cower.free()

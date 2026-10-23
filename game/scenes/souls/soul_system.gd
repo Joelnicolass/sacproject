@@ -216,13 +216,15 @@ func _watch(node: Node) -> void:
 
 
 func _on_unit_died(tag: String, slot: int, _at: Vector3, unit: Node3D) -> void:
+	if not is_instance_valid(unit):
+		return
 	var type := GameData.creature(tag)
 	var count := type.souls if type else 0
-	if count <= 0:
+	if not DeathRules.leaves_soul(count, false):
 		return
-	var remains := unit.get_node_or_null("Corpse")
-	if remains and not remains.get("is_settled"):
-		remains.connect("settled", _spawn_on_corpse.bind(unit, slot, count), CONNECT_ONE_SHOT)
+	var remains := (unit as UnitBody).corpse()
+	if not remains.is_settled:
+		remains.settled.connect(_spawn_on_corpse.bind(unit, slot, count), CONNECT_ONE_SHOT)
 		return
 	_spawn_on_corpse(unit, slot, count)
 

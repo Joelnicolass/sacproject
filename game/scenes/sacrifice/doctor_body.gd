@@ -364,7 +364,6 @@ func _apply_pose() -> void:
 		return
 	remove_from_group(GROUP)
 	collision.set_deferred("disabled", true)
-	health_bar.visible = false
 	if not BodyCatalog.loads_meshes():
 		return
 	if _fade:

@@ -228,7 +228,7 @@ func _ready() -> void:
 		flight.state_changed.connect(_on_flight_changed)
 	var health := _health()
 	health.changed.connect(_on_health_changed)
-	($HealthBar as UnitHealthBar).bind(health, owner_slot)
+	($HealthBar as UnitHealthBar).bind(health, owner_slot, self)
 	$MeleeAttack.struck.connect(_on_struck)
 	afflictions.held_changed.connect(cancel_attacks.unbind(1))
 	($RangedAttack as RangedAttack).setup(self, type, $ManaPool as ManaPool, $MeleeAttack as MeleeAttack, _rng)
@@ -556,7 +556,7 @@ func _physics_process(delta: float) -> void:
 			regenerate(delta)
 	else:
 		var state := current_state()
-		if state.rests_on_floor() and not airborne and is_on_floor():
+		if state.rests_on_floor() and (is_dead() or (not airborne and is_on_floor())):
 			return
 		state.physics_update(delta)
 	if flight != null and flight.holds_still():
@@ -688,6 +688,11 @@ func _on_struck(foe: Node3D, amount: float, hit_chance: float, roll: float) -> v
 	struck.emit(foe, amount, hit_chance, roll)
 
 
+## The Corpse child: the fall of this body once it is dead.
+func corpse() -> Corpse:
+	return $Corpse as Corpse
+
+
 func _on_died(_from_slot: int) -> void:
 	mode = Mode.DEAD
 	died.emit.call_deferred(creature_tag, owner_slot, global_position)
@@ -700,7 +705,7 @@ func soul_anchor() -> Vector3:
 	if pivot == null or visual == null:
 		return global_position
 	# A clip lays the body down (the pivot stays upright): the soul sits where the Tween would have left the center.
-	var lie := ($Corpse as Corpse).lying_pose(visual.body_radius())
+	var lie := corpse().lying_pose(visual.body_radius())
 	return pivot.global_transform * lie * Vector3(0.0, visual.body_height() * 0.5, 0.0)
 
 

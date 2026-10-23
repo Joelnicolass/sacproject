@@ -1,36 +1,34 @@
 class_name DeadState
 extends UnitState
 
-## DEAD (dying + dead): the corpse lies down, by a clip when the model has one (RFC-023f) or by Corpse's Tween. Leaving
-## it (a Convert doctor pumped the creature back to life, RFC-020e) stands the corpse up.
+## DEAD: the body stops acting (no target, no attacks) and becomes a corpse that falls until it rests on the floor.
+## Leaving it (a Convert doctor pumped the creature back to life) makes it a creature again. It does not touch the
+## health bar (the bar hides itself) and it does not animate the body: only the death clip is played from here.
 
 
 func present(animate: bool) -> void:
 	body.target = null
 	body.cancel_attacks()
-	body.get_node("HealthBar").visible = false
-	var visual := body.get_node_or_null("Tilt/Mesh") as BodyVisual
-	var radius := visual.body_radius() if visual else 0.3
 	var role := _death_role()
 	if not role.is_empty():
 		if animate:
 			body.clip_pose.play(role, true)
 		else:
 			body.clip_pose.play_ended(role)
-	(body.get_node("Corpse") as Corpse).lay_down(body, radius, animate, not role.is_empty())
+	body.corpse().lay_down(body, not role.is_empty(), not animate)
 
 
 func exit() -> void:
-	body.get_node("HealthBar").visible = true
-	(body.get_node("Corpse") as Corpse).stand_up(body)
+	body.corpse().stand_up(body)
 	super.exit()
 
 
+## The corpse stops moving once it rested; until then it falls like any body.
 func rests_on_floor() -> bool:
-	return true
+	return body.corpse().is_settled
 
 
-## The clip that lays the body down ("" = a Tween does: baked meshes, dedicated server, no dying clip).
+## The clip that lays the body down ("" = none: baked meshes, dedicated server, no dying clip).
 func _death_role() -> String:
 	for role: String in ["fly_death" if body.is_flying() else "death", "death"]:
 		if body.clip_pose.is_skeletal() and body.has_clip(role):

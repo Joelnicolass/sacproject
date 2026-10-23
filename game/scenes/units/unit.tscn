@@ -1,4 +1,4 @@
-[gd_scene load_steps=88 format=3]
+[gd_scene load_steps=89 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/unit_body.gd" id="1_body"]
 [ext_resource type="PackedScene" path="res://scenes/units/movement/body_avoidance.tscn" id="f207_avoid"]
@@ -72,6 +72,7 @@
 [ext_resource type="Script" path="res://scenes/units/states/chase_state.gd" id="f221_chase"]
 [ext_resource type="Script" path="res://scenes/units/states/attack_state.gd" id="f221_attack"]
 [ext_resource type="Script" path="res://scenes/units/states/dead_state.gd" id="f221_dead"]
+[ext_resource type="Script" path="res://scenes/units/states/reviving_state.gd" id="f221_reviving"]
 [ext_resource type="Script" path="res://scenes/units/states/summoning_state.gd" id="f221_summoning"]
 [ext_resource type="Script" path="res://scenes/units/states/shoot_state.gd" id="f221_shoot"]
 [ext_resource type="Script" path="res://scenes/units/states/rock_form_state.gd" id="f221_rock_form"]

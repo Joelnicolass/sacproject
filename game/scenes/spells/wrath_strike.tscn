@@ -13,6 +13,6 @@ cue = &"wrath_cast"
 [node name="Light" parent="." instance=ExtResource("3_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 light_color = Color(0.75, 0.82, 1, 1)
-light_energy = 3.0
-omni_range = 12.0
+light_energy = 1.2
+omni_range = 5.0
 priority = 3.0

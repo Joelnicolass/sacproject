@@ -181,6 +181,5 @@ tag = "stratos"
 display_name = "Stratos"
 sort_order = 3
 look = ExtResource("99_look")
-magic_color = Color(0.55, 0.75, 1, 1)
 ai_profile = ExtResource("6_ai")
 book = SubResource("Book_1")

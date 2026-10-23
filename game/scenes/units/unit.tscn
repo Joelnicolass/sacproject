@@ -32,6 +32,7 @@
 [ext_resource type="Script" path="res://scenes/bodies/body_animator.gd" id="f36_clip"]
 [ext_resource type="PackedScene" path="res://scenes/bodies/body_rig.tscn" id="f162_rig"]
 [ext_resource type="Script" path="res://scenes/units/unit_mana_support.gd" id="f41_mana_support"]
+[ext_resource type="Script" path="res://scenes/units/creature_fx.gd" id="f055_cfx"]
 [ext_resource type="Script" path="res://scenes/spells/guardian/guardian_bond.gd" id="f63_bond"]
 [ext_resource type="PackedScene" path="res://scenes/spells/guardian/guardian_tether.tscn" id="f63_tether"]
 [ext_resource type="Resource" path="res://data/match_rules.tres" id="f63_rules"]
@@ -254,6 +255,10 @@ catalog = ExtResource("f126_catalog")
 [node name="ManaSupport" type="Node3D" parent="."]
 script = ExtResource("f41_mana_support")
 
+[node name="CreatureFx" type="Node3D" parent="." node_paths=PackedStringArray("body")]
+script = ExtResource("f055_cfx")
+body = NodePath("..")
+
 [node name="ClipPose" type="Node" parent="." node_paths=PackedStringArray("visual")]
 script = ExtResource("f36_clip")
 visual = NodePath("../Tilt/Mesh")
@@ -355,6 +360,7 @@ visual = NodePath("../Tilt/Mesh")
 
 [node name="Light" parent="." instance=ExtResource("f055_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+enabled = false
 
 [node name="Corpse" type="Node" parent="."]
 script = ExtResource("5_corpse")

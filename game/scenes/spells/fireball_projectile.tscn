@@ -13,6 +13,6 @@ cue = &"fireball_cast"
 [node name="Light" parent="." instance=ExtResource("3_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 light_color = Color(1, 0.5, 0.15, 1)
-light_energy = 2.5
-omni_range = 9.0
+light_energy = 1.2
+omni_range = 5.0
 priority = 3.0

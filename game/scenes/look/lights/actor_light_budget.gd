@@ -76,6 +76,9 @@ func rank() -> void:
 	var entries: Array[_Entry] = []
 	for node in get_tree().get_nodes_in_group(ActorLight.GROUP):
 		var light := node as ActorLight
+		if light.always_on:
+			light.set_budget_on(true)
+			continue
 		var distance := light.global_position.distance_to(camera.global_position) if camera else min_distance_m
 		if cap <= 0 or not light.is_lit() or distance > _reach(light):
 			light.set_budget_on(false)

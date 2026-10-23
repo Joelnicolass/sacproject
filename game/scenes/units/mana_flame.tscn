@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/fx/sprite_emitter.tscn" id="1_emitter"]
+[ext_resource type="Resource" path="res://data/fx/manahoar.tres" id="2_type"]
+
+[node name="ManaFlame" instance=ExtResource("1_emitter")]
+type = ExtResource("2_type")

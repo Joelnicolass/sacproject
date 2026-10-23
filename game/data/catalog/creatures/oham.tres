@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_bou3e"]
+[ext_resource type="PackedScene" path="res://scenes/units/mana_flame.tscn" id="2_flame"]
 
 [resource]
 script = ExtResource("1_bou3e")
@@ -8,6 +9,7 @@ tag = "oham"
 display_name = "Manahoar"
 god = "none"
 model = "maho"
+carried_fx = ExtResource("2_flame")
 health = 550
 regeneration_per_s = 16.6667
 running_speed = 13.5

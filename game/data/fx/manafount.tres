@@ -1,20 +1,29 @@
-[gd_resource type="Resource" script_class="ParticleType" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="ParticleType" load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
 [ext_resource type="Texture2D" uid="uid://cyi4qh01ni1as" path="res://assets/original/fx/elec.png" id="atlas_png"]
+
+[sub_resource type="Gradient" id="Gradient_plume"]
+offsets = PackedFloat32Array(0, 0.35, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.75, 0.97, 1, 1, 0.35, 0.8, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="Ramp_plume"]
+gradient = SubResource("Gradient_plume")
 
 [resource]
 script = ExtResource("1_type")
 atlas = ExtResource("atlas_png")
 size = Vector2(6, 6)
-energy = 3.5
+energy = 2.0
 frame_s = 0.03333
 lifetime_s = 2.67
 gravity = 15.0
 speed_min = 15.0
 speed_max = 25.0
-spread = 27.0
+spread = 12.0
 emission_radius = 0.5
 rate_per_s = 240.0
 lifetime_randomness = 1.0
 fade_s = 1.6
+scale_fade_s = 1.0
+color_ramp = SubResource("Ramp_plume")

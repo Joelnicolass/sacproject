@@ -12,6 +12,12 @@ const GROUP := &"actor_lights"
 ## Weight against the other lights when the budget picks the best ones: a wizard 4, a spell 3, a unit 1.
 @export_range(0.1, 16.0, 0.1) var priority := 1.0
 
+## Off by default on units (the original has no light pool under bodies; only the wizard carries a reveal light); a human can turn it on in the inspector.
+@export var enabled := true
+
+## The budget never switches it off (the wizard's reveal light). Not counted among the budget's lights.
+@export var always_on := false
+
 var _lit := true
 var _budget_on := true
 var _full_energy := 1.0
@@ -24,7 +30,7 @@ func _ready() -> void:
 		return
 	_full_energy = light_energy
 	# With a budget around the light waits for its verdict (a hundred new lights must not all flash on for a moment).
-	_budget_on = get_tree().get_first_node_in_group(ActorLightBudget.GROUP) == null
+	_budget_on = always_on or get_tree().get_first_node_in_group(ActorLightBudget.GROUP) == null
 	add_to_group(GROUP)
 	_refresh()
 
@@ -61,11 +67,6 @@ func is_budget_on() -> bool:
 	return _budget_on
 
 
-## Paints the light (a wizard takes its god's color).
-func tint(color: Color) -> void:
-	light_color = color
-
-
 func _on_faded_out() -> void:
 	_lit = false
 	light_energy = _full_energy
@@ -79,4 +80,4 @@ func _stop_fade() -> void:
 
 
 func _refresh() -> void:
-	visible = _lit and _budget_on
+	visible = enabled and _lit and _budget_on

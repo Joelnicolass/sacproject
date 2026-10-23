@@ -89,13 +89,15 @@ void sky() {
 		vec2 cloud_offset = fract(t / cloud_period_s) * vec2(1.0, -1.0);
 
 		// Texture coordinates first, outside any branch, so their derivatives (the mip level) are valid.
-		vec4 bottom = sky_band_bottom_uv(dir, eye_height_m, spin);
-		vec4 top = sky_band_top_uv(dir, eye_height_m, spin);
+		float bottom_u;
+		float top_u;
+		vec4 bottom = sky_band_bottom_uv(dir, eye_height_m, spin, bottom_u);
+		vec4 top = sky_band_top_uv(dir, eye_height_m, spin, top_u);
 		vec4 cloud = sky_cloud_uv(dir, eye_height_m, cloud_offset);
-		vec2 bottom_dx = dFdx(bottom.xy);
-		vec2 bottom_dy = dFdy(bottom.xy);
-		vec2 top_dx = dFdx(top.xy);
-		vec2 top_dy = dFdy(top.xy);
+		vec2 bottom_dx = sky_band_grad(dFdx(bottom_u), dFdx(bottom.x), dFdx(bottom.y));
+		vec2 bottom_dy = sky_band_grad(dFdy(bottom_u), dFdy(bottom.x), dFdy(bottom.y));
+		vec2 top_dx = sky_band_grad(dFdx(top_u), dFdx(top.x), dFdx(top.y));
+		vec2 top_dy = sky_band_grad(dFdy(top_u), dFdy(top.x), dFdy(top.y));
 		vec2 cloud_dx = dFdx(cloud.xy);
 		vec2 cloud_dy = dFdy(cloud.xy);
 

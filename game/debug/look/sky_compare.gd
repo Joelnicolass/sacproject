@@ -4,6 +4,8 @@ extends Node
 ## Sky resource), same god, same camera, same frozen second, in two SubViewports side by side.
 ## F6 shows god 0 and `check_tick` steps to the next; `-- --sky-compare-run` measures all of them and quits:
 ##   god  mean  p99  max  PASS/FAIL     (PASS: mean < 2 and max < 6, CIE76 over every pixel of every pose)
+## `-- --sky-compare-size=1280x720` renders both skies that big (default 320x180): if the residual shrinks with the size it was
+## sampling (mip level, edges); if it stays it is geometry.
 
 const ThemeApplier := preload("res://scenes/look/theme/theme_applier.gd")
 const FROZEN_SECONDS := 100.0
@@ -16,6 +18,8 @@ const BASE_HEIGHT_M := -511.0
 ## (yaw, pitch) in degrees. Horizon and upper band, clouds, and the lower band.
 @export var poses: Array[Vector2] = [Vector2(0.0, 5.0), Vector2(135.0, 35.0), Vector2(270.0, -15.0)]
 @export var camera_height_m := 40.0
+## Pixels of each viewport; the containers do not stretch them, so this is really what is rendered.
+@export var viewport_size := Vector2i(320, 180)
 
 @export var old_viewport: SubViewport
 @export var new_viewport: SubViewport
@@ -29,11 +33,24 @@ var _index := 0
 
 
 func _ready() -> void:
+	_size_viewports()
 	new_environment.environment.sky.process_mode = Sky.PROCESS_MODE_QUALITY
 	if OS.get_cmdline_user_args().has("--sky-compare-run"):
 		_measure_all.call_deferred()
 	else:
 		_show.call_deferred(GameData.gods()[0], poses[0])
+
+
+func _size_viewports() -> void:
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--sky-compare-size="):
+			var parts := arg.get_slice("=", 1).split("x")
+			if parts.size() == 2:
+				viewport_size = Vector2i(int(parts[0]), int(parts[1]))
+	for viewport in [old_viewport, new_viewport]:
+		(viewport.get_parent() as SubViewportContainer).stretch = false
+		viewport.size = viewport_size
+	print("sky_compare viewport %dx%d" % [viewport_size.x, viewport_size.y])
 
 
 func _unhandled_input(event: InputEvent) -> void:

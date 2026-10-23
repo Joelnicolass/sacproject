@@ -4,10 +4,9 @@ extends LookLayer
 
 ## Environment layer of the rig: the only writer of the map's Environment. From the profile it draws the sky,
 ## the ambient light and reflections, the fog (and the `fx_fog_*` shader globals the additive sprites fade with),
-## exposure, screen-space light and glow. It works on a private copy of the shared `env_base.tres` and
-## recomputes all of it from (profile, quality preset, visible) every time: nothing is saved or restored,
-## and hidden or without a profile it shows the base as it is. Time of day and weather will hand it values.
-## Presentation only: the rig, and this layer with it, is freed in a headless or dedicated process.
+## tonemapper, exposure, screen-space light and glow. It works on a private copy of the shared `env_base.tres` and
+## recomputes all of it from (profile, quality preset, visible) every time: nothing is saved or restored, and hidden
+## or without a profile it shows the base as it is. Presentation only: freed in a headless or dedicated process.
 
 @export var world_environment: WorldEnvironment
 

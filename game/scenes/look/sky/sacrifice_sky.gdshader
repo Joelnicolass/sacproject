@@ -23,9 +23,16 @@ uniform float eye_height_m : hint_range(0.0, 2000.0, 1.0) = 551.0;
 
 group_uniforms bands;
 // Upper band, seen from the horizon up (skyt.png).
-uniform sampler2D top_texture : source_color, hint_default_transparent, filter_linear_mipmap, repeat_disable;
+uniform sampler2D top_texture : source_color, hint_default_transparent, filter_linear_mipmap, repeat_enable;
 // Lower band, seen below the horizon (skyb.png).
-uniform sampler2D bottom_texture : source_color, hint_default_transparent, filter_linear_mipmap, repeat_disable;
+uniform sampler2D bottom_texture : source_color, hint_default_transparent, filter_linear_mipmap, repeat_enable;
+// Copies of the texture around the sky (the original: 8).
+uniform int band_repeats : hint_range(1, 32) = 8;
+// true: every other copy is flipped, as in the original (a symmetry axis at each seam; needed only to compare with it).
+// false: plain wrap-around; the texture must tile horizontally (tools/look/make_tileable.py).
+uniform bool mirror_repeat = false;
+// Soft cross-fade where the upper and the lower band meet, as a fraction of a band's height each side. 0 = a hard edge.
+uniform float band_blend : hint_range(0.0, 0.2, 0.001) = 0.03;
 // Seconds for a full turn of both bands.
 uniform float rotation_period_s : hint_range(1.0, 2048.0, 1.0) = 512.0;
 
@@ -91,20 +98,25 @@ void sky() {
 		// Texture coordinates first, outside any branch, so their derivatives (the mip level) are valid.
 		float bottom_u;
 		float top_u;
-		vec4 bottom = sky_band_bottom_uv(dir, eye_height_m, spin, bottom_u);
-		vec4 top = sky_band_top_uv(dir, eye_height_m, spin, top_u);
-		bottom = sky_band_bottom_owns(bottom, top);
+		float repeats = float(band_repeats);
+		float margin_m = band_blend * SKY_BAND_TOP_M;
+		vec4 bottom = sky_band_bottom_uv(dir, eye_height_m, spin, margin_m, repeats, mirror_repeat, bottom_u);
+		vec4 top = sky_band_top_uv(dir, eye_height_m, spin, margin_m, repeats, mirror_repeat, top_u);
+		float top_weight = sky_band_top_weight(top.y, band_blend);
+		if (band_blend <= 0.0) {
+			bottom = sky_band_bottom_owns(bottom, top);
+		}
 		vec4 cloud = sky_cloud_uv(dir, eye_height_m, cloud_offset);
-		vec2 bottom_dx = sky_band_grad(dFdx(bottom_u), dFdx(bottom.x), dFdx(bottom.y));
-		vec2 bottom_dy = sky_band_grad(dFdy(bottom_u), dFdy(bottom.x), dFdy(bottom.y));
-		vec2 top_dx = sky_band_grad(dFdx(top_u), dFdx(top.x), dFdx(top.y));
-		vec2 top_dy = sky_band_grad(dFdy(top_u), dFdy(top.x), dFdy(top.y));
+		vec2 bottom_dx = sky_band_grad(dFdx(bottom_u), dFdx(bottom.x), dFdx(bottom.y), repeats, mirror_repeat);
+		vec2 bottom_dy = sky_band_grad(dFdy(bottom_u), dFdy(bottom.x), dFdy(bottom.y), repeats, mirror_repeat);
+		vec2 top_dx = sky_band_grad(dFdx(top_u), dFdx(top.x), dFdx(top.y), repeats, mirror_repeat);
+		vec2 top_dy = sky_band_grad(dFdy(top_u), dFdy(top.x), dFdy(top.y), repeats, mirror_repeat);
 		vec2 cloud_dx = dFdx(cloud.xy);
 		vec2 cloud_dy = dFdy(cloud.xy);
 
 		vec3 color = background_color;
-		color = sky_band_blend(color, bottom_texture, bottom, bottom_dx, bottom_dy, energy);
-		color = sky_band_blend(color, top_texture, top, top_dx, top_dy, energy);
+		color = sky_band_blend(color, bottom_texture, bottom, bottom_dx, bottom_dy, energy, 1.0);
+		color = sky_band_blend(color, top_texture, top, top_dx, top_dy, energy, top_weight);
 		color = sky_cloud_blend(color, clouds_texture, cloud, cloud_dx, cloud_dy, energy, cloud_alpha);
 
 		if (aurora_strength > 0.0 && dir.y > -0.1) {

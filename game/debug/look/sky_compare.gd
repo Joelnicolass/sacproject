@@ -3,7 +3,9 @@ extends Node
 ## Old sky (debug/look/sky_reference/sky.tscn: meshes on a background colour, frozen here as the reference) against the
 ## new one (sacrifice_sky.gdshader in a Sky resource), same god, same camera, same frozen second, in two SubViewports
 ## side by side. Both are fed from the god's own `look.sky.material` (colour and the three textures), minus its aurora
-## (the old sky has none), so what is measured is the picture, not the data.
+## (the old sky has none), so what is measured is the picture, not the data. The game's skies no longer mirror their
+## textures (`mirror_repeat` false, tileable copies under assets/custom/sky/): the measured copy goes back to the original
+## textures, mirrored and with a hard ring, so this still measures the geometry against the old meshes.
 ## F6 shows god 0 and `check_tick` steps to the next; `-- --sky-compare-run` measures all of them and quits:
 ##   god  mean  p99  max  PASS/FAIL     (PASS: mean < 2 and max < 6, CIE76 over every pixel of every pose)
 ## `-- --sky-compare-size=1280x720` renders both skies that big (default 320x180): if the residual shrinks with the size it was
@@ -111,8 +113,19 @@ func _set_new(material: ShaderMaterial) -> void:
 	copy.set_shader_parameter("eye_height_m", camera_height_m - BASE_HEIGHT_M)
 	copy.set_shader_parameter("time_override_s", FROZEN_SECONDS)
 	copy.set_shader_parameter("aurora_strength", 0.0)
+	copy.set_shader_parameter("mirror_repeat", true)
+	copy.set_shader_parameter("band_repeats", 8)
+	copy.set_shader_parameter("band_blend", 0.0)
+	for uniform in ["top_texture", "bottom_texture"]:
+		copy.set_shader_parameter(uniform, load(_path(material, uniform)))
 	new_environment.environment.sky.sky_material = copy
 
 
+## The original texture behind a uniform: a tileable copy (assets/custom/sky/<god>_<name>_tileable.png) maps back to
+## assets/original/themes/<god>/<name>.png.
 func _path(material: ShaderMaterial, uniform: String) -> String:
-	return (material.get_shader_parameter(uniform) as Texture2D).resource_path
+	var path := (material.get_shader_parameter(uniform) as Texture2D).resource_path
+	if path.begins_with("res://assets/custom/sky/") and path.ends_with("_tileable.png"):
+		var parts := path.get_file().trim_suffix("_tileable.png").split("_")
+		return "res://assets/original/themes/%s/%s.png" % [parts[0], parts[1]]
+	return path

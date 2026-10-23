@@ -2,9 +2,9 @@
 
 [ext_resource type="Shader" path="res://scenes/look/sky/sacrifice_sky.gdshader" id="1_nd78j"]
 [ext_resource type="Texture2D" path="res://data/look/sky/aurora_gradient.tres" id="2_ljtet"]
-[ext_resource type="Texture2D" path="res://assets/original/themes/james/skyb.png" id="3_cruv4"]
+[ext_resource type="Texture2D" path="res://assets/custom/sky/james_skyb_tileable.png" id="3_cruv4"]
 [ext_resource type="Texture2D" path="res://assets/original/themes/james/sky.png" id="4_aykr2"]
-[ext_resource type="Texture2D" path="res://assets/original/themes/james/skyt.png" id="5_8yatu"]
+[ext_resource type="Texture2D" path="res://assets/custom/sky/james_skyt_tileable.png" id="5_8yatu"]
 [ext_resource type="Script" path="res://scenes/look/sky/sky_look.gd" id="6_75fvq"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rhook"]
@@ -13,6 +13,9 @@ shader_parameter/background_color = Color(1, 0.7059, 0.4706, 1)
 shader_parameter/energy = 1.7
 shader_parameter/top_texture = ExtResource("5_8yatu")
 shader_parameter/bottom_texture = ExtResource("3_cruv4")
+shader_parameter/mirror_repeat = false
+shader_parameter/band_repeats = 8
+shader_parameter/band_blend = 0.03
 shader_parameter/rotation_period_s = 512.0
 shader_parameter/clouds_texture = ExtResource("4_aykr2")
 shader_parameter/cloud_period_s = 64.0

@@ -14,7 +14,7 @@
 const float SKY_BAND_RADIUS_M = 5120.0;
 const float SKY_BAND_TOP_M = 2560.0;
 const float SKY_BAND_BOTTOM_M = -2560.0;
-const float SKY_BAND_REPEATS = 8.0;
+const float SKY_BAND_REPEATS = 8.0; // the original's count; the sky material's `band_repeats` replaces it
 // The cone narrows by 20 % of the radius over its height.
 const float SKY_BAND_CONE_RADIUS_RATIO = 0.8;
 const float SKY_BAND_SIDES = 64.0;
@@ -30,13 +30,20 @@ float sky_band_mirror(float u) {
 	return 1.0 - abs(mod(u, 2.0) - 1.0);
 }
 
+// u folded into 0..1: mirrored (the original's mesh: every other copy is flipped, which leaves a symmetry axis at each
+// seam) or plain wrap-around (the texture must tile horizontally, see tools/look/make_tileable.py).
+float sky_band_wrap(float u, bool mirror_repeat) {
+	return mirror_repeat ? sky_band_mirror(u) : fract(u);
+}
+
 // Where the ray leaves a band made of flat sides between two rings.
 // Rings: (y_low, r_low, v_low) and (y_high, r_high, v_high) = height, radius, texture v. `spin` turns the band.
 // Returns xy = texture coordinate, z = hit height, w = 1 when the ray crosses the band.
 // `u_unfolded` is the same u before mirroring (0..8 around): derive the mip level from it, not from xy.
-// `hit_margin_high_m` lets the hit test reach that far above y_high (the uv still extrapolate smoothly).
+// `hit_margin_low_m` / `hit_margin_high_m` let the hit test reach that far past y_low / y_high (the uv extrapolate smoothly).
 vec4 sky_band_hit(vec3 dir, float eye_height_m, float spin, float y_low, float r_low, float v_low,
-		float y_high, float r_high, float v_high, float hit_margin_high_m, out float u_unfolded) {
+		float y_high, float r_high, float v_high, float hit_margin_low_m, float hit_margin_high_m,
+		float repeats, bool mirror_repeat, out float u_unfolded) {
 	float azimuth = mod(atan(dir.z, dir.x) - spin, TAU);
 	float side = min(floor(azimuth / SKY_BAND_SIDE_RAD), SKY_BAND_SIDES - 1.0);
 	// Angle from the middle of that side, where its flat face is closest to the axis.
@@ -60,19 +67,19 @@ vec4 sky_band_hit(vec3 dir, float eye_height_m, float spin, float y_low, float r
 		float lean = (across - half_low * (1.0 - up)) / half_high;
 		along = 1.0 - 0.5 * (up - lean);
 	}
-	u_unfolded = (side + along) * SKY_BAND_REPEATS / SKY_BAND_SIDES;
-	float hit = step(1e-5, denominator) * step(0.0, t) * step(y_low, y) * step(y, y_high + hit_margin_high_m);
-	return vec4(sky_band_mirror(u_unfolded), mix(v_low, v_high, up), y, hit);
+	u_unfolded = (side + along) * repeats / SKY_BAND_SIDES;
+	float hit = step(1e-5, denominator) * step(0.0, t) * step(y_low - hit_margin_low_m, y) * step(y, y_high + hit_margin_high_m);
+	return vec4(sky_band_wrap(u_unfolded, mirror_repeat), mix(v_low, v_high, up), y, hit);
 }
 
-vec4 sky_band_top_uv(vec3 dir, float eye_height_m, float spin, out float u_unfolded) {
+vec4 sky_band_top_uv(vec3 dir, float eye_height_m, float spin, float margin_m, float repeats, bool mirror_repeat, out float u_unfolded) {
 	return sky_band_hit(dir, eye_height_m, spin, 0.0, SKY_BAND_RADIUS_M, 1.0,
-			SKY_BAND_TOP_M, SKY_BAND_RADIUS_M, 0.0, 0.0, u_unfolded);
+			SKY_BAND_TOP_M, SKY_BAND_RADIUS_M, 0.0, margin_m, 0.0, repeats, mirror_repeat, u_unfolded);
 }
 
-vec4 sky_band_bottom_uv(vec3 dir, float eye_height_m, float spin, out float u_unfolded) {
+vec4 sky_band_bottom_uv(vec3 dir, float eye_height_m, float spin, float margin_m, float repeats, bool mirror_repeat, out float u_unfolded) {
 	return sky_band_hit(dir, eye_height_m, spin, SKY_BAND_BOTTOM_M, SKY_BAND_RADIUS_M * SKY_BAND_CONE_RADIUS_RATIO, 0.0,
-			0.0, SKY_BAND_RADIUS_M, 1.0, SKY_BAND_RING_OVERLAP_M, u_unfolded);
+			0.0, SKY_BAND_RADIUS_M, 1.0, 0.0, max(margin_m, SKY_BAND_RING_OVERLAP_M), repeats, mirror_repeat, u_unfolded);
 }
 
 // The ring where the bands meet belongs to the upper band when the ray crosses it at or above y = 0, and to the
@@ -84,17 +91,31 @@ vec4 sky_band_bottom_owns(vec4 bottom, vec4 top) {
 }
 
 // Screen-space change of (u, v) for the mip level, from the derivatives the caller takes (dFdx / dFdy are
-// fragment built-ins, so they stay in sky()). u is differentiated before mirroring so a fold in the middle
-// of a pixel pair does not read as "no change"; around the 0 / 8 wrap the mirrored one is the continuous one.
-vec2 sky_band_grad(float du_unfolded, float du_mirrored, float dv) {
-	return vec2(abs(du_unfolded) > 1.0 ? du_mirrored : du_unfolded, dv);
+// fragment built-ins, so they stay in sky()). Mirrored: u is differentiated before mirroring so a fold in the middle
+// of a pixel pair does not read as "no change"; around the 0 / repeats wrap the mirrored one is the continuous one.
+// Plain wrap-around: the unfolded u is smooth except at the one azimuth where it jumps by `repeats`.
+vec2 sky_band_grad(float du_unfolded, float du_mirrored, float dv, float repeats, bool mirror_repeat) {
+	if (mirror_repeat) {
+		return vec2(abs(du_unfolded) > 1.0 ? du_mirrored : du_unfolded, dv);
+	}
+	float du = abs(du_unfolded) > 0.5 * repeats ? du_unfolded - sign(du_unfolded) * repeats : du_unfolded;
+	return vec2(du, dv);
 }
 
-// Lays a band texel over `color`: unshaded, brightened by `energy` and clamped, blended by its alpha.
-vec3 sky_band_blend(vec3 color, sampler2D band, vec4 uv_hit, vec2 dx, vec2 dy, float energy) {
+// Weight of the upper band around the ring where it meets the lower one: 1 above, 0 below, 0.5 on the ring, easing
+// over `blend` of the band's v either side. The lower band is drawn under it, so the two cross-fade instead of meeting
+// at an edge. 1 when `blend` is 0 (the bands then meet at the ring, see sky_band_bottom_owns).
+float sky_band_top_weight(float top_v, float blend) {
+	return blend > 0.0 ? 1.0 - smoothstep(-1.0, 1.0, (top_v - 1.0) / blend) : 1.0;
+}
+
+// Lays a band texel over `color`: unshaded, brightened by `energy` and clamped, blended by its alpha times `weight`.
+// v stays half a texel inside the image, so a texture that wraps around (plain repeat) does not bleed top into bottom.
+vec3 sky_band_blend(vec3 color, sampler2D band, vec4 uv_hit, vec2 dx, vec2 dy, float energy, float weight) {
 	if (uv_hit.w > 0.5) {
-		vec4 texel = textureGrad(band, uv_hit.xy, dx, dy);
-		color = mix(color, min(texel.rgb * energy, vec3(1.0)), texel.a);
+		float edge = 0.5 / float(textureSize(band, 0).y);
+		vec4 texel = textureGrad(band, vec2(uv_hit.x, clamp(uv_hit.y, edge, 1.0 - edge)), dx, dy);
+		color = mix(color, min(texel.rgb * energy, vec3(1.0)), texel.a * weight);
 	}
 	return color;
 }

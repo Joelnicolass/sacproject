@@ -64,6 +64,12 @@ const SPRITE_LIFT := 1.25 * 1.6
 @export var ring_turn_per_s := TAU / 8.0
 @export_flags_3d_physics var ground_mask := 1
 
+@export_group("Rise")
+## How far under its hover height the soul starts when it appears (it only moves the drawing, never the soul).
+@export_range(0.0, 3.0, 0.05, "suffix:m") var rise_m := 0.8
+## Seconds the soul takes to rise from the corpse to its hover height.
+@export_range(0.0, 5.0, 0.05, "suffix:s") var rise_s := 1.2
+
 @export_group("Look")
 ## Soul sprite sheet (`spir`, 4x4 frames).
 @export var atlas: Texture2D
@@ -84,8 +90,11 @@ var _remains: Node3D
 var _who := ""
 var _anim_t := 0.0
 var _facing := 0.0
+var _rise_t := 0.0
 var _sprites: Array[MeshInstance3D] = []
 var _material: ShaderMaterial
+
+@onready var _visual := find_child("Visual", false, false) as Node3D
 
 
 func setup(data: Dictionary) -> void:
@@ -102,10 +111,17 @@ func setup(data: Dictionary) -> void:
 
 func _ready() -> void:
 	add_to_group("soul")
+	if _visual == null:
+		_visual = Node3D.new()
+		_visual.name = "Visual"
+		add_child(_visual)
 	var target := get_node_or_null("Target")
 	if target:
 		target.add_to_group("soul_target")
 	_rebuild_sprites()
+	## A soul that is already full grown (a late join) does not rise again.
+	if state != State.EMERGING:
+		_rise_t = rise_s
 	if MpKit.is_networked() and not MpKit.is_server():
 		set_physics_process(false)
 
@@ -311,6 +327,7 @@ func _collector_center() -> Vector3:
 
 
 func _process(delta: float) -> void:
+	_rise(delta)
 	if _sprites.is_empty():
 		return
 	_anim_t += delta
@@ -333,6 +350,13 @@ func _process(delta: float) -> void:
 		var angle := _facing + TAU * k / count
 		var offset := Vector3(-sin(angle), 0.0, cos(angle)) * radius
 		_place(_sprites[k], offset + lift, each, cell)
+
+
+## Presentation only: the drawing starts `rise_m` under the soul and climbs to it; the soul itself does not move.
+func _rise(delta: float) -> void:
+	_rise_t = minf(_rise_t + delta, rise_s)
+	var progress := 1.0 if rise_s <= 0.0 else smoothstep(0.0, 1.0, _rise_t / rise_s)
+	_visual.position.y = -rise_m * (1.0 - progress)
 
 
 func _place(sprite: MeshInstance3D, at: Vector3, size: float, cell: int) -> void:
@@ -361,7 +385,7 @@ func _rebuild_sprites() -> void:
 		sprite.mesh = quad
 		sprite.material_override = material
 		sprite.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		add_child(sprite)
+		_visual.add_child(sprite)
 		_sprites.append(sprite)
 
 

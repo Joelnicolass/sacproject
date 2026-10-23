@@ -36,6 +36,7 @@ func run(host: Node3D) -> Dictionary:
 	out["death_rules"] = _rules()
 	out["death_ground"] = await _ground()
 	out["death_flier"] = await _flier()
+	out["death_look"] = await _look()
 	out["death_carrier_rule_on"] = await _carrier(true)
 	out["death_carrier_rule_off"] = await _carrier(false)
 	_root.queue_free()
@@ -90,6 +91,38 @@ func _flier() -> Dictionary:
 	checks["on_the_floor"] = unit.global_position.y < 0.5 and unit.is_on_floor()
 	var soul := _soul_of(unit)
 	checks["soul_at_floor_height"] = soul != null and soul.global_position.y < 2.5
+	unit.free()
+	return _verdict(checks)
+
+
+## RFC-055 055a-2: the look of a death. A body with no clip tips over (the model, not the body), fades out when it
+## dissolves, and its soul rises on screen without the soul moving.
+func _look() -> Dictionary:
+	var unit := _unit("nmuh", Vector3(0.0, 0.0, 10.0))
+	await _frames(5)
+	var mesh := unit.find_child("Mesh", true, false) as BodyVisual
+	var look := unit.find_child("CorpseLook", false, false) as CorpseLook
+	var checks := {"upright_alive": is_zero_approx(mesh.rotation.x)}
+	var corpse := unit.corpse()
+	(unit.find_child("Health", false, false) as Health).damage(99999.0, 1)
+	await _until(func() -> bool: return corpse.is_settled, GUARD_FRAMES)
+	await _until(func() -> bool: return mesh.rotation.x < -1.5, GUARD_FRAMES)
+	checks["model_tipped"] = mesh.rotation.x < -1.5
+	checks["body_not_rotated"] = is_zero_approx((mesh.get_parent() as Node3D).rotation.x) and is_zero_approx(unit.rotation.x)
+	await _frames(2)
+	var soul := _soul_of(unit)
+	checks["soul_there"] = soul != null
+	if soul != null:
+		var before := soul.global_position
+		var visual := soul.find_child("Visual", false, false) as Node3D
+		checks["soul_starts_low"] = visual.position.y < -0.1
+		await _seconds(soul.rise_s + 0.3)
+		checks["soul_did_not_move"] = soul.global_position.is_equal_approx(before)
+		checks["soul_risen"] = absf(visual.position.y) < 0.01
+	corpse.dissolving = true
+	checks["still_visible"] = mesh.transparency < 1.0
+	await _seconds(look.corpse_fade_s + 0.3)
+	checks["faded_out"] = is_equal_approx(mesh.transparency, 1.0)
 	unit.free()
 	return _verdict(checks)
 
@@ -152,6 +185,11 @@ func _soul_of(unit: Node) -> Soul:
 func _frames(count: int) -> void:
 	for _i in count:
 		await _host.get_tree().physics_frame
+
+
+## Waits game seconds (the tweens of the look run on them).
+func _seconds(seconds: float) -> void:
+	await _host.get_tree().create_timer(seconds).timeout
 
 
 ## Waits until `condition` holds or `limit` frames pass. Returns the frames it took, or -1.

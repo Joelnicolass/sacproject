@@ -3,19 +3,13 @@ extends UnitState
 
 ## DEAD: the body stops acting (no target, no attacks) and becomes a corpse that falls until it rests on the floor.
 ## Leaving it (a Convert doctor pumped the creature back to life) makes it a creature again. It does not touch the
-## health bar (the bar hides itself) and it does not animate the body: only the death clip is played from here.
+## health bar (the bar hides itself) and it does not animate the body: CorpseLook decides how the death looks.
 
 
 func present(animate: bool) -> void:
 	body.target = null
 	body.cancel_attacks()
-	var role := _death_role()
-	if not role.is_empty():
-		if animate:
-			body.clip_pose.play(role, true)
-		else:
-			body.clip_pose.play_ended(role)
-	body.corpse().lay_down(body, not role.is_empty(), not animate)
+	body.corpse().lay_down(body, _death_role(), not animate)
 
 
 func exit() -> void:

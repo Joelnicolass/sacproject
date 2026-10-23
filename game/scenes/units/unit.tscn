@@ -17,6 +17,8 @@
 [ext_resource type="Resource" path="res://data/passives/yeti_freeze.tres" id="f158_zerf"]
 [ext_resource type="Resource" path="res://data/passives/dragon_vines.tres" id="f159_eniv"]
 [ext_resource type="Script" path="res://scenes/units/corpse.gd" id="5_corpse"]
+[ext_resource type="Script" path="res://scenes/units/corpse_look.gd" id="f055_look"]
+[ext_resource type="Script" path="res://scenes/units/tipping_fall.gd" id="f055_tipping"]
 [ext_resource type="PackedScene" path="res://scenes/units/unit_health_bar.tscn" id="6_bar"]
 [ext_resource type="Script" path="res://addons/mp_kit/mp_replicate.gd" id="7_replicate"]
 [ext_resource type="Script" path="res://scenes/units/unit_orders.gd" id="f27_orders"]
@@ -349,10 +351,19 @@ collision = NodePath("../Collision")
 flight = NodePath("../Flight")
 visual = NodePath("../Tilt/Mesh")
 
-[node name="Corpse" type="Node" parent="." node_paths=PackedStringArray("pivot", "visual")]
+[node name="Corpse" type="Node" parent="."]
 script = ExtResource("5_corpse")
-pivot = NodePath("../Tilt")
+
+[node name="CorpseLook" type="Node" parent="." node_paths=PackedStringArray("body", "corpse", "visual", "tipping")]
+script = ExtResource("f055_look")
+body = NodePath("..")
+corpse = NodePath("../Corpse")
 visual = NodePath("../Tilt/Mesh")
+tipping = NodePath("TippingFall")
+
+[node name="TippingFall" type="Node" parent="CorpseLook" node_paths=PackedStringArray("mesh")]
+script = ExtResource("f055_tipping")
+mesh = NodePath("../../Tilt/Mesh")
 
 [node name="Captive" type="Node" parent="." node_paths=PackedStringArray("body", "clip_pose")]
 script = ExtResource("f59_captive")

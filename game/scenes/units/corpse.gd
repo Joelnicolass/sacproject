@@ -6,6 +6,8 @@ extends Node
 ## in physics ticks and tells whoever listens (the soul, the look). It never animates anything and never fades the body.
 ## Ref: sacengine dying -> dead, when the soul appears (state.d:14026).
 
+## The body died and started to lie down (`instant`: it joined late and already lies). CorpseLook listens.
+signal laid_down(instant: bool)
 ## The body rests on the floor: this is when the soul appears.
 signal settled
 ## The corpse started or stopped dissolving (its soul was taken). Every peer hears it, because `dissolving` is replicated.
@@ -28,6 +30,8 @@ signal stood_up
 var laid := false
 ## The fall is over: the body rests on the floor.
 var is_settled := false
+## The clip that lays the body down ("" = none: baked meshes, no dying clip). Set by whoever lays the body down.
+var death_role := ""
 ## true: a clip (the skeleton's death) lays the body down and the pivot stays upright. Only the soul's place changes.
 var clip_driven := false
 ## Server writes it, the clients get it (unit.tscn replicates it).
@@ -54,17 +58,19 @@ func lying_pose(body_radius: float) -> Transform3D:
 
 
 ## Every peer. The body is dead: it leaves the creatures and starts to fall. `instant`: it joined late, it already lies.
-func lay_down(body: UnitBody, by_clip := false, instant := false) -> void:
+func lay_down(body: UnitBody, role := "", instant := false) -> void:
 	if laid:
 		return
 	laid = true
-	clip_driven = by_clip
+	death_role = role
+	clip_driven = not role.is_empty()
 	_body = body
 	_ticks = 0
 	body.remove_from_group("unit")
 	body.add_to_group("corpse")
 	body.collision_layer = corpse_layer
 	body.velocity = Vector3.ZERO
+	laid_down.emit(instant)
 	if instant:
 		_settle()
 		return
@@ -78,6 +84,7 @@ func stand_up(body: UnitBody) -> void:
 		return
 	laid = false
 	is_settled = false
+	death_role = ""
 	clip_driven = false
 	dissolving = false
 	set_physics_process(false)

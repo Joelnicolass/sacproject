@@ -3,7 +3,7 @@ extends RefCounted
 
 ## The land height the grass layer reads (RFC-022e), derived from the terrain when the grass loads instead of read from a
 ## baked height.exr (RFC-033 033f). RG float, 1024x1024 over the 2560 m map (2.5 m per texel): R = height, G = 1 where land
-## lies under the texel centre (`Terrain.ground_height` is not NAN), 0 over holes and the map rim. Hole texels take the
+## lies under the texel centre (`TerrainShape.height_at` is not NAN), 0 over holes and the map rim. Hole texels take the
 ## height of the nearest land texel so a bilinear read near a hole edge does not dip to 0. The grass is off today, so this
 ## costs nothing at start-up; it runs once, when a grass field first loads.
 
@@ -11,8 +11,8 @@ const SIZE := 1024
 const MAP_M := 2560.0
 
 
-## `terrain`: a loaded Terrain (or anything with `ground_height(x, z) -> float`, NAN over a hole).
-static func from_terrain(terrain: Object) -> Image:
+## `shape`: a loaded TerrainShape (height_at is NAN over a hole).
+static func from_shape(shape: TerrainShape) -> Image:
 	var texel := MAP_M / float(SIZE)
 	var heights := PackedFloat32Array()
 	heights.resize(SIZE * SIZE)
@@ -20,7 +20,7 @@ static func from_terrain(terrain: Object) -> Image:
 	land.resize(SIZE * SIZE)
 	for y in SIZE:
 		for x in SIZE:
-			var found: float = terrain.call("ground_height", (x + 0.5) * texel, (y + 0.5) * texel)  # dynamic: Terrain or the grass lab's GrassLabGround (debug/look) answers it
+			var found: float = shape.height_at((x + 0.5) * texel, (y + 0.5) * texel)
 			var at := y * SIZE + x
 			if is_nan(found):
 				heights[at] = NAN

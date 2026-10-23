@@ -6,11 +6,11 @@ extends RefCounted
 ## (an internal child of the host, never saved).
 ## - Build (`plan_cell`, a pure function): per 8 m data cell and species, FloraPlacement gives the instances; they are
 ##   ordered by rank (i + 0.5) / n so any prefix of a 32 m cell is an even sample of its 16 data cells; the height is
-##   Terrain.ground_height, and an instance off the ground or inside a VegetationClear is dropped (the clear's edge thins
+##   TerrainShape.height_at, and an instance off the ground or inside a VegetationClear is dropped (the clear's edge thins
 ##   them by a hash). Final transform: T·R·S·BodyCatalog.pose(model, false). Meshes and materials are BodyCatalog's,
 ##   shared by every cell.
 ## - Threads (054e, F384): `plan_cell` runs on a WorkerThreadPool task, at most `max_builds_per_frame` cells at once, the
-##   nearest first. A task gets copies of what it reads (the groups without meshes, the clears, a Terrain.height_sampler
+##   nearest first. A task gets copies of what it reads (the groups without meshes, the clears, a TerrainShape.sampler
 ##   snapshot) and touches no node. The main thread only makes the MultiMeshInstance3D from the finished buffers
 ##   (`multimesh.buffer`, no per-instance call), while the frame's deadline (FloraField.build_budget_ms) lasts; the rest
 ##   wait for the next frame. A result is applied in any order but its bytes depend only on the cell, so the order of
@@ -41,6 +41,8 @@ var config: VegetationLayerConfig
 var quality: VegetationQuality
 var flora: FloraMap
 var terrain: Terrain
+## The land numbers of `terrain` (heights, lowest land, a thread-safe sampler).
+var shape: TerrainShape
 var host: Node3D
 
 ## Per species drawn: {tag, tag_index, model, pose, scale_range, weight, cast_shadow, end_m, mesh, material}.
@@ -103,6 +105,7 @@ func _init(layer: VegetationLayerConfig, preset: VegetationQuality, map: FloraMa
 	quality = preset
 	flora = map
 	terrain = land
+	shape = land.shape
 	host = owner_node
 	map_xform = land.global_transform if land.is_inside_tree() else land.transform
 	_map_inverse = map_xform.affine_inverse()
@@ -308,8 +311,8 @@ static func _fade_material(mesh: Mesh, end_m: float, fade_m: float) -> Material:
 ## starts new ones. Call once per frame.
 func update(camera_global: Vector3, deadline_us: int) -> void:
 	var cam := _map_inverse * camera_global
-	var ground := terrain.ground_height(cam.x, cam.z)
-	var above := maxf(cam.y - (ground if not is_nan(ground) else terrain.lowest_ground()), 0.0)
+	var ground := shape.height_at(cam.x, cam.z)
+	var above := maxf(cam.y - (ground if not is_nan(ground) else shape.lowest()), 0.0)
 	var radius := config.radius_m * quality.radius_scale
 	_radius = sqrt(radius * radius - above * above) if radius > above else -2.0 * _ring.keep_margin_m
 	_eye = Vector2(cam.x, cam.z)
@@ -411,7 +414,7 @@ func _start_plans(deadline_us: int) -> void:
 		var ring := _ring
 		_pending.sort_custom(func(a: Vector2i, b: Vector2i) -> bool: return ring.rect_distance(a, eye) > ring.rect_distance(b, eye))
 		_pending_sorted = true
-	var height := terrain.height_sampler()
+	var height := shape.sampler()
 	var plain := plan_groups(groups)
 	var made := 0
 	while not _pending.is_empty() and _jobs.size() < quality.max_builds_per_frame:

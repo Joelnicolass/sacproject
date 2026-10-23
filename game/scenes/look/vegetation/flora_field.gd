@@ -116,7 +116,7 @@ func _refresh() -> void:
 	if is_visible_in_tree() and not presentationless():
 		layers = active_layers()
 	var terrain := rig.terrain as Terrain if rig else null
-	if terrain == null or not terrain.has_ground_data():
+	if terrain == null or terrain.shape == null or not terrain.shape.is_loaded():
 		layers.clear()
 	var signature := _signature_of(layers, terrain)
 	if signature == _signature:

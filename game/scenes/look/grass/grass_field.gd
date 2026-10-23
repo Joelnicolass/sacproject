@@ -171,7 +171,7 @@ func _refresh() -> void:
 	if _preset == null or not _preset.grass_enabled:
 		return
 	var terrain := _rig.terrain if _rig else null
-	if terrain == null or not terrain.has_method("tile_ids"):  # dynamic: Terrain or the grass lab's GrassLabGround (debug/look) answers it
+	if terrain == null or TerrainShape.of(self) == null:
 		return
 	if _rig.tile_map == null or terrain.get("material_override") == null:
 		return
@@ -263,7 +263,7 @@ func _zone_view(mode: int) -> SubViewport:
 	var mat := ShaderMaterial.new()
 	mat.shader = BAKE_SHADER
 	mat.set_shader_parameter("mode", mode)
-	var ids: PackedByteArray = _rig.terrain.call("tile_ids")  # dynamic: Terrain or the grass lab's GrassLabGround (debug/look) answers it
+	var ids := TerrainShape.of(self).tile_ids()
 	mat.set_shader_parameter("splat", GroundMaterial.splat_texture(_rig.tile_map, ids))
 	mat.set_shader_parameter("noise_tex", GroundMaterial.shared_noise())
 	mat.set_shader_parameter("height_tex", _height_texture)
@@ -654,9 +654,10 @@ func _height_range(key: Vector2i) -> Vector2:
 func _load_height(terrain: Object) -> bool:
 	if _height_texture:
 		return true
-	if not terrain.has_method("has_ground_data") or not terrain.call("has_ground_data"):  # dynamic: Terrain or the grass lab's GrassLabGround (debug/look) answers it
+	var shape := TerrainShape.of(self)
+	if shape == null:
 		return false
-	var image := GrassHeight.from_terrain(terrain)
+	var image := GrassHeight.from_shape(shape)
 	_height_image = image
 	var half := image.duplicate() as Image
 	half.convert(Image.FORMAT_RGH)

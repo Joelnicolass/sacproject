@@ -87,7 +87,8 @@ func _refresh() -> void:
 		_restore()
 		return
 	if _material == null:
-		_material = GroundMaterial.build(_ground, terrain.call("tile_ids"), _preset)  # dynamic: Terrain or the grass lab's GrassLabGround (debug/look) answers it
+		var shape := TerrainShape.of(self)
+		_material = GroundMaterial.build(_ground, shape.tile_ids() if shape else PackedByteArray(), _preset)
 	else:
 		GroundMaterial.update(_material, _ground, _preset)
 	terrain.call("set_ground_override", _material)  # dynamic: Terrain or the grass lab's GrassLabGround (debug/look) answers it

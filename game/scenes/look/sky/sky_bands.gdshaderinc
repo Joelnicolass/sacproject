@@ -22,6 +22,9 @@ const float SKY_BAND_SIDES = 64.0;
 const float SKY_BAND_SIDE_RAD = 0.09817477;
 const float SKY_BAND_HALF_COS = 0.99879546;
 const float SKY_BAND_HALF_SIN = 0.04906767;
+// The cone reaches this far above the shared ring, so a rounding error there never leaves a gap; the
+// upper band takes the ring back (see sky_band_bottom_owns) and the sampler clamps v at the edge.
+const float SKY_BAND_RING_OVERLAP_M = 64.0;
 
 float sky_band_mirror(float u) {
 	return 1.0 - abs(mod(u, 2.0) - 1.0);
@@ -31,8 +34,9 @@ float sky_band_mirror(float u) {
 // Rings: (y_low, r_low, v_low) and (y_high, r_high, v_high) = height, radius, texture v. `spin` turns the band.
 // Returns xy = texture coordinate, z = hit height, w = 1 when the ray crosses the band.
 // `u_unfolded` is the same u before mirroring (0..8 around): derive the mip level from it, not from xy.
+// `hit_margin_high_m` lets the hit test reach that far above y_high (the uv still extrapolate smoothly).
 vec4 sky_band_hit(vec3 dir, float eye_height_m, float spin, float y_low, float r_low, float v_low,
-		float y_high, float r_high, float v_high, out float u_unfolded) {
+		float y_high, float r_high, float v_high, float hit_margin_high_m, out float u_unfolded) {
 	float azimuth = mod(atan(dir.z, dir.x) - spin, TAU);
 	float side = min(floor(azimuth / SKY_BAND_SIDE_RAD), SKY_BAND_SIDES - 1.0);
 	// Angle from the middle of that side, where its flat face is closest to the axis.
@@ -57,18 +61,26 @@ vec4 sky_band_hit(vec3 dir, float eye_height_m, float spin, float y_low, float r
 		along = 1.0 - 0.5 * (up - lean);
 	}
 	u_unfolded = (side + along) * SKY_BAND_REPEATS / SKY_BAND_SIDES;
-	float hit = step(1e-5, denominator) * step(0.0, t) * step(y_low, y) * step(y, y_high);
+	float hit = step(1e-5, denominator) * step(0.0, t) * step(y_low, y) * step(y, y_high + hit_margin_high_m);
 	return vec4(sky_band_mirror(u_unfolded), mix(v_low, v_high, up), y, hit);
 }
 
 vec4 sky_band_top_uv(vec3 dir, float eye_height_m, float spin, out float u_unfolded) {
 	return sky_band_hit(dir, eye_height_m, spin, 0.0, SKY_BAND_RADIUS_M, 1.0,
-			SKY_BAND_TOP_M, SKY_BAND_RADIUS_M, 0.0, u_unfolded);
+			SKY_BAND_TOP_M, SKY_BAND_RADIUS_M, 0.0, 0.0, u_unfolded);
 }
 
 vec4 sky_band_bottom_uv(vec3 dir, float eye_height_m, float spin, out float u_unfolded) {
 	return sky_band_hit(dir, eye_height_m, spin, SKY_BAND_BOTTOM_M, SKY_BAND_RADIUS_M * SKY_BAND_CONE_RADIUS_RATIO, 0.0,
-			0.0, SKY_BAND_RADIUS_M, 1.0, u_unfolded);
+			0.0, SKY_BAND_RADIUS_M, 1.0, SKY_BAND_RING_OVERLAP_M, u_unfolded);
+}
+
+// The ring where the bands meet belongs to the upper band when the ray crosses it at or above y = 0, and to the
+// lower one otherwise: one comparison on one number, so the two bands cannot both miss (or both claim) a ray.
+// Before this, each band tested the same height with its own rounding and a thin line of rays fell between them.
+vec4 sky_band_bottom_owns(vec4 bottom, vec4 top) {
+	bottom.w *= 1.0 - step(0.0, top.z);
+	return bottom;
 }
 
 // Screen-space change of (u, v) for the mip level, from the derivatives the caller takes (dFdx / dFdy are

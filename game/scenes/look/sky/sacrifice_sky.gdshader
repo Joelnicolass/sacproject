@@ -93,6 +93,7 @@ void sky() {
 		float top_u;
 		vec4 bottom = sky_band_bottom_uv(dir, eye_height_m, spin, bottom_u);
 		vec4 top = sky_band_top_uv(dir, eye_height_m, spin, top_u);
+		bottom = sky_band_bottom_owns(bottom, top);
 		vec4 cloud = sky_cloud_uv(dir, eye_height_m, cloud_offset);
 		vec2 bottom_dx = sky_band_grad(dFdx(bottom_u), dFdx(bottom.x), dFdx(bottom.y));
 		vec2 bottom_dy = sky_band_grad(dFdy(bottom_u), dFdy(bottom.x), dFdy(bottom.y));

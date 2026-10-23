@@ -93,6 +93,8 @@ const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 @export var seat_attempts := 12
 ## sacengine stats.d:104: ground creatures turn at π rad/s.
 @export var turn_rate := PI
+## Minimum planar speed (m/s) of a walking ground body for it to face its final velocity (after avoidance).
+@export var face_min_speed := 0.1
 ## sacengine regenerates only in idle and not during a damage animation (state.d:1429).
 @export var regen_pause_s := 0.5
 @export var target_groups: PackedStringArray = PackedStringArray(["unit", "wizard", "structure", "doctor"])
@@ -129,6 +131,8 @@ var _goal := Vector3.ZERO
 var _since_damage := INF
 ## Whether the body flew when this physics step began (the avoidance ends the step later in it).
 var _airborne_step := false
+## The state asked for a planar walk this tick (ground, not held): only then the body faces its final velocity.
+var _walk_intent := false
 var _stats_ready := false
 var _last_health := 0.0
 var _rng := RandomNumberGenerator.new()
@@ -560,6 +564,7 @@ func _physics_process(delta: float) -> void:
 		velocity.z = 0.0
 	velocity = afflictions.steer(velocity, delta)  ## F121: a thrown body (Tumbling) flies its own ballistic path.
 	_airborne_step = airborne
+	_walk_intent = not airborne and not _playing_dead and not afflictions.holds() and Vector2(velocity.x, velocity.z).length() > face_min_speed
 	## RFC-036 036f: the engine's avoidance steers the body around the others; the step ends in _on_avoided, this same
 	## physics step, with the velocity it gives back.
 	if is_obstacle() and _avoidance.steer(velocity, afflictions.fixed()):
@@ -576,6 +581,9 @@ func _on_avoided(flat_velocity: Vector3) -> void:
 
 func _finish_step() -> void:
 	var airborne := _airborne_step
+	## A ground creature faces where it really goes (avoidance may bend the wanted velocity); pushes never reach here.
+	if _walk_intent and Vector2(velocity.x, velocity.z).length() > face_min_speed:
+		turn_toward(Vector3(velocity.x, 0.0, velocity.z), get_physics_process_delta_time())
 	if flight != null and flight.is_airborne():
 		air.cap_pace()
 	if not airborne:

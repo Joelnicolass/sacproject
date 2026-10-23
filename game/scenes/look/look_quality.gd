@@ -76,6 +76,10 @@ extends Resource
 ## Most effect lights on at once (RFC-029 029c, FxLightLayer): shadowless OmniLight3D. 0 = none.
 @export_range(0, 64) var fx_max_lights: int = 8
 
+@export_group("Actor lights (055b-3)")
+## Most lights of units, wizards and spells on at once (ActorLightBudget): shadowless OmniLight3D. 0 = none.
+@export_range(0, 64) var actor_max_lights: int = 12
+
 @export_group("Vegetación (RFC-054)")
 ## One entry per mesh vegetation layer (FloraField), by the layer's id. A layer without an entry is not drawn.
 @export var vegetation: Array[VegetationQuality] = []

@@ -35,4 +35,5 @@ grass_trample = true
 fx_soft_particles = true
 fx_frame_blend = true
 fx_max_lights = 8
+actor_max_lights = 12
 vegetation = Array[ExtResource("2_veg")]([SubResource("Veg_original_plants")])

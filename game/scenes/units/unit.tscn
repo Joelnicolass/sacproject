@@ -1,5 +1,6 @@
 [gd_scene load_steps=89 format=3]
 
+[ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
 [ext_resource type="Script" path="res://scenes/units/unit_body.gd" id="1_body"]
 [ext_resource type="PackedScene" path="res://scenes/units/movement/body_avoidance.tscn" id="f207_avoid"]
 [ext_resource type="PackedScene" path="res://scenes/units/status/pace_factors.tscn" id="f129_pace"]
@@ -352,16 +353,20 @@ collision = NodePath("../Collision")
 flight = NodePath("../Flight")
 visual = NodePath("../Tilt/Mesh")
 
+[node name="Light" parent="." instance=ExtResource("f055_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+
 [node name="Corpse" type="Node" parent="."]
 script = ExtResource("5_corpse")
 
-[node name="CorpseLook" type="Node" parent="." node_paths=PackedStringArray("body", "corpse", "visual", "ragdoll", "tipping")]
+[node name="CorpseLook" type="Node" parent="." node_paths=PackedStringArray("body", "corpse", "visual", "ragdoll", "tipping", "light")]
 script = ExtResource("f055_look")
 body = NodePath("..")
 corpse = NodePath("../Corpse")
 visual = NodePath("../Tilt/Mesh")
 ragdoll = NodePath("RagdollDriver")
 tipping = NodePath("TippingFall")
+light = NodePath("../Light")
 
 [node name="RagdollDriver" type="Node" parent="CorpseLook"]
 script = ExtResource("f055_ragdoll")

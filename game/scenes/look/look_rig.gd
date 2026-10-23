@@ -42,7 +42,7 @@ var vegetation_enabled := true
 
 
 func _ready() -> void:
-	if not Engine.is_editor_hint() and _is_presentationless():
+	if not Engine.is_editor_hint() and is_presentationless():
 		queue_free()
 		return
 	if quality and quality.quality:
@@ -128,10 +128,12 @@ func layer_mask() -> int:
 	return mask
 
 
-func _is_presentationless() -> bool:
+## True in a headless or dedicated process, where nothing of the look is drawn (the rig, and every actor light, frees itself).
+static func is_presentationless() -> bool:
 	if DisplayServer.get_name() == "headless":
 		return true
-	var kit := get_node_or_null("/root/MpKit")
+	var tree := Engine.get_main_loop() as SceneTree
+	var kit := tree.root.get_node_or_null("/root/MpKit") if tree else null
 	return kit != null and kit.has_method("is_dedicated") and bool(kit.call("is_dedicated"))  # dynamic: the MpKit autoload has no class_name and is absent in the editor
 
 

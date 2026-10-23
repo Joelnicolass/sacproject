@@ -181,6 +181,7 @@ tag = "james"
 display_name = "James"
 sort_order = 2
 look = ExtResource("99_look")
+magic_color = Color(1, 0.78, 0.4, 1)
 cast_fx_path = "res://data/fx/cast_james.tres"
 ai_profile = ExtResource("6_ai")
 book = SubResource("Book_1")

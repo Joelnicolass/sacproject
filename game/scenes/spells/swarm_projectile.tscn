@@ -1,5 +1,6 @@
 [gd_scene load_steps=3 format=3]
 
+[ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="3_light"]
 [ext_resource type="Script" path="res://scenes/spells/swarm_projectile.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="2_sound"]
 
@@ -8,3 +9,10 @@ script = ExtResource("1_script")
 
 [node name="CastSound" parent="." instance=ExtResource("2_sound")]
 cue = &"swarm_cast"
+
+[node name="Light" parent="." instance=ExtResource("3_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+light_color = Color(0.55, 0.9, 0.3, 1)
+light_energy = 1.5
+omni_range = 6.0
+priority = 3.0

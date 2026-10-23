@@ -180,6 +180,7 @@ script = ExtResource("1_gtype")
 tag = "persephone"
 display_name = "Persephone"
 look = ExtResource("99_look")
+magic_color = Color(0.55, 1, 0.6, 1)
 cast_fx_path = "res://data/fx/cast_persephone.tres"
 ai_profile = ExtResource("6_ai")
 book = SubResource("Book_1")

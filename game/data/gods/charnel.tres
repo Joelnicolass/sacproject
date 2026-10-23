@@ -181,5 +181,6 @@ tag = "charnel"
 display_name = "Charnel"
 sort_order = 4
 look = ExtResource("99_look")
+magic_color = Color(0.55, 0.9, 0.95, 1)
 ai_profile = ExtResource("6_ai")
 book = SubResource("Book_1")

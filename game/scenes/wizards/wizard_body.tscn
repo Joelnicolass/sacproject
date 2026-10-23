@@ -1,5 +1,7 @@
 [gd_scene load_steps=41 format=3]
 
+[ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
+[ext_resource type="Script" path="res://scenes/wizards/wizard_light_tint.gd" id="f055_tint"]
 [ext_resource type="Script" path="res://scenes/wizards/wizard_body.gd" id="1_body"]
 [ext_resource type="PackedScene" path="res://scenes/units/movement/body_avoidance.tscn" id="f207_avoid"]
 [ext_resource type="PackedScene" path="res://scenes/units/status/pace_factors.tscn" id="f129_pace"]
@@ -125,6 +127,17 @@ model = "jnwr"
 rig = NodePath("Rig")
 
 [node name="Rig" parent="Tilt/Mesh" instance=ExtResource("f162_rig")]
+
+[node name="Light" parent="." instance=ExtResource("f055_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+light_energy = 1.4
+omni_range = 8.0
+priority = 4.0
+
+[node name="LightTint" type="Node" parent="." node_paths=PackedStringArray("wizard", "light")]
+script = ExtResource("f055_tint")
+wizard = NodePath("..")
+light = NodePath("../Light")
 
 [node name="Collision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)

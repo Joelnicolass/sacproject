@@ -1,5 +1,6 @@
 [gd_scene format=3]
 
+[ext_resource type="Script" path="res://scenes/look/lights/actor_light_budget.gd" id="11_budget"]
 [ext_resource type="Script" path="res://scenes/look/look_rig.gd" id="1_rig"]
 [ext_resource type="Script" path="res://scenes/look/quality_applier.gd" id="2_quality"]
 [ext_resource type="Script" path="res://scenes/look/light/sun_layer.gd" id="3_sun_layer"]
@@ -47,6 +48,9 @@ environment = ExtResource("7_env")
 
 [node name="Flora" parent="Layers" node_paths=PackedStringArray("rig") instance=ExtResource("10_flora")]
 rig = NodePath("../..")
+
+[node name="ActorLights" type="Node3D" parent="Layers"]
+script = ExtResource("11_budget")
 
 [node name="TimeOfDay" type="Node" parent="."]
 

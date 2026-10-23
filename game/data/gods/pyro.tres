@@ -181,5 +181,6 @@ tag = "pyro"
 display_name = "Pyro"
 sort_order = 1
 look = ExtResource("99_look")
+magic_color = Color(1, 0.4, 0.15, 1)
 ai_profile = ExtResource("6_ai")
 book = SubResource("Book_1")

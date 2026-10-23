@@ -16,6 +16,8 @@ extends Node
 @export var ragdoll: RagdollDriver
 ## How a body with no death animation falls.
 @export var tipping: TippingFall
+## The unit's light: goes out with the corpse and comes back when it stands up.
+@export var light: ActorLight
 ## true: a model that has a death animation plays it even if it has a physical skeleton.
 @export var prefer_clip := false
 @export_group("Fades")
@@ -68,6 +70,7 @@ func _on_dissolving_changed(on: bool) -> void:
 		_fade_to(1.0, minf(corpse_fade_s, corpse.dissolve_s))
 	else:
 		visual.set_fade(0.0)
+	_light_to(not on, minf(corpse_fade_s, corpse.dissolve_s))
 
 
 ## A Convert doctor revived the body: it stands in its place and appears out of thin air.
@@ -81,6 +84,7 @@ func _on_stood_up() -> void:
 	_stop_fade()
 	visual.set_fade(1.0)
 	_fade_to(0.0, revive_fade_s)
+	_light_to(true, revive_fade_s)
 
 
 func _fade_to(target: float, seconds: float) -> void:
@@ -89,6 +93,11 @@ func _fade_to(target: float, seconds: float) -> void:
 		return
 	_fade = create_tween()
 	_fade.tween_method(visual.set_fade, 1.0 - target, target, seconds)
+
+
+func _light_to(on: bool, seconds: float) -> void:
+	if light:
+		light.set_lit(on, seconds)
 
 
 func _stop_fade() -> void:

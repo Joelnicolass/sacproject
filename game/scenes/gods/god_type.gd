@@ -14,6 +14,8 @@ extends Resource
 @export var sort_order: int = 0
 ## The land the god brings to a match: sky, fog, light, glow, ground and grass (`data/look/<tag>.tres`).
 @export var look: LookProfile
+## The color of the god's magic: the light its wizard carries (ActorLight).
+@export var magic_color: Color = Color(1.0, 0.9, 0.75)
 ## The particle of its casting hand (a ParticleType, data/fx/cast_<tag>.tres). Empty: the god casts without one.
 @export_file("*.tres") var cast_fx_path: String = ""
 ## The AI profile of a wizard of this god; empty: the original's profile.

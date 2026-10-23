@@ -35,7 +35,7 @@ const STAGE_NAMES: PackedStringArray = ["vivo", "muere", "se levanta", "fantasma
 @export var visual: GeometryInstance3D
 ## Converts a dagon shadeless energy to Godot's light scale. Shadeless is texture · energy like
 ## the ambient (albedo · 1, deferred.d:403), so it takes the ambient's ratio: π/14
-## (GodTheme.ambient_light_energy with ambient 1).
+## (the old theme's ambient_light_energy with ambient 1).
 @export_range(0.0, 2.0, 0.001) var energy_scale := 0.224
 @export var stage: Stage = Stage.ALIVE:
 	set(value):

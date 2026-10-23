@@ -5,10 +5,8 @@
 [ext_resource type="Script" uid="uid://bahus244cwp1m" path="res://scenes/map/props/map_props.gd" id="6_props"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="8_start"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="9_fount"]
-[ext_resource type="Environment" path="res://data/look/env_base.tres" id="f22_env"]
 [ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="f22_look"]
 [ext_resource type="Resource" path="res://data/look/ground/high_noon_tiles.tres" id="f22_tiles"]
-[ext_resource type="PackedScene" path="res://scenes/look/sky/sky.tscn" id="f40_sky"]
 [ext_resource type="Resource" path="res://assets/original/maps/high_noon/terrain.res" id="f172_terrain"]
 [ext_resource type="Material" uid="uid://b6pd04js5lq4t" path="res://assets/original/themes/james/ground_classic.tres" id="f194_ground"]
 [ext_resource type="PackedScene" uid="uid://c7w6ppe7anbdd" path="res://assets/original/maps/high_noon/terrain.glb" id="f195_terrain_glb"]
@@ -30,29 +28,11 @@ minimap_bake = NodePath("MinimapBake")
 buildings_root = NodePath("HighNoonLayout/Buildings")
 npc_spawns_root = NodePath("HighNoonLayout/NpcSpawns")
 
-[node name="Sky" parent="." unique_id=733427404 instance=ExtResource("f40_sky")]
+[node name="Look" parent="." unique_id=1022000001 node_paths=PackedStringArray("terrain") instance=ExtResource("f22_look")]
 unique_name_in_owner = true
-background_color = Color(2.8878452e-07, 0.92139935, 0.5927794, 1)
-top_path = "res://assets/original/themes/persephone/skyt.png"
-bottom_path = "res://assets/original/themes/persephone/skyb.png"
-clouds_path = "res://assets/original/themes/persephone/sky.png"
-
-[node name="Environment" type="WorldEnvironment" parent="." unique_id=749856849]
-unique_name_in_owner = true
-environment = ExtResource("f22_env")
-
-[node name="Look" parent="." unique_id=1022000001 node_paths=PackedStringArray("sun", "world_environment", "terrain", "legacy_sky") instance=ExtResource("f22_look")]
-unique_name_in_owner = true
-sun = NodePath("../Sun")
-world_environment = NodePath("../Environment")
 terrain = NodePath("../Terrain")
-legacy_sky = NodePath("../Sky")
 tile_map = ExtResource("f22_tiles")
 flora_map = ExtResource("flora_map")
-
-[node name="Sun" type="DirectionalLight3D" parent="." unique_id=1176620511]
-transform = Transform3D(0.921061, -0.27935162, 0.27131036, 0, 0.6967067, 0.7173561, -0.38941833, -0.6607287, 0.6417094, 0, 0, 0)
-shadow_enabled = true
 
 [node name="Terrain" parent="." unique_id=1483961628 groups=["nav_source"] instance=ExtResource("f195_terrain_glb")]
 unique_name_in_owner = true

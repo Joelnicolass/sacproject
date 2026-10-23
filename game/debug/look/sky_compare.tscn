@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://debug/look/sky_compare.gd" id="1_run"]
-[ext_resource type="PackedScene" path="res://scenes/look/sky/sky.tscn" id="2_sky"]
+[ext_resource type="PackedScene" path="res://debug/look/sky_reference/sky.tscn" id="2_sky"]
 [ext_resource type="Shader" path="res://scenes/look/sky/sacrifice_sky.gdshader" id="3_shader"]
 
 [sub_resource type="Environment" id="Environment_old"]

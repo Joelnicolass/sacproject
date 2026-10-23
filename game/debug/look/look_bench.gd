@@ -13,7 +13,6 @@ extends Node
 
 enum Run { MEASURE, CAPTURE }
 
-const ThemeApplier := preload("res://scenes/look/theme/theme_applier.gd")
 const QUALITY_DIR := "res://data/look"
 const PRESET_IDS: Array[StringName] = [&"low", &"medium", &"high"]
 const MODE_NAMES := {
@@ -93,12 +92,13 @@ func _ready() -> void:
 
 func _start() -> void:
 	await get_tree().process_frame
-	ThemeApplier.apply(ThemeApplier.theme_for(god), world)
+	var look := GameCatalog.shared().god(String(god)).look
+	var rig := world.get_node_or_null("Map/Look") as LookRig
+	if rig and look:
+		look.sky.material.set_shader_parameter(&"time_override_s", 0.0)  # a still sky: the bench measures frames, not the sky's motion
+		rig.apply_profile(look)
 	_fill_units()
 	_fill_emitters()
-	var sky := world.get_node_or_null("Map/Sky")
-	if sky:
-		sky.set_process(false)
 	view_camera.global_position = Vector3(center.x, 30.0, center.y - 40.0)
 	view_camera.look_at(Vector3(center.x, 18.0, center.y), Vector3.UP)
 	_make_views()

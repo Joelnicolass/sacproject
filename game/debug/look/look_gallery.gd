@@ -1,11 +1,10 @@
 extends Node
 
 ## RFC-022 gallery: the product map, six bodies (three in the sun, three in the altar's shade),
-## a looping emitter and three fixed cameras. Starts in classic mode with every layer off.
+## a looping emitter and three fixed cameras. With `classic` on no profile is handed to the rig.
 ## Debug-only actions are registered here (not in project.godot): F1 next biome, F2 next camera,
 ## F3 next quality, KP1..KP8 toggle layer N. Prints `look <god> cam <n> capas <mask> calidad <q>`.
 
-const ThemeApplier := preload("res://scenes/look/theme/theme_applier.gd")
 const QUALITY_DIR := "res://data/look"
 const QUALITY_IDS: Array[StringName] = [&"low", &"medium", &"high"]
 const ACTIONS := {
@@ -28,15 +27,15 @@ const ACTIONS := {
 @export var camera_markers: Node3D
 @export var bodies: Node3D
 @export var start_god: StringName = &"persephone"
-## Classic mode keeps look = null: no profile is handed to the rig.
+## True keeps the rig without a profile: no biome is handed to it.
 @export var classic := true
-## Freezes the original sky at time 0 so captures from two runs compare.
+## Freezes the sky at second 0 so captures from two runs compare.
 @export var freeze_sky := true
 @export var hide_hud := true
 ## Hides every particle node (also the ones that appear later): the sprites are random, so a
 ## capture without them can be compared byte for byte against another run.
 @export var hide_particles := false
-## Replaces the biome's sky look (to compare the Swirl sky with the Legacy one).
+## Replaces the biome's sky look (to compare two skies in the same land).
 @export var sky_override: SkyLook
 
 var _god_index := 0
@@ -77,10 +76,6 @@ func _settle() -> void:
 	_place_bodies()
 	_show_biome()
 	_show_camera()
-	if freeze_sky:
-		var sky := world.get_node_or_null("Map/Sky")
-		if sky:
-			sky.set_process(false)
 
 
 func _hide_existing(node: Node) -> void:
@@ -96,18 +91,19 @@ func _hide_if_particles(node: Node) -> void:
 
 func _show_biome() -> void:
 	var god := GameData.gods()[_god_index]
-	var theme: Resource = ThemeApplier.theme_for(god)
-	if theme == null:
-		print("bioma %s sin tema" % god)
+	var type := GameCatalog.shared().god(String(god))
+	var rig := _rig()
+	if type == null or type.look == null or rig == null:
+		print("bioma %s sin look" % god)
 		return
-	if classic and theme.get("look") != null:
-		theme = theme.duplicate()
-		theme.look = null
-	if sky_override and theme.get("look") != null:
-		theme = theme.duplicate()
-		theme.look = theme.look.duplicate()
-		theme.look.sky = sky_override
-	ThemeApplier.apply(theme, world)
+	if not classic:
+		var profile := type.look
+		if sky_override:
+			profile = profile.duplicate()
+			profile.sky = sky_override
+		if freeze_sky and profile.sky.material:
+			profile.sky.material.set_shader_parameter(&"time_override_s", 0.0)
+		rig.apply_profile(profile)
 	_report()
 
 

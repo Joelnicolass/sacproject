@@ -1,6 +1,10 @@
 @tool
 extends Node3D
 
+## The original sky as the port first drew it: two meshes (a cylinder and a cone, 64 sides) and a cloud plane, with
+## the biome textures. The game no longer uses it (the sky is `sacrifice_sky.gdshader` in the Environment); it stays
+## only so `debug/look/sky_compare.tscn` can measure the new sky against it.
+
 const SCALING := 10240.0
 const SKY_Z := 0.25
 const UNDER_Z := -0.25
@@ -17,9 +21,9 @@ const TEXTURE_REPEATS := 8
 ## World height of the sky origin.
 @export var base_height := -511.0
 @export var background_color := Color(1.0, 0.706, 0.471)
-@export_file("*.png") var top_path := OriginalAssets.theme("persephone", "skyt")
-@export_file("*.png") var bottom_path := OriginalAssets.theme("persephone", "skyb")
-@export_file("*.png") var clouds_path := OriginalAssets.theme("persephone", "sky")
+@export_file("*.png") var top_path := ""
+@export_file("*.png") var bottom_path := ""
+@export_file("*.png") var clouds_path := ""
 
 @onready var _spin: Node3D = %Spin
 @onready var _top: MeshInstance3D = %Top

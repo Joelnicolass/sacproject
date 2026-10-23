@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
 
-Import the five gods' land look (tileset, sky, sun, ENVI colours) to assets/original/themes/<god>/.
+Import the five gods' land images (tileset, sky, sun) to assets/original/themes/<god>/.
 
 RFC-033 (033e). Writes only assets/original/themes/. Deterministic and idempotent: a second run writes nothing, and an
 existing .png.import is never touched (it carries the UID).
@@ -15,8 +15,8 @@ result is versioned.
 
 Per god: atlas.png and edge.png (lossless textures: exact pixels, no mipmaps, no compression; ground_classic.tres uses them),
 skyt.png / skyb.png / sky.png (mipmapped textures: the sky sampled them with Image.generate_mipmaps()), sun.png and
-undr.png (textures without mipmaps; no consumer yet), and envi.tres (a GodEnvi: the ENVI colours, fog range and sun strength the game reads, in the order sacengine's
-renderer.d setupEnvironment gives them; the ENVI fields nobody reads stay in theme.json, not in the asset).
+undr.png (textures without mipmaps; no consumer yet). The ENVI colours (background, fog) are no longer written: they were copied once into
+data/look/sky/<god>_sky.tres (055b-2), which the game and the inspector own from then on.
 
 The cloud/sky textures of persephone are the ones the old sky read from a duplicate (same md5).
 """
@@ -47,33 +47,6 @@ source_file="res://assets/original/{rel}"
 [params]
 
 """
-
-ENVI_HEAD = """[gd_resource type="Resource" script_class="GodEnvi" load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://scenes/look/theme/god_envi.gd" id="1_envi"]
-
-[resource]
-script = ExtResource("1_envi")
-"""
-
-
-def color(rgb: list) -> str:
-    return "Color(%s, %s, %s, 1)" % tuple(repr(float(v)) for v in rgb[:3])
-
-
-def envi_tres(theme: dict) -> str:
-    envi = theme["envi"]
-    lines = [
-        "background_color = " + color(theme["background_color"]),
-        "ambient_color = " + color(theme["ambient_color"]),
-        "sun_color = " + color(theme["sun_color"]),
-        "fog_color = " + color(theme["fog_color"]),
-        "fog_begin = " + repr(float(theme["fog_begin"])),
-        "fog_end = " + repr(float(theme["fog_end"])),
-        "sun_direct_strength = " + repr(float(envi["sun_direct_strength"])),
-    ]
-    return ENVI_HEAD + "\n".join(lines) + "\n"
-
 
 class Writer:
     def __init__(self, check: bool):
@@ -108,7 +81,6 @@ def main() -> None:
         assert not theme["missing"], (god, theme["missing"])
         for name, kind in KINDS.items():
             writer.put(OUT / god / (name + ".png"), txtr.png_bytes(*images[name + ".png"]), kind)
-        writer.put(OUT / god / "envi.tres", envi_tres(theme).encode())
     print("themes: %d written, %d unchanged%s" % (writer.written, writer.kept, " [check]" if writer.check else ""))
 
 

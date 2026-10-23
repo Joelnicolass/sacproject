@@ -150,9 +150,6 @@ func _freeze() -> void:
 	var classic: Variant = _terrain.call("classic_material") if _terrain.has_method("classic_material") else null
 	if classic:
 		(classic as ShaderMaterial).set_shader_parameter("grass_time_override", 1.0)
-	var sky := world.get_node_or_null("Map/Sky")
-	if sky:
-		sky.set_process(false)
 	if _no_ssao:
 		var env := get_viewport().find_world_3d().environment
 		if env == null and get_viewport().get_camera_3d():

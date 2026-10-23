@@ -138,8 +138,7 @@ func _check_gods(tags: Dictionary) -> void:
 		seen[god.tag] = true
 		if god.display_name.is_empty():
 			_report("gods/%s: no display_name" % file)
-		_check_god_file(file, "theme", god.theme_path, god.tag)
-		_check_god_file(file, "look", god.look_path, god.tag)
+		_check_god_look(file, god)
 		if not god.cast_fx_path.is_empty() and not ResourceLoader.exists(god.cast_fx_path):
 			_report("gods/%s: cast_fx_path \"%s\" does not exist" % [file, god.cast_fx_path])
 		if god.ai_profile == null:
@@ -182,13 +181,14 @@ func _check_book(file: String, book: GodBook, tags: Dictionary) -> void:
 			_report("gods/%s: book.unlocks[%s] = %d" % [file, tag, unlock.level])
 
 
-## The theme or look file exists and is of this god (read as text: loading it would load the biome's textures).
-func _check_god_file(file: String, what: String, path: String, tag: String) -> void:
-	if path.is_empty() or not FileAccess.file_exists(path):
-		_report("gods/%s: %s_path \"%s\" does not exist" % [file, what, path])
-		return
-	if not FileAccess.get_file_as_string(path).contains('god = &"%s"' % tag):
-		_report("gods/%s: %s_path \"%s\" is not of \"%s\"" % [file, what, path, tag])
+## The look is the god's own file (data/look/<tag>.tres) and brings a sky, a light and a glow.
+func _check_god_look(file: String, god: GodType) -> void:
+	if god.look == null:
+		_report("gods/%s: no look" % file)
+	elif god.look.resource_path.get_file() != god.tag + ".tres":
+		_report("gods/%s: the look \"%s\" is not named after \"%s\"" % [file, god.look.resource_path, god.tag])
+	elif god.look.sky == null or god.look.sky.material == null or god.look.light == null or god.look.glow == null:
+		_report("gods/%s: the look lacks its sky material, light or glow" % file)
 
 
 ## The catalog's own type of a tag, to tell a book that points to the catalog file from one holding a stray copy.

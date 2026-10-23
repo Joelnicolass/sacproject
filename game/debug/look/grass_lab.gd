@@ -22,12 +22,13 @@ const HARD_MEMORY_MB := 2500.0
 
 @export var ground: GrassLabGround
 @export var rig: LookRig
-@export var sun: DirectionalLight3D
 @export var game_camera: Camera3D
 @export var body_scene: PackedScene
 @export var lab_camera: Camera3D
 @export var info: Label
 @export var creatures: Node3D
+## The rig's sun, which the keys turn (taken from the rig when the lab starts).
+var sun: DirectionalLight3D
 ## The set the biome uses: edit its types here, in the inspector, and the grass follows.
 @export var grass_set: GrassSet
 @export var center := Vector2(1500.0, 1500.0)
@@ -52,12 +53,9 @@ var _quality: LookQuality
 
 
 func _ready() -> void:
-	var sky := rig.layers.get_node_or_null("Sky")
-	if sky:
-		sky.queue_free()
 	rig.terrain = ground as MeshInstance3D
-	rig.sun = sun
-	var profile := LookApplier.profile_for(&"persephone")
+	sun = rig.sun_layer.sun
+	var profile := GameCatalog.shared().god("persephone").look
 	grass_set = profile.grass
 	ground.tiles = profile.ground.tiles
 	_read_args()

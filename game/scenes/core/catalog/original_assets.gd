@@ -70,7 +70,7 @@ static func fx(tag: String) -> String:
 	return FX_DIR + tag + ".png"
 
 
-## themes/<god>: the folder with a god's tileset, sky, sun and envi.tres.
+## themes/<god>: the folder with a god's tileset, sky and sun images.
 static func theme_dir(god: String) -> String:
 	return THEMES_DIR + god
 
@@ -78,10 +78,6 @@ static func theme_dir(god: String) -> String:
 ## A theme file: themes/<god>/<name>.png (atlas, edge, sky, skyb, skyt, sun, undr).
 static func theme(god: String, name: String) -> String:
 	return THEMES_DIR + "%s/%s.png" % [god, name]
-
-
-static func theme_envi(god: String) -> String:
-	return THEMES_DIR + god + "/envi.tres"
 
 
 ## A map file: maps/<map>/<file> (terrain.res, tiles.png, light.png, sides.tres).

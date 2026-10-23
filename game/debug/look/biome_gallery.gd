@@ -1,8 +1,6 @@
 extends Node
 
-## check_tick cycles the god themes over the High Noon world.
-
-const ThemeApplier := preload("res://scenes/look/theme/theme_applier.gd")
+## check_tick cycles the gods' looks over the High Noon world.
 
 @export var world_path: NodePath = ^"HighNoon"
 @export var start_god: StringName = &"persephone"
@@ -42,11 +40,10 @@ func _frame_close() -> void:
 
 func _show() -> void:
 	var god := GameData.gods()[_index]
-	var theme := ThemeApplier.theme_for(god)
-	if theme == null:
-		print("bioma %s sin tema" % god)
+	var type := GameCatalog.shared().god(String(god))
+	var rig := (get_node(world_path) as MatchWorld).map.look
+	if type == null or type.look == null or rig == null:
+		print("bioma %s sin look" % god)
 		return
-	var applied: Resource = ThemeApplier.apply(theme, get_node(world_path))
+	rig.apply_profile(type.look)
 	print("bioma %s" % god)
-	if not applied.missing.is_empty():
-		print("bioma %s falta %s" % [god, ", ".join(applied.missing)])

@@ -27,7 +27,7 @@ const LINT_ALLOWED_FILES: Array[String] = ["match/match_seed.gd", "orders/select
 ## Single lines allowed (file -> stripped line): generators seeded by hand from a stable number, for presentation
 ## (spin of a shot) or from a seed that is already the match's (biome).
 const LINT_ALLOWED_LINES := {
-	"theme_applier.gd": "var rng := RandomNumberGenerator.new()",  # rng.seed = match_seed (the biome stream)
+	"match/biome_rules.gd": "var rng := RandomNumberGenerator.new()",  # rng.seed = match_seed (the biome stream)
 	"units/attacks/ranged_shot.gd": "var rng := RandomNumberGenerator.new()",  # spin of the shot, hash(name)
 	"spells/rock_projectile.gd": "var rng := RandomNumberGenerator.new()",  # spin of the rock, hash(name)
 	"audio/sound_bus.gd": "var _rng := RandomNumberGenerator.new()",  # RFC-052: own generator, seeded with rng_seed

@@ -5,8 +5,6 @@
 [ext_resource type="Script" path="res://scenes/map/props/map_props.gd" id="3_props"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="4_start"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="5_fount"]
-[ext_resource type="Environment" path="res://data/look/env_base.tres" id="6_env"]
-[ext_resource type="PackedScene" path="res://scenes/look/sky/sky.tscn" id="7_sky"]
 [ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="8_look"]
 [ext_resource type="Resource" path="res://data/look/ground/high_noon_tiles.tres" id="9_tiles"]
 [ext_resource type="Resource" path="res://assets/original/maps/winter_wonder/terrain.res" id="10_data"]
@@ -30,29 +28,11 @@ minimap_bake = NodePath("MinimapBake")
 buildings_root = NodePath("WinterWonderLayout/Buildings")
 npc_spawns_root = NodePath("WinterWonderLayout/NpcSpawns")
 
-[node name="Sky" parent="." instance=ExtResource("7_sky")]
+[node name="Look" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("8_look")]
 unique_name_in_owner = true
-background_color = Color(2.8878452e-07, 0.92139935, 0.5927794, 1)
-top_path = "res://assets/original/themes/persephone/skyt.png"
-bottom_path = "res://assets/original/themes/persephone/skyb.png"
-clouds_path = "res://assets/original/themes/persephone/sky.png"
-
-[node name="Environment" type="WorldEnvironment" parent="."]
-unique_name_in_owner = true
-environment = ExtResource("6_env")
-
-[node name="Look" parent="." node_paths=PackedStringArray("sun", "world_environment", "terrain", "legacy_sky") instance=ExtResource("8_look")]
-unique_name_in_owner = true
-sun = NodePath("../Sun")
-world_environment = NodePath("../Environment")
 terrain = NodePath("../Terrain")
-legacy_sky = NodePath("../Sky")
 tile_map = ExtResource("9_tiles")
 flora_map = ExtResource("flora_map")
-
-[node name="Sun" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.921061, -0.27935162, 0.27131036, 0, 0.6967067, 0.7173561, -0.38941833, -0.6607287, 0.6417094, 0, 0, 0)
-shadow_enabled = true
 
 [node name="Terrain" parent="." groups=["nav_source"] instance=ExtResource("12_glb")]
 unique_name_in_owner = true

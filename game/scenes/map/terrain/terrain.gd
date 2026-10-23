@@ -412,7 +412,7 @@ func _load_image(path: String) -> Image:
 	return load(path) as Image
 
 
-## A biome's classic ground (`GodTheme.ground_material`). In a match the terrain works on a copy: the grass
+## A biome's classic ground (`LookProfile.ground_classic`). In a match the terrain works on a copy: the grass
 ## writes its paint into the classic material and the shared resource must stay as saved.
 func set_classic_material(material: ShaderMaterial) -> void:
 	_classic_material = _runtime_copy(material)

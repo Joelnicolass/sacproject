@@ -47,6 +47,33 @@ Palabras simples primero; la columna de la derecha dice quién las controla.
 
 Los identificadores van en inglés; el texto de UI, en el idioma del producto.
 
+## 2b. Todo en el editor, movible con gizmo, sin capas de abstracción (RFC-055 §15)
+
+Regla del usuario: lo que se ve, se mueve o se mide en el juego es un nodo en una escena que se arrastra con el gizmo; el código no inventa alturas, no arma nodos y no busca recursos por texto. El lint cuenta con grep (patrones aproximados) y sube el listón: solo puede bajar.
+
+| # | Regla (una frase) | Qué cuenta el lint | Allowlist |
+|---|---|---|---|
+| C15 | Un nodo de contenido vive en el `.tscn`, no nace con `.new()`. | `X3D/X2D/...Player/Timer/Light/Camera.new(` en `scenes/` (sin comentarios, sin Transform/Basis/Vector) | `fx_bus`, `sound_bus`, `fx_light_layer`, `mesh_planter`, `grass_field`, `npc_spawn` |
+| C16 | Una posición es un `Marker3D`, no `Vector3.UP * altura`. | `Vector3.UP *` con número o nombre `height/offset/lift/reach/spread/_h`, y `const [A-Z_]*(HEIGHT\|OFFSET\|LIFT\|REACH\|SPREAD)` | ninguna |
+| C17 | Un FX o sonido es un Resource tipado, no un texto. | `FxBus.<fn>("...")` y `@export` String/StringName con nombre fx/sfx/sound/effect | ninguna |
+| C18 | Gameplay no busca contenido por tag de texto: recibe el Resource por `@export`. | `GameData.(creature\|spell\|ability\|wizard\|god\|book)*(`, `BodyCatalog.(info\|pose\|has_model)(`, `MapCatalog.`, `GameModeCatalog.` | spawners (`*spawn*.gd`), `scenes/net/`, `scenes/core/catalog/` |
+| C19 | Un `.tres` de `data/` no guarda posiciones: eso es un nodo. | archivos `.tres` en `data/` con `*_offset/_position/_origin/_transform/_pos`, `position*`, `offsets`, `origin`, `transform`, `Transform3D(`. `debug/` se informa aparte (`info:`), no sube el listón | `roughness_offset` |
+| C20 | Un radio de lugar o de efecto es un `CollisionShape3D`, no un número de `MatchRules`. | `@export` `*_radius/_height/_distance` en `scenes/match/match_rules.gd` | ninguna |
+| C21 | Una referencia es un tipo (`PackedScene`, `Resource`), no una ruta en texto. | `@export_file` en `scenes/` | ninguna |
+
+Antes y después (C16 + C15):
+
+```gdscript
+# Antes: la altura vive en el código y no se ve en el editor.
+var muzzle := body.global_position + Vector3.UP * muzzle_height
+var flash := OmniLight3D.new(); add_child(flash)
+
+# Despues: el socket es un Marker3D de la escena; la luz es un hijo del .tscn.
+@export var muzzle: Marker3D
+@export var flash: OmniLight3D
+var muzzle_pos := muzzle.global_position
+```
+
 ## 3. README de un sistema (≤10 líneas)
 
 ```
@@ -100,3 +127,5 @@ class_name FloraLayer extends Resource
 - ¿El README del sistema dice quién habla con quién?
 - ¿Hay un `MpKit.` nuevo fuera de la allowlist?
 - ¿El lint está verde, y bajó el conteo de lo que el corte tocaba?
+- ¿Cada escena de actor tiene sus sockets (`Marker3D`) en vez de alturas en código?
+- ¿Hay hijos `INTERNAL_MODE` nuevos fuera de flora/grass/previews?

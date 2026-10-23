@@ -91,7 +91,39 @@ xargs grep -nE '(^|[^A-Za-z0-9_.])print\(' < "$OUT/all.txt" 2>/dev/null \
 	| grep -v 'DebugLog' | grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C14.txt" || true
 grep -v '/debug_log\.gd' "$OUT/C14.txt" > "$OUT/C14b.txt"; mv "$OUT/C14b.txt" "$OUT/C14.txt"
 
-RULES="C1a:scripts>150_lines C1b:scripts>300_lines C5:get_node(\"Cap\") C6:group_lookup_literal C7:.call/has_method C8:raw_fields_in_*_type.gd C9:doc_opens_with_original C11:inheritance_depth>=2 C12:MpKit_outside_allowlist C13:reads_original_assets C14:print()"
+# ---- Editor-first rules (RFC-055 §15): "todo en el editor, movible con gizmo, sin capas de abstraccion". ----
+
+# C15: content nodes built with .new() in code (allowlist: pools, buses, planters, previews).
+xargs grep -nE '[A-Z][A-Za-z0-9]*(3D|2D|Player|Timer|Light|Camera)[A-Za-z0-9]*\.new\(' < "$OUT/all.txt" 2>/dev/null \
+	| grep -vE '(Transform|Basis|Vector|Plane|Color)[A-Za-z0-9]*\.new\(' \
+	| grep -vE '^scenes/[a-z_/]*/(fx_bus|sound_bus|fx_light_layer|mesh_planter|grass_field|npc_spawn)\.gd:' \
+	| grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C15.txt" || true
+
+# C16: heights/offsets typed in code instead of a Marker3D socket.
+xargs grep -nE 'Vector3\.UP[ ]*\*[ ]*([-0-9.(]|[a-z_]*(height|offset|lift|reach|spread|_h)\b)|^[ 	]*const [A-Z_]*(HEIGHT|OFFSET|LIFT|REACH|SPREAD)' < "$OUT/all.txt" 2>/dev/null \
+	| grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C16.txt" || true
+
+# C17: FX/sound named by text literal or by an exported String instead of a typed Resource.
+xargs grep -nE 'FxBus\.[a-z_]+\([ ]*&?"|@export[a-z_]* var [a-z_]*(fx|sfx|sound|effect)[a-z_]*[ ]*:[ ]*(String|StringName)\b' < "$OUT/all.txt" 2>/dev/null \
+	| grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C17.txt" || true
+
+# C18: text-tag lookups of content in gameplay (allowed in spawners, scenes/net/, scenes/core/catalog/).
+xargs grep -nE 'GameData\.(creature|spell|ability|wizard|god|book)[a-z_]*\(|BodyCatalog\.(info|pose|has_model)\(|MapCatalog\.|GameModeCatalog\.' < "$OUT/all.txt" 2>/dev/null \
+	| grep -vE '^scenes/(net|core/catalog)/|^scenes/[a-z_/]*[a-z_]*spawn[a-z_]*\.gd:' \
+	| grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C18.txt" || true
+
+# C19: data/*.tres that store positions/offsets/transforms (counted by FILE). debug/ is reported, not ratcheted.
+TRES_POS='^([a-z_0-9]*_(offset|position|origin|transform|pos)|position[a-z_0-9]*|offsets|origin|transform) = |Transform3D\('
+find data -name '*.tres' 2>/dev/null | sort | xargs grep -lE "$TRES_POS" 2>/dev/null | grep -v 'roughness_offset' > "$OUT/C19.txt" || true
+find debug -name '*.tres' 2>/dev/null | sort | xargs grep -lE "$TRES_POS" 2>/dev/null > "$OUT/C19debug.txt" || true
+
+# C20: place/effect radii exported from MatchRules (they belong in a CollisionShape3D).
+grep -nE '^@export.*(_radius|_height|_distance)' scenes/match/match_rules.gd > "$OUT/C20.txt" 2>/dev/null || true
+
+# C21: file paths as text instead of typed references.
+xargs grep -nE '@export_file' < "$OUT/all.txt" 2>/dev/null > "$OUT/C21.txt" || true
+
+RULES="C1a:scripts>150_lines C1b:scripts>300_lines C5:get_node(\"Cap\") C6:group_lookup_literal C7:.call/has_method C8:raw_fields_in_*_type.gd C9:doc_opens_with_original C11:inheritance_depth>=2 C12:MpKit_outside_allowlist C13:reads_original_assets C14:print() C15:content_nodes_with_new C16:height_offset_in_code C17:fx_by_text C18:content_lookup_by_text C19:data_tres_with_positions C20:matchrules_place_radii C21:export_file"
 
 baseline_of() { grep -E "^$1=" "$BASELINE" 2>/dev/null | head -1 | cut -d= -f2; }
 
@@ -104,6 +136,7 @@ if [ "$UPDATE" -eq 1 ]; then
 	echo "baseline rewritten: $BASELINE"
 fi
 
+echo "info: debug/*.tres with positions/offsets (not ratcheted): $(wc -l < "$OUT/C19debug.txt" | tr -d ' ')"
 FAILED=0
 for r in $RULES; do
 	key="${r%%:*}"; label="${r#*:}"

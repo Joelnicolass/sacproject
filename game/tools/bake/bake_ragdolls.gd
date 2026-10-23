@@ -9,6 +9,9 @@ extends SceneTree
 ## How the bones are built (all numbers are the constants below):
 ##   - a bone gets a body when its segment (the distance to its children) is at least MIN_BONE_RATIO of the model's size;
 ##     a shorter bone rides on its parent. The segment of a bone with several children points to the middle of them.
+##   - a short bone with a body somewhere below it still gets one, as short as the rule allows (a "link"): without it the
+##     bodies below would hang free of the ones above (a Taurock's legs fell apart from its torso) and the skin weighted to
+##     that bone would stay up in the air at the standing pose while the rest lay down.
 ##   - the capsule lies along the segment; the joint to the nearest bone above that has a body is a cone with limits.
 ##   - the model is drawn mirrored on z (BodyModel), and a physics body cannot be mirrored: each body carries the mirror in
 ##     its `body_offset` so it moves as a normal rigid body and the skin still follows.
@@ -94,10 +97,11 @@ func _add_bones(skeleton: Skeleton3D, simulator: PhysicalBoneSimulator3D, root: 
 	var offset := mirror if mirrored else Transform3D.IDENTITY
 	var size := _model_size(skeleton)
 	var min_length := size * MIN_BONE_RATIO
+	var linked := _bones_over_bodies(skeleton, min_length)
 	var has_body := {}
 	var count := 0
 	for bone in skeleton.get_bone_count():
-		var segment := _segment(skeleton, bone, min_length)
+		var segment := _segment(skeleton, bone, min_length, linked.has(bone))
 		if segment.is_empty():
 			continue
 		var length: float = segment["length"]
@@ -148,8 +152,22 @@ func _add_capsule(body: PhysicalBone3D, root: Node, dir: Vector3, length: float,
 	shape.owner = root
 
 
+## The bones that have a body of their own or one below them (all their ancestors): the links of the physical skeleton.
+func _bones_over_bodies(skeleton: Skeleton3D, min_length: float) -> Dictionary:
+	var over := {}
+	for bone in skeleton.get_bone_count():
+		if _segment(skeleton, bone, min_length, false).is_empty():
+			continue
+		var up := bone
+		while up >= 0 and not over.has(up):
+			over[up] = true
+			up = skeleton.get_bone_parent(up)
+	return over
+
+
 ## Where a bone points and how long it is, in the bone's own frame: {dir, length, hub}. Empty when it gets no body.
-func _segment(skeleton: Skeleton3D, bone: int, min_length: float) -> Dictionary:
+## `link`: a bone that is too short still gets the shortest segment (it holds bodies below it together).
+func _segment(skeleton: Skeleton3D, bone: int, min_length: float, link: bool) -> Dictionary:
 	var kids: Array[Vector3] = []
 	for other in skeleton.get_bone_count():
 		var offset := skeleton.get_bone_rest(other).origin
@@ -174,7 +192,9 @@ func _segment(skeleton: Skeleton3D, bone: int, min_length: float) -> Dictionary:
 		for kid in kids:
 			length = maxf(length, kid.dot(dir))
 	if length < min_length:
-		return {}
+		if not link:
+			return {}
+		length = min_length
 	return {"dir": dir, "length": length, "hub": kids.size() > 1}
 
 

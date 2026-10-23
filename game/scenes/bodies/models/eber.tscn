@@ -5,74 +5,78 @@
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_r4ngo"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_adut3"]
+radius = 0.12825733
+height = 0.26651466
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7wff8"]
 radius = 0.17100976
 height = 0.76594526
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7wff8"]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u2ryn"]
 radius = 0.2410399
 height = 1.0956359
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u2ryn"]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_srohl"]
 radius = 0.17100976
 height = 0.5820875
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_srohl"]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_dtei6"]
 radius = 0.12825733
 height = 0.26651466
-
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_dtei6"]
-radius = 0.17100976
-height = 0.5557592
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_02vog"]
 radius = 0.17100976
-height = 0.67777455
+height = 0.5557592
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5luf0"]
 radius = 0.17100976
-height = 0.65003014
+height = 0.67777455
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_65huc"]
-radius = 0.12825733
-height = 0.26651466
+radius = 0.17100976
+height = 0.65003014
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_tve0r"]
-radius = 0.17100976
-height = 0.55241454
+radius = 0.12825733
+height = 0.26651466
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_s7rem"]
 radius = 0.17100976
-height = 0.69718266
+height = 0.55241454
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1ggaw"]
 radius = 0.17100976
-height = 0.64277864
+height = 0.69718266
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_nj8sw"]
-radius = 0.12825733
-height = 0.26651466
+radius = 0.17100976
+height = 0.64277864
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_s1kqy"]
-radius = 0.17100976
-height = 0.74753946
+radius = 0.12825733
+height = 0.26651466
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_hqnl4"]
 radius = 0.17100976
-height = 0.6430821
+height = 0.74753946
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_hou0r"]
+radius = 0.17100976
+height = 0.6430821
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_mkwfq"]
 radius = 0.12825733
 height = 0.26651466
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_mkwfq"]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_xx4sa"]
 radius = 0.17100976
 height = 0.75351405
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_xx4sa"]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_gosb0"]
 radius = 0.17100976
 height = 0.6406687
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_gosb0"]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_r1lrp"]
 radius = 0.12825733
 height = 0.26651466
 
@@ -349,22 +353,42 @@ clips = {
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 
-[node name="Ragdoll" type="PhysicalBoneSimulator3D" parent="Model/Skeleton3D" parent_id_path=PackedInt32Array(799680256, 922127660) index="1" unique_id=147158526]
+[node name="Ragdoll" type="PhysicalBoneSimulator3D" parent="Model/Skeleton3D" parent_id_path=PackedInt32Array(799680256, 922127660) index="1" unique_id=1210933202]
 process_mode = 4
 
-[node name="Bone_bone_02" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=122348534]
+[node name="Bone_bone_01" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=856391509]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+collision_layer = 16
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 10.60514
+friction = 0.8
+bone_name = "bone_01"
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_01" unique_id=211169791]
+transform = Transform3D(0.9922336, 0.11209176, 0.053925566, -0.11209176, 0.6178055, 0.7783006, 0.053925566, -0.7783006, 0.62557197, 0.014376589, 0.07923809, -0.09982275)
+shape = SubResource("CapsuleShape3D_adut3")
+
+[node name="Bone_bone_02" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1368330911]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -1.4e-08, 0.36174753, -2.7e-08)
 collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(1.7881393e-07, -0.99999994, -6.919554e-08, 0.99999994, 1.7881393e-07, -6.919553e-08, 6.919554e-08, -6.919553e-08, 1, 0, 0, 0)
+joint_rotation = Vector3(6.9195536e-08, -6.919555e-08, 1.5707961)
 body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 mass = 56.296246
 friction = 0.8
 bone_name = "bone_02"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
 
-[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_02" unique_id=96544063]
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_02" unique_id=247941159]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4e-08, 0.38297263, 2.6499999e-08)
-shape = SubResource("CapsuleShape3D_adut3")
+shape = SubResource("CapsuleShape3D_7wff8")
 
-[node name="Bone_bone_03" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1671665693]
+[node name="Bone_bone_03" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1692521411]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 5.3999997e-08, 1.1276928, -8e-08)
 collision_layer = 16
 joint_type = 2
@@ -380,11 +404,11 @@ joint_constraints/bias = 0.3
 joint_constraints/softness = 0.8
 joint_constraints/relaxation = 1.0
 
-[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_03" unique_id=786945000]
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_03" unique_id=1414689661]
 transform = Transform3D(0.99999994, -0.00039945985, -3.6866186e-05, 0.00039945985, 0.9831089, 0.18302129, -3.6866186e-05, -0.18302129, 0.98310894, -0.00021883131, 0.53856474, -0.100262366)
-shape = SubResource("CapsuleShape3D_7wff8")
+shape = SubResource("CapsuleShape3D_u2ryn")
 
-[node name="Bone_bone_04" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=436916578]
+[node name="Bone_bone_04" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=761833448]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 1.1999997e-08, 2.2108314, 0.16824642)
 collision_layer = 16
 joint_type = 2
@@ -400,11 +424,11 @@ joint_constraints/bias = 0.3
 joint_constraints/softness = 0.8
 joint_constraints/relaxation = 1.0
 
-[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_04" unique_id=131640676]
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_04" unique_id=928124291]
 transform = Transform3D(1, -1.2025684e-08, -4.343201e-10, 1.2025684e-08, 0.9973947, 0.072138, -4.343201e-10, -0.072138, 0.9973947, -3.5e-09, 0.2902855, -0.020995313)
-shape = SubResource("CapsuleShape3D_u2ryn")
+shape = SubResource("CapsuleShape3D_srohl")
 
-[node name="Bone_bone_05" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=493063407]
+[node name="Bone_bone_05" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1970210179]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 4.9999973e-09, 2.7914023, 0.21023704)
 collision_layer = 16
 joint_type = 2
@@ -420,11 +444,11 @@ joint_constraints/bias = 0.3
 joint_constraints/softness = 0.8
 joint_constraints/relaxation = 1.0
 
-[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_05" unique_id=1607582767]
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_05" unique_id=163825232]
 transform = Transform3D(1, -1.2025684e-08, -4.343201e-10, 1.2025684e-08, 0.9973947, 0.072138, -4.343201e-10, -0.072138, 0.9973947, -1.5423821e-09, 0.12792318, -0.009252227)
-shape = SubResource("CapsuleShape3D_srohl")
+shape = SubResource("CapsuleShape3D_dtei6")
 
-[node name="Bone_bone_06" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1324369341]
+[node name="Bone_bone_06" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=756075787]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -0.3013654, 1.8327183, 0.14795002)
 collision_layer = 16
 joint_type = 2
@@ -440,11 +464,11 @@ joint_constraints/bias = 0.3
 joint_constraints/softness = 0.8
 joint_constraints/relaxation = 1.0
 
-[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_06" unique_id=342682754]
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_06" unique_id=420430094]
 transform = Transform3D(0.006159246, -0.9963165, 0.08553062, 0.9963165, -0.0012016296, -0.08574368, 0.08553062, 0.08574368, 0.9926392, -0.27685603, -0.00033389303, 0.023826422)
-shape = SubResource("CapsuleShape3D_dtei6")
+shape = SubResource("CapsuleShape3D_02vog")
 
-[node name="Bone_bone_07" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=469011452]
+[node name="Bone_bone_07" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=310896950]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -0.8550774, 1.8320504, 0.10029718)
 collision_layer = 16
 joint_type = 2
@@ -460,11 +484,11 @@ joint_constraints/bias = 0.3
 joint_constraints/softness = 0.8
 joint_constraints/relaxation = 1.0
 
-[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_07" unique_id=55017450]
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_07" unique_id=1571524782]
 transform = Transform3D(0.97367823, 0.00812456, 0.22778209, -0.00812456, -0.9974922, 0.070307955, 0.22778209, -0.070307955, -0.9711704, 0.0027533022, -0.33803743, -0.023826404)
-shape = SubResource("CapsuleShape3D_02vog")
+shape = SubResource("CapsuleShape3D_5luf0")
 
-[node name="Bone_bone_08" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=46028659]
+[node name="Bone_bone_08" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=2058023226]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -0.8495708, 1.1559756, 0.14795)
 collision_layer = 16
 joint_type = 2
@@ -480,11 +504,11 @@ joint_constraints/bias = 0.3
 joint_constraints/softness = 0.8
 joint_constraints/relaxation = 1.0
 
-[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_08" unique_id=1602983442]
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_08" unique_id=1141602365]
 transform = Transform3D(0.8672838, 0.05019069, -0.49527735, -0.05019069, -0.9810189, -0.18730433, -0.49527735, 0.18730433, -0.8483027, 0.016312737, -0.3188459, 0.060876753)
-shape = SubResource("CapsuleShape3D_5luf0")
+shape = SubResource("CapsuleShape3D_65huc")
 
-[node name="Bone_bone_09" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=546240168]
+[node name="Bone_bone_09" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1326035940]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -0.8169453, 0.5182838, 0.02619648)
 collision_layer = 16
 joint_type = 2
@@ -500,11 +524,11 @@ joint_constraints/bias = 0.3
 joint_constraints/softness = 0.8
 joint_constraints/relaxation = 1.0
 
-[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_09" unique_id=1317977363]
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_09" unique_id=1585686774]
 transform = Transform3D(0.8672838, 0.05019069, -0.49527735, -0.05019069, -0.9810189, -0.18730433, -0.49527735, 0.18730433, -0.8483027, 0.006437327, -0.12582286, 0.024023164)
-shape = SubResource("CapsuleShape3D_65huc")
+shape = SubResource("CapsuleShape3D_tve0r")
 
-[node name="Bone_bone_10" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=890815632]
+[node name="Bone_bone_10" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=778405781]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0.3003525, 1.8327183, 0.14795005)
 collision_layer = 16
 joint_type = 2
@@ -520,11 +544,11 @@ joint_constraints/bias = 0.3
 joint_constraints/softness = 0.8
 joint_constraints/relaxation = 1.0
 
-[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_10" unique_id=1878331122]
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_10" unique_id=717532179]
 transform = Transform3D(0.0062415004, 0.99627167, -0.086045176, -0.99627167, -0.0012087822, -0.086262785, -0.086045176, 0.086262785, 0.9925497, 0.27517748, -0.00033389297, 0.023826405)
-shape = SubResource("CapsuleShape3D_tve0r")
+shape = SubResource("CapsuleShape3D_s7rem")
 
-[node name="Bone_bone_11" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=822748295]
+[node name="Bone_bone_11" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=347713164]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0.8507075, 1.8320504, 0.10029724)
 collision_layer = 16
 joint_type = 2
@@ -540,11 +564,11 @@ joint_constraints/bias = 0.3
 joint_constraints/softness = 0.8
 joint_constraints/relaxation = 1.0
 
-[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_11" unique_id=1588237714]
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_11" unique_id=477295620]
 transform = Transform3D(0.9029813, 0.015442977, 0.42940232, -0.015442977, -0.9975418, 0.068350196, 0.42940232, -0.068350196, -0.90052307, 0.005383324, -0.34773442, -0.023826445)
-shape = SubResource("CapsuleShape3D_s7rem")
+shape = SubResource("CapsuleShape3D_1ggaw")
 
-[node name="Bone_bone_12" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=857666528]
+[node name="Bone_bone_12" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1087440551]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0.8614741, 1.1365815, 0.14795014)
 collision_layer = 16
 joint_type = 2
@@ -560,11 +584,11 @@ joint_constraints/bias = 0.3
 joint_constraints/softness = 0.8
 joint_constraints/relaxation = 1.0
 
-[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_12" unique_id=2142042096]
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_12" unique_id=1373561664]
 transform = Transform3D(0.8394571, -0.056261346, 0.5405057, 0.056261346, -0.9802835, -0.18941714, 0.5405057, 0.18941714, -0.81974053, -0.018081825, -0.31505263, 0.060876746)
-shape = SubResource("CapsuleShape3D_1ggaw")
+shape = SubResource("CapsuleShape3D_nj8sw")
 
-[node name="Bone_bone_13" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=954481127]
+[node name="Bone_bone_13" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=245901802]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0.82531047, 0.5064762, 0.026196644)
 collision_layer = 16
 joint_type = 2
@@ -580,23 +604,31 @@ joint_constraints/bias = 0.3
 joint_constraints/softness = 0.8
 joint_constraints/relaxation = 1.0
 
-[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_13" unique_id=856777125]
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_13" unique_id=851260327]
 transform = Transform3D(0.8394571, -0.056261346, 0.5405057, 0.056261346, -0.9802835, -0.18941714, 0.5405057, 0.18941714, -0.81974053, -0.0072159423, -0.12572855, 0.024294177)
-shape = SubResource("CapsuleShape3D_nj8sw")
+shape = SubResource("CapsuleShape3D_s1kqy")
 
-[node name="Bone_bone_14" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=352588561]
+[node name="Bone_bone_14" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1277937659]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0.66756964, -0.09875366, 0.10029741)
 collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(0.0150844455, 0.9834788, 0.18039405, -0.9834788, 0.047142863, -0.1747773, -0.18039405, -0.1747773, 0.9679416, 0, 0, 0)
+joint_rotation = Vector3(0.17567958, 0.18425487, -1.5228982)
 body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 mass = 54.943436
 friction = 0.8
 bone_name = "bone_14"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
 
-[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_14" unique_id=2049762716]
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_14" unique_id=930215324]
 transform = Transform3D(0.9862274, 0.015084426, 0.16470587, -0.015084426, -0.9834789, 0.18039362, 0.16470587, -0.18039362, -0.9697063, 0.005638115, -0.3675946, -0.06742584)
-shape = SubResource("CapsuleShape3D_s1kqy")
+shape = SubResource("CapsuleShape3D_hqnl4")
 
-[node name="Bone_bone_15" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1674511561]
+[node name="Bone_bone_15" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=374570494]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0.6788459, -0.8339428, 0.23514907)
 collision_layer = 16
 joint_type = 2
@@ -612,11 +644,11 @@ joint_constraints/bias = 0.3
 joint_constraints/softness = 0.8
 joint_constraints/relaxation = 1.0
 
-[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_15" unique_id=1485297622]
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_15" unique_id=1076140421]
 transform = Transform3D(-0.99889386, -0.029163113, -0.036885474, 0.029163113, -0.99957454, 0.00053814525, -0.036885474, -0.00053814525, 0.9993194, -0.009377991, -0.32140422, -0.00017305152)
-shape = SubResource("CapsuleShape3D_hqnl4")
+shape = SubResource("CapsuleShape3D_hou0r")
 
-[node name="Bone_bone_16" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=524918050]
+[node name="Bone_bone_16" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=2024577218]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0.6600899, -1.4767511, 0.23549518)
 collision_layer = 16
 joint_type = 2
@@ -632,23 +664,31 @@ joint_constraints/bias = 0.3
 joint_constraints/softness = 0.8
 joint_constraints/relaxation = 1.0
 
-[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_16" unique_id=714522270]
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_16" unique_id=973903686]
 transform = Transform3D(-0.99889386, -0.029163113, -0.036885474, 0.029163113, -0.99957454, 0.00053814525, -0.036885474, -0.00053814525, 0.9993194, -0.0037407232, -0.12820275, -6.902735e-05)
-shape = SubResource("CapsuleShape3D_hou0r")
+shape = SubResource("CapsuleShape3D_mkwfq")
 
-[node name="Bone_bone_17" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1090046368]
+[node name="Bone_bone_17" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=761053549]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -0.63867974, -0.103764184, 0.10029741)
 collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(-0.063508034, 0.9818038, 0.17896377, -0.9818038, -0.02930808, -0.18762289, -0.17896377, -0.18762289, 0.9658, 0, 0, 0)
+joint_rotation = Vector3(0.18874148, 0.18322287, -1.6006386)
 body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 mass = 55.382565
 friction = 0.8
 bone_name = "bone_17"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
 
-[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_17" unique_id=1479172446]
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_17" unique_id=2100711293]
 transform = Transform3D(0.77834487, -0.063507974, -0.6246167, 0.063507974, -0.9818039, 0.17896333, -0.6246167, -0.17896333, -0.76014876, -0.023927134, -0.36990148, -0.067425855)
-shape = SubResource("CapsuleShape3D_mkwfq")
+shape = SubResource("CapsuleShape3D_xx4sa")
 
-[node name="Bone_bone_18" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=644706245]
+[node name="Bone_bone_18" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1771998905]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -0.68653405, -0.8435672, 0.23514913)
 collision_layer = 16
 joint_type = 2
@@ -664,11 +704,11 @@ joint_constraints/bias = 0.3
 joint_constraints/softness = 0.8
 joint_constraints/relaxation = 1.0
 
-[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_18" unique_id=440447470]
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_18" unique_id=1263662280]
 transform = Transform3D(-0.9930104, -0.03500136, -0.11271797, 0.03500136, -0.99938536, 0.0019795592, -0.11271797, -0.0019795592, 0.99362504, -0.011212264, -0.32013744, -0.00063412794)
-shape = SubResource("CapsuleShape3D_xx4sa")
+shape = SubResource("CapsuleShape3D_gosb0")
 
-[node name="Bone_bone_19" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1344929936]
+[node name="Bone_bone_19" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=725975100]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -0.70895857, -1.4838421, 0.23641738)
 collision_layer = 16
 joint_type = 2
@@ -684,9 +724,9 @@ joint_constraints/bias = 0.3
 joint_constraints/softness = 0.8
 joint_constraints/relaxation = 1.0
 
-[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_19" unique_id=1178161225]
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_19" unique_id=1202686775]
 transform = Transform3D(-0.9930104, -0.03500136, -0.11271797, 0.03500136, -0.99938536, 0.0019795592, -0.11271797, -0.0019795592, 0.99362504, -0.004489232, -0.12817849, -0.00025389585)
-shape = SubResource("CapsuleShape3D_gosb0")
+shape = SubResource("CapsuleShape3D_r1lrp")
 
 [node name="Tree" type="AnimationTree" parent="." unique_id=1814613936]
 unique_name_in_owner = true

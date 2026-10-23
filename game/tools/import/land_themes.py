@@ -169,8 +169,24 @@ def band_center(group: dict) -> float | None:
     return (band[1] + band[2]) / 2.0
 
 
-def base_mapping(source: dict, target: dict, tmap: bytes, by_corners: dict) -> dict:
+# RFC-059a. Persephone's ground is made only of Persephone's own tiles (the ones the tutorial paints), never of tiles that
+# look like James's: High Noon's base groups (MAPG numbers of James's land) take a native base group by role. Which native
+# group plays which role comes from how tu02 (sacengine/maps/Tutorial/(tu02).scp, land prsc) uses its tiles: group 3 is its
+# grass (5 665 of 18 520 painted cells, the largest; mean RGB 119,152,20), 2 the grey-green earth around it (3 444), 1 the
+# pale stone of the rings and paths (2 217), 4 the warm dirt of the banks. Each pair of roles that touch on High Noon has a
+# native transition group (3-2 = MG11, 2-1 = MG10, 3-4 = MG12), so the seams keep blending.
+#   James MG00 open ground (91 % of High Noon)  -> MG03 grass
+#   James MG01 hill earth                       -> MG04 dirt
+#   James MG02 low ground, pale paths           -> MG02 grey-green earth
+#   James MG03 rock and cliff                   -> MG01 pale stone
+# James MG04..MG06 have no height role: they take the native group of the ground they border (base_mapping, as before).
+NATIVE_ROLES = {"persephone": {0: 3, 1: 4, 2: 2, 3: 1}}
+
+
+def base_mapping(source: dict, target: dict, tmap: bytes, by_corners: dict, fixed: dict | None = None) -> dict:
     """Source base group -> target base group.
+
+    `fixed` (NATIVE_ROLES) decides the groups with a height role by hand; only the groups without a role are inferred.
 
     Groups with a height role keep the band order and, among the orders that keep the most
     map cells of each transition blended (the target land has that pair, or both sides
@@ -195,17 +211,20 @@ def base_mapping(source: dict, target: dict, tmap: bytes, by_corners: dict) -> d
                 total += count
         return total
 
-    order = sorted(roles, key=lambda n: (roles[n], n))
-    best = None
-    for choice in itertools.product(sorted(targets), repeat=len(order)):
-        if any(targets[a] > targets[b] for a, b in zip(choice, choice[1:])):
-            continue
-        mapping = dict(zip(order, choice))
-        distance = sum(abs(targets[mapping[n]] - roles[n]) for n in order)
-        score = (-kept(mapping), distance, choice)
-        if best is None or score < best[0]:
-            best = (score, mapping)
-    mapping = dict(best[1])
+    if fixed is not None:
+        mapping = {n: fixed[n] for n in roles}
+    else:
+        order = sorted(roles, key=lambda n: (roles[n], n))
+        best = None
+        for choice in itertools.product(sorted(targets), repeat=len(order)):
+            if any(targets[a] > targets[b] for a, b in zip(choice, choice[1:])):
+                continue
+            mapping = dict(zip(order, choice))
+            distance = sum(abs(targets[mapping[n]] - roles[n]) for n in order)
+            score = (-kept(mapping), distance, choice)
+            if best is None or score < best[0]:
+                best = (score, mapping)
+        mapping = dict(best[1])
 
     width = 256
     neighbors = {}
@@ -226,7 +245,7 @@ def base_mapping(source: dict, target: dict, tmap: bytes, by_corners: dict) -> d
     return mapping
 
 
-def land_remap(source: dict, target: dict, tmap: bytes, extra: frozenset = frozenset()) -> tuple:
+def land_remap(source: dict, target: dict, tmap: bytes, extra: frozenset = frozenset(), fixed: dict | None = None) -> tuple:
     """Tile id of the source land -> MAPT index of the target land with the same role, and the base group map.
 
     The base group map is decided by `tmap` alone (High Noon's cells for the themes). `extra` are more ids (the ones other maps
@@ -237,7 +256,7 @@ def land_remap(source: dict, target: dict, tmap: bytes, extra: frozenset = froze
         if len(set(corners)) == 1 and not is_base:
             continue
         by_corners.setdefault(corners, []).append(tile)
-    base_map = base_mapping(source, target, tmap, by_corners)
+    base_map = base_mapping(source, target, tmap, by_corners, fixed)
     remap = {}
     for tile in sorted(set(tmap) | set(extra)):
         signature = source["signatures"].get(tile)
@@ -271,7 +290,7 @@ def land_tiles(folder: dict) -> dict | None:
     }
 
 
-def build_atlas(folder: dict, tmap: bytes, map_land: dict | None, extra: frozenset = frozenset()) -> dict:
+def build_atlas(folder: dict, tmap: bytes, map_land: dict | None, extra: frozenset = frozenset(), god: str = "") -> dict:
     """16x16 grid of 64x64 MAPT, like terrain.gd / sacrifice_ground.gdshader expect."""
     land = land_tiles(folder)
     if land is None:
@@ -289,7 +308,7 @@ def build_atlas(folder: dict, tmap: bytes, map_land: dict | None, extra: frozens
     remap = {}
     groups = {}
     if map_land is not None:
-        remap, groups = land_remap(map_land, land, tmap, extra)
+        remap, groups = land_remap(map_land, land, tmap, extra, NATIVE_ROLES.get(god))
     atlas = bytearray(1024 * 1024 * 4)
     for index in range(256):
         source = remap.get(index, index if map_land is None else None)
@@ -339,7 +358,7 @@ def build_god(god: str, wad_name: str, land: str, sun_strength: float, tmap: byt
             images[filename] = found
         else:
             missing.append(filename)
-    atlas = build_atlas(folder, tmap, map_land, extra)
+    atlas = build_atlas(folder, tmap, map_land, extra, god)
     if atlas["ok"]:
         images["atlas.png"] = atlas["image"]
     else:

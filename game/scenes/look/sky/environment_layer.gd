@@ -104,6 +104,7 @@ func _write_fog(look: SkyLook) -> void:
 func _write_light(look: LightLook) -> void:
 	_env.ambient_light_color = look.ambient_color
 	_env.ambient_light_energy = look.ambient_energy
+	_env.tonemap_mode = look.tonemap_mode
 	_env.tonemap_exposure = look.tonemap_exposure
 	_env.tonemap_white = look.tonemap_white
 	_env.adjustment_enabled = true

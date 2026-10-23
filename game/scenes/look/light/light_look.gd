@@ -48,7 +48,10 @@ extends Resource
 @export var ambient_color: Color = Color(0.55, 0.65, 0.85)
 @export_range(0.0, 3.0, 0.01) var ambient_energy: float = 0.7
 
-@export_group("Exposure (AgX)")
+@export_group("Exposure")
+## The tonemapper of this biome. The default (AgX) is the one `env_base.tres` has; a biome whose ground must keep its
+## saturation (Persephone's green) picks another. Only EnvironmentLayer writes it.
+@export var tonemap_mode: Environment.ToneMapper = Environment.TONE_MAPPER_AGX
 @export_range(0.1, 4.0, 0.01) var tonemap_exposure: float = 1.0
 @export_range(0.5, 16.0, 0.1) var tonemap_white: float = 6.0
 ## 1.15 at most (RFC-022).

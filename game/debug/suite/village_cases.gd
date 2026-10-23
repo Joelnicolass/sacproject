@@ -26,6 +26,7 @@ func run(host: Node3D) -> Dictionary:
 	out["village_building"] = _building()
 	out["village_cower_flee"] = _cower_flee()
 	out["village_grudge_herd"] = _grudge()
+	out["village_hit_flees"] = _hit_flees()
 	out["village_separation_grid"] = _separation()
 	_root.free()
 	return out
@@ -174,6 +175,41 @@ func _grudge() -> Dictionary:
 	far.free()
 	other_side.free()
 	return _verdict(checks, {})
+
+
+## A farmer with a shelter near that is hit by an enemy runs away: within a few ticks it is in flee, in MOVE, with a planar
+## velocity of its running speed pointing away from the attacker (the avoidance callback does not fire in this suite, so the
+## position is not asserted); one with no shelter near crouches and does not move. The behavior and the body tick by hand.
+func _hit_flees() -> Dictionary:
+	const TICKS := 30
+	var delta := 1.0 / 60.0
+	var checks := {}
+	var runner := _unit(PEASANT_SCENE, 3, Vector3.ZERO, "zepe")
+	var hunter := _unit(UNIT_SCENE, 1, Vector3(-5.0, 0.0, 0.0), "nmuh")
+	var hut := _house("jhut", Vector3(0.0, 0.0, 30.0))
+	(runner.get_node("Health") as Health).damage(10.0, 1)
+	var behavior := runner.get_node("PeasantBehavior") as PeasantBehavior
+	for tick in TICKS:
+		behavior._physics_process(delta)
+		runner._physics_process(delta)
+	var away := (runner.global_position - hunter.global_position)
+	away.y = 0.0
+	var flat := Vector3(runner.velocity.x, 0.0, runner.velocity.z)
+	var info := {"state": behavior.state, "velocity": runner.velocity}
+	checks["hit_peasant_flees"] = behavior.state == &"flee" and runner.mode == UnitBody.Mode.MOVE
+	checks["runs_away_at_speed"] = flat.length() > 0.9 * runner.move_speed and flat.normalized().dot(away.normalized()) > 0.9
+	hut.free()
+	var cower := _unit(PEASANT_SCENE, 3, Vector3(300.0, 0.0, 0.0), "zepe")
+	(cower.get_node("Health") as Health).damage(10.0, 1)
+	var cower_behavior := cower.get_node("PeasantBehavior") as PeasantBehavior
+	for tick in TICKS:
+		cower_behavior._physics_process(delta)
+		cower._physics_process(delta)
+	checks["no_shelter_cowers_in_place"] = cower.is_cowering() and absf(cower.global_position.x - 300.0) < 0.5
+	runner.free()
+	hunter.free()
+	cower.free()
+	return _verdict(checks, info)
 
 
 ## The avoidance agent of a body is its box: a ycro and an nmuh (different radii) each give the agent their BodyBox half

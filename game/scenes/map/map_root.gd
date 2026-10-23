@@ -7,8 +7,8 @@ extends Node3D
 ## (scenes/match/match.tscn) instances it and binds its own systems to these sockets. A map you make in the editor
 ## fills the sockets it has; the required ones warn.
 
-## The ground (a `terrain.gd` MeshInstance3D).
-@export var terrain: MeshInstance3D
+## The ground: the mesh and, in its child `Shape`, the heights.
+@export var terrain: Terrain
 @export var nav_region: NavigationRegion3D
 ## The PlayerStart nodes, one per seat.
 @export var starts: Node3D

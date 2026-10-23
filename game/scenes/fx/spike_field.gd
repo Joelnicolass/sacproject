@@ -46,14 +46,14 @@ func play(params: Dictionary) -> void:
 	lifetime_s = float(params.get("life", lifetime_s))
 	var rng := RandomNumberGenerator.new()
 	rng.seed = int(params.get("seed", 0))
-	var terrain := FallCheck.terrain_of(self)
+	var shape := TerrainShape.of(self)
 	var center := global_position
 	for i in count:
 		var angle := rng.randf() * TAU
 		var radius := sqrt(lerpf(inner * inner, outer * outer, rng.randf()))
 		var base := center + Vector3(cos(angle), 0.0, sin(angle)) * radius
-		if terrain != null:
-			var land := terrain.ground_height(base.x, base.z)
+		if shape != null:
+			var land := shape.height_at(base.x, base.z)
 			if is_nan(land):
 				continue
 			base.y = land

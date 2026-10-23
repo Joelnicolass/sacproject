@@ -1,60 +1,47 @@
 class_name GrassLabGround
 extends MeshInstance3D
 
-## Lab ground (debug only): a flat-ish square patch cut from the derived height map (so the grass
-## has the same heights as in the map), at map coordinates, with the ground look given by the
-## rig's `TerrainLayer` like the real terrain. It offers the small part of `terrain.gd` that the
-## look layers and the lab use: `tile_ids`, `has_ground_data`, `ground_height`, `set_ground_override`.
+## Lab ground (debug only): a flat-ish square patch cut from the real map's heights (so the grass has the same
+## heights as in the map), at map coordinates, with the ground look given by the rig's `TerrainLayer` like the real
+## terrain. It offers the small part of Terrain the look layers use: a `shape` (heights and tile ids, every cell the
+## same tile so the first layer paints it) and `set_ground_override`.
 
 @export var center := Vector2(1500.0, 1500.0)
 @export var half_size_m := 65.0
 @export var step_m := 2.5
+## The ground numbers of High Noon (a TerrainShape child of this node).
+@export var shape: TerrainShape
 ## The map's zone ids -> ground layers; every cell gets a tile that paints the first layer.
-@export var tiles: TileLayerMap
+@export var tiles: TileLayerMap:
+	set(value):
+		tiles = value
+		_paint_tiles()
 
-var _height: Image
 var _material_classic := StandardMaterial3D.new()
 
 
 func _ready() -> void:
-	add_to_group("terrain")
 	_material_classic.albedo_color = Color(0.25, 0.35, 0.12)
-	_height = _derive_height()
-	if _height == null:
+	if shape == null or not shape.is_loaded():
 		push_error("Falta el terreno de High Noon (assets/original/maps/high_noon/terrain.res).")
 		return
+	_paint_tiles()
 	mesh = _build()
 	material_override = _material_classic
 
 
-## The grass height as the game derives it: from a throw-away Terrain built from the map's data.
-func _derive_height() -> Image:
-	var data := load(MapCatalog.active().terrain_path) as MapTerrainData
-	if data == null:
-		return null
-	var helper := MeshInstance3D.new()
-	helper.set_script(load("res://scenes/map/terrain/terrain.gd"))
-	helper.set("data", data)
-	add_child(helper)
-	helper.remove_from_group("terrain")
-	var image := GrassHeight.from_terrain(helper)
-	helper.free()
-	return image
+func set_ground_override(material: Material) -> void:
+	material_override = material if material else _material_classic
 
 
-func has_ground_data() -> bool:
-	return _height != null
+func clear_ground_override() -> void:
+	set_ground_override(null)
 
 
-func ground_height(x: float, z: float) -> float:
-	if _height == null or _height.is_empty():
-		return 0.0
-	var tx := clampi(int(x / 2.5), 0, 1023)
-	var tz := clampi(int(z / 2.5), 0, 1023)
-	return _height.get_pixel(tx, tz).r
-
-
-func tile_ids() -> PackedByteArray:
+## Every 10 m cell gets the first tile id the layer map paints with its first layer.
+func _paint_tiles() -> void:
+	if shape == null:
+		return
 	var ids := PackedByteArray()
 	ids.resize(256 * 256)
 	var pick := 0
@@ -64,15 +51,12 @@ func tile_ids() -> PackedByteArray:
 				pick = id
 				break
 	ids.fill(pick)
-	return ids
+	shape.use_tiles(ids)
 
 
-func set_ground_override(material: Material) -> void:
-	material_override = material if material else _material_classic
-
-
-func clear_ground_override() -> void:
-	set_ground_override(null)
+func _height(x: float, z: float) -> float:
+	var found := shape.height_at(x, z)
+	return 0.0 if is_nan(found) else found
 
 
 func _build() -> ArrayMesh:
@@ -84,7 +68,7 @@ func _build() -> ArrayMesh:
 		for x in count + 1:
 			var px := origin.x + x * step_m
 			var pz := origin.y + z * step_m
-			vertices.append(Vector3(px, ground_height(px, pz), pz))
+			vertices.append(Vector3(px, _height(px, pz), pz))
 			colors.append(Color(0.0, 0.0, 0.0, 1.0))
 	var indices := PackedInt32Array()
 	var row := count + 1

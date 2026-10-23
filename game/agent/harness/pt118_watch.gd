@@ -12,7 +12,6 @@ extends Node
 ## Lanes are z offsets from the center (1270, 1270): -45 Cog, 0 Necryl, +45 Mutant. Timed snapshots +1..+6 s.
 ## Props for wait_until: units, deaths, captured.
 
-const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 const CENTER := Vector2(1270.0, 1270.0)
 const CLOUD_TAGS := {"zidf": "goc@", "glsd": "cen@", "cbab": "tum@"}
 const OUT_DIR := "res://agent/out/pt118"
@@ -35,17 +34,17 @@ func _ready() -> void:
 	process_priority = 1000
 
 
-func _terrain() -> _TERRAIN:
+func _terrain() -> TerrainShape:
 	if get_tree().current_scene == null:
 		return null
-	return get_tree().root.find_child("Terrain", true, false) as _TERRAIN
+	return TerrainShape.of(self)
 
 
 func _ground_y(x: float, z: float) -> float:
 	var t := _terrain()
 	if t == null:
 		return 0.0
-	var y := t.ground_height(x, z)
+	var y := t.height_at(x, z)
 	return 0.0 if is_nan(y) else y
 
 

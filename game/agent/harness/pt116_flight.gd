@@ -9,7 +9,6 @@ extends Node
 ## 150 m east, to the X of the central fount (the bench leaves a 20 m gap in the row in front of it).
 const FAR_M := 150.0
 const _ORDERS := preload("res://scenes/units/unit_orders.gd")
-const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 const NEAR_M := 5.0
 const MAX_PHASE_TICKS := 60 * 45
 
@@ -118,8 +117,8 @@ func _summary() -> void:
 
 
 func _ground(at: Vector3) -> float:
-	var terrain := scene.find_child("Terrain", true, false) as _TERRAIN
-	return terrain.ground_height(at.x, at.z)
+	var terrain := TerrainShape.of(scene)
+	return terrain.height_at(at.x, at.z)
 
 
 ## The closest other creature (flat distance between centers) and both radii, for a unit that never arrived.

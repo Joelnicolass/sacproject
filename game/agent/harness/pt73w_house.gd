@@ -38,8 +38,8 @@ func aim_house(x: float, z: float, tag: String = "jhut") -> String:
 
 func aim_ground(x: float, z: float) -> String:
 	var cam := _cam()
-	var terrain: Variant = _root().find_child("Terrain", true, false)
-	var y: float = terrain.ground_height(x, z) if terrain else 0.0
+	var terrain: Variant = TerrainShape.of(self)
+	var y: float = terrain.height_at(x, z) if terrain else 0.0
 	var spot := cam.unproject_position(Vector3(x, 0.0 if is_nan(y) else y, z))
 	cam.set("debug_pointer", spot)
 	return "pointer suelo (%d,%d)" % [spot.x, spot.y]

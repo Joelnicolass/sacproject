@@ -55,7 +55,7 @@ func _attach_map() -> void:
 func _bind_map() -> void:
 	%Camera.set("ground", map.terrain)
 	%Selection.set("ground", map.terrain)
-	%Nav.set("terrain", map.terrain)
+	%Nav.set("terrain_shape", map.terrain.shape)
 	%Nav.set("region", map.nav_region)
 	var spawner := $WizardSpawner as MultiplayerSpawner
 	spawner.set("spawn_points", spawner.get_path_to(map.starts))

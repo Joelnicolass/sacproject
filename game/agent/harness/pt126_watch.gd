@@ -9,7 +9,6 @@ extends Node
 ##   report()                   life and shield (shown, bubble scale, ticks left) of every body of the lane.
 ## Props: tick, rel (ticks since the bench started: Enter).
 
-const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 const BODIES := ["Ent1", "Druid1", "Druid2", "Druid3", "Druid4", "Gnome1"]
 
 var tick := 0
@@ -80,10 +79,10 @@ func frame(x: float, z: float, ox: float, oy: float, oz: float) -> String:
 	var cam := get_viewport().get_camera_3d()
 	if cam == null:
 		return "no camera"
-	var t := get_tree().root.find_child("Terrain", true, false) as _TERRAIN
+	var t := TerrainShape.of(self)
 	var y := 0.0
 	if t != null:
-		var g: float = t.ground_height(x, z)
+		var g: float = t.height_at(x, z)
 		y = 0.0 if is_nan(g) else g
 	var look := Vector3(x, y + 1.0, z)
 	cam.look_at_from_position(look + Vector3(ox, oy, oz), look, Vector3.UP)

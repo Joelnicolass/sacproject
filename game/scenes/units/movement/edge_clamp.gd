@@ -11,14 +11,14 @@ extends RefCounted
 
 ## `velocity` whose horizontal step from the body's position this tick stays on the land. Y is kept.
 static func clamp_velocity(body: Node3D, velocity: Vector3, delta: float) -> Vector3:
-	var terrain := FallCheck.terrain_of(body)
-	if terrain == null or delta <= 0.0:
+	var shape := TerrainShape.of(body)
+	if shape == null or delta <= 0.0:
 		return velocity
 	var at := body.global_position
 	var step := Vector2(velocity.x, velocity.z) * delta
-	if step.length_squared() < 0.0000001 or not terrain.is_on_ground(at.x, at.z):
+	if step.length_squared() < 0.0000001 or not shape.is_on_ground(at.x, at.z):
 		return velocity
-	if terrain.is_on_ground(at.x + step.x, at.z + step.y):
+	if shape.is_on_ground(at.x + step.x, at.z + step.y):
 		return velocity
 	var tumbling := BodyNudge.tumbling_of(body)
 	if tumbling != null and tumbling.is_on():

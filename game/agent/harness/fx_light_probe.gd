@@ -43,7 +43,7 @@ func shadows() -> String:
 ## Grid of ground points (step `step_m`) inside `radius_m` of the slot marker named `slot`.
 func ring(slot: String, radius_m: float, step_m: float = 0.5) -> String:
 	var marker := _find(get_tree().current_scene, slot) as Node3D
-	var terrain := get_tree().get_first_node_in_group("terrain")
+	var terrain := TerrainShape.of(self)
 	if marker == null or terrain == null:
 		return "sin slot o terreno"
 	var center := marker.global_transform.origin
@@ -56,7 +56,7 @@ func ring(slot: String, radius_m: float, step_m: float = 0.5) -> String:
 				continue
 			var x := center.x + offset.x
 			var z := center.z + offset.y
-			var y: float = terrain.ground_height(x, z)
+			var y: float = terrain.height_at(x, z)
 			if not is_nan(y):
 				_points.append(Vector3(x, y, z))
 	return "puntos %d centro %s" % [_points.size(), center]

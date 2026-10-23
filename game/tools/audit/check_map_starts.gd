@@ -47,7 +47,7 @@ func _run() -> void:
 			problems.append("%s: `faces` is empty" % start.name)
 			continue
 		var spot := start.spawn_spot().origin
-		var on_ground := (root.terrain as Terrain).is_on_ground(spot.x, spot.z)
+		var on_ground := root.terrain.shape.is_on_ground(spot.x, spot.z)
 		var region := regions.component_at(spot, SNAP_M) if regions.polygon_count > 0 else -1
 		var region_size := regions.component_size_at(spot, SNAP_M) if regions.polygon_count > 0 else 0
 		print("start %s slot %d: altar (%.0f, %.0f) wizard (%.0f, %.0f) ground %s, region %d of %d polygons" % [

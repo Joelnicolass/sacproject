@@ -12,7 +12,6 @@ extends Node
 ## Props for wait_until: units, bursts (lanes whose first shot burst), captured.
 
 const _SHOT := preload("res://scenes/units/attacks/ranged_shot.gd")
-const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 const CENTER_Z := 1270.0
 const OUT_DIR := "res://agent/out/pt119"
 const AFTER := {2: "hit_a", 8: "hit_b", 20: "hit_c"}
@@ -34,17 +33,17 @@ func _ready() -> void:
 	process_priority = 1000
 
 
-func _terrain() -> _TERRAIN:
+func _terrain() -> TerrainShape:
 	if get_tree().current_scene == null:
 		return null
-	return get_tree().root.find_child("Terrain", true, false) as _TERRAIN
+	return TerrainShape.of(self)
 
 
 func _ground_y(x: float, z: float) -> float:
 	var t := _terrain()
 	if t == null:
 		return 0.0
-	var y := t.ground_height(x, z)
+	var y := t.height_at(x, z)
 	return 0.0 if is_nan(y) else y
 
 

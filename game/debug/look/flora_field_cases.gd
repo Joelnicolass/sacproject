@@ -12,8 +12,8 @@ extends RefCounted
 ## - flora_switch (054f): with the rig's «Vegetación» switch off (GraphicsPrefs.vegetation_enabled through
 ##   GraphicsApplier) the field has no layer and no cell; on, the layer comes back. The shared prefs start on.
 ## - flora_worker (054e): the densest peaks cells planned on WorkerThreadPool tasks (MeshPlanter.PlanJob with a
-##   Terrain.height_sampler snapshot, several at once) give the same buffers as plan_cell on this thread with
-##   Terrain.ground_height; and a threaded MeshPlanter (no FloraField: it would not build here) driven over the densest
+##   TerrainShape.sampler snapshot, several at once) give the same buffers as plan_cell on this thread with
+##   TerrainShape.height_at; and a threaded MeshPlanter (no FloraField: it would not build here) driven over the densest
 ##   spot fills each MultiMesh with exactly those bytes, drops the plans of cells that left the ring and leaves no task.
 ## - flora_presets: the original_plants entry of each preset is the RFC-054 §4.4 table, and no plant casts a shadow.
 
@@ -138,7 +138,7 @@ func _plan() -> Dictionary:
 			for cx in MeshPlanter.MAP_CELLS:
 				var key := Vector2i(cx, cz)
 				var started := Time.get_ticks_usec()
-				var buffers := MeshPlanter.plan_cell(config, flora, groups, 1.0, key, land.ground_height, PackedVector4Array())
+				var buffers := MeshPlanter.plan_cell(config, flora, groups, 1.0, key, land.shape.height_at, PackedVector4Array())
 				var took := Time.get_ticks_usec() - started
 				var in_cell := 0
 				for g in buffers.size():
@@ -157,8 +157,8 @@ func _plan() -> Dictionary:
 				most = maxi(most, in_cell)
 		var same := true
 		if first_full.x >= 0:
-			var a := MeshPlanter.plan_cell(config, flora, groups, 1.0, first_full, land.ground_height, PackedVector4Array())
-			var b := MeshPlanter.plan_cell(config, flora, groups, 1.0, first_full, land.ground_height, PackedVector4Array())
+			var a := MeshPlanter.plan_cell(config, flora, groups, 1.0, first_full, land.shape.height_at, PackedVector4Array())
+			var b := MeshPlanter.plan_cell(config, flora, groups, 1.0, first_full, land.shape.height_at, PackedVector4Array())
 			same = a == b
 		var total := flora.total()
 		maps[tag] = {
@@ -171,7 +171,7 @@ func _plan() -> Dictionary:
 	return {"ok": wrong.is_empty(), "maps": maps, "wrong": wrong}
 
 
-## Instances of a buffer that do not stand on the ground (more than 1 cm from ground_height; the pose may lift a model,
+## Instances of a buffer that do not stand on the ground (more than 1 cm from height_at; the pose may lift a model,
 ## so the check is that the instance origin before the pose is on the ground: the pose of the plants has no offset).
 static func _off_ground(buffer: PackedFloat32Array, key: Vector2i, land: Terrain) -> int:
 	var wrong := 0
@@ -180,7 +180,7 @@ static func _off_ground(buffer: PackedFloat32Array, key: Vector2i, land: Terrain
 		var at := i * MeshPlanter.XFORM_STRIDE
 		var x := buffer[at + 3] + corner.x
 		var z := buffer[at + 11] + corner.y
-		var ground := land.ground_height(x, z)
+		var ground := land.shape.height_at(x, z)
 		if is_nan(ground) or absf(ground - buffer[at + 7]) > 0.05:
 			wrong += 1
 	return wrong
@@ -196,9 +196,9 @@ func _clear() -> Dictionary:
 	var center := (Vector2(best) + Vector2(0.5, 0.5)) * MeshPlanter.CELL_M
 	var hard := PackedVector4Array([Vector4(center.x, center.y, 10.0, 0.0)])
 	var soft := PackedVector4Array([Vector4(center.x, center.y, 10.0, 6.0)])
-	var none := _positions(MeshPlanter.plan_cell(config, flora, groups, 1.0, best, land.ground_height, PackedVector4Array()), best)
-	var cut := _positions(MeshPlanter.plan_cell(config, flora, groups, 1.0, best, land.ground_height, hard), best)
-	var thinned := _positions(MeshPlanter.plan_cell(config, flora, groups, 1.0, best, land.ground_height, soft), best)
+	var none := _positions(MeshPlanter.plan_cell(config, flora, groups, 1.0, best, land.shape.height_at, PackedVector4Array()), best)
+	var cut := _positions(MeshPlanter.plan_cell(config, flora, groups, 1.0, best, land.shape.height_at, hard), best)
+	var thinned := _positions(MeshPlanter.plan_cell(config, flora, groups, 1.0, best, land.shape.height_at, soft), best)
 	land.free()
 	var inside := 0
 	for at: Vector2 in cut:
@@ -260,7 +260,7 @@ func _worker() -> Dictionary:
 			job.flora = flora
 			job.groups = MeshPlanter.plan_groups(groups)
 			job.density = 1.0
-			job.height = land.height_sampler()
+			job.height = land.shape.sampler()
 			job.clears = clears
 			job.task_id = WorkerThreadPool.add_task(job.run, false, "flora case")
 			jobs.append(job)
@@ -268,7 +268,7 @@ func _worker() -> Dictionary:
 	var plants := 0
 	for job: MeshPlanter.PlanJob in jobs:
 		job.finish()
-		var sync := MeshPlanter.plan_cell(config, flora, groups, 1.0, job.key, land.ground_height, clears)
+		var sync := MeshPlanter.plan_cell(config, flora, groups, 1.0, job.key, land.shape.height_at, clears)
 		if job.buffers != sync:
 			differ.append(job.key)
 		for buffer in sync:
@@ -289,7 +289,7 @@ func _planter_run(config: VegetationLayerConfig, flora: FloraMap, land: Terrain,
 	var planter := MeshPlanter.new(config, quality, flora, land, host)
 	planter.threaded = true
 	var spot := (Vector2(key) + Vector2(0.5, 0.5)) * MeshPlanter.CELL_M
-	var ground := land.ground_height(spot.x, spot.y)
+	var ground := land.shape.height_at(spot.x, spot.y)
 	var eye := planter.map_xform * Vector3(spot.x, (0.0 if is_nan(ground) else ground) + 6.0, spot.y)
 	var frames := 0
 	var worst_us := 0
@@ -306,7 +306,7 @@ func _planter_run(config: VegetationLayerConfig, flora: FloraMap, land: Terrain,
 	# Every shown cell holds exactly the bytes of plan_cell (species with no instance have no node).
 	var wrong := []
 	for cell: Vector2i in planter._cells:
-		var sync := MeshPlanter.plan_cell(config, flora, planter.groups, quality.density_scale, cell, land.ground_height, PackedVector4Array())
+		var sync := MeshPlanter.plan_cell(config, flora, planter.groups, quality.density_scale, cell, land.shape.height_at, PackedVector4Array())
 		var full: Array[PackedFloat32Array] = []
 		for buffer in sync:
 			if not buffer.is_empty():

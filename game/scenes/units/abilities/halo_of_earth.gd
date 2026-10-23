@@ -277,8 +277,8 @@ func _touching(rock: Rock) -> Node3D:
 
 
 func _under_land(at: Vector3) -> bool:
-	var terrain := FallCheck.terrain_of(self)
-	return terrain != null and terrain.is_on_ground(at.x, at.z) and at.y < terrain.ground_height(at.x, at.z)
+	var shape := TerrainShape.of(self)
+	return shape != null and shape.is_on_ground(at.x, at.z) and at.y < shape.height_at(at.x, at.z)
 
 
 ## The target search of a free rock (updateHaloOfEarth, 19296-19316).

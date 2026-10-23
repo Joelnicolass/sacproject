@@ -19,11 +19,11 @@ const THROW_SPEED := 8.0
 const THROW_UP := 3.0
 const FALL_TICKS := 900
 
-var _terrain: Node
+var _terrain: TerrainShape
 var _nav: NavService
 
 
-func run(host: Node3D, terrain: Node, nav: NavService) -> Dictionary:
+func run(host: Node3D, terrain: TerrainShape, nav: NavService) -> Dictionary:
 	_terrain = terrain
 	_nav = nav
 	var edge := _find_edge()
@@ -44,13 +44,13 @@ func _find_edge() -> Dictionary:
 	while x < SCAN_TO:
 		var z := SCAN_FROM
 		while z < SCAN_TO:
-			if _terrain.call("is_on_ground", x, z):
+			if _terrain.is_on_ground(x, z):
 				for dir in dirs:
 					var lip := _lip_distance(x, z, dir)
 					if lip < 0:
 						continue
 					var start := Vector3(x, 0.0, z) + dir * float(lip - LIP_M)
-					var ground := float(_terrain.call("ground_height", start.x, start.z))
+					var ground := float(_terrain.height_at(start.x, start.z))
 					if is_nan(ground):
 						continue
 					start.y = ground
@@ -65,12 +65,12 @@ func _find_edge() -> Dictionary:
 func _lip_distance(x: float, z: float, dir: Vector3) -> int:
 	for meters in range(1, int(SCAN_STEP) + 1):
 		var at := Vector3(x, 0.0, z) + dir * float(meters)
-		if not _terrain.call("is_on_ground", at.x, at.z):
+		if not _terrain.is_on_ground(at.x, at.z):
 			if meters <= LIP_M + 1:
 				return -1
 			for beyond in range(1, HOLE_M + 1):
 				var past := at + dir * float(beyond)
-				if _terrain.call("is_on_ground", past.x, past.z):
+				if _terrain.is_on_ground(past.x, past.z):
 					return -1
 			return meters
 	return -1
@@ -81,10 +81,10 @@ func _pushed(host: Node3D, start: Vector3, dir: Vector3) -> Dictionary:
 	var held := await _drive(host, start, dir, true)
 	var free := await _drive(host, start, dir, false)
 	var checks := {
-		"stays_on_land": bool(_terrain.call("is_on_ground", held.x, held.z)),
+		"stays_on_land": bool(_terrain.is_on_ground(held.x, held.z)),
 		"does_not_sink": held.y > start.y - 2.0,
 		"moved_toward_edge": (held - start).dot(dir) > 0.5,
-		"control_goes_over": not bool(_terrain.call("is_on_ground", free.x, free.z)),
+		"control_goes_over": not bool(_terrain.is_on_ground(free.x, free.z)),
 	}
 	return _verdict(checks, {"start": start, "dir": dir, "held": held, "control": free})
 

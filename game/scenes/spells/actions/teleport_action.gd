@@ -59,8 +59,8 @@ func finish(wizard: WizardBody, spell: SpellType, target: Node3D) -> String:
 	var destination := _destination
 	_has_destination = false
 	var radius := spell.effect_range
-	var terrain := FallCheck.terrain_of(wizard)
-	var on_ground := _on_ground_of(terrain)
+	var shape := TerrainShape.of(wizard)
+	var on_ground := _on_ground_of(shape)
 	var froms := PackedVector3Array()
 	var tos := PackedVector3Array()
 	var widths := PackedFloat32Array()
@@ -69,7 +69,7 @@ func finish(wizard: WizardBody, spell: SpellType, target: Node3D) -> String:
 		var info := BodyCatalog.info(str(body.get("model")))
 		var flying := body is UnitBody and (body as UnitBody).is_flying()
 		var spot := TeleportMath.carried(body.global_position, start, destination, flying, on_ground)
-		spot.y = _land_y(terrain, spot, destination.y)
+		spot.y = _land_y(shape, spot, destination.y)
 		froms.append(_feet_of(body))
 		body.call("warp_to", spot)  # dynamic: a unit or a wizard warps
 		tos.append(_feet_of(body))
@@ -117,25 +117,25 @@ func travelers(wizard: WizardBody, radius: float) -> Array[Node3D]:
 
 
 func _landing(start: Vector3, building: Node3D, radius: float) -> Vector3:
-	var terrain := FallCheck.terrain_of(building)
-	var spot := TeleportMath.landing(start, building.global_position, radius, _on_ground_of(terrain))
-	spot.y = _land_y(terrain, spot, building.global_position.y)
+	var shape := TerrainShape.of(building)
+	var spot := TeleportMath.landing(start, building.global_position, radius, _on_ground_of(shape))
+	spot.y = _land_y(shape, spot, building.global_position.y)
 	return spot
 
 
 ## The land under a spot (the terrain, never the first collision from above: that is a pillar or a roof),
 ## or `fallback` where there is no terrain data.
-func _land_y(terrain: Terrain, spot: Vector3, fallback: float) -> float:
-	if terrain == null:
+func _land_y(shape: TerrainShape, spot: Vector3, fallback: float) -> float:
+	if shape == null:
 		return fallback
-	var height := terrain.ground_height(spot.x, spot.z)
+	var height := shape.height_at(spot.x, spot.z)
 	return fallback if is_nan(height) else height
 
 
-func _on_ground_of(terrain: Terrain) -> Callable:
-	if terrain == null:
+func _on_ground_of(shape: TerrainShape) -> Callable:
+	if shape == null:
 		return Callable()
-	return Callable(terrain, "is_on_ground")
+	return shape.is_on_ground
 
 
 ## Where the feet of a body are (the origin of a wizard is higher: his capsule).

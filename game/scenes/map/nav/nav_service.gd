@@ -19,7 +19,8 @@ const GROUP := &"nav_service"
 const BAKE_SETTINGS := "res://data/nav/nav_bake.tres"
 const SEARCH_LOG_MAX := 200000
 
-@export var terrain: MeshInstance3D
+## The map's ground numbers (Terrain.shape): the path points take the land height from it.
+@export var terrain_shape: TerrainShape
 ## The map's NavigationRegion3D (MapRoot.nav_region). Empty: the service puts one under itself with the navmesh of the active map.
 @export var region: NavigationRegion3D
 ## Physics ticks between a change and the swap of the re-baked navmesh (the bake takes a couple of seconds on a worker thread; if it
@@ -125,7 +126,7 @@ static func path_length(from: Vector3, points: PackedVector3Array) -> float:
 
 ## Builds the pathfinder (again). Returns the milliseconds it took.
 func build() -> float:
-	if not terrain is Terrain:
+	if terrain_shape == null:
 		return 0.0
 	if not _build_navmesh():
 		return 0.0
@@ -251,7 +252,7 @@ func find_path(from: Vector3, to: Vector3) -> PackedVector3Array:
 	if path.is_empty():
 		return PackedVector3Array([to])
 	for k in path.size():
-		var ground: float = (terrain as Terrain).ground_height(path[k].x, path[k].z) if terrain else NAN
+		var ground: float = terrain_shape.height_at(path[k].x, path[k].z) if terrain_shape else NAN
 		path[k].y = from.y if is_nan(ground) else ground
 	return path
 
@@ -312,7 +313,7 @@ func search_percentile_us(fraction: float) -> int:
 
 ## `point` at the height of the ground under it (the navmesh is asked in 3D); the point itself off the land.
 func _grounded(point: Vector3) -> Vector3:
-	var ground: float = (terrain as Terrain).ground_height(point.x, point.z) if terrain else NAN
+	var ground: float = terrain_shape.height_at(point.x, point.z) if terrain_shape else NAN
 	if is_nan(ground):
 		return point
 	return Vector3(point.x, ground, point.z)

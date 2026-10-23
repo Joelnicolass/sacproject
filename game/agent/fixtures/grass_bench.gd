@@ -168,7 +168,7 @@ func _stop_time(stopped: bool) -> void:
 
 
 func _ground_y(x: float, z: float) -> float:
-	var y: float = _terrain.call("ground_height", x, z)
+	var y: float = _terrain.height_at(x, z)
 	return 0.0 if is_nan(y) else y
 
 

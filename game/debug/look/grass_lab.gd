@@ -124,7 +124,7 @@ func _spawn_creatures() -> void:
 
 
 func _place(unit: Node3D, at: Vector2) -> void:
-	unit.global_position = Vector3(at.x, ground.ground_height(at.x, at.y), at.y)
+	unit.global_position = Vector3(at.x, ground.shape.height_at(at.x, at.y), at.y)
 
 
 func _process(delta: float) -> void:
@@ -188,7 +188,7 @@ func _move_camera(delta: float) -> void:
 	_target += move * delta * maxf(_distance, 3.0) * 0.9
 	_target.x = clampf(_target.x, center.x - roam_m, center.x + roam_m)
 	_target.z = clampf(_target.z, center.y - roam_m, center.y + roam_m)
-	_target.y = clampf(_target.y, ground.ground_height(_target.x, _target.z) - 1.0, ground.ground_height(_target.x, _target.z) + 40.0)
+	_target.y = clampf(_target.y, ground.shape.height_at(_target.x, _target.z) - 1.0, ground.shape.height_at(_target.x, _target.z) + 40.0)
 	_frame_target()
 
 

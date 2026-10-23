@@ -207,8 +207,8 @@ func _measure_flora() -> void:
 		return
 	var high := _presets[2]
 	var spot := _densest(rig.flora_map)
-	var terrain := rig.terrain as Terrain
-	var ground := terrain.ground_height(spot.x, spot.y) if terrain else 0.0
+	var terrain := TerrainShape.of(self)
+	var ground := terrain.height_at(spot.x, spot.y) if terrain else 0.0
 	ground = 0.0 if is_nan(ground) else ground
 	view_camera.global_position = Vector3(spot.x, ground + 6.0, spot.y - 30.0)
 	view_camera.look_at(Vector3(spot.x, ground, spot.y), Vector3.UP)
@@ -293,7 +293,7 @@ func _make_views() -> void:
 
 
 func _fill_units() -> void:
-	var terrain := get_tree().get_first_node_in_group("terrain")
+	var terrain := TerrainShape.of(self)
 	var rows := ceili(float(unit_count) / unit_columns)
 	for i in unit_count:
 		var unit: Node3D = unit_scene.instantiate()
@@ -303,8 +303,8 @@ func _fill_units() -> void:
 		var x := center.x + (i % unit_columns - (unit_columns - 1) * 0.5) * unit_spacing
 		var z := center.y + (i / unit_columns - (rows - 1) * 0.5) * unit_spacing
 		var y := 18.0
-		if terrain and terrain.has_method("ground_height"):
-			var found: float = terrain.ground_height(x, z)
+		if terrain:
+			var found: float = terrain.height_at(x, z)
 			y = found if not is_nan(found) else y
 		units.add_child(unit)
 		unit.global_position = Vector3(x, y + 0.2, z)

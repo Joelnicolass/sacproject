@@ -162,7 +162,7 @@ func _prepare() -> void:
 	_prepared = true
 	for _frame in settle_frames:
 		await get_tree().physics_frame
-	var terrain := _world.get_node("Map/Terrain")
+	var terrain := TerrainShape.of(_world)
 	var spawner := _world.get_node("UnitSpawner")
 	if not _rules.ai_seats.is_empty():
 		await _seat_ais()
@@ -186,7 +186,7 @@ func _prepare() -> void:
 				x = spot.x
 				z = spot.y
 				yaw = spot.w
-			var ground := float(terrain.call("ground_height", x, z))
+			var ground := float(terrain.height_at(x, z))
 			var unit: Node3D = spawner.call("spawn_unit", {
 				"tag": group.tag, "label": label, "slot": group.slot,
 				"x": x, "y": (0.0 if is_nan(ground) else ground) + 0.2, "z": z,
@@ -457,7 +457,7 @@ func _place_structures() -> void:
 
 
 ## F370: the BenchBuilding of the rules, on the ground at their offset from the anchor (a map building like the layout's).
-func _place_buildings(terrain: Node) -> void:
+func _place_buildings(terrain: TerrainShape) -> void:
 	for entry in _rules.buildings:
 		if building_scene == null or entry.building == null:
 			push_warning("ai_match: falta la escena o el BLDG de un BenchBuilding")
@@ -469,7 +469,7 @@ func _place_buildings(terrain: Node) -> void:
 		building.name = "Bench_%s" % entry.key()
 		var x := _rules.anchor.x + entry.offset.x
 		var z := _rules.anchor.z + entry.offset.y
-		var ground := float(terrain.call("ground_height", x, z))
+		var ground := float(terrain.height_at(x, z))
 		building.position = Vector3(x, 0.0 if is_nan(ground) else ground, z)
 		building.rotation.y = deg_to_rad(entry.yaw_deg)
 		_world.add_child(building)
@@ -487,7 +487,7 @@ func _wizard_of(slot: int) -> Node3D:
 
 ## A spot `near_distance_m` from the wizard of `near_slot`, towards the other wizard turned `near_angle_deg`, the group in
 ## a row of its columns: (x, z, 0, yaw) in the components x, y, z, w.
-func _near_spot(group: BenchGroup, index: int, terrain: Node) -> Vector4:
+func _near_spot(group: BenchGroup, index: int, terrain: TerrainShape) -> Vector4:
 	var base := _wizard_of(group.near_slot)
 	var other: Node3D
 	for wizard in get_tree().get_nodes_in_group("wizard"):
@@ -515,7 +515,7 @@ func _order_advance(group: BenchGroup, units: Array[Node3D]) -> void:
 	if group.order == "move" or group.order == "guard_area":
 		## F370: walk to / hold `order_point` from the group's center (Orders.apply_for, like a click on the ground).
 		var center := Vector3(_rules.anchor.x + group.offset_m + group.order_point.x, 0.0, _rules.anchor.z + group.offset_z_m + group.order_point.y)
-		var ground := float(_world.get_node("Map/Terrain").call("ground_height", center.x, center.z))
+		var ground := float(TerrainShape.of(_world).height_at(center.x, center.z))
 		center.y = 0.0 if is_nan(ground) else ground
 		_world.get_node("%Orders").call("apply_for", group.slot, units, group.order, center, null, 0.0)
 		return
@@ -591,8 +591,8 @@ func _on_unit_entered(node: Node) -> void:
 func _frame_camera() -> void:
 	if camera == null or _headless:
 		return
-	var terrain := _world.get_node("Map/Terrain")
-	var ground := float(terrain.call("ground_height", _rules.anchor.x, _rules.anchor.z))
+	var terrain := TerrainShape.of(_world)
+	var ground := float(terrain.height_at(_rules.anchor.x, _rules.anchor.z))
 	var center := Vector3(_rules.anchor.x, 0.0 if is_nan(ground) else ground, _rules.anchor.z) + camera_target_offset
 	camera.global_position = center + camera_offset
 	camera.look_at(center, Vector3.UP)
@@ -610,11 +610,11 @@ func _move_ai_wizards() -> void:
 		var health := _wizard_of(1).get_node("Health") as Health
 		health.current = health.maximum * _rules.human_health_fraction
 	if _rules.ai_start_at_anchor:
-		var terrain := _world.get_node("Map/Terrain")
+		var terrain := TerrainShape.of(_world)
 		for seat in _rules.ai_seats:
 			var x := _rules.anchor.x + _rules.ai_start_offset.x
 			var z := _rules.anchor.z + _rules.ai_start_offset.y
-			var ground := float(terrain.call("ground_height", x, z))
+			var ground := float(terrain.height_at(x, z))
 			var wizard := _wizard_of(seat.slot)
 			if wizard != null:
 				wizard.call("warp_to", Vector3(x, 0.0 if is_nan(ground) else ground, z))
@@ -631,7 +631,7 @@ func _warp_to_anchor(wizard: Node3D, offset: Vector2) -> void:
 		return
 	var x := _rules.anchor.x + offset.x
 	var z := _rules.anchor.z + offset.y
-	var ground := float(_world.get_node("Map/Terrain").call("ground_height", x, z))
+	var ground := float(TerrainShape.of(_world).height_at(x, z))
 	wizard.call("warp_to", Vector3(x, 0.0 if is_nan(ground) else ground, z))
 
 

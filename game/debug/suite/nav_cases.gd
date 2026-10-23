@@ -8,7 +8,6 @@ extends RefCounted
 ## corner needs); `nav_rebake_ms` is the cost of baking the whole navmesh again (gate REBAKE_MS).
 
 const EDGE_CASES := preload("res://debug/suite/edge_cases.gd")  # 036h
-const TERRAIN_SCRIPT := preload("res://scenes/map/terrain/terrain.gd")
 const FOUNT_AT := Vector3(1270.0, 10.0, 1270.0)
 const FOUNT_RADIUS := 3.6
 const START1 := Vector3(1504.9, 17.0, 1540.5)
@@ -21,16 +20,16 @@ const REBAKE_MS := 3000.0
 
 var _root: Node3D
 var _service: NavService
-var _terrain: MeshInstance3D
+var _terrain: Terrain
 
 
 func run(host: Node3D) -> Dictionary:  # a coroutine: it waits for physics frames
 	_root = Node3D.new()
 	_root.name = "NavCases"
-	_terrain = MeshInstance3D.new()
+	_terrain = Terrain.new()
 	_terrain.name = "Terrain"
-	_terrain.set_script(TERRAIN_SCRIPT)
-	_terrain.set("data", load(MapCatalog.active().terrain_path))
+	_terrain.shape = TerrainShape.with_data(load(MapCatalog.active().terrain_path) as MapTerrainData)
+	_terrain.add_child(_terrain.shape)
 	_terrain.add_to_group(NavFingerprint.GROUP)
 	_root.add_child(_terrain)
 	var fount := StaticBody3D.new()
@@ -45,17 +44,17 @@ func run(host: Node3D) -> Dictionary:  # a coroutine: it waits for physics frame
 	shape.shape = cylinder
 	shape.position = Vector3(0.0, 4.0, 0.0)
 	fount.add_child(shape)
-	var ground: float = _terrain.call("ground_height", FOUNT_AT.x, FOUNT_AT.z)
+	var ground: float = _terrain.shape.height_at(FOUNT_AT.x, FOUNT_AT.z)
 	fount.position = FOUNT_AT if is_nan(ground) else Vector3(FOUNT_AT.x, ground, FOUNT_AT.z)
 	_root.add_child(fount)
 	_service = NavService.new()
 	_service.name = "Nav"
-	_service.terrain = _terrain
+	_service.terrain_shape = _terrain.shape
 	_service.build_on_ready = false
 	_root.add_child(_service)
 	host.add_child(_root)
 	var out := {}
-	if not _terrain.has_ground_data():
+	if not _terrain.shape.is_loaded():
 		var missing := {"ok": false, "reason": "sin terreno (assets/original/maps/high_noon/terrain.res)"}
 		_root.free()
 		return {"nav_build": missing}
@@ -78,7 +77,7 @@ func run(host: Node3D) -> Dictionary:  # a coroutine: it waits for physics frame
 	out["nav_goal_off_land"] = _off_land()
 	out["nav_line_clear"] = _line_clear()
 	out["nav_box_corner"] = _box_corner()
-	out.merge(await EDGE_CASES.new().run(_root, _terrain, _service))  # 036h
+	out.merge(await EDGE_CASES.new().run(_root, _terrain.shape, _service))  # 036h
 	out["nav_rebake_ms"] = _rebake()
 	_root.free()
 	return out

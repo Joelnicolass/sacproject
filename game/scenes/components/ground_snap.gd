@@ -4,7 +4,7 @@ extends Node3D
 
 ## Rests its parent on the land. Remove this child to place the parent by hand.
 ## In the editor it follows every move of the parent; in a match it runs once in _ready.
-## The height comes from the terrain data (Terrain.ground_height), not from a physics ray,
+## The height comes from the terrain data (TerrainShape.height_at), not from a physics ray,
 ## so the dedicated server and every client get the same number.
 
 const TERRAIN_GROUP := &"terrain"
@@ -44,11 +44,11 @@ func snap() -> void:
 	if not enabled or body == null or not is_inside_tree():
 		return
 	var terrain := _terrain()
-	if terrain == null:
+	if terrain == null or terrain.shape == null:
 		return
 	# Terrain-local = map coordinates. In the editor the scene root is shifted (terrain.gd).
 	var at := terrain.to_local(body.global_position)
-	var height := terrain.ground_height(at.x, at.z)
+	var height := terrain.shape.height_at(at.x, at.z)
 	if is_nan(height):
 		return
 	var rest := terrain.to_global(Vector3(at.x, height + offset, at.z))

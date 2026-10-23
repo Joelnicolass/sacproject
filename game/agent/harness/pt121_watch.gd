@@ -11,7 +11,6 @@ extends Node
 ## Props (of the focused lane, sticky): tick, moved_max (m from start, flat), air_now, air_seen, air_h (max m above
 ## start), landed, risen, spread (max flat distance from the lane centroid).
 
-const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 
 var tick := 0
 var moved_max := 0.0
@@ -138,10 +137,10 @@ func frame(x: float, z: float, ox: float, oy: float, oz: float) -> String:
 	var cam := get_viewport().get_camera_3d()
 	if cam == null:
 		return "no camera"
-	var t := get_tree().root.find_child("Terrain", true, false) as _TERRAIN
+	var t := TerrainShape.of(self)
 	var y := 0.0
 	if t != null:
-		var g: float = t.ground_height(x, z)
+		var g: float = t.height_at(x, z)
 		y = 0.0 if is_nan(g) else g
 	var look := Vector3(x, y, z)
 	cam.look_at_from_position(look + Vector3(ox, oy, oz), look, Vector3.UP)

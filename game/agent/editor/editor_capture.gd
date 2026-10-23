@@ -56,7 +56,7 @@ func _wait_frames(count: int) -> void:
 
 func _capture(step: String) -> void:
 	var root := EditorInterface.get_edited_scene_root()
-	var terrain: MeshInstance3D = root.find_child("Terrain", true, false) as MeshInstance3D if root else null
+	var terrain: MeshInstance3D = TerrainShape.of(root) as MeshInstance3D if root else null
 	var report := {"step": step, "scene": _scene, "scene_open": root != null, "terrain_found": terrain != null}
 	var aabb := AABB()
 	if terrain != null:

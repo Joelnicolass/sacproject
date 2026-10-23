@@ -19,7 +19,6 @@ extends Node
 ##   unfollow()
 ## Props for wait_until: tracked, flying_now, airborne_seen, takeoff_seen, landed, settled.
 
-const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 const _NAMES := ["GROUND", "TAKEOFF", "FLYING", "LANDING"]
 
 var tracked := 0
@@ -47,15 +46,15 @@ func _local_slot() -> int:
 	return MpKit.local_slot()
 
 
-func _terrain() -> _TERRAIN:
-	return get_tree().root.find_child("Terrain", true, false) as _TERRAIN
+func _terrain() -> TerrainShape:
+	return TerrainShape.of(self)
 
 
 func _ground_y(x: float, z: float) -> float:
 	var t := _terrain()
 	if t == null:
 		return 0.0
-	var y := t.ground_height(x, z)
+	var y := t.height_at(x, z)
 	return 0.0 if is_nan(y) else y
 
 

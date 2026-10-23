@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/map/map_root.gd" id="1_root"]
 [ext_resource type="Script" path="res://scenes/map/terrain/terrain.gd" id="2_terrain"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain_shape.gd" id="shape_script"]
 [ext_resource type="Script" path="res://scenes/map/props/map_props.gd" id="3_props"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="4_start"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="5_fount"]
@@ -25,10 +26,15 @@ minimap_bake = NodePath("MinimapBake")
 unique_name_in_owner = true
 terrain = NodePath("../Terrain")
 
-[node name="Terrain" type="MeshInstance3D" parent="." unique_id=1044100005 groups=["nav_source"]]
+[node name="Terrain" type="MeshInstance3D" parent="." unique_id=1044100005 node_paths=PackedStringArray("shape", "missing") groups=["nav_source"]]
 unique_name_in_owner = true
 material_override = ExtResource("9_ground")
 script = ExtResource("2_terrain")
+shape = NodePath("Shape")
+missing = NodePath("Missing")
+
+[node name="Shape" type="Node" parent="Terrain"]
+script = ExtResource("shape_script")
 data = ExtResource("8_terrain_data")
 
 [node name="Missing" type="Label3D" parent="Terrain" unique_id=1044100006]

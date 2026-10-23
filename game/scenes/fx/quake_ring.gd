@@ -59,7 +59,7 @@ func _redraw() -> void:
 	var outer := radius + width * 0.5
 	var tint := color
 	tint.a *= (1.0 - progress * progress)
-	var terrain := FallCheck.terrain_of(self)
+	var shape := TerrainShape.of(self)
 	var center := global_position
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
@@ -67,10 +67,10 @@ func _redraw() -> void:
 	for i in segments:
 		var a0 := TAU * float(i) / float(segments)
 		var a1 := TAU * float(i + 1) / float(segments)
-		var p00 := _point(terrain, center, inner, a0)
-		var p01 := _point(terrain, center, outer, a0)
-		var p10 := _point(terrain, center, inner, a1)
-		var p11 := _point(terrain, center, outer, a1)
+		var p00 := _point(shape, center, inner, a0)
+		var p01 := _point(shape, center, outer, a0)
+		var p10 := _point(shape, center, inner, a1)
+		var p11 := _point(shape, center, outer, a1)
 		for v in [p00, p01, p10, p10, p01, p11]:
 			st.set_color(tint)
 			st.add_vertex(v)
@@ -79,11 +79,11 @@ func _redraw() -> void:
 
 
 ## A point of the ring in world space, on the land (a hole keeps the center's height).
-func _point(terrain: Terrain, center: Vector3, radius: float, angle: float) -> Vector3:
+func _point(shape: TerrainShape, center: Vector3, radius: float, angle: float) -> Vector3:
 	var p := center + Vector3(cos(angle), 0.0, sin(angle)) * radius
 	p.y = center.y
-	if terrain != null:
-		var land := terrain.ground_height(p.x, p.z)
+	if shape != null:
+		var land := shape.height_at(p.x, p.z)
 		if not is_nan(land):
 			p.y = land
 	p.y += lift

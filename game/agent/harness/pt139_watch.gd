@@ -17,7 +17,6 @@ const _SHOT := preload("res://scenes/units/attacks/ranged_shot.gd")
 const _FIREBALL := preload("res://scenes/spells/fireball_projectile.gd")
 const _POISONED := preload("res://scenes/units/status/poisoned.gd")
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
-const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 
 var units := 0
 var clouds := 0
@@ -46,17 +45,17 @@ func _pf() -> int:
 	return Engine.get_physics_frames()
 
 
-func _terrain() -> _TERRAIN:
+func _terrain() -> TerrainShape:
 	if get_tree().current_scene == null:
 		return null
-	return get_tree().root.find_child("Terrain", true, false) as _TERRAIN
+	return TerrainShape.of(self)
 
 
 func _ground_y(x: float, z: float) -> float:
 	var t := _terrain()
 	if t == null:
 		return 0.0
-	var y := t.ground_height(x, z)
+	var y := t.height_at(x, z)
 	return 0.0 if is_nan(y) else y
 
 

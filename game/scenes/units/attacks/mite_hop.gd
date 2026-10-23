@@ -40,7 +40,7 @@ extends ShotInFlight
 
 var _rng: RandomNumberGenerator
 var _shot_name := ""
-var _terrain: Terrain
+var _shape: TerrainShape
 var _touches := 0
 var _stopped_at := -1
 var _rest := Vector3.ZERO
@@ -71,10 +71,10 @@ func _fly(shot: RangedShot, at: Vector3) -> void:
 		shot.velocity = Vector3.ZERO
 		shot.global_position = _rest
 		return
-	var terrain := _land(shot)
-	if terrain == null or not terrain.is_on_ground(at.x, at.z):
+	var shape := _land(shot)
+	if shape == null or not shape.is_on_ground(at.x, at.z):
 		return
-	var ground := terrain.ground_height(at.x, at.z)
+	var ground := shape.height_at(at.x, at.z)
 	if ground <= at.y:
 		return
 	var here := Vector3(at.x, ground, at.z)
@@ -87,8 +87,8 @@ func _fly(shot: RangedShot, at: Vector3) -> void:
 		if DebugLog.on(&"hop"):
 			print("salto %s n=%d en %s parado (tick %d)" % [_shot_name, _touches, _vec(here), MatchClock.now()])
 		return
-	var close := _closest(shot, here, terrain)
-	var chosen := _intended(shot, here, close, terrain)
+	var close := _closest(shot, here, shape)
+	var chosen := _intended(shot, here, close, shape)
 	var velocity := shot.velocity
 	var aim := "nadie"
 	if chosen != null:
@@ -107,7 +107,7 @@ func _fly(shot: RangedShot, at: Vector3) -> void:
 
 
 ## The closest live creature or wizard within the range, any side, whose feet are at most max_target_height over the land.
-func _closest(shot: RangedShot, from: Vector3, terrain: Terrain) -> Node3D:
+func _closest(shot: RangedShot, from: Vector3, shape: TerrainShape) -> Node3D:
 	var reach := _reach(shot)
 	var best: Node3D = null
 	var best_d := INF
@@ -119,7 +119,7 @@ func _closest(shot: RangedShot, from: Vector3, terrain: Terrain) -> Node3D:
 			var d := from.distance_squared_to(BodyNudge.center(body))
 			if d > reach * reach or d >= best_d:
 				continue
-			if not _low_enough(body, terrain):
+			if not _low_enough(body, shape):
 				continue
 			best = body
 			best_d = d
@@ -127,19 +127,19 @@ func _closest(shot: RangedShot, from: Vector3, terrain: Terrain) -> Node3D:
 
 
 ## Its feet are at most max_target_height over the land (or it is off the land).
-func _low_enough(body: Node3D, terrain: Terrain) -> bool:
-	if terrain == null or not terrain.is_on_ground(body.global_position.x, body.global_position.z):
+func _low_enough(body: Node3D, shape: TerrainShape) -> bool:
+	if shape == null or not shape.is_on_ground(body.global_position.x, body.global_position.z):
 		return true
-	return body.global_position.y <= terrain.ground_height(body.global_position.x, body.global_position.z) + max_target_height
+	return body.global_position.y <= shape.height_at(body.global_position.x, body.global_position.z) + max_target_height
 
 
 ## `close`, or the intended target when it is within the range (it goes first).
-func _intended(shot: RangedShot, from: Vector3, close: Node3D, terrain: Terrain) -> Node3D:
+func _intended(shot: RangedShot, from: Vector3, close: Node3D, shape: TerrainShape) -> Node3D:
 	var path := String(shot.spawn_data.get("intended", ""))
 	if path.is_empty() or close == null:
 		return close
 	var intended := shot.get_node_or_null(NodePath(path)) as Node3D
-	if intended == null or intended == close or not _is_target(intended) or not _low_enough(intended, terrain):
+	if intended == null or intended == close or not _is_target(intended) or not _low_enough(intended, shape):
 		return close
 	var reach := _reach(shot)
 	return intended if from.distance_squared_to(BodyNudge.center(intended)) <= reach * reach else close
@@ -153,10 +153,10 @@ func _reach(shot: RangedShot) -> float:
 	return shot.ability.effect_range if shot.ability != null and shot.ability.effect_range > 0.0 else fallback_range
 
 
-func _land(shot: RangedShot) -> Terrain:
-	if _terrain == null or not is_instance_valid(_terrain):
-		_terrain = shot.get_tree().get_first_node_in_group("terrain") as Terrain
-	return _terrain
+func _land(shot: RangedShot) -> TerrainShape:
+	if _shape == null or not is_instance_valid(_shape):
+		_shape = shot.get_tree().get_first_node_in_group(TerrainShape.GROUP) as TerrainShape
+	return _shape
 
 
 ## state.uniformDirection: a point of the cube [-1, 1]^3, normalized (3 draws). The draws are the simulation's.

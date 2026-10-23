@@ -8,7 +8,6 @@ extends SceneTree
 ## "$GODOT" --headless --path game --script res://tools/bake/terrain_glb_export.gd [-- --out=res://path/terrain.glb] [--force]
 ## Needs the project imported once (tiles.png is read as an Image). Then import again so the editor builds the scene.
 
-const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain.gd"
 const GlbImport := preload("res://tools/terrain_import.gd")
 
 
@@ -46,10 +45,10 @@ func _initialize() -> void:
 ##  - _FLAT_NORMAL = data.normals, which the post-import reads back into MapTerrainData.
 ## Also used by debug/suite/terrain_bake_cases.gd for its edited copies.
 static func export_data(data: MapTerrainData, out: String) -> Error:
-	var terrain := MeshInstance3D.new()
-	terrain.set_script(load(TERRAIN_SCRIPT))
-	terrain.set("data", data)
-	var arrays := (terrain as Terrain).bake_arrays()
+	var terrain := Terrain.new()
+	terrain.shape = TerrainShape.with_data(data)
+	terrain.add_child(terrain.shape)
+	var arrays := terrain.bake_arrays()
 	terrain.free()
 	if arrays.is_empty():
 		return ERR_INVALID_DATA

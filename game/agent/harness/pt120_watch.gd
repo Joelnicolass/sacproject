@@ -11,7 +11,6 @@ extends Node
 ## rising (half of the get-up) and up (20 frames after); lane B: the cluster 40 frames after the first stun there.
 ## Props for wait_until: done (true once lane A has 3 Druids back in the fight and lane B 3 stuns, or 2400 frames).
 
-const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 const CENTER_Z := 1270.0
 const OUT_DIR := "res://agent/out/pt120"
 const LIMIT_FRAMES := 2400
@@ -34,10 +33,10 @@ func _ready() -> void:
 	process_physics_priority = 1000
 
 
-func _terrain() -> _TERRAIN:
+func _terrain() -> TerrainShape:
 	if get_tree().current_scene == null:
 		return null
-	return get_tree().root.find_child("Terrain", true, false) as _TERRAIN
+	return TerrainShape.of(self)
 
 
 func _name(node: Node) -> String:
@@ -201,7 +200,7 @@ func _process(_delta: float) -> void:
 		radius = float(visual.body_radius())
 	var o := body.global_transform.origin
 	var t := _terrain()
-	var ground := t.ground_height(o.x, o.z) if t else NAN
+	var ground := t.height_at(o.x, o.z) if t else NAN
 	print("PT120 PNG %s %s tilt_z=%.1fdeg tilt_y=%.3f radius=%.3f body_y-ground=%.3f err=%d pf=%d" % [path,
 		_info[body]["name"], rad_to_deg(tilt.rotation.z) if tilt else NAN, tilt.position.y if tilt else NAN, radius,
 		o.y - ground, err, Engine.get_physics_frames()])

@@ -5,11 +5,10 @@ extends SceneTree
 ##    runtime mesh gives (so sim, heights and collision are the ones of today);
 ##  - the imported scene shows the glb mesh (same vertices/indices as the runtime mesh) and carries the Collision;
 ##  - a vertex moved 3 m in X fails validation naming its cell;
-##  - lifting a triangle 5 m in Y through a glb changes ground_height there by 5 m.
+##  - lifting a triangle 5 m in Y through a glb changes height_at there by 5 m.
 ## "$GODOT" --headless --path game --script res://debug/suite/terrain_bake_cases.gd
 ## Needs terrain.glb imported once (godot --headless --path game --import) and git showing terrain.res unchanged.
 
-const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain.gd"
 const WORLD_SCENE := "res://scenes/match/high_noon.tscn"
 const GlbImport := preload("res://tools/terrain_import.gd")
 const GlbExport := preload("res://tools/bake/terrain_glb_export.gd")
@@ -74,7 +73,7 @@ func _scene_instance(current: MapTerrainData) -> void:
 		world.free()
 		return
 	_check("scene_terrain_is_glb", scene_terrain.scene_file_path == glb, scene_terrain.scene_file_path)
-	_check("scene_script_data", scene_terrain.has_method("ground_height") and scene_terrain.get("data") != null)
+	_check("scene_script_data", scene_terrain is Terrain and (scene_terrain as Terrain).shape != null and (scene_terrain as Terrain).shape.data != null)
 	var shape_node := scene_terrain.get_node_or_null("Collision/Shape") as CollisionShape3D
 	_check("scene_collision_found", shape_node != null and shape_node.shape is ConcavePolygonShape3D)
 	if shape_node != null:
@@ -104,7 +103,7 @@ func _edits(current: MapTerrainData) -> void:
 	var problem := _through_glb(moved)
 	_check("moved_vertex_fails", problem != "", problem)
 	_check("moved_vertex_names_cell", problem.contains(expected_cell), "%s in: %s" % [expected_cell, problem])
-	# A triangle lifted 5 m in Y keeps a valid grid and raises ground_height there by exactly that much.
+	# A triangle lifted 5 m in Y keeps a valid grid and raises height_at there by exactly that much.
 	var a := current.vertices[current.indices[first * 3]]
 	var b := current.vertices[current.indices[first * 3 + 1]]
 	var c := current.vertices[current.indices[first * 3 + 2]]
@@ -118,7 +117,7 @@ func _edits(current: MapTerrainData) -> void:
 	_check("lifted_grid_valid", _through_glb(lifted, "user://terrain_bake_lifted.glb") == "")
 	var after := await _terrain_from_glb("user://terrain_bake_lifted.glb")
 	var before := await _built_terrain(current)
-	var delta: float = after.ground_height(probe.x, probe.z) - before.ground_height(probe.x, probe.z)
+	var delta: float = after.shape.height_at(probe.x, probe.z) - before.shape.height_at(probe.x, probe.z)
 	_check("lifted_height_delta", absf(delta - LIFT_Y) < 1e-3, "delta %.5f at (%.1f, %.1f)" % [delta, probe.x, probe.z])
 	before.free()
 	after.free()
@@ -137,16 +136,16 @@ func _through_glb(data: MapTerrainData, path := "user://terrain_bake_moved.glb")
 	return GlbImport.validate(read["data"])
 
 
-func _terrain_from_glb(path: String) -> MeshInstance3D:
+func _terrain_from_glb(path: String) -> Terrain:
 	var read := GlbImport.read_glb(path)
 	return await _built_terrain(read["data"] if read.has("data") else null)
 
 
 ## A Terrain made from the script alone, built in _ready from `data` (no saved mesh).
-func _built_terrain(data: MapTerrainData) -> MeshInstance3D:
-	var terrain := MeshInstance3D.new()
-	terrain.set_script(load(TERRAIN_SCRIPT))
-	terrain.set("data", data)
+func _built_terrain(data: MapTerrainData) -> Terrain:
+	var terrain := Terrain.new()
+	terrain.shape = TerrainShape.with_data(data)
+	terrain.add_child(terrain.shape)
 	root.add_child(terrain)
 	await process_frame
 	return terrain

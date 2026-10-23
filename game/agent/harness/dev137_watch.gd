@@ -20,10 +20,10 @@ func _ready() -> void:
 	process_physics_priority = 1000
 
 
-func _terrain() -> Node:
+func _terrain() -> TerrainShape:
 	if get_tree().current_scene == null:
 		return null
-	return get_tree().root.find_child("Terrain", true, false)
+	return TerrainShape.of(self)
 
 
 func arm() -> String:
@@ -76,7 +76,7 @@ func _on_hurt(amount: float, kind: StringName, _from: int, body: Node3D) -> void
 func _above(body: Node3D) -> float:
 	var t: Variant = _terrain()
 	var o := body.global_transform.origin
-	return o.y - float(t.ground_height(o.x, o.z)) if t != null else NAN
+	return o.y - float(t.height_at(o.x, o.z)) if t != null else NAN
 
 
 func _ray_above(body: Node3D) -> float:

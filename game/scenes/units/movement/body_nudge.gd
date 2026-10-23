@@ -40,16 +40,16 @@ static func airborne(body: Node3D) -> bool:
 
 
 static func on_land(body: Node3D, at: Vector3) -> bool:
-	var terrain := FallCheck.terrain_of(body)
-	return terrain == null or terrain.is_on_ground(at.x, at.z)
+	var shape := TerrainShape.of(body)
+	return shape == null or shape.is_on_ground(at.x, at.z)
 
 
 ## The land height under `at`; where the body stands when there is none.
 static func ground_y(body: Node3D, at: Vector3) -> float:
-	var terrain := FallCheck.terrain_of(body)
-	if terrain == null:
+	var shape := TerrainShape.of(body)
+	if shape == null:
 		return body.global_position.y
-	var height := terrain.ground_height(at.x, at.z)
+	var height := shape.height_at(at.x, at.z)
 	return body.global_position.y if is_nan(height) else height
 
 

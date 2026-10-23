@@ -22,8 +22,8 @@ func view(x: float, z: float, d: float, h: float, y: float) -> void:
 	active = true
 
 
-func _terrain() -> Node:
-	return get_tree().current_scene.find_child("Terrain", true, false)
+func _terrain() -> TerrainShape:
+	return TerrainShape.of(self)
 
 
 func _process(_dt: float) -> void:
@@ -33,7 +33,7 @@ func _process(_dt: float) -> void:
 	var t := _terrain()
 	if cam == null or t == null:
 		return
-	var gy: float = t.ground_height(spot.x, spot.y)
+	var gy: float = t.height_at(spot.x, spot.y)
 	var c := Vector3(spot.x, 0.0 if is_nan(gy) else gy, spot.y)
 	cam.position = c + Vector3(sin(deg_to_rad(yaw)), 0, cos(deg_to_rad(yaw))) * dist + Vector3(0, height, 0)
 	cam.look_at(c, Vector3.UP)
@@ -47,7 +47,7 @@ func audit() -> String:
 	var worst_n_name := ""
 	for n in get_tree().get_nodes_in_group("npc"):
 		var p := (n as Node3D).global_transform.origin
-		var g: float = t.ground_height(p.x, p.z)
+		var g: float = t.height_at(p.x, p.z)
 		if not is_nan(g) and absf(p.y - g) > worst_n:
 			worst_n = absf(p.y - g)
 			worst_n_name = n.name
@@ -59,7 +59,7 @@ func audit() -> String:
 	var bn := 0
 	for b in get_tree().get_nodes_in_group("map_building"):
 		var p := (b as Node3D).global_transform.origin
-		var g: float = t.ground_height(p.x, p.z)
+		var g: float = t.height_at(p.x, p.z)
 		if not is_nan(g):
 			var d := p.y - g
 			bsum += d

@@ -141,11 +141,11 @@ func _rig() -> LookRig:
 
 ## Feet on the terrain: the scene sets x and z, the terrain gives y.
 func _place_bodies() -> void:
-	var terrain := get_tree().get_first_node_in_group("terrain")
-	if terrain == null or not terrain.has_method("ground_height"):
+	var terrain := TerrainShape.of(self)
+	if terrain == null:
 		return
 	for body in bodies.get_children():
-		var found: float = terrain.ground_height(body.global_position.x, body.global_position.z)
+		var found: float = terrain.height_at(body.global_position.x, body.global_position.z)
 		if not is_nan(found):
 			body.global_position.y = found
 

@@ -9,7 +9,6 @@ extends Node
 ##   report()                   life of the targets and mana of the shooters.
 ## Props: tick, rel (ticks since the bench started: Enter).
 
-const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 const TARGETS := ["Druid5", "Druid6", "Druid7", "Druid8", "Druid9", "Druid10", "Druid11"]
 const SHOOTERS := ["Rhinok1"]
 
@@ -80,10 +79,10 @@ func frame(x: float, z: float, ox: float, oy: float, oz: float) -> String:
 	var cam := get_viewport().get_camera_3d()
 	if cam == null:
 		return "no camera"
-	var t := get_tree().root.find_child("Terrain", true, false) as _TERRAIN
+	var t := TerrainShape.of(self)
 	var y := 0.0
 	if t != null:
-		var g: float = t.ground_height(x, z)
+		var g: float = t.height_at(x, z)
 		y = 0.0 if is_nan(g) else g
 	var look := Vector3(x, y + 1.0, z)
 	cam.look_at_from_position(look + Vector3(ox, oy, oz), look, Vector3.UP)
@@ -119,7 +118,7 @@ func _process(_delta: float) -> void:
 func samples(key: String, cx: float, cz: float, radii: Array) -> String:
 	var cam := get_viewport().get_camera_3d()
 	var size := get_viewport().get_visible_rect().size
-	var t := get_tree().root.find_child("Terrain", true, false) as _TERRAIN
+	var t := TerrainShape.of(self)
 	var out: Array = []
 	var k := 0
 	while k + 1 < radii.size():
@@ -130,7 +129,7 @@ func samples(key: String, cx: float, cz: float, radii: Array) -> String:
 				var a := deg_to_rad(float(deg))
 				var x := cx + cos(a) * r
 				var z := cz + sin(a) * r
-				var y := float(t.ground_height(x, z)) if t != null else 0.0
+				var y := float(t.height_at(x, z)) if t != null else 0.0
 				if is_nan(y) or cam.is_position_behind(Vector3(x, y, z)):
 					continue
 				var p := cam.unproject_position(Vector3(x, y, z))

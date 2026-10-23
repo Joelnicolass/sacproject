@@ -4,7 +4,7 @@ extends RefCounted
 ## The clearings of a map's widgets.json plants, used by bake_flora_map (the FloraMap, RFC-054 054a; until 054d also by
 ## bake_map_layout's Plant nodes): no plant within ALTAR_CLEAR of an altar or FOUNT_CLEAR of a manafount. The altars and founts
 ## are the NTTS structures with the tags of ALTAR_TAGS and FOUNT_TAGS (`jaal`/`jfnt` for James, one pair per land), the
-## same spots as Starts and Founts in the map scene. A plant must also stand on the land (Terrain.is_on_ground).
+## same spots as Starts and Founts in the map scene. A plant must also stand on the land (TerrainShape.is_on_ground).
 
 ## The altar and the manafount of each land (BuildingType flags 0x80001407 and 0x80002810), RFC-050. Same lists as
 ## tools/import/scaffold_map.py.
@@ -42,20 +42,18 @@ func is_clear(x: float, z: float) -> bool:
 
 ## A widgets.json row (x, z) gets a plant: on the land and outside every clearing.
 func accepts(land: Terrain, x: float, z: float) -> bool:
-	return land.is_on_ground(x, z) and is_clear(x, z)
+	return land.shape.is_on_ground(x, z) and is_clear(x, z)
 
 
-## A Terrain with only its ground index, to ask is_on_ground and ground_height as the game does (the bake_map_layout
-## arithmetic). Not in the tree: the caller frees it. Null when the map has no valid terrain.
+## A Terrain whose `shape` holds the ground index, to ask is_on_ground and height_at as the game does. Not in the
+## tree: the caller frees it. Null when the map has no valid terrain.
 static func land_of(map: MapDefinition) -> Terrain:
 	var data := load(map.terrain_path) as MapTerrainData if not map.terrain_path.is_empty() else null
 	if data == null or not data.is_valid():
 		return null
-	var node := MeshInstance3D.new()
-	node.set_script(load("res://scenes/map/terrain/terrain.gd"))
-	node.set("data", data)
-	var land := node as Terrain
-	land._index_ground(data.vertices, data.indices)
+	var land := Terrain.new()
+	land.shape = TerrainShape.with_data(data)
+	land.add_child(land.shape)
 	return land
 
 

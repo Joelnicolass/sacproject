@@ -7,7 +7,6 @@ extends Node
 ##   godot --headless --path game --fixed-fps 60 res://agent/fixtures/pt120_flight_stun.tscn
 
 const _ORDERS := preload("res://scenes/units/unit_orders.gd")
-const _TERRAIN := preload("res://scenes/map/terrain/terrain.gd")
 const FAR_M := 150.0
 const STATES := ["GROUND", "TAKEOFF", "FLYING", "LANDING"]
 
@@ -86,5 +85,5 @@ func _watch(unit: Node3D) -> void:
 
 
 func _above(unit: Node3D) -> float:
-	var terrain := scene.find_child("Terrain", true, false) as _TERRAIN
-	return unit.position.y - terrain.ground_height(unit.position.x, unit.position.z)
+	var terrain := TerrainShape.of(scene)
+	return unit.position.y - terrain.height_at(unit.position.x, unit.position.z)

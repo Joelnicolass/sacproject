@@ -9,6 +9,7 @@ extends EditorScenePostImport
 ## The static helpers are shared with tools/bake/terrain_glb_export.gd and debug/suite/terrain_bake_cases.gd.
 
 const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain.gd"
+const SHAPE_SCRIPT := "res://scenes/map/terrain/terrain_shape.gd"
 const GLB_MAGIC := 0x46546C67
 const CHUNK_JSON := 0x4E4F534A
 const CHUNK_BIN := 0x004E4942
@@ -71,8 +72,12 @@ func _write_data(data: MapTerrainData, out: String) -> void:
 func _runtime_mesh(data: MapTerrainData, tiles_path: String) -> ArrayMesh:
 	var builder := MeshInstance3D.new()
 	builder.set_script(load(TERRAIN_SCRIPT))
-	builder.set("data", data)
-	builder.set("tiles_path", tiles_path)
+	var shape := Node.new()
+	shape.set_script(load(SHAPE_SCRIPT))  # dynamic: as the Terrain above, a post-import script names no class_name
+	shape.set("tiles_path", tiles_path)
+	shape.set("data", data)
+	builder.add_child(shape)
+	builder.set("shape", shape)
 	var arrays: Array = []
 	if not tiles_path.is_empty() and load(tiles_path) != null:
 		arrays = builder.call("bake_arrays")  # dynamic: a post-import script; it names no class_name it may run before (load + set_script)

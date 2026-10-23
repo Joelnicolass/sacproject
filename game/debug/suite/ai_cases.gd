@@ -12,7 +12,6 @@ const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 const RULES := preload("res://data/match_rules.tres")
 const TOL := 0.0005
 const AI_DIR := "res://scenes/ai"
-const TERRAIN_SCRIPT := preload("res://scenes/map/terrain/terrain.gd")
 
 
 func run(host: Node3D) -> Dictionary:
@@ -342,10 +341,10 @@ func _unit(host: Node3D, slot: int, at: Vector3) -> Node3D:
 func _nav_rebuild(host: Node3D) -> Dictionary:
 	var root := Node3D.new()
 	root.name = "NavRebuildCases"
-	var terrain := MeshInstance3D.new()
+	var terrain := Terrain.new()
 	terrain.name = "Terrain"
-	terrain.set_script(TERRAIN_SCRIPT)
-	terrain.set("data", load(MapCatalog.active().terrain_path))
+	terrain.shape = TerrainShape.with_data(load(MapCatalog.active().terrain_path) as MapTerrainData)
+	terrain.add_child(terrain.shape)
 	terrain.add_to_group(NavFingerprint.GROUP)
 	root.add_child(terrain)
 	var structures := Node3D.new()
@@ -353,12 +352,12 @@ func _nav_rebuild(host: Node3D) -> Dictionary:
 	root.add_child(structures)
 	var service := NavService.new()
 	service.name = "Nav"
-	service.terrain = terrain
+	service.terrain_shape = terrain.shape
 	service.structures = structures
 	service.build_on_ready = false
 	root.add_child(service)
 	host.add_child(root)
-	if not terrain.has_ground_data():
+	if not terrain.shape.is_loaded():
 		root.free()
 		return {"ok": false, "reason": "sin terreno (assets/original/maps/high_noon/terrain.res)"}
 	service.build()
@@ -376,7 +375,7 @@ func _nav_rebuild(host: Node3D) -> Dictionary:
 	shape.shape = cylinder
 	shape.position = Vector3(0.0, 4.0, 0.0)
 	body.add_child(shape)
-	var ground: float = terrain.call("ground_height", spot.x, spot.z)
+	var ground: float = terrain.shape.height_at(spot.x, spot.z)
 	body.position = spot if is_nan(ground) else Vector3(spot.x, ground, spot.z)
 	structures.add_child(body)
 	await _nav_settle(service, host)

@@ -9,7 +9,7 @@ extends SceneTree
 ##   assets/original/maps/<tag>/sides.tres   MapSides
 ## It does what the old runtime code did, in the same order and with the same arithmetic, so the match digests do not move:
 ##  - buildings: the order of `structures`, names `Bld%03d_<tag>` (the index counts the hand-placed founts and altars too),
-##    y = ground_height(x, z), the NTTS facing saved as the node's own rotation (rotation.y = -deg_to_rad(facing), RFC-043); the ones off the land are left out with a warning;
+##    y = height_at(x, z), the NTTS facing saved as the node's own rotation (rotation.y = -deg_to_rad(facing), RFC-043); the ones off the land are left out with a warning;
 ##  - NPCs: the order of `creatures`; position y = ground + 0.2 m (the feet settle by themselves).
 ## Idempotent: it refuses to overwrite a file that exists (the scene may have been edited). --force overwrites.
 ## "$GODOT" --headless --path game --script res://tools/bake/bake_map_layout.gd [-- --force] [--out=res://...tscn] [--sides-out=res://...tres]
@@ -19,7 +19,6 @@ extends SceneTree
 
 const BUILDING_SCENE := "res://scenes/map/map_building.tscn"
 const SPAWN_SCENE := "res://scenes/map/npc_spawn.tscn"
-const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain.gd"
 
 ## The altar and the manafount of each land (PlantClears). Rows the scene places by hand
 ## (Starts, Founts): not buildings of the layout.
@@ -31,9 +30,8 @@ const SPAWN_LIFT := 0.2
 
 ## Name of the layout root: "HighNoonLayout" for high_noon, "PeaksLayout" for peaks (the map scene names the same node).
 var _root_name := ""
-var _terrain: MeshInstance3D
-## `_terrain` once it carries terrain.gd.
-var _land: Terrain
+## The map's ground numbers, outside the tree: the bake frees it.
+var _land: TerrainShape
 var _map: MapDefinition
 var _failures: Array[String] = []
 
@@ -69,20 +67,20 @@ func _initialize() -> void:
 	var plan := _plan(ntts)
 	if check:
 		_check(plan, ntts, out, sides_out)
-		_terrain.free()
+		_land.free()
 		quit(1 if not _failures.is_empty() else 0)
 		return
 	if not force:
 		for path in [out, sides_out]:
 			if FileAccess.file_exists(path):
 				push_error("bake_map_layout: %s already exists and is now the source of truth. Pass --force to overwrite it." % path)
-				_terrain.free()
+				_land.free()
 				quit(1)
 				return
 	var error := _write_layout(plan, out)
 	if error == OK:
 		error = _write_sides(ntts, sides_out)
-	_terrain.free()
+	_land.free()
 	if error != OK:
 		push_error("bake_map_layout: could not write the files (error %d)." % error)
 		quit(1)
@@ -99,17 +97,13 @@ func _read_json(path: String) -> Dictionary:
 	return parsed if parsed is Dictionary else {}
 
 
-## A Terrain with only its ground index, to ask is_on_ground and ground_height as the game does.
+## A TerrainShape with only the ground index, to ask is_on_ground and height_at as the game does.
 func _make_terrain() -> bool:
 	var data := load(_map.terrain_path) as MapTerrainData if not _map.terrain_path.is_empty() else null
 	if data == null or not data.is_valid():
 		push_error("bake_map_layout: %s is missing or invalid." % _map.terrain_path)
 		return false
-	_terrain = MeshInstance3D.new()
-	_terrain.set_script(load(TERRAIN_SCRIPT))
-	_terrain.set("data", data)
-	_land = _terrain as Terrain
-	_land._index_ground(data.vertices, data.indices)
+	_land = TerrainShape.with_data(data)
 	return true
 
 
@@ -140,7 +134,7 @@ func _plan_buildings(structures: Array) -> Array:
 			"tag": tag,
 			"owner_slot": SideRelations.slot_of(int(row.get("side", NEUTRAL_SIDE))),
 			"facing": float(row.get("facing", 0.0)),
-			"position": Vector3(x, _land.ground_height(x, z), z),
+			"position": Vector3(x, _land.height_at(x, z), z),
 		})
 	return rows
 
@@ -153,7 +147,7 @@ func _plan_npcs(creatures: Array) -> Array:
 		var tag := str(row["tag"])
 		var x := float(row["x"])
 		var z := float(row["z"])
-		var ground := _land.ground_height(x, z)
+		var ground := _land.height_at(x, z)
 		rows.append({
 			"name": "Npc%02d_%s" % [index, tag],
 			"tag": tag,

@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/map/map_root.gd" id="1_root"]
 [ext_resource type="Script" uid="uid://cnbnjgq6ehkv7" path="res://scenes/map/terrain/terrain.gd" id="2_terrain"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain_shape.gd" id="shape_script"]
 [ext_resource type="Script" uid="uid://bahus244cwp1m" path="res://scenes/map/props/map_props.gd" id="6_props"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="8_start"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="9_fount"]
@@ -34,10 +35,15 @@ terrain = NodePath("../Terrain")
 tile_map = ExtResource("f22_tiles")
 flora_map = ExtResource("flora_map")
 
-[node name="Terrain" parent="." unique_id=1483961628 groups=["nav_source"] instance=ExtResource("f195_terrain_glb")]
+[node name="Terrain" parent="." unique_id=1483961628 node_paths=PackedStringArray("shape", "missing") groups=["nav_source"] instance=ExtResource("f195_terrain_glb")]
 unique_name_in_owner = true
 material_override = ExtResource("f194_ground")
 script = ExtResource("2_terrain")
+shape = NodePath("Shape")
+missing = NodePath("Missing")
+
+[node name="Shape" type="Node" parent="Terrain"]
+script = ExtResource("shape_script")
 data = ExtResource("f172_terrain")
 
 [node name="Missing" type="Label3D" parent="Terrain" unique_id=430681053]

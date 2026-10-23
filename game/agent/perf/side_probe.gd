@@ -14,7 +14,7 @@ func _ready() -> void:
 func _run() -> void:
 	await get_tree().process_frame
 	var c := Vector2(1545.0, 1340.0)
-	var terrain := get_tree().get_first_node_in_group("terrain")
+	var terrain := TerrainShape.of(self)
 	var i := 0
 	for tag in ["ycro", "amuh", "nmuh"]:
 		for slot in [1, 2]:
@@ -25,8 +25,8 @@ func _run() -> void:
 			var x: float = c.x + float(i / 2 - 1) * 3.5 + (slot - 1.5) * 1.2
 			var z: float = c.y + (slot - 1.5) * 1.0
 			var y := 18.0
-			if terrain and terrain.has_method("ground_height"):
-				var f: float = terrain.ground_height(x, z)
+			if terrain:
+				var f: float = terrain.height_at(x, z)
 				y = f if not is_nan(f) else y
 			units.add_child(u)
 			u.global_position = Vector3(x, y + 0.2, z)

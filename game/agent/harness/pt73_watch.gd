@@ -34,10 +34,10 @@ func _find(node_name: String) -> Node3D:
 func _center() -> Variant:
 	if spec.begins_with("point:"):
 		var bits := spec.substr(6).split(",")
-		var terrain: Variant = _root().find_child("Terrain", true, false)
+		var terrain: Variant = TerrainShape.of(self)
 		var x := bits[0].to_float()
 		var z := bits[1].to_float()
-		var y: float = terrain.ground_height(x, z) if terrain else 0.0
+		var y: float = terrain.height_at(x, z) if terrain else 0.0
 		return Vector3(x, 0.0 if is_nan(y) else y, z)
 	if spec.begins_with("node:"):
 		var node := _find(spec.substr(5))
@@ -163,8 +163,8 @@ func aim_ground_near_soul(back_m: float) -> String:
 	var to_wizard := wizard.global_transform.origin - soul.global_transform.origin
 	to_wizard.y = 0.0
 	var spot := soul.global_transform.origin + to_wizard.normalized() * back_m
-	var terrain: Variant = _root().find_child("Terrain", true, false)
-	var y: float = terrain.ground_height(spot.x, spot.z)
+	var terrain: Variant = TerrainShape.of(self)
+	var y: float = terrain.height_at(spot.x, spot.z)
 	spot.y = 0.0 if is_nan(y) else y
 	var screen := cam.unproject_position(spot)
 	cam.set("debug_pointer", screen)

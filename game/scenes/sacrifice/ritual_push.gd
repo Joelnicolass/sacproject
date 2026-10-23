@@ -29,7 +29,7 @@ func _physics_process(delta: float) -> void:
 		return
 	var rules := ritual.rules
 	var center := ritual.center()
-	var terrain := FallCheck.terrain_of(self)
+	var shape := TerrainShape.of(self)
 	var seen: Dictionary = {}
 	for group in GROUPS:
 		for node in get_tree().get_nodes_in_group(group):
@@ -37,10 +37,10 @@ func _physics_process(delta: float) -> void:
 			if body == null or seen.has(body) or ritual.is_part(body) or not _alive(body):
 				continue
 			seen[body] = true
-			_push(body, center, rules, terrain, delta)
+			_push(body, center, rules, shape, delta)
 
 
-func _push(body: CharacterBody3D, center: Vector3, rules: MatchRules, terrain: Terrain, delta: float) -> void:
+func _push(body: CharacterBody3D, center: Vector3, rules: MatchRules, shape: TerrainShape, delta: float) -> void:
 	var flat := Vector3(body.global_position.x - center.x, 0.0, body.global_position.z - center.z)
 	var distance := (body.global_position + Vector3.UP - center).length()
 	if flat.length_squared() < 0.000001 or distance >= rules.ritual_push_radius:
@@ -51,11 +51,11 @@ func _push(body: CharacterBody3D, center: Vector3, rules: MatchRules, terrain: T
 		speed = 1.1 * doctor.pace()
 	var step := flat.normalized() * speed * delta
 	var target := body.global_position + step
-	if terrain != null:
-		if not terrain.is_on_ground(target.x, target.z):
+	if shape != null:
+		if not shape.is_on_ground(target.x, target.z):
 			return
 		if body.is_on_floor():
-			step.y = terrain.ground_height(target.x, target.z) - body.global_position.y
+			step.y = shape.height_at(target.x, target.z) - body.global_position.y
 	body.move_and_collide(step)
 
 

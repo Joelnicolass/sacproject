@@ -27,10 +27,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _frame_close() -> void:
 	var camera := get_node(camera_path) as Camera3D
-	var terrain := get_tree().get_first_node_in_group("terrain")
+	var terrain := TerrainShape.of(self)
 	var height := 0.0
-	if terrain and terrain.has_method("ground_height"):
-		var found: float = terrain.ground_height(close_at.x, close_at.y)
+	if terrain:
+		var found: float = terrain.height_at(close_at.x, close_at.y)
 		if not is_nan(found):
 			height = found
 	var target := Vector3(close_at.x, height, close_at.y)

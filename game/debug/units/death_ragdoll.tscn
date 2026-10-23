@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://debug/units/death_ragdoll.gd" id="1_runner"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(60, 2, 60)
+
+[node name="DeathRagdoll" type="Node3D"]
+editor_description = "F6. Five models (humanoid, quadruped, small, big, flier) die one by one and fall as ragdolls, then dissolve; it repeats."
+script = ExtResource("1_runner")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+shape = SubResource("BoxShape3D_floor")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707, 0.707, 0, -0.707, 0.707, 0, 6, 0)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.94, 0.34, 0, -0.34, 0.94, 0, 7, 22)
+current = true

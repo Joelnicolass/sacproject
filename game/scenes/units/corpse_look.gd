@@ -1,9 +1,10 @@
 class_name CorpseLook
 extends Node
 
-## How a death looks. A creature with a death animation plays it once; one without it tips over (TippingFall). The
-## corpse fades out while it dissolves, and a creature that a Convert doctor brings back fades in where it lies. It
-## only listens to Corpse and never writes to the simulation: nothing in the sim reads it.
+## How a death looks. A model with a physical skeleton falls like a rag doll (RagdollDriver); one without it plays its death
+## animation once; one with neither tips over (TippingFall). The corpse fades out while it dissolves, and a creature that a
+## Convert doctor brings back fades in where it lies. It only listens to Corpse and never writes to the simulation:
+## nothing in the sim reads it.
 
 ## The unit that dies.
 @export var body: UnitBody
@@ -11,8 +12,12 @@ extends Node
 @export var corpse: Corpse
 ## The model that is drawn and faded.
 @export var visual: BodyVisual
+## How a body with a physical skeleton falls.
+@export var ragdoll: RagdollDriver
 ## How a body with no death animation falls.
 @export var tipping: TippingFall
+## true: a model that has a death animation plays it even if it has a physical skeleton.
+@export var prefer_clip := false
 @export_group("Fades")
 ## Seconds a dissolving corpse takes to fade out (never longer than the dissolve itself).
 @export_range(0.0, 5.0, 0.05, "suffix:s") var corpse_fade_s := 1.5
@@ -20,6 +25,8 @@ extends Node
 @export_range(0.0, 3.0, 0.05, "suffix:s") var revive_fade_s := 0.6
 
 var _fade: Tween
+## The body lies as a ragdoll (so it stands up by resetting it).
+var _ragdolled := false
 
 
 func _ready() -> void:
@@ -30,15 +37,29 @@ func _ready() -> void:
 		_on_dissolving_changed(true)
 
 
-## The body died. With a death clip, the clip lays it down; without one, the model tips over.
+## The body died. Who lays it down, in this order: the physical skeleton, the death clip, the tip-over. A body that joined
+## late (`instant`) never ragdolls: there is no fall to play, so it lies at once.
 func _on_laid_down(instant: bool) -> void:
-	if corpse.clip_driven:
+	if _can_ragdoll(instant):
+		body.clip_pose.frozen = true
+		_ragdolled = true
+		ragdoll.start(-body.facing_flat())
+	elif corpse.clip_driven:
 		if instant:
 			body.clip_pose.play_ended(corpse.death_role)
 		else:
 			body.clip_pose.play(corpse.death_role, true)
 	else:
 		tipping.lay_down(visual.body_radius(), not instant)
+
+
+func _can_ragdoll(instant: bool) -> bool:
+	if instant or prefer_clip and corpse.clip_driven:
+		return false
+	var skeleton := visual.rig.skeleton() if visual.rig != null else null
+	if skeleton != null:
+		ragdoll.bind(skeleton)
+	return ragdoll.available()
 
 
 func _on_dissolving_changed(on: bool) -> void:
@@ -51,6 +72,11 @@ func _on_dissolving_changed(on: bool) -> void:
 
 ## A Convert doctor revived the body: it stands in its place and appears out of thin air.
 func _on_stood_up() -> void:
+	if _ragdolled:
+		_ragdolled = false
+		ragdoll.reset()
+		body.clip_pose.frozen = false
+		body.clip_pose.play("idle", true)
 	tipping.stand_up(false)
 	_stop_fade()
 	visual.set_fade(1.0)
@@ -73,7 +99,7 @@ func _stop_fade() -> void:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
-	for socket in ["body", "corpse", "visual", "tipping"]:
+	for socket in ["body", "corpse", "visual", "ragdoll", "tipping"]:
 		if get(socket) == null:
 			warnings.append("Assign `%s`." % socket)
 	return warnings

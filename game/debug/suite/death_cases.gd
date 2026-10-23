@@ -37,6 +37,7 @@ func run(host: Node3D) -> Dictionary:
 	out["death_ground"] = await _ground()
 	out["death_flier"] = await _flier()
 	out["death_look"] = await _look()
+	out["death_ragdoll"] = await _ragdoll()
 	out["death_carrier_rule_on"] = await _carrier(true)
 	out["death_carrier_rule_off"] = await _carrier(false)
 	_root.queue_free()
@@ -125,6 +126,77 @@ func _look() -> Dictionary:
 	checks["faded_out"] = is_equal_approx(mesh.transparency, 1.0)
 	unit.free()
 	return _verdict(checks)
+
+
+## RFC-055 055a-3: a body that falls as a ragdoll leaves the simulation exactly as one that does not. Two Troggs die at the
+## same time: one has a physical skeleton mounted (headless draws no model, so the case mounts the baked one by hand), the
+## other has none. Same fall ticks, same body position, same soul position; the ragdoll moves only the model, stays near
+## where it fell, then freezes and its simulator stops. The physics itself runs headless: only the drawing does not.
+func _ragdoll() -> Dictionary:
+	var plain := _unit("ycro", Vector3(-30.0, 0.0, 10.0))
+	var rag := _unit("ycro", Vector3(30.0, 0.0, 10.0))
+	var look := rag.find_child("CorpseLook", false, false) as CorpseLook
+	var model := _mount_model(rag, "eorc")
+	var skeleton := model.skeleton()
+	var simulator := skeleton.find_children("*", "PhysicalBoneSimulator3D", false, false)[0] as PhysicalBoneSimulator3D
+	var hips := simulator.get_child(0) as PhysicalBone3D
+	var checks := {"bound": look.ragdoll.bind(skeleton), "off_while_alive": simulator.process_mode == Node.PROCESS_MODE_DISABLED}
+	checks["plain_has_none"] = not (plain.find_child("CorpseLook", false, false) as CorpseLook).ragdoll.available()
+	await _frames(5)
+	var start := hips.global_position
+	for unit in [plain, rag]:
+		(unit.find_child("Health", false, false) as Health).damage(99999.0, 1)
+	var took_plain := -1
+	var took_rag := -1
+	for frame in GUARD_FRAMES:
+		if took_plain < 0 and plain.corpse().is_settled:
+			took_plain = frame
+		if took_rag < 0 and rag.corpse().is_settled:
+			took_rag = frame
+		if took_plain >= 0 and took_rag >= 0:
+			break
+		await _host.get_tree().physics_frame
+	checks["falls_as_ragdoll"] = look.ragdoll.is_running() and simulator.process_mode != Node.PROCESS_MODE_DISABLED
+	checks["plain_does_not"] = not (plain.find_child("CorpseLook", false, false) as CorpseLook).ragdoll.is_running()
+	checks["same_fall_ticks"] = took_plain >= 0 and took_plain == took_rag
+	await _frames(2)
+	var offset := Vector3(60.0, 0.0, 0.0)
+	checks["same_body_position"] = rag.global_position.is_equal_approx(plain.global_position + offset)
+	checks["same_anchor"] = rag.soul_anchor().is_equal_approx(plain.soul_anchor() + offset)
+	var soul_plain := _soul_of(plain)
+	var soul_rag := _soul_of(rag)
+	checks["same_soul_position"] = soul_plain != null and soul_rag != null and soul_rag.global_position.is_equal_approx(soul_plain.global_position + offset)
+	await _seconds(look.ragdoll.settle_s * 0.6)
+	var away := hips.global_position - start
+	var drift := Vector2(away.x, away.z).length()
+	checks["thrown_back"] = away.z < -0.3
+	checks["drift_clamped"] = drift <= look.ragdoll.max_drift_m + 0.5
+	checks["body_did_not_move"] = rag.global_position.is_equal_approx(plain.global_position + offset)
+	await _until(func() -> bool: return not look.ragdoll.is_running(), GUARD_FRAMES)
+	checks["froze"] = not look.ragdoll.is_running() and simulator.process_mode == Node.PROCESS_MODE_DISABLED
+	var frozen_at := skeleton.get_bone_global_pose(10)
+	await _frames(20)
+	checks["pose_stays"] = frozen_at.is_equal_approx(skeleton.get_bone_global_pose(10))
+	var highest := 0.0
+	for bone in skeleton.get_bone_count():
+		highest = maxf(highest, (skeleton.global_transform * skeleton.get_bone_global_pose(bone)).origin.y - rag.global_position.y)
+	checks["lies_flat"] = highest < 0.7
+	look.ragdoll.reset()
+	checks["reset_to_rest"] = skeleton.get_bone_global_pose(10).is_equal_approx(skeleton.get_bone_global_rest(10))
+	plain.free()
+	rag.free()
+	return _verdict(checks)
+
+
+## The baked model of `tag` under the body's visual, in its idle pose and with its clips held (what the rig does at death).
+func _mount_model(unit: UnitBody, tag: String) -> BodyModel:
+	var model := (load(BodyModel.scene_path(tag)) as PackedScene).instantiate() as BodyModel
+	unit.get_node("Tilt/Mesh").add_child(model)
+	model.preview("idle")
+	model.tree().advance(0.3)
+	model.tree().callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
+	model.skeleton().force_update_all_bone_transforms()
+	return model
 
 
 ## A doctor dies carrying a creature. Rule on: it dies in the air and its soul is where it landed. Rule off: it lands alive.

@@ -112,6 +112,9 @@ func advance(delta: float, walking: bool, above: float, on_floor: bool) -> float
 ## lasts, a hybrid or one that must fly alike (sacengine petrify startTumbling, state.d:11636); its state waits. The body
 ## then asks advance() for its vertical speed, even one that must fly.
 func is_dropped() -> bool:
+	## A dead flier falls too: its corpse (and the soul that leaves it) belongs on the ground.
+	if body != null and body.is_dead():
+		return true
 	return afflictions != null and afflictions.drops_fliers()
 
 

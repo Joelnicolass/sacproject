@@ -133,7 +133,7 @@ func _revive() -> Dictionary:
 	if old != null:
 		old.state = Soul.State.REVIVING
 		old.queue_free()
-	captive.die_again()
+	captive.release(Captive.Release.CARRIER_DIED)
 	await _frames(120)
 	var again := _soul_of(unit)
 	checks["die_again_dead"] = unit.is_dead() and unit.is_in_group("corpse") and not unit.is_in_group(Captive.HELD_GROUP) and unit.collision_layer == int(corpse.corpse_layer)
@@ -366,12 +366,13 @@ func _doctor_dies() -> Dictionary:
 	if doctor != null:
 		doctor.kill(2)
 	await _frames(240)
-	checks["carry_creature_alive"] = not victim.is_dead() and victim.mode != UnitBody.Mode.HELD
+	## MatchRules.carried_dies_when_dropped is on: it dies in the air, falls and its soul stays where it landed.
+	checks["carry_creature_dead"] = victim.is_dead() and victim.mode != UnitBody.Mode.HELD and victim.corpse().is_settled
 	checks["carry_original_owner"] = victim.owner_slot == 2
-	checks["carry_in_unit_group"] = victim.is_in_group("unit") and not victim.is_in_group(Captive.HELD_GROUP)
-	checks["carry_is_target_again"] = Attackable.is_body(victim) and victim.is_targetable()
+	checks["carry_is_corpse"] = victim.is_in_group("corpse") and not victim.is_in_group(Captive.HELD_GROUP)
 	checks["carry_fell_to_floor"] = victim.global_position.y < 1.0
-	checks["carry_no_loose_soul"] = _souls_of(victim).is_empty()
+	var landed := _soul_of(victim)
+	checks["carry_soul_where_it_landed"] = landed != null and landed.global_position.y < 2.0
 	checks["carry_no_souls_for_caster"] = purse.count == before
 	checks["carry_site_free"] = (scene["altar"] as Altar).site.is_free()
 	_clear(scene)

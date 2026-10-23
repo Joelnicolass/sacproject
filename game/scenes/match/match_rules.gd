@@ -73,6 +73,9 @@ extends Resource
 @export var carry_height: float = 3.5
 @export var carry_distance: float = 2.7
 @export var carry_speed_factor: float = 1.1
+## A creature a doctor carries (or pumps back to life) dies when the doctor dies and drops it; its soul stays where it lands.
+## Off: it lands alive and stunned, as the original does (state.d:15776-15779).
+@export var carried_dies_when_dropped: bool = true
 ## The carrier asks for the ritual once it is this close to the site, in 3D (state.d:15780).
 @export var ritual_start_distance: float = 20.0
 

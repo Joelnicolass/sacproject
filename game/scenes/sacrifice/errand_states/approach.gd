@@ -19,10 +19,6 @@ func physics_update(_delta: float) -> void:
 		_desecrate(body)
 
 
-func doctor_died() -> void:
-	errand.release_soul()
-
-
 func _desecrate(body: DoctorBody) -> void:
 	if not errand.creature_is_free() or not errand.site_standing():
 		body.kill()

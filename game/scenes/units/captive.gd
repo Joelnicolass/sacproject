@@ -9,7 +9,7 @@ extends Node
 ## server (or solo) calls take()/release() and moves the body. Remove the child and the creature
 ## cannot be taken: the Desecrate cast answers «Blanco inválido».
 ## RFC-020e: a Convert doctor also revives a corpse with it (revive(), mode REVIVING: stood up, still
-## taken, nobody's target) and, if the doctor dies then, kills it again (die_again()).
+## taken, nobody's target) and, if the doctor dies then, release(CARRIER_DIED) kills it again.
 ## Numbers: rules.carry_height / carry_distance / carry_speed_factor (sacengine state.d:15759-15766).
 ## The creature does not use move_and_slide: like sacengine it follows a point without colliding.
 
@@ -19,6 +19,9 @@ signal taken(holder: DoctorBody)
 signal freed
 ## A Convert doctor brought the corpse back to life; it is REVIVING until the doctor takes it.
 signal revived
+
+## Why a creature is let go: the doctor chose to (or the ritual ended), or the doctor died holding it.
+enum Release { LET_GO, CARRIER_DIED }
 
 const HELD_GROUP := &"captive"
 const UNIT_GROUP := &"unit"
@@ -105,17 +108,24 @@ func hand_to_ritual() -> void:
 	holder = null
 
 
-## Server or solo. Lets the creature go where it is: it falls to the ground, alive and with its owner,
-## and answers orders again.
-func release() -> void:
-	if not is_held():
+## Server or solo. Lets the creature go where it is. LET_GO: it falls to the ground, alive and with its owner, and
+## answers orders again. CARRIER_DIED: DeathRules says if it lands alive or dies in the air and falls as a corpse.
+func release(reason := Release.LET_GO) -> void:
+	if not is_held() and not (reason == Release.CARRIER_DIED and body != null and body.is_reviving()):
 		holder = null
 		return
+	var kind := DeathRules.Carried.REVIVING if body.is_reviving() else DeathRules.Carried.HELD
+	var outcome := DeathRules.Outcome.LAND_ALIVE
+	if reason == Release.CARRIER_DIED:
+		outcome = DeathRules.on_carrier_lost(kind, not body.is_dead(), _dies_when_dropped())
 	if is_instance_valid(holder):
 		holder.carried = NodePath()
 	holder = null
 	body.velocity = Vector3.ZERO
-	body.mode = UnitBody.Mode.IDLE
+	if outcome == DeathRules.Outcome.DROP_DEAD:
+		_kill()
+	else:
+		body.mode = UnitBody.Mode.IDLE
 	freed.emit()
 
 
@@ -149,16 +159,19 @@ func finish_revive() -> bool:
 	return true
 
 
-## Server or solo. The Convert doctor died while it pumped: the creature dies again (freeCreature on a
-## convertReviving creature kills it, state.d:10145-10147) and leaves its soul, on its own side.
-func die_again() -> void:
-	if body == null or not body.is_reviving():
-		return
+## The creature dies where it hangs (a corpse that falls to the floor and leaves its soul there).
+func _kill() -> void:
 	var health := body.get_node_or_null("Health") as Health
 	if health == null:
 		return
 	health.current = 0.0
 	health.died.emit(0)
+
+
+## The match rule: does a dropped creature die? The doctor's rules win, then the body's; without any, yes.
+func _dies_when_dropped() -> bool:
+	var rules: MatchRules = holder.rules if is_instance_valid(holder) and holder.rules else body.rules
+	return rules.carried_dies_when_dropped if rules else true
 
 
 ## Where the creature hangs for a doctor at `at` facing `facing_flat` (a unit vector on the plane).
@@ -175,7 +188,7 @@ func _physics_process(delta: float) -> void:
 		holder = null
 		return
 	if not is_instance_valid(holder) or holder.is_dead():
-		release()
+		release(Release.CARRIER_DIED)
 		return
 	var rules := holder.rules
 	var want := hang_point(

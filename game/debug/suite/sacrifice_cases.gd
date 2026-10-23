@@ -82,6 +82,9 @@ func _captive() -> Dictionary:
 	var checks := {}
 	var unit := _unit(Vector3(0.0, 0.1, 6.0), 1)
 	var doctor := _doctor(Vector3(0.0, 0.1, 0.0))
+	## The rule off: a dropped creature lands alive (MatchRules.carried_dies_when_dropped; on, it dies: death_cases).
+	doctor.rules = RULES.duplicate() as MatchRules
+	doctor.rules.carried_dies_when_dropped = false
 	await _frames(20)
 	var captive := Captive.of(unit)
 	var health: Health = unit.get_node("Health")

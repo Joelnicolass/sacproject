@@ -4,9 +4,8 @@ extends ErrandStep
 ## state.d:15725-15748; exe 0x44a0f0). When it starts the creature stands up with
 ## max(400, 50 % of its max health) and is nobody's target; the doctor works (soul number + 1) times
 ## rules.convert_pump_s_per_soul seconds, then the soul is gone, the creature is taken and goes on to
-## Haul. If the site falls the doctor dies. If the doctor dies here, the creature dies again and leaves
-## its soul on its own side (freeCreature on a convertReviving creature, state.d:10145-10147): the
-## soul that was hidden while it pumped is replaced by the one its new death drops.
+## Haul. If the site falls the doctor dies. If the doctor dies here, CarryErrand drops the creature (it dies again and
+## leaves its soul on its own side): the soul that was hidden while it pumped is replaced by the one its new death drops.
 
 var _left := 0.0
 ## The corpse really stood up: only then there is something to undo if the doctor dies.
@@ -53,16 +52,6 @@ func physics_update(delta: float) -> void:
 		body.kill()
 		return
 	transition(&"Haul")
-
-
-## The doctor died while pumping.
-func doctor_died() -> void:
-	if not _pumping:
-		errand.release_soul()
-		return
-	_drop_soul()
-	if errand.captive != null and is_instance_valid(errand.captive):
-		errand.captive.die_again()
 
 
 ## The creature keeps its soul from now on (state.d:15668-15672); the one on the map goes.

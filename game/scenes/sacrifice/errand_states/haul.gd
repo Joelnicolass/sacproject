@@ -24,7 +24,3 @@ func physics_update(_delta: float) -> void:
 		errand.arrive()
 		return
 	body.walk_to(center)
-
-
-func doctor_died() -> void:
-	errand.release_creature()

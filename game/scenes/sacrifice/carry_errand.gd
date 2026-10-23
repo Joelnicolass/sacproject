@@ -110,10 +110,10 @@ func hand_over() -> void:
 	steps.transition(&"Over")
 
 
-## Lets the creature go where it hangs.
-func release_creature() -> void:
-	if captive != null and is_instance_valid(captive) and captive.holder == body:
-		captive.release()
+## Lets the creature go where it hangs, for `reason` (Captive.Release).
+func release_creature(reason := Captive.Release.LET_GO) -> void:
+	if captive != null and is_instance_valid(captive) and (captive.holder == body or captive.body.is_reviving()):
+		captive.release(reason)
 
 
 func _is_alive_own() -> bool:
@@ -126,10 +126,18 @@ func _on_landed() -> void:
 		steps.transition(&"Approach")
 
 
+## The doctor died, in whatever step: the soul it came for is free again (or goes, if the creature already took it) and
+## the creature it holds is dropped by one rule (DeathRules.on_carrier_lost, through Captive).
 func _on_died(_from_slot: int) -> void:
-	var step := steps.current as ErrandStep
-	if step != null:
-		step.doctor_died()
+	if _done:
+		return
+	if soul != null and is_instance_valid(soul):
+		if creature != null and creature.is_reviving():
+			soul.queue_free()
+			soul = null
+		else:
+			release_soul()
+	release_creature(Captive.Release.CARRIER_DIED)
 	_finish(Outcome.FAILED)
 
 

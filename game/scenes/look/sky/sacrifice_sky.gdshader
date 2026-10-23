@@ -1,0 +1,119 @@
+shader_type sky;
+
+// Sacrifice's sky as a real Godot sky: the background colour, the original's two textured bands
+// (rotating), its cloud plane (drifting), an optional aurora and optional sun / moon discs.
+// Edit it through the material in the inspector; every number a human wants is a uniform below.
+//
+// Cost: the radiance cubemap (ambient light and reflections) only gets a cheap three-colour
+// gradient, so it never re-bakes with the clouds. For that, set the Sky resource's
+// `process_mode` to Quality: the shader uses TIME, which makes Automatic re-bake every frame.
+
+#include "res://scenes/look/sky/sky_bands.gdshaderinc"
+#include "res://scenes/look/sky/sky_clouds.gdshaderinc"
+#include "res://scenes/look/sky/sky_discs.gdshaderinc"
+#include "res://scenes/look/sky/aurora.gdshaderinc"
+
+group_uniforms background;
+// Colour seen where no band or cloud covers the sky (the original's ENVI background).
+uniform vec3 background_color : source_color = vec3(1.0, 0.706, 0.471);
+// Brightness multiplier of the band and cloud textures (the original uses 1.7).
+uniform float energy : hint_range(0.0, 4.0, 0.01) = 1.7;
+// Height of the camera above the sky's base (a plane 511 m under the ground). Moves the horizon.
+uniform float eye_height_m : hint_range(0.0, 2000.0, 1.0) = 551.0;
+
+group_uniforms bands;
+// Upper band, seen from the horizon up (skyt.png).
+uniform sampler2D top_texture : source_color, hint_default_transparent, filter_linear_mipmap, repeat_disable;
+// Lower band, seen below the horizon (skyb.png).
+uniform sampler2D bottom_texture : source_color, hint_default_transparent, filter_linear_mipmap, repeat_disable;
+// Seconds for a full turn of both bands.
+uniform float rotation_period_s : hint_range(1.0, 2048.0, 1.0) = 512.0;
+
+group_uniforms clouds;
+uniform sampler2D clouds_texture : source_color, hint_default_transparent, filter_linear_mipmap, repeat_enable;
+// Seconds for the clouds to drift one texture repeat.
+uniform float cloud_period_s : hint_range(1.0, 1024.0, 1.0) = 64.0;
+// 0 hides the clouds.
+uniform float cloud_alpha : hint_range(0.0, 1.0, 0.01) = 1.0;
+
+group_uniforms ambient_gradient;
+// What the radiance cubemap sees: ambient light and reflections only. Not drawn on screen.
+uniform vec3 ambient_top_color : source_color = vec3(0.38, 0.45, 0.55);
+uniform vec3 ambient_horizon_color : source_color = vec3(0.65, 0.65, 0.7);
+uniform vec3 ambient_ground_color : source_color = vec3(0.2, 0.17, 0.13);
+uniform float ambient_energy : hint_range(0.0, 4.0, 0.01) = 1.0;
+// Lower = the top colour reaches farther down toward the horizon.
+uniform float ambient_curve : hint_range(0.05, 2.0, 0.01) = 0.5;
+
+group_uniforms aurora;
+// 0 = off (the aurora code does not run at all).
+uniform float aurora_strength : hint_range(0.0, 1.0, 0.01) = 0.0;
+// Colour from the lowest to the highest layer of the aurora (a 1D gradient).
+uniform sampler2D aurora_gradient : source_color, filter_linear;
+uniform float aurora_brightness : hint_range(0.0, 4.0, 0.01) = 1.7;
+uniform float aurora_speed : hint_range(0.0, 1.0, 0.001) = 0.12;
+uniform float aurora_height : hint_range(1.0, 100.0, 0.5) = 42.0;
+uniform float aurora_scale : hint_range(0.1, 4.0, 0.01) = 0.8;
+
+group_uniforms discs;
+// The sun disc follows the scene's first DirectionalLight3D. 0 = no disc.
+uniform float sun_intensity : hint_range(0.0, 20.0, 0.05) = 0.0;
+uniform vec3 sun_color : source_color = vec3(1.0, 0.9, 0.7);
+uniform float sun_radius_deg : hint_range(0.1, 15.0, 0.1) = 2.2;
+uniform float halo_strength : hint_range(0.0, 4.0, 0.01) = 0.0;
+uniform vec3 halo_color : source_color = vec3(1.0, 0.7, 0.4);
+// Higher = tighter halo around the sun.
+uniform float halo_power : hint_range(2.0, 400.0, 1.0) = 24.0;
+// 0 = no moon.
+uniform float moon_intensity : hint_range(0.0, 20.0, 0.05) = 0.0;
+uniform vec3 moon_color : source_color = vec3(0.75, 0.82, 1.0);
+uniform float moon_radius_deg : hint_range(0.1, 15.0, 0.1) = 3.0;
+// Compass azimuth of the moon: 0 = +Z, 90 = +X.
+uniform float moon_azimuth_deg : hint_range(-180.0, 180.0, 1.0) = -40.0;
+uniform float moon_elevation_deg : hint_range(-10.0, 89.0, 1.0) = 40.0;
+
+group_uniforms time;
+// -1 = the engine's TIME. 0 or more freezes the sky at that second (captures and comparisons).
+uniform float time_override_s : hint_range(-1.0, 4096.0, 0.01) = -1.0;
+
+void sky() {
+	if (AT_CUBEMAP_PASS) {
+		float up = EYEDIR.y;
+		float amount = pow(clamp(abs(up), 0.0, 1.0), ambient_curve);
+		vec3 far_color = up >= 0.0 ? ambient_top_color : ambient_ground_color;
+		COLOR = mix(ambient_horizon_color, far_color, amount) * ambient_energy;
+	} else {
+		vec3 dir = normalize(EYEDIR);
+		float t = time_override_s >= 0.0 ? time_override_s : TIME;
+		float spin = TAU * t / rotation_period_s;
+		vec2 cloud_offset = fract(t / cloud_period_s) * vec2(1.0, -1.0);
+
+		// Texture coordinates first, outside any branch, so their derivatives (the mip level) are valid.
+		vec4 bottom = sky_band_bottom_uv(dir, eye_height_m, spin);
+		vec4 top = sky_band_top_uv(dir, eye_height_m, spin);
+		vec4 cloud = sky_cloud_uv(dir, eye_height_m, cloud_offset);
+		vec2 bottom_dx = dFdx(bottom.xy);
+		vec2 bottom_dy = dFdy(bottom.xy);
+		vec2 top_dx = dFdx(top.xy);
+		vec2 top_dy = dFdy(top.xy);
+		vec2 cloud_dx = dFdx(cloud.xy);
+		vec2 cloud_dy = dFdy(cloud.xy);
+
+		vec3 color = background_color;
+		color = sky_band_blend(color, bottom_texture, bottom, bottom_dx, bottom_dy, energy);
+		color = sky_band_blend(color, top_texture, top, top_dx, top_dy, energy);
+		color = sky_cloud_blend(color, clouds_texture, cloud, cloud_dx, cloud_dy, energy, cloud_alpha);
+
+		if (aurora_strength > 0.0 && dir.y > -0.1) {
+			vec4 glow = aurora_color(dir, aurora_gradient, t, aurora_brightness, aurora_speed, aurora_height, aurora_scale);
+			color = mix(color, glow.rgb, glow.a * aurora_strength);
+		}
+
+		if (sun_intensity + halo_strength + moon_intensity > 0.0) {
+			vec3 sun_dir = LIGHT0_ENABLED ? LIGHT0_DIRECTION : vec3(0.0, 0.6, 0.8);
+			color = sky_disc_add(color, dir, sun_dir, sun_color * sun_intensity, sun_radius_deg, halo_color * halo_strength, halo_power,
+					sky_direction_from_angles(moon_azimuth_deg, moon_elevation_deg), moon_color * moon_intensity, moon_radius_deg);
+		}
+		COLOR = color;
+	}
+}

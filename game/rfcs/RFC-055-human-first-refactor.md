@@ -408,3 +408,21 @@ Hoy el port solo tiene sangre al desintegrar un cuerpo (`unit_body.gd:608`) y en
 - `BloodFx` (nodo hijo de la unidad): al recibir daño emite salpicadura (`GPUParticles3D` o el sistema de partículas existente) con el color de sangre del tipo de criatura (`CreatureType.blood_color`: rojo por defecto; verde, negro o nada para no-muertos y elementales).
 - `BloodDecals` (capa del `LookRig`): `Decal` de Godot en el suelo con pool y tope por calidad, se desvanecen en `fade_s`; nunca entran a la sim.
 - Escena de prueba `debug/fx/blood_lab.tscn`.
+
+## 15. Regla «todo en el editor, movible con gizmo» (aprobada 2026-10-23)
+Auditoría: `research/055R-editor-gizmo-audit.md`. El usuario aprobó los 5 cortes nuevos, el orden y los cambios a decisiones previas.
+
+**Cortes nuevos:** 055-0b (reglas C15–C21 en el lint), 055s (puntos de enganche y modelo como escena: `BodySockets` con `Marker3D`, `BoneAttachment3D` + `Muzzle`, transform del modelo y `CollisionShape3D` en vez de `BodySize`/`pose_overrides`, cápsula guardada), 055r (radios como `CollisionShape3D` con gizmo; consulta ordenada igual), 055x (FX tipados `ParticleType` + socket; `FxSoundMap` fuera; `fx_gallery.tscn`), 055k (cámara con `Curve` y vista en el editor), 055q (reglas del banco como escena con `BenchSquad : Marker3D`).
+
+**Decisiones que cambian:**
+- 055d-d4: **sin** `BiomeProp`/`PropSet`/`PropLayer`/`PropKind`. El mapa instancia la escena del prop directo; el cambio por dios queda solo para mapas neutros (059e) y con vista previa real, nunca gris.
+- 055d: lo que se arrastra al mapa es `scenes/structures/buildings/<name>.tscn`, con raíz `MapBuilding` y `@export var type: BuildingType`; las partes se ven con «Hijos editables» (fuera `INTERNAL_MODE`).
+- 055d-d1: `BuildingFootprint.hit_box` pasa a `CollisionShape3D` con `BoxShape3D` guardada en la escena del edificio.
+- 055c: **una escena heredada por criatura, obligatoria** (`trogg.tscn` hereda `unit.tscn`, modelo instanciado y guardado); ahí viven sockets, colisión y armas.
+- 055c1: `ClipTiming` pasa a marcadores `hit` en la animación del modelo (leídos una vez; `ClipTiming` solo fallback).
+- 055c3: `ShotLook` pasa a `PackedScene`.
+- `TypeRef`/`GameData` por tag: solo en la frontera (spawners, `scenes/net/`, catálogo).
+- 055d-d2 se amplía: `WizardSpot` (`Marker3D` en `PlayerStart`), `MapSides` derivado de los inicios, `MapDefinition` tipado (sin `@export_file`), colisión del terreno guardada, edificios como escenas instanciadas.
+- 055e absorbe proyectiles con su malla en el `.tscn` y una escena por estructura (Manalith, Shrine) con `StructureSpot`; 055g absorbe los `Marker3D` del ritual.
+
+**Orden vigente:** 055-0b → 055d-d2 ampliado → 059b/059c → 055d-d3 + d4 (sin capa de props) → 055c1 + escena por criatura → 055s → 055c2–c5 → 055x → 055r → 055e → 055f, 055g → 055k (puede adelantarse) → 055q → contenido (060 sangre, 058 ambiente, 059e, 056 estructuras, hechizos, 057 terreno deformable) → MpKit.

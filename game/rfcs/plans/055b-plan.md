@@ -79,3 +79,6 @@ El shader compila sin errores. Diferencia de color contra el cielo viejo (CIE76,
 | charnel | 0.53 | 5.92 | 13.78 |
 
 Mirando hacia arriba (35°) es casi idéntico (máx < 2,6). Los picos están en las poses de horizonte (5° y −15°): el borde de las bandas y el cono inferior. Antes de que 055b-2 cambie el juego, cerrar ese residuo (mipmaps a 320×180, geometría del cono) hasta p99 < 6 en el horizonte, o medir a mayor resolución para descartar el muestreo.
+
+## Corrección del horizonte (055b-2, paso 0)
+Causa: el cielo viejo dibuja las bandas como una malla de 64 caras planas con dos triángulos por cara y la `u` solo en las esquinas; `sacrifice_sky` calculaba la `u` sobre un cono perfecto. En el cilindro las dos cosas coinciden; en el cono cada cara es un trapecio y los dos triángulos curvan la textura (verificado numéricamente contra la malla: hasta 0,0068 de `u`, unos 7 texels de una textura de 1024, medio píxel a 320×180, a lo largo del cono del horizonte). Ahora `sky_bands.gdshaderinc` lanza el rayo contra las caras planas y reproduce los mismos triángulos (error contra la malla 1e-15). Además el mip de `u` se deriva sin plegar el espejo (antes una columna de píxeles en cada pliegue pedía un mip demasiado fino). `sky_compare` acepta `-- --sky-compare-size=1280x720` y sus `SubViewportContainer` ya no estiran los viewports. Hay que volver a medir con ventana.

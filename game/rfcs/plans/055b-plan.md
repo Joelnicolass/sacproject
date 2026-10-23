@@ -66,3 +66,16 @@ P1 borrar SWIRL · P2 renombrar capas · P3 aurora solo en Charnel, `aurora_stre
 Persephone: `persephone_light.tres` ambient (0.70, 0.86, 0.72), sun (1, 0.96, 0.85), fill (0.78, 0.90, 0.80), saturation 1.12; `persephone_sky.tres` `ground_color` (0.16, 0.26, 0.10), `ambient_sky_contribution` 0.6; `persephone.tres` `grade` negro → (0.47, 0.56, 0.44) → blanco. Criterio: en `biome_gallery`, G/(R+G+B) del suelo sube ≥ 0,03 y el cielo queda con ΔE < 2.
 
 Lint esperado: C1a 113→109, C7 70→69, C9 372→370, C13 47→40, C14 230→227. Todo es presentación: `quick` no cambia.
+
+## Resultado de 055b-1 (medido con ventana por el orquestador, 2026-10-23)
+El shader compila sin errores. Diferencia de color contra el cielo viejo (CIE76, viewports 320×180, 3 poses por dios):
+
+| Dios | ΔE medio | p99 | máx |
+|---|---|---|---|
+| persephone | 0.65 | 10.35 | 17.85 |
+| pyro | 0.51 | 7.22 | 12.60 |
+| james | 0.40 | 6.04 | 9.25 |
+| stratos | 0.17 | 4.34 | 7.76 |
+| charnel | 0.53 | 5.92 | 13.78 |
+
+Mirando hacia arriba (35°) es casi idéntico (máx < 2,6). Los picos están en las poses de horizonte (5° y −15°): el borde de las bandas y el cono inferior. Antes de que 055b-2 cambie el juego, cerrar ese residuo (mipmaps a 320×180, geometría del cono) hasta p99 < 6 en el horizonte, o medir a mayor resolución para descartar el muestreo.

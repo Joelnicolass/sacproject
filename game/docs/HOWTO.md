@@ -158,6 +158,9 @@ Todo se corre desde `game/` y de a un Godot por vez (la cola es `agent/harness/g
 ```bash
 G="${GODOT_BIN:-godot}"   # ver «Configurar rutas» abajo
 
+# Lint de convenciones (grep/awk, sin Godot, ~1 s; falla si un conteo sube sobre tools/lint/baseline.txt)
+bash tools/lint/conventions.sh
+
 # Validador del catálogo: imprime CATALOG PASS o CATALOG FAIL con el archivo que falla
 bash agent/harness/godot_run.sh $G --headless --path . --script res://debug/suite/catalog_cases.gd
 

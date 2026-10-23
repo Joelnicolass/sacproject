@@ -19,6 +19,8 @@ Estructura por dominio (RFC-048). Cada carpeta tiene su `README.md`.
 - `tools/`: `import/`, `bake/`, `audit/`, `material/`, `deploy/`. `agent/`: `runs/`, `flows/`, `fixtures/`, `harness/`, `scripts/`. Ni `scenes/` ni `data/` nombran `res://debug|agent|tools`.
 - Las mudanzas de rutas se hacen con `tools/move_map.py` y un CSV (`--check --lint` debe dar 0). Los commits de mudanza están en `.git-blame-ignore-revs`.
 
+Convenciones de código en `CONVENTIONS.md`; `tools/lint/conventions.sh` es el ratchet (falla si un conteo sube; cada corte que baja uno reescribe `tools/lint/baseline.txt`).
+
 Autoload: `MpKit` antes que `SacrificeFlow`.
 
 ## Red

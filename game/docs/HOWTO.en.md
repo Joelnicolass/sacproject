@@ -160,6 +160,9 @@ Everything runs from `game/` and one Godot at a time (the queue is `agent/harnes
 ```bash
 G="${GODOT_BIN:-godot}"   # see «Configure paths» below
 
+# Conventions lint (grep/awk, no Godot, ~1 s; fails if a count goes above tools/lint/baseline.txt)
+bash tools/lint/conventions.sh
+
 # Catalog validator: prints CATALOG PASS or CATALOG FAIL with the failing file
 bash agent/harness/godot_run.sh $G --headless --path . --script res://debug/suite/catalog_cases.gd
 

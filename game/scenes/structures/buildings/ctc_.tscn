@@ -1,0 +1,54 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
+[ext_resource type="Script" path="res://scenes/structures/building_footprint.gd" id="2_footprint"]
+
+[node name="Ctc" type="Node3D"]
+
+[node name="Base" type="Node3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Base"]
+script = ExtResource("1_visual")
+model = "ctch"
+stand_on_feet = false
+
+[node name="Spi1" type="Node3D" parent="."]
+position = Vector3(-20, 0, -20)
+rotation = Vector3(0, -0.7853982, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Spi1"]
+script = ExtResource("1_visual")
+model = "ctcs"
+stand_on_feet = false
+
+[node name="Spi2" type="Node3D" parent="."]
+position = Vector3(20, 0, -20)
+rotation = Vector3(0, -2.3561945, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Spi2"]
+script = ExtResource("1_visual")
+model = "ctcs"
+stand_on_feet = false
+
+[node name="Spi3" type="Node3D" parent="."]
+position = Vector3(20, 0, 20)
+rotation = Vector3(0, -3.9269907, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Spi3"]
+script = ExtResource("1_visual")
+model = "ctcs"
+stand_on_feet = false
+
+[node name="Spi4" type="Node3D" parent="."]
+position = Vector3(-20, 0, 20)
+rotation = Vector3(0, -5.497787, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Spi4"]
+script = ExtResource("1_visual")
+model = "ctcs"
+stand_on_feet = false
+
+[node name="Footprint" type="Node3D" parent="."]
+script = ExtResource("2_footprint")
+hit_box = AABB(-2, 0, -2, 4, 4, 4)
+inset = 0.5

@@ -32,11 +32,17 @@ func check(building_name: String, amount: float, radius: float) -> String:
 	if body == null or center == Vector3.INF:
 		return "sin edificio o sin estallido"
 	var tag := str(body.get("tag"))
-	var record: Dictionary = MapBuilding.bldg(tag)
-	var parts: Array = record.get("components", [])
-	if parts.size() != 1 or float(parts[0].get("facing", 0.0)) != 0.0 or float(parts[0].get("x", 0.0)) != 0.0 or float(parts[0].get("y", 0.0)) != 0.0:
+	var top := TypeRef.building(tag).scene.instantiate()
+	var holders: Array[Node3D] = []
+	for part in top.get_children():
+		if part is Node3D and part.get_child_count() > 0 and part.get_child(0) is BodyVisual:
+			holders.append(part)
+	var model := (holders[0].get_child(0) as BodyVisual).model if holders.size() == 1 else ""
+	var plain := holders.size() == 1 and holders[0].transform == Transform3D.IDENTITY
+	top.free()
+	if not plain:
 		return "%s: solo edificios de una pieza sin giro ni desplazamiento" % tag
-	var raw: Array = BodyCatalog.measured(str(parts[0].get("tag", tag))).get("box", [])
+	var raw: Array = BodyCatalog.measured(model).get("box", [])
 	if raw.size() != 6:
 		return "%s: sin caja horneada" % tag
 	var low := Vector3(raw[0], raw[1], raw[2])

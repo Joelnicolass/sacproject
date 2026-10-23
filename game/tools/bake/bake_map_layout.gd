@@ -225,7 +225,7 @@ func _check(plan: Dictionary, ntts: Dictionary, layout_path: String, sides_path:
 				and is_equal_approx(wrapf((node as NpcSpawn).yaw() + deg_to_rad(float(row["facing"])), -PI, PI), 0.0))
 		var shelters := 0
 		for node in root.get_node("Buildings").get_children():
-			if MapBuilding.bldg(str(node.get("tag"))).get("shelter", false):
+			if TypeRef.building(str(node.get("tag"))).shelters_peasants:
 				shelters += 1
 		print("layout: npc %d · edificios %d · refugios %d" % [
 			root.get_node("NpcSpawns").get_child_count(), root.get_node("Buildings").get_child_count(), shelters])

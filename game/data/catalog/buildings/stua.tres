@@ -1,66 +1,10 @@
 [gd_resource type="Resource" script_class="BuildingType" format=3]
 
-[ext_resource type="Script" path="res://scenes/structures/building_type.gd" id="1_qaj83"]
+[ext_resource type="Script" path="res://scenes/structures/building_type.gd" id="1_type"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/stua.tscn" id="2_scene"]
 
 [resource]
-script = ExtResource("1_qaj83")
+script = ExtResource("1_type")
 tag = "stua"
-flags = 2147488775
-ground = true
-tileset = "ST_A"
-folder = "SMOD.WAD!/bild.FLDR"
-components = Array[Dictionary]([{
-"destroyed": "",
-"facing": 0.0,
-"kind": "BASE",
-"spell": "",
-"tag": "crpt",
-"x": 0.0,
-"y": 0.0,
-"z": 0.0
-}, {
-"destroyed": "",
-"facing": 270.0,
-"kind": "PIL1",
-"spell": "",
-"tag": "stu1",
-"x": 30.0,
-"y": 0.0,
-"z": 0.0
-}, {
-"destroyed": "",
-"facing": 0.0,
-"kind": "PIL2",
-"spell": "",
-"tag": "stu1",
-"x": -30.0,
-"y": 0.0,
-"z": 0.0
-}, {
-"destroyed": "",
-"facing": 180.0,
-"kind": "PIL3",
-"spell": "",
-"tag": "stu1",
-"x": 0.0,
-"y": 30.0,
-"z": 0.0
-}, {
-"destroyed": "",
-"facing": 90.0,
-"kind": "PIL4",
-"spell": "",
-"tag": "stu1",
-"x": 0.0,
-"y": -30.0,
-"z": 0.0
-}, {
-"destroyed": "",
-"facing": 0.0,
-"kind": "TOP!",
-"spell": "",
-"tag": "stu2",
-"x": 0.0,
-"y": 0.0,
-"z": 0.0
-}])
+flattens_ground = true
+scene = ExtResource("2_scene")

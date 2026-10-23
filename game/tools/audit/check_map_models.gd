@@ -94,11 +94,8 @@ func _row_xz(row: Dictionary) -> Vector2:
 
 ## The BASE component of a BLDG (what ManafountBody.model() draws), FALLBACK_MODEL when it has none.
 func _base_model(building: BuildingType) -> String:
-	if building != null:
-		for component in building.components:
-			if str(component.get("kind", "")) == "BASE":
-				return str(component.get("tag", ""))
-	return ManafountBody.FALLBACK_MODEL
+	var base := building.base_model() if building != null else ""
+	return base if not base.is_empty() else ManafountBody.FALLBACK_MODEL
 
 
 ## Why `model` would show the placeholder (or an untextured mesh); "" when it has everything.

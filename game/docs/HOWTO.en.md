@@ -71,7 +71,7 @@ A spell is two things: the data and, if it has its own procedure, a scene.
 
 ## A building
 
-- **Type.** `data/catalog/buildings/<tag>.tres` (`BuildingType`: components, max health, whether it gives shelter). It is baked from the original data with `tools/bake/bake_catalog.gd`; a new one can be duplicated by hand.
+- **Type.** `data/buildings/<name>.tres` (`BuildingType`: name, max health, whether it gives shelter, and the scene with the parts in `scenes/structures/buildings/`). A new one is made by duplicating a `.tres` and its scene; «Ajustar a las partes» (on the `Footprint` node) measures the box.
 - **On the map.** Instance `scenes/map/map_building.tscn` under the buildings of the map scene and drag the `.tres` to `building`. Move and rotate it with the gizmo: the transform is the truth and the model shows in the editor. With `max_health` 0 it is indestructible.
 - **As a structure spell** (the Manalith): it is a `SpellType` in the book's `structures` plus an action in `Caster/Actions`; the body is `scenes/structures/structure.tscn`.
 

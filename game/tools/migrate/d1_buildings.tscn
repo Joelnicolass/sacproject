@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://tools/migrate/d1_buildings.gd" id="1_run"]
+
+[node name="D1Buildings" type="Node"]
+script = ExtResource("1_run")

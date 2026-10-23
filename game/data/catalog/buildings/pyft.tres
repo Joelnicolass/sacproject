@@ -1,21 +1,10 @@
 [gd_resource type="Resource" script_class="BuildingType" format=3]
 
-[ext_resource type="Script" path="res://scenes/structures/building_type.gd" id="1_udvbw"]
+[ext_resource type="Script" path="res://scenes/structures/building_type.gd" id="1_type"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyft.tscn" id="2_scene"]
 
 [resource]
-script = ExtResource("1_udvbw")
+script = ExtResource("1_type")
 tag = "pyft"
-flags = 128
 max_health = 10000.0
-tileset = "PY_A"
-folder = "PMOD.WAD!/bild.FLDR"
-components = Array[Dictionary]([{
-"destroyed": "",
-"facing": 0.0,
-"kind": "BASE",
-"spell": "",
-"tag": "pyft",
-"x": 0.0,
-"y": 0.0,
-"z": 0.0
-}])
+scene = ExtResource("2_scene")

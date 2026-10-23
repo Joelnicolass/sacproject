@@ -1,21 +1,12 @@
 [gd_resource type="Resource" script_class="BuildingType" format=3]
 
-[ext_resource type="Script" path="res://scenes/structures/building_type.gd" id="1_ag44r"]
+[ext_resource type="Script" path="res://scenes/structures/building_type.gd" id="1_type"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/e2u_.tscn" id="2_scene"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/e2u__ruin.tscn" id="3_ruin"]
 
 [resource]
-script = ExtResource("1_ag44r")
+script = ExtResource("1_type")
 tag = "e2u_"
-flags = 192
 max_health = 20000.0
-tileset = "char"
-folder = "joby.WAD!/ch_a.FLDR"
-components = Array[Dictionary]([{
-"destroyed": "e2ux",
-"facing": 0.0,
-"kind": "BASE",
-"spell": "",
-"tag": "e2u1",
-"x": 0.0,
-"y": 0.0,
-"z": 0.0
-}])
+scene = ExtResource("2_scene")
+ruin_scene = ExtResource("3_ruin")

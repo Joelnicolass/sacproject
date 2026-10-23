@@ -1,21 +1,10 @@
 [gd_resource type="Resource" script_class="BuildingType" format=3]
 
-[ext_resource type="Script" path="res://scenes/structures/building_type.gd" id="1_s7483"]
+[ext_resource type="Script" path="res://scenes/structures/building_type.gd" id="1_type"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/jeg3.tscn" id="2_scene"]
 
 [resource]
-script = ExtResource("1_s7483")
+script = ExtResource("1_type")
 tag = "jeg3"
-flags = 2147483648
-ground = true
-tileset = "JA_A"
-folder = "JMOD.WAD!/bild.FLDR"
-components = Array[Dictionary]([{
-"destroyed": "",
-"facing": 0.0,
-"kind": "BASE",
-"spell": "",
-"tag": "jeg3",
-"x": 0.0,
-"y": 0.0,
-"z": 0.0
-}])
+flattens_ground = true
+scene = ExtResource("2_scene")

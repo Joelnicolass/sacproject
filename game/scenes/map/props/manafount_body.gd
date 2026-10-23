@@ -8,10 +8,10 @@ extends StaticBody3D
 ## every peer with its manafount_path, so occupy()/release() run on clients and a late joiner sees
 ## the right state. The dedicated process draws nothing (SpriteEmitter.set_active is a no-op there).
 ## RFC-052 052d: the jet loops `fountain_loop` and the Manalith `manalith_loop` (SoundEmitter3D, silent with the gate closed).
-## The model is the BASE component of `building`, the BLDG the map's NTTS row names (jfnt James, cafn Charnel, pfon Pyro,
+## The model is the first part of `building`, the BLDG the map's NTTS row names (jfnt James, cafn Charnel, pfon Pyro,
 ## stmf Stratos, font Persephone = pcfn). Visual only: the collision and the source are the same for every land.
 
-## Drawn when `building` is empty or has no BASE component: the Persephone fountain.
+## Drawn when `building` is empty or has no parts: the Persephone fountain.
 const FALLBACK_MODEL := "pcfn"
 
 ## The fountain's BLDG (data/catalog/buildings/<tag>.tres): drag the land's fountain here; the model shows in the editor.
@@ -46,13 +46,10 @@ func _ready() -> void:
 	_manalith_sound.set_active(false)
 
 
-## The model of this fountain: the BASE component of its BLDG, else FALLBACK_MODEL.
+## The model of this fountain: the first part of its BLDG, else FALLBACK_MODEL.
 func model() -> String:
-	if building != null:
-		for component in building.components:
-			if str(component.get("kind", "")) == "BASE" and not str(component.get("tag", "")).is_empty():
-				return str(component["tag"])
-	return FALLBACK_MODEL
+	var base := building.base_model() if building != null else ""
+	return base if not base.is_empty() else FALLBACK_MODEL
 
 
 func _show_model() -> void:

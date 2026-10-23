@@ -9,7 +9,6 @@ const _CREATURE_TYPE := preload("res://scenes/units/creature_type.gd")
 const _SPELL_TYPE := preload("res://scenes/spells/spell_type.gd")
 const _ABILITY_TYPE := preload("res://scenes/units/abilities/ability_type.gd")
 const _WIZARD_TYPE := preload("res://scenes/wizards/wizard_type.gd")
-const _BUILDING_TYPE := preload("res://scenes/structures/building_type.gd")
 const _BODY_SIZE := preload("res://scenes/bodies/body_size.gd")
 
 const DATA_DIR := "res://assets/original/data/"
@@ -155,20 +154,6 @@ static func make_wizard(row: Dictionary) -> Resource:
 	type.corpse_rise_frames = int(row.get("corpse_rise_frames", 0))
 	type.float_to_stance_frames = int(row.get("float_to_stance_frames", 0))
 	type.stun_animations = row.get("stun_animations", {}) if row.get("stun_animations", {}) is Dictionary else {}
-	return type
-
-
-static func make_building(tag: String, row: Dictionary) -> Resource:
-	var type := _BUILDING_TYPE.new()
-	type.tag = tag
-	type.flags = int(row.get("flags", 0))
-	type.shelter = bool(row.get("shelter", false))
-	type.ground = bool(row.get("ground", false))
-	type.max_health = float(row.get("max_health", 0.0))
-	type.tileset = str(row.get("tileset", ""))
-	type.folder = str(row.get("folder", ""))
-	for component: Variant in row.get("components", []):
-		type.components.append(component if component is Dictionary else {})
 	return type
 
 

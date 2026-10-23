@@ -1,22 +1,13 @@
 [gd_resource type="Resource" script_class="BuildingType" format=3]
 
-[ext_resource type="Script" path="res://scenes/structures/building_type.gd" id="1_2atbu"]
+[ext_resource type="Script" path="res://scenes/structures/building_type.gd" id="1_type"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/mar5.tscn" id="2_scene"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/mar5_ruin.tscn" id="3_ruin"]
 
 [resource]
-script = ExtResource("1_2atbu")
+script = ExtResource("1_type")
 tag = "mar5"
-flags = 2147492040
-ground = true
 max_health = 20000.0
-tileset = "ST_A"
-folder = "SMOD.WAD!/bild.FLDR"
-components = Array[Dictionary]([{
-"destroyed": "mr5x",
-"facing": 0.0,
-"kind": "BASE",
-"spell": "",
-"tag": "mar5",
-"x": 0.0,
-"y": 0.0,
-"z": 0.0
-}])
+flattens_ground = true
+scene = ExtResource("2_scene")
+ruin_scene = ExtResource("3_ruin")

@@ -69,7 +69,7 @@ Un hechizo son dos cosas: el dato y, si tiene procedimiento propio, una escena.
 
 ## Un edificio
 
-- **Tipo.** `data/catalog/buildings/<tag>.tres` (`BuildingType`: componentes, vida máxima, si da refugio). Se hornea desde los datos originales con `tools/bake/bake_catalog.gd`; uno nuevo se puede duplicar a mano.
+- **Tipo.** `data/buildings/<nombre>.tres` (`BuildingType`: nombre, vida máxima, si da refugio y la escena con las partes en `scenes/structures/buildings/`). Uno nuevo se hace duplicando un `.tres` y su escena; «Ajustar a las partes» (en el nodo `Footprint`) mide la caja.
 - **En el mapa.** Instanciá `scenes/map/map_building.tscn` bajo los edificios de la escena del mapa y arrastrá el `.tres` a `building`. Movelo y rotalo con el gizmo: el transform es la verdad y el modelo se ve en el editor. Con `max_health` 0 es indestructible.
 - **Como hechizo de estructura** (el Manalith): es un `SpellType` en `structures` del libro más una acción en `Caster/Actions`; el cuerpo es `scenes/structures/structure.tscn`.
 

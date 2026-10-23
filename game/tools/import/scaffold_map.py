@@ -232,11 +232,17 @@ def map_tscn(ntts: dict, seats: list) -> str:
         return y
 
     out = [MAP_HEAD.format(tag=TAG, layout=layout)]
-    # The BLDG each fount row names (its BASE component is the model ManafountBody draws), right after the head's resources.
+    # data/buildings/<name>.tres: the file is named for humans, the tag is a field inside.
+    bldg_files = {}
+    for f in (ROOT / "data/buildings").glob("*.tres"):
+        m = re.search(r'^tag = "(\w+)"', f.read_text(), re.M)
+        if m:
+            bldg_files[m.group(1)] = f.name
+    # The BLDG each fount row names (its first part is the model ManafountBody draws), right after the head's resources.
     fount_bldgs = sorted({row["tag"] for row in founts})
     cut = out[0].index("\n\n[node ")
     out[0] = out[0][:cut] + "".join(
-        '\n[ext_resource type="Resource" path="res://data/catalog/buildings/%s.tres" id="fbldg_%s"]' % (t, t)
+        '\n[ext_resource type="Resource" path="res://data/buildings/%s" id="fbldg_%s"]' % (bldg_files[t], t)
         for t in fount_bldgs) + out[0][cut:]
     starts = []
     for altar in sorted(altars, key=lambda a: seats.index(a["side"])):

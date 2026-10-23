@@ -43,7 +43,7 @@ func _place(type: BuildingType, row: PackedStringArray, spot: Vector3) -> void:
 	building.position = spot
 	add_child(building)
 	var label := Label3D.new()
-	label.text = "%s\n%s%s\n%s" % [row[0], row[1], "?" if not row[5].is_empty() else "", row[2]]
+	label.text = "%s\n%s%s\n%s%s" % [row[0], row[1], "?" if not row[5].is_empty() else "", row[2], "\n«%s»" % type.display_name if not type.display_name.is_empty() else ""]
 	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	label.no_depth_test = true
 	label.pixel_size = 0.12

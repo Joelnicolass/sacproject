@@ -54,11 +54,13 @@ for f in sorted((ROOT / "data/catalog/spells").glob("*.tres")):
     if m:
         structure_tags |= set(re.findall(r'"(\w+)"', m.group(1)))
 components = {}
-for f in sorted((ROOT / "data/catalog/buildings").glob("*.tres")):
+for f in sorted((ROOT / "data/buildings").glob("*.tres")):
     text = f.read_text()
     tag = field(text, "tag")
-    for model in re.findall(r'"(?:tag|destroyed)": "(\w+)"', text):
-        components.setdefault(model, set()).add(tag)
+    # The parts are BodyVisual nodes in the scenes the type names (scene and ruin_scene).
+    for scene in re.findall(r'type="PackedScene" path="res://([^"]+)"', text):
+        for model in re.findall(r'^model = "(\w+)"', (ROOT / scene).read_text(), re.M):
+            components.setdefault(model, set()).add(tag)
 for model, users in sorted(components.items()):
     kind = "structure" if users & structure_tags else "building"
     rows.append((model, kind, status(model), " ".join(sorted(users))))

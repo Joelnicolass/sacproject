@@ -1,67 +1,13 @@
 [gd_resource type="Resource" script_class="BuildingType" format=3]
 
-[ext_resource type="Script" path="res://scenes/structures/building_type.gd" id="1_s01w0"]
+[ext_resource type="Script" path="res://scenes/structures/building_type.gd" id="1_type"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/mard.tscn" id="2_scene"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/mard_ruin.tscn" id="3_ruin"]
 
 [resource]
-script = ExtResource("1_s01w0")
+script = ExtResource("1_type")
 tag = "mard"
-flags = 2147484288
-ground = true
 max_health = 50000.0
-tileset = "char"
-folder = "joby.WAD!/ch_a.FLDR"
-components = Array[Dictionary]([{
-"destroyed": "mbx3",
-"facing": 0.0,
-"kind": "BASE",
-"spell": "",
-"tag": "marb",
-"x": 0.0,
-"y": 0.0,
-"z": 0.0
-}, {
-"destroyed": "mmx3",
-"facing": 0.0,
-"kind": "MAIN",
-"spell": "MMtp",
-"tag": "marm",
-"x": 0.0,
-"y": 0.0,
-"z": 0.0
-}, {
-"destroyed": "msx3",
-"facing": 45.0,
-"kind": "STR1",
-"spell": "MMst",
-"tag": "mars",
-"x": -20.0,
-"y": -20.0,
-"z": 0.0
-}, {
-"destroyed": "msx3",
-"facing": 135.0,
-"kind": "STR2",
-"spell": "MMst",
-"tag": "mars",
-"x": 20.0,
-"y": -20.0,
-"z": 0.0
-}, {
-"destroyed": "msx3",
-"facing": 225.0,
-"kind": "STR3",
-"spell": "MMst",
-"tag": "mars",
-"x": 20.0,
-"y": 20.0,
-"z": 0.0
-}, {
-"destroyed": "msx3",
-"facing": 315.0,
-"kind": "STR4",
-"spell": "MMst",
-"tag": "mars",
-"x": -20.0,
-"y": 20.0,
-"z": 0.0
-}])
+flattens_ground = true
+scene = ExtResource("2_scene")
+ruin_scene = ExtResource("3_ruin")

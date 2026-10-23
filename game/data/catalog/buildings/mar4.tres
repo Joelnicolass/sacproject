@@ -1,22 +1,13 @@
 [gd_resource type="Resource" script_class="BuildingType" format=3]
 
-[ext_resource type="Script" path="res://scenes/structures/building_type.gd" id="1_dqm4g"]
+[ext_resource type="Script" path="res://scenes/structures/building_type.gd" id="1_type"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/mar4.tscn" id="2_scene"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/mar4_ruin.tscn" id="3_ruin"]
 
 [resource]
-script = ExtResource("1_dqm4g")
+script = ExtResource("1_type")
 tag = "mar4"
-flags = 2147492040
-ground = true
 max_health = 20000.0
-tileset = "PY_A"
-folder = "PMOD.WAD!/bild.FLDR"
-components = Array[Dictionary]([{
-"destroyed": "mr4x",
-"facing": 0.0,
-"kind": "BASE",
-"spell": "",
-"tag": "mar4",
-"x": 0.0,
-"y": 0.0,
-"z": 0.0
-}])
+flattens_ground = true
+scene = ExtResource("2_scene")
+ruin_scene = ExtResource("3_ruin")

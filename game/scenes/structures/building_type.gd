@@ -2,37 +2,40 @@
 class_name BuildingType
 extends Resource
 
-## A BLDG of the original (RFC-036 036c): what a map building is made of and how much it takes to destroy it.
-## Baked once by tools/bake/bake_catalog.gd into data/catalog/buildings/<tag>.tres; MapBuilding reads it through GameCatalog.
-## Never mutated at runtime: HP lives in the building's Health node.
+## What a building of the map is: the name its panel shows, how much it takes to destroy it, whether peasants hide in it
+## and the scene with its parts. One .tres per building in data/buildings/. Never changed while playing: the health lives
+## in the building's Health node. Does not place anything: MapBuilding does.
 
-@export var tag := ""
-## RFC-053 053e (F374): the name the info panel shows («Casa», «Lápida»). Empty: the generic «Edificio».
+## The name the info panel shows («Casa», «Lápida»). Empty: the generic «Edificio».
 @export var display_name := ""
-@export var flags := 0
-## Peasants shelter in it (bit 15).
-@export var shelter := false
-## The land is changed under it and it has no body of its own.
-@export var ground := false
-## 0 = indestructible.
-@export var max_health := 0.0
-@export var tileset := ""
-@export var folder := ""
-## One row per model: kind, tag, destroyed, x, y, z, facing, spell.
-@export var components: Array[Dictionary] = []
+## 0 = cannot be destroyed.
+@export_range(0.0, 20000.0, 1.0, "or_greater") var max_health := 0.0
+## Peasants run to it when they are scared.
+@export var shelters_peasants := false
+## The land is changed under it and it has no body of its own (no collision, not a target).
+@export var flattens_ground := false
+## A Node3D with the parts (BodyVisual under a placed Node3D), a Footprint and, unless it flattens the ground, a VegetationClear.
+@export var scene: PackedScene
+## What stays when it falls: the destroyed models, placed like the parts. Empty: nothing.
+@export var ruin_scene: PackedScene
+## The id the network and the old maps use (jhut, jwg1). Derived: not edited by hand.
+@export var tag := ""
 
 
-## The record shape MapBuilding has always read (numbers as floats, like the JSON parser gave them).
-func to_record() -> Dictionary:
-	var rows: Array = []
-	for component in components:
-		rows.append(component.duplicate(true))
-	return {
-		"flags": float(flags),
-		"shelter": shelter,
-		"ground": ground,
-		"max_health": max_health,
-		"tileset": tileset,
-		"folder": folder,
-		"components": rows,
-	}
+func _validate_property(property: Dictionary) -> void:
+	if property.name == "tag":
+		property.usage |= PROPERTY_USAGE_READ_ONLY
+
+
+## The model of the first part (the base of a fountain). "" when there is no scene.
+func base_model() -> String:
+	if scene == null:
+		return ""
+	var top := scene.instantiate()
+	var model := ""
+	for part in top.get_children():
+		for child in part.get_children():
+			if child is BodyVisual and model.is_empty():
+				model = (child as BodyVisual).model
+	top.free()
+	return model

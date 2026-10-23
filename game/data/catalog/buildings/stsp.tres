@@ -1,20 +1,10 @@
 [gd_resource type="Resource" script_class="BuildingType" format=3]
 
-[ext_resource type="Script" path="res://scenes/structures/building_type.gd" id="1_aaqyw"]
+[ext_resource type="Script" path="res://scenes/structures/building_type.gd" id="1_type"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/stsp.tscn" id="2_scene"]
 
 [resource]
-script = ExtResource("1_aaqyw")
+script = ExtResource("1_type")
 tag = "stsp"
-flags = 5542
 max_health = 5000.0
-folder = "SMOD.WAD!/bild.FLDR"
-components = Array[Dictionary]([{
-"destroyed": "",
-"facing": 0.0,
-"kind": "BASE",
-"spell": "",
-"tag": "sshr",
-"x": 0.0,
-"y": 0.0,
-"z": 0.0
-}])
+scene = ExtResource("2_scene")

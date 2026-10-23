@@ -1,22 +1,13 @@
 [gd_resource type="Resource" script_class="BuildingType" format=3]
 
-[ext_resource type="Script" path="res://scenes/structures/building_type.gd" id="1_n1akn"]
+[ext_resource type="Script" path="res://scenes/structures/building_type.gd" id="1_type"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/mar3.tscn" id="2_scene"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/mar3_ruin.tscn" id="3_ruin"]
 
 [resource]
-script = ExtResource("1_n1akn")
+script = ExtResource("1_type")
 tag = "mar3"
-flags = 2147492040
-ground = true
 max_health = 20000.0
-tileset = "prsc"
-folder = "joby.WAD!/prsc.FLDR"
-components = Array[Dictionary]([{
-"destroyed": "mr3x",
-"facing": 0.0,
-"kind": "BASE",
-"spell": "",
-"tag": "mar3",
-"x": 0.0,
-"y": 0.0,
-"z": 0.0
-}])
+flattens_ground = true
+scene = ExtResource("2_scene")
+ruin_scene = ExtResource("3_ruin")

@@ -32,6 +32,12 @@ func _ready() -> void:
 		return
 	if _inert():
 		return
+	# A scene the flow swaps in (change_scene) enters the tree BEFORE it becomes the current scene, so `_owns_scene()` is
+	# false here and the player's preset would never reach the rig (no vegetation until the options change): wait for it.
+	if not _owns_scene():
+		await get_tree().process_frame
+		if not is_inside_tree():
+			return
 	if prefs == null:
 		push_warning("GraphicsApplier: falta prefs; no se aplica nada.")
 		return

@@ -16,6 +16,8 @@ signal puffed(at: Vector3)
 @export var emitting := true
 ## Puffs owed after a hitch beyond this many are dropped.
 @export_range(1, 16) var max_per_frame := 4
+## Puffs only while the host moves at least this fast, in m/s (a Halo rock trails dust while it chases, not while it orbits). 0 = always.
+@export_range(0.0, 100.0, 0.5, "suffix:m/s") var min_speed_m_s := 0.0
 
 var _clock := 0.0
 var _last := Vector3.INF
@@ -46,6 +48,8 @@ func _process(delta: float) -> void:
 		return
 	var from := here if _last == Vector3.INF else _last
 	_last = here
+	if min_speed_m_s > 0.0 and from.distance_to(here) < min_speed_m_s * delta:
+		return
 	_clock += delta
 	var owed := mini(int(_clock / interval_s), max_per_frame)
 	if owed <= 0:

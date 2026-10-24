@@ -5,6 +5,8 @@ extends MpSpawner
 ## `projectiles` (RFC-041): a new projectile is a scene here, not a line of code.
 
 const DEFAULT_KIND := "Rock"
+## The group the spawner joins, for whoever starts a spell that raises something (a zone).
+const GROUP := &"spell_spawner"
 
 ## Projectile scene by kind. Its root extends SpellProjectile.
 @export var projectiles: Dictionary[String, PackedScene] = {
@@ -12,21 +14,27 @@ const DEFAULT_KIND := "Rock"
 	"Wrath": preload("res://scenes/spells/wrath_strike.tscn"),
 	"Fireball": preload("res://scenes/spells/fireball_projectile.tscn"),
 	"Swarm": preload("res://scenes/spells/swarm_projectile.tscn"),
+	"Dragonfire": preload("res://scenes/spells/carrier/dragonfire.tscn"),
+	"RiftSpirit": preload("res://scenes/spells/zones/rift_spirit.tscn"),
 	"SoulMole": preload("res://scenes/spells/carrier/soul_mole.tscn"),
 	"SoulWind": preload("res://scenes/spells/carrier/soul_wind.tscn"),
 	"AnimateDead": preload("res://scenes/spells/animate_dead/animate_dead_fx.tscn"),
-	"Firewall": preload("res://scenes/spells/walls/firewall.tscn"),
-	"WallOfSpikes": preload("res://scenes/spells/walls/wall_of_spikes.tscn"),
-	"WailingWall": preload("res://scenes/spells/walls/wailing_wall.tscn"),
-	"Vinewall": preload("res://scenes/spells/walls/vinewall.tscn"),
-	"Fence": preload("res://scenes/spells/walls/fence.tscn"),
 }
+## Scenes by kind that point at their SpellType: the zones (Explosion, FrozenGround, DemonicRift; root extends GroundZone) and the walls
+## (Firewall, WallOfSpikes, WailingWall, Vinewall, Fence; root extends SpellWall). Assigned in match.tscn and not preloaded here: the scene
+## points at its SpellType, the SpellType at its action, and the action's script knows this class, so a preload would close the circle.
+@export var zones: Dictionary[String, PackedScene] = {}
 
 var _serial := 0
 
 
+## The spawner of spell projectiles in the world, or null.
+static func of(tree: SceneTree) -> SpellSpawner:
+	return tree.get_first_node_in_group(GROUP) as SpellSpawner
+
+
 func _ready() -> void:
-	add_to_group("spell_spawner")
+	add_to_group(GROUP)
 	spawn_function = _make
 	super._ready()
 
@@ -47,9 +55,9 @@ func spawn_projectile(kind: String, data: Dictionary) -> Node:
 func _make(data: Variant) -> Node:
 	var info: Dictionary = data
 	var kind := str(info.get("kind", DEFAULT_KIND))
-	if not projectiles.has(kind):
+	if not projectiles.has(kind) and not zones.has(kind):
 		push_error("SpellSpawner: no projectile scene for kind «%s», using %s" % [kind, DEFAULT_KIND])
 		kind = DEFAULT_KIND
-	var effect := projectiles[kind].instantiate() as SpellProjectile
+	var effect := (projectiles[kind] if projectiles.has(kind) else zones[kind]).instantiate() as SpellProjectile
 	effect.setup(info)
 	return effect

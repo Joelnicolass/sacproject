@@ -59,9 +59,14 @@ func _ready() -> void:
 		owner_node.health.hit.connect(_on_hit)
 
 
+## The Frozen state of `node`, or null (a body that is not a creature has none).
+static func of(node: Node) -> Frozen:
+	return node.get_node_or_null("Afflictions/Frozen") as Frozen if node else null
+
+
 ## The Frozen state under `node` is on (a body that is not a creature or has none: false).
 static func is_frozen(node: Node) -> bool:
-	var frozen := node.get_node_or_null("Afflictions/Frozen") as Frozen if node else null
+	var frozen := of(node)
 	return frozen != null and frozen.is_on()
 
 

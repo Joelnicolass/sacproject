@@ -37,6 +37,9 @@ scenes/spells/
     [+] wall_vines.gd                    WallVines (MultiMeshInstance3D): 180 lianas (tubo sin huesos; el shader las dobla). ≤110
     [+] wall_spirits.gd                  WallSpirit (Node3D): un espíritu que patrulla el muro; 12 en wailing_wall.tscn. ≤90
     [+] wall_orbit.tscn + wall_orbit.gd  WallOrbit: el espíritu que gira 8 s alrededor del cuerpo cruzado (FxBus.broadcast_scene). ≤70
+    [+] wall_light_follow.gd             WallLightFollow (Node): deja el ActorLight del muro en el punto (o poste) más cercano al oyente y lo prende mientras el muro está en pie. ≤60
+    [+] wall_sound.gd                    WallSound (SoundEmitter3D): un disparo al levantarse o al hundirse, o un lazo mientras está en pie, en el punto del muro más cercano al oyente. ≤60
+    [+] wall_ground.gd                   WallGround (RefCounted, static): el suelo bajo un punto, si un extremo puede pararse ahí, los cuerpos dentro. ≤70
     [+] fence_posts.gd                   FencePosts (Node3D): nacen los postes, flotan y se apagan; dibuja burbuja `bubl` y chispas `cst0`. ≤140
     [+] fence_zap.gd                     FenceZap (Node, servidor): rayos a criaturas, arcos entre postes, descargas al suelo, modelo de carga. ≤140
     [+] wall.gdshaderinc                 el doblado del muro: altura, rampa de extremos, ondulación, suelo
@@ -83,6 +86,7 @@ tools/lint/[~] baseline.txt
 - **Wailing Wall:** el maná llega a 0 en ≤ 62 ticks (aliado o enemigo); pace ×0,75 durante 480 ± 2 ticks.
 - **Vinewall:** el enemigo queda `vined` con `lay_within` (duración = el menor entre el tope del muro y la normal); un aliado no; el segundo cruce antes de los 6 s no vuelve a atar; un `ccProtected` se salta.
 - **Fence:** 12 postes nacen en los ticks 16, 48, …, 176 (dos por vez); un enemigo a ≤10 m de un poste recibe un múltiplo de 625 en 30 s de simulación con la semilla de la suite; uno a >10 m de todos los postes, nada.
+- **Luz:** cada escena de muro trae un `ActorLight` llamado `Light`, sin sombras, con el color de arriba (caso `*_has_its_light` y `*_light_colour`); `WallLightFollow` lo pone donde se ve.
 - **Escenas:** cada acción pide `Pick.GROUND` y no avisa configuración; cada clave está en el spawner; cada escena de muro no avisa; la forma `Body` coincide con el SpellType (`x` = 2·effect_range).
 - **IA:** un mago de la IA con muros en el libro sigue lanzando y la suite de IA sigue verde.
 - El lint no sube; el resto de la suite sigue verde.
@@ -97,7 +101,7 @@ tools/lint/[~] baseline.txt
 - Vinewall: la animación de lianas que cae sobre el blanco al acercarse (≤0,5 · espesor) no se dibuja; el atado sí. La grilla de `pvin` (5 × 6) es una lectura del perfil.
 - Wailing Wall: alto 7,5 m (SPEL) y no los 6 de sacengine; el rayo `ltng` de `sub_4363d0` queda sin dibujar (NO VERIFICADO si es el drenaje).
 - Wall of Spikes: el pincho del golpe se dibuja con `SpikeField` (el lanzamiento original solo dice «sube y baja en 2/3 s»); el brillo especular del pincho lo da el material.
-- Sin luces dinámicas (Firewall 100 m naranja): el brillo sale de los sprites aditivos.
+- Luces (regla del usuario del 2026-10-24: cada hechizo ilumina con su color): un `ActorLight` por muro (`Light`, sin sombras, rango 12-18 m) que `WallLightFollow` deja en el punto del muro más cercano al oyente (en el Fence, en el poste más cercano). Colores: Firewall el naranja (1, 0,5, 0) de la luz del exe (100 m en el exe; acá 18 m, moderado); el resto el dominante de su textura: pinchos `jspk` (0,75; 0,55; 0,35), Wailing Wall `wwal` (0,8; 0,4; 0,28), Vinewall `vine`/`pvin` (0,5; 0,72; 0,25), Fence `bubl` violeta (0,7; 0,55; 1). Los rayos del Fence ya traen su destello (`lightning_flash` del BeamType).
 - Las lianas y los pinchos del muro se generan con una semilla de presentación por muro; cada peer los coloca algo distinto (solo se ven).
 - Grietas SCAR: sin lector, fuera.
 - `WallTouch` es un solo script con knobs para los cuatro efectos (en vez de uno por muro).

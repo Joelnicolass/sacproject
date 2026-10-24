@@ -28,7 +28,7 @@ enum Mode { PATROL, ORBIT }
 @export_range(0.1, 4.0, 0.05) var turns_per_s := 1.0
 @export_range(0.0, 3.0, 0.1, "suffix:m") var gap_m := 0.5
 
-var _rng := RandomNumberGenerator.new()
+var _rng: RandomNumberGenerator
 var _mesh := ImmediateMesh.new()
 var _here := Vector3.ZERO
 var _going := Vector3.ZERO
@@ -45,7 +45,7 @@ func _ready() -> void:
 	if (mode == Mode.PATROL and wall == null) or type == null or DisplayServer.get_name() == "headless":
 		set_process(false)
 		return
-	_rng.seed = hash(name) ^ index
+	_rng = MatchSeed.rng(["wall_spirit", String(name), index])
 	top_level = true
 	global_transform = Transform3D.IDENTITY
 	mesh = _mesh

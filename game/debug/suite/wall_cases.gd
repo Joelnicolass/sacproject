@@ -8,6 +8,7 @@ extends RefCounted
 const WORLD := preload("res://debug/suite/soul_world.gd")
 const WALLS := {"lwrf": "pyro", "laws": "james", "laww": "charnel", "lawv": "persephone", "cnef": "stratos"}
 const KINDS := {"lwrf": "Firewall", "laws": "WallOfSpikes", "laww": "WailingWall", "lawv": "Vinewall", "cnef": "Fence"}
+const SCENES := {"Firewall": "firewall", "WallOfSpikes": "wall_of_spikes", "WailingWall": "wailing_wall", "Vinewall": "vinewall", "Fence": "fence"}
 const HEIGHTS := {"lwrf": 7.5, "laws": 5.0, "laww": 7.5, "lawv": 7.5, "cnef": 5.5}
 ## The colour of the light each wall carries: the exe's orange for the Firewall, the dominant of the picture for the rest.
 const LIGHTS := {"lwrf": Color(1, 0.5, 0), "laws": Color(0.75, 0.55, 0.35), "laww": Color(0.8, 0.4, 0.28), "lawv": Color(0.5, 0.72, 0.25), "cnef": Color(0.7, 0.55, 1)}
@@ -19,6 +20,9 @@ var _w := WORLD.new()
 
 func run(host: Node3D) -> Dictionary:
 	_w.build(host, "WallCases")
+	var spawner := _w.root.get_node("SpellSpawner") as SpellSpawner
+	for kind in KINDS.values():
+		spawner.zones[kind] = load("res://scenes/spells/walls/%s.tscn" % SCENES[kind]) as PackedScene
 	var out := {}
 	out["wall_rules"] = _rules()
 	out["wall_scenes"] = _scenes()
@@ -63,14 +67,14 @@ func _rules() -> Dictionary:
 ## and thickness, no configuration warnings, and every wall is in the book of its god.
 func _scenes() -> Dictionary:
 	var checks := {}
-	var spawner := SpellSpawner.new()
+	var match_text := FileAccess.get_file_as_string("res://scenes/match/match.tscn")
 	for tag in WALLS:
 		var spell := GameData.spell(tag)
 		var action := (spell.action.instantiate() as SpellAction) if spell != null and spell.action != null else null
 		checks[tag + "_action"] = action is WallAction and _with_tag(action, tag) and action.pick == SpellAction.Pick.GROUND and action._get_configuration_warnings().is_empty()
-		var scene := spawner.projectiles.get(KINDS[tag]) as PackedScene
+		var scene := load("res://scenes/spells/walls/%s.tscn" % SCENES[KINDS[tag]]) as PackedScene
 		var wall := scene.instantiate() as SpellWall if scene != null else null
-		checks[tag + "_kind_in_spawner"] = wall != null and action is WallAction and (action as WallAction).wall_kind == KINDS[tag]
+		checks[tag + "_kind_in_spawner"] = wall != null and action is WallAction and (action as WallAction).wall_kind == KINDS[tag] and match_text.contains("walls/%s.tscn" % SCENES[KINDS[tag]])
 		if wall != null:
 			var size := (wall.body.shape as BoxShape3D).size
 			checks[tag + "_warnings"] = wall._get_configuration_warnings().is_empty()
@@ -86,7 +90,6 @@ func _scenes() -> Dictionary:
 			action.free()
 		var god := GameData.god(WALLS[tag])
 		checks[tag + "_in_the_book"] = god != null and god.book.spells.has(spell)
-	spawner.free()
 	return _w.verdict("wall_scenes", checks)
 
 

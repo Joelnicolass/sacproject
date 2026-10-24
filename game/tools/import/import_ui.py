@@ -88,6 +88,22 @@ EXTRA_FX = {
     "lthg": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
     "lth2": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
     "cfx1": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
+    # RFC 061e: the exe's own bolt texture (ltng, deeper blue than ltn2; Chain Lightning's SPEL says ltn2: a knob), Rainbow's bands (rnbw)
+    # and the fireball sprite of Dragonfire's trail (fbal).
+    "ltng": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
+    "rnbw": ("main.wad", "MAIN.WAD!/bits.FLDR"),
+    # RFC 061f (SPEL): Explosion's casting balls (exeg), its blast particles (xplo 5x5, exp2), ash (frck), smoke (smok) and fireball (fbal); Demonic Rift's
+    # edge (rif2), swirl (rif3) and spirit trail (rift); Healing Aura's sphere (haur). cfx1 (Rift's cast) came with 061c.
+    "exeg": ("charlie.wad", "Bloo.WAD!/Pyro.FLDR/txtr.FLDR"),
+    "frck": ("charlie.wad", "Bloo.WAD!/Pyro.FLDR/txtr.FLDR"),
+    "smok": ("charlie.wad", "Bloo.WAD!/Pyro.FLDR/txtr.FLDR"),
+    "xplo": ("main.wad", "MAIN.WAD!/bits.FLDR"),
+    "exp2": ("main.wad", "MAIN.WAD!/bits.FLDR"),
+    "fbal": ("main.wad", "MAIN.WAD!/bits.FLDR"),
+    "rif2": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
+    "rif3": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
+    "rift": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
+    "haur": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
     # RFC 061d: Animate Dead's streams (and2, 1x8 strip) and burst (cfx1); Soul Wind's funnel (swnd) and dust trail (wdst).
     "and2": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
     "swnd": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),

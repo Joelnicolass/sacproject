@@ -18,6 +18,11 @@ extends Resource
 @export_range(0.005, 0.5, 0.001, "suffix:s") var frame_s := 2.0 / 60.0
 
 @export_group("Shape")
+enum Path { BOLT, ARC }
+## BOLT: the jagged bolt of sacengine's Lightning. ARC: a vertical half circle from end to end, with no jitter (Rainbow).
+@export var path := Path.BOLT
+## ARC: the height of the middle of the arc as a share of the distance between the ends (0.5 = a half circle).
+@export_range(0.0, 2.0, 0.05) var arc_height := 0.5
 ## Bolts drawn at once between the same ends, each with its own shape (sacengine `bolts[2]`).
 @export_range(1, 4) var bolts := 2
 ## Straight pieces of a bolt (sacengine numLightningSegments 10: 11 points).
@@ -51,6 +56,13 @@ enum Blend { ADD, MIX }
 ## Meters over which the ribbon fades in front of the scene depth (with the preset's `fx_soft_particles`).
 @export_range(0.0, 4.0, 0.05, "suffix:m") var soft_distance_m := 0.3
 
+@export_group("Tip sparks")
+## Sprites that stay behind the tip while it travels (Rainbow's glow). Optional: empty = none. A ParticleType under data/fx/.
+@export var tip_type: ParticleType
+@export_range(1.0, 240.0, 1.0, "suffix:/s") var tip_per_s := 60.0
+## Radius of the ball around the tip they are born in.
+@export_range(0.0, 3.0, 0.05, "suffix:m") var tip_spread_m := 0.7
+
 @export_group("Flash and pool")
 ## Light at the end when the tip arrives, from the rig's FxLightLayer. Empty = no flash.
 @export var light: FxLightSpec
@@ -75,3 +87,8 @@ func span_at(t: float) -> Vector2:
 	if t > life_s - travel_s:
 		return Vector2(clampf((t - (life_s - travel_s)) / travel_s, 0.0, 1.0), 1.0)
 	return Vector2(0.0, 1.0)
+
+
+## The name FxBus plays this type by: its file under data/fx/beams/ without the extension.
+func fx_name() -> String:
+	return resource_path.trim_prefix("res://data/fx/beams/").get_basename()

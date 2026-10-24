@@ -16,6 +16,10 @@ extends Node
 @export var tags: PackedStringArray = PackedStringArray(["nmuh", "ycro"])
 @export var spots: PackedVector2Array = PackedVector2Array([Vector2(0.0, 40.0), Vector2(0.0, 60.0)])
 @export var enemy_slot := 2
+## Health they start with, as a share of their maximum (Rainbow's allies stand hurt).
+@export_range(0.01, 1.0, 0.01) var start_health_share := 1.0
+## The share rises by this per creature, from the first (Rainbow picks the lowest health first).
+@export_range(0.0, 0.2, 0.005) var health_share_step := 0.0
 @export var building_tags: PackedStringArray = PackedStringArray()
 @export var building_spots: PackedVector2Array = PackedVector2Array()
 ## Empty: the wizard keeps the picked god. Picked like boot does, before the world spawns him.
@@ -70,7 +74,14 @@ func _spawn(tag: String, index: int, at: Vector3, facing: Vector3) -> Node3D:
 	unit.global_position = at
 	unit.rotation.y = atan2(facing.x, facing.z)
 	unit.get_node("Health").hurt.connect(_on_hurt.bind(unit))
+	if start_health_share < 1.0 or health_share_step > 0.0:
+		_wound.call_deferred(unit, minf(1.0, start_health_share + health_share_step * float(index)))
 	return unit
+
+
+func _wound(unit: Node3D, share: float) -> void:
+	var health := unit.get_node("Health") as Health
+	health.current = health.maximum * share
 
 
 func _place_building(tag: String, index: int, at: Vector3) -> Node3D:

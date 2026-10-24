@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="BeamType" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/beam_type.gd" id="1_type"]
+[ext_resource type="PackedScene" path="res://scenes/fx/beam_fx.tscn" id="2_scene"]
+[ext_resource type="Resource" path="res://data/fx/rainbow_tip.tres" id="3_tip"]
+[ext_resource type="Resource" path="res://data/fx/lights/heal_glow.tres" id="4_light"]
+
+[resource]
+script = ExtResource("1_type")
+scene = ExtResource("2_scene")
+atlas_tag = "rnbw"
+h_frames = 1
+v_frames = 1
+path = 1
+arc_height = 0.5
+bolts = 1
+segments = 31
+width_m = 0.7
+jitter_m = 0.0
+change_s = 1.0
+life_s = 2.667
+travel_s = 1.067
+energy_min = 10.0
+energy_max = 10.0
+tip_type = ExtResource("3_tip")
+tip_per_s = 60.0
+tip_spread_m = 0.7
+light = ExtResource("4_light")
+pool_max = 8

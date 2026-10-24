@@ -106,3 +106,6 @@ tools/lint/[~] baseline.txt
 
 ## Orden
 `Soul.carrier`/`release_to` → `CarrierPath` y `SpellCarrier` → `SoulFetch` y `CarrierPulse` → `SoulAction` y los `.tres` → `spell_command` (clic sobre alma) → casos de suite del viaje (headless, sin look) → `AnimateDeadAction` → casos → arte (assets, partículas, embudo, estelas) → debug, `match_shots` y lint.
+
+## Nota del merge con 061e
+`SpellCarrier` ahora tiene `motion` (SOUL_TRIP es el de este plan, sin cambios de comportamiento; GUIDED es el dragon de Dragonfire) y `arm(target := null)`. `CarrierPath` suma `spiral` y `turned`. Ver `061e-chain-plan.md`.

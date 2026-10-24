@@ -13,8 +13,9 @@ const RAMP_POINTS := 25
 @export var size: Vector2 = Vector2.ONE
 ## Color multiplier of the original shadeless material (HDR).
 @export var energy: float = 1.0
-## Seconds each atlas frame stays on screen (delay * 2 / 60 in sacengine).
-@export var frame_s: float = 1.0 / 30.0
+## Seconds each atlas frame stays on screen.
+## Ref: delay * 2 / 60 in sacengine.
+@export var frame_s: float = 0.0333
 @export var lifetime_s: float = 1.0
 ## Downward acceleration in m/s². sacengine uses 15 when gravity is on.
 @export var gravity: float = 0.0

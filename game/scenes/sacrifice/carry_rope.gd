@@ -18,7 +18,7 @@ extends Node3D
 ## Sparks at the needle tip (data/fx/needle.tres). Empty = none. sacengine: 2 per tick (120/s).
 @export var spark_type: ParticleType
 ## Seconds between bursts of `spark_count`. 120/s in the original; bursts of 4 every 1/30 s are about as many.
-@export_range(0.01, 1.0, 0.01) var spark_period_s := 1.0 / 30.0
+@export_range(0.01, 1.0, 0.0001, "suffix:s") var spark_period_s := 0.0333
 
 var _spark_left := 0.0
 

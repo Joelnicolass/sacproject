@@ -10,7 +10,7 @@ extends Node
 @export var aura: BodyAura
 ## What is drawn on the victim. Must live under data/fx/ (FxBus finds it by its file name there).
 @export var type: ParticleType
-@export_range(0.05, 5.0, 0.05, "suffix:s") var every_s := 1.0 / 3.0
+@export_range(0.05, 5.0, 0.0001, "suffix:s") var every_s := 0.3333
 
 ## Victim instance id -> MatchClock tick before which it is not marked again.
 var _next := {}

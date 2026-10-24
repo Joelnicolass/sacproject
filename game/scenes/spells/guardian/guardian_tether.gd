@@ -29,8 +29,9 @@ enum Phase { APPEARING, STEADY, WITHDRAWING_AT_BUILDING, WITHDRAWING_AT_CREATURE
 @export var atlas_tag := "grdn"
 ## Brightness (SacGuardianTether material energy, renderer.d:257).
 @export var energy := 5.0
-## Seconds per atlas cell (2 ticks of 60 per second).
-@export var frame_s := 2.0 / 60.0
+## Seconds per atlas cell.
+## Ref: 2 ticks of the original's 60 per second.
+@export_range(0.005, 0.5, 0.0001, "suffix:s") var frame_s := 0.0333
 @export var appear_s := 1.0
 @export var reshape_s := 1.0
 @export var withdraw_s := 1.0

@@ -14,8 +14,9 @@ extends Resource
 @export var atlas_tag := "ltn2"
 @export_range(1, 8) var h_frames := 4
 @export_range(1, 8) var v_frames := 4
-## Seconds each atlas cell stays (sacengine 2 ticks: getFrame(i / updateAnimFactor)).
-@export_range(0.005, 0.5, 0.001, "suffix:s") var frame_s := 2.0 / 60.0
+## Seconds each atlas cell stays.
+## Ref: sacengine 2 ticks, getFrame(i / updateAnimFactor).
+@export_range(0.005, 0.5, 0.0001, "suffix:s") var frame_s := 0.0333
 
 @export_group("Shape")
 enum Path { BOLT, ARC }
@@ -31,15 +32,18 @@ enum Path { BOLT, ARC }
 @export_range(0.01, 2.0, 0.01, "suffix:m") var width_m := 0.3
 ## Side of the box each inner point is pushed within, meters (sacengine changeShape size 2.5).
 @export_range(0.0, 10.0, 0.05, "suffix:m") var jitter_m := 2.5
-## Seconds between two shapes (sacengine changeShapeDelay 6 ticks).
-@export_range(0.01, 1.0, 0.001, "suffix:s") var change_s := 6.0 / 60.0
+## Seconds between two shapes.
+## Ref: sacengine changeShapeDelay 6 ticks.
+@export_range(0.01, 1.0, 0.0001, "suffix:s") var change_s := 0.1
 
 @export_group("Timing")
-## Seconds the beam lasts (sacengine Lightning.totalFrames 64 ticks ≈ 1.07 s).
-@export_range(0.05, 5.0, 0.001, "suffix:s") var life_s := 64.0 / 60.0
-## Seconds the tip takes to reach the end, and the tail to leave the start at the close
-## (sacengine travelDelay 12 ticks). The flash goes off when the tip arrives.
-@export_range(0.0, 2.0, 0.001, "suffix:s") var travel_s := 12.0 / 60.0
+## Seconds the beam lasts.
+## Ref: sacengine Lightning.totalFrames 64 ticks.
+@export_range(0.05, 5.0, 0.0001, "suffix:s") var life_s := 1.0666
+## Seconds the tip takes to reach the end, and the tail to leave the start at the close. The flash goes off when the tip
+## arrives.
+## Ref: sacengine travelDelay 12 ticks.
+@export_range(0.0, 2.0, 0.0001, "suffix:s") var travel_s := 0.2
 
 @export_group("Look")
 enum Blend { ADD, MIX }

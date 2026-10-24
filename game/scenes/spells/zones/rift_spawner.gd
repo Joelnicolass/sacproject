@@ -9,7 +9,7 @@ extends Node
 
 @export var zone: GroundZone
 @export_range(1, 64) var max_spirits := 24
-@export_range(0.05, 5.0, 0.01, "suffix:s") var every_s := 1.0 / 3.0
+@export_range(0.05, 5.0, 0.0001, "suffix:s") var every_s := 0.3333
 ## The wait after a spirit that found no creature.
 @export_range(0.05, 5.0, 0.01, "suffix:s") var retry_s := 1.0
 ## The spirit comes out of the rift's edge, this share of the rift's radius from its middle, toward its target.

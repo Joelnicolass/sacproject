@@ -16,7 +16,7 @@ const SPRITES := preload("res://scenes/fx/sprite_particles.tscn")
 ## One drop of the vortex (data/fx/red_vortex.tres): falls from the ring, 2 per tick in the original.
 @export var effect: ParticleType
 ## Seconds between bursts of `effect.count` drops. Original: 2 drops per tick (120/s).
-@export_range(0.01, 1.0, 0.01) var pulse_s := 1.0 / 30.0
+@export_range(0.01, 1.0, 0.0001, "suffix:s") var pulse_s := 0.0333
 ## Drops start once the ring is this open (state.d:15465: scale > 0.3).
 @export_range(0.0, 1.0, 0.05) var drops_after := 0.3
 ## Where the drops come out under the center, as a fraction of the radius (state.d:15471: -0.8).

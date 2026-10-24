@@ -48,7 +48,8 @@ const UV_INSET := 0.5 / 64.0
 ## Multiplies the whole brightness. 1 = sacengine's numbers.
 @export_range(0.0, 4.0, 0.01) var energy_scale := 1.0
 @export var pulse := true
-@export_range(0.005, 0.5, 0.001) var frame_s := 2.0 / 60.0
+## Ref: 2 ticks of the original per atlas cell.
+@export_range(0.005, 0.5, 0.0001, "suffix:s") var frame_s := 0.0333
 @export var fallback_color := Color(0.4, 0.8, 1.0)
 
 var _material: ShaderMaterial

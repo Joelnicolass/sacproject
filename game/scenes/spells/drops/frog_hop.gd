@@ -11,7 +11,7 @@ extends Node
 @export_range(0.0, 5.0, 0.05, "suffix:s") var sit_s := 0.5
 @export_range(1, 20) var max_jumps := 7
 ## After its last jump starts, the frog bursts this long into it.
-@export_range(0.0, 3.0, 0.01, "suffix:s") var burst_after_s := 1.0 / 3.0
+@export_range(0.0, 3.0, 0.0001, "suffix:s") var burst_after_s := 0.3333
 @export_group("Jump")
 ## Toward a creature: speed along the line (plus a wobble), and the cap of the upward speed.
 @export_range(0.0, 30.0, 0.1, "suffix:m/s") var toward_speed := 4.5

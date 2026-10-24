@@ -9,7 +9,7 @@ extends ChainEffect
 ## The bolt (lightning_strike.tscn).
 @export var strike_scene: PackedScene
 ## Seconds from the bolt leaving to its damage.
-@export_range(0.0, 1.0, 0.001, "suffix:s") var travel_s := 12.0 / 60.0
+@export_range(0.0, 1.0, 0.0001, "suffix:s") var travel_s := 0.2
 ## The BeamType every bolt draws (res://data/fx/beams/): ltn2 (the SPEL) or ltng (the exe).
 @export var beam: BeamType
 ## The burst where a bolt hurts.

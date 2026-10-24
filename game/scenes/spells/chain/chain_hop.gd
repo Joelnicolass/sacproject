@@ -17,7 +17,7 @@ signal landed(body: Node3D, point: Vector3, index: int)
 ## Hits in total, the first included.
 @export_range(1, 12) var hits := 7
 ## Seconds from a jump leaving to its landing. 0 = the owner drives the chain.
-@export_range(0.0, 5.0, 0.001, "suffix:s") var hop_s := 20.0 / 60.0
+@export_range(0.0, 5.0, 0.0001, "suffix:s") var hop_s := 0.3333
 ## After hit n the search radius is (shrink_steps - n) / shrink_steps of the spell's effect range. 0 = it stays whole.
 @export_range(0, 12) var shrink_steps := 6
 ## Jump to own side (Rainbow) or to whoever is not an ally (Chain Lightning, Dragonfire).

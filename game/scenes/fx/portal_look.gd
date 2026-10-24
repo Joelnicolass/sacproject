@@ -13,8 +13,9 @@ extends Resource
 ## Color multiplier of the shadeless material (HDR). sacengine: rim 10, center 1 (renderer.d:222-239).
 @export_range(0.0, 40.0, 0.1) var rim_energy := 10.0
 @export_range(0.0, 40.0, 0.1) var center_energy := 1.0
-## Seconds each of the 16 atlas cells stays (2 ticks at 60 Hz: 0.53 s per cycle, sacobject.d:4101-4105).
-@export_range(0.005, 0.5, 0.001) var frame_s := 2.0 / 60.0
+## Seconds each of the 16 atlas cells stays (0.53 s per cycle).
+## Ref: 2 ticks at 60 Hz, sacobject.d:4101-4105.
+@export_range(0.005, 0.5, 0.0001, "suffix:s") var frame_s := 0.0333
 ## Inner radius of the ring as a fraction of the outer one: thickness 0.35 (sacobject.d:4079).
 @export_range(0.05, 0.95, 0.01) var inner_ratio := 0.65
 ## The ring texture is mirrored this many times around it (16 cells of the zigzag, sacobject.d:4062-4093).

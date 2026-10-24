@@ -12,7 +12,7 @@ const UV_INSET := 0.5 / 256.0
 ## The look: atlas strip (`h_frames` x `v_frames`), segments, width of the fins, frame time and brightness.
 @export var type: BeamType
 ## Seconds the head takes to go from the wizard to the creature (and the tail to arrive after it).
-@export_range(0.1, 10.0, 0.01, "suffix:s") var travel_s := 128.0 / 60.0
+@export_range(0.1, 10.0, 0.0001, "suffix:s") var travel_s := 2.1333
 ## The part of the curve that shows at once, between these two fractions (each stream picks its own).
 @export var length_range := Vector2(0.15, 0.5)
 ## How steeply the stream leaves the wizard and falls on the creature (up and down, against the random side push).

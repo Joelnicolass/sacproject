@@ -137,9 +137,10 @@ extends Resource
 ## (dealRawDamage, state.d:9007-9008).
 @export var guardian_spell_factor: float = 0.5
 @export var guardian_ranged_factor: float = 0.25
-## It heals 1000 per minute on top of its own regeneration (`1000.0f/(60*updateFPS)` per update,
-## state.d:14408), i.e. 16.667 per second.
-@export var guardian_heal_per_s: float = 1000.0 / 60.0
+## It heals 1000 per minute on top of its own regeneration: 16.667 per second, written to the last digit because the
+## simulation multiplies it by the tick's delta.
+## Ref: `1000.0f/(60*updateFPS)` per update, state.d:14408.
+@export var guardian_heal_per_s: float = 16.666666666666668
 ## Farther than this from the post's attach point the guardian gets a move order back (state.d:15366)
 ## to this distance from the building (state.d:15368). sacengine leaves `TODO: bind creature to
 ## building` there (state.d:15393): the hard leash of the original is not verified.
@@ -149,11 +150,12 @@ extends Resource
 @export_group("Teleport")
 # 021c (numbers follow sacengine, `sacengine/source/state.d`; none checked against Sacrifice.exe). The carry radius and
 # the distance to the building are the spell's effect_range (SpellType, 30).
-## Each body that jumps sends rings out of its box for this long, at both ends (teleportEffectLifetime = 32 frames,
-## state.d:16074). Presentation.
-@export var teleport_effect_s: float = 32.0 / 60.0
-## Each ring lives this long (teleportRingLifetime = 48 frames, state.d:16095).
-@export var teleport_ring_s: float = 48.0 / 60.0
+## Each body that jumps sends rings out of its box for this long, at both ends. Presentation.
+## Ref: teleportEffectLifetime = 32 frames, state.d:16074.
+@export var teleport_effect_s: float = 0.5333
+## Each ring lives this long.
+## Ref: teleportRingLifetime = 48 frames, state.d:16095.
+@export var teleport_ring_s: float = 0.8
 ## A ring rises this much over its life (Vector3(0, 0, 0.25) / teleportRingLifetime per frame, state.d:16097).
 @export var teleport_ring_rise: float = 0.25
 

@@ -17,7 +17,7 @@ const GROUP := &"rift_spirit"
 @export var spawn_sound: SoundEmitter3D
 @export_group("Flight")
 ## It flies straight out for this long before it steers.
-@export_range(0.0, 3.0, 0.05, "suffix:s") var launch_s := 1.0 / 3.0
+@export_range(0.0, 3.0, 0.0001, "suffix:s") var launch_s := 0.3333
 ## How low over the land it skims, and how near the goal counts as arriving.
 @export_range(0.0, 3.0, 0.05, "suffix:m") var skim_m := 0.3
 @export_range(0.1, 5.0, 0.1, "suffix:m") var arrive_m := 1.0

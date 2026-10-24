@@ -1,6 +1,6 @@
 """Runs INSIDE Blender (`blender --background --python blender_dfir.py -- data.json out.glb`), started by import_dragonfire.py.
 
-Builds the dragon of Dragonfire: frame 0 is the mesh, frames 1..4 are shape keys (f1..f4), two materials named after the texture labels.
+Builds the dragon of Dragonfire (or, with "name" in the json, any model of frames: import_morph_models.py): frame 0 is the mesh, frames 1..4 are shape keys (f1..f4), two materials named after the texture labels.
 Positions in the json are in Godot's axes (x right, y up, z forward); Blender is Z-up and its glTF exporter maps (x, y, z) to
 (x, z, -y), so a vertex goes in as (x, -z, y) and comes out unchanged.
 """
@@ -22,7 +22,8 @@ def blender_axes(p):
 
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
-mesh = bpy.data.meshes.new("Dragon")
+name = data.get("name", "Dragon")
+mesh = bpy.data.meshes.new(name)
 mesh.from_pydata([blender_axes(p) for p in frames[0]], [], [(f[0], f[1], f[2]) for f in faces])
 mesh.update()
 for label in labels:
@@ -34,7 +35,7 @@ for polygon, face in zip(mesh.polygons, faces):
 layer = mesh.uv_layers.new(name="UVMap")
 for loop in mesh.loops:
     layer.data[loop.index].uv = uvs[loop.vertex_index]
-obj = bpy.data.objects.new("Dragon", mesh)
+obj = bpy.data.objects.new(name, mesh)
 bpy.context.scene.collection.objects.link(obj)
 bpy.context.view_layer.objects.active = obj
 obj.shape_key_add(name="Basis")

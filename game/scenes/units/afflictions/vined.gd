@@ -36,21 +36,29 @@ func inflict(spell: SpellType, _from_slot: int) -> bool:
 	return grasp(spell)
 
 
+## The Vinewall's grasp: its length is the usual share (wizard 0.25, creature 1000 / health) of `max_s`, the wall's remaining time, and never more
+## than `max_s` (sacengine vinewallGraspingVines, state.d:20370-20383).
+func lay_within(spell: SpellType, _from_slot: int, max_s: float) -> bool:
+	return grasp(spell, max_s)
+
+
 func lay_ticks(spell: SpellType) -> int:
 	var health := _afflictions().health
 	return cc_ticks(_body().is_in_group(&"wizard"), health.maximum if health else 0.0, spell.duration, creature_k, wizard_factor) if _body() != null else 0
 
 
 ## Server (or solo): sacengine graspingVines(target, spell). True when the vines took hold (a flier refuses them).
-func grasp(spell: SpellType) -> bool:
+func grasp(spell: SpellType, max_s := INF) -> bool:
 	var body := _body()
 	var owner_node := _afflictions()
 	if body == null or spell == null or not _simulates() or BodyNudge.airborne(body):
 		return false
 	if owner_node.health != null and owner_node.health.is_dead():
 		return false
-	var ticks := cc_ticks(body.is_in_group(&"wizard"), owner_node.health.maximum if owner_node.health else 0.0, spell.duration,
-		creature_k, wizard_factor)
+	var seconds := spell.duration if is_inf(max_s) else max_s
+	var ticks := cc_ticks(body.is_in_group(&"wizard"), owner_node.health.maximum if owner_node.health else 0.0, seconds, creature_k, wizard_factor)
+	if not is_inf(max_s):
+		ticks = mini(ticks, ceili(float(MatchClock.TICKS_PER_SECOND) * max_s))
 	if ticks <= 0 or not owner_node.admit(self):
 		return false
 	var now := MatchClock.now()

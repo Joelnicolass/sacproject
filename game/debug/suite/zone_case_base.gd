@@ -43,6 +43,8 @@ func begin(host: Node3D, world_name: String) -> void:
 	_spawner.zones["Erupt"] = load("res://scenes/spells/zones/erupt_zone.tscn") as PackedScene
 	for kind in CLOUDS:
 		_spawner.zones[kind] = load("res://scenes/spells/zones/%s.tscn" % CLOUDS[kind]) as PackedScene
+	_spawner.zones["Meanstalks"] = load("res://scenes/spells/stalks/meanstalks.tscn") as PackedScene
+	_spawner.zones["Tornado"] = load("res://scenes/spells/tornado/tornado.tscn") as PackedScene
 	_root.add_child(_spawner)
 	## Where a Cloudkill's bolts are born (LightningStrike.launch looks for the group and its spawn_path).
 	var shots := Node3D.new()

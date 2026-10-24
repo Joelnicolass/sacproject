@@ -26,12 +26,16 @@ const WARD_CASES := preload("res://debug/suite/ward_cases.gd")  # 061b
 const CHAIN_CASES := preload("res://debug/suite/chain_cases.gd")  # 061e
 const CONTROL_CASES := preload("res://debug/suite/control_cases.gd")  # 061c
 const ZONE_CASES := preload("res://debug/suite/zone_cases.gd")  # 061f
+const LEVEL8_CASES := preload("res://debug/suite/level8_cases.gd")  # 061i
 const RIFT_CASES := preload("res://debug/suite/rift_cases.gd")  # 061f
 const AURA_CASES := preload("res://debug/suite/aura_cases.gd")  # 061f
 const TERRAIN_CASES := preload("res://debug/suite/terrain_cases.gd")  # 061k
+const STALK_CASES := preload("res://debug/suite/stalk_cases.gd")  # 061j
+const TORNADO_CASES := preload("res://debug/suite/tornado_cases.gd")  # 061j
 const CLOUD_CASES := preload("res://debug/suite/cloud_cases.gd")  # 061h
 const SOUL_CASES := preload("res://debug/suite/soul_cases.gd")  # 061d
 const ANIMATE_DEAD_CASES := preload("res://debug/suite/animate_dead_cases.gd")  # 061d
+const WALL_CASES := preload("res://debug/suite/wall_cases.gd")  # 061g
 const SCAR_CASES := preload("res://debug/suite/scar_cases.gd")  # 061k-5
 const BIOME_CASES := preload("res://debug/suite/biome_cases.gd")
 const SPELL_LIGHT_CASES := preload("res://debug/suite/spell_light_cases.gd")  # 061 light pass
@@ -85,12 +89,16 @@ func _run_suite() -> void:
 	_results.merge(await CHAIN_CASES.new().run(self))  # 061e
 	_results.merge(await CONTROL_CASES.new().run(self))  # 061c
 	_results.merge(await ZONE_CASES.new().run(self))  # 061f
+	_results.merge(await LEVEL8_CASES.new().run(self))  # 061i
 	_results.merge(await RIFT_CASES.new().run(self))  # 061f
 	_results.merge(await AURA_CASES.new().run(self))  # 061f
 	_results.merge(await TERRAIN_CASES.new().run(self))  # 061k
+	_results.merge(await STALK_CASES.new().run(self))  # 061j
+	_results.merge(await TORNADO_CASES.new().run(self))  # 061j
 	_results.merge(await CLOUD_CASES.new().run(self))  # 061h
 	_results.merge(await SOUL_CASES.new().run(self))  # 061d
 	_results.merge(await ANIMATE_DEAD_CASES.new().run(self))  # 061d
+	_results.merge(await WALL_CASES.new().run(self))  # 061g
 	_results.merge(SCAR_CASES.new().run(self))  # 061k-5
 	_results.merge(BIOME_CASES.new().run(self))
 	_results.merge(SPELL_LIGHT_CASES.new().run(self))  # 061 light pass

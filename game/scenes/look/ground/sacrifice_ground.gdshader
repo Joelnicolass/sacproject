@@ -4,6 +4,21 @@ shader_type spatial;
 render_mode cull_disabled;
 
 uniform sampler2D atlas : filter_linear_mipmap, repeat_enable;
+// Pixels per tile side in the atlas (16x16 tiles). The lookup stays half a pixel inside the tile so the filter never
+// reads the tile next to it in the atlas: each tile is clamped to its own edge, like a texture of its own.
+const float TILE_PX = 64.0;
+// The fine grain of the ground (stones, leaves, cracks): one grey layer per kind of ground, stretched over each
+// 10 m cell, 4x the atlas resolution. `detail_ids` says the layer of each atlas tile (one pixel per tile, id in R).
+// Brightness *= (1 + detail) / (1 + mean of the layer): the grain changes the texture, not the calibrated colour.
+// No layers (the default white) = no grain.
+uniform sampler2DArray detail : filter_linear_mipmap_anisotropic, repeat_enable, hint_default_white;
+uniform sampler2D detail_ids : filter_nearest, repeat_disable, hint_default_black;
+/** 0 = no grain, 1 = as strong as the original's grain. */
+uniform float detail_strength : hint_range(0.0, 2.0, 0.01) = 0.0;
+/** How many times the grain repeats over one 10 m cell. */
+uniform float detail_repeat : hint_range(1.0, 8.0, 1.0) = 1.0;
+// Ref: sacmap.d:196-206 (DT layers per MAPG group, mirrored-repeat tiles), sacmap.d:887-888 (texcoords 0..1 per cell),
+// renderer.d:1262-1300 (detail bound per tile), dagon terrain2.d fragment (0.5 * diffuse * (1 + detail) * lightmap).
 uniform sampler2D lightmap : filter_linear, repeat_disable;
 // ENVI EDGE: sacmap.d draws the void walls with meshes[edgeIndex], not the cell's tile.
 uniform sampler2D edge : filter_linear_mipmap, repeat_enable;
@@ -59,8 +74,15 @@ void fragment() {
 			id = floor(texture(tile_index, (floor(map_pos.xz / 10.0) + 0.5) / 256.0).r * 255.0 + 0.5);
 		}
 		vec2 cell = vec2(mod(id, 16.0), floor(id / 16.0));
-		vec2 uv = (cell + clamp(COLOR.gb, vec2(0.001), vec2(0.999))) / 16.0;
-		albedo = texture(atlas, uv).rgb;
+		vec2 in_tile = clamp(COLOR.gb, vec2(0.5 / TILE_PX), vec2(1.0 - 0.5 / TILE_PX));
+		albedo = texture(atlas, (cell + in_tile) / 16.0).rgb;
+		if (detail_strength > 0.0) {
+			float layer = floor(texelFetch(detail_ids, ivec2(cell), 0).r * 255.0 + 0.5);
+			vec3 duv = vec3(COLOR.gb * detail_repeat, layer);
+			float grain = texture(detail, duv).r;
+			float grain_mean = textureLod(detail, duv, 8.0).r;
+			albedo *= mix(1.0, (1.0 + grain) / (1.0 + grain_mean), detail_strength);
+		}
 	}
 	if (grass_paint_amount > 0.0 && !(COLOR.a < 0.5 && has_edge)) {
 		albedo = grass_paint_textured(albedo, zone_splat_weights(map_pos.xz), map_pos.xz, TIME, slope_deg);

@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="ParticleType" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/pvin.png" id="atlas_png"]
+
+[resource]
+script = ExtResource("1_type")
+atlas = ExtResource("atlas_png")
+h_frames = 5
+v_frames = 6
+size = Vector2(1, 1)
+energy = 1.0
+frame_s = 0.0667
+lifetime_s = 1.0
+rate_per_s = 40.0
+speed_min = 0.2
+speed_max = 0.8
+spread = 60.0
+scale_min = 1.25
+scale_max = 3.0
+additive = false
+fade_s = 0.3

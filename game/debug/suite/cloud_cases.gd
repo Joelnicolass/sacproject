@@ -53,6 +53,15 @@ func _scenes() -> Dictionary:
 		wizard.queue_free()
 	for kind in ["RainFrog", "FireDrop", "PlagueDrop", "Meteor"]:
 		checks[kind + "_registered"] = _spawner.projectiles.has(kind) and _spawner.projectiles[kind].can_instantiate()
+	var meteor := (_spawner.projectiles["Meteor"] as PackedScene).instantiate()
+	var marks: Array[PackedScene] = (meteor.get_node("Blast") as DropBlast).ground_marks
+	var names := []
+	for mark in marks:
+		names.append(((mark.instantiate() as ScarMark).texture.resource_path.get_file()))
+	checks["meteor_marks_gscr_ecrk"] = names == ["gscr.png", "ecrk.png"]
+	meteor.free()
+	var beam := load("res://data/fx/beams/lightning.tres") as BeamType
+	checks["cloudkill_bolt_burns"] = beam != null and beam.scene.resource_path.ends_with("burning_beam_fx.tscn")
 	checks["cloudkill_follows"] = (GameData.spell("likc").action.instantiate() as ZoneAction).follows_target
 	checks["cloudkill_replicates"] = (_spawner.zones["Cloudkill"] as PackedScene).instantiate().get("replicates_position") == true
 	await _frames(2)
@@ -407,7 +416,19 @@ func _lights() -> Dictionary:
 		var zone := (_spawner.zones[kind] as PackedScene).instantiate()
 		var light := zone.get_node_or_null("CloudAt/Light") as ActorLight
 		checks[kind + "_cloud_light"] = light != null and not light.shadow_enabled and light.light_energy > 0.0
-		zone.free()
+		_root.add_child(zone)
+		await _frames(2)
+		## A cloud is a volume, not a flat oval: twenty layers, each in another place of the noise, each a thin veil, pushed far off the sphere.
+		var look := zone.get_node("CloudAt/Cloud") as CloudLook
+		var multimesh := look.layers.multimesh
+		var seeds := {}
+		for i in look.layer_count:
+			seeds[look.layer_seed(i)] = true
+		var material := (multimesh.mesh as SphereMesh).material as ShaderMaterial
+		checks[kind + "_layers_differ"] = look.layer_count == 20 and seeds.size() == 20 and look.layer_drift >= 1.0
+		checks[kind + "_lumpy"] = (material.shader.get_shader_uniform_list().size() > 0) and float(material.get_shader_parameter("noise_amount") if material.get_shader_parameter("noise_amount") != null else 0.324) >= 0.25
+		checks[kind + "_thin_veil"] = float(material.get_shader_parameter("layer_alpha")) <= 0.2
+		zone.queue_free()
 	var fire := (_spawner.projectiles["FireDrop"] as PackedScene).instantiate()
 	var fire_light := fire.get_node_or_null("Light") as ActorLight
 	checks["fire_drop_light"] = fire_light != null and not fire_light.shadow_enabled

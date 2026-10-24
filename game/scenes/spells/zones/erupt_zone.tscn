@@ -86,7 +86,7 @@ editor_description = "Erupt (tpre): la tierra sube hasta 15 m en 50 m a la redon
 script = ExtResource("1_zone")
 spell = ExtResource("2_spell")
 hold_s = 1.0
-sync_extra = PackedStringArray("Mound:synced_ticks", "Rebound:synced_ticks", "Wave:synced_ticks")
+synced = PackedStringArray("Mound:synced_ticks", "Rebound:synced_ticks", "Wave:synced_ticks")
 end_s = 0.1
 
 [node name="BurstAt" type="Marker3D" parent="."]

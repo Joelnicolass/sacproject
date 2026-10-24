@@ -42,6 +42,18 @@ const SPELLS := {
 	"pxef": [[SCENE, "res://scenes/spells/zones/explosion_zone.tscn"], [PARTICLE, "res://data/fx/explosion_blast.tres"]],
 	"zorf": [[SCENE, "res://scenes/spells/zones/frozen_ground.tscn"], [PARTICLE, "res://data/fx/snowball_burst.tres"], [PARTICLE, "res://data/fx/ice_shard.tres"]],
 	"tfir": [[SCENE, "res://scenes/spells/zones/demonic_rift.tscn"], [SCENE, "res://scenes/spells/zones/rift_spirit.tscn"]],
+	"mrhc": [[SCENE, "res://scenes/spells/carrier/charm.tscn"], [PARTICLE, "res://data/fx/charm_hearts.tres"]],
+	"egar": [[SCENE, "res://scenes/spells/carrier/blind_rage.tscn"], [PARTICLE, "res://data/fx/rage_blast.tres"], [AFFLICTION, "res://data/afflictions/blind_raged.tres"]],
+	"pavi": [[SCENE, "res://scenes/spells/carrier/vaporization.tscn"], [PARTICLE, "res://data/fx/vaporize_burst.tres"]],
+	"ivob": [[SCENE, "res://scenes/spells/carrier/bovine_intervention.tscn"], [PARTICLE, "res://data/fx/cow_burst.tres"]],
+	"taed": [[SCENE, "res://scenes/spells/carrier/death.tscn"], [PARTICLE, "res://data/fx/death_strike.tres"]],
+	"lwrf": [[SCENE, "res://scenes/spells/walls/firewall.tscn"]],
+	"laws": [[SCENE, "res://scenes/spells/walls/wall_of_spikes.tscn"]],
+	"laww": [[SCENE, "res://scenes/spells/walls/wailing_wall.tscn"]],
+	"lawv": [[SCENE, "res://scenes/spells/walls/vinewall.tscn"]],
+	"cnef": [[SCENE, "res://scenes/spells/walls/fence.tscn"]],
+	"rter": [[SCENE, "res://scenes/spells/stalks/stalk.tscn"], [PARTICLE, "res://data/fx/stalk_grab.tres"]],
+	"nrot": [[SCENE, "res://scenes/spells/tornado/tornado.tscn"]],
 }
 const WIZARD_SCENE := "res://scenes/wizards/wizard_body.tscn"
 const UNIT_SCENE := "res://scenes/units/unit.tscn"

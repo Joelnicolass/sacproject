@@ -1,4 +1,4 @@
-[gd_scene load_steps=90 format=3]
+[gd_scene load_steps=94 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
 [ext_resource type="Script" path="res://scenes/units/unit_body.gd" id="1_body"]
@@ -110,6 +110,9 @@
 [ext_resource type="Resource" path="res://data/fx/slime_drip.tres" id="l161_drip"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="l161_snd"]
 [ext_resource type="Script" path="res://scenes/units/afflictions/looks/affliction_cues.gd" id="l161_cues"]
+[ext_resource type="Resource" path="res://data/afflictions/blind_raged.tres" id="i8_raged_type"]
+[ext_resource type="Resource" path="res://data/targeting/rage.tres" id="i8_rage_policy"]
+[ext_resource type="Resource" path="res://data/fx/rage_swirl.tres" id="i8_swirl"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_unit"]
 radius = 0.3
@@ -182,6 +185,9 @@ properties/20/replication_mode = 2
 properties/21/path = NodePath("Wards/HealingAura:shown")
 properties/21/spawn = true
 properties/21/replication_mode = 2
+properties/22/path = NodePath("DevourGrowth:inflation")
+properties/22/spawn = true
+properties/22/replication_mode = 2
 
 [sub_resource type="BoxMesh" id="Box_unit"]
 
@@ -539,6 +545,21 @@ body = NodePath("../../..")
 shape = 1
 box_scale = 0.8
 
+[node name="BlindRaged" type="Node3D" parent="Afflictions"]
+editor_description = "Blind Rage (egar): 30 s sin ordenes ni disparos, pelea con la criatura mas cercana de cualquier bando. Cada capa es un lanzamiento. Las particulas swrl giran alrededor de su caja."
+script = ExtResource("f161_spell_affliction")
+type = ExtResource("i8_raged_type")
+max_stacks = 16
+
+[node name="Swirl" type="CPUParticles3D" parent="Afflictions/BlindRaged" node_paths=PackedStringArray("affliction", "body")]
+use_fixed_seed = true
+script = ExtResource("l161_emit")
+type = ExtResource("i8_swirl")
+affliction = NodePath("..")
+body = NodePath("../../..")
+shape = 1
+box_scale = 1.5
+
 [node name="Orders" type="Node" parent="."]
 script = ExtResource("f27_orders")
 
@@ -551,6 +572,7 @@ script = ExtResource("f72_picker")
 body = NodePath("..")
 futility = NodePath("../TargetFutility")
 policies = Array[ExtResource("f136_policy")]([ExtResource("f136_slba")])
+rage_policy = ExtResource("i8_rage_policy")
 
 [node name="TargetFutility" type="Node" parent="." node_paths=PackedStringArray("body")]
 script = ExtResource("f370_futility")

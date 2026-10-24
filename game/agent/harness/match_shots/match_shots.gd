@@ -5,9 +5,9 @@ extends Node
 ## and quits. It only watches: it plays no input and moves no actor; the camera is its own.
 ## It lives in a subfolder because AgentKit mounts every .gd of agent/harness/ itself.
 ## Args after `--`: --map=<tag> --god=<god of the local wizard> [--biome=<god whose land the map wears; default --god>] [--ai-god=<god>] [--wizard=<tag>] [--after=<s> before the first
-## round] [--shots=<n> rounds] [--every=<s>, from 0.02: a burst of shots; the files end in the milliseconds, _t001500] [--out=<dir>] [--views=wizard,wizard_close,halo,foe_close,zone,cloud,overview,fountain,manahoar,tower] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
+## round] [--shots=<n> rounds] [--every=<s>, from 0.02: a burst of shots; the files end in the milliseconds, _t001500] [--out=<dir>] [--views=wizard,wizard_close,halo,foe_close,scar,zone,cloud,overview,fountain,manahoar,tower,wall,ground] [--ground-at=<x>,<z> world metres, the point the "ground" view stands over; default the local wizard] [--ground-yaw=<degrees> where it looks, 0 = toward -z] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
 ## [--cast=<spell tag>[,<tag>…], the local wizard casts them one after the other once --after has passed, before the first round: a spell that aims at himself (a ward, Healing Aura) on himself,
-## one that aims at a soul (pmcd, dnws, deda) on the closest soul he may fetch (the harness makes one when there is none), any other on the closest enemy (a zone, on the ground at its feet; Rainbow on himself, the first body of its chain; 061e needs --level=4 or more: ntlc, wobr, rifd, olah); mana is filled first; --cast-wait=<s> is the wait after the last cast (a cloud rains after its cast: 10 shows the rain, 14 Cloudkill's bolts; Explosion goes off 3.8 s after it starts: 4.5)] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
+## one that aims at a soul (pmcd, dnws, deda) on the closest soul he may fetch (the harness makes one when there is none), a wall (lwrf, laws, laww, lawv, cnef) on the ground half way to the closest enemy (--cast-wait=6 to see it grown); any other on the closest enemy (a zone, on the ground at its feet; Rainbow on himself, the first body of its chain; 061e needs --level=4 or more: ntlc, wobr, rifd, olah; 061j needs --level=8: rter with --god=persephone, nrot with --god=stratos); 061i needs --level=8 or more: mrhc, egar, pavi, ivob, taed (the "carrier" view follows the carrier; the report prints the side, rage and swelling of the closest enemy); mana is filled first; --cast-wait=<s> is the wait after the last cast (a cloud rains after its cast: 10 shows the rain, 14 Cloudkill's bolts; Explosion goes off 3.8 s after it starts: 4.5)] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
 ## Windowed: `-- --agent=flow --flow=match_shots.json` (the flow gives the sandbox that applies the quality preset).
 
 const GROUP_FOUNT := &"manafount"
@@ -27,13 +27,22 @@ const TAG_MANAHOAR := &"oham"
 ## The "foe_close" view: the closest enemy of the wizard (the target of --cast) from the wizard's side, to read a state on it.
 @export_range(2.0, 30.0, 0.5, "suffix:m") var foe_close_m := 7.0
 @export_range(0.0, 10.0, 0.5, "suffix:m") var foe_close_up_m := 2.0
+## The "carrier" view: the first spell carrier in flight from this far back and this high (Death is 12 m tall: use 30 and 10).
+@export_range(2.0, 80.0, 0.5, "suffix:m") var carrier_m := 8.0
+@export_range(0.0, 40.0, 0.5, "suffix:m") var carrier_up_m := 4.0
 ## The "zone" view: the camera stands this far from the first ground zone (the one of --cast=pxef|zorf|tfir), toward the wizard, this high.
 @export_range(10.0, 200.0, 1.0, "suffix:m") var zone_m := 45.0
 @export_range(0.0, 100.0, 0.5, "suffix:m") var zone_up_m := 28.0
-## The "cloud" view (061h: --cast=grfr|rifr|galp|likc): the camera stands on the land this far from the first zone that has a cloud, toward the wizard,
-## and looks up at the cloud.
-@export_range(10.0, 200.0, 1.0, "suffix:m") var cloud_m := 80.0
+## The "cloud" view (061h: --cast=grfr|rifr|galp|likc|rtem): the camera looks at the middle between the first zone's land and its cloud, from 1.9 times
+## the cloud's height away (at least this far) and a third of it up, on the first of 8 bearings with a clear line to the land.
+@export_range(10.0, 200.0, 1.0, "suffix:m") var cloud_min_m := 45.0
+## The "scar" view: the camera stands this far from the last mark painted on the ground (toward the wizard), this high, looking at it.
+@export_range(5.0, 80.0, 1.0, "suffix:m") var scar_m := 22.0
+@export_range(2.0, 80.0, 0.5, "suffix:m") var scar_up_m := 16.0
 @export_range(30.0, 300.0, 5.0, "suffix:m") var overview_m := 110.0
+## The "wall" view: the newest wall standing, seen from the wizard's side this far from its middle and this high.
+@export_range(5.0, 120.0, 1.0, "suffix:m") var wall_m := 45.0
+@export_range(0.0, 60.0, 0.5, "suffix:m") var wall_up_m := 14.0
 @export_range(4.0, 60.0, 0.5, "suffix:m") var fount_m := 16.0
 @export_range(0.0, 30.0, 0.5, "suffix:m") var fount_up_m := 6.0
 ## The "manahoar" view: the camera stands this far from the nearest Manahoar (any bearing the wizard's side is) and this high.
@@ -44,7 +53,15 @@ const TAG_MANAHOAR := &"oham"
 @export_range(10.0, 80.0, 1.0, "suffix:m") var tower_m := 40.0
 @export_range(0.0, 40.0, 0.5, "suffix:m") var tower_up_m := 14.0
 
+## The "ground" view: the camera stands this high over --ground-at and looks at the ground this far ahead; a JSON with the 10 m
+## cell borders in the picture is saved next to the PNG (tools/import/measure_seams.py reads both).
+@export_range(1.0, 40.0, 0.5, "suffix:m") var ground_up_m := 8.0
+@export_range(2.0, 60.0, 0.5, "suffix:m") var ground_ahead_m := 15.0
+@export_range(5.0, 60.0, 1.0, "suffix:m") var ground_grid_reach_m := 30.0
+
 @export var camera: Camera3D
+
+const GroundGrid := preload("res://agent/harness/match_shots/ground_grid.gd")
 
 var _shot_count := 0
 
@@ -122,6 +139,10 @@ func _cast_all(world: MatchWorld, tags: PackedStringArray) -> void:
 		if action != null and action.pick == SpellAction.Pick.SOUL:
 			aimed = await _soul_for(world, wizard, action)
 		var point := aimed.global_position if aimed != null else wizard.global_position
+		if action is WallAction and foe != null:
+			## A wall goes on the ground half way between the wizard and the enemy, across the line that joins them.
+			point = (wizard.global_position + foe.global_position) * 0.5
+			aimed = null
 		caster.request_cast(tag, point, aimed)
 		print("match_shots: cast %s (casting: %s)" % [tag, caster.is_casting()])
 		while caster.is_casting():
@@ -221,6 +242,13 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 			look = BodyNudge.center(foe)
 			var from_foe := (focus - foe.global_position) * Vector3(1.0, 0.0, 1.0)
 			spot = look + (from_foe.normalized() if from_foe.length() > 0.1 else Vector3.BACK) * foe_close_m + Vector3.UP * foe_close_up_m
+		"scar":
+			if not ScarMark.last_painted_at.is_finite():
+				print("match_shots: no ground mark painted yet; view skipped")
+				return
+			look = ScarMark.last_painted_at
+			var toward_scar := (focus - look) * Vector3(1.0, 0.0, 1.0)
+			spot = look + (toward_scar.normalized() if toward_scar.length() > 0.1 else Vector3.BACK) * scar_m + Vector3.UP * scar_up_m
 		"zone":
 			var zone := get_tree().get_first_node_in_group(GroundZone.GROUP) as GroundZone
 			if zone == null:
@@ -231,13 +259,17 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 			spot = _clear_spot(look, toward_zone.normalized() if toward_zone.length() > 0.1 else Vector3.BACK)
 		"cloud":
 			var cloud_zone := get_tree().get_first_node_in_group(GroundZone.GROUP) as GroundZone
-			var cloud_at := cloud_zone.get_node_or_null("CloudAt") as Node3D if cloud_zone != null else null
-			if cloud_at == null:
-				print("match_shots: no cloud alive; view skipped")
+			if cloud_zone == null:
+				print("match_shots: no ground zone alive; view skipped")
 				return
-			look = cloud_at.global_position
+			var cloud_at := cloud_zone.get_node_or_null("CloudAt") as Node3D
 			var toward_cloud := (focus - cloud_zone.global_position) * Vector3(1.0, 0.0, 1.0)
-			spot = cloud_zone.global_position + (toward_cloud.normalized() if toward_cloud.length() > 0.1 else Vector3.BACK) * cloud_m + Vector3.UP * 4.0
+			var bearing := toward_cloud.normalized() if toward_cloud.length() > 0.1 else Vector3.BACK
+			## A cloud and the land under it in one frame, from a bearing with a clear line to the ground; a zone with no cloud (Bombardment: its rocks
+			## cross the sky) is seen from farther and higher than the other zones.
+			var up_m := cloud_at.global_position.y - cloud_zone.global_position.y if cloud_at != null else 0.0
+			look = cloud_zone.global_position + Vector3.UP * maxf(up_m * 0.5, 1.0)
+			spot = _clear_spot(look, bearing, maxf(up_m * 1.9, cloud_min_m) if cloud_at != null else zone_m * 2.0, maxf(up_m * 0.35, zone_up_m) if cloud_at != null else zone_up_m * 1.5, cloud_zone.global_position + Vector3.UP * 3.0)
 		"overview":
 			var middle := (focus + _foe_position(world, wizard)) * 0.5
 			spot = middle + Vector3(0.0, overview_m, overview_m * 0.55)
@@ -266,7 +298,17 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 			var carrier := carriers[0] as Node3D
 			look = carrier.global_position + Vector3.UP * 0.5
 			var from_wizard := (carrier.global_position - focus) * Vector3(1.0, 0.0, 1.0)
-			spot = look - (from_wizard.normalized() if from_wizard.length() > 0.1 else Vector3.FORWARD) * 8.0 + Vector3.UP * 4.0
+			spot = look - (from_wizard.normalized() if from_wizard.length() > 0.1 else Vector3.FORWARD) * carrier_m + Vector3.UP * carrier_up_m
+		"wall":
+			var walls := world.find_children("*", "SpellWall", true, false)
+			if walls.is_empty():
+				print("match_shots: no wall standing; view skipped")
+				return
+			var wall := walls[walls.size() - 1] as SpellWall
+			look = wall.point_at(0.0) + Vector3.UP * 3.0
+			var from_wizard := (focus - wall.center) * Vector3(1.0, 0.0, 1.0)
+			spot = look + (from_wizard.normalized() if from_wizard.length() > 0.1 else Vector3.BACK) * wall_m + Vector3.UP * wall_up_m
+			print("match_shots: wall %s age %d left %.1f right %.1f top %.2f armed %s inside %d" % [wall.name, wall.age, wall.left, wall.right, wall.top(), wall.armed, wall.bodies_inside().size()])
 		"tower":
 			var tower := _nearest_tower(focus)
 			if tower == null:
@@ -275,6 +317,15 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 			look = tower.global_transform.origin + Vector3.UP * 8.0
 			var toward := (focus - tower.global_transform.origin) * Vector3(1.0, 0.0, 1.0)
 			spot = look + (toward.normalized() if toward.length() > 0.1 else Vector3.BACK) * tower_m + Vector3.UP * tower_up_m
+		"ground":
+			var shape := TerrainShape.of(world)
+			if shape == null:
+				print("match_shots: no ground loaded; view skipped")
+				return
+			var at := _ground_at(focus)
+			var ahead := Vector3.FORWARD.rotated(Vector3.UP, deg_to_rad(float(arg("ground-yaw", "0")))) * ground_ahead_m
+			spot = Vector3(at.x, shape.height_at(at.x, at.y) + ground_up_m, at.y)
+			look = Vector3(at.x + ahead.x, shape.height_at(at.x + ahead.x, at.y + ahead.z), at.y + ahead.z)
 		_:
 			push_warning("match_shots: unknown view '%s'" % view)
 			return
@@ -284,11 +335,15 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 	_report_wards(wizard)
 	_report_afflictions(wizard)
 	_report_zones()
+	_report_scars()
 	_report_halo()
 	_report_bolts()
+	_report_carriers(wizard)
 	if arg("hover") == "wizard":
 		_hover(world, wizard)
 	await _save(file)
+	if view == "ground":
+		GroundGrid.write(camera, TerrainShape.of(world), _ground_at(focus), ground_grid_reach_m, ProjectSettings.globalize_path(file.get_basename() + ".json"))
 
 
 ## One line per ward of the wizard at every shot: is it on, what the look and its emitters do and where they are, so a capture
@@ -346,6 +401,19 @@ func _report_halo() -> void:
 			print("match_shots: halo rock %s visible=%s at (%.1f, %.1f, %.1f) | %s" % [rock.name, rock.is_visible_in_tree(), rock.global_position.x, rock.global_position.y, rock.global_position.z, detail])
 
 
+## One line per SpellCarrier alive at each shot (the level-8 spells, Dragonfire, the souls): its scene, motion, phase and place, and what the
+## spell did to the closest enemy (its side, whether it rages, how swollen it is), so a capture with nothing in it says why.
+func _report_carriers(wizard: Node3D) -> void:
+	for node in get_tree().root.find_children("*", "SpellCarrier", true, false):
+		var carrier := node as SpellCarrier
+		print("match_shots: carrier %s motion=%d phase=%d at (%.1f, %.1f, %.1f)" % [carrier.name, carrier.motion, carrier.phase, carrier.global_position.x, carrier.global_position.y, carrier.global_position.z])
+	var foe := _closest_foe(wizard)
+	if foe != null and not get_tree().root.find_children("*", "SpellCarrier", true, false).is_empty():
+		var afflictions := Afflictions.of(foe)
+		var growth := DevourGrowth.of(foe)
+		print("match_shots: foe %s side=%d raging=%s inflation=%.2f" % [foe.name, int(foe.get("owner_slot")), afflictions != null and afflictions.raging(), growth.inflation if growth != null else 0.0])
+
+
 ## One line per beam FxBus has on screen at each shot (a bolt, an arc): its type, if it is drawn and where it starts and ends.
 func _report_bolts() -> void:
 	for node in get_tree().root.find_children("*", "BeamFx", true, false):
@@ -356,13 +424,14 @@ func _report_bolts() -> void:
 
 ## A camera point `zone_m` from `look` and `zone_up_m` above it: the bearing closest to `toward` (then every 45 degrees around) from which a ray
 ## to `look` meets nothing (an altar or a tower between them hides the zone).
-func _clear_spot(look: Vector3, toward: Vector3) -> Vector3:
+func _clear_spot(look: Vector3, toward: Vector3, distance := zone_m, up := zone_up_m, seen := Vector3.INF) -> Vector3:
 	var space := camera.get_world_3d().direct_space_state
-	var spot := look + toward * zone_m + Vector3.UP * zone_up_m
+	var target := look + Vector3.UP * 3.0 if seen == Vector3.INF else seen
+	var spot := look + toward * distance + Vector3.UP * up
 	for step in 8:
 		var bearing := toward.rotated(Vector3.UP, TAU * float(step + 1 >> 1) / 8.0 * (1.0 if step % 2 == 0 else -1.0))
-		var candidate := look + bearing * zone_m + Vector3.UP * zone_up_m
-		var hit := space.intersect_ray(PhysicsRayQueryParameters3D.create(candidate, look + Vector3.UP * 3.0, 0xFFFFFFFF))
+		var candidate := look + bearing * distance + Vector3.UP * up
+		var hit := space.intersect_ray(PhysicsRayQueryParameters3D.create(candidate, target, 0xFFFFFFFF))
 		if hit.is_empty():
 			return candidate
 	return spot
@@ -370,6 +439,15 @@ func _clear_spot(look: Vector3, toward: Vector3) -> Vector3:
 
 ## One line per ground zone alive at every shot: its phase and ticks, where it stands, how many points it has, and its drawn parts (visible,
 ## where, emitting), so a capture with nothing in it says why. Rift spirits are counted.
+## The marks on the ground: what GroundScars holds and one line per request to paint it got (accepted, or refused and why).
+func _report_scars() -> void:
+	var scars := get_tree().get_first_node_in_group(GroundScars.GROUP) as GroundScars
+	print("match_shots: GroundScars %s" % (("active=%s painted=%d of %d, globals index=%s tiles=%s" % [scars.is_active(), scars.painted_tiles(), scars.capacity(),
+			RenderingServer.global_shader_parameter_get(GroundScars.INDEX_PARAM), RenderingServer.global_shader_parameter_get(GroundScars.TILES_PARAM)]) if scars != null else "missing from the match"))
+	for line in GroundScars.log_lines:
+		print("match_shots: scar %s" % line)
+
+
 func _report_zones() -> void:
 	for node in get_tree().get_nodes_in_group(GroundZone.GROUP):
 		var zone := node as GroundZone
@@ -380,6 +458,19 @@ func _report_zones() -> void:
 				parts.append("%s visible=%s%s" % [part.name, (part as Node3D).is_visible_in_tree(), emitting])
 		print("match_shots: zone %s phase %s (%d ticks) cancelled=%s at (%.1f, %.1f, %.1f) points=%d spirits=%d drops=%d | %s" % [zone.name, GroundZone.Phase.keys()[zone.phase], zone.phase_ticks,
 			zone.cancelled, zone.global_position.x, zone.global_position.y, zone.global_position.z, zone.points.size(), get_tree().get_nodes_in_group(RiftSpirit.GROUP).size(), get_tree().get_nodes_in_group(ZoneDrop.GROUP).size(), " | ".join(parts)])
+		_report_stalks_and_tornado(zone)
+
+
+## Meanstalks and Tornado (061j): one line per stalk (mode, how much is out, where its tip is) or the tornado's size, so a capture with no
+## stalk in it says if they had not grown or were holding someone.
+func _report_stalks_and_tornado(zone: GroundZone) -> void:
+	for node in zone.find_children("*", "Stalk", true, false):
+		var stalk := node as Stalk
+		print("match_shots: stalk %s %s growth %.2f root (%.1f, %.1f, %.1f) tip (%.1f, %.1f, %.1f) holds=%s" % [stalk.name, Stalk.Mode.keys()[stalk.mode], stalk.growth,
+			stalk.global_position.x, stalk.global_position.y, stalk.global_position.z, stalk.tip.x, stalk.tip.y, stalk.tip.z, stalk.grip.held() != null])
+	var drift := zone.get_node_or_null("Drift") as TornadoDrift
+	if drift != null:
+		print("match_shots: tornado size %.2f speed %.2f m/s at (%.1f, %.1f, %.1f)" % [drift.size, drift.velocity.length(), zone.global_position.x, zone.global_position.y, zone.global_position.z])
 
 
 ## --hover=wizard: the pointer rests on the local wizard (the HoverFrame draws its frame). The probe stops naming what is
@@ -402,6 +493,12 @@ func _save(file: String) -> void:
 	await RenderingServer.frame_post_draw
 	var error := get_viewport().get_texture().get_image().save_png(ProjectSettings.globalize_path(file))
 	print("shot %s (%s)" % [file, error_string(error)])
+
+
+## --ground-at=x,z (world metres), or the local wizard's x, z.
+func _ground_at(focus: Vector3) -> Vector2:
+	var parts := arg("ground-at").split(",", false)
+	return Vector2(float(parts[0]), float(parts[1])) if parts.size() == 2 else Vector2(focus.x, focus.z)
 
 
 func _foe_position(world: MatchWorld, wizard: Node3D) -> Vector3:

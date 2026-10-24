@@ -33,6 +33,8 @@ extends Node
 @export var bulk_step := 0.75
 ## Smoothing per tick: 1 − exp(ln(0.1)/60).
 @export var bulk_blend := 0.0376494
+## The swelling of Intestinal Vaporization adds up to this much to the bulk when `inflation` is 1 (sacengine maxBulk 2.5 − 1).
+@export var inflate_by := 1.5
 
 ## Replicated: souls eaten. The setter is the one place the bulk is asked.
 @export var shown := 0:
@@ -41,6 +43,15 @@ extends Node
 			return
 		shown = value
 		set_physics_process(is_inside_tree() and _bulk_moving())
+
+## Replicated: how swollen the body is, 0..1 (Intestinal Vaporization writes it each tick it lasts; nobody else). Drawn at once, with no smoothing.
+@export_range(0.0, 1.0) var inflation := 0.0:
+	set(value):
+		value = clampf(value, 0.0, 1.0)
+		if is_equal_approx(value, inflation):
+			return
+		inflation = value
+		_show_bulk()
 
 var _increment := -1.0
 var _extra := 0.0
@@ -103,8 +114,12 @@ func _physics_process(_delta: float) -> void:
 	if absf(_bulk - target) < 0.0005:
 		_bulk = target
 		set_physics_process(false)
+	_show_bulk()
+
+
+func _show_bulk() -> void:
 	if visual != null:
-		visual.scale = Vector3.ONE * _bulk
+		visual.scale = Vector3.ONE * (_bulk + inflate_by * inflation)
 
 
 func _bulk_moving() -> bool:

@@ -4,15 +4,15 @@ extends SpellProjectile
 ## A place on the ground with a clock: it goes through CASTING (the wizard is still casting it), ARMING (the cast ended, it waits), ACTIVE
 ## (it acts, for the spell's duration or until it is told it is done) and ENDING (it goes away), and its children do what their phase asks:
 ## pulses hurt or freeze the bodies near it, the look draws the balls, the ice or the rift. It does not know what the spell does to a body
-## (ZonePulse and its classes do) nor how to draw (the scene does). The server (or solo) runs the clock and replicates `phase`; every peer counts its ticks.
+## (ZonePulse and its classes do) nor how to draw (the scene does). The server (or solo) runs the clock and replicates `phase`; every peer
+## counts the ticks of the phase so its look can follow.
 ## Ref: sacengine ExplosionCasting, FrozenGround, DemonicRift (state.d:3405-3425, 3547-3655).
 
-## The zone entered phase `phase` (every peer).
+## The zone entered phase `phase` (every peer, from the replicated `phase`).
 signal phase_changed(phase: int)
 
 enum Phase { CASTING, ARMING, ACTIVE, ENDING }
 
-## Every zone in the world is in this group (the capture harness and the checks look for them).
 const GROUP := &"ground_zone"
 
 ## The spell whose numbers the zone uses: damage, ranges, duration.
@@ -25,10 +25,10 @@ const GROUP := &"ground_zone"
 @export var hold_is_spell_duration := false
 ## It acts until something calls `finish()` (a rift ends when its last spirit is gone).
 @export var open_ended := false
-## More properties of its children the server sends with the phase, like "Mound:synced_ticks" (a TerrainStamp's clock).
-@export var sync_extra := PackedStringArray()
-## The zone itself moves (a cloud that follows its target): its position is replicated.
+## The zone itself moves (a cloud that follows its target, a tornado): its position is replicated.
 @export var replicates_position := false
+## Properties of its children the server replicates with the zone, as paths from the zone (`Stalk1:tip`).
+@export var synced := PackedStringArray()
 ## It takes this long to go away, and frees itself after.
 @export_range(0.0, 10.0, 0.01, "suffix:s") var end_s := 0.5
 ## Its reach grows to the full radius in this time after it started acting (0 = at once).
@@ -36,16 +36,17 @@ const GROUP := &"ground_zone"
 
 ## Where it acts. The first is its anchor; Explosion has five.
 var points := PackedVector3Array()
-## The side that cast it, the wizard that did, and where he clicked (a rift's spirits look around it).
+## The side that cast it and the wizard that did.
 var from_slot := 0
 var caster_path := NodePath()
+## Where the wizard clicked (a rift's spirits look around it).
 var aim_point := Vector3.ZERO
 ## The body the wizard clicked, when the spell follows it (a cloud that chases its target); empty = the ground.
 var follow_path := NodePath()
-## Ticks the cast lasts (the balls grow in that time) and the wait after it.
+## Ticks the cast lasts (the balls grow in that time), and the wait after it.
 var cast_ticks := 0
 var arm_ticks := 0
-## Ticks counted in the current phase, on every peer (`cancelled` is set in the ENDING of a zone ended by `cancel()`).
+## Ticks counted in the current phase, on every peer. The ENDING of a zone ended by `cancel()` has `cancelled` set.
 var phase_ticks := 0
 ## Replicated. The server writes it; every peer draws from it.
 var phase := Phase.CASTING:
@@ -81,7 +82,7 @@ func _attach_net() -> void:
 	var net := MpReplicate.new()
 	net.name = "Net"
 	net.interpolate = false
-	net.sync_properties = PackedStringArray([".:phase", ".:cancelled", ".:position"] if replicates_position else [".:phase", ".:cancelled"]) + sync_extra
+	net.sync_properties = PackedStringArray([".:phase", ".:cancelled", ".:position"] if replicates_position else [".:phase", ".:cancelled"]) + synced
 	MpAuthority.ensure_sync(self, net.sync_properties)
 	add_child(net)
 
@@ -117,8 +118,7 @@ func hold_ticks() -> int:
 func end_ticks() -> int: return MatchClock.ticks_for(end_s)
 
 
-## The radius of the part of the ground the zone has reached, for a full radius of `max_m`: nothing before ACTIVE, growing during
-## `grow_s`, the whole of it after.
+## The radius of ground the zone has reached for a full radius of `max_m`: nothing before ACTIVE, growing during `grow_s`, all after.
 func grown_m(max_m: float) -> float:
 	if phase < Phase.ACTIVE:
 		return 0.0

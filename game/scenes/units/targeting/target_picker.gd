@@ -50,6 +50,8 @@ signal picked(target: Node3D)
 ## F136 (RFC-030h2): target rules by ranged attack (data/targeting/<tag>.tres). The one whose tag is the body's
 ## ranged attack picks and accepts in place of the enemy score; a body with none keeps this script's rules.
 @export var policies: Array[TargetPolicy] = []
+## Blind Rage: the rule of a body that is enraged, in place of everything above (data/targeting/rage.tres).
+@export var rage_policy: TargetPolicy
 
 var last_attacker_id := 0
 var _vision: SideVision
@@ -194,6 +196,8 @@ static func _height_above_ground(node: Node3D) -> float:
 
 ## The policy for the body's ranged attack, or null (the default rules).
 func active() -> TargetPolicy:
+	if rage_policy != null and body != null and body.afflictions.raging():
+		return rage_policy
 	if policies.is_empty() or body == null or body.type == null or body.type.ranged_attack_tag.is_empty():
 		return null
 	for policy in policies:

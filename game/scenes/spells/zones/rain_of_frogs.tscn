@@ -12,7 +12,9 @@
 [sub_resource type="ShaderMaterial" id="Mat_cloud"]
 shader = ExtResource("shader")
 shader_parameter/layer_alpha = 0.15
-shader_parameter/noise_amount = 0.096
+shader_parameter/tint = Color(0.03, 0.03, 0.04, 1)
+shader_parameter/rim_color = Color(0.2, 0.22, 0.28, 1)
+shader_parameter/top_color = Color(0.16, 0.18, 0.23, 1)
 shader_parameter/morph_s = 8.0
 
 [sub_resource type="SphereMesh" id="Mesh_layer"]
@@ -20,7 +22,7 @@ material = SubResource("Mat_cloud")
 radius = 0.5
 height = 1.0
 radial_segments = 24
-rings = 12
+rings = 24
 
 [sub_resource type="MultiMesh" id="Layers_mm"]
 transform_format = 1

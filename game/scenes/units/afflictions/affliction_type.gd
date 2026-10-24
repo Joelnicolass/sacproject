@@ -32,6 +32,8 @@ extends Resource
 @export var blocks_regeneration := false
 ## Refuses the crowd control that asks ccProtected (petrify, state.d:11631-11640).
 @export var cc_protects := false
+## Blind Rage (sacengine isBlindlyRaging, state.d:1143): no order is carried out, no shot is fired and the target is the closest creature of any side.
+@export var rages := false
 ## The ids of the states this one ends when it starts. A state that is on refuses a new one unless the new one
 ## cancels it, so who wins is said here, not by the order of the children (sacengine canStun refuses `stunned`).
 @export var cancels: Array[StringName] = []

@@ -123,6 +123,8 @@ var attack_factor := 1.0
 var move_speed := 0.0
 var type: CreatureType
 var target: Node3D
+## Gib sets it (server or solo) right before the body dies: it bursts, so it leaves no corpse and its soul stays free (SoulSystem).
+var gibbed := false
 ## Set by the Orders child while an RTS order steers the body: no idle aggro, and a chase
 ## does not give up at sight range.
 var ordered := false
@@ -342,6 +344,13 @@ func engage(foe: Node3D) -> void:
 		target = foe
 	if mode != Mode.ATTACK and mode != Mode.SHOOT:
 		mode = Mode.CHASE
+
+
+## Charm: the creature forgets its orders and its target and is told to follow `leader` (its new wizard).
+func follow(leader: Node3D) -> void:
+	_orders.clear()
+	halt()
+	_orders.give(UnitOrders.Command.RETREAT, leader, leader.global_position, Vector2.ZERO, 0.0)
 
 
 func halt() -> void:
@@ -669,7 +678,7 @@ func flat_distance(node: Node3D) -> float:
 ## best score above `threshold` (patrol 0.25; patrolAround min(100, d)*0.01, advance 0.25 with ref 150);
 ## without it, the closest foe within sight range of `center`. Null for a pacifist (aggressiveness 0).
 func closest_foe(center: Vector3, threshold := 0.25, ref_range := 100.0, within := INF) -> Node3D:
-	if type == null or type.aggressiveness <= 0:
+	if type == null or (type.aggressiveness <= 0 and not afflictions.raging()):
 		return null
 	if is_instance_valid(_target_picker):
 		return _target_picker.pick(center, threshold, ref_range, within)

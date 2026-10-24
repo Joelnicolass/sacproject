@@ -30,9 +30,9 @@ const TAG_MANAHOAR := &"oham"
 ## The "zone" view: the camera stands this far from the first ground zone (the one of --cast=pxef|zorf|tfir), toward the wizard, this high.
 @export_range(10.0, 200.0, 1.0, "suffix:m") var zone_m := 45.0
 @export_range(0.0, 100.0, 0.5, "suffix:m") var zone_up_m := 28.0
-## The "cloud" view (061h: --cast=grfr|rifr|galp|likc): the camera stands on the land this far from the first zone that has a cloud, toward the wizard,
-## and looks up at the cloud.
-@export_range(10.0, 200.0, 1.0, "suffix:m") var cloud_m := 80.0
+## The "cloud" view (061h: --cast=grfr|rifr|galp|likc|rtem): the camera looks at the middle between the first zone's land and its cloud, from 1.9 times
+## the cloud's height away (at least this far) and a third of it up, on the first of 8 bearings with a clear line to the land.
+@export_range(10.0, 200.0, 1.0, "suffix:m") var cloud_min_m := 45.0
 @export_range(30.0, 300.0, 5.0, "suffix:m") var overview_m := 110.0
 @export_range(4.0, 60.0, 0.5, "suffix:m") var fount_m := 16.0
 @export_range(0.0, 30.0, 0.5, "suffix:m") var fount_up_m := 6.0
@@ -226,13 +226,17 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 			spot = _clear_spot(look, toward_zone.normalized() if toward_zone.length() > 0.1 else Vector3.BACK)
 		"cloud":
 			var cloud_zone := get_tree().get_first_node_in_group(GroundZone.GROUP) as GroundZone
-			var cloud_at := cloud_zone.get_node_or_null("CloudAt") as Node3D if cloud_zone != null else null
-			if cloud_at == null:
-				print("match_shots: no cloud alive; view skipped")
+			if cloud_zone == null:
+				print("match_shots: no ground zone alive; view skipped")
 				return
-			look = cloud_at.global_position
+			var cloud_at := cloud_zone.get_node_or_null("CloudAt") as Node3D
 			var toward_cloud := (focus - cloud_zone.global_position) * Vector3(1.0, 0.0, 1.0)
-			spot = cloud_zone.global_position + (toward_cloud.normalized() if toward_cloud.length() > 0.1 else Vector3.BACK) * cloud_m + Vector3.UP * 4.0
+			var bearing := toward_cloud.normalized() if toward_cloud.length() > 0.1 else Vector3.BACK
+			## A cloud and the land under it in one frame, from a bearing with a clear line to the ground; a zone with no cloud (Bombardment: its rocks
+			## cross the sky) is seen from farther and higher than the other zones.
+			var up_m := cloud_at.global_position.y - cloud_zone.global_position.y if cloud_at != null else 0.0
+			look = cloud_zone.global_position + Vector3.UP * maxf(up_m * 0.5, 1.0)
+			spot = _clear_spot(look, bearing, maxf(up_m * 1.9, cloud_min_m) if cloud_at != null else zone_m * 2.0, maxf(up_m * 0.35, zone_up_m) if cloud_at != null else zone_up_m * 1.5, cloud_zone.global_position + Vector3.UP * 3.0)
 		"overview":
 			var middle := (focus + _foe_position(world, wizard)) * 0.5
 			spot = middle + Vector3(0.0, overview_m, overview_m * 0.55)
@@ -351,13 +355,14 @@ func _report_bolts() -> void:
 
 ## A camera point `zone_m` from `look` and `zone_up_m` above it: the bearing closest to `toward` (then every 45 degrees around) from which a ray
 ## to `look` meets nothing (an altar or a tower between them hides the zone).
-func _clear_spot(look: Vector3, toward: Vector3) -> Vector3:
+func _clear_spot(look: Vector3, toward: Vector3, distance := zone_m, up := zone_up_m, seen := Vector3.INF) -> Vector3:
 	var space := camera.get_world_3d().direct_space_state
-	var spot := look + toward * zone_m + Vector3.UP * zone_up_m
+	var target := look + Vector3.UP * 3.0 if seen == Vector3.INF else seen
+	var spot := look + toward * distance + Vector3.UP * up
 	for step in 8:
 		var bearing := toward.rotated(Vector3.UP, TAU * float(step + 1 >> 1) / 8.0 * (1.0 if step % 2 == 0 else -1.0))
-		var candidate := look + bearing * zone_m + Vector3.UP * zone_up_m
-		var hit := space.intersect_ray(PhysicsRayQueryParameters3D.create(candidate, look + Vector3.UP * 3.0, 0xFFFFFFFF))
+		var candidate := look + bearing * distance + Vector3.UP * up
+		var hit := space.intersect_ray(PhysicsRayQueryParameters3D.create(candidate, target, 0xFFFFFFFF))
 		if hit.is_empty():
 			return candidate
 	return spot

@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" path="res://scenes/look/grass/grass_layer.tscn" id="8_grass"]
 [ext_resource type="PackedScene" path="res://scenes/look/fx/fx_light_layer.tscn" id="9_fx_light"]
 [ext_resource type="PackedScene" path="res://scenes/look/vegetation/flora_layer.tscn" id="10_flora"]
+[ext_resource type="Script" path="res://scenes/look/ground/terrain_deform_texture.gd" id="12_deform"]
 
 [node name="Look" type="Node" node_paths=PackedStringArray("layers", "quality", "sun_layer")]
 script = ExtResource("1_rig")
@@ -51,6 +52,11 @@ rig = NodePath("../..")
 
 [node name="ActorLights" type="Node3D" parent="Layers"]
 script = ExtResource("11_budget")
+
+[node name="TerrainDeform" type="Node3D" parent="Layers" node_paths=PackedStringArray("rig")]
+editor_description = "Le da al shader del suelo cuánto se movió la tierra (textura global terrain_deform_map). Sin nada que mover no cuesta nada."
+script = ExtResource("12_deform")
+rig = NodePath("../..")
 
 [node name="TimeOfDay" type="Node" parent="."]
 

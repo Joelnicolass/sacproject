@@ -446,3 +446,11 @@ fx_fog_end={
 "type": "float",
 "value": 1.0
 }
+terrain_deform_map={
+"type": "sampler2D",
+"value": ""
+}
+terrain_deform_on={
+"type": "float",
+"value": 0.0
+}

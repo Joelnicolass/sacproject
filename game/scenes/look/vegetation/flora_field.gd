@@ -36,8 +36,11 @@ const GROUP := &"flora_field"
 ## Main-thread time per frame for every layer together (054e, F384): past it the finished cells wait for the next frame.
 ## The planning itself runs on WorkerThreadPool tasks (in the editor, on the main thread inside this same budget).
 @export_range(0.1, 8.0, 0.1, "suffix:ms") var build_budget_ms := 1.0
+## The ground moved (a spell raised it): the plants of that part are planned again at most this often.
+@export_range(0.05, 2.0, 0.05, "suffix:s") var replan_every_s := 0.25
 
 var _planters: Array[MeshPlanter] = []
+var _ground := FloraGroundWatch.new()
 var _signature := ""
 var _clears_dirty := true
 var _clear_timer := 0.0
@@ -133,6 +136,7 @@ func _refresh() -> void:
 	var terrain := rig.terrain as Terrain if rig else null
 	if terrain == null or terrain.shape == null or not terrain.shape.is_loaded():
 		layers.clear()
+	_ground.follow(terrain.shape if terrain != null and not Engine.is_editor_hint() else null)
 	var signature := _signature_of(layers, terrain)
 	if signature == _signature:
 		return
@@ -181,6 +185,7 @@ func _process(delta: float) -> void:
 	if camera == null:
 		return
 	_update_clears(delta)
+	_ground.update(delta, replan_every_s, _planters, get_tree())
 	var started := Time.get_ticks_usec()
 	var deadline := started + int(build_budget_ms * 1000.0)
 	for planter in _planters:
@@ -280,6 +285,7 @@ func planters() -> Array[MeshPlanter]:
 
 
 func _exit_tree() -> void:
+	_ground.follow(null)
 	_free_planters()
 
 

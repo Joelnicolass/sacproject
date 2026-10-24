@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://debug/net/terrain_late_join.gd" id="1_net"]
+
+[node name="TerrainLateJoin" type="Node3D"]
+editor_description = "Red del terreno deformable (RFC-057), en un solo proceso: el Deformer del servidor y los de dos clientes (uno temprano, uno tardío que recibe el snapshot) con los mismos argumentos que el RPC; imprime TERRAIN NET PASS si los tres terminan con el mismo suelo. El transporte (ENet) no se prueba acá."
+script = ExtResource("1_net")

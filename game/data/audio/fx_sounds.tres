@@ -86,6 +86,7 @@
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/dfi2.wav" id="e_dfi2"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/dfi4.wav" id="e_dfi4"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/halo.wav" id="e_halo"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/erpt.wav" id="j_erpt"]
 
 [sub_resource type="Resource" id="Cue_blood"]
 script = ExtResource("1_cue")
@@ -440,6 +441,15 @@ max_distance_m = 60.0
 unit_size = 8.0
 priority = 25
 
+[sub_resource type="Resource" id="Cue_erupt_burst"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("j_erpt")])
+max_voices = 2
+volume_db = 8.0
+max_distance_m = 120.0
+unit_size = 12.0
+priority = 70
+
 [resource]
 script = ExtResource("2_map")
 cues = Dictionary[StringName, ExtResource("1_cue")]({
@@ -495,6 +505,7 @@ cues = Dictionary[StringName, ExtResource("1_cue")]({
 &"explosion_loop": SubResource("Cue_explosion_loop"),
 &"explosion_cast": SubResource("Cue_explosion_cast"),
 &"explosion_burst": SubResource("Cue_explosion_burst"),
+&"erupt_burst": SubResource("Cue_erupt_burst"),
 &"frozen_ground_cast": SubResource("Cue_frozen_ground_cast"),
 &"frozen_ground_hit": SubResource("Cue_frozen_ground_hit"),
 &"ice_shatter": SubResource("Cue_ice_shatter"),

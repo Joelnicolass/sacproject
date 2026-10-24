@@ -24,6 +24,8 @@ uniform float light_gain : hint_range(0.0, 4.0, 0.01) = 0.55;
 // shader is the same as before. The zone mask comes from the map's TileLayerMap.
 #include "res://scenes/look/ground/zone_splat.gdshaderinc"
 #include "res://scenes/look/ground/grass_paint.gdshaderinc"
+// The ground can move after the map loaded (RFC-057): the vertices are moved here, the mesh is never rebuilt.
+#include "res://scenes/look/ground/terrain_deform.gdshaderinc"
 
 // Map coordinates of the fragment. The terrain mesh is stored in map coordinates, so the local
 // vertex is used: the light map stays put when the editor preview shifts the scene root.
@@ -32,10 +34,20 @@ varying float slope_deg;
 
 void vertex() {
 	map_pos = VERTEX;
+	deform_hole = 0.0;
+	if (terrain_deform_on > 0.5) {
+		vec2 shift = deform_at(VERTEX.xz);
+		NORMAL = deform_normal(NORMAL, VERTEX.xz);
+		VERTEX.y += shift.x;
+		deform_hole = shift.y;
+	}
 	slope_deg = degrees(acos(clamp(NORMAL.y, -1.0, 1.0)));
 }
 
 void fragment() {
+	if (deform_hole > 0.0001) {
+		discard;
+	}
 	vec3 albedo;
 	if (COLOR.a < 0.5 && has_edge) {
 		albedo = texture(edge, COLOR.gb).rgb;

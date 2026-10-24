@@ -5,8 +5,9 @@ extends Node
 ## The one owner of the map's ground as numbers: the raw triangles (`data`), the tile of each 10 m cell, and what is
 ## derived from them (land height, holes, how many triangles each cell has, the lowest land). Everyone who needs a
 ## height or to know if a point is land asks here; the mesh (Terrain) and a physics ray (GroundRay) are other things.
-## It is a child `Shape` of Terrain. A map that is not loaded answers like a map with only holes.
-## Signals: `changed(rect)` is for a later edit of the ground (a crater); nothing emits it yet.
+## It is a child `Shape` of Terrain. A map that is not loaded answers like a map with only holes. The ground can move
+## after loading (TerrainDeformer writes `displacement()`): every answer here already includes it.
+## `changed(rect)` says which part of the map (x, z in metres) moved, for whoever draws or collides it.
 
 signal changed(rect: Rect2)
 
@@ -27,6 +28,7 @@ const GROUP := &"terrain_shape"
 		_tiles_read = false
 
 var _index := TerrainRules.Index.new()
+var _displacement := TerrainDisplacement.new()
 var _counts := PackedByteArray()
 var _tiles := PackedByteArray()
 var _tiles_read := false
@@ -61,12 +63,12 @@ func is_loaded() -> bool:
 
 ## Land height under (x, z) in world units, NAN over a hole.
 func height_at(x: float, z: float) -> float:
-	return TerrainRules.height_in(x, z, _index.ground, _index.cells)
+	return TerrainRules.height_in(x, z, _index.ground, _index.cells, _displacement.texels, _index.corners)
 
 
 ## True when a land triangle lies under (x, z). Holes and the map rim have none.
 func is_on_ground(x: float, z: float) -> bool:
-	return TerrainRules.triangle_in(x, z, _index.ground, _index.cells) >= 0
+	return TerrainRules.triangle_in(x, z, _index.ground, _index.cells, _displacement.texels, _index.corners) >= 0
 
 
 ## The lowest land vertex (0 without land).
@@ -74,10 +76,20 @@ func lowest() -> float:
 	return _index.lowest
 
 
-## A Callable(x, z) -> float that answers like height_at from a snapshot of the index taken now (the packed arrays
-## are copy-on-write: a later re-index does not touch it). It reads no node, so a WorkerThreadPool task may call it.
+## A Callable(x, z) -> float that answers like height_at from a copy of the index and the displacement taken now (a later
+## change does not touch it). It reads no node, so a WorkerThreadPool task may call it.
 func sampler() -> Callable:
-	return TerrainRules.height_in.bind(_index.ground, _index.cells)
+	return TerrainRules.height_in.bind(_index.ground, _index.cells, _displacement.snapshot(), _index.corners)
+
+
+## How far the ground has moved from the file. Only TerrainDeformer writes it.
+func displacement() -> TerrainDisplacement:
+	return _displacement
+
+
+## Tells whoever listens that the vertices of `vertices` (grid coordinates) moved.
+func notify_changed(vertices: Rect2i) -> void:
+	changed.emit(Rect2(Vector2(vertices.position) * TerrainRules.CELL, Vector2(vertices.size) * TerrainRules.CELL))
 
 
 ## How many land triangles each 10 m cell has: 0 a hole or the rim, 1 half a cell, 2 a full one. 256x256 row-major
@@ -112,6 +124,7 @@ func use_tiles(ids: PackedByteArray) -> void:
 
 func _reindex() -> void:
 	_index = TerrainRules.index(data) if data != null and data.is_valid() else TerrainRules.Index.new()
+	_displacement = TerrainDisplacement.new()
 	_counts = PackedByteArray()
 
 

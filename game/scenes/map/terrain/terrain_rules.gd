@@ -3,7 +3,9 @@ extends RefCounted
 
 ## The ground's arithmetic with no tree: which land triangle lies under a point, how high the land is there, and how
 ## the raw triangles of a MapTerrainData become the per-cell index. Pure and static, so a WorkerThreadPool task can
-## call it on copies of an index. What it does NOT do: hold the data (TerrainShape) or build the mesh (Terrain).
+## call it on copies of an index. A ground that was raised, dug or holed passes its `shift` (two floats per 10 m vertex:
+## how far it moved, and 1 when it was taken away): a corner moves with it, and a triangle with a removed corner is no
+## land. What it does NOT do: hold the data (TerrainShape) or build the mesh (Terrain).
 ## Ref: sacmap.d getTriangles, isInside, getGroundHeight.
 
 const CELL := 10.0
@@ -15,10 +17,12 @@ const WALL_AREA := 0.01
 
 
 ## The land of a map ready to be asked: `ground` holds three vertices per land triangle; `cells` two triangle ids per
-## 10 m cell (-1 when the cell has fewer); `lowest` is the lowest land vertex (0 without land).
+## 10 m cell (-1 when the cell has fewer); `corners` the grid vertex (see `vertex_id`) of each of those corners;
+## `lowest` is the lowest land vertex (0 without land).
 class Index:
 	var ground := PackedVector3Array()
 	var cells := PackedInt32Array()
+	var corners := PackedInt32Array()
 	var lowest := 0.0
 
 
@@ -50,6 +54,7 @@ static func index(data: MapTerrainData) -> Index:
 			continue
 		result.cells[slot] = result.ground.size() / 3
 		result.ground.append_array([a, b, c])
+		result.corners.append_array([vertex_id(a.x, a.z), vertex_id(b.x, b.z), vertex_id(c.x, c.z)])
 		result.lowest = minf(result.lowest, minf(minf(a.y, b.y), c.y))
 	if result.ground.is_empty():
 		result.lowest = 0.0
@@ -61,17 +66,31 @@ static func is_wall(a: Vector3, b: Vector3, c: Vector3) -> bool:
 	return absf(flat_cross(a, b, Vector2(c.x, c.z))) < WALL_AREA
 
 
-## Land height under (x, z) in world units, NAN over a hole or off the map.
-static func height_in(x: float, z: float, ground: PackedVector3Array, cells: PackedInt32Array) -> float:
-	var id := triangle_in(x, z, ground, cells)
+## The vertex of the 256x256 grid at (x, z): the corners of the map lie on the 10 m lattice.
+static func vertex_id(x: float, z: float) -> int:
+	return clampi(roundi(z / CELL), 0, GRID - 1) * GRID + clampi(roundi(x / CELL), 0, GRID - 1)
+
+
+## Land height under (x, z) in world units, NAN over a hole or off the map. `shift`/`corners`: see the class doc.
+static func height_in(x: float, z: float, ground: PackedVector3Array, cells: PackedInt32Array,
+		shift := PackedFloat32Array(), corners := PackedInt32Array()) -> float:
+	var id := triangle_in(x, z, ground, cells, shift, corners)
 	if id < 0:
 		return NAN
-	var plane := Plane(ground[id * 3], ground[id * 3 + 1], ground[id * 3 + 2])
+	var a := ground[id * 3]
+	var b := ground[id * 3 + 1]
+	var c := ground[id * 3 + 2]
+	if not shift.is_empty():
+		a.y += shift[corners[id * 3] * 2]
+		b.y += shift[corners[id * 3 + 1] * 2]
+		c.y += shift[corners[id * 3 + 2] * 2]
+	var plane := Plane(a, b, c)
 	return (plane.d - plane.normal.x * x - plane.normal.z * z) / plane.normal.y
 
 
 ## The land triangle under (x, z) (an id into `ground`), -1 over a hole or off the map.
-static func triangle_in(x: float, z: float, ground: PackedVector3Array, cells: PackedInt32Array) -> int:
+static func triangle_in(x: float, z: float, ground: PackedVector3Array, cells: PackedInt32Array,
+		shift := PackedFloat32Array(), corners := PackedInt32Array()) -> int:
 	if ground.is_empty():
 		return -1
 	var cell_x := int(floor(x / CELL))
@@ -83,9 +102,14 @@ static func triangle_in(x: float, z: float, ground: PackedVector3Array, cells: P
 		var id := cells[(cell_z * GRID + cell_x) * 2 + k]
 		if id < 0:
 			continue
-		if _inside(ground, id, at):
+		if _inside(ground, id, at) and (shift.is_empty() or not _has_hole(shift, corners, id)):
 			return id
 	return -1
+
+
+## True when a corner of triangle `id` was taken away.
+static func _has_hole(shift: PackedFloat32Array, corners: PackedInt32Array, id: int) -> bool:
+	return shift[corners[id * 3] * 2 + 1] > 0.5 or shift[corners[id * 3 + 1] * 2 + 1] > 0.5 or shift[corners[id * 3 + 2] * 2 + 1] > 0.5
 
 
 ## Edges count as inside, with either winding.

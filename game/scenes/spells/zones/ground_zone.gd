@@ -26,6 +26,9 @@ const GROUP := &"ground_zone"
 @export var hold_is_spell_duration := false
 ## It acts until something calls `finish()` (a rift ends when its last spirit is gone).
 @export var open_ended := false
+## More properties of its children that the server sends to the clients with the phase, like "Mound:synced_ticks" (a
+## TerrainStamp), so one that joins late plays the same moment.
+@export var sync_extra := PackedStringArray()
 ## It takes this long to go away, and frees itself after.
 @export_range(0.0, 10.0, 0.01, "suffix:s") var end_s := 0.5
 ## Its reach grows to the full radius in this time after it started acting (0 = at once).
@@ -76,7 +79,7 @@ func _attach_net() -> void:
 	var net := MpReplicate.new()
 	net.name = "Net"
 	net.interpolate = false
-	net.sync_properties = PackedStringArray([".:phase", ".:cancelled"])
+	net.sync_properties = PackedStringArray([".:phase", ".:cancelled"]) + sync_extra
 	MpAuthority.ensure_sync(self, net.sync_properties)
 	add_child(net)
 

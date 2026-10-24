@@ -337,6 +337,27 @@ func set_clears(clears: PackedVector4Array) -> void:
 			_pending_sorted = false
 
 
+## The ground under `area` (map coordinates) moved: the cells it touches are planned again with the new heights. Shown
+## cells keep their old plants until the new plan is applied; a plan in flight for one is dropped.
+func replan(area: Rect2) -> void:
+	for key: Vector2i in _cache.keys():
+		if _hits(key, area):
+			_free_nodes(_cache[key])
+			_cache.erase(key)
+			_cache_order.erase(key)
+	for key: Vector2i in _jobs.keys():
+		if _hits(key, area):
+			(_jobs[key] as PlanJob).stale = true
+	for key: Vector2i in _cells.keys():
+		if _hits(key, area) and not _jobs.has(key) and not _pending.has(key):
+			_pending.append(key)
+			_pending_sorted = false
+
+
+func _hits(key: Vector2i, area: Rect2) -> bool:
+	return Rect2(Vector2(key) * CELL_M, Vector2(CELL_M, CELL_M)).intersects(area)
+
+
 func _touches(key: Vector2i, touched: PackedVector4Array) -> bool:
 	for clear in touched:
 		if _ring.rect_distance(key, Vector2(clear.x, clear.y)) < clear.z + clear.w:

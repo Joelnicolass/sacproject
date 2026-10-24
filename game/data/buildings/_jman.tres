@@ -5,4 +5,6 @@
 [resource]
 script = ExtResource("1_type")
 tag = "jman"
+display_name = "Manalito"
+role = 1
 max_health = 5000.0

@@ -102,7 +102,6 @@ static func make_spell(row: Dictionary, structure: bool) -> Resource:
 	type.flags1 = int(row.get("flags1", 0))
 	type.flags2 = int(row.get("flags2", 0))
 	type.is_structure = structure
-	type.structures = PackedStringArray(row.get("structures", []))
 	return type
 
 

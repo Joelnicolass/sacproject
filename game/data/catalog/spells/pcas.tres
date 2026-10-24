@@ -12,4 +12,4 @@ cooldown_s = 10.0
 casting_time_s = 11.1111
 spell_order = 300
 flags = 2064
-structures = PackedStringArray("pcsh", "pasp", "jsac", "stsp", "casp")
+is_structure = true

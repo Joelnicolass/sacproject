@@ -9,8 +9,7 @@ extends Resource
 
 @export var tag: String = ""
 @export var display_name: String = ""
-## Gods are listed by `sort_order`, then tag. The order is part of the rules: the biome draw, the AI's god draw and
-## SpellType.structures index into it, so never renumber an existing god.
+## Gods are listed by `sort_order`, then tag. The order is part of the rules: the biome draw and the AI's god draw index into it, so never renumber an existing god.
 @export var sort_order: int = 0
 ## The land the god brings to a match: sky, fog, light, glow, ground and grass (`data/look/<tag>.tres`).
 @export var look: LookProfile
@@ -19,6 +18,8 @@ extends Resource
 ## The AI profile of a wizard of this god; empty: the original's profile.
 @export var ai_profile: AiProfile
 @export var book: GodBook
+## The towers this god raises: one row per structure spell (Manalith, Shrine) with the scene of its own model.
+@export var structures: Array[GodStructure] = []
 
 
 ## Name FxBus plays for the casting hand. A god without a particle still names one (`cast_<tag>`): the wizard's pose follows it.
@@ -26,3 +27,11 @@ func cast_fx_name() -> String:
 	if not cast_fx_path.is_empty():
 		return cast_fx_path.get_file().get_basename()
 	return "cast_%s" % tag
+
+
+## The row of `spell` in this god's structures, or null when the god does not raise it.
+func structure_for(spell: SpellType) -> GodStructure:
+	for entry in structures:
+		if entry != null and entry.spell == spell:
+			return entry
+	return null

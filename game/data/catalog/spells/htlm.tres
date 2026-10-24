@@ -13,4 +13,3 @@ casting_time_s = 11.1111
 spell_order = 100
 flags = 2064
 is_structure = true
-structures = PackedStringArray("mana", "pyma", "jman", "stam", "cama")

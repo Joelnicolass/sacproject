@@ -20,8 +20,6 @@ extends Resource
 @export var flags1: int = 0
 @export var flags2: int = 0
 @export var is_structure: bool = false
-## Structure model tags by god order (persephone, pyro, james, stratos, charnel).
-@export var structures: PackedStringArray = PackedStringArray()
 ## Scene of the SpellAction that casts this spell (RFC-041). Caster instances it under its `actions` node when the wizard
 ## has no child for the tag, so a new spell is a `.tres` plus a scene, with no edit in Caster.
 @export var action: PackedScene

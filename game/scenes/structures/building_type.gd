@@ -7,8 +7,14 @@ extends Resource
 ## scenes/structures/buildings/ is the building you drag into a map. Never changed while playing: the health lives in the
 ## building's Health node. Does not place anything: MapBuilding does.
 
+## What the building does in the game: nothing (scenery), a Manalith (feeds mana, the Manahoar use it) or a Shrine (feeds
+## less mana, takes Convert rituals). Code that needs the difference asks this, never the tag.
+enum Role { SCENERY, MANALITH, SHRINE }
+
 ## The name the info panel shows («Casa», «Lápida»). Empty: the generic «Edificio».
 @export var display_name := ""
+## Manalith or Shrine for the ten towers a wizard can cast; every other building is scenery.
+@export var role := Role.SCENERY
 ## 0 = cannot be destroyed.
 @export_range(0.0, 20000.0, 1.0, "or_greater") var max_health := 0.0
 ## Peasants run to it when they are scared.

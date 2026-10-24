@@ -1,0 +1,56 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="1_zone"]
+[ext_resource type="Script" path="res://scenes/spells/stalks/stalk_roster.gd" id="2_roster"]
+[ext_resource type="Resource" path="res://data/catalog/spells/rter.tres" id="3_spell"]
+[ext_resource type="PackedScene" path="res://scenes/spells/stalks/stalk.tscn" id="4_stalk"]
+
+[node name="Meanstalks" type="Node3D"]
+editor_description = "Meanstalks (rter): cuatro tallos en un anillo de 9 a 21,6 m alrededor del clic. La zona cuenta el tiempo (lanzamiento, 60 s de caza, 3 s de hundirse); cada tallo caza solo. Los puntos de la zona son las raíces. Los `synced` son lo que el servidor replica."
+script = ExtResource("1_zone")
+spell = ExtResource("3_spell")
+hold_is_spell_duration = true
+end_s = 3.2
+synced = PackedStringArray("Stalk0:tip", "Stalk0:growth", "Stalk0:mode", "Stalk1:tip", "Stalk1:growth", "Stalk1:mode", "Stalk2:tip", "Stalk2:growth", "Stalk2:mode", "Stalk3:tip", "Stalk3:growth", "Stalk3:mode")
+
+[node name="Roster" type="Node" parent="."]
+script = ExtResource("2_roster")
+
+[node name="Stalk0" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("4_stalk")]
+zone = NodePath("..")
+
+[node name="Hunt" parent="Stalk0" node_paths=PackedStringArray("roster")]
+roster = NodePath("../../Roster")
+
+[node name="Light" parent="Stalk0" node_paths=PackedStringArray("zone")]
+zone = NodePath("../..")
+
+[node name="Stalk1" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("4_stalk")]
+zone = NodePath("..")
+index = 1
+
+[node name="Hunt" parent="Stalk1" node_paths=PackedStringArray("roster")]
+roster = NodePath("../../Roster")
+
+[node name="Light" parent="Stalk1" node_paths=PackedStringArray("zone")]
+zone = NodePath("../..")
+
+[node name="Stalk2" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("4_stalk")]
+zone = NodePath("..")
+index = 2
+
+[node name="Hunt" parent="Stalk2" node_paths=PackedStringArray("roster")]
+roster = NodePath("../../Roster")
+
+[node name="Light" parent="Stalk2" node_paths=PackedStringArray("zone")]
+zone = NodePath("../..")
+
+[node name="Stalk3" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("4_stalk")]
+zone = NodePath("..")
+index = 3
+
+[node name="Hunt" parent="Stalk3" node_paths=PackedStringArray("roster")]
+roster = NodePath("../../Roster")
+
+[node name="Light" parent="Stalk3" node_paths=PackedStringArray("zone")]
+zone = NodePath("../..")

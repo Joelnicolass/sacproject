@@ -1,0 +1,69 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/stalks/stalk.gd" id="1_stalk"]
+[ext_resource type="Script" path="res://scenes/spells/stalks/stalk_hunt.gd" id="2_hunt"]
+[ext_resource type="Script" path="res://scenes/spells/stalks/stalk_grip.gd" id="3_grip"]
+[ext_resource type="Script" path="res://scenes/spells/stalks/stalk_look.gd" id="4_look"]
+[ext_resource type="Shader" path="res://scenes/spells/stalks/stalk.gdshader" id="5_shader"]
+[ext_resource type="Mesh" path="res://scenes/spells/stalks/stalk_tube.res" id="6_tube"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/dvin.png" id="7_dvin"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/vine.png" id="8_vine"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="9_light"]
+[ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="10_sound"]
+[ext_resource type="Resource" path="res://data/fx/stalk_dirt.tres" id="11_dirt"]
+[ext_resource type="Resource" path="res://data/fx/stalk_grab.tres" id="12_grab"]
+[ext_resource type="PackedScene" path="res://scenes/spells/scar_mark.tscn" id="13_scar"]
+[ext_resource type="Texture2D" path="res://assets/original/scars/mean.png" id="14_mean"]
+
+[sub_resource type="ShaderMaterial" id="Material_stalk"]
+resource_local_to_scene = true
+shader = ExtResource("5_shader")
+shader_parameter/skin = ExtResource("7_dvin")
+shader_parameter/tip_skin = ExtResource("8_vine")
+
+[node name="Stalk" type="Node3D" node_paths=PackedStringArray("hunt", "grip")]
+editor_description = "Un tallo de Meanstalks. `zone` e `index` los pone meanstalks.tscn; `roster` de Hunt también. La luz (Light) se mueve con el gizmo: nace 8 m sobre la raíz."
+script = ExtResource("1_stalk")
+hunt = NodePath("Hunt")
+grip = NodePath("Grip")
+
+[node name="Hunt" type="Node" parent="."]
+script = ExtResource("2_hunt")
+
+[node name="Grip" type="Node" parent="."]
+script = ExtResource("3_grip")
+
+[node name="Look" type="MeshInstance3D" parent="." node_paths=PackedStringArray("stalk", "scar", "grab_sound", "fall_sound")]
+mesh = ExtResource("6_tube")
+material_override = SubResource("Material_stalk")
+script = ExtResource("4_look")
+stalk = NodePath("..")
+dirt = ExtResource("11_dirt")
+grab_burst = ExtResource("12_grab")
+scar = NodePath("../Scar")
+grab_sound = NodePath("../GrabSound")
+fall_sound = NodePath("../FallSound")
+
+[node name="Light" parent="." instance=ExtResource("9_light")]
+editor_description = "Luz verde (color medio de dvin.png) sobre la raiz mientras la zona lanza y actua; se apaga al hundirse. `zone` lo pone meanstalks.tscn."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, 0)
+light_color = Color(0.6, 1, 0.15, 1)
+light_energy = 1.6
+omni_range = 28.0
+priority = 3.0
+fade_in_s = 1.0
+fade_out_s = 2.0
+
+[node name="Scar" parent="." instance=ExtResource("13_scar")]
+texture = ExtResource("14_mean")
+
+[node name="RiseSound" parent="." instance=ExtResource("10_sound")]
+cue = &"stalk_rise"
+
+[node name="GrabSound" parent="." instance=ExtResource("10_sound")]
+cue = &"stalk_grab"
+play_on_ready = false
+
+[node name="FallSound" parent="." instance=ExtResource("10_sound")]
+cue = &"stalk_fall"
+play_on_ready = false

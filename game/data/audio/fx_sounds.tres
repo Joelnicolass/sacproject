@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="FxSoundMap" load_steps=102 format=3]
+[gd_resource type="Resource" script_class="FxSoundMap" load_steps=112 format=3]
 
 [ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
 [ext_resource type="Script" path="res://scenes/audio/fx_sound_map.gd" id="2_map"]
@@ -103,6 +103,12 @@
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/eqk1.wav" id="c61h_eqk1"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/eqk2.wav" id="c61h_eqk2"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/eqk3.wav" id="c61h_eqk3"]
+
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/stka.wav" id="j61_stka"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/stkh.wav" id="j61_stkh"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/stkf.wav" id="j61_stkf"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/stra/torn.wav" id="j61_torn"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/stra/trns.wav" id="j61_trns"]
 
 [sub_resource type="Resource" id="Cue_blood"]
 script = ExtResource("1_cue")
@@ -514,6 +520,50 @@ max_voices = 2
 max_distance_m = 150
 unit_size = 15
 priority = 30
+[sub_resource type="Resource" id="Cue_stalk_rise"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("j61_stka")])
+max_voices = 4
+volume_db = 8.0
+max_distance_m = 160.0
+unit_size = 16.0
+priority = 55
+
+[sub_resource type="Resource" id="Cue_stalk_grab"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("j61_stkh")])
+max_voices = 4
+volume_db = 8.0
+max_distance_m = 160.0
+unit_size = 16.0
+priority = 65
+
+[sub_resource type="Resource" id="Cue_stalk_fall"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("j61_stkf")])
+max_voices = 4
+volume_db = 8.0
+max_distance_m = 160.0
+unit_size = 16.0
+priority = 55
+
+[sub_resource type="Resource" id="Cue_tornado_loop"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("j61_torn")])
+max_voices = 2
+volume_db = 10.0
+max_distance_m = 220.0
+unit_size = 30.0
+priority = 40
+
+[sub_resource type="Resource" id="Cue_tornado_cast"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("j61_trns")])
+max_voices = 2
+volume_db = 6.0
+max_distance_m = 160.0
+unit_size = 20.0
+priority = 55
 
 [resource]
 script = ExtResource("2_map")
@@ -586,5 +636,10 @@ cues = Dictionary[StringName, ExtResource("1_cue")]({
 &"meteor_hit": SubResource("Cue_meteor_hit"),
 &"meteor_emerge": SubResource("Cue_meteor_emerge"),
 &"cloud_loop": SubResource("Cue_cloud_loop"),
-&"bombardment_loop": SubResource("Cue_bombardment_loop")
+&"bombardment_loop": SubResource("Cue_bombardment_loop"),
+&"stalk_rise": SubResource("Cue_stalk_rise"),
+&"stalk_grab": SubResource("Cue_stalk_grab"),
+&"stalk_fall": SubResource("Cue_stalk_fall"),
+&"tornado_loop": SubResource("Cue_tornado_loop"),
+&"tornado_cast": SubResource("Cue_tornado_cast")
 })

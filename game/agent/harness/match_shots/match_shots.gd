@@ -7,7 +7,7 @@ extends Node
 ## Args after `--`: --map=<tag> --god=<god of the local wizard> [--biome=<god whose land the map wears; default --god>] [--ai-god=<god>] [--wizard=<tag>] [--after=<s> before the first
 ## round] [--shots=<n> rounds] [--every=<s>, from 0.02: a burst of shots; the files end in the milliseconds, _t001500] [--out=<dir>] [--views=wizard,wizard_close,halo,foe_close,zone,cloud,overview,fountain,manahoar,tower] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
 ## [--cast=<spell tag>[,<tag>…], the local wizard casts them one after the other once --after has passed, before the first round: a spell that aims at himself (a ward, Healing Aura) on himself,
-## one that aims at a soul (pmcd, dnws, deda) on the closest soul he may fetch (the harness makes one when there is none), any other on the closest enemy (a zone, on the ground at its feet; Rainbow on himself, the first body of its chain; 061e needs --level=4 or more: ntlc, wobr, rifd, olah); mana is filled first; --cast-wait=<s> is the wait after the last cast (a cloud rains after its cast: 10 shows the rain, 14 Cloudkill's bolts; Explosion goes off 3.8 s after it starts: 4.5)] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
+## one that aims at a soul (pmcd, dnws, deda) on the closest soul he may fetch (the harness makes one when there is none), any other on the closest enemy (a zone, on the ground at its feet; Rainbow on himself, the first body of its chain; 061e needs --level=4 or more: ntlc, wobr, rifd, olah; 061j needs --level=8: rter with --god=persephone, nrot with --god=stratos); mana is filled first; --cast-wait=<s> is the wait after the last cast (a cloud rains after its cast: 10 shows the rain, 14 Cloudkill's bolts; Explosion goes off 3.8 s after it starts: 4.5)] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
 ## Windowed: `-- --agent=flow --flow=match_shots.json` (the flow gives the sandbox that applies the quality preset).
 
 const GROUP_FOUNT := &"manafount"
@@ -27,7 +27,7 @@ const TAG_MANAHOAR := &"oham"
 ## The "foe_close" view: the closest enemy of the wizard (the target of --cast) from the wizard's side, to read a state on it.
 @export_range(2.0, 30.0, 0.5, "suffix:m") var foe_close_m := 7.0
 @export_range(0.0, 10.0, 0.5, "suffix:m") var foe_close_up_m := 2.0
-## The "zone" view: the camera stands this far from the first ground zone (the one of --cast=pxef|zorf|tfir), toward the wizard, this high.
+## The "zone" view: the camera stands this far from the first ground zone (the one of --cast=pxef|zorf|tfir|rter|nrot), toward the wizard, this high.
 @export_range(10.0, 200.0, 1.0, "suffix:m") var zone_m := 45.0
 @export_range(0.0, 100.0, 0.5, "suffix:m") var zone_up_m := 28.0
 ## The "cloud" view (061h: --cast=grfr|rifr|galp|likc): the camera stands on the land this far from the first zone that has a cloud, toward the wizard,
@@ -375,6 +375,19 @@ func _report_zones() -> void:
 				parts.append("%s visible=%s%s" % [part.name, (part as Node3D).is_visible_in_tree(), emitting])
 		print("match_shots: zone %s phase %s (%d ticks) cancelled=%s at (%.1f, %.1f, %.1f) points=%d spirits=%d drops=%d | %s" % [zone.name, GroundZone.Phase.keys()[zone.phase], zone.phase_ticks,
 			zone.cancelled, zone.global_position.x, zone.global_position.y, zone.global_position.z, zone.points.size(), get_tree().get_nodes_in_group(RiftSpirit.GROUP).size(), get_tree().get_nodes_in_group(ZoneDrop.GROUP).size(), " | ".join(parts)])
+		_report_stalks_and_tornado(zone)
+
+
+## Meanstalks and Tornado (061j): one line per stalk (mode, how much is out, where its tip is) or the tornado's size, so a capture with no
+## stalk in it says if they had not grown or were holding someone.
+func _report_stalks_and_tornado(zone: GroundZone) -> void:
+	for node in zone.find_children("*", "Stalk", true, false):
+		var stalk := node as Stalk
+		print("match_shots: stalk %s %s growth %.2f root (%.1f, %.1f, %.1f) tip (%.1f, %.1f, %.1f) holds=%s" % [stalk.name, Stalk.Mode.keys()[stalk.mode], stalk.growth,
+			stalk.global_position.x, stalk.global_position.y, stalk.global_position.z, stalk.tip.x, stalk.tip.y, stalk.tip.z, stalk.grip.held() != null])
+	var drift := zone.get_node_or_null("Drift") as TornadoDrift
+	if drift != null:
+		print("match_shots: tornado size %.2f speed %.2f m/s at (%.1f, %.1f, %.1f)" % [drift.size, drift.velocity.length(), zone.global_position.x, zone.global_position.y, zone.global_position.z])
 
 
 ## --hover=wizard: the pointer rests on the local wizard (the HoverFrame draws its frame). The probe stops naming what is

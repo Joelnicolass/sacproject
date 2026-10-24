@@ -42,6 +42,8 @@ const SPELLS := {
 	"pxef": [[SCENE, "res://scenes/spells/zones/explosion_zone.tscn"], [PARTICLE, "res://data/fx/explosion_blast.tres"]],
 	"zorf": [[SCENE, "res://scenes/spells/zones/frozen_ground.tscn"], [PARTICLE, "res://data/fx/snowball_burst.tres"], [PARTICLE, "res://data/fx/ice_shard.tres"]],
 	"tfir": [[SCENE, "res://scenes/spells/zones/demonic_rift.tscn"], [SCENE, "res://scenes/spells/zones/rift_spirit.tscn"]],
+	"rter": [[SCENE, "res://scenes/spells/stalks/stalk.tscn"], [PARTICLE, "res://data/fx/stalk_grab.tres"]],
+	"nrot": [[SCENE, "res://scenes/spells/tornado/tornado.tscn"]],
 }
 const WIZARD_SCENE := "res://scenes/wizards/wizard_body.tscn"
 const UNIT_SCENE := "res://scenes/units/unit.tscn"

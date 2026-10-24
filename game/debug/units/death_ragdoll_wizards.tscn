@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://debug/units/death_ragdoll_wizards.gd" id="1_runner"]
+[ext_resource type="Script" path="res://debug/units/gallery_capture.gd" id="2_capture"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(80, 2, 80)
@@ -16,9 +17,10 @@ sky = SubResource("Sky_gallery")
 ambient_light_source = 3
 tonemap_mode = 3
 
-[node name="DeathRagdollWizards" type="Node3D"]
+[node name="DeathRagdollWizards" type="Node3D" node_paths=PackedStringArray("capture")]
 editor_description = "F6. The 15 wizards die one by one and fall as ragdolls; the ones of slot 1 (an altar stands behind) rise as ghosts, the ones of slot 2 just fade away. It repeats."
 script = ExtResource("1_runner")
+capture = NodePath("Capture")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_gallery")
@@ -37,3 +39,7 @@ shadow_enabled = true
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.8, 0.6, 0, -0.6, 0.8, 0, 14, 20)
 current = true
+
+[node name="Capture" type="Node" parent="." node_paths=PackedStringArray("camera")]
+script = ExtResource("2_capture")
+camera = NodePath("../Camera3D")

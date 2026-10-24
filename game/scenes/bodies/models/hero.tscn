@@ -37,9 +37,9 @@ start_offset = 0.0
 loop_mode = 1
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_jbrw3"]
-animation = &"hewa"
+animation = &"hern"
 use_custom_timeline = true
-timeline_length = 1.4
+timeline_length = 0.8
 stretch_time_scale = false
 start_offset = 0.0
 loop_mode = 1
@@ -129,9 +129,9 @@ clips = {
 "on": false
 }]
 },
-"hewa": {
+"hern": {
 "framerate": 30,
-"frames": 42,
+"frames": 24,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

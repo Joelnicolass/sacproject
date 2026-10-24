@@ -44,6 +44,8 @@ const GRID_COLUMNS := 4
 var _index: Dictionary = {}
 ## --force: rebuild the scenes that already exist (the edits made in the editor are lost) and delete the stale ones.
 var _force := false
+## --only=hero,sage: touch just these models (with --force it rebuilds only them).
+var _only := PackedStringArray()
 
 
 func _init() -> void:
@@ -54,6 +56,9 @@ func _init() -> void:
 		return
 	_index = parsed
 	_force = OS.get_cmdline_user_args().has("--force")
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--only="):
+			_only = arg.substr(7).split(",")
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUT_DIR))
 	var maps := _role_maps()
 	var made := PackedStringArray()
@@ -62,6 +67,8 @@ func _init() -> void:
 	var models: Array = _index.keys()
 	models.sort()
 	for model: String in models:
+		if not _only.is_empty() and not _only.has(model):
+			continue
 		var roles := _playable(model, maps.get(model, {}))
 		_drop_sliding_gesture(model, roles)
 		if not roles.has("idle"):
@@ -122,9 +129,10 @@ func _merge(maps: Dictionary, model: String, roles: Dictionary, who: String) -> 
 func _creature_roles(type: CreatureType, model: String) -> Dictionary:
 	var idle_tag := str(type.idle_animation.get("tag", ""))
 	var rest_tag := _rest_tag(type, model, idle_tag)
-	var run: Dictionary = type.walk_animation
+	# sacengine plays the run state whenever a body moves (state.d:8007-8011); walk is only a fallback for a type with no run clip.
+	var run: Dictionary = type.run_animation
 	if int(run.get("frames", 0)) <= 1:
-		run = type.run_animation
+		run = type.walk_animation
 	var attack_tag := ""
 	if not type.melee_animations.is_empty():
 		attack_tag = str((type.melee_animations[0] as Dictionary).get("tag", ""))
@@ -149,9 +157,10 @@ func _wizard_roles(type: WizardType, model: String) -> Dictionary:
 	var rest_tag := idle_tag
 	if not stance.is_empty() and stance != idle_tag and _has_clip(model, stance):
 		rest_tag = stance
-	var run: Dictionary = type.walk_animation
+	# sacengine plays the run state whenever a body moves (state.d:8007-8011); walk is only a fallback for a type with no run clip.
+	var run: Dictionary = type.run_animation
 	if int(run.get("frames", 0)) <= 1:
-		run = type.run_animation
+		run = type.walk_animation
 	var roles := {"idle": rest_tag, "run": str(run.get("tag", ""))}
 	if rest_tag != idle_tag and not idle_tag.is_empty():
 		roles["gesture"] = idle_tag

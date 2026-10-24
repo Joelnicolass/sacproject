@@ -2,11 +2,13 @@
 class_name HoverFrame
 extends Control
 
-## The four corner brackets that surround the unit, building or soul under the pointer, in its side color (soul colors for a
-## soul). It reads what is hovered from TargetProbe (the one owner of that ray), projects the body's box with the active
-## camera each frame and never shows over a corpse, the sky, the ground, the HUD or while a drag (camera or selection
-## rectangle) runs. Local presentation only: no sim reads it. The name box beside the pointer is TargetInfoPanel's.
-## Ref: renderer.d:3976-4021 (renderTargetFrame), dagonBackend.d:2048-2058.
+## The frame around the unit, building or soul under the pointer, in its side color (soul colors for a soul), drawn like the
+## original: four wedges (one per side, peak alpha near a corner, fading to zero along the side and across its width) that
+## stick out of the rect by 5% and scale with it. Plain alpha blending, no animation. It reads what is hovered from TargetProbe
+## (the one owner of that ray), projects the body's box with the active camera each frame and never shows over a corpse, the sky,
+## the ground, the HUD or while a drag (camera or selection rectangle) runs. Local presentation only: no sim reads it. The name
+## box beside the pointer is TargetInfoPanel's.
+## Ref: renderer.d:3976-4021 (renderTargetFrame), dagonBackend.d:2890-2990 (mesh), colorHUD2.d (material).
 
 @export var probe: TargetProbe
 ## Optional: while an icon waits for a target (spell, order) buildings are framed too.
@@ -14,11 +16,10 @@ extends Control
 ## The rectangle that the selection drag draws; visible means a drag is running.
 @export var selection_box: Control
 @export_group("Look")
-@export var thickness_px := 2.0
-@export var corner_length_px := 12.0
 ## Smallest frame, so a tiny or far body still gets a readable one.
 @export var min_size_px := Vector2(48.0, 48.0)
-@export var padding_px := 4.0
+## Growth of the projected box before the frame (the original adds none).
+@export var padding_px := 0.0
 @export var soul_own_color := Color(0.0, 182.0 / 255.0, 1.0)
 @export var soul_other_color := Color(1.0, 0.0, 0.0)
 @export_group("Rules")
@@ -61,16 +62,17 @@ func _process(_delta: float) -> void:
 
 
 func _draw() -> void:
-	var r := frame_rect
-	var arm := minf(corner_length_px, minf(r.size.x, r.size.y) * 0.5)
-	var half := thickness_px * 0.5
-	for corner in [r.position, Vector2(r.end.x, r.position.y), r.end, Vector2(r.position.x, r.end.y)]:
-		var dx := arm if corner.x == r.position.x else -arm
-		var dy := arm if corner.y == r.position.y else -arm
-		var pad_x := half if dx > 0.0 else -half
-		var pad_y := half if dy > 0.0 else -half
-		draw_line(corner - Vector2(pad_x, 0.0), corner + Vector2(dx, 0.0), frame_color, thickness_px)
-		draw_line(corner - Vector2(0.0, pad_y), corner + Vector2(0.0, dy), frame_color, thickness_px)
+	var mesh := HoverFrameRules.frame_mesh()
+	var points: PackedVector2Array = mesh["points"]
+	var alphas: PackedFloat32Array = mesh["alphas"]
+	for tri in points.size() / 3:
+		var corners := PackedVector2Array()
+		var colors := PackedColorArray()
+		for k in 3:
+			var i := tri * 3 + k
+			corners.append(frame_rect.position + points[i] * frame_rect.size)
+			colors.append(Color(frame_color, frame_color.a * alphas[i]))
+		draw_polygon(corners, colors)
 
 
 func _wanted() -> bool:

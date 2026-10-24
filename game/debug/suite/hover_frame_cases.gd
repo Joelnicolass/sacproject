@@ -30,6 +30,19 @@ func run(host: Node3D) -> Dictionary:
 	camera.look_at(Vector3(0.0, 2.0, -20.0))
 	if HoverFrameRules.screen_rect(camera, HoverFrameRules.world_corners(body)).size != Vector2.ZERO:
 		failures.append("a box behind the camera must give an empty rect")
+	var mesh := HoverFrameRules.frame_mesh()
+	var pts: PackedVector2Array = mesh["points"]
+	var alphas: PackedFloat32Array = mesh["alphas"]
+	if pts.size() != 48 or alphas.size() != 48:
+		failures.append("frame mesh must be 16 triangles")
+	else:
+		var peaks := 0
+		for i in 48:
+			peaks += 1 if alphas[i] == 1.0 else 0
+			if pts[i].x < -0.151 or pts[i].x > 1.151 or pts[i].y < -0.151 or pts[i].y > 1.151:
+				failures.append("frame mesh vertex out of range %s" % pts[i])
+		if peaks != 16 or not pts[1].is_equal_approx(Vector2(0.05, -0.05)) or not pts[24 + 1].is_equal_approx(Vector2(0.95, 1.05)):
+			failures.append("frame mesh peaks must sit at (0.05,-0.05) and its mirror")
 	var rules := HoverFrameRules
 	if rules.should_show(body, &"corpse", false, false, true):
 		failures.append("corpse must hide")

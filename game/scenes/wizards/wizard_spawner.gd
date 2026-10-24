@@ -1,12 +1,8 @@
 extends MpSlotSpawner
 
 ## One wizard_body.tscn per occupied player slot (the dedicated server is not a player).
-## Each wizard appears at spawn_spot() of the PlayerStart with its slot number, among the
-## children of spawn_points (MapProps/Starts).
-
-## Meters from the altar center toward what the start faces. Below 0 the start decides
-## (PlayerStart.wizard_distance); debug scenes set it to stand somewhere else.
-@export var toward_fount := -1.0
+## Each wizard appears at spawn_transform() of the PlayerStart with its slot number (the WizardSpot marker of that
+## start), among the children of spawn_points (MapProps/Starts).
 
 
 func _ready() -> void:
@@ -63,7 +59,7 @@ func _place(pawn: Node, slot: int) -> void:
 	if start == null or not pawn is Node3D:
 		return
 	var body := pawn as Node3D
-	var spot := start.spawn_spot(toward_fount)
+	var spot := start.spawn_transform()
 	body.position = (_root as Node3D).to_local(spot.origin)
 	body.rotation.y = spot.basis.get_euler().y
 

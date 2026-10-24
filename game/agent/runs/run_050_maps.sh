@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # RFC-050: smoke of an imported original map. An AI-vs-AI match of 0.5 min (Easy vs Normal, the NPCs on the field) on the map
-# given as argument (a tag of data/maps/map_catalog.tres), headless, and the checks that it ran on that map, that the two
+# given as argument (a folder of scenes/map/maps/), headless, and the checks that it ran on that map, that the two
 # wizards stood by their altars and that nothing printed an error. Exit 0 / 1, prints SMOKE PASS / SMOKE FAIL.
 #   bash agent/runs/run_050_maps.sh peaks            (needs `--import` once)
 # A map with four seats is played 1 vs 1 on seats 1 and 2 (the 2v2 mode is RFC-049).

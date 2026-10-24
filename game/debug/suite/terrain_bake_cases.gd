@@ -21,7 +21,7 @@ var _failed := 0
 
 func _initialize() -> void:
 	var glb := OriginalAssets.map("high_noon", "terrain.glb")
-	var current := load(MapCatalog.active().terrain_path) as MapTerrainData
+	var current := MapCatalog.active().terrain
 	# debug/map/terrain_reference.res is a frozen copy of the committed (original) terrain.res: neither the import
 	# nor the glb may drift from it.
 	var reference := load(REFERENCE) as MapTerrainData

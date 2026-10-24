@@ -125,9 +125,9 @@ func _case_load() -> void:
 		index += 1
 		if ["jfnt", "jaal"].has(str(row["tag"])):
 			continue
-		var node := _world.get_node_or_null("Map/HighNoonLayout/Buildings/Bld%03d_%s" % [index, row["tag"]]) as MapBuilding
+		var node := _building_at(row)
 		if node == null:
-			missing.append("Bld%03d" % index)
+			missing.append("%s#%03d" % [row["tag"], index])
 			continue
 		placed += 1
 		building_error = maxf(building_error, _flat(node.global_position, Vector3(float(row["x"]), 0.0, float(row["z"]))))
@@ -347,7 +347,6 @@ func _case_house() -> void:
 	info["souls_new"] = get_tree().get_nodes_in_group("soul").size() - souls_before
 	info["shelter_group_after"] = get_tree().get_nodes_in_group("shelter").size()
 	_out["hut"] = info
-	var wall := _world.get_node_or_null("Map/HighNoonLayout/Buildings/Bld010_bld1")
 	var any_wall: MapBuilding = null
 	for node in get_tree().get_nodes_in_group("map_building"):
 		if (node as MapBuilding).tag == "bld1":
@@ -358,7 +357,7 @@ func _case_house() -> void:
 		_attack(hunter2, any_wall)
 		await _ticks(1200)
 		_out["wall"] = {"max_health": any_wall.max_health, "indestructible": any_wall.is_indestructible(), "destroyed": any_wall.is_destroyed()}
-	_out["wall_node"] = str(wall)
+	_out["wall_node"] = str(any_wall)
 
 
 func _case_ground() -> void:
@@ -482,3 +481,12 @@ static func _parse(raw: PackedStringArray) -> Dictionary:
 		else:
 			out[body.substr(0, cut)] = body.substr(cut + 1)
 	return out
+
+
+## The MapBuilding of the map that stands on an NTTS row (same tag, within a meter on the ground).
+func _building_at(row: Dictionary) -> MapBuilding:
+	for node in get_tree().get_nodes_in_group(MapBuilding.GROUP):
+		var building := node as MapBuilding
+		if building.tag == str(row["tag"]) and _flat(building.global_position, Vector3(float(row["x"]), 0.0, float(row["z"]))) < 1.0:
+			return building
+	return null

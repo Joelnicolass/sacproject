@@ -11,23 +11,33 @@
 [ext_resource type="Resource" path="res://assets/original/maps/winter_wonder/terrain.res" id="10_data"]
 [ext_resource type="Material" path="res://assets/original/themes/james/ground_classic.tres" id="11_ground"]
 [ext_resource type="PackedScene" path="res://assets/original/maps/winter_wonder/terrain.glb" id="12_glb"]
-[ext_resource type="PackedScene" path="res://scenes/map/maps/winter_wonder/layout.tscn" id="13_layout"]
 [ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="14_bake"]
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/winter_wonder/nav.res" id="15_navmesh"]
 [ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="17_minimap"]
 [ext_resource type="Resource" path="res://data/buildings/stratos_fountain.tres" id="fbldg_stmf"]
 [ext_resource type="Resource" path="res://scenes/map/maps/winter_wonder/flora.res" id="flora_map"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_ice_1.tscn" id="d2_stratos_ice_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_ice_2.tscn" id="d2_stratos_ice_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_ice_3.tscn" id="d2_stratos_ice_3"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_igloo.tscn" id="d2_stratos_igloo"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_spire.tscn" id="d2_stratos_spire"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_hoodoo_1.tscn" id="d2_stratos_hoodoo_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_hoodoo_2.tscn" id="d2_stratos_hoodoo_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_hoodoo_3.tscn" id="d2_stratos_hoodoo_3"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/zepa.tres" id="d2_zepa"]
+[ext_resource type="PackedScene" path="res://scenes/map/npc_spawn.tscn" id="d2_npc_spawn"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/ycrp.tres" id="d2_ycrp"]
 
-[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings_root", "npc_spawns_root")]
+[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs")]
 script = ExtResource("1_root")
 terrain = NodePath("Terrain")
 nav_region = NodePath("NavRegion")
 starts = NodePath("MapProps/Starts")
 look = NodePath("Look")
 minimap_bake = NodePath("MinimapBake")
-buildings_root = NodePath("WinterWonderLayout/Buildings")
-npc_spawns_root = NodePath("WinterWonderLayout/NpcSpawns")
+buildings = NodePath("Buildings")
+npcs = NodePath("Npcs")
 
 [node name="Look" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("8_look")]
 unique_name_in_owner = true
@@ -56,24 +66,32 @@ script = ExtResource("3_props")
 
 [node name="Starts" type="Node3D" parent="MapProps"]
 
-[node name="Start1" parent="MapProps/Starts" node_paths=PackedStringArray("faces") instance=ExtResource("4_start")]
+[node name="Start1" parent="MapProps/Starts" instance=ExtResource("4_start")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 830, 52.4, 1050)
-faces = NodePath("../../Founts/Fount05")
 
-[node name="Start2" parent="MapProps/Starts" node_paths=PackedStringArray("faces") instance=ExtResource("4_start")]
+[node name="WizardSpot" parent="MapProps/Starts/Start1" index="1"]
+transform = Transform3D(-0.97014254, 0, -0.24253555, 0, 1, 0, 0.24253555, 0, -0.97014254, -7.27606869, 0, -29.1042747)
+
+[node name="Start2" parent="MapProps/Starts" instance=ExtResource("4_start")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 780, 49.2, 1790)
 slot = 2
-faces = NodePath("../../Founts/Fount04")
 
-[node name="Start3" parent="MapProps/Starts" node_paths=PackedStringArray("faces") instance=ExtResource("4_start")]
+[node name="WizardSpot" parent="MapProps/Starts/Start2" index="1"]
+transform = Transform3D(0.9761871, 0, -0.21693026, 0, 1, 0, 0.21693026, 0, 0.9761871, -6.50791359, 0, 29.2856121)
+
+[node name="Start3" parent="MapProps/Starts" instance=ExtResource("4_start")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1740, 35.1, 1770)
 slot = 3
-faces = NodePath("../../Founts/Fount10")
 
-[node name="Start4" parent="MapProps/Starts" node_paths=PackedStringArray("faces") instance=ExtResource("4_start")]
+[node name="WizardSpot" parent="MapProps/Starts/Start3" index="1"]
+transform = Transform3D(0.91914546, 0, 0.39391834, 0, 1, 0, -0.39391834, 0, 0.91914546, 11.8175793, 0, 27.5743504)
+
+[node name="Start4" parent="MapProps/Starts" instance=ExtResource("4_start")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1710, 52.4, 1040)
 slot = 4
-faces = NodePath("../../Founts/Fount09")
+
+[node name="WizardSpot" parent="MapProps/Starts/Start4" index="1"]
+transform = Transform3D(-1, 0, -8.7423e-08, 0, 1, 0, 8.7423e-08, 0, -1, 0, 0, -30)
 
 [node name="Founts" type="Node3D" parent="MapProps"]
 
@@ -117,7 +135,328 @@ building = ExtResource("fbldg_stmf")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1770, 36, 1840)
 building = ExtResource("fbldg_stmf")
 
-[node name="WinterWonderLayout" parent="." instance=ExtResource("13_layout")]
+[node name="Buildings" type="Node3D" parent="."]
+
+[node name="StratosIce1_01" parent="Buildings" instance=ExtResource("d2_stratos_ice_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 710, 61.49998, 1700)
+
+[node name="StratosIce1_02" parent="Buildings" instance=ExtResource("d2_stratos_ice_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1840, 74.1, 1080)
+
+[node name="StratosIce1_03" parent="Buildings" instance=ExtResource("d2_stratos_ice_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1940, 68.00004, 1180)
+
+[node name="StratosIce1_04" parent="Buildings" instance=ExtResource("d2_stratos_ice_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1920, 81.50002, 1140)
+
+[node name="StratosIce1_05" parent="Buildings" instance=ExtResource("d2_stratos_ice_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1540, 55.600014, 1730)
+
+[node name="StratosIce1_06" parent="Buildings" instance=ExtResource("d2_stratos_ice_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 690, 64.30001, 1680)
+
+[node name="StratosIce1_07" parent="Buildings" instance=ExtResource("d2_stratos_ice_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 660, 62.09999, 1650)
+
+[node name="StratosIce1_08" parent="Buildings" instance=ExtResource("d2_stratos_ice_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 720, 60.999985, 1670)
+
+[node name="StratosIce1_09" parent="Buildings" instance=ExtResource("d2_stratos_ice_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 670, 52.399986, 1270)
+
+[node name="StratosIce1_10" parent="Buildings" instance=ExtResource("d2_stratos_ice_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 670, 51.40001, 1320)
+
+[node name="StratosIce1_11" parent="Buildings" instance=ExtResource("d2_stratos_ice_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 710, 64.000015, 1250)
+
+[node name="StratosIce1_12" parent="Buildings" instance=ExtResource("d2_stratos_ice_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 720, 56.400017, 1310)
+
+[node name="StratosIce1_13" parent="Buildings" instance=ExtResource("d2_stratos_ice_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1080, 67.899994, 1110)
+
+[node name="StratosIce1_14" parent="Buildings" instance=ExtResource("d2_stratos_ice_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1130, 63.000042, 1210)
+
+[node name="StratosIce1_15" parent="Buildings" instance=ExtResource("d2_stratos_ice_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1100, 68.200005, 1180)
+
+[node name="StratosIce1_16" parent="Buildings" instance=ExtResource("d2_stratos_ice_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1090, 70.19999, 1140)
+
+[node name="StratosIce1_17" parent="Buildings" instance=ExtResource("d2_stratos_ice_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1530, 53.800014, 1750)
+
+[node name="StratosIce1_18" parent="Buildings" instance=ExtResource("d2_stratos_ice_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1570, 53.80002, 1660)
+
+[node name="StratosIce1_19" parent="Buildings" instance=ExtResource("d2_stratos_ice_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1890, 82.59998, 1120)
+
+[node name="StratosIce1_20" parent="Buildings" instance=ExtResource("d2_stratos_ice_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1560, 57.19998, 1680)
+
+[node name="StratosIce2_01" parent="Buildings" instance=ExtResource("d2_stratos_ice_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 910, 42.999992, 1210)
+
+[node name="StratosIce2_02" parent="Buildings" instance=ExtResource("d2_stratos_ice_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 980, 32.40003, 1390)
+
+[node name="StratosIce2_03" parent="Buildings" instance=ExtResource("d2_stratos_ice_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 890, 42.29999, 1620)
+
+[node name="StratosIce2_04" parent="Buildings" instance=ExtResource("d2_stratos_ice_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 820, 51.600002, 1740)
+
+[node name="StratosIce2_05" parent="Buildings" instance=ExtResource("d2_stratos_ice_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1070, 57.800022, 1250)
+
+[node name="StratosIce2_06" parent="Buildings" instance=ExtResource("d2_stratos_ice_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1300, 27.299988, 1150)
+
+[node name="StratosIce2_07" parent="Buildings" instance=ExtResource("d2_stratos_ice_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1420, 36.000008, 1030)
+
+[node name="StratosIce2_08" parent="Buildings" instance=ExtResource("d2_stratos_ice_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1550, 60.1, 1100)
+
+[node name="StratosIce2_09" parent="Buildings" instance=ExtResource("d2_stratos_ice_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1820, 61.899998, 1000)
+
+[node name="StratosIce2_10" parent="Buildings" instance=ExtResource("d2_stratos_ice_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1780, 55.100006, 1140)
+
+[node name="StratosIce2_11" parent="Buildings" instance=ExtResource("d2_stratos_ice_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1760, 38.399994, 1300)
+
+[node name="StratosIce2_12" parent="Buildings" instance=ExtResource("d2_stratos_ice_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1830, 39.7, 1340)
+
+[node name="StratosIce2_13" parent="Buildings" instance=ExtResource("d2_stratos_ice_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1640, 44.000023, 1640)
+
+[node name="StratosIce2_14" parent="Buildings" instance=ExtResource("d2_stratos_ice_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1880, 45.90004, 1770)
+
+[node name="StratosIce2_15" parent="Buildings" instance=ExtResource("d2_stratos_ice_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1680, 44.30002, 1840)
+
+[node name="StratosIce3_01" parent="Buildings" instance=ExtResource("d2_stratos_ice_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1520, 57.300014, 990)
+
+[node name="StratosIce3_02" parent="Buildings" instance=ExtResource("d2_stratos_ice_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1390, 31.799992, 1130)
+
+[node name="StratosIce3_03" parent="Buildings" instance=ExtResource("d2_stratos_ice_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 610, 41.20002, 1350)
+
+[node name="StratosIce3_04" parent="Buildings" instance=ExtResource("d2_stratos_ice_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1240, 41.100014, 1680)
+
+[node name="StratosIce3_05" parent="Buildings" instance=ExtResource("d2_stratos_ice_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1470, 41.800022, 1670)
+
+[node name="StratosIce3_06" parent="Buildings" instance=ExtResource("d2_stratos_ice_3")]
+transform = Transform3D(-0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, -0.70710677, 720, 42.500015, 1380)
+
+[node name="StratosIce3_07" parent="Buildings" instance=ExtResource("d2_stratos_ice_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 880, 50.499996, 1690)
+
+[node name="StratosIce3_08" parent="Buildings" instance=ExtResource("d2_stratos_ice_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1270, 51.600018, 1760)
+
+[node name="StratosIce3_09" parent="Buildings" instance=ExtResource("d2_stratos_ice_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 880, 57.399975, 1840)
+
+[node name="StratosIce3_10" parent="Buildings" instance=ExtResource("d2_stratos_ice_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 970, 32.400005, 1490)
+
+[node name="StratosIce3_11" parent="Buildings" instance=ExtResource("d2_stratos_ice_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1030, 65.99999, 1100)
+
+[node name="StratosIce3_12" parent="Buildings" instance=ExtResource("d2_stratos_ice_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 740, 51.6, 1060)
+
+[node name="StratosIce3_13" parent="Buildings" instance=ExtResource("d2_stratos_ice_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 890, 33.200016, 1520)
+
+[node name="StratosIce3_14" parent="Buildings" instance=ExtResource("d2_stratos_ice_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1130, 66.90001, 1760)
+
+[node name="StratosIce3_15" parent="Buildings" instance=ExtResource("d2_stratos_ice_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1140, 58.899998, 1690)
+
+[node name="StratosIce3_16" parent="Buildings" instance=ExtResource("d2_stratos_ice_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 800, 47.70004, 1140)
+
+[node name="StratosIgloo_01" parent="Buildings" instance=ExtResource("d2_stratos_igloo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 730, 28.800005, 1470)
+
+[node name="StratosIgloo_02" parent="Buildings" instance=ExtResource("d2_stratos_igloo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2080, 40.1, 1450)
+
+[node name="StratosIgloo_03" parent="Buildings" instance=ExtResource("d2_stratos_igloo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2060, 48.699997, 1380)
+
+[node name="StratosIgloo_04" parent="Buildings" instance=ExtResource("d2_stratos_igloo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 650, 33.000008, 1500)
+
+[node name="StratosIgloo_05" parent="Buildings" instance=ExtResource("d2_stratos_igloo")]
+transform = Transform3D(0.38267848, 0, 0.9238816, 0, 1, 0, -0.9238816, 0, 0.38267848, 650, 34.2, 1420)
+
+[node name="StratosIgloo_06" parent="Buildings" instance=ExtResource("d2_stratos_igloo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1990, 39.699997, 1460)
+
+[node name="StratosSpire_01" parent="Buildings" instance=ExtResource("d2_stratos_spire")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2328.159, 97.94549, 641.9)
+
+[node name="StratosSpire_02" parent="Buildings" instance=ExtResource("d2_stratos_spire")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1319.269, 126.439995, 2275.289)
+
+[node name="StratosSpire_03" parent="Buildings" instance=ExtResource("d2_stratos_spire")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2224.75, 84.04246, 427.126)
+
+[node name="StratosSpire_04" parent="Buildings" instance=ExtResource("d2_stratos_spire")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2099.859, 76.1436, 355.493)
+
+[node name="StratosSpire_05" parent="Buildings" instance=ExtResource("d2_stratos_spire")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2074.194, 150.17946, 207.33)
+
+[node name="StratosSpire_06" parent="Buildings" instance=ExtResource("d2_stratos_spire")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2228.075, 103.53191, 737.502)
+
+[node name="StratosSpire_07" parent="Buildings" instance=ExtResource("d2_stratos_spire")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1365.718, 118.91016, 2301.956)
+
+[node name="StratosSpire_08" parent="Buildings" instance=ExtResource("d2_stratos_spire")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 262.189, 82.61365, 1150.245)
+
+[node name="StratosSpire_09" parent="Buildings" instance=ExtResource("d2_stratos_spire")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 306.409, 59.050957, 1288.063)
+
+[node name="StratosSpire_10" parent="Buildings" instance=ExtResource("d2_stratos_spire")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1417.425, 145.09299, 1404.065)
+
+[node name="StratosSpire_11" parent="Buildings" instance=ExtResource("d2_stratos_spire")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1144.432, 131.71097, 487.509)
+
+[node name="StratosSpire_12" parent="Buildings" instance=ExtResource("d2_stratos_spire")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2281.355, 87.104614, 525.577)
+
+[node name="StratosHoodoo1_01" parent="Buildings" instance=ExtResource("d2_stratos_hoodoo_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1410, 33.9, 1660)
+
+[node name="StratosHoodoo1_02" parent="Buildings" instance=ExtResource("d2_stratos_hoodoo_1")]
+transform = Transform3D(-0.70711064, 0, 0.7071029, 0, 1, 0, -0.7071029, 0, -0.70711064, 1630, 55.40002, 900)
+
+[node name="StratosHoodoo2_01" parent="Buildings" instance=ExtResource("d2_stratos_hoodoo_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1440, 39.29999, 1730)
+
+[node name="StratosHoodoo2_02" parent="Buildings" instance=ExtResource("d2_stratos_hoodoo_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1910, 32.6, 1630)
+
+[node name="StratosHoodoo2_03" parent="Buildings" instance=ExtResource("d2_stratos_hoodoo_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1960, 40.200016, 1450)
+
+[node name="StratosHoodoo2_04" parent="Buildings" instance=ExtResource("d2_stratos_hoodoo_2")]
+transform = Transform3D(-0.3826834, 0, -0.92387956, 0, 1, 0, 0.92387956, 0, -0.3826834, 1670, 49.50002, 890)
+
+[node name="StratosHoodoo2_05" parent="Buildings" instance=ExtResource("d2_stratos_hoodoo_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1940, 37.9, 1560)
+
+[node name="StratosHoodoo3_01" parent="Buildings" instance=ExtResource("d2_stratos_hoodoo_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1370, 42.80001, 1770)
+
+[node name="StratosHoodoo3_02" parent="Buildings" instance=ExtResource("d2_stratos_hoodoo_3")]
+transform = Transform3D(-0.9238795, 0, -0.3826835, 0, 1, 0, 0.3826835, 0, -0.9238795, 1650, 52.700012, 880)
+
+[node name="Npcs" type="Node3D" parent="."]
+
+[node name="Snowman_01" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2026.496, 46.752094, 1405.423)
+creature = ExtResource("d2_zepa")
+side = 4
+
+[node name="Snowman_02" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 664.153, 33.916416, 1437.513)
+creature = ExtResource("d2_zepa")
+side = 4
+
+[node name="Snowman_03" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 666.794, 33.17879, 1478.643)
+creature = ExtResource("d2_zepa")
+side = 4
+
+[node name="Snowman_04" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 651.492, 34.01514, 1479.487)
+creature = ExtResource("d2_zepa")
+side = 4
+
+[node name="Snowman_05" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 653.689, 33.91707, 1480.076)
+creature = ExtResource("d2_zepa")
+side = 4
+
+[node name="Snowman_06" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 657.102, 33.982708, 1438.209)
+creature = ExtResource("d2_zepa")
+side = 4
+
+[node name="Snowman_07" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2026.11, 46.114544, 1417.808)
+creature = ExtResource("d2_zepa")
+side = 4
+
+[node name="Snowman_08" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 668.366, 33.63999, 1442.317)
+creature = ExtResource("d2_zepa")
+side = 4
+
+[node name="Snowman_09" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2066.35, 45.796043, 1431.093)
+creature = ExtResource("d2_zepa")
+side = 4
+
+[node name="Snowman_10" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2057.868, 45.35544, 1439.307)
+creature = ExtResource("d2_zepa")
+side = 4
+
+[node name="Snowman_11" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2037.988, 45.452682, 1437.337)
+creature = ExtResource("d2_zepa")
+side = 4
+
+[node name="Snowman_12" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2036.9, 46.534245, 1405.347)
+creature = ExtResource("d2_zepa")
+side = 4
+
+[node name="Yeti_01" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1441.622, 88.97227, 1471.575)
+creature = ExtResource("d2_ycrp")
+side = 4
+
+[node name="Yeti_02" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1329.38, 104.8858, 1431.127)
+creature = ExtResource("d2_ycrp")
+side = 4
+
+[node name="Yeti_03" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1382.632, 125.4005, 1359.676)
+creature = ExtResource("d2_ycrp")
+side = 4
+
+[node name="Yeti_04" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1496.811, 99.31493, 1378.065)
+creature = ExtResource("d2_ycrp")
+side = 4
+
+[node name="Yeti_05" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1404.744, 142.63788, 1390.307)
+creature = ExtResource("d2_ycrp")
+side = 4
 
 [node name="NavRegion" type="NavigationRegion3D" parent="."]
 unique_name_in_owner = true

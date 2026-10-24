@@ -24,7 +24,7 @@ const BOT_KEYS: PackedStringArray = ["god", "difficulty"]
 var _rng := RandomNumberGenerator.new()
 
 
-## The worlds a room can play: the maps of data/maps/map_catalog.tres that rooms offer (RFC-044), plus the test maps if asked.
+## The worlds a room can play: the maps of scenes/map/maps/ that rooms offer (RFC-044), plus the test maps if asked.
 func worlds() -> PackedStringArray:
 	var catalog := MapCatalog.shared()
 	return catalog.all_tags() if include_test_maps else catalog.room_tags()

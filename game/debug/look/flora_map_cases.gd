@@ -1,9 +1,8 @@
 extends RefCounted
 
 ## RFC-054 054a (F380): the baked FloraMaps (scenes/map/maps/<tag>/flora.res) and FloraPlacement.
-## - flora_total: total() of every map = the widgets.json rows bake_map_layout would plant (on the land, outside the
-##   altar's 40 m and the fount's 6 m), counted here row by row; high_noon and peasantville also against the Plant nodes
-##   of their layout.tscn (the real _plan_plants output).
+## - flora_total: total() of every map = the widgets.json rows that get a plant (on the land, outside the
+##   altar's 40 m and the fount's 6 m), counted here row by row.
 ## - flora_size: every flora.res at most MAX_BYTES (the sizes are in the result).
 ## - flora_seed: the same seed gives the same bytes; another seed, other bytes; the builder gives the same counts twice.
 ## - flora_half: density 0.5 keeps count x 0.5 within 1 in every cell (and density 1 keeps them all).
@@ -53,16 +52,13 @@ func _total(maps: Dictionary) -> Dictionary:
 		totals[tag] = flora.total()
 		if flora.total() != expected:
 			wrong[tag] = {"total": flora.total(), "expected": expected}
-		var plants := _layout_plants(map)
-		if plants > 0 and plants != flora.total():
-			wrong["%s_layout" % tag] = {"total": flora.total(), "plant_nodes": plants}
 	return {"ok": wrong.is_empty(), "totals": totals, "wrong": wrong}
 
 
-## widgets.json rows that bake_map_layout would plant, whatever their model.
+## widgets.json rows that get a plant, whatever their model.
 func _plantable(map: MapDefinition) -> int:
-	var widgets := PlantClears.read_json(map.widgets_path)
-	var ntts := PlantClears.read_json(map.ntts_path)
+	var widgets := PlantClears.read_json(PlantClears.original_file(map, "widgets.json"))
+	var ntts := PlantClears.read_json(PlantClears.original_file(map, "ntts.json"))
 	var land := PlantClears.land_of(map)
 	if land == null:
 		return -1
@@ -73,20 +69,6 @@ func _plantable(map: MapDefinition) -> int:
 			if clears.accepts(land, float(row[0]), float(row[1])):
 				count += 1
 	land.free()
-	return count
-
-
-## Plant nodes under the layout's `Plants` (read from the PackedScene's state, nothing instanced); 0 when it has none.
-func _layout_plants(map: MapDefinition) -> int:
-	var packed := load(map.layout_scene_path) as PackedScene if not map.layout_scene_path.is_empty() else null
-	if packed == null:
-		return 0
-	var state := packed.get_state()
-	var count := 0
-	for i in state.get_node_count():
-		var parent := str(state.get_node_path(i, true))
-		if parent == "Plants" or parent == "./Plants":
-			count += 1
 	return count
 
 

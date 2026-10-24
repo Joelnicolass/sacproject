@@ -24,9 +24,9 @@ func _initialize() -> void:
 		push_error("%s already exists and is now the source of truth. Pass --force to overwrite it." % out)
 		quit(1)
 		return
-	var data := load(map.terrain_path) as MapTerrainData if not map.terrain_path.is_empty() else null
+	var data := map.terrain
 	if data == null:
-		push_error("Missing %s." % map.terrain_path)
+		push_error("The map '%s' has no terrain in its MapDefinition." % map.tag)
 		quit(1)
 		return
 	var error := export_data(data, out)

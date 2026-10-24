@@ -11,20 +11,24 @@ script = ExtResource("1_start")
 [node name="Altar" parent="." instance=ExtResource("2_altar")]
 unique_name_in_owner = true
 
-[node name="Preview" type="Node3D" parent="."]
+[node name="WizardSpot" type="Marker3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 30)
+
+[node name="PreviewWizard" type="Node3D" parent="WizardSpot"]
 unique_name_in_owner = true
 
-[node name="PreviewWizard" type="Node3D" parent="Preview"]
-unique_name_in_owner = true
-
-[node name="PreviewVisual" type="MeshInstance3D" parent="Preview/PreviewWizard"]
+[node name="PreviewVisual" type="MeshInstance3D" parent="WizardSpot/PreviewWizard"]
 unique_name_in_owner = true
 transparency = 0.5
 cast_shadow = 0
 script = ExtResource("3_visual")
 
-[node name="GroundSnap" type="Node3D" parent="Preview/PreviewWizard"]
+[node name="GroundSnap" type="Node3D" parent="WizardSpot/PreviewWizard"]
 script = ExtResource("4_snap")
+
+[node name="Preview" type="Node3D" parent="."]
+unique_name_in_owner = true
 
 [node name="PreviewLabel" type="Label3D" parent="Preview"]
 unique_name_in_owner = true

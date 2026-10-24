@@ -1,7 +1,7 @@
 extends SceneTree
 
 ## No necesita el juego original por si mismo: lee el .bin que escribe tools/import/import_map.py (esa herramienta SI requiere el juego original).
-## Turns a map's terrain bin (High Noon, or `--map=<tag>`: RFC-050) into the `terrain_path` of its MapDefinition (RFC-033, 033f).
+## Turns a map's terrain bin (High Noon, or `--map=<tag>`: RFC-050) into assets/original/maps/<tag>/terrain.res (the `terrain` of its MapDefinition) (RFC-033, 033f).
 ## Source: the HNTR v1 bin that `python3 tools/import/import_map.py [--map=Name] --terrain-bin=F` builds from the .scp (a temporary file outside the
 ## repo; nothing in the repo). Same float32 and int32 values as the bin, so Terrain builds the same mesh. Idempotent: when
 ## terrain.res already holds the same arrays nothing is written. Run once; the result is versioned.
@@ -10,7 +10,7 @@ extends SceneTree
 
 func _initialize() -> void:
 	var source := ""
-	var out := MapCatalog.active().terrain_path
+	var out := OriginalAssets.map(String(MapCatalog.active().tag), "terrain.res")
 	for argument in OS.get_cmdline_user_args():
 		if argument.begins_with("--bin="):
 			source = argument.substr(6)

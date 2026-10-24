@@ -2,8 +2,8 @@
 class_name MapRoot
 extends Node3D
 
-## RFC-044 044a: the root of a map scene (scenes/map/maps/<tag>/map.tscn). It holds the ground, the layout, the
-## navmesh region, the starts and founts, the sky and the look of one map, and nothing of the match: the match scene
+## The root of a map scene (scenes/map/maps/<tag>/map.tscn): the ground, the buildings and the creature spawns, the
+## navmesh region, the starts and founts, the sky and the look of one map, and nothing of the match. The match scene
 ## (scenes/match/match.tscn) instances it and binds its own systems to these sockets. A map you make in the editor
 ## fills the sockets it has; the required ones warn.
 
@@ -16,9 +16,10 @@ extends Node3D
 @export var look: LookRig
 ## Draws the ground seen from above for the minimap; empty = no minimap picture.
 @export var minimap_bake: MinimapTerrainBake
-## The MapBuilding and NpcSpawn rows of the layout; empty in a map without houses or inhabitants.
-@export var buildings_root: Node3D
-@export var npc_spawns_root: Node3D
+## Holds the MapBuilding nodes (the building scenes you drag in); empty in a map without houses.
+@export var buildings: Node3D
+## Holds the NpcSpawn nodes; empty in a map without inhabitants.
+@export var npcs: Node3D
 
 
 func _get_configuration_warnings() -> PackedStringArray:

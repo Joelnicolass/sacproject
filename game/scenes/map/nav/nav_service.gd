@@ -157,10 +157,10 @@ func _build_navmesh() -> bool:
 		return true
 	var nav_region := region
 	if nav_region == null:
-		var nav_path := MapCatalog.active().nav_path
-		var stored := ResourceLoader.load(nav_path) as NavigationMesh if not nav_path.is_empty() else null
+		var map := MapCatalog.active()
+		var stored := map.nav
 		if stored == null or stored.get_polygon_count() == 0:
-			push_warning("nav: no navmesh in %s" % nav_path)
+			push_warning("nav: the map '%s' has no navmesh" % map.tag)
 			return false
 		nav_region = NavigationRegion3D.new()
 		nav_region.name = "NavRegion"

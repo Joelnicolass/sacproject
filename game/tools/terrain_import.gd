@@ -304,14 +304,8 @@ static func _read_indices(json: Dictionary, bin: PackedByteArray, accessor_id: i
 	return result
 
 
-## The tile map of the map whose terrain lives next to `source`: its MapDefinition says it, else a tiles.png beside the
-## glb. Import runs before any map is active (fresh clone, no cache), so the active map can't be asked.
+## The tile map of the map whose terrain lives next to `source`: the tiles.png beside the glb. Import runs before any map is
+## active (fresh clone, no cache) and a MapDefinition loads this very glb through its scene, so no definition is asked.
 func _tiles_for(source: String) -> String:
-	var folder := source.get_base_dir()
-	var catalog := load("res://data/maps/map_catalog.tres") as MapCatalog
-	if catalog != null:
-		for definition in catalog.maps:
-			if definition != null and definition.terrain_path.get_base_dir() == folder and not definition.tiles_path.is_empty():
-				return definition.tiles_path
-	var beside := folder.path_join("tiles.png")
+	var beside := source.get_base_dir().path_join("tiles.png")
 	return beside if ResourceLoader.exists(beside) else ""

@@ -1,19 +1,19 @@
-[gd_resource type="Resource" script_class="MapDefinition" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="MapDefinition" format=3]
 
 [ext_resource type="Script" path="res://scenes/map/map_definition.gd" id="1_def"]
-[ext_resource type="Resource" path="res://assets/original/maps/peasantville/sides.tres" id="2_sides"]
+[ext_resource type="PackedScene" path="res://scenes/map/maps/peasantville/map.tscn" id="2_scene"]
+[ext_resource type="Resource" path="res://assets/original/maps/peasantville/terrain.res" id="3_terrain"]
+[ext_resource type="Image" path="res://assets/original/maps/peasantville/tiles.png" id="4_tiles"]
+[ext_resource type="Texture2D" path="res://assets/original/maps/peasantville/light.png" id="5_light"]
+[ext_resource type="NavigationMesh" path="res://scenes/map/maps/peasantville/nav.res" id="6_nav"]
 
 [resource]
 script = ExtResource("1_def")
 tag = &"peasantville"
 display_name = "Peasantville"
-map_scene_path = "res://scenes/map/maps/peasantville/map.tscn"
-sides = ExtResource("2_sides")
-terrain_path = "res://assets/original/maps/peasantville/terrain.res"
-tiles_path = "res://assets/original/maps/peasantville/tiles.png"
-light_path = "res://assets/original/maps/peasantville/light.png"
-nav_path = "res://scenes/map/maps/peasantville/nav.res"
+map_scene = ExtResource("2_scene")
+terrain = ExtResource("3_terrain")
+tiles = ExtResource("4_tiles")
+light = ExtResource("5_light")
+nav = ExtResource("6_nav")
 player_starts = 2
-layout_scene_path = "res://scenes/map/maps/peasantville/layout.tscn"
-ntts_path = "res://assets/original/maps/peasantville/ntts.json"
-widgets_path = "res://assets/original/maps/peasantville/widgets.json"

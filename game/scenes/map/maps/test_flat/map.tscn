@@ -13,6 +13,7 @@
 [ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="12_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="14_look"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="13_bake"]
+[ext_resource type="Shape3D" path="res://scenes/map/maps/test_flat/terrain_collision.res" id="terrain_collision"]
 
 [node name="Map" type="Node3D" unique_id=1044100001 node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake")]
 script = ExtResource("1_root")
@@ -42,19 +43,28 @@ visible = false
 text = "UI_MAP_MISSING_2"
 font_size = 48
 
+[node name="Collision" type="StaticBody3D" parent="Terrain"]
+
+[node name="Shape" type="CollisionShape3D" parent="Terrain/Collision"]
+shape = ExtResource("terrain_collision")
+
 [node name="MapProps" type="Node3D" parent="." unique_id=1044100007]
 script = ExtResource("3_props")
 
 [node name="Starts" type="Node3D" parent="MapProps" unique_id=1044100008]
 
-[node name="Start1" parent="MapProps/Starts" unique_id=1044100009 node_paths=PackedStringArray("faces") instance=ExtResource("4_start")]
+[node name="Start1" parent="MapProps/Starts" unique_id=1044100009 instance=ExtResource("4_start")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1180, 10, 1300)
-faces = NodePath("../../Founts/FountCenter")
 
-[node name="Start2" parent="MapProps/Starts" unique_id=1044100010 node_paths=PackedStringArray("faces") instance=ExtResource("4_start")]
+[node name="WizardSpot" parent="MapProps/Starts/Start1" index="1"]
+transform = Transform3D(-4.3711e-08, 0, 1, 0, 1, 0, -1, 0, -4.3711e-08, 30, 0, 0)
+
+[node name="Start2" parent="MapProps/Starts" unique_id=1044100010 instance=ExtResource("4_start")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1420, 10, 1300)
 slot = 2
-faces = NodePath("../../Founts/FountCenter")
+
+[node name="WizardSpot" parent="MapProps/Starts/Start2" index="1"]
+transform = Transform3D(-4.3711e-08, 0, -1, 0, 1, 0, 1, 0, -4.3711e-08, -30, 0, 0)
 
 [node name="Founts" type="Node3D" parent="MapProps" unique_id=1044100011]
 

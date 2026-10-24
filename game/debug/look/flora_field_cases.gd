@@ -63,7 +63,7 @@ func _headless() -> Dictionary:
 	var seen := {}
 	for tag in FloraMapBuilder.ORIGINAL_MAPS:
 		var map := MapCatalog.shared().find(StringName(tag))
-		var packed := map.load_scene() if map else null
+		var packed := map.map_scene if map else null
 		if packed == null:
 			wrong[tag] = "no carga"
 			continue

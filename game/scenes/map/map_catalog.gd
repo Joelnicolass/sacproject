@@ -1,27 +1,34 @@
 @tool
 class_name MapCatalog
-extends Resource
+extends RefCounted
 
-## RFC-044 044b: the maps of the game (data/maps/map_catalog.tres) and the one this process plays. The active map is
-## `--map=<tag>` on the command line, or High Noon. Everything that used to name High Noon's files (SideRelations,
-## NavService, GroundMaterial, Terrain, the bake tools, the room rules) asks `MapCatalog.active()`.
+## The maps of the game and the one this process plays. A map is a folder scenes/map/maps/<tag>/ with its scene and a
+## MapDefinition `<tag>.tres`; this class finds them by scanning the folder, so adding a map edits no list. The active map is
+## `--map=<tag>` on the command line, or High Noon. Everything that used to name High Noon's files (SideRelations, NavService,
+## GroundMaterial, Terrain, the bake tools, the room rules) asks `MapCatalog.active()`.
+## A definition loads its scene, ground and navmesh: only the ones asked for are loaded (`find`, `active`); `maps` and the tag
+## lists that need a flag of each one (`room_tags`) load them all.
 
-const PATH := "res://data/maps/map_catalog.tres"
+const DIR := "res://scenes/map/maps"
 const DEFAULT_TAG := &"high_noon"
 
-@export var maps: Array[MapDefinition] = []
-
-## Only the tag of the active map is kept: a static that holds a Resource of its own script is never freed (the engine
-## complains "resources still in use at exit"), and the catalog is cheap to load again (ResourceLoader caches it).
+## Only the tag of the active map is kept, and the definitions already loaded.
 static var _active_tag: StringName = &""
+static var _loaded: Dictionary = {}
+
+## Every map, the default first, the test maps last. Loads them all.
+var maps: Array[MapDefinition]:
+	get:
+		var found: Array[MapDefinition] = []
+		for tag in all_tags():
+			var definition := find(StringName(tag))
+			if definition != null:
+				found.append(definition)
+		return found
 
 
 static func shared() -> MapCatalog:
-	var catalog := load(PATH) as MapCatalog
-	if catalog == null:
-		push_error("MapCatalog: %s does not load." % PATH)
-		catalog = MapCatalog.new()
-	return catalog
+	return MapCatalog.new()
 
 
 ## The tag of the map this process plays: `--map=<tag>` (read from the command line here, not through MpBoot: this
@@ -40,12 +47,11 @@ static func current_tag() -> StringName:
 ## The map this process plays. An unknown tag is an error and the default plays.
 static func active() -> MapDefinition:
 	current_tag()
-	var catalog := shared()
-	var definition := catalog.find(_active_tag)
+	var definition := shared().find(_active_tag)
 	if definition == null:
-		push_error("MapCatalog: no map '%s' in %s; playing '%s'." % [_active_tag, PATH, DEFAULT_TAG])
+		push_error("MapCatalog: no map '%s' in %s; playing '%s'." % [_active_tag, DIR, DEFAULT_TAG])
 		_active_tag = DEFAULT_TAG
-		definition = catalog.find(DEFAULT_TAG)
+		definition = shared().find(DEFAULT_TAG)
 	return definition
 
 
@@ -59,26 +65,29 @@ static func reset() -> void:
 	_active_tag = &""
 
 
+## The definition with that tag, loaded once. Null when the folder has none.
 func find(tag: StringName) -> MapDefinition:
-	for definition in maps:
-		if definition != null and definition.tag == tag:
-			return definition
-	return null
+	if not _loaded.has(tag) or Engine.is_editor_hint():
+		var path := "%s/%s/%s.tres" % [DIR, tag, tag]
+		_loaded[tag] = load(path) as MapDefinition if ResourceLoader.exists(path) else null
+	return _loaded[tag]
 
 
 ## The tags a room can offer.
 func room_tags() -> PackedStringArray:
 	var tags := PackedStringArray()
 	for definition in maps:
-		if definition != null and definition.room_selectable:
+		if definition.room_selectable:
 			tags.append(String(definition.tag))
 	return tags
 
 
 ## RFC-049 049a: every tag, the test maps included (a room server started with `--room-test-maps`, the debug boot).
 func all_tags() -> PackedStringArray:
-	var tags := PackedStringArray()
-	for definition in maps:
-		if definition != null:
-			tags.append(String(definition.tag))
-	return tags
+	var tags := Array(DirAccess.get_directories_at(DIR))
+	tags = tags.filter(func(tag: String) -> bool: return ResourceLoader.exists("%s/%s/%s.tres" % [DIR, tag, tag]))
+	tags.sort_custom(func(a: String, b: String) -> bool:
+		var ka := [a != String(DEFAULT_TAG), a.begins_with("test"), a]
+		var kb := [b != String(DEFAULT_TAG), b.begins_with("test"), b]
+		return ka < kb)
+	return PackedStringArray(tags)

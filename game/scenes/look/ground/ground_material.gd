@@ -34,8 +34,7 @@ static func build(ground: GroundSet, tile_ids: PackedByteArray, preset: LookQual
 static func bind_common(mat: ShaderMaterial, ground: GroundSet, tile_ids: PackedByteArray) -> void:
 	mat.set_shader_parameter("splat", splat_texture(ground.tiles, tile_ids))
 	mat.set_shader_parameter("noise_tex", _noise_texture())
-	var light_map := MapCatalog.active().light_path
-	var light := load(light_map) as Texture2D if ground.lightmap_tint > 0.0 and not light_map.is_empty() and ResourceLoader.exists(light_map) else null
+	var light := MapCatalog.active().light if ground.lightmap_tint > 0.0 else null
 	if light:
 		mat.set_shader_parameter("lightmap", light)
 

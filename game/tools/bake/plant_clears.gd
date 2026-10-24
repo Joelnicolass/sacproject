@@ -48,13 +48,18 @@ func accepts(land: Terrain, x: float, z: float) -> bool:
 ## A Terrain whose `shape` holds the ground index, to ask is_on_ground and height_at as the game does. Not in the
 ## tree: the caller frees it. Null when the map has no valid terrain.
 static func land_of(map: MapDefinition) -> Terrain:
-	var data := load(map.terrain_path) as MapTerrainData if not map.terrain_path.is_empty() else null
+	var data := map.terrain
 	if data == null or not data.is_valid():
 		return null
 	var land := Terrain.new()
 	land.shape = TerrainShape.with_data(data)
 	land.add_child(land.shape)
 	return land
+
+
+## The original's file of a map (ntts.json, widgets.json): assets/original/maps/<tag>/<file>.
+static func original_file(map: MapDefinition, file: String) -> String:
+	return OriginalAssets.map(String(map.tag), file)
 
 
 ## widgets.json or ntts.json as a Dictionary ({} when missing or not an object).

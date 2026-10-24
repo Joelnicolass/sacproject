@@ -5,14 +5,16 @@
 [ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="3_unit"]
 
 [node name="DesecrateRitual" type="Node"]
-editor_description = "Dedicado y dos clientes (slot 1 lanza, slot 2 mira). Start2 va a (1500, 16.9, 1480) y el mago 2 aparece a 12 m del altar (Start2.wizard_distance): a 30 m cae sobre un pilar del altar y queda a 38 m de altura."
+editor_description = "Dedicado y dos clientes (slot 1 lanza, slot 2 mira). Start2 va a (1500, 16.9, 1480) y el mago 2 aparece a 12 m del altar (el WizardSpot de Start2): a 30 m cae sobre un pilar del altar y queda a 38 m de altura."
 
 [node name="HighNoon" parent="." instance=ExtResource("1_world")]
 rules = ExtResource("2_rules")
 
 [node name="Start2" parent="HighNoon/Map/MapProps/Starts" index="1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1500, 16.9, 1480)
-wizard_distance = 12.0
+
+[node name="WizardSpot" parent="HighNoon/Map/MapProps/Starts/Start2" index="1"]
+transform = Transform3D(-0.618559599, 0, -0.785737872, 0, 1, 0, 0.785737872, 0, -0.618559599, -9.42885494, 0, -7.42271519)
 
 [node name="Camera" parent="HighNoon"]
 debug_pointer = Vector2(640, 360)

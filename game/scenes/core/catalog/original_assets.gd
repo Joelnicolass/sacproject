@@ -80,7 +80,7 @@ static func theme(god: String, name: String) -> String:
 	return THEMES_DIR + "%s/%s.png" % [god, name]
 
 
-## A map file: maps/<map>/<file> (terrain.res, tiles.png, light.png, sides.tres).
+## A map file: maps/<map>/<file> (terrain.res, tiles.png, light.png, ntts.json).
 static func map(map_name: String, file: String) -> String:
 	return MAPS_DIR + "%s/%s" % [map_name, file]
 

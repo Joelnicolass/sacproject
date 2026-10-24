@@ -35,12 +35,12 @@ func _attach_map() -> void:
 	## One line for the logs and the runs (RFC-049 049a): which map this process loaded, and whether it simulates it.
 	print(("mapa %s" if not MpKit.is_networked() or MpKit.is_server() else "en mapa %s") % definition.tag)
 	map = get_node_or_null(MAP_NODE) as MapRoot
-	if map != null and not definition.map_scene_path.is_empty() and map.scene_file_path != definition.map_scene_path:
+	if map != null and definition.map_scene != null and map.scene_file_path != definition.map_scene.resource_path:
 		remove_child(map)
 		map.free()
 		map = null
 	if map == null:
-		var packed := definition.load_scene()
+		var packed := definition.map_scene
 		map = packed.instantiate() as MapRoot if packed != null else null
 		if map == null:
 			push_error("Match: the map '%s' has no MapRoot; the match cannot start." % definition.tag)
@@ -59,8 +59,9 @@ func _bind_map() -> void:
 	%Nav.set("region", map.nav_region)
 	var spawner := $WizardSpawner as MultiplayerSpawner
 	spawner.set("spawn_points", spawner.get_path_to(map.starts))
-	%Population.set("buildings_root", map.buildings_root)
-	%Population.set("npc_spawns_root", map.npc_spawns_root)
+	var population := %Population as MapPopulation
+	population.buildings = map.buildings
+	population.npcs = map.npcs
 	%Minimap.set("terrain_bake", map.minimap_bake)
 	$GraphicsApplier.set("rig", map.look)
 

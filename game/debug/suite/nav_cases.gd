@@ -28,7 +28,7 @@ func run(host: Node3D) -> Dictionary:  # a coroutine: it waits for physics frame
 	_root.name = "NavCases"
 	_terrain = Terrain.new()
 	_terrain.name = "Terrain"
-	_terrain.shape = TerrainShape.with_data(load(MapCatalog.active().terrain_path) as MapTerrainData)
+	_terrain.shape = TerrainShape.with_data(MapCatalog.active().terrain)
 	_terrain.add_child(_terrain.shape)
 	_terrain.add_to_group(NavFingerprint.GROUP)
 	_root.add_child(_terrain)
@@ -53,6 +53,7 @@ func run(host: Node3D) -> Dictionary:  # a coroutine: it waits for physics frame
 	_service.build_on_ready = false
 	_root.add_child(_service)
 	host.add_child(_root)
+	_terrain.add_child(_terrain.make_collision_body())  # a Terrain from the script alone has no body
 	var out := {}
 	if not _terrain.shape.is_loaded():
 		var missing := {"ok": false, "reason": "sin terreno (assets/original/maps/high_noon/terrain.res)"}

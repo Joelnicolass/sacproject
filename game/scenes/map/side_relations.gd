@@ -14,9 +14,8 @@ extends RefCounted
 ## RFC-049 049b (F291): on top of the SIDS goes the team overlay of the game mode, as sacengine stanceSettings does after seating the
 ## wizards: two seats of the mode are allies when they share a team and enemies when they do not; NPCs and houses keep the SIDS.
 ## The overlay is installed only when the mode has allies or more than two seats, so 1v1 follows the old path untouched.
-## The map's rows live in its MapDefinition (`sides`, a MapSides, written once by
-## tools/bake/bake_map_layout.gd, RFC-035 035d). Without them, or for a side the file does not describe, «another slot is an
-## enemy» (what the port did before this cut). Static and @tool: the editor and a headless run read it
+## The map's rows come from its scene (MapSides.rows_of: the PlayerStart seats with their `team` and the sides its NpcSpawns
+## name). Without them, or for a side the map does not describe, «another slot is an enemy» (what the port did before). Static and @tool: the editor and a headless run read it
 ## without autoloads, and the suite can load its own rows with set_rows().
 
 enum Stance { NEUTRAL, ALLY, ENEMY }
@@ -40,16 +39,16 @@ static var _mode_tag: StringName = &""
 static var _team_of_seat: PackedInt32Array = PackedInt32Array()
 
 
-## Forgets what was read; the next question reads the sides of the active map (MapDefinition.sides) again.
+## Forgets what was read; the next question reads the sides of the active map (MapSides.rows_of its scene) again.
 static func refresh() -> void:
 	var map := MapCatalog.active()
 	_seat_count = map.player_starts
-	set_rows(map.sides.to_rows() if map.sides != null else [])
+	set_rows(MapSides.rows_of(map.map_scene))
 	_rows_tag = map.tag
 	_install_mode()
 
 
-## `rows`: [{id, allies, enemies, assignment}] as MapSides.to_rows gives them. `seats` >= 0 also sets the seat count (a suite
+## `rows`: [{id, allies, enemies, assignment}] as MapSides.rows_of gives them. `seats` >= 0 also sets the seat count (a suite
 ## that writes its own rows says how many are players); -1 keeps the one of the last map.
 static func set_rows(rows: Array, seats := -1) -> void:
 	_loaded = true

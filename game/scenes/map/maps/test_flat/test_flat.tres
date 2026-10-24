@@ -1,15 +1,16 @@
-[gd_resource type="Resource" script_class="MapDefinition" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="MapDefinition" format=3]
 
 [ext_resource type="Script" path="res://scenes/map/map_definition.gd" id="1_def"]
-[ext_resource type="Resource" path="res://scenes/map/maps/test_flat/sides.tres" id="2_sides"]
+[ext_resource type="PackedScene" path="res://scenes/map/maps/test_flat/map.tscn" id="2_scene"]
+[ext_resource type="Resource" path="res://scenes/map/maps/test_flat/terrain.res" id="3_terrain"]
+[ext_resource type="NavigationMesh" path="res://scenes/map/maps/test_flat/nav.res" id="6_nav"]
 
 [resource]
 script = ExtResource("1_def")
 tag = &"test_flat"
 display_name = "Test flat"
-map_scene_path = "res://scenes/map/maps/test_flat/map.tscn"
-sides = ExtResource("2_sides")
-terrain_path = "res://scenes/map/maps/test_flat/terrain.res"
-nav_path = "res://scenes/map/maps/test_flat/nav.res"
+map_scene = ExtResource("2_scene")
+terrain = ExtResource("3_terrain")
+nav = ExtResource("6_nav")
 player_starts = 2
 room_selectable = false

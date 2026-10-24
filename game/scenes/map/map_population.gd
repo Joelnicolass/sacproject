@@ -3,19 +3,19 @@ extends Node3D
 
 ## What the map puts on the field besides the player starts and the founts (RFC-024 addendum 1, 024b2): the neutral
 ## buildings (houses, fences, decorations) and the creatures of the sides the players do not take (26 Farmers of side 2 =
-## slot 3 and 6 Taurocks of side 3 = slot 4). Since RFC-035 035d they are nodes of high_noon_layout.tscn: every MapBuilding
-## under `buildings_root` and every NpcSpawn under `npc_spawns_root`. This node counts the buildings, which every peer has
+## slot 3 and 6 Taurocks of side 3 = slot 4). They are nodes of the map scene: every MapBuilding
+## under `buildings` and every NpcSpawn under `npcs`. This node counts the buildings, which every peer has
 ## (scene nodes with fixed names, health through MapBuilding's synchronizer), and turns the spawns into units through the
 ## UnitSpawner, in tree order, on the server or a solo game only (they replicate). Nothing respawns.
-## The layout comes before this node in the tree, so the buildings are ready (and in their groups) when this runs.
+## The map comes before this node in the tree, so the buildings are ready (and in their groups) when this runs.
 ## Prints one line: `npc farmer 26 slot 3 · taurock 6 slot 4 · edificios 69 · refugios 11`.
 
 signal populated(report: Dictionary)
 
 ## Off in scenes that want an empty field; high_noon.tscn turns it on.
 @export var spawn_creatures := false
-@export var buildings_root: Node3D
-@export var npc_spawns_root: Node3D
+@export var buildings: Node3D
+@export var npcs: Node3D
 @export var unit_spawner: UnitSpawner
 
 ## {npc_spawned: {name: {count, slot}}, buildings_placed, shelters}
@@ -24,8 +24,8 @@ var report: Dictionary = {}
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
-	if buildings_root == null or npc_spawns_root == null:
-		warnings.append("Asigná `buildings_root` y `npc_spawns_root`.")
+	if buildings == null or npcs == null:
+		warnings.append("Asigná `buildings` y `npcs`.")
 	if spawn_creatures and unit_spawner == null:
 		warnings.append("Asigná `unit_spawner` para poner las criaturas.")
 	return warnings
@@ -37,8 +37,8 @@ func _ready() -> void:
 
 func populate() -> void:
 	report = {"npc_spawned": {}, "buildings_placed": 0, "shelters": 0}
-	if buildings_root == null or npc_spawns_root == null:
-		print("poblados: faltan buildings_root o npc_spawns_root; el campo queda sin habitantes ni casas")
+	if buildings == null or npcs == null:
+		print("poblados: faltan buildings o npcs; el campo queda sin habitantes ni casas")
 		return
 	_count_buildings()
 	if spawn_creatures and _simulates():
@@ -52,7 +52,7 @@ func _simulates() -> bool:
 
 
 func _count_buildings() -> void:
-	for node in buildings_root.get_children():
+	for node in buildings.get_children():
 		var building := node as MapBuilding
 		if building == null:
 			continue
@@ -63,7 +63,7 @@ func _count_buildings() -> void:
 
 func _place_creatures() -> void:
 	var counts: Dictionary = report["npc_spawned"]
-	for node in npc_spawns_root.get_children():
+	for node in npcs.get_children():
 		var spawn := node as NpcSpawn
 		if spawn == null:
 			continue

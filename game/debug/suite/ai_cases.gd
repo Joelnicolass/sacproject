@@ -343,7 +343,7 @@ func _nav_rebuild(host: Node3D) -> Dictionary:
 	root.name = "NavRebuildCases"
 	var terrain := Terrain.new()
 	terrain.name = "Terrain"
-	terrain.shape = TerrainShape.with_data(load(MapCatalog.active().terrain_path) as MapTerrainData)
+	terrain.shape = TerrainShape.with_data(MapCatalog.active().terrain)
 	terrain.add_child(terrain.shape)
 	terrain.add_to_group(NavFingerprint.GROUP)
 	root.add_child(terrain)
@@ -357,6 +357,7 @@ func _nav_rebuild(host: Node3D) -> Dictionary:
 	service.build_on_ready = false
 	root.add_child(service)
 	host.add_child(root)
+	terrain.add_child(terrain.make_collision_body())  # a Terrain from the script alone has no body
 	if not terrain.shape.is_loaded():
 		root.free()
 		return {"ok": false, "reason": "sin terreno (assets/original/maps/high_noon/terrain.res)"}

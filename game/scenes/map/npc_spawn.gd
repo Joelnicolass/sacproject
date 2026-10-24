@@ -2,23 +2,26 @@
 class_name NpcSpawn
 extends Marker3D
 
-## Where one creature of the map is born (RFC-035 035d). MapPopulation turns every NpcSpawn under NpcSpawns into a unit,
-## in tree order, on the server or a solo game. The marker's own position is where the unit is put (its feet settle on
-## the ground by themselves, so the stored y is a little above the land). It does not replicate: the UnitSpawner does.
+## Where one creature of the map is born. MapPopulation turns every NpcSpawn under the map's `Npcs` into a unit, in tree
+## order, on the server or a solo game. The marker's own position and turn are where the unit is put (its feet settle on
+## the ground by themselves, so the stored y is a little above the land). In the editor a ghost of the creature and its
+## name show over the marker (never saved). It does not replicate: the UnitSpawner does.
+
+const SCENE_PATH := "res://scenes/map/npc_spawn.tscn"
 
 ## The creature type (CreatureType in data/catalog/creatures/); drag its .tres here. Its tag (zepe = Farmer, raeb = Taurock)
 ## is what the unit is spawned with.
 @export var creature: CreatureType:
 	set(value):
 		creature = value
-		_refresh_label()
+		_refresh_preview()
 		update_configuration_warnings()
-## Side of the map (SIDS), not the slot: slot = side + 1 (SideRelations.slot_of).
+## The side of the map (not the slot) these creatures belong to: Farmers and Taurocks are sides of their own, apart from the
+## players' seats (side = slot - 1). SideRelations puts them in the slots after the seats. MapSides reads it.
 @export var side := 0
-## Id of the entity in the original NTTS, kept to trace an NPC back to the map file.
-@export var ntts_id := 0
 
 var _label: Label3D
+var _ghost: BodyVisual
 
 ## Creature tag, derived from `creature` ("" when none). Setting it looks the type up (TypeRef), for code and old scenes
 ## that still name a tag; the reference is what is saved.
@@ -45,20 +48,28 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 func _ready() -> void:
 	if Engine.is_editor_hint():
-		_show_label()
+		_show_preview()
 
 
-## Editor only and never saved (no owner): the tag over the marker.
-func _show_label() -> void:
+## Editor only and never saved (internal children): the creature's ghost, and its name over the marker.
+func _show_preview() -> void:
+	var holder := Node3D.new()
+	add_child(holder, false, Node.INTERNAL_MODE_FRONT)
+	_ghost = BodyVisual.new()
+	_ghost.transparency = 0.5
+	_ghost.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	holder.add_child(_ghost)
 	_label = Label3D.new()
 	_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	_label.no_depth_test = true
 	_label.pixel_size = 0.05
 	_label.position = Vector3(0.0, 3.0, 0.0)
 	add_child(_label, false, Node.INTERNAL_MODE_FRONT)
-	_refresh_label()
+	_refresh_preview()
 
 
-func _refresh_label() -> void:
+func _refresh_preview() -> void:
 	if _label != null:
-		_label.text = tag
+		_label.text = "%s\n%s" % [creature.display_name, tag] if creature != null else ""
+	if _ghost != null:
+		_ghost.show_model(creature.model if creature != null else "")

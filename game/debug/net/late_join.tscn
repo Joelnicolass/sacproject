@@ -9,8 +9,11 @@
 [node name="HighNoon" parent="." instance=ExtResource("1_world")]
 rules = ExtResource("2_rules")
 
-[node name="WizardSpawner" parent="HighNoon"]
-toward_fount = 241.7
+[node name="WizardSpot" parent="HighNoon/Map/MapProps/Starts/Start1" index="1"]
+transform = Transform3D(0.986393929, 0, -0.164398983, 0, 1, 0, 0.164398983, 0, 0.986393929, 39.7352371, 0, -238.411407)
+
+[node name="WizardSpot" parent="HighNoon/Map/MapProps/Starts/Start2" index="1"]
+transform = Transform3D(-0.997054458, 0, 0.0766965002, 0, 1, 0, -0.0766965002, 0, -0.997054458, -18.5375443, 0, 240.988068)
 
 [node name="Camera" parent="HighNoon"]
 debug_pointer = Vector2(640, 360)

@@ -15,7 +15,7 @@ func _initialize() -> void:
 	terrain.set_script(load(TERRAIN_SCRIPT))
 	var shape := Node.new()
 	shape.set_script(load(SHAPE_SCRIPT))
-	shape.set("data", load(MapCatalog.active().terrain_path))
+	shape.set("data", MapCatalog.active().terrain)
 	terrain.add_child(shape)
 	terrain.set("shape", shape)
 	root.add_child(terrain)

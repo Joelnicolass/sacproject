@@ -1,7 +1,7 @@
 extends Node
 
 ## RFC-050: where the wizards would stand on a map. For every PlayerStart of the active map (`--map=<tag>` after `--`):
-## the slot is one of 1..player_starts and unique, `faces` is set, the spot `spawn_spot()` gives is on the land, and all
+## the slot is one of 1..player_starts and unique, the spot `spawn_transform()` gives is on the land, and all
 ## the spots lie in one walkable region of the navmesh (the seats can meet). Prints STARTS PASS / STARTS FAIL; exit 0 / 1.
 ## "$GODOT" --headless --path game res://tools/audit/check_map_starts.tscn -- --map=peaks
 ## It enters the map scene as the bake does (autoloads exist); it does not run the match.
@@ -16,10 +16,10 @@ func _ready() -> void:
 
 func _run() -> void:
 	var map := MapCatalog.active()
-	var packed := map.load_scene()
+	var packed := map.map_scene
 	var root: MapRoot = packed.instantiate() as MapRoot if packed else null
 	if root == null or root.terrain == null or root.starts == null:
-		_finish(["%s is not a MapRoot with terrain and starts" % map.map_scene_path])
+		_finish(["the scene of '%s' is not a MapRoot with terrain and starts" % map.tag])
 		return
 	add_child(root)
 	await get_tree().physics_frame
@@ -43,10 +43,7 @@ func _run() -> void:
 		if start.slot < 1 or start.slot > map.player_starts or seen.has(start.slot):
 			problems.append("%s: slot %d is out of range or repeated" % [start.name, start.slot])
 		seen[start.slot] = true
-		if start.faces == null:
-			problems.append("%s: `faces` is empty" % start.name)
-			continue
-		var spot := start.spawn_spot().origin
+		var spot := start.spawn_transform().origin
 		var on_ground := root.terrain.shape.is_on_ground(spot.x, spot.z)
 		var region := regions.component_at(spot, SNAP_M) if regions.polygon_count > 0 else -1
 		var region_size := regions.component_size_at(spot, SNAP_M) if regions.polygon_count > 0 else 0

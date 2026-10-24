@@ -271,7 +271,7 @@ Las rutas son relativas a `game/`.
 | `tools/import/import_map.py` (incluye `--list`) | **Sí** | `assets/original/maps/<tag>/` (tiles, luz, entidades, terreno) |
 | `tools/import/import_audio.py` | **Sí** | `assets/original/audio/` (efectos, voces y música) + `index.json`. Ya está en el repo (LFS) |
 | `tools/audit/check_original_assets.sh` | **Sí** | Paridad de `assets/original/` con el original (`ASSETS PARITY PASS/FAIL`) |
-| `tools/import/scaffold_map.py` | No: usa lo que ya dejó `import_map.py` | `sides.tres`, `MapDefinition`, `map.tscn`, entrada del catálogo |
+| `tools/import/scaffold_map.py` | No: usa lo que ya dejó `import_map.py` | `MapDefinition`, `map.tscn`, `nav.res` vacío |
 | `tools/import/classify_ground_tiles.py`, `sample_grass_palette.py` | No: usan `assets/original/` | `high_noon_tiles.tres`, paleta de pasto propuesta |
 | `tools/bake/*` (navmesh, catálogo, `bake_body_scenes`, `new_creature`, `bake_sound_sets`, terreno) | No: `bake_body_scenes` usa los `.glb` y `index.json` del repo; `import_terrain.gd` lee el `.bin` que escribe `import_map.py` | Escenas, `.tres` y navmesh |
 | Menú **Project > Tools > Sacrifice** | Solo «Listar mapas del original» e «Importar audio del original» (llevan «(requiere juego original)» en el menú) | Salida en un diálogo |

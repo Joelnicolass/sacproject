@@ -10,7 +10,7 @@ extends Node
 
 const DEFAULT_SCENE := "res://scenes/match/high_noon.tscn"
 const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain.gd"
-const COUNTED := ["Buildings", "NpcSpawns"]
+const COUNTED := ["Buildings", "Npcs"]
 
 var _scene := DEFAULT_SCENE
 var _out := "res://agent/out/035"

@@ -1,42 +1,56 @@
 @tool
 class_name MapSides
-extends Resource
+extends RefCounted
 
-## The SIDS of a map (RFC-035 035d): who is allied or enemy of whom, and which sides a player can take.
-## One entry per side, the four arrays are parallel. `allies` and `enemies` are bit masks over the side ids
-## (sacengine sids.d); `assignment` 0 is a side no player takes (the Farmers and the Taurocks of High Noon).
-## SideRelations reads it. It is written once by tools/bake/bake_map_layout.gd and edited in the inspector from then on.
+## Who is allied or enemy of whom on a map, read from the nodes the map already has instead of a table: every PlayerStart is
+## a seat (side = slot - 1; `team` above 0 allies the seats that share it, 0 stands alone), every other side an NpcSpawn
+## names (Farmers, Taurocks) is a side no player takes, and side 31 is the neutral owner of the houses. All sides are enemies
+## of each other except teammates; nobody is an enemy of the neutral side. SideRelations reads the rows.
+## Does not instance the map: it reads the stored properties of the scene (PackedScene.get_state).
 
-@export var ids := PackedInt64Array()
-@export var allies := PackedInt64Array()
-@export var enemies := PackedInt64Array()
-@export var assignment := PackedInt64Array()
-## Palette index of the side in the original; the port colors sides by slot (SideColors), so it is kept as data only.
-@export var colors := PackedInt64Array()
+const NEUTRAL_SIDE := 31
 
 
-## The rows SideRelations.set_rows takes: [{id, allies, enemies, assignment}].
-func to_rows() -> Array:
+## The rows SideRelations.set_rows takes: [{id, allies, enemies, assignment}]. Empty when the scene has no PlayerStart.
+static func rows_of(scene: PackedScene) -> Array:
+	var seats: Dictionary = {}
+	var npc_sides: Dictionary = {}
+	if scene == null:
+		return []
+	var state := scene.get_state()
+	for i in state.get_node_count():
+		var kind := state.get_node_instance(i)
+		if kind == null:
+			continue
+		if kind.resource_path == PlayerStart.SCENE_PATH:
+			seats[int(_stored(state, i, &"slot", 1)) - 1] = int(_stored(state, i, &"team", 0))
+		elif kind.resource_path == NpcSpawn.SCENE_PATH:
+			npc_sides[int(_stored(state, i, &"side", 0))] = true
+	if seats.is_empty():
+		return []
+	for seat: int in seats:
+		npc_sides.erase(seat)
+	var ids: Array = seats.keys() + npc_sides.keys()
 	var rows := []
-	for k in ids.size():
-		rows.append({
-			"id": ids[k],
-			"allies": allies[k] if k < allies.size() else 0,
-			"enemies": enemies[k] if k < enemies.size() else 0,
-			"assignment": assignment[k] if k < assignment.size() else 0,
-		})
+	for id: int in ids:
+		var team := int(seats.get(id, 0))
+		var allies := 1 << id
+		var enemies := 0
+		for other: int in ids:
+			if other == id:
+				continue
+			if team > 0 and int(seats.get(other, 0)) == team:
+				allies |= 1 << other
+			else:
+				enemies |= 1 << other
+		rows.append({"id": id, "allies": allies, "enemies": enemies, "assignment": id + 1 if seats.has(id) else 0})
+	rows.append({"id": NEUTRAL_SIDE, "allies": 0, "enemies": 0, "assignment": 0})
 	return rows
 
 
-## Builds the resource from the exporter's rows (tools/bake/bake_map_layout.gd).
-static func from_rows(rows: Array) -> MapSides:
-	var sides := MapSides.new()
-	for row: Variant in rows:
-		if not row is Dictionary:
-			continue
-		sides.ids.append(int(row.get("id", -1)))
-		sides.allies.append(int(row.get("allies", 0)))
-		sides.enemies.append(int(row.get("enemies", 0)))
-		sides.assignment.append(int(row.get("assignment", 0)))
-		sides.colors.append(int(row.get("color", 0)))
-	return sides
+## The value a node of the scene stores for `property`, or `fallback` when it keeps the default of its scene.
+static func _stored(state: SceneState, node: int, property: StringName, fallback: Variant) -> Variant:
+	for k in state.get_node_property_count(node):
+		if state.get_node_property_name(node, k) == property:
+			return state.get_node_property_value(node, k)
+	return fallback

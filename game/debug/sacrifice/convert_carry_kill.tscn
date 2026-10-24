@@ -5,13 +5,16 @@
 [ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="3_unit"]
 
 [node name="ConvertCarryKill" type="Node"]
-editor_description = "SOLO (un proceso). El mago nace a 120 m del altar (WizardSpawner.toward_fount) y Victim esta a 136 m del altar, 6 m al costado de la recta para no chocar con el manantial. Killer1..2 matan a Victim (alma roja). Guard1..6 (Druid slot 2, solo atacan el grupo doctor) en linea a 30 m del altar, a mas de 100 m del cadaver: no ven al doctor durante el bombeo, solo cuando arranca el acarreo. Resultado esperado: Victim suelta, viva, owner_slot 2, grupo unit y sigue Almas 0. Ojo: Killer1..2 vuelven a atacar a Victim apenas la ven (grupo victim)."
+editor_description = "SOLO (un proceso). El mago nace a 120 m del altar (el WizardSpot de Start1) y Victim esta a 136 m del altar, 6 m al costado de la recta para no chocar con el manantial. Killer1..2 matan a Victim (alma roja). Guard1..6 (Druid slot 2, solo atacan el grupo doctor) en linea a 30 m del altar, a mas de 100 m del cadaver: no ven al doctor durante el bombeo, solo cuando arranca el acarreo. Resultado esperado: Victim suelta, viva, owner_slot 2, grupo unit y sigue Almas 0. Ojo: Killer1..2 vuelven a atacar a Victim apenas la ven (grupo victim)."
 
 [node name="HighNoon" parent="." instance=ExtResource("1_world")]
 rules = ExtResource("2_rules")
 
-[node name="WizardSpawner" parent="HighNoon"]
-toward_fount = 120.0
+[node name="WizardSpot" parent="HighNoon/Map/MapProps/Starts/Start1" index="1"]
+transform = Transform3D(-0.986393929, 0, 0.164398983, 0, 1, 0, -0.164398983, 0, -0.986393929, 19.7278786, 0, -118.367271)
+
+[node name="WizardSpot" parent="HighNoon/Map/MapProps/Starts/Start2" index="1"]
+transform = Transform3D(0.997054458, 0, -0.0766965002, 0, 1, 0, 0.0766965002, 0, 0.997054458, -9.2035799, 0, 119.646538)
 
 [node name="Camera" parent="HighNoon"]
 debug_pointer = Vector2(640, 360)

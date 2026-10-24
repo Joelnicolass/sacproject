@@ -2,11 +2,13 @@ extends Node
 
 ## No necesita el juego original; usa los modelos y datos ya importados en assets/original (versionados).
 ## Bakes the map's navmesh headless (RFC-035 035f): the static colliders of the `nav_source` nodes of the map scene (the
-## terrain trimesh, the buildings, the manafounts) with the numbers of data/nav/nav_bake.tres, into the `nav_path` of its
-## MapDefinition. The map is `--map=<tag>` after `--` (High Noon without it; RFC-044 044b).
+## terrain trimesh, the buildings, the manafounts) with the numbers of data/nav/nav_bake.tres, into scenes/map/maps/<tag>/nav.res
+## (the `nav` of its MapDefinition; the «Hornear navmesh» button of the map's NavRegion runs this). The map is `--map=<tag>` after `--` (High Noon without it; RFC-044 044b).
 ## The navmesh carries the source hash (NavFingerprint.source_hash) in its metadata; MapNavRegion warns when it is stale.
 ## It runs as a scene (autoloads exist, the parse needs the nodes inside the tree):
 ## "$GODOT" --headless --path game res://tools/bake/bake_nav.tscn [-- --map=test_flat]           bakes and saves
+## "$GODOT" --headless --path game res://tools/bake/bake_nav.tscn -- [--map=test_flat] --restamp writes the source hash of the map as it is now into the
+##   saved navmesh without baking (after moving nodes of the map without changing what the bake reads; check first).
 ## "$GODOT" --headless --path game res://tools/bake/bake_nav.tscn -- [--map=test_flat] --check bakes again and compares with the saved file:
 ##   same source hash and same geometry, or it fails (exit 1). Run it twice to prove the bake is reproducible.
 ## Needs the project imported once (class names NavFingerprint, NavBakeSettings, MapNavRegion). Import again after writing.
@@ -28,13 +30,16 @@ func _ready() -> void:
 func _run() -> void:
 	var check := OS.get_cmdline_user_args().has("--check")
 	_map = MapCatalog.active()
-	_nav_path = _map.nav_path
-	if _nav_path.is_empty():
-		_fail("the map '%s' has no nav_path" % _map.tag)
+	if _map == null or _map.map_scene == null:
+		_fail("no map scene to bake")
 		return
+	_nav_path = "res://scenes/map/maps/%s/nav.res" % _map.tag
 	var settings := load(SETTINGS_PATH) as NavBakeSettings
 	if settings == null:
 		_fail("%s does not load" % SETTINGS_PATH)
+		return
+	if OS.get_cmdline_user_args().has("--restamp"):
+		_restamp(settings)
 		return
 	if not FileAccess.file_exists(_nav_path):
 		if check:
@@ -66,12 +71,28 @@ func _run() -> void:
 	get_tree().quit(0)
 
 
+## Keeps the saved navmesh and gives it the source hash of the map as it stands.
+func _restamp(settings: NavBakeSettings) -> void:
+	var saved := load(_nav_path) as NavigationMesh
+	var world := _map.map_scene.instantiate()
+	if saved == null or world == null:
+		_fail("%s or the map scene does not load" % _nav_path)
+		return
+	var source_hash := NavFingerprint.source_hash(world, settings)
+	world.free()
+	saved.set_meta(NavFingerprint.META_SOURCE, source_hash)
+	if ResourceSaver.save(saved, _nav_path) != OK:
+		_fail("could not save %s" % _nav_path)
+		return
+	print("bake_nav: restamped %s (%d polygons, source %s)" % [_nav_path, saved.get_polygon_count(), source_hash.substr(0, 12)])
+	get_tree().quit(0)
+
+
 ## The navmesh baked from the map now, with the source hash in its metadata; null (after _fail) when it cannot be built.
 func _bake(settings: NavBakeSettings) -> NavigationMesh:
-	var packed := load(_map.map_scene_path) as PackedScene
-	var world: Node = packed.instantiate() if packed else null
+	var world: Node = _map.map_scene.instantiate()
 	if world == null:
-		_fail("%s does not load" % _map.map_scene_path)
+		_fail("the scene of '%s' does not load" % _map.tag)
 		return null
 	# The hash is taken from the stored nodes, before any _ready, as the editor warning takes it.
 	var source_hash := NavFingerprint.source_hash(world, settings)
@@ -79,15 +100,14 @@ func _bake(settings: NavBakeSettings) -> NavigationMesh:
 	bake_root.name = "BakeRoot"
 	var map := world as MapRoot
 	if map == null or map.terrain == null:
-		_fail("%s is not a MapRoot with a terrain" % _map.map_scene_path)
+		_fail("the scene of '%s' is not a MapRoot with a terrain" % _map.tag)
 		bake_root.free()
 		world.free()
 		return null
-	# The terrain is required; the layout (the parent of the buildings) and the founts are optional.
+	# The terrain is required; the buildings and the founts are optional.
 	var parts: Array[Node] = [map.terrain]
-	var layout: Node = map.buildings_root.get_parent() if map.buildings_root != null else null
-	if layout != null and layout != map:
-		parts.append(layout)
+	if map.buildings != null:
+		parts.append(map.buildings)
 	var founts := map.get_node_or_null(FOUNTS_PATH)
 	if founts != null:
 		parts.append(founts)

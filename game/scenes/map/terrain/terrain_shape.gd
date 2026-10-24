@@ -19,7 +19,7 @@ const GROUP := &"terrain_shape"
 		data = value
 		_reindex()
 ## The map's tile index (256x256, tile id in R). Imported as Image, read on the CPU. Empty = the active map's
-## (MapDefinition.tiles_path), which may have none.
+## (MapDefinition.tiles), which may have none.
 @export_file("*.png") var tiles_path := "":
 	set(value):
 		tiles_path = value
@@ -116,18 +116,16 @@ func _reindex() -> void:
 
 
 func _use_active_map_data() -> void:
-	var fallback := MapCatalog.active().terrain_path
-	if fallback.is_empty() or not ResourceLoader.exists(fallback):
+	var fallback := MapCatalog.active().terrain
+	if fallback == null:
 		return
 	push_warning("TerrainShape.data is empty: the editor shows the ground of '%s'. Assign data in the scene." % MapCatalog.active().tag)
-	data = load(fallback) as MapTerrainData
+	data = fallback
 
 
 func _read_tiles() -> PackedByteArray:
-	var path := tiles_path if not tiles_path.is_empty() else MapCatalog.active().tiles_path
-	if path.is_empty() or not ResourceLoader.exists(path):
-		return PackedByteArray()
-	var image := load(path) as Image  # importer="image": exact pixels, no sRGB, no mipmaps, no compression
+	# importer="image": exact pixels, no sRGB, no mipmaps, no compression
+	var image := load(tiles_path) as Image if not tiles_path.is_empty() and ResourceLoader.exists(tiles_path) else MapCatalog.active().tiles
 	if image == null:
 		return PackedByteArray()
 	var ids := PackedByteArray()

@@ -71,14 +71,14 @@ A spell is two things: the data and, if it has its own procedure, a scene.
 
 ## A building
 
-- **Type.** `data/buildings/<name>.tres` (`BuildingType`: name, max health, whether it gives shelter, and the scene with the parts in `scenes/structures/buildings/`). A new one is made by duplicating a `.tres` and its scene; «Ajustar a las partes» (on the `Footprint` node) measures the box.
-- **On the map.** Instance `scenes/map/map_building.tscn` under the buildings of the map scene and drag the `.tres` to `building`. Move and rotate it with the gizmo: the transform is the truth and the model shows in the editor. With `max_health` 0 it is indestructible.
+- **Type.** `data/buildings/<name>.tres` (`BuildingType`: name, max health, whether it gives shelter, and the ruin). The scene with the same name in `scenes/structures/buildings/` is the building you drag into a map (root `MapBuilding`, parts saved under `Visuals`). A new one is made by duplicating a `.tres` and its scene; «Ajustar a las partes» (on the root) measures the box that holds the parts, which you can also drag with the handles of `Collision`.
+- **On the map.** Drag `scenes/structures/buildings/<name>.tscn` under `Buildings` in the map scene. Move and rotate it with the gizmo: the transform is the truth and the model shows in the editor; with «Editable Children» you see and move the parts of that instance. With `max_health` 0 it is indestructible.
 - **As a structure spell** (the Manalith): it is a `SpellType` in the book's `structures` plus an action in `Caster/Actions`; the body is `scenes/structures/structure.tscn`.
 
 ## An NPC
 
-1. Instance `scenes/map/npc_spawn.tscn` under `NpcSpawns` of the map scene.
-2. Drag the creature (`data/catalog/creatures/<tag>.tres`) to `creature` and set `side`. The marker's position is where it is born; the transform's rotation is where it faces.
+1. Instance `scenes/map/npc_spawn.tscn` under `Npcs` of the map scene.
+2. Drag the creature (`data/catalog/creatures/<tag>.tres`) to `creature` and set `side` (the side no player takes: the seats are sides 0..N-1). The marker's position is where it is born; the transform's rotation is where it faces; in the editor you see a ghost of the creature.
 3. `MapPopulation` turns them into units when the match starts (on the server or in single player).
 
 ## An FX
@@ -90,20 +90,19 @@ A spell is two things: the data and, if it has its own procedure, a scene.
 
 ## A map
 
-A map is a folder `scenes/map/maps/<tag>/` with its `map.tscn` (root `MapRoot`), its `MapDefinition` `<tag>.tres`, the `layout.tscn` (buildings, plants, NPCs) and the `nav.res`; its data from the original goes in `assets/original/maps/<tag>/`. `data/maps/map_catalog.tres` lists it and `--map=<tag>` picks it. More in `scenes/map/README.md`.
+A map is a folder `scenes/map/maps/<tag>/` with its `map.tscn` (root `MapRoot`), its `MapDefinition` `<tag>.tres` (scene, terrain, tiles, light and navmesh, typed) and the `nav.res`; buildings and NPCs are nodes of `map.tscn` (`Buildings`, `Npcs`); its data from the original goes in `assets/original/maps/<tag>/`. `MapCatalog` finds the folder by itself and `--map=<tag>` picks it. More in `scenes/map/README.md`.
 
 **Import one from the original** (RFC-050; the list of the 31 with seats and size: `python3 tools/import/import_map.py --list`). From `game/`. **Requires the original game installed** (`SAC_INSTALL`, see «Configure paths» below): `import_map.py` and `import_themes.py` read it; `scaffold_map.py` does not. `G` is the Godot binary and `<Name>` the `.scp`'s name without the `(N)`, for example `Peaks` or `WinterWonder` (the tag comes out by itself: `winter_wonder`).
 
 ```bash
 G="${GODOT_BIN:-godot}"   # see «Configure paths» below
 python3 tools/import/import_map.py --map=<Name> --terrain-bin=/tmp/<tag>.bin   # tiles, light, ntts, widgets + the terrain bin
-python3 tools/import/scaffold_map.py --map=<Name>                              # sides, MapDefinition, map.tscn, catalog
+python3 tools/import/scaffold_map.py --map=<Name>                              # MapDefinition, map.tscn (starts with their WizardSpot), empty nav.res
 python3 tools/import/import_themes.py                                            # adds the map's tile ids to the other gods' atlases
 bash agent/harness/godot_run.sh $G --headless --path . --script res://tools/bake/import_terrain.gd -- --map=<tag> --bin=/tmp/<tag>.bin
 bash agent/harness/godot_run.sh $G --headless --path . --import                  # imports tiles.png (the glb reads it)
 bash agent/harness/godot_run.sh $G --headless --path . --script res://tools/bake/terrain_glb_export.gd -- --map=<tag> --force
-bash agent/harness/godot_run.sh $G --headless --path . --script res://tools/bake/bake_map_layout.gd -- --map=<tag> --force
-bash agent/harness/godot_run.sh $G --headless --path . --import                  # once more: terrain.glb and layout.tscn
+bash agent/harness/godot_run.sh $G --headless --path . --import                  # once more: terrain.glb
 bash agent/harness/godot_run.sh $G --headless --path . res://tools/bake/bake_nav.tscn -- --map=<tag>
 bash agent/harness/godot_run.sh $G --headless --path . res://tools/bake/bake_nav.tscn -- --map=<tag> --check   # twice
 bash agent/harness/godot_run.sh $G --headless --path . res://tools/audit/check_map_starts.tscn -- --map=<tag>  # the starts land on ground and in one region
@@ -115,10 +114,10 @@ After importing, `map.tscn` and `<tag>.tres` are edited by hand (the scene is th
 **Make one by hand** (example: `test_flat4`, the 4-seat test map, in `scenes/map/maps/test_flat4/`):
 
 1. Copy the folder of a similar map (`test_flat/` or `test_flat4/`) to `scenes/map/maps/<tag>/`. The terrain can be its own (`terrain.glb` from Blender) or a reference to another map's: `test_flat4` uses `test_flat`'s `terrain.res` without copying it.
-2. In `map.tscn`, one `PlayerStart` per seat under `MapProps/Starts` (`Start1`…`Start4`, with `slot` 1..N without repeats) and its altar; the fountains under `MapProps/Founts`. In `test_flat4`, seats 1 and 2 are on the same side and 3 and 4 opposite, because `2v2` puts 1+2 against 3+4.
-3. `sides.tres`: one player side per seat (`assignment` 1..N, enemies of everyone). Teams do not go here: the mode sets them.
-4. `<tag>.tres` (`MapDefinition`): `tag`, `display_name`, `map_scene_path`, `sides`, `terrain_path`, `nav_path` and `player_starts` (= number of `PlayerStart`). `room_selectable = false` if it is only for testing (the rooms offer it with `--room-test-maps`).
-5. Add it to `data/maps/map_catalog.tres`, bake the navmesh (`bake_nav.tscn -- --map=<tag>`) and run the validator: it fails if the `PlayerStart`s do not match `player_starts`.
+2. In `map.tscn`, one `PlayerStart` per seat under `MapProps/Starts` (`Start1`…`Start4`, with `slot` 1..N without repeats) and its altar; move each start's `WizardSpot` with the gizmo (the wizard appears there, facing where it faces); the fountains under `MapProps/Founts`. A building is dragged under `Buildings`. In `test_flat4`, seats 1 and 2 are on the same side and 3 and 4 opposite, because `2v2` puts 1+2 against 3+4.
+3. The sides come from the nodes: each `PlayerStart` is a seat (`slot`; a `team` above 0 allies the seats that share it, 0 = enemy of everyone) and each `side` of an `NpcSpawn` is a side no player takes. The teams of a mode are set by the mode.
+4. `<tag>.tres` (`MapDefinition`): `tag`, `display_name`, `map_scene`, `terrain`, `nav` (and `tiles`/`light` if it has them) dragged from the inspector, and `player_starts` (= number of `PlayerStart`). `room_selectable = false` if it is only for testing (the rooms offer it with `--room-test-maps`).
+5. There is no list to edit (`MapCatalog` scans the folder). Bake the navmesh («Hornear navmesh» button of `NavRegion`) and run the validator: it fails if the `PlayerStart`s do not match `player_starts`.
 
 A map only shows up in a mode if it has one start per seat: High Noon (2) offers `1v1`; `winter_wonder` and `test_flat4` (4) also offer `2v2`, `ffa3` and `ffa4`.
 
@@ -203,7 +202,7 @@ Paths are relative to `game/`.
 | `tools/import/import_map.py` (includes `--list`) | **Yes** | `assets/original/maps/<tag>/` (tiles, light, entities, terrain) |
 | `tools/import/import_audio.py` | **Yes** | `assets/original/audio/` (WAV effects, Ogg voices or WAV without ffmpeg, MP3 music) + `index.json`. Already in the repo (LFS) |
 | `tools/audit/check_original_assets.sh` | **Yes** | Parity of `assets/original/` with the original (`ASSETS PARITY PASS/FAIL`) |
-| `tools/import/scaffold_map.py` | No: uses what `import_map.py` already left | `sides.tres`, `MapDefinition`, `map.tscn`, catalog entry |
+| `tools/import/scaffold_map.py` | No: uses what `import_map.py` already left | `MapDefinition`, `map.tscn`, empty `nav.res` |
 | `tools/import/classify_ground_tiles.py`, `sample_grass_palette.py` | No: they use `assets/original/` | `high_noon_tiles.tres`, proposed grass palette |
 | `tools/bake/*` (navmesh, catalog, `bake_body_scenes`, `new_creature`, `bake_sound_sets`, terrain) | No: `bake_body_scenes` uses the repo's `.glb` files and `index.json`; `import_terrain.gd` reads the `.bin` written by `import_map.py` | Scenes, `.tres` and navmesh |
 | **Project > Tools > Sacrifice** menu | Only «Listar mapas del original» (List the original's maps) and «Importar audio del original» (Import the original's audio); they are marked «(requiere juego original)» (requires the original game) in the menu | Output in a dialog |

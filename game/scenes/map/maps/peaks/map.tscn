@@ -11,23 +11,32 @@
 [ext_resource type="Resource" path="res://assets/original/maps/peaks/terrain.res" id="10_data"]
 [ext_resource type="Material" path="res://assets/original/themes/james/ground_classic.tres" id="11_ground"]
 [ext_resource type="PackedScene" path="res://assets/original/maps/peaks/terrain.glb" id="12_glb"]
-[ext_resource type="PackedScene" path="res://scenes/map/maps/peaks/layout.tscn" id="13_layout"]
 [ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="14_bake"]
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/peaks/nav.res" id="15_navmesh"]
 [ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="17_minimap"]
 [ext_resource type="Resource" path="res://data/buildings/charnel_fountain.tres" id="fbldg_cafn"]
 [ext_resource type="Resource" path="res://scenes/map/maps/peaks/flora.res" id="flora_map"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_spire.tscn" id="d2_charnel_spire"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_canopy.tscn" id="d2_charnel_canopy"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_tendril.tscn" id="d2_charnel_tendril"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_plant_1.tscn" id="d2_charnel_plant_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_plant_2.tscn" id="d2_charnel_plant_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_plant_3.tscn" id="d2_charnel_plant_3"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_cross.tscn" id="d2_charnel_cross"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_grave_1.tscn" id="d2_charnel_grave_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_grave_2.tscn" id="d2_charnel_grave_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_grave_3.tscn" id="d2_charnel_grave_3"]
 
-[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings_root", "npc_spawns_root")]
+[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs")]
 script = ExtResource("1_root")
 terrain = NodePath("Terrain")
 nav_region = NodePath("NavRegion")
 starts = NodePath("MapProps/Starts")
 look = NodePath("Look")
 minimap_bake = NodePath("MinimapBake")
-buildings_root = NodePath("PeaksLayout/Buildings")
-npc_spawns_root = NodePath("PeaksLayout/NpcSpawns")
+buildings = NodePath("Buildings")
+npcs = NodePath("Npcs")
 
 [node name="Look" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("8_look")]
 unique_name_in_owner = true
@@ -56,14 +65,18 @@ script = ExtResource("3_props")
 
 [node name="Starts" type="Node3D" parent="MapProps"]
 
-[node name="Start1" parent="MapProps/Starts" node_paths=PackedStringArray("faces") instance=ExtResource("4_start")]
+[node name="Start1" parent="MapProps/Starts" instance=ExtResource("4_start")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1440, 25.9, 1300)
-faces = NodePath("../../Founts/Fount03")
 
-[node name="Start2" parent="MapProps/Starts" node_paths=PackedStringArray("faces") instance=ExtResource("4_start")]
+[node name="WizardSpot" parent="MapProps/Starts/Start1" index="1"]
+transform = Transform3D(0.14142051, 0, -0.98994964, 0, 1, 0, 0.98994964, 0, 0.14142051, -29.6984844, 0, 4.2426405)
+
+[node name="Start2" parent="MapProps/Starts" instance=ExtResource("4_start")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1020, 26, 1320)
 slot = 2
-faces = NodePath("../../Founts/Fount04")
+
+[node name="WizardSpot" parent="MapProps/Starts/Start2" index="1"]
+transform = Transform3D(-4.3711e-08, 0, 1, 0, 1, 0, -1, 0, -4.3711e-08, 30, 0, 0)
 
 [node name="Founts" type="Node3D" parent="MapProps"]
 
@@ -87,7 +100,105 @@ building = ExtResource("fbldg_cafn")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1260, 10.1, 1500)
 building = ExtResource("fbldg_cafn")
 
-[node name="PeaksLayout" parent="." instance=ExtResource("13_layout")]
+[node name="Buildings" type="Node3D" parent="."]
+
+[node name="CharnelSpire_01" parent="Buildings" instance=ExtResource("d2_charnel_spire")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1360, 7.399992, 1420)
+
+[node name="CharnelSpire_02" parent="Buildings" instance=ExtResource("d2_charnel_spire")]
+transform = Transform3D(0.38268343, 0, 0.9238795, 0, 1, 0, -0.9238795, 0, 0.38268343, 1360, 13.300001, 1230)
+
+[node name="CharnelSpire_03" parent="Buildings" instance=ExtResource("d2_charnel_spire")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1450, 22.09999, 1260)
+
+[node name="CharnelSpire_04" parent="Buildings" instance=ExtResource("d2_charnel_spire")]
+transform = Transform3D(-0.3826834, 0, -0.92387956, 0, 1, 0, 0.92387956, 0, -0.3826834, 1430, 26.099997, 1340)
+
+[node name="CharnelSpire_05" parent="Buildings" instance=ExtResource("d2_charnel_spire")]
+transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 1230, 12.299988, 1100)
+
+[node name="CharnelSpire_06" parent="Buildings" instance=ExtResource("d2_charnel_spire")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 1050, 23.8, 1400)
+
+[node name="CharnelSpire_07" parent="Buildings" instance=ExtResource("d2_charnel_spire")]
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 1040, 22.199997, 1250)
+
+[node name="CharnelSpire_08" parent="Buildings" instance=ExtResource("d2_charnel_spire")]
+transform = Transform3D(-0.3826834, 0, 0.92387956, 0, 1, 0, -0.92387956, 0, -0.3826834, 1240, 4.300047, 1530)
+
+[node name="CharnelSpire_09" parent="Buildings" instance=ExtResource("d2_charnel_spire")]
+transform = Transform3D(0.38268343, 0, 0.9238795, 0, 1, 0, -0.9238795, 0, 0.38268343, 1080, 14.100001, 1410)
+
+[node name="CharnelCanopy_01" parent="Buildings" instance=ExtResource("d2_charnel_canopy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1214.989, 11.661628, 1098.062)
+
+[node name="CharnelTendril_01" parent="Buildings" instance=ExtResource("d2_charnel_tendril")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1200, 21.90001, 1230)
+
+[node name="CharnelTendril_02" parent="Buildings" instance=ExtResource("d2_charnel_tendril")]
+transform = Transform3D(-5.4081293e-06, 0, -1, 0, 1, 0, 1, 0, -5.4081293e-06, 1250, 30.200058, 1390)
+
+[node name="CharnelPlant1_01" parent="Buildings" instance=ExtResource("d2_charnel_plant_1")]
+transform = Transform3D(-0.3826834, 0, -0.92387956, 0, 1, 0, 0.92387956, 0, -0.3826834, 1220, 28.600006, 1390)
+
+[node name="CharnelPlant2_01" parent="Buildings" instance=ExtResource("d2_charnel_plant_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1240, 21.200026, 1230)
+
+[node name="CharnelPlant3_01" parent="Buildings" instance=ExtResource("d2_charnel_plant_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1150, 6.8000064, 1430)
+
+[node name="CharnelPlant3_02" parent="Buildings" instance=ExtResource("d2_charnel_plant_3")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 1200, 10.599978, 1100)
+
+[node name="CharnelPlant3_03" parent="Buildings" instance=ExtResource("d2_charnel_plant_3")]
+transform = Transform3D(-0.38268846, 0, -0.9238774, 0, 1, 0, 0.9238774, 0, -0.38268846, 1420, 22.7, 1250)
+
+[node name="CharnelPlant3_04" parent="Buildings" instance=ExtResource("d2_charnel_plant_3")]
+transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 1130, 11.1, 1210)
+
+[node name="CharnelPlant3_05" parent="Buildings" instance=ExtResource("d2_charnel_plant_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1420, 28.799997, 1360)
+
+[node name="CharnelPlant3_06" parent="Buildings" instance=ExtResource("d2_charnel_plant_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1330, 8.799999, 1430)
+
+[node name="CharnelPlant3_07" parent="Buildings" instance=ExtResource("d2_charnel_plant_3")]
+transform = Transform3D(-0.70711064, 0, -0.7071029, 0, 1, 0, 0.7071029, 0, -0.70711064, 1340, 15.699989, 1210)
+
+[node name="CharnelPlant3_08" parent="Buildings" instance=ExtResource("d2_charnel_plant_3")]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 1030, 27.299982, 1390)
+
+[node name="CharnelPlant3_09" parent="Buildings" instance=ExtResource("d2_charnel_plant_3")]
+transform = Transform3D(0.38268343, 0, -0.9238795, 0, 1, 0, 0.9238795, 0, 0.38268343, 1030, 23.000013, 1270)
+
+[node name="CharnelPlant3_10" parent="Buildings" instance=ExtResource("d2_charnel_plant_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1260, 7.1000037, 1530)
+
+[node name="CharnelCross_01" parent="Buildings" instance=ExtResource("d2_charnel_cross")]
+transform = Transform3D(0.38268343, 0, 0.9238795, 0, 1, 0, -0.9238795, 0, 0.38268343, 1135.623, 39.041504, 1326.311)
+
+[node name="CharnelCross_02" parent="Buildings" instance=ExtResource("d2_charnel_cross")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1318.498, 33.436928, 1311.931)
+
+[node name="CharnelGrave1_01" parent="Buildings" instance=ExtResource("d2_charnel_grave_1")]
+transform = Transform3D(-0.38268846, 0, -0.9238774, 0, 1, 0, 0.9238774, 0, -0.38268846, 1322.527, 32.15763, 1303.619)
+
+[node name="CharnelGrave1_02" parent="Buildings" instance=ExtResource("d2_charnel_grave_1")]
+transform = Transform3D(0.38267848, 0, 0.9238816, 0, 1, 0, -0.9238816, 0, 0.38267848, 1134.326, 39.016113, 1329.864)
+
+[node name="CharnelGrave2_01" parent="Buildings" instance=ExtResource("d2_charnel_grave_2")]
+transform = Transform3D(0.38268343, 0, 0.9238795, 0, 1, 0, -0.9238795, 0, 0.38268343, 1133.666, 39.344, 1321.607)
+
+[node name="CharnelGrave2_02" parent="Buildings" instance=ExtResource("d2_charnel_grave_2")]
+transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 1323.367, 32.95287, 1327.239)
+
+[node name="CharnelGrave3_01" parent="Buildings" instance=ExtResource("d2_charnel_grave_3")]
+transform = Transform3D(0.38268343, 0, -0.9238795, 0, 1, 0, 0.9238795, 0, 0.38268343, 1317.19, 33.489624, 1318.911)
+
+[node name="CharnelGrave3_02" parent="Buildings" instance=ExtResource("d2_charnel_grave_3")]
+transform = Transform3D(-0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, -0.70710677, 1133.434, 38.79975, 1316.324)
+
+[node name="Npcs" type="Node3D" parent="."]
 
 [node name="NavRegion" type="NavigationRegion3D" parent="."]
 unique_name_in_owner = true

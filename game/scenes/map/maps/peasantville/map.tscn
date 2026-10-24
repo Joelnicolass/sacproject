@@ -11,23 +11,48 @@
 [ext_resource type="Resource" path="res://assets/original/maps/peasantville/terrain.res" id="10_data"]
 [ext_resource type="Material" path="res://assets/original/themes/james/ground_classic.tres" id="11_ground"]
 [ext_resource type="PackedScene" path="res://assets/original/maps/peasantville/terrain.glb" id="12_glb"]
-[ext_resource type="PackedScene" path="res://scenes/map/maps/peasantville/layout.tscn" id="13_layout"]
 [ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="14_bake"]
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/peasantville/nav.res" id="15_navmesh"]
 [ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="17_minimap"]
 [ext_resource type="Resource" path="res://data/buildings/james_fountain.tres" id="fbldg_jfnt"]
 [ext_resource type="Resource" path="res://scenes/map/maps/peasantville/flora.res" id="flora_map"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_rock_1.tscn" id="d2_james_rock_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_rock_2.tscn" id="d2_james_rock_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_rock_3.tscn" id="d2_james_rock_3"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_cactus_1.tscn" id="d2_james_cactus_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_cactus_2.tscn" id="d2_james_cactus_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_cactus_3.tscn" id="d2_james_cactus_3"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_cactus_4.tscn" id="d2_james_cactus_4"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_camp.tscn" id="d2_james_camp"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_cart.tscn" id="d2_james_cart"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_crate_1.tscn" id="d2_james_crate_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_crate_2.tscn" id="d2_james_crate_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_crate_3.tscn" id="d2_james_crate_3"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_plant_1.tscn" id="d2_james_plant_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_plant_2.tscn" id="d2_james_plant_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_plant_3.tscn" id="d2_james_plant_3"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_fence_1.tscn" id="d2_james_fence_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_fence_2.tscn" id="d2_james_fence_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_fence_3.tscn" id="d2_james_fence_3"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_giant_tree.tscn" id="d2_james_giant_tree"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_hut.tscn" id="d2_james_hut"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_tent.tscn" id="d2_james_tent"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_hoodoo.tscn" id="d2_james_hoodoo"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_well.tscn" id="d2_james_well"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_tipi.tscn" id="d2_james_tipi"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/zepe.tres" id="d2_zepe"]
+[ext_resource type="PackedScene" path="res://scenes/map/npc_spawn.tscn" id="d2_npc_spawn"]
 
-[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings_root", "npc_spawns_root")]
+[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs")]
 script = ExtResource("1_root")
 terrain = NodePath("Terrain")
 nav_region = NodePath("NavRegion")
 starts = NodePath("MapProps/Starts")
 look = NodePath("Look")
 minimap_bake = NodePath("MinimapBake")
-buildings_root = NodePath("PeasantvilleLayout/Buildings")
-npc_spawns_root = NodePath("PeasantvilleLayout/NpcSpawns")
+buildings = NodePath("Buildings")
+npcs = NodePath("Npcs")
 
 [node name="Look" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("8_look")]
 unique_name_in_owner = true
@@ -56,14 +81,18 @@ script = ExtResource("3_props")
 
 [node name="Starts" type="Node3D" parent="MapProps"]
 
-[node name="Start1" parent="MapProps/Starts" node_paths=PackedStringArray("faces") instance=ExtResource("4_start")]
+[node name="Start1" parent="MapProps/Starts" instance=ExtResource("4_start")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1690, 0.6, 1370)
-faces = NodePath("../../Founts/Fount03")
 
-[node name="Start2" parent="MapProps/Starts" node_paths=PackedStringArray("faces") instance=ExtResource("4_start")]
+[node name="WizardSpot" parent="MapProps/Starts/Start1" index="1"]
+transform = Transform3D(-0.4856426, 0, 0.8741575, 0, 1, 0, -0.8741575, 0, -0.4856426, 26.2247181, 0, -14.5692883)
+
+[node name="Start2" parent="MapProps/Starts" instance=ExtResource("4_start")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2230, 10.3, 1620)
 slot = 2
-faces = NodePath("../../Founts/Fount04")
+
+[node name="WizardSpot" parent="MapProps/Starts/Start2" index="1"]
+transform = Transform3D(0.48564178, 0, -0.8741579, 0, 1, 0, 0.8741579, 0, 0.48564178, -26.2247181, 0, 14.5692883)
 
 [node name="Founts" type="Node3D" parent="MapProps"]
 
@@ -95,7 +124,700 @@ building = ExtResource("fbldg_jfnt")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1830, 8.1, 1750)
 building = ExtResource("fbldg_jfnt")
 
-[node name="PeasantvilleLayout" parent="." instance=ExtResource("13_layout")]
+[node name="Buildings" type="Node3D" parent="."]
+
+[node name="JamesRock1_01" parent="Buildings" instance=ExtResource("d2_james_rock_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2250, 30.100004, 1420)
+
+[node name="JamesRock1_02" parent="Buildings" instance=ExtResource("d2_james_rock_1")]
+transform = Transform3D(-0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, -0.70710677, 2150, 8.699998, 1620)
+
+[node name="JamesRock1_03" parent="Buildings" instance=ExtResource("d2_james_rock_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2050, 19.499992, 1580)
+
+[node name="JamesRock1_04" parent="Buildings" instance=ExtResource("d2_james_rock_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2100, 23.7, 1850)
+
+[node name="JamesRock2_01" parent="Buildings" instance=ExtResource("d2_james_rock_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1740, 0.9000083, 1320)
+
+[node name="JamesRock2_02" parent="Buildings" instance=ExtResource("d2_james_rock_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2110, 25.399998, 1210)
+
+[node name="JamesRock2_03" parent="Buildings" instance=ExtResource("d2_james_rock_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2200, 43.70001, 1200)
+
+[node name="JamesRock2_04" parent="Buildings" instance=ExtResource("d2_james_rock_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1920, 5.599984, 1650)
+
+[node name="JamesRock2_05" parent="Buildings" instance=ExtResource("d2_james_rock_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1740, 0.8999717, 1350)
+
+[node name="JamesRock3_01" parent="Buildings" instance=ExtResource("d2_james_rock_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1890, 9.199996, 1590)
+
+[node name="JamesRock3_02" parent="Buildings" instance=ExtResource("d2_james_rock_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2080, 18.299967, 1300)
+
+[node name="JamesRock3_03" parent="Buildings" instance=ExtResource("d2_james_rock_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2150, 23.100004, 1830)
+
+[node name="JamesCactus1_01" parent="Buildings" instance=ExtResource("d2_james_cactus_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2152.497, 48.057285, 1333.339)
+
+[node name="JamesCactus1_02" parent="Buildings" instance=ExtResource("d2_james_cactus_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2072.792, 20.256044, 1310.932)
+
+[node name="JamesCactus1_03" parent="Buildings" instance=ExtResource("d2_james_cactus_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2064.394, 17.29067, 1370.832)
+
+[node name="JamesCactus1_04" parent="Buildings" instance=ExtResource("d2_james_cactus_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2243.542, 48.311794, 1325.796)
+
+[node name="JamesCactus1_05" parent="Buildings" instance=ExtResource("d2_james_cactus_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2187.761, 43.736412, 1241.402)
+
+[node name="JamesCactus1_06" parent="Buildings" instance=ExtResource("d2_james_cactus_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2176.491, 10.392491, 1467.713)
+
+[node name="JamesCactus1_07" parent="Buildings" instance=ExtResource("d2_james_cactus_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2034.395, 38.165806, 1541.869)
+
+[node name="JamesCactus1_08" parent="Buildings" instance=ExtResource("d2_james_cactus_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1746.582, 43.931416, 1211.006)
+
+[node name="JamesCactus1_09" parent="Buildings" instance=ExtResource("d2_james_cactus_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1952.102, 52.29642, 1208.77)
+
+[node name="JamesCactus1_10" parent="Buildings" instance=ExtResource("d2_james_cactus_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1600.016, 4.089419, 1351.573)
+
+[node name="JamesCactus2_01" parent="Buildings" instance=ExtResource("d2_james_cactus_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1844.131, 28.83197, 1491.732)
+
+[node name="JamesCactus2_02" parent="Buildings" instance=ExtResource("d2_james_cactus_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2243.426, 47.820145, 1317.865)
+
+[node name="JamesCactus2_03" parent="Buildings" instance=ExtResource("d2_james_cactus_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1761.91, 43.955654, 1202.415)
+
+[node name="JamesCactus2_04" parent="Buildings" instance=ExtResource("d2_james_cactus_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1592.85, 34.11423, 1493.911)
+
+[node name="JamesCactus2_05" parent="Buildings" instance=ExtResource("d2_james_cactus_2")]
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 2201.271, 43.63972, 1241.986)
+
+[node name="JamesCactus2_06" parent="Buildings" instance=ExtResource("d2_james_cactus_2")]
+transform = Transform3D(-0.3826834, 0, 0.92387956, 0, 1, 0, -0.92387956, 0, -0.3826834, 1601.261, 3.4346921, 1346.253)
+
+[node name="JamesCactus2_07" parent="Buildings" instance=ExtResource("d2_james_cactus_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1934.275, 9.115238, 1591.934)
+
+[node name="JamesCactus2_08" parent="Buildings" instance=ExtResource("d2_james_cactus_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1731.974, 42.413345, 1203.824)
+
+[node name="JamesCactus2_09" parent="Buildings" instance=ExtResource("d2_james_cactus_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1609.685, 1.4741759, 1354.457)
+
+[node name="JamesCactus2_10" parent="Buildings" instance=ExtResource("d2_james_cactus_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1934.275, 9.115238, 1591.934)
+
+[node name="JamesCactus2_11" parent="Buildings" instance=ExtResource("d2_james_cactus_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1962.915, 22.972538, 1570.547)
+
+[node name="JamesCactus2_12" parent="Buildings" instance=ExtResource("d2_james_cactus_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2044.482, 39.530563, 1524.523)
+
+[node name="JamesCactus2_13" parent="Buildings" instance=ExtResource("d2_james_cactus_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2154.798, 12.53234, 1457.077)
+
+[node name="JamesCactus2_14" parent="Buildings" instance=ExtResource("d2_james_cactus_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2068.7, 16.59831, 1373.502)
+
+[node name="JamesCactus3_01" parent="Buildings" instance=ExtResource("d2_james_cactus_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2072.89, 34.327225, 1532.601)
+
+[node name="JamesCactus3_02" parent="Buildings" instance=ExtResource("d2_james_cactus_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2080.418, 21.373161, 1309.482)
+
+[node name="JamesCactus3_03" parent="Buildings" instance=ExtResource("d2_james_cactus_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2158.246, 47.06388, 1326.158)
+
+[node name="JamesCactus3_04" parent="Buildings" instance=ExtResource("d2_james_cactus_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1593.834, 7.3778653, 1351.832)
+
+[node name="JamesCactus3_05" parent="Buildings" instance=ExtResource("d2_james_cactus_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2189.844, 43.647057, 1234.238)
+
+[node name="JamesCactus3_06" parent="Buildings" instance=ExtResource("d2_james_cactus_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1733.91, 42.708508, 1201.873)
+
+[node name="JamesCactus3_07" parent="Buildings" instance=ExtResource("d2_james_cactus_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2246.864, 48.063347, 1318.788)
+
+[node name="JamesCactus3_08" parent="Buildings" instance=ExtResource("d2_james_cactus_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2151.654, 13.806788, 1432.011)
+
+[node name="JamesCactus4_01" parent="Buildings" instance=ExtResource("d2_james_cactus_4")]
+transform = Transform3D(-0.9238816, 0, -0.38267842, 0, 1, 0, 0.38267842, 0, -0.9238816, 2148.892, 48.706448, 1323.842)
+
+[node name="JamesCactus4_02" parent="Buildings" instance=ExtResource("d2_james_cactus_4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2190.27, 43.68372, 1238.642)
+
+[node name="JamesCactus4_03" parent="Buildings" instance=ExtResource("d2_james_cactus_4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2156.573, 47.284363, 1321.868)
+
+[node name="JamesCactus4_04" parent="Buildings" instance=ExtResource("d2_james_cactus_4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2256.891, 49.18488, 1324.025)
+
+[node name="JamesCactus4_05" parent="Buildings" instance=ExtResource("d2_james_cactus_4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1588.884, 9.517088, 1346.529)
+
+[node name="JamesCactus4_06" parent="Buildings" instance=ExtResource("d2_james_cactus_4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1762.826, 43.404625, 1212.678)
+
+[node name="JamesCamp_01" parent="Buildings" instance=ExtResource("d2_james_camp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1870, 23.299992, 1850)
+
+[node name="JamesCamp_02" parent="Buildings" instance=ExtResource("d2_james_camp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2210, 45.2, 1290)
+
+[node name="JamesCart_01" parent="Buildings" instance=ExtResource("d2_james_cart")]
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 1900.21, 26.187794, 1852.95)
+
+[node name="JamesCart_02" parent="Buildings" instance=ExtResource("d2_james_cart")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1948.131, 52.146885, 1201.41)
+
+[node name="JamesCart_03" parent="Buildings" instance=ExtResource("d2_james_cart")]
+transform = Transform3D(0.9238795, 0, 0.38268346, 0, 1, 0, -0.38268346, 0, 0.9238795, 1937.13, 51.26351, 1442.091)
+
+[node name="JamesCrate1_01" parent="Buildings" instance=ExtResource("d2_james_crate_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2045.68, 31.875975, 1818.144)
+
+[node name="JamesCrate1_02" parent="Buildings" instance=ExtResource("d2_james_crate_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1925.302, 50.666878, 1475.124)
+
+[node name="JamesCrate1_03" parent="Buildings" instance=ExtResource("d2_james_crate_1")]
+transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 1929.675, 50.965614, 1471.488)
+
+[node name="JamesCrate1_04" parent="Buildings" instance=ExtResource("d2_james_crate_1")]
+transform = Transform3D(0.9238795, 0, -0.38268346, 0, 1, 0, 0.38268346, 0, 0.9238795, 1843.155, 14.501492, 1798.876)
+
+[node name="JamesCrate1_05" parent="Buildings" instance=ExtResource("d2_james_crate_1")]
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 1844.342, 13.512616, 1787.442)
+
+[node name="JamesCrate1_06" parent="Buildings" instance=ExtResource("d2_james_crate_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2241.774, 45.597538, 1273.822)
+
+[node name="JamesCrate1_07" parent="Buildings" instance=ExtResource("d2_james_crate_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1976.676, 35.110577, 1792.718)
+
+[node name="JamesCrate1_08" parent="Buildings" instance=ExtResource("d2_james_crate_1")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1925.882, 50.449574, 1481.14)
+
+[node name="JamesCrate1_09" parent="Buildings" instance=ExtResource("d2_james_crate_1")]
+transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 1974.394, 34.396187, 1786.738)
+
+[node name="JamesCrate1_10" parent="Buildings" instance=ExtResource("d2_james_crate_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1816.706, 10.955461, 1780.68)
+
+[node name="JamesCrate1_11" parent="Buildings" instance=ExtResource("d2_james_crate_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1944.367, 36.50146, 1750.614)
+
+[node name="JamesCrate1_12" parent="Buildings" instance=ExtResource("d2_james_crate_1")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1939.388, 36.809235, 1742.396)
+
+[node name="JamesCrate1_13" parent="Buildings" instance=ExtResource("d2_james_crate_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1946.814, 49.83558, 1487.75)
+
+[node name="JamesCrate1_14" parent="Buildings" instance=ExtResource("d2_james_crate_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2071.352, 22.90118, 1182.913)
+
+[node name="JamesCrate1_15" parent="Buildings" instance=ExtResource("d2_james_crate_1")]
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 1972.495, 52.087193, 1179.403)
+
+[node name="JamesCrate1_16" parent="Buildings" instance=ExtResource("d2_james_crate_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1979.454, 51.545918, 1186.046)
+
+[node name="JamesCrate2_01" parent="Buildings" instance=ExtResource("d2_james_crate_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1844.563, 13.092542, 1782.603)
+
+[node name="JamesCrate2_02" parent="Buildings" instance=ExtResource("d2_james_crate_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1976.961, 51.70075, 1185.04)
+
+[node name="JamesCrate2_03" parent="Buildings" instance=ExtResource("d2_james_crate_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1979.964, 51.44062, 1188.706)
+
+[node name="JamesCrate2_04" parent="Buildings" instance=ExtResource("d2_james_crate_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1927.165, 50.766605, 1476.329)
+
+[node name="JamesCrate2_05" parent="Buildings" instance=ExtResource("d2_james_crate_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2044.678, 32.710007, 1816.157)
+
+[node name="JamesCrate2_06" parent="Buildings" instance=ExtResource("d2_james_crate_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2074.481, 22.75805, 1185.376)
+
+[node name="JamesCrate2_07" parent="Buildings" instance=ExtResource("d2_james_crate_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1976.639, 34.132526, 1789.557)
+
+[node name="JamesCrate2_08" parent="Buildings" instance=ExtResource("d2_james_crate_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1814.93, 12.360566, 1787.65)
+
+[node name="JamesCrate2_09" parent="Buildings" instance=ExtResource("d2_james_crate_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2243.329, 45.784435, 1275.694)
+
+[node name="JamesCrate2_10" parent="Buildings" instance=ExtResource("d2_james_crate_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1818.005, 10.854938, 1777.848)
+
+[node name="JamesCrate2_11" parent="Buildings" instance=ExtResource("d2_james_crate_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1933.972, 36.412575, 1743.273)
+
+[node name="JamesCrate2_12" parent="Buildings" instance=ExtResource("d2_james_crate_2")]
+transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 1942.903, 36.651623, 1748.064)
+
+[node name="JamesCrate2_13" parent="Buildings" instance=ExtResource("d2_james_crate_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1991.122, 48.236813, 1497.047)
+
+[node name="JamesCrate2_14" parent="Buildings" instance=ExtResource("d2_james_crate_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1943.494, 50.11694, 1488.886)
+
+[node name="JamesCrate2_15" parent="Buildings" instance=ExtResource("d2_james_crate_2")]
+transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 1937.833, 36.617382, 1746.546)
+
+[node name="JamesCrate2_16" parent="Buildings" instance=ExtResource("d2_james_crate_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1942.08, 36.740234, 1744.868)
+
+[node name="JamesCrate3_01" parent="Buildings" instance=ExtResource("d2_james_crate_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1815.07, 10.850699, 1777.334)
+
+[node name="JamesCrate3_02" parent="Buildings" instance=ExtResource("d2_james_crate_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1928.041, 50.844585, 1473.787)
+
+[node name="JamesCrate3_03" parent="Buildings" instance=ExtResource("d2_james_crate_3")]
+transform = Transform3D(0.38268343, 0, -0.9238795, 0, 1, 0, 0.9238795, 0, 0.38268343, 1928.293, 35.8353, 1742.329)
+
+[node name="JamesCrate3_04" parent="Buildings" instance=ExtResource("d2_james_crate_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1846.38, 13.131032, 1778.64)
+
+[node name="JamesCrate3_05" parent="Buildings" instance=ExtResource("d2_james_crate_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1813.536, 13.399138, 1790.178)
+
+[node name="JamesCrate3_06" parent="Buildings" instance=ExtResource("d2_james_crate_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1817.607, 11.59822, 1785.555)
+
+[node name="JamesCrate3_07" parent="Buildings" instance=ExtResource("d2_james_crate_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2047.326, 32.798206, 1814.48)
+
+[node name="JamesCrate3_08" parent="Buildings" instance=ExtResource("d2_james_crate_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1990.397, 48.235214, 1494.712)
+
+[node name="JamesCrate3_09" parent="Buildings" instance=ExtResource("d2_james_crate_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1946.502, 49.734524, 1484.271)
+
+[node name="JamesCrate3_10" parent="Buildings" instance=ExtResource("d2_james_crate_3")]
+transform = Transform3D(-0.3826834, 0, -0.92387956, 0, 1, 0, 0.92387956, 0, -0.3826834, 2240.586, 45.412155, 1271.54)
+
+[node name="JamesCrate3_11" parent="Buildings" instance=ExtResource("d2_james_crate_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2240.566, 45.698856, 1277.298)
+
+[node name="JamesCrate3_12" parent="Buildings" instance=ExtResource("d2_james_crate_3")]
+transform = Transform3D(0.38268343, 0, -0.9238795, 0, 1, 0, 0.9238795, 0, 0.38268343, 2072.896, 22.76592, 1187.36)
+
+[node name="JamesCrate3_13" parent="Buildings" instance=ExtResource("d2_james_crate_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1975.003, 51.8885, 1182.045)
+
+[node name="JamesCrate3_14" parent="Buildings" instance=ExtResource("d2_james_crate_3")]
+transform = Transform3D(0.9238795, 0, 0.38268346, 0, 1, 0, -0.38268346, 0, 0.9238795, 1945.617, 36.583645, 1747.392)
+
+[node name="JamesPlant1_01" parent="Buildings" instance=ExtResource("d2_james_plant_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2080, 35.800026, 1140)
+
+[node name="JamesPlant1_02" parent="Buildings" instance=ExtResource("d2_james_plant_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2140, 15.699994, 1420)
+
+[node name="JamesPlant1_03" parent="Buildings" instance=ExtResource("d2_james_plant_1")]
+transform = Transform3D(-0.3826834, 0, -0.92387956, 0, 1, 0, 0.92387956, 0, -0.3826834, 2080, 14.900007, 1370)
+
+[node name="JamesPlant1_04" parent="Buildings" instance=ExtResource("d2_james_plant_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1620, 0.59999955, 1390)
+
+[node name="JamesPlant2_01" parent="Buildings" instance=ExtResource("d2_james_plant_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2060, 36.899967, 1140)
+
+[node name="JamesPlant2_02" parent="Buildings" instance=ExtResource("d2_james_plant_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1710, 42.699993, 1610)
+
+[node name="JamesPlant2_03" parent="Buildings" instance=ExtResource("d2_james_plant_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1620, 2.0000076, 1410)
+
+[node name="JamesPlant2_04" parent="Buildings" instance=ExtResource("d2_james_plant_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1600, 5.400001, 1370)
+
+[node name="JamesPlant3_01" parent="Buildings" instance=ExtResource("d2_james_plant_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2010, 28.899973, 1260)
+
+[node name="JamesPlant3_02" parent="Buildings" instance=ExtResource("d2_james_plant_3")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2020, 29.499949, 1240)
+
+[node name="JamesFence1_01" parent="Buildings" instance=ExtResource("d2_james_fence_1")]
+transform = Transform3D(-0.38268846, 0, -0.9238774, 0, 1, 0, 0.9238774, 0, -0.38268846, 2110.92, 25.182793, 1204.92)
+
+[node name="JamesFence2_01" parent="Buildings" instance=ExtResource("d2_james_fence_2")]
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 2113.791, 25.403183, 1207.031)
+
+[node name="JamesFence3_01" parent="Buildings" instance=ExtResource("d2_james_fence_3")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 2109.109, 24.938942, 1202.383)
+
+[node name="JamesGiantTree_01" parent="Buildings" instance=ExtResource("d2_james_giant_tree")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2000.384, 26.78254, 1837.118)
+
+[node name="JamesHut_01" parent="Buildings" instance=ExtResource("d2_james_hut")]
+transform = Transform3D(0.9238795, 0, -0.38268346, 0, 1, 0, 0.38268346, 0, 0.9238795, 2091.707, 22.87329, 1187.31)
+
+[node name="JamesHut_02" parent="Buildings" instance=ExtResource("d2_james_hut")]
+transform = Transform3D(0.38268343, 0, -0.9238795, 0, 1, 0, 0.9238795, 0, 0.38268343, 2114.018, 25.32234, 1219.91)
+
+[node name="JamesHut_03" parent="Buildings" instance=ExtResource("d2_james_hut")]
+transform = Transform3D(-0.38268846, 0, -0.9238774, 0, 1, 0, 0.9238774, 0, -0.38268846, 1858.606, 7.78145, 1693.249)
+
+[node name="JamesHut_04" parent="Buildings" instance=ExtResource("d2_james_hut")]
+transform = Transform3D(-0.70711064, 0, -0.7071029, 0, 1, 0, 0.7071029, 0, -0.70711064, 1902.97, 24.918066, 1870.917)
+
+[node name="JamesHut_05" parent="Buildings" instance=ExtResource("d2_james_hut")]
+transform = Transform3D(0.38268343, 0, 0.9238795, 0, 1, 0, -0.9238795, 0, 0.38268343, 2177.596, 43.727882, 1263.141)
+
+[node name="JamesHut_06" parent="Buildings" instance=ExtResource("d2_james_hut")]
+transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 2233.547, 44.711704, 1263.923)
+
+[node name="JamesHut_07" parent="Buildings" instance=ExtResource("d2_james_hut")]
+transform = Transform3D(-0.3826834, 0, -0.92387956, 0, 1, 0, 0.92387956, 0, -0.3826834, 2246.799, 46.979664, 1303.998)
+
+[node name="JamesHut_08" parent="Buildings" instance=ExtResource("d2_james_hut")]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 1868.864, 23.802784, 1884.703)
+
+[node name="JamesHut_09" parent="Buildings" instance=ExtResource("d2_james_hut")]
+transform = Transform3D(-0.9238816, 0, 0.38267842, 0, 1, 0, -0.38267842, 0, -0.9238816, 1833.649, 23.887835, 1874.865)
+
+[node name="JamesHut_10" parent="Buildings" instance=ExtResource("d2_james_hut")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1808.474, 11.994582, 1679.081)
+
+[node name="JamesHut_11" parent="Buildings" instance=ExtResource("d2_james_hut")]
+transform = Transform3D(-0.70711064, 0, 0.7071029, 0, 1, 0, -0.7071029, 0, -0.70711064, 2176.832, 44.365555, 1315.87)
+
+[node name="JamesTent_01" parent="Buildings" instance=ExtResource("d2_james_tent")]
+transform = Transform3D(0.9238795, 0, -0.38268346, 0, 1, 0, 0.38268346, 0, 0.9238795, 1927.52, 34.492237, 1759.187)
+
+[node name="JamesTent_02" parent="Buildings" instance=ExtResource("d2_james_tent")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1829.41, 12.277059, 1792.246)
+
+[node name="JamesTent_03" parent="Buildings" instance=ExtResource("d2_james_tent")]
+transform = Transform3D(-0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, -0.70710677, 1959.902, 51.999462, 1186.717)
+
+[node name="JamesHoodoo_01" parent="Buildings" instance=ExtResource("d2_james_hoodoo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1746.632, 44.312702, 1202.806)
+
+[node name="JamesHoodoo_02" parent="Buildings" instance=ExtResource("d2_james_hoodoo")]
+transform = Transform3D(-0.70711064, 0, 0.7071029, 0, 1, 0, -0.7071029, 0, -0.70711064, 2202.569, 43.413822, 1233.26)
+
+[node name="JamesHoodoo_03" parent="Buildings" instance=ExtResource("d2_james_hoodoo")]
+transform = Transform3D(0.38267848, 0, -0.9238816, 0, 1, 0, 0.9238816, 0, 0.38267848, 2247.666, 45.482777, 1266.802)
+
+[node name="JamesWell_01" parent="Buildings" instance=ExtResource("d2_james_well")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1950, 34.8, 1770)
+
+[node name="JamesWell_02" parent="Buildings" instance=ExtResource("d2_james_well")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1970, 52, 1210)
+
+[node name="JamesWell_03" parent="Buildings" instance=ExtResource("d2_james_well")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1810, 10.800001, 1780)
+
+[node name="JamesTipi_01" parent="Buildings" instance=ExtResource("d2_james_tipi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1936.895, 51.794823, 1208.986)
+
+[node name="JamesTipi_02" parent="Buildings" instance=ExtResource("d2_james_tipi")]
+transform = Transform3D(0.38267848, 0, -0.9238816, 0, 1, 0, 0.9238816, 0, 0.38267848, 1908.987, 27.373348, 1821.652)
+
+[node name="JamesTipi_03" parent="Buildings" instance=ExtResource("d2_james_tipi")]
+transform = Transform3D(-0.9238795, 0, 0.3826835, 0, 1, 0, -0.3826835, 0, -0.9238795, 2209.345, 43.851326, 1251.711)
+
+[node name="JamesTipi_04" parent="Buildings" instance=ExtResource("d2_james_tipi")]
+transform = Transform3D(1, 0, -5.235988e-06, 0, 1, 0, 5.235988e-06, 0, 1, 1981.523, 48.25639, 1502.006)
+
+[node name="JamesTipi_05" parent="Buildings" instance=ExtResource("d2_james_tipi")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1935.111, 49.90589, 1480.495)
+
+[node name="JamesTipi_06" parent="Buildings" instance=ExtResource("d2_james_tipi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2062.88, 23.887594, 1187.085)
+
+[node name="JamesTipi_07" parent="Buildings" instance=ExtResource("d2_james_tipi")]
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 1949.096, 50.687237, 1442.451)
+
+[node name="Npcs" type="Node3D" parent="."]
+
+[node name="Farmer_01" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2127.336, 6.061516, 1681.416)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_02" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1952.292, 35.35132, 1764.349)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_03" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1875.15, 23.704792, 1853.102)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_04" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1848.539, 8.09853, 1690.804)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_05" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1819.476, 13.003158, 1680.49)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_06" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1842.902, 9.2728815, 1743.037)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_07" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1842.864, 9.441822, 1747.441)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_08" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2191.304, 9.613039, 1500.779)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_09" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2005.721, 31.19526, 1783.972)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_10" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1867.771, 22.88428, 1857.29)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_11" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1983.462, 50.69155, 1205.066)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_12" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1944.163, 52.23666, 1220.328)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_13" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2220.176, 46.437157, 1308.253)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_14" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2123.288, 6.1590943, 1672.349)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_15" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1843.755, 9.817648, 1750.947)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_16" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1826.02, 9.287274, 1766.187)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_17" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1824.216, 9.275834, 1765.45)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_18" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2045.21, 19.250618, 1256.605)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_19" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2047.539, 18.7461, 1261.42)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_20" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2067.903, 19.155066, 1262.282)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_21" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2070.441, 19.359545, 1260.662)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_22" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2088.991, 23.899534, 1224.395)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_23" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2089.186, 23.790985, 1226.878)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_24" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2226.16, 46.484516, 1303.453)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_25" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2069.449, 20.273249, 1238.992)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_26" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2061.042, 20.14443, 1235.619)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_27" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1970.673, 50.48341, 1460.635)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_28" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1964.38, 50.47187, 1473.996)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_29" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1979.779, 48.355236, 1483.756)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_30" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1968.552, 49.31028, 1482.518)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_31" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1963.199, 50.86979, 1470.907)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_32" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1966.969, 50.65342, 1463.111)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_33" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2151.448, 6.436219, 1661.153)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_34" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2199.587, 45.464863, 1299.328)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_35" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2197.47, 10.104819, 1528.976)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_36" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2212.417, 45.260235, 1284.693)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_37" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2197.039, 9.886339, 1495.646)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_38" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1863.651, 22.990156, 1849.808)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_39" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2206.765, 9.929841, 1522.073)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_40" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2216.343, 45.495056, 1287.619)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_41" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2154.404, 6.6167054, 1677.629)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_42" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1849.172, 8.188601, 1688.427)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_43" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1777.931, 2.8610706, 1328.705)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_44" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1767.765, 1.3024182, 1321.631)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_45" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1791.586, 3.7131538, 1319.447)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_46" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2193.072, 45.018, 1291.414)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_47" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2008.597, 31.124798, 1788.238)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_48" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1971.894, 51.951813, 1201.56)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_49" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1775.632, 2.6625562, 1309.747)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_50" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1740.192, 5.3307247, 1469.544)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_51" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1723.926, 6.2843456, 1481.728)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_52" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1724.414, 3.3518724, 1459.568)
+creature = ExtResource("d2_zepe")
+side = 2
+
+[node name="Farmer_53" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1716.239, 4.073148, 1468.836)
+creature = ExtResource("d2_zepe")
+side = 2
 
 [node name="NavRegion" type="NavigationRegion3D" parent="."]
 unique_name_in_owner = true

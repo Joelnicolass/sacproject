@@ -150,7 +150,7 @@ func _run() -> void:
 	var scene_path := _map_scene_of_world()
 	print("E2E_MAP %s tag=%s scene=%s" % [_name, MapCatalog.current_tag(), scene_path])
 	_check(MapCatalog.current_tag() == StringName(expect), "%s plays the map %s (got %s)" % [_name, expect, MapCatalog.current_tag()])
-	_check(definition != null and scene_path == definition.map_scene_path, "%s world holds the scene of %s (%s)" % [_name, expect, scene_path])
+	_check(definition != null and scene_path == definition.map_scene.resource_path, "%s world holds the scene of %s (%s)" % [_name, expect, scene_path])
 
 	# --- the end: the dedicated forces a defeat, both clients hear the result ----------------------------------------------
 	_check(await _until(func() -> bool: return not _session_ended.is_empty()), "%s gets session_ended" % _name)

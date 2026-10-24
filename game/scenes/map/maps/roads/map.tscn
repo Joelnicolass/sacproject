@@ -11,23 +11,51 @@
 [ext_resource type="Resource" path="res://assets/original/maps/roads/terrain.res" id="10_data"]
 [ext_resource type="Material" path="res://assets/original/themes/james/ground_classic.tres" id="11_ground"]
 [ext_resource type="PackedScene" path="res://assets/original/maps/roads/terrain.glb" id="12_glb"]
-[ext_resource type="PackedScene" path="res://scenes/map/maps/roads/layout.tscn" id="13_layout"]
 [ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="14_bake"]
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/roads/nav.res" id="15_navmesh"]
 [ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="17_minimap"]
 [ext_resource type="Resource" path="res://data/buildings/pyro_fountain.tres" id="fbldg_pfon"]
 [ext_resource type="Resource" path="res://scenes/map/maps/roads/flora.res" id="flora_map"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_camp.tscn" id="d2_pyro_camp"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_hut_1.tscn" id="d2_pyro_hut_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_hut_2.tscn" id="d2_pyro_hut_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_palm_1.tscn" id="d2_pyro_palm_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_palm_2.tscn" id="d2_pyro_palm_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_palm_3.tscn" id="d2_pyro_palm_3"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_mound_1.tscn" id="d2_pyro_mound_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_mound_2.tscn" id="d2_pyro_mound_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_spire_1.tscn" id="d2_pyro_spire_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_spire_2.tscn" id="d2_pyro_spire_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_pavilion.tscn" id="d2_pyro_pavilion"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_fort.tscn" id="d2_pyro_fort"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_tower.tscn" id="d2_pyro_tower"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_dead_tree_1.tscn" id="d2_pyro_dead_tree_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_dead_tree_2.tscn" id="d2_pyro_dead_tree_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_dead_tree_3.tscn" id="d2_pyro_dead_tree_3"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_dead_tree_4.tscn" id="d2_pyro_dead_tree_4"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_dead_tree_5.tscn" id="d2_pyro_dead_tree_5"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_dead_tree_6.tscn" id="d2_pyro_dead_tree_6"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_boulder_1.tscn" id="d2_pyro_boulder_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_boulder_2.tscn" id="d2_pyro_boulder_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_boulder_3.tscn" id="d2_pyro_boulder_3"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_boulder_4.tscn" id="d2_pyro_boulder_4"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_boulder_5.tscn" id="d2_pyro_boulder_5"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_boulder_6.tscn" id="d2_pyro_boulder_6"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_boulder_7.tscn" id="d2_pyro_boulder_7"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_boulder_8.tscn" id="d2_pyro_boulder_8"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/zepf.tres" id="d2_zepf"]
+[ext_resource type="PackedScene" path="res://scenes/map/npc_spawn.tscn" id="d2_npc_spawn"]
 
-[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings_root", "npc_spawns_root")]
+[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs")]
 script = ExtResource("1_root")
 terrain = NodePath("Terrain")
 nav_region = NodePath("NavRegion")
 starts = NodePath("MapProps/Starts")
 look = NodePath("Look")
 minimap_bake = NodePath("MinimapBake")
-buildings_root = NodePath("RoadsLayout/Buildings")
-npc_spawns_root = NodePath("RoadsLayout/NpcSpawns")
+buildings = NodePath("Buildings")
+npcs = NodePath("Npcs")
 
 [node name="Look" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("8_look")]
 unique_name_in_owner = true
@@ -56,14 +84,18 @@ script = ExtResource("3_props")
 
 [node name="Starts" type="Node3D" parent="MapProps"]
 
-[node name="Start1" parent="MapProps/Starts" node_paths=PackedStringArray("faces") instance=ExtResource("4_start")]
+[node name="Start1" parent="MapProps/Starts" instance=ExtResource("4_start")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1590, 18.4, 1590)
-faces = NodePath("../../Founts/Fount02")
 
-[node name="Start2" parent="MapProps/Starts" node_paths=PackedStringArray("faces") instance=ExtResource("4_start")]
+[node name="WizardSpot" parent="MapProps/Starts/Start1" index="1"]
+transform = Transform3D(-0.9761871, 0, -0.21693036, 0, 1, 0, 0.21693036, 0, -0.9761871, -6.50791359, 0, -29.2856121)
+
+[node name="Start2" parent="MapProps/Starts" instance=ExtResource("4_start")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 710, 18.4, 890)
 slot = 2
-faces = NodePath("../../Founts/Fount07")
+
+[node name="WizardSpot" parent="MapProps/Starts/Start2" index="1"]
+transform = Transform3D(0.35112345, 0, 0.9363292, 0, 1, 0, -0.9363292, 0, 0.35112345, 28.0898762, 0, 10.5337029)
 
 [node name="Founts" type="Node3D" parent="MapProps"]
 
@@ -99,7 +131,398 @@ building = ExtResource("fbldg_pfon")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1370, 46.7, 1430)
 building = ExtResource("fbldg_pfon")
 
-[node name="RoadsLayout" parent="." instance=ExtResource("13_layout")]
+[node name="Buildings" type="Node3D" parent="."]
+
+[node name="PyroCamp_01" parent="Buildings" instance=ExtResource("d2_pyro_camp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1230, 13.100009, 960)
+
+[node name="PyroCamp_02" parent="Buildings" instance=ExtResource("d2_pyro_camp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1000, 14.1, 1530)
+
+[node name="PyroHut1_01" parent="Buildings" instance=ExtResource("d2_pyro_hut_1")]
+transform = Transform3D(0.9238795, 0, -0.38268346, 0, 1, 0, 0.38268346, 0, 0.9238795, 990.031, 11.9003105, 1403.485)
+
+[node name="PyroHut1_02" parent="Buildings" instance=ExtResource("d2_pyro_hut_1")]
+transform = Transform3D(0.38268343, 0, 0.9238795, 0, 1, 0, -0.9238795, 0, 0.38268343, 938.866, 11.364013, 1415.627)
+
+[node name="PyroHut1_03" parent="Buildings" instance=ExtResource("d2_pyro_hut_1")]
+transform = Transform3D(-0.9238816, 0, 0.38267842, 0, 1, 0, -0.38267842, 0, -0.9238816, 983.409, 13.768179, 1529.368)
+
+[node name="PyroHut1_04" parent="Buildings" instance=ExtResource("d2_pyro_hut_1")]
+transform = Transform3D(-0.3826834, 0, 0.92387956, 0, 1, 0, -0.92387956, 0, -0.3826834, 940.475, 12.48729, 1487.304)
+
+[node name="PyroHut1_05" parent="Buildings" instance=ExtResource("d2_pyro_hut_1")]
+transform = Transform3D(-0.9238795, 0, 0.3826835, 0, 1, 0, -0.3826835, 0, -0.9238795, 980.901, 13.709009, 1546.636)
+
+[node name="PyroHut1_06" parent="Buildings" instance=ExtResource("d2_pyro_hut_1")]
+transform = Transform3D(-0.9238816, 0, -0.38267842, 0, 1, 0, 0.38267842, 0, -0.9238816, 1014.749, 14.6039915, 1536.673)
+
+[node name="PyroHut1_07" parent="Buildings" instance=ExtResource("d2_pyro_hut_1")]
+transform = Transform3D(0.38268343, 0, -0.9238795, 0, 1, 0, 0.9238795, 0, 0.38268343, 1280.549, 12.075643, 993.347)
+
+[node name="PyroHut1_08" parent="Buildings" instance=ExtResource("d2_pyro_hut_1")]
+transform = Transform3D(-0.70711064, 0, -0.7071029, 0, 1, 0, 0.7071029, 0, -0.70711064, 1051.838, 14.841497, 1473.303)
+
+[node name="PyroHut1_09" parent="Buildings" instance=ExtResource("d2_pyro_hut_1")]
+transform = Transform3D(0.9238795, 0, -0.38268346, 0, 1, 0, 0.38268346, 0, 0.9238795, 1262.296, 13.80616, 955.42)
+
+[node name="PyroHut1_10" parent="Buildings" instance=ExtResource("d2_pyro_hut_1")]
+transform = Transform3D(-0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, -0.70710677, 1246.212, 10.295627, 1062.633)
+
+[node name="PyroHut1_11" parent="Buildings" instance=ExtResource("d2_pyro_hut_1")]
+transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 1273.27, 12.174341, 985.682)
+
+[node name="PyroHut2_01" parent="Buildings" instance=ExtResource("d2_pyro_hut_2")]
+transform = Transform3D(0.9238795, 0, -0.38268346, 0, 1, 0, 0.38268346, 0, 0.9238795, 1252.154, 13.860618, 953.928)
+
+[node name="PyroHut2_02" parent="Buildings" instance=ExtResource("d2_pyro_hut_2")]
+transform = Transform3D(-0.9238816, 0, -0.38267842, 0, 1, 0, 0.38267842, 0, -0.9238816, 1021.106, 15.575591, 1511.289)
+
+[node name="PyroHut2_03" parent="Buildings" instance=ExtResource("d2_pyro_hut_2")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 997.181, 13.94362, 1550.758)
+
+[node name="PyroHut2_04" parent="Buildings" instance=ExtResource("d2_pyro_hut_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 973.828, 11.763739, 1397.094)
+
+[node name="PyroHut2_05" parent="Buildings" instance=ExtResource("d2_pyro_hut_2")]
+transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 1289.134, 11.537045, 1011.85)
+
+[node name="PyroPalm1_01" parent="Buildings" instance=ExtResource("d2_pyro_palm_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 930, 18.199997, 1020)
+
+[node name="PyroPalm1_02" parent="Buildings" instance=ExtResource("d2_pyro_palm_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1230, 8.599999, 1090)
+
+[node name="PyroPalm1_03" parent="Buildings" instance=ExtResource("d2_pyro_palm_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 920, 24.100006, 1280)
+
+[node name="PyroPalm1_04" parent="Buildings" instance=ExtResource("d2_pyro_palm_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1670, 29.599997, 1500)
+
+[node name="PyroPalm1_05" parent="Buildings" instance=ExtResource("d2_pyro_palm_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 900, 41.00001, 790)
+
+[node name="PyroPalm1_06" parent="Buildings" instance=ExtResource("d2_pyro_palm_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1310, 13.999992, 1020)
+
+[node name="PyroPalm1_07" parent="Buildings" instance=ExtResource("d2_pyro_palm_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1090, 16.70001, 1520)
+
+[node name="PyroPalm1_08" parent="Buildings" instance=ExtResource("d2_pyro_palm_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 930, 10.600003, 1420)
+
+[node name="PyroPalm2_01" parent="Buildings" instance=ExtResource("d2_pyro_palm_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 880, 27.500002, 1320)
+
+[node name="PyroPalm2_02" parent="Buildings" instance=ExtResource("d2_pyro_palm_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 920, 18.999998, 1060)
+
+[node name="PyroPalm2_03" parent="Buildings" instance=ExtResource("d2_pyro_palm_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 890, 33.700005, 810)
+
+[node name="PyroPalm2_04" parent="Buildings" instance=ExtResource("d2_pyro_palm_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1380, 42.699993, 1500)
+
+[node name="PyroPalm2_05" parent="Buildings" instance=ExtResource("d2_pyro_palm_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1220, 14.300001, 930)
+
+[node name="PyroPalm2_06" parent="Buildings" instance=ExtResource("d2_pyro_palm_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 950, 12.900002, 1520)
+
+[node name="PyroPalm2_07" parent="Buildings" instance=ExtResource("d2_pyro_palm_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1670, 38.600006, 1430)
+
+[node name="PyroPalm3_01" parent="Buildings" instance=ExtResource("d2_pyro_palm_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 990, 12.2, 1390)
+
+[node name="PyroPalm3_02" parent="Buildings" instance=ExtResource("d2_pyro_palm_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 900, 15.400001, 1040)
+
+[node name="PyroPalm3_03" parent="Buildings" instance=ExtResource("d2_pyro_palm_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1330, 26.899952, 970)
+
+[node name="PyroPalm3_04" parent="Buildings" instance=ExtResource("d2_pyro_palm_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 870, 37.99998, 790)
+
+[node name="PyroPalm3_05" parent="Buildings" instance=ExtResource("d2_pyro_palm_3")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1290, 15.400007, 950)
+
+[node name="PyroPalm3_06" parent="Buildings" instance=ExtResource("d2_pyro_palm_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1640, 35.5, 1420)
+
+[node name="PyroPalm3_07" parent="Buildings" instance=ExtResource("d2_pyro_palm_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 880, 30.29999, 1280)
+
+[node name="PyroMound1_01" parent="Buildings" instance=ExtResource("d2_pyro_mound_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1130, 9.300002, 1360)
+
+[node name="PyroMound1_02" parent="Buildings" instance=ExtResource("d2_pyro_mound_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1150, 8.8, 1160)
+
+[node name="PyroMound1_03" parent="Buildings" instance=ExtResource("d2_pyro_mound_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1360, 16.200008, 1200)
+
+[node name="PyroMound1_04" parent="Buildings" instance=ExtResource("d2_pyro_mound_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 890, 10.200003, 930)
+
+[node name="PyroMound2_01" parent="Buildings" instance=ExtResource("d2_pyro_mound_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1380, 19.800014, 1210)
+
+[node name="PyroMound2_02" parent="Buildings" instance=ExtResource("d2_pyro_mound_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 860, 10.699996, 950)
+
+[node name="PyroMound2_03" parent="Buildings" instance=ExtResource("d2_pyro_mound_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1120, 8.2, 1380)
+
+[node name="PyroSpire1_01" parent="Buildings" instance=ExtResource("d2_pyro_spire_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 754.071, 5.1991625, 1137.132)
+
+[node name="PyroSpire1_02" parent="Buildings" instance=ExtResource("d2_pyro_spire_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1199.245, 19.26946, 1298.795)
+
+[node name="PyroSpire2_01" parent="Buildings" instance=ExtResource("d2_pyro_spire_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 768.109, 15.930158, 1020.754)
+
+[node name="PyroSpire2_02" parent="Buildings" instance=ExtResource("d2_pyro_spire_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1204.372, 16.099108, 1279.699)
+
+[node name="PyroPavilion_01" parent="Buildings" instance=ExtResource("d2_pyro_pavilion")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1018.446, 12.320972, 1407.747)
+
+[node name="PyroPavilion_02" parent="Buildings" instance=ExtResource("d2_pyro_pavilion")]
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 1248.962, 9.06556, 1080.92)
+
+[node name="PyroPavilion_03" parent="Buildings" instance=ExtResource("d2_pyro_pavilion")]
+transform = Transform3D(0.9238795, 0, 0.38268346, 0, 1, 0, -0.38268346, 0, 0.9238795, 950.085, 13.00255, 1506.05)
+
+[node name="PyroPavilion_04" parent="Buildings" instance=ExtResource("d2_pyro_pavilion")]
+transform = Transform3D(-0.3826834, 0, -0.92387956, 0, 1, 0, 0.92387956, 0, -0.3826834, 1233.58, 13.7839, 945.038)
+
+[node name="PyroFort_01" parent="Buildings" instance=ExtResource("d2_pyro_fort")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1051.419, 17.017498, 1512.181)
+
+[node name="PyroTower_01" parent="Buildings" instance=ExtResource("d2_pyro_tower")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 921.673, 9.474219, 1445.711)
+
+[node name="PyroTower_02" parent="Buildings" instance=ExtResource("d2_pyro_tower")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1300.543, 13.197743, 916.629)
+
+[node name="PyroDeadTree1_01" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1090.654, 15.875768, 1511.659)
+
+[node name="PyroDeadTree1_02" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 938.948, 12.321202, 1402.3)
+
+[node name="PyroDeadTree1_03" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1084.347, 26.666437, 1106.286)
+
+[node name="PyroDeadTree2_01" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 897.452, 28.17092, 1327.62)
+
+[node name="PyroDeadTree2_02" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1165.921, 19.231165, 907.007)
+
+[node name="PyroDeadTree2_03" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1088.294, 17.113478, 1162.281)
+
+[node name="PyroDeadTree2_04" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1191.135, 16.39441, 922.545)
+
+[node name="PyroDeadTree3_01" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1099.113, 27.631622, 1093.615)
+
+[node name="PyroDeadTree3_02" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1540.514, 60.465363, 1221.105)
+
+[node name="PyroDeadTree3_03" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 904.182, 27.76374, 1346.178)
+
+[node name="PyroDeadTree4_01" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 927.459, 30.04856, 1333.411)
+
+[node name="PyroDeadTree4_02" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1540.57, 58.125954, 1241.485)
+
+[node name="PyroDeadTree4_03" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1086.198, 30.628199, 1090.582)
+
+[node name="PyroDeadTree4_04" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1487.781, 36.400284, 1385.119)
+
+[node name="PyroDeadTree4_05" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1169.143, 18.985481, 907.359)
+
+[node name="PyroDeadTree4_06" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 999.749, 12.929353, 1385.581)
+
+[node name="PyroDeadTree5_01" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1078.664, 21.501183, 1133.323)
+
+[node name="PyroDeadTree5_02" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1541.262, 59.384594, 1232.156)
+
+[node name="PyroDeadTree6_01" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1169.946, 19.428, 903.136)
+
+[node name="PyroDeadTree6_02" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1538.729, 59.32427, 1233.035)
+
+[node name="PyroDeadTree6_03" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1498.348, 37.167534, 1381.683)
+
+[node name="PyroDeadTree6_04" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 932.315, 10.852963, 1435.179)
+
+[node name="PyroDeadTree6_05" parent="Buildings" instance=ExtResource("d2_pyro_dead_tree_6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1089.982, 23.089918, 1120.799)
+
+[node name="PyroBoulder1_01" parent="Buildings" instance=ExtResource("d2_pyro_boulder_1")]
+transform = Transform3D(0.38268343, 0, 0.9238795, 0, 1, 0, -0.9238795, 0, 0.38268343, 786.445, 16.123907, 1050.75)
+
+[node name="PyroBoulder1_02" parent="Buildings" instance=ExtResource("d2_pyro_boulder_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 783.123, 10.854297, 1108.259)
+
+[node name="PyroBoulder1_03" parent="Buildings" instance=ExtResource("d2_pyro_boulder_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1203.353, 13.520981, 1266.128)
+
+[node name="PyroBoulder2_01" parent="Buildings" instance=ExtResource("d2_pyro_boulder_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1375.119, 42.250122, 1502.122)
+
+[node name="PyroBoulder2_02" parent="Buildings" instance=ExtResource("d2_pyro_boulder_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 782.02, 15.37976, 1015.352)
+
+[node name="PyroBoulder2_03" parent="Buildings" instance=ExtResource("d2_pyro_boulder_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1066.817, 15.770987, 1469.866)
+
+[node name="PyroBoulder3_01" parent="Buildings" instance=ExtResource("d2_pyro_boulder_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1388.196, 44.745914, 1478.607)
+
+[node name="PyroBoulder3_02" parent="Buildings" instance=ExtResource("d2_pyro_boulder_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1191.415, 19.985352, 1308.146)
+
+[node name="PyroBoulder3_03" parent="Buildings" instance=ExtResource("d2_pyro_boulder_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1070.189, 15.452397, 1464.508)
+
+[node name="PyroBoulder4_01" parent="Buildings" instance=ExtResource("d2_pyro_boulder_4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1367.277, 41.72415, 1506.968)
+
+[node name="PyroBoulder4_02" parent="Buildings" instance=ExtResource("d2_pyro_boulder_4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 757.133, 6.3257627, 1118.435)
+
+[node name="PyroBoulder4_03" parent="Buildings" instance=ExtResource("d2_pyro_boulder_4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1187.212, 15.811841, 1282.338)
+
+[node name="PyroBoulder5_01" parent="Buildings" instance=ExtResource("d2_pyro_boulder_5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1186.988, 17.593035, 1291.667)
+
+[node name="PyroBoulder5_02" parent="Buildings" instance=ExtResource("d2_pyro_boulder_5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1539.577, 60.243645, 1224.19)
+
+[node name="PyroBoulder6_01" parent="Buildings" instance=ExtResource("d2_pyro_boulder_6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1536.494, 60.129734, 1223.687)
+
+[node name="PyroBoulder6_02" parent="Buildings" instance=ExtResource("d2_pyro_boulder_6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1492.136, 36.728157, 1383.856)
+
+[node name="PyroBoulder7_01" parent="Buildings" instance=ExtResource("d2_pyro_boulder_7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1175.246, 18.892044, 1313.833)
+
+[node name="PyroBoulder7_02" parent="Buildings" instance=ExtResource("d2_pyro_boulder_7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1541.326, 59.012173, 1234.775)
+
+[node name="PyroBoulder7_03" parent="Buildings" instance=ExtResource("d2_pyro_boulder_7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1495.656, 36.946304, 1384.962)
+
+[node name="PyroBoulder8_01" parent="Buildings" instance=ExtResource("d2_pyro_boulder_8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1538.851, 58.887447, 1236.19)
+
+[node name="PyroBoulder8_02" parent="Buildings" instance=ExtResource("d2_pyro_boulder_8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1485.125, 36.153503, 1379.613)
+
+[node name="PyroBoulder8_03" parent="Buildings" instance=ExtResource("d2_pyro_boulder_8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1166.727, 15.0796385, 1280.737)
+
+[node name="Npcs" type="Node3D" parent="."]
+
+[node name="Slave_01" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1246.893, 13.965678, 958.828)
+creature = ExtResource("d2_zepf")
+side = 2
+
+[node name="Slave_02" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1043.438, 14.487237, 1472.585)
+creature = ExtResource("d2_zepf")
+side = 2
+
+[node name="Slave_03" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1046.974, 14.416738, 1467.966)
+creature = ExtResource("d2_zepf")
+side = 2
+
+[node name="Slave_04" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1005.053, 14.747749, 1514.563)
+creature = ExtResource("d2_zepf")
+side = 2
+
+[node name="Slave_05" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1009.386, 14.84007, 1524.103)
+creature = ExtResource("d2_zepf")
+side = 2
+
+[node name="Slave_06" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 995.78, 14.26107, 1521.233)
+creature = ExtResource("d2_zepf")
+side = 2
+
+[node name="Slave_07" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 992.387, 14.15748, 1521.413)
+creature = ExtResource("d2_zepf")
+side = 2
+
+[node name="Slave_08" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 955.747, 13.190129, 1490.886)
+creature = ExtResource("d2_zepf")
+side = 2
+
+[node name="Slave_09" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 952.299, 13.068971, 1488.719)
+creature = ExtResource("d2_zepf")
+side = 2
+
+[node name="Slave_10" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1248.806, 10.702378, 1055.624)
+creature = ExtResource("d2_zepf")
+side = 2
+
+[node name="Slave_11" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1249.883, 13.916049, 959.309)
+creature = ExtResource("d2_zepf")
+side = 2
+
+[node name="Slave_12" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1267.605, 10.48035, 1029.15)
+creature = ExtResource("d2_zepf")
+side = 2
+
+[node name="Slave_13" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1266.098, 11.7754545, 987.868)
+creature = ExtResource("d2_zepf")
+side = 2
+
+[node name="Slave_14" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1266.675, 11.666464, 989.591)
+creature = ExtResource("d2_zepf")
+side = 2
+
+[node name="Slave_15" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1263.126, 10.53062, 1034.434)
+creature = ExtResource("d2_zepf")
+side = 2
+
+[node name="Slave_16" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1280.453, 11.089048, 1014.672)
+creature = ExtResource("d2_zepf")
+side = 2
 
 [node name="NavRegion" type="NavigationRegion3D" parent="."]
 unique_name_in_owner = true

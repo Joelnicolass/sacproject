@@ -18,20 +18,20 @@ var report := {}
 
 ## scenes/map/maps/<tag>/flora.res: next to the map's scene.
 static func path_of(map: MapDefinition) -> String:
-	return map.map_scene_path.get_base_dir().path_join("flora.res")
+	return map.map_scene.resource_path.get_base_dir().path_join("flora.res")
 
 
 ## Null (and a pushed error) when the inputs are missing.
 func build(map: MapDefinition) -> FloraMap:
 	report = {"rows": 0, "kept": 0, "capped": 0, "per_tag": {}}
-	var widgets := PlantClears.read_json(map.widgets_path)
-	var ntts := PlantClears.read_json(map.ntts_path)
+	var widgets := PlantClears.read_json(PlantClears.original_file(map, "widgets.json"))
+	var ntts := PlantClears.read_json(PlantClears.original_file(map, "ntts.json"))
 	if widgets.is_empty() or ntts.is_empty():
-		push_error("FloraMapBuilder: missing or empty %s or %s." % [map.widgets_path, map.ntts_path])
+		push_error("FloraMapBuilder: missing or empty widgets.json or ntts.json of '%s'." % map.tag)
 		return null
 	var land := PlantClears.land_of(map)
 	if land == null:
-		push_error("FloraMapBuilder: %s is missing or invalid." % map.terrain_path)
+		push_error("FloraMapBuilder: the terrain of '%s' is missing or invalid." % map.tag)
 		return null
 	var clears := PlantClears.from_structures(ntts.get("structures", []))
 	var tags := PackedStringArray()

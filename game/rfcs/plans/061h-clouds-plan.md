@@ -71,6 +71,7 @@ data/catalog/spells/[~] grfr, rifr, galp, likc, rtem .tres   action = su escena;
 data/gods/[~] persephone, pyro, charnel, stratos, james .tres   + el hechizo en `spells` (sumar con las listas de 061e y 061g al hacer merge)
 data/fx/[+] frog_cast, frog_burst, fireball_blast, fireball_blast2, fireball_ash, fireball_smoke, fire_drop_trail, poison_cast, plague_trail,
             meteor_rocks, meteor_dirt, meteor_trail  (.tres de ParticleType; reutiliza explosion_*, dirt_cast, rock_emerge, rock_dust, poison)
+data/fx/lights/[+] frog_burst, fireball_blast, meteor_hit .tres (FxLightSpec)
 data/fx/shake_map.tres                      + meteor_hit, meteor_emerge
 data/audio/fx_sounds.tres                   + cues: frog_burst (frx), plague_burst (bldx), plague_hit (dish), fireball_blast (fbx), meteor_hit (mht), meteor_emerge (spt3),
                                             cloud_loop (cldl), bombardment_loop (eqk), cloudkill_bolt ya existe (lightning)
@@ -104,6 +105,7 @@ tools/lint/[~] baseline.txt (solo si algun conteo baja)
 - **Plague:** la gota llega a `82 ± 2` ticks; el tocado tiene `Poisoning.damage_sum() = 62`, dura 600 ticks y contagia; uno a 2,5 m de caja recibe 3/s (`int(6,25 × 0,5)`); la regeneración del envenenado es 0.
 - **Cloudkill:** la nube queda a `centro + 22 m` ± 0,05 m cuando llega; se mueve ≤ 3 m/s y ≤ `3/60` m por tick; sigue a un blanco que camina. Un cuerpo bajo el rayo pierde `900 × resistencia ± 1 %` a los 12 ticks del rayo; uno a 3 m del punto, `900 × (1 − 3/5) × resistencia`; el rayo a un punto del suelo (sin cuerpo) solo reparte salpicadura.
 - **Bombardment:** el meteorito sale a ≤ 12,5 m del mago y 1 m bajo el suelo; aterriza a `720 ± 2` ticks; solo choca bajando; 400 × resistencia ± 1 % al tocado; los de ≤ 5 m quedan `Stunned`; la altura del terreno en el punto de impacto **no cambia**.
+- **Luz (regla del usuario: cada hechizo ilumina con su color):** los estallidos (`frog_burst` verde, `fireball_blast` naranja, `meteor_hit` polvo cálido) llevan un `FxLightSpec` en su `ParticleType` (data/fx/lights/*.tres, sin sombras); las nubes y las gotas de fuego llevan un `ActorLight` hijo (Fire naranja, Cloudkill azul, Frogs verde, Plague oliva) y el rayo de Cloudkill ya usa `lightning_flash`. Color: el dominante de la textura (el exe empuja luces de 0x44ca20 solo en otros hechizos); energía y alcance moderados. Caso `cloud_lights`: cada escena tiene su luz o su `light` y ninguna proyecta sombra.
 - **Lint:** ningún conteo sube; los scripts nuevos ≤ 150 líneas; READMEs con What/Not/Talks to/Edit/Check.
 - **Antes/después visual:** no se verifica sin ventana (se captura con `match_shots`; el comando queda en el README).
 

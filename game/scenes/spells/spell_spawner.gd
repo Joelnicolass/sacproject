@@ -14,6 +14,7 @@ const GROUP := &"spell_spawner"
 	"Wrath": preload("res://scenes/spells/wrath_strike.tscn"),
 	"Fireball": preload("res://scenes/spells/fireball_projectile.tscn"),
 	"Swarm": preload("res://scenes/spells/swarm_projectile.tscn"),
+	"Dragonfire": preload("res://scenes/spells/carrier/dragonfire.tscn"),
 	"RiftSpirit": preload("res://scenes/spells/zones/rift_spirit.tscn"),
 	"SoulMole": preload("res://scenes/spells/carrier/soul_mole.tscn"),
 	"SoulWind": preload("res://scenes/spells/carrier/soul_wind.tscn"),
@@ -28,6 +29,11 @@ const GROUP := &"spell_spawner"
 @export var zones: Dictionary[String, PackedScene] = {}
 
 var _serial := 0
+
+
+## The spawner of spell projectiles in the world, or null.
+static func of(tree: SceneTree) -> SpellSpawner:
+	return tree.get_first_node_in_group(GROUP) as SpellSpawner
 
 
 func _ready() -> void:

@@ -1,7 +1,8 @@
-[gd_resource type="Resource" script_class="ParticleType" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="ParticleType" load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
 [ext_resource type="Texture2D" uid="uid://dwgfc5sn8ckpw" path="res://assets/original/fx/spd6.png" id="atlas_png"]
+[ext_resource type="Resource" path="res://data/fx/lights/speedup_glow.tres" id="9_light"]
 
 [resource]
 script = ExtResource("1_type")
@@ -15,3 +16,4 @@ lifetime_s = 1.067
 count = 12
 emission_radius = 0.8
 random_start_frame = true
+light = ExtResource("9_light")

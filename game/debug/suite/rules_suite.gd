@@ -23,6 +23,7 @@ const HOVER_FRAME_CASES := preload("res://debug/suite/hover_frame_cases.gd")
 const DEATH_CASES := preload("res://debug/suite/death_cases.gd")  # 055a
 const TOWER_CASES := preload("res://debug/suite/tower_cases.gd")  # 061a
 const WARD_CASES := preload("res://debug/suite/ward_cases.gd")  # 061b
+const CHAIN_CASES := preload("res://debug/suite/chain_cases.gd")  # 061e
 const CONTROL_CASES := preload("res://debug/suite/control_cases.gd")  # 061c
 const ZONE_CASES := preload("res://debug/suite/zone_cases.gd")  # 061f
 const RIFT_CASES := preload("res://debug/suite/rift_cases.gd")  # 061f
@@ -31,6 +32,7 @@ const CLOUD_CASES := preload("res://debug/suite/cloud_cases.gd")  # 061h
 const SOUL_CASES := preload("res://debug/suite/soul_cases.gd")  # 061d
 const ANIMATE_DEAD_CASES := preload("res://debug/suite/animate_dead_cases.gd")  # 061d
 const BIOME_CASES := preload("res://debug/suite/biome_cases.gd")
+const SPELL_LIGHT_CASES := preload("res://debug/suite/spell_light_cases.gd")  # 061 light pass
 const TEAM_CASES := preload("res://debug/match/team_cases.gd")  # 049b, 049c
 
 @export var auto_run := true
@@ -78,6 +80,7 @@ func _run_suite() -> void:
 	_results.merge(await TEAM_CASES.new().run(self))  # 049b, 049c
 	_results.merge(await TOWER_CASES.new().run(self))  # 061a
 	_results.merge(await WARD_CASES.new().run(self))  # 061b
+	_results.merge(await CHAIN_CASES.new().run(self))  # 061e
 	_results.merge(await CONTROL_CASES.new().run(self))  # 061c
 	_results.merge(await ZONE_CASES.new().run(self))  # 061f
 	_results.merge(await RIFT_CASES.new().run(self))  # 061f
@@ -86,6 +89,7 @@ func _run_suite() -> void:
 	_results.merge(await SOUL_CASES.new().run(self))  # 061d
 	_results.merge(await ANIMATE_DEAD_CASES.new().run(self))  # 061d
 	_results.merge(BIOME_CASES.new().run(self))
+	_results.merge(SPELL_LIGHT_CASES.new().run(self))  # 061 light pass
 	_print_suite()
 
 

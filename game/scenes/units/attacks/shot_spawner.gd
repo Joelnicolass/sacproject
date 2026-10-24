@@ -4,12 +4,23 @@ extends MpSpawner
 ## Spawns creature ranged shots under spawn_path: on the server (replicated) or in solo.
 
 const _SHOT := preload("res://scenes/units/attacks/ranged_shot.gd")
+const GROUP := &"shot_spawner"
 
 var _serial := 0
 
 
+## The spawner of shots in the world, or null.
+static func of(tree: SceneTree) -> ShotSpawner:
+	return tree.get_first_node_in_group(GROUP) as ShotSpawner
+
+
+## The node the shots are spawned into.
+func container() -> Node:
+	return get_node_or_null(spawn_path)
+
+
 func _ready() -> void:
-	add_to_group("shot_spawner")
+	add_to_group(GROUP)
 	spawn_function = _make
 	super._ready()
 

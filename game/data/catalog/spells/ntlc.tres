@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_v0uf7"]
 
+[ext_resource type="PackedScene" path="res://scenes/spells/actions/chain_lightning_action.tscn" id="2_action"]
+
 [resource]
 script = ExtResource("1_v0uf7")
 tag = "ntlc"
@@ -17,4 +19,5 @@ effect_range = 50.0
 flags = 8213
 flags1 = 16449
 flags2 = 33554432
+action = ExtResource("2_action")
 structures = PackedStringArray()

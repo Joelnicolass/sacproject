@@ -5,9 +5,9 @@ extends Node
 ## and quits. It only watches: it plays no input and moves no actor; the camera is its own.
 ## It lives in a subfolder because AgentKit mounts every .gd of agent/harness/ itself.
 ## Args after `--`: --map=<tag> --god=<god of the local wizard> [--biome=<god whose land the map wears; default --god>] [--ai-god=<god>] [--wizard=<tag>] [--after=<s> before the first
-## round] [--shots=<n> rounds] [--every=<s>] [--out=<dir>] [--views=wizard,wizard_close,foe_close,zone,cloud,overview,fountain,manahoar,tower] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
+## round] [--shots=<n> rounds] [--every=<s>, from 0.02: a burst of shots; the files end in the milliseconds, _t001500] [--out=<dir>] [--views=wizard,wizard_close,halo,foe_close,zone,cloud,overview,fountain,manahoar,tower] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
 ## [--cast=<spell tag>[,<tag>…], the local wizard casts them one after the other once --after has passed, before the first round: a spell that aims at himself (a ward, Healing Aura) on himself,
-## one that aims at a soul (pmcd, dnws, deda) on the closest soul he may fetch (the harness makes one when there is none), any other on the closest enemy (a zone, on the ground at its feet); mana is filled first; --cast-wait=<s> is the wait after the last cast (Explosion goes off 3.8 s after it starts: 4.5; a cloud rains after its cast: 10 shows the rain, 14 Cloudkill's bolts)] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
+## one that aims at a soul (pmcd, dnws, deda) on the closest soul he may fetch (the harness makes one when there is none), any other on the closest enemy (a zone, on the ground at its feet; Rainbow on himself, the first body of its chain; 061e needs --level=4 or more: ntlc, wobr, rifd, olah); mana is filled first; --cast-wait=<s> is the wait after the last cast (a cloud rains after its cast: 10 shows the rain, 14 Cloudkill's bolts; Explosion goes off 3.8 s after it starts: 4.5)] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
 ## Windowed: `-- --agent=flow --flow=match_shots.json` (the flow gives the sandbox that applies the quality preset).
 
 const GROUP_FOUNT := &"manafount"
@@ -20,6 +20,10 @@ const TAG_MANAHOAR := &"oham"
 ## The "wizard_close" view: the wizard from behind, close enough to read a ward on his body.
 @export_range(2.0, 20.0, 0.5, "suffix:m") var wizard_close_m := 5.5
 @export_range(0.0, 10.0, 0.5, "suffix:m") var wizard_close_up_m := 1.8
+## The "halo" view: the wizard from behind with the sky over his head in frame (the Halo of Earth orbits 5 m up: wizard_close cuts it off).
+@export_range(4.0, 30.0, 0.5, "suffix:m") var halo_m := 11.0
+@export_range(0.0, 20.0, 0.5, "suffix:m") var halo_up_m := 5.0
+@export_range(0.0, 10.0, 0.5, "suffix:m") var halo_look_up_m := 4.0
 ## The "foe_close" view: the closest enemy of the wizard (the target of --cast) from the wizard's side, to read a state on it.
 @export_range(2.0, 30.0, 0.5, "suffix:m") var foe_close_m := 7.0
 @export_range(0.0, 10.0, 0.5, "suffix:m") var foe_close_up_m := 2.0
@@ -82,7 +86,7 @@ func _run() -> void:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(out))
 	var views := arg("views", "wizard,overview,fountain").split(",", false)
 	var rounds := maxi(int(arg("shots", "3")), 1)
-	var every_s := maxf(float(arg("every", "5")), 0.1)
+	var every_s := maxf(float(arg("every", "5")), 0.02)
 	var elapsed_s := maxf(float(arg("after", "10")), 0.0)
 	await tree.create_timer(elapsed_s).timeout
 	if not arg("cast").is_empty():
@@ -91,7 +95,7 @@ func _run() -> void:
 	var map_tag := String(MapCatalog.active().tag)
 	for round in rounds:
 		for view in views:
-			await _shoot(world, view, "%s/%s_%s_%s_t%03d.png" % [out, map_tag, god, view, roundi(elapsed_s)])
+			await _shoot(world, view, "%s/%s_%s_%s_t%06d.png" % [out, map_tag, god, view, roundi(elapsed_s * 1000.0)])
 		elapsed_s += every_s
 		if round < rounds - 1:
 			await tree.create_timer(every_s).timeout
@@ -108,7 +112,7 @@ func _cast_all(world: MatchWorld, tags: PackedStringArray) -> void:
 		pool.current = pool.maximum
 		var action := caster.action_for(tag)
 		var foe := _closest_foe(wizard)
-		var on_himself := action == null or action.pick == SpellAction.Pick.SELF or action is WardAction
+		var on_himself := action == null or action.pick == SpellAction.Pick.SELF or action is WardAction or _heals_own(action)
 		var aimed := null if on_himself else foe
 		if action != null and action.pick == SpellAction.Pick.SOUL:
 			aimed = await _soul_for(world, wizard, action)
@@ -117,6 +121,12 @@ func _cast_all(world: MatchWorld, tags: PackedStringArray) -> void:
 		print("match_shots: cast %s (casting: %s)" % [tag, caster.is_casting()])
 		while caster.is_casting():
 			await get_tree().physics_frame
+
+
+## A spell that lands on the wizard's own side (Rainbow): the cast names nobody and the wizard himself is the first body of the chain.
+func _heals_own(action: SpellAction) -> bool:
+	var target: Variant = action.get("target")
+	return target is SpellTarget and (target as SpellTarget).who == SpellTarget.Who.ALLY_OR_SELF
 
 
 ## --cast of a spell that aims at a soul (Soul Mole, Soul Wind, Animate Dead): the closest soul the wizard may fetch; when the match has
@@ -195,6 +205,9 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 		"wizard_close":
 			look = focus + Vector3.UP * 1.4
 			spot = focus + _away_from_foe(world, wizard) * wizard_close_m + Vector3.UP * wizard_close_up_m
+		"halo":
+			look = focus + Vector3.UP * halo_look_up_m
+			spot = focus + _away_from_foe(world, wizard) * halo_m + Vector3.UP * halo_up_m
 		"foe_close":
 			var foe := _closest_foe(wizard)
 			if foe == null:
@@ -210,7 +223,7 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 				return
 			look = zone.global_position + Vector3.UP * 1.0
 			var toward_zone := (focus - zone.global_position) * Vector3(1.0, 0.0, 1.0)
-			spot = look + (toward_zone.normalized() if toward_zone.length() > 0.1 else Vector3.BACK) * zone_m + Vector3.UP * zone_up_m
+			spot = _clear_spot(look, toward_zone.normalized() if toward_zone.length() > 0.1 else Vector3.BACK)
 		"cloud":
 			var cloud_zone := get_tree().get_first_node_in_group(GroundZone.GROUP) as GroundZone
 			var cloud_at := cloud_zone.get_node_or_null("CloudAt") as Node3D if cloud_zone != null else null
@@ -266,6 +279,8 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 	_report_wards(wizard)
 	_report_afflictions(wizard)
 	_report_zones()
+	_report_halo()
+	_report_bolts()
 	if arg("hover") == "wizard":
 		_hover(world, wizard)
 	await _save(file)
@@ -309,6 +324,43 @@ func _report_afflictions(wizard: Node3D) -> void:
 		var layers := " layers=%d" % (state as SpellAffliction).layers() if state is SpellAffliction else ""
 		var skin := " skin=%s" % (afflictions.look.swap_texture != null) if afflictions.look != null else ""
 		print("match_shots: affliction %s on%s%s foe %s at (%.1f, %.1f, %.1f) | %s" % [state.type.id, layers, skin, foe.name, foe.global_position.x, foe.global_position.y, foe.global_position.z, " | ".join(parts)])
+
+
+## One line per rock of every Halo of Earth alive at each shot: is its body visible, where, how big and with what material, so a capture with
+## no rocks says why (not born yet, buried, scaled to nothing, no material).
+func _report_halo() -> void:
+	for halo in get_tree().get_nodes_in_group(HaloOfEarth.GROUP):
+		for rock: Node3D in (halo as HaloOfEarth).rock_nodes():
+			var mesh := rock.get_node_or_null("Mesh") as MeshInstance3D
+			var detail := "no mesh"
+			if mesh != null and mesh.mesh != null:
+				var material := mesh.mesh.surface_get_material(0)
+				var size := mesh.mesh.get_aabb().size * mesh.scale
+				detail = "mesh visible=%s scale %.2f size (%.2f, %.2f, %.2f) surfaces=%d material=%s" % [mesh.is_visible_in_tree(), mesh.scale.x, size.x, size.y, size.z,
+					mesh.mesh.get_surface_count(), material.get_class() if material else "none"]
+			print("match_shots: halo rock %s visible=%s at (%.1f, %.1f, %.1f) | %s" % [rock.name, rock.is_visible_in_tree(), rock.global_position.x, rock.global_position.y, rock.global_position.z, detail])
+
+
+## One line per beam FxBus has on screen at each shot (a bolt, an arc): its type, if it is drawn and where it starts and ends.
+func _report_bolts() -> void:
+	for node in get_tree().root.find_children("*", "BeamFx", true, false):
+		var beam := node as BeamFx
+		if beam.visible:
+			print("match_shots: beam %s visible=%s drawn=%s" % [beam.name, beam.is_visible_in_tree(), beam.mesh != null and (beam.mesh as ImmediateMesh).get_surface_count() > 0])
+
+
+## A camera point `zone_m` from `look` and `zone_up_m` above it: the bearing closest to `toward` (then every 45 degrees around) from which a ray
+## to `look` meets nothing (an altar or a tower between them hides the zone).
+func _clear_spot(look: Vector3, toward: Vector3) -> Vector3:
+	var space := camera.get_world_3d().direct_space_state
+	var spot := look + toward * zone_m + Vector3.UP * zone_up_m
+	for step in 8:
+		var bearing := toward.rotated(Vector3.UP, TAU * float(step + 1 >> 1) / 8.0 * (1.0 if step % 2 == 0 else -1.0))
+		var candidate := look + bearing * zone_m + Vector3.UP * zone_up_m
+		var hit := space.intersect_ray(PhysicsRayQueryParameters3D.create(candidate, look + Vector3.UP * 3.0, 0xFFFFFFFF))
+		if hit.is_empty():
+			return candidate
+	return spot
 
 
 ## One line per ground zone alive at every shot: its phase and ticks, where it stands, how many points it has, and its drawn parts (visible,

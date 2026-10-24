@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="FxSoundMap" load_steps=94 format=3]
+[gd_resource type="Resource" script_class="FxSoundMap" load_steps=102 format=3]
 
 [ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
 [ext_resource type="Script" path="res://scenes/audio/fx_sound_map.gd" id="2_map"]
@@ -82,6 +82,10 @@
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/char/rfth.wav" id="z_rfth"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/aura.wav" id="z_aura"]
 
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/rbow.wav" id="e_rbow"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/dfi2.wav" id="e_dfi2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/dfi4.wav" id="e_dfi4"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/halo.wav" id="e_halo"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/frx1.wav" id="c61h_frx1"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/frx2.wav" id="c61h_frx2"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/frg1.wav" id="c61h_frg1"]
@@ -355,6 +359,33 @@ script = ExtResource("1_cue")
 streams = Array[AudioStream]([ExtResource("n161_frx1"), ExtResource("n161_frx2")])
 max_voices = 3
 
+[sub_resource type="Resource" id="Cue_rainbow_arc"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("e_rbow")])
+max_voices = 3
+volume_db = 6.0
+
+[sub_resource type="Resource" id="Cue_dragon_roar"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("e_dfi2")])
+max_voices = 4
+volume_db = 12.0
+
+[sub_resource type="Resource" id="Cue_dragonfire_loop"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("e_dfi4")])
+max_voices = 2
+volume_db = 6.0
+max_distance_m = 60.0
+unit_size = 6.0
+priority = 30
+
+[sub_resource type="Resource" id="Cue_halo_throw"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("e_halo")])
+max_voices = 4
+volume_db = 6.0
+
 [sub_resource type="Resource" id="Cue_explosion_loop"]
 script = ExtResource("1_cue")
 streams = Array[AudioStream]([ExtResource("w_flp5")])
@@ -531,6 +562,11 @@ cues = Dictionary[StringName, ExtResource("1_cue")]({
 &"ward_swarm_loop": SubResource("Cue_ward_swarm_loop"),
 &"wards/fire_hit": SubResource("Cue_wards_fire_hit"),
 &"wards/swarm_sting": SubResource("Cue_wards_swarm_sting"),
+&"rainbow_arc": SubResource("Cue_rainbow_arc"),
+&"dragon_roar": SubResource("Cue_dragon_roar"),
+&"dragonfire_loop": SubResource("Cue_dragonfire_loop"),
+&"halo_throw": SubResource("Cue_halo_throw"),
+&"lightning_ltng": SubResource("Cue_lightning"),
 &"explosion_loop": SubResource("Cue_explosion_loop"),
 &"explosion_cast": SubResource("Cue_explosion_cast"),
 &"explosion_burst": SubResource("Cue_explosion_burst"),

@@ -77,6 +77,14 @@ func raise_maximum(amount: float) -> void:
 	current += amount
 
 
+## The Health of `node`, or null (a body that cannot be hurt has none).
+static func of(node: Node) -> Health:
+	for child in node.get_children() if node else []:
+		if child is Health:
+			return child
+	return null
+
+
 func is_dead() -> bool:
 	return maximum > 0.0 and current <= 0.0
 

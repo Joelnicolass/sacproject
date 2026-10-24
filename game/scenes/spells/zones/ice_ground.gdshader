@@ -6,10 +6,10 @@ render_mode unshaded, blend_mix, cull_disabled, depth_draw_never, shadows_disabl
 // centre out) to `radius` (how far the ice has grown). Both are set per instance by IcePatch.
 
 uniform sampler2D ice : source_color, filter_linear_mipmap, repeat_enable;
-uniform float energy = 10.0;
-uniform float opacity = 0.2;
+uniform float energy = 1.2;
+uniform float opacity = 0.7;
 // Soft edge of the band, in metres.
-uniform float edge_m = 0.4;
+uniform float edge_m = 0.8;
 instance uniform float radius = 0.0;
 instance uniform float inner = 0.0;
 

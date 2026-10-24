@@ -41,6 +41,8 @@ enum Phase { APPEARING, STEADY, WITHDRAWING_AT_BUILDING, WITHDRAWING_AT_CREATURE
 @export var color := Color(0.35, 1.0, 0.55, 1.0)
 ## Draws the ribbon. Its material is the look; a missing one warns in the inspector.
 @export var beam: MeshInstance3D
+## The light on the middle of the beam: it follows the ends while the beam is there and goes out when it withdraws. Optional.
+@export var glow: StateLight
 
 var phase := Phase.APPEARING
 
@@ -107,6 +109,8 @@ func retire() -> void:
 	_sample()
 	phase = Phase.WITHDRAWING_AT_BUILDING if _building_known and _post() != null else Phase.WITHDRAWING_AT_CREATURE
 	_phase_clock = 0.0
+	if is_instance_valid(glow):
+		glow.show_lit(false)
 
 
 ## Where the two ends are at `progress` (0..1) of the current phase: creature end, building end.
@@ -162,6 +166,9 @@ func _sample() -> void:
 
 
 func _draw(from: Vector3, to: Vector3) -> void:
+	if is_instance_valid(glow) and (phase == Phase.APPEARING or phase == Phase.STEADY):
+		glow.global_position = (from + to) * 0.5
+		glow.show_lit(true)
 	var mesh := beam.mesh as ImmediateMesh
 	mesh.clear_surfaces()
 	var line := to - from

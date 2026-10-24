@@ -115,6 +115,13 @@ func damage(amount: float, from_slot: int = 0) -> float:
 	return taken
 
 
+## Server or solo. The health goes to 0 whatever the body wears: no resistance, shield or side rule (Death's blow, a gib). A dead body
+## or one that cannot be hurt (maximum 0) takes nothing.
+func kill(from_slot: int = 0) -> void:
+	if _has_authority() and not is_dead() and maximum > 0.0:
+		_hit(current, from_slot)
+
+
 func _hit(amount: float, from_slot: int) -> void:
 	var was_full := current >= maximum
 	current = maxf(current - amount, 0.0)

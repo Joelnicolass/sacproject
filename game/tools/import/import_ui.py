@@ -108,6 +108,16 @@ EXTRA_FX = {
     "and2": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
     "swnd": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
     "wdst": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
+    # RFC 061i (SPEL): Charm's hearts (hrot, SPEL thrt/tcst/tSPK) and the big heart over a charmed creature (hart, tluv); Blind Rage's swirl (swrl: the fist,
+    # its trail and the rage around a creature) and the ring of its blast (per2); Intestinal Vaporization's shot (gut1) and the guts that circle the target
+    # (gut2); the cloud around Death (dth2, drawn with its colors inverted).
+    "hrot": ("shawn.wad", "shwn.WAD!/pers.FLDR/text.FLDR"),
+    "hart": ("shawn.wad", "shwn.WAD!/pers.FLDR/text.FLDR"),
+    "swrl": ("charlie.wad", "Bloo.WAD!/Pyro.FLDR/txtr.FLDR"),
+    "per2": ("charlie.wad", "Bloo.WAD!/Pyro.FLDR/txtr.FLDR"),
+    "gut1": ("charlie.wad", "Bloo.WAD!/Char.FLDR/tex.FLDR"),
+    "gut2": ("charlie.wad", "Bloo.WAD!/Char.FLDR/tex.FLDR"),
+    "dth2": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
     # RFC 061g (SPEL): the walls. Firewall's flames (fwal, 4x4) and its rising tongues (fwpt), Wailing Wall's faces (wwal, 4x4 with alpha) and
     # spirits (wlsp, 1x8), Vinewall's base sparks (pvin) and Fence's post bubble (bubl).
     "fwal": ("charlie.wad", "Bloo.WAD!/Pyro.FLDR/txtr.FLDR"),

@@ -1,0 +1,135 @@
+[gd_scene load_steps=30 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/carrier/spell_carrier.gd" id="1_carrier"]
+[ext_resource type="Script" path="res://scenes/spells/carrier/carrier_hold.gd" id="2_hold"]
+[ext_resource type="Script" path="res://scenes/spells/carrier/target_effect.gd" id="3_effect"]
+[ext_resource type="Script" path="res://scenes/spells/effects/afflict_effect.gd" id="4_afflict"]
+[ext_resource type="Resource" path="res://data/afflictions/blind_raged.tres" id="5_type"]
+[ext_resource type="Resource" path="res://data/fx/rage_blast.tres" id="6_blast"]
+[ext_resource type="Script" path="res://scenes/spells/carrier/morph_model.gd" id="7_model"]
+[ext_resource type="Script" path="res://scenes/spells/carrier/morph_clip.gd" id="8_clip"]
+[ext_resource type="PackedScene" path="res://assets/original/props/rage.glb" id="9_glb"]
+[ext_resource type="Texture2D" path="res://assets/original/props/rage_M000.png" id="10_skin"]
+[ext_resource type="Script" path="res://scenes/fx/sprite_emitter.gd" id="11_emitter"]
+[ext_resource type="Resource" path="res://data/fx/rage_trail.tres" id="12_trail"]
+[ext_resource type="Script" path="res://scenes/spells/carrier/growing_ring.gd" id="13_ring"]
+[ext_resource type="Shader" path="res://scenes/spells/carrier/ring.gdshader" id="14_shader"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/per2.png" id="15_per2"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="16_light"]
+[ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="17_sound"]
+[ext_resource type="Script" path="res://scenes/spells/carrier/phase_cue.gd" id="18_cue"]
+
+[sub_resource type="SphereShape3D" id="Sphere_reach"]
+radius = 30.0
+
+[sub_resource type="Resource" id="Afflict_rage"]
+script = ExtResource("4_afflict")
+affliction = ExtResource("5_type")
+
+[sub_resource type="StandardMaterial3D" id="Mat_fist"]
+albedo_texture = ExtResource("10_skin")
+roughness = 1.0
+metallic_specular = 0.0
+
+[sub_resource type="Resource" id="Clip_cast"]
+script = ExtResource("8_clip")
+id = &"cast"
+poses = PackedInt32Array(0, 1, 2, 3, 2, 1)
+pose_s = 0.2167
+
+[sub_resource type="Resource" id="Clip_fly"]
+script = ExtResource("8_clip")
+id = &"fly"
+poses = PackedInt32Array(3, 4, 5, 6, 7)
+pose_s = 0.2167
+loop = false
+
+[sub_resource type="Resource" id="Clip_fist"]
+script = ExtResource("8_clip")
+id = &"fist"
+poses = PackedInt32Array(7, 8, 9, 10, 11)
+pose_s = 0.2167
+loop = false
+
+[sub_resource type="PlaneMesh" id="Mesh_ring"]
+size = Vector2(2, 2)
+
+[sub_resource type="ShaderMaterial" id="Mat_ring"]
+shader = ExtResource("14_shader")
+shader_parameter/atlas = ExtResource("15_per2")
+
+[node name="BlindRage" type="Node3D" node_paths=PackedStringArray("hold")]
+editor_description = "Blind Rage (egar): un puno (rage, 12 cuadros del original) sale del mago, vuela a 30 m/s al blanco, se forma 82 ticks a 4 m del suelo y baja; explota con un anillo (per2) que crece a 30 m en 128 ticks. Toda criatura que no sea mago a 30 m queda 30 s enfurecida (BlindRaged). Luz roja (swrl / per2)."
+script = ExtResource("1_carrier")
+motion = 1
+hold = NodePath("Hold")
+
+[node name="Hold" type="Node" parent="." node_paths=PackedStringArray("carrier")]
+script = ExtResource("2_hold")
+carrier = NodePath("..")
+hold_s = 1.3667
+ride_height_m = 4.0
+drop_s = 0.5
+linger_s = 2.1333
+
+[node name="OnSettled" type="Node3D" parent="." node_paths=PackedStringArray("carrier", "reach")]
+script = ExtResource("3_effect")
+carrier = NodePath("..")
+effect = SubResource("Afflict_rage")
+reach = NodePath("Reach")
+flash = ExtResource("6_blast")
+
+[node name="Reach" type="CollisionShape3D" parent="OnSettled"]
+shape = SubResource("Sphere_reach")
+
+[node name="Fist" type="Node3D" parent="." node_paths=PackedStringArray("carrier")]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
+script = ExtResource("7_model")
+carrier = NodePath("..")
+clips = Array[ExtResource("8_clip")]([SubResource("Clip_cast"), SubResource("Clip_fly"), SubResource("Clip_fist")])
+phase_clips = Dictionary[int, StringName]({
+0: &"cast",
+1: &"cast",
+2: &"fly",
+4: &"fist",
+5: &"fist"
+})
+start_clip = &"cast"
+
+[node name="Model" parent="Fist" instance=ExtResource("9_glb")]
+
+[node name="Rage" parent="Fist/Model" index="0"]
+cast_shadow = 0
+surface_material_override/0 = SubResource("Mat_fist")
+
+[node name="Trail" type="CPUParticles3D" parent="."]
+use_fixed_seed = true
+local_coords = false
+script = ExtResource("11_emitter")
+type = ExtResource("12_trail")
+start_active = true
+
+[node name="Ring" type="MeshInstance3D" parent="." node_paths=PackedStringArray("carrier")]
+visible = false
+cast_shadow = 0
+mesh = SubResource("Mesh_ring")
+material_override = SubResource("Mat_ring")
+script = ExtResource("13_ring")
+carrier = NodePath("..")
+
+[node name="Glow" parent="." instance=ExtResource("16_light")]
+light_color = Color(1, 0.3, 0.2, 1)
+light_energy = 1.6
+omni_range = 8.0
+priority = 3.0
+lit_on_ready = true
+
+[node name="CastSound" parent="." instance=ExtResource("17_sound")]
+cue = &"rage_cast"
+play_on_ready = false
+
+[node name="CastCue" type="Node" parent="." node_paths=PackedStringArray("carrier", "sound")]
+script = ExtResource("18_cue")
+carrier = NodePath("..")
+phase = 1
+sound = NodePath("../CastSound")

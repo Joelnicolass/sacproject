@@ -222,6 +222,9 @@ func _on_unit_died(tag: String, slot: int, _at: Vector3, unit: Node3D) -> void:
 	var count := type.souls if type else 0
 	if not DeathRules.leaves_soul(count, false):
 		return
+	if (unit as UnitBody).gibbed:
+		_spawn_free(unit, slot, count)
+		return
 	var remains := (unit as UnitBody).corpse()
 	if not remains.is_settled:
 		remains.settled.connect(_spawn_on_corpse.bind(unit, slot, count), CONNECT_ONE_SHOT)
@@ -241,6 +244,12 @@ func _spawn_on_corpse(unit: Node3D, slot: int, count: int) -> void:
 	var soul := spawn_soul({"x": at.x, "y": at.y, "z": at.z, "number": count, "owner_slot": slot, "attached": true, "origin": String(origin_of(unit))})
 	if soul:
 		soul.set("corpse", unit)
+
+
+## A creature that burst (Gib): its soul rises where it stood, off any corpse (sacengine gib, state.d:8341-8365).
+func _spawn_free(unit: Node3D, slot: int, count: int) -> void:
+	var at := (unit as UnitBody).soul_anchor()
+	spawn_soul({"x": at.x, "y": at.y, "z": at.z, "number": count, "owner_slot": slot, "attached": false, "origin": String(origin_of(unit))})
 
 
 func _make(data: Variant) -> Node:

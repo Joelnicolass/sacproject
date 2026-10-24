@@ -43,6 +43,8 @@ var _think_left := 0.0
 
 
 func give(order_command: Command, order_target: Node3D, order_point: Vector3, order_offset: Vector2, order_facing: float) -> void:
+	if _body.afflictions.raging():
+		return
 	if _is_repeat(order_command, order_target):
 		point = order_point
 		offset = order_offset
@@ -106,6 +108,10 @@ func _physics_process(delta: float) -> void:
 		return
 	if _body.is_dead():
 		clear()
+		return
+	if _body.afflictions.raging():
+		clear()
+		_body.halt()
 		return
 	match command:
 		Command.MOVE:

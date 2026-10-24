@@ -111,6 +111,7 @@ func fixed() -> bool:
 func blocks_regeneration() -> bool:
 	return immobilized() or _any(&"blocks_regeneration")
 
+func raging() -> bool: return _any(&"rages")  ## Blind Rage is on (UnitOrders, RangedAttack and TargetPicker ask).
 
 ## A state that is on lets a flier fall (petrified; Flight reads it).
 func drops_fliers() -> bool:

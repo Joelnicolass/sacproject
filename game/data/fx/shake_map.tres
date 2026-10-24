@@ -10,6 +10,9 @@ trauma_by_fx = Dictionary[StringName, float]({
 &"quake_ring": 0.5,
 &"halo_emerge": 0.3,
 &"explosion_burst": 0.5,
+&"cow_ground": 0.25,
+&"cow_rocks_up": 0.4,
+&"cow_burst": 0.6,
 &"meteor_hit": 0.6,
 &"meteor_emerge": 0.25,
 &"fireball_blast": 0.2

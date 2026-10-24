@@ -1,78 +1,71 @@
 class_name SpellCarrier
 extends SpellProjectile
 
-## Something a spell sends on a trip (one piece for all of them; `motion` says which trip). SOUL_TRIP (the Soul Mole's rock, the Soul Wind's
-## funnel): it walks the ground from the wizard to a soul in half the trip, turns there, and comes back in the other half. GUIDED
-## (Dragonfire's dragon): it climbs a spiral around the wizard while he casts, then flies to its target (GuidedFlight) and asks its
-## `on_arrive` (a CarrierArrive) what to do on arriving. The children say what it does on the way: SoulFetch takes the soul at the turn,
-## a CarrierPulse hurts or stuns what it passes near, a DragonArrive burns and picks the next target, the look is whatever else hangs from it.
-## The server (or solo) moves it and replicates it; a client only draws. It ends when the trip is over, when the soul is gone or when the
-## spell is cancelled. It does not know what it carries nor who is near.
-## Ref: sacengine SoulMole, SoulWind (state.d:3109, 17938, 18916).
+## Something a spell sends on a trip (one piece for all of them; `motion` says which). SOUL_TRIP: the Soul Mole's rock and the Soul Wind's funnel
+## walk to a soul and back (SoulTrip). GUIDED: the dragon, Charm's spirits, Blind Rage's fist and the vaporizing shot fly to the target (GuidedFlight).
+## FALL: the cow arcs onto it (CarrierFall). HUNT: Death walks to the closest creature again and again (CarrierHunt). On arriving it says `arrived`;
+## a CarrierHold makes it wait and then say `settled`. The other children listen and act (TargetEffect, SoulFetch, a pulse, the look). The server (or
+## solo) moves it and replicates it; a client only draws. It does not know what it carries nor who is near.
+## Ref: sacengine SoulMole, SoulWind, Dragonfire, Charm, BlindRage, IntestinalVaporization, BovineIntervention, Death (state.d:17938-22300).
 
-## The turn: it stands on the soul and the soul is about to follow it. Server only.
+## Server only: SOUL_TRIP stands on the soul (`reached`); the trip is over (`ended`, the node frees itself); it reached its target (`arrived`, null: a
+## point; for HUNT each blow); the wait there is over or there was none (`settled`); FALL went through the land (`landed`).
 signal reached(soul: Soul)
-## The trip is over, whatever the reason. Server only; the node frees itself right after.
 signal ended
+signal arrived(target: Node3D)
+signal settled(target: Node3D)
+signal landed(at: Vector3)
+## Every peer: the look follows the phase.
+signal phase_changed(now: Phase)
 
-enum Motion { SOUL_TRIP, GUIDED }
-enum Phase { WAITING, CASTING, FLYING, SHRINKING }
+enum Motion { SOUL_TRIP, GUIDED, FALL, HUNT }
+enum Phase { WAITING, CASTING, FLYING, SHRINKING, HOLDING, LINGERING, STRIKING, LEAVING }
 
 @export var motion := Motion.SOUL_TRIP
-## Ticks of the whole trip: the same going and coming.
+## SOUL_TRIP: ticks of the trip (the same each way), how far it bends to the side (a part of the distance to the soul).
 @export_range(4, 3600, 4) var roundtrip_ticks := 540
-## How far the trip bends to the side, as a part of the distance to the soul.
 @export_range(0.0, 2.0, 0.05) var bend := 0.75
 @export_flags_3d_physics var ground_mask := 1
 @export_group("Guided")
-## What it does on its way and on arriving (see CarrierArrive).
 @export var on_arrive: CarrierArrive
 @export_range(0.1, 12.0, 0.1, "suffix:rad/s") var turn_rate := PI
-## Never lower than this over the land; arrived when its center is `arrive_distance_m` from the target's.
 @export_range(0.0, 5.0, 0.1, "suffix:m") var flying_height_m := 1.0
 @export_range(0.1, 3.0, 0.05, "suffix:m") var arrive_distance_m := 0.75
 @export_range(0.1, 5.0, 0.1, "suffix:s") var shrink_s := 1.0
-## It climbs this far over the top of the wizard's box while he casts.
 @export_range(0.0, 10.0, 0.1, "suffix:m") var cast_height_m := 4.0
+@export_group("Parts")
+@export var hold: CarrierHold
+@export var fall: CarrierFall
+@export var hunt: CarrierHunt
 
-## True once the casting time is over: from then on the children may hurt (a pulse waits for it).
 var armed := false
-## Ticks walked so far.
 var frame := 0
 var wizard_path := NodePath()
 var soul_path := NodePath()
 var from_slot := 0
-## The spell's damage, for a pulse that hurts.
 var damage := 0.0
 var speed := 0.0
 var damage_range := 0.0
-var phase := Phase.WAITING
-
-var _start := Vector3.ZERO
-var _turn := Vector3.ZERO
-var _side := Vector3.ZERO
-var _ended := false
+var spell: SpellType
+var start := Vector3.ZERO
 var flight: GuidedFlight
+var phase := Phase.WAITING:
+	set(value):
+		if value != phase:
+			phase = value
+			phase_changed.emit(value)
+
+var _trip: SoulTrip
+var _ended := false
 
 
 func setup(data: Dictionary) -> void:
-	name = str(data["name"])
-	position = Vector3(float(data["x"]), float(data["y"]), float(data["z"]))
-	wizard_path = NodePath(str(data.get("caster", "")))
-	soul_path = NodePath(str(data.get("target", "")))
-	from_slot = int(data.get("slot", 0))
-	damage = float(data.get("damage", 0.0))
-	speed = float(data.get("speed", 0.0))
-	damage_range = float(data.get("damage_range", 0.0))
-	_start = position
+	CarrierSync.read(self, data)
+	_trip = SoulTrip.new(self) if motion == Motion.SOUL_TRIP else null
 	if motion == Motion.GUIDED:
 		flight = GuidedFlight.new(self)
 		scale = Vector3.ONE * 0.01
-	var net := MpReplicate.new()
-	net.name = "Net"
-	net.sync_properties = PackedStringArray([".:position", ".:rotation", ".:scale"] if motion == Motion.GUIDED else [".:position"])
-	MpAuthority.ensure_sync(self, net.sync_properties)
-	add_child(net)
+	CarrierSync.attach(self)
 
 
 func _ready() -> void:
@@ -87,55 +80,48 @@ func soul() -> Soul:
 	return get_node_or_null(soul_path) as Soul if not soul_path.is_empty() else null
 
 
-## Guided, server or solo: the cast started; the carrier follows `caster` for `cast_ticks` ticks and tells its `on_arrive`.
-func begin(caster: Node3D, spell: SpellType, target: Node3D, point: Vector3, cast_ticks: int) -> void:
-	flight.begin(caster, target, point, cast_ticks)
+func target_body() -> Node3D:
+	return get_node_or_null(soul_path) as Node3D if not soul_path.is_empty() else null
+
+
+## Server or solo. The cast started: a guided carrier follows `caster` for `cast_ticks` ticks; a hunter appears; a falling one waits for `arm`.
+func begin(caster: Node3D, spell_cast: SpellType, target: Node3D, point: Vector3, cast_ticks: int) -> void:
+	spell = spell_cast
+	if motion == Motion.GUIDED:
+		flight.begin(caster, target, point, cast_ticks)
+	elif motion == Motion.HUNT:
+		hunt.begin(caster, cast_ticks)
+		set_physics_process(true)
 	if on_arrive != null:
-		on_arrive.begin(self, caster, spell, target)
+		on_arrive.begin(self, caster, spell_cast, target)
 
 
-## Server or solo. The casting time is over: the children may act (a guided carrier is let go toward `target`).
+## Server or solo. The casting time is over: a guided carrier is let go toward `target`, the cow falls, the hunter hunts.
 func arm(target: Node3D = null) -> void:
 	armed = true
-	if flight != null:
+	if motion == Motion.GUIDED:
 		flight.release(target)
 		if on_arrive != null:
 			on_arrive.released(self, flight.target)
+	elif motion == Motion.FALL:
+		fall.begin(target)
+		set_physics_process(true)
+	elif motion == Motion.HUNT:
+		hunt.release()
 
 
-## Server or solo. The spell was cancelled (the wizard died while casting): nothing walks, the soul is left alone.
-func stop() -> void:
-	_finish()
-
-
-func _physics_process(_delta: float) -> void:
-	if _ended:
-		return
-	if flight != null:
-		flight.step()
-		return
-	var leg := roundtrip_ticks / 2
-	var target := soul()
-	var owner_body := wizard()
-	if target == null or owner_body == null or not (target.state == Soul.State.NORMAL or target.state == Soul.State.EMERGING):
-		_finish()
-		return
-	frame += 1
-	if frame == leg + 1:
-		_turn = global_position
-		reached.emit(target)
-	var soul_at := target.global_position
-	if frame == 1:
-		_side = CarrierPath.side_velocity(_start, soul_at, bend)
-	if frame <= leg:
-		global_position = _grounded(CarrierPath.out_at(_start, soul_at, _side, frame, leg))
+## Server or solo. It reached `target`: the children hear it, and it waits (CarrierHold) or is done.
+func arrive_at(target: Node3D) -> void:
+	arrived.emit(target)
+	if hold != null:
+		hold.begin(target)
 	else:
-		global_position = _grounded(CarrierPath.back_at(_turn, owner_body.global_position, _side, frame - leg, leg))
-	if frame >= roundtrip_ticks:
-		_finish()
+		settled.emit(target)
+		stop()
 
 
-func _finish() -> void:
+## Server or solo. The spell was cancelled or the trip is over: nothing moves any more and the node goes.
+func stop() -> void:
 	if _ended:
 		return
 	_ended = true
@@ -144,7 +130,15 @@ func _finish() -> void:
 	queue_free()
 
 
-## The same place, on the ground (a carrier walks it).
-func _grounded(at: Vector3) -> Vector3:
-	var y := GroundRay.surface_y(self, at, ground_mask, GroundRay.wizard_rids(get_tree()), NAN)
-	return at if is_nan(y) else Vector3(at.x, y, at.z)
+func _physics_process(_delta: float) -> void:
+	if _ended:
+		return
+	match motion:
+		Motion.SOUL_TRIP:
+			_trip.step()
+		Motion.GUIDED:
+			flight.step()
+		Motion.FALL:
+			fall.step()
+		Motion.HUNT:
+			hunt.step()

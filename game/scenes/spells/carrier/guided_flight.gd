@@ -96,8 +96,11 @@ func _fly_step() -> void:
 	_face(direction)
 	_carrier.global_position = next
 	var flat := Vector2(center.x - next.x, center.z - next.z).length()
-	if _carrier.on_arrive != null and ((center - next).length() < _carrier.arrive_distance_m or (low and center.y < next.y and flat < 0.5)):
-		_carrier.on_arrive.arrive(_carrier)
+	if (center - next).length() < _carrier.arrive_distance_m or (low and center.y < next.y and flat < 0.5):
+		if _carrier.on_arrive != null:
+			_carrier.on_arrive.arrive(_carrier)
+		else:
+			_carrier.arrive_at(target_body())
 
 
 ## The head (+Z) looks where it goes.

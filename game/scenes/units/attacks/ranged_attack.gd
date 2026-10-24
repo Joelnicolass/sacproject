@@ -105,7 +105,7 @@ func shoot_range() -> float:
 ## sacengine attack: shoot unless the foe is in melee contact. A body of its own side (a Scarab's patient, F136) is
 ## always shot, never struck (state.d:12850-12853).
 func prefers(target: Node3D) -> bool:
-	if attack == null or target == null:
+	if attack == null or target == null or _body.afflictions.raging():
 		return false
 	if "owner_slot" in target and int(target.get("owner_slot")) == _body.owner_slot:
 		return true

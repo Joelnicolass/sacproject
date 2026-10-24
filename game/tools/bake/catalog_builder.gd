@@ -95,6 +95,7 @@ static func make_spell(row: Dictionary, structure: bool) -> Resource:
 	type.acceleration = float(row.get("acceleration", 0.0))
 	type.damage = int(row.get("amount", 0))
 	type.amount2 = int(row.get("amount2", 0))
+	type.count = int(row.get("amount3", 0))
 	type.damage_range = float(row.get("damage_range", 0.0))
 	type.effect_range = float(row.get("effect_range", 0.0))
 	type.duration = float(row.get("duration", 0.0))

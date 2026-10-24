@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/spells/scar_mark.tscn" id="1_mark"]
+[ext_resource type="Texture2D" path="res://assets/original/scars/bovs.png" id="2_bovs"]
+
+[node name="CowMark" instance=ExtResource("1_mark")]
+editor_description = "Donde cae la vaca de Bovine Intervention (ivob): la marca `bovs` (20 m), siempre que haya suelo (max_height_m 0)."
+texture = ExtResource("2_bovs")

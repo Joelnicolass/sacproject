@@ -42,7 +42,7 @@ static func describe(node: Node, local_slot: int) -> TargetInfo:
 		info.title = UiText.t(&"TARGET_INFO_MANAFOUNT")
 		return info
 	if node is MapBuilding:
-		var type := (node as MapBuilding).building
+		var type := (node as MapBuilding).type
 		var named := type != null and not type.display_name.is_empty()
 		info.title = type.display_name if named else UiText.t(&"TARGET_INFO_BUILDING")
 	elif node.is_in_group("structure"):

@@ -1,7 +1,7 @@
 class_name BenchBuilding
 extends Resource
 
-## A building of the map the bench puts on the field (RFC-053 053a, F370): scenes/map/map_building.tscn with `building`,
+## A building of the map the bench puts on the field (RFC-053 053a, F370): the BuildingType's scene (BuildingType.scene()),
 ## `offset` meters (X, Z) from BenchRules.anchor, on the ground. A gravestone (grv3) has 0 health in its BLDG: the
 ## indestructible case. Debug only: the map's own buildings stay where the layout has them.
 

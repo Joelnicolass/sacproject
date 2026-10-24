@@ -1,959 +1,255 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_mjlj0"]
-[ext_resource type="Script" path="res://scenes/map/map_building.gd" id="2_8js7i"]
-[ext_resource type="Resource" path="res://data/buildings/stratos_ice_1.tres" id="3_5rw7a"]
-[ext_resource type="Resource" path="res://data/buildings/stratos_ice_2.tres" id="4_eaib7"]
-[ext_resource type="Resource" path="res://data/buildings/stratos_ice_3.tres" id="5_3pwqm"]
-[ext_resource type="Resource" path="res://data/buildings/stratos_igloo.tres" id="6_dkefu"]
-[ext_resource type="Resource" path="res://data/buildings/stratos_spire.tres" id="7_su3na"]
-[ext_resource type="Resource" path="res://data/buildings/stratos_hoodoo_1.tres" id="8_hmunh"]
-[ext_resource type="Resource" path="res://data/buildings/stratos_hoodoo_2.tres" id="9_qursr"]
-[ext_resource type="Resource" path="res://data/buildings/stratos_hoodoo_3.tres" id="10_f50li"]
 [ext_resource type="PackedScene" path="res://scenes/map/npc_spawn.tscn" id="11_1wdsa"]
 [ext_resource type="Script" path="res://scenes/map/npc_spawn.gd" id="12_0vdy6"]
 [ext_resource type="Resource" path="res://data/catalog/creatures/zepa.tres" id="13_qbudp"]
 [ext_resource type="Resource" path="res://data/catalog/creatures/ycrp.tres" id="14_bwhuq"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_ice_1.tscn" id="b1_stratos_ice_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_ice_2.tscn" id="b2_stratos_ice_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_ice_3.tscn" id="b3_stratos_ice_3"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_igloo.tscn" id="b4_stratos_igloo"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_spire.tscn" id="b5_stratos_spire"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_hoodoo_1.tscn" id="b6_stratos_hoodoo_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_hoodoo_2.tscn" id="b7_stratos_hoodoo_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_hoodoo_3.tscn" id="b8_stratos_hoodoo_3"]
 
 [node name="WinterWonderLayout" type="Node3D" unique_id=367195788]
 
 [node name="Buildings" type="Node3D" parent="." unique_id=845701219]
 
-[node name="Bld011_sic1" type="StaticBody3D" parent="Buildings" unique_id=975446879 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld011_sic1" parent="Buildings" unique_id=975446879 instance=ExtResource("b1_stratos_ice_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 710, 61.49998, 1700)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("3_5rw7a")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld012_sic1" type="StaticBody3D" parent="Buildings" unique_id=5689077 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld012_sic1" parent="Buildings" unique_id=5689077 instance=ExtResource("b1_stratos_ice_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1840, 74.1, 1080)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("3_5rw7a")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld013_sic1" type="StaticBody3D" parent="Buildings" unique_id=1795198978 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld013_sic1" parent="Buildings" unique_id=1795198978 instance=ExtResource("b1_stratos_ice_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1940, 68.00004, 1180)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("3_5rw7a")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld014_sic1" type="StaticBody3D" parent="Buildings" unique_id=1625351543 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld014_sic1" parent="Buildings" unique_id=1625351543 instance=ExtResource("b1_stratos_ice_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1920, 81.50002, 1140)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("3_5rw7a")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld015_sic1" type="StaticBody3D" parent="Buildings" unique_id=1744578365 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld015_sic1" parent="Buildings" unique_id=1744578365 instance=ExtResource("b1_stratos_ice_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1540, 55.600014, 1730)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("3_5rw7a")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld016_sic1" type="StaticBody3D" parent="Buildings" unique_id=1520121359 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld016_sic1" parent="Buildings" unique_id=1520121359 instance=ExtResource("b1_stratos_ice_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 690, 64.30001, 1680)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("3_5rw7a")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld017_sic1" type="StaticBody3D" parent="Buildings" unique_id=1791939391 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld017_sic1" parent="Buildings" unique_id=1791939391 instance=ExtResource("b1_stratos_ice_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 660, 62.09999, 1650)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("3_5rw7a")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld018_sic1" type="StaticBody3D" parent="Buildings" unique_id=1675287839 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld018_sic1" parent="Buildings" unique_id=1675287839 instance=ExtResource("b1_stratos_ice_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 720, 60.999985, 1670)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("3_5rw7a")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld019_sic1" type="StaticBody3D" parent="Buildings" unique_id=1124011767 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld019_sic1" parent="Buildings" unique_id=1124011767 instance=ExtResource("b1_stratos_ice_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 670, 52.399986, 1270)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("3_5rw7a")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld020_sic1" type="StaticBody3D" parent="Buildings" unique_id=1292239359 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld020_sic1" parent="Buildings" unique_id=1292239359 instance=ExtResource("b1_stratos_ice_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 670, 51.40001, 1320)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("3_5rw7a")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld021_sic1" type="StaticBody3D" parent="Buildings" unique_id=167364322 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld021_sic1" parent="Buildings" unique_id=167364322 instance=ExtResource("b1_stratos_ice_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 710, 64.000015, 1250)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("3_5rw7a")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld022_sic1" type="StaticBody3D" parent="Buildings" unique_id=948899217 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld022_sic1" parent="Buildings" unique_id=948899217 instance=ExtResource("b1_stratos_ice_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 720, 56.400017, 1310)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("3_5rw7a")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld023_sic1" type="StaticBody3D" parent="Buildings" unique_id=1072704179 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld023_sic1" parent="Buildings" unique_id=1072704179 instance=ExtResource("b1_stratos_ice_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1080, 67.899994, 1110)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("3_5rw7a")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld024_sic1" type="StaticBody3D" parent="Buildings" unique_id=587785933 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld024_sic1" parent="Buildings" unique_id=587785933 instance=ExtResource("b1_stratos_ice_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1130, 63.000042, 1210)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("3_5rw7a")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld025_sic1" type="StaticBody3D" parent="Buildings" unique_id=406380380 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld025_sic1" parent="Buildings" unique_id=406380380 instance=ExtResource("b1_stratos_ice_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1100, 68.200005, 1180)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("3_5rw7a")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld026_sic1" type="StaticBody3D" parent="Buildings" unique_id=382206290 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld026_sic1" parent="Buildings" unique_id=382206290 instance=ExtResource("b1_stratos_ice_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1090, 70.19999, 1140)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("3_5rw7a")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld027_sic1" type="StaticBody3D" parent="Buildings" unique_id=1938777801 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld027_sic1" parent="Buildings" unique_id=1938777801 instance=ExtResource("b1_stratos_ice_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1530, 53.800014, 1750)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("3_5rw7a")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld028_sic1" type="StaticBody3D" parent="Buildings" unique_id=1719526184 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld028_sic1" parent="Buildings" unique_id=1719526184 instance=ExtResource("b1_stratos_ice_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1570, 53.80002, 1660)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("3_5rw7a")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld029_sic1" type="StaticBody3D" parent="Buildings" unique_id=882153840 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld029_sic1" parent="Buildings" unique_id=882153840 instance=ExtResource("b1_stratos_ice_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1890, 82.59998, 1120)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("3_5rw7a")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld030_sic1" type="StaticBody3D" parent="Buildings" unique_id=1241892159 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld030_sic1" parent="Buildings" unique_id=1241892159 instance=ExtResource("b1_stratos_ice_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1560, 57.19998, 1680)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("3_5rw7a")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld031_sic2" type="StaticBody3D" parent="Buildings" unique_id=2132720738 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld031_sic2" parent="Buildings" unique_id=2132720738 instance=ExtResource("b2_stratos_ice_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 910, 42.999992, 1210)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("4_eaib7")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld032_sic2" type="StaticBody3D" parent="Buildings" unique_id=1365421338 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld032_sic2" parent="Buildings" unique_id=1365421338 instance=ExtResource("b2_stratos_ice_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 980, 32.40003, 1390)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("4_eaib7")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld033_sic2" type="StaticBody3D" parent="Buildings" unique_id=284150043 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld033_sic2" parent="Buildings" unique_id=284150043 instance=ExtResource("b2_stratos_ice_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 890, 42.29999, 1620)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("4_eaib7")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld034_sic2" type="StaticBody3D" parent="Buildings" unique_id=33880046 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld034_sic2" parent="Buildings" unique_id=33880046 instance=ExtResource("b2_stratos_ice_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 820, 51.600002, 1740)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("4_eaib7")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld035_sic2" type="StaticBody3D" parent="Buildings" unique_id=984980664 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld035_sic2" parent="Buildings" unique_id=984980664 instance=ExtResource("b2_stratos_ice_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1070, 57.800022, 1250)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("4_eaib7")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld036_sic2" type="StaticBody3D" parent="Buildings" unique_id=1277804262 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld036_sic2" parent="Buildings" unique_id=1277804262 instance=ExtResource("b2_stratos_ice_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1300, 27.299988, 1150)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("4_eaib7")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld037_sic2" type="StaticBody3D" parent="Buildings" unique_id=147246168 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld037_sic2" parent="Buildings" unique_id=147246168 instance=ExtResource("b2_stratos_ice_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1420, 36.000008, 1030)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("4_eaib7")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld038_sic2" type="StaticBody3D" parent="Buildings" unique_id=745437043 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld038_sic2" parent="Buildings" unique_id=745437043 instance=ExtResource("b2_stratos_ice_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1550, 60.1, 1100)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("4_eaib7")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld039_sic2" type="StaticBody3D" parent="Buildings" unique_id=185463865 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld039_sic2" parent="Buildings" unique_id=185463865 instance=ExtResource("b2_stratos_ice_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1820, 61.899998, 1000)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("4_eaib7")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld040_sic2" type="StaticBody3D" parent="Buildings" unique_id=1360218536 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld040_sic2" parent="Buildings" unique_id=1360218536 instance=ExtResource("b2_stratos_ice_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1780, 55.100006, 1140)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("4_eaib7")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld041_sic2" type="StaticBody3D" parent="Buildings" unique_id=1561489269 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld041_sic2" parent="Buildings" unique_id=1561489269 instance=ExtResource("b2_stratos_ice_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1760, 38.399994, 1300)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("4_eaib7")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld042_sic2" type="StaticBody3D" parent="Buildings" unique_id=352416102 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld042_sic2" parent="Buildings" unique_id=352416102 instance=ExtResource("b2_stratos_ice_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1830, 39.7, 1340)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("4_eaib7")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld043_sic2" type="StaticBody3D" parent="Buildings" unique_id=1336859036 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld043_sic2" parent="Buildings" unique_id=1336859036 instance=ExtResource("b2_stratos_ice_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1640, 44.000023, 1640)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("4_eaib7")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld044_sic2" type="StaticBody3D" parent="Buildings" unique_id=1526325265 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld044_sic2" parent="Buildings" unique_id=1526325265 instance=ExtResource("b2_stratos_ice_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1880, 45.90004, 1770)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("4_eaib7")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld045_sic2" type="StaticBody3D" parent="Buildings" unique_id=1398820899 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld045_sic2" parent="Buildings" unique_id=1398820899 instance=ExtResource("b2_stratos_ice_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1680, 44.30002, 1840)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("4_eaib7")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld046_sic3" type="StaticBody3D" parent="Buildings" unique_id=794869759 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld046_sic3" parent="Buildings" unique_id=794869759 instance=ExtResource("b3_stratos_ice_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1520, 57.300014, 990)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("5_3pwqm")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld047_sic3" type="StaticBody3D" parent="Buildings" unique_id=967881116 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld047_sic3" parent="Buildings" unique_id=967881116 instance=ExtResource("b3_stratos_ice_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1390, 31.799992, 1130)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("5_3pwqm")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld048_sic3" type="StaticBody3D" parent="Buildings" unique_id=679782089 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld048_sic3" parent="Buildings" unique_id=679782089 instance=ExtResource("b3_stratos_ice_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 610, 41.20002, 1350)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("5_3pwqm")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld049_sic3" type="StaticBody3D" parent="Buildings" unique_id=2127545707 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld049_sic3" parent="Buildings" unique_id=2127545707 instance=ExtResource("b3_stratos_ice_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1240, 41.100014, 1680)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("5_3pwqm")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld050_sic3" type="StaticBody3D" parent="Buildings" unique_id=487122909 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld050_sic3" parent="Buildings" unique_id=487122909 instance=ExtResource("b3_stratos_ice_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1470, 41.800022, 1670)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("5_3pwqm")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld051_sic3" type="StaticBody3D" parent="Buildings" unique_id=1831167758 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld051_sic3" parent="Buildings" unique_id=1831167758 instance=ExtResource("b3_stratos_ice_3")]
 transform = Transform3D(-0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, -0.70710677, 720, 42.500015, 1380)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("5_3pwqm")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld052_sic3" type="StaticBody3D" parent="Buildings" unique_id=940492674 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld052_sic3" parent="Buildings" unique_id=940492674 instance=ExtResource("b3_stratos_ice_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 880, 50.499996, 1690)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("5_3pwqm")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld053_sic3" type="StaticBody3D" parent="Buildings" unique_id=1490563457 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld053_sic3" parent="Buildings" unique_id=1490563457 instance=ExtResource("b3_stratos_ice_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1270, 51.600018, 1760)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("5_3pwqm")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld054_sic3" type="StaticBody3D" parent="Buildings" unique_id=1270377182 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld054_sic3" parent="Buildings" unique_id=1270377182 instance=ExtResource("b3_stratos_ice_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 880, 57.399975, 1840)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("5_3pwqm")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld055_sic3" type="StaticBody3D" parent="Buildings" unique_id=654666729 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld055_sic3" parent="Buildings" unique_id=654666729 instance=ExtResource("b3_stratos_ice_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 970, 32.400005, 1490)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("5_3pwqm")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld056_sic3" type="StaticBody3D" parent="Buildings" unique_id=1521184802 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld056_sic3" parent="Buildings" unique_id=1521184802 instance=ExtResource("b3_stratos_ice_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1030, 65.99999, 1100)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("5_3pwqm")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld057_sic3" type="StaticBody3D" parent="Buildings" unique_id=836111581 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld057_sic3" parent="Buildings" unique_id=836111581 instance=ExtResource("b3_stratos_ice_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 740, 51.6, 1060)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("5_3pwqm")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld058_sic3" type="StaticBody3D" parent="Buildings" unique_id=1425556656 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld058_sic3" parent="Buildings" unique_id=1425556656 instance=ExtResource("b3_stratos_ice_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 890, 33.200016, 1520)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("5_3pwqm")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld059_sic3" type="StaticBody3D" parent="Buildings" unique_id=1251116912 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld059_sic3" parent="Buildings" unique_id=1251116912 instance=ExtResource("b3_stratos_ice_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1130, 66.90001, 1760)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("5_3pwqm")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld060_sic3" type="StaticBody3D" parent="Buildings" unique_id=1263670837 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld060_sic3" parent="Buildings" unique_id=1263670837 instance=ExtResource("b3_stratos_ice_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1140, 58.899998, 1690)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("5_3pwqm")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld061_sic3" type="StaticBody3D" parent="Buildings" unique_id=1884891898 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld061_sic3" parent="Buildings" unique_id=1884891898 instance=ExtResource("b3_stratos_ice_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 800, 47.70004, 1140)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("5_3pwqm")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld062_sig1" type="StaticBody3D" parent="Buildings" unique_id=1660096889 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld062_sig1" parent="Buildings" unique_id=1660096889 instance=ExtResource("b4_stratos_igloo")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 730, 28.800005, 1470)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("6_dkefu")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld063_sig1" type="StaticBody3D" parent="Buildings" unique_id=1650441772 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld063_sig1" parent="Buildings" unique_id=1650441772 instance=ExtResource("b4_stratos_igloo")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2080, 40.1, 1450)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("6_dkefu")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld064_sig1" type="StaticBody3D" parent="Buildings" unique_id=879553189 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld064_sig1" parent="Buildings" unique_id=879553189 instance=ExtResource("b4_stratos_igloo")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2060, 48.699997, 1380)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("6_dkefu")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld065_sig1" type="StaticBody3D" parent="Buildings" unique_id=885820773 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld065_sig1" parent="Buildings" unique_id=885820773 instance=ExtResource("b4_stratos_igloo")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 650, 33.000008, 1500)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("6_dkefu")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld066_sig1" type="StaticBody3D" parent="Buildings" unique_id=1159888280 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld066_sig1" parent="Buildings" unique_id=1159888280 instance=ExtResource("b4_stratos_igloo")]
 transform = Transform3D(0.38267848, 0, 0.9238816, 0, 1, 0, -0.9238816, 0, 0.38267848, 650, 34.2, 1420)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("6_dkefu")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld067_sig1" type="StaticBody3D" parent="Buildings" unique_id=1115539004 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld067_sig1" parent="Buildings" unique_id=1115539004 instance=ExtResource("b4_stratos_igloo")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1990, 39.699997, 1460)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("6_dkefu")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld068_slp1" type="StaticBody3D" parent="Buildings" unique_id=1508520619 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld068_slp1" parent="Buildings" unique_id=1508520619 instance=ExtResource("b5_stratos_spire")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2328.159, 97.94549, 641.9)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("7_su3na")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld069_slp1" type="StaticBody3D" parent="Buildings" unique_id=1922367025 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld069_slp1" parent="Buildings" unique_id=1922367025 instance=ExtResource("b5_stratos_spire")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1319.269, 126.439995, 2275.289)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("7_su3na")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld070_slp1" type="StaticBody3D" parent="Buildings" unique_id=369962620 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld070_slp1" parent="Buildings" unique_id=369962620 instance=ExtResource("b5_stratos_spire")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2224.75, 84.04246, 427.126)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("7_su3na")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld071_slp1" type="StaticBody3D" parent="Buildings" unique_id=2100600619 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld071_slp1" parent="Buildings" unique_id=2100600619 instance=ExtResource("b5_stratos_spire")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2099.859, 76.1436, 355.493)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("7_su3na")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld072_slp1" type="StaticBody3D" parent="Buildings" unique_id=2067133319 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld072_slp1" parent="Buildings" unique_id=2067133319 instance=ExtResource("b5_stratos_spire")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2074.194, 150.17946, 207.33)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("7_su3na")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld073_slp1" type="StaticBody3D" parent="Buildings" unique_id=701058868 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld073_slp1" parent="Buildings" unique_id=701058868 instance=ExtResource("b5_stratos_spire")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2228.075, 103.53191, 737.502)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("7_su3na")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld074_slp1" type="StaticBody3D" parent="Buildings" unique_id=73479792 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld074_slp1" parent="Buildings" unique_id=73479792 instance=ExtResource("b5_stratos_spire")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1365.718, 118.91016, 2301.956)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("7_su3na")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld075_slp1" type="StaticBody3D" parent="Buildings" unique_id=979540992 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld075_slp1" parent="Buildings" unique_id=979540992 instance=ExtResource("b5_stratos_spire")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 262.189, 82.61365, 1150.245)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("7_su3na")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld076_slp1" type="StaticBody3D" parent="Buildings" unique_id=1092881217 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld076_slp1" parent="Buildings" unique_id=1092881217 instance=ExtResource("b5_stratos_spire")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 306.409, 59.050957, 1288.063)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("7_su3na")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld077_slp1" type="StaticBody3D" parent="Buildings" unique_id=968494899 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld077_slp1" parent="Buildings" unique_id=968494899 instance=ExtResource("b5_stratos_spire")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1417.425, 145.09299, 1404.065)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("7_su3na")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld078_slp1" type="StaticBody3D" parent="Buildings" unique_id=571852809 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld078_slp1" parent="Buildings" unique_id=571852809 instance=ExtResource("b5_stratos_spire")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1144.432, 131.71097, 487.509)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("7_su3na")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld079_slp1" type="StaticBody3D" parent="Buildings" unique_id=1605880793 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld079_slp1" parent="Buildings" unique_id=1605880793 instance=ExtResource("b5_stratos_spire")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2281.355, 87.104614, 525.577)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("7_su3na")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld084_stdw" type="StaticBody3D" parent="Buildings" unique_id=1645336313 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld084_stdw" parent="Buildings" unique_id=1645336313 instance=ExtResource("b6_stratos_hoodoo_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1410, 33.9, 1660)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("8_hmunh")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld085_stdw" type="StaticBody3D" parent="Buildings" unique_id=2068484815 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld085_stdw" parent="Buildings" unique_id=2068484815 instance=ExtResource("b6_stratos_hoodoo_1")]
 transform = Transform3D(-0.70711064, 0, 0.7071029, 0, 1, 0, -0.7071029, 0, -0.70711064, 1630, 55.40002, 900)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("8_hmunh")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld086_stdx" type="StaticBody3D" parent="Buildings" unique_id=1881961620 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld086_stdx" parent="Buildings" unique_id=1881961620 instance=ExtResource("b7_stratos_hoodoo_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1440, 39.29999, 1730)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("9_qursr")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld087_stdx" type="StaticBody3D" parent="Buildings" unique_id=629201469 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld087_stdx" parent="Buildings" unique_id=629201469 instance=ExtResource("b7_stratos_hoodoo_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1910, 32.6, 1630)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("9_qursr")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld088_stdx" type="StaticBody3D" parent="Buildings" unique_id=1447909860 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld088_stdx" parent="Buildings" unique_id=1447909860 instance=ExtResource("b7_stratos_hoodoo_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1960, 40.200016, 1450)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("9_qursr")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld089_stdx" type="StaticBody3D" parent="Buildings" unique_id=944863790 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld089_stdx" parent="Buildings" unique_id=944863790 instance=ExtResource("b7_stratos_hoodoo_2")]
 transform = Transform3D(-0.3826834, 0, -0.92387956, 0, 1, 0, 0.92387956, 0, -0.3826834, 1670, 49.50002, 890)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("9_qursr")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld090_stdx" type="StaticBody3D" parent="Buildings" unique_id=630491223 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld090_stdx" parent="Buildings" unique_id=630491223 instance=ExtResource("b7_stratos_hoodoo_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1940, 37.9, 1560)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("9_qursr")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld091_stdy" type="StaticBody3D" parent="Buildings" unique_id=910807451 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld091_stdy" parent="Buildings" unique_id=910807451 instance=ExtResource("b8_stratos_hoodoo_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1370, 42.80001, 1770)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("10_f50li")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld092_stdy" type="StaticBody3D" parent="Buildings" unique_id=1259028462 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_mjlj0")]
+[node name="Bld092_stdy" parent="Buildings" unique_id=1259028462 instance=ExtResource("b8_stratos_hoodoo_3")]
 transform = Transform3D(-0.9238795, 0, -0.3826835, 0, 1, 0, 0.3826835, 0, -0.9238795, 1650, 52.700012, 880)
-collision_mask = 0
-script = ExtResource("2_8js7i")
-building = ExtResource("10_f50li")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
 [node name="NpcSpawns" type="Node3D" parent="." unique_id=1357990305]
 

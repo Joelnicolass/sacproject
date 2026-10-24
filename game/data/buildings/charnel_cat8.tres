@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="BuildingType" format=3]
 
 [ext_resource type="Script" path="res://scenes/structures/building_type.gd" id="1_type"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_cat8.tscn" id="2_scene"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_cat8_ruin.tscn" id="3_ruin"]
 
 [resource]
@@ -9,5 +8,4 @@ script = ExtResource("1_type")
 tag = "cat8"
 max_health = 1000.0
 flattens_ground = true
-scene = ExtResource("2_scene")
 ruin_scene = ExtResource("3_ruin")

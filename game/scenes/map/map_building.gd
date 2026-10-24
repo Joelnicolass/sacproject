@@ -2,58 +2,62 @@
 class_name MapBuilding
 extends StaticBody3D
 
-## A building of the map (house, fence, tree, gravestone), placed with the gizmo. Its BuildingType says what it looks like
-## (a scene with the parts, never saved in the map), how much it takes to destroy it and whether peasants hide in it.
+## A building of the map (house, fence, tree, gravestone): the scene you drag into a map and move with the gizmo. Its parts
+## are saved children of `Visuals` (open them with «Hijos editables»), the box of `Collision` holds them (drag its handles),
+## and its BuildingType says how much it takes to destroy it and whether peasants hide in it. At play the body is that box
+## smaller by `inset_m` on x and z; the box itself is the melee reach and the splash.
 ## A destroyed building gives no souls and shows its ruin on every peer. owner_slot 0 is the neutral side 31.
 ## Joins `map_building`, `structure` (unless it flattens the ground) and, while it shelters, `shelter`.
-## Does not draw the parts nor measure the box: the type's scene and its BuildingFootprint do.
+## Does not draw the parts nor measure them: BodyVisual and BuildingFit do.
 
 signal destroyed(building: MapBuilding)
 
 const GROUP := &"map_building"
 const SHELTER_GROUP := &"shelter"
 
-@export var building: BuildingType:
+@export var type: BuildingType:
 	set(value):
-		building = value
-		if is_node_ready():
-			_show_parts()
+		type = value
+		update_configuration_warnings()
 @export var max_health_override := 0.0
 @export var owner_slot := 0
+## Units pass the eaves: the body is the box of `Collision` this much (m) narrower on every side of x and z.
+@export_range(0.0, 5.0, 0.05, "suffix:m") var inset_m := 0.5
+@export_group("Parts")
 @export var visuals: Node3D
 @export var health: Health
 @export var collision: CollisionShape3D
 @export var sync: MultiplayerSynchronizer
 @export var health_bar: UnitHealthBar
+@export_tool_button("Ajustar a las partes", "Reload") var fit := _fit_to_parts
 
 var max_health := 0.0
 var shelter := false
-## Derived from `building`; setting it looks the type up (debug scenes). The reference is what is saved.
+## Derived from `type`: the id the network and the old maps use (jhut). Read-only.
 var tag: String:
 	get:
-		return building.tag if building != null else ""
-	set(value):
-		building = TypeRef.building(value)
+		return type.tag if type != null else ""
 
 var _box := AABB(Vector3(-2.0, 0.0, -2.0), Vector3(4.0, 4.0, 4.0))
 var _gone := false
-var _footprint: BuildingFootprint
-var _parts: Node3D
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	var complete := visuals != null and health != null and collision != null and building != null and building.scene != null
-	return PackedStringArray() if complete else PackedStringArray(["Asigná visuals, health, collision y un edificio con escena."])
+	var warnings := PackedStringArray()
+	if type == null:
+		warnings.append("Asigná `type` (data/buildings/<nombre>.tres).")
+	if collision == null or not collision.shape is BoxShape3D:
+		warnings.append("`collision` necesita un BoxShape3D: la caja que encierra las partes.")
+	return warnings
 
 
 func _ready() -> void:
-	_show_parts()
 	if Engine.is_editor_hint():
 		return
 	add_to_group(GROUP)
-	var flat := building != null and building.flattens_ground
-	max_health = max_health_override if max_health_override > 0.0 else (building.max_health if building != null else 0.0)
-	shelter = building != null and building.shelters_peasants
+	var flat := type != null and type.flattens_ground
+	max_health = max_health_override if max_health_override > 0.0 else (type.max_health if type != null else 0.0)
+	shelter = type != null and type.shelters_peasants
 	if not flat:
 		add_to_group(&"structure")
 	if shelter:
@@ -64,7 +68,7 @@ func _ready() -> void:
 		health.maximum = 0.0
 		if sync != null:
 			sync.queue_free()
-	_shape_collision(flat)
+	_read_body(flat)
 	health.changed.connect(_on_health_changed)
 	if health_bar != null:
 		health_bar.bind(health, owner_slot)
@@ -96,33 +100,33 @@ func melee_profile() -> Dictionary:
 	return {"evasion": 0.0, "resistance": 1.0, "reach": reach, "height": _box.position.y + _box.size.y}
 
 
-## The type's scene goes under `visuals` as an internal child (never saved); its footprint gives the box.
-func _show_parts() -> void:
-	update_configuration_warnings()
-	if _parts != null:
-		_parts.queue_free()
-	_parts = null
-	_footprint = null
-	if visuals == null or building == null or building.scene == null:
-		return
-	_parts = building.scene.instantiate() as Node3D
-	visuals.add_child(_parts, false, Node.INTERNAL_MODE_FRONT)
-	for child in _parts.get_children():
-		if child is BuildingFootprint:
-			_footprint = child
-
-
-func _shape_collision(flat: bool) -> void:
+## The box of `Collision` is the box of the parts; the body is that box smaller by the inset. A building that flattens the
+## ground has no body: the box stays the default one.
+func _read_body(flat: bool) -> void:
 	if flat:
 		collision.disabled = true
 		collision_layer = 0
 		return
-	if _footprint != null:
-		_box = _footprint.hit_box
-	var shape := BoxShape3D.new()
-	shape.size = _footprint.body_size() if _footprint != null else _box.size
+	var parts := collision.shape as BoxShape3D
+	if parts == null:
+		return
+	_box = AABB(collision.position - parts.size * 0.5, parts.size)
+	var body := BoxShape3D.new()
+	body.size = BuildingFit.body_size(_box, inset_m)
+	collision.shape = body
+
+
+## Editor button: the box of `Collision` becomes the box that holds every part (a new BoxShape3D, saved with the scene).
+func _fit_to_parts() -> void:
+	var parts := BuildingFit.parts_box(visuals)
+	if parts.size == Vector3.ZERO or not collision.shape is BoxShape3D:
+		push_warning("%s: needs a BodyVisual part to measure and a BoxShape3D in `collision`." % name)
+		return
+	var shape := collision.shape.duplicate() as BoxShape3D
+	shape.size = parts.size
 	collision.shape = shape
-	collision.position = _box.get_center()
+	collision.position = parts.get_center()
+	update_configuration_warnings()
 
 
 func _on_health_changed(_current: float, _maximum: float) -> void:
@@ -134,6 +138,6 @@ func _on_health_changed(_current: float, _maximum: float) -> void:
 	collision_layer = 0
 	collision.set_deferred("disabled", true)
 	visuals.visible = false
-	if building != null and building.ruin_scene != null:
-		add_child(building.ruin_scene.instantiate(), false, Node.INTERNAL_MODE_BACK)
+	if type != null and type.ruin_scene != null:
+		add_child(type.ruin_scene.instantiate(), false, Node.INTERNAL_MODE_BACK)
 	destroyed.emit(self)

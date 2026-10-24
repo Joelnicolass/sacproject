@@ -31,7 +31,6 @@ const REPORT_TAG := "AI_REPORT "
 ## F370 (RFC-053 §4): measures BenchRules.expects and prints EXPECT lines. Optional: without it the criteria are not judged.
 @export var judge: ExpectJudge
 ## F370: the scene of a BenchBuilding (scenes/map/map_building.tscn).
-@export var building_scene: PackedScene
 @export var default_minutes := 2.0
 @export var sample_every_s := 10.0
 @export var settle_frames := 4
@@ -459,11 +458,10 @@ func _place_structures() -> void:
 ## F370: the BenchBuilding of the rules, on the ground at their offset from the anchor (a map building like the layout's).
 func _place_buildings(terrain: TerrainShape) -> void:
 	for entry in _rules.buildings:
-		if building_scene == null or entry.building == null:
-			push_warning("ai_match: falta la escena o el BLDG de un BenchBuilding")
+		if entry.building == null or entry.building.scene() == null:
+			push_warning("ai_match: falta el BLDG o su escena en un BenchBuilding")
 			continue
-		var building := building_scene.instantiate() as MapBuilding
-		building.building = entry.building
+		var building := entry.building.scene().instantiate() as MapBuilding
 		building.owner_slot = entry.slot
 		building.max_health_override = entry.max_health_override
 		building.name = "Bench_%s" % entry.key()

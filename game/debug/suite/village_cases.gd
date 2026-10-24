@@ -8,7 +8,6 @@ extends RefCounted
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
 const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
 const PEASANT_SCENE := preload("res://scenes/units/peasant.tscn")
-const BUILDING_SCENE := preload("res://scenes/map/map_building.tscn")
 const RULES := preload("res://data/match_rules.tres")
 const GROUP := "village_cases"
 
@@ -273,9 +272,8 @@ func _unit(scene: PackedScene, slot: int, at: Vector3, tag: String) -> UnitBody:
 
 
 func _house(tag: String, at: Vector3) -> MapBuilding:
-	var building: MapBuilding = BUILDING_SCENE.instantiate()
+	var building := TypeRef.building(tag).scene().instantiate() as MapBuilding
 	building.name = "House_%s_%d" % [tag, _root.get_child_count()]
-	building.tag = tag
 	building.position = at
 	_root.add_child(building)
 	return building

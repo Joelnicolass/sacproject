@@ -3,8 +3,9 @@ class_name BuildingType
 extends Resource
 
 ## What a building of the map is: the name its panel shows, how much it takes to destroy it, whether peasants hide in it
-## and the scene with its parts. One .tres per building in data/buildings/. Never changed while playing: the health lives
-## in the building's Health node. Does not place anything: MapBuilding does.
+## and what stays when it falls. One .tres per building in data/buildings/; the scene with the same name in
+## scenes/structures/buildings/ is the building you drag into a map. Never changed while playing: the health lives in the
+## building's Health node. Does not place anything: MapBuilding does.
 
 ## The name the info panel shows («Casa», «Lápida»). Empty: the generic «Edificio».
 @export var display_name := ""
@@ -14,8 +15,6 @@ extends Resource
 @export var shelters_peasants := false
 ## The land is changed under it and it has no body of its own (no collision, not a target).
 @export var flattens_ground := false
-## A Node3D with the parts (BodyVisual under a placed Node3D), a Footprint and, unless it flattens the ground, a VegetationClear.
-@export var scene: PackedScene
 ## What stays when it falls: the destroyed models, placed like the parts. Empty: nothing.
 @export var ruin_scene: PackedScene
 ## The id the network and the old maps use (jhut, jwg1). Derived: not edited by hand.
@@ -27,15 +26,25 @@ func _validate_property(property: Dictionary) -> void:
 		property.usage |= PROPERTY_USAGE_READ_ONLY
 
 
+## The building scene to drag into a map: scenes/structures/buildings/<this file's name>.tscn (its root is a MapBuilding
+## whose `type` is this resource). Null when there is none. For code that spawns a building by type (debug, tools).
+func scene() -> PackedScene:
+	var path := "res://scenes/structures/buildings/%s.tscn" % resource_path.get_file().get_basename()
+	return load(path) as PackedScene if ResourceLoader.exists(path) else null
+
+
 ## The model of the first part (the base of a fountain). "" when there is no scene.
 func base_model() -> String:
-	if scene == null:
+	var packed := scene()
+	if packed == null:
 		return ""
-	var top := scene.instantiate()
+	var top := packed.instantiate() as MapBuilding
 	var model := ""
-	for part in top.get_children():
-		for child in part.get_children():
-			if child is BodyVisual and model.is_empty():
-				model = (child as BodyVisual).model
-	top.free()
+	if top != null and top.visuals != null:
+		for part in top.visuals.get_children():
+			for child in part.get_children():
+				if child is BodyVisual and model.is_empty():
+					model = (child as BodyVisual).model
+	if top != null:
+		top.free()
 	return model

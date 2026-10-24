@@ -7,7 +7,6 @@ extends Node3D
 
 const NAMES_CSV := "res://tools/migrate/d1_building_names.csv"
 
-@export var building_scene: PackedScene
 @export var camera: Camera3D
 @export var columns := 10
 @export var spacing_m := 70.0
@@ -36,8 +35,7 @@ func _ready() -> void:
 
 
 func _place(type: BuildingType, row: PackedStringArray, spot: Vector3) -> void:
-	var building := building_scene.instantiate() as MapBuilding
-	building.building = type
+	var building := type.scene().instantiate() as MapBuilding
 	building.name = row[1]
 	building.position = spot
 	add_child(building)

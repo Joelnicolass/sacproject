@@ -1,1742 +1,462 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_h2y4a"]
-[ext_resource type="Script" path="res://scenes/map/map_building.gd" id="2_6ersh"]
-[ext_resource type="Resource" path="res://data/buildings/james_rock_1.tres" id="3_1doah"]
-[ext_resource type="Resource" path="res://data/buildings/james_rock_2.tres" id="4_xrigy"]
-[ext_resource type="Resource" path="res://data/buildings/james_rock_3.tres" id="5_24rig"]
-[ext_resource type="Resource" path="res://data/buildings/james_cactus_1.tres" id="6_yecxc"]
-[ext_resource type="Resource" path="res://data/buildings/james_cactus_2.tres" id="7_e5ymg"]
-[ext_resource type="Resource" path="res://data/buildings/james_cactus_3.tres" id="8_whebs"]
-[ext_resource type="Resource" path="res://data/buildings/james_cactus_4.tres" id="9_vhiio"]
-[ext_resource type="Resource" path="res://data/buildings/james_camp.tres" id="10_vet1s"]
-[ext_resource type="Resource" path="res://data/buildings/james_cart.tres" id="11_km5vd"]
-[ext_resource type="Resource" path="res://data/buildings/james_crate_1.tres" id="12_sha3q"]
-[ext_resource type="Resource" path="res://data/buildings/james_crate_2.tres" id="13_o1una"]
-[ext_resource type="Resource" path="res://data/buildings/james_crate_3.tres" id="14_y2c2b"]
-[ext_resource type="Resource" path="res://data/buildings/james_plant_1.tres" id="15_lr7mf"]
-[ext_resource type="Resource" path="res://data/buildings/james_plant_2.tres" id="16_b54fl"]
-[ext_resource type="Resource" path="res://data/buildings/james_plant_3.tres" id="17_6otmq"]
-[ext_resource type="Resource" path="res://data/buildings/james_fence_1.tres" id="18_gghnh"]
-[ext_resource type="Resource" path="res://data/buildings/james_fence_2.tres" id="19_mqfca"]
-[ext_resource type="Resource" path="res://data/buildings/james_fence_3.tres" id="20_vfrs4"]
-[ext_resource type="Resource" path="res://data/buildings/james_giant_tree.tres" id="21_n7m8k"]
-[ext_resource type="Resource" path="res://data/buildings/james_hut.tres" id="22_x2qx1"]
-[ext_resource type="Resource" path="res://data/buildings/james_tent.tres" id="23_8cwsw"]
-[ext_resource type="Resource" path="res://data/buildings/james_hoodoo.tres" id="24_oh61g"]
-[ext_resource type="Resource" path="res://data/buildings/james_well.tres" id="25_hsxni"]
-[ext_resource type="Resource" path="res://data/buildings/james_tipi.tres" id="26_hcjhy"]
 [ext_resource type="PackedScene" path="res://scenes/map/npc_spawn.tscn" id="29_qtpnv"]
 [ext_resource type="Script" path="res://scenes/map/npc_spawn.gd" id="30_rmipv"]
 [ext_resource type="Resource" path="res://data/catalog/creatures/zepe.tres" id="31_3amfm"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_rock_1.tscn" id="b1_james_rock_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_rock_2.tscn" id="b2_james_rock_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_rock_3.tscn" id="b3_james_rock_3"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_cactus_1.tscn" id="b4_james_cactus_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_cactus_2.tscn" id="b5_james_cactus_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_cactus_3.tscn" id="b6_james_cactus_3"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_cactus_4.tscn" id="b7_james_cactus_4"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_camp.tscn" id="b8_james_camp"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_cart.tscn" id="b9_james_cart"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_crate_1.tscn" id="b10_james_crate_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_crate_2.tscn" id="b11_james_crate_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_crate_3.tscn" id="b12_james_crate_3"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_plant_1.tscn" id="b13_james_plant_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_plant_2.tscn" id="b14_james_plant_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_plant_3.tscn" id="b15_james_plant_3"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_fence_1.tscn" id="b16_james_fence_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_fence_2.tscn" id="b17_james_fence_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_fence_3.tscn" id="b18_james_fence_3"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_giant_tree.tscn" id="b19_james_giant_tree"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_hut.tscn" id="b20_james_hut"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_tent.tscn" id="b21_james_tent"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_hoodoo.tscn" id="b22_james_hoodoo"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_well.tscn" id="b23_james_well"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_tipi.tscn" id="b24_james_tipi"]
 
 [node name="PeasantvilleLayout" type="Node3D" unique_id=433319186]
 
 [node name="Buildings" type="Node3D" parent="." unique_id=2035394603]
 
-[node name="Bld008_bld1" type="StaticBody3D" parent="Buildings" unique_id=1590489942 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld008_bld1" parent="Buildings" unique_id=1590489942 instance=ExtResource("b1_james_rock_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2250, 30.100004, 1420)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("3_1doah")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld009_bld1" type="StaticBody3D" parent="Buildings" unique_id=2033734473 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld009_bld1" parent="Buildings" unique_id=2033734473 instance=ExtResource("b1_james_rock_1")]
 transform = Transform3D(-0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, -0.70710677, 2150, 8.699998, 1620)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("3_1doah")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld010_bld1" type="StaticBody3D" parent="Buildings" unique_id=933284954 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld010_bld1" parent="Buildings" unique_id=933284954 instance=ExtResource("b1_james_rock_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2050, 19.499992, 1580)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("3_1doah")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld011_bld1" type="StaticBody3D" parent="Buildings" unique_id=1233551983 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld011_bld1" parent="Buildings" unique_id=1233551983 instance=ExtResource("b1_james_rock_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2100, 23.7, 1850)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("3_1doah")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld012_bld2" type="StaticBody3D" parent="Buildings" unique_id=1050582202 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld012_bld2" parent="Buildings" unique_id=1050582202 instance=ExtResource("b2_james_rock_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1740, 0.9000083, 1320)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("4_xrigy")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld013_bld2" type="StaticBody3D" parent="Buildings" unique_id=394626200 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld013_bld2" parent="Buildings" unique_id=394626200 instance=ExtResource("b2_james_rock_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2110, 25.399998, 1210)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("4_xrigy")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld014_bld2" type="StaticBody3D" parent="Buildings" unique_id=2032017542 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld014_bld2" parent="Buildings" unique_id=2032017542 instance=ExtResource("b2_james_rock_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2200, 43.70001, 1200)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("4_xrigy")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld015_bld2" type="StaticBody3D" parent="Buildings" unique_id=44157384 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld015_bld2" parent="Buildings" unique_id=44157384 instance=ExtResource("b2_james_rock_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1920, 5.599984, 1650)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("4_xrigy")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld016_bld2" type="StaticBody3D" parent="Buildings" unique_id=1172434053 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld016_bld2" parent="Buildings" unique_id=1172434053 instance=ExtResource("b2_james_rock_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1740, 0.8999717, 1350)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("4_xrigy")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld017_bld3" type="StaticBody3D" parent="Buildings" unique_id=472436362 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld017_bld3" parent="Buildings" unique_id=472436362 instance=ExtResource("b3_james_rock_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1890, 9.199996, 1590)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("5_24rig")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld018_bld3" type="StaticBody3D" parent="Buildings" unique_id=2055326691 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld018_bld3" parent="Buildings" unique_id=2055326691 instance=ExtResource("b3_james_rock_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2080, 18.299967, 1300)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("5_24rig")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld019_bld3" type="StaticBody3D" parent="Buildings" unique_id=908769205 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld019_bld3" parent="Buildings" unique_id=908769205 instance=ExtResource("b3_james_rock_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2150, 23.100004, 1830)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("5_24rig")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld022_jcc1" type="StaticBody3D" parent="Buildings" unique_id=634348222 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld022_jcc1" parent="Buildings" unique_id=634348222 instance=ExtResource("b4_james_cactus_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2152.497, 48.057285, 1333.339)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("6_yecxc")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld023_jcc1" type="StaticBody3D" parent="Buildings" unique_id=770627071 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld023_jcc1" parent="Buildings" unique_id=770627071 instance=ExtResource("b4_james_cactus_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2072.792, 20.256044, 1310.932)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("6_yecxc")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld024_jcc1" type="StaticBody3D" parent="Buildings" unique_id=698374067 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld024_jcc1" parent="Buildings" unique_id=698374067 instance=ExtResource("b4_james_cactus_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2064.394, 17.29067, 1370.832)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("6_yecxc")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld025_jcc1" type="StaticBody3D" parent="Buildings" unique_id=1872059787 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld025_jcc1" parent="Buildings" unique_id=1872059787 instance=ExtResource("b4_james_cactus_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2243.542, 48.311794, 1325.796)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("6_yecxc")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld026_jcc1" type="StaticBody3D" parent="Buildings" unique_id=1115598654 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld026_jcc1" parent="Buildings" unique_id=1115598654 instance=ExtResource("b4_james_cactus_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2187.761, 43.736412, 1241.402)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("6_yecxc")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld027_jcc1" type="StaticBody3D" parent="Buildings" unique_id=840573639 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld027_jcc1" parent="Buildings" unique_id=840573639 instance=ExtResource("b4_james_cactus_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2176.491, 10.392491, 1467.713)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("6_yecxc")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld028_jcc1" type="StaticBody3D" parent="Buildings" unique_id=2007665165 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld028_jcc1" parent="Buildings" unique_id=2007665165 instance=ExtResource("b4_james_cactus_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2034.395, 38.165806, 1541.869)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("6_yecxc")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld029_jcc1" type="StaticBody3D" parent="Buildings" unique_id=1787135526 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld029_jcc1" parent="Buildings" unique_id=1787135526 instance=ExtResource("b4_james_cactus_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1746.582, 43.931416, 1211.006)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("6_yecxc")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld030_jcc1" type="StaticBody3D" parent="Buildings" unique_id=953030595 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld030_jcc1" parent="Buildings" unique_id=953030595 instance=ExtResource("b4_james_cactus_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1952.102, 52.29642, 1208.77)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("6_yecxc")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld031_jcc1" type="StaticBody3D" parent="Buildings" unique_id=100232734 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld031_jcc1" parent="Buildings" unique_id=100232734 instance=ExtResource("b4_james_cactus_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1600.016, 4.089419, 1351.573)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("6_yecxc")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld032_jcc2" type="StaticBody3D" parent="Buildings" unique_id=845849456 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld032_jcc2" parent="Buildings" unique_id=845849456 instance=ExtResource("b5_james_cactus_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1844.131, 28.83197, 1491.732)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("7_e5ymg")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld033_jcc2" type="StaticBody3D" parent="Buildings" unique_id=887822733 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld033_jcc2" parent="Buildings" unique_id=887822733 instance=ExtResource("b5_james_cactus_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2243.426, 47.820145, 1317.865)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("7_e5ymg")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld034_jcc2" type="StaticBody3D" parent="Buildings" unique_id=472520582 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld034_jcc2" parent="Buildings" unique_id=472520582 instance=ExtResource("b5_james_cactus_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1761.91, 43.955654, 1202.415)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("7_e5ymg")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld035_jcc2" type="StaticBody3D" parent="Buildings" unique_id=1794444928 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld035_jcc2" parent="Buildings" unique_id=1794444928 instance=ExtResource("b5_james_cactus_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1592.85, 34.11423, 1493.911)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("7_e5ymg")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld036_jcc2" type="StaticBody3D" parent="Buildings" unique_id=1986269884 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld036_jcc2" parent="Buildings" unique_id=1986269884 instance=ExtResource("b5_james_cactus_2")]
 transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 2201.271, 43.63972, 1241.986)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("7_e5ymg")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld037_jcc2" type="StaticBody3D" parent="Buildings" unique_id=821985534 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld037_jcc2" parent="Buildings" unique_id=821985534 instance=ExtResource("b5_james_cactus_2")]
 transform = Transform3D(-0.3826834, 0, 0.92387956, 0, 1, 0, -0.92387956, 0, -0.3826834, 1601.261, 3.4346921, 1346.253)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("7_e5ymg")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld038_jcc2" type="StaticBody3D" parent="Buildings" unique_id=17768296 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld038_jcc2" parent="Buildings" unique_id=17768296 instance=ExtResource("b5_james_cactus_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1934.275, 9.115238, 1591.934)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("7_e5ymg")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld039_jcc2" type="StaticBody3D" parent="Buildings" unique_id=1021535601 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld039_jcc2" parent="Buildings" unique_id=1021535601 instance=ExtResource("b5_james_cactus_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1731.974, 42.413345, 1203.824)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("7_e5ymg")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld040_jcc2" type="StaticBody3D" parent="Buildings" unique_id=182006551 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld040_jcc2" parent="Buildings" unique_id=182006551 instance=ExtResource("b5_james_cactus_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1609.685, 1.4741759, 1354.457)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("7_e5ymg")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld041_jcc2" type="StaticBody3D" parent="Buildings" unique_id=630552136 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld041_jcc2" parent="Buildings" unique_id=630552136 instance=ExtResource("b5_james_cactus_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1934.275, 9.115238, 1591.934)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("7_e5ymg")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld042_jcc2" type="StaticBody3D" parent="Buildings" unique_id=328674615 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld042_jcc2" parent="Buildings" unique_id=328674615 instance=ExtResource("b5_james_cactus_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1962.915, 22.972538, 1570.547)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("7_e5ymg")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld043_jcc2" type="StaticBody3D" parent="Buildings" unique_id=1536778674 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld043_jcc2" parent="Buildings" unique_id=1536778674 instance=ExtResource("b5_james_cactus_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2044.482, 39.530563, 1524.523)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("7_e5ymg")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld044_jcc2" type="StaticBody3D" parent="Buildings" unique_id=727596229 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld044_jcc2" parent="Buildings" unique_id=727596229 instance=ExtResource("b5_james_cactus_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2154.798, 12.53234, 1457.077)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("7_e5ymg")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld045_jcc2" type="StaticBody3D" parent="Buildings" unique_id=2109575118 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld045_jcc2" parent="Buildings" unique_id=2109575118 instance=ExtResource("b5_james_cactus_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2068.7, 16.59831, 1373.502)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("7_e5ymg")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld046_jcc3" type="StaticBody3D" parent="Buildings" unique_id=957206892 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld046_jcc3" parent="Buildings" unique_id=957206892 instance=ExtResource("b6_james_cactus_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2072.89, 34.327225, 1532.601)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("8_whebs")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld047_jcc3" type="StaticBody3D" parent="Buildings" unique_id=1790447117 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld047_jcc3" parent="Buildings" unique_id=1790447117 instance=ExtResource("b6_james_cactus_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2080.418, 21.373161, 1309.482)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("8_whebs")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld048_jcc3" type="StaticBody3D" parent="Buildings" unique_id=1107083907 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld048_jcc3" parent="Buildings" unique_id=1107083907 instance=ExtResource("b6_james_cactus_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2158.246, 47.06388, 1326.158)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("8_whebs")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld049_jcc3" type="StaticBody3D" parent="Buildings" unique_id=1030970911 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld049_jcc3" parent="Buildings" unique_id=1030970911 instance=ExtResource("b6_james_cactus_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1593.834, 7.3778653, 1351.832)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("8_whebs")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld050_jcc3" type="StaticBody3D" parent="Buildings" unique_id=575926964 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld050_jcc3" parent="Buildings" unique_id=575926964 instance=ExtResource("b6_james_cactus_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2189.844, 43.647057, 1234.238)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("8_whebs")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld051_jcc3" type="StaticBody3D" parent="Buildings" unique_id=528930107 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld051_jcc3" parent="Buildings" unique_id=528930107 instance=ExtResource("b6_james_cactus_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1733.91, 42.708508, 1201.873)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("8_whebs")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld052_jcc3" type="StaticBody3D" parent="Buildings" unique_id=1712776513 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld052_jcc3" parent="Buildings" unique_id=1712776513 instance=ExtResource("b6_james_cactus_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2246.864, 48.063347, 1318.788)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("8_whebs")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld053_jcc3" type="StaticBody3D" parent="Buildings" unique_id=285102803 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld053_jcc3" parent="Buildings" unique_id=285102803 instance=ExtResource("b6_james_cactus_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2151.654, 13.806788, 1432.011)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("8_whebs")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld054_jcc4" type="StaticBody3D" parent="Buildings" unique_id=1833022059 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld054_jcc4" parent="Buildings" unique_id=1833022059 instance=ExtResource("b7_james_cactus_4")]
 transform = Transform3D(-0.9238816, 0, -0.38267842, 0, 1, 0, 0.38267842, 0, -0.9238816, 2148.892, 48.706448, 1323.842)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("9_vhiio")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld055_jcc4" type="StaticBody3D" parent="Buildings" unique_id=181552137 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld055_jcc4" parent="Buildings" unique_id=181552137 instance=ExtResource("b7_james_cactus_4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2190.27, 43.68372, 1238.642)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("9_vhiio")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld056_jcc4" type="StaticBody3D" parent="Buildings" unique_id=1930766730 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld056_jcc4" parent="Buildings" unique_id=1930766730 instance=ExtResource("b7_james_cactus_4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2156.573, 47.284363, 1321.868)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("9_vhiio")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld057_jcc4" type="StaticBody3D" parent="Buildings" unique_id=1977944312 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld057_jcc4" parent="Buildings" unique_id=1977944312 instance=ExtResource("b7_james_cactus_4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2256.891, 49.18488, 1324.025)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("9_vhiio")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld058_jcc4" type="StaticBody3D" parent="Buildings" unique_id=187444850 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld058_jcc4" parent="Buildings" unique_id=187444850 instance=ExtResource("b7_james_cactus_4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1588.884, 9.517088, 1346.529)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("9_vhiio")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld059_jcc4" type="StaticBody3D" parent="Buildings" unique_id=2070110041 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld059_jcc4" parent="Buildings" unique_id=2070110041 instance=ExtResource("b7_james_cactus_4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1762.826, 43.404625, 1212.678)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("9_vhiio")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld060_jcmp" type="StaticBody3D" parent="Buildings" unique_id=272698049 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld060_jcmp" parent="Buildings" unique_id=272698049 instance=ExtResource("b8_james_camp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1870, 23.299992, 1850)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("10_vet1s")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld061_jcmp" type="StaticBody3D" parent="Buildings" unique_id=1826449790 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld061_jcmp" parent="Buildings" unique_id=1826449790 instance=ExtResource("b8_james_camp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2210, 45.2, 1290)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("10_vet1s")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld062_jcrt" type="StaticBody3D" parent="Buildings" unique_id=461556930 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld062_jcrt" parent="Buildings" unique_id=461556930 instance=ExtResource("b9_james_cart")]
 transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 1900.21, 26.187794, 1852.95)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("11_km5vd")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld063_jcrt" type="StaticBody3D" parent="Buildings" unique_id=1246009555 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld063_jcrt" parent="Buildings" unique_id=1246009555 instance=ExtResource("b9_james_cart")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1948.131, 52.146885, 1201.41)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("11_km5vd")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld064_jcrt" type="StaticBody3D" parent="Buildings" unique_id=318723893 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld064_jcrt" parent="Buildings" unique_id=318723893 instance=ExtResource("b9_james_cart")]
 transform = Transform3D(0.9238795, 0, 0.38268346, 0, 1, 0, -0.38268346, 0, 0.9238795, 1937.13, 51.26351, 1442.091)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("11_km5vd")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld065_jct1" type="StaticBody3D" parent="Buildings" unique_id=1584013567 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld065_jct1" parent="Buildings" unique_id=1584013567 instance=ExtResource("b10_james_crate_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2045.68, 31.875975, 1818.144)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("12_sha3q")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld066_jct1" type="StaticBody3D" parent="Buildings" unique_id=785404473 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld066_jct1" parent="Buildings" unique_id=785404473 instance=ExtResource("b10_james_crate_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1925.302, 50.666878, 1475.124)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("12_sha3q")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld067_jct1" type="StaticBody3D" parent="Buildings" unique_id=232215199 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld067_jct1" parent="Buildings" unique_id=232215199 instance=ExtResource("b10_james_crate_1")]
 transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 1929.675, 50.965614, 1471.488)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("12_sha3q")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld068_jct1" type="StaticBody3D" parent="Buildings" unique_id=466991362 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld068_jct1" parent="Buildings" unique_id=466991362 instance=ExtResource("b10_james_crate_1")]
 transform = Transform3D(0.9238795, 0, -0.38268346, 0, 1, 0, 0.38268346, 0, 0.9238795, 1843.155, 14.501492, 1798.876)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("12_sha3q")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld069_jct1" type="StaticBody3D" parent="Buildings" unique_id=1600533315 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld069_jct1" parent="Buildings" unique_id=1600533315 instance=ExtResource("b10_james_crate_1")]
 transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 1844.342, 13.512616, 1787.442)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("12_sha3q")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld070_jct1" type="StaticBody3D" parent="Buildings" unique_id=2126637949 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld070_jct1" parent="Buildings" unique_id=2126637949 instance=ExtResource("b10_james_crate_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2241.774, 45.597538, 1273.822)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("12_sha3q")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld071_jct1" type="StaticBody3D" parent="Buildings" unique_id=937120931 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld071_jct1" parent="Buildings" unique_id=937120931 instance=ExtResource("b10_james_crate_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1976.676, 35.110577, 1792.718)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("12_sha3q")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld072_jct1" type="StaticBody3D" parent="Buildings" unique_id=1532548090 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld072_jct1" parent="Buildings" unique_id=1532548090 instance=ExtResource("b10_james_crate_1")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1925.882, 50.449574, 1481.14)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("12_sha3q")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld073_jct1" type="StaticBody3D" parent="Buildings" unique_id=2018410569 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld073_jct1" parent="Buildings" unique_id=2018410569 instance=ExtResource("b10_james_crate_1")]
 transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 1974.394, 34.396187, 1786.738)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("12_sha3q")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld074_jct1" type="StaticBody3D" parent="Buildings" unique_id=1873480584 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld074_jct1" parent="Buildings" unique_id=1873480584 instance=ExtResource("b10_james_crate_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1816.706, 10.955461, 1780.68)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("12_sha3q")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld075_jct1" type="StaticBody3D" parent="Buildings" unique_id=1849997922 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld075_jct1" parent="Buildings" unique_id=1849997922 instance=ExtResource("b10_james_crate_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1944.367, 36.50146, 1750.614)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("12_sha3q")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld076_jct1" type="StaticBody3D" parent="Buildings" unique_id=728025122 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld076_jct1" parent="Buildings" unique_id=728025122 instance=ExtResource("b10_james_crate_1")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1939.388, 36.809235, 1742.396)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("12_sha3q")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld077_jct1" type="StaticBody3D" parent="Buildings" unique_id=1321127284 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld077_jct1" parent="Buildings" unique_id=1321127284 instance=ExtResource("b10_james_crate_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1946.814, 49.83558, 1487.75)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("12_sha3q")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld078_jct1" type="StaticBody3D" parent="Buildings" unique_id=119081199 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld078_jct1" parent="Buildings" unique_id=119081199 instance=ExtResource("b10_james_crate_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2071.352, 22.90118, 1182.913)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("12_sha3q")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld079_jct1" type="StaticBody3D" parent="Buildings" unique_id=1026784820 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld079_jct1" parent="Buildings" unique_id=1026784820 instance=ExtResource("b10_james_crate_1")]
 transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 1972.495, 52.087193, 1179.403)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("12_sha3q")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld080_jct1" type="StaticBody3D" parent="Buildings" unique_id=1792210308 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld080_jct1" parent="Buildings" unique_id=1792210308 instance=ExtResource("b10_james_crate_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1979.454, 51.545918, 1186.046)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("12_sha3q")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld081_jct2" type="StaticBody3D" parent="Buildings" unique_id=1576234509 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld081_jct2" parent="Buildings" unique_id=1576234509 instance=ExtResource("b11_james_crate_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1844.563, 13.092542, 1782.603)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("13_o1una")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld082_jct2" type="StaticBody3D" parent="Buildings" unique_id=1244482742 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld082_jct2" parent="Buildings" unique_id=1244482742 instance=ExtResource("b11_james_crate_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1976.961, 51.70075, 1185.04)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("13_o1una")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld083_jct2" type="StaticBody3D" parent="Buildings" unique_id=896902595 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld083_jct2" parent="Buildings" unique_id=896902595 instance=ExtResource("b11_james_crate_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1979.964, 51.44062, 1188.706)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("13_o1una")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld084_jct2" type="StaticBody3D" parent="Buildings" unique_id=474306607 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld084_jct2" parent="Buildings" unique_id=474306607 instance=ExtResource("b11_james_crate_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1927.165, 50.766605, 1476.329)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("13_o1una")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld085_jct2" type="StaticBody3D" parent="Buildings" unique_id=1014579598 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld085_jct2" parent="Buildings" unique_id=1014579598 instance=ExtResource("b11_james_crate_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2044.678, 32.710007, 1816.157)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("13_o1una")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld086_jct2" type="StaticBody3D" parent="Buildings" unique_id=1583019469 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld086_jct2" parent="Buildings" unique_id=1583019469 instance=ExtResource("b11_james_crate_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2074.481, 22.75805, 1185.376)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("13_o1una")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld087_jct2" type="StaticBody3D" parent="Buildings" unique_id=81852906 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld087_jct2" parent="Buildings" unique_id=81852906 instance=ExtResource("b11_james_crate_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1976.639, 34.132526, 1789.557)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("13_o1una")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld088_jct2" type="StaticBody3D" parent="Buildings" unique_id=1784824485 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld088_jct2" parent="Buildings" unique_id=1784824485 instance=ExtResource("b11_james_crate_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1814.93, 12.360566, 1787.65)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("13_o1una")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld089_jct2" type="StaticBody3D" parent="Buildings" unique_id=970000682 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld089_jct2" parent="Buildings" unique_id=970000682 instance=ExtResource("b11_james_crate_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2243.329, 45.784435, 1275.694)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("13_o1una")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld090_jct2" type="StaticBody3D" parent="Buildings" unique_id=154171418 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld090_jct2" parent="Buildings" unique_id=154171418 instance=ExtResource("b11_james_crate_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1818.005, 10.854938, 1777.848)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("13_o1una")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld091_jct2" type="StaticBody3D" parent="Buildings" unique_id=26719899 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld091_jct2" parent="Buildings" unique_id=26719899 instance=ExtResource("b11_james_crate_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1933.972, 36.412575, 1743.273)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("13_o1una")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld092_jct2" type="StaticBody3D" parent="Buildings" unique_id=902584636 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld092_jct2" parent="Buildings" unique_id=902584636 instance=ExtResource("b11_james_crate_2")]
 transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 1942.903, 36.651623, 1748.064)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("13_o1una")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld093_jct2" type="StaticBody3D" parent="Buildings" unique_id=1319568041 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld093_jct2" parent="Buildings" unique_id=1319568041 instance=ExtResource("b11_james_crate_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1991.122, 48.236813, 1497.047)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("13_o1una")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld094_jct2" type="StaticBody3D" parent="Buildings" unique_id=1648983640 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld094_jct2" parent="Buildings" unique_id=1648983640 instance=ExtResource("b11_james_crate_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1943.494, 50.11694, 1488.886)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("13_o1una")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld095_jct2" type="StaticBody3D" parent="Buildings" unique_id=320850379 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld095_jct2" parent="Buildings" unique_id=320850379 instance=ExtResource("b11_james_crate_2")]
 transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 1937.833, 36.617382, 1746.546)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("13_o1una")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld096_jct2" type="StaticBody3D" parent="Buildings" unique_id=236482960 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld096_jct2" parent="Buildings" unique_id=236482960 instance=ExtResource("b11_james_crate_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1942.08, 36.740234, 1744.868)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("13_o1una")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld097_jct3" type="StaticBody3D" parent="Buildings" unique_id=1954280326 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld097_jct3" parent="Buildings" unique_id=1954280326 instance=ExtResource("b12_james_crate_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1815.07, 10.850699, 1777.334)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("14_y2c2b")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld098_jct3" type="StaticBody3D" parent="Buildings" unique_id=1529686274 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld098_jct3" parent="Buildings" unique_id=1529686274 instance=ExtResource("b12_james_crate_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1928.041, 50.844585, 1473.787)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("14_y2c2b")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld099_jct3" type="StaticBody3D" parent="Buildings" unique_id=1050704694 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld099_jct3" parent="Buildings" unique_id=1050704694 instance=ExtResource("b12_james_crate_3")]
 transform = Transform3D(0.38268343, 0, -0.9238795, 0, 1, 0, 0.9238795, 0, 0.38268343, 1928.293, 35.8353, 1742.329)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("14_y2c2b")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld100_jct3" type="StaticBody3D" parent="Buildings" unique_id=1644338246 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld100_jct3" parent="Buildings" unique_id=1644338246 instance=ExtResource("b12_james_crate_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1846.38, 13.131032, 1778.64)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("14_y2c2b")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld101_jct3" type="StaticBody3D" parent="Buildings" unique_id=1655981379 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld101_jct3" parent="Buildings" unique_id=1655981379 instance=ExtResource("b12_james_crate_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1813.536, 13.399138, 1790.178)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("14_y2c2b")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld102_jct3" type="StaticBody3D" parent="Buildings" unique_id=2133750623 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld102_jct3" parent="Buildings" unique_id=2133750623 instance=ExtResource("b12_james_crate_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1817.607, 11.59822, 1785.555)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("14_y2c2b")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld103_jct3" type="StaticBody3D" parent="Buildings" unique_id=2119005581 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld103_jct3" parent="Buildings" unique_id=2119005581 instance=ExtResource("b12_james_crate_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2047.326, 32.798206, 1814.48)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("14_y2c2b")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld104_jct3" type="StaticBody3D" parent="Buildings" unique_id=309749423 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld104_jct3" parent="Buildings" unique_id=309749423 instance=ExtResource("b12_james_crate_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1990.397, 48.235214, 1494.712)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("14_y2c2b")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld105_jct3" type="StaticBody3D" parent="Buildings" unique_id=1052925026 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld105_jct3" parent="Buildings" unique_id=1052925026 instance=ExtResource("b12_james_crate_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1946.502, 49.734524, 1484.271)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("14_y2c2b")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld106_jct3" type="StaticBody3D" parent="Buildings" unique_id=1999512540 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld106_jct3" parent="Buildings" unique_id=1999512540 instance=ExtResource("b12_james_crate_3")]
 transform = Transform3D(-0.3826834, 0, -0.92387956, 0, 1, 0, 0.92387956, 0, -0.3826834, 2240.586, 45.412155, 1271.54)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("14_y2c2b")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld107_jct3" type="StaticBody3D" parent="Buildings" unique_id=1215692937 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld107_jct3" parent="Buildings" unique_id=1215692937 instance=ExtResource("b12_james_crate_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2240.566, 45.698856, 1277.298)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("14_y2c2b")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld108_jct3" type="StaticBody3D" parent="Buildings" unique_id=2114499895 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld108_jct3" parent="Buildings" unique_id=2114499895 instance=ExtResource("b12_james_crate_3")]
 transform = Transform3D(0.38268343, 0, -0.9238795, 0, 1, 0, 0.9238795, 0, 0.38268343, 2072.896, 22.76592, 1187.36)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("14_y2c2b")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld109_jct3" type="StaticBody3D" parent="Buildings" unique_id=245248619 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld109_jct3" parent="Buildings" unique_id=245248619 instance=ExtResource("b12_james_crate_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1975.003, 51.8885, 1182.045)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("14_y2c2b")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld110_jct3" type="StaticBody3D" parent="Buildings" unique_id=1974518723 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld110_jct3" parent="Buildings" unique_id=1974518723 instance=ExtResource("b12_james_crate_3")]
 transform = Transform3D(0.9238795, 0, 0.38268346, 0, 1, 0, -0.38268346, 0, 0.9238795, 1945.617, 36.583645, 1747.392)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("14_y2c2b")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld111_jeg1" type="StaticBody3D" parent="Buildings" unique_id=162725137 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld111_jeg1" parent="Buildings" unique_id=162725137 instance=ExtResource("b13_james_plant_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2080, 35.800026, 1140)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("15_lr7mf")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld112_jeg1" type="StaticBody3D" parent="Buildings" unique_id=1636233387 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld112_jeg1" parent="Buildings" unique_id=1636233387 instance=ExtResource("b13_james_plant_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2140, 15.699994, 1420)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("15_lr7mf")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld113_jeg1" type="StaticBody3D" parent="Buildings" unique_id=1825447750 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld113_jeg1" parent="Buildings" unique_id=1825447750 instance=ExtResource("b13_james_plant_1")]
 transform = Transform3D(-0.3826834, 0, -0.92387956, 0, 1, 0, 0.92387956, 0, -0.3826834, 2080, 14.900007, 1370)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("15_lr7mf")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld114_jeg1" type="StaticBody3D" parent="Buildings" unique_id=515056924 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld114_jeg1" parent="Buildings" unique_id=515056924 instance=ExtResource("b13_james_plant_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1620, 0.59999955, 1390)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("15_lr7mf")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld115_jeg2" type="StaticBody3D" parent="Buildings" unique_id=115324214 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld115_jeg2" parent="Buildings" unique_id=115324214 instance=ExtResource("b14_james_plant_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2060, 36.899967, 1140)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("16_b54fl")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld116_jeg2" type="StaticBody3D" parent="Buildings" unique_id=595248723 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld116_jeg2" parent="Buildings" unique_id=595248723 instance=ExtResource("b14_james_plant_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1710, 42.699993, 1610)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("16_b54fl")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld117_jeg2" type="StaticBody3D" parent="Buildings" unique_id=2045781440 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld117_jeg2" parent="Buildings" unique_id=2045781440 instance=ExtResource("b14_james_plant_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1620, 2.0000076, 1410)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("16_b54fl")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld118_jeg2" type="StaticBody3D" parent="Buildings" unique_id=2127746365 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld118_jeg2" parent="Buildings" unique_id=2127746365 instance=ExtResource("b14_james_plant_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1600, 5.400001, 1370)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("16_b54fl")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld119_jeg3" type="StaticBody3D" parent="Buildings" unique_id=1816233751 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld119_jeg3" parent="Buildings" unique_id=1816233751 instance=ExtResource("b15_james_plant_3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2010, 28.899973, 1260)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("17_6otmq")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld120_jeg3" type="StaticBody3D" parent="Buildings" unique_id=158310655 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld120_jeg3" parent="Buildings" unique_id=158310655 instance=ExtResource("b15_james_plant_3")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2020, 29.499949, 1240)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("17_6otmq")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld121_jfn1" type="StaticBody3D" parent="Buildings" unique_id=462929413 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld121_jfn1" parent="Buildings" unique_id=462929413 instance=ExtResource("b16_james_fence_1")]
 transform = Transform3D(-0.38268846, 0, -0.9238774, 0, 1, 0, 0.9238774, 0, -0.38268846, 2110.92, 25.182793, 1204.92)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("18_gghnh")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld122_jfn2" type="StaticBody3D" parent="Buildings" unique_id=1316829403 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld122_jfn2" parent="Buildings" unique_id=1316829403 instance=ExtResource("b17_james_fence_2")]
 transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 2113.791, 25.403183, 1207.031)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("19_mqfca")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld123_jfn3" type="StaticBody3D" parent="Buildings" unique_id=1003009318 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld123_jfn3" parent="Buildings" unique_id=1003009318 instance=ExtResource("b18_james_fence_3")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 2109.109, 24.938942, 1202.383)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("20_vfrs4")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld124_jfor" type="StaticBody3D" parent="Buildings" unique_id=1495890742 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld124_jfor" parent="Buildings" unique_id=1495890742 instance=ExtResource("b19_james_giant_tree")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2000.384, 26.78254, 1837.118)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("21_n7m8k")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld125_jhut" type="StaticBody3D" parent="Buildings" unique_id=1549842839 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld125_jhut" parent="Buildings" unique_id=1549842839 instance=ExtResource("b20_james_hut")]
 transform = Transform3D(0.9238795, 0, -0.38268346, 0, 1, 0, 0.38268346, 0, 0.9238795, 2091.707, 22.87329, 1187.31)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("22_x2qx1")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld126_jhut" type="StaticBody3D" parent="Buildings" unique_id=956117030 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld126_jhut" parent="Buildings" unique_id=956117030 instance=ExtResource("b20_james_hut")]
 transform = Transform3D(0.38268343, 0, -0.9238795, 0, 1, 0, 0.9238795, 0, 0.38268343, 2114.018, 25.32234, 1219.91)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("22_x2qx1")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld127_jhut" type="StaticBody3D" parent="Buildings" unique_id=1752928122 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld127_jhut" parent="Buildings" unique_id=1752928122 instance=ExtResource("b20_james_hut")]
 transform = Transform3D(-0.38268846, 0, -0.9238774, 0, 1, 0, 0.9238774, 0, -0.38268846, 1858.606, 7.78145, 1693.249)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("22_x2qx1")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld128_jhut" type="StaticBody3D" parent="Buildings" unique_id=1298922825 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld128_jhut" parent="Buildings" unique_id=1298922825 instance=ExtResource("b20_james_hut")]
 transform = Transform3D(-0.70711064, 0, -0.7071029, 0, 1, 0, 0.7071029, 0, -0.70711064, 1902.97, 24.918066, 1870.917)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("22_x2qx1")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld129_jhut" type="StaticBody3D" parent="Buildings" unique_id=699166722 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld129_jhut" parent="Buildings" unique_id=699166722 instance=ExtResource("b20_james_hut")]
 transform = Transform3D(0.38268343, 0, 0.9238795, 0, 1, 0, -0.9238795, 0, 0.38268343, 2177.596, 43.727882, 1263.141)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("22_x2qx1")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld130_jhut" type="StaticBody3D" parent="Buildings" unique_id=1123603808 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld130_jhut" parent="Buildings" unique_id=1123603808 instance=ExtResource("b20_james_hut")]
 transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 2233.547, 44.711704, 1263.923)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("22_x2qx1")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld131_jhut" type="StaticBody3D" parent="Buildings" unique_id=1948292078 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld131_jhut" parent="Buildings" unique_id=1948292078 instance=ExtResource("b20_james_hut")]
 transform = Transform3D(-0.3826834, 0, -0.92387956, 0, 1, 0, 0.92387956, 0, -0.3826834, 2246.799, 46.979664, 1303.998)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("22_x2qx1")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld132_jhut" type="StaticBody3D" parent="Buildings" unique_id=1035630401 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld132_jhut" parent="Buildings" unique_id=1035630401 instance=ExtResource("b20_james_hut")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 1868.864, 23.802784, 1884.703)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("22_x2qx1")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld133_jhut" type="StaticBody3D" parent="Buildings" unique_id=988135149 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld133_jhut" parent="Buildings" unique_id=988135149 instance=ExtResource("b20_james_hut")]
 transform = Transform3D(-0.9238816, 0, 0.38267842, 0, 1, 0, -0.38267842, 0, -0.9238816, 1833.649, 23.887835, 1874.865)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("22_x2qx1")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld134_jhut" type="StaticBody3D" parent="Buildings" unique_id=2006621459 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld134_jhut" parent="Buildings" unique_id=2006621459 instance=ExtResource("b20_james_hut")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1808.474, 11.994582, 1679.081)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("22_x2qx1")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld135_jhut" type="StaticBody3D" parent="Buildings" unique_id=369777214 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld135_jhut" parent="Buildings" unique_id=369777214 instance=ExtResource("b20_james_hut")]
 transform = Transform3D(-0.70711064, 0, 0.7071029, 0, 1, 0, -0.7071029, 0, -0.70711064, 2176.832, 44.365555, 1315.87)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("22_x2qx1")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld136_jmrq" type="StaticBody3D" parent="Buildings" unique_id=527045155 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld136_jmrq" parent="Buildings" unique_id=527045155 instance=ExtResource("b21_james_tent")]
 transform = Transform3D(0.9238795, 0, -0.38268346, 0, 1, 0, 0.38268346, 0, 0.9238795, 1927.52, 34.492237, 1759.187)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("23_8cwsw")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld137_jmrq" type="StaticBody3D" parent="Buildings" unique_id=584209125 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld137_jmrq" parent="Buildings" unique_id=584209125 instance=ExtResource("b21_james_tent")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1829.41, 12.277059, 1792.246)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("23_8cwsw")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld138_jmrq" type="StaticBody3D" parent="Buildings" unique_id=1254738913 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld138_jmrq" parent="Buildings" unique_id=1254738913 instance=ExtResource("b21_james_tent")]
 transform = Transform3D(-0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, -0.70710677, 1959.902, 51.999462, 1186.717)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("23_8cwsw")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld139_jst1" type="StaticBody3D" parent="Buildings" unique_id=167156574 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld139_jst1" parent="Buildings" unique_id=167156574 instance=ExtResource("b22_james_hoodoo")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1746.632, 44.312702, 1202.806)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("24_oh61g")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld140_jst1" type="StaticBody3D" parent="Buildings" unique_id=1617759602 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld140_jst1" parent="Buildings" unique_id=1617759602 instance=ExtResource("b22_james_hoodoo")]
 transform = Transform3D(-0.70711064, 0, 0.7071029, 0, 1, 0, -0.7071029, 0, -0.70711064, 2202.569, 43.413822, 1233.26)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("24_oh61g")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld141_jst1" type="StaticBody3D" parent="Buildings" unique_id=1330524400 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld141_jst1" parent="Buildings" unique_id=1330524400 instance=ExtResource("b22_james_hoodoo")]
 transform = Transform3D(0.38267848, 0, -0.9238816, 0, 1, 0, 0.9238816, 0, 0.38267848, 2247.666, 45.482777, 1266.802)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("24_oh61g")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld142_jwel" type="StaticBody3D" parent="Buildings" unique_id=958819544 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld142_jwel" parent="Buildings" unique_id=958819544 instance=ExtResource("b23_james_well")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1950, 34.8, 1770)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("25_hsxni")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld143_jwel" type="StaticBody3D" parent="Buildings" unique_id=1640278071 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld143_jwel" parent="Buildings" unique_id=1640278071 instance=ExtResource("b23_james_well")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1970, 52, 1210)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("25_hsxni")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld144_jwel" type="StaticBody3D" parent="Buildings" unique_id=1100153712 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld144_jwel" parent="Buildings" unique_id=1100153712 instance=ExtResource("b23_james_well")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1810, 10.800001, 1780)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("25_hsxni")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld145_jwg1" type="StaticBody3D" parent="Buildings" unique_id=809506228 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld145_jwg1" parent="Buildings" unique_id=809506228 instance=ExtResource("b24_james_tipi")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1936.895, 51.794823, 1208.986)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("26_hcjhy")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld146_jwg1" type="StaticBody3D" parent="Buildings" unique_id=1385446170 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld146_jwg1" parent="Buildings" unique_id=1385446170 instance=ExtResource("b24_james_tipi")]
 transform = Transform3D(0.38267848, 0, -0.9238816, 0, 1, 0, 0.9238816, 0, 0.38267848, 1908.987, 27.373348, 1821.652)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("26_hcjhy")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld147_jwg1" type="StaticBody3D" parent="Buildings" unique_id=1218922717 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld147_jwg1" parent="Buildings" unique_id=1218922717 instance=ExtResource("b24_james_tipi")]
 transform = Transform3D(-0.9238795, 0, 0.3826835, 0, 1, 0, -0.3826835, 0, -0.9238795, 2209.345, 43.851326, 1251.711)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("26_hcjhy")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld148_jwg1" type="StaticBody3D" parent="Buildings" unique_id=318576747 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld148_jwg1" parent="Buildings" unique_id=318576747 instance=ExtResource("b24_james_tipi")]
 transform = Transform3D(1, 0, -5.235988e-06, 0, 1, 0, 5.235988e-06, 0, 1, 1981.523, 48.25639, 1502.006)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("26_hcjhy")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld149_jwg1" type="StaticBody3D" parent="Buildings" unique_id=1659313206 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld149_jwg1" parent="Buildings" unique_id=1659313206 instance=ExtResource("b24_james_tipi")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1935.111, 49.90589, 1480.495)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("26_hcjhy")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld150_jwg1" type="StaticBody3D" parent="Buildings" unique_id=505861846 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld150_jwg1" parent="Buildings" unique_id=505861846 instance=ExtResource("b24_james_tipi")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2062.88, 23.887594, 1187.085)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("26_hcjhy")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
-[node name="Bld151_jwg1" type="StaticBody3D" parent="Buildings" unique_id=1314489839 node_paths=PackedStringArray("visuals", "collision", "sync", "health_bar") groups=["nav_source"] instance=ExtResource("1_h2y4a")]
+[node name="Bld151_jwg1" parent="Buildings" unique_id=1314489839 instance=ExtResource("b24_james_tipi")]
 transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 1949.096, 50.687237, 1442.451)
-collision_mask = 0
-script = ExtResource("2_6ersh")
-building = ExtResource("26_hcjhy")
-max_health_override = 0.0
-owner_slot = 0
-visuals = NodePath("Visuals")
-collision = NodePath("Collision")
-sync = NodePath("Sync")
-health_bar = NodePath("HealthBar")
 
 [node name="NpcSpawns" type="Node3D" parent="." unique_id=978657770]
 

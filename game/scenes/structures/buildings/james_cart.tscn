@@ -1,24 +1,28 @@
 [gd_scene format=3]
 
+[ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_building"]
+[ext_resource type="Resource" path="res://data/buildings/james_cart.tres" id="2_type"]
 [ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
-[ext_resource type="Script" path="res://scenes/structures/building_footprint.gd" id="2_footprint"]
 [ext_resource type="Script" path="res://scenes/look/grass/vegetation_clear.gd" id="3_clear"]
 
-[node name="JamesCart" type="Node3D"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(6.394, 3.633, 12.545)
 
-[node name="Base" type="Node3D" parent="."]
+[node name="JamesCart" instance=ExtResource("1_building")]
+type = ExtResource("2_type")
 
-[node name="Mesh" type="MeshInstance3D" parent="Base"]
+[node name="Base" type="Node3D" parent="Visuals"]
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Base"]
 script = ExtResource("1_visual")
 model = "jcrt"
 stand_on_feet = false
 
-[node name="Footprint" type="Node3D" parent="."]
-script = ExtResource("2_footprint")
-hit_box = AABB(-3.109, -0.023, -6.574, 6.394, 3.633, 12.545)
-inset = 0.5
-
-[node name="VegetationClear" type="Node3D" parent="."]
+[node name="VegetationClear" type="Node3D" parent="Visuals"]
 position = Vector3(0.08800006, 0, -0.30149984)
 script = ExtResource("3_clear")
 radius_m = 8.040000000000001
+
+[node name="Collision" parent="." index="1"]
+position = Vector3(0.08800006, 1.7935, -0.30149984)
+shape = SubResource("BoxShape3D_body")

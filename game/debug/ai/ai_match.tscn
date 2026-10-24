@@ -7,7 +7,6 @@
 [ext_resource type="Script" path="res://addons/agent_kit/determinism/det_recorder.gd" id="9_recorder"]
 [ext_resource type="PackedScene" path="res://scenes/ai/ai_side.tscn" id="5_side"]
 [ext_resource type="Script" path="res://debug/ai/expect_judge.gd" id="6_judge"]
-[ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="7_building"]
 
 [node name="AiMatch" type="Node"]
 
@@ -44,7 +43,6 @@ world_scene = ExtResource("2_world")
 default_rules = ExtResource("3_rules")
 ai_side_scene = ExtResource("5_side")
 judge = NodePath("../Judge")
-building_scene = ExtResource("7_building")
 audit = NodePath("../Audit")
 status_label = NodePath("../Overlay/Status")
 camera = NodePath("../BenchCamera")

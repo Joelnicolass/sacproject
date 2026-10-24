@@ -16,7 +16,6 @@ extends Node
 @export var tags: PackedStringArray = PackedStringArray(["nmuh", "ycro"])
 @export var spots: PackedVector2Array = PackedVector2Array([Vector2(0.0, 40.0), Vector2(0.0, 60.0)])
 @export var enemy_slot := 2
-@export var building_scene: PackedScene
 @export var building_tags: PackedStringArray = PackedStringArray()
 @export var building_spots: PackedVector2Array = PackedVector2Array()
 ## Empty: the wizard keeps the picked god. Picked like boot does, before the world spawns him.
@@ -75,9 +74,8 @@ func _spawn(tag: String, index: int, at: Vector3, facing: Vector3) -> Node3D:
 
 
 func _place_building(tag: String, index: int, at: Vector3) -> Node3D:
-	var building: Node3D = building_scene.instantiate()
+	var building: Node3D = TypeRef.building(tag).scene().instantiate()
 	building.name = "%s_%d" % [tag, index + 1]
-	building.set("tag", tag)
 	var query := PhysicsRayQueryParameters3D.create(at + Vector3.UP * 200.0, at + Vector3.DOWN * 200.0)
 	query.collision_mask = 1
 	var hit := arena.get_world_3d().direct_space_state.intersect_ray(query)

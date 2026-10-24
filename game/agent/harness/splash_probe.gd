@@ -32,9 +32,9 @@ func check(building_name: String, amount: float, radius: float) -> String:
 	if body == null or center == Vector3.INF:
 		return "sin edificio o sin estallido"
 	var tag := str(body.get("tag"))
-	var top := TypeRef.building(tag).scene.instantiate()
+	var top := TypeRef.building(tag).scene().instantiate() as MapBuilding
 	var holders: Array[Node3D] = []
-	for part in top.get_children():
+	for part in top.visuals.get_children():
 		if part is Node3D and part.get_child_count() > 0 and part.get_child(0) is BodyVisual:
 			holders.append(part)
 	var model := (holders[0].get_child(0) as BodyVisual).model if holders.size() == 1 else ""

@@ -2,11 +2,9 @@
 
 [ext_resource type="Script" path="res://debug/map/building_gallery.gd" id="1_gallery"]
 [ext_resource type="PackedScene" path="res://scenes/map/maps/test_flat/map.tscn" id="2_map"]
-[ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="3_building"]
 
 [node name="BuildingGallery" type="Node3D" node_paths=PackedStringArray("camera")]
 script = ExtResource("1_gallery")
-building_scene = ExtResource("3_building")
 camera = NodePath("Camera3D")
 
 [node name="Map" parent="." instance=ExtResource("2_map")]

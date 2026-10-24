@@ -84,7 +84,7 @@ func _check_folder(folder: String, types: Array) -> Dictionary:
 		if seen.has(type.tag):
 			_report("%s/%s: duplicate tag \"%s\" (also in %s)" % [folder, file, type.tag, seen[type.tag]])
 		seen[type.tag] = file
-		if folder == "buildings" and (type as BuildingType).scene == null:
+		if folder == "buildings" and (type as BuildingType).scene() == null:
 			_report("buildings/%s: no scene of parts" % file)
 		var base: String = type.tag.validate_filename()
 		var stem: String = file.get_basename()
@@ -276,9 +276,9 @@ func _check_maps_and_modes() -> void:
 	for definition in maps.maps:
 		if definition == null:
 			continue
-		var scene := definition.load_scene()
+		var scene := definition.map_scene
 		if scene == null:
-			_report("maps/%s: the scene '%s' does not load" % [definition.tag, definition.map_scene_path])
+			_report("maps/%s: the scene does not load" % definition.tag)
 			continue
 		var slots := _start_slots(scene.get_state())
 		var expected: Array[int] = []

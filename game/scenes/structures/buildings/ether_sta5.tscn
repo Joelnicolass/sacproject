@@ -1,31 +1,35 @@
 [gd_scene format=3]
 
+[ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_building"]
+[ext_resource type="Resource" path="res://data/buildings/ether_sta5.tres" id="2_type"]
 [ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
-[ext_resource type="Script" path="res://scenes/structures/building_footprint.gd" id="2_footprint"]
 [ext_resource type="Script" path="res://scenes/look/grass/vegetation_clear.gd" id="3_clear"]
 
-[node name="EtherSta5" type="Node3D"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(49.772, 67.111, 49.806)
 
-[node name="Base" type="Node3D" parent="."]
+[node name="EtherSta5" instance=ExtResource("1_building")]
+type = ExtResource("2_type")
 
-[node name="Mesh" type="MeshInstance3D" parent="Base"]
+[node name="Base" type="Node3D" parent="Visuals"]
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Base"]
 script = ExtResource("1_visual")
 model = "st5a"
 stand_on_feet = false
 
-[node name="Head" type="Node3D" parent="."]
+[node name="Head" type="Node3D" parent="Visuals"]
 
-[node name="Mesh" type="MeshInstance3D" parent="Head"]
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Head"]
 script = ExtResource("1_visual")
 model = "st5b"
 stand_on_feet = false
 
-[node name="Footprint" type="Node3D" parent="."]
-script = ExtResource("2_footprint")
-hit_box = AABB(-24.885, -8.398, -3.182, 49.772, 67.111, 49.806)
-inset = 0.5
-
-[node name="VegetationClear" type="Node3D" parent="."]
+[node name="VegetationClear" type="Node3D" parent="Visuals"]
 position = Vector3(0.0009994507, 0, 21.721)
 script = ExtResource("3_clear")
 radius_m = 36.21
+
+[node name="Collision" parent="." index="1"]
+position = Vector3(0.0009994507, 25.157501, 21.721)
+shape = SubResource("BoxShape3D_body")

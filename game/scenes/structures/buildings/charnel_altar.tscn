@@ -1,60 +1,64 @@
 [gd_scene format=3]
 
+[ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_building"]
+[ext_resource type="Resource" path="res://data/buildings/charnel_altar.tres" id="2_type"]
 [ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
-[ext_resource type="Script" path="res://scenes/structures/building_footprint.gd" id="2_footprint"]
 
-[node name="CharnelAltar" type="Node3D"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(4, 4, 4)
 
-[node name="Base" type="Node3D" parent="."]
+[node name="CharnelAltar" instance=ExtResource("1_building")]
+type = ExtResource("2_type")
 
-[node name="Mesh" type="MeshInstance3D" parent="Base"]
+[node name="Base" type="Node3D" parent="Visuals"]
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Base"]
 script = ExtResource("1_visual")
 model = "caab"
 stand_on_feet = false
 
-[node name="Pil1" type="Node3D" parent="."]
+[node name="Pil1" type="Node3D" parent="Visuals"]
 position = Vector3(20, 0, 20)
 rotation = Vector3(0, -4.712389, 0)
 
-[node name="Mesh" type="MeshInstance3D" parent="Pil1"]
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Pil1"]
 script = ExtResource("1_visual")
 model = "caap"
 stand_on_feet = false
 
-[node name="Pil2" type="Node3D" parent="."]
+[node name="Pil2" type="Node3D" parent="Visuals"]
 position = Vector3(-20, 0, 20)
 
-[node name="Mesh" type="MeshInstance3D" parent="Pil2"]
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Pil2"]
 script = ExtResource("1_visual")
 model = "caap"
 stand_on_feet = false
 
-[node name="Pil3" type="Node3D" parent="."]
+[node name="Pil3" type="Node3D" parent="Visuals"]
 position = Vector3(20, 0, -20)
 rotation = Vector3(0, -3.1415927, 0)
 
-[node name="Mesh" type="MeshInstance3D" parent="Pil3"]
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Pil3"]
 script = ExtResource("1_visual")
 model = "caap"
 stand_on_feet = false
 
-[node name="Pil4" type="Node3D" parent="."]
+[node name="Pil4" type="Node3D" parent="Visuals"]
 position = Vector3(-20, 0, -20)
 rotation = Vector3(0, -1.5707964, 0)
 
-[node name="Mesh" type="MeshInstance3D" parent="Pil4"]
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Pil4"]
 script = ExtResource("1_visual")
 model = "caap"
 stand_on_feet = false
 
-[node name="Top" type="Node3D" parent="."]
+[node name="Top" type="Node3D" parent="Visuals"]
 
-[node name="Mesh" type="MeshInstance3D" parent="Top"]
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Top"]
 script = ExtResource("1_visual")
 model = "caar"
 stand_on_feet = false
 
-[node name="Footprint" type="Node3D" parent="."]
-script = ExtResource("2_footprint")
-hit_box = AABB(-2, 0, -2, 4, 4, 4)
-inset = 0.5
+[node name="Collision" parent="." index="1"]
+position = Vector3(0, 2, 0)
+shape = SubResource("BoxShape3D_body")

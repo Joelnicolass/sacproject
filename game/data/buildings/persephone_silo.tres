@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="BuildingType" format=3]
 
 [ext_resource type="Script" path="res://scenes/structures/building_type.gd" id="1_type"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_silo.tscn" id="2_scene"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_silo_ruin.tscn" id="3_ruin"]
 
 [resource]
@@ -10,5 +9,4 @@ tag = "silo"
 max_health = 7500.0
 shelters_peasants = true
 flattens_ground = true
-scene = ExtResource("2_scene")
 ruin_scene = ExtResource("3_ruin")

@@ -33,6 +33,8 @@ const STAGE_NAMES: PackedStringArray = ["vivo", "muere", "se levanta", "fantasma
 
 @export var rules: MatchRules
 @export var visual: GeometryInstance3D
+## Lays the body down when it dies and stands it up for the ghost (empty = the body just stays as it is).
+@export var death_look: WizardDeathLook
 ## Converts a dagon shadeless energy to Godot's light scale. Shadeless is texture · energy like
 ## the ambient (albedo · 1, deferred.d:403), so it takes the ambient's ratio: π/14
 ## (the old theme's ambient_light_energy with ambient 1).
@@ -243,6 +245,8 @@ func _show_stage(animate: bool) -> void:
 		_fade.kill()
 		_fade = null
 	visual.visible = true
+	if death_look != null and stage != Stage.DYING and stage != Stage.RISING and stage != Stage.GONE:
+		death_look.stand()
 	var see_through := shows_ghost() or stage == Stage.GONE
 	_look.set_shadow(not see_through)
 	_look.set_shadeless(shows_ghost())
@@ -250,8 +254,14 @@ func _show_stage(animate: bool) -> void:
 	match stage:
 		Stage.ALIVE, Stage.DYING:
 			_look.set_transparency(0.0)
+			if animate and stage == Stage.DYING and death_look != null:
+				death_look.fall()
 		Stage.RISING:
-			_fade_to(ghost, _seconds(_type().corpse_rise_frames if _type() else 0), animate)
+			var rise_s := _seconds(_type().corpse_rise_frames if _type() else 0)
+			if animate and rise_s > 0.0 and death_look != null and death_look.is_lying():
+				_fade = death_look.rise(_look.set_transparency, _look.transparency, ghost, rise_s)
+			else:
+				_fade_to(ghost, rise_s, animate)
 		Stage.GHOST:
 			_look.set_transparency(ghost)
 			visual.visible = _seen_by_viewer()

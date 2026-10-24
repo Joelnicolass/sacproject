@@ -16,6 +16,8 @@
 [ext_resource type="Script" path="res://scenes/spells/caster.gd" id="10_caster"]
 [ext_resource type="Script" path="res://scenes/spells/summoner.gd" id="11_summoner"]
 [ext_resource type="Script" path="res://scenes/wizards/ghost_form.gd" id="12_ghost"]
+[ext_resource type="Script" path="res://scenes/wizards/wizard_death_look.gd" id="a055_deathlook"]
+[ext_resource type="Script" path="res://scenes/units/ragdoll_driver.gd" id="a055_ragdoll"]
 [ext_resource type="Script" path="res://scenes/bodies/body_animator.gd" id="13_clip"]
 [ext_resource type="PackedScene" path="res://scenes/bodies/body_rig.tscn" id="f162_rig"]
 [ext_resource type="Script" path="res://scenes/bodies/hand_fx.gd" id="d023_handfx"]
@@ -230,10 +232,21 @@ rings_scene = ExtResource("19_rings")
 
 [node name="Swarm" parent="Caster/Actions" instance=ExtResource("a041_swarm")]
 
-[node name="GhostForm" type="Node" parent="." node_paths=PackedStringArray("visual")]
+[node name="GhostForm" type="Node" parent="." node_paths=PackedStringArray("visual", "death_look")]
 script = ExtResource("12_ghost")
 rules = ExtResource("7_rules")
 visual = NodePath("../Tilt/Mesh")
+death_look = NodePath("../DeathLook")
+
+[node name="DeathLook" type="Node" parent="." node_paths=PackedStringArray("body", "visual", "clip_pose", "ragdoll")]
+script = ExtResource("a055_deathlook")
+body = NodePath("..")
+visual = NodePath("../Tilt/Mesh")
+clip_pose = NodePath("../ClipPose")
+ragdoll = NodePath("RagdollDriver")
+
+[node name="RagdollDriver" type="Node" parent="DeathLook"]
+script = ExtResource("a055_ragdoll")
 
 [node name="ClipPose" type="Node" parent="." node_paths=PackedStringArray("visual")]
 script = ExtResource("13_clip")

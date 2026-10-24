@@ -1,0 +1,39 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://debug/units/death_ragdoll_wizards.gd" id="1_runner"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(80, 2, 80)
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_gallery"]
+
+[sub_resource type="Sky" id="Sky_gallery"]
+sky_material = SubResource("ProceduralSkyMaterial_gallery")
+
+[sub_resource type="Environment" id="Environment_gallery"]
+background_mode = 2
+sky = SubResource("Sky_gallery")
+ambient_light_source = 3
+tonemap_mode = 3
+
+[node name="DeathRagdollWizards" type="Node3D"]
+editor_description = "F6. The 15 wizards die one by one and fall as ragdolls; the ones of slot 1 (an altar stands behind) rise as ghosts, the ones of slot 2 just fade away. It repeats."
+script = ExtResource("1_runner")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_gallery")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+shape = SubResource("BoxShape3D_floor")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, 0.25, -0.433, 0, 0.866, 0.5, 0.5, -0.433, 0.75, 0, 10, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.8, 0.6, 0, -0.6, 0.8, 0, 14, 20)
+current = true

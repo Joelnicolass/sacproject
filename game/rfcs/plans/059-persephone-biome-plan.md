@@ -7,7 +7,7 @@ Objetivo del usuario: la apariencia del **tutorial** del original (capturas del 
 - **Alpine Meadow** (tierra prsc, 2 asientos, relieve 240 m) entra como mapa **agregado** al catálogo.
 - P2: si con luz y niebla no se llega a la saturación objetivo, Persephone puede cambiar el tonemapper (`LightLook.tonemap_mode`).
 - P3: se reabre 055d-P8 para 059e: `BuildingType.biome_kind` + `LookProfile.props` cambia solo el modelo de los árboles de escenografía (footprint, vida y colisión intactos), después de 055d-d4.
-- P4: tu02 queda como mapa de referencia (no jugable).
+- P4 (corregido 2026-10-24 por el usuario): `tutorial_valley` es **jugable**; se le agrega un segundo inicio con `WizardSpot`.
 
 ## Hallazgos (tech lead, con citas)
 - Tutorial: `sacengine/maps/Tutorial/(tu01|tu02|tu03).scp`, tierra Persephone (`prsc`, `levl.d:43-53`). La captura de las colinas coincide con **tu02** por contenido (arco ×2, pct1 ×73, pct2 ×35, pcfe ×28, rocas pcr1–8, PCG/PCF/PCW miles); no verificado con captura desde la misma posición.

@@ -14,16 +14,16 @@ const ANGLES := 64
 @export var zone: GroundZone
 ## The stamp that digs the crater: the eruption happens when it starts, and its ticks are the zone's clock.
 @export var eruption: TerrainStamp
-## The three meshes, each with a ShaderMaterial of volcano_lava / volcano_cloud / volcano_spatter.gdshader.
+## The lava and the splash: meshes with a ShaderMaterial of volcano_lava / volcano_spatter.gdshader. `cloud` holds the smoke (the noisy
+## layers of 061h, CloudLook) and is shown from the eruption.
 @export var lava: MeshInstance3D
-@export var cloud: MeshInstance3D
+@export var cloud: Node3D
 @export var spatter: MeshInstance3D
 @export_group("Timing")
 ## Steps of growth of the column (the baked original has 16 frames of geometry), and ticks it spends on each frame of its skin.
 @export_range(2, 32) var growth_steps := 16
 @export_range(1, 16) var lava_frame_ticks := 4
-## The smoke goes through its 16 frames in this many ticks; the splash pulses once in `pulse_ticks`.
-@export_range(1, 600) var cloud_cycle_ticks := 120
+## The splash pulses once in this many ticks.
 @export_range(1, 600) var pulse_ticks := 90
 ## It grows in during the first second after the eruption and shrinks away during the last one.
 @export_range(0.1, 5.0, 0.05, "suffix:s") var fade_s := 1.0
@@ -73,8 +73,6 @@ func _process(_delta: float) -> void:
 	elif since < fade:
 		grown = floorf(float(since) * steps / fade)
 	_apply(lava, {"extend": grown / steps, "frame": (since / lava_frame_ticks) % 8})
-	_apply(cloud, {"frame": int(float(since % cloud_cycle_ticks) * 2.0 / 15.0),
-		"alpha_scale": minf(1.0, 1.1 * float(since) / float(growth_steps)) * minf(1.0, maxf(0.0, float(remaining)) / fade)})
 	var pulse := float(since % pulse_ticks) / float(pulse_ticks)
 	_apply(spatter, {"pulse": pulse, "frame": mini(15, int(16.0 * pulse)), "origin_y": global_position.y})
 	_renew_ground(land, mouth)

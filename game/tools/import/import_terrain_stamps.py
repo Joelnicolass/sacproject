@@ -6,7 +6,6 @@ Import what Volcano (RFC-057, 061k-2) reads from the original:
   assets/original/terrain/volcano_shape.png   the 33x33 shape of the mound (volc.DATA of xmenu.wad), 8-bit grey, byte for byte:
                                               pixel (x, y) is the vertex x cells east and y cells south of the corner of the stamp
   assets/original/fx/sprt.png                 the lava tube's skin (atlas 4x2, MAIN.WAD!/bits.FLDR)
-  assets/original/fx/vsmk.png                 the smoke cloud over the crater (atlas 4x4, Pyro's textures)
   assets/original/fx/sptr.png                 the lava spatter on the ground (atlas 4x4, Pyro's textures)
 
   python3 tools/import/import_terrain_stamps.py            # write
@@ -35,7 +34,6 @@ SIDE = 33
 # (wad, folder) of each texture, as sacobject.d SacVolcanoLava / SacVolcanoCloud / SacVolcanoSpatter load them.
 FX = {
     "sprt": ("main.wad", "MAIN.WAD!/bits.FLDR"),
-    "vsmk": ("charlie.wad", "Bloo.WAD!/Pyro.FLDR/txtr.FLDR"),
     "sptr": ("charlie.wad", "Bloo.WAD!/Pyro.FLDR/txtr.FLDR"),
 }
 

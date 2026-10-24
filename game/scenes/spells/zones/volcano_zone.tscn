@@ -15,14 +15,13 @@
 [ext_resource type="Script" path="res://scenes/spells/zones/zone_dropper.gd" id="13_dropper"]
 [ext_resource type="Script" path="res://scenes/spells/zones/drop_launcher.gd" id="14_launcher"]
 [ext_resource type="Script" path="res://scenes/spells/zones/volcano_look.gd" id="15_look"]
+[ext_resource type="Script" path="res://scenes/spells/zones/cloud_look.gd" id="30_cloud"]
+[ext_resource type="Shader" path="res://scenes/spells/zones/cloud_sphere.gdshader" id="31_sphere"]
 [ext_resource type="ArrayMesh" path="res://scenes/spells/zones/volcano_lava_tube.res" id="16_lava_mesh"]
-[ext_resource type="ArrayMesh" path="res://scenes/spells/zones/volcano_cloud_tube.res" id="17_cloud_mesh"]
 [ext_resource type="ArrayMesh" path="res://scenes/spells/zones/volcano_spatter_ring.res" id="18_spatter_mesh"]
 [ext_resource type="Shader" path="res://scenes/spells/zones/volcano_lava.gdshader" id="19_lava_shader"]
-[ext_resource type="Shader" path="res://scenes/spells/zones/volcano_cloud.gdshader" id="20_cloud_shader"]
 [ext_resource type="Shader" path="res://scenes/spells/zones/volcano_spatter.gdshader" id="21_spatter_shader"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/sprt.png" id="22_sprt"]
-[ext_resource type="Texture2D" path="res://assets/original/fx/vsmk.png" id="23_vsmk"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/sptr.png" id="24_sptr"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="25_light"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/zone_sound.tscn" id="26_sound"]
@@ -72,13 +71,35 @@ radius = 25
 shader = ExtResource("19_lava_shader")
 shader_parameter/skin = ExtResource("22_sprt")
 
-[sub_resource type="ShaderMaterial" id="Mat_cloud"]
-shader = ExtResource("20_cloud_shader")
-shader_parameter/skin = ExtResource("23_vsmk")
-
 [sub_resource type="ShaderMaterial" id="Mat_spatter"]
 shader = ExtResource("21_spatter_shader")
 shader_parameter/skin = ExtResource("24_sptr")
+
+[sub_resource type="ShaderMaterial" id="Mat_smoke"]
+shader = ExtResource("31_sphere")
+shader_parameter/layer_alpha = 0.11
+shader_parameter/tint = Color(0.012, 0.012, 0.014, 1)
+shader_parameter/rim_color = Color(0.05, 0.05, 0.055, 1)
+shader_parameter/top_color = Color(0.03, 0.03, 0.035, 1)
+shader_parameter/light_dir = Vector3(0, -1, 0)
+shader_parameter/light_color = Color(0.4, 0.12, 0.03, 1)
+shader_parameter/mottle_color = Color(0.07, 0.07, 0.08, 1)
+shader_parameter/mottle_scale = 4.0
+shader_parameter/core_alpha = 0.6
+shader_parameter/noise_scale = 1.8
+shader_parameter/morph_s = 8.0
+
+[sub_resource type="SphereMesh" id="Mesh_smoke"]
+material = SubResource("Mat_smoke")
+radius = 0.5
+height = 1.0
+radial_segments = 24
+rings = 24
+
+[sub_resource type="MultiMesh" id="Layers_smoke"]
+transform_format = 1
+use_custom_data = true
+mesh = SubResource("Mesh_smoke")
 
 [node name="VolcanoZone" type="Node3D"]
 editor_description = "Volcano (clov): el monte sube mientras el mago lanza (4,44 s) y a esa hora erupciona: un crater de 25 m y 10 m de hondo, 1000 de dano en 50 m, una columna de lava de 310 m, humo y bolas de lava (una cada 32 ticks de media) durante 60 s. En ese tiempo el monte baja al 25 % y eso queda. Los TerrainStamp son el monte (la imagen volcano_shape.png, aplanado a la altura del centro) y el crater; sus Reach se mueven con el gizmo. Si el lanzamiento se corta, el suelo vuelve exacto a como estaba. La luz naranja es la de la lava (la erupcion lleva su FxLightSpec en volcano_ash_burst.tres)."
@@ -174,12 +195,24 @@ shoots = true
 editor_description = "Donde esta el humo (a unos 290 m): la camara de capturas (match_shots --views=cloud) mira a medio camino entre el suelo y este punto."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 290, 0)
 
+[node name="Smoke" type="Node3D" parent="CloudAt" node_paths=PackedStringArray("zone", "layers")]
+editor_description = "El humo sobre la columna: las capas de esfera ruidosa de las nubes de 061h (cloud_sphere.gdshader), con altura (un monton de esferas de 160 m de radio), de nucleo negro y gris; solo su cara de abajo toma el naranja de la lava. VolcanoLook las muestra solo desde la erupcion."
+script = ExtResource("30_cloud")
+zone = NodePath("../..")
+layers = NodePath("Layers")
+fixed_radius_m = 160.0
+shape = Vector3(1.4, 0.55, 1.4)
+
+[node name="Layers" type="MultiMeshInstance3D" parent="CloudAt/Smoke"]
+cast_shadow = 0
+multimesh = SubResource("Layers_smoke")
+
 [node name="Look" type="Node3D" parent="." node_paths=PackedStringArray("zone", "eruption", "lava", "cloud", "spatter")]
 script = ExtResource("15_look")
 zone = NodePath("..")
 eruption = NodePath("../Crater")
 lava = NodePath("Lava")
-cloud = NodePath("Cloud")
+cloud = NodePath("../CloudAt")
 spatter = NodePath("Spatter")
 
 [node name="Lava" type="MeshInstance3D" parent="Look"]
@@ -187,12 +220,6 @@ editor_description = "La columna de lava de 310 m (volcano_lava.gdshader): crece
 cast_shadow = 0
 mesh = ExtResource("16_lava_mesh")
 material_override = SubResource("Mat_lava")
-
-[node name="Cloud" type="MeshInstance3D" parent="Look"]
-editor_description = "El humo sobre la columna (volcano_cloud.gdshader), a 270-325 m, de 246 m de radio."
-cast_shadow = 0
-mesh = ExtResource("17_cloud_mesh")
-material_override = SubResource("Mat_cloud")
 
 [node name="Spatter" type="MeshInstance3D" parent="Look"]
 editor_description = "La salpicadura de lava en el suelo (volcano_spatter.gdshader): late cada 1,5 s hasta unos 25 m."

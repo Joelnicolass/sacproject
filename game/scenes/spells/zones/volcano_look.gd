@@ -14,16 +14,16 @@ const ANGLES := 64
 @export var zone: GroundZone
 ## The stamp that digs the crater: the eruption happens when it starts, and its ticks are the zone's clock.
 @export var eruption: TerrainStamp
-## The three meshes, each with a ShaderMaterial of volcano_lava / volcano_cloud / volcano_spatter.gdshader.
+## The lava and the splash: meshes with a ShaderMaterial of volcano_lava / volcano_spatter.gdshader. `cloud` holds the smoke (the noisy
+## layers of 061h, CloudLook) and is shown from the eruption.
 @export var lava: MeshInstance3D
-@export var cloud: MeshInstance3D
+@export var cloud: Node3D
 @export var spatter: MeshInstance3D
 @export_group("Timing")
 ## Steps of growth of the column (the baked original has 16 frames of geometry), and how long it stays on each frame of its skin.
 @export_range(2, 32) var growth_steps := 16
 @export_range(0.0166, 0.5, 0.0001, "suffix:s") var lava_frame_s := 0.0666
-## The smoke goes through its 16 frames in `cloud_cycle_s`; the splash pulses once in `pulse_s`.
-@export_range(0.0166, 10.0, 0.0001, "suffix:s") var cloud_cycle_s := 2.0
+## The splash pulses once in this long.
 @export_range(0.0166, 10.0, 0.0001, "suffix:s") var pulse_s := 1.5
 ## It grows in during the first second after the eruption and shrinks away during the last one.
 @export_range(0.1, 5.0, 0.05, "suffix:s") var fade_s := 1.0
@@ -72,11 +72,8 @@ func _process(_delta: float) -> void:
 		grown = floorf(steps * maxf(0.0, remaining) / fade)
 	elif since < fade:
 		grown = floorf(float(since) * steps / fade)
-	var cycle := maxi(1, MatchClock.ticks_for(cloud_cycle_s))
 	var pulse_ticks := maxi(1, MatchClock.ticks_for(pulse_s))
 	_apply(lava, {"extend": grown / steps, "frame": (since / maxi(1, MatchClock.ticks_for(lava_frame_s))) % 8})
-	_apply(cloud, {"frame": int(float(since % cycle) * 16.0 / float(cycle)),
-		"alpha_scale": minf(1.0, 1.1 * float(since) / float(growth_steps)) * minf(1.0, maxf(0.0, float(remaining)) / fade)})
 	var pulse := float(since % pulse_ticks) / float(pulse_ticks)
 	_apply(spatter, {"pulse": pulse, "frame": mini(15, int(16.0 * pulse)), "origin_y": global_position.y})
 	_renew_ground(land, mouth)

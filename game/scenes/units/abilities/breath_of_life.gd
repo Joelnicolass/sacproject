@@ -72,8 +72,8 @@ func _physics_process(_delta: float) -> void:
 		_finish()
 		return
 	var velocity := MatchClock.TICKS_PER_SECOND_F * (BodyNudge.center(corpse) - _position)
-	if velocity.length() > ability.speed:
-		velocity = velocity.normalized() * ability.speed
+	if velocity.length() > ability.speed_m_s:
+		velocity = velocity.normalized() * ability.speed_m_s
 	_position += velocity / MatchClock.TICKS_PER_SECOND_F
 	if _shot != null and is_instance_valid(_shot):
 		_shot.global_position = _position

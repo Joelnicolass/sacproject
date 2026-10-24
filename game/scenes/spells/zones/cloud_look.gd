@@ -52,7 +52,7 @@ func _process(delta: float) -> void:
 	var ending := zone.phase == GroundZone.Phase.ENDING
 	_size = clampf(_size + (-shrink_per_s if ending else grow_per_s) * delta, 0.0, 1.0)
 	visible = _size > 0.001
-	var radius := fixed_radius_m if fixed_radius_m > 0.0 else zone.spell.effect_range * radius_share
+	var radius := fixed_radius_m if fixed_radius_m > 0.0 else zone.spell.effect_range_m * radius_share
 	layers.scale = shape * radius * (0.5 + 0.5 * _size) * 2.0 * mean_radius
 	layers.set_instance_shader_parameter(&"size", _size)
 

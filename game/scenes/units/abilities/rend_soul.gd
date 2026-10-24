@@ -21,7 +21,7 @@ func status(_target_pos: Vector3, target: Node3D) -> String:
 	var soul := _soul_of(target)
 	if not can_rend(soul, _slot()):
 		return ActiveAbility.BAD_TARGET
-	if user.global_position.distance_to(SoulStrike.center_of_soul(soul)) > ability.cast_range:
+	if user.global_position.distance_to(SoulStrike.center_of_soul(soul)) > ability.cast_range_m:
 		return ActiveAbility.OUT_OF_RANGE
 	return ""
 
@@ -62,7 +62,7 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 		"aim_x": center.x, "aim_y": center.y, "aim_z": center.z,
 		"damage": float(ability.damage),
 		"slot": _slot(),
-		"max_distance": ability.cast_range,
+		"max_distance": ability.cast_range_m,
 		"target": "",
 		"shooter": str(user.get_path()),
 	}, ShotLook.for_tag(look_tag), parent)

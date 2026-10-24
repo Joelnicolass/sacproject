@@ -16,7 +16,7 @@ const _HEAL := preload("res://scenes/spells/heal_effect.gd")
 
 func _affect(shot: Node3D, _target: Node3D, point: Vector3, ability: AbilityType) -> void:
 	var from_slot := int(shot.get("from_slot"))
-	var radius := ability.effect_range if ability else 0.0
+	var radius := ability.effect_range_m if ability else 0.0
 	print("telarana %s en (%.1f, %.1f, %.1f) radio %.1f m slot %d" % [ability.tag if ability else "?", point.x, point.y, point.z, radius, from_slot])
 	for body in _SPLASH.bodies_within(get_tree(), point, radius, null, groups):
 		if int(body.get("owner_slot")) != from_slot or _HEAL.heal_full(body, true) == null:

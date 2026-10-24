@@ -33,13 +33,13 @@ func _affect(shot: Node3D, target: Node3D, _point: Vector3, ability: AbilityType
 			## A building with guardians sends the hit to them (dealRangedDamage, 9369): the shooter drains from what they took.
 			LifeDrain.feed(shooter_of(shot), target, health.damage_typed(float(shot.get("damage")), _HEALTH.DIRECT_RANGED, from_slot))
 		return
-	if ability == null or ability.duration <= 0.0:
+	if ability == null or ability.duration_s <= 0.0:
 		return
 	var shooter := shooter_of(shot)
 	## healFromDrain(shooter, amount) (23523, 24360, 24879): the whole SPEL amount, whatever the target takes; LifeDrain owns the rule.
 	LifeDrain.feed(shooter, target, float(ability.damage))
-	var per_second := float(ability.damage) / ability.duration / nerf_factor
-	var frames := int(ability.duration * MatchClock.TICKS_PER_SECOND)
+	var per_second := float(ability.damage) / ability.duration_s / nerf_factor
+	var frames := int(ability.duration_s * MatchClock.TICKS_PER_SECOND)
 	var ires := ability.arg_int("ires", 0)
 	var freg := ability.arg_float("freg", 1.0)
 	if Poisoning.dose_body(target, per_second, frames, kind, from_slot, infectious, ires, freg, shooter.get_path() if shooter != null else NodePath()):

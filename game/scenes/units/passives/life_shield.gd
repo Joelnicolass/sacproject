@@ -18,4 +18,4 @@ func start_for_ability(ability: AbilityType) -> bool:
 
 
 static func ticks_for(ability: AbilityType) -> int:
-	return ticks_for_seconds(ability.duration if ability else 20.0)
+	return ticks_for_seconds(ability.duration_s if ability else 20.0)

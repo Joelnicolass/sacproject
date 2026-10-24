@@ -39,7 +39,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 ## Server or solo. The cast started: it appears where it is and looks where the wizard looks, for `cast_ticks`.
 func begin(wizard: Node3D, cast_ticks: int) -> void:
-	_lifetime = MatchClock.ticks_for(carrier.spell.duration) + cast_ticks if carrier.spell != null else cast_ticks
+	_lifetime = MatchClock.ticks_for(carrier.spell.duration_s) + cast_ticks if carrier.spell != null else cast_ticks
 	carrier.phase = SpellCarrier.Phase.CASTING
 	carrier.rotation.y = wizard.rotation.y
 

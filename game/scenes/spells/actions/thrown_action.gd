@@ -38,5 +38,5 @@ func _throw(wizard: WizardBody, spell: SpellType, target: Node3D, point: Vector3
 	if spawner == null:
 		return
 	var data := projectile_data(wizard, spell, hand_origin(wizard), target, point)
-	data["damage_range"] = spell.damage_range
+	data["damage_range"] = spell.damage_range_m
 	spawner.spawn_projectile(projectile_kind, data)

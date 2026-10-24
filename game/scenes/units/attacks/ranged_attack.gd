@@ -67,7 +67,7 @@ func setup(body: UnitBody, creature: CreatureType, mana: ManaPool, melee: MeleeA
 	_melee = melee
 	_rng = rng
 	attack = GameData.ability(creature.ranged_attack_tag) if creature and creature.is_ranged else null
-	if attack and attack.speed <= 0.0:
+	if attack and attack.speed_m_s <= 0.0:
 		attack = null
 
 
@@ -100,7 +100,7 @@ func cancel() -> void:
 func shoot_range() -> float:
 	if attack == null:
 		return 0.0
-	return maxf(range_factor * attack.cast_range, attack.cast_range - range_margin)
+	return maxf(range_factor * attack.cast_range_m, attack.cast_range_m - range_margin)
 
 
 ## sacengine attack: shoot unless the foe is in melee contact. A body of its own side (a Scarab's patient, F136) is
@@ -204,11 +204,11 @@ func _fire(target: Node3D) -> void:
 	var ballistic := BALLISTIC.has(attack.tag)
 	var gravity := float(FALLING_ACCELERATION.get(attack.tag, DEFAULT_FALLING)) if ballistic else 0.0
 	if ballistic:
-		direction.y += 0.5 * gravity * offset.length() / (attack.speed * attack.speed)
+		direction.y += 0.5 * gravity * offset.length() / (attack.speed_m_s * attack.speed_m_s)
 	direction = ShotAim.scatter(direction, _accuracy(), _rng)
 	if not ballistic:
 		direction = direction.normalized()
-	var velocity: Vector3 = direction * attack.speed
+	var velocity: Vector3 = direction * attack.speed_m_s
 	var data := {
 		"tag": attack.tag,
 		"x": origin.x, "y": origin.y, "z": origin.z,
@@ -216,7 +216,7 @@ func _fire(target: Node3D) -> void:
 		"damage": float(attack.damage) * _attack_factor(),
 		"slot": _body.owner_slot,
 		"gravity": gravity,
-		"max_distance": INF if ballistic else attack.cast_range * look.range_factor,
+		"max_distance": INF if ballistic else attack.cast_range_m * look.range_factor,
 		"target": str(target.get_path()),
 		"shooter": str(_body.get_path()),
 		## F124: the predicted point without accuracy, and the accuracy, for the strikes that aim again.
@@ -271,9 +271,9 @@ static func origin_of(body: Node3D) -> Vector3:
 ## sacengine predictShotTargetPosition: the target's center where it will be when the shot arrives.
 func _predicted(target: Node3D) -> Vector3:
 	var center := _center(target)
-	if attack == null or attack.speed <= 0.0 or not target is CharacterBody3D:
+	if attack == null or attack.speed_m_s <= 0.0 or not target is CharacterBody3D:
 		return center
-	var flight := _body.global_position.distance_to(center) / attack.speed
+	var flight := _body.global_position.distance_to(center) / attack.speed_m_s
 	var moving := (target as CharacterBody3D).velocity
 	moving.y = 0.0
 	return center + moving * flight

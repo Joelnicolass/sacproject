@@ -54,7 +54,7 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	var since := eruption.ticks - MatchClock.ticks_for(eruption.start_s)
-	var remaining := MatchClock.ticks_for(zone.spell.duration) - since
+	var remaining := MatchClock.ticks_for(zone.spell.duration_s) - since
 	var shown := since > 0 and remaining > 0 and not zone.cancelled
 	for part in [lava, cloud, spatter]:
 		part.visible = shown

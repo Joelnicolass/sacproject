@@ -6,8 +6,8 @@
 script = ExtResource("1_7gu62")
 tag = "tum@"
 display_name = "Healing Shower"
-damage_range = 30.0
-effect_range = 30.0
+damage_range_m = 30.0
+effect_range_m = 30.0
 flags = 16409
 flags1 = 32864
 args = {

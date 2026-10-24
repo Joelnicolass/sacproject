@@ -112,7 +112,7 @@ func finish() -> void:
 
 
 func hold_ticks() -> int:
-	return maxi(1, MatchClock.ticks_for(spell.duration if hold_is_spell_duration and spell != null else hold_s))
+	return maxi(1, MatchClock.ticks_for(spell.duration_s if hold_is_spell_duration and spell != null else hold_s))
 
 
 func end_ticks() -> int: return MatchClock.ticks_for(end_s)

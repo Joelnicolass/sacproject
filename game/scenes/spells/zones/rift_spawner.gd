@@ -55,7 +55,7 @@ func _release() -> bool:
 	if spawner == null:
 		return true
 	var rng := MatchSeed.rng(["rift", String(zone.name), _out])
-	var around := zone.aim_point + ZoneRules.disk_point(rng, zone.spell.effect_range)
+	var around := zone.aim_point + ZoneRules.disk_point(rng, zone.spell.effect_range_m)
 	var body := _closest_foe(around)
 	var goal := BodyNudge.center(body) if body != null else around
 	var rift := zone.points[0]
@@ -68,9 +68,9 @@ func _release() -> bool:
 	var aimed := Vector3(outward.x, 5.0, outward.z).normalized()
 	_out += 1
 	var spirit := spawner.spawn_projectile("RiftSpirit", {
-		"x": start.x, "y": start.y, "z": start.z, "goal": goal, "home": rift, "velocity": aimed * zone.spell.speed,
-		"target": str(body.get_path()) if body != null else "", "slot": zone.from_slot, "speed": zone.spell.speed,
-		"acceleration": zone.spell.acceleration, "damage": float(zone.spell.damage), "range": zone.spell.effect_range,
+		"x": start.x, "y": start.y, "z": start.z, "goal": goal, "home": rift, "velocity": aimed * zone.spell.speed_m_s,
+		"target": str(body.get_path()) if body != null else "", "slot": zone.from_slot, "speed": zone.spell.speed_m_s,
+		"acceleration": zone.spell.acceleration_m_s2, "damage": float(zone.spell.damage), "range": zone.spell.effect_range_m,
 		"loud": _out == 1 or rng.randi() % 3 == 0})
 	if spirit != null:
 		_alive.append(spirit)
@@ -83,7 +83,7 @@ func _release() -> bool:
 func _closest_foe(point: Vector3) -> Node3D:
 	var best: Node3D
 	var best_d := INF
-	for body in SplashDamage.bodies_within(get_tree(), point, zone.spell.effect_range, null, ZonePulse.BODY_GROUPS):
+	for body in SplashDamage.bodies_within(get_tree(), point, zone.spell.effect_range_m, null, ZonePulse.BODY_GROUPS):
 		var d := BodyNudge.center(body).distance_to(point)
 		var stance := SideRelations.stance(zone.from_slot, int(body.get("owner_slot")))
 		if d < best_d and stance != SideRelations.Stance.ALLY and not _targeted.has(body.get_instance_id()):

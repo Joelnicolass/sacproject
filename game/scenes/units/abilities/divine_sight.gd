@@ -31,7 +31,7 @@ func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 	at.y = RangedShot.land_height(user, at)
 	if at.y == -INF:
 		at.y = user.global_position.y
-	var velocity := ability.speed * ahead
+	var velocity := ability.speed_m_s * ahead
 	var eye := spawner.spawn_scene({
 		"scene": eye_scene.resource_path, "prefix": "Eye",
 		"x": at.x, "y": at.y, "z": at.z,

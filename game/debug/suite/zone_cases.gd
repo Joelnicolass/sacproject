@@ -115,7 +115,7 @@ func _explosion_blast() -> Dictionary:
 	for node: Node in [wizard, inside, five, eleven, far, ally]:
 		node.queue_free()
 	await _frames(2)
-	checks["spell_numbers"] = spell.damage == 600 and spell.damage_range == 10.0 and spell.effect_range == 20.0
+	checks["spell_numbers"] = spell.damage == 600 and spell.damage_range_m == 10.0 and spell.effect_range_m == 20.0
 	return _verdict("zone_explosion_blast", checks)
 
 
@@ -146,7 +146,7 @@ func _explosion_cast() -> Dictionary:
 		checks["five_points"] = zone.points.size() == 5 and zone.points[0].is_equal_approx(click)
 		var within := true
 		for i in range(1, zone.points.size()):
-			within = within and zone.points[i].distance_to(click) <= spell.effect_range + 0.01
+			within = within and zone.points[i].distance_to(click) <= spell.effect_range_m + 0.01
 		checks["four_within_20"] = within
 		checks["cast_ticks"] = zone.cast_ticks > 0
 		var before := (foe.get_node("Health") as Health).current
@@ -201,7 +201,7 @@ func _frozen_freeze() -> Dictionary:
 	LifeShield.of(guarded).start(100000)
 	await _frames(2)
 	var zone := _zone("FrozenGround", PackedVector3Array([Vector3.ZERO]), wizard, 0, 120)
-	checks["hold_is_the_spell_duration"] = zone.hold_is_spell_duration and zone.hold_ticks() == ceili(60.0 * spell.duration) and spell.duration == 30.0
+	checks["hold_is_the_spell_duration"] = zone.hold_is_spell_duration and zone.hold_ticks() == ceili(60.0 * spell.duration_s) and spell.duration_s == 30.0
 	checks["casting"] = zone.phase == GroundZone.Phase.CASTING
 	zone.release()
 	checks["arming"] = zone.phase == GroundZone.Phase.ARMING
@@ -225,7 +225,7 @@ func _frozen_freeze() -> Dictionary:
 	checks["shielded_never"] = not Frozen.is_frozen(guarded)
 	var zerf := GameData.spell("zerf")
 	var lasts := (near.get_node("Afflictions/Frozen") as Frozen).lay_ticks(zerf)
-	checks["freeze_numbers_are_freezes"] = absi(lasts - ceili(60.0 * 1000.0 / (near.get_node("Health") as Health).maximum * zerf.duration)) <= 1
+	checks["freeze_numbers_are_freezes"] = absi(lasts - ceili(60.0 * 1000.0 / (near.get_node("Health") as Health).maximum * zerf.duration_s)) <= 1
 	checks["uses_zerf"] = (zone.get_node("Freeze") as ZoneFreeze).freeze_spell == zerf
 	zone.queue_free()
 	for node: Node in [wizard, near, rim, out, flier, ally, guarded]:
@@ -274,7 +274,7 @@ func _frozen_shatter() -> Dictionary:
 	checks["fourteen_in_step_6"] = absi(int(step_of.get("fourteen", -99)) - 30) <= 1
 	checks["twenty_untouched"] = (bodies["twenty"].get_node("Health") as Health).current == float(start["twenty"])
 	checks["zone_freed"] = not is_instance_valid(zone) or zone.is_queued_for_deletion()
-	checks["spell_numbers"] = spell.damage == 800 and spell.effect_range == 15.0
+	checks["spell_numbers"] = spell.damage == 800 and spell.effect_range_m == 15.0
 	for node: Node in bodies.values() + [wizard]:
 		node.queue_free()
 	await _frames(2)

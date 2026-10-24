@@ -44,21 +44,21 @@ func check(wizard: WizardBody, spell: SpellType, _point: Vector3, picked: Node3D
 
 
 func begin(wizard: WizardBody, spell: SpellType, aim: Aim) -> void:
-	_destination = _landing(wizard.global_position, aim.target, spell.effect_range)
+	_destination = _landing(wizard.global_position, aim.target, spell.effect_range_m)
 	_has_destination = true
 
 
 ## `target` is the building, or null when it is gone: then the last destination stands.
 func finish(wizard: WizardBody, spell: SpellType, target: Node3D) -> String:
 	if is_building_of(wizard.owner_slot, target):
-		_destination = _landing(wizard.global_position, target, spell.effect_range)
+		_destination = _landing(wizard.global_position, target, spell.effect_range_m)
 		_has_destination = true
 	if not _has_destination:
 		return BAD_TARGET
 	var start := wizard.global_position
 	var destination := _destination
 	_has_destination = false
-	var radius := spell.effect_range
+	var radius := spell.effect_range_m
 	var shape := TerrainShape.of(wizard)
 	var on_ground := _on_ground_of(shape)
 	var froms := PackedVector3Array()

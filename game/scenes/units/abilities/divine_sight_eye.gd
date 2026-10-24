@@ -131,7 +131,7 @@ func _physics_process(_delta: float) -> void:
 
 
 func lifetime_ticks() -> int:
-	return rising_ticks + roundi(ability.duration * MatchClock.TICKS_PER_SECOND_F) if ability else rising_ticks
+	return rising_ticks + roundi(ability.duration_s * MatchClock.TICKS_PER_SECOND_F) if ability else rising_ticks
 
 
 ## updateDivineSight: false when the eye is over.
@@ -146,9 +146,9 @@ func _step(at_frame: int) -> bool:
 	var flying := flying_height
 	if target == null and not lost:
 		var travel := frame - rising_ticks
-		if float(travel) * ability.speed < MatchClock.TICKS_PER_SECOND_F * ability.cast_range:
-			velocity = velocity.normalized() * ability.speed
-		elif float(travel - 1) * ability.speed < MatchClock.TICKS_PER_SECOND_F * ability.cast_range:
+		if float(travel) * ability.speed_m_s < MatchClock.TICKS_PER_SECOND_F * ability.cast_range_m:
+			velocity = velocity.normalized() * ability.speed_m_s
+		elif float(travel - 1) * ability.speed_m_s < MatchClock.TICKS_PER_SECOND_F * ability.cast_range_m:
 			velocity = Vector3.ZERO
 		target = _closest_foe()
 		if target and DebugLog.on(&"eye"):
@@ -159,9 +159,9 @@ func _step(at_frame: int) -> bool:
 			var center := box.get_center()
 			flying = box.end.y - _height(center) + 0.5 * flying_height
 			var offset := center - position
-			velocity += offset.normalized() * ability.acceleration
-			if velocity.length() > ability.speed:
-				velocity = velocity.normalized() * ability.speed
+			velocity += offset.normalized() * ability.acceleration_m_s2
+			if velocity.length() > ability.speed_m_s:
+				velocity = velocity.normalized() * ability.speed_m_s
 			if velocity.length() > MatchClock.TICKS_PER_SECOND_F * offset.length():
 				velocity = velocity.normalized() * offset.length() * MatchClock.TICKS_PER_SECOND_F
 		else:
@@ -174,26 +174,26 @@ func _step(at_frame: int) -> bool:
 	if next.y < land + flying:
 		var pushed := velocity
 		pushed.y += (land + flying - next.y) * MatchClock.TICKS_PER_SECOND_F
-		if pushed.length() > ability.speed:
-			pushed = pushed.normalized() * ability.speed
+		if pushed.length() > ability.speed_m_s:
+			pushed = pushed.normalized() * ability.speed_m_s
 		next = position + pushed / MatchClock.TICKS_PER_SECOND_F
 	position = next
 	if _vision and (frame - rising_ticks) % maxi(1, MatchClock.ticks_for(refresh_s)) == 0:
-		_vision.update_vision(slot, position, ability.effect_range)
+		_vision.update_vision(slot, position, ability.effect_range_m)
 	return float(frame) < lifetime
 
 
 ## The closest enemy creature (or wizard) within the SPEL's range of the eye, or null. Ties keep the first in group order.
 func _closest_foe() -> Node3D:
 	var best: Node3D
-	var best_distance := ability.cast_range
+	var best_distance := ability.cast_range_m
 	for group in target_groups:
 		for node in get_tree().get_nodes_in_group(group):
 			var body := node as Node3D
 			if body == null or not TargetRules.is_valid_foe_of(slot, body):
 				continue
 			var distance := BodyNudge.center(body).distance_to(position)
-			if distance <= ability.cast_range and (best == null or distance < best_distance):
+			if distance <= ability.cast_range_m and (best == null or distance < best_distance):
 				best = body
 				best_distance = distance
 	return best

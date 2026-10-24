@@ -114,7 +114,7 @@ var _ended := false
 func setup(body: Node3D, type: AbilityType, rock_spawner: Node) -> void:
 	user = body
 	ability = type if type else GameData.ability(spell_tag)
-	_set_numbers(float(ability.damage), ability.speed, ability.acceleration, ability.effect_range)
+	_set_numbers(float(ability.damage), ability.speed_m_s, ability.acceleration_m_s2, ability.effect_range_m)
 	spawner = rock_spawner
 	_born = MatchClock.now()
 	_who = AbilityEffect.who(body)
@@ -127,8 +127,8 @@ func setup(body: Node3D, type: AbilityType, rock_spawner: Node) -> void:
 ## The wizard's halo: the cast started. The rocks come out as the casting goes on and wait for `release` to look for targets.
 func begin_cast(caster: Node3D, spell: SpellType, _target: Node3D, _point: Vector3, cast_ticks: int) -> void:
 	user = caster
-	_set_numbers(float(spell.damage), spell.speed, spell.acceleration, spell.effect_range)
-	life_s = spell.duration
+	_set_numbers(float(spell.damage), spell.speed_m_s, spell.acceleration_m_s2, spell.effect_range_m)
+	life_s = spell.duration_s
 	spawner = ShotSpawner.of(get_tree())
 	_born = MatchClock.now()
 	_who = AbilityEffect.who(caster)

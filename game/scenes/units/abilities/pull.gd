@@ -47,7 +47,7 @@ func status(_target_pos: Vector3, target: Node3D) -> String:
 		return ActiveAbility.BAD_TARGET
 	if not applicable(target):
 		return ActiveAbility.BAD_TARGET
-	if user.global_position.distance_to(target.global_position) > ability.cast_range:
+	if user.global_position.distance_to(target.global_position) > ability.cast_range_m:
 		return ActiveAbility.OUT_OF_RANGE
 	return ""
 

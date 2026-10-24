@@ -6,4 +6,4 @@
 script = ExtResource("1_htwxq")
 tag = "korq"
 display_name = "Taurock Passive"
-cast_range = 100.0
+cast_range_m = 100.0

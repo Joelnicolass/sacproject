@@ -73,8 +73,8 @@ func _fly(shot: RangedShot, at: Vector3) -> void:
 ## without one, from the shot's own range and speed.
 func radius_at(frame: int, shot: RangedShot) -> float:
 	var ability := shot.ability
-	var reach := ability.cast_range if ability else shot.max_distance
-	var speed := ability.speed if ability else shot.velocity.length()
+	var reach := ability.cast_range_m if ability else shot.max_distance
+	var speed := ability.speed_m_s if ability else shot.velocity.length()
 	if speed <= 0.0 or reach <= 0.0 or not is_finite(reach):
 		return 0.0
 	return final_radius * float(frame) / (MatchClock.TICKS_PER_SECOND_F * reach / speed)

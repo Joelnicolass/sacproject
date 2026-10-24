@@ -55,7 +55,7 @@ func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D,
 		aim.status = BAD_TARGET
 	else:
 		var at := aim.target.global_position if aim.target != null else point
-		if wizard.global_position.distance_to(at) > spell.cast_range:
+		if wizard.global_position.distance_to(at) > spell.cast_range_m:
 			aim.status = OUT_OF_RANGE
 	return aim
 
@@ -91,7 +91,7 @@ func _spawn(wizard: WizardBody, spell: SpellType) -> void:
 		return
 	var at := _birth(wizard, _aim) - Vector3.UP * depth_m
 	var data := AimedAction.projectile_data(wizard, spell, at, _aim.target, _aim.point)
-	data["damage_range"] = spell.damage_range
+	data["damage_range"] = spell.damage_range_m
 	data["cast_ticks"] = _ticks
 	_carrier = spawner.spawn_projectile(kind, data) as SpellCarrier
 	_released = false

@@ -163,7 +163,7 @@ func _action() -> Dictionary:
 	await _frames(2)
 	dying.get_node("Health").damage(99999.0, 2)
 	checks["own_building_ok"] = action.check(wizard, spell, Vector3.ZERO, near, "").status.is_empty()
-	checks["any_distance"] = action.check(wizard, spell, Vector3.ZERO, far, "").status.is_empty() and spell.cast_range >= 700.0
+	checks["any_distance"] = action.check(wizard, spell, Vector3.ZERO, far, "").status.is_empty() and spell.cast_range_m >= 700.0
 	checks["enemy_building_invalid"] = action.check(wizard, spell, Vector3.ZERO, enemy, "").status == SpellAction.BAD_TARGET
 	checks["creature_invalid"] = action.check(wizard, spell, Vector3.ZERO, own_unit, "").status == SpellAction.BAD_TARGET
 	checks["ground_invalid"] = action.check(wizard, spell, Vector3(30.0, 0.0, 30.0), null, "").status == SpellAction.BAD_TARGET

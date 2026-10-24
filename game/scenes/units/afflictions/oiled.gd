@@ -56,7 +56,7 @@ func _ready() -> void:
 	process_physics_priority = -1
 
 
-## Server (or solo): sacengine oilExplosion's callback + Oil. `ticks`: how long it lasts (ability.duration · 60); `slot`: the
+## Server (or solo): sacengine oilExplosion's callback + Oil. `ticks`: how long it lasts (ability.duration_s · 60); `slot`: the
 ## side of whoever threw it (the blast's attacker); `ability`: the SPEL (amount and damage_range of the blast). True when the body
 ## got smeared; false if it already is, cannot be, or this is a client.
 func start(ticks: int, slot: int, ability: AbilityType) -> bool:
@@ -68,7 +68,7 @@ func start(ticks: int, slot: int, ability: AbilityType) -> bool:
 	_ticks = ticks
 	_slot = slot
 	_damage = float(ability.damage) if ability != null else 0.0
-	_radius = ability.damage_range if ability != null else 0.0
+	_radius = ability.damage_range_m if ability != null else 0.0
 	_frame = 0
 	_ignited = false
 	_running = true

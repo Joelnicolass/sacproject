@@ -4,7 +4,7 @@ extends ShotImpact
 ## F129 (RFC-030 030r-a): a shot that sticks to the creature it touches instead of hurting it: the Ikarus's Sticky bomb
 ## (acia, ×0.75) and the Bilemites (×0.8). updateStickyBomb (state.d:25531-25578): the bomb that touches the ground or a
 ## building (not a creature) vanishes; the one that touches a creature of another side that canBeStickyBombed
-## (= canBePoisoned, 25524-25529) sticks to it for ability.duration seconds: it is gone at `duration · 60 + 1` updates
+## (= canBePoisoned, 25524-25529) sticks to it for ability.duration_s seconds: it is gone at `duration · 60 + 1` updates
 ## (`++infectionTime <= updateFPS·duration`). No damage.
 ## The pieces are Clinging's (the body's component): this node only asks it to stick one. The slowdown is PaceFactors'.
 ## Divergence (declared): a creature that cannot be stuck to (dying, summoning) stops the bomb in the port; in sacengine
@@ -14,7 +14,7 @@ extends ShotImpact
 @export var kind: StringName = &"sticky"
 ## What one piece multiplies the body's pace by (sacengine 0.75 ^ numStickyBombs, 0.8 ^ numBlightMites).
 @export var factor := 0.75
-## Seconds it lasts when the shot has no SPEL (ability.duration is the rule).
+## Seconds it lasts when the shot has no SPEL (ability.duration_s is the rule).
 @export var fallback_seconds := 10.0
 ## Updates past duration · 60 at which it lets go (the `++infectionTime` runs once more than the frames it holds).
 @export var extra_ticks := 1
@@ -29,7 +29,7 @@ func _affect(shot: Node3D, target: Node3D, point: Vector3, ability: AbilityType)
 	if poisoning == null or clinging == null or not poisoning.can_be_poisoned():
 		_log("%s se pierde en %s (no se le puede pegar) en %s" % [shot.name, str(target.name), _vec(point)])
 		return
-	var seconds := ability.duration if ability != null and ability.duration > 0.0 else fallback_seconds
+	var seconds := ability.duration_s if ability != null and ability.duration_s > 0.0 else fallback_seconds
 	var ticks := int(seconds * MatchClock.TICKS_PER_SECOND) + extra_ticks
 	_log("%s pega a %s en %s" % [shot.name, str(target.name), _vec(point)])
 	clinging.stick(kind, ticks, factor)

@@ -52,9 +52,9 @@ func lay_ticks(spell: SpellType) -> int:
 	if body == null or spell == null:
 		return 0
 	if duration_mode == Duration.FIXED:
-		return ceili(float(MatchClock.TICKS_PER_SECOND) * spell.duration)
+		return ceili(float(MatchClock.TICKS_PER_SECOND) * spell.duration_s)
 	var health := _afflictions().health
-	return cc_ticks(body.is_in_group(&"wizard"), health.maximum if health else 0.0, spell.duration, creature_k, wizard_factor)
+	return cc_ticks(body.is_in_group(&"wizard"), health.maximum if health else 0.0, spell.duration_s, creature_k, wizard_factor)
 
 
 ## Server (or solo). True when a layer went on.

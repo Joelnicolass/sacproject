@@ -26,7 +26,7 @@ func check(wizard: WizardBody, spell: SpellType, point: Vector3, _picked: Node3D
 	aim.point = point
 	var fount := TowerRules.closest_free_fount(get_tree(), point, POINT_FOUNT_RANGE_M)
 	if fount == null:
-		fount = TowerRules.closest_free_fount(get_tree(), wizard.global_position, spell.cast_range + 1.0)
+		fount = TowerRules.closest_free_fount(get_tree(), wizard.global_position, spell.cast_range_m + 1.0)
 	if fount == null:
 		aim.status = NO_FOUNT
 		return aim

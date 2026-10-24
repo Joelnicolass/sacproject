@@ -125,7 +125,7 @@ func _lay(body: Node3D) -> bool:
 	var state := _state_of(body)
 	if state == null or Afflictions.of(body).cc_protected():
 		return false
-	var left_s := wall.spell.duration - float(wall.age - wall.grow_ticks) / MatchClock.TICKS_PER_SECOND_F
+	var left_s := wall.spell.duration_s - float(wall.age - wall.grow_ticks) / MatchClock.TICKS_PER_SECOND_F
 	return state.lay_within(wall.spell, wall.from_slot, maxf(0.0, left_s))
 
 

@@ -38,7 +38,7 @@ func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D,
 	aim.target = target.pick(wizard, picked) if target != null else null
 	if aim.target == null or _state_of(aim.target) == null:
 		aim.status = BAD_TARGET
-	elif wizard.global_position.distance_to(aim.target.global_position) > spell.cast_range:
+	elif wizard.global_position.distance_to(aim.target.global_position) > spell.cast_range_m:
 		aim.status = OUT_OF_RANGE
 	return aim
 

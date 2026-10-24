@@ -116,9 +116,9 @@ func _capture_block(wizard: AiTrack, record: AiRecord) -> int:
 			var guard := pick_guard_creature(tn)
 			if guard != null and perception.closest_enemy_altar_in_range() == tn.node:
 				var spell: SpellType = wizard.desecrate_spell
-				var radius := AiField.f32(spell.cast_range * profile.desecrate_range_factor)
+				var radius := AiField.f32(spell.cast_range_m * profile.desecrate_range_factor)
 				if port.order_target_radius(guard, 3, wizard, radius) != 0:
-					if enqueue_forced_execute(wizard, guard, spell, spell.cast_range, null) != 0:
+					if enqueue_forced_execute(wizard, guard, spell, spell.cast_range_m, null) != 0:
 						wizard.next_reissue += 7 * profile.wizard_reissue_age
 						return 2
 	elif (tn.flags & AiTrack.CAPTURABLE) and (tn.status & AiTrack.UNBUILT):
@@ -169,11 +169,11 @@ func cast_cached_in_range(wizard: AiTrack, fount: AiTrack) -> int:
 		return 0
 	if not fount.is_valid() or not (fount.node as ManafountBody).is_free():
 		return 0
-	var r := float(shrine.cast_range)
+	var r := float(shrine.cast_range_m)
 	r = r * r * 1.399999976158142 * 25.0
 	if wizard.cur_pos.distance_squared_to(fount.cur_pos) > r:
 		return 0
-	return enqueue_forced_execute(wizard, fount, shrine, shrine.cast_range, null)
+	return enqueue_forced_execute(wizard, fount, shrine, shrine.cast_range_m, null)
 
 
 ## enqueueForcedExecute (shiny.d:3290, 0x48d080): score 0, forced, and straight to the execution.

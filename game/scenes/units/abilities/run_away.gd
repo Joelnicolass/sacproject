@@ -23,7 +23,7 @@ func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 		return true
 	var speed := _SPEEDUP_SCENE.instantiate() as SpeedupEffect
 	speed.name = SpeedupEffect.NODE_NAME
-	speed.start(maxf(ability.duration, min_duration_s))
+	speed.start(maxf(ability.duration_s, min_duration_s))
 	user.add_child(speed)
 	user.halt()
 	FxBus.broadcast("speedup", user.global_position + Vector3.UP)

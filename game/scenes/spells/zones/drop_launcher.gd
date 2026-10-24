@@ -46,9 +46,9 @@ func _launch(point: Vector3, _body: Node3D) -> void:
 	var spell := zone.spell
 	var data := {
 		"x": from.x, "y": from.y, "z": from.z, "goal": goal, "fall_s": fall_s, "slot": zone.from_slot,
-		"caster": str(zone.caster_path), "damage": float(spell.damage), "damage_range": spell.damage_range, "effect_range": spell.effect_range}
+		"caster": str(zone.caster_path), "damage": float(spell.damage), "damage_range": spell.damage_range_m, "effect_range": spell.effect_range_m}
 	if shoots:
-		data["shot_speed"] = spell.speed
+		data["shot_speed"] = spell.speed_m_s
 	spawner.spawn_projectile(kind, data)
 
 
@@ -69,7 +69,7 @@ func _start(point: Vector3) -> Vector3:
 
 
 func _disk() -> Vector3:
-	return ZoneRules.disk_point(_rng, zone.spell.effect_range * disk_share)
+	return ZoneRules.disk_point(_rng, zone.spell.effect_range_m * disk_share)
 
 
 func _get_configuration_warnings() -> PackedStringArray:

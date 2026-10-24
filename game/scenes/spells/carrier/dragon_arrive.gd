@@ -78,9 +78,9 @@ func _burst(carrier: SpellCarrier) -> void:
 ## No body to follow: fly on to a point `wander_share` of the range away, over the land.
 func _wander(carrier: SpellCarrier) -> void:
 	var around := Vector3(_rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0)).normalized()
-	var at := carrier.global_position + around * wander_share * _spell.effect_range
+	var at := carrier.global_position + around * wander_share * _spell.effect_range_m
 	var ground := GroundRay.surface_y(carrier, at, 1, GroundRay.wizard_rids(carrier.get_tree()), INF)
-	at.y = (ground if is_finite(ground) else carrier.global_position.y) + wander_share * _spell.effect_range
+	at.y = (ground if is_finite(ground) else carrier.global_position.y) + wander_share * _spell.effect_range_m
 	carrier.flight.retarget(null, at)
 
 

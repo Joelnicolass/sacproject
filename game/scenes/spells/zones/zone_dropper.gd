@@ -50,7 +50,7 @@ func _physics_process(_delta: float) -> void:
 
 func _choose() -> void:
 	var centre := zone.global_position
-	var reach := zone.spell.effect_range * reach_share
+	var reach := zone.spell.effect_range_m * reach_share
 	var spot := centre + ZoneRules.disk_point(_rng, reach)
 	var body: Node3D
 	if pick == Pick.BODY_OR_RING:
@@ -71,7 +71,7 @@ func _choose() -> void:
 func _pulled(centre: Vector3, spot: Vector3) -> Node3D:
 	var best: Node3D
 	var best_d := INF
-	for body in SplashDamage.bodies_within(get_tree(), centre, zone.spell.effect_range, null, groups):
+	for body in SplashDamage.bodies_within(get_tree(), centre, zone.spell.effect_range_m, null, groups):
 		var at := BodyNudge.center(body)
 		var d := Vector2(at.x - spot.x, at.z - spot.z).length()
 		if d < best_d:

@@ -44,7 +44,7 @@ func lay_within(spell: SpellType, _from_slot: int, max_s: float) -> bool:
 
 func lay_ticks(spell: SpellType) -> int:
 	var health := _afflictions().health
-	return cc_ticks(_body().is_in_group(&"wizard"), health.maximum if health else 0.0, spell.duration, creature_k, wizard_factor) if _body() != null else 0
+	return cc_ticks(_body().is_in_group(&"wizard"), health.maximum if health else 0.0, spell.duration_s, creature_k, wizard_factor) if _body() != null else 0
 
 
 ## Server (or solo): sacengine graspingVines(target, spell). True when the vines took hold (a flier refuses them).
@@ -55,7 +55,7 @@ func grasp(spell: SpellType, max_s := INF) -> bool:
 		return false
 	if owner_node.health != null and owner_node.health.is_dead():
 		return false
-	var seconds := spell.duration if is_inf(max_s) else max_s
+	var seconds := spell.duration_s if is_inf(max_s) else max_s
 	var ticks := cc_ticks(body.is_in_group(&"wizard"), owner_node.health.maximum if owner_node.health else 0.0, seconds, creature_k, wizard_factor)
 	if not is_inf(max_s):
 		ticks = mini(ticks, ceili(float(MatchClock.TICKS_PER_SECOND) * max_s))

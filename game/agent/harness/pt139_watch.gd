@@ -190,7 +190,7 @@ func _on_cloud_exit(rec: Dictionary) -> void:
 	rec["slot"] = cloud.from_slot
 	if cloud.ability:
 		rec["tag"] = str(cloud.ability.tag)
-		rec["range"] = float(cloud.ability.damage_range)
+		rec["range"] = float(cloud.ability.damage_range_m)
 		rec["amount"] = float(cloud.ability.damage)
 	for body in _info:
 		if is_instance_valid(body) and body != cloud.dead:

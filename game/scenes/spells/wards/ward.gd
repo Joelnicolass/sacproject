@@ -98,7 +98,7 @@ func _on_cast_fx(type_name: String) -> void:
 
 ## Server (or solo): the ward of a SPEL for its duration. The one place the formula lives.
 func start_for(type: SpellType) -> bool:
-	return start(ticks_for_seconds(type.duration if type else 20.0))
+	return start(ticks_for_seconds(type.duration_s if type else 20.0))
 
 
 static func ticks_for_seconds(seconds: float) -> int:

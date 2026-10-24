@@ -89,7 +89,7 @@ func thickness_m() -> float:
 	return (body.shape as BoxShape3D).size.z if body != null and body.shape is BoxShape3D else 0.0
 
 func reach_m() -> float:
-	return spell.effect_range if spell != null else 0.0
+	return spell.effect_range_m if spell != null else 0.0
 
 
 ## grow_s in ticks: what the wall's parts compare its age against.
@@ -146,7 +146,7 @@ func _physics_process(_delta: float) -> void:
 		return
 	if multiplayer.is_server():
 		WallGround.grow(self)
-		if vanish_at < 0 and age >= grow_ticks + MatchClock.ticks_for(spell.duration):
+		if vanish_at < 0 and age >= grow_ticks + MatchClock.ticks_for(spell.duration_s):
 			vanish_at = age
 		if vanish_at >= 0 and age - vanish_at >= vanish_ticks() + MatchClock.ticks_for(linger_s):
 			_ended = true

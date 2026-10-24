@@ -98,7 +98,7 @@ func _data(wizard: WizardBody, spell: SpellType, click: Vector3, frames: int) ->
 	else:
 		points.append(origin)
 	for i in scatter:
-		points.append(_ground(click + ZoneRules.disk_point(rng, spell.effect_range)))
+		points.append(_ground(click + ZoneRules.disk_point(rng, spell.effect_range_m)))
 	var wait := MatchClock.ticks_for(arm_s)
 	return {
 		"x": origin.x, "y": origin.y, "z": origin.z, "points": points, "aim": click,

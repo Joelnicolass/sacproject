@@ -44,4 +44,4 @@ func _affect(shot: Node3D, target: Node3D, point: Vector3, ability: AbilityType)
 func _radius(ability: AbilityType) -> float:
 	if ability == null:
 		return 0.0
-	return ability.effect_range if radius_source == RadiusSource.EFFECT_RANGE else ability.damage_range
+	return ability.effect_range_m if radius_source == RadiusSource.EFFECT_RANGE else ability.damage_range_m

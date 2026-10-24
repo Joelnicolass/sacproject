@@ -96,7 +96,7 @@ func cancel() -> void:
 func standing_status(funds: String, wizard: WizardBody, spell: SpellType, point: Vector3) -> String:
 	if funds == COOLING or funds == NO_MANA:
 		return funds
-	if wizard.global_position.distance_to(point) > spell.cast_range:
+	if wizard.global_position.distance_to(point) > spell.cast_range_m:
 		return OUT_OF_RANGE
 	return ""
 

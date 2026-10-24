@@ -72,7 +72,7 @@ func _ignite(body: Node3D, damage: float, frames: int, from_slot: int, ability: 
 func _frames(ability: AbilityType) -> int:
 	if lifetime == Lifetime.FIXED:
 		return MatchClock.ticks_for(fixed_s)
-	return int(ability.duration * MatchClock.TICKS_PER_SECOND) if ability else 0
+	return int(ability.duration_s * MatchClock.TICKS_PER_SECOND) if ability else 0
 
 
 func _radius(ability: AbilityType) -> float:
@@ -80,7 +80,7 @@ func _radius(ability: AbilityType) -> float:
 		return 0.0
 	match radius_source:
 		RadiusSource.DAMAGE_RANGE:
-			return ability.damage_range
+			return ability.damage_range_m
 		RadiusSource.EFFECT_RANGE:
-			return ability.effect_range
+			return ability.effect_range_m
 	return 0.0

@@ -13,12 +13,12 @@ const _HEALTH := preload("res://scenes/components/health.gd")
 
 
 func _affect(center: Vector3) -> void:
-	if ability.duration <= 0.0:
+	if ability.duration_s <= 0.0:
 		return
-	var per_second := float(ability.damage) / ability.duration / nerf_factor
-	var frames := int(ability.duration * MatchClock.TICKS_PER_SECOND)
+	var per_second := float(ability.damage) / ability.duration_s / nerf_factor
+	var frames := int(ability.duration_s * MatchClock.TICKS_PER_SECOND)
 	var ires := ability.arg_int("ires", 0)
 	var freg := ability.arg_float("freg", 1.0)
-	for body in bodies_within(center, ability.effect_range):
+	for body in bodies_within(center, ability.effect_range_m):
 		Poisoning.dose_body(body, per_second, frames, _HEALTH.SPLASH_SPELL, from_slot, false, ires, freg)
 		print("  veneno a %s %.2f/s %d cuadros ires %d freg %.2f (vida %d)" % [who(body), per_second, frames, ires, freg, roundi(float(body.get_node("Health").get("current")))])

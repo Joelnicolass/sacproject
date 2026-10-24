@@ -107,10 +107,10 @@ func _begin_search() -> void:
 
 ## The nearest body it can reach, or a drift to a point of the cone over the root.
 func _look() -> void:
-	_prey = hunt.pick(_base(), zone.spell.effect_range)
+	_prey = hunt.pick(_base(), zone.spell.effect_range_m)
 	if _prey != null:
-		_rate = zone.spell.speed
-		_accel = zone.spell.acceleration
+		_rate = zone.spell.speed_m_s
+		_accel = zone.spell.acceleration_m_s2
 		_gap = 50.0
 		mode = Mode.APPROACHING
 		_chased = _approach()

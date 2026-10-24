@@ -138,7 +138,7 @@ func freeze(spell: SpellType, from_slot: int) -> bool:
 ## · SPEL duration (state.d:10701-10702).
 func lifetime_ticks(body: Node3D, spell: SpellType) -> int:
 	var health := _afflictions().health
-	return cc_ticks(body.is_in_group(&"wizard"), health.maximum if health else 0.0, spell.duration, creature_k, wizard_factor)
+	return cc_ticks(body.is_in_group(&"wizard"), health.maximum if health else 0.0, spell.duration_s, creature_k, wizard_factor)
 
 
 ## canBeFrozen = canBeImmobilized (state.d:189-198, 204): Petrified's.

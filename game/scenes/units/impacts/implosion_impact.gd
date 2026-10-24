@@ -15,8 +15,8 @@ func _affect(shot: Node3D, _target: Node3D, point: Vector3, ability: AbilityType
 	if implosion == null:
 		return
 	if ability:
-		implosion.effect_range = ability.effect_range
-		implosion.duration_s = ability.duration
+		implosion.effect_range = ability.effect_range_m
+		implosion.duration_s = ability.duration_s
 	implosion.side = int(shot.get("from_slot"))
 	shot.get_parent().add_child(implosion)
 	implosion.global_position = point

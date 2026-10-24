@@ -22,7 +22,7 @@ func _physics_process(_delta: float) -> void:
 	if zone.phase != GroundZone.Phase.ACTIVE or target == null or not is_instance_valid(target):
 		return
 	var to := BodyNudge.center(target) - zone.global_position
-	_speed = minf(zone.spell.speed, _speed + zone.spell.acceleration)
+	_speed = minf(zone.spell.speed_m_s, _speed + zone.spell.acceleration_m_s2)
 	var step := minf(to.length(), _speed / MatchClock.TICKS_PER_SECOND_F)
 	zone.global_position += to.normalized() * step
 

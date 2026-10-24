@@ -59,16 +59,16 @@ func _wander() -> void:
 	var flat := Vector2(at.x - _goal.x, at.z - _goal.z)
 	if not _on_ground(_goal) or flat.length_squared() <= arrive_m * arrive_m:
 		var home := zone.points[0]
-		var range_m := zone.spell.effect_range
+		var range_m := zone.spell.effect_range_m
 		_goal = Vector3(home.x + _offset(range_m), 0.0, home.z + _offset(range_m))
 	_goal.y = _height(_goal)
 	var delta := Vector3(_goal.x - at.x, 0.0, _goal.z - at.z)
-	var most := zone.spell.acceleration / MatchClock.TICKS_PER_SECOND_F
+	var most := zone.spell.acceleration_m_s2 / MatchClock.TICKS_PER_SECOND_F
 	if delta.length() > most:
 		delta *= most / delta.length()
 	velocity += MatchClock.TICKS_PER_SECOND_F * delta
-	if velocity.length() > zone.spell.speed:
-		velocity *= zone.spell.speed / velocity.length()
+	if velocity.length() > zone.spell.speed_m_s:
+		velocity *= zone.spell.speed_m_s / velocity.length()
 	zone.position = at + velocity / MatchClock.TICKS_PER_SECOND_F
 
 

@@ -29,7 +29,7 @@ func _affect(_shot: Node3D, target: Node3D, point: Vector3, ability: AbilityType
 		if _is_stunnable(target):
 			_stun(target)
 		return
-	var radius := ability.effect_range if ability else 0.0
+	var radius := ability.effect_range_m if ability else 0.0
 	for body in _SPLASH.bodies_within(get_tree(), point, radius, null, groups):
 		_stun(body)
 

@@ -6,7 +6,7 @@
 script = ExtResource("1_ibtsh")
 tag = "gcil"
 display_name = "Lightning Charge"
-cast_range = 30.0
+cast_range_m = 30.0
 damage = 250
 amount2 = 250
 args = {

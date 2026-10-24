@@ -15,7 +15,7 @@ func show_spell(spell: SpellType, key: String, page: Texture2D, icon: Texture2D)
 	_mana_cost = maxf(1.0, float(spell.mana_cost))
 	_soul_cost = 0
 	_show(spell.display_name, key, page, icon)
-	tooltip_text = tr("UI_SLOT_SPELL_TIP") % [spell.display_name, key, spell.mana_cost, roundi(spell.cast_range)]
+	tooltip_text = tr("UI_SLOT_SPELL_TIP") % [spell.display_name, key, spell.mana_cost, roundi(spell.cast_range_m)]
 
 
 func show_creature(creature: CreatureType, key: String, page: Texture2D, icon: Texture2D) -> void:

@@ -104,7 +104,7 @@ func _freeze() -> Dictionary:
 	await _frames(3)
 	var health := unit.get_node("Health") as Health
 	var frozen := unit.get_node("Afflictions/Frozen") as Frozen
-	var expected := ceili(60.0 * 1000.0 / health.maximum * spell.duration)
+	var expected := ceili(60.0 * 1000.0 / health.maximum * spell.duration_s)
 	checks["creature_ticks_formula"] = absi(frozen.lay_ticks(spell) - expected) <= 1
 	checks["lay_froze"] = frozen.lay(spell, 1) and frozen.is_on()
 	var ticks := await _count_until_off(frozen, 2000)
@@ -138,7 +138,7 @@ func _vines() -> Dictionary:
 	var flier := _unit("tbsh", Vector3(-30.0, 0.0, 0.0), 3)
 	await _frames(90)
 	var vined := wizard.get_node("Afflictions/Vined") as Vined
-	var expected := ceili(60.0 * 1000.0 / (unit.get_node("Health") as Health).maximum * spell.duration)
+	var expected := ceili(60.0 * 1000.0 / (unit.get_node("Health") as Health).maximum * spell.duration_s)
 	checks["creature_ticks_formula"] = absi((unit.get_node("Afflictions/Vined") as Vined).lay_ticks(spell) - expected) <= 1
 	checks["wizard_ticks_formula"] = vined.lay_ticks(spell) == 600
 	checks["lay"] = vined.lay(spell, 1) and vined.is_on()
@@ -205,7 +205,7 @@ func _slime() -> Dictionary:
 	var afflictions := Afflictions.of(unit)
 	var pace := PaceFactors.of(unit)
 	var health := unit.get_node("Health") as Health
-	var expected := ceili(60.0 * 1000.0 / health.maximum * spell.duration)
+	var expected := ceili(60.0 * 1000.0 / health.maximum * spell.duration_s)
 	checks["creature_ticks_formula"] = absi(slimed.lay_ticks(spell) - expected) <= 1
 	var base_resistance := health.resistance(Health.MELEE)
 	checks["clean"] = pace.factor_of(&"slimed") == 1.0 and afflictions.stat_factor(Afflictions.Stat.ATTACK_TIME) == 1.0 and not slimed.is_on()

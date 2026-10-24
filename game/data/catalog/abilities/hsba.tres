@@ -9,6 +9,6 @@ display_name = "Life Shield"
 mana_cost = 50
 cooldown_s = 20.0
 casting_time_s = 14.8148
-duration = 20.0
+duration_s = 20.0
 flags1 = 1040
 flags2 = 786432

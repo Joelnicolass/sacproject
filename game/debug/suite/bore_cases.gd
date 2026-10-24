@@ -103,7 +103,7 @@ func _cut() -> Dictionary:
 	var ground_spot := func(at: Vector2) -> Vector3: return Vector3(at.x, shape.height_at(at.x, at.y), at.y)
 	var wizard = _c._wizard(1, _c._far_wizard_spot(), "james", 8)
 	var spell := GameData.spell("erob").duplicate() as SpellType
-	spell.effect_range = TRY_RANGE_M
+	spell.effect_range_m = TRY_RANGE_M
 	var first_vertex := HoleRules.vertex_near(CENTER + Vector2(0.0, 5.0))
 	var first_at: Vector3 = ground_spot.call(Vector2(first_vertex) * TerrainRules.CELL)
 	var body = _c._tough(first_at + Vector3(0.0, 0.1, 0.0), 3)
@@ -140,7 +140,7 @@ func _cut() -> Dictionary:
 		await _c._frames(1)
 		clock[0] += 1
 		if clock[0] == 20:
-			near_start = drill.ticks == 20 and drill.place.distance_to(BoreSpiral.new(CENTER, TRY_RANGE_M, 0.9 * spell.speed / 60.0).skip(20)) < 1e-3 and drill.place.distance_to(CENTER) > 5.5
+			near_start = drill.ticks == 20 and drill.place.distance_to(BoreSpiral.new(CENTER, TRY_RANGE_M, 0.9 * spell.speed_m_s / 60.0).skip(20)) < 1e-3 and drill.place.distance_to(CENTER) > 5.5
 		if clock[0] == 450:
 			drill_gone = not drill.look.visible
 	_c._note("first hole at tick", [clock[0]])

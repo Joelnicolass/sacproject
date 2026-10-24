@@ -27,7 +27,7 @@ extends ShotInFlight
 @export_range(0.0, 5.0, 0.0001, "suffix:s") var rest_s := 0.5
 ## sacengine closestCreatureInRange(…, 10): a body whose feet are higher over the land than this is not a target.
 @export var max_target_height := 10.0
-## Range of the search when the shot has no SPEL (ability.effect_range is the rule).
+## Range of the search when the shot has no SPEL (ability.effect_range_m is the rule).
 @export var fallback_range := 15.0
 ## v = hop_speed · direction + wobble · uniformDirection.
 @export var hop_speed := 4.5
@@ -150,7 +150,7 @@ func _is_target(body: Node3D) -> bool:
 
 
 func _reach(shot: RangedShot) -> float:
-	return shot.ability.effect_range if shot.ability != null and shot.ability.effect_range > 0.0 else fallback_range
+	return shot.ability.effect_range_m if shot.ability != null and shot.ability.effect_range_m > 0.0 else fallback_range
 
 
 func _land(shot: RangedShot) -> TerrainShape:

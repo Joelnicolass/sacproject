@@ -26,7 +26,7 @@ var _rng := RandomNumberGenerator.new()
 func play(params: Dictionary) -> void:
 	_ticks = maxi(1, int(params.get("ticks", 1)))
 	_wizard = get_tree().root.get_node_or_null(NodePath(str(params.get("wizard", "")))) as Node3D
-	_rng.randomize()
+	MatchSeed.seed_rng(_rng, ["cast_bolts", str(params.get("wizard", "")), MatchClock.now()])
 	set_physics_process(_wizard != null and beam != null)
 	if _wizard == null or beam == null:
 		queue_free()

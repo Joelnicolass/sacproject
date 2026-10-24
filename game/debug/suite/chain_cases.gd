@@ -72,6 +72,20 @@ func _scenes() -> Dictionary:
 	checks["rainbow_arc_numbers"] = FxBus.beam_type("rainbow_arc").segments == 31 and absf(FxBus.beam_type("rainbow_arc").width_m - 0.7) < 0.001
 	checks["ltng_knob_exists"] = FxBus.beam_type("lightning_ltng") != null and FxBus.beam_type("lightning_ltng").atlas_tag == "ltng"
 	checks["dragon_kind"] = (_spells.get_parent().get_node("SpellSpawner") as SpellSpawner).projectiles.has("Dragonfire")
+	var caster_wizard := _wizard(1, ORIGIN, "stratos", 5)
+	await _frames(2)
+	var bolts := (load("res://scenes/spells/chain/cast_bolts.tscn") as PackedScene).instantiate() as CastBolts
+	var glow := (load("res://scenes/spells/chain/cast_glow.tscn") as PackedScene).instantiate() as CastGlow
+	_root.add_child(bolts)
+	_root.add_child(glow)
+	bolts.play({"ticks": 5, "wizard": str(caster_wizard.get_path())})
+	glow.play({"ticks": 5, "wizard": str(caster_wizard.get_path())})
+	checks["cast_scenes_play"] = bolts.is_physics_processing() and glow.is_physics_processing()
+	await _frames(12)
+	checks["cast_bolts_free_themselves"] = not is_instance_valid(bolts) or bolts.is_queued_for_deletion()
+	checks["cast_glow_stops"] = not glow.is_physics_processing()
+	glow.queue_free()
+	caster_wizard.queue_free()
 	for god in ["stratos", "persephone", "pyro", "james"]:
 		var tags: Array = []
 		for entry in GameData.book(god, 5)["spells"]:

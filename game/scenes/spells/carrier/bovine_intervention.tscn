@@ -20,6 +20,8 @@
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="18_sound"]
 [ext_resource type="Script" path="res://scenes/spells/carrier/phase_cue.gd" id="19_cue"]
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="20_ptype"]
+[ext_resource type="PackedScene" path="res://scenes/spells/marks/cow_mark.tscn" id="21_mark"]
+[ext_resource type="PackedScene" path="res://scenes/spells/marks/cow_crack_mark.tscn" id="22_crack"]
 
 [sub_resource type="Resource" id="Gib_cow"]
 script = ExtResource("4_gib")
@@ -66,6 +68,7 @@ carrier = NodePath("..")
 wave_scene = ExtResource("7_wave")
 burst_scene = ExtResource("8_burst")
 effects = Array[ExtResource("20_ptype")]([ExtResource("9_rocks"), ExtResource("10_dust")])
+marks = Array[PackedScene]([ExtResource("21_mark"), ExtResource("22_crack")])
 
 [node name="Emerge" type="Node" parent="." node_paths=PackedStringArray("carrier")]
 script = ExtResource("11_phase_burst")

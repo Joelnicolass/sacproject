@@ -14,6 +14,8 @@ extends Node
 @export var burst_scene: PackedScene
 ## Bursts at the landing point (ParticleTypes under data/fx/).
 @export var effects: Array[ParticleType] = []
+## Marks the fall leaves on the ground (ScarMark scenes under spells/marks/, played on every peer).
+@export var marks: Array[PackedScene] = []
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -32,3 +34,5 @@ func _on_landed(at: Vector3) -> void:
 		FxBus.broadcast_scene(burst_scene.resource_path, at, {})
 	for type in effects:
 		FxBus.broadcast(type.bus_name(), at)
+	for mark in marks:
+		ScarMark.broadcast(mark, at)

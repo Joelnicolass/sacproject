@@ -5,8 +5,7 @@ extends Node
 ## The errand of a carrier doctor (sacengine SacDocCarry): which creature it came for and which site
 ## it takes it to. The body is the DoctorBody (it only walks and dies); the errand is what makes this
 ## doctor a carrier, and the steps (Wait, Approach, Haul, Over) are nodes of `steps`. A ritual doctor
-## has no errand. Server only: the clients get the doctor and the creature through their synchronizers.
-## 020e adds the Convert kind and its Pump step.
+## has no errand. Server only: the clients get the doctor and the creature through their synchronizers. 020e adds Convert and Pump.
 
 ## The carrier reached the site and holds the creature there. The ritual starts from here (RFC-020d).
 signal reached_site
@@ -42,7 +41,7 @@ func _ready() -> void:
 		steps.run_process = false
 		return
 	body.landed.connect(_on_landed)
-	steps.state_changed.connect(_on_step_changed)
+	steps.state_changed.connect(func(_from: StringName, to: StringName) -> void: body.errand_walks = not _done and not arrived and (to == &"Approach" or to == &"Haul"))
 	body.died.connect(_on_died)
 
 
@@ -121,11 +120,6 @@ func release_creature(reason := Captive.Release.LET_GO) -> void:
 func _is_alive_own() -> bool:
 	return creature != null and is_instance_valid(creature) and creature.is_inside_tree() \
 		and not creature.is_dead() and creature.owner_slot == creature_owner
-
-
-## Approach and Haul (before the site) are the steps that walk: the StuckGuard watches the body move through `errand_walks`.
-func _on_step_changed(_from: StringName, to: StringName) -> void:
-	body.errand_walks = not _done and not arrived and (to == &"Approach" or to == &"Haul")
 
 
 func _on_landed() -> void:

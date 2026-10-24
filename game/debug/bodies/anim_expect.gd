@@ -81,7 +81,9 @@ static func _creature_roles(type: CreatureType, doctor: bool, roles: Dictionary)
 
 static func _clip(value: Variant) -> Dictionary:
 	var dict: Dictionary = value if value is Dictionary else {}
-	return {"tag": str(dict.get("tag", "")), "frames": int(dict.get("frames", 0))}
+	# The .glb carries every clip at 30 fps: a 20 fps clip of the data (the Spitfire's shoot) is compared in 30 fps frames.
+	var rate := maxi(1, int(dict.get("framerate", 30)))
+	return {"tag": str(dict.get("tag", "")), "frames": roundi(float(dict.get("frames", 0)) * 30.0 / float(rate))}
 
 
 static func _entry(main: Dictionary, accepted: Array) -> Dictionary:

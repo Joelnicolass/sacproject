@@ -24,7 +24,11 @@ const WIZARDS_DIR := "res://data/catalog/wizards/"
 
 const EXTRA_ROLES: PackedStringArray = ["cower", "talk_cower", "work"]
 const FLIGHT_ROLES: PackedStringArray = ["takeoff", "fly", "land", "hover"]
-const STUN_ROLES: PackedStringArray = ["knock", "get_up", "fly_damage"]
+const STUN_ROLES: PackedStringArray = ["knock", "get_up", "fly_damage", "hit_floor"]
+## The WizardType.stun_animations a wizard can play (it never flies).
+const WIZARD_STUN_ROLES: PackedStringArray = ["knock", "get_up", "hit_floor"]
+## Role of each slot of CreatureType.melee_animations (the Sac Doctor has its own, DOCTOR_SLOT_ROLES).
+const MELEE_SLOT_ROLES: PackedStringArray = ["attack", "attack2", "attack3"]
 const DEATH_ROLES: PackedStringArray = ["death", "fly_death"]
 const CAPTIVE_ROLES: PackedStringArray = ["rise", "held", "thrash"]
 const CAST_ROLES: PackedStringArray = ["cast", "cast_run"]
@@ -34,6 +38,8 @@ const DOCTOR_SLOT_ROLES := {1: "work", 2: "cast", 0: "attack"}
 ## The clip the Sac Doctor holds while it falls out of the vortex (sacengine expelled); its landing is stun_animations.hit_floor.
 const DOCTOR_FALL_TAG := "SDex"
 
+## A shoot clip of this many frames or fewer does not move: no `shoot` role.
+const STILL_FRAMES := 2
 const XFADE_S := 0.15
 ## F376 (RFC-053 053g): a rest gesture whose root or hip slides more than this on the ground (ClipSlide) reads as a step on the
 ## spot, so the model gets no `gesture` role. debug/units/f376_idle_truth.tscn measures every scene against the same limit.
@@ -141,6 +147,11 @@ func _creature_roles(type: CreatureType, model: String) -> Dictionary:
 	if not type.melee_animations.is_empty():
 		attack_tag = str((type.melee_animations[0] as Dictionary).get("tag", ""))
 	var roles := {"idle": rest_tag, "run": str(run.get("tag", "")), "attack": attack_tag}
+	# MeleeAttack picks slot 0 or 1 at random (slot 2 when the foe is lower) and times the hit with it: the visual plays the same slot.
+	for slot in range(1, 1 if model == DOCTOR_MODEL else mini(type.melee_animations.size(), MELEE_SLOT_ROLES.size())):
+		roles[MELEE_SLOT_ROLES[slot]] = str((type.melee_animations[slot] as Dictionary).get("tag", ""))
+	if not type.shoot_animations.is_empty():
+		roles["shoot"] = str((type.shoot_animations[0] as Dictionary).get("tag", ""))
 	# sacengine plays idle0 now and then on top of the rest pose (state.d:7957-7992): the gesture. Only when idle0 is not the rest.
 	if rest_tag != idle_tag and not idle_tag.is_empty():
 		roles["gesture"] = idle_tag
@@ -173,6 +184,11 @@ func _wizard_roles(type: WizardType, model: String) -> Dictionary:
 		var tag := str((clip as Dictionary).get("tag", "")) if clip is Dictionary else ""
 		if not tag.is_empty():
 			roles[role] = tag
+	for role: String in WIZARD_STUN_ROLES:
+		var clip: Variant = type.stun_animations.get(role, {})
+		var tag := str((clip as Dictionary).get("tag", "")) if clip is Dictionary else ""
+		if not tag.is_empty():
+			roles[role] = tag
 	return roles
 
 
@@ -189,7 +205,8 @@ func _playable(model: String, wanted: Dictionary) -> Dictionary:
 	var out: Dictionary = {}
 	for role in BodyModel.ROLES:
 		var tag := str(wanted.get(role, ""))
-		if not tag.is_empty() and _has_clip(model, tag):
+		# shoot0 of the Peasant and the Dizzy (PC00, DZ00) is a still two-frame placeholder: they keep their rest clip.
+		if not tag.is_empty() and _has_clip(model, tag) and not (role == "shoot" and int(_clip(model, tag).get("frames", 0)) <= STILL_FRAMES):
 			out[role] = tag
 	return out
 
@@ -313,7 +330,10 @@ func _clip_table(model: String, info: Dictionary, roles: Dictionary) -> Dictiona
 			# Same conversion as the exporter's to_obj: (-x, y, z) times the model's scaling.
 			hands.append({"on": int(hand.get("bone", 0)) != 0, "bone_name": str(hand["bone_name"]),
 				"offset": Vector3(-raw[0], raw[1], raw[2]) * scaling})
-		table[tag] = {"frames": int(clip.get("frames", 0)), "framerate": int(clip.get("framerate", 30)), "hands": hands}
+		var frames := int(clip.get("frames", 0))
+		var rate := int(clip.get("framerate", 30))
+		# The .glb carries every clip at 30 fps (the exporter resamples the 20 fps shoot of the Spitfire).
+		table[tag] = {"frames": roundi(float(frames) * 30.0 / float(rate)) if rate != 30 else frames, "framerate": 30, "hands": hands}
 	return table
 
 

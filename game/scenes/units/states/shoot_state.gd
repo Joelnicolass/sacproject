@@ -10,3 +10,8 @@ func physics_update(delta: float) -> void:
 		body.turn_toward(ranged.aim_direction(body.target), delta)
 	if not ranged.advance(delta):
 		transition(&"Chase")
+
+
+## The shot clip (shoot0 of CreatureType.shoot_animations) when the model has it, else the rest pose.
+func clip_role() -> String:
+	return "shoot" if body.has_clip("shoot") else "idle"

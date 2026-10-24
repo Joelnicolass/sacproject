@@ -12,6 +12,22 @@ stretch_time_scale = false
 start_offset = 0.0
 loop_mode = 1
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_wj5sn"]
+animation = &"HAa2"
+use_custom_timeline = true
+timeline_length = 1.5
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_wjsm3"]
+animation = &"HAal"
+use_custom_timeline = true
+timeline_length = 1.5
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_klhlc"]
 animation = &"HAd1"
 use_custom_timeline = true
@@ -40,6 +56,14 @@ loop_mode = 1
 animation = &"HA2t"
 use_custom_timeline = true
 timeline_length = 0.8666666666666667
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_hogtu"]
+animation = &"HAhf"
+use_custom_timeline = true
+timeline_length = 2.2333333333333334
 stretch_time_scale = false
 start_offset = 0.0
 loop_mode = 1
@@ -76,10 +100,18 @@ stretch_time_scale = false
 start_offset = 0.0
 loop_mode = 1
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_n745f"]
+animation = &"HAsh"
+use_custom_timeline = true
+timeline_length = 1.9333333333333333
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_4su87"]
 animation = &"HAsa"
 use_custom_timeline = true
-timeline_length = 1.4333333333333333
+timeline_length = 1.4333333333333331
 stretch_time_scale = false
 start_offset = 0.0
 loop_mode = 1
@@ -95,10 +127,17 @@ xfade_time = 0.15
 switch_mode = 2
 advance_mode = 2
 
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ruiul"]
+xfade_time = 0.15
+
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_nrtea"]
 states/Start/position = Vector2(60, 100)
 states/attack/node = SubResource("AnimationNodeAnimation_8ciig")
 states/attack/position = Vector2(660, 40)
+states/attack2/node = SubResource("AnimationNodeAnimation_wj5sn")
+states/attack2/position = Vector2(660, 260)
+states/attack3/node = SubResource("AnimationNodeAnimation_wjsm3")
+states/attack3/position = Vector2(860, 260)
 states/death/node = SubResource("AnimationNodeAnimation_klhlc")
 states/death/position = Vector2(860, 40)
 states/gesture/node = SubResource("AnimationNodeAnimation_hd5v4")
@@ -107,6 +146,8 @@ states/get_up/node = SubResource("AnimationNodeAnimation_4a3iq")
 states/get_up/position = Vector2(260, 260)
 states/held/node = SubResource("AnimationNodeAnimation_a5eb1")
 states/held/position = Vector2(260, 150)
+states/hit_floor/node = SubResource("AnimationNodeAnimation_hogtu")
+states/hit_floor/position = Vector2(460, 370)
 states/idle/node = SubResource("AnimationNodeAnimation_s62fo")
 states/idle/position = Vector2(260, 40)
 states/knock/node = SubResource("AnimationNodeAnimation_wajef")
@@ -115,9 +156,11 @@ states/rise/node = SubResource("AnimationNodeAnimation_qo0kg")
 states/rise/position = Vector2(660, 150)
 states/run/node = SubResource("AnimationNodeAnimation_0jpc8")
 states/run/position = Vector2(460, 40)
+states/shoot/node = SubResource("AnimationNodeAnimation_n745f")
+states/shoot/position = Vector2(260, 370)
 states/thrash/node = SubResource("AnimationNodeAnimation_4su87")
 states/thrash/position = Vector2(460, 150)
-transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_npu7w"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "idle", "attack", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "idle", "death", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "idle", "held", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "idle", "thrash", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "idle", "rise", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "idle", "knock", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "idle", "get_up", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "idle", "gesture", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "run", "attack", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "run", "death", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "run", "held", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "run", "thrash", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "run", "rise", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "run", "knock", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "run", "get_up", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "run", "gesture", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "attack", "idle", SubResource("AnimationNodeStateMachineTransition_3qqhg"), "attack", "run", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "attack", "death", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "attack", "held", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "attack", "thrash", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "attack", "rise", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "attack", "knock", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "attack", "get_up", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "attack", "gesture", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "death", "idle", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "death", "run", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "death", "attack", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "death", "held", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "death", "thrash", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "death", "rise", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "death", "knock", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "death", "get_up", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "death", "gesture", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "held", "idle", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "held", "run", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "held", "attack", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "held", "death", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "held", "thrash", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "held", "rise", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "held", "knock", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "held", "get_up", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "held", "gesture", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "thrash", "idle", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "thrash", "run", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "thrash", "attack", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "thrash", "death", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "thrash", "held", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "thrash", "rise", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "thrash", "knock", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "thrash", "get_up", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "thrash", "gesture", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "rise", "idle", SubResource("AnimationNodeStateMachineTransition_3qqhg"), "rise", "run", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "rise", "attack", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "rise", "death", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "rise", "held", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "rise", "thrash", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "rise", "knock", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "rise", "get_up", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "rise", "gesture", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "knock", "idle", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "knock", "run", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "knock", "attack", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "knock", "death", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "knock", "held", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "knock", "thrash", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "knock", "rise", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "knock", "get_up", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "knock", "gesture", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "get_up", "idle", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "get_up", "run", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "get_up", "attack", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "get_up", "death", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "get_up", "held", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "get_up", "thrash", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "get_up", "rise", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "get_up", "knock", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "get_up", "gesture", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "gesture", "idle", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "gesture", "run", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "gesture", "attack", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "gesture", "death", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "gesture", "held", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "gesture", "thrash", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "gesture", "rise", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "gesture", "knock", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "gesture", "get_up", SubResource("AnimationNodeStateMachineTransition_t3mh5")]
+transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_npu7w"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "idle", "attack", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "idle", "death", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "idle", "held", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "idle", "thrash", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "idle", "rise", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "idle", "knock", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "idle", "get_up", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "idle", "gesture", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "run", "attack", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "run", "death", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "run", "held", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "run", "thrash", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "run", "rise", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "run", "knock", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "run", "get_up", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "run", "gesture", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "attack", "idle", SubResource("AnimationNodeStateMachineTransition_3qqhg"), "attack", "run", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "attack", "death", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "attack", "held", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "attack", "thrash", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "attack", "rise", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "attack", "knock", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "attack", "get_up", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "attack", "gesture", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "death", "idle", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "death", "run", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "death", "attack", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "death", "held", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "death", "thrash", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "death", "rise", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "death", "knock", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "death", "get_up", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "death", "gesture", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "held", "idle", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "held", "run", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "held", "attack", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "held", "death", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "held", "thrash", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "held", "rise", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "held", "knock", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "held", "get_up", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "held", "gesture", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "thrash", "idle", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "thrash", "run", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "thrash", "attack", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "thrash", "death", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "thrash", "held", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "thrash", "rise", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "thrash", "knock", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "thrash", "get_up", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "thrash", "gesture", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "rise", "idle", SubResource("AnimationNodeStateMachineTransition_3qqhg"), "rise", "run", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "rise", "attack", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "rise", "death", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "rise", "held", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "rise", "thrash", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "rise", "knock", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "rise", "get_up", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "rise", "gesture", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "knock", "idle", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "knock", "run", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "knock", "attack", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "knock", "death", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "knock", "held", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "knock", "thrash", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "knock", "rise", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "knock", "get_up", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "knock", "gesture", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "get_up", "idle", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "get_up", "run", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "get_up", "attack", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "get_up", "death", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "get_up", "held", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "get_up", "thrash", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "get_up", "rise", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "get_up", "knock", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "get_up", "gesture", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "gesture", "idle", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "gesture", "run", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "gesture", "attack", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "gesture", "death", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "gesture", "held", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "gesture", "thrash", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "gesture", "rise", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "gesture", "knock", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "gesture", "get_up", SubResource("AnimationNodeStateMachineTransition_t3mh5"), "attack", "attack2", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack2", "attack", SubResource("AnimationNodeStateMachineTransition_ruiul"), "death", "attack2", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack2", "death", SubResource("AnimationNodeStateMachineTransition_ruiul"), "gesture", "attack2", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack2", "gesture", SubResource("AnimationNodeStateMachineTransition_ruiul"), "get_up", "attack2", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack2", "get_up", SubResource("AnimationNodeStateMachineTransition_ruiul"), "held", "attack2", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack2", "held", SubResource("AnimationNodeStateMachineTransition_ruiul"), "idle", "attack2", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack2", "idle", SubResource("AnimationNodeStateMachineTransition_3qqhg"), "knock", "attack2", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack2", "knock", SubResource("AnimationNodeStateMachineTransition_ruiul"), "rise", "attack2", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack2", "rise", SubResource("AnimationNodeStateMachineTransition_ruiul"), "run", "attack2", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack2", "run", SubResource("AnimationNodeStateMachineTransition_ruiul"), "thrash", "attack2", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack2", "thrash", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack", "attack3", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack3", "attack", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack2", "attack3", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack3", "attack2", SubResource("AnimationNodeStateMachineTransition_ruiul"), "death", "attack3", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack3", "death", SubResource("AnimationNodeStateMachineTransition_ruiul"), "gesture", "attack3", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack3", "gesture", SubResource("AnimationNodeStateMachineTransition_ruiul"), "get_up", "attack3", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack3", "get_up", SubResource("AnimationNodeStateMachineTransition_ruiul"), "held", "attack3", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack3", "held", SubResource("AnimationNodeStateMachineTransition_ruiul"), "idle", "attack3", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack3", "idle", SubResource("AnimationNodeStateMachineTransition_3qqhg"), "knock", "attack3", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack3", "knock", SubResource("AnimationNodeStateMachineTransition_ruiul"), "rise", "attack3", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack3", "rise", SubResource("AnimationNodeStateMachineTransition_ruiul"), "run", "attack3", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack3", "run", SubResource("AnimationNodeStateMachineTransition_ruiul"), "thrash", "attack3", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack3", "thrash", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack", "shoot", SubResource("AnimationNodeStateMachineTransition_ruiul"), "shoot", "attack", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack2", "shoot", SubResource("AnimationNodeStateMachineTransition_ruiul"), "shoot", "attack2", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack3", "shoot", SubResource("AnimationNodeStateMachineTransition_ruiul"), "shoot", "attack3", SubResource("AnimationNodeStateMachineTransition_ruiul"), "death", "shoot", SubResource("AnimationNodeStateMachineTransition_ruiul"), "shoot", "death", SubResource("AnimationNodeStateMachineTransition_ruiul"), "gesture", "shoot", SubResource("AnimationNodeStateMachineTransition_ruiul"), "shoot", "gesture", SubResource("AnimationNodeStateMachineTransition_ruiul"), "get_up", "shoot", SubResource("AnimationNodeStateMachineTransition_ruiul"), "shoot", "get_up", SubResource("AnimationNodeStateMachineTransition_ruiul"), "held", "shoot", SubResource("AnimationNodeStateMachineTransition_ruiul"), "shoot", "held", SubResource("AnimationNodeStateMachineTransition_ruiul"), "idle", "shoot", SubResource("AnimationNodeStateMachineTransition_ruiul"), "shoot", "idle", SubResource("AnimationNodeStateMachineTransition_3qqhg"), "knock", "shoot", SubResource("AnimationNodeStateMachineTransition_ruiul"), "shoot", "knock", SubResource("AnimationNodeStateMachineTransition_ruiul"), "rise", "shoot", SubResource("AnimationNodeStateMachineTransition_ruiul"), "shoot", "rise", SubResource("AnimationNodeStateMachineTransition_ruiul"), "run", "shoot", SubResource("AnimationNodeStateMachineTransition_ruiul"), "shoot", "run", SubResource("AnimationNodeStateMachineTransition_ruiul"), "thrash", "shoot", SubResource("AnimationNodeStateMachineTransition_ruiul"), "shoot", "thrash", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ruiul"), "hit_floor", "attack", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack2", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ruiul"), "hit_floor", "attack2", SubResource("AnimationNodeStateMachineTransition_ruiul"), "attack3", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ruiul"), "hit_floor", "attack3", SubResource("AnimationNodeStateMachineTransition_ruiul"), "death", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ruiul"), "hit_floor", "death", SubResource("AnimationNodeStateMachineTransition_ruiul"), "gesture", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ruiul"), "hit_floor", "gesture", SubResource("AnimationNodeStateMachineTransition_ruiul"), "get_up", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ruiul"), "hit_floor", "get_up", SubResource("AnimationNodeStateMachineTransition_ruiul"), "held", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ruiul"), "hit_floor", "held", SubResource("AnimationNodeStateMachineTransition_ruiul"), "idle", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ruiul"), "hit_floor", "idle", SubResource("AnimationNodeStateMachineTransition_3qqhg"), "knock", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ruiul"), "hit_floor", "knock", SubResource("AnimationNodeStateMachineTransition_ruiul"), "rise", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ruiul"), "hit_floor", "rise", SubResource("AnimationNodeStateMachineTransition_ruiul"), "run", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ruiul"), "hit_floor", "run", SubResource("AnimationNodeStateMachineTransition_ruiul"), "shoot", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ruiul"), "hit_floor", "shoot", SubResource("AnimationNodeStateMachineTransition_ruiul"), "thrash", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ruiul"), "hit_floor", "thrash", SubResource("AnimationNodeStateMachineTransition_ruiul")]
 
 [sub_resource type="Animation" id="Animation_y6btt"]
 length = 1.5
@@ -137,9 +180,69 @@ tracks/0/keys = {
 }]
 }
 
+[sub_resource type="Animation" id="Animation_bxsec"]
+length = 1.5
+loop_mode = 1
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ClipEvents")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.56666666),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["attack"],
+"method": &"fire"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_qgrg8"]
+length = 1.5
+loop_mode = 1
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ClipEvents")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.6666667),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["attack"],
+"method": &"fire"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_72cje"]
+length = 1.9333333333333333
+loop_mode = 1
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ClipEvents")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.13333334, 1.2),
+"transitions": PackedFloat32Array(1, 1),
+"values": [{
+"args": ["load"],
+"method": &"fire"
+}, {
+"args": ["shoot"],
+"method": &"fire"
+}]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_7otge"]
 _data = {
-&"HAa1": SubResource("Animation_y6btt")
+&"HAa1": SubResource("Animation_y6btt"),
+&"HAa2": SubResource("Animation_bxsec"),
+&"HAal": SubResource("Animation_qgrg8"),
+&"HAsh": SubResource("Animation_72cje")
 }
 
 [node name="huma" type="Node3D" unique_id=276213482]
@@ -162,6 +265,32 @@ clips = {
 }]
 },
 "HAa1": {
+"framerate": 30,
+"frames": 45,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"HAa2": {
+"framerate": 30,
+"frames": 45,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"HAal": {
 "framerate": 30,
 "frames": 45,
 "hands": [{
@@ -203,6 +332,19 @@ clips = {
 "HAgu": {
 "framerate": 30,
 "frames": 52,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"HAhf": {
+"framerate": 30,
+"frames": 67,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -263,6 +405,19 @@ clips = {
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
 "on": false
+}]
+},
+"HAsh": {
+"framerate": 30,
+"frames": 58,
+"hands": [{
+"bone_name": "bone_15",
+"offset": Vector3(0, 0, 0),
+"on": true
+}, {
+"bone_name": "bone_15",
+"offset": Vector3(0, 0, 0),
+"on": true
 }]
 },
 "HAst": {

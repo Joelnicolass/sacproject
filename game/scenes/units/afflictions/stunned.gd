@@ -8,9 +8,9 @@ extends Affliction
 ##
 ## A wizard too (F138, RFC-030i-c): its WizardType clips; it never flies. The fasterStandupTimes fix
 ## (sacobject.d:844-874) only swaps hitFloor, which a stun on the ground never plays (14170-14212), so it changes nothing here.
-## Look: the knock and get_up roles of ClipPose when the model has those clips; the export leaves them out (they would
-## add ~1,6 GB to the clip cache), so meanwhile it falls on its side and gets up with a Tween on Tilt.
-## WORKAROUND: Tween on Tilt rotation:z in place of the knocked2Floor/getUp mesh clips (disk, RFC-030i-a risk).
+## Look: the knock, hit_floor and get_up roles of ClipPose when the model has those clips; a model without one falls on its side
+## and gets up with a Tween on Tilt.
+## WORKAROUND: Tween on Tilt rotation:z, only for a model whose scene lacks the stun clip.
 
 ## sacengine updateAnimFactor: a 30 fps clip frame lasts 2 ticks of 60.
 const FRAME_TICKS := 2

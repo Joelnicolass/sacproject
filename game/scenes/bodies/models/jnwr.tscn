@@ -28,10 +28,34 @@ stretch_time_scale = false
 start_offset = 0.0
 loop_mode = 1
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_37rhx"]
+animation = &"jwgu"
+use_custom_timeline = true
+timeline_length = 0.9333333333333333
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_q6jbc"]
+animation = &"jwh2"
+use_custom_timeline = true
+timeline_length = 1.3333333333333333
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_dlmxf"]
 animation = &"jwst"
 use_custom_timeline = true
 timeline_length = 3.6
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_exfh6"]
+animation = &"jwfd"
+use_custom_timeline = true
+timeline_length = 0.9666666666666667
 stretch_time_scale = false
 start_offset = 0.0
 loop_mode = 1
@@ -55,6 +79,9 @@ xfade_time = 0.15
 switch_mode = 2
 advance_mode = 2
 
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_irjtm"]
+xfade_time = 0.15
+
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_nma1s"]
 states/Start/position = Vector2(60, 100)
 states/cast/node = SubResource("AnimationNodeAnimation_ynvqp")
@@ -63,11 +90,17 @@ states/cast_run/node = SubResource("AnimationNodeAnimation_fltlp")
 states/cast_run/position = Vector2(260, 150)
 states/gesture/node = SubResource("AnimationNodeAnimation_pywyw")
 states/gesture/position = Vector2(860, 40)
+states/get_up/node = SubResource("AnimationNodeAnimation_37rhx")
+states/get_up/position = Vector2(660, 150)
+states/hit_floor/node = SubResource("AnimationNodeAnimation_q6jbc")
+states/hit_floor/position = Vector2(860, 150)
 states/idle/node = SubResource("AnimationNodeAnimation_dlmxf")
 states/idle/position = Vector2(260, 40)
+states/knock/node = SubResource("AnimationNodeAnimation_exfh6")
+states/knock/position = Vector2(460, 150)
 states/run/node = SubResource("AnimationNodeAnimation_cyw4o")
 states/run/position = Vector2(460, 40)
-transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_uq8dn"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "idle", "cast", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "idle", "gesture", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "idle", "cast_run", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "run", "cast", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "run", "gesture", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "run", "cast_run", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "cast", "idle", SubResource("AnimationNodeStateMachineTransition_usvub"), "cast", "run", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "cast", "gesture", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "cast", "cast_run", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "gesture", "idle", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "gesture", "run", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "gesture", "cast", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "gesture", "cast_run", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "cast_run", "idle", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "cast_run", "run", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "cast_run", "cast", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "cast_run", "gesture", SubResource("AnimationNodeStateMachineTransition_ajr2a")]
+transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_uq8dn"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "idle", "cast", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "idle", "gesture", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "idle", "cast_run", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "run", "cast", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "run", "gesture", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "run", "cast_run", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "cast", "idle", SubResource("AnimationNodeStateMachineTransition_usvub"), "cast", "run", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "cast", "gesture", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "cast", "cast_run", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "gesture", "idle", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "gesture", "run", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "gesture", "cast", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "gesture", "cast_run", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "cast_run", "idle", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "cast_run", "run", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "cast_run", "cast", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "cast_run", "gesture", SubResource("AnimationNodeStateMachineTransition_ajr2a"), "cast", "knock", SubResource("AnimationNodeStateMachineTransition_irjtm"), "knock", "cast", SubResource("AnimationNodeStateMachineTransition_irjtm"), "cast_run", "knock", SubResource("AnimationNodeStateMachineTransition_irjtm"), "knock", "cast_run", SubResource("AnimationNodeStateMachineTransition_irjtm"), "gesture", "knock", SubResource("AnimationNodeStateMachineTransition_irjtm"), "knock", "gesture", SubResource("AnimationNodeStateMachineTransition_irjtm"), "idle", "knock", SubResource("AnimationNodeStateMachineTransition_irjtm"), "knock", "idle", SubResource("AnimationNodeStateMachineTransition_irjtm"), "run", "knock", SubResource("AnimationNodeStateMachineTransition_irjtm"), "knock", "run", SubResource("AnimationNodeStateMachineTransition_irjtm"), "cast", "get_up", SubResource("AnimationNodeStateMachineTransition_irjtm"), "get_up", "cast", SubResource("AnimationNodeStateMachineTransition_irjtm"), "cast_run", "get_up", SubResource("AnimationNodeStateMachineTransition_irjtm"), "get_up", "cast_run", SubResource("AnimationNodeStateMachineTransition_irjtm"), "gesture", "get_up", SubResource("AnimationNodeStateMachineTransition_irjtm"), "get_up", "gesture", SubResource("AnimationNodeStateMachineTransition_irjtm"), "idle", "get_up", SubResource("AnimationNodeStateMachineTransition_irjtm"), "get_up", "idle", SubResource("AnimationNodeStateMachineTransition_irjtm"), "knock", "get_up", SubResource("AnimationNodeStateMachineTransition_irjtm"), "get_up", "knock", SubResource("AnimationNodeStateMachineTransition_irjtm"), "run", "get_up", SubResource("AnimationNodeStateMachineTransition_irjtm"), "get_up", "run", SubResource("AnimationNodeStateMachineTransition_irjtm"), "cast", "hit_floor", SubResource("AnimationNodeStateMachineTransition_irjtm"), "hit_floor", "cast", SubResource("AnimationNodeStateMachineTransition_irjtm"), "cast_run", "hit_floor", SubResource("AnimationNodeStateMachineTransition_irjtm"), "hit_floor", "cast_run", SubResource("AnimationNodeStateMachineTransition_irjtm"), "gesture", "hit_floor", SubResource("AnimationNodeStateMachineTransition_irjtm"), "hit_floor", "gesture", SubResource("AnimationNodeStateMachineTransition_irjtm"), "get_up", "hit_floor", SubResource("AnimationNodeStateMachineTransition_irjtm"), "hit_floor", "get_up", SubResource("AnimationNodeStateMachineTransition_irjtm"), "idle", "hit_floor", SubResource("AnimationNodeStateMachineTransition_irjtm"), "hit_floor", "idle", SubResource("AnimationNodeStateMachineTransition_usvub"), "knock", "hit_floor", SubResource("AnimationNodeStateMachineTransition_irjtm"), "hit_floor", "knock", SubResource("AnimationNodeStateMachineTransition_irjtm"), "run", "hit_floor", SubResource("AnimationNodeStateMachineTransition_irjtm"), "hit_floor", "run", SubResource("AnimationNodeStateMachineTransition_irjtm")]
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_26oq7"]
 
@@ -77,6 +110,45 @@ model = "jnwr"
 bind_aabb = AABB(-1.059584, -1.369958, -4.287388, 2.1357741, 4.084907, 5.1987987)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0], [8.0], [9.0], [10.0]]
 clips = {
+"jwfd": {
+"framerate": 30,
+"frames": 29,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"jwgu": {
+"framerate": 30,
+"frames": 28,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"jwh2": {
+"framerate": 30,
+"frames": 40,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
 "jwi1": {
 "framerate": 30,
 "frames": 108,

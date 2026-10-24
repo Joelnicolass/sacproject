@@ -20,6 +20,22 @@ stretch_time_scale = false
 start_offset = 0.0
 loop_mode = 1
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_xl0y6"]
+animation = &"qugu"
+use_custom_timeline = true
+timeline_length = 0.9333333333333333
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_0drsu"]
+animation = &"quhf"
+use_custom_timeline = true
+timeline_length = 3.3666666666666667
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_n1de6"]
 animation = &"qust"
 use_custom_timeline = true
@@ -28,10 +44,18 @@ stretch_time_scale = false
 start_offset = 0.0
 loop_mode = 1
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_6x8bd"]
+animation = &"qufd"
+use_custom_timeline = true
+timeline_length = 0.7666666666666667
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_75tlu"]
 animation = &"qurn"
 use_custom_timeline = true
-timeline_length = 1.9333333333333333
+timeline_length = 1.9333333333333331
 stretch_time_scale = false
 start_offset = 0.0
 loop_mode = 1
@@ -47,17 +71,26 @@ xfade_time = 0.15
 switch_mode = 2
 advance_mode = 2
 
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_1wos4"]
+xfade_time = 0.15
+
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_bpdbg"]
 states/Start/position = Vector2(60, 100)
 states/cast/node = SubResource("AnimationNodeAnimation_qgx1a")
 states/cast/position = Vector2(660, 40)
 states/cast_run/node = SubResource("AnimationNodeAnimation_kgblk")
 states/cast_run/position = Vector2(260, 150)
+states/get_up/node = SubResource("AnimationNodeAnimation_xl0y6")
+states/get_up/position = Vector2(460, 150)
+states/hit_floor/node = SubResource("AnimationNodeAnimation_0drsu")
+states/hit_floor/position = Vector2(660, 150)
 states/idle/node = SubResource("AnimationNodeAnimation_n1de6")
 states/idle/position = Vector2(260, 40)
+states/knock/node = SubResource("AnimationNodeAnimation_6x8bd")
+states/knock/position = Vector2(860, 40)
 states/run/node = SubResource("AnimationNodeAnimation_75tlu")
 states/run/position = Vector2(460, 40)
-transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_8hp2u"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_stpxa"), "idle", "cast", SubResource("AnimationNodeStateMachineTransition_stpxa"), "idle", "cast_run", SubResource("AnimationNodeStateMachineTransition_stpxa"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_stpxa"), "run", "cast", SubResource("AnimationNodeStateMachineTransition_stpxa"), "run", "cast_run", SubResource("AnimationNodeStateMachineTransition_stpxa"), "cast", "idle", SubResource("AnimationNodeStateMachineTransition_r1onq"), "cast", "run", SubResource("AnimationNodeStateMachineTransition_stpxa"), "cast", "cast_run", SubResource("AnimationNodeStateMachineTransition_stpxa"), "cast_run", "idle", SubResource("AnimationNodeStateMachineTransition_stpxa"), "cast_run", "run", SubResource("AnimationNodeStateMachineTransition_stpxa"), "cast_run", "cast", SubResource("AnimationNodeStateMachineTransition_stpxa")]
+transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_8hp2u"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_stpxa"), "idle", "cast", SubResource("AnimationNodeStateMachineTransition_stpxa"), "idle", "cast_run", SubResource("AnimationNodeStateMachineTransition_stpxa"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_stpxa"), "run", "cast", SubResource("AnimationNodeStateMachineTransition_stpxa"), "run", "cast_run", SubResource("AnimationNodeStateMachineTransition_stpxa"), "cast", "idle", SubResource("AnimationNodeStateMachineTransition_r1onq"), "cast", "run", SubResource("AnimationNodeStateMachineTransition_stpxa"), "cast", "cast_run", SubResource("AnimationNodeStateMachineTransition_stpxa"), "cast_run", "idle", SubResource("AnimationNodeStateMachineTransition_stpxa"), "cast_run", "run", SubResource("AnimationNodeStateMachineTransition_stpxa"), "cast_run", "cast", SubResource("AnimationNodeStateMachineTransition_stpxa"), "cast", "knock", SubResource("AnimationNodeStateMachineTransition_1wos4"), "knock", "cast", SubResource("AnimationNodeStateMachineTransition_1wos4"), "cast_run", "knock", SubResource("AnimationNodeStateMachineTransition_1wos4"), "knock", "cast_run", SubResource("AnimationNodeStateMachineTransition_1wos4"), "idle", "knock", SubResource("AnimationNodeStateMachineTransition_1wos4"), "knock", "idle", SubResource("AnimationNodeStateMachineTransition_1wos4"), "run", "knock", SubResource("AnimationNodeStateMachineTransition_1wos4"), "knock", "run", SubResource("AnimationNodeStateMachineTransition_1wos4"), "cast", "get_up", SubResource("AnimationNodeStateMachineTransition_1wos4"), "get_up", "cast", SubResource("AnimationNodeStateMachineTransition_1wos4"), "cast_run", "get_up", SubResource("AnimationNodeStateMachineTransition_1wos4"), "get_up", "cast_run", SubResource("AnimationNodeStateMachineTransition_1wos4"), "idle", "get_up", SubResource("AnimationNodeStateMachineTransition_1wos4"), "get_up", "idle", SubResource("AnimationNodeStateMachineTransition_1wos4"), "knock", "get_up", SubResource("AnimationNodeStateMachineTransition_1wos4"), "get_up", "knock", SubResource("AnimationNodeStateMachineTransition_1wos4"), "run", "get_up", SubResource("AnimationNodeStateMachineTransition_1wos4"), "get_up", "run", SubResource("AnimationNodeStateMachineTransition_1wos4"), "cast", "hit_floor", SubResource("AnimationNodeStateMachineTransition_1wos4"), "hit_floor", "cast", SubResource("AnimationNodeStateMachineTransition_1wos4"), "cast_run", "hit_floor", SubResource("AnimationNodeStateMachineTransition_1wos4"), "hit_floor", "cast_run", SubResource("AnimationNodeStateMachineTransition_1wos4"), "get_up", "hit_floor", SubResource("AnimationNodeStateMachineTransition_1wos4"), "hit_floor", "get_up", SubResource("AnimationNodeStateMachineTransition_1wos4"), "idle", "hit_floor", SubResource("AnimationNodeStateMachineTransition_1wos4"), "hit_floor", "idle", SubResource("AnimationNodeStateMachineTransition_r1onq"), "knock", "hit_floor", SubResource("AnimationNodeStateMachineTransition_1wos4"), "hit_floor", "knock", SubResource("AnimationNodeStateMachineTransition_1wos4"), "run", "hit_floor", SubResource("AnimationNodeStateMachineTransition_1wos4"), "hit_floor", "run", SubResource("AnimationNodeStateMachineTransition_1wos4")]
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_eyf2o"]
 
@@ -67,6 +100,45 @@ model = "quil"
 bind_aabb = AABB(-0.793058, -0.848114, -0.35251, 1.593725, 1.886311, 1.171346)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0], [8.0]]
 clips = {
+"qufd": {
+"framerate": 30,
+"frames": 23,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"qugu": {
+"framerate": 30,
+"frames": 28,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"quhf": {
+"framerate": 30,
+"frames": 101,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
 "qui1": {
 "framerate": 30,
 "frames": 101,

@@ -28,6 +28,22 @@ stretch_time_scale = false
 start_offset = 0.0
 loop_mode = 1
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_yhl2o"]
+animation = &"BUgu"
+use_custom_timeline = true
+timeline_length = 0.8333333333333334
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_t6yye"]
+animation = &"BUhf"
+use_custom_timeline = true
+timeline_length = 3.066666666666667
+stretch_time_scale = false
+start_offset = 0.0
+loop_mode = 1
+
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_dxefr"]
 animation = &"BUs1"
 use_custom_timeline = true
@@ -55,6 +71,9 @@ xfade_time = 0.15
 switch_mode = 2
 advance_mode = 2
 
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_swepd"]
+xfade_time = 0.15
+
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_wcysk"]
 states/Start/position = Vector2(60, 100)
 states/cast/node = SubResource("AnimationNodeAnimation_uy5lb")
@@ -63,11 +82,15 @@ states/cast_run/node = SubResource("AnimationNodeAnimation_gt1fr")
 states/cast_run/position = Vector2(260, 150)
 states/gesture/node = SubResource("AnimationNodeAnimation_hf56n")
 states/gesture/position = Vector2(860, 40)
+states/get_up/node = SubResource("AnimationNodeAnimation_yhl2o")
+states/get_up/position = Vector2(460, 150)
+states/hit_floor/node = SubResource("AnimationNodeAnimation_t6yye")
+states/hit_floor/position = Vector2(660, 150)
 states/idle/node = SubResource("AnimationNodeAnimation_dxefr")
 states/idle/position = Vector2(260, 40)
 states/run/node = SubResource("AnimationNodeAnimation_47558")
 states/run/position = Vector2(460, 40)
-transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_0a0ek"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "idle", "cast", SubResource("AnimationNodeStateMachineTransition_ngqre"), "idle", "gesture", SubResource("AnimationNodeStateMachineTransition_ngqre"), "idle", "cast_run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_ngqre"), "run", "cast", SubResource("AnimationNodeStateMachineTransition_ngqre"), "run", "gesture", SubResource("AnimationNodeStateMachineTransition_ngqre"), "run", "cast_run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "cast", "idle", SubResource("AnimationNodeStateMachineTransition_mhn1p"), "cast", "run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "cast", "gesture", SubResource("AnimationNodeStateMachineTransition_ngqre"), "cast", "cast_run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "gesture", "idle", SubResource("AnimationNodeStateMachineTransition_ngqre"), "gesture", "run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "gesture", "cast", SubResource("AnimationNodeStateMachineTransition_ngqre"), "gesture", "cast_run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "cast_run", "idle", SubResource("AnimationNodeStateMachineTransition_ngqre"), "cast_run", "run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "cast_run", "cast", SubResource("AnimationNodeStateMachineTransition_ngqre"), "cast_run", "gesture", SubResource("AnimationNodeStateMachineTransition_ngqre")]
+transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_0a0ek"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "idle", "cast", SubResource("AnimationNodeStateMachineTransition_ngqre"), "idle", "gesture", SubResource("AnimationNodeStateMachineTransition_ngqre"), "idle", "cast_run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_ngqre"), "run", "cast", SubResource("AnimationNodeStateMachineTransition_ngqre"), "run", "gesture", SubResource("AnimationNodeStateMachineTransition_ngqre"), "run", "cast_run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "cast", "idle", SubResource("AnimationNodeStateMachineTransition_mhn1p"), "cast", "run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "cast", "gesture", SubResource("AnimationNodeStateMachineTransition_ngqre"), "cast", "cast_run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "gesture", "idle", SubResource("AnimationNodeStateMachineTransition_ngqre"), "gesture", "run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "gesture", "cast", SubResource("AnimationNodeStateMachineTransition_ngqre"), "gesture", "cast_run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "cast_run", "idle", SubResource("AnimationNodeStateMachineTransition_ngqre"), "cast_run", "run", SubResource("AnimationNodeStateMachineTransition_ngqre"), "cast_run", "cast", SubResource("AnimationNodeStateMachineTransition_ngqre"), "cast_run", "gesture", SubResource("AnimationNodeStateMachineTransition_ngqre"), "cast", "get_up", SubResource("AnimationNodeStateMachineTransition_swepd"), "get_up", "cast", SubResource("AnimationNodeStateMachineTransition_swepd"), "cast_run", "get_up", SubResource("AnimationNodeStateMachineTransition_swepd"), "get_up", "cast_run", SubResource("AnimationNodeStateMachineTransition_swepd"), "gesture", "get_up", SubResource("AnimationNodeStateMachineTransition_swepd"), "get_up", "gesture", SubResource("AnimationNodeStateMachineTransition_swepd"), "idle", "get_up", SubResource("AnimationNodeStateMachineTransition_swepd"), "get_up", "idle", SubResource("AnimationNodeStateMachineTransition_swepd"), "run", "get_up", SubResource("AnimationNodeStateMachineTransition_swepd"), "get_up", "run", SubResource("AnimationNodeStateMachineTransition_swepd"), "cast", "hit_floor", SubResource("AnimationNodeStateMachineTransition_swepd"), "hit_floor", "cast", SubResource("AnimationNodeStateMachineTransition_swepd"), "cast_run", "hit_floor", SubResource("AnimationNodeStateMachineTransition_swepd"), "hit_floor", "cast_run", SubResource("AnimationNodeStateMachineTransition_swepd"), "gesture", "hit_floor", SubResource("AnimationNodeStateMachineTransition_swepd"), "hit_floor", "gesture", SubResource("AnimationNodeStateMachineTransition_swepd"), "get_up", "hit_floor", SubResource("AnimationNodeStateMachineTransition_swepd"), "hit_floor", "get_up", SubResource("AnimationNodeStateMachineTransition_swepd"), "idle", "hit_floor", SubResource("AnimationNodeStateMachineTransition_swepd"), "hit_floor", "idle", SubResource("AnimationNodeStateMachineTransition_mhn1p"), "run", "hit_floor", SubResource("AnimationNodeStateMachineTransition_swepd"), "hit_floor", "run", SubResource("AnimationNodeStateMachineTransition_swepd")]
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_3f4ba"]
 
@@ -77,6 +100,32 @@ model = "buta"
 bind_aabb = AABB(-1.411924, -0.92901, -0.80306, 2.834439, 2.350586, 1.450975)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0], [8.0]]
 clips = {
+"BUgu": {
+"framerate": 30,
+"frames": 25,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
+"BUhf": {
+"framerate": 30,
+"frames": 92,
+"hands": [{
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}, {
+"bone_name": "root",
+"offset": Vector3(0, 0, 0),
+"on": false
+}]
+},
 "BUi1": {
 "framerate": 30,
 "frames": 51,

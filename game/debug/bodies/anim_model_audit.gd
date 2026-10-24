@@ -23,7 +23,7 @@ const NET_LIMIT := 0.05
 const FALLBACKS := {
 	"attack2": "WRONG: plays attack; the sim picks this swing at random and times it by slot 1 (MeleeAttack._pick_animation)",
 	"attack3": "WRONG: plays attack; the sim picks this swing when the foe is lower and times it by slot 2",
-	"shoot": "WRONG: plays idle; ShootState has no clip role, the sim times the shot by shoot0",
+	"shoot": "OK: plays idle; its shoot0 is a still two-frame placeholder (PC00, DZ00), so the bake gives no shoot role",
 	"hit_floor": "WRONG-ish: idle + Tween tilt (Stunned) for the whole fall stun, no landing clip",
 	"knock": "WRONG-ish: idle + Tween tilt (Stunned), the stun lasts the clip's frames",
 	"get_up": "WRONG-ish: idle + Tween tilt (Stunned), the stun lasts the clip's frames",

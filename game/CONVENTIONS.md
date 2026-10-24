@@ -14,7 +14,7 @@ bash tools/lint/conventions.sh --update-baseline
 
 ```
 scenes/<system>/
-  README.md            10 líneas: qué es · quién habla con quién · cómo agregar uno · cómo se verifica
+  README.md            10 líneas: qué es · quién habla con quién · cómo agregar uno · cómo se verifica (debug/suite)
   <system>.tscn        la escena compuesta (la raíz es un nodo flaco)
   <system>.gd          ≤150 líneas (raíz de un actor replicado: ≤200)
   <part>.gd/.tscn      un hijo por responsabilidad
@@ -80,7 +80,7 @@ var muzzle_pos := muzzle.global_position
 - **Nada disperso.** Lo que un humano edita junto vive en UN lugar que se abre y se ve en el viewport, con nodos estándar de Godot. Sin cadenas de `.tres` que se referencian entre sí cuando una escena o un recurso embebido alcanza.
 - **Pocos scripts genéricos, muchos nodos y `.tres`.** Nunca un script por hechizo, criatura o edificio si una pieza común con knobs alcanza (ejemplo: `StructureAction` para Manalith y Shrine).
 - **No inventar.** Todo dato o comportamiento del original se verifica con sacengine (`archivo:línea`), los datos horneados y REA sobre el ejecutable; lo que no se pudo confirmar se marca NO VERIFICADO.
-- **Sin escenas de debug nuevas.** `debug/` se va a borrar al terminar el refactor. Las herramientas de edición viven en las escenas reales (p. ej. el nodo `Look` del `map.tscn`); la verificación es la suite de reglas y las capturas de `agent/harness/`.
+- **Debug para verificar, edición en las escenas reales.** El developer arma lo que necesite en `debug/<sistema>/` (escenas F6, casos de la suite) para verificar su corte. Las herramientas que usa un humano para editar viven en las escenas reales (p. ej. el nodo `Look` del `map.tscn`), nunca solo en `debug/`, porque `debug/` se borra al terminar el refactor.
 - **Portable.** Sin rutas personales en archivos versionados; el producto no necesita el juego original; las herramientas que sí lo necesitan lo dicen al arrancar.
 - **Medible.** Un arreglo visual se cierra con una captura de cámara fija y un criterio numérico, no a ojo.
 
@@ -92,7 +92,7 @@ What: a creature sees foes inside its Vision area; the side remembers them for `
 Not: who to attack (Engagement), what the AI knows (AiPerception).
 Talks to: Vision.seen(foe) goes up to UnitBody -> Engagement; SideVision listens to every Vision.seen.
 Edit: unit.tscn/Vision radius_m · data/creatures/<name>.tres vision_m.
-Check: rules_suite vision_cases · unit.tscn abierta en el editor (el radio se ve con su gizmo).
+Check: debug/units/vision_range.tscn (F6) · rules_suite vision_cases.
 ```
 
 Las cinco líneas son obligatorias: What / Not / Talks to / Edit / Check. Si el README ya tenía texto cierto y útil, queda debajo de una línea `---`.
@@ -135,7 +135,7 @@ Pocas plantas en un lugar: `VegetationPatch` (especie, `radius_m`, `count`, `see
 - ¿Un hijo nombra a su padre o a un hermano?
 - ¿Hay un socket `@export` sin warning cuando falta?
 - ¿Quedó un campo crudo (`flags`, `Dictionary`, String-tipo) en un `.tres`?
-- ¿Se creó alguna escena nueva en `debug/`? No se aceptan: se verifica con la suite de reglas y con capturas de la partida real (`agent/harness/match_shots`).
+- ¿El corte se puede verificar (escena `debug/<sistema>/` con F6, caso en la suite o captura de `agent/harness/`)? ¿Alguna herramienta de edición quedó solo en `debug/`?
 - ¿El README del sistema dice quién habla con quién?
 - ¿Hay un `MpKit.` nuevo fuera de la allowlist?
 - ¿El lint está verde, y bajó el conteo de lo que el corte tocaba?

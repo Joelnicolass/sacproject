@@ -31,6 +31,8 @@ const TRAIL_FX := "rock_trail"
 const TRAIL_INTERVAL_S := 2.0 / 60.0
 
 @export var rock_color := Color(0.42, 0.4, 0.34)
+## 061k-5: the crack it leaves where it bursts (spells/marks/rock_mark.tscn), played on every peer.
+@export var ground_mark: PackedScene
 
 var speed := 0.0
 var acceleration := 0.0
@@ -252,6 +254,7 @@ func _burst(target: Node3D) -> void:
 		report(target, taken, _HEALTH.DIRECT_SPELL)
 	FxBus.broadcast("rock", global_position)
 	FxBus.broadcast("dirt", global_position)
+	ScarMark.broadcast(ground_mark, global_position)
 	set_physics_process(false)
 	queue_free()
 

@@ -9,6 +9,8 @@ extends MeshInstance3D
 ## Frees itself at the end of its life, unless FxBus pools it (then it hides and says `finished`).
 
 signal finished
+## The bolt reached its end (once per play), at that point: a ScarMark of the scene can burn the ground there.
+signal struck(at: Vector3)
 
 const SHADER := preload("res://scenes/fx/beam.gdshader")
 const SHADER_MIX := preload("res://scenes/fx/beam_mix.gdshader")
@@ -106,6 +108,7 @@ func _stop() -> void:
 
 
 func _flash() -> void:
+	struck.emit(_end_point())
 	if type.light != null and is_inside_tree():
 		type.light.light_up(get_tree(), self, _end_point())
 

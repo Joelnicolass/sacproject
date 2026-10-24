@@ -5,3 +5,4 @@
 [resource]
 script = ExtResource("1_species")
 tag = "PYA3"
+tint_cluster_m = 20.0

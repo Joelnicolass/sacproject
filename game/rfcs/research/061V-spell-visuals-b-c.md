@@ -6,7 +6,7 @@ Investigación de hechos para el arte final de 061b (escudos de nivel 2) y 061c 
 
 - **[SAC archivo:línea]** sacengine (`sacengine/source/`, GPL, solo lectura). Se describe lo que hace; no se copió código. Si no se nombra el archivo, es `state.d`. sacengine es una reimplementación: las texturas y las mallas las carga de las WAD originales, pero los números de dibujo (energía, transparencia, cantidad de partículas) son decisiones de su autor. Donde el ejecutable dice otra cosa, se avisa.
 - **[TXTR]** texturas leídas de las WAD de la instalación (`SAC_INSTALL`) con el lector del port (`tools/import/sac_formats/txtr.py`). Se miraron el tamaño, la grilla y el color. Las carpetas reales de la WAD dicen `tex.FLDR` donde sacengine dice `tex_ZERO_.FLDR`.
-- **[EXE 0xDIR]** `Sacrifice.exe` (GOG, sha256 `a53ebb53…abcb`, base 0x400000). Se buscó en `.text` cada `push imm32` cuyo inmediato es una etiqueta de 4 letras (los tags se guardan al revés: `push 'hsap'` = `pash`). Cada uno se asignó a la entrada anterior de la tabla de funciones con nombre de **0x4cbba8** (272 entradas, ver 061R). **Ojo:** la función real puede ser una auxiliar sin nombre que viene después de esa entrada. Por eso un tag del EXE prueba que el original usa ese recurso cerca de esa función, pero no prueba qué dibuja. Se intentó desensamblar con REA (Ghidra 12.1.4), pero estas funciones solo las alcanza la tabla y el autoanálisis no las define, así que no se llegó a leer las instrucciones. No quedó ningún Ghidra corriendo.
+- **[EXE 0xDIR]** `Sacrifice.exe` (GOG, sha256 `a53ebb53…abcb`, base 0x400000). Se buscó en `.text` cada `push imm32` cuyo inmediato es una etiqueta de 4 letras (los tags se guardan al revés: `push 'hsap'` = `pash`). **Reatribuido el 2026-10-24 (método de 061V d-e):** el comienzo de cada función sale de la tabla de funciones con nombre de **0x4cbba8** (272 entradas, ver 061R) **más** todos los destinos de `call rel32` (E8) del `.text`. Cada etiqueta cae así en su función real (con nombre o `sub_XXXXXX`), y se sigue quién llama a esa función. La primera versión asignaba cada etiqueta a la entrada con nombre anterior, y cuatro atribuciones estaban mal (Skin of Stone, Ethereal Form, Protective Swarm y Grasping Vines: abajo). Una etiqueta prueba que el original usa ese recurso en esa función, pero no prueba qué dibuja. No se leyeron instrucciones con REA/Ghidra; no quedó ningún Ghidra corriendo.
 - **[DOC]** manual oficial (`MANUAL.PDF` de la instalación, texto extraído). **[WEB]** guía polaca de gry-online.pl (páginas de hechizos por dios). No se vieron videos: ninguna afirmación de este informe sale de una captura.
 - **[PORT]** código y datos del port (`game/…`).
 - Precedencia: EXE/datos > sacengine > manual > web. Lo que no se pudo confirmar dice **NO VERIFICADO**.
@@ -46,7 +46,7 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 - El anillo se cierra hacia el centro de la caja a medida que avanza el lanzamiento: en xy llega al 90 % del camino y en z al 100 %.
 - Las partículas no tienen velocidad, miden 2·s y viven 12 ticks. Si se interrumpe el lanzamiento, viven 31.
 - Además, una `dirt` por mano.
-- [EXE 0x446a90 `SkinOfStoneCasting`]: `push 'dirt'` (coincide).
+- [EXE 0x446a90 `SkinOfStoneCasting`]: `push 'dirt'` + `ttex` (coincide).
 
 **Mientras dura** [SAC stats.d:91; renderer.d:1438-1440; dagon bone.d:189-192]:
 - El cuerpo se dibuja con el sombreador de piedra: brillo = (r+g+b)/3, color = 0,3 + 0,7·brillo·(1, 1, 0,8), rugosidad y metal 0,5. Es el mismo aspecto que Petrify.
@@ -57,11 +57,9 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 - 64 `rock` nacen en la caja ×0,9 y salen en direcciones al azar a 2,5–3 m/s. Miden 1–2,5 y viven 95 ticks, con gravedad.
 - Termina por tiempo (80 s) o cuando el cuerpo deja de poder escudarse (`canShield`).
 
-**El EXE agrega algo que sacengine no tiene** [EXE 0x446d10 `SkinOfStoneStart`]:
-- `push 'quk1'` en 0x447031 y `push 'mud1'` en 0x447041, junto a `tscr` y `thit`.
-- `quk1` es un `SCAR` (main/scar.FLDR). Es la misma grieta de suelo que empujan `FireWallRun`, `BoreRun` y `SpikeWallStart`.
-- `mud1` es una TXTR de 128² de tierra parda (main/bits).
-- Lectura probable: al prenderse, el original deja una grieta en el suelo, o tal vez pinta el cuerpo con `mud1`. **NO VERIFICADO** cuál de las dos. Hace falta desensamblar 0x446d10 (crear la función en Ghidra, como en 061R) antes de dibujarlo.
+**El EXE no agrega nada** [EXE 0x446d10 `SkinOfStoneStart`: solo `PROT` y `thit`]:
+- **Corrección:** `quk1` (0x447030) y `mud1` (0x447040), junto a `tscr` y `ttex`, están en `sub_446fb0`, que llama **`SpikeWallStart`** (0x4473e9). Son de Wall of Spikes, no de Skin of Stone.
+- Skin of Stone no deja grieta ni pinta el cuerpo con `mud1`. Manda sacengine: tierra al lanzar, sombreador de piedra, rocas al terminar.
 
 **Sonido.** `ksts` = `assets/original/audio/sfx/jams/stsk.wav` (fin). Al lanzar y al prender no hay sonido propio en sacengine (**NO VERIFICADO** en el EXE).
 
@@ -70,9 +68,7 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 - `data/fx/petrify_rocks.tres` (rock, MIX, con gravedad): sirve para el estallido del final, ajustando los números (64, 2,5–3 m/s, vida 1,58 s).
 - `data/fx/dirt_cast.tres` sirve de base para el anillo del lanzamiento. Es un anillo que se cierra, así que conviene un `SpriteEmitter` con forma de anillo o un `.tres` nuevo.
 
-**Qué falta.**
-- Nada por importar para lo que hace sacengine.
-- Si se confirma la grieta: `quk1.SCAR`. El port no tiene lector de `SCAR`; habría que agregarlo a `tools/import/sac_formats/` y escribirlo como decal. También `mud1.TXTR` (main/bits) con `import_ui.py`/`fx_catalog.py` (`EXTRA_FX`).
+**Qué falta.** Nada por importar.
 
 ### Air Shield (`dlhs`, Stratos)
 
@@ -81,8 +77,9 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 **Assets.**
 - `shld` (charlie, `Bloo.WAD!/Stra.FLDR/txtr.FLDR`): 256², atlas de **4×2** remolinos azules en espiral con un hueco oscuro al medio.
 - `pash` (misma carpeta): 256², atlas 4×4 de destellos en estrella blanco-azulados sobre negro.
-- [EXE 0x41f6e0..0x41f870]: `push 'pash'` y `push 'cst0'`, además de `icec`. Confirma los destellos y las partículas `cst0` del lanzamiento.
-- Ninguno de los dos está importado.
+- [EXE `sub_41f730`, la llama `RunAirShield` en 0x41f8d2]: `push 'icec'` + `ttex` (una textura), `push 'cst0'` + `tcst` (partícula del lanzamiento) y `push 'pash'`. Confirma los destellos `pash` y las partículas `cst0` del lanzamiento.
+- **`shld` no aparece en ningún `push` del EXE.** En su lugar, la función del escudo carga `icec` como textura (`ttex`). `icec` (charlie, Stra/txtr, 128²) es hielo claro y lechoso. Lectura probable: la burbuja del original usa **`icec`** y no `shld`, o `shld` llega por otro camino. **NO VERIFICADO**: conviene importar los dos y decidir con una captura.
+- Ninguno de los tres está importado.
 
 **La burbuja** [SAC sacobject.d:2467-2537; renderer.d:322-331, 2144-2182]:
 - **Malla.** Una esfera de radio 0,5 (24 anillos × 25 sectores) en 16 variantes deformadas por ruido: cada vértice se mueve hasta 0,12 con ruido suavizado entre vecinos.
@@ -116,7 +113,7 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 - `fx/cst0.png` (y `cst0_a`) para las partículas del lanzamiento.
 
 **Qué falta.**
-- Importar `shld` y `pash` (agregarlos a `fx_catalog.ATLASES`; `pash` también como `ParticleType` aditivo).
+- Importar `shld` y `pash` (agregarlos a `fx_catalog.ATLASES`; `pash` también como `ParticleType` aditivo), y `icec` como textura de malla para compararla con `shld` (también la pide Freeze).
 - La deformación por ruido: lo idiomático en Godot es un shader de vértices sobre `SphereMesh`, con ruido 3D animado y amplitud 0,12·radio. No hace falta Blender: es una divergencia declarada de «16 mallas con morph» y el resultado se ve igual.
 - El mapeo polar del atlas se hace en el mismo shader.
 - Las 3 capas: 3 `MeshInstance3D` en la escena, o un shader con 3 pasadas.
@@ -135,17 +132,15 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 - **Mientras dura.** Cada tick nace una partícula `ghost` (glo2, aditiva, energía 4, delay 2, sin velocidad, cuadro inicial al azar, vida de un ciclo = 64 ticks) en un punto al azar de la caja. A diferencia del fantasma de la muerte, la ven **todos los bandos** (`animateGhost!false`, SAC 13798-13806).
 - **Fin** (15 s o al perder `canShield`). El alfa y la energía vuelven a 1 en 30 ticks, y siguen naciendo partículas `ghost`. No hay chispas al salir.
 
-**El EXE no coincide del todo** [EXE 0x42b5b0 `EtherealFormRun`]:
-- Hay `push 'forb'` en 0x42b9a1 y `push 'flao'` en 0x42b9f9, junto a `trng` y `ttex`. No aparecen `cst0` ni `glo2`.
-- `forb` (main/bits, 256²) es un atlas 4×4 de nubes eléctricas cian y rosa con rayos. `flao` (main/bits, 3×3) es el resplandor verde que el port ya usa para Wrath.
-- Lectura probable: el original dibuja la transición o el aura etérea con `forb`/`flao` y no con las partículas que eligió sacengine. **NO VERIFICADO** qué hace cada una. Confirmar antes de elegir partículas: desensamblar 0x42b5b0 o mirar un video.
+**El EXE no contradice** [EXE 0x42b5b0 `EtherealFormRun`: solo `PROT`]:
+- **Corrección:** `forb` (0x42b9a0, con `trng`) está en `sub_42b980` y `flao` (0x42b9f8, con `ttex`) en `sub_42b9f0`. Las dos las llama **`FlashOrbRun`** (0x42bc63 y 0x42bb2c), no Ethereal Form.
+- Ethereal Form no empuja ninguna textura propia (tampoco `cst0` ni `glo2`: las partículas ya cargadas no necesitan `push`). Manda sacengine.
 
 **Qué reutilizar del port.**
 - `scenes/wizards/ghost_form.gd` ya tiene `GHOST_ALPHA = 0.36`, `GHOST_ENERGY = 10` y el paso a sin sombreado (`_look.set_shadeless`). El plan conecta `EtherealForm.shown_changed → GhostForm.set_ethereal`, así que GhostForm sigue siendo el único dueño de la transparencia.
 - `fx/glo2.png` y `fx/cst0.png` ya están importados. Faltan solo los `.tres` (`ghost`, `ethereal_spark`).
 
-**Qué falta.**
-- Si se confirma el EXE: importar `forb` (main/bits) con `fx_catalog`. `flao` ya está importado.
+**Qué falta.** Nada por importar.
 
 ### Fireform (`mrff`, Pyro)
 
@@ -165,7 +160,7 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 
 **Fin.** A los 40 s o al perder `canShield` se corta en seco. No hay partículas ni sonido de cierre en sacengine.
 
-**El EXE** [EXE 0x427590 `FireformRun`]. No hay ningún `push` de etiqueta: usa partículas ya cargadas. No contradice, pero tampoco confirma.
+**El EXE** [EXE 0x427590 `FireformRun`]. No hay ningún `push` de etiqueta, ni en la función ni en sus auxiliares (`sub_427880` … `sub_427cd0`): usa partículas ya cargadas. No contradice, pero tampoco confirma.
 
 **Qué reutilizar del port.**
 - `data/fx/fire.tres` (firy_a, MIX, energía 1) más un `SpriteEmitter` (`scenes/fx/sprite_emitter.gd`) con tasa 600/s y emisión en una caja o esfera escalada a la caja.
@@ -179,7 +174,7 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 
 **Qué dice el original.** [DOC] «A protective shield of swarming insects». [WEB] Insectos que giran alrededor del mago y atacan al que se acerca.
 
-**Asset.** `pswm` (charlie, `Bloo.WAD!/Char.FLDR/tex.FLDR`): 256², atlas 4×4 de un escarabajo marrón con patas, con un halo amarillo en algunos cuadros (batir de alas). No está importado. En el EXE no aparece como `push`: lo carga otro camino (**NO VERIFICADO**).
+**Asset.** `pswm` (charlie, `Bloo.WAD!/Char.FLDR/tex.FLDR`): 256², atlas 4×4 de un escarabajo marrón con patas, con un halo amarillo en algunos cuadros (batir de alas). No está importado. En el EXE no aparece en ningún `push`: lo carga otro camino (**NO VERIFICADO**).
 
 **Los bichos** [SAC sacobject.d:2378-2390; renderer.d:311-319, 2123-2143; state.d:17297-17433]:
 - **Sprite.** `pswm` de 0,5 m, mezcla **alfa**, energía 1, sin escribir profundidad y sin sombra. 16 cuadros de 4 ticks (ciclo de 64), cada bicho con un cuadro inicial al azar.
@@ -194,7 +189,9 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 - Al picar, el tipo `swarm` (`Xswr`: `sfx/char/swr1..3.wav`), como mucho uno cada 1/3 s por víctima.
 - Lanzamiento: partículas del lanzamiento de Charnel.
 
-**El EXE** [EXE 0x433470 `ProtectiveSwarmStart`]. Hay `push 'rift'` y `'tdmn'`, pero probablemente son de la función de Wailing Wall que sigue (0x433760). **NO VERIFICADO**.
+**El EXE** [EXE 0x433470 `ProtectiveSwarmStart`]:
+- `push 'fb_g'` + `ttex` (0x433507) y `PROT`. `fb_g` (main/bits, ya importado: el brillo del Manalito) es una textura que sacengine no usa aquí. Lectura probable: un resplandor al prender el enjambre. **NO VERIFICADO** qué dibuja.
+- **Corrección:** `rift` + `tdmn` están en `sub_433580`, que llama **`WailingWallDemon`** (0x4337dd). Son de Wailing Wall, confirmado.
 
 **Qué reutilizar del port.** Nada específico. `scenes/fx/sprite_particles.gd`/`sprite_emitter.gd` dibujan atlas, pero los bichos tienen trayectorias propias. Lo natural en Godot es un `GPUParticles3D` con un shader de proceso que mueva cada partícula entre puntos al azar de un elipsoide, en coordenadas locales.
 
@@ -341,9 +338,9 @@ Todo lo de esta tabla lo lee `tools/import/import_ui.py` con `fx_catalog.py` (lo
 
 | Tag | WAD / carpeta | Tamaño / grilla | Uso | Hechizo |
 |---|---|---|---|---|
-| `shld` | charlie.wad · `Bloo.WAD!/Stra.FLDR/txtr.FLDR` | 256², 4×2 | textura de la burbuja | Air Shield |
+| `shld` | charlie.wad · `Bloo.WAD!/Stra.FLDR/txtr.FLDR` | 256², 4×2 | textura de la burbuja (sacengine; el EXE no la empuja) | Air Shield |
 | `pash` | ídem | 256², 4×4 | destellos aditivos | Air Shield |
-| `icec` | ídem | 128² | bloque de hielo (probable según el EXE) | Freeze |
+| `icec` | ídem | 128² | bloque de hielo (probable según el EXE); posible textura de la burbuja (EXE) | Freeze, Air Shield |
 | `frez` | ídem | 128² | bloque de hielo (sacengine), Yeti y Frozen Ground | Freeze |
 | `pswm` | charlie.wad · `Bloo.WAD!/Char.FLDR/tex.FLDR` | 256², 4×4 | bichos | Protective Swarm |
 | `vine` | charlie.wad · `Bloo.WAD!/Pers.FLDR/tex.FLDR` | 64² | lianas | Grasping Vines (y después Vinewall) |
@@ -351,9 +348,6 @@ Todo lo de esta tabla lo lee `tools/import/import_ui.py` con `fx_catalog.py` (lo
 | `lthg` | Daniel.wad · `DanC.WAD!/char.FLDR` | 128² | bola y cuerpo bañado | Slime |
 | `lth2` | ídem | 256², 4×4 | salpicadura y goteo | Slime |
 | `cfx1` | ídem | 256², 4×4 | lanzamiento de Charnel de nivel 2 | Slime |
-| `forb` | main.wad · `MAIN.WAD!/bits.FLDR` | 256², 4×4 | posible aura etérea (EXE, NO VERIFICADO) | Ethereal Form |
-| `mud1` | main.wad · `MAIN.WAD!/bits.FLDR` | 128² | posible grieta o piel (EXE, NO VERIFICADO) | Skin of Stone |
-| `quk1` | main.wad · `MAIN.WAD!/scar.FLDR` (SCAR) | — | grieta en el suelo (EXE, NO VERIFICADO); el port no tiene lector de SCAR | Skin of Stone |
 
 Ya están en el port: `firy`, `firy_a`, `glo2`, `cst0`, `cst0_a`, `shrd`, `rock`, `dirt`, `flao` y todos los sonidos nombrados arriba (`assets/original/audio/sfx/…`; los tags de sacengine se leen al revés: `ksts` → `stsk.wav`).
 
@@ -365,8 +359,9 @@ Mallas:
 ## Pendientes antes de dibujar (NO VERIFICADO)
 
 1. **Freeze.** ¿`icec` o `frez` para el bloque? Desensamblar el entorno de 0x42178f (crear la función en Ghidra a partir de la tabla, como en 061R) o comparar con una captura.
-2. **Skin of Stone.** ¿Qué hacen `quk1` y `mud1` en 0x447031/0x447041: una grieta en el suelo o la piel?
-3. **Ethereal Form.** ¿Qué dibujan `forb` y `flao` (0x42b9a1/0x42b9f9) en lugar de las chispas `cst0` y las partículas `ghost` `glo2` de sacengine?
+2. ~~Skin of Stone: `quk1`/`mud1`~~ **Resuelto** (reatribución): son de Wall of Spikes (`sub_446fb0` ← `SpikeWallStart`).
+3. ~~Ethereal Form: `forb`/`flao`~~ **Resuelto** (reatribución): son de Flash Orb (`FlashOrbRun`). Manda sacengine.
+3b. **Air Shield.** ¿`icec` (lo empuja la función del escudo) o `shld` (sacengine; el EXE no lo empuja) para la burbuja? Captura de cámara fija. ¿Para qué usa `ProtectiveSwarmStart` el `fb_g`?
 4. **Grasping Vines.** ¿Para qué usa el original `fbal`/`glo2` en `GraspingVinesRun`? ¿Qué extremo de `vine` queda en la raíz?
 5. **Fuego** (Fireform, Rings of Fire): ¿aditivo con energía 8 como el original, o el `firy_a` MIX que ya usa el port? Se decide con capturas de cámara fija y un criterio numérico.
 6. Ninguna apariencia se confirmó con un video. El manual y la guía confirman la forma general: piedra, minitornado, enjambre, bloque de hielo, lianas que salen del suelo, anillo de fuego que late y bola de baba que cubre al blanco.

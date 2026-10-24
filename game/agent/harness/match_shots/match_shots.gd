@@ -124,6 +124,11 @@ func _run() -> void:
 func _cast_all(world: MatchWorld, tags: PackedStringArray) -> void:
 	var wizard := world.local_wizard() as WizardBody
 	var caster := wizard.get_node("Caster") as Caster
+	var known := []
+	for i in caster.spellbook.size():
+		known.append(caster.spellbook.spell_at(i).tag)
+	print("match_shots: the book has %s" % [known])
+	caster.feedback.connect(func(text: String) -> void: print("match_shots: the caster says «%s»" % text))
 	for tag in tags:
 		var pool := wizard.get_node("ManaPool") as ManaPool
 		pool.current = pool.maximum

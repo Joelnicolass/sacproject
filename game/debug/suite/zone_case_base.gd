@@ -40,6 +40,7 @@ func begin(host: Node3D, world_name: String) -> void:
 	_spawner.zones["Explosion"] = load("res://scenes/spells/zones/explosion_zone.tscn") as PackedScene
 	_spawner.zones["FrozenGround"] = load("res://scenes/spells/zones/frozen_ground.tscn") as PackedScene
 	_spawner.zones["DemonicRift"] = load("res://scenes/spells/zones/demonic_rift.tscn") as PackedScene
+	_spawner.zones["Erupt"] = load("res://scenes/spells/zones/erupt_zone.tscn") as PackedScene
 	for kind in CLOUDS:
 		_spawner.zones[kind] = load("res://scenes/spells/zones/%s.tscn" % CLOUDS[kind]) as PackedScene
 	_spawner.zones["Meanstalks"] = load("res://scenes/spells/stalks/meanstalks.tscn") as PackedScene

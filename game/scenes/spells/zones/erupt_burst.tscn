@@ -1,0 +1,16 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/zones/debris_burst.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/erupt_debris.tscn" id="2_piece"]
+[ext_resource type="PackedScene" path="res://scenes/spells/scar_mark.tscn" id="3_mark"]
+[ext_resource type="Texture2D" path="res://assets/original/scars/escr.png" id="4_escr"]
+
+[node name="EruptBurst" type="Node3D" node_paths=PackedStringArray("scar")]
+editor_description = "El estallido de Erupt (FxBus.broadcast_scene): 64 rocas que salen a 30 +- 7,5 m/s en todas direcciones. Su sonido es la clave `erupt_burst` de fx_sounds.tres y su sacudida de cámara la de shake_map.tres. Las partículas (rocas con luz naranja) las toca la zona al lado."
+script = ExtResource("1_script")
+piece = ExtResource("2_piece")
+scar = NodePath("Scar")
+
+[node name="Scar" parent="." instance=ExtResource("3_mark")]
+editor_description = "Erupt (tpre): la marca escr bajo el estallido, a la altura del suelo."
+texture = ExtResource("4_escr")

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="FxLightSpec" format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/fx_light_spec.gd" id="1_spec"]
+
+[resource]
+script = ExtResource("1_spec")
+color = Color(1, 0.62, 0.3, 1)
+energy = 12
+range_m = 22
+attack_s = 0.03
+decay_s = 0.9
+decay_power = 1.5
+height_m = 3
+attenuation = 0.6

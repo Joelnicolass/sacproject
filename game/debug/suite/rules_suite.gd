@@ -29,6 +29,7 @@ const ZONE_CASES := preload("res://debug/suite/zone_cases.gd")  # 061f
 const LEVEL8_CASES := preload("res://debug/suite/level8_cases.gd")  # 061i
 const RIFT_CASES := preload("res://debug/suite/rift_cases.gd")  # 061f
 const AURA_CASES := preload("res://debug/suite/aura_cases.gd")  # 061f
+const TERRAIN_CASES := preload("res://debug/suite/terrain_cases.gd")  # 061k
 const STALK_CASES := preload("res://debug/suite/stalk_cases.gd")  # 061j
 const TORNADO_CASES := preload("res://debug/suite/tornado_cases.gd")  # 061j
 const CLOUD_CASES := preload("res://debug/suite/cloud_cases.gd")  # 061h
@@ -91,6 +92,7 @@ func _run_suite() -> void:
 	_results.merge(await LEVEL8_CASES.new().run(self))  # 061i
 	_results.merge(await RIFT_CASES.new().run(self))  # 061f
 	_results.merge(await AURA_CASES.new().run(self))  # 061f
+	_results.merge(await TERRAIN_CASES.new().run(self))  # 061k
 	_results.merge(await STALK_CASES.new().run(self))  # 061j
 	_results.merge(await TORNADO_CASES.new().run(self))  # 061j
 	_results.merge(await CLOUD_CASES.new().run(self))  # 061h

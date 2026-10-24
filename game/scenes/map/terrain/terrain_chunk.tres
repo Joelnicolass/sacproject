@@ -1,0 +1,4 @@
+[gd_resource type="ConcavePolygonShape3D" format=3]
+
+[resource]
+backface_collision = true

@@ -2,9 +2,9 @@
 What: one playable map: terrain, navmesh, buildings, NPC spawns, altars/manafounts, player starts. Maps are edited in Godot.
 Not: the match rules (`scenes/match/`), the look and sky (`scenes/look/`), the creatures that live there (`scenes/units/`).
 Talks to: `MapRoot` exposes sockets (`terrain`, `nav_region`, `starts`, `look`, `buildings`, `npcs`, `props`); the match plugs into them.
-Talks to: `MapBuilding.destroyed` goes up to `NavService` (it updates the navmesh); `MapPopulation` asks `UnitSpawner` for creatures and emits `populated`.
+Talks to: `Terrain/Deformer` and `Terrain/Collision` (see `terrain/README.md`) move and collide the ground after it loaded; `MapBuilding.destroyed` goes up to `NavService` (it updates the navmesh); `MapPopulation` asks `UnitSpawner` for creatures and emits `populated`.
 Edit: `maps/<tag>/map.tscn` + `<tag>.tres` (`MapDefinition`); drag building scenes under `Buildings`, decoration scenes (`scenes/props/`) under `Props`, `NpcSpawn` under `Npcs`, move `WizardSpot` under each start; bake the navmesh with the «Hornear navmesh» button of `NavRegion`.
-Debug: `debug/map/*.tscn` (F6; e.g. `village.tscn`, `nav_cross.tscn`, `ground_probe.gd`).
+Check: `debug/map/*.tscn` (F6; e.g. `village.tscn`, `nav_cross.tscn`, `ground_probe.gd`) · `debug/spells/cast_terrain.tscn` (F6, the ground that moves) · rules_suite `terrain_cases`.
 Known debt: 5 representations of the ground with no single owner (055d-t `TerrainShape`).
 
 ---

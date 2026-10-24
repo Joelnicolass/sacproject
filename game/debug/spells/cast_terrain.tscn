@@ -1,0 +1,64 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="PackedScene" uid="uid://highnoonworld01" path="res://scenes/match/high_noon.tscn" id="1_world"]
+[ext_resource type="Resource" path="res://debug/rules/cast_terrain.tres" id="2_rules"]
+[ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="3_unit"]
+[ext_resource type="Script" path="res://debug/units/rock_hit.gd" id="4_targets"]
+[ext_resource type="Script" path="res://debug/spells/zones_setup.gd" id="5_setup"]
+[ext_resource type="Script" path="res://scenes/look/vegetation/vegetation_patch.gd" id="6_patch"]
+[ext_resource type="Resource" path="res://data/vegetation/species/james_bush_1.tres" id="7_bush"]
+
+[node name="CastTerrain" type="Node"]
+
+[node name="Targets" type="Node" parent="." node_paths=PackedStringArray("world", "arena", "log_label")]
+editor_description = "Terreno deformable (RFC-057). `wizard_god`: james (Erupt tpre, spell_7 del libro; nivel 4 o más; con pyro, Volcano clov cuando exista). Suelo sin deformar; un Trogg enemigo a 10 m, otros a 45 y 60 m, una casa a 30 m (jhut) y un VegetationPatch de arbustos a 25 m. Hechizo: la tecla spell_N del libro y clic en el suelo; la tierra sube hasta 15 m en 4,2 s, estalla y vuelve a su sitio a los 5,2 s. En erupt_zone.tscn el radio y el pico de cada sello se mueven con el gizmo del cilindro Reach y las curvas se editan en su StampProfile; en map.tscn, Terrain/Collision con Debug > Visible Collision Shapes muestra los trozos."
+script = ExtResource("4_targets")
+world = NodePath("../HighNoon")
+unit_scene = ExtResource("3_unit")
+arena = NodePath("../Arena")
+log_label = NodePath("../Overlay/HitLog")
+tags = PackedStringArray("ycro", "ycro", "ycro")
+spots = PackedVector2Array(0, 10, 0, 45, 0, 60)
+building_tags = PackedStringArray("jhut")
+building_spots = PackedVector2Array(6, 30)
+wizard_god = "james"
+
+[node name="Setup" type="Node" parent="." node_paths=PackedStringArray("world", "arena")]
+script = ExtResource("5_setup")
+world = NodePath("../HighNoon")
+arena = NodePath("../Arena")
+unit_scene = ExtResource("3_unit")
+
+[node name="HighNoon" parent="." instance=ExtResource("1_world")]
+rules = ExtResource("2_rules")
+
+[node name="Camera" parent="HighNoon"]
+debug_pointer = Vector2(640, 360)
+
+[node name="Arena" type="Node3D" parent="."]
+
+[node name="Overlay" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="HitLog" type="Label" parent="Overlay"]
+unique_name_in_owner = true
+offset_left = 24.0
+offset_top = 80.0
+offset_right = 900.0
+offset_bottom = 170.0
+mouse_filter = 2
+text = "Blancos"
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+
+[node name="Ferns" type="Node3D" parent="."]
+editor_description = "Arbustos a unos 25 m del mago (el arranque de James en High Noon): al subir la tierra se replantan a la altura nueva."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1501, 17, 1515)
+script = ExtResource("6_patch")
+species = ExtResource("7_bush")
+radius_m = 10.0
+count = 80
+
+[node name="Population" parent="HighNoon"]
+spawn_creatures = false

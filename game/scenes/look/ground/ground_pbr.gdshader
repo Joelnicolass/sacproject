@@ -4,6 +4,8 @@ render_mode cull_disabled;
 
 // Splat, zone rules and macro drift shared with the grass (grass.gdshader).
 #include "res://scenes/look/ground/ground_common.gdshaderinc"
+// The ground can move after the map loaded (RFC-057): the vertices are moved here, the mesh is never rebuilt.
+#include "res://scenes/look/ground/terrain_deform.gdshaderinc"
 // The marks on the ground (burns, cracks), over the ground and under the light.
 #include "res://scenes/look/ground/ground_scars.gdshaderinc"
 
@@ -71,6 +73,13 @@ struct Tap {
 
 void vertex() {
 	map_pos = VERTEX;
+	deform_hole = 0.0;
+	if (terrain_deform_on > 0.5) {
+		vec2 shift = deform_at(VERTEX.xz);
+		NORMAL = deform_normal(NORMAL, VERTEX.xz);
+		VERTEX.y += shift.x;
+		deform_hole = shift.y;
+	}
 	view_dist = length((MODELVIEW_MATRIX * vec4(VERTEX, 1.0)).xyz);
 }
 
@@ -155,6 +164,9 @@ Lay eval_layer(int i, sampler2D a, sampler2D n, sampler2D o, vec3 g, vec3 dpx, v
 }
 
 void fragment() {
+	if (deform_hole > 0.0001) {
+		discard;
+	}
 	vec3 g = normalize((INV_VIEW_MATRIX * vec4(NORMAL, 0.0)).xyz);
 	vec2 xz = map_pos.xz;
 	// Rule weights first: they need no texture, and decide which layers are sampled at all.

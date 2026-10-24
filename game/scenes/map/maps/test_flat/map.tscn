@@ -3,6 +3,8 @@
 [ext_resource type="Script" path="res://scenes/map/map_root.gd" id="1_root"]
 [ext_resource type="Script" path="res://scenes/map/terrain/terrain.gd" id="2_terrain"]
 [ext_resource type="Script" path="res://scenes/map/terrain/terrain_shape.gd" id="shape_script"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain_deformer.gd" id="deformer_script"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain_collision.gd" id="collision_script"]
 [ext_resource type="Script" path="res://scenes/map/props/map_props.gd" id="3_props"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="4_start"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="5_fount"]
@@ -44,13 +46,16 @@ visible = false
 text = "UI_MAP_MISSING_2"
 font_size = 48
 
+[node name="Deformer" type="Node" parent="Terrain" node_paths=PackedStringArray("shape")]
+script = ExtResource("deformer_script")
+shape = NodePath("../Shape")
+
 [node name="GroundScars" parent="Terrain" node_paths=PackedStringArray("shape") instance=ExtResource("ground_scars")]
 shape = NodePath("../Shape")
 
-[node name="Collision" type="StaticBody3D" parent="Terrain"]
-
-[node name="Shape" type="CollisionShape3D" parent="Terrain/Collision"]
-shape = ExtResource("terrain_collision")
+[node name="Collision" type="StaticBody3D" parent="Terrain" node_paths=PackedStringArray("shape")]
+script = ExtResource("collision_script")
+shape = NodePath("../Shape")
 
 [node name="MapProps" type="Node3D" parent="." unique_id=1044100007]
 script = ExtResource("3_props")

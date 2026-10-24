@@ -95,7 +95,7 @@ func _plant() -> void:
 		_bound_rig = rig
 		rig.vegetation_toggled.connect(_on_toggled)
 	var clears := VegetationClear.world_rows(get_tree())
-	var signature := "%s|%s|%s|%s|%s|%s|%s|%s" % [[species.tag, species.model, species.scale_range, species.visibility_end_m, species.cast_shadow], radius_m, count, seed, quality.density_scale, global_transform, clears, quality.shadows]
+	var signature := "%s|%s|%s|%s|%s|%s|%s|%s|%s" % [[species.tag, species.model, species.scale_range, species.visibility_end_m, species.cast_shadow], radius_m, count, seed, quality.density_scale, global_transform, clears, quality.shadows, terrain.shape.displacement().version]
 	if signature == _signature and _multimesh:
 		return
 	_clear_multimesh()

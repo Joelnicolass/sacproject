@@ -11,6 +11,7 @@ trauma_by_fx = Dictionary[StringName, float]({
 &"halo_emerge": 0.3,
 &"explosion_burst": 0.5,
 &"erupt_burst": 0.8,
+&"falling_chunk": 0.15,
 &"cow_ground": 0.25,
 &"cow_rocks_up": 0.4,
 &"cow_burst": 0.6,

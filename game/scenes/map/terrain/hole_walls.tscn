@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/map/terrain/hole_walls.gd" id="1_walls"]
+
+[node name="HoleWalls" type="MeshInstance3D"]
+editor_description = "Las paredes de los agujeros que abre el suelo (Bore): una tira vertical de 50 m en cada borde donde hay tierra junto a un triangulo sin vertice. Hijo de Terrain; usa el material del suelo. `shape` es el TerrainShape del mapa y `terrain` el Terrain."
+cast_shadow = 0
+script = ExtResource("1_walls")

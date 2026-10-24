@@ -1,7 +1,9 @@
-[gd_resource type="Resource" script_class="FxSoundMap" load_steps=155 format=3]
+[gd_resource type="Resource" script_class="FxSoundMap" load_steps=158 format=3]
 
 [ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
 [ext_resource type="Script" path="res://scenes/audio/fx_sound_map.gd" id="2_map"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/qkr1.wav" id="bore_qkr1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/qkr2.wav" id="bore_qkr2"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/spku.wav" id="wall_spku"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/spkd.wav" id="wall_spkd"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/char/lwwl.wav" id="wall_lwwl"]
@@ -561,6 +563,14 @@ volume_db = 8.0
 max_distance_m = 120.0
 unit_size = 12.0
 priority = 70
+
+[sub_resource type="Resource" id="Cue_bore_repair"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("bore_qkr1"), ExtResource("bore_qkr2")])
+max_voices = 3
+max_distance_m = 120.0
+priority = 40
+
 [sub_resource type="Resource" id="Cue_i8_charm_cast"]
 script = ExtResource("1_cue")
 streams = Array[AudioStream]([ExtResource("i8_cchm")])
@@ -792,6 +802,7 @@ cues = Dictionary[StringName, ExtResource("1_cue")]({
 &"explosion_cast": SubResource("Cue_explosion_cast"),
 &"explosion_burst": SubResource("Cue_explosion_burst"),
 &"erupt_burst": SubResource("Cue_erupt_burst"),
+&"bore_repair": SubResource("Cue_bore_repair"),
 &"frozen_ground_cast": SubResource("Cue_frozen_ground_cast"),
 &"frozen_ground_hit": SubResource("Cue_frozen_ground_hit"),
 &"ice_shatter": SubResource("Cue_ice_shatter"),

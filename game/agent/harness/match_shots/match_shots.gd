@@ -207,7 +207,7 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 				return
 			look = zone.global_position + Vector3.UP * 1.0
 			var toward_zone := (focus - zone.global_position) * Vector3(1.0, 0.0, 1.0)
-			spot = look + (toward_zone.normalized() if toward_zone.length() > 0.1 else Vector3.BACK) * zone_m + Vector3.UP * zone_up_m
+			spot = _clear_spot(look, toward_zone.normalized() if toward_zone.length() > 0.1 else Vector3.BACK)
 		"overview":
 			var middle := (focus + _foe_position(world, wizard)) * 0.5
 			spot = middle + Vector3(0.0, overview_m, overview_m * 0.55)
@@ -297,6 +297,20 @@ func _report_afflictions(wizard: Node3D) -> void:
 		var layers := " layers=%d" % (state as SpellAffliction).layers() if state is SpellAffliction else ""
 		var skin := " skin=%s" % (afflictions.look.swap_texture != null) if afflictions.look != null else ""
 		print("match_shots: affliction %s on%s%s foe %s at (%.1f, %.1f, %.1f) | %s" % [state.type.id, layers, skin, foe.name, foe.global_position.x, foe.global_position.y, foe.global_position.z, " | ".join(parts)])
+
+
+## A camera point `zone_m` from `look` and `zone_up_m` above it: the bearing closest to `toward` (then every 45 degrees around) from which a ray
+## to `look` meets nothing (an altar or a tower between them hides the zone).
+func _clear_spot(look: Vector3, toward: Vector3) -> Vector3:
+	var space := camera.get_world_3d().direct_space_state
+	var spot := look + toward * zone_m + Vector3.UP * zone_up_m
+	for step in 8:
+		var bearing := toward.rotated(Vector3.UP, TAU * float(step + 1 >> 1) / 8.0 * (1.0 if step % 2 == 0 else -1.0))
+		var candidate := look + bearing * zone_m + Vector3.UP * zone_up_m
+		var hit := space.intersect_ray(PhysicsRayQueryParameters3D.create(candidate, look + Vector3.UP * 3.0, 0xFFFFFFFF))
+		if hit.is_empty():
+			return candidate
+	return spot
 
 
 ## One line per ground zone alive at every shot: its phase and ticks, where it stands, how many points it has, and its drawn parts (visible,

@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
 [ext_resource type="Script" path="res://scenes/map/props/mana_source.gd" id="2_source"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://scenes/components/ground_snap.gd" id="6_snap"]
 [ext_resource type="Resource" path="res://data/buildings/persephone_font.tres" id="10_bldg"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="9_sound"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_pool"]
 height = 4.0
@@ -61,3 +62,13 @@ active = false
 
 [node name="GroundSnap" type="Node3D" parent="."]
 script = ExtResource("6_snap")
+
+[node name="ManalithLight" parent="." instance=ExtResource("glow_state_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+light_color = Color(0.4, 0.8, 1, 1)
+light_energy = 1.6
+omni_range = 12
+fade_in_s = 1
+fade_out_s = 1
+unique_name_in_owner = true
+editor_description = "The glow of the Manalith / Shrine column. Its colour is the mana colour of the side that owns the tower (set by ManafountBody); this is the default. Tune energy and range here."

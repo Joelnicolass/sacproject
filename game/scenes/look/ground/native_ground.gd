@@ -15,15 +15,20 @@ extends Resource
 @export var tiles: Texture2D
 ## The baked light of the map's ground.
 @export var light: Texture2D
+## 16x16, one pixel per tile id: the grain layer of each tile of the land (`themes/<god>/detail_ids_native.png`). Empty = the
+## god's ground keeps its own, laid out for its generic atlas.
+@export var detail_ids: Texture2D
 
 
-## Puts the three textures on a classic ground material (`sacrifice_ground.gdshader`).
+## Puts its textures on a classic ground material (`sacrifice_ground.gdshader`).
 func dress(material: ShaderMaterial) -> void:
 	material.set_shader_parameter("atlas", atlas)
 	material.set_shader_parameter("tile_index", tiles)
 	material.set_shader_parameter("use_tile_index", tiles != null)
 	if light != null:
 		material.set_shader_parameter("lightmap", light)
+	if detail_ids != null:
+		material.set_shader_parameter("detail_ids", detail_ids)
 
 
 func _get_configuration_warnings() -> PackedStringArray:

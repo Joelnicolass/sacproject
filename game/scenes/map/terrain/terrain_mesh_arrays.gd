@@ -32,9 +32,11 @@ static func from_data(data: MapTerrainData, tiles: PackedByteArray) -> TerrainMe
 			_color_wall(colors, ids, tile, walls % 2 == 0)
 			walls += 1
 			continue
+		# The whole tile over the whole cell (0..1), so a tile meets its neighbour edge to edge; the shader keeps the
+		# lookup inside the tile. Ref: sacmap.d:888.
 		for id in ids:
-			var local_x := clampf(vertices[id].x / 10.0 - float(cell_x), 0.02, 0.98)
-			var local_z := clampf(vertices[id].z / 10.0 - float(cell_z), 0.02, 0.98)
+			var local_x := clampf(vertices[id].x / 10.0 - float(cell_x), 0.0, 1.0)
+			var local_z := clampf(vertices[id].z / 10.0 - float(cell_z), 0.0, 1.0)
 			colors[id] = Color(float(tile) / 255.0, local_x, local_z)
 	var built := TerrainMeshArrays.new()
 	built.arrays.resize(Mesh.ARRAY_MAX)

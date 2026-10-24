@@ -11,6 +11,10 @@ const Maps := preload("res://debug/look/flora_test_maps.gd")
 const CENTER := Vector2(1260.0, 1270.0)
 const BURST_TICKS := 252
 const OVER_TICKS := 313
+## 061k-2 Volcano: it erupts 4.4444 s (267 ticks) after it starts and its mound is over 64.4444 s (3867 ticks) after it starts.
+const ERUPT_TICKS := 267
+const VOLCANO_OVER_TICKS := 3867
+const VOLCANO_SHAPE := "res://assets/original/terrain/volcano_shape.png"
 
 ## Real seconds a case may take: past it the run fails and quits, so a stuck wait never holds the queue.
 const CASE_CAP_S := 60.0
@@ -37,6 +41,7 @@ func run(host: Node3D) -> Dictionary:
 	var cases := {
 		"rules": _rules, "displacement": _displacement, "hole": _hole, "erupt_ground": _erupt_ground,
 		"erupt_bodies": _erupt_bodies, "flora": _flora, "net": _net,
+		"volcano_rules": _volcano_rules, "volcano_cut": _volcano_cut, "volcano_ground": _volcano_ground, "volcano_bodies": _volcano_bodies,
 	}
 	var out := {}
 	for name: String in cases:
@@ -324,6 +329,205 @@ func _flora() -> Dictionary:
 	holder.free()
 	land.free()
 	return _verdict("terrain_flora", checks)
+
+
+## Volcano on paper: its action and zone are wired, Pyro's book has it, the picture is the original's 33 x 33 grey, the pattern of the
+## stamp (the picture times the peak, the flattening to the center's height) and the lava ball's shot are what the arithmetic says.
+func _volcano_rules() -> Dictionary:
+	var checks := {}
+	var spell := GameData.spell("clov")
+	var action := spell.action.instantiate() as ZoneAction if spell != null and spell.action != null else null
+	checks["volcano_has_action"] = action != null and _spawner.zones.has(action.kind) and (_spawner.zones[action.kind] as PackedScene).can_instantiate()
+	if action != null:
+		action.tag = "clov"
+		checks["volcano_action_no_warnings"] = action._get_configuration_warnings().is_empty()
+		checks["volcano_action_on_lattice"] = action.snap_m == TerrainRules.CELL and action.arm_from_start
+		action.free()
+	var wizard := _wizard(1, _far_wizard_spot(), "pyro", 8)
+	await _frames(2)
+	checks["in_pyro_book"] = Caster.of(wizard).spellbook.index_of("clov") >= 0
+	wizard.queue_free()
+	var zone := (_spawner.zones["Volcano"] as PackedScene).instantiate() as GroundZone
+	checks["zone_spell"] = zone.spell == spell and zone.hold_is_spell_duration
+	var warned := []
+	for child in zone.find_children("*", "", true, false):
+		if child.has_method("_get_configuration_warnings") and not child._get_configuration_warnings().is_empty():
+			warned.append(child.name)
+	checks["zone_nodes_no_warnings"] = warned.is_empty()
+	if not warned.is_empty():
+		_note("nodes with warnings", warned)
+	var shape := load(VOLCANO_SHAPE) as Texture2D
+	var picture := shape.get_image()
+	checks["picture_33"] = picture.get_size() == Vector2i(33, 33)
+	checks["picture_center_255"] = picture.get_pixel(16, 16).r8 == 255 and picture.get_pixel(0, 0).r8 == 0
+	var mound := zone.get_node("Mound") as TerrainStamp
+	var reach := (mound.reach.shape as CylinderShape3D)
+	var rect := TerrainDisplacement.vertex_rect(CENTER, reach.radius)
+	checks["mound_rect_33"] = rect.size == Vector2i(33, 33)
+	var flat := PackedFloat32Array()
+	flat.resize(33 * 33)
+	flat.fill(100.0)
+	var full := StampRules.pattern(mound.profile, CENTER, reach.radius, reach.height, rect, flat, 100.0)
+	checks["pattern_center_is_the_peak"] = absf(full[16 * 33 + 16] - 0.2 * 255.0) < 1e-3
+	var step := 17 * 33 + 20
+	checks["pattern_is_picture_times_0_2"] = absf(full[step] - 0.2 * float(picture.get_pixel(20, 17).r8)) < 1e-3
+	flat.fill(90.0)
+	var east_100 := 16 * 33 + 26
+	var share := 1.0 - (100.0 - 80.0) / (164.0 - 80.0)
+	var dug := StampRules.pattern(mound.profile, CENTER, reach.radius, reach.height, rect, flat, 100.0)
+	checks["pattern_flattens_100m"] = absf(dug[east_100] - (10.0 * share + 0.2 * float(picture.get_pixel(26, 16).r8))) < 0.01
+	checks["pattern_flat_inside_80m"] = absf(dug[16 * 33 + 24] - (10.0 + 0.2 * float(picture.get_pixel(24, 16).r8))) < 1e-3
+	var heat := zone.get_node("Burn") as ZoneHeat
+	checks["heat_falls_20_to_50"] = heat.strength_at(20.0) == 1.0 and absf(heat.strength_at(35.0) - 0.5) < 1e-5 and heat.strength_at(50.0) == 0.0
+	var shot := ZoneRules.shot_velocity(Vector3.ZERO, Vector3(100.0, 0.0, 0.0), 30.0, 30.0)
+	checks["shot_leans_up_for_gravity"] = shot.is_equal_approx(Vector3(30.0, 50.0, 0.0))
+	checks["lava_ball_registered"] = _spawner.projectiles.has("LavaBall") and (_spawner.projectiles["LavaBall"] as PackedScene).can_instantiate()
+	zone.free()
+	return _verdict("terrain_volcano_rules", checks)
+
+
+## A cast that is cut: the mound goes at once and the ground is exactly what it was (nothing kept, no commit).
+func _volcano_cut() -> Dictionary:
+	var checks := {}
+	var wizard := _wizard(1, _far_wizard_spot(), "pyro", 8)
+	var ground := _shape.displacement()
+	var rev_before := ground.rev
+	var zone := _volcano(wizard)
+	var mound := zone.get_node("Mound") as TerrainStamp
+	while mound.ticks < 150:
+		await _frames(1)
+	var raised := 0.0
+	for id in TerrainDisplacement.COUNT:
+		raised = maxf(raised, absf(ground.at(id)))
+	checks["it_rose"] = raised > 20.0 and ground.live_count() == 1
+	zone.cancel()
+	await _frames(3)
+	var worst := 0.0
+	var kept := 0.0
+	for id in TerrainDisplacement.COUNT:
+		worst = maxf(worst, absf(ground.at(id)))
+		kept = maxf(kept, absf(ground.permanent[id]))
+	_note("cut: raised/after/kept/live", [raised, worst, kept, ground.live_count()])
+	checks["grid_exactly_zero"] = worst == 0.0 and kept == 0.0
+	checks["nothing_committed"] = ground.rev == rev_before and ground.live_count() == 0
+	zone.queue_free()
+	wizard.queue_free()
+	await _frames(2)
+	return _verdict("terrain_volcano_cut", checks)
+
+
+## The whole spell on the ground: the mound rises with the cast (0.75 of 51 m at 3.33 s), the crater opens at 4.44 s, and when it is over
+## (64.44 s) the ground keeps a quarter of the mound plus the crater, over the vertices of the picture and the flattening, as the formulas
+## of the original give them; nothing outside the 33 x 33 changes, two commits were made and no stamp is left playing.
+func _volcano_ground() -> Dictionary:
+	var checks := {}
+	var wizard := _wizard(1, _far_wizard_spot(), "pyro", 8)
+	var rect := TerrainDisplacement.vertex_rect(CENTER, 160.0)
+	var before := StampRules.ground_under(_shape, rect)
+	var rev_before := _shape.displacement().rev
+	var target := before[16 * 33 + 16]
+	var picture := (load(VOLCANO_SHAPE) as Texture2D).get_image()
+	var zone := _volcano(wizard)
+	var mound := zone.get_node("Mound") as TerrainStamp
+	var crater := zone.get_node("Crater") as TerrainStamp
+	while mound.ticks < 200:
+		await _frames(1)
+		if mound.ticks == 100:
+			checks["ray_matches_height"] = await _ray_matches()
+	var rise := _shape.height_at(CENTER.x, CENTER.y) - target
+	_note("mound at 3.33 s (expected 38.25)", [rise])
+	checks["center_rises_with_the_cast"] = absf(rise - 51.0 * 200.0 / 266.6667) < 0.3
+	while mound.ticks < 285:
+		await _frames(1)
+	var opened := _shape.height_at(CENTER.x, CENTER.y) - target
+	_note("center after the crater (expected 40.86)", [opened])
+	checks["crater_opens_at_the_eruption"] = absf(opened - (51.0 * (1.0 - 0.0125 * (285.0 / 60.0 - 4.4444)) - 10.0)) < 0.3 and crater.ticks > ERUPT_TICKS
+	checks["two_stamps_playing_then_one"] = _shape.displacement().live_count() == 1 and _shape.displacement().rev == rev_before + 1
+	for stamp in [mound, crater]:
+		(stamp as TerrainStamp).ticks = VOLCANO_OVER_TICKS - 3
+		(stamp as TerrainStamp).synced_ticks = VOLCANO_OVER_TICKS - 3
+	while mound.ticks < VOLCANO_OVER_TICKS + 3:
+		await _frames(1)
+	var ground := _shape.displacement()
+	var worst := 0.0
+	var at_100 := 0.0
+	var outside := 0.0
+	for id in TerrainDisplacement.COUNT:
+		var x := id % TerrainDisplacement.SIDE
+		var z := id / TerrainDisplacement.SIDE
+		if not rect.has_point(Vector2i(x, z)):
+			outside = maxf(outside, absf(ground.permanent[id]))
+			continue
+		var offset := Vector2(x, z) * TerrainRules.CELL - CENTER
+		var cell := (rect.position + Vector2i.ZERO)
+		var at := (z - cell.y) * rect.size.x + x - cell.x
+		if is_nan(before[at]):
+			continue
+		var square := maxf(absf(offset.x), absf(offset.y))
+		var falloff := clampf((square - 80.0) / (164.0 - 80.0), 0.0, 1.0)
+		var dmap := (target - before[at]) * (1.0 - falloff) + 0.2 * float(picture.get_pixel(x - cell.x, z - cell.y).r8)
+		var dent := (offset.length_squared() / 625.0 - 1.0) * 10.0 if offset.length() < 25.0 else 0.0
+		var error := absf(ground.permanent[id] - (0.25 * dmap + dent))
+		worst = maxf(worst, error)
+		if square == 100.0 and offset.y == 0.0:
+			at_100 = error
+	_note("volcano end: worst error/at 100 m/outside/rev", [worst, at_100, outside, ground.rev - rev_before])
+	checks["every_vertex_as_the_formula"] = worst < 0.1
+	checks["flattened_100m_within_0_1"] = at_100 < 0.1
+	checks["center_quarter_plus_crater"] = absf(_shape.height_at(CENTER.x, CENTER.y) - target - (0.25 * 51.0 - 10.0)) < 0.1
+	checks["nothing_outside_the_33"] = outside == 0.0
+	checks["two_commits_nothing_playing"] = ground.rev == rev_before + 2 and ground.live_count() == 0
+	zone.queue_free()
+	wizard.queue_free()
+	await _frames(2)
+	return _verdict("terrain_volcano_ground", checks)
+
+
+## What the eruption does to the bodies around it: 1000 a second at 10 m (and fire), nothing at 60 m, lava balls at about one every 32
+## ticks, and the lava ball's shot lands where it is thrown.
+func _volcano_bodies() -> Dictionary:
+	var checks := {}
+	var wizard := _wizard(1, _far_wizard_spot(), "pyro", 8)
+	var near := _tough(Vector3(CENTER.x, _shape.height_at(CENTER.x, CENTER.y + 10.0) + 0.1, CENTER.y + 10.0), 3)
+	var far := _tough(Vector3(CENTER.x, _shape.height_at(CENTER.x, CENTER.y + 60.0) + 0.1, CENTER.y + 60.0), 3)
+	await _frames(10)
+	var zone := _volcano(wizard)
+	var dropper := zone.get_node("Dropper") as ZoneDropper
+	var thrown := [0]
+	dropper.chosen.connect(func(_point: Vector3, _body: Node3D) -> void: thrown[0] += 1)
+	var crater := zone.get_node("Crater") as TerrainStamp
+	while crater.ticks < ERUPT_TICKS + 40:
+		await _frames(1)
+	var life := func(body: Node3D) -> float: return (body.get_node("Health") as Health).current
+	var near_0: float = life.call(near)
+	var far_0: float = life.call(far)
+	while crater.ticks < ERUPT_TICKS + 40 + 60:
+		await _frames(1)
+	var lost: float = near_0 - float(life.call(near))
+	var lit := false
+	for child in near.get_children():
+		lit = lit or child is Burning
+	_note("burn: lost in 1 s at 10 m / far lost / lit", [lost, far_0 - float(life.call(far)), lit])
+	checks["burns_about_1000_a_second"] = lost > 850.0 and lost < 1150.0
+	checks["fire_on_the_body"] = lit
+	checks["nothing_at_60m"] = far_0 - float(life.call(far)) == 0.0
+	while crater.ticks < ERUPT_TICKS + 40 + 660:
+		await _frames(1)
+	_note("lava balls thrown in 10 s", [thrown[0]])
+	checks["lava_balls_about_1_875_a_second"] = thrown[0] >= 8 and thrown[0] <= 32
+	zone.queue_free()
+	for node: Node in [near, far, wizard]:
+		node.queue_free()
+	await _frames(2)
+	return _verdict("terrain_volcano_bodies", checks)
+
+
+## Volcano at CENTER, as the action starts it (the cast of the test is instant: it erupts 267 ticks after it is born).
+func _volcano(wizard: Node3D) -> GroundZone:
+	var ground := _shape.height_at(CENTER.x, CENTER.y)
+	var zone := _zone("Volcano", PackedVector3Array([Vector3(CENTER.x, ground, CENTER.y)]), wizard, 0, ERUPT_TICKS)
+	zone.release()
+	return zone
 
 
 func _frames(count: int) -> void:

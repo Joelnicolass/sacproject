@@ -20,6 +20,8 @@ extends Node3D
 @export var carries := false
 ## A body buried by the lift is carried up only if it is no deeper than this under the new surface.
 @export_range(0.5, 20.0, 0.5, "suffix:m") var carry_reach_m := 6.0
+## It shows a new shift only when it differs from the last one shown by this many metres of its peak (a slow decline is not redrawn each tick).
+@export_range(0.0, 2.0, 0.01, "suffix:m") var min_step_m := 0.0
 ## Ticks a peer may be off the server's count before it takes the server's.
 @export_range(1, 60) var resync_ticks := 8
 
@@ -34,6 +36,7 @@ var pattern := PackedFloat32Array()
 var _key := ""
 var _deformer: TerrainDeformer
 var _over := false
+var _shown_share := INF
 
 
 func _ready() -> void:
@@ -110,28 +113,19 @@ func _physics_process(_delta: float) -> void:
 		_make_pattern(rect)
 	var at := local_s()
 	if at < profile.duration_s():
+		var share := profile.timeline.sample(at)
+		if absf(share - _shown_share) * (reach.shape as CylinderShape3D).height < min_step_m:
+			return
+		_shown_share = share
 		_deformer.set_live(_key, rect, values_at(at, rect))
 		if carries and _deformer.is_authority():
-			_carry(rect)
+			StampCarry.lift(get_tree(), _deformer.shape, rect, carry_reach_m)
 		return
 	_over = true
 	if keep and _deformer.is_authority():
 		_deformer.commit(rect, values_at(profile.duration_s() - 1e-4, rect), _key)
 	elif not keep:
 		_deformer.drop_live(_key)
-
-
-## Lifts the bodies over `rect` that the ground just came up through to stand on it again.
-func _carry(rect: Rect2i) -> void:
-	var area := Rect2(Vector2(rect.position) * TerrainRules.CELL, Vector2(rect.size) * TerrainRules.CELL)
-	for group in [&"unit", &"wizard"]:
-		for node in get_tree().get_nodes_in_group(group):
-			var body := node as Node3D
-			if body == null or BodyNudge.airborne(body) or not area.has_point(Vector2(body.global_position.x, body.global_position.z)):
-				continue
-			var ground := _deformer.shape.height_at(body.global_position.x, body.global_position.z)
-			if not is_nan(ground) and body.global_position.y < ground and body.global_position.y > ground - carry_reach_m:
-				body.global_position.y = ground
 
 
 ## Takes back at once what it shows and never plays again (whoever owns it was cut short). What it already kept stays.

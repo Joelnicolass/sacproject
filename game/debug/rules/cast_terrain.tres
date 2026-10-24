@@ -15,5 +15,5 @@ ghost_speed_factor = 1.75
 cast_drain_per_s = 500.0
 extra_cooldown_s = 1.5
 other_spell_cooldown_s = 1.0
-wizard_level = 6
+wizard_level = 8
 biome_god = &"james"

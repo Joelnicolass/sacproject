@@ -19,6 +19,8 @@ extends Resource
 @export_range(0.0, 90.0) var agent_max_slope := 85.0
 @export var region_min_size := 8.0
 @export var region_merge_size := 20.0
+## The scene that bakes (a tool, left out of the exported game): MapNavRegion's «Hornear navmesh» button runs it. Not a bake number.
+@export var bake_tool := ""
 
 
 ## Copies the numbers into `navmesh` and fixes the geometry source: static colliders of the `nav_source` group and its children.

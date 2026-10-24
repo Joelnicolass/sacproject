@@ -383,6 +383,8 @@ Actualizado el 2026-10-24 con la auditoría `research/055R-legacy-audit.md`, que
 
 ### 13.2b Registro, segunda parte (auditoría 055R, 2026-10-24)
 
+
+> **Corrección del orquestador (2026-10-24, decisión del usuario):** todo el terreno de malla libre (063-1 a 063-4 / 055t) va **al final de la fase 1**, después de la v2 del refactor; los pasos de este orden que nombran 063 se corren sin esa parte hasta entonces (los cortes que dependían de 063 para límites o `bounds`, como 055k, usan la grilla mientras tanto).
 **Grupo B: suelo y terreno.**
 
 | # | Sistema 1 a 1 hoy | Evidencia | Por qué limita | Reemplazo Godot | Corte · tamaño · depende de |

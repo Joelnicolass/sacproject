@@ -1,0 +1,95 @@
+[gd_scene load_steps=15 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="zone"]
+[ext_resource type="Resource" path="res://data/catalog/spells/likc.tres" id="spell"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/zone_sound.tscn" id="sound"]
+[ext_resource type="Script" path="res://scenes/spells/zones/cloud_look.gd" id="look"]
+[ext_resource type="Shader" path="res://scenes/spells/zones/cloud_sphere.gdshader" id="shader"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/clou.png" id="skin"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="light"]
+[ext_resource type="Script" path="res://scenes/spells/zones/zone_dropper.gd" id="dropper"]
+[ext_resource type="Script" path="res://scenes/spells/zones/zone_mover.gd" id="mover"]
+[ext_resource type="Script" path="res://scenes/spells/zones/bolt_launcher.gd" id="bolts"]
+[ext_resource type="PackedScene" path="res://scenes/units/abilities/lightning_strike.tscn" id="strike"]
+
+[sub_resource type="ShaderMaterial" id="Mat_cloud"]
+shader = ExtResource("shader")
+shader_parameter/layer_alpha = 0.15
+shader_parameter/noise_amount = 0.096
+shader_parameter/morph_s = 8.0
+shader_parameter/use_skin = true
+shader_parameter/skin = ExtResource("skin")
+shader_parameter/energy = 20.0
+shader_parameter/frame_s = 0.1333
+
+[sub_resource type="SphereMesh" id="Mesh_layer"]
+material = SubResource("Mat_cloud")
+radius = 0.5
+height = 1.0
+radial_segments = 24
+rings = 12
+
+[sub_resource type="MultiMesh" id="Layers_mm"]
+transform_format = 1
+use_custom_data = true
+mesh = SubResource("Mesh_layer")
+
+[node name="Cloudkill" type="Node3D"]
+editor_description = "Cloudkill (likc): una nube de tormenta azul de 5 m a 22 m sobre el centro del blanco que persigue a 3 m/s durante 30 s y tira ~2 rayos por segundo (900 de dano y 5 m de salpicadura) a un punto del disco de 47,5 m bajo ella o a un cuerpo cercano."
+script = ExtResource("zone")
+spell = ExtResource("spell")
+hold_is_spell_duration = true
+end_s = 1.1
+replicates_position = true
+
+[node name="CloudAt" type="Marker3D" parent="."]
+editor_description = "Donde flota la nube sobre el suelo del clic (el original: 22 m). Las gotas nacen a esta altura."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 22.0, 0)
+
+[node name="Cloud" type="Node3D" parent="CloudAt" node_paths=PackedStringArray("zone", "layers")]
+script = ExtResource("look")
+zone = NodePath("../..")
+layers = NodePath("Layers")
+fixed_radius_m = 5.0
+shape = Vector3(1.3, 0.5, 1.3)
+layer_shrink = 0.015
+grow_per_s = 0.2326
+
+[node name="Layers" type="MultiMeshInstance3D" parent="CloudAt/Cloud"]
+cast_shadow = 0
+multimesh = SubResource("Layers_mm")
+
+[node name="Light" parent="CloudAt" instance=ExtResource("light")]
+light_color = Color(0.4, 0.55, 1.0, 1)
+light_energy = 1.5
+omni_range = 40.0
+priority = 3.0
+
+[node name="Mover" type="Node" parent="." node_paths=PackedStringArray("zone")]
+editor_description = "La nube persigue el centro del cuerpo clicado a la velocidad del hechizo."
+script = ExtResource("mover")
+zone = NodePath("..")
+
+[node name="Dropper" type="Node" parent="." node_paths=PackedStringArray("zone")]
+script = ExtResource("dropper")
+zone = NodePath("..")
+rate_per_s = 2.0
+reach_share = 0.95
+near_m = 15.0
+far_m = 50.0
+far_chance = 0.5
+groups = Array[StringName]([&"wizard", &"unit", &"structure"])
+
+[node name="Bolts" type="Node" parent="." node_paths=PackedStringArray("zone", "dropper", "cloud_at")]
+script = ExtResource("bolts")
+zone = NodePath("..")
+dropper = NodePath("../Dropper")
+bolt = ExtResource("strike")
+cloud_at = NodePath("../CloudAt")
+
+[node name="Sound0" parent="CloudAt" node_paths=PackedStringArray("zone") instance=ExtResource("sound")]
+cue = &"cloud_loop"
+loop = true
+zone = NodePath("../..")
+from_phase = 0
+to_phase = 2

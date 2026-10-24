@@ -5,9 +5,9 @@ extends Node
 ## and quits. It only watches: it plays no input and moves no actor; the camera is its own.
 ## It lives in a subfolder because AgentKit mounts every .gd of agent/harness/ itself.
 ## Args after `--`: --map=<tag> --god=<god of the local wizard> [--biome=<god whose land the map wears; default --god>] [--ai-god=<god>] [--wizard=<tag>] [--after=<s> before the first
-## round] [--shots=<n> rounds] [--every=<s>, from 0.02: a burst of shots; the files end in the milliseconds, _t001500] [--out=<dir>] [--views=wizard,wizard_close,halo,foe_close,overview,fountain,manahoar,tower] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
+## round] [--shots=<n> rounds] [--every=<s>, from 0.02: a burst of shots; the files end in the milliseconds, _t001500] [--out=<dir>] [--views=wizard,wizard_close,halo,foe_close,zone,cloud,overview,fountain,manahoar,tower] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
 ## [--cast=<spell tag>[,<tag>…], the local wizard casts them one after the other once --after has passed, before the first round: a spell that aims at himself (a ward, Healing Aura) on himself,
-## one that aims at a soul (pmcd, dnws, deda) on the closest soul he may fetch (the harness makes one when there is none), any other on the closest enemy (a zone, on the ground at its feet; Rainbow on himself, the first body of its chain; 061e needs --level=4 or more: ntlc, wobr, rifd, olah); mana is filled first; --cast-wait=<s> is the wait after the last cast (Explosion goes off 3.8 s after it starts: 4.5)] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
+## one that aims at a soul (pmcd, dnws, deda) on the closest soul he may fetch (the harness makes one when there is none), any other on the closest enemy (a zone, on the ground at its feet; Rainbow on himself, the first body of its chain; 061e needs --level=4 or more: ntlc, wobr, rifd, olah); mana is filled first; --cast-wait=<s> is the wait after the last cast (a cloud rains after its cast: 10 shows the rain, 14 Cloudkill's bolts; Explosion goes off 3.8 s after it starts: 4.5)] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
 ## Windowed: `-- --agent=flow --flow=match_shots.json` (the flow gives the sandbox that applies the quality preset).
 
 const GROUP_FOUNT := &"manafount"
@@ -30,6 +30,9 @@ const TAG_MANAHOAR := &"oham"
 ## The "zone" view: the camera stands this far from the first ground zone (the one of --cast=pxef|zorf|tfir), toward the wizard, this high.
 @export_range(10.0, 200.0, 1.0, "suffix:m") var zone_m := 45.0
 @export_range(0.0, 100.0, 0.5, "suffix:m") var zone_up_m := 28.0
+## The "cloud" view (061h: --cast=grfr|rifr|galp|likc): the camera stands on the land this far from the first zone that has a cloud, toward the wizard,
+## and looks up at the cloud.
+@export_range(10.0, 200.0, 1.0, "suffix:m") var cloud_m := 80.0
 @export_range(30.0, 300.0, 5.0, "suffix:m") var overview_m := 110.0
 @export_range(4.0, 60.0, 0.5, "suffix:m") var fount_m := 16.0
 @export_range(0.0, 30.0, 0.5, "suffix:m") var fount_up_m := 6.0
@@ -221,6 +224,15 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 			look = zone.global_position + Vector3.UP * 1.0
 			var toward_zone := (focus - zone.global_position) * Vector3(1.0, 0.0, 1.0)
 			spot = _clear_spot(look, toward_zone.normalized() if toward_zone.length() > 0.1 else Vector3.BACK)
+		"cloud":
+			var cloud_zone := get_tree().get_first_node_in_group(GroundZone.GROUP) as GroundZone
+			var cloud_at := cloud_zone.get_node_or_null("CloudAt") as Node3D if cloud_zone != null else null
+			if cloud_at == null:
+				print("match_shots: no cloud alive; view skipped")
+				return
+			look = cloud_at.global_position
+			var toward_cloud := (focus - cloud_zone.global_position) * Vector3(1.0, 0.0, 1.0)
+			spot = cloud_zone.global_position + (toward_cloud.normalized() if toward_cloud.length() > 0.1 else Vector3.BACK) * cloud_m + Vector3.UP * 4.0
 		"overview":
 			var middle := (focus + _foe_position(world, wizard)) * 0.5
 			spot = middle + Vector3(0.0, overview_m, overview_m * 0.55)
@@ -361,8 +373,8 @@ func _report_zones() -> void:
 			if part is GeometryInstance3D or part is CPUParticles3D:
 				var emitting := " emitting=%s" % (part as CPUParticles3D).emitting if part is CPUParticles3D else ""
 				parts.append("%s visible=%s%s" % [part.name, (part as Node3D).is_visible_in_tree(), emitting])
-		print("match_shots: zone %s phase %s (%d ticks) cancelled=%s at (%.1f, %.1f, %.1f) points=%d spirits=%d | %s" % [zone.name, GroundZone.Phase.keys()[zone.phase], zone.phase_ticks,
-			zone.cancelled, zone.global_position.x, zone.global_position.y, zone.global_position.z, zone.points.size(), get_tree().get_nodes_in_group(RiftSpirit.GROUP).size(), " | ".join(parts)])
+		print("match_shots: zone %s phase %s (%d ticks) cancelled=%s at (%.1f, %.1f, %.1f) points=%d spirits=%d drops=%d | %s" % [zone.name, GroundZone.Phase.keys()[zone.phase], zone.phase_ticks,
+			zone.cancelled, zone.global_position.x, zone.global_position.y, zone.global_position.z, zone.points.size(), get_tree().get_nodes_in_group(RiftSpirit.GROUP).size(), get_tree().get_nodes_in_group(ZoneDrop.GROUP).size(), " | ".join(parts)])
 
 
 ## --hover=wizard: the pointer rests on the local wizard (the HoverFrame draws its frame). The probe stops naming what is

@@ -9,7 +9,10 @@ trauma_by_fx = Dictionary[StringName, float]({
 &"wrath_explosion2": 0.25,
 &"quake_ring": 0.5,
 &"halo_emerge": 0.3,
-&"explosion_burst": 0.5
+&"explosion_burst": 0.5,
+&"meteor_hit": 0.6,
+&"meteor_emerge": 0.25,
+&"fireball_blast": 0.2
 })
 full_within_m = 8.0
 max_distance_m = 40.0

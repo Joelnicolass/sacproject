@@ -10,15 +10,17 @@ extends Node3D
 ## The slowdown is not written here: for each kind Clinging gives PaceFactors the factor `factor ^ count` under its own source
 ## (&"cling_sticky", &"cling_mites"), and PaceFactors writes speed_factor. It is derived from the lists on every change, so a
 ## piece that lets go in the same tick as another one is the same as the two one after the other.
-## `shown` is replicated (the unit's MultiplayerSynchronizer, "Clinging:shown"): x = bombs, y = mites. Every peer draws that
+## `shown` is replicated (the unit's MultiplayerSynchronizer, "Clinging:shown"): x = bombs, y = mites, z = frogs. Every peer draws that
 ## many of the look scenes at fixed places on the body (declared: sacengine keeps where each one hit).
 ## Server (or solo) only for stick(); the look runs on every peer.
 
 const STICKY := &"sticky"
 const MITES := &"mites"
-const KINDS: Array[StringName] = [STICKY, MITES]
+## A frog of Rain of Frogs (×0.6 each): the frog is its own look, a node that rides the body (ZoneDrop attached to it).
+const FROGS := &"frogs"
+const KINDS: Array[StringName] = [STICKY, MITES, FROGS]
 ## The PaceFactors source of each kind.
-const SOURCES := {STICKY: &"cling_sticky", MITES: &"cling_mites"}
+const SOURCES := {STICKY: &"cling_sticky", MITES: &"cling_mites", FROGS: &"cling_frogs"}
 
 
 ## The body they stick to (its box places the look, its name goes in the log). Empty = the parent.
@@ -37,8 +39,8 @@ const SOURCES := {STICKY: &"cling_sticky", MITES: &"cling_mites"}
 @export var min_height := 0.45
 @export var height_step := 0.1
 
-## Replicated. x = Sticky bombs, y = Blight mites. The setter is the one place that draws.
-@export var shown := Vector2i.ZERO:
+## Replicated. x = Sticky bombs, y = Blight mites, z = frogs. The setter is the one place that draws.
+@export var shown := Vector3i.ZERO:
 	set(value):
 		if value == shown:
 			return
@@ -84,12 +86,12 @@ func stick(kind: StringName, ticks: int, factor: float) -> bool:
 ## How many pieces of `kind` are on (the server's lists; on a client what it was told).
 func count_of(kind: StringName) -> int:
 	if not _has_authority():
-		return shown.x if kind == STICKY else (shown.y if kind == MITES else 0)
+		return shown.x if kind == STICKY else (shown.y if kind == MITES else (shown.z if kind == FROGS else 0))
 	return (_ends.get(kind, []) as Array).size()
 
 
 func is_clinging() -> bool:
-	return count_of(STICKY) + count_of(MITES) > 0
+	return count_of(STICKY) + count_of(MITES) + count_of(FROGS) > 0
 
 
 ## Server (or solo): every piece lets go now.
@@ -141,7 +143,7 @@ func _refresh() -> void:
 		if pace != null:
 			var count := (_ends.get(kind, []) as Array).size()
 			pace.set_factor(SOURCES[kind], pow(float(_factors.get(kind, 1.0)), count) if count > 0 else 1.0)
-	shown = Vector2i((_ends.get(STICKY, []) as Array).size(), (_ends.get(MITES, []) as Array).size())
+	shown = Vector3i((_ends.get(STICKY, []) as Array).size(), (_ends.get(MITES, []) as Array).size(), (_ends.get(FROGS, []) as Array).size())
 
 
 ## Every peer: as many looks of each kind as `shown` says (up to max_looks), at fixed places.

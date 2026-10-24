@@ -132,3 +132,13 @@ Números medibles; los tests de zona usan una duración corta cuando el dato es 
 - Tamaño (C1): `body_aura.gd` está en 140 líneas; el cura va en un método corto y se quita el resto a `zone_rules`/`heal_effect`.
 - **NO VERIFICADO:** el tipo de daño de Healing Aura (cura, no daño); el significado de los números de `FrozenGroundRun` (10; 0,5; 2,5; 5; 1; 0,05); `iXsm` (humo) de la explosión genérica; qué malla dibuja el sprite XS. Por defecto: la forma de sacengine. Knob para cambiarlo: `fire_ball.tscn` (capas), `explosion_burst.tscn` (esferas).
 - Healing Aura: sacengine apaga la aura 30 ticks antes del final (`frame+scaleFrames ≥ duration`); acá cura hasta el final del `Ward` y la mirada se achica al apagarse (divergencia de medio segundo declarada).
+
+## Desvíos al implementar
+- **`SpellSpawner.zones` en `match.tscn`, no un preload** (el plan decía «4 clases en `projectiles`»): una zona apunta a su `SpellType`, este a su acción y el script de la acción conoce a `SpellSpawner`; un `preload` de la escena de zona cerraba el círculo y rompía la carga del catálogo (`Parse Error: ... non-existent resource`). `RiftSpirit` (no apunta a ningún hechizo) sí queda en `projectiles`. `spawn_projectile` devuelve el nodo que la acción guarda para `release`/`cancel`.
+- **Los cuatro hechizos entran al libro de su dios** (`spells = [...]` de `pyro`, `stratos`, `charnel`, `persephone`): la tabla de niveles ya los tenía (5, 6, 5, 6) pero no estaban en la lista.
+- **La IA sí los ve**: sus `flags1` hacen que `AiSpellEval.rating_fn` dé `FN_AREA` para Explosion, Frozen Ground y Demonic Rift y `FN_HEAL` para Healing Aura. No hay `ai_use`; el caso `zone_ai` confirma que los evalúan sin romperse. Cuándo y sobre quién los lanza es 055f.
+- **`ParticleType.bus_name()`** y **`Frozen.of(body)`**: dos ayudas chicas que no estaban en el plan. `data/fx/ramps/ice.tres` es la rampa de hielo que comparten `freeze_shards`, `snowball_burst*` e `ice_shard` (así C19 no sube).
+- **Sin `body_sizes` de `bold` ni `sbll`**: el importador los agrega a `sizes.json` y C19 cuenta `foot_offset`. No se usan: las mallas se piden por `BodyCatalog.mesh`.
+- **Sin cicatriz `scar`, sin luces dinámicas y sin el sprite «XS» del exe** (como decía el plan).
+- Healing Aura: `BodyAura` gana `heal_per_s`, `heal_hold_s`, `include_owner` y `Affects.OWN_SIDE`; `HealEffect.renew` es el temporizador de 256 ticks que no suma.
+- Tests: `zone_cases.gd`, `rift_cases.gd` y `aura_cases.gd` (con `zone_case_base.gd`), más `zone_run.tscn` para correrlos solos (`-- --only=zone|rift|aura`). Los cuerpos de daño son Druidas (`nmuh`): el Trogg es inmune al daño de hechizo.

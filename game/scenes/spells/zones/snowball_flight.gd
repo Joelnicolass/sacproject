@@ -34,8 +34,7 @@ func _ready() -> void:
 		return
 	if ball != null and ball.mesh == null:
 		ball.mesh = BodyCatalog.mesh(model)
-	var rng := RandomNumberGenerator.new()
-	rng.seed = hash(zone.name)
+	var rng := MatchSeed.rng(["snowball", String(zone.name)])
 	_axis = Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0)).normalized()
 	_turn = TAU * rng.randf_range(spin_turns.x, spin_turns.y)
 	zone.phase_changed.connect(_on_phase)

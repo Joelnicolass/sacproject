@@ -48,8 +48,7 @@ func _swell(sphere: MeshInstance3D, seconds: float, radius: float) -> void:
 func _throw() -> void:
 	if piece == null:
 		return
-	var rng := RandomNumberGenerator.new()
-	rng.seed = hash(global_position)
+	var rng := MatchSeed.rng(["explosion_burst", global_position])
 	for i in pieces:
 		var angle := rng.randf_range(-PI, PI)
 		var direction := Vector3(cos(angle), rng.randf_range(0.5, 2.0), sin(angle)).normalized()

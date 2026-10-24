@@ -116,6 +116,13 @@ EXTRA_FX = {
     "wlsp": ("charlie.wad", "Bloo.WAD!/Char.FLDR/tex.FLDR"),
     "pvin": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
     "bubl": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
+    # RFC 061j (SPEL): Meanstalks' skin (dvin = ttex, 64x64; vine = ttx2 came with 061c) and the Tornado's two skins (trn1, trn2), its edge
+    # strip (edge, 4 frames) and the dust it kicks up (tdst, 4x4).
+    "dvin": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
+    "trn1": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
+    "trn2": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
+    "edge": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
+    "tdst": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
     # RFC 061h (SPEL): Rain of Frogs' frog (fhop, 4x4), cast glints (frgl) and burst (brst); Rain of Fire's drop (bbrd, 4x4); Cloudkill's cloud (clou, 4x4).
     "fhop": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
     "brst": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),

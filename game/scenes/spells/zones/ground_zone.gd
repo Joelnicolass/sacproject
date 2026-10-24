@@ -13,7 +13,6 @@ signal phase_changed(phase: int)
 
 enum Phase { CASTING, ARMING, ACTIVE, ENDING }
 
-## Every zone in the world is in this group (the capture harness and the checks look for them).
 const GROUP := &"ground_zone"
 
 ## The spell whose numbers the zone uses: damage, ranges, duration.
@@ -26,8 +25,10 @@ const GROUP := &"ground_zone"
 @export var hold_is_spell_duration := false
 ## It acts until something calls `finish()` (a rift ends when its last spirit is gone).
 @export var open_ended := false
-## The zone itself moves (a cloud that follows its target): its position is replicated.
+## The zone itself moves (a cloud that follows its target, a tornado): its position is replicated.
 @export var replicates_position := false
+## Properties of its children the server replicates with the zone, as paths from the zone (`Stalk1:tip`).
+@export var synced := PackedStringArray()
 ## It takes this long to go away, and frees itself after.
 @export_range(0.0, 10.0, 0.01, "suffix:s") var end_s := 0.5
 ## Its reach grows to the full radius in this time after it started acting (0 = at once).
@@ -81,7 +82,7 @@ func _attach_net() -> void:
 	var net := MpReplicate.new()
 	net.name = "Net"
 	net.interpolate = false
-	net.sync_properties = PackedStringArray([".:phase", ".:cancelled", ".:position"] if replicates_position else [".:phase", ".:cancelled"])
+	net.sync_properties = PackedStringArray([".:phase", ".:cancelled", ".:position"] if replicates_position else [".:phase", ".:cancelled"]) + synced
 	MpAuthority.ensure_sync(self, net.sync_properties)
 	add_child(net)
 
@@ -117,8 +118,7 @@ func hold_ticks() -> int:
 func end_ticks() -> int: return MatchClock.ticks_for(end_s)
 
 
-## The radius of the part of the ground the zone has reached, for a full radius of `max_m`: nothing before ACTIVE, growing during
-## `grow_s`, the whole of it after.
+## The radius of ground the zone has reached for a full radius of `max_m`: nothing before ACTIVE, growing during `grow_s`, all after.
 func grown_m(max_m: float) -> float:
 	if phase < Phase.ACTIVE:
 		return 0.0

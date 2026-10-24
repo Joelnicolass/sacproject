@@ -47,6 +47,8 @@ const SPELLS := {
 	"laww": [[SCENE, "res://scenes/spells/walls/wailing_wall.tscn"]],
 	"lawv": [[SCENE, "res://scenes/spells/walls/vinewall.tscn"]],
 	"cnef": [[SCENE, "res://scenes/spells/walls/fence.tscn"]],
+	"rter": [[SCENE, "res://scenes/spells/stalks/stalk.tscn"], [PARTICLE, "res://data/fx/stalk_grab.tres"]],
+	"nrot": [[SCENE, "res://scenes/spells/tornado/tornado.tscn"]],
 }
 const WIZARD_SCENE := "res://scenes/wizards/wizard_body.tscn"
 const UNIT_SCENE := "res://scenes/units/unit.tscn"

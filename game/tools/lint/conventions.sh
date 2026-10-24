@@ -125,7 +125,14 @@ grep -nE '^@export.*(_radius|_height|_distance)' scenes/match/match_rules.gd > "
 # C21: file paths as text instead of typed references.
 xargs grep -nE '@export_file' < "$OUT/all.txt" 2>/dev/null > "$OUT/C21.txt" || true
 
-RULES="C1a:scripts>150_lines C1b:scripts>300_lines C5:get_node(\"Cap\") C6:group_lookup_literal C7:.call/has_method C8:raw_fields_in_*_type.gd C9:doc_opens_with_original C11:inheritance_depth>=2 C12:MpKit_outside_allowlist C13:reads_original_assets C14:print() C15:content_nodes_with_new C16:height_offset_in_code C17:fx_by_text C18:content_lookup_by_text C19:data_tres_with_positions C20:matchrules_place_radii C21:export_file"
+# C22: time knobs in ticks or frames (a human edits seconds; MatchClock.ticks_for converts). Allowlist: UI and network folders,
+# atlas cells (h_frames, v_frames, frames_h, frames_v, frames_per_s), the network resync of a client copy (resync_ticks).
+# @export_storage is not edited by a human, so it does not count.
+xargs grep -nE '^@export(_[a-z]+)?(\([^)]*\))? var [a-z_0-9]*(_ticks|frames)[a-z_0-9]*' < "$OUT/all.txt" 2>/dev/null \
+	| grep -vE '^scenes/(ui|net)/' | grep -vE ':@export_storage ' \
+	| grep -vE 'var (h_frames|v_frames|frames_h|frames_v|frames_per_s|resync_ticks)\b' > "$OUT/C22.txt" || true
+
+RULES="C1a:scripts>150_lines C1b:scripts>300_lines C5:get_node(\"Cap\") C6:group_lookup_literal C7:.call/has_method C8:raw_fields_in_*_type.gd C9:doc_opens_with_original C11:inheritance_depth>=2 C12:MpKit_outside_allowlist C13:reads_original_assets C14:print() C15:content_nodes_with_new C16:height_offset_in_code C17:fx_by_text C18:content_lookup_by_text C19:data_tres_with_positions C20:matchrules_place_radii C21:export_file C22:time_in_ticks"
 
 baseline_of() { grep -E "^$1=" "$BASELINE" 2>/dev/null | head -1 | cut -d= -f2; }
 

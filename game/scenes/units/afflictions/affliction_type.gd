@@ -51,3 +51,6 @@ extends Resource
 ## A state that draws the body with another texture on every surface while it lasts (Slime: the wet skin `lthg`), with the surface's own UV
 ## and light. Applies together with the stone look when the body also has one. Off (empty): the state does not change the texture.
 @export var look_texture: Texture2D
+## The light the state gives off while it lasts (a StateLight scene, tinted with the state's colour). Afflictions adds it as a child of
+## the state and it fades in and out with `shown_changed`. Off (empty): the state lights nothing.
+@export var glow: PackedScene

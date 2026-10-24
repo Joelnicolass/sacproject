@@ -8,6 +8,8 @@ extends Node3D
 
 ## The rock that flies off, and how many.
 @export var piece: PackedScene
+## Optional. The burn it leaves on the ground under the burst, painted when it plays.
+@export var scar: ScarMark
 @export_range(0, 128) var pieces := 64
 ## Speed of a rock and how much it can differ.
 @export_range(1.0, 100.0, 0.5, "suffix:m/s") var speed := 30.0
@@ -20,6 +22,8 @@ extends Node3D
 
 
 func play(_params: Dictionary) -> void:
+	if scar != null:
+		scar.mark()
 	if piece == null:
 		return
 	var rng := MatchSeed.rng(["debris_burst", global_position])

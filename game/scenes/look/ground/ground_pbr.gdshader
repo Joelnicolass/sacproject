@@ -6,6 +6,8 @@ render_mode cull_disabled;
 #include "res://scenes/look/ground/ground_common.gdshaderinc"
 // The ground can move after the map loaded (RFC-057): the vertices are moved here, the mesh is never rebuilt.
 #include "res://scenes/look/ground/terrain_deform.gdshaderinc"
+// The marks on the ground (burns, cracks), over the ground and under the light.
+#include "res://scenes/look/ground/ground_scars.gdshaderinc"
 
 // Ground of a biome: up to four PBR layers blended by the original map's zones (splat), slope,
 // altitude and height maps. Maps by map coordinates (the mesh stores them in local vertex space,
@@ -244,6 +246,8 @@ void fragment() {
 	if (lightmap_tint > 0.0) {
 		out_alb *= ground_lightmap_mul(xz);
 	}
+
+	out_alb = ground_scar_mix(out_alb, xz, true);
 
 	vec3 world_n = normalize(out_n);
 	if (bump_height_m > 0.0) {

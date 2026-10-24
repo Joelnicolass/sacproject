@@ -1,0 +1,39 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="zone"]
+[ext_resource type="Resource" path="res://data/catalog/spells/rtem.tres" id="spell"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/zone_sound.tscn" id="sound"]
+[ext_resource type="Script" path="res://scenes/spells/zones/zone_dropper.gd" id="dropper"]
+[ext_resource type="Script" path="res://scenes/spells/zones/drop_launcher.gd" id="launcher"]
+
+[node name="Bombardment" type="Node3D"]
+editor_description = "Bombardment (rtem): sin nube. 2 meteoritos por segundo durante 20 s; cada uno sale de la tierra a <= 12,5 m del mago y cruza el cielo en un arco de 12 s hasta un punto del disco de 50 m alrededor del clic. Sin abolladuras (061k)."
+script = ExtResource("zone")
+spell = ExtResource("spell")
+hold_is_spell_duration = true
+end_s = 1.1
+
+[node name="Dropper" type="Node" parent="." node_paths=PackedStringArray("zone")]
+script = ExtResource("dropper")
+zone = NodePath("..")
+rate_per_s = 2
+near_m = 10.0
+far_m = 25.0
+far_chance = 0.667
+
+[node name="Launcher" type="Node" parent="." node_paths=PackedStringArray("zone", "dropper", "cloud_at")]
+script = ExtResource("launcher")
+zone = NodePath("..")
+dropper = NodePath("../Dropper")
+kind = "Meteor"
+start = 2
+disk_share = 0.25
+buried_m = 1.0
+fall_s = 12.0
+
+[node name="Sound0" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("sound")]
+cue = &"bombardment_loop"
+loop = true
+zone = NodePath("..")
+from_phase = 2
+to_phase = 2

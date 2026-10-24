@@ -12,6 +12,10 @@ const CENTER := Vector2(1260.0, 1270.0)
 const BURST_TICKS := 252
 const OVER_TICKS := 313
 
+## Real seconds a case may take: past it the run fails and quits, so a stuck wait never holds the queue.
+const CASE_CAP_S := 60.0
+
+var _case_started := 0
 var _bed: Node3D
 var _shape: TerrainShape
 var _collision: TerrainCollision
@@ -19,19 +23,26 @@ var _collision: TerrainCollision
 
 func run(host: Node3D) -> Dictionary:
 	begin(host, "TerrainCases")
+	var started := Time.get_ticks_usec()
 	_bed = BED.instantiate() as Node3D
 	_root.add_child(_bed)
+	_note("collision chunks built ms", [snappedf((Time.get_ticks_usec() - started) / 1000.0, 0.1)])
 	_shape = _bed.get_node("Shape") as TerrainShape
 	_collision = _bed.get_node("Collision") as TerrainCollision
 	await _frames(2)
+	var only := ""
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--case="):
+			only = arg.trim_prefix("--case=")
+	var cases := {
+		"rules": _rules, "displacement": _displacement, "hole": _hole, "erupt_ground": _erupt_ground,
+		"erupt_bodies": _erupt_bodies, "flora": _flora, "net": _net,
+	}
 	var out := {}
-	out["terrain_rules"] = _rules()
-	out["terrain_displacement"] = _displacement()
-	out["terrain_collision_hole"] = await _hole()
-	out["terrain_erupt_ground"] = await _erupt_ground()
-	out["terrain_erupt_bodies"] = await _erupt_bodies()
-	out["terrain_flora"] = await _flora()
-	out["terrain_net"] = await _net()
+	for name: String in cases:
+		if only.is_empty() or only == name:
+			_case_started = Time.get_ticks_msec()
+			out["terrain_" + name] = await (cases[name] as Callable).call()
 	finish()
 	return out
 
@@ -39,6 +50,7 @@ func run(host: Node3D) -> Dictionary:
 ## Runs only the network case (debug/net/terrain_late_join.tscn).
 func run_net(host: Node3D) -> Dictionary:
 	begin(host, "TerrainNet")
+	_case_started = Time.get_ticks_msec()
 	var out := {"terrain_net": await _net()}
 	finish()
 	return out
@@ -305,6 +317,14 @@ func _flora() -> Dictionary:
 	holder.free()
 	land.free()
 	return _verdict("terrain_flora", checks)
+
+
+func _frames(count: int) -> void:
+	for _i in count:
+		await _host.get_tree().physics_frame
+		if _case_started > 0 and Time.get_ticks_msec() - _case_started > int(CASE_CAP_S * 1000.0):
+			printerr("terrain_cases: a case passed %d s: FAIL" % int(CASE_CAP_S))
+			_host.get_tree().quit(1)
 
 
 func _settle(planter: MeshPlanter, eye: Vector3) -> void:

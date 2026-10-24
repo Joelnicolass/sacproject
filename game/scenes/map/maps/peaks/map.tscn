@@ -51,6 +51,7 @@
 [ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_shrub_1.png" id="fd_charnel_shrub_1"]
 [ext_resource type="Resource" path="res://data/vegetation/species/charnel_groundcover_4.tres" id="sp_charnel_groundcover_4"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_groundcover_4.png" id="fd_charnel_groundcover_4"]
+[ext_resource type="PackedScene" path="res://scenes/map/terrain/ground_scars.tscn" id="ground_scars"]
 
 [node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
@@ -94,6 +95,9 @@ shape = NodePath("../Shape")
 
 [node name="Shape" parent="Terrain/Collision" index="0"]
 disabled = true
+
+[node name="GroundScars" parent="Terrain" node_paths=PackedStringArray("shape") instance=ExtResource("ground_scars")]
+shape = NodePath("../Shape")
 
 [node name="MapProps" type="Node3D" parent="."]
 script = ExtResource("3_props")

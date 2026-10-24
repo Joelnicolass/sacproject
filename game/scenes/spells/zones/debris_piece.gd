@@ -8,6 +8,8 @@ extends Node3D
 ## The prop whose mesh the rock wears.
 @export var model := "bold"
 @export var rock: MeshInstance3D
+## Optional. The mark it leaves on the ground where it stops (a crack).
+@export var landing_mark: ScarMark
 ## What it puffs behind it, every `trail_every_s`.
 @export var trail: ParticleType
 @export_range(0.0, 100.0, 0.5, "suffix:m/s²") var gravity := 30.0
@@ -53,6 +55,8 @@ func _process(delta: float) -> void:
 		global_position.y = ground
 		velocity.y *= -bounce
 		if velocity.y < 1.0:
+			if landing_mark != null:
+				landing_mark.mark()
 			queue_free()
 			return
 	_puff += delta

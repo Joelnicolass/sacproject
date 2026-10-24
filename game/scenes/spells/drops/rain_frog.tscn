@@ -1,0 +1,60 @@
+[gd_scene load_steps=15 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/drops/zone_drop.gd" id="drop"]
+[ext_resource type="Script" path="res://scenes/fx/atlas_sprite.gd" id="atlas"]
+[ext_resource type="Shader" path="res://scenes/fx/atlas_sprite_mix.gdshader" id="mix"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/fhop.png" id="fhop"]
+[ext_resource type="Script" path="res://scenes/spells/drops/frog_hop.gd" id="hop"]
+[ext_resource type="Script" path="res://scenes/spells/drops/frog_cling.gd" id="cling"]
+[ext_resource type="Script" path="res://scenes/spells/drops/drop_blast.gd" id="blast"]
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="ptype"]
+[ext_resource type="Resource" path="res://data/fx/frog_burst.tres" id="frog_burst"]
+[ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="emitter"]
+[ext_resource type="Script" path="res://scenes/spells/drops/frog_look.gd" id="look"]
+
+[sub_resource type="QuadMesh" id="Quad_Sprite"]
+size = Vector2(0.75, 0.75)
+
+[sub_resource type="ShaderMaterial" id="Mat_Sprite"]
+shader = ExtResource("mix")
+shader_parameter/atlas = ExtResource("fhop")
+shader_parameter/energy = 3.0
+
+[node name="RainFrog" type="Node3D"]
+editor_description = "Una rana de Rain of Frogs: cae de la nube (gravedad 30), se sienta 0,5 s y salta hacia la criatura mas cercana (hasta 7 saltos); si toca una criatura infectable se pega (x0,6 de velocidad por rana) y a los 5 s explota (90 y 5 m de salpicadura). El dano llega en los datos del spawn."
+script = ExtResource("drop")
+gravity_m_s2 = 30.0
+contact_m = 0.5
+ends_on_contact = false
+rests = true
+
+[node name="Sprite" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.375, 0)
+cast_shadow = 0
+mesh = SubResource("Quad_Sprite")
+material_override = SubResource("Mat_Sprite")
+script = ExtResource("atlas")
+frame = 11
+
+[node name="Hop" type="Node" parent="." node_paths=PackedStringArray("drop")]
+script = ExtResource("hop")
+drop = NodePath("..")
+
+[node name="Cling" type="Node" parent="." node_paths=PackedStringArray("drop")]
+script = ExtResource("cling")
+drop = NodePath("..")
+
+[node name="Blast" type="Node" parent="." node_paths=PackedStringArray("drop")]
+script = ExtResource("blast")
+drop = NodePath("..")
+bursts = Array[ExtResource("ptype")]([ExtResource("frog_burst")])
+
+[node name="Croak" parent="." instance=ExtResource("emitter")]
+cue = &"frog_croak"
+play_on_ready = false
+
+[node name="Look" type="Node" parent="." node_paths=PackedStringArray("drop", "sprite", "croak")]
+script = ExtResource("look")
+drop = NodePath("..")
+sprite = NodePath("../Sprite")
+croak = NodePath("../Croak")

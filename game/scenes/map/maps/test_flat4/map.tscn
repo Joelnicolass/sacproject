@@ -15,6 +15,8 @@
 [ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="12_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="14_look"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="13_bake"]
+[ext_resource type="Shape3D" path="res://scenes/map/maps/test_flat/terrain_collision.res" id="terrain_collision"]
+[ext_resource type="PackedScene" path="res://scenes/map/terrain/ground_scars.tscn" id="ground_scars"]
 
 [node name="Map" type="Node3D" unique_id=1049100001 node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake")]
 script = ExtResource("1_root")
@@ -46,6 +48,9 @@ font_size = 48
 
 [node name="Deformer" type="Node" parent="Terrain" node_paths=PackedStringArray("shape")]
 script = ExtResource("deformer_script")
+shape = NodePath("../Shape")
+
+[node name="GroundScars" parent="Terrain" node_paths=PackedStringArray("shape") instance=ExtResource("ground_scars")]
 shape = NodePath("../Shape")
 
 [node name="Collision" type="StaticBody3D" parent="Terrain" node_paths=PackedStringArray("shape")]

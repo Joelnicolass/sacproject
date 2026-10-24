@@ -8,6 +8,11 @@ const TERRAIN_CASES := preload("res://debug/suite/terrain_cases.gd")
 ## Runs only the zone cases (debug/suite/zone_cases.gd, rift_cases.gd, aura_cases.gd, terrain_cases.gd) and quits: the loop of whoever works on the zones,
 ## instead of the whole rules_suite. `godot --headless --path game --fixed-fps 600 res://debug/suite/zone_run.tscn` (after `--`, `--only=zone`,
 ## `--only=rift`, `--only=aura` or `--only=terrain` runs one file).
+const CLOUD_CASES := preload("res://debug/suite/cloud_cases.gd")
+
+## Runs only the zone cases (debug/suite/zone_cases.gd, rift_cases.gd, aura_cases.gd, cloud_cases.gd) and quits: the loop of whoever works on the zones,
+## instead of the whole rules_suite. `godot --headless --path game --fixed-fps 600 res://debug/suite/zone_run.tscn` (after `--`, `--only=zone`,
+## `--only=rift`, `--only=aura` or `--only=cloud` runs one file).
 
 
 func _ready() -> void:
@@ -28,6 +33,8 @@ func _run() -> void:
 		results.merge(await AURA_CASES.new().run(self))
 	if only.is_empty() or only == "terrain":
 		results.merge(await TERRAIN_CASES.new().run(self))
+	if only.is_empty() or only == "cloud":
+		results.merge(await CLOUD_CASES.new().run(self))
 	var failed := 0
 	for name in results:
 		var ok := bool((results[name] as Dictionary).get("ok", false))

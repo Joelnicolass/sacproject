@@ -187,6 +187,7 @@ MAP_HEAD = """[gd_scene format=3]
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/{tag}/nav.res" id="15_navmesh"]
 [ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="17_minimap"]
+[ext_resource type="PackedScene" path="res://scenes/map/terrain/ground_scars.tscn" id="ground_scars"]
 
 [node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
@@ -230,6 +231,9 @@ shape = NodePath("../Shape")
 
 [node name="Shape" parent="Terrain/Collision" index="0"]
 disabled = true
+
+[node name="GroundScars" parent="Terrain" node_paths=PackedStringArray("shape") instance=ExtResource("ground_scars")]
+shape = NodePath("../Shape")
 
 [node name="MapProps" type="Node3D" parent="."]
 script = ExtResource("3_props")

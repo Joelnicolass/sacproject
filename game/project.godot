@@ -454,3 +454,11 @@ terrain_deform_on={
 "type": "float",
 "value": 0.0
 }
+scar_index={
+"type": "sampler2D",
+"value": ""
+}
+scar_tiles={
+"type": "sampler2DArray",
+"value": ""
+}

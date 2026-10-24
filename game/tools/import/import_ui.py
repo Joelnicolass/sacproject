@@ -80,6 +80,14 @@ EXTRA_FX = {
     # RFC 061b (SPEL): Protective Swarm's pus burst (puss, mix) and the common spark burst (sprk, Stratos blue stars; Ethereal Form).
     "puss": ("charlie.wad", "Bloo.WAD!/Char.FLDR/tex.FLDR"),
     "sprk": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
+    # RFC 061c: Freeze's ice block (frez: the SPEL's ttex; icec is the exe's default and belongs to Frozen Ground), Grasping Vines' tube (vine) and its cast particle (cst1); Slime's wet skin (lthg), splash (lth2) and the cast particle
+    # sacengine uses (cfx1, the SPEL's tcst). Daniel.wad is spelled with a capital D in the install.
+    "frez": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
+    "vine": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
+    "cst1": ("main.wad", "MAIN.WAD!/bits.FLDR"),
+    "lthg": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
+    "lth2": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
+    "cfx1": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
 }
 
 IMPORT_TEMPLATE = """[remap]

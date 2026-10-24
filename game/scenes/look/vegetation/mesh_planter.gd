@@ -2,9 +2,9 @@ class_name MeshPlanter
 extends RefCounted
 
 ## RFC-054 054c (F382): draws one VegetationLayerConfig of FloraField as meshes. A CellRing of 32 m cells (4 x 4 cells of
-## the FloraMap) follows the camera; each cell is built once on the CPU and holds one MultiMeshInstance3D per species
+## the FloraLayer images, at 8 m a pixel) follows the camera; each cell is built once on the CPU and holds one MultiMeshInstance3D per species
 ## (an internal child of the host, never saved).
-## - Build (`plan_cell`, a pure function): per 8 m data cell and species, FloraPlacement gives the instances; they are
+## - Build (`plan_cell`, a pure function): per data cell (pixel) and species, FloraPlacement gives the instances; they are
 ##   ordered by rank (i + 0.5) / n so any prefix of a 32 m cell is an even sample of its 16 data cells; the height is
 ##   TerrainShape.height_at, and an instance off the ground or inside a VegetationClear is dropped (the clear's edge thins
 ##   them by a hash). Final transform: T·R·S·BodyCatalog.pose(model, false). Meshes and materials are BodyCatalog's,
@@ -27,25 +27,24 @@ extends RefCounted
 
 const CELL_M := 32.0
 const MAP_CELLS := 80
-## FloraMap cells per side of a planter cell (32 m / 8 m).
+## Image pixels per side of a planter cell at the usual 8 m a pixel (32 m / 8 m); a layer's `cell_m` sets its own.
 const DATA_PER_CELL := 4
 const CACHE_SIZE := 64
 ## Half the diagonal of a cell plus some height: the node's visibility range is measured to its AABB center.
 const CELL_REACH_M := CELL_M * 0.7072 + 4.0
 ## Floats per instance in a MultiMesh TRANSFORM_3D buffer.
 const XFORM_STRIDE := 12
-const SALT_SPECIES := 0x3C6EF372
 const SALT_CLEAR := 0x7F4A7C15
 
 var config: VegetationLayerConfig
 var quality: VegetationQuality
-var flora: FloraMap
+var flora: FloraDensity
 var terrain: Terrain
 ## The land numbers of `terrain` (heights, lowest land, a thread-safe sampler).
 var shape: TerrainShape
 var host: Node3D
 
-## Per species drawn: {tag, tag_index, model, pose, scale_range, weight, cast_shadow, end_m, mesh, material}.
+## Per species drawn: {tag, tag_index, model, pose, scale_range, cast_shadow, end_m, mesh, material, per_cell, texel_m}.
 var groups: Array[Dictionary] = []
 ## The map's transform (the terrain's global transform) and its inverse.
 var map_xform := Transform3D.IDENTITY
@@ -77,7 +76,7 @@ class PlanJob:
 	extends RefCounted
 	var key: Vector2i
 	var config: VegetationLayerConfig
-	var flora: FloraMap
+	var flora: FloraDensity
 	var groups: Array[Dictionary]
 	var density: float
 	var height: Callable
@@ -100,7 +99,7 @@ class PlanJob:
 			task_id = -1
 
 
-func _init(layer: VegetationLayerConfig, preset: VegetationQuality, map: FloraMap, land: Terrain, owner_node: Node3D) -> void:
+func _init(layer: VegetationLayerConfig, preset: VegetationQuality, map: FloraDensity, land: Terrain, owner_node: Node3D) -> void:
 	config = layer
 	quality = preset
 	flora = map
@@ -120,42 +119,38 @@ func _init(layer: VegetationLayerConfig, preset: VegetationQuality, map: FloraMa
 	for group in groups:
 		group["end_m"] = species_end(group, config, quality)
 		group["mesh"] = BodyCatalog.mesh(str(group["model"]))
-		group["material"] = _fade_material(group["mesh"], float(group["end_m"]), config.fade_m)
+		group["material"] = fade_material(group["mesh"], float(group["end_m"]), config.fade_m)
 	groups = groups.filter(func(group: Dictionary) -> bool: return group["mesh"] != null)
 
 
-## The species a config draws on a map, without meshes (headless-safe): one entry per tag (MAP_TAGS) or per species of
-## the tag (MAP_TAG). Tags the map does not have give nothing.
-static func describe_groups(layer: VegetationLayerConfig, map: FloraMap) -> Array[Dictionary]:
+## The species the FloraLayers of a map draw, without meshes (headless-safe): one entry per layer.
+static func describe_groups(layer: VegetationLayerConfig, map: FloraDensity) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	if map == null:
 		return out
-	match layer.density_source:
-		VegetationLayerConfig.DensitySource.MAP_TAGS:
-			for index in map.tags.size():
-				var tag := map.tags[index]
-				var entry := layer.species_for_tag(tag)
-				out.append(_group(tag, index, layer.model_for(tag, entry), entry))
-		VegetationLayerConfig.DensitySource.MAP_TAG:
-			var index := map.tag_index(layer.map_tag)
-			if index < 0:
-				return out
-			for entry in layer.species:
-				if entry and entry.weight > 0.0:
-					out.append(_group(layer.map_tag, index, layer.model_for(layer.map_tag, entry), entry))
+	for index in map.entries():
+		out.append(_group(index, map))
 	return out
 
 
-static func _group(tag: String, index: int, model: String, entry: VegetationSpecies) -> Dictionary:
+## The pose of a plant prop (its model transform; plants have no offset).
+static func pose_of(model: String) -> Transform3D:
+	return BodyCatalog.pose(model, false)
+
+
+static func _group(index: int, map: FloraDensity) -> Dictionary:
+	var entry := map.species[index]
+	var model := entry.prop()
 	return {
-		"tag": tag,
+		"tag": map.tags[index],
 		"tag_index": index,
 		"model": model,
-		"pose": BodyCatalog.pose(model, false),
-		"scale_range": entry.scale_range if entry else Vector2.ONE,
-		"weight": entry.weight if entry else 1.0,
-		"cast_shadow": entry.cast_shadow if entry else false,
-		"visibility_end_m": entry.visibility_end_m if entry else 0.0,
+		"pose": pose_of(model),
+		"scale_range": entry.scale_range,
+		"cast_shadow": entry.cast_shadow,
+		"visibility_end_m": entry.visibility_end_m,
+		"texel_m": map.cell_m(index),
+		"per_cell": maxi(roundi(CELL_M / map.cell_m(index)), 1),
 	}
 
 
@@ -164,7 +159,7 @@ static func plan_groups(layer_groups: Array[Dictionary]) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	for group in layer_groups:
 		out.append({"tag": group["tag"], "tag_index": group["tag_index"], "pose": group["pose"],
-			"scale_range": group["scale_range"], "weight": group["weight"]})
+			"scale_range": group["scale_range"], "texel_m": group["texel_m"], "per_cell": group["per_cell"]})
 	return out
 
 
@@ -178,46 +173,34 @@ static func species_end(group: Dictionary, layer: VegetationLayerConfig, preset:
 ## The instances of planter cell `key`, one MultiMesh buffer (XFORM_STRIDE floats each, cell-local: the cell's corner
 ## at the map origin's height 0) per entry of `groups`. Pure: the same inputs give the same floats.
 ## `height` is a Callable(x, z) -> float, NAN off the ground. `clears`: rows x, z, radius, edge.
-static func plan_cell(layer: VegetationLayerConfig, map: FloraMap, layer_groups: Array[Dictionary], density: float,
+static func plan_cell(layer: VegetationLayerConfig, map: FloraDensity, layer_groups: Array[Dictionary], density: float,
 		key: Vector2i, height: Callable, clears: PackedVector4Array) -> Array[PackedFloat32Array]:
 	var items: Array = []
 	items.resize(layer_groups.size())
 	for g in layer_groups.size():
 		items[g] = []
 	var seed := layer.placement_seed
-	var texel := map.texel_m
-	var split := layer.density_source == VegetationLayerConfig.DensitySource.MAP_TAG
-	var total_weight := 0.0
-	for group in layer_groups:
-		total_weight += float(group["weight"])
-	# Tags plant once each (MAP_TAG: all groups share one tag).
-	var tags_done := {}
-	for dz in DATA_PER_CELL:
-		for dx in DATA_PER_CELL:
-			var tx := key.x * DATA_PER_CELL + dx
-			var tz := key.y * DATA_PER_CELL + dz
-			var sub := dz * DATA_PER_CELL + dx
-			tags_done.clear()
-			for g in layer_groups.size():
-				var group: Dictionary = layer_groups[g]
-				var tag: String = group["tag"]
-				if tags_done.has(tag):
-					continue
-				tags_done[tag] = true
+	for g in layer_groups.size():
+		var group: Dictionary = layer_groups[g]
+		var tag: String = group["tag"]
+		var tag_h := FloraPlacement.tag_hash(tag)
+		var texel: float = group["texel_m"]
+		var per: int = group["per_cell"]
+		for dz in per:
+			for dx in per:
+				var tx := key.x * per + dx
+				var tz := key.y * per + dz
 				var count := map.count_at(int(group["tag_index"]), tx, tz)
 				if count <= 0:
 					continue
 				var n := FloraPlacement.instance_count(seed, tag, tx, tz, count, density)
 				if n <= 0:
 					continue
-				var tag_h := FloraPlacement.tag_hash(tag)
+				var sub := dz * per + dx
 				var spots := FloraPlacement.cell_instances(seed, tag, tx, tz, n, texel, Vector2(0.0, 1.0))
 				for i in n:
-					var target := g
-					if split:
-						target = _pick(layer_groups, total_weight, FloraPlacement.unit(FloraPlacement.cell_hash(seed ^ SALT_SPECIES, tag_h, tx, tz, i)))
 					var at := i * FloraPlacement.STRIDE
-					(items[target] as Array).append([(float(i) + 0.5) / float(n), sub, spots[at], spots[at + 1], spots[at + 2], spots[at + 3], tag_h, tx, tz, i])
+					(items[g] as Array).append([(float(i) + 0.5) / float(n), sub, spots[at], spots[at + 1], spots[at + 2], spots[at + 3], tag_h, tx, tz, i])
 	var out: Array[PackedFloat32Array] = []
 	var corner := Vector2(key) * CELL_M
 	for g in layer_groups.size():
@@ -232,14 +215,14 @@ static func plan_cell(layer: VegetationLayerConfig, map: FloraMap, layer_groups:
 		for item: Array in list:
 			var x: float = item[2]
 			var z: float = item[3]
-			if not clears.is_empty() and _cleared(clears, x, z, seed, item):
+			if not clears.is_empty() and is_cleared(clears, x, z, seed, int(item[6]), int(item[7]), int(item[8]), int(item[9])):
 				continue
 			var y: float = height.call(x, z)
 			if is_nan(y):
 				continue
 			var s := lerpf(range_v.x, range_v.y, float(item[5]))
 			var xform := Transform3D(Basis(Vector3.UP, float(item[4])).scaled(Vector3(s, s, s)), Vector3(x - corner.x, y, z - corner.y)) * pose
-			_write(buffer, kept, xform)
+			write_xform(buffer, kept, xform)
 			kept += 1
 		buffer.resize(kept * XFORM_STRIDE)
 		out.append(buffer)
@@ -252,30 +235,21 @@ static func _by_rank(a: Array, b: Array) -> bool:
 	return a[1] < b[1]
 
 
-static func _pick(layer_groups: Array[Dictionary], total: float, u: float) -> int:
-	var at := u * total
-	for g in layer_groups.size():
-		at -= float(layer_groups[g]["weight"])
-		if at < 0.0:
-			return g
-	return layer_groups.size() - 1
-
-
 ## Inside a clear, or in its edge where a hash of the instance thins it linearly to nothing at the rim.
-static func _cleared(clears: PackedVector4Array, x: float, z: float, seed: int, item: Array) -> bool:
+static func is_cleared(clears: PackedVector4Array, x: float, z: float, seed: int, tag_h: int, tx: int, tz: int, i: int) -> bool:
 	for clear in clears:
 		var d := Vector2(x - clear.x, z - clear.y).length()
 		if d < clear.z:
 			return true
 		if clear.w > 0.0 and d < clear.z + clear.w:
 			var keep := (d - clear.z) / clear.w
-			if FloraPlacement.unit(FloraPlacement.cell_hash(seed ^ SALT_CLEAR, int(item[6]), int(item[7]), int(item[8]), int(item[9]))) > keep:
+			if FloraPlacement.unit(FloraPlacement.cell_hash(seed ^ SALT_CLEAR, tag_h, tx, tz, i)) > keep:
 				return true
 	return false
 
 
 ## MultiMesh TRANSFORM_3D layout: the 3 x 4 matrix row by row.
-static func _write(buffer: PackedFloat32Array, index: int, t: Transform3D) -> void:
+static func write_xform(buffer: PackedFloat32Array, index: int, t: Transform3D) -> void:
 	var at := index * XFORM_STRIDE
 	buffer[at] = t.basis.x.x
 	buffer[at + 1] = t.basis.y.x
@@ -293,7 +267,7 @@ static func _write(buffer: PackedFloat32Array, index: int, t: Transform3D) -> vo
 
 ## A copy of the mesh's only material that dithers out between end - fade and end (camera distance). Null for a mesh with
 ## several surfaces (material_override would paint them all one way) or no fade: the node's visibility range still ends it.
-static func _fade_material(mesh: Mesh, end_m: float, fade_m: float) -> Material:
+static func fade_material(mesh: Mesh, end_m: float, fade_m: float) -> Material:
 	if mesh == null or mesh.get_surface_count() != 1 or fade_m <= 0.0:
 		return null
 	var base := mesh.surface_get_material(0) as BaseMaterial3D

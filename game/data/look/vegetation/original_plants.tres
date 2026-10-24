@@ -1,20 +1,10 @@
-[gd_resource type="Resource" script_class="VegetationLayerConfig" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="VegetationLayerConfig" load_steps=2 format=3]
 
 [ext_resource type="Script" path="res://scenes/look/vegetation/vegetation_layer_config.gd" id="1_config"]
-[ext_resource type="Script" path="res://scenes/look/vegetation/vegetation_species.gd" id="2_species"]
-
-[sub_resource type="Resource" id="Species_default"]
-script = ExtResource("2_species")
-scale_range = Vector2(0.9, 1.1)
-cast_shadow = false
-visibility_end_m = 0.0
 
 [resource]
 script = ExtResource("1_config")
 id = &"original_plants"
-density_source = 1
-species = Array[ExtResource("2_species")]([])
-default_species = SubResource("Species_default")
 radius_m = 160.0
 fade_m = 12.0
 tier_starts_m = PackedFloat32Array(0, 60, 110)

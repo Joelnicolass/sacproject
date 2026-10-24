@@ -16,7 +16,6 @@
 [ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="17_minimap"]
 [ext_resource type="Resource" path="res://data/buildings/stratos_fountain.tres" id="fbldg_stmf"]
-[ext_resource type="Resource" path="res://scenes/map/maps/winter_wonder/flora.res" id="flora_map"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_ice_1.tscn" id="d2_stratos_ice_1"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_ice_2.tscn" id="d2_stratos_ice_2"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_ice_3.tscn" id="d2_stratos_ice_3"]
@@ -28,6 +27,21 @@
 [ext_resource type="Resource" path="res://data/catalog/creatures/zepa.tres" id="d2_zepa"]
 [ext_resource type="PackedScene" path="res://scenes/map/npc_spawn.tscn" id="d2_npc_spawn"]
 [ext_resource type="Resource" path="res://data/catalog/creatures/ycrp.tres" id="d2_ycrp"]
+[ext_resource type="Script" path="res://scenes/look/vegetation/flora_layer.gd" id="flora_layer_script"]
+[ext_resource type="Resource" path="res://data/vegetation/species/stratos_shrub_1.tres" id="sp_stratos_shrub_1"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/winter_wonder/flora/stratos_shrub_1.png" id="fd_stratos_shrub_1"]
+[ext_resource type="Resource" path="res://data/vegetation/species/stratos_shrub_2.tres" id="sp_stratos_shrub_2"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/winter_wonder/flora/stratos_shrub_2.png" id="fd_stratos_shrub_2"]
+[ext_resource type="Resource" path="res://data/vegetation/species/stratos_groundcover_1.tres" id="sp_stratos_groundcover_1"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/winter_wonder/flora/stratos_groundcover_1.png" id="fd_stratos_groundcover_1"]
+[ext_resource type="Resource" path="res://data/vegetation/species/stratos_groundcover_2.tres" id="sp_stratos_groundcover_2"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/winter_wonder/flora/stratos_groundcover_2.png" id="fd_stratos_groundcover_2"]
+[ext_resource type="Resource" path="res://data/vegetation/species/stratos_groundcover_3.tres" id="sp_stratos_groundcover_3"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/winter_wonder/flora/stratos_groundcover_3.png" id="fd_stratos_groundcover_3"]
+[ext_resource type="Resource" path="res://data/vegetation/species/stratos_groundcover_4.tres" id="sp_stratos_groundcover_4"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/winter_wonder/flora/stratos_groundcover_4.png" id="fd_stratos_groundcover_4"]
+[ext_resource type="Resource" path="res://data/vegetation/species/stratos_groundcover_5.tres" id="sp_stratos_groundcover_5"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/winter_wonder/flora/stratos_groundcover_5.png" id="fd_stratos_groundcover_5"]
 
 [node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs")]
 script = ExtResource("1_root")
@@ -43,7 +57,6 @@ npcs = NodePath("Npcs")
 unique_name_in_owner = true
 terrain = NodePath("../Terrain")
 tile_map = ExtResource("9_tiles")
-flora_map = ExtResource("flora_map")
 
 [node name="Terrain" parent="." node_paths=PackedStringArray("shape", "missing") groups=["nav_source"] instance=ExtResource("12_glb")]
 unique_name_in_owner = true
@@ -467,3 +480,47 @@ bake_settings = ExtResource("14_bake")
 [node name="MinimapBake" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("17_minimap")]
 unique_name_in_owner = true
 terrain = NodePath("../Terrain")
+
+[node name="Vegetation" type="Node3D" parent="."]
+
+[node name="StratosShrub1" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_stratos_shrub_1")
+density = ExtResource("fd_stratos_shrub_1")
+max_per_cell = 6
+
+[node name="StratosShrub2" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_stratos_shrub_2")
+density = ExtResource("fd_stratos_shrub_2")
+max_per_cell = 7
+
+[node name="StratosGroundcover1" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_stratos_groundcover_1")
+density = ExtResource("fd_stratos_groundcover_1")
+max_per_cell = 7
+
+[node name="StratosGroundcover2" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_stratos_groundcover_2")
+density = ExtResource("fd_stratos_groundcover_2")
+max_per_cell = 6
+
+[node name="StratosGroundcover3" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_stratos_groundcover_3")
+density = ExtResource("fd_stratos_groundcover_3")
+max_per_cell = 7
+
+[node name="StratosGroundcover4" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_stratos_groundcover_4")
+density = ExtResource("fd_stratos_groundcover_4")
+max_per_cell = 8
+
+[node name="StratosGroundcover5" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_stratos_groundcover_5")
+density = ExtResource("fd_stratos_groundcover_5")
+max_per_cell = 7

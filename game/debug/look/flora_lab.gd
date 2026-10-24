@@ -1,6 +1,6 @@
 extends Node
 
-## RFC-054 054c (F382): playtest scene of the map flora. Instances the setup's real map.tscn (with its FloraMap), applies
+## RFC-054 054c (F382): playtest scene of the map flora. Instances the setup's real map.tscn (with its FloraLayers), applies
 ## the setup's preset and puts the camera on pose 0; `check_tick` goes to the next pose (the last one of each setup is
 ## aerial, 120 m). The label shows what FloraField draws: instances, cells, nodes, pending cells, build time, draw calls.
 ## `--setup=<name>` (user arg) loads res://debug/look/flora_lab_<name>.tres instead of the exported one.

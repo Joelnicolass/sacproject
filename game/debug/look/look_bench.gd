@@ -198,15 +198,15 @@ func _measure_case(preset_name: String, quality: LookQuality, layers: String) ->
 		draws / sample_frames, prims / sample_frames, vram / 1048576.0, MODE_NAMES[applied.mode]])
 
 
-## RFC-054 054e: the high preset, all layers on, over the densest 32 m cell of the map's FloraMap; Flora off, then on.
+## RFC-054 054e: the high preset, all layers on, over the densest 32 m cell of the map's FloraLayers; Flora off, then on.
 func _measure_flora() -> void:
 	var rig := world.get_node_or_null("Map/Look") as LookRig
 	var field := rig.get_node_or_null("Layers/Flora") as FloraField if rig else null
-	if field == null or rig.flora_map == null:
-		print("bench flora: el mapa no tiene capa Flora o FloraMap")
+	if field == null or field.density().entries() == 0:
+		print("bench flora: el mapa no tiene capa Flora o FloraLayer")
 		return
 	var high := _presets[2]
-	var spot := _densest(rig.flora_map)
+	var spot := _densest(field.density())
 	var terrain := TerrainShape.of(self)
 	var ground := terrain.height_at(spot.x, spot.y) if terrain else 0.0
 	ground = 0.0 if is_nan(ground) else ground
@@ -237,14 +237,14 @@ func _measure_flora() -> void:
 
 
 ## Map point (x, z) at the center of the 32 m cell with the most plants.
-func _densest(map: FloraMap) -> Vector2:
+func _densest(map: FloraDensity) -> Vector2:
 	var per := MeshPlanter.DATA_PER_CELL
 	var best := Vector2i.ZERO
 	var best_sum := -1
 	for cz in MeshPlanter.MAP_CELLS:
 		for cx in MeshPlanter.MAP_CELLS:
 			var sum := 0
-			for t in map.tags.size():
+			for t in map.entries():
 				for dz in per:
 					for dx in per:
 						sum += map.count_at(t, cx * per + dx, cz * per + dz)

@@ -16,7 +16,6 @@
 [ext_resource type="Script" uid="uid://brj6glypovhy8" path="res://scenes/map/nav/map_nav_region.gd" id="f200_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="f212_bake"]
 [ext_resource type="Resource" path="res://data/buildings/james_fountain.tres" id="fbldg_jfnt"]
-[ext_resource type="Resource" path="res://scenes/map/maps/high_noon/flora.res" id="flora_map"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_rock_1.tscn" id="d2_james_rock_1"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_rock_2.tscn" id="d2_james_rock_2"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_rock_3.tscn" id="d2_james_rock_3"]
@@ -37,6 +36,17 @@
 [ext_resource type="Resource" path="res://data/catalog/creatures/raeb.tres" id="d2_raeb"]
 [ext_resource type="PackedScene" path="res://scenes/map/npc_spawn.tscn" id="d2_npc_spawn"]
 [ext_resource type="Resource" path="res://data/catalog/creatures/zepe.tres" id="d2_zepe"]
+[ext_resource type="Script" path="res://scenes/look/vegetation/flora_layer.gd" id="flora_layer_script"]
+[ext_resource type="Resource" path="res://data/vegetation/species/james_bush_1.tres" id="sp_james_bush_1"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/high_noon/flora/james_bush_1.png" id="fd_james_bush_1"]
+[ext_resource type="Resource" path="res://data/vegetation/species/james_bush_2.tres" id="sp_james_bush_2"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/high_noon/flora/james_bush_2.png" id="fd_james_bush_2"]
+[ext_resource type="Resource" path="res://data/vegetation/species/james_bush_3.tres" id="sp_james_bush_3"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/high_noon/flora/james_bush_3.png" id="fd_james_bush_3"]
+[ext_resource type="Resource" path="res://data/vegetation/species/james_bush_4.tres" id="sp_james_bush_4"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/high_noon/flora/james_bush_4.png" id="fd_james_bush_4"]
+[ext_resource type="Resource" path="res://data/vegetation/species/james_bush_5.tres" id="sp_james_bush_5"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/high_noon/flora/james_bush_5.png" id="fd_james_bush_5"]
 
 [node name="Map" type="Node3D" unique_id=1044000001 node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs")]
 script = ExtResource("1_root")
@@ -52,7 +62,6 @@ npcs = NodePath("Npcs")
 unique_name_in_owner = true
 terrain = NodePath("../Terrain")
 tile_map = ExtResource("f22_tiles")
-flora_map = ExtResource("flora_map")
 
 [node name="Terrain" parent="." unique_id=1483961628 node_paths=PackedStringArray("shape", "missing") groups=["nav_source"] instance=ExtResource("f195_terrain_glb")]
 unique_name_in_owner = true
@@ -491,3 +500,34 @@ bake_settings = ExtResource("f200_bake")
 unique_name_in_owner = true
 terrain = NodePath("../Terrain")
 
+[node name="Vegetation" type="Node3D" parent="."]
+
+[node name="JamesBush1" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_james_bush_1")
+density = ExtResource("fd_james_bush_1")
+max_per_cell = 5
+
+[node name="JamesBush2" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_james_bush_2")
+density = ExtResource("fd_james_bush_2")
+max_per_cell = 4
+
+[node name="JamesBush3" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_james_bush_3")
+density = ExtResource("fd_james_bush_3")
+max_per_cell = 5
+
+[node name="JamesBush4" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_james_bush_4")
+density = ExtResource("fd_james_bush_4")
+max_per_cell = 2
+
+[node name="JamesBush5" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_james_bush_5")
+density = ExtResource("fd_james_bush_5")
+max_per_cell = 1

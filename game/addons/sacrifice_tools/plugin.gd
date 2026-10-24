@@ -18,9 +18,6 @@ const ITEMS := [
 	# RFC-052 052b / 052i: the SoundSets of data/audio/ from assets/original/audio/index.json and assets/custom/sounds/.
 	{"title": "Sacrifice: Hornear sonidos", "args": ["--script", "res://tools/bake/bake_sound_sets.gd"], "rescan": true,
 		"about": "Crea los sets de sonido (data/audio/*.tres) que faltan: los del original desde assets/original/audio/ (si ya está importado; está en el repo por LFS), y los tuyos desde assets/custom/sounds/<tipo>/<tag>/<evento>_N.ogg|wav (van a data/audio/custom/ y ganan). No pisa los existentes. Para tus sonidos no hace falta el juego original."},
-	# RFC-054 054a: scenes/map/maps/<tag>/flora.res of the five original maps from their widgets.json (data only: re-baking is safe).
-	{"title": "Sacrifice: Hornear flora", "args": ["--quit-after", "60000", "--script", "res://tools/bake/bake_flora_map.gd", "--", "--all"], "rescan": true,
-		"about": "Escribe scenes/map/maps/<mapa>/flora.res (cuántas plantas de cada especie hay en cada celda de 8 m) de los cinco mapas del original, desde su widgets.json y su terreno, ya en el repo (no necesita el juego original instalado). Despeja 40 m alrededor del altar y 6 m alrededor del manantial. Se puede rehornear sin miedo: es solo dato."},
 ]
 # Entries with "original": true read the ORIGINAL game (not in the repo); their label says so. "exe": the command is that program
 # (not this Godot) and "args" are paths relative to the project. SETTING_INSTALL is passed to every child process as SAC_INSTALL.

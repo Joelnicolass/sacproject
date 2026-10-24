@@ -33,7 +33,25 @@
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_pcwm.tscn" id="d2_persephone_pcwm"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_silo.tscn" id="d2_persephone_silo"]
 [ext_resource type="Resource" path="res://assets/original/maps/tutorial_valley/ground_native.tres" id="native_ground"]
-[ext_resource type="Resource" path="res://scenes/map/maps/tutorial_valley/flora.res" id="flora_map"]
+[ext_resource type="Script" path="res://scenes/look/vegetation/flora_layer.gd" id="flora_layer_script"]
+[ext_resource type="Resource" path="res://data/vegetation/species/persephone_clump_1.tres" id="sp_persephone_clump_1"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/tutorial_valley/flora/persephone_clump_1.png" id="fd_persephone_clump_1"]
+[ext_resource type="Resource" path="res://data/vegetation/species/persephone_clump_2.tres" id="sp_persephone_clump_2"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/tutorial_valley/flora/persephone_clump_2.png" id="fd_persephone_clump_2"]
+[ext_resource type="Resource" path="res://data/vegetation/species/persephone_fern_1.tres" id="sp_persephone_fern_1"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/tutorial_valley/flora/persephone_fern_1.png" id="fd_persephone_fern_1"]
+[ext_resource type="Resource" path="res://data/vegetation/species/persephone_fern_2.tres" id="sp_persephone_fern_2"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/tutorial_valley/flora/persephone_fern_2.png" id="fd_persephone_fern_2"]
+[ext_resource type="Resource" path="res://data/vegetation/species/persephone_fern_3.tres" id="sp_persephone_fern_3"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/tutorial_valley/flora/persephone_fern_3.png" id="fd_persephone_fern_3"]
+[ext_resource type="Resource" path="res://data/vegetation/species/persephone_shrub_1.tres" id="sp_persephone_shrub_1"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/tutorial_valley/flora/persephone_shrub_1.png" id="fd_persephone_shrub_1"]
+[ext_resource type="Resource" path="res://data/vegetation/species/persephone_reed_1.tres" id="sp_persephone_reed_1"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/tutorial_valley/flora/persephone_reed_1.png" id="fd_persephone_reed_1"]
+[ext_resource type="Resource" path="res://data/vegetation/species/persephone_grass_1.tres" id="sp_persephone_grass_1"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/tutorial_valley/flora/persephone_grass_1.png" id="fd_persephone_grass_1"]
+[ext_resource type="Resource" path="res://data/vegetation/species/persephone_shrub_2.tres" id="sp_persephone_shrub_2"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/tutorial_valley/flora/persephone_shrub_2.png" id="fd_persephone_shrub_2"]
 
 [node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs")]
 script = ExtResource("1_root")
@@ -49,7 +67,6 @@ npcs = NodePath("Npcs")
 unique_name_in_owner = true
 terrain = NodePath("../Terrain")
 tile_map = ExtResource("9_tiles")
-flora_map = ExtResource("flora_map")
 native_ground = ExtResource("native_ground")
 
 [node name="Terrain" parent="." node_paths=PackedStringArray("shape", "missing") groups=["nav_source"] instance=ExtResource("12_glb")]
@@ -642,3 +659,59 @@ bake_settings = ExtResource("14_bake")
 [node name="MinimapBake" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("17_minimap")]
 unique_name_in_owner = true
 terrain = NodePath("../Terrain")
+
+[node name="Vegetation" type="Node3D" parent="."]
+
+[node name="PersephoneClump1" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_persephone_clump_1")
+density = ExtResource("fd_persephone_clump_1")
+max_per_cell = 4
+
+[node name="PersephoneClump2" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_persephone_clump_2")
+density = ExtResource("fd_persephone_clump_2")
+max_per_cell = 3
+
+[node name="PersephoneFern1" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_persephone_fern_1")
+density = ExtResource("fd_persephone_fern_1")
+max_per_cell = 12
+
+[node name="PersephoneFern2" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_persephone_fern_2")
+density = ExtResource("fd_persephone_fern_2")
+max_per_cell = 12
+
+[node name="PersephoneFern3" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_persephone_fern_3")
+density = ExtResource("fd_persephone_fern_3")
+max_per_cell = 18
+
+[node name="PersephoneShrub1" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_persephone_shrub_1")
+density = ExtResource("fd_persephone_shrub_1")
+max_per_cell = 4
+
+[node name="PersephoneReed1" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_persephone_reed_1")
+density = ExtResource("fd_persephone_reed_1")
+max_per_cell = 25
+
+[node name="PersephoneGrass1" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_persephone_grass_1")
+density = ExtResource("fd_persephone_grass_1")
+max_per_cell = 26
+
+[node name="PersephoneShrub2" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_persephone_shrub_2")
+density = ExtResource("fd_persephone_shrub_2")
+max_per_cell = 5

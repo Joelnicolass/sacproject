@@ -177,7 +177,6 @@ bash agent/run_determinism.sh table               # verdict and table from agent
 godot --headless --path . --script res://tools/bake/bake_body_scenes.gd                  # body scenes of the models that lack one
 godot --headless --path . res://tools/bake/bake_nav.tscn                                 # navmesh
 godot --headless --path . --script res://tools/bake/bake_sound_sets.gd -- --only=custom  # your own sounds in assets/custom/sounds/
-godot --headless --path . --quit-after 60000 --script res://tools/bake/bake_flora_map.gd -- --all   # flora.res of the five maps
 godot --resolution 256x256 --path . --script res://tools/bake/new_creature.gd -- <tag> --name="Name" --god=pyro   # a creature from assets/custom/models/<tag>.glb
 ```
 

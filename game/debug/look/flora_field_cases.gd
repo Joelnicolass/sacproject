@@ -4,9 +4,9 @@ extends RefCounted
 ## - flora_headless: every map.tscn of the original, instanced in this (headless) process, leaves 0 MultiMeshInstance3D
 ##   (internal children included) and no FloraField with a planter; run it again with `-- --dedicated --no-flow` for the
 ##   dedicated server (`dedicated` in the result says which one ran).
-## - flora_guard: a FloraField with a rig, a FloraMap and a terrain would draw (active_layers) but builds nothing here.
+## - flora_guard: a FloraField with a rig, FloraLayer nodes and a terrain would draw (active_layers) but builds nothing here.
 ## - flora_plan: every 32 m cell of every map planned at density 1 (the high preset): the instances kept against
-##   FloraMap.total() (only the spots that fall off the land are lost), the same floats twice, every instance on the
+##   FloraDensity.total() (only the spots that fall off the land are lost), the same floats twice, every instance on the
 ##   ground. The counts and the planning time per cell are in the result (for 054e).
 ## - flora_clear: no instance inside a clear; its edge thins them.
 ## - flora_switch (054f): with the rig's «Vegetación» switch off (GraphicsPrefs.vegetation_enabled through
@@ -16,14 +16,18 @@ extends RefCounted
 ##   TerrainShape.height_at; and a threaded MeshPlanter (no FloraField: it would not build here) driven over the densest
 ##   spot fills each MultiMesh with exactly those bytes, drops the plans of cells that left the ring and leaves no task.
 ## - flora_maps: every map of the catalog with a map scene (playable or not, tutorial_valley and alpine_meadow included):
-##   its Look socket holds the flora.res, the FloraMap has plants, every species it draws has its prop (the mesh would load in
-##   a window: headless never loads meshes, so MeshPlanter keeps no group here), and planning the fullest cell on the map's
-##   own ground keeps plants. A playable map without flora.res fails. Also: the debug scene that instances a map without a
-##   GraphicsApplier (persephone_compare) hands the rig a preset, or FloraField draws nothing there.
-## - flora_presets: the original_plants entry of each preset is the RFC-054 §4.4 table, and no plant casts a shadow.
+##   its `Vegetation` node holds FloraLayers, their images hold the plants of the old flora.res (flora_test_maps.gd TOTALS),
+##   every species it draws has its prop (the mesh would load in a window: headless never loads meshes, so MeshPlanter keeps
+##   no group here), and planning the fullest cell on the map's own ground keeps plants. A playable map without FloraLayers
+##   fails. Also: the debug scene that instances a map without a GraphicsApplier (persephone_compare) hands the rig a preset,
+##   or FloraField draws nothing there.
+## - flora_patch (055d-d3): a VegetationPatch's plan on the flat test map is the same twice, keeps every spot on the ground,
+##   leaves a house's clear bare, and a lower density keeps a prefix of the same plants.
+## - flora_presets: the original_plants entry of each preset is the RFC-054 §4.4 table, and no species casts a shadow.
 
+const Maps := preload("res://debug/look/flora_test_maps.gd")
 const CONFIG_PATH := "res://data/look/vegetation/original_plants.tres"
-const TREES_PATH := "res://data/look/vegetation/trees.tres"
+const SPECIES_DIR := "res://data/vegetation/species/"
 const PRESETS := {
 	&"low": {"radius_scale": 0.45, "density_scale": 0.6},
 	&"medium": {"radius_scale": 0.7, "density_scale": 0.85},
@@ -45,6 +49,7 @@ func run() -> Dictionary:
 	results["flora_maps"] = _maps()
 	results["flora_clear"] = _clear()
 	results["flora_worker"] = await _worker()
+	results["flora_patch"] = _patch()
 	results["flora_presets"] = _presets()
 	results["flora_switch"] = await _switch()
 	return results
@@ -67,7 +72,7 @@ static func _fields(node: Node, out: Array) -> void:
 func _headless() -> Dictionary:
 	var wrong := {}
 	var seen := {}
-	for tag in FloraMapBuilder.ORIGINAL_MAPS:
+	for tag in Maps.ORIGINAL_MAPS:
 		var map := MapCatalog.shared().find(StringName(tag))
 		var packed := map.map_scene if map else null
 		if packed == null:
@@ -114,16 +119,17 @@ func _maps() -> Dictionary:
 		var map := catalog.find(StringName(tag))
 		if map == null or map.map_scene == null:
 			continue
-		var path := FloraMapBuilder.path_of(map)
-		if not ResourceLoader.exists(path):
+		var root := map.map_scene.instantiate()
+		var layers := Maps.layers_of(root)
+		root.free()
+		if layers.is_empty():
 			# test_* maps are flat fixtures of the rules suite: no plants by design.
 			if tag in playable and not tag.begins_with("test"):
-				wrong[tag] = "sin flora.res"
+				wrong[tag] = "sin FloraLayer"
 			continue
-		var flora := load(path) as FloraMap
-		var socket: Variant = _saved(map.map_scene, "Look", "flora_map")
-		var land := PlantClears.land_of(map)
-		if flora == null or land == null:
+		var flora := Maps.density_of(tag)
+		var land := Maps.land_of(map)
+		if land == null:
 			wrong[tag] = "sin datos"
 			continue
 		var groups := MeshPlanter.describe_groups(config, flora)
@@ -137,8 +143,8 @@ func _maps() -> Dictionary:
 			for buffer in MeshPlanter.plan_cell(config, flora, groups, 1.0, best[0], land.shape.height_at, PackedVector4Array()):
 				kept += buffer.size() / MeshPlanter.XFORM_STRIDE
 		land.free()
-		seen[tag] = {"total": flora.total(), "species": groups.size(), "fullest_cell_kept": kept, "socket": socket != null}
-		if flora.total() <= 0 or groups.is_empty() or not no_prop.is_empty() or kept <= 0 or socket == null:
+		seen[tag] = {"total": flora.total(), "layers": layers.size(), "species": groups.size(), "fullest_cell_kept": kept}
+		if flora.total() <= 0 or groups.is_empty() or not no_prop.is_empty() or kept <= 0 or (Maps.TOTALS.has(tag) and flora.total() != Maps.TOTALS[tag]):
 			wrong[tag] = {"seen": seen[tag], "no_prop": no_prop}
 	var compare := load("res://debug/look/persephone_compare.tscn") as PackedScene
 	var preset: Variant = _saved(compare, "PersephoneCompare", "quality") if compare else null
@@ -149,15 +155,15 @@ func _maps() -> Dictionary:
 
 func _guard() -> Dictionary:
 	var map := MapCatalog.shared().find(&"peaks")
-	var land := PlantClears.land_of(map)
+	var land := Maps.land_of(map)
 	var rig := LookRig.new()
 	rig.terrain = land
-	rig.flora_map = load(FloraMapBuilder.path_of(map)) as FloraMap
 	rig.quality_preset = load("res://data/look/quality_high.tres") as LookQuality
+	var host := _host_with_layers("peaks")
 	var field := FloraField.new()
 	field.rig = rig
-	field.configs = [load(CONFIG_PATH) as VegetationLayerConfig, load(TREES_PATH) as VegetationLayerConfig]
-	tree.root.add_child(field)
+	field.configs = [load(CONFIG_PATH) as VegetationLayerConfig]
+	host.add_child(field)
 	for i in SETTLE_FRAMES:
 		await tree.process_frame
 	var layers := field.active_layers()
@@ -167,7 +173,7 @@ func _guard() -> Dictionary:
 		"multimesh": count_multimeshes(field),
 		"presentationless": FloraField.presentationless(),
 	}
-	field.queue_free()
+	host.queue_free()
 	rig.free()
 	land.free()
 	await tree.process_frame
@@ -175,14 +181,23 @@ func _guard() -> Dictionary:
 	return result
 
 
+## A node in the tree holding copies of the FloraLayers of map `tag` (a bare FloraField goes beside them).
+func _host_with_layers(tag: String) -> Node3D:
+	var host := Node3D.new()
+	for layer in Maps.layer_copies(tag):
+		host.add_child(layer)
+	tree.root.add_child(host)
+	return host
+
+
 func _plan() -> Dictionary:
 	var config := load(CONFIG_PATH) as VegetationLayerConfig
 	var maps := {}
 	var wrong := {}
-	for tag in FloraMapBuilder.ORIGINAL_MAPS:
+	for tag in Maps.ORIGINAL_MAPS:
 		var map := MapCatalog.shared().find(StringName(tag))
-		var flora := load(FloraMapBuilder.path_of(map)) as FloraMap
-		var land := PlantClears.land_of(map)
+		var flora := Maps.density_of(tag)
+		var land := Maps.land_of(map)
 		if flora == null or land == null:
 			wrong[tag] = "sin datos"
 			continue
@@ -250,8 +265,8 @@ static func _off_ground(buffer: PackedFloat32Array, key: Vector2i, land: Terrain
 func _clear() -> Dictionary:
 	var config := load(CONFIG_PATH) as VegetationLayerConfig
 	var map := MapCatalog.shared().find(&"peaks")
-	var flora := load(FloraMapBuilder.path_of(map)) as FloraMap
-	var land := PlantClears.land_of(map)
+	var flora := Maps.density_of("peaks")
+	var land := Maps.land_of(map)
 	var groups := MeshPlanter.describe_groups(config, flora)
 	var best: Vector2i = _fullest(flora, groups, 1)[0]
 	var center := (Vector2(best) + Vector2(0.5, 0.5)) * MeshPlanter.CELL_M
@@ -284,7 +299,7 @@ func _clear() -> Dictionary:
 
 
 ## The `n` 32 m cells with the most plants, fullest first.
-static func _fullest(flora: FloraMap, groups: Array[Dictionary], n: int) -> Array[Vector2i]:
+static func _fullest(flora: FloraDensity, groups: Array[Dictionary], n: int) -> Array[Vector2i]:
 	var scored := []
 	for cz in MeshPlanter.MAP_CELLS:
 		for cx in MeshPlanter.MAP_CELLS:
@@ -305,8 +320,8 @@ static func _fullest(flora: FloraMap, groups: Array[Dictionary], n: int) -> Arra
 func _worker() -> Dictionary:
 	var config := load(CONFIG_PATH) as VegetationLayerConfig
 	var map := MapCatalog.shared().find(&"peaks")
-	var flora := load(FloraMapBuilder.path_of(map)) as FloraMap
-	var land := PlantClears.land_of(map)
+	var flora := Maps.density_of("peaks")
+	var land := Maps.land_of(map)
 	var groups := MeshPlanter.describe_groups(config, flora)
 	var keys := _fullest(flora, groups, 8)
 	var center := (Vector2(keys[0]) + Vector2(0.5, 0.5)) * MeshPlanter.CELL_M
@@ -343,7 +358,7 @@ func _worker() -> Dictionary:
 
 
 ## A threaded MeshPlanter over cell `key` until nothing is pending; then far away and back mid-plan.
-func _planter_run(config: VegetationLayerConfig, flora: FloraMap, land: Terrain, key: Vector2i) -> Dictionary:
+func _planter_run(config: VegetationLayerConfig, flora: FloraDensity, land: Terrain, key: Vector2i) -> Dictionary:
 	var quality := (load("res://data/look/quality_high.tres") as LookQuality).vegetation_for(config.id)
 	var host := Node3D.new()
 	tree.root.add_child(host)
@@ -410,6 +425,35 @@ static func _positions(buffers: Array[PackedFloat32Array], key: Vector2i) -> Arr
 	return out
 
 
+func _patch() -> Dictionary:
+	var land := Maps.land_of(MapCatalog.shared().find(&"test_flat"))
+	var species := load(SPECIES_DIR + "persephone_fern_1.tres") as VegetationSpecies
+	var at := Transform3D(Basis.IDENTITY, Vector3(1325.0, 10.0, 1300.0))
+	var house := Vector4(1335.0, 1300.0, 14.65, 0.0)
+	var free := PatchPlanner.plan(species, 1, 600, 30.0, at, land.shape, Transform3D.IDENTITY, 1.0, PackedVector4Array())
+	var again := PatchPlanner.plan(species, 1, 600, 30.0, at, land.shape, Transform3D.IDENTITY, 1.0, PackedVector4Array())
+	var cleared := PatchPlanner.plan(species, 1, 600, 30.0, at, land.shape, Transform3D.IDENTITY, 1.0, PackedVector4Array([house]))
+	var half := PatchPlanner.plan(species, 1, 600, 30.0, at, land.shape, Transform3D.IDENTITY, 0.5, PackedVector4Array())
+	var other := PatchPlanner.plan(species, 2, 600, 30.0, at, land.shape, Transform3D.IDENTITY, 1.0, PackedVector4Array())
+	var inside := 0
+	var outside_disc := 0
+	var stride := MeshPlanter.XFORM_STRIDE
+	for i in cleared.size() / stride:
+		if Vector2(cleared[i * stride + 3] - house.x, cleared[i * stride + 11] - house.y).length() < house.z:
+			inside += 1
+	for i in free.size() / stride:
+		if Vector2(free[i * stride + 3] - at.origin.x, free[i * stride + 11] - at.origin.z).length() > 30.01:
+			outside_disc += 1
+	land.free()
+	var result := {
+		"planted": free.size() / stride, "with_clear": cleared.size() / stride, "inside_clear": inside, "half": half.size() / stride,
+		"outside_disc": outside_disc,
+	}
+	result["ok"] = free.size() / stride == 600 and free == again and inside == 0 and cleared.size() < free.size() \
+		and half.size() / stride == 300 and half == free.slice(0, half.size()) and free != other and outside_disc == 0
+	return result
+
+
 func _presets() -> Dictionary:
 	var wrong := {}
 	for id: StringName in PRESETS:
@@ -421,29 +465,28 @@ func _presets() -> Dictionary:
 		var want: Dictionary = PRESETS[id]
 		if not is_equal_approx(entry.radius_scale, want["radius_scale"]) or not is_equal_approx(entry.density_scale, want["density_scale"]) or entry.shadows or not entry.enabled:
 			wrong[id] = {"radius_scale": entry.radius_scale, "density_scale": entry.density_scale, "shadows": entry.shadows}
-	var config := load(CONFIG_PATH) as VegetationLayerConfig
-	var shadows := config.default_species == null or config.default_species.cast_shadow
-	for entry in config.species:
-		shadows = shadows or entry.cast_shadow
-	if shadows:
-		wrong["original_plants"] = "una especie da sombra"
-	var trees := load(TREES_PATH) as VegetationLayerConfig
-	if trees == null or trees.density_source != VegetationLayerConfig.DensitySource.NONE:
-		wrong["trees"] = "no es NONE"
+	for file in DirAccess.get_files_at(SPECIES_DIR):
+		if not file.ends_with(".tres"):
+			continue
+		var species := load(SPECIES_DIR + file) as VegetationSpecies
+		if species == null or species.density_tag().is_empty():
+			wrong[file] = "no es una especie con tag"
+		elif species.cast_shadow:
+			wrong[file] = "da sombra"
 	return {"ok": wrong.is_empty(), "wrong": wrong}
 
 
 func _switch() -> Dictionary:
 	var map := MapCatalog.shared().find(&"roads")
-	var land := PlantClears.land_of(map)
+	var land := Maps.land_of(map)
 	var rig := LookRig.new()
 	rig.terrain = land
-	rig.flora_map = load(FloraMapBuilder.path_of(map)) as FloraMap
 	rig.quality_preset = load("res://data/look/quality_high.tres") as LookQuality
+	var host := _host_with_layers("roads")
 	var field := FloraField.new()
 	field.rig = rig
 	field.configs = [load(CONFIG_PATH) as VegetationLayerConfig]
-	tree.root.add_child(field)
+	host.add_child(field)
 	await tree.process_frame
 	var on_before := field.active_layers().size()
 	rig.set_vegetation_enabled(false)
@@ -455,7 +498,7 @@ func _switch() -> Dictionary:
 	rig.set_vegetation_enabled(true)
 	await tree.process_frame
 	var on_after := field.active_layers().size()
-	field.queue_free()
+	host.queue_free()
 	rig.free()
 	land.free()
 	await tree.process_frame

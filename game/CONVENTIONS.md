@@ -53,7 +53,7 @@ Regla del usuario: lo que se ve, se mueve o se mide en el juego es un nodo en un
 
 | # | Regla (una frase) | Qué cuenta el lint | Allowlist |
 |---|---|---|---|
-| C15 | Un nodo de contenido vive en el `.tscn`, no nace con `.new()`. | `X3D/X2D/...Player/Timer/Light/Camera.new(` en `scenes/` (sin comentarios, sin Transform/Basis/Vector) | `fx_bus`, `sound_bus`, `fx_light_layer`, `mesh_planter`, `grass_field`, `npc_spawn` |
+| C15 | Un nodo de contenido vive en el `.tscn`, no nace con `.new()`. | `X3D/X2D/...Player/Timer/Light/Camera.new(` en `scenes/` (sin comentarios, sin Transform/Basis/Vector) | `fx_bus`, `sound_bus`, `fx_light_layer`, `mesh_planter`, `patch_planner`, `grass_field`, `npc_spawn` |
 | C16 | Una posición es un `Marker3D`, no `Vector3.UP * altura`. | `Vector3.UP *` con número o nombre `height/offset/lift/reach/spread/_h`, y `const [A-Z_]*(HEIGHT\|OFFSET\|LIFT\|REACH\|SPREAD)` | ninguna |
 | C17 | Un FX o sonido es un Resource tipado, no un texto. | `FxBus.<fn>("...")` y `@export` String/StringName con nombre fx/sfx/sound/effect | ninguna |
 | C18 | Gameplay no busca contenido por tag de texto: recibe el Resource por `@export`. | `GameData.(creature\|spell\|ability\|wizard\|god\|book)*(`, `BodyCatalog.(info\|pose\|has_model)(`, `MapCatalog.`, `GameModeCatalog.` | spawners (`*spawn*.gd`), `scenes/net/`, `scenes/core/catalog/` |
@@ -105,16 +105,18 @@ class_name BuildingType extends Resource
 
 Las partes pasan a ser nodos hijos de `scene`; la colisión sale de la escena.
 
-Otro caso: `FloraMap` hoy es `tags = ["CAH1", …]` más `counts: Array[PackedByteArray]` de 320x320. Después:
+Otro caso (hecho en 055d-d3): `FloraMap` era `tags = ["CAH1", …]` más `counts: Array[PackedByteArray]` de 320x320. Ahora la flora es un **nodo** (se arrastra, se ve en el árbol, se pinta con cualquier editor de imágenes):
 
 ```gdscript
-class_name FloraLayer extends Resource
+class_name FloraLayer extends Node3D   # hijo de Vegetation/ en map.tscn
 ## Where one kind of plant grows on a map. Paint `density` in any image editor (white = dense).
-@export var species: VegetationSpecies
-@export var density: Texture2D        ## grayscale PNG, 1 px = cell_m
+@export var species: VegetationSpecies   # data/vegetation/species/<nombre>.tres
+@export var density: Texture2D           # grayscale PNG, 1 px = cell_m
 @export var cell_m := 8.0
 @export var max_per_cell := 6
 ```
+
+Pocas plantas en un lugar: `VegetationPatch` (especie, `radius_m`, `count`, `seed`).
 
 ## 5. Checklist del reviewer (por corte)
 

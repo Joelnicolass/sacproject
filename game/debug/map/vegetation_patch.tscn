@@ -1,0 +1,32 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://debug/map/vegetation_patch.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/map/maps/test_flat/map.tscn" id="2_map"]
+[ext_resource type="Script" path="res://scenes/look/vegetation/vegetation_patch.gd" id="3_patch"]
+[ext_resource type="Resource" path="res://data/vegetation/species/persephone_fern_1.tres" id="4_fern"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_tipi.tscn" id="5_tipi"]
+[ext_resource type="Resource" path="res://data/look/quality_high.tres" id="6_quality"]
+
+[node name="VegetationPatchDebug" type="Node3D" node_paths=PackedStringArray("map")]
+script = ExtResource("1_script")
+map = NodePath("Map")
+quality = ExtResource("6_quality")
+
+[node name="Map" parent="." instance=ExtResource("2_map")]
+
+[node name="Vegetation" type="Node3D" parent="Map"]
+
+[node name="Ferns" type="Node3D" parent="Map/Vegetation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1325, 10, 1300)
+script = ExtResource("3_patch")
+species = ExtResource("4_fern")
+radius_m = 30.0
+count = 600
+
+[node name="Tipi" parent="Map" instance=ExtResource("5_tipi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1335, 10, 1300)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.5, 0.866, 0, -0.866, 0.5, 1325, 55, 1350)
+current = true
+far = 600.0

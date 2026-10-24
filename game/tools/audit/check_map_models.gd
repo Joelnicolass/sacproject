@@ -11,7 +11,8 @@ extends Node
 ## stmf; font = pcfn), and ManafountBody.FALLBACK_MODEL on a map without an NTTS (test_flat).
 ## "$GODOT" --headless --path game res://tools/audit/check_map_models.tscn -- --map=peaks
 
-
+## The manafount of each land (BuildingType flags 0x80002810), same list as tools/import/scaffold_map.py.
+const FOUNT_TAGS: PackedStringArray = ["jfnt", "cafn", "pfon", "stmf", "font"]
 ## A fount node and its NTTS row are the same spot (scaffold_map places one on the other).
 const FOUNT_ROW_MAX_M := 1.0
 
@@ -51,13 +52,13 @@ func _run() -> void:
 ## Each ManafountBody shows the model its NTTS row's BLDG names (FALLBACK_MODEL without an NTTS); one line per mismatch.
 func _fount_problems(map: MapDefinition, root: Node) -> Array[String]:
 	var rows: Array = []
-	var ntts_path := PlantClears.original_file(map, "ntts.json")
+	var ntts_path := OriginalAssets.map(String(map.tag), "ntts.json")
 	if FileAccess.file_exists(ntts_path):
 		var ntts: Variant = JSON.parse_string(FileAccess.get_file_as_string(ntts_path))
 		if not ntts is Dictionary:
 			return ["%s does not parse" % ntts_path]
 		for row: Dictionary in (ntts as Dictionary).get("structures", []):
-			if PlantClears.FOUNT_TAGS.has(str(row.get("tag", ""))):
+			if FOUNT_TAGS.has(str(row.get("tag", ""))):
 				rows.append(row)
 	var problems: Array[String] = []
 	var counted := 0

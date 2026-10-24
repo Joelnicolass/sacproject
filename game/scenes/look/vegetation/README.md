@@ -1,17 +1,15 @@
-# scenes/look/vegetation/
+# vegetation
+What: the mesh plants of a map: `FloraLayer` nodes (a species + a painted density PNG, 1 px = 8 m) and `VegetationPatch` nodes (a cluster of one species in a circle), drawn as MultiMeshes around the camera.
+Not: the grass (`scenes/look/grass/`, which also owns `VegetationClear`), anything the simulation reads (nothing here exists in the dedicated or headless process), the buildings or trees of the original (`MapBuilding`).
+Talks to: `FloraLayer` calls `FloraField.layers_changed` (group `flora_field`); `FloraField` (in `Look/Layers/Flora`) makes a `FloraDensity` snapshot of the layers under its `MapRoot` and hands it to one `MeshPlanter` per `VegetationLayerConfig`; `VegetationClear` calls `clears_changed()` on fields and patches; `FloraField` calls `field_changed()` on patches when the preset or the switch changes. A patch reads the field's `rig` (terrain, «Vegetación» switch) and preset.
+Edit: add a `FloraLayer` under the map's `Vegetation` node, drop a species from `data/vegetation/species/` and paint its L8 PNG (`maps/<mapa>/flora/`, white = `max_per_cell`; `show_overlay` tints it in the editor). For a few plants add a `VegetationPatch` (species, `radius_m` circle, `count`, `seed`). A house brings its own `VegetationClear`; move the house and the clear moves. LOD, radius, fade: `data/look/vegetation/original_plants.tres` + the preset.
+Debug: `debug/map/vegetation_patch.tscn` (F6: flat map, a patch of ferns, a house); `debug/look/flora_lab.tscn` (`-- --setup=roads_low`); `debug/look/flora_cases.tscn` (headless, `FLORA CASES PASS`).
 
-Motor compartido de la vegetación (RFC-054): lo que usan el pasto y la flora de los mapas. Solo presentación: nada de esto existe en el dedicado ni en headless, y la simulación no lo lee.
-
-- `flora_map.gd` (`FloraMap`, Resource): cuántas plantas de cada especie del original hay en cada celda de 8 m de un mapa (`counts`, una grilla de 320 × 320 por tag, tope 255). Uno por mapa en `scenes/map/maps/<mapa>/flora.res`, binario y comprimido (4–11 KB). Lo escribe solo `tools/bake/bake_flora_map.gd` (o «Sacrifice: Hornear flora» en Project > Tools) desde `widgets.json` y el terreno, con los mismos claros que `bake_map_layout` (40 m del altar, 6 m del manantial, fuera del suelo no). Se puede rehornear sin miedo; `--check` lo compara con el JSON.
-- `flora_placement.gd` (`FloraPlacement`, funciones puras): dónde van las plantas de una celda. Con la misma semilla da siempre lo mismo, sin `randi()` ni el azar de la partida. Cualquier prefijo de la lista es una muestra pareja de la celda, así que el LOD dibuja un prefijo.
-- `cell_ring.gd` (`CellRing`, RefCounted): qué celdas existen alrededor de la cámara (la del viewport en el editor, la del juego al jugar) y en qué tier, con histéresis. Solo guarda claves y tiers: `update` dice qué celdas aparecieron, se fueron o cambiaron de tier, y la capa crea, mueve o libera sus nodos. Lo usan `GrassField` y `MeshPlanter`.
-- Claros: `VegetationClear` (en `scenes/look/grass/`) avisa al grupo `vegetation_field`; cada capa de vegetación entra en ese grupo y responde `clears_changed()`.
-
-- `vegetation_layer_config.gd` (`VegetationLayerConfig`), `vegetation_species.gd` (`VegetationSpecies`): una capa de mallas y sus especies (`data/look/vegetation/original_plants.tres`, `trees.tres` vacío). `density_source`: `MAP_TAGS` (cada tag del `FloraMap` dibuja el prop de su nombre), `MAP_TAG`, `NONE`, `BAKED` (054g, todavía no dibuja). Sombras apagadas por especie.
-- `vegetation_quality.gd` (`VegetationQuality`): cuánto dibuja una capa en un preset (`LookQuality.vegetation`, por `layer_id`). Sin entrada, la capa no se dibuja.
-- `mesh_planter.gd` (`MeshPlanter`): celdas de 32 m (4 × 4 del `FloraMap`) con un `MultiMeshInstance3D` por especie, internos y nunca guardados. Arma como mucho `max_builds_per_frame` por cuadro, caché LRU de 64, LOD por prefijo (`visible_instance_count`) y fin por distancia con fundido.
-- `flora_field.gd` (`FloraField`, `LookLayer @tool`, `flora_layer.tscn` en `Look/Layers/Flora`): un `MeshPlanter` por config. Lee el `FloraMap` de `LookRig.flora_map` (lo fija cada `map.tscn`). En el editor usa `editor_quality` (medio) y la cámara del viewport. El interruptor «Vegetación» de Opciones → Gráficos (`GraphicsPrefs.vegetation_enabled`, por `GraphicsApplier` a `LookRig.set_vegetation_enabled`) la apaga sin importar el preset.
-
-Laboratorio con ventana: `res://debug/look/flora_lab.tscn` (`check_tick` pasa de pose; `-- --setup=roads_low`).
-
-Pruebas sin ventana: `res://debug/look/flora_cases.tscn` → `FLORA CASES PASS`.
+---
+- `flora_density.gd` (`FloraDensity`, RefCounted): the snapshot of the layers as plain bytes, so `WorkerThreadPool` tasks read it safely. Count of a pixel = round(value x `max_per_cell` / 255).
+- `flora_placement.gd` (`FloraPlacement`, funciones puras): donde van las plantas de una celda. Con la misma semilla y el mismo tag da siempre lo mismo (por eso la especie conserva el `tag` del original), sin `randi()`. Cualquier prefijo de la lista es una muestra pareja de la celda, asi que el LOD dibuja un prefijo.
+- `cell_ring.gd` (`CellRing`): que celdas existen alrededor de la camara y en que tier, con histeresis. Lo usan `GrassField` y `MeshPlanter`.
+- `mesh_planter.gd` (`MeshPlanter`): celdas de 32 m con un `MultiMeshInstance3D` por especie, internos y nunca guardados. Planifica en hilos (`plan_cell`, pura), arma como mucho `max_builds_per_frame` por cuadro dentro de `build_budget_ms`, cache LRU de 64, LOD por prefijo y fin por distancia con fundido.
+- `patch_planner.gd` (`PatchPlanner`): las instancias de un `VegetationPatch` (puro) y su anillo del editor.
+- `vegetation_species.gd` (`VegetationSpecies`), `vegetation_layer_config.gd` (`VegetationLayerConfig`), `vegetation_quality.gd` (`VegetationQuality`, por preset y `layer_id`): datos de tipo. Sombras apagadas por especie.
+- `flora_field.gd` (`FloraField`, `LookLayer @tool`, `flora_layer.tscn`): en el editor usa `editor_quality` (medio) y la camara del viewport. El interruptor «Vegetacion» de Opciones -> Graficos la apaga sin importar el preset.

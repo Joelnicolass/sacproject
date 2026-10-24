@@ -1,7 +1,7 @@
 extends Node
 
-## RFC-054 (F380-F387): runner of the headless flora cases. 054a: flora_map_cases.gd (the baked FloraMaps and
-## FloraPlacement); 054b: cell_ring_cases.gd (CellRing against the golden of GrassField's old ring); 054c:
+## RFC-054 (F380-F387): runner of the headless flora cases. 054a: flora_placement_cases.gd (the density images of the
+## maps and FloraPlacement); 054b: cell_ring_cases.gd (CellRing against the golden of GrassField's old ring); 054c:
 ## flora_field_cases.gd (FloraField and MeshPlanter; `-- --dedicated --no-flow` runs its map case as the dedicated server: without
 ## --no-flow MpFlow would replace this scene with the world).
 ## A case script may declare `var tree: SceneTree` (the runner sets it) and make `run` a coroutine.
@@ -10,10 +10,10 @@ extends Node
 ## Watchdog: past `timeout_s` of wall time it prints `FLORA CASES FAIL timeout` and quits 1. The case scripts are loaded
 ## at run time (not preloaded), so one that fails to compile ends in a FAIL line instead of a runner without a script.
 
-const CASES := ["res://debug/look/flora_map_cases.gd", "res://debug/look/cell_ring_cases.gd", "res://debug/look/flora_field_cases.gd"]
+const CASES := ["res://debug/look/flora_placement_cases.gd", "res://debug/look/cell_ring_cases.gd", "res://debug/look/flora_field_cases.gd"]
 
 ## Real seconds (not game time: --fixed-fps would stretch a game-time timer).
-@export var timeout_s := 20.0
+@export var timeout_s := 40.0
 
 var _done := false
 

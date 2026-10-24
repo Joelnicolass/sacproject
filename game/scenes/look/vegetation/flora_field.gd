@@ -3,18 +3,20 @@ class_name FloraField
 extends LookLayer
 
 ## RFC-054 054c (F382): the mesh vegetation of a map (Look/Layers/Flora). One MeshPlanter per VegetationLayerConfig of
-## `configs` (original_plants.tres: the plants of the original; trees.tres: empty), each drawing the map's FloraMap
-## (`LookRig.flora_map`, set in the map.tscn) around the camera: the 3D viewport's in the editor, the game's when playing.
+## `configs` (original_plants.tres), each drawing the FloraLayer nodes of the map (the `Vegetation` node of its map.tscn;
+## a snapshot, FloraDensity) around the camera: the 3D viewport's in the editor, the game's when playing.
 ## How much each layer draws comes from the quality preset (`LookQuality.vegetation_for(config.id)`; the editor uses
 ## `editor_quality`); a preset without an entry for a layer, the rig's «Vegetación» switch off (GraphicsPrefs), the node
-## hidden or a map without a FloraMap draws nothing.
+## hidden or a map without FloraLayers draws nothing. A FloraLayer that changes calls `layers_changed` (group `GROUP`).
 ## Presentation only: no collision, no RPC, no shared RNG. Every node it makes is an internal child, never saved. In a
 ## dedicated or headless process the rig is freed, and this never builds anything there either.
 ## A `VegetationClear` that moves calls `clears_changed` (group `vegetation_field`): only the cells it touches are rebuilt.
 
 const CLEAR_POLL_S := 1.0
+## Group of the fields: FloraLayer calls `layers_changed` on it.
+const GROUP := &"flora_field"
 
-## The rig this layer belongs to (look_rig.tscn sets it): the FloraMap, the terrain, the preset and the switch.
+## The rig this layer belongs to (look_rig.tscn sets it): the terrain, the preset and the switch.
 @export var rig: LookRig
 ## One mesh layer each.
 @export var configs: Array[VegetationLayerConfig] = []:
@@ -41,6 +43,10 @@ var _clears_dirty := true
 var _clear_timer := 0.0
 var _watching: Array[Resource] = []
 var _bound_rig: LookRig
+## What the FloraLayer nodes of the map say now (rebuilt when one changes) and how many times it was rebuilt.
+var _density: FloraDensity
+var _density_dirty := true
+var _density_version := 0
 ## Main-thread microseconds of the planters (ring + applying cells) in the last frame, and the worst frame since the
 ## planters were made.
 var _last_frame_us := 0
@@ -49,6 +55,7 @@ var _worst_frame_us := 0
 
 func _ready() -> void:
 	add_to_group(VegetationClear.FIELD_GROUP)
+	add_to_group(GROUP)
 	visibility_changed.connect(_refresh)
 	set_process(false)
 	_watch_configs()
@@ -72,6 +79,12 @@ func apply_quality(_preset: LookQuality) -> void:
 	_refresh()
 
 
+## `FloraLayer` nodes call this (through the group) when one changes, enters or leaves the tree.
+func layers_changed() -> void:
+	_density_dirty = true
+	_refresh.call_deferred()
+
+
 ## `VegetationClear` nodes call this (through the group) when one moves, resizes or leaves.
 func clears_changed() -> void:
 	_clears_dirty = true
@@ -93,13 +106,13 @@ func preset() -> LookQuality:
 ## dedicated) is not part of it: `presentationless` stops the building on top.
 func active_layers() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
-	if rig == null or rig.flora_map == null or not rig.vegetation_enabled:
+	if rig == null or not is_inside_tree() or not rig.vegetation_enabled or density().entries() == 0:
 		return out
 	var current := preset()
 	if current == null:
 		return out
 	for config in configs:
-		if config == null or not config.draws():
+		if config == null:
 			continue
 		var layer_quality := current.vegetation_for(config.id)
 		if layer_quality == null or not layer_quality.enabled or layer_quality.density_scale <= 0.0:
@@ -111,6 +124,7 @@ func active_layers() -> Array[Dictionary]:
 func _refresh() -> void:
 	if not is_inside_tree():
 		return
+	get_tree().call_group(VegetationPatch.GROUP, &"field_changed")
 	_bind_rig()
 	var layers: Array[Dictionary] = []
 	if is_visible_in_tree() and not presentationless():
@@ -126,7 +140,7 @@ func _refresh() -> void:
 	_last_frame_us = 0
 	_worst_frame_us = 0
 	for layer in layers:
-		var planter := MeshPlanter.new(layer["config"], layer["quality"], rig.flora_map, terrain, self)
+		var planter := MeshPlanter.new(layer["config"], layer["quality"], density(), terrain, self)
 		# The editor reloads tool scripts under a running task: plan on the main thread there.
 		planter.threaded = not Engine.is_editor_hint()
 		_planters.append(planter)
@@ -151,7 +165,7 @@ func _on_vegetation_toggled(_enabled: bool) -> void:
 ## What the planters depend on: a change of it rebuilds them.
 func _signature_of(layers: Array[Dictionary], terrain: Terrain) -> String:
 	var parts := PackedStringArray()
-	parts.append(str(rig.flora_map.get_instance_id() if rig and rig.flora_map else 0))
+	parts.append(str(_density_version))
 	parts.append(str(terrain.get_instance_id() if terrain else 0))
 	for layer in layers:
 		var q: VegetationQuality = layer["quality"]
@@ -189,11 +203,9 @@ func _update_clears(delta: float) -> void:
 ## Every VegetationClear in map coordinates: x, z, radius, edge.
 func _gather_clears(to_map: Transform3D) -> PackedVector4Array:
 	var found := PackedVector4Array()
-	for node in get_tree().get_nodes_in_group(VegetationClear.GROUP):
-		var clear := node as VegetationClear
-		if clear and clear.is_inside_tree() and clear.radius_m > 0.0:
-			var local := to_map * clear.global_position
-			found.append(Vector4(local.x, local.z, clear.radius_m, clear.edge_m))
+	for row in VegetationClear.world_rows(get_tree()):
+		var local := to_map * Vector3(row.x, 0.0, row.y)
+		found.append(Vector4(local.x, local.z, row.z, row.w))
 	return found
 
 
@@ -209,25 +221,12 @@ func _watch_configs() -> void:
 	for resource in _watching:
 		if is_instance_valid(resource) and resource.changed.is_connected(_on_config_changed):
 			resource.changed.disconnect(_on_config_changed)
-	_watching.clear()
-	for config in configs:
-		if config == null:
-			continue
-		_watch(config)
-		if config.default_species:
-			_watch(config.default_species)
-		for entry in config.species:
-			if entry:
-				_watch(entry)
-
-
-func _watch(resource: Resource) -> void:
-	if not resource.changed.is_connected(_on_config_changed):
+	_watching.assign(configs.filter(func(config: VegetationLayerConfig) -> bool: return config != null))
+	for resource in _watching:
 		resource.changed.connect(_on_config_changed)
-		_watching.append(resource)
 
 
-## Editing a config or a species in the inspector rebuilds the layers (RFC-054 §11.2).
+## Editing a config in the inspector rebuilds the layers (RFC-054 §11.2).
 func _on_config_changed() -> void:
 	_watch_configs()
 	_free_planters()
@@ -236,38 +235,43 @@ func _on_config_changed() -> void:
 
 ## Instances drawn now by every layer (the visible prefix of each shown cell).
 func instance_count() -> int:
-	var sum := 0
-	for planter in _planters:
-		sum += planter.instance_count()
-	return sum
+	return _planters.reduce(func(sum: int, planter: MeshPlanter) -> int: return sum + planter.instance_count(), 0)
 
 
 ## Cells built and shown by every layer.
 func cell_count() -> int:
-	var sum := 0
-	for planter in _planters:
-		sum += planter.cell_count()
-	return sum
+	return _planters.reduce(func(sum: int, planter: MeshPlanter) -> int: return sum + planter.cell_count(), 0)
 
 
 ## MultiMeshInstance3D nodes shown by every layer.
 func node_count() -> int:
-	var sum := 0
-	for planter in _planters:
-		sum += planter.node_count()
-	return sum
+	return _planters.reduce(func(sum: int, planter: MeshPlanter) -> int: return sum + planter.node_count(), 0)
 
 
 func pending_count() -> int:
-	var sum := 0
-	for planter in _planters:
-		sum += planter.pending_count()
-	return sum
+	return _planters.reduce(func(sum: int, planter: MeshPlanter) -> int: return sum + planter.pending_count(), 0)
 
 
 ## Main-thread time of the planters (microseconds, every layer): x the last frame, y the worst since they were made.
 func build_us() -> Vector2i:
 	return Vector2i(_last_frame_us, _worst_frame_us)
+
+
+## The FloraLayer nodes of this field's map as a snapshot: the layers under the same MapRoot (or, without one, in the
+## tree), taken again after one changed.
+func density() -> FloraDensity:
+	if _density == null or _density_dirty:
+		_density_dirty = false
+		_density_version += 1
+		_density = FloraDensity.gather(_scope())
+	return _density
+
+
+func _scope() -> Node:
+	var node: Node = self
+	while node and not node is MapRoot:
+		node = node.get_parent()
+	return node if node else get_tree().root
 
 
 func planters() -> Array[MeshPlanter]:

@@ -78,8 +78,8 @@ for path in sorted((ROOT / "scenes").rglob("*.gd")):
     for model in re.findall(r'(?:MODEL|_model) := "(\w{4})"', path.read_text()):
         rows.append((model, "spell/prop", status(model), str(path.relative_to(ROOT))))
 
-# Plants: the widgets of every imported map. The Flora layer (RFC-054, original_plants.tres: MAP_TAGS) draws each tag with
-# the prop of its own name.
+# Plants: the widgets of every imported map. The FloraLayer nodes (RFC-054, 055d-d3) draw each species with
+# the prop of its tag's name.
 for widgets in sorted((ROOT / "assets/original/maps").glob("*/widgets.json")):
     land_map = widgets.parent.name
     for widget in sorted(json.loads(widgets.read_text())):

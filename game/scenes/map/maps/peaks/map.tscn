@@ -16,7 +16,6 @@
 [ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="17_minimap"]
 [ext_resource type="Resource" path="res://data/buildings/charnel_fountain.tres" id="fbldg_cafn"]
-[ext_resource type="Resource" path="res://scenes/map/maps/peaks/flora.res" id="flora_map"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_spire.tscn" id="d2_charnel_spire"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_canopy.tscn" id="d2_charnel_canopy"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_tendril.tscn" id="d2_charnel_tendril"]
@@ -27,6 +26,29 @@
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_grave_1.tscn" id="d2_charnel_grave_1"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_grave_2.tscn" id="d2_charnel_grave_2"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_grave_3.tscn" id="d2_charnel_grave_3"]
+[ext_resource type="Script" path="res://scenes/look/vegetation/flora_layer.gd" id="flora_layer_script"]
+[ext_resource type="Resource" path="res://data/vegetation/species/charnel_groundcover_1.tres" id="sp_charnel_groundcover_1"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_groundcover_1.png" id="fd_charnel_groundcover_1"]
+[ext_resource type="Resource" path="res://data/vegetation/species/charnel_groundcover_2.tres" id="sp_charnel_groundcover_2"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_groundcover_2.png" id="fd_charnel_groundcover_2"]
+[ext_resource type="Resource" path="res://data/vegetation/species/charnel_fern_1.tres" id="sp_charnel_fern_1"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_fern_1.png" id="fd_charnel_fern_1"]
+[ext_resource type="Resource" path="res://data/vegetation/species/charnel_fern_2.tres" id="sp_charnel_fern_2"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_fern_2.png" id="fd_charnel_fern_2"]
+[ext_resource type="Resource" path="res://data/vegetation/species/charnel_fern_3.tres" id="sp_charnel_fern_3"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_fern_3.png" id="fd_charnel_fern_3"]
+[ext_resource type="Resource" path="res://data/vegetation/species/charnel_reed_1.tres" id="sp_charnel_reed_1"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_reed_1.png" id="fd_charnel_reed_1"]
+[ext_resource type="Resource" path="res://data/vegetation/species/charnel_reed_2.tres" id="sp_charnel_reed_2"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_reed_2.png" id="fd_charnel_reed_2"]
+[ext_resource type="Resource" path="res://data/vegetation/species/charnel_reed_3.tres" id="sp_charnel_reed_3"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_reed_3.png" id="fd_charnel_reed_3"]
+[ext_resource type="Resource" path="res://data/vegetation/species/charnel_groundcover_3.tres" id="sp_charnel_groundcover_3"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_groundcover_3.png" id="fd_charnel_groundcover_3"]
+[ext_resource type="Resource" path="res://data/vegetation/species/charnel_shrub_1.tres" id="sp_charnel_shrub_1"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_shrub_1.png" id="fd_charnel_shrub_1"]
+[ext_resource type="Resource" path="res://data/vegetation/species/charnel_groundcover_4.tres" id="sp_charnel_groundcover_4"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_groundcover_4.png" id="fd_charnel_groundcover_4"]
 
 [node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs")]
 script = ExtResource("1_root")
@@ -42,7 +64,6 @@ npcs = NodePath("Npcs")
 unique_name_in_owner = true
 terrain = NodePath("../Terrain")
 tile_map = ExtResource("9_tiles")
-flora_map = ExtResource("flora_map")
 
 [node name="Terrain" parent="." node_paths=PackedStringArray("shape", "missing") groups=["nav_source"] instance=ExtResource("12_glb")]
 unique_name_in_owner = true
@@ -209,3 +230,71 @@ bake_settings = ExtResource("14_bake")
 [node name="MinimapBake" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("17_minimap")]
 unique_name_in_owner = true
 terrain = NodePath("../Terrain")
+
+[node name="Vegetation" type="Node3D" parent="."]
+
+[node name="CharnelGroundcover1" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_charnel_groundcover_1")
+density = ExtResource("fd_charnel_groundcover_1")
+max_per_cell = 9
+
+[node name="CharnelGroundcover2" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_charnel_groundcover_2")
+density = ExtResource("fd_charnel_groundcover_2")
+max_per_cell = 8
+
+[node name="CharnelFern1" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_charnel_fern_1")
+density = ExtResource("fd_charnel_fern_1")
+max_per_cell = 10
+
+[node name="CharnelFern2" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_charnel_fern_2")
+density = ExtResource("fd_charnel_fern_2")
+max_per_cell = 12
+
+[node name="CharnelFern3" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_charnel_fern_3")
+density = ExtResource("fd_charnel_fern_3")
+max_per_cell = 12
+
+[node name="CharnelReed1" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_charnel_reed_1")
+density = ExtResource("fd_charnel_reed_1")
+max_per_cell = 17
+
+[node name="CharnelReed2" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_charnel_reed_2")
+density = ExtResource("fd_charnel_reed_2")
+max_per_cell = 15
+
+[node name="CharnelReed3" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_charnel_reed_3")
+density = ExtResource("fd_charnel_reed_3")
+max_per_cell = 13
+
+[node name="CharnelGroundcover3" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_charnel_groundcover_3")
+density = ExtResource("fd_charnel_groundcover_3")
+max_per_cell = 6
+
+[node name="CharnelShrub1" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_charnel_shrub_1")
+density = ExtResource("fd_charnel_shrub_1")
+max_per_cell = 4
+
+[node name="CharnelGroundcover4" type="Node3D" parent="Vegetation"]
+script = ExtResource("flora_layer_script")
+species = ExtResource("sp_charnel_groundcover_4")
+density = ExtResource("fd_charnel_groundcover_4")
+max_per_cell = 7

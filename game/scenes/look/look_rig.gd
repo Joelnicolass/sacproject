@@ -30,9 +30,6 @@ signal vegetation_toggled(enabled: bool)
 @export var tile_map: TileLayerMap
 ## The ground of a map made of one god's land (empty for the other maps): a look of that god wears it.
 @export var native_ground: NativeGround
-## How many plants of the original stand in each 8 m cell of this map (scenes/map/maps/<tag>/flora.res).
-## The Flora layer draws it; empty = no plants.
-@export var flora_map: FloraMap
 
 var profile: LookProfile
 ## Last preset handed to `apply_quality` (or the one the Quality socket holds).

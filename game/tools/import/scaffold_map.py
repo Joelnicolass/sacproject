@@ -6,7 +6,7 @@ The Godot side of an imported map (RFC-050): the files a map needs besides its a
   python3 tools/import/scaffold_map.py --map=Peaks            # write what is missing, list what it wrote
   python3 tools/import/scaffold_map.py --map=Peaks --force    # overwrite map.tscn and the definition (they are hand-edited afterwards)
   python3 tools/import/scaffold_map.py --scp="Tutorial/(tu02).scp" --tag=tutorial_valley --not-playable --no-npcs   # a map to look at, without inhabitants
-  python3 tools/import/scaffold_map.py --map=Peaks --wire-flora   # after bake_flora_map.gd wrote flora.res: hang it from the Look of the existing map.tscn
+  python3 tools/import/scaffold_map.py --map=Peaks --wire-flora   # the plants of widgets.json as FloraLayer nodes (a density PNG per species) in the existing map.tscn; then import once
 
 Run tools/import/import_map.py first (it writes ntts.json, tiles.png, ...). For `<tag>` it writes:
   assets/original/maps/<tag>/terrain.glb.import    the post-import of the ground (tools/terrain_import.gd), so Godot reads the glb as a terrain
@@ -19,7 +19,7 @@ them (sac_formats.terrain.ground_height_fn); the WizardSpot of seat k is 30 m to
 Buildings: every other structure row that has a BuildingType in data/buildings/ becomes an instance of its scene
 (scenes/structures/buildings/<name>.tscn) at the ground height, turned by its facing; Npcs: every creature row becomes an NpcSpawn
 (the creature type of data/catalog/creatures/, its side) 0.2 m above the ground. Rows off the land, rows with no type and the sky dome
-`pcsb` (a 1 140 m model, not a prop) are left out and listed. The plants are not nodes: tools/bake/bake_flora_map.gd bakes them.
+`pcsb` (a 1 140 m model, not a prop) are left out and listed. The plants are --wire-flora's: one FloraLayer per species under a `Vegetation` node.
 The navmesh is baked with the «Hornear navmesh» button of the NavRegion. Nothing here is read at runtime. Idempotent: an existing file
 is kept unless --force.
 """
@@ -28,7 +28,9 @@ import base64
 import json
 import math
 import re
+import struct
 import sys
+import zlib
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -46,7 +48,7 @@ FORCE = "--force" in ARGS
 HAS_NATIVE = (ASSETS / "tiles_native.png").exists()
 
 # The altar and the manafount of each land (flags 0x80001407 and 0x80002810 in data/buildings/). Same lists as
-# tools/bake/plant_clears.py: those rows are PlayerStart and Manafount nodes of the map scene, not buildings.
+# the plant clearings of --wire-flora: those rows are PlayerStart and Manafount nodes of the map scene, not buildings.
 ALTAR_TAGS = ("jaal", "ca_a", "pyal", "stal", "alt1")
 FOUNT_TAGS = ("jfnt", "cafn", "pfon", "stmf", "font")
 NEUTRAL_SIDE = 31
@@ -270,10 +272,6 @@ def creature_files() -> dict:
     return files
 
 
-def flora_line() -> str:
-    return 'flora_map = ExtResource("flora_map")\n' if (SCENES / "flora.res").exists() else ""
-
-
 def map_tscn(ntts: dict, seats: list) -> str:
     height_at = terrain.ground_height_fn(SCP)
     founts = [s for s in ntts["structures"] if s["tag"] in FOUNT_TAGS]
@@ -398,9 +396,7 @@ side = {side}
     if HAS_NATIVE:
         native_look = 'native_ground = ExtResource("native_ground")\n'
         resource("Resource", "res://assets/original/maps/%s/ground_native.tres" % TAG, "native_ground")
-    head = MAP_HEAD.format(tag=TAG, native_look=flora_line() + native_look)
-    if flora_line():
-        resource("Resource", "res://scenes/map/maps/%s/flora.res" % TAG, "flora_map")
+    head = MAP_HEAD.format(tag=TAG, native_look=native_look)
     cut = head.index("\n\n[node ")
     head = head[:cut] + "".join("\n" + line for line in ext) + head[cut:]
     return head + "".join(body)
@@ -417,23 +413,83 @@ def wizard_spot(altar: dict, fount: dict, distance: float = 30.0) -> tuple:
     return [c, 0, s, 0, 1, 0, -s, 0, c], off
 
 
+PLANT_CELL_M = 8.0
+PLANT_CELLS = 320
+ALTAR_CLEAR_M = 40.0
+FOUNT_CLEAR_M = 6.0
+
+
+def png_l8(size: int, data: bytes) -> bytes:
+    """A grayscale (L8) PNG of size x size pixels."""
+    def chunk(kind: bytes, body: bytes) -> bytes:
+        return struct.pack(">I", len(body)) + kind + body + struct.pack(">I", zlib.crc32(kind + body) & 0xFFFFFFFF)
+    raw = b"".join(b"\x00" + data[row * size:(row + 1) * size] for row in range(size))
+    return b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", size, size, 8, 0, 0, 0, 0)) + chunk(b"IDAT", zlib.compress(raw, 9)) + chunk(b"IEND", b"")
+
+
+def species_files() -> dict:
+    """Original plant tag -> file stem of data/vegetation/species/."""
+    found = {}
+    for f in (ROOT / "data/vegetation/species").glob("*.tres"):
+        m = re.search(r'^tag = "([^"]*)"', f.read_text(), re.M)
+        if m:
+            found[m.group(1)] = f.stem
+    return found
+
+
+def plant_cells(rows: list, height_at, clears: list) -> list:
+    """Plants per 8 m cell (row-major, 320 x 320, capped at 255): on the land, outside the altar's and the fount's clearing."""
+    counts = [0] * (PLANT_CELLS * PLANT_CELLS)
+    for x, z in ((row[0], row[1]) for row in rows):
+        if height_at(x, z) is None or any(math.hypot(x - cx, z - cz) < radius for cx, cz, radius in clears):
+            continue
+        cx, cz = min(max(int(x // PLANT_CELL_M), 0), PLANT_CELLS - 1), min(max(int(z // PLANT_CELL_M), 0), PLANT_CELLS - 1)
+        counts[cz * PLANT_CELLS + cx] = min(counts[cz * PLANT_CELLS + cx] + 1, 255)
+    return counts
+
+
 def wire_flora() -> None:
-    """Hangs flora.res from the Look of the map.tscn that exists (the plants are baked after the scene can load)."""
+    """The plants of widgets.json as FloraLayer nodes of the existing map.tscn: per species a density PNG
+    (scenes/map/maps/<tag>/flora/<species>.png, v = round(count x 255 / max), max_per_cell = max) and a node under `Vegetation`. A tag with
+    no species file gets data/vegetation/species/<tag>.tres: rename it by hand. Import the project once afterwards."""
     path = SCENES / "map.tscn"
     text = path.read_text()
-    if not (SCENES / "flora.res").exists():
-        sys.exit("scaffold_map: bake the plants first (tools/bake/bake_flora_map.gd -- --map=%s): flora.res is missing" % TAG)
-    if "flora_map" in text:
-        print("scaffold_map: %s already has its flora_map" % TAG)
+    if '[node name="Vegetation"' in text and not FORCE:
+        print("scaffold_map: %s already has its Vegetation node" % TAG)
         return
-    head = '[ext_resource type="Resource" path="res://scenes/map/maps/%s/flora.res" id="flora_map"]\n' % TAG
+    widgets = json.loads((ASSETS / "widgets.json").read_text())
+    structures = json.loads((ASSETS / "ntts.json").read_text())["structures"]
+    clears = [(s["x"], s["z"], ALTAR_CLEAR_M) for s in structures if s["tag"] in ALTAR_TAGS]
+    clears += [(s["x"], s["z"], FOUNT_CLEAR_M) for s in structures if s["tag"] in FOUNT_TAGS]
+    height_at = terrain.ground_height_fn(SCP)
+    known = species_files()
+    heads = ['[ext_resource type="Script" path="res://scenes/look/vegetation/flora_layer.gd" id="flora_layer_script"]']
+    nodes = ['\n[node name="Vegetation" type="Node3D" parent="."]']
+    for tag in sorted(widgets):
+        counts = plant_cells(widgets[tag], height_at, clears)
+        biggest = max(counts)
+        if biggest == 0:
+            continue
+        if tag not in known:
+            known[tag] = tag.lower()
+            (ROOT / "data/vegetation/species").mkdir(parents=True, exist_ok=True)
+            (ROOT / "data/vegetation/species" / (tag.lower() + ".tres")).write_text(
+                '[gd_resource type="Resource" script_class="VegetationSpecies" load_steps=2 format=3]\n\n'
+                '[ext_resource type="Script" path="res://scenes/look/vegetation/vegetation_species.gd" id="1_species"]\n\n'
+                '[resource]\nscript = ExtResource("1_species")\ntag = "%s"\n' % tag)
+        name = known[tag]
+        png = SCENES / "flora" / (name + ".png")
+        png.parent.mkdir(parents=True, exist_ok=True)
+        png.write_bytes(png_l8(PLANT_CELLS, bytes(round(c * 255 / biggest) for c in counts)))
+        heads.append('[ext_resource type="Resource" path="res://data/vegetation/species/%s.tres" id="sp_%s"]' % (name, name))
+        heads.append('[ext_resource type="Texture2D" path="res://scenes/map/maps/%s/flora/%s.png" id="fd_%s"]' % (TAG, name, name))
+        nodes.append('\n[node name="%s" type="Node3D" parent="Vegetation"]\nscript = ExtResource("flora_layer_script")\n'
+                     'species = ExtResource("sp_%s")\ndensity = ExtResource("fd_%s")\nmax_per_cell = %d' % (pascal(name), name, name, biggest))
+        print("scaffold_map: %s %s -> %s (max %d)" % (TAG, tag, name, biggest))
     last = max(m.end() for m in re.finditer(r"^\[ext_resource [^\n]*\n", text, re.M))
-    text = text[:last] + head + text[last:]
-    text, count = re.subn(r'(\[node name="Look"[^\n]*\n(?:[^\n\[][^\n]*\n)*?tile_map = [^\n]*\n)', r'\1flora_map = ExtResource("flora_map")\n', text, count=1)
-    if count != 1:
-        sys.exit("scaffold_map: %s has no Look node with a tile_map" % TAG)
-    path.write_text(text)
-    print("scaffold_map: %s: flora_map wired" % TAG)
+    text = text[:last] + "\n".join(heads) + "\n" + text[last:]
+    path.write_text(text.rstrip("\n") + "\n" + "\n".join(nodes) + "\n")
+    print("scaffold_map: %s: Vegetation wired; import the project once (Godot --import)" % TAG)
 
 
 def main() -> None:

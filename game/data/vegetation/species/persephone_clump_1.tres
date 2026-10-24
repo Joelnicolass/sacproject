@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="VegetationSpecies" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/look/vegetation/vegetation_species.gd" id="1_species"]
+
+[resource]
+script = ExtResource("1_species")
+tag = "PCC1"

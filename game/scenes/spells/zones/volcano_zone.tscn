@@ -77,13 +77,15 @@ shader_parameter/skin = ExtResource("24_sptr")
 
 [sub_resource type="ShaderMaterial" id="Mat_smoke"]
 shader = ExtResource("31_sphere")
-shader_parameter/layer_alpha = 0.09
-shader_parameter/tint = Color(0.03, 0.02, 0.02, 1)
-shader_parameter/rim_color = Color(0.35, 0.12, 0.05, 1)
-shader_parameter/top_color = Color(0.22, 0.09, 0.05, 1)
-shader_parameter/light_color = Color(0.3, 0.12, 0.05, 1)
-shader_parameter/mottle_color = Color(0.1, 0.05, 0.03, 1)
-shader_parameter/core_alpha = 0.45
+shader_parameter/layer_alpha = 0.11
+shader_parameter/tint = Color(0.012, 0.012, 0.014, 1)
+shader_parameter/rim_color = Color(0.05, 0.05, 0.055, 1)
+shader_parameter/top_color = Color(0.03, 0.03, 0.035, 1)
+shader_parameter/light_dir = Vector3(0, -1, 0)
+shader_parameter/light_color = Color(0.4, 0.12, 0.03, 1)
+shader_parameter/mottle_color = Color(0.07, 0.07, 0.08, 1)
+shader_parameter/mottle_scale = 4.0
+shader_parameter/core_alpha = 0.6
 shader_parameter/noise_scale = 1.8
 shader_parameter/morph_s = 8.0
 
@@ -194,12 +196,12 @@ editor_description = "Donde esta el humo (a unos 290 m): la camara de capturas (
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 290, 0)
 
 [node name="Smoke" type="Node3D" parent="CloudAt" node_paths=PackedStringArray("zone", "layers")]
-editor_description = "El humo sobre la columna: las capas de esfera ruidosa de las nubes de 061h (cloud_sphere.gdshader), achatadas y de 190 m de radio, oscuras con borde de brasa. VolcanoLook las muestra solo desde la erupcion."
+editor_description = "El humo sobre la columna: las capas de esfera ruidosa de las nubes de 061h (cloud_sphere.gdshader), con altura (un monton de esferas de 160 m de radio), de nucleo negro y gris; solo su cara de abajo toma el naranja de la lava. VolcanoLook las muestra solo desde la erupcion."
 script = ExtResource("30_cloud")
 zone = NodePath("../..")
 layers = NodePath("Layers")
-fixed_radius_m = 190.0
-shape = Vector3(1.3, 0.15, 1.3)
+fixed_radius_m = 160.0
+shape = Vector3(1.4, 0.55, 1.4)
 
 [node name="Layers" type="MultiMeshInstance3D" parent="CloudAt/Smoke"]
 cast_shadow = 0

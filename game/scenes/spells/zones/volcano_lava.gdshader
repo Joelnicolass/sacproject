@@ -17,10 +17,14 @@ uniform int frame = 0;
 uniform ivec2 frames = ivec2(4, 2);
 // How many times the skin goes (and comes back, mirrored) around the column.
 uniform float turns = 2.0;
-// Brightness of the skin (the original shades it at 10; under the filmic tonemap that burns it white).
-uniform float energy = 3.2;
+// Brightness of the skin (the original shades it at 10; under the filmic tonemap that burns it white, so it stays near 1).
+uniform float energy = 1.1;
+// The lava flows down the column: the skin repeats this many times along it and slides at this many repeats a second.
+uniform float flow_repeats = 14.0;
+uniform float flow_speed = 0.25;
 
 varying vec2 v_uv;
+varying vec4 v_cell;
 
 float bezier_1d(vec4 k, float u) {
 	float v = 1.0 - u;
@@ -41,9 +45,11 @@ void vertex() {
 	vec2 inset = 0.5 / (vec2(256.0) / grid);
 	vec2 low = cell / grid + inset;
 	vec2 high = (cell + 1.0) / grid - inset;
-	v_uv = vec2(mix(low.x, high.x, across), mix(low.y, high.y, s));
+	v_uv = vec2(across, s);
+	v_cell = vec4(low, high);
 }
 
 void fragment() {
-	ALBEDO = texture(skin, v_uv).rgb * energy;
+	vec2 inside = vec2(v_uv.x, fract(v_uv.y * flow_repeats - TIME * flow_speed));
+	ALBEDO = texture(skin, mix(v_cell.xy, v_cell.zw, inside)).rgb * energy;
 }

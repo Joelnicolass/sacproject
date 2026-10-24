@@ -11,3 +11,4 @@ Healing Aura (`ruah`) is a `WardAction` with a `target` (the creature that carri
 Wards (shields and temporary forms): see `wards/README.md`. Spells that fetch souls (Soul Mole, Soul Wind): `carrier/README.md`; Animate Dead's effect: `animate_dead/README.md`.
 Jumping spells (Chain Lightning, Rainbow): `chain/README.md`. Dragonfire's dragon is a guided `SpellCarrier` (`carrier/README.md`). Halo of Earth is `units/abilities/halo_of_earth.gd` (the same node as the Rhinok's); check them with `debug/suite/chain_cases.tscn` and `match_shots --level=5 --cast=ntlc|wobr|rifd|olah`.
 Known debt: `SpellType` still has raw `flags*` and unit-less fields; 4 actions are at inheritance depth 2 (see `CONVENTIONS.md`).
+Light: every spell lights the ground with its own colour (see `look/lights/README.md`): a lasting effect carries a `StateLight` in its scene, a burst an `FxLightSpec` on its `ParticleType`. Check: `debug/suite/spell_light_cases.tscn`.

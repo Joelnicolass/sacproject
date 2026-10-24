@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/wards/ward.gd" id="1_ward"]
 [ext_resource type="Script" path="res://scenes/spells/wards/ward_emitter.gd" id="2_emitter"]
@@ -7,6 +7,7 @@
 [ext_resource type="Resource" path="res://data/fx/wards/skin_cast.tres" id="6_cast"]
 [ext_resource type="Resource" path="res://data/fx/wards/skin_ring.tres" id="7_ring"]
 [ext_resource type="PackedScene" path="res://scenes/spells/wards/ward_sound.tscn" id="8_sound"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
 
 [node name="SkinOfStone" type="Node3D"]
 script = ExtResource("1_ward")
@@ -43,3 +44,12 @@ shrink_to = 0.1
 cue = &"ward_skin_end"
 ward = NodePath("..")
 when = 1
+
+[node name="Glow" parent="." instance=ExtResource("glow_state_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+light_color = Color(0.95, 0.75, 0.42, 1)
+light_energy = 1
+omni_range = 6
+editor_description = "Warm earth light while the stone skin lasts (colour of the dirt/rock sprites of the ward). Tune color, energy and range here."
+
+[connection signal="shown_changed" from="." to="Glow" method="show_lit"]

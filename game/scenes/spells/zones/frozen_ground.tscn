@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="1_zone"]
 [ext_resource type="Resource" path="res://data/catalog/spells/zorf.tres" id="2_spell"]
@@ -15,6 +15,7 @@
 [ext_resource type="Script" path="res://scenes/spells/zones/zone_shatter.gd" id="13_shatter"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/ice_shatter.tscn" id="14_shards"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/zone_sound.tscn" id="15_sound"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
 
 [sub_resource type="ShaderMaterial" id="Mat_ice"]
 shader = ExtResource("9_shader")
@@ -73,3 +74,27 @@ cue = &"frozen_ground_hit"
 zone = NodePath("..")
 when = 1
 from_phase = 2
+
+[node name="IceGlow" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("glow_state_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+light_color = Color(0.6, 0.82, 1, 1)
+light_energy = 1
+omni_range = 15
+fade_in_s = 0.5
+fade_out_s = 0.5
+from_phase = 2
+to_phase = 2
+zone = NodePath("..")
+editor_description = "Cold light over the ice while it grows and holds; it fades out while the ice breaks (dominant colour of icec.png). Range = the radius of the ice."
+
+[node name="SnowballGlow" parent="Snowball" node_paths=PackedStringArray("zone") instance=ExtResource("glow_state_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+light_color = Color(0.6, 0.82, 1, 1)
+light_energy = 1.2
+omni_range = 7
+fade_in_s = 0.5
+fade_out_s = 0.3
+from_phase = 0
+to_phase = 1
+zone = NodePath("../..")
+editor_description = "Cold light that travels with the snowball while it grows and flies (the sprites of its trail, cst0.png, are blue)."

@@ -15,6 +15,11 @@ const DEFAULT_KIND := "Rock"
 	"SoulMole": preload("res://scenes/spells/carrier/soul_mole.tscn"),
 	"SoulWind": preload("res://scenes/spells/carrier/soul_wind.tscn"),
 	"AnimateDead": preload("res://scenes/spells/animate_dead/animate_dead_fx.tscn"),
+	"Firewall": preload("res://scenes/spells/walls/firewall.tscn"),
+	"WallOfSpikes": preload("res://scenes/spells/walls/wall_of_spikes.tscn"),
+	"WailingWall": preload("res://scenes/spells/walls/wailing_wall.tscn"),
+	"Vinewall": preload("res://scenes/spells/walls/vinewall.tscn"),
+	"Fence": preload("res://scenes/spells/walls/fence.tscn"),
 }
 
 var _serial := 0

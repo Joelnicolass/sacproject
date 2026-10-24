@@ -1,5 +1,6 @@
-[gd_resource type="Resource" script_class="SpellType" format=3]
+[gd_resource type="Resource" script_class="SpellType" load_steps=3 format=3]
 
+[ext_resource type="PackedScene" path="res://scenes/spells/actions/wailing_wall_action.tscn" id="2_action"]
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_jcfxs"]
 
 [resource]
@@ -17,3 +18,4 @@ flags = 90117
 flags1 = 16448
 flags2 = 33554432
 structures = PackedStringArray()
+action = ExtResource("2_action")

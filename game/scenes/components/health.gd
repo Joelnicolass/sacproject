@@ -24,6 +24,14 @@ const SPLASH_RANGED := &"splash_ranged"
 const LIGHTNING := 1 << 5
 const IGNITE := 1 << 6
 
+## The Health child of `node` (a body), or null.
+static func of(node: Node) -> Health:
+	for child in node.get_children() if node else []:
+		if child is Health:
+			return child
+	return null
+
+
 ## Only read by setup(): MatchRules.start_health, if not negative, replaces a full bar.
 @export var rules: MatchRules
 @export var maximum: float = 0.0:

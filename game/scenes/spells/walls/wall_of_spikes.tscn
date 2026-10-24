@@ -1,0 +1,40 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/walls/spell_wall.gd" id="1_wall"]
+[ext_resource type="Script" path="res://scenes/spells/walls/wall_touch.gd" id="2_touch"]
+[ext_resource type="Resource" path="res://data/catalog/spells/laws.tres" id="3_spell"]
+[ext_resource type="PackedScene" path="res://scenes/fx/spike_field.tscn" id="4_spike"]
+
+[sub_resource type="BoxShape3D" id="Box_body"]
+size = Vector3(110, 5, 5)
+
+[node name="WallOfSpikes" type="Node3D" node_paths=PackedStringArray("body")]
+script = ExtResource("1_wall")
+spell = ExtResource("3_spell")
+body = NodePath("Body")
+grow_ticks = 240
+rise_s = 0.5
+vanish_s = 1.0
+
+[node name="Body" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+shape = SubResource("Box_body")
+
+[node name="Touch" type="Node" parent="." node_paths=PackedStringArray("wall")]
+script = ExtResource("2_touch")
+wall = NodePath("..")
+only_while_standing = true
+core_fraction = 0.4
+cooldown_s = 6.0
+spell_damage_on_touch = true
+stun_cooldown_ticks = 480
+slow_factor = 0.5
+slow_s = 6.0
+pace_source = &"wall_spikes"
+hit_scene = ExtResource("4_spike")
+hit_params = {
+"count": 1,
+"height": 3.0,
+"inner": 0.0,
+"outer": 1.5
+}

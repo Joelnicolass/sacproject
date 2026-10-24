@@ -1,0 +1,30 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/walls/spell_wall.gd" id="1_wall"]
+[ext_resource type="Script" path="res://scenes/spells/walls/wall_touch.gd" id="2_touch"]
+[ext_resource type="Resource" path="res://data/catalog/spells/laww.tres" id="3_spell"]
+
+[sub_resource type="BoxShape3D" id="Box_body"]
+size = Vector3(110, 7.5, 5)
+
+[node name="WailingWall" type="Node3D" node_paths=PackedStringArray("body")]
+script = ExtResource("1_wall")
+spell = ExtResource("3_spell")
+body = NodePath("Body")
+grow_ticks = 180
+rise_s = 2.0
+vanish_s = 1.0
+linger_s = 4.0
+
+[node name="Body" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.75, 0)
+shape = SubResource("Box_body")
+
+[node name="Touch" type="Node" parent="." node_paths=PackedStringArray("wall")]
+script = ExtResource("2_touch")
+wall = NodePath("..")
+mana_drain_per_s = 1.0
+cooldown_s = 8.0
+slow_factor = 0.75
+slow_s = 8.0
+pace_source = &"wall_wailing"

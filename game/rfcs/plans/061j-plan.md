@@ -32,7 +32,6 @@ scenes/spells/stalks/
   [+] stalk_tube.res             malla horneada por tools/bake/make_stalk_tube.gd (31 segmentos × 24 lados)
   [+] stalk.tscn                 Stalk ├ Grip ├ Look(MeshInstance3D) ├ Dirt(SpriteEmitter) ├ Light(ActorLight) ├ Sounds
   [+] meanstalks.tscn            GroundZone(spell=rter, synced) └ Stalk ×4 (índice 0 a 3)
-  [+] meanstalks_cast_glow.tscn  CastGlow con la partícula heal
 scenes/spells/tornado/
   [+] README.md
   [+] tornado_rules.gd           static: updateCurve (7 puntos, 7 radios), getCentre, wander, lift. ≤130
@@ -47,8 +46,7 @@ scenes/spells/[~] spell_spawner.gd (no: las zonas se registran en match.tscn, co
 scenes/match/[~] match.tscn      zones += Meanstalks, Tornado
 data/catalog/spells/[~] rter.tres, nrot.tres   action = su escena; (Meanstalks: no se guarda amount3)
 data/gods/[~] persephone.tres, stratos.tres    + rter, + nrot en `spells`
-data/fx/[+] stalk_dirt.tres, stalk_grab.tres (con FxLightSpec), tornado_dust.tres, tornado_cast.tres
-data/fx/[+] stalk_heal.tres no: se usa data/fx/heal.tres (la partícula del exe)
+data/fx/[+] stalk_dirt.tres, stalk_grab.tres (con FxLightSpec en data/fx/lights/), tornado_dust.tres, tornado_cast.tres
 data/audio/[~] fx_sounds.tres    + stalk_rise (stka), stalk_grab (stkh), stalk_fall (stkf), tornado_loop (torn), tornado_cast (trns)
 assets/original/fx/[+] dvin, trn1, trn2, edge, tdst (.png)   tools/import/import_ui.py EXTRA_FX
 tools/bake/[+] make_stalk_tube.gd, make_tornado_funnel.gd
@@ -83,7 +81,7 @@ Mediciones con `--fixed-fps 600`; las duraciones largas del dato se prueban con 
 - **Tornado, deriva:** durante 25 s la posición queda a ≤ 50 m ± 1 del punto, la velocidad nunca pasa de 6 m/s, y con `MatchSeed` fijo la trayectoria es la misma en dos corridas (los 4 primeros puntos de paso).
 - **Tornado, tirón:** un Druid a 20 m del eje (radio 1,5 en el suelo) sube (Tumbling activo, y > inicio) en ≤ 120 ticks; uno a 40 m no se mueve; un volador a 5 m no se mueve; un cuerpo `fixed` no se mueve; ningún cuerpo supera 30 m/s; el tornado no hace daño directo (la vida cambia solo por caída).
 - **Tornado, duración:** `ceil(60 · 25)` = 1500 ticks ± 1 en ACTIVE y después se disipa (el tamaño llega a 0) y la zona se libera. Interrumpir el lanzamiento: nadie es levantado.
-- **Luz:** cada tallo y el tornado tienen un `ActorLight` sin sombras de color distinto de blanco; `stalk_grab` y `tornado_dust`... (`stalk_grab` solo) tienen `FxLightSpec`; el lint no cuenta `Light.new(`.
+- **Luz:** cada tallo y el tornado tienen un `ActorLight` sin sombras de color distinto de blanco; `stalk_grab` tiene `FxLightSpec`; el lint no cuenta `Light.new(`.
 - **Lint:** ningún conteo sube; los scripts nuevos ≤150 líneas.
 - **Antes/después visual:** no se verifica sin ventana. El comando de captura queda en los README.
 
@@ -100,3 +98,10 @@ Mediciones con `--fixed-fps 600`; las duraciones largas del dato se prueban con 
 - Tamaño (C1): `stalk.gd` es el script más cercano a 150 líneas; el agarre y la curva viven en `StalkGrip` y `StalkRules`.
 - Un cuerpo colgado a 60 m: `Tumbling` lo aterrizaría si `velocity.y ≤ 0` y bajo el suelo; mientras se le da la velocidad de la punta (hacia arriba) no ocurre. Si el tallo muere (zona cancelada o fin de tiempo) mientras sostiene, `StalkGrip` lo suelta en el acto con la velocidad que tiene.
 - Dos escritores de la posición del agarrado (el tallo y el cuerpo): la regla es que solo `StalkGrip` escribe `global_position` del colgado y lo hace después del paso del cuerpo (prioridad de física +1).
+
+## Desvíos al implementar
+- **Cast de Meanstalks:** el SPEL no trae `tcst`, y sacengine usa la partícula `heal` en las manos del mago: es el `cast_fx = "heal"` de la acción (el mecanismo `HandFx` que ya existe), no una escena `CastGlow` nueva. Tornado sí lleva `cast_scene` (la espiral `cst0`).
+- **Piezas que el plan no nombraba:** `StalkHunt` (la elección de presa y las velocidades de la punta; saca esas líneas de `Stalk`, que ya llegaba a 150), `StalkRoster` (quién fue agarrado en este hechizo, uno por zona), `TornadoWinds` (los cuatro ángulos del viento, una sola fuente para `Lift` y `Look`), `GroundZone.hold_extra_s` (los 3 s de crecimiento se suman a la duración, para que los tallos cacen los 60 s completos).
+- **Duración de los tallos:** manda el dato (60 s). sacengine resta dos veces el temporizador (state.d:22667 y 22689-22690): NO VERIFICADO si el exe también lo hace.
+- **Sin cicatriz `mean`, sin temblor de pantalla al crecer** (como declaraba el plan).
+- **Arte de la ranura 0/1 del tallo:** NO VERIFICADO, ver `061V-spell-visuals-j.md`.

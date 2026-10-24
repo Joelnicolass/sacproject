@@ -13,7 +13,7 @@ uniform sampler2D tip_skin : source_color, filter_linear_mipmap, repeat_enable;
 uniform float tip_mix : hint_range(0.0, 1.0) = 0.6;
 uniform float tip_from : hint_range(0.0, 1.0) = 0.55;
 // Times the skin repeats around and along the stalk (the original: once each).
-uniform vec2 repeat = vec2(1.0, 1.0);
+uniform vec2 uv_repeat = vec2(1.0, 1.0);
 uniform float roughness_value : hint_range(0.0, 1.0) = 1.0;
 uniform float metallic_value : hint_range(0.0, 1.0) = 0.1;
 
@@ -56,7 +56,7 @@ void vertex() {
 }
 
 void fragment() {
-	vec2 uv = UV * repeat;
+	vec2 uv = UV * uv_repeat;
 	vec3 base = texture(skin, uv).rgb;
 	vec3 tip_colour = texture(tip_skin, uv).rgb;
 	ALBEDO = mix(base, tip_colour, tip_mix * smoothstep(tip_from, 1.0, UV.y));

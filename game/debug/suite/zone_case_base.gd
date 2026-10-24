@@ -38,6 +38,8 @@ func begin(host: Node3D, world_name: String) -> void:
 	_spawner.zones["Explosion"] = load("res://scenes/spells/zones/explosion_zone.tscn") as PackedScene
 	_spawner.zones["FrozenGround"] = load("res://scenes/spells/zones/frozen_ground.tscn") as PackedScene
 	_spawner.zones["DemonicRift"] = load("res://scenes/spells/zones/demonic_rift.tscn") as PackedScene
+	_spawner.zones["Meanstalks"] = load("res://scenes/spells/stalks/meanstalks.tscn") as PackedScene
+	_spawner.zones["Tornado"] = load("res://scenes/spells/tornado/tornado.tscn") as PackedScene
 	_root.add_child(_spawner)
 	_host.add_child(_root)
 	SideRelations.set_rows(_rows(), 3)

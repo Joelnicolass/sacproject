@@ -14,6 +14,7 @@
 [node name="Dragonfire" type="Node3D" node_paths=PackedStringArray("on_arrive")]
 editor_description = "Dragonfire (rifd): el dragon. Sube en espiral alrededor del mago mientras lanza, vuela a 18 m/s girando hasta pi rad/s, quema lo que atraviesa (175/s), al llegar hace 700 con salpicadura de 5 m y prende a todos, y sigue al no aliado mas cercano a 50 m: 5 blancos. Si no hay, se achica en 1 s. La cabeza mira a +Z."
 script = ExtResource("1_carrier")
+motion = 1
 on_arrive = NodePath("OnArrive")
 
 [node name="Look" parent="." instance=ExtResource("4_look")]

@@ -28,7 +28,7 @@ var _rng: RandomNumberGenerator
 func begin(carrier: SpellCarrier, wizard: Node3D, spell: SpellType, target: Node3D) -> void:
 	_spell = spell
 	_misses = 0
-	_rng = MatchSeed.rng(["dragonfire", spell.tag, carrier.slot, MatchClock.now()])
+	_rng = MatchSeed.rng(["dragonfire", spell.tag, carrier.from_slot, MatchClock.now()])
 	chain.begin_cast(wizard, spell, target, carrier.global_position, 0)
 
 
@@ -42,26 +42,26 @@ func along(carrier: SpellCarrier) -> void:
 	var area := AABB(carrier.global_position - Vector3(half, half, half), Vector3(carrier.damage_range, carrier.damage_range, carrier.damage_range))
 	var per_tick := burn_share * carrier.damage / MatchClock.TICKS_PER_SECOND_F
 	for body in BodyNudge.bodies_in(carrier.get_tree(), area):
-		if body != carrier.caster():
-			Health.of(body).damage_typed(per_tick, Health.DIRECT_SPELL, carrier.slot, false, true)
+		if body != carrier.wizard():
+			Health.of(body).damage_typed(per_tick, Health.DIRECT_SPELL, carrier.from_slot, false, true)
 
 
 func arrive(carrier: SpellCarrier) -> void:
 	_roar(carrier)
-	if carrier.target_body() != null:
+	if carrier.flight.target_body() != null:
 		_burst(carrier)
 		_wander(carrier)
 		return
 	var next := chain.pick_next(carrier.global_position, 0)
 	if next != null:
 		if chain.add_hit(next):
-			carrier.retarget(next, BodyNudge.center(next))
+			carrier.flight.retarget(next, BodyNudge.center(next))
 		else:
-			carrier.finish_flight()
+			carrier.flight.finish()
 		return
 	_misses += 1
 	if _misses > misses_allowed:
-		carrier.finish_flight()
+		carrier.flight.finish()
 	else:
 		_wander(carrier)
 
@@ -70,9 +70,9 @@ func arrive(carrier: SpellCarrier) -> void:
 func _burst(carrier: SpellCarrier) -> void:
 	var center := carrier.global_position
 	var tree := carrier.get_tree()
-	SplashDamage.deal(tree, center, carrier.damage, carrier.damage_range, null, carrier.slot, Health.SPLASH_SPELL, Health.IGNITE)
+	SplashDamage.deal(tree, center, carrier.damage, carrier.damage_range, null, carrier.from_slot, Health.SPLASH_SPELL, Health.IGNITE)
 	for body in SplashDamage.bodies_within(tree, center, carrier.damage_range):
-		Burning.ignite(body, 0.0, MatchClock.ticks_for(ablaze_s), Health.SPLASH_SPELL, carrier.slot)
+		Burning.ignite(body, 0.0, MatchClock.ticks_for(ablaze_s), Health.SPLASH_SPELL, carrier.from_slot)
 
 
 ## No body to follow: fly on to a point `wander_share` of the range away, over the land.
@@ -81,7 +81,7 @@ func _wander(carrier: SpellCarrier) -> void:
 	var at := carrier.global_position + around * wander_share * _spell.effect_range
 	var ground := GroundRay.surface_y(carrier, at, 1, GroundRay.wizard_rids(carrier.get_tree()), INF)
 	at.y = (ground if is_finite(ground) else carrier.global_position.y) + wander_share * _spell.effect_range
-	carrier.retarget(null, at)
+	carrier.flight.retarget(null, at)
 
 
 func _roar(carrier: SpellCarrier) -> void:

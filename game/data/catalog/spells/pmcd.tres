@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="SpellType" format=3]
 
+[ext_resource type="PackedScene" path="res://scenes/spells/actions/soul_mole_action.tscn" id="2_action"]
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_7gkxr"]
 
 [resource]
@@ -14,4 +15,5 @@ spell_order = 348
 effect_range = 10.0
 duration = 30.0
 flags = 4098
+action = ExtResource("2_action")
 structures = PackedStringArray()

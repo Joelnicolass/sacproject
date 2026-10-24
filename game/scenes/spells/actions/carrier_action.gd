@@ -58,11 +58,11 @@ func started(wizard: WizardBody, spell: SpellType, aim: Aim, frames: int) -> voi
 func finish(_wizard: WizardBody, _spell: SpellType, picked: Node3D) -> String:
 	if _carrier != null and is_instance_valid(_carrier):
 		_released = true
-		_carrier.release(picked)
+		_carrier.arm(picked)
 	return ""
 
 
 func cancel() -> void:
 	if _carrier != null and is_instance_valid(_carrier) and not _released:
-		_carrier.abort()
+		_carrier.stop()
 	_carrier = null

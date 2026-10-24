@@ -10,6 +10,9 @@ const MAP_TAG := &"tutorial_valley"
 @export var map: MapRoot
 @export var cameras: Array[Camera3D] = []
 @export var god: StringName = &"persephone"
+## A debug scene owns its preset (GraphicsApplier does not touch it here): without one the rig has none and FloraField
+## draws no plants.
+@export var quality: LookQuality
 
 var _index := 0
 
@@ -33,6 +36,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _show() -> void:
+	if quality != null and map != null and map.look != null and map.look.quality_preset != quality:
+		map.look.apply_quality(quality)
 	var type := GameCatalog.shared().god(String(god))
 	if type != null and map != null and map.look != null and map.look.profile != type.look:
 		map.look.apply_profile(type.look)

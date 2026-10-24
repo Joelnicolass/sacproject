@@ -15,6 +15,11 @@ extends RefCounted
 ##   TerrainShape.sampler snapshot, several at once) give the same buffers as plan_cell on this thread with
 ##   TerrainShape.height_at; and a threaded MeshPlanter (no FloraField: it would not build here) driven over the densest
 ##   spot fills each MultiMesh with exactly those bytes, drops the plans of cells that left the ring and leaves no task.
+## - flora_maps: every map of the catalog with a map scene (playable or not, tutorial_valley and alpine_meadow included):
+##   its Look socket holds the flora.res, the FloraMap has plants, every species it draws has its prop (the mesh would load in
+##   a window: headless never loads meshes, so MeshPlanter keeps no group here), and planning the fullest cell on the map's
+##   own ground keeps plants. A playable map without flora.res fails. Also: the debug scene that instances a map without a
+##   GraphicsApplier (persephone_compare) hands the rig a preset, or FloraField draws nothing there.
 ## - flora_presets: the original_plants entry of each preset is the RFC-054 §4.4 table, and no plant casts a shadow.
 
 const CONFIG_PATH := "res://data/look/vegetation/original_plants.tres"
@@ -37,6 +42,7 @@ func run() -> Dictionary:
 	results["flora_headless"] = await _headless()
 	results["flora_guard"] = await _guard()
 	results["flora_plan"] = _plan()
+	results["flora_maps"] = _maps()
 	results["flora_clear"] = _clear()
 	results["flora_worker"] = await _worker()
 	results["flora_presets"] = _presets()
@@ -84,6 +90,61 @@ func _headless() -> Dictionary:
 		root.queue_free()
 		await tree.process_frame
 	return {"ok": wrong.is_empty(), "dedicated": MpBoot.is_dedicated_process(), "maps": seen, "wrong": wrong}
+
+
+## The value the scene's node `node_name` saves for `property`, or null.
+static func _saved(packed: PackedScene, node_name: String, property: String) -> Variant:
+	var state := packed.get_state()
+	for n in state.get_node_count():
+		if state.get_node_name(n) != node_name:
+			continue
+		for p in state.get_node_property_count(n):
+			if state.get_node_property_name(n, p) == property:
+				return state.get_node_property_value(n, p)
+	return null
+
+
+func _maps() -> Dictionary:
+	var config := load(CONFIG_PATH) as VegetationLayerConfig
+	var catalog := MapCatalog.shared()
+	var playable := catalog.playable_tags()
+	var seen := {}
+	var wrong := {}
+	for tag in catalog.all_tags():
+		var map := catalog.find(StringName(tag))
+		if map == null or map.map_scene == null:
+			continue
+		var path := FloraMapBuilder.path_of(map)
+		if not ResourceLoader.exists(path):
+			# test_* maps are flat fixtures of the rules suite: no plants by design.
+			if tag in playable and not tag.begins_with("test"):
+				wrong[tag] = "sin flora.res"
+			continue
+		var flora := load(path) as FloraMap
+		var socket: Variant = _saved(map.map_scene, "Look", "flora_map")
+		var land := PlantClears.land_of(map)
+		if flora == null or land == null:
+			wrong[tag] = "sin datos"
+			continue
+		var groups := MeshPlanter.describe_groups(config, flora)
+		var no_prop := []
+		for group in groups:
+			if not ResourceLoader.exists(OriginalAssets.prop(str(group["model"]))):
+				no_prop.append(group["model"])
+		var kept := 0
+		var best := _fullest(flora, groups, 1)
+		if not best.is_empty():
+			for buffer in MeshPlanter.plan_cell(config, flora, groups, 1.0, best[0], land.shape.height_at, PackedVector4Array()):
+				kept += buffer.size() / MeshPlanter.XFORM_STRIDE
+		land.free()
+		seen[tag] = {"total": flora.total(), "species": groups.size(), "fullest_cell_kept": kept, "socket": socket != null}
+		if flora.total() <= 0 or groups.is_empty() or not no_prop.is_empty() or kept <= 0 or socket == null:
+			wrong[tag] = {"seen": seen[tag], "no_prop": no_prop}
+	var compare := load("res://debug/look/persephone_compare.tscn") as PackedScene
+	var preset: Variant = _saved(compare, "PersephoneCompare", "quality") if compare else null
+	if preset == null:
+		wrong["persephone_compare"] = "sin preset: FloraField no dibuja"
+	return {"ok": wrong.is_empty() and not seen.is_empty(), "maps": seen, "wrong": wrong}
 
 
 func _guard() -> Dictionary:

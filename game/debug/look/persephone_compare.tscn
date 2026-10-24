@@ -2,9 +2,11 @@
 
 [ext_resource type="PackedScene" path="res://scenes/map/maps/tutorial_valley/map.tscn" id="1_map"]
 [ext_resource type="Script" path="res://debug/look/persephone_compare.gd" id="2_compare"]
+[ext_resource type="Resource" path="res://data/look/quality_high.tres" id="3_quality"]
 
 [node name="PersephoneCompare" type="Node3D" node_paths=PackedStringArray("map", "cameras")]
 script = ExtResource("2_compare")
+quality = ExtResource("3_quality")
 map = NodePath("Map")
 cameras = [NodePath("Ground"), NodePath("Arch"), NodePath("Hills")]
 

@@ -47,7 +47,7 @@ Las «edades» de la IA cuentan corridas de la ranura k2 (6 ticks en Normal). El
 | `afflictions/looks/body_box_look.gd` | `grow_ticks 30` | `grow_s 0.5` | — |
 | `afflictions/looks/rings_look.gd` | `every_ticks 25` | `every_s 0.4166` | — |
 | `abilities/lightning_strike.gd` | `travel_ticks 12` (y `launch(..., travel := -1)`) | `travel_s 0.2` (`launch(..., travel_s := -1.0)`) | — |
-| `status/devour_growth.gd` | `regeneration_ticks 60.0` | `regeneration_s 1.0` | — |
+| `status/devour_growth.gd` | `regeneration_ticks 60.0` (un divisor: «increment/60 por segundo», no una duración en ticks) | `regeneration_over_s 60.0` (mismo número, ya era segundos) | — |
 | `abilities/pull_thread.gd` | `grow 20`, `reshape 6`, `ramp 30`, `wait 30`, `max_life 2400` | `grow_s 0.3333`, `reshape_s 0.1`, `ramp_s 0.5`, `wait_s 0.5`, `max_life_s 40.0` | `cage_thread.tscn reshape 6 → 0.1, ramp 30 → 0.5`. La clave de red `grow_ticks` del evento queda en ticks (red) |
 | `abilities/divine_sight_eye.gd` | `rising 45`, `refresh 30`, `ticks_per_frame 8` | `rising_s 0.75`, `refresh_s 0.5`, `frame_s 0.1333` | — |
 | `status/poisoning.gd` | `mana_block 120`, `infection_cooldown_extra 180`, `fx_every 30` | `mana_block_s 2.0`, `infection_cooldown_extra_s 3.0`, `fx_every_s 0.5` | — |
@@ -68,19 +68,21 @@ Las «edades» de la IA cuentan corridas de la ranura k2 (6 ticks en Normal). El
 
 | Archivo | Antes | Después | Overrides |
 |---|---|---|---|
-| `walls/fence_posts.gd` | `period_ticks 32` | `period_s 0.5333` | — |
+| `walls/fence_posts.gd` | `period_ticks 32`, `birth_tick 16` | `period_s 0.5333`, `birth_s 0.2666` | — |
 | `walls/wall_scars.gd` | `every_ticks 4` | `every_s 0.0666` | — |
 | `walls/spell_wall.gd` | `grow_ticks 240` | `grow_s 4.0` (getter `grow_ticks` para las partes del muro) | `vinewall/wall_of_spikes/firewall 240 → 4.0`, `wailing_wall 180 → 3.0`, `fence 176 → 2.9333` |
 | `walls/wall_touch.gd` | `stun_cooldown_ticks 0` | `stun_cooldown_s 0.0` | `wall_of_spikes.tscn 480 → 8.0` |
 | `walls/wall_spirit.gd` | `trail_ticks 90` (largo del rastro, una muestra por tick) | `trail_s 1.5` | `charm.tscn 60 → 1.0` (×3) |
 | `zones/zone_blast.gd` | `burn_ticks 60` | `burn_s 1.0` | — |
+| `zones/zone_heat.gd` (Volcano, entró con el merge) | `burn_ticks 0` | `burn_s 0.0` | `volcano_zone.tscn 30 → 0.5` |
+| `zones/volcano_look.gd` (Volcano) | `lava_frame_ticks 4`, `cloud_cycle_ticks 120`, `pulse_ticks 90` | `lava_frame_s 0.0666`, `cloud_cycle_s 2.0`, `pulse_s 1.5` | — |
 | `zones/zone_stun_ring.gd` | `cooldown_ticks 480` | `cooldown_s 8.0` | — |
 | `zones/rift_ribbon.gd` | `trail_ticks 120` | `trail_s 2.0` | — |
 | `wards/ward.gd` | `grow_ticks 15` | `grow_s 0.25` | `healing_aura.tscn 30 → 0.5` |
 | `drops/drop_blast.gd` | `burn_ticks 60`, `stun_ticks 0` | `burn_s 1.0`, `stun_s 0.0` | `meteor.tscn stun 480 → 8.0` |
 | `animate_dead/animate_dead_fx.gd` | `every_ticks 2` | `every_s 0.0333` | — |
 | `carrier/carrier_pulse.gd` | `stun_ticks 480` | `stun_s 8.0` | — |
-| `carrier/spell_carrier.gd` | `roundtrip_ticks 540` | `roundtrip_s 9.0` (getter par en ticks: `ticks_for` redondeado a múltiplo de 2) | — |
+| `carrier/spell_carrier.gd` | `roundtrip_ticks 540` | `roundtrip_s 9.0` (`SoulTrip` lo pasa a ticks; cada tramo es la mitad) | — |
 | `zones/bore_drill.gd` | `resync_ticks 8` | **queda** (red: cuánto se aleja la copia del cliente antes de resincronizar) | — |
 
 ### Mapa (`scenes/map/`)
@@ -102,6 +104,8 @@ Las «edades» de la IA cuentan corridas de la ranura k2 (6 ticks en Normal). El
 | `fx/beam_type.gd` | `frame_s 2/60`, `change_s 6/60`, `life_s 64/60`, `travel_s 12/60` | `0.0333`, `0.1`, `1.0666`, `0.2` | look |
 | `fx/particle_type.gd`, `fx/tether.gd`, `fx/portal_look.gd`, `fx/fx_trail.gd`, `spells/guardian/guardian_tether.gd` | `frame_s/interval_s 2/60 o 1/30` | `0.0333` | look |
 | `sacrifice/carry_rope.gd`, `sacrifice/red_vortex.gd` | `1.0 / 30.0` | `0.0333` | look |
+| `fx/spike_field.gd` | `lifetime_s 2.0 / 3.0` | `0.6666` | look |
+| `spells/zones/rift_spawner.gd`, `rift_spirit.gd`, `wards/aura_impact.gd`, `drops/frog_hop.gd` | `1.0 / 3.0` | `0.3333` | `ticks_for` / `roundi(s·60)` = 20 |
 | `spells/chain/chain_strike.gd`, `spells/chain/chain_hop.gd` | `12/60`, `20/60` | `0.2`, `0.3333` | `ticks_for` |
 | `spells/animate_dead/streamer_fx.gd` | `128/60` | `2.1333` | look |
 
@@ -124,6 +128,11 @@ Se renombran en las dos clases, en los `.tres` de `data/catalog/{spells,abilitie
 - `AiProfile.slot_periods`: cadencia de las 6 ranuras de la IA (ticks). Pasarla a segundos cambia cómo escala la dificultad; va con 055f.
 - `CreatureType`/`WizardType` sin unidad (`running_speed`, `sight_range`, `drain`): 055c1.
 - `debug/` y `agent/` (`settle_frames` de las escenas de prueba): herramientas, no datos de juego.
+
+## Resultado
+
+- C22 en `scenes/`: 77 en main → 6 (los 3 cuadros de clip de `WizardType`, `NavService.rebuild_delay_frames`, `StickImpact.extra_ticks`, `Protector.allies_delay_ticks`).
+- `AiProfile.age_period_ticks` es `@export_storage` (no lo edita un humano; C22 no lo cuenta).
 
 ## Verificación
 

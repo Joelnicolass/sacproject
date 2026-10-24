@@ -32,6 +32,8 @@ extends SpellLaunch
 
 
 
+const GROUP := &"halo_of_earth"
+
 ## SPEL of the ability when HaloOfEarthAbility does not hand one over (a scene run alone).
 @export var spell_tag := "HRba"
 ## The shot container's spawner (group `shot_spawner`): the rocks are its shots. The ability that adds this node hands it over.
@@ -160,8 +162,18 @@ func _set_numbers(damage: float, speed: float, acceleration: float, reach: float
 
 
 func _ready() -> void:
+	add_to_group(GROUP)
 	if MpKit.is_networked() and not MpKit.is_server():
 		set_physics_process(false)
+
+
+## The bodies of the rocks that are out now (the harness reads them).
+func rock_nodes() -> Array[Node3D]:
+	var found: Array[Node3D] = []
+	for rock in _active:
+		if rock.node != null and is_instance_valid(rock.node):
+			found.append(rock.node)
+	return found
 
 
 func _exit_tree() -> void:

@@ -3,8 +3,8 @@ class_name BodyAura
 extends Node3D
 
 ## What a body does to the bodies around it while its Ward is on: burns them, stings them and heals the owner with the sting,
-## or pushes them away (Fireform, Protective Swarm, Air Shield). It does not protect the owner (Ward) nor start itself: it runs
-## only while `ward` is on, and only on the server (or solo).
+## pushes them away (Fireform, Protective Swarm, Air Shield) or heals them (Healing Aura). It does not protect the owner (Ward) nor start
+## itself: it runs only while `ward` is on, and only on the server (or solo).
 ## Reach is a sphere drawn in the editor: its radius is the distance, measured between the two boxes (BOX_GAP) or from the
 ## owner's centre to the other body's centre (CENTER). Only bodies that move are touched (wizards and creatures), as the Phoenix.
 ## Damage type: the SPEL of Fireform and Protective Swarm says «direct spell» (type byte 1 at record offset 64), pierce or not.
@@ -13,7 +13,7 @@ extends Node3D
 ## The aura hurt `victim` this tick. Server (or solo) only; AuraImpact turns it into the mark and the sound on every peer.
 signal stung(victim: Node3D)
 
-enum Affects { ENEMIES, NOT_OWN, ALLIES }
+enum Affects { ENEMIES, NOT_OWN, ALLIES, OWN_SIDE }
 enum Measure { BOX_GAP, CENTER }
 
 @export var ward: Ward
@@ -30,6 +30,13 @@ enum Measure { BOX_GAP, CENTER }
 @export var mods := 0
 ## The owner heals this fraction of what the sting took (Protective Swarm 0.5).
 @export_range(0.0, 1.0, 0.05) var heal_owner_fraction := 0.0
+@export_group("Heal")
+## Health a second it gives to every body it reaches that can be healed (Healing Aura 60). The heal keeps running `heal_hold_s` after
+## the body leaves, and every tick in reach renews it (it does not add up).
+@export var heal_per_s := 0.0
+@export_range(0.0, 10.0, 0.05, "suffix:s") var heal_hold_s := 4.267
+## The owner is healed too (the creature that carries the aura).
+@export var include_owner := false
 @export_group("Push")
 ## Metres per second at the inner radius; it falls to 0 at the reach. 0 = no push.
 @export var push_force := 0.0
@@ -60,6 +67,9 @@ func _physics_process(delta: float) -> void:
 			continue
 		taken += _sting(body, other, delta)
 		_push(body, other, mine, radius, delta)
+		_mend(other)
+	if include_owner:
+		_mend(body)
 	if taken > 0.0 and heal_owner_fraction > 0.0 and ward.health != null:
 		ward.health.heal(taken * heal_owner_fraction)
 
@@ -86,6 +96,8 @@ func _affected(body: Node3D, other: Node3D) -> bool:
 			return stance != SideRelations.Stance.ALLY
 		Affects.ALLIES:
 			return stance == SideRelations.Stance.ALLY
+		Affects.OWN_SIDE:
+			return _slot(other) == _slot(body)
 	return _slot(other) != _slot(body)
 
 
@@ -111,6 +123,12 @@ func _push(body: Node3D, other: Node3D, mine: AABB, radius: float, delta: float)
 		return
 	var strength := clampf(1.0 - (distance - inner) / (radius - inner), 0.0, 1.0) * push_force
 	BodyNudge.slide(other, away / distance * strength * delta)
+
+
+## Renews the heal of `other` (HealEffect keeps the better rate and the longer time; a body that cannot be healed is left alone).
+func _mend(other: Node3D) -> void:
+	if heal_per_s > 0.0 and HealEffect.can_heal(other):
+		(HealEffect.on(other) as HealEffect).renew(heal_per_s / MatchClock.TICKS_PER_SECOND_F, MatchClock.ticks_for(heal_hold_s))
 
 
 func _slot(node: Node) -> int:

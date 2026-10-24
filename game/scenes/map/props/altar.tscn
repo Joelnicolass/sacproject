@@ -106,10 +106,13 @@ script = ExtResource("6_collapse")
 visuals = NodePath("../Visuals")
 ring = NodePath("../Visuals/Base")
 
-[node name="GuardPost" type="Node" parent="." node_paths=PackedStringArray("host", "altar")]
+[node name="AttachPoint" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+
+[node name="GuardPost" type="Node" parent="." node_paths=PackedStringArray("host", "attach_point", "altar")]
 script = ExtResource("7_post")
 host = NodePath("..")
-attach_height = 2.5
+attach_point = NodePath("../AttachPoint")
 altar = NodePath("..")
 
 [node name="LoopSound" parent="." instance=ExtResource("8_sound")]

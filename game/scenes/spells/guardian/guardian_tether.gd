@@ -157,7 +157,7 @@ func _sample() -> void:
 		_creature_at = _creature.global_position + Vector3.UP * center_height
 	var post := _post()
 	if post != null:
-		_building_at = post.attach_point()
+		_building_at = post.attach_position()
 		_building_known = true
 
 

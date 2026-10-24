@@ -11,6 +11,9 @@ extends StaticBody3D
 ## The model is the first part of `building`, the BLDG the map's NTTS row names (jfnt James, cafn Charnel, pfon Pyro,
 ## stmf Stratos, font Persephone = pcfn). Visual only: the collision and the source are the same for every land.
 
+## The group every manafount joins.
+const GROUP := &"manafount"
+
 ## Drawn when `building` is empty or has no parts: the Persephone fountain.
 const FALLBACK_MODEL := "pcfn"
 
@@ -36,7 +39,7 @@ func _ready() -> void:
 	# The editor only shows the model; none of the game runs there.
 	if Engine.is_editor_hint():
 		return
-	add_to_group("manafount")
+	add_to_group(GROUP)
 	var source := _source()
 	if source:
 		_source_rate = float(source.get("rate"))

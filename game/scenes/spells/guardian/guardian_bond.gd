@@ -140,7 +140,7 @@ func _physics_process(delta: float) -> void:
 ## building (state.d:15366-15376). An order that already goes there stays.
 func _keep_near() -> void:
 	var rule := _rules()
-	var attach := post.attach_point()
+	var attach := post.attach_position()
 	var gap := body.global_position + Vector3.UP * CENTER_HEIGHT - attach
 	if gap.length_squared() <= rule.guardian_leash * rule.guardian_leash:
 		return

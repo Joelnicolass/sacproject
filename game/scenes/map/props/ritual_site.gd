@@ -3,10 +3,12 @@ class_name RitualSite
 extends Node3D
 
 ## "A ritual can be held here": whose it is, where its center is, and whether another ritual
-## already uses it. The altar has one; a Shrine would add its own as a child (RFC-020).
-## Only the server calls occupy() and release().
+## already uses it. The altar has one and so has every Shrine. Only the server calls occupy() and release().
 
 enum Kind { ALTAR, SHRINE }
+
+## Every site in play: where Convert looks for the closest one of a side.
+const GROUP := &"ritual_site"
 
 ## A ritual took the site.
 signal occupied(by: Node)
@@ -14,21 +16,30 @@ signal occupied(by: Node)
 signal released
 
 @export var kind := Kind.ALTAR
-## The building this site belongs to; it says who owns it and whether it still stands.
+## The altar this site belongs to (an altar's site). Leave empty on a Shrine.
 @export var altar: Altar
+## The building this site belongs to (a Shrine's site). Leave empty on an altar.
+@export var building: MapBuilding
 
 var occupant: Node
 
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
-	if altar == null:
-		warnings.append("Asigná en `altar` el altar al que pertenece este sitio.")
+	if altar == null and building == null:
+		warnings.append("Asigná en `altar` o en `building` a quién pertenece este sitio.")
 	return warnings
 
 
+func _enter_tree() -> void:
+	if not Engine.is_editor_hint():
+		add_to_group(GROUP)
+
+
 func owner_slot() -> int:
-	return altar.owner_slot if altar else 0
+	if altar != null:
+		return altar.owner_slot
+	return building.owner_slot if building != null else 0
 
 
 func center() -> Vector3:
@@ -37,7 +48,9 @@ func center() -> Vector3:
 
 ## Standing: a collapsing or destroyed altar is not a place for rituals.
 func is_standing() -> bool:
-	return altar != null and altar.is_standing()
+	if altar != null:
+		return altar.is_standing()
+	return building != null and is_instance_valid(building) and not building.is_destroyed() and not building.is_queued_for_deletion()
 
 
 func is_free() -> bool:

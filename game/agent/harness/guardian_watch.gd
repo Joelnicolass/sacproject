@@ -41,7 +41,7 @@ func _process(_delta: float) -> void:
 	var post: GuardPost = guard_bond.get_node_or_null(guard_bond.post_path) as GuardPost if guard_bond and not guard_bond.post_path.is_empty() else null
 	var center := body.global_transform.origin + Vector3.UP
 	if post:
-		center = center.lerp(post.attach_point(), along)
+		center = center.lerp(post.attach_position(), along)
 	var dir := Vector3(sin(deg_to_rad(yaw_deg)), 0, cos(deg_to_rad(yaw_deg)))
 	cam.position = center + dir * dist + Vector3(0, height, 0)
 	cam.look_at(center, Vector3.UP)

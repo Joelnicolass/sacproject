@@ -10,15 +10,15 @@ extends DamageDeflector
 ## Damage split (damageGuardians, state.d:9098-9117): each valid guardian takes
 ## damage / min(n, 0.5 (n + 3)) with its own resistances and factors; with no valid guardian the
 ## building takes the hit (the NaN of state.d:9117).
-## Attach height: 15 over a Manalith, 2.5 over an altar or shrine (manalithGuardHeight /
-## shrineGuardHeight, state.d:15344-15345, guardianAttachPosition).
+## Where the beam ends is the `attach_point` marker of the building: move it with the gizmo (15 m up on a Manalith, 2.5 m on
+## an altar or a Shrine).
 
 const GROUP := &"guard_post"
 
 ## The building (its owner_slot and position). Obligatory.
 @export var host: Node3D
-## How high over the building the beam ends.
-@export var attach_height := 15.0
+## Where the beam ends: a Marker3D child of the building.
+@export var attach_point: Marker3D
 ## The host's Health, if it has one (an altar has none): a dead host closes the post.
 @export var health: Health
 ## The altar, if the host is one: a destroyed altar closes the post.
@@ -58,6 +58,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if host == null:
 		warnings.append("Asigná en `host` el edificio (su dueño y su posición).")
+	if attach_point == null:
+		warnings.append("Asigná en `attach_point` el Marker3D donde termina el rayo.")
 	return warnings
 
 
@@ -67,8 +69,10 @@ func owner_slot() -> int:
 
 
 ## Where the beam ends.
-func attach_point() -> Vector3:
-	return host.global_position + Vector3.UP * attach_height if host != null else Vector3.ZERO
+func attach_position() -> Vector3:
+	if attach_point != null:
+		return attach_point.global_position
+	return host.global_position if host != null else Vector3.ZERO
 
 
 ## The building stands and can hold guardians.

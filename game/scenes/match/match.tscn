@@ -74,6 +74,9 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/hover_frame/hover_frame.tscn" id="hover_frame"]
 [ext_resource type="PackedScene" path="res://scenes/camera/camera_shake.tscn" id="f375_shake"]
 [ext_resource type="PackedScene" path="res://scenes/fx/damage_numbers.tscn" id="f375_numbers"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/explosion_zone.tscn" id="z61_explosion"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/frozen_ground.tscn" id="z61_frozen"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/demonic_rift.tscn" id="z61_rift"]
 
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
@@ -160,6 +163,11 @@ scenes = Array[PackedScene]([ExtResource("tw_mana"), ExtResource("tw_pyma"), Ext
 [node name="SpellSpawner" type="MultiplayerSpawner" parent="." unique_id=1184984889]
 spawn_path = NodePath("../Spells")
 script = ExtResource("16_spawner")
+zones = Dictionary[String, PackedScene]({
+"DemonicRift": ExtResource("z61_rift"),
+"Explosion": ExtResource("z61_explosion"),
+"FrozenGround": ExtResource("z61_frozen")
+})
 
 
 [node name="DropletRain" parent="." unique_id=1480148148 instance=ExtResource("f148_rain")]

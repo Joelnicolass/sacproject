@@ -14,11 +14,11 @@ const GROUP := &"spell_spawner"
 	"Wrath": preload("res://scenes/spells/wrath_strike.tscn"),
 	"Fireball": preload("res://scenes/spells/fireball_projectile.tscn"),
 	"Swarm": preload("res://scenes/spells/swarm_projectile.tscn"),
-	"Explosion": preload("res://scenes/spells/zones/explosion_zone.tscn"),
-	"FrozenGround": preload("res://scenes/spells/zones/frozen_ground.tscn"),
-	"DemonicRift": preload("res://scenes/spells/zones/demonic_rift.tscn"),
 	"RiftSpirit": preload("res://scenes/spells/zones/rift_spirit.tscn"),
 }
+## Zone scenes by kind (Explosion, FrozenGround, DemonicRift), assigned in match.tscn and not preloaded here: a zone points at its SpellType,
+## the SpellType at its action, and the action's script knows this class, so a preload would close the circle. Root extends GroundZone.
+@export var zones: Dictionary[String, PackedScene] = {}
 
 var _serial := 0
 
@@ -45,9 +45,9 @@ func spawn_projectile(kind: String, data: Dictionary) -> Node:
 func _make(data: Variant) -> Node:
 	var info: Dictionary = data
 	var kind := str(info.get("kind", DEFAULT_KIND))
-	if not projectiles.has(kind):
+	if not projectiles.has(kind) and not zones.has(kind):
 		push_error("SpellSpawner: no projectile scene for kind «%s», using %s" % [kind, DEFAULT_KIND])
 		kind = DEFAULT_KIND
-	var effect := projectiles[kind].instantiate() as SpellProjectile
+	var effect := (projectiles[kind] if projectiles.has(kind) else zones[kind]).instantiate() as SpellProjectile
 	effect.setup(info)
 	return effect

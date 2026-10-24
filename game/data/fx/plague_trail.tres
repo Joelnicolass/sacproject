@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="ParticleType" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/blud.png" id="atlas_png"]
+
+[resource]
+script = ExtResource("1_type")
+atlas = ExtResource("atlas_png")
+h_frames = 4
+v_frames = 4
+size = Vector2(0.75, 0.75)
+energy = 8
+frame_s = 0.13333
+lifetime_s = 2.117
+gravity = 15
+count = 2
+scale_min = 0.65
+scale_max = 1.95
+emission_radius = 0.4
+additive = false
+lit = true
+pool_max = 60

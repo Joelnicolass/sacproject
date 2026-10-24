@@ -16,7 +16,7 @@ Fuentes: `061-spells-master-plan.md` (§1 pieza 7 `GroundZone`, fila 061j), `061
 ## Árbol de archivos
 ```
 scenes/spells/zones/
-  [~] ground_zone.gd             + synced: PackedStringArray (propiedades de los hijos que replica), + age_ticks. ≤150
+  [~] ground_zone.gd             + synced: PackedStringArray (propiedades de los hijos que replica). ≤150
   [~] zone_rules.gd              + ring_points(rng, center, count, inner_m, outer_m, jitter): los puntos del anillo. ≤90
   [~] README.md                  menciona stalks/ y tornado/
 scenes/spells/actions/
@@ -65,7 +65,7 @@ tools/lint/[~] baseline.txt (solo si algún conteo baja)
 
 ## Dueños y red
 - **`GroundZone` es el dueño del reloj y de la fase** (como 061f). **`Stalk` es el único dueño de su punta, su crecimiento y de a quién agarra**; **`StalkGrip` el único que mueve al cuerpo colgado** (entre el agarre y el lanzamiento nada más lo mueve). **`Tumbling` es el único que lanza** (el tallo y el tornado le piden `catapult`/`drive`/`lift`). **`TornadoDrift` es el único dueño de la posición y del tamaño del tornado**; `TornadoLift` y `TornadoLook` los leen.
-- Red: `Caster.request_cast` → `submit_cast` → en el host `ZoneAction.started/finish` → `SpellSpawner.spawn_projectile` (la zona es un `SpellProjectile`) → solo el host corre tallos, deriva y tirón; la zona replica `phase`, `cancelled` y los `synced` (`StalkN:tip`, `StalkN:growth`; `.:position` y `Drift:size` del tornado); cada par dibuja el tubo y el embudo desde esos datos. Las fases del viento (balanceo y giro) salen de `age_ticks` y una semilla del spawn, iguales en todos los pares. El sonido de agarre y la tierra al nacer viajan por `FxBus.broadcast`. Un par que entra tarde ve los tallos y el tornado donde están (`late_join`).
+- Red: `Caster.request_cast` → `submit_cast` → en el host `ZoneAction.started/finish` → `SpellSpawner.spawn_projectile` (la zona es un `SpellProjectile`) → solo el host corre tallos, deriva y tirón; la zona replica `phase`, `cancelled` y los `synced` (`StalkN:tip`, `StalkN:growth`; `.:position` y `Drift:size` del tornado); cada par dibuja el tubo y el embudo desde esos datos. Las fases del viento (balanceo y giro) salen de los ticks propios de cada par y una semilla del spawn. El sonido de agarre y la tierra al nacer viajan por `FxBus.broadcast`. Un par que entra tarde ve los tallos y el tornado donde están (`late_join`).
 - Orden en el tick: la zona avanza primero (`process_physics_priority` -1); los tallos y el tornado actúan en prioridad -1 también y los cuerpos corren después; `Tumbling` ya corre después del cuerpo.
 - Autoridad de los hijos: el `MultiplayerSynchronizer` de la zona agrega los paths de sus hijos; no hay uno por tallo.
 
@@ -87,7 +87,7 @@ Mediciones con `--fixed-fps 600`; las duraciones largas del dato se prueban con 
 
 ## Orden
 1. Importar texturas (hecho: `import_ui.py`); hornear las tres mallas.
-2. `GroundZone.synced/age_ticks`, `ZoneRules.ring_points`, `ZoneAction` (anillo y casting) y el registro en `match.tscn` con cajas sin arte.
+2. `GroundZone.synced`, `ZoneRules.ring_points`, `ZoneAction` (anillo y casting) y el registro en `match.tscn` con cajas sin arte.
 3. Tornado (reglas → deriva → tirón → suite) y su arte (shader, polvo, luz, sonidos).
 4. Meanstalks (reglas → tallo → agarre → suite) y su arte.
 5. Libros, `cast_stalks_tornado.tscn`, `match_shots`, READMEs, lint, suite completa.
@@ -101,7 +101,7 @@ Mediciones con `--fixed-fps 600`; las duraciones largas del dato se prueban con 
 
 ## Desvíos al implementar
 - **Cast de Meanstalks:** el SPEL no trae `tcst`, y sacengine usa la partícula `heal` en las manos del mago: es el `cast_fx = "heal"` de la acción (el mecanismo `HandFx` que ya existe), no una escena `CastGlow` nueva. Tornado sí lleva `cast_scene` (la espiral `cst0`).
-- **Piezas que el plan no nombraba:** `StalkHunt` (la elección de presa y las velocidades de la punta; saca esas líneas de `Stalk`, que ya llegaba a 150), `StalkRoster` (quién fue agarrado en este hechizo, uno por zona), `TornadoWinds` (los cuatro ángulos del viento, una sola fuente para `Lift` y `Look`), `GroundZone.hold_extra_s` (los 3 s de crecimiento se suman a la duración, para que los tallos cacen los 60 s completos).
+- **Piezas que el plan no nombraba:** `StalkHunt` (la elección de presa y las velocidades de la punta; saca esas líneas de `Stalk`, que ya llegaba a 150), `StalkRoster` (quién fue agarrado en este hechizo, uno por zona), `TornadoWinds` (los cuatro ángulos del viento, una sola fuente para `Lift` y `Look`). No hizo falta `hold_extra_s` ni `age_ticks` en `GroundZone` (que ya estaba en 150 líneas): con un lanzamiento real los tallos están crecidos al soltarlo, así que los 60 s de caza se cuentan desde ahí; los giros del viento los cuenta `TornadoWinds`.
 - **Duración de los tallos:** manda el dato (60 s). sacengine resta dos veces el temporizador (state.d:22667 y 22689-22690): NO VERIFICADO si el exe también lo hace.
 - **Sin cicatriz `mean`, sin temblor de pantalla al crecer** (como declaraba el plan).
 - **Arte de la ranura 0/1 del tallo:** NO VERIFICADO, ver `061V-spell-visuals-j.md`.

@@ -18,6 +18,8 @@ const LOOKS_DIR := "res://data/shots/"
 ## trail_every / 60 s, whatever the frame rate.
 @export var trail_fx := ""
 @export var trail_every := 1
+## The trail only puffs while the shot flies at least this fast, in m/s (0 = always).
+@export_range(0.0, 100.0, 0.5, "suffix:m/s") var trail_min_speed_m_s := 0.0
 ## FxBus types broadcast where it bursts.
 @export var impact_fx: PackedStringArray = PackedStringArray()
 ## F119: ShotImpact scene the server (or solo) applies where it bursts, in place of the plain direct ranged hit

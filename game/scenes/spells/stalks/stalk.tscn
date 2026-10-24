@@ -8,7 +8,7 @@
 [ext_resource type="Mesh" path="res://scenes/spells/stalks/stalk_tube.res" id="6_tube"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/dvin.png" id="7_dvin"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/vine.png" id="8_vine"]
-[ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="9_light"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="9_light"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="10_sound"]
 [ext_resource type="Resource" path="res://data/fx/stalk_dirt.tres" id="11_dirt"]
 [ext_resource type="Resource" path="res://data/fx/stalk_grab.tres" id="12_grab"]
@@ -31,23 +31,25 @@ script = ExtResource("2_hunt")
 [node name="Grip" type="Node" parent="."]
 script = ExtResource("3_grip")
 
-[node name="Look" type="MeshInstance3D" parent="." node_paths=PackedStringArray("stalk", "light", "grab_sound", "fall_sound")]
+[node name="Look" type="MeshInstance3D" parent="." node_paths=PackedStringArray("stalk", "grab_sound", "fall_sound")]
 mesh = ExtResource("6_tube")
 material_override = SubResource("Material_stalk")
 script = ExtResource("4_look")
 stalk = NodePath("..")
-light = NodePath("../Light")
 dirt = ExtResource("11_dirt")
 grab_burst = ExtResource("12_grab")
 grab_sound = NodePath("../GrabSound")
 fall_sound = NodePath("../FallSound")
 
 [node name="Light" parent="." instance=ExtResource("9_light")]
+editor_description = "Luz verde (color medio de dvin.png) sobre la raiz mientras la zona lanza y actua; se apaga al hundirse. `zone` lo pone meanstalks.tscn."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, 0)
 light_color = Color(0.6, 1, 0.15, 1)
 light_energy = 1.6
 omni_range = 28.0
 priority = 3.0
+fade_in_s = 1.0
+fade_out_s = 2.0
 
 [node name="RiseSound" parent="." instance=ExtResource("10_sound")]
 cue = &"stalk_rise"

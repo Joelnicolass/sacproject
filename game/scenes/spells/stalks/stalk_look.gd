@@ -3,13 +3,11 @@ class_name StalkLook
 extends MeshInstance3D
 
 ## What a stalk looks and sounds like on every peer: the tube laid on the curve from the root to the tip (the shader does the rings; this
-## hands it the eight control points each tick), the dirt that flies where it is born, the burst and sound at a catch, the sound of the
-## fall, and the light that goes out when it shrinks. Presentation only; it reads the stalk's replicated `tip`, `growth` and `mode` and
+## hands it the eight control points each tick), the dirt that flies where it is born, the burst and sound at a catch and the sound of the
+## fall (its light is a StateLight of the scene that follows the zone). Presentation only; it reads the stalk's replicated `tip`, `growth` and `mode` and
 ## writes nothing of the game. A dedicated server or a headless run draws nothing.
 
 @export var stalk: Stalk
-## The small light the stalk gives off (no shadows, from the actor lights' budget).
-@export var light: ActorLight
 ## Dirt that flies off the root when the stalk is born.
 @export var dirt: ParticleType
 ## What flies off the tip at a catch (with the light of a burst).
@@ -55,8 +53,6 @@ func _on_mode(mode: int) -> void:
 	elif mode == Stalk.Mode.SHRINKING:
 		if fall_sound != null:
 			fall_sound.play_once()
-		if is_instance_valid(light):
-			light.set_lit(false, 2.0)
 
 
 func _get_configuration_warnings() -> PackedStringArray:

@@ -14,7 +14,7 @@
 [ext_resource type="Texture2D" path="res://assets/original/fx/trn1.png" id="12_trn1"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/trn2.png" id="13_trn2"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/edge.png" id="14_edge"]
-[ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="15_light"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="15_light"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="16_sound"]
 
 [sub_resource type="ShaderMaterial" id="Material_upper"]
@@ -42,7 +42,8 @@ script = ExtResource("1_zone")
 spell = ExtResource("7_spell")
 hold_is_spell_duration = true
 end_s = 1.7
-synced = PackedStringArray(".:position", "Drift:size")
+replicates_position = true
+synced = PackedStringArray("Drift:size")
 
 [node name="Drift" type="Node" parent="." node_paths=PackedStringArray("zone")]
 script = ExtResource("2_drift")
@@ -58,14 +59,13 @@ zone = NodePath("..")
 drift = NodePath("../Drift")
 winds = NodePath("../Winds")
 
-[node name="Look" type="Node3D" parent="." node_paths=PackedStringArray("zone", "drift", "winds", "parts", "dust", "light")]
+[node name="Look" type="Node3D" parent="." node_paths=PackedStringArray("zone", "drift", "winds", "parts", "dust")]
 script = ExtResource("5_look")
 zone = NodePath("..")
 drift = NodePath("../Drift")
 winds = NodePath("../Winds")
 parts = [NodePath("Upper"), NodePath("Lower"), NodePath("Edge")]
 dust = NodePath("Dust")
-light = NodePath("Light")
 
 [node name="Upper" type="MeshInstance3D" parent="Look"]
 mesh = ExtResource("10_rings")
@@ -89,12 +89,16 @@ script = ExtResource("6_emitter")
 type = ExtResource("8_dust")
 start_active = true
 
-[node name="Light" parent="Look" instance=ExtResource("15_light")]
+[node name="Light" parent="Look" node_paths=PackedStringArray("zone") instance=ExtResource("15_light")]
+editor_description = "Luz del tornado: el gris casi neutro de trn1.png (saturacion 7 %), empujado a su sesgo calido para que no sea blanca. Prende con el lanzamiento y se apaga al disiparse."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, 0)
-light_color = Color(0.85, 0.84, 0.8, 1)
+light_color = Color(0.9, 0.82, 0.7, 1)
 light_energy = 1.3
 omni_range = 35.0
 priority = 3.0
+fade_in_s = 1.0
+fade_out_s = 1.5
+zone = NodePath("../..")
 
 [node name="CastSound" parent="." instance=ExtResource("16_sound")]
 cue = &"tornado_cast"

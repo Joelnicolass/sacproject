@@ -2,10 +2,13 @@
 class_name ZoneAction
 extends SpellAction
 
-## A spell that raises a zone on the ground (Explosion, Frozen Ground, Demonic Rift): the click names the ground, the zone is born when the
-## cast starts (it is drawn while the wizard casts), the cast's end releases it and an interrupted cast cancels it. One script for all of
-## them; the zone's scene says what happens there. It does not act on bodies (the zone's pulses do) nor time the zone (GroundZone does).
-## Ref: sacengine castExplosion, castFrozenGround, castDemonicRift (state.d:9986-10013, 10960-11116).
+## A spell that raises a zone on the ground (Explosion, Frozen Ground, Demonic Rift, and the clouds: Rain of Frogs, Rain of Fire, Plague,
+## Cloudkill, Bombardment): the click names the ground, the zone is born when the cast starts (it is drawn while the wizard casts), the
+## cast's end releases it and an interrupted cast cancels it. One script for all of them; the zone's scene says what happens there. It
+## does not act on bodies (the zone's children do) nor time the zone (GroundZone does).
+## Ref: sacengine castExplosion, castFrozenGround, castDemonicRift, castRainOfFrogs, castCloudkill (state.d:9986-10048, 10960-11339).
+
+const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
 enum Anchor { CLICK, WIZARD }
 
@@ -32,6 +35,8 @@ enum Anchor { CLICK, WIZARD }
 @export_group("Look")
 ## Played on every peer while the wizard casts (FxBus.broadcast_scene; its root answers play(params): `ticks` and `wizard`). Optional.
 @export var cast_scene: PackedScene
+## A creature or wizard the click names is the zone's target: the zone follows it (Cloudkill's cloud chases it).
+@export var follows_target := false
 
 var _zone: GroundZone
 
@@ -48,6 +53,8 @@ func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D,
 	var aim := Aim.new()
 	aim.point = picked.global_position if picked != null else point
 	aim.target = wizard
+	if follows_target and picked != null and _ROCK.is_live_body(picked):
+		aim.data["follow"] = str(picked.get_path())
 	aim.status = standing_status(funds, wizard, spell, aim.point)
 	return aim
 
@@ -56,7 +63,9 @@ func started(wizard: WizardBody, spell: SpellType, aim: Aim, frames: int) -> voi
 	var spawner := get_tree().get_first_node_in_group(SpellSpawner.GROUP) as SpellSpawner
 	if spawner == null:
 		return
-	_zone = spawner.spawn_projectile(kind, _data(wizard, spell, aim.point, frames)) as GroundZone
+	var data := _data(wizard, spell, aim.point, frames)
+	data["follow"] = aim.data.get("follow", "")
+	_zone = spawner.spawn_projectile(kind, data) as GroundZone
 	if cast_scene != null:
 		FxBus.broadcast_scene(cast_scene.resource_path, wizard.global_position, {"ticks": frames, "wizard": str(wizard.get_path())})
 

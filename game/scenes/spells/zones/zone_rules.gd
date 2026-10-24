@@ -76,3 +76,10 @@ static func flat_gap(box: AABB, point: Vector3) -> float:
 	var dx := maxf(0.0, maxf(box.position.x - point.x, point.x - box.end.x))
 	var dz := maxf(0.0, maxf(box.position.z - point.z, point.z - box.end.z))
 	return sqrt(dx * dx + dz * dz)
+
+
+## The velocity that takes a drop from `start` to `goal` in `seconds`: the straight line of that time, plus (`lobbed`) what its `gravity`
+## takes away over the flight, so it lands on `goal` right on time.
+static func launch_velocity(start: Vector3, goal: Vector3, seconds: float, gravity: float, lobbed: bool) -> Vector3:
+	var line := (goal - start) / maxf(seconds, 0.001)
+	return line + Vector3(0.0, 0.5 * gravity * seconds, 0.0) if lobbed else line

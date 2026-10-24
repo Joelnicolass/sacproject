@@ -4,7 +4,7 @@ extends Node3D
 
 ## What the tornado looks like on every peer: every frame it computes the axis of the funnel (500 m tall, its top fixed, its foot where the
 ## tornado is, bent by the winds) and hands it, with the turn and the fade, to the shader of each part (upper wall, lower wall, ragged edge);
-## it raises dust where the foot touches the ground and puts out the light when the tornado dissipates. Presentation only: it reads the
+## it raises dust where the foot touches the ground (its light is a StateLight of the scene that follows the zone). Presentation only: it reads the
 ## replicated position and size and writes nothing of the game. A dedicated server or a headless run draws nothing.
 ## Ref: sacengine renderTornado, animateTornadoDirt (renderer.d:3453-3481, state.d:22802-22823).
 
@@ -13,9 +13,8 @@ extends Node3D
 @export var winds: TornadoWinds
 ## The meshes of the funnel, with a ShaderMaterial of tornado_funnel.gdshader each: the upper wall, the lower wall and the edge, in that order.
 @export var parts: Array[MeshInstance3D] = []
-## The dust at the foot (rate set here from how high the foot is) and the small light of the tornado.
+## The dust at the foot (rate set here from how high the foot is).
 @export var dust: SpriteEmitter
-@export var light: ActorLight
 ## The edge strip changes frame this many times a second (4 frames).
 @export_range(1.0, 60.0, 0.5, "suffix:/s") var edge_fps := 15.0
 ## Seconds the funnel takes to turn once around its axis.
@@ -36,16 +35,15 @@ func _ready() -> void:
 		return
 	for part in parts:
 		(part.material_override as ShaderMaterial).set_shader_parameter("radii", _radii)
-	zone.phase_changed.connect(_on_phase)
 
 
 func _physics_process(_delta: float) -> void:
 	var home := zone.points[0]
-	var axis := TornadoRules.axis(home + Vector3.UP * TornadoRules.COLUMN_M, zone.global_position, drift.size, winds.phases(zone.age_ticks))
+	var axis := TornadoRules.axis(home + Vector3.UP * TornadoRules.COLUMN_M, zone.global_position, drift.size, winds.phases())
 	var local := PackedVector3Array()
 	for point in axis:
 		local.append(point - global_position)
-	var seconds := float(zone.age_ticks) / MatchClock.TICKS_PER_SECOND_F
+	var seconds := winds.seconds()
 	var fade := sqrt(sqrt(minf(1.0, 1.5 * drift.size)))
 	for i in parts.size():
 		var material := parts[i].material_override as ShaderMaterial
@@ -57,11 +55,6 @@ func _physics_process(_delta: float) -> void:
 	if dust != null:
 		var foot := axis[6].y - global_position.y
 		dust.set_rate(MatchClock.TICKS_PER_SECOND_F * clampf(0.4 * (dust_height_m - foot), 0.0, dust_per_tick))
-
-
-func _on_phase(phase: int) -> void:
-	if phase == GroundZone.Phase.ENDING and is_instance_valid(light):
-		light.set_lit(false, 1.5)
 
 
 func _get_configuration_warnings() -> PackedStringArray:

@@ -9,6 +9,8 @@ const RULES := preload("res://data/match_rules.tres")
 const TOLERANCE := 0.01
 ## The match seed of the cases: what a spell draws (the points of an Explosion, the targets of a rift) is the same on every run.
 const SEED := 4242
+## 061h: the clouds, by the kind their zone has in SpellSpawner.zones.
+const CLOUDS := {"RainOfFrogs": "rain_of_frogs", "RainOfFire": "rain_of_fire", "Plague": "plague", "Cloudkill": "cloudkill", "Bombardment": "bombardment"}
 
 var _host: Node3D
 var _root: Node3D
@@ -38,9 +40,20 @@ func begin(host: Node3D, world_name: String) -> void:
 	_spawner.zones["Explosion"] = load("res://scenes/spells/zones/explosion_zone.tscn") as PackedScene
 	_spawner.zones["FrozenGround"] = load("res://scenes/spells/zones/frozen_ground.tscn") as PackedScene
 	_spawner.zones["DemonicRift"] = load("res://scenes/spells/zones/demonic_rift.tscn") as PackedScene
+	for kind in CLOUDS:
+		_spawner.zones[kind] = load("res://scenes/spells/zones/%s.tscn" % CLOUDS[kind]) as PackedScene
 	_spawner.zones["Meanstalks"] = load("res://scenes/spells/stalks/meanstalks.tscn") as PackedScene
 	_spawner.zones["Tornado"] = load("res://scenes/spells/tornado/tornado.tscn") as PackedScene
 	_root.add_child(_spawner)
+	## Where a Cloudkill's bolts are born (LightningStrike.launch looks for the group and its spawn_path).
+	var shots := Node3D.new()
+	shots.name = "Shots"
+	_root.add_child(shots)
+	var shot_spawner := MultiplayerSpawner.new()
+	shot_spawner.name = "ShotSpawner"
+	shot_spawner.spawn_path = NodePath("../Shots")
+	shot_spawner.add_to_group(&"shot_spawner")
+	_root.add_child(shot_spawner)
 	_host.add_child(_root)
 	SideRelations.set_rows(_rows(), 3)
 	_saved_seed = MatchSeed.current

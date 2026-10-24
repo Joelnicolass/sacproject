@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="AfflictionType" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="AfflictionType" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/afflictions/affliction_type.gd" id="1_type"]
+[ext_resource type="PackedScene" path="res://scenes/units/afflictions/glows/rings_glow.tscn" id="9_glow"]
 
 [resource]
 script = ExtResource("1_type")
@@ -10,3 +11,4 @@ holds = false
 blocks_regeneration = true
 cc_protects = true
 coexists = true
+glow = ExtResource("9_glow")

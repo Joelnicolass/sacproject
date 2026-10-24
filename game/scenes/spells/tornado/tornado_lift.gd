@@ -23,7 +23,7 @@ func _physics_process(_delta: float) -> void:
 	if zone.cancelled or zone.phase != GroundZone.Phase.ACTIVE or drift.size <= 0.0:
 		return
 	var home := zone.points[0]
-	var axis := TornadoRules.axis(home + Vector3.UP * TornadoRules.COLUMN_M, zone.position, drift.size, winds.phases(zone.age_ticks))
+	var axis := TornadoRules.axis(home + Vector3.UP * TornadoRules.COLUMN_M, zone.position, drift.size, winds.phases())
 	var area := AABB(home - Vector3(350.0, 10.0, 350.0), Vector3(700.0, TornadoRules.COLUMN_M + 20.0, 700.0))
 	for body in BodyNudge.bodies_in(get_tree(), area):
 		_pull(body, axis)

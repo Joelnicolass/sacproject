@@ -155,8 +155,7 @@ func _catch() -> Dictionary:
 	return _verdict("stalk_catch", checks)
 
 
-## The zone lasts the spell's duration plus the seconds the stalks take to grow, counted from the end of the cast; then it ends and the
-## stalks sink in `end_s`.
+## The zone acts for the spell's duration, counted from the end of the cast; then it ends and the stalks sink in `end_s`.
 func _duration() -> Dictionary:
 	var checks := {}
 	var wizard := _wizard(1, Vector3(-120.0, 0.0, 120.0), "persephone", 8)
@@ -171,7 +170,7 @@ func _duration() -> Dictionary:
 	while zone.phase != GroundZone.Phase.ENDING and active < 1000:
 		await _frames(1)
 		active += 1
-	checks["acts_for_duration_plus_growth"] = absi(active - 480) <= 2
+	checks["acts_for_the_duration"] = absi(active - 300) <= 2
 	var sinking := 0
 	while is_instance_valid(zone) and not zone.is_queued_for_deletion() and sinking < 400:
 		await _frames(1)

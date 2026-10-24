@@ -22,6 +22,9 @@ extends Node3D
 
 const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
+## The bolt arrived: on `body` (a valid end) or on the land (null), at `at`. For whoever launched it and adds something of its own (the splash).
+signal struck(body: Node3D, at: Vector3)
+
 ## Ticks from the order to the damage (Lightning.travelDelay).
 @export var travel_ticks := 12
 ## updateTargets: the first live body on the way becomes the end.
@@ -157,6 +160,7 @@ func _retarget() -> void:
 
 ## Frame travelDelay: the SPEL's amount as direct spell damage with DamageMod.lightning to a valid end.
 func _strike() -> void:
+	struck.emit(end_body if end_body != null and is_valid_target(end_body) else null, end_point)
 	if end_body == null:
 		_say("rayo %s %s llega al suelo en %s (tick %d)" % [label, _who, _v(end_point), MatchClock.now()])
 		return

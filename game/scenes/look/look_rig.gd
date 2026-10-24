@@ -40,8 +40,6 @@ signal vegetation_toggled(enabled: bool)
 @export var tile_map: TileLayerMap
 ## The ground of a map made of one god's land (empty for the other maps): a look of that god wears it.
 @export var native_ground: NativeGround
-## The baked light of this map's ground. Empty = the one the biome's `ground_classic` carries (High Noon's).
-@export var ground_light: Texture2D
 
 var profile: LookProfile
 ## Last preset handed to `apply_quality` (or the one the Quality socket holds).

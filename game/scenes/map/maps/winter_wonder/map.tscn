@@ -42,7 +42,6 @@
 [ext_resource type="Texture2D" path="res://scenes/map/maps/winter_wonder/flora/stratos_groundcover_4.png" id="fd_stratos_groundcover_4"]
 [ext_resource type="Resource" path="res://data/vegetation/species/stratos_groundcover_5.tres" id="sp_stratos_groundcover_5"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/winter_wonder/flora/stratos_groundcover_5.png" id="fd_stratos_groundcover_5"]
-[ext_resource type="Texture2D" uid="uid://ccujxfxmnl6lw" path="res://assets/original/maps/winter_wonder/light.png" id="light_png"]
 
 [node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
@@ -59,7 +58,6 @@ props = NodePath("Props")
 unique_name_in_owner = true
 terrain = NodePath("../Terrain")
 tile_map = ExtResource("9_tiles")
-ground_light = ExtResource("light_png")
 
 [node name="Terrain" parent="." node_paths=PackedStringArray("shape", "missing") groups=["nav_source"] instance=ExtResource("12_glb")]
 unique_name_in_owner = true

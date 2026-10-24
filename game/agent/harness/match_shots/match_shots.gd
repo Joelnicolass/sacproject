@@ -5,7 +5,7 @@ extends Node
 ## and quits. It only watches: it plays no input and moves no actor; the camera is its own.
 ## It lives in a subfolder because AgentKit mounts every .gd of agent/harness/ itself.
 ## Args after `--`: --map=<tag> --god=<god of the local wizard> [--biome=<god whose land the map wears; default --god>] [--ai-god=<god>] [--wizard=<tag>] [--after=<s> before the first
-## round] [--shots=<n> rounds] [--every=<s>] [--out=<dir>] [--views=wizard,overview,fountain]; the match's own flags
+## round] [--shots=<n> rounds] [--every=<s>] [--out=<dir>] [--views=wizard,overview,fountain] [--hover=wizard]; the match's own flags
 ## (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
 ## Windowed: `-- --agent=flow --flow=match_shots.json` (the flow gives the sandbox that applies the quality preset).
 
@@ -112,7 +112,19 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 	camera.position = spot
 	camera.look_at(look)
 	camera.make_current()
+	if arg("hover") == "wizard":
+		_hover(world, wizard)
 	await _save(file)
+
+
+## --hover=wizard: the pointer rests on the local wizard (the HoverFrame draws its frame). The probe stops naming what is
+## under the real mouse; the harness names the wizard instead.
+func _hover(world: MatchWorld, wizard: Node3D) -> void:
+	for node in world.find_children("*", "TargetProbe", true, false):
+		var probe := node as TargetProbe
+		probe.process_mode = Node.PROCESS_MODE_DISABLED
+		probe.hovered = wizard
+		probe.kind = &"own_unit"
 
 
 func _save(file: String) -> void:

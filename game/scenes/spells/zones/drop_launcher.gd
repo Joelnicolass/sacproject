@@ -7,7 +7,7 @@ extends Node
 ## children). Server (or solo) only.
 ## Ref: sacengine updateRainOfFrogs, updateRainOfFire, makeBombardmentDrop (state.d:19387, 21121-21123, 21235-21257).
 
-enum Start { ABOVE_POINT, CLOUD_DISK, CASTER_DISK }
+enum Start { ABOVE_POINT, CLOUD_DISK, CASTER_DISK, ZONE_COLUMN }
 
 @export var zone: GroundZone
 @export var dropper: ZoneDropper
@@ -22,6 +22,10 @@ enum Start { ABOVE_POINT, CLOUD_DISK, CASTER_DISK }
 @export_range(0.0, 5.0, 0.1, "suffix:m") var buried_m := 1.0
 ## The seconds from its start to its goal.
 @export_range(0.1, 30.0, 0.1, "suffix:s") var fall_s := 2.0
+## ZONE_COLUMN: it starts over the zone's center, at a random height up to this much over the land (a volcano's mouth).
+@export_range(0.0, 400.0, 1.0, "suffix:m") var column_m := 120.0
+## The drop is shot at the spell's speed, leaning up for its gravity, instead of flying for `fall_s` (a lava ball).
+@export var shoots := false
 
 var _rng: RandomNumberGenerator
 
@@ -40,9 +44,12 @@ func _launch(point: Vector3, _body: Node3D) -> void:
 	var from := _start(point)
 	var goal := Vector3(point.x, zone.global_position.y, point.z) if start == Start.ABOVE_POINT else point
 	var spell := zone.spell
-	spawner.spawn_projectile(kind, {
+	var data := {
 		"x": from.x, "y": from.y, "z": from.z, "goal": goal, "fall_s": fall_s, "slot": zone.from_slot,
-		"caster": str(zone.caster_path), "damage": float(spell.damage), "damage_range": spell.damage_range, "effect_range": spell.effect_range})
+		"caster": str(zone.caster_path), "damage": float(spell.damage), "damage_range": spell.damage_range, "effect_range": spell.effect_range}
+	if shoots:
+		data["shot_speed"] = spell.speed
+	spawner.spawn_projectile(kind, data)
 
 
 func _start(point: Vector3) -> Vector3:
@@ -55,6 +62,9 @@ func _start(point: Vector3) -> Vector3:
 			var wizard := zone.caster()
 			var base := (wizard.global_position if wizard != null else zone.global_position) + _disk()
 			return Vector3(base.x, ZoneGround.height(self, base.x, base.z, zone.global_position.y) - buried_m, base.z)
+		Start.ZONE_COLUMN:
+			var mouth := zone.global_position
+			return Vector3(mouth.x, ZoneGround.height(self, mouth.x, mouth.z, mouth.y) + _rng.randf() * column_m, mouth.z)
 	return Vector3(point.x, height, point.z)
 
 

@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/spells/scar_mark.tscn" id="1_mark"]
+[ext_resource type="Texture2D" path="res://assets/original/scars/volc.png" id="2_volc"]
+
+[node name="VolcanoMark" instance=ExtResource("1_mark")]
+editor_description = "La marca del Volcano (`volc`, 40 m) en el suelo donde erupciona. Altura 0: se pinta siempre."
+texture = ExtResource("2_volc")

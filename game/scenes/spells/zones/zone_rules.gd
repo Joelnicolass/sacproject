@@ -83,3 +83,13 @@ static func flat_gap(box: AABB, point: Vector3) -> float:
 static func launch_velocity(start: Vector3, goal: Vector3, seconds: float, gravity: float, lobbed: bool) -> Vector3:
 	var line := (goal - start) / maxf(seconds, 0.001)
 	return line + Vector3(0.0, 0.5 * gravity * seconds, 0.0) if lobbed else line
+
+
+## The velocity of a shot at `speed` m/s from `start` toward `goal` that leans up to make up for `gravity` (a lava ball): the unit
+## direction plus half the pull times the distance over the speed squared, not normalised again, as the original shoots.
+## Ref: sacengine getShotDirectionWithGravity (state.d:11506-11511).
+static func shot_velocity(start: Vector3, goal: Vector3, speed: float, gravity: float) -> Vector3:
+	var offset := goal - start
+	var direction := offset.normalized() if offset.length() > 0.0 else offset
+	direction.y += 0.5 * gravity * offset.length() / maxf(speed * speed, 0.001)
+	return direction * speed

@@ -28,6 +28,7 @@ const GROUP := &"spell_spawner"
 	"FireDrop": preload("res://scenes/spells/drops/fire_drop.tscn"),
 	"PlagueDrop": preload("res://scenes/spells/drops/plague_drop.tscn"),
 	"Meteor": preload("res://scenes/spells/drops/meteor.tscn"),
+	"LavaBall": preload("res://scenes/spells/drops/lava_ball.tscn"),
 }
 ## Zone scenes by kind (Explosion, FrozenGround, DemonicRift, RainOfFrogs, RainOfFire, Plague, Cloudkill, Bombardment), assigned in match.tscn and not preloaded here: a zone points at its SpellType,
 ## the SpellType at its action, and the action's script knows this class, so a preload would close the circle. Root extends GroundZone.

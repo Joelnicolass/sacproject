@@ -22,6 +22,8 @@ enum Anchor { CLICK, WIZARD }
 @export_range(0.0, 10.0, 0.01, "suffix:s") var arm_s := 0.0
 ## `arm_s` counts from the start of the cast instead (Explosion goes off 3.8 s after it begins).
 @export var arm_from_start := false
+## More than 0: the zone stands on the nearest point of a grid of this many metres (a volcano is fixed to the ground's 10 m lattice).
+@export_range(0.0, 20.0, 0.5, "suffix:m") var snap_m := 0.0
 @export_group("Ring of roots")
 ## More than 0: the zone stands on the click and its points are this many roots around it, one per equal slice of a turn (Meanstalks: 4).
 @export_range(0, 12) var ring_count := 0
@@ -88,6 +90,8 @@ func _data(wizard: WizardBody, spell: SpellType, click: Vector3, frames: int) ->
 	var points := PackedVector3Array()
 	var rng := MatchSeed.rng(["zone", spell.tag, String(wizard.name), MatchClock.now()])
 	var origin := _ground(wizard.global_position) if anchor == Anchor.WIZARD else click
+	if snap_m > 0.0:
+		origin = _ground(Vector3(floorf((origin.x + snap_m * 0.5) / snap_m), origin.y, floorf((origin.z + snap_m * 0.5) / snap_m)) * Vector3(snap_m, 1.0, snap_m))
 	if ring_count > 0:
 		points = _roots(rng, click)
 		origin = _ground(click)

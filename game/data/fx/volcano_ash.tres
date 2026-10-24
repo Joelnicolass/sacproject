@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ParticleType" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/frck.png" id="atlas_png"]
+
+[resource]
+script = ExtResource("1_type")
+atlas = ExtResource("atlas_png")
+h_frames = 4
+v_frames = 4
+size = Vector2(0.3, 0.3)
+energy = 10.0
+frame_s = 0.03333
+lifetime_s = 3.0
+gravity = 15.0
+count = 32
+speed_min = 13.0
+speed_max = 22.0
+spread = 60.0
+scale_min = 2.5
+scale_max = 5.0
+emission_radius = 9.0
+lifetime_randomness = 0.5
+fade_s = 0.4
+pool_max = 6

@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/units/abilities/halo_of_earth.tscn" id="1_halo"]
+[ext_resource type="Resource" path="res://data/fx/halo_throw.tres" id="2_throw"]
+
+[node name="HaloOfEarth" instance=ExtResource("1_halo")]
+editor_description = "Halo of Earth del mago (olah): el mismo coordinador que el del Rhinok. LaunchAction lo crea al empezar el lanzamiento (las rocas salen escalonadas, floor((progreso + 0.1) x 6), y solo orbitan) y lo suelta al terminar. Las rocas nacen en la caja del mago x2,5."
+spawn_box_scale = 2.5
+throw_burst = ExtResource("2_throw")

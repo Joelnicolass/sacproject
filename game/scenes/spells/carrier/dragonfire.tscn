@@ -1,0 +1,52 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/carrier/spell_carrier.gd" id="1_carrier"]
+[ext_resource type="Script" path="res://scenes/spells/carrier/dragon_arrive.gd" id="2_arrive"]
+[ext_resource type="Script" path="res://scenes/spells/chain/chain_hop.gd" id="3_chain"]
+[ext_resource type="PackedScene" path="res://scenes/spells/carrier/dragon_look.tscn" id="4_look"]
+[ext_resource type="Script" path="res://scenes/fx/sprite_emitter.gd" id="5_emitter"]
+[ext_resource type="Resource" path="res://data/fx/spells/dragon_flame.tres" id="6_flame"]
+[ext_resource type="Resource" path="res://data/fx/spells/dragon_fireball.tres" id="7_fireball"]
+[ext_resource type="Resource" path="res://data/fx/dragon_roar.tres" id="8_roar"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="9_light"]
+[ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="10_sound"]
+
+[node name="Dragonfire" type="Node3D" node_paths=PackedStringArray("on_arrive")]
+editor_description = "Dragonfire (rifd): el dragon. Sube en espiral alrededor del mago mientras lanza, vuela a 18 m/s girando hasta pi rad/s, quema lo que atraviesa (175/s), al llegar hace 700 con salpicadura de 5 m y prende a todos, y sigue al no aliado mas cercano a 50 m: 5 blancos. Si no hay, se achica en 1 s. La cabeza mira a +Z."
+script = ExtResource("1_carrier")
+on_arrive = NodePath("OnArrive")
+
+[node name="Look" parent="." instance=ExtResource("4_look")]
+
+[node name="Chain" type="Node3D" parent="."]
+script = ExtResource("3_chain")
+hits = 5
+hop_s = 0.0
+shrink_steps = 0
+
+[node name="OnArrive" type="Node" parent="." node_paths=PackedStringArray("chain")]
+script = ExtResource("2_arrive")
+chain = NodePath("../Chain")
+roar = ExtResource("8_roar")
+
+[node name="Flames" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.7)
+script = ExtResource("5_emitter")
+type = ExtResource("6_flame")
+start_active = true
+
+[node name="Fireballs" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.7)
+script = ExtResource("5_emitter")
+type = ExtResource("7_fireball")
+start_active = true
+
+[node name="Light" parent="." instance=ExtResource("9_light")]
+light_color = Color(1, 0.55, 0.15, 1)
+light_energy = 2.0
+omni_range = 9.0
+priority = 4.0
+
+[node name="FlightSound" parent="." instance=ExtResource("10_sound")]
+cue = &"dragonfire_loop"
+loop = true

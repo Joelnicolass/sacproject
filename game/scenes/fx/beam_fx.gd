@@ -31,6 +31,7 @@ var _t := 0.0
 var _shape := 0
 var _flashed := false
 var _live := false
+var _tip_left := 0.0
 
 
 func _ready() -> void:
@@ -89,6 +90,7 @@ func _process(delta: float) -> void:
 	if not _flashed and _t >= type.travel_s:
 		_flashed = true
 		_flash()
+	_sparkle_tip(delta)
 	_draw()
 
 
@@ -106,6 +108,27 @@ func _stop() -> void:
 func _flash() -> void:
 	if type.light != null and is_inside_tree():
 		type.light.light_up(get_tree(), self, _end_point())
+
+
+## While the tip travels, sprites stay behind it (Rainbow's glow): a few every tick, in a ball around the tip.
+func _sparkle_tip(delta: float) -> void:
+	if type.tip_type == null or _t >= type.travel_s:
+		return
+	_tip_left -= delta
+	var tip := _arc_point(_from, _end_point(), type.span_at(_t).y) if type.path == BeamType.Path.ARC else _from.lerp(_end_point(), type.span_at(_t).y)
+	while _tip_left <= 0.0:
+		_tip_left += 1.0 / type.tip_per_s
+		var around := Vector3(_rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0))
+		FxBus.play_puff(type.tip_type.fx_name(), tip + around.limit_length(1.0) * type.tip_spread_m)
+
+
+## The point at `t` (0 = start, 1 = end) of a vertical half circle from `a` to `b`: the ground track runs along the chord with the
+## speed of a half circle, the height is the arc over the straight mix of the ends' heights (sacengine RainbowEffect).
+func _arc_point(a: Vector3, b: Vector3, t: float) -> Vector3:
+	var angle := PI * clampf(t, 0.0, 1.0)
+	var along := 0.5 * (1.0 - cos(angle))
+	var flat := Vector2(b.x - a.x, b.z - a.z).length()
+	return a.lerp(b, along) + Vector3(0.0, flat * type.arc_height * sin(angle), 0.0)
 
 
 func _draw() -> void:
@@ -132,7 +155,11 @@ func _draw() -> void:
 	_imesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
 	for bolt in _bolts:
 		for k in n + 1:
-			var p := bolt.sample(clampf(float(k) / float(n), span.x, span.y))
+			var at := clampf(float(k) / float(n), span.x, span.y)
+			if type.path == BeamType.Path.ARC:
+				points[k] = _arc_point(start, start + diff, at)
+				continue
+			var p := bolt.sample(at)
 			points[k] = start + turn * Vector3(p.x, p.y, p.z * length)
 		_add_ribbon(points, fins, n)
 	_imesh.surface_end()

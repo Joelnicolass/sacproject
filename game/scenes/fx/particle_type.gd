@@ -108,3 +108,8 @@ func cycle_s() -> float:
 ## The atlas loops within one life (more than one cycle, or a random start frame).
 func frames_wrap() -> bool:
 	return random_start_frame or lifetime_s > cycle_s() * 1.001
+
+
+## The name FxBus plays this type by: its file under data/fx/ without the extension ("" for a type that lives elsewhere).
+func fx_name() -> String:
+	return resource_path.trim_prefix("res://data/fx/").get_basename()

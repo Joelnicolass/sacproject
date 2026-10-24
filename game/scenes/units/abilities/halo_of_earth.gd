@@ -1,5 +1,5 @@
 class_name HaloOfEarth
-extends Node3D
+extends SpellLaunch
 
 ## F127 (RFC-030 030p-a): the Rhinok's Halo of Earth (HRba). sacengine haloOfEarth (state.d:13232-13236) adds the effect at
 ## once; updateHaloOfEarth (19284-19321) runs it from the next tick: while the Rhinok can carry it (canCarryHaloOfEarth,
@@ -20,6 +20,10 @@ extends Node3D
 ## - free ones look for a target (closestNonAllyInRange, 28825): the closest non-ally creature or wizard within
 ##   effectRange (50 m), alive, targetable, in sight, that no other rock chases.
 ## Blowing up = the SPEL's amount as direct spell damage to the body it hit (haloRockExplosion, 19076-19100).
+##
+## RFC-061e: the wizard's Halo of Earth (olah) is the same node. LaunchAction makes it when the cast starts (`begin_cast`: the numbers
+## come from the SpellType): the rocks come out staggered while the wizard casts, floor((progress + 0.1) × 6) of them by the share of the
+## casting that has gone, and only orbit until `release` (no target, no hit, no ground, no clock); `abort` blows the free ones up.
 ##
 ## Divergences (declared): the line of sight is a ray to the target's center (sacengine: a box); an ally is the same slot;
 ## the rocks use MatchSeed's stream, not the engine's; the dust trail is always there; no screen shake, no sound, no
@@ -57,10 +61,23 @@ extends Node3D
 @export var los_lift := 0.5
 ## FxBus type played where a rock is born.
 @export var emerge_fx := "rock_emerge"
+## Played where a rock picks its target (the sound `halo`). Optional.
+@export var throw_burst: ParticleType
 
-## The Rhinok and the SPEL. Set by setup() before the node enters the tree.
+## The Rhinok (or the wizard) and the SPEL. Set by setup() / begin_cast() before the first tick.
 var user: Node3D
 var ability: AbilityType
+
+## The numbers of the SPEL the rocks use, whatever type holds them (AbilityType of the Rhinok, SpellType of the wizard).
+var _damage := 0.0
+var _speed := 0.0
+var _acceleration := 0.0
+var _reach := 0.0
+var _numbers := false
+## False while the wizard casts: the rocks come out and orbit, nothing else.
+var _armed := true
+var _cast_ticks := 0
+var _cast_elapsed := 0
 
 
 class Rock extends RefCounted:
@@ -93,6 +110,7 @@ var _ended := false
 func setup(body: Node3D, type: AbilityType, rock_spawner: Node) -> void:
 	user = body
 	ability = type if type else GameData.ability(spell_tag)
+	_set_numbers(float(ability.damage), ability.speed, ability.acceleration, ability.effect_range)
 	spawner = rock_spawner
 	_born = MatchClock.now()
 	_who = AbilityEffect.who(body)
@@ -100,6 +118,43 @@ func setup(body: Node3D, type: AbilityType, rock_spawner: Node) -> void:
 	_rng = MatchSeed.rng(["halo", _who, _born])
 	_look = ShotLook.for_tag(rock_tag)
 	name = "Halo%s_%d" % [_who, _born]
+
+
+## The wizard's halo: the cast started. The rocks come out as the casting goes on and wait for `release` to look for targets.
+func begin_cast(caster: Node3D, spell: SpellType, _target: Node3D, _point: Vector3, cast_ticks: int) -> void:
+	user = caster
+	_set_numbers(float(spell.damage), spell.speed, spell.acceleration, spell.effect_range)
+	life_ticks = MatchClock.ticks_for(spell.duration)
+	spawner = get_tree().get_first_node_in_group(&"shot_spawner")
+	_born = MatchClock.now()
+	_who = AbilityEffect.who(caster)
+	_slot = int(caster.get("owner_slot")) if "owner_slot" in caster else 0
+	_rng = MatchSeed.rng(["halo", _who, _born])
+	_look = ShotLook.for_tag(rock_tag)
+	name = "Halo%s_%d" % [_who, _born]
+	_armed = false
+	_cast_ticks = maxi(1, cast_ticks)
+	_cast_elapsed = 0
+
+
+## The casting time ended: every rock is out and they start to look for targets.
+func release(_target: Node3D) -> void:
+	_armed = true
+
+
+## The wizard was cut: the free rocks blow up where they are and the halo ends.
+func abort() -> void:
+	_armed = true
+	_despawn_free()
+	_finish()
+
+
+func _set_numbers(damage: float, speed: float, acceleration: float, reach: float) -> void:
+	_damage = damage
+	_speed = speed
+	_acceleration = acceleration
+	_reach = reach
+	_numbers = true
 
 
 func _ready() -> void:
@@ -115,21 +170,38 @@ func _exit_tree() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if _ended or ability == null or MatchClock.now() <= _born:
+	if _ended or not _numbers or MatchClock.now() <= _born:
 		return
 	var center := _center()
 	if not is_nan(center.x):
 		if _spawned == 0:
 			_log_start(center)
-		while _spawned < num_rocks:
+		while _spawned < _rocks_due():
 			_spawn()
 	else:
 		_despawn_free()
+	if not _armed:
+		_cast_elapsed += 1
 	for rock in _active.duplicate():
-		if _update(rock, center) and rock.target == null:
+		if not _armed:
+			_orbit_only(rock, center)
+		elif _update(rock, center) and rock.target == null:
 			_seek(rock)
 	if (_spawned > 0 and _active.is_empty()) or (_spawned == 0 and is_nan(center.x)):
 		_finish()
+
+
+## How many rocks are out by now: all at once for an ability, floor((progress + 0.1) × rocks) while the wizard casts (REA HaloOfEarthRun).
+func _rocks_due() -> int:
+	if _armed:
+		return num_rocks
+	return mini(num_rocks, floori((float(_cast_elapsed) / float(_cast_ticks) + 0.1) * float(num_rocks)))
+
+
+## updateHaloRock with isCasting: the free flight only.
+func _orbit_only(rock: Rock, center: Vector3) -> void:
+	_orbit(rock, center)
+	_place(rock)
 
 
 ## canCarryHaloOfEarth: alive, on the field, not being revived or taken.
@@ -138,7 +210,8 @@ func _can_carry() -> bool:
 		return false
 	var unit := user as UnitBody
 	if unit == null:
-		return true
+		var health := user.get_node_or_null("Health") as Health
+		return health == null or not health.is_dead()
 	return unit.mode != UnitBody.Mode.DEAD and unit.mode != UnitBody.Mode.SUMMONING \
 		and unit.mode != UnitBody.Mode.REVIVING and not unit.is_taken()
 
@@ -175,7 +248,7 @@ func _make_node(at: Vector3) -> Node3D:
 		return null
 	var data := {
 		"x": at.x, "y": at.y, "z": at.z, "vx": 0.0, "vy": 0.0, "vz": 0.0,
-		"damage": float(ability.damage), "slot": _slot, "gravity": 0.0,
+		"damage": _damage, "slot": _slot, "gravity": 0.0,
 		"max_distance": 1.0e9, "tag": rock_tag, "target": "",
 		"shooter": str(user.get_path()) if user != null and user.is_inside_tree() else "",
 	}
@@ -189,7 +262,7 @@ func _update(rock: Rock, center: Vector3) -> bool:
 	else:
 		var seen := _target_center(rock)
 		var distance := seen - rock.position
-		rock.velocity = _cap(rock.velocity + distance.normalized() * ability.acceleration, distance)
+		rock.velocity = _cap(rock.velocity + distance.normalized() * _acceleration, distance)
 		rock.position += rock.velocity / MatchClock.TICKS_PER_SECOND_F
 		if distance.length() < arrive_distance:
 			_explode(rock, rock.target, "llegada")
@@ -250,8 +323,8 @@ func _direction() -> Vector3:
 
 ## The SPEL's speed cap and the one that stops it from passing its target in a tick (updateHaloRock capVelocity).
 func _cap(velocity: Vector3, distance: Vector3) -> Vector3:
-	if velocity.length() > ability.speed:
-		velocity = velocity.normalized() * ability.speed
+	if velocity.length() > _speed:
+		velocity = velocity.normalized() * _speed
 	if velocity.length() > MatchClock.TICKS_PER_SECOND_F * distance.length():
 		velocity = velocity.normalized() * distance.length() * MatchClock.TICKS_PER_SECOND_F
 	return velocity
@@ -298,7 +371,7 @@ func _seek(rock: Rock) -> void:
 			if not _attackable(body) or (_slot > 0 and _slot_of(body) == _slot):
 				continue
 			var distance := rock.position.distance_to(BodyNudge.center(body))
-			if distance <= ability.effect_range:
+			if distance <= _reach:
 				found.append([distance, str(body.name), body])
 	found.sort_custom(func(a: Array, b: Array) -> bool: return a[0] < b[0] or (a[0] == b[0] and a[1] < b[1]))
 	for entry in found:
@@ -306,6 +379,8 @@ func _seek(rock: Rock) -> void:
 		if _in_sight(rock, body):
 			rock.target = body
 			rock.target_center = BodyNudge.center(body)
+			if throw_burst != null:
+				FxBus.broadcast(throw_burst.fx_name(), rock.position)
 			var half := BodyNudge.box(body).size * 0.5
 			_say("halo %s roca %d blanco %s a %.4f m desde %s hacia %s caja %s (tick %d)" % [
 				_who, rock.index, body.name, entry[0], _v(rock.position), _v(rock.target_center), _v(half), MatchClock.now()])
@@ -352,7 +427,7 @@ func _hurt(body: Node3D) -> void:
 	var health := body.get_node_or_null("Health") as Health
 	if health == null:
 		return
-	var taken := health.damage_typed(float(ability.damage), Health.DIRECT_SPELL, _slot)
+	var taken := health.damage_typed(_damage, Health.DIRECT_SPELL, _slot)
 	_say("dano %s %d vida %d" % [body.name, roundi(taken), roundi(health.current)])
 
 

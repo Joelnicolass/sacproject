@@ -50,8 +50,10 @@ var _ended := false
 
 ## The bolt of `scene` in the shot container, or null (and a warning) when there is none. `from` is any node of the tree.
 ## `with_retarget` overrides the scene's knob (the charge's discharges say false).
+## `look` (a chain of lightning): the BeamType name, the burst name and the ticks of travel this bolt takes instead of the scene's;
+## `seat` the slot it hurts in the name of when `shooting` is gone (-1 = the shooter's).
 static func launch(scene: PackedScene, from: Node, shooting: Node3D, from_point: Vector3, target: Node3D, ground_point: Vector3,
-		damage: float, tag: String, with_retarget := true) -> LightningStrike:
+		damage: float, tag: String, with_retarget := true, look: PackedStringArray = PackedStringArray(), travel := -1, seat := -1) -> LightningStrike:
 	if scene == null or from == null or not from.is_inside_tree():
 		return null
 	var spawner := from.get_tree().get_first_node_in_group(&"shot_spawner")
@@ -64,7 +66,14 @@ static func launch(scene: PackedScene, from: Node, shooting: Node3D, from_point:
 		push_warning("LightningStrike: la escena no es un LightningStrike.")
 		return null
 	bolt.retarget = with_retarget
+	if look.size() >= 2:
+		bolt.beam_type = look[0]
+		bolt.hit_fx = look[1]
+	if travel >= 0:
+		bolt.travel_ticks = travel
 	bolt.setup(shooting, from_point, target, ground_point, damage, tag)
+	if seat >= 0:
+		bolt._slot = seat
 	container.add_child(bolt, true)
 	return bolt
 

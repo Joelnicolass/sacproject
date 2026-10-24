@@ -64,6 +64,8 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 
 **Sonido.** `ksts` = `assets/original/audio/sfx/jams/stsk.wav` (fin). Al lanzar y al prender no hay sonido propio en sacengine (**NO VERIFICADO** en el EXE).
 
+**SPEL `skin` (2026-10-24).** `tcst = dirt`, `ttex = dirt`, `tsha = rock`, `tbrk = shat`, `inum = 48`, `thit = shat`, `iCHg = 1`, `iCH+ = 0`. Sonido: `stsk` (bandera 4, el único). **Confirma** la tierra del lanzamiento y las **rocas `rock` al terminar** (`tsha`, leído en `sub_446750` ← `SkinOfStoneStart`), con **48** piezas (`inum`; sacengine tira otra cantidad, ver arriba). `tbrk`/`thit = shat`: no hay recurso `shat` en las WAD (**NO VERIFICADO** qué es; lo comparte el Freeze). `iCH+ = 0`: el lanzamiento de James **no es aditivo** (misma lectura de banderas que en 061V f-g).
+
 **Qué reutilizar del port.**
 - `scenes/look/stone_look.gd` y `stone.gdshader`: ya son la fórmula exacta del sombreador de piedra. Hoy los maneja `Afflictions`, y su doc dice que Skin of Stone debe ser una fuente más de ese mismo `StoneLook`, no un segundo. Con `Wards` habrá que decidir un único dueño del look (§2c).
 - `data/fx/petrify_rocks.tres` (rock, MIX, con gravedad): sirve para el estallido del final, ajustando los números (64, 2,5–3 m/s, vida 1,58 s).
@@ -79,7 +81,7 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 - `shld` (charlie, `Bloo.WAD!/Stra.FLDR/txtr.FLDR`): 256², atlas de **4×2** remolinos azules en espiral con un hueco oscuro al medio.
 - `pash` (misma carpeta): 256², atlas 4×4 de destellos en estrella blanco-azulados sobre negro.
 - [EXE `sub_41f730`, la llama `RunAirShield` en 0x41f8d2]: `push 'icec'` + `ttex` (una textura), `push 'cst0'` + `tcst` (partícula del lanzamiento) y `push 'pash'`. Confirma los destellos `pash` y las partículas `cst0` del lanzamiento.
-- **`shld` no aparece en ningún `push` del EXE.** En su lugar, la función del escudo carga `icec` como textura (`ttex`). `icec` (charlie, Stra/txtr, 128²) es hielo claro y lechoso. Lectura probable: la burbuja del original usa **`icec`** y no `shld`, o `shld` llega por otro camino. **NO VERIFICADO**: conviene importar los dos y decidir con una captura.
+- ~~`shld` no aparece en ningún `push`; la burbuja usaría `icec`~~ **Corregido (SPEL `shld`, 2026-10-24):** `icec` es solo el **valor por defecto** de `ttex` en `sub_41f730`. El SPEL pone **`ttex = shld`**, `tcst = cst0`, `fCHs = 0,25`, `tsfx` vacío. **La burbuja del original es `shld`**, como sacengine. La bandera de la burbuja es alfa (`0x02011008`, alfa 255, «6» y 0,01 al lado). `pash` va empujado **sin clave** a `SpawnSpinnyParticles` con bandera aditiva: fijo, confirmado. Sonidos del SPEL: `ashd` (bandera 2) y `ashh` (bandera 8, `sfx/stra/ashh.wav`, que sacengine no usa).
 - Ninguno de los tres está importado.
 
 **La burbuja** [SAC sacobject.d:2467-2537; renderer.d:322-331, 2144-2182]:
@@ -114,7 +116,7 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 - `fx/cst0.png` (y `cst0_a`) para las partículas del lanzamiento.
 
 **Qué falta.**
-- Importar `shld` y `pash` (agregarlos a `fx_catalog.ATLASES`; `pash` también como `ParticleType` aditivo), y `icec` como textura de malla para compararla con `shld` (también la pide Freeze).
+- Importar `shld` y `pash` (agregarlos a `fx_catalog.ATLASES`; `pash` también como `ParticleType` aditivo). `icec` no hace falta para Air Shield (SPEL).
 - La deformación por ruido: lo idiomático en Godot es un shader de vértices sobre `SphereMesh`, con ruido 3D animado y amplitud 0,12·radio. No hace falta Blender: es una divergencia declarada de «16 mallas con morph» y el resultado se ve igual.
 - El mapeo polar del atlas se hace en el mismo shader.
 - Las 3 capas: 3 `MeshInstance3D` en la escena, o un shader con 3 pasadas.
@@ -136,6 +138,7 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 **El EXE no contradice** [EXE 0x42b5b0 `EtherealFormRun`: solo `PROT`]:
 - **Corrección:** `forb` (0x42b9a0, con `trng`) está en `sub_42b980` y `flao` (0x42b9f8, con `ttex`) en `sub_42b9f0`. Las dos las llama **`FlashOrbRun`** (0x42bc63 y 0x42bb2c), no Ethereal Form.
 - Ethereal Form no empuja ninguna textura propia (tampoco `cst0` ni `glo2`: las partículas ya cargadas no necesitan `push`). Manda sacengine.
+- **SPEL `efrm` (2026-10-24).** Sin tabla de recursos. Sonido: `winv` (bandera 2, `sfx/pers/winv.wav`), que sacengine no usa. **Nuevo en el EXE:** `EtherealFormRun` llama a la rutina común de chispas `0x438ff0` → `0x438e30`, que lee `tSPK` con **`sprk`** por defecto (64 partículas, `fSPs` 2, aditiva). Como el SPEL no trae `tSPK`, las chispas de Ethereal Form serían **`sprk`** (estrellas azules de Stratos, charlie/Stra/txtr 4×4), no `cst0` como en sacengine. También le pone una luz amarilla de 50 m. **NO VERIFICADO** que esa llamada sea la ráfaga de entrada (no se leyeron sus argumentos).
 
 **Qué reutilizar del port.**
 - `scenes/wizards/ghost_form.gd` ya tiene `GHOST_ALPHA = 0.36`, `GHOST_ENERGY = 10` y el paso a sin sombreado (`_look.set_shadeless`). El plan conecta `EtherealForm.shown_changed → GhostForm.set_ethereal`, así que GhostForm sigue siendo el único dueño de la transparencia.
@@ -162,6 +165,8 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 **Fin.** A los 40 s o al perder `canShield` se corta en seco. No hay partículas ni sonido de cierre en sacengine.
 
 **El EXE** [EXE 0x427590 `FireformRun`]. No hay ningún `push` de etiqueta, ni en la función ni en sus auxiliares (`sub_427880` … `sub_427cd0`): usa partículas ya cargadas. No contradice, pero tampoco confirma.
+
+**SPEL `ffrm` (2026-10-24).** `tcst = firy`, `iCHg = 2`. Sonidos: `flam` (bandera 2) y **`flp5` en lazo** (bandera 2, `!`). **Confirma** `firy` en el lanzamiento. El `flp5` del SPEL es el sample `flp5` del índice, que el port resuelve a `sfx/comn/flp5.wav` (la duda `comn`/`pyro` queda a favor de `comn` salvo que el índice diga otra cosa). `iCHg = 2` es la misma clave que en Explosion, Firewall y Dragonfire (Pyro).
 
 **Qué reutilizar del port.**
 - `data/fx/fire.tres` (firy_a, MIX, energía 1) más un `SpriteEmitter` (`scenes/fx/sprite_emitter.gd`) con tasa 600/s y emisión en una caja o esfera escalada a la caja.
@@ -191,14 +196,27 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 - Lanzamiento: partículas del lanzamiento de Charnel.
 
 **El EXE** [EXE 0x433470 `ProtectiveSwarmStart`]:
-- `push 'fb_g'` + `ttex` (0x433507) y `PROT`. `fb_g` (main/bits, ya importado: el brillo del Manalito) es una textura que sacengine no usa aquí. Lectura probable: un resplandor al prender el enjambre. **NO VERIFICADO** qué dibuja.
+- ~~`fb_g` + `ttex`: un resplandor al prender~~ **Corregido (SPEL `pswr`, 2026-10-24):** `fb_g` es solo el **valor por defecto** de `ttex`. El SPEL pone **`ttex = pswm`** (con bandera alfa `0x0a011008`, como sacengine). **`fb_g` no se usa.** El resto del SPEL: `tsfx = swrm` (`swrm` es un TXTR de main/bits, 256², motas negras de ruido; no hay sample `swrm`: si es una textura de nube del enjambre o un sonido, **NO VERIFICADO**), `tfx2 = buzz` (`sfx/char/buzz.wav`), **`tSPK = puss`**, `iSP+ = 0`, `fSPa = 255`, `iSPs = 4`. Sonido: `Xswr` (bandera 4).
+- `puss` (charlie, `Bloo.WAD!/Char.FLDR/tex.FLDR`, 256² con alfa, 4×4): gotas de pus amarillo verdoso. Por las claves `tSPK`/`iSP+` es la ráfaga de la rutina común de chispas, **no aditiva** (`iSP+ = 0`). Lectura probable: salpicadura al picar. **NO VERIFICADO** dónde la llama el enjambre (`ProtectiveSwarmRun` no llama a `0x438ff0` directamente; usa `sub_4313f0`, compartida con Insect Swarm).
 - **Corrección:** `rift` + `tdmn` están en `sub_433580`, que llama **`WailingWallDemon`** (0x4337dd). Son de Wailing Wall, confirmado.
 
 **Qué reutilizar del port.** Nada específico. `scenes/fx/sprite_particles.gd`/`sprite_emitter.gd` dibujan atlas, pero los bichos tienen trayectorias propias. Lo natural en Godot es un `GPUParticles3D` con un shader de proceso que mueva cada partícula entre puntos al azar de un elipsoide, en coordenadas locales.
 
-**Qué falta.** Importar `pswm` con `fx_catalog`/`import_ui.py`.
+**Qué falta.** Importar `pswm` con `fx_catalog`/`import_ui.py`, y `puss` (Char/tex, 4×4, alfa) para la ráfaga.
 
 ---
+
+### 061b: qué difiere de lo implementado (SPEL, 2026-10-24)
+
+Lo implementado hoy en el port (commit 09d0985d): `StoneLook` para Skin of Stone; burbuja `icec` por defecto con `shld` alternativa más destellos `pash` para Air Shield; fantasma `glo2` más chispas `cst0` para Ethereal Form; fuego `firy` aditivo para Fireform; bichos `pswm` más `fb_g` apagado para Protective Swarm.
+
+| Hechizo | Implementado | Según el SPEL | Qué cambiar |
+|---|---|---|---|
+| Skin of Stone | `StoneLook`; tierra al lanzar; rocas al final | `ttex`/`tcst = dirt`, `tsha = rock`, `inum = 48`, sonido `stsk` | Nada de fondo. Revisar que las rocas del final sean 48 (`inum`). `iCH+ = 0`: el lanzamiento no aditivo. |
+| Air Shield | burbuja **`icec`** por defecto, `shld` alternativa; destellos `pash` | **`ttex = shld`**; `pash` fijo; `tcst = cst0`; sonidos `ashd` y `ashh` | **Pasar la burbuja por defecto a `shld`** y quitar `icec` como opción del original. Agregar el sonido `ashh.wav`. |
+| Ethereal Form | fantasma `glo2`; chispas **`cst0`** | sin recursos; sonido `winv`; el EXE llama a la ráfaga común con `sprk` por defecto | Probable: chispas **`sprk`** en lugar de `cst0` (importar `sprk`, ya pedido en 061V d-e). **NO VERIFICADO**: decidir con captura. Agregar el sonido `winv.wav`. |
+| Fireform | `firy` aditivo | `tcst = firy`; sonidos `flam` y `flp5` en lazo | Nada de fondo (confirma). Verificar que el lazo sea `flp5`. |
+| Protective Swarm | bichos `pswm`; `fb_g` apagado | **`ttex = pswm`**; **`fb_g` no se usa**; `tSPK = puss` (no aditiva); `tfx2 = buzz`; `tsfx = swrm`; sonido `Xswr` | **Borrar `fb_g`** (aunque esté apagado: no es del original). Agregar la ráfaga `puss` (importar `puss`) y el sonido `buzz.wav`. `swrm` queda NO VERIFICADO. |
 
 ## 061c — Control sobre un blanco
 
@@ -227,7 +245,7 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 - Fragmentos: `tsha` = `shrd`, `inum` = 48 (`FreezeSpellRun` 0x4217c0; sacengine tira 30).
 - `tbrk = shat`: no hay ningún recurso `shat` en las WAD (ni TXTR ni MRMM). Qué es: **NO VERIFICADO** (¿efecto de rotura con nombre?).
 - Lanzamiento: `tcst = cst0` (coincide con sacengine).
-- `frez` es la textura del Freeze **y** del Silverback y Frozen Ground la cargan en otras claves (Frozen Ground usa `icec` en el suelo, ver 061V f-g).
+- El Silverback y Frozen Ground también empujan `frez` (en otras claves); el suelo de Frozen Ground es `icec` (ver 061V f-g).
 
 **Qué reutilizar del port.**
 - `scenes/units/afflictions/frozen.gd` ya hace la duración, el deshielo y los fragmentos (`data/fx/freeze_shards.tres`).
@@ -347,7 +365,9 @@ Todo lo de esta tabla lo lee `tools/import/import_ui.py` con `fx_catalog.py` (lo
 
 | Tag | WAD / carpeta | Tamaño / grilla | Uso | Hechizo |
 |---|---|---|---|---|
-| `shld` | charlie.wad · `Bloo.WAD!/Stra.FLDR/txtr.FLDR` | 256², 4×2 | textura de la burbuja (sacengine; el EXE no la empuja) | Air Shield |
+| `shld` | charlie.wad · `Bloo.WAD!/Stra.FLDR/txtr.FLDR` | 256², 4×2 | textura de la burbuja (SPEL `shld`: `ttex = shld`) | Air Shield |
+| `sprk` | ídem | 256², 4×4 | chispas por defecto de la ráfaga común (probable en Ethereal Form) | Ethereal Form (NO VERIFICADO) |
+| `puss` | charlie.wad · `Bloo.WAD!/Char.FLDR/tex.FLDR` | 256², 4×4, alfa | ráfaga del enjambre (`tSPK`) | Protective Swarm |
 | `pash` | ídem | 256², 4×4 | destellos aditivos | Air Shield |
 | `icec` | ídem | 128² | **no** es del Freeze ni de Air Shield (valor por defecto del EXE que el SPEL pisa); es el suelo de Frozen Ground | — (061f) |
 | `frez` | ídem | 128² | bloque de hielo (SPEL `frez`: `ttex = frez`) | Freeze |
@@ -370,7 +390,7 @@ Mallas:
 1. **Freeze.** **Resuelto por el SPEL:** el bloque usa `frez` (el `icec` del EXE es el valor por defecto). Abierto: alfa 192/255 (SPEL) contra transparencia 0,2 (sacengine), y qué es `tbrk = shat`.
 2. ~~Skin of Stone: `quk1`/`mud1`~~ **Resuelto** (reatribución): son de Wall of Spikes (`sub_446fb0` ← `SpikeWallStart`).
 3. ~~Ethereal Form: `forb`/`flao`~~ **Resuelto** (reatribución): son de Flash Orb (`FlashOrbRun`). Manda sacengine.
-3b. **Air Shield.** ¿`icec` (lo empuja la función del escudo) o `shld` (sacengine; el EXE no lo empuja) para la burbuja? Captura de cámara fija. ¿Para qué usa `ProtectiveSwarmStart` el `fb_g`?
+3b. ~~Air Shield: `icec` o `shld`; `fb_g` del enjambre~~ **Resuelto por el SPEL:** la burbuja es `shld`; `fb_g` no se usa (es el valor por defecto que pisa `pswm`). Abierto: las chispas de Ethereal Form (`sprk` por defecto del EXE contra `cst0` de sacengine) y qué es `tsfx = swrm` del enjambre.
 4. **Grasping Vines.** `fbal`/`glo2` **resuelto** (reatribución): son de Healing Aura. Sigue abierto qué extremo de `vine` queda en la raíz.
 4b. ~~Slime: `cst0` o `cfx1`~~ **Resuelto por el SPEL:** `cfx1`.
 5. **Fuego** (Fireform, Rings of Fire): ¿aditivo con energía 8 como el original, o el `firy_a` MIX que ya usa el port? Se decide con capturas de cámara fija y un criterio numérico.

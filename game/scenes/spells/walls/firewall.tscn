@@ -1,11 +1,30 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/walls/spell_wall.gd" id="1_wall"]
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_touch.gd" id="2_touch"]
 [ext_resource type="Resource" path="res://data/catalog/spells/lwrf.tres" id="3_spell"]
+[ext_resource type="Script" path="res://scenes/spells/walls/wall_look.gd" id="4_look"]
+[ext_resource type="Mesh" path="res://assets/custom/walls/wall_strip.obj" id="5_strip"]
+[ext_resource type="Shader" path="res://scenes/spells/walls/wall_add.gdshader" id="6_shader"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/fwal.png" id="7_fwal"]
+[ext_resource type="Script" path="res://scenes/spells/walls/wall_emitter.gd" id="8_emitter"]
+[ext_resource type="PackedScene" path="res://scenes/fx/sprite_emitter.tscn" id="9_sprites"]
+[ext_resource type="Resource" path="res://data/fx/wall_flames.tres" id="10_flames"]
+[ext_resource type="Resource" path="res://data/fx/wall_front_fire.tres" id="11_front"]
+[ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="12_sound"]
+[ext_resource type="Script" path="res://scenes/spells/walls/wall_sound.gd" id="13_wallsound"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="14_light"]
+[ext_resource type="Script" path="res://scenes/spells/walls/wall_light_follow.gd" id="15_follow"]
 
 [sub_resource type="BoxShape3D" id="Box_body"]
 size = Vector3(110, 7.5, 5)
+
+[sub_resource type="ShaderMaterial" id="Material_fire"]
+shader = ExtResource("6_shader")
+shader_parameter/atlas = ExtResource("7_fwal")
+shader_parameter/energy = 2.0
+shader_parameter/wave_speed = 1.0
+shader_parameter/frame_s = 0.0667
 
 [node name="Firewall" type="Node3D" node_paths=PackedStringArray("body")]
 script = ExtResource("1_wall")
@@ -26,3 +45,63 @@ spell_damage_per_s = true
 ramp_s = 3.0
 pierce_shield = true
 mods = 64
+
+[node name="Look" type="MeshInstance3D" parent="." node_paths=PackedStringArray("wall")]
+material_override = SubResource("Material_fire")
+mesh = ExtResource("5_strip")
+cast_shadow = 0
+script = ExtResource("4_look")
+wall = NodePath("..")
+
+[node name="Flames" type="Node3D" parent="." node_paths=PackedStringArray("wall", "emitter")]
+script = ExtResource("8_emitter")
+wall = NodePath("..")
+emitter = NodePath("Sprites")
+rate = 0.55
+
+[node name="Sprites" parent="Flames" instance=ExtResource("9_sprites")]
+type = ExtResource("10_flames")
+
+[node name="LeftFront" type="Node3D" parent="." node_paths=PackedStringArray("wall", "emitter")]
+script = ExtResource("8_emitter")
+wall = NodePath("..")
+emitter = NodePath("Sprites")
+where = 1
+rate = 30.0
+heights = Vector2(0, 0)
+
+[node name="Sprites" parent="LeftFront" instance=ExtResource("9_sprites")]
+type = ExtResource("11_front")
+
+[node name="RightFront" type="Node3D" parent="." node_paths=PackedStringArray("wall", "emitter")]
+script = ExtResource("8_emitter")
+wall = NodePath("..")
+emitter = NodePath("Sprites")
+where = 2
+rate = 30.0
+heights = Vector2(0, 0)
+
+[node name="Sprites" parent="RightFront" instance=ExtResource("9_sprites")]
+type = ExtResource("11_front")
+
+[node name="Loop" parent="." node_paths=PackedStringArray("wall") instance=ExtResource("12_sound")]
+script = ExtResource("13_wallsound")
+cue = &"wall_fire_loop"
+wall = NodePath("..")
+
+[node name="Start" parent="." node_paths=PackedStringArray("wall") instance=ExtResource("12_sound")]
+script = ExtResource("13_wallsound")
+cue = &"wall_fire_start"
+wall = NodePath("..")
+when = 0
+
+[node name="Light" parent="." instance=ExtResource("14_light")]
+light_color = Color(1, 0.5, 0, 1)
+light_energy = 2.5
+omni_range = 18.0
+priority = 3.0
+
+[node name="LightFollow" type="Node" parent="." node_paths=PackedStringArray("wall", "light")]
+script = ExtResource("15_follow")
+wall = NodePath("..")
+light = NodePath("../Light")

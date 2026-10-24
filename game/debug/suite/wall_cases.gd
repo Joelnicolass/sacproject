@@ -9,6 +9,8 @@ const WORLD := preload("res://debug/suite/soul_world.gd")
 const WALLS := {"lwrf": "pyro", "laws": "james", "laww": "charnel", "lawv": "persephone", "cnef": "stratos"}
 const KINDS := {"lwrf": "Firewall", "laws": "WallOfSpikes", "laww": "WailingWall", "lawv": "Vinewall", "cnef": "Fence"}
 const HEIGHTS := {"lwrf": 7.5, "laws": 5.0, "laww": 7.5, "lawv": 7.5, "cnef": 5.5}
+## The colour of the light each wall carries: the exe's orange for the Firewall, the dominant of the picture for the rest.
+const LIGHTS := {"lwrf": Color(1, 0.5, 0), "laws": Color(0.75, 0.55, 0.35), "laww": Color(0.8, 0.4, 0.28), "lawv": Color(0.5, 0.72, 0.25), "cnef": Color(0.7, 0.55, 1)}
 const CLICK := Vector3(0.0, 0.0, 30.0)
 const TICKS := 60.0
 
@@ -75,6 +77,9 @@ func _scenes() -> Dictionary:
 			checks[tag + "_box_is_the_spell"] = absf(size.x - 2.0 * spell.effect_range) < 0.01 and absf(size.y - HEIGHTS[tag]) < 0.01 and absf(size.z - 5.0) < 0.01
 			checks[tag + "_wall_has_the_spell"] = wall.spell == spell
 			var touch := wall.get_node_or_null("Touch") as WallTouch
+			var light := wall.get_node_or_null("Light") as ActorLight
+			checks[tag + "_has_its_light"] = light != null and not light.shadow_enabled and light.light_energy > 0.0
+			checks[tag + "_light_colour"] = light != null and light.light_color.is_equal_approx(LIGHTS[tag])
 			checks[tag + "_touch_ok"] = tag == "cnef" or (touch != null and touch._get_configuration_warnings().is_empty())
 			wall.free()
 		if action != null:

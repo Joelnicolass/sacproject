@@ -1,12 +1,33 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/walls/spell_wall.gd" id="1_wall"]
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_touch.gd" id="2_touch"]
 [ext_resource type="Resource" path="res://data/catalog/spells/lawv.tres" id="3_spell"]
 [ext_resource type="Resource" path="res://data/afflictions/vined.tres" id="4_vined"]
+[ext_resource type="Script" path="res://scenes/spells/walls/wall_vines.gd" id="5_vines"]
+[ext_resource type="Mesh" path="res://assets/custom/walls/vine_tube.obj" id="6_tube"]
+[ext_resource type="Shader" path="res://scenes/spells/walls/wall_vine.gdshader" id="7_shader"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/vine.png" id="8_vine"]
+[ext_resource type="Script" path="res://scenes/spells/walls/wall_emitter.gd" id="9_emitter"]
+[ext_resource type="PackedScene" path="res://scenes/fx/sprite_emitter.tscn" id="10_sprites"]
+[ext_resource type="Resource" path="res://data/fx/wall_vine_sparks.tres" id="11_sparks"]
+[ext_resource type="Resource" path="res://data/fx/wall_vine_cast.tres" id="12_cast"]
+[ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="13_sound"]
+[ext_resource type="Script" path="res://scenes/spells/walls/wall_sound.gd" id="14_wallsound"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="15_light"]
+[ext_resource type="Script" path="res://scenes/spells/walls/wall_light_follow.gd" id="16_follow"]
 
 [sub_resource type="BoxShape3D" id="Box_body"]
 size = Vector3(110, 7.5, 5)
+
+[sub_resource type="MultiMesh" id="MultiMesh_vines"]
+transform_format = 1
+use_custom_data = true
+mesh = ExtResource("6_tube")
+
+[sub_resource type="ShaderMaterial" id="Material_vine"]
+shader = ExtResource("7_shader")
+shader_parameter/albedo = ExtResource("8_vine")
 
 [node name="Vinewall" type="Node3D" node_paths=PackedStringArray("body")]
 script = ExtResource("1_wall")
@@ -29,3 +50,72 @@ core_fraction = 0.35
 cooldown_s = 6.0
 renew_while_afflicted = true
 affliction = ExtResource("4_vined")
+
+[node name="Vines" type="MultiMeshInstance3D" parent="." node_paths=PackedStringArray("wall")]
+material_override = SubResource("Material_vine")
+multimesh = SubResource("MultiMesh_vines")
+script = ExtResource("5_vines")
+wall = NodePath("..")
+
+[node name="LeftSparks" type="Node3D" parent="." node_paths=PackedStringArray("wall", "emitter")]
+script = ExtResource("9_emitter")
+wall = NodePath("..")
+emitter = NodePath("Sprites")
+where = 1
+rate = 40.0
+
+[node name="Sprites" parent="LeftSparks" instance=ExtResource("10_sprites")]
+type = ExtResource("11_sparks")
+
+[node name="RightSparks" type="Node3D" parent="." node_paths=PackedStringArray("wall", "emitter")]
+script = ExtResource("9_emitter")
+wall = NodePath("..")
+emitter = NodePath("Sprites")
+where = 2
+rate = 40.0
+
+[node name="Sprites" parent="RightSparks" instance=ExtResource("10_sprites")]
+type = ExtResource("11_sparks")
+
+[node name="LeftCast" type="Node3D" parent="." node_paths=PackedStringArray("wall", "emitter")]
+script = ExtResource("9_emitter")
+wall = NodePath("..")
+emitter = NodePath("Sprites")
+where = 1
+rate = 110.0
+
+[node name="Sprites" parent="LeftCast" instance=ExtResource("10_sprites")]
+type = ExtResource("12_cast")
+
+[node name="RightCast" type="Node3D" parent="." node_paths=PackedStringArray("wall", "emitter")]
+script = ExtResource("9_emitter")
+wall = NodePath("..")
+emitter = NodePath("Sprites")
+where = 2
+rate = 110.0
+
+[node name="Sprites" parent="RightCast" instance=ExtResource("10_sprites")]
+type = ExtResource("12_cast")
+
+[node name="Raise" parent="." node_paths=PackedStringArray("wall") instance=ExtResource("13_sound")]
+script = ExtResource("14_wallsound")
+cue = &"wall_vine_root"
+wall = NodePath("..")
+when = 0
+
+[node name="Sink" parent="." node_paths=PackedStringArray("wall") instance=ExtResource("13_sound")]
+script = ExtResource("14_wallsound")
+cue = &"wall_vine_down"
+wall = NodePath("..")
+when = 1
+
+[node name="Light" parent="." instance=ExtResource("15_light")]
+light_color = Color(0.5, 0.72, 0.25, 1)
+light_energy = 1.2
+omni_range = 14.0
+priority = 3.0
+
+[node name="LightFollow" type="Node" parent="." node_paths=PackedStringArray("wall", "light")]
+script = ExtResource("16_follow")
+wall = NodePath("..")
+light = NodePath("../Light")

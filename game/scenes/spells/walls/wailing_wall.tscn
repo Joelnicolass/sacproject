@@ -1,11 +1,29 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/walls/spell_wall.gd" id="1_wall"]
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_touch.gd" id="2_touch"]
 [ext_resource type="Resource" path="res://data/catalog/spells/laww.tres" id="3_spell"]
+[ext_resource type="Script" path="res://scenes/spells/walls/wall_look.gd" id="4_look"]
+[ext_resource type="Mesh" path="res://assets/custom/walls/wall_strip.obj" id="5_strip"]
+[ext_resource type="Shader" path="res://scenes/spells/walls/wall_mix.gdshader" id="6_shader"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/wwal.png" id="7_wwal"]
+[ext_resource type="PackedScene" path="res://scenes/spells/walls/wall_spirit.tscn" id="8_spirit"]
+[ext_resource type="PackedScene" path="res://scenes/spells/walls/wall_orbit.tscn" id="9_orbit"]
+[ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="10_sound"]
+[ext_resource type="Script" path="res://scenes/spells/walls/wall_sound.gd" id="11_wallsound"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="12_light"]
+[ext_resource type="Script" path="res://scenes/spells/walls/wall_light_follow.gd" id="13_follow"]
 
 [sub_resource type="BoxShape3D" id="Box_body"]
 size = Vector3(110, 7.5, 5)
+
+[sub_resource type="ShaderMaterial" id="Material_faces"]
+shader = ExtResource("6_shader")
+shader_parameter/atlas = ExtResource("7_wwal")
+shader_parameter/wave_speed = 0.25
+shader_parameter/tile_m = 7.0
+shader_parameter/energy = 1.0
+shader_parameter/opacity = 0.63
 
 [node name="WailingWall" type="Node3D" node_paths=PackedStringArray("body")]
 script = ExtResource("1_wall")
@@ -28,3 +46,83 @@ cooldown_s = 8.0
 slow_factor = 0.75
 slow_s = 8.0
 pace_source = &"wall_wailing"
+hit_scene = ExtResource("9_orbit")
+
+[node name="Look" type="MeshInstance3D" parent="." node_paths=PackedStringArray("wall")]
+material_override = SubResource("Material_faces")
+mesh = ExtResource("5_strip")
+cast_shadow = 0
+script = ExtResource("4_look")
+wall = NodePath("..")
+
+[node name="Spirits" type="Node3D" parent="."]
+
+[node name="Spirit0" parent="Spirits" node_paths=PackedStringArray("wall") instance=ExtResource("8_spirit")]
+wall = NodePath("../..")
+index = 0
+
+[node name="Spirit1" parent="Spirits" node_paths=PackedStringArray("wall") instance=ExtResource("8_spirit")]
+wall = NodePath("../..")
+index = 1
+
+[node name="Spirit2" parent="Spirits" node_paths=PackedStringArray("wall") instance=ExtResource("8_spirit")]
+wall = NodePath("../..")
+index = 2
+
+[node name="Spirit3" parent="Spirits" node_paths=PackedStringArray("wall") instance=ExtResource("8_spirit")]
+wall = NodePath("../..")
+index = 3
+
+[node name="Spirit4" parent="Spirits" node_paths=PackedStringArray("wall") instance=ExtResource("8_spirit")]
+wall = NodePath("../..")
+index = 4
+
+[node name="Spirit5" parent="Spirits" node_paths=PackedStringArray("wall") instance=ExtResource("8_spirit")]
+wall = NodePath("../..")
+index = 5
+
+[node name="Spirit6" parent="Spirits" node_paths=PackedStringArray("wall") instance=ExtResource("8_spirit")]
+wall = NodePath("../..")
+index = 6
+
+[node name="Spirit7" parent="Spirits" node_paths=PackedStringArray("wall") instance=ExtResource("8_spirit")]
+wall = NodePath("../..")
+index = 7
+
+[node name="Spirit8" parent="Spirits" node_paths=PackedStringArray("wall") instance=ExtResource("8_spirit")]
+wall = NodePath("../..")
+index = 8
+
+[node name="Spirit9" parent="Spirits" node_paths=PackedStringArray("wall") instance=ExtResource("8_spirit")]
+wall = NodePath("../..")
+index = 9
+
+[node name="Spirit10" parent="Spirits" node_paths=PackedStringArray("wall") instance=ExtResource("8_spirit")]
+wall = NodePath("../..")
+index = 10
+
+[node name="Spirit11" parent="Spirits" node_paths=PackedStringArray("wall") instance=ExtResource("8_spirit")]
+wall = NodePath("../..")
+index = 11
+
+[node name="Loop" parent="." node_paths=PackedStringArray("wall") instance=ExtResource("10_sound")]
+script = ExtResource("11_wallsound")
+cue = &"wall_wail_loop"
+wall = NodePath("..")
+
+[node name="Cast" parent="." node_paths=PackedStringArray("wall") instance=ExtResource("10_sound")]
+script = ExtResource("11_wallsound")
+cue = &"wall_wail_cast"
+wall = NodePath("..")
+when = 0
+
+[node name="Light" parent="." instance=ExtResource("12_light")]
+light_color = Color(0.8, 0.4, 0.28, 1)
+light_energy = 1.2
+omni_range = 14.0
+priority = 3.0
+
+[node name="LightFollow" type="Node" parent="." node_paths=PackedStringArray("wall", "light")]
+script = ExtResource("13_follow")
+wall = NodePath("..")
+light = NodePath("../Light")

@@ -1,13 +1,43 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/walls/spell_wall.gd" id="1_wall"]
 [ext_resource type="Script" path="res://scenes/spells/walls/fence_posts.gd" id="2_posts"]
 [ext_resource type="Script" path="res://scenes/spells/walls/fence_zap.gd" id="3_zap"]
 [ext_resource type="Resource" path="res://data/catalog/spells/cnef.tres" id="4_spell"]
 [ext_resource type="Resource" path="res://data/fx/beams/lightning.tres" id="5_bolt"]
+[ext_resource type="Shader" path="res://scenes/spells/walls/wall_sprite_mix.gdshader" id="6_mix"]
+[ext_resource type="Shader" path="res://scenes/spells/walls/wall_sprite_add.gdshader" id="7_add"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/bubl.png" id="8_bubl"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/cst0.png" id="9_cst0"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="10_light"]
+[ext_resource type="Script" path="res://scenes/spells/walls/wall_light_follow.gd" id="11_follow"]
 
 [sub_resource type="BoxShape3D" id="Box_body"]
 size = Vector3(110, 5.5, 5)
+
+[sub_resource type="QuadMesh" id="Quad_post"]
+
+[sub_resource type="MultiMesh" id="MultiMesh_bubbles"]
+transform_format = 1
+instance_count = 12
+visible_instance_count = 0
+mesh = SubResource("Quad_post")
+
+[sub_resource type="MultiMesh" id="MultiMesh_sparks"]
+transform_format = 1
+instance_count = 12
+visible_instance_count = 0
+mesh = SubResource("Quad_post")
+
+[sub_resource type="ShaderMaterial" id="Material_bubble"]
+shader = ExtResource("6_mix")
+shader_parameter/picture = ExtResource("8_bubl")
+shader_parameter/opacity = 0.9
+
+[sub_resource type="ShaderMaterial" id="Material_sparks"]
+shader = ExtResource("7_add")
+shader_parameter/atlas = ExtResource("9_cst0")
+shader_parameter/energy = 3.0
 
 [node name="Fence" type="Node3D" node_paths=PackedStringArray("body")]
 script = ExtResource("1_wall")
@@ -24,12 +54,38 @@ sync_extra = PackedStringArray("Posts:posts")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.75, 0)
 shape = SubResource("Box_body")
 
-[node name="Posts" type="Node3D" parent="." node_paths=PackedStringArray("wall")]
+[node name="Posts" type="Node3D" parent="." node_paths=PackedStringArray("wall", "bubbles", "sparks")]
 script = ExtResource("2_posts")
 wall = NodePath("..")
+bubbles = NodePath("Bubbles")
+sparks = NodePath("Sparks")
 
-[node name="Zap" type="Node" parent="." node_paths=PackedStringArray("wall", "posts")]
+[node name="Bubbles" type="MultiMeshInstance3D" parent="Posts"]
+top_level = true
+material_override = SubResource("Material_bubble")
+multimesh = SubResource("MultiMesh_bubbles")
+cast_shadow = 0
+
+[node name="Sparks" type="MultiMeshInstance3D" parent="Posts"]
+top_level = true
+material_override = SubResource("Material_sparks")
+multimesh = SubResource("MultiMesh_sparks")
+cast_shadow = 0
+
+[node name="Zap" type="Node" parent="." node_paths=PackedStringArray("wall", "posts", "bolt")]
 script = ExtResource("3_zap")
 wall = NodePath("..")
 posts = NodePath("../Posts")
 bolt = ExtResource("5_bolt")
+
+[node name="Light" parent="." instance=ExtResource("10_light")]
+light_color = Color(0.7, 0.55, 1, 1)
+light_energy = 2.0
+omni_range = 14.0
+priority = 3.0
+
+[node name="LightFollow" type="Node" parent="." node_paths=PackedStringArray("wall", "light", "posts")]
+script = ExtResource("11_follow")
+wall = NodePath("..")
+light = NodePath("../Light")
+posts = NodePath("../Posts")

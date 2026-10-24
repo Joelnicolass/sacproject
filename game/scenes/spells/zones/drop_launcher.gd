@@ -1,0 +1,71 @@
+@tool
+class_name DropLauncher
+extends Node
+
+## Makes the drop of a cloud: when its ZoneDropper says where, it spawns the scene of `kind` (a ZoneDrop) at its start, with the point it
+## must reach, the time it takes and the numbers of the spell. It does not choose where (ZoneDropper) nor move or hurt (ZoneDrop and its
+## children). Server (or solo) only.
+## Ref: sacengine updateRainOfFrogs, updateRainOfFire, makeBombardmentDrop (state.d:19387, 21121-21123, 21235-21257).
+
+enum Start { ABOVE_POINT, CLOUD_DISK, CASTER_DISK }
+
+@export var zone: GroundZone
+@export var dropper: ZoneDropper
+## The key of the drop's scene in SpellSpawner.projectiles.
+@export var kind := ""
+@export var start := Start.ABOVE_POINT
+## The cloud: a drop of ABOVE_POINT or CLOUD_DISK starts at its height.
+@export var cloud_at: Marker3D
+## For the disks: how far from their centre it can start, as a share of the spell's effect range.
+@export_range(0.0, 2.0, 0.01) var disk_share := 0.5
+## CASTER_DISK: how far under the land it starts.
+@export_range(0.0, 5.0, 0.1, "suffix:m") var buried_m := 1.0
+## The seconds from its start to its goal.
+@export_range(0.1, 30.0, 0.1, "suffix:s") var fall_s := 2.0
+
+var _rng: RandomNumberGenerator
+
+
+func _ready() -> void:
+	if zone == null or dropper == null or Engine.is_editor_hint() or not zone.is_authority():
+		return
+	_rng = MatchSeed.rng(["launcher", String(zone.name), String(name)])
+	dropper.chosen.connect(_launch)
+
+
+func _launch(point: Vector3, _body: Node3D) -> void:
+	var spawner := get_tree().get_first_node_in_group(SpellSpawner.GROUP) as SpellSpawner
+	if spawner == null:
+		return
+	var from := _start(point)
+	var goal := Vector3(point.x, zone.global_position.y, point.z) if start == Start.ABOVE_POINT else point
+	var spell := zone.spell
+	spawner.spawn_projectile(kind, {
+		"x": from.x, "y": from.y, "z": from.z, "goal": goal, "fall_s": fall_s, "slot": zone.from_slot,
+		"caster": str(zone.caster_path), "damage": float(spell.damage), "damage_range": spell.damage_range, "effect_range": spell.effect_range})
+
+
+func _start(point: Vector3) -> Vector3:
+	var height := cloud_at.global_position.y if cloud_at != null else point.y
+	match start:
+		Start.CLOUD_DISK:
+			var around := (cloud_at.global_position if cloud_at != null else zone.global_position) + _disk()
+			return Vector3(around.x, height, around.z)
+		Start.CASTER_DISK:
+			var wizard := zone.caster()
+			var base := (wizard.global_position if wizard != null else zone.global_position) + _disk()
+			return Vector3(base.x, ZoneGround.height(self, base.x, base.z, zone.global_position.y) - buried_m, base.z)
+	return Vector3(point.x, height, point.z)
+
+
+func _disk() -> Vector3:
+	return ZoneRules.disk_point(_rng, zone.spell.effect_range * disk_share)
+
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings := PackedStringArray()
+	if zone == null or dropper == null:
+		warnings.append("Faltan la zona y su ZoneDropper.")
+	if kind.is_empty():
+		warnings.append("Falta `kind`: la escena de la gota en SpellSpawner.projectiles.")
+	return warnings

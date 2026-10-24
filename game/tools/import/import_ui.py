@@ -104,6 +104,12 @@ EXTRA_FX = {
     "and2": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
     "swnd": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
     "wdst": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
+    # RFC 061h (SPEL): Rain of Frogs' frog (fhop, 4x4), cast glints (frgl) and burst (brst); Rain of Fire's drop (bbrd, 4x4); Cloudkill's cloud (clou, 4x4).
+    "fhop": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
+    "brst": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
+    "frgl": ("main.wad", "MAIN.WAD!/bits.FLDR"),
+    "bbrd": ("charlie.wad", "Bloo.WAD!/Pyro.FLDR/txtr.FLDR"),
+    "clou": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
 }
 
 IMPORT_TEMPLATE = """[remap]

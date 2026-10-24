@@ -99,3 +99,8 @@ func standing_status(funds: String, wizard: WizardBody, spell: SpellType, point:
 	if wizard.global_position.distance_to(point) > spell.cast_range:
 		return OUT_OF_RANGE
 	return ""
+
+
+## The spawner of projectiles in the world, or null.
+func projectile_spawner() -> SpellSpawner:
+	return get_tree().get_first_node_in_group("spell_spawner") as SpellSpawner

@@ -77,8 +77,3 @@ static func projectile_data(wizard: Node3D, spell: SpellType, from: Vector3, tar
 		"acceleration": spell.acceleration,
 		"damage": float(spell.damage),
 	}
-
-
-## The spawner of projectiles in the world, or null.
-func projectile_spawner() -> SpellSpawner:
-	return get_tree().get_first_node_in_group("spell_spawner") as SpellSpawner

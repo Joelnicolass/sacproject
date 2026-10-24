@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="SpellType" format=3]
 
+[ext_resource type="PackedScene" path="res://scenes/spells/actions/animate_dead_action.tscn" id="2_action"]
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_yn41v"]
 
 [resource]
@@ -13,4 +14,5 @@ casting_time_s = 0.3704
 spell_order = 454
 duration = 5.0
 flags = 4098
+action = ExtResource("2_action")
 structures = PackedStringArray()

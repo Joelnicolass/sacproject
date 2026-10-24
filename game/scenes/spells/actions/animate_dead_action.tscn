@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/actions/animate_dead_action.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/units/abilities/revive_slow.tscn" id="2_revive"]
+
+[node name="AnimateDead" type="Node"]
+script = ExtResource("1_script")
+tag = "deda"
+pick = 2
+prompt = "Elegí un alma"
+cast_fx = "animate_dead_cast"
+revive_scene = ExtResource("2_revive")

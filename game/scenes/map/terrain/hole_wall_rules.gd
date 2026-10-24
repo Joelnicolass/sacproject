@@ -12,7 +12,8 @@ extends RefCounted
 const DEPTH_M := 50.0
 
 
-## The arrays (positions, normals, COLOR, indices) of the walls for `removed` vertex ids, ready for ArrayMesh. Empty when none.
+## The arrays (positions, normals, COLOR, indices, UV) of the walls for `removed` vertex ids, ready for ArrayMesh. Empty when
+## none. COLOR alpha 0 marks a wall for the ground shader; UV places the cliff texture (WallUvRules).
 static func arrays(index: TerrainRules.Index, removed: PackedInt32Array) -> Array:
 	var edges := boundary(index, removed)
 	if edges.is_empty():
@@ -21,18 +22,22 @@ static func arrays(index: TerrainRules.Index, removed: PackedInt32Array) -> Arra
 	var normals := PackedVector3Array()
 	var colors := PackedColorArray()
 	var indices := PackedInt32Array()
+	var uvs := PackedVector2Array()
 	var down := Vector3(0.0, -DEPTH_M, 0.0)
-	var uvs := [Vector2(0, 0), Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)]
+	var ends := PackedVector2Array()
 	for edge: Array in edges:
-		var a: Vector3 = edge[0]
-		var b: Vector3 = edge[1]
+		ends.append_array([Vector2(edge[0].x, edge[0].z), Vector2(edge[1].x, edge[1].z)])
+	var metres := WallUvRules.rim_metres(ends)
+	for w in edges.size():
+		var a: Vector3 = edges[w][0]
+		var b: Vector3 = edges[w][1]
 		var first := vertices.size()
 		vertices.append_array([a, b, b + down, a + down])
-		normals.append_array([edge[2], edge[2], edge[2], edge[2]])
-		for uv: Vector2 in uvs:
-			colors.append(Color(0.0, uv.x, uv.y, 0.0))
+		normals.append_array([edges[w][2], edges[w][2], edges[w][2], edges[w][2]])
+		colors.append_array([Color(0, 0, 0, 0), Color(0, 0, 0, 0), Color(0, 0, 0, 0), Color(0, 0, 0, 0)])
+		uvs.append_array([Vector2(metres[w * 2], 0.0), Vector2(metres[w * 2 + 1], 0.0), Vector2(metres[w * 2 + 1], 1.0), Vector2(metres[w * 2], 1.0)])
 		indices.append_array([first, first + 2, first + 1, first + 2, first, first + 3])
-	return [vertices, normals, colors, indices]
+	return [vertices, normals, colors, indices, uvs]
 
 
 ## The edges between a land triangle and one that lost a corner, each as [from, to, normal toward the hole] (positions of the file).

@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" path="res://assets/custom/sky/james_skyb_tileable.png" id="3_cruv4"]
 [ext_resource type="Texture2D" path="res://assets/original/themes/james/sky.png" id="4_aykr2"]
 [ext_resource type="Texture2D" path="res://assets/custom/sky/james_skyt_tileable.png" id="5_8yatu"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/james/undr.png" id="7_undr"]
 [ext_resource type="Script" path="res://scenes/look/sky/sky_look.gd" id="6_75fvq"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rhook"]
@@ -40,6 +41,7 @@ shader_parameter/moon_elevation_deg = 40.0
 script = ExtResource("6_75fvq")
 label = "Cielo de James: mediodia de desierto"
 material = SubResource("ShaderMaterial_rhook")
+under_texture = ExtResource("7_undr")
 ambient_sky_contribution = 0.45
 fog_color = Color(0.7299, 0.6995, 0.76175, 1)
 haze_tint = Color(1, 0.94, 0.82, 1)

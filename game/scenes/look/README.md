@@ -1,6 +1,6 @@
 # look
 
-What: the rig (`look_rig.tscn`) hands a god's `LookProfile` and the quality preset to its layers (Sun, Ground, Environment, Grass, FxLight, Flora, TerrainDeform: the texture with how far the land has moved, which the ground shaders read); each layer is the only writer of its object.
+What: the rig (`look_rig.tscn`) hands a god's `LookProfile` and the quality preset to its layers (Sun, Ground, Environment, Grass, FxLight, Flora, TerrainDeform: the texture with how far the land has moved, which the ground shaders read; Underside: the god's `undr` picture far under the island, seen through the void and the pits, from `SkyLook.under_texture`); each layer is the only writer of its object.
 Not: what a god is (GodType), when a biome is drawn (scenes/match/biome_rules.gd), or time of day and weather (empty slots `TimeOfDay` and `Weather`, RFC-058).
 Talks to: MatchBiome -> `map.look.apply_profile(god.look)` -> `LookLayer.apply_look(profile, rig)` / `apply_quality(preset)`; the rig emits `profile_applied`.
 Edit: `data/look/<god>.tres` (the profile) -> `sky/<god>_sky.tres` (the sky shader's material, fog, ambient), `light/<god>_light.tres`, `glow/<god>_glow.tres`; in the editor open any `scenes/map/maps/<m>/map.tscn`, select `Look` and pick a god in `Preview god`: the map shows its look live (clear it to go back); `Preview quality` (default high) is what lets the plants show. Editor only: the running game ignores both.

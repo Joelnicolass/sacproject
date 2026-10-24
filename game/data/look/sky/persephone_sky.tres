@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" path="res://assets/custom/sky/persephone_skyb_tileable.png" id="3_yy0cy"]
 [ext_resource type="Texture2D" path="res://assets/original/themes/persephone/sky.png" id="4_jwwaj"]
 [ext_resource type="Texture2D" path="res://assets/custom/sky/persephone_skyt_tileable.png" id="5_n3j26"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/persephone/undr.png" id="7_undr"]
 [ext_resource type="Script" path="res://scenes/look/sky/sky_look.gd" id="6_hirsd"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7gcis"]
@@ -40,6 +41,7 @@ shader_parameter/moon_elevation_deg = 40.0
 script = ExtResource("6_hirsd")
 label = "Cielo de Persephone: atardecer dorado"
 material = SubResource("ShaderMaterial_7gcis")
+under_texture = ExtResource("7_undr")
 ambient_sky_contribution = 0.6
 fog_color = Color(0.3137, 0.5098, 0.5882, 1)
 fog_begin_m = 100.0

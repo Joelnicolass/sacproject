@@ -88,6 +88,7 @@ func _runtime_mesh(data: MapTerrainData, tiles_path: String) -> ArrayMesh:
 	var built := ArrayMesh.new()
 	built.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 	built.set_meta("smooth_ground", smooth)
+	built.set_meta("arrays_version", 2)  # TerrainMeshArrays.VERSION: a post-import script names no class_name
 	return built
 
 

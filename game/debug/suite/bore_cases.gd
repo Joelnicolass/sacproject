@@ -74,7 +74,7 @@ func _walls() -> Dictionary:
 	var edges := HoleWallRules.boundary(index, PackedInt32Array([id]))
 	checks["one_vertex_six_walls"] = edges.size() == 6
 	var built := HoleWallRules.arrays(index, PackedInt32Array([id]))
-	checks["wall_arrays"] = built.size() == 4 and (built[0] as PackedVector3Array).size() == 24 and (built[3] as PackedInt32Array).size() == 36
+	checks["wall_arrays"] = built.size() == 5 and (built[0] as PackedVector3Array).size() == 24 and (built[3] as PackedInt32Array).size() == 36
 	var drops := true
 	var faces_the_hole := true
 	var centre := Vector3(one.x * TerrainRules.CELL, 0.0, one.y * TerrainRules.CELL)
@@ -163,7 +163,7 @@ func _cut() -> Dictionary:
 		await _c._frames(1)
 		clock[0] += 1
 		if clock[0] % 97 == 0 and ground.holes.count() > 0:
-			walls_ok = walls_ok and HoleWallRules.arrays(shape.index, ground.removed_ids()).size() == 4
+			walls_ok = walls_ok and HoleWallRules.arrays(shape.index, ground.removed_ids()).size() == 5
 	FxBus.played.disconnect(hear)
 	checks["body_fell_and_was_gone"] = not is_instance_valid(body)
 	checks["drill_gone_when_its_spiral_ends"] = drill_gone

@@ -12,6 +12,7 @@
 [ext_resource type="PackedScene" path="res://scenes/look/fx/fx_light_layer.tscn" id="9_fx_light"]
 [ext_resource type="PackedScene" path="res://scenes/look/vegetation/flora_layer.tscn" id="10_flora"]
 [ext_resource type="Script" path="res://scenes/look/ground/terrain_deform_texture.gd" id="12_deform"]
+[ext_resource type="PackedScene" path="res://scenes/look/sky/sky_underside.tscn" id="13_underside"]
 
 [node name="Look" type="Node" node_paths=PackedStringArray("layers", "quality", "sun_layer")]
 script = ExtResource("1_rig")
@@ -57,6 +58,8 @@ script = ExtResource("11_budget")
 editor_description = "Le da al shader del suelo cuánto se movió la tierra (textura global terrain_deform_map). Sin nada que mover no cuesta nada."
 script = ExtResource("12_deform")
 rig = NodePath("../..")
+
+[node name="Underside" parent="Layers" instance=ExtResource("13_underside")]
 
 [node name="TimeOfDay" type="Node" parent="."]
 

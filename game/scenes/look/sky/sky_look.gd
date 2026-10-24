@@ -11,6 +11,10 @@ extends Resource
 ## A ShaderMaterial of `scenes/look/sky/sacrifice_sky.gdshader`.
 @export var material: ShaderMaterial
 
+## The god's picture under the world (themes/<god>/undr.png), seen through the void and the pits on the rig's
+## `Underside` layer. Empty = nothing under the island but the sky's own colour.
+@export var under_texture: Texture2D
+
 @export_group("Ambient and reflections")
 ## 0 = the ambient is the light look's color alone, 1 = all of it comes from the sky.
 @export_range(0.0, 1.0, 0.01) var ambient_sky_contribution: float = 0.5

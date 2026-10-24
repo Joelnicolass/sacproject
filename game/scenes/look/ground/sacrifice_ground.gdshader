@@ -20,9 +20,8 @@ uniform float detail_repeat : hint_range(1.0, 8.0, 1.0) = 1.0;
 // Ref: sacmap.d:196-206 (DT layers per MAPG group, mirrored-repeat tiles), sacmap.d:887-888 (texcoords 0..1 per cell),
 // renderer.d:1262-1300 (detail bound per tile), dagon terrain2.d fragment (0.5 * diffuse * (1 + detail) * lightmap).
 uniform sampler2D lightmap : filter_linear, repeat_disable;
-// ENVI EDGE: sacmap.d draws the void walls with meshes[edgeIndex], not the cell's tile.
-uniform sampler2D edge : filter_linear_mipmap, repeat_enable;
-uniform bool has_edge = false;
+// The walls under the edge of the land wear the god's cliff texture, not the cell's tile.
+#include "res://scenes/look/ground/ground_edge.gdshaderinc"
 // A map in its own land (NativeGround): the tile of each 10 m cell comes from this 256x256 index (id in R) instead of the
 // mesh colors, so the atlas can hold the land's tiles at the ids the map stores. Off = the mesh colors, as every map.
 uniform sampler2D tile_index : filter_nearest, repeat_disable, hint_default_black;
@@ -66,8 +65,9 @@ void fragment() {
 		discard;
 	}
 	vec3 albedo;
-	if (COLOR.a < 0.5 && has_edge) {
-		albedo = texture(edge, COLOR.gb).rgb;
+	if (ground_edge_is_wall(COLOR)) {
+		vec2 wall = ground_edge_uv(UV);
+		albedo = ground_edge_albedo(wall, dFdx(wall), dFdy(wall));
 	} else {
 		float id = COLOR.r * 255.0;
 		if (use_tile_index) {
@@ -84,7 +84,7 @@ void fragment() {
 			albedo *= mix(1.0, (1.0 + grain) / (1.0 + grain_mean), detail_strength);
 		}
 	}
-	if (grass_paint_amount > 0.0 && !(COLOR.a < 0.5 && has_edge)) {
+	if (grass_paint_amount > 0.0 && !ground_edge_is_wall(COLOR)) {
 		albedo = grass_paint_textured(albedo, zone_splat_weights(map_pos.xz), map_pos.xz, TIME, slope_deg);
 	}
 	albedo = ground_scar_mix(albedo, map_pos.xz, false);

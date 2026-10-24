@@ -10,11 +10,12 @@ extends RefCounted
 const SKIRT_M := 50.0
 
 
-## The arrays (positions, normals, COLOR, indices) of the piece around lattice vertex `id`; [] when the vertex touches no land.
+## The arrays (positions, normals, COLOR, UV, indices) of the piece around lattice vertex `id`; [] when the vertex touches no land.
 static func arrays(index: TerrainRules.Index, texels: PackedFloat32Array, tiles: PackedByteArray, id: int) -> Array:
 	var vertices := PackedVector3Array()
 	var normals := PackedVector3Array()
 	var colors := PackedColorArray()
+	var uvs := PackedVector2Array()
 	var indices := PackedInt32Array()
 	var sides := {}
 	var middle := Vector3.ZERO
@@ -41,6 +42,7 @@ static func arrays(index: TerrainRules.Index, texels: PackedFloat32Array, tiles:
 					var inside := Vector2(at.x / TerrainRules.CELL - float(cell_column), at.z / TerrainRules.CELL - float(cell_row))
 					colors.append(Color(float(tile) / 255.0, clampf(inside.x, 0.0, 1.0), clampf(inside.y, 0.0, 1.0)))
 					normals.append(Vector3.UP)
+					uvs.append(Vector2.ZERO)
 				for corner in 3:
 					var from := index.corners[triangle * 3 + corner]
 					var to := index.corners[triangle * 3 + (corner + 1) % 3]
@@ -48,8 +50,8 @@ static func arrays(index: TerrainRules.Index, texels: PackedFloat32Array, tiles:
 					sides[key] = [corners[corner], corners[(corner + 1) % 3], int((sides[key] as Array)[2]) + 1 if sides.has(key) else 1]
 	if vertices.is_empty():
 		return []
-	_skirt(sides, middle / float(count), vertices, normals, colors, indices)
-	return [vertices, normals, null, colors, null, null, null, null, null, null, null, null, indices]
+	_skirt(sides, middle / float(count), vertices, normals, colors, uvs, indices)
+	return [vertices, normals, null, colors, uvs, null, null, null, null, null, null, null, indices]
 
 
 static func _touches(index: TerrainRules.Index, triangle: int, id: int) -> bool:
@@ -57,13 +59,18 @@ static func _touches(index: TerrainRules.Index, triangle: int, id: int) -> bool:
 
 
 ## A hanging wall under every side only one triangle of the piece has (the rest of the land is on its other side).
-static func _skirt(sides: Dictionary, middle: Vector3, vertices: PackedVector3Array, normals: PackedVector3Array, colors: PackedColorArray, indices: PackedInt32Array) -> void:
+static func _skirt(sides: Dictionary, middle: Vector3, vertices: PackedVector3Array, normals: PackedVector3Array, colors: PackedColorArray,
+		uvs: PackedVector2Array, indices: PackedInt32Array) -> void:
 	var down := Vector3(0.0, -SKIRT_M, 0.0)
-	var uvs := [Vector2(0, 0), Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)]
+	var hanging: Array = []
+	var ends := PackedVector2Array()
 	for key: Vector2i in sides:
-		var side: Array = sides[key]
-		if int(side[2]) != 1:
-			continue
+		if int((sides[key] as Array)[2]) == 1:
+			hanging.append(sides[key])
+			ends.append_array([Vector2(sides[key][0].x, sides[key][0].z), Vector2(sides[key][1].x, sides[key][1].z)])
+	var metres := WallUvRules.rim_metres(ends)
+	for w in hanging.size():
+		var side: Array = hanging[w]
 		var a: Vector3 = side[0]
 		var b: Vector3 = side[1]
 		var along := b - a
@@ -72,7 +79,8 @@ static func _skirt(sides: Dictionary, middle: Vector3, vertices: PackedVector3Ar
 			normal = -normal
 		var first := vertices.size()
 		vertices.append_array([a, b, b + down, a + down])
-		for uv: Vector2 in uvs:
+		for k in 4:
 			normals.append(normal)
-			colors.append(Color(0.0, uv.x, uv.y, 0.0))
+			colors.append(Color(0.0, 0.0, 0.0, 0.0))
+		uvs.append_array([Vector2(metres[w * 2], 0.0), Vector2(metres[w * 2 + 1], 0.0), Vector2(metres[w * 2 + 1], 1.0), Vector2(metres[w * 2], 1.0)])
 		indices.append_array([first, first + 2, first + 1, first + 2, first, first + 3])

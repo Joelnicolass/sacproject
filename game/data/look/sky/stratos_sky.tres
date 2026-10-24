@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" path="res://assets/custom/sky/stratos_skyb_tileable.png" id="3_l5pvr"]
 [ext_resource type="Texture2D" path="res://assets/original/themes/stratos/sky.png" id="4_4cagt"]
 [ext_resource type="Texture2D" path="res://assets/custom/sky/stratos_skyt_tileable.png" id="5_h6e0o"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/stratos/undr.png" id="7_undr"]
 [ext_resource type="Script" path="res://scenes/look/sky/sky_look.gd" id="6_xh8eg"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_io23x"]
@@ -40,6 +41,7 @@ shader_parameter/moon_elevation_deg = 40.0
 script = ExtResource("6_xh8eg")
 label = "Cielo de Stratos: altura fria"
 material = SubResource("ShaderMaterial_io23x")
+under_texture = ExtResource("7_undr")
 ambient_sky_contribution = 0.6
 fog_color = Color(0.76715004, 0.81715, 0.9412, 1)
 fog_end_m = 1500.0

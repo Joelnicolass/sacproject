@@ -3,8 +3,12 @@ extends RefCounted
 
 ## The vertex arrays of the map's visible ground, built from its raw triangles: positions, one set of flat normals
 ## (as the data stores them), one set of smooth normals (averaged per grid vertex, so slopes read as one surface), the
-## tile of each vertex in COLOR, and the indices. What it does NOT do: hold a mesh node or answer heights.
+## tile of each vertex in COLOR, the place of the cliff texture on the walls in UV (WallUvRules), and the indices.
+## What it does NOT do: hold a mesh node or answer heights.
 ## Ref: sacmap.d generateNormals, appendEdgeWall.
+
+## Bumped when the arrays change shape: an imported terrain.glb mesh of an older version is rebuilt (Terrain).
+const VERSION := 2
 
 ## The arrays of a Mesh without the normals; `with_normals` completes them.
 var arrays := []
@@ -21,7 +25,7 @@ static func from_data(data: MapTerrainData, tiles: PackedByteArray) -> TerrainMe
 	var indices := data.indices
 	var colors := PackedColorArray()
 	colors.resize(vertices.size())
-	var walls := 0
+	var walls := PackedInt32Array()
 	for triangle in range(0, indices.size(), 3):
 		var ids := [indices[triangle], indices[triangle + 1], indices[triangle + 2]]
 		var corners := [vertices[ids[0]], vertices[ids[1]], vertices[ids[2]]]
@@ -29,8 +33,9 @@ static func from_data(data: MapTerrainData, tiles: PackedByteArray) -> TerrainMe
 		var cell_z := clampi(mini(mini(int(round(corners[0].z / 10.0)), int(round(corners[1].z / 10.0))), int(round(corners[2].z / 10.0))), 0, 255)
 		var tile := 0 if tiles.is_empty() else tiles[cell_z * 256 + cell_x]
 		if TerrainRules.is_wall(corners[0], corners[1], corners[2]):
-			_color_wall(colors, ids, tile, walls % 2 == 0)
-			walls += 1
+			for id in ids:
+				colors[id] = Color(float(tile) / 255.0, 0.0, 0.0, 0.0)  # alpha 0 marks a wall for the ground shader
+			walls.append(triangle)
 			continue
 		# The whole tile over the whole cell (0..1), so a tile meets its neighbour edge to edge; the shader keeps the
 		# lookup inside the tile. Ref: sacmap.d:888.
@@ -42,6 +47,7 @@ static func from_data(data: MapTerrainData, tiles: PackedByteArray) -> TerrainMe
 	built.arrays.resize(Mesh.ARRAY_MAX)
 	built.arrays[Mesh.ARRAY_VERTEX] = vertices
 	built.arrays[Mesh.ARRAY_COLOR] = colors
+	built.arrays[Mesh.ARRAY_TEX_UV] = _wall_uvs(vertices, indices, walls)
 	built.arrays[Mesh.ARRAY_INDEX] = indices
 	built.flat_normals = data.normals
 	built.smooth_normals = _smooth_normals(vertices, indices, data.normals)
@@ -90,9 +96,40 @@ static func _position_key(v: Vector3) -> Vector3i:
 	return Vector3i(roundi(v.x * 100.0), roundi(v.y * 100.0), roundi(v.z * 100.0))
 
 
-## Wall texcoords: top_a (0,0), top_b (1,0), bot_b (1,1), bot_a (0,1); the importer keeps each wall as
-## (top_a, bot_b, top_b), (bot_b, top_a, bot_a). Alpha 0 marks the wall for sacrifice_ground.gdshader.
-static func _color_wall(colors: PackedColorArray, ids: Array, tile: int, first: bool) -> void:
-	var uvs := [Vector2(0, 0), Vector2(1, 1), Vector2(1, 0)] if first else [Vector2(1, 1), Vector2(0, 0), Vector2(0, 1)]
-	for k in 3:
-		colors[ids[k]] = Color(float(tile) / 255.0, uvs[k].x, uvs[k].y, 0.0)
+## UV of every vertex: on a wall, x = metres along the rim and y = 0 at the rim, 1 at the foot; (0, 0) on the land.
+## A wall is two triangles over the same two rim points (x, z); its top vertex at a point is the higher of the two there.
+static func _wall_uvs(vertices: PackedVector3Array, indices: PackedInt32Array, walls: PackedInt32Array) -> PackedVector2Array:
+	var uvs := PackedVector2Array()
+	uvs.resize(vertices.size())
+	var segment_at := {}
+	var ends := PackedVector2Array()
+	var tops := PackedFloat32Array()
+	var segments := PackedInt32Array()
+	for triangle in walls:
+		var points: Array[Vector2] = []
+		for k in 3:
+			var at := Vector2(vertices[indices[triangle + k]].x, vertices[indices[triangle + k]].z)
+			if points.is_empty() or not (points[0].is_equal_approx(at) or points[-1].is_equal_approx(at)):
+				points.append(at)
+		var key := [WallUvRules.point_key(points[0]), WallUvRules.point_key(points[-1])]
+		key.sort()
+		if not segment_at.has(key):
+			segment_at[key] = ends.size() / 2
+			ends.append_array([points[0], points[-1]])
+			tops.append_array([-INF, -INF])
+		var segment: int = segment_at[key]
+		segments.append(segment)
+		for k in 3:
+			var end := _end_of(ends, segment, vertices[indices[triangle + k]])
+			tops[end] = maxf(tops[end], vertices[indices[triangle + k]].y)
+	var metres := WallUvRules.rim_metres(ends)
+	for w in walls.size():
+		for k in 3:
+			var id := indices[walls[w] + k]
+			var end := _end_of(ends, segments[w], vertices[id])
+			uvs[id] = Vector2(metres[end], 0.0 if vertices[id].y > tops[end] - 1.0 else 1.0)
+	return uvs
+
+
+static func _end_of(ends: PackedVector2Array, segment: int, at: Vector3) -> int:
+	return segment * 2 if ends[segment * 2].is_equal_approx(Vector2(at.x, at.z)) else segment * 2 + 1

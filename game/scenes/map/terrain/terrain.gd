@@ -115,14 +115,15 @@ func _load_mesh() -> bool:
 
 
 ## The mesh the scene holds (the instanced terrain.glb) is shown as it is when it still matches the data and smooth_ground;
-## otherwise it is rebuilt from the data (with a warning when a file is stale).
+## otherwise it is rebuilt from the data (with a warning when a file is stale, e.g. imported before TerrainMeshArrays.VERSION).
 func _saved_mesh_matches() -> bool:
 	if not _mesh_is_file() or not (mesh is ArrayMesh) or mesh.get_surface_count() != 1:
 		return false
 	var fits: bool = mesh.surface_get_array_len(0) == shape.data.vertices.size() \
-			and bool(mesh.get_meta("smooth_ground", true)) == smooth_ground
+			and bool(mesh.get_meta("smooth_ground", true)) == smooth_ground \
+			and int(mesh.get_meta("arrays_version", 1)) == TerrainMeshArrays.VERSION
 	if not fits:
-		push_warning("Terrain '%s': %s is stale (vertices or smooth_ground differ from data); rebuilding it in memory." % [name, mesh.resource_path])
+		push_warning("Terrain '%s': %s is stale (vertices, smooth_ground or the arrays' version differ; reimport it); rebuilding it in memory." % [name, mesh.resource_path])
 	return fits
 
 

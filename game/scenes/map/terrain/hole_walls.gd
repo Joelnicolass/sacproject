@@ -53,6 +53,7 @@ func _process(_delta: float) -> void:
 	arrays[Mesh.ARRAY_NORMAL] = built[1]
 	arrays[Mesh.ARRAY_COLOR] = built[2]
 	arrays[Mesh.ARRAY_INDEX] = built[3]
+	arrays[Mesh.ARRAY_TEX_UV] = built[4]
 	var walls := ArrayMesh.new()
 	walls.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 	mesh = walls

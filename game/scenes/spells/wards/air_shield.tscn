@@ -1,21 +1,64 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/wards/ward.gd" id="1_ward"]
-[ext_resource type="Resource" path="res://data/catalog/spells/dlhs.tres" id="2_spell"]
+[ext_resource type="Script" path="res://scenes/spells/wards/ward_emitter.gd" id="2_emitter"]
 [ext_resource type="Script" path="res://scenes/spells/wards/body_aura.gd" id="3_aura"]
+[ext_resource type="Resource" path="res://data/catalog/spells/dlhs.tres" id="4_spell"]
+[ext_resource type="Resource" path="res://data/fx/wards/air_sparks.tres" id="5_sparks"]
+[ext_resource type="Shader" path="res://scenes/spells/wards/air_bubble.gdshader" id="6_shader"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/icec.png" id="7_swirl"]
 
 [sub_resource type="SphereShape3D" id="Sphere_reach"]
 radius = 5.0
 
+[sub_resource type="ShaderMaterial" id="Mat_bubble"]
+shader = ExtResource("6_shader")
+shader_parameter/swirl = ExtResource("7_swirl")
+shader_parameter/cells = Vector2(1, 1)
+
+[sub_resource type="SphereMesh" id="Mesh_bubble"]
+material = SubResource("Mat_bubble")
+radius = 0.5
+height = 1.0
+radial_segments = 25
+rings = 24
+
 [node name="AirShield" type="Node3D" node_paths=PackedStringArray("look")]
 script = ExtResource("1_ward")
-spell = ExtResource("2_spell")
+spell = ExtResource("4_spell")
 factor = 0.5
 ranged_factor = 0.5
+look_scale = Vector3(2, 1.5, 2)
 look = NodePath("Look")
 
 [node name="Look" type="Node3D" parent="."]
+editor_description = "La burbuja son tres capas de la misma esfera con ruido (air_bubble.gdshader). Textura: el material usa icec.png (la que carga el exe, 1 celda); la alternativa de sacengine es shld.png con shader_parameter/cells = Vector2(4, 2)."
 visible = false
+
+[node name="Layer0" type="MeshInstance3D" parent="Look"]
+cast_shadow = 0
+mesh = SubResource("Mesh_bubble")
+instance_shader_parameters/phase = 0.000
+
+[node name="Layer1" type="MeshInstance3D" parent="Look"]
+cast_shadow = 0
+mesh = SubResource("Mesh_bubble")
+instance_shader_parameters/phase = 0.333
+
+[node name="Layer2" type="MeshInstance3D" parent="Look"]
+cast_shadow = 0
+mesh = SubResource("Mesh_bubble")
+instance_shader_parameters/phase = 0.667
+[node name="Sparks" type="CPUParticles3D" parent="." node_paths=PackedStringArray("ward")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.53, 0)
+use_fixed_seed = true
+local_coords = false
+script = ExtResource("2_emitter")
+type = ExtResource("5_sparks")
+ward = NodePath("..")
+when = 0
+half_axes_m = Vector3(2.6, 2.3, 2.6)
+on_surface = false
 
 [node name="Aura" type="Node3D" parent="." node_paths=PackedStringArray("ward", "reach")]
 script = ExtResource("3_aura")
@@ -27,3 +70,4 @@ push_force = 20.0
 
 [node name="Reach" type="CollisionShape3D" parent="Aura"]
 shape = SubResource("Sphere_reach")
+

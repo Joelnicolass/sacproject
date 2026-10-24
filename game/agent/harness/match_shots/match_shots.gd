@@ -6,7 +6,8 @@ extends Node
 ## It lives in a subfolder because AgentKit mounts every .gd of agent/harness/ itself.
 ## Args after `--`: --map=<tag> --god=<god of the local wizard> [--biome=<god whose land the map wears; default --god>] [--ai-god=<god>] [--wizard=<tag>] [--after=<s> before the first
 ## round] [--shots=<n> rounds] [--every=<s>] [--out=<dir>] [--views=wizard,overview,fountain,manahoar,tower] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
-## (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
+## [--cast=<spell tag>[,<tag>…], the local wizard casts them one after the other once --after has passed, before the first round: a spell that aims at himself (a ward) on himself,
+## any other on the closest enemy; mana is filled first] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
 ## Windowed: `-- --agent=flow --flow=match_shots.json` (the flow gives the sandbox that applies the quality preset).
 
 const GROUP_FOUNT := &"manafount"
@@ -16,6 +17,9 @@ const TAG_MANAHOAR := &"oham"
 @export_group("Views")
 @export_range(4.0, 40.0, 0.5, "suffix:m") var behind_m := 12.0
 @export_range(0.0, 20.0, 0.5, "suffix:m") var behind_up_m := 5.0
+## The "wizard_close" view: the wizard from behind, close enough to read a ward on his body.
+@export_range(2.0, 20.0, 0.5, "suffix:m") var wizard_close_m := 5.5
+@export_range(0.0, 10.0, 0.5, "suffix:m") var wizard_close_up_m := 1.8
 @export_range(30.0, 300.0, 5.0, "suffix:m") var overview_m := 110.0
 @export_range(4.0, 60.0, 0.5, "suffix:m") var fount_m := 16.0
 @export_range(0.0, 30.0, 0.5, "suffix:m") var fount_up_m := 6.0
@@ -72,6 +76,9 @@ func _run() -> void:
 	var every_s := maxf(float(arg("every", "5")), 0.1)
 	var elapsed_s := maxf(float(arg("after", "10")), 0.0)
 	await tree.create_timer(elapsed_s).timeout
+	if not arg("cast").is_empty():
+		await _cast_all(world, arg("cast").split(",", false))
+		await tree.create_timer(maxf(float(arg("cast-wait", "1.5")), 0.0)).timeout
 	var map_tag := String(MapCatalog.active().tag)
 	for round in rounds:
 		for view in views:
@@ -81,6 +88,39 @@ func _run() -> void:
 			await tree.create_timer(every_s).timeout
 	print("MATCH_SHOTS done: %d shots in %s (preset %s)" % [_shot_count, out, _preset(world)])
 	tree.quit(0)
+
+
+## --cast: each tag through the wizard's own Caster (cost, cooldown and casting time as in play), mana refilled before each one.
+func _cast_all(world: MatchWorld, tags: PackedStringArray) -> void:
+	var wizard := world.local_wizard() as WizardBody
+	var caster := wizard.get_node("Caster") as Caster
+	for tag in tags:
+		var pool := wizard.get_node("ManaPool") as ManaPool
+		pool.current = pool.maximum
+		var action := caster.action_for(tag)
+		var foe := _closest_foe(wizard)
+		var aimed := null if action == null or action.pick == SpellAction.Pick.SELF else foe
+		var point := aimed.global_position if aimed != null else wizard.global_position
+		caster.request_cast(tag, point, aimed)
+		print("match_shots: cast %s (casting: %s)" % [tag, caster.is_casting()])
+		while caster.is_casting():
+			await get_tree().physics_frame
+
+
+## The enemy body closest to `wizard` (a creature or a wizard of another side), or null.
+func _closest_foe(wizard: WizardBody) -> Node3D:
+	var best: Node3D
+	var best_d := INF
+	for group in [&"unit", &"wizard"]:
+		for node in get_tree().get_nodes_in_group(group):
+			var body := node as Node3D
+			if body == null or body == wizard or SideRelations.stance(wizard.owner_slot, int(body.get("owner_slot"))) == SideRelations.Stance.ALLY:
+				continue
+			var d := body.global_position.distance_to(wizard.global_position)
+			if d < best_d:
+				best = body
+				best_d = d
+	return best
 
 
 func _wait_world() -> MatchWorld:
@@ -105,6 +145,9 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 	match view:
 		"wizard":
 			spot = focus + _away_from_foe(world, wizard) * behind_m + Vector3.UP * behind_up_m
+		"wizard_close":
+			look = focus + Vector3.UP * 1.4
+			spot = focus + _away_from_foe(world, wizard) * wizard_close_m + Vector3.UP * wizard_close_up_m
 		"overview":
 			var middle := (focus + _foe_position(world, wizard)) * 0.5
 			spot = middle + Vector3(0.0, overview_m, overview_m * 0.55)

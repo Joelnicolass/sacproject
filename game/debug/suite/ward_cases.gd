@@ -56,14 +56,18 @@ func _scenes() -> Dictionary:
 	await _frames(2)
 	var wards := Wards.of(wizard)
 	checks["wards_node"] = wards != null
+	checks["skin_is_stone"] = wards.ward_for(GameData.spell("niks")).stone_skin and not wards.stone_skin()
 	for tag in WARDS:
 		var ward := wards.ward_for(GameData.spell(tag)) if wards else null
-		checks[tag + "_ward"] = ward != null and ward.body == wizard and ward.health != null and ward.look != null
+		checks[tag + "_ward"] = ward != null and ward.body == wizard and ward.health != null and (ward.look != null or tag != "dlhs")
 		checks[tag + "_off"] = ward != null and not ward.is_on() and not ward.shown
 		checks[tag + "_no_warnings"] = ward != null and ward._get_configuration_warnings().is_empty()
 		var aura := ward.find_child("Aura", false, false) if ward else null
 		checks[tag + "_aura_no_warnings"] = aura == null or (aura as BodyAura)._get_configuration_warnings().is_empty()
-	checks["life_shield_is_ward"] = LifeShield.of(_unit(Vector3(50.0, 0.0, 0.0), 1)) != null
+	var unit := _unit(Vector3(50.0, 0.0, 0.0), 1)
+	await _frames(1)
+	checks["life_shield_is_ward"] = LifeShield.of(unit) != null
+	unit.queue_free()
 	checks["only_life_shield_is_not_spell"] = wards.ward_for(null) == null
 	wizard.queue_free()
 	return _verdict("ward_scenes", checks)
@@ -337,6 +341,7 @@ func _ai() -> Dictionary:
 	checks["other_god_book"] = Wards.of(wizard).ward_for(other) != null and AiSpellEval.rating_fn(other) == AiSpellEval.FN_GUARD
 	checks["tactics_knobs"] = eval.tactics.guard_threat_m == 25.0 and eval.tactics.guard_min_foes == 2
 	checks["old_spells_unchanged"] = AiSpellEval.rating_fn(GameData.spell("kcor")) == AiSpellEval.FN_SINGLE and AiSpellEval.rating_fn(GameData.spell("laeh")) == AiSpellEval.FN_HEAL
+	stance.free()
 	for node: Node in [perception, wizard, near_a, near_b, far]:
 		node.queue_free()
 	return _verdict("ward_ai", checks)

@@ -22,7 +22,8 @@ signal held_changed(held: bool)
 ## on every peer from the replicated mask. Optional: empty = no pose to hold.
 @export var clip_pose: ClipPlayback
 ## F149 (REVIEW-030k-b B1): the one owner of the mesh look. The tint of the state with a look (AfflictionType.has_look)
-## and the highest look_priority among the ones that are on (petrified over frozen); none = off. Every peer, from the
+## and the highest look_priority among the ones that are on (petrified over frozen); none = off. A ward that turns the skin to stone
+## (Skin of Stone) is plain stone when no state has a look. Every peer, from the
 ## mask, so two states that change in the same tick cannot undress each other. Optional: empty = no look.
 @export var look: StoneLook
 ## F158: the body's wards. While one that counts as a shield is on the body is ccProtected (stats.d:86-90: shielded). Optional: empty = a shield does not protect.
@@ -46,6 +47,8 @@ var previous := 0
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
+	if wards != null:
+		wards.changed.connect(_show_look)
 	if health and (not MpKit.is_networked() or MpKit.is_server()):
 		health.died.connect(_on_died)
 	if shown != 0:
@@ -248,9 +251,12 @@ func _show_look() -> void:
 		var type := affliction.type
 		if type.has_look and (best == null or type.look_priority > best.look_priority):
 			best = type
+	var skin := wards != null and wards.stone_skin()
 	if best:
 		look.apply(best.look_tint, best.look_base, best.look_gain, best.look_roughness, best.look_metallic)
-	look.stone = best != null
+	elif skin:
+		look.apply_stone()
+	look.stone = best != null or skin
 
 
 func _on_died(_from_slot: int) -> void:

@@ -1,20 +1,43 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/wards/ward.gd" id="1_ward"]
-[ext_resource type="Resource" path="res://data/catalog/spells/rwsp.tres" id="2_spell"]
+[ext_resource type="Script" path="res://scenes/spells/wards/ward_emitter.gd" id="2_emitter"]
 [ext_resource type="Script" path="res://scenes/spells/wards/body_aura.gd" id="3_aura"]
+[ext_resource type="Resource" path="res://data/catalog/spells/rwsp.tres" id="4_spell"]
+[ext_resource type="Resource" path="res://data/fx/wards/swarm_bug.tres" id="5_bug"]
+[ext_resource type="Resource" path="res://data/fx/wards/swarm_glow.tres" id="6_glow"]
 
 [sub_resource type="SphereShape3D" id="Sphere_reach"]
 radius = 4.0
 
-[node name="ProtectiveSwarm" type="Node3D" node_paths=PackedStringArray("look")]
+[node name="ProtectiveSwarm" type="Node3D"]
 script = ExtResource("1_ward")
-spell = ExtResource("2_spell")
+spell = ExtResource("4_spell")
 factor = 0.75
-look = NodePath("Look")
 
-[node name="Look" type="Node3D" parent="."]
-visible = false
+[node name="Bugs" type="CPUParticles3D" parent="." node_paths=PackedStringArray("ward")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.53, 0)
+use_fixed_seed = true
+local_coords = false
+script = ExtResource("2_emitter")
+type = ExtResource("5_bug")
+ward = NodePath("..")
+when = 0
+half_axes_m = Vector3(2.04, 2.03, 2.04)
+on_surface = true
+
+[node name="Glow" type="CPUParticles3D" parent="." node_paths=PackedStringArray("ward")]
+editor_description = "Resplandor alternativo con fb_g (la textura que carga el exe al lanzar; NO VERIFICADO que dibuja). Apagado por defecto: enabled = true para probarlo."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.53, 0)
+use_fixed_seed = true
+local_coords = false
+script = ExtResource("2_emitter")
+type = ExtResource("6_glow")
+ward = NodePath("..")
+when = 1
+half_axes_m = Vector3(0.5, 0.5, 0.5)
+on_surface = false
+enabled = false
 
 [node name="Aura" type="Node3D" parent="." node_paths=PackedStringArray("ward", "reach")]
 script = ExtResource("3_aura")
@@ -25,3 +48,4 @@ heal_owner_fraction = 0.5
 
 [node name="Reach" type="CollisionShape3D" parent="Aura"]
 shape = SubResource("Sphere_reach")
+

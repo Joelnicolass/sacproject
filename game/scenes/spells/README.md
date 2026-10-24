@@ -4,5 +4,6 @@ Not: the wizard body (`scenes/wizards/`), the spell data (`data/catalog/spells/<
 Talks to: HUD/input call `Caster.request_cast/request_summon/request_structure`; the host runs `submit_*`; `Caster.feedback/cast_fx_changed` go up to the HUD.
 Talks to: `Caster` calls down to a `SpellAction` (`check`, `begin`, `finish`), which spawns projectiles/effects through `SpellSpawner` and hits units via `Health`.
 Edit: `data/catalog/spells/<tag>.tres` (cost, range, cooldown, `action` scene) · `actions/<name>_action.tscn` (the behaviour) · projectile/effect scenes in this folder.
-Debug: `debug/spells/cast_*.tscn` (F6), `guardian_altar.tscn`, `wrath_splash.tscn`.
+Check: `debug/spells/cast_*.tscn` (F6; `cast_wards.tscn` for the level-2 wards), `guardian_altar.tscn`, `wrath_splash.tscn` · rules_suite `ward_cases` · `match_shots --cast=niks|dlhs|mrfe|mrff|rwsp`.
+Wards (shields and temporary forms): see `wards/README.md`.
 Known debt: `SpellType` still has raw `flags*` and unit-less fields; 4 actions are at inheritance depth 2 (see `CONVENTIONS.md`).

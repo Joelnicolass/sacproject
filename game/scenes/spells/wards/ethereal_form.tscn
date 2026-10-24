@@ -1,14 +1,35 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/wards/ward.gd" id="1_ward"]
-[ext_resource type="Resource" path="res://data/catalog/spells/mrfe.tres" id="2_spell"]
+[ext_resource type="Script" path="res://scenes/spells/wards/ward_emitter.gd" id="2_emitter"]
+[ext_resource type="Resource" path="res://data/catalog/spells/mrfe.tres" id="4_spell"]
+[ext_resource type="Resource" path="res://data/fx/wards/ethereal_ghost.tres" id="5_ghost"]
+[ext_resource type="Resource" path="res://data/fx/wards/ethereal_spark.tres" id="6_spark"]
 
-[node name="EtherealForm" type="Node3D" node_paths=PackedStringArray("look")]
+[node name="EtherealForm" type="Node3D"]
 script = ExtResource("1_ward")
-spell = ExtResource("2_spell")
-factor = 1.0
+spell = ExtResource("4_spell")
 immune = true
-look = NodePath("Look")
 
-[node name="Look" type="Node3D" parent="."]
-visible = false
+[node name="Ghost" type="CPUParticles3D" parent="." node_paths=PackedStringArray("ward")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.53, 0)
+use_fixed_seed = true
+local_coords = false
+script = ExtResource("2_emitter")
+type = ExtResource("5_ghost")
+ward = NodePath("..")
+when = 0
+half_axes_m = Vector3(1.04, 1.53, 1.04)
+on_surface = false
+
+[node name="Sparks" type="CPUParticles3D" parent="." node_paths=PackedStringArray("ward")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.53, 0)
+use_fixed_seed = true
+local_coords = false
+script = ExtResource("2_emitter")
+type = ExtResource("6_spark")
+ward = NodePath("..")
+when = 1
+half_axes_m = Vector3(0.93, 1.38, 0.93)
+on_surface = false
+

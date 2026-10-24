@@ -1,0 +1,6 @@
+# spells/wards
+What: a body's shields and temporary forms. `Wards` (one per body) owns «what protects it now»; each `Ward` is one of them (LifeShield, SkinOfStone, AirShield, EtherealForm, Fireform, ProtectiveSwarm) with its factor, immunity and look; `BodyAura` is what the ward does to the bodies around; `WardEmitter` draws sprites around the body.
+Not: casting (`WardAction` + `Caster`), the transparency of Ethereal Form (`GhostForm`), the stone look (`Afflictions` owns `StoneLook`), who is shielded from Freeze/Petrify/Pull (they ask `Wards.shielded()`).
+Talks to: `Health` asks `Wards.factor(kind)` and `immune()`; `Afflictions` asks `shielded()` and `stone_skin()` and listens to `Wards.changed`; `WardAction.finish` calls `Ward.start_for(spell)`; `Ward.shown` is replicated and every peer draws from `shown_changed`.
+Edit: each ward scene (factor, ranged_factor, look_scale, Aura reach radius with the gizmo, damage/push/heal knobs) · `data/fx/wards/*.tres` (sprites) · `data/catalog/spells/<tag>.tres` (cost, duration, `action`, `ai_use`). To add a ward: a scene + a child of `Wards` in `wizard_body.tscn` + its `:shown` in the synchronizer + a spell with `ward_action.tscn`.
+Check: `debug/spells/cast_wards.tscn` (F6, key of the level-2 spell) · rules_suite `ward_cases` · `match_shots --cast=<tag> --views=wizard_close`.

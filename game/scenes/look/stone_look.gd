@@ -81,6 +81,11 @@ func apply(new_tint: Color, new_base: float, new_gain: float, new_roughness: flo
 		_dress()
 
 
+## The look of plain stone (sacengine's bone shader grey): what Skin of Stone and a petrified body wear.
+func apply_stone() -> void:
+	apply(Color(1.0, 1.0, 0.8), 0.3, 0.7, 0.5, 0.5)
+
+
 func _refresh() -> void:
 	var on := stone and not Engine.is_editor_hint()
 	set_process(on)

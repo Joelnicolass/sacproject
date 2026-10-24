@@ -72,6 +72,11 @@ EXTRA_FX = {
     "scri": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
     # The order marker's cone texture (SacCommandCone, sacobject.d:4483-4505), F220.
     "aura": ("main.wad", "MAIN.WAD!/bits.FLDR"),
+    # RFC 061b: Air Shield's bubble (icec is what the exe loads, shld is sacengine's), its sparks (pash) and Protective Swarm's bug.
+    "icec": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
+    "shld": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
+    "pash": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
+    "pswm": ("charlie.wad", "Bloo.WAD!/Char.FLDR/tex.FLDR"),
 }
 
 IMPORT_TEMPLATE = """[remap]

@@ -5,7 +5,17 @@ extends Node
 ## The one owner of «what protects this body right now»: it holds the Ward children (Life Shield, Skin of Stone, Air Shield,
 ## Ethereal Form, Fireform, Protective Swarm) and answers for all of them. Health asks factor() and immune(); Afflictions and
 ## Pull ask shielded(); a SpellAction asks ward_for(spell). It does not start a ward (the action does) nor draw one (the Ward).
+## `changed` fires on every peer when any ward goes on or off.
 ## Ref: sacengine effects.lifeShield / skinOfStone / ... and `shielded` (stats.d:86-90).
+
+signal changed
+
+
+func _ready() -> void:
+	if Engine.is_editor_hint():
+		return
+	for ward in _wards():
+		ward.shown_changed.connect(func(_on: bool) -> void: changed.emit())
 
 
 ## The Wards of `node`, or null (a body without one is never warded).
@@ -45,6 +55,14 @@ func factor(kind: StringName) -> float:
 	for ward in _wards():
 		result *= ward.factor_for(kind)
 	return result
+
+
+## Is a ward on that draws the body as stone (Skin of Stone)?
+func stone_skin() -> bool:
+	for ward in _wards():
+		if ward.stone_skin and ward.is_on():
+			return true
+	return false
 
 
 func _wards() -> Array[Ward]:

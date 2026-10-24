@@ -32,8 +32,10 @@ signal shown_changed(on: bool)
 @export var look: Node3D
 ## The look grows from nothing to the body's box (and back) over these ticks.
 @export var grow_ticks := 15
-## Size of the look over the body's box. 0 = the look keeps its own size and only shows or hides.
-@export var look_scale := 1.4
+## Size of the look over the body's box, per axis. Zero = the look keeps its own size and only shows or hides.
+@export var look_scale := Vector3.ONE * 1.4
+## While on, the body is drawn as stone (Afflictions owns that look; this only says the ward wants it).
+@export var stone_skin := false
 
 ## Replicated by the body's MultiplayerSynchronizer ("Wards/<Name>:shown"). The server writes it; every peer draws it.
 @export var shown := false:
@@ -132,7 +134,7 @@ func _show(on: bool) -> void:
 		return
 	if _tween:
 		_tween.kill()
-	if look_scale <= 0.0:
+	if look_scale == Vector3.ZERO:
 		look.visible = on
 		return
 	var full := (BodyNudge.box(body).size if body else Vector3(0.6, 1.8, 0.6)) * look_scale
@@ -157,8 +159,6 @@ func has_authority() -> bool:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
-	if look == null:
-		warnings.append("Sin look: el escudo no se ve.")
 	if health == null:
 		warnings.append("Sin Health: el escudo no termina con la muerte.")
 	return warnings

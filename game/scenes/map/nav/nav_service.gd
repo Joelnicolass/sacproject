@@ -10,7 +10,7 @@ extends Node
 ## RFC-035 035i: the navmesh is the one owner (NavMeshBackend + NavRegions + NavBoxBlockers; the 5 m grid is gone). The engine
 ## answers from the NavigationRegion3D `region`. What the bake
 ## does not hold (altars, structures, nav_blocker) and a building that fell change the map: NavRebake bakes the whole navmesh again on a
-## worker thread and the result is swapped into the region `rebake_swap_frames` physics ticks after the change (a count, so it is the
+## worker thread and the result is swapped into the region `rebake_swap_s` after the change (a count, so it is the
 ## same tick on every machine). A missing navmesh leaves the service not ready (callers get the straight line) with a warning.
 
 signal built(ms: float)
@@ -23,11 +23,11 @@ const SEARCH_LOG_MAX := 200000
 @export var terrain_shape: TerrainShape
 ## The map's NavigationRegion3D (MapRoot.nav_region). Empty: the service puts one under itself with the navmesh of the active map.
 @export var region: NavigationRegion3D
-## Physics ticks between a change and the swap of the re-baked navmesh (the bake takes a couple of seconds on a worker thread; if it
-## is not done by then the swap waits for it). A count, never a clock.
-@export var rebake_swap_frames := 180
-## Physics ticks the holes of the ground (Bore) are gathered for before the navmesh is baked again, so a spiral of holes costs a few bakes and not one per vertex.
-@export var holes_rebake_ticks := 120
+## Time between a change and the swap of the re-baked navmesh (the bake takes a couple of seconds on a worker thread; if it
+## is not done by then the swap waits for it). Counted in physics ticks, never a clock.
+@export_range(0.0, 30.0, 0.0001, "suffix:s") var rebake_swap_s := 3.0
+## Time the holes of the ground (Bore) are gathered for before the navmesh is baked again, so a spiral of holes costs a few bakes and not one per vertex.
+@export_range(0.0, 30.0, 0.0001, "suffix:s") var holes_rebake_s := 2.0
 ## The groups whose colliders are in the stored bake and move on their own (the buildings, the manafounts). The nodes of the other
 ## blocker groups and the built structures join the group NavFingerprint.GROUP before a re-bake so the bake sees them.
 @export var baked_groups: PackedStringArray = PackedStringArray(["manafount", "map_building"])
@@ -157,7 +157,7 @@ func _watch_buildings() -> void:
 func _on_holes_changed() -> void:
 	_baked_changed = true
 	if _holes_at < 0:
-		_holes_at = _tick + holes_rebake_ticks
+		_holes_at = _tick + MatchClock.ticks_for(holes_rebake_s)
 
 
 func _on_building_destroyed(_building: MapBuilding) -> void:
@@ -208,7 +208,7 @@ func _request_rebake() -> void:
 		return
 	_tag_dynamic_nodes()
 	if rebake.start(get_parent()):
-		_swap_at = _tick + rebake_swap_frames
+		_swap_at = _tick + MatchClock.ticks_for(rebake_swap_s)
 		_pending_signature = signature
 		_baked_changed = false
 

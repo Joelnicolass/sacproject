@@ -3,7 +3,7 @@ extends StaticBody3D
 
 ## The ground to stand on: the map's triangles (land and cliff walls) cut in chunks of `chunk_cells` x `chunk_cells` cells,
 ## one collision shape each, all on this one body. When the ground moves (TerrainShape.changed) only the chunks it touched
-## are made again, at most every `refresh_ticks` ticks (a hole at once), with the corners moved as the shape says; a triangle
+## are made again, at most every `refresh_s` (a hole at once), with the corners moved as the shape says; a triangle
 ## with a taken away corner is left out. So a ray from above (GroundRay) finds the same ground TerrainShape.height_at answers, a
 ## few ticks late. It does not decide how the ground moves (TerrainDeformer) and draws nothing.
 
@@ -12,8 +12,8 @@ const CHUNK_SHAPE := preload("res://scenes/map/terrain/terrain_chunk.tres")
 
 @export var shape: TerrainShape
 @export_range(1, 32) var chunk_cells := 8
-## Ticks between two remakes of the chunks that moved.
-@export_range(1, 30) var refresh_ticks := 3
+## Time between two remakes of the chunks that moved.
+@export_range(0.0166, 0.5, 0.0001, "suffix:s") var refresh_s := 0.05
 
 var _vertices := PackedVector3Array()
 var _indices := PackedInt32Array()
@@ -116,5 +116,5 @@ func _on_holes_changed(_area: Rect2) -> void:
 
 func _physics_process(_delta: float) -> void:
 	_tick += 1
-	if _tick % refresh_ticks == 0 and not _dirty.is_empty():
+	if _tick % maxi(1, MatchClock.ticks_for(refresh_s)) == 0 and not _dirty.is_empty():
 		flush()

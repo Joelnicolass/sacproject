@@ -15,7 +15,7 @@ const START2 := Vector3(1037.7, 15.0, 1009.9)
 const PATH_US := 5000
 ## Loading the navmesh into its map and finding its regions (GDScript, once per match).
 const NAVMESH_MS := 1500.0
-## The whole-map re-bake runs on a worker thread and is swapped in after NavService.rebake_swap_frames ticks (3 s): it has to fit.
+## The whole-map re-bake runs on a worker thread and is swapped in after NavService.rebake_swap_s (3 s): it has to fit.
 const REBAKE_MS := 3000.0
 
 var _root: Node3D

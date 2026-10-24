@@ -432,6 +432,7 @@ func _explode(rock: Rock, hit: Node3D, why: String) -> void:
 		_hurt(hit)
 	for fx in _look.impact_fx:
 		FxBus.broadcast(fx, rock.position)
+	ScarMark.broadcast(_look.ground_mark, rock.position)
 	if rock.node != null and is_instance_valid(rock.node):
 		rock.node.queue_free()
 	rock.node = null

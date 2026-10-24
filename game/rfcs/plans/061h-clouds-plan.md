@@ -126,4 +126,12 @@ tools/lint/[~] baseline.txt (solo si algun conteo baja)
 - **Contratos sin probar contra el exe:** distancias de desvío (10/25 m, 2/3; Cloudkill 15/50, 1/2), gravedad de las gotas (30; 20 en Bombardment), cómo entra `acceleration` 0,3 de Cloudkill (se aplica como aceleración por tick con tope `speed`), significado de `Xquk!`/`cldl!`/`cldf`/`clod`, sonido `Xfrx` de la explosión de rana, y la malla `rokm`. Cada uno es un campo de una escena.
 
 ## Desvíos al implementar
-(se llena al cerrar)
+- **Contacto sin consulta física:** `ZoneDrop` usa `BodyNudge.bodies_in` (cajas) y `Poisoning.can_be_poisoned()` como filtro de «infectable», no `intersect_shape`; sigue la compuerta de 30 m de altura.
+- **El splash de Cloudkill lo reparte `BoltLauncher`** al recibir `LightningStrike.struck` (señal nueva, también para rayos al suelo); `LightningStrike` solo ganó la señal.
+- **La velocidad de salida vive en `ZoneRules.launch_velocity`** (arco que cae a tiempo con `lobbed`, línea recta si no) y `ZoneDrop.setup` la calcula con su propia gravedad: el lanzador pasa `goal` y `fall_s`, no una velocidad.
+- **Piezas genéricas nuevas en `scenes/fx/`:** `AtlasSprite` (cuadro de atlas que mira a la cámara, con `fps` propio), sus dos shaders y `Spinner`; `ZoneGround` (altura del terreno o un valor de reserva) en `zones/`.
+- **Tolerancia de la tasa:** la cuenta de gotas por segundo es un sorteo; el criterio es el mayor de ±25 % o 3 sigmas (`3 × √(tasa × s)`), no ±25 % a secas.
+- **`Clinging.shown` pasa de `Vector2i` a `Vector3i`** (z = ranas); el path de replicación no cambia.
+- **Los lazos `cldl` (nubes de Fire y Cloudkill) y `Xquk` (Bombardment) y el `Xfrx` de la rana son lectura del SPEL** (NO VERIFICADO qué evento los toca); cada uno es una `ZoneSound` o un cue de una escena.
+- **El mago del test de casos es de nivel 8** (`wizard_level`); la prueba de Cloudkill lanza rayos con `BoltLauncher._launch` directo y deja la zona sin liberar para que su propio dropper no tire rayos al azar sobre los cuerpos medidos.
+- **Pruebas:** `debug/suite/cloud_cases.gd` (`cloud_scenes`, `cloud_rules`, `cloud_rates`, `cloud_frog`, `cloud_fire`, `cloud_plague`, `cloud_meteor`, `cloud_cloudkill`, `cloud_cast`, `cloud_ai`, `cloud_lights`), con `--case=<nombre>` para correr uno.

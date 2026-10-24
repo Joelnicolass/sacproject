@@ -8,7 +8,7 @@ extends Node3D
 ## Ref: sacengine SacCloud, SacCloud2, renderCloud (sacobject.d:2778-2819, renderer.d:451-475, 1844-1853, 2477-2486).
 
 @export var zone: GroundZone
-## The layers: a MultiMeshInstance3D of a unit sphere with the cloud_sphere shader.
+## The layers: a MultiMeshInstance3D of a unit sphere with the cloud_sphere shader (its MultiMesh uses custom data and has no instances: this sets them).
 @export var layers: MultiMeshInstance3D
 ## The radius of the cloud: this share of the spell's effect range, unless `fixed_radius_m` says one.
 @export_range(0.0, 2.0, 0.01) var radius_share := 1.0
@@ -33,11 +33,11 @@ func _ready() -> void:
 	if layers == null or layers.multimesh == null:
 		return
 	var multimesh := layers.multimesh
-	multimesh.use_custom_data = true
-	multimesh.instance_count = layer_count
-	for i in layer_count:
-		multimesh.set_instance_transform(i, Transform3D(Basis.from_scale(Vector3.ONE * (1.0 - layer_shrink * i)), Vector3.ZERO))
-		multimesh.set_instance_custom_data(i, Color(layer_drift * i, 0.0, 0.0, 0.0))
+	if multimesh.instance_count != layer_count:
+		multimesh.instance_count = layer_count
+		for i in layer_count:
+			multimesh.set_instance_transform(i, Transform3D(Basis.from_scale(Vector3.ONE * (1.0 - layer_shrink * i)), Vector3.ZERO))
+			multimesh.set_instance_custom_data(i, Color(layer_drift * i, 0.0, 0.0, 0.0))
 	set_process(not Engine.is_editor_hint() and zone != null and DisplayServer.get_name() != "headless")
 	visible = false
 

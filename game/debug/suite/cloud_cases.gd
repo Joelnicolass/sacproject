@@ -18,7 +18,7 @@ func run(host: Node3D) -> Dictionary:
 		if arg.begins_with("--case="):
 			only = arg.trim_prefix("--case=")
 	var cases := {"scenes": _scenes, "rules": _rules, "rates": _rates, "frog": _frog, "fire": _fire, "plague": _plague, "meteor": _meteor,
-		"cloudkill": _cloudkill, "cast": _cast, "ai": _ai}
+		"cloudkill": _cloudkill, "cast": _cast, "ai": _ai, "lights": _lights}
 	for name in cases:
 		if only.is_empty() or only == name:
 			out["cloud_" + name] = await (cases[name] as Callable).call()
@@ -97,7 +97,7 @@ func _rates() -> Dictionary:
 		var started: int = count[0]
 		await _frames(MatchClock.ticks_for(seconds) + 5)
 		var born: int = count[0] - started
-		checks[tag + "_rate"] = absf(float(born) - rate * seconds) <= rate * seconds * 0.25
+		checks[tag + "_rate"] = absf(float(born) - rate * seconds) <= maxf(rate * seconds * 0.25, 3.0 * sqrt(rate * seconds))
 		checks[tag + "_stops"] = zone.phase >= GroundZone.Phase.ENDING
 		var after: int = count[0]
 		await _frames(30)
@@ -153,6 +153,7 @@ func _frog() -> Dictionary:
 	while is_instance_valid(first) and not first.is_queued_for_deletion() and ticks < 600:
 		await _frames(1)
 		ticks += 1
+	await _frames(MatchClock.ticks_for(0.5))
 	checks["bursts_at_5_s"] = absi(ticks - MatchClock.ticks_for(5.0)) <= 6
 	var resist := health.resistance(Health.SPLASH_SPELL)
 	var took := before - health.current
@@ -321,8 +322,8 @@ func _cloudkill() -> Dictionary:
 	var hp := {}
 	for body in [a, b, far]:
 		hp[body] = (body.get_node("Health") as Health).current
+	## Still casting: its own dropper rests, only the launcher under test throws.
 	var z2 := _cloud("Cloudkill", Vector3(700.0, 0.0, 700.0), wizard, 0)
-	z2.release()
 	var launcher := z2.get_node("Bolts") as BoltLauncher
 	var end_at := BodyNudge.center(a)
 	launcher._launch(Vector3(700.0, 0.0, 700.0), a)
@@ -352,6 +353,10 @@ func _cast() -> Dictionary:
 	var checks := {}
 	var spell := GameData.spell("grfr")
 	var wizard := _wizard(1, Vector3(-30.0, 0.0, -800.0), "persephone", 8)
+	var waiting := 0
+	while not _zones().is_empty() and waiting < 600:
+		await _frames(1)
+		waiting += 1
 	await _frames(3)
 	var caster := Caster.of(wizard)
 	var pool := wizard.get_node("ManaPool") as ManaPool
@@ -365,10 +370,13 @@ func _cast() -> Dictionary:
 	caster.request_cast("grfr", Vector3(0.0, 0.0, -800.0), null)
 	checks["casting"] = caster.is_casting() and _zones().size() == 1
 	var zone: GroundZone = _zones()[0] if not _zones().is_empty() else null
-	await _frames(MatchClock.ticks_for(spell.casting_time_s) - 20)
-	checks["cloud_while_casting"] = zone != null and zone.phase == GroundZone.Phase.CASTING and drops[0] == 0
+	var waited := 0
+	while is_instance_valid(zone) and zone.phase == GroundZone.Phase.CASTING and waited < 600:
+		await _frames(1)
+		waited += 1
+	checks["cloud_while_casting"] = zone != null and zone.cast_ticks > 0 and absi(waited - zone.cast_ticks) <= 2 and drops[0] == 0
 	await _frames(MatchClock.ticks_for(1.5))
-	checks["rains_after_cast"] = zone.phase == GroundZone.Phase.ACTIVE and drops[0] > 0
+	checks["rains_after_cast"] = is_instance_valid(zone) and zone.phase == GroundZone.Phase.ACTIVE and drops[0] > 0
 	checks["mana_spent"] = pool.current < 5000.0 - float(spell.mana_cost) * 0.9
 	checks["cooling"] = caster.spellbook.cooldown(index) > 0.0
 	zone.cancel()
@@ -389,6 +397,27 @@ func _cast() -> Dictionary:
 		node.queue_free()
 	await _frames(2)
 	return _verdict("cloud_cast", checks)
+
+
+## Every spell lights its surroundings with its colour: the clouds and the drop of fire carry an ActorLight with no shadow, and each burst that
+## makes a light (the frogs', the fire's, the meteorite's, the plague's) has its FxLightSpec; Cloudkill's bolt uses the lightning flash.
+func _lights() -> Dictionary:
+	var checks := {}
+	for kind in ["RainOfFrogs", "RainOfFire", "Plague", "Cloudkill"]:
+		var zone := (_spawner.zones[kind] as PackedScene).instantiate()
+		var light := zone.get_node_or_null("CloudAt/Light") as ActorLight
+		checks[kind + "_cloud_light"] = light != null and not light.shadow_enabled and light.light_energy > 0.0
+		zone.free()
+	var fire := (_spawner.projectiles["FireDrop"] as PackedScene).instantiate()
+	var fire_light := fire.get_node_or_null("Light") as ActorLight
+	checks["fire_drop_light"] = fire_light != null and not fire_light.shadow_enabled
+	fire.free()
+	for name in ["frog_burst", "fireball_blast", "meteor_hit", "plague_burst"]:
+		var type := load("res://data/fx/%s.tres" % name) as ParticleType
+		checks[name + "_has_light"] = type != null and type.light != null and type.light.energy > 0.0
+	var bolt := load("res://data/fx/beams/lightning.tres") as BeamType
+	checks["bolt_flash"] = bolt != null and bolt.light != null
+	return _verdict("cloud_lights", checks)
 
 
 ## The AI sees the five without breaking: no `ai_use`, and its evaluator gives a finite rating.

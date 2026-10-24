@@ -18,6 +18,7 @@ extends Node
 var _last := ZoneDrop.Status.FLYING
 var _jumping := false
 var _t := 0.0
+var _jumps := 0
 
 
 func _ready() -> void:
@@ -29,7 +30,8 @@ func _process(delta: float) -> void:
 		if _last == ZoneDrop.Status.RESTING and drop.status == ZoneDrop.Status.FLYING:
 			_jumping = true
 			_t = 0.0
-			if croak != null and randi() % croak_one_in == 0:
+			_jumps += 1
+			if croak != null and (_jumps + hash(drop.name)) % croak_one_in == 0:
 				croak.play_once()
 		_last = drop.status
 	_t += delta

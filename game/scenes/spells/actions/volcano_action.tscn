@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/actions/zone_action.gd" id="1_script"]
+
+[node name="Volcano" type="Node"]
+editor_description = "Volcano (clov): la zona nace al empezar el lanzamiento (el monte empieza a subir), se ancla a la cuadricula de 10 m del suelo (como el original) y erupciona a los 4,44 s del inicio (arm_from_start). Si el lanzamiento se corta, el suelo vuelve exacto."
+script = ExtResource("1_script")
+tag = "clov"
+prompt = "Elegí el punto"
+cast_fx = "wards/fire_cast"
+kind = "Volcano"
+arm_s = 4.4444
+arm_from_start = true
+snap_m = 10.0

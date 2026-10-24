@@ -49,4 +49,14 @@ chmod +x "$T/fakegodot"
 ( unset GODOT_RUN_NO_PREFLIGHT; GODOT_BIN="$T/fakegodot" bash "$RUN" bash -c 'true' --headless --path "$P" 2> "$T/g.err" )
 grep -q 'clases sin importar (SelftestThing' "$T/g.err" && [ "$(grep -c -- '--import' "$T/imports.log" 2>/dev/null)" = 2 ] && ok "preflight imports x2" || bad "preflight: $(cat "$T/g.err") / $(cat "$T/imports.log" 2>/dev/null)"
 
+# 5. An --import of ANOTHER project does not wait for a headless run of this one (per-project import lock).
+mkdir -p "$T/other"
+bash "$RUN" bash -c 'sleep 5' --headless 2> "$T/h.err" &
+sleep 1
+s=$(date +%s)
+( cd "$T/other" && bash "$RUN" bash -c 'true' --import 2> "$T/i.err" )
+e=$(( $(date +%s) - s ))
+wait
+[ "$e" -le 3 ] && grep -q 'import exclusivo' "$T/i.err" && ok "import of another project runs at once (${e}s)" || bad "import of another project waited ${e}s: $(cat "$T/i.err")"
+
 exit $fail

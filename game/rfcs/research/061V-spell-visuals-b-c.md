@@ -222,9 +222,10 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 - Sonido `breakingIce` (`Xice`: `sfx/stra/ish1..4.wav`).
 
 **El EXE no coincide con la textura:**
-- En `FreezeSpellInterrupt` (0x4216e0) hay `push 'icec'` en 0x42178f, y en `FreezeSpellRun` (0x4217c0) `push 'shrd'` en 0x42194b. En el Freeze **no aparece `frez`**: el original solo empuja `frez` en `SilverbackIcespray` (0x414146) y en `FrozenGroundStart` (0x422491).
+- **Reatribuido:** `push 'icec'` + `ttex` (0x42178e, junto a `falf`, probablemente un alfa) está en `sub_421700`, que llama **`FreezeSpellRun`** (0x42183f); no en `FreezeSpellInterrupt`. `FreezeSpellRun` empuja además `shrd` + `tsha` (los fragmentos) e `inum`. `FreezeSpellStart` empuja `tcst` (partícula del lanzamiento).
+- En el Freeze **no aparece `frez`**: el original solo empuja `frez` en `sub_413f00` (la llama `SilverbackAbility`, 0x414145) y en `FrozenGroundStart` (0x422490).
 - `icec` (charlie, Stra/txtr, 128²) es hielo más claro y lechoso que `frez`.
-- Lectura probable: el bloque del hechizo Freeze del original usa **`icec`**, y `frez` es el del aliento del Silverback y de Frozen Ground. **NO VERIFICADO** (falta desensamblar). Los dos son baratos de importar: conviene traer los dos y decidir con una captura.
+- Conclusión: el bloque del hechizo Freeze del original usa **`icec`** (la única textura que carga la rutina del hechizo, con un parámetro de alfa al lado), y `frez` es del Silverback y de Frozen Ground. Queda **NO VERIFICADO** solo que `icec` vaya en el cubo y no en otra pieza, porque no se leyeron instrucciones. Recomendación: usar `icec`; importar `frez` solo para Frozen Ground.
 
 **Qué reutilizar del port.**
 - `scenes/units/afflictions/frozen.gd` ya hace la duración, el deshielo y los fragmentos (`data/fx/freeze_shards.tres`).
@@ -251,7 +252,7 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 - **Crecer y desaparecer.** Crecen con `lengthFactor` de 0,1 a 1 en 60 ticks. Al soltar, encogen de 1 a 0 en 60 ticks.
 - **Sonido.** `toor` = `sfx/pers/root.wav` (ganancia 4) al agarrar; `dafr` = `sfx/pers/rfad.wav` (ganancia 2) al soltar.
 
-**El EXE** [EXE 0x42c2f0 `GraspingVinesRun`]: `push 'vine'` en 0x42c33d, más `dirt`, `fbal` y `glo2`. Confirma la textura y la tierra. `fbal`/`glo2` sugieren un resplandor o bola que sacengine no dibuja (**NO VERIFICADO**).
+**El EXE** [EXE 0x42c2f0 `GraspingVinesRun`]: `push 'vine'` + `ttex` (0x42c33c), `tsfx`, y `dirt` + `tdrt` (0x42c425). Confirma la textura y la tierra. **Corrección:** `fbal` + `tcld` y `glo2` están en `sub_42c460`, que llama **`HealingAuraRun`** (0x42c5f3): son de Healing Aura, no de las lianas. Las lianas no tienen resplandor.
 
 **Qué reutilizar del port.**
 - `scenes/units/afflictions/vined.gd` ya hace la duración, la crecida y el encogido en 1 s, y el rechazo a voladores.
@@ -283,7 +284,7 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 - 3 anillos más, en coordenadas del mundo (se quedan donde estaba el cuerpo).
 - Suena `disableRingsOfFire` (`Xfrd`: `sfx/pyro/frd1..2.wav`).
 
-**El EXE** [EXE 0x4258a0 `ChainsOfFireRun`, el nombre interno]. No hay `push` de etiqueta. No contradice.
+**El EXE** [EXE 0x4258a0 `ChainsOfFireRun`, el nombre interno]. No hay `push` de etiqueta, ni en la función ni en sus auxiliares (`sub_425bf0` … `sub_426340`, que comparte con Dragonfire y Wraithwind). No contradice.
 
 **Qué reutilizar del port.** `fx/firy.png` (aditivo) o `firy_a.png` (MIX), con un `ParticleType` nuevo (`ring_of_fire`: 0,5 m, delay 1). Otra opción es que un emisor dispare ráfagas de 30 en anillo con velocidad hacia un punto, local al cuerpo.
 
@@ -299,7 +300,8 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 - `lthg` (Daniel.wad, `DanC.WAD!/char.FLDR`): 128², una textura continua de baba verde oliva.
 - `lth2` (misma carpeta): 256², atlas 4×4 de gotas y salpicaduras verdes con alfa.
 - `cfx1` (misma carpeta): atlas del segundo nivel del lanzamiento de Charnel.
-- [EXE 0x432550 `LethargyRun`]: `push 'lthg'` en 0x4327e4 y `push 'lth2'` en 0x432818, más `TXTR` y `tgoo`. **Confirmado**: el original usa las dos texturas.
+- [EXE 0x432550 `LethargyRun`]: `push 'lthg'` + `ttex` (0x4327e3) y `push 'lth2'` + `tgoo` (0x432817), más `TXTR` y `PARA`. **Confirmado**: el original usa las dos texturas.
+- [EXE `sub_432400`, la llama `LethargyRun` en 0x4325ce]: `push 'cst0'` + `tcst` (partícula del lanzamiento) y `lthg` + `ttex`. Lectura probable: el lanzamiento del original usa **`cst0`**, no el `cfx1` de sacengine. **NO VERIFICADO** (podría ser la bola que cae). `cfx1` no aparece en el Slime: solo en `sub_433b90` ← Wailing Wall.
 - Ninguna está importada.
 - El archivo en la instalación se llama `Daniel.wad`, con mayúscula. La tabla del importador hoy escribe los nombres en minúscula; en un disco que distingue mayúsculas hay que usar el nombre real.
 
@@ -308,7 +310,7 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 - **Avance.** El progreso avanza 1/`castingTime` por tick (≈74 ticks) y sigue aunque el mago ya terminó de lanzar.
 - **Crece arriba.** Hasta el 85 % del progreso, la bola crece de 0 a 1 quieta **10 m sobre el centro** del cuerpo.
 - **Cae.** Del 85 % al 100 %, cae en línea recta hasta el centro (≈11 ticks).
-- **Lanzamiento del mago.** Partículas `castCharnel2` (cfx1, aditivas, energía 5), 2 por mano y por tick, en direcciones al azar.
+- **Lanzamiento del mago.** Partículas `castCharnel2` (cfx1, aditivas, energía 5), 2 por mano y por tick, en direcciones al azar. El EXE sugiere `cst0` en su lugar (ver Assets).
 
 **Impacto y mientras dura** [SAC 10753-10764, 17730-17786; renderer.d:1441-1452, 1798-1822]:
 - **Al tocar.**
@@ -341,13 +343,13 @@ Todo lo de esta tabla lo lee `tools/import/import_ui.py` con `fx_catalog.py` (lo
 | `shld` | charlie.wad · `Bloo.WAD!/Stra.FLDR/txtr.FLDR` | 256², 4×2 | textura de la burbuja (sacengine; el EXE no la empuja) | Air Shield |
 | `pash` | ídem | 256², 4×4 | destellos aditivos | Air Shield |
 | `icec` | ídem | 128² | bloque de hielo (probable según el EXE); posible textura de la burbuja (EXE) | Freeze, Air Shield |
-| `frez` | ídem | 128² | bloque de hielo (sacengine), Yeti y Frozen Ground | Freeze |
+| `frez` | ídem | 128² | bloque de hielo de sacengine; en el EXE es del Silverback y de Frozen Ground | Frozen Ground (no Freeze) |
 | `pswm` | charlie.wad · `Bloo.WAD!/Char.FLDR/tex.FLDR` | 256², 4×4 | bichos | Protective Swarm |
 | `vine` | charlie.wad · `Bloo.WAD!/Pers.FLDR/tex.FLDR` | 64² | lianas | Grasping Vines (y después Vinewall) |
 | `cst1` | main.wad · `MAIN.WAD!/bits.FLDR` | 256², 4×4 | lanzamiento de Persephone de nivel 2 | Grasping Vines |
 | `lthg` | Daniel.wad · `DanC.WAD!/char.FLDR` | 128² | bola y cuerpo bañado | Slime |
 | `lth2` | ídem | 256², 4×4 | salpicadura y goteo | Slime |
-| `cfx1` | ídem | 256², 4×4 | lanzamiento de Charnel de nivel 2 | Slime |
+| `cfx1` | ídem | 256², 4×4 | lanzamiento de Charnel de nivel 2 (sacengine; el EXE sugiere `cst0`) | Slime |
 
 Ya están en el port: `firy`, `firy_a`, `glo2`, `cst0`, `cst0_a`, `shrd`, `rock`, `dirt`, `flao` y todos los sonidos nombrados arriba (`assets/original/audio/sfx/…`; los tags de sacengine se leen al revés: `ksts` → `stsk.wav`).
 
@@ -358,10 +360,11 @@ Mallas:
 
 ## Pendientes antes de dibujar (NO VERIFICADO)
 
-1. **Freeze.** ¿`icec` o `frez` para el bloque? Desensamblar el entorno de 0x42178f (crear la función en Ghidra a partir de la tabla, como en 061R) o comparar con una captura.
+1. **Freeze.** Casi resuelto (reatribución): la rutina del hechizo (`sub_421700` ← `FreezeSpellRun`) carga `icec`; `frez` es del Silverback y de Frozen Ground. Usar `icec`.
 2. ~~Skin of Stone: `quk1`/`mud1`~~ **Resuelto** (reatribución): son de Wall of Spikes (`sub_446fb0` ← `SpikeWallStart`).
 3. ~~Ethereal Form: `forb`/`flao`~~ **Resuelto** (reatribución): son de Flash Orb (`FlashOrbRun`). Manda sacengine.
 3b. **Air Shield.** ¿`icec` (lo empuja la función del escudo) o `shld` (sacengine; el EXE no lo empuja) para la burbuja? Captura de cámara fija. ¿Para qué usa `ProtectiveSwarmStart` el `fb_g`?
-4. **Grasping Vines.** ¿Para qué usa el original `fbal`/`glo2` en `GraspingVinesRun`? ¿Qué extremo de `vine` queda en la raíz?
+4. **Grasping Vines.** `fbal`/`glo2` **resuelto** (reatribución): son de Healing Aura. Sigue abierto qué extremo de `vine` queda en la raíz.
+4b. **Slime.** ¿Partículas del lanzamiento `cst0` (EXE, `sub_432400`) o `cfx1` (sacengine)?
 5. **Fuego** (Fireform, Rings of Fire): ¿aditivo con energía 8 como el original, o el `firy_a` MIX que ya usa el port? Se decide con capturas de cámara fija y un criterio numérico.
 6. Ninguna apariencia se confirmó con un video. El manual y la guía confirman la forma general: piedra, minitornado, enjambre, bloque de hielo, lianas que salen del suelo, anillo de fuego que late y bola de baba que cubre al blanco.

@@ -50,10 +50,13 @@
 [ext_resource type="Texture2D" path="res://scenes/map/maps/tutorial_valley/flora/persephone_reed_1.png" id="fd_persephone_reed_1"]
 [ext_resource type="Resource" path="res://data/vegetation/species/persephone_grass_1.tres" id="sp_persephone_grass_1"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/tutorial_valley/flora/persephone_grass_1.png" id="fd_persephone_grass_1"]
+[ext_resource type="PackedScene" path="res://scenes/props/persephone_arch.tscn" id="prop_arch"]
+[ext_resource type="PackedScene" path="res://scenes/props/persephone_pillar.tscn" id="prop_pillar"]
+[ext_resource type="PackedScene" path="res://scenes/props/persephone_rock.tscn" id="prop_rock"]
 [ext_resource type="Resource" path="res://data/vegetation/species/persephone_shrub_2.tres" id="sp_persephone_shrub_2"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/tutorial_valley/flora/persephone_shrub_2.png" id="fd_persephone_shrub_2"]
 
-[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs")]
+[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
 terrain = NodePath("Terrain")
 nav_region = NodePath("NavRegion")
@@ -62,6 +65,7 @@ look = NodePath("Look")
 minimap_bake = NodePath("MinimapBake")
 buildings = NodePath("Buildings")
 npcs = NodePath("Npcs")
+props = NodePath("Props")
 
 [node name="Look" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("8_look")]
 unique_name_in_owner = true
@@ -96,6 +100,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1270, 62.3, 1570)
 [node name="WizardSpot" parent="MapProps/Starts/Start1" index="1"]
 transform = Transform3D(-0.9261, 0, 0.3773, 0, 1, 0, -0.3773, 0, -0.9261, 11.3189, 0, -27.7828)
 
+[node name="Start2" parent="MapProps/Starts" instance=ExtResource("4_start")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 880, 73.6, 980)
+slot = 2
+
+[node name="WizardSpot" parent="MapProps/Starts/Start2" index="1"]
+transform = Transform3D(-0.9261, 0, 0.3773, 0, 1, 0, -0.3773, 0, -0.9261, 11.3189, 0, -27.7828)
+
 [node name="Founts" type="Node3D" parent="MapProps"]
 
 [node name="Fount01" parent="MapProps/Founts" instance=ExtResource("5_fount")]
@@ -105,6 +116,17 @@ building = ExtResource("fbldg_font")
 [node name="Fount02" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1700, 6, 230)
 building = ExtResource("fbldg_font")
+
+[node name="Props" type="Node3D" parent="."]
+
+[node name="PersephoneArch" parent="Props" instance=ExtResource("prop_arch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1590, 60.5, 1000)
+
+[node name="PersephonePillar" parent="Props" instance=ExtResource("prop_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1665, 60.5, 1040)
+
+[node name="PersephoneRock" parent="Props" instance=ExtResource("prop_rock")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1620, 60.5, 1075)
 
 [node name="Buildings" type="Node3D" parent="."]
 

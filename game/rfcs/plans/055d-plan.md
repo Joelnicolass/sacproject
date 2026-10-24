@@ -61,3 +61,9 @@ Sim: `MapBuilding`, `NpcSpawn`, nav, `TerrainShape`, colisión, `GroundRay`, `Bi
 | 8–9 | d4 | `PropKind`, `PropSet`, `PropLayer`, `LookProfile.props`, `BiomeProp`, `debug/map/biome_props.tscn`, **`debug/look/look_preview.tscn` (cualquier mapa × cualquier dios)**; READMEs; baseline; review; playtest con ventana |
 
 Lint esperado: C1a 109→107, C1b 25→24, C5 223→221, C6 64→63, C7 70→61, C8 27→24, C9 370→~360, C13 40→36, C14 227→220.
+
+## As built: d4 (2026-10-24)
+- No `BiomeProp`/`PropSet`/`PropLayer`/`PropKind`/`LookProfile.props` exist or were created (only these docs name them). A prop is a plain scene `scenes/props/<name>.tscn` (BodyVisual `Mesh` + optional `StaticBody3D`/`CollisionShape3D` + optional `VegetationClear`, no script) dropped under the map's new `Props/` node (`MapRoot.props`, in the 7 maps with Buildings and in `scaffold_map.py`). 3 examples (`persephone_arch`, `persephone_pillar`, `persephone_rock`) sit under `tutorial_valley/map.tscn/Props` as the living example; README in `scenes/props/`. No resolver, no registry, no gallery scene (debug scenes go away at the end).
+- Decoration decision: the 59 BuildingTypes with `flattens_ground` and no health/shelter (41 placements in the maps) stay `MapBuilding`: they still join the `map_building` group that NavService (`baked_groups`/`blocker_groups`, fingerprint), the inspector and the bench read, so moving them would change the bench. Only NEW decoration uses `scenes/props/`.
+- Look preview: no `debug/look/look_preview.tscn`. `LookRig.preview_god: GodType` (live setter, editor only) + `preview_quality: LookQuality` (default `quality_high.tres`, so FloraField plants); null returns to the classic look. The «Vista previa del bioma» button and the `preview_god` String were removed.
+- `tutorial_valley` is now playable: `player_starts = 2`, `Start2` at (880, 73.6, 980) in the western strip.

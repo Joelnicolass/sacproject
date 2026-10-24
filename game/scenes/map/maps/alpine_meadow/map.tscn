@@ -60,7 +60,7 @@
 [ext_resource type="Resource" path="res://data/vegetation/species/persephone_reed_3.tres" id="sp_persephone_reed_3"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/alpine_meadow/flora/persephone_reed_3.png" id="fd_persephone_reed_3"]
 
-[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs")]
+[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
 terrain = NodePath("Terrain")
 nav_region = NodePath("NavRegion")
@@ -69,6 +69,7 @@ look = NodePath("Look")
 minimap_bake = NodePath("MinimapBake")
 buildings = NodePath("Buildings")
 npcs = NodePath("Npcs")
+props = NodePath("Props")
 
 [node name="Look" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("8_look")]
 unique_name_in_owner = true
@@ -139,6 +140,8 @@ building = ExtResource("fbldg_font")
 [node name="Fount07" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1280, 100.1, 1160)
 building = ExtResource("fbldg_font")
+
+[node name="Props" type="Node3D" parent="."]
 
 [node name="Buildings" type="Node3D" parent="."]
 

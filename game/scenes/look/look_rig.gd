@@ -14,9 +14,19 @@ signal layer_toggled(index: int, enabled: bool)
 signal vegetation_toggled(enabled: bool)
 
 @export_group("Editor preview")
-## One of the gods of data/gods/ (the inspector lists them: see `_validate_property`).
-@export var preview_god: String = "persephone"
-@export_tool_button("Vista previa del bioma") var _preview_action: Callable = preview
+## Pick a god and the map shows its look in the editor, live (sky, light, glow, ground, plants). Empty = the map as it is.
+## Editor only: in the running game it is ignored and the match's god wins.
+@export var preview_god: GodType:
+	set(value):
+		preview_god = value
+		if Engine.is_editor_hint() and is_node_ready():
+			_show_preview()
+## The preset the editor preview wears (without one, FloraField plants nothing). Editor only.
+@export var preview_quality: LookQuality = preload("res://data/look/quality_high.tres"):
+	set(value):
+		preview_quality = value
+		if Engine.is_editor_hint() and is_node_ready():
+			_show_preview()
 
 @export_group("Sockets")
 @export var layers: Node
@@ -46,16 +56,8 @@ func _ready() -> void:
 	if quality and quality.quality:
 		quality_preset = quality.quality
 		_push_quality()
-
-
-func _validate_property(property: Dictionary) -> void:
-	if property.name != "preview_god":
-		return
-	var tags := PackedStringArray()
-	for type in GameCatalog.shared().gods:
-		tags.append(type.tag)
-	property.hint = PROPERTY_HINT_ENUM
-	property.hint_string = ",".join(tags)
+	if Engine.is_editor_hint() and preview_god != null:
+		_show_preview.call_deferred()
 
 
 func apply_profile(new_profile: LookProfile) -> void:
@@ -80,11 +82,12 @@ func set_vegetation_enabled(on: bool) -> void:
 	vegetation_toggled.emit(on)
 
 
-## Editor button: shows the preview god's profile through the layers. The scene never saves it.
-func preview() -> void:
-	var type := GameCatalog.shared().god(preview_god)
-	if type != null:
-		apply_profile(type.look)
+## Editor only: the preview god's profile through the layers, with the preview preset. Nothing of it is saved: the layers
+## draw it from the profile each time.
+func _show_preview() -> void:
+	if quality and preview_quality != null:
+		apply_quality(preview_quality)
+	apply_profile(preview_god.look if preview_god != null else null)
 
 
 func _push_quality() -> void:

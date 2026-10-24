@@ -20,6 +20,9 @@ extends Node3D
 @export var buildings: Node3D
 ## Holds the NpcSpawn nodes; empty in a map without inhabitants.
 @export var npcs: Node3D
+## Holds the decoration scenes you drag in (scenes/props/<name>.tscn: arches, rocks, pillars that do not block and have no
+## health); empty in a map without any.
+@export var props: Node3D
 
 
 func _get_configuration_warnings() -> PackedStringArray:

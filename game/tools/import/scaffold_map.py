@@ -186,7 +186,7 @@ MAP_HEAD = """[gd_scene format=3]
 [ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="17_minimap"]
 
-[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs")]
+[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
 terrain = NodePath("Terrain")
 nav_region = NodePath("NavRegion")
@@ -195,6 +195,7 @@ look = NodePath("Look")
 minimap_bake = NodePath("MinimapBake")
 buildings = NodePath("Buildings")
 npcs = NodePath("Npcs")
+props = NodePath("Props")
 
 [node name="Look" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("8_look")]
 unique_name_in_owner = true
@@ -346,6 +347,7 @@ building = ExtResource("fbldg_{bldg}")
 
     left_out = {}
     counters = {}
+    body.append('\n[node name="Props" type="Node3D" parent="."]\n')
     body.append('\n[node name="Buildings" type="Node3D" parent="."]\n')
     by_tag = building_files()
     for row in ntts["structures"]:

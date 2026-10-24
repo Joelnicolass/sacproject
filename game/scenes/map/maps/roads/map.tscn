@@ -55,7 +55,7 @@
 [ext_resource type="Resource" path="res://data/vegetation/species/pyro_groundcover_4.tres" id="sp_pyro_groundcover_4"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/roads/flora/pyro_groundcover_4.png" id="fd_pyro_groundcover_4"]
 
-[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs")]
+[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
 terrain = NodePath("Terrain")
 nav_region = NodePath("NavRegion")
@@ -64,6 +64,7 @@ look = NodePath("Look")
 minimap_bake = NodePath("MinimapBake")
 buildings = NodePath("Buildings")
 npcs = NodePath("Npcs")
+props = NodePath("Props")
 
 [node name="Look" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("8_look")]
 unique_name_in_owner = true
@@ -137,6 +138,8 @@ building = ExtResource("fbldg_pfon")
 [node name="Fount08" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1370, 46.7, 1430)
 building = ExtResource("fbldg_pfon")
+
+[node name="Props" type="Node3D" parent="."]
 
 [node name="Buildings" type="Node3D" parent="."]
 

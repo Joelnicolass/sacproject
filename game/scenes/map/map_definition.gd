@@ -26,7 +26,7 @@ extends Resource
 @export var preview: Texture2D
 ## False for maps that exist to test the game (test_flat): rooms do not offer them.
 @export var room_selectable := true
-## False for a map that is only there to look at (tutorial_valley): no room or menu offers it, not even with the test maps;
+## False for a map that is only there to look at: no room or menu offers it, not even with the test maps;
 ## `--map=<tag>` and the debug scenes still open it.
 @export var playable := true
 ## The ground of the map in its own land (the same resource its Look rig holds in `native_ground`); empty = the map has none.

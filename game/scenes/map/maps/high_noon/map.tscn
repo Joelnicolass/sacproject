@@ -48,7 +48,7 @@
 [ext_resource type="Resource" path="res://data/vegetation/species/james_bush_5.tres" id="sp_james_bush_5"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/high_noon/flora/james_bush_5.png" id="fd_james_bush_5"]
 
-[node name="Map" type="Node3D" unique_id=1044000001 node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs")]
+[node name="Map" type="Node3D" unique_id=1044000001 node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
 terrain = NodePath("Terrain")
 nav_region = NodePath("NavRegion")
@@ -57,6 +57,7 @@ look = NodePath("Look")
 minimap_bake = NodePath("MinimapBake")
 buildings = NodePath("Buildings")
 npcs = NodePath("Npcs")
+props = NodePath("Props")
 
 [node name="Look" parent="." unique_id=1022000001 node_paths=PackedStringArray("terrain") instance=ExtResource("f22_look")]
 unique_name_in_owner = true
@@ -118,6 +119,8 @@ building = ExtResource("fbldg_jfnt")
 [node name="FountWest" parent="MapProps/Founts" unique_id=1824358006 instance=ExtResource("9_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1030, 21, 1110)
 building = ExtResource("fbldg_jfnt")
+
+[node name="Props" type="Node3D" parent="."]
 
 [node name="Buildings" type="Node3D" parent="."]
 

@@ -16,6 +16,8 @@ enum AiUse { NONE, SELF_GUARD, DISABLE_FOE }
 @export var damage: int = 0
 ## SPEL `amount2` (u32 at 96): the AI's spell evaluators read it (shiny.d:2650-2690).
 @export var amount2: int = 0
+## SPEL `amount3` (u32 at 100): how many hits, kills or targets a spell takes (Death: 8). 0 = not written in the .tres (the SPEL says 1 for most).
+@export var count: int = 0
 @export var damage_range: float = 0.0
 @export var effect_range: float = 0.0
 @export var duration: float = 0.0

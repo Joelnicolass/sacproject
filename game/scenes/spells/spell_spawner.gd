@@ -19,6 +19,11 @@ const GROUP := &"spell_spawner"
 	"SoulMole": preload("res://scenes/spells/carrier/soul_mole.tscn"),
 	"SoulWind": preload("res://scenes/spells/carrier/soul_wind.tscn"),
 	"AnimateDead": preload("res://scenes/spells/animate_dead/animate_dead_fx.tscn"),
+	"Vaporization": preload("res://scenes/spells/carrier/vaporization.tscn"),
+	"Charm": preload("res://scenes/spells/carrier/charm.tscn"),
+	"BlindRage": preload("res://scenes/spells/carrier/blind_rage.tscn"),
+	"BovineIntervention": preload("res://scenes/spells/carrier/bovine_intervention.tscn"),
+	"Death": preload("res://scenes/spells/carrier/death.tscn"),
 }
 ## Zone scenes by kind (Explosion, FrozenGround, DemonicRift), assigned in match.tscn and not preloaded here: a zone points at its SpellType,
 ## the SpellType at its action, and the action's script knows this class, so a preload would close the circle. Root extends GroundZone.

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="FxSoundMap" load_steps=102 format=3]
+[gd_resource type="Resource" script_class="FxSoundMap" load_steps=125 format=3]
 
 [ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
 [ext_resource type="Script" path="res://scenes/audio/fx_sound_map.gd" id="2_map"]
@@ -86,6 +86,17 @@
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/dfi2.wav" id="e_dfi2"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/dfi4.wav" id="e_dfi4"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/halo.wav" id="e_halo"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/char/deth.wav" id="i8_deth"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/char/ivpf.wav" id="i8_ivpf"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/char/ivph.wav" id="i8_ivph"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/char/ivpx.wav" id="i8_ivpx"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/cow_.wav" id="i8_cow_"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/cowh.wav" id="i8_cowh"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/cchm.wav" id="i8_cchm"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/hchm.wav" id="i8_hchm"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/schm.wav" id="i8_schm"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/rfst.wav" id="i8_rfst"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/rhnd.wav" id="i8_rhnd"]
 
 [sub_resource type="Resource" id="Cue_blood"]
 script = ExtResource("1_cue")
@@ -440,6 +451,71 @@ max_distance_m = 60.0
 unit_size = 8.0
 priority = 25
 
+[sub_resource type="Resource" id="Cue_i8_charm_cast"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("i8_cchm")])
+max_voices = 3
+
+[sub_resource type="Resource" id="Cue_i8_charm_start"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("i8_schm")])
+max_voices = 3
+
+[sub_resource type="Resource" id="Cue_i8_charm_hearts"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("i8_hchm")])
+max_voices = 3
+
+[sub_resource type="Resource" id="Cue_i8_rage_cast"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("i8_rhnd")])
+max_voices = 3
+
+[sub_resource type="Resource" id="Cue_i8_rage_blast"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("i8_rfst")])
+max_voices = 3
+volume_db = 3.0
+
+[sub_resource type="Resource" id="Cue_i8_vaporize_cast"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("i8_ivpf")])
+max_voices = 3
+
+[sub_resource type="Resource" id="Cue_i8_vaporize_hit"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("i8_ivph")])
+max_voices = 3
+
+[sub_resource type="Resource" id="Cue_i8_vaporize_burst"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("i8_ivpx")])
+max_voices = 3
+
+[sub_resource type="Resource" id="Cue_i8_cow_emerge"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("i8_cow_")])
+max_voices = 3
+volume_db = 6.0
+
+[sub_resource type="Resource" id="Cue_i8_cow_hit"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("i8_cowh")])
+max_voices = 3
+volume_db = 6.0
+
+[sub_resource type="Resource" id="Cue_i8_death_cast"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("i8_deth")])
+max_voices = 2
+volume_db = 6.0
+
+[sub_resource type="Resource" id="Cue_i8_death_swing"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("i8_deth")])
+max_voices = 2
+volume_db = 6.0
+
 [resource]
 script = ExtResource("2_map")
 cues = Dictionary[StringName, ExtResource("1_cue")]({
@@ -502,5 +578,17 @@ cues = Dictionary[StringName, ExtResource("1_cue")]({
 &"rift_close": SubResource("Cue_rift_close"),
 &"rift_spawn": SubResource("Cue_rift_spawn"),
 &"rift_hit": SubResource("Cue_rift_hit"),
-&"ward_healing_aura": SubResource("Cue_ward_healing_aura")
+&"ward_healing_aura": SubResource("Cue_ward_healing_aura"),
+&"charm_cast": SubResource("Cue_i8_charm_cast"),
+&"charm_start": SubResource("Cue_i8_charm_start"),
+&"charm_hearts": SubResource("Cue_i8_charm_hearts"),
+&"rage_cast": SubResource("Cue_i8_rage_cast"),
+&"rage_blast": SubResource("Cue_i8_rage_blast"),
+&"vaporize_cast": SubResource("Cue_i8_vaporize_cast"),
+&"vaporize_hit": SubResource("Cue_i8_vaporize_hit"),
+&"vaporize_burst": SubResource("Cue_i8_vaporize_burst"),
+&"cow_emerge": SubResource("Cue_i8_cow_emerge"),
+&"cow_hit": SubResource("Cue_i8_cow_hit"),
+&"death_cast": SubResource("Cue_i8_death_cast"),
+&"death_swing": SubResource("Cue_i8_death_swing")
 })

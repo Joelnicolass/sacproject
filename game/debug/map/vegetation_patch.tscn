@@ -7,10 +7,28 @@
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_tipi.tscn" id="5_tipi"]
 [ext_resource type="Resource" path="res://data/look/quality_high.tres" id="6_quality"]
 
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_debug"]
+
+[sub_resource type="Sky" id="Sky_debug"]
+sky_material = SubResource("ProceduralSkyMaterial_debug")
+
+[sub_resource type="Environment" id="Environment_debug"]
+background_mode = 2
+sky = SubResource("Sky_debug")
+ambient_light_source = 3
+tonemap_mode = 3
+
 [node name="VegetationPatchDebug" type="Node3D" node_paths=PackedStringArray("map")]
 script = ExtResource("1_script")
 map = NodePath("Map")
 quality = ExtResource("6_quality")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_debug")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, 0.25, -0.433, 0, 0.866, 0.5, 0.5, -0.433, 0.75, 1325, 60, 1300)
+shadow_enabled = true
 
 [node name="Map" parent="." instance=ExtResource("2_map")]
 

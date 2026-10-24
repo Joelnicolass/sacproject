@@ -9,7 +9,7 @@ extends SpellProjectile
 
 ## One stream. Its look is its own BeamType.
 @export var streamer_scene: PackedScene
-## The burst over the creature (a one-shot SpriteEmitter child).
+## The burst over the creature (a one-shot SpriteEmitter child). The effect is born on the creature, so its sound plays there too.
 @export var burst: SpriteEmitter
 ## A stream is born every this many ticks, with `chance` of it really being born (30 fps of rolls, half of them).
 @export_range(1, 30) var every_ticks := 2

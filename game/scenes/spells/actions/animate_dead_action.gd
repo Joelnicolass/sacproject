@@ -45,7 +45,7 @@ func started(wizard: WizardBody, _spell: SpellType, aim: Aim, _frames: int) -> v
 	var spawner := projectile_spawner()
 	if spawner == null:
 		return
-	var at := wizard.global_position
+	var at := corpse.global_position
 	spawner.spawn_projectile(effect_kind, {
 		"x": at.x, "y": at.y, "z": at.z,
 		"caster": str(wizard.get_path()),

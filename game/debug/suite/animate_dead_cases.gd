@@ -14,6 +14,7 @@ func run(host: Node3D) -> Dictionary:
 	_w.build(host, "AnimateDeadCases")
 	var out := {}
 	out["animate_dead_scene"] = _scene()
+	out["animate_dead_streamer"] = await _streamer()
 	out["animate_dead_revive"] = await _revive()
 	out["animate_dead_cut_cast"] = await _cut_cast()
 	out["animate_dead_refusals"] = await _refusals()
@@ -33,6 +34,40 @@ func _scene() -> Dictionary:
 	if action != null:
 		action.free()
 	return _w.verdict("animate_dead_scene", checks)
+
+
+## One stream between two bodies (it is only drawn in a window, so the case runs its frames by hand): a ribbon of 31 links x 3 fins
+## that starts at the wizard, whose head reaches the creature and which frees itself when its time is up.
+func _streamer() -> Dictionary:
+	var checks := {}
+	var from := _w.unit(Vector3.ZERO, 1)
+	var to := _w.unit(Vector3(20.0, 0.0, 0.0), 1)
+	await _w.frames(2)
+	var fx := (load("res://scenes/spells/animate_dead/streamer_fx.tscn") as PackedScene).instantiate() as StreamerFx
+	_w.root.add_child(fx)
+	fx.play(from, to, 7)
+	var near_end := INF
+	var all_finite := true
+	var drawn := 0
+	for step in 40:
+		fx._process(fx.travel_s / 40.0)
+		if not fx.is_inside_tree() or fx.is_queued_for_deletion():
+			break
+		var arrays := fx.mesh.surface_get_arrays(0) if fx.mesh.get_surface_count() > 0 else []
+		if arrays.is_empty():
+			continue
+		drawn += 1
+		for vertex: Vector3 in arrays[Mesh.ARRAY_VERTEX]:
+			all_finite = all_finite and is_finite(vertex.x) and is_finite(vertex.y) and is_finite(vertex.z)
+			near_end = minf(near_end, vertex.distance_to(BodyNudge.center(to)))
+	checks["draws_while_it_lives"] = drawn >= 30
+	checks["every_point_is_a_number"] = all_finite
+	checks["head_reaches_the_creature"] = near_end < 1.0
+	fx._process(fx.travel_s)
+	checks["frees_itself"] = fx.is_queued_for_deletion()
+	from.queue_free()
+	to.queue_free()
+	return _w.verdict("animate_dead_streamer", checks)
 
 
 ## The whole revival from the click: REVIVING at once, 300 ticks (+- 1), 2 m up, 2 turns, alive with all its health, the soul gone.

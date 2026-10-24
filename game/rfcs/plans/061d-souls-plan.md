@@ -32,7 +32,8 @@ scenes/spells/
     [+] soul_mole.tscn                   SpellCarrier ├ Look (rock.glb + SpriteEmitter dust + SpriteEmitter rock) ├ Fetch ├ Pulse(Reach r 10, solo aturde) └ Sound(Xquk, lazo)
     [+] soul_wind.tscn                   SpellCarrier ├ Look (embudo + SpriteEmitter dust) ├ Fetch └ Pulse(Reach r 30, 400 una vez, no aliados, rayo) └ Sound
     [+] funnel.gdshader                  swnd x2, desplazamiento de v, alfa 0,75
-    [+] soul_wind_funnel.res             ArrayMesh 32 lados x 32 anillos (hecha con tools/blender/soul_wind_funnel.py)
+    [+] soul_wind_funnel.res             ArrayMesh 32 lados x 32 anillos (la hornea tools/bake/make_soul_wind_funnel.gd: es una formula, no hace falta Blender)
+    [+] prop_look.gd                     PropLook (MeshInstance3D): dibuja un modelo estatico del original por nombre (la roca del topo)
   actions/
     [+] soul_action.gd                   SoulAction extends SpellAction: pick SOUL; check (alma azul, no soltada, viva, en alcance); started → spawn del portador; finish → pulse armado; cancel → portador fuera. ≤90
     [+] soul_mole_action.tscn            SoulAction(tag pmcd, carrier_kind SoulMole, cast_fx dirt_cast)
@@ -59,9 +60,11 @@ data/fx/
   [+] soul_mole_dust.tres, soul_mole_rocks.tres, soul_wind_dust.tres, animate_dead_burst.tres
   beams/[+] soul_wind_bolt.tres, animate_dead_streamer.tres
 assets/original/fx/[+] and2.png, cfx1.png, swnd.png, wdst.png (+ .import)   tools/import/import_ui.py: EXTRA_FX
-tools/blender/[+] soul_wind_funnel.py
-debug/spells/[+] cast_souls.tscn         debug/rules/[+] cast_souls.tres
-debug/suite/[+] soul_cases.gd ; [~] rules_suite.gd
+tools/bake/[+] make_soul_wind_funnel.gd
+data/gods/[~] james, stratos, charnel .tres   pmcd, dnws, deda entran en el libro (las tres ya estaban en los desbloqueos por nivel)
+scenes/spells/actions/[~] spell_action.gd, aimed_action.gd   projectile_spawner() sube a SpellAction (lo usan tambien SoulAction y AnimateDeadAction)
+debug/spells/[+] cast_souls.tscn, soul_field.gd         debug/rules/[+] cast_souls.tres
+debug/suite/[+] soul_cases.gd, animate_dead_cases.gd, soul_world.gd ; [~] rules_suite.gd, determinism_cases.gd (dos lineas permitidas para los RNG de presentacion)
 agent/harness/match_shots/[~] match_shots.gd   --cast con un hechizo de alma: apunta al alma libre más cercana (si no hay, suelta una a 30 m)
 tools/lint/[~] baseline.txt
 ```

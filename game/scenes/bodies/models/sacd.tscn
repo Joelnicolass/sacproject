@@ -23,10 +23,10 @@ loop_mode = 1
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_wnbto"]
 animation = &"SDst"
 use_custom_timeline = true
-timeline_length = 0.36666666666666664
+timeline_length = 0.03333333333333333
 stretch_time_scale = false
-start_offset = 0.0
-loop_mode = 1
+start_offset = 0.3333333333333333
+loop_mode = 0
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_tk0pq"]
 animation = &"SDrn"

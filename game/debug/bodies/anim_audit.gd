@@ -30,6 +30,7 @@ func _run() -> void:
 	models.sort()
 	var rows: Array[Dictionary] = []
 	var unmapped: Array[Dictionary] = []
+	var holds := PackedStringArray()
 	var without_scene := PackedStringArray()
 	var without_owner := PackedStringArray()
 	for model: String in models:
@@ -42,6 +43,7 @@ func _run() -> void:
 		audit.audit(model, owners.get(model, []))
 		rows.append_array(audit.rows)
 		unmapped.append_array(audit.unmapped)
+		holds.append_array(audit.holds)
 	var lines := _table(rows)
 	if not _out_path.is_empty():
 		var file := FileAccess.open(_out_path, FileAccess.WRITE)
@@ -51,6 +53,7 @@ func _run() -> void:
 		if _verbose or not line.begins_with("PASS"):
 			print(line)
 	_print_unmapped(unmapped)
+	print("ANIM AUDIT HOLD (intentional still pose): %s" % (", ".join(holds) if not holds.is_empty() else "none"))
 	print("ANIM AUDIT models without a scene (static meshes): %s" % (", ".join(without_scene) if not without_scene.is_empty() else "none"))
 	print("ANIM AUDIT scenes no type uses: %s" % (", ".join(without_owner) if not without_owner.is_empty() else "none"))
 	var fails := _print_summary(rows, models.size() - without_scene.size())

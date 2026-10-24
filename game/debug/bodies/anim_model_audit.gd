@@ -19,6 +19,8 @@ const SLIDE_LIMIT := 0.25
 ## An in-place loop whose root or hip is further than this (share of the model's size) from its first-frame place on the
 ## last frame pops back when it wraps.
 const NET_LIMIT := 0.05
+## A state whose custom timeline lasts at most this many frames is a held pose (the Sac Doctor's idle: IdleSway moves it).
+const HOLD_FRAMES := 1.5
 ## What the game shows for a role the scene lacks, and whether that is right.
 const FALLBACKS := {
 	"attack2": "WRONG: plays attack; the sim picks this swing at random and times it by slot 1 (MeleeAttack._pick_animation)",
@@ -34,6 +36,8 @@ const FALLBACKS := {
 
 var rows: Array[Dictionary] = []
 var unmapped: Array[Dictionary] = []
+## One entry per role the scene holds on a single frame on purpose (see _hold_frame): "sacd/idle (SDst frame 10)".
+var holds := PackedStringArray()
 var _model := ""
 var _root: BodyModel
 var _machine: AnimationNodeStateMachine
@@ -88,6 +92,10 @@ func _audit_role(role: String) -> void:
 		return
 	var sampler := AnimSampler.new(_skeleton, _player.get_animation(tag), _custom)
 	var frames := sampler.frames()
+	var hold := _hold_frame(node, frames)
+	if hold >= 0:
+		_audit_hold(role, tag, hold, frames, checks)
+		return
 	checks["clip"] = _clip(role, tag, node, frames)
 	checks["rate"] = _rate(tag)
 	checks["loop"] = _loop(role, node)
@@ -103,6 +111,36 @@ func _audit_role(role: String) -> void:
 	if HAND_ROLES.has(role) and not _only_doctor(role):
 		checks["hands"] = _hands(tag)
 	rows.append(_row(role, tag, frames, checks))
+
+
+## The frame a state holds (its custom timeline is about one frame long, starting at `start_offset`), -1 when it plays the clip.
+func _hold_frame(node: AnimationNodeAnimation, frames: int) -> int:
+	if not node.use_custom_timeline or node.timeline_length > HOLD_FRAMES / AnimSampler.FPS:
+		return -1
+	return clampi(roundi(node.start_offset * AnimSampler.FPS), 0, maxi(frames - 1, 0))
+
+
+## A held pose is intentional: only the clip table, the rate and the frame it holds are checked; the wrap checks (seam, drift,
+## loop) do not apply to a pose that never plays.
+func _audit_hold(role: String, tag: String, frame: int, frames: int, checks: Dictionary) -> void:
+	checks["rate"] = _rate(tag)
+	var table: Dictionary = _root.clips.get(tag, {})
+	if frames <= 1 or int(table.get("frames", 0)) != frames:
+		checks["clip"] = ["FAIL", "held clip %s: table says %s frames, the clip has %d" % [tag, table.get("frames", "none"), frames]]
+	else:
+		checks["clip"] = ["PASS", ""]
+		holds.append("%s/%s (%s frame %d of %d)" % [_model, role, tag, frame, frames])
+	var m := _measures_of(tag)
+	checks["finite"] = ["PASS", ""] if bool(m["finite"]) and bool(m["keys_finite"]) else ["FAIL", "NaN or inf in the pose or the keys"]
+	rows.append(_row(role, tag, frames, checks))
+
+
+func _measures_of(tag: String) -> Dictionary:
+	if not _measures.has(tag):
+		var sampler := AnimSampler.new(_skeleton, _player.get_animation(tag), _custom)
+		_measures[tag] = sampler.measure(_up)
+		_measures[tag]["keys_finite"] = sampler.keys_finite()
+	return _measures[tag]
 
 
 ## The doctor's «cast» is its lift work, not a spell: no hands to check.

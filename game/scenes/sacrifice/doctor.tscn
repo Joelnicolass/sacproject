@@ -16,6 +16,7 @@
 [ext_resource type="Resource" path="res://data/match_rules.tres" id="13_rules"]
 [ext_resource type="Script" path="res://scenes/bodies/body_animator.gd" id="14_clip"]
 [ext_resource type="PackedScene" path="res://scenes/bodies/body_rig.tscn" id="14_rig"]
+[ext_resource type="Script" path="res://scenes/bodies/idle_sway.gd" id="18_sway"]
 
 [ext_resource type="Script" path="res://scenes/sacrifice/carry_rope.gd" id="15_rope"]
 [ext_resource type="PackedScene" path="res://scenes/fx/tether.tscn" id="16_tether"]
@@ -76,6 +77,11 @@ rig = NodePath("Rig")
 [node name="ClipPose" type="Node" parent="." node_paths=PackedStringArray("visual")]
 script = ExtResource("14_clip")
 visual = NodePath("../Pivot/Mesh")
+
+[node name="IdleSway" type="Node" parent="." node_paths=PackedStringArray("clip_player", "pivot")]
+script = ExtResource("18_sway")
+clip_player = NodePath("../ClipPose")
+pivot = NodePath("../Pivot/Mesh/Rig")
 
 [node name="Collision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)

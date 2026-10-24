@@ -31,7 +31,9 @@ const SEARCH_LOG_MAX := 200000
 @export var baked_groups: PackedStringArray = PackedStringArray(["manafount", "map_building"])
 ## A straight line must stay this far (m) from a box blocker (a building) to be clear (NavBoxBlockers.crosses_box, F88 round 2).
 @export var box_clearance_m := 0.5
-@export var blocker_groups: PackedStringArray = PackedStringArray(["manafount", "altar", "map_building", "nav_blocker"])
+## `cast_tower`: Manaliths and Shrines are MapBuildings raised during the match, so the stored bake never holds them; listing their
+## own group here (and not in `baked_groups`) puts them in the re-bake signature, or a doctor walks into a tower's legs.
+@export var blocker_groups: PackedStringArray = PackedStringArray(["manafount", "altar", "map_building", "nav_blocker", "cast_tower"])
 ## What the players build (Manaliths, RFC-021): their collision blocks too, and the navmesh is baked again when one
 ## appears or falls (024c; the debt of F72/F73). `structures` is the node they are put under (%Structures).
 @export var built_group: StringName = &"structure"

@@ -57,7 +57,8 @@ func _ready() -> void:
 	add_to_group(VegetationClear.FIELD_GROUP)
 	add_to_group(GROUP)
 	visibility_changed.connect(_refresh)
-	set_process(false)
+	# The rig can push its saved preset before this node is ready (planters already made): keep them running.
+	set_process(not _planters.is_empty())
 	_watch_configs()
 	# After the map (terrain, rig sockets) is ready.
 	_refresh.call_deferred()

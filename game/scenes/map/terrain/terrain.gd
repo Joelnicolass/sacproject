@@ -7,6 +7,8 @@ extends MeshInstance3D
 ## own with ConcavePolygonShape3D `terrain_collision.res`). Heights, holes and tiles are not here: ask the child TerrainShape.
 ## The material swap is TerrainGroundMaterial.
 
+const GROUP := &"terrain"
+
 ## The ground as numbers: its `Shape` child.
 @export var shape: TerrainShape
 ## The label that says the map has no ground (shown only when it could not be built).
@@ -53,7 +55,7 @@ func _notification(what: int) -> void:
 
 
 func _ready() -> void:
-	add_to_group("terrain")
+	add_to_group(GROUP)
 	var built := _load_mesh()
 	_apply_preview_offset()
 	if missing:

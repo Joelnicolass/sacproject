@@ -2,14 +2,15 @@
 class_name TerrainShape
 extends Node
 
-## The one owner of the map's ground as numbers: the raw triangles (`data`), the tile of each 10 m cell, and what is
-## derived from them (land height, holes, how many triangles each cell has, the lowest land). Everyone who needs a
-## height or to know if a point is land asks here; the mesh (Terrain) and a physics ray (GroundRay) are other things.
-## It is a child `Shape` of Terrain. A map that is not loaded answers like a map with only holes. The ground can move
-## after loading (TerrainDeformer writes `displacement()`): every answer here already includes it.
-## `changed(rect)` says which part of the map (x, z in metres) moved, for whoever draws or collides it.
+## The one owner of the map's ground as numbers: the raw triangles (`data`), the tile of each 10 m cell, and what is derived
+## from them (land height, holes, how many triangles each cell has, the lowest land). Everyone who needs a height or to know if a
+## point is land asks here; the mesh (Terrain) and a physics ray (GroundRay) are other things. It is a child `Shape` of Terrain.
+## A map that is not loaded answers like a map with only holes. The ground can move after loading (TerrainDeformer writes
+## `displacement()`): every answer here already includes it. `changed(rect)` says which part of the map (x, z in metres) moved,
+## for whoever draws or collides it; `holes_changed(rect)` too when vertices came or went, for whoever must answer at once.
 
 signal changed(rect: Rect2)
+signal holes_changed(rect: Rect2)
 
 const GROUP := &"terrain_shape"
 
@@ -27,7 +28,8 @@ const GROUP := &"terrain_shape"
 		_tiles = PackedByteArray()
 		_tiles_read = false
 
-var _index := TerrainRules.Index.new()
+## The land triangles of the file (read only: the walls of the holes and the falling piece read them).
+var index := TerrainRules.Index.new()
 var _displacement := TerrainDisplacement.new()
 var _counts := PackedByteArray()
 var _tiles := PackedByteArray()
@@ -58,28 +60,28 @@ func _ready() -> void:
 
 ## True once there is land to ask about.
 func is_loaded() -> bool:
-	return not _index.ground.is_empty()
+	return not index.ground.is_empty()
 
 
 ## Land height under (x, z) in world units, NAN over a hole.
 func height_at(x: float, z: float) -> float:
-	return TerrainRules.height_in(x, z, _index.ground, _index.cells, _displacement.texels, _index.corners)
+	return TerrainRules.height_in(x, z, index.ground, index.cells, _displacement.texels, index.corners)
 
 
 ## True when a land triangle lies under (x, z). Holes and the map rim have none.
 func is_on_ground(x: float, z: float) -> bool:
-	return TerrainRules.triangle_in(x, z, _index.ground, _index.cells, _displacement.texels, _index.corners) >= 0
+	return TerrainRules.triangle_in(x, z, index.ground, index.cells, _displacement.texels, index.corners) >= 0
 
 
 ## The lowest land vertex (0 without land).
 func lowest() -> float:
-	return _index.lowest
+	return index.lowest
 
 
 ## A Callable(x, z) -> float that answers like height_at from a copy of the index and the displacement taken now (a later
 ## change does not touch it). It reads no node, so a WorkerThreadPool task may call it.
 func sampler() -> Callable:
-	return TerrainRules.height_in.bind(_index.ground, _index.cells, _displacement.snapshot(), _index.corners)
+	return TerrainRules.height_in.bind(index.ground, index.cells, _displacement.snapshot(), index.corners)
 
 
 ## How far the ground has moved from the file. Only TerrainDeformer writes it.
@@ -92,17 +94,16 @@ func notify_changed(vertices: Rect2i) -> void:
 	changed.emit(Rect2(Vector2(vertices.position) * TerrainRules.CELL, Vector2(vertices.size) * TerrainRules.CELL))
 
 
-## How many land triangles each 10 m cell has: 0 a hole or the rim, 1 half a cell, 2 a full one. 256x256 row-major
-## (z * 256 + x).
+## Land triangles per 10 m cell (0 a hole or the rim, 1 half a cell, 2 a full one), 256x256 row-major (z * 256 + x).
 func cell_counts() -> PackedByteArray:
 	if _counts.size() != TerrainRules.GRID * TerrainRules.GRID:
 		_counts = PackedByteArray()
 		_counts.resize(TerrainRules.GRID * TerrainRules.GRID)
-		var has_cells := _index.cells.size() == TerrainRules.GRID * TerrainRules.GRID * 2
+		var has_cells := index.cells.size() == TerrainRules.GRID * TerrainRules.GRID * 2
 		for cell in _counts.size():
 			var count := 0
 			if has_cells:
-				count = int(_index.cells[cell * 2] >= 0) + int(_index.cells[cell * 2 + 1] >= 0)
+				count = int(index.cells[cell * 2] >= 0) + int(index.cells[cell * 2 + 1] >= 0)
 			_counts[cell] = count
 	return _counts
 
@@ -123,7 +124,7 @@ func use_tiles(ids: PackedByteArray) -> void:
 
 
 func _reindex() -> void:
-	_index = TerrainRules.index(data) if data != null and data.is_valid() else TerrainRules.Index.new()
+	index = TerrainRules.index(data) if data != null and data.is_valid() else TerrainRules.Index.new()
 	_displacement = TerrainDisplacement.new()
 	_counts = PackedByteArray()
 

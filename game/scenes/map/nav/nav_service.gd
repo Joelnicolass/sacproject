@@ -26,6 +26,8 @@ const SEARCH_LOG_MAX := 200000
 ## Physics ticks between a change and the swap of the re-baked navmesh (the bake takes a couple of seconds on a worker thread; if it
 ## is not done by then the swap waits for it). A count, never a clock.
 @export var rebake_swap_frames := 180
+## Physics ticks the holes of the ground (Bore) are gathered for before the navmesh is baked again, so a spiral of holes costs a few bakes and not one per vertex.
+@export var holes_rebake_ticks := 120
 ## The groups whose colliders are in the stored bake and move on their own (the buildings, the manafounts). The nodes of the other
 ## blocker groups and the built structures join the group NavFingerprint.GROUP before a re-bake so the bake sees them.
 @export var baked_groups: PackedStringArray = PackedStringArray(["manafount", "map_building"])
@@ -57,8 +59,10 @@ var rebuilds := 0
 
 var _rebuild_in := -1
 var _tick := 0
-## A building fell: the stored bake still holds its walls, a bake without it is due.
+## A building fell, or a hole opened or closed in the ground: the stored bake is out of date and a new one is due.
 var _baked_changed := false
+## Tick at which the bake for the holes that came since is asked; -1 with none waiting.
+var _holes_at := -1
 var rebakes := 0
 ## What the stored bake holds of the dynamic groups, as the hash of their blocker entries (the empty list at first).
 var _baked_signature := [].hash()
@@ -76,6 +80,8 @@ func _ready() -> void:
 	if MpKit.is_networked() and not MpKit.is_server():
 		set_physics_process(false)
 		return
+	if terrain_shape != null:
+		terrain_shape.holes_changed.connect(_on_holes_changed.unbind(1))
 	if structures != null:
 		structures.child_entered_tree.connect(_on_structure_changed.unbind(1))
 		structures.child_exiting_tree.connect(_on_structure_changed.unbind(1))
@@ -88,6 +94,9 @@ func _physics_process(_delta: float) -> void:
 	searches_this_tick = 0
 	if _swap_at >= 0 and _tick >= _swap_at:
 		_swap_rebaked()
+	if _holes_at >= 0 and _tick >= _holes_at:
+		_holes_at = -1
+		_request_rebake()
 	if _rebuild_in >= 0:
 		_rebuild_in -= 1
 		if _rebuild_in < 0:
@@ -142,6 +151,13 @@ func _watch_buildings() -> void:
 		var building := node as MapBuilding
 		if building != null and not building.destroyed.is_connected(_on_building_destroyed):
 			building.destroyed.connect(_on_building_destroyed)
+
+
+## A vertex of the ground was taken away or given back: a path may not cross the hole any more. The re-bake waits a little for the next ones.
+func _on_holes_changed() -> void:
+	_baked_changed = true
+	if _holes_at < 0:
+		_holes_at = _tick + holes_rebake_ticks
 
 
 func _on_building_destroyed(_building: MapBuilding) -> void:

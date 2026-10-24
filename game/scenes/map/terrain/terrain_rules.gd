@@ -18,11 +18,12 @@ const WALL_AREA := 0.01
 
 ## The land of a map ready to be asked: `ground` holds three vertices per land triangle; `cells` two triangle ids per
 ## 10 m cell (-1 when the cell has fewer); `corners` the grid vertex (see `vertex_id`) of each of those corners;
-## `lowest` is the lowest land vertex (0 without land).
+## `lowest` is the lowest land vertex (0 without land); `land` has 1 for each grid vertex a land triangle uses.
 class Index:
 	var ground := PackedVector3Array()
 	var cells := PackedInt32Array()
 	var corners := PackedInt32Array()
+	var land := PackedByteArray()
 	var lowest := 0.0
 
 
@@ -31,6 +32,7 @@ static func index(data: MapTerrainData) -> Index:
 	var result := Index.new()
 	result.cells.resize(GRID * GRID * 2)
 	result.cells.fill(-1)
+	result.land.resize(GRID * GRID)
 	result.lowest = INF
 	if data == null:
 		result.lowest = 0.0
@@ -55,6 +57,8 @@ static func index(data: MapTerrainData) -> Index:
 		result.cells[slot] = result.ground.size() / 3
 		result.ground.append_array([a, b, c])
 		result.corners.append_array([vertex_id(a.x, a.z), vertex_id(b.x, b.z), vertex_id(c.x, c.z)])
+		for corner in 3:
+			result.land[result.corners[result.corners.size() - 1 - corner]] = 1
 		result.lowest = minf(result.lowest, minf(minf(a.y, b.y), c.y))
 	if result.ground.is_empty():
 		result.lowest = 0.0

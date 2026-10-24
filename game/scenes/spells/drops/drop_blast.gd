@@ -13,6 +13,8 @@ const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 @export var drop: ZoneDrop
 ## FxBus bursts played where it ends (ParticleType under data/fx/).
 @export var bursts: Array[ParticleType] = []
+## Marks it leaves on the ground where it ends (ScarMark scenes: a burn, a crack), painted on every peer.
+@export var ground_marks: Array[PackedScene] = []
 @export_group("Fire")
 @export var ignites := false
 ## The fire a reached body keeps (no damage of its own: the damage is the blast's) and the sprite it puffs.
@@ -45,6 +47,8 @@ func blast(body: Node3D, at: Vector3) -> void:
 			stunned.stun_with_cooldown(stun_ticks)
 	for type in bursts:
 		FxBus.broadcast(type.bus_name(), at)
+	for mark in ground_marks:
+		ScarMark.broadcast(mark, at)
 
 
 func _get_configuration_warnings() -> PackedStringArray:

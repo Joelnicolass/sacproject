@@ -8,6 +8,8 @@
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="ptype"]
 [ext_resource type="Resource" path="res://data/fx/meteor_hit.tres" id="hit"]
 [ext_resource type="Resource" path="res://data/fx/meteor_dirt.tres" id="dirt"]
+[ext_resource type="PackedScene" path="res://scenes/spells/marks/rock_mark.tscn" id="mark_gscr"]
+[ext_resource type="PackedScene" path="res://scenes/spells/marks/crack_mark.tscn" id="mark_ecrk"]
 
 [node name="Meteor" type="Node3D"]
 editor_description = "Un meteorito de Bombardment: sale de la tierra, cruza el cielo en un arco de 12 s (gravedad 20) y solo choca bajando, con una caja de 3 m; al llegar, 400 de dano de hechizo, salpicadura de 5 m que aturde 8 s, piedras, polvo y temblor. Sin abolladura del terreno (061k)."
@@ -35,3 +37,4 @@ script = ExtResource("blast")
 drop = NodePath("..")
 bursts = Array[ExtResource("ptype")]([ExtResource("hit"), ExtResource("dirt")])
 stun_ticks = 480
+ground_marks = Array[PackedScene]([ExtResource("mark_gscr"), ExtResource("mark_ecrk")])

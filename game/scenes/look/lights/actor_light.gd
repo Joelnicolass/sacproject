@@ -15,7 +15,7 @@ const GROUP := &"actor_lights"
 ## Off by default on units (the original has no light pool under bodies; only the wizard carries a reveal light); a human can turn it on in the inspector.
 @export var enabled := true
 
-## The budget never switches it off (the wizard's reveal light). Not counted among the budget's lights.
+## The budget never switches it off (the wizard's reveal light: a tight, neutral pool that lifts the ground around the wizard). Not counted among the budget's lights.
 @export var always_on := false
 
 var _lit := true

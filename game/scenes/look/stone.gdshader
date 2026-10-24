@@ -31,14 +31,15 @@ void fragment() {
 		discard;
 	}
 	vec4 c = use_swap ? texture(swap_tex, UV) : own;
-	if (!stone_on) {
+	if (stone_on) {
+		float brightness = (c.r + c.g + c.b) / 3.0;
+		vec3 grey = clamp(vec3(stone_base) + stone_gain * brightness * stone_tint, 0.0, 1.0);
+		ALBEDO = srgb_to_linear(grey);
+		ROUGHNESS = stone_roughness;
+		METALLIC = stone_metallic;
+	} else {
+		// Godot rejects `return` in fragment(): the plain branch is an else.
 		ALBEDO = srgb_to_linear(c.rgb);
 		ROUGHNESS = plain_roughness;
-		return;
 	}
-	float brightness = (c.r + c.g + c.b) / 3.0;
-	vec3 grey = clamp(vec3(stone_base) + stone_gain * brightness * stone_tint, 0.0, 1.0);
-	ALBEDO = srgb_to_linear(grey);
-	ROUGHNESS = stone_roughness;
-	METALLIC = stone_metallic;
 }

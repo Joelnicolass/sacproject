@@ -1,0 +1,12 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/map/terrain/ground_scars.gd" id="1_scars"]
+[ext_resource type="Resource" path="res://data/ui/graphics_prefs.tres" id="2_prefs"]
+
+[sub_resource type="Texture2DArray" id="Tiles_scars"]
+
+[node name="GroundScars" type="Node3D"]
+editor_description = "Las marcas en el suelo del mapa (quemaduras, grietas, crateres): unico dueno de las baldosas pintadas. Hijo de Terrain; `shape` es el TerrainShape del mapa. Cantidad maxima de baldosas: la opcion «Cantidad de marcas» (prefs)."
+script = ExtResource("1_scars")
+prefs = ExtResource("2_prefs")
+tiles = SubResource("Tiles_scars")

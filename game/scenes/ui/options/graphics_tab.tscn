@@ -52,6 +52,32 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="ScarsRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="ScarsLabel" type="Label" parent="ScarsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI_GRAPHICS_TAB_SCARS_LABEL"
+
+[node name="ScarTiles" type="HSlider" parent="ScarsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 32.0
+max_value = 256.0
+step = 32.0
+value = 256.0
+
+[node name="ScarTilesValue" type="Label" parent="ScarsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+text = "256"
+horizontal_alignment = 2
+
 [node name="HudRow" type="HBoxContainer" parent="."]
 layout_mode = 2
 

@@ -53,6 +53,7 @@
 [ext_resource type="Texture2D" path="res://scenes/map/maps/peasantville/flora/james_bush_4.png" id="fd_james_bush_4"]
 [ext_resource type="Resource" path="res://data/vegetation/species/james_bush_5.tres" id="sp_james_bush_5"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/peasantville/flora/james_bush_5.png" id="fd_james_bush_5"]
+[ext_resource type="PackedScene" path="res://scenes/map/terrain/ground_scars.tscn" id="ground_scars"]
 
 [node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
@@ -85,6 +86,9 @@ data = ExtResource("10_data")
 visible = false
 text = "UI_MAP_MISSING"
 font_size = 48
+
+[node name="GroundScars" parent="Terrain" node_paths=PackedStringArray("shape") instance=ExtResource("ground_scars")]
+shape = NodePath("../Shape")
 
 [node name="MapProps" type="Node3D" parent="."]
 script = ExtResource("3_props")

@@ -182,6 +182,12 @@ def band_center(group: dict) -> float | None:
 # James MG04..MG06 have no height role: they take the native group of the ground they border (base_mapping, as before).
 NATIVE_ROLES = {"persephone": {0: 3, 1: 4, 2: 2, 3: 1}}
 
+# Source land -> James groups, decided by hand for the maps of another land (map_tiles). The height bands alone sent Peaks's
+# dominant low ground (Charnel MG04, 43 % of the map, a band of zeros) to James's pale low ground MG02 and its rim to
+# the rock MG03, so every god showed Peaks as snow. Charnel MG04 and its rim MG00 are the open ground (James MG00), the
+# heights (MG01) take the hill earth MG01, the peaks the rock MG03, the low pockets MG02.
+JAMES_ROLES = {"charnel": {4: 0, 0: 0, 1: 1, 2: 3, 3: 2, 5: 2}}
+
 
 def base_mapping(source: dict, target: dict, tmap: bytes, by_corners: dict, fixed: dict | None = None) -> dict:
     """Source base group -> target base group.
@@ -242,6 +248,8 @@ def base_mapping(source: dict, target: dict, tmap: bytes, by_corners: dict, fixe
                             neighbors.setdefault(signature[0], Counter())[corner] += 1
     for number, counter in neighbors.items():
         mapping[number] = mapping[counter.most_common(1)[0][0]]
+    if fixed is not None:
+        mapping.update(fixed)
     return mapping
 
 
@@ -401,7 +409,7 @@ def map_tiles(scp: Path) -> tuple:
     god = map_god(scp)
     if god == MAP_GOD:
         return tmap, 0, len(tmap)
-    remap, _ = land_remap(god_land(god), god_land(MAP_GOD), tmap)
+    remap, _ = land_remap(god_land(god), god_land(MAP_GOD), tmap, frozenset(), JAMES_ROLES.get(god))
     missed = sum(1 for tile in tmap if tile not in remap)
     return bytes(remap.get(tile, tile) for tile in tmap), missed, len(tmap)
 

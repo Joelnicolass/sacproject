@@ -33,10 +33,16 @@ func apply_look(profile: LookProfile, rig: LookRig) -> void:
 func _classic_for(profile: LookProfile, rig: LookRig) -> ShaderMaterial:
 	var classic := profile.ground_classic if profile else null
 	var native := rig.native_ground
-	if classic == null or native == null or profile.god != native.god:
+	if classic == null:
 		return classic
 	var dressed := classic.duplicate() as ShaderMaterial
-	native.dress(dressed)
+	if native != null and profile.god == native.god:
+		native.dress(dressed)
+		return dressed
+	# The god's ground_classic carries High Noon's light map; the other maps name their own baked light in the rig.
+	if rig.ground_light == null:
+		return classic
+	dressed.set_shader_parameter("lightmap", rig.ground_light)
 	return dressed
 
 

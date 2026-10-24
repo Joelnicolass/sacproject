@@ -131,6 +131,14 @@ func structure_status(index: int) -> String:
 	return _funds(spell)
 
 
+## The Caster of `node`, or null (a body that casts nothing).
+static func of(node: Node) -> Caster:
+	for child in node.get_children() if node else []:
+		if child is Caster:
+			return child
+	return null
+
+
 ## The action that answers to `tag`, or null (the spell is not implemented). A child of `actions` wins; else the
 ## scene in the SpellType's `action` is instanced under `actions` the first time (RFC-041).
 func action_for(tag: String) -> SpellAction:

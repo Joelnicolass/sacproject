@@ -64,6 +64,13 @@ func add(amount: float) -> void:
 	per_frame = maxf(per_frame, amount / float(frames))
 
 
+## sacengine HealingAura's doHeal: the timer goes back to `frames` and the rate to the better of the two; nothing is added. A body that
+## is carried by the aura calls it every tick.
+func renew(rate_per_frame: float, frames: int) -> void:
+	frames_left = maxi(frames_left, frames)
+	per_frame = maxf(per_frame, rate_per_frame)
+
+
 func _ready() -> void:
 	_health = get_parent().get_node_or_null("Health") as Health
 

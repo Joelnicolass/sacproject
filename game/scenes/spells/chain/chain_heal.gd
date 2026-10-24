@@ -21,5 +21,5 @@ func land(_chain: ChainHop, body: Node3D, _point: Vector3) -> void:
 	if body == null:
 		return
 	if burst != null:
-		FxBus.broadcast(burst.fx_name(), BodyNudge.center(body))
+		FxBus.broadcast(burst.bus_name(), BodyNudge.center(body))
 	HealEffect.heal_full(body)

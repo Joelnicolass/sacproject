@@ -1,14 +1,9 @@
-[gd_resource type="Resource" script_class="ParticleType" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="ParticleType" load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
+[ext_resource type="GradientTexture1D" path="res://data/fx/ramps/ice.tres" id="ramp_ice"]
 [ext_resource type="Texture2D" uid="uid://bmg3vdsq7rluc" path="res://assets/original/fx/shrd.png" id="atlas_png"]
 
-[sub_resource type="Gradient" id="Gradient_ice"]
-offsets = PackedFloat32Array(0, 1)
-colors = PackedColorArray(0.3, 0.55, 0.95, 1, 0.4, 0.65, 1, 0.5)
-
-[sub_resource type="GradientTexture1D" id="Ramp_ice"]
-gradient = SubResource("Gradient_ice")
 
 [resource]
 script = ExtResource("1_type")
@@ -29,4 +24,4 @@ scale_max = 1.0
 emission_radius = 0.6
 additive = false
 lit = false
-color_ramp = SubResource("Ramp_ice")
+color_ramp = ExtResource("ramp_ice")

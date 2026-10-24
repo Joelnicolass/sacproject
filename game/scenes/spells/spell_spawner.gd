@@ -5,6 +5,7 @@ extends MpSpawner
 ## `projectiles` (RFC-041): a new projectile is a scene here, not a line of code.
 
 const DEFAULT_KIND := "Rock"
+## The group the spawner joins, for whoever starts a spell that raises something (a zone).
 const GROUP := &"spell_spawner"
 
 ## Projectile scene by kind. Its root extends SpellProjectile.
@@ -14,10 +15,14 @@ const GROUP := &"spell_spawner"
 	"Fireball": preload("res://scenes/spells/fireball_projectile.tscn"),
 	"Swarm": preload("res://scenes/spells/swarm_projectile.tscn"),
 	"Dragonfire": preload("res://scenes/spells/carrier/dragonfire.tscn"),
+	"RiftSpirit": preload("res://scenes/spells/zones/rift_spirit.tscn"),
 	"SoulMole": preload("res://scenes/spells/carrier/soul_mole.tscn"),
 	"SoulWind": preload("res://scenes/spells/carrier/soul_wind.tscn"),
 	"AnimateDead": preload("res://scenes/spells/animate_dead/animate_dead_fx.tscn"),
 }
+## Zone scenes by kind (Explosion, FrozenGround, DemonicRift), assigned in match.tscn and not preloaded here: a zone points at its SpellType,
+## the SpellType at its action, and the action's script knows this class, so a preload would close the circle. Root extends GroundZone.
+@export var zones: Dictionary[String, PackedScene] = {}
 
 var _serial := 0
 
@@ -49,9 +54,9 @@ func spawn_projectile(kind: String, data: Dictionary) -> Node:
 func _make(data: Variant) -> Node:
 	var info: Dictionary = data
 	var kind := str(info.get("kind", DEFAULT_KIND))
-	if not projectiles.has(kind):
+	if not projectiles.has(kind) and not zones.has(kind):
 		push_error("SpellSpawner: no projectile scene for kind «%s», using %s" % [kind, DEFAULT_KIND])
 		kind = DEFAULT_KIND
-	var effect := projectiles[kind].instantiate() as SpellProjectile
+	var effect := (projectiles[kind] if projectiles.has(kind) else zones[kind]).instantiate() as SpellProjectile
 	effect.setup(info)
 	return effect

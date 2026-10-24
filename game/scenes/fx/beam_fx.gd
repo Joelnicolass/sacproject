@@ -119,7 +119,7 @@ func _sparkle_tip(delta: float) -> void:
 	while _tip_left <= 0.0:
 		_tip_left += 1.0 / type.tip_per_s
 		var around := Vector3(_rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0))
-		FxBus.play_puff(type.tip_type.fx_name(), tip + around.limit_length(1.0) * type.tip_spread_m)
+		FxBus.play_puff(type.tip_type.bus_name(), tip + around.limit_length(1.0) * type.tip_spread_m)
 
 
 ## The point at `t` (0 = start, 1 = end) of a vertical half circle from `a` to `b`: the ground track runs along the chord with the

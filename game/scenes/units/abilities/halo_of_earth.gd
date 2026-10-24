@@ -241,7 +241,7 @@ func _spawn() -> void:
 	_spawned += 1
 	FxBus.broadcast(emerge_fx, at)
 	for extra in emerge_extra:
-		FxBus.broadcast(extra.fx_name(), at)
+		FxBus.broadcast(extra.bus_name(), at)
 	_say("halo %s roca %d nace en %s (tick %d)" % [_who, rock.index, _v(at), MatchClock.now()])
 
 
@@ -384,7 +384,7 @@ func _seek(rock: Rock) -> void:
 			rock.target = body
 			rock.target_center = BodyNudge.center(body)
 			if throw_burst != null:
-				FxBus.broadcast(throw_burst.fx_name(), rock.position)
+				FxBus.broadcast(throw_burst.bus_name(), rock.position)
 			var half := BodyNudge.box(body).size * 0.5
 			_say("halo %s roca %d blanco %s a %.4f m desde %s hacia %s caja %s (tick %d)" % [
 				_who, rock.index, body.name, entry[0], _v(rock.position), _v(rock.target_center), _v(half), MatchClock.now()])

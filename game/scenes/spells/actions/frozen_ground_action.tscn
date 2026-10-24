@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/actions/zone_action.gd" id="1_script"]
+
+[node name="FrozenGround" type="Node"]
+editor_description = "Frozen Ground (zorf): la zona nace al empezar el lanzamiento (la bola crece junto al mago) y cae 2 s despues de terminarlo (arm_s). Particula del lanzamiento: cst0 (SPEL zorf: tcst = cst0)."
+script = ExtResource("1_script")
+tag = "zorf"
+prompt = "Elegí el punto"
+cast_fx = "freeze_cast"
+kind = "FrozenGround"
+arm_s = 2.0

@@ -1,4 +1,4 @@
-[gd_scene load_steps=89 format=3]
+[gd_scene load_steps=90 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
 [ext_resource type="Script" path="res://scenes/units/unit_body.gd" id="1_body"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" path="res://scenes/units/passives/lightning_charge.tscn" id="f130_charge"]
 [ext_resource type="PackedScene" path="res://scenes/units/passives/life_shield.tscn" id="f126_shield"]
 [ext_resource type="Script" path="res://scenes/spells/wards/wards.gd" id="w_wards"]
+[ext_resource type="PackedScene" path="res://scenes/spells/wards/healing_aura.tscn" id="w_healing_aura"]
 [ext_resource type="Resource" path="res://data/abilities/ability_catalog.tres" id="f126_catalog"]
 [ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="2_visual"]
 [ext_resource type="Script" path="res://scenes/components/health.gd" id="3_health"]
@@ -178,6 +179,9 @@ properties/19/replication_mode = 2
 properties/20/path = NodePath(".:_stealth")
 properties/20/spawn = true
 properties/20/replication_mode = 2
+properties/21/path = NodePath("Wards/HealingAura:shown")
+properties/21/spawn = true
+properties/21/replication_mode = 2
 
 [sub_resource type="BoxMesh" id="Box_unit"]
 
@@ -211,6 +215,10 @@ wards = NodePath("../Wards")
 script = ExtResource("w_wards")
 
 [node name="LifeShield" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("f126_shield")]
+body = NodePath("../..")
+health = NodePath("../../Health")
+
+[node name="HealingAura" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("w_healing_aura")]
 body = NodePath("../..")
 health = NodePath("../../Health")
 

@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/zones/debris_piece.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/fx/fire.tres" id="2_trail"]
+
+[node name="DebrisPiece" type="Node3D" node_paths=PackedStringArray("rock")]
+editor_description = "Una roca que lanza un estallido (la malla bold del original a escala 0,2). Gravedad 30, rebota y deja fuego."
+script = ExtResource("1_script")
+rock = NodePath("Rock")
+trail = ExtResource("2_trail")
+
+[node name="Rock" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
+cast_shadow = 0

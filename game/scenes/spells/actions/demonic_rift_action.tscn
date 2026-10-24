@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/actions/zone_action.gd" id="1_script"]
+
+[node name="DemonicRift" type="Node"]
+editor_description = "Demonic Rift (tfir): la grieta nace en los pies del mago al empezar el lanzamiento; los espiritus buscan a los enemigos alrededor del clic. Particula del lanzamiento: cfx1 (SPEL tfir: tcst = cfx1)."
+script = ExtResource("1_script")
+tag = "tfir"
+prompt = "Elegí el punto"
+cast_fx = "rift_cast"
+kind = "DemonicRift"
+anchor = 1

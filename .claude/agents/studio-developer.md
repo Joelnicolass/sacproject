@@ -16,6 +16,7 @@ Sos el desarrollador del kit Godot studio. Implementás **solo** el RFC (o el ca
 
 Al invocarte:
 
+0. **En este proyecto (sacproject)**, antes de tocar o planear código, leé entero `game/CONVENTIONS.md` (reglas C1–C21 y los lineamientos del usuario en §2c) y cumplilo siempre, aunque el prompt no lo repita: human first / Godot priority, un dueño por estado, nada disperso, scripts genéricos + nodos/`.tres`, no inventar (verificar con sacengine, datos y REA), sin escenas de debug nuevas, portable y medible. Corré `bash game/tools/lint/conventions.sh` al terminar: ningún conteo puede subir. Si un README que tocás tiene `Debug:`, cambialo por `Check:`.
 1. Leé el plan del tech lead, RULES.md, VISUAL.md si existe, el RFC y el código que vas a tocar.
 2. Seguí el árbol aprobado. Si el corte no da, devolvé el desvío al orquestador; no rediseñes el feature en silencio.
 3. Seguí composición: contenedor flaco, hijos, packed scenes, `@export`. Tipos de contenido = `Resource` `.tres`, no `if kind`.

@@ -1,0 +1,479 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/map/map_root.gd" id="1_root"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain.gd" id="2_terrain"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain_shape.gd" id="shape_script"]
+[ext_resource type="Script" path="res://scenes/map/props/map_props.gd" id="3_props"]
+[ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="4_start"]
+[ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="5_fount"]
+[ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="8_look"]
+[ext_resource type="Resource" path="res://data/look/ground/high_noon_tiles.tres" id="9_tiles"]
+[ext_resource type="Resource" path="res://assets/original/maps/alpine_meadow/terrain.res" id="10_data"]
+[ext_resource type="Material" path="res://assets/original/themes/james/ground_classic.tres" id="11_ground"]
+[ext_resource type="PackedScene" path="res://assets/original/maps/alpine_meadow/terrain.glb" id="12_glb"]
+[ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="14_bake"]
+[ext_resource type="NavigationMesh" path="res://scenes/map/maps/alpine_meadow/nav.res" id="15_navmesh"]
+[ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
+[ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="17_minimap"]
+[ext_resource type="Resource" path="res://data/buildings/persephone_font.tres" id="fbldg_font"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_arch.tscn" id="d2_persephone_arch"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_hut1.tscn" id="d2_persephone_hut1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_rock_1.tscn" id="d2_persephone_rock_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_rock_2.tscn" id="d2_persephone_rock_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_rock_3.tscn" id="d2_persephone_rock_3"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_rock_4.tscn" id="d2_persephone_rock_4"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_rock_7.tscn" id="d2_persephone_rock_7"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_rock_9.tscn" id="d2_persephone_rock_9"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_pcru.tscn" id="d2_persephone_pcru"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_pillar.tscn" id="d2_persephone_pillar"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_conifer.tscn" id="d2_persephone_conifer"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_tree_tall.tscn" id="d2_persephone_tree_tall"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_tree_1.tscn" id="d2_persephone_tree_1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_tree_2.tscn" id="d2_persephone_tree_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_tree_crown.tscn" id="d2_persephone_tree_crown"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_tree_tall_2.tscn" id="d2_persephone_tree_tall_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_conifer_2.tscn" id="d2_persephone_conifer_2"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_silo.tscn" id="d2_persephone_silo"]
+[ext_resource type="PackedScene" path="res://scenes/map/npc_spawn.tscn" id="d2_npc_spawn"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/saep.tres" id="d2_saep"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/lort.tres" id="d2_lort"]
+[ext_resource type="Resource" path="res://assets/original/maps/alpine_meadow/ground_native.tres" id="native_ground"]
+[ext_resource type="Resource" path="res://scenes/map/maps/alpine_meadow/flora.res" id="flora_map"]
+
+[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs")]
+script = ExtResource("1_root")
+terrain = NodePath("Terrain")
+nav_region = NodePath("NavRegion")
+starts = NodePath("MapProps/Starts")
+look = NodePath("Look")
+minimap_bake = NodePath("MinimapBake")
+buildings = NodePath("Buildings")
+npcs = NodePath("Npcs")
+
+[node name="Look" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("8_look")]
+unique_name_in_owner = true
+terrain = NodePath("../Terrain")
+tile_map = ExtResource("9_tiles")
+flora_map = ExtResource("flora_map")
+native_ground = ExtResource("native_ground")
+
+[node name="Terrain" parent="." node_paths=PackedStringArray("shape", "missing") groups=["nav_source"] instance=ExtResource("12_glb")]
+unique_name_in_owner = true
+material_override = ExtResource("11_ground")
+script = ExtResource("2_terrain")
+shape = NodePath("Shape")
+missing = NodePath("Missing")
+
+[node name="Shape" type="Node" parent="Terrain"]
+script = ExtResource("shape_script")
+data = ExtResource("10_data")
+
+[node name="Missing" type="Label3D" parent="Terrain"]
+visible = false
+text = "UI_MAP_MISSING"
+font_size = 48
+
+[node name="MapProps" type="Node3D" parent="."]
+script = ExtResource("3_props")
+
+[node name="Starts" type="Node3D" parent="MapProps"]
+
+[node name="Start1" parent="MapProps/Starts" instance=ExtResource("4_start")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1270, 100.8, 1840)
+
+[node name="WizardSpot" parent="MapProps/Starts/Start1" index="1"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, -30)
+
+[node name="Start2" parent="MapProps/Starts" instance=ExtResource("4_start")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1280, 100.8, 1000)
+slot = 2
+
+[node name="WizardSpot" parent="MapProps/Starts/Start2" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 30)
+
+[node name="Founts" type="Node3D" parent="MapProps"]
+
+[node name="Fount01" parent="MapProps/Founts" instance=ExtResource("5_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 990, 109.1, 1570)
+building = ExtResource("fbldg_font")
+
+[node name="Fount02" parent="MapProps/Founts" instance=ExtResource("5_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1540, 109.2, 1290)
+building = ExtResource("fbldg_font")
+
+[node name="Fount03" parent="MapProps/Founts" instance=ExtResource("5_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1270, 105.9, 1430)
+building = ExtResource("fbldg_font")
+
+[node name="Fount04" parent="MapProps/Founts" instance=ExtResource("5_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1270, 96.6, 1690)
+building = ExtResource("fbldg_font")
+
+[node name="Fount05" parent="MapProps/Founts" instance=ExtResource("5_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1530, 88.7, 1560)
+building = ExtResource("fbldg_font")
+
+[node name="Fount06" parent="MapProps/Founts" instance=ExtResource("5_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 990, 92.6, 1270)
+building = ExtResource("fbldg_font")
+
+[node name="Fount07" parent="MapProps/Founts" instance=ExtResource("5_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1280, 100.1, 1160)
+building = ExtResource("fbldg_font")
+
+[node name="Buildings" type="Node3D" parent="."]
+
+[node name="PersephoneArch_01" parent="Buildings" instance=ExtResource("d2_persephone_arch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1230, 101.9, 1160)
+
+[node name="PersephoneArch_02" parent="Buildings" instance=ExtResource("d2_persephone_arch")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1320, 98.4, 1690)
+
+[node name="PersephoneArch_03" parent="Buildings" instance=ExtResource("d2_persephone_arch")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1330, 101.8, 1160)
+
+[node name="PersephoneArch_04" parent="Buildings" instance=ExtResource("d2_persephone_arch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1220, 98.4, 1690)
+
+[node name="PersephoneHut1_01" parent="Buildings" instance=ExtResource("d2_persephone_hut1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 940, 97.1, 1270)
+
+[node name="PersephoneHut1_02" parent="Buildings" instance=ExtResource("d2_persephone_hut1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 980, 96.7, 1210)
+
+[node name="PersephoneHut1_03" parent="Buildings" instance=ExtResource("d2_persephone_hut1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1010, 95.4, 1220)
+
+[node name="PersephoneHut1_04" parent="Buildings" instance=ExtResource("d2_persephone_hut1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 960, 94.7, 1350)
+
+[node name="PersephoneHut1_05" parent="Buildings" instance=ExtResource("d2_persephone_hut1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 990, 93.3, 1370)
+
+[node name="PersephoneHut1_06" parent="Buildings" instance=ExtResource("d2_persephone_hut1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1590, 88.6, 1580)
+
+[node name="PersephoneHut1_07" parent="Buildings" instance=ExtResource("d2_persephone_hut1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1620, 93.8, 1620)
+
+[node name="PersephoneHut1_08" parent="Buildings" instance=ExtResource("d2_persephone_hut1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1580, 97.3, 1680)
+
+[node name="PersephoneHut1_09" parent="Buildings" instance=ExtResource("d2_persephone_hut1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1540, 92.4, 1650)
+
+[node name="PersephoneHut1_10" parent="Buildings" instance=ExtResource("d2_persephone_hut1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1500, 90.4, 1640)
+
+[node name="PersephoneRock1_01" parent="Buildings" instance=ExtResource("d2_persephone_rock_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1630, 91.1, 1600)
+
+[node name="PersephoneRock2_01" parent="Buildings" instance=ExtResource("d2_persephone_rock_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 880, 105.7, 1670)
+
+[node name="PersephoneRock2_02" parent="Buildings" instance=ExtResource("d2_persephone_rock_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 910, 98.9, 1420)
+
+[node name="PersephoneRock3_01" parent="Buildings" instance=ExtResource("d2_persephone_rock_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 950, 95.1, 1230)
+
+[node name="PersephoneRock3_02" parent="Buildings" instance=ExtResource("d2_persephone_rock_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 940, 95.4, 1420)
+
+[node name="PersephoneRock3_03" parent="Buildings" instance=ExtResource("d2_persephone_rock_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1360, 94.4, 1360)
+
+[node name="PersephoneRock3_04" parent="Buildings" instance=ExtResource("d2_persephone_rock_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1580, 89.7, 1530)
+
+[node name="PersephoneRock4_01" parent="Buildings" instance=ExtResource("d2_persephone_rock_4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1036.929, 95.0409, 1208.732)
+
+[node name="PersephoneRock7_01" parent="Buildings" instance=ExtResource("d2_persephone_rock_7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1039.605, 103.4871, 1404.74)
+
+[node name="PersephoneRock7_02" parent="Buildings" instance=ExtResource("d2_persephone_rock_7")]
+transform = Transform3D(0.3827, 0, -0.9239, 0, 1, 0, 0.9239, 0, 0.3827, 942.872, 96.2224, 1301.171)
+
+[node name="PersephoneRock9_01" parent="Buildings" instance=ExtResource("d2_persephone_rock_9")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1208.953, 98.8614, 1722.983)
+
+[node name="PersephonePcru_01" parent="Buildings" instance=ExtResource("d2_persephone_pcru")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1530, 93.8, 1480)
+owner_slot = 3
+
+[node name="PersephonePillar_01" parent="Buildings" instance=ExtResource("d2_persephone_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1550, 95.5, 1460)
+owner_slot = 3
+
+[node name="PersephonePillar_02" parent="Buildings" instance=ExtResource("d2_persephone_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1510, 92.4, 1500)
+owner_slot = 3
+
+[node name="PersephonePillar_03" parent="Buildings" instance=ExtResource("d2_persephone_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1510, 95.6, 1460)
+owner_slot = 3
+
+[node name="PersephonePillar_04" parent="Buildings" instance=ExtResource("d2_persephone_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1550, 92.9, 1500)
+owner_slot = 3
+
+[node name="PersephoneConifer_01" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(0.7071, 0, 0.7071, 0, 1, 0, -0.7071, 0, 0.7071, 1430, 102.2, 1290)
+
+[node name="PersephoneConifer_02" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 1470, 105.5, 1430)
+
+[node name="PersephoneConifer_03" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 1570, 96.8, 1450)
+
+[node name="PersephoneConifer_04" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 880, 101.9, 1250)
+
+[node name="PersephoneConifer_05" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1040, 106.8, 1430)
+
+[node name="PersephoneConifer_06" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 890, 103, 1400)
+
+[node name="PersephoneConifer_07" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1630, 103.5, 1470)
+
+[node name="PersephoneConifer_08" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1640, 96.4, 1690)
+
+[node name="PersephoneConifer_09" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1710, 119, 1230)
+
+[node name="PersephoneConifer_10" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(-0.7071, 0, 0.7071, 0, 1, 0, -0.7071, 0, -0.7071, 930, 96, 1440)
+
+[node name="PersephoneConifer_11" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(-0.7071, 0, -0.7071, 0, 1, 0, 0.7071, 0, -0.7071, 1690, 118, 1220)
+
+[node name="PersephoneConifer_12" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(0.7071, 0, -0.7071, 0, 1, 0, 0.7071, 0, 0.7071, 1610, 99, 1420)
+
+[node name="PersephoneConifer_13" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(-0.7071, 0, 0.7071, 0, 1, 0, -0.7071, 0, -0.7071, 1420, 98.3, 1590)
+
+[node name="PersephoneConifer_14" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(0.7071, 0, -0.7071, 0, 1, 0, 0.7071, 0, 0.7071, 880, 104.7, 1380)
+
+[node name="PersephoneConifer_15" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 1060, 107.8, 1440)
+
+[node name="PersephoneConifer_16" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 930, 96.6, 1390)
+
+[node name="PersephoneConifer_17" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1590, 97.5, 1430)
+
+[node name="PersephoneConifer_18" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1690, 95.4, 1670)
+
+[node name="PersephoneConifer_19" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(-0.7071, 0, 0.7071, 0, 1, 0, -0.7071, 0, -0.7071, 1680, 115.2, 1240)
+
+[node name="PersephoneConifer_20" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(0.7071, 0, -0.7071, 0, 1, 0, 0.7071, 0, 0.7071, 1660, 111.8, 1210)
+
+[node name="PersephoneConifer_21" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1450, 109.4, 1420)
+
+[node name="PersephoneConifer_22" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1430, 98.5, 1560)
+
+[node name="PersephoneConifer_23" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 900, 100.4, 1280)
+
+[node name="PersephoneConifer_24" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(-0.3827, 0, 0.9239, 0, 1, 0, -0.9239, 0, -0.3827, 1610, 101.8, 1470)
+
+[node name="PersephoneConifer_25" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(-0.9239, 0, 0.3827, 0, 1, 0, -0.3827, 0, -0.9239, 1410, 100.7, 1600)
+
+[node name="PersephoneConifer_26" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1680, 94.7, 1650)
+
+[node name="PersephoneConifer_27" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 880, 108.7, 1650)
+
+[node name="PersephoneConifer_28" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1060, 106.2, 1390)
+
+[node name="PersephoneConifer_29" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(-0.7071, 0, -0.7071, 0, 1, 0, 0.7071, 0, -0.7071, 890, 102, 1450)
+
+[node name="PersephoneConifer_30" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1610, 97.6, 1690)
+
+[node name="PersephoneConifer_31" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1680, 96, 1710)
+
+[node name="PersephoneConifer_32" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(-0.7071, 0, -0.7071, 0, 1, 0, 0.7071, 0, -0.7071, 1350, 113.6, 1530)
+
+[node name="PersephoneConifer_33" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1440, 105.2, 1320)
+
+[node name="PersephoneConifer_34" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1420, 102, 1250)
+
+[node name="PersephoneConifer_35" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 880, 101.3, 1300)
+
+[node name="PersephoneConifer_36" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(0.7071, 0, -0.7071, 0, 1, 0, 0.7071, 0, 0.7071, 1430, 98.5, 1230)
+
+[node name="PersephoneConifer_37" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1180, 106.7, 1350)
+
+[node name="PersephoneConifer_38" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 1370, 107.2, 1580)
+
+[node name="PersephoneConifer_39" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1390, 116.6, 1530)
+
+[node name="PersephoneConifer_40" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1360, 114.1, 1550)
+
+[node name="PersephoneConifer_41" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1460, 101.9, 1500)
+
+[node name="PersephoneConifer_42" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1120, 102, 1310)
+
+[node name="PersephoneConifer_43" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1100, 105.5, 1340)
+
+[node name="PersephoneConifer_44" parent="Buildings" instance=ExtResource("d2_persephone_conifer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1470, 103.5, 1450)
+
+[node name="PersephoneTreeTall_01" parent="Buildings" instance=ExtResource("d2_persephone_tree_tall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1060, 107.2, 1410)
+
+[node name="PersephoneTreeTall_02" parent="Buildings" instance=ExtResource("d2_persephone_tree_tall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1420, 105.4, 1330)
+
+[node name="PersephoneTreeTall_03" parent="Buildings" instance=ExtResource("d2_persephone_tree_tall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 890, 103.1, 1430)
+
+[node name="PersephoneTreeTall_04" parent="Buildings" instance=ExtResource("d2_persephone_tree_tall")]
+transform = Transform3D(0.3827, 0, 0.9239, 0, 1, 0, -0.9239, 0, 0.3827, 1600, 102, 1450)
+
+[node name="PersephoneTreeTall_05" parent="Buildings" instance=ExtResource("d2_persephone_tree_tall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 870, 103.8, 1270)
+
+[node name="PersephoneTreeTall_06" parent="Buildings" instance=ExtResource("d2_persephone_tree_tall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 900, 100.2, 1380)
+
+[node name="PersephoneTreeTall_07" parent="Buildings" instance=ExtResource("d2_persephone_tree_tall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1140, 111.4, 1340)
+
+[node name="PersephoneTreeTall_08" parent="Buildings" instance=ExtResource("d2_persephone_tree_tall")]
+transform = Transform3D(-0.3827, 0, 0.9239, 0, 1, 0, -0.9239, 0, -0.3827, 1370, 113.5, 1520)
+
+[node name="PersephoneTreeTall_09" parent="Buildings" instance=ExtResource("d2_persephone_tree_tall")]
+transform = Transform3D(-0.3827, 0, 0.9239, 0, 1, 0, -0.9239, 0, -0.3827, 1470, 102, 1470)
+
+[node name="PersephoneTree1_01" parent="Buildings" instance=ExtResource("d2_persephone_tree_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1540, 93.6, 1680)
+
+[node name="PersephoneTree2_01" parent="Buildings" instance=ExtResource("d2_persephone_tree_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1580, 95.3, 1640)
+
+[node name="PersephoneTree2_02" parent="Buildings" instance=ExtResource("d2_persephone_tree_2")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 930, 96.4, 1330)
+
+[node name="PersephoneTreeCrown_01" parent="Buildings" instance=ExtResource("d2_persephone_tree_crown")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1605.022, 96.6853, 1644.849)
+
+[node name="PersephoneTreeTall2_01" parent="Buildings" instance=ExtResource("d2_persephone_tree_tall_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1330, 100.8, 1130)
+
+[node name="PersephoneConifer2_01" parent="Buildings" instance=ExtResource("d2_persephone_conifer_2")]
+transform = Transform3D(0.3827, 0, 0.9239, 0, 1, 0, -0.9239, 0, 0.3827, 1340, 98.7, 1110)
+
+[node name="PersephoneConifer2_02" parent="Buildings" instance=ExtResource("d2_persephone_conifer_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1350, 98.7, 1130)
+
+[node name="PersephoneConifer2_03" parent="Buildings" instance=ExtResource("d2_persephone_conifer_2")]
+transform = Transform3D(0.7071, 0, 0.7071, 0, 1, 0, -0.7071, 0, 0.7071, 1220, 98.7, 1130)
+
+[node name="PersephoneConifer2_04" parent="Buildings" instance=ExtResource("d2_persephone_conifer_2")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1200, 98.1, 1730)
+
+[node name="PersephoneConifer2_05" parent="Buildings" instance=ExtResource("d2_persephone_conifer_2")]
+transform = Transform3D(-0.3827, 0, 0.9239, 0, 1, 0, -0.9239, 0, -0.3827, 1290, 98.3, 1750)
+
+[node name="PersephoneConifer2_06" parent="Buildings" instance=ExtResource("d2_persephone_conifer_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1330, 99.8, 1720)
+
+[node name="PersephoneSilo_01" parent="Buildings" instance=ExtResource("d2_persephone_silo")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 1560, 90.4, 1610)
+
+[node name="PersephoneSilo_02" parent="Buildings" instance=ExtResource("d2_persephone_silo")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1030, 92.3, 1280)
+
+[node name="Npcs" type="Node3D" parent="."]
+
+[node name="Peasant_01" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 995.953, 94.0822, 1248.392)
+creature = ExtResource("d2_saep")
+side = 2
+
+[node name="Peasant_02" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1569.035, 89.4388, 1589.141)
+creature = ExtResource("d2_saep")
+side = 2
+
+[node name="Peasant_03" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1507.675, 88.2865, 1603)
+creature = ExtResource("d2_saep")
+side = 2
+
+[node name="Peasant_04" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1507.102, 88.029, 1595.246)
+creature = ExtResource("d2_saep")
+side = 2
+
+[node name="Peasant_05" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 995.245, 91.9004, 1310.041)
+creature = ExtResource("d2_saep")
+side = 2
+
+[node name="Peasant_06" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1004.893, 93.3402, 1253.772)
+creature = ExtResource("d2_saep")
+side = 2
+
+[node name="Peasant_07" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1571.12, 88.8993, 1581.105)
+creature = ExtResource("d2_saep")
+side = 2
+
+[node name="Peasant_08" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 992.081, 91.9, 1303.681)
+creature = ExtResource("d2_saep")
+side = 2
+
+[node name="Troll_01" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1539.815, 109.4084, 1278.787)
+creature = ExtResource("d2_lort")
+side = 3
+
+[node name="Troll_02" parent="Npcs" instance=ExtResource("d2_npc_spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 984.098, 109.259, 1584.764)
+creature = ExtResource("d2_lort")
+side = 3
+
+[node name="NavRegion" type="NavigationRegion3D" parent="."]
+unique_name_in_owner = true
+navigation_mesh = ExtResource("15_navmesh")
+script = ExtResource("16_nav_region")
+bake_settings = ExtResource("14_bake")
+
+[node name="MinimapBake" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("17_minimap")]
+unique_name_in_owner = true
+terrain = NodePath("../Terrain")

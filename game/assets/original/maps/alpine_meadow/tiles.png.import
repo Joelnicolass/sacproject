@@ -1,0 +1,14 @@
+[remap]
+
+importer="image"
+type="Image"
+uid="uid://bmjw3g5cy4aik"
+path="res://.godot/imported/tiles.png-6545c444a713a2786dda8d3913b8759b.image"
+
+[deps]
+
+source_file="res://assets/original/maps/alpine_meadow/tiles.png"
+dest_files=["res://.godot/imported/tiles.png-6545c444a713a2786dda8d3913b8759b.image"]
+
+[params]
+

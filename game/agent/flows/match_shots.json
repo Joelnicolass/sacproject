@@ -1,0 +1,7 @@
+{
+  "scene": "res://agent/harness/match_shots/match_shots.tscn",
+  "wait_first": 0.1,
+  "steps": [
+    { "wait": 3600 }
+  ]
+}

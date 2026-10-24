@@ -28,7 +28,7 @@ extends Node
 
 func _ready() -> void:
 	if _sandbox_preset_only():
-		apply_sandbox_preset.call_deferred()
+		apply_sandbox_preset()
 		return
 	if _inert():
 		return
@@ -61,8 +61,9 @@ func apply() -> void:
 
 
 ## Sandboxed run with a window: the deterministic preset on the rig, nothing read from or written to the player's file.
-## Deferred one frame: the map binds `rig` while the world enters the tree.
+## Waits a frame: the map binds `rig` and the flow makes this world the current scene while it enters the tree.
 func apply_sandbox_preset() -> void:
+	await get_tree().process_frame
 	if not _sandbox_preset_only() or prefs == null or not _owns_scene() or not _has_rig():
 		return
 	var preset := prefs.forced_quality()

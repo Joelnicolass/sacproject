@@ -53,6 +53,15 @@ func _scenes() -> Dictionary:
 		wizard.queue_free()
 	for kind in ["RainFrog", "FireDrop", "PlagueDrop", "Meteor"]:
 		checks[kind + "_registered"] = _spawner.projectiles.has(kind) and _spawner.projectiles[kind].can_instantiate()
+	var meteor := (_spawner.projectiles["Meteor"] as PackedScene).instantiate()
+	var marks: Array[PackedScene] = (meteor.get_node("Blast") as DropBlast).ground_marks
+	var names := []
+	for mark in marks:
+		names.append(((mark.instantiate() as ScarMark).texture.resource_path.get_file()))
+	checks["meteor_marks_gscr_ecrk"] = names == ["gscr.png", "ecrk.png"]
+	meteor.free()
+	var beam := load("res://data/fx/beams/lightning.tres") as BeamType
+	checks["cloudkill_bolt_burns"] = beam != null and beam.scene.resource_path.ends_with("burning_beam_fx.tscn")
 	checks["cloudkill_follows"] = (GameData.spell("likc").action.instantiate() as ZoneAction).follows_target
 	checks["cloudkill_replicates"] = (_spawner.zones["Cloudkill"] as PackedScene).instantiate().get("replicates_position") == true
 	await _frames(2)

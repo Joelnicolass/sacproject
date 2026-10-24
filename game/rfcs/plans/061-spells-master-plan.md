@@ -2,6 +2,8 @@
 
 Leí 061R completo, `CONVENTIONS.md` (con §2c), RFC-055 §12–§16, el plan 061a y el código real: `caster.gd`, `spell_action.gd`, `aimed_action.gd`, `pups/heal/lightning/thrown/rock_action.gd`, `speedup_effect.gd`, `health.gd`, `afflictions.gd`, `affliction(_type).gd`, `frozen.gd`, `vined.gd`, `life_shield.gd`, `fire_shield.gd`, `timed_state_ability.gd`, `pace_factors.gd`, `ghost_form.gd`, `spell_command.gd`, `ai_spell_eval.gd`, `wizard_brain.gd`, `unit_body.gd`/`idle_state.gd`, y los nodos de `unit.tscn` y `wizard_body.tscn`. Leí también los dos avisos del orquestador: cumplo §2c, los README usan `Check:` en lugar de `Debug:`, y uso escenas de verificación en `debug/<sistema>/` (el usuario volvió a permitirlas en el commit 05622346).
 
+> **Decisiones del usuario (2026-10-24):** plan aprobado. Los hechizos van ya, tomando solo lo mínimo de 055e en cada corte (los 12 existentes no se tocan). Soul Mole se adelanta a 061d y Bombardment entra en 061h con daño y sin abolladuras. **Arte final desde el inicio** (no looks provisorios): cada corte trae el look del original (sus texturas/partículas de `assets/original/fx`, modelos con Blender cuando haga falta), verificado contra sacengine/REA y capturas.
+
 ## 0. Contradicción entre artefactos (decide el usuario)
 RFC-055 §13.1 y §13.4 dicen que no entra contenido nuevo sobre un sistema calcado 1 a 1. Según eso, los 41 hechizos van después de 055e (mago y libro) y de 055f (IA), y hoy los dos son 1 a 1: `SpellType.flags*`, `AimedAction` con herencia de profundidad 2 y una IA que despacha por bits de `flags1`. La prioridad nueva del usuario («todos los poderes del mago») es la instrucción más reciente y manda sobre el orden del RFC.
 

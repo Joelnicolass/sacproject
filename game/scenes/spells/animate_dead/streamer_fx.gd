@@ -85,12 +85,13 @@ func _draw() -> void:
 	_mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
 	for i in n:
 		for j in 3:
-			_add_fin(points, turns, i, j, n)
+			add_fin(_mesh, points, turns, i, j, n, type.width_m)
 	_mesh.surface_end()
 
 
-## The quad of fin `j` between link `i` and `i + 1`: the axis along the bottom of the cell, the fin's edge along the top.
-func _add_fin(points: PackedVector3Array, turns: Array[Quaternion], i: int, j: int, n: int) -> void:
+## The quad of fin `j` between link `i` and `i + 1` of a ribbon: the axis along the bottom of the cell, the fin's edge along the top. The
+## ribbons of the Wailing Wall's spirits are drawn with it too.
+static func add_fin(mesh: ImmediateMesh, points: PackedVector3Array, turns: Array[Quaternion], i: int, j: int, n: int, width_m: float) -> void:
 	var sqrt34 := sqrt(0.75)
 	var fins: Array[Vector3] = [Vector3(0.0, -1.0, 0.0), Vector3(sqrt34, 0.5, 0.0), Vector3(-sqrt34, 0.5, 0.0)]
 	var corners: Array[Vector3] = []
@@ -98,11 +99,11 @@ func _add_fin(points: PackedVector3Array, turns: Array[Quaternion], i: int, j: i
 	for k in 4:
 		var link := i + 1 if (k == 1 or k == 2) else i
 		var edge := k == 2 or k == 3
-		corners.append(points[link] + (turns[link] * (fins[j] * type.width_m) if edge else Vector3.ZERO))
+		corners.append(points[link] + (turns[link] * (fins[j] * width_m) if edge else Vector3.ZERO))
 		uvs.append(Vector2(clampf(float(link) / n, UV_INSET, 1.0 - UV_INSET), UV_INSET if edge else 1.0 - UV_INSET))
 	for index in [0, 1, 2, 2, 3, 0]:
-		_mesh.surface_set_uv(uvs[index])
-		_mesh.surface_add_vertex(corners[index])
+		mesh.surface_set_uv(uvs[index])
+		mesh.surface_add_vertex(corners[index])
 
 
 static func _direction(rng: RandomNumberGenerator) -> Vector3:

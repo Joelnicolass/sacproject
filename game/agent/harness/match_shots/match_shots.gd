@@ -5,9 +5,9 @@ extends Node
 ## and quits. It only watches: it plays no input and moves no actor; the camera is its own.
 ## It lives in a subfolder because AgentKit mounts every .gd of agent/harness/ itself.
 ## Args after `--`: --map=<tag> --god=<god of the local wizard> [--biome=<god whose land the map wears; default --god>] [--ai-god=<god>] [--wizard=<tag>] [--after=<s> before the first
-## round] [--shots=<n> rounds] [--every=<s>, from 0.02: a burst of shots; the files end in the milliseconds, _t001500] [--out=<dir>] [--views=wizard,wizard_close,halo,foe_close,zone,cloud,overview,fountain,manahoar,tower] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
+## round] [--shots=<n> rounds] [--every=<s>, from 0.02: a burst of shots; the files end in the milliseconds, _t001500] [--out=<dir>] [--views=wizard,wizard_close,halo,foe_close,zone,cloud,overview,fountain,manahoar,tower,wall] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
 ## [--cast=<spell tag>[,<tag>…], the local wizard casts them one after the other once --after has passed, before the first round: a spell that aims at himself (a ward, Healing Aura) on himself,
-## one that aims at a soul (pmcd, dnws, deda) on the closest soul he may fetch (the harness makes one when there is none), any other on the closest enemy (a zone, on the ground at its feet; Rainbow on himself, the first body of its chain; 061e needs --level=4 or more: ntlc, wobr, rifd, olah; 061j needs --level=8: rter with --god=persephone, nrot with --god=stratos); mana is filled first; --cast-wait=<s> is the wait after the last cast (a cloud rains after its cast: 10 shows the rain, 14 Cloudkill's bolts; Explosion goes off 3.8 s after it starts: 4.5)] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
+## one that aims at a soul (pmcd, dnws, deda) on the closest soul he may fetch (the harness makes one when there is none), a wall (lwrf, laws, laww, lawv, cnef) on the ground half way to the closest enemy (--cast-wait=6 to see it grown); any other on the closest enemy (a zone, on the ground at its feet; Rainbow on himself, the first body of its chain; 061e needs --level=4 or more: ntlc, wobr, rifd, olah; 061j needs --level=8: rter with --god=persephone, nrot with --god=stratos); mana is filled first; --cast-wait=<s> is the wait after the last cast (a cloud rains after its cast: 10 shows the rain, 14 Cloudkill's bolts; Explosion goes off 3.8 s after it starts: 4.5)] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
 ## Windowed: `-- --agent=flow --flow=match_shots.json` (the flow gives the sandbox that applies the quality preset).
 
 const GROUP_FOUNT := &"manafount"
@@ -34,6 +34,9 @@ const TAG_MANAHOAR := &"oham"
 ## the cloud's height away (at least this far) and a third of it up, on the first of 8 bearings with a clear line to the land.
 @export_range(10.0, 200.0, 1.0, "suffix:m") var cloud_min_m := 45.0
 @export_range(30.0, 300.0, 5.0, "suffix:m") var overview_m := 110.0
+## The "wall" view: the newest wall standing, seen from the wizard's side this far from its middle and this high.
+@export_range(5.0, 120.0, 1.0, "suffix:m") var wall_m := 45.0
+@export_range(0.0, 60.0, 0.5, "suffix:m") var wall_up_m := 14.0
 @export_range(4.0, 60.0, 0.5, "suffix:m") var fount_m := 16.0
 @export_range(0.0, 30.0, 0.5, "suffix:m") var fount_up_m := 6.0
 ## The "manahoar" view: the camera stands this far from the nearest Manahoar (any bearing the wizard's side is) and this high.
@@ -117,6 +120,10 @@ func _cast_all(world: MatchWorld, tags: PackedStringArray) -> void:
 		if action != null and action.pick == SpellAction.Pick.SOUL:
 			aimed = await _soul_for(world, wizard, action)
 		var point := aimed.global_position if aimed != null else wizard.global_position
+		if action is WallAction and foe != null:
+			## A wall goes on the ground half way between the wizard and the enemy, across the line that joins them.
+			point = (wizard.global_position + foe.global_position) * 0.5
+			aimed = null
 		caster.request_cast(tag, point, aimed)
 		print("match_shots: cast %s (casting: %s)" % [tag, caster.is_casting()])
 		while caster.is_casting():
@@ -266,6 +273,16 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 			look = carrier.global_position + Vector3.UP * 0.5
 			var from_wizard := (carrier.global_position - focus) * Vector3(1.0, 0.0, 1.0)
 			spot = look - (from_wizard.normalized() if from_wizard.length() > 0.1 else Vector3.FORWARD) * 8.0 + Vector3.UP * 4.0
+		"wall":
+			var walls := world.find_children("*", "SpellWall", true, false)
+			if walls.is_empty():
+				print("match_shots: no wall standing; view skipped")
+				return
+			var wall := walls[walls.size() - 1] as SpellWall
+			look = wall.point_at(0.0) + Vector3.UP * 3.0
+			var from_wizard := (focus - wall.center) * Vector3(1.0, 0.0, 1.0)
+			spot = look + (from_wizard.normalized() if from_wizard.length() > 0.1 else Vector3.BACK) * wall_m + Vector3.UP * wall_up_m
+			print("match_shots: wall %s age %d left %.1f right %.1f top %.2f armed %s inside %d" % [wall.name, wall.age, wall.left, wall.right, wall.top(), wall.armed, wall.bodies_inside().size()])
 		"tower":
 			var tower := _nearest_tower(focus)
 			if tower == null:

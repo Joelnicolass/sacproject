@@ -42,6 +42,11 @@ const SPELLS := {
 	"pxef": [[SCENE, "res://scenes/spells/zones/explosion_zone.tscn"], [PARTICLE, "res://data/fx/explosion_blast.tres"]],
 	"zorf": [[SCENE, "res://scenes/spells/zones/frozen_ground.tscn"], [PARTICLE, "res://data/fx/snowball_burst.tres"], [PARTICLE, "res://data/fx/ice_shard.tres"]],
 	"tfir": [[SCENE, "res://scenes/spells/zones/demonic_rift.tscn"], [SCENE, "res://scenes/spells/zones/rift_spirit.tscn"]],
+	"lwrf": [[SCENE, "res://scenes/spells/walls/firewall.tscn"]],
+	"laws": [[SCENE, "res://scenes/spells/walls/wall_of_spikes.tscn"]],
+	"laww": [[SCENE, "res://scenes/spells/walls/wailing_wall.tscn"]],
+	"lawv": [[SCENE, "res://scenes/spells/walls/vinewall.tscn"]],
+	"cnef": [[SCENE, "res://scenes/spells/walls/fence.tscn"]],
 	"rter": [[SCENE, "res://scenes/spells/stalks/stalk.tscn"], [PARTICLE, "res://data/fx/stalk_grab.tres"]],
 	"nrot": [[SCENE, "res://scenes/spells/tornado/tornado.tscn"]],
 }

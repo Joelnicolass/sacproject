@@ -2,10 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
+uid="uid://b13v06q3lkjaf"
+path="res://.godot/imported/dvin.png-58c7650b72c6a6edd0a67d32186624a9.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/original/fx/dvin.png"
+dest_files=["res://.godot/imported/dvin.png-58c7650b72c6a6edd0a67d32186624a9.ctex"]
 
 [params]
 

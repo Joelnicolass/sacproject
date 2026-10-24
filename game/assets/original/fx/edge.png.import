@@ -2,10 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
+uid="uid://ccr4jt7f30vri"
+path="res://.godot/imported/edge.png-cbba99bacb19ab7a25845b09e74cb78a.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/original/fx/edge.png"
+dest_files=["res://.godot/imported/edge.png-cbba99bacb19ab7a25845b09e74cb78a.ctex"]
 
 [params]
 

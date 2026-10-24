@@ -77,6 +77,8 @@
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/explosion_zone.tscn" id="z61_explosion"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/frozen_ground.tscn" id="z61_frozen"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/demonic_rift.tscn" id="z61_rift"]
+[ext_resource type="PackedScene" path="res://scenes/spells/stalks/meanstalks.tscn" id="z61_stalks"]
+[ext_resource type="PackedScene" path="res://scenes/spells/tornado/tornado.tscn" id="z61_tornado"]
 
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
@@ -166,7 +168,9 @@ script = ExtResource("16_spawner")
 zones = Dictionary[String, PackedScene]({
 "DemonicRift": ExtResource("z61_rift"),
 "Explosion": ExtResource("z61_explosion"),
-"FrozenGround": ExtResource("z61_frozen")
+"FrozenGround": ExtResource("z61_frozen"),
+"Meanstalks": ExtResource("z61_stalks"),
+"Tornado": ExtResource("z61_tornado")
 })
 
 

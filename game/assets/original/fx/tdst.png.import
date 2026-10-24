@@ -2,10 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
+uid="uid://bo556xnbqqgrn"
+path="res://.godot/imported/tdst.png-4a7bd4b8c76183993472f01b35d32430.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/original/fx/tdst.png"
+dest_files=["res://.godot/imported/tdst.png-4a7bd4b8c76183993472f01b35d32430.ctex"]
 
 [params]
 

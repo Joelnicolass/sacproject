@@ -2,10 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
+uid="uid://bkj1hrxkasjd7"
+path="res://.godot/imported/trn2.png-fc42befe3e6dec5d7ed9d7b5e4b32518.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/original/fx/trn2.png"
+dest_files=["res://.godot/imported/trn2.png-fc42befe3e6dec5d7ed9d7b5e4b32518.ctex"]
 
 [params]
 

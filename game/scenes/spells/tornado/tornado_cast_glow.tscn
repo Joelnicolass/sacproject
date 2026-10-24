@@ -1,0 +1,14 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/chain/cast_glow.gd" id="1_script"]
+[ext_resource type="Script" path="res://scenes/fx/sprite_emitter.gd" id="2_emitter"]
+[ext_resource type="Resource" path="res://data/fx/tornado_cast.tres" id="3_type"]
+
+[node name="CastGlow" type="Node3D" node_paths=PackedStringArray("emitter")]
+editor_description = "Las estrellas cst0 que suben alrededor del mago mientras lanza Tornado (sacengine las trae en espiral hacia el; aqui suben dentro de su caja). ZoneAction.cast_scene lo juega en cada peer con FxBus.broadcast_scene."
+script = ExtResource("1_script")
+emitter = NodePath("Glow")
+
+[node name="Glow" type="CPUParticles3D" parent="."]
+script = ExtResource("2_emitter")
+type = ExtResource("3_type")

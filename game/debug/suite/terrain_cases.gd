@@ -121,6 +121,13 @@ func _rules() -> Dictionary:
 	checks["hole_corner_no_land"] = is_nan(TerrainRules.height_in(inside.x, inside.z, index.ground, index.cells, texels, corners))
 	checks["vertex_id"] = TerrainRules.vertex_id(1260.0, 1270.0) == 127 * 256 + 126
 	checks["shape_without_shift_equals_rules"] = absf(_shape.height_at(inside.x, inside.z) - base) < 1e-6
+	var spell := GameData.spell("tpre")
+	var action := spell.action.instantiate() as ZoneAction if spell != null and spell.action != null else null
+	checks["erupt_has_action"] = action != null and _spawner.zones.has(action.kind) and (_spawner.zones[action.kind] as PackedScene).can_instantiate()
+	if action != null:
+		action.tag = "tpre"
+		checks["erupt_action_no_warnings"] = action._get_configuration_warnings().is_empty()
+		action.free()
 	return _verdict("terrain_rules", checks)
 
 
@@ -372,15 +379,16 @@ func _erupt(wizard: Node3D) -> GroundZone:
 ## The ray of the collision against height_at on 50 spots around the center. True when every one agrees within 5 cm.
 func _ray_matches() -> bool:
 	_collision.flush()
-	await _frames(2)
+	# What the collision holds is the ground of this very moment: take the heights now, ask the rays after the physics step.
 	var rng := MatchSeed.rng(["terrain_cases", "ray"])
-	var worst := 0.0
+	var spots := []
 	for _i in 50:
 		var spot := CENTER + Vector2(rng.randf_range(-45.0, 45.0), rng.randf_range(-45.0, 45.0))
-		var expected := _shape.height_at(spot.x, spot.y)
-		if is_nan(expected):
-			continue
-		worst = maxf(worst, absf(_ray(spot) - expected))
+		spots.append([spot, _shape.height_at(spot.x, spot.y)])
+	var worst := 0.0
+	for pair: Array in spots:
+		if not is_nan(pair[1]):
+			worst = maxf(worst, absf(_ray(pair[0]) - float(pair[1])))
 	_note("ray worst", [worst])
 	return worst < 0.05
 

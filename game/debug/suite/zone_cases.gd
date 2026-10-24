@@ -4,7 +4,7 @@ extends "res://debug/suite/zone_case_base.gd"
 ## its classes, and Healing Aura through WardAction, Ward and BodyAura: the numbers of each spell, when it acts, who it reaches and who it
 ## leaves alone, and what the AI makes of them. No network: the server paths run as solo. `run(host)` adds its own bodies and removes them.
 
-const SPELLS: Array[String] = ["pxef", "zorf", "tfir", "ruah", "tpre"]
+const SPELLS: Array[String] = ["pxef", "zorf", "tfir", "ruah"]
 
 
 func run(host: Node3D) -> Dictionary:

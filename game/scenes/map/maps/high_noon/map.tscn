@@ -50,6 +50,8 @@
 [ext_resource type="Resource" path="res://data/vegetation/species/james_bush_5.tres" id="sp_james_bush_5"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/high_noon/flora/james_bush_5.png" id="fd_james_bush_5"]
 [ext_resource type="PackedScene" path="res://scenes/map/terrain/ground_scars.tscn" id="ground_scars"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/high_noon/ground_roles.png" id="62_roles"]
+[ext_resource type="Texture2D" path="res://assets/original/maps/high_noon/light.png" id="62_light"]
 
 [node name="Map" type="Node3D" unique_id=1044000001 node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
@@ -73,6 +75,8 @@ material_override = ExtResource("f194_ground")
 script = ExtResource("2_terrain")
 shape = NodePath("Shape")
 missing = NodePath("Missing")
+ground_roles = ExtResource("62_roles")
+light_map = ExtResource("62_light")
 
 [node name="Shape" type="Node" parent="Terrain"]
 script = ExtResource("shape_script")

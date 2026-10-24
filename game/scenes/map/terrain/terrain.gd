@@ -11,6 +11,11 @@ extends MeshInstance3D
 @export var shape: TerrainShape
 ## The label that says the map has no ground (shown only when it could not be built).
 @export var missing: Label3D
+## Which kind of ground lies where: 256x256, one pixel per 10 m cell, R open, G earth, B rock, A path (the map's
+## ground_roles.png; paint it in any image editor). The god's look says what each kind looks like.
+@export var ground_roles: Texture2D
+## The map's own baked light on the ground (the map's light.png). Empty = the ground reads evenly lit.
+@export var light_map: Texture2D
 ## The map sits far from where the editor camera opens: in the editor only, the parent is shifted so the map shows
 ## at the origin (the shift is taken off while saving).
 @export var editor_preview_recenter := true:
@@ -40,7 +45,12 @@ func _validate_property(property: Dictionary) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if shape else PackedStringArray(["Falta el hijo Shape (TerrainShape) en `shape`."])
+	var warnings := PackedStringArray()
+	if shape == null:
+		warnings.append("Falta el hijo Shape (TerrainShape) en `shape`.")
+	if ground_roles == null:
+		warnings.append("Falta `ground_roles` (el ground_roles.png del mapa): el suelo del dios no sabe qué va dónde.")
+	return warnings
 
 
 func _notification(what: int) -> void:

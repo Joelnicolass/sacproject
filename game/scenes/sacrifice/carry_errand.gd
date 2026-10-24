@@ -42,6 +42,7 @@ func _ready() -> void:
 		steps.run_process = false
 		return
 	body.landed.connect(_on_landed)
+	steps.state_changed.connect(_on_step_changed)
 	body.died.connect(_on_died)
 
 
@@ -100,6 +101,7 @@ func arrive() -> void:
 	if arrived:
 		return
 	arrived = true
+	body.errand_walks = false
 	body.stop()
 	reached_site.emit()
 
@@ -119,6 +121,11 @@ func release_creature(reason := Captive.Release.LET_GO) -> void:
 func _is_alive_own() -> bool:
 	return creature != null and is_instance_valid(creature) and creature.is_inside_tree() \
 		and not creature.is_dead() and creature.owner_slot == creature_owner
+
+
+## Approach and Haul (before the site) are the steps that walk: the StuckGuard watches the body move through `errand_walks`.
+func _on_step_changed(_from: StringName, to: StringName) -> void:
+	body.errand_walks = not _done and not arrived and (to == &"Approach" or to == &"Haul")
 
 
 func _on_landed() -> void:
@@ -145,4 +152,5 @@ func _finish(outcome: Outcome) -> void:
 	if _done:
 		return
 	_done = true
+	body.errand_walks = false
 	finished.emit(outcome)

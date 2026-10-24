@@ -108,6 +108,12 @@ func _physics_process(delta: float) -> void:
 		return
 	if not _body_walking():
 		var arrived_at_goal := _flat(body.global_position, goal) <= arrive_m
+		if not arrived_at_goal and waypoints.size() > 1 and _flat(body.global_position, waypoints[0]) <= arrive_m:
+			# The body ended a leg that was already under it (its own stop distance is wider than a waypoint a cell
+			# rounding away): the walk is not over, the next leg starts.
+			waypoints.remove_at(0)
+			_begin_leg(waypoints[0])
+			return
 		cancel()
 		if arrived_at_goal:
 			arrived.emit()
@@ -214,6 +220,10 @@ func _plan() -> void:
 	waypoints = _nav.find_path(body.global_position, goal)
 	if waypoints.is_empty():
 		waypoints = PackedVector3Array([goal])
+	# The search projects the start on the mesh and can hand back a first node under the body: a leg that is over
+	# before it begins. Dropped, but never the last one (the goal).
+	while waypoints.size() > 1 and _flat(body.global_position, waypoints[0]) <= arrive_m:
+		waypoints.remove_at(0)
 	path_set.emit(waypoints)
 	_begin_leg(waypoints[0])
 

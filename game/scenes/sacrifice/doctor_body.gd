@@ -100,6 +100,9 @@ var type: CreatureType
 ## Where the walk goes / where the drop lands. Server only.
 var goal := Vector3.ZERO
 var landing := Vector3.ZERO
+## The carrier's errand is in a step that walks (Approach, Haul before the site): a body that does not move then is stuck,
+## even when its walk keeps ending (the StuckGuard reads it).
+var errand_walks := false
 ## Sideways nudge of the StuckGuard: radians the walk heading is rotated for dodge_left seconds.
 var dodge_angle := 0.0
 var dodge_left := 0.0

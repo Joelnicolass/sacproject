@@ -17,6 +17,8 @@ signal gave_up
 ## Meters closer to the goal that count as progress in a window.
 @export var progress_m := 2.0
 @export var window_s := 2.0
+## Meters the body must move in a window while its errand wants it to walk.
+@export var idle_move_m := 0.5
 @export var dodge_deg := 90.0
 @export var dodge_s := 1.0
 
@@ -27,6 +29,9 @@ var _goal := Vector3.INF
 var _window_left := 0.0
 var _stuck_for := 0.0
 var _side := 1.0
+var _idle_mark := Vector3.INF
+var _idle_left := 0.0
+var _idle_for := 0.0
 
 
 func _physics_process(delta: float) -> void:
@@ -34,6 +39,7 @@ func _physics_process(delta: float) -> void:
 		return
 	if MpKit.is_networked() and not MpKit.is_server():
 		return
+	_watch_idle(delta)
 	if not body.is_walking() or not body.is_targetable():
 		_reset()
 		return
@@ -57,6 +63,36 @@ func _physics_process(delta: float) -> void:
 	if limit > 0.0 and _stuck_for >= limit:
 		gave_up.emit()
 		_reset()
+		body.give_up()
+
+
+## `body.errand_walks`: the errand wants the body to walk: every window it must have moved `idle_move_m`; else it sidesteps, and after the
+## abort time of the rules it gives up, as a walk that makes no progress does.
+func _watch_idle(delta: float) -> void:
+	if not body.errand_walks or not body.is_targetable():
+		_idle_mark = Vector3.INF
+		_idle_for = 0.0
+		return
+	if _idle_mark == Vector3.INF:
+		_idle_mark = body.global_position
+		_idle_left = window_s
+		_idle_for = 0.0
+	_idle_left -= delta
+	if _idle_left > 0.0:
+		return
+	_idle_left = window_s
+	var moved := Vector2(body.global_position.x - _idle_mark.x, body.global_position.z - _idle_mark.z).length()
+	_idle_mark = body.global_position
+	if moved >= idle_move_m:
+		_idle_for = 0.0
+		return
+	_idle_for += window_s
+	_dodge()
+	var limit := body.rules.doctor_stuck_abort_s if body.rules else 0.0
+	if limit > 0.0 and _idle_for >= limit:
+		gave_up.emit()
+		_idle_mark = Vector3.INF
+		_idle_for = 0.0
 		body.give_up()
 
 

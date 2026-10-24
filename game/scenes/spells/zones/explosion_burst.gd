@@ -9,6 +9,8 @@ extends Node3D
 ## The spheres, scaled from nothing: each is a unit-diameter sphere.
 @export var big: MeshInstance3D
 @export var small: MeshInstance3D
+## The burn it leaves on the ground (061k-5), painted when the blast starts.
+@export var scar: ScarMark
 ## The rock that flies off, and how many.
 @export var piece: PackedScene
 @export_range(0, 64) var pieces := 15
@@ -29,6 +31,8 @@ extends Node3D
 
 
 func play(_params: Dictionary) -> void:
+	if scar != null:
+		scar.mark()
 	_swell(big, big_radius_m / big_speed, big_radius_m)
 	_swell(small, small_radius_m / small_speed, small_radius_m)
 	_throw()

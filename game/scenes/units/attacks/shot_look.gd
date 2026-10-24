@@ -20,6 +20,8 @@ const LOOKS_DIR := "res://data/shots/"
 @export var trail_every := 1
 ## FxBus types broadcast where it bursts.
 @export var impact_fx: PackedStringArray = PackedStringArray()
+## 061k-5: the mark it leaves on the ground where it bursts (a ScarMark scene from spells/marks/, played on every peer). Empty = none.
+@export var ground_mark: PackedScene
 ## F119: ShotImpact scene the server (or solo) applies where it bursts, in place of the plain direct ranged hit
 ## (impacts/*.tscn). Empty = the whole amount as direct ranged damage to the body it hit.
 @export var impact: PackedScene

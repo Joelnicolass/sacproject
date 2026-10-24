@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="ShotLook" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="ShotLook" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/attacks/shot_look.gd" id="1_look"]
+[ext_resource type="PackedScene" path="res://scenes/spells/marks/rock_mark.tscn" id="2_mark"]
 
 [resource]
 script = ExtResource("1_look")
@@ -13,5 +14,6 @@ trail_fx = "rock_dust"
 trail_every = 2
 impact_fx = PackedStringArray("rock", "dirt")
 collides = false
+ground_mark = ExtResource("2_mark")
 fallback_color = Color(0.42, 0.4, 0.34, 1)
 fallback_radius = 0.35

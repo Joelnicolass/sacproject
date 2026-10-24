@@ -6,8 +6,8 @@ render_mode unshaded, blend_mix, cull_back, depth_draw_never, shadows_disabled;
 // Three of these overlap, each a little later in the morph (`phase`). Alpha blended, not additive.
 
 uniform sampler2D swirl : source_color, repeat_enable, filter_linear_mipmap;
-// Cells of the atlas: icec is one picture (1, 1), shld is 4 x 2.
-uniform vec2 cells = vec2(1.0, 1.0);
+// Cells of the atlas: shld (the bubble of the original) is 4 x 2; a single picture is (1, 1).
+uniform vec2 cells = vec2(4.0, 2.0);
 uniform float cell_s = 0.1333;
 uniform float energy = 5.0;
 uniform float layer_alpha = 0.075;

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="FxSoundMap" load_steps=77 format=3]
+[gd_resource type="Resource" script_class="FxSoundMap" load_steps=94 format=3]
 
 [ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
 [ext_resource type="Script" path="res://scenes/audio/fx_sound_map.gd" id="2_map"]
@@ -51,6 +51,20 @@
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/font.wav" id="49_font"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/mlth.wav" id="50_mlth"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/afir.wav" id="51_afir"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/stra/ashd.wav" id="w_ashd"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/stra/ashh.wav" id="w_ashh"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/stsk.wav" id="w_stsk"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/winv.wav" id="w_winv"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comn/flp5.wav" id="w_flp5"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/stra/frz3.wav" id="n161_frz3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/root.wav" id="n161_root"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/rfad.wav" id="n161_rfad"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/flam.wav" id="n161_flam"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/frrl.wav" id="n161_frrl"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/frd1.wav" id="n161_frd1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/frd2.wav" id="n161_frd2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/frx1.wav" id="n161_frx1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/frx2.wav" id="n161_frx2"]
 
 [sub_resource type="Resource" id="Cue_blood"]
 script = ExtResource("1_cue")
@@ -195,6 +209,118 @@ max_distance_m = 80.0
 unit_size = 8.0
 priority = 20
 
+[sub_resource type="Resource" id="Cue_ward_air"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("w_ashd")])
+max_voices = 3
+volume_db = 6.0
+
+[sub_resource type="Resource" id="Cue_ward_air_hiss"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("w_ashh")])
+max_voices = 3
+
+[sub_resource type="Resource" id="Cue_ward_skin_end"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("w_stsk")])
+max_voices = 3
+
+[sub_resource type="Resource" id="Cue_ward_ethereal_start"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("w_winv")])
+max_voices = 3
+
+[sub_resource type="Resource" id="Cue_ward_ethereal_zap"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("28_ltn1"), ExtResource("29_ltn2"), ExtResource("30_ltn3"), ExtResource("31_ltn4"), ExtResource("32_ltn5"), ExtResource("33_ltn6")])
+max_voices = 3
+volume_db = 6.0
+
+[sub_resource type="Resource" id="Cue_ward_fire_ignite"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("24_ign1")])
+max_voices = 3
+volume_db = 12.0
+
+[sub_resource type="Resource" id="Cue_ward_fire_flame"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("35_flam")])
+max_voices = 3
+
+[sub_resource type="Resource" id="Cue_ward_fire_loop"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("w_flp5")])
+max_voices = 2
+volume_db = 12.0
+max_distance_m = 60.0
+unit_size = 6.0
+priority = 30
+
+[sub_resource type="Resource" id="Cue_ward_swarm_buzz"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("36_buzz")])
+max_voices = 3
+
+[sub_resource type="Resource" id="Cue_ward_swarm_loop"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("47_swr3")])
+max_voices = 2
+max_distance_m = 60.0
+unit_size = 6.0
+priority = 30
+
+[sub_resource type="Resource" id="Cue_wards_fire_hit"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("24_ign1")])
+max_voices = 3
+volume_db = 12.0
+cooldown_s = 0.3
+
+[sub_resource type="Resource" id="Cue_wards_swarm_sting"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("45_swr1"), ExtResource("46_swr2"), ExtResource("47_swr3")])
+max_voices = 3
+cooldown_s = 0.2
+
+[sub_resource type="Resource" id="Cue_freeze_block"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("n161_frz3")])
+max_voices = 3
+priority = 20
+
+[sub_resource type="Resource" id="Cue_vines_grab"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("n161_root")])
+max_voices = 3
+
+[sub_resource type="Resource" id="Cue_vines_release"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("n161_rfad")])
+max_voices = 3
+
+[sub_resource type="Resource" id="Cue_rings_start"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("n161_flam")])
+max_voices = 3
+
+[sub_resource type="Resource" id="Cue_rings_loop"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("n161_frrl")])
+max_voices = 4
+volume_db = -6.0
+max_distance_m = 60.0
+unit_size = 6.0
+
+[sub_resource type="Resource" id="Cue_rings_end"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("n161_frd1"), ExtResource("n161_frd2")])
+max_voices = 3
+
+[sub_resource type="Resource" id="Cue_slime_hit"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("n161_frx1"), ExtResource("n161_frx2")])
+max_voices = 3
+
 [resource]
 script = ExtResource("2_map")
 cues = Dictionary[StringName, ExtResource("1_cue")]({
@@ -222,5 +348,24 @@ cues = Dictionary[StringName, ExtResource("1_cue")]({
 &"wrath_cast": SubResource("Cue_wrath_cast"),
 &"fountain_loop": SubResource("Cue_fountain_loop"),
 &"manalith_loop": SubResource("Cue_manalith_loop"),
-&"altar_loop": SubResource("Cue_altar_loop")
+&"altar_loop": SubResource("Cue_altar_loop"),
+&"freeze_block": SubResource("Cue_freeze_block"),
+&"vines_grab": SubResource("Cue_vines_grab"),
+&"vines_release": SubResource("Cue_vines_release"),
+&"rings_start": SubResource("Cue_rings_start"),
+&"rings_loop": SubResource("Cue_rings_loop"),
+&"rings_end": SubResource("Cue_rings_end"),
+&"slime_hit": SubResource("Cue_slime_hit"),
+&"ward_air": SubResource("Cue_ward_air"),
+&"ward_air_hiss": SubResource("Cue_ward_air_hiss"),
+&"ward_skin_end": SubResource("Cue_ward_skin_end"),
+&"ward_ethereal_start": SubResource("Cue_ward_ethereal_start"),
+&"ward_ethereal_zap": SubResource("Cue_ward_ethereal_zap"),
+&"ward_fire_ignite": SubResource("Cue_ward_fire_ignite"),
+&"ward_fire_flame": SubResource("Cue_ward_fire_flame"),
+&"ward_fire_loop": SubResource("Cue_ward_fire_loop"),
+&"ward_swarm_buzz": SubResource("Cue_ward_swarm_buzz"),
+&"ward_swarm_loop": SubResource("Cue_ward_swarm_loop"),
+&"wards/fire_hit": SubResource("Cue_wards_fire_hit"),
+&"wards/swarm_sting": SubResource("Cue_wards_swarm_sting")
 })

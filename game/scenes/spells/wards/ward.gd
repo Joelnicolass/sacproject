@@ -11,6 +11,8 @@ extends Node3D
 
 ## The ward went on (true) or off (false). Every peer, from `shown`.
 signal shown_changed(on: bool)
+## The cast of this ward's spell began (true) or ended or was cut (false). Every peer, from the Caster's replicated cast particle.
+signal casting_changed(on: bool)
 
 ## The body it protects: its box sizes the look; its name goes in the log.
 @export var body: Node3D
@@ -27,6 +29,10 @@ signal shown_changed(on: bool)
 @export var immune := false
 ## The body counts as shielded: Freeze, Petrify and Pull refuse it.
 @export var counts_as_shield := true
+@export_group("Casting")
+## The particle the hands throw while this spell is cast (HandFx plays it, from `data/fx/`). Every ward has its own, and that is how every peer
+## knows which spell is being cast: it is the one whose type is showing. Empty = the ward does not follow the cast.
+@export var cast_type: ParticleType
 @export_group("Look")
 ## What is drawn. Optional: empty = no look.
 @export var look: Node3D
@@ -50,6 +56,8 @@ signal shown_changed(on: bool)
 ## MatchClock tick at which the ward is off. -1 = no ward.
 var _until := -1
 var _tween: Tween
+## True while the wizard casts this ward's spell (casting_changed).
+var casting := false
 
 
 func _ready() -> void:
@@ -60,10 +68,32 @@ func _ready() -> void:
 		body = get_parent().get_parent() as Node3D
 	if health and has_authority():
 		health.died.connect(_on_died)
+	_follow_cast()
 	if look:
 		look.visible = shown
 		if shown:
 			_show(true)
+
+
+## The FxBus name of `cast_type` (the file under data/fx/ without extension), "" without one. WardAction hands it to the Caster.
+func cast_fx_name() -> String:
+	return cast_type.resource_path.trim_prefix(FxBus.TYPES_DIR).get_basename() if cast_type != null else ""
+
+
+## Listens to the wizard's cast particle: while it is this ward's own, the spell is being cast.
+func _follow_cast() -> void:
+	var caster := Caster.of(body)
+	if caster == null or cast_type == null:
+		return
+	caster.cast_fx_changed.connect(_on_cast_fx)
+	_on_cast_fx(caster.cast_fx_shown)
+
+
+func _on_cast_fx(type_name: String) -> void:
+	var on := not type_name.is_empty() and type_name == cast_fx_name()
+	if on != casting:
+		casting = on
+		casting_changed.emit(on)
 
 
 ## Server (or solo): the ward of a SPEL for its duration. The one place the formula lives.

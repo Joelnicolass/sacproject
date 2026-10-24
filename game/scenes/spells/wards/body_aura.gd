@@ -10,6 +10,9 @@ extends Node3D
 ## Damage type: the SPEL of Fireform and Protective Swarm says «direct spell» (type byte 1 at record offset 64), pierce or not.
 ## Ref: sacengine updateFireform, updateProtectiveSwarm, updateAirShield + pushAll (state.d:8614-8633, 17263-17295, 17376-17420, 17458-17525).
 
+## The aura hurt `victim` this tick. Server (or solo) only; AuraImpact turns it into the mark and the sound on every peer.
+signal stung(victim: Node3D)
+
 enum Affects { ENEMIES, NOT_OWN, ALLIES }
 enum Measure { BOX_GAP, CENTER }
 
@@ -90,7 +93,10 @@ func _sting(body: Node3D, other: Node3D, delta: float) -> float:
 	if damage_per_s <= 0.0:
 		return 0.0
 	var victim := other.get_node_or_null("Health") as Health
-	return victim.damage_typed(damage_per_s * delta, damage_kind, _slot(body), false, pierce_shield, mods) if victim else 0.0
+	var took := victim.damage_typed(damage_per_s * delta, damage_kind, _slot(body), false, pierce_shield, mods) if victim else 0.0
+	if took > 0.0:
+		stung.emit(other)
+	return took
 
 
 ## sacengine pushAll: away from the owner's centre, full strength inside the owner's own radius, none at the reach.

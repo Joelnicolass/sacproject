@@ -3,10 +3,11 @@ class_name TerrainLayer
 extends LookLayer
 
 ## Ground layer of the rig: the only writer of the map's terrain material. It gives the terrain the biome's
-## classic ground (`ground_classic`: atlas x light map) and, over it, the `GroundSet` as a PBR material
-## (`ground_pbr.gdshader`). Hiding the node, a null profile or a profile without ground shows the classic
-## one. Heights and collision are untouched (the mesh is the same). The materials and the zone mask are
-## rebuilt from the map on every load and never saved.
+## classic ground (`ground_classic`: atlas x light map; the map's own tiles when the map is made of the
+## look's god, `NativeGround`) and, over it, the `GroundSet` as a PBR material (`ground_pbr.gdshader`).
+## Hiding the node, a null profile or a profile without ground shows the classic one. Heights and
+## collision are untouched (the mesh is the same). The materials and the zone mask are rebuilt from
+## the map on every load and never saved.
 
 var _rig: LookRig
 var _ground: GroundSet
@@ -24,8 +25,19 @@ func _ready() -> void:
 func apply_look(profile: LookProfile, rig: LookRig) -> void:
 	_rig = rig
 	_preset = rig.quality_preset
-	_classic = profile.ground_classic if profile else null
+	_classic = _classic_for(profile, rig)
 	_set_ground(profile.ground if profile else null)
+
+
+## The biome's classic ground; a copy dressed with the map's own tiles when the map is made of the look's god.
+func _classic_for(profile: LookProfile, rig: LookRig) -> ShaderMaterial:
+	var classic := profile.ground_classic if profile else null
+	var native := rig.native_ground
+	if classic == null or native == null or profile.god != native.god:
+		return classic
+	var dressed := classic.duplicate() as ShaderMaterial
+	native.dress(dressed)
+	return dressed
 
 
 func apply_quality(preset: LookQuality) -> void:

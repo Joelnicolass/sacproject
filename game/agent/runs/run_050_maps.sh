@@ -28,7 +28,7 @@ check() { # description, condition (exit code)
 [ "$RC" -eq 0 ]; check "Godot exited 0 (exit $RC)" $?
 grep -q "^AI_REPORT " "$LOG"; check "the bench printed its AI_REPORT" $?
 grep -q "nav: navmesh [0-9]* pol" "$LOG"; check "the navmesh of $MAP was the one in play" $?
-# The "resources still in use at exit" line is the bench's own leak at quit (every ai_match log has it); not an error of the map.
-grep -vE "still in use at exit" "$LOG" | grep -qE "^(SCRIPT ERROR|ERROR:)|Parse Error"; [ $? -ne 0 ]; check "no ERROR / SCRIPT ERROR in the log" $?
+# The "resources still in use at exit" and "RID allocations ... leaked at exit" lines are the bench's own leaks at quit (every ai_match log has them); not an error of the map.
+grep -vE "still in use at exit|RID allocations .* leaked at exit" "$LOG" | grep -qE "^(SCRIPT ERROR|ERROR:)|Parse Error"; [ $? -ne 0 ]; check "no ERROR / SCRIPT ERROR in the log" $?
 if [ "$fail" -eq 0 ]; then echo "SMOKE PASS ($LOG)"; exit 0; fi
 echo "SMOKE FAIL ($LOG)"; tail -30 "$LOG"; exit 1

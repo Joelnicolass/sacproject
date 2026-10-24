@@ -5,16 +5,23 @@ The Godot side of an imported map (RFC-050): the files a map needs besides its a
 
   python3 tools/import/scaffold_map.py --map=Peaks            # write what is missing, list what it wrote
   python3 tools/import/scaffold_map.py --map=Peaks --force    # overwrite map.tscn and the definition (they are hand-edited afterwards)
+  python3 tools/import/scaffold_map.py --scp="Tutorial/(tu02).scp" --tag=tutorial_valley --not-playable --no-npcs   # a map to look at, without inhabitants
+  python3 tools/import/scaffold_map.py --map=Peaks --wire-flora   # after bake_flora_map.gd wrote flora.res: hang it from the Look of the existing map.tscn
 
 Run tools/import/import_map.py first (it writes ntts.json, tiles.png, ...). For `<tag>` it writes:
   assets/original/maps/<tag>/terrain.glb.import    the post-import of the ground (tools/terrain_import.gd), so Godot reads the glb as a terrain
   scenes/map/maps/<tag>/<tag>.tres                 MapDefinition (typed: scene, terrain, tiles, light, navmesh); MapCatalog finds it by scanning the folder
   scenes/map/maps/<tag>/nav.res                    an empty navmesh, so the definition loads until the first bake
-  scenes/map/maps/<tag>/map.tscn                   MapRoot: sky, look, terrain, one PlayerStart (with its WizardSpot) per seat and the manafounts, empty Buildings and Npcs, navmesh, minimap
+  scenes/map/maps/<tag>/map.tscn                   MapRoot: sky, look, terrain, one PlayerStart (with its WizardSpot) per seat, the manafounts, Buildings, Npcs, navmesh, minimap
+  assets/original/maps/<tag>/ground_native.tres    NativeGround (only when import_map.py --native-tiles wrote tiles_native.png): the map's own tiles, worn by the look of its land
 The PlayerStart and the manafounts are the altar and manafount rows of the NTTS, placed on the ground height the game would give
 them (sac_formats.terrain.ground_height_fn); the WizardSpot of seat k is 30 m toward the closest manafount, looking at it, as sacengine puts the wizard.
-The buildings and the creatures are dragged into Buildings and Npcs in the editor; the navmesh is baked with the «Hornear navmesh» button of the NavRegion.
-Nothing here is read at runtime. Idempotent: an existing file is kept unless --force.
+Buildings: every other structure row that has a BuildingType in data/buildings/ becomes an instance of its scene
+(scenes/structures/buildings/<name>.tscn) at the ground height, turned by its facing; Npcs: every creature row becomes an NpcSpawn
+(the creature type of data/catalog/creatures/, its side) 0.2 m above the ground. Rows off the land, rows with no type and the sky dome
+`pcsb` (a 1 140 m model, not a prop) are left out and listed. The plants are not nodes: tools/bake/bake_flora_map.gd bakes them.
+The navmesh is baked with the «Hornear navmesh» button of the NavRegion. Nothing here is read at runtime. Idempotent: an existing file
+is kept unless --force.
 """
 
 import base64
@@ -26,6 +33,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import import_map  # noqa: E402
+import land_themes  # noqa: E402
 from sac_formats import terrain  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -35,6 +43,7 @@ TAG = import_map.TAG
 ASSETS = ROOT / "assets" / "original" / "maps" / TAG
 SCENES = ROOT / "scenes" / "map" / "maps" / TAG
 FORCE = "--force" in ARGS
+HAS_NATIVE = (ASSETS / "tiles_native.png").exists()
 
 # The altar and the manafount of each land (flags 0x80001407 and 0x80002810 in data/buildings/). Same lists as
 # tools/bake/plant_clears.py: those rows are PlayerStart and Manafount nodes of the map scene, not buildings.
@@ -66,6 +75,7 @@ def seats_of(sides: list) -> list:
 
 
 def definition_tres(seats: int) -> str:
+    native = HAS_NATIVE
     return """[gd_resource type="Resource" script_class="MapDefinition" format=3]
 
 [ext_resource type="Script" path="res://scenes/map/map_definition.gd" id="1_def"]
@@ -73,7 +83,7 @@ def definition_tres(seats: int) -> str:
 [ext_resource type="Resource" path="res://assets/original/maps/{tag}/terrain.res" id="3_terrain"]
 [ext_resource type="Image" path="res://assets/original/maps/{tag}/tiles.png" id="4_tiles"]
 [ext_resource type="Texture2D" path="res://assets/original/maps/{tag}/light.png" id="5_light"]
-[ext_resource type="NavigationMesh" path="res://scenes/map/maps/{tag}/nav.res" id="6_nav"]
+[ext_resource type="NavigationMesh" path="res://scenes/map/maps/{tag}/nav.res" id="6_nav"]{native_res}
 
 [resource]
 script = ExtResource("1_def")
@@ -85,7 +95,27 @@ tiles = ExtResource("4_tiles")
 light = ExtResource("5_light")
 nav = ExtResource("6_nav")
 player_starts = {seats}
-""".format(tag=TAG, name=import_map.display_name(SCP), seats=seats)
+{playable}{native_line}""".format(
+        tag=TAG, name=import_map.display_name(SCP), seats=seats,
+        native_res='\n[ext_resource type="Resource" path="res://assets/original/maps/%s/ground_native.tres" id="7_native"]' % TAG if native else "",
+        playable="playable = false\n" if "--not-playable" in ARGS else "",
+        native_line='native_ground = ExtResource("7_native")\n' if native else "")
+
+
+NATIVE_GROUND_TRES = """[gd_resource type="Resource" script_class="NativeGround" format=3]
+
+[ext_resource type="Script" path="res://scenes/look/ground/native_ground.gd" id="1_native"]
+[ext_resource type="Texture2D" path="res://assets/original/maps/{tag}/atlas_native.png" id="2_atlas"]
+[ext_resource type="Texture2D" path="res://assets/original/maps/{tag}/tiles_native.png" id="3_tiles"]
+[ext_resource type="Texture2D" path="res://assets/original/maps/{tag}/light.png" id="4_light"]
+
+[resource]
+script = ExtResource("1_native")
+god = &"{god}"
+atlas = ExtResource("2_atlas")
+tiles = ExtResource("3_tiles")
+light = ExtResource("4_light")
+"""
 
 
 # An empty NavigationMesh saved by Godot as a binary .res (ResourceSaver.save(NavigationMesh.new(), "x.res")), base64.
@@ -140,6 +170,7 @@ MAP_HEAD = """[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/map/map_root.gd" id="1_root"]
 [ext_resource type="Script" path="res://scenes/map/terrain/terrain.gd" id="2_terrain"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain_shape.gd" id="shape_script"]
 [ext_resource type="Script" path="res://scenes/map/props/map_props.gd" id="3_props"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="4_start"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="5_fount"]
@@ -167,11 +198,16 @@ npcs = NodePath("Npcs")
 unique_name_in_owner = true
 terrain = NodePath("../Terrain")
 tile_map = ExtResource("9_tiles")
-
-[node name="Terrain" parent="." groups=["nav_source"] instance=ExtResource("12_glb")]
+{native_look}
+[node name="Terrain" parent="." node_paths=PackedStringArray("shape", "missing") groups=["nav_source"] instance=ExtResource("12_glb")]
 unique_name_in_owner = true
 material_override = ExtResource("11_ground")
 script = ExtResource("2_terrain")
+shape = NodePath("Shape")
+missing = NodePath("Missing")
+
+[node name="Shape" type="Node" parent="Terrain"]
+script = ExtResource("shape_script")
 data = ExtResource("10_data")
 
 [node name="Missing" type="Label3D" parent="Terrain"]
@@ -186,10 +222,6 @@ script = ExtResource("3_props")
 """
 
 MAP_TAIL = """
-[node name="Buildings" type="Node3D" parent="."]
-
-[node name="Npcs" type="Node3D" parent="."]
-
 [node name="NavRegion" type="NavigationRegion3D" parent="."]
 unique_name_in_owner = true
 navigation_mesh = ExtResource("15_navmesh")
@@ -200,6 +232,46 @@ bake_settings = ExtResource("14_bake")
 unique_name_in_owner = true
 terrain = NodePath("../Terrain")
 """
+
+# Structure rows that are not props of the Buildings folder: the altar and the manafount are PlayerStart and Manafount nodes,
+# and `pcsb` is a 1 140 m model (a sky dome), not something to stand on the ground.
+NOT_BUILDINGS = ("pcsb",)
+SPAWN_LIFT = 0.2
+
+
+def pascal_stem(stem: str) -> str:
+    return "".join(part.capitalize() for part in stem.strip("_").split("_"))
+
+
+def turn(facing: float) -> str:
+    """The Transform3D basis of a turn about Y of -facing degrees (rotation.y = -deg_to_rad(facing)), row major."""
+    angle = -math.radians(facing)
+    c, s = math.cos(angle), math.sin(angle)
+    return ", ".join(fmt(v) for v in (c, 0, s, 0, 1, 0, -s, 0, c))
+
+
+def building_files() -> dict:
+    """BuildingType tag -> file stem of data/buildings/ (the building scene has the same stem)."""
+    files = {}
+    for f in (ROOT / "data/buildings").glob("*.tres"):
+        m = re.search(r'^tag = "(\w+)"', f.read_text(), re.M)
+        if m:
+            files[m.group(1)] = f.stem
+    return files
+
+
+def creature_files() -> dict:
+    """Creature tag -> (file stem of data/catalog/creatures/, display name)."""
+    files = {}
+    for f in (ROOT / "data/catalog/creatures").glob("*.tres"):
+        text = f.read_text()
+        m = re.search(r'^display_name = "([^"]*)"', text, re.M)
+        files[f.stem] = (f.stem, m.group(1) if m else f.stem)
+    return files
+
+
+def flora_line() -> str:
+    return 'flora_map = ExtResource("flora_map")\n' if (SCENES / "flora.res").exists() else ""
 
 
 def map_tscn(ntts: dict, seats: list) -> str:
@@ -217,27 +289,33 @@ def map_tscn(ntts: dict, seats: list) -> str:
             sys.exit("scaffold_map: %s (%s, %s) is over a hole" % (row["tag"], row["x"], row["z"]))
         return y
 
-    out = [MAP_HEAD.format(tag=TAG)]
     # data/buildings/<name>.tres: the file is named for humans, the tag is a field inside.
     bldg_files = {}
     for f in (ROOT / "data/buildings").glob("*.tres"):
         m = re.search(r'^tag = "(\w+)"', f.read_text(), re.M)
         if m:
             bldg_files[m.group(1)] = f.name
-    # The BLDG each fount row names (its first part is the model ManafountBody draws), right after the head's resources.
-    fount_bldgs = sorted({row["tag"] for row in founts})
-    cut = out[0].index("\n\n[node ")
-    out[0] = out[0][:cut] + "".join(
-        '\n[ext_resource type="Resource" path="res://data/buildings/%s" id="fbldg_%s"]' % (bldg_files[t], t)
-        for t in fount_bldgs) + out[0][cut:]
+    ext = []   # (type, path, id) in order
+    ext_ids = {}
+
+    def resource(kind: str, path: str, key: str) -> str:
+        if key not in ext_ids:
+            ext_ids[key] = key
+            ext.append('[ext_resource type="%s" path="%s" id="%s"]' % (kind, path, key))
+        return key
+
+    # The BLDG each fount row names (its first part is the model ManafountBody draws).
+    for t in sorted({row["tag"] for row in founts}):
+        resource("Resource", "res://data/buildings/%s" % bldg_files[t], "fbldg_%s" % t)
     starts = []
     for altar in sorted(altars, key=lambda a: seats.index(a["side"])):
         slot = seats.index(altar["side"]) + 1
         near = min(range(len(founts)), key=lambda k: (founts[k]["x"] - altar["x"]) ** 2 + (founts[k]["z"] - altar["z"]) ** 2)
         starts.append((slot, altar, near))
+    body = [""]
     for slot, altar, near in starts:
         spot, local = wizard_spot(altar, founts[near])
-        out.append("""
+        body.append("""
 [node name="Start{slot}" parent="MapProps/Starts" instance=ExtResource("4_start")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, {x}, {y}, {z})
 {slot_line}
@@ -246,15 +324,86 @@ transform = Transform3D({basis}, {x_off}, 0, {z_off})
 """.format(slot=slot, x=fmt(altar["x"]), y=fmt(y_of(altar)), z=fmt(altar["z"]),
            slot_line="" if slot == 1 else "slot = %d\n" % slot, basis=", ".join(fmt(v) for v in spot),
            x_off=fmt(local[0]), z_off=fmt(local[1])))
-    out.append('\n[node name="Founts" type="Node3D" parent="MapProps"]\n')
+    body.append('\n[node name="Founts" type="Node3D" parent="MapProps"]\n')
     for name, row in zip(names, founts):
-        out.append("""
+        body.append("""
 [node name="{name}" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, {x}, {y}, {z})
 building = ExtResource("fbldg_{bldg}")
 """.format(name=name, x=fmt(row["x"]), y=fmt(y_of(row)), z=fmt(row["z"]), bldg=row["tag"]))
-    out.append(MAP_TAIL)
-    return "".join(out)
+
+    # Slot of each side, as SideRelations gives it: seats first, then the sides of the Npcs in the order they appear.
+    creatures = [] if "--no-npcs" in ARGS else ntts["creatures"]
+    npc_sides = []
+    for row in creatures:
+        if row["side"] not in seats and row["side"] not in npc_sides:
+            npc_sides.append(row["side"])
+
+    def slot_of(side: int) -> int:
+        if side in seats:
+            return seats.index(side) + 1
+        if side in npc_sides:
+            return len(seats) + npc_sides.index(side) + 1
+        return 0
+
+    left_out = {}
+    counters = {}
+    body.append('\n[node name="Buildings" type="Node3D" parent="."]\n')
+    by_tag = building_files()
+    for row in ntts["structures"]:
+        tag = row["tag"]
+        if tag in ALTAR_TAGS or tag in FOUNT_TAGS:
+            continue
+        if tag in NOT_BUILDINGS or tag not in by_tag:
+            left_out.setdefault(tag + (" (not a prop)" if tag in NOT_BUILDINGS else " (no BuildingType)"), 0)
+            left_out[tag + (" (not a prop)" if tag in NOT_BUILDINGS else " (no BuildingType)")] += 1
+            continue
+        y = height_at(row["x"], row["z"])
+        if y is None:
+            left_out.setdefault(tag + " (off the land)", 0)
+            left_out[tag + " (off the land)"] += 1
+            continue
+        stem = by_tag[tag]
+        counters[stem] = counters.get(stem, 0) + 1
+        key = resource("PackedScene", "res://scenes/structures/buildings/%s.tscn" % stem, "d2_%s" % stem)
+        owner = slot_of(row.get("side", NEUTRAL_SIDE))
+        body.append("""
+[node name="{name}_{n:02d}" parent="Buildings" instance=ExtResource("{key}")]
+transform = Transform3D({basis}, {x}, {y}, {z})
+{owner}""".format(name=pascal_stem(stem), n=counters[stem], key=key, basis=turn(float(row.get("facing", 0.0))),
+                  x=fmt(row["x"]), y=fmt(y), z=fmt(row["z"]), owner="owner_slot = %d\n" % owner if owner else ""))
+    body.append('\n[node name="Npcs" type="Node3D" parent="."]\n')
+    types = creature_files()
+    for row in creatures:
+        if row["tag"] not in types:
+            left_out[row["tag"] + " (no CreatureType)"] = left_out.get(row["tag"] + " (no CreatureType)", 0) + 1
+            continue
+        stem, display = types[row["tag"]]
+        y = height_at(row["x"], row["z"])
+        label = display.replace(" ", "")
+        counters[label] = counters.get(label, 0) + 1
+        npc = resource("PackedScene", "res://scenes/map/npc_spawn.tscn", "d2_npc_spawn")
+        creature = resource("Resource", "res://data/catalog/creatures/%s.tres" % stem, "d2_%s" % stem)
+        body.append("""
+[node name="{name}_{n:02d}" parent="Npcs" instance=ExtResource("{npc}")]
+transform = Transform3D({basis}, {x}, {y}, {z})
+creature = ExtResource("{creature}")
+side = {side}
+""".format(name=label, n=counters[label], npc=npc, basis=turn(float(row.get("facing", 0.0))), x=fmt(row["x"]),
+           y=fmt((0.0 if y is None else y) + SPAWN_LIFT), z=fmt(row["z"]), creature=creature, side=row["side"]))
+    body.append(MAP_TAIL)
+    if left_out:
+        print("scaffold_map: left out: %s" % ", ".join("%s x%d" % kv for kv in sorted(left_out.items())))
+    native_look = ""
+    if HAS_NATIVE:
+        native_look = 'native_ground = ExtResource("native_ground")\n'
+        resource("Resource", "res://assets/original/maps/%s/ground_native.tres" % TAG, "native_ground")
+    head = MAP_HEAD.format(tag=TAG, native_look=flora_line() + native_look)
+    if flora_line():
+        resource("Resource", "res://scenes/map/maps/%s/flora.res" % TAG, "flora_map")
+    cut = head.index("\n\n[node ")
+    head = head[:cut] + "".join("\n" + line for line in ext) + head[cut:]
+    return head + "".join(body)
 
 
 def wizard_spot(altar: dict, fount: dict, distance: float = 30.0) -> tuple:
@@ -268,14 +417,38 @@ def wizard_spot(altar: dict, fount: dict, distance: float = 30.0) -> tuple:
     return [c, 0, s, 0, 1, 0, -s, 0, c], off
 
 
+def wire_flora() -> None:
+    """Hangs flora.res from the Look of the map.tscn that exists (the plants are baked after the scene can load)."""
+    path = SCENES / "map.tscn"
+    text = path.read_text()
+    if not (SCENES / "flora.res").exists():
+        sys.exit("scaffold_map: bake the plants first (tools/bake/bake_flora_map.gd -- --map=%s): flora.res is missing" % TAG)
+    if "flora_map" in text:
+        print("scaffold_map: %s already has its flora_map" % TAG)
+        return
+    head = '[ext_resource type="Resource" path="res://scenes/map/maps/%s/flora.res" id="flora_map"]\n' % TAG
+    last = max(m.end() for m in re.finditer(r"^\[ext_resource [^\n]*\n", text, re.M))
+    text = text[:last] + head + text[last:]
+    text, count = re.subn(r'(\[node name="Look"[^\n]*\n(?:[^\n\[][^\n]*\n)*?tile_map = [^\n]*\n)', r'\1flora_map = ExtResource("flora_map")\n', text, count=1)
+    if count != 1:
+        sys.exit("scaffold_map: %s has no Look node with a tile_map" % TAG)
+    path.write_text(text)
+    print("scaffold_map: %s: flora_map wired" % TAG)
+
+
 def main() -> None:
+    if "--wire-flora" in ARGS:
+        wire_flora()
+        return
     ntts_path = ASSETS / "ntts.json"
     if not ntts_path.exists():
-        sys.exit("scaffold_map: run tools/import/import_map.py --map=%s first (%s is missing)" % (ARGS.get("--map"), ntts_path))
+        sys.exit("scaffold_map: run tools/import/import_map.py (--map=<Name> or --scp=<path>) first (%s is missing)" % ntts_path)
     ntts = json.loads(ntts_path.read_text())
     seats = seats_of(ntts["sides"])
     wrote = []
     write(ASSETS / "terrain.glb.import", GLB_IMPORT.format(tag=TAG), wrote)
+    if HAS_NATIVE:
+        write(ASSETS / "ground_native.tres", NATIVE_GROUND_TRES.format(tag=TAG, god=land_themes.map_god(SCP)), wrote)
     write(SCENES / (TAG + ".tres"), definition_tres(len(seats)), wrote)
     write(SCENES / "nav.res", base64.b64decode(NAV_PLACEHOLDER_B64), wrote)
     write(SCENES / "map.tscn", map_tscn(ntts, seats), wrote)

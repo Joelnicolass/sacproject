@@ -28,7 +28,7 @@ func _ready() -> void:
 static func offered_tags(with_test_maps: bool) -> PackedStringArray:
 	var catalog := MapCatalog.shared()
 	var all := MpBoot.user_flag("room-test-maps") or (with_test_maps and OS.is_debug_build())
-	return catalog.all_tags() if all else catalog.room_tags()
+	return catalog.playable_tags() if all else catalog.room_tags()
 
 
 func fill() -> void:

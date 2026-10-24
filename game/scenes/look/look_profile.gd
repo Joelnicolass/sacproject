@@ -7,6 +7,8 @@ extends Resource
 ## its layer simply has nothing to show.
 
 @export var display_name: String = ""
+## The god of this biome (`data/gods/<god>.tres`): a map made of its land wears its own ground (NativeGround).
+@export var god: StringName = &""
 
 @export_group("Sky and light")
 ## The sky, the fog and the ambient (see SkyLook).

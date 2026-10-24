@@ -6,8 +6,7 @@ extends Node
 ## scene or a node under `Layers`; removing one removes that layer. It also holds the world's sun and
 ## Environment inside their layers, and the empty slots time of day and weather will fill.
 ## The rig hands every `LookLayer` the profile and the quality preset; the layer works out its own
-## object from them. Presentation only: a dedicated or headless process frees the whole rig.
-## No autoloads, so it also runs in the editor.
+## object from them. Presentation only: a dedicated or headless process frees the whole rig. Runs in the editor too.
 
 signal profile_applied(profile: LookProfile)
 signal layer_toggled(index: int, enabled: bool)
@@ -29,6 +28,8 @@ signal vegetation_toggled(enabled: bool)
 ## Which `GroundSet` slot paints each of the map's tile ids. The classic ground (a biome without a
 ## PBR `GroundSet`) uses it so the grass knows where it grows; it belongs to the map, not to a biome.
 @export var tile_map: TileLayerMap
+## The ground of a map made of one god's land (empty for the other maps): a look of that god wears it.
+@export var native_ground: NativeGround
 ## How many plants of the original stand in each 8 m cell of this map (scenes/map/maps/<tag>/flora.res).
 ## The Flora layer draws it; empty = no plants.
 @export var flora_map: FloraMap

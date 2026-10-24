@@ -10,6 +10,7 @@
 [resource]
 script = ExtResource("1_p")
 display_name = "Pyro"
+god = &"pyro"
 sky = ExtResource("9_sky")
 light = ExtResource("2_light")
 glow = ExtResource("1_pgdjj")

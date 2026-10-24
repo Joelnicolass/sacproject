@@ -77,8 +77,18 @@ func find(tag: StringName) -> MapDefinition:
 func room_tags() -> PackedStringArray:
 	var tags := PackedStringArray()
 	for definition in maps:
-		if definition.room_selectable:
+		if definition.room_selectable and definition.playable:
 			tags.append(String(definition.tag))
+	return tags
+
+
+## The maps a screen offers with the test maps on: all of them but the ones only there to look at (`playable` off).
+func playable_tags() -> PackedStringArray:
+	var tags := PackedStringArray()
+	for tag in all_tags():
+		var definition := find(StringName(tag))
+		if definition != null and definition.playable:
+			tags.append(tag)
 	return tags
 
 

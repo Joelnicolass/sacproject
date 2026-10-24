@@ -406,12 +406,41 @@ def map_tiles(scp: Path) -> tuple:
     return bytes(remap.get(tile, tile) for tile in tmap), missed, len(tmap)
 
 
+def native_tiles(scp: Path) -> bytes:
+    """The map's 256x256 tile ids as the .scp stores them: indices of the MAPTs of the map's own land (sacmap.d loads the LEVL land)."""
+    return bytes(extract(scp, "", "TMAP")[512: 512 + 256 * 256])
+
+
+def native_atlas(god: str, scp: Path) -> tuple:
+    """(1024, 1024, RGBA) atlas of the tiles `scp` paints, each at its own id, from the land of `god` (the map's land, map_god(scp)).
+
+    RFC-059b. No remap: the tile ids of a Persephone map index Persephone's MAPTs, as in the original. The ids the map does not
+    paint stay blank, so the file says what the map uses."""
+    if map_god(scp) != god:
+        sys.exit("land_themes: %s is a %s map; its native atlas is that god's, not %s's" % (scp.name, map_god(scp), god))
+    wad_name, land, _ = GODS[god]
+    folder = land_folder(DATA / wad_name, land)
+    palt = folder[("LAND", "PALT")][8:]
+    atlas = bytearray(1024 * 1024 * 4)
+    for index in sorted(set(native_tiles(scp))):
+        data = folder.get((f"{index:04d}", "MAPT"))
+        if data is None:
+            continue
+        ox, oy = (index % 16) * 64, (index // 16) * 64
+        for y in range(64):
+            out = ((oy + y) * 1024 + ox) * 4
+            for x, color in enumerate(data[64 * y: 64 * y + 64]):
+                atlas[out + 4 * x: out + 4 * x + 4] = palt[3 * color: 3 * color + 3] + b"\xff"
+    return 1024, 1024, bytes(atlas)
+
+
 def imported_maps() -> list:
     """The .scp of every map under assets/original/maps/ except High Noon (the base of the themes), by the `map` of its ntts.json."""
     folder = Path(__file__).resolve().parents[2] / "assets" / "original" / "maps"
     found = []
     for ntts in sorted(folder.glob("*/ntts.json")):
-        scp = MAPS / json.loads(ntts.read_text())["map"]
+        name = json.loads(ntts.read_text())["map"]
+        scp = next((c for c in (MAPS / name, MAPS / "Tutorial" / name) if c.exists()), MAPS / name)
         if scp != MAP and scp.exists():
             found.append(scp)
     return found

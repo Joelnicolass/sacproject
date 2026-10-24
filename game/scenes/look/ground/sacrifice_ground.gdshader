@@ -8,6 +8,10 @@ uniform sampler2D lightmap : filter_linear, repeat_disable;
 // ENVI EDGE: sacmap.d draws the void walls with meshes[edgeIndex], not the cell's tile.
 uniform sampler2D edge : filter_linear_mipmap, repeat_enable;
 uniform bool has_edge = false;
+// A map in its own land (NativeGround): the tile of each 10 m cell comes from this 256x256 index (id in R) instead of the
+// mesh colors, so the atlas can hold the land's tiles at the ids the map stores. Off = the mesh colors, as every map.
+uniform sampler2D tile_index : filter_nearest, repeat_disable, hint_default_black;
+uniform bool use_tile_index = false;
 // The map's baked light is a multiplier; these two shape how strongly it reads.
 // Brightness = albedo * (light_base + light * light_gain).
 /** Light left where the light map is black. */
@@ -37,6 +41,9 @@ void fragment() {
 		albedo = texture(edge, COLOR.gb).rgb;
 	} else {
 		float id = COLOR.r * 255.0;
+		if (use_tile_index) {
+			id = floor(texture(tile_index, (floor(map_pos.xz / 10.0) + 0.5) / 256.0).r * 255.0 + 0.5);
+		}
 		vec2 cell = vec2(mod(id, 16.0), floor(id / 16.0));
 		vec2 uv = (cell + clamp(COLOR.gb, vec2(0.001), vec2(0.999))) / 16.0;
 		albedo = texture(atlas, uv).rgb;

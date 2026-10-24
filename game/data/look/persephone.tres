@@ -10,6 +10,7 @@
 [resource]
 script = ExtResource("1_p")
 display_name = "Pradera de Persephone"
+god = &"persephone"
 sky = ExtResource("9_sky")
 light = ExtResource("2_light")
 glow = ExtResource("1_e3s6b")

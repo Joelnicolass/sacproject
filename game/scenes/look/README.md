@@ -4,6 +4,7 @@ What: the rig (`look_rig.tscn`) hands a god's `LookProfile` and the quality pres
 Not: what a god is (GodType), when a biome is drawn (scenes/match/biome_rules.gd), or time of day and weather (empty slots `TimeOfDay` and `Weather`, RFC-058).
 Talks to: MatchBiome -> `map.look.apply_profile(god.look)` -> `LookLayer.apply_look(profile, rig)` / `apply_quality(preset)`; the rig emits `profile_applied`.
 Edit: `data/look/<god>.tres` (the profile) -> `sky/<god>_sky.tres` (the sky shader's material, fog, ambient), `light/<god>_light.tres`, `glow/<god>_glow.tres`; in the editor press «Vista previa del bioma» on the rig.
+Ground: a map made of one god's land holds a `NativeGround` in its rig (`native_ground`); a look of that god (`LookProfile.god`) wears its tiles, any other look its own atlas. `debug/look/persephone_compare.tscn` shows the tutorial's valley from three fixed cameras.
 Debug: `debug/look/biome_gallery.tscn`, `look_gallery.tscn`, `grass_lab.tscn`, `sky_compare.tscn` (F6).
 
 ---

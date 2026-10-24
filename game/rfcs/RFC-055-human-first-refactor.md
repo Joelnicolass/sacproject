@@ -426,3 +426,11 @@ Auditoría: `research/055R-editor-gizmo-audit.md`. El usuario aprobó los 5 cort
 - 055e absorbe proyectiles con su malla en el `.tscn` y una escena por estructura (Manalith, Shrine) con `StructureSpot`; 055g absorbe los `Marker3D` del ritual.
 
 **Orden vigente:** 055-0b → 055d-d2 ampliado → 059b/059c → 055d-d3 + d4 (sin capa de props) → 055c1 + escena por criatura → 055s → 055c2–c5 → 055x → 055r → 055e → 055f, 055g → 055k (puede adelantarse) → 055q → contenido (060 sangre, 058 ambiente, 059e, 056 estructuras, hechizos, 057 terreno deformable) → MpKit.
+
+## 16. Ragdoll del cautivo (aprobado 2026-10-23)
+Decisión del usuario: mientras un doctor carga o bombea una criatura (sacrificio **y Convert**), la criatura es un ragdoll en vez de reproducir los clips de cautivo. Va **después de 055s** (ahí nacen los sockets: ancla del cuerpo y `BoneAttachment3D` de la aguja del doctor), como **055a-5**:
+- `CaptiveLook` (hermano de `CorpseLook`) escucha `taken_changed`/`held_changed`; si el modelo tiene ragdoll, congela `clip_pose`, arranca `RagdollDriver.hang(anchor)` sin congelar (`settle_s` = ∞ mientras está tomada) y fija un hueso ancla (cadera/pecho) con un `PinJoint3D`/`Generic6DOFJoint3D` a un `AnimatableBody3D` Anchor hijo del cuerpo (sin colisiones); el resto cuelga. Sin ragdoll: los clips de hoy como respaldo.
+- Solo presentación: la sim sigue moviendo `body.global_position` (punto de cuelgue y ritual); nada la lee.
+- Al soltar: si vive, `reset()` y clips; si muere, sigue `CorpseLook`. Con Convert, `CaptiveLook` toma el ragdoll ya corriendo en vez de resetearlo (pendiente: si el revivido se levanta también como ragdoll).
+- Hornear los 72 modelos con `bake_ragdolls.gd -- <tags>`; galería (`debug/units/death_ragdoll.tscn` extendida) con los 72 colgados de un Anchor móvil; métricas automáticas (velocidad máx. de hueso a 3 s < 0,5 m/s, extensión < 2× altura, sin NaN); los que fallen van a una lista en un `.tres`.
+- Spike previo con eorc: que el ancla aguante sin estirarse a 11 m/s.

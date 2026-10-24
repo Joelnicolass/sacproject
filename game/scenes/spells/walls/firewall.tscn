@@ -16,6 +16,9 @@
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="14_light"]
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_light_follow.gd" id="15_follow"]
 
+[ext_resource type="PackedScene" path="res://scenes/spells/scar_mark.tscn" id="scar_mark"]
+[ext_resource type="Script" path="res://scenes/spells/walls/wall_scars.gd" id="scar_script"]
+[ext_resource type="Texture2D" path="res://assets/original/scars/quk1.png" id="scar_tex"]
 [sub_resource type="BoxShape3D" id="Box_body"]
 size = Vector3(110, 7.5, 5)
 
@@ -105,3 +108,11 @@ priority = 3.0
 script = ExtResource("15_follow")
 wall = NodePath("..")
 light = NodePath("../Light")
+
+[node name="Mark" parent="." instance=ExtResource("scar_mark")]
+texture = ExtResource("scar_tex")
+
+[node name="Scars" type="Node" parent="." node_paths=PackedStringArray("wall", "mark")]
+script = ExtResource("scar_script")
+wall = NodePath("..")
+mark = NodePath("../Mark")

@@ -1,0 +1,59 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://debug/look/scars_lab.gd" id="1_lab"]
+[ext_resource type="PackedScene" path="res://scenes/map/maps/test_flat/map.tscn" id="2_map"]
+[ext_resource type="PackedScene" path="res://scenes/spells/scar_mark.tscn" id="3_mark"]
+[ext_resource type="Texture2D" path="res://assets/original/scars/scar.png" id="4_scar"]
+[ext_resource type="Texture2D" path="res://assets/original/scars/gscr.png" id="5_gscr"]
+[ext_resource type="Texture2D" path="res://assets/original/scars/tscr.png" id="6_tscr"]
+[ext_resource type="Texture2D" path="res://assets/original/scars/oils.png" id="7_oils"]
+[ext_resource type="Texture2D" path="res://assets/original/scars/volc.png" id="8_volc"]
+[ext_resource type="Texture2D" path="res://assets/original/scars/escr.png" id="9_escr"]
+[ext_resource type="Texture2D" path="res://assets/original/scars/quk1.png" id="10_quk1"]
+[ext_resource type="Texture2D" path="res://assets/original/scars/blud.png" id="11_blud"]
+[ext_resource type="Texture2D" path="res://assets/original/scars/bovs.png" id="12_bovs"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_lab"]
+
+[sub_resource type="Sky" id="Sky_lab"]
+sky_material = SubResource("ProceduralSkyMaterial_lab")
+
+[sub_resource type="Environment" id="Environment_lab"]
+background_mode = 2
+sky = SubResource("Sky_lab")
+ambient_light_source = 3
+tonemap_mode = 3
+
+[node name="ScarsLab" type="Node3D" node_paths=PackedStringArray("map", "camera", "mark", "info")]
+script = ExtResource("1_lab")
+map = NodePath("Map")
+camera = NodePath("Camera")
+mark = NodePath("Mark")
+info = NodePath("Ui/Info")
+textures = Array[Texture2D]([ExtResource("4_scar"), ExtResource("5_gscr"), ExtResource("6_tscr"), ExtResource("7_oils"), ExtResource("8_volc"), ExtResource("9_escr"), ExtResource("10_quk1"), ExtResource("11_blud"), ExtResource("12_bovs")])
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_lab")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, 0.25, -0.433, 0, 0.866, 0.5, 0.5, -0.433, 0.75, 1325, 60, 1300)
+
+[node name="Map" parent="." instance=ExtResource("2_map")]
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.866, 0.5, 0, -0.5, 0.866, 1250, 90, 1360)
+current = true
+far = 3000.0
+
+[node name="Mark" parent="." instance=ExtResource("3_mark")]
+
+[node name="Ui" type="CanvasLayer" parent="."]
+
+[node name="Info" type="Label" parent="Ui"]
+mouse_filter = 2
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 900.0
+offset_bottom = 80.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6

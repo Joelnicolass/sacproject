@@ -69,4 +69,5 @@ static func land(holder: Node3D, look: ShotLook, target: Node3D, point: Vector3,
 		LifeDrain.feed(shooter_of(holder), hit, taken)  ## F164
 	for fx in look.impact_fx:
 		FxBus.broadcast(fx, point)
+	ScarMark.broadcast(look.ground_mark, point)
 	return taken

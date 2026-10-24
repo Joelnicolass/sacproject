@@ -24,12 +24,17 @@ const GROUP := &"ground_zone"
 ## How long it acts. Ignored when it lasts the spell's duration or until `finish()`.
 @export_range(0.0, 120.0, 0.1, "suffix:s") var hold_s := 0.0
 @export var hold_is_spell_duration := false
+## Added to what it acts for (Meanstalks: the seconds its stalks take to grow, so they hunt for the whole duration).
+@export_range(0.0, 60.0, 0.1, "suffix:s") var hold_extra_s := 0.0
 ## It acts until something calls `finish()` (a rift ends when its last spirit is gone).
 @export var open_ended := false
 ## It takes this long to go away, and frees itself after.
 @export_range(0.0, 10.0, 0.01, "suffix:s") var end_s := 0.5
 ## Its reach grows to the full radius in this time after it started acting (0 = at once).
 @export_range(0.0, 10.0, 0.01, "suffix:s") var grow_s := 0.0
+
+## Properties of its children the server replicates with the zone (paths from the zone, as `Stalk1:tip`): Meanstalks, Tornado.
+@export var synced := PackedStringArray()
 
 ## Where it acts. The first is its anchor; Explosion has five.
 var points := PackedVector3Array()
@@ -43,6 +48,8 @@ var cast_ticks := 0
 var arm_ticks := 0
 ## Ticks counted in the current phase, on every peer. The ENDING of a zone ended by `cancel()` has `cancelled` set.
 var phase_ticks := 0
+## Ticks since it was born, on every peer: the phases of a wind that must look the same everywhere.
+var age_ticks := 0
 ## Replicated. The server writes it; every peer draws from it.
 var phase := Phase.CASTING:
 	set(value):
@@ -76,7 +83,7 @@ func _attach_net() -> void:
 	var net := MpReplicate.new()
 	net.name = "Net"
 	net.interpolate = false
-	net.sync_properties = PackedStringArray([".:phase", ".:cancelled"])
+	net.sync_properties = PackedStringArray([".:phase", ".:cancelled"]) + synced
 	MpAuthority.ensure_sync(self, net.sync_properties)
 	add_child(net)
 
@@ -106,7 +113,7 @@ func finish() -> void:
 
 
 func hold_ticks() -> int:
-	return maxi(1, MatchClock.ticks_for(spell.duration if hold_is_spell_duration and spell != null else hold_s))
+	return maxi(1, MatchClock.ticks_for((spell.duration if hold_is_spell_duration and spell != null else hold_s) + hold_extra_s))
 
 
 func end_ticks() -> int:
@@ -127,6 +134,7 @@ func caster() -> Node3D:
 
 func _physics_process(_delta: float) -> void:
 	phase_ticks += 1
+	age_ticks += 1
 	if not is_authority():
 		return
 	match phase:

@@ -59,6 +59,18 @@ static func disk_point(rng: RandomNumberGenerator, radius: float) -> Vector3:
 	return Vector3(cos(angle) * length, 0.0, sin(angle) * length)
 
 
+## `count` points around `center`, one per equal slice of a turn (the first slice starts half a slice in), each at a random angle within
+## ±`jitter_rad` of its slice's middle and a random distance between `inner_m` and `outer_m` (the roots of Meanstalks: 9 to 21.6 m).
+static func ring_points(rng: RandomNumberGenerator, center: Vector3, count: int, inner_m: float, outer_m: float, jitter_rad: float) -> PackedVector3Array:
+	var points := PackedVector3Array()
+	var step := TAU / float(maxi(count, 1))
+	for i in count:
+		var angle := step * (0.5 + i) + rng.randf_range(-jitter_rad, jitter_rad)
+		var length := outer_m - (outer_m - inner_m) * rng.randf()
+		points.append(center + Vector3(sin(angle) * length, 0.0, cos(angle) * length))
+	return points
+
+
 ## Distance on the ground plane from `point` to the foot of a body's box (0 inside it).
 static func flat_gap(box: AABB, point: Vector3) -> float:
 	var dx := maxf(0.0, maxf(box.position.x - point.x, point.x - box.end.x))

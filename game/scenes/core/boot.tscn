@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://bootsacrifice01"]
+[gd_scene load_steps=14 format=3 uid="uid://bootsacrifice01"]
 
 [ext_resource type="Script" path="res://scenes/core/boot.gd" id="1_boot"]
 [ext_resource type="PackedScene" path="res://scenes/ui/character_select/character_select.tscn" id="2_select"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://scenes/ui/mode_picker/mode_picker.gd" id="9_mode_picker"]
 [ext_resource type="Script" path="res://scenes/ui/ai_picker/ai_god_picker.gd" id="10_god_picker"]
 [ext_resource type="PackedScene" path="res://scenes/audio/music_director.tscn" id="11_music"]
+[ext_resource type="Script" path="res://scenes/ui/biome_picker/biome_picker.gd" id="12_biome_picker"]
 
 [node name="Boot" type="Control"]
 layout_mode = 3
@@ -84,6 +85,11 @@ layout_mode = 2
 script = ExtResource("8_map_picker")
 offer_test_maps = true
 mode_picker = NodePath("../ModePicker")
+
+[node name="BiomePicker" type="OptionButton" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("12_biome_picker")
 
 [node name="Solo" type="Button" parent="Column"]
 unique_name_in_owner = true

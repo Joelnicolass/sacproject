@@ -5,7 +5,7 @@ extends Node
 ## waits until the match scene is up and checks that it is the map the room chose. That is the measure of the order risk
 ## (snapshot `{map}` before the order to load the world): a wrong order loads High Noon.
 ## The main scene only starts a twin of this script under `root`, because loading the world frees the main scene.
-## Flags: --e2e-name --e2e-room --e2e-peer --e2e-create --e2e-world (the room's map) --e2e-expect-map (default: the world)
+## Flags: --e2e-name --e2e-room --e2e-peer --e2e-create --e2e-world (the room's map) --e2e-biome (the room's land: every client must end up with it) --e2e-expect-map (default: the world)
 ## --e2e-wizard --e2e-god --e2e-expect-winner --lobby-port --e2e-bad-world (only create a room with a map that does not exist
 ## and expect `bad_options`).
 ## Prints `PASS …` / `FAIL …` per check and `E2E CLIENT <name> PASS|FAIL`; exit 0 / 1.
@@ -96,6 +96,7 @@ func _run() -> void:
 	var room_name := MpBoot.user_value("e2e-room", "")
 	var peer_name := MpBoot.user_value("e2e-peer", "")
 	var world := MpBoot.user_value("e2e-world", "")
+	var biome := MpBoot.user_value("e2e-biome", "")
 	var lobby_port := int(MpBoot.user_value("lobby-port", "7700"))
 	_check(MpLobby.connect_to(LOCAL_HOST, lobby_port, _name) == OK, "%s connects to the lobby" % _name)
 	_check(await _until(func() -> bool: return client.is_online()), "%s is welcomed" % _name)
@@ -111,7 +112,10 @@ func _run() -> void:
 
 	# --- lobby: room with the chosen map, pick, ready -------------------------------------------------------------------
 	if MpBoot.user_flag("e2e-create"):
-		client.create_room(room_name, false, {"world": world} if not world.is_empty() else {})
+		var options := {"world": world} if not world.is_empty() else {}
+		if not biome.is_empty():
+			options["biome"] = biome
+		client.create_room(room_name, false, options)
 	else:
 		var joined := false
 		for _i in 80:
@@ -151,6 +155,10 @@ func _run() -> void:
 	print("E2E_MAP %s tag=%s scene=%s" % [_name, MapCatalog.current_tag(), scene_path])
 	_check(MapCatalog.current_tag() == StringName(expect), "%s plays the map %s (got %s)" % [_name, expect, MapCatalog.current_tag()])
 	_check(definition != null and scene_path == definition.map_scene.resource_path, "%s world holds the scene of %s (%s)" % [_name, expect, scene_path])
+	if not biome.is_empty():
+		var got := await _until(func() -> bool: return _biome_of_world() != &"")
+		print("E2E_BIOME %s god=%s" % [_name, _biome_of_world()])
+		_check(got and _biome_of_world() == StringName(biome), "%s shows the land the room chose (%s, got '%s')" % [_name, biome, _biome_of_world()])
 
 	# --- the end: the dedicated forces a defeat, both clients hear the result ----------------------------------------------
 	_check(await _until(func() -> bool: return not _session_ended.is_empty()), "%s gets session_ended" % _name)
@@ -160,6 +168,13 @@ func _run() -> void:
 	MpKit.leave()
 	MpLobby.client.close_connection()
 	_finish()
+
+
+## The land (god) the match scene's MatchBiome holds, or empty while the server has not sent it.
+func _biome_of_world() -> StringName:
+	var scene := get_tree().current_scene
+	var node := scene.get_node_or_null("MatchBiome") if scene != null else null
+	return (node as MatchBiome).god if node is MatchBiome else &""
 
 
 ## The scene file of the map the match scene holds, or "" while the match scene is not up.

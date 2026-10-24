@@ -65,6 +65,8 @@ func _setup(level: int) -> MatchSetup:
 		setup.level = level
 	## RFC-049 049a: the map of %MapPicker (SacrificeFlow plays it).
 	setup.map_tag = (%MapPicker as MapPicker).selected_tag()
+	## The land of %BiomePicker (empty = drawn from the seed; the authority of the match draws it and sends it to the clients).
+	setup.biome_god = (%BiomePicker as BiomePicker).selected_god()
 	## RFC-049 049h: and the mode of %ModePicker (in «Contra la IA» the AI takes every other seat).
 	setup.mode_tag = (%ModePicker as ModePicker).selected_tag()
 	return setup

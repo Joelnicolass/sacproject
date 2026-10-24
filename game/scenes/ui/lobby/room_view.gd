@@ -121,6 +121,9 @@ func _meta_text(room: Dictionary) -> String:
 	var map := MapCatalog.shared().find(StringName(str(options.get("world", MapCatalog.DEFAULT_TAG))))
 	if map != null:
 		parts.append(tr("UI_ROOM_VIEW_MAP") % map.display_name)
+	var land := GameCatalog.shared().god(str(options.get("biome", "")))
+	if land != null:
+		parts.append(tr("UI_ROOM_VIEW_LAND") % land.display_name)
 	if options.has("level"):
 		parts.append(tr("UI_ROOM_VIEW_LEVEL") % int(options["level"]))
 	return " · ".join(parts)

@@ -12,7 +12,7 @@ const LEVEL_MAX := 9
 const SOULS_MIN := 0
 const SOULS_MAX := 200
 const SEED_MAX := 0x7fffffff
-const OPTION_KEYS: PackedStringArray = ["world", "mode", "level", "friendly_fire", "drop_soul", "starting_souls"]
+const OPTION_KEYS: PackedStringArray = ["world", "mode", "level", "friendly_fire", "drop_soul", "starting_souls", "biome"]
 ## RFC-049 049f: version of the ticket this builds (2 = `mode` and `ai_seats`). The dedicated reads a ticket without them as a 1v1.
 const TICKET_VERSION := 2
 const BOT_KEYS: PackedStringArray = ["god", "difficulty"]
@@ -80,7 +80,7 @@ func seat_count_for(options: Dictionary) -> int:
 	return GameModeCatalog.seats_of(StringName(str(clean_options(options).get("mode", ""))))
 
 
-## The options that are valid (`world` as string, `level` and `starting_souls` as int, the switches as bool).
+## The options that are valid (`world` and `biome` as string, `level` and `starting_souls` as int, the switches as bool).
 ## An invalid value is left out.
 func clean_options(options: Dictionary) -> Dictionary:
 	var out := {}
@@ -97,6 +97,10 @@ func clean_options(options: Dictionary) -> Dictionary:
 		var flag: Variant = options.get(key)
 		if flag is bool:
 			out[key] = flag
+	## The land of the match: a god that brings a look (absent = drawn from the seed by the server that simulates).
+	var biome: Variant = options.get("biome")
+	if biome is String and BiomeRules.has_look(StringName(biome)):
+		out["biome"] = biome
 	var souls: Variant = options.get("starting_souls")
 	if souls is int and souls >= SOULS_MIN and souls <= SOULS_MAX:
 		out["starting_souls"] = souls

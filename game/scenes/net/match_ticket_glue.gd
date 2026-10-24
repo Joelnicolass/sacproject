@@ -125,6 +125,7 @@ static func setup_from_ticket(ticket: Dictionary) -> MatchSetup:
 	setup.match_seed = int(ticket.get("seed", 0))
 	setup.map_tag = StringName(str(ticket.get("world", "")))
 	setup.mode_tag = StringName(str(ticket.get("mode", "")))
+	setup.biome_god = StringName(str(options.get("biome", "")))
 	return setup
 
 

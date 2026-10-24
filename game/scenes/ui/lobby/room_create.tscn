@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/lobby/room_create.gd" id="1_create"]
 [ext_resource type="Script" path="res://scenes/ui/map_picker/map_picker.gd" id="2_map_picker"]
 [ext_resource type="Script" path="res://scenes/ui/mode_picker/mode_picker.gd" id="3_mode_picker"]
+[ext_resource type="Script" path="res://scenes/ui/biome_picker/biome_picker.gd" id="4_biome_picker"]
 
 [node name="RoomCreate" type="Control"]
 layout_mode = 3
@@ -58,6 +59,11 @@ unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("2_map_picker")
 mode_picker = NodePath("../RoomMode")
+
+[node name="RoomBiome" type="OptionButton" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("4_biome_picker")
 
 [node name="CreateConfirm" type="Button" parent="Column"]
 unique_name_in_owner = true

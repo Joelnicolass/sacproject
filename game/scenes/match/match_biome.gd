@@ -1,6 +1,7 @@
+class_name MatchBiome
 extends Node
 
-## The land of the match: the server (or solo) draws one god per match (BiomeRules) and sends it to each client on
+## The land of the match: the server (or solo) takes the god the setup chose (rules.biome_god) or draws one per match (BiomeRules) and sends it to each client on
 ## the MpKit custom channel once that client's world is ready. Every peer with a screen then hands that god's look
 ## to the map's LookRig, after the world's _ready (the rig exists).
 
@@ -46,6 +47,8 @@ func _draw() -> void:
 		match_seed = rules.biome_seed
 	if match_seed == 0:
 		match_seed = MatchSeed.rng(["biome"]).seed  # the biome stream of the match (randomized without one)
+	if forced != &"" and not BiomeRules.has_look(forced):
+		push_warning("MatchBiome: '%s' no tiene tierra; se sortea." % forced)
 	var picked := BiomeRules.choose(forced, match_seed)
 	if not BiomeRules.has_look(picked):
 		if DebugLog.on(&"biome"): print("bioma sin look")

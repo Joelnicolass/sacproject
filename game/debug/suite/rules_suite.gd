@@ -21,6 +21,7 @@ const FORMATION_CASES := preload("res://debug/suite/formation_cases.gd")  # 038a
 const RADIAL_CASES := preload("res://debug/suite/radial_cases.gd")  # 038c
 const HOVER_FRAME_CASES := preload("res://debug/suite/hover_frame_cases.gd")
 const DEATH_CASES := preload("res://debug/suite/death_cases.gd")  # 055a
+const BIOME_CASES := preload("res://debug/suite/biome_cases.gd")
 const TEAM_CASES := preload("res://debug/match/team_cases.gd")  # 049b, 049c
 
 @export var auto_run := true
@@ -66,6 +67,7 @@ func _run_suite() -> void:
 	_results.merge(await HOVER_FRAME_CASES.new().run(self))
 	_results.merge(await DEATH_CASES.new().run(self))  # 055a
 	_results.merge(await TEAM_CASES.new().run(self))  # 049b, 049c
+	_results.merge(BIOME_CASES.new().run(self))
 	_print_suite()
 
 

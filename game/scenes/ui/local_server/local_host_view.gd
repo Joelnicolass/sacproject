@@ -54,6 +54,9 @@ func _on_create() -> void:
 	var world := (%HostMap as MapPicker).selected_tag()
 	if world != &"":
 		options["world"] = String(world)
+	var biome := (%HostBiome as BiomePicker).selected_god()
+	if biome != &"":
+		options["biome"] = String(biome)
 	var mode := (%HostMode as ModePicker).selected_tag()
 	if mode != &"":
 		options["mode"] = String(mode)

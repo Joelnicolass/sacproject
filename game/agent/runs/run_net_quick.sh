@@ -22,6 +22,7 @@ PROC_MAX=6 # server + 3 clients + the dedicated (+1 of margin while one exits)
 TRANSPORT="${TRANSPORT:-enet}"
 LOBBY_PORT="${E2E_LOBBY_PORT:-7706}"
 FORCE_TICKS="${E2E_FORCE_TICKS:-120}"
+BIOME="${E2E_BIOME:-pyro}" # the land the room chooses: both clients must show it (the dedicated sends it on the biome channel)
 OUT="$(mktemp -d "${TMPDIR:-/tmp}/net_quick.XXXXXX")"
 MATCHES="$OUT/matches"
 mkdir -p "$MATCHES"
@@ -49,10 +50,10 @@ wait_line "$OUT/server.log" "^salas listo puerto" "$SERVER" 30 && READY=1
 gd "$OUT/Bea.log" res://debug/net/room_world_client.tscn -- "${CLIENT_FLAGS[@]}" --e2e-name=Bea --e2e-room=SalaBad --e2e-bad-world
 BEA=$LAST_PID
 gd "$OUT/Ana.log" res://debug/net/room_world_client.tscn -- "${CLIENT_FLAGS[@]}" --e2e-name=Ana --e2e-room=SalaFlat --e2e-peer=Aldo --e2e-create \
-  --e2e-world=test_flat --e2e-wizard=cwa0 --e2e-model=jnwr --e2e-god=james --e2e-expect-winner=1
+  --e2e-world=test_flat --e2e-biome="$BIOME" --e2e-wizard=cwa0 --e2e-model=jnwr --e2e-god=james --e2e-expect-winner=1
 ANA=$LAST_PID
 gd "$OUT/Aldo.log" res://debug/net/room_world_client.tscn -- "${CLIENT_FLAGS[@]}" --e2e-name=Aldo --e2e-room=SalaFlat --e2e-peer=Ana \
-  --e2e-world=test_flat --e2e-wizard=cwa1 --e2e-model=serx --e2e-god=pyro --e2e-expect-winner=1
+  --e2e-world=test_flat --e2e-biome="$BIOME" --e2e-wizard=cwa1 --e2e-model=serx --e2e-god=pyro --e2e-expect-winner=1
 ALDO=$LAST_PID
 
 for p in $BEA $ANA $ALDO; do wait "$p"; done
@@ -103,6 +104,7 @@ if launch:
         log = read(who + ".log")
         check(any(l == "E2E CLIENT %s PASS" % who for l in log), "%s passed all its checks (slot, world loaded, result)" % who)
         check(any(l.startswith("E2E_MAP %s tag=test_flat scene=res://scenes/map/maps/test_flat/map.tscn" % who) for l in log), "%s: the match scene holds the map of test_flat" % who)
+        check(any(l == "E2E_BIOME %s god=%s" % (who, os.environ.get("E2E_BIOME", "pyro")) for l in log), "%s: the land of the room reached the client (%s)" % (who, os.environ.get("E2E_BIOME", "pyro")))
         check(not any("SCRIPT ERROR" in l for l in log), "no SCRIPT ERROR in %s's log" % who)
 check(not any("SCRIPT ERROR" in l for l in server), "no SCRIPT ERROR in the server log")
 check(not any("SCRIPT ERROR" in l for l in bea), "no SCRIPT ERROR in Bea's log")

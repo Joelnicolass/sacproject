@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/local_server/local_host_view.gd" id="1_host"]
 [ext_resource type="PackedScene" path="res://scenes/net/local_server_host.tscn" id="2_server"]
 [ext_resource type="Script" path="res://scenes/ui/map_picker/map_picker.gd" id="3_map_picker"]
 [ext_resource type="Script" path="res://scenes/ui/mode_picker/mode_picker.gd" id="4_mode_picker"]
 [ext_resource type="PackedScene" path="res://scenes/ui/local_server/local_seat_row.tscn" id="5_seat_row"]
+[ext_resource type="Script" path="res://scenes/ui/biome_picker/biome_picker.gd" id="6_biome_picker"]
 
 [node name="LocalHostView" type="Control"]
 layout_mode = 3
@@ -57,6 +58,11 @@ unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("3_map_picker")
 mode_picker = NodePath("../HostMode")
+
+[node name="HostBiome" type="OptionButton" parent="Column/HostForm"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("6_biome_picker")
 
 [node name="HostSeats" type="VBoxContainer" parent="Column/HostForm"]
 theme_type_variation = &"VBoxList"

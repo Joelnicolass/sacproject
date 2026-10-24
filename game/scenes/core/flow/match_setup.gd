@@ -22,6 +22,10 @@ var map_tag: StringName = &""
 ## RFC-049 049b (F291): the game mode of the match (a tag of the GameModeCatalog); empty = the one of `--mode` or 1v1. Like `map_tag` it is not a
 ## rule of the round; SacrificeFlow._apply_match_choice is the only one that turns it into `GameModeCatalog.use`.
 var mode_tag: StringName = &""
+## The land (the god whose look the map wears) of the match; empty = drawn from the seed like always. Unlike `map_tag` it IS a rule
+## of the round for `apply_to`: the copy of the rules carries it (`biome_god`), MatchBiome on the authority reads it and sends the result
+## to the clients on its own channel. A tag with no look is ignored there (BiomeRules.choose draws).
+var biome_god: StringName = &""
 
 
 func copy() -> MatchSetup:
@@ -33,11 +37,12 @@ func copy() -> MatchSetup:
 	other.match_seed = match_seed
 	other.map_tag = map_tag
 	other.mode_tag = mode_tag
+	other.biome_god = biome_god
 	return other
 
 
 func is_empty() -> bool:
-	return level == 0 and friendly_fire < 0 and drop_soul < 0 and starting_souls < 0 and match_seed == 0
+	return level == 0 and friendly_fire < 0 and drop_soul < 0 and starting_souls < 0 and match_seed == 0 and biome_god == &""
 
 
 ## A copy of this setup where every field `over` sets wins (boot > flag: the boot's setup over the flags' one).
@@ -59,6 +64,8 @@ func overlaid_by(over: MatchSetup) -> MatchSetup:
 		merged.map_tag = over.map_tag
 	if over.mode_tag != &"":
 		merged.mode_tag = over.mode_tag
+	if over.biome_god != &"":
+		merged.biome_god = over.biome_god
 	return merged
 
 
@@ -78,10 +85,12 @@ func apply_to(rules: Variant) -> Variant:
 		copy.starting_souls = starting_souls
 	if match_seed > 0:
 		copy.match_seed = match_seed
+	if biome_god != &"":
+		copy.biome_god = biome_god
 	return copy
 
 
-## --level=N (1-9, like sacengine app.d:276), --souls=N (app.d:278; the one owner of this flag, the bench ai_match
+## --biome=<god> (the land of the match), --level=N (1-9, like sacengine app.d:276), --souls=N (app.d:278; the one owner of this flag, the bench ai_match
 ## included: it reaches the bench through HighNoon like any other match), and the option flags --friendly-fire /
 ## --no-friendly-fire and --drop-soul / --no-drop-soul (app.d:333-355: the flag is the name of the option field).
 ## Prints what it took. With both forms of a flag the --no- one wins (sacengine keeps the last one in argv; passing
@@ -118,4 +127,7 @@ static func from_cli() -> MatchSetup:
 			print("semilla de la partida %d (--match-seed)" % setup.match_seed)
 		else:
 			push_warning("--match-seed=%s: no es un número > 0, se usa el de las reglas" % wanted_seed)
+	var biome := MpBoot.user_value("biome", "")
+	if not biome.is_empty():
+		setup.biome_god = StringName(biome)
 	return setup

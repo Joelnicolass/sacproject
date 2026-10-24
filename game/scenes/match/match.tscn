@@ -62,6 +62,7 @@
 [ext_resource type="PackedScene" path="res://scenes/audio/music_director.tscn" id="a052_music"]
 [ext_resource type="PackedScene" path="res://scenes/audio/ambience_director.tscn" id="a052_ambience"]
 [ext_resource type="PackedScene" path="res://scenes/ui/target_info/target_info_panel.tscn" id="f374_info"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hover_frame/hover_frame.tscn" id="hover_frame"]
 [ext_resource type="PackedScene" path="res://scenes/camera/camera_shake.tscn" id="f375_shake"]
 [ext_resource type="PackedScene" path="res://scenes/fx/damage_numbers.tscn" id="f375_numbers"]
 
@@ -386,6 +387,14 @@ command_log = NodePath("../Battle")
 cues = ExtResource("f80_cues")
 probe = NodePath("../TargetProbe")
 skin = NodePath("../CursorSkin")
+
+
+[node name="HoverFrame" parent="Hud" node_paths=PackedStringArray("probe", "armed", "selection_box") instance=ExtResource("hover_frame")]
+unique_name_in_owner = true
+editor_description = "El marco de esquinas sobre la unidad, el edificio o el alma bajo el puntero, con el color de su bando. Local, sin RPC."
+probe = NodePath("../TargetProbe")
+armed = NodePath("../../MatchCommand/ArmedCommand")
+selection_box = NodePath("../SelectionBox")
 
 
 [node name="TargetInfoPanel" parent="Hud" node_paths=PackedStringArray("probe", "inspector") instance=ExtResource("f374_info")]

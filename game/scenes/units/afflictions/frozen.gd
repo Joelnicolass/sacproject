@@ -16,7 +16,8 @@ extends Affliction
 ## side that froze it, and 30 shards burst from its box; it goes back to idle with no knock-down.
 ## Deviations (declared): a hit of 0 does not break the ice (Health.hit only reports what was taken; a fall of more than
 ## 0 does, as in sacengine); a broken ice shatters on the next tick (sacengine: in the same frame when the Freeze effect
-## updates after the hit); the ice is a tint of Afflictions.look (frozen.tres look_tint), not the `frez` cube.
+## updates after the hit). The ice is the translucent block of its child IceBlock (`icec`; the exe loads it for the spell), the
+## same for the spell and for the Yeti's and the Silverback's breath.
 
 const _HEALTH := preload("res://scenes/components/health.gd")
 ## The duration uses plain floats (RFC-036e): it may differ by one tick from sacengine (a Trogg 1251, not 1250).
@@ -67,6 +68,15 @@ static func is_frozen(node: Node) -> bool:
 ## F158: the on-hit freeze (Yeti zerf). Same as try_freeze_with_cooldown, and it logs the cooldown and the one roll it drew.
 func inflict(spell: SpellType, from_slot: int) -> bool:
 	return _try(spell, from_slot, true)
+
+
+## The Freeze spell: sacengine castFreeze already refused a ccProtected body, and freeze() takes no Yeti cooldown (state.d:10687-10708).
+func lay(spell: SpellType, from_slot: int) -> bool:
+	return freeze(spell, from_slot)
+
+
+func lay_ticks(spell: SpellType) -> int:
+	return lifetime_ticks(_body(), spell) if _body() != null else 0
 
 
 ## Server (or solo): sacengine tryFreezeWithCooldown(wizard, side, target, spell). True when it froze.

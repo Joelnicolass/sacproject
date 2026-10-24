@@ -1,10 +1,13 @@
 class_name Affliction
-extends Node
+extends Node3D
 
 ## F120 (RFC-030i): one state that takes the creature out of the fight (Stunned; later Petrified, Frozen). A child of
 ## Afflictions, which owns the questions the body asks and the replicated mask. Whether it is on is that mask's bit
 ## (`type.bit`), the same on the server and on the clients. Variants start themselves (stun_with_cooldown, petrify…)
 ## through Afflictions.admit/mark and draw themselves in _shown().
+
+## The state went on (true) or off (false). Every peer, from the replicated mask: whoever draws it (a look, an emitter) listens here.
+signal shown_changed(on: bool)
 
 @export var type: AfflictionType
 
@@ -18,6 +21,17 @@ func is_on() -> bool:
 ## took hold. Default: this state is not laid that way.
 func inflict(_spell: SpellType, _from_slot: int) -> bool:
 	return false
+
+
+## A spell lays this state on the body with `spell` from the side `from_slot` (AfflictAction). True when it took hold. Default: the
+## same as an on-hit passive; a state that a spell starts in its own way (Frozen: no Yeti cooldown) overrides it.
+func lay(spell: SpellType, from_slot: int) -> bool:
+	return inflict(spell, from_slot)
+
+
+## How many ticks `lay` would hold the state on this body under `spell` (0 = it would not take). The AI rates a spell by it.
+func lay_ticks(_spell: SpellType) -> int:
+	return 0
 
 
 ## sacengine's crowd-control lifetime (Freeze 10701-10702, Grasping Vines 10806): cast(int)ceil(updateFPS · duration), duration =

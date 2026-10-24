@@ -19,6 +19,10 @@ const NORMAL := "res://data/ai/tactics_normal.tres"
 @export_range(0.0, 100.0, 1.0) var guard_threat_m := 25.0
 @export_range(1, 10) var guard_min_foes := 2
 
+@export_group("Control de enemigos (061c)")
+## A control spell (Freeze, Grasping Vines, Rings of Fire, Slime) is worth the target's rating times min(1, seconds it lasts / this).
+@export_range(1.0, 60.0, 1.0) var disable_ref_s := 10.0
+
 @export_group("Tiro limpio (053b)")
 ## A projectile or area spell is cast only with a clear line (AiLineOfFire); without it the wizard walks closer (shiny.d:3262).
 @export var los_check := true

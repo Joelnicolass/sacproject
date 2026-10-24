@@ -144,7 +144,8 @@ func aim_direction(target: Node3D) -> Vector3:
 func advance(delta: float) -> bool:
 	if _anim.is_empty():
 		return false
-	_elapsed += delta
+	## RFC 061c: each layer of Slime makes the shot take 5x as long (sacengine hasShootTick, state.d:1405-1408).
+	_elapsed += delta / Afflictions.stat_factor_of(_body, Afflictions.Stat.ATTACK_TIME)
 	var rate := float(_anim.get("framerate", 30))
 	var frames := int(_anim.get("frames", 1))
 	var ticks: Array = _anim.get("shoot_ticks", [])

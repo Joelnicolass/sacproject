@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="SpellType" format=3]
 
+[ext_resource type="PackedScene" path="res://scenes/spells/actions/grasping_vines_action.tscn" id="2_action"]
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_xqura"]
 
 [resource]
@@ -14,4 +15,6 @@ spell_order = 344
 duration = 40.0
 flags = 73733
 flags1 = 2080
+action = ExtResource("2_action")
+ai_use = 2
 structures = PackedStringArray()

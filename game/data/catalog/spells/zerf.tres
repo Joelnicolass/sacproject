@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="SpellType" format=3]
 
+[ext_resource type="PackedScene" path="res://scenes/spells/actions/freeze_action.tscn" id="2_action"]
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_oxxll"]
 
 [resource]
@@ -16,4 +17,6 @@ amount2 = 150
 duration = 20.0
 flags = 8197
 flags1 = 2080
+action = ExtResource("2_action")
+ai_use = 2
 structures = PackedStringArray()

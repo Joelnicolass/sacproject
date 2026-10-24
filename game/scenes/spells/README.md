@@ -5,5 +5,6 @@ Talks to: HUD/input call `Caster.request_cast/request_summon/request_structure`;
 Talks to: `Caster` calls down to a `SpellAction` (`check`, `begin`, `finish`), which spawns projectiles/effects through `SpellSpawner` and hits units via `Health`.
 Edit: `data/catalog/spells/<tag>.tres` (cost, range, cooldown, `action` scene) · `actions/<name>_action.tscn` (the behaviour) · projectile/effect scenes in this folder.
 Check: `debug/spells/cast_*.tscn` (F6; `cast_wards.tscn` for the level-2 wards), `guardian_altar.tscn`, `wrath_splash.tscn` · rules_suite `ward_cases` · `match_shots --cast=niks|dlhs|mrfe|mrff|rwsp`.
+Control on one foe (Freeze, Grasping Vines, Rings of Fire, Slime): `AfflictAction` (one script, a scene per spell) asks its `SpellTarget` (embedded Resource: who, ground only, refuses ccProtected) and lays the state on the foe's `Afflictions`; `SlimeBall` is the ball that falls while Slime is cast. Check: `debug/spells/cast_control.tscn` (F6) · rules_suite `control_cases` · `match_shots --cast=zerf|eniv|rapf|htel --views=foe_close` (prints each state on the closest foe).
 Wards (shields and temporary forms): see `wards/README.md`.
 Known debt: `SpellType` still has raw `flags*` and unit-less fields; 4 actions are at inheritance depth 2 (see `CONVENTIONS.md`).

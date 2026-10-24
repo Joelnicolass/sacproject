@@ -16,8 +16,8 @@ func exit() -> void:
 	super.exit()
 
 
-func physics_update(delta: float) -> void:
-	body.regenerate(delta)
+func regenerates() -> bool:
+	return true
 
 
 ## "work" for a calm peasant (PeasantBehavior), then the gesture, else the CRE8 idle0.

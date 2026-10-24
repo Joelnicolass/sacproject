@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/actions/afflict_action.gd" id="1_script"]
+[ext_resource type="Script" path="res://scenes/spells/spell_target.gd" id="2_target"]
+[ext_resource type="Resource" path="res://data/afflictions/frozen.tres" id="3_type"]
+
+[sub_resource type="Resource" id="Target_enemy"]
+script = ExtResource("2_target")
+who = 2
+ground_only = false
+refuse_cc_protected = true
+
+[node name="Freeze" type="Node"]
+script = ExtResource("1_script")
+prompt = "Elegí el blanco"
+cast_fx = "freeze_cast"
+affliction = ExtResource("3_type")
+target = SubResource("Target_enemy")

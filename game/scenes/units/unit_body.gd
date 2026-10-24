@@ -551,14 +551,14 @@ func _physics_process(delta: float) -> void:
 	velocity.z = 0.0
 	## The gate: playing dead (regenerating) or held by Afflictions, the body only falls and is pushed; its mode (and its
 	## order) waits for it. Declared (F120): Play Dead now also gibs over a hole (has_fallen) and, in the air, shows idle, not fly.
-	if _playing_dead or afflictions.holds():
-		if _playing_dead:
-			regenerate(delta)
-	else:
+	var resting := _playing_dead
+	if not (_playing_dead or afflictions.holds()):
 		var state := current_state()
 		if state.rests_on_floor() and (is_dead() or (not airborne and is_on_floor())):
 			return
+		resting = state.regenerates()  ## asked before the update: a mode it leaves this tick does not regenerate in it
 		state.physics_update(delta)
+	_regenerate_step(delta, resting)
 	if flight != null and flight.holds_still():
 		velocity.x = 0.0
 		velocity.z = 0.0
@@ -611,10 +611,21 @@ func _gib_fallen() -> void:
 	queue_free()
 
 
-## sacengine updateCreatureStats (state.d:14400-14403): regeneration · mana/maxMana (1 without mana).
-func regenerate(delta: float) -> void:
+## The one place a creature regenerates (sacengine isRegenerating, state.d:1428-1434): at rest (its state says so, or it plays dead) and
+## not held, once the pause after a hit is over; or, for a creature that regenerates always (the Troll), in any mode that can heal and
+## with no pause. A blocked body (Afflictions) heals nothing in either case.
+func _regenerate_step(delta: float, resting: bool) -> void:
+	if resting:
+		regenerate(delta, true)
+	elif type != null and type.regenerates_always and mode != Mode.DEAD and mode != Mode.REVIVING and not _health().is_dead():
+		regenerate(delta, false)
+
+
+## sacengine updateCreatureStats (state.d:14400-14403): regeneration · mana/maxMana (1 without mana). `paused`: not for `regen_pause_s`
+## after a hit.
+func regenerate(delta: float, paused := true) -> void:
 	var health := _health()
-	if type == null or _since_damage < regen_pause_s or health.is_full():
+	if type == null or (paused and _since_damage < regen_pause_s) or health.is_full():
 		return
 	var mana := $ManaPool as ManaPool
 	var full := mana.maximum

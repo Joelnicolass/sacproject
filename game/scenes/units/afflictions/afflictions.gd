@@ -1,6 +1,6 @@
 @tool
 class_name Afflictions
-extends Node
+extends Node3D
 
 ## F120 (RFC-030i): the one owner of «can this creature act?». Its Affliction children are the states (Stunned; later
 ## Petrified, Frozen), each with its AfflictionType. The body and the rest ask here, never a child:
@@ -8,12 +8,15 @@ extends Node
 ## cc_protected() and clip_role(). Who wins between two states is the data's (`AfflictionType.cancels`), not the order of the children.
 ##
 ## The server (or solo) decides; `shown` (one bit per type) is replicated, so on a client a state is on exactly when
-## its bit is, and the children draw it from there.
+## its bit is, and the children draw it from there. It is a Node3D (like its children) so the looks under a state follow the body.
 
 ## The state that holds the body started (true) or the last one ended (false), or one that ends its special mode started
 ## or ended (F155, REVIEW-030r-b B1: a Rockform already held by the oil that is petrified changes `holds()` not at all).
 ## Idempotent for the listeners (the body cancels its attacks and closes Rockform). Every peer.
 signal held_changed(held: bool)
+
+## What a layer of a spell state (SpellAffliction) multiplies in a fight: how long swings and shots take, how well the body hits.
+enum Stat { ATTACK_TIME, ACCURACY }
 
 @export var body: Node3D
 ## On its death every state ends (sacengine: a dying creature leaves stunned).
@@ -55,82 +58,67 @@ func _ready() -> void:
 		_show(0)
 
 
+## The Afflictions of `node`, or null (a body without one is never afflicted).
+static func of(node: Node) -> Afflictions:
+	for child in node.get_children() if node else []:
+		if child is Afflictions:
+			return child
+	return null
+
+
+## What `node`'s spell states multiply `stat` by (1 without Afflictions): melee swing and shot time x5 a layer, melee accuracy and evasion x0.2.
+static func stat_factor_of(node: Node, stat: Stat) -> float:
+	var owner_node := of(node)
+	return owner_node.stat_factor(stat) if owner_node else 1.0
+
+
+## What `node`'s spell states add to its resistances (0 without Afflictions): Slime +0.2 a layer.
+static func resistance_bonus_of(node: Node) -> float:
+	var owner_node := of(node)
+	return owner_node.resistance_bonus() if owner_node else 0.0
+
+
 func is_on(type: AfflictionType) -> bool:
 	return type != null and shown & (1 << type.bit) != 0
 
 
 func holds() -> bool:
-	if shown == 0:
-		return false
-	for affliction in _on():
-		if affliction.type.holds:
-			return true
-	return false
+	return _any(&"holds")
 
 
 ## A state that is on takes the body out of the world: not an obstacle, not a target (Firewalking).
 func hides() -> bool:
-	if shown == 0:
-		return false
-	for affliction in _on():
-		if affliction.type.hides:
-			return true
-	return false
+	return _any(&"hides")
 
 
 func immobilized() -> bool:
-	if shown == 0:
-		return false
-	for affliction in _on():
-		if affliction.type.immobilizes:
-			return true
-	return false
+	return _any(&"immobilizes")
 
 
 ## F159: a state that is on holds the body where it is (Vined: pins, sacengine effects.vined → fixed).
 func pins() -> bool:
-	if shown == 0:
-		return false
-	for affliction in _on():
-		if affliction.type.pins:
-			return true
-	return false
+	return _any(&"pins")
 
 
-## sacengine effects.fixed (push, catapult and the walk do nothing, state.d:8588-8590): a petrified or frozen body, or a pinned one.
-## The one answer to «can this body be moved from outside?» (BodyNudge, BodyAvoidance).
+## sacengine effects.fixed (state.d:8588-8590): a petrified, frozen or pinned body. The one answer to «can it be moved from outside?».
 func fixed() -> bool:
 	return immobilized() or pins()
 
 
-## F159: a state that is on stops the body's regeneration (Vined; Health.regenerate asks).
+## sacengine regenerationBlocked (stats.d:83): a body that is immobilized (petrified, frozen) or has a state that is on that stops it
+## (Vined, Rings of Fire, Slime). Health.regenerate asks.
 func blocks_regeneration() -> bool:
-	if shown == 0:
-		return false
-	for affliction in _on():
-		if affliction.type.blocks_regeneration:
-			return true
-	return false
+	return immobilized() or _any(&"blocks_regeneration")
 
 
 ## A state that is on lets a flier fall (petrified; Flight reads it).
 func drops_fliers() -> bool:
-	if shown == 0:
-		return false
-	for affliction in _on():
-		if affliction.type.drops_fliers:
-			return true
-	return false
+	return _any(&"drops_fliers")
 
 
 ## A state that is on ends the body's special mode (petrified ends Rockform).
 func breaks_special_modes() -> bool:
-	if shown == 0:
-		return false
-	for affliction in _on():
-		if affliction.type.breaks_special_modes:
-			return true
-	return false
+	return _any(&"breaks_special_modes")
 
 
 ## Product of the factors of the states that are on (1 with none). Health multiplies every hit by it, on both of its
@@ -144,15 +132,37 @@ func damage_factor() -> float:
 	return factor
 
 
+## The state of `type` on this body, or null.
+func child_for(type: AfflictionType) -> Affliction:
+	for child in get_children():
+		var affliction := child as Affliction
+		if affliction != null and affliction.type == type:
+			return affliction
+	return null
+
+
+## Product of what the states that are on make `stat` (1 with none). Server: the layers are counted there.
+func stat_factor(stat: Stat) -> float:
+	var factor := 1.0
+	for affliction in _on() if shown != 0 else []:
+		if affliction is SpellAffliction:
+			factor *= (affliction as SpellAffliction).stat_factor(stat)
+	return factor
+
+
+## Sum of what the states that are on add to every resistance (0 with none). Server.
+func resistance_bonus() -> float:
+	var bonus := 0.0
+	for affliction in _on() if shown != 0 else []:
+		if affliction is SpellAffliction:
+			bonus += (affliction as SpellAffliction).resistance_bonus()
+	return bonus
+
+
 func cc_protected() -> bool:
 	if wards != null and wards.shielded():
 		return true
-	if shown == 0:
-		return false
-	for affliction in _on():
-		if affliction.type.cc_protects:
-			return true
-	return false
+	return _any(&"cc_protects")
 
 
 ## Server: the body's velocity for this tick, as the states that are on say (F121: a Tumbling body flies its ballistic
@@ -210,6 +220,16 @@ func mark(affliction: Affliction, on: bool) -> void:
 	shown = (shown | bit) if on else (shown & ~bit)
 
 
+## Is a state that is on flagged `flag` (a bool of its AfflictionType)? The one loop behind holds(), hides(), pins()...
+func _any(flag: StringName) -> bool:
+	if shown == 0:
+		return false
+	for affliction in _on():
+		if affliction.type.get(flag):
+			return true
+	return false
+
+
 func _on() -> Array[Affliction]:
 	var found: Array[Affliction] = []
 	for child in get_children():
@@ -234,6 +254,7 @@ func _show(was: int) -> void:
 			was_breaking = true
 		if (was & bit) != (shown & bit):
 			affliction._shown(shown & bit != 0)
+			affliction.shown_changed.emit(shown & bit != 0)
 	if clip_pose:
 		clip_pose.frozen = immobilized()
 	_show_look()
@@ -247,10 +268,14 @@ func _show_look() -> void:
 	if look == null:
 		return
 	var best: AfflictionType = null
+	var swap: Texture2D = null
 	for affliction in _on():
 		var type := affliction.type
 		if type.has_look and (best == null or type.look_priority > best.look_priority):
 			best = type
+		if type.look_texture != null:
+			swap = type.look_texture
+	look.swap_texture = swap
 	var skin := wards != null and wards.stone_skin()
 	if best:
 		look.apply(best.look_tint, best.look_base, best.look_gain, best.look_roughness, best.look_metallic)

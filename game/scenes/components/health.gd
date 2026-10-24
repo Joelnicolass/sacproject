@@ -158,9 +158,10 @@ func shield_factor(kind := MELEE) -> float:
 ## sacengine stores them ×1e-3 (sacobject.d:156-160); a 0 is immunity (Trogg vs spells).
 ## F122: dealDamage adds the poison's resistanceBonus inside the max (state.d:8950-8957): max(0, resistance + bonus).
 ## F131: the resistance is the one the body has devoured down to (DevourGrowth, ×0.9 a soul).
+## RFC 061c: its spell states add theirs inside the same max (Slime +0.2 a layer, sacengine state.d:8950).
 func resistance(kind: StringName) -> float:
 	var base := _base_resistance(kind) * (growth.resistance_factor() if growth else 1.0)
-	return maxf(0.0, base + (poisoning.resistance_bonus() if poisoning else 0.0))
+	return maxf(0.0, base + (poisoning.resistance_bonus() if poisoning else 0.0) + (afflictions.resistance_bonus() if afflictions else 0.0))
 
 
 func _base_resistance(kind: StringName) -> float:

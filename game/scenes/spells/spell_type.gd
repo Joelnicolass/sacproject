@@ -2,7 +2,7 @@ class_name SpellType
 extends Resource
 
 ## What the AI wants a spell for (AiSpellEval reads it before the old flag bits).
-enum AiUse { NONE, SELF_GUARD }
+enum AiUse { NONE, SELF_GUARD, DISABLE_FOE }
 
 @export var tag: String = ""
 @export var display_name: String = ""
@@ -26,5 +26,6 @@ enum AiUse { NONE, SELF_GUARD }
 ## Scene of the SpellAction that casts this spell (RFC-041). Caster instances it under its `actions` node when the wizard
 ## has no child for the tag, so a new spell is a `.tres` plus a scene, with no edit in Caster.
 @export var action: PackedScene
-## What the wizard of the AI casts it for. SELF_GUARD: on himself when foes are near and the ward is off.
+## What the wizard of the AI casts it for. SELF_GUARD: on himself when foes are near and the ward is off. DISABLE_FOE: on the enemy whose
+## being held is worth the most (Freeze, Grasping Vines, Rings of Fire, Slime).
 @export var ai_use := AiUse.NONE

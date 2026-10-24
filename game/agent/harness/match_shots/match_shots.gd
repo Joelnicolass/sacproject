@@ -5,7 +5,7 @@ extends Node
 ## and quits. It only watches: it plays no input and moves no actor; the camera is its own.
 ## It lives in a subfolder because AgentKit mounts every .gd of agent/harness/ itself.
 ## Args after `--`: --map=<tag> --god=<god of the local wizard> [--biome=<god whose land the map wears; default --god>] [--ai-god=<god>] [--wizard=<tag>] [--after=<s> before the first
-## round] [--shots=<n> rounds] [--every=<s>] [--out=<dir>] [--views=wizard,overview,fountain,manahoar,tower] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
+## round] [--shots=<n> rounds] [--every=<s>] [--out=<dir>] [--views=wizard,wizard_close,foe_close,overview,fountain,manahoar,tower] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
 ## [--cast=<spell tag>[,<tag>…], the local wizard casts them one after the other once --after has passed, before the first round: a spell that aims at himself (a ward) on himself,
 ## any other on the closest enemy; mana is filled first] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
 ## Windowed: `-- --agent=flow --flow=match_shots.json` (the flow gives the sandbox that applies the quality preset).
@@ -20,6 +20,9 @@ const TAG_MANAHOAR := &"oham"
 ## The "wizard_close" view: the wizard from behind, close enough to read a ward on his body.
 @export_range(2.0, 20.0, 0.5, "suffix:m") var wizard_close_m := 5.5
 @export_range(0.0, 10.0, 0.5, "suffix:m") var wizard_close_up_m := 1.8
+## The "foe_close" view: the closest enemy of the wizard (the target of --cast) from the wizard's side, to read a state on it.
+@export_range(2.0, 30.0, 0.5, "suffix:m") var foe_close_m := 7.0
+@export_range(0.0, 10.0, 0.5, "suffix:m") var foe_close_up_m := 2.0
 @export_range(30.0, 300.0, 5.0, "suffix:m") var overview_m := 110.0
 @export_range(4.0, 60.0, 0.5, "suffix:m") var fount_m := 16.0
 @export_range(0.0, 30.0, 0.5, "suffix:m") var fount_up_m := 6.0
@@ -148,6 +151,14 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 		"wizard_close":
 			look = focus + Vector3.UP * 1.4
 			spot = focus + _away_from_foe(world, wizard) * wizard_close_m + Vector3.UP * wizard_close_up_m
+		"foe_close":
+			var foe := _closest_foe(wizard)
+			if foe == null:
+				print("match_shots: no enemy; view skipped")
+				return
+			look = BodyNudge.center(foe)
+			var from_foe := (focus - foe.global_position) * Vector3(1.0, 0.0, 1.0)
+			spot = look + (from_foe.normalized() if from_foe.length() > 0.1 else Vector3.BACK) * foe_close_m + Vector3.UP * foe_close_up_m
 		"overview":
 			var middle := (focus + _foe_position(world, wizard)) * 0.5
 			spot = middle + Vector3(0.0, overview_m, overview_m * 0.55)
@@ -183,6 +194,7 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 	camera.look_at(look)
 	camera.make_current()
 	_report_wards(wizard)
+	_report_afflictions(wizard)
 	if arg("hover") == "wizard":
 		_hover(world, wizard)
 	await _save(file)
@@ -205,6 +217,27 @@ func _report_wards(wizard: Node3D) -> void:
 				parts.append("%s visible=%s at (%.1f, %.1f, %.1f)%s" % [part.name, (part as Node3D).is_visible_in_tree(), part.global_position.x, part.global_position.y, part.global_position.z, emitting])
 		print("match_shots: ward %s on=%s shown=%s ticks_left=%d look=%s wizard at (%.1f, %.1f, %.1f) | %s" % [ward.name, ward.is_on(), ward.shown, ward.ticks_left(),
 			ward.look.is_visible_in_tree() if ward.look else "-", wizard.global_position.x, wizard.global_position.y, wizard.global_position.z, " | ".join(parts)])
+
+
+## One line per state that is on in the enemy closest to the wizard (the target of --cast): its layers, the drawn parts under it (visible,
+## where, emitting) and the skin texture, so a capture with nothing in it says why.
+func _report_afflictions(wizard: Node3D) -> void:
+	var foe := _closest_foe(wizard)
+	var afflictions := Afflictions.of(foe)
+	if afflictions == null:
+		return
+	for child in afflictions.get_children():
+		var state := child as Affliction
+		if state == null or not state.is_on():
+			continue
+		var parts := PackedStringArray()
+		for part in state.find_children("*", "Node3D", true, false):
+			if part is MeshInstance3D or part is CPUParticles3D or part is VineLook or part is RingsLook:
+				var emitting := " emitting=%s" % (part as CPUParticles3D).emitting if part is CPUParticles3D else ""
+				parts.append("%s visible=%s at (%.1f, %.1f, %.1f)%s" % [part.name, (part as Node3D).is_visible_in_tree(), part.global_position.x, part.global_position.y, part.global_position.z, emitting])
+		var layers := " layers=%d" % (state as SpellAffliction).layers() if state is SpellAffliction else ""
+		var skin := " skin=%s" % (afflictions.look.swap_texture != null) if afflictions.look != null else ""
+		print("match_shots: affliction %s on%s%s foe %s at (%.1f, %.1f, %.1f) | %s" % [state.type.id, layers, skin, foe.name, foe.global_position.x, foe.global_position.y, foe.global_position.z, " | ".join(parts)])
 
 
 ## --hover=wizard: the pointer rests on the local wizard (the HoverFrame draws its frame). The probe stops naming what is

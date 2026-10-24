@@ -29,3 +29,4 @@ npc_summon_threat_weight = 0.0
 summon_min_manaliths = 1
 guard_threat_m = 25.0
 guard_min_foes = 2
+disable_ref_s = 10.0

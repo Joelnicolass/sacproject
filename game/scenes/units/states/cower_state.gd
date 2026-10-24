@@ -19,8 +19,8 @@ func exit() -> void:
 	super.exit()
 
 
-func physics_update(delta: float) -> void:
-	body.regenerate(delta)
+func regenerates() -> bool:
+	return true
 
 
 func clip_role() -> String:

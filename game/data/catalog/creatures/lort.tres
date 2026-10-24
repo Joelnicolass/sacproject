@@ -10,6 +10,7 @@ god = "persephone"
 model = "ltrl"
 health = 1600
 regeneration_per_s = 29.1667
+regenerates_always = true
 running_speed = 8.0
 melee_strength = 300
 melee_accuracy = 1500

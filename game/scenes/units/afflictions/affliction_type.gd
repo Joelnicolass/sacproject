@@ -48,3 +48,6 @@ extends Resource
 @export var look_gain := 0.7
 @export var look_roughness := 0.5
 @export var look_metallic := 0.5
+## A state that draws the body with another texture on every surface while it lasts (Slime: the wet skin `lthg`), with the surface's own UV
+## and light. Applies together with the stone look when the body also has one. Off (empty): the state does not change the texture.
+@export var look_texture: Texture2D

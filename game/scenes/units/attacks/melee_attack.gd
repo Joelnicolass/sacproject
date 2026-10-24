@@ -112,7 +112,8 @@ func start(target: Node3D) -> void:
 func advance(delta: float) -> bool:
 	if _anim.is_empty():
 		return false
-	_elapsed += delta
+	## RFC 061c: each layer of Slime makes the swing take 5x as long (sacengine slowdownFactor, state.d:1381-1388).
+	_elapsed += delta / Afflictions.stat_factor_of(_body, Afflictions.Stat.ATTACK_TIME)
 	var rate := float(_anim.get("framerate", 30))
 	var ticks: Array = _anim.get("attack_ticks", [])
 	var frames := int(_anim.get("frames", 1))
@@ -163,10 +164,12 @@ func roll_damage(target: Node3D, anim: Dictionary) -> Dictionary:
 	var damage := facing * pending
 	var foe := profile_of(target)
 	## F130: ×1.5 while the Storm Giant's Lightning Charge is on (dealMeleeDamage, state.d:9237).
-	var accuracy := float(type.melee_accuracy) * (passive.melee_accuracy_factor() if passive != null else 1.0)
-	var total := accuracy + float(foe.get("evasion", 0.0)) / facing
+	## RFC 061c: each layer of Slime on the attacker costs accuracy and each on the target costs its evasion, x0.2 (state.d:9237-9238).
+	var accuracy := float(type.melee_accuracy) * (passive.melee_accuracy_factor() if passive != null else 1.0) * Afflictions.stat_factor_of(_body, Afflictions.Stat.ACCURACY)
+	var evasion := float(foe.get("evasion", 0.0)) * Afflictions.stat_factor_of(target, Afflictions.Stat.ACCURACY)
+	var total := accuracy + evasion / facing
 	if not (total > 0.0):
-		return {"amount": 0.0, "chance": 0.0, "roll": 1.0, "accuracy": accuracy, "evasion": float(foe.get("evasion", 0.0)),
+		return {"amount": 0.0, "chance": 0.0, "roll": 1.0, "accuracy": accuracy, "evasion": evasion,
 			"facing": facing, "pending": pending, "resistance": 0.0}
 	var hit_chance := accuracy / total
 	var roll := _rng.randf()
@@ -175,9 +178,10 @@ func roll_damage(target: Node3D, anim: Dictionary) -> Dictionary:
 	damage *= float(type.melee_strength)
 	## F122: the poison's resistanceBonus goes inside the max (state.d:8950-8951); Poisoning owns it.
 	## F131: the resistance the target has devoured down to (DevourGrowth ×0.9 a soul) goes inside it too.
-	var resistance := maxf(0.0, float(foe.get("resistance", 1.0)) * DevourGrowth.resistance_factor_of(target) + Poisoning.resistance_bonus_of(target))
+	var resistance := maxf(0.0, float(foe.get("resistance", 1.0)) * DevourGrowth.resistance_factor_of(target) + Poisoning.resistance_bonus_of(target)
+		+ Afflictions.resistance_bonus_of(target))
 	damage *= melee_resistance_scale * resistance
-	return {"amount": damage, "chance": hit_chance, "roll": roll, "accuracy": accuracy, "evasion": float(foe.get("evasion", 0.0)),
+	return {"amount": damage, "chance": hit_chance, "roll": roll, "accuracy": accuracy, "evasion": evasion,
 		"facing": facing, "pending": pending, "resistance": resistance}
 
 

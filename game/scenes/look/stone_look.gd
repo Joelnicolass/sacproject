@@ -9,7 +9,7 @@ extends Node
 ## The mesh may be swapped under it (a clip frame, a model set up late on a client): it re-dresses whatever mesh is
 ## there each frame it is on, so it does not matter whether the clip froze before or after the stone came on.
 ## F149 (REVIEW-030k-b B1): one StoneLook per body, owned by Afflictions (its `look`), which sets `tint` and `stone`
-## from the states that are on (petrified grey, frozen ice; the `frez` cube is not drawn, declared). Skin of Stone will
+## from the states that are on (petrified grey; the ice is a block of its own, IceBlock). Skin of Stone will
 ## be one more state with a look there, not a second StoneLook on the same mesh.
 
 @export var mesh: MeshInstance3D
@@ -20,7 +20,7 @@ extends Node
 		if value == tint:
 			return
 		tint = value
-		if is_node_ready() and stone and not Engine.is_editor_hint():
+		if is_node_ready() and _dressing() and not Engine.is_editor_hint():
 			_dressed = null
 			_dress()
 ## The shader's stone_base, stone_gain, stone_roughness and stone_metallic (F155: the oil is a dark glossy coat, not grey stone;
@@ -36,6 +36,16 @@ extends Node
 			return
 		stone = value
 		if is_node_ready():
+			_refresh()
+## RFC 061c: a texture drawn on every surface instead of its own, with the surface's UV, alpha cut and light (Slime's wet skin, `lthg`).
+## Afflictions sets it from the states that are on; with `stone` also on, the stone's grey is made from this texture. Null: the surfaces keep theirs.
+var swap_texture: Texture2D:
+	set(value):
+		if value == swap_texture:
+			return
+		swap_texture = value
+		if is_node_ready():
+			_dressed = null
 			_refresh()
 
 ## One stone material per source material (or per shader with no source) and tint, shared by every body.
@@ -76,7 +86,7 @@ func apply(new_tint: Color, new_base: float, new_gain: float, new_roughness: flo
 	gain = new_gain
 	roughness = new_roughness
 	metallic = new_metallic
-	if is_node_ready() and stone and not Engine.is_editor_hint():
+	if is_node_ready() and _dressing() and not Engine.is_editor_hint():
 		_dressed = null
 		_dress()
 
@@ -86,8 +96,13 @@ func apply_stone() -> void:
 	apply(Color(1.0, 1.0, 0.8), 0.3, 0.7, 0.5, 0.5)
 
 
+## Are the surfaces dressed: stone, a swapped texture, or both.
+func _dressing() -> bool:
+	return stone or swap_texture != null
+
+
 func _refresh() -> void:
-	var on := stone and not Engine.is_editor_hint()
+	var on := _dressing() and not Engine.is_editor_hint()
 	set_process(on)
 	if on:
 		_dress()
@@ -143,7 +158,7 @@ func _undress() -> void:
 
 
 func _stone_for(source: Material) -> ShaderMaterial:
-	var key: Array = [source if source else shader, tint, base, gain, roughness, metallic]
+	var key: Array = [source if source else shader, tint, base, gain, roughness, metallic, swap_texture, stone]
 	var found := _materials.get(key) as ShaderMaterial
 	if found and found.shader == shader:
 		return found
@@ -154,6 +169,9 @@ func _stone_for(source: Material) -> ShaderMaterial:
 	built.set_shader_parameter("stone_gain", gain)
 	built.set_shader_parameter("stone_roughness", roughness)
 	built.set_shader_parameter("stone_metallic", metallic)
+	built.set_shader_parameter("stone_on", stone)
+	built.set_shader_parameter("use_swap", swap_texture != null)
+	built.set_shader_parameter("swap_tex", swap_texture)
 	var base := source as BaseMaterial3D
 	if base:
 		built.set_shader_parameter("albedo_tex", base.albedo_texture)

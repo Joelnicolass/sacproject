@@ -13,6 +13,8 @@ extends Resource
 @export var carried_fx: PackedScene
 @export var health: int = 0
 @export var regeneration_per_s: float = 0.0
+## Regenerates in any mode that can heal, also walking, fighting and being hit (the Troll); the rest only at rest, once a hit is over.
+@export var regenerates_always := false
 ## CRE8 `drain` (file word / 1000): the AI's rater adds 2x drain to the regeneration (shiny.d:241 `fillStats`).
 @export var drain: float = 0.0
 @export var running_speed: float = 0.0

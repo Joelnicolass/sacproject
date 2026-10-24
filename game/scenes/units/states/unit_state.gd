@@ -28,6 +28,11 @@ func rests_on_floor() -> bool:
 	return false
 
 
+## At rest in this mode the creature regenerates (UnitBody._regenerate_step asks): idle, cower, rock form.
+func regenerates() -> bool:
+	return false
+
+
 ## The clip role of the mode, after the held / captive / flight roles of UnitBody have been ruled out.
 func clip_role() -> String:
 	return "idle"

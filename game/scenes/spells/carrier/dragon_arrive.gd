@@ -43,7 +43,7 @@ func along(carrier: SpellCarrier) -> void:
 	var per_tick := burn_share * carrier.damage / MatchClock.TICKS_PER_SECOND_F
 	for body in BodyNudge.bodies_in(carrier.get_tree(), area):
 		if body != carrier.caster():
-			(body.get_node("Health") as Health).damage_typed(per_tick, Health.DIRECT_SPELL, carrier.slot, false, true)
+			Health.of(body).damage_typed(per_tick, Health.DIRECT_SPELL, carrier.slot, false, true)
 
 
 func arrive(carrier: SpellCarrier) -> void:

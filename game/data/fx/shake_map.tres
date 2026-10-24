@@ -7,7 +7,8 @@ script = ExtResource("1_map")
 trauma_by_fx = Dictionary[StringName, float]({
 &"wrath_explosion1": 0.45,
 &"wrath_explosion2": 0.25,
-&"quake_ring": 0.5
+&"quake_ring": 0.5,
+&"halo_emerge": 0.3
 })
 full_within_m = 8.0
 max_distance_m = 40.0

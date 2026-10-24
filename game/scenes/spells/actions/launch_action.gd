@@ -9,8 +9,6 @@ extends SpellAction
 ## (the launch does) and it does not know which spell it is.
 ## Ref: sacengine castChainLightning, castRainbow, castHaloOfEarth (state.d:10832-10857, 11015-11023).
 
-const _GROUP_SPAWNER := &"shot_spawner"
-
 ## Who the click may name. SELF casts on the key (set `pick` to SELF too).
 @export var target: SpellTarget
 ## What is made when the cast starts (the root is a SpellLaunch).
@@ -78,8 +76,7 @@ func _running() -> bool:
 	return _launch != null and is_instance_valid(_launch) and _launch.is_running()
 
 
-## The node the shot spawner spawns into; the wizard's parent when the world has none (a bare debug scene).
+## The node the shot spawner spawns into, or null (a world with none).
 func _container() -> Node:
-	var spawner := get_tree().get_first_node_in_group(_GROUP_SPAWNER)
-	var container := spawner.get_node_or_null(spawner.get("spawn_path")) if spawner != null else null
-	return container
+	var spawner := ShotSpawner.of(get_tree())
+	return spawner.container() if spawner != null else null

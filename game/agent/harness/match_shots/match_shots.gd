@@ -7,7 +7,7 @@ extends Node
 ## Args after `--`: --map=<tag> --god=<god of the local wizard> [--biome=<god whose land the map wears; default --god>] [--ai-god=<god>] [--wizard=<tag>] [--after=<s> before the first
 ## round] [--shots=<n> rounds] [--every=<s>] [--out=<dir>] [--views=wizard,wizard_close,foe_close,overview,fountain,manahoar,tower] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
 ## [--cast=<spell tag>[,<tag>…], the local wizard casts them one after the other once --after has passed, before the first round: a spell that aims at himself (a ward) on himself,
-## any other on the closest enemy; mana is filled first] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
+## any other on the closest enemy (Rainbow on himself, the first body of its chain; 061e needs --level=4 or more: ntlc, wobr, rifd, olah); mana is filled first] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
 ## Windowed: `-- --agent=flow --flow=match_shots.json` (the flow gives the sandbox that applies the quality preset).
 
 const GROUP_FOUNT := &"manafount"
@@ -102,12 +102,18 @@ func _cast_all(world: MatchWorld, tags: PackedStringArray) -> void:
 		pool.current = pool.maximum
 		var action := caster.action_for(tag)
 		var foe := _closest_foe(wizard)
-		var aimed := null if action == null or action.pick == SpellAction.Pick.SELF else foe
+		var aimed := null if action == null or action.pick == SpellAction.Pick.SELF or _heals_own(action) else foe
 		var point := aimed.global_position if aimed != null else wizard.global_position
 		caster.request_cast(tag, point, aimed)
 		print("match_shots: cast %s (casting: %s)" % [tag, caster.is_casting()])
 		while caster.is_casting():
 			await get_tree().physics_frame
+
+
+## A spell that lands on the wizard's own side (Rainbow): the cast names nobody and the wizard himself is the first body of the chain.
+func _heals_own(action: SpellAction) -> bool:
+	var target: Variant = action.get("target")
+	return target is SpellTarget and (target as SpellTarget).who == SpellTarget.Who.ALLY_OR_SELF
 
 
 ## The enemy body closest to `wizard` (a creature or a wizard of another side), or null.

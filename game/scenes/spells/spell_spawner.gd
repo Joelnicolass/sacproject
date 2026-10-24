@@ -5,6 +5,7 @@ extends MpSpawner
 ## `projectiles` (RFC-041): a new projectile is a scene here, not a line of code.
 
 const DEFAULT_KIND := "Rock"
+const GROUP := &"spell_spawner"
 
 ## Projectile scene by kind. Its root extends SpellProjectile.
 @export var projectiles: Dictionary[String, PackedScene] = {
@@ -18,8 +19,13 @@ const DEFAULT_KIND := "Rock"
 var _serial := 0
 
 
+## The spawner of spell projectiles in the world, or null.
+static func of(tree: SceneTree) -> SpellSpawner:
+	return tree.get_first_node_in_group(GROUP) as SpellSpawner
+
+
 func _ready() -> void:
-	add_to_group("spell_spawner")
+	add_to_group(GROUP)
 	spawn_function = _make
 	super._ready()
 

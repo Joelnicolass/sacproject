@@ -61,6 +61,8 @@ extends SpellLaunch
 @export var los_lift := 0.5
 ## FxBus type played where a rock is born.
 @export var emerge_fx := "rock_emerge"
+## More types played where a rock is born (the wizard's halo throws dirt and dust up too).
+@export var emerge_extra: Array[ParticleType] = []
 ## Played where a rock picks its target (the sound `halo`). Optional.
 @export var throw_burst: ParticleType
 
@@ -125,7 +127,7 @@ func begin_cast(caster: Node3D, spell: SpellType, _target: Node3D, _point: Vecto
 	user = caster
 	_set_numbers(float(spell.damage), spell.speed, spell.acceleration, spell.effect_range)
 	life_ticks = MatchClock.ticks_for(spell.duration)
-	spawner = get_tree().get_first_node_in_group(&"shot_spawner")
+	spawner = ShotSpawner.of(get_tree())
 	_born = MatchClock.now()
 	_who = AbilityEffect.who(caster)
 	_slot = int(caster.get("owner_slot")) if "owner_slot" in caster else 0
@@ -210,7 +212,7 @@ func _can_carry() -> bool:
 		return false
 	var unit := user as UnitBody
 	if unit == null:
-		var health := user.get_node_or_null("Health") as Health
+		var health := Health.of(user)
 		return health == null or not health.is_dead()
 	return unit.mode != UnitBody.Mode.DEAD and unit.mode != UnitBody.Mode.SUMMONING \
 		and unit.mode != UnitBody.Mode.REVIVING and not unit.is_taken()
@@ -238,6 +240,8 @@ func _spawn() -> void:
 	_active.append(rock)
 	_spawned += 1
 	FxBus.broadcast(emerge_fx, at)
+	for extra in emerge_extra:
+		FxBus.broadcast(extra.fx_name(), at)
 	_say("halo %s roca %d nace en %s (tick %d)" % [_who, rock.index, _v(at), MatchClock.now()])
 
 

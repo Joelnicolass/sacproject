@@ -12,7 +12,7 @@ effect = NodePath("Heal")
 hits = 6
 hop_s = 1.0667
 allies = true
-pick = 1
+order = 1
 fallback_limit_min = 1.0
 fallback_drift = 0.25
 

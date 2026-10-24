@@ -128,3 +128,18 @@ Con ventana (el usuario captura): `match_shots --cast=ntlc|wobr|rifd|olah` en Hi
 ## Orden
 
 1. Plan (este archivo). 2. Assets: `ltng`, `rnbw`, `fbal`, `roks` por el importador; `dfir.glb` con Blender CLI. 3. Piezas compartidas (`SpellTarget`, `SpellLaunch`, `ChainHop`, efectos, `BeamType.ARC`). 4. Chain Lightning y Rainbow (datos, escenas, sonido, presentación del lanzamiento). 5. Halo (refactor mínimo de `HaloOfEarth`, `roks`, escalonado). 6. Dragonfire (portador, modelo, llegada, trazo). 7. Escena de verificación, suite, `match_shots`. 8. Lint y corrida.
+
+## Ajustes al implementar (lo que cambió respecto del árbol de arriba)
+
+- `SpellTarget` ya existía (061c, en `main`): se usa tal cual; no se creó ninguno.
+- La presentación del lanzamiento no está en `wizard_body.tscn`: `LaunchAction.cast_scene` la juega en cada peer con `FxBus.broadcast_scene` (`CastBolts`, `CastGlow`), como el globo de Slime. `wizard_body.tscn` no se toca.
+- La elección del próximo blanco y el punto de caída salieron de `ChainHop` a `ChainPick` (RefCounted, sin estado), y la geometría del vuelo del dragón a `CarrierPath`, para quedar bajo las 150 líneas (C1).
+- `ChainHop.pick` pasó a `order` (`ChainPick.Order`).
+- `Health.of(body)`, `ShotSpawner.of(tree)` / `container()` y `SpellSpawner.of(tree)` son estáticos nuevos (el lint prohíbe `get_node("Health")` y los grupos por texto).
+- `LightningStrike.launch` recibe `look`, `travel` y `seat` opcionales (el rayo de la cadena trae su haz, su chispa y su tiempo, y daña en nombre del mago aunque ya no exista).
+- `data/gods/<dios>.tres`: cada libro suma su hechizo en `spells` (ntlc, wobr, rifd, olah); sin eso el mago no lo tiene.
+- Sonidos: `rainbow_arc`, `dragon_roar`, `dragonfire_loop`, `halo_throw` en `fx_sounds.tres`; `lightning_ltng` alias del cue del rayo. `halo_throw` y `dragon_roar` son `ParticleType` sin sprites (solo disparan el sonido por `FxBus`).
+- `data/fx/spells/` guarda los tipos continuos (`rainbow_cast`, `dragon_flame`, `dragon_fireball`): FxBus pre-calienta todo lo que está en `data/fx/` y esos son para `SpriteEmitter`.
+- No se creó `roks.tres` en `data/catalog/body_sizes/` (suma 1 al conteo C19 y la roca no lo necesita); el `sizes.json` sí tiene la entrada.
+- El halo del Rhinok también pasa a `roks` ×1 (el exe empuja `roks` fijo para las dos versiones).
+- Dragonfire usa `CarrierArrive` con cuatro ganchos (`begin`, `released`, `along`, `arrive`); `along` es la quema al pasar. `SpellSpawner.spawn_projectile` devuelve el nodo.

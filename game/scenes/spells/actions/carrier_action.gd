@@ -42,7 +42,7 @@ func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D,
 
 
 func started(wizard: WizardBody, spell: SpellType, aim: Aim, frames: int) -> void:
-	var spawner := get_tree().get_first_node_in_group(&"spell_spawner") as SpellSpawner
+	var spawner := SpellSpawner.of(get_tree())
 	if spawner == null:
 		push_warning("CarrierAction: no hay SpellSpawner (grupo spell_spawner).")
 		return

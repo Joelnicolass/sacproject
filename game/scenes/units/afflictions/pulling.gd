@@ -16,8 +16,8 @@ extends Affliction
 ##   4. a tumbling target that goes away (farther than 1.05 · the smallest radius so far and moving along the thread
 ##      faster than 1.5, or backwards faster than 0.2 of its climb) is pulled at once (the extra pull);
 ##   5. at a pull tick (the clip's last frame, every `loop_ticks`, or the extra pull): numPulls += 1,
-##      velocity.y += 5 · fallingAcceleration / 60, Stunned.stun_with_cooldown(stun_ticks) (only the first one stuns: the
-##      cooldown runs), Tumbling.catapult(velocity), window = pull_ticks. Else, for the next pull_ticks − 1 ticks: a
+##      velocity.y += 5 · fallingAcceleration / 60, Stunned.stun_with_cooldown(stun_s) (only the first one stuns: the
+##      cooldown runs), Tumbling.catapult(velocity), window = pull_s. Else, for the next pull_s (in ticks) − 1 ticks: a
 ##      tumbling target takes `velocity` (Tumbling.drive), one on the ground is pushed by velocity / 60 (BodyNudge.push);
 ##   6. with max_pulls pulls done it ends at the last tick of the clip loop (frame + 1 >= numFrames · 2).
 ## Ending (a thread cut, the target gone, the user stunned or dead…) always goes through _finish(): the break FX at the
@@ -156,7 +156,7 @@ func _physics_process(_delta: float) -> void:
 		var stunned := _stun()
 		if tumbling != null:
 			tumbling.catapult(velocity, int(body.get("owner_slot")) if "owner_slot" in body else 0)
-		_window = _effect.pull_ticks
+		_window = MatchClock.ticks_for(_effect.pull_s)
 		action = "tirón"
 		if DebugLog.on(&"pull"):
 			print("tirón %d %s → %s v (%.4f, %.4f, %.4f) hilo (%.4f, %.4f, %.4f) aturde %s (tick %d)" % [
@@ -216,7 +216,7 @@ func _throw_thread(body: Node3D) -> void:
 
 func _stun() -> bool:
 	var stunned := _target.get_node_or_null("Afflictions/Stunned") as Stunned
-	return stunned != null and stunned.stun_with_cooldown(_effect.stun_ticks)
+	return stunned != null and stunned.stun_with_cooldown(MatchClock.ticks_for(_effect.stun_s))
 
 
 ## The target's fallingAcceleration (CreatureStats): its Tumbling's, else the default of a creature.

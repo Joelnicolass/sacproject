@@ -2,14 +2,14 @@ class_name Pushback
 extends Node
 
 ## F121 (RFC-030j): Squall's push, sacengine Pushback (state.d:4768-4776, updatePushback 24017-24031). A child of the
-## body it pushes (it goes with the body), server (or solo) only. For `duration_ticks` ticks it pushes the body at
+## body it pushes (it goes with the body), server (or solo) only. For `duration_s` it pushes the body at
 ## `speed` m/s along the shot (BodyNudge.push: it slides on the land, a step off the land is not taken). A thrown body
 ## (Tumbling on) gets the velocity once and the push ends. Effects run before the creatures (state.d:29331): the
 ## node's physics priority is −1, so it pushes before the body moves.
 
 ## sacengine pushDistance / pushDuration = 15 m in 2/3 s.
 @export var speed := 22.5
-@export var duration_ticks := 40
+@export_range(0.0, 10.0, 0.0001, "suffix:s") var duration_s := 0.6666
 
 var direction := Vector3.ZERO
 var _done := 0
@@ -38,7 +38,7 @@ func _physics_process(_delta: float) -> void:
 	if BodyNudge.push(body, push):
 		_moved += push.length() / MatchClock.TICKS_PER_SECOND_F
 	_done += 1
-	if _done >= duration_ticks:
+	if _done >= MatchClock.ticks_for(duration_s):
 		_end(body)
 
 

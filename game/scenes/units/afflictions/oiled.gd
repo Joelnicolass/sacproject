@@ -32,7 +32,7 @@ const _ORDERS := preload("res://scenes/units/unit_orders.gd")
 @export var orders: Node
 ## FxBus type puffed on each body the blast lights, and how long that fire of no damage lasts (setAblaze(…, updateFPS)).
 @export var fire_fx := "fire"
-@export var fire_ticks := 60
+@export_range(0.0, 10.0, 0.0001, "suffix:s") var fire_s := 1.0
 ## FxBus type of the fireball that blasts at the body's center (sacengine animateFireballExplosion, 25650; the explosion's
 ## particles of the original are the `fire` atlas here, in MIX like the Bombard's).
 @export var blast_fx := "oil_blast"
@@ -129,7 +129,7 @@ func _blast(body: Node3D) -> void:
 	FxBus.broadcast(blast_fx, center)
 	var tree := get_tree()
 	for target in SplashDamage.bodies_within(tree, center, _radius):
-		Burning.ignite(target, 0.0, fire_ticks, Health.SPLASH_RANGED, _slot, 0.0, false, fire_fx)
+		Burning.ignite(target, 0.0, MatchClock.ticks_for(fire_s), Health.SPLASH_RANGED, _slot, 0.0, false, fire_fx)
 	SplashDamage.deal(tree, center, _damage, _radius, null, _slot, Health.SPLASH_RANGED, Health.IGNITE)
 	_say("explosión fin")
 	_finish("explotó")

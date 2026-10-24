@@ -7,8 +7,9 @@ extends WaveTouch
 ## oiled body (F155). Order of sacengine: the shot's target takes the blow and then the fire; any other body (not of the
 ## shooter's side) the fire and then the splash.
 
-## Updates the fire lasts (sacengine updateFPS / 2).
-@export var fire_ticks := 30
+## How long the fire lasts.
+## Ref: sacengine updateFPS / 2.
+@export_range(0.0, 10.0, 0.0001, "suffix:s") var fire_s := 0.5
 ## Damage of the whole fire (the original sets it to 0).
 @export var fire_damage := 0.0
 ## FxBus fire puffed on a creature while it burns (presentation only, like BurnImpact and Oiled).
@@ -27,4 +28,4 @@ func after_hit(body: Node3D, direct: bool, _before: Variant, shot: RangedShot) -
 
 
 func _ignite(body: Node3D, shot: RangedShot) -> void:
-	Burning.ignite(body, fire_damage, fire_ticks, Health.DIRECT_RANGED, shot.from_slot, 0.0, false, fire_fx, ShotImpact.shooter_of(shot))
+	Burning.ignite(body, fire_damage, MatchClock.ticks_for(fire_s), Health.DIRECT_RANGED, shot.from_slot, 0.0, false, fire_fx, ShotImpact.shooter_of(shot))

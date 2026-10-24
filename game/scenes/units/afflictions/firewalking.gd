@@ -16,20 +16,25 @@ extends Affliction
 ## position is replicated). Declared: the health bar stays visible and the capsule stays on the units' layer.
 
 
-## sacengine Firewalk.numFrames.
-@export var frames := 60
+## How long the walk lasts.
+## Ref: sacengine Firewalk.numFrames (60 ticks).
+@export_range(0.0166, 10.0, 0.0001, "suffix:s") var walk_s := 1.0
 ## sacengine Firewalk.animatedDistance (m).
 @export var animated_distance := 20.0
 ## A step longer than this (m) is a jump: the clients are told not to glide it.
 @export var snap_step := 2.0
 @export var snap: WarpSnap
+## walk_s in ticks: the frames of the walk.
+var frames: int:
+	get: return MatchClock.ticks_for(walk_s)
 ## The mesh pivot that is hidden while it lasts.
 @export var tilt: Node3D
 ## FxBus type of the trail (sacengine placeFirewalkParticles) and the height above the feet it is placed at (m).
 @export var trail_fx := "firewalk_trail"
 @export var trail_lift := 0.8
-## sacengine places 6 flames every tick; the type's 14 every 2 ticks is the same density with a quarter of the emitters.
-@export var trail_every_ticks := 2
+## How often a trail flame is placed. sacengine places 6 flames every tick; the type's 14 every 2 ticks is the same density with
+## a quarter of the emitters.
+@export_range(0.0, 1.0, 0.0001, "suffix:s") var trail_every_s := 0.0333
 ## FxBus type of the burst at the start and at the end (sacengine animateFirewalk: 32 flames in the body's box).
 @export var burst_fx := "firewalk_burst"
 
@@ -116,7 +121,8 @@ func _physics_process(_delta: float) -> void:
 		set_physics_process(false)
 		return
 	var body := _body()
-	if body and trail_every_ticks > 0 and MatchClock.now() % trail_every_ticks == 0:
+	var every := MatchClock.ticks_for(trail_every_s)
+	if body and every > 0 and MatchClock.now() % every == 0:
 		FxBus.play_puff(trail_fx, body.global_position + Vector3.UP * trail_lift)
 	if _simulates() and _running and _frame >= frames:
 		_running = false

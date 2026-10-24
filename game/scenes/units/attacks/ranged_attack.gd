@@ -36,8 +36,9 @@ const BALLISTIC: PackedStringArray = ["ekba", "fkba", "dkba", "aaba", "wobf", "b
 ## sacengine shootRange: max(range_factor·range, range − range_margin).
 @export var range_factor := 0.8
 @export var range_margin := 30.0
-## sacengine aim: facing once within facing_frames·turn_rate/fps of the aim.
-@export var facing_frames := 4.0
+## It shoots once it faces the aim within what it turns in this long.
+## Ref: sacengine aim, facing once within 4 frames·turn_rate/fps.
+@export_range(0.0, 1.0, 0.0001, "suffix:s") var facing_s := 0.0666
 ## The shot leaves from the body's front at this fraction of its height. sacengine uses the
 ## shoot animation's hand (shotPosition, state.d:1346); the baked bodies have no hand bones.
 @export var shot_height := 0.7
@@ -125,7 +126,7 @@ func aim(target: Node3D) -> Step:
 	to.y = 0.0
 	var turn_rate := _body.turn_rate
 	var facing: Vector3 = _body.facing_flat()
-	if to.length_squared() > 0.000001 and facing.angle_to(to.normalized()) > facing_frames * turn_rate / FPS:
+	if to.length_squared() > 0.000001 and facing.angle_to(to.normalized()) > float(MatchClock.ticks_for(facing_s)) * turn_rate / FPS:
 		return Step.HOLD
 	if _cooldown > 0.0 or _mana_left() < _mana_cost():
 		return Step.HOLD

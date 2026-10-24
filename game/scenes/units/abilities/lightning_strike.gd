@@ -10,7 +10,7 @@ extends Node3D
 ## - It is born in the tick of the order. With `retarget` (updateTargets, 10475-10484) the segment from the start to the end's
 ##   center is cut at the first live body it crosses, the shooter left out: that body is the new end (it "bounces"). The charge's
 ##   discharges do not (updateTargets = false: the end was picked by the charge).
-## - `travel_ticks` ticks later (Lightning.travelDelay 12; the node counts from the tick after it was born) the end's center is
+## - `travel_s` later (Lightning.travelDelay 12; the node counts from the tick after it was born) the end's center is
 ##   read again (the bolt follows its target) and, if the end is a valid body, it takes the SPEL's amount as direct spell damage
 ##   with DamageMod.lightning (dealSpellDamage, 16380-16383). A ground end (a discharge into the land) hurts nothing.
 ## - The damage goes through Health.damage_typed: the side factor (friendly fire off: an ally takes nothing; on: ally_damage_factor,
@@ -25,8 +25,9 @@ const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 ## The bolt arrived: on `body` (a valid end) or on the land (null), at `at`. For whoever launched it and adds something of its own (the splash).
 signal struck(body: Node3D, at: Vector3)
 
-## Ticks from the order to the damage (Lightning.travelDelay).
-@export var travel_ticks := 12
+## Time from the order to the damage.
+## Ref: Lightning.travelDelay (12 ticks).
+@export_range(0.0, 2.0, 0.0001, "suffix:s") var travel_s := 0.2
 ## updateTargets: the first live body on the way becomes the end.
 @export var retarget := true
 ## FxBus BeamType (data/fx/beams/<name>.tres).
@@ -56,7 +57,7 @@ var _ended := false
 ## `look` (a chain of lightning): the BeamType name, the burst name and the ticks of travel this bolt takes instead of the scene's;
 ## `seat` the slot it hurts in the name of when `shooting` is gone (-1 = the shooter's).
 static func launch(scene: PackedScene, from: Node, shooting: Node3D, from_point: Vector3, target: Node3D, ground_point: Vector3,
-		damage: float, tag: String, with_retarget := true, look: PackedStringArray = PackedStringArray(), travel := -1, seat := -1) -> LightningStrike:
+		damage: float, tag: String, with_retarget := true, look: PackedStringArray = PackedStringArray(), travel_s := -1.0, seat := -1) -> LightningStrike:
 	if scene == null or from == null or not from.is_inside_tree():
 		return null
 	var spawner := from.get_tree().get_first_node_in_group(&"shot_spawner")
@@ -72,8 +73,8 @@ static func launch(scene: PackedScene, from: Node, shooting: Node3D, from_point:
 	if look.size() >= 2:
 		bolt.beam_type = look[0]
 		bolt.hit_fx = look[1]
-	if travel >= 0:
-		bolt.travel_ticks = travel
+	if travel_s >= 0.0:
+		bolt.travel_s = travel_s
 	bolt.setup(shooting, from_point, target, ground_point, damage, tag)
 	if seat >= 0:
 		bolt._slot = seat
@@ -122,7 +123,7 @@ func _physics_process(_delta: float) -> void:
 		return
 	_age += 1
 	_follow()
-	if _age >= maxi(1, travel_ticks):
+	if _age >= maxi(1, MatchClock.ticks_for(travel_s)):
 		_strike()
 		_ended = true
 		set_physics_process(false)

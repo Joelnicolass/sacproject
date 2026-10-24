@@ -19,9 +19,9 @@ enum RadiusSource { NONE, DAMAGE_RANGE, EFFECT_RANGE }
 
 ## What the fire deals over its life: the shot's amount (already scaled by the shooter) or nothing (a look).
 @export var amount := Amount.SHOT
-## How many frames it burns: the SPEL's duration · 60, or `fixed_ticks`.
+## How long it burns: the SPEL's duration, or `fixed_s`.
 @export var lifetime := Lifetime.ABILITY_DURATION
-@export var fixed_ticks := 60
+@export_range(0.0, 60.0, 0.0001, "suffix:s") var fixed_s := 1.0
 ## The Health kind of its damage (setAblaze `ranged`: direct ranged; else direct spell).
 @export var kind: StringName = &"direct_ranged"
 ## sacengine DamageMod.peirceShield: skips the body's shields and states (Health).
@@ -34,7 +34,7 @@ enum RadiusSource { NONE, DAMAGE_RANGE, EFFECT_RANGE }
 @export_group("Look")
 ## FxBus type puffed on a burning creature (sacengine spawnFireParticles: 3 particles a frame).
 @export var fire_fx := "fire"
-@export var fire_every_ticks := 10
+@export_range(0.0, 2.0, 0.0001, "suffix:s") var fire_every_s := 0.1666
 ## Height over the body's origin the fire puffs from: low enough that the flames stay under the health bar.
 @export var fire_height_m := 0.8
 
@@ -61,7 +61,7 @@ func _ignite(body: Node3D, damage: float, frames: int, from_slot: int, ability: 
 	var fire := Burning.ignite(body, damage, frames, kind, from_slot, drain, pierce_shield, fire_fx, shooter)
 	if fire == null:
 		return
-	fire.fire_every_ticks = fire_every_ticks
+	fire.fire_every_ticks = MatchClock.ticks_for(fire_every_s)
 	fire.fire_height_m = fire_height_m
 	var health := body.get_node("Health") as Health
 	print("fuego %s a %s: %.1f en %d cuadros%s%s (vida %d%s)" % [ability.tag if ability else "?", who(body), damage, frames,
@@ -71,7 +71,7 @@ func _ignite(body: Node3D, damage: float, frames: int, from_slot: int, ability: 
 
 func _frames(ability: AbilityType) -> int:
 	if lifetime == Lifetime.FIXED:
-		return fixed_ticks
+		return MatchClock.ticks_for(fixed_s)
 	return int(ability.duration * MatchClock.TICKS_PER_SECOND) if ability else 0
 
 

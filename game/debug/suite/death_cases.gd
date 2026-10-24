@@ -71,7 +71,7 @@ func _ground() -> Dictionary:
 	var took := await _until(func() -> bool: return corpse.is_settled, GUARD_FRAMES)
 	await _frames(2)
 	var soul := _soul_of(unit)
-	checks["settled_after_fall_ticks"] = took >= 0 and took + 5 >= corpse.fall_ticks - 1
+	checks["settled_after_fall_ticks"] = took >= 0 and took + 5 >= MatchClock.ticks_for(corpse.fall_s) - 1
 	checks["soul_at_corpse"] = soul != null and soul.attached and Vector2(soul.global_position.x - unit.global_position.x, soul.global_position.z - unit.global_position.z).length() < 1.0
 	checks["bar_hidden"] = not bar.visible
 	unit.free()

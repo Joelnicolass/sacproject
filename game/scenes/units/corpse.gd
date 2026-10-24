@@ -17,8 +17,8 @@ signal stood_up
 
 ## Physics layer of corpses: off the unit layer (2) so picks and other bodies ignore it.
 @export_flags_3d_physics var corpse_layer := 8
-## A body on the ground counts as fallen after this many physics ticks (0.91 s at 60 per second, as the tip-over lasted).
-@export_range(0, 600) var fall_ticks := 55
+## A body on the ground counts as fallen after this long (as the tip-over lasted).
+@export_range(0.0, 10.0, 0.0001, "suffix:s") var fall_s := 0.9166
 ## A body that never lands (it keeps falling) counts as fallen after this long anyway.
 @export_range(1.0, 60.0, 0.5, "suffix:s") var max_fall_s := 10.0
 ## The corpse is removed this long after its soul is taken.
@@ -108,7 +108,7 @@ func dissolve(body: Node) -> void:
 func _physics_process(_delta: float) -> void:
 	_ticks += 1
 	var landed := not _body.simulates() or _body.is_on_floor()
-	if (landed and _ticks >= fall_ticks) or _ticks >= MatchClock.ticks_for(max_fall_s):
+	if (landed and _ticks >= MatchClock.ticks_for(fall_s)) or _ticks >= MatchClock.ticks_for(max_fall_s):
 		_settle()
 
 

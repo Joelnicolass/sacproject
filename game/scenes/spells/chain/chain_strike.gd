@@ -20,7 +20,7 @@ func hop(chain: ChainHop, from: Vector3, body: Node3D, point: Vector3) -> void:
 	var shooter := chain.wizard if is_instance_valid(chain.wizard) else null
 	var look := PackedStringArray([beam.fx_name(), hit_burst.bus_name()]) if beam != null and hit_burst != null else PackedStringArray()
 	LightningStrike.launch(strike_scene, chain, shooter, from, body, point, float(chain.spell.damage), chain.spell.tag, false, look,
-		MatchClock.ticks_for(travel_s), chain.slot)
+		travel_s, chain.slot)
 
 
 func _get_configuration_warnings() -> PackedStringArray:

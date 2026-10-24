@@ -11,7 +11,7 @@ extends Node3D
 ##   then the closest. It deals `amount` as direct ranged damage (dealRangedDamage(target, amount, …, DamageMod.none),
 ##   state.d:24494) through Health.damage_typed, so resistance, friendly fire (F139) and passives apply; the drop ends;
 ## - below the ground it ends without damage (state.d:24497-24498, «TODO: scar»). Off the map (no ground under it,
-##   the fallLimit branch) it ends after `max_fall_ticks`.
+##   the fallLimit branch) it ends after `max_fall_s`.
 ## The drop falls straight down (velocity has only a vertical part), so the ground under it is measured once, when
 ## it is added: one shape query per drop per tick, no ray.
 
@@ -23,8 +23,8 @@ const GROUP := &"droplet_rain"
 @export_flags_3d_physics var body_mask := 3
 ## Layers whose top is the ground a drop ends on (terrain, map buildings); wizards are left out.
 @export_flags_3d_physics var ground_mask := 1
-## A drop with no ground under it (off the map) ends after this many ticks.
-@export var max_fall_ticks := 600
+## A drop with no ground under it (off the map) ends after this long.
+@export_range(0.0, 60.0, 0.0001, "suffix:s") var max_fall_s := 10.0
 ## Most drops alive at once; past it a new drop is not added (counted in `over_cap`).
 @export var max_drops := 1024
 ## Prints one `gota <body> <taken> vida <current>` line per hit (bench and debug scenes read it).
@@ -101,7 +101,7 @@ func _physics_process(delta: float) -> void:
 			_hit(target, _amount[i], _slot[i])
 			_remove(i)
 			continue
-		if at.y < _ground[i] or (_ground[i] == -INF and _age[i] > max_fall_ticks):
+		if at.y < _ground[i] or (_ground[i] == -INF and _age[i] > MatchClock.ticks_for(max_fall_s)):
 			landed += 1
 			_remove(i)
 			continue

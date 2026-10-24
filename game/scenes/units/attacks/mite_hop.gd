@@ -23,8 +23,8 @@ extends ShotInFlight
 
 ## sacengine: the mite stops on the touch number `jumps` (5).
 @export var jumps := 5
-## Updates a stopped mite stays before it is gone (the fade).
-@export var rest_ticks := 30
+## How long a stopped mite stays before it is gone (the fade).
+@export_range(0.0, 5.0, 0.0001, "suffix:s") var rest_s := 0.5
 ## sacengine closestCreatureInRange(…, 10): a body whose feet are higher over the land than this is not a target.
 @export var max_target_height := 10.0
 ## Range of the search when the shot has no SPEL (ability.effect_range is the rule).
@@ -51,9 +51,9 @@ func holds_height() -> bool:
 	return true
 
 
-## True once the mite has been stopped for `rest_ticks` updates. RangedShot frees the shot when it is (F156: ShotInFlight.spent()).
+## True once the mite has been stopped for `rest_s`. RangedShot frees the shot when it is (F156: ShotInFlight.spent()).
 func spent() -> bool:
-	if _stopped_at < 0 or ticks - _stopped_at < rest_ticks:
+	if _stopped_at < 0 or ticks - _stopped_at < MatchClock.ticks_for(rest_s):
 		return false
 	if DebugLog.on(&"hop") and not _released:
 		print("acaro %s suelto (tick %d)" % [_shot_name, MatchClock.now()])

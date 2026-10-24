@@ -7,11 +7,12 @@ extends Node
 ## 13467-13470). The effect never touches mana or cooldown. AbilityCatalog says which tag has which scene.
 ## Server (or solo): on a client ActiveAbility does not call it and its _physics_process stays off.
 
-## Ticks the body prepares before fire() (sacengine startUsingAbility … shoot tick). 0 = at once (Protector, Life Shield).
-@export var windup_ticks := 0
+## How long the body prepares before fire(). 0 = at once (Protector, Life Shield).
+## Ref: sacengine startUsingAbility … shoot tick.
+@export_range(0.0, 10.0, 0.0001, "suffix:s") var windup_s := 0.0
 ## Starts the cooldown when it fires. Off = none (the pull: sacengine returns before setting it, state.d:12738-12739).
 @export var starts_cooldown := true
-## The preparation comes from the creature's ability clip (see windup()). Off = windup_ticks as is (Protector, Halo: none).
+## The preparation comes from the creature's ability clip (see windup()). Off = windup_s as is (Protector, Halo: none).
 @export var windup_from_clip := false
 ## F157: which of the creature's two ability clips the preparation reads (shoot_animations[windup_clip]). 1 = shoot1 (Firewalk, Breath
 ## of life, Pull, Sticky bomb: they must not change); 0 = shoot0 (the Styx's Rend Soul prepares its attack clip, 100 ticks).
@@ -40,7 +41,7 @@ func _ready() -> void:
 
 
 ## Ticks from the order to fire(). 0 = fire() in the same tick. With `windup_from_clip` the creature prepares until the shoot
-## tick of its ability clip (shoot_animations[windup_clip]: shoot_ticks[0] at framerate → 60 ticks/s, or its last frame if it has none); windup_ticks is the fallback when
+## tick of its ability clip (shoot_animations[windup_clip]: shoot_ticks[0] at framerate → 60 ticks/s, or its last frame if it has none); windup_s is the fallback when
 ## it has no such clip (or the flag is off). The one owner of the lookup: Firewalk (shoot1) and Breath of life (shoot2).
 func windup() -> int:
 	if windup_from_clip:
@@ -55,7 +56,7 @@ func windup() -> int:
 			var frames := int(clip.get("frames", 0))
 			if frames > 0:
 				return FRAME_TICKS * (frames - 1)
-	return windup_ticks
+	return MatchClock.ticks_for(windup_s)
 
 
 ## The ability's own rule: "" = it can be used now, else the reason (ActiveAbility's constants).

@@ -4,7 +4,7 @@ extends Node3D
 ## F151 (RFC-030 030n-b): the Rhinok's rings of spikes, sacengine RhinokProjectile phase spreading (state.d:4996-5025,
 ## updateRhinokProjectile 24942-25037). SpikeImpact puts it in the shots' container where the shot burst (on the land),
 ## server (or solo) only. Its frame is MatchClock.now() − the tick it was born (sacengine: frame 0 is the update of
-## the hit). On frame damage_frames[i] (14, 29, 44, 59, 89) ring i hurts; on frame `life_ticks` (90) it ends.
+## the hit). At damage_at_s[i] (14, 29, 44, 59, 89 ticks) ring i hurts; at `life_s` (90 ticks) it ends.
 ## Ring i goes from min_radius + i·offset to that + strip, offset = (effect_range − strip − min_radius) / (rings − 1):
 ## with hrba (effectRange 30) [1, 7], [6,75, 12,75], [12,5, 18,5], [18,25, 24,25], [24, 30].
 ## Who a ring hurts (the callback of dealDamageAt, 24985-25001): every live creature, wizard and building whose hit box
@@ -23,16 +23,18 @@ extends Node3D
 const _HEALTH := preload("res://scenes/components/health.gd")
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 
-## sacengine damageFrames (15−1, 30−1, 45−1, 60−1, 90−1).
-@export var damage_frames: PackedInt32Array = PackedInt32Array([14, 29, 44, 59, 89])
+## When each ring hurts, after the hit.
+## Ref: sacengine damageFrames (15−1, 30−1, 45−1, 60−1, 90−1 ticks).
+@export var damage_at_s: PackedFloat64Array = PackedFloat64Array([0.2333, 0.4833, 0.7333, 0.9833, 1.4833])
 ## sacengine stripSize: the width of a ring (m).
 @export var strip := 6.0
 ## sacengine minRadius: the inner radius of the first ring (m).
 @export var min_radius := 1.0
 ## sacengine maxDamageHeight: a body higher than this over the land is not hurt (m).
 @export var max_height := 10.0
-## sacengine numProjectileFrames: the last frame (the wave ends after it).
-@export var life_ticks := 90
+## How long the wave lasts (it ends after it).
+## Ref: sacengine numProjectileFrames (90 ticks).
+@export_range(0.0, 10.0, 0.0001, "suffix:s") var life_s := 1.5
 ## The SPEL's effectRange (hrba: 30 m); SpikeImpact writes it. The outer radius of the last ring and of the spikes.
 @export var effect_range := 30.0
 ## The spikes of a ring: SpikeField scene played by FxBus on every peer (empty: none).
@@ -75,11 +77,12 @@ func _physics_process(_delta: float) -> void:
 	var frame := MatchClock.now() - _born
 	if frame <= _last_frame:
 		return
-	for i in damage_frames.size():
-		if damage_frames[i] > _last_frame and damage_frames[i] <= frame:
-			_ring(i, damage_frames[i])
+	for i in damage_at_s.size():
+		var at := MatchClock.ticks_for(damage_at_s[i])
+		if at > _last_frame and at <= frame:
+			_ring(i, at)
 	_last_frame = frame
-	if frame >= life_ticks:
+	if frame >= MatchClock.ticks_for(life_s):
 		if DebugLog.on(&"spikes"):
 			print("anillos %s fin +%d (cuadro %d)" % [label, frame, MatchClock.now()])
 		set_physics_process(false)
@@ -88,7 +91,7 @@ func _physics_process(_delta: float) -> void:
 
 ## sacengine: offset = (effectRange − stripSize − minRadius) / (damageFrames.length − 1).
 func ring_bounds(i: int) -> Vector2:
-	var rings := damage_frames.size()
+	var rings := damage_at_s.size()
 	var offset := (effect_range - strip - min_radius) / float(rings - 1) if rings > 1 else 0.0
 	var inner := min_radius + float(i) * offset
 	return Vector2(inner, inner + strip)
@@ -99,7 +102,7 @@ func _ring(i: int, frame: int) -> void:
 	var bounds := ring_bounds(i)
 	var center := global_position
 	if DebugLog.on(&"spikes"):
-		print("anillo %d/%d %s +%d de %.2f a %.2f m (cuadro %d)" % [i + 1, damage_frames.size(), label, frame, bounds.x,
+		print("anillo %d/%d %s +%d de %.2f a %.2f m (cuadro %d)" % [i + 1, damage_at_s.size(), label, frame, bounds.x,
 			bounds.y, MatchClock.now()])
 	_bristle(i, bounds)
 	var skip: Node3D = touched if touched != null and is_instance_valid(touched) else null
@@ -144,9 +147,9 @@ func _excluded(body: Node3D, feet: Vector3) -> String:
 
 func _log_start() -> void:
 	var rings := PackedStringArray()
-	for i in damage_frames.size():
+	for i in damage_at_s.size():
 		var bounds := ring_bounds(i)
-		rings.append("+%d [%.2f, %.2f]" % [damage_frames[i], bounds.x, bounds.y])
+		rings.append("+%d [%.2f, %.2f]" % [MatchClock.ticks_for(damage_at_s[i]), bounds.x, bounds.y])
 	var at := global_position
 	print("anillos %s en (%.3f, %.3f, %.3f) alcance %.1f m daño %d bando %d pedido %s tocado %s anillos %s (cuadro %d)" % [
 		label, at.x, at.y, at.z, effect_range, roundi(amount), from_slot, _name_of(intended), _name_of(touched),

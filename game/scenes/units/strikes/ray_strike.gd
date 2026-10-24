@@ -15,8 +15,8 @@ extends ShotStrike
 @export_range(1, 64) var bursts := 1
 ## Tick of the first burst (0 = the tick of the shot).
 @export_range(0, 120) var first_tick := 0
-## Ticks between two bursts.
-@export_range(1, 120) var period_ticks := 4
+## Time between two bursts.
+@export_range(0.0166, 2.0, 0.0001, "suffix:s") var period_s := 0.0666
 ## Rays per burst.
 @export_range(1, 8) var rays_per_burst := 1
 ## Each ray draws the accuracy again around the aimed point (ShotAim.scatter with a stream of its own). Off: every ray
@@ -51,7 +51,7 @@ func _strike_tick(age: int) -> void:
 		_log("%s %s cortada: tirador muerto tras la ráfaga %d/%d" % [label, tag, _bursts_fired, bursts])
 		finish()
 		return
-	if age < first_tick or (age - first_tick) % period_ticks != 0:
+	if age < first_tick or (age - first_tick) % maxi(1, MatchClock.ticks_for(period_s)) != 0:
 		return
 	var from: Vector3 = source.shot_origin() if follow else origin
 	_bursts_fired += 1

@@ -5,7 +5,7 @@
 [node name="Bilemites" type="Node"]
 editor_description = "F156 (RFC-030 030s-b): efecto propio de los Bilemites del Blight (liba). ActiveAbility lo instancia como \"Effect\" desde data/abilities/ability_catalog.tres. Prepara 94 ticks (la animación de la habilidad del Blight, igual que la Sticky bomb), lanza 10 ácaros con dispersión 0,2 y gravedad 20; el look es data/shots/liba.tres: el vuelo (MiteHop: 5 saltos) y lo que hace al tocar (StickImpact mites, x0,8 por ácaro, sin daño)."
 script = ExtResource("1_lob")
-windup_ticks = 94
+windup_s = 1.5666
 windup_from_clip = true
 shots = 10
 spread = 0.2

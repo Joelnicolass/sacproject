@@ -42,8 +42,8 @@ const PERMANENT := 1000000
 @export var seen_groups: PackedStringArray = PackedStringArray(["unit", "wizard", "structure", "doctor", "manafount"])
 ## A wizard has no sight range in the exported data: aprox. like a creature of the roster.
 @export var wizard_sight_m := 100.0
-## Ticks between purges of the marks of bodies that no longer exist.
-@export var purge_ticks := 600
+## Time between purges of the marks of bodies that no longer exist.
+@export_range(0.0166, 600.0, 0.0001, "suffix:s") var purge_s := 10.0
 ## RFC-049 049c: the rules that say if the allies share what they see (MatchRules.allied_vision). Empty = the ones of the world that
 ## holds this node (its `rules`), else shared.
 @export var rules: MatchRules
@@ -87,7 +87,7 @@ func _physics_process(_delta: float) -> void:
 		var next := (int(_cursor.get(slot, -1)) + 1) % list.size()
 		_cursor[slot] = next
 		observe(list[next])
-	if tick % purge_ticks == 0:
+	if tick % maxi(1, MatchClock.ticks_for(purge_s)) == 0:
 		_purge()
 	last_us = Time.get_ticks_usec() - started
 	total_us += last_us

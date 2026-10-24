@@ -11,8 +11,8 @@ extends MeshInstance3D
 @export var affliction: Affliction
 ## The body whose box it takes.
 @export var body: Node3D
-## Ticks it takes to grow to the full box.
-@export_range(1, 300) var grow_ticks := 30
+## Time it takes to grow to the full box.
+@export_range(0.0166, 5.0, 0.0001, "suffix:s") var grow_s := 0.5
 
 var _grown := 0.0
 
@@ -37,7 +37,7 @@ func _on_shown(on: bool) -> void:
 
 
 func _process(delta: float) -> void:
-	_grown = minf(1.0, _grown + delta * MatchClock.TICKS_PER_SECOND_F / float(grow_ticks))
+	_grown = minf(1.0, _grown + delta / grow_s)
 	_fit()
 
 

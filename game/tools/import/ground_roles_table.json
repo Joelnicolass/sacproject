@@ -1,0 +1,69 @@
+{
+  "doc": "The ONE table of which ground role (open, earth, rock, path) each base tile group (MAPG number) of each god's land plays. Read by bake_ground_roles.py. 'neighbours' = the group has no role of its own: its cells take the majority role around them. verified=false is NO VERIFICADO: decided by the script (bake_ground_roles.py --infer) from the height bands and the use on the imported maps, and waiting for a human to look at it. The lands of persephone, james and charnel come from the former land_themes.py NATIVE_ROLES / JAMES_ROLES.",
+  "roles": ["open", "earth", "rock", "path"],
+  "lands": {
+    "persephone": {
+      "source": "land_themes.NATIVE_ROLES (James open/earth/low ground/rock -> MG3/MG4/MG2/MG1) and the use of tu02",
+      "groups": {
+        "0": {"role": "neighbours", "verified": true, "why": "near-white tile 0000, the filler under void cells (land_themes build_atlas comment)"},
+        "1": {"role": "rock", "verified": true, "why": "pale stone of the rings"},
+        "2": {"role": "path", "verified": true, "why": "grey-green earth around the grass; the former low ground / pale paths role"},
+        "3": {"role": "open", "verified": true, "why": "grass, the largest group of tu02"},
+        "4": {"role": "earth", "verified": true, "why": "warm dirt of the banks"},
+        "5": {"role": "earth", "verified": false, "why": "lowest band, 1 tile, blends only with MG4 (pair 4-5)"},
+        "6": {"role": "neighbours", "verified": true, "why": "no height band"},
+        "7": {"role": "neighbours", "verified": true, "why": "no height band"},
+        "8": {"role": "neighbours", "verified": true, "why": "no height band"}
+      }
+    },
+    "james": {
+      "source": "land_themes.NATIVE_ROLES comment (James MG00/01/02/03) and base_mapping for the groups with no band",
+      "groups": {
+        "0": {"role": "open", "verified": true, "why": "open ground, 91 % of High Noon"},
+        "1": {"role": "earth", "verified": true, "why": "hill earth"},
+        "2": {"role": "path", "verified": true, "why": "low ground, pale paths"},
+        "3": {"role": "rock", "verified": true, "why": "rock and cliff"},
+        "4": {"role": "neighbours", "verified": true, "why": "no height band"},
+        "5": {"role": "neighbours", "verified": true, "why": "zero-width band [1,1,1,1]"},
+        "6": {"role": "neighbours", "verified": true, "why": "no height band"}
+      }
+    },
+    "charnel": {
+      "source": "land_themes.JAMES_ROLES {4:0, 0:0, 1:1, 2:3, 3:0, 5:0} (James open/earth/rock)",
+      "groups": {
+        "0": {"role": "open", "verified": true, "why": "rim of Peaks"},
+        "1": {"role": "earth", "verified": true, "why": "the heights"},
+        "2": {"role": "rock", "verified": true, "why": "the peaks"},
+        "3": {"role": "open", "verified": true, "why": "pockets around the spawns"},
+        "4": {"role": "open", "verified": true, "why": "dominant low ground, 43 % of Peaks"},
+        "5": {"role": "open", "verified": true, "why": "pockets around the spawns"},
+        "6": {"role": "neighbours", "verified": true, "why": "no entry in JAMES_ROLES"},
+        "7": {"role": "neighbours", "verified": true, "why": "no entry in JAMES_ROLES"},
+        "8": {"role": "neighbours", "verified": true, "why": "no entry in JAMES_ROLES"}
+      }
+    },
+    "pyro": {
+      "source": "NO VERIFICADO: bake_ground_roles.py --infer (open = most used banded group on Roads, rock = highest band, path = lowest band, the rest earth)",
+      "groups": {
+        "0": {"role": "open", "verified": false, "why": "most used on Roads (27 993 cells), band 0.20-0.35"},
+        "1": {"role": "earth", "verified": false, "why": "band 0.31-0.50"},
+        "2": {"role": "earth", "verified": false, "why": "band 0.45-0.60"},
+        "3": {"role": "rock", "verified": false, "why": "highest band 0.55-1.00"},
+        "4": {"role": "neighbours", "verified": false, "why": "no height band, unused on Roads"},
+        "5": {"role": "path", "verified": false, "why": "lowest band 0.00-0.30, dark tiles"}
+      }
+    },
+    "stratos": {
+      "source": "NO VERIFICADO: bake_ground_roles.py --infer (open = most used banded group on WinterWonder, rock = highest band, path = lowest of the rest, the rest earth)",
+      "groups": {
+        "0": {"role": "path", "verified": false, "why": "band 0.10-0.65, lowest centre after the open group; 21 163 cells on WinterWonder, so it may really be open ground"},
+        "1": {"role": "rock", "verified": false, "why": "highest band 0.80-1.00, unused on WinterWonder"},
+        "2": {"role": "open", "verified": false, "why": "most used on WinterWonder (33 420 cells), lowest band 0.00-0.15, blue-white ice"},
+        "3": {"role": "earth", "verified": false, "why": "band 0.70-0.85"},
+        "4": {"role": "earth", "verified": false, "why": "band 0.55-0.80"},
+        "5": {"role": "neighbours", "verified": false, "why": "no height band, unused on WinterWonder"},
+        "6": {"role": "neighbours", "verified": false, "why": "no height band"}
+      }
+    }
+  }
+}

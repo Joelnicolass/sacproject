@@ -10,6 +10,8 @@
 
 global uniform sampler2D terrain_deform_map;
 global uniform float terrain_deform_on;
+// 0 on a piece of ground that carries its own heights and falls (FallingChunk): it must not take the shift of the map again.
+instance uniform float deform_follow = 1.0;
 
 // The vertices of the map lie on a 10 m lattice.
 const float DEFORM_CELL = 10.0;

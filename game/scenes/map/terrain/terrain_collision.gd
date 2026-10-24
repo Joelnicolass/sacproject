@@ -3,8 +3,8 @@ extends StaticBody3D
 
 ## The ground to stand on: the map's triangles (land and cliff walls) cut in chunks of `chunk_cells` x `chunk_cells` cells,
 ## one collision shape each, all on this one body. When the ground moves (TerrainShape.changed) only the chunks it touched
-## are made again, at most every `refresh_ticks` ticks, with the corners moved as the shape says; a triangle with a taken
-## away corner is left out. So a ray from above (GroundRay) finds the same ground TerrainShape.height_at answers, a
+## are made again, at most every `refresh_ticks` ticks (a hole at once), with the corners moved as the shape says; a triangle
+## with a taken away corner is left out. So a ray from above (GroundRay) finds the same ground TerrainShape.height_at answers, a
 ## few ticks late. It does not decide how the ground moves (TerrainDeformer) and draws nothing.
 
 ## An empty shape every chunk copies, so no shape is built in code.
@@ -41,6 +41,7 @@ func _ready() -> void:
 	for chunk: Vector2i in _triangles:
 		_remake(chunk)
 	shape.changed.connect(_on_shape_changed)
+	shape.holes_changed.connect(_on_holes_changed)
 	set_physics_process(true)
 
 
@@ -106,6 +107,11 @@ func _on_shape_changed(area: Rect2) -> void:
 		for x in range(maxi(low.x, 0) / chunk_cells, high.x / chunk_cells + 1):
 			if _triangles.has(Vector2i(x, z)):
 				_dirty[Vector2i(x, z)] = true
+
+
+## A hole is there in the same tick, not a few later: whoever stands on it must not be held up by a ground that is gone.
+func _on_holes_changed(_area: Rect2) -> void:
+	flush()
 
 
 func _physics_process(_delta: float) -> void:

@@ -68,7 +68,7 @@ func set_removed(id: int, removed: bool) -> void:
 	var ground := shape.displacement()
 	if ground.set_removed(id, removed):
 		ground.rev += 1
-		shape.notify_changed(Rect2i(id % TerrainDisplacement.SIDE, id / TerrainDisplacement.SIDE, 1, 1))
+		_tell_holes(id)
 		if MpKit.is_server():
 			rpc_removed.rpc(ground.rev, id, removed)
 
@@ -89,7 +89,14 @@ func rpc_removed(rev: int, id: int, removed: bool) -> void:
 		return
 	ground.set_removed(id, removed)
 	ground.rev = rev
-	shape.notify_changed(Rect2i(id % TerrainDisplacement.SIDE, id / TerrainDisplacement.SIDE, 1, 1))
+	_tell_holes(id)
+
+
+## The vertex `id` came or went: the shape says it moved, and that it was a hole (the collision flushes, the navmesh is baked again).
+func _tell_holes(id: int) -> void:
+	var around := Rect2i(id % TerrainDisplacement.SIDE - 1, id / TerrainDisplacement.SIDE - 1, 3, 3)
+	shape.notify_changed(around)
+	shape.holes_changed.emit(Rect2(Vector2(around.position) * TerrainRules.CELL, Vector2(around.size) * TerrainRules.CELL))
 
 
 func _push_snapshot(peer_id: int) -> void:

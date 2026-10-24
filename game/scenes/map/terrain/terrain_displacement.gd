@@ -17,6 +17,8 @@ var permanent := PackedFloat32Array()
 var rev := 0
 ## Count of times the visible sum changed (live stamps included): whoever caches what it plants compares it.
 var version := 0
+## The vertices taken away, as a list (`texels` holds the same in its second float).
+var holes := TerrainHoles.new()
 
 ## Stamps playing now: key -> [rect, values] (values row by row over the rect).
 var _live := {}
@@ -100,17 +102,14 @@ func set_removed(id: int, removed: bool) -> bool:
 	if is_removed(id) == removed:
 		return false
 	texels[id * 2 + 1] = 1.0 if removed else 0.0
+	holes.put(id, removed)
 	version += 1
 	return true
 
 
 ## The vertices taken away, in order.
 func removed_ids() -> PackedInt32Array:
-	var found := PackedInt32Array()
-	for id in COUNT:
-		if is_removed(id):
-			found.append(id)
-	return found
+	return holes.ids()
 
 
 ## Sums what stays and the live stamps again over `rect`.
@@ -142,9 +141,10 @@ func to_snapshot() -> Dictionary:
 
 func apply_snapshot(data: Dictionary) -> void:
 	permanent = (data["permanent"] as PackedByteArray).decompress(int(data["size"]), FileAccess.COMPRESSION_ZSTD).to_float32_array()
-	for id in COUNT:
+	for id in holes.ids():
 		texels[id * 2 + 1] = 0.0
-	for id in data["holes"] as PackedInt32Array:
+	holes.replace(data["holes"] as PackedInt32Array)
+	for id in holes.ids():
 		texels[id * 2 + 1] = 1.0
 	rev = int(data["rev"])
 	refresh(Rect2i(0, 0, SIDE, SIDE))

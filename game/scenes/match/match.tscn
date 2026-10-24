@@ -79,6 +79,7 @@
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/demonic_rift.tscn" id="z61_rift"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/erupt_zone.tscn" id="z61k_erupt"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/volcano_zone.tscn" id="z61k_volcano"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/bore_zone.tscn" id="z61k_bore"]
 [ext_resource type="PackedScene" path="res://scenes/spells/walls/firewall.tscn" id="w61_firewall"]
 [ext_resource type="PackedScene" path="res://scenes/spells/walls/wall_of_spikes.tscn" id="w61_wall_of_spikes"]
 [ext_resource type="PackedScene" path="res://scenes/spells/walls/wailing_wall.tscn" id="w61_wailing_wall"]
@@ -181,6 +182,7 @@ zones = Dictionary[String, PackedScene]({
 "DemonicRift": ExtResource("z61_rift"),
 "Erupt": ExtResource("z61k_erupt"),
 "Volcano": ExtResource("z61k_volcano"),
+"Bore": ExtResource("z61k_bore"),
 "Explosion": ExtResource("z61_explosion"),
 "FrozenGround": ExtResource("z61_frozen"),
 "Firewall": ExtResource("w61_firewall"),

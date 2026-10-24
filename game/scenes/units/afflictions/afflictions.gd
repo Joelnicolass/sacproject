@@ -25,8 +25,8 @@ signal held_changed(held: bool)
 ## and the highest look_priority among the ones that are on (petrified over frozen); none = off. Every peer, from the
 ## mask, so two states that change in the same tick cannot undress each other. Optional: empty = no look.
 @export var look: StoneLook
-## F158: the body's Life Shield. While it is on the body is ccProtected (stats.d:86-90: shielded). Optional: empty = a shield does not protect.
-@export var life_shield: LifeShield
+## F158: the body's wards. While one that counts as a shield is on the body is ccProtected (stats.d:86-90: shielded). Optional: empty = a shield does not protect.
+@export var wards: Wards
 ## The bits of the states that are on (AfflictionType.bit). Replicated by the unit's MultiplayerSynchronizer.
 @export var shown := 0:
 	set(value):
@@ -142,7 +142,7 @@ func damage_factor() -> float:
 
 
 func cc_protected() -> bool:
-	if life_shield != null and life_shield.is_on():
+	if wards != null and wards.shielded():
 		return true
 	if shown == 0:
 		return false

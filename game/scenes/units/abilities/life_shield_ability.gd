@@ -19,6 +19,6 @@ func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 	var shield := LifeShield.of(user)
 	if shield == null:
 		return false
-	shield.start_for(ability)
+	shield.start_for_ability(ability)
 	FxBus.broadcast("heal", user.global_position + Vector3.UP)
 	return true

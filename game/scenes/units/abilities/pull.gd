@@ -72,8 +72,8 @@ func applicable(target: Node3D) -> bool:
 		return false
 	if SideRelations.stance(_slot(user), _slot(target)) == SideRelations.Stance.ALLY:
 		return false
-	var shield := LifeShield.of(target)
-	return shield == null or not shield.is_on()
+	var wards := Wards.of(target)
+	return wards == null or not wards.shielded()
 
 
 ## sacengine collideRay from the shot origin to the target's center: the nearest valid body (any side, not the user) whose

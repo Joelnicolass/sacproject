@@ -45,8 +45,8 @@ const IGNITE := 1 << 6
 ## F122: the body's poison (Poisoning): its resistance bonus goes into every resistance and its factor into regenerate().
 ## Optional: empty = no bonus, regeneration ×1.
 @export var poisoning: Poisoning
-## F126: the body's life shield (Life Shield, Protector). Optional: empty = no shield, ×1.
-@export var life_shield: LifeShield
+## The body's shields and temporary forms (Life Shield, Skin of Stone, Air Shield, Ethereal Form...). Optional: empty = no ward, ×1.
+@export var wards: Wards
 ## F155: the body's oil (Oiled). A hit with IGNITE that reaches it while the body is oiled takes ×2 and lights it (sacengine
 ## dealRawDamage, state.d:9028-9031). Optional: empty = never doubled.
 @export var oil: Oiled
@@ -137,7 +137,7 @@ func damage_typed(amount: float, kind: StringName, from_slot: int = 0, ignore_fr
 	var side := _side_factor(from_slot, ignore_friendly, 0.0)
 	if side > 0.0:
 		var factor := float(kind_factors.get(kind, 1.0))
-		var shields := 1.0 if pierce_shield else shield_factor() * _state_factor()
+		var shields := 1.0 if pierce_shield else shield_factor(kind) * _state_factor()
 		var before := amount * side * resistance(kind) * maxf(0.0, factor) * shields
 		var scaled := before * _passive_factor(before, mods, from_slot)
 		if mods & IGNITE != 0 and oil != null and oil.ignite():
@@ -149,9 +149,9 @@ func damage_typed(amount: float, kind: StringName, from_slot: int = 0, ignore_fr
 	return taken
 
 
-## sacengine dealDamage (state.d:8962-8963): the body's damage_factor (Rockform) times the life shield's. The melee path asks it too.
-func shield_factor() -> float:
-	return maxf(0.0, damage_factor) * (life_shield.factor() if life_shield else 1.0)
+## sacengine dealDamage (state.d:8962-8969): the body's damage_factor (Rockform) times its wards' for `kind`. The melee path asks it too.
+func shield_factor(kind := MELEE) -> float:
+	return maxf(0.0, damage_factor) * (wards.factor(kind) if wards else 1.0)
 
 
 ## The body's resistance for `kind`: CreatureType for a UnitBody, WizardType for a wizard.
@@ -259,8 +259,11 @@ func heal(amount: float) -> void:
 	current = minf(current + amount, maximum)
 
 
-## sacengine canDamage (state.d:8916-8923): a wizard's ghost takes no damage while it heals.
+## sacengine canDamage (state.d:8916-8923): a wizard's ghost takes no damage while it heals; neither does a body in a ward that
+## makes it immune (Ethereal Form), whatever the hit pierces.
 func _can_be_damaged() -> bool:
+	if wards != null and wards.immune():
+		return false
 	var body := get_parent()
 	return body == null or not body.has_method("is_targetable") or bool(body.call("is_targetable"))  # dynamic: any body that owns a Health answers it
 

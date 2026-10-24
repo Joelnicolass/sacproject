@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://scenes/units/status/devour_growth.tscn" id="f131_growth"]
 [ext_resource type="PackedScene" path="res://scenes/units/passives/lightning_charge.tscn" id="f130_charge"]
 [ext_resource type="PackedScene" path="res://scenes/units/passives/life_shield.tscn" id="f126_shield"]
+[ext_resource type="Script" path="res://scenes/spells/wards/wards.gd" id="w_wards"]
 [ext_resource type="Resource" path="res://data/abilities/ability_catalog.tres" id="f126_catalog"]
 [ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="2_visual"]
 [ext_resource type="Script" path="res://scenes/components/health.gd" id="3_health"]
@@ -143,7 +144,7 @@ properties/13/replication_mode = 2
 properties/14/path = NodePath("Afflictions:shown")
 properties/14/spawn = true
 properties/14/replication_mode = 2
-properties/15/path = NodePath("LifeShield:shown")
+properties/15/path = NodePath("Wards/LifeShield:shown")
 properties/15/spawn = true
 properties/15/replication_mode = 2
 properties/16/path = NodePath("Clinging:shown")
@@ -179,18 +180,21 @@ rig = NodePath("Rig")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_unit")
 
-[node name="Health" type="Node" parent="." node_paths=PackedStringArray("oil", "passive", "afflictions", "poisoning", "life_shield", "growth")]
+[node name="Health" type="Node" parent="." node_paths=PackedStringArray("oil", "passive", "afflictions", "poisoning", "wards", "growth")]
 script = ExtResource("3_health")
 growth = NodePath("../DevourGrowth")
 oil = NodePath("../Afflictions/Oiled")
 passive = NodePath("../DamagePassive")
 afflictions = NodePath("../Afflictions")
 poisoning = NodePath("../Poisoning")
-life_shield = NodePath("../LifeShield")
+wards = NodePath("../Wards")
 
-[node name="LifeShield" parent="." node_paths=PackedStringArray("body", "health") instance=ExtResource("f126_shield")]
-body = NodePath("..")
-health = NodePath("../Health")
+[node name="Wards" type="Node" parent="."]
+script = ExtResource("w_wards")
+
+[node name="LifeShield" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("f126_shield")]
+body = NodePath("../..")
+health = NodePath("../../Health")
 
 [node name="MeleeAttack" type="Node" parent="." node_paths=PackedStringArray("passive", "own_health")]
 script = ExtResource("4_melee")
@@ -265,13 +269,13 @@ mana_support = NodePath("../ManaSupport")
 script = ExtResource("f36_clip")
 visual = NodePath("../Tilt/Mesh")
 
-[node name="Afflictions" type="Node" parent="." node_paths=PackedStringArray("body", "health", "clip_pose", "look", "life_shield")]
+[node name="Afflictions" type="Node" parent="." node_paths=PackedStringArray("body", "health", "clip_pose", "look", "wards")]
 script = ExtResource("f120_afflictions")
 body = NodePath("..")
 health = NodePath("../Health")
 clip_pose = NodePath("../ClipPose")
 look = NodePath("Look")
-life_shield = NodePath("../LifeShield")
+wards = NodePath("../Wards")
 
 [node name="Stunned" type="Node" parent="Afflictions" node_paths=PackedStringArray("clip_pose", "tilt", "visual")]
 script = ExtResource("f120_stunned")

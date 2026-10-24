@@ -50,7 +50,7 @@ func report() -> String:
 		var s := LifeShield.of(b)
 		var look := "sin escudo"
 		if s:
-			look = "escudo %s burbuja %s x%.2f" % ["sí" if s.shown else "no", "visible" if s.bubble.visible else "oculta", s.bubble.scale.x]
+			look = "escudo %s burbuja %s x%.2f" % ["sí" if s.shown else "no", "visible" if s.look.visible else "oculta", s.look.scale.x]
 		parts.append("%s %.1f %s px %s" % [n, h.current if h else -1.0, look, _px_rect(b)])
 	var line := "PT126 tick %d rel %d · %s" % [tick, rel, " · ".join(parts)]
 	print(line)

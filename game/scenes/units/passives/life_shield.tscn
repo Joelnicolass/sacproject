@@ -3,8 +3,9 @@
 [ext_resource type="Script" path="res://scenes/units/passives/life_shield.gd" id="1_shield"]
 [ext_resource type="PackedScene" path="res://scenes/units/passives/shield_bubble.tscn" id="2_bubble"]
 
-[node name="LifeShield" type="Node3D" node_paths=PackedStringArray("bubble")]
+[node name="LifeShield" type="Node3D" node_paths=PackedStringArray("look")]
 script = ExtResource("1_shield")
-bubble = NodePath("Bubble")
+factor = 0.5
+look = NodePath("Bubble")
 
 [node name="Bubble" parent="." instance=ExtResource("2_bubble")]

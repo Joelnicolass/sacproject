@@ -107,6 +107,11 @@ func set_max_fps(value: int) -> void:
 	_commit()
 
 
+## The preset `--quality=` asked for in this run, or null (the sandboxed runs use it over their default).
+func forced_quality() -> LookQuality:
+	return preset_for(_cli_quality())
+
+
 ## The preset whose `id` is `id`, or null.
 func preset_for(id: StringName) -> LookQuality:
 	for preset in presets:

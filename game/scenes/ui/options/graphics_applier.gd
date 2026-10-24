@@ -14,14 +14,22 @@ extends Node
 ##   test never inherits the player's choice (no VSync off / no cap in a playtest). The rule is UserSettings.sandboxed():
 ##   `--user-settings=user://<file>.cfg` (a playtest of the preferences) turns it back on with that file; the engine
 ##   flags of the run still win.
+## - Under AgentKit with a window (not headless) the preset is still applied, deterministically and without touching the
+##   player's file: `--quality=low|medium|high`, else `sandbox_quality` (high). The window settings and the vegetation switch
+##   stay as the run started; without a preset FloraField plants nothing, so a capture would show a bare ground.
 
 ## The shared preference (data/ui/graphics_prefs.tres).
 @export var prefs: GraphicsPrefs
 ## The world's look rig; empty in the boot (window settings only).
 @export var rig: LookRig
+## The `id` of the preset a sandboxed run with a window gets when it passes no `--quality=`.
+@export var sandbox_quality: StringName = &"high"
 
 
 func _ready() -> void:
+	if _sandbox_preset_only():
+		apply_sandbox_preset.call_deferred()
+		return
 	if _inert():
 		return
 	if prefs == null:
@@ -50,6 +58,24 @@ func apply() -> void:
 		rig.apply_quality(preset)
 		line += " · preset aplicado en %d ms" % roundi((Time.get_ticks_usec() - started) / 1000.0)
 	print(line)
+
+
+## Sandboxed run with a window: the deterministic preset on the rig, nothing read from or written to the player's file.
+## Deferred one frame: the map binds `rig` while the world enters the tree.
+func apply_sandbox_preset() -> void:
+	if not _sandbox_preset_only() or prefs == null or not _owns_scene() or not _has_rig():
+		return
+	var preset := prefs.forced_quality()
+	if preset == null:
+		preset = prefs.preset_for(sandbox_quality)
+	if preset != null and rig.quality_preset != preset:
+		rig.apply_quality(preset)
+
+
+func _sandbox_preset_only() -> bool:
+	if Engine.is_editor_hint() or DisplayServer.get_name() == "headless" or MpBoot.is_dedicated_process():
+		return false
+	return UserSettings.sandboxed()
 
 
 func _apply_window() -> void:

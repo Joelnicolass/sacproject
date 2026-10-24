@@ -14,7 +14,7 @@ from .install import INSTALL
 PLANT_WADS = ("prsc.wad", "char.wad", "pyro_a.wad", "strato_a.wad", "james_a.wad")
 
 ## Spell models of models.wad (renderer.d loads them from MODL.WAD!/<tag>.MRMC/<tag>.MRMM).
-SPELL_MODELS = ("rock",)
+SPELL_MODELS = ("rock", "roks")
 
 
 @dataclass

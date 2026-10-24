@@ -88,6 +88,11 @@ EXTRA_FX = {
     "lthg": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
     "lth2": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
     "cfx1": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
+    # RFC 061e: the exe's own bolt texture (ltng, deeper blue than ltn2; Chain Lightning's SPEL says ltn2: a knob), Rainbow's bands (rnbw)
+    # and the fireball sprite of Dragonfire's trail (fbal).
+    "ltng": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
+    "rnbw": ("main.wad", "MAIN.WAD!/bits.FLDR"),
+    "fbal": ("main.wad", "MAIN.WAD!/bits.FLDR"),
 }
 
 IMPORT_TEMPLATE = """[remap]

@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/actions/zone_action.gd" id="1_script"]
+
+[node name="RainOfFire" type="Node"]
+editor_description = "Rain of Fire (rifr): una nube de fuego que cae al terminar el lanzamiento."
+script = ExtResource("1_script")
+tag = "rifr"
+prompt = "Elegí el punto"
+cast_fx = "wards/fire_cast"
+kind = "RainOfFire"

@@ -14,7 +14,7 @@
 [ext_resource type="Resource" path="res://data/fx/wall_vine_cast.tres" id="12_cast"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="13_sound"]
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_sound.gd" id="14_wallsound"]
-[ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="15_light"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="15_light"]
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_light_follow.gd" id="16_follow"]
 
 [sub_resource type="BoxShape3D" id="Box_body"]

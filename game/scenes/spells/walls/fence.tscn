@@ -9,7 +9,7 @@
 [ext_resource type="Shader" path="res://scenes/spells/walls/wall_sprite_add.gdshader" id="7_add"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/bubl.png" id="8_bubl"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/cst0.png" id="9_cst0"]
-[ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="10_light"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="10_light"]
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_light_follow.gd" id="11_follow"]
 
 [sub_resource type="BoxShape3D" id="Box_body"]

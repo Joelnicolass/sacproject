@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="1_zone"]
 [ext_resource type="Resource" path="res://data/catalog/spells/pxef.tres" id="2_spell"]
@@ -13,6 +13,7 @@
 [ext_resource type="Resource" path="res://data/fx/fire.tres" id="11_fire"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/zone_sound.tscn" id="12_sound"]
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="13_ptype"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
 
 [node name="ExplosionZone" type="Node3D"]
 editor_description = "Explosion (pxef): cinco bolas de fuego que crecen mientras el mago lanza y estallan a los 3,8 s del inicio del lanzamiento. El tiempo lo cuenta la zona (arm_from_start en la acción); el daño, el fuego y el lanzamiento los hace ZoneBlast; el look es de las bolas y de ExplosionBurst. Sin cicatriz scar en el suelo: no hay lector de SCAR."
@@ -57,3 +58,15 @@ editor_description = "flam al empezar el lanzamiento (malf con ganancia 4 en el 
 cue = &"explosion_cast"
 zone = NodePath("..")
 when = 1
+
+[node name="FireGlow" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("glow_state_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+light_color = Color(1, 0.75, 0.25, 1)
+light_energy = 1.6
+omni_range = 14
+fade_in_s = 1
+fade_out_s = 0.3
+from_phase = 0
+to_phase = 1
+zone = NodePath("..")
+editor_description = "Yellow-orange light while the five fire balls grow and wait (the exe gives Explosion a yellow light; exeg.png lava is orange). The blast itself lights through data/fx/explosion_blast.tres."

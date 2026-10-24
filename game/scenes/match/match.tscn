@@ -82,6 +82,11 @@
 [ext_resource type="PackedScene" path="res://scenes/spells/walls/wailing_wall.tscn" id="w61_wailing_wall"]
 [ext_resource type="PackedScene" path="res://scenes/spells/walls/vinewall.tscn" id="w61_vinewall"]
 [ext_resource type="PackedScene" path="res://scenes/spells/walls/fence.tscn" id="w61_fence"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/rain_of_frogs.tscn" id="z61h_RainOfFrogs"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/rain_of_fire.tscn" id="z61h_RainOfFire"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/plague.tscn" id="z61h_Plague"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/cloudkill.tscn" id="z61h_Cloudkill"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/bombardment.tscn" id="z61h_Bombardment"]
 
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
@@ -176,7 +181,12 @@ zones = Dictionary[String, PackedScene]({
 "WallOfSpikes": ExtResource("w61_wall_of_spikes"),
 "WailingWall": ExtResource("w61_wailing_wall"),
 "Vinewall": ExtResource("w61_vinewall"),
-"Fence": ExtResource("w61_fence")
+"Fence": ExtResource("w61_fence"),
+"RainOfFrogs": ExtResource("z61h_RainOfFrogs"),
+"RainOfFire": ExtResource("z61h_RainOfFire"),
+"Plague": ExtResource("z61h_Plague"),
+"Cloudkill": ExtResource("z61h_Cloudkill"),
+"Bombardment": ExtResource("z61h_Bombardment")
 })
 
 

@@ -12,6 +12,8 @@
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="10_sound"]
 [ext_resource type="Resource" path="res://data/fx/stalk_dirt.tres" id="11_dirt"]
 [ext_resource type="Resource" path="res://data/fx/stalk_grab.tres" id="12_grab"]
+[ext_resource type="PackedScene" path="res://scenes/spells/scar_mark.tscn" id="13_scar"]
+[ext_resource type="Texture2D" path="res://assets/original/scars/mean.png" id="14_mean"]
 
 [sub_resource type="ShaderMaterial" id="Material_stalk"]
 resource_local_to_scene = true
@@ -31,13 +33,14 @@ script = ExtResource("2_hunt")
 [node name="Grip" type="Node" parent="."]
 script = ExtResource("3_grip")
 
-[node name="Look" type="MeshInstance3D" parent="." node_paths=PackedStringArray("stalk", "grab_sound", "fall_sound")]
+[node name="Look" type="MeshInstance3D" parent="." node_paths=PackedStringArray("stalk", "scar", "grab_sound", "fall_sound")]
 mesh = ExtResource("6_tube")
 material_override = SubResource("Material_stalk")
 script = ExtResource("4_look")
 stalk = NodePath("..")
 dirt = ExtResource("11_dirt")
 grab_burst = ExtResource("12_grab")
+scar = NodePath("../Scar")
 grab_sound = NodePath("../GrabSound")
 fall_sound = NodePath("../FallSound")
 
@@ -50,6 +53,9 @@ omni_range = 28.0
 priority = 3.0
 fade_in_s = 1.0
 fade_out_s = 2.0
+
+[node name="Scar" parent="." instance=ExtResource("13_scar")]
+texture = ExtResource("14_mean")
 
 [node name="RiseSound" parent="." instance=ExtResource("10_sound")]
 cue = &"stalk_rise"

@@ -12,6 +12,8 @@ extends MeshInstance3D
 @export var dirt: ParticleType
 ## What flies off the tip at a catch (with the light of a burst).
 @export var grab_burst: ParticleType
+## The scar the root leaves on the ground when the stalk is born (every peer paints it).
+@export var scar: ScarMark
 @export var grab_sound: SoundEmitter3D
 @export var fall_sound: SoundEmitter3D
 
@@ -30,6 +32,8 @@ func _ready() -> void:
 		stalk.mode_changed.connect(_on_mode)
 		if dirt != null:
 			FxBus.play(dirt.bus_name(), stalk.global_position)
+		if scar != null:
+			scar.mark()
 
 
 func _physics_process(_delta: float) -> void:

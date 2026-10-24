@@ -32,7 +32,7 @@ varying vec3 map_pos;
 void vertex() {
 	map_pos = VERTEX;
 	deform_hole = 0.0;
-	if (terrain_deform_on > 0.5) {
+	if (terrain_deform_on > 0.5 && deform_follow > 0.5) {
 		vec2 shift = deform_at(VERTEX.xz);
 		NORMAL = deform_normal(NORMAL, VERTEX.xz);
 		VERTEX.y += shift.x;

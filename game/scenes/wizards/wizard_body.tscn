@@ -171,7 +171,7 @@ oil = NodePath("../Afflictions/Oiled")
 afflictions = NodePath("../Afflictions")
 poisoning = NodePath("../Poisoning")
 
-[node name="Wards" type="Node" parent="."]
+[node name="Wards" type="Node3D" parent="."]
 script = ExtResource("w_wards")
 
 [node name="SkinOfStone" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("w_skin_of_stone")]

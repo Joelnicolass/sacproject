@@ -182,9 +182,29 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 	camera.position = spot
 	camera.look_at(look)
 	camera.make_current()
+	_report_wards(wizard)
 	if arg("hover") == "wizard":
 		_hover(world, wizard)
 	await _save(file)
+
+
+## One line per ward of the wizard at every shot: is it on, what the look and its emitters do and where they are, so a capture
+## with nothing in it says why (ward off, look hidden, emitter not emitting, drawn far from the body).
+func _report_wards(wizard: Node3D) -> void:
+	var wards := Wards.of(wizard)
+	if wards == null:
+		return
+	for child in wards.get_children():
+		var ward := child as Ward
+		if ward == null or not (ward.is_on() or ward.shown):
+			continue
+		var parts := PackedStringArray()
+		for part in ward.find_children("*", "Node3D", true, false):
+			if part is GeometryInstance3D or part is CPUParticles3D:
+				var emitting := " emitting=%s" % (part as CPUParticles3D).emitting if part is CPUParticles3D else ""
+				parts.append("%s visible=%s at (%.1f, %.1f, %.1f)%s" % [part.name, (part as Node3D).is_visible_in_tree(), part.global_position.x, part.global_position.y, part.global_position.z, emitting])
+		print("match_shots: ward %s on=%s shown=%s ticks_left=%d look=%s wizard at (%.1f, %.1f, %.1f) | %s" % [ward.name, ward.is_on(), ward.shown, ward.ticks_left(),
+			ward.look.is_visible_in_tree() if ward.look else "-", wizard.global_position.x, wizard.global_position.y, wizard.global_position.z, " | ".join(parts)])
 
 
 ## --hover=wizard: the pointer rests on the local wizard (the HoverFrame draws its frame). The probe stops naming what is

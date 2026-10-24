@@ -189,7 +189,7 @@ afflictions = NodePath("../Afflictions")
 poisoning = NodePath("../Poisoning")
 wards = NodePath("../Wards")
 
-[node name="Wards" type="Node" parent="."]
+[node name="Wards" type="Node3D" parent="."]
 script = ExtResource("w_wards")
 
 [node name="LifeShield" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("f126_shield")]

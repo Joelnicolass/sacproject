@@ -216,6 +216,15 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 			look = hoar.global_transform.origin + Vector3.UP * 1.2
 			var side := (focus - hoar.global_transform.origin) * Vector3(1.0, 0.0, 1.0)
 			spot = look + (side.normalized() if side.length() > 0.1 else Vector3.BACK) * manahoar_m + Vector3.UP * manahoar_up_m
+		"carrier":
+			var carriers := world.find_children("*", "SpellCarrier", true, false)
+			if carriers.is_empty():
+				print("match_shots: no spell carrier on its way; view skipped")
+				return
+			var carrier := carriers[0] as Node3D
+			look = carrier.global_position + Vector3.UP * 0.5
+			var from_wizard := (carrier.global_position - focus) * Vector3(1.0, 0.0, 1.0)
+			spot = look - (from_wizard.normalized() if from_wizard.length() > 0.1 else Vector3.FORWARD) * 8.0 + Vector3.UP * 4.0
 		"tower":
 			var tower := _nearest_tower(focus)
 			if tower == null:

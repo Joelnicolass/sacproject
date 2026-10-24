@@ -24,8 +24,12 @@ const GROUP := &"spell_spawner"
 	"BlindRage": preload("res://scenes/spells/carrier/blind_rage.tscn"),
 	"BovineIntervention": preload("res://scenes/spells/carrier/bovine_intervention.tscn"),
 	"Death": preload("res://scenes/spells/carrier/death.tscn"),
+	"RainFrog": preload("res://scenes/spells/drops/rain_frog.tscn"),
+	"FireDrop": preload("res://scenes/spells/drops/fire_drop.tscn"),
+	"PlagueDrop": preload("res://scenes/spells/drops/plague_drop.tscn"),
+	"Meteor": preload("res://scenes/spells/drops/meteor.tscn"),
 }
-## Zone scenes by kind (Explosion, FrozenGround, DemonicRift), assigned in match.tscn and not preloaded here: a zone points at its SpellType,
+## Zone scenes by kind (Explosion, FrozenGround, DemonicRift, RainOfFrogs, RainOfFire, Plague, Cloudkill, Bombardment), assigned in match.tscn and not preloaded here: a zone points at its SpellType,
 ## the SpellType at its action, and the action's script knows this class, so a preload would close the circle. Root extends GroundZone.
 @export var zones: Dictionary[String, PackedScene] = {}
 

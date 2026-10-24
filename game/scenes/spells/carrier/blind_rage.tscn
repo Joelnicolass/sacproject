@@ -15,7 +15,7 @@
 [ext_resource type="Script" path="res://scenes/spells/carrier/growing_ring.gd" id="13_ring"]
 [ext_resource type="Shader" path="res://scenes/spells/carrier/ring.gdshader" id="14_shader"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/per2.png" id="15_per2"]
-[ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="16_light"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="16_light"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="17_sound"]
 [ext_resource type="Script" path="res://scenes/spells/carrier/phase_cue.gd" id="18_cue"]
 
@@ -117,11 +117,12 @@ material_override = SubResource("Mat_ring")
 script = ExtResource("13_ring")
 carrier = NodePath("..")
 
-[node name="Light" parent="." instance=ExtResource("16_light")]
+[node name="Glow" parent="." instance=ExtResource("16_light")]
 light_color = Color(1, 0.3, 0.2, 1)
 light_energy = 1.6
 omni_range = 8.0
 priority = 3.0
+lit_on_ready = true
 
 [node name="CastSound" parent="." instance=ExtResource("17_sound")]
 cue = &"rage_cast"

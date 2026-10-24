@@ -105,8 +105,8 @@ func _lights() -> Dictionary:
 	for name: String in expected:
 		var scene := load("res://scenes/spells/carrier/%s.tscn" % name) as PackedScene
 		var carrier := scene.instantiate() as SpellCarrier
-		var light := carrier.get_node_or_null("Light") as ActorLight
-		checks[name + "_has_light"] = light != null
+		var light := carrier.get_node_or_null("Glow") as StateLight
+		checks[name + "_has_light"] = light != null and light.lit_on_ready
 		if light != null:
 			var color: Color = expected[name]
 			checks[name + "_light_color"] = absf(light.light_color.r - color.r) < 0.02 and absf(light.light_color.g - color.g) < 0.02 and absf(light.light_color.b - color.b) < 0.02

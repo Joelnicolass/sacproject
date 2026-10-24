@@ -14,7 +14,7 @@
 [ext_resource type="Script" path="res://scenes/spells/carrier/phase_sprite.gd" id="12_sprite"]
 [ext_resource type="Shader" path="res://scenes/spells/carrier/atlas_quad_add.gdshader" id="13_shader"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/hart.png" id="14_hart"]
-[ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="15_light"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="15_light"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="16_sound"]
 [ext_resource type="Script" path="res://scenes/spells/carrier/phase_cue.gd" id="17_cue"]
 
@@ -130,11 +130,12 @@ grow_s = 0.667
 life_s = 10.667
 over_target = true
 
-[node name="Light" parent="." instance=ExtResource("15_light")]
+[node name="Glow" parent="." instance=ExtResource("15_light")]
 light_color = Color(1, 0.1, 0.3, 1)
 light_energy = 1.4
 omni_range = 7.0
 priority = 3.0
+lit_on_ready = true
 
 [node name="CastSound" parent="." instance=ExtResource("16_sound")]
 cue = &"charm_cast"

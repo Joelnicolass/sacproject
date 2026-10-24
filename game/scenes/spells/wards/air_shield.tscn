@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/wards/ward.gd" id="1_ward"]
 [ext_resource type="Script" path="res://scenes/spells/wards/ward_emitter.gd" id="2_emitter"]
@@ -10,6 +10,7 @@
 [ext_resource type="Resource" path="res://data/fx/wards/air_cast.tres" id="8_cast"]
 [ext_resource type="Resource" path="res://data/fx/wards/air_converge.tres" id="9_converge"]
 [ext_resource type="PackedScene" path="res://scenes/spells/wards/ward_sound.tscn" id="10_sound"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
 
 [sub_resource type="SphereShape3D" id="Sphere_reach"]
 radius = 5.0
@@ -109,3 +110,12 @@ editor_description = "ashh.wav es el segundo sonido del SPEL dlhs (bandera 8). N
 cue = &"ward_air_hiss"
 ward = NodePath("..")
 when = 1
+
+[node name="Glow" parent="." instance=ExtResource("glow_state_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+light_color = Color(0.5, 0.7, 1, 1)
+light_energy = 1.3
+omni_range = 7
+editor_description = "Blue light while the bubble lasts (dominant colour of shld.png, the bubble texture). Tune color, energy and range here."
+
+[connection signal="shown_changed" from="." to="Glow" method="show_lit"]

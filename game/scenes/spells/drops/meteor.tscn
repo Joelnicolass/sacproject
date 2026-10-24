@@ -1,0 +1,37 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/drops/zone_drop.gd" id="drop"]
+[ext_resource type="Script" path="res://scenes/fx/spinner.gd" id="spinner"]
+[ext_resource type="Script" path="res://scenes/spells/carrier/prop_look.gd" id="prop"]
+[ext_resource type="Script" path="res://scenes/fx/fx_trail.gd" id="trail"]
+[ext_resource type="Script" path="res://scenes/spells/drops/drop_blast.gd" id="blast"]
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="ptype"]
+[ext_resource type="Resource" path="res://data/fx/meteor_hit.tres" id="hit"]
+[ext_resource type="Resource" path="res://data/fx/meteor_dirt.tres" id="dirt"]
+
+[node name="Meteor" type="Node3D"]
+editor_description = "Un meteorito de Bombardment: sale de la tierra, cruza el cielo en un arco de 12 s (gravedad 20) y solo choca bajando, con una caja de 3 m; al llegar, 400 de dano de hechizo, salpicadura de 5 m que aturde 8 s, piedras, polvo y temblor. Sin abolladura del terreno (061k)."
+script = ExtResource("drop")
+gravity_m_s2 = 20.0
+contact_m = 3.0
+only_descending = true
+lobbed = true
+
+[node name="Spin" type="Node3D" parent="."]
+script = ExtResource("spinner")
+
+[node name="Rock" type="MeshInstance3D" parent="Spin"]
+transform = Transform3D(1.875, 0, 0, 0, 1.875, 0, 0, 0, 1.875, 0, 0, 0)
+script = ExtResource("prop")
+model = "rock"
+
+[node name="Trail" type="Node3D" parent="."]
+script = ExtResource("trail")
+type_name = "meteor_trail"
+interval_s = 0.0167
+
+[node name="Blast" type="Node" parent="." node_paths=PackedStringArray("drop")]
+script = ExtResource("blast")
+drop = NodePath("..")
+bursts = Array[ExtResource("ptype")]([ExtResource("hit"), ExtResource("dirt")])
+stun_ticks = 480

@@ -97,6 +97,23 @@
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/schm.wav" id="i8_schm"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/rfst.wav" id="i8_rfst"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/rhnd.wav" id="i8_rhnd"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/frx1.wav" id="c61h_frx1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/frx2.wav" id="c61h_frx2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/frg1.wav" id="c61h_frg1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/frg2.wav" id="c61h_frg2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/char/bldx.wav" id="c61h_bldx"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/char/dish.wav" id="c61h_dish"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/fbx1.wav" id="c61h_fbx1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/fbx2.wav" id="c61h_fbx2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/fbx3.wav" id="c61h_fbx3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/mht1.wav" id="c61h_mht1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/mht2.wav" id="c61h_mht2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/mht3.wav" id="c61h_mht3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/spt3.wav" id="c61h_spt3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comn/cldl.wav" id="c61h_cldl"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/eqk1.wav" id="c61h_eqk1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/eqk2.wav" id="c61h_eqk2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/eqk3.wav" id="c61h_eqk3"]
 
 [sub_resource type="Resource" id="Cue_blood"]
 script = ExtResource("1_cue")
@@ -515,6 +532,63 @@ script = ExtResource("1_cue")
 streams = Array[AudioStream]([ExtResource("i8_deth")])
 max_voices = 2
 volume_db = 6.0
+[sub_resource type="Resource" id="Cue_frog_burst"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("c61h_frx1"), ExtResource("c61h_frx2")])
+max_voices = 6
+cooldown_s = 0.03
+
+[sub_resource type="Resource" id="Cue_frog_croak"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("c61h_frg1"), ExtResource("c61h_frg2")])
+max_voices = 4
+cooldown_s = 0.1
+
+[sub_resource type="Resource" id="Cue_plague_burst"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("c61h_bldx")])
+max_voices = 4
+
+[sub_resource type="Resource" id="Cue_plague_hit"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("c61h_dish")])
+max_voices = 3
+
+[sub_resource type="Resource" id="Cue_fireball_blast"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("c61h_fbx1"), ExtResource("c61h_fbx2"), ExtResource("c61h_fbx3")])
+max_voices = 5
+volume_db = 4
+priority = 60
+
+[sub_resource type="Resource" id="Cue_meteor_hit"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("c61h_mht1"), ExtResource("c61h_mht2"), ExtResource("c61h_mht3")])
+max_voices = 6
+volume_db = 4
+priority = 60
+
+[sub_resource type="Resource" id="Cue_meteor_emerge"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("c61h_spt3")])
+max_voices = 6
+volume_db = 2
+
+[sub_resource type="Resource" id="Cue_cloud_loop"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("c61h_cldl")])
+max_voices = 3
+max_distance_m = 120
+unit_size = 12
+priority = 30
+
+[sub_resource type="Resource" id="Cue_bombardment_loop"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("c61h_eqk1"), ExtResource("c61h_eqk2"), ExtResource("c61h_eqk3")])
+max_voices = 2
+max_distance_m = 150
+unit_size = 15
+priority = 30
 
 [resource]
 script = ExtResource("2_map")
@@ -590,5 +664,14 @@ cues = Dictionary[StringName, ExtResource("1_cue")]({
 &"cow_emerge": SubResource("Cue_i8_cow_emerge"),
 &"cow_hit": SubResource("Cue_i8_cow_hit"),
 &"death_cast": SubResource("Cue_i8_death_cast"),
-&"death_swing": SubResource("Cue_i8_death_swing")
+&"death_swing": SubResource("Cue_i8_death_swing"),
+&"frog_burst": SubResource("Cue_frog_burst"),
+&"frog_croak": SubResource("Cue_frog_croak"),
+&"plague_burst": SubResource("Cue_plague_burst"),
+&"plague_hit": SubResource("Cue_plague_hit"),
+&"fireball_blast": SubResource("Cue_fireball_blast"),
+&"meteor_hit": SubResource("Cue_meteor_hit"),
+&"meteor_emerge": SubResource("Cue_meteor_emerge"),
+&"cloud_loop": SubResource("Cue_cloud_loop"),
+&"bombardment_loop": SubResource("Cue_bombardment_loop")
 })

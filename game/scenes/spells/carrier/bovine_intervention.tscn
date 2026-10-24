@@ -16,7 +16,7 @@
 [ext_resource type="Script" path="res://scenes/spells/carrier/morph_clip.gd" id="14_clip"]
 [ext_resource type="PackedScene" path="res://assets/original/props/bovi.glb" id="15_glb"]
 [ext_resource type="Texture2D" path="res://assets/original/props/bovi_M000.png" id="16_skin"]
-[ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="17_light"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="17_light"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="18_sound"]
 [ext_resource type="Script" path="res://scenes/spells/carrier/phase_cue.gd" id="19_cue"]
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="20_ptype"]
@@ -89,11 +89,12 @@ start_clip = &"walk"
 [node name="Bovi" parent="Cow/Model" index="0"]
 surface_material_override/0 = SubResource("Mat_cow")
 
-[node name="Light" parent="." instance=ExtResource("17_light")]
+[node name="Glow" parent="." instance=ExtResource("17_light")]
 light_color = Color(1, 0.8, 0.44, 1)
 light_energy = 1.2
 omni_range = 12.0
 priority = 3.0
+lit_on_ready = true
 
 [node name="EmergeSound" parent="." instance=ExtResource("18_sound")]
 cue = &"cow_emerge"

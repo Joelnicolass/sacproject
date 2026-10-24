@@ -63,7 +63,9 @@ func setup(data: Dictionary) -> void:
 	_attach_net()
 	_add_in_flight()
 	## ShotLook.trail_every counts 60 fps frames; the trail now goes by time (FxTrail, RFC-029 029b).
-	FxTrail.attach(self, look.trail_fx, float(maxi(look.trail_every, 1)) / TRAIL_FPS)
+	var trail := FxTrail.attach(self, look.trail_fx, float(maxi(look.trail_every, 1)) / TRAIL_FPS)
+	if trail != null:
+		trail.min_speed_m_s = look.trail_min_speed_m_s
 
 
 func _add_visual() -> void:

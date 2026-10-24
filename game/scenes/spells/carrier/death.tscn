@@ -14,7 +14,7 @@
 [ext_resource type="Shader" path="res://scenes/spells/carrier/death_reveal.gdshader" id="12_reveal"]
 [ext_resource type="Shader" path="res://scenes/spells/carrier/death_aura.gdshader" id="13_aura"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/dth2.png" id="14_dth2"]
-[ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="15_light"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="15_light"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="16_sound"]
 [ext_resource type="Script" path="res://scenes/spells/carrier/phase_cue.gd" id="17_cue"]
 
@@ -133,12 +133,13 @@ mesh = SubResource("Mesh_cloud")
 material_override = SubResource("Mat_cloud")
 instance_shader_parameters/phase_frames = 40.0
 
-[node name="Light" parent="." instance=ExtResource("15_light")]
+[node name="Glow" parent="." instance=ExtResource("15_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 0)
 light_color = Color(0.75, 0.05, 1, 1)
 light_energy = 1.5
 omni_range = 12.0
 priority = 4.0
+lit_on_ready = true
 
 [node name="CastSound" parent="." instance=ExtResource("16_sound")]
 cue = &"death_cast"

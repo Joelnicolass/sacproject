@@ -10,7 +10,7 @@
 [ext_resource type="Shader" path="res://scenes/spells/carrier/atlas_quad_mix.gdshader" id="8_shader"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/gut1.png" id="9_gut1"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/gut2.png" id="10_gut2"]
-[ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="11_light"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="11_light"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="12_sound"]
 [ext_resource type="Script" path="res://scenes/spells/carrier/phase_cue.gd" id="13_cue"]
 [ext_resource type="Resource" path="res://data/fx/vaporize_burst.tres" id="14_flash"]
@@ -129,11 +129,12 @@ mesh = SubResource("Mesh_quad")
 material_override = SubResource("Mat_gut")
 instance_shader_parameters/offset = 12.0
 
-[node name="Light" parent="." instance=ExtResource("11_light")]
+[node name="Glow" parent="." instance=ExtResource("11_light")]
 light_color = Color(1, 0.5, 0.47, 1)
 light_energy = 1.4
 omni_range = 7.0
 priority = 3.0
+lit_on_ready = true
 
 [node name="CastSound" parent="." instance=ExtResource("12_sound")]
 cue = &"vaporize_cast"

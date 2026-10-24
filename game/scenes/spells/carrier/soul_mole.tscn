@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/carrier/spell_carrier.gd" id="1_carrier"]
 [ext_resource type="Script" path="res://scenes/spells/carrier/soul_fetch.gd" id="2_fetch"]
@@ -8,6 +8,7 @@
 [ext_resource type="Resource" path="res://data/fx/soul_mole_dust.tres" id="6_dust"]
 [ext_resource type="Resource" path="res://data/fx/soul_mole_rocks.tres" id="7_rocks"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="8_sound"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
 
 [sub_resource type="SphereShape3D" id="Sphere_reach"]
 radius = 10.0
@@ -51,3 +52,12 @@ shape = SubResource("Sphere_reach")
 source = "world"
 cue = &"Xquk"
 loop = true
+
+[node name="Glow" parent="." instance=ExtResource("glow_state_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+light_color = Color(1, 0.9, 0.65, 1)
+light_energy = 0.9
+omni_range = 5
+fade_in_s = 0.4
+lit_on_ready = true
+editor_description = "Warm dust-coloured light that travels with the Soul Mole rock (dust.png / rock.png are cream; a little saturated so it reads on the ground). It goes out when the trip ends."

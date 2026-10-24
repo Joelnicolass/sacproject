@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="SpellType" format=3]
 
+[ext_resource type="PackedScene" path="res://scenes/spells/actions/soul_wind_action.tscn" id="2_action"]
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_qv2nt"]
 
 [resource]
@@ -15,4 +16,5 @@ damage = 400
 amount2 = 400
 effect_range = 30.0
 flags = 4098
+action = ExtResource("2_action")
 structures = PackedStringArray()

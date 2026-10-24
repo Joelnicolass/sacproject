@@ -7,7 +7,7 @@ extends Node
 ## Args after `--`: --map=<tag> --god=<god of the local wizard> [--biome=<god whose land the map wears; default --god>] [--ai-god=<god>] [--wizard=<tag>] [--after=<s> before the first
 ## round] [--shots=<n> rounds] [--every=<s>] [--out=<dir>] [--views=wizard,wizard_close,foe_close,overview,fountain,manahoar,tower] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
 ## [--cast=<spell tag>[,<tag>…], the local wizard casts them one after the other once --after has passed, before the first round: a spell that aims at himself (a ward, Healing Aura) on himself,
-## any other on the closest enemy (a zone, on the ground at its feet); mana is filled first; --cast-wait=<s> is the wait after the last cast (Explosion goes off 3.8 s after it starts: 4.5)] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
+## one that aims at a soul (pmcd, dnws, deda) on the closest soul he may fetch (the harness makes one when there is none), any other on the closest enemy (a zone, on the ground at its feet); mana is filled first; --cast-wait=<s> is the wait after the last cast (Explosion goes off 3.8 s after it starts: 4.5)] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
 ## Windowed: `-- --agent=flow --flow=match_shots.json` (the flow gives the sandbox that applies the quality preset).
 
 const GROUP_FOUNT := &"manafount"
@@ -107,11 +107,48 @@ func _cast_all(world: MatchWorld, tags: PackedStringArray) -> void:
 		var foe := _closest_foe(wizard)
 		var on_himself := action == null or action.pick == SpellAction.Pick.SELF or action is WardAction
 		var aimed := null if on_himself else foe
+		if action != null and action.pick == SpellAction.Pick.SOUL:
+			aimed = await _soul_for(world, wizard, action)
 		var point := aimed.global_position if aimed != null else wizard.global_position
 		caster.request_cast(tag, point, aimed)
 		print("match_shots: cast %s (casting: %s)" % [tag, caster.is_casting()])
 		while caster.is_casting():
 			await get_tree().physics_frame
+
+
+## --cast of a spell that aims at a soul (Soul Mole, Soul Wind, Animate Dead): the closest soul the wizard may fetch; when the match has
+## none, one is made: a free soul 30 m ahead of him, or, for the spell that revives, a creature of his side that dies 20 m ahead.
+func _soul_for(world: MatchWorld, wizard: WizardBody, action: SpellAction) -> Soul:
+	var revives := action is AnimateDeadAction
+	var best: Soul
+	for node in get_tree().get_nodes_in_group(&"soul"):
+		var soul := node as Soul
+		if soul != null and soul.fetchable_by(wizard.owner_slot) and (not revives or soul.corpse != null) \
+				and (best == null or soul.global_position.distance_to(wizard.global_position) < best.global_position.distance_to(wizard.global_position)):
+			best = soul
+	if best != null:
+		return best
+	var system := get_tree().get_first_node_in_group(&"soul_system") as SoulSystem
+	var ahead := wizard.facing_flat()
+	if not revives:
+		var at := wizard.global_position + ahead * 30.0
+		print("match_shots: no soul to fetch; a free one 30 m ahead")
+		return system.spawn_soul({"x": at.x, "y": at.y, "z": at.z, "number": 1, "owner_slot": 0, "emerging": false}) as Soul
+	var creature := (load("res://scenes/units/unit.tscn") as PackedScene).instantiate() as UnitBody
+	creature.creature_tag = "nmuh"
+	creature.owner_slot = wizard.owner_slot
+	creature.target_groups = PackedStringArray()
+	wizard.get_parent().add_child(creature)
+	creature.global_position = wizard.global_position + ahead * 20.0
+	await get_tree().create_timer(0.5).timeout
+	(creature.get_node("Health") as Health).damage(99999.0, 0)
+	for _frame in 600:
+		await get_tree().physics_frame
+		for node in get_tree().get_nodes_in_group(&"soul"):
+			if (node as Soul).corpse == creature:
+				print("match_shots: no dead creature of his; one fell 20 m ahead")
+				return node as Soul
+	return null
 
 
 ## The enemy body closest to `wizard` (a creature or a wizard of another side), or null.
@@ -191,6 +228,15 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 			look = hoar.global_transform.origin + Vector3.UP * 1.2
 			var side := (focus - hoar.global_transform.origin) * Vector3(1.0, 0.0, 1.0)
 			spot = look + (side.normalized() if side.length() > 0.1 else Vector3.BACK) * manahoar_m + Vector3.UP * manahoar_up_m
+		"carrier":
+			var carriers := world.find_children("*", "SpellCarrier", true, false)
+			if carriers.is_empty():
+				print("match_shots: no spell carrier on its way; view skipped")
+				return
+			var carrier := carriers[0] as Node3D
+			look = carrier.global_position + Vector3.UP * 0.5
+			var from_wizard := (carrier.global_position - focus) * Vector3(1.0, 0.0, 1.0)
+			spot = look - (from_wizard.normalized() if from_wizard.length() > 0.1 else Vector3.FORWARD) * 8.0 + Vector3.UP * 4.0
 		"tower":
 			var tower := _nearest_tower(focus)
 			if tower == null:

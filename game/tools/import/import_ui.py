@@ -100,6 +100,10 @@ EXTRA_FX = {
     "rif3": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
     "rift": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
     "haur": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
+    # RFC 061d: Animate Dead's streams (and2, 1x8 strip) and burst (cfx1); Soul Wind's funnel (swnd) and dust trail (wdst).
+    "and2": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
+    "swnd": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
+    "wdst": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
 }
 
 IMPORT_TEMPLATE = """[remap]

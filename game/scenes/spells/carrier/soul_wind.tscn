@@ -1,0 +1,59 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/carrier/spell_carrier.gd" id="1_carrier"]
+[ext_resource type="Script" path="res://scenes/spells/carrier/soul_fetch.gd" id="2_fetch"]
+[ext_resource type="Script" path="res://scenes/spells/carrier/carrier_pulse.gd" id="3_pulse"]
+[ext_resource type="Script" path="res://scenes/fx/sprite_emitter.gd" id="5_emitter"]
+[ext_resource type="Resource" path="res://data/fx/soul_wind_dust.tres" id="6_dust"]
+[ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="8_sound"]
+[ext_resource type="Resource" path="res://data/fx/beams/soul_wind_bolt.tres" id="9_bolt"]
+[ext_resource type="Mesh" path="res://scenes/spells/carrier/soul_wind_funnel.res" id="10_funnel"]
+[ext_resource type="Shader" path="res://scenes/spells/carrier/funnel.gdshader" id="11_shader"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/swnd.png" id="12_swnd"]
+
+[sub_resource type="SphereShape3D" id="Sphere_reach"]
+radius = 30.0
+
+[sub_resource type="ShaderMaterial" id="Material_funnel"]
+shader = ExtResource("11_shader")
+shader_parameter/streaks = ExtResource("12_swnd")
+
+[node name="SoulWind" type="Node3D"]
+script = ExtResource("1_carrier")
+
+[node name="Look" type="Node3D" parent="."]
+
+[node name="Funnel" type="MeshInstance3D" parent="Look"]
+mesh = ExtResource("10_funnel")
+material_override = SubResource("Material_funnel")
+cast_shadow = 0
+
+[node name="Dust" type="CPUParticles3D" parent="Look"]
+use_fixed_seed = true
+local_coords = false
+script = ExtResource("5_emitter")
+type = ExtResource("6_dust")
+start_active = true
+
+[node name="Fetch" type="Node" parent="." node_paths=PackedStringArray("carrier")]
+script = ExtResource("2_fetch")
+carrier = NodePath("..")
+
+[node name="Pulse" type="Node3D" parent="." node_paths=PackedStringArray("carrier", "reach", "bolt_origin")]
+script = ExtResource("3_pulse")
+carrier = NodePath("..")
+reach = NodePath("Reach")
+affects = 1
+damage_foes = true
+bolt_origin = NodePath("BoltOrigin")
+bolt = ExtResource("9_bolt")
+
+[node name="Reach" type="CollisionShape3D" parent="Pulse"]
+shape = SubResource("Sphere_reach")
+
+[node name="BoltOrigin" type="Marker3D" parent="Pulse"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="Sound" parent="." instance=ExtResource("8_sound")]
+source = "world"
+cue = &"Xfbl"

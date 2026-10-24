@@ -15,6 +15,9 @@ const GROUP := &"spell_spawner"
 	"Fireball": preload("res://scenes/spells/fireball_projectile.tscn"),
 	"Swarm": preload("res://scenes/spells/swarm_projectile.tscn"),
 	"RiftSpirit": preload("res://scenes/spells/zones/rift_spirit.tscn"),
+	"SoulMole": preload("res://scenes/spells/carrier/soul_mole.tscn"),
+	"SoulWind": preload("res://scenes/spells/carrier/soul_wind.tscn"),
+	"AnimateDead": preload("res://scenes/spells/animate_dead/animate_dead_fx.tscn"),
 }
 ## Zone scenes by kind (Explosion, FrozenGround, DemonicRift), assigned in match.tscn and not preloaded here: a zone points at its SpellType,
 ## the SpellType at its action, and the action's script knows this class, so a preload would close the circle. Root extends GroundZone.
@@ -29,8 +32,8 @@ func _ready() -> void:
 	super._ready()
 
 
-## `kind` is a key of `projectiles`; `data` = the projectile's setup() keys without `name`. Returns the node made here (the server's or the
-## solo one), or null on a client; a zone's action keeps it to release or cancel it.
+## `kind` is a key of `projectiles`; `data` = the projectile's setup() keys without `name`. Returns the projectile on the server
+## and in solo (a spell that must arm or cancel it keeps it), null on a client.
 func spawn_projectile(kind: String, data: Dictionary) -> Node:
 	_serial += 1
 	data["name"] = "%s%d" % [kind, _serial]

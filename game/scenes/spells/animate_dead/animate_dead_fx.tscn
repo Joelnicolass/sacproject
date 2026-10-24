@@ -1,0 +1,22 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/animate_dead/animate_dead_fx.gd" id="1_fx"]
+[ext_resource type="PackedScene" path="res://scenes/spells/animate_dead/streamer_fx.tscn" id="2_streamer"]
+[ext_resource type="Script" path="res://scenes/fx/sprite_emitter.gd" id="3_emitter"]
+[ext_resource type="Resource" path="res://data/fx/animate_dead_burst.tres" id="4_burst"]
+[ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="5_sound"]
+
+[node name="AnimateDeadFx" type="Node3D" node_paths=PackedStringArray("burst")]
+script = ExtResource("1_fx")
+streamer_scene = ExtResource("2_streamer")
+burst = NodePath("Burst")
+
+[node name="Burst" type="CPUParticles3D" parent="."]
+use_fixed_seed = true
+local_coords = false
+script = ExtResource("3_emitter")
+type = ExtResource("4_burst")
+
+[node name="Sound" parent="." instance=ExtResource("5_sound")]
+source = "world"
+cue = &"Xanm"

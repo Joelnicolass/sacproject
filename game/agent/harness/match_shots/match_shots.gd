@@ -5,7 +5,7 @@ extends Node
 ## and quits. It only watches: it plays no input and moves no actor; the camera is its own.
 ## It lives in a subfolder because AgentKit mounts every .gd of agent/harness/ itself.
 ## Args after `--`: --map=<tag> --god=<god of the local wizard> [--biome=<god whose land the map wears; default --god>] [--ai-god=<god>] [--wizard=<tag>] [--after=<s> before the first
-## round] [--shots=<n> rounds] [--every=<s>, from 0.02: a burst of shots; the files end in the milliseconds, _t001500] [--out=<dir>] [--views=wizard,wizard_close,halo,foe_close,zone,cloud,overview,fountain,manahoar,tower] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
+## round] [--shots=<n> rounds] [--every=<s>, from 0.02: a burst of shots; the files end in the milliseconds, _t001500] [--out=<dir>] [--views=wizard,wizard_close,halo,foe_close,zone,cloud,overview,fountain,manahoar,tower,ground] [--ground-at=<x>,<z> world metres, the point the "ground" view stands over; default the local wizard] [--ground-yaw=<degrees> where it looks, 0 = toward -z] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
 ## [--cast=<spell tag>[,<tag>…], the local wizard casts them one after the other once --after has passed, before the first round: a spell that aims at himself (a ward, Healing Aura) on himself,
 ## one that aims at a soul (pmcd, dnws, deda) on the closest soul he may fetch (the harness makes one when there is none), any other on the closest enemy (a zone, on the ground at its feet; Rainbow on himself, the first body of its chain; 061e needs --level=4 or more: ntlc, wobr, rifd, olah; 061j needs --level=8: rter with --god=persephone, nrot with --god=stratos); mana is filled first; --cast-wait=<s> is the wait after the last cast (a cloud rains after its cast: 10 shows the rain, 14 Cloudkill's bolts; Explosion goes off 3.8 s after it starts: 4.5)] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
 ## Windowed: `-- --agent=flow --flow=match_shots.json` (the flow gives the sandbox that applies the quality preset).
@@ -44,7 +44,15 @@ const TAG_MANAHOAR := &"oham"
 @export_range(10.0, 80.0, 1.0, "suffix:m") var tower_m := 40.0
 @export_range(0.0, 40.0, 0.5, "suffix:m") var tower_up_m := 14.0
 
+## The "ground" view: the camera stands this high over --ground-at and looks at the ground this far ahead; a JSON with the 10 m
+## cell borders in the picture is saved next to the PNG (tools/import/measure_seams.py reads both).
+@export_range(1.0, 40.0, 0.5, "suffix:m") var ground_up_m := 8.0
+@export_range(2.0, 60.0, 0.5, "suffix:m") var ground_ahead_m := 15.0
+@export_range(5.0, 60.0, 1.0, "suffix:m") var ground_grid_reach_m := 30.0
+
 @export var camera: Camera3D
+
+const GroundGrid := preload("res://agent/harness/match_shots/ground_grid.gd")
 
 var _shot_count := 0
 
@@ -274,6 +282,15 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 			look = tower.global_transform.origin + Vector3.UP * 8.0
 			var toward := (focus - tower.global_transform.origin) * Vector3(1.0, 0.0, 1.0)
 			spot = look + (toward.normalized() if toward.length() > 0.1 else Vector3.BACK) * tower_m + Vector3.UP * tower_up_m
+		"ground":
+			var shape := TerrainShape.of(world)
+			if shape == null:
+				print("match_shots: no ground loaded; view skipped")
+				return
+			var at := _ground_at(focus)
+			var ahead := Vector3.FORWARD.rotated(Vector3.UP, deg_to_rad(float(arg("ground-yaw", "0")))) * ground_ahead_m
+			spot = Vector3(at.x, shape.height_at(at.x, at.y) + ground_up_m, at.y)
+			look = Vector3(at.x + ahead.x, shape.height_at(at.x + ahead.x, at.y + ahead.z), at.y + ahead.z)
 		_:
 			push_warning("match_shots: unknown view '%s'" % view)
 			return
@@ -288,6 +305,8 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 	if arg("hover") == "wizard":
 		_hover(world, wizard)
 	await _save(file)
+	if view == "ground":
+		GroundGrid.write(camera, TerrainShape.of(world), _ground_at(focus), ground_grid_reach_m, ProjectSettings.globalize_path(file.get_basename() + ".json"))
 
 
 ## One line per ward of the wizard at every shot: is it on, what the look and its emitters do and where they are, so a capture
@@ -415,6 +434,12 @@ func _save(file: String) -> void:
 	await RenderingServer.frame_post_draw
 	var error := get_viewport().get_texture().get_image().save_png(ProjectSettings.globalize_path(file))
 	print("shot %s (%s)" % [file, error_string(error)])
+
+
+## --ground-at=x,z (world metres), or the local wizard's x, z.
+func _ground_at(focus: Vector3) -> Vector2:
+	var parts := arg("ground-at").split(",", false)
+	return Vector2(float(parts[0]), float(parts[1])) if parts.size() == 2 else Vector2(focus.x, focus.z)
 
 
 func _foe_position(world: MatchWorld, wizard: Node3D) -> Vector3:

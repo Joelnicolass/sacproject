@@ -16,6 +16,14 @@ uniform vec4 tint : source_color = vec4(0.0, 0.0, 0.0, 1.0);
 uniform vec4 rim_color : source_color = vec4(0.0, 0.0, 0.0, 1.0);
 uniform vec4 top_color : source_color = vec4(0.0, 0.0, 0.0, 1.0);
 uniform float rim_power = 2.0;
+// A light from `light_dir` (world) on the lumps, and a mottling of the skin: what makes the inside of the cloud readable (not in the original).
+uniform vec3 light_dir = vec3(0.3, 0.8, 0.3);
+uniform vec4 light_color : source_color = vec4(0.0, 0.0, 0.0, 1.0);
+uniform vec4 mottle_color : source_color = vec4(0.0, 0.0, 0.0, 1.0);
+uniform float mottle_scale = 5.0;
+// The veil is this share as thick where the skin faces the camera (the middle of the cloud) as where it turns away (its edge), so the
+// layers behind show through the middle (1 = the original's even veil).
+uniform float core_alpha = 1.0;
 uniform sampler2D skin : source_color, filter_linear_mipmap, repeat_enable;
 uniform bool use_skin = false;
 uniform vec2 cells = vec2(4.0, 4.0);
@@ -31,6 +39,7 @@ uniform float morph_s = 8.0;
 instance uniform float size = 1.0;
 
 varying vec3 sphere_normal;
+varying float layer_seed;
 
 vec3 rough_skin(vec3 vertex, float seed, float t) {
 	vec3 n = normalize(vertex);
@@ -41,6 +50,7 @@ vec3 rough_skin(vec3 vertex, float seed, float t) {
 
 void vertex() {
 	sphere_normal = normalize(VERTEX);
+	layer_seed = INSTANCE_CUSTOM.x;
 	VERTEX = rough_skin(VERTEX, INSTANCE_CUSTOM.x, TIME / morph_s);
 }
 
@@ -54,9 +64,15 @@ void fragment() {
 		color = texture(skin, (inside + atlas_cell(index, cells)) / cells).rgb * energy;
 	}
 	vec3 skin_normal = normalize(cross(dFdx(VERTEX), dFdy(VERTEX)));
+	if (dot(skin_normal, NORMAL) < 0.0) {
+		skin_normal = -skin_normal;
+	}
 	float facing = abs(dot(skin_normal, normalize(-VERTEX)));
 	float up = max((INV_VIEW_MATRIX * vec4(skin_normal, 0.0)).y, 0.0);
-	color += rim_color.rgb * pow(1.0 - facing, rim_power) + top_color.rgb * up;
+	vec3 world_normal = (INV_VIEW_MATRIX * vec4(skin_normal, 0.0)).xyz;
+	float lit = clamp(dot(world_normal, normalize(light_dir)) * 0.5 + 0.5, 0.0, 1.0);
+	float mottle = value_noise(sphere_normal * mottle_scale + vec3(layer_seed));
+	color += rim_color.rgb * pow(1.0 - facing, rim_power) + top_color.rgb * up + light_color.rgb * lit * lit + mottle_color.rgb * mottle;
 	ALBEDO = color;
-	ALPHA = clamp(layer_alpha * size, 0.0, 1.0);
+	ALPHA = clamp(layer_alpha * size * mix(core_alpha, 1.0, 1.0 - facing), 0.0, 1.0);
 }

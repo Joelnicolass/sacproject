@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 """Measures whether a storm cloud of a match_shots capture (`--views=cloud`) reads as a volume and not as a flat black oval (RFC-061h).
 
-  python3 tools/look/cloud_stats.py shot.png [--box=x0,y0,x1,y1] [--dark=25] [--min-std=5]
+  python3 tools/look/cloud_stats.py shot.png [--box=x0,y0,x1,y1] [--dark=35] [--erode=8] [--min-std=5]
 
 The cloud is the dark blob: the pixels darker than `--dark` (0-255 luminance) inside `--box` (default: the upper half of the picture, below the
 HUD strips). Three numbers, each with its pass level:
-  core_std     standard deviation of the luminance inside the blob (the flat oval: 3.7; lumps, a rim and a lit top: `--min-std` or more)
+  core_std     standard deviation of the luminance inside the blob (measured on the blob without its 8 px edge: the flat oval of v4 ~ 1; lumps, a rim and a lit top: `--min-std` or more)
   fringe       share of the blob's bounding-box width that the edge takes to go from the blob to the sky, averaged over the rows of the blob
                (a smooth disc ~ 0.01-0.03; a frayed edge, where the twenty layers do not agree, > `--min-fringe`)
   edge_rows    how many rows have a ragged edge: the left edge of the blob moves more than 2 px between neighbour rows (a smooth oval moves <= 1)
-Exit code 0 when core_std passes (fringe and edge_rows are reported: they move with the sky behind the cloud). The flat black oval of the first
-capture of 061h measured core_std 3.7 at `--dark=25`; level 5 asks for a cloud with visible lumps.
+Exit code 0 when core_std passes (fringe and edge_rows are reported: they move with the sky behind the cloud). Level 5 asks for a cloud with visible lumps (calibrated with `--box` hugging the cloud: the flat oval of the first capture 4.3, the second 2.7).
 """
 
 import sys
@@ -26,7 +25,7 @@ def main() -> int:
     lum = image @ np.array([0.2126, 0.7152, 0.0722])
     h, w = lum.shape
     x0, y0, x1, y1 = (int(v) for v in ARGS["--box"].split(",")) if "--box" in ARGS else (int(w * 0.15), int(h * 0.05), int(w * 0.85), int(h * 0.5))
-    dark = float(ARGS.get("--dark", 25))
+    dark = float(ARGS.get("--dark", 35))
     crop = lum[y0:y1, x0:x1]
     mask = crop < dark
     if mask.sum() < 200:
@@ -47,7 +46,15 @@ def main() -> int:
         # from the first pixel under `dark` outwards to the sky, how many pixels still sit between the blob and the sky level
         ramp = line[max(left - box_w // 4, 0):left]
         fringes.append(float(np.sum((ramp > dark) & (ramp < sky - 0.15 * (sky - dark)))) / box_w)
-    core = crop[mask]
+    inner = mask.copy()
+    for _ in range(int(ARGS.get("--erode", 8))):
+        grown = inner.copy()
+        grown[1:] &= inner[:-1]
+        grown[:-1] &= inner[1:]
+        grown[:, 1:] &= inner[:, :-1]
+        grown[:, :-1] &= inner[:, 1:]
+        inner = grown
+    core = crop[inner] if inner.sum() > 100 else crop[mask]
     std = float(core.std())
     fringe = float(np.mean(fringes)) if fringes else 0.0
     ragged = int(np.sum(np.abs(np.diff(lefts)) > 2)) if len(lefts) > 1 else 0

@@ -47,6 +47,8 @@ const SPELLS := {
 	"pavi": [[SCENE, "res://scenes/spells/carrier/vaporization.tscn"], [PARTICLE, "res://data/fx/vaporize_burst.tres"]],
 	"ivob": [[SCENE, "res://scenes/spells/carrier/bovine_intervention.tscn"], [PARTICLE, "res://data/fx/cow_burst.tres"]],
 	"taed": [[SCENE, "res://scenes/spells/carrier/death.tscn"], [PARTICLE, "res://data/fx/death_strike.tres"]],
+	"rter": [[SCENE, "res://scenes/spells/stalks/stalk.tscn"], [PARTICLE, "res://data/fx/stalk_grab.tres"]],
+	"nrot": [[SCENE, "res://scenes/spells/tornado/tornado.tscn"]],
 }
 const WIZARD_SCENE := "res://scenes/wizards/wizard_body.tscn"
 const UNIT_SCENE := "res://scenes/units/unit.tscn"

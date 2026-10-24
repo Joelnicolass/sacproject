@@ -82,6 +82,8 @@
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/plague.tscn" id="z61h_Plague"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/cloudkill.tscn" id="z61h_Cloudkill"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/bombardment.tscn" id="z61h_Bombardment"]
+[ext_resource type="PackedScene" path="res://scenes/spells/stalks/meanstalks.tscn" id="z61_stalks"]
+[ext_resource type="PackedScene" path="res://scenes/spells/tornado/tornado.tscn" id="z61_tornado"]
 
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
@@ -176,7 +178,9 @@ zones = Dictionary[String, PackedScene]({
 "RainOfFire": ExtResource("z61h_RainOfFire"),
 "Plague": ExtResource("z61h_Plague"),
 "Cloudkill": ExtResource("z61h_Cloudkill"),
-"Bombardment": ExtResource("z61h_Bombardment")
+"Bombardment": ExtResource("z61h_Bombardment"),
+"Meanstalks": ExtResource("z61_stalks"),
+"Tornado": ExtResource("z61_tornado")
 })
 
 

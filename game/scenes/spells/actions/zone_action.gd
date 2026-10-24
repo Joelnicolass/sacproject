@@ -22,6 +22,19 @@ enum Anchor { CLICK, WIZARD }
 @export_range(0.0, 10.0, 0.01, "suffix:s") var arm_s := 0.0
 ## `arm_s` counts from the start of the cast instead (Explosion goes off 3.8 s after it begins).
 @export var arm_from_start := false
+@export_group("Ring of roots")
+## More than 0: the zone stands on the click and its points are this many roots around it, one per equal slice of a turn (Meanstalks: 4).
+@export_range(0, 12) var ring_count := 0
+@export_range(0.0, 100.0, 0.1, "suffix:m") var ring_inner_m := 9.0
+@export_range(0.0, 100.0, 0.1, "suffix:m") var ring_outer_m := 21.6
+## Each root may stray this far from the middle of its slice.
+@export_range(0.0, 180.0, 0.5, "suffix:°") var ring_jitter_deg := 22.5
+## A root that falls off the land is tried again this many times at random inside this radius (the original: 32 tries within 18 m).
+@export_range(0, 64) var ring_retries := 32
+@export_range(0.0, 100.0, 0.1, "suffix:m") var ring_retry_m := 18.0
+@export_group("Look")
+## Played on every peer while the wizard casts (FxBus.broadcast_scene; its root answers play(params): `ticks` and `wizard`). Optional.
+@export var cast_scene: PackedScene
 ## A creature or wizard the click names is the zone's target: the zone follows it (Cloudkill's cloud chases it).
 @export var follows_target := false
 
@@ -53,6 +66,8 @@ func started(wizard: WizardBody, spell: SpellType, aim: Aim, frames: int) -> voi
 	var data := _data(wizard, spell, aim.point, frames)
 	data["follow"] = aim.data.get("follow", "")
 	_zone = spawner.spawn_projectile(kind, data) as GroundZone
+	if cast_scene != null:
+		FxBus.broadcast_scene(cast_scene.resource_path, wizard.global_position, {"ticks": frames, "wizard": str(wizard.get_path())})
 
 
 func finish(_wizard: WizardBody, _spell: SpellType, _target: Node3D) -> String:
@@ -71,16 +86,35 @@ func cancel() -> void:
 ## What the zone's `setup` reads: where it stands, its points, who cast it and how long the cast and the wait are.
 func _data(wizard: WizardBody, spell: SpellType, click: Vector3, frames: int) -> Dictionary:
 	var points := PackedVector3Array()
-	points.append(_ground(wizard.global_position) if anchor == Anchor.WIZARD else click)
 	var rng := MatchSeed.rng(["zone", spell.tag, String(wizard.name), MatchClock.now()])
+	var origin := _ground(wizard.global_position) if anchor == Anchor.WIZARD else click
+	if ring_count > 0:
+		points = _roots(rng, click)
+		origin = _ground(click)
+	else:
+		points.append(origin)
 	for i in scatter:
 		points.append(_ground(click + ZoneRules.disk_point(rng, spell.effect_range)))
 	var wait := MatchClock.ticks_for(arm_s)
 	return {
-		"x": points[0].x, "y": points[0].y, "z": points[0].z, "points": points, "aim": click,
+		"x": origin.x, "y": origin.y, "z": origin.z, "points": points, "aim": click,
 		"slot": wizard.owner_slot, "caster": str(wizard.get_path()), "cast_ticks": frames,
 		"arm_ticks": maxi(0, wait - frames) if arm_from_start else wait,
 	}
+
+
+## The roots of a ring on the ground: a root off the land is drawn again around where it fell (the zone keeps the last one when none fits).
+func _roots(rng: RandomNumberGenerator, click: Vector3) -> PackedVector3Array:
+	var roots := ZoneRules.ring_points(rng, click, ring_count, ring_inner_m, ring_outer_m, deg_to_rad(ring_jitter_deg))
+	var shape := TerrainShape.of(self)
+	for i in roots.size():
+		var fell := roots[i]
+		for _try in ring_retries:
+			if shape == null or shape.is_on_ground(roots[i].x, roots[i].z):
+				break
+			roots[i] = fell + ZoneRules.disk_point(rng, ring_retry_m)
+		roots[i] = _ground(roots[i])
+	return roots
 
 
 ## `at` with the height of the land under it (the click's own height when there is no land to ask).

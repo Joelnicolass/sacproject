@@ -80,6 +80,8 @@ const SPRITE_LIFT := 1.25 * 1.6
 
 var corpse: Node3D
 var collector: Node3D
+## The spell that drags it (Soul Mole, Soul Wind): while it lives the soul sits on it. Server only; the clients get the position.
+var carrier: Node3D
 ## Where it came from (SoulSystem.ORIGIN_*), for the ledger of the bench. Not replicated: the clients only draw.
 var origin: StringName = &"creature"
 
@@ -166,6 +168,7 @@ func is_reserved_for(slot: int) -> bool:
 
 
 func begin_collect(by: Node3D, slot: int) -> void:
+	carrier = null
 	collector = by
 	collector_slot = slot
 	_remains = corpse
@@ -208,6 +211,23 @@ func sever() -> void:
 		print("cadáver %s disuelto (tick %d)" % [dead.name, MatchClock.now()])
 
 
+## A soul a spell can fetch for `slot`: not dropped with P, blue for that side, and still waiting (not being taken, eaten or revived).
+func fetchable_by(slot: int) -> bool:
+	return not dropped and is_free_or_own(slot) and (state == State.NORMAL or state == State.EMERGING)
+
+
+## Server or solo. Soul Mole and Soul Wind take the soul: it lets go of its corpse (which dissolves), prefers the wizard's side
+## when somebody collects it, and follows `by` until `by` is gone.
+func release_to(slot: int, by: Node3D) -> void:
+	if _remains == null:
+		_remains = corpse
+	attached = false
+	corpse = null
+	sever()
+	owner_slot = slot
+	carrier = by
+
+
 ## Server or solo. Rend Soul (updateRendShoot, state.d:25867-25890): the soul explodes. It lets go of its corpse (severSoul dissolves
 ## it), has nothing inside and goes. What the blast does is the strike's.
 func burst() -> void:
@@ -245,7 +265,9 @@ static func on_corpse(corpse_node: Node3D) -> Soul:
 
 func _physics_process(delta: float) -> void:
 	if state != State.COLLECTING and state != State.DEVOURING:
-		if attached:
+		if carrier != null and is_instance_valid(carrier):
+			global_position = carrier.global_position
+		elif attached:
 			_follow_corpse()
 		else:
 			_settle(delta)

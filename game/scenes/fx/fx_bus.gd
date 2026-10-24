@@ -58,6 +58,12 @@ func _ready() -> void:
 		_prewarm_all()
 
 
+## The name FxBus knows a typed effect (ParticleType or BeamType loaded from data/fx/) by: a scene that holds the Resource passes
+## `FxBus.name_of(type)` instead of writing the text.
+static func name_of(type: Resource) -> String:
+	return type.resource_path.get_file().get_basename() if type != null else ""
+
+
 ## Seed for the next emitter (SpriteParticles, SpriteEmitter): from this generator, never the global one.
 func next_particle_seed() -> int:
 	return _rng.randi()

@@ -1,0 +1,53 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/carrier/spell_carrier.gd" id="1_carrier"]
+[ext_resource type="Script" path="res://scenes/spells/carrier/soul_fetch.gd" id="2_fetch"]
+[ext_resource type="Script" path="res://scenes/spells/carrier/carrier_pulse.gd" id="3_pulse"]
+[ext_resource type="Script" path="res://scenes/spells/carrier/prop_look.gd" id="4_prop"]
+[ext_resource type="Script" path="res://scenes/fx/sprite_emitter.gd" id="5_emitter"]
+[ext_resource type="Resource" path="res://data/fx/soul_mole_dust.tres" id="6_dust"]
+[ext_resource type="Resource" path="res://data/fx/soul_mole_rocks.tres" id="7_rocks"]
+[ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="8_sound"]
+
+[sub_resource type="SphereShape3D" id="Sphere_reach"]
+radius = 10.0
+
+[node name="SoulMole" type="Node3D"]
+script = ExtResource("1_carrier")
+
+[node name="Look" type="Node3D" parent="."]
+
+[node name="Rock" type="MeshInstance3D" parent="Look"]
+script = ExtResource("4_prop")
+model = "rock"
+
+[node name="Dust" type="CPUParticles3D" parent="Look"]
+use_fixed_seed = true
+local_coords = false
+script = ExtResource("5_emitter")
+type = ExtResource("6_dust")
+start_active = true
+
+[node name="Pebbles" type="CPUParticles3D" parent="Look"]
+use_fixed_seed = true
+local_coords = false
+script = ExtResource("5_emitter")
+type = ExtResource("7_rocks")
+start_active = true
+
+[node name="Fetch" type="Node" parent="." node_paths=PackedStringArray("carrier")]
+script = ExtResource("2_fetch")
+carrier = NodePath("..")
+
+[node name="Pulse" type="Node3D" parent="." node_paths=PackedStringArray("carrier", "reach")]
+script = ExtResource("3_pulse")
+carrier = NodePath("..")
+reach = NodePath("Reach")
+
+[node name="Reach" type="CollisionShape3D" parent="Pulse"]
+shape = SubResource("Sphere_reach")
+
+[node name="Sound" parent="." instance=ExtResource("8_sound")]
+source = "world"
+cue = &"Xquk"
+loop = true

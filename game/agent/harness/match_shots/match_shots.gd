@@ -7,7 +7,7 @@ extends Node
 ## Args after `--`: --map=<tag> --god=<god of the local wizard> [--biome=<god whose land the map wears; default --god>] [--ai-god=<god>] [--wizard=<tag>] [--after=<s> before the first
 ## round] [--shots=<n> rounds] [--every=<s>, from 0.02: a burst of shots; the files end in the milliseconds, _t001500] [--out=<dir>] [--views=wizard,wizard_close,halo,foe_close,overview,fountain,manahoar,tower] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
 ## [--cast=<spell tag>[,<tag>…], the local wizard casts them one after the other once --after has passed, before the first round: a spell that aims at himself (a ward, Healing Aura) on himself,
-## one that aims at a soul (pmcd, dnws, deda) on the closest soul he may fetch (the harness makes one when there is none), any other on the closest enemy (a zone, on the ground at its feet; Rainbow on himself, the first body of its chain; 061e needs --level=4 or more: ntlc, wobr, rifd, olah); mana is filled first; --cast-wait=<s> is the wait after the last cast (Explosion goes off 3.8 s after it starts: 4.5)] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
+## one that aims at a soul (pmcd, dnws, deda) on the closest soul he may fetch (the harness makes one when there is none), any other on the closest enemy (a zone, on the ground at its feet; Rainbow on himself, the first body of its chain; 061e needs --level=4 or more: ntlc, wobr, rifd, olah; 061i needs --level=8 or more: mrhc, egar, pavi, ivob, taed, whose carrier the "carrier" view follows and whose effect on the closest enemy (side, rage, swelling) is printed); mana is filled first; --cast-wait=<s> is the wait after the last cast (Explosion goes off 3.8 s after it starts: 4.5)] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
 ## Windowed: `-- --agent=flow --flow=match_shots.json` (the flow gives the sandbox that applies the quality preset).
 
 const GROUP_FOUNT := &"manafount"
@@ -27,6 +27,9 @@ const TAG_MANAHOAR := &"oham"
 ## The "foe_close" view: the closest enemy of the wizard (the target of --cast) from the wizard's side, to read a state on it.
 @export_range(2.0, 30.0, 0.5, "suffix:m") var foe_close_m := 7.0
 @export_range(0.0, 10.0, 0.5, "suffix:m") var foe_close_up_m := 2.0
+## The "carrier" view: the first spell carrier in flight from this far back and this high (Death is 12 m tall: use 30 and 10).
+@export_range(2.0, 80.0, 0.5, "suffix:m") var carrier_m := 8.0
+@export_range(0.0, 40.0, 0.5, "suffix:m") var carrier_up_m := 4.0
 ## The "zone" view: the camera stands this far from the first ground zone (the one of --cast=pxef|zorf|tfir), toward the wizard, this high.
 @export_range(10.0, 200.0, 1.0, "suffix:m") var zone_m := 45.0
 @export_range(0.0, 100.0, 0.5, "suffix:m") var zone_up_m := 28.0
@@ -249,7 +252,7 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 			var carrier := carriers[0] as Node3D
 			look = carrier.global_position + Vector3.UP * 0.5
 			var from_wizard := (carrier.global_position - focus) * Vector3(1.0, 0.0, 1.0)
-			spot = look - (from_wizard.normalized() if from_wizard.length() > 0.1 else Vector3.FORWARD) * 8.0 + Vector3.UP * 4.0
+			spot = look - (from_wizard.normalized() if from_wizard.length() > 0.1 else Vector3.FORWARD) * carrier_m + Vector3.UP * carrier_up_m
 		"tower":
 			var tower := _nearest_tower(focus)
 			if tower == null:
@@ -269,6 +272,7 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 	_report_zones()
 	_report_halo()
 	_report_bolts()
+	_report_carriers(wizard)
 	if arg("hover") == "wizard":
 		_hover(world, wizard)
 	await _save(file)
@@ -327,6 +331,19 @@ func _report_halo() -> void:
 				detail = "mesh visible=%s scale %.2f size (%.2f, %.2f, %.2f) surfaces=%d material=%s" % [mesh.is_visible_in_tree(), mesh.scale.x, size.x, size.y, size.z,
 					mesh.mesh.get_surface_count(), material.get_class() if material else "none"]
 			print("match_shots: halo rock %s visible=%s at (%.1f, %.1f, %.1f) | %s" % [rock.name, rock.is_visible_in_tree(), rock.global_position.x, rock.global_position.y, rock.global_position.z, detail])
+
+
+## One line per SpellCarrier alive at each shot (the level-8 spells, Dragonfire, the souls): its scene, motion, phase and place, and what the
+## spell did to the closest enemy (its side, whether it rages, how swollen it is), so a capture with nothing in it says why.
+func _report_carriers(wizard: Node3D) -> void:
+	for node in get_tree().root.find_children("*", "SpellCarrier", true, false):
+		var carrier := node as SpellCarrier
+		print("match_shots: carrier %s motion=%d phase=%d at (%.1f, %.1f, %.1f)" % [carrier.name, carrier.motion, carrier.phase, carrier.global_position.x, carrier.global_position.y, carrier.global_position.z])
+	var foe := _closest_foe(wizard)
+	if foe != null and not get_tree().root.find_children("*", "SpellCarrier", true, false).is_empty():
+		var afflictions := Afflictions.of(foe)
+		var growth := DevourGrowth.of(foe)
+		print("match_shots: foe %s side=%d raging=%s inflation=%.2f" % [foe.name, int(foe.get("owner_slot")), afflictions != null and afflictions.raging(), growth.inflation if growth != null else 0.0])
 
 
 ## One line per beam FxBus has on screen at each shot (a bolt, an arc): its type, if it is drawn and where it starts and ends.

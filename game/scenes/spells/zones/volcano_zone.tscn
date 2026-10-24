@@ -123,7 +123,7 @@ editor_description = "La quemadura: 1000 de dano por segundo hasta 20 m, que cae
 script = ExtResource("6_heat")
 zone = NodePath("..")
 damage_share = 1.0
-burn_ticks = 30
+burn_s = 0.5
 burn_look = ExtResource("7_fire")
 push_m_s = 5.0
 

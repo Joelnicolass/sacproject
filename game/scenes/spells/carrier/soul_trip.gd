@@ -2,7 +2,7 @@ class_name SoulTrip
 extends RefCounted
 
 ## The trip of the Soul Mole's rock and the Soul Wind's funnel for its SpellCarrier: it walks the ground from the wizard to a soul in half
-## of `roundtrip_ticks`, turns there (`reached`), and comes back in the other half. It ends when the soul is gone or no longer waiting. It
+## of `roundtrip_s`, turns there (`reached`), and comes back in the other half. It ends when the soul is gone or no longer waiting. It
 ## moves the carrier it is given and nothing else: who takes the soul is SoulFetch, who is stunned on the way is CarrierPulse.
 ## Ref: sacengine updateSoulMole, updateSoulWind (state.d:17938-18044, 18916-19018).
 
@@ -17,7 +17,7 @@ func _init(carrier: SpellCarrier) -> void:
 
 ## One tick of the trip. Server or solo.
 func step() -> void:
-	var leg := _carrier.roundtrip_ticks / 2
+	var leg := MatchClock.ticks_for(_carrier.roundtrip_s) / 2
 	var target := _carrier.soul()
 	var owner_body := _carrier.wizard()
 	if target == null or owner_body == null or not (target.state == Soul.State.NORMAL or target.state == Soul.State.EMERGING):
@@ -34,7 +34,7 @@ func step() -> void:
 		_carrier.global_position = _grounded(CarrierPath.out_at(_carrier.start, soul_at, _side, _carrier.frame, leg))
 	else:
 		_carrier.global_position = _grounded(CarrierPath.back_at(_turn, owner_body.global_position, _side, _carrier.frame - leg, leg))
-	if _carrier.frame >= _carrier.roundtrip_ticks:
+	if _carrier.frame >= MatchClock.ticks_for(_carrier.roundtrip_s):
 		_carrier.stop()
 
 

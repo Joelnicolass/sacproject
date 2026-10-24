@@ -14,8 +14,8 @@ enum Affects { ALL_BUT_WIZARD, FOES }
 ## The sphere of the effect, in the carrier's frame; its radius is how far from the carrier a body feels it.
 @export var reach: CollisionShape3D
 @export var affects := Affects.ALL_BUT_WIZARD
-## The stun's own cooldown for the body, in ticks (8 s).
-@export_range(0, 3600) var stun_ticks := 480
+## The stun's own cooldown for the body.
+@export_range(0.0, 60.0, 0.0001, "suffix:s") var stun_s := 8.0
 ## The foes also take the spell's damage (direct spell) the first time they are reached.
 @export var damage_foes := false
 ## Where the bolt starts (Soul Wind: a metre over the funnel's base). Empty = no bolt.
@@ -64,7 +64,7 @@ func _physics_process(_delta: float) -> void:
 func _reach(body: Node3D) -> void:
 	var stunned := body.get_node_or_null(stunned_path) as Stunned
 	if stunned != null:
-		stunned.stun_with_cooldown(stun_ticks)
+		stunned.stun_with_cooldown(MatchClock.ticks_for(stun_s))
 	if not damage_foes:
 		return
 	if bolt != null and bolt_origin != null:

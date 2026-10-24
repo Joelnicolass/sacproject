@@ -14,8 +14,8 @@ extends Node
 @export_group("Hurt")
 ## Damage per second at full strength, as a share of the spell's damage (0 = it does not hurt).
 @export_range(0.0, 4.0, 0.01) var damage_share := 0.0
-## The fire a creature keeps (ticks, no damage: it is the look), and the sprite it puffs. 0 = it does not light anyone.
-@export_range(0, 600) var burn_ticks := 0
+## The fire a creature keeps (no damage: it is the look), and the sprite it puffs. 0 = it does not light anyone.
+@export_range(0.0, 10.0, 0.0001, "suffix:s") var burn_s := 0.0
 @export var burn_look: ParticleType
 @export_group("Push")
 ## Metres per second away from the center at full strength (0 = it does not push).
@@ -61,6 +61,7 @@ func _physics_process(_delta: float) -> void:
 ## A fire of no damage (the look of burning) that is renewed when it runs out, never one on top of another.
 func _ignite(body: Node3D) -> void:
 	var id := body.get_instance_id()
+	var burn_ticks := MatchClock.ticks_for(burn_s)
 	if burn_ticks > 0 and int(_lit_until.get(id, 0)) <= _ticks:
 		_lit_until[id] = _ticks + burn_ticks
 		Burning.ignite(body, 0.0, burn_ticks, Health.DIRECT_SPELL, zone.from_slot, 0.0, false, burn_look.bus_name() if burn_look != null else "")

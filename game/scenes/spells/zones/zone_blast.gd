@@ -10,8 +10,8 @@ extends ZonePulse
 @export var burst: PackedScene
 ## Sprite bursts played at each point (FxBus), under data/fx/.
 @export var puffs: Array[ParticleType] = []
-## The fire a body keeps for `burn_ticks` ticks (no damage: it is the look), and the sprite it puffs.
-@export_range(0, 600) var burn_ticks := 60
+## The fire a body keeps for `burn_s` (no damage: it is the look), and the sprite it puffs.
+@export_range(0.0, 10.0, 0.0001, "suffix:s") var burn_s := 1.0
 @export var burn_look: ParticleType
 ## Bodies within the spell's effect range plus its damage range of the first point are thrown.
 @export var throws := true
@@ -25,7 +25,7 @@ func _fire(_step: int) -> void:
 		_show(point)
 		SplashDamage.deal(get_tree(), point, float(spell.damage), spell.damage_range, null, zone.from_slot, Health.SPLASH_SPELL, Health.IGNITE)
 		for body in SplashDamage.bodies_within(get_tree(), point, spell.damage_range):
-			Burning.ignite(body, 0.0, burn_ticks, Health.DIRECT_SPELL, zone.from_slot, 0.0, false, burn_look.bus_name() if burn_look else "")
+			Burning.ignite(body, 0.0, MatchClock.ticks_for(burn_s), Health.DIRECT_SPELL, zone.from_slot, 0.0, false, burn_look.bus_name() if burn_look else "")
 	if throws:
 		_throw_all()
 

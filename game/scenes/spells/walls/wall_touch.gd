@@ -38,7 +38,7 @@ enum Affects { EVERYBODY, NOT_ALLIES }
 @export var renew_while_afflicted := false
 ## The spell's `damage` is dealt once per touch (Wall of Spikes).
 @export var spell_damage_on_touch := false
-@export var stun_cooldown_ticks := 0
+@export_range(0.0, 60.0, 0.0001, "suffix:s") var stun_cooldown_s := 0.0
 ## Pace factor and how long it lasts (1 = none), under the name `pace_source`.
 @export_range(0.05, 1.0, 0.05) var slow_factor := 1.0
 @export_range(0.0, 60.0, 0.5, "suffix:s") var slow_s := 0.0
@@ -90,7 +90,7 @@ func _every_tick(body: Node3D) -> void:
 
 
 func _touch(body: Node3D, now: int) -> void:
-	if stun_cooldown_ticks <= 0 and not spell_damage_on_touch and slow_factor >= 1.0 and affliction == null and hit_scene == null:
+	if stun_cooldown_s <= 0.0 and not spell_damage_on_touch and slow_factor >= 1.0 and affliction == null and hit_scene == null:
 		return
 	var id := body.get_instance_id()
 	var wait := MatchClock.ticks_for(cooldown_s)
@@ -102,8 +102,8 @@ func _touch(body: Node3D, now: int) -> void:
 		return
 	_until[id] = now + wait
 	var stunned := body.get_node_or_null(stunned_path) as Stunned
-	if stun_cooldown_ticks > 0 and stunned != null:
-		stunned.stun_with_cooldown(stun_cooldown_ticks)
+	if stun_cooldown_s > 0.0 and stunned != null:
+		stunned.stun_with_cooldown(MatchClock.ticks_for(stun_cooldown_s))
 	var health := Health.of(body)
 	if spell_damage_on_touch and health != null:
 		health.damage_typed(float(wall.spell.damage), Health.DIRECT_SPELL, wall.from_slot)

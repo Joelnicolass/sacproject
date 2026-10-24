@@ -72,7 +72,7 @@ mesh = SubResource("Mesh_ribbon0")
 script = ExtResource("9_ribbon")
 follows = NodePath("..")
 width_m = 0.3
-trail_ticks = 60
+trail_s = 1.0
 
 [node name="Hearts" type="CPUParticles3D" parent="Spirits/Spirit0"]
 use_fixed_seed = true
@@ -90,7 +90,7 @@ mesh = SubResource("Mesh_ribbon1")
 script = ExtResource("9_ribbon")
 follows = NodePath("..")
 width_m = 0.3
-trail_ticks = 60
+trail_s = 1.0
 
 [node name="Hearts" type="CPUParticles3D" parent="Spirits/Spirit1"]
 use_fixed_seed = true
@@ -108,7 +108,7 @@ mesh = SubResource("Mesh_ribbon2")
 script = ExtResource("9_ribbon")
 follows = NodePath("..")
 width_m = 0.3
-trail_ticks = 60
+trail_s = 1.0
 
 [node name="Hearts" type="CPUParticles3D" parent="Spirits/Spirit2"]
 use_fixed_seed = true

@@ -13,8 +13,8 @@ extends SpellProjectile
 @export var spell: SpellType
 ## The wall's box: size.y is the height it rises to, size.z the thickness, size.x the whole reach (2 * effect_range, to show it).
 @export var body: CollisionShape3D
-## Ticks the ends take to reach `effect_range` when nothing stops them.
-@export_range(1, 3600) var grow_ticks := 240
+## Time the ends take to reach `effect_range` when nothing stops them.
+@export_range(0.0166, 60.0, 0.0001, "suffix:s") var grow_s := 4.0
 @export_range(0.0, 10.0, 0.05, "suffix:s") var rise_s := 2.0
 @export_range(0.0, 10.0, 0.05, "suffix:s") var vanish_s := 1.0
 ## Seconds the wall stays after it sank (Wailing Wall's spirits fade out over 4 s).
@@ -90,6 +90,11 @@ func thickness_m() -> float:
 
 func reach_m() -> float:
 	return spell.effect_range if spell != null else 0.0
+
+
+## grow_s in ticks: what the wall's parts compare its age against.
+var grow_ticks: int:
+	get: return MatchClock.ticks_for(grow_s)
 
 
 func rise_ticks() -> int:

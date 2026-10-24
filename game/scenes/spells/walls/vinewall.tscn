@@ -33,7 +33,7 @@ shader_parameter/albedo = ExtResource("8_vine")
 script = ExtResource("1_wall")
 spell = ExtResource("3_spell")
 body = NodePath("Body")
-grow_ticks = 240
+grow_s = 4.0
 rise_s = 1.0
 vanish_s = 1.0
 

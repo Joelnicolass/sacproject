@@ -1,3 +1,5 @@
+> **Decisiones del usuario (2026-10-24):** plan aprobado. **SCAR (marcas de quemado y cráter) va dentro de 061k** como sub-corte 061k-5 (lector + marcas de Explosion, Chain Lightning, Wall of Spikes, Volcano, Bombardment), investigado con REA en paralelo. Navegación como el original (solo los agujeros cambian los caminos). 4 sub-cortes + 061k-5. La lava y la erupción llevan luz de su color.
+
 # Plan 061k: terreno deformable (Erupt `tpre`, Volcano `clov`, Bore `erob`, abolladuras de Bombardment `rtem`)
 
 No edité el repo. El lint está en verde y no cambió ningún conteo (C1a 103, C16 41, C21 5…).

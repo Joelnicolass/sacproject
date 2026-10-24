@@ -31,6 +31,8 @@ const CAST_ROLES: PackedStringArray = ["cast", "cast_run"]
 ## The Sac Doctor (sacd) plays its melee slots as works: slot -> role of the state machine (doctor_body.gd work_slots/work_roles).
 const DOCTOR_MODEL := "sacd"
 const DOCTOR_SLOT_ROLES := {1: "work", 2: "cast", 0: "attack"}
+## The clip the Sac Doctor holds while it falls out of the vortex (sacengine expelled); its landing is stun_animations.hit_floor.
+const DOCTOR_FALL_TAG := "SDex"
 
 const XFADE_S := 0.15
 ## F376 (RFC-053 053g): a rest gesture whose root or hip slides more than this on the ground (ClipSlide) reads as a step on the
@@ -103,6 +105,8 @@ func _role_maps() -> Dictionary:
 			for slot: int in DOCTOR_SLOT_ROLES:
 				if slot < type.melee_animations.size():
 					roles[DOCTOR_SLOT_ROLES[slot]] = str(type.melee_animations[slot].get("tag", ""))
+			roles["fall"] = DOCTOR_FALL_TAG
+			roles["hit_floor"] = str((type.stun_animations.get("hit_floor", {}) as Dictionary).get("tag", ""))
 		_merge(maps, type.model, roles, "creature " + type.tag)
 	for file in _files(WIZARDS_DIR):
 		var wizard := load(WIZARDS_DIR + file) as WizardType

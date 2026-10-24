@@ -1,8 +1,9 @@
 extends FsmState
 
-## Invulnerable (the body is not targetable while FALLING). A ballistic arc under the engine gravity
-## from where the body is to `body.landing`; on touching the ground it stands still for
-## `rules.doctor_bounce_s` (the original `bounce`) and then `landed` fires. Server only.
+## Invulnerable (the body is not targetable while it falls or lands). It leaves the vortex going up at
+## `body.launch_up_m_s`, falls under the engine gravity to `body.landing` holding the last frame of the
+## expelled clip, plays the hit-floor clip once on touching the ground and then `landed` fires. Server only.
+## Ref: state.d:15480-15504 (launch), 14184-14190 and 14220-14224 (expelled, hitFloor).
 
 var body: DoctorBody:
 	get:
@@ -16,9 +17,11 @@ func enter() -> void:
 	body.pose = DoctorBody.Pose.FALLING
 	_bounce_left = -1.0
 	var rise := body.global_position.y - body.landing.y
-	var fall_s := sqrt(2.0 * maxf(rise, 0.0) / DoctorBody.gravity())
+	var g := DoctorBody.gravity()
+	var up := body.launch_up_m_s
+	var fall_s := (up + sqrt(up * up + 2.0 * g * maxf(rise, 0.0))) / g
 	var flat := Vector3(body.landing.x - body.global_position.x, 0.0, body.landing.z - body.global_position.z)
-	body.velocity = Vector3.ZERO if fall_s <= 0.0 else flat / fall_s
+	body.velocity = Vector3(flat.x / fall_s, up, flat.z / fall_s)
 
 
 func physics_update(delta: float) -> void:
@@ -33,6 +36,7 @@ func physics_update(delta: float) -> void:
 	body.move_and_slide()
 	if body.is_on_floor():
 		body.velocity = Vector3.ZERO
-		_bounce_left = body.rules.doctor_bounce_s if body.rules else 1.0
+		body.pose = DoctorBody.Pose.LANDING
+		_bounce_left = body.landing_s()
 	elif FallCheck.has_fallen(body):
 		body.kill()

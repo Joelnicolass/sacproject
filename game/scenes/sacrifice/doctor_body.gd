@@ -22,7 +22,7 @@ signal stuck
 const GROUP := &"doctor"
 
 ## What the doctor is doing. Replicated; it is also how a client knows what to show.
-enum Pose { IDLE, FALLING, WALKING, WORKING, DYING }
+enum Pose { IDLE, FALLING, WALKING, WORKING, DYING, LANDING }
 ## What a working doctor does (sacengine pumping, lifting, torturing).
 enum Work { PUMP, LIFT, TORTURE }
 
@@ -49,6 +49,8 @@ enum Work { PUMP, LIFT, TORTURE }
 @export var carried := NodePath()
 ## Only for the test bench: the server drops it straight down from where it is placed.
 @export var drop_on_ready := false
+## Upward speed it leaves the vortex with (m/s); it then falls under the engine gravity to `landing` (sacengine state.d:15480-15504).
+@export var launch_up_m_s := 10.0
 ## sacengine ground creatures turn at π rad/s (stats.d:104).
 @export var turn_rate := PI
 @export var arrive_distance := 0.25
@@ -59,10 +61,11 @@ enum Work { PUMP, LIFT, TORTURE }
 
 @export_group("Clips")
 ## Pose -> clip role of the CRE8 (idle, run). A pose without an entry keeps the clip it had.
-## The falling doctor has no clip of its own in the cache: it holds the idle one.
+## Falling holds the last frame of «expelled» (role fall); landing plays «hit floor» once (role hit_floor, then idle).
 @export var pose_roles := {
 	Pose.IDLE: &"idle",
-	Pose.FALLING: &"idle",
+	Pose.FALLING: &"fall",
+	Pose.LANDING: &"hit_floor",
 	Pose.WALKING: &"run",
 	Pose.DYING: &"idle",
 }
@@ -158,7 +161,7 @@ func drop_to(point: Vector3) -> void:
 ## there is one (RFC-024 024d), else in a line. `arrived` fires at the end of each leg. Calling it again with a new
 ## point just moves the goal; the same point (within `repath_goal_m`) while a path is on is a no-op.
 func walk_to(point: Vector3) -> void:
-	if pose == Pose.DYING or pose == Pose.FALLING:
+	if pose == Pose.DYING or is_dropping():
 		return
 	if is_instance_valid(_path_follower):
 		var follower_goal := _path_follower.goal
@@ -172,7 +175,7 @@ func walk_to(point: Vector3) -> void:
 
 ## One straight leg to `point` (what the PathFollower hands out, and what walk_to does without one).
 func begin_walk(point: Vector3) -> void:
-	if pose == Pose.DYING or pose == Pose.FALLING:
+	if pose == Pose.DYING or is_dropping():
 		return
 	goal = point
 	_walking = true
@@ -181,7 +184,7 @@ func begin_walk(point: Vector3) -> void:
 
 ## Stops walking and stands.
 func stop() -> void:
-	if pose == Pose.DYING or pose == Pose.FALLING:
+	if pose == Pose.DYING or is_dropping():
 		return
 	if is_instance_valid(_path_follower):
 		_path_follower.cancel()
@@ -190,7 +193,7 @@ func stop() -> void:
 
 ## Stands still on the spot doing `kind`.
 func begin_work(kind: Work) -> void:
-	if pose == Pose.DYING or pose == Pose.FALLING:
+	if pose == Pose.DYING or is_dropping():
 		return
 	work = kind
 	_walking = false
@@ -228,6 +231,17 @@ func is_dead() -> bool:
 	return pose == Pose.DYING or (health != null and health.is_dead())
 
 
+## Falling out of the vortex or still bouncing on landing.
+func is_dropping() -> bool:
+	return pose == Pose.FALLING or pose == Pose.LANDING
+
+
+## Seconds of the «hit floor» clip (CRE8 stun_animations): how long it stays down after touching the ground.
+func landing_s() -> float:
+	var clip: Dictionary = type.stun_animations.get("hit_floor", {}) if type else {}
+	return float(clip.get("frames", 0)) / maxf(float(clip.get("framerate", 30.0)), 1.0)
+
+
 func is_alive() -> bool:
 	return not is_dead()
 
@@ -235,7 +249,7 @@ func is_alive() -> bool:
 ## Not a target while it falls or dies (the original bounce makes it invulnerable). Health.damage
 ## and every target search ask this.
 func is_targetable() -> bool:
-	return pose != Pose.FALLING and pose != Pose.DYING
+	return not is_dropping() and pose != Pose.DYING
 
 
 ## sacengine isObstacle (state.d:112-126): it blocks the others, but not once dead.

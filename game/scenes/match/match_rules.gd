@@ -44,8 +44,6 @@ extends Resource
 ## doctor_exit_depth below (sacengine doctorHeight / doctorOffset, state.d:2639-2641, 15489).
 @export var doctor_drop_height: float = 15.0
 @export var doctor_exit_depth: float = 2.25
-## Invention of the port: the original `bounce` animation is not exported. Invulnerable all along.
-@export var doctor_bounce_s: float = 1.0
 ## sacengine doctor death: 70 + 50 frames at 60 fps (state.d:13999).
 @export var doctor_death_s: float = 2.0
 ## Invention of the port (the user chose it, RFC-020 section 20): the original has no limit. A doctor

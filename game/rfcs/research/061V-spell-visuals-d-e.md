@@ -7,6 +7,7 @@ Investigación de hechos para el arte final de 061d (almas: Soul Mole, Animate D
 - **[SAC archivo:línea]** sacengine (`sacengine/source/`, GPL, solo lectura). Se describe lo que hace; no se copió código. Si no se nombra el archivo, es `state.d`. sacengine carga texturas y mallas de las WAD originales, pero los números de dibujo (energía, transparencia, cantidad de partículas) son decisiones de su autor. Donde el ejecutable dice otra cosa, se avisa.
 - **[TXTR]** texturas y mallas leídas de las WAD de la instalación (`SAC_INSTALL`) con el lector del port (`tools/import/sac_formats/`: `txtr.py`, `wad.py`; cabecera MRMM según SAC mrmm.d:47-71). Se miraron tamaño, grilla, color y, en las mallas, cuadros, caras y caja.
 - **[EXE 0xDIR]** `Sacrifice.exe` (GOG, sha256 `a53ebb53…abcb`, base 0x400000). Igual que en 061V b-c: cada `push imm32` de `.text` cuyo inmediato es una etiqueta de 4 letras. **Mejora de método en este informe:** además de la tabla de funciones con nombre de **0x4cbba8** (272 entradas), se tomaron como comienzo de función todos los destinos de `call rel32` (E8) del `.text`. Así cada etiqueta cae en su función real (con nombre o `sub_XXXXXX`), y se sigue quién la llama. Esto corrige atribuciones del método viejo: por ejemplo, `fbal` «de Dragonfire» está en `sub_426760`, que llama `PyroExplosionRun`; `rif3` «de AnimateDeadRun» está en `sub_42f840`, que llama `DeathPortalEffect`; `rock` «de HaloOfEarthRun» está en `sub_445b40`, que llama `MeteorRun`. Sigue valiendo la advertencia: una etiqueta prueba que el original usa ese recurso en esa función, no qué dibuja. No se desensamblaron instrucciones con REA/Ghidra en esta pasada (no se abrió Ghidra; no quedó ninguno corriendo).
+- **[SPEL]** **Agregado el 2026-10-24 (método de 061V f-g).** El registro SPEL de cada hechizo (`spells.wad`) trae una tabla de sonidos (`!` = lazo) y una tabla de recursos clave/valor. El EXE lee cada recurso con `0x4502e0(spel, clave, valor_por_defecto)`: **las etiquetas que empuja el EXE son valores por defecto y el SPEL las pisa**; una etiqueta empujada **sin** clave (directo a un cargador) es fija. Precedencia nueva: SPEL > EXE > sacengine. Las fichas corregidas lo dicen en un bloque «SPEL».
 - **[WEB]** se buscó en la web («Soul Mole», «Soul Wind», «Halo of Earth» de Sacrifice) sin resultados útiles. El texto del `MANUAL.PDF` no se pudo extraer en esta pasada (fuentes codificadas). No se vieron videos: **ninguna afirmación de este informe sale de una captura.**
 - **[PORT]** código y datos del port (`game/…`).
 - Precedencia: EXE/datos > sacengine > manual > web. Lo que no se pudo confirmar dice **NO VERIFICADO**.
@@ -43,7 +44,8 @@ Partículas de sacengine que se repiten abajo (mezcla según [SAC dagonBackend.d
 **Assets.**
 - En `models.wad` **no hay ningún modelo de topo** (las carpetas MRMC son `bess bold bovi dfir loca mrph rage rock rokm roks sbll`), ni en otra WAD (se buscó `mol*`). En `spells.wad` el SPEL está como `dcmp`.
 - sacengine dibuja en la posición del topo la **malla `rock`** (`MODL.WAD!/rock.MRMC`, 503 vértices, caja ≈2×2×2,2 m) a escala 1, sin rotar y en la altura del suelo: una roca medio enterrada que se desliza [SAC renderer.d:2012-2044, 1043].
-- [EXE] En la tabla de 0x4cbba8 no hay ninguna función «SoulMole». El candidato es **`BurrowRun` (0x417f70)**: empuja `dirt` tres veces y `tscr` dos (el tipo de las grietas `SCAR`), sin ninguna malla (`tmod`). Lectura probable: en el original el topo **no se ve**; va bajo tierra y deja tierra levantada y un surco. **NO VERIFICADO** que `BurrowRun` sea Soul Mole, ni qué grieta deja (el nombre no aparece en el `push`).
+- ~~[EXE] El candidato es `BurrowRun`: el topo no se ve~~ **Corregido (SPEL `dcmp`, 2026-10-24).** El SPEL de Soul Mole se llama `dcmp` = **Decompose**, y su función es **`DecomposeStart` (0x444060)** → `sub_443e80`, no `BurrowRun`. `sub_443e80` lee `tmod` con **`rock`** por defecto (el SPEL no lo cambia) y lo carga con el cargador de mallas (`sub_469230`, el mismo de Dragonfire y Frozen Ground); `ttrl` = `dust` (estela, bandera alfa), `tbit` = `rock` (piedritas) y llama a `sub_4591a0(10, 0)` (¿aturdir?). `DecomposeStart` tira `dirt` (1,2; 1,2; 0,5; 3) y comparte la rutina del recorrido con Soul Wind (`sub_423980`). **El topo es la malla `rock` visible, como en sacengine.**
+- **SPEL `dcmp`:** `ttrl = dust`, `tcst = dirt`, `iCHg = 1`, `iCH+ = 0`. Sonidos: `Xquk` en lazo (bandera 1) y `sstl` (bandera 4). **Confirma** los sonidos de sacengine (`bore` = `Xquk`, `sstl`).
 
 **Recorrido** [SAC 10814-10830, 17938-18028]:
 - Nace en los pies del mago al **empezar** a lanzar y ya se mueve mientras el mago lanza.
@@ -58,7 +60,7 @@ Partículas de sacengine que se repiten abajo (mezcla según [SAC dagonBackend.d
 - Siempre: 2 `rock` por tick que salen del topo en dirección al azar a 5–10 m/s, escala 0,5–2, vida 63, con gravedad. Es un chorro de piedritas.
 - Lanzamiento del mago: `animateRockCasting`, una `dirt` por mano por tick, en direcciones al azar [SAC 17877-17894; `animateRockCasting`].
 
-**Sonido.** Lazo `bore` (`Xquk` del set `spel` = `sfx/jams/eqk1..3.wav`, ganancia 5) mientras se mueve; `sstl.wav` al tomar el alma. El EXE no empuja sonidos para esto (los toma del SPEL o del SSET): **NO VERIFICADO** en el EXE.
+**Sonido.** Lazo `bore` (`Xquk` del set `spel` = `sfx/jams/eqk1..3.wav`, ganancia 5) mientras se mueve; `sstl.wav` al tomar el alma. **Confirmado por el SPEL** (`Xquk` en lazo, `sstl`).
 
 **Qué reutilizar del port.**
 - `data/fx/rock_dust.tres` (dust) y `data/fx/rock.tres` (rock con gravedad) para el rastro.
@@ -66,9 +68,9 @@ Partículas de sacengine que se repiten abajo (mezcla según [SAC dagonBackend.d
 - Mover el alma: `scenes/souls/soul.gd` y `scenes/units/abilities/rend_soul.gd` / `strikes/soul_strike.gd` (ya cortan y mueven almas).
 - Aturdir: `scenes/units/afflictions/stunned.gd`.
 
-**Decisión pendiente.** ¿Roca visible (sacengine) o topo invisible con polvo, piedritas y surco (lectura del EXE)? Lo más fiel a lo confirmado es **no** modelar un topo: el original no trae ninguno. Si el usuario quiere un topo visible, es contenido propio (Blender CLI, memoria «contenido propio desde Blender») y una divergencia declarada.
+**Decisión (resuelta por el SPEL/EXE).** El topo es la **roca `rock` visible** (`props/rock.glb`), como en sacengine, con estela `dust` y piedritas `rock`. No se modela ningún topo.
 
-**Qué falta.** Nada por importar para el rastro. Si se confirma el surco: un lector de `SCAR` (lo mismo que pide Skin of Stone en 061V b-c).
+**Qué falta.** Nada por importar. El surco era de `BurrowRun` (otro hechizo): Soul Mole no deja grieta.
 
 ### Animate Dead (`deda`, Charnel)
 
@@ -78,7 +80,8 @@ Partículas de sacengine que se repiten abajo (mezcla según [SAC dagonBackend.d
 - `and2` (Daniel.wad, `DanC.WAD!/char.FLDR`): 256², tira de **1×8** cuadros. Cada cuadro es un arco fantasmal gris con una cabeza verde brillante que avanza por el arco, y una cola violeta difusa. No está importado.
 - `cfx1` (misma carpeta): partículas del segundo nivel de Charnel. No está importado.
 - [EXE 0x42f040 `AnimateDeadStreamerRun`]: `push 'and2'` + `tstx` (textura de estela) e `ilen` (largo). **Confirma** las estelas con `and2`.
-- [EXE 0x42f4f0 `AnimateDeadRun`]: `push 'glo2'`. Llama a `sub_41b200`, `sub_41b290`, `sub_41b300` y `sub_41b7c0`, las mismas que usa `ResurrectRun` (0x41b8b0, que también empuja `glo2`). Lectura probable: el original revive con la misma rutina que la resurrección y con partículas `glo2`, donde sacengine usa `cfx1`. **NO VERIFICADO** qué dibuja cada una.
+- **SPEL `aded` (2026-10-24):** `iadd = 0`, `tstx = and2`, `tcst = cfx1`, **`tSPK = cfx1`**. Sonidos: `sac0` en lazo (bandera 2), `Xanm` (bandera 4, `sfx/char/anm1..2.wav`), `sac9` (bandera 8) y `anme` (bandera 16, `sfx/char/anme.wav`). `AnimateDeadRun` llama a la rutina común de chispas (`0x438ff0` → `0x438e30`, clave `tSPK`): **el estallido `cfx1` sobre la criatura está confirmado**, igual que el lanzamiento `cfx1`. `AnimateDeadStreamerRun` lee `tstx` (= `and2`, aditiva) e `ilen` (por defecto 20; el SPEL no lo trae; sacengine usa 31 segmentos). `Xanm` y `anme` no los usa sacengine.
+- [EXE 0x42f4f0 `AnimateDeadRun`]: `push 'glo2'` **fijo** (sin clave) con la bandera `0x1a010401` (la que en 061V f-g se lee como «oscurecer»). Llama a `sub_41b200`, `sub_41b290`, `sub_41b300` y `sub_41b7c0`, las mismas que usa `ResurrectRun` (0x41b8b0, que también empuja `glo2`). Lectura probable: el original revive con la misma rutina que la resurrección y con partículas `glo2`, donde sacengine usa `cfx1`. **NO VERIFICADO** qué dibuja cada una.
 
 **Al lanzar** [SAC 10859-10903, 18296-18311]:
 - En sacengine la reanimación ocurre al **empezar** el lanzamiento (`castAnimateDead` llama `animateDead` antes de crear el casting); mientras dura el lanzamiento solo hay partículas `castCharnel2` en las manos.
@@ -110,7 +113,10 @@ Partículas de sacengine que se repiten abajo (mezcla según [SAC dagonBackend.d
 - [EXE] `SpiritWindRun` (0x423590, el nombre interno) llama a:
   - `sub_422e00`: `push 'swnd'` **dos veces**, con `ttx1` y `ttx2` (dos capas de textura), y `dirt` con `ttrl` (rastro de tierra).
   - `sub_4232b0`: `push 'Xltn'` (sonido de rayo).
-  - **Confirma** `swnd` y el rayo. Diferencias con sacengine: el original tiene **dos capas** de `swnd` (sacengine una) y deja rastro de **`dirt`** (sacengine `dust`). **NO VERIFICADO** cómo combina las dos capas.
+  - **Confirma** `swnd` y el rayo. Diferencias con sacengine: el original tiene **dos capas** de `swnd` (sacengine una; `ttx1`/`ttx2`, las dos `swnd` porque el SPEL no las cambia, bandera alfa). **NO VERIFICADO** cómo combina las dos capas.
+  - **Corregido (SPEL `swnd`, 2026-10-24):** `dirt` es solo el valor por defecto de `ttrl`; el SPEL pone **`ttrl = wdst`** (charlie, `Bloo.WAD!/Stra.FLDR/txtr.FLDR`, 256² con alfa: polvo gris muy tenue). El rastro es **`wdst`**, ni `dirt` ni `dust`.
+  - SPEL completo: `tmod = skul`, `ttex = swnd`, `ttrl = wdst`, `tcst = cst0`, `fCHs = 0,25`. `skul` es una malla de Daniel.wad (`DanC.WAD!/char.FLDR/skul.MRMC`), pero **ninguna** de las lecturas de `tmod` del EXE está en el camino de Soul Wind (solo Frozen Ground, Fireball, Volcano, Bore, Decompose y Rock): probablemente no se usa. **NO VERIFICADO.**
+  - Sonidos del SPEL: `Xfbl` (bandera 6) y `shld` en lazo (bandera 2; no hay sample `shld` en el índice del port). **El `fireball` de sacengine no es provisorio: está en el SPEL.** El lazo del viento queda **NO VERIFICADO** (`shld` no se resuelve a un archivo).
 
 **El remolino** [SAC 10941-10958, 18873-19034; renderer.d:427-437, 2409-2429; sacobject.d:2711-2748]:
 - **Malla.** Un embudo de 32 lados × 32 anillos, alto 3 m. El radio del anillo i va de 0 a 1,5 m (`1,5·(i/32 + 0,05·sin(2πi/32))`), con un ensanche arriba de +0,75·(i/32)⁴. El eje se curva: cada anillo se corre 0,5·radio en dirección (cos θ, sin θ) con θ = π·i/32. Es un tornado estrecho abajo, abierto arriba y torcido.
@@ -147,7 +153,8 @@ Partículas de sacengine que se repiten abajo (mezcla según [SAC dagonBackend.d
 - [EXE] Los rayos del original empujan **`ltng`**, no `ltn2`. `ChainLightningRun` (0x420220) llama a `sub_4355a0` (`push 'ltng'`, la usan 6 funciones: es la rutina común del rayo), y esta a `sub_435a60` (`push 'scar'` + `tscr`). `ChainLightningStart` (0x420320) empuja `cst0` y llama a `sub_436160` (`ltng`). `ltn2` solo lo empujan el Sacrificio (`SACDOCRunBeam`, `SACDOCUnitGlobeRun`) y `sub_416180`.
 - `ltng` (charlie, `Bloo.WAD!/Stra.FLDR/txtr.FLDR`): 256², atlas 4×4 del mismo estilo que `ltn2` pero **azul más profundo y oscuro**. No está importado.
 - `scar` (charlie, `Bloo.WAD!/Pyro.FLDR/scar.FLDR`, SCAR): lectura probable, una **quemadura en el suelo** donde pega el rayo. sacengine lo deja como TODO («scar», SAC 16377).
-- Conclusión: lo más probable es que el rayo del original (y el Lightning `ntil` del port) use `ltng`. **NO VERIFICADO** sin desensamblar `sub_4355a0`; afecta también a `lightning_action` y `LightningStrike`, que hoy usan `ltn2`.
+- Conclusión anterior: «lo más probable es `ltng`». **Matiz (SPEL `cltn`, 2026-10-24):** el SPEL trae **`ttex = ltn2`**, pero `sub_4355a0` pasa `'ltng'` **fijo** (sin clave) a `sub_4355e0`, y no se encontró ninguna lectura de `ttex` en el camino de Chain Lightning. Las dos fuentes se contradicen: **NO VERIFICADO**. Se decide con captura (`ltng` contra `ltn2`); el SPEL da un motivo para dejar `ltn2`, que es lo que usa el port.
+- **SPEL `cltn`:** `ttex = ltn2`, `ffps = 30`, `tscr = scar` (confirmado: `sub_435a60` lee `tscr` con `scar` por defecto), `tcst = cst0`, `fCHs = 0,25`, `fSPa = 255`. Sonidos: `Xltn` (bandera 14) y `Xcnj` en lazo. Cada salto (`sub_4201c0`) llama a la rutina común de chispas; como el SPEL no trae `tSPK`, son **`sprk`** (valor por defecto): **confirma** las chispas de sacengine.
 
 **Lanzamiento** [SAC 18198-18248]:
 - Cada tick, 2 `lightningCasting` (cst0, aditivas, energía 3) relativas al cuerpo, en una caja de ±0,25 m en el punto de salida: 0,75 m delante del frente de la caja y 0,5 m sobre la cabeza.
@@ -179,7 +186,7 @@ Partículas de sacengine que se repiten abajo (mezcla según [SAC dagonBackend.d
 **Assets.**
 - `rnbw` (main, `MAIN.WAD!/bits.FLDR`): 64², degradé **vertical** de arcoíris, de rojo arriba a violeta abajo, opaco y sin alfa. No está importado.
 - `prbw` (charlie, Pers/tex): 4×4 de destellos de colores. Ya está importado (`data/fx/rainbow.tres`).
-- [EXE] `sub_42c990` (la llaman `RainbowRun` y `sub_42caf0`) empuja `glo2` y `rnbw` + `ttex`: **confirma** la textura del arco y las partículas `glo2`. `RainbowStart` (0x42d070) empuja `glo2` + `tcst` (partículas del lanzamiento): **confirma**. `prbw` **no aparece** en ningún `push` del EXE: el estallido de colores al curar es de sacengine y queda **NO VERIFICADO**. `RainbowRun` empuja además `flif` (probablemente una bandera de «vida»).
+- [EXE] `sub_42c990` (la llaman `RainbowRun` y `sub_42caf0`) empuja `glo2` y `rnbw` + `ttex`: **confirma** la textura del arco y las partículas `glo2`. `RainbowStart` (0x42d070) empuja `glo2` + `tcst` (partículas del lanzamiento): **confirma**. ~~`prbw` no aparece en ningún `push`: el estallido es de sacengine~~ **Corregido (SPEL `rbow`, 2026-10-24):** el SPEL pone **`tSPK = prbw`** y `fSPa = 255`, y `RainbowRun` → `sub_42cdb0` llama a la rutina común de chispas: **el estallido `prbw` al curar existe en el original.** SPEL completo: `ttex = rnbw`, `tsfx` (valor no textual), `flif = 0,5` (lo lee `RainbowRun`), `tcst = glo2`, `tSPK = prbw`. Sonidos: `rbow` en lazo y `Xcnj` en lazo. `RainbowRun` empuja además `flif` (probablemente una bandera de «vida»).
 
 **Lanzamiento** [SAC 18047-18063]:
 - `heal` (glo2) en las manos.
@@ -236,7 +243,7 @@ Partículas de sacengine que se repiten abajo (mezcla según [SAC dagonBackend.d
 - **Al llegar.** Daño en `damageRange` y prende al blanco (`setAblaze`). Suena `2ifd` = `sfx/pyro/dfi2.wav` (ganancia 4). No hay explosión dibujada en sacengine: el fuego lo pone el blanco que arde.
 - **Siguiente blanco.** El no aliado más cercano a ≤ `effectRange`. Suena otra vez `dfi2.wav`. Si no hay, se va a un punto al azar y, al segundo fallo, se achica y desaparece.
 
-**Sonido.** `sfx/pyro/dfi2.wav` al soltarlo, en cada blanco nuevo y en cada golpe. Hay `dfi1..5.wav`: si el original elige entre ellos, **NO VERIFICADO**.
+**Sonido.** `sfx/pyro/dfi2.wav` al soltarlo, en cada blanco nuevo y en cada golpe. **SPEL `dfir` (2026-10-24):** el original usa **cuatro**: `dfi3` (bandera 1), `dfi2` (bandera 12), **`dfi4` en lazo** (bandera 2: el vuelo) y `dfi5` (bandera 2). Qué evento es cada bandera: **NO VERIFICADO**. SPEL completo: `tmdl = dfir`, `ttex = firy`, `tcst = firy`, `iCHg = 2`; **confirma** la malla y las llamas (`Dragonfire` empuja `dfir` fijo).
 
 **Qué reutilizar del port.**
 - `data/fx/fire.tres` / `fx/firy.png` para la estela y el lanzamiento (con la misma decisión pendiente de 061V b-c: aditivo energía 8, o `firy_a` MIX).
@@ -253,7 +260,7 @@ Partículas de sacengine que se repiten abajo (mezcla según [SAC dagonBackend.d
 
 **Assets.**
 - sacengine dibuja cada roca con la malla `rock` a escala `haloRockSize`/2 = **0,35** (≈0,7 m) [SAC renderer.d:2052-2062; state.d:19067].
-- [EXE] `HaloRockRun` (0x445590) llama a `sub_445110`, que empuja **`roks`**. `roks` (`MODL.WAD!/roks.MRMC`) es otra malla del original: **31 vértices, 90 caras, 1 cuadro**, caja ≈0,77 × 0,61 × 0,61 m, con su textura `M000` (256², piedra gris parda con vetas). A escala 1 mide justo lo que sacengine imita con `rock`×0,35 (el comentario de sacengine en state.d:19067 dice que el 0,7 es provisorio). Lectura probable: **la roca del Halo es `roks`**. **NO VERIFICADO** (falta desensamblar `sub_445110`), pero coinciden la función y el tamaño.
+- [EXE] `HaloRockRun` (0x445590) llama a `sub_445110`, que empuja **`roks`**. `roks` (`MODL.WAD!/roks.MRMC`) es otra malla del original: **31 vértices, 90 caras, 1 cuadro**, caja ≈0,77 × 0,61 × 0,61 m, con su textura `M000` (256², piedra gris parda con vetas). A escala 1 mide justo lo que sacengine imita con `rock`×0,35 (el comentario de sacengine en state.d:19067 dice que el 0,7 es provisorio). **Confirmado (2026-10-24):** `sub_445110` empuja `'roks'` **fijo** (sin clave del SPEL) al cargador de mallas `sub_469230` (el mismo que carga `dfir` y `sbll`). **La roca del Halo es `roks`.** SPEL `halo`: `tcst = dirt`, `iCHg = 1`, `iCH+ = 0`. Sonidos: `halo` (bandera 2), `Xrxp` (bandera 4) y **`hall` en lazo** (bandera 8, `sfx/jams/hall.wav`), que sacengine no usa (probable: el zumbido de la órbita, **NO VERIFICADO**).
 - `HaloRockRun` también llama a `sub_445400` (`push 'dust'`, la estela) y a `sub_439270`. `sub_439270` la usan 6 funciones y empuja `rock`/`tRS1`, `dirt`/`tRS3` y `gscr`/`tRS4`: los restos de piedra, tierra y una **grieta `gscr`** (shawn, `jams.FLDR/scar.FLDR`, SCAR) al romperse la roca. sacengine no dibuja grieta (TODO en SAC 19186).
 - [EXE 0x4458d0 `HaloOfEarthRun`]: `push 'dirt'` (la tierra al emerger). El `rock` que el método viejo le atribuía está en `sub_445b40`, que llama **`MeteorRun`**.
 
@@ -301,11 +308,12 @@ Las texturas las lee `tools/import/import_ui.py` con `fx_catalog.py` (atlas en `
 | `cfx1` | ídem | 256², 4×4 | lanzamiento y estallido de Charnel nivel 2 | Animate Dead (y Slime, 061c) |
 | `swnd` | charlie.wad · `Bloo.WAD!/Stra.FLDR/txtr.FLDR` | 64² | textura del embudo (2 capas según el EXE) | Soul Wind |
 | `sprk` | ídem | 256², 4×4 | chispas al pegar el rayo | Chain Lightning (y Lightning, Storm Giant) |
-| `ltng` | ídem | 256², 4×4 | posible rayo del original (EXE, NO VERIFICADO) | Chain Lightning, Soul Wind, Lightning |
+| `ltng` | ídem | 256², 4×4 | rayo fijo de la rutina común del EXE; el SPEL de Chain Lightning dice `ltn2` (NO VERIFICADO) | Chain Lightning, Soul Wind, Lightning |
 | `rnbw` | main.wad · `MAIN.WAD!/bits.FLDR` | 64² | bandas del arco | Rainbow |
 | `fbal` | ídem | 256², 3×3 | partícula `fireball` de la estela | Dragonfire (y Fireball, Explosion) |
 | `dfir` | models.wad · `MODL.WAD!/dfir.MRMC` (MRMM + `M000`, `M001`) | 97 vért., 5 cuadros | el dragón (shape keys) | Dragonfire (y el renacer del Phoenix) |
-| `roks` | models.wad · `MODL.WAD!/roks.MRMC` (MRMM + `M000`) | 31 vért. | roca del Halo (EXE, probable) | Halo of Earth |
+| `roks` | models.wad · `MODL.WAD!/roks.MRMC` (MRMM + `M000`) | 31 vért. | roca del Halo (EXE, confirmado) | Halo of Earth |
+| `wdst` | charlie.wad · `Bloo.WAD!/Stra.FLDR/txtr.FLDR` | 256², alfa | rastro del remolino (SPEL `ttrl`) | Soul Wind |
 | `scar` | charlie.wad · `Bloo.WAD!/Pyro.FLDR/scar.FLDR` (SCAR) | — | quemadura del rayo (EXE, NO VERIFICADO); sin lector | Chain Lightning |
 | `gscr` | shawn.wad · `shwn.WAD!/jams.FLDR/scar.FLDR` (SCAR) | — | grieta al romperse la roca (EXE, NO VERIFICADO); sin lector | Halo of Earth |
 
@@ -319,11 +327,11 @@ Mallas:
 
 ## Pendientes antes de dibujar (NO VERIFICADO)
 
-1. **Soul Mole.** ¿`BurrowRun` es Soul Mole? ¿El topo es invisible (tierra y surco) o una roca como en sacengine? Desensamblar 0x417f70 (crear la función en Ghidra desde la tabla) o mirar un video.
-2. **Rayo.** ¿`ltng` (rutina común `sub_4355a0`) o `ltn2` (sacengine y port)? Afecta a Chain Lightning, Soul Wind, Lightning y Storm Giant. ¿Qué es la `scar` de `sub_435a60`?
-3. **Halo of Earth.** ¿`roks` a escala 1 (EXE) o `rock` ×0,35 (sacengine)? Desensamblar `sub_445110`.
-4. **Animate Dead.** ¿El original usa partículas `glo2` (EXE) en vez de `cfx1` (sacengine)? ¿Revive al empezar o al terminar el lanzamiento?
-5. **Soul Wind.** ¿Cómo combina las dos capas `swnd` (`ttx1`/`ttx2`)? ¿Qué sonido hace el viento (sacengine pone `fireball` como provisorio)?
-6. **Rainbow.** ¿Existe el estallido `prbw` al curar? No aparece en el EXE.
+1. ~~Soul Mole~~ **Resuelto:** es `DecomposeStart` (SPEL `dcmp`); el topo es la malla `rock` visible. `BurrowRun` es otro hechizo.
+2. **Rayo.** ¿`ltng` (fijo en la rutina común `sub_4355a0`) o `ltn2` (SPEL de Chain Lightning, sacengine y port)? Afecta a Chain Lightning, Soul Wind, Lightning y Storm Giant. ¿Qué es la `scar` de `sub_435a60`?
+3. ~~Halo of Earth~~ **Resuelto:** `roks` a escala 1 (empuje fijo al cargador de mallas).
+4. **Animate Dead.** `cfx1` **confirmado** (SPEL `tcst`/`tSPK`). Abierto: qué dibuja el `glo2` fijo con bandera de oscurecer, y si revive al empezar o al terminar el lanzamiento.
+5. **Soul Wind.** ¿Cómo combina las dos capas `swnd`? El rastro es `wdst` (SPEL). `Xfbl` está en el SPEL (no es provisorio). Abierto: el lazo `shld` (sin archivo) y si `tmod = skul` se usa.
+6. ~~Rainbow: ¿existe el estallido `prbw`?~~ **Resuelto:** sí (SPEL `tSPK = prbw`).
 7. **Fuego** (Dragonfire): ¿`firy` aditivo con energía 8 o el `firy_a` MIX del port? Es la misma decisión de 061V b-c. Se decide con capturas de cámara fija y un criterio numérico.
 8. Ninguna apariencia se confirmó con un video.

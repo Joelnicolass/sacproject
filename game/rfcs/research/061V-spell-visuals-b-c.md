@@ -7,6 +7,7 @@ Investigación de hechos para el arte final de 061b (escudos de nivel 2) y 061c 
 - **[SAC archivo:línea]** sacengine (`sacengine/source/`, GPL, solo lectura). Se describe lo que hace; no se copió código. Si no se nombra el archivo, es `state.d`. sacengine es una reimplementación: las texturas y las mallas las carga de las WAD originales, pero los números de dibujo (energía, transparencia, cantidad de partículas) son decisiones de su autor. Donde el ejecutable dice otra cosa, se avisa.
 - **[TXTR]** texturas leídas de las WAD de la instalación (`SAC_INSTALL`) con el lector del port (`tools/import/sac_formats/txtr.py`). Se miraron el tamaño, la grilla y el color. Las carpetas reales de la WAD dicen `tex.FLDR` donde sacengine dice `tex_ZERO_.FLDR`.
 - **[EXE 0xDIR]** `Sacrifice.exe` (GOG, sha256 `a53ebb53…abcb`, base 0x400000). Se buscó en `.text` cada `push imm32` cuyo inmediato es una etiqueta de 4 letras (los tags se guardan al revés: `push 'hsap'` = `pash`). **Reatribuido el 2026-10-24 (método de 061V d-e):** el comienzo de cada función sale de la tabla de funciones con nombre de **0x4cbba8** (272 entradas, ver 061R) **más** todos los destinos de `call rel32` (E8) del `.text`. Cada etiqueta cae así en su función real (con nombre o `sub_XXXXXX`), y se sigue quién llama a esa función. La primera versión asignaba cada etiqueta a la entrada con nombre anterior, y cuatro atribuciones estaban mal (Skin of Stone, Ethereal Form, Protective Swarm y Grasping Vines: abajo). Una etiqueta prueba que el original usa ese recurso en esa función, pero no prueba qué dibuja. No se leyeron instrucciones con REA/Ghidra; no quedó ningún Ghidra corriendo.
+- **[SPEL]** **Agregado el 2026-10-24 (método de 061V f-g).** El registro SPEL de cada hechizo (`spells.wad`) trae una tabla de sonidos `[bandera][' '/'!'][etiqueta]` (`!` = lazo) y una tabla de recursos clave/valor (`ttex`, `tcst`, `tsha`, …). El EXE lee cada recurso con `0x4502e0(spel, clave, valor_por_defecto)`: **las etiquetas que empuja el EXE son valores por defecto y el SPEL las pisa.** Precedencia nueva: SPEL > EXE (por defecto) > sacengine. Las fichas corregidas lo dicen en un bloque «SPEL».
 - **[DOC]** manual oficial (`MANUAL.PDF` de la instalación, texto extraído). **[WEB]** guía polaca de gry-online.pl (páginas de hechizos por dios). No se vieron videos: ninguna afirmación de este informe sale de una captura.
 - **[PORT]** código y datos del port (`game/…`).
 - Precedencia: EXE/datos > sacengine > manual > web. Lo que no se pudo confirmar dice **NO VERIFICADO**.
@@ -221,11 +222,12 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 - 30 `shard` nacen en la caja ×1,05 con velocidad horizontal unitaria hacia afuera y 3 m/s hacia arriba. Miden 0,75·max(1, ∛vol), viven 31 ticks y caen con gravedad.
 - Sonido `breakingIce` (`Xice`: `sfx/stra/ish1..4.wav`).
 
-**El EXE no coincide con la textura:**
-- **Reatribuido:** `push 'icec'` + `ttex` (0x42178e, junto a `falf`, probablemente un alfa) está en `sub_421700`, que llama **`FreezeSpellRun`** (0x42183f); no en `FreezeSpellInterrupt`. `FreezeSpellRun` empuja además `shrd` + `tsha` (los fragmentos) e `inum`. `FreezeSpellStart` empuja `tcst` (partícula del lanzamiento).
-- En el Freeze **no aparece `frez`**: el original solo empuja `frez` en `sub_413f00` (la llama `SilverbackAbility`, 0x414145) y en `FrozenGroundStart` (0x422490).
-- `icec` (charlie, Stra/txtr, 128²) es hielo más claro y lechoso que `frez`.
-- Conclusión: el bloque del hechizo Freeze del original usa **`icec`** (la única textura que carga la rutina del hechizo, con un parámetro de alfa al lado), y `frez` es del Silverback y de Frozen Ground. Queda **NO VERIFICADO** solo que `icec` vaya en el cubo y no en otra pieza, porque no se leyeron instrucciones. Recomendación: usar `icec`; importar `frez` solo para Frozen Ground.
+**SPEL `frez` (corregido 2026-10-24).** `ttex = frez`, `falf = 192`, `tsha = shrd`, `tbrk = shat`, `tsfx` (valor no textual), `inum = 48`, `tcst = cst0`, `fCHs = 0,25`. Sonidos: `frz3` (`sfx/stra/frz3.wav`) y `Xice` (`ish1..4`).
+- El EXE (`sub_421700` ← `FreezeSpellRun`) lee `ttex` con **`icec` como valor por defecto**, y `falf` con 128 por defecto. El SPEL pone **`frez`** y **192**. La conclusión anterior («el bloque usa `icec`») estaba mal: **el bloque del Freeze usa `frez`, como sacengine**, con alfa 192/255 (≈0,75 de opacidad, bandera alfa `0x0a011008`; sacengine pone transparencia 0,2: **NO VERIFICADO** cuál de los dos números es el que se ve).
+- Fragmentos: `tsha` = `shrd`, `inum` = 48 (`FreezeSpellRun` 0x4217c0; sacengine tira 30).
+- `tbrk = shat`: no hay ningún recurso `shat` en las WAD (ni TXTR ni MRMM). Qué es: **NO VERIFICADO** (¿efecto de rotura con nombre?).
+- Lanzamiento: `tcst = cst0` (coincide con sacengine).
+- `frez` es la textura del Freeze **y** del Silverback y Frozen Ground la cargan en otras claves (Frozen Ground usa `icec` en el suelo, ver 061V f-g).
 
 **Qué reutilizar del port.**
 - `scenes/units/afflictions/frozen.gd` ya hace la duración, el deshielo y los fragmentos (`data/fx/freeze_shards.tres`).
@@ -233,7 +235,7 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 - Ese mismo cambio arregla al Yeti (Icy Breath), que en sacengine dibuja el mismo bloque (mismo efecto `Freeze`).
 - El cubo es un `BoxMesh` en la escena, con un `StandardMaterial3D` sin sombreado y en mezcla alfa. No hace falta Blender.
 
-**Qué falta.** Importar `icec` y `frez` (Stra/txtr) como texturas de malla (`EXTRA_FX` en `import_ui.py`, igual que `scri`/`aura`).
+**Qué falta.** Importar `frez` (Stra/txtr) como textura de malla (`EXTRA_FX` en `import_ui.py`). `icec` ya está en el port (061b) pero **no** es la del Freeze.
 
 ### Grasping Vines (`eniv`, Persephone)
 
@@ -253,6 +255,8 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 - **Sonido.** `toor` = `sfx/pers/root.wav` (ganancia 4) al agarrar; `dafr` = `sfx/pers/rfad.wav` (ganancia 2) al soltar.
 
 **El EXE** [EXE 0x42c2f0 `GraspingVinesRun`]: `push 'vine'` + `ttex` (0x42c33c), `tsfx`, y `dirt` + `tdrt` (0x42c425). Confirma la textura y la tierra. **Corrección:** `fbal` + `tcld` y `glo2` están en `sub_42c460`, que llama **`HealingAuraRun`** (0x42c5f3): son de Healing Aura, no de las lianas. Las lianas no tienen resplandor.
+
+**SPEL `vine` (2026-10-24).** `ttex = vine`, `tsfx` (valor no textual), `tdrt = dirt`, `tcst = cst1`. Sonidos: `root` (bandera 4), `rfad` (bandera 16) y `clod` (bandera 2; `sfx/pers/clod.wav`). **Confirma** `vine`, la tierra `dirt` y el lanzamiento `cst1` de sacengine. `clod` no lo usa sacengine: cuándo suena, **NO VERIFICADO**.
 
 **Qué reutilizar del port.**
 - `scenes/units/afflictions/vined.gd` ya hace la duración, la crecida y el encogido en 1 s, y el rechazo a voladores.
@@ -286,6 +290,8 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 
 **El EXE** [EXE 0x4258a0 `ChainsOfFireRun`, el nombre interno]. No hay `push` de etiqueta, ni en la función ni en sus auxiliares (`sub_425bf0` … `sub_426340`, que comparte con Dragonfire y Wraithwind). No contradice.
 
+**SPEL `fpar` (2026-10-24).** `ttex = firy`, `tcst = firy`, `iCHg = 2`. Sonidos: `flam` (bandera 2), `Xfir` en lazo (`sfx/comn/flp1..5`, bandera 2), `Xfrd` (bandera 16, `frd1..2`) y `frrl` en lazo (bandera 4, `sfx/pyro/frrl.wav`). **Confirma** `firy` para los anillos. **Nuevo:** el original tiene un lazo propio de los anillos, `frrl.wav`, además del lazo de fuego `Xfir`; sacengine solo usa `flp5`.
+
 **Qué reutilizar del port.** `fx/firy.png` (aditivo) o `firy_a.png` (MIX), con un `ParticleType` nuevo (`ring_of_fire`: 0,5 m, delay 1). Otra opción es que un emisor dispare ráfagas de 30 en anillo con velocidad hacia un punto, local al cuerpo.
 
 **Divergencia del plan.** El plan proponía «3 TorusMesh con material aditivo». El original **no** usa toros: son anillos de sprites `firy` que se cierran hacia los pies. Para el arte final hay que cambiar ese nodo del árbol de 061c.
@@ -301,7 +307,8 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 - `lth2` (misma carpeta): 256², atlas 4×4 de gotas y salpicaduras verdes con alfa.
 - `cfx1` (misma carpeta): atlas del segundo nivel del lanzamiento de Charnel.
 - [EXE 0x432550 `LethargyRun`]: `push 'lthg'` + `ttex` (0x4327e3) y `push 'lth2'` + `tgoo` (0x432817), más `TXTR` y `PARA`. **Confirmado**: el original usa las dos texturas.
-- [EXE `sub_432400`, la llama `LethargyRun` en 0x4325ce]: `push 'cst0'` + `tcst` (partícula del lanzamiento) y `lthg` + `ttex`. Lectura probable: el lanzamiento del original usa **`cst0`**, no el `cfx1` de sacengine. **NO VERIFICADO** (podría ser la bola que cae). `cfx1` no aparece en el Slime: solo en `sub_433b90` ← Wailing Wall.
+- [EXE `sub_432400`, la llama `LethargyRun` en 0x4325ce]: `push 'cst0'` + `tcst` (partícula del lanzamiento) y `lthg` + `ttex`. ~~Lectura probable: el lanzamiento usa `cst0`~~ **Corregido (SPEL):** `cst0` es solo el valor por defecto de `tcst`; el SPEL `leth` pone **`tcst = cfx1`**, como sacengine.
+- **SPEL `leth` (2026-10-24).** `ttex = lthg`, `tcst = cfx1`, `tSPK = lth2`, `tgoo = lth2`, `iSP+ = 0`. Sonido: `Xfrx` (bandera 20). `tSPK`/`iSP+` son las claves de la rutina común de chispas (`0x438e30`, por defecto `sprk`, 64 partículas, tamaño 2, aditiva): en el Slime esa ráfaga es de **`lth2`** y con `iSP+ = 0` **no es aditiva** (la salpicadura de baba de sacengine coincide).
 - Ninguna está importada.
 - El archivo en la instalación se llama `Daniel.wad`, con mayúscula. La tabla del importador hoy escribe los nombres en minúscula; en un disco que distingue mayúsculas hay que usar el nombre real.
 
@@ -310,7 +317,7 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 - **Avance.** El progreso avanza 1/`castingTime` por tick (≈74 ticks) y sigue aunque el mago ya terminó de lanzar.
 - **Crece arriba.** Hasta el 85 % del progreso, la bola crece de 0 a 1 quieta **10 m sobre el centro** del cuerpo.
 - **Cae.** Del 85 % al 100 %, cae en línea recta hasta el centro (≈11 ticks).
-- **Lanzamiento del mago.** Partículas `castCharnel2` (cfx1, aditivas, energía 5), 2 por mano y por tick, en direcciones al azar. El EXE sugiere `cst0` en su lugar (ver Assets).
+- **Lanzamiento del mago.** Partículas `castCharnel2` (cfx1, aditivas, energía 5), 2 por mano y por tick, en direcciones al azar. El SPEL confirma `cfx1`.
 
 **Impacto y mientras dura** [SAC 10753-10764, 17730-17786; renderer.d:1441-1452, 1798-1822]:
 - **Al tocar.**
@@ -342,14 +349,14 @@ Todo lo de esta tabla lo lee `tools/import/import_ui.py` con `fx_catalog.py` (lo
 |---|---|---|---|---|
 | `shld` | charlie.wad · `Bloo.WAD!/Stra.FLDR/txtr.FLDR` | 256², 4×2 | textura de la burbuja (sacengine; el EXE no la empuja) | Air Shield |
 | `pash` | ídem | 256², 4×4 | destellos aditivos | Air Shield |
-| `icec` | ídem | 128² | bloque de hielo (probable según el EXE); posible textura de la burbuja (EXE) | Freeze, Air Shield |
-| `frez` | ídem | 128² | bloque de hielo de sacengine; en el EXE es del Silverback y de Frozen Ground | Frozen Ground (no Freeze) |
+| `icec` | ídem | 128² | **no** es del Freeze ni de Air Shield (valor por defecto del EXE que el SPEL pisa); es el suelo de Frozen Ground | — (061f) |
+| `frez` | ídem | 128² | bloque de hielo (SPEL `frez`: `ttex = frez`) | Freeze |
 | `pswm` | charlie.wad · `Bloo.WAD!/Char.FLDR/tex.FLDR` | 256², 4×4 | bichos | Protective Swarm |
 | `vine` | charlie.wad · `Bloo.WAD!/Pers.FLDR/tex.FLDR` | 64² | lianas | Grasping Vines (y después Vinewall) |
 | `cst1` | main.wad · `MAIN.WAD!/bits.FLDR` | 256², 4×4 | lanzamiento de Persephone de nivel 2 | Grasping Vines |
 | `lthg` | Daniel.wad · `DanC.WAD!/char.FLDR` | 128² | bola y cuerpo bañado | Slime |
 | `lth2` | ídem | 256², 4×4 | salpicadura y goteo | Slime |
-| `cfx1` | ídem | 256², 4×4 | lanzamiento de Charnel de nivel 2 (sacengine; el EXE sugiere `cst0`) | Slime |
+| `cfx1` | ídem | 256², 4×4 | lanzamiento de Charnel de nivel 2 (SPEL `leth`: `tcst = cfx1`) | Slime |
 
 Ya están en el port: `firy`, `firy_a`, `glo2`, `cst0`, `cst0_a`, `shrd`, `rock`, `dirt`, `flao` y todos los sonidos nombrados arriba (`assets/original/audio/sfx/…`; los tags de sacengine se leen al revés: `ksts` → `stsk.wav`).
 
@@ -360,11 +367,11 @@ Mallas:
 
 ## Pendientes antes de dibujar (NO VERIFICADO)
 
-1. **Freeze.** Casi resuelto (reatribución): la rutina del hechizo (`sub_421700` ← `FreezeSpellRun`) carga `icec`; `frez` es del Silverback y de Frozen Ground. Usar `icec`.
+1. **Freeze.** **Resuelto por el SPEL:** el bloque usa `frez` (el `icec` del EXE es el valor por defecto). Abierto: alfa 192/255 (SPEL) contra transparencia 0,2 (sacengine), y qué es `tbrk = shat`.
 2. ~~Skin of Stone: `quk1`/`mud1`~~ **Resuelto** (reatribución): son de Wall of Spikes (`sub_446fb0` ← `SpikeWallStart`).
 3. ~~Ethereal Form: `forb`/`flao`~~ **Resuelto** (reatribución): son de Flash Orb (`FlashOrbRun`). Manda sacengine.
 3b. **Air Shield.** ¿`icec` (lo empuja la función del escudo) o `shld` (sacengine; el EXE no lo empuja) para la burbuja? Captura de cámara fija. ¿Para qué usa `ProtectiveSwarmStart` el `fb_g`?
 4. **Grasping Vines.** `fbal`/`glo2` **resuelto** (reatribución): son de Healing Aura. Sigue abierto qué extremo de `vine` queda en la raíz.
-4b. **Slime.** ¿Partículas del lanzamiento `cst0` (EXE, `sub_432400`) o `cfx1` (sacengine)?
+4b. ~~Slime: `cst0` o `cfx1`~~ **Resuelto por el SPEL:** `cfx1`.
 5. **Fuego** (Fireform, Rings of Fire): ¿aditivo con energía 8 como el original, o el `firy_a` MIX que ya usa el port? Se decide con capturas de cámara fija y un criterio numérico.
 6. Ninguna apariencia se confirmó con un video. El manual y la guía confirman la forma general: piedra, minitornado, enjambre, bloque de hielo, lianas que salen del suelo, anillo de fuego que late y bola de baba que cubre al blanco.

@@ -97,7 +97,7 @@ grep -v '/debug_log\.gd' "$OUT/C14.txt" > "$OUT/C14b.txt"; mv "$OUT/C14b.txt" "$
 
 # C15: content nodes built with .new() in code (allowlist: pools, buses, planters, previews).
 xargs grep -nE '[A-Z][A-Za-z0-9]*(3D|2D|Player|Timer|Light|Camera)[A-Za-z0-9]*\.new\(' < "$OUT/all.txt" 2>/dev/null \
-	| grep -vE '(Transform|Basis|Vector|Plane|Color)[A-Za-z0-9]*\.new\(' \
+	| grep -vE '(Transform|Basis|Vector|Plane|Color|Texture)[A-Za-z0-9]*\.new\(' \
 	| grep -vE '^scenes/[a-z_/]*/(fx_bus|sound_bus|fx_light_layer|mesh_planter|patch_planner|grass_field|npc_spawn)\.gd:' \
 	| grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C15.txt" || true
 

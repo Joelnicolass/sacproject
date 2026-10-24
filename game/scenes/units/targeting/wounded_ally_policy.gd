@@ -21,7 +21,7 @@ func accepts(body: UnitBody, node: Variant, explicit: bool) -> bool:
 
 func pick(body: UnitBody, center: Vector3, within: float) -> Node3D:
 	var attack := GameData.ability(body.type.ranged_attack_tag) if body.type else null
-	var reach := attack.cast_range if attack else 0.0
+	var reach := attack.cast_range_m if attack else 0.0
 	var found := _most_wounded(body, center, minf(reach, within))
 	if found == null:
 		found = _most_wounded(body, center, minf(body.type.sight_range if body.type else 0.0, within))

@@ -95,7 +95,7 @@ static func fill_by_tag(type: CreatureType, abilities: Array) -> PackedFloat32Ar
 	acc[RATE_ABILITY] = 0.0
 	for ability: AbilityType in abilities:
 		if ability != null:
-			ability_acc(acc, float(ability.amount2), ability.cast_range, float(ability.mana_cost), float(ts["melee_accuracy"]), float(ts["ranged_accuracy"]), float(ts["mana"]), float(ts["fly"]))
+			ability_acc(acc, float(ability.amount2), ability.cast_range_m, float(ability.mana_cost), float(ts["melee_accuracy"]), float(ts["ranged_accuracy"]), float(ts["mana"]), float(ts["fly"]))
 	return acc
 
 
@@ -110,11 +110,11 @@ static func fill_from_object(ts: Dictionary, current_mana: int, abilities: Array
 	for ability: AbilityType in abilities:
 		if ability == null or (ability.flags1 & 0x4000) == 0 or (ability.flags & 4) == 0:
 			continue
-		ability_acc(acc, float(ability.amount2), ability.cast_range, float(ability.mana_cost), float(ts["melee_accuracy"]), float(ts["ranged_accuracy"]), mana_f, float(ts["fly"]))
+		ability_acc(acc, float(ability.amount2), ability.cast_range_m, float(ability.mana_cost), float(ts["melee_accuracy"]), float(ts["ranged_accuracy"]), mana_f, float(ts["fly"]))
 	for spell: SpellType in spells:
 		if spell == null or (spell.flags1 & 0xfc00) == 0:
 			continue
-		var t := float(spell.amount2) * spell.cast_range
+		var t := float(spell.amount2) * spell.cast_range_m
 		var f := AiField.safediv(float(spell.mana_cost), mana_f) if mana_f > float(spell.mana_cost) else 1.0
 		t *= (1.0 - f)
 		t *= ABILITY_K

@@ -32,7 +32,7 @@ spell = ExtResource("2_spell")
 counts_as_shield = false
 cast_type = ExtResource("3_cast")
 look = NodePath("Look")
-grow_ticks = 30
+grow_s = 0.5
 look_scale = Vector3(1.9, 1.45, 1.9)
 
 [node name="Look" type="Node3D" parent="."]

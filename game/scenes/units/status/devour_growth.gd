@@ -25,8 +25,9 @@ extends Node
 @export var first_increment := 0.25
 @export var increment_keep := 0.75
 @export var increment_add := 125.0
-## Regeneration per second is increment/this (updateFPS).
-@export var regeneration_ticks := 60.0
+## The increment heals over this long: regeneration per second goes up by increment / regeneration_over_s.
+## Ref: state.d:13138-13163 (increment / updateFPS).
+@export_range(1.0, 600.0, 0.0001, "suffix:s") var regeneration_over_s := 60.0
 @export var resistance_step := 0.9
 @export_group("Bulk")
 ## bulk target = 2 − bulk_step^n
@@ -99,7 +100,7 @@ func grow(souls: int, from := "") -> void:
 	for _i in souls:
 		health.raise_maximum(health_per_soul)
 		_increment = first_increment * health.maximum if _increment < 0.0 else increment_keep * _increment + increment_add
-		_extra += _increment / regeneration_ticks
+		_extra += _increment / regeneration_over_s
 		_resistance *= resistance_step
 		shown += 1
 	if DebugLog.on(&"devour"):

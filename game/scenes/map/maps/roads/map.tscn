@@ -58,6 +58,8 @@
 [ext_resource type="Texture2D" path="res://scenes/map/maps/roads/flora/pyro_groundcover_4.png" id="fd_pyro_groundcover_4"]
 [ext_resource type="PackedScene" path="res://scenes/map/terrain/ground_scars.tscn" id="ground_scars"]
 [ext_resource type="PackedScene" path="res://scenes/map/terrain/hole_walls.tscn" id="hole_walls"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/roads/ground_roles.png" id="62_roles"]
+[ext_resource type="Texture2D" path="res://assets/original/maps/roads/light.png" id="62_light"]
 
 [node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
@@ -81,6 +83,8 @@ material_override = ExtResource("11_ground")
 script = ExtResource("2_terrain")
 shape = NodePath("Shape")
 missing = NodePath("Missing")
+ground_roles = ExtResource("62_roles")
+light_map = ExtResource("62_light")
 
 [node name="Shape" type="Node" parent="Terrain"]
 script = ExtResource("shape_script")

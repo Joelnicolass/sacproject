@@ -15,16 +15,24 @@ extends Node
 
 
 
-## Ticks of the revival (creatureStats.reviveTime 5 s · 60 / 2 when fast).
-@export var revive_ticks := 150
-## It climbs while the timer is under this (reviveTime / 2 in the original's tick count: 150 / 2).
-@export var rise_ticks := 75
-## Meters it climbs in rise_ticks (creatureStats.reviveHeight).
+## How long the revival lasts.
+## Ref: creatureStats.reviveTime 5 s / 2 when fast.
+@export_range(0.0166, 30.0, 0.0001, "suffix:s") var revive_s := 2.5
+## It climbs while the timer is under this.
+## Ref: reviveTime / 2 in the original's tick count (150 / 2).
+@export_range(0.0166, 30.0, 0.0001, "suffix:s") var rise_s := 1.25
+## Meters it climbs in rise_s (creatureStats.reviveHeight).
 @export var rise_height := 2.0
-## Turns it makes in revive_ticks (fast: 2π).
+## Turns it makes in revive_s (fast: 2π).
 @export var turns := 1.0
 ## Fraction of its maximum health it comes back with (fastRevive: all of it).
 @export_range(0.0, 1.0) var health_fraction := 1.0
+
+## revive_s and rise_s in ticks (what the timer counts).
+var revive_ticks: int:
+	get: return MatchClock.ticks_for(revive_s)
+var rise_ticks: int:
+	get: return MatchClock.ticks_for(rise_s)
 
 var _body: UnitBody
 var _soul: Soul

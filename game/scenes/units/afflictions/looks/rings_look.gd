@@ -12,8 +12,8 @@ extends Node3D
 @export var affliction: Affliction
 @export var body: Node3D
 @export_group("Rings")
-## A ring is born every this many ticks, and with chance 1 in `extra_chance` on any tick.
-@export_range(1, 200) var every_ticks := 25
+## A ring is born every this long, and with chance 1 in `extra_chance` on any tick.
+@export_range(0.0166, 4.0, 0.0001, "suffix:s") var every_s := 0.4166
 @export_range(1, 500) var extra_chance := 50
 ## Height of a ring over the body's box (a fraction of it; above 1 is over the head) and how long it takes to close.
 @export var height_range := Vector2(0.4, 1.2)
@@ -51,7 +51,7 @@ func _on_shown(on: bool) -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if _tick % every_ticks == 0 or _rng.randi() % extra_chance == 0:
+	if _tick % maxi(1, MatchClock.ticks_for(every_s)) == 0 or _rng.randi() % extra_chance == 0:
 		_spawn(true)
 	_tick += 1
 

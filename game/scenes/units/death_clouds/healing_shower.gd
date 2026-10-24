@@ -11,7 +11,7 @@ const _HEAL := preload("res://scenes/spells/heal_effect.gd")
 
 
 func _affect(center: Vector3) -> void:
-	for body in bodies_within(center, ability.effect_range):
+	for body in bodies_within(center, ability.effect_range_m):
 		if int(body.get("owner_slot")) != from_slot or _HEAL.heal_full(body, true) == null:
 			continue
 		var health := body.get_node("Health")

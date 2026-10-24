@@ -17,7 +17,7 @@ signal landed(body: Node3D, point: Vector3, index: int)
 ## Hits in total, the first included.
 @export_range(1, 12) var hits := 7
 ## Seconds from a jump leaving to its landing. 0 = the owner drives the chain.
-@export_range(0.0, 5.0, 0.001, "suffix:s") var hop_s := 20.0 / 60.0
+@export_range(0.0, 5.0, 0.0001, "suffix:s") var hop_s := 0.3333
 ## After hit n the search radius is (shrink_steps - n) / shrink_steps of the spell's effect range. 0 = it stays whole.
 @export_range(0, 12) var shrink_steps := 6
 ## Jump to own side (Rainbow) or to whoever is not an ally (Chain Lightning, Dragonfire).
@@ -110,7 +110,7 @@ func add_hit(body: Node3D) -> bool:
 
 ## The body the next jump goes to after `n` hits, from `from_point`, or null.
 func pick_next(from_point: Vector3, n: int) -> Node3D:
-	return ChainPick.next(get_tree(), from_point, radius_for(spell.effect_range, n, shrink_steps), _hit, slot, allies, order)
+	return ChainPick.next(get_tree(), from_point, radius_for(spell.effect_range_m, n, shrink_steps), _hit, slot, allies, order)
 
 
 func _physics_process(_delta: float) -> void:
@@ -141,6 +141,6 @@ func _land() -> void:
 		return
 	var here := _current_at
 	_current = pick_next(here, _count - 1)
-	_current_at = BodyNudge.center(_current) if _current != null else ChainPick.fallback(self, here, _from, spell.effect_range, fallback_limit_min, fallback_drift, _rng)
+	_current_at = BodyNudge.center(_current) if _current != null else ChainPick.fallback(self, here, _from, spell.effect_range_m, fallback_limit_min, fallback_drift, _rng)
 	_from = here
 	_start_hop()

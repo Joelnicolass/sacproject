@@ -83,7 +83,7 @@ func _scenes() -> Dictionary:
 		stalks += 1 if child is Stalk else 0
 	checks["four_stalks"] = stalks == 4
 	zone.free()
-	checks["numbers"] = spell.damage == 500 and spell.duration == 60.0 and spell.effect_range == 60.0 and spell.speed == 30.0 and spell.acceleration == 3.0
+	checks["numbers"] = spell.damage == 500 and spell.duration_s == 60.0 and spell.effect_range_m == 60.0 and spell.speed_m_s == 30.0 and spell.acceleration_m_s2 == 3.0
 	var book := GameData.book("persephone", 9)["spells"] as Array
 	checks["in_persephones_book"] = book.any(func(type: SpellType) -> bool: return type.tag == TAG)
 	checks["not_before_level_8"] = not (GameData.book("persephone", 7)["spells"] as Array).any(func(type: SpellType) -> bool: return type.tag == TAG)
@@ -163,7 +163,7 @@ func _duration() -> Dictionary:
 	var roots := PackedVector3Array([Vector3(30.0, 0.0, 0.0), Vector3(0.0, 0.0, 30.0), Vector3(-30.0, 0.0, 0.0), Vector3(0.0, 0.0, -30.0)])
 	var zone := _zone("Meanstalks", roots, wizard, 30, 0)
 	zone.spell = zone.spell.duplicate()
-	zone.spell.duration = 5.0
+	zone.spell.duration_s = 5.0
 	await _frames(30)
 	zone.release()
 	var active := 0
@@ -176,7 +176,7 @@ func _duration() -> Dictionary:
 		await _frames(1)
 		sinking += 1
 	checks["gone_after_end_s"] = absi(sinking - 192) <= 3
-	checks["data_duration"] = GameData.spell(TAG).duration == 60.0
+	checks["data_duration"] = GameData.spell(TAG).duration_s == 60.0
 	wizard.queue_free()
 	await _frames(2)
 	return _verdict("stalk_duration", checks)

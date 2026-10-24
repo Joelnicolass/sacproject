@@ -8,9 +8,9 @@ tag = "goc@"
 display_name = "Steam Cloud"
 damage = 300
 amount2 = 300
-damage_range = 10.0
-effect_range = 10.0
-duration = 2.0
+damage_range_m = 10.0
+effect_range_m = 10.0
+duration_s = 2.0
 flags = 16415
 args = {
 "ttex": "stem"

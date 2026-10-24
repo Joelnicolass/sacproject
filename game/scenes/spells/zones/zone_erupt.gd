@@ -25,7 +25,7 @@ func _fire(_step: int) -> void:
 	var spell := zone.spell
 	var center := zone.points[0]
 	_show(center)
-	SplashDamage.deal(get_tree(), center, float(spell.damage), spell.damage_range, null, zone.from_slot)
+	SplashDamage.deal(get_tree(), center, float(spell.damage), spell.damage_range_m, null, zone.from_slot)
 	for body in bodies_near(center, throw_range_m):
 		var away := body.global_position - center
 		away.y = 0.0

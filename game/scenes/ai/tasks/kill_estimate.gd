@@ -131,7 +131,7 @@ static func seen_healing(perception: AiPerception, target: AiTrack) -> float:
 ## A body of `side` other than `healer`, not full by what the side knows, within the healer's web burst (effect_range).
 static func _wounded_near(perception: AiPerception, healer: AiTrack, side: Array) -> bool:
 	var attack := GameData.ability((healer.node.get("type") as CreatureType).ranged_attack_tag)
-	var reach := attack.effect_range if attack != null else 0.0
+	var reach := attack.effect_range_m if attack != null else 0.0
 	var at := perception.pos_of(healer)
 	for other: AiTrack in side:
 		if other == healer or not other.is_body() or not AiGroups.alive(other):

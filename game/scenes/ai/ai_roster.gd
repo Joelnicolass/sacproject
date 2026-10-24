@@ -16,8 +16,8 @@ signal seated(slot: int, side: AiSide)
 @export var side_scene: PackedScene
 ## The bench (debug/ai_match) turns it off: it seats its own sides, with its audit and its pause.
 @export var enabled := true
-## Physics frames between the spawn of the wizards and the start of their sides: the wizard settles on the ground first.
-@export var settle_frames := 20
+## Seconds between the spawn of the wizards and the start of their sides: the wizard settles on the ground first.
+@export_range(0.0, 5.0, 0.0001, "suffix:s") var settle_s := 0.3333
 
 ## AiSide by slot, once seated.
 var sides: Dictionary = {}
@@ -61,7 +61,7 @@ func _seat_all(seats: Array[AiSeat]) -> void:
 			"wizard": seat.wizard, "model": wizard_type.model if wizard_type != null else "jnwr", "god": str(seat.god)})
 		wizard_spawner.spawn_slot(seat.slot)
 		placed.append(seat)
-	for _frame in settle_frames:
+	for _tick in MatchClock.ticks_for(settle_s):
 		await get_tree().physics_frame
 	for seat in placed:
 		var wizard := wizard_spawner.pawn_for(seat.slot) as Node3D

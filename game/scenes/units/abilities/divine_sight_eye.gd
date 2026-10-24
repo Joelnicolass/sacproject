@@ -18,7 +18,7 @@ extends Node3D
 ##   velocity it had and never looks again (target = −1).
 ##   It never goes under land + flying height: the velocity is not changed but that step is pushed up (capped at the speed).
 ##   After the rise it lights the terrain sight of its side within the SPEL's effectRange (75 m): SideVision.update_vision, every
-##   refresh_ticks ticks (the cells stay lit for that long).
+##   refresh_s (the cells stay lit for that long).
 ## Ends at the lifetime. It survives the death of the one who cast it.
 ## Divergences (declared): (1) frontOfAIQueue: sacengine looks for the target only on the ticks its creature is at the front of the
 ## side's AI queue; the eye looks every tick. (2) The target is a valid foe by TargetRules.is_valid_foe_of (no stealth, no rock, no
@@ -35,20 +35,25 @@ const GROUP := &"divine_sight_eye"
 
 ## sacengine divineSightFlyingHeight.
 @export var flying_height := 4.0
-## sacengine divineSightNumRisingFrames.
-@export var rising_ticks := 45
-## sacengine updateVision `refresh` = updateFPS / 2: how often the eye lights its cells (they stay lit as long).
-@export var refresh_ticks := 30
+## How long the eye rises before it flies.
+## Ref: sacengine divineSightNumRisingFrames (45 ticks).
+@export_range(0.0333, 10.0, 0.0001, "suffix:s") var rising_s := 0.75
+## How often the eye lights its cells (they stay lit as long).
+## Ref: sacengine updateVision `refresh` = updateFPS / 2.
+@export_range(0.0166, 5.0, 0.0001, "suffix:s") var refresh_s := 0.5
 ## Who may be the target: the moving bodies of sacengine's creature type.
 @export var target_groups: Array[StringName] = [&"wizard", &"unit"]
 ## The sprite (a MeshInstance3D with its own StandardMaterial3D whose uv1_scale is one cell); its alpha follows scale².
 @export var glow: MeshInstance3D
-## Cells of the sprite sheet (scri.png) and the ticks each one stays (sacengine animationDelay 4 x updateAnimFactor 2).
+## Cells of the sprite sheet (scri.png) and how long each one stays (sacengine animationDelay 4 x updateAnimFactor 2 ticks).
 @export var frames_h := 4
 @export var frames_v := 4
-@export var ticks_per_frame := 8
+@export_range(0.0166, 1.0, 0.0001, "suffix:s") var frame_s := 0.1333
 
 
+## rising_s in ticks (the frames count ticks).
+var rising_ticks: int:
+	get: return MatchClock.ticks_for(rising_s)
 var slot := 0
 var ability: AbilityType
 var velocity := Vector3.ZERO
@@ -104,7 +109,7 @@ func _process(_delta: float) -> void:
 	if _material:
 		_material.albedo_color.a = clampf(scale.x * scale.x, 0.0, 1.0)
 		var cells := frames_h * frames_v
-		var cell := posmod(floori(float(Engine.get_physics_frames() - _first_tick) / ticks_per_frame), cells)
+		var cell := posmod(floori(float(Engine.get_physics_frames() - _first_tick) / maxi(1, MatchClock.ticks_for(frame_s))), cells)
 		_material.uv1_offset = Vector3(float(cell % frames_h) / frames_h, float(floori(float(cell) / frames_h)) / frames_v, 0.0)
 
 
@@ -126,7 +131,7 @@ func _physics_process(_delta: float) -> void:
 
 
 func lifetime_ticks() -> int:
-	return rising_ticks + roundi(ability.duration * MatchClock.TICKS_PER_SECOND_F) if ability else rising_ticks
+	return rising_ticks + roundi(ability.duration_s * MatchClock.TICKS_PER_SECOND_F) if ability else rising_ticks
 
 
 ## updateDivineSight: false when the eye is over.
@@ -141,9 +146,9 @@ func _step(at_frame: int) -> bool:
 	var flying := flying_height
 	if target == null and not lost:
 		var travel := frame - rising_ticks
-		if float(travel) * ability.speed < MatchClock.TICKS_PER_SECOND_F * ability.cast_range:
-			velocity = velocity.normalized() * ability.speed
-		elif float(travel - 1) * ability.speed < MatchClock.TICKS_PER_SECOND_F * ability.cast_range:
+		if float(travel) * ability.speed_m_s < MatchClock.TICKS_PER_SECOND_F * ability.cast_range_m:
+			velocity = velocity.normalized() * ability.speed_m_s
+		elif float(travel - 1) * ability.speed_m_s < MatchClock.TICKS_PER_SECOND_F * ability.cast_range_m:
 			velocity = Vector3.ZERO
 		target = _closest_foe()
 		if target and DebugLog.on(&"eye"):
@@ -154,9 +159,9 @@ func _step(at_frame: int) -> bool:
 			var center := box.get_center()
 			flying = box.end.y - _height(center) + 0.5 * flying_height
 			var offset := center - position
-			velocity += offset.normalized() * ability.acceleration
-			if velocity.length() > ability.speed:
-				velocity = velocity.normalized() * ability.speed
+			velocity += offset.normalized() * ability.acceleration_m_s2
+			if velocity.length() > ability.speed_m_s:
+				velocity = velocity.normalized() * ability.speed_m_s
 			if velocity.length() > MatchClock.TICKS_PER_SECOND_F * offset.length():
 				velocity = velocity.normalized() * offset.length() * MatchClock.TICKS_PER_SECOND_F
 		else:
@@ -169,26 +174,26 @@ func _step(at_frame: int) -> bool:
 	if next.y < land + flying:
 		var pushed := velocity
 		pushed.y += (land + flying - next.y) * MatchClock.TICKS_PER_SECOND_F
-		if pushed.length() > ability.speed:
-			pushed = pushed.normalized() * ability.speed
+		if pushed.length() > ability.speed_m_s:
+			pushed = pushed.normalized() * ability.speed_m_s
 		next = position + pushed / MatchClock.TICKS_PER_SECOND_F
 	position = next
-	if _vision and (frame - rising_ticks) % refresh_ticks == 0:
-		_vision.update_vision(slot, position, ability.effect_range)
+	if _vision and (frame - rising_ticks) % maxi(1, MatchClock.ticks_for(refresh_s)) == 0:
+		_vision.update_vision(slot, position, ability.effect_range_m)
 	return float(frame) < lifetime
 
 
 ## The closest enemy creature (or wizard) within the SPEL's range of the eye, or null. Ties keep the first in group order.
 func _closest_foe() -> Node3D:
 	var best: Node3D
-	var best_distance := ability.cast_range
+	var best_distance := ability.cast_range_m
 	for group in target_groups:
 		for node in get_tree().get_nodes_in_group(group):
 			var body := node as Node3D
 			if body == null or not TargetRules.is_valid_foe_of(slot, body):
 				continue
 			var distance := BodyNudge.center(body).distance_to(position)
-			if distance <= ability.cast_range and (best == null or distance < best_distance):
+			if distance <= ability.cast_range_m and (best == null or distance < best_distance):
 				best = body
 				best_distance = distance
 	return best

@@ -115,7 +115,7 @@ func _duration() -> Dictionary:
 		var ward := wards.ward_for(spell)
 		checks[tag + "_started"] = ward.start_for(spell)
 		checks[tag + "_second_refused"] = not ward.start_for(spell)
-		checks[tag + "_ticks"] = absi(ward.ticks_left() - roundi(spell.duration * 60.0)) <= 1 and ward.shown
+		checks[tag + "_ticks"] = absi(ward.ticks_left() - roundi(spell.duration_s * 60.0)) <= 1 and ward.shown
 		if tag == "mrfe":
 			ward.stop("caso")
 	var ward := wards.ward_for(GameData.spell("dlhs"))

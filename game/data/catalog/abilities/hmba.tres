@@ -6,7 +6,7 @@
 script = ExtResource("1_5onl8")
 tag = "hmba"
 display_name = "Manahoar channelling"
-cast_range = 40.0
+cast_range_m = 40.0
 cooldown_s = 1.0
 args = {
 "fbnd": 758.5,

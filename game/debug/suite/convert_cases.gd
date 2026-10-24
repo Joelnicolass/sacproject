@@ -165,7 +165,7 @@ func _check() -> Dictionary:
 	await _frames(2)
 	checks["action_found"] = action != null and spell != null and action.pick == SpellAction.Pick.SOUL
 	checks["action_no_warnings"] = action != null and action._get_configuration_warnings().is_empty()
-	checks["spell_numbers"] = spell != null and is_equal_approx(spell.mana_cost, 800.0) and absf(spell.casting_time_s - 2.2222) < 0.01 and is_equal_approx(spell.cast_range, 20.0)
+	checks["spell_numbers"] = spell != null and is_equal_approx(spell.mana_cost, 800.0) and absf(spell.casting_time_s - 2.2222) < 0.01 and is_equal_approx(spell.cast_range_m, 20.0)
 	checks["no_altar"] = action.arm_status(wizard, spell) == SacrificeSystem.NO_ALTAR
 	var enemy_altar := _altar(2, Vector3(0.0, 0.0, 40.0))
 	checks["enemy_altar_not_enough"] = action.arm_status(wizard, spell) == SacrificeSystem.NO_ALTAR

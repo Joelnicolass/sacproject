@@ -25,4 +25,4 @@ func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:
 	if soul == null:
 		return
 	var spell: SpellType = wizard.convert_spell
-	AiCastQueue.enqueue(wizard.cast_queue, AiCastQueue.make(0, AiField.f32((1.0 - wizard.threat) * w3[2] * profile.convert_score_factor), soul, spell, spell.cast_range, soul))
+	AiCastQueue.enqueue(wizard.cast_queue, AiCastQueue.make(0, AiField.f32((1.0 - wizard.threat) * w3[2] * profile.convert_score_factor), soul, spell, spell.cast_range_m, soul))

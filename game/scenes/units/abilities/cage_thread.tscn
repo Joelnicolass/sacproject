@@ -16,8 +16,8 @@ width = 0.1
 fins = 3
 jitter = 2.5
 segments = 10
-reshape_ticks = 6
-ramp_ticks = 30
+reshape_s = 0.1
+ramp_s = 0.5
 
 [node name="Strand" type="MeshInstance3D" parent="."]
 unique_name_in_owner = true

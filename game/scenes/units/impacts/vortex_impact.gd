@@ -15,7 +15,7 @@ func _affect(shot: Node3D, _target: Node3D, point: Vector3, ability: AbilityType
 	if vortex == null:
 		return
 	if ability:
-		vortex.radius = ability.effect_range
+		vortex.radius = ability.effect_range_m
 	vortex.side = int(shot.get("from_slot"))
 	var before := point - (shot.get("velocity") as Vector3) / float(MatchClock.TICKS_PER_SECOND)
 	shot.get_parent().add_child(vortex)

@@ -16,7 +16,7 @@ extends SpellLaunch
 ## - with a target: velocity += acceleration toward the target's center, capped at the SPEL's speed and at 60 · distance;
 ##   it blows up on the target when the distance (before the step) is under `arrive_distance`.
 ## - then, whatever it does: it blows up on the first live body not of its side its `ShotLook.hit_size` box touches, on the
-##   land from `ground_grace_ticks` of life, and at `life_ticks` (duration 35 s · 60) with no target.
+##   land from `ground_grace_s` of life, and at `life_s` (the SPEL duration, 35 s) with no target.
 ## - free ones look for a target (closestNonAllyInRange, 28825): the closest non-ally creature or wizard within
 ##   effectRange (50 m), alive, targetable, in sight, that no other rock chases.
 ## Blowing up = the SPEL's amount as direct spell damage to the body it hit (haloRockExplosion, 19076-19100).
@@ -56,9 +56,9 @@ const GROUP := &"halo_of_earth"
 ## A rock chasing its target blows up under this distance.
 @export var arrive_distance := 0.25
 ## Ticks of life before a rock may blow up on the land (the original: frame ≥ 60 / 1.75, so 35).
-@export var ground_grace_ticks := 35
+@export_range(0.0, 10.0, 0.0001, "suffix:s") var ground_grace_s := 0.5833
 ## Ticks of life of a rock (SPEL duration 35 s · 60); at the next it blows up.
-@export var life_ticks := 2100
+@export_range(0.0, 600.0, 0.0001, "suffix:s") var life_s := 35.0
 ## The line of sight starts at least this high over the land (a newborn rock is buried).
 @export var los_lift := 0.5
 ## FxBus type played where a rock is born.
@@ -114,7 +114,7 @@ var _ended := false
 func setup(body: Node3D, type: AbilityType, rock_spawner: Node) -> void:
 	user = body
 	ability = type if type else GameData.ability(spell_tag)
-	_set_numbers(float(ability.damage), ability.speed, ability.acceleration, ability.effect_range)
+	_set_numbers(float(ability.damage), ability.speed_m_s, ability.acceleration_m_s2, ability.effect_range_m)
 	spawner = rock_spawner
 	_born = MatchClock.now()
 	_who = AbilityEffect.who(body)
@@ -127,8 +127,8 @@ func setup(body: Node3D, type: AbilityType, rock_spawner: Node) -> void:
 ## The wizard's halo: the cast started. The rocks come out as the casting goes on and wait for `release` to look for targets.
 func begin_cast(caster: Node3D, spell: SpellType, _target: Node3D, _point: Vector3, cast_ticks: int) -> void:
 	user = caster
-	_set_numbers(float(spell.damage), spell.speed, spell.acceleration, spell.effect_range)
-	life_ticks = MatchClock.ticks_for(spell.duration)
+	_set_numbers(float(spell.damage), spell.speed_m_s, spell.acceleration_m_s2, spell.effect_range_m)
+	life_s = spell.duration_s
 	spawner = ShotSpawner.of(get_tree())
 	_born = MatchClock.now()
 	_who = AbilityEffect.who(caster)
@@ -288,11 +288,11 @@ func _update(rock: Rock, center: Vector3) -> bool:
 	if hit != null:
 		_explode(rock, hit, "choque")
 		return false
-	if rock.age >= ground_grace_ticks and _under_land(rock.position):
+	if rock.age >= MatchClock.ticks_for(ground_grace_s) and _under_land(rock.position):
 		_explode(rock, null, "suelo")
 		return false
 	rock.age += 1
-	if rock.age > life_ticks:
+	if rock.age > MatchClock.ticks_for(life_s):
 		_explode(rock, null, "vida")
 		return false
 	return true

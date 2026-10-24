@@ -12,9 +12,9 @@ extends Node3D
 ## - the wave is at waveLoc = wave_range · (frame / 60) / wave_s (1,667 m per frame, float32 as sacengine);
 ## - while stun_min < waveLoc < stun_max (frames 1 to 5), every moving body of `groups`, any side (wizards too, the user
 ##   if it stood there), whose hit box is within waveLoc + 0,1 and whose feet are, seen from above, farther than stun_min
-##   and within `band`·wave_range / (wave_s · 60) (2,5 m) of the wave takes Stunned.stun_with_cooldown(cooldown_ticks).
+##   and within `band`·wave_range / (wave_s · 60) (2,5 m) of the wave takes Stunned.stun_with_cooldown(cooldown_s).
 ##   No damage;
-## - the effect ends when the frame goes past total_frames (30): the node is freed on frame 31.
+## - the effect ends when the frame goes past life_s (30 ticks): the node is freed on frame 31.
 ## The stun is each body's Afflictions/Stunned (canStun, its own cooldown): a stunned one is skipped by it.
 ##
 ## Deviations (declared): the land does not bend (sacengine Quake.displacement is a render effect); the look is
@@ -29,10 +29,12 @@ extends Node3D
 @export var stun_max := 10.0
 ## The band the wave stuns, in frames of travel: 1,5 (sacengine 1.5·waveRange/(waveDur·updateFPS) = 2,5 m).
 @export var band := 1.5
-## sacengine stunCooldownFrames = 8·updateFPS.
-@export var cooldown_ticks := 480
-## sacengine totalFrames = int(waveDur·updateFPS + 0.5).
-@export var total_frames := 30
+## How long a stunned body cannot be stunned again.
+## Ref: sacengine stunCooldownFrames = 8·updateFPS.
+@export_range(0.0, 60.0, 0.0001, "suffix:s") var cooldown_s := 8.0
+## How long the wave lasts.
+## Ref: sacengine totalFrames = int(waveDur·updateFPS + 0.5).
+@export_range(0.0, 10.0, 0.0001, "suffix:s") var life_s := 0.5
 ## sacengine movingObjects: creatures and wizards (buildings are not stunned).
 @export var groups: Array[StringName] = [&"wizard", &"unit"]
 ## The path of the Stunned state under each body.
@@ -75,7 +77,7 @@ func begin() -> void:
 	if DebugLog.on(&"quake"):
 		var at := global_position
 		print("onda %s en (%.3f, %.3f, %.3f) alcance %.1f m %.2f s aturde de %.1f a %.1f m banda %.3f m por %d (cuadro %d)" % [
-			label, at.x, at.y, at.z, wave_range, wave_s, stun_min, stun_max, band_meters(), cooldown_ticks, _born])
+			label, at.x, at.y, at.z, wave_range, wave_s, stun_min, stun_max, band_meters(), MatchClock.ticks_for(cooldown_s), _born])
 
 
 func _physics_process(_delta: float) -> void:
@@ -84,8 +86,9 @@ func _physics_process(_delta: float) -> void:
 	var frame := MatchClock.now() - _born
 	if frame <= _last_frame:
 		return
+	var last := MatchClock.ticks_for(life_s)
 	for f in range(_last_frame + 1, frame + 1):
-		if f > total_frames:
+		if f > last:
 			_end(f)
 			return
 		_step(f)
@@ -131,7 +134,7 @@ func _stun(body: Node3D) -> String:
 	var stunned := body.get_node_or_null(stunned_path) as Stunned
 	if stunned == null:
 		return "sin Stunned"
-	if stunned.stun_with_cooldown(cooldown_ticks):
+	if stunned.stun_with_cooldown(MatchClock.ticks_for(cooldown_s)):
 		return "aturdido"
 	return "sin efecto, enfriamiento %d" % stunned.cooldown_ticks() if stunned.cooldown_ticks() > 0 else "sin efecto"
 

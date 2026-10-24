@@ -36,8 +36,8 @@ signal casting_changed(on: bool)
 @export_group("Look")
 ## What is drawn. Optional: empty = no look.
 @export var look: Node3D
-## The look grows from nothing to the body's box (and back) over these ticks.
-@export var grow_ticks := 15
+## The look grows from nothing to the body's box (and back) over this long.
+@export_range(0.0, 5.0, 0.0001, "suffix:s") var grow_s := 0.25
 ## Size of the look over the body's box, per axis. Zero = the look keeps its own size and only shows or hides.
 @export var look_scale := Vector3.ONE * 1.4
 ## While on, the body is drawn as stone (Afflictions owns that look; this only says the ward wants it).
@@ -98,7 +98,7 @@ func _on_cast_fx(type_name: String) -> void:
 
 ## Server (or solo): the ward of a SPEL for its duration. The one place the formula lives.
 func start_for(type: SpellType) -> bool:
-	return start(ticks_for_seconds(type.duration if type else 20.0))
+	return start(ticks_for_seconds(type.duration_s if type else 20.0))
 
 
 static func ticks_for_seconds(seconds: float) -> int:
@@ -173,7 +173,7 @@ func _show(on: bool) -> void:
 		look.scale = Vector3.ONE * 0.01
 		look.visible = true
 	_tween = look.create_tween()
-	_tween.tween_property(look, "scale", full if on else Vector3.ONE * 0.01, grow_ticks / MatchClock.TICKS_PER_SECOND_F)
+	_tween.tween_property(look, "scale", full if on else Vector3.ONE * 0.01, grow_s)
 	if not on:
 		_tween.tween_callback(look.hide)
 

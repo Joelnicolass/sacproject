@@ -10,8 +10,8 @@ signal puffed(at: Vector3)
 
 ## FxBus type (res://data/fx/<name>.tres).
 @export var type_name := ""
-## 2/60 s matches the old one puff every 2 render frames at 60 fps.
-@export_range(0.005, 1.0, 0.001, "suffix:s") var interval_s := 2.0 / 60.0
+## Time between two puffs (as one puff every 2 render frames at 60 fps did).
+@export_range(0.005, 1.0, 0.0001, "suffix:s") var interval_s := 0.0333
 ## Off: no puffs and the clock waits (a Rock still rising out of the ground).
 @export var emitting := true
 ## Puffs owed after a hitch beyond this many are dropped.

@@ -29,7 +29,7 @@ func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D,
 	aim.target = resolve_target(wizard, spell, picked)
 	if aim.target == null:
 		aim.status = BAD_TARGET
-	elif wizard.global_position.distance_to(aim.target.global_position) > spell.cast_range:
+	elif wizard.global_position.distance_to(aim.target.global_position) > spell.cast_range_m:
 		aim.status = OUT_OF_RANGE
 	return aim
 
@@ -73,7 +73,7 @@ static func projectile_data(wizard: Node3D, spell: SpellType, from: Vector3, tar
 		"target": str(target.get_path()) if target else "",
 		"caster": str(wizard.get_path()),
 		"slot": int(wizard.get("owner_slot")),
-		"speed": spell.speed,
-		"acceleration": spell.acceleration,
+		"speed": spell.speed_m_s,
+		"acceleration": spell.acceleration_m_s2,
 		"damage": float(spell.damage),
 	}

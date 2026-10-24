@@ -21,10 +21,12 @@ extends AbilityEffect
 @export var clip_index := 0
 ## sacengine Pull.pullSpeed (m/s).
 @export var pull_speed := 16.5
-## sacengine Pull.numPullFrames: the window after a pull in which the target is pulled along.
-@export var pull_ticks := 25
-## sacengine stunCooldownFrames: the stun cooldown of the first pull.
-@export var stun_ticks := 480
+## The window after a pull in which the target is pulled along.
+## Ref: sacengine Pull.numPullFrames (25 ticks).
+@export_range(0.0, 5.0, 0.0001, "suffix:s") var pull_s := 0.4166
+## The stun cooldown of the first pull.
+## Ref: sacengine stunCooldownFrames (480 ticks).
+@export_range(0.0, 60.0, 0.0001, "suffix:s") var stun_s := 8.0
 ## sacengine Pull.minThreadLength: it ends when the target's box is this close to the user's center.
 @export var min_thread := 3.0
 ## sacengine: with this many pulls done it ends at the end of the clip loop.
@@ -45,7 +47,7 @@ func status(_target_pos: Vector3, target: Node3D) -> String:
 		return ActiveAbility.BAD_TARGET
 	if not applicable(target):
 		return ActiveAbility.BAD_TARGET
-	if user.global_position.distance_to(target.global_position) > ability.cast_range:
+	if user.global_position.distance_to(target.global_position) > ability.cast_range_m:
 		return ActiveAbility.OUT_OF_RANGE
 	return ""
 

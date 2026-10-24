@@ -23,7 +23,7 @@ size = Vector3(110, 5, 5)
 script = ExtResource("1_wall")
 spell = ExtResource("3_spell")
 body = NodePath("Body")
-grow_ticks = 240
+grow_s = 4.0
 rise_s = 0.5
 vanish_s = 1.0
 
@@ -38,7 +38,7 @@ only_while_standing = true
 core_fraction = 0.4
 cooldown_s = 6.0
 spell_damage_on_touch = true
-stun_cooldown_ticks = 480
+stun_cooldown_s = 8.0
 slow_factor = 0.5
 slow_s = 6.0
 pace_source = &"wall_spikes"

@@ -22,7 +22,7 @@ enum Mode { PATROL, ORBIT }
 ## PATROL: it looks for a new place when it is this close to the one it flies to, and picks one up to `hop_m` along the wall.
 @export_range(0.5, 20.0, 0.5, "suffix:m") var arrive_m := 5.0
 @export_range(1.0, 60.0, 1.0, "suffix:m") var hop_m := 20.0
-@export_range(1.0, 600.0, 1.0) var trail_ticks := 90
+@export_range(0.0166, 10.0, 0.0001, "suffix:s") var trail_s := 1.5
 @export_range(0.5, 20.0, 0.5, "suffix:s") var fade_s := 4.0
 ## ORBIT: turns a second and the gap between it and the body's box, in metres.
 @export_range(0.1, 4.0, 0.05) var turns_per_s := 1.0
@@ -72,7 +72,7 @@ func _process(delta: float) -> void:
 	if _trail.is_empty():
 		_here = _orbit() if mode == Mode.ORBIT else _pick(0.0, true)
 		_going = _pick(WallRules.along(_here, wall.center, wall.direction)) if mode == Mode.PATROL else _here
-		_trail.resize(trail_ticks)
+		_trail.resize(maxi(1, MatchClock.ticks_for(trail_s)))
 		_trail.fill(_here)
 	_owed += delta * MatchClock.TICKS_PER_SECOND_F
 	while _owed >= 1.0:

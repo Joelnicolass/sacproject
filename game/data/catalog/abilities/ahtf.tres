@@ -7,6 +7,6 @@ script = ExtResource("1_fq6q2")
 tag = "ahtf"
 display_name = "Firefist Passive"
 mana_cost = 10
-cast_range = 100.0
+cast_range_m = 100.0
 cooldown_s = 1.25
 casting_time_s = 0.0741

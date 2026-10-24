@@ -266,7 +266,7 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 			if zone == null:
 				print("match_shots: no ground zone alive; view skipped")
 				return
-			look = zone.global_position + Vector3.UP * 1.0
+			look = _over_land(zone.global_position + Vector3.UP * 1.0, 1.0)
 			var toward_zone := (focus - zone.global_position) * Vector3(1.0, 0.0, 1.0)
 			spot = _clear_spot(look, toward_zone.normalized() if toward_zone.length() > 0.1 else Vector3.BACK)
 		"cloud":
@@ -487,17 +487,27 @@ func _report_bolts() -> void:
 
 
 ## A camera point `zone_m` from `look` and `zone_up_m` above it: the bearing closest to `toward` (then every 45 degrees around) from which a ray
-## to `look` meets nothing (an altar or a tower between them hides the zone).
+## to `look` meets nothing (an altar or a tower between them hides the zone). The point is never under the ground as it is now: a mound that
+## rose over the zone (Volcano) lifts it to `up` above the land under it.
 func _clear_spot(look: Vector3, toward: Vector3, distance := zone_m, up := zone_up_m, seen := Vector3.INF) -> Vector3:
 	var space := camera.get_world_3d().direct_space_state
 	var target := look + Vector3.UP * 3.0 if seen == Vector3.INF else seen
-	var spot := look + toward * distance + Vector3.UP * up
+	var spot := _over_land(look + toward * distance + Vector3.UP * up, up)
 	for step in 8:
 		var bearing := toward.rotated(Vector3.UP, TAU * float(step + 1 >> 1) / 8.0 * (1.0 if step % 2 == 0 else -1.0))
-		var candidate := look + bearing * distance + Vector3.UP * up
+		var candidate := _over_land(look + bearing * distance + Vector3.UP * up, up)
 		var hit := space.intersect_ray(PhysicsRayQueryParameters3D.create(candidate, target, 0xFFFFFFFF))
 		if hit.is_empty():
 			return candidate
+	return spot
+
+
+## `spot` raised to `margin` above the land (with its displacement) under it.
+func _over_land(spot: Vector3, margin: float) -> Vector3:
+	var shape := TerrainShape.of(self)
+	var ground := shape.height_at(spot.x, spot.z) if shape != null else NAN
+	if not is_nan(ground):
+		spot.y = maxf(spot.y, ground + margin)
 	return spot
 
 

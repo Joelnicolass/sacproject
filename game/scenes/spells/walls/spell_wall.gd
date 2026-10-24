@@ -2,24 +2,22 @@
 class_name SpellWall
 extends SpellProjectile
 
-## A wall a wizard raises on the ground (Firewall, Wall of Spikes, Wailing Wall, Vinewall, Fence): it is centred on the click and runs
-## across the line from the wizard to it. Both ends grow outwards while he casts and stop at `effect_range`, at a building or at the edge
-## of the land. It rises, stands for the spell's `duration` and sinks. The children say what it does (WallTouch hurts what is inside,
-## FencePosts and FenceZap are the Fence, the rest is the look). It does not hurt, slow or draw anything itself. The server (or solo)
-## grows the ends and decides when it ends; `age`, `left`, `right` and `vanish_at` are replicated and every peer derives the height
-## (`top()`) from them. Its size is the `Body` shape: x the whole reach, y the height, z the thickness.
+## A wall a wizard raises on the ground (Firewall, Wall of Spikes, Wailing Wall, Vinewall, Fence), centred on the click and across the
+## line from the wizard to it. Both ends grow out while he casts and stop at `effect_range_m`, a building or the edge of the land; it
+## rises, stands for the spell's `duration_s` and sinks. Its children say what it does; it does not hurt, slow or draw anything itself.
+## The server (or solo) grows the ends and ends it; `age`, `left`, `right`, `vanish_at` are replicated, every peer derives `top()`.
 
-## Its `effect_range` is how far each end may go, its `duration` how long the wall stands.
+## Its `effect_range_m` is how far each end may go, its `duration_s` how long the wall stands.
 @export var spell: SpellType
-## The wall's box: size.y is the height it rises to, size.z the thickness, size.x the whole reach (2 * effect_range, to show it).
+## The wall's box: size.y is the height it rises to, size.z the thickness, size.x the whole reach (2 * effect_range_m, to show it).
 @export var body: CollisionShape3D
-## Ticks the ends take to reach `effect_range` when nothing stops them.
-@export_range(1, 3600) var grow_ticks := 240
+## Time the ends take to reach `effect_range_m` when nothing stops them.
+@export_range(0.0166, 60.0, 0.0001, "suffix:s") var grow_s := 4.0
 @export_range(0.0, 10.0, 0.05, "suffix:s") var rise_s := 2.0
 @export_range(0.0, 10.0, 0.05, "suffix:s") var vanish_s := 1.0
 ## Seconds the wall stays after it sank (Wailing Wall's spirits fade out over 4 s).
 @export_range(0.0, 10.0, 0.05, "suffix:s") var linger_s := 0.0
-## An end may go this far beyond `effect_range` (Fence).
+## An end may go this far beyond `effect_range_m` (Fence).
 @export_range(0.0, 5.0, 0.1, "suffix:m") var reach_slack_m := 0.0
 ## The clock starts when the casting time is over, not when the cast begins (Fence).
 @export var starts_when_armed := false
@@ -42,6 +40,8 @@ var from_slot := 0
 var left_stopped := false
 var right_stopped := false
 var _ended := false
+var grow_ticks: int:  # grow_s in ticks: what the parts compare `age` against
+	get: return MatchClock.ticks_for(grow_s)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -89,7 +89,7 @@ func thickness_m() -> float:
 	return (body.shape as BoxShape3D).size.z if body != null and body.shape is BoxShape3D else 0.0
 
 func reach_m() -> float:
-	return spell.effect_range if spell != null else 0.0
+	return spell.effect_range_m if spell != null else 0.0
 
 
 func rise_ticks() -> int:
@@ -141,7 +141,7 @@ func _physics_process(_delta: float) -> void:
 		return
 	if multiplayer.is_server():
 		WallGround.grow(self)
-		if vanish_at < 0 and age >= grow_ticks + MatchClock.ticks_for(spell.duration):
+		if vanish_at < 0 and age >= grow_ticks + MatchClock.ticks_for(spell.duration_s):
 			vanish_at = age
 		if vanish_at >= 0 and age - vanish_at >= vanish_ticks() + MatchClock.ticks_for(linger_s):
 			_ended = true

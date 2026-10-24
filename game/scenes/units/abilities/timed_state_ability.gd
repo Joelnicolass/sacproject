@@ -26,7 +26,7 @@ func status(_target_pos: Vector3, _target: Node3D) -> String:
 func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 	if not _has_authority():
 		return false
-	_until = MatchClock.now() + roundi(maxf(ability.duration, min_duration_s) * MatchClock.TICKS_PER_SECOND)
+	_until = MatchClock.now() + roundi(maxf(ability.duration_s, min_duration_s) * MatchClock.TICKS_PER_SECOND)
 	if user.has_method(body_setter):  # dynamic: the setter is data (body_setter, set in the scene)
 		user.call(body_setter, true)
 	FxBus.broadcast(fx, user.global_position + Vector3.UP * fx_height)

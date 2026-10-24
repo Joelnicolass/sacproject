@@ -22,8 +22,8 @@ enum Motion { SOUL_TRIP, GUIDED, FALL, HUNT }
 enum Phase { WAITING, CASTING, FLYING, SHRINKING, HOLDING, LINGERING, STRIKING, LEAVING }
 
 @export var motion := Motion.SOUL_TRIP
-## SOUL_TRIP: ticks of the trip (the same each way), how far it bends to the side (a part of the distance to the soul).
-@export_range(4, 3600, 4) var roundtrip_ticks := 540
+## SOUL_TRIP: time of the trip (half each way), how far it bends to the side (a part of the distance to the soul).
+@export_range(0.0666, 60.0, 0.0001, "suffix:s") var roundtrip_s := 9.0
 @export_range(0.0, 2.0, 0.05) var bend := 0.75
 @export_flags_3d_physics var ground_mask := 1
 @export_group("Guided")

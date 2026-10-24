@@ -54,7 +54,7 @@ func _physics_process(_delta: float) -> void:
 		ticks = synced_ticks
 		_spiral = null
 	if _spiral == null:
-		_spiral = BoreSpiral.new(Vector2(zone.points[0].x, zone.points[0].z), zone.spell.effect_range, scribe_speed * zone.spell.speed / MatchClock.TICKS_PER_SECOND_F)
+		_spiral = BoreSpiral.new(Vector2(zone.points[0].x, zone.points[0].z), zone.spell.effect_range_m, scribe_speed * zone.spell.speed_m_s / MatchClock.TICKS_PER_SECOND_F)
 		_spiral.skip(ticks - 1)
 	place = _spiral.advance()
 	if _spiral.arrived or zone.cancelled:

@@ -55,7 +55,7 @@ func _physics_process(_delta: float) -> void:
 
 
 func _shield_allies() -> void:
-	var radius := ability.effect_range if ability else 30.0
+	var radius := ability.effect_range_m if ability else 30.0
 	var origin := BodyNudge.center(user)
 	var slot := int(user.get("owner_slot"))
 	var ticks := shield_ticks()

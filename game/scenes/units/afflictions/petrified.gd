@@ -9,8 +9,9 @@ extends Affliction
 ## The end (updatePetrification, 23732-23764): the stun cooldown is cleared and damageStun knocks it down with 4 s of
 ## cooldown (Stunned.knock); 32 rocks burst from its box.
 
-## sacengine damageStunCooldownFrames = 4·updateFPS.
-@export var knock_cooldown_ticks := 240
+## How long the body cannot be stunned again after it is knocked down.
+## Ref: sacengine damageStunCooldownFrames = 4·updateFPS.
+@export_range(0.0, 60.0, 0.0001, "suffix:s") var knock_cooldown_s := 4.0
 ## Knocked down when it ends. Optional: empty = it just stands up.
 @export var stunned: Stunned
 ## Its body_height() puts the rocks at the middle of the body.
@@ -77,7 +78,7 @@ func _end() -> void:
 	_afflictions().mark(self, false)
 	print("%s deja de ser piedra (cuadro %d)" % [_body_name(), MatchClock.now()])
 	if stunned:
-		stunned.knock(knock_cooldown_ticks)
+		stunned.knock(MatchClock.ticks_for(knock_cooldown_s))
 	_burst_rocks()
 
 

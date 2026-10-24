@@ -15,7 +15,7 @@ extends ZonePulse
 @export_range(0.0, 300.0, 0.5, "suffix:m") var stun_max_m := 75.0
 ## Half the width of the stunned band, in ticks of travel of the ring.
 @export_range(0.5, 10.0, 0.1) var band := 1.5
-@export var cooldown_ticks := 480
+@export_range(0.0, 60.0, 0.0001, "suffix:s") var cooldown_s := 8.0
 ## The path of the Stunned state under each body.
 @export var stunned_path := NodePath("Afflictions/Stunned")
 
@@ -40,4 +40,4 @@ func _fire(step: int) -> void:
 		if flat > stun_min_m and absf(flat - loc) < half_band_m():
 			var stunned := body.get_node_or_null(stunned_path) as Stunned
 			if stunned != null:
-				stunned.stun_with_cooldown(cooldown_ticks)
+				stunned.stun_with_cooldown(MatchClock.ticks_for(cooldown_s))

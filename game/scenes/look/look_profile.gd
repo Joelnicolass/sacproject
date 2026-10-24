@@ -23,7 +23,7 @@ extends Resource
 @export_group("Ground and plants")
 ## The original's flat ground (atlas, edge and light map): what the terrain wears when `ground` is empty.
 @export var ground_classic: ShaderMaterial
-## PBR ground layers by zone, slope and height.
-@export var ground: GroundSet
+## The god's four kinds of ground (open, earth, rock, path), laid on each map's ground roles.
+@export var ground: GodGround
 ## The stylized grass around the camera.
 @export var grass: GrassSet

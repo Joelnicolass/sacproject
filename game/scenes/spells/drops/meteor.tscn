@@ -36,5 +36,5 @@ interval_s = 0.0167
 script = ExtResource("blast")
 drop = NodePath("..")
 bursts = Array[ExtResource("ptype")]([ExtResource("hit"), ExtResource("dirt")])
-stun_ticks = 480
+stun_s = 8.0
 ground_marks = Array[PackedScene]([ExtResource("mark_gscr"), ExtResource("mark_ecrk")])

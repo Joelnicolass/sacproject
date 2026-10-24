@@ -59,6 +59,7 @@ Regla del usuario: lo que se ve, se mueve o se mide en el juego es un nodo en un
 | C19 | Un `.tres` de `data/` no guarda posiciones: eso es un nodo. | archivos `.tres` en `data/` con `*_offset/_position/_origin/_transform/_pos`, `position*`, `offsets`, `origin`, `transform`, `Transform3D(`. `debug/` se informa aparte (`info:`), no sube el listón | `roughness_offset` |
 | C20 | Un radio de lugar o de efecto es un `CollisionShape3D`, no un número de `MatchRules`. | `@export` `*_radius/_height/_distance` en `scenes/match/match_rules.gd` | ninguna |
 | C21 | Una referencia es un tipo (`PackedScene`, `Resource`), no una ruta en texto. | `@export_file` en `scenes/` | ninguna |
+| C22 | Un tiempo que edita un humano va en segundos (`_s`); la simulación lo pasa a ticks con `MatchClock.ticks_for`. | `@export` con `_ticks` o `frames` en el nombre, en `scenes/` (`@export_storage` no cuenta) | `scenes/ui/`, `scenes/net/`, celdas de atlas (`h_frames`, `v_frames`, `frames_h`, `frames_v`, `frames_per_s`), resync de red (`resync_ticks`) |
 
 Antes y después (C16 + C15):
 

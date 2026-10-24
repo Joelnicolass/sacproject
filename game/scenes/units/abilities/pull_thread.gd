@@ -5,18 +5,18 @@ extends Node3D
 ## from the user's shot position to the center of the target, growing out of the user over the first 20 frames
 ## (renderCord(start, (1 − α) · start + α · end), α = frame / numShootFrames) and following both bodies after that. The web
 ## is a straight cord (`jitter` 0); the cage is a lightning bolt that changes its shape every 6 frames (changeShape, 5126-5136)
-## with LightningBolt, spread by `jitter` meters and grown from nothing to full over `ramp_ticks`.
+## with LightningBolt, spread by `jitter` meters and grown from nothing to full over `ramp_s`.
 ## One event (FxBus.broadcast_scene, one RPC): params `user` and `target` (node paths, the bodies have the same path on every
-## peer), `seed` (the shapes) and `grow_ticks`. It ends with the bit of the user's Pulling (replicated), or when a body is
-## gone; `wait_ticks` covers the clients whose bit arrives after the event. Presentation only, never headless, drawn in MIX
+## peer), `seed` (the shapes) and `grow_ticks` (the network sends ticks; `grow_s` without it). It ends with the bit of the user's Pulling (replicated), or when a body is
+## gone; `wait_s` covers the clients whose bit arrives after the event. Presentation only, never headless, drawn in MIX
 ## (alpha blend, never additive).
 ## WORKAROUND: the textures of the original (TXTR `cord`, `ltng`) are not in the exporter's atlases (tools/import/fx_catalog.py):
 ## a flat color stands in until `texture_tag` has an atlas.
 ## Divergences (declared): the web / cage mesh around the target is not drawn; the cage's shape does not reset at each pull
 ## (the clients do not see the pull ticks): one ramp from the start.
 
-## Ticks the thread takes to reach the target (sacengine Pull.numShootFrames).
-@export var grow_ticks := 20
+## Time the thread takes to reach the target (sacengine Pull.numShootFrames, 20 ticks).
+@export_range(0.0, 5.0, 0.0001, "suffix:s") var grow_s := 0.3333
 ## Half width of each fin (m).
 @export var width := 0.06
 ## Flat fins crossing along the thread: 2 = a cross, 3 = the bolts' 120 degree fins.
@@ -24,16 +24,16 @@ extends Node3D
 ## 0 = a straight cord. > 0: a bolt of `segments` pieces whose inner points leave the axis up to this many meters.
 @export var jitter := 0.0
 @export_range(2, 32) var segments := 10
-## The bolt takes a new shape every this many ticks (sacengine changeShapeDelay 6).
-@export var reshape_ticks := 6
-## The bolt grows from nothing to its full spread over this many ticks (sacengine boltScaleGrowth 2 per second).
-@export var ramp_ticks := 30
+## The bolt takes a new shape every this long (sacengine changeShapeDelay 6 ticks).
+@export_range(0.0166, 2.0, 0.0001, "suffix:s") var reshape_s := 0.1
+## The bolt grows from nothing to its full spread over this long (sacengine boltScaleGrowth 2 per second).
+@export_range(0.0, 5.0, 0.0001, "suffix:s") var ramp_s := 0.5
 ## Texture tag of the atlas (FxAtlas). Empty or missing: the material's color.
 @export var texture_tag := ""
-## It frees itself when the user's Pulling was not seen on within this many ticks (a bit that never arrives).
-@export var wait_ticks := 30
-## ... and in any case after this many ticks.
-@export var max_life_ticks := 2400
+## It frees itself when the user's Pulling was not seen on within this long (a bit that never arrives).
+@export_range(0.0, 10.0, 0.0001, "suffix:s") var wait_s := 0.5
+## ... and in any case after this long.
+@export_range(0.0, 600.0, 0.0001, "suffix:s") var max_life_s := 40.0
 
 @onready var _strand: MeshInstance3D = %Strand
 
@@ -45,6 +45,7 @@ var _mesh: ImmediateMesh
 var _bolt: LightningBolt
 var _rng: RandomNumberGenerator
 var _shape_slot := -1
+var _grow_ticks := 0
 
 
 ## FxBus.broadcast_scene: starts the thread. Nothing happens without both bodies.
@@ -52,7 +53,7 @@ func play(params: Dictionary) -> void:
 	var root := get_tree().root
 	_user = root.get_node_or_null(NodePath(str(params.get("user", "")))) as Node3D
 	_target = root.get_node_or_null(NodePath(str(params.get("target", "")))) as Node3D
-	grow_ticks = int(params.get("grow_ticks", grow_ticks))
+	_grow_ticks = int(params.get("grow_ticks", MatchClock.ticks_for(grow_s)))
 	if _user == null or _target == null:
 		queue_free()
 		return
@@ -79,18 +80,19 @@ func _process(_delta: float) -> void:
 	var pulling := Pulling.of(_user) if is_instance_valid(_user) else null
 	if pulling != null and pulling.is_on():
 		_seen = true
-	elif _seen or now - _born > wait_ticks:
+	elif _seen or now - _born > MatchClock.ticks_for(wait_s):
 		queue_free()
 		return
-	if now - _born > max_life_ticks or not is_instance_valid(_user) or not is_instance_valid(_target):
+	if now - _born > MatchClock.ticks_for(max_life_s) or not is_instance_valid(_user) or not is_instance_valid(_target):
 		queue_free()
 		return
 	var start := _origin()
-	var reach := clampf(float(now - _born) / maxf(1.0, float(grow_ticks)), 0.0, 1.0)
+	var reach := clampf(float(now - _born) / maxf(1.0, float(_grow_ticks)), 0.0, 1.0)
 	var end := start.lerp(BodyNudge.center(_target), reach)
-	var ramp := clampf(float(now - _born) / maxf(1.0, float(ramp_ticks)), 0.0, 1.0)
-	if _bolt != null and now / maxi(1, reshape_ticks) != _shape_slot:
-		_shape_slot = now / maxi(1, reshape_ticks)
+	var ramp := clampf(float(now - _born) / maxf(1.0, float(MatchClock.ticks_for(ramp_s))), 0.0, 1.0)
+	var reshape := maxi(1, MatchClock.ticks_for(reshape_s))
+	if _bolt != null and now / reshape != _shape_slot:
+		_shape_slot = now / reshape
 		_bolt.change_shape(_rng, jitter, ramp)
 	_rebuild(start, end, ramp)
 

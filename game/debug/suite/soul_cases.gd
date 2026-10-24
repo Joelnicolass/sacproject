@@ -64,7 +64,7 @@ func _scenes() -> Dictionary:
 			checks[tag + "_kind_in_spawner"] = carrier is SpellCarrier
 			if carrier is SpellCarrier:
 				var pulse := carrier.get_node("Pulse") as CarrierPulse
-				checks[tag + "_reach_is_effect_range"] = absf(pulse.radius_m() - spell.effect_range) < 0.01
+				checks[tag + "_reach_is_effect_range"] = absf(pulse.radius_m() - spell.effect_range_m) < 0.01
 				checks[tag + "_pulse_ok"] = pulse._get_configuration_warnings().is_empty()
 				checks[tag + "_fetch_ok"] = (carrier.get_node("Fetch") as SoulFetch)._get_configuration_warnings().is_empty()
 				var wind: bool = tag == "dnws"

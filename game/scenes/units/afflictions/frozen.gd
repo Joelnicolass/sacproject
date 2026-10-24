@@ -22,8 +22,9 @@ extends Affliction
 const _HEALTH := preload("res://scenes/components/health.gd")
 ## The duration uses plain floats (RFC-036e): it may differ by one tick from sacengine (a Trogg 1251, not 1250).
 
-## sacengine maxFreezeCooldown = 10·updateFPS (state.d:10709).
-@export var max_cooldown_ticks := 600
+## The longest time a frozen body cannot be frozen again.
+## Ref: sacengine maxFreezeCooldown = 10·updateFPS (state.d:10709).
+@export_range(0.0166, 60.0, 0.0001, "suffix:s") var max_cooldown_s := 10.0
 ## freeze: a creature lasts creature_k / max health · the SPEL duration (s).
 @export var creature_k := 1000.0
 ## freeze: a wizard lasts wizard_factor · the SPEL duration (s).
@@ -104,7 +105,7 @@ func _try(spell: SpellType, from_slot: int, log_roll: bool) -> bool:
 		if not passes:
 			return false
 	var done := freeze(spell, from_slot)
-	_cooldown = max_cooldown_ticks
+	_cooldown = MatchClock.ticks_for(max_cooldown_s)
 	set_physics_process(true)
 	return done
 
@@ -137,7 +138,7 @@ func freeze(spell: SpellType, from_slot: int) -> bool:
 ## · SPEL duration (state.d:10701-10702).
 func lifetime_ticks(body: Node3D, spell: SpellType) -> int:
 	var health := _afflictions().health
-	return cc_ticks(body.is_in_group(&"wizard"), health.maximum if health else 0.0, spell.duration, creature_k, wizard_factor)
+	return cc_ticks(body.is_in_group(&"wizard"), health.maximum if health else 0.0, spell.duration_s, creature_k, wizard_factor)
 
 
 ## canBeFrozen = canBeImmobilized (state.d:189-198, 204): Petrified's.
@@ -155,7 +156,7 @@ func _can_cc() -> bool:
 func _roll() -> int:
 	if _rng == null:
 		_rng = MatchSeed.rng(["freeze", String(_body().name)])
-	return int(_rng.randi() % maxi(1, max_cooldown_ticks))
+	return int(_rng.randi() % maxi(1, MatchClock.ticks_for(max_cooldown_s)))
 
 
 ## Server only: on from the first try until the cooldown ran out, the ice ended and the shards flew.

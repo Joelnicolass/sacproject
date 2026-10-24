@@ -35,7 +35,7 @@ extends AbilityEffect
 func status(target_pos: Vector3, target: Node3D) -> String:
 	if ability == null or user == null:
 		return ActiveAbility.BAD_TARGET
-	if user.global_position.distance_to(_aim_point(target_pos, target)) > ability.cast_range:
+	if user.global_position.distance_to(_aim_point(target_pos, target)) > ability.cast_range_m:
 		return ActiveAbility.OUT_OF_RANGE
 	return ""
 
@@ -57,10 +57,10 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 	for index in shots:
 		## getShotDirectionWithGravity: a zero offset stays a zero direction (offset.length == 0 ? offset : normalized).
 		var direction := offset.normalized() if offset.length_squared() > 0.0 else offset
-		direction.y += 0.5 * falling * offset.length() / (ability.speed * ability.speed)
+		direction.y += 0.5 * falling * offset.length() / (ability.speed_m_s * ability.speed_m_s)
 		direction = ShotAim.scatter(direction, accuracy, rng)
 		direction += spread * _uniform_direction(rng)
-		var velocity := direction * ability.speed
+		var velocity := direction * ability.speed_m_s
 		var shot := spawner.spawn_shot({
 			"tag": tag,
 			"x": origin.x, "y": origin.y, "z": origin.z,
@@ -95,11 +95,11 @@ func _aim_point(target_pos: Vector3, target: Node3D) -> Vector3:
 	if not _is_foe(target):
 		return target_pos
 	var center := BodyNudge.center(target)
-	if ability == null or ability.speed <= 0.0 or not target is CharacterBody3D:
+	if ability == null or ability.speed_m_s <= 0.0 or not target is CharacterBody3D:
 		return center
 	var moving := (target as CharacterBody3D).velocity
 	moving.y = 0.0
-	return center + moving * (user.global_position.distance_to(center) / ability.speed)
+	return center + moving * (user.global_position.distance_to(center) / ability.speed_m_s)
 
 
 ## A live body of another side: the only kind a lob aims at (an ally is the ground).

@@ -29,7 +29,7 @@ func _spirits() -> Dictionary:
 	var zone := _zone("DemonicRift", PackedVector3Array([wizard.global_position]), wizard, 0, 0, Vector3(28.0, 0.0, 0.0))
 	var spawner := zone.get_node("Spirits") as RiftSpawner
 	spawner.max_spirits = 6
-	checks["open_ended"] = zone.open_ended and spell.effect_range == 75.0 and spell.damage == 500 and spell.speed == 18.0
+	checks["open_ended"] = zone.open_ended and spell.effect_range_m == 75.0 and spell.damage == 500 and spell.speed_m_s == 18.0
 	zone.release()
 	var spawned_at: Array[int] = []
 	var seen := 0

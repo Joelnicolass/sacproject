@@ -52,7 +52,7 @@ func _rock_line() -> String:
 	var rock := GameData.spell(_ROCK)
 	if rock == null:
 		return "Rock: sin datos"
-	return "%s %d maná alcance %s cooldown %s s" % [rock.display_name, rock.mana_cost, _number(rock.cast_range), _number(rock.cooldown_s)]
+	return "%s %d maná alcance %s cooldown %s s" % [rock.display_name, rock.mana_cost, _number(rock.cast_range_m), _number(rock.cooldown_s)]
 
 
 func _wizards_line() -> String:

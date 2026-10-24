@@ -18,11 +18,11 @@ const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 @export_group("Fire")
 @export var ignites := false
 ## The fire a reached body keeps (no damage of its own: the damage is the blast's) and the sprite it puffs.
-@export_range(0, 600) var burn_ticks := 60
+@export_range(0.0, 10.0, 0.0001, "suffix:s") var burn_s := 1.0
 @export var burn_look: ParticleType
 @export_group("Stun")
 ## Bodies the blast only splashed (not the one it ended on) are stunned for this long (0 = no stun).
-@export_range(0, 3600) var stun_ticks := 0
+@export_range(0.0, 60.0, 0.0001, "suffix:s") var stun_s := 0.0
 @export var stunned_path := NodePath("Afflictions/Stunned")
 
 
@@ -41,10 +41,10 @@ func blast(body: Node3D, at: Vector3) -> void:
 	SplashDamage.deal(get_tree(), at, drop.damage, drop.damage_range, body if live else null, slot, Health.SPLASH_SPELL, mods)
 	for hit in SplashDamage.bodies_within(get_tree(), at, drop.damage_range):
 		if ignites:
-			Burning.ignite(hit, 0.0, burn_ticks, Health.DIRECT_SPELL, slot, 0.0, false, burn_look.bus_name() if burn_look != null else "")
-		var stunned := hit.get_node_or_null(stunned_path) as Stunned if stun_ticks > 0 and hit != body else null
+			Burning.ignite(hit, 0.0, MatchClock.ticks_for(burn_s), Health.DIRECT_SPELL, slot, 0.0, false, burn_look.bus_name() if burn_look != null else "")
+		var stunned := hit.get_node_or_null(stunned_path) as Stunned if stun_s > 0.0 and hit != body else null
 		if stunned != null:
-			stunned.stun_with_cooldown(stun_ticks)
+			stunned.stun_with_cooldown(MatchClock.ticks_for(stun_s))
 	for type in bursts:
 		FxBus.broadcast(type.bus_name(), at)
 	for mark in ground_marks:

@@ -13,7 +13,7 @@ var _hit := {}
 
 func _fire(step: int) -> void:
 	var center := zone.points[0]
-	var max_m := zone.spell.effect_range
+	var max_m := zone.spell.effect_range_m
 	var inner := ZoneRules.ring_radius(step, count, max_m)
 	var outer := ZoneRules.ring_radius(step + 1, count, max_m)
 	if shards != null:

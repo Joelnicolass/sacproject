@@ -123,7 +123,7 @@ func flush() -> void:
 		if refusal.is_empty() and can_cast.is_valid():
 			refusal = str(can_cast.call(track, spell, target, entry["point"]))
 		## the target may have walked out of reach meanwhile (the Caster would answer «Fuera de alcance»)
-		var reach := float(spell.get("cast_range")) if spell is SpellType else 0.0
+		var reach := float(spell.get("cast_range_m")) if spell is SpellType else 0.0
 		var aim_ok := target == null or can_aim(target)
 		var in_reach := aim_ok and (target == null or not target.is_valid() or reach <= 0.0 \
 				or wizard.global_position.distance_to(target.node.global_position) <= reach)

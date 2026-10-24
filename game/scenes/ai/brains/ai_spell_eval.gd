@@ -74,7 +74,7 @@ static func rating_fn(spell: SpellType) -> int:
 			return FN_NONE
 	var f1 := spell.flags1
 	if f1 & 0x4000:
-		return FN_AREA if ((f1 & 0x40) != 0 and spell.effect_range > 0.0) else FN_SINGLE
+		return FN_AREA if ((f1 & 0x40) != 0 and spell.effect_range_m > 0.0) else FN_SINGLE
 	if f1 & 0x8000:
 		return FN_HEAL
 	return FN_NONE
@@ -112,7 +112,7 @@ func rate(caster: AiTrack, spell: SpellType, target: AiTrack, dist_scaled: float
 		return 0.0
 	if not can_cast_on(caster, target, spell):
 		return 0.0
-	if dist_scaled > spell.cast_range * spell.cast_range:
+	if dist_scaled > spell.cast_range_m * spell.cast_range_m:
 		return 0.0
 	match rating_fn(spell):
 		FN_SINGLE:
@@ -146,8 +146,8 @@ func _single(spell: SpellType, target: AiTrack) -> float:
 ## weighs even if the rest of its group stands far. The only casts the wizard releases burst on the target (AiLineOfFire: a blocked
 ## shot walks instead), so the rating's `point` is the target.
 func _area(spell: SpellType, target: AiTrack, point: Vector3) -> float:
-	var er := spell.effect_range
-	var dr := spell.damage_range
+	var er := spell.effect_range_m
+	var dr := spell.damage_range_m
 	var rr := dr if dr > er else er
 	var r2 := AiField.f32(rr * rr)
 	var inv := AiField.f32(AiField.safediv(1.0, r2))
@@ -198,9 +198,9 @@ static func splash_loss(body: Node3D, point: Vector3, spell: SpellType, from_slo
 		return 0.0
 	var amount := float(spell.damage)
 	if not direct:
-		if spell.damage_range <= 0.0:
+		if spell.damage_range_m <= 0.0:
 			return 0.0
-		amount *= maxf(0.0, 1.0 - SplashDamage.box_distance(body, point) / spell.damage_range)
+		amount *= maxf(0.0, 1.0 - SplashDamage.box_distance(body, point) / spell.damage_range_m)
 	return amount * health.side_factor(from_slot) / health.maximum
 
 
@@ -296,4 +296,4 @@ func find_best(caster: AiTrack, target: AiTrack, mask: int) -> Dictionary:
 			best_spell = spell
 	if best_spell == null:
 		return {"score": 0.0}
-	return {"score": best, "spell": best_spell, "range": best_spell.cast_range, "obj": null}
+	return {"score": best, "spell": best_spell, "range": best_spell.cast_range_m, "obj": null}

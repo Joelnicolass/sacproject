@@ -25,7 +25,7 @@ func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D,
 	var corpse := soul.corpse as UnitBody if soul != null else null
 	if corpse == null or not corpse.is_dead() or not soul.fetchable_by(int(wizard.get("owner_slot"))):
 		aim.status = BAD_TARGET
-	elif wizard.global_position.distance_to(soul.global_position) > spell.cast_range:
+	elif wizard.global_position.distance_to(soul.global_position) > spell.cast_range_m:
 		aim.status = OUT_OF_RANGE
 	else:
 		aim.target = corpse

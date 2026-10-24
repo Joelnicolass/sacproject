@@ -58,7 +58,7 @@ func _physics_process(_delta: float) -> void:
 	if zone.cancelled or zone.phase != GroundZone.Phase.ACTIVE or _deformer == null or _land == null:
 		return
 	if _spiral == null:
-		_spiral = BoreSpiral.new(Vector2(zone.points[0].x, zone.points[0].z), zone.spell.effect_range, scribe_speed * zone.spell.speed / MatchClock.TICKS_PER_SECOND_F)
+		_spiral = BoreSpiral.new(Vector2(zone.points[0].x, zone.points[0].z), zone.spell.effect_range_m, scribe_speed * zone.spell.speed_m_s / MatchClock.TICKS_PER_SECOND_F)
 	_ticks += 1
 	if _stage == Stage.CUTTING:
 		_cut()

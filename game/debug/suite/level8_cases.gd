@@ -44,7 +44,7 @@ func run(host: Node3D) -> Dictionary:
 func _data() -> Dictionary:
 	var checks := {}
 	checks["death_counts_eight"] = GameData.spell("taed").count == 8
-	checks["death_duration_is_forty"] = is_equal_approx(GameData.spell("taed").duration, 40.0)
+	checks["death_duration_is_forty"] = is_equal_approx(GameData.spell("taed").duration_s, 40.0)
 	for pair in [["mrhc", "persephone"], ["egar", "pyro"], ["pavi", "charnel"], ["ivob", "james"], ["taed", "charnel"]]:
 		var tag: String = pair[0]
 		var spell := GameData.spell(tag)

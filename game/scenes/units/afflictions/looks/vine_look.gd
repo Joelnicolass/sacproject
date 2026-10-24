@@ -12,7 +12,7 @@ extends Node3D
 @export var body: Node3D
 ## Lit and opaque, with the vine texture (the tube's UV: u around, v along).
 @export var material: Material
-@export_range(1, 300) var grow_ticks := 60
+@export_range(0.0166, 5.0, 0.0001, "suffix:s") var grow_s := 1.0
 @export_group("Springs")
 ## Acceleration of a control point toward its place is this over the vine's scale; the speed halves every `half_life_s` and stops at `max_speed`.
 @export var spring := 90.0
@@ -54,7 +54,7 @@ func _on_shown(on: bool) -> void:
 
 
 func _process(delta: float) -> void:
-	var step := delta * MatchClock.TICKS_PER_SECOND_F / float(grow_ticks)
+	var step := delta / grow_s
 	_length = clampf(_length + (step if _growing else -step), 0.0, 1.0)
 	if not _growing and _length <= 0.0:
 		visible = false

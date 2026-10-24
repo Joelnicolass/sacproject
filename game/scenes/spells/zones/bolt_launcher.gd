@@ -28,7 +28,7 @@ func _launch(point: Vector3, body: Node3D) -> void:
 
 ## The splash of the bolt on whatever is within the spell's damage range of where it arrived, but the body it hit.
 func _splash(body: Node3D, at: Vector3) -> void:
-	SplashDamage.deal(get_tree(), at, float(zone.spell.damage), zone.spell.damage_range, body, zone.from_slot, Health.SPLASH_SPELL)
+	SplashDamage.deal(get_tree(), at, float(zone.spell.damage), zone.spell.damage_range_m, body, zone.from_slot, Health.SPLASH_SPELL)
 
 
 func _get_configuration_warnings() -> PackedStringArray:

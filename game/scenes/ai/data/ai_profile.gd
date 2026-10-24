@@ -22,15 +22,15 @@ const DIR := "res://data/ai"
 @export_range(0.0, 1.0) var aggression := 1.0
 
 @export_group("Percepción y nodos")
-## Ages count RUNS of updateNtts, not ticks: `run(...,1)` hands dTicks = 1 to every slot (shiny.d:459, 1289-1297), so a body's
-## age goes up by 1 every 6 ticks (slot k2). A creature is rated again every 16 age (96 ticks, shiny.d:1044), a structure
-## every 32 (shiny.d:1089); the mana and status of a body every 8 (1053, 1095); a wizard's soul count every 32 (1080).
-## Según [S].
-@export var rerate_ticks := 16
-@export var status_ticks := 8
-@export var souls_snapshot_ticks := 32
-## Threat of a wizard: every 8 age (48 ticks), the influence of the groups within 10..280 m of it (shiny.d:1065-1072). Según [S].
-@export var threat_ticks := 8
+## How often a body is looked at again, in seconds at Normal pace: a creature is rated again every `rerate_s`, the mana and
+## status of a body every `status_s`, a wizard's soul count every `souls_snapshot_s`, his threat every `threat_s` (the
+## influence of the groups within threat_near..threat_far m of him). The tracks count these in ages (runs of slot k2, see
+## ages_for), so a difficulty that slows the slots stretches them the same.
+## Ref: shiny.d:1044, 1053, 1065-1072, 1080, 1089, 1095 (an age goes up by 1 per run of updateNtts, shiny.d:459, 1289-1297). Según [S].
+@export_range(0.0, 60.0, 0.0001, "suffix:s") var rerate_s := 1.6
+@export_range(0.0, 60.0, 0.0001, "suffix:s") var status_s := 0.8
+@export_range(0.0, 60.0, 0.0001, "suffix:s") var souls_snapshot_s := 3.2
+@export_range(0.0, 60.0, 0.0001, "suffix:s") var threat_s := 0.8
 @export var threat_near := 10.0
 @export var threat_far := 280.0
 
@@ -50,9 +50,10 @@ const DIR := "res://data/ai"
 ## engine arrives at the target's radius + 10 m (state.d:13608 `retreatDistance`, shiny.d:2376). The port's `guard` order puts each
 ## creature in a tight formation 2-3 m from the target, where they stacked on the wizard and shoved him off his Manalith (measured).
 @export var retreat_hold_m := 10.0
-## Time between the wizard's replans and the re-issue of an order, in age (16 age = 96 ticks = 1.6 s; shiny.d:3328, 3356). Según [S].
-@export var wizard_replan_ticks := 16
-@export var wizard_reissue_ticks := 8
+## Seconds (at Normal pace) between the wizard's replans and between two re-issues of an order. Counted in ages, like rerate_s.
+## Ref: shiny.d:3328, 3356 (16 and 8 ages). Según [S].
+@export_range(0.0, 60.0, 0.0001, "suffix:s") var wizard_replan_s := 1.6
+@export_range(0.0, 60.0, 0.0001, "suffix:s") var wizard_reissue_s := 0.8
 
 @export_group("Hechizos y convocatorias")
 ## wizAttack reach: (1 - threat) * 280 m (shiny.d:3058, retail 0x4901a0; the beta uses 180). Según [S].
@@ -94,6 +95,30 @@ const DIR := "res://data/ai"
 ## A capture record asks a creature to think from this far (orderInteract radius: (1 - value) * 160 m, shiny.d:2565). Según [S].
 @export var interact_reach_m := 160.0
 
+
+## Ticks one age lasts: slot k2's period of the base profile. 0 = this profile's own slot_periods[2]; AiDifficulty sets it on its
+## copy, so the ages stay the base's and a slower difficulty stretches them in time like it stretches the slots.
+@export_storage var age_period_ticks := 0
+
+## The seconds-at-Normal knobs above, in ages (what the tracks count). 1.6 s at 60 Hz with k2 = 6 ticks → 16 ages.
+var rerate_age: int:
+	get: return ages_for(rerate_s)
+var status_age: int:
+	get: return ages_for(status_s)
+var souls_snapshot_age: int:
+	get: return ages_for(souls_snapshot_s)
+var threat_age: int:
+	get: return ages_for(threat_s)
+var wizard_replan_age: int:
+	get: return ages_for(wizard_replan_s)
+var wizard_reissue_age: int:
+	get: return ages_for(wizard_reissue_s)
+
+
+## Whole ages that `seconds` lasts at Normal pace (MatchClock.ticks_for, then the ticks of one age).
+func ages_for(seconds: float) -> int:
+	var period := age_period_ticks if age_period_ticks > 0 else (slot_periods[2] if slot_periods.size() > 2 else 1)
+	return MatchClock.ticks_for(seconds) / maxi(1, period)
 
 ## The profile of a god (the `ai_profile` of data/gods/<god>.tres), or the original when the god has none.
 static func for_god(god_name: StringName) -> AiProfile:

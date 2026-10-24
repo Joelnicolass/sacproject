@@ -96,7 +96,7 @@ static func flight_of(wizard: WizardBody, spell: SpellType) -> int:
 
 ## A spell whose burst hurts every body around it (ThrownAction explodes with SplashDamage over damage_range).
 static func is_splash(wizard: WizardBody, spell: SpellType) -> bool:
-	return spell.damage_range > 0.0 and flight_of(wizard, spell) == FLIGHT_THROWN
+	return spell.damage_range_m > 0.0 and flight_of(wizard, spell) == FLIGHT_THROWN
 
 
 static func _is_body(node: Node) -> bool:

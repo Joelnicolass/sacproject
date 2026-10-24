@@ -10,7 +10,7 @@ extends Node
 
 @export var carrier: SpellCarrier
 @export_range(0.0, 120.0, 0.01, "suffix:s") var hold_s := 0.0
-## The wait is the spell's duration (SpellType.duration) in place of `hold_s`.
+## The wait is the spell's duration (SpellType.duration_s) in place of `hold_s`.
 @export var hold_is_spell_duration := false
 ## Above 0: it rides this high over the land under the target (the fist); 0: at the target's center.
 @export_range(0.0, 30.0, 0.1, "suffix:m") var ride_height_m := 0.0
@@ -34,7 +34,7 @@ func _ready() -> void:
 
 ## Ticks the wait lasts for the carrier's spell.
 func wait_ticks() -> int:
-	var seconds := carrier.spell.duration if hold_is_spell_duration and carrier.spell != null else hold_s
+	var seconds := carrier.spell.duration_s if hold_is_spell_duration and carrier.spell != null else hold_s
 	return MatchClock.ticks_for(seconds)
 
 

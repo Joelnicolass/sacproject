@@ -59,7 +59,7 @@ func _scenes() -> Dictionary:
 	if action != null:
 		action.free()
 	checks["zone_loads"] = (_spawner.zones["Tornado"] as PackedScene).can_instantiate()
-	checks["numbers"] = spell.duration == 25.0 and spell.speed == 6.0 and spell.acceleration == 0.6 and spell.effect_range == 50.0
+	checks["numbers"] = spell.duration_s == 25.0 and spell.speed_m_s == 6.0 and spell.acceleration_m_s2 == 0.6 and spell.effect_range_m == 50.0
 	checks["in_stratos_book"] = (GameData.book("stratos", 9)["spells"] as Array).any(func(type: SpellType) -> bool: return type.tag == TAG)
 	checks["not_before_level_8"] = not (GameData.book("stratos", 7)["spells"] as Array).any(func(type: SpellType) -> bool: return type.tag == TAG)
 	checks["ai_none"] = spell.ai_use == SpellType.AiUse.NONE
@@ -107,7 +107,7 @@ func _drift() -> Dictionary:
 		await _frames(1)
 		ending += 1
 	checks["gone_after_end_s"] = absi(ending - 102) <= 3
-	checks["data_duration"] = GameData.spell(TAG).duration == 25.0
+	checks["data_duration"] = GameData.spell(TAG).duration_s == 25.0
 	wizard.queue_free()
 	await _frames(2)
 	return _verdict("tornado_drift", checks)

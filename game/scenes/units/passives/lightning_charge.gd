@@ -146,7 +146,7 @@ func _simulate() -> void:
 ## The pick and the bolt.
 func _discharge(rng: RandomNumberGenerator, spell: AbilityType) -> void:
 	var center := BodyNudge.center(body)
-	var candidates := _candidates(center, spell.cast_range)
+	var candidates := _candidates(center, spell.cast_range_m)
 	var pick := rng.randi_range(0, candidates.size() + extra_picks - 1)
 	var target: Node3D = null
 	if pick < candidates.size() and LightningStrike.is_valid_target(candidates[pick]):
@@ -157,7 +157,7 @@ func _discharge(rng: RandomNumberGenerator, spell: AbilityType) -> void:
 	var ground := Vector3.ZERO
 	if target == null:
 		var flat := Vector2(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0)).normalized()
-		var distance := rng.randf_range(ground_min_m, spell.cast_range)
+		var distance := rng.randf_range(ground_min_m, spell.cast_range_m)
 		ground = center + Vector3(flat.x * distance, 0.0, flat.y * distance)
 		ground.y = BodyNudge.ground_y(body, ground)
 	var before := frames

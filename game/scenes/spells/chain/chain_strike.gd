@@ -9,7 +9,7 @@ extends ChainEffect
 ## The bolt (lightning_strike.tscn).
 @export var strike_scene: PackedScene
 ## Seconds from the bolt leaving to its damage.
-@export_range(0.0, 1.0, 0.001, "suffix:s") var travel_s := 12.0 / 60.0
+@export_range(0.0, 1.0, 0.0001, "suffix:s") var travel_s := 0.2
 ## The BeamType every bolt draws (res://data/fx/beams/): ltn2 (the SPEL) or ltng (the exe).
 @export var beam: BeamType
 ## The burst where a bolt hurts.
@@ -20,7 +20,7 @@ func hop(chain: ChainHop, from: Vector3, body: Node3D, point: Vector3) -> void:
 	var shooter := chain.wizard if is_instance_valid(chain.wizard) else null
 	var look := PackedStringArray([beam.fx_name(), hit_burst.bus_name()]) if beam != null and hit_burst != null else PackedStringArray()
 	LightningStrike.launch(strike_scene, chain, shooter, from, body, point, float(chain.spell.damage), chain.spell.tag, false, look,
-		MatchClock.ticks_for(travel_s), chain.slot)
+		travel_s, chain.slot)
 
 
 func _get_configuration_warnings() -> PackedStringArray:

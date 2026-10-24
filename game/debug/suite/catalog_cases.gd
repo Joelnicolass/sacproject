@@ -28,8 +28,8 @@ const CREATURE_RANGES := {
 	"splash_ranged_resistance": 0, "mana": 0, "mana_cost": 0, "souls": 0, "cooldown_s": 0, "casting_time_s": 0,
 }
 const SPELL_RANGES := {
-	"mana_cost": 0, "cast_range": 0, "cooldown_s": 0, "casting_time_s": 0, "speed": 0, "damage_range": 0,
-	"effect_range": 0, "duration": 0,
+	"mana_cost": 0, "cast_range_m": 0, "cooldown_s": 0, "casting_time_s": 0, "speed_m_s": 0, "damage_range_m": 0,
+	"effect_range_m": 0, "duration_s": 0,
 }
 const WIZARD_RANGES := {
 	"health>": 0, "mana": 0, "running_speed": 0, "regeneration_per_s": 0, "melee_resistance": 0,

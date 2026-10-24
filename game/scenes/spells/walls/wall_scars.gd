@@ -1,7 +1,7 @@
 class_name WallScars
 extends Node
 
-## The cracks a wall leaves in the ground as its ends advance: every `every_ticks` of the wall's age, while the ends can still be going out,
+## The cracks a wall leaves in the ground as its ends advance: every `every_s` of the wall's age, while the ends can still be going out,
 ## it asks its ScarMark to paint at each end, somewhere across the thickness and up to `behind_m` behind the front. The Firewall leaves
 ## `quk1`, the Wall of Spikes `gscr`. Presentation only, on every peer (each one sees the wall grow and paints it), never at a dedicated or
 ## headless process (ScarMark); it does not touch the rules. Its dice are its own.
@@ -10,7 +10,7 @@ extends Node
 @export var wall: SpellWall
 ## The mark and the picture (texture, height limit) that is painted.
 @export var mark: ScarMark
-@export_range(1, 120) var every_ticks := 4
+@export_range(0.0166, 2.0, 0.0001, "suffix:s") var every_s := 0.0666
 @export_range(0.0, 10.0, 0.1, "suffix:m") var behind_m := 1.5
 
 var _rng: RandomNumberGenerator
@@ -27,7 +27,7 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if wall.vanish_at >= 0 or wall.age > wall.grow_ticks:
 		return
-	var step := wall.age / every_ticks
+	var step := wall.age / maxi(1, MatchClock.ticks_for(every_s))
 	while _done < step:
 		_done += 1
 		for end in [wall.left, wall.right]:

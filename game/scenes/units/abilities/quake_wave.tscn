@@ -4,5 +4,5 @@
 
 [node name="QuakeWave" type="Node3D"]
 process_physics_priority = -1
-editor_description = "F132 (RFC-030 030u-a): coordinador del Quake del Jabberocky (kauq; Quake, state.d:5187-5225). QuakeAbility lo agrega al contenedor de disparos, solo en el servidor, a los pies del usuario. Descarta el tick en que nace; del cuadro 1 al 5 la onda (1,667·f m) aturde 480 a todo cuerpo móvil de cualquier bando con la caja a ≤ onda + 0,1, a más de 0,5 m en planta y a menos de 2,5 m de la onda. Sin daño. Se libera en el cuadro 31. Knobs: wave_range, wave_s, stun_min, stun_max, band, cooldown_ticks, total_frames, groups."
+editor_description = "F132 (RFC-030 030u-a): coordinador del Quake del Jabberocky (kauq; Quake, state.d:5187-5225). QuakeAbility lo agrega al contenedor de disparos, solo en el servidor, a los pies del usuario. Descarta el tick en que nace; del cuadro 1 al 5 la onda (1,667·f m) aturde 480 a todo cuerpo móvil de cualquier bando con la caja a ≤ onda + 0,1, a más de 0,5 m en planta y a menos de 2,5 m de la onda. Sin daño. Se libera en el cuadro 31. Knobs: wave_range, wave_s, stun_min, stun_max, band, cooldown_s, life_s, groups."
 script = ExtResource("1_wave")

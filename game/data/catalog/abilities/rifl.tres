@@ -6,4 +6,4 @@
 script = ExtResource("1_uvew2")
 tag = "rifl"
 display_name = "Phoenix Shield"
-cast_range = 100.0
+cast_range_m = 100.0

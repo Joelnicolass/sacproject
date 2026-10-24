@@ -10,7 +10,7 @@ extends Node
 ## (ManaPool.drain; 0 for rifl) and puffs the shield particles. Buildings are not touched (movingObjectById).
 ## A child of unit.tscn like MeleeOnHit; it only acts on a body whose CreatureType.passive_on_damage is `passive_tag`, so the other
 ## creatures carry it and ignore it. Server (or solo) only. Divergences (declared): the particles are the reserve look (FxBus `fire`
-## on the burned body every `fire_every_ticks`); the shield ticks only on a carrier (the node sleeps on the rest).
+## on the burned body every `fire_every_s`); the shield ticks only on a carrier (the node sleeps on the rest).
 
 
 const GROUPS: Array[StringName] = [&"unit", &"wizard"]
@@ -26,9 +26,9 @@ const GROUPS: Array[StringName] = [&"unit", &"wizard"]
 ## Scale of the body's box about its center (scaleBox(object.hitbox, 1.5f)).
 @export var box_scale := 1.5
 @export_group("Look")
-## FxBus fire puffed on a burned body every `fire_every_ticks` ticks it burns (reserve look).
+## FxBus fire puffed on a burned body every `fire_every_s` it burns (reserve look).
 @export var fire_fx := "fire"
-@export var fire_every_ticks := 5
+@export_range(0.0, 2.0, 0.0001, "suffix:s") var fire_every_s := 0.0833
 @export var fire_height_m := 0.8
 
 var _carrier := false
@@ -101,7 +101,8 @@ func _burn(target: Node3D, per_tick: float, mine: Array) -> void:
 	var key := target.get_instance_id()
 	var count := int(_burn_ticks.get(key, 0))
 	_burn_ticks[key] = count + 1
-	if not fire_fx.is_empty() and fire_every_ticks > 0 and count % fire_every_ticks == 0:
+	var every := MatchClock.ticks_for(fire_every_s)
+	if not fire_fx.is_empty() and every > 0 and count % every == 0:
 		FxBus.broadcast(fire_fx, target.global_position + Vector3.UP * fire_height_m)
 	if DebugLog.on(&"shield") and taken > 0.0:
 		var box := BodyBox.box_of(target)

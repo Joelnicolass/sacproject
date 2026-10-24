@@ -11,8 +11,9 @@ extends Node3D
 ## [inner, outer] around this node, each on the land under it (a spike off the land is not placed, as placeSpike).
 ## Presentation only: every peer, never headless; its generator is seeded by the event (`seed`), never the global one.
 
-## sacengine Spike.lifetime: 2·60/3 updates.
-@export var lifetime_s := 2.0 / 3.0
+## How long a spike stands.
+## Ref: sacengine Spike.lifetime, 2·60/3 updates.
+@export var lifetime_s := 0.6666
 ## sacengine uniformDisk(…, 2.0): how far the tip leans (m).
 @export var tilt := 2.0
 ## makeSpikeMesh: radius at the ground, radius and height of the neck (the tip is at 1).

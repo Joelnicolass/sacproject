@@ -15,8 +15,8 @@ const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 
 func _affect(shot: Node3D, target: Node3D, point: Vector3, ability: AbilityType) -> void:
 	var from_slot := int(shot.get("from_slot"))
-	var radius := ability.effect_range if ability != null else 0.0
-	var ticks := int(ability.duration * MatchClock.TICKS_PER_SECOND) if ability != null else 0
+	var radius := ability.effect_range_m if ability != null else 0.0
+	var ticks := int(ability.duration_s * MatchClock.TICKS_PER_SECOND) if ability != null else 0
 	if DebugLog.on(&"oil"):
 		print("bola aceite %s toca %s en (%.3f, %.3f, %.3f) radio %.1f (tick %d)" % [
 			shot.name, ("a " + who(target)) if target != null and is_instance_valid(target) else "suelo",

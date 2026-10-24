@@ -13,26 +13,28 @@ extends Node
 ## Infection (updatePoison, state.d:23537-23552): every tick, each infectious dose touches every live creature and wizard
 ## whose box meets the body's box grown `infection_margin_m`, of any side, the body excepted. One with no infection
 ## cooldown gets a dose of damage_sum() per second for the frames this dose has left, infectious, with its debuffs, its kind
-## and its attacker, and keeps an infection cooldown of those frames + `infection_cooldown_extra_ticks` (ticks of
+## and its attacker, and keeps an infection cooldown of those frames + `infection_cooldown_extra_s` (ticks of
 ## MatchClock). The body that infected it has no cooldown of its own, so the first victim is infected back once.
 ## Divergence (declared): checked on every tick, without sacengine's AI-queue gate.
 
 ## The body the doses act on (its Health, its box). Empty = the parent.
 @export var body: Node3D
 @export var health: Health
-## sacengine Poison.manaBlockDelay = 2·updateFPS.
-@export var mana_block_ticks := 120
+## How long a dose blocks the body's mana.
+## Ref: sacengine Poison.manaBlockDelay = 2·updateFPS.
+@export_range(0.0, 60.0, 0.0001, "suffix:s") var mana_block_s := 2.0
 ## sacengine updatePoison: hitbox[0] -= 2, hitbox[1] += 2.
 @export var infection_margin_m := 2.0
-## sacengine infectionCooldown = lifetime + 3·updateFPS.
-@export var infection_cooldown_extra_ticks := 180
+## A body just infected cannot be infected again for the dose's life plus this.
+## Ref: sacengine infectionCooldown = lifetime + 3·updateFPS.
+@export_range(0.0, 60.0, 0.0001, "suffix:s") var infection_cooldown_extra_s := 3.0
 ## sacengine movingObjects: who an infection may touch.
 @export var groups: Array[StringName] = [&"wizard", &"unit"]
 @export_group("Look")
 ## FxBus puff on the body while a dose takes health (relativePoison, state.d:23565-23575: one particle every 2 frames;
 ## a puff every 30 ticks is the same rate).
 @export var fx_name := "poison_dose"
-@export var fx_every_ticks := 30
+@export_range(0.0, 5.0, 0.0001, "suffix:s") var fx_every_s := 0.5
 
 ## MatchClock tick until which no infection reaches this body.
 var _infection_until := 0
@@ -86,9 +88,9 @@ func dose(per_second: float, lifetime: int, kind: StringName, from_slot: int, in
 	added.infectious = infectious
 	added.resistance_debuff = resistance_debuff
 	added.regeneration_factor = regen_factor
-	added.mana_block_frame = mana_block_ticks
+	added.mana_block_frame = MatchClock.ticks_for(mana_block_s)
 	added.fx_name = fx_name
-	added.fx_every_ticks = fx_every_ticks
+	added.fx_every_ticks = MatchClock.ticks_for(fx_every_s)
 	add_child(added, true)
 	_log_regeneration(regen_before)
 	return added
@@ -133,7 +135,7 @@ func infection_cooling() -> bool:
 
 ## sacengine infect(): infectionCooldown = lifetime + 3·updateFPS on the body just infected.
 func start_infection_cooldown(lifetime: int) -> void:
-	_infection_until = MatchClock.now() + lifetime + infection_cooldown_extra_ticks
+	_infection_until = MatchClock.now() + lifetime + MatchClock.ticks_for(infection_cooldown_extra_s)
 
 
 func _physics_process(_delta: float) -> void:

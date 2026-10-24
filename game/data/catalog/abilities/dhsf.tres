@@ -6,4 +6,4 @@
 script = ExtResource("1_k8frn")
 tag = "dhsf"
 display_name = "dhsf"
-cast_range = 100.0
+cast_range_m = 100.0

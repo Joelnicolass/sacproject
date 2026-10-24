@@ -11,8 +11,8 @@ extends SpellProjectile
 @export var streamer_scene: PackedScene
 ## The burst over the creature (a one-shot SpriteEmitter child). The effect is born on the creature, so its sound plays there too.
 @export var burst: SpriteEmitter
-## A stream is born every this many ticks, with `chance` of it really being born (30 fps of rolls, half of them).
-@export_range(1, 30) var every_ticks := 2
+## A stream is born every this long, with `chance` of it really being born (30 rolls a second, half of them).
+@export_range(0.0166, 0.5, 0.0001, "suffix:s") var every_s := 0.0333
 @export_range(0.0, 1.0, 0.05) var chance := 0.5
 
 var wizard_path := NodePath()
@@ -45,7 +45,7 @@ func _physics_process(_delta: float) -> void:
 	if _age > ticks:
 		queue_free()
 		return
-	if DisplayServer.get_name() == "headless" or streamer_scene == null or _age % every_ticks != 0:
+	if DisplayServer.get_name() == "headless" or streamer_scene == null or _age % maxi(1, MatchClock.ticks_for(every_s)) != 0:
 		return
 	if _rng.randf() >= chance:
 		return

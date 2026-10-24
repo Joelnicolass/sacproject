@@ -36,8 +36,9 @@ const BALLISTIC: PackedStringArray = ["ekba", "fkba", "dkba", "aaba", "wobf", "b
 ## sacengine shootRange: max(range_factor·range, range − range_margin).
 @export var range_factor := 0.8
 @export var range_margin := 30.0
-## sacengine aim: facing once within facing_frames·turn_rate/fps of the aim.
-@export var facing_frames := 4.0
+## It shoots once it faces the aim within what it turns in this long.
+## Ref: sacengine aim, facing once within 4 frames·turn_rate/fps.
+@export_range(0.0, 1.0, 0.0001, "suffix:s") var facing_s := 0.0666
 ## The shot leaves from the body's front at this fraction of its height. sacengine uses the
 ## shoot animation's hand (shotPosition, state.d:1346); the baked bodies have no hand bones.
 @export var shot_height := 0.7
@@ -66,7 +67,7 @@ func setup(body: UnitBody, creature: CreatureType, mana: ManaPool, melee: MeleeA
 	_melee = melee
 	_rng = rng
 	attack = GameData.ability(creature.ranged_attack_tag) if creature and creature.is_ranged else null
-	if attack and attack.speed <= 0.0:
+	if attack and attack.speed_m_s <= 0.0:
 		attack = null
 
 
@@ -99,7 +100,7 @@ func cancel() -> void:
 func shoot_range() -> float:
 	if attack == null:
 		return 0.0
-	return maxf(range_factor * attack.cast_range, attack.cast_range - range_margin)
+	return maxf(range_factor * attack.cast_range_m, attack.cast_range_m - range_margin)
 
 
 ## sacengine attack: shoot unless the foe is in melee contact. A body of its own side (a Scarab's patient, F136) is
@@ -125,7 +126,7 @@ func aim(target: Node3D) -> Step:
 	to.y = 0.0
 	var turn_rate := _body.turn_rate
 	var facing: Vector3 = _body.facing_flat()
-	if to.length_squared() > 0.000001 and facing.angle_to(to.normalized()) > facing_frames * turn_rate / FPS:
+	if to.length_squared() > 0.000001 and facing.angle_to(to.normalized()) > float(MatchClock.ticks_for(facing_s)) * turn_rate / FPS:
 		return Step.HOLD
 	if _cooldown > 0.0 or _mana_left() < _mana_cost():
 		return Step.HOLD
@@ -203,11 +204,11 @@ func _fire(target: Node3D) -> void:
 	var ballistic := BALLISTIC.has(attack.tag)
 	var gravity := float(FALLING_ACCELERATION.get(attack.tag, DEFAULT_FALLING)) if ballistic else 0.0
 	if ballistic:
-		direction.y += 0.5 * gravity * offset.length() / (attack.speed * attack.speed)
+		direction.y += 0.5 * gravity * offset.length() / (attack.speed_m_s * attack.speed_m_s)
 	direction = ShotAim.scatter(direction, _accuracy(), _rng)
 	if not ballistic:
 		direction = direction.normalized()
-	var velocity: Vector3 = direction * attack.speed
+	var velocity: Vector3 = direction * attack.speed_m_s
 	var data := {
 		"tag": attack.tag,
 		"x": origin.x, "y": origin.y, "z": origin.z,
@@ -215,7 +216,7 @@ func _fire(target: Node3D) -> void:
 		"damage": float(attack.damage) * _attack_factor(),
 		"slot": _body.owner_slot,
 		"gravity": gravity,
-		"max_distance": INF if ballistic else attack.cast_range * look.range_factor,
+		"max_distance": INF if ballistic else attack.cast_range_m * look.range_factor,
 		"target": str(target.get_path()),
 		"shooter": str(_body.get_path()),
 		## F124: the predicted point without accuracy, and the accuracy, for the strikes that aim again.
@@ -270,9 +271,9 @@ static func origin_of(body: Node3D) -> Vector3:
 ## sacengine predictShotTargetPosition: the target's center where it will be when the shot arrives.
 func _predicted(target: Node3D) -> Vector3:
 	var center := _center(target)
-	if attack == null or attack.speed <= 0.0 or not target is CharacterBody3D:
+	if attack == null or attack.speed_m_s <= 0.0 or not target is CharacterBody3D:
 		return center
-	var flight := _body.global_position.distance_to(center) / attack.speed
+	var flight := _body.global_position.distance_to(center) / attack.speed_m_s
 	var moving := (target as CharacterBody3D).velocity
 	moving.y = 0.0
 	return center + moving * flight

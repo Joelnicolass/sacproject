@@ -24,7 +24,7 @@ func status(_target_pos: Vector3, target: Node3D) -> String:
 	var soul := soul_of(corpse)
 	if soul == null or not (soul.state == Soul.State.NORMAL or soul.state == Soul.State.EMERGING):
 		return ActiveAbility.BAD_TARGET
-	if user.global_position.distance_to(corpse.global_position) > ability.cast_range:
+	if user.global_position.distance_to(corpse.global_position) > ability.cast_range_m:
 		return ActiveAbility.OUT_OF_RANGE
 	return ""
 

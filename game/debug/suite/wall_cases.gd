@@ -78,7 +78,7 @@ func _scenes() -> Dictionary:
 		if wall != null:
 			var size := (wall.body.shape as BoxShape3D).size
 			checks[tag + "_warnings"] = wall._get_configuration_warnings().is_empty()
-			checks[tag + "_box_is_the_spell"] = absf(size.x - 2.0 * spell.effect_range) < 0.01 and absf(size.y - HEIGHTS[tag]) < 0.01 and absf(size.z - 5.0) < 0.01
+			checks[tag + "_box_is_the_spell"] = absf(size.x - 2.0 * spell.effect_range_m) < 0.01 and absf(size.y - HEIGHTS[tag]) < 0.01 and absf(size.z - 5.0) < 0.01
 			checks[tag + "_wall_has_the_spell"] = wall.spell == spell
 			var touch := wall.get_node_or_null("Touch") as WallTouch
 			var light := wall.get_node_or_null("Light") as ActorLight
@@ -303,7 +303,7 @@ func _vines() -> Dictionary:
 	var asked: Array[float] = []
 	touch.touched.connect(func(_body: Node3D) -> void:
 		tied_at.append(wall.age)
-		asked.append(maxf(0.0, wall.spell.duration - float(wall.age - wall.grow_ticks) / TICKS)))
+		asked.append(maxf(0.0, wall.spell.duration_s - float(wall.age - wall.grow_ticks) / TICKS)))
 	var on_since := -1
 	var runs: Array[Vector2i] = []
 	var ally_tied := false

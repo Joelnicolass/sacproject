@@ -14,9 +14,9 @@ signal post_born(at: Vector3)
 
 @export var wall: SpellWall
 @export_range(1, 24) var max_posts := 12
-## Ticks between two births (one pair per period), and the tick of the period the pair is born on.
-@export_range(2, 240) var period_ticks := 32
-@export_range(0, 239) var birth_tick := 16
+## Time between two births (one pair per period), and when in the period the pair is born.
+@export_range(0.0333, 4.0, 0.0001, "suffix:s") var period_s := 0.5333
+@export_range(0.0, 4.0, 0.0001, "suffix:s") var birth_s := 0.2666
 @export_range(0.5, 10.0, 0.1, "suffix:m") var low_m := 2.5
 @export_range(0.5, 10.0, 0.1, "suffix:m") var high_m := 5.5
 @export_range(0.5, 20.0, 0.1, "suffix:s") var swing_s := 3.6
@@ -47,7 +47,8 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if wall.vanish_at >= 0 or wall.age < birth_tick or (wall.age - birth_tick) % period_ticks != 0:
+	var birth_tick := MatchClock.ticks_for(birth_s)
+	if wall.vanish_at >= 0 or wall.age < birth_tick or (wall.age - birth_tick) % maxi(1, MatchClock.ticks_for(period_s)) != 0:
 		return
 	for side in [-1.0, 1.0]:
 		if posts.size() >= max_posts or (wall.left_stopped if side < 0.0 else wall.right_stopped):

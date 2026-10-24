@@ -46,7 +46,7 @@ func _process(_delta: float) -> void:
 
 ## The ring at the full radius, every vertex at the height of the land under it (the centre's height where there is none).
 func _build() -> void:
-	_radius = zone.spell.effect_range
+	_radius = zone.spell.effect_range_m
 	var center := zone.points[0]
 	var land := TerrainShape.of(self)
 	var surface := SurfaceTool.new()

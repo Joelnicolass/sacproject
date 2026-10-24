@@ -71,7 +71,7 @@ func _start_wave(shot: Node3D, center: Vector3, amount: float, from_slot: int, i
 		push_warning("SpikeImpact: la escena de anillos no es un SpikeWave.")
 		return
 	if ability:
-		wave.effect_range = ability.effect_range
+		wave.effect_range = ability.effect_range_m
 	wave.amount = amount
 	wave.from_slot = from_slot
 	wave.intended = intended

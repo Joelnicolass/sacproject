@@ -9,7 +9,7 @@ extends MeshInstance3D
 ## The node whose positions it draws (a RiftSpirit); it keeps drawing from where that node is.
 @export var follows: Node3D
 @export_range(0.05, 3.0, 0.05, "suffix:m") var width_m := 0.6
-@export_range(2, 240) var trail_ticks := 120
+@export_range(0.0333, 4.0, 0.0001, "suffix:s") var trail_s := 2.0
 ## One position in every `stride` is a point of the ribbon.
 @export_range(1, 8) var stride := 3
 
@@ -25,6 +25,7 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	_history.insert(0, follows.global_position)
+	var trail_ticks := maxi(2, MatchClock.ticks_for(trail_s))
 	if _history.size() > trail_ticks:
 		_history.resize(trail_ticks)
 

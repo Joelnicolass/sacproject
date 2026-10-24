@@ -97,7 +97,7 @@ func _rates() -> Dictionary:
 		var counter := func(_node: Node) -> void: count[0] += 1
 		var zone := _cloud(KINDS[tag], Vector3(0.0, 0.0, 0.0), wizard, 30)
 		zone.spell = zone.spell.duplicate()
-		zone.spell.duration = seconds
+		zone.spell.duration_s = seconds
 		zone.hold_is_spell_duration = true
 		spells.child_entered_tree.connect(counter)
 		await _frames(25)
@@ -301,7 +301,7 @@ func _cloudkill() -> Dictionary:
 	await _frames(3)
 	var zone := _cloud("Cloudkill", Vector3.ZERO, wizard, 0, target.get_path())
 	zone.spell = zone.spell.duplicate()
-	zone.spell.duration = 14.0
+	zone.spell.duration_s = 14.0
 	var shots := _root.get_node("Shots")
 	var bolts := [0]
 	shots.child_entered_tree.connect(func(_n: Node) -> void: bolts[0] += 1)
@@ -352,7 +352,7 @@ func _cloudkill() -> Dictionary:
 	for node: Node in [wizard, target, a, b, far]:
 		node.queue_free()
 	await _frames(2)
-	checks["spell_numbers"] = spell.damage == 900 and spell.damage_range == 5.0 and spell.speed == 3.0 and spell.duration == 30.0
+	checks["spell_numbers"] = spell.damage == 900 and spell.damage_range_m == 5.0 and spell.speed_m_s == 3.0 and spell.duration_s == 30.0
 	return _verdict("cloud_cloudkill", checks)
 
 
@@ -488,4 +488,4 @@ func _cloud(kind: String, at: Vector3, wizard: Node3D, cast_ticks: int, follow :
 func _drop(kind: String, start: Vector3, goal: Vector3, fall_s: float, spell: SpellType, wizard: Node3D) -> ZoneDrop:
 	return _spawner.spawn_projectile(kind, {
 		"x": start.x, "y": start.y, "z": start.z, "goal": goal, "fall_s": fall_s, "slot": wizard.get("owner_slot"),
-		"caster": str(wizard.get_path()), "damage": float(spell.damage), "damage_range": spell.damage_range, "effect_range": spell.effect_range}) as ZoneDrop
+		"caster": str(wizard.get_path()), "damage": float(spell.damage), "damage_range": spell.damage_range_m, "effect_range": spell.effect_range_m}) as ZoneDrop

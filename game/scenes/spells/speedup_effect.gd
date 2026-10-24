@@ -27,11 +27,11 @@ static func duration_s(body: Node, spell: SpellType) -> float:
 	if not "speed_factor" in body or body.get_node_or_null(NODE_NAME) != null:
 		return -1.0
 	if body.is_in_group("wizard"):
-		return spell.duration * WIZARD_DURATION_FACTOR + EXTRA_S
+		return spell.duration_s * WIZARD_DURATION_FACTOR + EXTRA_S
 	var health := body.get_node_or_null("Health")
 	if health == null or float(health.get("maximum")) <= 0.0:
 		return -1.0
-	return spell.duration * 1000.0 / float(health.get("maximum")) + EXTRA_S
+	return spell.duration_s * 1000.0 / float(health.get("maximum")) + EXTRA_S
 
 
 func start(seconds: float) -> void:

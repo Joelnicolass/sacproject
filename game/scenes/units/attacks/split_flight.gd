@@ -64,7 +64,7 @@ func _split(shot: RangedShot) -> void:
 
 ## sacengine decrements distanceUntilSplit by rangedAttack.speed/updateFPS; without a SPEL, by the shot's own speed.
 func _step_m(shot: RangedShot) -> float:
-	var speed := shot.ability.speed if shot.ability else shot.velocity.length()
+	var speed := shot.ability.speed_m_s if shot.ability else shot.velocity.length()
 	return speed / MatchClock.TICKS_PER_SECOND_F
 
 

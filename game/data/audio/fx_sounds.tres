@@ -1,7 +1,14 @@
-[gd_resource type="Resource" script_class="FxSoundMap" load_steps=140 format=3]
+[gd_resource type="Resource" script_class="FxSoundMap" load_steps=155 format=3]
 
 [ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
 [ext_resource type="Script" path="res://scenes/audio/fx_sound_map.gd" id="2_map"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/spku.wav" id="wall_spku"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/spkd.wav" id="wall_spkd"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/char/lwwl.wav" id="wall_lwwl"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/char/cwwl.wav" id="wall_cwwl"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/root.wav" id="wall_root"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/vinu.wav" id="wall_vinu"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/vind.wav" id="wall_vind"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/char/bld1.wav" id="3_bld1"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/char/bld2.wav" id="4_bld2"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/gib!/gib1.wav" id="5_gib1"]
@@ -376,6 +383,77 @@ script = ExtResource("1_cue")
 streams = Array[AudioStream]([ExtResource("n161_frx1"), ExtResource("n161_frx2")])
 max_voices = 3
 
+[sub_resource type="Resource" id="Cue_wall_fire_loop"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("w_flp5")])
+max_voices = 3
+volume_db = 12.0
+max_distance_m = 140.0
+unit_size = 20.0
+
+[sub_resource type="Resource" id="Cue_wall_fire_start"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("25_ign2")])
+max_voices = 2
+volume_db = 0.0
+max_distance_m = 120.0
+unit_size = 12.0
+
+[sub_resource type="Resource" id="Cue_wall_spikes_up"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("wall_spku")])
+max_voices = 2
+volume_db = 0.0
+max_distance_m = 120.0
+unit_size = 12.0
+
+[sub_resource type="Resource" id="Cue_wall_spikes_down"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("wall_spkd")])
+max_voices = 2
+volume_db = 0.0
+max_distance_m = 120.0
+unit_size = 12.0
+
+[sub_resource type="Resource" id="Cue_wall_wail_loop"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("wall_lwwl")])
+max_voices = 3
+volume_db = 0.0
+max_distance_m = 140.0
+unit_size = 20.0
+
+[sub_resource type="Resource" id="Cue_wall_wail_cast"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("wall_cwwl")])
+max_voices = 2
+volume_db = 0.0
+max_distance_m = 120.0
+unit_size = 12.0
+
+[sub_resource type="Resource" id="Cue_wall_vine_root"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("wall_root")])
+max_voices = 2
+volume_db = 0.0
+max_distance_m = 120.0
+unit_size = 12.0
+
+[sub_resource type="Resource" id="Cue_wall_vine_up"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("wall_vinu")])
+max_voices = 2
+volume_db = 0.0
+max_distance_m = 120.0
+unit_size = 12.0
+
+[sub_resource type="Resource" id="Cue_wall_vine_down"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("wall_vind")])
+max_voices = 2
+volume_db = 0.0
+max_distance_m = 120.0
+unit_size = 12.0
 [sub_resource type="Resource" id="Cue_rainbow_arc"]
 script = ExtResource("1_cue")
 streams = Array[AudioStream]([ExtResource("e_rbow")])
@@ -687,6 +765,15 @@ cues = Dictionary[StringName, ExtResource("1_cue")]({
 &"ward_swarm_loop": SubResource("Cue_ward_swarm_loop"),
 &"wards/fire_hit": SubResource("Cue_wards_fire_hit"),
 &"wards/swarm_sting": SubResource("Cue_wards_swarm_sting"),
+&"wall_fire_loop": SubResource("Cue_wall_fire_loop"),
+&"wall_fire_start": SubResource("Cue_wall_fire_start"),
+&"wall_spikes_up": SubResource("Cue_wall_spikes_up"),
+&"wall_spikes_down": SubResource("Cue_wall_spikes_down"),
+&"wall_wail_loop": SubResource("Cue_wall_wail_loop"),
+&"wall_wail_cast": SubResource("Cue_wall_wail_cast"),
+&"wall_vine_root": SubResource("Cue_wall_vine_root"),
+&"wall_vine_up": SubResource("Cue_wall_vine_up"),
+&"wall_vine_down": SubResource("Cue_wall_vine_down"),
 &"rainbow_arc": SubResource("Cue_rainbow_arc"),
 &"dragon_roar": SubResource("Cue_dragon_roar"),
 &"dragonfire_loop": SubResource("Cue_dragonfire_loop"),

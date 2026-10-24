@@ -118,6 +118,14 @@ EXTRA_FX = {
     "gut1": ("charlie.wad", "Bloo.WAD!/Char.FLDR/tex.FLDR"),
     "gut2": ("charlie.wad", "Bloo.WAD!/Char.FLDR/tex.FLDR"),
     "dth2": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
+    # RFC 061g (SPEL): the walls. Firewall's flames (fwal, 4x4) and its rising tongues (fwpt), Wailing Wall's faces (wwal, 4x4 with alpha) and
+    # spirits (wlsp, 1x8), Vinewall's base sparks (pvin) and Fence's post bubble (bubl).
+    "fwal": ("charlie.wad", "Bloo.WAD!/Pyro.FLDR/txtr.FLDR"),
+    "fwpt": ("charlie.wad", "Bloo.WAD!/Pyro.FLDR/txtr.FLDR"),
+    "wwal": ("main.wad", "MAIN.WAD!/bits.FLDR"),
+    "wlsp": ("charlie.wad", "Bloo.WAD!/Char.FLDR/tex.FLDR"),
+    "pvin": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
+    "bubl": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
     # RFC 061j (SPEL): Meanstalks' skin (dvin = ttex, 64x64; vine = ttx2 came with 061c) and the Tornado's two skins (trn1, trn2), its edge
     # strip (edge, 4 frames) and the dust it kicks up (tdst, 4x4).
     "dvin": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),

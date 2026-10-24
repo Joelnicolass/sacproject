@@ -47,6 +47,11 @@ const SPELLS := {
 	"pavi": [[SCENE, "res://scenes/spells/carrier/vaporization.tscn"], [PARTICLE, "res://data/fx/vaporize_burst.tres"]],
 	"ivob": [[SCENE, "res://scenes/spells/carrier/bovine_intervention.tscn"], [PARTICLE, "res://data/fx/cow_burst.tres"]],
 	"taed": [[SCENE, "res://scenes/spells/carrier/death.tscn"], [PARTICLE, "res://data/fx/death_strike.tres"]],
+	"lwrf": [[SCENE, "res://scenes/spells/walls/firewall.tscn"]],
+	"laws": [[SCENE, "res://scenes/spells/walls/wall_of_spikes.tscn"]],
+	"laww": [[SCENE, "res://scenes/spells/walls/wailing_wall.tscn"]],
+	"lawv": [[SCENE, "res://scenes/spells/walls/vinewall.tscn"]],
+	"cnef": [[SCENE, "res://scenes/spells/walls/fence.tscn"]],
 	"rter": [[SCENE, "res://scenes/spells/stalks/stalk.tscn"], [PARTICLE, "res://data/fx/stalk_grab.tres"]],
 	"nrot": [[SCENE, "res://scenes/spells/tornado/tornado.tscn"]],
 }

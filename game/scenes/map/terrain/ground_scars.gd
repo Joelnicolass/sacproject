@@ -2,16 +2,11 @@ class_name GroundScars
 extends Node3D
 
 ## The marks on the ground of a map (a burn under an explosion, a crack where a rock lands): the one owner of the painted
-## tiles. A mark is a small picture painted INTO the ground, 0.15625 m per pixel, centered where it lands and never turned,
-## over what is there; marks on the same 10 m tile pile up, they never fade, and when the map holds `max_tiles` painted tiles
-## the tile that was painted longest ago is cleaned. The ground shaders read the result (ground_scars.gdshaderinc).
-## Presentation only: with no window (headless, dedicated server) it holds nothing and `stamp` does nothing. It does not
-## decide when a mark happens (ScarMark does) and never touches the ground's mesh, collision or height.
-## Ref: rfcs/research/061S-scar-ground-marks.md.
+## tiles. A mark is a picture painted INTO the ground, 0.15625 m per pixel, centered, never turned, over what is there; marks on
+## a 10 m tile pile up and never fade; past `max_tiles` painted tiles the one painted longest ago is cleaned (ground_scars.gdshaderinc reads it).
+## Presentation only: with no window (headless, dedicated) it holds nothing. ScarMark decides when; the ground's mesh, collision and height are untouched.
 
-## ScarMark finds the marks of its map through this group.
 const GROUP := &"ground_scars"
-## The shader globals ground_scars.gdshaderinc reads (declared in project.godot).
 const INDEX_PARAM := &"scar_index"
 const TILES_PARAM := &"scar_tiles"
 
@@ -20,19 +15,19 @@ const TILES_PARAM := &"scar_tiles"
 ## The player's graphics options: «Cantidad de marcas». Empty: `max_tiles`.
 @export var prefs: GraphicsPrefs
 @export_range(32, 256) var max_tiles := 256
-## The array of painted tiles the ground shaders read (empty in the scene; `_ready` fills it with the layers).
+## The painted tiles the shaders read (empty in the scene; `_ready` fills it).
 @export var tiles: Texture2DArray
 
 var _pool: GroundScarRules.Pool
 var _layers: Array[Image] = []
 var _index: Image
 var _index_texture: ImageTexture
-## texture -> Image (RGBA8), read once.
-var _images: Dictionary = {}
-static var _blank: ImageTexture
+var _images: Dictionary = {}  # texture -> Image (RGBA8), read once
+## The last 40 requests to paint, accepted or refused and why (the capture harness prints them).
+static var log_lines := PackedStringArray()
 
 
-## The marks of the map `node` is in; null when it has none or draws nothing (headless).
+## The marks of the map `node` is in; null when none or headless.
 static func of(node: Node) -> GroundScars:
 	if node == null or not node.is_inside_tree():
 		return null
@@ -51,15 +46,18 @@ func _ready() -> void:
 	_index = Image.create_empty(GroundScarRules.GRID, GroundScarRules.GRID, false, Image.FORMAT_RGBA8)
 	tiles.create_from_images(_layers)
 	_index_texture = ImageTexture.create_from_image(_index)
-	_publish(_index_texture, tiles)
+	_publish()
+
+
+## Reparenting leaves and enters the tree without a new `_ready`: the shaders get the textures again.
+func _enter_tree() -> void:
+	if _pool != null:
+		_publish()
 
 
 func _exit_tree() -> void:
-	if _pool == null:
-		return
-	if _blank == null:
-		_blank = ImageTexture.create_from_image(Image.create_empty(GroundScarRules.GRID, GroundScarRules.GRID, false, Image.FORMAT_RGBA8))
-	RenderingServer.global_shader_parameter_set(INDEX_PARAM, _blank)
+	if _pool != null and is_queued_for_deletion():
+		RenderingServer.global_shader_parameter_set(INDEX_PARAM, RID())
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -93,7 +91,9 @@ func stamp(texture: Texture2D, at: Vector3, max_height_m := 0.0) -> bool:
 	if _pool == null or texture == null:
 		return false
 	var local := to_local(at)
-	if not _near_ground(local, max_height_m):
+	var refusal := _refusal(local, max_height_m)
+	if not refusal.is_empty():
+		note("refused (%s) %s at map %s, max height %.1f" % [refusal, texture.resource_path.get_file(), local, max_height_m])
 		return false
 	var mark := _image_of(texture)
 	var origin := GroundScarRules.texel_origin(Vector2(local.x, local.z), mark.get_size())
@@ -101,13 +101,28 @@ func stamp(texture: Texture2D, at: Vector3, max_height_m := 0.0) -> bool:
 	for tile in touched:
 		_paint_tile(mark, origin, tile)
 	_index_texture.update(_index)
+	_publish()
+	note("painted %s at map %s, %.1f m over the ground, %d tiles" % [texture.resource_path.get_file(), local, local.y - shape.height_at(local.x, local.z), touched.size()])
 	return not touched.is_empty()
 
 
-func _near_ground(local: Vector3, max_height_m: float) -> bool:
-	if shape == null or not shape.is_on_ground(local.x, local.z):
-		return false
-	return GroundScarRules.allows_height(shape.height_at(local.x, local.z), local.y, max_height_m)
+## Why a mark at `local` is not painted, or "". The height is from the ground's own height there.
+func _refusal(local: Vector3, max_height_m: float) -> String:
+	if shape == null:
+		return "no shape"
+	if not shape.is_on_ground(local.x, local.z):
+		return "not over land"
+	var ground_y := shape.height_at(local.x, local.z)
+	if not GroundScarRules.allows_height(ground_y, local.y, max_height_m):
+		return "too far from the ground: %.1f m" % (local.y - ground_y)
+	return ""
+
+
+static func note(text: String) -> void:
+	log_lines.append(text)
+	if log_lines.size() > 40:
+		log_lines.remove_at(0)
+
 
 
 func _paint_tile(mark: Image, origin: Vector2i, tile: Vector2i) -> void:
@@ -130,6 +145,6 @@ func _image_of(texture: Texture2D) -> Image:
 	return _images[texture]
 
 
-func _publish(index: Texture2D, array: Texture2DArray) -> void:
-	RenderingServer.global_shader_parameter_set(INDEX_PARAM, index)
-	RenderingServer.global_shader_parameter_set(TILES_PARAM, array)
+func _publish() -> void:
+	RenderingServer.global_shader_parameter_set(INDEX_PARAM, _index_texture.get_rid())
+	RenderingServer.global_shader_parameter_set(TILES_PARAM, tiles.get_rid())

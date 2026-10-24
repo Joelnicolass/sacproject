@@ -29,6 +29,12 @@ func lay(spell: SpellType, from_slot: int) -> bool:
 	return inflict(spell, from_slot)
 
 
+## `lay`, for a state that may not last longer than `max_s` seconds (the Vinewall: never more than what is left of the wall). A state whose
+## length does not come from the spell ignores the cap.
+func lay_within(spell: SpellType, from_slot: int, _max_s: float) -> bool:
+	return lay(spell, from_slot)
+
+
 ## How many ticks `lay` would hold the state on this body under `spell` (0 = it would not take). The AI rates a spell by it.
 func lay_ticks(_spell: SpellType) -> int:
 	return 0

@@ -13,6 +13,9 @@ extends Node3D
 ## Not painted when the ground under it is this far (m) from the mark (a bolt that bursts in the air leaves nothing). 0 = always.
 @export_range(0.0, 40.0, 0.5, "suffix:m") var max_height_m := 0.0
 
+## Where the last mark was painted (world; INF before any): the capture harness points its camera there.
+static var last_painted_at := Vector3.INF
+
 
 ## Paints the mark where this node is. False when nothing was painted.
 func mark() -> bool:
@@ -22,7 +25,13 @@ func mark() -> bool:
 ## Paints the mark at `point` (world), for an effect that knows its place only when it happens (the end of a bolt).
 func mark_at(point: Vector3) -> bool:
 	var scars := GroundScars.of(self)
-	return scars != null and scars.stamp(texture, point, max_height_m)
+	if scars == null:
+		GroundScars.note("refused: the map has no active GroundScars (%s)" % name)
+		return false
+	var painted := scars.stamp(texture, point, max_height_m)
+	if painted:
+		last_painted_at = point
+	return painted
 
 
 ## FxBus.broadcast_scene: this scene is the effect itself, played where the mark goes. Paints it and goes.

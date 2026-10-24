@@ -99,14 +99,14 @@ def godot_colors(envi: dict) -> dict:
 
 
 def tile_groups(folder: dict) -> dict:
-    """MGnn.MAPG (maps.d MapGroup, 60 bytes; loadDTIndex reads num at 33, indices at 34).
+    """MGnn.MAPG (maps.d MapGroup, 60 bytes; loadDTIndex reads num at 33, indices at 34, the detail layer DTnn at 55).
     Base groups start with a normalized height band (4 floats); transition groups have
     byte 32 set and start with the two base group numbers they blend."""
     groups = {}
     for (name, ext), raw in folder.items():
         if ext != "MAPG" or len(raw) != 60 or not name[2:].isdigit():
             continue
-        group = {"tiles": list(raw[34 : 34 + raw[33]])}
+        group = {"tiles": list(raw[34 : 34 + raw[33]]), "detail": raw[55]}
         if raw[32]:
             group["pair"] = struct.unpack_from("<2i", raw, 0)
         else:
@@ -341,6 +341,31 @@ def build_atlas(folder: dict, tmap: bytes, map_land: dict | None, extra: frozens
     }
 
 
+def detail_layers(folder: dict, groups: dict) -> tuple:
+    """(width, height, RGBA) strip of the land's detail layers DT00..DTnn side by side (256x256 grey each, the fine grain the
+    original lays over every tile of a group: sacmap.d:196 loadDTs, maps.d:65 loadDTIndex). Only the layers the groups use."""
+    count = max(group["detail"] for group in groups.values()) + 1
+    strip = bytearray(256 * count * 256 * 4)
+    for layer in range(count):
+        width, height, rgba = folder_texture(folder, "DT%02d" % layer)
+        assert (width, height) == (256, 256), ("DT%02d" % layer, width, height)
+        for y in range(256):
+            out = (y * 256 * count + layer * 256) * 4
+            strip[out: out + 256 * 4] = rgba[y * 256 * 4: (y + 1) * 256 * 4]
+    return 256 * count, 256, bytes(strip)
+
+
+def detail_ids(groups: dict, shown: dict) -> tuple:
+    """(16, 16, RGBA): one pixel per atlas tile id (x = id % 16, y = id // 16), R = the detail layer of the MAPT the atlas
+    shows at that id (`shown`: atlas id -> MAPT index of the land). Ids with no tile take layer 0."""
+    layer_of = {tile: group["detail"] for group in groups.values() for tile in group["tiles"]}
+    pixels = bytearray(16 * 16 * 4)
+    for index in range(256):
+        layer = layer_of.get(shown.get(index, -1), 0)
+        pixels[4 * index: 4 * index + 4] = bytes((layer, layer, layer, 255))
+    return 16, 16, bytes(pixels)
+
+
 def build_god(god: str, wad_name: str, land: str, sun_strength: float, tmap: bytes, map_land: dict | None, extra: frozenset = frozenset()):
     """({png name: (width, height, RGBA)}, theme dict with the ENVI colours)."""
     folder = land_folder(DATA / wad_name, land)
@@ -369,6 +394,12 @@ def build_god(god: str, wad_name: str, land: str, sun_strength: float, tmap: byt
     atlas = build_atlas(folder, tmap, map_land, extra, god)
     if atlas["ok"]:
         images["atlas.png"] = atlas["image"]
+        # The grain of each tile: the theme's atlas shows remapped MAPTs; a native atlas (NativeGround) shows each id itself.
+        groups = tile_groups(folder)
+        shown = {int(k): v for k, v in atlas["remap"].items()} if map_land is not None else {i: i for i in range(256)}
+        images["detail.png"] = detail_layers(folder, groups)
+        images["detail_ids.png"] = detail_ids(groups, shown)
+        images["detail_ids_native.png"] = detail_ids(groups, {i: i for i in range(256)})
     else:
         missing.append("atlas.png")
     theme = {

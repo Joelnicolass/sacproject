@@ -64,10 +64,10 @@ func play(params: Dictionary) -> void:
 		_axes.append(axis)
 	var multimesh := MultiMesh.new()
 	multimesh.transform_format = MultiMesh.TRANSFORM_3D
-	multimesh.mesh = _mesh()
+	multimesh.mesh = spike_mesh(sides, base_radius, neck_radius, neck_height)
 	multimesh.instance_count = _bases.size()
 	_spikes.multimesh = multimesh
-	_spikes.material_override = _material()
+	_spikes.material_override = spike_material(texture_tag, fallback_color)
 	_age = 0.0
 	_playing = true
 	_pose()
@@ -93,21 +93,22 @@ func _pose() -> void:
 		multimesh.set_instance_transform(i, Transform3D(basis, _bases[i]))
 
 
-func _material() -> StandardMaterial3D:
+## The material of a spike: the texture `tag` (jspk) lit, or `fallback` without the cache. The Wall of Spikes draws its own with it.
+static func spike_material(tag: String, fallback: Color) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.roughness = 1.0
 	material.cull_mode = BaseMaterial3D.CULL_DISABLED
-	var texture := FxAtlas.texture(texture_tag)
+	var texture := FxAtlas.texture(tag)
 	if texture:
 		material.albedo_texture = texture
 	else:
-		material.albedo_color = fallback_color
+		material.albedo_color = fallback
 	return material
 
 
 ## makeSpikeMesh(numV, texBase 0.6, base, baseRadius, topRadius) with numU 2: the ground ring, the neck ring and the tip
 ## (y up); texture coordinates radial, as sacengine's.
-func _mesh() -> ArrayMesh:
+static func spike_mesh(sides: int, base_radius: float, neck_radius: float, neck_height: float) -> ArrayMesh:
 	var key := "%d/%s/%s/%s" % [sides, base_radius, neck_radius, neck_height]
 	if _mesh_cache.has(key):
 		return _mesh_cache[key]

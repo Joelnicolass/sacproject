@@ -27,6 +27,14 @@ signal fed(amount: float, source: StringName)
 @export var poisoning: Poisoning
 
 
+## The ManaPool child of `node` (a body), or null.
+static func of(node: Node) -> ManaPool:
+	for child in node.get_children() if node else []:
+		if child is ManaPool:
+			return child
+	return null
+
+
 func setup(full: float) -> void:
 	maximum = full
 	current = full

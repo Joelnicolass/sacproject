@@ -7,7 +7,7 @@ extends Node
 ## Args after `--`: --map=<tag> --god=<god of the local wizard> [--biome=<god whose land the map wears; default --god>] [--ai-god=<god>] [--wizard=<tag>] [--after=<s> before the first
 ## round] [--shots=<n> rounds] [--every=<s>] [--out=<dir>] [--views=wizard,wizard_close,foe_close,overview,fountain,manahoar,tower] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
 ## [--cast=<spell tag>[,<tag>…], the local wizard casts them one after the other once --after has passed, before the first round: a spell that aims at himself (a ward, Healing Aura) on himself,
-## one that aims at a soul (pmcd, dnws, deda) on the closest soul he may fetch (the harness makes one when there is none), any other on the closest enemy (a zone, on the ground at its feet); mana is filled first; --cast-wait=<s> is the wait after the last cast (Explosion goes off 3.8 s after it starts: 4.5)] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
+## one that aims at a soul (pmcd, dnws, deda) on the closest soul he may fetch (the harness makes one when there is none), any other on the closest enemy (a zone, on the ground at its feet; Rainbow on himself, the first body of its chain; 061e needs --level=4 or more: ntlc, wobr, rifd, olah); mana is filled first; --cast-wait=<s> is the wait after the last cast (Explosion goes off 3.8 s after it starts: 4.5)] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
 ## Windowed: `-- --agent=flow --flow=match_shots.json` (the flow gives the sandbox that applies the quality preset).
 
 const GROUP_FOUNT := &"manafount"
@@ -105,7 +105,7 @@ func _cast_all(world: MatchWorld, tags: PackedStringArray) -> void:
 		pool.current = pool.maximum
 		var action := caster.action_for(tag)
 		var foe := _closest_foe(wizard)
-		var on_himself := action == null or action.pick == SpellAction.Pick.SELF or action is WardAction
+		var on_himself := action == null or action.pick == SpellAction.Pick.SELF or action is WardAction or _heals_own(action)
 		var aimed := null if on_himself else foe
 		if action != null and action.pick == SpellAction.Pick.SOUL:
 			aimed = await _soul_for(world, wizard, action)
@@ -114,6 +114,12 @@ func _cast_all(world: MatchWorld, tags: PackedStringArray) -> void:
 		print("match_shots: cast %s (casting: %s)" % [tag, caster.is_casting()])
 		while caster.is_casting():
 			await get_tree().physics_frame
+
+
+## A spell that lands on the wizard's own side (Rainbow): the cast names nobody and the wizard himself is the first body of the chain.
+func _heals_own(action: SpellAction) -> bool:
+	var target: Variant = action.get("target")
+	return target is SpellTarget and (target as SpellTarget).who == SpellTarget.Who.ALLY_OR_SELF
 
 
 ## --cast of a spell that aims at a soul (Soul Mole, Soul Wind, Animate Dead): the closest soul the wizard may fetch; when the match has

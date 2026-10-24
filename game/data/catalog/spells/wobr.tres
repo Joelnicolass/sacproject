@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_be8e0"]
 
+[ext_resource type="PackedScene" path="res://scenes/spells/actions/rainbow_action.tscn" id="2_action"]
+
 [resource]
 script = ExtResource("1_be8e0")
 tag = "wobr"
@@ -17,4 +19,5 @@ damage_range = 5.0
 effect_range = 50.0
 flags = 4101
 flags1 = 32866
+action = ExtResource("2_action")
 structures = PackedStringArray()

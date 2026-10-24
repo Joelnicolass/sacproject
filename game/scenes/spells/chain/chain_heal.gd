@@ -1,0 +1,25 @@
+class_name ChainHeal
+extends ChainEffect
+
+## One arc of Rainbow: each jump draws an arch from the last point to the next ally (it follows the ally while it travels) and when it
+## lands it cures all the ally's health through HealEffect (the same cure in time as Heal) and throws a burst of colored sparks.
+## It does not choose whom (ChainHop) nor heal by itself: HealEffect owns the cure.
+## Ref: sacengine updateRainbow, animateRainbowHit, heal with an infinite amount (state.d:18112-18156; REA FUN_0042cdb0).
+
+## The arch (a BeamType with path ARC under data/fx/beams/).
+@export var beam: BeamType
+## The sparks where the arch lands (a ParticleType under data/fx/).
+@export var burst: ParticleType
+
+
+func hop(_chain: ChainHop, from: Vector3, body: Node3D, point: Vector3) -> void:
+	if beam != null:
+		FxBus.broadcast_beam(beam.fx_name(), from, BodyNudge.center(body) if body != null else point, body)
+
+
+func land(_chain: ChainHop, body: Node3D, _point: Vector3) -> void:
+	if body == null:
+		return
+	if burst != null:
+		FxBus.broadcast(burst.bus_name(), BodyNudge.center(body))
+	HealEffect.heal_full(body)

@@ -4210,6 +4210,13 @@
     "owner": "rock"
    }
   },
+  "roks": {
+   "M000": {
+    "cutout": false,
+    "file": "M000",
+    "owner": "roks"
+   }
+  },
   "sacd": {
    "bodypart001": {
     "cutout": false,

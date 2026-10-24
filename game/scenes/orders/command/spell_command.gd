@@ -61,11 +61,22 @@ func arm_spell(index: int) -> void:
 	if not status.is_empty():
 		_log.say(status)
 		return
+	var spell: SpellType = book.spell_at(index)
+	var action := caster.action_for(spell.tag) if spell else null
+	if action != null and action.pick == SpellAction.Pick.SELF:
+		_cast_on_self(caster, spell)
+		return
 	armed.mode = "spell"
 	armed.spell_index = index
 	armed.cast_pending = ""
-	var spell: SpellType = book.spell_at(index)
 	_log.arm("spell", spell.tag if spell else "", "Elegí el blanco")
+
+
+## A spell that aims at the wizard himself (a ward) starts on the key: there is nothing to click.
+func _cast_on_self(caster: Caster, spell: SpellType) -> void:
+	armed.mode = ""
+	armed.cast_pending = spell.tag
+	caster.request_cast(spell.tag, Vector3.ZERO, null)
 
 
 ## Structure tab entries are armed here and applied on the next left click.
@@ -197,4 +208,6 @@ func _accepts_of(action: SpellAction) -> PackedStringArray:
 			return PackedStringArray(["soul", "own_soul"])
 		SpellAction.Pick.OWN_BUILDING:
 			return PackedStringArray(["own_building"])
+		SpellAction.Pick.SELF:
+			return PackedStringArray()
 	return PackedStringArray()

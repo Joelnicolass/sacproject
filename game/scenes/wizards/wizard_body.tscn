@@ -54,6 +54,12 @@
 [ext_resource type="Resource" path="res://data/afflictions/vined.tres" id="f159_vined_type"]
 [ext_resource type="Resource" path="res://data/afflictions/oiled_wizard.tres" id="f155_oiled_type"]
 [ext_resource type="Script" path="res://scenes/audio/wizard_sounds.gd" id="a052_sounds"]
+[ext_resource type="PackedScene" path="res://scenes/spells/wards/skin_of_stone.tscn" id="w_skin_of_stone"]
+[ext_resource type="PackedScene" path="res://scenes/spells/wards/air_shield.tscn" id="w_air_shield"]
+[ext_resource type="PackedScene" path="res://scenes/spells/wards/ethereal_form.tscn" id="w_ethereal_form"]
+[ext_resource type="PackedScene" path="res://scenes/spells/wards/fireform.tscn" id="w_fireform"]
+[ext_resource type="PackedScene" path="res://scenes/spells/wards/protective_swarm.tscn" id="w_protective_swarm"]
+[ext_resource type="Script" path="res://scenes/spells/wards/wards.gd" id="w_wards"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -111,6 +117,21 @@ properties/15/replication_mode = 2
 properties/16/path = NodePath("Caster:cast_fx_shown")
 properties/16/spawn = true
 properties/16/replication_mode = 2
+properties/17/path = NodePath("Wards/SkinOfStone:shown")
+properties/17/spawn = true
+properties/17/replication_mode = 2
+properties/18/path = NodePath("Wards/AirShield:shown")
+properties/18/spawn = true
+properties/18/replication_mode = 2
+properties/19/path = NodePath("Wards/EtherealForm:shown")
+properties/19/spawn = true
+properties/19/replication_mode = 2
+properties/20/path = NodePath("Wards/Fireform:shown")
+properties/20/spawn = true
+properties/20/replication_mode = 2
+properties/21/path = NodePath("Wards/ProtectiveSwarm:shown")
+properties/21/spawn = true
+properties/21/replication_mode = 2
 
 [node name="Wizard" type="CharacterBody3D"]
 floor_max_angle = 1.4835298
@@ -143,11 +164,35 @@ priority = 4.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_body")
 
-[node name="Health" type="Node" parent="." node_paths=PackedStringArray("oil", "afflictions", "poisoning")]
+[node name="Health" type="Node" parent="." node_paths=PackedStringArray("oil", "afflictions", "poisoning", "wards")]
 script = ExtResource("4_health")
+wards = NodePath("../Wards")
 oil = NodePath("../Afflictions/Oiled")
 afflictions = NodePath("../Afflictions")
 poisoning = NodePath("../Poisoning")
+
+[node name="Wards" type="Node" parent="."]
+script = ExtResource("w_wards")
+
+[node name="SkinOfStone" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("w_skin_of_stone")]
+body = NodePath("../..")
+health = NodePath("../../Health")
+
+[node name="AirShield" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("w_air_shield")]
+body = NodePath("../..")
+health = NodePath("../../Health")
+
+[node name="EtherealForm" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("w_ethereal_form")]
+body = NodePath("../..")
+health = NodePath("../../Health")
+
+[node name="Fireform" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("w_fireform")]
+body = NodePath("../..")
+health = NodePath("../../Health")
+
+[node name="ProtectiveSwarm" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("w_protective_swarm")]
+body = NodePath("../..")
+health = NodePath("../../Health")
 
 [node name="ManaPool" type="Node" parent="." node_paths=PackedStringArray("poisoning")]
 script = ExtResource("5_mana")
@@ -237,10 +282,12 @@ rings_scene = ExtResource("19_rings")
 
 [node name="Swarm" parent="Caster/Actions" instance=ExtResource("a041_swarm")]
 
-[node name="GhostForm" type="Node" parent="." node_paths=PackedStringArray("visual", "death_look")]
+[node name="GhostForm" type="Node" parent="." node_paths=PackedStringArray("visual", "health", "mana", "death_look")]
 script = ExtResource("12_ghost")
 rules = ExtResource("7_rules")
 visual = NodePath("../Tilt/Mesh")
+health = NodePath("../Health")
+mana = NodePath("../ManaPool")
 death_look = NodePath("../DeathLook")
 
 [node name="DeathLook" type="Node" parent="." node_paths=PackedStringArray("body", "visual", "clip_pose", "ragdoll")]
@@ -262,8 +309,9 @@ script = ExtResource("d023_handfx")
 caster = NodePath("../Caster")
 rig = NodePath("../Tilt/Mesh/Rig")
 
-[node name="Afflictions" type="Node" parent="." node_paths=PackedStringArray("body", "health", "clip_pose", "look")]
+[node name="Afflictions" type="Node" parent="." node_paths=PackedStringArray("body", "health", "clip_pose", "look", "wards")]
 script = ExtResource("f120_afflictions")
+wards = NodePath("../Wards")
 body = NodePath("..")
 health = NodePath("../Health")
 clip_pose = NodePath("../ClipPose")
@@ -339,3 +387,4 @@ ghost = NodePath("../GhostForm")
 height_m = 1.6
 
 [connection signal="solved" from="Avoidance" to="." method="_on_avoided"]
+[connection signal="shown_changed" from="Wards/EtherealForm" to="GhostForm" method="set_ethereal"]

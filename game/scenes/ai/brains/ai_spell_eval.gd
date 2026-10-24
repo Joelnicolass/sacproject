@@ -19,12 +19,13 @@ const ATTACK_MASK := 0x58000000
 ## wizSupport (shiny.d:3086, 0xa4000000): heal, speedup and the other benefits.
 const SUPPORT_MASK := 0xa4000000
 
-## Evaluators (ratingFn): 0 none, 1 single target, 2 area, 3 heal, 4 speedup.
+## Evaluators (ratingFn): 0 none, 1 single target, 2 area, 3 heal, 4 speedup, 5 guard (a ward on himself).
 const FN_NONE := 0
 const FN_SINGLE := 1
 const FN_AREA := 2
 const FN_HEAL := 3
 const FN_SPEEDUP := 4
+const FN_GUARD := 5
 
 var perception: AiPerception
 var stance: AiStance
@@ -59,6 +60,8 @@ static func wants_acc(spell: SpellType) -> bool:
 
 ## Which evaluator a spell uses (ratingFn, shiny.d:334-345: the table of names first, then the flags1 chain).
 static func rating_fn(spell: SpellType) -> int:
+	if spell.ai_use == SpellType.AiUse.SELF_GUARD:
+		return FN_GUARD
 	match spell.tag:
 		"laeh":
 			return FN_HEAL
@@ -117,6 +120,8 @@ func rate(caster: AiTrack, spell: SpellType, target: AiTrack, dist_scaled: float
 			return _heal(spell, target)
 		FN_SPEEDUP:
 			return _speedup(target)
+		FN_GUARD:
+			return AiGuard.rate(spell, target, perception, tactics)
 	return 0.0
 
 

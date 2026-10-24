@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_uyto4"]
 
+[ext_resource type="PackedScene" path="res://scenes/spells/actions/ward_action.tscn" id="2_action"]
+
 [resource]
 script = ExtResource("1_uyto4")
 tag = "niks"
@@ -13,4 +15,6 @@ spell_order = 240
 speed = 15.0
 duration = 80.0
 flags1 = 1040
+action = ExtResource("2_action")
+ai_use = 1
 structures = PackedStringArray()

@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_6hie3"]
 
+[ext_resource type="PackedScene" path="res://scenes/spells/actions/ward_action.tscn" id="2_action"]
+
 [resource]
 script = ExtResource("1_6hie3")
 tag = "mrff"
@@ -16,4 +18,6 @@ amount2 = 250
 effect_range = 5.0
 duration = 40.0
 flags1 = 1040
+action = ExtResource("2_action")
+ai_use = 1
 structures = PackedStringArray()

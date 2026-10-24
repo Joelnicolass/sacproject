@@ -56,7 +56,7 @@ func _ready() -> void:
 		return
 	if body == null:
 		body = get_parent().get_parent() as Node3D
-	if health and _has_authority():
+	if health and has_authority():
 		health.died.connect(_on_died)
 	if look:
 		look.visible = shown
@@ -75,7 +75,7 @@ static func ticks_for_seconds(seconds: float) -> int:
 
 ## Server (or solo). False (nothing changes) when the ward is already on.
 func start(ticks: int) -> bool:
-	if not _has_authority() or is_on() or ticks <= 0:
+	if not has_authority() or is_on() or ticks <= 0:
 		return false
 	_until = MatchClock.now() + ticks
 	shown = true
@@ -88,7 +88,7 @@ func start(ticks: int) -> bool:
 ## The server's own clock: on from the tick it started until start + ticks. Derived from the tick, so whoever asks in a tick
 ## reads the same. A client trusts `shown`.
 func is_on() -> bool:
-	if not _has_authority():
+	if not has_authority():
 		return shown
 	return _until >= 0 and MatchClock.now() < _until
 
@@ -150,7 +150,8 @@ func _who() -> String:
 	return str(body.name) if body else "?"
 
 
-func _has_authority() -> bool:
+## True on the server (or in a solo match): the only peer that decides.
+func has_authority() -> bool:
 	return not MpKit.is_networked() or MpKit.is_server()
 
 

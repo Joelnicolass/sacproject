@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/wards/ward.gd" id="1_ward"]
+[ext_resource type="Resource" path="res://data/catalog/spells/niks.tres" id="2_spell"]
+
+[node name="SkinOfStone" type="Node3D" node_paths=PackedStringArray("look")]
+script = ExtResource("1_ward")
+spell = ExtResource("2_spell")
+factor = 0.25
+look = NodePath("Look")
+
+[node name="Look" type="Node3D" parent="."]
+visible = false

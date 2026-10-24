@@ -14,6 +14,11 @@ const NORMAL := "res://data/ai/tactics_normal.tres"
 ## Heal only goes to a body that misses at least this much health.
 @export_range(0.0, 2000.0, 10.0) var heal_min_missing := 100.0
 
+@export_group("Escudos propios (061b)")
+## The wizard puts a ward on himself (Skin of Stone, Air Shield...) when at least guard_min_foes known enemies stand within this distance.
+@export_range(0.0, 100.0, 1.0) var guard_threat_m := 25.0
+@export_range(1, 10) var guard_min_foes := 2
+
 @export_group("Tiro limpio (053b)")
 ## A projectile or area spell is cast only with a clear line (AiLineOfFire); without it the wizard walks closer (shiny.d:3262).
 @export var los_check := true

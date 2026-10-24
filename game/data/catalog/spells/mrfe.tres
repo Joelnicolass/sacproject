@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_xqlgs"]
 
+[ext_resource type="PackedScene" path="res://scenes/spells/actions/ward_action.tscn" id="2_action"]
+
 [resource]
 script = ExtResource("1_xqlgs")
 tag = "mrfe"
@@ -12,4 +14,6 @@ casting_time_s = 0.9877
 spell_order = 238
 duration = 15.0
 flags1 = 1040
+action = ExtResource("2_action")
+ai_use = 1
 structures = PackedStringArray()

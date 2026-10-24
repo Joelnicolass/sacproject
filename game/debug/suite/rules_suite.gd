@@ -22,6 +22,7 @@ const RADIAL_CASES := preload("res://debug/suite/radial_cases.gd")  # 038c
 const HOVER_FRAME_CASES := preload("res://debug/suite/hover_frame_cases.gd")
 const DEATH_CASES := preload("res://debug/suite/death_cases.gd")  # 055a
 const TOWER_CASES := preload("res://debug/suite/tower_cases.gd")  # 061a
+const WARD_CASES := preload("res://debug/suite/ward_cases.gd")  # 061b
 const BIOME_CASES := preload("res://debug/suite/biome_cases.gd")
 const TEAM_CASES := preload("res://debug/match/team_cases.gd")  # 049b, 049c
 
@@ -69,6 +70,7 @@ func _run_suite() -> void:
 	_results.merge(await DEATH_CASES.new().run(self))  # 055a
 	_results.merge(await TEAM_CASES.new().run(self))  # 049b, 049c
 	_results.merge(await TOWER_CASES.new().run(self))  # 061a
+	_results.merge(await WARD_CASES.new().run(self))  # 061b
 	_results.merge(BIOME_CASES.new().run(self))
 	_print_suite()
 

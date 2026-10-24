@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/wards/ward.gd" id="1_ward"]
+[ext_resource type="Resource" path="res://data/catalog/spells/mrff.tres" id="2_spell"]
+[ext_resource type="Script" path="res://scenes/spells/wards/body_aura.gd" id="3_aura"]
+
+[sub_resource type="SphereShape3D" id="Sphere_reach"]
+radius = 5.0
+
+[node name="Fireform" type="Node3D" node_paths=PackedStringArray("look")]
+script = ExtResource("1_ward")
+spell = ExtResource("2_spell")
+factor = 1.0
+look = NodePath("Look")
+
+[node name="Look" type="Node3D" parent="."]
+visible = false
+
+[node name="Aura" type="Node3D" parent="." node_paths=PackedStringArray("ward", "reach")]
+script = ExtResource("3_aura")
+ward = NodePath("..")
+reach = NodePath("Reach")
+damage_per_s = 250.0
+pierce_shield = true
+
+[node name="Reach" type="CollisionShape3D" parent="Aura"]
+shape = SubResource("Sphere_reach")

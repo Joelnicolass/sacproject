@@ -21,6 +21,7 @@ signal stage_changed(stage: Stage)
 const GHOST_ALPHA := 0.36
 ## sacengine ghostEnergy.
 const GHOST_ENERGY := 10.0
+const ETHEREAL_FADE_S := 0.5  ## Ethereal Form fades the living wizard to the ghost's alpha and back in 30 ticks.
 ## sacengine updateFPS / updateAnimFactor: one animation frame lasts 2 ticks at 60 fps.
 const ANIM_FPS := 30.0
 ## Group of every GhostForm: DefeatRule finds the wizards that already exist.
@@ -33,6 +34,8 @@ const STAGE_NAMES: PackedStringArray = ["vivo", "muere", "se levanta", "fantasma
 
 @export var rules: MatchRules
 @export var visual: GeometryInstance3D
+@export var health: Health
+@export var mana: ManaPool
 ## Lays the body down when it dies and stands it up for the ghost (empty = the body just stays as it is).
 @export var death_look: WizardDeathLook
 ## Converts a dagon shadeless energy to Godot's light scale. Shadeless is texture · energy like
@@ -56,14 +59,13 @@ const STAGE_NAMES: PackedStringArray = ["vivo", "muere", "se levanta", "fantasma
 var desecrations := 0
 
 var _left := 0.0
+var _ethereal := false
 var _fade: Tween
 var _rng := RandomNumberGenerator.new()
 ## RFC-023f: the see-through look of THIS body (its own meshes, or the rig's), never of the others.
 var _look := SeeThroughLook.new()
 
 @onready var _wizard: Node3D = get_parent()
-@onready var _health: Health = get_parent().get_node("Health")
-@onready var _mana: Node = get_parent().get_node("ManaPool")
 
 
 func _ready() -> void:
@@ -76,8 +78,15 @@ func _ready() -> void:
 	if MpKit.is_networked() and not MpKit.is_server():
 		set_physics_process(false)
 		return
-	_health.died.connect(_on_died)
-	_mana.given.connect(_on_mana_given)
+	health.died.connect(_on_died)
+	mana.given.connect(_on_mana_given)
+
+
+## Ethereal Form went on or off (its Ward says so on every peer): the living body fades to the ghost's look and back.
+func set_ethereal(on: bool) -> void:
+	_ethereal = on
+	if is_node_ready():
+		_show_stage(true)
 
 
 func owner_slot() -> int:
@@ -169,9 +178,9 @@ func _physics_process(delta: float) -> void:
 		Stage.GHOST:
 			## A ritual on the altar brings the ghost back to the body so it can be drained and killed
 			## (sacengine state.d:13959-13962); with at least 1 life so it does not die on the way.
-			if desecrations > 0 and _health.current < 1.0:
-				_health.current = 1.0
-			if desecrations > 0 or _health.is_full():
+			if desecrations > 0 and health.current < 1.0:
+				health.current = 1.0
+			if desecrations > 0 or health.is_full():
 				_enter(Stage.UNGHOSTING, _seconds(_type().float_to_stance_frames if _type() else 0))
 		Stage.UNGHOSTING:
 			_left -= delta
@@ -191,23 +200,20 @@ func _after_dying() -> void:
 	if desecrations > 0 or not _has_altar():
 		_enter(Stage.GONE, 0.0)
 		return
-	_mana.set("current", 0.0)
+	mana.current = 0.0
 	_enter(Stage.RISING, _seconds(_type().corpse_rise_frames if _type() else 0))
 
 
 func _on_mana_given(amount: float) -> void:
 	if stage == Stage.GHOST and rules:
-		_health.heal(rules.ghost_health_per_mana * amount)
+		health.heal(rules.ghost_health_per_mana * amount)
 
 
 func _enter(next: Stage, seconds: float) -> void:
 	_left = seconds
 	stage = next
 	var at := _wizard.global_position
-	print("mago %d %s en %.1f %.1f vida %d mana %d" % [
-		int(_wizard.get("owner_slot")), STAGE_NAMES[next], at.x, at.z,
-		roundi(float(_health.get("current"))), roundi(float(_mana.get("current"))),
-	])
+	print("mago %d %s en %.1f %.1f vida %d mana %d" % [owner_slot(), STAGE_NAMES[next], at.x, at.z, roundi(health.current), roundi(mana.current)])
 
 
 ## sacengine pickRandomAnimation(deathCandidatesOnGround): death0, death1 or death2.
@@ -247,13 +253,14 @@ func _show_stage(animate: bool) -> void:
 	visual.visible = true
 	if death_look != null and stage != Stage.DYING and stage != Stage.RISING and stage != Stage.GONE:
 		death_look.stand()
-	var see_through := shows_ghost() or stage == Stage.GONE
+	var ethereal := _ethereal and stage == Stage.ALIVE
+	var see_through := shows_ghost() or stage == Stage.GONE or ethereal
 	_look.set_shadow(not see_through)
-	_look.set_shadeless(shows_ghost())
+	_look.set_shadeless(shows_ghost() or ethereal)
 	var ghost := 1.0 - GHOST_ALPHA
 	match stage:
 		Stage.ALIVE, Stage.DYING:
-			_look.set_transparency(0.0)
+			_fade_to(ghost if ethereal else 0.0, ETHEREAL_FADE_S, animate)
 			if animate and stage == Stage.DYING and death_look != null:
 				death_look.fall()
 		Stage.RISING:
@@ -277,8 +284,7 @@ func _show_stage(animate: bool) -> void:
 
 func _fade_to(transparency: float, seconds: float, animate: bool) -> void:
 	if not animate or seconds <= 0.0:
-		_look.set_transparency(transparency)
-		return
+		return _look.set_transparency(transparency)
 	_fade = visual.create_tween()
 	_fade.tween_method(_look.set_transparency, _look.transparency, transparency, seconds)
 

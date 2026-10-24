@@ -11,7 +11,7 @@ extends Node
 ## Only the server (or solo) runs begin/finish/cancel. This base holds no game logic, so the editor
 ## can run it for the configuration warnings.
 
-enum Pick { GROUND, OWN_UNIT, SOUL, OWN_BUILDING }
+enum Pick { GROUND, OWN_UNIT, SOUL, OWN_BUILDING, SELF }
 
 const NO_MANA := Refusal.NO_MANA
 const COOLING := Refusal.COOLING
@@ -32,7 +32,7 @@ class Aim extends RefCounted:
 
 ## SpellType tag this action answers to.
 @export var tag := ""
-## What the click aims at: the ground, an own creature, a soul or an own building.
+## What the click aims at: the ground, an own creature, a soul or an own building. SELF aims at nothing: the cast starts on the key.
 @export var pick := Pick.GROUND
 ## What the battle line says while the spell is armed.
 @export var prompt := ""

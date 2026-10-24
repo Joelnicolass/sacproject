@@ -4,7 +4,7 @@ extends Node
 ## from a few fixed viewpoints (the local wizard from behind, an overview, the nearest mana fountain) every few seconds
 ## and quits. It only watches: it plays no input and moves no actor; the camera is its own.
 ## It lives in a subfolder because AgentKit mounts every .gd of agent/harness/ itself.
-## Args after `--`: --map=<tag> --god=<god of the local wizard> [--ai-god=<god>] [--wizard=<tag>] [--after=<s> before the first
+## Args after `--`: --map=<tag> --god=<god of the local wizard> [--biome=<god whose land the map wears; default --god>] [--ai-god=<god>] [--wizard=<tag>] [--after=<s> before the first
 ## round] [--shots=<n> rounds] [--every=<s>] [--out=<dir>] [--views=wizard,overview,fountain]; the match's own flags
 ## (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
 ## Windowed: `-- --agent=flow --flow=match_shots.json` (the flow gives the sandbox that applies the quality preset).
@@ -51,6 +51,7 @@ func _run() -> void:
 		push_error("match_shots: the world never had a local wizard.")
 		tree.quit(1)
 		return
+	await _wear_biome(world, StringName(arg("biome", god)))
 	var out := arg("out", "res://agent/out/match_shots")
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(out))
 	var views := arg("views", "wizard,overview,fountain").split(",", false)
@@ -67,6 +68,24 @@ func _run() -> void:
 			await tree.create_timer(every_s).timeout
 	print("MATCH_SHOTS done: %d shots in %s (preset %s)" % [_shot_count, out, _preset(world)])
 	tree.quit(0)
+
+
+## The match draws the land (the look) from its seed, not from the wizard's god: without this a capture of "Persephone on <map>"
+## shows a random god's ground one time in five. The harness hands the wanted god's look to the map's rig (what MatchBiome does).
+func _wear_biome(world: MatchWorld, biome: StringName) -> void:
+	if DisplayServer.get_name() == "headless":
+		return  # a headless process has no rig (LookRig frees itself)
+	for frame in 5:
+		await get_tree().process_frame
+	var rig := world.map.look if world.map != null else null
+	var type := GameCatalog.shared().god(String(biome))
+	if not is_instance_valid(rig) or rig.is_queued_for_deletion() or type == null or type.look == null:
+		push_warning("match_shots: no look to wear for '%s'; the match's own land stays." % biome)
+		return
+	rig.apply_profile(type.look)
+	print("match_shots: land of %s on %s" % [biome, MapCatalog.active().tag])
+	for frame in 5:
+		await get_tree().process_frame
 
 
 func _wait_world() -> MatchWorld:

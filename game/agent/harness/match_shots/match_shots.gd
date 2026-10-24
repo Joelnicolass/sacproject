@@ -5,7 +5,7 @@ extends Node
 ## and quits. It only watches: it plays no input and moves no actor; the camera is its own.
 ## It lives in a subfolder because AgentKit mounts every .gd of agent/harness/ itself.
 ## Args after `--`: --map=<tag> --god=<god of the local wizard> [--biome=<god whose land the map wears; default --god>] [--ai-god=<god>] [--wizard=<tag>] [--after=<s> before the first
-## round] [--shots=<n> rounds] [--every=<s>, from 0.02: a burst of shots; the files end in the milliseconds, _t001500] [--out=<dir>] [--views=wizard,wizard_close,halo,foe_close,scar,zone,cloud,overview,fountain,manahoar,tower,wall,ground] [--ground-at=<x>,<z> world metres, the point the "ground" view stands over; default the local wizard] [--ground-yaw=<degrees> where it looks, 0 = toward -z] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
+## round] [--shots=<n> rounds] [--every=<s>, from 0.02: a burst of shots; the files end in the milliseconds, _t001500] [--out=<dir>] [--views=wizard,wizard_close,halo,foe_close,aim,scar,zone,cloud,overview,fountain,manahoar,tower,wall,ground] [--ground-at=<x>,<z> world metres, the point the "ground" view stands over; default the local wizard] [--ground-yaw=<degrees> where it looks, 0 = toward -z] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
 ## [--cast=<spell tag>[,<tag>…], the local wizard casts them one after the other once --after has passed, before the first round: a spell that aims at himself (a ward, Healing Aura) on himself,
 ## one that aims at a soul (pmcd, dnws, deda) on the closest soul he may fetch (the harness makes one when there is none), a wall (lwrf, laws, laww, lawv, cnef) on the ground half way to the closest enemy (--cast-wait=6 to see it grown); any other on the closest enemy (a zone, on the ground at its feet; Rainbow on himself, the first body of its chain; 061e needs --level=4 or more: ntlc, wobr, rifd, olah; 061j needs --level=8: rter with --god=persephone, nrot with --god=stratos); 061i needs --level=8 or more: mrhc, egar, pavi, ivob, taed (the "carrier" view follows the carrier; the report prints the side, rage and swelling of the closest enemy); mana is filled first; --cast-wait=<s> is the wait after the last cast (a cloud rains after its cast: 10 shows the rain, 14 Cloudkill's bolts; Explosion goes off 3.8 s after it starts: 4.5)] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
 ## Windowed: `-- --agent=flow --flow=match_shots.json` (the flow gives the sandbox that applies the quality preset).
@@ -30,6 +30,9 @@ const TAG_MANAHOAR := &"oham"
 ## The "carrier" view: the first spell carrier in flight from this far back and this high (Death is 12 m tall: use 30 and 10).
 @export_range(2.0, 80.0, 0.5, "suffix:m") var carrier_m := 8.0
 @export_range(0.0, 40.0, 0.5, "suffix:m") var carrier_up_m := 4.0
+## The "aim" view: the place the last --cast aimed at, from the wizard's side this far back and this high (a cow falling there, the mark it leaves).
+@export_range(5.0, 120.0, 0.5, "suffix:m") var aim_m := 30.0
+@export_range(0.0, 80.0, 0.5, "suffix:m") var aim_up_m := 18.0
 ## The "zone" view: the camera stands this far from the first ground zone (the one of --cast=pxef|zorf|tfir), toward the wizard, this high.
 @export_range(10.0, 200.0, 1.0, "suffix:m") var zone_m := 45.0
 @export_range(0.0, 100.0, 0.5, "suffix:m") var zone_up_m := 28.0
@@ -64,6 +67,8 @@ const TAG_MANAHOAR := &"oham"
 const GroundGrid := preload("res://agent/harness/match_shots/ground_grid.gd")
 
 var _shot_count := 0
+## Where the last --cast aimed (the place of the foe it named): the "aim" view frames it, to see a mark or a fall there after the target is gone.
+var _aim_at := Vector3.ZERO
 
 
 static func arg(arg_name: String, fallback: String = "") -> String:
@@ -143,6 +148,7 @@ func _cast_all(world: MatchWorld, tags: PackedStringArray) -> void:
 			## A wall goes on the ground half way between the wizard and the enemy, across the line that joins them.
 			point = (wizard.global_position + foe.global_position) * 0.5
 			aimed = null
+		_aim_at = point
 		caster.request_cast(tag, point, aimed)
 		print("match_shots: cast %s (casting: %s)" % [tag, caster.is_casting()])
 		while caster.is_casting():
@@ -296,9 +302,15 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 				print("match_shots: no spell carrier on its way; view skipped")
 				return
 			var carrier := carriers[0] as Node3D
-			look = carrier.global_position + Vector3.UP * 0.5
+			var box := _drawn_box(carrier)
+			look = box.get_center() if box.size.length() > 0.0 else carrier.global_position + Vector3.UP * 0.5
 			var from_wizard := (carrier.global_position - focus) * Vector3(1.0, 0.0, 1.0)
-			spot = look - (from_wizard.normalized() if from_wizard.length() > 0.1 else Vector3.FORWARD) * carrier_m + Vector3.UP * carrier_up_m
+			var back := maxf(carrier_m, 2.0 * maxf(box.size.x, maxf(box.size.y, box.size.z)))
+			spot = look - (from_wizard.normalized() if from_wizard.length() > 0.1 else Vector3.FORWARD) * back + Vector3.UP * maxf(carrier_up_m, 0.4 * back)
+		"aim":
+			look = _aim_at + Vector3.UP * 1.0
+			var toward_aim := (focus - _aim_at) * Vector3(1.0, 0.0, 1.0)
+			spot = look + (toward_aim.normalized() if toward_aim.length() > 0.1 else Vector3.BACK) * aim_m + Vector3.UP * aim_up_m
 		"wall":
 			var walls := world.find_children("*", "SpellWall", true, false)
 			if walls.is_empty():
@@ -407,11 +419,32 @@ func _report_carriers(wizard: Node3D) -> void:
 	for node in get_tree().root.find_children("*", "SpellCarrier", true, false):
 		var carrier := node as SpellCarrier
 		print("match_shots: carrier %s motion=%d phase=%d at (%.1f, %.1f, %.1f)" % [carrier.name, carrier.motion, carrier.phase, carrier.global_position.x, carrier.global_position.y, carrier.global_position.z])
+		for part in carrier.find_children("*", "MeshInstance3D", true, false):
+			var mesh_node := part as MeshInstance3D
+			var material: Material = mesh_node.material_override if mesh_node.material_override != null else (mesh_node.get_surface_override_material(0) if mesh_node.mesh != null and mesh_node.mesh.get_surface_count() > 0 else null)
+			print("match_shots:   mesh %s visible=%s mesh=%s shapes=%d material=%s size (%.1f, %.1f, %.1f) at (%.1f, %.1f, %.1f)" % [mesh_node.name, mesh_node.is_visible_in_tree(),
+				mesh_node.mesh.get_class() if mesh_node.mesh != null else "none", mesh_node.get_blend_shape_count(), material.get_class() if material != null else "none",
+				mesh_node.get_aabb().size.x * mesh_node.global_basis.get_scale().x, mesh_node.get_aabb().size.y * mesh_node.global_basis.get_scale().y,
+				mesh_node.get_aabb().size.z * mesh_node.global_basis.get_scale().z, mesh_node.global_position.x, mesh_node.global_position.y, mesh_node.global_position.z])
 	var foe := _closest_foe(wizard)
 	if foe != null and not get_tree().root.find_children("*", "SpellCarrier", true, false).is_empty():
 		var afflictions := Afflictions.of(foe)
 		var growth := DevourGrowth.of(foe)
 		print("match_shots: foe %s side=%d raging=%s inflation=%.2f" % [foe.name, int(foe.get("owner_slot")), afflictions != null and afflictions.raging(), growth.inflation if growth != null else 0.0])
+
+
+## The box (world) of what a carrier draws: its visible meshes of the first fifty, so a view can stand as far as its size asks (Death is 12 m tall).
+static func _drawn_box(carrier: Node3D) -> AABB:
+	var box := AABB()
+	var first := true
+	for part in carrier.find_children("*", "MeshInstance3D", true, false):
+		var mesh_node := part as MeshInstance3D
+		if mesh_node.mesh == null or not mesh_node.is_visible_in_tree():
+			continue
+		var world := mesh_node.global_transform * mesh_node.get_aabb()
+		box = world if first else box.merge(world)
+		first = false
+	return box
 
 
 ## One line per beam FxBus has on screen at each shot (a bolt, an arc): its type, if it is drawn and where it starts and ends.

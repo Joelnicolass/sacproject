@@ -5,3 +5,4 @@
 [resource]
 script = ExtResource("1_species")
 tag = "JAW4"
+tint_cluster_m = 6.0

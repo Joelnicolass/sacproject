@@ -16,6 +16,7 @@ static func plan(species: VegetationSpecies, seed: int, count: int, radius_m: fl
 	var height := shape.sampler()
 	var to_map := map_xform.affine_inverse()
 	var pose := MeshPlanter.pose_of(species.prop())
+	var variation := species.variation()
 	var buffer := PackedFloat32Array()
 	buffer.resize(n * MeshPlanter.XFORM_STRIDE)
 	var kept := 0
@@ -29,9 +30,9 @@ static func plan(species: VegetationSpecies, seed: int, count: int, radius_m: fl
 		var y: float = height.call(on_map.x, on_map.z)
 		if is_nan(y):
 			continue
-		var s := lerpf(species.scale_range.x, species.scale_range.y, _unit(seed, FloraPlacement.SALT_SCALE, tag_h, i))
-		var basis := Basis(Vector3.UP, TAU * _unit(seed, FloraPlacement.SALT_YAW, tag_h, i)).scaled(Vector3(s, s, s))
-		MeshPlanter.write_xform(buffer, kept, Transform3D(basis, map_xform * Vector3(on_map.x, y, on_map.z)) * pose)
+		var yaw := TAU * _unit(seed, FloraPlacement.SALT_YAW, tag_h, i)
+		var at := FloraVariation.instance_transform(variation, seed, tag_h, 0, 0, i, yaw, _unit(seed, FloraPlacement.SALT_SCALE, tag_h, i), map_xform * Vector3(on_map.x, y, on_map.z), pose)
+		FloraVariation.write_instance(buffer, kept, at, FloraVariation.instance_color(variation, seed, tag_h, 0, 0, i, on_map.x, on_map.z))
 		kept += 1
 	buffer.resize(kept * MeshPlanter.XFORM_STRIDE)
 	return buffer
@@ -45,6 +46,7 @@ static func _unit(seed: int, salt: int, tag_h: int, i: int) -> float:
 static func instance(mesh: Mesh, buffer: PackedFloat32Array, material: Material, shadows: bool, range_end_m: float) -> MultiMeshInstance3D:
 	var multimesh := MultiMesh.new()
 	multimesh.transform_format = MultiMesh.TRANSFORM_3D
+	multimesh.use_colors = true
 	multimesh.mesh = mesh
 	multimesh.instance_count = buffer.size() / MeshPlanter.XFORM_STRIDE
 	multimesh.buffer = buffer

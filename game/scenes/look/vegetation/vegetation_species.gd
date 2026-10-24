@@ -11,12 +11,26 @@ extends Resource
 @export var tag := ""
 ## The prop it draws (assets/original/props/<model>.glb). Empty: `tag` (the original draws the prop with the tag's name).
 @export var model := ""
-## Uniform scale of an instance, picked per instance by FloraPlacement between x and y.
-@export var scale_range := Vector2(0.9, 1.1)
 ## Off by default (RFC-054 §14.6): plants cast no shadow. A preset can also turn every shadow of a layer off.
 @export var cast_shadow := false
 ## Camera distance where this species is gone (it dithers out over the layer's `fade_m` before). 0 = the layer's radius.
 @export_range(0.0, 400.0, 1.0, "suffix:m") var visibility_end_m := 0.0
+
+
+@export_group("Variation")
+## Uniform scale of an instance, picked per instance by FloraPlacement between x and y.
+@export var scale_range := Vector2(0.75, 1.3)
+## Extra height stretch: each plant is taller or shorter than its width by up to this fraction (0.1 = +-10 %).
+@export_range(0.0, 0.5, 0.01) var height_jitter := 0.1
+## The colors an instance is multiplied by: the darkest and the lightest plant. Each plant lies between them.
+@export var tint_dark := Color(0.88, 0.9, 0.85)
+@export var tint_light := Color(1.08, 1.1, 1.0)
+## 0: the tint is picked per plant. Above 0: it follows blotches of this size in meters (value noise on the map), so a
+## meadow has darker and lighter patches.
+@export_range(0.0, 100.0, 0.5, "suffix:m") var tint_cluster_m := 0.0
+## Each plant leans up to this angle away from vertical, toward a hashed direction.
+@export_range(0.0, 30.0, 0.5, "suffix:deg") var tilt_max_deg := 4.0
+@export_group("")
 
 
 ## The tag FloraPlacement hashes: `tag`, or `model` for a species made by hand without one.
@@ -27,3 +41,10 @@ func density_tag() -> String:
 ## The prop drawn: `model`, or the tag.
 func prop() -> String:
 	return model if not model.is_empty() else tag
+
+
+## The numbers FloraVariation.instance_transform / instance_color read, as plain values (a planting task copies these,
+## never the Resource).
+func variation() -> Dictionary:
+	return {"scale_range": scale_range, "height_jitter": height_jitter, "tint_dark": tint_dark, "tint_light": tint_light,
+		"tint_cluster_m": tint_cluster_m, "tilt_max_deg": tilt_max_deg}

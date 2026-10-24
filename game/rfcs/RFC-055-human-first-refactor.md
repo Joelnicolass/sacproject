@@ -360,24 +360,86 @@ El usuario marcó dos huecos: (1) el plan no prioriza construir el juego para qu
 
 ### 13.2 Registro de deprecación (sistemas calcados del original)
 
-| Sistema 1 a 1 hoy | Por qué limita | Reemplazo Godot | Corte |
-|---|---|---|---|
-| Muerte por Tween rígido; el cadáver no cae | Voladores en el aire; el alma depende de un Tween | `Corpse` por ticks + `CorpseLook` + ragdoll | 055a (en curso) |
-| Cielo: `GodEnvi` pisado por `import_themes.py`, 3 escritores del `Environment` | ~30 archivos para cambiar un cielo | `LookProfile` único, un dueño | 055b |
-| `original_material.gd` parsea `index.json` en runtime; 47 lecturas del original | El juego depende del formato original | Materiales horneados como `.tres` | 055b/055c |
-| `SideVision`: una criatura por bando por tick, memoria de 384 ticks | Nadie entiende cómo «ve» una unidad | `Vision` (`Area3D`) por unidad | 055c |
-| `UnitBody.Mode` replicado como puente a la FSM; 750 líneas | God file de 12 responsabilidades | Componentes hijos + FSM sola | 055c |
-| `CreatureType` de 44 campos, clips en `Dictionary`, nombres del WAD (`ycro`) | Ilegible en el inspector | Sub-recursos con nombre, `trogg.tres`, `AnimationLibrary` | 055c |
-| Ataques que copian `state.d` (`ranged_attack.gd`, 26 citas) | Un arma nueva exige leer el original | `Weapons/` con escenas `Weapon` enchufables | 055c |
-| Aldeanos con la regla de 50 m de sacengine | Parecen quietos | FSM visible `Idle/Work/Flee/Cower` | 055c |
-| `BuildingType` con `flags/folder/components`; `Layout` instanciado y caché `bldg()` | No se ve ni se mueve en el editor | Escena por edificio, nodos en `map.tscn` | 055d |
-| `FloraMap` de bytes desde `widgets.json` | Números sin sentido para un humano | `FloraLayer` (PNG pintable) + `VegetationPatch` | 055d |
-| Terreno: triángulos crudos con 5 representaciones | Imposible deformar o esculpir | `TerrainShape` único dueño | 055d-t |
-| `SpellType.flags/flags1`; IA que despacha por tag; `AimedAction` con herencia de 2 | Un hechizo nuevo toca 13 archivos | Campos con nombre, `ai_role`, `Aim` como hijo, proyectil `PackedScene` | 055e |
-| `AiPerception` (698 líneas, 32 citas), cerebros por tag | La IA no se puede ajustar sin leer sacengine | Percepción que escucha `Vision`; tácticas en `.tres` | **055f (nuevo)** |
-| `SacrificeSystem` (492) + `Ritual` (311) + `DoctorBody` (406) | Ritual y doctor calcados | Ritual como FSM con nodos y `.tres` | **055g (nuevo)** |
-| Herramientas de bake del original (`bake_catalog`, `bake_map_layout`, `bake_flora_map`…) | Re-correrlas borra ediciones humanas | Borrar o congelar en `tools/import/legacy/` | Con 055c/055d |
-| `MpKit.` en 86 archivos | La red está en todas partes | Wrapper de casos de uso | Fase 3 |
+Actualizado el 2026-10-24 con la auditoría `research/055R-legacy-audit.md`, que tiene la evidencia de cada fila. Se mide con `tools/lint/conventions.sh --verbose`. Las citas al original en `scenes/` hoy son 1 529 líneas en 373 archivos; subieron con los hechizos de 061. Tamaño: S, M o L. **Mantener** quiere decir que la fila es una decisión razonable y no se corrige.
+
+| Sistema 1 a 1 hoy | Evidencia (hoy) | Por qué limita | Reemplazo Godot | Corte · tamaño · depende de | Estado |
+|---|---|---|---|---|---|
+| Muerte por Tween rígido | `Corpse` por ticks, `CorpseLook`, ragdoll en 20 de 74 modelos | — | `Corpse` + `CorpseLook` + ragdoll; `TippingFall` queda como respaldo (mantener) | 055a · hornear los otros 54 en 055a-5 · 055s | **Hecho** (falta 055a-5) |
+| Cielo con 3 escritores del `Environment` | Se borraron `ThemeApplier`/`GodTheme`/`GodEnvi`/`SkyLayer`/`LightLayer` (`4bcbd7db`) | — | `EnvironmentLayer` + `LookProfile` | 055b | **Hecho** |
+| Lecturas del original en runtime | C13 40 (eran 47): 13 líneas de código (`original_material.gd` parsea `index.json`, `hud_icons.gd`, `fx_atlas.gd`, `order_marker.gd`, `body_catalog.gd`, `terrain_ground_material.gd`), 4 avisos, ~23 comentarios | Sin `assets/original` cae a rellenos; no se puede arrastrar una textura en el inspector | `Texture2D`/`Material` por `@export`; materiales horneados en `models/<x>.tscn`; `OriginalAssets` solo en `tools/` | 055s (materiales) · 055h (HUD) · 055x (FX) · 062-2 · 055z (resto y lint sin comentarios) · M | Pendiente |
+| `SideVision` | 273 líneas, `SEEN_TICKS 384`, `GRID 256` | Nadie entiende cómo ve una unidad; atado a la grilla | `Vision` (`Area3D`) por unidad | 055c2 · M · 063-1 saca el `GRID` | Pendiente |
+| `UnitBody` god file | 783 líneas (eran 750), `enum Mode` de 11 | 12 responsabilidades | Componentes hijos + FSM sola | 055c · L | Pendiente (creció) |
+| `CreatureType` | 46 `@export`, 12 `Dictionary` de clips; `.tres` con tag (`EHTH_2.tres`, 72) | Ilegible; los clips están duplicados con `BodyModel.clips` | Sub-recursos con nombre, `trogg.tres`, `AnimationLibrary` del modelo | 055c1 + 055i · L | Pendiente |
+| Ataques que copian `state.d` | `ranged_attack.gd` 337 líneas, 27 citas | Un arma nueva exige leer el original | `Weapons/` con escenas enchufables | 055c3 · M | Pendiente |
+| Aldeanos con la regla de 50 m | `peasant_behavior.gd` 215 líneas, sin FSM | Parecen quietos | FSM `Idle/Work/Flee/Cower` | 055c · S | Pendiente |
+| `BuildingType` crudo | 56 líneas, campos humanos; 196 escenas arrastrables | — | — | 055d-d1/d2 | **Hecho** (los nombres `<dios>_<tag>` de 114 archivos pasan a 055i) |
+| `FloraMap` | Borrado (`28b3b6a3`) | — | `FloraLayer` + `VegetationPatch` | 055d-d3 | **Hecho** |
+| Terreno con 5 representaciones | `TerrainShape` único dueño, `GroundRay` única copia del rayo | — | — | 055d-t1/t2 | **Hecho**; la grilla sigue (ver §13.2b B1) |
+| `SpellType.flags*`, `AimedAction` | `flags/flags1/flags2` en `spell_type.gd:24-26` y 107 `.tres` con `flags*` ≠ 0; `ai_spell_eval.gd` lee bits (`0xfc00`, `0x781f`, `1<<11`); 5 `extends AimedAction`; 15 de 53 sin `action` | Un hechizo nuevo toca 13 archivos. **Convive duplicado:** `ai_use` (061b) junto a los bits | Campos con nombre, `ai_use` como única entrada de la IA, `Aim` como hijo | 055e · L · 061 cerrado, 055c | Pendiente (creció con 061) |
+| `AiPerception`, cerebros por tag | 700 líneas, 32 citas; `wizard_brain.gd:240` compara `spell.tag == "ccas"` | La IA no se ajusta sin leer sacengine | Percepción que escucha `Vision`; tácticas en `.tres` | 055f · L · 055c2, 055e | Pendiente |
+| Ritual y doctor | `sacrifice_system.gd` 494, `ritual.gd` 311, `doctor_body.gd` 418 | Calcados | Ritual como FSM con nodos y `.tres` | 055g · L | Pendiente |
+| Herramientas de bake del original | Se borraron `bake_map_layout` y `bake_flora_map`. Siguen `bake_catalog.gd` + `catalog_builder.gd`, `import_terrain.gd`, `terrain_glb_export.gd`, `make_flat_terrain.gd` | Re-correrlas pisa ediciones humanas | Congelar `bake_catalog` (055i); borrar las de terreno | 055i · 063-4 · S | A medias |
+| `MpKit.` fuera de la allowlist | 85 archivos (units 29, ui 15) | La red está en todas partes | Wrapper de casos de uso. **Mantener** el diseño host autoritativo con dedicado | Fase 3 · L | Pendiente |
+
+### 13.2b Registro, segunda parte (auditoría 055R, 2026-10-24)
+
+**Grupo B: suelo y terreno.**
+
+| # | Sistema 1 a 1 hoy | Evidencia | Por qué limita | Reemplazo Godot | Corte · tamaño · depende de |
+|---|---|---|---|---|---|
+| B1 | Terreno en grilla 256×256 cada 10 m (2 560 m fijos) | 340 líneas en 140 archivos con símbolos de la grilla; 39 scripts de `scenes/` usan `TerrainShape`; `GRID 256`/`2560` en visión, SCAR, pasto y minimapa; `MapDefinition.terrain/tiles`; 061k usa `SIDE`/`DEFORM_CELL` | No hay otros tamaños, voladizos, arcos ni cuevas; un mapa nuevo necesita el original | Malla libre de Blender con `GroundSurface` único y `GroundField` con `size`/`cell_m`. La grilla convive solo en la transición y se borra tras la paridad. Sin Terrain3D | **RFC-063 (alias 055t)**: 063-1 → 2a/2b/2c → 3 → 4 · L · 061k-2/3 integrados; 063-4 pide 062-2 |
+| B2 | Suelo con el atlas de baldosas del original, traducido entre dioses, con la luz horneada de High Noon para todos | Los 5 `ground_classic.tres` apuntan a `maps/high_noon/light.png` (el arreglo se revirtió en `e4d52f26`); 725 celdas sin baldosa en peasantville; 19 celdas sueltas en High Noon | Un mapa sin ids del original no tiene suelo; colores raros | 4 roles PBR por dios (`GodGround`), `ground_roles.png` por mapa **proyectado en mundo** (`ground_size_m`, por 063), luz del mapa | **062** · cortes 1 y 4 hechos, 2 en curso, falta 3 · M |
+| B3 | Dos sistemas de suelo en paralelo | `sacrifice_ground.gdshader` (atlas) y `ground_pbr.gdshader` + `GroundSet` (solo Persephone, el perfil no lo usa); además `NativeGround` y `TileLayerMap` (lo lee el pasto); 30 archivos los nombran | Dos caminos para lo mismo | Un shader `ground.gdshader`; se borran los 4 scripts y los 3 shaders viejos | 062-2 · M |
+
+**Grupo C: auditoría a fondo.**
+
+| # | Sistema 1 a 1 hoy | Evidencia | Por qué limita | Reemplazo Godot | Corte · tamaño · depende de |
+|---|---|---|---|---|---|
+| C-1 | Identidad por tag de 4 letras del WAD | C18 132: `sacrifice_flow.gd` 25, ui 26, units 24, ai 12, map 11; `GameData.ability` 20, `BodyCatalog.info` 18, `GameData.wizard` 14. Datos con nombre de WAD: creatures 72, spells 53, abilities 63, wizards 15, `data/audio/creatures`, 74 `models/<tag>.tscn`. Referencias por texto en `CreatureType` (`ability_tags`, `ranged_attack_tag`, `active_ability_tag`, `passive_*`, `god`, `model`; 33 lecturas), `WizardType.spell_tag`. Tablas por tag en código (`FALLING_ACCELERATION {"dkba"}`, `sacrifice_system.gd` 8 claves) | Una criatura propia necesita inventarse un tag y repetirlo en 5 campos, sin aviso en el editor | Referencias `@export` tipadas (`Array[AbilityType]`, `WeaponType`, `SoundSet`, `GodType`, `SpellType`, `PackedScene`) y `.tres` con nombre humano. El tag queda como id de red derivado, solo en la frontera (**mantener** eso) | **055i identidad por recursos (nuevo)** · L · 055i-a (UI, lobby, `sacrifice_flow`) en paralelo con 063; 055i-b junto a 055c1 |
+| C-2 | Registros SPEL/CRE8 copiados | `SpellType`: `flags*`, `amount2`, `count` (=`amount3`), `spell_order`; `AbilityType`: `flags*`, `amount2`, `args: Dictionary`; `CreatureType`: stats en milésimas (`melee_accuracy 800`, `aggressiveness 1000`), `spell_order 498`; `WizardType`: 6 `Dictionary` + `death_frames`. Conviven duplicados: `ai_use` y bits; clips en el tipo y en `BodyModel` | Ilegible; dos fuentes de verdad | Booleanos y enums con nombre, `ai_use` único, nombres por uso, `@export_range(0,1)`, clips solo en el modelo | 055e (hechizos y habilidades) · 055c1 (criaturas y clips) · 055u (escalas) |
+| C-3 | Tiempo en ticks y cuadros en el inspector | 64 `@export *_ticks` (units 31, spells 13, `AiProfile` 6) contra 236 `*_s`; clips con `frames/framerate` a 30 fps y `attack_ticks`; `SpellType.duration`/`speed`/`*_range` sin unidad | Un humano no piensa en «480 ticks» | Segundos y metros en el inspector, convertidos una vez con `MatchClock.ticks_for`. **Mantener** los ticks enteros a 60 Hz dentro de la sim, del snapshot y de la red (determinismo); el golpe del clip como marcador `hit` en la animación | **055u unidades humanas (nuevo)** · M · 061 cerrado; por carpetas, en paralelo con 055c |
+| C-4 | Formatos del original en runtime | Ver la fila «Lecturas del original» de §13.2 | — | — | — |
+| C-5 | Posiciones como números | C19 328, de los que 320 son `data/catalog/body_sizes/` (y `hands` dentro de `BodyModel.clips`); C16 41 (units 14, spells 11); C20 17 radios de `MatchRules`; banco con 73 `Vector3` en 113 `debug/rules/*.tres` (`anchor 1270,0,1270` = centro de la grilla) | No se ve ni se mueve con el gizmo | `Marker3D`, `BoneAttachment3D`, `CollisionShape3D` en la escena | 055s (C16, C19) · 055r (C20) · 055q (banco) |
+| C-6 | Comentarios que abren citando al original | C9 356: units 117, ui 58, ai 34, audio 28, spells 24, orders 15, fx 15, map 11, sacrifice 10, resto ≤9 | El doc no explica el juego | `## Ref:` al final | Cada corte arregla su sistema · **055z limpieza final (nuevo)** · S–M |
+| C-7 | Banco atado a la paridad | El digest se compara contra su propia base (28 en `det_baseline.txt`), no contra sacengine. El acople está en 15 archivos de `debug/` con 43 líneas de valores «como state.d» (`ai_cases` 12, `target_cases` 7) y en las anclas fijas de 2 560 m | Un cambio de diseño rompe casos escritos como copia; no sirve en mapas de malla | Banco de humo (mismo digest dos veces); casos con reglas propias en s/m; `BenchSquad : Marker3D` en escena | 055q · M · 063-3 |
+| C-8a | Cámara: fórmula de sacengine | `world_camera.gd` grupo «Formula», 15 coeficientes (`distance_per_height 2.32`, `distance_zoom_scale 3.13`…); `KEY_*` crudos; sin límites | No se ajusta a ojo | `Curve` de distancia y altura por zoom, vista en el editor, límites desde `GroundSurface.bounds()`. **Mantener** la cámara detrás del mago (identidad) | 055k · S–M · 063-1 para los límites |
+| C-8b | HUD medido en «unidades de 480 px» | `hud_scale.gd:21 SACENGINE_HEIGHT := 480.0`; `HudIcons` con 4 `const *_DIR` y `icon_file(tag)`; `bitmap_digits.gd`; `radial_layout.gd` en `*_px` de HUD; el menú de opciones salió de `sacform.d` (031R) | Reemplaza `content_scale`, anclas y `Theme` de Godot; la UI no se tematiza | `stretch canvas_items` + `expand`, contenedores con anclas, un `Theme`, texturas por `@export`; fuera `HudScale`. **Mantener** el diseño de radial, libro y barras | **055h HUD nativo (nuevo)** · M · ninguna (paralelo) |
+| C-8c | IA traducida de `shiny.d` | 237 citas en `scenes/ai`; `AiTrack` con bits (`ENEMY 4`, `SEEN 0x80`, status `0x40000`) y `Kind {WIZ, CRE, MAHO, STR}`; `AiProfile` «every `beta*` switch» (41 `@export`) | Sin nombres de diseño | Campos y enums con nombre, `AiProfile` con knobs de diseño, percepción sobre `Vision` | 055f (se amplía) |
+| C-8d | Audio por tag y por ruta | `SoundLibrary.find(rel)`, `creature(tag)`, `wizard(tag)`; `FxSoundMap` (nombre del FX → sonido) | Texto en lugar de recursos | `CreatureType.sounds: SoundSet`; el sonido dentro del recurso o escena del FX. **Mantener** `SoundBus`, el pool y `SoundSet` | 055i-b · 055x |
+| C-8e | Animación con nombres del WAD y duplicada | 74 modelos con `AnimationTree` por rol (nativo), pero clips `AAa1`/`FGst` y `BodyModel.clips: Dictionary` repetido en los tipos | Dos fuentes y nombres ilegibles | `AnimationLibrary` del modelo con nombres de rol, marcadores `hit`, `hands` como `BoneAttachment3D` | 055c1 · 055s |
+| C-8f | FX buscados por nombre | C17 26 (spells 17); `FxBus` busca `data/fx/<nombre>.tres` (128). `ParticleType` sobre atlas de sprites | Errores de tipeo silenciosos | `@export var fx: ParticleType` + socket. **Mantener** los sprites aditivos sobre atlas (son el look del original); lo nuevo puede ser `GPUParticles3D` | 055x · M · 061 cerrado |
+
+**Decisiones razonables que se mantienen** (no son corte):
+- Sim a 60 Hz en ticks enteros (`MatchClock = physics_ticks_per_second`).
+- 1 unidad = 1 m, con el balance de velocidades y alcances.
+- Un altar por bando y victoria por altares: `MatchState` ya admite N.
+- `MapDefinition` tipado y lados derivados de `PlayerStart`.
+- Órdenes y selección por hijos de `MatchCommand` con InputMap (72 acciones); quedan 18 teclas crudas en 3 archivos, que van a 055z.
+- Cielo con las bandas originales, por pedido del usuario.
+- `StructureAction` como pieza común.
+- Red host autoritativa.
+- El tag como id de red.
+
+**Orden propuesto** (prioridad del usuario: hechizos y suelo/terreno en curso, después la v2; detalle y pares paralelos en 055R §4):
+
+| Paso | Cortes | En paralelo con |
+|---|---|---|
+| 1 | 061k-2/3 (Volcano, Bore, abolladuras) + lo que falte de 061 | 062-2 |
+| 2 | 062-2 (con roles proyectados en mundo) → 062-3 | 055h |
+| 3 | 063-1 `GroundSurface` sobre la grilla | 055h, 055k |
+| 4 | 063-2a/b/c malla libre | 055i-a |
+| 5 | 063-3 paridad de los 9 mapas → 063-4 borrar la grilla | 055c1 + 055i-b |
+| 6 | 055c1 + 055i-b | 063-3/4 |
+| 7 | 055s → 055a-5 | 055h si no cerró |
+| 8 | 055c2–c5 | 055x |
+| 9 | 055x · 055r | entre sí |
+| 10 | 055e · 055u | por carpetas |
+| 11 | 055f · 055g | entre sí |
+| 12 | 055k (puede adelantarse desde el paso 3) | cualquiera |
+| 13 | 055q | 055z |
+| 14 | 055z: C9 restante, C13 = 0, lint sin comentarios. Cierra la fase 1 | — |
+
+Después siguen la fase 2 (contenido) y la fase 3 (MpKit), como en §13.4. «En paralelo» quiere decir worktrees con carpetas disjuntas. Godot sigue en la cola FIFO.
 
 ### 13.3 Ambiente y bioma (contenido nuevo, después del refactor del look)
 Verificado: el formato de ambiente del original solo trae niebla por mapa (`sacengine/source/envi.d:58-65`); no hay día y noche ni lluvia. Todo esto es contenido nuevo, diseñado como juego moderno. El mapa tutorial no está importado (solo existe en el instalador original).

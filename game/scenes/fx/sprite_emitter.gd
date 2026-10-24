@@ -6,6 +6,9 @@ extends CPUParticles3D
 ## Presentation only: it never draws in a headless (dedicated) process. Runs in the editor
 ## (@tool, no autoloads); editing the type's numbers rebuilds it live.
 
+## Relative change of the emission rate below which `set_rate` leaves the particle pool alone (resizing it drops the live sprites).
+const RATE_STEP := 0.15
+
 @export var type: ParticleType:
 	set(value):
 		if type != null and type.changed.is_connected(_apply):
@@ -28,6 +31,10 @@ extends CPUParticles3D
 
 var _warned := false
 var _active := false
+## Particles per second asked by `set_rate`; negative = the type's own `rate_per_s`.
+var _rate := -1.0
+## The rate the pool was last sized for.
+var _sized_rate := -1.0
 
 
 func _ready() -> void:
@@ -56,7 +63,19 @@ func set_active(active: bool) -> void:
 
 
 func _apply_active() -> void:
-	emitting = _active and not _is_headless()
+	emitting = _active and _rate != 0.0 and not _is_headless()
+
+
+## Emits `per_s` particles per second instead of the type's `rate_per_s` (a rate the game decides, like the Manahoar's, which
+## follows the mana it gives). 0 stops; a negative value goes back to the type's. Only continuous types (rate_per_s > 0).
+func set_rate(per_s: float) -> void:
+	_rate = per_s if per_s < 0.0 else maxf(per_s, 0.0)
+	_apply_active()
+	if _rate <= 0.0 or type == null or type.rate_per_s <= 0.0 or not is_node_ready():
+		return
+	if _sized_rate > 0.0 and absf(_rate - _sized_rate) < _sized_rate * RATE_STEP:
+		return
+	_apply()
 
 
 ## What the state asks for; `emitting` is also off in a dedicated process.
@@ -97,7 +116,9 @@ func _apply() -> void:
 	explosiveness = 1.0 if one_shot else 0.0
 	lifetime = type.lifetime_s
 	lifetime_randomness = type.lifetime_randomness
-	amount = maxi(1, ceili(type.rate_per_s * type.lifetime_s) if type.rate_per_s > 0.0 else type.count)
+	var rate := type.rate_per_s if _rate < 0.0 else _rate
+	_sized_rate = rate
+	amount = maxi(1, ceili(rate * type.lifetime_s) if type.rate_per_s > 0.0 else type.count)
 	direction = type.direction
 	spread = type.spread
 	initial_velocity_min = type.speed_min

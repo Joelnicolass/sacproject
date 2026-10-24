@@ -53,6 +53,15 @@ func _physics_process(delta: float) -> void:
 				pool.add(rate * delta, &"manahoar")
 
 
+## Particles per second of the Manahoar's flame: sacengine draws one flame particle per mana point per second it gives
+## (state.d animateManahoar takes the rate addManahoar returns), so it is 0 when no allied manalith is around. Every peer
+## can ask (it only reads the structures); a body that gives no mana (dead, or not a Manahoar) answers 0.
+func flame_rate() -> float:
+	if not enabled or _body == null or _body.is_dead():
+		return 0.0
+	return _rate_from_manaliths()
+
+
 func _rate_from_manaliths() -> float:
 	var peak := rules.manahoar_rate if rules else 20.0
 	var near := rules.manahoar_near_distance if rules else 50.0

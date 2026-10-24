@@ -41,6 +41,10 @@ const PLAYBACK := &"parameters/playback"
 		if Engine.is_editor_hint() and is_node_ready():
 			preview(value)
 
+## Where the sprite effect a creature carries floats (the Manahoar's mana flame): a node that follows a bone of the skeleton,
+## placed in this scene so the editor moves it with a gizmo. Empty: the model carries none (CreatureFx then uses its fallback offset).
+@export var carried_fx_socket: Node3D
+
 @export_group("Baked from the original")
 ## Bounding box of the rest pose (from the exporter index at bake time).
 @export var bind_aabb := AABB()

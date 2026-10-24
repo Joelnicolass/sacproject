@@ -255,9 +255,11 @@ catalog = ExtResource("f126_catalog")
 [node name="ManaSupport" type="Node3D" parent="."]
 script = ExtResource("f41_mana_support")
 
-[node name="CreatureFx" type="Node3D" parent="." node_paths=PackedStringArray("body")]
+[node name="CreatureFx" type="Node3D" parent="." node_paths=PackedStringArray("body", "rig", "mana_support")]
 script = ExtResource("f055_cfx")
 body = NodePath("..")
+rig = NodePath("../Tilt/Mesh/Rig")
+mana_support = NodePath("../ManaSupport")
 
 [node name="ClipPose" type="Node" parent="." node_paths=PackedStringArray("visual")]
 script = ExtResource("f36_clip")

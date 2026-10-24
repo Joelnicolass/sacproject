@@ -10,6 +10,9 @@ extends Node3D
 ## On the dedicated server (headless) nothing loads: the rig is inert.
 ## Presentation only: the simulation never reads the rig.
 
+## A model scene was instanced under the rig (its skeleton and sockets exist now).
+signal model_loaded
+
 ## The two hand sockets follow the skeleton of the instanced model; the .glb is drawn with z mirrored (BodyModel).
 const MIRROR := Vector3(1.0, 1.0, -1.0)
 
@@ -82,6 +85,11 @@ func play_position() -> float:
 ## The frame of the active clip's first attack event (the strike lands on it), -1 without one.
 func impact_frame() -> int:
 	return _model_root.impact_frame(role_tag(_role)) if _model_root != null and not _role.is_empty() else -1
+
+
+## The node the model scene gives for the sprite effect a creature carries (BodyModel.carried_fx_socket); null without one.
+func carried_fx_socket() -> Node3D:
+	return _model_root.carried_fx_socket if _model_root != null else null
 
 
 func skeleton() -> Skeleton3D:
@@ -244,6 +252,7 @@ func _reload() -> void:
 	_bind_hands()
 	update_configuration_warnings()
 	play(preview_role, true)
+	model_loaded.emit()
 
 
 func _clear() -> void:

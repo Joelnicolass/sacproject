@@ -124,9 +124,10 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_vvhhi"]
 
-[node name="maho" type="Node3D" unique_id=1153520847]
+[node name="maho" type="Node3D" unique_id=1153520847 node_paths=PackedStringArray("carried_fx_socket")]
 script = ExtResource("1_u2up3")
 model = "maho"
+carried_fx_socket = NodePath("Model/Skeleton3D/ManaFlame/Socket")
 bind_aabb = AABB(-0.375552, -0.751113, -0.637469, 0.771996, 1.433192, 1.597652)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0]]
 clips = {
@@ -242,3 +243,9 @@ libraries/ = SubResource("AnimationLibrary_vvhhi")
 [node name="ClipEvents" type="Node" parent="." unique_id=2035510905]
 unique_name_in_owner = true
 script = ExtResource("3_1dver")
+
+[node name="ManaFlame" type="BoneAttachment3D" parent="Model/Skeleton3D"]
+bone_name = "bone_10"
+
+[node name="Socket" type="Marker3D" parent="Model/Skeleton3D/ManaFlame"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.004, 0.285, 0.568)

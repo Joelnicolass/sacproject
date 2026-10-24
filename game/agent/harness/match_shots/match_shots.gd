@@ -5,11 +5,13 @@ extends Node
 ## and quits. It only watches: it plays no input and moves no actor; the camera is its own.
 ## It lives in a subfolder because AgentKit mounts every .gd of agent/harness/ itself.
 ## Args after `--`: --map=<tag> --god=<god of the local wizard> [--biome=<god whose land the map wears; default --god>] [--ai-god=<god>] [--wizard=<tag>] [--after=<s> before the first
-## round] [--shots=<n> rounds] [--every=<s>] [--out=<dir>] [--views=wizard,overview,fountain] [--hover=wizard]; the match's own flags
+## round] [--shots=<n> rounds] [--every=<s>] [--out=<dir>] [--views=wizard,overview,fountain,manahoar] [--hover=wizard]; the match's own flags
 ## (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
 ## Windowed: `-- --agent=flow --flow=match_shots.json` (the flow gives the sandbox that applies the quality preset).
 
 const GROUP_FOUNT := &"manafount"
+const GROUP_UNIT := &"unit"
+const TAG_MANAHOAR := &"oham"
 ## Where each view puts the camera, from its subject.
 @export_group("Views")
 @export_range(4.0, 40.0, 0.5, "suffix:m") var behind_m := 12.0
@@ -17,6 +19,9 @@ const GROUP_FOUNT := &"manafount"
 @export_range(30.0, 300.0, 5.0, "suffix:m") var overview_m := 110.0
 @export_range(4.0, 60.0, 0.5, "suffix:m") var fount_m := 16.0
 @export_range(0.0, 30.0, 0.5, "suffix:m") var fount_up_m := 6.0
+## The "manahoar" view: the camera stands this far from the nearest Manahoar (any bearing the wizard's side is) and this high.
+@export_range(2.0, 30.0, 0.5, "suffix:m") var manahoar_m := 6.0
+@export_range(0.0, 10.0, 0.5, "suffix:m") var manahoar_up_m := 1.5
 
 @export var camera: Camera3D
 
@@ -106,6 +111,14 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 			look = fount.global_transform.origin + Vector3.UP * 3.0
 			var toward := (focus - fount.global_transform.origin) * Vector3(1.0, 0.0, 1.0)
 			spot = look + toward.normalized() * fount_m + Vector3.UP * fount_up_m
+		"manahoar":
+			var hoar := _nearest_manahoar(focus)
+			if hoar == null:
+				print("match_shots: no Manahoar in the match; view skipped")
+				return
+			look = hoar.global_transform.origin + Vector3.UP * 1.2
+			var side := (focus - hoar.global_transform.origin) * Vector3(1.0, 0.0, 1.0)
+			spot = look + (side.normalized() if side.length() > 0.1 else Vector3.BACK) * manahoar_m + Vector3.UP * manahoar_up_m
 		_:
 			push_warning("match_shots: unknown view '%s'" % view)
 			return
@@ -160,4 +173,19 @@ func _nearest_fount(from: Vector3) -> Node3D:
 		if fount != null and fount.global_transform.origin.distance_to(from) < best_d:
 			best = fount
 			best_d = fount.global_transform.origin.distance_to(from)
+	return best
+
+
+## The Manahoar (creature tag `oham`) closest to `from`; null when the match has none yet.
+func _nearest_manahoar(from: Vector3) -> Node3D:
+	var best: Node3D
+	var best_d := INF
+	for node in get_tree().get_nodes_in_group(GROUP_UNIT):
+		var body := node as UnitBody
+		if body == null or body.type == null or StringName(body.type.tag) != TAG_MANAHOAR:
+			continue
+		var d := body.global_transform.origin.distance_to(from)
+		if d < best_d:
+			best = body
+			best_d = d
 	return best

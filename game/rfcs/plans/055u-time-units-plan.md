@@ -75,7 +75,7 @@ Las «edades» de la IA cuentan corridas de la ranura k2 (6 ticks en Normal). El
 | `walls/wall_spirit.gd` | `trail_ticks 90` (largo del rastro, una muestra por tick) | `trail_s 1.5` | `charm.tscn 60 → 1.0` (×3) |
 | `zones/zone_blast.gd` | `burn_ticks 60` | `burn_s 1.0` | — |
 | `zones/zone_heat.gd` (Volcano, entró con el merge) | `burn_ticks 0` | `burn_s 0.0` | `volcano_zone.tscn 30 → 0.5` |
-| `zones/volcano_look.gd` (Volcano) | `lava_frame_ticks 4`, `cloud_cycle_ticks 120`, `pulse_ticks 90` | `lava_frame_s 0.0666`, `cloud_cycle_s 2.0`, `pulse_s 1.5` | — |
+| `zones/volcano_look.gd` (Volcano) | `lava_frame_ticks 4`, `pulse_ticks 90` (main quitó `cloud_cycle_ticks`) | `lava_frame_s 0.0666`, `pulse_s 1.5` | — |
 | `zones/zone_stun_ring.gd` | `cooldown_ticks 480` | `cooldown_s 8.0` | — |
 | `zones/rift_ribbon.gd` | `trail_ticks 120` | `trail_s 2.0` | — |
 | `wards/ward.gd` | `grow_ticks 15` | `grow_s 0.25` | `healing_aura.tscn 30 → 0.5` |

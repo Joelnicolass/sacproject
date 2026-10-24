@@ -88,7 +88,6 @@ const FIELDS := [
 	["res://scenes/spells/zones/zone_stun_ring.gd", "cooldown_s", 480],
 	["res://scenes/spells/zones/rift_ribbon.gd", "trail_s", 120],
 	["res://scenes/spells/zones/volcano_look.gd", "lava_frame_s", 4],
-	["res://scenes/spells/zones/volcano_look.gd", "cloud_cycle_s", 120],
 	["res://scenes/spells/zones/volcano_look.gd", "pulse_s", 90],
 	["res://scenes/spells/wards/ward.gd", "grow_s", 15],
 	["res://scenes/spells/wards/healing_aura.tscn", "grow_s", 30],

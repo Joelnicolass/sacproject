@@ -5,8 +5,7 @@ extends SpellProjectile
 ## (it acts, for the spell's duration or until it is told it is done) and ENDING (it goes away), and its children do what their phase asks:
 ## pulses hurt or freeze the bodies near it, the look draws the balls, the ice or the rift. It does not know what the spell does to a body
 ## (ZonePulse and its classes do) nor how to draw (the scene does). The server (or solo) runs the clock and replicates `phase`; every peer
-## counts the ticks of the phase so its look can follow.
-## Ref: sacengine ExplosionCasting, FrozenGround, DemonicRift (state.d:3405-3425, 3547-3655).
+## counts the ticks of the phase so its look can follow. Ref: sacengine ExplosionCasting, FrozenGround, DemonicRift (state.d:3405-3655).
 
 ## The zone entered phase `phase` (every peer, from the replicated `phase`).
 signal phase_changed(phase: int)
@@ -14,7 +13,6 @@ signal phase_changed(phase: int)
 enum Phase { CASTING, ARMING, ACTIVE, ENDING }
 
 const GROUP := &"ground_zone"
-
 ## The spell whose numbers the zone uses: damage, ranges, duration.
 @export var spell: SpellType
 @export_group("Timeline")
@@ -29,11 +27,12 @@ const GROUP := &"ground_zone"
 @export var replicates_position := false
 ## Properties of its children the server replicates with the zone, as paths from the zone (`Stalk1:tip`).
 @export var synced := PackedStringArray()
+## Same, for what changes rarely and is big (a volcano's shape): sent when it changes and with the spawn, not at every sync.
+@export var synced_on_change := PackedStringArray()
 ## It takes this long to go away, and frees itself after.
 @export_range(0.0, 10.0, 0.01, "suffix:s") var end_s := 0.5
 ## Its reach grows to the full radius in this time after it started acting (0 = at once).
 @export_range(0.0, 10.0, 0.01, "suffix:s") var grow_s := 0.0
-
 ## Where it acts. The first is its anchor; Explosion has five.
 var points := PackedVector3Array()
 ## The side that cast it and the wizard that did.
@@ -82,8 +81,9 @@ func _attach_net() -> void:
 	var net := MpReplicate.new()
 	net.name = "Net"
 	net.interpolate = false
-	net.sync_properties = PackedStringArray([".:phase", ".:cancelled", ".:position"] if replicates_position else [".:phase", ".:cancelled"]) + synced
-	MpAuthority.ensure_sync(self, net.sync_properties)
+	net.sync_properties = PackedStringArray([".:phase", ".:cancelled", ".:position"] if replicates_position else [".:phase", ".:cancelled"]) + synced + synced_on_change
+	var sync := MpAuthority.ensure_sync(self, net.sync_properties)
+	for path in synced_on_change: sync.replication_config.property_set_replication_mode(NodePath(path), SceneReplicationConfig.REPLICATION_MODE_ON_CHANGE)
 	add_child(net)
 
 

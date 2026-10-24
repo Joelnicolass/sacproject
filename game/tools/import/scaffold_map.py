@@ -110,6 +110,7 @@ NATIVE_GROUND_TRES = """[gd_resource type="Resource" script_class="NativeGround"
 [ext_resource type="Texture2D" path="res://assets/original/maps/{tag}/atlas_native.png" id="2_atlas"]
 [ext_resource type="Texture2D" path="res://assets/original/maps/{tag}/tiles_native.png" id="3_tiles"]
 [ext_resource type="Texture2D" path="res://assets/original/maps/{tag}/light.png" id="4_light"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/{god}/detail_ids_native.png" id="5_detail_ids"]
 
 [resource]
 script = ExtResource("1_native")
@@ -117,6 +118,7 @@ god = &"{god}"
 atlas = ExtResource("2_atlas")
 tiles = ExtResource("3_tiles")
 light = ExtResource("4_light")
+detail_ids = ExtResource("5_detail_ids")
 """
 
 

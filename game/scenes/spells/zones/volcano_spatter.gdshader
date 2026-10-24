@@ -17,7 +17,7 @@ uniform float origin_y = 0.0;
 uniform float pulse : hint_range(0.0, 1.0) = 0.0;
 uniform int frame = 0;
 uniform float turns = 8.0;
-uniform float energy = 3.2;
+uniform float energy = 2.0;
 
 varying vec2 v_uv;
 

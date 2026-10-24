@@ -24,6 +24,8 @@ uniform float light_gain : hint_range(0.0, 4.0, 0.01) = 0.55;
 // shader is the same as before. The zone mask comes from the map's TileLayerMap.
 #include "res://scenes/look/ground/zone_splat.gdshaderinc"
 #include "res://scenes/look/ground/grass_paint.gdshaderinc"
+// The marks on the ground (burns, cracks), over the ground and under the light.
+#include "res://scenes/look/ground/ground_scars.gdshaderinc"
 
 // Map coordinates of the fragment. The terrain mesh is stored in map coordinates, so the local
 // vertex is used: the light map stays put when the editor preview shifts the scene root.
@@ -51,6 +53,7 @@ void fragment() {
 	if (grass_paint_amount > 0.0 && !(COLOR.a < 0.5 && has_edge)) {
 		albedo = grass_paint_textured(albedo, zone_splat_weights(map_pos.xz), map_pos.xz, TIME, slope_deg);
 	}
+	albedo = ground_scar_mix(albedo, map_pos.xz, false);
 	vec2 light_uv = vec2(map_pos.x, map_pos.z) / 2560.0;
 	vec3 light = texture(lightmap, light_uv).rgb;
 	ALBEDO = albedo * (light_base + light * light_gain);

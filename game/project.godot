@@ -446,3 +446,11 @@ fx_fog_end={
 "type": "float",
 "value": 1.0
 }
+scar_index={
+"type": "sampler2D",
+"value": ""
+}
+scar_tiles={
+"type": "sampler2DArray",
+"value": ""
+}

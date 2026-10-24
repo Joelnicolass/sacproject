@@ -101,6 +101,11 @@ func scale_curve() -> Curve:
 	return curve
 
 
+## The name FxBus plays this type by: its file under data/fx/ without the extension. "" for a type that is not a file there.
+func bus_name() -> String:
+	return resource_path.trim_prefix("res://data/fx/").get_basename() if resource_path.begins_with("res://data/fx/") else ""
+
+
 func cycle_s() -> float:
 	return frame_s * float(h_frames * v_frames)
 

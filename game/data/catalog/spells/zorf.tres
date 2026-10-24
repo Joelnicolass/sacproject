@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="SpellType" format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_kh5xf"]
+[ext_resource type="PackedScene" path="res://scenes/spells/actions/frozen_ground_action.tscn" id="2_action"]
 
 [resource]
 script = ExtResource("1_kh5xf")
@@ -18,4 +19,5 @@ effect_range = 15.0
 duration = 30.0
 flags = 16405
 flags1 = 16448
+action = ExtResource("2_action")
 structures = PackedStringArray()

@@ -1,0 +1,59 @@
+[gd_scene load_steps=15 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="1_zone"]
+[ext_resource type="Resource" path="res://data/catalog/spells/pxef.tres" id="2_spell"]
+[ext_resource type="Script" path="res://scenes/spells/zones/zone_balls.gd" id="3_balls"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/fire_ball.tscn" id="4_ball"]
+[ext_resource type="Script" path="res://scenes/spells/zones/zone_blast.gd" id="5_blast"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/explosion_burst.tscn" id="6_burst"]
+[ext_resource type="Resource" path="res://data/fx/explosion_blast.tres" id="7_blast"]
+[ext_resource type="Resource" path="res://data/fx/explosion_blast2.tres" id="8_blast2"]
+[ext_resource type="Resource" path="res://data/fx/explosion_ash.tres" id="9_ash"]
+[ext_resource type="Resource" path="res://data/fx/explosion_smoke.tres" id="10_smoke"]
+[ext_resource type="Resource" path="res://data/fx/fire.tres" id="11_fire"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/zone_sound.tscn" id="12_sound"]
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="13_ptype"]
+
+[node name="ExplosionZone" type="Node3D"]
+editor_description = "Explosion (pxef): cinco bolas de fuego que crecen mientras el mago lanza y estallan a los 3,8 s del inicio del lanzamiento. El tiempo lo cuenta la zona (arm_from_start en la acción); el daño, el fuego y el lanzamiento los hace ZoneBlast; el look es de las bolas y de ExplosionBurst. Sin cicatriz scar en el suelo: no hay lector de SCAR."
+script = ExtResource("1_zone")
+spell = ExtResource("2_spell")
+end_s = 0.5
+
+[node name="BurstAt" type="Marker3D" parent="."]
+editor_description = "Dónde nacen las esferas y las partículas del estallido sobre cada punto (el original: 1 m)."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="Balls" type="Node3D" parent="." node_paths=PackedStringArray("zone")]
+script = ExtResource("3_balls")
+zone = NodePath("..")
+
+[node name="Ball0" parent="Balls" instance=ExtResource("4_ball")]
+
+[node name="Ball1" parent="Balls" instance=ExtResource("4_ball")]
+
+[node name="Ball2" parent="Balls" instance=ExtResource("4_ball")]
+
+[node name="Ball3" parent="Balls" instance=ExtResource("4_ball")]
+
+[node name="Ball4" parent="Balls" instance=ExtResource("4_ball")]
+
+[node name="Blast" type="Node" parent="." node_paths=PackedStringArray("zone", "burst_at")]
+script = ExtResource("5_blast")
+zone = NodePath("..")
+burst = ExtResource("6_burst")
+puffs = Array[ExtResource("13_ptype")]([ExtResource("7_blast"), ExtResource("8_blast2"), ExtResource("9_ash"), ExtResource("10_smoke")])
+burn_look = ExtResource("11_fire")
+burst_at = NodePath("../BurstAt")
+
+[node name="Fire" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("12_sound")]
+editor_description = "Las bolas arden (flp5 en bucle) desde el lanzamiento hasta el estallido."
+cue = &"explosion_loop"
+loop = true
+zone = NodePath("..")
+
+[node name="CastSound" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("12_sound")]
+editor_description = "flam al empezar el lanzamiento (malf con ganancia 4 en el original)."
+cue = &"explosion_cast"
+zone = NodePath("..")
+when = 1

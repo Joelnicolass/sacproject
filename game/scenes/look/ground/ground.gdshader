@@ -21,9 +21,8 @@ render_mode cull_disabled;
 uniform sampler2D lightmap : filter_linear, repeat_disable, hint_default_white;
 uniform float light_base : hint_range(0.0, 2.0, 0.01) = 0.3;
 uniform float light_gain : hint_range(0.0, 4.0, 0.01) = 0.55;
-// The wall of the void (the mesh marks its triangles with COLOR.a = 0 and their uv in COLOR.gb).
-uniform sampler2D edge : filter_linear_mipmap, repeat_enable;
-uniform bool has_edge = false;
+// The walls under the edge of the land wear the god's cliff texture, not the ground roles.
+#include "res://scenes/look/ground/ground_edge.gdshaderinc"
 
 // Map coordinates of the fragment. The terrain mesh is stored in map coordinates, so the local vertex is used: the maps stay
 // put when the editor preview shifts the scene root.
@@ -48,12 +47,13 @@ void fragment() {
 	float slope = degrees(acos(clamp(g.y, -1.0, 1.0)));
 	vec3 dpx = dFdx(map_pos);
 	vec3 dpy = dFdy(map_pos);
-	bool wall = COLOR.a < 0.5 && has_edge;
+	bool wall = ground_edge_is_wall(COLOR);
 	vec3 albedo = vec3(0.0);
 	vec3 world_n = g;
 	vec3 orm = vec3(1.0, 1.0, 0.0);
 	if (wall) {
-		albedo = texture(edge, COLOR.gb).rgb;
+		vec2 wall_uv = ground_edge_uv(UV);
+		albedo = ground_edge_albedo(wall_uv, dFdx(wall_uv), dFdy(wall_uv));
 	} else {
 		vec4 w = role_weights(map_pos.xz, slope);
 		RoleTap taps[4];

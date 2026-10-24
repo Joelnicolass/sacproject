@@ -9,6 +9,8 @@ extends Resource
 @export var creature: MinimapMarkerStyle
 @export var altar: MinimapMarkerStyle
 @export var manalith: MinimapMarkerStyle
+## The Shrine: the «+» of the sheet.
+@export var shrine: MinimapMarkerStyle
 @export var manafount: MinimapMarkerStyle
 ## A soul the viewer can use (no side or the viewer's), and one of the foe.
 @export var soul: MinimapMarkerStyle

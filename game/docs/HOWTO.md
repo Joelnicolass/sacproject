@@ -71,7 +71,7 @@ Un hechizo son dos cosas: el dato y, si tiene procedimiento propio, una escena.
 
 - **Tipo.** `data/buildings/<nombre>.tres` (`BuildingType`: nombre, vida máxima, si da refugio y la ruina). La escena del mismo nombre en `scenes/structures/buildings/` es el edificio que se arrastra al mapa (raíz `MapBuilding`, partes guardadas bajo `Visuals`). Uno nuevo se hace duplicando un `.tres` y su escena; «Ajustar a las partes» (en la raíz) mide la caja que encierra las partes, que también se arrastra con los tiradores de `Collision`.
 - **En el mapa.** Arrastrá `scenes/structures/buildings/<nombre>.tscn` bajo `Buildings` en la escena del mapa. Movelo y rotalo con el gizmo: el transform es la verdad y el modelo se ve en el editor; con «Hijos editables» ves y movés las partes de esa instancia. Con `max_health` 0 es indestructible.
-- **Como hechizo de estructura** (el Manalith): es un `SpellType` en `structures` del libro más una acción en `Caster/Actions`; el cuerpo es `scenes/structures/structure.tscn`.
+- **Como hechizo de estructura** (Manalith, Shrine): el `SpellType` va en `structures` del libro y una fila `GodStructure` (hechizo + escena) en `GodType.structures`; la acción es un `StructureAction` con ese `tag` bajo `Caster/Actions`; el edificio es una escena de `buildings/` que instancia `towers/tower.tscn` (o `shrine_tower.tscn`) y se agrega a `StructureSpawner.scenes` en `match.tscn`.
 
 ## Un NPC
 

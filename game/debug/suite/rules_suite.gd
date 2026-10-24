@@ -1,7 +1,7 @@
 extends Node3D
 
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
-const STRUCTURE_SCENE := preload("res://scenes/structures/structure.tscn")
+const STRUCTURE_SCENE := preload("res://scenes/structures/buildings/_jman.tscn")
 const RULES := preload("res://data/match_rules.tres")
 const DOCTOR_CASES := preload("res://debug/suite/doctor_cases.gd")  # 020b
 const MATCH_CASES := preload("res://debug/suite/match_cases.gd")  # 020a
@@ -21,6 +21,7 @@ const FORMATION_CASES := preload("res://debug/suite/formation_cases.gd")  # 038a
 const RADIAL_CASES := preload("res://debug/suite/radial_cases.gd")  # 038c
 const HOVER_FRAME_CASES := preload("res://debug/suite/hover_frame_cases.gd")
 const DEATH_CASES := preload("res://debug/suite/death_cases.gd")  # 055a
+const TOWER_CASES := preload("res://debug/suite/tower_cases.gd")  # 061a
 const BIOME_CASES := preload("res://debug/suite/biome_cases.gd")
 const TEAM_CASES := preload("res://debug/match/team_cases.gd")  # 049b, 049c
 
@@ -67,6 +68,7 @@ func _run_suite() -> void:
 	_results.merge(await HOVER_FRAME_CASES.new().run(self))
 	_results.merge(await DEATH_CASES.new().run(self))  # 055a
 	_results.merge(await TEAM_CASES.new().run(self))  # 049b, 049c
+	_results.merge(await TOWER_CASES.new().run(self))  # 061a
 	_results.merge(BIOME_CASES.new().run(self))
 	_print_suite()
 
@@ -149,29 +151,27 @@ func _test_unit_death() -> Dictionary:
 func _test_buildings() -> Dictionary:
 	var count := 0
 	for index in range(max_spawned_structures):
-		var structure := _spawn_structure("htlm", 1, Vector3(index * 10.0, 0.0, 0.0))
+		var structure := _spawn_structure(1, Vector3(index * 10.0, 0.0, 0.0))
 		if structure == null:
 			return {"ok": false, "reason": "structure null", "count": index}
 		var health: Node = structure.get_node("Health")
 		if not health or not health.has_method("setup"):
 			return {"ok": false, "reason": "structure health missing", "count": index}
-		if str(structure.get("spell_tag")) != "htlm":
-			return {"ok": false, "reason": "spell_tag mismatch", "count": index}
-		if str(structure.get("model")) != "mana":
-			return {"ok": false, "reason": "model mismatch", "count": index}
+		if structure.type.role != BuildingType.Role.MANALITH:
+			return {"ok": false, "reason": "role mismatch", "count": index}
 		count += 1
 		structure.queue_free()
 	return {"ok": true, "count": count}
 
 
 func _test_desctruction() -> Dictionary:
-	var structure := _spawn_structure("htlm", 1, Vector3.ZERO)
+	var structure := _spawn_structure(1, Vector3.ZERO)
 	if structure == null:
 		return {"ok": false, "reason": "structure null"}
 	var health: Node = structure.get_node("Health")
 	health.call("setup", 300.0)
 	health.call("damage", 300.0, 2)
-	var ok := bool(structure.call("is_dead"))
+	var ok := structure.is_destroyed()
 	structure.queue_free()
 	return {"ok": ok, "destroyed": ok}
 
@@ -278,14 +278,11 @@ func _spawn_unit(tag: String, owner_slot: int, position: Vector3) -> Node3D:
 	return unit
 
 
-func _spawn_structure(tag: String, owner_slot: int, position: Vector3) -> Node3D:
-	var structure: Node3D = STRUCTURE_SCENE.instantiate()
-	structure.name = "TestStructure_%s" % tag
+func _spawn_structure(owner_slot: int, position: Vector3) -> CastTower:
+	var structure := STRUCTURE_SCENE.instantiate() as CastTower
+	structure.name = "TestStructure"
 	structure.position = position
-	structure.set("owner_slot", owner_slot)
-	structure.set("spell_tag", tag)
-	structure.set("model", "mana")
-	structure.set("rules", RULES)
+	structure.owner_slot = owner_slot
 	add_child(structure)
 	return structure
 

@@ -14,8 +14,8 @@ func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:
 	var perception := brain.perception
 	if wizard.convert_spell == null or not perception.has_home_altar():
 		return
-	var home := perception.sacrifice().closest_own_altar(perception.slot, wizard.node.global_position)
-	if home != null and perception.sacrifice().desecration_against(home.owner_slot):
+	var home := perception.sacrifice().closest_own_site(perception.slot, wizard.node.global_position)
+	if home != null and perception.sacrifice().desecration_against(home.owner_slot()):
 		return
 	var profile := brain.profile
 	var v := AiField.f32((1.0 - brain.stance.enemy_ratio()) * (1.0 - wizard.threat) * profile.aggression * profile.convert_reach_m)

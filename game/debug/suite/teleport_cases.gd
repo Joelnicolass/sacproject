@@ -5,7 +5,7 @@ extends RefCounted
 ## solo. `run(host)` adds its own floor and bodies under `host` and removes them at the end.
 
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
-const STRUCTURE_SCENE := preload("res://scenes/structures/structure.tscn")
+const STRUCTURE_SCENE := preload("res://scenes/structures/buildings/_jman.tscn")
 const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
 const UNIT_ORDERS := preload("res://scenes/units/unit_orders.gd")
 const RULES := preload("res://data/match_rules.tres")
@@ -262,7 +262,6 @@ func _wizard(at: Vector3) -> WizardBody:
 func _structure(at: Vector3, slot := 1) -> Node3D:
 	var structure := STRUCTURE_SCENE.instantiate() as Node3D
 	structure.set("owner_slot", slot)
-	structure.set("spell_tag", "htlm")
 	structure.position = at
 	_root.add_child(structure)
 	return structure

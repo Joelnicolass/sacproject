@@ -21,7 +21,16 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/spell_book/spell_book.tscn" id="15_book"]
 [ext_resource type="Script" uid="uid://c8mumq6up5ajy" path="res://scenes/spells/spell_spawner.gd" id="16_spawner"]
 [ext_resource type="Script" uid="uid://k8nbg7yvigvf" path="res://scenes/structures/structure_spawner.gd" id="17_structure_spawner"]
-[ext_resource type="PackedScene" path="res://scenes/structures/structure.tscn" id="18_structure"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_mana.tscn" id="tw_mana"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_pyma.tscn" id="tw_pyma"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_jman.tscn" id="tw_jman"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_stam.tscn" id="tw_stam"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_cama.tscn" id="tw_cama"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_pcsh.tscn" id="tw_pcsh"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_pasp.tscn" id="tw_pasp"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_jsac.tscn" id="tw_jsac"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_stsp.tscn" id="tw_stsp"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_casp.tscn" id="tw_casp"]
 [ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="f25_unit"]
 [ext_resource type="Script" uid="uid://c3o4n6xmxkjph" path="res://scenes/units/unit_spawner.gd" id="f25_unit_spawner"]
 [ext_resource type="Script" uid="uid://dqkkafcm1xuke" path="res://scenes/orders/orders.gd" id="f27_orders"]
@@ -145,8 +154,7 @@ unique_name_in_owner = true
 [node name="StructureSpawner" type="MultiplayerSpawner" parent="." unique_id=687306311]
 spawn_path = NodePath("../Structures")
 script = ExtResource("17_structure_spawner")
-structure_scene = ExtResource("18_structure")
-rules = ExtResource("12_rules")
+scenes = Array[PackedScene]([ExtResource("tw_mana"), ExtResource("tw_pyma"), ExtResource("tw_jman"), ExtResource("tw_stam"), ExtResource("tw_cama"), ExtResource("tw_pcsh"), ExtResource("tw_pasp"), ExtResource("tw_jsac"), ExtResource("tw_stsp"), ExtResource("tw_casp")])
 
 
 [node name="SpellSpawner" type="MultiplayerSpawner" parent="." unique_id=1184984889]

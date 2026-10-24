@@ -5,11 +5,9 @@ extends RefCounted
 ## copied). `describe` is the one owner of that text and of the health the box shows; it reads the body and writes nothing.
 ## - Creature (or Sac Doctor): its icon and «<name> de <wizard of its side>»; an NPC side or nobody's: «<name> de la aldea».
 ## - Wizard: its name.
-## - Building: `BuildingType.display_name`, else «Edificio». Altar, Manalith and manafount have fixed names.
+## - Building: `BuildingType.display_name`, else «Edificio». Altar and manafount have fixed names; the Manalith and the Shrine take theirs from their BuildingType.
 ## - Corpse: «Cadáver de <name>». Soul: «Alma»; a red soul for `local_slot` (another side's): «Alma pagana. Convertila.».
 ## - `fraction` = current / maximum of its Health; NaN when it has none or its maximum is 0 (indestructible): no bar.
-
-const MANALITH_TAG := "htlm"
 
 var title := ""
 var icon: Texture2D
@@ -45,9 +43,6 @@ static func describe(node: Node, local_slot: int) -> TargetInfo:
 		var type := (node as MapBuilding).type
 		var named := type != null and not type.display_name.is_empty()
 		info.title = type.display_name if named else UiText.t(&"TARGET_INFO_BUILDING")
-	elif node.is_in_group("structure"):
-		var manalith := str(node.get("spell_tag")) == MANALITH_TAG if "spell_tag" in node else false
-		info.title = UiText.t(&"TARGET_INFO_MANALITH" if manalith else &"TARGET_INFO_BUILDING")
 	elif node is WizardBody:
 		info.title = (node as WizardBody).display_name()
 	elif node.has_method("display_name") and "owner_slot" in node:

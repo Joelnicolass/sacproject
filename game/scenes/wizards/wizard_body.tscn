@@ -21,7 +21,7 @@
 [ext_resource type="Script" path="res://scenes/bodies/body_animator.gd" id="13_clip"]
 [ext_resource type="PackedScene" path="res://scenes/bodies/body_rig.tscn" id="f162_rig"]
 [ext_resource type="Script" path="res://scenes/bodies/hand_fx.gd" id="d023_handfx"]
-[ext_resource type="Script" path="res://scenes/spells/actions/manalith_action.gd" id="14_manalith"]
+[ext_resource type="Script" path="res://scenes/spells/actions/structure_action.gd" id="14_manalith"]
 [ext_resource type="Script" path="res://scenes/spells/actions/desecrate_action.gd" id="15_desecrate"]
 [ext_resource type="Script" path="res://scenes/spells/actions/convert_action.gd" id="16_convert"]
 [ext_resource type="Script" path="res://scenes/spells/actions/guardian_action.gd" id="17_guardian"]
@@ -189,6 +189,11 @@ actions = NodePath("Actions")
 [node name="Manalith" type="Node" parent="Caster/Actions"]
 script = ExtResource("14_manalith")
 tag = "htlm"
+prompt = "Elegí el suelo"
+
+[node name="Shrine" type="Node" parent="Caster/Actions"]
+script = ExtResource("14_manalith")
+tag = "pcas"
 prompt = "Elegí el suelo"
 
 [node name="Desecrate" type="Node" parent="Caster/Actions"]

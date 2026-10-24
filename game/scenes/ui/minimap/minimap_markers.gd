@@ -6,8 +6,6 @@ extends Control
 ## viewer's color. What lies beyond the circle shows as an arrow at the edge only for your things and for wizards.
 ## Presentation only: the fog of war does not exist in the port, so everything shows.
 
-const STRUCTURE_BODY := preload("res://scenes/structures/structure_body.gd")
-
 @export var minimap: Minimap
 
 ## Measures for flows and the bench: icons and arrows drawn last frame, microseconds the draw took, and where the
@@ -50,14 +48,15 @@ func _draw() -> void:
 		_mark(node as Node3D, style.manafount, 0, false)
 	for node in tree.get_nodes_in_group(&"altar"):
 		_mark(node as Node3D, style.altar, int(node.get("owner_slot")), _is_mine(int(node.get("owner_slot")), slot))
-	var built: Array[Node] = minimap.structures_root.get_children() if minimap.structures_root else []
-	for node in built:
-		if not _is_manalith(node):
+	for node in tree.get_nodes_in_group(CastTower.TOWER_GROUP):
+		var tower := node as CastTower
+		if tower == null:
 			continue
-		var owner_slot := int(node.get("owner_slot"))
-		if not _is_mine(owner_slot, slot) and not (node as STRUCTURE_BODY).is_targetable():
+		var owner_slot := tower.owner_slot
+		if not _is_mine(owner_slot, slot) and tower.is_destroyed():
 			continue
-		_mark(node as Node3D, style.manalith, owner_slot, _is_mine(owner_slot, slot))
+		var kind := style.shrine if tower.type.role == BuildingType.Role.SHRINE else style.manalith
+		_mark(tower, kind, owner_slot, _is_mine(owner_slot, slot))
 	for node in tree.get_nodes_in_group(&"unit"):
 		var unit := node as UnitBody
 		if unit == null or not _unit_shows(unit, slot):
@@ -70,11 +69,6 @@ func _draw() -> void:
 		_mark(wizard, style.wizard, wizard.owner_slot, true)
 	_draw_arrows()
 	draw_us = Time.get_ticks_usec() - started
-
-
-## A structure placed by StructureSpawner that is a Manalith.
-func _is_manalith(node: Node) -> bool:
-	return "spell_tag" in node and str(node.get("spell_tag")) == STRUCTURE_BODY.MANALITH
 
 
 ## RFC-049 049c: the local slot and its allies (allied vision: sacengine minimapVisibleToSide shows what the allies see; the port has no

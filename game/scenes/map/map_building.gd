@@ -63,7 +63,9 @@ func _ready() -> void:
 	if shelter:
 		add_to_group(SHELTER_GROUP)
 	if max_health > 0.0:
-		health.setup(max_health)
+		## A tower on a client already has the maximum its synchronizer sent with the spawn: setting it again would erase the damage.
+		if health.maximum <= 0.0:
+			health.setup(max_health)
 	else:
 		health.maximum = 0.0
 		if sync != null:

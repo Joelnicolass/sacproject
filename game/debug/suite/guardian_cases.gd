@@ -6,7 +6,7 @@ extends RefCounted
 ## paths run as solo. `run(host)` adds its own floor and bodies under `host` and removes them at the end.
 
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
-const STRUCTURE_SCENE := preload("res://scenes/structures/structure.tscn")
+const STRUCTURE_SCENE := preload("res://scenes/structures/buildings/_jman.tscn")
 const ALTAR_SCENE := preload("res://scenes/map/props/altar.tscn")
 const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
 const SELECTION := preload("res://scenes/orders/selection.gd")
@@ -234,7 +234,7 @@ func _leash() -> Dictionary:
 	var busy := _unit(Vector3(80.0, 0.0, 0.0), 1)
 	await _frames(3)
 	var post := _post(structure)
-	checks["attach_height"] = is_equal_approx(post.attach_height, 15.0) and post.attach_point().is_equal_approx(structure.global_position + Vector3(0.0, 15.0, 0.0))
+	checks["attach_height"] = post.attach_position().is_equal_approx(structure.global_position + Vector3(0.0, 15.0, 0.0))
 	for unit in [near, far, busy]:
 		GuardianBond.of(unit).bind(post)
 	var busy_orders := busy.get_node("Orders")
@@ -274,7 +274,7 @@ func _release() -> Dictionary:
 	await _frames(3)
 	var post := _post(structure)
 	var altar_post := altar.get_node("GuardPost") as GuardPost
-	checks["altar_post"] = is_equal_approx(altar_post.attach_height, 2.5) and altar_post.owner_slot() == 1 and altar_post.is_open()
+	checks["altar_post"] = altar_post.attach_position().is_equal_approx(altar.global_position + Vector3(0.0, 2.5, 0.0)) and altar_post.owner_slot() == 1 and altar_post.is_open()
 	for key in cases:
 		var bond := GuardianBond.of(cases[key])
 		var ok := bond.bind(altar_post if key == "altar_destroyed" else post)
@@ -409,7 +409,6 @@ func _selection() -> Dictionary:
 func _structure(at: Vector3, slot := 1) -> Node3D:
 	var structure := STRUCTURE_SCENE.instantiate() as Node3D
 	structure.set("owner_slot", slot)
-	structure.set("spell_tag", "htlm")
 	structure.position = at
 	_root.add_child(structure)
 	return structure

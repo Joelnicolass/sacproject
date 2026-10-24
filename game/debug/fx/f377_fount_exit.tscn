@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://debug/fx/f377_fount_exit.gd" id="1_case"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="2_fount"]
-[ext_resource type="PackedScene" path="res://scenes/structures/structure.tscn" id="3_structure"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_jman.tscn" id="3_structure"]
 [ext_resource type="Script" path="res://debug/fx/f377_drawing_emitter.gd" id="4_emitter"]
 
 [node name="F377FountExit" type="Node" node_paths=PackedStringArray("world", "fount", "manalith", "exit_fount")]
@@ -22,16 +22,14 @@ script = ExtResource("4_emitter")
 [node name="ManalithFx" parent="World/Fount" index="4"]
 script = ExtResource("4_emitter")
 
-[node name="Manalith" parent="World" instance=ExtResource("3_structure")]
+[node name="Manalith" parent="World" instance=ExtResource("3_structure") node_paths=PackedStringArray("fount")]
 owner_slot = 1
-spell_tag = "htlm"
-manafount_path = NodePath("../Fount")
+fount = NodePath("../Fount")
 
-[node name="ExitManalith" parent="World" instance=ExtResource("3_structure")]
+[node name="ExitManalith" parent="World" instance=ExtResource("3_structure") node_paths=PackedStringArray("fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, 0)
 owner_slot = 2
-spell_tag = "htlm"
-manafount_path = NodePath("ExitFount")
+fount = NodePath("ExitFount")
 
 [node name="ExitFount" parent="World/ExitManalith" instance=ExtResource("2_fount")]
 

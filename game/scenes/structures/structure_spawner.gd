@@ -1,41 +1,47 @@
+class_name StructureSpawner
 extends MpSpawner
 
-## Spawns built structures under spawn_path: on the server (replicated) or in solo.
+## Puts the towers wizards cast into the match: on the server (replicated to every peer) or in solo. The ten tower scenes are
+## listed in `scenes`; the spawn message carries the index of the scene, the fount and the side, so every peer builds the same
+## tower. Does not decide where a tower may stand: StructureAction does.
 
-@export var structure_scene: PackedScene
-@export var rules: MatchRules
+const GROUP := &"structure_spawner"
+
+@export var scenes: Array[PackedScene] = []
 
 var _serial := 0
 
 
 func _ready() -> void:
-	add_to_group("structure_spawner")
+	add_to_group(GROUP)
 	spawn_function = _make
 	super._ready()
 
 
-## data: model, spell_tag, slot, x, y, z, yaw, manafount_path. Returns the structure, or null on clients.
-func spawn_structure(data: Dictionary) -> Node3D:
-	_serial += 1
-	data["name"] = "Structure%d" % _serial
-	if MpKit.is_networked():
-		if MpKit.is_server():
-			return spawn(data) as Node3D
+## Raises `scene` (one of `scenes`) over `fount` for `slot`. Returns the tower, or null on a client or an unknown scene.
+func spawn_tower(scene: PackedScene, fount: ManafountBody, slot: int, yaw: float) -> CastTower:
+	var index := scenes.find(scene)
+	if index < 0 or fount == null:
 		return null
-	var structure := _make(data)
-	get_node(spawn_path).add_child(structure)
-	return structure
+	_serial += 1
+	var at := fount.anchor()
+	var data := {
+		"name": "Tower%d" % _serial, "scene": index, "slot": slot, "yaw": yaw,
+		"x": at.x, "y": at.y, "z": at.z, "fount": str(fount.get_path()),
+	}
+	if MpKit.is_networked():
+		return spawn(data) as CastTower if MpKit.is_server() else null
+	var tower := _make(data)
+	get_node(spawn_path).add_child(tower)
+	return tower
 
 
-func _make(data: Variant) -> Node3D:
+func _make(data: Variant) -> Node:
 	var info: Dictionary = data
-	var structure: Node3D = structure_scene.instantiate()
-	structure.name = str(info["name"])
-	structure.position = Vector3(float(info["x"]), float(info["y"]), float(info["z"]))
-	structure.rotation.y = float(info.get("yaw", 0.0))
-	structure.set("owner_slot", int(info.get("slot", 0)))
-	structure.set("model", str(info.get("model", "")))
-	structure.set("spell_tag", str(info.get("spell_tag", "")))
-	structure.set("manafount_path", NodePath(str(info.get("manafount_path", ""))))
-	structure.set("rules", rules)
-	return structure
+	var tower := scenes[int(info["scene"])].instantiate() as CastTower
+	tower.name = str(info["name"])
+	tower.position = Vector3(float(info["x"]), float(info["y"]), float(info["z"]))
+	tower.rotation.y = float(info["yaw"])
+	tower.owner_slot = int(info["slot"])
+	tower.fount = get_node_or_null(NodePath(str(info["fount"]))) as ManafountBody
+	return tower

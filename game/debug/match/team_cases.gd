@@ -11,7 +11,7 @@ const RULES := preload("res://data/match_rules.tres")
 const SYSTEM_SCENE := preload("res://scenes/sacrifice/sacrifice_system.tscn")
 const SOUL_SYSTEM_SCENE := preload("res://scenes/souls/soul_system.tscn")
 const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
-const STRUCTURE_SCENE := preload("res://scenes/structures/structure.tscn")
+const STRUCTURE_SCENE := preload("res://scenes/structures/buildings/_jman.tscn")
 const GOD := "james"
 const MANA_SUPPORT := preload("res://scenes/units/unit_mana_support.gd")
 
@@ -368,9 +368,6 @@ func _manalith(slot: int, at: Vector3) -> Node3D:
 	var structure: Node3D = STRUCTURE_SCENE.instantiate()
 	structure.position = at
 	structure.set("owner_slot", slot)
-	structure.set("spell_tag", "htlm")
-	structure.set("model", "mana")
-	structure.set("rules", RULES)
 	_root.add_child(structure)
 	return structure
 

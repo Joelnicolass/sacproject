@@ -10,30 +10,7 @@ const GOD := "james"
 const WITHOUT_ACTION: Array[String] = []
 
 
-## A manafount that answers like manafount_body.gd: group, is_free(), anchor().
-class StubFount extends Node3D:
-	var occupied := false
-
-	func _ready() -> void:
-		add_to_group("manafount")
-
-	func is_free() -> bool:
-		return not occupied
-
-	func anchor() -> Vector3:
-		return global_position
-
-
-## Records what the action asks the spawner to build.
-class StubSpawner extends Node:
-	var spawned: Array[Dictionary] = []
-
-	func _ready() -> void:
-		add_to_group("structure_spawner")
-
-	func spawn_structure(data: Dictionary) -> Node3D:
-		spawned.append(data)
-		return null
+const FOUNT_SCENE := preload("res://scenes/map/props/manafount.tscn")
 
 
 func run(host: Node3D) -> Dictionary:
@@ -51,7 +28,7 @@ func _action_lookup(host: Node3D) -> Dictionary:
 	var book: Node = caster.get("spellbook")
 	var checks := {}
 	var manalith: SpellAction = caster.action_for("htlm")
-	checks["manalith_found"] = manalith is ManalithAction
+	checks["manalith_found"] = manalith is StructureAction
 	checks["manalith_pick"] = manalith != null and manalith.pick == SpellAction.Pick.GROUND
 	checks["manalith_prompt"] = manalith != null and manalith.prompt == "Elegí el suelo"
 	checks["manalith_no_warnings"] = manalith != null and manalith._get_configuration_warnings().is_empty()
@@ -68,7 +45,7 @@ func _action_lookup(host: Node3D) -> Dictionary:
 	var bare := SpellAction.new()
 	checks["bare_warns"] = bare._get_configuration_warnings().size() == 2
 	bare.free()
-	var twin := ManalithAction.new()
+	var twin := StructureAction.new()
 	twin.tag = "htlm"
 	twin.prompt = "x"
 	caster.actions.add_child(twin)
@@ -91,15 +68,20 @@ func _spells_tab_status(caster: Node, book: Node) -> bool:
 
 
 ## check(): fount near the point or the wizard, then mana, range and room, cooldown first.
-## begin + finish: one structure with the god's model on the fount; a stolen fount builds nothing.
+## begin + finish: one tower of the god over the fount; a stolen fount builds nothing.
 func _manalith_action(host: Node3D) -> Dictionary:
 	var wizard := _wizard(host, Vector3(15.0, 0.0, 0.0))
 	var caster := wizard.get_node("Caster")
-	var action: ManalithAction = caster.action_for("htlm")
+	var action: StructureAction = caster.action_for("htlm")
 	var spell: SpellType = caster.get("spellbook").structure_by_tag("htlm")
-	var fount := StubFount.new()
+	var fount := FOUNT_SCENE.instantiate() as ManafountBody
 	host.add_child(fount)
-	var spawner := StubSpawner.new()
+	var towers := Node3D.new()
+	towers.name = "Towers"
+	host.add_child(towers)
+	var spawner := StructureSpawner.new()
+	spawner.scenes = [wizard.god_type().structure_for(spell).scene]
+	spawner.spawn_path = NodePath("../Towers")
 	host.add_child(spawner)
 	var checks := {}
 	var aim := action.check(wizard, spell, fount.global_position, null, "")
@@ -112,37 +94,44 @@ func _manalith_action(host: Node3D) -> Dictionary:
 	checks["out_of_range"] = action.check(wizard, spell, fount.global_position, null, "").status == SpellAction.OUT_OF_RANGE
 	wizard.global_position = Vector3(0.0, 0.0, 60.0)
 	var nofount := action.check(wizard, spell, fount.global_position + Vector3(30.0, 0.0, 0.0), null, SpellAction.COOLING)
-	checks["no_fount_wins_over_cooling"] = nofount.status == ManalithAction.NO_FOUNT
+	checks["no_fount_wins_over_cooling"] = nofount.status == StructureAction.NO_FOUNT
 	wizard.global_position = Vector3(15.0, 0.0, 0.0)
 	var blocker := Node3D.new()
 	blocker.add_to_group("unit")
 	host.add_child(blocker)
 	checks["no_room"] = action.check(wizard, spell, fount.global_position, null, "").status == SpellAction.NO_ROOM
 	blocker.free()
-	fount.occupied = true
-	checks["occupied_no_fount"] = action.check(wizard, spell, fount.global_position, null, "").status == ManalithAction.NO_FOUNT
-	fount.occupied = false
 	aim = action.check(wizard, spell, fount.global_position, null, "")
 	action.begin(wizard, spell, aim)
 	checks["finish_quiet"] = action.finish(wizard, spell, wizard).is_empty()
-	var data: Dictionary = spawner.spawned[0] if spawner.spawned.size() == 1 else {}
-	checks["spawned_one"] = spawner.spawned.size() == 1
-	checks["spawned_model"] = str(data.get("model", "")) == action._structure_model(wizard, spell) and str(data.get("model", "")) == "jman"
-	checks["spawned_tag_slot"] = str(data.get("spell_tag", "")) == "htlm" and int(data.get("slot", 0)) == 1
-	checks["spawned_at_fount"] = Vector3(float(data.get("x", 0.0)), float(data.get("y", 0.0)), float(data.get("z", 0.0))).is_equal_approx(fount.global_position)
-	checks["spawned_fount_path"] = str(data.get("manafount_path", "")) == str(fount.get_path())
-	checks["finish_twice_builds_once"] = action.finish(wizard, spell, wizard).is_empty() and spawner.spawned.size() == 1
+	var tower := towers.get_child(0) as CastTower if towers.get_child_count() == 1 else null
+	checks["spawned_one"] = tower != null
+	checks["spawned_god_model"] = tower != null and tower.type.tag == "jman" and tower.type.role == BuildingType.Role.MANALITH
+	checks["spawned_slot"] = tower != null and tower.owner_slot == 1
+	checks["spawned_at_fount"] = tower != null and tower.global_position.is_equal_approx(fount.global_position)
+	checks["fount_taken"] = tower != null and not fount.is_free()
+	checks["occupied_no_fount"] = action.check(wizard, spell, fount.global_position, null, "").status == StructureAction.NO_FOUNT
+	checks["finish_twice_builds_once"] = action.finish(wizard, spell, wizard).is_empty() and towers.get_child_count() == 1
+	if tower != null:
+		towers.remove_child(tower)
+		tower.free()
+	checks["fount_free_again"] = fount.is_free()
 	aim = action.check(wizard, spell, fount.global_position, null, "")
 	action.begin(wizard, spell, aim)
-	fount.occupied = true
-	checks["stolen_says_no_fount"] = action.finish(wizard, spell, wizard) == ManalithAction.NO_FOUNT and spawner.spawned.size() == 1
-	fount.occupied = false
+	var thief := Node3D.new()
+	thief.set_script(preload("res://debug/suite/slot_node.gd"))
+	host.add_child(thief)
+	fount.occupy(thief.get_path())
+	checks["stolen_says_no_fount"] = action.finish(wizard, spell, wizard) == StructureAction.NO_FOUNT and towers.get_child_count() == 0
+	fount.release(thief.get_path())
+	thief.free()
 	aim = action.check(wizard, spell, fount.global_position, null, "")
 	action.begin(wizard, spell, aim)
 	action.cancel()
-	checks["cancel_builds_nothing"] = action.finish(wizard, spell, wizard).is_empty() and spawner.spawned.size() == 1
+	checks["cancel_builds_nothing"] = action.finish(wizard, spell, wizard).is_empty() and towers.get_child_count() == 0
 	fount.free()
 	spawner.free()
+	towers.free()
 	return _verdict(checks, wizard)
 
 

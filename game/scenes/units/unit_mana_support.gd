@@ -69,15 +69,12 @@ func _rate_from_manaliths() -> float:
 	if peak <= 0.0 or near <= 0.0 or far <= near:
 		return 0.0
 	var total := 0.0
-	for node in get_tree().get_nodes_in_group("structure"):
-		## RFC-049 049c: the manaliths of the allies count too (state.d:28598-28606).
-		var structure_slot := int(node.get("owner_slot"))
-		if structure_slot != owner_slot and SideRelations.stance(owner_slot, structure_slot) != SideRelations.Stance.ALLY:
+	for node in get_tree().get_nodes_in_group(CastTower.TOWER_GROUP):
+		var manalith := node as CastTower
+		## Only Manaliths feed a Manahoar, the allies' too; a Shrine does not.
+		if manalith == null or manalith.type.role != BuildingType.Role.MANALITH:
 			continue
-		if str(node.get("spell_tag")) != "htlm":
-			continue
-		var manalith := node as Node3D
-		if manalith == null:
+		if manalith.owner_slot != owner_slot and SideRelations.stance(owner_slot, manalith.owner_slot) != SideRelations.Stance.ALLY:
 			continue
 		var distance := global_position.distance_to(manalith.global_position)
 		if distance >= far:

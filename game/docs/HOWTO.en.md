@@ -73,7 +73,7 @@ A spell is two things: the data and, if it has its own procedure, a scene.
 
 - **Type.** `data/buildings/<name>.tres` (`BuildingType`: name, max health, whether it gives shelter, and the ruin). The scene with the same name in `scenes/structures/buildings/` is the building you drag into a map (root `MapBuilding`, parts saved under `Visuals`). A new one is made by duplicating a `.tres` and its scene; «Ajustar a las partes» (on the root) measures the box that holds the parts, which you can also drag with the handles of `Collision`.
 - **On the map.** Drag `scenes/structures/buildings/<name>.tscn` under `Buildings` in the map scene. Move and rotate it with the gizmo: the transform is the truth and the model shows in the editor; with «Editable Children» you see and move the parts of that instance. With `max_health` 0 it is indestructible.
-- **As a structure spell** (the Manalith): it is a `SpellType` in the book's `structures` plus an action in `Caster/Actions`; the body is `scenes/structures/structure.tscn`.
+- **As a structure spell** (Manalith, Shrine): the `SpellType` goes in the book's `structures`, a `GodStructure` row (spell + scene) in `GodType.structures`, and a `StructureAction` with that `tag` under `Caster/Actions`; the building is a scene of `buildings/` that instances `towers/tower.tscn` (or `shrine_tower.tscn`) and is added to `StructureSpawner.scenes` in `match.tscn`.
 
 ## An NPC
 

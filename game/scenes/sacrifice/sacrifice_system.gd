@@ -38,8 +38,8 @@ class Cast extends RefCounted:
 	var creature: UnitBody
 	## Convert: the red soul, reserved for the caster until the doctor is done with it.
 	var soul: Soul
-	## Where the ritual will be: the enemy altar (Desecrate) or the caster's own (Convert).
-	var altar: Altar
+	## Where the ritual will be: the enemy altar's site (Desecrate) or the caster's own altar or Shrine (Convert).
+	var site: RitualSite
 	var vortex: RedVortex
 	## Where the doctor comes out (under the vortex) and where it lands.
 	var exit_point := Vector3.ZERO
@@ -146,26 +146,27 @@ func sacrifice_status(slot: int, picked: Node3D) -> String:
 	return ""
 
 
-## The standing altar of `slot` closest to `from` on the plane, or null: where a Convert takes the creature
-## (sacengine closestShrine, state.d:28060-28095: no range, any altar or shrine of the side that is active).
-func closest_own_altar(slot: int, from: Vector3) -> Altar:
-	var best: Altar = null
+## The standing ritual site of `slot` closest to `from` on the plane, or null: where a Convert takes the creature. It is the
+## site of an altar or of a Shrine, whichever is closer, with no range.
+## Ref: sacengine closestShrine, state.d:28060-28095.
+func closest_own_site(slot: int, from: Vector3) -> RitualSite:
+	var best: RitualSite = null
 	var best_d := INF
-	for node in get_tree().get_nodes_in_group(Altar.GROUP):
-		var altar := node as Altar
-		if altar == null or not altar.is_standing() or altar.owner_slot != slot or slot <= 0:
+	for node in get_tree().get_nodes_in_group(RitualSite.GROUP):
+		var site := node as RitualSite
+		if site == null or not site.is_standing() or site.owner_slot() != slot or slot <= 0:
 			continue
-		var d := Vector2(altar.global_position.x - from.x, altar.global_position.z - from.z).length()
+		var d := Vector2(site.global_position.x - from.x, site.global_position.z - from.z).length()
 		if d < best_d:
 			best_d = d
-			best = altar
+			best = site
 	return best
 
 
 ## "" when Convert can be armed from `from`: the wizard needs an own altar standing (sacengine
 ## mustBeConnectedToConversion, state.d:29563).
 func convert_arm_status(slot: int, from: Vector3) -> String:
-	return "" if closest_own_altar(slot, from) != null else NO_ALTAR
+	return "" if closest_own_site(slot, from) != null else NO_ALTAR
 
 
 ## "" when `picked` is a soul the wizard of `slot` can convert: red for him, in the open, on the corpse of a
@@ -198,8 +199,8 @@ func desecration_by(caster_slot: int) -> bool:
 
 func _desecration_matches(altar_slot: int, caster_slot: int) -> bool:
 	for cast in _desecrations:
-		if cast.altar != null and is_instance_valid(cast.altar) \
-				and (altar_slot <= 0 or cast.altar.owner_slot == altar_slot) and (caster_slot <= 0 or cast.caster_slot == caster_slot):
+		if cast.site != null and is_instance_valid(cast.site) \
+				and (altar_slot <= 0 or cast.site.owner_slot() == altar_slot) and (caster_slot <= 0 or cast.caster_slot == caster_slot):
 			return true
 	for node in get_tree().get_nodes_in_group(DoctorBody.GROUP):
 		var errand := node.get_node_or_null("Errand") as CarryErrand
@@ -225,7 +226,8 @@ func begin_cast(wizard: WizardBody, creature: UnitBody, casting_s: float) -> Cas
 	cast.kind = Ritual.Kind.DESECRATE
 	cast.caster_slot = wizard.owner_slot
 	cast.creature = creature
-	cast.altar = closest_enemy_altar(wizard.owner_slot, wizard.global_position, rule.desecrate_altar_range)
+	var altar := closest_enemy_altar(wizard.owner_slot, wizard.global_position, rule.desecrate_altar_range)
+	cast.site = altar.site if altar != null else null
 	_open_vortex(cast, creature.global_position, wizard.global_position, casting_s, false)
 	_desecrations.append(cast)
 	return cast
@@ -240,7 +242,7 @@ func begin_convert_cast(wizard: WizardBody, soul: Soul, casting_s: float) -> Cas
 	cast.caster_slot = wizard.owner_slot
 	cast.soul = soul
 	cast.creature = soul.corpse as UnitBody
-	cast.altar = closest_own_altar(wizard.owner_slot, wizard.global_position)
+	cast.site = closest_own_site(wizard.owner_slot, wizard.global_position)
 	soul.reserve_for(cast.caster_slot)
 	_open_vortex(cast, soul.global_position, wizard.global_position, casting_s, true)
 	return cast
@@ -281,7 +283,7 @@ func finish_cast(cast: Cast) -> String:
 			doctor.queue_free()
 		_release_soul(cast)
 		return BAD_TARGET
-	errand.configure(cast.kind, cast.caster_slot, cast.creature, cast.altar.site, cast.soul)
+	errand.configure(cast.kind, cast.caster_slot, cast.creature, cast.site, cast.soul)
 	errand.reached_site.connect(_on_reached_site.bind(errand))
 	doctor.drop_to(cast.landing)
 	return ""
@@ -289,7 +291,7 @@ func finish_cast(cast: Cast) -> String:
 
 ## Why the doctor does not come out when the casting time ends, or "" (state.d:15519-15545).
 func _cast_problem(cast: Cast) -> String:
-	if cast.altar == null or not is_instance_valid(cast.altar) or not cast.altar.is_standing():
+	if cast.site == null or not is_instance_valid(cast.site) or not cast.site.is_standing():
 		return NO_ALTAR
 	if cast.kind == Ritual.Kind.CONVERT:
 		if cast.soul == null or not is_instance_valid(cast.soul) or not cast.soul.is_inside_tree():

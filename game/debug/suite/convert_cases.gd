@@ -173,7 +173,7 @@ func _check() -> Dictionary:
 	var far_own := _altar(1, Vector3(0.0, 0.0, -300.0))
 	checks["own_altar_any_distance"] = action.arm_status(wizard, spell) == ""
 	var own := _altar(1, Vector3(0.0, 0.0, 60.0))
-	checks["closest_own_altar"] = system.closest_own_altar(1, wizard.global_position) == own
+	checks["closest_own_site"] = system.closest_own_site(1, wizard.global_position) == own.site
 	far_own.free()
 	var enemy := _unit(Vector3(0.0, 0.1, 12.0), 2)
 	var friend := _unit(Vector3(4.0, 0.1, 12.0), 1)

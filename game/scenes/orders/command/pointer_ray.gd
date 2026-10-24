@@ -8,7 +8,6 @@ extends Node
 
 const _WORLD := preload("res://scenes/match/match_world.gd")
 const _CAMERA := preload("res://scenes/camera/world_camera.gd")
-const _STRUCTURE := preload("res://scenes/structures/structure_body.gd")
 
 ## A click on the minimap finds a body within this many minimap units of it (meters = units × the minimap zoom).
 @export var minimap_pick_units := 3.0
@@ -168,8 +167,8 @@ static func is_corpse(body: Node3D) -> bool:
 		return (body as UnitBody).is_dead()
 	if body is DoctorBody:
 		return (body as DoctorBody).is_dead()
-	if body is _STRUCTURE:
-		return (body as _STRUCTURE).is_dead()
+	if body is CastTower:
+		return (body as CastTower).is_destroyed()
 	return false
 
 
@@ -185,8 +184,8 @@ static func owner_slot_of(body: Node3D) -> int:
 		return (body as WizardBody).owner_slot
 	if body is DoctorBody:
 		return (body as DoctorBody).owner_slot
-	if body is _STRUCTURE:
-		return (body as _STRUCTURE).owner_slot
+	if body is CastTower:
+		return (body as CastTower).owner_slot
 	return 0
 
 

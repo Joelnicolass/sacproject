@@ -2,7 +2,7 @@ extends Node3D
 
 const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
-const STRUCTURE_SCENE := preload("res://scenes/structures/structure.tscn")
+const STRUCTURE_SCENE := preload("res://scenes/structures/buildings/_jman.tscn")
 const RULES := preload("res://data/match_rules.tres")
 
 @export var wizard_tags: PackedStringArray = ["cwa0", "cwa1", "cwa2", "cwa3", "cwa4", "cwa5"]
@@ -132,8 +132,6 @@ func _spawn_probe_structures() -> void:
 	var structure := STRUCTURE_SCENE.instantiate() as Node3D
 	structure.name = "Probe_Manalith"
 	structure.set("owner_slot", 1)
-	structure.set("spell_tag", "htlm")
-	structure.set("model", "mana")
 	structure.position = _grid_pos(0, row)
 	_actors.add_child(structure)
 	_structures.append(structure)

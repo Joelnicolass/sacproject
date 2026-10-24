@@ -5,7 +5,7 @@ extends Node
 ## and quits. It only watches: it plays no input and moves no actor; the camera is its own.
 ## It lives in a subfolder because AgentKit mounts every .gd of agent/harness/ itself.
 ## Args after `--`: --map=<tag> --god=<god of the local wizard> [--biome=<god whose land the map wears; default --god>] [--ai-god=<god>] [--wizard=<tag>] [--after=<s> before the first
-## round] [--shots=<n> rounds] [--every=<s>] [--out=<dir>] [--views=wizard,overview,fountain,manahoar] [--hover=wizard]; the match's own flags
+## round] [--shots=<n> rounds] [--every=<s>] [--out=<dir>] [--views=wizard,overview,fountain,manahoar,tower] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
 ## (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
 ## Windowed: `-- --agent=flow --flow=match_shots.json` (the flow gives the sandbox that applies the quality preset).
 
@@ -22,6 +22,10 @@ const TAG_MANAHOAR := &"oham"
 ## The "manahoar" view: the camera stands this far from the nearest Manahoar (any bearing the wizard's side is) and this high.
 @export_range(2.0, 30.0, 0.5, "suffix:m") var manahoar_m := 6.0
 @export_range(0.0, 10.0, 0.5, "suffix:m") var manahoar_up_m := 1.5
+
+## The "tower" view: the camera stands this far from the nearest tower, toward the local wizard, and this high.
+@export_range(10.0, 80.0, 1.0, "suffix:m") var tower_m := 40.0
+@export_range(0.0, 40.0, 0.5, "suffix:m") var tower_up_m := 14.0
 
 @export var camera: Camera3D
 
@@ -59,6 +63,8 @@ func _run() -> void:
 		push_error("match_shots: the world never had a local wizard.")
 		tree.quit(1)
 		return
+	if not arg("structure").is_empty():
+		_raise_structure(world, arg("structure"))
 	var out := arg("out", "res://agent/out/match_shots")
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(out))
 	var views := arg("views", "wizard,overview,fountain").split(",", false)
@@ -119,6 +125,14 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 			look = hoar.global_transform.origin + Vector3.UP * 1.2
 			var side := (focus - hoar.global_transform.origin) * Vector3(1.0, 0.0, 1.0)
 			spot = look + (side.normalized() if side.length() > 0.1 else Vector3.BACK) * manahoar_m + Vector3.UP * manahoar_up_m
+		"tower":
+			var tower := _nearest_tower(focus)
+			if tower == null:
+				print("match_shots: no tower in the match; view skipped")
+				return
+			look = tower.global_transform.origin + Vector3.UP * 8.0
+			var toward := (focus - tower.global_transform.origin) * Vector3(1.0, 0.0, 1.0)
+			spot = look + (toward.normalized() if toward.length() > 0.1 else Vector3.BACK) * tower_m + Vector3.UP * tower_up_m
 		_:
 			push_warning("match_shots: unknown view '%s'" % view)
 			return
@@ -163,6 +177,31 @@ func _foe_position(world: MatchWorld, wizard: Node3D) -> Vector3:
 func _away_from_foe(world: MatchWorld, wizard: Node3D) -> Vector3:
 	var away := (wizard.global_transform.origin - _foe_position(world, wizard)) * Vector3(1.0, 0.0, 1.0)
 	return away.normalized() if away.length() > 0.1 else Vector3(0.0, 0.0, 1.0)
+
+
+## --structure=<spell tag>: the tower the local wizard's god raises with that spell, over the free fountain closest to him.
+func _raise_structure(world: MatchWorld, tag: String) -> void:
+	var wizard := world.local_wizard() as WizardBody
+	var god := wizard.god_type()
+	var entry := god.structure_for(GameData.spell(tag)) if god != null else null
+	var fount := TowerRules.closest_free_fount(get_tree(), wizard.global_position, INF)
+	var spawner := get_tree().get_first_node_in_group(StructureSpawner.GROUP) as StructureSpawner
+	if entry == null or fount == null or spawner == null:
+		push_warning("match_shots: cannot raise '%s' (god %s)." % [tag, wizard.god])
+		return
+	var tower := spawner.spawn_tower(entry.scene, fount, wizard.owner_slot, wizard.rotation.y)
+	print("match_shots: %s raised over %s" % [tower.name if tower != null else "nothing", fount.name])
+
+
+func _nearest_tower(from: Vector3) -> Node3D:
+	var best: Node3D
+	var best_d := INF
+	for node in get_tree().get_nodes_in_group(CastTower.TOWER_GROUP):
+		var tower := node as Node3D
+		if tower != null and tower.global_transform.origin.distance_to(from) < best_d:
+			best = tower
+			best_d = tower.global_transform.origin.distance_to(from)
+	return best
 
 
 func _nearest_fount(from: Vector3) -> Node3D:

@@ -9,7 +9,7 @@
 [ext_resource type="Resource" path="res://data/buildings/charnel_grave_3.tres" id="7_grv3"]
 [ext_resource type="Resource" path="res://data/buildings/james_hut.tres" id="8_jhut"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="9_fount"]
-[ext_resource type="PackedScene" path="res://scenes/structures/structure.tscn" id="10_structure"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_jman.tscn" id="10_structure"]
 [ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="11_unit"]
 [ext_resource type="PackedScene" path="res://scenes/wizards/wizard_body.tscn" id="12_wizard"]
 [ext_resource type="PackedScene" path="res://scenes/souls/soul.tscn" id="13_soul"]
@@ -81,10 +81,9 @@ building = ExtResource("8_jhut")
 
 [node name="Fount" parent="World" instance=ExtResource("9_fount")]
 
-[node name="Manalith" parent="World" instance=ExtResource("10_structure")]
+[node name="Manalith" parent="World" instance=ExtResource("10_structure") node_paths=PackedStringArray("fount")]
 owner_slot = 2
-spell_tag = "htlm"
-manafount_path = NodePath("../Fount")
+fount = NodePath("../Fount")
 
 [node name="FreeFount" parent="World" instance=ExtResource("9_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, -4)

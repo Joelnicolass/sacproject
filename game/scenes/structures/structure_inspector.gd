@@ -63,11 +63,10 @@ func clear() -> void:
 ## How many inspection bars are on screen (flows and the playtest read it).
 func visible_bars() -> int:
 	var seen := {}
-	for group in [&"structure", &"map_building"]:
-		for node in get_tree().get_nodes_in_group(group):
-			var bar := _bar_of(node as Node3D)
-			if bar and bar.is_visible_in_tree() and bool(bar.get("only_when_selected")):
-				seen[bar] = true
+	for node in get_tree().get_nodes_in_group(MapBuilding.GROUP):
+		var bar := _bar_of(node as Node3D)
+		if bar and bar.is_visible_in_tree() and bar.only_when_selected:
+			seen[bar] = true
 	return seen.size()
 
 

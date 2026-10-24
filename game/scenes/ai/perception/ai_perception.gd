@@ -27,7 +27,7 @@ signal untracked(track: AiTrack)
 const BLDG_ALTAR := 0x1407
 const BLDG_FOUNT := 0x2810
 const BLDG_MANALITH := 0x55a0
-const MANALITH_TAG := "htlm"
+const BLDG_SHRINE := 0x15a6
 const MAHO_TAG := "oham"
 
 @export var profile: AiProfile
@@ -158,7 +158,7 @@ static func kind_of(node: Node) -> AiTrack.Kind:
 		return AiTrack.Kind.CRE
 	if node.is_in_group(Altar.GROUP) or node.is_in_group(&"manafount"):
 		return AiTrack.Kind.STR
-	if node.is_in_group(&"structure") and not node.is_in_group(MapBuilding.GROUP) and str(node.get("spell_tag")) == MANALITH_TAG:
+	if node is CastTower:
 		return AiTrack.Kind.STR
 	return AiTrack.Kind.NONE
 
@@ -253,6 +253,8 @@ func _bldg_flags(node: Node) -> int:
 		return BLDG_FOUNT
 	if node.is_in_group(Altar.GROUP):
 		return BLDG_ALTAR
+	if node is CastTower and (node as CastTower).type.role == BuildingType.Role.SHRINE:
+		return BLDG_SHRINE
 	return BLDG_MANALITH
 
 
@@ -686,7 +688,7 @@ func own_desecration() -> bool:
 ## The wizard has a standing altar of his own (closestShrine != 0, shiny.d:3100): where a Convert takes the creature.
 func has_home_altar() -> bool:
 	var system := sacrifice()
-	return system != null and wizard != null and system.closest_own_altar(slot, wizard.global_position) != null
+	return system != null and wizard != null and system.closest_own_site(slot, wizard.global_position) != null
 
 
 ## closestEnemyAltar of the wizard (shiny.d:3358): the enemy altar within the Desecrate range, as the game defines it.

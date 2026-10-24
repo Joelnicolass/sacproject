@@ -438,21 +438,18 @@ func _seat_ais() -> void:
 
 
 func _place_structures() -> void:
-	var spawner := _world.get_tree().get_first_node_in_group("structure_spawner")
+	var spawner := _world.get_tree().get_first_node_in_group(StructureSpawner.GROUP) as StructureSpawner
 	for structure in _rules.structures:
-		var fount := _world.get_node_or_null("Map/MapProps/Founts/" + structure.fount)
-		var wizard := _wizard_of(structure.slot)
+		var fount := _world.get_node_or_null("Map/MapProps/Founts/" + structure.fount) as ManafountBody
+		var wizard := _wizard_of(structure.slot) as WizardBody
 		if fount == null or wizard == null or spawner == null:
 			push_warning("ai_match: no se pudo poner la estructura %s en %s" % [structure.spell_tag, structure.fount])
 			continue
-		var spell := GameData.spell(structure.spell_tag)
-		var index := GameData.gods().find(str(wizard.get("god")))
-		var model: String = spell.structures[maxi(index, 0)] if spell != null and spell.structures.size() > maxi(index, 0) else ""
-		spawner.call("spawn_structure", {
-			"x": fount.global_position.x, "y": fount.global_position.y, "z": fount.global_position.z,
-			"yaw": 0.0, "slot": structure.slot, "model": model, "spell_tag": structure.spell_tag,
-			"manafount_path": str(fount.get_path()),
-		})
+		var entry := wizard.god_type().structure_for(GameData.spell(structure.spell_tag))
+		if entry == null:
+			push_warning("ai_match: el dios de %d no levanta %s" % [structure.slot, structure.spell_tag])
+			continue
+		spawner.spawn_tower(entry.scene, fount, structure.slot, 0.0)
 
 
 ## F370: the BenchBuilding of the rules, on the ground at their offset from the anchor (a map building like the layout's).
@@ -531,8 +528,8 @@ func _order_advance(group: BenchGroup, units: Array[Node3D]) -> void:
 	if group.order == "attack_structure":
 		## An attack on the first structure (a Manalith) of `order_slot`: Orders.apply_for, like a human's order on a click.
 		var structure: Node3D
-		for node in get_tree().get_nodes_in_group("structure"):
-			if int(node.get("owner_slot")) == group.order_slot and not node.is_in_group(MapBuilding.GROUP):
+		for node in get_tree().get_nodes_in_group(CastTower.TOWER_GROUP):
+			if int(node.get("owner_slot")) == group.order_slot:
 				structure = node as Node3D
 				break
 		if structure != null:

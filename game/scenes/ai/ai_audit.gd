@@ -109,7 +109,8 @@ func watch_world(world: Node) -> void:
 
 
 func _on_structure_entered(node: Node) -> void:
-	if not running or str(node.get("spell_tag")) != "htlm":
+	var tower := node as CastTower
+	if not running or tower == null or tower.type.role != BuildingType.Role.MANALITH:
 		return
 	var slot := int(node.get("owner_slot"))
 	var at := (node as Node3D).global_position if node is Node3D else Vector3.ZERO

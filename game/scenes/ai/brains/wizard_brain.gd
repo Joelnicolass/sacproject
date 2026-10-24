@@ -76,7 +76,7 @@ func think(wizard: AiTrack, cmd: int, record: AiRecord) -> int:
 	if wizard.spell_dirty:
 		rebuild_spells(wizard)
 	if wizard.age >= wizard.next_replan:
-		wizard.next_replan = wizard.age + profile.wizard_replan_ticks
+		wizard.next_replan = wizard.age + profile.wizard_replan_age
 		wizard.next_reissue = wizard.age - 1
 		var w3 := AiField.weight_triple(cmd, stance.enemy_ratio(), profile.aggression)
 		wizard.cast_queue.clear()
@@ -108,7 +108,7 @@ func _capture_block(wizard: AiTrack, record: AiRecord) -> int:
 	var tn := record.target
 	if tn == null or wizard.age < wizard.next_reissue:
 		return 0
-	wizard.next_reissue = wizard.age + profile.wizard_reissue_ticks
+	wizard.next_reissue = wizard.age + profile.wizard_reissue_age
 	if tn.flags & AiTrack.ALTAR:
 		## The desecrate path: an enemy altar not under ritual, the creature with most souls brought next to the wizard, and
 		## the altar being the closest enemy one in range (the game's closestEnemyAltar).
@@ -119,7 +119,7 @@ func _capture_block(wizard: AiTrack, record: AiRecord) -> int:
 				var radius := AiField.f32(spell.cast_range * profile.desecrate_range_factor)
 				if port.order_target_radius(guard, 3, wizard, radius) != 0:
 					if enqueue_forced_execute(wizard, guard, spell, spell.cast_range, null) != 0:
-						wizard.next_reissue += 7 * profile.wizard_reissue_ticks
+						wizard.next_reissue += 7 * profile.wizard_reissue_age
 						return 2
 	elif (tn.flags & AiTrack.CAPTURABLE) and (tn.status & AiTrack.UNBUILT):
 		if cast_cached_in_range(wizard, tn) != 0:

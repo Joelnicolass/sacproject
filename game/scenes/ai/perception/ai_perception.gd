@@ -436,22 +436,22 @@ func _update_node(t: AiTrack, dt: int) -> void:
 	match t.kind:
 		AiTrack.Kind.CRE, AiTrack.Kind.MAHO, AiTrack.Kind.WIZ:
 			if t.age >= t.rerate_tick:
-				t.rerate_tick = t.age + profile.rerate_ticks
+				t.rerate_tick = t.age + profile.rerate_age
 				_rate(t)
 			if t.kind == AiTrack.Kind.MAHO and t.age >= t.status_tick:
-				t.status_tick = t.age + profile.status_ticks
+				t.status_tick = t.age + profile.status_age
 				if _maho_ready(t.node):
 					t.status |= AiTrack.READY
 				else:
 					t.status &= ~AiTrack.READY
 			if t.kind == AiTrack.Kind.WIZ and (t.flags & AiTrack.OWN) and t.age >= t.souls_snap_tick:
-				t.souls_snap_tick = t.age + profile.souls_snapshot_ticks
+				t.souls_snap_tick = t.age + profile.souls_snapshot_age
 				var purse := t.node.get_node_or_null("SoulPurse")
 				if purse != null:
 					t.souls_snap = int(purse.get("count"))
 		AiTrack.Kind.STR:
 			if t.age >= t.status_tick:
-				t.status_tick = t.age + profile.status_ticks
+				t.status_tick = t.age + profile.status_age
 				_status_of_structure(t)
 
 

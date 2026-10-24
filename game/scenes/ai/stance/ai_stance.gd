@@ -175,7 +175,7 @@ func npc_share(at: Vector3, radius: float) -> float:
 func update_threat(wizard: AiTrack) -> void:
 	if wizard == null or not (wizard.flags & AiTrack.OWN) or wizard.age < wizard.threat_tick:
 		return
-	wizard.threat_tick = wizard.age + profile.threat_ticks
+	wizard.threat_tick = wizard.age + profile.threat_age
 	wizard.threat = 0.0
 	var acc0 := AiRater.new_acc()
 	var acc1_local := AiRater.new_acc()

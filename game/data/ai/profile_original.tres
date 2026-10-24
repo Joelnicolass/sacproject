@@ -14,12 +14,12 @@ script = ExtResource("1_profile")
 slot_periods = PackedInt32Array(12, 60, 6, 6, 60, 12)
 ; aggression: fija en 1.0, nada la cambia (shiny.d:380, 662); el original no tiene dificultad. Segun [S]
 aggression = 1.0
-; edades (1 por corrida de updateNtts = 6 ticks): recalcular rating 16 (1044), estado 8 (1053, 1095), almas del mago 32 (1080). Segun [S]
-rerate_ticks = 16
-status_ticks = 8
-souls_snapshot_ticks = 32
-; amenaza del mago: cada 8 de edad, influencia de grupos entre 10 y 280 m (shiny.d:1065-1072). Segun [S]
-threat_ticks = 8
+; en segundos a ritmo Normal (la IA los cuenta en edades de 6 ticks): rating 1,6 s = 16 edades (1044), estado 0,8 s = 8 (1053, 1095), almas del mago 3,2 s = 32 (1080). Segun [S]
+rerate_s = 1.6
+status_s = 0.8
+souls_snapshot_s = 3.2
+; amenaza del mago: cada 0,8 s (8 edades), influencia de grupos entre 10 y 280 m (shiny.d:1065-1072). Segun [S]
+threat_s = 0.8
 threat_near = 10.0
 threat_far = 280.0
 ; canAccept: radio 30*min(1+0.1n, 1.8) (shiny.d:1702-1710). Segun [S]
@@ -32,9 +32,9 @@ record_near_m = 100.0
 follow_radius_m = 8.0
 ; guardia: se detiene a 10 m del blanco (retreatDistance, state.d:13608); sin esto el `guard` del port las apila a 2-3 m del mago
 retreat_hold_m = 10.0
-; replan del mago cada 16 de edad y reemision de orden cada 8 (shiny.d:3328, 3356). Segun [S]
-wizard_replan_ticks = 16
-wizard_reissue_ticks = 8
+; replan del mago cada 1,6 s (16 edades) y reemision de orden cada 0,8 s (8) (shiny.d:3328, 3356). Segun [S]
+wizard_replan_s = 1.6
+wizard_reissue_s = 0.8
 ; wizAttack: alcance (1-amenaza)*280, retail 0x4901a0 (shiny.d:3058; la beta usa 180). Segun [S]
 attack_coefficient = 280.0
 ; pesos del blanco (shiny.d:3070-3072): no agresivo x0.5, sin habilidad lista x1/3, Sac Doctor x10. Segun [S]

@@ -59,6 +59,7 @@ func apply_to(base: AiProfile) -> AiProfile:
 	if period_scale == 1.0 and aggression == base.aggression:
 		return base
 	var out := base.duplicate() as AiProfile
+	out.age_period_ticks = base.age_period_ticks if base.age_period_ticks > 0 else base.slot_periods[2]
 	out.slot_periods = scaled_periods(base.slot_periods)
 	out.aggression = aggression
 	return out

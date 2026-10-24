@@ -30,6 +30,7 @@ const RIFT_CASES := preload("res://debug/suite/rift_cases.gd")  # 061f
 const AURA_CASES := preload("res://debug/suite/aura_cases.gd")  # 061f
 const SOUL_CASES := preload("res://debug/suite/soul_cases.gd")  # 061d
 const ANIMATE_DEAD_CASES := preload("res://debug/suite/animate_dead_cases.gd")  # 061d
+const SCAR_CASES := preload("res://debug/suite/scar_cases.gd")  # 061k-5
 const BIOME_CASES := preload("res://debug/suite/biome_cases.gd")
 const TEAM_CASES := preload("res://debug/match/team_cases.gd")  # 049b, 049c
 
@@ -85,6 +86,7 @@ func _run_suite() -> void:
 	_results.merge(await AURA_CASES.new().run(self))  # 061f
 	_results.merge(await SOUL_CASES.new().run(self))  # 061d
 	_results.merge(await ANIMATE_DEAD_CASES.new().run(self))  # 061d
+	_results.merge(SCAR_CASES.new().run(self))  # 061k-5
 	_results.merge(BIOME_CASES.new().run(self))
 	_print_suite()
 

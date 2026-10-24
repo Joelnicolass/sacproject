@@ -32,8 +32,8 @@ const DATA_PER_CELL := 4
 const CACHE_SIZE := 64
 ## Half the diagonal of a cell plus some height: the node's visibility range is measured to its AABB center.
 const CELL_REACH_M := CELL_M * 0.7072 + 4.0
-## Floats per instance in a MultiMesh TRANSFORM_3D buffer.
-const XFORM_STRIDE := 12
+## Floats per instance in a MultiMesh TRANSFORM_3D buffer with colors: the 3 x 4 matrix, then r, g, b, a.
+const XFORM_STRIDE := 16
 const SALT_CLEAR := 0x7F4A7C15
 
 var config: VegetationLayerConfig
@@ -118,8 +118,8 @@ func _init(layer: VegetationLayerConfig, preset: VegetationQuality, map: FloraDe
 	groups = describe_groups(config, flora)
 	for group in groups:
 		group["end_m"] = species_end(group, config, quality)
-		group["mesh"] = BodyCatalog.mesh(str(group["model"]))
-		group["material"] = fade_material(group["mesh"], float(group["end_m"]), config.fade_m)
+		group["mesh"] = FloraMaterial.mesh_for(BodyCatalog.mesh(str(group["model"])))
+		group["material"] = FloraMaterial.for_mesh(group["mesh"], float(group["end_m"]), config.fade_m)
 	groups = groups.filter(func(group: Dictionary) -> bool: return group["mesh"] != null)
 
 
@@ -146,7 +146,7 @@ static func _group(index: int, map: FloraDensity) -> Dictionary:
 		"tag_index": index,
 		"model": model,
 		"pose": pose_of(model),
-		"scale_range": entry.scale_range,
+		"variation": entry.variation(),
 		"cast_shadow": entry.cast_shadow,
 		"visibility_end_m": entry.visibility_end_m,
 		"texel_m": map.cell_m(index),
@@ -159,7 +159,7 @@ static func plan_groups(layer_groups: Array[Dictionary]) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	for group in layer_groups:
 		out.append({"tag": group["tag"], "tag_index": group["tag_index"], "pose": group["pose"],
-			"scale_range": group["scale_range"], "texel_m": group["texel_m"], "per_cell": group["per_cell"]})
+			"variation": group["variation"], "texel_m": group["texel_m"], "per_cell": group["per_cell"]})
 	return out
 
 
@@ -208,7 +208,7 @@ static func plan_cell(layer: VegetationLayerConfig, map: FloraDensity, layer_gro
 		list.sort_custom(_by_rank)
 		var group: Dictionary = layer_groups[g]
 		var pose: Transform3D = group["pose"]
-		var range_v: Vector2 = group["scale_range"]
+		var variation: Dictionary = group["variation"]
 		var buffer := PackedFloat32Array()
 		buffer.resize(list.size() * XFORM_STRIDE)
 		var kept := 0
@@ -220,9 +220,8 @@ static func plan_cell(layer: VegetationLayerConfig, map: FloraDensity, layer_gro
 			var y: float = height.call(x, z)
 			if is_nan(y):
 				continue
-			var s := lerpf(range_v.x, range_v.y, float(item[5]))
-			var xform := Transform3D(Basis(Vector3.UP, float(item[4])).scaled(Vector3(s, s, s)), Vector3(x - corner.x, y, z - corner.y)) * pose
-			write_xform(buffer, kept, xform)
+			var at := FloraVariation.instance_transform(variation, seed, int(item[6]), int(item[7]), int(item[8]), int(item[9]), float(item[4]), float(item[5]), Vector3(x - corner.x, y, z - corner.y), pose)
+			FloraVariation.write_instance(buffer, kept, at, FloraVariation.instance_color(variation, seed, int(item[6]), int(item[7]), int(item[8]), int(item[9]), x, z))
 			kept += 1
 		buffer.resize(kept * XFORM_STRIDE)
 		out.append(buffer)
@@ -263,22 +262,6 @@ static func write_xform(buffer: PackedFloat32Array, index: int, t: Transform3D) 
 	buffer[at + 9] = t.basis.y.z
 	buffer[at + 10] = t.basis.z.z
 	buffer[at + 11] = t.origin.z
-
-
-## A copy of the mesh's only material that dithers out between end - fade and end (camera distance). Null for a mesh with
-## several surfaces (material_override would paint them all one way) or no fade: the node's visibility range still ends it.
-static func fade_material(mesh: Mesh, end_m: float, fade_m: float) -> Material:
-	if mesh == null or mesh.get_surface_count() != 1 or fade_m <= 0.0:
-		return null
-	var base := mesh.surface_get_material(0) as BaseMaterial3D
-	if base == null:
-		return null
-	var copy := base.duplicate() as BaseMaterial3D
-	copy.distance_fade_mode = BaseMaterial3D.DISTANCE_FADE_PIXEL_DITHER
-	# max < min reverses the fade: opaque up to max, gone at min.
-	copy.distance_fade_max_distance = maxf(end_m - fade_m, 0.0)
-	copy.distance_fade_min_distance = end_m
-	return copy
 
 
 ## Brings the ring to the camera (`camera_global`), applies finished plans until `deadline_us` (Time.get_ticks_usec) and
@@ -445,6 +428,7 @@ func _make_nodes(key: Vector2i, buffers: Array[PackedFloat32Array]) -> Array:
 		var group: Dictionary = groups[g]
 		var multimesh := MultiMesh.new()
 		multimesh.transform_format = MultiMesh.TRANSFORM_3D
+		multimesh.use_colors = true
 		multimesh.mesh = group["mesh"]
 		multimesh.instance_count = count
 		multimesh.buffer = buffer

@@ -10,7 +10,7 @@ extends Node
 ## Watchdog: past `timeout_s` of wall time it prints `FLORA CASES FAIL timeout` and quits 1. The case scripts are loaded
 ## at run time (not preloaded), so one that fails to compile ends in a FAIL line instead of a runner without a script.
 
-const CASES := ["res://debug/look/flora_placement_cases.gd", "res://debug/look/cell_ring_cases.gd", "res://debug/look/flora_field_cases.gd"]
+const CASES := ["res://debug/look/flora_placement_cases.gd", "res://debug/look/cell_ring_cases.gd", "res://debug/look/flora_field_cases.gd", "res://debug/look/flora_variation_cases.gd"]
 
 ## Real seconds (not game time: --fixed-fps would stretch a game-time timer).
 @export var timeout_s := 40.0

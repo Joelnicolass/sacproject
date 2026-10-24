@@ -25,6 +25,7 @@ const SALT_YAW := 0x68E31DA4
 const SALT_SCALE := 0x0B4F2E1D
 
 
+
 ## Stable hash of a tag (FNV-1a over its UTF-8 bytes); String.hash() is not promised to stay the same across versions.
 static func tag_hash(tag: String) -> int:
 	var h := 0x811C9DC5

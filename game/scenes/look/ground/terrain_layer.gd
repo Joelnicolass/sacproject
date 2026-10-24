@@ -2,20 +2,18 @@
 class_name TerrainLayer
 extends LookLayer
 
-## Ground layer of the rig: the only writer of the map's terrain material. It gives the terrain the biome's
-## classic ground (`ground_classic`: atlas x light map; the map's own tiles when the map is made of the
-## look's god, `NativeGround`) and, over it, the `GroundSet` as a PBR material (`ground_pbr.gdshader`).
-## Hiding the node, a null profile or a profile without ground shows the classic one. Heights and
-## collision are untouched (the mesh is the same). The materials and the zone mask are rebuilt from
-## the map on every load and never saved.
+## Ground layer of the rig: the only writer of the map's terrain material. A look with a `GodGround` gets the god's ground on
+## the map's ground roles and baked light (`ground.gdshader`, built by GroundMaterial); a look without one keeps the biome's
+## classic ground (`ground_classic`: atlas x light map; the map's own tiles when the map is made of the look's god,
+## `NativeGround`) until every god has its GodGround (plan 062, cut 3). Hiding the node or a null profile shows the classic
+## one. Heights and collision are untouched (the mesh is the same). The materials are rebuilt on every load and never saved.
 
 var _rig: LookRig
-var _ground: GroundSet
+var _ground: GodGround
 var _classic: ShaderMaterial
 var _classic_given: ShaderMaterial
 var _preset: LookQuality
 var _material: ShaderMaterial
-var _watching: Array[Resource] = []
 
 
 func _ready() -> void:
@@ -56,35 +54,19 @@ func _notification(what: int) -> void:
 		_refresh()
 
 
-func _set_ground(ground: GroundSet) -> void:
+## Editor: editing the GodGround (or one of its roles) in the inspector refreshes the preview.
+func _set_ground(ground: GodGround) -> void:
 	_unwatch()
 	_ground = ground
 	_material = null
-	if _ground:
-		_watch(_ground)
-		for layer in _ground.layers:
-			if layer:
-				_watch(layer)
+	if _ground and Engine.is_editor_hint():
+		_ground.changed.connect(_refresh)
 	_refresh()
 
 
-## Editor: editing a GroundSet or a GroundLayer in the inspector refreshes the preview.
-func _watch(resource: Resource) -> void:
-	if not resource.changed.is_connected(_on_resource_changed):
-		resource.changed.connect(_on_resource_changed)
-		_watching.append(resource)
-
-
 func _unwatch() -> void:
-	for resource in _watching:
-		if is_instance_valid(resource) and resource.changed.is_connected(_on_resource_changed):
-			resource.changed.disconnect(_on_resource_changed)
-	_watching.clear()
-
-
-func _on_resource_changed() -> void:
-	if Engine.is_editor_hint():
-		_set_ground(_ground)
+	if _ground and _ground.changed.is_connected(_refresh):
+		_ground.changed.disconnect(_refresh)
 
 
 func _refresh() -> void:
@@ -99,8 +81,9 @@ func _refresh() -> void:
 		_restore()
 		return
 	if _material == null:
-		var shape := TerrainShape.of(self)
-		_material = GroundMaterial.build(_ground, shape.tile_ids() if shape else PackedByteArray(), _preset)
+		var map_terrain := terrain as Terrain
+		_material = GroundMaterial.build(_ground, map_terrain.ground_roles if map_terrain else null,
+				map_terrain.light_map if map_terrain else null, _preset)
 	else:
 		GroundMaterial.update(_material, _ground, _preset)
 	terrain.call("set_ground_override", _material)  # dynamic: Terrain or the grass lab's GrassLabGround (debug/look) answers it

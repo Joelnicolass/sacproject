@@ -6,6 +6,45 @@
 [ext_resource type="Material" path="res://assets/original/themes/persephone/ground_classic.tres" id="3_04iut"]
 [ext_resource type="Resource" path="res://data/look/sky/persephone_sky.tres" id="9_sky"]
 [ext_resource type="Resource" path="res://data/look/grass/persephone_grass.tres" id="10_grass"]
+[ext_resource type="Script" path="res://scenes/look/ground/god_ground.gd" id="20_god_ground"]
+[ext_resource type="Script" path="res://scenes/look/ground/ground_role.gd" id="21_ground_role"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/persephone/edge.png" id="22_edge"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/persephone/roles/open.png" id="23_open"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/persephone/roles/open_detail.png" id="24_open_detail"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/persephone/roles/earth.png" id="25_earth"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/persephone/roles/earth_detail.png" id="26_earth_detail"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/persephone/roles/rock.png" id="27_rock"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/persephone/roles/rock_detail.png" id="28_rock_detail"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/persephone/roles/path.png" id="29_path"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/persephone/roles/path_detail.png" id="30_path_detail"]
+
+[sub_resource type="Resource" id="Role_open"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("23_open")
+detail = ExtResource("24_open_detail")
+
+[sub_resource type="Resource" id="Role_earth"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("25_earth")
+detail = ExtResource("26_earth_detail")
+
+[sub_resource type="Resource" id="Role_rock"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("27_rock")
+detail = ExtResource("28_rock_detail")
+
+[sub_resource type="Resource" id="Role_path"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("29_path")
+detail = ExtResource("30_path_detail")
+
+[sub_resource type="Resource" id="GodGround_persephone"]
+script = ExtResource("20_god_ground")
+open = SubResource("Role_open")
+earth = SubResource("Role_earth")
+rock = SubResource("Role_rock")
+path = SubResource("Role_path")
+edge = ExtResource("22_edge")
 
 [resource]
 script = ExtResource("1_p")
@@ -15,4 +54,5 @@ sky = ExtResource("9_sky")
 light = ExtResource("2_light")
 glow = ExtResource("1_e3s6b")
 ground_classic = ExtResource("3_04iut")
+ground = SubResource("GodGround_persephone")
 grass = ExtResource("10_grass")

@@ -1,0 +1,23 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/map/maps/high_noon/map.tscn" id="1_map"]
+[ext_resource type="Script" path="res://debug/look/ground_roles_lab.gd" id="2_lab"]
+[ext_resource type="Resource" path="res://data/look/quality_high.tres" id="3_quality"]
+[ext_resource type="Resource" path="res://data/gods/persephone.tres" id="4_god"]
+
+[node name="GroundRolesLab" type="Node3D" node_paths=PackedStringArray("map")]
+script = ExtResource("2_lab")
+map = NodePath("Map")
+god = ExtResource("4_god")
+quality = ExtResource("3_quality")
+
+[node name="Map" parent="." instance=ExtResource("1_map")]
+
+[node name="Look" parent="Map"]
+preview_god = ExtResource("4_god")
+
+[node name="Hills" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9641, 0.2656, 0, -0.2656, 0.9641, 1480, 75, 1700)
+current = true
+fov = 70.0
+far = 6000.0

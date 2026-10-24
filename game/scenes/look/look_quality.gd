@@ -42,7 +42,7 @@ extends Resource
 @export var glow_enabled: bool = true
 
 @export_group("Ground (022c)")
-## How many of the GroundSet's layers are drawn (the first ones): 2 = grass and rock only.
+## 4 = the god's ground also reads its roles' normal and ORM maps; below 4 = colour only. All four roles always draw.
 @export_range(1, 4) var ground_layers: int = 4
 ## Rock layers project the maps from three sides (stretch-free cliffs).
 @export var ground_triplanar: bool = true

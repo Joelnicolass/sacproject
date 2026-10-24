@@ -88,6 +88,18 @@ EXTRA_FX = {
     "lthg": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
     "lth2": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
     "cfx1": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
+    # RFC 061f (SPEL): Explosion's casting balls (exeg), its blast particles (xplo 5x5, exp2), ash (frck), smoke (smok) and fireball (fbal); Demonic Rift's
+    # edge (rif2), swirl (rif3) and spirit trail (rift); Healing Aura's sphere (haur). cfx1 (Rift's cast) came with 061c.
+    "exeg": ("charlie.wad", "Bloo.WAD!/Pyro.FLDR/txtr.FLDR"),
+    "frck": ("charlie.wad", "Bloo.WAD!/Pyro.FLDR/txtr.FLDR"),
+    "smok": ("charlie.wad", "Bloo.WAD!/Pyro.FLDR/txtr.FLDR"),
+    "xplo": ("main.wad", "MAIN.WAD!/bits.FLDR"),
+    "exp2": ("main.wad", "MAIN.WAD!/bits.FLDR"),
+    "fbal": ("main.wad", "MAIN.WAD!/bits.FLDR"),
+    "rif2": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
+    "rif3": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
+    "rift": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
+    "haur": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
 }
 
 IMPORT_TEMPLATE = """[remap]

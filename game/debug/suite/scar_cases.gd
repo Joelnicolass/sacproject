@@ -187,7 +187,18 @@ func _effects() -> Dictionary:
 	var rock := (load("res://scenes/spells/rock_projectile.tscn") as PackedScene).instantiate()
 	checks["rock_spell"] = rock.get("ground_mark") != null
 	rock.free()
+	checks["firewall"] = _child_mark("res://scenes/spells/walls/firewall.tscn", "Mark", "quk1", 0.0) and _wall_scars("res://scenes/spells/walls/firewall.tscn")
+	checks["wall_of_spikes"] = _child_mark("res://scenes/spells/walls/wall_of_spikes.tscn", "Mark", "gscr", 0.0) and _wall_scars("res://scenes/spells/walls/wall_of_spikes.tscn")
 	return _result(checks)
+
+
+## A wall paints its cracks with the ScarMark of its scene, wired to its own wall.
+func _wall_scars(path: String) -> bool:
+	var root := (load(path) as PackedScene).instantiate()
+	var scars := root.get_node("Scars") as WallScars
+	var ok := scars != null and scars.wall == root and scars.mark == root.get_node("Mark")
+	root.free()
+	return ok
 
 
 func _beam_scene(type_name: String) -> bool:

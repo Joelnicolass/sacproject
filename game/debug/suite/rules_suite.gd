@@ -33,6 +33,7 @@ const TORNADO_CASES := preload("res://debug/suite/tornado_cases.gd")  # 061j
 const CLOUD_CASES := preload("res://debug/suite/cloud_cases.gd")  # 061h
 const SOUL_CASES := preload("res://debug/suite/soul_cases.gd")  # 061d
 const ANIMATE_DEAD_CASES := preload("res://debug/suite/animate_dead_cases.gd")  # 061d
+const WALL_CASES := preload("res://debug/suite/wall_cases.gd")  # 061g
 const SCAR_CASES := preload("res://debug/suite/scar_cases.gd")  # 061k-5
 const BIOME_CASES := preload("res://debug/suite/biome_cases.gd")
 const SPELL_LIGHT_CASES := preload("res://debug/suite/spell_light_cases.gd")  # 061 light pass
@@ -93,6 +94,7 @@ func _run_suite() -> void:
 	_results.merge(await CLOUD_CASES.new().run(self))  # 061h
 	_results.merge(await SOUL_CASES.new().run(self))  # 061d
 	_results.merge(await ANIMATE_DEAD_CASES.new().run(self))  # 061d
+	_results.merge(await WALL_CASES.new().run(self))  # 061g
 	_results.merge(SCAR_CASES.new().run(self))  # 061k-5
 	_results.merge(BIOME_CASES.new().run(self))
 	_results.merge(SPELL_LIGHT_CASES.new().run(self))  # 061 light pass

@@ -1,4 +1,6 @@
-# 062 — Suelo por dios con roles, PBR completo y variación de flora (plan, pendiente de aprobación)
+# 062 — Suelo por dios con roles, PBR completo y variación de flora (plan aprobado)
+
+> **Decisiones del usuario (2026-10-24):** plan aprobado; un solo camino por roles también para el tutorial (sin el calco `NativeGround`, siempre que pase la medición contra el tutorial); 4 roles (abierto/pasto, tierra, roca, camino); sin parche en el pipeline viejo, directo al corte 1.
 
 ## Plan del tech lead: rediseño del suelo por dios, PBR completo y variación de la flora
 

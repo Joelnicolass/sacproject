@@ -27,7 +27,7 @@ var synced_ticks := 0
 var place := Vector2.ZERO
 
 var _spiral: BoreSpiral
-var _land: TerrainShape
+var _land: GroundSurface
 var _draws := false
 
 
@@ -37,7 +37,7 @@ func _ready() -> void:
 		set_physics_process(false)
 		return
 	_draws = DisplayServer.get_name() != "headless"
-	_land = TerrainShape.of(self)
+	_land = GroundSurface.of(self)
 	for emitter in emitters:
 		emitter.set_active(true)
 

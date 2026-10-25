@@ -2,15 +2,15 @@ class_name TerrainCollision
 extends StaticBody3D
 
 ## The ground to stand on: the map's triangles (land and cliff walls) cut in chunks of `chunk_cells` x `chunk_cells` cells,
-## one collision shape each, all on this one body. When the ground moves (TerrainShape.changed) only the chunks it touched
+## one collision shape each, all on this one body. When the ground moves (GroundSurface.changed) only the chunks it touched
 ## are made again, at most every `refresh_s` (a hole at once), with the corners moved as the shape says; a triangle
-## with a taken away corner is left out. So a ray from above (GroundRay) finds the same ground TerrainShape.height_at answers, a
+## with a taken away corner is left out. So a ray from above (GroundRay) finds the same ground GroundSurface.height_at answers, a
 ## few ticks late. It does not decide how the ground moves (TerrainDeformer) and draws nothing.
 
 ## An empty shape every chunk copies, so no shape is built in code.
 const CHUNK_SHAPE := preload("res://scenes/map/terrain/terrain_chunk.tres")
 
-@export var shape: TerrainShape
+@export var shape: GroundSurface
 @export_range(1, 32) var chunk_cells := 8
 ## Time between two remakes of the chunks that moved.
 @export_range(0.0166, 0.5, 0.0001, "suffix:s") var refresh_s := 0.05
@@ -28,7 +28,7 @@ var _tick := 0
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if shape != null else PackedStringArray(["Falta el socket `shape` (el TerrainShape del mapa)."])
+	return PackedStringArray() if shape != null else PackedStringArray(["Falta el socket `shape` (el GroundSurface del mapa)."])
 
 
 func _ready() -> void:
@@ -78,7 +78,7 @@ func _split_in_chunks() -> void:
 
 ## The triangles of `chunk` with their corners where the ground is now.
 func _faces_of(chunk: Vector2i) -> PackedVector3Array:
-	var texels := shape.displacement().texels
+	var texels := shape.field().texels
 	var faces := PackedVector3Array()
 	for first: int in _triangles[chunk]:
 		var ids := [_indices[first], _indices[first + 1], _indices[first + 2]]

@@ -6,11 +6,11 @@ extends RefCounted
 ## (an internal child of the host, never saved).
 ## - Build (`plan_cell`, a pure function): per data cell (pixel) and species, FloraPlacement gives the instances; they are
 ##   ordered by rank (i + 0.5) / n so any prefix of a 32 m cell is an even sample of its 16 data cells; the height is
-##   TerrainShape.height_at, and an instance off the ground or inside a VegetationClear is dropped (the clear's edge thins
+##   GroundSurface.height_at, and an instance off the ground or inside a VegetationClear is dropped (the clear's edge thins
 ##   them by a hash). Final transform: T·R·S (the plant's mesh stands upright already). The meshes and materials are the species',
 ##   shared by every cell.
 ## - Threads (054e, F384): `plan_cell` runs on a WorkerThreadPool task, at most `max_builds_per_frame` cells at once, the
-##   nearest first. A task gets copies of what it reads (the groups without meshes, the clears, a TerrainShape.sampler
+##   nearest first. A task gets copies of what it reads (the groups without meshes, the clears, a GroundSurface.sampler
 ##   snapshot) and touches no node. The main thread only makes the MultiMeshInstance3D from the finished buffers
 ##   (`multimesh.buffer`, no per-instance call), while the frame's deadline (FloraField.build_budget_ms) lasts; the rest
 ##   wait for the next frame. A result is applied in any order but its bytes depend only on the cell, so the order of
@@ -39,14 +39,13 @@ const SALT_CLEAR := 0x7F4A7C15
 var config: VegetationLayerConfig
 var quality: VegetationQuality
 var flora: FloraDensity
-var terrain: Terrain
-## The land numbers of `terrain` (heights, lowest land, a thread-safe sampler).
-var shape: TerrainShape
+## The land numbers (heights, lowest land, a thread-safe sampler) and where the map sits.
+var shape: GroundSurface
 var host: Node3D
 
 ## Per species drawn: {tag, tag_index, variation, cast_shadow, visibility_end_m, end_m, mesh, material, per_cell, texel_m}.
 var groups: Array[Dictionary] = []
-## The map's transform (the terrain's global transform) and its inverse.
+## The map's transform (the ground mesh's global transform) and its inverse.
 var map_xform := Transform3D.IDENTITY
 var _map_inverse := Transform3D.IDENTITY
 var _ring := CellRing.new(CELL_M, MAP_CELLS)
@@ -99,14 +98,13 @@ class PlanJob:
 			task_id = -1
 
 
-func _init(layer: VegetationLayerConfig, preset: VegetationQuality, map: FloraDensity, land: Terrain, owner_node: Node3D) -> void:
+func _init(layer: VegetationLayerConfig, preset: VegetationQuality, map: FloraDensity, land: GroundSurface, owner_node: Node3D) -> void:
 	config = layer
 	quality = preset
 	flora = map
-	terrain = land
-	shape = land.shape
+	shape = land
 	host = owner_node
-	map_xform = land.global_transform if land.is_inside_tree() else land.transform
+	map_xform = land.map_transform()
 	_map_inverse = map_xform.affine_inverse()
 	var scale := quality.radius_scale
 	var starts := PackedFloat32Array()

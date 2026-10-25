@@ -133,11 +133,11 @@ func _refresh() -> void:
 	var layers: Array[Dictionary] = []
 	if is_visible_in_tree() and not presentationless():
 		layers = active_layers()
-	var terrain := rig.terrain as Terrain if rig else null
-	if terrain == null or terrain.shape == null or not terrain.shape.is_loaded():
+	var surface := rig.ground if rig else null
+	if surface == null or not surface.is_loaded():
 		layers.clear()
-	_ground.follow(terrain.shape if terrain != null and not Engine.is_editor_hint() else null)
-	var signature := _signature_of(layers, terrain)
+	_ground.follow(surface if surface != null and not Engine.is_editor_hint() else null)
+	var signature := _signature_of(layers, surface)
 	if signature == _signature:
 		return
 	_free_planters()
@@ -145,7 +145,7 @@ func _refresh() -> void:
 	_last_frame_us = 0
 	_worst_frame_us = 0
 	for layer in layers:
-		var planter := MeshPlanter.new(layer["config"], layer["quality"], density(), terrain, self)
+		var planter := MeshPlanter.new(layer["config"], layer["quality"], density(), surface, self)
 		# The editor reloads tool scripts under a running task: plan on the main thread there.
 		planter.threaded = not Engine.is_editor_hint()
 		_planters.append(planter)
@@ -168,10 +168,10 @@ func _on_vegetation_toggled(_enabled: bool) -> void:
 
 
 ## What the planters depend on: a change of it rebuilds them.
-func _signature_of(layers: Array[Dictionary], terrain: Terrain) -> String:
+func _signature_of(layers: Array[Dictionary], surface: GroundSurface) -> String:
 	var parts := PackedStringArray()
 	parts.append(str(_density_version))
-	parts.append(str(terrain.get_instance_id() if terrain else 0))
+	parts.append(str(surface.get_instance_id() if surface else 0))
 	for layer in layers:
 		var q: VegetationQuality = layer["quality"]
 		parts.append("%d:%s:%s:%s:%s:%d" % [(layer["config"] as Object).get_instance_id(), q.enabled, q.radius_scale, q.density_scale, q.shadows, q.max_builds_per_frame])

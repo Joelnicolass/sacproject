@@ -22,12 +22,12 @@ func _ready() -> void:
 
 ## `params["vertex"]`: the lattice id of the vertex that was taken away.
 func play(params: Dictionary) -> void:
-	var shape := TerrainShape.of(self)
+	var shape := GroundSurface.of(self)
 	var terrain := get_tree().get_first_node_in_group(Terrain.GROUP) as Terrain
 	if shape == null or terrain == null or DisplayServer.get_name() == "headless":
 		queue_free()
 		return
-	var built := FallingChunkRules.arrays(shape.index, shape.displacement().texels, shape.tile_ids(), int(params["vertex"]))
+	var built := FallingChunkRules.arrays(shape.index, shape.field().texels, shape.tile_ids(), int(params["vertex"]))
 	if built.is_empty():
 		queue_free()
 		return

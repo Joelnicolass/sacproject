@@ -7,7 +7,7 @@ extends MeshInstance3D
 ## (TerrainDeformer) nor decide where the walls go (HoleWallRules).
 
 ## The map's ground numbers, and the mesh whose material the walls wear.
-@export var shape: TerrainShape
+@export var shape: GroundSurface
 @export var terrain: Terrain
 ## The ground shader moves the vertices up to this far (m): the walls are not culled while it does.
 @export_range(0.0, 60.0, 1.0, "suffix:m") var lift_margin_m := 30.0
@@ -24,7 +24,7 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if shape == null:
-		warnings.append("Falta el socket `shape` (el TerrainShape del mapa).")
+		warnings.append("Falta el socket `shape` (el GroundSurface del mapa).")
 	if terrain == null:
 		warnings.append("Falta el socket `terrain` (el Terrain cuyo material usan las paredes).")
 	return warnings
@@ -38,7 +38,7 @@ func wall_vertices() -> int:
 func _process(_delta: float) -> void:
 	if terrain != null and material_override != terrain.material_override:
 		material_override = terrain.material_override
-	var ground := shape.displacement()
+	var ground := shape.field()
 	if ground.holes.version == _built_version:
 		return
 	_built_version = ground.holes.version

@@ -15,7 +15,7 @@ extends Resource
 ## land as flat, so the navmesh must too: at 1 m cells a slope of 70 degrees rises 2.7 m per cell. 0.5 m (the step of move_and_slide)
 ## cut the hills into 30 islands (F201); 3 m keeps them one piece, bodies walk those slopes (floor_max_angle 85).
 @export var agent_max_climb := 3.0
-## Degrees. High on purpose: every ground triangle of TerrainShape.is_on_ground must be walkable (floor_max_angle is 85).
+## Degrees. High on purpose: every ground triangle of GroundSurface.is_on_ground must be walkable (floor_max_angle is 85).
 @export_range(0.0, 90.0) var agent_max_slope := 85.0
 @export var region_min_size := 8.0
 @export var region_merge_size := 20.0

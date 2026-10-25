@@ -46,8 +46,8 @@ func _local_slot() -> int:
 	return MpKit.local_slot()
 
 
-func _terrain() -> TerrainShape:
-	return TerrainShape.of(self)
+func _terrain() -> GroundSurface:
+	return GroundSurface.of(self)
 
 
 func _ground_y(x: float, z: float) -> float:

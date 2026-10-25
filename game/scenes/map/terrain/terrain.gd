@@ -4,13 +4,13 @@ extends MeshInstance3D
 
 ## The map's ground as something to see: the mesh (the instanced terrain.glb, or one built from the data) and the editor
 ## preview. The body to stand on is a saved child of the map (`Collision`: the glb brings one, a map without glb saves its
-## own with ConcavePolygonShape3D `terrain_collision.res`). Heights, holes and tiles are not here: ask the child TerrainShape.
+## own with ConcavePolygonShape3D `terrain_collision.res`). Heights, holes and tiles are not here: ask the child GroundSurface.
 ## The material swap is TerrainGroundMaterial.
 
 const GROUP := &"terrain"
 
 ## The ground as numbers: its `Shape` child.
-@export var shape: TerrainShape
+@export var shape: GroundSurface
 ## The label that says the map has no ground (shown only when it could not be built).
 @export var missing: Label3D
 ## Which kind of ground lies where: 256x256, one pixel per 10 m cell, R open, G earth, B rock, A path (the map's
@@ -49,7 +49,7 @@ func _validate_property(property: Dictionary) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if shape == null:
-		warnings.append("Falta el hijo Shape (TerrainShape) en `shape`.")
+		warnings.append("Falta el hijo Shape (GroundSurface) en `shape`.")
 	if ground_roles == null:
 		warnings.append("Falta `ground_roles` (el ground_roles.png del mapa): el suelo del dios no sabe qué va dónde.")
 	return warnings
@@ -62,6 +62,11 @@ func _notification(what: int) -> void:
 	elif what == NOTIFICATION_EDITOR_POST_SAVE:
 		_apply_preview_offset()
 		_material.after_save()
+
+
+func _enter_tree() -> void:
+	if shape != null:  # the surface lists who draws it; before any _ready, so the look layer and the minimap find it
+		shape.meshes.assign([self])
 
 
 func _ready() -> void:
@@ -111,7 +116,7 @@ func _set_preview_offset(offset: Vector3) -> void:
 
 func _load_mesh() -> bool:
 	if shape == null or shape.data == null:
-		push_error("Terrain '%s' has no ground: its `shape` needs a TerrainShape with data (MapTerrainData)." % name)
+		push_error("Terrain '%s' has no ground: its `shape` needs a GroundSurface with data (MapTerrainData)." % name)
 		return false
 	if not shape.data.is_valid():
 		push_error("Terrain '%s': data is not a valid MapTerrainData (vertices, normals, indices)." % name)

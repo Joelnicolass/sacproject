@@ -6,7 +6,7 @@ extends SceneTree
 ## Run: Godot --headless --path game --script res://debug/map/terrain_normals_probe.gd
 
 const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain.gd"
-const SHAPE_SCRIPT := "res://scenes/map/terrain/terrain_shape.gd"
+const SHAPE_SCRIPT := "res://scenes/map/terrain/ground_surface.gd"
 const WALL_AREA := 0.01
 
 

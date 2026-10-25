@@ -79,7 +79,7 @@ func local_s() -> float:
 
 ## The lattice vertices it can touch.
 func vertex_rect() -> Rect2i:
-	return TerrainDisplacement.vertex_rect(center(), (reach.shape as CylinderShape3D).radius)
+	return GroundField.vertex_rect(center(), (reach.shape as CylinderShape3D).radius)
 
 
 ## The shift it makes at `at_s` seconds over `rect`.

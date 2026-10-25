@@ -14,7 +14,7 @@ func _ready() -> void:
 func _run() -> void:
 	await get_tree().process_frame
 	var c := Vector2(1545.0, 1340.0)
-	var terrain := TerrainShape.of(self)
+	var terrain := GroundSurface.of(self)
 	var i := 0
 	for tag in ["ycro", "amuh", "nmuh"]:
 		for slot in [1, 2]:

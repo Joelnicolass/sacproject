@@ -5,7 +5,7 @@ extends RefCounted
 ## the raw triangles of a MapTerrainData become the per-cell index. Pure and static, so a WorkerThreadPool task can
 ## call it on copies of an index. A ground that was raised, dug or holed passes its `shift` (two floats per 10 m vertex:
 ## how far it moved, and 1 when it was taken away): a corner moves with it, and a triangle with a removed corner is no
-## land. What it does NOT do: hold the data (TerrainShape) or build the mesh (Terrain).
+## land. What it does NOT do: hold the data (GroundSurface) or build the mesh (Terrain).
 ## Ref: sacmap.d getTriangles, isInside, getGroundHeight.
 
 const CELL := 10.0
@@ -90,6 +90,23 @@ static func height_in(x: float, z: float, ground: PackedVector3Array, cells: Pac
 		c.y += shift[corners[id * 3 + 2] * 2]
 	var plane := Plane(a, b, c)
 	return (plane.d - plane.normal.x * x - plane.normal.z * z) / plane.normal.y
+
+
+## Unit normal (y >= 0) of the land triangle under (x, z), corners shifted like `height_in`; UP over a hole or off the map.
+static func normal_in(x: float, z: float, ground: PackedVector3Array, cells: PackedInt32Array,
+		shift := PackedFloat32Array(), corners := PackedInt32Array()) -> Vector3:
+	var id := triangle_in(x, z, ground, cells, shift, corners)
+	if id < 0:
+		return Vector3.UP
+	var a := ground[id * 3]
+	var b := ground[id * 3 + 1]
+	var c := ground[id * 3 + 2]
+	if not shift.is_empty():
+		a.y += shift[corners[id * 3] * 2]
+		b.y += shift[corners[id * 3 + 1] * 2]
+		c.y += shift[corners[id * 3 + 2] * 2]
+	var normal := Plane(a, b, c).normal
+	return normal if normal.y >= 0.0 else -normal
 
 
 ## The land triangle under (x, z) (an id into `ground`), -1 over a hole or off the map.

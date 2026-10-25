@@ -4,7 +4,7 @@ extends RefCounted
 ## The height of the first surface a straight-down physics ray finds over a point: land, but also roofs, altars and
 ## anything else on the layers of `mask` (units and wizards are left out through `exclude`). It is the one copy of that
 ## ray for projectiles, souls, flyers and spawners; each caller keeps its own answer for «nothing below» (`miss`).
-## What it does NOT do: say how high the land is (TerrainShape.height_at: roofs do not count there).
+## What it does NOT do: say how high the land is (GroundSurface.height_at: roofs do not count there).
 
 ## How far above and below the point the ray reaches.
 const REACH_M := 500.0

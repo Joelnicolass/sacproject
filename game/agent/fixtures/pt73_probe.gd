@@ -63,7 +63,7 @@ func _npc(label: String) -> UnitBody:
 
 
 func _hunter(at: Vector3) -> UnitBody:
-	var ground := float(TerrainShape.of(_world).height_at(at.x, at.z))
+	var ground := float(GroundSurface.of(_world).height_at(at.x, at.z))
 	var unit: UnitBody = _world.get_node("UnitSpawner").call("spawn_unit", {
 		"tag": "nmuh", "label": "Druid", "slot": 1, "x": at.x, "y": (0.0 if is_nan(ground) else ground) + 0.2, "z": at.z, "yaw": 0.0})
 	unit.name = "Hunter"
@@ -293,7 +293,7 @@ func _case_taurock() -> void:
 
 ## A point `gap` meters from `origin` on the land: the first of eight directions whose point has ground.
 func _ground_spot(origin: Vector3, gap: float) -> Vector3:
-	var terrain := TerrainShape.of(_world)
+	var terrain := GroundSurface.of(_world)
 	for k in 8:
 		var angle := TAU * k / 8.0
 		var at := origin + Vector3(cos(angle), 0.0, sin(angle)) * gap
@@ -361,7 +361,7 @@ func _case_house() -> void:
 
 
 func _case_ground() -> void:
-	var terrain := TerrainShape.of(_world)
+	var terrain := GroundSurface.of(_world)
 	var out := []
 	for z in [1060, 1080, 1100, 1120, 1140]:
 		for x in [1000, 1030, 1060, 1090, 1120]:
@@ -404,7 +404,7 @@ func _case_convert() -> void:
 	for pair in [["Farmer3", Vector3(1507.0, 0.0, 1525.0)], ["Taurock2", Vector3(1480.0, 0.0, 1520.0)]]:
 		var body := _npc(pair[0])
 		var spot: Vector3 = pair[1]
-		spot.y = float(TerrainShape.of(_world).height_at(spot.x, spot.z))
+		spot.y = float(GroundSurface.of(_world).height_at(spot.x, spot.z))
 		body.warp_to(spot)
 		body.get_node("Health").call("damage", 9999.0, 1)
 	await _ticks(300)

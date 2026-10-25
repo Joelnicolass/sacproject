@@ -1,12 +1,12 @@
 [gd_scene load_steps=6 format=3]
 
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain_shape.gd" id="1_shape"]
+[ext_resource type="Script" path="res://scenes/map/terrain/ground_surface.gd" id="1_shape"]
 [ext_resource type="Script" path="res://scenes/map/terrain/terrain_deformer.gd" id="2_deformer"]
 [ext_resource type="Script" path="res://scenes/map/terrain/terrain_collision.gd" id="3_collision"]
 [ext_resource type="Resource" path="res://assets/original/maps/high_noon/terrain.res" id="4_data"]
 
 [node name="Terrain" type="Node3D"]
-editor_description = "Un suelo sin malla para verificar el terreno deformable: la forma (TerrainShape) de High Noon, su Deformer y su Collision por trozos. Lo usan terrain_cases y terrain_late_join; no tiene look."
+editor_description = "Un suelo sin malla para verificar el terreno deformable: la forma (GroundSurface) de High Noon, su Deformer y su Collision por trozos. Lo usan terrain_cases y terrain_late_join; no tiene look."
 
 [node name="Shape" type="Node" parent="."]
 script = ExtResource("1_shape")

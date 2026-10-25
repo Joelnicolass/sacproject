@@ -1,6 +1,6 @@
 extends Node
 
-## Watches the local wizard against the land under it (TerrainShape is_on_ground / height_at).
+## Watches the local wizard against the land under it (GroundSurface is_on_ground / height_at).
 ## The label says «en el suelo» while the feet never dropped below the land by more than
 ## tolerance and the body never stood over a hole, «cayó» after that, and «llegó» once the
 ## wizard walked reach_m from where he first touched the floor.
@@ -21,7 +21,7 @@ var _elapsed := 0.0
 
 func _physics_process(delta: float) -> void:
 	var wizard: Node3D = world.call("local_wizard") if world else null
-	var terrain := TerrainShape.of(world)
+	var terrain := GroundSurface.of(world)
 	if wizard == null or terrain == null:
 		return
 	if not _started:

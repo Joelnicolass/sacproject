@@ -11,7 +11,7 @@ const INDEX_PARAM := &"scar_index"
 const TILES_PARAM := &"scar_tiles"
 
 ## The map's ground (to know how high it is under a mark).
-@export var shape: TerrainShape
+@export var shape: GroundSurface
 ## The player's graphics options: «Cantidad de marcas». Empty: `max_tiles`.
 @export var prefs: GraphicsPrefs
 @export_range(32, 256) var max_tiles := 256
@@ -37,13 +37,14 @@ static func of(node: Node) -> GroundScars:
 
 func _ready() -> void:
 	add_to_group(GROUP)
-	if DisplayServer.get_name() == "headless" or tiles == null:
+	if DisplayServer.get_name() == "headless" or tiles == null or shape == null:
 		return
 	var count := GroundScarRules.clamp_capacity(prefs.scar_tiles() if prefs != null else max_tiles)
 	_pool = GroundScarRules.Pool.new(count)
 	for i in count:
 		_layers.append(Image.create_empty(GroundScarRules.TILE_TEXELS, GroundScarRules.TILE_TEXELS, false, Image.FORMAT_RGBA8))
-	_index = Image.create_empty(GroundScarRules.GRID, GroundScarRules.GRID, false, Image.FORMAT_RGBA8)
+	var grid := GroundScarRules.grid_for(shape.bounds())  # one index texel per 10 m tile of the map
+	_index = Image.create_empty(grid.x, grid.y, false, Image.FORMAT_RGBA8)
 	tiles.create_from_images(_layers)
 	_index_texture = ImageTexture.create_from_image(_index)
 	_publish()
@@ -63,7 +64,7 @@ func _exit_tree() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if shape == null:
-		warnings.append("Asigná `shape` (el TerrainShape del mapa).")
+		warnings.append("Asigná `shape` (el GroundSurface del mapa).")
 	if prefs == null:
 		warnings.append(GraphicsPrefs.socket_warning(prefs))
 	if tiles == null:
@@ -97,7 +98,7 @@ func stamp(texture: Texture2D, at: Vector3, max_height_m := 0.0) -> bool:
 		return false
 	var mark := _image_of(texture)
 	var origin := GroundScarRules.texel_origin(Vector2(local.x, local.z), mark.get_size())
-	var touched := GroundScarRules.tiles_touched(origin, mark.get_size())
+	var touched := GroundScarRules.tiles_touched(origin, mark.get_size(), GroundScarRules.grid_for(shape.bounds()))
 	for tile in touched:
 		_paint_tile(mark, origin, tile)
 	_index_texture.update(_index)
@@ -122,7 +123,6 @@ static func note(text: String) -> void:
 	log_lines.append(text)
 	if log_lines.size() > 40:
 		log_lines.remove_at(0)
-
 
 
 func _paint_tile(mark: Image, origin: Vector2i, tile: Vector2i) -> void:

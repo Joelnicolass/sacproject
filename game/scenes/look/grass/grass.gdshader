@@ -67,7 +67,7 @@ uniform sampler2D zone_data : filter_linear, repeat_disable, hint_default_white;
 /** r = height left on a slope (1 flat .. the type's floor on a steep one; never 0); g = share of the
 ground's grass paint there (where its wind bands show). */
 uniform sampler2D slope_data : filter_linear, repeat_disable, hint_default_white;
-uniform float map_size = 2560.0;
+uniform float map_size;  // metres per side of the map, set by GrassField from the ground's bounds
 uniform sampler2D noise_tex : filter_linear_mipmap, repeat_enable, hint_default_white;
 
 uniform float width_m = 0.09;

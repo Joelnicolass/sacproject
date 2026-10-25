@@ -144,7 +144,7 @@ func _terrain_from_glb(path: String) -> Terrain:
 ## A Terrain made from the script alone, built in _ready from `data` (no saved mesh).
 func _built_terrain(data: MapTerrainData) -> Terrain:
 	var terrain := Terrain.new()
-	terrain.shape = TerrainShape.with_data(data)
+	terrain.shape = GroundSurface.with_data(data)
 	terrain.add_child(terrain.shape)
 	root.add_child(terrain)
 	await process_frame

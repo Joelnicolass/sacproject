@@ -4,7 +4,7 @@ extends Node3D
 
 ## Rests its parent on the land. Remove this child to place the parent by hand.
 ## In the editor it follows every move of the parent; in a match it runs once in _ready.
-## The height comes from the terrain data (TerrainShape.height_at), not from a physics ray,
+## The height comes from the terrain data (GroundSurface.height_at), not from a physics ray,
 ## so the dedicated server and every client get the same number.
 
 const TERRAIN_GROUP := &"terrain"

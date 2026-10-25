@@ -59,7 +59,7 @@ func _redraw() -> void:
 	var outer := radius + width * 0.5
 	var tint := color
 	tint.a *= (1.0 - progress * progress)
-	var shape := TerrainShape.of(self)
+	var shape := GroundSurface.of(self)
 	var center := global_position
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
@@ -79,7 +79,7 @@ func _redraw() -> void:
 
 
 ## A point of the ring in world space, on the land (a hole keeps the center's height).
-func _point(shape: TerrainShape, center: Vector3, radius: float, angle: float) -> Vector3:
+func _point(shape: GroundSurface, center: Vector3, radius: float, angle: float) -> Vector3:
 	var p := center + Vector3(cos(angle), 0.0, sin(angle)) * radius
 	p.y = center.y
 	if shape != null:

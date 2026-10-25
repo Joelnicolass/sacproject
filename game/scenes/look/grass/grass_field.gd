@@ -15,7 +15,6 @@ extends LookLayer
 const SHADER := preload("res://scenes/look/grass/grass.gdshader")
 const BAKE_SHADER := preload("res://scenes/look/grass/grass_bake.gdshader")
 const CELL_M := 16.0
-const MAP_M := GrassHeight.MAP_M
 const MAP_CELLS := 160
 const HEIGHT_TEXELS := GrassHeight.SIZE
 ## The ground's color is baked finer (1.25 m per texel): in the distance fade a blade takes the color of
@@ -45,6 +44,8 @@ const PBR_ROUGHNESS := 0.85
 
 static var _height_image: Image
 static var _height_texture: ImageTexture
+## Side of the square map the height image covers, in metres (the surface's `bounds()` when it was made).
+static var _map_m := 0.0
 
 var _rig: LookRig
 var _grass: GrassSet
@@ -137,7 +138,7 @@ func _on_resource_changed() -> void:
 	_type = _grass.resolved_type()
 	_apply_type()
 	_apply_preset()
-	_push_paint(_rig.terrain if _rig else null)
+	_push_paint(_ground_mesh())
 	if _mesh_key_now() != _mesh_key:
 		_build_meshes()
 		for key in _cells:
@@ -145,9 +146,9 @@ func _on_resource_changed() -> void:
 	_clears_dirty = true
 	if _signature() != _bake_signature:
 		_refresh()
-	elif _paint_signature_now() != _paint_signature and _rig and _rig.terrain:
+	elif _paint_signature_now() != _paint_signature and _ground_mesh() != null:
 		# The roots carry the painted ground color: bake it again, the blades stay.
-		_bake(_rig.terrain)
+		_bake(_ground_mesh())
 
 
 func _refresh() -> void:
@@ -170,8 +171,8 @@ func _refresh() -> void:
 	# Grass is off unless a quality preset turns it on (the editor has no preset).
 	if _preset == null or not _preset.grass_enabled:
 		return
-	var terrain := _rig.terrain if _rig else null
-	if terrain == null or TerrainShape.of(self) == null:
+	var terrain := _ground_mesh()
+	if terrain == null or GroundSurface.of(self) == null:
 		return
 	if _rig.tile_map == null or terrain.get("material_override") == null:
 		return
@@ -181,6 +182,7 @@ func _refresh() -> void:
 	_material.shader = SHADER
 	_push_paint(terrain)
 	_material.set_shader_parameter("height_tex", _height_texture)
+	_material.set_shader_parameter("map_size", _map_m)
 	_material.set_shader_parameter("noise_tex", GroundMaterial.shared_noise())
 	_map_origin = Vector3.INF
 	_apply_type()
@@ -263,10 +265,12 @@ func _zone_view(mode: int) -> SubViewport:
 	var mat := ShaderMaterial.new()
 	mat.shader = BAKE_SHADER
 	mat.set_shader_parameter("mode", mode)
-	var ids := TerrainShape.of(self).tile_ids()
+	var ids := GroundSurface.of(self).tile_ids()
 	mat.set_shader_parameter("splat", GroundMaterial.splat_texture(_rig.tile_map, ids))
 	mat.set_shader_parameter("noise_tex", GroundMaterial.shared_noise())
 	mat.set_shader_parameter("height_tex", _height_texture)
+	mat.set_shader_parameter("zone_map_size", _map_m)
+	mat.set_shader_parameter("height_texel_m", _map_m / float(HEIGHT_TEXELS))
 	mat.set_shader_parameter("density_by_layer", _type.density_by_layer)
 	mat.set_shader_parameter("height_by_layer", _type.height_by_layer)
 	mat.set_shader_parameter("slope_range", Vector2(_type.slope_start_deg, _type.slope_full_deg))
@@ -283,7 +287,7 @@ func _zone_view(mode: int) -> SubViewport:
 
 
 ## The ground pass: the terrain mesh with `material` (the ground the biome shows) seen from straight
-## above with an orthographic camera, unlit (albedo only), GROUND_TEXELS px over the 2560 m map. Image row 0
+## above with an orthographic camera, unlit (albedo only), GROUND_TEXELS px over the map. Image row 0
 ## is z = 0 and column 0 is x = 0, like every map texture.
 func _ground_view(terrain: Node, material: ShaderMaterial) -> SubViewport:
 	var view := SubViewport.new()
@@ -299,10 +303,10 @@ func _ground_view(terrain: Node, material: ShaderMaterial) -> SubViewport:
 	view.add_child(ground)
 	var camera := Camera3D.new()
 	camera.projection = Camera3D.PROJECTION_ORTHOGONAL
-	camera.size = MAP_M
+	camera.size = _map_m
 	camera.near = 1.0
 	camera.far = 4000.0
-	camera.transform = Transform3D(Basis(Vector3(1, 0, 0), Vector3(0, 0, -1), Vector3(0, 1, 0)), Vector3(MAP_M * 0.5, 1500.0, MAP_M * 0.5))
+	camera.transform = Transform3D(Basis(Vector3(1, 0, 0), Vector3(0, 0, -1), Vector3(0, 1, 0)), Vector3(_map_m * 0.5, 1500.0, _map_m * 0.5))
 	view.add_child(camera)
 	camera.current = true
 	add_child(view, false, Node.INTERNAL_MODE_BACK)
@@ -375,7 +379,7 @@ func _paintable(material: Variant) -> ShaderMaterial:
 ## Back to no paint on every ground the terrain can show (a profile change, the layer hidden,
 ## leaving the tree). A ground with amount 0 is the same as before the grass.
 func _clear_paint() -> void:
-	var terrain := _rig.terrain if _rig else null
+	var terrain := _ground_mesh()
 	if terrain == null or not is_instance_valid(terrain):
 		return
 	var shown := _paintable(terrain.get("material_override"))
@@ -620,6 +624,11 @@ func _update_trample(delta: float, radius: float) -> void:
 	_stamps_on = count > 0
 
 
+## The node that draws the map's ground (the first of `ground.meshes`).
+func _ground_mesh() -> MeshInstance3D:
+	return _rig.ground.main_mesh() if _rig and _rig.ground else null
+
+
 func _camera() -> Camera3D:
 	return CellRing.view_camera(self, follow_editor_camera)
 
@@ -628,14 +637,14 @@ func _camera() -> Camera3D:
 func _height_at(x: float, z: float) -> float:
 	if _height_image == null:
 		return 0.0
-	var tx := clampi(int(x / MAP_M * HEIGHT_TEXELS), 0, HEIGHT_TEXELS - 1)
-	var tz := clampi(int(z / MAP_M * HEIGHT_TEXELS), 0, HEIGHT_TEXELS - 1)
+	var tx := clampi(int(x / _map_m * HEIGHT_TEXELS), 0, HEIGHT_TEXELS - 1)
+	var tz := clampi(int(z / _map_m * HEIGHT_TEXELS), 0, HEIGHT_TEXELS - 1)
 	return _height_image.get_pixel(tx, tz).r
 
 
 ## (lowest, highest) land height in a cell, from the baked map.
 func _height_range(key: Vector2i) -> Vector2:
-	var texels := CELL_M / (MAP_M / float(HEIGHT_TEXELS))
+	var texels := CELL_M / (_map_m / float(HEIGHT_TEXELS))
 	var x0 := maxi(int(floor(key.x * texels)) - 1, 0)
 	var x1 := mini(int(ceil((key.x + 1) * texels)) + 1, HEIGHT_TEXELS - 1)
 	var z0 := maxi(int(floor(key.y * texels)) - 1, 0)
@@ -654,10 +663,11 @@ func _height_range(key: Vector2i) -> Vector2:
 func _load_height(terrain: Object) -> bool:
 	if _height_texture:
 		return true
-	var shape := TerrainShape.of(self)
+	var shape := GroundSurface.of(self)
 	if shape == null:
 		return false
 	var image := GrassHeight.from_shape(shape)
+	_map_m = shape.bounds().size.x
 	_height_image = image
 	var half := image.duplicate() as Image
 	half.convert(Image.FORMAT_RGH)

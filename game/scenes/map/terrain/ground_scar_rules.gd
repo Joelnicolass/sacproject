@@ -10,8 +10,6 @@ extends RefCounted
 const TEXEL_M := 0.15625
 const TILE_TEXELS := 64
 const TILE_M := 10.0
-## The map is a grid of 256 x 256 tiles.
-const GRID := 256
 ## The number of painted tiles the map can hold (the player's option) goes from MIN to MAX.
 const MIN_TILES := 32
 const MAX_TILES := 256
@@ -32,13 +30,18 @@ static func texel_origin(center_xz: Vector2, size: Vector2i) -> Vector2i:
 	return Vector2i((center_xz / TEXEL_M - Vector2(size) * 0.5).floor())
 
 
-## The tiles of the map a mark touches, in row order. Tiles outside the 256 x 256 grid are left out.
-static func tiles_touched(origin: Vector2i, size: Vector2i) -> Array[Vector2i]:
+## How many 10 m tiles the map has on each side: its footprint (GroundSurface.bounds) over the tile size, rounded up.
+static func grid_for(bounds: Rect2) -> Vector2i:
+	return Vector2i((bounds.size / TILE_M).ceil())
+
+
+## The tiles of the map a mark touches, in row order. Tiles outside the `grid` (tiles per side, see `grid_for`) are left out.
+static func tiles_touched(origin: Vector2i, size: Vector2i, grid: Vector2i) -> Array[Vector2i]:
 	var first := Vector2i(floori(float(origin.x) / TILE_TEXELS), floori(float(origin.y) / TILE_TEXELS))
 	var last := Vector2i(floori(float(origin.x + size.x - 1) / TILE_TEXELS), floori(float(origin.y + size.y - 1) / TILE_TEXELS))
 	var tiles: Array[Vector2i] = []
-	for z in range(maxi(first.y, 0), mini(last.y, GRID - 1) + 1):
-		for x in range(maxi(first.x, 0), mini(last.x, GRID - 1) + 1):
+	for z in range(maxi(first.y, 0), mini(last.y, grid.y - 1) + 1):
+		for x in range(maxi(first.x, 0), mini(last.x, grid.x - 1) + 1):
 			tiles.append(Vector2i(x, z))
 	return tiles
 

@@ -31,7 +31,6 @@ material_override = ExtResource("3_ground")
 [node name="Camera" type="Camera3D" parent="Viewport" unique_id=1037000004]
 environment = SubResource("Environment_ambient")
 projection = 1
-size = 2560.0
 far = 1000.0
 
 [node name="Preview" type="TextureRect" parent="." unique_id=1037000005]

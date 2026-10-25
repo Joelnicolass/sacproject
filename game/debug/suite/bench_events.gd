@@ -295,7 +295,7 @@ func report() -> Dictionary:
 ## most 8 m above or below `from`, in the same region of the pathfinder and with a clear line. When that one is not (a cliff,
 ## a hole, a fount), the angle is moved by 15 degrees to either side until one is. NAN in x when none is.
 static func find_spot(world: Node, from: Vector3, dir: Vector3, distance: float, angle_deg: float, strict := true) -> Vector3:
-	var terrain := TerrainShape.of(world)
+	var terrain := GroundSurface.of(world)
 	var nav := world.get_tree().get_first_node_in_group(NavService.GROUP) as NavService
 	for attempt in 25:
 		var wobble := 15.0 * float((attempt + 1) / 2) * (1.0 if attempt % 2 == 0 else -1.0)

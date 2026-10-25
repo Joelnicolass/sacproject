@@ -16,7 +16,7 @@ shader_type canvas_item;
 #include "res://scenes/look/ground/zone_splat.gdshaderinc"
 
 uniform sampler2D height_tex : filter_linear, repeat_disable, hint_default_black;
-uniform float height_texel_m = 2.5;
+uniform float height_texel_m;  // metres per texel of the height image, set by GrassField
 uniform int mode = 0;
 uniform vec4 density_by_layer = vec4(1.0, 0.0, 0.35, 0.3);
 uniform vec4 height_by_layer = vec4(1.0, 0.0, 0.5, 0.0);

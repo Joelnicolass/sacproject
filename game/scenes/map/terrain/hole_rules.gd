@@ -18,11 +18,11 @@ static func vertex_near(point: Vector2) -> Vector2i:
 
 
 ## True when the vertex at (column, row) may be taken away. `parts` are the world places of the parts of every building.
-static func can_remove(shape: TerrainShape, vertex: Vector2i, parts: PackedVector3Array) -> bool:
+static func can_remove(shape: GroundSurface, vertex: Vector2i, parts: PackedVector3Array) -> bool:
 	if vertex.x < 0 or vertex.y < 0 or vertex.x >= TerrainRules.GRID - 1 or vertex.y >= TerrainRules.GRID - 1:
 		return false
 	var id := vertex.y * TerrainRules.GRID + vertex.x
-	if shape.index.land[id] == 0 or shape.displacement().is_removed(id):
+	if shape.index.land[id] == 0 or shape.field().is_removed(id):
 		return false
 	var spot := Vector2(vertex) * TerrainRules.CELL
 	var height := shape.height_at(spot.x, spot.y)

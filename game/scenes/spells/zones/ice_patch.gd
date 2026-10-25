@@ -48,7 +48,7 @@ func _process(_delta: float) -> void:
 func _build() -> void:
 	_radius = zone.spell.effect_range_m
 	var center := zone.points[0]
-	var land := TerrainShape.of(self)
+	var land := GroundSurface.of(self)
 	var surface := SurfaceTool.new()
 	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for ring in rings:
@@ -62,7 +62,7 @@ func _build() -> void:
 	mesh = surface.commit()
 
 
-func _vertex(land: TerrainShape, center: Vector3, ring: int, side: int) -> Vector3:
+func _vertex(land: GroundSurface, center: Vector3, ring: int, side: int) -> Vector3:
 	var angle := TAU * float(side) / float(sides)
 	var at := center + Vector3(cos(angle), 0.0, sin(angle)) * _radius * float(ring) / float(rings)
 	var height := land.height_at(at.x, at.z) if land != null else NAN

@@ -117,7 +117,7 @@ func _summary() -> void:
 
 
 func _ground(at: Vector3) -> float:
-	var terrain := TerrainShape.of(scene)
+	var terrain := GroundSurface.of(scene)
 	return terrain.height_at(at.x, at.z)
 
 

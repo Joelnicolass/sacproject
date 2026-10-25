@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/map/map_root.gd" id="1_root"]
 [ext_resource type="Script" path="res://scenes/map/terrain/terrain.gd" id="2_terrain"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain_shape.gd" id="shape_script"]
+[ext_resource type="Script" path="res://scenes/map/terrain/ground_surface.gd" id="shape_script"]
 [ext_resource type="Script" path="res://scenes/map/terrain/terrain_deformer.gd" id="deformer_script"]
 [ext_resource type="Script" path="res://scenes/map/terrain/terrain_collision.gd" id="collision_script"]
 [ext_resource type="Script" path="res://scenes/map/props/map_props.gd" id="3_props"]
@@ -19,17 +19,18 @@
 [ext_resource type="PackedScene" path="res://scenes/map/terrain/hole_walls.tscn" id="hole_walls"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/test_flat/ground_roles.png" id="62_roles"]
 
-[node name="Map" type="Node3D" unique_id=1044100001 node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake")]
+[node name="Map" type="Node3D" unique_id=1044100001 node_paths=PackedStringArray("terrain", "ground", "nav_region", "starts", "look", "minimap_bake")]
 script = ExtResource("1_root")
 terrain = NodePath("Terrain")
+ground = NodePath("Terrain/Shape")
 nav_region = NodePath("NavRegion")
 starts = NodePath("MapProps/Starts")
 look = NodePath("Look")
 minimap_bake = NodePath("MinimapBake")
 
-[node name="Look" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("14_look")]
+[node name="Look" parent="." node_paths=PackedStringArray("ground") instance=ExtResource("14_look")]
 unique_name_in_owner = true
-terrain = NodePath("../Terrain")
+ground = NodePath("../Terrain/Shape")
 
 [node name="Terrain" type="MeshInstance3D" parent="." unique_id=1044100005 node_paths=PackedStringArray("shape", "missing") groups=["nav_source"]]
 unique_name_in_owner = true
@@ -92,6 +93,6 @@ navigation_mesh = ExtResource("11_navmesh")
 script = ExtResource("12_nav_region")
 bake_settings = ExtResource("10_bake")
 
-[node name="MinimapBake" parent="." unique_id=1044100014 node_paths=PackedStringArray("terrain") instance=ExtResource("13_bake")]
+[node name="MinimapBake" parent="." unique_id=1044100014 node_paths=PackedStringArray("surface") instance=ExtResource("13_bake")]
 unique_name_in_owner = true
-terrain = NodePath("../Terrain")
+surface = NodePath("../Terrain/Shape")

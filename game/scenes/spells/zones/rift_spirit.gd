@@ -98,7 +98,7 @@ func _steer() -> void:
 	velocity = (velocity + (aim - global_position).normalized() * acceleration).limit_length(speed)
 	global_position += velocity / MatchClock.TICKS_PER_SECOND_F
 	if status != Status.RISING:
-		var land := TerrainShape.of(self)
+		var land := GroundSurface.of(self)
 		var ground := land.height_at(global_position.x, global_position.z) if land != null else NAN
 		if not is_nan(ground):
 			global_position.y = maxf(global_position.y, ground + skim_m)

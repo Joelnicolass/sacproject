@@ -16,7 +16,7 @@ func _ready() -> void:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(_out))
 	await get_tree().create_timer(first_s).timeout
 	var field := get_tree().get_first_node_in_group("grass_field")
-	var terrain := TerrainShape.of(self)
+	var terrain := GroundSurface.of(self)
 	if field == null:
 		get_tree().quit()
 		return

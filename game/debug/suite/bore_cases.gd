@@ -41,7 +41,7 @@ func _rules() -> Dictionary:
 	checks["spiral_ends_at_50m"] = absf(last.distance_to(CENTER) - 50.0) < 1e-3
 	checks["spiral_972_ticks_at_0_8m"] = ticks == 972
 	checks["spiral_1080_ticks_at_0_72m"] = _ticks_of(BoreSpiral.new(CENTER, 50.0, 0.72)) == 1080
-	var shape: TerrainShape = _c._shape
+	var shape: GroundSurface = _c._shape
 	var inside := _full_vertex(shape, 3)
 	var spot := Vector2(inside) * TerrainRules.CELL
 	var height := shape.height_at(spot.x, spot.y)
@@ -67,7 +67,7 @@ func _rules() -> Dictionary:
 ## The walls round a hole, the piece that falls, and the pit the shader leaves.
 func _walls() -> Dictionary:
 	var checks := {}
-	var shape: TerrainShape = _c._shape
+	var shape: GroundSurface = _c._shape
 	var index := shape.index
 	var one := _full_vertex(shape, 3)
 	var id := one.y * TerrainRules.GRID + one.x
@@ -90,16 +90,16 @@ func _walls() -> Dictionary:
 	var pair_id := pair.y * TerrainRules.GRID + pair.x
 	checks["two_neighbours_eight_walls"] = HoleWallRules.boundary(index, PackedInt32Array([pair_id, pair_id + 1])).size() == 8
 	checks["no_hole_no_walls"] = HoleWallRules.arrays(index, PackedInt32Array()).is_empty()
-	var chunk := FallingChunkRules.arrays(index, shape.displacement().texels, shape.tile_ids(), id)
+	var chunk := FallingChunkRules.arrays(index, shape.field().texels, shape.tile_ids(), id)
 	checks["chunk_six_triangles_and_six_skirts"] = chunk.size() == 13 and (chunk[0] as PackedVector3Array).size() == 6 * 3 + 6 * 4
-	checks["chunk_off_the_rim_is_nothing"] = FallingChunkRules.arrays(index, shape.displacement().texels, shape.tile_ids(), 5).is_empty()
+	checks["chunk_off_the_rim_is_nothing"] = FallingChunkRules.arrays(index, shape.field().texels, shape.tile_ids(), 5).is_empty()
 	return _c._verdict("bore_walls", checks)
 
 
 ## Bore from the click to the last vertex back.
 func _cut() -> Dictionary:
 	var checks := {}
-	var shape: TerrainShape = _c._shape
+	var shape: GroundSurface = _c._shape
 	var ground_spot := func(at: Vector2) -> Vector3: return Vector3(at.x, shape.height_at(at.x, at.y), at.y)
 	var wizard = _c._wizard(1, _c._far_wizard_spot(), "james", 8)
 	var spell := GameData.spell("erob").duplicate() as SpellType
@@ -133,7 +133,7 @@ func _cut() -> Dictionary:
 	var gave := []
 	cutter.vertex_taken.connect(func(id: int) -> void: took.append([clock[0], id]))
 	cutter.vertex_given_back.connect(func(id: int) -> void: gave.append([clock[0], id]))
-	var ground := shape.displacement()
+	var ground := shape.field()
 	var near_start := true
 	var drill_gone := false
 	while ground.holes.count() == 0 and clock[0] < ARM_TICKS + 60:
@@ -209,12 +209,12 @@ func _cut() -> Dictionary:
 func _cancel() -> Dictionary:
 	var checks := {}
 	var wizard = _c._wizard(1, _c._far_wizard_spot(), "james", 8)
-	var shape: TerrainShape = _c._shape
+	var shape: GroundSurface = _c._shape
 	var zone: GroundZone = _c._zone("Bore", PackedVector3Array([Vector3(CENTER.x, shape.height_at(CENTER.x, CENTER.y), CENTER.y)]), wizard, 30, ARM_TICKS)
 	await _c._frames(20)
 	zone.cancel()
 	await _c._frames(ARM_TICKS + 5)
-	checks["no_hole"] = shape.displacement().holes.count() == 0
+	checks["no_hole"] = shape.field().holes.count() == 0
 	checks["zone_gone"] = not is_instance_valid(zone) or zone.is_queued_for_deletion()
 	wizard.queue_free()
 	await _c._frames(2)
@@ -224,11 +224,11 @@ func _cancel() -> Dictionary:
 ## A path goes round a hole once the navmesh is baked again, and the pathfinder knows the place is not free any more.
 func _nav() -> Dictionary:
 	var checks := {}
-	var shape: TerrainShape = _c._shape
+	var shape: GroundSurface = _c._shape
 	var deformer := _c._bed.get_node("Deformer") as TerrainDeformer
 	var service := NavService.new()
 	service.name = "Nav"
-	service.terrain_shape = shape
+	service.ground = shape
 	service.build_on_ready = false
 	_c._collision.add_to_group(NavFingerprint.GROUP)
 	_c._bed.add_child(service)
@@ -273,7 +273,7 @@ func _nav() -> Dictionary:
 
 
 ## True when a leg of the path from `start` has a point (every metre) with no land under it.
-func _crosses(start: Vector3, path: PackedVector3Array, shape: TerrainShape) -> bool:
+func _crosses(start: Vector3, path: PackedVector3Array, shape: GroundSurface) -> bool:
 	var last := Vector2(start.x, start.z)
 	for point in path:
 		var here := Vector2(point.x, point.z)
@@ -306,7 +306,7 @@ func _ticks_of(spiral: BoreSpiral) -> int:
 
 ## A lattice vertex near the click whose surroundings (`margin` cells each way) are all full land cells; `with_next` also wants
 ## the vertex to its east to be like that.
-func _full_vertex(shape: TerrainShape, margin: int, with_next := false) -> Vector2i:
+func _full_vertex(shape: GroundSurface, margin: int, with_next := false) -> Vector2i:
 	var counts := shape.cell_counts()
 	for dz in range(-12, 13):
 		for dx in range(-12, 13):

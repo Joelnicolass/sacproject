@@ -11,7 +11,7 @@ const BUILDINGS: StringName = &"structure"
 
 ## The land height under (x, z), or the wall's own height when there is no map or the point is a hole.
 static func ground_y(wall: Node3D, fallback: float, x: float, z: float) -> float:
-	var shape := TerrainShape.of(wall)
+	var shape := GroundSurface.of(wall)
 	if shape == null:
 		return fallback
 	var land := shape.height_at(x, z)
@@ -36,7 +36,7 @@ static func can_stand(wall: SpellWall, t: float) -> bool:
 	if absf(t) > wall.reach_m() + wall.reach_slack_m:
 		return false
 	var at := wall.point_at(t)
-	var shape := TerrainShape.of(wall)
+	var shape := GroundSurface.of(wall)
 	if shape != null and not shape.is_on_ground(at.x, at.z):
 		return false
 	for node in wall.get_tree().get_nodes_in_group(BUILDINGS):

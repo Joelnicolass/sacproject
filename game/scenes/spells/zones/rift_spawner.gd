@@ -62,7 +62,7 @@ func _release() -> bool:
 	var radius := _radius()
 	var outward := Vector3(goal.x - rift.x, 0.0, goal.z - rift.z).normalized()
 	var start := rift + outward * radius * exit_share
-	var land := TerrainShape.of(self)
+	var land := GroundSurface.of(self)
 	var ground := land.height_at(start.x, start.z) if land != null else NAN
 	start.y = rift.y if is_nan(ground) else ground
 	var aimed := Vector3(outward.x, 5.0, outward.z).normalized()

@@ -19,14 +19,14 @@ extends Node3D
 @export var to_phase := GroundZone.Phase.ARMING
 
 var _rng: RandomNumberGenerator
-var _land: TerrainShape
+var _land: GroundSurface
 
 
 func _ready() -> void:
 	process_physics_priority = 1
 	set_physics_process(not Engine.is_editor_hint() and zone != null and type != null and DisplayServer.get_name() != "headless")
 	_rng = MatchSeed.rng(["zone_dust", String(zone.name) if zone != null else ""])
-	_land = TerrainShape.of(self)
+	_land = GroundSurface.of(self)
 
 
 func _get_configuration_warnings() -> PackedStringArray:

@@ -3,8 +3,8 @@ extends RefCounted
 ## 055s (s1) case of rules_suite: the size and sockets a body scene saves (BodyFacts) are the ones BodyCatalog.info(model) gives today,
 ## so moving the readers to the scene changes nothing the rules see. For every CreatureType and WizardType:
 ##   - it points at a complete BodyFrame whose `model_id` is its `model`, with no synchronizer or spawner inside;
-##   - height, radius, reach and flying height read from the scene are the ones BodyCatalog.info holds, at the precision the shapes and
-##     markers keep (32 bits). `exact_double` counts the types whose four numbers are also identical as doubles;
+##   - height, radius, reach and flying height BodyFacts gives (decoded to the mm from the 32 bits the shapes and markers keep) are the
+##     doubles BodyCatalog.info holds, bit for bit. `exact_double` counts the types whose four raw 32-bit numbers already were;
 ##   - the capsule is what BodyCollider used to compute (height >= 0.6, radius <= 0.45 of it), the ground one and the flying one;
 ##   - the Muzzle, Center and Top are the positions the code used to build from the height and the reach.
 ## Plus: BodyMount ignores the same scene twice, and BodyCollider writes the capsule of the scene a body wears (and only that).
@@ -77,9 +77,9 @@ func _check_type(path: String, wizard: bool) -> String:
 	var decoded := true
 	for key: String in sizes:
 		var pair: Array = sizes[key]
-		if not _same32(float(pair[0]), float(pair[1])):
+		if var_to_bytes(float(pair[0])) != var_to_bytes(float(pair[1])):
 			return "%s: scene %s, BodyCatalog %s" % [key, str(pair[0]), str(pair[1])]
-		exact = exact and var_to_bytes(float(pair[0])) == var_to_bytes(float(pair[1]))
+		exact = exact and PackedFloat32Array([pair[1]])[0] == float(pair[1])
 		decoded = decoded and roundi(float(pair[0]) * 1000.0) / 1000.0 == float(pair[1])
 	_exact_double += 1 if exact else 0
 	_decoded_double += 1 if decoded else 0
@@ -109,10 +109,6 @@ func _old_capsule(height: float, radius: float, shape_height: bool, in_air: bool
 	shape.radius = minf(radius, limit)
 	shape.height = tall
 	return shape
-
-
-func _same32(a: float, b: float) -> bool:
-	return PackedFloat32Array([b])[0] == a
 
 
 func _mount_is_idempotent() -> bool:

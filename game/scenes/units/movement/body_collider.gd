@@ -45,13 +45,16 @@ func refit() -> void:
 	if capsule != null and is_equal_approx(capsule.height, height) and is_equal_approx(capsule.radius, radius) \
 			and is_equal_approx(collision.position.y, height * 0.5):
 		return
-	# A capsule saved in a scene (it has a resource path) is shared by every instance: copied once, then owned.
-	if capsule == null or not capsule.resource_path.is_empty():
+	# A capsule saved in a scene (it has a resource path) is shared by every instance: copied once, then owned. A new one is sized
+	# before it is assigned, so the physics server gets one shape update, not three.
+	var fresh := capsule == null or not capsule.resource_path.is_empty()
+	if fresh:
 		capsule = CapsuleShape3D.new()
-		collision.shape = capsule
 	capsule.height = height
 	capsule.radius = radius
 	capsule.height = height
+	if fresh:
+		collision.shape = capsule
 	collision.position = Vector3(0.0, height * 0.5, 0.0)
 
 

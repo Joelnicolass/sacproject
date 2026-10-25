@@ -24,6 +24,6 @@ func finish(wizard: WizardBody, spell: SpellType, target: Node3D) -> String:
 ## wizard's hitbox and 0.75 ahead of its front. Presentation only.
 func _origin(wizard: WizardBody) -> Vector3:
 	var facts := BodyFacts.of_body(wizard)
-	var at := wizard.global_position + Vector3(0.0, facts.top.y + 0.5, 0.0)
+	var at := wizard.global_position + Vector3(0.0, facts.height_m + 0.5, 0.0)
 	at += wizard.facing_flat() * (facts.reach_m + 0.75)
 	return at

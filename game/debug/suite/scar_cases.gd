@@ -182,8 +182,12 @@ func _effects() -> Dictionary:
 	beam.free()
 	checks["oil"] = _scene_mark("res://scenes/spells/marks/oil_mark.tscn", "oils", 10.0)
 	checks["rock"] = _scene_mark("res://scenes/spells/marks/rock_mark.tscn", "gscr", 5.0)
-	checks["oil_shot"] = (load("res://data/shots/kcfa.tres") as ShotLook).ground_mark != null
-	checks["halo_shot"] = (load("res://data/shots/halo_rock.tres") as ShotLook).ground_mark != null
+	var oil_look := ShotLook.make("kcfa")
+	var halo_look := ShotLook.make("halo_rock")
+	checks["oil_shot"] = oil_look.ground_mark != null
+	checks["halo_shot"] = halo_look.ground_mark != null
+	oil_look.free()
+	halo_look.free()
 	var rock := (load("res://scenes/spells/rock_projectile.tscn") as PackedScene).instantiate()
 	checks["rock_spell"] = rock.get("ground_mark") != null
 	rock.free()

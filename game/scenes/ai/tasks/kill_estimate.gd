@@ -57,16 +57,16 @@ static func heal_rate_of(type: CreatureType, target_max: float) -> float:
 	return minf(HealEffect.HEAL_SPEED, target_max / shot_period(type, attack))
 
 
-## Pure: seconds between two shots of a creature of `type` with `attack` (RangedAttack): it shoots with its first shoot clip, the
+## Pure: seconds between two shots of a creature of `type` with `attack` (RangedWeapon): it shoots with its first shoot clip, the
 ## cooldown starts at the clip's shoot tick, and the next shot starts once both the clip and the cooldown are over.
 static func shot_period(type: CreatureType, attack: AbilityType) -> float:
 	var length := 0.0
 	var at := 0.0
 	var facts := type.clip_facts()
-	var rate := float(facts.fps(RangedAttack.SHOT_ROLE))
-	if rate > 0.0 and facts.frames(RangedAttack.SHOT_ROLE) > 1:
-		length = float(facts.frames(RangedAttack.SHOT_ROLE)) / rate
-		var shots := facts.shots(RangedAttack.SHOT_ROLE)
+	var rate := float(facts.fps(ShotClip.ROLE))
+	if rate > 0.0 and facts.frames(ShotClip.ROLE) > 1:
+		length = float(facts.frames(ShotClip.ROLE)) / rate
+		var shots := facts.shots(ShotClip.ROLE)
 		at = float(shots[0]) / rate if not shots.is_empty() else length
 	return maxf(maxf(length, at + attack.cooldown_s), MIN_PERIOD_S)
 
@@ -171,7 +171,7 @@ static func _resistance(data: Resource, field: StringName) -> float:
 static func _mean_swing_s(facts: ClipFacts) -> float:
 	var total := 0.0
 	var count := 0
-	for role: StringName in MeleeAttack.SWING_ROLES:
+	for role: StringName in MeleeRules.SWING_ROLES:
 		if facts.has(role):
 			total += float(facts.frames(role)) / float(facts.fps(role))
 			count += 1

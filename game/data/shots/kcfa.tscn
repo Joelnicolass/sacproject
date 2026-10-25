@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/attacks/shot_look.gd" id="1_look"]
+[ext_resource type="PackedScene" path="res://scenes/units/impacts/oil_impact.tscn" id="2_impact"]
+[ext_resource type="PackedScene" path="res://scenes/spells/marks/oil_mark.tscn" id="3_mark"]
+
+[node name="Kcfa" type="Node"]
+script = ExtResource("1_look")
+hit_size = 1.0
+hits_every_side = true
+impact_fx = PackedStringArray("oil_splash")
+impact = ExtResource("2_impact")
+ground_mark = ExtResource("3_mark")
+fallback_color = Color(0.1, 0.08, 0.04, 1)
+fallback_radius = 0.5

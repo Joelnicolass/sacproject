@@ -5,7 +5,7 @@ extends Resource
 ## `EXPECT PASS|FAIL <check> <value>`. Bodies are named by the `label` of their BenchGroup / BenchBuilding (or its tag).
 ##   picked   each body of `subject` (all) or one (any) takes a body of `object` as its target within `within_s` of `from`.
 ##   struck   each (all) or one (any) body of `subject` strikes or shoots bodies of `object` at least `min_count` times within
-##            `within_s` of `from` (a blow that lands, UnitBody.struck; a shot that leaves, RangedAttack.fired).
+##            `within_s` of `from` (a blow that lands, UnitBody.struck; a shot that leaves, RangedWeapon.fired).
 ##   hurt     a body of `object` takes damage from the slot of `subject` within `within_s` of `from` (Health.hit).
 ##   dropped  each body of `subject` (all) or one (any) that had a body of `object` as its target stops having it within
 ##            `within_s` of the later of the tick it took it and the last tick that body of `object` lost health (`from` is

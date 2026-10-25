@@ -36,9 +36,10 @@ func begin(rules: BenchRules, bodies: Dictionary) -> void:
 		MapCatalog.current_tag(), _stance(1, 0), _stance(2, 0), _stance(1, 3), _stance(2, 3)])
 	for label in rules.trace_labels:
 		for body: Node3D in _of(label):
-			var ranged := body.get_node_or_null("RangedAttack")
+			var carrier := body as UnitBody
+			var ranged := carrier.weapons.ranged if carrier != null else null
 			if ranged != null:
-				ranged.connect("fired", _on_traced_fire.bind(body).unbind(3))
+				ranged.fired.connect(_on_traced_fire.bind(body).unbind(3))
 			var health := body.get_node_or_null("Health") as Health
 			if health != null:
 				health.hit.connect(_on_traced_hit.bind(body))
@@ -153,9 +154,10 @@ func _wire(row: Dictionary) -> void:
 		for body: Node3D in subjects:
 			if body.has_signal("struck"):
 				body.connect("struck", _on_blow.bind(row, body).unbind(3))
-			var ranged := body.get_node_or_null("RangedAttack")
+			var carrier := body as UnitBody
+			var ranged := carrier.weapons.ranged if carrier != null else null
 			if ranged != null:
-				ranged.connect("fired", _on_blow.bind(row, body).unbind(3))
+				ranged.fired.connect(_on_blow.bind(row, body).unbind(3))
 	if expect.kind == "hurt":
 		var slot := _slot_of(expect.subject)
 		for body: Node3D in _of(expect.object):

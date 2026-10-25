@@ -3,7 +3,7 @@ extends ShotInFlight
 
 ## F125 (RFC-030 030n-a): the Boulderdash's fan of three rocks (emba), sacengine boulderdashShoot (state.d:11793-11813)
 ## and updateBoulderdashProjectile (24729-24755).
-## RangedAttack fires ShotLook.volley shots with the same direction (one accuracy roll) and writes in each spawn packet
+## RangedWeapon fires ShotLook.volley shots with the same direction (one accuracy roll) and writes in each spawn packet
 ## its `volley_index` (−1, 0, +1) and `aim_distance` (|aim point − origin|). This node counts
 ## distanceUntilSplit = max(0, aim_distance − before_target_m) down by speed/60 on every tick of the flight; on the tick
 ## it goes under 0 the side rocks turn volley_index · angle_deg around `axis` (sacengine: the shooter's «up»), after the

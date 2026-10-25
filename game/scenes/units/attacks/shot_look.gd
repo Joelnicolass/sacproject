@@ -1,10 +1,14 @@
 class_name ShotLook
-extends Resource
+extends Node
 
-## How a creature's ranged shot looks: res://data/shots/<ability tag>.tres. Flight and damage
-## come from the AbilityType; a tag without a .tres flies as a plain ball with no particles.
+## How a creature's ranged shot looks and what it does in flight and on arrival: the scene res://data/shots/<ability tag>.tscn, whose
+## root is this node. Flight and damage come from the AbilityType; a tag without a scene flies as a plain ball with no particles.
+## The shot (or the weapon, or the strike) that uses it holds it as a child, so it goes when they go.
+## Not: the flight itself (RangedShot) nor who is hit (ShotImpact).
 
 const LOOKS_DIR := "res://data/shots/"
+## The scene of each tag looked up so far (null = it has none): the lookup runs once per tag, not once per shot.
+static var _scenes: Dictionary = {}
 
 ## The shot's mesh (scenes/props/meshes/<tag>.res); empty = a ball of fallback_radius.
 @export var mesh: Mesh
@@ -53,11 +57,11 @@ const LOOKS_DIR := "res://data/shots/"
 ## Silverback's breath: its in_flight does the damage). On: it bursts on its hit (the rest of the shots).
 @export var collides := true
 ## F124 (RFC-030 030m): ShotStrike scene that replaces the flight (strikes/*.tscn): a ray at once (the Gnome's
-## gnome_ray), a blow on the next tick (the Styx's styx_strike). RangedAttack instances it on the server (or solo).
+## gnome_ray), a blow on the next tick (the Styx's styx_strike). RangedWeapon instances it on the server (or solo).
 ## Empty = a RangedShot flies.
 @export var strike: PackedScene
 ## F125 (RFC-030 030n-a): shots per fire, one accuracy roll for all (boulderdashShoot fires which = −1, 0, +1,
-## state.d:11806-11808). RangedAttack writes volley_index −k..k and aim_distance in each packet (RangedShot.spawn_data).
+## state.d:11806-11808). RangedWeapon writes volley_index −k..k and aim_distance in each packet (RangedShot.spawn_data).
 @export_range(1, 9, 2) var volley := 1
 ## F125: a straight shot flies range_factor · the SPEL's range (emba 2: remainingDistance = 2·range, state.d:11799).
 @export var range_factor := 1.0
@@ -65,12 +69,32 @@ const LOOKS_DIR := "res://data/shots/"
 @export var fallback_radius := 0.15
 
 
-## The look of an ability tag (res://data/shots/<tag>.tres), or a plain ball. The one lookup for RangedShot and
-## RangedAttack (which needs `strike` before anything flies).
-static func for_tag(tag: String) -> ShotLook:
-	var path := LOOKS_DIR + tag + ".tres"
-	if not tag.is_empty() and ResourceLoader.exists(path):
-		var found := load(path) as ShotLook
-		if found:
-			return found
-	return ShotLook.new()
+## The ability tag this look was made for ("" for the plain ball).
+var tag := ""
+
+
+## A new look of the ability `tag` (res://data/shots/<tag>.tscn), or a plain ball. The caller owns it: add it as a child. The one
+## lookup for RangedShot, RangedWeapon and the abilities that throw their own shots.
+static func make(tag_name: String) -> ShotLook:
+	if not _scenes.has(tag_name):
+		var path := LOOKS_DIR + tag_name + ".tscn"
+		_scenes[tag_name] = load(path) as PackedScene if not tag_name.is_empty() and ResourceLoader.exists(path) else null
+	var scene: PackedScene = _scenes[tag_name]
+	var made := scene.instantiate() as ShotLook if scene != null else null
+	if made == null:
+		made = ShotLook.new()
+	made.tag = tag_name
+	return made
+
+
+## Keeps `current` as a child of `holder` when it is the look of `tag_name`; otherwise frees it and makes the right one ("" = none).
+static func fit(holder: Node, current: ShotLook, tag_name: String) -> ShotLook:
+	if current != null and current.tag == tag_name:
+		return current
+	if current != null:
+		current.queue_free()
+	if tag_name.is_empty():
+		return null
+	var made := make(tag_name)
+	holder.add_child(made)
+	return made

@@ -324,7 +324,7 @@ func _devour_step(delta: float) -> void:
 		scaling = 0.0
 	if collector and is_instance_valid(collector):
 		var factor := scaling / previous if previous > 0.0 else 0.0
-		global_position = global_position * factor + RangedAttack.origin_of(collector) * (1.0 - factor)
+		global_position = global_position * factor + ShotAim.shot_position(collector) * (1.0 - factor)
 	if scaling <= 0.0:
 		number = 0
 		if DebugLog.on(&"souls"):

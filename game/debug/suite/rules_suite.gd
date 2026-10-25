@@ -13,6 +13,7 @@ const GUARDIAN_CASES := preload("res://debug/suite/guardian_cases.gd")  # 021b
 const TELEPORT_CASES := preload("res://debug/suite/teleport_cases.gd")  # 021c
 const TARGET_CASES := preload("res://debug/suite/target_cases.gd")  # 024b
 const VISION_CASES := preload("res://debug/suite/vision_cases.gd")  # 055c2
+const WEAPON_CASES := preload("res://debug/suite/weapon_cases.gd")  # 055c3
 const NAV_CASES := preload("res://debug/suite/nav_cases.gd")  # 024b
 const VILLAGE_CASES := preload("res://debug/suite/village_cases.gd")  # 024b2
 const AI_CASES := preload("res://debug/suite/ai_cases.gd")  # 024c
@@ -83,6 +84,7 @@ func _run_suite() -> void:
 	_results.merge(await TELEPORT_CASES.new().run(self))  # 021c
 	_results.merge(await TARGET_CASES.new().run(self))  # 024b
 	_results.merge(await VISION_CASES.new().run(self))  # 055c2
+	_results.merge(await WEAPON_CASES.new().run(self))  # 055c3
 	_results.merge(await NAV_CASES.new().run(self))  # 024b
 	_results.merge(VILLAGE_CASES.new().run(self))  # 024b2
 	_results.merge(await AI_CASES.new().run(self))  # 024c

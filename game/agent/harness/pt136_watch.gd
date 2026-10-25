@@ -1,7 +1,7 @@
 extends Node
 
 ## Read-only observer for the F136 playtest (RFC-030 030h2, Scarab healing web). It never moves, orders, damages,
-## heals or spawns anything: it listens to Health.changed/hit of every unit, RangedAttack.fired, MeleeAttack.struck,
+## heals or spawns anything: it listens to Health.changed/hit of every unit, RangedWeapon.fired, MeleeWeapon.struck,
 ## shots entering/leaving the tree and HealEffect nodes being added; and it re-frames the screen camera (like a player
 ## scrolling the view) to save the rendered viewport. Tolerates scene == null.
 ##
@@ -95,12 +95,13 @@ func arm() -> String:
 			"heals_fx": [], "full_pf": -1, "rise": 0.0, "rise_max_step": 0.0}
 		health.connect("changed", _on_changed.bind(body))
 		health.connect("hit", _on_hit.bind(body))
-		var ranged := body.get_node_or_null("RangedAttack")
-		if ranged != null and ranged.has_signal("fired"):
-			ranged.connect("fired", _on_fired.bind(body))
-		var melee := body.get_node_or_null("MeleeAttack")
-		if melee != null and melee.has_signal("struck"):
-			melee.connect("struck", _on_struck.bind(body))
+		var carrier := body as UnitBody
+		var ranged := carrier.weapons.ranged if carrier != null else null
+		if ranged != null:
+			ranged.fired.connect(_on_fired.bind(body))
+		var melee := carrier.weapons.melee if carrier != null else null
+		if melee != null:
+			melee.struck.connect(_on_struck.bind(body))
 		units += 1
 		print("PT136 UNIT %s tag=%s lane=%s hp=%.1f/%.1f at=(%.1f, %.1f, %.1f) pf%d" % [_info[body]["name"],
 			_info[body]["tag"], _lane_name(_info[body]["lane"]), hp, float(health.get("maximum")), o.x, o.y, o.z, _pf()])

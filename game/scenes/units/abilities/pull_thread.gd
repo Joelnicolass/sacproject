@@ -99,7 +99,8 @@ func _process(_delta: float) -> void:
 
 ## The user's shot position (sacengine shotPosition), else a hand above its feet.
 func _origin() -> Vector3:
-	var ranged := _user.get_node_or_null("RangedAttack") as RangedAttack
+	var unit := _user as UnitBody
+	var ranged := unit.weapons.ranged if unit != null else null
 	if ranged != null:
 		return ranged.shot_origin()
 	return _user.global_position + Vector3.UP * 1.5

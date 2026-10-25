@@ -5,7 +5,7 @@ extends ShotStrike
 ## once on the next (updateRendShoot, state.d:25867-25890): it checks canRend again; if the soul is still there it bursts
 ## (Soul.burst: severSoul dissolves the corpse), draws the StyxBolt from the shot origin to the soul's center and deals
 ## dealSplashRangedDamageAt(0, …, damageRange): that is ShotLook.impact (impacts/rend_blast_impact.tscn: nobody takes the whole
-## amount). If the soul went, nothing happens (the mana is already spent). Born from RendSoulAbility, not from RangedAttack.
+## amount). If the soul went, nothing happens (the mana is already spent). Born from RendSoulAbility, not from RangedWeapon.
 
 ## FxBus beam type (res://data/fx/beams/) from the shot origin to the soul's center. Empty: none.
 @export var beam := "styx"

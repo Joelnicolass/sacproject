@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/attacks/shot_look.gd" id="1_look"]
+[ext_resource type="PackedScene" path="res://scenes/units/impacts/flummox_impact.tscn" id="2_impact"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/rock.res" id="mesh_rock"]
+
+[node name="Crba" type="Node"]
+script = ExtResource("1_look")
+model_scale = 0.9
+hit_size = 2.0
+spin_min = 0.2
+spin_max = 0.6
+trail_fx = "spit_trail"
+trail_every = 1
+impact_fx = PackedStringArray("spit_rock", "spit_dirt")
+impact = ExtResource("2_impact")
+fallback_color = Color(0.42, 0.4, 0.34, 1)
+fallback_radius = 0.45
+mesh = ExtResource("mesh_rock")

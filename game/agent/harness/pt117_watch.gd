@@ -6,14 +6,12 @@ extends Node
 ##   PT117 HIT <attacker>(<tag>) h_att=<attacker health/max> -> <target>(<tag>) h_tgt_before=<..> struck=<amount>
 ##         taken=<health lost> in_ratio=<taken/struck> raw=<recomputed raw blow> out_ratio=<struck/raw>
 ## in_ratio is the target's incoming factor (Taurock korq); out_ratio is the attacker's outgoing melee factor
-## (Firefist ahtf). raw is recomputed here from the same data MeleeAttack.roll_damage reads (anim frames, facing,
+## (Firefist ahtf). raw is recomputed here from the same data MeleeWeapon.roll_damage reads (anim frames, facing,
 ## roll, strength, resistance), so out_ratio does not trust the product's own factor.
 ## Tolerates scene == null: arm() just finds nothing.
 ##   arm()     connects to the units present (group "unit"). Returns the count.
 ##   report()  prints the totals.
 ## Props for wait_until: units, taurock_hits (blows taken by a raeb), firefist_hits (blows dealt by a lrtf).
-
-const _MA := preload("res://scenes/units/attacks/melee_attack.gd")
 
 var units := 0
 var taurock_hits := 0
@@ -56,18 +54,18 @@ func _on_hit(amount: float, _from_slot: int, _was_full: bool, unit: Node, health
 
 
 func _raw(attacker: Node, target: Node3D, chance: float, roll: float) -> float:
-	var ma := attacker.get_node_or_null("MeleeAttack")
+	var carrier := attacker as UnitBody
+	var ma := carrier.weapons.melee if carrier != null else null
 	if ma == null:
 		return NAN
-	var pending := float(ma.get("_pending"))
-	var facing := 1.5 + 0.5 * _MA.facing_of(attacker as Node3D).dot(_MA.facing_of(target))
+	var pending := ma.swing.pending
+	var facing := 1.5 + 0.5 * MeleeRules.facing_of(attacker as Node3D).dot(MeleeRules.facing_of(target))
 	var damage := facing * pending
 	if roll >= chance:
 		damage *= (1.0 - roll) / (1.0 - chance)
-	var type: Variant = ma.get("type")
-	damage *= float(type.get("melee_strength"))
-	var foe := _MA.profile_of(target)
-	damage *= float(ma.get("melee_resistance_scale")) * maxf(0.0, float(foe.get("resistance", 1.0)))
+	damage *= float(ma.type.melee_strength)
+	var foe := MeleeRules.profile_of(target)
+	damage *= ma.melee_resistance_scale * maxf(0.0, float(foe.get("resistance", 1.0)))
 	var th := target.get_node_or_null("Health")
 	if th != null:
 		damage *= maxf(0.0, float(th.get("damage_factor")))

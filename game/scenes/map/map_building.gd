@@ -95,7 +95,7 @@ func hit_box() -> AABB:
 	return _box
 
 
-## What a blow needs to know of its target (MeleeAttack.profile_of): a reach as wide as the box.
+## What a blow needs to know of its target (MeleeRules.profile_of): a reach as wide as the box.
 func melee_profile() -> Dictionary:
 	var c := _box.get_center()
 	var reach := maxf(absf(c.x) + _box.size.x * 0.5, absf(c.z) + _box.size.z * 0.5)

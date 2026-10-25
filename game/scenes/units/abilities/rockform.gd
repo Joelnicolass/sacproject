@@ -1,7 +1,7 @@
 class_name Rockform
 extends AbilityEffect
 
-## F133 (RFC-030 030v-b): the Earthfling's Rockform (dihk), moved from ActiveAbility's branches without a change.
+## F133 (RFC-030 030v-b): the Earthfling's Rockform (dihk), moved from AbilitySlot's branches without a change.
 ## sacengine rockForm (state.d:13052-13065, 25040-25067): the creature stops, drops its orders and turns into a rock
 ## (renderer.d:2084-2091: the rock model at its center, scale 0.55·hit box diagonal, grown over 30 frames). It takes 5 % damage
 ## (state.d:8964; UnitBody sets damage_factor), still regenerates (state.d:1430), is hidden from enemy AI and does nothing until it
@@ -20,7 +20,7 @@ var _shell_tween: Tween
 
 func status(_target_pos: Vector3, _target: Node3D) -> String:
 	if user.is_rock_form():
-		return ActiveAbility.BAD_TARGET
+		return Refusal.BAD_TARGET
 	return ""
 
 

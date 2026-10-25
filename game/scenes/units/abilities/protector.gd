@@ -25,7 +25,7 @@ var _pending_at := -1
 func status(_target_pos: Vector3, _target: Node3D) -> String:
 	var own := LifeShield.of(user)
 	if own == null or own.is_on():
-		return ActiveAbility.BAD_TARGET
+		return Refusal.BAD_TARGET
 	return ""
 
 

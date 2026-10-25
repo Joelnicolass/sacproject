@@ -117,7 +117,7 @@ func _drain() -> Dictionary:
 	checks["guarded_hit_deflects"] = health.deflected_last and absf(taken - want) < 0.05
 	var gained := LifeDrain.feed(scythe, structure, taken)
 	checks["guarded_drain_from_guardians"] = absf(gained - drain * taken) < 0.001 and absf(feeder.current - (start + drain * taken)) < 0.001
-	var melee := health.damage(60.0, 2)  ## the melee path reports it too (MeleeAttack._land feeds with this)
+	var melee := health.damage(60.0, 2)  ## the melee path reports it too (MeleeWeapon._land feeds with this)
 	checks["melee_reports_guardians_damage"] = health.deflected_last and melee > 0.0
 	taken = health.damage_typed(60.0, Health.MELEE, 2)
 	for unit in guards:
@@ -205,9 +205,9 @@ func _factors() -> Dictionary:
 	var shot_splash_free := th.damage_typed(10.0, Health.SPLASH_RANGED, 2)
 	var shot_splash_guard := gh.damage_typed(10.0, Health.SPLASH_RANGED, 2)
 	checks["ranged_quarter"] = shot_free > 0.0 and absf(shot_guard - 0.25 * shot_free) < 0.001 and absf(shot_splash_guard - 0.25 * shot_splash_free) < 0.001
-	var ability := guard.get_node("ActiveAbility") as ActiveAbility
-	checks["ability_locked"] = ability.locked and ability.status(guard.global_position, null) == ActiveAbility.NO_ABILITY
-	checks["twin_ability_free"] = not (twin.get_node("ActiveAbility") as ActiveAbility).locked
+	var ability := guard.abilities.slot
+	checks["ability_locked"] = ability.locked and ability.status(guard.global_position, null) == Refusal.NO_ABILITY
+	checks["twin_ability_free"] = not twin.abilities.slot.locked
 	gh.current = gh.maximum * 0.5
 	th.current = th.maximum * 0.5
 	await _frames(60)

@@ -11,7 +11,7 @@ extends AbilityEffect
 
 
 func status(_target_pos: Vector3, _target: Node3D) -> String:
-	return "" if user != null and ability != null else ActiveAbility.BAD_TARGET
+	return "" if user != null and ability != null else Refusal.BAD_TARGET
 
 
 ## quake: server (or solo) only. The wave is born on the shoot tick.

@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/weapons/melee_weapon.gd" id="1_melee"]
+[ext_resource type="PackedScene" path="res://scenes/units/weapons/melee_on_hit.tscn" id="2_onhit"]
+
+[node name="Melee" type="Node"]
+editor_description = "Golpe cuerpo a cuerpo: un solo golpe a la vez, con el tiempo del clip de ataque de la criatura. Suelta esta escena bajo Weapons para dar un golpe a una criatura; el orden de los hijos de Weapons es la prioridad. Las cajas (start_factor, forward_factor, height_factor) y el castigo de resistencia se editan aca. OnHit aplica las pasivas del tipo cuando el golpe conecta."
+script = ExtResource("1_melee")
+
+[node name="OnHit" parent="." node_paths=PackedStringArray("melee") instance=ExtResource("2_onhit")]
+melee = NodePath("..")

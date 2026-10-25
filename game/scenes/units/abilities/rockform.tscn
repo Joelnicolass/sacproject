@@ -4,6 +4,6 @@
 [ext_resource type="ArrayMesh" path="res://scenes/props/meshes/rock.res" id="mesh_rock"]
 
 [node name="Rockform" type="Node"]
-editor_description = "F133 (RFC-030 030v-b): efecto propio del Rockform del Earthfling (dihk). ActiveAbility lo instancia como \"Effect\" desde data/abilities/ability_catalog.tres. Entra en roca en el tick de la orden y lleva el caparazón (show_rock_form, todos los peers)."
+editor_description = "F133 (RFC-030 030v-b): efecto propio del Rockform del Earthfling (dihk). AbilitySlot lo instancia como \"Effect\" desde el campo effect de su AbilityType (data/catalog/abilities/). Entra en roca en el tick de la orden y lleva el caparazón (show_rock_form, todos los peers)."
 script = ExtResource("1_rock")
 rock_mesh = ExtResource("mesh_rock")

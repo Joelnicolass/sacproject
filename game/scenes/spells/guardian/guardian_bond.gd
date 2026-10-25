@@ -33,7 +33,7 @@ const CENTER_HEIGHT := 0.9
 @export var health: Health
 ## The creature's UnitOrders (unit_orders.gd has no class_name).
 @export var orders: Node
-@export var ability: ActiveAbility
+@export var ability: AbilitySlot
 @export var rules: MatchRules
 ## The beam, drawn on the peers that have a window. Empty = no beam.
 @export var tether_scene: PackedScene
@@ -79,7 +79,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if orders == null:
 		warnings.append("Asigná en `orders` el nodo Orders de la unidad.")
 	if ability == null:
-		warnings.append("Asigná en `ability` el ActiveAbility de la unidad.")
+		warnings.append("Asigná en `ability` el AbilitySlot de la unidad (Abilities/Ability).")
 	if rules == null:
 		warnings.append("Asigná en `rules` el MatchRules (factores y correa del guardián).")
 	return warnings

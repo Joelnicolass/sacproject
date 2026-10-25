@@ -136,7 +136,7 @@ func _hit(amount: float, from_slot: int) -> void:
 ## The side factor is the match's friendly fire (_side_factor): an ally takes nothing with it off (dealDamage returns 0,
 ## state.d:8961) and ally_damage_factor with it on (sideDamageMultiplier, state.d:9005, 28892-28899); `ignore_friendly`
 ## (poison, state.d:9415-9419) takes ×1 then. A dead body takes nothing (canDamage).
-## Melee callers still apply sacengine's extra 0.4 themselves (melee_attack.gd).
+## Melee callers still apply sacengine's extra 0.4 themselves (melee_weapon.gd).
 ## Returns the damage taken.
 ## `mods` (F130): the DamageMod bits of the hit (LIGHTNING, IGNITE). The body's passive and the oil read them.
 ## `pierce_shield` (sacengine DamageMod.peirceShield, state.d:8962-8969): the body's shields and states (damage_factor:

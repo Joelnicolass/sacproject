@@ -1,11 +1,11 @@
 class_name AbilityEffect
 extends Node
 
-## F126 (RFC-030 030o-a): the own part of one active ability (sacengine useAbility, state.d:13463-13561: the function each
-## SpellTag calls). ActiveAbility checks cooldown → mana (abilityStatus, state.d:29582-29604), then asks status() for the
-## ability's own rule, calls fire() and, when it returns true, spends the mana and starts the cooldown (`apply()`,
-## 13467-13470). The effect never touches mana or cooldown. AbilityCatalog says which tag has which scene.
-## Server (or solo): on a client ActiveAbility does not call it and its _physics_process stays off.
+## The own part of one active ability (sacengine useAbility, state.d:13463-13561: the function each SpellTag calls). AbilitySlot
+## checks cooldown → mana (abilityStatus, state.d:29582-29604), then asks status() for the ability's own rule, calls fire() and, when
+## it returns true, spends the mana and starts the cooldown (`apply()`, 13467-13470). The effect never touches mana or cooldown.
+## The AbilityType says which scene is its effect (`AbilityType.effect`).
+## Server (or solo): on a client AbilitySlot does not call it and its _physics_process stays off.
 
 ## How long the body prepares before fire(). 0 = at once (Protector, Life Shield).
 ## Ref: sacengine startUsingAbility … shoot tick.
@@ -18,7 +18,7 @@ extends Node
 ## of life, Pull, Sticky bomb: they must not change); 0 = `shoot` (the Styx's Rend Soul prepares its attack clip, 100 ticks).
 @export_range(0, 1) var windup_clip := 1
 ## F132: the mana is paid when the preparation starts, not at the shoot tick (sacengine act(), state.d:13495-13510: the Jabberocky's
-## Quake). At the shoot tick ActiveAbility does not check the mana again: fire() and, if it was 0, the cooldown. If the preparation is cut the mana
+## Quake). At the shoot tick AbilitySlot does not check the mana again: fire() and, if it was 0, the cooldown. If the preparation is cut the mana
 ## is gone and there is no cooldown. Off = the mana is paid at the shoot tick (Firewalk, Breath, Pull, Sticky, Oil, Mites, Devour, Rend).
 @export var pays_upfront := false
 
@@ -61,12 +61,12 @@ func windup() -> int:
 	return MatchClock.ticks_for(windup_s)
 
 
-## The ability's own rule: "" = it can be used now, else the reason (ActiveAbility's constants).
+## The ability's own rule: "" = it can be used now, else the reason (AbilitySlot's constants).
 func status(_target_pos: Vector3, _target: Node3D) -> String:
 	return ""
 
 
-## Does it. True = applied: ActiveAbility spends the mana and starts the cooldown. False = nothing happened, nothing spent.
+## Does it. True = applied: AbilitySlot spends the mana and starts the cooldown. False = nothing happened, nothing spent.
 func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 	return false
 

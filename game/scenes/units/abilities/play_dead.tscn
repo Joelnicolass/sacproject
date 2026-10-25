@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/abilities/timed_state_ability.gd" id="1_timed"]
 
 [node name="PlayDead" type="Node"]
-editor_description = "F133 (RFC-030 030v-b): efecto propio del Play Dead del Fallen (dedp). ActiveAbility lo instancia como \"Effect\" desde data/abilities/ability_catalog.tres. UnitBody.set_playing_dead por la duración del SPEL (mínimo 6 s), contada en ticks."
+editor_description = "F133 (RFC-030 030v-b): efecto propio del Play Dead del Fallen (dedp). AbilitySlot lo instancia como \"Effect\" desde el campo effect de su AbilityType (data/catalog/abilities/). UnitBody.set_playing_dead por la duración del SPEL (mínimo 6 s), contada en ticks."
 script = ExtResource("1_timed")
 body_setter = &"set_playing_dead"
 min_duration_s = 6.0

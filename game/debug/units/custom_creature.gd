@@ -140,7 +140,7 @@ func _run() -> void:
 	var dummy_health: Health = dummy.get_node("Health")
 	dummy_health.setup(1.0e7)
 	var before := dummy_health.current
-	var melee: MeleeAttack = unit.find_children("*", "MeleeAttack", true, false)[0]
+	var melee: MeleeWeapon = unit.weapons.melee
 	melee.connected.connect(func(_target: Node3D, _frozen: bool) -> void:
 		if not _swings.is_empty() and int(_swings[-1]["hit"]) < 0:
 			_swings[-1]["hit"] = _frame)
@@ -160,7 +160,7 @@ func _run() -> void:
 			if int(swing["index"]) == index and int(swing["hit"]) >= 0:
 				times.append("%.3f" % (float(int(swing["hit"]) - int(swing["start"])) / 60.0))
 		print("CUSTOM_CREATURE variant %d (%s): %d swings, %d blows landed, after the swing started (s): %s (impact %.2f s)" % [
-			index, type.clips.get_animation(MeleeAttack.SWING_ROLES[index]).resource_name, _count(index), _landed(index), ", ".join(times), IMPACT_S[index]])
+			index, type.clips.get_animation(MeleeRules.SWING_ROLES[index]).resource_name, _count(index), _landed(index), ", ".join(times), IMPACT_S[index]])
 	if _landed(0) < 1 or _landed(1) < 1:
 		_fail("both melee variants must land a blow (swings %d of the first, %d of the second; blows %d and %d; dummy %.0f of %.0f)" % [
 			_count(0), _count(1), _landed(0), _landed(1), dummy_health.current, before])

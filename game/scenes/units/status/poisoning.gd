@@ -8,7 +8,7 @@ extends Node
 ##   regeneration_factor()  Π freg of the live doses (poison(), 11604; restorePoisonRegeneration, 26103-26112)
 ##   mana_blocked()         a dose past its 2 s blocks giveMana (state.d:8829, 23556-23558)
 ##   damage_sum()           Σ int(per second) (poisonDamage, what an infection passes on)
-## Health, ManaPool and MeleeAttack ask it, never a dose. Server (or solo) only: on a client it does nothing.
+## Health, ManaPool and MeleeWeapon ask it, never a dose. Server (or solo) only: on a client it does nothing.
 ##
 ## Infection (updatePoison, state.d:23537-23552): every tick, each infectious dose touches every live creature and wizard
 ## whose box meets the body's box grown `infection_margin_m`, of any side, the body excepted. One with no infection

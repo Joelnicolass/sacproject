@@ -1,4 +1,4 @@
-[gd_scene load_steps=99 format=3]
+[gd_scene load_steps=123 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
 [ext_resource type="PackedScene" path="res://scenes/units/vision/vision.tscn" id="f55c2_vision"]
@@ -11,11 +11,8 @@
 [ext_resource type="PackedScene" path="res://scenes/units/passives/life_shield.tscn" id="f126_shield"]
 [ext_resource type="Script" path="res://scenes/spells/wards/wards.gd" id="w_wards"]
 [ext_resource type="PackedScene" path="res://scenes/spells/wards/healing_aura.tscn" id="w_healing_aura"]
-[ext_resource type="Resource" path="res://data/abilities/ability_catalog.tres" id="f126_catalog"]
 [ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="2_visual"]
 [ext_resource type="Script" path="res://scenes/components/health.gd" id="3_health"]
-[ext_resource type="Script" path="res://scenes/units/attacks/melee_attack.gd" id="4_melee"]
-[ext_resource type="PackedScene" path="res://scenes/units/attacks/melee_on_hit.tscn" id="f158_onhit"]
 [ext_resource type="PackedScene" path="res://scenes/units/passives/fire_shield.tscn" id="f163_shield"]
 [ext_resource type="Script" path="res://scenes/units/corpse.gd" id="5_corpse"]
 [ext_resource type="Script" path="res://scenes/units/corpse_look.gd" id="f055_look"]
@@ -28,8 +25,13 @@
 [ext_resource type="Script" path="res://scenes/units/captive_look.gd" id="f055_captive_look"]
 [ext_resource type="PackedScene" path="res://scenes/fx/portal_disc.tscn" id="f59_portal"]
 [ext_resource type="Script" path="res://scenes/components/mana_pool.gd" id="f29_mana"]
-[ext_resource type="Script" path="res://scenes/units/attacks/ranged_attack.gd" id="f29_ranged"]
-[ext_resource type="Script" path="res://scenes/units/abilities/active_ability.gd" id="f29_ability"]
+[ext_resource type="Script" path="res://scenes/units/weapons/weapons.gd" id="f55c3_weapons"]
+[ext_resource type="PackedScene" path="res://scenes/units/weapons/ranged_weapon.tscn" id="f55c3_ranged"]
+[ext_resource type="PackedScene" path="res://scenes/units/weapons/melee_weapon.tscn" id="f55c3_melee"]
+[ext_resource type="Script" path="res://scenes/units/abilities/abilities.gd" id="f55c3_abilities"]
+[ext_resource type="Script" path="res://scenes/units/abilities/ability_slot.gd" id="f55c3_slot"]
+[ext_resource type="Script" path="res://scenes/units/abilities/ability_windup.gd" id="f55c3_windup"]
+[ext_resource type="Script" path="res://scenes/units/abilities/ability_port.gd" id="f55c3_port"]
 [ext_resource type="Script" path="res://scenes/bodies/body_animator.gd" id="f36_clip"]
 [ext_resource type="PackedScene" path="res://scenes/bodies/body_rig.tscn" id="f162_rig"]
 [ext_resource type="Script" path="res://scenes/units/unit_mana_support.gd" id="f41_mana_support"]
@@ -196,12 +198,14 @@ properties/22/replication_mode = 2
 
 [sub_resource type="BoxMesh" id="Box_unit"]
 
-[node name="Unit" type="CharacterBody3D" node_paths=PackedStringArray("mount", "vision")]
+[node name="Unit" type="CharacterBody3D" node_paths=PackedStringArray("mount", "vision", "weapons", "abilities")]
 collision_layer = 2
 floor_max_angle = 1.4835298
 script = ExtResource("1_body")
 mount = NodePath("BodyMount")
 vision = NodePath("Vision")
+weapons = NodePath("Weapons")
+abilities = NodePath("Abilities")
 
 [node name="Tilt" type="Node3D" parent="."]
 
@@ -235,15 +239,6 @@ health = NodePath("../../Health")
 [node name="HealingAura" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("w_healing_aura")]
 body = NodePath("../..")
 health = NodePath("../../Health")
-
-[node name="MeleeAttack" type="Node" parent="." node_paths=PackedStringArray("passive", "own_health")]
-script = ExtResource("4_melee")
-passive = NodePath("../DamagePassive")
-own_health = NodePath("../Health")
-
-[node name="MeleeOnHit" parent="." node_paths=PackedStringArray("melee", "body") instance=ExtResource("f158_onhit")]
-melee = NodePath("../MeleeAttack")
-body = NodePath("..")
 
 [node name="DamagePassive" type="Node" parent="." node_paths=PackedStringArray("body", "charge")]
 script = ExtResource("f117_passive")
@@ -287,12 +282,34 @@ visual = NodePath("../Tilt/Mesh")
 body = NodePath("..")
 pace = NodePath("../PaceFactors")
 
-[node name="RangedAttack" type="Node" parent="."]
-script = ExtResource("f29_ranged")
+[node name="Weapons" type="Node" parent="." node_paths=PackedStringArray("mana", "health", "passive")]
+script = ExtResource("f55c3_weapons")
+mana = NodePath("../ManaPool")
+health = NodePath("../Health")
+passive = NodePath("../DamagePassive")
 
-[node name="ActiveAbility" type="Node" parent="."]
-script = ExtResource("f29_ability")
-catalog = ExtResource("f126_catalog")
+[node name="Ranged" parent="Weapons" instance=ExtResource("f55c3_ranged")]
+
+[node name="Melee" parent="Weapons" instance=ExtResource("f55c3_melee")]
+
+[node name="Abilities" type="Node" parent="." node_paths=PackedStringArray("slot", "port", "mana")]
+script = ExtResource("f55c3_abilities")
+slot = NodePath("Ability")
+port = NodePath("Port")
+mana = NodePath("../ManaPool")
+
+[node name="Ability" type="Node" parent="Abilities" node_paths=PackedStringArray("windup")]
+script = ExtResource("f55c3_slot")
+windup = NodePath("Windup")
+
+[node name="Windup" type="Node" parent="Abilities/Ability" node_paths=PackedStringArray("slot")]
+script = ExtResource("f55c3_windup")
+slot = NodePath("..")
+
+[node name="Port" type="Node" parent="Abilities" node_paths=PackedStringArray("body", "slot")]
+script = ExtResource("f55c3_port")
+body = NodePath("../..")
+slot = NodePath("../Ability")
 
 [node name="ManaSupport" type="Node3D" parent="."]
 script = ExtResource("f41_mana_support")
@@ -649,7 +666,7 @@ script = ExtResource("f63_bond")
 body = NodePath("..")
 health = NodePath("../Health")
 orders = NodePath("../Orders")
-ability = NodePath("../ActiveAbility")
+ability = NodePath("../Abilities/Ability")
 rules = ExtResource("f63_rules")
 tether_scene = ExtResource("f63_tether")
 

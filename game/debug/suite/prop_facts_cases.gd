@@ -99,12 +99,15 @@ func _resources_with_mesh(dir: String, notes: PackedStringArray) -> Array:
 func _shots(notes: PackedStringArray) -> int:
 	var with_mesh := 0
 	for file in DirAccess.get_files_at(SHOTS_DIR):
-		if file.ends_with(".tres"):
-			var look := load(SHOTS_DIR + file) as ShotLook
+		if file.ends_with(".tscn"):
+			var scene := load(SHOTS_DIR + file) as PackedScene
+			var look := scene.instantiate() as ShotLook if scene != null else null
 			if look == null:
 				_note(notes, "%s is not a ShotLook" % file)
-			elif look.mesh != null:
+				continue
+			if look.mesh != null:
 				with_mesh += 1
+			look.free()
 	return with_mesh
 
 

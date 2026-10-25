@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/weapons/melee_on_hit.gd" id="1_onhit"]
+
+[node name="MeleeOnHit" type="Node"]
+editor_description = "Las pasivas que se disparan cuando el golpe cuerpo a cuerpo conecta (el Congelar del Yeti, las Enredaderas del Dragon). Escucha MeleeWeapon.connected; por cada OnHitPassiveType de los passives de la criatura aplica refuse_flying y skip_if_was_frozen y llama a Affliction.inflict. Asigna en melee el arma que lo contiene."
+script = ExtResource("1_onhit")

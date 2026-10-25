@@ -4,7 +4,7 @@ extends AbilityEffect
 ## F153 (RFC-030 030p-b): the Dragon's Breath of life (filb, flags targetSouls | targetCorpses | onlyAlly = 4106). sacengine
 ## useAbility → shoot (state.d:13470-13493): the body prepares (startUsingAbility, shoot2) and at the shoot tick shootOnTick
 ## calls breathOfLifeShoot (13238-13248), which drains the mana (12746-12748) and adds the BreathOfLife effect; the cooldown
-## (4 s) is set if it was 0. The preparation is ActiveAbility's (UsingAbility + windup()), the flight is BreathOfLife's and
+## (4 s) is set if it was 0. The preparation is AbilityWindup's (UsingAbility + windup()), the flight is BreathOfLife's and
 ## the revival is FastRevive's: this effect only judges the target and launches the breath.
 ##
 ## Target (abilityStatus, 29582-29604: applicable → range): a soul is resolved to its corpse (13241-13244). It must be dead,
@@ -17,20 +17,20 @@ extends AbilityEffect
 
 func status(_target_pos: Vector3, target: Node3D) -> String:
 	if ability == null or user == null:
-		return ActiveAbility.BAD_TARGET
+		return Refusal.BAD_TARGET
 	var corpse := corpse_of(target)
 	if corpse == null or not corpse.is_dead() or _slot_of(corpse) != _slot_of(user):
-		return ActiveAbility.BAD_TARGET
+		return Refusal.BAD_TARGET
 	var soul := soul_of(corpse)
 	if soul == null or not (soul.state == Soul.State.NORMAL or soul.state == Soul.State.EMERGING):
-		return ActiveAbility.BAD_TARGET
+		return Refusal.BAD_TARGET
 	if user.global_position.distance_to(corpse.global_position) > ability.cast_range_m:
-		return ActiveAbility.OUT_OF_RANGE
+		return Refusal.OUT_OF_RANGE
 	return ""
 
 
 ## breathOfLifeShoot: the breath leaves the shot origin toward the corpse. False = nothing launched (the target is gone by the
-## shoot tick): ActiveAbility spends the mana all the same, like the original.
+## shoot tick): AbilitySlot spends the mana all the same, like the original.
 func fire(target_pos: Vector3, target: Node3D) -> bool:
 	if not _has_authority() or breath_scene == null:
 		return false

@@ -1,7 +1,7 @@
 class_name ChaseState
 extends UnitState
 
-## CHASE: toward the attack target; starts the melee swing or the shot when in range. Without an order it gives up
+## CHASE: toward the attack target; starts the swing or the shot of the first weapon that can when in range. Without an order it gives up
 ## beyond the sight range.
 ## F376 (RFC-053 053g): a chase that does not move (turning in place, held by the avoidance, under a flier it cannot reach)
 ## shows the rest clip instead of `run` on the spot once its flat speed stays under `still_speed` for `still_after_s`. Only the
@@ -29,21 +29,20 @@ func physics_update(delta: float) -> void:
 		body.target = null
 		transition(&"Idle")
 		return
-	var ranged := body.get_node("RangedAttack") as RangedAttack
-	var shooting := ranged.prefers(foe)
-	if shooting:
-		var step := ranged.aim(foe)
-		if step != RangedAttack.Step.APPROACH:
-			body.turn_toward(ranged.aim_direction(foe), delta)
-			if step == RangedAttack.Step.FIRE:
-				body.shots += 1
-				transition(&"Shoot")
-			return
-	var melee := body.get_node("MeleeAttack") as MeleeAttack
-	if not shooting and melee.can_start(foe):
-		melee.start(foe)
-		body.swings += 1
-		transition(&"Attack")
+	## The first weapon (in priority order) that wants this foe: it asks to walk on, to hold and turn, or it starts. A weapon that wants
+	## the foe but is out of range keeps the body walking: a weaker weapon does not take over.
+	for weapon: Weapon in body.weapons.ordered():
+		if not weapon.wants(foe):
+			continue
+		var step := weapon.aim(foe)
+		if step == Weapon.Step.APPROACH:
+			break
+		var facing := weapon.aim_direction(foe)
+		if facing != Vector3.ZERO:
+			body.turn_toward(facing, delta)
+		if step == Weapon.Step.FIRE:
+			weapon.announce()
+			transition(weapon.busy_state())
 		return
 	var heading := foe.global_position
 	if is_instance_valid(body.path_follower):

@@ -3,6 +3,9 @@ extends Resource
 
 @export var tag: String = ""
 @export var display_name: String = ""
+## What the ability does when a creature uses it on command: the scene of an AbilityEffect (scenes/units/abilities/). Empty = «No
+## implementado». A new active ability is a new scene dropped here, never a new branch in code.
+@export var effect: PackedScene
 ## The picture of the ability on the roster button and on the cursor while it waits for its target. Empty: the tag is written instead.
 @export var icon: Texture2D
 @export var mana_cost: int = 0

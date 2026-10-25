@@ -34,11 +34,9 @@ extends SpellLaunch
 
 const GROUP := &"halo_of_earth"
 
-## The ability when HaloOfEarthAbility does not hand one over (a scene run alone): data/catalog/abilities/HRba_2.tres.
-@export var default_ability: AbilityType
 ## The shot container's spawner (group `shot_spawner`): the rocks are its shots. The ability that adds this node hands it over.
 @export var spawner: Node
-## ShotLook tag of a rock (data/shots/halo_rock.tres).
+## ShotLook tag of a rock (data/shots/halo_rock.tscn).
 @export var rock_tag := "halo_rock"
 @export_range(1, 12) var num_rocks := 6
 ## The Rhinok's box (BodyNudge.box) is scaled by this to place a newborn rock (haloRockSpawnPosition: 1.25 for an ability,
@@ -113,14 +111,14 @@ var _ended := false
 ## Before the node enters the tree. `rock_spawner` is the shot container's spawner.
 func setup(body: Node3D, type: AbilityType, rock_spawner: Node) -> void:
 	user = body
-	ability = type if type else default_ability
+	ability = type
 	_set_numbers(float(ability.damage), ability.speed_m_s, ability.acceleration_m_s2, ability.effect_range_m)
 	spawner = rock_spawner
 	_born = MatchClock.now()
 	_who = AbilityEffect.who(body)
 	_slot = int(body.get("owner_slot")) if "owner_slot" in body else 0
 	_rng = MatchSeed.rng(["halo", _who, _born])
-	_look = ShotLook.for_tag(rock_tag)
+	_look = ShotLook.fit(self, _look, rock_tag)
 	name = "Halo%s_%d" % [_who, _born]
 
 
@@ -134,7 +132,7 @@ func begin_cast(caster: Node3D, spell: SpellType, _target: Node3D, _point: Vecto
 	_who = AbilityEffect.who(caster)
 	_slot = int(caster.get("owner_slot")) if "owner_slot" in caster else 0
 	_rng = MatchSeed.rng(["halo", _who, _born])
-	_look = ShotLook.for_tag(rock_tag)
+	_look = ShotLook.fit(self, _look, rock_tag)
 	name = "Halo%s_%d" % [_who, _born]
 	_armed = false
 	_cast_ticks = maxi(1, cast_ticks)

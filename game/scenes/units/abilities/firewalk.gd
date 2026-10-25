@@ -7,7 +7,7 @@ extends AbilityEffect
 ## firewalk refuses a target that is not on the ground (isOnGround) and else adds the Firewalk effect.
 ## The range is the SPEL's cast_range · 0.75 (sacspell.d:208: 200 → 150). AbilityType.cast_range_m stays 200 (the rater
 ## reads it), so the factor is this knob. Out of range is refused (declared: sacengine walks closer first).
-## The preparation is ActiveAbility's (UsingAbility + windup()); the walk is Firewalking's.
+## The preparation is AbilityWindup's (UsingAbility + windup()); the walk is Firewalking's.
 
 ## sacengine SacSpell: `if(tag==SpellTag.firewalk) range*=0.75f`.
 @export var range_factor := 0.75
@@ -15,9 +15,9 @@ extends AbilityEffect
 
 func status(target_pos: Vector3, _target: Node3D) -> String:
 	if ability == null or Firewalking.of(user) == null or not BodyNudge.on_land(user, target_pos):
-		return ActiveAbility.BAD_TARGET
+		return Refusal.BAD_TARGET
 	if user.global_position.distance_to(target_pos) > ability.cast_range_m * range_factor:
-		return ActiveAbility.OUT_OF_RANGE
+		return Refusal.OUT_OF_RANGE
 	return ""
 
 

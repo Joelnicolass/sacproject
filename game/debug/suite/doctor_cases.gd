@@ -48,7 +48,7 @@ func _stats() -> Dictionary:
 	ok = ok and is_equal_approx(type.regeneration_per_s, 83.3333)
 	ok = ok and doctor.is_in_group("doctor") and not doctor.is_in_group("unit")
 	ok = ok and Attackable.is_body(doctor) and _attackable_matches_old_groups()
-	ok = ok and not doctor.has_node("Orders") and not doctor.has_node("MeleeAttack")
+	ok = ok and not doctor.has_node("Orders") and not doctor.has_node("Weapons")
 	var result := {"ok": ok, "health": health.maximum, "speed": doctor.pace(), "regen": type.regeneration_per_s if type else 0.0}
 	doctor.queue_free()
 	return result

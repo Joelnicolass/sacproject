@@ -4,25 +4,25 @@ extends AbilityEffect
 ## F157 (RFC-030 030t-b): the Styx's Rend Soul (dner). sacengine useAbility → shoot0 (state.d:13463-13561): the body prepares its
 ## attack clip (windup_clip 0: 100 ticks) and at the shoot tick shootOnTick calls rendShoot (12750, 13226-13230), which adds the
 ## effect only if canRend (13219-13225): a soul that is NORMAL or EMERGING, free or of the user's side, not dropped. The mana
-## and the cooldown are paid at the shoot tick whether or not the soul is still there (ActiveAbility does it).
+## and the cooldown are paid at the shoot tick whether or not the soul is still there (AbilitySlot does it).
 ## This effect only judges the soul and throws the SoulStrike; what happens the tick after is the strike's.
 ## Range: the SPEL's cast_range (90) in 3D, to the soul's center.
 ## Divergence (declared): the body does not walk closer or turn; out of range is refused.
 
-## The strike (strikes/soul_strike.tscn), a child of the user's RangedAttack.
+## The strike (strikes/soul_strike.tscn), a child of the user's RangedWeapon.
 @export var strike_scene: PackedScene
-## The shot's look: res://data/shots/<tag>.tres (the blast at the soul and its sparks).
+## The shot's look: res://data/shots/<tag>.tscn (the blast at the soul and its sparks).
 @export var look_tag := "rend_soul"
 
 
 func status(_target_pos: Vector3, target: Node3D) -> String:
 	if ability == null or user == null:
-		return ActiveAbility.BAD_TARGET
+		return Refusal.BAD_TARGET
 	var soul := _soul_of(target)
 	if not can_rend(soul, _slot()):
-		return ActiveAbility.BAD_TARGET
+		return Refusal.BAD_TARGET
 	if user.global_position.distance_to(SoulStrike.center_of_soul(soul)) > ability.cast_range_m:
-		return ActiveAbility.OUT_OF_RANGE
+		return Refusal.OUT_OF_RANGE
 	return ""
 
 
@@ -42,9 +42,9 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 			print("reventar %s sin blanco válido (tick %d)" % [who(user), MatchClock.now()])
 		return false
 	var soul := _soul_of(target)
-	var parent := user.get_node_or_null("RangedAttack") as RangedAttack
+	var parent := user.weapons.ranged
 	if parent == null:
-		push_warning("RendSoulAbility: %s no tiene RangedAttack." % who(user))
+		push_warning("RendSoulAbility: %s no tiene RangedWeapon." % who(user))
 		return false
 	var node := strike_scene.instantiate()
 	var strike := node as SoulStrike
@@ -54,7 +54,7 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 		return false
 	strike.soul = soul
 	parent.add_child(strike)
-	var origin := RangedAttack.origin_of(user)
+	var origin := ShotAim.shot_position(user)
 	var center := SoulStrike.center_of_soul(soul)
 	strike.launch({
 		"tag": ability.tag,
@@ -65,7 +65,7 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 		"max_distance": ability.cast_range_m,
 		"target": "",
 		"shooter": str(user.get_path()),
-	}, ShotLook.for_tag(look_tag), ability, parent)
+	}, ShotLook.make(look_tag), ability, parent)
 	return true
 
 

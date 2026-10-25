@@ -28,19 +28,10 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 
-## Funds first (cooldown, mana), then a valid body, then the range: the order every spell of the book answers in.
+## Funds first (cooldown, mana), then a valid body that can take the state, then the range: the order every spell of the book answers in.
 func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String) -> Aim:
-	var aim := Aim.new()
-	aim.point = point
-	if not funds.is_empty():
-		aim.status = funds
-		return aim
-	aim.target = target.pick(wizard, picked) if target != null else null
-	if aim.target == null or _state_of(aim.target) == null:
-		aim.status = BAD_TARGET
-	elif wizard.global_position.distance_to(aim.target.global_position) > spell.cast_range_m:
-		aim.status = OUT_OF_RANGE
-	return aim
+	var body := target.pick(wizard, picked) if target != null else null
+	return aim_at_body(wizard, spell, point, funds, body if body != null and _state_of(body) != null else null)
 
 
 func started(_wizard: WizardBody, _spell: SpellType, aim: Aim, frames: int) -> void:

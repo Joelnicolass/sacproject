@@ -1,18 +1,26 @@
+@tool
 class_name PupsAction
-extends AimedAction
+extends SpellAction
 
 ## Speedup (pups): an ally or the wizard himself runs faster for a while (sacengine speedUp). The effect is
 ## a SpeedupEffect child of the body, made as soon as the cast starts (it works at once). A body that
 ## already has one is not a valid target (the spell's exclusion).
 
 @export var effect_scene: PackedScene
+## Who may be sped up (own creature or the wizard himself; not only living ones).
+@export var target: SpellTarget
 
 
-func resolve_target(wizard: WizardBody, spell: SpellType, picked: Node3D) -> Node3D:
-	var body := ally_or_self(wizard, picked)
-	if body == null or SpeedupEffect.duration_s(body, spell) < 0.0:
-		return null
-	return body
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings := super()
+	if target == null:
+		warnings.append("Falta `target`: quién es un blanco válido.")
+	return warnings
+
+
+func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String) -> Aim:
+	var body := target.pick(wizard, picked) if target != null else null
+	return aim_at_body(wizard, spell, point, funds, body if body != null and SpeedupEffect.duration_s(body, spell) >= 0.0 else null)
 
 
 func started(_wizard: WizardBody, spell: SpellType, aim: Aim, _frames: int) -> void:

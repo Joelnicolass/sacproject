@@ -56,7 +56,7 @@ Más detalle (sonidos de FX, música y ambiente por dios): `data/audio/README.md
 Un hechizo son dos cosas: el dato y, si tiene procedimiento propio, una escena.
 
 1. **Dato.** Duplicá un `SpellType` de `data/catalog/spells/` como `<tag>.tres` (maná, alcance, enfriamiento, tiempo de lanzamiento, daño). Ponelo en `book` → `spells` del dios (o `structures` si es una estructura).
-2. **Acción.** Si el hechizo hace algo más que el lanzamiento común, creá una escena en `scenes/spells/actions/` con un script que extienda `SpellAction` (o `AimedAction` para un golpe a un cuerpo bajo el cursor). Completá `tag` (el del `SpellType`), `pick` (suelo, criatura propia, alma, edificio propio) y `prompt` en el inspector; el editor avisa si falta algo.
+2. **Acción.** Si el hechizo hace algo más que el lanzamiento común, creá una escena en `scenes/spells/actions/` con un script que extienda `SpellAction` (para un golpe a un cuerpo bajo el cursor, un `SpellTarget` embebido y `aim_at_body`). Completá `tag` (el del `SpellType`), `pick` (suelo, criatura propia, alma, edificio propio) y `prompt` en el inspector; el editor avisa si falta algo.
 3. **Registro.** Instanciá la escena como hijo de `Caster/Actions` en `scenes/wizards/wizard_body.tscn`. Sacar el nodo apaga el hechizo («No implementado» en el libro).
 4. Los efectos visuales se piden por nombre a `FxBus` (ver «Un FX»).
 

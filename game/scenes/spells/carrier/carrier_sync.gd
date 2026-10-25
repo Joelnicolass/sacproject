@@ -18,7 +18,7 @@ static func attach(carrier: SpellCarrier) -> void:
 	carrier.add_child(net)
 
 
-## The keys every guided projectile's `setup` reads (AimedAction.projectile_data): where it starts, who casts it, what it aims at, the spell's numbers.
+## The keys every guided projectile's `setup` reads (LaunchPoint.projectile_data): where it starts, who casts it, what it aims at, the spell's numbers.
 static func read(carrier: SpellCarrier, data: Dictionary) -> void:
 	carrier.name = str(data["name"])
 	carrier.position = Vector3(float(data["x"]), float(data["y"]), float(data["z"]))

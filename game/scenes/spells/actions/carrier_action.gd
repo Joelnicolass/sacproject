@@ -90,7 +90,7 @@ func _spawn(wizard: WizardBody, spell: SpellType) -> void:
 		push_warning("CarrierAction: no hay SpellSpawner (grupo spell_spawner).")
 		return
 	var at := _birth(wizard, _aim) - Vector3.UP * depth_m
-	var data := AimedAction.projectile_data(wizard, spell, at, _aim.target, _aim.point)
+	var data := LaunchPoint.projectile_data(wizard, spell, at, _aim.target, _aim.point)
 	data["damage_range"] = spell.damage_range_m
 	data["cast_ticks"] = _ticks
 	_carrier = spawner.spawn_projectile(kind, data) as SpellCarrier

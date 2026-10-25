@@ -58,7 +58,7 @@ More detail (FX sounds, music and ambience per god): `data/audio/README.md`.
 A spell is two things: the data and, if it has its own procedure, a scene.
 
 1. **Data.** Duplicate a `SpellType` from `data/catalog/spells/` as `<tag>.tres` (mana, range, cooldown, cast time, damage). Put it in the god's `book` → `spells` (or `structures` if it is a structure).
-2. **Action.** If the spell does more than the common cast, create a scene in `scenes/spells/actions/` with a script that extends `SpellAction` (or `AimedAction` for a strike on a body under the cursor). Fill in `tag` (the `SpellType`'s), `pick` (ground, own creature, soul, own building) and `prompt` in the inspector; the editor warns if something is missing.
+2. **Action.** If the spell does more than the common cast, create a scene in `scenes/spells/actions/` with a script that extends `SpellAction` (for a strike on a body under the cursor, an embedded `SpellTarget` and `aim_at_body`). Fill in `tag` (the `SpellType`'s), `pick` (ground, own creature, soul, own building) and `prompt` in the inspector; the editor warns if something is missing.
 3. **Registration.** Instance the scene as a child of `Caster/Actions` in `scenes/wizards/wizard_body.tscn`. Removing the node turns the spell off («No implementado», Not implemented, in the book).
 4. Visual effects are requested by name from `FxBus` (see «An FX»).
 

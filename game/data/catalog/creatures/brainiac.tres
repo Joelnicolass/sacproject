@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_2obe3"]
 [ext_resource type="Resource" path="res://data/audio/creatures/brainiac.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://b6ekcu7x37rrp" path="res://assets/original/ui/icons/bobs.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/bsba.tres" id="typed_bsba"]
 
 [resource]
 script = ExtResource("1_2obe3")
 tag = "bobs"
 display_name = "Brainiac"
 icon = ExtResource("icon_tex")
-god = "stratos"
 model = "sbob"
 health = 400
 regeneration_per_s = 16.6667
@@ -28,7 +28,7 @@ souls = 1
 cooldown_s = 2.0
 casting_time_s = 0.2469
 spell_order = 137
-ability_tags = PackedStringArray("bsba")
+ranged_attack = ExtResource("typed_bsba")
 stance_animation = {
 "framerate": 30.0,
 "frames": 40.0,
@@ -65,9 +65,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 41.0,
 "tag": "SBa3"
 }])
-is_ranged = true
-ranged_attack_tag = "bsba"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 35.0,

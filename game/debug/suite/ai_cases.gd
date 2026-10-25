@@ -106,15 +106,11 @@ func _rater_stats() -> Dictionary:
 func _rater_ability() -> Dictionary:
 	var palk := GameData.creature("palk")
 	var abilities: Array = []
-	for tag in palk.ability_tags:
-		if tag != "":
-			abilities.append(GameData.ability(tag))
+	abilities.assign(palk.abilities())
 	var by_tag := AiRater.fill_by_tag(palk, abilities)
 	var gargoyle := GameData.creature("sohe")
 	var g_abilities: Array = []
-	for tag in gargoyle.ability_tags:
-		if tag != "":
-			g_abilities.append(GameData.ability(tag))
+	g_abilities.assign(gargoyle.abilities())
 	var garg := AiRater.fill_by_tag(gargoyle, g_abilities)
 	## fillFromObject with 100 mana: the ability is cheaper to afford... f = 5/100: 164.16.
 	var live := AiRater.fill_from_object(AiRater.stats_of(palk), 100, abilities, [])
@@ -139,9 +135,7 @@ func _rater_combine() -> Dictionary:
 	var trogg := AiRater.fill_by_tag(GameData.creature("ycro"), [])
 	var palk_type := GameData.creature("palk")
 	var abilities: Array = []
-	for tag in palk_type.ability_tags:
-		if tag != "":
-			abilities.append(GameData.ability(tag))
+	abilities.assign(palk_type.abilities())
 	var palk := AiRater.fill_by_tag(palk_type, abilities)
 	var mixed := AiRater.new_acc()
 	AiRater.combine(mixed, 1.0, trogg, 1.0)
@@ -328,7 +322,7 @@ func _unit(host: Node3D, slot: int, at: Vector3) -> Node3D:
 	unit.name = "AiCasesUnit%d_%d" % [slot, int(at.x)]
 	unit.position = at
 	unit.set("owner_slot", slot)
-	unit.set("creature_tag", "ycro")
+	unit.set("type", GameData.creature("ycro"))
 	unit.set("model", str(type.model))
 	unit.set("rules", RULES)
 	unit.set("idle_aggro", false)
@@ -539,7 +533,7 @@ func _profiles_by_god() -> Dictionary:
 	var checks := {}
 	var differ := {}
 	for god in GameData.gods():
-		var profile := AiProfile.for_god(StringName(god))
+		var profile := AiProfile.for_type(GameData.god(god))
 		checks[god] = profile != null and profile != original and profile.god == StringName(god)
 		if profile == null:
 			continue
@@ -683,7 +677,7 @@ func _own_splash(host: Node3D) -> Dictionary:
 	ranger.name = "AiCasesRanger"
 	ranger.position = Vector3(1100.0, 0.0, 1100.0)
 	ranger.set("owner_slot", 2)
-	ranger.set("creature_tag", "amuh")
+	ranger.set("type", GameData.creature("amuh"))
 	ranger.set("model", str(type.model))
 	ranger.set("rules", RULES)
 	ranger.set("idle_aggro", false)
@@ -746,7 +740,7 @@ func _heal_threshold(host: Node3D) -> Dictionary:
 	trogg.name = "AiCasesHealTrogg"
 	trogg.position = Vector3(1100.0, 0.0, 1100.0)
 	trogg.owner_slot = 2
-	trogg.creature_tag = "ycro"
+	trogg.type = GameData.creature("ycro")
 	trogg.rules = RULES
 	trogg.idle_aggro = false
 	host.add_child(trogg)

@@ -15,8 +15,8 @@ const _HEAL := preload("res://scenes/spells/heal_effect.gd")
 
 ## Multiplies the length of the box (|(2·reach, height, 2·reach)| of the body's melee_profile).
 @export var reach_factor := 1.0
-## The spell that heals the eater after the meal (Rainbow wobr: 600 health at 240/s, only if it is not full).
-@export var heal_spell := "wobr"
+## The spell that heals the eater after the meal (data/catalog/spells/wobr.tres, Rainbow: 600 health at 240/s, only if it is not full).
+@export var healing: SpellType
 
 
 func status(_target_pos: Vector3, target: Node3D) -> String:
@@ -60,8 +60,7 @@ func reach() -> float:
 
 
 func _heal_amount() -> float:
-	var spell := GameData.spell(heal_spell)
-	return float(spell.damage) if spell else 0.0
+	return float(healing.damage) if healing else 0.0
 
 
 ## The soul the order was given on: the soul itself or the corpse it waits on.

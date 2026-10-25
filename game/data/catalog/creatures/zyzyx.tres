@@ -8,7 +8,6 @@ script = ExtResource("1_d43oa")
 tag = "tnem"
 display_name = "Zyzyx"
 icon = ExtResource("icon_tex")
-god = "none"
 model = "FAmr"
 health = 1000
 regeneration_per_s = 16.6667
@@ -23,7 +22,6 @@ sight_range = 100.0
 mana = 2000
 mana_cost = 250
 souls = 1
-ability_tags = PackedStringArray("tsg@")
 stance_animation = {
 "framerate": 30.0,
 "frames": 63.0,
@@ -60,8 +58,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 63.0,
 "tag": "FA2t"
 }])
-passive_on_damage = "tsg@"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 63.0,

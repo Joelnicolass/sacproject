@@ -3,13 +3,15 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_n0fcr"]
 [ext_resource type="Resource" path="res://data/audio/creatures/warmonger.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://co2nm8vnn27cl" path="res://assets/original/ui/icons/nugf.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/fhga.tres" id="typed_fhga"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/wfhg.tres" id="typed_wfhg"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/tfhg.tres" id="typed_tfhg"]
 
 [resource]
 script = ExtResource("1_n0fcr")
 tag = "nugf"
 display_name = "Warmonger"
 icon = ExtResource("icon_tex")
-god = "pyro"
 model = "gunf"
 health = 1200
 regeneration_per_s = 16.6667
@@ -27,7 +29,9 @@ souls = 4
 cooldown_s = 8.0
 casting_time_s = 2.5926
 spell_order = 777
-ability_tags = PackedStringArray("fhga", "wfhg", "tfhg")
+ranged_attack = ExtResource("typed_fhga")
+active_ability = ExtResource("typed_wfhg")
+on_damage = ExtResource("typed_tfhg")
 stance_animation = {
 "framerate": 30.0,
 "frames": 28.0,
@@ -64,11 +68,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 61.0,
 "tag": "GUa1"
 }])
-is_ranged = true
-ranged_attack_tag = "fhga"
-active_ability_tag = "wfhg"
-passive_on_damage = "tfhg"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 73.0,

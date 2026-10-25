@@ -1,8 +1,10 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/devour.gd" id="1_ability"]
+[ext_resource type="Resource" path="res://data/catalog/spells/wobr.tres" id="typed_healing"]
 
 [node name="DevourAbility" type="Node"]
 editor_description = "F131 (RFC-030 030t-a): efecto propio del Devour (ifna) de la Netherfiend y el Hellmouth. ActiveAbility lo instancia como \"Effect\" desde data/abilities/ability_catalog.tres. Prepara el clip shoot1 (72 y 92 ticks), acepta un alma azul NORMAL o EMERGING a la longitud de la caja (2D), se la come (Soul.begin_devour), crece (DevourGrowth) y se cura 600 (Rainbow). Maná 0, sin enfriamiento."
 script = ExtResource("1_ability")
+healing = ExtResource("typed_healing")
 windup_from_clip = true

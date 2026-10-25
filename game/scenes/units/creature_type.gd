@@ -4,7 +4,6 @@ extends Resource
 
 @export var tag: String = ""
 @export var display_name: String = ""
-@export var god: String = ""
 @export var model: String = ""
 ## The picture of the creature in the roster, the book and the info box. Drag any PNG here to change it. A creature of your own gets one
 ## drawn from its model (tools/bake/creature_icon.gd); the original's come from tools/bake/fill_type_icons.gd. Empty: the tag is written.
@@ -39,7 +38,10 @@ extends Resource
 @export var cooldown_s: float = 0.0
 @export var casting_time_s: float = 0.0
 @export var spell_order: int = 0
-@export var ability_tags: PackedStringArray = PackedStringArray()
+## Widens the box of its melee swing (the Druid is 1.3); 1 = the creature's own box.
+@export var melee_width_scale := 1.0
+## A villager: gets the peasant scene (it digs, cowers and holds a grudge) and never attacks (PeasantBehavior).
+@export var peasant := false
 ## stance1 (slot 0): the rest pose sacengine plays between gestures (state.d:7957-7992). RFC-023: the idle role plays it.
 @export var stance_animation: Dictionary = {}
 ## idle0 from SXSK/SKEL: baseline breathing/stance loop for presentation timing.
@@ -50,19 +52,18 @@ extends Resource
 @export var walk_animation: Dictionary = {}
 ## attack0..attack2 from the SXSK/SKEL: {tag, frames, framerate, attack_ticks}. Empty dict = missing.
 @export var melee_animations: Array[Dictionary] = []
-## nttData `ranged` (sacobject.d:424 isRanged).
-@export var is_ranged := false
-## AbilityType tag of the ranged attack (abilities[0] if ranged), "" = melee only.
-@export var ranged_attack_tag: String = ""
-## AbilityType tag of the active ability (abilities[1] if ranged, else abilities[0]).
-@export var active_ability_tag: String = ""
-## sacengine passiveOnDamage = abilities[2] (sacobject.d:426): korq (Taurock), ahtf (Firefist), rifl, gcil... "" = none.
-## DamagePassive looks it up among its DamagePassiveType resources; a tag without one there does nothing.
-@export var passive_on_damage: String = ""
-## CRE8 passiveAbility / passiveAbility2 (bytes 440/452, sacobject.d:607-610): goc@ (Cog, Phoenix), cen@ (Necryl),
-## tum@ (Mutant, Dragon), eniv... sacengine kill() runs the death clouds among them (state.d:8274-8278); DeathCloudSpawner
-## looks each one up in its DeathCloudType resources.
-@export var passive_abilities: PackedStringArray = PackedStringArray()
+@export_group("Abilities")
+## The ranged attack of the creature (data/catalog/abilities/), or empty for one that only fights in melee.
+@export var ranged_attack: AbilityType
+## The ability the player triggers with Ctrl+Q while the creature is selected (Rhinok's halo, Dragon's breath of life), or empty.
+@export var active_ability: AbilityType
+## What happens to the creature when it is hurt (Taurock's hide, Firefist's fury, Phoenix's shield, Storm Giant's charge), or empty.
+## DamagePassive, FireShield and LightningCharge are the components that act on it; a passive no component knows does nothing.
+@export var on_damage: AbilityType
+## What the creature does without being asked: the clouds it leaves when it dies (Cog, Necryl, Mutant) and the effects its blows
+## add (Yeti's freeze, Dragon's vines). DeathCloudSpawner and MeleeOnHit walk this list.
+@export var passives: Array[CreaturePassive] = []
+@export_group("")
 ## shoot0, shoot1 from the SXSK/SKEL: {tag, frames, framerate, shoot_ticks}.
 @export var shoot_animations: Array[Dictionary] = []
 ## Peasant clips (CRE8 animation slots 32/33/35/37, RFC-028c): role -> {tag, frames, framerate}, with roles
@@ -87,6 +88,20 @@ extends Resource
 ## The id of this creature on the network and in the catalog: its `tag`, or the file name when the tag is empty (new content).
 func id() -> String:
 	return tag if not tag.is_empty() else resource_path.get_file().get_basename()
+
+
+## True when the creature has a ranged attack.
+func is_ranged() -> bool:
+	return ranged_attack != null
+
+
+## The abilities the creature has, in the order the AI rates them: ranged attack, active ability, on-damage passive. An empty slot is left out.
+func abilities() -> Array[AbilityType]:
+	var found: Array[AbilityType] = []
+	for slot: AbilityType in [ranged_attack, active_ability, on_damage]:
+		if slot != null:
+			found.append(slot)
+	return found
 
 
 func is_flying() -> bool:

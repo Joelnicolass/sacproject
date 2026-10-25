@@ -8,7 +8,8 @@ extends Node3D
 @export var rules: MatchRules
 @export var owner_slot := 0
 @export var enabled := false
-@export var source_ability_tag := "hmba"
+## The ability that makes a creature a mana source (data/catalog/abilities/hmba.tres, the Manahoar's).
+@export var source: AbilityType
 @export var target_groups: PackedStringArray = PackedStringArray(["wizard", "unit"])
 
 var _body: UnitBody
@@ -18,7 +19,7 @@ func setup(body: UnitBody, creature: CreatureType, slot: int, match_rules: Match
 	_body = body
 	owner_slot = slot
 	rules = match_rules
-	enabled = creature != null and source_ability_tag in creature.ability_tags
+	enabled = creature != null and source != null and creature.abilities().has(source)
 
 
 func _ready() -> void:

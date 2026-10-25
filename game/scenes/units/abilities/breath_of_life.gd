@@ -19,8 +19,8 @@ extends Node3D
 @export var look_tag := "breath_of_life"
 ## The revival the breath starts on arrival (fast_revive.tscn).
 @export var fast_revive_scene: PackedScene
-## SPEL tag of the ability when BreathOfLifeAbility does not hand one over (a scene run alone).
-@export var spell_tag := "filb"
+## The ability when BreathOfLifeAbility does not hand one over (a scene run alone): data/catalog/abilities/filb.tres.
+@export var default_ability: AbilityType
 ## Arrived when the velocity of the tick is under this (updateBreathOfLife: 0.01 m/s).
 @export var arrive_speed := 0.01
 
@@ -40,7 +40,7 @@ var _who := "?"
 ## Before the node enters the tree. `shot_spawner` is the shot container's spawner.
 func setup(body: Node3D, type: AbilityType, shot_spawner: ShotSpawner, target: UnitBody) -> void:
 	user = body
-	ability = type if type else GameData.ability(spell_tag)
+	ability = type if type else default_ability
 	spawner = shot_spawner
 	corpse = target
 	_born = MatchClock.now()

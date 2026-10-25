@@ -9,7 +9,6 @@ script = ExtResource("1_lhdmn")
 tag = "ycro"
 display_name = "Trogg"
 icon = ExtResource("icon_tex")
-god = "james"
 model = "eorc"
 health = 960
 regeneration_per_s = 16.6667
@@ -28,7 +27,6 @@ souls = 1
 cooldown_s = 2.0
 casting_time_s = 0.4321
 spell_order = 122
-ability_tags = PackedStringArray()
 stance_animation = {
 "framerate": 30.0,
 "frames": 76.0,
@@ -65,7 +63,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 45.0,
 "tag": "HUa3"
 }])
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 1.0,

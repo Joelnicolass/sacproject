@@ -136,7 +136,7 @@ func _start() -> void:
 
 func _spawn(tag: String, slot: int, at: Vector3, facing: Vector3, serial: int) -> Node3D:
 	var unit: Node3D = unit_scene.instantiate()
-	unit.set("creature_tag", tag)
+	unit.set("type", GameData.creature(tag))
 	unit.name = "%s%d" % [str(GameData.creature(tag).display_name), serial]
 	unit.set("owner_slot", slot)
 	unit.set("idle_aggro", false)

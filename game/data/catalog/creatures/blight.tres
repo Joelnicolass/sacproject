@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_k7jck"]
 [ext_resource type="Resource" path="res://data/audio/creatures/blight.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://bbmsae7t7gm7n" path="res://assets/original/ui/icons/kacd.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/liba.tres" id="typed_liba"]
 
 [resource]
 script = ExtResource("1_k7jck")
 tag = "kacd"
 display_name = "Blight"
 icon = ExtResource("icon_tex")
-god = "charnel"
 model = "dcak"
 health = 1260
 drain = 0.5
@@ -31,7 +31,7 @@ souls = 2
 cooldown_s = 4.0
 casting_time_s = 1.1111
 spell_order = 352
-ability_tags = PackedStringArray("liba")
+active_ability = ExtResource("typed_liba")
 stance_animation = {
 "framerate": 30.0,
 "frames": 88.0,
@@ -68,8 +68,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 71.0,
 "tag": "CKa3"
 }])
-active_ability_tag = "liba"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 88.0,

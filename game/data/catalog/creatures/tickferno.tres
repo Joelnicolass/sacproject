@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_kqi83"]
 [ext_resource type="Resource" path="res://data/audio/creatures/tickferno.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://biat2mju52glw" path="res://assets/original/ui/icons/craf.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/sfba.tres" id="typed_sfba"]
 
 [resource]
 script = ExtResource("1_kqi83")
 tag = "craf"
 display_name = "Tickferno"
 icon = ExtResource("icon_tex")
-god = "pyro"
 model = "bugf"
 health = 1120
 regeneration_per_s = 16.6667
@@ -27,7 +27,7 @@ souls = 2
 cooldown_s = 3.0
 casting_time_s = 0.7407
 spell_order = 242
-ability_tags = PackedStringArray("sfba")
+ranged_attack = ExtResource("typed_sfba")
 stance_animation = {
 "framerate": 30.0,
 "frames": 30.0,
@@ -64,9 +64,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 45.0,
 "tag": "BGa3"
 }])
-is_ranged = true
-ranged_attack_tag = "sfba"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 44.0,

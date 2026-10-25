@@ -9,7 +9,6 @@ script = ExtResource("1_feh45")
 tag = "lort"
 display_name = "Troll"
 icon = ExtResource("icon_tex")
-god = "persephone"
 model = "ltrl"
 health = 1600
 regeneration_per_s = 29.1667
@@ -28,7 +27,6 @@ souls = 2
 cooldown_s = 4.0
 casting_time_s = 1.1111
 spell_order = 348
-ability_tags = PackedStringArray()
 stance_animation = {
 "framerate": 30.0,
 "frames": 32.0,
@@ -65,7 +63,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 43.0,
 "tag": "TRa1"
 }])
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 1.0,

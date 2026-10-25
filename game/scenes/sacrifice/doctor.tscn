@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scenes/sacrifice/doctor_body.gd" id="1_body"]
 [ext_resource type="PackedScene" path="res://scenes/units/movement/body_avoidance.tscn" id="f207_avoid"]
@@ -21,6 +21,7 @@
 [ext_resource type="Script" path="res://scenes/sacrifice/carry_rope.gd" id="15_rope"]
 [ext_resource type="PackedScene" path="res://scenes/fx/tether.tscn" id="16_tether"]
 [ext_resource type="Resource" path="res://data/fx/needle.tres" id="17_needle"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/sac_doctor.tres" id="typed_dcas"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_doctor"]
 radius = 0.4
@@ -57,6 +58,7 @@ collision_layer = 2
 floor_snap_length = 0.5
 floor_max_angle = 1.4835298
 script = ExtResource("1_body")
+type = ExtResource("typed_dcas")
 rules = ExtResource("13_rules")
 health = NodePath("Health")
 visual = NodePath("Pivot/Mesh")

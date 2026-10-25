@@ -1,4 +1,4 @@
-[gd_scene load_steps=51 format=3]
+[gd_scene load_steps=52 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
 [ext_resource type="Script" path="res://scenes/wizards/wizard_body.gd" id="1_body"]
@@ -86,6 +86,7 @@
 [ext_resource type="Resource" path="res://data/audio/cues/rings_end.tres" id="cue_rings_end"]
 [ext_resource type="Resource" path="res://data/audio/cues/rings_loop.tres" id="cue_rings_loop"]
 [ext_resource type="Resource" path="res://data/audio/cues/slime_hit.tres" id="cue_slime_hit"]
+[ext_resource type="Resource" path="res://data/catalog/wizards/jadugarr.tres" id="typed_cwa0"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -168,7 +169,7 @@ properties/22/replication_mode = 2
 floor_max_angle = 1.4835298
 script = ExtResource("1_body")
 step = ExtResource("2_step")
-wizard_tag = "cwa0"
+wizard_type = ExtResource("typed_cwa0")
 model = "jnwr"
 god = "james"
 

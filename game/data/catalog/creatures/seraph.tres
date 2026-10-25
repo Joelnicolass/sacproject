@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_wbuvc"]
 [ext_resource type="Resource" path="res://data/audio/creatures/seraph.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://cm7p1cd07usua" path="res://assets/original/ui/icons/grps.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/psaa.tres" id="typed_psaa"]
 
 [resource]
 script = ExtResource("1_wbuvc")
 tag = "grps"
 display_name = "Seraph"
 icon = ExtResource("icon_tex")
-god = "stratos"
 model = "sprg"
 health = 1120
 regeneration_per_s = 16.6667
@@ -31,7 +31,7 @@ souls = 3
 cooldown_s = 6.0
 casting_time_s = 1.2346
 spell_order = 565
-ability_tags = PackedStringArray("psaa")
+active_ability = ExtResource("typed_psaa")
 stance_animation = {
 "framerate": 30.0,
 "frames": 51.0,
@@ -68,8 +68,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 59.0,
 "tag": "SPa3"
 }])
-active_ability_tag = "psaa"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 20.0,
 "frames": 102.0,

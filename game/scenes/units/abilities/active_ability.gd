@@ -48,7 +48,7 @@ var _effect: AbilityEffect
 func setup(body: UnitBody, creature: CreatureType, mana: ManaPool) -> void:
 	_body = body
 	_mana = mana
-	ability = GameData.ability(creature.active_ability_tag) if creature and not creature.active_ability_tag.is_empty() else null
+	ability = creature.active_ability if creature else null
 	var scene := catalog.scene_for(ability.tag) if catalog and ability else null
 	if scene:
 		_effect = scene.instantiate() as AbilityEffect

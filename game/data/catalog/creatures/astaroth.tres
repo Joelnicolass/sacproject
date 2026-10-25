@@ -9,7 +9,6 @@ script = ExtResource("1_yt7v8")
 tag = "RAMH"
 display_name = "Astaroth"
 icon = ExtResource("icon_tex")
-god = "charnel"
 model = "ban2"
 health = 2700
 drain = 0.5
@@ -29,7 +28,6 @@ souls = 1
 cooldown_s = 2.0
 casting_time_s = 0.3704
 spell_order = 202
-ability_tags = PackedStringArray()
 stance_animation = {
 "framerate": 30.0,
 "frames": 62.0,
@@ -66,7 +64,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 43.0,
 "tag": "DZa3"
 }])
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 2.0,

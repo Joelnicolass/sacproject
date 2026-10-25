@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_8736l"]
 [ext_resource type="Resource" path="res://data/audio/creatures/pyrodactyl.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://cc5jf8w74ht5x" path="res://assets/original/ui/icons/kacf.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/kcfa.tres" id="typed_kcfa"]
 
 [resource]
 script = ExtResource("1_8736l")
 tag = "kacf"
 display_name = "Pyrodactyl"
 icon = ExtResource("icon_tex")
-god = "pyro"
 model = "fcak"
 health = 1120
 regeneration_per_s = 16.6667
@@ -31,7 +31,7 @@ souls = 3
 cooldown_s = 6.0
 casting_time_s = 1.8519
 spell_order = 563
-ability_tags = PackedStringArray("kcfa")
+active_ability = ExtResource("typed_kcfa")
 stance_animation = {
 "framerate": 30.0,
 "frames": 88.0,
@@ -68,8 +68,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 71.0,
 "tag": "CKa3"
 }])
-active_ability_tag = "kcfa"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 88.0,

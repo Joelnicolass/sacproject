@@ -226,7 +226,7 @@ func rebuild_spells(wizard: AiTrack) -> void:
 		if type.tag == AiPerception.MAHO_TAG:
 			wizard.manahoar_spell = type
 		else:
-			wizard.summons.append({"tag": type.tag, "type": type, "acc": perception.tag_acc(type.tag)})
+			wizard.summons.append({"tag": type.tag, "type": type, "acc": perception.tag_acc(type)})
 	for i in book.size():
 		var spell := book.spell_at(i)
 		if spell != null and AiSpellEval.wants_acc(spell):

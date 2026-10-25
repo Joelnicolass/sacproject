@@ -304,7 +304,7 @@ func _spawn_unit(tag: String, owner_slot: int, position: Vector3) -> Node3D:
 	unit.name = "TestUnit_%s" % tag
 	unit.position = position
 	unit.set("owner_slot", owner_slot)
-	unit.set("creature_tag", tag)
+	unit.set("type", GameData.creature(tag))
 	unit.set("model", str(type.model))
 	unit.set("rules", RULES)
 	unit.set("mode", 0)

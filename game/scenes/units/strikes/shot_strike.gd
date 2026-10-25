@@ -46,7 +46,7 @@ var _finished := false
 
 ## `data`: the keys of RangedAttack._fire (the ones of RangedShot.setup plus aim_x/y/z and accuracy). Call it once the
 ## strike is in the tree: tick 0 may already cast against the world. `from`: the RangedAttack that fired it.
-func launch(data: Dictionary, shot_look: ShotLook, from: RangedAttack = null) -> void:
+func launch(data: Dictionary, shot_look: ShotLook, shot_ability: AbilityType, from: RangedAttack = null) -> void:
 	source = from
 	tag = str(data.get("tag", ""))
 	origin = Vector3(float(data.get("x", 0.0)), float(data.get("y", 0.0)), float(data.get("z", 0.0)))
@@ -60,7 +60,7 @@ func launch(data: Dictionary, shot_look: ShotLook, from: RangedAttack = null) ->
 	target_path = NodePath(str(data.get("target", "")))
 	shooter_path = NodePath(str(data.get("shooter", "")))
 	look = shot_look if shot_look != null else ShotLook.new()
-	ability = GameData.ability(tag)
+	ability = shot_ability
 	_born_tick = MatchClock.now()
 	_done_tick = 0
 	_strike_tick(0)

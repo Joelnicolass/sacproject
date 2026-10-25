@@ -37,7 +37,7 @@ func _start() -> void:
 	souls.spawn_soul({"x": free_at.x, "y": free_at.y, "z": free_at.z, "number": 1, "owner_slot": 0, "emerging": false})
 	var creature := creature_scene.instantiate() as UnitBody
 	creature.name = "Fallen"
-	creature.creature_tag = dead_tag
+	creature.type = GameData.creature(dead_tag)
 	creature.owner_slot = int(wizard.get("owner_slot"))
 	creature.target_groups = PackedStringArray()
 	arena.add_child(creature)

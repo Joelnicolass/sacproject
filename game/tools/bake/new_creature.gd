@@ -206,7 +206,6 @@ func _create(tag: String, glb_path: String, display: String, god: String) -> int
 		var type := (load(TEMPLATE) as CreatureType).duplicate() as CreatureType
 		type.tag = tag
 		type.display_name = display if not display.is_empty() else tag.capitalize()
-		type.god = god
 		type.model = tag
 		if not roles.has("run") and roles.has("fly"):
 			# A flier with no ground clip: it never walks.

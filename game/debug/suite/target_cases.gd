@@ -344,7 +344,7 @@ func _peasant_passive() -> Dictionary:
 	SideRelations.refresh()
 	var farmer: UnitBody = PEASANT_SCENE.instantiate()
 	farmer.name = "Farmer3"
-	farmer.creature_tag = "zepe"
+	farmer.type = GameData.creature("zepe")
 	farmer.owner_slot = 3
 	farmer.rules = RULES
 	_root.add_child(farmer)
@@ -459,7 +459,7 @@ func _vision() -> SideVision:
 func _unit(slot: int, at: Vector3, label: String, tag := "ycro") -> UnitBody:
 	var unit: UnitBody = UNIT_SCENE.instantiate()
 	unit.name = "%s%d" % [label, slot]
-	unit.creature_tag = tag
+	unit.type = GameData.creature(tag)
 	unit.owner_slot = slot
 	unit.rules = RULES
 	unit.idle_aggro = false

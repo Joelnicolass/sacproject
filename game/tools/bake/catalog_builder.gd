@@ -35,7 +35,6 @@ static func make_creature(row: Dictionary) -> Resource:
 	var type := _CREATURE_TYPE.new()
 	type.tag = row.get("tag", "")
 	type.display_name = row.get("name", "")
-	type.god = row.get("god", "")
 	type.model = row.get("model", "")
 	type.health = int(row.get("health", 0))
 	type.regeneration_per_s = float(row.get("regeneration_per_s", 0.0))
@@ -60,18 +59,12 @@ static func make_creature(row: Dictionary) -> Resource:
 	type.cooldown_s = float(row.get("cooldown_s", 0.0))
 	type.casting_time_s = float(row.get("casting_time_s", 0.0))
 	type.spell_order = int(row.get("spell_order", 0))
-	type.ability_tags = PackedStringArray(row.get("abilities", []))
 	type.stance_animation = row.get("stance_animation", {}) if row.get("stance_animation", {}) is Dictionary else {}
 	type.idle_animation = row.get("idle_animation", {}) if row.get("idle_animation", {}) is Dictionary else {}
 	type.run_animation = row.get("run_animation", {}) if row.get("run_animation", {}) is Dictionary else {}
 	type.walk_animation = row.get("walk_animation", {}) if row.get("walk_animation", {}) is Dictionary else {}
 	for anim: Variant in row.get("melee_animations", []):
 		type.melee_animations.append(anim if anim is Dictionary else {})
-	type.is_ranged = bool(row.get("ranged", false))
-	type.ranged_attack_tag = str(row.get("ranged_attack", ""))
-	type.active_ability_tag = str(row.get("active_ability", ""))
-	type.passive_on_damage = str(row.get("passive_on_damage", ""))
-	type.passive_abilities = PackedStringArray(row.get("passive_abilities", []))
 	for anim: Variant in row.get("shoot_animations", []):
 		type.shoot_animations.append(anim if anim is Dictionary else {})
 	type.extra_animations = row.get("extra_animations", {}) if row.get("extra_animations", {}) is Dictionary else {}
@@ -131,7 +124,6 @@ static func make_ability(row: Dictionary) -> Resource:
 static func make_wizard(row: Dictionary) -> Resource:
 	var type := _WIZARD_TYPE.new()
 	type.tag = row.get("tag", "")
-	type.spell_tag = row.get("spell_tag", "")
 	type.display_name = row.get("name", "")
 	type.model = row.get("model", "")
 	type.health = int(row.get("health", 0))

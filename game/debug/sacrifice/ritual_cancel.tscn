@@ -1,9 +1,11 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="PackedScene" uid="uid://cvgikgwb1sifg" path="res://scenes/match/high_noon.tscn" id="1_world"]
 [ext_resource type="Resource" path="res://debug/rules/ritual_cancel.tres" id="2_rules"]
 [ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="3_unit"]
 [ext_resource type="PackedScene" path="res://scenes/wizards/wizard_body.tscn" id="4_wizard"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/ranger.tres" id="typed_c_amuh"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/druid.tres" id="typed_c_nmuh"]
 
 [node name="RitualCancel" type="Node"]
 editor_description = "SOLO (un proceso, sin dedicado): TargetWizard hace de mago del slot 2 para que el ritual aguante varias rondas; si no, termina en la primera. No unir un cliente como slot 2 (habria dos magos 2). Los Rangers enemigos empiezan a 55 m del altar para llegar a los doctores durante el ritual. Con dedicado y dos clientes, quitar TargetWizard."
@@ -26,7 +28,7 @@ debug_pointer = Vector2(640, 360)
 
 [node name="Offering" parent="." instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1513.1, 17, 1531.6)
-creature_tag = "nmuh"
+type = ExtResource("typed_c_nmuh")
 owner_slot = 1
 idle_aggro = false
 rng_seed = 31
@@ -34,49 +36,49 @@ target_groups = PackedStringArray()
 
 [node name="Ranger1" parent="HighNoon" instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1494, 25.0, 1425)
-creature_tag = "amuh"
+type = ExtResource("typed_c_amuh")
 owner_slot = 2
 rng_seed = 41
 
 [node name="Ranger2" parent="HighNoon" instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1497, 25.0, 1425)
-creature_tag = "amuh"
+type = ExtResource("typed_c_amuh")
 owner_slot = 2
 rng_seed = 42
 
 [node name="Ranger3" parent="HighNoon" instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1500, 25.0, 1425)
-creature_tag = "amuh"
+type = ExtResource("typed_c_amuh")
 owner_slot = 2
 rng_seed = 43
 
 [node name="Ranger4" parent="HighNoon" instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1503, 25.0, 1425)
-creature_tag = "amuh"
+type = ExtResource("typed_c_amuh")
 owner_slot = 2
 rng_seed = 44
 
 [node name="Ranger5" parent="HighNoon" instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1506, 25.0, 1425)
-creature_tag = "amuh"
+type = ExtResource("typed_c_amuh")
 owner_slot = 2
 rng_seed = 45
 
 [node name="Ranger6" parent="HighNoon" instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1509, 25.0, 1425)
-creature_tag = "amuh"
+type = ExtResource("typed_c_amuh")
 owner_slot = 2
 rng_seed = 46
 
 [node name="Ranger7" parent="HighNoon" instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1512, 25.0, 1425)
-creature_tag = "amuh"
+type = ExtResource("typed_c_amuh")
 owner_slot = 2
 rng_seed = 47
 
 [node name="Ranger8" parent="HighNoon" instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1515, 25.0, 1425)
-creature_tag = "amuh"
+type = ExtResource("typed_c_amuh")
 owner_slot = 2
 rng_seed = 48
 

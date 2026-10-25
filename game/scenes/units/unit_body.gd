@@ -1,7 +1,7 @@
 class_name UnitBody
 extends CharacterBody3D
 
-## A creature with CRE8 stats from GameData. The server (or solo) runs movement, aggro and
+## A creature with the stats of its CreatureType. The server (or solo) runs movement, aggro and
 ## melee; clients get position, rotation, mode and Health through the MultiplayerSynchronizer
 ## of units/unit.tscn and only present them.
 ##
@@ -38,11 +38,15 @@ const REST_FACING := Vector3(0.0, 0.0, 1.0)
 ## unit_orders.gd has no class_name (other scripts preload it as UnitOrders).
 const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 
-## CreatureType tag (CRE8 SpellTag) read from GameData.
-@export var creature_tag := "ycro":
+## The creature this body is (data/catalog/creatures/). Whoever makes the body sets it before it enters the tree: the spawner on
+## every peer, the .tscn of a bench. It never looks the type up by text.
+@export var type: CreatureType:
 	set(value):
-		creature_tag = value
+		type = value
+		creature_tag = value.id() if value != null else ""
 		_apply_type()
+## The id of `type` on the network (it travels in the synchronizer). Derived from `type`: set the type, not this.
+var creature_tag := ""
 ## Baked model; empty = the CreatureType model.
 @export var model := "":
 	set(value):
@@ -121,7 +125,6 @@ var speed_factor := 1.0
 ## has 1.5; GuardianBond writes it.
 var attack_factor := 1.0
 var move_speed := 0.0
-var type: CreatureType
 var target: Node3D
 ## Gib sets it (server or solo) right before the body dies: it bursts, so it leaves no corpse and its soul stays free (SoulSystem).
 var gibbed := false
@@ -489,7 +492,6 @@ func _sync_clip_pose() -> void:
 	clip_pose.setup(model)
 
 func _apply_type() -> void:
-	type = GameData.creature(creature_tag)
 	if type:
 		move_speed = type.flying_speed if is_flying() else type.running_speed
 	else:

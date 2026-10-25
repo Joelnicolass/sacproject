@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="PackedScene" uid="uid://cvgikgwb1sifg" path="res://scenes/match/high_noon.tscn" id="1_world"]
 [ext_resource type="Resource" path="res://debug/rules/nav_cross.tres" id="2_rules"]
 [ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="3_unit"]
 [ext_resource type="Script" path="res://debug/map/nav_flyer.gd" id="4_case"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/brainiac.tres" id="typed_c_bobs"]
 
 [node name="NavFlyer" type="Node"]
 
@@ -15,7 +16,7 @@ start_zoom = 0.45
 
 [node name="Bat" parent="." instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1496, 18, 1536)
-creature_tag = "bobs"
+type = ExtResource("typed_c_bobs")
 owner_slot = 1
 idle_aggro = false
 rng_seed = 20

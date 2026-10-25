@@ -12,17 +12,31 @@ signal pick_changed
 	set(value):
 		owner_slot = value
 		_refresh_owner()
-## WizardType tag (cwa0…). The server sets it from SacrificeFlow.pick_for(owner_slot).
+## The wizard the player picked (data/catalog/wizards/). Every peer takes it from SacrificeFlow.pick_for(owner_slot) (the pick is
+## typed on each of them); a bench without a flow sets it in its .tscn. It never looks the type up by text.
+@export var wizard_type: WizardType:
+	set(value):
+		wizard_type = value
+		_apply_type()
+		if value != null and wizard_tag != value.id():
+			wizard_tag = value.id()
+## The id of `wizard_type` on the network (it travels in the synchronizer). Derived from the type: set the type, not this.
 @export var wizard_tag := "":
 	set(value):
 		wizard_tag = value
-		_apply_type()
 		pick_changed.emit()
 @export var model := "":
 	set(value):
 		model = value
 		_apply_model()
 		pick_changed.emit()
+## The god whose book the wizard casts (data/gods/). Taken from the pick on every peer; a bench without a flow sets it by hand.
+@export var god_type: GodType:
+	set(value):
+		god_type = value
+		if value != null and god != value.id():
+			god = value.id()
+## The id of `god_type` on the network (it travels in the synchronizer). Derived from the type; the spellbook reads it.
 @export var god := "":
 	set(value):
 		god = value
@@ -62,7 +76,6 @@ var _seat_left := 0
 var _stats_ready := false
 var _since_damage := INF
 var _last_health := 0.0
-var _type: WizardType
 var _present_prev_pos := Vector3.ZERO
 var _present_prev_ready := false
 var _present_flat_speed := 0.0
@@ -98,6 +111,8 @@ func _ready() -> void:
 	_present_prev_pos = global_position
 	_present_prev_ready = true
 	if MpKit.is_networked() and not MpKit.is_server():
+		_take_pick_type()
+		SacrificeFlow.slot_picks_changed.connect(_take_pick_type)
 		return
 	_seat_left = seat_attempts
 	health.changed.connect(_on_health_changed)
@@ -108,6 +123,8 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	if SacrificeFlow.slot_picks_changed.is_connected(_apply_pick):
 		SacrificeFlow.slot_picks_changed.disconnect(_apply_pick)
+	if SacrificeFlow.slot_picks_changed.is_connected(_take_pick_type):
+		SacrificeFlow.slot_picks_changed.disconnect(_take_pick_type)
 
 
 func is_local() -> bool:
@@ -152,17 +169,12 @@ func spellbook_visible() -> bool:
 
 ## Its WizardType: Afflictions/Stunned reads the stun clips from it.
 func clip_type() -> WizardType:
-	return _type
-
-
-## The wizard's god (its book, its towers), or null when `god` names none.
-func god_type() -> GodType:
-	return GameData.god(god)
+	return wizard_type
 
 
 func display_name() -> String:
-	if _type:
-		return _type.display_name
+	if wizard_type:
+		return wizard_type.display_name
 	return model
 
 
@@ -178,14 +190,25 @@ func _refresh_owner() -> void:
 func _apply_pick() -> void:
 	var chosen: WizardPick = SacrificeFlow.pick_for(owner_slot)
 	if chosen != null and chosen.is_complete():
-		## The replicated ids (`wizard_tag`, `model`, `god`) stay the wire until the body is a scene of its own (055i-b, 055s).
-		if chosen.wizard.id() != wizard_tag:
-			wizard_tag = chosen.wizard.id()
+		## The replicated ids (`wizard_tag`, `model`, `god`) stay the wire until the body is a scene of its own (055s).
+		if chosen.wizard != wizard_type:
+			wizard_type = chosen.wizard
 		if chosen.wizard.model != model:
 			model = chosen.wizard.model
-		if chosen.god.id() != god:
-			god = chosen.god.id()
+		if chosen.god != god_type:
+			god_type = chosen.god
 	_apply_type()
+
+
+## A client: only the type comes from the pick; the ids (`wizard_tag`, `model`, `god`) are the server's and reach it by replication.
+func _take_pick_type() -> void:
+	var chosen: WizardPick = SacrificeFlow.pick_for(owner_slot)
+	if chosen == null or not chosen.is_complete():
+		return
+	if chosen.wizard != wizard_type:
+		wizard_type = chosen.wizard
+	if chosen.god != god_type:
+		god_type = chosen.god
 
 
 func _sync_clip_pose() -> void:
@@ -196,19 +219,18 @@ func _sync_clip_pose() -> void:
 	_clip_pose.setup(model)
 
 func _apply_type() -> void:
-	_type = GameData.wizard(wizard_tag)
-	if _type == null:
+	if wizard_type == null:
 		return
-	if _type.running_speed > 0.0:
-		move_speed = _type.running_speed
+	if wizard_type.running_speed > 0.0:
+		move_speed = wizard_type.running_speed
 	_sync_clip_pose()
 	if not is_node_ready() or _stats_ready:
 		return
 	if MpKit.is_networked() and not MpKit.is_server():
 		return
 	_stats_ready = true
-	health.setup(_type.health + level_health_bonus)
-	mana.setup(_type.mana + level_mana_bonus)
+	health.setup(wizard_type.health + level_health_bonus)
+	mana.setup(wizard_type.mana + level_mana_bonus)
 
 func _apply_model() -> void:
 	var visual := get_node_or_null("Tilt/Mesh") as BodyVisual
@@ -440,12 +462,11 @@ func _regenerate(delta: float) -> void:
 	var caster := get_node_or_null("Caster") as Caster
 	if caster and caster.is_casting():
 		return
-	var type: WizardType = GameData.wizard(wizard_tag)
-	if type == null:
+	if wizard_type == null:
 		return
 	var full := mana.maximum
 	var factor := 1.0 if full <= 0.0 else mana.current / full
-	health.regenerate(type.regeneration_per_s * factor * delta)
+	health.regenerate(wizard_type.regeneration_per_s * factor * delta)
 
 
 func _on_health_changed(current: float, _maximum: float) -> void:

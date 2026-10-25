@@ -146,7 +146,7 @@ func _unit(root: Node3D, slot: int) -> UnitBody:
 	var unit := UNIT_SCENE.instantiate() as UnitBody
 	unit.name = "Unit%d" % slot
 	unit.owner_slot = slot
-	unit.creature_tag = "nmuh"
+	unit.type = GameData.creature("nmuh")
 	unit.model = str(type.model) if type else ""
 	unit.rules = RULES
 	unit.position = Vector3(slot * 500.0 + 30.0, 0.0, 0.0)

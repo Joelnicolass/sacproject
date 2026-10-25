@@ -180,7 +180,7 @@ func is_banned(node: Variant) -> bool:
 
 ## maxTargetHeight (state.d:12879): INF for a flyer or a body with a ranged attack, else the top of its swing.
 func _max_target_height() -> float:
-	if not melee_height_filter or body.type == null or not body.type.ranged_attack_tag.is_empty() or body.is_flying():
+	if not melee_height_filter or body.type == null or body.type.ranged_attack != null or body.is_flying():
 		return INF
 	var melee := body.get_node_or_null("MeleeAttack") as MeleeAttack
 	return melee.height if melee != null else INF
@@ -198,10 +198,10 @@ static func _height_above_ground(node: Node3D) -> float:
 func active() -> TargetPolicy:
 	if rage_policy != null and body != null and body.afflictions.raging():
 		return rage_policy
-	if policies.is_empty() or body == null or body.type == null or body.type.ranged_attack_tag.is_empty():
+	if policies.is_empty() or body == null or body.type == null or body.type.ranged_attack == null:
 		return null
 	for policy in policies:
-		if policy != null and policy.tag == body.type.ranged_attack_tag:
+		if policy != null and policy.attack == body.type.ranged_attack:
 			return policy
 	return null
 

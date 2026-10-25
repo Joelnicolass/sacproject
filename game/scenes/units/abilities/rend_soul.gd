@@ -65,7 +65,7 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 		"max_distance": ability.cast_range_m,
 		"target": "",
 		"shooter": str(user.get_path()),
-	}, ShotLook.for_tag(look_tag), parent)
+	}, ShotLook.for_tag(look_tag), ability, parent)
 	return true
 
 

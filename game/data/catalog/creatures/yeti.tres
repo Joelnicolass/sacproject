@@ -3,13 +3,14 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_iod8r"]
 [ext_resource type="Resource" path="res://data/audio/creatures/yeti.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://bvflfj7noeu2i" path="res://assets/original/ui/icons/ycrp.png" id="icon_tex"]
+[ext_resource type="Script" path="res://scenes/units/passives/creature_passive.gd" id="typed_passive_script"]
+[ext_resource type="Resource" path="res://data/passives/yeti_freeze.tres" id="typed_passive_0"]
 
 [resource]
 script = ExtResource("1_iod8r")
 tag = "ycrp"
 display_name = "Yeti"
 icon = ExtResource("icon_tex")
-god = "stratos"
 model = "aprc"
 health = 3600
 regeneration_per_s = 16.6667
@@ -30,7 +31,7 @@ souls = 4
 cooldown_s = 8.0
 casting_time_s = 1.7284
 spell_order = 779
-ability_tags = PackedStringArray()
+passives = Array[ExtResource("typed_passive_script")]([ExtResource("typed_passive_0")])
 stance_animation = {
 "framerate": 30.0,
 "frames": 78.0,
@@ -67,7 +68,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 60.0,
 "tag": "PCa2"
 }])
-passive_abilities = PackedStringArray("zerf")
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 2.0,

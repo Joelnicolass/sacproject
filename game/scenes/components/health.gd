@@ -185,8 +185,8 @@ func _base_resistance(kind: StringName) -> float:
 	var type: Variant = body.get("type") if body and "type" in body else null
 	if type is CreatureType:
 		data = type
-	elif body and "wizard_tag" in body:
-		data = GameData.wizard(str(body.get("wizard_tag")))
+	elif body and "wizard_type" in body:
+		data = body.get("wizard_type")
 	if data == null:
 		return 1.0
 	var value: Variant = data.get("%s_resistance" % kind)

@@ -195,7 +195,7 @@ func _start_casting(spell: Resource, target: AiTrack, point: Vector3) -> String:
 	var name := str(spell.get("display_name"))
 	var started := answer == name
 	if audit != null:
-		audit.note_request(slot, tag, name, started, answer, before, is_summon, _new_summoned_unit(tag) if (is_summon and started) else null, target.node if target != null else null)
+		audit.note_request(slot, tag, name, started, answer, before, is_summon, _new_summoned_unit(tag) if (is_summon and started) else null, target.node if target != null else null, spell as CreatureType)
 	return answer
 
 

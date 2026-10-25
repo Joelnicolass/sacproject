@@ -2,7 +2,6 @@ class_name WizardType
 extends Resource
 
 @export var tag: String = ""
-@export var spell_tag: String = ""
 @export var display_name: String = ""
 @export var model: String = ""
 @export var health: int = 0

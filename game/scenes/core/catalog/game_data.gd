@@ -37,7 +37,7 @@ func reload(from_disk := false) -> void:
 		print("GameData: data/catalog/ está vacío o incompleto. Corré tools/bake/bake_catalog.gd.")
 		return
 	for type in catalog.creatures:
-		_creatures[type.tag] = type
+		_creatures[type.id()] = type
 	for type in catalog.spells:
 		_spells[type.tag] = type
 	for type in catalog.abilities:

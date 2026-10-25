@@ -3,13 +3,14 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_ng7lu"]
 [ext_resource type="Resource" path="res://data/audio/creatures/rhinok.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://d1i2ep17a1n3a" path="res://assets/original/ui/icons/gard.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/hrba.tres" id="typed_hrba"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/HRba_2.tres" id="typed_HRba"]
 
 [resource]
 script = ExtResource("1_ng7lu")
 tag = "gard"
 display_name = "Rhinok"
 icon = ExtResource("icon_tex")
-god = "james"
 model = "edmn"
 health = 7200
 regeneration_per_s = 16.6667
@@ -31,7 +32,8 @@ souls = 5
 cooldown_s = 10.0
 casting_time_s = 3.3333
 spell_order = 987
-ability_tags = PackedStringArray("hrba", "HRba")
+ranged_attack = ExtResource("typed_hrba")
+active_ability = ExtResource("typed_HRba")
 stance_animation = {
 "framerate": 30.0,
 "frames": 118.0,
@@ -68,10 +70,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 48.0,
 "tag": "Eda3"
 }])
-is_ranged = true
-ranged_attack_tag = "hrba"
-active_ability_tag = "HRba"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 78.0,

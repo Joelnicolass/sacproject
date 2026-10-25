@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://debug/ui/f374_target_info.gd" id="1_case"]
 [ext_resource type="Script" path="res://scenes/camera/world_camera.gd" id="2_camera"]
@@ -13,6 +13,8 @@
 [ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="11_unit"]
 [ext_resource type="PackedScene" path="res://scenes/wizards/wizard_body.tscn" id="12_wizard"]
 [ext_resource type="PackedScene" path="res://scenes/souls/soul.tscn" id="13_soul"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/trogg.tres" id="typed_c_ycro"]
+[ext_resource type="Resource" path="res://data/catalog/wizards/eldred.tres" id="typed_w_cwe2"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
 size = Vector3(200, 1, 200)
@@ -90,14 +92,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, -4)
 
 [node name="Trogg" parent="World" instance=ExtResource("11_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0, 0)
-creature_tag = "ycro"
+type = ExtResource("typed_c_ycro")
 owner_slot = 2
 idle_aggro = false
 
 [node name="Wizard" parent="World" instance=ExtResource("12_wizard")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0, 0)
 owner_slot = 2
-wizard_tag = "cwe2"
+wizard_type = ExtResource("typed_w_cwe2")
 
 [node name="BlueSoul" parent="World" instance=ExtResource("13_soul")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, 4)

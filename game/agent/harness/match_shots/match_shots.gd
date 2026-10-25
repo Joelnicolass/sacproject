@@ -201,7 +201,7 @@ func _soul_for(world: MatchWorld, wizard: WizardBody, action: SpellAction) -> So
 		print("match_shots: no soul to fetch; a free one 30 m ahead")
 		return system.spawn_soul({"x": at.x, "y": at.y, "z": at.z, "number": 1, "owner_slot": 0, "emerging": false}) as Soul
 	var creature := (load("res://scenes/units/unit.tscn") as PackedScene).instantiate() as UnitBody
-	creature.creature_tag = "nmuh"
+	creature.type = GameData.creature("nmuh")
 	creature.owner_slot = wizard.owner_slot
 	creature.target_groups = PackedStringArray()
 	wizard.get_parent().add_child(creature)
@@ -660,7 +660,7 @@ func _away_from_foe(world: MatchWorld, wizard: Node3D) -> Vector3:
 ## --structure=<spell tag>: the tower the local wizard's god raises with that spell, over the free fountain closest to him.
 func _raise_structure(world: MatchWorld, tag: String) -> void:
 	var wizard := world.local_wizard() as WizardBody
-	var god := wizard.god_type()
+	var god := wizard.god_type
 	var entry := god.structure_for(GameData.spell(tag)) if god != null else null
 	var fount := TowerRules.closest_free_fount(get_tree(), wizard.global_position, INF)
 	var spawner := get_tree().get_first_node_in_group(StructureSpawner.GROUP) as StructureSpawner

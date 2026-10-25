@@ -8,8 +8,8 @@ extends Resource
 ## The defaults change nothing. A new passive of this shape is a new .tres in DamagePassive.types; a passive with
 ## side effects (gcil lightning charge, rifl phoenix shield) is not of this shape and gets its own component.
 
-## SpellTag of the passive, as CreatureType.passive_on_damage holds it.
-@export var tag := ""
+## The passive this shape is for: the `on_damage` of the creatures that use it (data/catalog/abilities/korq.tres, ahtf.tres).
+@export var ability: AbilityType
 ## sacengine dealRawDamage taurockPassive (state.d:9011-9015): 0.25 + 0.75·h.
 @export var incoming_base := 1.0
 @export var incoming_per_health := 0.0

@@ -66,7 +66,7 @@ func setup(body: UnitBody, creature: CreatureType, mana: ManaPool, melee: MeleeA
 	_mana = mana
 	_melee = melee
 	_rng = rng
-	attack = GameData.ability(creature.ranged_attack_tag) if creature and creature.is_ranged else null
+	attack = creature.ranged_attack if creature else null
 	if attack and attack.speed_m_s <= 0.0:
 		attack = null
 
@@ -246,7 +246,7 @@ func _strike(look: ShotLook, data: Dictionary) -> void:
 		push_warning("RangedAttack: el strike de %s no es un ShotStrike." % attack.tag)
 		return
 	add_child(strike)
-	strike.launch(data, look, self)
+	strike.launch(data, look, attack, self)
 
 
 ## The shooter's ranged accuracy (ShotAim.scatter).

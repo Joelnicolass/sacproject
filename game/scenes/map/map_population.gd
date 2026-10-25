@@ -68,11 +68,12 @@ func _place_creatures() -> void:
 		if spawn == null:
 			continue
 		var slot := SideRelations.slot_of(spawn.side)
-		var unit := unit_spawner.spawn_map_creature(spawn.tag, slot, spawn.global_position, spawn.yaw())
+		if spawn.creature == null:
+			continue
+		var unit := unit_spawner.spawn_map_creature(spawn.creature, slot, spawn.global_position, spawn.yaw())
 		if unit == null:
 			continue
-		var type := GameData.creature(spawn.tag)
-		var key := (type.display_name if type else spawn.tag).to_lower()
+		var key := spawn.creature.display_name.to_lower()
 		var entry: Dictionary = counts.get(key, {"count": 0, "slot": slot})
 		entry["count"] = int(entry["count"]) + 1
 		counts[key] = entry

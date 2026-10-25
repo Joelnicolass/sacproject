@@ -398,20 +398,12 @@ func _finish() -> void:
 
 
 ## The cast particle of the action (Rock throws dirt, Wrath its own sparks: state.d:16386, 16707); the rest
-## use the god's casting particle.
+## use the casting particle of the wizard's god, a summon included (a creature only comes out of its god's book).
 func _cast_fx() -> String:
 	if _active != null and not _active.cast_fx.is_empty():
 		return _active.cast_fx
-	var god_type: GodType = GameCatalog.shared().god(_cast_god())
-	return god_type.cast_fx_name() if god_type != null else "cast_%s" % _cast_god()
-
-
-## sacengine animateCreatureCasting: the creature's god, else the wizard's.
-func _cast_god() -> String:
-	var god := str(_entry.get("god")) if _entry is CreatureType else ""
-	if god.is_empty() or god == "none":
-		god = str(_wizard.get("god"))
-	return god
+	var god_type := _wizard.god_type
+	return god_type.cast_fx_name() if god_type != null else "cast_%s" % _wizard.god
 
 
 ## The spell of the book by tag, from either tab, or null.

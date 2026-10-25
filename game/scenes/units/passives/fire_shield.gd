@@ -8,7 +8,7 @@ extends Node
 ## dealFireDamage(0, amount / 60, …, peirceShield), i.e. a direct spell hit that skips the Life Shield / Rockform / petrified
 ## factors (Health.damage_typed, pierce_shield) plus three fire particles. If it burned someone it drains the mana cost
 ## (ManaPool.drain; 0 for rifl) and puffs the shield particles. Buildings are not touched (movingObjectById).
-## A child of unit.tscn like MeleeOnHit; it only acts on a body whose CreatureType.passive_on_damage is `passive_tag`, so the other
+## A child of unit.tscn like MeleeOnHit; it only acts on a body whose CreatureType.on_damage is `passive`, so the other
 ## creatures carry it and ignore it. Server (or solo) only. Divergences (declared): the particles are the reserve look (FxBus `fire`
 ## on the burned body every `fire_every_s`); the shield ticks only on a carrier (the node sleeps on the rest).
 
@@ -19,10 +19,10 @@ const GROUPS: Array[StringName] = [&"unit", &"wizard"]
 @export var body: Node3D
 @export var health: Health
 @export var mana: ManaPool
-## SpellTag of the passive: the SPEL gives the mana cost.
-@export var passive_tag := "rifl"
-## SpellTag of the fire it ignites with (sacengine SpellTag.fireform): the SPEL's amount, per second.
-@export var spell := "mrff"
+## The passive (data/catalog/abilities/rifl.tres): its numbers give the mana cost.
+@export var passive: AbilityType
+## The fire it ignites with (data/catalog/spells/mrff.tres, fireform): the spell's amount, per second.
+@export var fire: SpellType
 ## Scale of the body's box about its center (scaleBox(object.hitbox, 1.5f)).
 @export var box_scale := 1.5
 @export_group("Look")
@@ -71,7 +71,6 @@ func _physics_process(_delta: float) -> void:
 	var cost := _mana_cost()
 	if cost > 0.0 and (mana == null or mana.current < cost):
 		return
-	var fire := GameData.spell(spell)
 	if fire == null:
 		return
 	var per_tick := float(fire.damage) / MatchClock.TICKS_PER_SECOND_F
@@ -147,13 +146,12 @@ func _slot(node: Node) -> int:
 
 
 func _mana_cost() -> float:
-	var passive := GameData.spell(passive_tag)
 	return float(passive.mana_cost) if passive != null else 0.0
 
 
 func _carries() -> bool:
 	var type: CreatureType = body.get("type") as CreatureType if body != null and "type" in body else null
-	return type != null and type.passive_on_damage == passive_tag
+	return passive != null and type != null and type.on_damage == passive
 
 
 ## canShield (state.d:218-225): stunned, cowering, casting, rockForm, firewalk and stealth keep the shield; dying, dead, summoning,

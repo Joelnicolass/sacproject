@@ -138,7 +138,7 @@ func _spawn(event: BenchEvent) -> Node3D:
 	return world.get_node("UnitSpawner").call("spawn_unit", {
 		"tag": event.tag, "label": type.display_name if type else event.tag, "slot": event.slot,
 		"x": at.x, "y": at.y, "z": at.z, "yaw": atan2(-dir.x, -dir.z),
-		"npc": event.npc, "peasant": PeasantBehavior.is_peasant_tag(event.tag),
+		"npc": event.npc, "peasant": type != null and type.peasant,
 	}) as Node3D
 
 

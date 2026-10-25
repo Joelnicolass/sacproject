@@ -1,8 +1,10 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/protector.gd" id="1_protector"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/hsba.tres" id="typed_life_shield"]
 
 [node name="Protector" type="Node"]
 process_physics_priority = -1
 editor_description = "F126 (RFC-030 030o-a): efecto propio del Protector del Ent (HSba). ActiveAbility lo instancia como \"Effect\" desde data/abilities/ability_catalog.tres. Se escuda en el tick de la orden y escuda a los aliados a 30 m en el tick siguiente."
 script = ExtResource("1_protector")
+life_shield = ExtResource("typed_life_shield")

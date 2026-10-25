@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_dtvq4"]
 [ext_resource type="Resource" path="res://data/audio/creatures/thestor.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://crppaxi3c5887" path="res://assets/original/ui/icons/eaf_h.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/plfa.tres" id="typed_plfa"]
 
 [resource]
 script = ExtResource("1_dtvq4")
 tag = "eafH"
 display_name = "Thestor"
 icon = ExtResource("icon_tex")
-god = "persephone"
 model = "faez"
 health = 2600
 regeneration_per_s = 29.1667
@@ -30,7 +30,7 @@ souls = 2
 cooldown_s = 5.0
 casting_time_s = 1.4815
 spell_order = 496
-ability_tags = PackedStringArray("plfa")
+ranged_attack = ExtResource("typed_plfa")
 stance_animation = {
 "framerate": 30.0,
 "frames": 61.0,
@@ -67,9 +67,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 29.0,
 "tag": "FGa3"
 }])
-is_ranged = true
-ranged_attack_tag = "plfa"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 38.0,

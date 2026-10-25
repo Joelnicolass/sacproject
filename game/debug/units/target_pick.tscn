@@ -1,9 +1,11 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="PackedScene" uid="uid://cvgikgwb1sifg" path="res://scenes/match/high_noon.tscn" id="1_world"]
 [ext_resource type="Resource" path="res://debug/rules/nav_cross.tres" id="2_rules"]
 [ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="3_unit"]
 [ext_resource type="Script" path="res://debug/units/target_pick.gd" id="4_runner"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/druid.tres" id="typed_c_nmuh"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/trogg.tres" id="typed_c_ycro"]
 
 [node name="TargetPick" type="Node"]
 
@@ -15,28 +17,28 @@ start_zoom = 0.3
 
 [node name="Trogg" parent="." instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1496, 19, 1536)
-creature_tag = "ycro"
+type = ExtResource("typed_c_ycro")
 owner_slot = 1
 idle_aggro = false
 rng_seed = 11
 
 [node name="DruidNear" parent="." instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1476, 19, 1536)
-creature_tag = "nmuh"
+type = ExtResource("typed_c_nmuh")
 owner_slot = 2
 idle_aggro = false
 rng_seed = 12
 
 [node name="DruidFar" parent="." instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1496, 19, 1476)
-creature_tag = "nmuh"
+type = ExtResource("typed_c_nmuh")
 owner_slot = 2
 idle_aggro = false
 rng_seed = 13
 
 [node name="DruidUnseen" parent="." instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1496, 19, 1386)
-creature_tag = "nmuh"
+type = ExtResource("typed_c_nmuh")
 owner_slot = 2
 idle_aggro = false
 rng_seed = 14

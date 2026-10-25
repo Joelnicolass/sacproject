@@ -1,14 +1,15 @@
 class_name TargetPolicy
 extends Resource
 
-## F136 (RFC-030h2): how a creature whose ranged attack is `tag` chooses and keeps its target, in place of the
-## enemy score of TargetPicker (sacengine's special cases of updateTarget, state.d:12940-12958). TargetPicker owns
-## the list (`policies`) and asks the one whose tag is the body's ranged attack; a body with none keeps the code it
+## How a creature whose ranged attack is `attack` chooses and keeps its target, in place of the enemy score of
+## TargetPicker (the Scarab heals the wounded, a raging body fights anyone). TargetPicker owns
+## the list (`policies`) and asks the one whose `attack` is the body's ranged attack; a body with none keeps the code it
 ## had. This base is the default rule: accepts() is what UnitBody accepted before, pick() has no opinion (null).
-## A variant is a new script and a .tres (data/targeting/<tag>.tres), never an `if` on the tag.
+## A variant is a new script and a .tres (data/targeting/<name>.tres), never an `if` on the ability.
+## Ref: F136 (RFC-030h2), sacengine's special cases of updateTarget (state.d:12940-12958).
 
-## SpellTag of the ranged attack (CreatureType.ranged_attack_tag) this policy is for.
-@export var tag := ""
+## The ranged attack (CreatureType.ranged_attack) this policy is for.
+@export var attack: AbilityType
 
 
 ## Whether `body` may keep `node` as its target (UnitBody.accepts_target). `explicit`: `node` is the target of an explicit

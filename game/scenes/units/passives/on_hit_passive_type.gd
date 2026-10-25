@@ -1,14 +1,14 @@
 class_name OnHitPassiveType
-extends Resource
+extends CreaturePassive
 
-## One passive that fires when its owner's melee blow connects (sacengine updateCreatureAttack, state.d:14411-14438: on
-## every attack tick with a target, even if the damage roll fails): the Yeti's Freeze (zerf) and the Dragon's Grasping
-## Vines (eniv). The tag is the SpellTag, as CreatureType.passive_on_hit holds it; MeleeOnHit looks the type up by it and
-## calls Affliction.inflict(GameData.spell(tag), slot) on the target's Affliction found at `affliction_path`. A new
-## on-hit passive is a new .tres, not an `if tag` (a passive with its own rule beyond these knobs gets its own component).
+## A passive that fires when its owner's melee blow connects, even if the damage roll fails: the Yeti's Freeze and the Dragon's
+## Grasping Vines. MeleeOnHit walks the creature's `passives` and, for each one of this kind, calls Affliction.inflict(spell, slot)
+## on the Affliction it finds at `affliction_path` under the target. A new on-hit passive is a new .tres, not an `if`; a passive
+## with its own rule beyond these knobs gets its own component.
+## Ref: sacengine updateCreatureAttack (state.d:14411-14438).
 
-## SpellTag of the passive.
-@export var tag := ""
+## The spell the affliction takes (data/catalog/spells/zerf.tres, eniv.tres).
+@export var spell: SpellType
 ## The Affliction under the target body ("Afflictions/Frozen").
 @export var affliction_path := NodePath("")
 ## graspingVines refuses a flier (10795-10812); Freeze does not.

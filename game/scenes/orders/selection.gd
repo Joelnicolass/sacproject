@@ -65,17 +65,17 @@ func has(unit: Variant) -> bool:
 	return unit != null and is_instance_valid(unit) and _members.has((unit as Object).get_instance_id())
 
 
-## Tag of the active ability the selection offers: the newest selected creature that has one wins
-## (sacengine renderedSelection ability; CRE8 priority is not exported). "" = none. MatchCommand
+## The active ability the selection offers: the newest selected creature that has one wins
+## (sacengine renderedSelection ability; CRE8 priority is not exported). Null = none. MatchCommand
 ## (Ctrl+Q) and the roster's ability icon both read it, so they never disagree.
-func ability_tag() -> String:
+func ability() -> AbilityType:
 	for unit in units():
 		if not unit is UnitBody:
 			continue
 		var type: CreatureType = unit.get("type")
-		if type and not type.active_ability_tag.is_empty():
-			return type.active_ability_tag
-	return ""
+		if type and type.active_ability != null:
+			return type.active_ability
+	return null
 
 
 func clear() -> void:

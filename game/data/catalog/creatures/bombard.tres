@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_ewb3k"]
 [ext_resource type="Resource" path="res://data/audio/creatures/bombard.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://bx3t28saovwhn" path="res://assets/original/ui/icons/wlcf.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/cfba.tres" id="typed_cfba"]
 
 [resource]
 script = ExtResource("1_ewb3k")
 tag = "wlcf"
 display_name = "Bombard"
 icon = ExtResource("icon_tex")
-god = "pyro"
 model = "fclw"
 health = 1520
 regeneration_per_s = 16.6667
@@ -28,7 +28,7 @@ souls = 4
 cooldown_s = 7.0
 casting_time_s = 2.2222
 spell_order = 670
-ability_tags = PackedStringArray("cfba")
+ranged_attack = ExtResource("typed_cfba")
 stance_animation = {
 "framerate": 30.0,
 "frames": 53.0,
@@ -65,9 +65,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 54.0,
 "tag": "CPa3"
 }])
-is_ranged = true
-ranged_attack_tag = "cfba"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 62.0,

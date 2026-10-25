@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_xaj8f"]
 [ext_resource type="Resource" path="res://data/audio/creatures/abomination.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://d6lu26xqtjao" path="res://assets/original/ui/icons/ctug.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/tugt.tres" id="typed_tugt"]
 
 [resource]
 script = ExtResource("1_xaj8f")
 tag = "ctug"
 display_name = "Abomination"
 icon = ExtResource("icon_tex")
-god = "charnel"
 model = "gutc"
 health = 1710
 drain = 0.5
@@ -28,7 +28,7 @@ souls = 3
 cooldown_s = 7.0
 casting_time_s = 2.2222
 spell_order = 673
-ability_tags = PackedStringArray("tugt")
+ranged_attack = ExtResource("typed_tugt")
 stance_animation = {
 "framerate": 30.0,
 "frames": 58.0,
@@ -65,9 +65,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 43.0,
 "tag": "GCal"
 }])
-is_ranged = true
-ranged_attack_tag = "tugt"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 71.0,

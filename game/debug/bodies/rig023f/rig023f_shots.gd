@@ -30,7 +30,7 @@ func _process(_delta: float) -> void:
 
 func _unit(tag: String, at: Vector3) -> UnitBody:
 	var unit := UNIT.instantiate() as UnitBody
-	unit.creature_tag = tag
+	unit.type = GameData.creature(tag)
 	unit.set("owner_slot", 1)
 	unit.set("idle_aggro", false)
 	add_child(unit)

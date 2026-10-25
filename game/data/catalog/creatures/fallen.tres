@@ -3,13 +3,14 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_wsjns"]
 [ext_resource type="Resource" path="res://data/audio/creatures/fallen.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://cp05iswkijk4v" path="res://assets/original/ui/icons/dplk.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/dkba.tres" id="typed_dkba"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/dedp.tres" id="typed_dedp"]
 
 [resource]
 script = ExtResource("1_wsjns")
 tag = "dplk"
 display_name = "Fallen"
 icon = ExtResource("icon_tex")
-god = "charnel"
 model = "dklp"
 health = 720
 drain = 0.5
@@ -27,7 +28,8 @@ souls = 1
 cooldown_s = 2.0
 casting_time_s = 0.3704
 spell_order = 131
-ability_tags = PackedStringArray("dkba", "dedp")
+ranged_attack = ExtResource("typed_dkba")
+active_ability = ExtResource("typed_dedp")
 stance_animation = {
 "framerate": 30.0,
 "frames": 27.0,
@@ -64,10 +66,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 69.0,
 "tag": "KLal"
 }])
-is_ranged = true
-ranged_attack_tag = "dkba"
-active_ability_tag = "dedp"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 47.0,

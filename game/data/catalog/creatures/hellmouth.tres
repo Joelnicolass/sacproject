@@ -3,13 +3,14 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_3nw7s"]
 [ext_resource type="Resource" path="res://data/audio/creatures/hellmouth.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://dkuxo3breglsc" path="res://assets/original/ui/icons/nomd.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/mhba.tres" id="typed_mhba"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/ifna.tres" id="typed_ifna"]
 
 [resource]
 script = ExtResource("1_3nw7s")
 tag = "nomd"
 display_name = "Hellmouth"
 icon = ExtResource("icon_tex")
-god = "charnel"
 model = "ddmn"
 health = 5400
 drain = 0.5
@@ -31,7 +32,8 @@ souls = 5
 cooldown_s = 10.0
 casting_time_s = 3.3333
 spell_order = 989
-ability_tags = PackedStringArray("mhba", "ifna")
+ranged_attack = ExtResource("typed_mhba")
+active_ability = ExtResource("typed_ifna")
 stance_animation = {
 "framerate": 30.0,
 "frames": 101.0,
@@ -68,10 +70,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 41.0,
 "tag": "DMa3"
 }])
-is_ranged = true
-ranged_attack_tag = "mhba"
-active_ability_tag = "ifna"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 85.0,

@@ -25,22 +25,21 @@ func _ready() -> void:
 
 ## Ctrl+Q / Shift+B and the roster's ability icon.
 func use() -> void:
-	var tag := _selection.ability_tag()
-	if tag.is_empty():
+	var ability := _selection.ability()
+	if ability == null:
 		return
-	var ability: AbilityType = GameData.ability(tag)
-	if ability and ability.flags != 0:
+	if ability.flags != 0:
 		armed.mode = "ability"
-		armed.ability_tag = tag
+		armed.ability = ability
 		_log.arm("ability", ability.icon, "Elegí el blanco", TargetProbe.ORDER_TARGETS)
 		return
-	_apply(tag, null, null)
+	_apply(ability, null, null)
 
 
 func click_at(screen: Vector2) -> void:
 	var body := ray.body_under(screen, false)
 	## RFC-030 030p-b: an ability that aims at souls or corpses (Breath of life) looks for them after the living body.
-	if body == null and _aims_at_dead(armed.ability_tag):
+	if body == null and _aims_at_dead(armed.ability):
 		body = ray.soul_under(screen)
 		if body == null:
 			body = ray.corpse_under(screen)
@@ -52,27 +51,28 @@ func click_on(body: Node3D, ground: Variant) -> void:
 		_log.say(Refusal.NO_TARGET)
 		return
 	var point: Vector3 = body.global_position if body else ground
-	if _apply(armed.ability_tag, point, body):
+	if _apply(armed.ability, point, body):
 		armed.mode = ""
 		feedback.show_ping(point)
 
 
 ## spells.d:168-183: targetSouls (1 << 1) and targetCorpses (1 << 3).
-func _aims_at_dead(tag: String) -> bool:
-	var ability: AbilityType = GameData.ability(tag)
+func _aims_at_dead(ability: AbilityType) -> bool:
 	return ability != null and (ability.flags & ((1 << 1) | (1 << 3))) != 0
 
 
-## Every selected creature whose active ability is `tag` gets the order; the others skip it
+## Every selected creature whose active ability is `ability` gets the order; the others skip it
 ## (applyOrder, state.d:29256). `point` null = no target (the creature's own spot).
-func _apply(tag: String, point: Variant, body: Node3D) -> bool:
+func _apply(ability: AbilityType, point: Variant, body: Node3D) -> bool:
+	if ability == null:
+		return false
 	var used := 0
 	var refusal := ""
 	for node in _selection.units():
 		if not is_instance_valid(node) or not node is UnitBody:
 			continue
 		var unit := node as UnitBody
-		if _ability_of(unit) != tag:
+		if _ability_of(unit) != ability:
 			continue
 		var at: Vector3 = point if point != null else unit.global_position
 		var reason := unit.request_ability(at, body)
@@ -80,11 +80,10 @@ func _apply(tag: String, point: Variant, body: Node3D) -> bool:
 			used += 1
 		elif refusal.is_empty():
 			refusal = reason
-	var ability: AbilityType = GameData.ability(tag)
-	_log.say((ability.display_name if ability else tag) if used > 0 else refusal)
+	_log.say(ability.display_name if used > 0 else refusal)
 	return used > 0
 
 
-func _ability_of(unit: UnitBody) -> String:
+func _ability_of(unit: UnitBody) -> AbilityType:
 	var type: CreatureType = unit.type
-	return type.active_ability_tag if type else ""
+	return type.active_ability if type else null

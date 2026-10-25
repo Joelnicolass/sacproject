@@ -3,13 +3,14 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_5iwmj"]
 [ext_resource type="Resource" path="res://data/audio/creatures/flame_minion.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://r7hdquidis3h" path="res://assets/original/ui/icons/fplk.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/fkba.tres" id="typed_fkba"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/!nur.tres" id="typed__nur"]
 
 [resource]
 script = ExtResource("1_5iwmj")
 tag = "fplk"
 display_name = "Flame Minion"
 icon = ExtResource("icon_tex")
-god = "pyro"
 model = "fklp"
 health = 640
 regeneration_per_s = 16.6667
@@ -27,7 +28,8 @@ souls = 1
 cooldown_s = 2.0
 casting_time_s = 0.3704
 spell_order = 128
-ability_tags = PackedStringArray("fkba", "!nur")
+ranged_attack = ExtResource("typed_fkba")
+active_ability = ExtResource("typed__nur")
 stance_animation = {
 "framerate": 30.0,
 "frames": 27.0,
@@ -64,10 +66,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 69.0,
 "tag": "KLal"
 }])
-is_ranged = true
-ranged_attack_tag = "fkba"
-active_ability_tag = "!nur"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 47.0,

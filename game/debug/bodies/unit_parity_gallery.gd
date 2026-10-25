@@ -89,7 +89,7 @@ func _spawn_wizards() -> void:
 		var wiz := _wizard_for_tag(tag)
 		wizard.name = "Wizard_%s" % tag
 		wizard.set("owner_slot", 1)
-		wizard.set("wizard_tag", tag)
+		wizard.set("wizard_type", GameData.wizard(tag))
 		wizard.set("model", wiz.get("model", ""))
 		wizard.set("god", wiz.get("god", "james"))
 		wizard.position = _grid_pos(index, row)
@@ -114,7 +114,7 @@ func _spawn_unit(tag: String, at: Vector3) -> void:
 	var type := GameData.creature(tag)
 	unit.name = "Unit_%s" % tag
 	unit.set("owner_slot", 1)
-	unit.set("creature_tag", tag)
+	unit.set("type", GameData.creature(tag))
 	unit.set("rules", RULES)
 	unit.set("model", str(type.model) if type else "")
 	unit.set("idle_aggro", false)
@@ -260,7 +260,10 @@ func _actor_line(body: Node3D) -> String:
 	if not creature_tag.is_empty():
 		var creature := GameData.creature(creature_tag)
 		if creature:
-			extras = " ability=%s abilities=%s" % [creature.active_ability_tag, ",".join(creature.ability_tags)]
+			var ability_tags := PackedStringArray()
+			for slot in creature.abilities():
+				ability_tags.append(slot.tag)
+			extras = " ability=%s abilities=%s" % [creature.active_ability.tag if creature.active_ability else "", ",".join(ability_tags)]
 	var col := body.get_node_or_null("Collision") as CollisionShape3D
 	var capsule := col.shape as CapsuleShape3D if col else null
 	if capsule:

@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_njg5r"]
 [ext_resource type="Resource" path="res://data/audio/creatures/netherfiend.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://dy22u0t0qb3he" path="res://assets/original/ui/icons/crpd.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/ifna.tres" id="typed_ifna"]
 
 [resource]
 script = ExtResource("1_njg5r")
 tag = "crpd"
 display_name = "Netherfiend"
 icon = ExtResource("icon_tex")
-god = "charnel"
 model = "prcy"
 health = 1800
 drain = 0.5
@@ -30,7 +30,7 @@ souls = 2
 cooldown_s = 5.0
 casting_time_s = 1.4815
 spell_order = 459
-ability_tags = PackedStringArray("ifna")
+active_ability = ExtResource("typed_ifna")
 stance_animation = {
 "framerate": 30.0,
 "frames": 78.0,
@@ -67,8 +67,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 60.0,
 "tag": "PCa2"
 }])
-active_ability_tag = "ifna"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 2.0,

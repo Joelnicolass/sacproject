@@ -41,7 +41,8 @@ var _spin_rate := 0.0
 var _in_flight: ShotInFlight
 
 
-func setup(data: Dictionary) -> void:
+## `shot_ability`: the ability the packet's `tag` names (ShotSpawner turns the text into it), or null for a shot that is not one.
+func setup(data: Dictionary, shot_ability: AbilityType = null) -> void:
 	name = str(data["name"])
 	spawn_data = data
 	position = Vector3(float(data["x"]), float(data["y"]), float(data["z"]))
@@ -53,7 +54,7 @@ func setup(data: Dictionary) -> void:
 	target_path = NodePath(str(data.get("target", "")))
 	shooter_path = NodePath(str(data.get("shooter", "")))
 	look = ShotLook.for_tag(str(data.get("tag", "")))
-	ability = GameData.ability(str(data.get("tag", "")))
+	ability = shot_ability
 	mods = Health.IGNITE if look.ignites else 0
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash(name)

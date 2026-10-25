@@ -6,7 +6,6 @@
 [resource]
 script = ExtResource("1_r86mw")
 tag = "cwf0"
-spell_tag = "0fwc"
 display_name = "Ambassador Buta"
 model = "buta"
 health = 1500

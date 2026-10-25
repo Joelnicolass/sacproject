@@ -222,11 +222,8 @@ func _setup(t: AiTrack) -> void:
 			## (the Manahoar has none: setupMaho). 024d (autoCapture).
 			if t.kind == AiTrack.Kind.CRE and type != null:
 				t.min_mana_cost = float(AiRater.ftol(_mana_max(t.node))) if _ability_count(type) > 0 else 0.0
-				for ability_tag in type.ability_tags:
-					if ability_tag == "":
-						continue
-					var ability := GameData.ability(ability_tag)
-					if ability != null and float(ability.mana_cost) < t.min_mana_cost:
+				for ability in type.abilities():
+					if float(ability.mana_cost) < t.min_mana_cost:
 						t.min_mana_cost = float(ability.mana_cost)
 			_rate(t)
 		AiTrack.Kind.STR:
@@ -239,13 +236,9 @@ func _setup(t: AiTrack) -> void:
 			_status_of_structure(t)
 
 
-## The abilities the CRE8 really has: the tags of export_stats.py keep empty slots (shiny.d:891-894 counts the non-null ones).
+## The abilities the creature really has: an empty slot does not count (shiny.d:891-894 counts the non-null ones).
 static func _ability_count(type: CreatureType) -> int:
-	var n := 0
-	for tag in type.ability_tags:
-		if tag != "":
-			n += 1
-	return n
+	return type.abilities().size()
 
 
 func _bldg_flags(node: Node) -> int:
@@ -298,25 +291,19 @@ func _rate(t: AiTrack) -> void:
 		if type == null:
 			return
 		ts = AiRater.stats_of(type)
-		for tag in type.ability_tags:
-			if tag != "":
-				abilities.append(GameData.ability(tag))
+		abilities.assign(type.abilities())
 	t.acc = AiRater.fill_from_object(ts, mana_of(t).x, abilities, spells)
 	t.cached_rate = AiRater.rate(t.acc)
 
 
 ## fillByTag cache (shiny.d:392-405 `tagAcc`): what a creature a wizard may summon is worth.
-func tag_acc(tag: String) -> PackedFloat32Array:
-	if _tag_accs.has(tag):
-		return _tag_accs[tag]
-	var type := GameData.creature(tag)
+func tag_acc(type: CreatureType) -> PackedFloat32Array:
+	if _tag_accs.has(type):
+		return _tag_accs[type]
 	var abilities: Array = []
-	if type != null:
-		for ability_tag in type.ability_tags:
-			if ability_tag != "":
-				abilities.append(GameData.ability(ability_tag))
-	var acc := AiRater.fill_by_tag(type, abilities) if type != null else AiRater.new_acc()
-	_tag_accs[tag] = acc
+	abilities.assign(type.abilities())
+	var acc := AiRater.fill_by_tag(type, abilities)
+	_tag_accs[type] = acc
 	return acc
 
 

@@ -66,7 +66,7 @@ func cancel() -> void:
 
 ## The tower scene of the wizard's god for this spell, or null.
 func _scene_of(wizard: WizardBody, spell: SpellType) -> PackedScene:
-	var god := wizard.god_type()
+	var god := wizard.god_type
 	var entry := god.structure_for(spell) if god != null and spell != null else null
 	return entry.scene if entry != null else null
 

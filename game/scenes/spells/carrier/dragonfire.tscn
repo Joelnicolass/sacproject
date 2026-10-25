@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/carrier/spell_carrier.gd" id="1_carrier"]
 [ext_resource type="Script" path="res://scenes/spells/carrier/dragon_arrive.gd" id="2_arrive"]
@@ -10,6 +10,7 @@
 [ext_resource type="Resource" path="res://data/fx/dragon_roar.tres" id="8_roar"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="9_light"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="10_sound"]
+[ext_resource type="Resource" path="res://data/audio/cues/dragonfire_loop.tres" id="cue_dragonfire_loop"]
 
 [node name="Dragonfire" type="Node3D" node_paths=PackedStringArray("on_arrive")]
 editor_description = "Dragonfire (rifd): el dragon. Sube en espiral alrededor del mago mientras lanza, vuela a 18 m/s girando hasta pi rad/s, quema lo que atraviesa (175/s), al llegar hace 700 con salpicadura de 5 m y prende a todos, y sigue al no aliado mas cercano a 50 m: 5 blancos. Si no hay, se achica en 1 s. La cabeza mira a +Z."
@@ -49,5 +50,5 @@ omni_range = 9.0
 priority = 4.0
 
 [node name="FlightSound" parent="." instance=ExtResource("10_sound")]
-cue = &"dragonfire_loop"
+cue = ExtResource("cue_dragonfire_loop")
 loop = true

@@ -19,7 +19,7 @@ Si un set nombra un archivo que no está (por ejemplo, un clon sin el audio del 
 | `world.tres` | el mundo: sacrificio, almas, invocación, hechizos, ambiente `A*` | set `spel` |
 | `advisor.tres` | los avisos del consejero, bus `Voice` | set `advi` |
 | `ui.tres` | clics de menú, volver, menú X, subir de nivel | set `ifac` |
-| `fx_sounds.tres` | `FxSoundMap`: nombre de FX de `FxBus` → cue, y las claves de los `SoundEmitter3D` | a mano (052d), sobre los `SAMP` del original |
+| `cues/<nombre>.tres` | un `SoundCue` por sonido de FX o de emisor del mundo (`fireball_cast.tres`, `fountain_loop.tres`, `heal.tres`…); lo arrastrás a `ParticleType.sound`, `BeamType.sound` o `SoundEmitter3D.cue` | migrado de `fx_sounds.tres` (055o-a), sobre los `SAMP` del original |
 | `music/<dios>.tres`, `music/common.tres`, `music/menu.tres` | `MusicSet`: `calm` del dios (`<dios>_normal`) con `fallback` a `common` (battle 1-5, sacrifice 1, sacrifice victory/losing, victory y defeat theme); el menú toca `menu` y guarda God Realm en `extras` | a mano (052f), sobre los MP3 |
 | `ambience/<dios>.tres` | `AmbienceSet`: fondo en bucle y códigos `A*` de `spel` | a mano (052g) |
 | `custom/<tipo>/<tag>.tres` | los tuyos | `assets/custom/sounds/<tipo>/<tag>/` |
@@ -81,11 +81,17 @@ Un código sin evento todavía queda con su código como clave, y lo mapea un co
 
 Solo se importan el inglés y las voces que nombra algún set de escaramuza. La música se importa completa.
 
-## Sonidos de FX y de emisores (`fx_sounds.tres`)
+## Sonidos de FX y de emisores (`cues/`)
 
-`FxSoundMap` (un `SoundSet`): la clave es el nombre del FX como lo recibe `FxBus` (un `ParticleType`, un `BeamType`, o el nombre de archivo de una escena de `broadcast_scene`), o la clave que nombra un `SoundEmitter3D`. Se escribe a mano, no lo hornea `bake_sound_sets`: los hechizos y los edificios del original tocan `SAMP` por nombre, sin `SSET`, así que donde no hay entrada de `spel` el cue nombra el `.wav` directo. Un `custom/fx_sounds.tres` pisa solo las claves que tiene.
+Cada sonido de un efecto o de un nodo del mundo es un `SoundCue` en `data/audio/cues/` con nombre humano (`fireball_cast.tres`, `wall_spikes_up.tres`). Quién lo usa:
 
-| Clave | Sonido | Del original |
+- Una ráfaga o un rayo: el campo `Sound` de su `ParticleType` (`data/fx/*.tres`) o `BeamType` (`data/fx/beams/*.tres`); lo toca `FxSounds` donde pasa el efecto.
+- Un efecto de escena (`spike_field`, `quake_ring`, `wall_spike`, `explosion_burst`, `ice_shatter`, `erupt_burst`): el nodo `Sound` de la escena.
+- Un proyectil, un manantial, un escudo, una zona, un muro: el `Cue` del `SoundEmitter3D` de su escena.
+
+Agregar un sonido a un hechizo: instanciar `scenes/audio/sound_emitter_3d.tscn` en su escena, arrastrar un `.tres` de `cues/` (o crear uno y arrastrar el `.wav`/`.ogg` a `Streams`). Nada se registra en otro lado. Un mismo cue puede estar en varios lugares (`ward_air` en tres nodos): bajarlo cambia todos. Los cues salieron de `fx_sounds.tres` (99 claves de texto) con `tools/migrate/migrate_055o_audio.py`; `wall_vine_up` no lo usaba nadie y no se migró.
+
+| Cue (`cues/<nombre>.tres`) | Sonido | Del original |
 |---|---|---|
 | `blood` | `char/bld1-2` | `spel` `Xbld` |
 | `hover_blood` | `gib!/gib1-4` | `spel` `Xgib` (gib) |

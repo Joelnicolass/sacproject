@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="SoundCue" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/frx1.wav" id="c61h_frx1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/frx2.wav" id="c61h_frx2"]
+
+[resource]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("c61h_frx1"), ExtResource("c61h_frx2")])
+max_voices = 6
+cooldown_s = 0.03

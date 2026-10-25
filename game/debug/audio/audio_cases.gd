@@ -5,7 +5,7 @@ extends Node
 ## - closed (plain headless, `--dedicated`, `--room-server`): gate cases and the closed SoundEmitter3D (nothing built,
 ##   nothing loaded).
 ## Both modes also run the FX sound cases (052d), the voice cases (052e) and the music and ambience cases (052f, 052g) and
-## the UI and sacrifice cases (052h) for their gate.
+## the UI and sacrifice cases (052h) for their gate, and the typed-sound probe (055o-a: `SOUND REFS ...`).
 ## Prints `<case>: PASS|FAIL` and `AUDIO CASES PASS|FAIL (n)`; headless quits with 0 / 1.
 ## Watchdog: past `timeout_s` it prints `AUDIO CASES FAIL timeout` and quits 1. The case scripts are loaded at run time
 ## (not preloaded), so one that fails to compile still ends in a FAIL line instead of a runner without a script.
@@ -17,6 +17,7 @@ const BUS_CASES := "res://debug/audio/sound_bus_cases.gd"
 const ORIGINAL_CASES := "res://debug/audio/original_sets_cases.gd"
 const BODY_CASES := "res://debug/audio/body_sounds_cases.gd"
 const FX_CASES := "res://debug/audio/fx_sounds_cases.gd"
+const REFS_CASES := "res://debug/audio/sound_refs_cases.gd"
 const VOICE_CASES := "res://debug/audio/voice_cases.gd"
 const MUSIC_CASES := "res://debug/audio/music_mood_cases.gd"
 const UI_SACRIFICE_CASES := "res://debug/audio/ui_sacrifice_cases.gd"
@@ -58,6 +59,11 @@ func _run() -> void:
 			results["fx_sounds_cases"] = {"ok": false, "reason": "no compila"}
 		elif expect == "closed":
 			results.merge(await fx.run(self, false))
+		var refs := _cases(REFS_CASES)
+		if refs == null:
+			results["sound_refs_cases"] = {"ok": false, "reason": "no compila"}
+		else:
+			results.merge(await refs.run(self, expect == "open"))
 		var voices := _cases(VOICE_CASES)
 		if voices == null:
 			results["voice_cases"] = {"ok": false, "reason": "no compila"}

@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3]
+[gd_scene load_steps=31 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/carrier/spell_carrier.gd" id="1_carrier"]
 [ext_resource type="Script" path="res://scenes/spells/carrier/carrier_hold.gd" id="2_hold"]
@@ -18,6 +18,7 @@
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="16_light"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="17_sound"]
 [ext_resource type="Script" path="res://scenes/spells/carrier/phase_cue.gd" id="18_cue"]
+[ext_resource type="Resource" path="res://data/audio/cues/rage_cast.tres" id="cue_rage_cast"]
 
 [sub_resource type="SphereShape3D" id="Sphere_reach"]
 radius = 30.0
@@ -125,7 +126,7 @@ priority = 3.0
 lit_on_ready = true
 
 [node name="CastSound" parent="." instance=ExtResource("17_sound")]
-cue = &"rage_cast"
+cue = ExtResource("cue_rage_cast")
 play_on_ready = false
 
 [node name="CastCue" type="Node" parent="." node_paths=PackedStringArray("carrier", "sound")]

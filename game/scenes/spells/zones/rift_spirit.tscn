@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/zones/rift_spirit.gd" id="1_script"]
 [ext_resource type="Shader" path="res://scenes/spells/zones/rift_trail.gdshader" id="2_shader"]
@@ -6,6 +6,8 @@
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="4_sound"]
 [ext_resource type="Script" path="res://scenes/spells/zones/rift_ribbon.gd" id="5_ribbon"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
+[ext_resource type="Resource" path="res://data/audio/cues/rift_hit.tres" id="cue_rift_hit"]
+[ext_resource type="Resource" path="res://data/audio/cues/rift_spawn.tres" id="cue_rift_spawn"]
 
 [sub_resource type="ShaderMaterial" id="Mat_trail"]
 shader = ExtResource("2_shader")
@@ -27,11 +29,11 @@ script = ExtResource("5_ribbon")
 follows = NodePath("..")
 
 [node name="HitSound" parent="." instance=ExtResource("4_sound")]
-cue = &"rift_hit"
+cue = ExtResource("cue_rift_hit")
 play_on_ready = false
 
 [node name="SpawnSound" parent="." instance=ExtResource("4_sound")]
-cue = &"rift_spawn"
+cue = ExtResource("cue_rift_spawn")
 play_on_ready = false
 
 [node name="Glow" parent="." instance=ExtResource("glow_state_light")]

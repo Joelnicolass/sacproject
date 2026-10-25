@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="1_zone"]
 [ext_resource type="Resource" path="res://data/catalog/spells/tfir.tres" id="2_spell"]
@@ -10,6 +10,8 @@
 [ext_resource type="Script" path="res://scenes/spells/zones/rift_spawner.gd" id="8_spawner"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/zone_sound.tscn" id="9_sound"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
+[ext_resource type="Resource" path="res://data/audio/cues/rift_open.tres" id="cue_rift_open"]
+[ext_resource type="Resource" path="res://data/audio/cues/rift_close.tres" id="cue_rift_close"]
 
 [sub_resource type="ShaderMaterial" id="Mat_edge"]
 shader = ExtResource("4_shader")
@@ -59,13 +61,13 @@ wall = NodePath("../Edge/Wall")
 
 [node name="CastSound" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("9_sound")]
 editor_description = "srft al abrirse la grieta (SPEL tfir)."
-cue = &"rift_open"
+cue = ExtResource("cue_rift_open")
 zone = NodePath("..")
 when = 1
 
 [node name="CloseSound" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("9_sound")]
 editor_description = "crft al cerrarse (SPEL tfir)."
-cue = &"rift_close"
+cue = ExtResource("cue_rift_close")
 zone = NodePath("..")
 when = 1
 from_phase = 3

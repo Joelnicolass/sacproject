@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="SoundCue" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/stra/ish1.wav" id="17_ish1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/stra/ish2.wav" id="18_ish2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/stra/ish3.wav" id="19_ish3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/stra/ish4.wav" id="20_ish4"]
+
+[resource]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("17_ish1"), ExtResource("18_ish2"), ExtResource("19_ish3"), ExtResource("20_ish4")])
+max_voices = 6
+volume_db = 3.0

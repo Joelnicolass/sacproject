@@ -10,8 +10,9 @@ extends Node3D
 ## - `--audio-no-original`: SoundLibrary sees only the script's roots and an empty one (a clone without the original's audio).
 ## The script (an AudioLabScript .tres) is loaded at run time with load(), so a broken one ends in a FAIL line. Watchdog:
 ## `timeout_s` of real time.
-## 052d: the FX actions call FxBus as a peer does when a broadcast arrives (fx, puff, beam, scene); `spawn` instances a
-## projectile scene (frozen) and frees it after the look; `loop` restarts the loops of the target's SoundEmitter3D nodes;
+## 052d: the FX actions call FxBus as a peer does when a broadcast arrives (fx, puff, beam); `spawn` instances a
+## projectile or FX scene (frozen) and frees it after the look (a scene FX sounds through its own Sound child; the headless
+## FxBus.play_scene draws nothing); `loop` lets go of the loops of the target's SoundEmitter3D nodes and looks again;
 ## `occupy`/`release` put a Manalith on the Fountain and take it off.
 ## 052e: the player's voices. `select` leaves the target alone in the lab's Selection (CommandVoice hears Selection.changed),
 ## `order` emits Orders.requested for it as OrderCommand's request does, `refuse` says a Refusal key on the CommandLog
@@ -99,10 +100,7 @@ func _start() -> void:
 	roots.append_array(PackedStringArray(_lab.get("fallback_roots")) if _lab.get("fallback_roots") != null else PackedStringArray())
 	SoundLibrary.roots = roots
 	SoundLibrary.clear_cache()
-	## The emitters resolved their cues on entering the tree, with the default roots.
-	for node in find_children("*", "SoundEmitter3D", true, false):
-		(node as SoundEmitter3D).restart()
-	## So did the directors (052f, 052g).
+	## The directors looked their sets up on entering the tree, with the default roots (052f, 052g).
 	if music != null:
 		music.use_set(music.set_path)
 	if ambience != null:
@@ -208,18 +206,16 @@ func _expected_cue(body: Node, action: StringName, arg: String, event: StringNam
 		&"select", &"order":
 			return command_voice.cue_for(body, event) if command_voice != null else false
 		&"fx":
-			return SoundBus.fx_cue(FxBus.KIND_BURST, arg)
+			return SoundBus.fx_sounds.cue_of(FxBus.KIND_BURST, arg)
 		&"puff":
-			return SoundBus.fx_cue(FxBus.KIND_PUFF, arg)
+			return SoundBus.fx_sounds.cue_of(FxBus.KIND_PUFF, arg)
 		&"beam":
-			return SoundBus.fx_cue(FxBus.KIND_BEAM, arg)
-		&"scene":
-			return SoundBus.fx_cue(FxBus.KIND_SCENE, arg)
+			return SoundBus.fx_sounds.cue_of(FxBus.KIND_BEAM, arg)
 		&"spawn":
 			return true
 		&"loop", &"occupy", &"release":
 			var emitters := _emitters_of(body)
-			return emitters[0].resolved_cue() if not emitters.is_empty() else false
+			return emitters[0].cue if not emitters.is_empty() else false
 	var sounds := _sounds_of(body)
 	return sounds.cue_for(event) if sounds != null else false
 
@@ -308,7 +304,7 @@ func _act(body: Node, action: StringName, arg := "") -> bool:
 			return body is Node3D and _spawn(body as Node3D, arg)
 		&"loop":
 			for emitter in _emitters_of(body):
-				emitter.restart()
+				_relisten(emitter)
 			return true
 		&"select":
 			if selection == null:
@@ -370,7 +366,7 @@ func _act(body: Node, action: StringName, arg := "") -> bool:
 			if not body.has_method("occupy"):
 				return false
 			for emitter in _emitters_of(body):
-				emitter.restart()
+				_relisten(emitter)
 			if action == &"occupy":
 				body.call("occupy", get_node("Wizard").get_path())
 			else:
@@ -496,6 +492,12 @@ func _free_spawned() -> void:
 		if is_instance_valid(node):
 			node.queue_free()
 	_spawned.clear()
+
+
+## A loop lets go and looks again, as if the listener had just come into range.
+func _relisten(emitter: SoundEmitter3D) -> void:
+	SoundBus.release_loop(emitter)
+	emitter.set_active(emitter.active)
 
 
 ## The SoundEmitter3D loops under `body` (any depth).

@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3]
+[gd_scene load_steps=28 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/carrier/spell_carrier.gd" id="1_carrier"]
 [ext_resource type="Script" path="res://scenes/spells/carrier/carrier_hold.gd" id="2_hold"]
@@ -17,6 +17,8 @@
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="15_light"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="16_sound"]
 [ext_resource type="Script" path="res://scenes/spells/carrier/phase_cue.gd" id="17_cue"]
+[ext_resource type="Resource" path="res://data/audio/cues/charm_cast.tres" id="cue_charm_cast"]
+[ext_resource type="Resource" path="res://data/audio/cues/charm_start.tres" id="cue_charm_start"]
 
 [sub_resource type="QuadMesh" id="Mesh_quad"]
 
@@ -138,7 +140,7 @@ priority = 3.0
 lit_on_ready = true
 
 [node name="CastSound" parent="." instance=ExtResource("16_sound")]
-cue = &"charm_cast"
+cue = ExtResource("cue_charm_cast")
 play_on_ready = false
 
 [node name="CastCue" type="Node" parent="." node_paths=PackedStringArray("carrier", "sound")]
@@ -148,7 +150,7 @@ phase = 1
 sound = NodePath("../CastSound")
 
 [node name="StartSound" parent="." instance=ExtResource("16_sound")]
-cue = &"charm_start"
+cue = ExtResource("cue_charm_start")
 play_on_ready = false
 
 [node name="StartCue" type="Node" parent="." node_paths=PackedStringArray("carrier", "sound")]

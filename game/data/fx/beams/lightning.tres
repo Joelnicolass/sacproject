@@ -1,11 +1,13 @@
-[gd_resource type="Resource" script_class="BeamType" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="BeamType" load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/fx/beam_type.gd" id="1_type"]
 [ext_resource type="PackedScene" path="res://scenes/fx/burning_beam_fx.tscn" id="2_scene"]
 [ext_resource type="Resource" path="res://data/fx/lights/lightning_flash.tres" id="3_light"]
+[ext_resource type="Resource" path="res://data/audio/cues/lightning.tres" id="cue_lightning"]
 
 [resource]
 script = ExtResource("1_type")
 scene = ExtResource("2_scene")
 atlas_tag = "ltn2"
 light = ExtResource("3_light")
+sound = ExtResource("cue_lightning")

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="SoundCue" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/fbal.wav" id="39_fbal"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/fba2.wav" id="40_fba2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/fba3.wav" id="41_fba3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/fba4.wav" id="42_fba4"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/fba5.wav" id="43_fba5"]
+
+[resource]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("39_fbal"), ExtResource("40_fba2"), ExtResource("41_fba3"), ExtResource("42_fba4"), ExtResource("43_fba5")])
+max_voices = 4

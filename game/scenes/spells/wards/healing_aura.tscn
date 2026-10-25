@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/wards/ward.gd" id="1_ward"]
 [ext_resource type="Resource" path="res://data/catalog/spells/ruah.tres" id="2_spell"]
@@ -10,6 +10,7 @@
 [ext_resource type="Resource" path="res://data/fx/healing_aura_glow.tres" id="8_glow"]
 [ext_resource type="PackedScene" path="res://scenes/spells/wards/ward_sound.tscn" id="9_sound"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
+[ext_resource type="Resource" path="res://data/audio/cues/ward_healing_aura.tres" id="cue_ward_healing_aura"]
 
 [sub_resource type="ShaderMaterial" id="Mat_veil"]
 shader = ExtResource("4_shader")
@@ -78,7 +79,7 @@ on_surface = true
 
 [node name="SoundLoop" parent="." node_paths=PackedStringArray("ward") instance=ExtResource("9_sound")]
 editor_description = "aura.wav en bucle sobre la portadora (SPEL ruah: sonido aura, bandera de lazo)."
-cue = &"ward_healing_aura"
+cue = ExtResource("cue_ward_healing_aura")
 ward = NodePath("..")
 when = 2
 

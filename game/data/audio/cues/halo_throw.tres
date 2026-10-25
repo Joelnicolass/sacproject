@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="SoundCue" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/halo.wav" id="e_halo"]
+
+[resource]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("e_halo")])
+max_voices = 4
+volume_db = 6.0

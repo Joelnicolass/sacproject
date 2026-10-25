@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="SoundCue" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/char/anm1.wav" id="47_23bdy"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/char/anm2.wav" id="48_26ace"]
+
+[resource]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("47_23bdy"), ExtResource("48_26ace")])

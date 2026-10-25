@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="SoundCue" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/rxp1.wav" id="15_rxp1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/rxp2.wav" id="16_rxp2"]
+
+[resource]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("15_rxp1"), ExtResource("16_rxp2")])
+max_voices = 4

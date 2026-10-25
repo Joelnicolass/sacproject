@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/wards/ward.gd" id="1_ward"]
 [ext_resource type="Script" path="res://scenes/spells/wards/ward_emitter.gd" id="2_emitter"]
@@ -8,6 +8,7 @@
 [ext_resource type="Resource" path="res://data/fx/wards/skin_ring.tres" id="7_ring"]
 [ext_resource type="PackedScene" path="res://scenes/spells/wards/ward_sound.tscn" id="8_sound"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
+[ext_resource type="Resource" path="res://data/audio/cues/ward_skin_end.tres" id="cue_ward_skin_end"]
 
 [node name="SkinOfStone" type="Node3D"]
 script = ExtResource("1_ward")
@@ -41,7 +42,7 @@ half_axes_m = Vector3(1.84, 0, 1.84)
 shrink_to = 0.1
 
 [node name="SoundEnd" parent="." node_paths=PackedStringArray("ward") instance=ExtResource("8_sound")]
-cue = &"ward_skin_end"
+cue = ExtResource("cue_ward_skin_end")
 ward = NodePath("..")
 when = 1
 

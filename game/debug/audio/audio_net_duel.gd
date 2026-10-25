@@ -6,7 +6,7 @@ extends Node
 ## `duel_health` and makes them fight. Every sound the client then hears comes from the replicated state (mode, swings, shots,
 ## Health): nothing here is sent to the client. Only the authority acts; not in the product.
 ## 052d: then it broadcasts `fx_name` through FxBus (the RPC every FX already uses) `fx_times` times, one every
-## `fx_every_ticks`, between the two creatures: the client hears it through FxBus.played and FxSoundMap.
+## `fx_every_ticks`, between the two creatures: the client hears it through FxBus.played and FxSounds (the `sound` of the blood ParticleType).
 ## 052f: the fight first lasts `battle_hold_ms` of REAL time with `battle_health` (nobody dies), and only then the health drops
 ## to `duel_health`. With --fixed-fps the dedicated runs far faster than real time, so a short duel would end between two
 ## frames of the client (it then gets the whole fight in one burst of state, and its CombatGauge, which samples every

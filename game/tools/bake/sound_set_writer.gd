@@ -1,36 +1,34 @@
 extends RefCounted
 
-## No necesita el juego original. RFC-052 052b / 052i (F361, F368): writes SoundSet .tres files, one owner for both bakes.
-## - tools/bake/bake_sound_sets.gd uses it for the original's sets (index.json) and for your own sounds.
-## - tools/bake/new_creature.gd uses it for the sounds of the creature it makes (assets/custom/sounds/creatures/<tag>/).
-## Your own sounds: assets/custom/sounds/<kind>/<tag>/<event>[_n].{ogg,wav} -> data/audio/custom/<kind>/<tag>.tres. Every
-## file of one event is a variant of its cue (`death_1.wav`, `death_2.wav`). The event names are SoundEvent's (EVENT_HELP).
+## No necesita el juego original. Writes the SoundSet of a creature of your own (the one tools/bake/new_creature.gd makes).
+## Your own sounds: assets/custom/sounds/creatures/<name>/<event>[_n].{ogg,wav} -> data/audio/creatures/<name>.tres. Every file of
+## one event is a variant of its cue (`death_1.wav`, `death_2.wav`); the event names are SoundEvent.BODY (EVENT_HELP) and each one
+## is a field of the SoundSet. A `swing` with no `shoot` of its own also sounds when the creature shoots (the same cue).
+## The set has the melee set `data/audio/melee/fist.tres` as `fallback`, so a creature with only a death still swings.
+## With no sound files it writes the set empty (the fallback only): drag the files onto its fields in the inspector.
 ## Never over an existing .tres unless `force` (it throws away what you edited by hand).
 ## The streams are referenced by path and never loaded here: it works before the editor imports the audio.
-## Preloaded by path (no class_name): the bakes run as `--script` before the class cache knows anything new.
+## Preloaded by path (no class_name): the tool runs as `--script` before the class cache knows anything new.
 
 const CUSTOM_SRC := "res://assets/custom/sounds/"
-const CUSTOM_OUT := "res://data/audio/custom/"
-const CATALOG_DIR := "res://data/catalog/"
+const CUSTOM_OUT := "res://data/audio/"
 const SET_SCRIPT := "res://scenes/audio/sound_set.gd"
 const CUE_SCRIPT := "res://scenes/audio/sound_cue.gd"
+const MELEE_FALLBACK := "res://data/audio/melee/fist.tres"
 const STREAM_EXTENSIONS := ["ogg", "wav", "mp3"]
 const _EVENTS := preload("res://scenes/audio/sound_event.gd")
 ## Events a voice says; the rest of your sounds go to SFX.
-const VOICE_EVENTS := [&"selected", &"ack", &"attack_ack", &"annoyed", &"incantation", &"advice"]
-## Kinds whose set the game finds by the catalog file name (SoundLibrary.creature / wizard), not by the tag.
-const CATALOG_KINDS := ["creatures", "wizards"]
+const VOICE_EVENTS := [&"selected", &"ack", &"attack_ack", &"annoyed", &"incantation"]
 
 var force := false
 var written := PackedStringArray()
 var kept := PackedStringArray()
 var failures := PackedStringArray()
-## File names whose event is not one the game emits (still baked: a set may hold keys of its own).
+## File names whose event is not a field of the set (skipped: drag it by hand if it has a place).
 var unknown := PackedStringArray()
 var _set_script: Script = load(SET_SCRIPT)
 var _cue_script: Script = load(CUE_SCRIPT)
 var _streams := {}
-var _catalog := {}
 
 
 func is_ready() -> bool:
@@ -83,50 +81,50 @@ func save_set(sound_set: Resource, path: String) -> Resource:
 	return sound_set
 
 
-## Every <kind>/<tag>/ folder under `source` -> `out`/<kind>/<file>.tres. Nothing when `source` does not exist.
-func bake_custom(source: String = CUSTOM_SRC, out: String = CUSTOM_OUT) -> void:
-	if not DirAccess.dir_exists_absolute(source):
-		return
-	for kind in DirAccess.get_directories_at(source):
-		for tag in DirAccess.get_directories_at(source.path_join(kind)):
-			bake_folder(kind, tag, source, out)
+## The set of the creature `name`: the sound files of `source`/creatures/<name>/ as fields (none: an empty set over the melee
+## fallback) -> `out`/creatures/<name>.tres. Returns the path it wrote or kept ("" when it could not be saved).
+func write_creature_set(name: String, source: String = CUSTOM_SRC, out: String = CUSTOM_OUT) -> String:
+	var events := _events_in(source.path_join("creatures").path_join(name))
+	var sound_set := new_set()
+	for event: StringName in events:
+		var cue := make_cue(events[event])
+		cue.bus = &"Voice" if event in VOICE_EVENTS else &"SFX"
+		sound_set.set(event, cue)
+	if events.has(&"swing") and not events.has(&"shoot"):
+		sound_set.set(&"shoot", sound_set.get(&"swing"))
+	if ResourceLoader.exists(MELEE_FALLBACK):
+		sound_set.set(&"fallback", load(MELEE_FALLBACK))
+	var path := out.path_join("creatures").path_join(name + ".tres")
+	return path if save_set(sound_set, path) != null else ""
 
 
-## One folder of your sounds, `source`/<kind>/<tag>/, -> `out`/<kind>/<file>.tres. Returns the path it wrote or kept ("" when
-## the folder is missing or holds no sound file).
-func bake_folder(kind: String, tag: String, source: String = CUSTOM_SRC, out: String = CUSTOM_OUT) -> String:
-	var folder := source.path_join(kind).path_join(tag)
-	if not DirAccess.dir_exists_absolute(folder):
-		return ""
+## {event: [res paths]} of the sound files in `folder` (empty when it does not exist). An event that is not a field goes to `unknown`.
+func _events_in(folder: String) -> Dictionary:
 	var events := {}
+	if not DirAccess.dir_exists_absolute(folder):
+		return events
 	var files := Array(DirAccess.get_files_at(folder))
 	files.sort()
 	for file: String in files:
 		if file.get_extension().to_lower() not in STREAM_EXTENSIONS:
 			continue
 		var event := event_of(file.get_basename())
-		if event not in _EVENTS.ALL:
+		if event not in _EVENTS.BODY:
 			unknown.append(folder.path_join(file))
+			continue
 		events[event] = events.get(event, []) + [folder.path_join(file)]
-	if events.is_empty():
-		return ""
-	var sound_set := new_set()
-	for event: StringName in events:
-		var cue := make_cue(events[event])
-		cue.bus = &"Voice" if event in VOICE_EVENTS else &"SFX"
-		sound_set.cues[event] = cue
-	var path := out.path_join(kind).path_join(file_for(kind, tag) + ".tres")
-	return path if save_set(sound_set, path) != null else ""
+	return events
 
 
-## The file name of `tag`'s set: for a creature or a wizard, the name of its .tres in data/catalog/ (EHTH -> EHTH_2), as
-## SoundLibrary looks it up; else (or when the catalog has no such tag) the tag.
-func file_for(kind: String, tag: String) -> String:
-	if kind not in CATALOG_KINDS:
-		return tag
-	if not _catalog.has(kind):
-		_catalog[kind] = catalog_files(kind)
-	return _catalog[kind].get(tag, tag)
+## True when `source`/creatures/<name>/ holds a sound file.
+static func has_sounds(name: String, source: String = CUSTOM_SRC) -> bool:
+	var folder := source.path_join("creatures").path_join(name)
+	if not DirAccess.dir_exists_absolute(folder):
+		return false
+	for file in DirAccess.get_files_at(folder):
+		if file.get_extension().to_lower() in STREAM_EXTENSIONS:
+			return true
+	return false
 
 
 ## "death_2" -> &"death", "swing" -> &"swing".
@@ -137,22 +135,6 @@ static func event_of(stem: String) -> StringName:
 	return StringName(stem)
 
 
-## {tag: file stem} of data/catalog/<kind>/*.tres (read as text: only the `tag = "..."` line).
-static func catalog_files(kind: String) -> Dictionary:
-	var out := {}
-	var dir := CATALOG_DIR + kind + "/"
-	if not DirAccess.dir_exists_absolute(dir):
-		return out
-	for file in DirAccess.get_files_at(dir):
-		if file.get_extension() != "tres":
-			continue
-		for line in FileAccess.get_file_as_string(dir + file).split("\n"):
-			if line.begins_with("tag = \""):
-				out[line.trim_prefix("tag = \"").trim_suffix("\"")] = file.get_basename()
-				break
-	return out
-
-
-## The event names a file of yours may start with (for the notes of the bakes).
+## The event names a file of yours may start with (for the notes of the tool).
 static func event_help() -> String:
-	return ", ".join(_EVENTS.ALL)
+	return ", ".join(_EVENTS.BODY)

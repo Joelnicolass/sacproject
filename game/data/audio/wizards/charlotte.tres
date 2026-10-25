@@ -1,329 +1,55 @@
-[gd_resource type="Resource" script_class="SoundSet" format=3]
+[gd_resource type="Resource" script_class="SoundSet" load_steps=40 format=3]
 
-[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_e2dfl"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_t1.ogg" id="2_tului"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_t2.ogg" id="3_xxnrx"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_t3.ogg" id="4_n68dy"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_t4.ogg" id="5_8p4hr"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_z.ogg" id="6_lmws7"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h11.ogg" id="7_jcvn5"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h12.ogg" id="8_0ywqp"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a1.ogg" id="9_rxrrd"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a2.ogg" id="10_hlqon"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a3.ogg" id="11_256gn"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a4.ogg" id="12_nyj15"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a5.ogg" id="13_r31j8"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a6.ogg" id="14_cdamk"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a7.ogg" id="15_goirg"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a8.ogg" id="16_jpou3"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a9.ogg" id="17_ttr7b"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_a.ogg" id="18_rwta0"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_b.ogg" id="19_xcosu"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_c.ogg" id="20_g0ulc"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_d.ogg" id="21_7bte6"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_e.ogg" id="22_2ugtc"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_f.ogg" id="23_hbtl6"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_g.ogg" id="24_36gto"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_h.ogg" id="25_n8pnn"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_i.ogg" id="26_yvxay"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_j.ogg" id="27_b8y1m"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_k.ogg" id="28_7t1n5"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_l.ogg" id="29_3qtfp"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_m.ogg" id="30_r3aa2"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_n.ogg" id="31_2cwwk"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_o.ogg" id="32_g7j4p"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_p.ogg" id="33_mdgwe"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_q.ogg" id="34_g01r0"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_s.ogg" id="35_b35v5"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_t.ogg" id="36_643w8"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_u.ogg" id="37_7eyk0"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_v.ogg" id="38_p6qtr"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_w.ogg" id="39_anh14"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_h.ogg" id="40_o1nyi"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_i.ogg" id="41_jlb68"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_j.ogg" id="42_bd0v8"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_k.ogg" id="43_di2e8"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_l.ogg" id="44_kccps"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_m.ogg" id="45_ihu0y"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_n.ogg" id="46_1vi64"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_o.ogg" id="47_2xtbx"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_p.ogg" id="48_gcsvn"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_q.ogg" id="49_lfn2h"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_r.ogg" id="50_g6qqy"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_s.ogg" id="51_guyhe"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_t.ogg" id="52_c61bh"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r1.ogg" id="53_lq7vi"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r3.ogg" id="54_jfe31"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r4.ogg" id="55_irqi2"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r2.ogg" id="56_oxmtv"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r5.ogg" id="57_glc0m"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r6.ogg" id="58_f3hwf"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_u.ogg" id="59_27jxf"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_v.ogg" id="60_coo5p"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_w.ogg" id="61_iel1m"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_x.ogg" id="62_1xnt2"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r7.ogg" id="63_27hch"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r8.ogg" id="64_7tyhw"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r9.ogg" id="65_fyajv"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_a.ogg" id="66_syach"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_b.ogg" id="67_nafwg"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_c.ogg" id="68_rsyvb"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_d.ogg" id="69_8tlv7"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_e.ogg" id="70_i8ql4"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_f.ogg" id="71_525fk"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_g.ogg" id="72_s4hn5"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_y.ogg" id="73_avu6x"]
-[ext_resource type="Resource" path="res://data/audio/melee/fist.tres" id="74_pqiw0"]
-[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="75_bdobo"]
+[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_r_z.ogg" id="s1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h11.ogg" id="s2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h12.ogg" id="s3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a1.ogg" id="s4"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a2.ogg" id="s5"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a3.ogg" id="s6"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a4.ogg" id="s7"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a5.ogg" id="s8"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a6.ogg" id="s9"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a7.ogg" id="s10"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a8.ogg" id="s11"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a9.ogg" id="s12"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_a.ogg" id="s13"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_b.ogg" id="s14"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_c.ogg" id="s15"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_d.ogg" id="s16"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_e.ogg" id="s17"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_f.ogg" id="s18"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_g.ogg" id="s19"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_h.ogg" id="s20"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_i.ogg" id="s21"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_j.ogg" id="s22"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_k.ogg" id="s23"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_l.ogg" id="s24"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_m.ogg" id="s25"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_n.ogg" id="s26"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_o.ogg" id="s27"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_p.ogg" id="s28"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_q.ogg" id="s29"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_s.ogg" id="s30"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_t.ogg" id="s31"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_u.ogg" id="s32"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_v.ogg" id="s33"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/char/_c_h_a_w.ogg" id="s34"]
+[ext_resource type="Resource" path="res://data/audio/melee/fist.tres" id="3_fallback"]
 
-[sub_resource type="Resource" id="Resource_vafy3"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("2_tului")])
+[sub_resource type="Resource" id="cue_damaged"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s1"), ExtResource("s2"), ExtResource("s3")])
 bus = &"Voice"
 
-[sub_resource type="Resource" id="Resource_8fdip"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("3_xxnrx")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_6eec6"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("4_n68dy")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_vecln"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("5_8p4hr")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_mdq4t"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("6_lmws7"), ExtResource("7_jcvn5"), ExtResource("8_0ywqp")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_5w74b"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("9_rxrrd"), ExtResource("10_hlqon"), ExtResource("11_256gn"), ExtResource("12_nyj15"), ExtResource("13_r31j8"), ExtResource("14_cdamk"), ExtResource("15_goirg"), ExtResource("16_jpou3"), ExtResource("17_ttr7b"), ExtResource("18_rwta0"), ExtResource("19_xcosu"), ExtResource("20_g0ulc"), ExtResource("21_7bte6"), ExtResource("22_2ugtc"), ExtResource("23_hbtl6"), ExtResource("24_36gto"), ExtResource("25_n8pnn"), ExtResource("26_yvxay"), ExtResource("27_b8y1m"), ExtResource("28_7t1n5"), ExtResource("29_3qtfp"), ExtResource("30_r3aa2"), ExtResource("31_2cwwk"), ExtResource("32_g7j4p"), ExtResource("33_mdgwe"), ExtResource("34_g01r0"), ExtResource("35_b35v5"), ExtResource("36_643w8"), ExtResource("37_7eyk0"), ExtResource("38_p6qtr"), ExtResource("39_anh14")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_c3w17"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("40_o1nyi")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_r6p0a"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("41_jlb68")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_ssny3"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("42_bd0v8")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_8jgnl"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("43_di2e8")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_d5eko"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("44_kccps")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_nlikf"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("45_ihu0y")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_obubg"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("46_1vi64")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_igjy0"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("47_2xtbx")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_kg0ij"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("48_gcsvn")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_8c3gk"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("49_lfn2h")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_n3gkl"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("50_g6qqy")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_h3rql"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("51_guyhe")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_tef00"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("52_c61bh")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_sbdeb"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("53_lq7vi")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_5a4x0"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("54_jfe31")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_2mhjp"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("55_irqi2")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_8sude"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("56_oxmtv")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_keh4e"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("57_glc0m")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_j8v58"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("58_f3hwf")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_kj57h"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("59_27jxf")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_5i1k6"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("60_coo5p")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_w4ekk"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("61_iel1m")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_2xmyi"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("62_1xnt2")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_b22rw"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("63_27hch")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_ee0ij"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("64_7tyhw")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_lbaj0"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("65_fyajv")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_ghp3r"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("66_syach")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_cwaqt"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("67_nafwg")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_47m54"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("68_rsyvb")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_pbhy0"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("69_8tlv7")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_wk68u"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("70_i8ql4")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_y04g0"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("71_525fk")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_o3xjv"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("72_s4hn5")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_kfgth"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("73_avu6x")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_kjb0r"]
-script = ExtResource("1_e2dfl")
-streams = Array[AudioStream]([ExtResource("2_tului"), ExtResource("3_xxnrx"), ExtResource("4_n68dy"), ExtResource("5_8p4hr")])
+[sub_resource type="Resource" id="cue_incantation"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s4"), ExtResource("s5"), ExtResource("s6"), ExtResource("s7"), ExtResource("s8"), ExtResource("s9"), ExtResource("s10"), ExtResource("s11"), ExtResource("s12"), ExtResource("s13"), ExtResource("s14"), ExtResource("s15"), ExtResource("s16"), ExtResource("s17"), ExtResource("s18"), ExtResource("s19"), ExtResource("s20"), ExtResource("s21"), ExtResource("s22"), ExtResource("s23"), ExtResource("s24"), ExtResource("s25"), ExtResource("s26"), ExtResource("s27"), ExtResource("s28"), ExtResource("s29"), ExtResource("s30"), ExtResource("s31"), ExtResource("s32"), ExtResource("s33"), ExtResource("s34")])
 bus = &"Voice"
 
 [resource]
-script = ExtResource("75_bdobo")
-cues = Dictionary[StringName, ExtResource("1_e2dfl")]({
-&"TNT1": SubResource("Resource_vafy3"),
-&"TNT2": SubResource("Resource_8fdip"),
-&"TNT3": SubResource("Resource_6eec6"),
-&"TNT4": SubResource("Resource_vecln"),
-&"asg0": SubResource("Resource_c3w17"),
-&"asg1": SubResource("Resource_r6p0a"),
-&"asg2": SubResource("Resource_ssny3"),
-&"asg3": SubResource("Resource_8jgnl"),
-&"asg4": SubResource("Resource_d5eko"),
-&"asg5": SubResource("Resource_nlikf"),
-&"asg6": SubResource("Resource_obubg"),
-&"asg7": SubResource("Resource_igjy0"),
-&"asg8": SubResource("Resource_kg0ij"),
-&"asg9": SubResource("Resource_8c3gk"),
-&"attB": SubResource("Resource_n3gkl"),
-&"attG": SubResource("Resource_h3rql"),
-&"attU": SubResource("Resource_tef00"),
-&"damaged": SubResource("Resource_mdq4t"),
-&"fcir": SubResource("Resource_sbdeb"),
-&"flin": SubResource("Resource_5a4x0"),
-&"fpha": SubResource("Resource_2mhjp"),
-&"fsem": SubResource("Resource_8sude"),
-&"fskr": SubResource("Resource_keh4e"),
-&"fwdj": SubResource("Resource_j8v58"),
-&"grdB": SubResource("Resource_kj57h"),
-&"grdG": SubResource("Resource_5i1k6"),
-&"grdM": SubResource("Resource_w4ekk"),
-&"grdU": SubResource("Resource_2xmyi"),
-&"grp0": SubResource("Resource_b22rw"),
-&"grp1": SubResource("Resource_ee0ij"),
-&"grp2": SubResource("Resource_lbaj0"),
-&"grp3": SubResource("Resource_ghp3r"),
-&"grp4": SubResource("Resource_cwaqt"),
-&"grp5": SubResource("Resource_47m54"),
-&"grp6": SubResource("Resource_pbhy0"),
-&"grp7": SubResource("Resource_wk68u"),
-&"grp8": SubResource("Resource_y04g0"),
-&"grp9": SubResource("Resource_o3xjv"),
-&"incantation": SubResource("Resource_5w74b"),
-&"movG": SubResource("Resource_kfgth"),
-&"xTNT": SubResource("Resource_kjb0r")
-})
-fallback = ExtResource("74_pqiw0")
+script = ExtResource("1_set")
+damaged = SubResource("cue_damaged")
+incantation = SubResource("cue_incantation")
+fallback = ExtResource("3_fallback")

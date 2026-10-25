@@ -1,4 +1,4 @@
-[gd_scene load_steps=101 format=3]
+[gd_scene load_steps=102 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
 [ext_resource type="Script" path="res://scenes/units/unit_body.gd" id="1_body"]
@@ -120,6 +120,7 @@
 [ext_resource type="Resource" path="res://data/audio/cues/rings_end.tres" id="cue_rings_end"]
 [ext_resource type="Resource" path="res://data/audio/cues/rings_loop.tres" id="cue_rings_loop"]
 [ext_resource type="Resource" path="res://data/audio/cues/slime_hit.tres" id="cue_slime_hit"]
+[ext_resource type="Resource" path="res://data/audio/cues/summon.tres" id="a055_summon"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_unit"]
 radius = 0.3
@@ -719,5 +720,6 @@ mode = 10
 script = ExtResource("a052_sounds")
 body = NodePath("..")
 health = NodePath("../Health")
+summon = ExtResource("a055_summon")
 
 [connection signal="solved" from="Avoidance" to="." method="_on_avoided"]

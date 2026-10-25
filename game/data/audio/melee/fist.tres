@@ -1,40 +1,17 @@
-[gd_resource type="Resource" script_class="SoundSet" format=3]
+[gd_resource type="Resource" script_class="SoundSet" load_steps=9 format=3]
 
-[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_eonla"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/pun1.wav" id="2_tflh7"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/pun2.wav" id="3_ayhsj"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/pun3.wav" id="4_13dls"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/pun4.wav" id="5_cs3vm"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/pun5.wav" id="6_831dg"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/pns1.wav" id="7_h6qm7"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/pns2.wav" id="8_3dtd3"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/pns3.wav" id="9_kwbnl"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/pns4.wav" id="10_i81hq"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/pns5.wav" id="11_xk4ka"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/pns6.wav" id="12_txuke"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/pns7.wav" id="13_g8f13"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/pnw1.wav" id="14_b5yx7"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/pnw2.wav" id="15_q2hcn"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/pnw3.wav" id="16_pscn8"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/pnw4.wav" id="17_mqhn4"]
-[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="18_e687j"]
+[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/pun1.wav" id="s1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/pun2.wav" id="s2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/pun3.wav" id="s3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/pun4.wav" id="s4"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/pun5.wav" id="s5"]
 
-[sub_resource type="Resource" id="Resource_dsmvx"]
-script = ExtResource("1_eonla")
-streams = Array[AudioStream]([ExtResource("2_tflh7"), ExtResource("3_ayhsj"), ExtResource("4_13dls"), ExtResource("5_cs3vm"), ExtResource("6_831dg")])
-
-[sub_resource type="Resource" id="Resource_yxc34"]
-script = ExtResource("1_eonla")
-streams = Array[AudioStream]([ExtResource("7_h6qm7"), ExtResource("8_3dtd3"), ExtResource("9_kwbnl"), ExtResource("10_i81hq"), ExtResource("11_xk4ka"), ExtResource("12_txuke"), ExtResource("13_g8f13")])
-
-[sub_resource type="Resource" id="Resource_0gcag"]
-script = ExtResource("1_eonla")
-streams = Array[AudioStream]([ExtResource("14_b5yx7"), ExtResource("15_q2hcn"), ExtResource("16_pscn8"), ExtResource("17_mqhn4")])
+[sub_resource type="Resource" id="cue_swing"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s1"), ExtResource("s2"), ExtResource("s3"), ExtResource("s4"), ExtResource("s5")])
 
 [resource]
-script = ExtResource("18_e687j")
-cues = Dictionary[StringName, ExtResource("1_eonla")]({
-&"Xhit": SubResource("Resource_dsmvx"),
-&"Xstn": SubResource("Resource_yxc34"),
-&"Xwud": SubResource("Resource_0gcag")
-})
+script = ExtResource("1_set")
+swing = SubResource("cue_swing")

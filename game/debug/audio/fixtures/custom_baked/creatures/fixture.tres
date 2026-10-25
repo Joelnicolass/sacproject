@@ -1,16 +1,14 @@
-[gd_resource type="Resource" script_class="SoundSet" format=3]
+[gd_resource type="Resource" script_class="SoundSet" load_steps=6 format=3]
 
-[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_hhkc6"]
-[ext_resource type="AudioStream" path="res://debug/audio/fixtures/custom_sounds/creatures/fixture/death_1.wav" id="2_ltoew"]
-[ext_resource type="AudioStream" path="res://debug/audio/fixtures/custom_sounds/creatures/fixture/death_2.wav" id="3_bfjag"]
-[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="4_q8dbl"]
+[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" path="res://debug/audio/fixtures/custom_sounds/creatures/fixture/death_1.wav" id="s1"]
+[ext_resource type="AudioStream" path="res://debug/audio/fixtures/custom_sounds/creatures/fixture/death_2.wav" id="s2"]
 
-[sub_resource type="Resource" id="Resource_kvdna"]
-script = ExtResource("1_hhkc6")
-streams = Array[AudioStream]([ExtResource("2_ltoew"), ExtResource("3_bfjag")])
+[sub_resource type="Resource" id="cue_death"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s1"), ExtResource("s2")])
 
 [resource]
-script = ExtResource("4_q8dbl")
-cues = Dictionary[StringName, ExtResource("1_hhkc6")]({
-&"death": SubResource("Resource_kvdna")
-})
+script = ExtResource("1_set")
+death = SubResource("cue_death")

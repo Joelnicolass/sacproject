@@ -41,7 +41,7 @@ func _process(host: Node, expect_open: bool) -> Dictionary:
 	var open := AudioGate.is_open()
 	SoundLibrary.roots = PackedStringArray([FIXTURE_ROOT])
 	SoundLibrary.clear_cache()
-	var sound_set := SoundLibrary.creature(&"test")
+	var sound_set := SoundLibrary.sound_set("creatures/test")
 	var cue := SoundCue.new()
 	cue.streams = [preload_free_stream()]
 	var played: bool = SoundBus.play_2d(cue, &"gate_case", SoundEvent.CLICK)

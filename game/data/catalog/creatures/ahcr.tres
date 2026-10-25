@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_fx88v"]
+[ext_resource type="Resource" path="res://data/audio/creatures/sylph.tres" id="sounds_set"]
 
 [resource]
 script = ExtResource("1_fx88v")
@@ -117,3 +118,4 @@ captive_animations = {
 "tag": "HAsa"
 }
 }
+sounds = ExtResource("sounds_set")

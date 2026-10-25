@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_ebs7r"]
+[ext_resource type="Resource" path="res://data/audio/creatures/mutant.tres" id="sounds_set"]
 
 [resource]
 script = ExtResource("1_ebs7r")
@@ -122,3 +123,4 @@ captive_animations = {
 "tag": "GCsa"
 }
 }
+sounds = ExtResource("sounds_set")

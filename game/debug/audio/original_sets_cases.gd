@@ -1,16 +1,14 @@
 extends RefCounted
 
-## RFC-052 052b (F361): the sets baked from the original's import (tools/bake/bake_sound_sets.gd) load through
-## SoundLibrary, and their streams are what the importer wrote:
-## - with the import (assets/original/audio/index.json): the creature set of CREATURE resolves; the hit of its melee
-##   fallback (fist, Xhit) is an AudioStreamWAV at 22050 Hz, 16 bit or QOA mono, whose length is the file's PCM; its `selected`
+## The sets made from the original's audio load, and their streams are what the importer wrote:
+## - with the import (assets/original/audio/index.json): the `sounds` of the creature CREATURE resolve; the swing of its melee
+##   fallback (fist) is an AudioStreamWAV at 22050 Hz, 16 bit or QOA mono, whose length is the file's PCM; its `selected`
 ##   voice is a non-empty stream on the Voice bus.
-## - without it (the folder moved aside, a clone without the audio): the same lookups give null, silently.
+## - without it (the folder moved aside): the world set gives null, silently.
 ## Runs only with the gate open (`--audio-probe`).
 
 const INDEX := "res://assets/original/audio/index.json"
 const CREATURE := &"plfl"   # Gnome (gnom voice set, fist melee set): both kinds of stream
-const MELEE_HIT := &"Xhit"   # a type code with no SoundEvent yet keeps its code
 const RATE := 22050
 const WAV_HEADER := 44
 
@@ -18,9 +16,10 @@ const WAV_HEADER := 44
 func run(_host: Node) -> Dictionary:
 	SoundLibrary.reset_roots()
 	var imported := FileAccess.file_exists(INDEX)
-	var sound_set := SoundLibrary.creature(CREATURE)
+	var type: CreatureType = GameData.creature(String(CREATURE))
+	var sound_set: SoundSet = type.sounds if type != null else null
 	if not imported:
-		return {"original_sets_absent": {"ok": sound_set == null and SoundLibrary.sound_set("world") == null,
+		return {"original_sets_absent": {"ok": SoundLibrary.sound_set("world") == null,
 			"note": "sin import del original: silencio", "set_found": sound_set != null}}
 	var results := {}
 	results["original_sets_creature"] = _creature(sound_set)
@@ -33,7 +32,7 @@ func run(_host: Node) -> Dictionary:
 func _creature(sound_set: SoundSet) -> Dictionary:
 	if sound_set == null:
 		return {"ok": false, "reason": "no set for %s" % CREATURE}
-	var swing := sound_set.cue(MELEE_HIT)
+	var swing := sound_set.cue(SoundEvent.SWING)
 	var voice := sound_set.cue(SoundEvent.SELECTED)
 	var info := {"has_swing": swing != null, "has_voice": voice != null, "fallback": sound_set.fallback != null}
 	if swing == null or voice == null or swing.streams.is_empty() or voice.streams.is_empty():

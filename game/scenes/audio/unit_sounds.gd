@@ -2,13 +2,13 @@
 class_name UnitSounds
 extends BodySounds
 
-## RFC-052 052c (F362): child of units/unit.tscn. A creature's sounds from what every peer already has (replicated state):
+## Child of units/unit.tscn. A creature's sounds from what every peer already has (replicated state):
 ## - `summon` when its mode becomes SUMMONING, or when it is born in it (a summon spawned on a client);
 ## - `swing` and `shoot` on UnitBody.swung / shot_started (the setters of the replicated `swings` and `shots`);
 ## - `damaged` when Health.current goes down and the body is alive (BodySounds limits it per body);
 ## - `death` when its mode becomes DEAD.
-## Its set is data/audio/creatures/<file>.tres of the replicated `creature_tag` (SoundLibrary.creature). No set: silence.
-## Remove the node to silence every creature.
+## Its set is `body.type.sounds` (the CreatureType of the replicated `creature_tag`). No set: silence, except `summon`: the
+## `summon` cue below sounds for every creature that has none of its own. Remove the node to silence every creature.
 
 @export var body: UnitBody:
 	set(value):
@@ -18,6 +18,9 @@ extends BodySounds
 	set(value):
 		health = value
 		update_configuration_warnings()
+
+## The sound of being summoned, the same for every creature (a set may bring its own `summon`).
+@export var summon: SoundCue
 
 var _last_health := 0.0
 
@@ -36,7 +39,11 @@ func _ready() -> void:
 
 
 func own_set() -> SoundSet:
-	return SoundLibrary.creature(StringName(body.creature_tag)) if body != null else null
+	return body.type.sounds if body != null and body.type != null else null
+
+
+func default_cue(event: StringName) -> SoundCue:
+	return summon if event == SoundEvent.SUMMON else null
 
 
 func anchor() -> Node3D:

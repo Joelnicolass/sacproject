@@ -1,32 +1,88 @@
 extends RefCounted
 
-## RFC-052 052c (F362): how a body finds its set, without the original's audio (fixture sets only).
-## - SoundLibrary.creature(tag) uses the file name of the CreatureType: EHTH's catalog file is EHTH_2.tres, so its set is
-##   creatures/EHTH_2.tres; ehtH (its own file ehtH.tres) does not take it. A tag the catalog lacks keeps the tag (`test`).
-## - A tag with no set anywhere is null (silence) and the lookup prints nothing.
+## 055o-b: how a body finds its cue, with sets made here (no audio file, no original).
+## - A creature's own field wins; an empty field asks the `fallback` set (the melee set); nothing: silence.
+## - `summon` of the set wins over UnitSounds.summon; a creature with no set still has the summon sound; a silent cue is silence.
+## - A wizard has no summon: its set or nothing.
+## - CommandVoice reads the same set (`type.sounds`) of the creature it hears.
 ## Runs only with the gate open (`--audio-probe`).
 
-const FIXTURE_ROOT := "res://debug/audio/fixtures/sets/"
-const EMPTY_ROOT := "res://debug/audio/fixtures/empty/"
 
-
-func run(_host: Node) -> Dictionary:
+func run(host: Node) -> Dictionary:
 	var results := {}
-	SoundLibrary.roots = PackedStringArray([FIXTURE_ROOT])
-	SoundLibrary.clear_cache()
-	var ehth := SoundLibrary.creature(&"EHTH")
-	var other := SoundLibrary.creature(&"ehtH")
-	var plain := SoundLibrary.creature(&"test")
-	results["body_sounds_catalog_file"] = {
-		"ok": ehth != null and ehth.resource_path == FIXTURE_ROOT + "creatures/EHTH_2.tres" and other == null and plain != null,
-		"EHTH": ehth.resource_path if ehth else "",
-		"ehtH": other.resource_path if other else "",
-		"test": plain.resource_path if plain else "",
-		"file_of_EHTH": SoundLibrary.type_file(GameData.creature("EHTH"), &"EHTH"),
+	var melee_swing := _cue()
+	var own_death := _cue()
+	var own_swing := _cue()
+	var melee := SoundSet.new()
+	melee.swing = melee_swing
+	var own := SoundSet.new()
+	own.death = own_death
+	own.fallback = melee
+	var summon := _cue()
+	var set_summon := _cue()
+
+	var unit := _unit(host, own, summon)
+	results["body_sounds_fields"] = {
+		"ok": unit.cue_for(SoundEvent.DEATH) == own_death and unit.cue_for(SoundEvent.SWING) == melee_swing \
+			and unit.cue_for(SoundEvent.SHOOT) == null and unit.cue_for(SoundEvent.DAMAGED) == null,
 	}
-	SoundLibrary.roots = PackedStringArray([EMPTY_ROOT])
-	SoundLibrary.clear_cache()
-	results["body_sounds_no_set"] = {"ok": SoundLibrary.creature(&"nmuh") == null and SoundLibrary.wizard(&"cwa0") == null \
-		and SoundLibrary.sound_set("world") == null}
-	SoundLibrary.reset_roots()
+	own.swing = own_swing
+	own.summon = set_summon
+	results["body_sounds_own_wins"] = {"ok": unit.cue_for(SoundEvent.SWING) == own_swing and unit.cue_for(SoundEvent.SUMMON) == set_summon}
+	own.summon = null
+	results["body_sounds_summon_default"] = {"ok": unit.cue_for(SoundEvent.SUMMON) == summon}
+	own.summon = SoundCue.new()
+	results["body_sounds_silent_cue"] = {"ok": unit.cue_for(SoundEvent.SUMMON) == null}
+	_free(unit)
+
+	var bare := _unit(host, null, summon)
+	results["body_sounds_no_set"] = {"ok": bare.cue_for(SoundEvent.SUMMON) == summon and bare.cue_for(SoundEvent.DEATH) == null}
+	_free(bare)
+
+	var wizard_set := SoundSet.new()
+	wizard_set.incantation = _cue()
+	var type := WizardType.new()
+	type.sounds = wizard_set
+	results["body_sounds_wizard"] = {"ok": BodySounds.resolve(type.sounds, SoundEvent.INCANTATION) == wizard_set.incantation \
+		and BodySounds.resolve(type.sounds, SoundEvent.SUMMON) == null and BodySounds.resolve(null, SoundEvent.DEATH) == null}
+
+	var voice := CommandVoice.new()
+	host.add_child(voice)
+	var speaker := UnitBody.new()
+	speaker.type = CreatureType.new()
+	speaker.type.sounds = own
+	var selected := _cue()
+	own.selected = selected
+	results["body_sounds_command_voice"] = {"ok": voice.cue_for(speaker, SoundEvent.SELECTED) == selected \
+		and voice.cue_for(speaker, SoundEvent.ANNOYED) == null}
+	speaker.free()
+	voice.queue_free()
 	return results
+
+
+## A cue with one stream made here (not loaded from a file).
+func _cue() -> SoundCue:
+	var stream := AudioStreamWAV.new()
+	stream.data = PackedByteArray([0, 40, 0, 216])
+	var cue := SoundCue.new()
+	cue.streams = [stream]
+	return cue
+
+
+## A UnitSounds on a creature that is not in the tree, with `sounds` in its type and `summon` as the shared summon cue.
+func _unit(host: Node, sounds: SoundSet, summon: SoundCue) -> UnitSounds:
+	var body := UnitBody.new()
+	body.type = CreatureType.new()
+	body.type.sounds = sounds
+	var sounds_node := UnitSounds.new()
+	sounds_node.body = body
+	sounds_node.health = Health.new()
+	sounds_node.summon = summon
+	host.add_child(sounds_node)
+	return sounds_node
+
+
+func _free(sounds_node: UnitSounds) -> void:
+	sounds_node.body.free()
+	sounds_node.health.free()
+	sounds_node.queue_free()

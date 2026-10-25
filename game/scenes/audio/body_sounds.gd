@@ -2,20 +2,16 @@
 class_name BodySounds
 extends Node
 
-## RFC-052 052c (F362): the shared contract of UnitSounds and WizardSounds (the children that turn a body's replicated state
-## into SoundEvents). It owns how an event finds its cue and the per-body limit of `damaged`; the subclasses only wire signals.
-## - Where a cue comes from, in order: the body's own set (SoundLibrary, with its `fallback` chain: the melee set), then the
-##   `aliases` of the event in that set (a fist creature has no `swing` but its melee set has `Xhit`), then the shared set
-##   (`shared_set`, the world: `summon` lives there). No cue anywhere: silence, no log entry, no warning.
+## The shared part of UnitSounds and WizardSounds, the children that turn a body's replicated state into sound events. It owns
+## how an event finds its cue and the per-body limit of `damaged`; the subclasses only wire the signals. It does not decide
+## what the body sounds like: that is the `sounds` set of its CreatureType or WizardType.
+## - Where a cue comes from: the body's own set (`type.sounds`, with its `fallback` chain: the melee set), then `default_cue`
+##   (UnitSounds: the summon cue every creature shares). No cue anywhere: silence, no log entry, no warning.
 ## - Everything is client presentation: it reads replicated state and signals, never writes the body, never draws from the
 ##   global generator (SoundBus has its own), never adds an RPC. With the AudioGate closed (dedicated, room server, headless)
-##   it connects nothing and loads nothing.
-## The set is resolved at play time (the tag may arrive after `_ready` on a client); SoundLibrary caches it.
+##   it connects nothing and plays nothing.
+## The set is read at play time (the type may arrive after `_ready` on a client).
 
-## Event -> another key tried in the own set when the event has no cue there (one hop).
-@export var aliases: Dictionary[StringName, StringName] = {&"swing": &"Xhit", &"shoot": &"swing"}
-## The set asked last (SoundLibrary path under a root, "" = none): the original's world set holds `summon`.
-@export var shared_set := "world"
 ## `damaged` plays at most once in this many seconds of game time per body (a poison tick or a swarm would chain it).
 @export_range(0.0, 10.0, 0.1, "suffix:s") var damaged_every_s := 1.5
 ## Height over the body origin where the sound sits.
@@ -33,14 +29,16 @@ func _ready() -> void:
 
 ## The cue that answers `event` for this body now, or null (no set, no cue: silence). The lab asks it to know what to expect.
 func cue_for(event: StringName) -> SoundCue:
-	var own := own_set()
-	var cue: SoundCue = own.cue(event) if own != null else null
-	if cue == null and own != null and aliases.has(event):
-		cue = own.cue(aliases[event])
-	if cue == null and not shared_set.is_empty():
-		var shared := SoundLibrary.sound_set(shared_set)
-		cue = shared.cue(event) if shared != null else null
-	return cue if cue != null and not cue.is_silent() else null
+	return resolve(own_set(), event, default_cue(event))
+
+
+## The cue `sounds` gives for `event` (its fallback chain), else `otherwise`; null when there is none or it is silent. Static so the
+## command voice and the migration check ask the same rule.
+static func resolve(sounds: SoundSet, event: StringName, otherwise: SoundCue = null) -> SoundCue:
+	var found: SoundCue = sounds.cue(event) if sounds != null else null
+	if found == null:
+		found = otherwise
+	return found if found != null and not found.is_silent() else null
 
 
 ## Plays `event` at the body. False when it is silent or SoundBus dropped it.
@@ -70,8 +68,13 @@ static func game_seconds() -> float:
 	return float(Engine.get_physics_frames()) / float(Engine.physics_ticks_per_second)
 
 
-## The body's own set (subclasses: SoundLibrary.creature / wizard of the replicated tag).
+## The body's own set (subclasses: `sounds` of its CreatureType or WizardType).
 func own_set() -> SoundSet:
+	return null
+
+
+## The cue an event gets when the own set has none (subclasses: the creature's summon).
+func default_cue(_event: StringName) -> SoundCue:
 	return null
 
 

@@ -133,31 +133,42 @@ func _watch_aborts() -> bool:
 
 func _payoff_purse() -> bool:
 	var ok := true
+	## One caster slot per class: a wizard queued for deletion is still in the group until the frame ends.
 	for kind: Ritual.Kind in [Ritual.Kind.DESECRATE, Ritual.Kind.CONVERT]:
-		var caster := _wizard(7, Vector3(140.0, 0.1, 140.0))
+		var slot := 7 + int(kind)
+		var label := Ritual.Kind.keys()[kind] as String
+		var caster := _wizard(slot, Vector3(140.0, 0.1, 140.0))
 		var purse := caster.get_node("SoulPurse") as SoulPurse
 		var before := purse.count
 		var paid := _ritual(kind)
-		paid.caster_slot = 7
+		paid.caster_slot = slot
 		paid.target_slot = 5
 		paid.souls = 4
 		paid.creature = _unit(5, Vector3(150.0, 0.1, 150.0))
 		paid.complete()
-		ok = ok and paid.outcome == Ritual.Outcome.COMPLETED and purse.count == before + 4
-		ok = ok and paid.creature.is_queued_for_deletion()
+		ok = _check(ok, paid.outcome == Ritual.Outcome.COMPLETED, "%s paid outcome=%s" % [label, paid.outcome])
+		ok = _check(ok, purse.count == before + 4, "%s paid purse=%s before=%s" % [label, purse.count, before])
+		ok = _check(ok, paid.creature.is_queued_for_deletion(), "%s paid creature queued=%s" % [label, paid.creature.is_queued_for_deletion()])
 		var unpaid := _ritual(kind)
-		unpaid.caster_slot = 7
+		unpaid.caster_slot = slot
 		unpaid.souls = 4
 		unpaid.creature = _unit(5, Vector3(160.0, 0.1, 160.0))
 		unpaid.remove_child(unpaid.payoff)
 		unpaid.payoff.free()
 		unpaid.payoff = null
 		unpaid.complete()
-		ok = ok and unpaid.outcome == Ritual.Outcome.COMPLETED and purse.count == before + 4
-		ok = ok and not unpaid.creature.is_queued_for_deletion()
+		ok = _check(ok, unpaid.outcome == Ritual.Outcome.COMPLETED, "%s unpaid outcome=%s" % [label, unpaid.outcome])
+		ok = _check(ok, purse.count == before + 4, "%s unpaid purse=%s expected=%s" % [label, purse.count, before + 4])
+		ok = _check(ok, not unpaid.creature.is_queued_for_deletion(), "%s unpaid creature queued" % label)
 		for node: Node in [caster, paid, unpaid, unpaid.creature]:
 			node.queue_free()
 	return ok
+
+
+func _check(ok: bool, passed: bool, what: String) -> bool:
+	if not passed:
+		print("RITUAL PARTS   falla: %s" % what)
+	return ok and passed
 
 
 func _no_drain_without_part() -> bool:

@@ -20,6 +20,8 @@ func _initialize() -> void:
 	var args := OS.get_cmdline_user_args()
 	if args.size() > 0:
 		_mode = args[0]
+	## create_instance() needs the tree running: in _initialize the root is not inside the tree yet.
+	await process_frame
 	quit(_main())
 
 

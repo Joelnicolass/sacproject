@@ -59,6 +59,13 @@ const PLAYBACK := &"parameters/playback"
 ## Bounding box of the rest pose (from the exporter index at bake time).
 @export var bind_aabb := AABB()
 
+@export_group("Ragdoll")
+## The physical skeleton the body falls and hangs with (the `Ragdoll` simulator under the Skeleton3D, written by tools/bake/bake_ragdolls.gd).
+## Empty: the model never falls as a rag doll (it plays its death clip or tips over).
+@export var ragdoll: PhysicalBoneSimulator3D
+## The physical bone a hanging body dangles from: a child of `ragdoll`. Empty: the model never hangs (a captive plays its clips).
+@export var hang_bone: PhysicalBone3D
+
 @onready var _model: Node3D = %Model
 @onready var _tree: AnimationTree = %Tree
 @onready var _clips: AnimationPlayer = %Clips
@@ -127,6 +134,15 @@ func clips_player() -> AnimationPlayer:
 ## The library of the model (role -> Animation), the same file the rules read through ClipFacts.
 func library() -> AnimationLibrary:
 	return _clips.get_animation_library(&"") if _clips != null else null
+
+
+## The physical skeleton of the model, null without one.
+## WORKAROUND: a scene that does not assign `ragdoll` yet (the models are rewritten by the bake) falls back to the `Ragdoll` child of the skeleton.
+func ragdoll_simulator() -> PhysicalBoneSimulator3D:
+	if ragdoll != null:
+		return ragdoll
+	var skin := skeleton()
+	return skin.find_child("Ragdoll", false, false) as PhysicalBoneSimulator3D if skin != null else null
 
 
 ## The state machine of the Tree.
@@ -206,6 +222,12 @@ func _get_configuration_warnings() -> PackedStringArray:
 	elif scene_file_path.is_empty() == false and scene_file_path.get_file().get_basename() != model:
 		warnings.append("El archivo se llama «%s» pero `model` es «%s»: el juego busca la escena por `model`." % [
 			scene_file_path.get_file().get_basename(), model])
+	if hang_bone != null and ragdoll == null:
+		warnings.append("`hang_bone` está asignado pero falta `ragdoll`: el cuerpo no puede colgar sin el esqueleto físico.")
+	elif hang_bone != null and hang_bone.get_parent() != ragdoll:
+		warnings.append("`hang_bone` tiene que ser un hijo directo de `ragdoll` (un PhysicalBone3D del mismo simulador).")
+	if ragdoll != null and ragdoll.get_child_count() == 0:
+		warnings.append("`ragdoll` no tiene PhysicalBone3D: se hornean con tools/bake/bake_ragdolls.gd.")
 	var player := get_node_or_null("%Clips") as AnimationPlayer
 	if player == null or not player.has_animation(&"idle"):
 		warnings.append("Falta el nodo `Clips` con la biblioteca <modelo>_clips.tres (rol idle incluido): el cuerpo no tiene qué reproducir.")

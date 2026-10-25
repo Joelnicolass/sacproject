@@ -26,7 +26,6 @@ extends Node
 ## Seconds a revived creature takes to fade in, where it lies.
 @export_range(0.0, 3.0, 0.05, "suffix:s") var revive_fade_s := 0.6
 
-var _fade: Tween
 ## The body lies as a ragdoll (so it stands up by resetting it).
 var _ragdolled := false
 
@@ -43,9 +42,8 @@ func _ready() -> void:
 ## late (`instant`) never ragdolls: there is no fall to play, so it lies at once.
 func _on_laid_down(instant: bool) -> void:
 	if _can_ragdoll(instant):
-		body.clip_pose.frozen = true
 		_ragdolled = true
-		ragdoll.start(-body.facing_flat())
+		ragdoll.set_pose(RagdollDriver.Pose.FALL, -body.facing_flat())
 	elif corpse.clip_driven:
 		if instant:
 			body.clip_pose.play_ended(corpse.death_role)
@@ -58,16 +56,18 @@ func _on_laid_down(instant: bool) -> void:
 func _can_ragdoll(instant: bool) -> bool:
 	if instant or prefer_clip and corpse.clip_driven:
 		return false
-	var skeleton := visual.rig.skeleton() if visual.rig != null else null
-	if skeleton != null:
-		ragdoll.bind(skeleton)
+	var model := visual.rig.model_root() if visual.rig != null else null
+	if model != null:
+		ragdoll.bind_model(model)
+		## WORKAROUND: unit.tscn wires the driver's clip_pose socket in 055a-5 s3; until then the body hands it over.
+		if ragdoll.clip_pose == null:
+			ragdoll.clip_pose = body.clip_pose
 	return ragdoll.available()
 
 
 func _on_dissolving_changed(on: bool) -> void:
-	_stop_fade()
 	if on:
-		_fade_to(1.0, minf(corpse_fade_s, corpse.dissolve_s))
+		visual.fade_to(1.0, minf(corpse_fade_s, corpse.dissolve_s))
 	else:
 		visual.set_fade(0.0)
 	_light_to(not on, minf(corpse_fade_s, corpse.dissolve_s))
@@ -77,33 +77,17 @@ func _on_dissolving_changed(on: bool) -> void:
 func _on_stood_up() -> void:
 	if _ragdolled:
 		_ragdolled = false
-		ragdoll.reset()
-		body.clip_pose.frozen = false
+		ragdoll.set_pose(RagdollDriver.Pose.OFF)
 		body.clip_pose.play("idle", true)
 	tipping.stand_up(false)
-	_stop_fade()
 	visual.set_fade(1.0)
-	_fade_to(0.0, revive_fade_s)
+	visual.fade_to(0.0, revive_fade_s)
 	_light_to(true, revive_fade_s)
-
-
-func _fade_to(target: float, seconds: float) -> void:
-	if seconds <= 0.0:
-		visual.set_fade(target)
-		return
-	_fade = create_tween()
-	_fade.tween_method(visual.set_fade, 1.0 - target, target, seconds)
 
 
 func _light_to(on: bool, seconds: float) -> void:
 	if light:
 		light.set_lit(on, seconds)
-
-
-func _stop_fade() -> void:
-	if _fade:
-		_fade.kill()
-		_fade = null
 
 
 func _get_configuration_warnings() -> PackedStringArray:

@@ -14,7 +14,9 @@ static func snapshot(simulator: Node) -> Dictionary:
 	for body: PhysicalBone3D in simulator.find_children("*", "PhysicalBone3D", true, false):
 		var entry := {"transform": body.transform, "offset": body.body_offset, "joint": body.joint_type, "limits": []}
 		for key in LIMITS:
-			entry["limits"].append(float(body.get(key)))
+			## A body without a joint (the root) has no constraint properties: null.
+			var limit: Variant = body.get(key)
+			entry["limits"].append(float(limit) if limit != null else 0.0)
 		var sizes: Array[Vector2] = []
 		var places: Array[Transform3D] = []
 		for shape: CollisionShape3D in body.find_children("*", "CollisionShape3D", false, false):

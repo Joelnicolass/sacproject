@@ -11,6 +11,70 @@
 [ext_resource type="Material" path="res://scenes/bodies/materials/fhbt_005.tres" id="mat_fhbt_005"]
 [ext_resource type="Material" path="res://scenes/bodies/materials/fhbt_006_cutout.tres" id="mat_fhbt_006_cutout"]
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ub7hl"]
+radius = 0.07929527
+height = 0.16859053
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jlclh"]
+radius = 0.11378521
+height = 0.5172055
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_8ylbv"]
+radius = 0.105727024
+height = 0.4379493
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u70hm"]
+radius = 0.105727024
+height = 0.31384152
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_6l6o8"]
+radius = 0.07929527
+height = 0.16859053
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_0fv7a"]
+radius = 0.07929527
+height = 0.16859053
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1mkau"]
+radius = 0.105727024
+height = 0.4126503
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5uurk"]
+radius = 0.105727024
+height = 0.46320352
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_6whl4"]
+radius = 0.08106061
+height = 0.17212123
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_r2xnx"]
+radius = 0.105727024
+height = 0.41265017
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_o4cwk"]
+radius = 0.105727024
+height = 0.4632035
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_57luj"]
+radius = 0.0810606
+height = 0.17212121
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_srn1s"]
+radius = 0.105727024
+height = 0.42357355
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_q15x7"]
+radius = 0.105727024
+height = 0.25723794
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_yhj3l"]
+radius = 0.07929527
+height = 0.16859053
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5to08"]
+radius = 0.07929527
+height = 0.16859053
+
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_mdr1i"]
 animation = &"attack"
 
@@ -119,22 +183,345 @@ states/thrash/node = SubResource("AnimationNodeAnimation_ipv87")
 states/thrash/position = Vector2(460, 150)
 transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_s6ei3"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_6o513"), "idle", "attack", SubResource("AnimationNodeStateMachineTransition_6o513"), "idle", "death", SubResource("AnimationNodeStateMachineTransition_6o513"), "idle", "held", SubResource("AnimationNodeStateMachineTransition_6o513"), "idle", "thrash", SubResource("AnimationNodeStateMachineTransition_6o513"), "idle", "rise", SubResource("AnimationNodeStateMachineTransition_6o513"), "idle", "fly", SubResource("AnimationNodeStateMachineTransition_6o513"), "idle", "takeoff", SubResource("AnimationNodeStateMachineTransition_6o513"), "idle", "knock", SubResource("AnimationNodeStateMachineTransition_6o513"), "idle", "fly_damage", SubResource("AnimationNodeStateMachineTransition_6o513"), "idle", "gesture", SubResource("AnimationNodeStateMachineTransition_6o513"), "idle", "hover", SubResource("AnimationNodeStateMachineTransition_6o513"), "idle", "fly_death", SubResource("AnimationNodeStateMachineTransition_6o513"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_6o513"), "run", "attack", SubResource("AnimationNodeStateMachineTransition_6o513"), "run", "death", SubResource("AnimationNodeStateMachineTransition_6o513"), "run", "held", SubResource("AnimationNodeStateMachineTransition_6o513"), "run", "thrash", SubResource("AnimationNodeStateMachineTransition_6o513"), "run", "rise", SubResource("AnimationNodeStateMachineTransition_6o513"), "run", "fly", SubResource("AnimationNodeStateMachineTransition_6o513"), "run", "takeoff", SubResource("AnimationNodeStateMachineTransition_6o513"), "run", "knock", SubResource("AnimationNodeStateMachineTransition_6o513"), "run", "fly_damage", SubResource("AnimationNodeStateMachineTransition_6o513"), "run", "gesture", SubResource("AnimationNodeStateMachineTransition_6o513"), "run", "hover", SubResource("AnimationNodeStateMachineTransition_6o513"), "run", "fly_death", SubResource("AnimationNodeStateMachineTransition_6o513"), "attack", "idle", SubResource("AnimationNodeStateMachineTransition_527l2"), "attack", "run", SubResource("AnimationNodeStateMachineTransition_6o513"), "attack", "death", SubResource("AnimationNodeStateMachineTransition_6o513"), "attack", "held", SubResource("AnimationNodeStateMachineTransition_6o513"), "attack", "thrash", SubResource("AnimationNodeStateMachineTransition_6o513"), "attack", "rise", SubResource("AnimationNodeStateMachineTransition_6o513"), "attack", "fly", SubResource("AnimationNodeStateMachineTransition_6o513"), "attack", "takeoff", SubResource("AnimationNodeStateMachineTransition_6o513"), "attack", "knock", SubResource("AnimationNodeStateMachineTransition_6o513"), "attack", "fly_damage", SubResource("AnimationNodeStateMachineTransition_6o513"), "attack", "gesture", SubResource("AnimationNodeStateMachineTransition_6o513"), "attack", "hover", SubResource("AnimationNodeStateMachineTransition_6o513"), "attack", "fly_death", SubResource("AnimationNodeStateMachineTransition_6o513"), "death", "idle", SubResource("AnimationNodeStateMachineTransition_6o513"), "death", "run", SubResource("AnimationNodeStateMachineTransition_6o513"), "death", "attack", SubResource("AnimationNodeStateMachineTransition_6o513"), "death", "held", SubResource("AnimationNodeStateMachineTransition_6o513"), "death", "thrash", SubResource("AnimationNodeStateMachineTransition_6o513"), "death", "rise", SubResource("AnimationNodeStateMachineTransition_6o513"), "death", "fly", SubResource("AnimationNodeStateMachineTransition_6o513"), "death", "takeoff", SubResource("AnimationNodeStateMachineTransition_6o513"), "death", "knock", SubResource("AnimationNodeStateMachineTransition_6o513"), "death", "fly_damage", SubResource("AnimationNodeStateMachineTransition_6o513"), "death", "gesture", SubResource("AnimationNodeStateMachineTransition_6o513"), "death", "hover", SubResource("AnimationNodeStateMachineTransition_6o513"), "death", "fly_death", SubResource("AnimationNodeStateMachineTransition_6o513"), "held", "idle", SubResource("AnimationNodeStateMachineTransition_6o513"), "held", "run", SubResource("AnimationNodeStateMachineTransition_6o513"), "held", "attack", SubResource("AnimationNodeStateMachineTransition_6o513"), "held", "death", SubResource("AnimationNodeStateMachineTransition_6o513"), "held", "thrash", SubResource("AnimationNodeStateMachineTransition_6o513"), "held", "rise", SubResource("AnimationNodeStateMachineTransition_6o513"), "held", "fly", SubResource("AnimationNodeStateMachineTransition_6o513"), "held", "takeoff", SubResource("AnimationNodeStateMachineTransition_6o513"), "held", "knock", SubResource("AnimationNodeStateMachineTransition_6o513"), "held", "fly_damage", SubResource("AnimationNodeStateMachineTransition_6o513"), "held", "gesture", SubResource("AnimationNodeStateMachineTransition_6o513"), "held", "hover", SubResource("AnimationNodeStateMachineTransition_6o513"), "held", "fly_death", SubResource("AnimationNodeStateMachineTransition_6o513"), "thrash", "idle", SubResource("AnimationNodeStateMachineTransition_6o513"), "thrash", "run", SubResource("AnimationNodeStateMachineTransition_6o513"), "thrash", "attack", SubResource("AnimationNodeStateMachineTransition_6o513"), "thrash", "death", SubResource("AnimationNodeStateMachineTransition_6o513"), "thrash", "held", SubResource("AnimationNodeStateMachineTransition_6o513"), "thrash", "rise", SubResource("AnimationNodeStateMachineTransition_6o513"), "thrash", "fly", SubResource("AnimationNodeStateMachineTransition_6o513"), "thrash", "takeoff", SubResource("AnimationNodeStateMachineTransition_6o513"), "thrash", "knock", SubResource("AnimationNodeStateMachineTransition_6o513"), "thrash", "fly_damage", SubResource("AnimationNodeStateMachineTransition_6o513"), "thrash", "gesture", SubResource("AnimationNodeStateMachineTransition_6o513"), "thrash", "hover", SubResource("AnimationNodeStateMachineTransition_6o513"), "thrash", "fly_death", SubResource("AnimationNodeStateMachineTransition_6o513"), "rise", "idle", SubResource("AnimationNodeStateMachineTransition_527l2"), "rise", "run", SubResource("AnimationNodeStateMachineTransition_6o513"), "rise", "attack", SubResource("AnimationNodeStateMachineTransition_6o513"), "rise", "death", SubResource("AnimationNodeStateMachineTransition_6o513"), "rise", "held", SubResource("AnimationNodeStateMachineTransition_6o513"), "rise", "thrash", SubResource("AnimationNodeStateMachineTransition_6o513"), "rise", "fly", SubResource("AnimationNodeStateMachineTransition_6o513"), "rise", "takeoff", SubResource("AnimationNodeStateMachineTransition_6o513"), "rise", "knock", SubResource("AnimationNodeStateMachineTransition_6o513"), "rise", "fly_damage", SubResource("AnimationNodeStateMachineTransition_6o513"), "rise", "gesture", SubResource("AnimationNodeStateMachineTransition_6o513"), "rise", "hover", SubResource("AnimationNodeStateMachineTransition_6o513"), "rise", "fly_death", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly", "idle", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly", "run", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly", "attack", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly", "death", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly", "held", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly", "thrash", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly", "rise", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly", "takeoff", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly", "knock", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly", "fly_damage", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly", "gesture", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly", "hover", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly", "fly_death", SubResource("AnimationNodeStateMachineTransition_6o513"), "takeoff", "idle", SubResource("AnimationNodeStateMachineTransition_6o513"), "takeoff", "run", SubResource("AnimationNodeStateMachineTransition_6o513"), "takeoff", "attack", SubResource("AnimationNodeStateMachineTransition_6o513"), "takeoff", "death", SubResource("AnimationNodeStateMachineTransition_6o513"), "takeoff", "held", SubResource("AnimationNodeStateMachineTransition_6o513"), "takeoff", "thrash", SubResource("AnimationNodeStateMachineTransition_6o513"), "takeoff", "rise", SubResource("AnimationNodeStateMachineTransition_6o513"), "takeoff", "fly", SubResource("AnimationNodeStateMachineTransition_6o513"), "takeoff", "knock", SubResource("AnimationNodeStateMachineTransition_6o513"), "takeoff", "fly_damage", SubResource("AnimationNodeStateMachineTransition_6o513"), "takeoff", "gesture", SubResource("AnimationNodeStateMachineTransition_6o513"), "takeoff", "hover", SubResource("AnimationNodeStateMachineTransition_6o513"), "takeoff", "fly_death", SubResource("AnimationNodeStateMachineTransition_6o513"), "knock", "idle", SubResource("AnimationNodeStateMachineTransition_6o513"), "knock", "run", SubResource("AnimationNodeStateMachineTransition_6o513"), "knock", "attack", SubResource("AnimationNodeStateMachineTransition_6o513"), "knock", "death", SubResource("AnimationNodeStateMachineTransition_6o513"), "knock", "held", SubResource("AnimationNodeStateMachineTransition_6o513"), "knock", "thrash", SubResource("AnimationNodeStateMachineTransition_6o513"), "knock", "rise", SubResource("AnimationNodeStateMachineTransition_6o513"), "knock", "fly", SubResource("AnimationNodeStateMachineTransition_6o513"), "knock", "takeoff", SubResource("AnimationNodeStateMachineTransition_6o513"), "knock", "fly_damage", SubResource("AnimationNodeStateMachineTransition_6o513"), "knock", "gesture", SubResource("AnimationNodeStateMachineTransition_6o513"), "knock", "hover", SubResource("AnimationNodeStateMachineTransition_6o513"), "knock", "fly_death", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_damage", "idle", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_damage", "run", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_damage", "attack", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_damage", "death", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_damage", "held", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_damage", "thrash", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_damage", "rise", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_damage", "fly", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_damage", "takeoff", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_damage", "knock", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_damage", "gesture", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_damage", "hover", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_damage", "fly_death", SubResource("AnimationNodeStateMachineTransition_6o513"), "gesture", "idle", SubResource("AnimationNodeStateMachineTransition_6o513"), "gesture", "run", SubResource("AnimationNodeStateMachineTransition_6o513"), "gesture", "attack", SubResource("AnimationNodeStateMachineTransition_6o513"), "gesture", "death", SubResource("AnimationNodeStateMachineTransition_6o513"), "gesture", "held", SubResource("AnimationNodeStateMachineTransition_6o513"), "gesture", "thrash", SubResource("AnimationNodeStateMachineTransition_6o513"), "gesture", "rise", SubResource("AnimationNodeStateMachineTransition_6o513"), "gesture", "fly", SubResource("AnimationNodeStateMachineTransition_6o513"), "gesture", "takeoff", SubResource("AnimationNodeStateMachineTransition_6o513"), "gesture", "knock", SubResource("AnimationNodeStateMachineTransition_6o513"), "gesture", "fly_damage", SubResource("AnimationNodeStateMachineTransition_6o513"), "gesture", "hover", SubResource("AnimationNodeStateMachineTransition_6o513"), "gesture", "fly_death", SubResource("AnimationNodeStateMachineTransition_6o513"), "hover", "idle", SubResource("AnimationNodeStateMachineTransition_6o513"), "hover", "run", SubResource("AnimationNodeStateMachineTransition_6o513"), "hover", "attack", SubResource("AnimationNodeStateMachineTransition_6o513"), "hover", "death", SubResource("AnimationNodeStateMachineTransition_6o513"), "hover", "held", SubResource("AnimationNodeStateMachineTransition_6o513"), "hover", "thrash", SubResource("AnimationNodeStateMachineTransition_6o513"), "hover", "rise", SubResource("AnimationNodeStateMachineTransition_6o513"), "hover", "fly", SubResource("AnimationNodeStateMachineTransition_6o513"), "hover", "takeoff", SubResource("AnimationNodeStateMachineTransition_6o513"), "hover", "knock", SubResource("AnimationNodeStateMachineTransition_6o513"), "hover", "fly_damage", SubResource("AnimationNodeStateMachineTransition_6o513"), "hover", "gesture", SubResource("AnimationNodeStateMachineTransition_6o513"), "hover", "fly_death", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_death", "idle", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_death", "run", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_death", "attack", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_death", "death", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_death", "held", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_death", "thrash", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_death", "rise", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_death", "fly", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_death", "takeoff", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_death", "knock", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_death", "fly_damage", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_death", "gesture", SubResource("AnimationNodeStateMachineTransition_6o513"), "fly_death", "hover", SubResource("AnimationNodeStateMachineTransition_6o513"), "attack", "attack2", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack2", "attack", SubResource("AnimationNodeStateMachineTransition_eposk"), "death", "attack2", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack2", "death", SubResource("AnimationNodeStateMachineTransition_eposk"), "fly", "attack2", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack2", "fly", SubResource("AnimationNodeStateMachineTransition_eposk"), "fly_damage", "attack2", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack2", "fly_damage", SubResource("AnimationNodeStateMachineTransition_eposk"), "fly_death", "attack2", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack2", "fly_death", SubResource("AnimationNodeStateMachineTransition_eposk"), "gesture", "attack2", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack2", "gesture", SubResource("AnimationNodeStateMachineTransition_eposk"), "held", "attack2", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack2", "held", SubResource("AnimationNodeStateMachineTransition_eposk"), "hover", "attack2", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack2", "hover", SubResource("AnimationNodeStateMachineTransition_eposk"), "idle", "attack2", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack2", "idle", SubResource("AnimationNodeStateMachineTransition_527l2"), "knock", "attack2", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack2", "knock", SubResource("AnimationNodeStateMachineTransition_eposk"), "rise", "attack2", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack2", "rise", SubResource("AnimationNodeStateMachineTransition_eposk"), "run", "attack2", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack2", "run", SubResource("AnimationNodeStateMachineTransition_eposk"), "takeoff", "attack2", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack2", "takeoff", SubResource("AnimationNodeStateMachineTransition_eposk"), "thrash", "attack2", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack2", "thrash", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack", "attack3", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack3", "attack", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack2", "attack3", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack3", "attack2", SubResource("AnimationNodeStateMachineTransition_eposk"), "death", "attack3", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack3", "death", SubResource("AnimationNodeStateMachineTransition_eposk"), "fly", "attack3", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack3", "fly", SubResource("AnimationNodeStateMachineTransition_eposk"), "fly_damage", "attack3", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack3", "fly_damage", SubResource("AnimationNodeStateMachineTransition_eposk"), "fly_death", "attack3", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack3", "fly_death", SubResource("AnimationNodeStateMachineTransition_eposk"), "gesture", "attack3", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack3", "gesture", SubResource("AnimationNodeStateMachineTransition_eposk"), "held", "attack3", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack3", "held", SubResource("AnimationNodeStateMachineTransition_eposk"), "hover", "attack3", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack3", "hover", SubResource("AnimationNodeStateMachineTransition_eposk"), "idle", "attack3", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack3", "idle", SubResource("AnimationNodeStateMachineTransition_527l2"), "knock", "attack3", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack3", "knock", SubResource("AnimationNodeStateMachineTransition_eposk"), "rise", "attack3", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack3", "rise", SubResource("AnimationNodeStateMachineTransition_eposk"), "run", "attack3", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack3", "run", SubResource("AnimationNodeStateMachineTransition_eposk"), "takeoff", "attack3", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack3", "takeoff", SubResource("AnimationNodeStateMachineTransition_eposk"), "thrash", "attack3", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack3", "thrash", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack", "shoot", SubResource("AnimationNodeStateMachineTransition_eposk"), "shoot", "attack", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack2", "shoot", SubResource("AnimationNodeStateMachineTransition_eposk"), "shoot", "attack2", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack3", "shoot", SubResource("AnimationNodeStateMachineTransition_eposk"), "shoot", "attack3", SubResource("AnimationNodeStateMachineTransition_eposk"), "death", "shoot", SubResource("AnimationNodeStateMachineTransition_eposk"), "shoot", "death", SubResource("AnimationNodeStateMachineTransition_eposk"), "fly", "shoot", SubResource("AnimationNodeStateMachineTransition_eposk"), "shoot", "fly", SubResource("AnimationNodeStateMachineTransition_eposk"), "fly_damage", "shoot", SubResource("AnimationNodeStateMachineTransition_eposk"), "shoot", "fly_damage", SubResource("AnimationNodeStateMachineTransition_eposk"), "fly_death", "shoot", SubResource("AnimationNodeStateMachineTransition_eposk"), "shoot", "fly_death", SubResource("AnimationNodeStateMachineTransition_eposk"), "gesture", "shoot", SubResource("AnimationNodeStateMachineTransition_eposk"), "shoot", "gesture", SubResource("AnimationNodeStateMachineTransition_eposk"), "held", "shoot", SubResource("AnimationNodeStateMachineTransition_eposk"), "shoot", "held", SubResource("AnimationNodeStateMachineTransition_eposk"), "hover", "shoot", SubResource("AnimationNodeStateMachineTransition_eposk"), "shoot", "hover", SubResource("AnimationNodeStateMachineTransition_eposk"), "idle", "shoot", SubResource("AnimationNodeStateMachineTransition_eposk"), "shoot", "idle", SubResource("AnimationNodeStateMachineTransition_527l2"), "knock", "shoot", SubResource("AnimationNodeStateMachineTransition_eposk"), "shoot", "knock", SubResource("AnimationNodeStateMachineTransition_eposk"), "rise", "shoot", SubResource("AnimationNodeStateMachineTransition_eposk"), "shoot", "rise", SubResource("AnimationNodeStateMachineTransition_eposk"), "run", "shoot", SubResource("AnimationNodeStateMachineTransition_eposk"), "shoot", "run", SubResource("AnimationNodeStateMachineTransition_eposk"), "takeoff", "shoot", SubResource("AnimationNodeStateMachineTransition_eposk"), "shoot", "takeoff", SubResource("AnimationNodeStateMachineTransition_eposk"), "thrash", "shoot", SubResource("AnimationNodeStateMachineTransition_eposk"), "shoot", "thrash", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack", "hit_floor", SubResource("AnimationNodeStateMachineTransition_eposk"), "hit_floor", "attack", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack2", "hit_floor", SubResource("AnimationNodeStateMachineTransition_eposk"), "hit_floor", "attack2", SubResource("AnimationNodeStateMachineTransition_eposk"), "attack3", "hit_floor", SubResource("AnimationNodeStateMachineTransition_eposk"), "hit_floor", "attack3", SubResource("AnimationNodeStateMachineTransition_eposk"), "death", "hit_floor", SubResource("AnimationNodeStateMachineTransition_eposk"), "hit_floor", "death", SubResource("AnimationNodeStateMachineTransition_eposk"), "fly", "hit_floor", SubResource("AnimationNodeStateMachineTransition_eposk"), "hit_floor", "fly", SubResource("AnimationNodeStateMachineTransition_eposk"), "fly_damage", "hit_floor", SubResource("AnimationNodeStateMachineTransition_eposk"), "hit_floor", "fly_damage", SubResource("AnimationNodeStateMachineTransition_eposk"), "fly_death", "hit_floor", SubResource("AnimationNodeStateMachineTransition_eposk"), "hit_floor", "fly_death", SubResource("AnimationNodeStateMachineTransition_eposk"), "gesture", "hit_floor", SubResource("AnimationNodeStateMachineTransition_eposk"), "hit_floor", "gesture", SubResource("AnimationNodeStateMachineTransition_eposk"), "held", "hit_floor", SubResource("AnimationNodeStateMachineTransition_eposk"), "hit_floor", "held", SubResource("AnimationNodeStateMachineTransition_eposk"), "hover", "hit_floor", SubResource("AnimationNodeStateMachineTransition_eposk"), "hit_floor", "hover", SubResource("AnimationNodeStateMachineTransition_eposk"), "idle", "hit_floor", SubResource("AnimationNodeStateMachineTransition_eposk"), "hit_floor", "idle", SubResource("AnimationNodeStateMachineTransition_527l2"), "knock", "hit_floor", SubResource("AnimationNodeStateMachineTransition_eposk"), "hit_floor", "knock", SubResource("AnimationNodeStateMachineTransition_eposk"), "rise", "hit_floor", SubResource("AnimationNodeStateMachineTransition_eposk"), "hit_floor", "rise", SubResource("AnimationNodeStateMachineTransition_eposk"), "run", "hit_floor", SubResource("AnimationNodeStateMachineTransition_eposk"), "hit_floor", "run", SubResource("AnimationNodeStateMachineTransition_eposk"), "shoot", "hit_floor", SubResource("AnimationNodeStateMachineTransition_eposk"), "hit_floor", "shoot", SubResource("AnimationNodeStateMachineTransition_eposk"), "takeoff", "hit_floor", SubResource("AnimationNodeStateMachineTransition_eposk"), "hit_floor", "takeoff", SubResource("AnimationNodeStateMachineTransition_eposk"), "thrash", "hit_floor", SubResource("AnimationNodeStateMachineTransition_eposk"), "hit_floor", "thrash", SubResource("AnimationNodeStateMachineTransition_eposk")]
 
-[node name="fhbt" type="Node3D" unique_id=309850075]
+[node name="fhbt" type="Node3D" unique_id=309850075 node_paths=PackedStringArray("ragdoll", "hang_bone")]
 script = ExtResource("1_80mhn")
 model = "fhbt"
 bind_aabb = AABB(-2.425686, -1.037258, -1.000809, 4.8611755, 2.4302402, 1.703988)
+ragdoll = NodePath("Model/Skeleton3D/Ragdoll")
+hang_bone = NodePath("Model/Skeleton3D/Ragdoll/Bone_root")
 
 [node name="Model" parent="." unique_id=387724924 instance=ExtResource("2_tmtpt")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 
-[node name="fhbt_mesh" parent="Model/Skeleton3D" index="0"]
+[node name="fhbt_mesh" parent="Model/Skeleton3D" parent_id_path=PackedInt32Array(387724924, 73982102) index="0" unique_id=1693141437]
 surface_material_override/0 = ExtResource("mat_fhbt_001")
 surface_material_override/1 = ExtResource("mat_fhbt_002")
 surface_material_override/2 = ExtResource("mat_fhbt_003")
 surface_material_override/3 = ExtResource("mat_fhbt_004")
 surface_material_override/4 = ExtResource("mat_fhbt_005")
 surface_material_override/5 = ExtResource("mat_fhbt_006_cutout")
+
+[node name="HandL" type="BoneAttachment3D" parent="Model/Skeleton3D" parent_id_path=PackedInt32Array(387724924, 73982102) index="1" unique_id=810651826]
+visible = false
+bone_name = "bone_15"
+
+[node name="Socket" type="Marker3D" parent="Model/Skeleton3D/HandL" unique_id=259935488]
+
+[node name="Ragdoll" type="PhysicalBoneSimulator3D" parent="Model/Skeleton3D" parent_id_path=PackedInt32Array(387724924, 73982102) index="2" unique_id=25537683]
+process_mode = 4
+
+[node name="Bone_root" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=777805629]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+collision_layer = 16
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 2.5061767
+friction = 0.8
+bone_name = "root"
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_root" unique_id=522615447]
+transform = Transform3D(1, -7.396928e-09, -7.396928e-09, 7.396928e-09, 0, 1, -7.396928e-09, -1, 0, -5.8654137e-10, 0, -0.07929527)
+shape = SubResource("CapsuleShape3D_ub7hl")
+
+[node name="Bone_bone_01" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1154830602]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -1e-09, 0, 0.13519126)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(0, -0.83374673, -0.5521471, 0.83374673, 0.30486637, -0.46035084, 0.5521471, -0.46035084, 0.69513357, 0, 0, 0)
+joint_rotation = Vector3(0.4783904, -0.67125785, 1.2202407)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 16.82963
+friction = 0.8
+bone_name = "bone_01"
+joint_constraints/swing_span = 27.999998
+joint_constraints/twist_span = 18.0
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_01" unique_id=1208172433]
+transform = Transform3D(1, 3.228614e-09, -9.721463e-10, -3.228614e-09, 0.8337467, -0.55214715, -9.721463e-10, 0.55214715, 0.8337467, 8.3492846e-10, 0.2156092, 0.14278676)
+shape = SubResource("CapsuleShape3D_jlclh")
+
+[node name="Bone_bone_02" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1640881434]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -2.9999998e-09, 0.5364686, 0.008546546)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(0.0077317357, -0.9199582, 0.3919404, 0.9199582, 0.16017038, 0.3578023, -0.3919404, 0.3578023, 0.84756136, 0, 0, 0)
+joint_rotation = Vector3(-0.36591333, 0.433145, 1.3984181)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 12.3036995
+friction = 0.8
+bone_name = "bone_02"
+joint_constraints/swing_span = 27.999998
+joint_constraints/twist_span = 18.0
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_02" unique_id=1189284472]
+transform = Transform3D(0.9999689, 0.0077317515, 0.0015783604, -0.0077317515, 0.9199581, 0.3919404, 0.0015783604, -0.3919404, 0.9199892, 0.0016930576, 0.20144752, -0.08582501)
+shape = SubResource("CapsuleShape3D_8ylbv")
+
+[node name="Bone_bone_03" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1621213113]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -1.0999999e-08, 1.0249817, -0.11972307)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(0, -0.13924849, -0.99025744, 0.13924849, 0.98060983, -0.13789186, 0.99025744, -0.13789186, 0.019390106, 0, 0, 0)
+joint_rotation = Vector3(0.13833264, -1.5512179, 0.14105886)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 8.817029
+friction = 0.8
+bone_name = "bone_03"
+joint_constraints/swing_span = 27.999998
+joint_constraints/twist_span = 18.0
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_03" unique_id=203681627]
+transform = Transform3D(1, -7.912367e-08, 6.877587e-08, 7.912367e-08, 0.13924849, -0.9902575, 6.877587e-08, 0.9902575, 0.13924849, -1.2416147e-08, 0.021850977, 0.15539195)
+shape = SubResource("CapsuleShape3D_u70hm")
+
+[node name="Bone_bone_04" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1225445478]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -1.8999998e-08, 0.94185126, -0.261181)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(0, 0.5066576, -0.86214733, -0.5066576, 0.74329805, 0.43681353, 0.86214733, 0.43681353, 0.25670195, 0, 0, 0)
+joint_rotation = Vector3(-0.45205334, -1.2814076, -0.59829354)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 2.5061767
+friction = 0.8
+bone_name = "bone_04"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_04" unique_id=969655477]
+transform = Transform3D(1, -4.8757812e-08, 8.52074e-08, 4.8757812e-08, -0.5066577, -0.8621474, 8.52074e-08, 0.8621474, -0.5066577, -3.866264e-09, -0.040175557, 0.06836421)
+shape = SubResource("CapsuleShape3D_6l6o8")
+
+[node name="Bone_bone_05" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1280204505]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -3.8e-08, 1.1697081, -0.41630107)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(0, -0.43855637, -0.8987037, 0.43855637, 0.8076683, -0.39413223, 0.8987037, -0.39413223, 0.19233167, 0, 0, 0)
+joint_rotation = Vector3(0.40512344, -1.3599665, 0.49744585)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 2.5061767
+friction = 0.8
+bone_name = "bone_05"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_05" unique_id=1743868721]
+transform = Transform3D(1, -8.181659e-08, 5.111296e-08, 8.181659e-08, 0.43855637, -0.8987037, 5.111296e-08, 0.8987037, 0.43855637, -6.487668e-09, 0.034775443, 0.071262956)
+shape = SubResource("CapsuleShape3D_0fv7a")
+
+[node name="Bone_bone_06" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1506948475]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0.45742375, 0.8754833, 0.3211791)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(0.9840179, 0.17806959, -3.6350393e-08, -0.17806959, 0.9840179, 3.262521e-09, 3.6350393e-08, 3.262521e-09, 1, 0, 0, 0)
+joint_rotation = Vector3(-3.2625198e-09, -3.635039e-08, -0.17902434)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 11.592952
+friction = 0.8
+bone_name = "bone_06"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_06" unique_id=313260575]
+transform = Transform3D(-0.17806959, 0.9840178, -4.3518817e-08, -0.9840178, -0.17806959, -3.635039e-08, -4.3518817e-08, 3.635039e-08, 1, 0.20302764, -0.036740232, 7.5e-09)
+shape = SubResource("CapsuleShape3D_1mkau")
+
+[node name="Bone_bone_07" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=855021249]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0.863479, 0.8020028, 0.32117906)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(0.99958414, -0.028835993, -3.2383173e-08, 0.028835993, 0.99958414, -4.6699755e-10, 3.2383173e-08, -4.6699755e-10, 1, 0, 0, 0)
+joint_rotation = Vector3(4.669977e-10, -3.2383177e-08, 0.028839992)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 13.013188
+friction = 0.8
+bone_name = "bone_07"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_07" unique_id=1193340794]
+transform = Transform3D(0.028835893, 0.9995842, -3.146246e-08, -0.9995842, 0.028835893, -3.2383173e-08, -3.146246e-08, 3.2383173e-08, 1, 0.23150545, 0.0066784667, 7.5e-09)
+shape = SubResource("CapsuleShape3D_5uurk")
+
+[node name="Bone_bone_08" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1954930021]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 1.3264899, 0.8153597, 0.32117903)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(0.99958414, -0.028835993, -3.2383173e-08, 0.028835993, 0.99958414, -4.6699755e-10, 3.2383173e-08, -4.6699755e-10, 1, 0, 0, 0)
+joint_rotation = Vector3(4.669977e-10, -3.2383177e-08, 0.028839992)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 2.677315
+friction = 0.8
+bone_name = "bone_08"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_08" unique_id=1544303318]
+transform = Transform3D(0.028835893, 0.9995842, -3.146246e-08, -0.9995842, 0.028835893, -3.2383173e-08, -3.146246e-08, 3.2383173e-08, 1, 0.081026904, 0.0023374632, 2.6249998e-09)
+shape = SubResource("CapsuleShape3D_6whl4")
+
+[node name="Bone_bone_09" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=632417851]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -0.4476196, 0.87548333, 0.32117915)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(-0.98401797, 0.17806982, -3.6350382e-08, -0.17806982, -0.98401797, 4.0500862e-07, 3.6350382e-08, 4.0500862e-07, 1, 0, 0, 0)
+joint_rotation = Vector3(-4.0500856e-07, -3.635037e-08, -2.962568)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 11.592948
+friction = 0.8
+bone_name = "bone_09"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_09" unique_id=1928666810]
+transform = Transform3D(-0.17806995, -0.98401785, 4.3518845e-08, 0.98401785, -0.17806995, -3.6350404e-08, 4.3518845e-08, 3.6350404e-08, 1, -0.20302756, -0.036740292, 7.5e-09)
+shape = SubResource("CapsuleShape3D_r2xnx")
+
+[node name="Bone_bone_10" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=69248543]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -0.8536747, 0.8020027, 0.32117912)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(-0.9995842, -0.028832834, 0, 0.028832834, -0.9995842, 0, 0, 0, 1, 0, 0, 0)
+joint_rotation = Vector3(0, 0, 3.1127558)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 13.013187
+friction = 0.8
+bone_name = "bone_10"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_10" unique_id=989100781]
+transform = Transform3D(0.02883619, -0.9995842, 0, 0.9995842, 0.02883619, 0, 0, 0, 1, -0.23150544, 0.006678528, 0)
+shape = SubResource("CapsuleShape3D_o4cwk")
+
+[node name="Bone_bone_11" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1921422301]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -1.3166856, 0.8153598, 0.32117912)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(-0.9995842, -0.028832834, 0, 0.028832834, -0.9995842, 0, 0, 0, 1, 0, 0, 0)
+joint_rotation = Vector3(0, 0, 3.1127558)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 2.6773145
+friction = 0.8
+bone_name = "bone_11"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_11" unique_id=1427529865]
+transform = Transform3D(0.02883619, -0.9995842, 0, 0.9995842, 0.02883619, 0, 0, 0, 1, -0.0810269, 0.0023374846, 0)
+shape = SubResource("CapsuleShape3D_57luj")
+
+[node name="Bone_bone_12" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=874430451]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 2.0000002e-09, -0.2782319, 0.09081921)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(0, 0.99634635, 0.085404545, -0.99634635, 0.0072939396, -0.08509251, -0.085404545, -0.08509251, 0.99270606, 0, 0, 0)
+joint_rotation = Vector3(0.085195534, 0.085820735, -1.5634757)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 11.899829
+friction = 0.8
+bone_name = "bone_12"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_12" unique_id=1076693114]
+transform = Transform3D(1, -1.1804333e-08, -2.7592816e-07, 1.1804333e-08, -0.99634624, 0.0854046, -2.7592816e-07, -0.0854046, -0.99634624, -2.5e-09, -0.21101299, -0.018087553)
+shape = SubResource("CapsuleShape3D_srn1s")
+
+[node name="Bone_bone_13" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=852972592]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -2.9999998e-09, -0.7002579, 0.12699431)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(-1.1920929e-07, -0.040751353, -0.99916935, 0.040751353, 0.99833935, -0.040717505, 0.99916935, -0.040717505, 0.0016605854, 0, 0, 0)
+joint_rotation = Vector3(0.040728763, -1.5691344, 0.040796492)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 7.2268143
+friction = 0.8
+bone_name = "bone_13"
+joint_constraints/swing_span = 27.999998
+joint_constraints/twist_span = 18.0
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_13" unique_id=1737276220]
+transform = Transform3D(1, -4.4233776e-08, 4.2466468e-08, 4.4233776e-08, 0.04075128, -0.99916935, 4.2466468e-08, 0.99916935, 0.04075128, -5.689303e-09, 0.0052413964, 0.12851213)
+shape = SubResource("CapsuleShape3D_q15x7")
+
+[node name="Bone_bone_14" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1215989579]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -1.5e-08, -0.71852624, -0.11406997)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(-1.1920929e-07, 0.075565286, -0.9971409, -0.075565286, 0.9942899, 0.07534924, 0.9971409, 0.07534924, 0.0057100058, 0, 0, 0)
+joint_rotation = Vector3(-0.07542073, -1.56507, -0.07585344)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 2.5061767
+friction = 0.8
+bone_name = "bone_14"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_14" unique_id=1615063628]
+transform = Transform3D(1, -4.9636935e-08, 5.3540838e-08, 4.9636935e-08, -0.07556522, -0.9971409, 5.3540838e-08, 0.9971409, -0.07556522, -3.9359738e-09, -0.00599197, 0.07906856)
+shape = SubResource("CapsuleShape3D_yhj3l")
+
+[node name="Bone_bone_15" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1398241881]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -1.2999999e-08, -0.6617216, -0.12888578)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(-1.1920929e-07, -0.1489236, -0.98884875, 0.1489236, 0.97782177, -0.14726292, 0.98884875, -0.14726292, 0.022178113, 0, 0, 0)
+joint_rotation = Vector3(0.14780046, -1.5483719, 0.15113993)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 2.5061767
+friction = 0.8
+bone_name = "bone_15"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_15" unique_id=2065351957]
+transform = Transform3D(1, -3.8645005e-08, 3.326075e-08, 3.8645005e-08, 0.14892358, -0.98884875, 3.326075e-08, 0.98884875, 0.14892358, -3.0643659e-09, 0.0118089365, 0.07841102)
+shape = SubResource("CapsuleShape3D_5to08")
 
 [node name="Clips" type="AnimationPlayer" parent="." unique_id=1150907738]
 unique_name_in_owner = true
@@ -152,9 +539,4 @@ anim_player = NodePath("../Clips")
 unique_name_in_owner = true
 script = ExtResource("3_m4uxm")
 
-[node name="HandL" type="BoneAttachment3D" parent="Model/Skeleton3D"]
-visible = false
-bone_name = "bone_15"
-
-[node name="Socket" type="Marker3D" parent="Model/Skeleton3D/HandL"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.0, 0.0)
+[editable path="Model"]

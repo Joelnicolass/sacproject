@@ -235,3 +235,10 @@ Sobre `trogg_model`: 11 m/s durante 2 s y frenado; medido 7 s. El spike original
 - **Por par (D):** se sueltan **solo las 3 articulaciones que cuelgan de `root`** (`bone_01`, `bone_04` y `bone_16`, todas cono). Las otras 15 aguantan. Los hijos de la raíz se desprenden y caen.
 - **I** (D, y después de arrancar se rearma cada articulación, poniendo `joint_type` en NONE y de vuelta): aparecen todas, pero el cuerpo explota (stretch 34, 140 m/s). El marco de la articulación hacia la raíz (`joint_offset`/`joint_rotation` del bake contra el `body_offset` de `root`) parece estar mal, y Godot no la arma al arrancar.
 - **Siguiente paso de 055a-5j:** revisar cómo `ragdoll_bones.gd` calcula `joint_offset` para los hijos directos de la raíz y probar con `hang_spike.gd -- d`. Criterio: `loose 0/18` y stretch ≤ 1,3. Eso también arregla la muerte: hoy los 3 miembros que cuelgan de la raíz se sueltan, y el piso lo disimula (F: stretch 2,4).
+
+### 17.2 Bake y galería de caída (s5)
+- **Bake:** `--missing --skip=sac_doctor_model` dio `baked=53 completed=20 failed=0`, y una segunda corrida `baked=0`. El chequeo de ida y vuelta fallaba en el hueso raíz, que no tiene articulación y por eso devuelve sus límites en null; se corrigió en `ragdoll_check.gd` y los 53 se rehornearon con `--force`, esta vez con el chequeo completo.
+- **Galería `--mode=fall`:** `RAGDOLL FALL FAIL 65/73`. Los 8 que fallan lo hacen por `top_ratio` (caen y quedan medio parados): scythe, blight, ikarus, pyrodactyl, jabberocky, ent, cog y taurock.
+  - **Los 7 nuevos se quedan SIN ragdoll** y siguen muriendo con su clip, como hasta hoy: scythe, blight, ikarus, pyrodactyl, jabberocky, ent y cog.
+  - **taurock no se toca:** ya tenía ragdoll antes del corte, así que se ve como siempre.
+  - **Pendiente:** marcar en la escena del modelo que no lleva ragdoll, para que `--missing` no lo vuelva a hornear. Hasta entonces, se pasan con `--skip`.

@@ -11,6 +11,82 @@
 [ext_resource type="Material" path="res://scenes/bodies/materials/eclw_005.tres" id="mat_eclw_005"]
 [ext_resource type="Material" path="res://scenes/bodies/materials/eclw_006.tres" id="mat_eclw_006"]
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7l55y"]
+radius = 0.12172821
+height = 0.25345644
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_bvoi4"]
+radius = 0.21422288
+height = 0.97374034
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_oqvfe"]
+radius = 0.16230428
+height = 0.69404006
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_mhb6d"]
+radius = 0.18367507
+height = 0.83488667
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_pfbwx"]
+radius = 0.14610516
+height = 0.3022103
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_r7len"]
+radius = 0.21422288
+height = 0.97374034
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_xromf"]
+radius = 0.16230428
+height = 0.69404006
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_h8cr2"]
+radius = 0.18343714
+height = 0.8338052
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_4buvt"]
+radius = 0.14591591
+height = 0.3018318
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_wpunf"]
+radius = 0.19840753
+height = 0.9018524
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_sgtia"]
+radius = 0.16230428
+height = 0.608125
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ul64j"]
+radius = 0.16230428
+height = 0.55907774
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_x62h0"]
+radius = 0.12172821
+height = 0.25345644
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_s1uu2"]
+radius = 0.16230428
+height = 0.34322786
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_qbhfe"]
+radius = 0.12172821
+height = 0.25345644
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ea575"]
+radius = 0.16230428
+height = 0.33460858
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_eq7li"]
+radius = 0.16230428
+height = 0.71039766
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_qis1s"]
+radius = 0.16744173
+height = 0.76109874
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_xrn8i"]
+radius = 0.13319227
+height = 0.27638453
+
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_fxud5"]
 animation = &"attack"
 
@@ -94,22 +170,412 @@ states/thrash/node = SubResource("AnimationNodeAnimation_nxi8w")
 states/thrash/position = Vector2(460, 150)
 transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_5wxlb"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_nux34"), "idle", "attack", SubResource("AnimationNodeStateMachineTransition_nux34"), "idle", "death", SubResource("AnimationNodeStateMachineTransition_nux34"), "idle", "held", SubResource("AnimationNodeStateMachineTransition_nux34"), "idle", "thrash", SubResource("AnimationNodeStateMachineTransition_nux34"), "idle", "rise", SubResource("AnimationNodeStateMachineTransition_nux34"), "idle", "knock", SubResource("AnimationNodeStateMachineTransition_nux34"), "idle", "get_up", SubResource("AnimationNodeStateMachineTransition_nux34"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_nux34"), "run", "attack", SubResource("AnimationNodeStateMachineTransition_nux34"), "run", "death", SubResource("AnimationNodeStateMachineTransition_nux34"), "run", "held", SubResource("AnimationNodeStateMachineTransition_nux34"), "run", "thrash", SubResource("AnimationNodeStateMachineTransition_nux34"), "run", "rise", SubResource("AnimationNodeStateMachineTransition_nux34"), "run", "knock", SubResource("AnimationNodeStateMachineTransition_nux34"), "run", "get_up", SubResource("AnimationNodeStateMachineTransition_nux34"), "attack", "idle", SubResource("AnimationNodeStateMachineTransition_nofqs"), "attack", "run", SubResource("AnimationNodeStateMachineTransition_nux34"), "attack", "death", SubResource("AnimationNodeStateMachineTransition_nux34"), "attack", "held", SubResource("AnimationNodeStateMachineTransition_nux34"), "attack", "thrash", SubResource("AnimationNodeStateMachineTransition_nux34"), "attack", "rise", SubResource("AnimationNodeStateMachineTransition_nux34"), "attack", "knock", SubResource("AnimationNodeStateMachineTransition_nux34"), "attack", "get_up", SubResource("AnimationNodeStateMachineTransition_nux34"), "death", "idle", SubResource("AnimationNodeStateMachineTransition_nux34"), "death", "run", SubResource("AnimationNodeStateMachineTransition_nux34"), "death", "attack", SubResource("AnimationNodeStateMachineTransition_nux34"), "death", "held", SubResource("AnimationNodeStateMachineTransition_nux34"), "death", "thrash", SubResource("AnimationNodeStateMachineTransition_nux34"), "death", "rise", SubResource("AnimationNodeStateMachineTransition_nux34"), "death", "knock", SubResource("AnimationNodeStateMachineTransition_nux34"), "death", "get_up", SubResource("AnimationNodeStateMachineTransition_nux34"), "held", "idle", SubResource("AnimationNodeStateMachineTransition_nux34"), "held", "run", SubResource("AnimationNodeStateMachineTransition_nux34"), "held", "attack", SubResource("AnimationNodeStateMachineTransition_nux34"), "held", "death", SubResource("AnimationNodeStateMachineTransition_nux34"), "held", "thrash", SubResource("AnimationNodeStateMachineTransition_nux34"), "held", "rise", SubResource("AnimationNodeStateMachineTransition_nux34"), "held", "knock", SubResource("AnimationNodeStateMachineTransition_nux34"), "held", "get_up", SubResource("AnimationNodeStateMachineTransition_nux34"), "thrash", "idle", SubResource("AnimationNodeStateMachineTransition_nux34"), "thrash", "run", SubResource("AnimationNodeStateMachineTransition_nux34"), "thrash", "attack", SubResource("AnimationNodeStateMachineTransition_nux34"), "thrash", "death", SubResource("AnimationNodeStateMachineTransition_nux34"), "thrash", "held", SubResource("AnimationNodeStateMachineTransition_nux34"), "thrash", "rise", SubResource("AnimationNodeStateMachineTransition_nux34"), "thrash", "knock", SubResource("AnimationNodeStateMachineTransition_nux34"), "thrash", "get_up", SubResource("AnimationNodeStateMachineTransition_nux34"), "rise", "idle", SubResource("AnimationNodeStateMachineTransition_nofqs"), "rise", "run", SubResource("AnimationNodeStateMachineTransition_nux34"), "rise", "attack", SubResource("AnimationNodeStateMachineTransition_nux34"), "rise", "death", SubResource("AnimationNodeStateMachineTransition_nux34"), "rise", "held", SubResource("AnimationNodeStateMachineTransition_nux34"), "rise", "thrash", SubResource("AnimationNodeStateMachineTransition_nux34"), "rise", "knock", SubResource("AnimationNodeStateMachineTransition_nux34"), "rise", "get_up", SubResource("AnimationNodeStateMachineTransition_nux34"), "knock", "idle", SubResource("AnimationNodeStateMachineTransition_nux34"), "knock", "run", SubResource("AnimationNodeStateMachineTransition_nux34"), "knock", "attack", SubResource("AnimationNodeStateMachineTransition_nux34"), "knock", "death", SubResource("AnimationNodeStateMachineTransition_nux34"), "knock", "held", SubResource("AnimationNodeStateMachineTransition_nux34"), "knock", "thrash", SubResource("AnimationNodeStateMachineTransition_nux34"), "knock", "rise", SubResource("AnimationNodeStateMachineTransition_nux34"), "knock", "get_up", SubResource("AnimationNodeStateMachineTransition_nux34"), "get_up", "idle", SubResource("AnimationNodeStateMachineTransition_nux34"), "get_up", "run", SubResource("AnimationNodeStateMachineTransition_nux34"), "get_up", "attack", SubResource("AnimationNodeStateMachineTransition_nux34"), "get_up", "death", SubResource("AnimationNodeStateMachineTransition_nux34"), "get_up", "held", SubResource("AnimationNodeStateMachineTransition_nux34"), "get_up", "thrash", SubResource("AnimationNodeStateMachineTransition_nux34"), "get_up", "rise", SubResource("AnimationNodeStateMachineTransition_nux34"), "get_up", "knock", SubResource("AnimationNodeStateMachineTransition_nux34"), "attack", "attack2", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack2", "attack", SubResource("AnimationNodeStateMachineTransition_ywav5"), "death", "attack2", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack2", "death", SubResource("AnimationNodeStateMachineTransition_ywav5"), "get_up", "attack2", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack2", "get_up", SubResource("AnimationNodeStateMachineTransition_ywav5"), "held", "attack2", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack2", "held", SubResource("AnimationNodeStateMachineTransition_ywav5"), "idle", "attack2", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack2", "idle", SubResource("AnimationNodeStateMachineTransition_nofqs"), "knock", "attack2", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack2", "knock", SubResource("AnimationNodeStateMachineTransition_ywav5"), "rise", "attack2", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack2", "rise", SubResource("AnimationNodeStateMachineTransition_ywav5"), "run", "attack2", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack2", "run", SubResource("AnimationNodeStateMachineTransition_ywav5"), "thrash", "attack2", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack2", "thrash", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack", "attack3", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack3", "attack", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack2", "attack3", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack3", "attack2", SubResource("AnimationNodeStateMachineTransition_ywav5"), "death", "attack3", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack3", "death", SubResource("AnimationNodeStateMachineTransition_ywav5"), "get_up", "attack3", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack3", "get_up", SubResource("AnimationNodeStateMachineTransition_ywav5"), "held", "attack3", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack3", "held", SubResource("AnimationNodeStateMachineTransition_ywav5"), "idle", "attack3", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack3", "idle", SubResource("AnimationNodeStateMachineTransition_nofqs"), "knock", "attack3", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack3", "knock", SubResource("AnimationNodeStateMachineTransition_ywav5"), "rise", "attack3", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack3", "rise", SubResource("AnimationNodeStateMachineTransition_ywav5"), "run", "attack3", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack3", "run", SubResource("AnimationNodeStateMachineTransition_ywav5"), "thrash", "attack3", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack3", "thrash", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack", "shoot", SubResource("AnimationNodeStateMachineTransition_ywav5"), "shoot", "attack", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack2", "shoot", SubResource("AnimationNodeStateMachineTransition_ywav5"), "shoot", "attack2", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack3", "shoot", SubResource("AnimationNodeStateMachineTransition_ywav5"), "shoot", "attack3", SubResource("AnimationNodeStateMachineTransition_ywav5"), "death", "shoot", SubResource("AnimationNodeStateMachineTransition_ywav5"), "shoot", "death", SubResource("AnimationNodeStateMachineTransition_ywav5"), "get_up", "shoot", SubResource("AnimationNodeStateMachineTransition_ywav5"), "shoot", "get_up", SubResource("AnimationNodeStateMachineTransition_ywav5"), "held", "shoot", SubResource("AnimationNodeStateMachineTransition_ywav5"), "shoot", "held", SubResource("AnimationNodeStateMachineTransition_ywav5"), "idle", "shoot", SubResource("AnimationNodeStateMachineTransition_ywav5"), "shoot", "idle", SubResource("AnimationNodeStateMachineTransition_nofqs"), "knock", "shoot", SubResource("AnimationNodeStateMachineTransition_ywav5"), "shoot", "knock", SubResource("AnimationNodeStateMachineTransition_ywav5"), "rise", "shoot", SubResource("AnimationNodeStateMachineTransition_ywav5"), "shoot", "rise", SubResource("AnimationNodeStateMachineTransition_ywav5"), "run", "shoot", SubResource("AnimationNodeStateMachineTransition_ywav5"), "shoot", "run", SubResource("AnimationNodeStateMachineTransition_ywav5"), "thrash", "shoot", SubResource("AnimationNodeStateMachineTransition_ywav5"), "shoot", "thrash", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ywav5"), "hit_floor", "attack", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack2", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ywav5"), "hit_floor", "attack2", SubResource("AnimationNodeStateMachineTransition_ywav5"), "attack3", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ywav5"), "hit_floor", "attack3", SubResource("AnimationNodeStateMachineTransition_ywav5"), "death", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ywav5"), "hit_floor", "death", SubResource("AnimationNodeStateMachineTransition_ywav5"), "get_up", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ywav5"), "hit_floor", "get_up", SubResource("AnimationNodeStateMachineTransition_ywav5"), "held", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ywav5"), "hit_floor", "held", SubResource("AnimationNodeStateMachineTransition_ywav5"), "idle", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ywav5"), "hit_floor", "idle", SubResource("AnimationNodeStateMachineTransition_nofqs"), "knock", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ywav5"), "hit_floor", "knock", SubResource("AnimationNodeStateMachineTransition_ywav5"), "rise", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ywav5"), "hit_floor", "rise", SubResource("AnimationNodeStateMachineTransition_ywav5"), "run", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ywav5"), "hit_floor", "run", SubResource("AnimationNodeStateMachineTransition_ywav5"), "shoot", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ywav5"), "hit_floor", "shoot", SubResource("AnimationNodeStateMachineTransition_ywav5"), "thrash", "hit_floor", SubResource("AnimationNodeStateMachineTransition_ywav5"), "hit_floor", "thrash", SubResource("AnimationNodeStateMachineTransition_ywav5")]
 
-[node name="eclw" type="Node3D" unique_id=1007440642]
+[node name="eclw" type="Node3D" unique_id=1007440642 node_paths=PackedStringArray("ragdoll", "hang_bone")]
 script = ExtResource("1_2tpkn")
 model = "eclw"
 bind_aabb = AABB(-1.946679, -2.346921, -2.015016, 4.160358, 3.94642, 5.297995)
+ragdoll = NodePath("Model/Skeleton3D/Ragdoll")
+hang_bone = NodePath("Model/Skeleton3D/Ragdoll/Bone_root")
 
 [node name="Model" parent="." unique_id=2053623198 instance=ExtResource("2_qvmba")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 
-[node name="eclw_mesh" parent="Model/Skeleton3D" index="0"]
+[node name="eclw_mesh" parent="Model/Skeleton3D" parent_id_path=PackedInt32Array(2053623198, 719739370) index="0" unique_id=1952716153]
 surface_material_override/0 = ExtResource("mat_eclw_001")
 surface_material_override/1 = ExtResource("mat_eclw_002")
 surface_material_override/2 = ExtResource("mat_eclw_003")
 surface_material_override/3 = ExtResource("mat_eclw_004")
 surface_material_override/4 = ExtResource("mat_eclw_005")
 surface_material_override/5 = ExtResource("mat_eclw_006")
+
+[node name="HandL" type="BoneAttachment3D" parent="Model/Skeleton3D" parent_id_path=PackedInt32Array(2053623198, 719739370) index="1" unique_id=1542146090]
+visible = false
+bone_name = "bone_15"
+
+[node name="Socket" type="Marker3D" parent="Model/Skeleton3D/HandL" unique_id=923380378]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0015, -0.0003)
+
+[node name="HandR" type="BoneAttachment3D" parent="Model/Skeleton3D" parent_id_path=PackedInt32Array(2053623198, 719739370) index="2" unique_id=1361409951]
+visible = false
+bone_name = "bone_18"
+
+[node name="Socket" type="Marker3D" parent="Model/Skeleton3D/HandR" unique_id=1294998768]
+
+[node name="Ragdoll" type="PhysicalBoneSimulator3D" parent="Model/Skeleton3D" parent_id_path=PackedInt32Array(2053623198, 719739370) index="3" unique_id=1311584539]
+process_mode = 4
+
+[node name="Bone_root" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=963588441]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+collision_layer = 16
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 9.066583
+friction = 0.8
+bone_name = "root"
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_root" unique_id=848884762]
+transform = Transform3D(1, 0, 0, 0, -0.9703196, 0.24182595, 0, -0.24182595, -0.9703196, 0, -0.118115276, -0.029437054)
+shape = SubResource("CapsuleShape3D_7l55y")
+
+[node name="Bone_bone_01" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=2070072706]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -0.66525644, -0.21788855, 0.054302856)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(-0.5103235, 0.85751027, 0.06515988, -0.85751027, -0.50165284, -0.11410651, -0.06515988, -0.11410651, 0.9913294, 0, 0, 0)
+joint_rotation = Vector3(0.114355616, 0.06563539, -2.1001215)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 112.30904
+friction = 0.8
+bone_name = "bone_01"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_01" unique_id=263677851]
+transform = Transform3D(-0.827713, -0.5103235, -0.23336871, 0.5103235, -0.8575103, 0.06515987, -0.23336871, -0.06515987, 0.9702027, -0.2484613, -0.4174962, -0.031724397)
+shape = SubResource("CapsuleShape3D_bvoi4")
+
+[node name="Bone_bone_02" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=634093674]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -1.1621791, -1.0528811, 0.11775166)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(0, 1, 3.3139298e-08, -1, 0, -3.31393e-08, -3.3139298e-08, -3.31393e-08, 1, 0, 0, 0)
+joint_rotation = Vector3(3.3139298e-08, 3.31393e-08, -1.5707964)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 45.94988
+friction = 0.8
+bone_name = "bone_02"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_02" unique_id=1784782263]
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, -0.34702003, -1.15e-08)
+shape = SubResource("CapsuleShape3D_oqvfe")
+
+[node name="Bone_bone_03" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1486734597]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -1.1621791, -1.7469212, 0.11775168)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(-0.13772678, 0.56377494, -0.8143643, -0.56377494, 0.63139045, 0.5324509, 0.8143643, 0.5324509, 0.23088276, 0, 0, 0)
+joint_rotation = Vector3(-0.5614934, -1.2945331, -0.7288842)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 70.78933
+friction = 0.8
+bone_name = "bone_03"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_03" unique_id=2064321077]
+transform = Transform3D(0.9565164, -0.13772671, 0.25711435, 0.13772671, -0.56377506, -0.81436425, 0.25711435, 0.81436425, -0.52029145, -0.0574931, -0.2353441, 0.33995095)
+shape = SubResource("CapsuleShape3D_mhb6d")
+
+[node name="Bone_bone_04" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1577998669]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -1.2771653, -2.2176094, -0.5621502)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(-0.13772678, 0.56377494, -0.8143643, -0.56377494, 0.63139045, 0.5324509, 0.8143643, 0.5324509, 0.23088276, 0, 0, 0)
+joint_rotation = Vector3(-0.5614934, -1.2945331, -0.7288842)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 15.677128
+friction = 0.8
+bone_name = "bone_04"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_04" unique_id=1042126720]
+transform = Transform3D(0.9565164, -0.13772671, 0.25711435, 0.13772671, -0.56377506, -0.81436425, 0.25711435, 0.81436425, -0.52029145, -0.020122584, -0.08237042, 0.11898282)
+shape = SubResource("CapsuleShape3D_pfbwx")
+
+[node name="Bone_bone_05" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1112587577]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0.66525644, -0.21788855, 0.054302856)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(0.5103235, 0.8575104, 0.06515988, -0.8575104, 0.5131347, -0.036995564, -0.06515988, -0.036995564, 0.9971888, 0, 0, 0)
+joint_rotation = Vector3(0.037004013, 0.06525081, -1.0315537)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 112.30904
+friction = 0.8
+bone_name = "bone_05"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_05" unique_id=436367206]
+transform = Transform3D(-0.827713, 0.5103235, 0.23336871, -0.5103235, -0.8575103, 0.06515987, 0.23336871, -0.06515987, 0.9702027, 0.2484613, -0.4174962, -0.031724397)
+shape = SubResource("CapsuleShape3D_r7len")
+
+[node name="Bone_bone_06" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=610827407]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 1.1621791, -1.0528811, 0.11775166)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(0, 1, 3.3139298e-08, -1, 0, -3.31393e-08, -3.3139298e-08, -3.31393e-08, 1, 0, 0, 0)
+joint_rotation = Vector3(3.3139298e-08, 3.31393e-08, -1.5707964)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 45.94988
+friction = 0.8
+bone_name = "bone_06"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_06" unique_id=1297155073]
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, -0.34702003, -1.15e-08)
+shape = SubResource("CapsuleShape3D_xromf")
+
+[node name="Bone_bone_07" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=439474874]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 1.1621791, -1.7469212, 0.11775168)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(0.12814927, 0.5645061, -0.8154205, -0.5645061, 0.7175311, 0.4080221, 0.8154205, 0.4080221, 0.41061825, 0, 0, 0)
+joint_rotation = Vector3(-0.42028657, -1.1042998, -0.66659945)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 70.514595
+friction = 0.8
+bone_name = "bone_07"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_07" unique_id=1613110767]
+transform = Transform3D(0.96229047, 0.1281494, -0.2399475, -0.1281494, -0.5645062, -0.8154204, -0.2399475, 0.8154204, -0.5267966, 0.053425826, -0.23534407, 0.33995092)
+shape = SubResource("CapsuleShape3D_h8cr2")
+
+[node name="Bone_bone_08" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=2111013433]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 1.2690308, -2.2176094, -0.5621502)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(0.12814927, 0.5645061, -0.8154205, -0.5645061, 0.7175311, 0.4080221, 0.8154205, 0.4080221, 0.41061825, 0, 0, 0)
+joint_rotation = Vector3(-0.42028657, -1.1042998, -0.66659945)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 15.616288
+friction = 0.8
+bone_name = "bone_08"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_08" unique_id=1819107053]
+transform = Transform3D(0.96229047, 0.1281494, -0.2399475, -0.1281494, -0.5645062, -0.8154204, -0.2399475, 0.8154204, -0.5267966, 0.018699039, -0.08237042, 0.11898283)
+shape = SubResource("CapsuleShape3D_4buvt")
+
+[node name="Bone_bone_09" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1721357241]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(-1.1920929e-07, -0.9080342, -0.41889614, 0.9080342, 0.17547387, -0.38037202, 0.41889614, -0.38037202, 0.824526, 0, 0, 0)
+joint_rotation = Vector3(0.3901986, -0.47006264, 1.3799034)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 89.22605
+friction = 0.8
+bone_name = "bone_09"
+joint_constraints/swing_span = 27.999998
+joint_constraints/twist_span = 18.0
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_09" unique_id=1348487301]
+transform = Transform3D(1, -1.3316108e-08, 2.9234624e-09, 1.3316108e-08, 0.90803415, -0.4188961, 2.9234624e-09, 0.4188961, 0.90803415, -6.004582e-09, 0.40945643, 0.18889125)
+shape = SubResource("CapsuleShape3D_wpunf")
+
+[node name="Bone_bone_10" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=623741764]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -6.4e-08, 0.033590514, -0.586844)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(0, 0.21298766, -0.9770549, -0.21298766, 0.9546363, 0.20810065, 0.9770549, 0.20810065, 0.045363724, 0, 0, 0)
+joint_rotation = Vector3(-0.20963268, -1.5244006, -0.21951355)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 40.261753
+friction = 0.8
+bone_name = "bone_10"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_10" unique_id=185066119]
+transform = Transform3D(1, 0, 0, 0, -0.21298766, -0.97705483, 0, 0.97705483, -0.21298766, 0, -0.064761564, 0.29708573)
+shape = SubResource("CapsuleShape3D_sgtia")
+
+[node name="Bone_bone_11" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1448307526]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -6.4e-08, -0.09593262, -1.1810155)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(0, 0.7662761, -0.6425114, -0.7662761, 0.41282088, 0.4923412, 0.6425114, 0.4923412, 0.58717906, 0, 0, 0)
+joint_rotation = Vector3(-0.5147775, -0.8303648, -1.0766418)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 37.014515
+friction = 0.8
+bone_name = "bone_11"
+joint_constraints/swing_span = 27.999998
+joint_constraints/twist_span = 18.0
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_11" unique_id=1106183129]
+transform = Transform3D(1, 5.5968833e-08, -1.5385943e-07, -5.5968833e-08, -0.76627636, -0.64251125, -1.5385943e-07, 0.64251125, -0.76627636, 1.5645467e-08, -0.21420398, 0.17960691)
+shape = SubResource("CapsuleShape3D_ul64j")
+
+[node name="Bone_bone_12" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1847296176]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, -0.3890103, -1.7016277)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(1.7881393e-07, 0.4905579, -0.8714086, -0.4905579, 0.759353, 0.42747632, 0.8714086, 0.42747632, 0.2406472, 0, 0, 0)
+joint_rotation = Vector3(-0.44169933, -1.3013531, -0.5735729)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 9.066583
+friction = 0.8
+bone_name = "bone_12"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_12" unique_id=235940509]
+transform = Transform3D(1, 1.0712419e-07, -1.8323756e-07, -1.0712419e-07, -0.4905578, -0.87140864, -1.8323756e-07, 0.87140864, -0.4905578, 1.3040034e-08, -0.059714742, 0.10607501)
+shape = SubResource("CapsuleShape3D_x62h0")
+
+[node name="Bone_bone_13" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1070096752]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -7e-08, -0.5969399, -1.3262321)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(3.5762787e-07, 0.36540395, -0.930849, -0.36540395, 0.86648, 0.3401358, 0.930849, 0.3401358, 0.13352036, 0, 0, 0)
+joint_rotation = Vector3(-0.3470613, -1.4283288, -0.39908138)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 22.723875
+friction = 0.8
+bone_name = "bone_13"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_13" unique_id=170319106]
+transform = Transform3D(1, 2.0103263e-07, -2.948822e-07, -2.0103263e-07, -0.36540413, -0.930849, -2.948822e-07, 0.930849, -0.36540413, 3.45e-08, -0.06270841, 0.15974666)
+shape = SubResource("CapsuleShape3D_s1uu2")
+
+[node name="Bone_bone_14" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=2066176791]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, -9.999965e-10, -0.72235674, -1.6457254)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(3.5762787e-07, 0.36540395, -0.930849, -0.36540395, 0.86648, 0.3401358, 0.930849, 0.3401358, 0.13352036, 0, 0, 0)
+joint_rotation = Vector3(-0.3470613, -1.4283288, -0.39908138)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 9.066583
+friction = 0.8
+bone_name = "bone_14"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_14" unique_id=757361570]
+transform = Transform3D(1, 2.0103263e-07, -2.948822e-07, -2.0103263e-07, -0.36540413, -0.930849, -2.948822e-07, 0.930849, -0.36540413, 2.4471342e-08, -0.04447997, 0.11331058)
+shape = SubResource("CapsuleShape3D_qbhfe")
+
+[node name="Bone_bone_15" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1593041499]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 3e-09, 0.7249988, -0.5813582)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(-1.1920929e-07, -0.7801548, -0.6255865, 0.7801548, 0.39135838, -0.48805436, 0.6255865, -0.48805436, 0.6086415, 0, 0, 0)
+joint_rotation = Vector3(0.5098593, -0.79912657, 1.105836)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 21.533981
+friction = 0.8
+bone_name = "bone_15"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_15" unique_id=419099815]
+transform = Transform3D(1, 3.2282323e-09, -1.1344735e-09, -3.2282323e-09, 0.7801548, -0.6255865, -1.1344735e-09, 0.6255865, 0.7801548, 5.2500004e-10, 0.12687479, 0.10173769)
+shape = SubResource("CapsuleShape3D_ea575")
+
+[node name="Bone_bone_16" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1632661720]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 5.2e-08, -0.14487323, 0.88508147)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(0, 0.008810203, 0.9999612, -0.008810203, 0.9999224, -0.008809861, -0.9999612, -0.008809861, 7.760525e-05, 0, 0, 0)
+joint_rotation = Vector3(0.008809974, 1.5707186, -0.008810658)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 47.032856
+friction = 0.8
+bone_name = "bone_16"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_16" unique_id=1329645619]
+transform = Transform3D(1, 4.082221e-08, 4.1183462e-08, -4.082221e-08, -0.008810282, 0.99996126, 4.1183462e-08, -0.99996126, -0.008810282, 1.4500002e-08, -0.0031293738, -0.35518506)
+shape = SubResource("CapsuleShape3D_eq7li")
+
+[node name="Bone_bone_17" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1710962138]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 8.1e-08, -0.15113197, 1.5954516)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(-1.1920929e-07, -0.038725168, 0.99924994, 0.038725168, 0.99850035, 0.038696125, -0.99924994, 0.038696125, 0.0014995337, 0, 0, 0)
+joint_rotation = Vector3(-0.038705792, 1.5692956, 0.038763903)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 53.630054
+friction = 0.8
+bone_name = "bone_17"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_17" unique_id=136681721]
+transform = Transform3D(1, 3.2847254e-08, 3.1598944e-08, -3.2847254e-08, 0.038725078, 0.99924994, 3.1598944e-08, -0.99924994, 0.038725078, 1.2500002e-08, 0.01473684, -0.38026392)
+shape = SubResource("CapsuleShape3D_qis1s")
+
+[node name="Bone_bone_18" type="PhysicalBone3D" parent="Model/Skeleton3D/Ragdoll" unique_id=1688654644]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 1.06e-07, -0.121658295, 2.3559794)
+collision_layer = 16
+joint_type = 2
+joint_offset = Transform3D(-1.1920929e-07, -0.038725168, 0.99924994, 0.038725168, 0.99850035, 0.038696125, -0.99924994, 0.038696125, 0.0014995337, 0, 0, 0)
+joint_rotation = Vector3(-0.038705792, 1.5692956, 0.038763903)
+body_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mass = 11.877005
+friction = 0.8
+bone_name = "bone_18"
+joint_constraints/swing_span = 54.999996
+joint_constraints/twist_span = 34.999996
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+
+[node name="Capsule" type="CollisionShape3D" parent="Model/Skeleton3D/Ragdoll/Bone_bone_18" unique_id=766407471]
+transform = Transform3D(1, 3.2847254e-08, 3.1598944e-08, -3.2847254e-08, 0.038725078, 0.99924994, 3.1598944e-08, -0.99924994, 0.038725078, 4.3750004e-09, 0.0051578935, -0.13309237)
+shape = SubResource("CapsuleShape3D_xrn8i")
 
 [node name="Clips" type="AnimationPlayer" parent="." unique_id=1738263827]
 unique_name_in_owner = true
@@ -127,16 +593,4 @@ anim_player = NodePath("../Clips")
 unique_name_in_owner = true
 script = ExtResource("3_juxbn")
 
-[node name="HandL" type="BoneAttachment3D" parent="Model/Skeleton3D"]
-visible = false
-bone_name = "bone_15"
-
-[node name="Socket" type="Marker3D" parent="Model/Skeleton3D/HandL"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.0015, -0.0003)
-
-[node name="HandR" type="BoneAttachment3D" parent="Model/Skeleton3D"]
-visible = false
-bone_name = "bone_18"
-
-[node name="Socket" type="Marker3D" parent="Model/Skeleton3D/HandR"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.0, 0.0)
+[editable path="Model"]

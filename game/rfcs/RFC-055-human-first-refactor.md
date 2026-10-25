@@ -424,6 +424,8 @@ Actualizado el 2026-10-24 con la auditoría `research/055R-legacy-audit.md`, que
 - Red host autoritativa.
 - El tag como id de red.
 
+> **Decisión del usuario (2026-10-24, MVP):** la v2 del refactor empieza por **055f-mvp: la IA usa los 53 hechizos** sobre la estructura de hoy, para tener un corte jugable certero como MVP. 055f-mvp no espera a 055c2 ni a 055e: cada hechizo dice en su `.tres` cómo lo usa la IA (blanco, zona, muro, estructura, terreno) y un caso de la suite comprueba que el mago IA lance cada uno en partida. La parte de 055f que reescribe la percepción sobre `Vision` y quita lo calcado de `shiny.d` sigue en el paso 11. Antes de 055f-mvp quedan solo las abolladuras de Bombardment y el visual del Volcano y del Tornado. El terreno de malla (063) va al final de la fase 1 y la pantalla de carga con precalentado de shaders va después de 063.
+
 **Orden propuesto** (prioridad del usuario: hechizos y suelo/terreno en curso, después la v2; detalle y pares paralelos en 055R §4):
 
 | Paso | Cortes | En paralelo con |

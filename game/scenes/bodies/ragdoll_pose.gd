@@ -62,12 +62,49 @@ static func brake(bones: Array[PhysicalBone3D], start: Vector3, max_drift_m: flo
 			bone.linear_velocity -= out * outward
 
 
-## Gives `bone` the speed and the spin that take it to `goal` (a global transform) within `delta` seconds.
-static func follow(bone: PhysicalBone3D, goal: Transform3D, delta: float) -> void:
-	bone.linear_velocity = (goal.origin - bone.global_position) / delta
-	var turn := (goal.basis.orthonormalized() * bone.global_transform.basis.orthonormalized().inverse()).get_rotation_quaternion()
-	var angle := turn.get_angle()
-	bone.angular_velocity = turn.get_axis() * angle / delta if angle > 0.0001 else Vector3.ZERO
+## Cone limits wide enough that a hanging chain never pushes against them (055a-5j spike: tight cones blow up under gravity).
+const HANG_SPAN_DEG := 180.0
+
+
+## Starts the simulation: every bone (a fall: the joints stay as built), or every bone but `anchor`, which stays on the skeleton (a
+## hang). A hang rebuilds every cone joint, parents first, on HANG_SPAN_DEG cones: Godot builds a joint when its bone enters the tree,
+## with every body static, and the joints hanging from the root come out loose (plan 055a-5 s17). Rebuilding them for a fall sends
+## bones flying (gallery fall, 055a-5j), so a fall keeps them. `spans` (spans_of) are put back before the cones open.
+static func start(simulator: PhysicalBoneSimulator3D, skeleton: Skeleton3D, spans: Dictionary, anchor: PhysicalBone3D) -> void:
+	var names: Array[StringName] = []
+	for bone in bones_of(simulator):
+		if bone != anchor:
+			names.append(StringName(bone.bone_name))
+	simulator.physical_bones_start_simulation(names)
+	if anchor == null:
+		return
+	var cones: Array[PhysicalBone3D] = []
+	for bone in bones_of(simulator):
+		if bone.joint_type == PhysicalBone3D.JOINT_TYPE_CONE:
+			cones.append(bone)
+	cones.sort_custom(func(a: PhysicalBone3D, b: PhysicalBone3D) -> bool:
+		return _depth(skeleton, a.get_bone_id()) < _depth(skeleton, b.get_bone_id()))
+	for bone in cones:
+		var limits: Dictionary = spans.get(bone, {})
+		bone.joint_type = PhysicalBone3D.JOINT_TYPE_NONE
+		bone.joint_type = PhysicalBone3D.JOINT_TYPE_CONE
+		for key: String in limits:
+			bone.set("joint_constraints/" + key, limits[key])
+		bone.set("joint_constraints/swing_span", HANG_SPAN_DEG)
+		bone.set("joint_constraints/twist_span", HANG_SPAN_DEG)
+
+
+## The cone limits each bone was baked with (bone -> {swing_span, twist_span, bias, softness, relaxation}).
+static func spans_of(bones: Array[PhysicalBone3D]) -> Dictionary:
+	var out := {}
+	for bone in bones:
+		if bone.joint_type != PhysicalBone3D.JOINT_TYPE_CONE:
+			continue
+		var limits := {}
+		for key: String in ["swing_span", "twist_span", "bias", "softness", "relaxation"]:
+			limits[key] = bone.get("joint_constraints/" + key)
+		out[bone] = limits
+	return out
 
 
 static func _depth(skeleton: Skeleton3D, bone: int) -> int:

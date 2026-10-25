@@ -2,9 +2,9 @@ class_name RagdollDriver
 extends Node
 
 ## Lets a body fall, or hang, like a rag doll with the physical skeleton of its model (BodyModel.ragdoll). FALL throws the body a
-## little away and after `settle_s` freezes the pose and stops the physics, so a field of corpses costs nothing. HANG keeps every
-## bone simulating while the hang bone follows the skeleton, so the body dangles from it. The bones only meet the terrain (layer 16,
-## mask 1). It moves the model only (the simulation never reads it; a server mounts no model, so it never binds) and does not decide when.
+## little away and after `settle_s` freezes the pose and stops the physics, so a field of corpses costs nothing. HANG leaves the hang
+## bone out of the physics (it rides the frozen skeleton) and lets the rest dangle on wide cones (055a-5j). Bones only meet the terrain
+## (layer 16, mask 1). It moves the model only (the simulation never reads it; a server mounts no model, so it never binds) and does not decide when.
 
 ## The ragdoll started to fall.
 signal started
@@ -40,7 +40,8 @@ var _hang_bone: PhysicalBone3D
 var _bones: Array[PhysicalBone3D] = []
 var _elapsed := 0.0
 var _hips_start := Vector3.ZERO
-var _hang_rest := Transform3D.IDENTITY
+## The cone limits the model was baked with, put back whenever the bones do not hang.
+var _spans := {}
 
 
 func _ready() -> void:
@@ -62,6 +63,7 @@ func bind_model(model: BodyModel) -> void:
 	_simulator = model.ragdoll_simulator() if model != null else null
 	_hang_bone = model.hang_bone if model != null else null
 	_bones = RagdollPose.bones_of(_simulator)
+	_spans = RagdollPose.spans_of(_bones)
 	bound.emit(available())
 
 
@@ -97,9 +99,7 @@ func set_pose(next: Pose, push := Vector3.ZERO) -> void:
 		_halt()
 		if from == Pose.FALL:
 			_skeleton.reset_bone_poses()
-		if next == Pose.HANG:
-			_hang_rest = _skeleton.get_bone_global_pose(_hang_bone.get_bone_id()) * _hang_bone.body_offset
-		_begin()
+	_begin(next)
 	RagdollPose.damp(_bones, hang_damping if next == Pose.HANG else bone_damping)
 	if next == Pose.FALL:
 		if from == Pose.OFF:
@@ -112,7 +112,6 @@ func set_pose(next: Pose, push := Vector3.ZERO) -> void:
 
 func _physics_process(delta: float) -> void:
 	if _pose == Pose.HANG:
-		RagdollPose.follow(_hang_bone, _skeleton.global_transform * _hang_rest, delta)
 		return
 	_elapsed += delta
 	RagdollPose.brake(_bones, _hips_start, max_drift_m)
@@ -120,12 +119,12 @@ func _physics_process(delta: float) -> void:
 		_settle()
 
 
-## Holds the clips and turns the simulator on, every bone simulating.
-func _begin() -> void:
+## Holds the clips and turns the simulator on: every bone (FALL) or all but the hang bone (HANG), then rebuilds the joints.
+func _begin(next: Pose) -> void:
 	if clip_pose != null:
 		clip_pose.frozen = true
 	_simulator.process_mode = Node.PROCESS_MODE_INHERIT
-	_simulator.physical_bones_start_simulation()
+	RagdollPose.start(_simulator, _skeleton, _spans, _hang_bone if next == Pose.HANG else null)
 
 
 ## Keeps the pose the bones ended in and stops the physics (the pose stays FALL).

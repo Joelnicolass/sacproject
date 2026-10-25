@@ -260,3 +260,15 @@ Sobre `trogg_model`: 11 m/s durante 2 s y frenado; medido 7 s. El spike original
 
 **Próximo intento:** ancla en el pecho, con el ancla fuera de la simulación verificada (pose y velocidad del ancla impresas por tick), y límites del cono más anchos solo mientras cuelga.
 `RagdollDriver` y `RagdollPose` NO se cambian: el rearmado también afectaría la muerte (FALL) y eso no está medido. HANG sigue apagado.
+
+### 17.4 055a-5j resuelto (orquestador)
+- **Variante O** (L con conos de 180°): 0/18 sueltas, estiramiento 2,6. **P** (O + `hang_damping` 4): 0/18, 0,12 m/s a los 3 s y extensión 1,29. El estiramiento máximo es el tirón del arranque instantáneo a 11 m/s del spike; al final no queda ningún par estirado.
+- **Causa:** los conos de 55° peleaban con la gravedad. Colgado, el torso se dobla casi 180°.
+- **Driver (Q = lo que hace `RagdollDriver`):** en HANG el ancla NO simula (viaja con el esqueleto congelado, sin código por cuadro). El resto simula, y las articulaciones se rearman de la raíz hacia afuera con conos de 180° (`RagdollPose.start`). En FALL no se rearma nada: rearmar en la caída disparaba huesos (galería 54/66). Q en 6 modelos (trogg, druid, scarab, rhinok, dragon, jadugarr): 0 sueltas salvo una en jadugarr, que es un mago y nunca es cautivo.
+- **Pruebas:**
+  - **Galería en caída:** 65/66, igual que antes; falla solo taurock.
+  - **rules_suite:** PASS, con los 7 casos del cautivo.
+  - **NET QUICK:** PASS.
+  - **Dedicado:** 2,22 s y 374 MB.
+  - **Capturas en rig023e:** `pose=2`; el Trogg cuelga flojo dentro del anillo.
+- **Pendiente:** las métricas de cuelgue de la galería salen constantes (stretch 1, velocidad 0), así que miden en reposo y no sirven; hay que arreglarlas. `CaptiveLook.hangs` queda prendido (true por defecto).

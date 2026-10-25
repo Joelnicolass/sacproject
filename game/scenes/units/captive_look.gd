@@ -23,8 +23,8 @@ const SEQUENCE: PackedStringArray = ["rise", "held", "thrash"]
 @export var clip_pose: ClipPlayback
 ## The unit's light: comes back when the creature stands up.
 @export var light: ActorLight
-## true: a model with a physical skeleton hangs as a rag doll. Off (the default), every model uses its clips.
-@export var hangs := false
+## true (the default): a model with a physical skeleton and a hang bone hangs as a rag doll. Off: every model uses its clips.
+@export var hangs := true
 ## Seconds a creature that stands up or hangs out of a corpse takes to appear.
 @export_range(0.0, 3.0, 0.05, "suffix:s") var appear_s := 0.6
 

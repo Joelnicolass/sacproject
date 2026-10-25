@@ -642,7 +642,6 @@ tipping = NodePath("../TippingFall")
 visual = NodePath("../Tilt/Mesh")
 clip_pose = NodePath("../ClipPose")
 light = NodePath("../Light")
-hangs = false
 
 [node name="GuardianBond" type="Node" parent="." node_paths=PackedStringArray("body", "health", "orders", "ability")]
 script = ExtResource("f63_bond")

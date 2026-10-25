@@ -15,6 +15,8 @@ extends SceneTree
 ##   godot_run.sh Godot --headless --path . --script res://debug/bodies/hang_spike.gd           (runs a and b as child processes, prints SPIKE CHOICE A|B|NONE)
 
 const MODEL_SCENE := "res://scenes/bodies/models/trogg_model.tscn"
+## The model under test: MODEL_SCENE, or the stem given after the variant (`-- q druid_model`).
+var _model_scene := MODEL_SCENE
 const SPEED_MPS := 11.0
 const MOVE_S := 2.0
 const MEASURE_AFTER_STOP_S := 5.0
@@ -29,10 +31,13 @@ var _variant := ""
 
 
 func _initialize() -> void:
-	_variant = "".join(OS.get_cmdline_user_args()).to_lower()
+	var args := OS.get_cmdline_user_args()
+	_variant = args[0].to_lower() if args.size() > 0 else ""
+	if args.size() > 1:
+		_model_scene = "res://scenes/bodies/models/%s.tscn" % args[1]
 	var limit := TIMEOUT_S if _variant != "" else TIMEOUT_S * 2.0
 	create_timer(limit).timeout.connect(_on_timeout)
-	if _variant in ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n"]:
+	if _variant in ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q"]:
 		_run_variant()
 	else:
 		_run_all()
@@ -68,7 +73,7 @@ func _run_variant() -> void:
 	await process_frame
 	var holder := Node3D.new()
 	root.add_child(holder)
-	var model: Node3D = (load(MODEL_SCENE) as PackedScene).instantiate()
+	var model: Node3D = (load(_model_scene) as PackedScene).instantiate()
 	holder.add_child(model)
 	if _variant == "g" or _variant == "h":
 		## G (and H): the glb instance turned 180 degrees instead of mirrored on z (det +1). Tests whether the reflection breaks the joints.
@@ -163,6 +168,26 @@ func _run_variant() -> void:
 				rest_names_m.append(StringName((bodies[id] as PhysicalBone3D).bone_name))
 		sim.physical_bones_start_simulation(rest_names_m)
 		_rebuild_cones(sim, skeleton)
+	elif _variant == "q":
+		## Q: what RagdollDriver does for HANG (RagdollPose.start with the anchor, then hang_damping 4).
+		RagdollPose.start(sim, skeleton, RagdollPose.spans_of(RagdollPose.bones_of(sim)), anchor)
+		RagdollPose.damp(RagdollPose.bones_of(sim), 4.0)
+	elif _variant == "o" or _variant == "p":
+		## O: L with the cones opened wide (swing and twist 180) before the joints are rebuilt: do the limits fight gravity?
+		var rest_names_o: Array[StringName] = []
+		for id: int in bodies:
+			if bodies[id] != anchor:
+				rest_names_o.append(StringName((bodies[id] as PhysicalBone3D).bone_name))
+		sim.physical_bones_start_simulation(rest_names_o)
+		_rebuild_cones(sim, skeleton, 180.0)
+		if _variant == "p":
+			## P: O with the damping RagdollDriver gives the bones while it hangs (hang_damping 4).
+			for id: int in bodies:
+				var b := bodies[id] as PhysicalBone3D
+				b.linear_damp_mode = PhysicalBone3D.DAMP_MODE_REPLACE
+				b.angular_damp_mode = PhysicalBone3D.DAMP_MODE_REPLACE
+				b.linear_damp = 4.0
+				b.angular_damp = 4.0
 	elif _variant == "l" or _variant == "n":
 		## L: A (the anchor does not simulate and rides the skeleton) + every cone joint rebuilt once the rest simulates.
 		var rest_names: Array[StringName] = []
@@ -231,7 +256,8 @@ func _lock_axis(pin: Generic6DOFJoint3D, axis: int) -> void:
 func _model_height(model: Node3D, skeleton: Skeleton3D, bodies: Dictionary) -> float:
 	var aabb: AABB = model.get("bind_aabb")
 	if aabb.size.y > 0.0:
-		return aabb.size.y
+		## The glb keeps its own up axis (z for the original models): the largest side of the rest box is the height.
+		return maxf(aabb.size.y, maxf(aabb.size.x, aabb.size.z))
 	var lo := INF
 	var hi := -INF
 	for id: int in bodies:
@@ -316,7 +342,7 @@ func _start_rebuilt(sim: PhysicalBoneSimulator3D) -> void:
 
 
 ## Swaps every cone joint off and on (Godot builds it again) and puts its limits back, parents before children.
-func _rebuild_cones(sim: PhysicalBoneSimulator3D, skeleton: Skeleton3D) -> void:
+func _rebuild_cones(sim: PhysicalBoneSimulator3D, skeleton: Skeleton3D, span_override := -1.0) -> void:
 	var cones: Array[PhysicalBone3D] = []
 	for child in sim.get_children():
 		var bone := child as PhysicalBone3D
@@ -333,6 +359,9 @@ func _rebuild_cones(sim: PhysicalBoneSimulator3D, skeleton: Skeleton3D) -> void:
 		bone.joint_type = PhysicalBone3D.JOINT_TYPE_CONE
 		for key: String in keys:
 			bone.set("joint_constraints/" + key, saved[key])
+		if span_override > 0.0:
+			bone.set("joint_constraints/swing_span", span_override)
+			bone.set("joint_constraints/twist_span", span_override)
 
 
 func _bone_depth(skeleton: Skeleton3D, bone: int) -> int:

@@ -97,7 +97,7 @@ func book(god_tag: String, max_level := 1) -> Dictionary:
 	return type.book.up_to(max_level)
 
 
-## Wizard level at which `tag` enters the god's book (computeDefaultSpells), or -1 if it is not in it.
-func creature_level(god_tag: String, tag: String) -> int:
-	var type: GodType = _gods_by_tag.get(god_tag)
-	return type.book.level_of(tag) if type != null and type.book != null else -1
+## Wizard level at which `type` (a CreatureType or SpellType) enters the god's book (computeDefaultSpells), or -1 if it is not in it.
+func creature_level(god_tag: String, type: Resource) -> int:
+	var god_type: GodType = _gods_by_tag.get(god_tag)
+	return god_type.book.level_of(type) if god_type != null and god_type.book != null else -1

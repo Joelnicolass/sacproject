@@ -6,6 +6,8 @@ extends CharacterBody3D
 
 signal walk_changed(walking: bool)
 signal pick_changed
+## The book override changed: the Spellbook builds again.
+signal book_changed
 
 @export var step: WalkStep
 @export var owner_slot := 0:
@@ -45,6 +47,13 @@ signal pick_changed
 	set(value):
 		god = value
 		pick_changed.emit()
+## Book of THIS wizard (a bench, a solo game, the server). Empty: the book of `god_type`. It does not travel on the network.
+@export var book: GodBook:
+	set(value):
+		if value == book:
+			return
+		book = value
+		book_changed.emit()
 ## Wizard level (RFC-030 030b): the Spellbook keeps the entries up to it. The server sets it from
 ## MatchRules.wizard_level (WizardSpawner) and replicates it like `god`.
 @export_range(1, 9) var level := 1:

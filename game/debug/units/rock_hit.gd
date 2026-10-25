@@ -25,6 +25,8 @@ extends Node
 @export var building_spots: PackedVector2Array = PackedVector2Array()
 ## Empty: the wizard keeps the picked god. Picked like boot does, before the world spawns him.
 @export var wizard_god := ""
+## Empty: the wizard casts from the book of his god. Set: it is his book (WizardBody.book), to try a mixed one.
+@export var wizard_book: GodBook
 @export var settle_frames := 8
 ## RFC-029 029b: each projectile trail (FxTrail) prints `fx_trail <n>` when it leaves the tree: its puffs
 ## in the first `trail_window_s` from the first one, the same at any fps.
@@ -57,6 +59,8 @@ func _start() -> void:
 		return
 	for _frame in settle_frames:
 		await get_tree().physics_frame
+	if wizard_book != null:
+		(wizard as WizardBody).book = wizard_book
 	var ahead: Vector3 = wizard.call("facing_flat")
 	var right := ahead.cross(Vector3.UP)
 	for i in mini(tags.size(), spots.size()):

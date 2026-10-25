@@ -28,9 +28,6 @@ const SPIN_MAX := 0.8
 const TRAIL_FX := "rock_trail"
 const TRAIL_INTERVAL_S := 2.0 / 60.0
 
-## The rock, drawn at scale 1 (scenes/props/meshes/rock.res).
-@export var rock_mesh: Mesh
-@export var rock_color := Color(0.42, 0.4, 0.34)
 ## 061k-5: the crack it leaves where it bursts (spells/marks/rock_mark.tscn), played on every peer.
 @export var ground_mark: PackedScene
 
@@ -51,6 +48,9 @@ var _spin_axis := Vector3.UP
 var _spin_rate := 0.0
 var _trail: FxTrail
 
+## The rock, drawn at scale 1 (the mesh of the `Mesh` node, scenes/props/meshes/rock.res).
+@onready var _mesh: MeshInstance3D = %Mesh
+
 
 func setup(data: Dictionary) -> void:
 	name = str(data["name"])
@@ -67,25 +67,8 @@ func setup(data: Dictionary) -> void:
 	rng.seed = hash(name)
 	_spin_axis = Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0)).normalized()
 	_spin_rate = TAU * rng.randf_range(SPIN_MIN, SPIN_MAX)
-	_add_visual()
 	_attach_net()
 	_trail = FxTrail.attach(self, TRAIL_FX, TRAIL_INTERVAL_S)
-
-
-func _add_visual() -> void:
-	var visual := MeshInstance3D.new()
-	visual.name = "Mesh"
-	visual.mesh = rock_mesh
-	if visual.mesh == null:
-		var ball := SphereMesh.new()
-		ball.radius = HALF_SIZE
-		ball.height = HALF_SIZE * 2.0
-		visual.mesh = ball
-		var mat := StandardMaterial3D.new()
-		mat.albedo_color = rock_color
-		mat.roughness = 1.0
-		visual.material_override = mat
-	add_child(visual)
 
 
 func _ready() -> void:
@@ -106,12 +89,11 @@ func _attach_net() -> void:
 
 
 func _process(delta: float) -> void:
-	var mesh := get_node_or_null("Mesh") as Node3D
 	if _trail:
-		_trail.emitting = mesh != null and flying
-	if mesh == null or not flying:
+		_trail.emitting = flying
+	if not flying:
 		return
-	mesh.rotate(_spin_axis, _spin_rate * delta)
+	_mesh.rotate(_spin_axis, _spin_rate * delta)
 
 
 func _physics_process(_delta: float) -> void:

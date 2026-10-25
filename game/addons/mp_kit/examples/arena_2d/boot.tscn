@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://addons/mp_kit/mp_flow.gd" id="1"]
 [ext_resource type="PackedScene" path="res://addons/mp_kit/mp_boot_menu.tscn" id="2"]
-[ext_resource type="Resource" path="res://addons/mp_kit/examples/arena_2d/arena_net.tres" id="3"]
+[ext_resource type="Resource" path="res://addons/mp_kit/examples/arena_2d/arena_game.tres" id="3"]
 
 [node name="Boot" type="Control"]
 layout_mode = 3
@@ -14,15 +14,10 @@ grow_vertical = 2
 
 [node name="Flow" type="Node" parent="."]
 script = ExtResource("1")
-net_config = ExtResource("3")
-boot_path = "res://addons/mp_kit/examples/arena_2d/boot.tscn"
-world_path = "res://addons/mp_kit/examples/arena_2d/arena.tscn"
-room_server_path = "res://addons/mp_kit/examples/arena_2d/rooms.tscn"
-lobby_path = "res://addons/mp_kit/examples/arena_2d/lobby.tscn"
+game = ExtResource("3")
 room_name = "MpKit Arena"
 
 [node name="Menu" parent="." instance=ExtResource("2")]
 offer_private_server = true
-lobby_scene_path = "res://addons/mp_kit/examples/arena_2d/lobby.tscn"
 title_text = "MpKit Arena"
 room_name = "MpKit Arena"

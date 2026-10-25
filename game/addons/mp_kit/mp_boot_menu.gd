@@ -12,7 +12,8 @@ signal status_changed(text: String)
 
 ## Show a "Private server" button: a dedicated match on this PC with an invite code (MpLocalServer).
 @export var offer_private_server: bool = false
-## The online lobby screen (MpLobbyScreen). Set = an "Online rooms" button opens it.
+## The online lobby screen (MpLobbyScreen). Set = an "Online rooms" button opens it. Empty = the flow's
+## (MpGame.lobby_scene), if any.
 @export_file("*.tscn") var lobby_scene_path: String = ""
 @export var world_scene: PackedScene
 @export var world_id: StringName = &""
@@ -111,8 +112,9 @@ func _build() -> void:
 		_add_button(box, host_text, _on_host)
 	if offer_private_server and MpNetConfig.can_host():
 		_add_button(box, private_text, _on_private)
-	if not lobby_scene_path.is_empty():
-		_add_button(box, online_text, func() -> void: get_tree().change_scene_to_file(lobby_scene_path))
+	var lobby := _lobby_path()
+	if not lobby.is_empty():
+		_add_button(box, online_text, func() -> void: get_tree().change_scene_to_file(lobby))
 	var join_row := HBoxContainer.new()
 	join_row.add_theme_constant_override("separation", 8)
 	box.add_child(join_row)
@@ -285,3 +287,11 @@ class LateJoin extends Node:
 	func _on_peer(peer_id: int, _slot: int) -> void:
 		if MpKit.is_server():
 			MpKit.load_world_to(peer_id)
+
+
+## The lobby scene: this menu's own, or the flow's (MpGame.lobby_scene).
+func _lobby_path() -> String:
+	if not lobby_scene_path.is_empty():
+		return lobby_scene_path
+	var flow := MpFlow.find_in_tree(self) if is_inside_tree() else null
+	return flow.lobby_path if flow else ""

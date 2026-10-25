@@ -22,7 +22,7 @@ Probalo local antes: `PORT=8080 RELAY_HOST_SECRET=prueba node server.mjs` y `ws:
 
 ## 2. Configurar el juego
 
-En el `MpNetConfig` del juego (`net.tres`):
+En el `game.tres` del juego (un `MpGame`; o el `MpNetConfig` que uses):
 
 | Campo | Valor |
 |---|---|

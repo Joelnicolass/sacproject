@@ -15,6 +15,7 @@ const STATE := "res://addons/mp_kit/nodes/mp_state.gd"
 const MATCH := "res://addons/mp_kit/nodes/mp_match.gd"
 const SLOT_SPAWNER := "res://addons/mp_kit/mp_slot_spawner.gd"
 const LEAVE := "res://addons/mp_kit/nodes/mp_leave_button.gd"
+const WORLD := "res://addons/mp_kit/nodes/mp_world.gd"
 
 
 static func player_script(is_3d: bool) -> String:
@@ -91,6 +92,7 @@ static func player(is_3d: bool, script: Script) -> Node:
 	return root
 
 
+## Older layout (each piece at the world's root); the wizard uses world_with_mp_world.
 static func world(is_3d: bool, players: int, player_scene: PackedScene) -> Node:
 	var root: Node = Node3D.new() if is_3d else Node2D.new()
 	root.name = "World"
@@ -144,6 +146,47 @@ static func world(is_3d: bool, players: int, player_scene: PackedScene) -> Node:
 	return root
 
 
+## The world as the wizard writes it now: a camera (and a light in 3D) and one MpWorld that builds the rest.
+static func world_with_mp_world(is_3d: bool, players: int, player_scene: PackedScene) -> Node:
+	var root: Node = Node3D.new() if is_3d else Node2D.new()
+	root.name = "World"
+	if is_3d:
+		var camera := Camera3D.new()
+		camera.name = "Camera"
+		camera.position = Vector3(0, 12, 12)
+		camera.rotation_degrees = Vector3(-45, 0, 0)
+		_add(root, camera)
+		var sun := DirectionalLight3D.new()
+		sun.name = "Sun"
+		sun.rotation_degrees = Vector3(-60, 30, 0)
+		_add(root, sun)
+	var script: GDScript = load(WORLD)
+	var world: Node = script.new()
+	world.name = "MpWorld"
+	world.set("player_scene", player_scene)
+	world.set("seats", players)
+	_add(root, world)
+	script.build(world, root, is_3d)
+	return root
+
+
+## The boot as the wizard writes it now: an MpFlow with the MpGame (nothing else to set) and the menu.
+static func boot_with_game(game: Resource, private_server: bool) -> Node:
+	var root := Control.new()
+	root.name = "Boot"
+	root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	var flow: Node = load(FLOW).new()
+	flow.name = "Flow"
+	flow.set("game", game)
+	_add(root, flow)
+	var menu: Node = (load(MENU) as PackedScene).instantiate()
+	menu.name = "Menu"
+	menu.set("offer_private_server", private_server)
+	_add(root, menu)
+	return root
+
+
+## Older layout (every piece and path set by hand); the wizard uses world_with_mp_world and boot_with_game.
 static func boot(net: Resource, paths: Dictionary, private_server: bool) -> Node:
 	var root := Control.new()
 	root.name = "Boot"

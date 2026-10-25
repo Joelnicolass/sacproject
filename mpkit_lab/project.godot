@@ -16,7 +16,7 @@ MpLabProbe="*res://probe/lab_probe.gd"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/mp_kit/plugin.cfg")
+enabled=PackedStringArray("res://addons/mp_kit/plugin.cfg", "res://addons/lab_editor_check/plugin.cfg")
 
 [display]
 

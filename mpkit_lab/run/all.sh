@@ -2,7 +2,8 @@
 # Every MpKit lab check in a row (mpkit_lab/CASES.md lists them): the kit's own tests, solo, the session cases, and
 # the relay's host rules, arena, rooms and private over ENet, WebSocket and the relay (rooms also over wss://), a
 # browser client over WebSocket and over the relay (Web export templates + a headless Chrome / Chromium; without a
-# browser those two say SKIP; BROWSER=none skips them), instances and the wizard.
+# browser those two say SKIP; BROWSER=none skips them), instances, the wizard, and MpWorld + the wizard in the real
+# editor (headless).
 # Prints one line per check and MPKIT ALL PASS / MPKIT ALL FAIL: n (exit 0 / 1).
 HERE="$(cd "$(dirname "$0")" && pwd)"
 . "$HERE/lib.sh"
@@ -33,6 +34,7 @@ fi
 step instances bash "$HERE/instances.sh"
 step "wizard 2d" bash "$HERE/wizard.sh"
 step "wizard 3d" env WIZARD_3D=1 bash "$HERE/wizard.sh"
+step editor bash "$HERE/editor.sh"
 if [ "$FAILS" = 0 ]; then echo "MPKIT ALL PASS"; exit 0; fi
 echo "MPKIT ALL FAIL: $FAILS"
 exit 1

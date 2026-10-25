@@ -10,7 +10,7 @@ Los nombres de código (`MpActor`, `to_server`, `owner_slot`...) quedan en ingl�
 2. [Conceptos en palabras simples](#2-conceptos-en-palabras-simples)
 3. [Instalar](#3-instalar)
 4. [Camino A: el asistente Setup game](#4-camino-a-el-asistente-setup-game)
-5. [Camino B: a mano, escena por escena](#5-camino-b-a-mano-escena-por-escena)
+5. [Camino B: a mano, escena por escena](#5-camino-b-a-mano-escena-por-escena) (un recurso, `MpFlow` y `MpWorld`)
 6. [Programar el jugador](#6-programar-el-jugador)
 7. [Cosas del mundo: objetos, apariciones, puntaje, inicio y fin](#7-cosas-del-mundo-objetos-apariciones-puntaje-inicio-y-fin)
 8. [Probar](#8-probar)
@@ -108,9 +108,9 @@ El camino más corto. En dos minutos tenés un juego que anda solo, en LAN, dedi
 |---|---|---|
 | **Folder** | Carpeta donde escribe todo. Tiene que empezar con `res://`. | `res://game` |
 | **World** | `2D` o `3D`. | 2D |
-| **Max players** | Jugadores de la partida (1 a 64). Va a `MpNetConfig.max_players` y a la cantidad de puntos de aparición. | 4 |
-| **Transport** | `ENet (UDP, desktop)`, `WebSocket (TCP, web builds)` o `Relay (WebSocket tunnel: Railway…)`. Va a `MpNetConfig.transport`. | ENet |
-| **Relay URL** | Solo con Relay: la dirección del relay (`wss://tu-relay.up.railway.app`). Va a `MpNetConfig.relay_url`. | vacío |
+| **Max players** | Jugadores de la partida (1 a 64). Va a `max_players` de `game.tres` y a la cantidad de puntos de aparición. | 4 |
+| **Transport** | `ENet (UDP, desktop)`, `WebSocket (TCP, web builds)` o `Relay (WebSocket tunnel: Railway…)`. Va a `transport` de `game.tres`. | ENet |
+| **Relay URL** | Solo aparece con Relay: la dirección del relay (`wss://tu-relay.up.railway.app`). Va a `relay_url`. | vacío |
 | **Online rooms** | Agrega servidor de salas y pantalla de lobby. | tildado |
 | **Private server button** | Muestra el botón *Private server* en el menú (partida en tu PC con código). | tildado |
 | **Make the boot scene the main scene** | Pone el boot como escena principal del proyecto (F5 la abre). | tildado |
@@ -120,7 +120,7 @@ El camino más corto. En dos minutos tenés un juego que anda solo, en LAN, dedi
 Abajo, bajo **Files:**, el diálogo muestra qué va a escribir. Con la carpeta `res://game`, salas online y escena principal:
 
 ```
-[+] res://game/net.tres
+[+] res://game/game.tres
 [+] res://game/player.gd
 [+] res://game/player.tscn
 [+] res://game/world.tscn
@@ -140,7 +140,7 @@ Apretá **Create**. El editor escanea los archivos y abre `boot.tscn`.
 
 ### 4.4 Qué hay en cada archivo
 
-**`net.tres`**: un `MpNetConfig` con el transporte y los jugadores que elegiste (puerto 7777). `relay_url` es lo que escribiste en *Relay URL*, y `relay_room` es el nombre del proyecto más una cola al azar (`mi-juego-3fa9c1`): dos juegos hechos con el asistente nunca comparten salas en el mismo relay.
+**`game.tres`**: un `MpGame`, el juego en un solo recurso. Tiene la red (transporte y jugadores que elegiste, puerto 7777) y, en **Scenes**, las rutas de `boot.tscn`, `world.tscn` y, con salas, `lobby.tscn` y `rooms.tscn`. `relay_url` es lo que escribiste en *Relay URL*, y `relay_room` es el nombre del proyecto más una cola al azar (`mi-juego-3fa9c1`): dos juegos hechos con el asistente nunca comparten salas en el mismo relay.
 
 **`player.tscn`**:
 
@@ -155,33 +155,36 @@ Player (CharacterBody2D o CharacterBody3D, motion_mode = Floating, script player
 
 **`player.gd`**: movimiento en `mp_move`, y Enter (`ui_accept`) suma un punto en el `MpState` y hace un destello en todos (`mp_all_flash`).
 
-**`world.tscn`**:
+**`world.tscn`**: tu nivel y un solo nodo de red, `MpWorld`, que armó sus piezas:
 
 ```
 World (Node2D o Node3D)
 ├── Camera, Sun          (solo en 3D)
-├── SpawnPoints          (P1..Pn en círculo, uno por jugador)
-├── Actors               (vacío: ahí aparecen los jugadores)
-├── Players              (MpSlotSpawner: spawn_path ../Actors, pawn_scene player.tscn, spawn_points ../SpawnPoints)
-├── Score                (MpState, con su MpSync)
-├── Match                (MpMatch)
-└── Hud                  (CanvasLayer)
-    └── Leave            (MpLeaveButton: sale de la partida)
+└── MpWorld              (player_scene = player.tscn, seats = Max players)
+    ├── SpawnPoints      (P1..Pn en círculo, uno por jugador)
+    ├── Actors           (vacío: ahí aparecen los jugadores)
+    ├── Players          (MpSlotSpawner)
+    ├── State            (MpState, con su MpSync)
+    ├── Match            (MpMatch)
+    └── Hud
+        └── Leave        (MpLeaveButton: sale de la partida)
 ```
 
 **`boot.tscn`**:
 
 ```
 Boot (Control, pantalla completa)
-├── Flow  (MpFlow: net_config = net.tres, boot_path, world_path, lobby_path, room_server_path)
-└── Menu  (instancia de mp_boot_menu.tscn: lobby_scene_path, offer_private_server)
+├── Flow  (MpFlow: game = game.tres, nada más)
+└── Menu  (instancia de mp_boot_menu.tscn: offer_private_server)
 ```
+
+El menú muestra *Online rooms* solo porque `game.tres` tiene `lobby_scene`.
 
 **`rooms_config.tres`**: un `MpLobbyConfig` con `seats_per_room` = el menor entre *Max players* y 2. El resto, por defecto (lobby en 7700, partidas en 7800-7899).
 
-**`rooms.tscn`**: un nodo `Rooms` con `MpRoomServer`, `config = rooms_config.tres` y `net_config = net.tres`. El servidor de salas toma transporte, relay y TLS del mismo `net.tres` que el juego.
+**`rooms.tscn`**: un nodo `Rooms` con `MpRoomServer` y `config = rooms_config.tres`. El servidor de salas toma transporte, relay y TLS de `game.tres` (a través del flow que lo abrió con `--room-server`), y cada partida abre el boot del juego.
 
-**`lobby.tscn`**: una instancia de `MpLobbyScreen` con `back_path` = el boot. `lobby_address` queda vacío: el campo arranca con `MpNetConfig.public_host` en el puerto 7700, o `127.0.0.1:7700` si no hay.
+**`lobby.tscn`**: una instancia de `MpLobbyScreen`. Su botón Back vuelve al boot del juego. `lobby_address` queda vacío: el campo arranca con `public_host` de `game.tres` en el puerto 7700, o `127.0.0.1:7700` si no hay.
 
 ### 4.5 Probarlo enseguida
 
@@ -194,13 +197,13 @@ Lo que el asistente **no** agrega, y conviene que agregues vos: un fin de partid
 
 ## 5. Camino B: a mano, escena por escena
 
-Lo mismo que arma el asistente, con los clics del editor. Te sirve para entender qué hay, o para sumar MpKit a un juego que ya tenés. El ejemplo `examples/arena_2d/` está armado así.
+Lo mismo que arma el asistente, con los clics del editor. Te sirve para entender qué hay, o para sumar MpKit a un juego que ya tenés. Son tres cosas: un recurso (`game.tres`), el boot con un `MpFlow`, y el mundo con un `MpWorld`. Más tu jugador.
 
-### 5.1 La configuración de red (`MpNetConfig`)
+### 5.1 El juego en un recurso (`MpGame`)
 
 1. En el panel **Sistema de archivos**, clic derecho en tu carpeta › **Nuevo › Recurso...**
-2. Buscá **MpNetConfig** y creá `net.tres`.
-3. En el inspector:
+2. Buscá **MpGame** y creá `game.tres`. Un `MpGame` es un `MpNetConfig` (la red) con tus escenas.
+3. En el inspector, la red:
 
 | Propiedad | Qué poner | Por defecto |
 |---|---|---|
@@ -213,25 +216,34 @@ Lo mismo que arma el asistente, con los clics del editor. Te sirve para entender
 | Grupo **Relay** | `relay_url` y `relay_room`. Ver [12](#12-relay-túnel-por-railway-u-otro-host) | vacío / `mpkit` |
 | Grupo **TLS (wss://)** | Ver [Web](#11-web) | vacío |
 
+Y el grupo **Scenes**:
+
+| Propiedad | Qué poner |
+|---|---|
+| `boot_scene` | La escena del menú (5.2), por ejemplo `res://game/boot.tscn`. Leave y un servidor caído vuelven acá |
+| `world_scene` | La escena de la partida (5.3) |
+| `lobby_scene` | Opcional: la pantalla de salas online (ver [9](#9-online-con-salas)). Con esto, el menú muestra *Online rooms* |
+| `rooms_scene` | Opcional: la escena con `MpRoomServer`, que abre `--room-server` |
+
 Los flags de línea de comando le ganan al `.tres`: `--transport=ws`, `--mp-port=N`, `--max-players=N`, `--relay-url=`, `--relay-room=`.
+
+Un `MpNetConfig` solo (sin escenas) sigue andando en `Flow › net_config`, con las rutas puestas a mano en el flow. Es el armado de antes; el `MpGame` lo junta todo.
 
 ### 5.2 Escena de boot (el menú)
 
 1. **Escena › Nueva escena**. Raíz: **Interfaz de usuario** (`Control`). Renombrala `Boot`.
 2. Seleccioná `Boot`, **Agregar nodo hijo** (Ctrl+A), buscá **MpFlow** y agregalo. Renombralo `Flow`.
-3. En el inspector del `Flow`:
+3. En el inspector del `Flow`, **Game** = tu `game.tres`. Es lo único obligatorio.
 
-| Propiedad | Qué poner |
+El resto de los campos del `Flow` es opcional. Uno puesto a mano le gana al `game.tres`:
+
+| Propiedad | Qué hace |
 |---|---|
-| `net_config` | Arrastrá tu `net.tres` |
-| `boot_path` | Esta misma escena (con el selector de archivo), por ejemplo `res://game/boot.tscn` |
-| `world_path` | Tu mundo, por ejemplo `res://game/world.tscn` |
 | `room_name` | Nombre que se ve en la lista LAN |
-| `lobby_path` | Solo con salas online: la escena de lobby |
-| `room_server_path` | Solo con salas online: la escena con `MpRoomServer` |
+| `net_config`, `boot_path`, `world_path`, `lobby_path`, `room_server_path` | Lo mismo que el `game.tres`, campo por campo. Vacíos = los del juego |
 | `start_when` | Dejalo como está. Host LAN y `--dedicated` siempre cargan el mundo al arrancar; `DEDICATED_FIRST_CLIENT` y `MANUAL` solo cuentan en un export *Dedicated Server* arrancado sin `--dedicated` |
 
-Con `net_config` puesto, `max_players`, `custom_channels` y el puerto salen del `.tres`, no de los campos del `Flow`.
+`max_players`, `custom_channels` y el puerto salen del `.tres`, no de los campos del `Flow`.
 
 4. Seleccioná `Boot` otra vez y **Instanciar escena hija** (Ctrl+Shift+A). Elegí `res://addons/mp_kit/mp_boot_menu.tscn`. Renombralo `Menu`.
 5. En el inspector del `Menu` (un `MpBootMenu`):
@@ -240,7 +252,7 @@ Con `net_config` puesto, `max_players`, `custom_channels` y el puerto salen del 
 |---|---|
 | `title_text` | Título del menú |
 | `offer_private_server` | Botón *Private server* |
-| `lobby_scene_path` | Botón *Online rooms*, que abre esa escena |
+| `lobby_scene_path` | Otra escena de lobby para *Online rooms*. Vacío = la del juego (`lobby_scene`) |
 | `play_solo_text`, `host_text`, `join_text`... | Los textos de los botones, para traducir |
 | `world_scene`, `max_players`, `room_name`, `advertise_lan`, `drive_kit` | Solo para un menú **sin** `MpFlow`. Con flow, el flow manda y estos campos no hacen nada |
 
@@ -255,12 +267,30 @@ Qué hace el `MpFlow`: arranca la red con la config, cambia de escena (boot ↔ 
 
 ### 5.3 Escena del mundo
 
-1. **Escena › Nueva escena**. Raíz: **Escena 2D** (`Node2D`) o **Escena 3D** (`Node3D`). Renombrala `World`.
-2. Agregá un hijo `Node2D` (o `Node3D`) llamado `SpawnPoints`.
-3. Adentro, un `Marker2D` (o `Marker3D`) por jugador: `P1`, `P2`, `P3`, `P4`. Movelos donde querés que aparezca cada uno. El slot 1 usa el primero, el 2 el segundo; si hay más jugadores que marcas, vuelven a empezar.
-4. Agregá un hijo `Node2D` (o `Node3D`) vacío llamado `Actors`. Ahí aparecen los jugadores.
-5. Agregá un hijo **MpSlotSpawner** (buscalo por nombre; es un `MultiplayerSpawner`). Renombralo `Players`.
-6. En su inspector:
+1. **Escena › Nueva escena**. Raíz: **Escena 2D** (`Node2D`) o **Escena 3D** (`Node3D`). Renombrala `World`. Tu nivel va acá, como siempre.
+2. **Agregar nodo hijo**, buscá **MpWorld** y agregalo. Al soltarlo, arma sus piezas como hijos: `SpawnPoints` (un marcador por asiento), `Actors`, `Players` (un `MpSlotSpawner`), `State` (un `MpState`), `Match` (un `MpMatch`) y `Hud/Leave` (un `MpLeaveButton`). Detecta solo si el mundo es 2D o 3D.
+3. En su inspector:
+
+| Propiedad | Qué hace | Por defecto |
+|---|---|---|
+| `player_scene` | Tu `player.tscn` (lo armás en 5.4; podés volver después). Es la escena que recibe cada asiento | vacío |
+| `seats` | Cuántos marcadores arma en `SpawnPoints` (si hay más jugadores, vuelven a empezar) | 4 |
+| `leave_button` | Arma `Hud/Leave` | on |
+
+4. Mové los marcadores de `MpWorld/SpawnPoints` adonde querés que nazca cada jugador.
+5. **Guardá la escena** (Ctrl+S).
+
+Si borrás una pieza, el `MpWorld` la vuelve a armar la próxima vez que abrís la escena. No les cambies el nombre: el `MpWorld` las busca así. Desde un script, `Mp.state()`, `Mp.current_match()` y `Mp.player(slot)` las encuentran.
+
+#### Sin MpWorld: cada pieza a mano
+
+El `MpWorld` solo arma nodos que también podés poner vos. Sirve si tu mundo ya tiene su propia estructura (el ejemplo `examples/arena_2d/arena.tscn` está armado así):
+
+1. Agregá un hijo `Node2D` (o `Node3D`) llamado `SpawnPoints`.
+2. Adentro, un `Marker2D` (o `Marker3D`) por jugador: `P1`, `P2`, `P3`, `P4`. Movelos donde querés que aparezca cada uno. El slot 1 usa el primero, el 2 el segundo; si hay más jugadores que marcas, vuelven a empezar.
+3. Agregá un hijo `Node2D` (o `Node3D`) vacío llamado `Actors`. Ahí aparecen los jugadores.
+4. Agregá un hijo **MpSlotSpawner** (buscalo por nombre; es un `MultiplayerSpawner`). Renombralo `Players`.
+5. En su inspector:
 
 | Propiedad | Valor |
 |---|---|
@@ -272,10 +302,10 @@ Qué hace el `MpFlow`: arranca la red con la config, cambia de escena (boot ↔ 
 | `gate_unsynced_spawns` | on (dejalo así) |
 | `room_id` | vacío |
 
-7. Opcional, para el puntaje: agregá un hijo **MpState** llamado `Score`.
-8. Opcional, para inicio y fin: agregá un hijo **MpMatch** llamado `Match`.
-9. Para salir: agregá un `CanvasLayer` llamado `Hud` y, adentro, un **MpLeaveButton** llamado `Leave` (ver [7.6](#76-salir-de-la-partida)).
-10. **Guardá la escena** (Ctrl+S). Al guardar, el `MpState` arma su hijo `MpSync` y queda guardado.
+6. Opcional, para el puntaje: agregá un hijo **MpState** llamado `Score`.
+7. Opcional, para inicio y fin: agregá un hijo **MpMatch** llamado `Match`.
+8. Para salir: agregá un `CanvasLayer` llamado `Hud` y, adentro, un **MpLeaveButton** llamado `Leave` (ver [7.6](#76-salir-de-la-partida)).
+9. **Guardá la escena** (Ctrl+S). Al guardar, el `MpState` arma su hijo `MpSync` y queda guardado.
 
 Qué hace el `MpSlotSpawner`: crea un jugador por slot ocupado. En solo, el tuyo. En LAN, el del host al arrancar y el de cada cliente cuando termina de cargar el mundo. En dedicado, ninguno para el servidor. Los llama `Pawn_1`, `Pawn_2`... y les pone `MpActor.owner_slot` antes de que entren al árbol.
 
@@ -341,8 +371,8 @@ Si usás acciones propias (`jump`, `shoot`), crealas en **Ajustes del proyecto �
 
 ### 5.5 Conectar todo
 
-1. En `world.tscn`, en el `MpSlotSpawner`, asigná `pawn_scene` = `player.tscn`.
-2. En `boot.tscn`, en el `Flow`, revisá `world_path`.
+1. En `world.tscn`, en el `MpWorld`, asigná `player_scene` = `player.tscn`.
+2. En `game.tres`, revisá `boot_scene` y `world_scene`.
 3. Guardá todo y apretá F5.
 
 ## 6. Programar el jugador
@@ -521,6 +551,27 @@ func respawn(at: Vector2) -> void:   # en el servidor
 func mp_all_respawned() -> void:
 	net.snap()
 ```
+
+### 6.9 La partida desde cualquier script: `Mp`
+
+El `MpActor` es de cada actor. Para lo que es de la partida, la clase **Mp** tiene los verbos, sin buscar nodos:
+
+| Verbo | Qué hace |
+|---|---|
+| `Mp.play_solo()` | Juega solo, sin red |
+| `Mp.host()` | Hostea en esta PC (LAN, o por el relay si el juego lo dice) y juega |
+| `Mp.join(direccion)` | Se une: `"192.168.1.5"`, `"juego.ejemplo.com:7777"`, `"ip:puerto#CÓDIGO"` o `"wss://…"` |
+| `Mp.leave()` | Sale de la partida: al lobby si era de sala, al boot si no. Lo mismo que el botón Leave |
+| `Mp.open_rooms()` | Abre el lobby (`lobby_scene` del juego). `false` si no hay |
+| `Mp.is_server()` | ¿Corren acá las reglas? El servidor, o tu PC en solo |
+| `Mp.is_online()` | ¿Hay red? Host, dedicado o cliente |
+| `Mp.me()` | Tu asiento: 1, 2, 3… (0 en un dedicado) |
+| `Mp.player(slot)` | El jugador de ese asiento en esta máquina |
+| `Mp.state()` | El `MpState` del mundo: `Mp.state().add(&"score")` en el servidor, `get_value` en todos |
+| `Mp.current_match()` | El `MpMatch` del mundo (señales y asientos) |
+| `Mp.finish(resultado)` | En el servidor: termina la partida para todos |
+
+Un menú propio en vez de `mp_boot_menu.tscn` son tres botones: `Mp.play_solo()`, `Mp.host()` y `Mp.join(campo.text)`.
 
 ## 7. Cosas del mundo: objetos, apariciones, puntaje, inicio y fin
 
@@ -847,7 +898,7 @@ Cliente B ─┼─> Servidor de salas (7700) ─────┤
 Cliente C ─┘     lobby, salas, chat          └─> Partida 2 (dedicado, puerto 7801)
 ```
 
-Son tres piezas, cero código de pegamento. El ejemplo las trae: `rooms.tscn`, `lobby.tscn` y el `MpMatch` de `arena.tscn`.
+Son dos escenas más, anotadas en `game.tres`, y el `MpMatch` que ya trae el `MpWorld`. Cero código de pegamento. El ejemplo las trae: `rooms.tscn`, `lobby.tscn` y el `MpMatch` de `arena.tscn`.
 
 ### 9.1 La escena del servidor: `MpRoomServer`
 
@@ -858,9 +909,9 @@ Son tres piezas, cero código de pegamento. El ejemplo las trae: `rooms.tscn`, `
 | Propiedad | Qué poner |
 |---|---|
 | `config` | Un `MpLobbyConfig` (`.tres`, abajo) |
-| `net_config` | El **mismo** `MpNetConfig` del juego (`net.tres`). El lobby y cada partida toman de ahí transporte, relay y TLS, así hablan como el juego |
+| `net_config` | Dejalo vacío: toma el `game.tres` del flow que abrió esta escena con `--room-server`. El lobby y cada partida toman de ahí transporte, relay y TLS, así hablan como el juego. Ponelo solo si este servidor tiene que hablar distinto |
 | `rules` | Opcional: tus reglas (`MpRoomRules`, abajo). Vacío = acepta todo, 2 asientos |
-| `match_scene` | Escena que abre cada partida. Vacío = la escena principal (lo normal: tiene el `MpFlow`) |
+| `match_scene` | Escena que abre cada partida. Vacío = el `boot_scene` de `game.tres` (sin `MpGame`, la escena principal) |
 
 4. Guardala como `rooms.tscn`.
 
@@ -871,7 +922,7 @@ Creala como recurso nuevo (**Nuevo › Recurso › MpLobbyConfig**).
 | Campo | Qué es | Por defecto |
 |---|---|---|
 | `lobby_port` | Puerto del lobby | 7700 |
-| `transport` | `enet`, `ws` o `relay`. Con `MpRoomServer.net_config` puesto, sale del `net.tres` | `enet` |
+| `transport` | `enet`, `ws` o `relay`. Con `game.tres` (o `MpRoomServer.net_config`), sale de ahí | `enet` |
 | `max_connections` | Conexiones al lobby a la vez | 64 |
 | `max_rooms` | Salas a la vez | 32 |
 | `seats_per_room` | Asientos por sala si tus reglas no dicen otra cosa | 2 |
@@ -934,12 +985,13 @@ Ojo con dos cosas:
 
 | Propiedad | Qué hace | Por defecto |
 |---|---|---|
-| `lobby_address` | El servidor de salas: `host:puerto`, un nombre o una URL `wss://…` (se puede editar en pantalla). Vacío = `MpNetConfig.public_host` en el puerto 7700, o `127.0.0.1:7700` | vacío |
+| `lobby_address` | El servidor de salas: `host:puerto`, un nombre o una URL `wss://…` (se puede editar en pantalla). Vacío = `public_host` del juego en `lobby_port`, o `127.0.0.1` en ese puerto | vacío |
+| `lobby_port` | El puerto del servidor de salas, cuando la dirección no trae uno (`lobby_port` del `MpLobbyConfig`) | 7700 |
 | `room_options` | Opciones que lleva cada sala creada con *Create room* (mapa, modo); las leen `seats_for` y `accept_options` | `{}` |
 | `player_name` | Nombre inicial | `Player` |
 | `default_pick` | El pick con el que arranca cada asiento. El lobby necesita uno antes de *listo* | `{"pick": "default"}` |
 | `auto_join_match` | Entrar a la partida apenas arranca. Off = se emite `match_found(host, port, token)` y tu UI llama `join_found()` (para un botón "Unirse" propio) | on |
-| `back_path` | Escena del botón *Back* (el boot) | vacío |
+| `back_path` | Escena del botón *Back*. Vacío = el boot del juego | vacío |
 | Grupo **Texts** | Todos los textos, para traducir | |
 
 Qué hace: pantalla de conectar (nombre y dirección), lista de salas, crear sala (pública o con código), unirse con código, asientos, *Ready*, chat. Al arrancar la partida se une solo (por el `MpFlow`); al terminar vuelve acá y muestra el último resultado. Si te caíste de una partida que sigue corriendo, aparece **Back to the match** (ver 9.7).
@@ -956,16 +1008,20 @@ Cada botón llama un método público, así podés hacer tu propia pantalla enci
 | `set_ready(on)` | Listo / no listo |
 | `leave_room()` | Se levanta |
 | `send_chat(texto)` | Chat |
-| `go_back()` | Cierra y vuelve a `back_path` |
+| `go_back()` | Cierra y vuelve a `back_path` (o al boot del juego) |
 | `join_found()` | Con `auto_join_match` off: entra a la partida encontrada |
 | `can_rejoin()` / `rejoin_match()` | ¿Tu partida sigue corriendo? / Volver a ella con el mismo ticket |
 
 ### 9.5 Conectar el boot con las salas
 
-En `boot.tscn`:
+En `game.tres`, grupo **Scenes**: `lobby_scene` = tu `lobby.tscn` y `rooms_scene` = tu `rooms.tscn`. Con eso:
 
-1. En el `Flow`: `lobby_path` = tu `lobby.tscn` (adonde vuelve al terminar una partida) y `room_server_path` = tu `rooms.tscn` (lo que abre `--room-server`).
-2. En el `Menu`: `lobby_scene_path` = tu `lobby.tscn`. Aparece el botón **Online rooms**.
+- El menú muestra **Online rooms**.
+- Una partida de sala, al terminar, vuelve al lobby.
+- `--room-server` abre `rooms.tscn`.
+- `Mp.open_rooms()` abre el lobby desde tu propio menú.
+
+(Sin `MpGame`: `lobby_path` y `room_server_path` en el `Flow`, y `lobby_scene_path` en el `Menu`.)
 
 El `MpFlow` vive en el boot. Por eso el juego tiene que arrancar por el boot: si abrís `lobby.tscn` directo con F6, no hay flow y no puede entrar a la partida.
 
@@ -1013,7 +1069,7 @@ if not last.is_empty():
 
 ### 9.8 Transporte de las salas
 
-Tiene que ser el mismo en todos: el lobby, cada partida y cada cliente. Con `MpRoomServer.net_config` = el `net.tres` del juego (como hace el asistente) ya está: el servidor de salas usa ese transporte y se lo pasa a cada partida, y el cliente (pantalla de lobby y partida) usa el mismo `.tres`. Un flag `--transport=` en el servidor de salas le gana a los dos.
+Tiene que ser el mismo en todos: el lobby, cada partida y cada cliente. Con `game.tres` (como hace el asistente) ya está: el servidor de salas usa ese transporte y se lo pasa a cada partida, y el cliente (pantalla de lobby y partida) usa el mismo `.tres`. Un flag `--transport=` en el servidor de salas le gana a los dos.
 
 ## 10. Partida privada con código
 
@@ -1081,7 +1137,7 @@ En el servidor, alguna de estas:
 |---|---|
 | `MpNetConfig` del dedicado | `tls_certificate` (`X509Certificate`) y `tls_key` (`CryptoKey`) |
 | Flags del dedicado | `--tls-certificate-path=/ruta/fullchain.pem --tls-key-path=/ruta/privkey.pem` |
-| `MpLobbyConfig` (salas) | `tls_certificate_path` y `tls_key_path`. El lobby escucha en `wss://` y cada partida recibe el mismo certificado. Con `MpRoomServer.net_config`, si están vacíos salen del `tls_*` del `net.tres` |
+| `MpLobbyConfig` (salas) | `tls_certificate_path` y `tls_key_path`. El lobby escucha en `wss://` y cada partida recibe el mismo certificado. Si están vacíos, salen del `tls_*` de `game.tres` |
 | `deploy.sh` | `--transport ws --tls-cert … --tls-key …` (ver [13](#13-subir-a-un-vps)) |
 
 En el cliente:
@@ -1130,7 +1186,7 @@ PORT=8080 RELAY_HOST_SECRET=prueba node addons/mp_kit/relay/server.mjs
 
 ### 12.2 Configurar el juego
 
-En el `MpNetConfig` (`net.tres`):
+En el `game.tres` del juego (o el `MpNetConfig` que uses):
 
 | Campo | Valor |
 |---|---|
@@ -1240,7 +1296,7 @@ MPKIT_RELAY_SECRET=la-clave addons/mp_kit/deploy/deploy.sh usuario@mi-vps build/
   --transport relay --relay-url wss://tu-relay.up.railway.app
 ```
 
-`deploy.sh` toma `MPKIT_RELAY_SECRET` de **tu** máquina y lo escribe en `/etc/juego/relay.env`, que solo lee el usuario del servicio. Si no lo pasás, ese archivo queda como estaba: un redeploy no borra el secreto. `--relay-room` cambia el prefijo de las salas si no querés el del `net.tres`.
+`deploy.sh` toma `MPKIT_RELAY_SECRET` de **tu** máquina y lo escribe en `/etc/juego/relay.env`, que solo lee el usuario del servicio. Si no lo pasás, ese archivo queda como estaba: un redeploy no borra el secreto. `--relay-room` cambia el prefijo de las salas si no querés el de `game.tres`.
 
 ### 13.4 Varias instancias
 
@@ -1465,6 +1521,9 @@ Cambió de pestaña: el navegador la pausó. Ver [11.5](#115-pestaña-oculta).
 |---|---|
 | `MpKit` | El autoload: red, slots, mensajes de sesión |
 | `MpFlow` | El nodo que maneja escenas y modos (solo, LAN, unirse, dedicado). Es dueño de la sesión |
+| `Mp` | La clase con los verbos de la partida: `play_solo`, `host`, `join`, `leave`, `is_server`, `me`, `state`, `finish` |
+| `MpGame` | El juego en un `.tres`: la red (es un `MpNetConfig`) y las escenas (boot, mundo, lobby, salas) |
+| `MpWorld` | Un nodo en el mundo que arma puntos de aparición, actores, spawner, estado, partida y botón Leave |
 | `MpNetConfig` | Recurso `.tres` con la red del juego: transporte, puerto, jugadores, dirección pública, relay, TLS |
 | `MpAddress` | El lector de direcciones (IP, nombre, `:puerto`, `#CÓDIGO`, URL) que usan el menú, el flow y el lobby |
 | `MpBootMenu` | El menú listo para usar (`mp_boot_menu.tscn`) |
@@ -1502,6 +1561,9 @@ Cambió de pestaña: el navegador la pausó. Ver [11.5](#115-pestaña-oculta).
 | Quiero… | Uso… |
 |---|---|
 | un juego que anda en minutos | **Proyecto › Herramientas › MpKit: Setup game...** |
+| toda la red y las escenas en un lugar | un **MpGame** (`game.tres`) en **Flow › Game** |
+| un mundo en red sin cablear nodos | un **MpWorld** con **Player Scene** |
+| jugar solo, hostear, unirse o salir desde mi propio menú | `Mp.play_solo()`, `Mp.host()`, `Mp.join(texto)`, `Mp.leave()` |
 | que algo se vea igual en todos | **MpActor › Sync** (posición, rotación, visible, Extra) |
 | sincronizar una propiedad propia (`health`) | **MpActor › Sync › sync_extra** = `health` (o `Health:current`) |
 | que el jugador responda sin lag | **MpActor › Prediction › predict** + `func mp_move(keys, delta)` |
@@ -1518,23 +1580,23 @@ Cambió de pestaña: el navegador la pausó. Ver [11.5](#115-pestaña-oculta).
 | borrar algo en todos | `net.despawn()` (servidor, nodos hechos por un spawner) |
 | ocultar un objeto del mundo | `sync_visible` + `visible = false` en el servidor |
 | teletransportar sin deslizar | `net.snap()` en los clientes |
-| puntaje, reloj, ronda | `MpState.of(self).set_value` / `.add`, señal `changed` |
-| terminar la partida | `MpMatch.finish({"winner": ...})`, señal `finished` en todos |
+| puntaje, reloj, ronda | `Mp.state().set_value` / `.add`, señal `changed` |
+| terminar la partida | `Mp.finish({"winner": ...})`, señal `finished` en todos |
 | mostrar "esperando jugadores" | `MpMatch.waiting_changed` + nodo con Process Mode = Always |
 | saber si alguien volvió o abandonó | `MpMatch.player_back` / `player_abandoned` |
-| un botón para salir | **MpLeaveButton** en el HUD |
+| un botón para salir | el `Hud/Leave` del `MpWorld` (un **MpLeaveButton**), o `Mp.leave()` |
 | volver al menú siempre | `MpFlow.find_in_tree(self).return_to_boot()` |
 | volver a una partida de sala después de caerme | botón **Back to the match** (`MpLobbyScreen.rejoin_match()`) |
-| saber si soy servidor | `net.is_authority()` / `MpKit.is_authority()` |
+| saber si soy servidor | `net.is_authority()` / `Mp.is_server()` |
 | saber si este nodo es mío | `net.is_local()` |
-| saber qué jugador soy | `MpKit.local_slot()` |
+| saber qué jugador soy | `Mp.me()` |
 | jugar en LAN | **Host LAN** + **Join** a la IP |
 | un servidor dedicado | `godot --headless --path . -- --dedicated` |
-| salas online | `MpRoomServer` (con `net_config`) + `MpLobbyConfig` + `MpLobbyScreen` + `MpMatch` |
+| salas online | `lobby_scene` y `rooms_scene` en `game.tres`: `MpRoomServer` + `MpLobbyConfig` + `MpLobbyScreen` (el `MpMatch` viene en el `MpWorld`) |
 | reglas de sala | un script que extiende `MpRoomRules` |
 | salas con modo o mapa | `MpLobbyScreen.room_options` + `MpRoomRules.seats_for` |
 | partida con código en mi PC | `MpBootMenu.offer_private_server` o `MpLocalServer.start_on` |
-| que el menú ya tenga la dirección del servidor | `MpNetConfig.public_host` |
+| que el menú ya tenga la dirección del servidor | `public_host` en `game.tres` |
 | servidor sin IP pública ni puertos | relay: `transport = relay`, `relay_url`, `MPKIT_RELAY_SECRET` |
 | juego web | `MpNetConfig.transport = ws`, servidor dedicado WS, export Web |
 | web por https | `wss://`: `tls_client` en el cliente y certificado en el servidor |

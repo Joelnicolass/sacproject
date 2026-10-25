@@ -20,7 +20,7 @@ extends Control
 @export var default_pick: Dictionary = {"pick": "default"}
 ## Join the match as soon as the room server starts it. Off = `match_found` is emitted and your UI calls join_found().
 @export var auto_join_match: bool = true
-## Scene of the "Back" button (usually the boot menu).
+## Scene of the "Back" button. Empty = the flow's boot scene (MpGame.boot_scene).
 @export_file("*.tscn") var back_path: String = ""
 
 @export_group("Texts")
@@ -173,6 +173,11 @@ func go_back() -> void:
 	_client.close_connection()
 	if not back_path.is_empty():
 		get_tree().change_scene_to_file(back_path)
+		return
+	## No back_path: the flow's boot scene (MpGame.boot_scene).
+	var flow := MpFlow.find_in_tree(self)
+	if flow:
+		flow.return_to_boot()
 
 
 ## Room ids of the visible list, in order.

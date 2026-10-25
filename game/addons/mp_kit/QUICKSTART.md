@@ -1,43 +1,51 @@
-# MpKit en 6 pasos
+# MpKit: primeros pasos
 
 Un juego multijugador sin escribir código de red: nodos en el editor y un script como el de un juego de un jugador. Funciona igual solo, en LAN (un jugador hostea) y con servidor dedicado, por ENet (UDP) o WebSocket (TCP).
 
 El ejemplo completo está en `examples/arena_2d/`: abrí `boot.tscn` y apretá F6.
 
-**El camino más corto**: con el plugin activo, **Proyecto › Herramientas › MpKit: Setup game...**. Elegís carpeta, 2D o 3D, jugadores, transporte y si querés salas online; el diálogo muestra los archivos que va a crear (`[+]`, y `[~]` si ya existen: entonces no escribe nada) y arma boot, mundo, jugador predicho y la red. F5 y ya se juega solo, en LAN, dedicado u online. Los pasos de abajo explican qué armó, por si lo querés hacer a mano.
+**El camino más corto**: con el plugin activo, **Proyecto › Herramientas › MpKit: Setup game...**. Elegís carpeta, 2D o 3D, jugadores, transporte y si querés salas online; el diálogo muestra los archivos que va a crear (`[+]`, y `[~]` si ya existen: entonces no escribe nada) y arma `game.tres`, boot, mundo, jugador predicho y salas. F5 y ya se juega solo, en LAN, dedicado u online. Los pasos de abajo son lo mismo a mano: un recurso, dos nodos de escena y tu jugador.
 
 ## 1. Instalar
 
 Copiá `addons/mp_kit/` a tu proyecto y activá **MpKit** en Proyecto → Ajustes del proyecto → Plugins. Eso agrega el autoload `MpKit`.
 
-## 2. Boot (el menú)
+## 2. El juego en un `.tres`
+
+Recurso nuevo **MpGame** (`game.tres`). Tiene todo lo de la red (transporte, puerto, jugadores, relay, TLS) y, en el grupo **Scenes**, tus escenas: `boot_scene`, `world_scene` y, si querés salas online, `lobby_scene` y `rooms_scene`. Es el único lugar donde se escribe cada cosa.
+
+## 3. Boot (el menú)
 
 Escena nueva con raíz `Control`:
 
-- Un hijo **MpFlow**. En el inspector: `boot_path` = esta escena, `world_path` = tu mundo y `net_config` = un **MpNetConfig** nuevo (`.tres`): transporte, puerto, jugadores, dirección pública y TLS en un solo lugar.
-- Una instancia de `res://addons/mp_kit/mp_boot_menu.tscn`: botones Jugar solo, Host LAN, Unirse y la lista de salas LAN.
+- Un hijo **MpFlow** con **Game** = tu `game.tres`. Nada más.
+- Una instancia de `res://addons/mp_kit/mp_boot_menu.tscn`: Jugar solo, Host LAN, Unirse, la lista de salas LAN y, si el juego tiene lobby, Online rooms.
 
-El `MpFlow` se muda solo a la raíz del árbol y sobrevive a los cambios de escena. No hace falta autoload. El flow es el dueño de la sesión (mundo, jugadores, nombre en la LAN); el menú solo la muestra.
+El `MpFlow` se muda solo a la raíz del árbol y sobrevive a los cambios de escena. No hace falta autoload. El flow es el dueño de la sesión; el menú, la pantalla de lobby y el servidor de salas leen el juego de él.
 
-## 3. Mundo
+## 4. Mundo
 
-Escena con raíz `Node2D` o `Node3D`:
+Escena con raíz `Node2D` o `Node3D` (tu nivel) y un nodo **MpWorld** con **Player Scene** = tu jugador. Al agregarlo, el editor arma sus piezas como hijos que podés ver y mover:
 
-| Nodo | Para qué |
+| Pieza | Para qué |
 |---|---|
-| `SpawnPoints` con un `Marker2D`/`Marker3D` por jugador | dónde nace cada uno |
-| `Actors` (vacío) | ahí aparecen los jugadores |
-| **MpSlotSpawner** | `spawn_path` = `../Actors`, `pawn_scene` = tu jugador, `spawn_points` = `../SpawnPoints` |
-| **MpState** (opcional) | puntaje, reloj, ronda: lo ven todos, también el que entra tarde |
+| `SpawnPoints` | un marcador por asiento: movelos adonde nace cada jugador |
+| `Actors` | ahí aparecen los jugadores (y lo que haga un spawner) |
+| `Players` | un jugador por asiento, en todos, también para el que entra tarde |
+| `State` | puntaje, reloj, ronda: lo ven todos (`Mp.state()`) |
+| `Match` | espera a que carguen todos, quién se va y quién vuelve, el final (`Mp.finish()`) |
+| `Hud/Leave` | botón para salir de la partida |
 
-## 4. Jugador
+Si borrás una pieza, se vuelve a armar al abrir la escena. No les cambies el nombre.
+
+## 5. Jugador
 
 Escena del jugador (`CharacterBody2D`, `CharacterBody3D`...) con dos hijos:
 
 - **MpActor**: tildá qué se sincroniza (posición, rotación, visible, y en *Extra* cualquier propiedad, por ejemplo `health` o `Health:current`) y prendé **Prediction › predict** para el jugador. Guardá la escena: el editor arma el sincronizador y lo guarda.
 - **MpInput**: la lista de acciones del InputMap que manda el jugador (por defecto las flechas y Enter).
 
-## 5. Script del jugador
+## 6. Script del jugador
 
 ```gdscript
 extends CharacterBody2D
@@ -54,7 +62,7 @@ func _physics_process(_delta: float) -> void:
 	if not net.is_authority():   # las reglas corren en el servidor (o en solo)
 		return
 	if input.is_action_just_pressed(&"ui_accept"):
-		MpState.of(self).add(&"score")
+		Mp.state().add(&"score")
 		net.to_all(&"flash")      # corre mp_all_flash() en todos
 
 func _process(_delta: float) -> void:
@@ -77,10 +85,21 @@ func mp_all_flash() -> void:
 | una orden puntual del jugador | `net.to_server(&"nombre", args)` → `func mp_sv_nombre(args)` |
 | un efecto en todos (sonido, destello) | `net.to_all(&"nombre", args)` → `func mp_all_nombre(args)` |
 | saber quién pidió una orden | `net.sender_slot()` dentro de `mp_sv_*` |
-| un número de la partida | `MpState.of(self).set_value(&"clave", v)` / `.add(&"clave")`, señal `changed` |
+| un número de la partida | `Mp.state().set_value(&"clave", v)` / `.add(&"clave")`, señal `changed` |
 | aparecer balas, unidades, pickups | `$MpSpawner.spawn_actor(escena, {"position": p})` (la escena va en *Extra Scenes*) |
 
-Solo el dueño puede pedir los `mp_sv_*` de su actor (`MpActor › Owner › callers = OWNER`), y solo el servidor manda `mp_all_*`: el kit lo valida. Para cosas del mundo que usa cualquiera (una puerta, la campana del ejemplo), `callers = ANYONE` y validá lo que piden dentro de `mp_sv_*`. Para salir de la partida, un nodo **MpLeaveButton** en el HUD.
+Desde cualquier script, la clase **Mp** tiene los verbos de la partida:
+
+| Querés… | Usá |
+|---|---|
+| jugar solo, hostear, unirte, salir | `Mp.play_solo()`, `Mp.host()`, `Mp.join("192.168.1.5")` (o `"ip:puerto#CÓDIGO"`, o `"wss://…"`), `Mp.leave()` |
+| abrir las salas online | `Mp.open_rooms()` |
+| saber si corrés las reglas | `Mp.is_server()` (servidor, o tu PC en solo) |
+| tu asiento, tu jugador | `Mp.me()`, `Mp.player(Mp.me())` |
+| los números de la partida | `Mp.state()` |
+| terminar la partida para todos | `Mp.finish({"winner": slot})` (en el servidor) |
+
+Solo el dueño puede pedir los `mp_sv_*` de su actor (`MpActor › Owner › callers = OWNER`), y solo el servidor manda `mp_all_*`: el kit lo valida. Para cosas del mundo que usa cualquiera (una puerta, la campana del ejemplo), `callers = ANYONE` y validá lo que piden dentro de `mp_sv_*`. Para salir de la partida, el botón Leave del `MpWorld` (un **MpLeaveButton**) o `Mp.leave()`.
 
 ### Red real: lag, jitter y pérdida
 
@@ -95,7 +114,7 @@ Reglas de `mp_move`: solo movimiento (puede correr varias veces por tick al reco
 
 Para probar con red mala, agregá a cada proceso `--net-lag-ms=100 --net-jitter-ms=30 --net-loss=0.05` (lag de salida, jitter y pérdida de paquetes no confiables). `net.last_correction()` dice cuánto corrigió el servidor al dueño en el último estado.
 
-## 6. Probar
+## 7. Probar
 
 | Modo | Cómo |
 |---|---|
@@ -105,16 +124,16 @@ Para probar con red mala, agregá a cada proceso `--net-lag-ms=100 --net-jitter-
 | WebSocket | agregá `--transport=ws` a todos los procesos (un servidor WS solo atiende clientes WS) |
 | Web | exportá con el preset Web (sin threads). El export usa WebSocket solo y oculta Host y la lista LAN: un navegador solo se une. El servidor es un dedicado con `transport = ws` |
 
-## Más allá de los 6 pasos
+## Más allá de lo básico
 
 ### Online: salas y varias partidas en un servidor
 
-Tres escenas y cero glue (el ejemplo las trae: `rooms.tscn`, `lobby.tscn` y el `MpMatch` de `arena.tscn`):
+Dos escenas más, y anotarlas en `game.tres` (`lobby_scene`, `rooms_scene`); el `MpMatch` ya viene en el `MpWorld`. El ejemplo las trae: `rooms.tscn` y `lobby.tscn`.
 
 | Dónde | Nodo | Qué hace |
 |---|---|---|
-| Servidor (VPS o tu PC) | **MpRoomServer** en una escena propia, con un **MpLobbyConfig** (`.tres`: puerto, salas, rango de puertos de partida, tiempos) y opcional un **MpRoomRules** | Abre el lobby. Cuando una sala está llena y todos listos, lanza **un proceso dedicado por partida** con un ticket: solo entran los sentados. Correlo con `godot --headless --path . res://rooms.tscn`. Varias partidas a la vez = varios procesos; el tope es `max_matches` |
-| Cliente | **MpLobbyScreen** (`rooms/ui/mp_lobby_screen.tscn`) en una escena; en el boot, `MpBootMenu.lobby_scene_path` muestra el botón *Online rooms* y `MpFlow.lobby_path` dice adónde volver | Conectar con un nombre, ver salas, crear (pública o con código), sentarse, *listo*, chat. Al arrancar la partida se une solo y al terminar vuelve con el resultado |
+| Servidor (VPS o tu PC) | **MpRoomServer** en una escena propia, con un **MpLobbyConfig** (`.tres`: puerto, salas, rango de puertos de partida, tiempos) y opcional un **MpRoomRules** | Abre el lobby. Cuando una sala está llena y todos listos, lanza **un proceso dedicado por partida** con un ticket: solo entran los sentados. Toma la red del juego. Correlo con `godot --headless --path . -- --room-server`. Varias partidas a la vez = varios procesos; el tope es `max_matches` |
+| Cliente | **MpLobbyScreen** (`rooms/ui/mp_lobby_screen.tscn`) en una escena. Con `lobby_scene` en el juego, el menú muestra *Online rooms* y el botón Back vuelve al boot | Conectar con un nombre, ver salas, crear (pública o con código), sentarse, *listo*, chat. Al arrancar la partida se une solo y al terminar vuelve con el resultado |
 | Mundo | **MpMatch** | En el servidor: `all_loaded`, `player_joined`, `player_left`, `player_back`, `player_abandoned`. `finish(resultado)` termina la partida para todos (`finished` en cada peer) y le avisa a la sala |
 
 El proceso de cada partida es tu mismo proyecto con `--dedicated` y un ticket: `MpFlow` arma solo el agente que valida el ticket. Reglas de sala propias (cuántos asientos según el modo, qué personajes valen):

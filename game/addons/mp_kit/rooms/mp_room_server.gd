@@ -13,11 +13,12 @@ signal started(port: int)
 
 @export var config: MpLobbyConfig
 ## The game's network .tres (the same one its MpFlow uses): the lobby and every match take transport, relay and TLS
-## from it, so they always talk like the game. Empty = what `config` says.
+## from it, so they always talk like the game. Empty = the flow's (its MpGame), or what `config` says without one.
 @export var net_config: MpNetConfig
 ## Empty = the defaults (anything goes, 2 seats).
 @export var rules: MpRoomRules
-## Scene each match process opens. Empty = the project's main scene (the usual case: it holds the MpFlow).
+## Scene each match process opens. Empty = the game's boot scene (MpGame), or the project's main scene without one
+## (the usual case: it holds the MpFlow).
 @export_file("*.tscn") var match_scene: String = ""
 
 var launcher: MpMatchLauncher
@@ -35,6 +36,13 @@ func _start() -> void:
 	if config == null:
 		config = MpLobbyConfig.new()
 	config = config.duplicate()
+	## No net_config of its own: the game's (the flow that opened this scene with --room-server).
+	var flow := MpFlow.find_in_tree(self)
+	if net_config == null and flow:
+		net_config = flow.net_config
+	## A game in one .tres: each match opens the game's boot scene (its flow plays the ticket's match).
+	if match_scene.is_empty() and flow and flow.game and not flow.game.boot_scene.is_empty():
+		match_scene = flow.game.boot_scene
 	if net_config:
 		net_config.fill_lobby_config(config)
 	launcher = MpMatchLauncher.new()

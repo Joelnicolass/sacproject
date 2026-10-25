@@ -19,10 +19,11 @@ func test_writes_a_2d_game_once() -> void:
 	check(wizard.plan_text().contains("[~]") and not wizard.plan_text().contains("[+]"), "now every file exists")
 	check(wizard.write() == ERR_ALREADY_EXISTS, "a second write refuses to overwrite")
 	var world: Node = (load("user://mpkit_wizard_2d/world.tscn") as PackedScene).instantiate()
-	check(world.get_node("SpawnPoints").get_child_count() == 3, "one spawn point per player")
-	check(world.get_node("Players") is MpSlotSpawner and world.get_node("Players").get("pawn_scene") != null, "the slot spawner has the player")
-	check(world.get_node("Score") is MpState and world.get_node_or_null("Score/MpSync") != null, "MpState with its synchronizer")
-	check(world.get_node("Match") is MpMatch, "MpMatch in the world")
+	check(world.get_node("MpWorld") is MpWorld, "one MpWorld in the world")
+	check(world.get_node("MpWorld/SpawnPoints").get_child_count() == 3, "one spawn point per player")
+	check(world.get_node("MpWorld/Players") is MpSlotSpawner and world.get_node("MpWorld/Players").get("pawn_scene") != null, "the slot spawner has the player")
+	check(world.get_node("MpWorld/State") is MpState and world.get_node_or_null("MpWorld/State/MpSync") != null, "MpState with its synchronizer")
+	check(world.get_node("MpWorld/Match") is MpMatch, "MpMatch in the world")
 	world.free()
 	var player: Node = (load("user://mpkit_wizard_2d/player.tscn") as PackedScene).instantiate()
 	var actor := MpActor.of(player)
@@ -32,8 +33,9 @@ func test_writes_a_2d_game_once() -> void:
 	check(player.has_method(&"mp_move"), "the player script has mp_move")
 	player.free()
 	var boot: Node = (load("user://mpkit_wizard_2d/boot.tscn") as PackedScene).instantiate()
-	check(boot.get_node("Flow").get("net_config") is MpNetConfig, "the boot's flow has the network .tres")
-	check(str(boot.get_node("Flow").get("lobby_path")).ends_with("lobby.tscn"), "the flow knows the lobby")
+	var game: Variant = boot.get_node("Flow").get("game")
+	check(game is MpGame, "the boot's flow has only the game .tres")
+	check(game is MpGame and (game as MpGame).lobby_scene.ends_with("lobby.tscn") and (game as MpGame).world_scene.ends_with("world.tscn"), "the game knows its scenes")
 	boot.free()
 
 
@@ -43,8 +45,8 @@ func test_each_game_gets_its_own_relay_rooms() -> void:
 	a.transport = "relay"
 	b.transport = "relay"
 	check(a.write() == OK and b.write() == OK, "two relay games are written")
-	var room_a := str((load("user://mpkit_wizard_relay_a/net.tres") as MpNetConfig).relay_room)
-	var room_b := str((load("user://mpkit_wizard_relay_b/net.tres") as MpNetConfig).relay_room)
+	var room_a := str((load("user://mpkit_wizard_relay_a/game.tres") as MpNetConfig).relay_room)
+	var room_b := str((load("user://mpkit_wizard_relay_b/game.tres") as MpNetConfig).relay_room)
 	check(not room_a.is_empty() and room_a != room_b, "two games made with the wizard never share relay rooms")
 
 

@@ -58,7 +58,11 @@ Transportes: lo marcado **T** corre en ENet, WebSocket y relay (`TRANSPORT=enet|
 | Cliente sin TLS contra lobby `wss://` | `rooms.sh` public `TLS=1` |
 | Partida privada en la PC con código; código equivocado afuera | `private.sh` **T** |
 | Dos servidores de salas en una máquina (línea de systemd) | `instances.sh` |
-| Asistente: juego nuevo 2D y 3D jugable en red | `wizard.sh` |
+| Asistente: juego nuevo 2D y 3D jugable en red (`game.tres` + `MpWorld`) | `wizard.sh` |
+| Asistente: las salas del juego nuevo (menú *Online rooms*, partida, `Mp.leave()` al lobby, Back al boot) | `wizard.sh` |
+| `MpWorld` en el editor real: arma sus piezas al abrir la escena y al agregarlo; se guardan | `editor.sh` |
+| El asistente corriendo dentro del editor | `editor.sh` |
+| `MpGame` llena el flow; `Mp` sin red; `MpWorld` arma, empaqueta y vuelve a cargar | `tests/test_mp_facade.gd`, `tests/test_mp_world.gd` |
 | Cliente web (navegador) contra dedicado WebSocket | `web.sh` (Chrome headless, o abrir la URL a mano) |
 | Cliente web por el relay (el servidor hostea una sala del relay) | `TRANSPORT=relay web.sh` |
 | Relay: solo hostea quien tiene el secreto (header o query); sin secreto nadie, salvo `RELAY_OPEN=1` | `relay.sh` |

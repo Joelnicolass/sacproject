@@ -146,7 +146,7 @@ func _check_late() -> void:
 	var first := await _pawn(slot)
 	if own == null or first == null:
 		return
-	var marker_x: float = get_tree().current_scene.get_node("SpawnPoints/P%d" % slot).position.x
+	var marker_x: float = _in_world("SpawnPoints/P%d" % slot).position.x
 	await _until(func() -> bool: return first.position.x > marker_x + 50.0, "P%d shows where it moved before this client joined" % slot)
 	var key := StringName("p%d" % slot)
 	await _until(func() -> bool: return int(_state().get_value(key, 0)) == 1, "the score made before joining arrived")
@@ -262,6 +262,7 @@ func _measure_proxy_jitter() -> void:
 ##   --probe-join-room=Room | --probe-join-code   join by name from the list, or with the code from the file
 ##   --probe-chat=text / --probe-expect-chat=text say something / wait to read it
 ##   --probe-leave-room-once                      leave the room once after sitting, and come back
+##   --probe-leave-to-boot                        in the match: Mp.leave() to the lobby, then the lobby's Back to the boot
 ##   --probe-drop=rejoin|abandon                  in the match: leave it, and come back with the same ticket (or not)
 ##   --probe-delay-join-s=N                       join the match N seconds after the room server started it
 ##   --probe-check-paused                         the world must not move until every seat loaded
@@ -274,6 +275,7 @@ func _play_online() -> void:
 	var flow_ok := await _until(func() -> bool: return MpFlow.find_in_tree(self) != null, "the boot scene has a flow")
 	if not flow_ok:
 		return
+	await _until(func() -> bool: return _scene_has_button("Online rooms"), "the menu offers Online rooms")
 	get_tree().change_scene_to_file(MpFlow.find_in_tree(self).lobby_path)
 	var screens: Array[MpLobbyScreen] = []
 	await _until(func() -> bool:
@@ -322,6 +324,9 @@ func _play_online() -> void:
 	var pawn := await _pawn(MpKit.local_slot())
 	if pawn == null:
 		return
+	if MpBoot.user_flag("probe-leave-to-boot"):
+		await _leave_to_boot()
+		return
 	if MpBoot.user_flag("probe-check-paused"):
 		var start_x: float = pawn.position.x
 		Input.action_press(&"ui_right")
@@ -363,7 +368,7 @@ func _play_online() -> void:
 	## Like a person: score once the match runs (MpMatch keeps the world paused until every seat loaded, and a key
 	## pressed while paused does nothing).
 	await _until(func() -> bool:
-		var match_node := get_tree().current_scene.get_node_or_null("Match") as MpMatch
+		var match_node := Mp.current_match()
 		return match_node != null and not match_node.waiting, "the match runs (every seat loaded)")
 	for i in int(MpBoot.user_value("probe-score", "3" if creator else "0")):
 		await _tap(&"ui_accept")
@@ -497,7 +502,7 @@ func _leave_and_return() -> void:
 func _watch_leave_and_return() -> void:
 	await _until(func() -> bool: return MpKit.is_server(), "this process is the server")
 	await _pawn(1)
-	await _until(func() -> bool: return get_tree().current_scene.get_node_or_null("Actors/Pawn_1") == null, "the pawn of a player who left is removed")
+	await _until(func() -> bool: return _in_world("Actors/Pawn_1") == null, "the pawn of a player who left is removed")
 	await _pawn(1)
 
 
@@ -560,11 +565,44 @@ func _pawn(slot: int) -> Node:
 	var found: Array[Node] = []
 	var ok := await _until(func() -> bool:
 		var scene := get_tree().current_scene
-		var node := scene.get_node_or_null("Actors/Pawn_%d" % slot) if scene else null
+		var node := _in_world("Actors/Pawn_%d" % slot) if scene else null
 		if node:
 			found.append(node)
 		return node != null, "P%d exists here" % slot)
 	return found[0] if ok else null
+
+
+## In a match: Mp.leave() goes back to the lobby, and the lobby's Back goes to the game's boot scene.
+func _leave_to_boot() -> void:
+	await _until(func() -> bool: return Mp.current_match() != null and not Mp.current_match().waiting, "the match runs (every seat loaded)")
+	await get_tree().create_timer(0.5).timeout
+	Mp.leave()
+	var back: Array[MpLobbyScreen] = []
+	await _until(func() -> bool:
+		if get_tree().current_scene is MpLobbyScreen:
+			back.append(get_tree().current_scene)
+		return not back.is_empty(), "Mp.leave() took the player back to the lobby")
+	if back.is_empty():
+		return
+	back[0].go_back()
+	var boot := MpFlow.find_in_tree(self).boot_path
+	await _until(func() -> bool: return get_tree().current_scene != null and get_tree().current_scene.scene_file_path == boot, "the lobby's Back went to the game's boot scene (%s)" % boot)
+
+
+func _scene_has_button(text: String) -> bool:
+	var scene := get_tree().current_scene
+	if scene == null:
+		return false
+	return not scene.find_children("*", "Button", true, false).filter(func(b: Node) -> bool: return (b as Button).text == text).is_empty()
+
+
+## A node of the world by its path: under the MpWorld when the world has one, under the scene otherwise.
+func _in_world(path: String) -> Node:
+	var scene := get_tree().current_scene
+	if scene == null:
+		return null
+	var world := MpWorld.of(scene)
+	return world.get_node_or_null(path) if world else scene.get_node_or_null(path)
 
 
 func _networked_slot() -> bool:

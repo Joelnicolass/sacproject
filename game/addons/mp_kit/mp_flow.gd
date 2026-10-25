@@ -23,6 +23,9 @@ enum StartWhen {
 ## Every network setting in one .tres (transport, port, players, TLS). Set = it replaces max_players,
 ## custom_channels and the port here. Empty = the fields below and the flags, as before.
 @export var net_config: MpNetConfig
+## Your game in one .tres (MpGame: network + scenes). Set = it is the net_config, and it fills every scene path
+## below that is empty. The easy way: set only this.
+@export var game: MpGame
 ## Scene with your MpRoomServer. `--room-server` opens it: one exported binary is client, room server and match.
 @export_file("*.tscn") var room_server_path: String = ""
 ## The online lobby screen. A match joined with join_match() comes back here when it ends or the server is lost.
@@ -78,6 +81,7 @@ static func find_in_tree(from: Node) -> MpFlow:
 func _enter_tree() -> void:
 	add_to_group(GROUP)
 	_tree = get_tree()
+	_use_game()
 	if _origin.is_empty():
 		_origin = owner.scene_file_path if owner else "autoload %s" % name
 
@@ -152,6 +156,22 @@ func _ready() -> void:
 		if start_when == StartWhen.LISTEN_IMMEDIATE:
 			match_running = true
 			call_deferred("goto_world")
+
+
+## The MpGame fills what was left empty; anything set by hand on this node wins.
+func _use_game() -> void:
+	if game == null:
+		return
+	if net_config == null:
+		net_config = game
+	if boot_path.is_empty() and boot_scene == null:
+		boot_path = game.boot_scene
+	if world_path.is_empty() and world_scene == null and worlds.is_empty():
+		world_path = game.world_scene
+	if lobby_path.is_empty():
+		lobby_path = game.lobby_scene
+	if room_server_path.is_empty():
+		room_server_path = game.rooms_scene
 
 
 ## Moves this flow under the root. Works even when a scene change already took the boot scene out of the tree

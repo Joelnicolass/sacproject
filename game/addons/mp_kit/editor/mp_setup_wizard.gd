@@ -2,16 +2,19 @@
 class_name MpSetupWizard
 extends RefCounted
 
-## Writes a working multiplayer game from a few choices (Project > Tools > MpKit: Setup game...): a boot menu with
-## MpFlow, a world (spawn points, MpSlotSpawner, MpState, MpMatch), a predicted player (MpActor + MpInput) and the
-## network .tres; optionally the online rooms (room server, lobby screen). It never overwrites a file: `plan()` says
+## Writes a working multiplayer game from a few choices (Project > Tools > MpKit: Setup game...): game.tres (an
+## MpGame: the network and the scenes), a boot menu with an MpFlow that only has that .tres, a world with one MpWorld
+## (it builds spawn points, spawner, MpState, MpMatch and a Leave button), a predicted player (MpActor + MpInput);
+## optionally the online rooms (room server, lobby screen), which read everything from game.tres too. It never overwrites a file: `plan()` says
 ## what exists, and `write()` refuses then. No editor needed (the tests run it headless). Not: your game rules.
 
 const BOOT := "boot.tscn"
 const WORLD := "world.tscn"
 const PLAYER := "player.tscn"
 const PLAYER_SCRIPT := "player.gd"
-const NET := "net.tres"
+const GAME := "game.tres"
+## Deprecated name: the network lives in GAME (an MpGame is an MpNetConfig).
+const NET := GAME
 const LOBBY := "lobby.tscn"
 const ROOMS := "rooms.tscn"
 const ROOMS_CONFIG := "rooms_config.tres"
@@ -29,7 +32,7 @@ var private_server: bool = true
 ## Every file `write()` would create, with whether it already exists: [{path, exists}].
 func plan() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
-	var names := [NET, PLAYER_SCRIPT, PLAYER, WORLD, BOOT]
+	var names := [GAME, PLAYER_SCRIPT, PLAYER, WORLD, BOOT]
 	if online_rooms:
 		names.append_array([ROOMS_CONFIG, ROOMS, LOBBY])
 	for file in names:
@@ -54,32 +57,34 @@ func write() -> Error:
 	var err := DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(folder))
 	if err != OK:
 		return err
-	var net := MpNetConfig.new()
-	net.transport = transport
-	net.relay_url = relay_url
+	var game := MpGame.new()
+	game.transport = transport
+	game.relay_url = relay_url
 	## The project's name plus a random tail: two games made with this wizard on one relay never share rooms.
-	net.relay_room = "%s-%s" % [_relay_name(), Crypto.new().generate_random_bytes(3).hex_encode()]
-	net.max_players = max_players
-	err = ResourceSaver.save(net, _p(NET))
+	game.relay_room = "%s-%s" % [_relay_name(), Crypto.new().generate_random_bytes(3).hex_encode()]
+	game.max_players = max_players
+	game.boot_scene = _p(BOOT)
+	game.world_scene = _p(WORLD)
+	game.lobby_scene = _p(LOBBY) if online_rooms else ""
+	game.rooms_scene = _p(ROOMS) if online_rooms else ""
+	err = ResourceSaver.save(game, _p(GAME))
 	if err == OK:
 		err = _save_text(_p(PLAYER_SCRIPT), MpSetupTemplates.player_script(dimension_3d))
 	if err == OK:
 		err = _save_scene(MpSetupTemplates.player(dimension_3d, load(_p(PLAYER_SCRIPT))), _p(PLAYER))
 	if err == OK:
-		err = _save_scene(MpSetupTemplates.world(dimension_3d, max_players, load(_p(PLAYER))), _p(WORLD))
+		err = _save_scene(MpSetupTemplates.world_with_mp_world(dimension_3d, max_players, load(_p(PLAYER))), _p(WORLD))
 	if err == OK and online_rooms:
-		## The room server takes transport, relay and TLS from net.tres (MpRoomServer.net_config): one place.
+		## The room server takes transport, relay and TLS from game.tres through the flow: one place.
 		var config := MpLobbyConfig.new()
 		config.seats_per_room = mini(max_players, 2)
 		err = ResourceSaver.save(config, _p(ROOMS_CONFIG))
 		if err == OK:
-			err = _save_scene(MpSetupTemplates.room_server(load(_p(ROOMS_CONFIG)), load(_p(NET))), _p(ROOMS))
+			err = _save_scene(MpSetupTemplates.room_server(load(_p(ROOMS_CONFIG)), null), _p(ROOMS))
 		if err == OK:
-			err = _save_scene(MpSetupTemplates.lobby(_p(BOOT)), _p(LOBBY))
+			err = _save_scene(MpSetupTemplates.lobby(""), _p(LOBBY))
 	if err == OK:
-		var paths := {"boot": _p(BOOT), "world": _p(WORLD), "lobby": _p(LOBBY) if online_rooms else "",
-			"rooms": _p(ROOMS) if online_rooms else ""}
-		err = _save_scene(MpSetupTemplates.boot(load(_p(NET)), paths, private_server), _p(BOOT))
+		err = _save_scene(MpSetupTemplates.boot_with_game(load(_p(GAME)), private_server), _p(BOOT))
 	return err
 
 

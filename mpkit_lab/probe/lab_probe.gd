@@ -7,7 +7,8 @@ extends Node
 ## observe (another player, `--probe-watch-slot=N`: how evenly it moves on screen) | lobby (online rooms through the
 ## lobby screen: `--probe-lobby=host:port --probe-name=X`, `--probe-create=Room` makes the room and scores to win) |
 ## private (MpLocalServer on this PC; writes "port code" to `--probe-code-file`, plays and wins) | invited (joins
-## with "ip:port#CODE" from that file) | badcode (same address, a wrong code: must be turned away). `--probe-linger-s=N` keeps a
+## with "ip:port#CODE" from that file) | badcode (same address, a wrong code: must be turned away) | flood (sends 500
+## tunnel messages and 500 to_server calls at once) | floodwatch (server: only what the limits allow gets through). `--probe-linger-s=N` keeps a
 ## passing process alive N seconds. lag and observe print `METRIC name=value` lines.
 
 ## Seconds each check may wait (`--probe-timeout-s=N` for a person opening a browser by hand).
@@ -52,6 +53,10 @@ func _run() -> void:
 			await _play_online()
 		"private":
 			await _host_private()
+		"flood":
+			await _flood()
+		"floodwatch":
+			await _watch_flood()
 		"invited":
 			await _join_private(true)
 		"badcode":
@@ -258,6 +263,34 @@ func _join_private(right_code: bool) -> void:
 	await _until(_networked_slot, "the friend got in with the code (typed in lower case)")
 	await _pawn(2)
 	await _until(func() -> bool: return not finished.is_empty(), "the friend saw the match end")
+
+
+func _flood() -> void:
+	await _until(_networked_slot, "the flooding client got a slot")
+	var pawn := await _pawn(MpKit.local_slot())
+	if pawn == null:
+		return
+	var net := MpActor.of(pawn)
+	for i in 500:
+		MpKit.send_custom(&"spam", {"i": i})
+		net.to_server(&"recolor")
+	print("PASS sent 500 tunnel messages and 500 server calls")
+
+
+func _watch_flood() -> void:
+	await _until(func() -> bool: return MpKit.is_server(), "this process is the server")
+	var got: Array[int] = [0]
+	MpKit.custom_received.connect(func(_c: StringName, _d: Dictionary, from_peer: int) -> void:
+		if from_peer != 1:
+			got[0] += 1)
+	var pawn := await _pawn(1)
+	if pawn == null:
+		return
+	await _until(func() -> bool: return got[0] > 0, "the first tunnel messages arrived")
+	await get_tree().create_timer(2.0).timeout
+	print("METRIC tunnel_accepted=%d server_calls_accepted=%d (of 500 each)" % [got[0], pawn.color_index])
+	_check(got[0] >= 50 and got[0] <= 60 + 30 * 4, "the tunnel let the burst in and dropped the flood")
+	_check(pawn.color_index >= 100 and pawn.color_index <= 120 + 60 * 4, "to_server let the burst in and dropped the flood")
 
 
 func _pawn(slot: int) -> Node:

@@ -22,6 +22,8 @@ const ALL_PREFIX := "mp_all_"
 const SYNC_NAME := "MpSync"
 ## Largest argument list a client may send in one to_server call (var_to_bytes size).
 const MAX_ARGS_BYTES := 4096
+## to_server calls a client may make, shared by every MpActor of the process (per second, and at once).
+static var server_calls := MpRateLimit.new(60.0, 120.0)
 
 @export_group("Sync")
 @export var sync_position: bool = true:
@@ -217,7 +219,7 @@ func rpc_server_call(action: StringName, args: Array) -> void:
 	var slot := MpKit.slot_for_peer(multiplayer.get_remote_sender_id())
 	if slot <= 0 or (owner_slot != 0 and slot != owner_slot):
 		return
-	if var_to_bytes(args).size() > MAX_ARGS_BYTES:
+	if var_to_bytes(args).size() > MAX_ARGS_BYTES or not server_calls.allow(multiplayer.get_remote_sender_id()):
 		return
 	_run_sv(action, args, slot)
 

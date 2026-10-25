@@ -8,7 +8,8 @@
 #   lag:       dedicated + an observer + a predicted player, every process with MpLagPeer (LAG_MS one way, JITTER_MS,
 #              LOSS of unreliable packets): the player answers its keys at once and is barely corrected; the observer
 #              sees it move steadily. Prints METRIC lines.
-# TRANSPORT=ws runs everything over WebSocket (TCP) instead of ENet (UDP). SCENARIOS="dedicated listen lag" (default all).
+#   flood:     a client sends 500 tunnel messages and 500 to_server calls at once: only the burst gets through.
+# TRANSPORT=ws runs everything over WebSocket (TCP) instead of ENet (UDP). SCENARIOS="dedicated listen lag flood" (default all).
 # Prints PASS / FAIL lines and MPKIT ARENA PASS / MPKIT ARENA FAIL (exit 0 / 1).
 . "$(dirname "$0")/../harness/net_e2e.sh"
 net_group 3 "$@"
@@ -17,7 +18,7 @@ LIMIT_S="${PROBE_LIMIT_S:-120}"
 PROC_MAX=4
 TRANSPORT="${TRANSPORT:-enet}"
 PORT="${E2E_PORT:-7790}"
-SCENARIOS="${SCENARIOS:-dedicated listen lag}"
+SCENARIOS="${SCENARIOS:-dedicated listen lag flood}"
 LAG_MS="${LAG_MS:-60}"
 JITTER_MS="${JITTER_MS:-30}"
 LOSS="${LOSS:-0.03}"
@@ -82,11 +83,28 @@ run_lag() { # dedicated server + an observer (slot 1) + a predicted player (slot
   if grep -qE "^SCRIPT ERROR" "$dir"/*.log; then echo "FAIL lag: script errors"; FAILS=$((FAILS + 1)); fi
 }
 
+run_flood() { # dedicated server + one client that floods the tunnel and to_server
+  local dir="$OUT/flood"
+  mkdir -p "$dir"
+  local common=(--transport="$TRANSPORT" --mp-port="$PORT")
+  gd "$dir/server.log" -- --server "${common[@]}" --probe=floodwatch
+  local server=$LAST_PID
+  sleep 0.5
+  gd "$dir/client.log" -- --client1 "${common[@]}" --probe=flood --probe-linger-s=8
+  local client=$LAST_PID
+  wait_line "$dir/server.log" "^PROBE floodwatch (PASS|FAIL)" "$server" 40
+  for p in $client $server; do kill_tree "$p"; done
+  echo "--- flood ($TRANSPORT) ---"
+  grep -hE "^(PASS|FAIL|METRIC|SCRIPT ERROR)" "$dir/server.log" | sed "s/^/server: /"
+  verdict "$dir/server.log" floodwatch "flood: the server only lets in what the limits allow"
+}
+
 for s in $SCENARIOS; do
   case "$s" in
     dedicated) run_scenario dedicated --server 1 ;;
     listen) run_scenario listen --listen-host 2 ;;
     lag) run_lag ;;
+    flood) run_flood ;;
   esac
 done
 net_stop

@@ -364,6 +364,8 @@ El kit **no lee** el dict. **No reenvía solo**. Si el servidor no hace `broadca
 
 Allowlist: `configure(..., PackedStringArray(["emote"]))`. Vacío = cualquier nombre. Nombre desconocido = se descarta.
 
+Topes del servidor (para que un cliente no lo inunde): un mensaje del túnel de más de `MpKit.custom_max_bytes` (8192) se descarta, y cada cliente manda a lo sumo `MpKit.custom_limit` (30 por segundo, ráfaga de 60). Las llamadas `mp_sv_*` de `MpActor` tienen su propio tope (`MpActor.server_calls`: 60 por segundo, ráfaga de 120) y un máximo de argumentos de 4 KB. Con admisión por ticket, a lo sumo `MpKit.max_pending_admission` (64) conexiones esperan ticket a la vez.
+
 Nodo cómodo: hijo `MpCustomPipe`, `@export channel = &"emote"`.
 
 | Pipe | Equivale a |
@@ -506,6 +508,7 @@ Nodos de alto nivel (lo que usa un humano; detalle y ejemplos en [QUICKSTART.md]
 | `deploy/` | `deploy.sh usuario@vps build` (un comando: usuario, archivos, unidades systemd, instancias, firewall), `mp-rooms@.service` / `mp-dedicated@.service` (una instancia por puerto), presets de export de ejemplo y la guía |
 | `rooms/mp_lobby_link.gd` | el stack `/root/MpLobby` (autoload o creado al vuelo) |
 | `rooms/ui/mp_lobby_screen.gd` / `mp_lobby_ui.gd` / `.tscn` | `MpLobbyScreen`: lobby drop-in (conectar, salas, crear, código, asientos, listo, chat) que se une a la partida por `MpFlow.join_match` |
+| `core/mp_rate_limit.gd` | `MpRateLimit`: cubeta de tokens por peer (túnel y `mp_sv_*`) |
 | `core/mp_calls.gd` | llamadas por nombre (`mp_sv_*`, `mp_all_*`) con chequeo de cantidad de argumentos |
 | `core/mp_smoother.gd` | suavizado exponencial de `MpReplicate` |
 | `tests/` | tests propios del kit: `godot --headless --path <proyecto> --script res://addons/mp_kit/tests/mp_test_runner.gd` |

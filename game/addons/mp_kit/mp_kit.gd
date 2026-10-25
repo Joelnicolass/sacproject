@@ -33,6 +33,11 @@ var admission_timeout_s: float = 5.0
 const TICKET_MAX_LEN := 512
 ## Seconds between the rejection RPC and the disconnect.
 const REJECT_FLUSH_S := 0.2
+## Peers that may wait for admission at once; more are disconnected on arrival (a flood of empty connections).
+var max_pending_admission: int = 64
+## Largest Dictionary a client may send through the custom tunnel (var_to_bytes), and how often.
+var custom_max_bytes: int = 8192
+var custom_limit := MpRateLimit.new(30.0, 60.0)
 var rooms: MpRoomDirectory
 var matchmaker: MpMatchmaker
 
@@ -324,6 +329,9 @@ func _on_peer_connected(id: int) -> void:
 	if not multiplayer.is_server():
 		return
 	if admission.is_valid():
+		if _awaiting_ticket.size() >= max_pending_admission:
+			multiplayer.multiplayer_peer.disconnect_peer(id)
+			return
 		_awaiting_ticket[id] = true
 		get_tree().create_timer(admission_timeout_s).timeout.connect(_on_admission_timeout.bind(id))
 		return
@@ -344,6 +352,7 @@ func _on_peer_disconnected(id: int) -> void:
 	if _awaiting_ticket.erase(id):
 		return
 	_world_ready.erase(id)
+	custom_limit.forget(id)
 	var slot := ids.unbind_peer(id)
 	if slot == 0 and admission.is_valid():
 		return
@@ -469,6 +478,8 @@ func rpc_custom_to_server(channel: String, data: Dictionary) -> void:
 		return
 	var name := StringName(channel)
 	if not is_custom_channel_allowed(name):
+		return
+	if var_to_bytes(data).size() > custom_max_bytes or not custom_limit.allow(sender):
 		return
 	custom_received.emit(name, data.duplicate(true), sender)
 

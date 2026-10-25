@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/bala/005.png" id="1_4y5ts"]
+
+[resource]
+resource_name = "bala_005"
+albedo_texture = ExtResource("1_4y5ts")
+roughness = 0.85

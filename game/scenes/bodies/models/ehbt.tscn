@@ -4,6 +4,13 @@
 [ext_resource type="PackedScene" path="res://assets/original/models/ehbt.glb" id="2_i5n2b"]
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_6jwyk"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/ehbt_clips.tres" id="clips_lib"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ehbt_001.tres" id="mat_ehbt_001"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ehbt_002.tres" id="mat_ehbt_002"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ehbt_003.tres" id="mat_ehbt_003"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ehbt_004.tres" id="mat_ehbt_004"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ehbt_005.tres" id="mat_ehbt_005"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ehbt_006.tres" id="mat_ehbt_006"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ehbt_007_cutout.tres" id="mat_ehbt_007_cutout"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7xv8y"]
 radius = 0.07929527
@@ -176,7 +183,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_523af")
 model = "ehbt"
 bind_aabb = AABB(-2.643686, -1.102258, -0.882325, 5.298176, 2.78724, 1.5875039)
-surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0]]
 clips = {
 "EHa1": {
 "hands": [{
@@ -370,6 +376,15 @@ clips = {
 [node name="Model" parent="." unique_id=825150683 instance=ExtResource("2_i5n2b")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="ehbt_mesh" parent="Model/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("mat_ehbt_001")
+surface_material_override/1 = ExtResource("mat_ehbt_002")
+surface_material_override/2 = ExtResource("mat_ehbt_003")
+surface_material_override/3 = ExtResource("mat_ehbt_004")
+surface_material_override/4 = ExtResource("mat_ehbt_005")
+surface_material_override/5 = ExtResource("mat_ehbt_006")
+surface_material_override/6 = ExtResource("mat_ehbt_007_cutout")
 
 [node name="Ragdoll" type="PhysicalBoneSimulator3D" parent="Model/Skeleton3D" parent_id_path=PackedInt32Array(825150683, 722037971) index="1" unique_id=670503168]
 process_mode = 4

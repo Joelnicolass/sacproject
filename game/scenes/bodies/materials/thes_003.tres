@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/thes/003.png" id="1_xqe1e"]
+
+[resource]
+resource_name = "thes_003"
+albedo_texture = ExtResource("1_xqe1e")
+roughness = 0.85

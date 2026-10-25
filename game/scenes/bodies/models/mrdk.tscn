@@ -4,6 +4,15 @@
 [ext_resource type="PackedScene" path="res://assets/original/models/mrdk.glb" id="2_3xusd"]
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_kwiuk"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/mrdk_clips.tres" id="clips_lib"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/mrdk_001.tres" id="mat_mrdk_001"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/mrdk_002.tres" id="mat_mrdk_002"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/mrdk_003.tres" id="mat_mrdk_003"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/mrdk_004.tres" id="mat_mrdk_004"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/mrdk_005.tres" id="mat_mrdk_005"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/mrdk_006.tres" id="mat_mrdk_006"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/mrdk_007.tres" id="mat_mrdk_007"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/mrdk_008.tres" id="mat_mrdk_008"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/mrdk_009.tres" id="mat_mrdk_009"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_x2rqd"]
 radius = 0.108045086
@@ -190,7 +199,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_e8smg")
 model = "mrdk"
 bind_aabb = AABB(-2.497409, -2.387808, -1.02338, 4.678546, 4.236582, 3.235385)
-surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0], [8.0]]
 clips = {
 "mdfd": {
 "hands": [{
@@ -285,6 +293,17 @@ clips = {
 [node name="Model" parent="." unique_id=461085438 instance=ExtResource("2_3xusd")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="mrdk_mesh" parent="Model/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("mat_mrdk_001")
+surface_material_override/1 = ExtResource("mat_mrdk_002")
+surface_material_override/2 = ExtResource("mat_mrdk_003")
+surface_material_override/3 = ExtResource("mat_mrdk_004")
+surface_material_override/4 = ExtResource("mat_mrdk_005")
+surface_material_override/5 = ExtResource("mat_mrdk_006")
+surface_material_override/6 = ExtResource("mat_mrdk_007")
+surface_material_override/7 = ExtResource("mat_mrdk_008")
+surface_material_override/8 = ExtResource("mat_mrdk_009")
 
 [node name="Ragdoll" type="PhysicalBoneSimulator3D" parent="Model/Skeleton3D" parent_id_path=PackedInt32Array(461085438, 491237506) index="1" unique_id=1739150221]
 process_mode = 4

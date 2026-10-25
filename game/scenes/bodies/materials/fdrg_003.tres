@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/fdrg/003.png" id="1_fcdgr"]
+
+[resource]
+resource_name = "fdrg_003"
+albedo_texture = ExtResource("1_fcdgr")
+roughness = 0.85

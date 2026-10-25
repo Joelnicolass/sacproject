@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/adrg/006.png" id="1_27w3p"]
+
+[resource]
+resource_name = "adrg_006"
+albedo_texture = ExtResource("1_27w3p")
+roughness = 0.85

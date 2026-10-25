@@ -4,6 +4,14 @@
 [ext_resource type="PackedScene" path="res://assets/original/models/sacd.glb" id="2_cyd1s"]
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_puwug"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/sacd_clips.tres" id="clips_lib"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/sacd_001.tres" id="mat_sacd_001"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/sacd_002.tres" id="mat_sacd_002"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/sacd_003.tres" id="mat_sacd_003"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/sacd_004.tres" id="mat_sacd_004"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/sacd_005.tres" id="mat_sacd_005"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/sacd_006.tres" id="mat_sacd_006"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/sacd_007.tres" id="mat_sacd_007"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/sacd_008.tres" id="mat_sacd_008"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_81reb"]
 animation = &"attack"
@@ -64,7 +72,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_twkdh")
 model = "sacd"
 bind_aabb = AABB(-0.562, -0.804839, -1.412845, 1.138, 2.54882, 3.072332)
-surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0]]
 clips = {
 "SDda": {
 "hands": [{
@@ -159,6 +166,16 @@ clips = {
 [node name="Model" parent="." unique_id=1164361672 instance=ExtResource("2_cyd1s")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="sacd_mesh" parent="Model/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("mat_sacd_001")
+surface_material_override/1 = ExtResource("mat_sacd_002")
+surface_material_override/2 = ExtResource("mat_sacd_003")
+surface_material_override/3 = ExtResource("mat_sacd_004")
+surface_material_override/4 = ExtResource("mat_sacd_005")
+surface_material_override/5 = ExtResource("mat_sacd_006")
+surface_material_override/6 = ExtResource("mat_sacd_007")
+surface_material_override/7 = ExtResource("mat_sacd_008")
 
 [node name="Clips" type="AnimationPlayer" parent="." unique_id=557685384]
 unique_name_in_owner = true

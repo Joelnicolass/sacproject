@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/sprg/003.png" id="1_o0jlh"]
+
+[resource]
+resource_name = "sprg_003"
+albedo_texture = ExtResource("1_o0jlh")
+roughness = 0.85

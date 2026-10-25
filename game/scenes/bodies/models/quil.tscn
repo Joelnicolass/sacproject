@@ -4,6 +4,15 @@
 [ext_resource type="PackedScene" path="res://assets/original/models/quil.glb" id="2_gm5ci"]
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_rhq8l"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/quil_clips.tres" id="clips_lib"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/quil_001.tres" id="mat_quil_001"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/quil_002.tres" id="mat_quil_002"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/quil_003.tres" id="mat_quil_003"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/quil_004.tres" id="mat_quil_004"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/quil_005.tres" id="mat_quil_005"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/quil_006.tres" id="mat_quil_006"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/quil_007.tres" id="mat_quil_007"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/quil_008.tres" id="mat_quil_008"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/quil_009.tres" id="mat_quil_009"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_xl0y6"]
 radius = 0.06514767
@@ -190,7 +199,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_rfqym")
 model = "quil"
 bind_aabb = AABB(-0.793058, -0.848114, -0.35251, 1.593725, 1.886311, 1.171346)
-surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0], [8.0]]
 clips = {
 "qufd": {
 "hands": [{
@@ -285,6 +293,17 @@ clips = {
 [node name="Model" parent="." unique_id=908563802 instance=ExtResource("2_gm5ci")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="quil_mesh" parent="Model/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("mat_quil_001")
+surface_material_override/1 = ExtResource("mat_quil_002")
+surface_material_override/2 = ExtResource("mat_quil_003")
+surface_material_override/3 = ExtResource("mat_quil_004")
+surface_material_override/4 = ExtResource("mat_quil_005")
+surface_material_override/5 = ExtResource("mat_quil_006")
+surface_material_override/6 = ExtResource("mat_quil_007")
+surface_material_override/7 = ExtResource("mat_quil_008")
+surface_material_override/8 = ExtResource("mat_quil_009")
 
 [node name="Ragdoll" type="PhysicalBoneSimulator3D" parent="Model/Skeleton3D" parent_id_path=PackedInt32Array(908563802, 1876216502) index="1" unique_id=413276452]
 process_mode = 4

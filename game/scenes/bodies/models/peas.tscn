@@ -4,6 +4,11 @@
 [ext_resource type="PackedScene" path="res://assets/original/models/peas.glb" id="2_s0fn7"]
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_15jcw"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/peas_clips.tres" id="clips_lib"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/peas_001.tres" id="mat_peas_001"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/peas_002.tres" id="mat_peas_002"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/peas_003.tres" id="mat_peas_003"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/peas_004.tres" id="mat_peas_004"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/peas_005.tres" id="mat_peas_005"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_tmk65"]
 animation = &"attack"
@@ -132,7 +137,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_owh71")
 model = "peas"
 bind_aabb = AABB(-0.403654, -0.222168, -0.7512, 0.814324, 0.478206, 1.7310541)
-surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0]]
 clips = {
 "PE2t": {
 "hands": [{
@@ -337,6 +341,13 @@ clips = {
 [node name="Model" parent="." unique_id=1053341117 instance=ExtResource("2_s0fn7")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="peas_mesh" parent="Model/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("mat_peas_001")
+surface_material_override/1 = ExtResource("mat_peas_002")
+surface_material_override/2 = ExtResource("mat_peas_003")
+surface_material_override/3 = ExtResource("mat_peas_004")
+surface_material_override/4 = ExtResource("mat_peas_005")
 
 [node name="Clips" type="AnimationPlayer" parent="." unique_id=310137014]
 unique_name_in_owner = true

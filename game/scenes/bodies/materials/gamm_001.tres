@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/gamm/001.png" id="1_3jmcs"]
+
+[resource]
+resource_name = "gamm_001"
+albedo_texture = ExtResource("1_3jmcs")
+roughness = 0.85

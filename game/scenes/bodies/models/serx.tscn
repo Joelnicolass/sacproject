@@ -4,6 +4,14 @@
 [ext_resource type="PackedScene" path="res://assets/original/models/serx.glb" id="2_ljxsv"]
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_kwqx6"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/serx_clips.tres" id="clips_lib"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/serx_001.tres" id="mat_serx_001"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/serx_002.tres" id="mat_serx_002"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/serx_003.tres" id="mat_serx_003"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/serx_004.tres" id="mat_serx_004"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/serx_005.tres" id="mat_serx_005"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/serx_006.tres" id="mat_serx_006"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/serx_007.tres" id="mat_serx_007"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/serx_008.tres" id="mat_serx_008"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_qcb7r"]
 radius = 0.0688172
@@ -190,7 +198,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_ajhh0")
 model = "serx"
 bind_aabb = AABB(-0.887244, -0.178725, -0.212826, 1.771301, 2.144669, 1.518404)
-surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0]]
 clips = {
 "segu": {
 "hands": [{
@@ -285,6 +292,16 @@ clips = {
 [node name="Model" parent="." unique_id=1235618273 instance=ExtResource("2_ljxsv")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="serx_mesh" parent="Model/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("mat_serx_001")
+surface_material_override/1 = ExtResource("mat_serx_002")
+surface_material_override/2 = ExtResource("mat_serx_003")
+surface_material_override/3 = ExtResource("mat_serx_004")
+surface_material_override/4 = ExtResource("mat_serx_005")
+surface_material_override/5 = ExtResource("mat_serx_006")
+surface_material_override/6 = ExtResource("mat_serx_007")
+surface_material_override/7 = ExtResource("mat_serx_008")
 
 [node name="Ragdoll" type="PhysicalBoneSimulator3D" parent="Model/Skeleton3D" parent_id_path=PackedInt32Array(1235618273, 1833232820) index="1" unique_id=2072419556]
 process_mode = 4

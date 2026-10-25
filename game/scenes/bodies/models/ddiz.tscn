@@ -4,6 +4,12 @@
 [ext_resource type="PackedScene" path="res://assets/original/models/ddiz.glb" id="2_x867m"]
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_cktwf"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/ddiz_clips.tres" id="clips_lib"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ddiz_001.tres" id="mat_ddiz_001"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ddiz_002.tres" id="mat_ddiz_002"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ddiz_003.tres" id="mat_ddiz_003"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ddiz_004.tres" id="mat_ddiz_004"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ddiz_005.tres" id="mat_ddiz_005"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ddiz_006_cutout.tres" id="mat_ddiz_006_cutout"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ekxho"]
 animation = &"attack"
@@ -92,7 +98,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_srgjc")
 model = "ddiz"
 bind_aabb = AABB(-1.225102, -0.951, -1.004825, 2.429535, 1.5730879, 1.961825)
-surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0]]
 clips = {
 "DDa1": {
 "hands": [{
@@ -242,6 +247,14 @@ clips = {
 [node name="Model" parent="." unique_id=1660451277 instance=ExtResource("2_x867m")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="ddiz_mesh" parent="Model/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("mat_ddiz_001")
+surface_material_override/1 = ExtResource("mat_ddiz_002")
+surface_material_override/2 = ExtResource("mat_ddiz_003")
+surface_material_override/3 = ExtResource("mat_ddiz_004")
+surface_material_override/4 = ExtResource("mat_ddiz_005")
+surface_material_override/5 = ExtResource("mat_ddiz_006_cutout")
 
 [node name="Clips" type="AnimationPlayer" parent="." unique_id=667024124]
 unique_name_in_owner = true

@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/mrdk/001.png" id="1_yg0jq"]
+
+[resource]
+resource_name = "mrdk_001"
+albedo_texture = ExtResource("1_yg0jq")
+roughness = 0.85

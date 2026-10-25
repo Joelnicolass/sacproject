@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/buta/002.png" id="1_ee3vh"]
+
+[resource]
+resource_name = "buta_002"
+albedo_texture = ExtResource("1_ee3vh")
+roughness = 0.85

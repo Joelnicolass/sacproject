@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/buga/007.png" id="1_qdkrj"]
+
+[resource]
+resource_name = "buga_007"
+albedo_texture = ExtResource("1_qdkrj")
+roughness = 0.85

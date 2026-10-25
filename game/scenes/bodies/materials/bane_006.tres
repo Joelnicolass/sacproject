@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/bane/006.png" id="1_eui4g"]
+
+[resource]
+resource_name = "bane_006"
+albedo_texture = ExtResource("1_eui4g")
+roughness = 0.85

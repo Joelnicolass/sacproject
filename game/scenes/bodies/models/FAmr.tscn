@@ -4,6 +4,10 @@
 [ext_resource type="PackedScene" path="res://assets/original/models/FAmr.glb" id="2_c6145"]
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_rlfpa"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/FAmr_clips.tres" id="clips_lib"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/FAmr_001.tres" id="mat_FAmr_001"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/FAmr_002.tres" id="mat_FAmr_002"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/FAmr_003.tres" id="mat_FAmr_003"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/FAmr_004_cutout.tres" id="mat_FAmr_004_cutout"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ooxyd"]
 radius = 0.021332674
@@ -170,7 +174,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_cne8v")
 model = "FAmr"
 bind_aabb = AABB(-0.543547, -0.273996, -0.126674, 1.091089, 0.628059, 0.21750799)
-surface_parts = [[0.0], [1.0], [2.0], [3.0]]
 clips = {
 "FA2t": {
 "hands": [{
@@ -221,6 +224,12 @@ clips = {
 [node name="Model" parent="." unique_id=780293243 instance=ExtResource("2_c6145")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="FAmr_mesh" parent="Model/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("mat_FAmr_001")
+surface_material_override/1 = ExtResource("mat_FAmr_002")
+surface_material_override/2 = ExtResource("mat_FAmr_003")
+surface_material_override/3 = ExtResource("mat_FAmr_004_cutout")
 
 [node name="Ragdoll" type="PhysicalBoneSimulator3D" parent="Model/Skeleton3D" parent_id_path=PackedInt32Array(780293243, 928981504) index="1" unique_id=1787212409]
 process_mode = 4

@@ -4,6 +4,11 @@
 [ext_resource type="PackedScene" path="res://assets/original/models/eorc.glb" id="2_5dhjk"]
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_mwhw7"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/eorc_clips.tres" id="clips_lib"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/eorc_001.tres" id="mat_eorc_001"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/eorc_002.tres" id="mat_eorc_002"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/eorc_003.tres" id="mat_eorc_003"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/eorc_004.tres" id="mat_eorc_004"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/eorc_005.tres" id="mat_eorc_005"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7qyk7"]
 radius = 0.07349175
@@ -168,7 +173,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_l6mva")
 model = "eorc"
 bind_aabb = AABB(-0.520576, -0.404032, -1.187877, 1.056076, 0.68220496, 2.193381)
-surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0]]
 clips = {
 "HU2t": {
 "hands": [{
@@ -318,6 +322,13 @@ clips = {
 [node name="Model" parent="." unique_id=812204854 instance=ExtResource("2_5dhjk")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="eorc_mesh" parent="Model/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("mat_eorc_001")
+surface_material_override/1 = ExtResource("mat_eorc_002")
+surface_material_override/2 = ExtResource("mat_eorc_003")
+surface_material_override/3 = ExtResource("mat_eorc_004")
+surface_material_override/4 = ExtResource("mat_eorc_005")
 
 [node name="Ragdoll" type="PhysicalBoneSimulator3D" parent="Model/Skeleton3D" parent_id_path=PackedInt32Array(812204854, 192573633) index="1" unique_id=1472288587]
 process_mode = 4

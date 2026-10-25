@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/dflp/001.png" id="1_cys4a"]
+
+[resource]
+resource_name = "dflp_001"
+albedo_texture = ExtResource("1_cys4a")
+roughness = 0.85

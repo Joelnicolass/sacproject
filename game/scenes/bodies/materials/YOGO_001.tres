@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/YOGO/001.png" id="1_n20h0"]
+
+[resource]
+resource_name = "YOGO_001"
+albedo_texture = ExtResource("1_n20h0")
+roughness = 0.85

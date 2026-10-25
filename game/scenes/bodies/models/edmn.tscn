@@ -4,6 +4,13 @@
 [ext_resource type="PackedScene" path="res://assets/original/models/edmn.glb" id="2_ecm4s"]
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_1b1b7"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/edmn_clips.tres" id="clips_lib"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/edmn_001.tres" id="mat_edmn_001"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/edmn_002.tres" id="mat_edmn_002"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/edmn_003.tres" id="mat_edmn_003"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/edmn_004.tres" id="mat_edmn_004"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/edmn_005.tres" id="mat_edmn_005"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/edmn_006.tres" id="mat_edmn_006"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/edmn_007.tres" id="mat_edmn_007"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_2vhap"]
 animation = &"attack"
@@ -92,7 +99,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_tmypu")
 model = "edmn"
 bind_aabb = AABB(-7.705132, -1.807624, -3.136478, 15.374985, 9.74622, 6.490111)
-surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0]]
 clips = {
 "Eda1": {
 "hands": [{
@@ -242,6 +248,15 @@ clips = {
 [node name="Model" parent="." unique_id=544837718 instance=ExtResource("2_ecm4s")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="edmn_mesh" parent="Model/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("mat_edmn_001")
+surface_material_override/1 = ExtResource("mat_edmn_002")
+surface_material_override/2 = ExtResource("mat_edmn_003")
+surface_material_override/3 = ExtResource("mat_edmn_004")
+surface_material_override/4 = ExtResource("mat_edmn_005")
+surface_material_override/5 = ExtResource("mat_edmn_006")
+surface_material_override/6 = ExtResource("mat_edmn_007")
 
 [node name="Clips" type="AnimationPlayer" parent="." unique_id=86305592]
 unique_name_in_owner = true

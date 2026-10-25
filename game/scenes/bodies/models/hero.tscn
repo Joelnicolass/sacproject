@@ -4,6 +4,13 @@
 [ext_resource type="PackedScene" path="res://assets/original/models/hero.glb" id="2_evl82"]
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_7b76x"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/hero_clips.tres" id="clips_lib"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/hero_001.tres" id="mat_hero_001"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/hero_002.tres" id="mat_hero_002"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/hero_003.tres" id="mat_hero_003"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/hero_004.tres" id="mat_hero_004"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/hero_005.tres" id="mat_hero_005"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/hero_006.tres" id="mat_hero_006"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/hero_007_cutout.tres" id="mat_hero_007_cutout"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_b5vmp"]
 radius = 0.056630332
@@ -195,7 +202,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_kqjfg")
 model = "hero"
 bind_aabb = AABB(-0.766222, -1.214082, -0.209123, 1.5373499, 2.055678, 0.479989)
-surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0]]
 clips = {
 "hefd": {
 "hands": [{
@@ -279,6 +285,15 @@ clips = {
 [node name="Model" parent="." unique_id=1740022557 instance=ExtResource("2_evl82")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="hero_mesh" parent="Model/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("mat_hero_001")
+surface_material_override/1 = ExtResource("mat_hero_002")
+surface_material_override/2 = ExtResource("mat_hero_003")
+surface_material_override/3 = ExtResource("mat_hero_004")
+surface_material_override/4 = ExtResource("mat_hero_005")
+surface_material_override/5 = ExtResource("mat_hero_006")
+surface_material_override/6 = ExtResource("mat_hero_007_cutout")
 
 [node name="Ragdoll" type="PhysicalBoneSimulator3D" parent="Model/Skeleton3D" parent_id_path=PackedInt32Array(1740022557, 980095059) index="1" unique_id=1915327610]
 process_mode = 4

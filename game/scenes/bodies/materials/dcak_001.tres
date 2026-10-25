@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/dcak/001.png" id="1_a8mnn"]
+
+[resource]
+resource_name = "dcak_001"
+albedo_texture = ExtResource("1_a8mnn")
+roughness = 0.85

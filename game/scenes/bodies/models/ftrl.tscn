@@ -4,6 +4,14 @@
 [ext_resource type="PackedScene" path="res://assets/original/models/ftrl.glb" id="2_1kyky"]
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_dkk2l"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/ftrl_clips.tres" id="clips_lib"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ftrl_001.tres" id="mat_ftrl_001"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ftrl_002.tres" id="mat_ftrl_002"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ftrl_003.tres" id="mat_ftrl_003"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ftrl_004.tres" id="mat_ftrl_004"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ftrl_005.tres" id="mat_ftrl_005"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ftrl_006.tres" id="mat_ftrl_006"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ftrl_007.tres" id="mat_ftrl_007"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ftrl_008.tres" id="mat_ftrl_008"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_fu8dt"]
 animation = &"attack"
@@ -87,7 +95,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_54el0")
 model = "ftrl"
 bind_aabb = AABB(-1.45094, -1.672962, -1.54875, 2.931336, 3.2929468, 2.86125)
-surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0]]
 clips = {
 "TFa1": {
 "hands": [{
@@ -237,6 +244,16 @@ clips = {
 [node name="Model" parent="." unique_id=1130914903 instance=ExtResource("2_1kyky")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="ftrl_mesh" parent="Model/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("mat_ftrl_001")
+surface_material_override/1 = ExtResource("mat_ftrl_002")
+surface_material_override/2 = ExtResource("mat_ftrl_003")
+surface_material_override/3 = ExtResource("mat_ftrl_004")
+surface_material_override/4 = ExtResource("mat_ftrl_005")
+surface_material_override/5 = ExtResource("mat_ftrl_006")
+surface_material_override/6 = ExtResource("mat_ftrl_007")
+surface_material_override/7 = ExtResource("mat_ftrl_008")
 
 [node name="Clips" type="AnimationPlayer" parent="." unique_id=169575335]
 unique_name_in_owner = true

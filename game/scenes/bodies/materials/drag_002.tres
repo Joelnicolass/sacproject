@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/drag/002.png" id="1_b0apl"]
+
+[resource]
+resource_name = "drag_002"
+albedo_texture = ExtResource("1_b0apl")
+roughness = 0.85

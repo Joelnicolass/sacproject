@@ -4,6 +4,11 @@
 [ext_resource type="PackedScene" path="res://assets/original/models/sprl.glb" id="2_2xok4"]
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_754a5"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/sprl_clips.tres" id="clips_lib"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/sprl_001.tres" id="mat_sprl_001"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/sprl_002.tres" id="mat_sprl_002"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/sprl_003.tres" id="mat_sprl_003"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/sprl_004.tres" id="mat_sprl_004"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/sprl_005_cutout.tres" id="mat_sprl_005_cutout"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ogah7"]
 animation = &"attack"
@@ -122,7 +127,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_lmh2c")
 model = "sprl"
 bind_aabb = AABB(-3.562101, -1.362911, -1.757386, 7.1285286, 3.990842, 2.498185)
-surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0, 5.0]]
 clips = {
 "LSs1": {
 "hands": [{
@@ -338,6 +342,13 @@ clips = {
 [node name="Model" parent="." unique_id=1128674420 instance=ExtResource("2_2xok4")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="sprl_mesh" parent="Model/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("mat_sprl_001")
+surface_material_override/1 = ExtResource("mat_sprl_002")
+surface_material_override/2 = ExtResource("mat_sprl_003")
+surface_material_override/3 = ExtResource("mat_sprl_004")
+surface_material_override/4 = ExtResource("mat_sprl_005_cutout")
 
 [node name="Clips" type="AnimationPlayer" parent="." unique_id=892683514]
 unique_name_in_owner = true

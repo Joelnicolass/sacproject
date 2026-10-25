@@ -4,6 +4,13 @@
 [ext_resource type="PackedScene" path="res://assets/original/models/ABRX.glb" id="2_hxbhe"]
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_mykw3"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/ABRX_clips.tres" id="clips_lib"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ABRX_001.tres" id="mat_ABRX_001"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ABRX_002.tres" id="mat_ABRX_002"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ABRX_003.tres" id="mat_ABRX_003"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ABRX_004.tres" id="mat_ABRX_004"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ABRX_005.tres" id="mat_ABRX_005"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ABRX_006.tres" id="mat_ABRX_006"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/ABRX_007.tres" id="mat_ABRX_007"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_j268l"]
 radius = 0.047401574
@@ -179,7 +186,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_gw84j")
 model = "ABRX"
 bind_aabb = AABB(-0.448727, -1.209852, -0.165051, 0.916817, 2.001368, 0.691026)
-surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0]]
 clips = {
 "AXgu": {
 "hands": [{
@@ -263,6 +269,15 @@ clips = {
 [node name="Model" parent="." unique_id=1071059118 instance=ExtResource("2_hxbhe")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="ABRX_mesh" parent="Model/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("mat_ABRX_001")
+surface_material_override/1 = ExtResource("mat_ABRX_002")
+surface_material_override/2 = ExtResource("mat_ABRX_003")
+surface_material_override/3 = ExtResource("mat_ABRX_004")
+surface_material_override/4 = ExtResource("mat_ABRX_005")
+surface_material_override/5 = ExtResource("mat_ABRX_006")
+surface_material_override/6 = ExtResource("mat_ABRX_007")
 
 [node name="Ragdoll" type="PhysicalBoneSimulator3D" parent="Model/Skeleton3D" parent_id_path=PackedInt32Array(1071059118, 959145484) index="1" unique_id=719398015]
 process_mode = 4

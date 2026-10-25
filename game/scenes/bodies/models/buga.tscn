@@ -4,6 +4,13 @@
 [ext_resource type="PackedScene" path="res://assets/original/models/buga.glb" id="2_vsw1i"]
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_nasx1"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/buga_clips.tres" id="clips_lib"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/buga_001.tres" id="mat_buga_001"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/buga_002.tres" id="mat_buga_002"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/buga_003.tres" id="mat_buga_003"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/buga_004.tres" id="mat_buga_004"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/buga_005.tres" id="mat_buga_005"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/buga_006.tres" id="mat_buga_006"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/buga_007.tres" id="mat_buga_007"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_uhgig"]
 animation = &"attack"
@@ -92,7 +99,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_cpk1i")
 model = "buga"
 bind_aabb = AABB(-0.461, -1.10625, -0.325325, 1.813395, 2.145846, 0.908)
-surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0]]
 clips = {
 "BA2t": {
 "hands": [{
@@ -253,6 +259,15 @@ clips = {
 [node name="Model" parent="." unique_id=78823261 instance=ExtResource("2_vsw1i")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="buga_mesh" parent="Model/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("mat_buga_001")
+surface_material_override/1 = ExtResource("mat_buga_002")
+surface_material_override/2 = ExtResource("mat_buga_003")
+surface_material_override/3 = ExtResource("mat_buga_004")
+surface_material_override/4 = ExtResource("mat_buga_005")
+surface_material_override/5 = ExtResource("mat_buga_006")
+surface_material_override/6 = ExtResource("mat_buga_007")
 
 [node name="Clips" type="AnimationPlayer" parent="." unique_id=1778389464]
 unique_name_in_owner = true

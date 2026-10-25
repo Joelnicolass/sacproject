@@ -4,6 +4,15 @@
 [ext_resource type="PackedScene" path="res://assets/original/models/buta.glb" id="2_xxp4r"]
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_ui1lq"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/buta_clips.tres" id="clips_lib"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/buta_001.tres" id="mat_buta_001"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/buta_002.tres" id="mat_buta_002"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/buta_003.tres" id="mat_buta_003"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/buta_004.tres" id="mat_buta_004"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/buta_005.tres" id="mat_buta_005"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/buta_006.tres" id="mat_buta_006"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/buta_007.tres" id="mat_buta_007"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/buta_008.tres" id="mat_buta_008"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/buta_009.tres" id="mat_buta_009"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_yhl2o"]
 radius = 0.10357759
@@ -182,7 +191,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_8y6wo")
 model = "buta"
 bind_aabb = AABB(-1.411924, -0.92901, -0.80306, 2.834439, 2.350586, 1.450975)
-surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0], [8.0]]
 clips = {
 "BUgu": {
 "hands": [{
@@ -266,6 +274,17 @@ clips = {
 [node name="Model" parent="." unique_id=115261741 instance=ExtResource("2_xxp4r")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="buta_mesh" parent="Model/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("mat_buta_001")
+surface_material_override/1 = ExtResource("mat_buta_002")
+surface_material_override/2 = ExtResource("mat_buta_003")
+surface_material_override/3 = ExtResource("mat_buta_004")
+surface_material_override/4 = ExtResource("mat_buta_005")
+surface_material_override/5 = ExtResource("mat_buta_006")
+surface_material_override/6 = ExtResource("mat_buta_007")
+surface_material_override/7 = ExtResource("mat_buta_008")
+surface_material_override/8 = ExtResource("mat_buta_009")
 
 [node name="Ragdoll" type="PhysicalBoneSimulator3D" parent="Model/Skeleton3D" parent_id_path=PackedInt32Array(115261741, 1008913187) index="1" unique_id=720886624]
 process_mode = 4

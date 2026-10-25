@@ -4,6 +4,11 @@
 [ext_resource type="PackedScene" path="res://assets/original/models/epez.glb" id="2_gbrrr"]
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_1r044"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/epez_clips.tres" id="clips_lib"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/epez_001.tres" id="mat_epez_001"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/epez_002.tres" id="mat_epez_002"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/epez_003.tres" id="mat_epez_003"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/epez_004.tres" id="mat_epez_004"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/epez_005.tres" id="mat_epez_005"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_sppx1"]
 animation = &"attack"
@@ -92,7 +97,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_kr200")
 model = "epez"
 bind_aabb = AABB(-0.337587, -0.264448, -0.655833, 0.711922, 0.526659, 1.723668)
-surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0]]
 clips = {
 "PEa1": {
 "hands": [{
@@ -231,6 +235,13 @@ clips = {
 [node name="Model" parent="." unique_id=1236442016 instance=ExtResource("2_gbrrr")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="epez_mesh" parent="Model/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("mat_epez_001")
+surface_material_override/1 = ExtResource("mat_epez_002")
+surface_material_override/2 = ExtResource("mat_epez_003")
+surface_material_override/3 = ExtResource("mat_epez_004")
+surface_material_override/4 = ExtResource("mat_epez_005")
 
 [node name="Clips" type="AnimationPlayer" parent="." unique_id=966267375]
 unique_name_in_owner = true

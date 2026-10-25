@@ -4,6 +4,11 @@
 [ext_resource type="PackedScene" path="res://assets/original/models/bala.glb" id="2_3c546"]
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_7d5yo"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/bala_clips.tres" id="clips_lib"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/bala_001.tres" id="mat_bala_001"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/bala_002.tres" id="mat_bala_002"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/bala_003.tres" id="mat_bala_003"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/bala_004.tres" id="mat_bala_004"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/bala_005.tres" id="mat_bala_005"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_8e44s"]
 animation = &"attack"
@@ -92,7 +97,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_hob0h")
 model = "bala"
 bind_aabb = AABB(-2.448922, -1.448527, -2.694573, 4.879895, 3.6346588, 4.771653)
-surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0]]
 clips = {
 "ABa1": {
 "hands": [{
@@ -242,6 +246,13 @@ clips = {
 [node name="Model" parent="." unique_id=983566991 instance=ExtResource("2_3c546")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="bala_mesh" parent="Model/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("mat_bala_001")
+surface_material_override/1 = ExtResource("mat_bala_002")
+surface_material_override/2 = ExtResource("mat_bala_003")
+surface_material_override/3 = ExtResource("mat_bala_004")
+surface_material_override/4 = ExtResource("mat_bala_005")
 
 [node name="Clips" type="AnimationPlayer" parent="." unique_id=747516934]
 unique_name_in_owner = true

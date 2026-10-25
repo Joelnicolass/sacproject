@@ -4,6 +4,15 @@
 [ext_resource type="PackedScene" path="res://assets/original/models/YOGO.glb" id="2_swnb0"]
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_h8ert"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/YOGO_clips.tres" id="clips_lib"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/YOGO_001.tres" id="mat_YOGO_001"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/YOGO_002.tres" id="mat_YOGO_002"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/YOGO_003.tres" id="mat_YOGO_003"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/YOGO_004.tres" id="mat_YOGO_004"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/YOGO_005.tres" id="mat_YOGO_005"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/YOGO_006.tres" id="mat_YOGO_006"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/YOGO_007.tres" id="mat_YOGO_007"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/YOGO_008.tres" id="mat_YOGO_008"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/YOGO_009.tres" id="mat_YOGO_009"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_15okv"]
 radius = 0.08220137
@@ -182,7 +191,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_5bksf")
 model = "YOGO"
 bind_aabb = AABB(-0.853401, -1.087367, -0.945497, 1.7064049, 3.0740452, 2.937355)
-surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0], [8.0, 9.0]]
 clips = {
 "YOgu": {
 "hands": [{
@@ -277,6 +285,17 @@ clips = {
 [node name="Model" parent="." unique_id=652110768 instance=ExtResource("2_swnb0")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="YOGO_mesh" parent="Model/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("mat_YOGO_001")
+surface_material_override/1 = ExtResource("mat_YOGO_002")
+surface_material_override/2 = ExtResource("mat_YOGO_003")
+surface_material_override/3 = ExtResource("mat_YOGO_004")
+surface_material_override/4 = ExtResource("mat_YOGO_005")
+surface_material_override/5 = ExtResource("mat_YOGO_006")
+surface_material_override/6 = ExtResource("mat_YOGO_007")
+surface_material_override/7 = ExtResource("mat_YOGO_008")
+surface_material_override/8 = ExtResource("mat_YOGO_009")
 
 [node name="Ragdoll" type="PhysicalBoneSimulator3D" parent="Model/Skeleton3D" parent_id_path=PackedInt32Array(652110768, 294442700) index="1" unique_id=1791697426]
 process_mode = 4

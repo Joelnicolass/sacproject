@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/ban2/001.png" id="1_4brq3"]
+
+[resource]
+resource_name = "ban2_001"
+albedo_texture = ExtResource("1_4brq3")
+roughness = 0.85

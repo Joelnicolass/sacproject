@@ -4,6 +4,15 @@
 [ext_resource type="PackedScene" path="res://assets/original/models/gret.glb" id="2_esxja"]
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_6b52d"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/gret_clips.tres" id="clips_lib"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/gret_001.tres" id="mat_gret_001"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/gret_002.tres" id="mat_gret_002"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/gret_003.tres" id="mat_gret_003"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/gret_004.tres" id="mat_gret_004"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/gret_005.tres" id="mat_gret_005"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/gret_006.tres" id="mat_gret_006"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/gret_007.tres" id="mat_gret_007"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/gret_008.tres" id="mat_gret_008"]
+[ext_resource type="Material" path="res://scenes/bodies/materials/gret_009.tres" id="mat_gret_009"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_nbt0l"]
 radius = 0.060005937
@@ -190,7 +199,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_0hh2l")
 model = "gret"
 bind_aabb = AABB(-0.738473, -1.03514, -0.242422, 1.608302, 2.248518, 0.927741)
-surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0], [8.0]]
 clips = {
 "grgu": {
 "hands": [{
@@ -285,6 +293,17 @@ clips = {
 [node name="Model" parent="." unique_id=1470103975 instance=ExtResource("2_esxja")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="gret_mesh" parent="Model/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("mat_gret_001")
+surface_material_override/1 = ExtResource("mat_gret_002")
+surface_material_override/2 = ExtResource("mat_gret_003")
+surface_material_override/3 = ExtResource("mat_gret_004")
+surface_material_override/4 = ExtResource("mat_gret_005")
+surface_material_override/5 = ExtResource("mat_gret_006")
+surface_material_override/6 = ExtResource("mat_gret_007")
+surface_material_override/7 = ExtResource("mat_gret_008")
+surface_material_override/8 = ExtResource("mat_gret_009")
 
 [node name="Ragdoll" type="PhysicalBoneSimulator3D" parent="Model/Skeleton3D" parent_id_path=PackedInt32Array(1470103975, 546087248) index="1" unique_id=1072026399]
 process_mode = 4

@@ -601,6 +601,10 @@ func _save_scene(tag: String, glb: PackedScene, clips: Dictionary, roles: Dictio
 	root.add_child(sink)
 	sink.owner = root
 
+	# The physical skeleton the body falls and hangs with (and its hang bone), written once with the model.
+	if RagdollBaker.add_to(root) < 0:
+		push_warning("new_creature: %s has no skeleton, so it gets no ragdoll" % tag)
+
 	var packed := PackedScene.new()
 	var error := packed.pack(root)
 	root.free()

@@ -13,6 +13,11 @@ const ITEMS := [
 	{"title": "Sacrifice: Nueva criatura desde modelo…", "args": ["--script", "res://tools/bake/new_creature.gd", "--"], "rescan": true, "pick": "glb", "window": true,
 		"about": "Crea la escena, el tamaño y la criatura (data/catalog/creatures/<tag>.tres) desde un .glb de assets/custom/models/. También crea su SoundSet (data/audio/creatures/<tag>.tres, sobre los golpes del puño) y lo asigna a la criatura: si existe assets/custom/sounds/creatures/<tag>/ con <evento>_1.wav u .ogg (death, swing, damaged, selected…) los pone en sus campos; si no, queda vacío para arrastrar los archivos."},
 	{"title": "Sacrifice: Sincronizar criatura con su modelo…", "args": ["--script", "res://tools/bake/new_creature.gd", "--", "--sync"], "rescan": true, "pick": "glb", "window": true},
+	# 055a-5: the ragdoll of every model that lacks one (the Sac Doctor never falls as a ragdoll), or of the one the user picks.
+	{"title": "Sacrifice: Hornear ragdolls que faltan", "args": ["--script", "res://tools/bake/bake_ragdolls.gd", "--", "--missing", "--skip=sac_doctor_model"], "rescan": true,
+		"about": "Le da un esqueleto físico (Skeleton3D/Ragdoll) y su hueso de cuelgue a cada modelo de scenes/bodies/models/ que no lo tiene. Los que ya lo tienen conservan lo editado a mano y solo completan los campos de la raíz."},
+	{"title": "Sacrifice: Hornear ragdoll de un modelo…", "args": ["--script", "res://tools/bake/bake_ragdolls.gd", "--"], "rescan": true, "pick": "model",
+		"about": "Hornea el ragdoll del modelo (.tscn de scenes/bodies/models/) que elijas. Si ya lo tiene, solo completa los campos de la raíz."},
 ]
 # Entries with "original": true read the ORIGINAL game (not in the repo); their label says so. "exe": the command is that program
 # (not this Godot) and "args" are paths relative to the project. SETTING_INSTALL is passed to every child process as SAC_INSTALL.
@@ -24,6 +29,7 @@ const ITEMS_ORIGINAL := [
 		"original": true, "about": "Lee sounds.wad, local/sfx_english.wad y music/*.mp3 del juego original instalado y escribe assets/original/audio/ (efectos WAV, voces Ogg con ffmpeg, música MP3). Solo inglés y solo las voces de escaramuza."},
 ]
 const CUSTOM_MODELS := "res://assets/custom/models/"
+const MODEL_SCENES := "res://scenes/bodies/models/"
 const SETTING_INSTALL := "sacrifice/original_install_path"
 const LABEL_ORIGINAL := " (requiere juego original)"
 
@@ -87,7 +93,13 @@ func _run(item: Dictionary) -> void:
 		return
 	if item.has("pick"):
 		_picking = item
-		if DirAccess.dir_exists_absolute(ProjectSettings.globalize_path(CUSTOM_MODELS)):
+		var is_model: bool = item["pick"] == "model"
+		_picker.clear_filters()
+		_picker.add_filter("*.tscn" if is_model else "*.glb", "Escena del modelo" if is_model else "Modelo glTF")
+		_picker.title = "Elegí el modelo (.tscn de scenes/bodies/models/)" if is_model else "Elegí el modelo (.glb) de la criatura"
+		if is_model:
+			_picker.current_dir = MODEL_SCENES
+		elif DirAccess.dir_exists_absolute(ProjectSettings.globalize_path(CUSTOM_MODELS)):
 			_picker.current_dir = CUSTOM_MODELS
 		_picker.popup_file_dialog()
 		return

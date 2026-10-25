@@ -217,3 +217,15 @@ El anillo y la aguja como `BoneAttachment3D` (055g); sacudidas procedurales; lev
 11. Aguja del doctor como hueso: 055g.
 12. Spike antes de la pasada final: **sí** (una corrida headless de ~1 min).
 13. `RagdollDriver` a `scenes/bodies/`: **sí** (`git mv`).
+
+## 17. Resultado del spike s0 (2026-10-25, orquestador)
+Sobre `trogg_model`: 11 m/s durante 2 s y frenado; medido 7 s. El spike original no habilitaba el simulador, que los modelos guardan con `process_mode = DISABLED` (`RagdollDriver` lo prende); se corrigió en el spike.
+| Variante | anchor_err máx | stretch máx | speed@3s | Lectura |
+|---|---|---|---|---|
+| A (ancla sin simular) | 0,000 | 1115 | 49 m/s | Las articulaciones hacia un hueso que no simula no existen: el resto cae libre |
+| B (Hook + Pin) | 22,0 | 1108 | 49 m/s | El Hook no arrastra al ancla y el resto cae libre |
+| C (control: todos simulan, sin mover) | — | 1,000 | 49 m/s | Caída libre conjunta: no prueba las articulaciones |
+| D (todos simulan; el ancla sigue por velocidad) | 0,183 (0,003 al final) | 1115 | 49 m/s | El ancla sigue bien; el resto igual se va: las articulaciones no sostienen peso |
+| F (muerte sobre un piso) | — | 2,42 | 0,48 m/s | Se asienta casi armado: el contacto con el piso disimula articulaciones flojas |
+**Decisión:** ninguna variante pasa. La rama HANG queda **apagada** (`CaptiveLook.hangs = false` en `unit.tscn`; el cautivo sigue con los clips `rise/held/thrash`) hasta que se arreglen las articulaciones de los ragdolls horneados. Se sigue con s1–s4 tal cual: la API HANG queda implementada y probada en la suite con `hangs` prendido a mano, y la galería `--mode=fall` va a medir si las articulaciones flojas también afectan la muerte de los 73.
+**Pendiente (055a-5j):** por qué las articulaciones no sostienen peso (¿`joint_type` cono sin `joint_offset` coherente con `body_offset`, o el espejado del modelo?). La prueba: la variante D del spike tiene que dar stretch ≤ 1,3. Cuando pase, prender `hangs` y correr la galería en modo hang.

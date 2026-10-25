@@ -31,7 +31,7 @@ func _initialize() -> void:
 	_variant = "".join(OS.get_cmdline_user_args()).to_lower()
 	var limit := TIMEOUT_S if _variant != "" else TIMEOUT_S * 2.0
 	create_timer(limit).timeout.connect(_on_timeout)
-	if _variant == "a" or _variant == "b":
+	if _variant in ["a", "b", "c", "d", "f"]:
 		_run_variant()
 	else:
 		_run_all()
@@ -86,7 +86,25 @@ func _run_variant() -> void:
 		quit(1)
 		return
 	var height := _model_height(model, skeleton, bodies)
-	if _variant == "b":
+	## The models save their simulator disabled (RagdollDriver enables it before it starts): so does the spike.
+	sim.process_mode = Node.PROCESS_MODE_INHERIT
+	if _variant == "f":
+		## F: a death fall onto a floor 1 m below, every bone simulating. Shows whether the joints keep the body together.
+		var floor_body := StaticBody3D.new()
+		floor_body.collision_layer = 0xFFFFFFFF
+		floor_body.collision_mask = 0xFFFFFFFF
+		var floor_shape := CollisionShape3D.new()
+		var box := BoxShape3D.new()
+		box.size = Vector3(200.0, 1.0, 200.0)
+		floor_shape.shape = box
+		floor_body.add_child(floor_shape)
+		floor_body.position = Vector3(0.0, -1.5, 0.0)
+		root.add_child(floor_body)
+		sim.physical_bones_start_simulation()
+	elif _variant == "c" or _variant == "d":
+		## Control: every bone simulating, no anchor and no motion (a free fall). Shows whether the joints hold at all.
+		sim.physical_bones_start_simulation()
+	elif _variant == "b":
 		_add_hook(model, anchor)
 		sim.physical_bones_start_simulation()
 	else:
@@ -169,7 +187,17 @@ func _measure(holder: Node3D, skeleton: Skeleton3D, bodies: Dictionary, anchor: 
 		prev[id] = (bodies[id] as PhysicalBone3D).global_position
 	var out := {"anchor_err": 0.0, "anchor_err_end": 0.0, "stretch": 0.0, "speed": 0.0, "extent": 0.0, "nan": false}
 	var ticks := int((MOVE_S + MEASURE_AFTER_STOP_S) / dt)
+	var rel_anchor_basis: Basis = (skeleton.global_transform.affine_inverse() * anchor.global_transform).basis
 	for i in ticks:
+		if _variant == "d":
+			## D: every bone simulates; the anchor gets the velocity that takes it to where the skeleton carries it this tick.
+			var goal := skeleton.global_transform * rel_anchor
+			if t_next_moves(i, dt):
+				goal.x += SPEED_MPS * dt
+			anchor.linear_velocity = (goal - anchor.global_position) / dt
+			var want: Basis = skeleton.global_transform.basis * rel_anchor_basis
+			var turn := (want * anchor.global_transform.basis.inverse()).get_rotation_quaternion()
+			anchor.angular_velocity = turn.get_axis() * turn.get_angle() / dt if turn.get_angle() > 0.0001 else Vector3.ZERO
 		await physics_frame
 		var t := float(i) * dt
 		var lo := Vector3(INF, INF, INF)
@@ -193,6 +221,10 @@ func _measure(holder: Node3D, skeleton: Skeleton3D, bodies: Dictionary, anchor: 
 			var d: float = (pair[0] as PhysicalBone3D).global_position.distance_to((pair[1] as PhysicalBone3D).global_position)
 			out.stretch = maxf(out.stretch, d / float(pair[2]))
 		out.extent = maxf(out.extent, (hi - lo).length() / height)
-		if t < MOVE_S:
+		if t < MOVE_S and _variant != "c" and _variant != "f":
 			holder.position.x += SPEED_MPS * dt
 	return out
+
+
+func t_next_moves(i: int, dt: float) -> bool:
+	return float(i) * dt < MOVE_S

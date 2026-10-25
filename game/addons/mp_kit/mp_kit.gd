@@ -39,6 +39,9 @@ var matchmaker: MpMatchmaker
 ## `MpTransport.ENET` (default) or `MpTransport.WS`. Read from `--transport=` at startup; glue may set it
 ## before `host()` / `join()`. Same API and RPCs with both.
 var transport: String = MpTransport.ENET
+## WebSocket TLS (wss://). Server: certificate + key; client: TLSOptions.client(). Null = plain. MpNetConfig sets them.
+var tls_server: TLSOptions
+var tls_client: TLSOptions
 var _peer: MultiplayerPeer
 var _world_ready: Dictionary = {}
 var _broadcasting_custom: bool = false
@@ -130,7 +133,7 @@ func is_peer_world_ready(peer_id: int) -> bool:
 func host(dedicated: bool = false) -> Error:
 	leave()
 	ids.dedicated = dedicated
-	var made := MpTransport.create_server(transport, port, _enet_max_clients())
+	var made := MpTransport.create_server(transport, port, _enet_max_clients(), tls_server)
 	var peer := made["peer"] as MultiplayerPeer
 	if int(made["error"]) != OK:
 		ids.dedicated = false
@@ -152,7 +155,7 @@ func host_dedicated() -> Error:
 ## `p_port` <= 0 uses `port`. A non-empty `ticket` is presented to the server on connect.
 func join(address: String, p_port: int = -1, ticket: String = "") -> Error:
 	leave()
-	var made := MpTransport.create_client(transport, address, p_port if p_port > 0 else port)
+	var made := MpTransport.create_client(transport, address, p_port if p_port > 0 else port, tls_client)
 	var peer := made["peer"] as MultiplayerPeer
 	if int(made["error"]) != OK:
 		return int(made["error"]) as Error

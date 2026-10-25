@@ -12,7 +12,7 @@ Copiá `addons/mp_kit/` a tu proyecto y activá **MpKit** en Proyecto → Ajuste
 
 Escena nueva con raíz `Control`:
 
-- Un hijo **MpFlow**. En el inspector: `boot_path` = esta escena, `world_path` = tu mundo, `max_players`.
+- Un hijo **MpFlow**. En el inspector: `boot_path` = esta escena, `world_path` = tu mundo y `net_config` = un **MpNetConfig** nuevo (`.tres`): transporte, puerto, jugadores, dirección pública y TLS en un solo lugar.
 - Una instancia de `res://addons/mp_kit/mp_boot_menu.tscn`: botones Jugar solo, Host LAN, Unirse y la lista de salas LAN.
 
 El `MpFlow` se muda solo a la raíz del árbol y sobrevive a los cambios de escena. No hace falta autoload.
@@ -101,5 +101,11 @@ Para probar con red mala, agregá a cada proceso `--net-lag-ms=100 --net-jitter-
 | LAN | Depurar → Ejecutar varias instancias (2). Una: Host LAN. Otra: Unirse a `127.0.0.1` |
 | Dedicado | `godot --headless --path . -- --dedicated` y los clientes se unen a `127.0.0.1` |
 | WebSocket | agregá `--transport=ws` a todos los procesos (un servidor WS solo atiende clientes WS) |
+
+| Web | exportá con el preset Web (sin threads). El export usa WebSocket solo y oculta Host y la lista LAN: un navegador solo se une. El servidor es un dedicado con `transport = ws` |
+
+### Web
+
+Un navegador no puede abrir un servidor ni usar UDP, así que un juego web se une a un dedicado WebSocket (`MpNetConfig.transport = ws`). Escritorio y web no se mezclan: un servidor WebSocket atiende clientes WebSocket. En el campo de dirección del menú sirven `192.168.1.5`, `juego.ejemplo.com`, cualquiera con `:puerto`, o una URL `wss://…`. Una página servida por `https` necesita `wss://`: o el dedicado tiene certificado y clave en su `MpNetConfig`, o un proxy (Caddy, nginx) pone el TLS delante.
 
 Detalle de cada pieza, salas online y despliegue: [README.md](README.md).

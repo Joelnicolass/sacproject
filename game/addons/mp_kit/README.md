@@ -52,6 +52,8 @@ El transporte es elegible; la API, los RPC y la replicación son los mismos con 
 | Export web | no (el navegador no abre UDP) | si |
 | Túnel TCP (ngrok, etc.) | no | si |
 
+- **Un solo lugar**: un `MpNetConfig` (`.tres`) en `MpFlow.net_config` (transporte, puerto, jugadores, `public_host`, TLS). Los flags le ganan.
+- **Web**: un export web usa WebSocket siempre (`MpTransport.from_flags`), no hostea ni busca salas LAN (`MpNetConfig.can_host()`); el menú oculta esas filas. Prueba: `game/agent/runs/run_mpkit_web.sh` (abrí la URL que imprime en una pestaña nueva).
 - **Flag**: `--transport=ws` (o `enet`). Lo leen `MpKit` (`MpKit.transport`, antes de `host()`/`host_dedicated()`/`join()`; el glue puede fijarlo a mano) y `MpLobbyClient.transport`.
 - **Servidor de salas**: `MpLobbyConfig.transport` (`.tres` o `--transport=ws`). Sirve el lobby con ese transporte, busca puertos libres de las partidas con TCP o UDP según corresponda y **se lo pasa al dedicado hijo** (`transport` está en `agent_fields`, llega como `--transport=ws`).
 - Mismo transporte en todos los procesos: cliente, servidor de salas y dedicados. Un cliente ENet no habla con un servidor WS.
@@ -63,7 +65,7 @@ El transporte es elegible; la API, los RPC y la replicación son los mismos con 
 El kit habla `ws://`. Para `wss://` hay dos caminos, sin cambiar el juego:
 
 1. **Proxy inverso (recomendado)**: nginx/Caddy termina TLS en 443 con el certificado del dominio y reenvía a los puertos WS locales (`proxy_pass http://127.0.0.1:7700;` con `Upgrade`/`Connection`). El cliente web usa `wss://juego.example.com/...`. Un puerto publico por partida es incomodo: mapeá una ruta o un subdominio por rango, o usá un puerto TLS por partida.
-2. **TLS en Godot**: `MpTransport.create_server(kind, port, max, TLSOptions.server(key, cert))` y `create_client(kind, host, port, TLSOptions.client())`. Hoy `MpKit`/lobby no los exponen; si hace falta se agrega un `@export` con el recurso de clave y certificado. En `create_client`, `host` puede ser ya una URL completa (`wss://dominio/ruta`).
+2. **TLS en Godot**: en el `MpNetConfig` del dedicado, `tls_certificate` + `tls_key`; en el del cliente, `tls_client` (y `tls_trusted_ca` si el certificado no es de una CA del sistema). `MpKit.tls_server` / `tls_client` los llevan a `MpTransport`. En `create_client`, `host` puede ser ya una URL completa (`wss://dominio/ruta`). El lobby todavía no los toma.
 
 Probar: `TRANSPORT=ws bash agent/run_034d.sh` y `TRANSPORT=ws bash agent/run_034e.sh` (los scripts pasan `--transport=$TRANSPORT`; sin variable, ENet).
 
@@ -496,6 +498,7 @@ Nodos de alto nivel (lo que usa un humano; detalle y ejemplos en [QUICKSTART.md]
 | `core/mp_proxy_motion.gd` / `mp_interpolator.gd` | dibujo de proxies: `BUFFERED` (en el pasado, entre dos estados reales) o `FOLLOW` |
 | `core/mp_net_clock.gd` | tiempo de simulación del servidor (ticks / tps, parejo) y su estimación en el cliente (sigue al paquete menos demorado) |
 | `core/mp_lag_peer.gd` | red mala a propósito para probar: `--net-lag-ms`, `--net-jitter-ms`, `--net-loss` envuelven el peer (ENet o WS). Solo pruebas |
+| `core/mp_net_config.gd` | `MpNetConfig` (`.tres`): la red del juego en un lugar; `apply()` configura `MpKit`; en web fuerza WebSocket y `can_host()` es falso |
 | `core/mp_calls.gd` | llamadas por nombre (`mp_sv_*`, `mp_all_*`) con chequeo de cantidad de argumentos |
 | `core/mp_smoother.gd` | suavizado exponencial de `MpReplicate` |
 | `tests/` | tests propios del kit: `godot --headless --path <proyecto> --script res://addons/mp_kit/tests/mp_test_runner.gd` |

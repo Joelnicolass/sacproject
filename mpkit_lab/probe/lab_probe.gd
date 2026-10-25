@@ -7,7 +7,8 @@ extends Node
 ## observe (another player, `--probe-watch-slot=N`: how evenly it moves on screen). `--probe-linger-s=N` keeps a
 ## passing process alive N seconds. lag and observe print `METRIC name=value` lines.
 
-const STEP_TIMEOUT_S := 20.0
+## Seconds each check may wait (`--probe-timeout-s=N` for a person opening a browser by hand).
+var step_timeout_s := 20.0
 
 var _role := ""
 var _fails := 0
@@ -15,6 +16,7 @@ var _fails := 0
 
 func _ready() -> void:
 	_role = MpBoot.user_value("probe", "")
+	step_timeout_s = float(MpBoot.user_value("probe-timeout-s", "20"))
 	if _role.is_empty():
 		return
 	print("probe %s start" % _role)
@@ -22,6 +24,11 @@ func _ready() -> void:
 
 
 func _run() -> void:
+	## `--probe-join=host:port`: join the way a person does, through the address field of the flow.
+	var address := MpBoot.user_value("probe-join", "")
+	if not address.is_empty():
+		await _until(func() -> bool: return MpFlow.find_in_tree(self) != null, "the boot scene has a flow")
+		_check(MpFlow.find_in_tree(self).join_address(address) == OK, "join_address(%s) started" % address)
 	match _role:
 		"solo":
 			await _until(func() -> bool: return MpFlow.find_in_tree(self) != null, "the boot scene has a flow")
@@ -184,7 +191,7 @@ func _tap(action: StringName) -> void:
 
 
 func _until(cond: Callable, what: String) -> bool:
-	var end := Time.get_ticks_msec() + int(STEP_TIMEOUT_S * 1000.0)
+	var end := Time.get_ticks_msec() + int(step_timeout_s * 1000.0)
 	while Time.get_ticks_msec() < end:
 		if get_tree().current_scene != null and cond.call():
 			_check(true, what)

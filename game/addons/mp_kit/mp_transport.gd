@@ -11,8 +11,10 @@ const ENET := "enet"
 const WS := "ws"
 
 
-## `--transport=` flag; an unknown value falls back to ENet with a warning.
+## `--transport=` flag; an unknown value falls back to ENet with a warning. A web export is always WebSocket.
 static func from_flags(default: String = ENET) -> String:
+	if OS.has_feature("web"):
+		return WS
 	return normalize(MpBoot.user_value("transport", default))
 
 

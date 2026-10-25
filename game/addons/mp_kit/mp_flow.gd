@@ -15,6 +15,9 @@ enum StartWhen {
 	MANUAL, ## the flow never loads the world by itself; glue calls start_match()/goto_world()
 }
 
+## Every network setting in one .tres (transport, port, players, TLS). Set = it replaces max_players,
+## custom_channels and the port here. Empty = the fields below and the flags, as before.
+@export var net_config: MpNetConfig
 @export var boot_scene: PackedScene
 @export var world_scene: PackedScene
 @export var boot_path: String = ""
@@ -35,6 +38,7 @@ enum StartWhen {
 @export var joining_status: String = "Connecting to %s…"
 @export var server_lost_status: String = "Lost the server"
 @export var dedicated_status: String = "Dedicated on port %d"
+@export var cannot_host_status: String = "This build cannot host (web): join a server"
 
 const PORT_MIN := 1
 const PORT_MAX := 65535
@@ -71,8 +75,17 @@ func _ready() -> void:
 	if MpBoot.user_flag("no-flow"):
 		return
 	_pick_world_from_args()
-	var port := int(MpBoot.user_value("mp-port", "7777"))
-	MpKit.configure(port, max_players, host_slot, custom_channels)
+	if net_config:
+		max_players = net_config.max_players
+		custom_channels = net_config.custom_channels
+		advertise_lan = advertise_lan and net_config.lan_discovery
+		net_config.apply(host_slot)
+	else:
+		var port := int(MpBoot.user_value("mp-port", "7777"))
+		MpKit.configure(port, max_players, host_slot, custom_channels)
+	## A browser can neither host nor advertise on the LAN.
+	if not MpNetConfig.can_host():
+		advertise_lan = false
 	MpKit.load_world.connect(goto_world)
 	MpKit.peer_joined.connect(_on_peer_joined)
 	MpKit.join_failed.connect(_on_join_failed)
@@ -143,6 +156,9 @@ func play_solo() -> void:
 
 
 func host_lan() -> Error:
+	if not MpNetConfig.can_host():
+		_set_status(cannot_host_status)
+		return ERR_UNAVAILABLE
 	var err := MpKit.host()
 	if err != OK:
 		_set_status(host_fail_status)
@@ -162,6 +178,29 @@ func join_lan(ip: String) -> Error:
 		return err
 	_set_status(joining_status % trimmed)
 	return OK
+
+
+## What a player types: "192.168.1.5", "play.example.com" or either with ":port" (default MpKit.port).
+## A full "wss://…" URL goes as is (WebSocket).
+func join_address(text: String, ticket: String = "") -> Error:
+	var clean := text.strip_edges()
+	if clean.contains("://"):
+		var err := MpKit.join(clean, MpKit.port, ticket)
+		if err != OK:
+			_set_status(join_fail_status)
+		else:
+			_set_status(joining_status % clean)
+		return err
+	var host := clean
+	var p_port := MpKit.port
+	if clean.count(":") == 1:
+		host = clean.get_slice(":", 0)
+		var raw := clean.get_slice(":", 1)
+		if not raw.is_valid_int():
+			_set_status(bad_ip_status)
+			return ERR_INVALID_PARAMETER
+		p_port = raw.to_int()
+	return join_endpoint(host, p_port, ticket)
 
 
 ## Join a dedicated by host (IPv4 or name) and port; `ticket` is presented for admission.

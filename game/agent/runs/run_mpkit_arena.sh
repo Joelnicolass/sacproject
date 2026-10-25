@@ -42,7 +42,8 @@ run_scenario() { # run_scenario <name> <server flag> <first client slot>
   gd "$dir/client.log" -- --client1 "${common[@]}" --probe=client --probe-linger-s=60
   local client=$LAST_PID
   wait_line "$dir/client.log" "^PROBE client (PASS|FAIL)" "$client" 40
-  gd "$dir/late.log" -- --client2 "${common[@]}" --probe=late --probe-first="$first"
+  # the late client joins the way a person types it: "host:port" in the address field (MpFlow.join_address)
+  gd "$dir/late.log" -- "${common[@]}" --probe-join="127.0.0.1:$PORT" --probe=late --probe-first="$first"
   local late=$LAST_PID
   wait_line "$dir/late.log" "^PROBE late (PASS|FAIL)" "$late" 40
   wait_line "$dir/server.log" "^PROBE watch (PASS|FAIL)" "$server" 5

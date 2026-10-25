@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_aanvv"]
 [ext_resource type="Resource" path="res://data/audio/creatures/sara_bella.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://cmxcoa38igf0j" path="res://assets/original/ui/icons/pez_h.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/bsba.tres" id="typed_bsba"]
 
 [resource]
 script = ExtResource("1_aanvv")
 tag = "pezH"
 display_name = "Sara Bella"
 icon = ExtResource("icon_tex")
-god = "stratos"
 model = "sara"
 health = 1500
 regeneration_per_s = 16.6667
@@ -29,7 +29,7 @@ souls = 1
 cooldown_s = 2.0
 casting_time_s = 0.2469
 spell_order = 205
-ability_tags = PackedStringArray("bsba")
+ranged_attack = ExtResource("typed_bsba")
 stance_animation = {
 "framerate": 30.0,
 "frames": 40.0,
@@ -66,9 +66,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 41.0,
 "tag": "SBa3"
 }])
-is_ranged = true
-ranged_attack_tag = "bsba"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 35.0,

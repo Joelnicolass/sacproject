@@ -36,9 +36,9 @@ static func seconds(health: float, dps: float, healing: float) -> float:
 static func dps_of(type: CreatureType, target_data: Resource = null) -> float:
 	if type == null:
 		return 0.0
-	if type.is_ranged and not type.ranged_attack_tag.is_empty():
-		var attack := GameData.ability(type.ranged_attack_tag)
-		if attack != null and not shot_heals(type.ranged_attack_tag):
+	if type.ranged_attack != null:
+		var attack := type.ranged_attack
+		if not shot_heals(attack.tag):
 			return float(attack.damage) * _resistance(target_data, &"direct_ranged_resistance") / shot_period(type, attack)
 	if type.melee_strength <= 0:
 		return 0.0
@@ -51,7 +51,7 @@ static func dps_of(type: CreatureType, target_data: Resource = null) -> float:
 static func heal_rate_of(type: CreatureType, target_max: float) -> float:
 	if not is_healer(type) or target_max <= 0.0:
 		return 0.0
-	var attack := GameData.ability(type.ranged_attack_tag)
+	var attack := type.ranged_attack
 	if attack == null:
 		return 0.0
 	return minf(HealEffect.HEAL_SPEED, target_max / shot_period(type, attack))
@@ -74,7 +74,7 @@ static func shot_period(type: CreatureType, attack: AbilityType) -> float:
 
 ## Pure: a creature whose ranged shot heals its side.
 static func is_healer(type: CreatureType) -> bool:
-	return type != null and type.is_ranged and shot_heals(type.ranged_attack_tag)
+	return type != null and type.ranged_attack != null and shot_heals(type.ranged_attack.tag)
 
 
 ## Pure: whether the ranged attack `tag` is a healer's: its targeting rules (data/targeting/<tag>.tres, TargetPicker.policies) are a
@@ -96,8 +96,8 @@ static func data_of(node: Node) -> Resource:
 	var type: Variant = node.get("type") if "type" in node else null
 	if type is CreatureType:
 		return type
-	if "wizard_tag" in node:
-		return GameData.wizard(str(node.get("wizard_tag")))
+	if "wizard_type" in node:
+		return node.get("wizard_type")
 	return null
 
 
@@ -130,7 +130,7 @@ static func seen_healing(perception: AiPerception, target: AiTrack) -> float:
 
 ## A body of `side` other than `healer`, not full by what the side knows, within the healer's web burst (effect_range).
 static func _wounded_near(perception: AiPerception, healer: AiTrack, side: Array) -> bool:
-	var attack := GameData.ability((healer.node.get("type") as CreatureType).ranged_attack_tag)
+	var attack := (healer.node.get("type") as CreatureType).ranged_attack
 	var reach := attack.effect_range_m if attack != null else 0.0
 	var at := perception.pos_of(healer)
 	for other: AiTrack in side:

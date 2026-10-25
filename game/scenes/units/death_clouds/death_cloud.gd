@@ -12,7 +12,7 @@ const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 ## Bodies a cloud may touch: creatures and wizards (sacengine movingObjects). SteamCloud also hits buildings itself.
 const GROUPS: Array[StringName] = [&"wizard", &"unit"]
 
-## The passive's SPEL (GameData.ability(tag)); set by DeathCloudSpawner before burst().
+## The numbers of the cloud (DeathCloudType.ability); set by DeathCloudSpawner before burst().
 var ability: AbilityType
 ## The dead body's slot (sacengine side).
 var from_slot := 0

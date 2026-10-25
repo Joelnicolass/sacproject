@@ -132,6 +132,15 @@ xargs grep -nE 'GameData\.(creature|spell|ability|wizard|god|book)[a-z_]*\(|Body
 } | grep -vE '^scenes/(net|core/catalog)/|^scenes/[a-z_/]*[a-z_]*spawn[a-z_]*\.gd:' \
 	| grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C18b.txt" || true
 
+# C18c (055c1): a content reference exported as text where the Resource exists: `*_tag`, `*_tags`, `*_spell`, `spell`, and the old passive
+# slots, as String / StringName / PackedStringArray, or a `const TAGS` list of creature tags, in units, ai, wizards and sacrifice. A component
+# receives the AbilityType / SpellType / CreaturePassive by `@export`. Allowlist: the network ids (`tag` in a `*_type.gd`, `creature_tag`,
+# `wizard_tag`) and the FX by text that 055x owns (`look_tag`, `rock_tag`, `texture_tag`, `shot_tag`); the AI difficulty names are not content.
+find scenes/units scenes/ai scenes/wizards scenes/sacrifice -name '*.gd' 2>/dev/null | sort \
+	| xargs grep -nE '^@export[a-z_]*(\([^)]*\))? var (tag|[a-z_0-9]*_tags?|[a-z_0-9]*_spell|spell|passive_on_damage|passive_abilities)[ ]*(:[ ]*(String|StringName|PackedStringArray)\b|:=[ ]*(&?"|PackedStringArray))|^const [A-Z_]*TAGS?[ ]*(:[^=]*)?=[ ]*(PackedStringArray|\[)' 2>/dev/null \
+	| grep -vE '^[^:]*_type\.gd:[0-9]+:@export[a-z_]* var tag\b' \
+	| grep -vE 'var (creature_tag|wizard_tag|look_tag|rock_tag|texture_tag|shot_tag)\b|const DIFFICULTY_TAGS' > "$OUT/C18c.txt" || true
+
 # C19: data/*.tres that store positions/offsets/transforms (counted by FILE). debug/ is reported, not ratcheted.
 TRES_POS='^([a-z_0-9]*_(offset|position|origin|transform|pos)|position[a-z_0-9]*|offsets|origin|transform) = |Transform3D\('
 find data -name '*.tres' 2>/dev/null | sort | xargs grep -lE "$TRES_POS" 2>/dev/null | grep -v 'roughness_offset' > "$OUT/C19.txt" || true
@@ -150,7 +159,7 @@ xargs grep -nE '^@export(_[a-z]+)?(\([^)]*\))? var [a-z_0-9]*(_ticks|frames)[a-z
 	| grep -vE '^scenes/(ui|net)/' | grep -vE ':@export_storage ' \
 	| grep -vE 'var (h_frames|v_frames|frames_h|frames_v|frames_per_s|resync_ticks)\b' > "$OUT/C22.txt" || true
 
-RULES="C1a:scripts>150_lines C1b:scripts>300_lines C5:get_node(\"Cap\") C6:group_lookup_literal C7:.call/has_method C8:raw_fields_in_*_type.gd C9:doc_opens_with_original C11:inheritance_depth>=2 C12:MpKit_outside_allowlist C13:reads_original_assets C14:print() C15:content_nodes_with_new C16:height_offset_in_code C17:fx_by_text C18:content_lookup_by_text C18b:content_lookup_by_id C19:data_tres_with_positions C20:matchrules_place_radii C21:export_file C22:time_in_ticks"
+RULES="C1a:scripts>150_lines C1b:scripts>300_lines C5:get_node(\"Cap\") C6:group_lookup_literal C7:.call/has_method C8:raw_fields_in_*_type.gd C9:doc_opens_with_original C11:inheritance_depth>=2 C12:MpKit_outside_allowlist C13:reads_original_assets C14:print() C15:content_nodes_with_new C16:height_offset_in_code C17:fx_by_text C18:content_lookup_by_text C18b:content_lookup_by_id C18c:text_instead_of_resource C19:data_tres_with_positions C20:matchrules_place_radii C21:export_file C22:time_in_ticks"
 
 baseline_of() { grep -E "^$1=" "$BASELINE" 2>/dev/null | head -1 | cut -d= -f2; }
 

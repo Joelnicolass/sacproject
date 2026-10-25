@@ -6,7 +6,6 @@
 [resource]
 script = ExtResource("1_frkql")
 tag = "cwl2"
-spell_tag = "2lwc"
 display_name = "Hachimen"
 model = "brod"
 health = 1500

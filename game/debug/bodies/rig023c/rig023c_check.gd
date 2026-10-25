@@ -23,7 +23,7 @@ func _ready() -> void:
 			continue
 		seen[type.model] = true
 		var unit := UNIT.instantiate() as UnitBody
-		unit.creature_tag = tag
+		unit.type = GameData.creature(tag)
 		holder.add_child(unit)
 		await get_tree().process_frame
 		await get_tree().physics_frame

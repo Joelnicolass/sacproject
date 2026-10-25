@@ -22,7 +22,7 @@ var spell_index := -1
 var structure_index := -1
 ## Name the caster answers once the armed spell starts; until then it stays armed.
 var cast_pending := ""
-var ability_tag := ""
+var ability: AbilityType
 var caster: Caster
 
 @onready var _log: CommandLog = %Battle

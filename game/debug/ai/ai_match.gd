@@ -189,7 +189,7 @@ func _prepare() -> void:
 			var unit: Node3D = spawner.call("spawn_unit", {
 				"tag": group.tag, "label": label, "slot": group.slot,
 				"x": x, "y": (0.0 if is_nan(ground) else ground) + 0.2, "z": z,
-				"yaw": yaw, "npc": group.npc, "peasant": group.npc and PeasantBehavior.is_peasant_tag(group.tag),
+				"yaw": yaw, "npc": group.npc, "peasant": group.npc and GameData.creature(group.tag) != null and GameData.creature(group.tag).peasant,
 				"summoning": group.summoning,
 			})
 			if group.pacifist and unit.get("type") is CreatureType:
@@ -449,7 +449,7 @@ func _place_structures() -> void:
 		if fount == null or wizard == null or spawner == null:
 			push_warning("ai_match: no se pudo poner la estructura %s en %s" % [structure.spell_tag, structure.fount])
 			continue
-		var entry := wizard.god_type().structure_for(GameData.spell(structure.spell_tag))
+		var entry := wizard.god_type.structure_for(GameData.spell(structure.spell_tag))
 		if entry == null:
 			push_warning("ai_match: el dios de %d no levanta %s" % [structure.slot, structure.spell_tag])
 			continue

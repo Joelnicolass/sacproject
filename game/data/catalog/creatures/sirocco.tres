@@ -3,13 +3,16 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_oyuso"]
 [ext_resource type="Resource" path="res://data/audio/creatures/sirocco.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://dgy8stlnkln0j" path="res://assets/original/ui/icons/ris_h.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/filb.tres" id="typed_filb"]
+[ext_resource type="Script" path="res://scenes/units/passives/creature_passive.gd" id="typed_passive_script"]
+[ext_resource type="Resource" path="res://data/passives/dragon_vines.tres" id="typed_passive_0"]
+[ext_resource type="Resource" path="res://data/death_clouds/mutant_cloud.tres" id="typed_passive_1"]
 
 [resource]
 script = ExtResource("1_oyuso")
 tag = "risH"
 display_name = "Sirocco"
 icon = ExtResource("icon_tex")
-god = "persephone"
 model = "sirc"
 health = 6875
 regeneration_per_s = 29.1667
@@ -32,7 +35,8 @@ souls = 5
 cooldown_s = 10.0
 casting_time_s = 3.3333
 spell_order = 999
-ability_tags = PackedStringArray("filb")
+active_ability = ExtResource("typed_filb")
+passives = Array[ExtResource("typed_passive_script")]([ExtResource("typed_passive_0"), ExtResource("typed_passive_1")])
 stance_animation = {
 "framerate": 30.0,
 "frames": 148.0,
@@ -69,8 +73,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 32.0,
 "tag": "DGa3"
 }])
-active_ability_tag = "filb"
-passive_abilities = PackedStringArray("eniv", "tum@")
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 49.0,

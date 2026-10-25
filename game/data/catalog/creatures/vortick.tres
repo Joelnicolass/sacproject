@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_mqc38"]
 [ext_resource type="Resource" path="res://data/audio/creatures/vortick.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://xrxfxqeqncam" path="res://assets/original/ui/icons/craa.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/cita.tres" id="typed_cita"]
 
 [resource]
 script = ExtResource("1_mqc38")
 tag = "craa"
 display_name = "Vortick"
 icon = ExtResource("icon_tex")
-god = "stratos"
 model = "buga"
 health = 1120
 regeneration_per_s = 16.6667
@@ -27,7 +27,7 @@ souls = 2
 cooldown_s = 3.0
 casting_time_s = 0.4938
 spell_order = 244
-ability_tags = PackedStringArray("cita")
+ranged_attack = ExtResource("typed_cita")
 stance_animation = {
 "framerate": 30.0,
 "frames": 66.0,
@@ -64,9 +64,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 39.0,
 "tag": "BAa3"
 }])
-is_ranged = true
-ranged_attack_tag = "cita"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 57.0,

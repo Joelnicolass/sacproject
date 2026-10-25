@@ -297,7 +297,7 @@ func _fill_units() -> void:
 	var rows := ceili(float(unit_count) / unit_columns)
 	for i in unit_count:
 		var unit: Node3D = unit_scene.instantiate()
-		unit.set("creature_tag", CREATURE_TAGS[i % CREATURE_TAGS.size()])
+		unit.set("type", GameData.creature(CREATURE_TAGS[i % CREATURE_TAGS.size()]))
 		unit.set("owner_slot", 1)
 		unit.set("idle_aggro", false)
 		var x := center.x + (i % unit_columns - (unit_columns - 1) * 0.5) * unit_spacing

@@ -11,9 +11,6 @@ extends Node
 ## the villagers flee near their village and cower on the outskirts [DOC], which is the same shape.
 ## Server or solo only; the mode it sets reaches the clients through the unit's synchronizer.
 
-## CRE8 tags that use the peasant behavior (nttData.d:133).
-const TAGS: PackedStringArray = ["zepa", "zepd", "zepe", "zepf", "saep"]
-
 @export var body: UnitBody
 @export var grudge: GrudgeMemory
 ## Where the hits come from: a hit starts the panic.
@@ -50,10 +47,6 @@ var state := &"stand"
 var _left := 0.0
 var _panic_left := 0.0
 var _panic_from := 0
-
-
-static func is_peasant_tag(tag: String) -> bool:
-	return TAGS.has(tag)
 
 
 func _ready() -> void:

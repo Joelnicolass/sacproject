@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_l2bu3"]
 [ext_resource type="Resource" path="res://data/audio/creatures/spitfire.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://t5shjbaadrna" path="res://assets/original/ui/icons/sohf.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/fhba.tres" id="typed_fhba"]
 
 [resource]
 script = ExtResource("1_l2bu3")
 tag = "sohf"
 display_name = "Spitfire"
 icon = ExtResource("icon_tex")
-god = "pyro"
 model = "fhbt"
 health = 400
 regeneration_per_s = 16.6667
@@ -28,7 +28,7 @@ souls = 1
 cooldown_s = 2.0
 casting_time_s = 0.3704
 spell_order = 135
-ability_tags = PackedStringArray("fhba")
+ranged_attack = ExtResource("typed_fhba")
 stance_animation = {
 "framerate": 30.0,
 "frames": 56.0,
@@ -65,9 +65,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 83.0,
 "tag": "HBa3"
 }])
-is_ranged = true
-ranged_attack_tag = "fhba"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 60.0,

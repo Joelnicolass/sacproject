@@ -21,7 +21,7 @@ func _ready() -> void:
 	add_child(_doctor)
 	_doctor.position = Vector3(-8.0, 0.0, 0.0)
 	_captive = UNIT.instantiate() as UnitBody
-	_captive.creature_tag = "ycro"
+	_captive.type = GameData.creature("ycro")
 	_captive.set("owner_slot", 1)
 	_captive.set("idle_aggro", false)
 	add_child(_captive)

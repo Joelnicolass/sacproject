@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_3qucp"]
 [ext_resource type="Resource" path="res://data/audio/creatures/toldor.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://0nl7lyp4p1b1" path="res://assets/original/ui/icons/ooh_h.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/HSba_2.tres" id="typed_HSba"]
 
 [resource]
 script = ExtResource("1_3qucp")
 tag = "oohH"
 display_name = "Toldor"
 icon = ExtResource("icon_tex")
-god = "persephone"
 model = "hoom"
 health = 5625
 regeneration_per_s = 29.1667
@@ -29,7 +29,7 @@ souls = 4
 cooldown_s = 8.0
 casting_time_s = 2.5926
 spell_order = 800
-ability_tags = PackedStringArray("HSba")
+active_ability = ExtResource("typed_HSba")
 stance_animation = {
 "framerate": 30.0,
 "frames": 103.0,
@@ -66,8 +66,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 43.0,
 "tag": "STa3"
 }])
-active_ability_tag = "HSba"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 1.0,

@@ -6,7 +6,6 @@
 [resource]
 script = ExtResource("1_q8i18")
 tag = "cwa2"
-spell_tag = "2awc"
 display_name = "Marduk"
 model = "mrdk"
 health = 1500

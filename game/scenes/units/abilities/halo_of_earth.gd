@@ -34,8 +34,8 @@ extends SpellLaunch
 
 const GROUP := &"halo_of_earth"
 
-## SPEL of the ability when HaloOfEarthAbility does not hand one over (a scene run alone).
-@export var spell_tag := "HRba"
+## The ability when HaloOfEarthAbility does not hand one over (a scene run alone): data/catalog/abilities/HRba_2.tres.
+@export var default_ability: AbilityType
 ## The shot container's spawner (group `shot_spawner`): the rocks are its shots. The ability that adds this node hands it over.
 @export var spawner: Node
 ## ShotLook tag of a rock (data/shots/halo_rock.tres).
@@ -113,7 +113,7 @@ var _ended := false
 ## Before the node enters the tree. `rock_spawner` is the shot container's spawner.
 func setup(body: Node3D, type: AbilityType, rock_spawner: Node) -> void:
 	user = body
-	ability = type if type else GameData.ability(spell_tag)
+	ability = type if type else default_ability
 	_set_numbers(float(ability.damage), ability.speed_m_s, ability.acceleration_m_s2, ability.effect_range_m)
 	spawner = rock_spawner
 	_born = MatchClock.now()

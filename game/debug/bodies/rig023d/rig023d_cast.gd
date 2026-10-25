@@ -24,7 +24,7 @@ func _ready() -> void:
 			_fx = arg.trim_prefix("--fx=")
 	DirAccess.make_dir_recursive_absolute(_out)
 	_wizard = WIZARD.instantiate() as WizardBody
-	_wizard.wizard_tag = _tag
+	_wizard.wizard_type = GameData.wizard(_tag)
 	_wizard.model = str(GameData.wizard(_tag).model)
 	add_child(_wizard)
 	_wizard.set_physics_process(false)

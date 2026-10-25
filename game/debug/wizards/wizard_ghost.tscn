@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="PackedScene" uid="uid://highnoonworld01" path="res://scenes/match/high_noon.tscn" id="1_world"]
 [ext_resource type="Resource" path="res://debug/rules/wizard_ghost.tres" id="2_rules"]
 [ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="3_unit"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/druid.tres" id="typed_c_nmuh"]
 
 [node name="WizardGhost" type="Node"]
 
@@ -20,7 +21,7 @@ debug_pointer = Vector2(640, 360)
 
 [node name="Druid" parent="." instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1545.6, 30, 1332.6)
-creature_tag = "nmuh"
+type = ExtResource("typed_c_nmuh")
 owner_slot = 2
 rng_seed = 31
 

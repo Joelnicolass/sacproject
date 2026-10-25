@@ -19,7 +19,7 @@ func _run() -> void:
 	for tag in ["ycro", "amuh", "nmuh"]:
 		for slot in [1, 2]:
 			var u: Node3D = unit_scene.instantiate()
-			u.set("creature_tag", tag)
+			u.set("type", GameData.creature(tag))
 			u.set("owner_slot", slot)
 			u.set("idle_aggro", false)
 			var x: float = c.x + float(i / 2 - 1) * 3.5 + (slot - 1.5) * 1.2

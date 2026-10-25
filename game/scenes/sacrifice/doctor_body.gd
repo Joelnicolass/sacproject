@@ -7,7 +7,7 @@ extends CharacterBody3D
 ## shots and direct spells can still attack it (group «doctor», see Attackable).
 ## The server (or solo) runs the States machine and moves the body; clients get position, rotation,
 ## pose, work and Health through the MultiplayerSynchronizer of doctor.tscn and only present them.
-## Numbers: health, speed and regeneration come from GameData.creature(creature_tag); the plazos
+## Numbers: health, speed and regeneration come from its `type`; the plazos
 ## from `rules` (MatchRules, group «Sacrificios»).
 
 ## The drop is over (the bounce included). Server only.
@@ -26,8 +26,8 @@ enum Pose { IDLE, FALLING, WALKING, WORKING, DYING, LANDING }
 ## What a working doctor does (sacengine pumping, lifting, torturing).
 enum Work { PUMP, LIFT, TORTURE }
 
-## CreatureType tag read from GameData.
-@export var creature_tag := "dcas"
+## The creature it is (data/catalog/creatures/sac_doctor.tres): its health, speed and regeneration.
+@export var type: CreatureType
 ## Player slot that cast the ritual (0 = nobody).
 @export var owner_slot := 0:
 	set(value):
@@ -96,7 +96,6 @@ enum Work { PUMP, LIFT, TORTURE }
 
 ## Multiplies the pace (Speedup-like effects).
 var speed_factor := 1.0
-var type: CreatureType
 ## Where the walk goes / where the drop lands. Server only.
 var goal := Vector3.ZERO
 var landing := Vector3.ZERO
@@ -126,7 +125,6 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
 	add_to_group(GROUP)
-	type = GameData.creature(creature_tag)
 	_fit_collision()
 	if clip_player and BodyCatalog.loads_meshes():
 		clip_player.setup(visual.model)
@@ -261,7 +259,7 @@ func is_obstacle() -> bool:
 
 
 func display_name() -> String:
-	return type.display_name if type else creature_tag
+	return type.display_name if type else name
 
 
 func facing_flat() -> Vector3:
@@ -400,6 +398,8 @@ func _play_clip() -> void:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
+	if type == null:
+		out.append("Asigná `type` (la criatura, data/catalog/creatures/sac_doctor.tres).")
 	if health == null:
 		out.append("Asigná `health` (nodo Health).")
 	if visual == null:

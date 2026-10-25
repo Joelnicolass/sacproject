@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_nni0f"]
 [ext_resource type="Resource" path="res://data/audio/creatures/gargoyle.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://cvg33nxgcefqx" path="res://assets/original/ui/icons/sohe.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/ehba.tres" id="typed_ehba"]
 
 [resource]
 script = ExtResource("1_nni0f")
 tag = "sohe"
 display_name = "Gargoyle"
 icon = ExtResource("icon_tex")
-god = "james"
 model = "ehbt"
 health = 625
 regeneration_per_s = 16.6667
@@ -30,7 +30,7 @@ souls = 1
 cooldown_s = 2.0
 casting_time_s = 0.4321
 spell_order = 136
-ability_tags = PackedStringArray("ehba")
+ranged_attack = ExtResource("typed_ehba")
 stance_animation = {
 "framerate": 30.0,
 "frames": 56.0,
@@ -67,9 +67,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 83.0,
 "tag": "HBa3"
 }])
-is_ranged = true
-ranged_attack_tag = "ehba"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 60.0,

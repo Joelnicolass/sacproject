@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_4q8pd"]
 [ext_resource type="Resource" path="res://data/audio/creatures/ent.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://cjdmxibb4cbi5" path="res://assets/original/ui/icons/mtsl.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/HSba_2.tres" id="typed_HSba"]
 
 [resource]
 script = ExtResource("1_4q8pd")
 tag = "mtsl"
 display_name = "Ent"
 icon = ExtResource("icon_tex")
-god = "persephone"
 model = "stmp"
 health = 4500
 regeneration_per_s = 29.1667
@@ -30,7 +30,7 @@ souls = 4
 cooldown_s = 8.0
 casting_time_s = 2.5926
 spell_order = 776
-ability_tags = PackedStringArray("HSba")
+active_ability = ExtResource("typed_HSba")
 stance_animation = {
 "framerate": 30.0,
 "frames": 103.0,
@@ -67,8 +67,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 43.0,
 "tag": "STa3"
 }])
-active_ability_tag = "HSba"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 1.0,

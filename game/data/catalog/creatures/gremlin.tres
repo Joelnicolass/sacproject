@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_nwe2w"]
 [ext_resource type="Resource" path="res://data/audio/creatures/gremlin.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://dh4ksqat4q5ke" path="res://assets/original/ui/icons/lrps.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/psla.tres" id="typed_psla"]
 
 [resource]
 script = ExtResource("1_nwe2w")
 tag = "lrps"
 display_name = "Gremlin"
 icon = ExtResource("icon_tex")
-god = "persephone"
 model = "sprl"
 health = 1400
 regeneration_per_s = 29.1667
@@ -31,7 +31,7 @@ souls = 3
 cooldown_s = 6.0
 casting_time_s = 1.8519
 spell_order = 562
-ability_tags = PackedStringArray("psla")
+active_ability = ExtResource("typed_psla")
 stance_animation = {
 "framerate": 30.0,
 "frames": 51.0,
@@ -68,8 +68,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 59.0,
 "tag": "Spa3"
 }])
-active_ability_tag = "psla"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 20.0,
 "frames": 82.0,

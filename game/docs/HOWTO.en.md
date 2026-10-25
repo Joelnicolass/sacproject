@@ -13,11 +13,11 @@ After any content change, run the validator (last section).
 For a creature that does not exist in the original, go straight to «Create your own creature from Blender». These steps are for the catalog ones.
 
 1. Duplicate a sibling in `data/catalog/creatures/` (for example `sylph.tres`) and name it after your creature (`my_beast.tres`). Leave the `tag` empty: the id is the file name.
-2. In the inspector: `tag`, `display_name`, `god`, `model` (the tag of the model in `assets/original/models/<model>.glb`), health, speed, resistances, `ability_tags` and the animations.
+2. In the inspector: `tag`, `display_name`, `model` (the tag of the model in `assets/original/models/<model>.glb`), health, speed, resistances, the `Abilities` group and the animations.
 3. The body size goes in `data/catalog/body_sizes/<model>.tres` (`BodySize`: box, `height`, `radius`, `reach`). If another creature already uses the model, it already exists.
 4. The model's scene is `scenes/bodies/models/<model>.tscn`. If it is missing, bake it: **Project > Tools > Sacrifice: Hornear modelos que faltan** (Bake missing models) (or `tools/bake/bake_body_scenes.gd`). It only writes the missing ones; what you already edited is not overwritten. That is where you change which clip each role plays (`AnimationTree`).
 5. So that the player can summon it, put it in the god's book: `data/gods/<god>.tres` → `book` → `creatures` (and a line in `unlocks` with the wizard level at which it comes in).
-6. Abilities: `ability_tags` points to `data/catalog/abilities/`; the logic of each one is a node in `scenes/units/abilities/`.
+6. Abilities: in the `Abilities` group, drag the `.tres` of `data/catalog/abilities/` onto `ranged_attack`, `active_ability` and `on_damage`, and the clouds or on-hit effects of `data/death_clouds/` and `data/passives/` onto `passives`; the logic of each one is a node in `scenes/units/abilities/`.
 
 ## Create your own creature from Blender
 

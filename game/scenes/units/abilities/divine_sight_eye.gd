@@ -72,12 +72,13 @@ var _first_tick := 0
 
 
 ## The packet of DivineSight.fire (ShotSpawner.spawn_scene): name, x/y/z, vx/vy/vz (m/s), slot, tag, shooter (its name, for the log).
-func setup(data: Dictionary) -> void:
+## `eye_ability`: the ability the packet's `tag` names (ShotSpawner turns the text into it).
+func setup(data: Dictionary, eye_ability: AbilityType) -> void:
 	name = str(data["name"])
 	position = Vector3(float(data["x"]), float(data["y"]), float(data["z"]))
 	velocity = Vector3(float(data["vx"]), float(data["vy"]), float(data["vz"]))
 	slot = int(data.get("slot", 0))
-	ability = GameData.ability(str(data.get("tag", "")))
+	ability = eye_ability
 	_shooter_name = str(data.get("shooter", ""))
 	_last_land = position.y
 	scale = Vector3.ONE * 0.001

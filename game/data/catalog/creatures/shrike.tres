@@ -3,13 +3,14 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_747c0"]
 [ext_resource type="Resource" path="res://data/audio/creatures/shrike.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://5voqoki8jq4x" path="res://assets/original/ui/icons/tbsh.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/absh.tres" id="typed_absh"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/hsba.tres" id="typed_hsba"]
 
 [resource]
 script = ExtResource("1_747c0")
 tag = "tbsh"
 display_name = "Shrike"
 icon = ExtResource("icon_tex")
-god = "persephone"
 model = "lhbt"
 health = 450
 regeneration_per_s = 29.1667
@@ -28,7 +29,8 @@ souls = 1
 cooldown_s = 2.0
 casting_time_s = 0.3704
 spell_order = 134
-ability_tags = PackedStringArray("absh", "hsba")
+ranged_attack = ExtResource("typed_absh")
+active_ability = ExtResource("typed_hsba")
 stance_animation = {
 "framerate": 30.0,
 "frames": 56.0,
@@ -65,10 +67,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 83.0,
 "tag": "HBa3"
 }])
-is_ranged = true
-ranged_attack_tag = "absh"
-active_ability_tag = "hsba"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 60.0,

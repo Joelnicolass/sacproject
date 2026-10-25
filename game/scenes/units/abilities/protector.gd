@@ -11,8 +11,8 @@ extends AbilityEffect
 
 static var TICKS_PER_SECOND := MatchClock.TICKS_PER_SECOND
 
-## The SPEL of the shield it gives (`tspl "absh"` of HSba = hsba, Life Shield).
-@export var shield_tag := "hsba"
+## The shield it gives (data/catalog/abilities/hsba.tres, Life Shield): its duration is the shield's.
+@export var life_shield: AbilityType
 ## Ticks after fire() at which the allies are shielded (sacengine: the effect's first update).
 @export var allies_delay_ticks := 1
 ## The bench log also lists the same-side bodies up to this many times effectRange, as «fuera».
@@ -42,7 +42,7 @@ func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 
 ## The hsba SPEL's duration in ticks (1200).
 func shield_ticks() -> int:
-	return LifeShield.ticks_for(GameData.ability(shield_tag))
+	return LifeShield.ticks_for(life_shield)
 
 
 func _physics_process(_delta: float) -> void:

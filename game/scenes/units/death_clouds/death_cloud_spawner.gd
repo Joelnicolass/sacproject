@@ -2,17 +2,13 @@
 class_name DeathCloudSpawner
 extends Node
 
-## F118 (RFC-030g): the only owner of «does this creature leave a cloud when it dies?». sacengine kill() walks
-## passiveAbility and passiveAbility2 and starts the cloud of each one it knows (state.d:8274-8278); here each passive tag of
-## CreatureType.passive_abilities that has a DeathCloudType in `types` instances its scene. A child of unit.tscn; take it
-## out and nobody leaves a cloud. Server (or solo) only: Health.died fires there, the cloud acts there and its puff reaches
-## every peer through FxBus.
+## The only owner of «does this creature leave a cloud when it dies?»: every DeathCloudType in the creature's `passives`
+## instances its scene where the body died. A child of unit.tscn; take it out and nobody leaves a cloud. Server (or solo) only:
+## Health.died fires there, the cloud acts there and its puff reaches every peer through FxBus.
+## Ref: F118 (RFC-030g), sacengine kill() walks passiveAbility and passiveAbility2 (state.d:8274-8278).
 
 @export var body: UnitBody
 @export var health: Health
-## The clouds of this shape (goc@, cen@, tum@). A new one is a new .tres here.
-@export var types: Array[DeathCloudType] = []
-
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
@@ -31,26 +27,17 @@ func _ready() -> void:
 	health.died.connect(_on_died)
 
 
-## The DeathCloudType of `tag`, or null.
-func type_of(tag: String) -> DeathCloudType:
-	for candidate in types:
-		if candidate != null and candidate.tag == tag:
-			return candidate
-	return null
-
-
 func _on_died(_from_slot: int) -> void:
 	if body == null or body.type == null:
 		return
 	## The center is taken now, where the body died; the cloud acts after the hit that killed it is over (sacengine adds
 	## the effect and runs it in its effects pass, state.d:27454-27522).
 	var center := _center()
-	for tag in body.type.passive_abilities:
-		var cloud_type := type_of(tag)
-		var ability := GameData.ability(tag)
-		if cloud_type == null or cloud_type.scene == null or ability == null:
+	for passive: CreaturePassive in body.type.passives:
+		var cloud_type := passive as DeathCloudType
+		if cloud_type == null or cloud_type.scene == null or cloud_type.ability == null:
 			continue
-		_burst.call_deferred(cloud_type, ability, center)
+		_burst.call_deferred(cloud_type, cloud_type.ability, center)
 
 
 func _burst(cloud_type: DeathCloudType, ability: AbilityType, center: Vector3) -> void:

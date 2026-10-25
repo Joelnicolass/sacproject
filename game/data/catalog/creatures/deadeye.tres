@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_1joh7"]
 [ext_resource type="Resource" path="res://data/audio/creatures/deadeye.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://dl76ap62hhrk5" path="res://assets/original/ui/icons/plfd.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/lfda.tres" id="typed_lfda"]
 
 [resource]
 script = ExtResource("1_1joh7")
 tag = "plfd"
 display_name = "Deadeye"
 icon = ExtResource("icon_tex")
-god = "charnel"
 model = "dflp"
 health = 1170
 drain = 0.5
@@ -27,7 +27,7 @@ souls = 2
 cooldown_s = 5.0
 casting_time_s = 1.8519
 spell_order = 566
-ability_tags = PackedStringArray("lfda")
+ranged_attack = ExtResource("typed_lfda")
 stance_animation = {
 "framerate": 30.0,
 "frames": 61.0,
@@ -64,9 +64,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 29.0,
 "tag": "FGa3"
 }])
-is_ranged = true
-ranged_attack_tag = "lfda"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 38.0,

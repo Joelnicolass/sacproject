@@ -260,7 +260,7 @@ func _unit(parent: Node3D, slot: int, at: Vector3) -> Node3D:
 	unit.name = "FormationUnit%d" % parent.get_child_count()
 	unit.position = at
 	unit.set("owner_slot", slot)
-	unit.set("creature_tag", "ycro")
+	unit.set("type", GameData.creature("ycro"))
 	unit.set("model", str(type.model))
 	unit.set("rules", RULES)
 	unit.set("idle_aggro", false)

@@ -256,7 +256,7 @@ func _separation() -> Dictionary:
 func _unit(scene: PackedScene, slot: int, at: Vector3, tag: String) -> UnitBody:
 	var unit: UnitBody = scene.instantiate()
 	unit.name = "%s_%d_%d" % [tag, slot, _root.get_child_count()]
-	unit.creature_tag = tag
+	unit.type = GameData.creature(tag)
 	unit.owner_slot = slot
 	unit.rules = RULES
 	unit.idle_aggro = false

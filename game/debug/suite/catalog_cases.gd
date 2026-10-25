@@ -18,8 +18,6 @@ extends SceneTree
 ## No autoloads: the catalog is read through GameCatalog, the same scan the game does.
 
 const MAX_REPORTED := 60
-## References the original data itself leaves dangling ("tsg@" is in no table of the original game).
-const KNOWN_DANGLING: PackedStringArray = ["tsg@"]
 ## Property -> minimum, per type. A strict minimum (">") is a key ending in ">".
 const CREATURE_RANGES := {
 	"health>": 0, "regeneration_per_s": 0, "drain": 0, "running_speed": 0, "flying_speed": 0, "melee_strength": 0,
@@ -128,14 +126,19 @@ func _check_references(tags: Dictionary) -> void:
 	var abilities: Dictionary = tags["abilities"]
 	var spells: Dictionary = tags["spells"]
 	for creature: CreatureType in _catalog.creatures:
-		var names := {"ranged_attack_tag": [creature.ranged_attack_tag], "active_ability_tag": [creature.active_ability_tag],
-				"passive_on_damage": [creature.passive_on_damage], "ability_tags": Array(creature.ability_tags),
-				"passive_abilities": Array(creature.passive_abilities)}
-		for property: String in names:
-			for tag: String in names[property]:
-				# A passive may also be a spell (eniv, zerf).
-				if not tag.is_empty() and not abilities.has(tag) and not spells.has(tag) and not KNOWN_DANGLING.has(tag):
-					_report("creatures/%s: %s = \"%s\" is not an ability or a spell" % [_file(creature), property, tag])
+		# 055c1-b: the three slots are references, so they cannot dangle; they must be in the catalog all the same (not a loose copy).
+		for slot: AbilityType in creature.abilities():
+			if not abilities.has(slot.tag):
+				_report("creatures/%s: the ability \"%s\" is not in data/catalog/abilities/" % [_file(creature), slot.tag])
+		if creature.is_ranged() != (creature.ranged_attack != null):
+			_report("creatures/%s: is_ranged() disagrees with ranged_attack" % _file(creature))
+		for passive: CreaturePassive in creature.passives:
+			if passive == null:
+				_report("creatures/%s: an empty entry in passives" % _file(creature))
+			elif passive is DeathCloudType and ((passive as DeathCloudType).ability == null or not abilities.has((passive as DeathCloudType).ability.tag)):
+				_report("creatures/%s: a death cloud without an ability of the catalog" % _file(creature))
+			elif passive is OnHitPassiveType and ((passive as OnHitPassiveType).spell == null or not spells.has((passive as OnHitPassiveType).spell.tag)):
+				_report("creatures/%s: an on-hit passive without a spell of the catalog" % _file(creature))
 
 
 ## 055i-a: the menu lists what is `offered`, the wire carries `id()`, and the «Contra la IA» seat holds real references.

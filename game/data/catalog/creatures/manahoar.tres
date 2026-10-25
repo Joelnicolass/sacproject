@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_bou3e"]
 [ext_resource type="PackedScene" path="res://scenes/units/mana_flame.tscn" id="2_flame"]
 [ext_resource type="Texture2D" uid="uid://decnulic3iwu2" path="res://assets/original/ui/icons/oham.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/hmba.tres" id="typed_hmba"]
 
 [resource]
 script = ExtResource("1_bou3e")
 tag = "oham"
 display_name = "Manahoar"
 icon = ExtResource("icon_tex")
-god = "none"
 model = "maho"
 carried_fx = ExtResource("2_flame")
 health = 550
@@ -25,7 +25,7 @@ souls = 1
 cooldown_s = 1.0
 casting_time_s = 0.1235
 spell_order = 117
-ability_tags = PackedStringArray("hmba")
+on_damage = ExtResource("typed_hmba")
 stance_animation = {
 "framerate": 30.0,
 "frames": 40.0,
@@ -62,8 +62,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 40.0,
 "tag": "MAst"
 }])
-passive_on_damage = "hmba"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 1.0,

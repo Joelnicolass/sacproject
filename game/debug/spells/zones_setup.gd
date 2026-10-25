@@ -23,7 +23,7 @@ func _ready() -> void:
 	var ahead := wizard.facing_flat()
 	var troll := unit_scene.instantiate() as UnitBody
 	troll.name = "OwnTroll"
-	troll.creature_tag = "lort"
+	troll.type = GameData.creature("lort")
 	troll.owner_slot = wizard.owner_slot
 	troll.idle_aggro = false
 	arena.add_child(troll)

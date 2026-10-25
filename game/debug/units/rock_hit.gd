@@ -71,7 +71,7 @@ func _start() -> void:
 func _spawn(tag: String, index: int, at: Vector3, facing: Vector3) -> Node3D:
 	var unit: Node3D = unit_scene.instantiate()
 	unit.name = "%s%d" % [tag.capitalize(), index + 1]
-	unit.set("creature_tag", tag)
+	unit.set("type", GameData.creature(tag))
 	unit.set("owner_slot", enemy_slot)
 	unit.set("target_groups", PackedStringArray())
 	arena.add_child(unit)

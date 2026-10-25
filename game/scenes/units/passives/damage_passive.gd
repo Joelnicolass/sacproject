@@ -4,20 +4,20 @@ extends Node
 
 ## F117 (RFC-030f): the only owner of the damage multipliers of a creature's passiveOnDamage (sacobject.d:426). Health asks
 ## incoming_factor() for every hit the body takes; MeleeAttack asks outgoing_melee_factor() for every blow it lands. The
-## formula lives in the DamagePassiveType of the creature's tag; a creature without one (or a tag with no resource here) is ×1.
+## formula lives in the DamagePassiveType of the creature's `on_damage`; a creature without one (or an ability with no resource here) is ×1.
 ## A child of unit.tscn; take it out and no passive applies.
 ## F130: gcil (the Storm Giant's Lightning Charge) has side effects and is not a DamagePassiveType: its LightningCharge is the
 ## `charge` socket, and this node only asks it (a lightning hit charges, a charged body blows and aims ×1.5).
 
-## The body whose CreatureType.passive_on_damage picks the resource. Read on every query: a body that changes its tag
-## (replication, a late join) changes its passive with it.
+## The body whose CreatureType.on_damage picks the resource. Read on every query: a body that changes its type changes its
+## passive with it.
 @export var body: UnitBody
 ## The passives of this shape (korq, ahtf). A new one is a new .tres here; Health and MeleeAttack do not change.
 @export var types: Array[DamagePassiveType] = []
-## F130: the body's Lightning Charge. Optional: empty = no charge. It only counts for a body whose passive is its `tag`.
+## F130: the body's Lightning Charge. Optional: empty = no charge. It only counts for a body whose `on_damage` is its `passive`.
 @export var charge: LightningCharge
 
-var _cached_tag := ""
+var _cached_for: AbilityType
 var _cached: DamagePassiveType
 
 
@@ -55,19 +55,19 @@ func melee_accuracy_factor() -> float:
 
 ## The Lightning Charge, when the body's passive is its (the other bodies carry the node and ignore it).
 func _charge() -> LightningCharge:
-	if charge == null or body == null or body.type == null or body.type.passive_on_damage != charge.tag:
+	if charge == null or body == null or body.type == null or charge.passive == null or body.type.on_damage != charge.passive:
 		return null
 	return charge
 
 
 ## The resource of the body's passive, or null.
 func active() -> DamagePassiveType:
-	var tag := body.type.passive_on_damage if body != null and body.type != null else ""
-	if tag != _cached_tag:
-		_cached_tag = tag
+	var ability: AbilityType = body.type.on_damage if body != null and body.type != null else null
+	if ability != _cached_for:
+		_cached_for = ability
 		_cached = null
 		for candidate in types:
-			if candidate != null and not tag.is_empty() and candidate.tag == tag:
+			if candidate != null and ability != null and candidate.ability == ability:
 				_cached = candidate
 				break
 	return _cached

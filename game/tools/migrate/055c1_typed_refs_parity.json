@@ -1,0 +1,1063 @@
+{
+ "abilities": [
+  "!nur",
+  "HRba",
+  "HSba",
+  "aaba",
+  "absh",
+  "acia",
+  "ahtf",
+  "amba",
+  "babt",
+  "bsba",
+  "caba",
+  "cen@",
+  "cena",
+  "cfba",
+  "cita",
+  "crba",
+  "dedp",
+  "dhga",
+  "dhsf",
+  "dihk",
+  "dkba",
+  "dner",
+  "dpsf",
+  "eesd",
+  "ehba",
+  "ekba",
+  "emba",
+  "fhba",
+  "fhga",
+  "filb",
+  "fkba",
+  "gcil",
+  "goc@",
+  "gsba",
+  "hmba",
+  "hrba",
+  "hsba",
+  "ifna",
+  "ivni",
+  "kauq",
+  "kcfa",
+  "korq",
+  "lfda",
+  "lffa",
+  "liba",
+  "mhba",
+  "othg",
+  "plfa",
+  "psaa",
+  "psla",
+  "rdba",
+  "rdra",
+  "rifb",
+  "rifl",
+  "sfba",
+  "slba",
+  "tdhg",
+  "tfhg",
+  "tugt",
+  "tum@",
+  "wfhg",
+  "wobf",
+  "zbba"
+ ],
+ "creatures": {
+  "EHTH": {
+   "ability_tags": [
+    "lffa"
+   ],
+   "active_ability_tag": "",
+   "file": "faestus_pyro.tres",
+   "god": "pyro",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "lffa"
+  },
+  "RAMH": {
+   "ability_tags": [],
+   "active_ability_tag": "",
+   "file": "astaroth.tres",
+   "god": "charnel",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "ahcr": {
+   "ability_tags": [
+    "aaba",
+    "ivni"
+   ],
+   "active_ability_tag": "ivni",
+   "file": "sylph.tres",
+   "god": "stratos",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "aaba"
+  },
+  "alab": {
+   "ability_tags": [
+    "amba"
+   ],
+   "active_ability_tag": "",
+   "file": "squall.tres",
+   "god": "stratos",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "amba"
+  },
+  "amuh": {
+   "ability_tags": [
+    "wobf",
+    "eesd"
+   ],
+   "active_ability_tag": "eesd",
+   "file": "ranger.tres",
+   "god": "persephone",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "wobf"
+  },
+  "bobs": {
+   "ability_tags": [
+    "bsba"
+   ],
+   "active_ability_tag": "",
+   "file": "brainiac.tres",
+   "god": "stratos",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "bsba"
+  },
+  "cara": {
+   "ability_tags": [
+    "slba"
+   ],
+   "active_ability_tag": "",
+   "file": "scarab.tres",
+   "god": "persephone",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "slba"
+  },
+  "cbab": {
+   "ability_tags": [
+    "babt"
+   ],
+   "active_ability_tag": "",
+   "file": "mutant.tres",
+   "god": "persephone",
+   "is_ranged": true,
+   "passive_abilities": [
+    "tum@"
+   ],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "babt"
+  },
+  "craa": {
+   "ability_tags": [
+    "cita"
+   ],
+   "active_ability_tag": "",
+   "file": "vortick.tres",
+   "god": "stratos",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "cita"
+  },
+  "craf": {
+   "ability_tags": [
+    "sfba"
+   ],
+   "active_ability_tag": "",
+   "file": "tickferno.tres",
+   "god": "pyro",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "sfba"
+  },
+  "crpd": {
+   "ability_tags": [
+    "ifna"
+   ],
+   "active_ability_tag": "ifna",
+   "file": "netherfiend.tres",
+   "god": "charnel",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "ctug": {
+   "ability_tags": [
+    "tugt"
+   ],
+   "active_ability_tag": "",
+   "file": "abomination.tres",
+   "god": "charnel",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "tugt"
+  },
+  "dcas": {
+   "ability_tags": [],
+   "active_ability_tag": "",
+   "file": "sac_doctor.tres",
+   "god": "none",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "dplk": {
+   "ability_tags": [
+    "dkba",
+    "dedp"
+   ],
+   "active_ability_tag": "dedp",
+   "file": "fallen.tres",
+   "god": "charnel",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "dkba"
+  },
+  "dzid": {
+   "ability_tags": [],
+   "active_ability_tag": "",
+   "file": "scythe.tres",
+   "god": "charnel",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "eafH": {
+   "ability_tags": [
+    "plfa"
+   ],
+   "active_ability_tag": "",
+   "file": "thestor.tres",
+   "god": "persephone",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "plfa"
+  },
+  "ehtH": {
+   "ability_tags": [
+    "plfa"
+   ],
+   "active_ability_tag": "",
+   "file": "faestus_persephone.tres",
+   "god": "persephone",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "plfa"
+  },
+  "fplk": {
+   "ability_tags": [
+    "fkba",
+    "!nur"
+   ],
+   "active_ability_tag": "!nur",
+   "file": "flame_minion.tres",
+   "god": "pyro",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "fkba"
+  },
+  "gard": {
+   "ability_tags": [
+    "hrba",
+    "HRba"
+   ],
+   "active_ability_tag": "HRba",
+   "file": "rhinok.tres",
+   "god": "james",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "hrba"
+  },
+  "glsd": {
+   "ability_tags": [
+    "cena"
+   ],
+   "active_ability_tag": "",
+   "file": "necryl.tres",
+   "god": "charnel",
+   "is_ranged": true,
+   "passive_abilities": [
+    "cen@"
+   ],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "cena"
+  },
+  "grdb": {
+   "ability_tags": [
+    "rdba",
+    "!nur",
+    "gcil"
+   ],
+   "active_ability_tag": "!nur",
+   "file": "silverback.tres",
+   "god": "stratos",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "gcil",
+   "ranged_attack_tag": "rdba"
+  },
+  "grdg": {
+   "ability_tags": [
+    "filb"
+   ],
+   "active_ability_tag": "filb",
+   "file": "dragon.tres",
+   "god": "persephone",
+   "is_ranged": false,
+   "passive_abilities": [
+    "eniv",
+    "tum@"
+   ],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "grdr": {
+   "ability_tags": [
+    "rdra",
+    "rifl"
+   ],
+   "active_ability_tag": "",
+   "file": "phoenix.tres",
+   "god": "pyro",
+   "is_ranged": true,
+   "passive_abilities": [
+    "goc@"
+   ],
+   "passive_on_damage": "rifl",
+   "ranged_attack_tag": "rdra"
+  },
+  "grps": {
+   "ability_tags": [
+    "psaa"
+   ],
+   "active_ability_tag": "psaa",
+   "file": "seraph.tres",
+   "god": "stratos",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "guls": {
+   "ability_tags": [
+    "dpsf"
+   ],
+   "active_ability_tag": "",
+   "file": "basilisk.tres",
+   "god": "james",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "dpsf"
+  },
+  "imaf": {
+   "ability_tags": [],
+   "active_ability_tag": "",
+   "file": "familiar.tres",
+   "god": "none",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "kacd": {
+   "ability_tags": [
+    "liba"
+   ],
+   "active_ability_tag": "liba",
+   "file": "blight.tres",
+   "god": "charnel",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "kace": {
+   "ability_tags": [
+    "acia"
+   ],
+   "active_ability_tag": "acia",
+   "file": "ikarus.tres",
+   "god": "james",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "kacf": {
+   "ability_tags": [
+    "kcfa"
+   ],
+   "active_ability_tag": "kcfa",
+   "file": "pyrodactyl.tres",
+   "god": "pyro",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "lbog": {
+   "ability_tags": [
+    "!nur"
+   ],
+   "active_ability_tag": "!nur",
+   "file": "frostwolf.tres",
+   "god": "stratos",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "llab": {
+   "ability_tags": [
+    "emba"
+   ],
+   "active_ability_tag": "",
+   "file": "boulderdash.tres",
+   "god": "james",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "emba"
+  },
+  "lort": {
+   "ability_tags": [],
+   "active_ability_tag": "",
+   "file": "troll.tres",
+   "god": "persephone",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "lrps": {
+   "ability_tags": [
+    "psla"
+   ],
+   "active_ability_tag": "psla",
+   "file": "gremlin.tres",
+   "god": "persephone",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "lrtf": {
+   "ability_tags": [
+    "ahtf"
+   ],
+   "active_ability_tag": "",
+   "file": "firefist.tres",
+   "god": "pyro",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "ahtf",
+   "ranged_attack_tag": ""
+  },
+  "magH": {
+   "ability_tags": [
+    "acia"
+   ],
+   "active_ability_tag": "acia",
+   "file": "gammel.tres",
+   "god": "james",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "mtse": {
+   "ability_tags": [
+    "kauq"
+   ],
+   "active_ability_tag": "kauq",
+   "file": "jabberocky.tres",
+   "god": "james",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "mtsl": {
+   "ability_tags": [
+    "HSba"
+   ],
+   "active_ability_tag": "HSba",
+   "file": "ent.tres",
+   "god": "persephone",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "nmuh": {
+   "ability_tags": [
+    "hsba"
+   ],
+   "active_ability_tag": "hsba",
+   "file": "druid.tres",
+   "god": "persephone",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "nomd": {
+   "ability_tags": [
+    "mhba",
+    "ifna"
+   ],
+   "active_ability_tag": "ifna",
+   "file": "hellmouth.tres",
+   "god": "charnel",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "mhba"
+  },
+  "nugd": {
+   "ability_tags": [
+    "dhga",
+    "dner",
+    "tdhg"
+   ],
+   "active_ability_tag": "dner",
+   "file": "styx.tres",
+   "god": "charnel",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "tdhg",
+   "ranged_attack_tag": "dhga"
+  },
+  "nugf": {
+   "ability_tags": [
+    "fhga",
+    "wfhg",
+    "tfhg"
+   ],
+   "active_ability_tag": "wfhg",
+   "file": "warmonger.tres",
+   "god": "pyro",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "tfhg",
+   "ranged_attack_tag": "fhga"
+  },
+  "oham": {
+   "ability_tags": [
+    "hmba"
+   ],
+   "active_ability_tag": "",
+   "file": "manahoar.tres",
+   "god": "none",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "hmba",
+   "ranged_attack_tag": ""
+  },
+  "oohH": {
+   "ability_tags": [
+    "HSba"
+   ],
+   "active_ability_tag": "HSba",
+   "file": "toldor.tres",
+   "god": "persephone",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "palk": {
+   "ability_tags": [
+    "ekba",
+    "dihk"
+   ],
+   "active_ability_tag": "dihk",
+   "file": "earthfling.tres",
+   "god": "james",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "ekba"
+  },
+  "pazb": {
+   "ability_tags": [
+    "zbba"
+   ],
+   "active_ability_tag": "",
+   "file": "locust.tres",
+   "god": "charnel",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "zbba"
+  },
+  "pezH": {
+   "ability_tags": [
+    "bsba"
+   ],
+   "active_ability_tag": "",
+   "file": "sara_bella.tres",
+   "god": "stratos",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "bsba"
+  },
+  "plfd": {
+   "ability_tags": [
+    "lfda"
+   ],
+   "active_ability_tag": "",
+   "file": "deadeye.tres",
+   "god": "charnel",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "lfda"
+  },
+  "plff": {
+   "ability_tags": [
+    "lffa"
+   ],
+   "active_ability_tag": "",
+   "file": "pyromaniac.tres",
+   "god": "pyro",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "lffa"
+  },
+  "plfl": {
+   "ability_tags": [
+    "plfa"
+   ],
+   "active_ability_tag": "",
+   "file": "gnome.tres",
+   "god": "persephone",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "plfa"
+  },
+  "raeb": {
+   "ability_tags": [
+    "korq"
+   ],
+   "active_ability_tag": "",
+   "file": "taurock.tres",
+   "god": "james",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "korq",
+   "ranged_attack_tag": ""
+  },
+  "ramH": {
+   "ability_tags": [],
+   "active_ability_tag": "",
+   "file": "gangrel.tres",
+   "god": "charnel",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "rdbO": {
+   "ability_tags": [
+    "filb"
+   ],
+   "active_ability_tag": "filb",
+   "file": "dragon_hatchling.tres",
+   "god": "persephone",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "rgos": {
+   "ability_tags": [
+    "gsba",
+    "gcil"
+   ],
+   "active_ability_tag": "gsba",
+   "file": "storm_giant.tres",
+   "god": "stratos",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "gcil",
+   "ranged_attack_tag": ""
+  },
+  "risH": {
+   "ability_tags": [
+    "filb"
+   ],
+   "active_ability_tag": "filb",
+   "file": "sirocco.tres",
+   "god": "persephone",
+   "is_ranged": false,
+   "passive_abilities": [
+    "eniv",
+    "tum@"
+   ],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "saep": {
+   "ability_tags": [],
+   "active_ability_tag": "",
+   "file": "peasant.tres",
+   "god": "persephone",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "sohe": {
+   "ability_tags": [
+    "ehba"
+   ],
+   "active_ability_tag": "",
+   "file": "gargoyle.tres",
+   "god": "james",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "ehba"
+  },
+  "sohf": {
+   "ability_tags": [
+    "fhba"
+   ],
+   "active_ability_tag": "",
+   "file": "spitfire.tres",
+   "god": "pyro",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "fhba"
+  },
+  "tbsh": {
+   "ability_tags": [
+    "absh",
+    "hsba"
+   ],
+   "active_ability_tag": "hsba",
+   "file": "shrike.tres",
+   "god": "persephone",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "absh"
+  },
+  "testmonster": {
+   "ability_tags": [],
+   "active_ability_tag": "",
+   "file": "testmonster.tres",
+   "god": "pyro",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "tnem": {
+   "ability_tags": [
+    "tsg@"
+   ],
+   "active_ability_tag": "",
+   "file": "zyzyx.tres",
+   "god": "none",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "tsg@",
+   "ranged_attack_tag": ""
+  },
+  "tshg": {
+   "ability_tags": [
+    "tsg@"
+   ],
+   "active_ability_tag": "",
+   "file": "ghost.tres",
+   "god": "persephone",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "tsg@",
+   "ranged_attack_tag": ""
+  },
+  "uslH": {
+   "ability_tags": [
+    "gsba",
+    "gcil"
+   ],
+   "active_ability_tag": "gsba",
+   "file": "lord_surtur.tres",
+   "god": "stratos",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "gcil",
+   "ranged_attack_tag": ""
+  },
+  "wlca": {
+   "ability_tags": [
+    "caba"
+   ],
+   "active_ability_tag": "",
+   "file": "flurry.tres",
+   "god": "stratos",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "caba"
+  },
+  "wlce": {
+   "ability_tags": [
+    "crba"
+   ],
+   "active_ability_tag": "",
+   "file": "flummox.tres",
+   "god": "james",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "crba"
+  },
+  "wlcf": {
+   "ability_tags": [
+    "cfba"
+   ],
+   "active_ability_tag": "",
+   "file": "bombard.tres",
+   "god": "pyro",
+   "is_ranged": true,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": "cfba"
+  },
+  "ycro": {
+   "ability_tags": [],
+   "active_ability_tag": "",
+   "file": "trogg.tres",
+   "god": "james",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "ycrp": {
+   "ability_tags": [],
+   "active_ability_tag": "",
+   "file": "yeti.tres",
+   "god": "stratos",
+   "is_ranged": false,
+   "passive_abilities": [
+    "zerf"
+   ],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "zepa": {
+   "ability_tags": [],
+   "active_ability_tag": "",
+   "file": "snowman.tres",
+   "god": "stratos",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "zepd": {
+   "ability_tags": [],
+   "active_ability_tag": "",
+   "file": "zombie.tres",
+   "god": "charnel",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "zepe": {
+   "ability_tags": [],
+   "active_ability_tag": "",
+   "file": "farmer.tres",
+   "god": "james",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "zepf": {
+   "ability_tags": [],
+   "active_ability_tag": "",
+   "file": "slave.tres",
+   "god": "pyro",
+   "is_ranged": false,
+   "passive_abilities": [],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  },
+  "zidf": {
+   "ability_tags": [],
+   "active_ability_tag": "",
+   "file": "cog.tres",
+   "god": "pyro",
+   "is_ranged": false,
+   "passive_abilities": [
+    "goc@"
+   ],
+   "passive_on_damage": "",
+   "ranged_attack_tag": ""
+  }
+ },
+ "passives": {
+  "res://data/death_clouds/cog_cloud.tres": "goc@",
+  "res://data/death_clouds/mutant_cloud.tres": "tum@",
+  "res://data/death_clouds/necryl_cloud.tres": "cen@",
+  "res://data/passives/dragon_vines.tres": "eniv",
+  "res://data/passives/firefist_fury.tres": "ahtf",
+  "res://data/passives/taurock_hide.tres": "korq",
+  "res://data/passives/yeti_freeze.tres": "zerf",
+  "res://data/targeting/slba.tres": "slba"
+ },
+ "spells": [
+  "brif",
+  "ccas",
+  "clov",
+  "cnef",
+  "deda",
+  "dlhs",
+  "dnws",
+  "egar",
+  "elet",
+  "eniv",
+  "erob",
+  "galp",
+  "grfr",
+  "htel",
+  "htlm",
+  "ivob",
+  "kcor",
+  "laeh",
+  "laws",
+  "lawv",
+  "laww",
+  "likc",
+  "lwrf",
+  "mrfe",
+  "mrff",
+  "mrhc",
+  "mrws",
+  "ndrg",
+  "niks",
+  "nrot",
+  "ntil",
+  "ntlc",
+  "oalf",
+  "olah",
+  "pavi",
+  "pcas",
+  "pmcd",
+  "pups",
+  "pxef",
+  "rapf",
+  "rifd",
+  "rifr",
+  "rtem",
+  "rter",
+  "ruah",
+  "rwsp",
+  "taed",
+  "tfir",
+  "tpre",
+  "ucas",
+  "wobr",
+  "zerf",
+  "zorf"
+ ],
+ "wizards": {
+  "cwa0": {
+   "file": "jadugarr.tres",
+   "spell_tag": "0awc"
+  },
+  "cwa1": {
+   "file": "seerix.tres",
+   "spell_tag": "1awc"
+  },
+  "cwa2": {
+   "file": "marduk.tres",
+   "spell_tag": "2awc"
+  },
+  "cwd0": {
+   "file": "the_ragman.tres",
+   "spell_tag": "0dwc"
+  },
+  "cwd1": {
+   "file": "acheron.tres",
+   "spell_tag": "1dwc"
+  },
+  "cwd2": {
+   "file": "sorcha.tres",
+   "spell_tag": "2dwc"
+  },
+  "cwe0": {
+   "file": "abraxus.tres",
+   "spell_tag": "0ewc"
+  },
+  "cwe1": {
+   "file": "mithras.tres",
+   "spell_tag": "1ewc"
+  },
+  "cwe2": {
+   "file": "eldred.tres",
+   "spell_tag": "2ewc"
+  },
+  "cwf0": {
+   "file": "ambassador_buta.tres",
+   "spell_tag": "0fwc"
+  },
+  "cwf1": {
+   "file": "grakkus.tres",
+   "spell_tag": "1fwc"
+  },
+  "cwf2": {
+   "file": "charlotte.tres",
+   "spell_tag": "2fwc"
+  },
+  "cwl0": {
+   "file": "shakti.tres",
+   "spell_tag": "0lwc"
+  },
+  "cwl1": {
+   "file": "yogo.tres",
+   "spell_tag": "1lwc"
+  },
+  "cwl2": {
+   "file": "hachimen.tres",
+   "spell_tag": "2lwc"
+  }
+ }
+}

@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_wa6k1"]
 [ext_resource type="Resource" path="res://data/audio/creatures/dragon_hatchling.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://bnbej6vwrihp6" path="res://assets/original/ui/icons/rdb_o.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/filb.tres" id="typed_filb"]
 
 [resource]
 script = ExtResource("1_wa6k1")
 tag = "rdbO"
 display_name = "Dragon Hatchling"
 icon = ExtResource("icon_tex")
-god = "persephone"
 model = "baby"
 health = 1375
 regeneration_per_s = 29.1667
@@ -31,7 +31,7 @@ souls = 1
 cooldown_s = 10.0
 casting_time_s = 3.3333
 spell_order = 1008
-ability_tags = PackedStringArray("filb")
+active_ability = ExtResource("typed_filb")
 stance_animation = {
 "framerate": 30.0,
 "frames": 148.0,
@@ -68,8 +68,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 32.0,
 "tag": "DGa3"
 }])
-active_ability_tag = "filb"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 49.0,

@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_38h3d"]
 [ext_resource type="Resource" path="res://data/audio/creatures/basilisk.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://c6xtq3qlcfinn" path="res://assets/original/ui/icons/guls.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/dpsf.tres" id="typed_dpsf"]
 
 [resource]
 script = ExtResource("1_38h3d")
 tag = "guls"
 display_name = "Basilisk"
 icon = ExtResource("icon_tex")
-god = "james"
 model = "eslg"
 health = 1680
 regeneration_per_s = 16.6667
@@ -27,7 +27,7 @@ souls = 2
 cooldown_s = 3.0
 casting_time_s = 0.8642
 spell_order = 243
-ability_tags = PackedStringArray("dpsf")
+ranged_attack = ExtResource("typed_dpsf")
 stance_animation = {
 "framerate": 30.0,
 "frames": 98.0,
@@ -64,9 +64,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 59.0,
 "tag": "SLa3"
 }])
-is_ranged = true
-ranged_attack_tag = "dpsf"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 47.0,

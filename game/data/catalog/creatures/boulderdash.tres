@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_t6t3n"]
 [ext_resource type="Resource" path="res://data/audio/creatures/boulderdash.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://ctfljfg6l03m7" path="res://assets/original/ui/icons/llab.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/emba.tres" id="typed_emba"]
 
 [resource]
 script = ExtResource("1_t6t3n")
 tag = "llab"
 display_name = "Boulderdash"
 icon = ExtResource("icon_tex")
-god = "james"
 model = "bale"
 health = 1560
 regeneration_per_s = 16.6667
@@ -27,7 +27,7 @@ souls = 4
 cooldown_s = 7.0
 casting_time_s = 2.5926
 spell_order = 671
-ability_tags = PackedStringArray("emba")
+ranged_attack = ExtResource("typed_emba")
 stance_animation = {
 "framerate": 30.0,
 "frames": 79.0,
@@ -64,9 +64,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 47.0,
 "tag": "BMa3"
 }])
-is_ranged = true
-ranged_attack_tag = "emba"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 41.0,

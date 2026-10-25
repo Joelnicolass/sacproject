@@ -35,8 +35,8 @@ const PACE_SOURCE := &"lightning_charge"
 @export var pace: PaceFactors
 ## The discharge's bolt (lightning_strike.tscn).
 @export var bolt_scene: PackedScene
-## SpellTag of the passive (the SPEL gives the amount 250, the range 30 and the bolt's damage 250).
-@export var tag := "gcil"
+## The passive (data/catalog/abilities/gcil.tres): its numbers give the amount 250, the range 30 and the bolt's damage 250.
+@export var passive: AbilityType
 ## Frames charged per point of damage taken from an ally / from anyone else.
 @export var ally_factor := 4.0
 @export var foe_factor := 2.0
@@ -135,7 +135,7 @@ func _simulate() -> void:
 		_refresh()
 		return
 	ramp = minf(ramp + 1.0 / MatchClock.TICKS_PER_SECOND_F, 1.0)
-	var spell := GameData.ability(tag)
+	var spell := passive
 	if spell == null or frames < spell.damage:
 		return
 	var rng := MatchSeed.rng(["charge", _who(), MatchClock.now()])
@@ -163,7 +163,7 @@ func _discharge(rng: RandomNumberGenerator, spell: AbilityType) -> void:
 	var before := frames
 	frames -= int(spell.damage) >> 1
 	ramp = 0.0
-	LightningStrike.launch(bolt_scene, self, body, center, target, ground, float(spell.damage), tag, false)
+	LightningStrike.launch(bolt_scene, self, body, center, target, ground, float(spell.damage), passive.tag, false)
 	var where := "suelo %s" % _v(ground) if target == null else "%s a %.4f m" % [target.name, center.distance_to(BodyNudge.center(target))]
 	_say("carga %s descarga a %s (candidatos %d, tirada %d) cuadros %d->%d (tick %d)" % [
 		_who(), where, candidates.size(), pick, before, frames, MatchClock.now()])
@@ -209,7 +209,7 @@ func _wake() -> void:
 
 func _carries() -> bool:
 	var type: Variant = body.get("type") if body != null and "type" in body else null
-	return type is CreatureType and (type as CreatureType).passive_on_damage == tag
+	return passive != null and type is CreatureType and (type as CreatureType).on_damage == passive
 
 
 ## Bench only: `marcha body ×pace (x, y, z)` on every tick the carrier moved, for the replica to measure the step.

@@ -13,8 +13,8 @@ extends AbilityEffect
 
 ## The coordinator's scene (lightning_strike.tscn).
 @export var bolt_scene: PackedScene
-## The SPEL whose amount the bolt deals (SpellTag.lightning, `ntil`).
-@export var spell_tag := "ntil"
+## The spell whose amount the bolt deals (data/catalog/spells/ntil.tres, lightning).
+@export var spell: SpellType
 ## Meters from the Giant's center to the point of the sky.
 @export var sky_distance := 100.0
 ## sacengine adds (0, 0, 6) to the random direction before normalizing: 6 up (the port's y).
@@ -24,9 +24,8 @@ extends AbilityEffect
 func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 	if not _has_authority() or user == null or not is_instance_valid(user):
 		return false
-	var spell := GameData.spell(spell_tag)
 	if spell == null:
-		push_warning("CallLightning: no hay SPEL %s." % spell_tag)
+		push_warning("CallLightning: falta el hechizo (spell).")
 		return false
 	var center := BodyNudge.center(user)
 	var rng := MatchSeed.rng(["call_lightning", AbilityEffect.who(user), MatchClock.now()])

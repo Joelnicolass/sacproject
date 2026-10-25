@@ -213,7 +213,7 @@ func _cast() -> Dictionary:
 		var index := int(caster.get("spellbook").structure_index_of("pcas"))
 		checks[god + "_in_book"] = spell != null and action != null and action.arm_status(wizard, spell) == ""
 		checks[god + "_not_implemented_gone"] = index >= 0 and caster.structure_status(index) != SpellAction.NOT_IMPLEMENTED
-		spawner.scenes = [wizard.god_type().structure_for(spell).scene]
+		spawner.scenes = [wizard.god_type.structure_for(spell).scene]
 		var dead := Node3D.new()
 		dead.name = "Corpse"
 		dead.add_to_group(Corpse.GROUP)
@@ -264,12 +264,12 @@ func _tower(tag: String, slot: int, at: Vector3) -> CastTower:
 func _wizard(slot: int, at: Vector3, god := "james", level := 1) -> WizardBody:
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = slot
-	wizard.god = god
+	wizard.god_type = GameData.god(god)
 	wizard.level = level
 	wizard.position = at
 	_root.add_child(wizard)
 	## The wizard reads its seat's god when it enters; the case says it again.
-	wizard.god = god
+	wizard.god_type = GameData.god(god)
 	return wizard
 
 
@@ -278,7 +278,7 @@ func _unit(at: Vector3, slot: int) -> UnitBody:
 	var type := GameData.creature(tag)
 	var unit := UNIT_SCENE.instantiate() as UnitBody
 	unit.owner_slot = slot
-	unit.creature_tag = tag
+	unit.type = GameData.creature(tag)
 	unit.model = str(type.model) if type else ""
 	unit.rules = RULES
 	unit.idle_aggro = false

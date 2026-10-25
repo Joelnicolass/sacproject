@@ -33,8 +33,6 @@ signal connected(target: Node3D, was_frozen: bool)
 @export var passive: DamagePassive
 @export var own_health: Health
 
-## sacengine `defaultMeleeHitbox`: the Druid's box is 1.3× wider and deeper.
-const WIDTH_SCALE := {"nmuh": 1.3}
 ## Used when the cache has no SXSK data: HUa1, the humanoid attack0 (24 frames, tick 15, 30 fps).
 const FALLBACK_ANIMATION := {"tag": "HUa1", "frames": 24, "framerate": 30, "attack_ticks": [15]}
 
@@ -133,11 +131,11 @@ func swing_period_s(index: int) -> float:
 	return float(anim.get("frames", 0)) / float(anim.get("framerate", 30)) if not anim.is_empty() else 0.0
 
 
-## Half width of the melee box at `factor` of its size: the reach, widened for the creatures WIDTH_SCALE names. One owner for
+## Half width of the melee box at `factor` of its size: the reach, widened by the creature's `melee_width_scale`. One owner for
 ## the box width: in_reach (and so can_start and close_in's gate) reads it here. The box only widens, its forward offset
 ## (forward_factor·reach, what close_in walks to) does not (sacobject.d:446-476).
 func box_half(factor: float) -> float:
-	return reach * float(WIDTH_SCALE.get(type.tag if type else "", 1.0)) * factor
+	return reach * (type.melee_width_scale if type else 1.0) * factor
 
 
 func in_reach(target: Node3D, factor: float) -> bool:
@@ -204,7 +202,7 @@ static func profile_of(target: Node3D) -> Dictionary:
 		"reach": float(info.get("reach", 0.35)),
 		"height": float(info.get("height", 1.8)),
 	}
-	var wizard: WizardType = GameData.wizard(str(target.get("wizard_tag"))) if "wizard_tag" in target else null
+	var wizard: WizardType = target.get("wizard_type") if "wizard_type" in target else null
 	if wizard:
 		result["evasion"] = float(wizard.melee_evasion)
 		result["resistance"] = wizard.melee_resistance

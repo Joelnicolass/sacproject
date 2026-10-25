@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_vkkob"]
 [ext_resource type="Resource" path="res://data/audio/creatures/flummox.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://ckfjgwxrxuh5u" path="res://assets/original/ui/icons/wlce.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/crba.tres" id="typed_crba"]
 
 [resource]
 script = ExtResource("1_vkkob")
 tag = "wlce"
 display_name = "Flummox"
 icon = ExtResource("icon_tex")
-god = "james"
 model = "eclw"
 health = 2280
 regeneration_per_s = 16.6667
@@ -28,7 +28,7 @@ souls = 3
 cooldown_s = 5.0
 casting_time_s = 1.7284
 spell_order = 457
-ability_tags = PackedStringArray("crba")
+ranged_attack = ExtResource("typed_crba")
 stance_animation = {
 "framerate": 30.0,
 "frames": 53.0,
@@ -65,9 +65,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 54.0,
 "tag": "CPa3"
 }])
-is_ranged = true
-ranged_attack_tag = "crba"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 62.0,

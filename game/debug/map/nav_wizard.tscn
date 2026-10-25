@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="PackedScene" uid="uid://cvgikgwb1sifg" path="res://scenes/match/high_noon.tscn" id="1_world"]
 [ext_resource type="Resource" path="res://debug/rules/match_defeat.tres" id="2_rules"]
 [ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="3_unit"]
 [ext_resource type="Script" path="res://debug/map/nav_cross.gd" id="4_runner"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/druid.tres" id="typed_c_nmuh"]
 
 [node name="NavWizard" type="Node"]
 
@@ -18,7 +19,7 @@ start_zoom = 0.45
 
 [node name="Executioner" parent="." instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1028, 30, 1140)
-creature_tag = "nmuh"
+type = ExtResource("typed_c_nmuh")
 owner_slot = 1
 rng_seed = 20
 target_groups = PackedStringArray("wizard")

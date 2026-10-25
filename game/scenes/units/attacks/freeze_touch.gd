@@ -6,14 +6,12 @@ extends WaveTouch
 ## the wave touched it tries at the end of the update (toFreeze). A building has no Frozen. The freeze is the body's own
 ## Afflictions/Frozen with the SPEL `zerf`.
 
-## The SPEL of the freeze a touched body may take (zerf: 20 s, 150 of spell damage when it thaws).
-@export var freeze_spell := "zerf"
+## The spell of the freeze a touched body may take (data/catalog/spells/zerf.tres: 20 s, 150 of spell damage when it thaws).
+@export var freeze: SpellType
 ## The Frozen state under each body.
 @export var frozen_path := NodePath("Afflictions/Frozen")
 
 var _to_freeze: Array[Frozen] = []
-var _spell: SpellType
-var _warned := false
 
 
 ## The body's Frozen when it can be frozen now (not a building, not frozen yet), read before the damage.
@@ -40,9 +38,4 @@ func settled(shot: RangedShot) -> void:
 
 
 func _freeze_spell() -> SpellType:
-	if _spell == null:
-		_spell = GameData.spell(freeze_spell)
-		if _spell == null and not _warned:
-			_warned = true
-			push_warning("FreezeTouch: GameData no tiene el SPEL %s." % freeze_spell)
-	return _spell
+	return freeze

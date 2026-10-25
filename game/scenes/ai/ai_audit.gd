@@ -272,7 +272,7 @@ func _on_pool_changed(current: float, _maximum: float, slot: int) -> void:
 
 ## Everything the port asked of the Caster, and what it answered (RFC-024 §5.2): a started summon opens a window that
 ## closes when the creature is let go (`summoned`); a refusal is counted by its reason.
-func note_request(slot: int, tag: String, display: String, started: bool, answer: String, before: Dictionary, is_summon: bool, unit: Node, target: Node) -> void:
+func note_request(slot: int, tag: String, display: String, started: bool, answer: String, before: Dictionary, is_summon: bool, unit: Node, target: Node, summoned: CreatureType = null) -> void:
 	var side := _side(slot)
 	if not started:
 		var reason := answer if not answer.is_empty() else "(sin respuesta)"
@@ -282,7 +282,7 @@ func note_request(slot: int, tag: String, display: String, started: bool, answer
 		return
 	request_noted.emit(slot, tag, target, is_summon)
 	if is_summon:
-		var type := GameData.creature(tag)
+		var type := summoned
 		var entry := {
 			"tick": tick, "tag": tag, "name": display,
 			"mana_before": snappedf(float(before["mana"]), 0.001), "souls_before": int(before["souls"]),

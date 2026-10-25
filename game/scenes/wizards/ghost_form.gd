@@ -229,7 +229,7 @@ func _seconds(frames: int) -> float:
 
 
 func _type() -> WizardType:
-	return GameData.wizard(str(_wizard.get("wizard_tag")))
+	return _wizard.get("wizard_type") as WizardType
 
 
 ## sacengine hasAltar (state.d:13293): an altar of the wizard's side that stands.

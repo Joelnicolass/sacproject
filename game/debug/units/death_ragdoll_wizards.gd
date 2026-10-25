@@ -95,7 +95,7 @@ func _spawn(tags: PackedStringArray, only_tag: String) -> Array[WizardBody]:
 		var type := GameData.wizard(tags[i])
 		var wizard := WIZARD_SCENE.instantiate() as WizardBody
 		wizard.owner_slot = 1 + i % 2
-		wizard.wizard_tag = tags[i]
+		wizard.wizard_type = GameData.wizard(tags[i])
 		wizard.model = str(type.model)
 		var col := i % columns
 		var row := i / columns

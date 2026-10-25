@@ -3,13 +3,14 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_fx88v"]
 [ext_resource type="Resource" path="res://data/audio/creatures/sylph.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://bki4dmo8630lc" path="res://assets/original/ui/icons/ahcr.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/aaba.tres" id="typed_aaba"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/ivni.tres" id="typed_ivni"]
 
 [resource]
 script = ExtResource("1_fx88v")
 tag = "ahcr"
 display_name = "Sylph"
 icon = ExtResource("icon_tex")
-god = "stratos"
 model = "AArc"
 health = 640
 regeneration_per_s = 16.6667
@@ -27,7 +28,8 @@ souls = 1
 cooldown_s = 2.0
 casting_time_s = 0.2469
 spell_order = 130
-ability_tags = PackedStringArray("aaba", "ivni")
+ranged_attack = ExtResource("typed_aaba")
+active_ability = ExtResource("typed_ivni")
 stance_animation = {
 "framerate": 30.0,
 "frames": 37.0,
@@ -64,10 +66,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 45.0,
 "tag": "HAal"
 }])
-is_ranged = true
-ranged_attack_tag = "aaba"
-active_ability_tag = "ivni"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 58.0,

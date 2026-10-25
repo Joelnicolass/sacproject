@@ -33,14 +33,13 @@ func spawn_unit(data: Dictionary) -> Node3D:
 	return unit
 
 
-## A creature the map puts on the field (MapPopulation): a peasant tag gets peasant_scene, and every one
+## A creature the map puts on the field (MapPopulation): a type with `peasant` gets peasant_scene, and every one
 ## joins the group `npc` (SoulSystem and the ledger read it). `slot` is the side of the map plus one.
-func spawn_map_creature(tag: String, slot: int, at: Vector3, yaw: float) -> Node3D:
-	var type := GameData.creature(tag)
+func spawn_map_creature(type: CreatureType, slot: int, at: Vector3, yaw: float) -> Node3D:
 	return spawn_unit({
-		"tag": tag, "label": type.display_name if type else tag, "slot": slot,
+		"tag": type.id(), "label": type.display_name, "slot": slot,
 		"x": at.x, "y": at.y, "z": at.z, "yaw": yaw,
-		"npc": true, "peasant": PeasantBehavior.is_peasant_tag(tag),
+		"npc": true, "peasant": type.peasant,
 	})
 
 
@@ -51,7 +50,7 @@ func _make(data: Variant) -> Node3D:
 	if bool(info.get("npc", false)):
 		unit.add_to_group(&"npc")
 	unit.name = str(info["name"])
-	unit.set("creature_tag", str(info["tag"]))
+	unit.set("type", GameData.creature(str(info["tag"])))
 	unit.set("owner_slot", int(info.get("slot", 0)))
 	unit.set("rules", rules)
 	unit.position = Vector3(float(info["x"]), float(info["y"]), float(info["z"]))

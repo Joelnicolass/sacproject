@@ -11,11 +11,11 @@ Después de cualquier cambio de contenido, corré el validador (último apartado
 Para una criatura que no existe en el original, andá directo a «Crear una criatura propia desde Blender». Estos pasos son para las del catálogo.
 
 1. Duplicá un hermano en `data/catalog/creatures/` (por ejemplo `sylph.tres`) y llamalo con el nombre de tu criatura (`mi_bicho.tres`). El `tag` queda vacío: el id es el nombre del archivo.
-2. En el inspector: `tag`, `display_name`, `god`, `model` (el tag del modelo de `assets/original/models/<model>.glb`), vida, velocidad, resistencias, `ability_tags` y las animaciones.
+2. En el inspector: `tag`, `display_name`, `model` (el tag del modelo de `assets/original/models/<model>.glb`), vida, velocidad, resistencias, el grupo `Abilities` y las animaciones.
 3. El tamaño del cuerpo va en `data/catalog/body_sizes/<model>.tres` (`BodySize`: caja, `height`, `radius`, `reach`). Si el modelo ya lo usa otra criatura, ya existe.
 4. La escena del modelo es `scenes/bodies/models/<model>.tscn`. Si falta, hornéala: **Project > Tools > Sacrifice: Hornear modelos que faltan** (o `tools/bake/bake_body_scenes.gd`). Solo escribe los que faltan; lo que ya editaste no se pisa. Ahí se cambia qué clip toca cada rol (`AnimationTree`).
 5. Para que el jugador la pueda convocar, ponela en el libro del dios: `data/gods/<dios>.tres` → `book` → `creatures` (y una línea en `unlocks` con el nivel de mago en que entra).
-6. Las habilidades: `ability_tags` apunta a `data/catalog/abilities/`; la lógica de cada una es un nodo en `scenes/units/abilities/`.
+6. Las habilidades: en el grupo `Abilities` arrastrás el `.tres` de `data/catalog/abilities/` a `ranged_attack`, `active_ability` y `on_damage`, y las nubes o golpes con efecto de `data/death_clouds/` y `data/passives/` a `passives`; la lógica de cada una es un nodo en `scenes/units/abilities/`.
 
 ## Crear una criatura propia desde Blender
 

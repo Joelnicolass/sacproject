@@ -137,7 +137,7 @@ func _melee_run(tag: String, layout: String, count: int) -> Dictionary:
 	for i in count:
 		var angle := deg_to_rad(-30.0 + 20.0 * i) if layout == "frente" else deg_to_rad(45.0 + 90.0 * i)
 		var unit: Node3D = UNIT_SCENE.instantiate()
-		unit.set("creature_tag", tag)
+		unit.set("type", GameData.creature(tag))
 		unit.set("owner_slot", 1)
 		unit.set("idle_aggro", false)
 		unit.set("rng_seed", 100 + i)

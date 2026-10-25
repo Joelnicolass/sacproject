@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_ic8cq"]
 [ext_resource type="Resource" path="res://data/audio/creatures/taurock.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://d3dgng788qv3s" path="res://assets/original/ui/icons/raeb.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/korq.tres" id="typed_korq"]
 
 [resource]
 script = ExtResource("1_ic8cq")
 tag = "raeb"
 display_name = "Taurock"
 icon = ExtResource("icon_tex")
-god = "james"
 model = "eber"
 health = 1920
 regeneration_per_s = 16.6667
@@ -27,7 +27,7 @@ souls = 2
 cooldown_s = 4.0
 casting_time_s = 1.2963
 spell_order = 350
-ability_tags = PackedStringArray("korq")
+on_damage = ExtResource("typed_korq")
 stance_animation = {
 "framerate": 30.0,
 "frames": 58.0,
@@ -64,8 +64,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 72.0,
 "tag": "BEa2"
 }])
-passive_on_damage = "korq"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 1.0,

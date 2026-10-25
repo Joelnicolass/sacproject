@@ -3,13 +3,15 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_d0ate"]
 [ext_resource type="Resource" path="res://data/audio/creatures/silverback.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://b1q5o5ky24uaj" path="res://assets/original/ui/icons/grdb.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/rdba.tres" id="typed_rdba"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/!nur.tres" id="typed__nur"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/gcil.tres" id="typed_gcil"]
 
 [resource]
 script = ExtResource("1_d0ate")
 tag = "grdb"
 display_name = "Silverback"
 icon = ExtResource("icon_tex")
-god = "stratos"
 model = "adrg"
 health = 4800
 regeneration_per_s = 16.6667
@@ -31,7 +33,9 @@ souls = 5
 cooldown_s = 10.0
 casting_time_s = 3.3333
 spell_order = 988
-ability_tags = PackedStringArray("rdba", "!nur", "gcil")
+ranged_attack = ExtResource("typed_rdba")
+active_ability = ExtResource("typed__nur")
+on_damage = ExtResource("typed_gcil")
 stance_animation = {
 "framerate": 30.0,
 "frames": 97.0,
@@ -68,11 +72,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 84.0,
 "tag": "ADa3"
 }])
-is_ranged = true
-ranged_attack_tag = "rdba"
-active_ability_tag = "!nur"
-passive_on_damage = "gcil"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 43.0,

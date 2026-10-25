@@ -57,8 +57,8 @@ func _make(data: Variant) -> Node:
 	if data is Dictionary and (data as Dictionary).has("scene"):
 		var scene := load(str(data["scene"])) as PackedScene
 		var node := scene.instantiate()
-		node.call("setup", data)  # dynamic: the root of any spawnable scene answers setup(data) (F165)
+		node.call("setup", data, GameData.ability(str(data.get("tag", ""))))  # dynamic: the root of any spawnable scene answers setup(data, ability) (F165)
 		return node
 	var shot: RangedShot = _SHOT.new()
-	shot.setup(data)
+	shot.setup(data, GameData.ability(str(data.get("tag", ""))))
 	return shot

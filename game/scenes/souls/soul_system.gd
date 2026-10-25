@@ -215,10 +215,10 @@ func _watch(node: Node) -> void:
 		node.connect("died", on_died)
 
 
-func _on_unit_died(tag: String, slot: int, _at: Vector3, unit: Node3D) -> void:
+func _on_unit_died(_tag: String, slot: int, _at: Vector3, unit: Node3D) -> void:
 	if not is_instance_valid(unit):
 		return
-	var type := GameData.creature(tag)
+	var type: CreatureType = (unit as UnitBody).type
 	var count := type.souls if type else 0
 	if not DeathRules.leaves_soul(count, false):
 		return

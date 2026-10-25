@@ -120,11 +120,6 @@ func ages_for(seconds: float) -> int:
 	var period := age_period_ticks if age_period_ticks > 0 else (slot_periods[2] if slot_periods.size() > 2 else 1)
 	return MatchClock.ticks_for(seconds) / maxi(1, period)
 
-## The profile of a god (the `ai_profile` of data/gods/<god>.tres), or the original when the god has none.
-static func for_god(god_name: StringName) -> AiProfile:
-	return for_type(GameCatalog.shared().god(String(god_name)))
-
-
 ## The profile of a god Resource (null = no god), or the original when it has none.
 static func for_type(type: GodType) -> AiProfile:
 	if type != null and type.ai_profile != null:

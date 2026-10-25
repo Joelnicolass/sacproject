@@ -3,13 +3,16 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_g6wjd"]
 [ext_resource type="Resource" path="res://data/audio/creatures/phoenix.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://dxjogj4b33ybh" path="res://assets/original/ui/icons/grdr.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/rdra.tres" id="typed_rdra"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/rifl.tres" id="typed_rifl"]
+[ext_resource type="Script" path="res://scenes/units/passives/creature_passive.gd" id="typed_passive_script"]
+[ext_resource type="Resource" path="res://data/death_clouds/cog_cloud.tres" id="typed_passive_0"]
 
 [resource]
 script = ExtResource("1_g6wjd")
 tag = "grdr"
 display_name = "Phoenix"
 icon = ExtResource("icon_tex")
-god = "pyro"
 model = "fdrg"
 health = 4800
 regeneration_per_s = 16.6667
@@ -31,7 +34,9 @@ souls = 5
 cooldown_s = 10.0
 casting_time_s = 3.3333
 spell_order = 986
-ability_tags = PackedStringArray("rdra", "rifl")
+ranged_attack = ExtResource("typed_rdra")
+on_damage = ExtResource("typed_rifl")
+passives = Array[ExtResource("typed_passive_script")]([ExtResource("typed_passive_0")])
 stance_animation = {
 "framerate": 30.0,
 "frames": 88.0,
@@ -68,10 +73,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 45.0,
 "tag": "DFa3"
 }])
-is_ranged = true
-ranged_attack_tag = "rdra"
-passive_on_damage = "rifl"
-passive_abilities = PackedStringArray("goc@")
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 89.0,

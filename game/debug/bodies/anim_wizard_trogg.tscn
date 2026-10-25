@@ -1,8 +1,10 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://debug/bodies/anim_wizard_trogg.gd" id="1_debug"]
 [ext_resource type="PackedScene" path="res://scenes/wizards/wizard_body.tscn" id="2_wizard"]
 [ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="3_unit"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/trogg.tres" id="typed_c_ycro"]
+[ext_resource type="Resource" path="res://data/catalog/wizards/jadugarr.tres" id="typed_w_cwa0"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
 size = Vector3(80, 1, 80)
@@ -41,13 +43,13 @@ position = Vector3(0, -0.5, 0)
 [node name="Wizard" parent="." instance=ExtResource("2_wizard")]
 position = Vector3(-2.4, 0, 0)
 owner_slot = 0
-wizard_tag = "cwa0"
+wizard_type = ExtResource("typed_w_cwa0")
 model = "jnwr"
 
 [node name="Trogg" parent="." instance=ExtResource("3_unit")]
 position = Vector3(2.4, 0, 0)
 owner_slot = 2
-creature_tag = "ycro"
+type = ExtResource("typed_c_ycro")
 model = "eorc"
 mode = 0
 idle_aggro = false

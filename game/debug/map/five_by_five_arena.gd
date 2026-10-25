@@ -96,7 +96,7 @@ func _spawn_wizard_side(parent: Node3D, slot: int, position: Vector3, facing: Ve
 	var wizard: CharacterBody3D = WIZARD_SCENE.instantiate()
 	wizard.name = "Wizard%d" % slot
 	wizard.set("owner_slot", slot)
-	wizard.set("wizard_tag", "cwa0")
+	wizard.set("wizard_type", GameData.wizard("cwa0"))
 	wizard.set("model", "jnwr")
 	wizard.set("god", "james")
 	wizard.position = position
@@ -125,7 +125,7 @@ func _spawn_wizard_side(parent: Node3D, slot: int, position: Vector3, facing: Ve
 		if slot == 2:
 			local_pos.x *= -1.0
 		unit.name = "%s%d" % [tag.capitalize(), index + 1]
-		unit.set("creature_tag", tag)
+		unit.set("type", GameData.creature(tag))
 		unit.set("owner_slot", slot)
 		unit.set("rules", MATCH_RULES)
 		unit.set("idle_aggro", true)

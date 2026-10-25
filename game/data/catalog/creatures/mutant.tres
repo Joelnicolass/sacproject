@@ -3,13 +3,15 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_ebs7r"]
 [ext_resource type="Resource" path="res://data/audio/creatures/mutant.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://b8u5o0o4fk0p5" path="res://assets/original/ui/icons/cbab.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/babt.tres" id="typed_babt"]
+[ext_resource type="Script" path="res://scenes/units/passives/creature_passive.gd" id="typed_passive_script"]
+[ext_resource type="Resource" path="res://data/death_clouds/mutant_cloud.tres" id="typed_passive_0"]
 
 [resource]
 script = ExtResource("1_ebs7r")
 tag = "cbab"
 display_name = "Mutant"
 icon = ExtResource("icon_tex")
-god = "persephone"
 model = "babc"
 health = 1900
 regeneration_per_s = 29.1667
@@ -28,7 +30,8 @@ souls = 3
 cooldown_s = 7.0
 casting_time_s = 2.2222
 spell_order = 669
-ability_tags = PackedStringArray("babt")
+ranged_attack = ExtResource("typed_babt")
+passives = Array[ExtResource("typed_passive_script")]([ExtResource("typed_passive_0")])
 stance_animation = {
 "framerate": 30.0,
 "frames": 58.0,
@@ -65,9 +68,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 43.0,
 "tag": "GCal"
 }])
-is_ranged = true
-ranged_attack_tag = "babt"
-passive_abilities = PackedStringArray("tum@")
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 71.0,

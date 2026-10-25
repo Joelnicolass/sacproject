@@ -6,7 +6,6 @@
 [resource]
 script = ExtResource("1_2ptvr")
 tag = "cwl0"
-spell_tag = "0lwc"
 display_name = "Shakti"
 model = "shkt"
 health = 1500

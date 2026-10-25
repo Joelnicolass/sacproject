@@ -3,13 +3,15 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_oqlub"]
 [ext_resource type="Resource" path="res://data/audio/creatures/necryl.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://cedbb5ksqd4wv" path="res://assets/original/ui/icons/glsd.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/cena.tres" id="typed_cena"]
+[ext_resource type="Script" path="res://scenes/units/passives/creature_passive.gd" id="typed_passive_script"]
+[ext_resource type="Resource" path="res://data/death_clouds/necryl_cloud.tres" id="typed_passive_0"]
 
 [resource]
 script = ExtResource("1_oqlub")
 tag = "glsd"
 display_name = "Necryl"
 icon = ExtResource("icon_tex")
-god = "charnel"
 model = "dslg"
 health = 1260
 drain = 0.5
@@ -27,7 +29,8 @@ souls = 2
 cooldown_s = 3.0
 casting_time_s = 0.7407
 spell_order = 245
-ability_tags = PackedStringArray("cena")
+ranged_attack = ExtResource("typed_cena")
+passives = Array[ExtResource("typed_passive_script")]([ExtResource("typed_passive_0")])
 stance_animation = {
 "framerate": 30.0,
 "frames": 98.0,
@@ -64,9 +67,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 59.0,
 "tag": "SLa3"
 }])
-is_ranged = true
-ranged_attack_tag = "cena"
-passive_abilities = PackedStringArray("cen@")
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 47.0,

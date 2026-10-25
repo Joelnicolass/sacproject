@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_cbtr8"]
 [ext_resource type="Resource" path="res://data/audio/creatures/gammel.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://dkwt4qld5ypfe" path="res://assets/original/ui/icons/mag_h.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/acia.tres" id="typed_acia"]
 
 [resource]
 script = ExtResource("1_cbtr8")
 tag = "magH"
 display_name = "Gammel"
 icon = ExtResource("icon_tex")
-god = "james"
 model = "gamm"
 health = 3360
 regeneration_per_s = 16.6667
@@ -32,7 +32,7 @@ souls = 3
 cooldown_s = 6.0
 casting_time_s = 2.1605
 spell_order = 604
-ability_tags = PackedStringArray("acia")
+active_ability = ExtResource("typed_acia")
 stance_animation = {
 "framerate": 30.0,
 "frames": 88.0,
@@ -69,8 +69,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 71.0,
 "tag": "CKa3"
 }])
-active_ability_tag = "acia"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 96.0,

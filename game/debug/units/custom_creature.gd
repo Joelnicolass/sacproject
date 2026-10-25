@@ -239,7 +239,7 @@ func _dummy(at: Vector3) -> UnitBody:
 	var type := GameData.creature("raeb")
 	var dummy := UNIT_SCENE.instantiate() as UnitBody
 	dummy.owner_slot = 2
-	dummy.creature_tag = "raeb"
+	dummy.type = GameData.creature("raeb")
 	dummy.model = type.model
 	dummy.idle_aggro = false
 	dummy.target_groups = PackedStringArray()

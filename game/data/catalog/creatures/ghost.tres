@@ -9,7 +9,6 @@ script = ExtResource("1_0fo3b")
 tag = "tshg"
 display_name = "Ghost"
 icon = ExtResource("icon_tex")
-god = "persephone"
 model = "peas"
 health = 500
 regeneration_per_s = 16.6667
@@ -21,7 +20,6 @@ sight_range = 50.0
 melee_resistance = 1.5
 souls = 1
 spell_order = 11
-ability_tags = PackedStringArray("tsg@")
 stance_animation = {
 "framerate": 30.0,
 "frames": 56.0,
@@ -58,8 +56,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 26.0,
 "tag": "PEa1"
 }])
-passive_on_damage = "tsg@"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 1.0,

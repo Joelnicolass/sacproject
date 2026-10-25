@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_4djl0"]
 [ext_resource type="Resource" path="res://data/audio/creatures/flurry.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://bn6qifs6uyuky" path="res://assets/original/ui/icons/wlca.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/caba.tres" id="typed_caba"]
 
 [resource]
 script = ExtResource("1_4djl0")
 tag = "wlca"
 display_name = "Flurry"
 icon = ExtResource("icon_tex")
-god = "stratos"
 model = "aclw"
 health = 1520
 regeneration_per_s = 16.6667
@@ -28,7 +28,7 @@ souls = 4
 cooldown_s = 7.0
 casting_time_s = 1.4815
 spell_order = 672
-ability_tags = PackedStringArray("caba")
+ranged_attack = ExtResource("typed_caba")
 stance_animation = {
 "framerate": 30.0,
 "frames": 53.0,
@@ -65,9 +65,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 54.0,
 "tag": "CPa3"
 }])
-is_ranged = true
-ranged_attack_tag = "caba"
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 62.0,

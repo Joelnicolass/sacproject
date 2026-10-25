@@ -8,7 +8,6 @@ script = ExtResource("1_d4j27")
 tag = "testmonster"
 display_name = "Test Monster"
 icon = ExtResource("icon_tex")
-god = "pyro"
 model = "testmonster"
 health = 1000
 regeneration_per_s = 10.0
@@ -23,7 +22,6 @@ souls = 1
 cooldown_s = 3.0
 casting_time_s = 1.0
 spell_order = 100
-ability_tags = PackedStringArray()
 idle_animation = {
 "framerate": 30.0,
 "frames": 60,
@@ -50,7 +48,6 @@ melee_animations = Array[Dictionary]([{
 "frames": 50,
 "tag": "attack2_at60"
 }])
-passive_abilities = PackedStringArray()
 shoot_animations = Array[Dictionary]([{
 "framerate": 30.0,
 "frames": 40,

@@ -37,7 +37,9 @@ var mode := "unit"
 ## Microseconds the last rebuild took, and the last bar refresh (debug and flows).
 var last_build_us := 0
 var last_refresh_us := 0
-## Tag of the ability icon on show, "" when there is none.
+## The ability whose icon is on show, null when there is none.
+var ability: AbilityType
+## Its tag, "" when there is none (flows read it).
 var ability_tag := ""
 ## Text of a single creature «Trogg 960/960» or «N unidades»; never drawn, flows read it.
 var summary: String:
@@ -161,16 +163,16 @@ func _ensure_cells(needed: int) -> void:
 
 
 func _show_ability() -> void:
-	ability_tag = (selection as _SELECTION).ability_tag() if selection else ""
+	ability = (selection as _SELECTION).ability() if selection else null
+	ability_tag = ability.tag if ability else ""
 	var button: Button = %Ability
-	button.visible = not ability_tag.is_empty()
-	if ability_tag.is_empty():
+	button.visible = ability != null
+	if ability == null:
 		return
-	var ability: AbilityType = GameData.ability(ability_tag)
-	var icon: Texture2D = ability.icon if ability else null
+	var icon: Texture2D = ability.icon
 	%AbilityIcon.texture = icon
 	button.text = "" if icon else ability_tag
-	button.tooltip_text = (ability.display_name if ability else ability_tag) if tooltips else ""
+	button.tooltip_text = ability.display_name if tooltips else ""
 
 
 ## Click on a cell. By creature: plain = only that one, Shift = take it out, Ctrl = every selected

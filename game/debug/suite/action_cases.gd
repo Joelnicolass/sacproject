@@ -80,7 +80,7 @@ func _manalith_action(host: Node3D) -> Dictionary:
 	towers.name = "Towers"
 	host.add_child(towers)
 	var spawner := StructureSpawner.new()
-	spawner.scenes = [wizard.god_type().structure_for(spell).scene]
+	spawner.scenes = [wizard.god_type.structure_for(spell).scene]
 	spawner.spawn_path = NodePath("../Towers")
 	host.add_child(spawner)
 	var checks := {}
@@ -138,7 +138,7 @@ func _manalith_action(host: Node3D) -> Dictionary:
 func _wizard(host: Node3D, at: Vector3) -> WizardBody:
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = 1
-	wizard.god = GOD
+	wizard.god_type = GameData.god(GOD)
 	host.add_child(wizard)
 	wizard.global_position = at
 	return wizard

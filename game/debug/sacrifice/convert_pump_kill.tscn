@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="PackedScene" uid="uid://cvgikgwb1sifg" path="res://scenes/match/high_noon.tscn" id="1_world"]
 [ext_resource type="Resource" path="res://debug/rules/convert.tres" id="2_rules"]
 [ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="3_unit"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/druid.tres" id="typed_c_nmuh"]
 
 [node name="ConvertPumpKill" type="Node"]
 editor_description = "SOLO (un proceso). Igual que convert_ritual y ademas Guard1..4 (Druid slot 2, solo atacan el grupo doctor) a 40 m de Victim, del lado opuesto al mago: matan al Sac Doctor mientras bombea (10 s). Resultado esperado: Victim vuelve a morir, el alma roja reaparece y sigue Almas 0."
@@ -15,7 +16,7 @@ debug_pointer = Vector2(640, 360)
 
 [node name="Victim" parent="HighNoon" groups=["victim"] instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1507.40, 18.0, 1525.61)
-creature_tag = "nmuh"
+type = ExtResource("typed_c_nmuh")
 owner_slot = 2
 idle_aggro = false
 rng_seed = 51
@@ -23,42 +24,42 @@ target_groups = PackedStringArray()
 
 [node name="Killer1" parent="HighNoon" instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1502.14, 18.0, 1532.85)
-creature_tag = "nmuh"
+type = ExtResource("typed_c_nmuh")
 owner_slot = 1
 rng_seed = 61
 target_groups = PackedStringArray("victim")
 
 [node name="Killer2" parent="HighNoon" instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1510.03, 18.0, 1534.16)
-creature_tag = "nmuh"
+type = ExtResource("typed_c_nmuh")
 owner_slot = 1
 rng_seed = 62
 target_groups = PackedStringArray("victim")
 
 [node name="Guard1" parent="HighNoon" instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1508.06, 25.0, 1485.17)
-creature_tag = "nmuh"
+type = ExtResource("typed_c_nmuh")
 owner_slot = 2
 rng_seed = 71
 target_groups = PackedStringArray("doctor")
 
 [node name="Guard2" parent="HighNoon" instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1512.00, 25.0, 1485.83)
-creature_tag = "nmuh"
+type = ExtResource("typed_c_nmuh")
 owner_slot = 2
 rng_seed = 72
 target_groups = PackedStringArray("doctor")
 
 [node name="Guard3" parent="HighNoon" instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1515.95, 25.0, 1486.49)
-creature_tag = "nmuh"
+type = ExtResource("typed_c_nmuh")
 owner_slot = 2
 rng_seed = 73
 target_groups = PackedStringArray("doctor")
 
 [node name="Guard4" parent="HighNoon" instance=ExtResource("3_unit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1519.89, 25.0, 1487.14)
-creature_tag = "nmuh"
+type = ExtResource("typed_c_nmuh")
 owner_slot = 2
 rng_seed = 74
 target_groups = PackedStringArray("doctor")

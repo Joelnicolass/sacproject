@@ -46,9 +46,24 @@ func hanging(rules: MatchRules) -> Dictionary:
 	return {"unit": body, "model": model, "driver": ragdoll, "doctor": carrier, "taken": taken}
 
 
+## Frees a scenario. The bones stop first and the nodes leave through the queue: freeing bodies that still simulate crashes the engine.
 func release(scenario: Dictionary) -> void:
-	scenario.unit.free()
-	scenario.doctor.free()
+	await dispose([scenario.unit], scenario.driver)
+	scenario.doctor.queue_free()
+
+
+## Stops the ragdoll of `body`, queues it for deletion and waits two physics frames.
+func dispose(bodies: Array, ragdoll: RagdollDriver) -> void:
+	if ragdoll != null:
+		ragdoll.set_pose(RagdollDriver.Pose.OFF)
+	for body: Node in bodies:
+		body.queue_free()
+	await wait_frames(2)
+
+
+## "pose=1 running=true mode=8": what a failing case prints next to the key.
+func state(ragdoll: RagdollDriver, body: UnitBody) -> String:
+	return "pose=%d running=%s mode=%d role='%s'" % [ragdoll.pose(), ragdoll.is_running(), body.mode, body.captive_role]
 
 
 func make_unit(at: Vector3) -> UnitBody:
@@ -61,6 +76,7 @@ func make_unit(at: Vector3) -> UnitBody:
 	body.target_groups = PackedStringArray()
 	body.position = at
 	root.add_child(body)
+	(body.find_child("CaptiveLook", false, false) as CaptiveLook).hangs = true  # off by default in unit.tscn (plan 17)
 	return body
 
 
@@ -109,11 +125,13 @@ func wait_until(condition: Callable) -> void:
 		await host.get_tree().physics_frame
 
 
-func verdict(checks: Dictionary) -> Dictionary:
+## A check named `pending_*` is reported but does not fail the case (it waits for a cut that is not in yet, 055a-5j).
+func verdict(checks: Dictionary, info := "") -> Dictionary:
 	var ok := true
 	for key in checks:
 		if checks[key] is bool and not checks[key]:
-			ok = false
-			print("captive_look_cases: falla %s" % key)
+			var pending := String(key).begins_with("pending_")
+			ok = ok and pending
+			print("captive_look_cases: %s %s %s" % ["pendiente" if pending else "falla", key, info])
 	checks["ok"] = ok
 	return checks

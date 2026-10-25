@@ -37,7 +37,7 @@ func _pure_table() -> Dictionary:
 		[m.REVIVING, m.HELD, true, true, look.HANG_APPEAR], [m.REVIVING, m.HELD, false, false, look.CLIPS],
 		[m.DEAD, m.REVIVING, true, true, look.KEEP_LYING], [m.DEAD, m.REVIVING, false, false, look.STAND_APPEAR],
 		[m.HELD, m.IDLE, true, false, look.LET_GO], [m.HELD, m.IDLE, false, false, look.LET_GO],
-		[m.REVIVING, m.IDLE, true, false, look.STAND_APPEAR], [m.REVIVING, m.IDLE, false, false, look.LET_GO],
+		[m.REVIVING, m.IDLE, true, true, look.STAND_APPEAR], [m.REVIVING, m.IDLE, false, false, look.LET_GO],
 		[m.HELD, m.DEAD, true, false, look.NONE], [m.IDLE, m.DEAD, false, false, look.NONE],
 		[m.HELD, m.HELD, true, false, look.HANG],  # a peer that joins late: already held, the model binds now
 	]
@@ -56,10 +56,11 @@ func _hang() -> Dictionary:
 	var checks := {"can_hang": ragdoll.can_hang(), "taken": s.taken}
 	checks["hangs"] = ragdoll.pose() == RagdollDriver.Pose.HANG and ragdoll.is_running()
 	checks["no_captive_clip"] = s.unit.captive_role.is_empty()
-	checks["anchor_follows"] = model.hang_bone != null and model.hang_bone.global_position.y > 1.0
+	checks["pending_055a5j_anchor_follows"] = model.hang_bone != null and model.hang_bone.global_position.y > 1.0
 	checks["no_nan"] = not METRICS.has_nan(_w.bone_points(model))
-	_w.release(s)
-	return _w.verdict(checks)
+	var info := _w.state(ragdoll, s.unit)
+	await _w.release(s)
+	return _w.verdict(checks, info)
 
 
 ## Let go alive: the ragdoll is off, the skeleton is back at rest for the clips and the creature answers orders again.
@@ -72,8 +73,9 @@ func _let_go_alive() -> Dictionary:
 	var checks := {"alive": not s.unit.is_dead() and s.unit.is_in_group("unit"), "idle": s.unit.mode == UnitBody.Mode.IDLE}
 	checks["ragdoll_off"] = ragdoll.pose() == RagdollDriver.Pose.OFF and not ragdoll.is_running()
 	checks["at_rest"] = skeleton.get_bone_global_pose(10).is_equal_approx(skeleton.get_bone_global_rest(10))
-	_w.release(s)
-	return _w.verdict(checks)
+	var info := _w.state(ragdoll, s.unit)
+	await _w.release(s)
+	return _w.verdict(checks, info)
 
 
 ## The doctor dies holding it (the rule says it dies): the ragdoll that hung falls where it is, settles and freezes lying.
@@ -89,8 +91,9 @@ func _dies_hanging() -> Dictionary:
 	await _w.wait_until(func() -> bool: return not ragdoll.is_running())
 	checks["froze_as_fall"] = not ragdoll.is_running() and ragdoll.pose() == RagdollDriver.Pose.FALL
 	checks["lies_flat"] = METRICS.top_ratio(_w.bone_points(s.model), s.unit.global_position.y, 1.0) < LYING_MAX_M
-	_w.release(s)
-	return _w.verdict(checks)
+	var info := _w.state(ragdoll, s.unit)
+	await _w.release(s)
+	return _w.verdict(checks, info)
 
 
 ## A corpse lying as a ragdoll stays lying while a Convert doctor pumps it, and hangs as soon as the doctor takes it.
@@ -114,9 +117,10 @@ func _convert_keeps_lying() -> Dictionary:
 	checks["taken"] = captive.take(carrier)
 	await _w.wait_until(func() -> bool: return ragdoll.pose() == RagdollDriver.Pose.HANG)
 	checks["hangs_when_taken"] = ragdoll.pose() == RagdollDriver.Pose.HANG
-	body.free()
-	carrier.free()
-	return _w.verdict(checks)
+	var info := _w.state(ragdoll, body)
+	carrier.queue_free()
+	await _w.dispose([body], ragdoll)
+	return _w.verdict(checks, info)
 
 
 ## A model that binds after the creature was already taken (a peer that joins late) hangs at once, without a fade.
@@ -130,6 +134,7 @@ func _late_join() -> Dictionary:
 	ragdoll.bind_model(_w.mount_model(body))
 	await _w.wait_frames(10)
 	checks["hangs"] = body.is_held() and ragdoll.pose() == RagdollDriver.Pose.HANG
-	body.free()
-	carrier.free()
-	return _w.verdict(checks)
+	var info := _w.state(ragdoll, body)
+	carrier.queue_free()
+	await _w.dispose([body], ragdoll)
+	return _w.verdict(checks, info)

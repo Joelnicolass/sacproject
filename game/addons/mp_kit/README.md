@@ -53,7 +53,7 @@ El transporte es elegible; la API, los RPC y la replicación son los mismos con 
 | Túnel TCP (ngrok, etc.) | no | si |
 
 - **Un solo lugar**: un `MpNetConfig` (`.tres`) en `MpFlow.net_config` (transporte, puerto, jugadores, `public_host`, TLS). Los flags le ganan.
-- **Web**: un export web usa WebSocket siempre (`MpTransport.from_flags`), no hostea ni busca salas LAN (`MpNetConfig.can_host()`); el menú oculta esas filas. Prueba: `game/agent/runs/run_mpkit_web.sh` (abrí la URL que imprime en una pestaña nueva).
+- **Web**: un export web usa WebSocket siempre (`MpTransport.from_flags`), no hostea ni busca salas LAN (`MpNetConfig.can_host()`); el menú oculta esas filas. Prueba: el script e2e `run_mpkit_web.sh` del laboratorio (abrí la URL que imprime en una pestaña nueva); ver [tests/README.md](tests/README.md).
 - **Flag**: `--transport=ws` (o `enet`). Lo leen `MpKit` (`MpKit.transport`, antes de `host()`/`host_dedicated()`/`join()`; el glue puede fijarlo a mano) y `MpLobbyClient.transport`.
 - **Servidor de salas**: `MpLobbyConfig.transport` (`.tres` o `--transport=ws`). Sirve el lobby con ese transporte, busca puertos libres de las partidas con TCP o UDP según corresponda y **se lo pasa al dedicado hijo** (`transport` está en `agent_fields`, llega como `--transport=ws`).
 - Mismo transporte en todos los procesos: cliente, servidor de salas y dedicados. Un cliente ENet no habla con un servidor WS.
@@ -476,7 +476,7 @@ No metas meshes, puntaje ni `kind` de bala en el túnel.
 
 Con el plugin enabled, **Project → Tools**:
 
-- **Setup game...** — un juego multijugador completo desde un diálogo (`editor/mp_setup_wizard.gd`): boot, mundo, jugador con `MpActor` predicho + `MpInput`, `MpNetConfig` y, opcional, salas online. Muestra el árbol de archivos (`[+]` / `[~]`) y nunca pisa uno existente. Prueba: `game/agent/runs/run_mpkit_wizard.sh` (genera un juego y lo juega en red; `WIZARD_3D=1` para 3D)
+- **Setup game...** — un juego multijugador completo desde un diálogo (`editor/mp_setup_wizard.gd`): boot, mundo, jugador con `MpActor` predicho + `MpInput`, `MpNetConfig` y, opcional, salas online. Muestra el árbol de archivos (`[+]` / `[~]`) y nunca pisa uno existente. Prueba: el e2e `run_mpkit_wizard.sh` del laboratorio (genera un juego y lo juega en red; `WIZARD_3D=1` para 3D)
 - **Make selection a network actor** — hijo `MpActor` (con su `MpSync`, que se arma y se guarda con la escena) y, si es un `CharacterBody`, `MpInput`
 - **New replicated feature...** — `res://features/<id>/<id>.gd` + `.tscn`
 - **New session flow...** — autoload `MpFlow` (`res://glue/session_flow.tscn`)
@@ -551,7 +551,7 @@ Handshake de spawn: `hold_until_world_ready` (synchronizers ocultos hasta que el
 
 ## Servidor de salas
 
-**Camino de nodos (recomendado)**: `MpRoomServer` (escena del servidor) + `MpLobbyConfig` + `MpRoomRules` (opcional), `MpLobbyScreen` en el cliente y `MpMatch` en el mundo. Ver [QUICKSTART.md](QUICKSTART.md) › Online. Prueba sin juego: `game/agent/runs/run_mpkit_rooms.sh` (`TRANSPORT=ws` para WebSocket). Lo que sigue es la referencia de las piezas de abajo, que esos nodos envuelven sin cambiarlas.
+**Camino de nodos (recomendado)**: `MpRoomServer` (escena del servidor) + `MpLobbyConfig` + `MpRoomRules` (opcional), `MpLobbyScreen` en el cliente y `MpMatch` en el mundo. Ver [QUICKSTART.md](QUICKSTART.md) › Online. Prueba sin juego: el e2e `run_mpkit_rooms.sh` del laboratorio (`TRANSPORT=ws` para WebSocket). Lo que sigue es la referencia de las piezas de abajo, que esos nodos envuelven sin cambiarlas.
 
 Regla de dependencias: `MpFlow` y los nodos del mundo (`MpMatch`) nunca nombran clases del lobby (`MpMatchAgent`...): las buscan por grupo o las cargan por ruta. Un juego que carga el lobby como autoload y referencia su flow desde el glue del dedicado formaría un ciclo de carga.
 

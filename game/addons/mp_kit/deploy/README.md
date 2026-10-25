@@ -51,4 +51,4 @@ Una página servida por `https` solo abre `wss://`. Con un dedicado sin lobby al
 
 ## Verificado y no verificado
 
-Verificado en una Mac: varias instancias de `--room-server` lado a lado con sus rangos (`game/agent/runs/run_mpkit_instances.sh`), salas, partidas privadas y web. No verificado: el export de Linux (faltan las plantillas en esa Mac) y un VPS real.
+Verificado en una Mac: varias instancias de `--room-server` lado a lado con sus rangos (e2e `run_mpkit_instances.sh` del laboratorio), salas, partidas privadas y web. No verificado: el export de Linux (faltan las plantillas en esa Mac) y un VPS real.

@@ -121,8 +121,6 @@ func _menu_sounds(host: Node) -> Dictionary:
 	var packed := load(RADIAL_SCENE) as PackedScene
 	var radial := packed.instantiate() as RadialMenu
 	radial.name = "CaseRadial"
-	radial.open_s = 0.0
-	radial.close_s = 0.0
 	host.add_child(radial)
 	await host.get_tree().process_frame
 	var menu_sounds := radial.get_node_or_null("MenuSounds") as MenuSounds

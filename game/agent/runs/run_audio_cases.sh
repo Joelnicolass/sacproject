@@ -70,7 +70,7 @@ tool() { # name, expected line (grep -E), then the args after --path
 }
 tool new_creature_052i "^NEW_CREATURE sounds (wrote|kept[^:]*): user://new_creature_052i/creatures/testmonster.tres$" \
   --script res://tools/bake/new_creature.gd -- testmonster --no-icon \
-  --sounds=res://debug/audio/fixtures/custom_sounds/ --sounds-out=user://new_creature_052i/ --force
+  --sounds=res://debug/audio/fixtures/custom_sounds/ --sounds-out=user://new_creature_052i/ --force-sounds
 lab lab_052i res://debug/audio/lab_052i.tres
 lab lab_052i_no_original res://debug/audio/lab_052i.tres --audio-no-original
 echo "logs: $OUT"

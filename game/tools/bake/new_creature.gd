@@ -30,7 +30,7 @@ extends SceneTree
 ## When assets/custom/sounds/creatures/<tag>/ exists, its files (`death_1.wav`, `swing_1.ogg`...: the event names of SoundEvent.BODY)
 ## fill the fields of the set; without that folder the set is empty (drag the files onto it in the inspector). Never over an
 ## existing one (`--force` rewrites it). Also with `--sync`.
-## Options: --name="Display name"  --god=<god tag>  --fps=<n> (default: the animation's own step, 30)  --force  --sync
+## Options: --name="Display name"  --god=<god tag>  --fps=<n> (default: the animation's own step, 30)  --force  --force-sounds  --sync
 ##          --icon (draw the icon again even if the PNG exists)  --no-icon (do not draw one)
 ##          --sounds=res://dir/ --sounds-out=res://dir/ (another source / target for the sounds, e.g. a fixture)
 
@@ -96,6 +96,8 @@ const SETS := {
 }
 
 var _force := false
+## Rewrites only the sound set (a test refreshing its output), never the creature's type, scene or icon.
+var _force_sounds := false
 var _sync := false
 var _fps_arg := 0
 var _icon := false
@@ -114,6 +116,8 @@ func _initialize() -> void:
 	for arg in args:
 		if arg == "--force":
 			_force = true
+		elif arg == "--force-sounds":
+			_force_sounds = true
 		elif arg == "--sync":
 			_sync = true
 		elif arg == "--icon":
@@ -656,7 +660,7 @@ func _bake_sounds(tag: String) -> int:
 	var folder := _sounds_src.path_join("creatures").path_join(tag)
 	var has_files := SoundSetWriter.has_sounds(tag, _sounds_src)
 	var writer := SoundSetWriter.new()
-	writer.force = _force
+	writer.force = _force or _force_sounds
 	var path := writer.write_creature_set(tag, _sounds_src, _sounds_out)
 	for file in writer.unknown:
 		print("NEW_CREATURE sounds note: %s is not an event with a field in the set. Events: %s" % [file, SoundSetWriter.event_help()])

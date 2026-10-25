@@ -67,6 +67,12 @@ func _init() -> void:
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--only="):
 			_only = arg.substr(7).split(",")
+	if _force:
+		# FROZEN (055c1): the 74 model scenes were edited in the editor and the clips live in them now. A new model comes from
+		# tools/bake/new_creature.gd; this script only writes the scenes that are still missing. It is deleted in 055z.
+		push_error("bake_body_scenes: --force is frozen (it would throw away the edits made in the editor). Use tools/bake/new_creature.gd for a new model.")
+		quit(1)
+		return
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUT_DIR))
 	var maps := _role_maps()
 	var made := PackedStringArray()

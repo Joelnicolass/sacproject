@@ -89,8 +89,8 @@ func _check_folder(folder: String, types: Array) -> Dictionary:
 			_report("buildings/%s: no scene of parts" % file)
 		var base: String = type.tag.validate_filename()
 		var stem: String = file.get_basename()
-		if folder == "wizards":
-			# Wizards have human file names (jadugarr.tres, tag cwa0): the id is the tag field, the file only has to be snake_case.
+		if folder == "wizards" or folder == "creatures":
+			# Wizards and creatures have human file names (jadugarr.tres, tag cwa0; trogg.tres, tag ycro): the id is the tag field, the file only has to be snake_case.
 			if not _is_snake_case(stem):
 				_report("%s/%s: the file name should be snake_case (a-z, 0-9, _)" % [folder, file])
 		elif folder != "buildings" and stem != base and not _is_case_repeat(stem, base):
@@ -150,6 +150,13 @@ func _check_lobby() -> void:
 	for wizard in _catalog.wizards:
 		if wizard.id().is_empty() or _catalog.wizard(wizard.id()) != wizard:
 			_report("wizards/%s: id() \"%s\" does not find the wizard back" % [_file(wizard), wizard.id()])
+	for creature in _catalog.creatures:
+		if creature.id().is_empty() or _catalog.creature(creature.id()) != creature:
+			_report("creatures/%s: id() \"%s\" does not find the creature back" % [_file(creature), creature.id()])
+		# 055c1: the file carries the human name its sound set already has (ycro.tres is trogg.tres, as is data/audio/creatures/trogg.tres).
+		if creature.sounds != null and creature.sounds.resource_path.begins_with("res://data/audio/creatures/") \
+				and creature.sounds.resource_path.get_file() != _file(creature):
+			_report("creatures/%s: the sound set is %s, the file should have the same name" % [_file(creature), creature.sounds.resource_path.get_file()])
 	var seat := load("res://data/ai/seat_vs_ai.tres") as AiSeat
 	if seat == null or seat.wizard == null:
 		_report("data/ai/seat_vs_ai.tres: the seat of «Contra la IA» has no wizard")

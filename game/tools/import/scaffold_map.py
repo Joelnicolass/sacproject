@@ -293,7 +293,9 @@ def creature_files() -> dict:
     for f in (ROOT / "data/catalog/creatures").glob("*.tres"):
         text = f.read_text()
         m = re.search(r'^display_name = "([^"]*)"', text, re.M)
-        files[f.stem] = (f.stem, m.group(1) if m else f.stem)
+        tag = re.search(r'^tag = "([^"]*)"', text, re.M)
+        # The file carries a human name (trogg.tres); the original's tag is a field inside (ycro). A custom creature may have no tag: its id is the file name.
+        files[tag.group(1) if tag and tag.group(1) else f.stem] = (f.stem, m.group(1) if m else f.stem)
     return files
 
 

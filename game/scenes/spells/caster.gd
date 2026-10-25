@@ -7,7 +7,7 @@ extends Node
 ## without mana). Creatures check souls, mana, then cooldown, and need no target: the
 ## Summoner puts them in front of the wizard when the cast starts. Starting sets every
 ## cooldown, then mana drains at cast_drain_per_s during the casting frames.
-## Every spell of the book (combat or structure) is a SpellAction child of `actions`, found by tag (RFC-041):
+## Every spell of the book (combat or structure) is a SpellAction child of `actions`, instanced from `SpellType.action` and found by `spell` (RFC-041):
 ## Caster does the common part and asks the action to check, begin, start, finish and cancel. A creature needs
 ## no action: the Summoner puts it in front of the wizard when the cast starts and finishes it when it ends.
 
@@ -139,21 +139,21 @@ static func of(node: Node) -> Caster:
 	return null
 
 
-## The action that answers to `tag`, or null (the spell is not implemented). A child of `actions` wins; else the
-## scene in the SpellType's `action` is instanced under `actions` the first time (RFC-041).
+## The action of the spell `tag`, or null (the spell is not implemented). The scene in the SpellType's `action` is instanced
+## under `actions` the first time and kept; its `spell` says which spell it casts.
 func action_for(tag: String) -> SpellAction:
 	if actions == null:
 		return null
-	for child in actions.get_children():
-		if child is SpellAction and not child.is_queued_for_deletion() and (child as SpellAction).tag == tag:
-			return child
 	var spell := _spell_of(tag)
 	if spell == null or spell.action == null:
 		return null
+	for child in actions.get_children():
+		if child is SpellAction and not child.is_queued_for_deletion() and (child as SpellAction).spell == spell:
+			return child
 	var made := spell.action.instantiate() as SpellAction
 	if made == null:
 		return null
-	made.tag = tag
+	made.spell = spell
 	actions.add_child(made)
 	return made
 

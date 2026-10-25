@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_vv6cg"]
 [ext_resource type="Texture2D" uid="uid://rwivqusq0fg8" path="res://assets/original/ui/icons/brif.png" id="icon_tex"]
+[ext_resource type="PackedScene" path="res://scenes/spells/actions/fireball_action.tscn" id="2_action"]
 
 [resource]
 script = ExtResource("1_vv6cg")
@@ -27,3 +28,4 @@ ai_use = 4
 ai_phase = 1
 ai_worth = 625
 structures = PackedStringArray()
+action = ExtResource("2_action")

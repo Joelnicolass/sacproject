@@ -5,7 +5,6 @@
 [node name="Plague" type="Node"]
 editor_description = "Plague (galp): una nube de veneno que cae al terminar el lanzamiento."
 script = ExtResource("1_script")
-tag = "galp"
 prompt = "Elegí el punto"
 cast_fx = "poison_cast"
 kind = "Plague"

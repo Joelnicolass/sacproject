@@ -9,6 +9,5 @@ who = 5
 
 [node name="Lightning" type="Node"]
 script = ExtResource("1_script")
-tag = "ntil"
 prompt = "Elegí el blanco"
 target = SubResource("Target_enemy")

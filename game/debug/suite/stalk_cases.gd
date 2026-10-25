@@ -68,7 +68,7 @@ func _scenes() -> Dictionary:
 	checks["has_action"] = spell != null and spell.action != null
 	var action := spell.action.instantiate() if spell and spell.action else null
 	if action is ZoneAction:
-		(action as ZoneAction).tag = TAG
+		(action as ZoneAction).spell = spell
 		checks["kind_registered"] = _spawner.zones.has((action as ZoneAction).kind)
 		checks["no_warnings"] = (action as ZoneAction)._get_configuration_warnings().is_empty()
 		checks["ring_of_four"] = (action as ZoneAction).ring_count == 4

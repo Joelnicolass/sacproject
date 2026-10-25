@@ -5,7 +5,6 @@
 [node name="Cloudkill" type="Node"]
 editor_description = "Cloudkill (likc): una nube de tormenta que persigue al cuerpo clicado (o se queda sobre el suelo clicado)."
 script = ExtResource("1_script")
-tag = "likc"
 prompt = "Elegí el blanco"
 cast_fx = ""
 kind = "Cloudkill"

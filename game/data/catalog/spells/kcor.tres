@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_thy2d"]
 [ext_resource type="Texture2D" uid="uid://yr1uccxy3867" path="res://assets/original/ui/icons/kcor.png" id="icon_tex"]
+[ext_resource type="PackedScene" path="res://scenes/spells/actions/rock_action.tscn" id="2_action"]
 
 [resource]
 script = ExtResource("1_thy2d")
@@ -25,3 +26,4 @@ ai_use = 3
 ai_phase = 1
 ai_worth = 650
 structures = PackedStringArray()
+action = ExtResource("2_action")

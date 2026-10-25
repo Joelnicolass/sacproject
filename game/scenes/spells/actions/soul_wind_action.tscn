@@ -4,7 +4,6 @@
 
 [node name="SoulWind" type="Node"]
 script = ExtResource("1_script")
-tag = "dnws"
 pick = 2
 prompt = "Elegí un alma"
 cast_fx = "soul_wind_cast"

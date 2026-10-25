@@ -5,7 +5,6 @@
 [node name="Bore" type="Node"]
 editor_description = "Bore (erob): la zona nace al empezar el lanzamiento (la roca ya perfora la espiral) y abre el suelo a los 10 s del inicio (arm_from_start). Si el lanzamiento se corta, no queda nada. Particula del lanzamiento: la tierra de James (dirt_cast)."
 script = ExtResource("1_script")
-tag = "erob"
 prompt = "Elegí el punto"
 cast_fx = "dirt_cast"
 kind = "Bore"

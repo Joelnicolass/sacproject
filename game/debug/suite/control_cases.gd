@@ -67,7 +67,7 @@ func _scenes() -> Dictionary:
 		var action := spell.action.instantiate() as AfflictAction if spell and spell.action else null
 		checks[tag + "_action_class"] = action != null and action.target != null and action.affliction == type
 		if action != null:
-			action.tag = tag
+			action.spell = spell
 			checks[tag + "_no_warnings"] = action._get_configuration_warnings().is_empty()
 			action.free()
 		for body in [wizard, unit]:
@@ -482,7 +482,7 @@ func _ai() -> Dictionary:
 ## The action scene of a spell, as a child of the case root (its book does not matter here).
 func _action(tag: String) -> AfflictAction:
 	var made := GameData.spell(tag).action.instantiate() as AfflictAction
-	made.tag = tag
+	made.spell = GameData.spell(tag)
 	_root.add_child(made)
 	return made
 

@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_jgq3y"]
 [ext_resource type="Texture2D" uid="uid://bcf058lyrm6o2" path="res://assets/original/ui/icons/laeh.png" id="icon_tex"]
+[ext_resource type="PackedScene" path="res://scenes/spells/actions/heal_action.tscn" id="2_action"]
 
 [resource]
 script = ExtResource("1_jgq3y")
@@ -21,3 +22,4 @@ ai_use = 5
 ai_phase = 2
 ai_worth = 1000
 structures = PackedStringArray()
+action = ExtResource("2_action")

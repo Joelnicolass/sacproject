@@ -31,8 +31,8 @@ enum AiPhase { NEVER, ATTACK, SUPPORT }
 ## How long its effect lasts (s).
 @export var duration_s: float = 0.0
 @export var is_structure: bool = false
-## Scene of the SpellAction that casts this spell (RFC-041). Caster instances it under its `actions` node when the wizard
-## has no child for the tag, so a new spell is a `.tres` plus a scene, with no edit in Caster.
+## Scene of the SpellAction that casts this spell (RFC-041). Caster instances it under its `actions` node the first time the
+## spell is asked for and sets its `spell`, so a new spell is a `.tres` plus a scene, with no edit in Caster.
 @export var action: PackedScene
 @export_group("AI: who it may land on")
 ## Nothing ticked = anything. Ticks widen it to those kinds of body; a body of another kind is not a target for the AI.

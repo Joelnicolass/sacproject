@@ -52,7 +52,8 @@ El juego la usa hoy. No cambiar firma, nombre ni semántica. Si algo necesita ca
 | `MpReplicate` | 15 | `MpLobbyConfig` | 3 |
 | `MpMatchFiles` | 11 | `MpLan` | 3 |
 | `MpSpawner` | 10 | `MpSlotSpawner` | 2 |
-| | | `MpLobbyEndpoint` | 2 |
+| `MpLobbyClient` | 2 | `MpLobbyEndpoint` | 2 |
+| `MpLobbyServer` | 1 | | |
 
 Al empezar, volvé a medir con `grep -rhoE "MpKit\.[a-zA-Z_]+|\bMp[A-Z][A-Za-z]+\b" game/scenes | sort | uniq -c`. Si la lista cambió, avisá antes de tocar nada.
 

@@ -2,7 +2,8 @@
 class_name BodyVisual
 extends MeshInstance3D
 
-## Shows a static body or prop from BodyCatalog; an animated body is drawn by its BodyRig (`rig`) and has no mesh here. Feet on local y = 0.
+## Shows a static prop from BodyCatalog (`model`), or the look of a creature or wizard (draw_look): the skeleton of an animated body is
+## drawn by its BodyRig (`rig`) and has no mesh here, a hybrid's static mesh is this node's own mesh. Feet on local y = 0.
 ## This node owns its mesh and its transform (the model pose): the editor saves neither.
 ## To place a model, move a parent Node3D, not this node.
 
@@ -27,11 +28,16 @@ const _LOCKED: PackedStringArray = ["mesh", "position", "rotation", "scale"]
 ## The skeletal body (BodyRig, RFC-023 023c) that hangs under this node and draws instead of the static mesh. It inherits
 ## this node's transform (the pose, the capsule scale, DevourGrowth). Set by the body's clip animator; null otherwise.
 @export var rig: BodyRig
+## The body scene this visual draws (BodyMount of the creature, wizard or doctor): `body_height` and `body_radius` come from there. Empty
+## for a prop, which reads its size from the catalog.
+@export var mount: BodyMount
 
 ## The list of corrections this visual is listening to. After BodyCatalog.refresh() it is a new one.
 var _watched: BodyPoseOverrides
 ## The skeleton draws this model: this node keeps the pose and the measures, and no mesh of its own.
 var _skeletal := false
+## A BodyLook draws this body (a creature or a wizard): `model` and the catalog do not apply, `_apply` leaves the mesh alone.
+var _look_drawn := false
 
 
 func _validate_property(property: Dictionary) -> void:
@@ -68,15 +74,15 @@ func show_model(tag: String) -> void:
 	_apply()
 
 
-## true: the rig draws and this node's own mesh goes away; false: the static mesh is shown again (a hybrid, or a model with no .glb).
-func use_skeleton(on: bool) -> void:
-	if on == _skeletal:
-		return
-	_skeletal = on
-	if on:
-		mesh = null
-	if is_node_ready():
-		_apply()
+## The look of a creature or wizard decides what this node shows: with a model the rig draws and this node's mesh goes away; a hybrid
+## (no model) shows its static mesh here, in the pose of the look. Called by whoever listens to the rig (BodyAnimator).
+func draw_look(look: BodyLook) -> void:
+	_look_drawn = true
+	_skeletal = look.has_model()
+	mesh = null if _skeletal else look.static_mesh
+	if not _skeletal:
+		transform = look.transform
+	posed.emit()
 
 
 ## GeometryInstance3D.transparency of the whole body, rig included (it does not inherit): summoning, play dead, stealth.
@@ -95,11 +101,17 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 
+## The real height of the body (its footprint), before the capsule floor.
 func body_height() -> float:
+	if mount != null:
+		return mount.facts.height_m
 	return float(BodyCatalog.info(model).get("height", placeholder_height))
 
 
+## Half the width of the body (the raw radius of its footprint).
 func body_radius() -> float:
+	if mount != null:
+		return mount.facts.radius_m
 	return float(BodyCatalog.info(model).get("radius", 0.35))
 
 
@@ -111,13 +123,15 @@ func _refresh_in_editor() -> void:
 
 func _apply() -> void:
 	update_configuration_warnings()
+	if _look_drawn:
+		return
 	_watch()
 	transform = BodyCatalog.pose(model, stand_on_feet, _skeletal)
 	if BodyCatalog.loads_meshes() and not _skeletal:
 		var found := BodyCatalog.mesh(model)
 		if found:
 			mesh = found
-		elif BodyCatalog.has_skeletal(model):
+		elif BodyCatalog.has_skeletal(model) or (model.is_empty() and rig != null):
 			mesh = null
 		else:
 			_placeholder()

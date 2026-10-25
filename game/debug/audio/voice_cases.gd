@@ -18,6 +18,7 @@ extends RefCounted
 ## Closed gate (plain headless, --dedicated, --room-server):
 ## - voices_closed: AdvisorVoice (with its AdvisorWatch) and CommandVoice enter the tree and their channels stay idle; say() is false.
 
+const _LOOK := preload("res://debug/audio/sound_look.gd")
 const LOOP_CUE := "res://debug/audio/fixtures/beep_a.tres"
 const VOICES_ROOT := "res://debug/audio/fixtures/voices/"
 const CUES := "res://data/ui/command_cues.tres"
@@ -333,12 +334,12 @@ func _body(host: Node, body_name: String, slot: int, group: String) -> Node3D:
 	return body
 
 
-## A creature that is not in the tree (CommandVoice only reads its name and `type.sounds`) with the given sounds.
+## A creature that is not in the tree (CommandVoice only reads its name and the sounds of the look it wears) with the given sounds.
 func _creature(body_name: String, sounds: SoundSet) -> UnitBody:
 	var body := UnitBody.new()
 	body.name = body_name
 	body.type = CreatureType.new()
-	body.type.sounds = sounds
+	_LOOK.give(body, sounds)
 	return body
 
 

@@ -3,8 +3,8 @@ class_name SoundSet
 extends Resource
 
 ## What a creature or a wizard sounds like: one cue per thing that happens to it (voice when you pick it, swing, hurt, death...).
-## A type template (a .tres in data/audio/creatures/ or wizards/, never written at runtime) assigned to `CreatureType.sounds` or
-## `WizardType.sounds`. An empty field is silence for that event unless the `fallback` set has it (the melee set many creatures
+## A type template (a .tres in data/audio/creatures/ or wizards/, never written at runtime) assigned to the `sounds` of a look
+## (`scenes/units/bodies/<name>_look.tscn` or `scenes/wizards/bodies/<name>_look.tscn`). An empty field is silence for that event unless the `fallback` set has it (the melee set many creatures
 ## share). It does not play anything: UnitSounds, WizardSounds and CommandVoice ask it which cue answers an event.
 
 @export_group("Voice")

@@ -35,7 +35,7 @@ static func read(glue: MatchTicketGlue, ai_seat: AiSeat, fallback: WizardPick, s
 		var chosen: WizardPick = MatchWire.decode_pick(metas[slot], true)
 		var kept: WizardPick = chosen if chosen != null else fallback
 		plan.picks[slot] = kept
-		print("partida %s: slot %d pick %s %s" % [match_id, slot, kept.wizard.model, kept.god.id()])
+		print("partida %s: slot %d pick %s %s" % [match_id, slot, kept.wizard.model_id(), kept.god.id()])
 	plan.setup = glue.match_setup()
 	plan.wait_for_picks = glue.picks_pending()
 	return plan

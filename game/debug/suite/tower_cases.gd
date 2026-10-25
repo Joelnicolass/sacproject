@@ -279,7 +279,7 @@ func _unit(at: Vector3, slot: int) -> UnitBody:
 	var unit := UNIT_SCENE.instantiate() as UnitBody
 	unit.owner_slot = slot
 	unit.type = GameData.creature(tag)
-	unit.model = str(type.model) if type else ""
+	unit.model = type.model_id() if type else ""
 	unit.rules = RULES
 	unit.idle_aggro = false
 	unit.position = at

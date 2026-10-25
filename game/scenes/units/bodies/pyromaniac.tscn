@@ -45,4 +45,4 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.9605, 0.0)
 [node name="Top" type="Marker3D" parent="Sockets"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 1.921, 0.0)
 
-[node name="Look" type="Node3D" parent="."]
+[node name="Look" parent="." instance_placeholder="res://scenes/units/bodies/pyromaniac_look.tscn"]

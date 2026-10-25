@@ -5,7 +5,8 @@ extends Node3D
 ## The size and the sockets of one creature or wizard, as nodes you can drag in the editor: the capsule it collides with, the
 ## footprint other bodies keep away from, and the markers (reach, center, top, muzzle, feet) the rules read.
 ## It only holds them: nothing here moves, draws or decides (BodyFacts reads the numbers once, BodyCollider sizes the physics capsule).
-## The scene never points at its creature's type, never carries a synchronizer, and never loads a sound or a model.
+## The scene never points at its creature's type, never carries a synchronizer, and never loads a sound or a model: its `Look` is an
+## instance placeholder of `<name>_look.tscn`, the appearance (model, sounds), and only a client builds it (BodyMount).
 ## Each creature has `scenes/units/bodies/<name>.tscn`, each wizard `scenes/wizards/bodies/<name>.tscn`.
 
 ## The model id that travels in the network packets (what the original calls the body); read only, the tool writes it.
@@ -28,8 +29,9 @@ extends Node3D
 @export var muzzle: Marker3D
 ## The soles of the feet, relative to the origin of the body (wizards).
 @export var feet: Marker3D
-## The appearance (model, sounds) hangs here; it stays empty until the appearance scenes exist.
-@export var look: Node3D
+## The appearance (model, sounds) hangs here, as an instance placeholder of the `<name>_look.tscn` next to this scene (the editor
+## draws it; a game only loads it when a client asks). Do not override anything on it: an override would load with this scene.
+@export var look: Node
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -42,6 +44,12 @@ func _get_configuration_warnings() -> PackedStringArray:
 		warnings.append("Falta `footprint` (CollisionShape3D con una CylinderShape3D).")
 	if reach == null or center == null or top == null:
 		warnings.append("Faltan marcadores: `reach`, `center` y `top`.")
+	if look == null:
+		warnings.append("Falta `look`: el nodo `Look` con la apariencia (<nombre>_look.tscn) como instancia, «Cargar como placeholder».")
+	elif look.scene_file_path.is_empty() and not look is InstancePlaceholder:
+		warnings.append("`look` tiene que ser la instancia de <nombre>_look.tscn.")
+	elif not look is InstancePlaceholder and not look.get_scene_instance_load_placeholder():
+		warnings.append("`look` tiene que cargarse como placeholder (clic derecho › Cargar como placeholder): si no, el servidor carga el modelo y los sonidos.")
 	if model_id.is_empty():
 		warnings.append("`model_id` vacío: el cable no sabría qué modelo dibujar.")
 	return warnings
@@ -49,4 +57,13 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 ## True when every node the rules read is in place.
 func is_complete() -> bool:
-	return _get_configuration_warnings().is_empty()
+	return capsule != null and capsule.shape is CapsuleShape3D and footprint != null and footprint.shape is CylinderShape3D \
+		and reach != null and center != null and top != null and not model_id.is_empty()
+
+
+## Where the appearance scene of this body is (res://scenes/units/bodies/<name>_look.tscn); "" without a `Look`. Read from the placeholder,
+## so nothing of the appearance is loaded.
+func look_path() -> String:
+	if look is InstancePlaceholder:
+		return (look as InstancePlaceholder).get_instance_path()
+	return look.scene_file_path if look != null else ""

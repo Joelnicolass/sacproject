@@ -159,7 +159,16 @@ xargs grep -nE '^@export(_[a-z]+)?(\([^)]*\))? var [a-z_0-9]*(_ticks|frames)[a-z
 	| grep -vE '^scenes/(ui|net)/' | grep -vE ':@export_storage ' \
 	| grep -vE 'var (h_frames|v_frames|frames_h|frames_v|frames_per_s|resync_ticks)\b' > "$OUT/C22.txt" || true
 
-RULES="C1a:scripts>150_lines C1b:scripts>300_lines C5:get_node(\"Cap\") C6:group_lookup_literal C7:.call/has_method C8:raw_fields_in_*_type.gd C9:doc_opens_with_original C11:inheritance_depth>=2 C12:MpKit_outside_allowlist C13:reads_original_assets C14:print() C15:content_nodes_with_new C16:height_offset_in_code C17:fx_by_text C18:content_lookup_by_text C18b:content_lookup_by_id C18c:text_instead_of_resource C19:data_tres_with_positions C20:matchrules_place_radii C21:export_file C22:time_in_ticks"
+# C23 (055s): the types the server reads (creatures, wizards, gods) carry no presentation. Their look, sounds and carried effect live in
+# the appearance scene behind the placeholder of their body scene (BodyLook), which only a client builds. Counts `model`, `sounds`,
+# `carried_fx` and any exported SoundSet / SoundCue / AudioStream / LookProfile / MusicSet / PackedScene in those three types.
+# Allowlist: `body` (the body scene, with its placeholder) and `GodType.look` (sky, light and music of the god: it leaves the server with the
+# split of match.tscn, plan 055s question 2; kept until 2026-12-31).
+xargs grep -nE '^@export[a-z_]*(\([^)]*\))? var (model|sounds|carried_fx)\b|^@export[a-z_]*(\([^)]*\))? var [a-z_0-9]+[ ]*:[ ]*(Array\[)?(SoundSet|SoundCue|AudioStream[A-Za-z]*|LookProfile|MusicSet|PackedScene)\b' \
+	< <(grep -E '^scenes/(units/creature_type|wizards/wizard_type|gods/god_type)\.gd$' "$OUT/all.txt") 2>/dev/null \
+	| grep -vE '@export var body: PackedScene' | grep -vE '^scenes/gods/god_type\.gd:[0-9]+:@export var look: LookProfile' > "$OUT/C23.txt" || true
+
+RULES="C1a:scripts>150_lines C1b:scripts>300_lines C5:get_node(\"Cap\") C6:group_lookup_literal C7:.call/has_method C8:raw_fields_in_*_type.gd C9:doc_opens_with_original C11:inheritance_depth>=2 C12:MpKit_outside_allowlist C13:reads_original_assets C14:print() C15:content_nodes_with_new C16:height_offset_in_code C17:fx_by_text C18:content_lookup_by_text C18b:content_lookup_by_id C18c:text_instead_of_resource C19:data_tres_with_positions C20:matchrules_place_radii C21:export_file C22:time_in_ticks C23:presentation_in_server_types"
 
 baseline_of() { grep -E "^$1=" "$BASELINE" 2>/dev/null | head -1 | cut -d= -f2; }
 

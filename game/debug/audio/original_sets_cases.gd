@@ -17,7 +17,7 @@ const WAV_HEADER := 44
 func run(_host: Node) -> Dictionary:
 	var imported := FileAccess.file_exists(INDEX)
 	var type: CreatureType = GameData.creature(String(CREATURE))
-	var sound_set: SoundSet = type.sounds if type != null else null
+	var sound_set: SoundSet = BodyLook.sounds_in(BodyLook.of_body(type.body)) if type != null else null
 	if not imported:
 		return {"original_sets_absent": {"ok": true, "note": "sin import del original: se omite", "set_found": sound_set != null}}
 	var results := {}

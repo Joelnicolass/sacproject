@@ -43,6 +43,7 @@ const TIME_UNIT_CASES := preload("res://debug/suite/time_unit_cases.gd")  # 055u
 const CLIP_FACTS_CASES := preload("res://debug/suite/clip_facts_cases.gd")  # 055c1
 const CLIP_STRIP_CASES := preload("res://debug/suite/clip_strip_cases.gd")  # 055s s4
 const BODY_FACTS_CASES := preload("res://debug/suite/body_facts_cases.gd")  # 055s
+const PRESENTATION_REFS_CASES := preload("res://debug/suite/presentation_refs_cases.gd")  # 055s s2
 const WIRE_CONFIG_CASES := preload("res://debug/net/wire_config_cases.gd")  # 055s
 const TEAM_CASES := preload("res://debug/match/team_cases.gd")  # 049b, 049c
 
@@ -111,6 +112,7 @@ func _run_suite() -> void:
 	_results.merge(CLIP_FACTS_CASES.new().run(self))  # 055c1
 	_results.merge(CLIP_STRIP_CASES.new().run(self))  # 055s s4
 	_results.merge(BODY_FACTS_CASES.new().run(self))  # 055s
+	_results.merge(PRESENTATION_REFS_CASES.new().run(self))  # 055s s2
 	_results.merge(WIRE_CONFIG_CASES.new().run(self))  # 055s
 	_print_suite()
 
@@ -313,7 +315,7 @@ func _spawn_unit(tag: String, owner_slot: int, position: Vector3) -> Node3D:
 	unit.position = position
 	unit.set("owner_slot", owner_slot)
 	unit.set("type", GameData.creature(tag))
-	unit.set("model", str(type.model))
+	unit.set("model", type.model_id())
 	unit.set("rules", RULES)
 	unit.set("mode", 0)
 	add_child(unit)

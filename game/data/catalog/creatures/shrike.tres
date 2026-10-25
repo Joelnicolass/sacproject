@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_747c0"]
-[ext_resource type="Resource" path="res://data/audio/creatures/shrike.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://5voqoki8jq4x" path="res://assets/original/ui/icons/tbsh.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/absh.tres" id="typed_absh"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/hsba.tres" id="typed_hsba"]
@@ -13,7 +12,6 @@ script = ExtResource("1_747c0")
 tag = "tbsh"
 display_name = "Shrike"
 icon = ExtResource("icon_tex")
-model = "lhbt"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 450
@@ -35,4 +33,3 @@ casting_time_s = 0.3704
 spell_order = 134
 ranged_attack = ExtResource("typed_absh")
 active_ability = ExtResource("typed_hsba")
-sounds = ExtResource("sounds_set")

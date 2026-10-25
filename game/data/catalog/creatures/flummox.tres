@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_vkkob"]
-[ext_resource type="Resource" path="res://data/audio/creatures/flummox.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://ckfjgwxrxuh5u" path="res://assets/original/ui/icons/wlce.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/crba.tres" id="typed_crba"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/eclw_clips.tres" id="clips_lib"]
@@ -12,7 +11,6 @@ script = ExtResource("1_vkkob")
 tag = "wlce"
 display_name = "Flummox"
 icon = ExtResource("icon_tex")
-model = "eclw"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 2280
@@ -33,4 +31,3 @@ cooldown_s = 5.0
 casting_time_s = 1.7284
 spell_order = 457
 ranged_attack = ExtResource("typed_crba")
-sounds = ExtResource("sounds_set")

@@ -323,7 +323,7 @@ func _unit(host: Node3D, slot: int, at: Vector3) -> Node3D:
 	unit.position = at
 	unit.set("owner_slot", slot)
 	unit.set("type", GameData.creature("ycro"))
-	unit.set("model", str(type.model))
+	unit.set("model", type.model_id())
 	unit.set("rules", RULES)
 	unit.set("idle_aggro", false)
 	host.add_child(unit)
@@ -678,7 +678,7 @@ func _own_splash(host: Node3D) -> Dictionary:
 	ranger.position = Vector3(1100.0, 0.0, 1100.0)
 	ranger.set("owner_slot", 2)
 	ranger.set("type", GameData.creature("amuh"))
-	ranger.set("model", str(type.model))
+	ranger.set("model", type.model_id())
 	ranger.set("rules", RULES)
 	ranger.set("idle_aggro", false)
 	host.add_child(ranger)

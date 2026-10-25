@@ -102,7 +102,7 @@ static func wizard_models() -> Dictionary:
 		if file.ends_with(".tres"):
 			var type := load(WIZARDS_DIR + file) as Resource
 			if type != null:
-				out[str(type.get("model"))] = true
+				out[BodyFacts.of(type.get("body") as PackedScene).model_id] = true
 	return out
 
 
@@ -142,7 +142,7 @@ static func creature_ticks() -> Dictionary:
 		var type := load(CREATURES_DIR + file) as Resource
 		if type == null:
 			continue
-		var by_tag: Dictionary = out.get_or_add(str(type.get("model")), {})
+		var by_tag: Dictionary = out.get_or_add(BodyFacts.of(type.get("body") as PackedScene).model_id, {})
 		_collect(by_tag, type.get("melee_animations"), "attack_ticks", "hits")
 		_collect(by_tag, type.get("shoot_animations"), "shoot_ticks", "shoots")
 	return out

@@ -96,7 +96,7 @@ func _spawn(tags: PackedStringArray, only_tag: String) -> Array[WizardBody]:
 		var wizard := WIZARD_SCENE.instantiate() as WizardBody
 		wizard.owner_slot = 1 + i % 2
 		wizard.wizard_type = GameData.wizard(tags[i])
-		wizard.model = str(type.model)
+		wizard.model = type.model_id()
 		var col := i % columns
 		var row := i / columns
 		wizard.position = Vector3((col - (columns - 1) * 0.5) * spacing_m, 0.0, row * spacing_m)

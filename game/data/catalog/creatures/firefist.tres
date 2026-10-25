@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_c7lma"]
-[ext_resource type="Resource" path="res://data/audio/creatures/firefist.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://ujrbppcigecj" path="res://assets/original/ui/icons/lrtf.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/ahtf.tres" id="typed_ahtf"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/ftrl_clips.tres" id="clips_lib"]
@@ -12,7 +11,6 @@ script = ExtResource("1_c7lma")
 tag = "lrtf"
 display_name = "Firefist"
 icon = ExtResource("icon_tex")
-model = "ftrl"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1280
@@ -32,4 +30,3 @@ cooldown_s = 4.0
 casting_time_s = 1.1111
 spell_order = 349
 on_damage = ExtResource("typed_ahtf")
-sounds = ExtResource("sounds_set")

@@ -261,7 +261,7 @@ func _unit(parent: Node3D, slot: int, at: Vector3) -> Node3D:
 	unit.position = at
 	unit.set("owner_slot", slot)
 	unit.set("type", GameData.creature("ycro"))
-	unit.set("model", str(type.model))
+	unit.set("model", type.model_id())
 	unit.set("rules", RULES)
 	unit.set("idle_aggro", false)
 	parent.add_child(unit)

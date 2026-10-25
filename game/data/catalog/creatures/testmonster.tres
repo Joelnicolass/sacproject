@@ -10,7 +10,6 @@ script = ExtResource("1_d4j27")
 tag = "testmonster"
 display_name = "Test Monster"
 icon = ExtResource("icon_tex")
-model = "testmonster"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1000

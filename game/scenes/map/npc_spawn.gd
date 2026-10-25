@@ -21,7 +21,7 @@ const SCENE_PATH := "res://scenes/map/npc_spawn.tscn"
 @export var side := 0
 
 var _label: Label3D
-var _ghost: BodyVisual
+var _ghost: Node3D
 
 ## Creature tag, derived from `creature` ("" when none). Setting it looks the type up (TypeRef), for code and old scenes
 ## that still name a tag; the reference is what is saved.
@@ -53,12 +53,8 @@ func _ready() -> void:
 
 ## Editor only and never saved (internal children): the creature's ghost, and its name over the marker.
 func _show_preview() -> void:
-	var holder := Node3D.new()
-	add_child(holder, false, Node.INTERNAL_MODE_FRONT)
-	_ghost = BodyVisual.new()
-	_ghost.transparency = 0.5
-	_ghost.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	holder.add_child(_ghost)
+	_ghost = Node3D.new()
+	add_child(_ghost, false, Node.INTERNAL_MODE_FRONT)
 	_label = Label3D.new()
 	_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	_label.no_depth_test = true
@@ -72,4 +68,23 @@ func _refresh_preview() -> void:
 	if _label != null:
 		_label.text = "%s\n%s" % [creature.display_name, tag] if creature != null else ""
 	if _ghost != null:
-		_ghost.show_model(creature.model if creature != null else "")
+		_show_look()
+
+
+## The look of the creature's body scene, half see-through (the same appearance the match draws).
+func _show_look() -> void:
+	for child in _ghost.get_children():
+		_ghost.remove_child(child)
+		child.free()
+	var packed := BodyLook.of_body(creature.body) if creature != null else null
+	var look := packed.instantiate() as BodyLook if packed != null else null
+	if look == null:
+		return
+	_ghost.add_child(look)
+	if look.static_mesh != null:
+		var hybrid := MeshInstance3D.new()
+		hybrid.mesh = look.static_mesh
+		look.add_child(hybrid)
+	for shown: MeshInstance3D in look.find_children("*", "MeshInstance3D", true, false):
+		shown.transparency = 0.5
+		shown.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF

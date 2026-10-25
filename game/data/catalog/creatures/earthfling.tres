@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_onlcn"]
-[ext_resource type="Resource" path="res://data/audio/creatures/earthfling.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://6go1ad4gox8t" path="res://assets/original/ui/icons/palk.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/ekba.tres" id="typed_ekba"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/dihk.tres" id="typed_dihk"]
@@ -13,7 +12,6 @@ script = ExtResource("1_onlcn")
 tag = "palk"
 display_name = "Earthfling"
 icon = ExtResource("icon_tex")
-model = "eklp"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 960
@@ -34,4 +32,3 @@ casting_time_s = 0.4321
 spell_order = 129
 ranged_attack = ExtResource("typed_ekba")
 active_ability = ExtResource("typed_dihk")
-sounds = ExtResource("sounds_set")

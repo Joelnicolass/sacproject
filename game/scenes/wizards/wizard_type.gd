@@ -3,8 +3,8 @@ extends Resource
 
 @export var tag: String = ""
 @export var display_name: String = ""
-@export var model: String = ""
 ## The body the wizard wears: its size, capsule and sockets (scenes/wizards/bodies/<name>.tscn, a BodyFrame). Drag the scene here.
+## Its look (model, sounds) is the `<name>_look.tscn` behind the placeholder of that scene: a client builds it, the server never does.
 @export var body: PackedScene
 ## What the model plays and how long each role lasts (scenes/bodies/models/<model>_clips.tres): the same library the body draws,
 ## read by the rules through ClipFacts.
@@ -21,8 +21,6 @@ extends Resource
 @export var splash_spell_resistance: float = 1.0
 @export var direct_ranged_resistance: float = 1.0
 @export var splash_ranged_resistance: float = 1.0
-## What the wizard sounds like: damaged, incantation, death, ghost (data/audio/wizards/<name>.tres). Empty: silent.
-@export var sounds: SoundSet
 
 ## Lobby (055i-a): false takes this wizard out of the menu and the rooms without deleting the file.
 @export var offered := true
@@ -46,6 +44,11 @@ func death_roles() -> Array[StringName]:
 ## The evasion as the whole thousandths the simulation counts in (1.25 -> 1250): exact for any value with up to three decimals.
 func melee_evasion_milli() -> int:
 	return roundi(melee_evasion * 1000.0)
+
+
+## The model id that travels with the wizard on the network (the pick, the replicated body): the one saved in his body scene.
+func model_id() -> String:
+	return BodyFacts.of(body).model_id
 
 
 ## The id of this wizard on the network and in the catalog: its `tag`, or the file name when the tag is empty (new content).

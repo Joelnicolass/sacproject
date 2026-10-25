@@ -1,18 +1,18 @@
 class_name BodyAnimator
 extends ClipPlayback
 
-## RFC-023 (023c) / RFC-036 (036g): plays the clips of a creature unit by ROLE. The body picks the role (from its replicated
+## Plays the clips of a creature unit by ROLE. The body picks the role (from its replicated
 ## mode) with play(); on a client this node makes the BodyRig under the visual travel to it. The animation tree of the model's
 ## scene does the rest, and clip_looped is emitted when the clip the rig plays wraps.
-## A model with no baked scene (the hybrids, which are static meshes) is not drawn by the rig: the visual shows its own mesh
-## (BodyCatalog.mesh). The dedicated server loads no meshes, so it plays nothing and reports no clips and no loops; nothing in
-## the simulation depends on that.
+## A look with no model (the hybrids, which are static meshes) is not drawn by the rig: the visual shows the mesh of the look. The
+## dedicated server mounts no look, so it plays nothing and reports no clips and no loops; nothing in the simulation depends on that.
+## It listens to the rig: whenever BodyMount hands the rig a look, this node tells the visual what to draw and starts the wanted role.
 ## Presentation only: the simulation takes its ticks from CreatureType and never reads this node.
+## Ref: RFC-023 (023c), RFC-036 (036g).
 
 ## The body's visual (Tilt/Mesh). Its `rig` is the BodyRig that draws the skeleton; it has the pose and the measures.
 @export var visual: BodyVisual
 
-var _model := ""
 var _skeletal := false
 ## The role the body asked for.
 var _wanted := ""
@@ -36,11 +36,14 @@ func _physics_process(_delta: float) -> void:
 	_seen_pos = pos
 
 
-func setup(model: String) -> void:
-	if model == _model:
+func _ready() -> void:
+	var rig := _rig()
+	if rig == null:
 		return
-	_model = model
-	_choose_body()
+	rig.look_mounted.connect(_on_look_mounted)
+	var mounted := rig.mounted_look()
+	if mounted != null:
+		_on_look_mounted(mounted)
 
 
 func play(role: String, restart := false) -> void:
@@ -108,19 +111,15 @@ func _rig() -> BodyRig:
 	return visual.rig if visual != null else null
 
 
-## Skeleton or the visual's own static mesh for the model just set. The dedicated server draws neither.
-func _choose_body() -> void:
-	if not BodyCatalog.loads_meshes() or visual == null:
+## A look was mounted: a skeleton or the visual's own static mesh draws it. The dedicated server mounts none.
+func _on_look_mounted(look: BodyLook) -> void:
+	if visual == null:
 		return
-	var rig := _rig()
-	_skeletal = rig != null and BodyCatalog.has_skeletal(_model)
-	visual.use_skeleton(_skeletal)
-	if _skeletal:
-		_shown_role = ""
-		rig.set_body(_model)
-		_follow()
-	elif rig != null:
-		rig.set_body("")
+	_skeletal = look.has_model()
+	visual.draw_look(look)
+	_shown_role = ""
+	_seen_role = ""
+	_follow()
 
 
 ## Makes the rig show the wanted role. A role the model has no clip for rests on idle.

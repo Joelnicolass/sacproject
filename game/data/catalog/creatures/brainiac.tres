@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_2obe3"]
-[ext_resource type="Resource" path="res://data/audio/creatures/brainiac.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://b6ekcu7x37rrp" path="res://assets/original/ui/icons/bobs.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/bsba.tres" id="typed_bsba"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/sbob_clips.tres" id="clips_lib"]
@@ -12,7 +11,6 @@ script = ExtResource("1_2obe3")
 tag = "bobs"
 display_name = "Brainiac"
 icon = ExtResource("icon_tex")
-model = "sbob"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 400
@@ -33,4 +31,3 @@ cooldown_s = 2.0
 casting_time_s = 0.2469
 spell_order = 137
 ranged_attack = ExtResource("typed_bsba")
-sounds = ExtResource("sounds_set")

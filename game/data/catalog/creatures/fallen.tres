@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_wsjns"]
-[ext_resource type="Resource" path="res://data/audio/creatures/fallen.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://cp05iswkijk4v" path="res://assets/original/ui/icons/dplk.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/dkba.tres" id="typed_dkba"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/dedp.tres" id="typed_dedp"]
@@ -13,7 +12,6 @@ script = ExtResource("1_wsjns")
 tag = "dplk"
 display_name = "Fallen"
 icon = ExtResource("icon_tex")
-model = "dklp"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 720
@@ -34,4 +32,3 @@ casting_time_s = 0.3704
 spell_order = 131
 ranged_attack = ExtResource("typed_dkba")
 active_ability = ExtResource("typed_dedp")
-sounds = ExtResource("sounds_set")

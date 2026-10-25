@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_udh5p"]
-[ext_resource type="Resource" path="res://data/audio/creatures/gnome.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://bsyag4su742jq" path="res://assets/original/ui/icons/plfl.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/plfa.tres" id="typed_plfa"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/lflp_clips.tres" id="clips_lib"]
@@ -12,7 +11,6 @@ script = ExtResource("1_udh5p")
 tag = "plfl"
 display_name = "Gnome"
 icon = ExtResource("icon_tex")
-model = "lflp"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1300
@@ -32,4 +30,3 @@ cooldown_s = 5.0
 casting_time_s = 1.4815
 spell_order = 455
 ranged_attack = ExtResource("typed_plfa")
-sounds = ExtResource("sounds_set")

@@ -1,11 +1,11 @@
 class_name HandFx
 extends Node
 
-## RFC-023 (023d): the casting particle of a wizard, played at its hands while it casts. sacengine animateCasting puts the
-## particle at both hands of the spellcast pose (state.d:16165-16195, a hand on the root bone is NaN and gets none); here the
-## hand points come from the BodyRig, whose BoneAttachment3D sockets follow the skeleton clip by clip.
+## The casting particle of a wizard, played at its hands while it casts. The hand points come from the BodyRig: the sockets of the
+## model (HandL, HandR: BoneAttachment3D nodes placed in the editor) that the clip shows. A body with none gets the burst at its Center.
 ## The Caster (server) says which particle shows (`cast_fx_shown`, replicated); this node only draws it, on every peer. It is
 ## presentation: nothing here reads or writes the simulation, and a dedicated server (no meshes) plays nothing.
+## Ref: RFC-023 (023d), sacengine animateCasting (state.d:16165-16195).
 
 ## Emits `cast_fx_changed(type_name)` and holds `cast_fx_shown` (Caster).
 @export var caster: Caster
@@ -13,9 +13,6 @@ extends Node
 @export var rig: BodyRig
 ## Seconds between two bursts while the cast lasts (the first one is at once).
 @export_range(0.05, 2.0, 0.05) var interval_s := 0.5
-## Metres over the wizard's feet where the burst goes when the pose has no hands (a model without skeleton).
-@export var fallback_height := 1.0
-
 ## Seconds the pose may take to arrive before the burst goes to the fallback point.
 const POSE_WAIT_S := 0.3
 
@@ -52,21 +49,16 @@ func _on_cast_fx_changed(type_name: String) -> void:
 
 
 ## true when something played. A skeletal wizard whose spellcast pose has not arrived yet (the body is still blending in from
-## the rest pose, which has no hands) waits for it instead of playing at the feet.
+## the rest pose, which has no hands) waits for it instead of playing at the center.
 func _burst() -> bool:
 	var points := rig.hand_points() if rig != null else PackedVector3Array()
 	if points.is_empty():
-		if rig != null and rig.is_loaded() and not _casting_pose() and _waited < POSE_WAIT_S:
+		if rig != null and rig.is_loaded() and _waited < POSE_WAIT_S:
 			return false
 		var body := get_parent() as Node3D
 		if body == null:
 			return false
-		points.append(body.global_position + Vector3.UP * fallback_height)
+		points.append(body.global_position + BodyFacts.of_body(body).center)
 	for point in points:
 		FxBus.play_puff(_type, point)
 	return true
-
-
-func _casting_pose() -> bool:
-	var role := rig.active_role()
-	return role == "cast" or role == "cast_run"

@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_vx1gb"]
-[ext_resource type="Resource" path="res://data/audio/creatures/gangrel.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://c7glllnpeynhx" path="res://assets/original/ui/icons/ram_h.png" id="icon_tex"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/bane_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/gangrel.tscn" id="body_scene"]
@@ -11,7 +10,6 @@ script = ExtResource("1_vx1gb")
 tag = "ramH"
 display_name = "Gangrel"
 icon = ExtResource("icon_tex")
-model = "bane"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1500
@@ -32,4 +30,3 @@ souls = 1
 cooldown_s = 2.0
 casting_time_s = 0.3704
 spell_order = 201
-sounds = ExtResource("sounds_set")

@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_nkab1"]
-[ext_resource type="Resource" path="res://data/audio/creatures/lord_surtur.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://bw3j53xaogfx8" path="res://assets/original/ui/icons/usl_h.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/gsba.tres" id="typed_gsba"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/gcil.tres" id="typed_gcil"]
@@ -13,7 +12,6 @@ script = ExtResource("1_nkab1")
 tag = "uslH"
 display_name = "Lord Surtur"
 icon = ExtResource("icon_tex")
-model = "surt"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 2560
@@ -37,4 +35,3 @@ casting_time_s = 0.9877
 spell_order = 503
 active_ability = ExtResource("typed_gsba")
 on_damage = ExtResource("typed_gcil")
-sounds = ExtResource("sounds_set")

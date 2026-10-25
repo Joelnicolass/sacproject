@@ -353,9 +353,7 @@ func _same_type_near(unit: Node3D) -> Array:
 
 
 func _center(unit: Node3D) -> Vector3:
-	var visual := unit.get_node_or_null("Tilt/Mesh") as BodyVisual
-	var height := visual.body_height() if visual else 1.8
-	return unit.global_position + Vector3.UP * height * 0.5
+	return unit.global_position + BodyFacts.of_body(unit).center
 
 
 func _hidden_by_ground(camera: Camera3D, center: Vector3) -> bool:

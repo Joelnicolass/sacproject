@@ -62,13 +62,17 @@ func _jobs() -> Array:
 	var out: Array = []
 	var models := {}
 	for t: CreatureType in GameData.all_creatures():
-		models[t.model] = true
+		models[t.model_id()] = true
 	for w: WizardType in GameData.wizards():
-		models[w.model] = true
+		models[w.model_id()] = true
 	for model: String in models:
 		out.append([model, {}])
 	return out
 
 
 func _show(rig: BodyRig, model: String, _roles_of_model: Dictionary) -> void:
-	rig.set_body(model)
+	var look := BodyLook.new()
+	var root := (load(BodyModel.scene_path(model)) as PackedScene).instantiate() as BodyModel
+	look.add_child(root)
+	look.model = root
+	rig.mount(look)

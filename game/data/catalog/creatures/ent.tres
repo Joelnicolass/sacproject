@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_4q8pd"]
-[ext_resource type="Resource" path="res://data/audio/creatures/ent.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://cjdmxibb4cbi5" path="res://assets/original/ui/icons/mtsl.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/HSba_2.tres" id="typed_HSba"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/stmp_clips.tres" id="clips_lib"]
@@ -12,7 +11,6 @@ script = ExtResource("1_4q8pd")
 tag = "mtsl"
 display_name = "Ent"
 icon = ExtResource("icon_tex")
-model = "stmp"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 4500
@@ -35,4 +33,3 @@ cooldown_s = 8.0
 casting_time_s = 2.5926
 spell_order = 776
 active_ability = ExtResource("typed_HSba")
-sounds = ExtResource("sounds_set")

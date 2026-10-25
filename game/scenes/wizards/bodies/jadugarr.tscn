@@ -52,4 +52,4 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 1.9889998, 1.76)
 
 [node name="Feet" type="Marker3D" parent="Sockets"]
 
-[node name="Look" type="Node3D" parent="."]
+[node name="Look" parent="." instance_placeholder="res://scenes/wizards/bodies/jadugarr_look.tscn"]

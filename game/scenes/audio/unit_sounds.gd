@@ -7,7 +7,7 @@ extends BodySounds
 ## - `swing` and `shoot` on UnitBody.swung / shot_started (the setters of the replicated `swings` and `shots`);
 ## - `damaged` when Health.current goes down and the body is alive (BodySounds limits it per body);
 ## - `death` when its mode becomes DEAD.
-## Its set is `body.type.sounds` (the CreatureType of the replicated `creature_tag`). No set: silence, except `summon`: the
+## Its set is the `sounds` of the look the body wears (BodyMount.look, the appearance of its body scene). No set: silence, except `summon`: the
 ## `summon` cue below sounds for every creature that has none of its own. Remove the node to silence every creature.
 
 @export var body: UnitBody:
@@ -39,7 +39,7 @@ func _ready() -> void:
 
 
 func own_set() -> SoundSet:
-	return body.type.sounds if body != null and body.type != null else null
+	return body.mount.sounds() if body != null and body.mount != null else null
 
 
 func default_cue(event: StringName) -> SoundCue:

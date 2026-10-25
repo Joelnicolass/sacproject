@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_m3kw8"]
-[ext_resource type="Resource" path="res://data/audio/creatures/dragon.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://cpyy0cwriafo2" path="res://assets/original/ui/icons/grdg.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/filb.tres" id="typed_filb"]
 [ext_resource type="Script" path="res://scenes/units/passives/creature_passive.gd" id="typed_passive_script"]
@@ -15,7 +14,6 @@ script = ExtResource("1_m3kw8")
 tag = "grdg"
 display_name = "Dragon"
 icon = ExtResource("icon_tex")
-model = "drag"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 5500
@@ -40,4 +38,3 @@ casting_time_s = 3.3333
 spell_order = 985
 active_ability = ExtResource("typed_filb")
 passives = Array[ExtResource("typed_passive_script")]([ExtResource("typed_passive_0"), ExtResource("typed_passive_1")])
-sounds = ExtResource("sounds_set")

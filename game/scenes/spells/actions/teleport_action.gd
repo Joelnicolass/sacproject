@@ -65,6 +65,7 @@ func finish(wizard: WizardBody, spell: SpellType, target: Node3D) -> String:
 	var tos := PackedVector3Array()
 	var widths := PackedFloat32Array()
 	var heights := PackedFloat32Array()
+	var centers := PackedFloat32Array()
 	for body in travelers(wizard, radius):
 		var facts := BodyFacts.of_body(body)
 		var flying := body is UnitBody and (body as UnitBody).is_flying()
@@ -75,7 +76,8 @@ func finish(wizard: WizardBody, spell: SpellType, target: Node3D) -> String:
 		tos.append(_feet_of(body))
 		widths.append(2.0 * facts.radius_m)
 		heights.append(facts.height_m)
-	_announce(froms, tos, widths, heights)
+		centers.append(facts.center.y)
+	_announce(froms, tos, widths, heights, centers)
 	return ""
 
 
@@ -144,26 +146,27 @@ func _feet_of(body: Node3D) -> Vector3:
 
 
 ## Server or solo: every peer shows the same burst at the origin and at the destination of each body.
-func _announce(froms: PackedVector3Array, tos: PackedVector3Array, widths: PackedFloat32Array, heights: PackedFloat32Array) -> void:
+## `centers` is the y of the Center marker of each body, over its feet: where the particle goes.
+func _announce(froms: PackedVector3Array, tos: PackedVector3Array, widths: PackedFloat32Array, heights: PackedFloat32Array, centers: PackedFloat32Array) -> void:
 	if MpKit.is_networked():
 		if MpKit.is_server():
-			_show_jump.rpc(froms, tos, widths, heights)
+			_show_jump.rpc(froms, tos, widths, heights, centers)
 		return
-	_show_jump(froms, tos, widths, heights)
+	_show_jump(froms, tos, widths, heights, centers)
 
 
 @rpc("authority", "call_local", "reliable")
-func _show_jump(froms: PackedVector3Array, tos: PackedVector3Array, widths: PackedFloat32Array, heights: PackedFloat32Array) -> void:
+func _show_jump(froms: PackedVector3Array, tos: PackedVector3Array, widths: PackedFloat32Array, heights: PackedFloat32Array, centers: PackedFloat32Array) -> void:
 	if DisplayServer.get_name() == "headless" or not is_inside_tree():
 		return
 	for i in froms.size():
-		_burst(out_fx, true, froms[i], widths[i], heights[i])
-		_burst(in_fx, false, tos[i], widths[i], heights[i])
+		_burst(out_fx, true, froms[i], widths[i], heights[i], centers[i])
+		_burst(in_fx, false, tos[i], widths[i], heights[i], centers[i])
 
 
-func _burst(fx: String, going_out: bool, feet: Vector3, width: float, height: float) -> void:
+func _burst(fx: String, going_out: bool, feet: Vector3, width: float, height: float, center_y: float) -> void:
 	if not fx.is_empty():
-		FxBus.play(fx, feet + Vector3.UP * height * 0.5)
+		FxBus.play(fx, feet + Vector3(0.0, center_y, 0.0))
 	if rings_scene == null:
 		return
 	var rings := rings_scene.instantiate() as TeleportRings

@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_njg5r"]
-[ext_resource type="Resource" path="res://data/audio/creatures/netherfiend.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://dy22u0t0qb3he" path="res://assets/original/ui/icons/crpd.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/ifna.tres" id="typed_ifna"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/prcy_clips.tres" id="clips_lib"]
@@ -12,7 +11,6 @@ script = ExtResource("1_njg5r")
 tag = "crpd"
 display_name = "Netherfiend"
 icon = ExtResource("icon_tex")
-model = "prcy"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1800
@@ -35,4 +33,3 @@ cooldown_s = 5.0
 casting_time_s = 1.4815
 spell_order = 459
 active_ability = ExtResource("typed_ifna")
-sounds = ExtResource("sounds_set")

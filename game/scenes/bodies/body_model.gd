@@ -12,6 +12,9 @@ extends Node3D
 ##   Tree        the AnimationTree whose AnimationNodeStateMachine has one state PER ROLE. A state plays the Animation of its own
 ##               name: change which Animation a role plays in the library, or point the state at another one.
 ##   ClipEvents  receives the method tracks of the Animations.
+##   Skeleton3D/HandL, HandR...  where the hands are: a BoneAttachment3D on the hand bone with a Marker3D `Socket` (the casting particles of a
+##               wizard go there). A hand shows only in the clips that have it: each clip carries a `visible` track for it and the library's
+##               RESET hides it. Move the Socket with the gizmo; delete the node to give the model no hand.
 ## Open the scene and press play on the Tree (or set `preview_role` here) to see a role move.
 ## The body draws from it (a BodyRig instances this scene under its ModelSlot); the rules read the same library through
 ## ClipFacts, and never a pose.
@@ -53,9 +56,6 @@ const PLAYBACK := &"parameters/playback"
 @export_group("Baked from the original")
 ## Bounding box of the rest pose (from the exporter index at bake time).
 @export var bind_aabb := AABB()
-## clip tag -> {hands: [{on, bone_name, offset}, {...}]}. Only the clips a role uses. `hands` are the two sockets of the clip (a
-## hand on the root bone is "no hand": sacengine leaves it NaN). How long a clip lasts is the Animation's, in the library.
-@export var clips: Dictionary = {}
 
 @onready var _model: Node3D = %Model
 @onready var _tree: AnimationTree = %Tree
@@ -145,12 +145,6 @@ func roles() -> PackedStringArray:
 		if has_role(role):
 			out.append(role)
 	return out
-
-
-## The two hand sockets of the .glb clip `tag`. A clip the table does not list (the role was pointed at another clip of the .glb
-## in the inspector) comes without hands.
-func hands_of(tag: String) -> Array:
-	return (clips.get(tag, {}) as Dictionary).get("hands", [])
 
 
 ## Frames and frames per second of the Animation `role` plays (0 / 30 without one), read from the library.

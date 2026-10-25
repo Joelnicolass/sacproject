@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_aanvv"]
-[ext_resource type="Resource" path="res://data/audio/creatures/sara_bella.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://cmxcoa38igf0j" path="res://assets/original/ui/icons/pez_h.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/bsba.tres" id="typed_bsba"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/sara_clips.tres" id="clips_lib"]
@@ -12,7 +11,6 @@ script = ExtResource("1_aanvv")
 tag = "pezH"
 display_name = "Sara Bella"
 icon = ExtResource("icon_tex")
-model = "sara"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1500
@@ -34,4 +32,3 @@ cooldown_s = 2.0
 casting_time_s = 0.2469
 spell_order = 205
 ranged_attack = ExtResource("typed_bsba")
-sounds = ExtResource("sounds_set")

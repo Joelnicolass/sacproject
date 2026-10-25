@@ -66,7 +66,7 @@ func set_pick(chosen: WizardPick) -> void:
 	if chosen == null or not chosen.is_complete():
 		return
 	pick = chosen
-	print("pick %s %s" % [pick.wizard.model, pick.god.id()])
+	print("pick %s %s" % [pick.wizard.model_id(), pick.god.id()])
 
 
 ## The pick of `slot`: the one the server published, or the local one for the local slot; null if none.

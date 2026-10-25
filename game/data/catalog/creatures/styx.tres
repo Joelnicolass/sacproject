@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_8orfn"]
-[ext_resource type="Resource" path="res://data/audio/creatures/styx.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://d2qgjk4t3otu5" path="res://assets/original/ui/icons/nugd.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/dhga.tres" id="typed_dhga"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/dner.tres" id="typed_dner"]
@@ -14,7 +13,6 @@ script = ExtResource("1_8orfn")
 tag = "nugd"
 display_name = "Styx"
 icon = ExtResource("icon_tex")
-model = "gund"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1350
@@ -36,4 +34,3 @@ spell_order = 780
 ranged_attack = ExtResource("typed_dhga")
 active_ability = ExtResource("typed_dner")
 on_damage = ExtResource("typed_tdhg")
-sounds = ExtResource("sounds_set")

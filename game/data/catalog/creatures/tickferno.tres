@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_kqi83"]
-[ext_resource type="Resource" path="res://data/audio/creatures/tickferno.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://biat2mju52glw" path="res://assets/original/ui/icons/craf.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/sfba.tres" id="typed_sfba"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/bugf_clips.tres" id="clips_lib"]
@@ -12,7 +11,6 @@ script = ExtResource("1_kqi83")
 tag = "craf"
 display_name = "Tickferno"
 icon = ExtResource("icon_tex")
-model = "bugf"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1120
@@ -32,4 +30,3 @@ cooldown_s = 3.0
 casting_time_s = 0.7407
 spell_order = 242
 ranged_attack = ExtResource("typed_sfba")
-sounds = ExtResource("sounds_set")

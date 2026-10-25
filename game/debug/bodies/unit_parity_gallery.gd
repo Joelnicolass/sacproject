@@ -116,7 +116,7 @@ func _spawn_unit(tag: String, at: Vector3) -> void:
 	unit.set("owner_slot", 1)
 	unit.set("type", GameData.creature(tag))
 	unit.set("rules", RULES)
-	unit.set("model", str(type.model) if type else "")
+	unit.set("model", type.model_id() if type else "")
 	unit.set("idle_aggro", false)
 	unit.set("mode", 0)
 	unit.position = at
@@ -174,7 +174,7 @@ func _wizard_for_tag(tag: String) -> Dictionary:
 	if type == null:
 		return {}
 	return {
-		"model": type.model,
+		"model": type.model_id(),
 		"god": "james",
 	}
 

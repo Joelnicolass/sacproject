@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_d7ydu"]
-[ext_resource type="Resource" path="res://data/audio/creatures/faestus_persephone.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://bmdmhxmc3m33v" path="res://assets/original/ui/icons/eht_h.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/plfa.tres" id="typed_plfa"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/thes_clips.tres" id="clips_lib"]
@@ -12,7 +11,6 @@ script = ExtResource("1_d7ydu")
 tag = "ehtH"
 display_name = "Faestus"
 icon = ExtResource("icon_tex")
-model = "thes"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 2600
@@ -35,4 +33,3 @@ cooldown_s = 5.0
 casting_time_s = 1.4815
 spell_order = 497
 ranged_attack = ExtResource("typed_plfa")
-sounds = ExtResource("sounds_set")

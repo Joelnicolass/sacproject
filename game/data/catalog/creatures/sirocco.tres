@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_oyuso"]
-[ext_resource type="Resource" path="res://data/audio/creatures/sirocco.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://dgy8stlnkln0j" path="res://assets/original/ui/icons/ris_h.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/filb.tres" id="typed_filb"]
 [ext_resource type="Script" path="res://scenes/units/passives/creature_passive.gd" id="typed_passive_script"]
@@ -15,7 +14,6 @@ script = ExtResource("1_oyuso")
 tag = "risH"
 display_name = "Sirocco"
 icon = ExtResource("icon_tex")
-model = "sirc"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 6875
@@ -41,4 +39,3 @@ casting_time_s = 3.3333
 spell_order = 999
 active_ability = ExtResource("typed_filb")
 passives = Array[ExtResource("typed_passive_script")]([ExtResource("typed_passive_0"), ExtResource("typed_passive_1")])
-sounds = ExtResource("sounds_set")

@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_ng7lu"]
-[ext_resource type="Resource" path="res://data/audio/creatures/rhinok.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://d1i2ep17a1n3a" path="res://assets/original/ui/icons/gard.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/hrba.tres" id="typed_hrba"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/HRba_2.tres" id="typed_HRba"]
@@ -13,7 +12,6 @@ script = ExtResource("1_ng7lu")
 tag = "gard"
 display_name = "Rhinok"
 icon = ExtResource("icon_tex")
-model = "edmn"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 7200
@@ -38,4 +36,3 @@ casting_time_s = 3.3333
 spell_order = 987
 ranged_attack = ExtResource("typed_hrba")
 active_ability = ExtResource("typed_HRba")
-sounds = ExtResource("sounds_set")

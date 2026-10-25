@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_eqfkw"]
-[ext_resource type="Resource" path="res://data/audio/creatures/ranger.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://i8n5w3b50ued" path="res://assets/original/ui/icons/amuh.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/wobf.tres" id="typed_wobf"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/eesd.tres" id="typed_eesd"]
@@ -13,7 +12,6 @@ script = ExtResource("1_eqfkw")
 tag = "amuh"
 display_name = "Ranger"
 icon = ExtResource("icon_tex")
-model = "huma"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 800
@@ -34,4 +32,3 @@ casting_time_s = 0.3704
 spell_order = 127
 ranged_attack = ExtResource("typed_wobf")
 active_ability = ExtResource("typed_eesd")
-sounds = ExtResource("sounds_set")

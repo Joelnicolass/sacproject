@@ -19,9 +19,9 @@ func _ready() -> void:
 	var bad := 0
 	for tag: String in GameData._creatures.keys():
 		var type := GameData.creature(tag)
-		if type == null or seen.has(type.model) or (not only.is_empty() and not only.has(type.model)):
+		if type == null or seen.has(type.model_id()) or (not only.is_empty() and not only.has(type.model_id())):
 			continue
-		seen[type.model] = true
+		seen[type.model_id()] = true
 		var unit := UNIT.instantiate() as UnitBody
 		unit.type = GameData.creature(tag)
 		holder.add_child(unit)
@@ -31,7 +31,7 @@ func _ready() -> void:
 		var info := unit.debug_clip_info()
 		var rig := unit.get_node("Tilt/Mesh/Rig") as BodyRig
 		print("%s\t%s\tskeletal=%s\trole=%s\ttag=%s\tfps=%s\trig_loaded=%s\troles=%d" % [
-			type.model, tag, anim.is_skeletal(), info.role, info.tag, info.fps, rig.is_loaded(),
+			type.model_id(), tag, anim.is_skeletal(), info.role, info.tag, info.fps, rig.is_loaded(),
 			rig.model_root().roles().size() if rig.is_loaded() else 0])
 		if str(info.role) != "idle" and anim.has_role("idle"):
 			bad += 1

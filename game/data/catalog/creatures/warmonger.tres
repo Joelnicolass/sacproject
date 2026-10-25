@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_n0fcr"]
-[ext_resource type="Resource" path="res://data/audio/creatures/warmonger.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://co2nm8vnn27cl" path="res://assets/original/ui/icons/nugf.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/fhga.tres" id="typed_fhga"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/wfhg.tres" id="typed_wfhg"]
@@ -14,7 +13,6 @@ script = ExtResource("1_n0fcr")
 tag = "nugf"
 display_name = "Warmonger"
 icon = ExtResource("icon_tex")
-model = "gunf"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1200
@@ -36,4 +34,3 @@ spell_order = 777
 ranged_attack = ExtResource("typed_fhga")
 active_ability = ExtResource("typed_wfhg")
 on_damage = ExtResource("typed_tfhg")
-sounds = ExtResource("sounds_set")

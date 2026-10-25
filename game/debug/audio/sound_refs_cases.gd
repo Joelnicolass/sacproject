@@ -178,9 +178,10 @@ func count_body_sets() -> Dictionary:
 		if type == null:
 			continue
 		counts["creatures"] += 1
-		if type.sounds != null:
+		var set := BodyLook.sounds_in(BodyLook.of_body(type.body))
+		if set != null:
 			counts["creature_sets"] += 1
-			if type.sounds.fallback == null:
+			if set.fallback == null:
 				counts["without_fallback"] += 1
 	files.clear()
 	_files(WIZARDS_DIR, ".tres", files)
@@ -189,7 +190,7 @@ func count_body_sets() -> Dictionary:
 		if wizard == null:
 			continue
 		counts["wizards"] += 1
-		if wizard.sounds != null:
+		if BodyLook.sounds_in(BodyLook.of_body(wizard.body)) != null:
 			counts["wizard_sets"] += 1
 	counts["summon"] = _unit_summon() != null
 	return counts

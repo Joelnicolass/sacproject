@@ -72,10 +72,10 @@ clip_player = NodePath("ClipPose")
 
 [node name="Pivot" type="Node3D" parent="."]
 
-[node name="Mesh" type="MeshInstance3D" parent="Pivot" node_paths=PackedStringArray("rig")]
+[node name="Mesh" type="MeshInstance3D" parent="Pivot" node_paths=PackedStringArray("rig", "mount")]
 script = ExtResource("2_visual")
-model = "sacd"
 rig = NodePath("Rig")
+mount = NodePath("../../BodyMount")
 
 [node name="Rig" parent="Pivot/Mesh" instance=ExtResource("14_rig")]
 
@@ -92,8 +92,9 @@ pivot = NodePath("../Pivot/Mesh/Rig")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
 shape = SubResource("CapsuleShape3D_doctor")
 
-[node name="BodyMount" type="Node" parent="."]
+[node name="BodyMount" type="Node" parent="." node_paths=PackedStringArray("rig")]
 script = ExtResource("s1_mount")
+rig = NodePath("../Pivot/Mesh/Rig")
 
 [node name="BodyCollider" type="Node" parent="." node_paths=PackedStringArray("mount", "collision")]
 script = ExtResource("s1_collider")

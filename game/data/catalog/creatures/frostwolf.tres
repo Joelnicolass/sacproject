@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_bb17u"]
-[ext_resource type="Resource" path="res://data/audio/creatures/frostwolf.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://cwc1uf3nbqfjm" path="res://assets/original/ui/icons/lbog.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/!nur.tres" id="typed__nur"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/gobl_clips.tres" id="clips_lib"]
@@ -12,7 +11,6 @@ script = ExtResource("1_bb17u")
 tag = "lbog"
 display_name = "Frostwolf"
 icon = ExtResource("icon_tex")
-model = "gobl"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 640
@@ -32,4 +30,3 @@ cooldown_s = 2.0
 casting_time_s = 0.2469
 spell_order = 123
 active_ability = ExtResource("typed__nur")
-sounds = ExtResource("sounds_set")

@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_2pstc"]
-[ext_resource type="Resource" path="res://data/audio/creatures/snowman.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://bq8f8c1lwvocp" path="res://assets/original/ui/icons/zepa.png" id="icon_tex"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/apez_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/snowman.tscn" id="body_scene"]
@@ -11,7 +10,6 @@ script = ExtResource("1_2pstc")
 tag = "zepa"
 display_name = "Snowman"
 icon = ExtResource("icon_tex")
-model = "apez"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 500
@@ -25,4 +23,3 @@ melee_resistance = 1.5
 souls = 1
 spell_order = 14
 peasant = true
-sounds = ExtResource("sounds_set")

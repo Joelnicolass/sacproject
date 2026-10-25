@@ -4,7 +4,7 @@ extends Node
 
 ## The hunt of Death for its SpellCarrier. While the wizard casts it only stands there (the look rises out of the land); when the casting ends it
 ## looks for the closest creature of any side that is not a wizard, turns to it, walks to it, strikes (`arrived` at the blow, TargetEffect does the
-## killing) and goes on to the next, until it has struck `SpellType.count` of them or the spell's duration is over; then it leaves. Each tick it
+## killing) and goes on to the next, until it has struck `SpellType.max_targets` of them or the spell's duration is over; then it leaves. Each tick it
 ## looks again, so it changes its mind if something comes closer. It does not kill (TargetEffect) and it does not draw (the look follows `phase`:
 ## CASTING, FLYING = walking, STRIKING, LEAVING). Server (or solo) only.
 ## Ref: sacengine updateDeath, Death (state.d:4262-4298, 22153-22274).
@@ -123,7 +123,7 @@ func _chest() -> Vector3:
 
 
 func _over() -> bool:
-	var most := carrier.spell.count if carrier.spell != null else 0
+	var most := carrier.spell.max_targets if carrier.spell != null else 0
 	return _age >= _lifetime or (most > 0 and _kills >= most)
 
 

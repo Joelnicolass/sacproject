@@ -317,14 +317,14 @@ func _ai() -> Dictionary:
 	if track != null and a != null:
 		track.cached_rate = 1.0
 		checks["fn_is_guard"] = AiSpellEval.rating_fn(spell) == AiSpellEval.FN_GUARD
-		checks["accepted_by_support"] = AiSpellEval.accepts(spell, AiSpellEval.SUPPORT_MASK) and not AiSpellEval.accepts(spell, AiSpellEval.ATTACK_MASK)
+		checks["accepted_by_support"] = AiSpellEval.casts_in(spell, SpellType.AiPhase.SUPPORT) and not AiSpellEval.casts_in(spell, SpellType.AiPhase.ATTACK)
 		checks["one_foe_zero"] = AiGuard.rate(spell, track, perception, eval.tactics) == 0.0
 		var b := perception.add_node(near_b, &"event")
 		perception.add_node(far, &"event")
 		checks["two_foes_worth"] = AiGuard.rate(spell, track, perception, eval.tactics) == 1.0
 		(wizard.get_node("ManaPool") as ManaPool).maximum = 10000.0
 		track.spell_accs = [{"spell": spell, "fn": AiSpellEval.rating_fn(spell)}]
-		var found := eval.find_best(track, track, AiSpellEval.SUPPORT_MASK)
+		var found := eval.find_best(track, track, SpellType.AiPhase.SUPPORT)
 		checks["support_picks_it"] = found.get("spell") == spell
 		b.cached_rate = 1.0
 		near_b.global_position = Vector3(-300.0, 0.0, -300.0)

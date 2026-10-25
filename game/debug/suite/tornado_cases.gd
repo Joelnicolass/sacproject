@@ -62,7 +62,7 @@ func _scenes() -> Dictionary:
 	checks["numbers"] = spell.duration_s == 25.0 and spell.speed_m_s == 6.0 and spell.acceleration_m_s2 == 0.6 and spell.effect_range_m == 50.0
 	checks["in_stratos_book"] = (GameData.book("stratos", 9)["spells"] as Array).any(func(type: SpellType) -> bool: return type.tag == TAG)
 	checks["not_before_level_8"] = not (GameData.book("stratos", 7)["spells"] as Array).any(func(type: SpellType) -> bool: return type.tag == TAG)
-	checks["ai_none"] = spell.ai_use == SpellType.AiUse.NONE
+	checks["ai_area"] = AiSpellEval.rating_fn(spell) == AiSpellEval.FN_AREA
 	var zone := (_spawner.zones["Tornado"] as PackedScene).instantiate()
 	var light := zone.get_node_or_null("Look/Light") as ActorLight
 	checks["lit_with_its_colour"] = light != null and light.light_color != Color.WHITE and not light.shadow_enabled

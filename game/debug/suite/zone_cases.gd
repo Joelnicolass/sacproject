@@ -64,7 +64,7 @@ func _scenes() -> Dictionary:
 	for tag in ["pxef", "zorf", "tfir"]:
 		var made := GameData.spell(tag).action.instantiate() as SpellAction
 		checks[tag + "_ground_pick"] = made.pick == SpellAction.Pick.GROUND
-		checks[tag + "_ai_none"] = GameData.spell(tag).ai_use == SpellType.AiUse.NONE
+		checks[tag + "_ai_area"] = GameData.spell(tag).ai_use == SpellType.AiUse.HIT_AREA
 		made.free()
 	await _frames(1)
 	return _verdict("zone_scenes", checks)
@@ -281,8 +281,8 @@ func _frozen_shatter() -> Dictionary:
 	return _verdict("zone_frozen_shatter", checks)
 
 
-## The AI rates the four with the evaluators their flags give them (the three ground spells as area spells, Healing Aura as a heal), the
-## numbers are finite and nothing breaks; none has an `ai_use` of its own yet.
+## The AI rates the four with the evaluators their `ai_use` gives them (the three ground spells as area spells, Healing Aura as a heal), the
+## numbers are finite and nothing breaks.
 func _ai() -> Dictionary:
 	var checks := {}
 	var perception := AiPerception.new()
@@ -310,7 +310,7 @@ func _ai() -> Dictionary:
 	var wanted := {"pxef": AiSpellEval.FN_AREA, "zorf": AiSpellEval.FN_AREA, "tfir": AiSpellEval.FN_AREA, "ruah": AiSpellEval.FN_HEAL}
 	for tag in SPELLS:
 		var spell := GameData.spell(tag)
-		checks[tag + "_evaluator"] = AiSpellEval.rating_fn(spell) == wanted[tag] and spell.ai_use == SpellType.AiUse.NONE
+		checks[tag + "_evaluator"] = AiSpellEval.rating_fn(spell) == wanted[tag]
 		if checks["tracked"]:
 			var rated := eval.rate(track, spell, hurt_track if tag == "ruah" else foe_track, 0.0)
 			checks[tag + "_rates_finite"] = is_finite(rated) and rated >= 0.0

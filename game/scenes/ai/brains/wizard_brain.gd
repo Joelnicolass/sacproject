@@ -235,11 +235,11 @@ func rebuild_spells(wizard: AiTrack) -> void:
 		var spell := book.structure_at(i)
 		if spell == null:
 			continue
-		if wizard.shrine_spell == null and (spell.flags & (1 << 11)) != 0:
+		if wizard.shrine_spell == null and spell.only_free_manafounts:
 			wizard.shrine_spell = spell
-		if spell.tag == "ccas":
+		if spell.ai_use == SpellType.AiUse.CONVERT:
 			wizard.convert_spell = spell
-		if spell.tag == "ucas":
+		if spell.ai_use == SpellType.AiUse.DESECRATE:
 			wizard.desecrate_spell = spell
 	wizard.spell_dirty = false
 
@@ -385,7 +385,7 @@ func _shot_check(wizard: AiTrack, target: AiTrack, spell: Resource, check_only: 
 	if not (spell is SpellType) or target == null or not target.is_valid() or target.node == wizard.node:
 		return SHOT_OK
 	var type := spell as SpellType
-	if type.is_structure or not AiSpellEval.accepts(type, AiSpellEval.ATTACK_MASK):
+	if type.is_structure or not AiSpellEval.casts_in(type, SpellType.AiPhase.ATTACK):
 		return SHOT_OK
 	var body := wizard.node as WizardBody
 	var splash := AiLineOfFire.is_splash(body, type)
@@ -430,7 +430,7 @@ func spell_futile(target: AiTrack) -> bool:
 func _note_attack_cast(spell: Resource, target: AiTrack) -> void:
 	if tactics == null or tactics.spell_futile_forget_s <= 0.0 or target == null or not target.is_body():
 		return
-	if not (spell is SpellType) or (spell as SpellType).is_structure or not AiSpellEval.accepts(spell as SpellType, AiSpellEval.ATTACK_MASK):
+	if not (spell is SpellType) or (spell as SpellType).is_structure or not AiSpellEval.casts_in(spell as SpellType, SpellType.AiPhase.ATTACK):
 		return
 	var health := perception.health_of(target)
 	var mark: Array = _attack_marks.get(target.id, [])

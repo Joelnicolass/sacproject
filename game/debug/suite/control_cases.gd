@@ -458,7 +458,7 @@ func _ai() -> Dictionary:
 	checks["tracked"] = track != null and big_track != null and small_track != null and guarded_track != null
 	if checks["tracked"]:
 		checks["fn_is_disable"] = AiSpellEval.rating_fn(spell) == AiSpellEval.FN_DISABLE
-		checks["accepted_by_attack"] = AiSpellEval.accepts(spell, AiSpellEval.ATTACK_MASK)
+		checks["accepted_by_attack"] = AiSpellEval.casts_in(spell, SpellType.AiPhase.ATTACK)
 		var rated_big := eval.rate(track, spell, big_track, 0.0)
 		var rated_small := eval.rate(track, spell, small_track, 0.0)
 		checks["worth_something"] = rated_big > 0.0 and rated_small > 0.0
@@ -466,9 +466,9 @@ func _ai() -> Dictionary:
 		checks["ally_zero"] = eval.rate(small_track, spell, track, 0.0) == 0.0
 		(wizard.get_node("ManaPool") as ManaPool).maximum = 10000.0
 		track.spell_accs = [{"spell": spell, "fn": AiSpellEval.rating_fn(spell)}]
-		var found := eval.find_best(track, big_track, AiSpellEval.ATTACK_MASK)
+		var found := eval.find_best(track, big_track, SpellType.AiPhase.ATTACK)
 		checks["picks_it"] = found.get("spell") == spell
-		var none := eval.find_best(track, guarded_track, AiSpellEval.ATTACK_MASK)
+		var none := eval.find_best(track, guarded_track, SpellType.AiPhase.ATTACK)
 		checks["never_on_protected"] = float(none["score"]) == 0.0
 		checks["vines_not_on_flier_rated_zero"] = true
 	checks["knob"] = eval.tactics.disable_ref_s == 10.0

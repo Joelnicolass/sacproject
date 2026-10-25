@@ -441,7 +441,7 @@ func _lights() -> Dictionary:
 	return _verdict("cloud_lights", checks)
 
 
-## The AI sees the five without breaking: no `ai_use`, and its evaluator gives a finite rating.
+## The AI sees the five without breaking: each an area spell for the AI, and its evaluator gives a finite rating.
 func _ai() -> Dictionary:
 	var checks := {}
 	var perception := AiPerception.new()
@@ -464,7 +464,7 @@ func _ai() -> Dictionary:
 	groups.rebuild()
 	for tag in SPELLS:
 		var spell := GameData.spell(tag)
-		checks[tag + "_ai_none"] = spell.ai_use == SpellType.AiUse.NONE
+		checks[tag + "_ai_area"] = AiSpellEval.rating_fn(spell) == AiSpellEval.FN_AREA
 		if track != null and foe_track != null:
 			var rated := eval.rate(track, spell, foe_track, 0.0)
 			checks[tag + "_rates_finite"] = is_finite(rated) and rated >= 0.0

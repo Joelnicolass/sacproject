@@ -3,21 +3,13 @@ extends RefCounted
 
 const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 
-## How a wizard rates a spell on a target (shiny.d:2799-2923 `rateSpellAcc`, 2925-2951 `findBestSpell`; RFC-024 §3.1).
-## 024c rates the attack spells of the five books: the single-target ones (`f489780`: Rock, Lightning, Insect Swarm) and
-## the ones with an area (`f489860`: Wrath, Fireball). 024d adds the support ones of the five books: Heal (`f489af0`) and
-## Speedup (`f489c40`). The other evaluators of the original (omna, ndrg Guardian, elet Teleport, protect, `taed`) belong to
-## spells the books of the port keep in the tab of structures or do not have, and count 0 («aprox.»). The word `unknown16` of
-## the SPEL (low half of the mask at 0x58) is not exported by export_stats.py: it counts as 0 («aprox.»).
-
+## How the wizard of the AI rates a spell on a target and picks the best one of his book. It reads only the named fields of the
+## SpellType (`ai_use`, `ai_phase`, the «who it may land on» ticks, `ai_worth`); it does not cast and it does not look at tags.
+## A spell the AI has no evaluator for rates 0. ## Ref: shiny.d:2799-2923 `rateSpellAcc`, 2925-2951 `findBestSpell`; RFC-024 §3.1.
 ## ntt type bits (shiny.d:2672-2680).
 const TYPE_WIZ := 1
 const TYPE_CRE := 4
 const TYPE_STR := 0x10
-
-const ATTACK_MASK := 0x58000000
-## wizSupport (shiny.d:3086, 0xa4000000): heal, speedup and the other benefits.
-const SUPPORT_MASK := 0xa4000000
 
 ## Evaluators (ratingFn): 0 none, 1 single target, 2 area, 3 heal, 4 speedup, 5 guard (a ward on himself), 6 disable (a control spell on a foe).
 const FN_NONE := 0
@@ -27,6 +19,8 @@ const FN_HEAL := 3
 const FN_SPEEDUP := 4
 const FN_GUARD := 5
 const FN_DISABLE := 6
+const FN_OF_USE := {SpellType.AiUse.HIT_ONE: FN_SINGLE, SpellType.AiUse.HIT_AREA: FN_AREA, SpellType.AiUse.HEAL: FN_HEAL,
+	SpellType.AiUse.SPEEDUP: FN_SPEEDUP, SpellType.AiUse.SELF_GUARD: FN_GUARD, SpellType.AiUse.DISABLE_FOE: FN_DISABLE}
 
 var perception: AiPerception
 var stance: AiStance
@@ -54,61 +48,68 @@ static func type_bits(t: AiTrack) -> int:
 	return 0
 
 
-## wantsSpellAcc (shiny.d:322-324): spells with a flags1 in 0xfc00.
+## The AI keeps in its book list the spells it may cast on its own: those with a phase (attack or support).
 static func wants_acc(spell: SpellType) -> bool:
-	return (spell.flags1 & 0xfc00) != 0
+	return spell.ai_phase != SpellType.AiPhase.NEVER
 
 
-## Which evaluator a spell uses (ratingFn, shiny.d:334-345: the table of names first, then the flags1 chain).
+## Which evaluator a spell uses, from what the .tres says it is for (`ai_use`). The altar spells (Convert, Desecrate) have their own
+## phases and no rating.
 static func rating_fn(spell: SpellType) -> int:
-	if spell.ai_use == SpellType.AiUse.SELF_GUARD:
-		return FN_GUARD
-	if spell.ai_use == SpellType.AiUse.DISABLE_FOE:
-		return FN_DISABLE
-	match spell.tag:
-		"laeh":
-			return FN_HEAL
-		"pups":
-			return FN_SPEEDUP
-		"omna", "ndrg", "elet", "ccas", "taed":
-			return FN_NONE
-	var f1 := spell.flags1
-	if f1 & 0x4000:
-		return FN_AREA if ((f1 & 0x40) != 0 and spell.effect_range_m > 0.0) else FN_SINGLE
-	if f1 & 0x8000:
-		return FN_HEAL
-	return FN_NONE
+	return int(FN_OF_USE.get(spell.ai_use, FN_NONE))
 
 
-## rater2 vtbl[0] (shiny.d:2656-2661): the spell accepts the mask `(unknown16 | flags1 << 16) & mask`.
-static func accepts(spell: SpellType, mask: int) -> bool:
-	return (((spell.flags1 << 16) | 0) & mask) != 0
+## Whether the spell is cast in this phase (attack on a foe, support of an own body).
+static func casts_in(spell: SpellType, phase: SpellType.AiPhase) -> bool:
+	return phase != SpellType.AiPhase.NEVER and spell.ai_phase == phase
 
 
-## canCastSpellOn (shiny.d:2756-2797) for the flags of an attack: no ally, a real structure, not a fount.
-func can_cast_on(caster: AiTrack, target: AiTrack, spell: SpellType) -> bool:
-	var flags := spell.flags
-	if flags == 0:
+## Whether the kind of the target is one the spell lands on (a spell with none of the nine ticks lands on anything).
+static func lands_on(spell: SpellType, target: AiTrack) -> bool:
+	if not (_names_a_kind(spell) or spell.only_free_manafounts or spell.only_allies or spell.never_allies or spell.targets_ground):
 		return true
-	if flags & 0x1f:
-		if flags & (1 << 11):  # onlyManafounts
-			return target.node is ManafountBody and (target.node as ManafountBody).is_free()
-		if (flags & (1 << 12)) != 0 and perception.relation_of(target.node) > 1:  # onlyAlly: CREATURE::IsFriendly
-			return false
-		if flags & (1 << 13):  # disallowAlly
-			if perception.relation_of(target.node) <= 1:
-				return false
-			if target.kind == AiTrack.Kind.STR and target.node.is_in_group(&"manafount"):
-				return false
+	match target.kind:
+		AiTrack.Kind.WIZ:
+			return spell.targets_wizards
+		AiTrack.Kind.CRE, AiTrack.Kind.MAHO:
+			return spell.targets_creatures
+		AiTrack.Kind.STR:
+			return spell.targets_structures
+	return false
+
+
+## Whether the spell may land on this target by side: no ally, a real structure, not a fount.
+func can_cast_on(_caster: AiTrack, target: AiTrack, spell: SpellType) -> bool:
+	if not _names_a_kind(spell):
+		return true
+	var free_fount := spell.only_free_manafounts and target.node is ManafountBody and (target.node as ManafountBody).is_free()
+	return side_allows(spell, free_fount, perception.relation_of(target.node),
+		target.kind == AiTrack.Kind.STR and target.node.is_in_group(&"manafount"))
+
+
+## The side rule of can_cast_on over facts already looked up (relation: 0 own, 1 ally, 2 or 3 not an ally). A free manafount is all
+## that `only_free_manafounts` takes; after it `only_allies`, then `never_allies` (which also refuses a manafount structure).
+static func side_allows(spell: SpellType, free_fount: bool, relation: int, fount_structure: bool) -> bool:
+	if not _names_a_kind(spell):
+		return true
+	if spell.only_free_manafounts:
+		return free_fount
+	if spell.only_allies and relation > 1:
+		return false
+	if spell.never_allies:
+		return relation > 1 and not fount_structure
 	return true
+
+
+static func _names_a_kind(spell: SpellType) -> bool:
+	return spell.targets_wizards or spell.targets_souls or spell.targets_creatures or spell.targets_corpses or spell.targets_structures
 
 
 ## rateSpellAcc (shiny.d:2799-2923) for the evaluators of 024c. `dist_scaled` is findBestSpell's (shiny.d:2930-2934).
 func rate(caster: AiTrack, spell: SpellType, target: AiTrack, dist_scaled: float) -> float:
-	var mask := spell.flags & 0x781f
-	if mask != 0 and (type_bits(target) & mask) == 0:
+	if not lands_on(spell, target):
 		return 0.0
-	if (spell.flags1 & 0x10) != 0 and caster != target:
+	if spell.ai_only_on_self and caster != target:
 		return 0.0
 	if not can_cast_on(caster, target, spell):
 		return 0.0
@@ -135,7 +136,7 @@ func _single(spell: SpellType, target: AiTrack) -> float:
 	if (type_bits(target) & 0x15) == 0 or (target.flags & AiTrack.ENEMY) == 0:
 		return 0.0
 	var hp := perception.health_of(target)
-	var m := mini(spell.amount2, hp.x)
+	var m := mini(spell.ai_worth, hp.x)
 	var ratio := AiField.f32(AiField.safediv(float(m), float(hp.y)))
 	return AiField.f32(target.sort_key() * ratio)
 
@@ -275,7 +276,7 @@ func _speedup(target: AiTrack) -> float:
 
 ## findBestSpell (shiny.d:2925-2951): the spell of the wizard's book with the best score against `target`
 ## (cost paid out of the pool of mana: (1 - cost/pool) * s). Returns {score, spell, range, obj}.
-func find_best(caster: AiTrack, target: AiTrack, mask: int) -> Dictionary:
+func find_best(caster: AiTrack, target: AiTrack, phase: SpellType.AiPhase) -> Dictionary:
 	var pool := float(AiRater.ftol(AiPerception._mana_max(caster.node)) * stance.manalith_count())
 	var dist_scaled := 0.0
 	if target != null:
@@ -287,7 +288,7 @@ func find_best(caster: AiTrack, target: AiTrack, mask: int) -> Dictionary:
 	var best_spell: SpellType
 	for entry: Dictionary in caster.spell_accs:
 		var spell: SpellType = entry["spell"]
-		if not accepts(spell, mask):
+		if not casts_in(spell, phase):
 			continue
 		var s := rate(caster, spell, target, dist_scaled)
 		s = AiField.spell_cost_scaled(s, spell.mana_cost, pool)

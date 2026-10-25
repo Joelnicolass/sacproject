@@ -2,10 +2,11 @@ extends Node3D
 
 ## RFC-023 023e capture: a Sac Doctor walks, then takes a Trogg: the captive rises, floats and thrashes in the ring.
 ##   godot --path game --max-fps 60 --resolution 1280x720 res://debug/bodies/rig023e/rig023e_shots.tscn -- --out=/abs/dir
-## Prints the role of both rigs at every shot. One PNG per moment.
+## Prints the role of both rigs at every shot, and (055a-5) the metrics of the captive's ragdoll. One PNG per moment.
 
 const UNIT := preload("res://scenes/units/unit.tscn")
 const DOCTOR := preload("res://scenes/sacrifice/doctor.tscn")
+const METRICS := preload("res://debug/bodies/ragdoll_metrics.gd")
 
 var _out := ""
 var _doctor: DoctorBody
@@ -42,7 +43,33 @@ func _shot(name_: String) -> void:
 	get_viewport().get_texture().get_image().save_png(_out.path_join(name_ + ".png"))
 	var rig := _doctor.get_node("Pivot/Mesh/Rig") as BodyRig
 	var crig := _captive.get_node("Tilt/Mesh/Rig") as BodyRig
-	print("SHOT %s doctor=%s captive=%s mode=%d" % [name_, rig.active_role(), crig.active_role(), _captive.mode])
+	print("SHOT %s doctor=%s captive=%s mode=%d %s" % [name_, rig.active_role(), crig.active_role(), _captive.mode, _ragdoll_metrics(crig)])
+
+
+## The numbers of the captive's ragdoll (ragdoll_metrics.gd) at this moment: pose, extent and stretch against the rest pose, how far under
+## the anchor it hangs, NaN. "ragdoll=none" when the model has no ragdoll.
+func _ragdoll_metrics(crig: BodyRig) -> String:
+	var model := crig.model_root()
+	var driver := _captive.find_child("RagdollDriver", false, false) as RagdollDriver
+	if model == null or model.ragdoll == null or driver == null:
+		return "ragdoll=none"
+	var skeleton := crig.skeleton()
+	var rest := PackedVector3Array()
+	var now := PackedVector3Array()
+	var parents := PackedInt32Array()
+	for bone in skeleton.get_bone_count():
+		rest.append(skeleton.global_transform * skeleton.get_bone_global_rest(bone).origin)
+		now.append(skeleton.global_transform * skeleton.get_bone_global_pose(bone).origin)
+		parents.append(skeleton.get_bone_parent(bone))
+	var ref_m := maxf(METRICS.longest_side(rest), 0.3)
+	var m := {
+		"extent_ratio": METRICS.extent_ratio(now, ref_m),
+		"stretch_ratio": METRICS.stretch_ratio(rest, now, parents),
+		"nan": METRICS.has_nan(now),
+	}
+	if model.hang_bone != null:
+		m["drop_ratio"] = METRICS.drop_ratio(now, now[model.hang_bone.get_bone_id()].y, ref_m)
+	return "pose=%d %s" % [driver.pose(), METRICS.summary(m)]
 
 
 func _ticks(n: int) -> void:

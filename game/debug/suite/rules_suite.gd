@@ -21,6 +21,7 @@ const FORMATION_CASES := preload("res://debug/suite/formation_cases.gd")  # 038a
 const RADIAL_CASES := preload("res://debug/suite/radial_cases.gd")  # 038c
 const HOVER_FRAME_CASES := preload("res://debug/suite/hover_frame_cases.gd")
 const DEATH_CASES := preload("res://debug/suite/death_cases.gd")  # 055a
+const CAPTIVE_LOOK_CASES := preload("res://debug/suite/captive_look_cases.gd")  # 055a-5
 const TOWER_CASES := preload("res://debug/suite/tower_cases.gd")  # 061a
 const WARD_CASES := preload("res://debug/suite/ward_cases.gd")  # 061b
 const CHAIN_CASES := preload("res://debug/suite/chain_cases.gd")  # 061e
@@ -90,6 +91,7 @@ func _run_suite() -> void:
 	_results.merge(RADIAL_CASES.new().run(self))  # 038c
 	_results.merge(await HOVER_FRAME_CASES.new().run(self))
 	_results.merge(await DEATH_CASES.new().run(self))  # 055a
+	_results.merge(await CAPTIVE_LOOK_CASES.new().run(self))  # 055a-5
 	_results.merge(await TEAM_CASES.new().run(self))  # 049b, 049c
 	_results.merge(await TOWER_CASES.new().run(self))  # 061a
 	_results.merge(await WARD_CASES.new().run(self))  # 061b

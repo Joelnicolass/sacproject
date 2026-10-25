@@ -176,6 +176,14 @@ func sender_slot() -> int:
 	return _sender_slot
 
 
+## Server (or solo) only: remove this node everywhere (the spawner that made it removes it on every peer).
+func despawn() -> void:
+	if not MpKit.is_authority():
+		push_warning("MpActor '%s': despawn() only runs on the server" % _root.name)
+		return
+	_root.queue_free()
+
+
 ## After a teleport or respawn: on a client, jump to the server's pose instead of sliding there.
 func snap() -> void:
 	if _motion and not is_authority():

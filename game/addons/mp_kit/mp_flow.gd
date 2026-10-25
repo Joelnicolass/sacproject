@@ -86,7 +86,7 @@ func _ready() -> void:
 		return
 	_pick_world_from_args()
 	if net_config:
-		max_players = net_config.max_players
+		max_players = net_config.effective_max_players()
 		custom_channels = net_config.custom_channels
 		advertise_lan = advertise_lan and net_config.lan_discovery
 		net_config.apply(host_slot)

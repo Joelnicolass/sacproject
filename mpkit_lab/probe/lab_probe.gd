@@ -90,6 +90,14 @@ func _play_as(slot: int) -> void:
 	await _until(func() -> bool: return pawn.flashes == 1, "the flash event arrived (to_all)")
 	await _tap(&"ui_focus_next")
 	await _until(func() -> bool: return pawn.color_index == 1, "recolor went to the server and back (to_server + sync)")
+	var shots := get_tree().current_scene.get_node("Projectiles")
+	await _tap(&"ui_select")
+	await _until(func() -> bool: return shots.get_child_count() > 0, "a shot the server spawned (spawn_actor) reached this peer")
+	await _until(func() -> bool: return shots.get_child_count() == 0, "the shot was removed everywhere (despawn)")
+	var bell := get_tree().get_first_node_in_group(&"bell")
+	await _tap(&"ui_cancel")
+	await _until(func() -> bool: return bell.rings == 1, "the bell (no owner) rang through to_server")
+	await _until(func() -> bool: return int(_state().get_value(&"bell_by", -1)) == _who_rang(slot), "the server knew who rang it (sender_slot)")
 
 
 ## Only what every MpKit game has: the arrows move the own player (server simulated) and Enter scores.
@@ -103,6 +111,11 @@ func _play_basic(slot: int) -> void:
 	Input.action_release(&"ui_right")
 	await _tap(&"ui_accept")
 	await _until(func() -> bool: return int(_state().get_value(StringName("p%d" % slot), 0)) == 1, "the score reached 1")
+
+
+## The slot that rang the bell: the player, or 1 in solo / for the host (local_slot of the authority).
+func _who_rang(slot: int) -> int:
+	return slot
 
 
 ## A player who joins after the first one played (`--probe-first=N`, default 1) sees it where it went, its score
@@ -119,6 +132,14 @@ func _check_late() -> void:
 	var key := StringName("p%d" % slot)
 	await _until(func() -> bool: return int(_state().get_value(key, 0)) == 1, "the score made before joining arrived")
 	await _until(func() -> bool: return first.color_index == 1, "P%d's color made before joining arrived" % slot)
+	var bell := get_tree().get_first_node_in_group(&"bell")
+	await _until(func() -> bool: return bell.rings == 1, "the bell rung before joining shows (a static actor, late join)")
+	_check(get_tree().current_scene.get_node("Projectiles").get_child_count() == 0, "no leftover shots reached the late peer")
+	## Bypass the client-side guard: send the RPC by hand for an actor this peer does not own.
+	var their := MpActor.of(first)
+	their.rpc_server_call.rpc_id(1, &"recolor", [])
+	await get_tree().create_timer(1.0).timeout
+	_check(first.color_index == 1, "the server refused a to_server call from a peer that does not own the actor")
 
 
 ## Server or host: a remote player's input moves its pawn here and its score counts here.
@@ -128,10 +149,19 @@ func _check_watch() -> void:
 	var pawn := await _pawn(slot)
 	if pawn == null:
 		return
+	if MpBoot.user_flag("probe-server-node"):
+		## A server-only node added by hand in a spawn_path (an effect the engine does not replicate): clients must not
+		## be affected (no gate, nothing held for it).
+		var fx := Node2D.new()
+		fx.name = "ServerOnlyFx"
+		get_tree().current_scene.get_node("Projectiles").add_child(fx)
+		_check(fx.get_node_or_null(MpSpawner.GATE_NAME) == null, "a server-only node in spawn_path got no gate")
 	var start_x: float = pawn.position.x
 	var min_move := float(MpBoot.user_value("probe-min-move", "60"))
 	await _until(func() -> bool: return pawn.position.x > start_x + min_move, "the remote P%d input moved it on the server" % slot)
 	await _until(func() -> bool: return int(_state().get_value(StringName("p%d" % slot), 0)) >= 1, "the remote P%d scored on the server" % slot)
+	if pawn.has_node("MpInput") and MpBoot.user_value("probe-min-move", "60") == "60":
+		await _until(func() -> bool: return pawn.get_node("MpInput").get_value(&"aim") is Vector2, "the owner's aim (MpInput.set_value) reached the server")
 
 
 ## Own player, predicted: it must answer the key on the next ticks whatever the lag, and the server's corrections

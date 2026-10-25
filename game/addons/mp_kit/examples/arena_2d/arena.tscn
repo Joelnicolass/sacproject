@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://addons/mp_kit/mp_slot_spawner.gd" id="1"]
 [ext_resource type="PackedScene" path="res://addons/mp_kit/examples/arena_2d/player.tscn" id="2"]
@@ -6,6 +6,9 @@
 [ext_resource type="Script" path="res://addons/mp_kit/examples/arena_2d/hud.gd" id="4"]
 [ext_resource type="Script" path="res://addons/mp_kit/examples/arena_2d/arena.gd" id="5"]
 [ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_match.gd" id="6"]
+[ext_resource type="Script" path="res://addons/mp_kit/mp_spawner.gd" id="7"]
+[ext_resource type="PackedScene" path="res://addons/mp_kit/examples/arena_2d/shot.tscn" id="8"]
+[ext_resource type="PackedScene" path="res://addons/mp_kit/examples/arena_2d/bell.tscn" id="9"]
 
 [sub_resource type="SceneReplicationConfig" id="state_sync"]
 properties/0/path = NodePath(".:values")
@@ -41,6 +44,16 @@ spawn_path = NodePath("../Actors")
 script = ExtResource("1")
 pawn_scene = ExtResource("2")
 spawn_points = NodePath("../SpawnPoints")
+
+[node name="Projectiles" type="Node2D" parent="."]
+
+[node name="Shots" type="MultiplayerSpawner" parent="." groups=["shot_spawner"]]
+spawn_path = NodePath("../Projectiles")
+script = ExtResource("7")
+extra_scenes = Array[PackedScene]([ExtResource("8")])
+
+[node name="Bell" parent="." instance=ExtResource("9")]
+position = Vector2(480, 470)
 
 [node name="Score" type="Node" parent="."]
 script = ExtResource("3")

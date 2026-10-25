@@ -39,6 +39,11 @@ func effective_port() -> int:
 	return int(MpBoot.user_value("mp-port", str(port)))
 
 
+## `--max-players=N` on a server process wins over the .tres (one build, several server sizes).
+func effective_max_players() -> int:
+	return int(MpBoot.user_value("max-players", str(max_players)))
+
+
 ## A browser cannot open a server or listen for LAN rooms.
 static func can_host() -> bool:
 	return not OS.has_feature("web")
@@ -58,7 +63,7 @@ func client_tls() -> TLSOptions:
 
 ## Puts these settings on MpKit (before host / join).
 func apply(host_slot: int = 1) -> void:
-	MpKit.configure(effective_port(), max_players, host_slot, custom_channels)
+	MpKit.configure(effective_port(), effective_max_players(), host_slot, custom_channels)
 	MpKit.transport = effective_transport()
 	## What this .tres sets wins; otherwise the TLS flags MpKit read at startup stay.
 	var server := server_tls()

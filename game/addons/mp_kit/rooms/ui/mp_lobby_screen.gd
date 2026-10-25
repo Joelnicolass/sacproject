@@ -12,6 +12,8 @@ extends Control
 ## The pick every seat starts with (character, team...). The lobby needs one before "ready"; a game without
 ## choices can keep this one. Change it with set_pick() (and check it in MpRoomRules.accept_pick).
 @export var default_pick: Dictionary = {"pick": "default"}
+## Join the match as soon as the room server starts it. Off = `match_found` is emitted and your UI calls join_found().
+@export var auto_join_match: bool = true
 ## Scene of the "Back" button (usually the boot menu).
 @export_file("*.tscn") var back_path: String = ""
 
@@ -35,7 +37,11 @@ extends Control
 @export var joining_status: String = "Joining the match…"
 @export var result_status: String = "Last match: %s"
 
+## The room server started this player's match (only with auto_join_match off; call join_found() to go).
+signal match_found(host: String, port: int, token: String)
+
 var _ui: MpLobbyUi
+var _found: Array = []
 var _client: MpLobbyClient
 var _room_ids: PackedStringArray = PackedStringArray()
 var _picked: bool = false
@@ -204,6 +210,20 @@ func _on_room(view: Dictionary) -> void:
 
 
 func _on_match_ready(host: String, port: int, token: String) -> void:
+	_found = [host, port, token]
+	if not auto_join_match:
+		match_found.emit(host, port, token)
+		return
+	join_found()
+
+
+## Joins the match the room server started for this player (after match_found).
+func join_found() -> void:
+	if _found.is_empty():
+		return
+	var host: String = _found[0]
+	var port: int = _found[1]
+	var token: String = _found[2]
 	_status(joining_status)
 	var flow := MpFlow.find_in_tree(self)
 	if flow == null:

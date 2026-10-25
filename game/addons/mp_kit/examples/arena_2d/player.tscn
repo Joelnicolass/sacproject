@@ -54,3 +54,4 @@ replication_config = SubResource("sync")
 
 [node name="MpInput" type="Node" parent="."]
 script = ExtResource("3")
+actions = PackedStringArray("ui_left", "ui_right", "ui_up", "ui_down", "ui_accept", "ui_select")

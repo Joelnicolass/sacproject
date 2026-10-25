@@ -1,10 +1,11 @@
 extends CharacterBody2D
 
 ## The example player, written like a single-player script. Arrows move it (predicted: no lag for its owner), Enter
-## scores a point and flashes it, Tab changes its color. MpActor (sync, owner, calls, prediction) and MpInput (keys of
+## scores a point and flashes it, Space shoots toward the mouse, Tab changes its color, Escape rings the bell. MpActor (sync, owner, calls, prediction) and MpInput (keys of
 ## the owner) carry it over the network.
 
 const SPEED := 220.0
+const SHOT := preload("res://addons/mp_kit/examples/arena_2d/shot.tscn")
 const COLORS: Array[Color] = [Color("e05d5d"), Color("5d9de0"), Color("6cc56c"), Color("e0c25d")]
 
 ## Synced (MpActor > Sync > Extra): the server changes it, every peer repaints.
@@ -40,12 +41,29 @@ func _physics_process(_delta: float) -> void:
 	if input.is_action_just_pressed(&"ui_accept"):
 		MpState.of(self).add(StringName("p%d" % net.owner_slot))
 		net.to_all(&"flash")
+	if input.is_action_just_pressed(&"ui_select"):
+		_shoot()
 
 
-## The owner asks for a new color; the server decides.
+## The owner: aim at the mouse (the server reads it with input.get_value), a new color, ring the bell.
 func _process(_delta: float) -> void:
-	if net.is_local() and Input.is_action_just_pressed(&"ui_focus_next"):
+	if not net.is_local():
+		return
+	input.set_value(&"aim", (get_global_mouse_position() - global_position).normalized())
+	if Input.is_action_just_pressed(&"ui_focus_next"):
 		net.to_server(&"recolor")
+	if Input.is_action_just_pressed(&"ui_cancel"):
+		var bell := get_tree().get_first_node_in_group(&"bell")
+		if bell:
+			bell.ring()
+
+
+func _shoot() -> void:
+	var shots := get_tree().get_first_node_in_group(&"shot_spawner") as MpSpawner
+	if shots == null:
+		return
+	var aim: Vector2 = input.get_value(&"aim", Vector2.RIGHT)
+	shots.spawn_actor(SHOT, {"position": position, "direction": aim if aim != Vector2.ZERO else Vector2.RIGHT}, net.owner_slot)
 
 
 func mp_sv_recolor() -> void:

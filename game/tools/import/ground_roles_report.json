@@ -83,11 +83,11 @@
     "cells_without_role": 200,
     "cells_without_tile": 0,
     "god": "stratos",
-    "loose_cells_absorbed": 25,
+    "loose_cells_absorbed": 53,
     "loose_cells_before": {
-      "earth": 16,
+      "earth": 34,
       "open": 1,
-      "path": 8,
+      "path": 18,
       "rock": 0
     }
   }

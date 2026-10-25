@@ -1,5 +1,5 @@
 {
-  "doc": "The ONE table of which ground role (open, earth, rock, path) each base tile group (MAPG number) of each god's land plays. Read by bake_ground_roles.py. 'neighbours' = the group has no role of its own: its cells take the majority role around them. verified=false is NO VERIFICADO: decided by the script (bake_ground_roles.py --infer) from the height bands and the use on the imported maps, and waiting for a human to look at it. The lands of persephone, james and charnel come from the former land_themes.py NATIVE_ROLES / JAMES_ROLES.",
+  "doc": "The ONE table of which ground role (open, earth, rock, path) each base tile group (MAPG number) of each god's land plays. Read by bake_ground_roles.py. 'neighbours' = the group has no role of its own: its cells take the majority role around them. verified=false is NO VERIFICADO: decided by the script (bake_ground_roles.py --infer) from the height bands and the use on the imported maps, and waiting for a human to look at it. The lands of persephone, james and charnel come from the former land_themes.py NATIVE_ROLES / JAMES_ROLES; pyro and stratos were inferred by the script and checked by the user with a role sheet (each group's texture and where it falls on its map) on 2026-10-25.",
   "roles": ["open", "earth", "rock", "path"],
   "lands": {
     "persephone": {
@@ -43,26 +43,26 @@
       }
     },
     "pyro": {
-      "source": "NO VERIFICADO: bake_ground_roles.py --infer (open = most used banded group on Roads, rock = highest band, path = lowest band, the rest earth)",
+      "source": "bake_ground_roles.py --infer, checked by the user with the role sheet (2026-10-25)",
       "groups": {
-        "0": {"role": "open", "verified": false, "why": "most used on Roads (27 993 cells), band 0.20-0.35"},
-        "1": {"role": "earth", "verified": false, "why": "band 0.31-0.50"},
-        "2": {"role": "earth", "verified": false, "why": "band 0.45-0.60"},
-        "3": {"role": "rock", "verified": false, "why": "highest band 0.55-1.00"},
-        "4": {"role": "neighbours", "verified": false, "why": "no height band, unused on Roads"},
-        "5": {"role": "path", "verified": false, "why": "lowest band 0.00-0.30, dark tiles"}
+        "0": {"role": "open", "verified": true, "why": "most used on Roads (27 993 cells), band 0.20-0.35; seen in the role sheet (texture + where it falls on the map) and decided by the user, 2026-10-25"},
+        "1": {"role": "earth", "verified": true, "why": "band 0.31-0.50; seen in the role sheet (texture + where it falls on the map) and decided by the user, 2026-10-25"},
+        "2": {"role": "earth", "verified": true, "why": "band 0.45-0.60; seen in the role sheet (texture + where it falls on the map) and decided by the user, 2026-10-25"},
+        "3": {"role": "rock", "verified": true, "why": "highest band 0.55-1.00; seen in the role sheet (texture + where it falls on the map) and decided by the user, 2026-10-25"},
+        "4": {"role": "neighbours", "verified": true, "why": "no height band, unused on Roads; seen in the role sheet (texture + where it falls on the map) and decided by the user, 2026-10-25"},
+        "5": {"role": "path", "verified": true, "why": "lowest band 0.00-0.30, dark tiles; seen in the role sheet (texture + where it falls on the map) and decided by the user, 2026-10-25"}
       }
     },
     "stratos": {
-      "source": "NO VERIFICADO: bake_ground_roles.py --infer (open = most used banded group on WinterWonder, rock = highest band, path = lowest of the rest, the rest earth)",
+      "source": "bake_ground_roles.py --infer, corrected and checked by the user with the role sheet (2026-10-25)",
       "groups": {
-        "0": {"role": "path", "verified": false, "why": "band 0.10-0.65, lowest centre after the open group; 21 163 cells on WinterWonder, so it may really be open ground"},
-        "1": {"role": "rock", "verified": false, "why": "highest band 0.80-1.00, unused on WinterWonder"},
-        "2": {"role": "open", "verified": false, "why": "most used on WinterWonder (33 420 cells), lowest band 0.00-0.15, blue-white ice"},
-        "3": {"role": "earth", "verified": false, "why": "band 0.70-0.85"},
-        "4": {"role": "earth", "verified": false, "why": "band 0.55-0.80"},
-        "5": {"role": "neighbours", "verified": false, "why": "no height band, unused on WinterWonder"},
-        "6": {"role": "neighbours", "verified": false, "why": "no height band"}
+        "0": {"role": "open", "verified": true, "why": "white snow over the whole playable middle of WinterWonder; seen in the role sheet (texture + where it falls on the map) and decided by the user, 2026-10-25"},
+        "1": {"role": "rock", "verified": true, "why": "highest band 0.80-1.00, unused on WinterWonder; seen in the role sheet (texture + where it falls on the map) and decided by the user, 2026-10-25"},
+        "2": {"role": "path", "verified": true, "why": "blue-white ice of the low outer ring; seen in the role sheet (texture + where it falls on the map) and decided by the user, 2026-10-25"},
+        "3": {"role": "earth", "verified": true, "why": "band 0.70-0.85; seen in the role sheet (texture + where it falls on the map) and decided by the user, 2026-10-25"},
+        "4": {"role": "earth", "verified": true, "why": "band 0.55-0.80; seen in the role sheet (texture + where it falls on the map) and decided by the user, 2026-10-25"},
+        "5": {"role": "neighbours", "verified": true, "why": "no height band, unused on WinterWonder; seen in the role sheet (texture + where it falls on the map) and decided by the user, 2026-10-25"},
+        "6": {"role": "neighbours", "verified": true, "why": "no height band; seen in the role sheet (texture + where it falls on the map) and decided by the user, 2026-10-25"}
       }
     }
   }

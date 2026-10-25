@@ -69,7 +69,7 @@ const FIELDS := [
 	["res://scenes/units/attacks/mite_hop.gd", "rest_s", 30],
 	["res://scenes/units/attacks/ignite_touch.gd", "fire_s", 30],
 	["res://scenes/units/attacks/ground_hug_flight.gd", "spike_every_s", 6],
-	["res://scenes/units/attacks/ranged_attack.gd", "facing_s", 4],
+	["res://scenes/units/weapons/ranged_weapon.gd", "facing_s", 4],
 	["res://scenes/spells/walls/fence_posts.gd", "period_s", 32],
 	["res://scenes/spells/walls/fence_posts.gd", "birth_s", 16],
 	["res://scenes/spells/walls/wall_scars.gd", "every_s", 4],

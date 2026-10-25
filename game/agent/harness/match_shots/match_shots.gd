@@ -5,7 +5,7 @@ extends Node
 ## and quits. It only watches: it plays no input and moves no actor; the camera is its own.
 ## It lives in a subfolder because AgentKit mounts every .gd of agent/harness/ itself.
 ## Args after `--`: --map=<tag> --god=<god of the local wizard> [--biome=<god whose land the map wears; default --god>] [--ai-god=<god>] [--wizard=<tag>] [--after=<s> before the first
-## round] [--shots=<n> rounds] [--every=<s>, from 0.02: a burst of shots; the files end in the milliseconds, _t001500] [--out=<dir>] [--views=wizard,wizard_close,halo,foe_close,aim,scar,zone,cloud,overview,fountain,manahoar,tower,wall,ground,rim] [--ground-at=<x>,<z> world metres, the point the "ground" view stands over; default the local wizard] [--ground-yaw=<degrees> where it looks, 0 = toward -z] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
+## round] [--shots=<n> rounds] [--every=<s>, from 0.02: a burst of shots; the files end in the milliseconds, _t001500] [--out=<dir>] [--views=wizard,wizard_close,halo,foe_close,aim,scar,zone,rift,cloud,overview,fountain,manahoar,tower,wall,ground,rim] [--ground-at=<x>,<z> world metres, the point the "ground" view stands over; default the local wizard] [--ground-yaw=<degrees> where it looks, 0 = toward -z] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
 ## [--cast=<spell tag>[,<tag>…], the local wizard casts them one after the other once --after has passed, before the first round: a spell that aims at himself (a ward, Healing Aura) on himself,
 ## one that aims at a soul (pmcd, dnws, deda) on the closest soul he may fetch (the harness makes one when there is none), a wall (lwrf, laws, laww, lawv, cnef) on the ground half way to the closest enemy (--cast-wait=6 to see it grown); any other on the closest enemy (a zone, on the ground at its feet; Rainbow on himself, the first body of its chain; 061e needs --level=4 or more: ntlc, wobr, rifd, olah; 061j needs --level=8: rter with --god=persephone, nrot with --god=stratos); 061i needs --level=8 or more: mrhc, egar, pavi, ivob, taed (the "carrier" view follows the carrier; the report prints the side, rage and swelling of the closest enemy); mana is filled first; --cast-wait=<s> is the wait after the last cast (a cloud rains after its cast: 10 shows the rain, 14 Cloudkill's bolts; Explosion goes off 3.8 s after it starts: 4.5)] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
 ## Windowed: `-- --agent=flow --flow=match_shots.json` (the flow gives the sandbox that applies the quality preset).
@@ -36,6 +36,10 @@ const TAG_MANAHOAR := &"oham"
 ## The "zone" view: the camera stands this far from the first ground zone (the one of --cast=pxef|zorf|tfir), toward the wizard, this high.
 @export_range(10.0, 200.0, 1.0, "suffix:m") var zone_m := 45.0
 @export_range(0.0, 100.0, 0.5, "suffix:m") var zone_up_m := 28.0
+## The "rift" view (Demonic Rift, --cast=tfir): the camera stands this far from the rift (2.5 m wide), toward the wizard, this high, looking at its mouth
+## with the spirits that leave it; the "zone" view is 45 m away and loses it.
+@export_range(4.0, 60.0, 0.5, "suffix:m") var rift_m := 12.0
+@export_range(0.0, 40.0, 0.5, "suffix:m") var rift_up_m := 6.0
 ## The "cloud" view (061h: --cast=grfr|rifr|galp|likc|rtem): the camera looks at the middle between the first zone's land and its cloud, from 1.9 times
 ## the cloud's height away (at least this far) and a third of it up, on the first of 8 bearings with a clear line to the land.
 @export_range(10.0, 200.0, 1.0, "suffix:m") var cloud_min_m := 45.0
@@ -269,6 +273,18 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 			look = _over_land(zone.global_position + Vector3.UP * 1.0, 1.0)
 			var toward_zone := (focus - zone.global_position) * Vector3(1.0, 0.0, 1.0)
 			spot = _clear_spot(look, toward_zone.normalized() if toward_zone.length() > 0.1 else Vector3.BACK)
+		"rift":
+			var rift: GroundZone = null
+			for node in get_tree().get_nodes_in_group(GroundZone.GROUP):
+				var candidate := node as GroundZone
+				if candidate != null and candidate.spell != null and candidate.spell.tag == "tfir":
+					rift = candidate
+			if rift == null:
+				print("match_shots: no Demonic Rift alive (--cast=tfir); view skipped")
+				return
+			look = rift.global_position + Vector3.UP * 1.5
+			var toward_rift := (focus - rift.global_position) * Vector3(1.0, 0.0, 1.0)
+			spot = _clear_spot(look, toward_rift.normalized() if toward_rift.length() > 0.1 else Vector3.BACK, rift_m, rift_up_m)
 		"cloud":
 			var cloud_zone := get_tree().get_first_node_in_group(GroundZone.GROUP) as GroundZone
 			if cloud_zone == null:

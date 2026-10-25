@@ -154,7 +154,7 @@ Partículas de sacengine que se repiten abajo. Mezcla según [SAC dagonBackend.d
 - 3 partículas `firy` por mano y por tick suben desde la mano entre 0,5 y 1,5 m a lo largo de su ciclo. Viven una fracción al azar del ciclo (32 ticks).
 - La cuota de llamas del cuerpo (ver abajo) sube de 0 a 10 por tick a medida que avanza el lanzamiento.
 - Suena `1ngi` = `sfx/pyro/ign1.wav` (ganancia 4) y empieza el lazo `5plf` = `flp5.wav`, con ganancia 4.
-- Hay dos `flp5.wav`, en `sfx/comn/` y en `sfx/pyro/`. Cuál usa el original: **NO VERIFICADO**.
+- Hay dos `flp5.wav`, en `sfx/comn/` y en `sfx/pyro/` (los bytes difieren). El índice de muestras del port resuelve `flp5` a `sfx/comn/flp5.wav` (2026-10-25) y el port usa ese; cuál elige el original: **NO VERIFICADO**.
 
 **Mientras dura** [SAC 17206-17222, 17263-17295]:
 - Cada tick nacen **10** partículas `fire` (firy 1 m, aditiva, energía 8, delay 2) en la superficie de un elipsoide alrededor del centro de la caja de la pose actual. El elipsoide mide max(x, y)+1 en x e y, y el alto de la caja +0,5 en z.

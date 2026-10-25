@@ -115,7 +115,7 @@ Varias funciones llaman a `0x44ca20` con un radio y un color (lo comparten Manal
 - `data/fx/fire.tres` / `firy` para la estela de los escombros.
 - `scenes/spells/wards/air_bubble.gdshader` (061b ya hizo una esfera de ruido en capas) para las bolas `exeg`.
 - `data/fx/shake_map.tres` para el temblor.
-- **Ojo:** hoy el Fireball del port estalla con `wrath_explosion1/2` (`flao`/`wrth`), no con `xplo`/`exp2`. Explosion es la ocasión de crear `ParticleType` reales de explosión, y el Fireball puede reusarlos (otro corte).
+- **Ojo:** el Fireball del port estallaba con `wrath_explosion1/2` (`flao`/`wrth`), no con `xplo`/`exp2`. **Corregido el 2026-10-25:** `fireball_projectile.tscn` lleva su propia estela (`fireball_trail` = `firy` ×7 y `fireball_trail_core` = `fbal` ×1, escala 1,5) y su explosión (`fireball_blast`/`blast2`/`ash`/`smoke`: `xplo`, `exp2`, `frck`, `smok`).
 
 **Qué falta.**
 - Importar `exeg`, `xplo` (5×5), `exp2`, `frck`, `smok` y `fbal` (`fx_catalog.py`: `ATLASES`/`EXTRA_FX`).

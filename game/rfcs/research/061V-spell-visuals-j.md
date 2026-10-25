@@ -54,7 +54,7 @@ La rutina que arma el hechizo lee `ttex` (por defecto `vine`) y lo guarda en la 
 ## Tornado (`nrot`, SPEL `torn`, Stratos, nivel 8)
 
 ### Qué dice el SPEL
-- Recursos: `ttx1 = trn1`, `ttx2 = trn2`, `ttx3 = edge`, `tcst = cst0`, `fCHs = 0,25`, `ttrl = tdst`, `tsfx = seTO` (**NO VERIFICADO**, parece una etiqueta de sonido al revés; no coincide con ninguna muestra).
+- Recursos: `ttx1 = trn1`, `ttx2 = trn2`, `ttx3 = edge`, `tcst = cst0`, `fCHs = 0,25`, `ttrl = tdst`, `tsfx = seTO` (**NO VERIFICADO** qué es; contra el índice de muestras del port no existe ni `seto` ni `otes`, 2026-10-25).
 - Sonidos: `nrot` (lazo; bandera 2 y `!`) y `snrt`. Al revés: `torn` y `trns`. Existen en `assets/original/audio/sfx/stra/` (`torn.wav`, `trns.wav`).
 - Números en `data/catalog/spells/nrot.tres`: 25 s, velocidad 6, aceleración 0,6, alcance de vagabundeo 50 m.
 

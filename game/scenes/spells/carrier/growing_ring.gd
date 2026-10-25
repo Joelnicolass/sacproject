@@ -2,15 +2,16 @@
 class_name GrowingRing
 extends MeshInstance3D
 
-## A flat ring that grows from nothing to `radius_m` while its SpellCarrier lingers (Blind Rage's blast: 30 m in 128 ticks, rising 4 m as it goes),
+## A flat ring that grows from nothing to `radius_m` while its SpellCarrier lingers (Blind Rage's blast: 30 m in 128 ticks, rising 7 m as it goes),
 ## wearing one cell of its atlas after another. The mesh is a quad of diameter 2 and the shader (ring.gdshader) cuts the ring out of it. Presentation
 ## only: every peer draws its own from the replicated phase, and a headless process none. It hurts nobody (TargetEffect does).
-## Ref: sacengine renderBlindRageExplosion, SacBlindRageExplosion (renderer.d:2832-2851, sacobject.d:3174-3230).
+## Ref: sacengine renderBlindRageExplosion, SacBlindRageExplosion (renderer.d:2832-2851, sacobject.d:3174-3230); the rise is 3 m of state (state.d:21636, maxExplosionHeight/128 per tick) plus 4 m of drawing (renderer.d:2849, maxOffset).
 
 @export var carrier: SpellCarrier
 @export_range(1.0, 100.0, 0.5, "suffix:m") var radius_m := 30.0
-## It rises this much over its life.
-@export_range(0.0, 10.0, 0.1, "suffix:m") var rise_m := 4.0
+## It rises this much over its life (7 m: 3 m the blast climbs plus 4 m the ring is drawn higher). A flat ring at the eye level of a low camera
+## looks like a thin red line across the screen; climbing the full 7 m takes it above the camera.
+@export_range(0.0, 10.0, 0.1, "suffix:m") var rise_m := 7.0
 @export_range(0.1, 10.0, 0.01, "suffix:s") var life_s := 2.1333
 ## The phase that makes it grow.
 @export var during := SpellCarrier.Phase.LINGERING

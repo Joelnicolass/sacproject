@@ -10,10 +10,14 @@ from . import png
 HEADER = 16
 PALETTE = 1024
 ALPHA_STEPS = 8
+# The palette's index 0 is magenta (the original's "no ink" key). Left as is it tints the edge of a mark pink (and, with a transparent
+# pixel next to it, bleeds through the linear filter), so it is drawn as black: the dark of the marks that use it.
+KEY_RGB = (255, 0, 255)
+KEY_REPLACEMENT = (0, 0, 0)
 
 
 def decode_scar(raw: bytes):
-    """(width, height, RGBA bytes). Alpha 0..8 becomes round(a * 255 / 8); the colour of a transparent pixel is kept."""
+    """(width, height, RGBA bytes). Alpha 0..8 becomes round(a * 255 / 8); the colour of a transparent pixel is kept, except the magenta key."""
     width = int.from_bytes(raw[8:12], "little")
     height = int.from_bytes(raw[12:16], "little")
     if len(raw) != HEADER + PALETTE + 2 * width * height:
@@ -24,7 +28,10 @@ def decode_scar(raw: bytes):
     for i in range(width * height):
         index = pixels[2 * i]
         alpha = min(pixels[2 * i + 1], ALPHA_STEPS)
-        rgba[4 * i: 4 * i + 4] = bytes((palette[4 * index + 2], palette[4 * index + 1], palette[4 * index], round(alpha * 255 / ALPHA_STEPS)))
+        color = (palette[4 * index + 2], palette[4 * index + 1], palette[4 * index])
+        if color == KEY_RGB:
+            color = KEY_REPLACEMENT
+        rgba[4 * i: 4 * i + 4] = bytes((*color, round(alpha * 255 / ALPHA_STEPS)))
     return width, height, bytes(rgba)
 
 

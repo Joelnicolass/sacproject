@@ -195,7 +195,7 @@ Es el mismo modelo que el original, con datos de Godot.
 - **Cicatrices de mapa (§2.5, modo procedural):** fuera de 061k-5 hasta que se verifique qué mapas las traen. Si aparecen, van como nodos `GroundScarPatch` puestos en el `map.tscn` con gizmo (regla «todo en el editor»), no en datos.
 - **Sangre (`blud`):** fuera de 061k-5. El sistema de partículas del port tendría que avisar del contacto con el suelo.
 
-**Lo único que no se puede decidir sin el usuario:** si `quk1` se importa tal cual, con su halo magenta de 12-25 % (fiel al EXE), o con el índice 0 transparente. **Recomiendo** tal cual, y mirarlo en una captura antes de decidir, como manda «Medible».
+**Decidido el 2026-10-25 (el usuario vio el borde magenta en una captura):** el importador de SCAR dibuja el magenta clave (FF00FF) como negro (`tools/import/sac_formats/scar.py`), sin tocar el alfa; el halo rosado ya no existe. Antes: **Lo único que no se puede decidir sin el usuario:** si `quk1` se importa tal cual, con su halo magenta de 12-25 % (fiel al EXE), o con el índice 0 transparente. **Recomiendo** tal cual, y mirarlo en una captura antes de decidir, como manda «Medible».
 
 ### 4.4 Qué importar
 

@@ -85,6 +85,13 @@ func is_listen_host() -> bool:
 	return is_server() and not ids.dedicated
 
 
+## True where the game rules run: solo (no network) or the server. Use it instead of
+## `not is_networked() or is_server()`.
+func is_authority() -> bool:
+	return not is_networked() or is_server()
+
+
+## The slot of the player on this machine; 0 on a dedicated server and on a client that has not got one yet.
 func local_slot() -> int:
 	if not is_networked():
 		return ids.host_slot
@@ -92,9 +99,12 @@ func local_slot() -> int:
 		if ids.dedicated:
 			return 0
 		return ids.host_slot
-	if ids.local_slot != 0:
-		return ids.local_slot
-	return ids.host_slot + 1
+	return ids.local_slot
+
+
+## True when this machine has a player with a known slot (solo, a listen host, a client once the server assigned it).
+func has_local_slot() -> bool:
+	return local_slot() > 0
 
 
 func occupied_slots() -> Array[int]:

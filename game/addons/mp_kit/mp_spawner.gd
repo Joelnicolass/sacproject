@@ -98,6 +98,35 @@ func _exit_tree() -> void:
 			MpKit.rooms.peer_unseated.disconnect(_on_seat_changed)
 
 
+## Server (or solo) only: instance `scene` under spawn_path with `props` set first ({"position": p, ...}),
+## and the MpActor owner when `owner_slot` > 0. The scene must be in this spawner's list (Extra Scenes or the
+## Auto Spawn List): every peer needs the same list, so it cannot be added only here at runtime.
+func spawn_actor(scene: PackedScene, props: Dictionary = {}, owner_slot: int = 0) -> Node:
+	if not MpKit.is_authority():
+		push_warning("MpSpawner '%s': spawn_actor() only runs on the server" % name)
+		return null
+	if scene == null or _root == null:
+		return null
+	if not _lists(scene.resource_path):
+		push_error("MpSpawner '%s': add %s to Extra Scenes" % [name, scene.resource_path])
+		return null
+	var node := scene.instantiate()
+	for key in props:
+		node.set(key, props[key])
+	var net := MpActor.of(node)
+	if net and owner_slot > 0:
+		net.owner_slot = owner_slot
+	_root.add_child(node, true)
+	return node
+
+
+func _lists(path: String) -> bool:
+	for i in get_spawnable_scene_count():
+		if get_spawnable_scene(i) == path:
+			return true
+	return false
+
+
 ## True on the server once `peer_id` has this spawner and may see its actors.
 func is_revealed_to(peer_id: int) -> bool:
 	if not _ready_peers.has(peer_id):

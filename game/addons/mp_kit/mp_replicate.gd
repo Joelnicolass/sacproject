@@ -18,14 +18,7 @@ extends Node
 @export var interpolate_speed: float = 14.0
 
 var _target: Node
-var _display_pos: Vector3 = Vector3.ZERO
-var _net_pos: Vector3 = Vector3.ZERO
-var _display_rot: float = 0.0
-var _net_rot: float = 0.0
-var _display_quat: Quaternion = Quaternion.IDENTITY
-var _net_quat: Quaternion = Quaternion.IDENTITY
-var _is_2d: bool = false
-var _primed: bool = false
+var _smoother := MpSmoother.new()
 
 
 func _ready() -> void:
@@ -44,7 +37,6 @@ func _ready() -> void:
 		)
 	if freeze_rigid_if_proxy:
 		MpAuthority.freeze_rigid_proxy(_target)
-	_is_2d = _target is Node2D
 	set_process(interpolate)
 
 
@@ -55,48 +47,7 @@ func _process(delta: float) -> void:
 		return
 	if _target.is_multiplayer_authority():
 		return
-	var alpha := 1.0 - exp(-interpolate_speed * delta)
-	if _is_2d:
-		_interp_2d(alpha)
-	elif _target is Node3D:
-		_interp_3d(alpha)
-
-
-func _interp_2d(alpha: float) -> void:
-	var n := _target as Node2D
-	var live := n.position
-	if not _primed:
-		_display_pos = Vector3(live.x, live.y, 0.0)
-		_net_pos = _display_pos
-		_display_rot = n.rotation
-		_net_rot = n.rotation
-		_primed = true
-		return
-	if live.distance_squared_to(Vector2(_display_pos.x, _display_pos.y)) > 0.0000001:
-		_net_pos = Vector3(live.x, live.y, 0.0)
-		_net_rot = n.rotation
-	_display_pos = _display_pos.lerp(_net_pos, alpha)
-	_display_rot = lerp_angle(_display_rot, _net_rot, alpha)
-	n.position = Vector2(_display_pos.x, _display_pos.y)
-	n.rotation = _display_rot
-
-
-func _interp_3d(alpha: float) -> void:
-	var n := _target as Node3D
-	if not _primed:
-		_display_pos = n.position
-		_net_pos = n.position
-		_display_quat = n.quaternion
-		_net_quat = n.quaternion
-		_primed = true
-		return
-	if n.position.distance_squared_to(_display_pos) > 0.0000001:
-		_net_pos = n.position
-		_net_quat = n.quaternion
-	_display_pos = _display_pos.lerp(_net_pos, alpha)
-	_display_quat = _display_quat.slerp(_net_quat, alpha)
-	n.position = _display_pos
-	n.quaternion = _display_quat
+	_smoother.step(_target, delta, interpolate_speed)
 
 
 func _has_sync(node: Node) -> bool:

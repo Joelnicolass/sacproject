@@ -39,6 +39,9 @@ enum StartWhen {
 const PORT_MIN := 1
 const PORT_MAX := 65535
 
+## Group every flow joins, so a lobby finds one dropped in its own scene.
+const GROUP := &"mp_flow"
+
 var match_running: bool = false
 
 var _lan: MpLanBeacon
@@ -50,10 +53,20 @@ static func find_in_tree(from: Node) -> MpFlow:
 	for child in from.get_tree().root.get_children():
 		if child is MpFlow:
 			return child as MpFlow
-	return null
+	## A flow dropped in the boot scene, before it moves itself under the root.
+	return from.get_tree().get_first_node_in_group(GROUP) as MpFlow
+
+
+func _enter_tree() -> void:
+	add_to_group(GROUP)
 
 
 func _ready() -> void:
+	## Dropped in a scene instead of being an autoload: live under the root so a scene change keeps it.
+	## A second one (the boot scene loaded again) gives way to the first.
+	if get_parent() != get_tree().root:
+		_adopt.call_deferred()
+		return
 	## `--no-flow`: tools and probes that use MpKit directly; the flow never reacts to it.
 	if MpBoot.user_flag("no-flow"):
 		return
@@ -76,6 +89,10 @@ func _ready() -> void:
 		_set_status(dedicated_status % MpKit.port)
 		call_deferred("goto_world")
 		return
+	if role == "listen":
+		if host_lan() != OK:
+			get_tree().quit(1)
+		return
 	if role == "client1" or role == "client2":
 		var ip := MpBoot.user_value("join-ip", "127.0.0.1")
 		var err := join_lan(ip)
@@ -90,6 +107,19 @@ func _ready() -> void:
 			get_tree().quit(1)
 			return
 		_set_status(dedicated_status % MpKit.port)
+
+
+func _adopt() -> void:
+	if not is_inside_tree() or get_parent() == get_tree().root:
+		return
+	var root := get_tree().root
+	for child in root.get_children():
+		if child is MpFlow and child != self:
+			queue_free()
+			return
+	get_parent().remove_child(self)
+	request_ready()
+	root.add_child(self)
 
 
 func _exit_tree() -> void:
@@ -167,6 +197,7 @@ func return_to_boot() -> void:
 
 
 func goto_world() -> void:
+	_adopt()
 	world_loading.emit()
 	var entry := _resolved_world()
 	if entry != null:
@@ -261,6 +292,7 @@ func _on_server_lost() -> void:
 
 
 func _go_boot() -> void:
+	_adopt()
 	var path := boot_path.strip_edges()
 	if not path.is_empty():
 		get_tree().change_scene_to_file(path)

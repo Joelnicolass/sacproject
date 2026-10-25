@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://addons/mp_kit/mp_flow.gd" id="1"]
+[ext_resource type="PackedScene" path="res://addons/mp_kit/mp_boot_menu.tscn" id="2"]
+
+[node name="Boot" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Flow" type="Node" parent="."]
+script = ExtResource("1")
+boot_path = "res://addons/mp_kit/examples/arena_2d/boot.tscn"
+world_path = "res://addons/mp_kit/examples/arena_2d/arena.tscn"
+room_name = "MpKit Arena"
+start_when = 1
+
+[node name="Menu" parent="." instance=ExtResource("2")]
+title_text = "MpKit Arena"
+room_name = "MpKit Arena"

@@ -6,6 +6,8 @@ Copia canónica: este repo (`addons/mp_kit`). Ayudas host-authoritative. **Cero 
 
 Esta guía es para **configuración manual en el editor**. Los identificadores de código quedan en inglés.
 
+**¿Primera vez?** Empezá por [QUICKSTART.md](QUICKSTART.md): seis pasos con los nodos `MpActor`, `MpInput` y `MpState`, sin escribir RPCs. El ejemplo `examples/arena_2d/` corre solo, en LAN y dedicado. Lo de abajo es la referencia de cada pieza.
+
 ## Índice
 
 1. [Instalar](#instalar)
@@ -478,6 +480,23 @@ Con el plugin enabled, **Project → Tools**:
 Al Enable copia plantillas a `res://script_templates/` (CharacterBody / Node2D / Node3D / Node).
 
 ## Piezas del addon
+
+Nodos de alto nivel (lo que usa un humano; detalle y ejemplos en [QUICKSTART.md](QUICKSTART.md)):
+
+| Archivo | Rol |
+|---------|-----|
+| `nodes/mp_actor.gd` | `MpActor`: hijo de lo que la red comparte. El servidor es su autoridad; la lista *Sync* arma en el editor un `MultiplayerSynchronizer` (`MpSync`) que se guarda en la escena; suaviza proxies; `owner_slot` (lo pone el spawner, viaja al nacer). `to_server(&"x", args)` corre `mp_sv_x(args)` en el servidor (solo el dueño puede pedirlo; `sender_slot()` dice quién); `to_all(&"x", args)` corre `mp_all_x(args)` en todos los peers que ya tienen el nodo (solo el servidor). `is_authority()`, `is_local()`, `MpActor.of(nodo)` |
+| `nodes/mp_input.gd` | `MpInput`: junto a un `MpActor`. El dueño manda sus acciones del InputMap (frames con secuencia, contadores de pulsación que no se pierden con un paquete); en el servidor se leen con la API de `Input` (`get_vector`, `is_action_just_pressed`...). `set_value` / `get_value` para valores propios (mira, cursor) |
+| `nodes/mp_state.gd` | `MpState`: valores de partida (`set_value`, `add`, `get_value`, señal `changed`). Lo escribe el servidor; lo reciben todos, también el que entra tarde. `MpState.of(nodo)` |
+| `core/mp_sync_builder.gd` | lista del inspector → `SceneReplicationConfig` (transformaciones ALWAYS, el resto ON_CHANGE, `owner_slot` solo al nacer) |
+| `core/mp_input_frame.gd` | el frame de input que viaja al servidor; valida tamaño y tipos |
+| `core/mp_smoother.gd` | suavizado de proxies que usan `MpActor` y `MpReplicate` |
+| `tests/` | tests propios del kit: `godot --headless --path <proyecto> --script res://addons/mp_kit/tests/mp_test_runner.gd` |
+| `examples/arena_2d/` | ejemplo mínimo (boot, arena, jugador); sirve de quickstart y de prueba e2e |
+
+Helpers de rol en `MpKit`: `is_authority()` (solo o servidor: donde corren las reglas), `has_local_slot()` (hay un jugador en esta máquina con slot conocido). `local_slot()` devuelve 0 en un cliente hasta que el servidor le asigna slot (antes adivinaba). `MpSpawner.spawn_actor(escena, props, owner_slot)` instancia en el servidor bajo `spawn_path` (la escena tiene que estar en la lista del spawner). `MpFlow` se puede poner como nodo en la escena de boot: se muda solo a la raíz.
+
+Piezas de bajo nivel:
 
 | Archivo | Rol |
 |---------|-----|

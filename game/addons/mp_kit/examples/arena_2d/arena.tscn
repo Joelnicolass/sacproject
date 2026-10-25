@@ -1,0 +1,66 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://addons/mp_kit/mp_slot_spawner.gd" id="1"]
+[ext_resource type="PackedScene" path="res://addons/mp_kit/examples/arena_2d/player.tscn" id="2"]
+[ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_state.gd" id="3"]
+[ext_resource type="Script" path="res://addons/mp_kit/examples/arena_2d/hud.gd" id="4"]
+
+[sub_resource type="SceneReplicationConfig" id="state_sync"]
+properties/0/path = NodePath(".:values")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+
+[node name="Arena" type="Node2D"]
+
+[node name="Floor" type="ColorRect" parent="."]
+offset_right = 960.0
+offset_bottom = 540.0
+color = Color(0.11, 0.12, 0.16, 1)
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="P1" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(240, 180)
+
+[node name="P2" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(720, 180)
+
+[node name="P3" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(240, 380)
+
+[node name="P4" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(720, 380)
+
+[node name="Actors" type="Node2D" parent="."]
+
+[node name="Players" type="MultiplayerSpawner" parent="."]
+spawn_path = NodePath("../Actors")
+script = ExtResource("1")
+pawn_scene = ExtResource("2")
+spawn_points = NodePath("../SpawnPoints")
+
+[node name="Score" type="Node" parent="."]
+script = ExtResource("3")
+
+[node name="MpSync" type="MultiplayerSynchronizer" parent="Score"]
+root_path = NodePath("..")
+replication_config = SubResource("state_sync")
+
+[node name="Hud" type="CanvasLayer" parent="." node_paths=PackedStringArray("state")]
+script = ExtResource("4")
+state = NodePath("../Score")
+
+[node name="Info" type="Label" parent="Hud"]
+unique_name_in_owner = true
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 320.0
+offset_bottom = 120.0
+
+[node name="Leave" type="Button" parent="Hud"]
+unique_name_in_owner = true
+offset_left = 860.0
+offset_top = 12.0
+offset_right = 944.0
+offset_bottom = 44.0
+text = "Leave"

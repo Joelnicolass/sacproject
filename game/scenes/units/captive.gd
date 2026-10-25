@@ -25,15 +25,10 @@ enum Release { LET_GO, CARRIER_DIED }
 
 const HELD_GROUP := &"captive"
 const UNIT_GROUP := &"unit"
-## RFC-023 023e: the clips of a held creature, in order (sacengine thrashing, state.d:8200-8223, 14329-14342): it rises,
-## floats into the thrash and then thrashes in the ring until it is let go. A revived corpse (REVIVING) only rises.
-const HELD_SEQUENCE: PackedStringArray = ["rise", "held", "thrash"]
 ## unit_orders.gd has no class_name (other scripts preload it).
 const _ORDERS := preload("res://scenes/units/unit_orders.gd")
 
 @export var body: UnitBody
-## The body's clip player (ClipPose). The captive asks it which of its clips the model has and hears the loops end.
-@export var clip_pose: ClipPlayback
 ## Ring drawn around the creature while it is held (scenes/fx/portal_disc.tscn, blue). Local
 ## presentation on every peer; empty = no ring. sacengine renderer.d:1638-1677.
 @export var portal_scene: PackedScene
@@ -58,13 +53,8 @@ func _ready() -> void:
 		return
 	body.taken_changed.connect(_apply)
 	body.held_changed.connect(_apply_ring)
-	body.taken_changed.connect(_sync_clip.unbind(1))
-	body.held_changed.connect(_sync_clip.unbind(1))
-	if clip_pose:
-		clip_pose.clip_looped.connect(_on_clip_looped)
 	_apply(body.is_taken())
 	_apply_ring(body.is_held())
-	_sync_clip()
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -220,36 +210,6 @@ func _apply(held: bool) -> void:
 		body.collision_layer = _layer if _layer != 0 else body.unit_layer
 		body.remove_from_group(HELD_GROUP)
 		body.add_to_group(UNIT_GROUP)
-
-
-## Every peer, from the replicated mode: starts the clips of the creature that was just taken (or revived), or lets go of them.
-func _sync_clip() -> void:
-	if body == null:
-		return
-	if body.is_held() or body.is_reviving():
-		body.captive_role = _first_clip(0)
-	else:
-		body.captive_role = ""
-
-
-## A clip of the sequence ended: the next one that the model has (rise -> held -> thrash). The last loops; a revived corpse
-## stands after its rise.
-func _on_clip_looped(role: String) -> void:
-	if body == null or role != body.captive_role or role == HELD_SEQUENCE[HELD_SEQUENCE.size() - 1]:
-		return
-	if body.is_held():
-		body.captive_role = _first_clip(HELD_SEQUENCE.find(role) + 1)
-	else:
-		body.captive_role = ""
-
-
-## The first role of the sequence from `from` on that the model has a clip for ("" when none). A revived corpse only rises.
-func _first_clip(from: int) -> String:
-	var last := HELD_SEQUENCE.size() if body.is_held() else 1
-	for i in range(from, last):
-		if clip_pose != null and clip_pose.has_role(HELD_SEQUENCE[i]):
-			return HELD_SEQUENCE[i]
-	return ""
 
 
 ## The ring is only drawn while the doctor carries the creature (HELD), not while it pumps it.

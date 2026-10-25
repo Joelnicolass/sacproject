@@ -2,9 +2,8 @@ class_name CorpseLook
 extends Node
 
 ## How a death looks. A model with a physical skeleton falls like a rag doll (RagdollDriver); one without it plays its death
-## animation once; one with neither tips over (TippingFall). The corpse fades out while it dissolves, and a creature that a
-## Convert doctor brings back fades in where it lies. It only listens to Corpse and never writes to the simulation:
-## nothing in the sim reads it.
+## animation once; one with neither tips over (TippingFall). The corpse fades out while it dissolves. A creature that a Convert
+## doctor brings back is CaptiveLook's. It only listens to Corpse and never writes to the simulation: nothing in the sim reads it.
 
 ## The unit that dies.
 @export var body: UnitBody
@@ -23,17 +22,11 @@ extends Node
 @export_group("Fades")
 ## Seconds a dissolving corpse takes to fade out (never longer than the dissolve itself).
 @export_range(0.0, 5.0, 0.05, "suffix:s") var corpse_fade_s := 1.5
-## Seconds a revived creature takes to fade in, where it lies.
-@export_range(0.0, 3.0, 0.05, "suffix:s") var revive_fade_s := 0.6
-
-## The body lies as a ragdoll (so it stands up by resetting it).
-var _ragdolled := false
 
 
 func _ready() -> void:
 	corpse.laid_down.connect(_on_laid_down)
 	corpse.dissolving_changed.connect(_on_dissolving_changed)
-	corpse.stood_up.connect(_on_stood_up)
 	if corpse.dissolving:
 		_on_dissolving_changed(true)
 
@@ -42,7 +35,6 @@ func _ready() -> void:
 ## late (`instant`) never ragdolls: there is no fall to play, so it lies at once.
 func _on_laid_down(instant: bool) -> void:
 	if _can_ragdoll(instant):
-		_ragdolled = true
 		ragdoll.set_pose(RagdollDriver.Pose.FALL, -body.facing_flat())
 	elif corpse.clip_driven:
 		if instant:
@@ -59,9 +51,6 @@ func _can_ragdoll(instant: bool) -> bool:
 	var model := visual.rig.model_root() if visual.rig != null else null
 	if model != null:
 		ragdoll.bind_model(model)
-		## WORKAROUND: unit.tscn wires the driver's clip_pose socket in 055a-5 s3; until then the body hands it over.
-		if ragdoll.clip_pose == null:
-			ragdoll.clip_pose = body.clip_pose
 	return ragdoll.available()
 
 
@@ -71,18 +60,6 @@ func _on_dissolving_changed(on: bool) -> void:
 	else:
 		visual.set_fade(0.0)
 	_light_to(not on, minf(corpse_fade_s, corpse.dissolve_s))
-
-
-## A Convert doctor revived the body: it stands in its place and appears out of thin air.
-func _on_stood_up() -> void:
-	if _ragdolled:
-		_ragdolled = false
-		ragdoll.set_pose(RagdollDriver.Pose.OFF)
-		body.clip_pose.play("idle", true)
-	tipping.stand_up(false)
-	visual.set_fade(1.0)
-	visual.fade_to(0.0, revive_fade_s)
-	_light_to(true, revive_fade_s)
 
 
 func _light_to(on: bool, seconds: float) -> void:

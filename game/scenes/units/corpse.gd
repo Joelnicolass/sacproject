@@ -12,8 +12,6 @@ signal laid_down(instant: bool)
 signal settled
 ## The corpse started or stopped dissolving (its soul was taken). Every peer hears it, because `dissolving` is replicated.
 signal dissolving_changed(on: bool)
-## A Convert doctor brought the body back to life: it is a creature again.
-signal stood_up
 
 ## Every body that lies dead on the map.
 const GROUP := &"corpse"
@@ -94,7 +92,6 @@ func stand_up(body: UnitBody) -> void:
 	body.remove_from_group(GROUP)
 	body.add_to_group("unit")
 	body.collision_layer = body.unit_layer
-	stood_up.emit()
 
 
 ## Server or solo. The spawner removes it on clients.

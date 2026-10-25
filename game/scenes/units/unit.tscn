@@ -1,4 +1,4 @@
-[gd_scene load_steps=97 format=3]
+[gd_scene load_steps=98 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
 [ext_resource type="Script" path="res://scenes/units/unit_body.gd" id="1_body"]
@@ -24,6 +24,7 @@
 [ext_resource type="Script" path="res://addons/mp_kit/mp_replicate.gd" id="7_replicate"]
 [ext_resource type="Script" path="res://scenes/units/unit_orders.gd" id="f27_orders"]
 [ext_resource type="Script" path="res://scenes/units/captive.gd" id="f59_captive"]
+[ext_resource type="Script" path="res://scenes/units/captive_look.gd" id="f055_captive_look"]
 [ext_resource type="PackedScene" path="res://scenes/fx/portal_disc.tscn" id="f59_portal"]
 [ext_resource type="Script" path="res://scenes/components/mana_pool.gd" id="f29_mana"]
 [ext_resource type="Script" path="res://scenes/units/attacks/ranged_attack.gd" id="f29_ranged"]
@@ -613,22 +614,33 @@ script = ExtResource("f055_look")
 body = NodePath("..")
 corpse = NodePath("../Corpse")
 visual = NodePath("../Tilt/Mesh")
-ragdoll = NodePath("RagdollDriver")
-tipping = NodePath("TippingFall")
+ragdoll = NodePath("../RagdollDriver")
+tipping = NodePath("../TippingFall")
 light = NodePath("../Light")
 
-[node name="RagdollDriver" type="Node" parent="CorpseLook"]
-script = ExtResource("f055_ragdoll")
-
-[node name="TippingFall" type="Node" parent="CorpseLook" node_paths=PackedStringArray("mesh")]
-script = ExtResource("f055_tipping")
-mesh = NodePath("../../Tilt/Mesh")
-
-[node name="Captive" type="Node" parent="." node_paths=PackedStringArray("body", "clip_pose")]
+[node name="Captive" type="Node" parent="." node_paths=PackedStringArray("body")]
 script = ExtResource("f59_captive")
 body = NodePath("..")
-clip_pose = NodePath("../ClipPose")
 portal_scene = ExtResource("f59_portal")
+
+[node name="RagdollDriver" type="Node" parent="." node_paths=PackedStringArray("rig", "clip_pose")]
+script = ExtResource("f055_ragdoll")
+rig = NodePath("../Tilt/Mesh/Rig")
+clip_pose = NodePath("../ClipPose")
+
+[node name="TippingFall" type="Node" parent="." node_paths=PackedStringArray("mesh")]
+script = ExtResource("f055_tipping")
+mesh = NodePath("../Tilt/Mesh")
+
+[node name="CaptiveLook" type="Node" parent="." node_paths=PackedStringArray("body", "ragdoll", "tipping", "visual", "clip_pose", "light")]
+script = ExtResource("f055_captive_look")
+body = NodePath("..")
+ragdoll = NodePath("../RagdollDriver")
+tipping = NodePath("../TippingFall")
+visual = NodePath("../Tilt/Mesh")
+clip_pose = NodePath("../ClipPose")
+light = NodePath("../Light")
+hangs = false
 
 [node name="GuardianBond" type="Node" parent="." node_paths=PackedStringArray("body", "health", "orders", "ability")]
 script = ExtResource("f63_bond")

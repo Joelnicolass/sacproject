@@ -6,6 +6,8 @@ extends Button
 
 
 func _ready() -> void:
+	## Usable while MpMatch keeps the world paused waiting for seats (leaving a match that never starts).
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	if text.is_empty():
 		text = "Leave"
 	pressed.connect(_leave)

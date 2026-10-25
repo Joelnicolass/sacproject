@@ -37,6 +37,8 @@ func _enter_tree() -> void:
 
 
 func _ready() -> void:
+	## Infrastructure: it keeps the heartbeat and the state going while the match is paused (MpMatch waits for seats).
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	if config == null:
 		config = MpLobbyConfig.new()
 	config = config.with_cli_overrides()
@@ -179,7 +181,7 @@ func _write_state() -> void:
 	var slots := {}
 	for slot in _seats.keys():
 		slots[str(slot)] = int(_seats[slot]["peer"]) != 0
-	var listening := MpKit.is_server() and MpKit.multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED
+	var listening := MpKit.is_listening()
 	MpMatchFiles.write_json(MpMatchFiles.path_of(_root, match_id, MpMatchFiles.STATE), {
 		"match_id": match_id, "pid": OS.get_process_id(), "listening": listening,
 		"heartbeat_ms": MpMatchFiles.now_ms(), "started_ms": _started_ms,

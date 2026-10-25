@@ -297,7 +297,8 @@ func _play_online() -> void:
 			await get_tree().create_timer(delay).timeout
 			screen.join_found())
 	screen.connect_lobby(MpBoot.user_value("probe-lobby", "127.0.0.1:7700"), MpBoot.user_value("probe-name", "Bot"))
-	await _until(client.is_online, "connected to the lobby")
+	if not await _until(client.is_online, "connected to the lobby"):
+		return
 	await _enter_room(screen, client)
 	if client.my_seat() < 0:
 		return
@@ -326,10 +327,12 @@ func _play_online() -> void:
 		Input.action_press(&"ui_right")
 		await get_tree().create_timer(1.0).timeout
 		_check(absf(pawn.position.x - start_x) < 1.0, "the world waits (paused) until every seat loaded")
+		var leave_buttons := get_tree().current_scene.find_children("*", "Button", true, false).filter(func(b: Node) -> bool: return b is MpLeaveButton)
+		_check(not leave_buttons.is_empty() and (leave_buttons[0] as Node).can_process(), "the Leave button works while the world waits")
 		Input.action_release(&"ui_right")
 		await _pawn(2 if MpKit.local_slot() == 1 else 1)
 		Input.action_press(&"ui_right")
-		await _until(func() -> bool: return pawn.position.x > start_x + 20.0, "once everyone loaded the match runs")
+		await _until(func() -> bool: return is_instance_valid(pawn) and pawn.position.x > start_x + 20.0, "once everyone loaded the match runs")
 		Input.action_release(&"ui_right")
 	var drop := MpBoot.user_value("probe-drop", "")
 	if not drop.is_empty():
@@ -357,6 +360,11 @@ func _play_online() -> void:
 		await _until(func() -> bool: return int(_state().get_value(StringName("back_%s" % back), 0)) >= 1, "the match saw P%s come back (player_back)" % back)
 	await get_tree().create_timer(float(MpBoot.user_value("probe-hold-s", "0"))).timeout
 	var creator := not MpBoot.user_value("probe-create", "").is_empty()
+	## Like a person: score once the match runs (MpMatch keeps the world paused until every seat loaded, and a key
+	## pressed while paused does nothing).
+	await _until(func() -> bool:
+		var match_node := get_tree().current_scene.get_node_or_null("Match") as MpMatch
+		return match_node != null and not match_node.waiting, "the match runs (every seat loaded)")
 	for i in int(MpBoot.user_value("probe-score", "3" if creator else "0")):
 		await _tap(&"ui_accept")
 		await get_tree().create_timer(0.2).timeout
@@ -391,7 +399,8 @@ func _enter_room(screen: MpLobbyScreen, client: MpLobbyClient) -> void:
 		screen.join_code(FileAccess.get_file_as_string(code_file).to_lower())
 	else:
 		var wanted := MpBoot.user_value("probe-join-room", "")
-		await _until(func() -> bool: return _listed_index(client, wanted) >= 0, "the room shows in the list")
+		if not await _until(func() -> bool: return _listed_index(client, wanted) >= 0, "the room shows in the list"):
+			return
 		screen.join_room(str(client.rooms[_listed_index(client, wanted)]["id"]))
 	await _until(func() -> bool: return client.my_seat() >= 0, "took a seat")
 

@@ -34,9 +34,44 @@ descendants() { local p="$1" c; echo "$p"; for c in $(pgrep -P "$p" 2>/dev/null)
 kill_tree() { local p; for p in $(descendants "$1" | sort -rn); do kill "$p" 2>/dev/null; done; }
 kill_pids() { local p; for p in $(cat "$OUT/pids" 2>/dev/null); do [ -n "$p" ] && kill_tree "$p"; done; }
 
+## TRANSPORT=relay: relay_up starts a local MpKit relay (node addons/mp_kit/relay/server.mjs) and every process gd
+## starts with user args ("--") gets --relay-url / --relay-room; the host secret goes by environment.
+RELAY_PORT="${RELAY_PORT:-8790}"
+RELAY_SECRET="${RELAY_SECRET:-lab-secret}"
+RELAY_FLAGS=()
+relay_up() {
+  [ "${TRANSPORT:-}" = relay ] || return 0
+  PORT="$RELAY_PORT" RELAY_HOST_SECRET="$RELAY_SECRET" RELAY_QUIET="${RELAY_QUIET:-1}" \
+    node "$LAB/addons/mp_kit/relay/server.mjs" > "$OUT/relay.log" 2>&1 &
+  RELAY_PID=$!
+  echo "$RELAY_PID" >> "$OUT/pids"
+  export MPKIT_RELAY_SECRET="$RELAY_SECRET"
+  RELAY_FLAGS=(--relay-url="ws://127.0.0.1:$RELAY_PORT" --relay-room="lab$$")
+  python3 - "$RELAY_PORT" <<'PYEOF' || echo "FAIL the relay did not start"
+import sys, time, urllib.request
+for _ in range(100):
+    try:
+        urllib.request.urlopen("http://127.0.0.1:%s/health" % sys.argv[1], timeout=0.5); sys.exit(0)
+    except Exception:
+        time.sleep(0.1)
+sys.exit(1)
+PYEOF
+}
+
 gd() { # gd <log> <godot args…>
   local log="$1"; shift
-  "$GODOT" --headless --path "$ROOT" "$@" > "$log" 2>&1 &
+  local args=("$@")
+  if [ "${#RELAY_FLAGS[@]}" -gt 0 ] && printf '%s\n' "${args[@]}" | grep -qx -- "--"; then args+=("${RELAY_FLAGS[@]}"); fi
+  "$GODOT" --headless --path "$ROOT" "${args[@]}" > "$log" 2>&1 &
+  LAST_PID=$!
+  echo "$LAST_PID" >> "$OUT/pids"
+}
+
+gw() { # gw <log> <x> <y> <godot args…>: a WINDOWED Godot on the lab project at (x, y), 640x360 (the play mode)
+  local log="$1" x="$2" y="$3"; shift 3
+  local args=("$@")
+  if [ "${#RELAY_FLAGS[@]}" -gt 0 ] && printf '%s\n' "${args[@]}" | grep -qx -- "--"; then args+=("${RELAY_FLAGS[@]}"); fi
+  "$GODOT" --path "$ROOT" --windowed --resolution 640x360 --position "$x,$y" "${args[@]}" > "$log" 2>&1 &
   LAST_PID=$!
   echo "$LAST_PID" >> "$OUT/pids"
 }

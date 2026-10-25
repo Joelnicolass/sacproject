@@ -11,12 +11,11 @@ signal world_changed(id: StringName)
 ## The server ended the match (MpMatch.finish): every peer gets the result.
 signal match_finished(result: Dictionary)
 
-## When the server enters the world. A listen host (Host LAN) always enters at once, and so does a process started
-## with `--dedicated` (a dedicated server loads its world as soon as it starts). This only changes a "Dedicated
-## Server" export started without that flag: DEDICATED_FIRST_CLIENT waits for the first client, MANUAL never loads by
-## itself (glue calls start_match() / goto_world()).
+## When a "Dedicated Server" export started without `--dedicated` enters the world: at once (the default), with the
+## first client, or never by itself. Nothing else reads it: a listen host (Host LAN) and a process started with
+## `--dedicated` always enter at once.
 enum StartWhen {
-	LISTEN_IMMEDIATE, ## enter the world at once (the default)
+	LISTEN_IMMEDIATE, ## enter the world at once (the default; the name is older than the other two)
 	DEDICATED_FIRST_CLIENT, ## a "Dedicated Server" export without --dedicated: enter when the first client joins
 	MANUAL, ## never load the world by itself; glue calls start_match() / goto_world()
 }
@@ -150,6 +149,9 @@ func _ready() -> void:
 			get_tree().quit(1)
 			return
 		_set_status(dedicated_status % MpKit.port)
+		if start_when == StartWhen.LISTEN_IMMEDIATE:
+			match_running = true
+			call_deferred("goto_world")
 
 
 ## Moves this flow under the root. Works even when a scene change already took the boot scene out of the tree
@@ -167,6 +169,8 @@ func _adopt() -> void:
 			queue_free()
 			return
 	get_parent().remove_child(self)
+	## It no longer belongs to the boot scene: under the root it is nobody's child scene.
+	owner = null
 	request_ready()
 	root.add_child(self)
 

@@ -41,6 +41,8 @@ func _start() -> void:
 	launcher.name = "Launcher"
 	launcher.config = config
 	launcher.base_args = _base_args()
+	## `--keep-match-files`: keep each match's folder (ticket, state, result and its log) to see what happened.
+	launcher.keep_files = MpBoot.user_flag("keep-match-files")
 	var extra := MpBoot.user_value("match-args", "")
 	if not extra.is_empty():
 		launcher.agent_args.append_array(extra.split(",", false))
@@ -59,6 +61,9 @@ func _start() -> void:
 		print("match %s ended %s" % [match_id, JSON.stringify(result)]))
 	launcher.match_failed.connect(func(match_id: String, reason: String) -> void:
 		print("match %s failed %s" % [match_id, reason]))
+	## Ready means reachable (a relay accepts the lobby a moment after it starts).
+	while not lobby.is_listening():
+		await get_tree().process_frame
 	print("rooms ready port %d (%s)" % [launcher.config.lobby_port, launcher.config.transport])
 	started.emit(launcher.config.lobby_port)
 

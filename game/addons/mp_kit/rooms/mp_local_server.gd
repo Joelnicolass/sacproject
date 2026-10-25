@@ -9,7 +9,7 @@ extends Node
 ##   server.server_ready.connect(func(address, port, codes): show(codes))
 ## Not: a LAN listen server (MpFlow.host_lan is simpler there), the online lobby (MpRoomServer).
 
-## The match process listens. `address`: this PC on the LAN ("" if none). `codes`: slot -> code for each other seat.
+## The match process listens. `address`: this PC on the LAN ("" if none, or through the relay). `codes`: slot -> code for each other seat.
 signal server_ready(address: String, port: int, codes: Dictionary)
 signal server_failed(reason: String)
 signal server_ended(result: Dictionary)
@@ -41,10 +41,16 @@ func start(seats: int = 2, options: Dictionary = {}, join_host: bool = true) -> 
 	_join_host = join_host
 	if config == null:
 		config = MpLobbyConfig.new()
-		## The match talks like this process does (its MpFlow already applied the game's MpNetConfig).
+		## The match talks like this process does: the game's MpNetConfig (transport, relay, TLS) when there is a
+		## flow with one, what MpKit runs otherwise.
+		var flow := MpFlow.find_in_tree(self)
+		if flow and flow.net_config:
+			flow.net_config.fill_lobby_config(config)
 		config.transport = MpKit.transport
-		config.relay_url = MpTransport.relay_url
-		config.relay_room = MpTransport.relay_room
+		if config.relay_url.is_empty():
+			config.relay_url = MpTransport.relay_url
+		if config.relay_room.is_empty():
+			config.relay_room = MpTransport.relay_room
 	_launcher = MpMatchLauncher.new()
 	_launcher.name = "Launcher"
 	_launcher.config = config
@@ -88,7 +94,9 @@ static func new_code() -> String:
 
 func _on_listening(_id: String, p_port: int) -> void:
 	port = p_port
-	server_ready.emit(MpLan.get_local_ipv4(), port, codes.duplicate())
+	## Through the relay friends need no address of this PC, only the port (it picks the room) and a code.
+	var address := "" if MpTransport.normalize(config.transport) == MpTransport.RELAY else MpLan.get_local_ipv4()
+	server_ready.emit(address, port, codes.duplicate())
 	if _join_host:
 		var flow := MpFlow.find_in_tree(self)
 		if flow:

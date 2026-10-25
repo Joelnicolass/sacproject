@@ -17,7 +17,7 @@ Escena nueva con raíz `Control`:
 - Un hijo **MpFlow**. En el inspector: `boot_path` = esta escena, `world_path` = tu mundo y `net_config` = un **MpNetConfig** nuevo (`.tres`): transporte, puerto, jugadores, dirección pública y TLS en un solo lugar.
 - Una instancia de `res://addons/mp_kit/mp_boot_menu.tscn`: botones Jugar solo, Host LAN, Unirse y la lista de salas LAN.
 
-El `MpFlow` se muda solo a la raíz del árbol y sobrevive a los cambios de escena. No hace falta autoload.
+El `MpFlow` se muda solo a la raíz del árbol y sobrevive a los cambios de escena. No hace falta autoload. El flow es el dueño de la sesión (mundo, jugadores, nombre en la LAN); el menú solo la muestra.
 
 ## 3. Mundo
 
@@ -80,7 +80,7 @@ func mp_all_flash() -> void:
 | un número de la partida | `MpState.of(self).set_value(&"clave", v)` / `.add(&"clave")`, señal `changed` |
 | aparecer balas, unidades, pickups | `$MpSpawner.spawn_actor(escena, {"position": p})` (la escena va en *Extra Scenes*) |
 
-Solo el dueño puede pedir `mp_sv_*` de su actor, y solo el servidor manda `mp_all_*`: el kit lo valida.
+Solo el dueño puede pedir los `mp_sv_*` de su actor (`MpActor › Owner › callers = OWNER`), y solo el servidor manda `mp_all_*`: el kit lo valida. Para cosas del mundo que usa cualquiera (una puerta, la campana del ejemplo), `callers = ANYONE` y validá lo que piden dentro de `mp_sv_*`. Para salir de la partida, un nodo **MpLeaveButton** en el HUD.
 
 ### Red real: lag, jitter y pérdida
 
@@ -91,7 +91,7 @@ Solo el dueño puede pedir `mp_sv_*` de su actor, y solo el servidor manda `mp_a
 | Ancho de banda | **MpActor › Sync › send_hz** | Estados por segundo (0 = cada frame). `BUFFERED` tapa los huecos. |
 | Buffer de entrada | automático con predict | El servidor junta unos pocos frames del dueño antes de consumirlos de a uno por tick, así un jugador con jitter se mueve parejo para los demás. Un cliente que manda frames de más no va más rápido. |
 
-Reglas de `mp_move`: solo movimiento (puede correr varias veces por tick al reconciliar). Sonidos y efectos detrás de `if not keys.is_replaying():`. Saltos con `is_action_just_pressed` sí van adentro: se ven igual en el dueño, en el servidor y al repetir.
+Reglas de `mp_move`: solo movimiento (puede correr varias veces por tick al reconciliar). Si usa inercia o gravedad, agregá `velocity` a *Sync › Extra*: viaja con la pose y la reconciliación parte de él. Sonidos y efectos detrás de `if not keys.is_replaying():`. Saltos con `is_action_just_pressed` sí van adentro: se ven igual en el dueño, en el servidor y al repetir.
 
 Para probar con red mala, agregá a cada proceso `--net-lag-ms=100 --net-jitter-ms=30 --net-loss=0.05` (lag de salida, jitter y pérdida de paquetes no confiables). `net.last_correction()` dice cuánto corrigió el servidor al dueño en el último estado.
 
@@ -128,6 +128,10 @@ func seats_for(options: Dictionary) -> int:
 func accept_pick(pick: Dictionary) -> bool:
 	return pick.get("hero") in ["knight", "archer"]
 ```
+
+### Sin IP pública: el relay (Railway u otro host)
+
+Si tu servidor no tiene IP pública (tu PC detrás del router) o querés un dominio con TLS para la web, usá el relay: un servidor Node chico (`relay/server.mjs`, sin dependencias) que hace de túnel. El servidor Godot se conecta hacia afuera y los jugadores también. En el `MpNetConfig`: `transport = relay`, `relay_url = wss://tu-relay.up.railway.app`, `relay_room = mi-juego`; el servidor recibe el secreto por `MPKIT_RELAY_SECRET`. Salas, partidas y partida privada funcionan igual. Pasos para Railway: [relay/README.md](relay/README.md).
 
 ### Partida privada en tu PC (con código)
 

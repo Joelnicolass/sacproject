@@ -12,6 +12,8 @@ User=@NAME@
 Group=@NAME@
 WorkingDirectory=/opt/@NAME@
 EnvironmentFile=-/etc/@NAME@/dedicated.env
+## The relay secret (MPKIT_RELAY_SECRET), kept apart so a redeploy never rewrites it; optional.
+EnvironmentFile=-/etc/@NAME@/relay.env
 ExecStart=/opt/@NAME@/@BIN@ --headless -- --dedicated --mp-port=%i $EXTRA_ARGS
 Restart=always
 RestartSec=3

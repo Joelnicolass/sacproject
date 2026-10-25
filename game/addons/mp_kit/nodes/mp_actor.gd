@@ -84,6 +84,8 @@ var net_position: Vector3 = Vector3.ZERO
 var net_rotation: Quaternion = Quaternion.IDENTITY
 
 var _root: Node
+## Loaded as part of a saved scene (it had an owner when it entered); a node a spawner or script made has none then.
+var _from_saved_scene: bool = false
 var _calls: MpCalls
 var _motion: MpProxyMotion
 var _prediction: MpPrediction
@@ -110,6 +112,7 @@ func _ready() -> void:
 		set_physics_process(false)
 		return
 	_root = get_parent()
+	_from_saved_scene = _root.owner != null
 	_calls = MpCalls.new(_root)
 	process_priority = 10000
 	MpAuthority.claim_server(_root)
@@ -191,8 +194,8 @@ func despawn() -> void:
 	if not MpKit.is_authority():
 		push_warning("MpActor '%s': despawn() only runs on the server" % _root.name)
 		return
-	## Saved in the world scene = it has an owner; a node a spawner made has none.
-	if _root.owner != null:
+	## Saved in the world scene = it had an owner when it loaded (an owner a script sets later does not count).
+	if _from_saved_scene:
 		push_error("MpActor '%s': despawn() on a node of the world scene; hide it (sync visible) or spawn it" % _root.name)
 		return
 	_root.queue_free()

@@ -28,6 +28,7 @@ kill_stray() {
 kill_all() { kill_pids; kill_stray; }
 trap 'kill_all; net_stop' EXIT
 net_guard
+relay_up
 
 SERVER_TLS=(); CLIENT_TLS=()
 if [ "${TLS:-0}" = 1 ]; then
@@ -45,7 +46,7 @@ room_server() { # room_server <dir> [flags…]
   mkdir -p "$dir/matches"
   gd "$dir/rooms.log" res://addons/mp_kit/examples/arena_2d/rooms.tscn -- "${SERVER_TLS[@]}" --transport="$TRANSPORT" \
     --lobby-port="$LOBBY_PORT" --match-port-min=7730 --match-port-max=7739 --countdown-s=0.3 --matches-root="$dir/matches" \
-    --result-quit-delay-s=1 --idle-no-players-s=20 --heartbeat-s=0.5 --poll-s=0.1 "$@"
+    --result-quit-delay-s=1 --idle-no-players-s=20 --heartbeat-s=0.5 --poll-s=0.1 ${KEEP_MATCH:+--keep-match-files} "$@"
   ROOMS=$LAST_PID
   wait_line "$dir/rooms.log" "^rooms ready port" "$ROOMS" 30 || echo "FAIL the room server did not start"
 }
@@ -64,11 +65,11 @@ close() { # close <dir> <pids…>: wait for the players, then the matches, then 
   local dir="$1"; shift
   for p in "$@"; do wait "$p"; done
   wait_gone "match-ticket-file=$dir/matches" 15
-  for _ in $(seq 1 100); do [ -z "$(find "$dir/matches" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)" ] && break; sleep 0.1; done
+  [ -n "${KEEP_MATCH:-}" ] || for _ in $(seq 1 100); do [ -z "$(find "$dir/matches" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)" ] && break; sleep 0.1; done
   kill_tree "$ROOMS"
   check '! grep -q "^SCRIPT ERROR" "$dir"/*.log' "$(basename "$dir"): no script errors"
   check '[ "$(godots_with "match-ticket-file=$dir/matches")" = 0 ]' "$(basename "$dir"): no match process left"
-  check '[ -z "$(find "$dir/matches" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)" ]' "$(basename "$dir"): no match folder left"
+  [ -n "${KEEP_MATCH:-}" ] || check '[ -z "$(find "$dir/matches" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)" ]' "$(basename "$dir"): no match folder left"
 }
 
 for s in $SCENARIOS; do

@@ -25,6 +25,8 @@ var _by_key: Dictionary = {}
 
 
 func _ready() -> void:
+	## Infrastructure: a host's pause menu does not stop LAN advertising.
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	set_process(false)
 
 

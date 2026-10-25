@@ -14,6 +14,8 @@ User=@NAME@
 Group=@NAME@
 WorkingDirectory=/opt/@NAME@
 EnvironmentFile=/etc/@NAME@/rooms-%i.env
+## The relay secret (MPKIT_RELAY_SECRET), kept apart so a redeploy never rewrites it; optional.
+EnvironmentFile=-/etc/@NAME@/relay.env
 ExecStart=/opt/@NAME@/@BIN@ --headless -- --room-server --lobby-port=%i --match-port-min=${MATCH_PORT_MIN} --match-port-max=${MATCH_PORT_MAX} --matches-root=/var/lib/@NAME@/matches-%i $EXTRA_ARGS
 Restart=on-failure
 RestartSec=3

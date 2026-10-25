@@ -10,6 +10,7 @@ var _folder: LineEdit
 var _dimension: OptionButton
 var _players: SpinBox
 var _transport: OptionButton
+var _relay_url: LineEdit
 var _rooms: CheckBox
 var _private: CheckBox
 var _main: CheckBox
@@ -34,6 +35,9 @@ func _init() -> void:
 	_transport = _row(box, "Transport", OptionButton.new()) as OptionButton
 	_transport.add_item("ENet (UDP, desktop)")
 	_transport.add_item("WebSocket (TCP, web builds)")
+	_transport.add_item("Relay (WebSocket tunnel: Railway…)")
+	_relay_url = _row(box, "Relay URL", LineEdit.new()) as LineEdit
+	_relay_url.placeholder_text = "wss://your-relay.up.railway.app"
 	_rooms = _check(box, "Online rooms (room server + lobby screen)", true)
 	_private = _check(box, "Private server button (match on this PC with a code)", true)
 	_main = _check(box, "Make the boot scene the main scene", true)
@@ -42,7 +46,7 @@ func _init() -> void:
 	box.add_child(files_title)
 	_files = Label.new()
 	box.add_child(_files)
-	for control in [_folder, _dimension, _players, _transport, _rooms, _main]:
+	for control in [_folder, _dimension, _players, _transport, _relay_url, _rooms, _main]:
 		var refresh := func(_a: Variant = null) -> void: _show_plan()
 		if control is LineEdit:
 			control.text_changed.connect(refresh)
@@ -61,13 +65,16 @@ func wizard() -> MpSetupWizard:
 	w.folder = _folder.text.strip_edges().trim_suffix("/")
 	w.dimension_3d = _dimension.selected == 1
 	w.max_players = int(_players.value)
-	w.transport = "ws" if _transport.selected == 1 else "enet"
+	w.transport = ["enet", "ws", "relay"][_transport.selected]
+	w.relay_url = _relay_url.text.strip_edges()
 	w.online_rooms = _rooms.button_pressed
 	w.private_server = _private.button_pressed
 	return w
 
 
 func _show_plan() -> void:
+	## The relay URL only matters for the relay transport.
+	_relay_url.get_parent().visible = _transport.selected == 2
 	var w := wizard()
 	_files.text = w.plan_text() + ("\n[~] project.godot (main scene)" if _main.button_pressed else "")
 	get_ok_button().disabled = not w.folder.begins_with("res://") or w.plan_text().contains("[~]")

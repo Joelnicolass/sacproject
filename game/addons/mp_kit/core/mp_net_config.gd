@@ -37,11 +37,13 @@ extends Resource
 @export var tls_common_name: String = ""
 
 
-## The transport this build really uses: WebSocket on the web, the flag or this setting elsewhere.
+## The transport this build really uses: the flag or this setting; a browser has no ENet, so there it is WebSocket
+## unless the relay was picked (the relay is WebSocket too).
 func effective_transport() -> String:
-	if OS.has_feature("web"):
+	var picked := MpTransport.from_flags(transport)
+	if OS.has_feature("web") and picked != MpTransport.RELAY:
 		return MpTransport.WS
-	return MpTransport.from_flags(transport)
+	return picked
 
 
 func effective_port() -> int:
@@ -71,7 +73,8 @@ func client_tls() -> TLSOptions:
 
 
 ## Copies the network part of this .tres (transport, relay, TLS files) into a room server / match launcher config,
-## so the lobby and every match talk like the game. Fields already set in `config` win (and flags win over both).
+## so the lobby and every match talk like the game. The transport always follows this .tres (`--transport` wins over
+## it); the relay and TLS fields fill only what `config` leaves empty (flags win over both).
 ## `config` is an MpLobbyConfig, untyped on purpose: this .tres (used by MpFlow) must not load the lobby scripts.
 func fill_lobby_config(config: Resource) -> void:
 	if MpBoot.user_value("transport", "").is_empty():
@@ -81,8 +84,22 @@ func fill_lobby_config(config: Resource) -> void:
 	if str(config.get("relay_room")).is_empty():
 		config.set("relay_room", relay_room)
 	if str(config.get("tls_certificate_path")).is_empty() and tls_certificate and tls_key:
-		config.set("tls_certificate_path", ProjectSettings.globalize_path(tls_certificate.resource_path))
-		config.set("tls_key_path", ProjectSettings.globalize_path(tls_key.resource_path))
+		config.set("tls_certificate_path", _file_on_disk(tls_certificate, "mpkit_tls.crt"))
+		config.set("tls_key_path", _file_on_disk(tls_key, "mpkit_tls.key"))
+
+
+## A real file path the match processes can read: the resource's own file when it is on disk (the editor), a copy
+## under user:// otherwise (an export keeps res:// inside the .pck).
+static func _file_on_disk(resource: Resource, copy_name: String) -> String:
+	var own := ProjectSettings.globalize_path(resource.resource_path)
+	if not resource.resource_path.is_empty() and FileAccess.file_exists(own) and not OS.has_feature("template"):
+		return own
+	var copy := "user://" + copy_name
+	if resource is X509Certificate:
+		(resource as X509Certificate).save(copy)
+	elif resource is CryptoKey:
+		(resource as CryptoKey).save(copy)
+	return ProjectSettings.globalize_path(copy)
 
 
 ## Puts these settings on MpKit (before host / join).

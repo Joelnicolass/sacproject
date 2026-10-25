@@ -37,6 +37,17 @@ func test_writes_a_2d_game_once() -> void:
 	boot.free()
 
 
+func test_each_game_gets_its_own_relay_rooms() -> void:
+	var a := _wizard("user://mpkit_wizard_relay_a", false)
+	var b := _wizard("user://mpkit_wizard_relay_b", false)
+	a.transport = "relay"
+	b.transport = "relay"
+	check(a.write() == OK and b.write() == OK, "two relay games are written")
+	var room_a := str((load("user://mpkit_wizard_relay_a/net.tres") as MpNetConfig).relay_room)
+	var room_b := str((load("user://mpkit_wizard_relay_b/net.tres") as MpNetConfig).relay_room)
+	check(not room_a.is_empty() and room_a != room_b, "two games made with the wizard never share relay rooms")
+
+
 func test_writes_a_3d_game_without_rooms() -> void:
 	var wizard := _wizard("user://mpkit_wizard_3d", true)
 	wizard.online_rooms = false

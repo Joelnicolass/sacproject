@@ -20,6 +20,8 @@ var folder: String = "res://game"
 var dimension_3d: bool = false
 var max_players: int = 4
 var transport: String = "enet"
+## relay transport: the relay's address (the secret never goes in the game; see relay/README.md).
+var relay_url: String = ""
 var online_rooms: bool = true
 var private_server: bool = true
 
@@ -54,6 +56,9 @@ func write() -> Error:
 		return err
 	var net := MpNetConfig.new()
 	net.transport = transport
+	net.relay_url = relay_url
+	## The project's name plus a random tail: two games made with this wizard on one relay never share rooms.
+	net.relay_room = "%s-%s" % [_relay_name(), Crypto.new().generate_random_bytes(3).hex_encode()]
 	net.max_players = max_players
 	err = ResourceSaver.save(net, _p(NET))
 	if err == OK:
@@ -98,3 +103,10 @@ func _save_scene(root: Node, path: String) -> Error:
 	if err != OK:
 		return err
 	return ResourceSaver.save(scene, path)
+
+
+func _relay_name() -> String:
+	var project := str(ProjectSettings.get_setting("application/config/name", "")).to_snake_case().replace("_", "-")
+	if project.is_empty():
+		project = folder.get_file().to_snake_case().replace("_", "-")
+	return project if not project.is_empty() else "mpkit"

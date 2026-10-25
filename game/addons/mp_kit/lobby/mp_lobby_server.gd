@@ -57,6 +57,11 @@ func is_active() -> bool:
 	return _active
 
 
+## Clients can reach the lobby now (with the relay transport: once the relay accepted it).
+func is_listening() -> bool:
+	return _active and MpTransport.is_listening(_peer)
+
+
 func peer_of(session_id: String) -> int:
 	return int(_session_peer.get(session_id, 0))
 

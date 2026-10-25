@@ -32,8 +32,13 @@ static func wrap_from_flags(peer: MultiplayerPeer) -> MultiplayerPeer:
 	return lagged
 
 
-func setup(inner: MultiplayerPeer, p_lag_ms: float, p_jitter_ms: float, p_loss: float) -> void:
-	_inner = inner
+## The real peer under the simulated lag.
+func inner() -> MultiplayerPeer:
+	return _inner
+
+
+func setup(p_inner: MultiplayerPeer, p_lag_ms: float, p_jitter_ms: float, p_loss: float) -> void:
+	_inner = p_inner
 	lag_ms = maxf(p_lag_ms, 0.0)
 	jitter_ms = maxf(p_jitter_ms, 0.0)
 	loss = clampf(p_loss, 0.0, 1.0)

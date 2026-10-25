@@ -19,6 +19,7 @@ OUT="$(mktemp -d "${TMPDIR:-/tmp}/mpkit_session.XXXXXX")"
 kill_all() { kill_pids; }
 trap 'kill_all; net_stop' EXIT
 net_guard
+relay_up
 FAILS=0
 verdict() { if grep -q "^PROBE $2 PASS" "$1"; then echo "PASS $3"; else echo "FAIL $3"; grep -E "^FAIL" "$1" | head -3 | sed 's/^/   /'; FAILS=$((FAILS + 1)); fi; }
 server() { gd "$1" -- "${@:2}" --mp-port="$PORT"; SERVER=$LAST_PID; sleep 0.6; }

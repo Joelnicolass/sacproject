@@ -55,6 +55,8 @@ var _awaiting_ticket: Dictionary = {}
 
 
 func _ready() -> void:
+	## Infrastructure: the session (admission timers, rejections) keeps going while the game is paused.
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	transport = MpTransport.from_flags()
 	tls_server = MpTransport.server_tls_from_flags()
 	tls_client = MpTransport.client_tls_from_flags()
@@ -89,6 +91,11 @@ func is_server() -> bool:
 
 func is_dedicated() -> bool:
 	return is_server() and ids.dedicated
+
+
+## Server: clients can reach it now. ENet / WebSocket: as soon as it hosts; relay: once the relay accepted it.
+func is_listening() -> bool:
+	return is_server() and MpTransport.is_listening(_peer)
 
 
 func is_listen_host() -> bool:

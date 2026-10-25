@@ -8,8 +8,10 @@ extends Control
 ## Not: the rules of a room (MpRoomRules on the server), the player's pick (call `set_pick` from your own UI).
 
 ## The lobby: "host:port", a name, or a wss:// URL (read like the Join field, MpAddress). Empty = the flow's
-## MpNetConfig.public_host on port LOBBY_PORT (or 127.0.0.1).
+## MpNetConfig.public_host on `lobby_port` (or 127.0.0.1).
 @export var lobby_address: String = ""
+## The room server's lobby port (MpLobbyConfig.lobby_port, `--lobby-port`): used when the address has none.
+@export var lobby_port: int = LOBBY_PORT
 ## Options every room created here carries (map, mode…): MpRoomRules.seats_for / accept_options read them.
 @export var room_options: Dictionary = {}
 @export var player_name: String = "Player"
@@ -47,6 +49,7 @@ extends Control
 ## The room server started this player's match (only with auto_join_match off; call join_found() to go).
 signal match_found(host: String, port: int, token: String)
 
+## The default lobby port (MpLobbyConfig's default).
 const LOBBY_PORT := 7700
 
 var _ui: MpLobbyUi
@@ -89,15 +92,15 @@ func _bind() -> void:
 		_ui.show_page(&"connect")
 
 
-## "host:port" (or the default lobby address) and a display name.
+## The lobby address ("host:port", a name or a URL; empty = default_address()) and a display name.
 func connect_lobby(address: String = "", display_name: String = "") -> Error:
-	var parsed := MpAddress.parse(address if not address.strip_edges().is_empty() else default_address(), LOBBY_PORT)
+	var parsed := MpAddress.parse(address if not address.strip_edges().is_empty() else default_address(), lobby_port)
 	if not parsed.is_valid():
 		_status(bad_address_status)
 		return ERR_INVALID_PARAMETER
 	_status(connecting_status)
 	var host := parsed.url if not parsed.url.is_empty() else parsed.host
-	return _client.connect_to(host, parsed.port if parsed.url.is_empty() else LOBBY_PORT, display_name if not display_name.is_empty() else player_name)
+	return _client.connect_to(host, parsed.port if parsed.url.is_empty() else lobby_port, display_name if not display_name.is_empty() else player_name)
 
 
 ## The address the Connect field starts with.
@@ -106,8 +109,8 @@ func default_address() -> String:
 		return lobby_address
 	var flow := MpFlow.find_in_tree(self)
 	if flow and flow.net_config and not flow.net_config.public_host.is_empty():
-		return MpAddress.parse(flow.net_config.public_host, LOBBY_PORT).host + ":%d" % LOBBY_PORT
-	return "127.0.0.1:%d" % LOBBY_PORT
+		return MpAddress.parse(flow.net_config.public_host, lobby_port).host + ":%d" % lobby_port
+	return "127.0.0.1:%d" % lobby_port
 
 
 ## Your match still runs (you dropped out of it): join it again with the same ticket, within rejoin_grace_s.

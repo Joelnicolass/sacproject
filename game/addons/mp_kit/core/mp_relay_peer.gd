@@ -24,19 +24,32 @@ var _channel: int = 0
 var _mode: int = TRANSFER_MODE_RELIABLE
 var _target: int = 0
 var _refuse: bool = false
+var _welcomed: bool = false
 
 
 ## `url` like wss://relay.example.com (or ws://127.0.0.1:8080); `room` the room name; `secret` only for the host.
 func start(url: String, room: String, host: bool, secret: String = "", tls: TLSOptions = null) -> Error:
 	_host = host
 	var query := "?role=%s&room=%s" % ["host" if host else "client", room.uri_encode()]
-	if host and not secret.is_empty():
-		query += "&secret=" + secret.uri_encode()
+	## The secret goes in a header, not the URL (URLs end up in access logs). Only a host sends it, and a host is
+	## never a browser (a browser cannot set headers).
+	_ws.handshake_headers = PackedStringArray(["X-Relay-Secret: " + secret]) if host and not secret.is_empty() else PackedStringArray()
 	_ws.inbound_buffer_size = 1 << 20
 	_ws.outbound_buffer_size = 1 << 20
 	var err := _ws.connect_to_url(url.trim_suffix("/") + "/" + query, tls)
-	_status = CONNECTION_CONNECTING if err == OK else CONNECTION_DISCONNECTED
-	return err
+	if err != OK:
+		_status = CONNECTION_DISCONNECTED
+		return err
+	## A host is the server (id 1) from the start, like an ENet server: nothing reaches it before clients join, and
+	## clients join only after the relay accepted it. A client waits for its id (WELCOME).
+	_id = 1 if host else 0
+	_status = CONNECTION_CONNECTED if host else CONNECTION_CONNECTING
+	return OK
+
+
+## True once the relay accepted this peer (WELCOME): a host is reachable by clients from then on.
+func is_registered() -> bool:
+	return _status == CONNECTION_CONNECTED and _ws.get_ready_state() == WebSocketPeer.STATE_OPEN and (not _host or _welcomed)
 
 
 func _poll() -> void:
@@ -44,6 +57,8 @@ func _poll() -> void:
 	var state := _ws.get_ready_state()
 	if state == WebSocketPeer.STATE_CLOSED:
 		if _status != CONNECTION_DISCONNECTED:
+			if _host:
+				push_error("MpRelayPeer: the relay closed the host (%d %s)" % [_ws.get_close_code(), _ws.get_close_reason()])
 			_drop_all()
 		return
 	while _ws.get_available_packet_count() > 0:
@@ -57,6 +72,7 @@ func _read(msg: PackedByteArray) -> void:
 	var value := msg.decode_u32(1)
 	match kind:
 		WELCOME:
+			_welcomed = true
 			_id = value
 			_status = CONNECTION_CONNECTED
 			if not _host:
@@ -84,7 +100,7 @@ func _drop_all() -> void:
 
 
 func _put_packet_script(buffer: PackedByteArray) -> Error:
-	if _status != CONNECTION_CONNECTED:
+	if _status != CONNECTION_CONNECTED or _ws.get_ready_state() != WebSocketPeer.STATE_OPEN:
 		return ERR_UNCONFIGURED
 	var msg := PackedByteArray()
 	msg.resize(7)

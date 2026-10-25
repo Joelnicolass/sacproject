@@ -4,26 +4,29 @@
 // port: it can live behind NAT, on a PC, or anywhere. Railway, Render, Fly or a VPS can run it (one HTTPS port).
 //
 //   PORT=8080 RELAY_HOST_SECRET=change-me node server.mjs
-//   wss://relay.example.com/?role=host&room=game-7700&secret=change-me     (the Godot server)
+//   wss://relay.example.com/?role=host&room=game-7700   + header X-Relay-Secret: change-me   (the Godot server)
 //   wss://relay.example.com/?role=client&room=game-7700                    (each player)
 //   GET /health -> 200 ok
 //
-// Environment: PORT (default 8080), RELAY_HOST_SECRET (required to host; empty = anyone may host, only for local
-// tests), RELAY_MAX_CLIENTS per room (default 64), RELAY_MAX_MESSAGE bytes (default 262144).
+// Environment: PORT (default 8080), RELAY_HOST_SECRET (required to host; without it every host is refused, unless
+// RELAY_OPEN=1 lets anyone host: only for local tests), RELAY_MAX_CLIENTS per room (default 64), RELAY_MAX_MESSAGE bytes (default 262144).
 // Protocol (binary frames, little-endian):
 //   relay -> peer:  0x01 WELCOME u32 your_id | 0x02 JOIN u32 id (host) | 0x03 LEAVE u32 id (host)
 //                   0x04 DATA u32 from u8 channel u8 mode bytes…
 //   peer -> relay:  0x04 DATA i32 to u8 channel u8 mode bytes…   (host: to = a client id, 0 = every client,
 //                   -id = every client but id; a client: to is ignored, it always reaches the host)
 //                   0x05 KICK u32 id   (host only: the relay closes that client, 4007)
-// The host is id 1; clients get 2, 3… A second host for a room is refused (close 4003); clients of a room without a
-// host are refused (4004); when the host leaves every client of the room is closed (4005).
+// The host is id 1; clients get 2, 3… A new host of a room (it knows the secret) replaces the old one and closes
+// its clients (4008); clients of a room without a host are refused (4004); when the host leaves every client of the
+// room is closed (4005).
 
 import http from "node:http";
 import crypto from "node:crypto";
 
 const PORT = Number(process.env.PORT || 8080);
 const SECRET = process.env.RELAY_HOST_SECRET || "";
+// Without a secret nobody may host, unless RELAY_OPEN=1 says so on purpose (a relay on your own machine for tests).
+const OPEN = process.env.RELAY_OPEN === "1";
 const MAX_CLIENTS = Number(process.env.RELAY_MAX_CLIENTS || 64);
 const MAX_MESSAGE = Number(process.env.RELAY_MAX_MESSAGE || 262144);
 const GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
@@ -116,8 +119,22 @@ function forward(from, msg) {
   return out;
 }
 
+function sameSecret(given, secret) {
+  const a = Buffer.from(String(given));
+  const b = Buffer.from(secret);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
 function attachHost(conn, name) {
-  if (rooms.has(name)) return conn.close(4003, "room already hosted");
+  // A new host of a room replaces the old one (a server restart, or one that died without closing its socket): it
+  // proved the secret. The old host and its clients are closed (4008); clients reconnect to the new one.
+  const old = rooms.get(name);
+  if (old) {
+    rooms.delete(name);
+    for (const c of old.clients.values()) c.close(4008, "the host was replaced");
+    old.host.close(4008, "replaced by a new host");
+    log(`host ${name} replaced`);
+  }
   const room = { host: conn, clients: new Map(), next: 2 };
   rooms.set(name, room);
   conn.send(u32(WELCOME, 1));
@@ -140,18 +157,20 @@ function attachHost(conn, name) {
 
 function attachClient(conn, name) {
   const room = rooms.get(name);
-  if (!room) return conn.close(4004, "no host for this room");
+  if (!room) { log(`client refused: no host for ${name}`); return conn.close(4004, "no host for this room"); }
   if (room.clients.size >= MAX_CLIENTS) return conn.close(4006, "room full");
   const id = room.next++;
   room.clients.set(id, conn);
   conn.send(u32(WELCOME, id));
   room.host.send(u32(JOIN, id));
+  log(`client ${id} joined ${name} (${room.clients.size} in the room)`);
   conn.onMessage = (msg) => {
     if (msg.length < 7 || msg[0] !== DATA) return;
     room.host.send(forward(id, msg));
   };
   conn.onClose = () => {
     if (room.clients.delete(id) && rooms.get(name) === room) room.host.send(u32(LEAVE, id));
+    log(`client ${id} left ${name}`);
   };
 }
 
@@ -171,9 +190,14 @@ server.on("upgrade", (req, socket) => {
   const role = url.searchParams.get("role");
   const name = (url.searchParams.get("room") || "").slice(0, 128);
   if (!key || !name || (role !== "host" && role !== "client")) { socket.end("HTTP/1.1 400 Bad Request\r\n\r\n"); return; }
-  if (role === "host" && SECRET && url.searchParams.get("secret") !== SECRET) {
-    socket.end("HTTP/1.1 403 Forbidden\r\n\r\n");
-    return;
+  if (role === "host") {
+    // The secret comes in the X-Relay-Secret header (it never lands in an access log); ?secret= is still read.
+    const given = req.headers["x-relay-secret"] || url.searchParams.get("secret") || "";
+    if (SECRET ? !sameSecret(given, SECRET) : !OPEN) {
+      log(`host refused for ${name}: ${SECRET ? "wrong secret" : "no RELAY_HOST_SECRET set (RELAY_OPEN=1 allows any host)"}`);
+      socket.end("HTTP/1.1 403 Forbidden\r\n\r\n");
+      return;
+    }
   }
   const accept = crypto.createHash("sha1").update(key + GUID).digest("base64");
   socket.write(`HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: ${accept}\r\n\r\n`);
@@ -182,4 +206,4 @@ server.on("upgrade", (req, socket) => {
   else attachClient(conn, name);
 });
 
-server.listen(PORT, () => log(`ready port ${PORT}${SECRET ? "" : " (no host secret: tests only)"}`));
+server.listen(PORT, () => log(`ready port ${PORT}${SECRET ? "" : OPEN ? " (RELAY_OPEN: anyone may host, tests only)" : " (no RELAY_HOST_SECRET: every host is refused)"}`));

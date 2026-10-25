@@ -25,3 +25,21 @@ func test_tls_only_when_set() -> void:
 	cfg.tls_key = key
 	cfg.tls_certificate = crypto.generate_self_signed_certificate(key, "CN=mpkit.test")
 	check(cfg.server_tls() != null, "certificate + key = the server speaks wss:// itself")
+
+
+func test_relay_is_kept() -> void:
+	var cfg := MpNetConfig.new()
+	cfg.transport = "relay"
+	check(cfg.effective_transport() == MpTransport.RELAY, "a .tres with relay gives the relay (on the web too: it is WebSocket)")
+
+
+func test_tls_made_in_memory_reaches_the_matches_as_files() -> void:
+	var cfg := MpNetConfig.new()
+	var crypto := Crypto.new()
+	var key := crypto.generate_rsa(2048)
+	cfg.tls_key = key
+	cfg.tls_certificate = crypto.generate_self_signed_certificate(key, "CN=mpkit.test")
+	var lobby := MpLobbyConfig.new()
+	cfg.fill_lobby_config(lobby)
+	check(FileAccess.file_exists(lobby.tls_certificate_path) and FileAccess.file_exists(lobby.tls_key_path), "a certificate with no file of its own is copied to a real file")
+	check(MpTransport.server_tls(lobby.tls_certificate_path, lobby.tls_key_path) != null, "the match can load that copy")

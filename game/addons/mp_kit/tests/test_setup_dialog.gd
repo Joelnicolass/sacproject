@@ -8,6 +8,10 @@ func test_choices_and_guard() -> void:
 	tree.root.add_child(dialog)
 	var w: MpSetupWizard = dialog.call("wizard")
 	check(w.folder == "res://game" and not w.dimension_3d and w.max_players == 4 and w.online_rooms, "the defaults")
+	dialog.get("_transport").select(2)
+	dialog.get("_relay_url").text = "wss://relay.example.com"
+	w = dialog.call("wizard")
+	check(w.transport == "relay" and w.relay_url == "wss://relay.example.com", "the relay choice and its URL reach the wizard")
 	dialog.get("_dimension").select(1)
 	dialog.get("_transport").select(1)
 	dialog.get("_players").value = 8

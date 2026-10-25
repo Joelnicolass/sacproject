@@ -28,12 +28,14 @@ signal status_changed(text: String)
 @export var online_text: String = "Online rooms"
 @export var private_text: String = "Private server"
 @export var private_ready_status: String = "Private match on %s:%d · friends join with %s:%d#%s"
+## The same through the relay: friends type only the port and a code.
+@export var private_relay_status: String = "Private match through the relay · friends join with :%d#%s"
 @export var ip_hint: String = "127.0.0.1"
 @export var rooms_header: String = "LAN rooms"
 @export var idle_status: String = "Pick a mode."
 @export var host_fail_status: String = "Could not host (port busy?)"
 @export var join_fail_status: String = "Could not join"
-@export var bad_ip_status: String = "Invalid IPv4"
+@export var bad_ip_status: String = "Invalid address (an IP or a name, optionally :port)"
 @export var joining_status: String = "Connecting to %s…"
 
 var _lan: Label
@@ -190,7 +192,10 @@ func _on_private() -> void:
 	server.server_ready.connect(func(address: String, p_port: int, codes: Dictionary) -> void:
 		var shown := address if not address.is_empty() else "127.0.0.1"
 		var all := ", ".join(PackedStringArray(codes.values()))
-		_set_status(private_ready_status % [shown, p_port, shown, p_port, all]))
+		if MpKit.transport == MpTransport.RELAY:
+			_set_status(private_relay_status % [p_port, all])
+		else:
+			_set_status(private_ready_status % [shown, p_port, shown, p_port, all]))
 	server.server_failed.connect(func(reason: String) -> void: _set_status(host_fail_status + " (%s)" % reason))
 
 

@@ -87,7 +87,7 @@ func _ready() -> void:
 		ai_seats().size()])
 
 
-## slot -> the `meta` (pick) the lobby validated for that seat. Raw: the flow sanitizes it again.
+## slot -> the `meta` (pick) the lobby validated for that seat. Raw wire text: the flow reads it again with MatchWire.
 func seat_metas() -> Dictionary:
 	return _seat_metas.duplicate(true)
 
@@ -348,8 +348,9 @@ func _report(data: Dictionary) -> void:
 	var out := data.duplicate(true)
 	## What each seat played with (JSON keys are strings): lets the clients and the tests see the picks the dedicated applied.
 	var played := {}
-	for slot in SacrificeFlow.slot_picks.keys():
-		played[str(slot)] = SacrificeFlow.slot_picks[slot]
+	var picks: Dictionary[int, WizardPick] = SacrificeFlow.slot_picks
+	for slot in picks.keys():
+		played[str(slot)] = MatchWire.encode_pick(picks[slot])
 	out["picks"] = played
 	out["seed"] = MatchSeed.current
 	out["ticks"] = MatchClock.now()

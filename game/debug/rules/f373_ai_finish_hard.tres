@@ -1,10 +1,12 @@
-[gd_resource type="Resource" script_class="BenchRules" load_steps=12 format=3]
+[gd_resource type="Resource" script_class="BenchRules" load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://debug/suite/bench_rules.gd" id="1_rules"]
 [ext_resource type="Script" path="res://debug/suite/bench_group.gd" id="2_group"]
 [ext_resource type="Script" path="res://scenes/ai/data/ai_seat.gd" id="3_seat"]
 [ext_resource type="Script" path="res://debug/suite/bench_expect.gd" id="4_expect"]
 [ext_resource type="Resource" path="res://data/ai/difficulty_hard.tres" id="5_difficulty"]
+[ext_resource type="Resource" path="res://data/catalog/wizards/jadugarr.tres" id="seat_wizard_jadugarr"]
+[ext_resource type="Resource" uid="uid://b2h7s83blbac8" path="res://data/gods/persephone.tres" id="seat_god_persephone"]
 
 ; RFC-053 053d (F373). Linea base medida en 2660b36c (sin FocusTask), semilla 1: Normal no mata al mago en 600 s, Easy 387,18 s, Hard 157,27 s.
 ; Criterio: Normal <= 300 s (50 % de los 600 s que la linea base no alcanzo). Easy >= Normal >= Hard lo compara agent/runs/run_rfc053.sh 053d.
@@ -12,8 +14,8 @@
 [sub_resource type="Resource" id="Seat_persephone"]
 script = ExtResource("3_seat")
 slot = 2
-wizard = "cwa0"
-god = &"persephone"
+wizard = ExtResource("seat_wizard_jadugarr")
+god = ExtResource("seat_god_persephone")
 difficulty = ExtResource("5_difficulty")
 
 [sub_resource type="Resource" id="Group_rangers"]

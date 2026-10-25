@@ -408,12 +408,15 @@ func _set_status(text: String) -> void:
 func _apply_human_god() -> void:
 	if _rules.human_god == &"":
 		return
-	var chosen := SacrificeFlow.pick.duplicate()
-	chosen["god"] = str(_rules.human_god)
+	var god: GodType = MatchWire.decode_god(str(_rules.human_god))
+	var chosen := WizardPick.new()
+	chosen.wizard = SacrificeFlow.pick.wizard
+	chosen.god = god
 	SacrificeFlow.pick = chosen
 	if SacrificeFlow.slot_picks.has(1):
-		var seated: Dictionary = SacrificeFlow.slot_picks[1].duplicate()
-		seated["god"] = str(_rules.human_god)
+		var seated := WizardPick.new()
+		seated.wizard = SacrificeFlow.slot_picks[1].wizard
+		seated.god = god
 		SacrificeFlow.slot_picks[1] = seated
 		SacrificeFlow.slot_picks_changed.emit()
 
@@ -422,9 +425,10 @@ func _apply_human_god() -> void:
 ## wizards read it, the WizardSpawner makes the wizard of its slot, and a few frames pass while he seats himself on the ground.
 func _seat_ais() -> void:
 	for seat in _rules.ai_seats:
-		var wizard_type := GameData.wizard(seat.wizard)
-		SacrificeFlow.slot_picks[seat.slot] = {
-			"wizard": seat.wizard, "model": wizard_type.model if wizard_type != null else "jnwr", "god": str(seat.god)}
+		var seated := WizardPick.new()
+		seated.wizard = seat.wizard if seat.wizard != null else SacrificeFlow.default_pick.wizard
+		seated.god = seat.god if seat.god != null else SacrificeFlow.default_pick.god
+		SacrificeFlow.slot_picks[seat.slot] = seated
 		SacrificeFlow.slot_picks_changed.emit()
 		_world.get_node("WizardSpawner").call("spawn_slot", seat.slot)
 	for _frame in settle_frames + 16:

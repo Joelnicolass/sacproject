@@ -60,6 +60,7 @@ func _initialize() -> void:
 	_check_ranges("body_sizes", _catalog.body_sizes, BODY_RANGES)
 	_check_references(tags)
 	_check_gods(tags)
+	_check_lobby()
 	_check_bodies(tags)
 	_check_maps_and_modes()
 	_check_audio()
@@ -135,6 +136,26 @@ func _check_references(tags: Dictionary) -> void:
 				# A passive may also be a spell (eniv, zerf).
 				if not tag.is_empty() and not abilities.has(tag) and not spells.has(tag) and not KNOWN_DANGLING.has(tag):
 					_report("creatures/%s: %s = \"%s\" is not an ability or a spell" % [_file(creature), property, tag])
+
+
+## 055i-a: the menu lists what is `offered`, the wire carries `id()`, and the «Contra la IA» seat holds real references.
+func _check_lobby() -> void:
+	if _catalog.offered_wizards().is_empty():
+		_report("wizards/: none is offered to the lobby")
+	if _catalog.offered_gods().is_empty():
+		_report("gods/: none is offered to the lobby")
+	for god in _catalog.gods:
+		if god.id().is_empty() or _catalog.god(god.id()) != god:
+			_report("gods/%s: id() \"%s\" does not find the god back" % [_file(god), god.id()])
+	for wizard in _catalog.wizards:
+		if wizard.id().is_empty() or _catalog.wizard(wizard.id()) != wizard:
+			_report("wizards/%s: id() \"%s\" does not find the wizard back" % [_file(wizard), wizard.id()])
+	var seat := load("res://data/ai/seat_vs_ai.tres") as AiSeat
+	if seat == null or seat.wizard == null:
+		_report("data/ai/seat_vs_ai.tres: the seat of «Contra la IA» has no wizard")
+	var pick := MatchWire.decode_pick({"wizard": "cwa0", "god": "james"}, true)
+	if pick == null or MatchWire.encode_pick(pick) != {"wizard": "cwa0", "model": "jnwr", "god": "james"}:
+		_report("MatchWire: the pick cwa0/james does not travel as {wizard, model, god}")
 
 
 func _check_gods(tags: Dictionary) -> void:

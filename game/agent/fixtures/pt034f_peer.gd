@@ -83,7 +83,7 @@ func _my_seat() -> Dictionary:
 func _run() -> void:
 	var client := MpLobby.client
 	var room_name := MpBoot.user_value("pt-room", "Duelo")
-	SacrificeFlow.set_pick(MpBoot.user_value("pt-wizard", "cwa1"), MpBoot.user_value("pt-god", "pyro"))
+	SacrificeFlow.set_pick(MatchWire.decode_pick({"wizard": MpBoot.user_value("pt-wizard", "cwa1"), "god": MpBoot.user_value("pt-god", "pyro")}))
 	_check(await _until(_scene_is_screen), "%s: the room screen is the current scene" % _name)
 	var endpoint := (load(ENDPOINT) as MpLobbyEndpoint).resolved()
 	_check(MpLobby.connect_to(endpoint.host, endpoint.port, _name) == OK, "%s connects to the lobby" % _name)

@@ -78,12 +78,38 @@ func _index_buildings() -> void:
 		_building_by_tag[type.tag] = type
 
 
-## The god of a tag, or null.
-func god(tag: String) -> GodType:
+## The god with that id (its `tag`, or the file name when the tag is empty), or null.
+func god(id: String) -> GodType:
 	for type in gods:
-		if type.tag == tag:
+		if type.id() == id:
 			return type
 	return null
+
+
+## The wizard with that id (its `tag`, or the file name when the tag is empty), or null.
+func wizard(id: String) -> WizardType:
+	for type in wizards:
+		if type.id() == id:
+			return type
+	return null
+
+
+## The gods the menu, the AI picker and the rooms list (`offered`), in catalog order.
+func offered_gods() -> Array[GodType]:
+	var out: Array[GodType] = []
+	for type in gods:
+		if type.offered:
+			out.append(type)
+	return out
+
+
+## The wizards the menu and the rooms list (`offered`), in catalog order.
+func offered_wizards() -> Array[WizardType]:
+	var out: Array[WizardType] = []
+	for type in wizards:
+		if type.offered:
+			out.append(type)
+	return out
 
 
 func _load_gods(reload_from_disk: bool) -> Array:

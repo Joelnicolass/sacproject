@@ -121,7 +121,7 @@ func _on_error(code: String) -> void:
 ## The room server says the match listens: join its dedicated with the one-use ticket.
 func _on_match_ready(host: String, port: int, token: String) -> void:
 	_show_notice(tr(LobbyText.ENTERING_MATCH))
-	var err := SacrificeFlow.join_from_lobby(host, port, token)
+	var err: Error = SacrificeFlow.join_from_lobby(host, port, token)
 	if err != OK:
 		_show_notice(LobbyText.error_text("match_failed"))
 

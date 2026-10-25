@@ -47,7 +47,6 @@ func _on_create() -> void:
 	_server.server_ready.connect(_on_server_ready)
 	_server.server_failed.connect(_on_server_failed)
 	_server.server_closed.connect(_on_server_closed)
-	var host_pick := {"wizard": str(SacrificeFlow.pick.get("wizard", "")), "god": str(SacrificeFlow.pick.get("god", ""))}
 	var kind: String = str(_transport.get_item_metadata(_transport.selected))
 	## RFC-049 049a: the map of the match goes in the ticket like a room's `world` option.
 	var options := {}
@@ -60,7 +59,7 @@ func _on_create() -> void:
 	var mode := (%HostMode as ModePicker).selected_tag()
 	if mode != &"":
 		options["mode"] = String(mode)
-	var err := _server.start(host_pick, kind, options, ai_seats())
+	var err := _server.start(SacrificeFlow.pick, kind, options, ai_seats())
 	if err != OK:
 		_server.queue_free()
 		_server = null
@@ -122,7 +121,7 @@ func _on_server_closed(_result: Dictionary) -> void:
 func _on_enter() -> void:
 	if _server == null or not _server.hosting:
 		return
-	var err := SacrificeFlow.join_local_server(LocalServerHost.LOOPBACK, _server.port, _server.host_token)
+	var err: Error = SacrificeFlow.join_local_server(LocalServerHost.LOOPBACK, _server.port, _server.host_token)
 	if err != OK:
 		_status.text = tr(LocalServerText.FAILED_START)
 

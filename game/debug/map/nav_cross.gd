@@ -81,7 +81,7 @@ func _arm() -> void:
 	if _args.has("time-scale"):
 		Engine.time_scale = float(_args["time-scale"])
 	if wizard_slot > 0 and walker == null:
-		SacrificeFlow.slot_picks[wizard_slot] = SacrificeFlow.pick.duplicate()
+		SacrificeFlow.slot_picks[wizard_slot] = SacrificeFlow.pick
 		walker = world.get_node("WizardSpawner").call("spawn_slot", wizard_slot) as Node3D
 	if _args.has("nofollow") and walker != null:
 		var follower := walker.get_node_or_null("PathFollower")

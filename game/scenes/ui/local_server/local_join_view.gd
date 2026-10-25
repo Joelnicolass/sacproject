@@ -33,9 +33,8 @@ func _ready() -> void:
 
 
 func _show_choice() -> void:
-	var wizard: WizardType = GameData.wizard(str(SacrificeFlow.pick.get("wizard", "")))
-	var wizard_name := wizard.display_name if wizard else str(SacrificeFlow.pick.get("model", ""))
-	%JoinChoice.text = tr(LocalServerText.PICK_CHOICE) % [wizard_name, str(SacrificeFlow.pick.get("god", "")).capitalize()]
+	var chosen: WizardPick = SacrificeFlow.pick
+	%JoinChoice.text = tr(LocalServerText.PICK_CHOICE) % [chosen.wizard.display_name, chosen.god.display_name]
 
 
 func _on_pick_pressed() -> void:
@@ -67,7 +66,7 @@ func _on_join() -> void:
 		_status.text = tr(LocalServerText.BAD_CODE)
 		return
 	MpKit.transport = str(_transport.get_item_metadata(_transport.selected))
-	var err := SacrificeFlow.join_local_server(str(target["host"]), int(target["port"]), code)
+	var err: Error = SacrificeFlow.join_local_server(str(target["host"]), int(target["port"]), code)
 	if err != OK:
 		_status.text = tr(LocalServerText.BAD_ENDPOINT)
 		return

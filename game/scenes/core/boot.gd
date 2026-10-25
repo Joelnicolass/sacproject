@@ -40,9 +40,8 @@ func _show_select() -> void:
 	character_select.visible = true
 
 func _on_confirmed() -> void:
-	var wizard: WizardType = GameData.wizard(str(SacrificeFlow.pick.get("wizard", "")))
-	var wizard_name := wizard.display_name if wizard else str(SacrificeFlow.pick.get("model", ""))
-	%Choice.text = tr("UI_BOOT_CHOICE") % [wizard_name, str(SacrificeFlow.pick.get("god", "")).capitalize()]
+	var chosen: WizardPick = SacrificeFlow.pick
+	%Choice.text = tr("UI_BOOT_CHOICE") % [chosen.wizard.display_name, chosen.god.display_name]
 	character_select.visible = false
 	column.visible = true
 

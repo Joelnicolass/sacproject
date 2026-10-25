@@ -1,16 +1,15 @@
 class_name AiSeat
 extends Resource
 
-## A seat the AI takes (RFC-024 §3.1 `AiSeat`): which slot, which wizard and god, which numbers. 024c only reads it in
-## the debug scenes (the production roster, the button and the difficulties come with 024f); the fields are the ones
-## the roster will need.
+## A seat the AI takes: which slot, which wizard and god, which numbers. Drag the wizard and the god from the FileSystem
+## (data/catalog/wizards, data/gods). It does not play: AiRoster seats it and AiSide plays it.
 
 @export var slot := 2
-## WizardType tag (cwa0…); empty = the default of SacrificeFlow.
-@export var wizard := "cwa0"
-## persephone, pyro, james, stratos, charnel. Empty (or unknown): AiRoster draws one per match («Aleatorio», 024f).
-@export var god: StringName = &"james"
-## Empty: the profile of the god (AiProfile.for_god).
+## Empty = the wizard of the menu's default pick (`SacrificeFlow.default_pick`).
+@export var wizard: WizardType
+## Empty: AiRoster draws one per match from the gods the lobby offers («Aleatorio»).
+@export var god: GodType
+## Empty: the profile of the god (`god.ai_profile`).
 @export var profile: AiProfile
 ## How well it plays (024e). Empty: Normal (data/ai/difficulty_normal.tres).
 @export var difficulty: AiDifficulty

@@ -105,8 +105,8 @@ func _run_host() -> void:
 	server.server_closed.connect(func(result: Dictionary) -> void:
 		closed["seen"] = true
 		closed["result"] = result)
-	var pick := {"wizard": "cwa0", "god": "james"}
-	SacrificeFlow.set_pick(pick["wizard"], pick["god"])
+	var pick: WizardPick = MatchWire.decode_pick({"wizard": "cwa0", "god": "james"})
+	SacrificeFlow.set_pick(pick)
 	_check(server.start(pick, MpBoot.user_value("e2e-transport", "")) == OK, "the host launches the local dedicated")
 	_check(await _until(func() -> bool: return not ready_info.is_empty()), "the dedicated listens and the host gets address, port and code")
 	if ready_info.is_empty():
@@ -178,14 +178,18 @@ func _run_rival() -> void:
 	var code := LocalServerEndpoint.clean_code(" %s " % str(info["code"]).to_upper())
 	## The rival chooses who he is. `--e2e-bad-first`: first an invalid pick (must be rejected, no seat), then the real one with the same code.
 	if MpBoot.user_flag("e2e-bad-first"):
-		SacrificeFlow.pick = {"wizard": "cwa1", "model": "serx", "god": "no_such_god"}
+		var bogus := WizardPick.new()
+		bogus.wizard = MatchWire.decode_wizard("cwa1")
+		bogus.god = GodType.new()
+		bogus.god.tag = "no_such_god"
+		SacrificeFlow.pick = bogus
 		_check(MpKit.join(str(target["host"]), int(target["port"]), code) == OK, "the rival joins with an invalid pick")
 		_check(await _until(func() -> bool: return _rejected == "bad_pick", _reject_s()), "the invalid pick is rejected (%s)" % _rejected)
 		_check(_slot == LocalServerHost.RIVAL_SLOT, "the rival got his slot before the pick was judged (%d)" % _slot)
 		_rejected = ""
 		_slot = 0
 		await get_tree().create_timer(1.0).timeout
-	SacrificeFlow.set_pick(MpBoot.user_value("e2e-wizard", "cwa1"), MpBoot.user_value("e2e-god", "pyro"))
+	SacrificeFlow.set_pick(MatchWire.decode_pick({"wizard": MpBoot.user_value("e2e-wizard", "cwa1"), "god": MpBoot.user_value("e2e-god", "pyro")}))
 	_check(MpKit.join(str(target["host"]), int(target["port"]), code) == OK, "the rival joins with the code")
 	_check(await _until(func() -> bool: return _slot != 0 or not _rejected.is_empty()), "the rival gets a slot")
 	_check(_rejected.is_empty(), "the rival is not rejected")

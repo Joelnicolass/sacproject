@@ -62,11 +62,11 @@ func _ready() -> void:
 	set_process(false)
 
 
-## Launches the dedicated. `host_pick` = {wizard, god}; `transport` empty = the one of the config / flag; `options` the room options
+## Launches the dedicated. `host_pick` is what the host chose (MatchWire writes it into the ticket); `transport` empty = the one of the config / flag; `options` the room options
 ## (`world`, `mode`…); `ai_seats` {slot: {god, difficulty}} the seats an AI plays (slot 1 is the host's and never an AI).
 ## `server_ready` comes when the dedicated listens. ERR_ALREADY_IN_USE if this node already hosts; ERR_INVALID_PARAMETER for options
 ## or an AI seat the rules refuse (a map with fewer starts than the mode, an unknown god).
-func start(host_pick: Dictionary, transport: String = "", options: Dictionary = {}, ai_seats: Dictionary = {}) -> Error:
+func start(host_pick: WizardPick, transport: String = "", options: Dictionary = {}, ai_seats: Dictionary = {}) -> Error:
 	if hosting:
 		return ERR_ALREADY_IN_USE
 	## Not in the tree yet (added while its parent is busy, or never added): say so, do not break on Nil.
@@ -85,7 +85,7 @@ func start(host_pick: Dictionary, transport: String = "", options: Dictionary = 
 	MpKit.transport = launcher.config.transport
 	host_token = _new_code()
 	codes = {}
-	var seats: Array = [{"slot": HOST_SLOT, "token": host_token, "meta": host_pick}]
+	var seats: Array = [{"slot": HOST_SLOT, "token": host_token, "meta": MatchWire.encode_pick(host_pick)}]
 	for slot in range(RIVAL_SLOT, rules.seat_count_for(options) + 1):
 		if ai_seats.has(slot):
 			seats.append({"slot": slot, "bot": true, "meta": ai_seats[slot]})

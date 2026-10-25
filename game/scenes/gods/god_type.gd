@@ -20,6 +20,13 @@ extends Resource
 @export var book: GodBook
 ## The towers this god raises: one row per structure spell (Manalith, Shrine) with the scene of its own model.
 @export var structures: Array[GodStructure] = []
+## Lobby (055i-a): false takes this god out of the menu, the AI picker and the rooms without deleting the file.
+@export var offered := true
+
+
+## The id of this god on the network and in the catalog: its `tag`, or the file name when the tag is empty (new content).
+func id() -> String:
+	return tag if not tag.is_empty() else resource_path.get_file().get_basename()
 
 
 ## Name FxBus plays for the casting hand. A god without a particle still names one (`cast_<tag>`): the wizard's pose follows it.

@@ -113,11 +113,11 @@ func _run() -> void:
 	tree.root.add_child(self)
 	tree.current_scene = stub
 	var god := arg("god", "persephone")
-	SacrificeFlow.set_pick(arg("wizard", "cwa0"), god)
+	SacrificeFlow.set_pick(MatchWire.decode_pick({"wizard": arg("wizard", "cwa0"), "god": god}))
 	## The land is the product's: the setup's biome (the capture wears the wizard's god unless --biome says otherwise).
 	var chosen := MatchSetup.new()
 	chosen.biome_god = StringName(arg("biome", god))
-	SacrificeFlow.play_vs_ai(StringName(arg("ai-god")), chosen)
+	SacrificeFlow.play_vs_ai(MatchWire.decode_god(arg("ai-god")), chosen)
 	var world := await _wait_world()
 	if world == null:
 		push_error("match_shots: the world never had a local wizard.")

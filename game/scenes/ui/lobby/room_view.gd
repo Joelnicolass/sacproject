@@ -143,7 +143,7 @@ func _auto_pick(room: Dictionary, mine: Dictionary, open: bool) -> void:
 	if not (mine["meta"] as Dictionary).is_empty():
 		return
 	_auto_picked_room = str(room["id"])
-	MpLobby.client.set_pick(SacrificeFlow.pick)
+	MpLobby.client.set_pick(MatchWire.encode_pick(SacrificeFlow.pick))
 
 
 func _on_sit(seat: int) -> void:
@@ -153,7 +153,7 @@ func _on_sit(seat: int) -> void:
 ## RFC-049 049h: the host puts a bot with the god and the difficulty of %BotOptions in a free seat.
 func _on_add_bot(seat: int) -> void:
 	var meta := {
-		"god": String((%BotGod as AiGodPicker).selected_god()),
+		"god": MatchWire.encode_god((%BotGod as AiGodPicker).selected_god()),
 		"difficulty": (%BotDifficulty as AiDifficultyPicker).selected_difficulty(),
 	}
 	MpLobby.client.set_seat_bot(seat, meta)
@@ -194,4 +194,4 @@ func _on_pick_confirmed() -> void:
 	if _character_select != null:
 		_character_select.queue_free()
 		_character_select = null
-	MpLobby.client.set_pick(SacrificeFlow.pick)
+	MpLobby.client.set_pick(MatchWire.encode_pick(SacrificeFlow.pick))

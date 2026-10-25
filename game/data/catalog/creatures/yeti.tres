@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_iod8r"]
-[ext_resource type="Resource" path="res://data/audio/creatures/yeti.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://bvflfj7noeu2i" path="res://assets/original/ui/icons/ycrp.png" id="icon_tex"]
 [ext_resource type="Script" path="res://scenes/units/passives/creature_passive.gd" id="typed_passive_script"]
 [ext_resource type="Resource" path="res://data/passives/yeti_freeze.tres" id="typed_passive_0"]
@@ -13,7 +12,6 @@ script = ExtResource("1_iod8r")
 tag = "ycrp"
 display_name = "Yeti"
 icon = ExtResource("icon_tex")
-model = "aprc"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 3600
@@ -36,4 +34,3 @@ cooldown_s = 8.0
 casting_time_s = 1.7284
 spell_order = 779
 passives = Array[ExtResource("typed_passive_script")]([ExtResource("typed_passive_0")])
-sounds = ExtResource("sounds_set")

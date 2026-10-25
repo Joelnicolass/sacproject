@@ -1,8 +1,8 @@
 class_name CreatureFx
 extends Node3D
 
-## The sprite effect a creature carries, from `CreatureType.carried_fx` (the Manahoar's mana flame). It adds the scene
-## once the body has its type and tints it with the side's mana color (`SideColors.mana_color`): the original draws it with
+## The sprite effect a creature carries, from the `carried_fx` of its look (the Manahoar's mana flame). It adds the scene
+## once the body is dressed and tints it with the side's mana color (`SideColors.mana_color`): the original draws it with
 ## additive sprites, not with a light. A creature with no `carried_fx` gets nothing.
 ## Where: the flame follows the `carried_fx_socket` of the model's scene (BodyModel; a BoneAttachment3D + Marker3D the editor
 ## moves with a gizmo), like sacengine's manahoarManaOffset (a point of the skeleton in the current frame of the clip), so it
@@ -36,6 +36,8 @@ func _ready() -> void:
 		return
 	if rig != null:
 		rig.model_loaded.connect(_find_socket)
+	if body.mount != null:
+		body.mount.dressed.connect(_on_dressed)
 	body.ready.connect(_attach, CONNECT_ONE_SHOT)
 	if body.is_node_ready():
 		_attach()
@@ -54,10 +56,15 @@ func _process(delta: float) -> void:
 		_apply_rate()
 
 
+func _on_dressed(_look: BodyLook) -> void:
+	_attach()
+
+
 func _attach() -> void:
-	if _fx != null or body.type == null or body.type.carried_fx == null:
+	var look := body.mount.look if body.mount != null else null
+	if _fx != null or look == null or look.carried_fx == null:
 		return
-	_fx = body.type.carried_fx.instantiate() as Node3D
+	_fx = look.carried_fx.instantiate() as Node3D
 	_fx.position = offset
 	add_child(_fx)
 	var emitter := _fx as SpriteEmitter

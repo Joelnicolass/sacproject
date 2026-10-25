@@ -2,26 +2,20 @@
 class_name BodyRig
 extends Node3D
 
-## A skeletal body: it instances the model's scene (scenes/bodies/models/<model>.tscn, a BodyModel: the .glb, its library of
-## clips by role and the AnimationTree with one state per ROLE) under %ModelSlot and plays ROLES (idle, run, attack...) through
-## that tree. Which clip a role plays, and how the animations look, is edited in the model's scene in the editor; this node
-## only asks the tree to travel to a role.
-## Without the scene (a model that is a static mesh) the rig shows nothing and warns in the inspector; no error.
-## On the dedicated server (headless) nothing loads: the rig is inert.
+## A skeletal body: it holds the look the body wears (BodyMount hands it over: the model's scene scenes/bodies/models/<model>.tscn, a
+## BodyModel with the .glb, its library of clips by role and the AnimationTree with one state per ROLE) under %ModelSlot and plays
+## ROLES (idle, run, attack...) through that tree. Which clip a role plays, and how the animations look, is edited in the model's
+## scene in the editor; this node only asks the tree to travel to a role.
+## A look without a model (a hybrid drawn as a static mesh) is held too, and nothing plays.
+## On the dedicated server (headless) nothing is mounted: the rig is inert.
 ## Presentation only: the simulation never reads the rig (it reads the same clips through ClipFacts).
 ## Ref: RFC-023 (023b), RFC-036 (036g).
 
-## A model scene was instanced under the rig (its skeleton and sockets exist now).
+## A look with a model was mounted under the rig (its skeleton and sockets exist now).
 signal model_loaded
+## A look was mounted (with or without a model): whoever draws the body can pick its mesh or its skeleton.
+signal look_mounted(look: BodyLook)
 
-## The two hand sockets follow the skeleton of the instanced model; the .glb is drawn with z mirrored (BodyModel).
-const MIRROR := Vector3(1.0, 1.0, -1.0)
-
-## Body to show (a model tag: eorc, jnwr...). The owner sets it at run time; in the editor it is the preview.
-@export var model := "":
-	set(value):
-		model = value
-		_reload_if_ready()
 ## Role shown after loading (the editor preview and the starting role).
 @export var preview_role := "idle":
 	set(value):
@@ -29,25 +23,43 @@ const MIRROR := Vector3(1.0, 1.0, -1.0)
 		if is_node_ready() and _model_root != null:
 			play(value)
 
+var _look: BodyLook
+var _pending: BodyLook
 var _model_root: BodyModel
 var _skeleton: Skeleton3D
 var _fade := 0.0
 var _paused := false
 var _role := ""
-var _missing := false
-## Which of the two hand sockets the active clip really has (a hand on the root bone is "no hand": sacengine leaves it NaN).
-var _hand_on: Array[bool] = [false, false]
+## The hands of the model (BoneAttachment3D named Hand*) and the Marker3D under each: a hand shows only in the clips that have it.
+var _hands: Array[BoneAttachment3D] = []
+var _sockets: Array[Node3D] = []
 
 @onready var _slot: Node3D = %ModelSlot
-@onready var _hand_l: BoneAttachment3D = %HandL
-@onready var _hand_r: BoneAttachment3D = %HandR
 
 
 func _ready() -> void:
 	if not BodyCatalog.loads_meshes():
 		process_mode = Node.PROCESS_MODE_DISABLED
 		return
-	_reload()
+	if _pending != null:
+		var waiting := _pending
+		_pending = null
+		_adopt(waiting)
+
+
+## Puts `look` under the rig, in place of the one it had. Safe before the rig is ready: the look waits for it.
+func mount(look: BodyLook) -> void:
+	if not is_node_ready():
+		if _pending != null:
+			_pending.free()
+		_pending = look
+		return
+	_adopt(look)
+
+
+## The look mounted now (null before one is).
+func mounted_look() -> BodyLook:
+	return _look
 
 
 ## True when `role` has a clip in the loaded model.
@@ -101,16 +113,14 @@ func is_loaded() -> bool:
 	return _model_root != null
 
 
-## World positions of the hands the active clip has (RFC-023 023d: where a wizard's casting particles go). Empty when the
-## clip has none or the model is not loaded.
+## World positions of the hands the active clip has (RFC-023 023d: where a wizard's casting particles go). A hand shows only in the
+## clips that have it (a `visible` track of the clip), so these are the sockets whose hand is visible now. Empty when the clip has none
+## or the model is not loaded.
 func hand_points() -> PackedVector3Array:
 	var points := PackedVector3Array()
-	if _skeleton == null:
-		return points
-	var sockets := [_hand_l, _hand_r]
-	for i in 2:
-		if _hand_on[i]:
-			points.append((sockets[i] as BoneAttachment3D).get_node("Socket").global_position)
+	for i in _hands.size():
+		if _hands[i].visible:
+			points.append(_sockets[i].global_position)
 	return points
 
 
@@ -165,7 +175,6 @@ func play(role: String, restart := false, at := 0.0) -> void:
 	else:
 		playback.travel(wanted)
 	_role = wanted
-	_apply_hands(wanted)
 	if at > 0.0:
 		tree.advance(at)
 
@@ -184,18 +193,12 @@ func pose_at(role: String, seconds: float) -> void:
 	player.seek(seconds, true)
 	player.pause()
 	_role = wanted
-	_apply_hands(wanted)
 
 
 ## Steps the state machine by hand (tests and, later, a body-LOD that updates far bodies less often).
 func advance(delta: float) -> void:
 	if _model_root != null and _model_root.tree().active:
 		_model_root.tree().advance(delta)
-
-
-## Sets the model and loads it.
-func set_body(model_tag: String) -> void:
-	model = model_tag
 
 
 func _playback() -> AnimationNodeStateMachinePlayback:
@@ -211,78 +214,40 @@ func _stop_player() -> void:
 		player.stop()
 
 
-func _reload_if_ready() -> void:
-	if is_node_ready() and BodyCatalog.loads_meshes():
-		_reload()
-
-
-func _reload() -> void:
+func _adopt(look: BodyLook) -> void:
 	_clear()
-	_missing = false
-	if model.is_empty():
-		update_configuration_warnings()
-		return
-	if not BodyModel.exists(model):
-		_missing = true
-		update_configuration_warnings()
-		return
-	var packed := load(BodyModel.scene_path(model)) as PackedScene
-	var root := packed.instantiate() as BodyModel if packed != null else null
-	if root == null:
-		_missing = true
-		update_configuration_warnings()
-		return
-	_slot.add_child(root)
-	_model_root = root
-	_skeleton = root.skeleton()
+	_look = look
+	_slot.add_child(look)
+	_model_root = look.model
+	if _model_root != null:
+		_skeleton = _model_root.skeleton()
+		_collect_hands()
 	set_fade(_fade)
 	set_paused(_paused)
-	_bind_hands()
-	update_configuration_warnings()
-	play(preview_role, true)
-	model_loaded.emit()
+	if _model_root != null:
+		play(preview_role, true)
+	look_mounted.emit(look)
+	if _model_root != null:
+		model_loaded.emit()
 
 
 func _clear() -> void:
-	for attach in [_hand_l, _hand_r]:
-		attach.use_external_skeleton = false
-		attach.external_skeleton = NodePath()
-	_hand_on = [false, false]
 	for child in _slot.get_children():
 		_slot.remove_child(child)
 		child.free()
+	_hands.clear()
+	_sockets.clear()
+	_look = null
 	_model_root = null
 	_skeleton = null
 	_role = ""
 
 
-## The hand attachments follow the skeleton of the instanced model; their bone changes with the clip.
-func _bind_hands() -> void:
-	for attach in [_hand_l, _hand_r]:
-		# Start on the root bone: the bone name of the previous model may not exist in this skeleton.
-		attach.bone_name = _skeleton.get_bone_name(0)
-		attach.use_external_skeleton = true
-		attach.external_skeleton = attach.get_path_to(_skeleton)
-		(attach.get_node("Socket") as Node3D).scale = MIRROR
-
-
-func _apply_hands(role: String) -> void:
-	if _skeleton == null:
-		return
-	var hands: Array = _model_root.hands_of(_model_root.tag_for(role))
-	var attachments := [_hand_l, _hand_r]
-	_hand_on = [false, false]
-	for i in mini(hands.size(), 2):
-		var attach: BoneAttachment3D = attachments[i]
-		var hand: Dictionary = hands[i]
-		_hand_on[i] = bool(hand.get("on", false))
-		if attach.bone_name != str(hand["bone_name"]):
-			attach.bone_name = str(hand["bone_name"])
-		(attach.get_node("Socket") as Node3D).position = hand["offset"]
-
-
-func _get_configuration_warnings() -> PackedStringArray:
-	var warnings := PackedStringArray()
-	if _missing:
-		warnings.append("No scene %s: make it with tools/bake/new_creature.gd (a model with no playable idle clip is a static mesh)." % BodyModel.scene_path(model))
-	return warnings
+## The hands are nodes of the model scene (BoneAttachment3D HandL, HandR... under its skeleton), placed in the editor.
+func _collect_hands() -> void:
+	for child in _skeleton.get_children():
+		var hand := child as BoneAttachment3D
+		var socket := hand.get_child(0) as Node3D if hand != null and hand.get_child_count() > 0 else null
+		if socket != null and String(hand.name).begins_with("Hand"):
+			_hands.append(hand)
+			_sockets.append(socket)

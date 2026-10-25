@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_ebs7r"]
-[ext_resource type="Resource" path="res://data/audio/creatures/mutant.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://b8u5o0o4fk0p5" path="res://assets/original/ui/icons/cbab.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/babt.tres" id="typed_babt"]
 [ext_resource type="Script" path="res://scenes/units/passives/creature_passive.gd" id="typed_passive_script"]
@@ -14,7 +13,6 @@ script = ExtResource("1_ebs7r")
 tag = "cbab"
 display_name = "Mutant"
 icon = ExtResource("icon_tex")
-model = "babc"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1900
@@ -36,4 +34,3 @@ casting_time_s = 2.2222
 spell_order = 669
 ranged_attack = ExtResource("typed_babt")
 passives = Array[ExtResource("typed_passive_script")]([ExtResource("typed_passive_0")])
-sounds = ExtResource("sounds_set")

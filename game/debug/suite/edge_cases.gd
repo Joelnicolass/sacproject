@@ -123,7 +123,7 @@ func _thrown(host: Node3D, start: Vector3, dir: Vector3) -> Dictionary:
 	unit.position = start
 	unit.set("owner_slot", 1)
 	unit.set("type", GameData.creature("ycro"))
-	unit.set("model", str(type.model))
+	unit.set("model", type.model_id())
 	unit.set("rules", RULES)
 	unit.set("idle_aggro", false)
 	host.add_child(unit)

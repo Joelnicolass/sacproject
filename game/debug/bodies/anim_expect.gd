@@ -17,14 +17,14 @@ static func owners() -> Dictionary:
 	var out: Dictionary = {}
 	for file in _files(CREATURES_DIR):
 		var type := load(CREATURES_DIR + file) as CreatureType
-		if type == null or type.model.is_empty():
+		if type == null or type.model_id().is_empty():
 			continue
-		var kind := "doctor" if type.model == DOCTOR_MODEL else ("peasant" if type.peasant else "creature")
-		_add(out, type.model, {"who": "%s %s" % [kind, type.tag], "kind": kind, "type": type})
+		var kind := "doctor" if type.model_id() == DOCTOR_MODEL else ("peasant" if type.peasant else "creature")
+		_add(out, type.model_id(), {"who": "%s %s" % [kind, type.tag], "kind": kind, "type": type})
 	for file in _files(WIZARDS_DIR):
 		var wizard := load(WIZARDS_DIR + file) as WizardType
-		if wizard != null and not wizard.model.is_empty():
-			_add(out, wizard.model, {"who": "wizard " + wizard.tag, "kind": "wizard", "type": wizard})
+		if wizard != null and not wizard.model_id().is_empty():
+			_add(out, wizard.model_id(), {"who": "wizard " + wizard.tag, "kind": "wizard", "type": wizard})
 	return out
 
 

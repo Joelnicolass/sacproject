@@ -10,7 +10,6 @@ script = ExtResource("1_x23l5")
 tag = "imaf"
 display_name = "Familiar"
 icon = ExtResource("icon_tex")
-model = "FAmr"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1000

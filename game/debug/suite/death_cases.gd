@@ -237,7 +237,7 @@ func _unit(tag: String, at: Vector3) -> UnitBody:
 	var unit := UNIT_SCENE.instantiate() as UnitBody
 	unit.owner_slot = 2
 	unit.type = GameData.creature(tag)
-	unit.model = str(type.model) if type else ""
+	unit.model = type.model_id() if type else ""
 	unit.rules = RULES
 	unit.idle_aggro = false
 	unit.target_groups = PackedStringArray()

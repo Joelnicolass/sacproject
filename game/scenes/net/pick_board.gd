@@ -65,7 +65,7 @@ func _store(data: Dictionary, from_peer: int) -> void:
 	if slot <= 0 or chosen == null:
 		return
 	picks[slot] = chosen
-	print("slot %d pick %s %s" % [slot, chosen.wizard.model, chosen.god.id()])
+	print("slot %d pick %s %s" % [slot, chosen.wizard.model_id(), chosen.god.id()])
 	_publish()
 
 
@@ -79,7 +79,7 @@ func _accept_open(from_peer: int, slot: int, data: Dictionary) -> void:
 		return
 	picks[slot] = chosen
 	ticket_glue.close_pick(slot)
-	print("partida %s: slot %d pick %s %s (elegido al entrar)" % [ticket_glue.agent.match_id, slot, chosen.wizard.model, chosen.god.id()])
+	print("partida %s: slot %d pick %s %s (elegido al entrar)" % [ticket_glue.agent.match_id, slot, chosen.wizard.model_id(), chosen.god.id()])
 	_publish()
 	if not ticket_glue.picks_pending():
 		complete.emit()

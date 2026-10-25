@@ -10,7 +10,7 @@ extends Node
 ##   `order_events[command]`: `ack` for move and guard, `attack_ack` for attack and advance. An order
 ##   starts the count of `annoyed` again.
 ## - Each kind keeps its cooldown (`cooldown_s` selections, `ack_cooldown_s` orders): clicking fast does not chain voices.
-## The cue is the creature's own set (`type.sounds`, with its fallback chain). No set or no cue: silence, no log entry.
+## The cue is the creature's own set (the `sounds` of the look it wears, with its fallback chain). No set or no cue: silence, no log entry.
 ## Only the local player's (Selection and Orders.request are local). With the AudioGate closed (dedicated, room server,
 ## headless) it creates nothing. No RPC, nothing written to the simulation.
 
@@ -63,9 +63,9 @@ func _ready() -> void:
 
 ## The cue `unit` answers `event` with, or null (no set, no cue: silence).
 func cue_for(unit: UnitBody, event: StringName) -> SoundCue:
-	if not _open or unit == null or not is_instance_valid(unit) or unit.type == null:
+	if not _open or unit == null or not is_instance_valid(unit) or unit.mount == null:
 		return null
-	return BodySounds.resolve(unit.type.sounds, event)
+	return BodySounds.resolve(unit.mount.sounds(), event)
 
 
 ## `unit` says `event` on the channel now (cutting the line speaking). False when it is silent or was dropped.

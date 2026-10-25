@@ -2,7 +2,7 @@ extends RefCounted
 
 ## 055s (s1) case of rules_suite: the size and sockets a body scene saves (BodyFacts) are the ones BodyCatalog.info(model) gives today,
 ## so moving the readers to the scene changes nothing the rules see. For every CreatureType and WizardType:
-##   - it points at a complete BodyFrame whose `model_id` is its `model`, with no synchronizer or spawner inside;
+##   - it points at a complete BodyFrame (with its `model_id`), with no synchronizer or spawner inside;
 ##   - height, radius, reach and flying height BodyFacts gives (decoded to the mm from the 32 bits the shapes and markers keep) are the
 ##     doubles BodyCatalog.info holds, bit for bit. `exact_double` counts the types whose four raw 32-bit numbers already were;
 ##   - the capsule is what BodyCollider used to compute (height >= 0.6, radius <= 0.45 of it), the ground one and the flying one;
@@ -49,16 +49,14 @@ func run(_host: Node) -> Dictionary:
 func _check_type(path: String, wizard: bool) -> String:
 	var type := load(path) as Resource
 	var scene := type.get("body") as PackedScene
-	var model := str(type.get("model"))
 	if scene == null:
 		return "no body scene"
 	var root := scene.instantiate()
 	var frame := root as BodyFrame
+	var model := frame.model_id if frame != null else ""
 	var problem := ""
 	if frame == null or not frame.is_complete():
 		problem = "not a complete BodyFrame"
-	elif frame.model_id != model:
-		problem = "model_id %s, type model %s" % [frame.model_id, model]
 	elif not root.find_children("*", "MultiplayerSynchronizer", true, false).is_empty() \
 			or not root.find_children("*", "MultiplayerSpawner", true, false).is_empty():
 		problem = "the body scene carries a synchronizer or a spawner"

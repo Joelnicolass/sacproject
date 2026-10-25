@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_5iwmj"]
-[ext_resource type="Resource" path="res://data/audio/creatures/flame_minion.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://r7hdquidis3h" path="res://assets/original/ui/icons/fplk.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/fkba.tres" id="typed_fkba"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/!nur.tres" id="typed__nur"]
@@ -13,7 +12,6 @@ script = ExtResource("1_5iwmj")
 tag = "fplk"
 display_name = "Flame Minion"
 icon = ExtResource("icon_tex")
-model = "fklp"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 640
@@ -34,4 +32,3 @@ casting_time_s = 0.3704
 spell_order = 128
 ranged_attack = ExtResource("typed_fkba")
 active_ability = ExtResource("typed__nur")
-sounds = ExtResource("sounds_set")

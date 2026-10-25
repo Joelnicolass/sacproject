@@ -178,10 +178,10 @@ god = "james"
 
 [node name="Tilt" type="Node3D" parent="."]
 
-[node name="Mesh" type="MeshInstance3D" parent="Tilt" node_paths=PackedStringArray("rig")]
+[node name="Mesh" type="MeshInstance3D" parent="Tilt" node_paths=PackedStringArray("rig", "mount")]
 script = ExtResource("3_visual")
-model = "jnwr"
 rig = NodePath("Rig")
+mount = NodePath("../../BodyMount")
 
 [node name="Rig" parent="Tilt/Mesh" instance=ExtResource("f162_rig")]
 
@@ -199,8 +199,9 @@ priority = 4.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_body")
 
-[node name="BodyMount" type="Node" parent="."]
+[node name="BodyMount" type="Node" parent="." node_paths=PackedStringArray("rig")]
 script = ExtResource("s1_mount")
+rig = NodePath("../Tilt/Mesh/Rig")
 
 [node name="BodyCollider" type="Node" parent="." node_paths=PackedStringArray("mount", "collision")]
 script = ExtResource("s1_collider")

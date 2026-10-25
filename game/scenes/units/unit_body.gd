@@ -49,7 +49,7 @@ const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 var creature_tag := ""
 ## Wears the body scene of `type` (BodyFrame): its size and sockets. It is the one place that says which body this is.
 @export var mount: BodyMount
-## Baked model; empty = the CreatureType model.
+## The model id on the network: the one of the body scene `type` wears (BodyFrame.model_id). Derived from `type`: set the type, not this.
 @export var model := "":
 	set(value):
 		model = value
@@ -227,8 +227,6 @@ func _ready() -> void:
 	collision_mask = ground_mask
 	_apply_type()
 	_apply_model()
-	if get_node_or_null("Tilt/Mesh"):
-		clip_pose.setup(model)
 	if clip_pose and clip_pose.has_signal("clip_looped"):
 		clip_pose.connect("clip_looped", _on_clip_looped)
 	if flight:
@@ -485,23 +483,15 @@ func _health() -> Health:
 	return $Health
 
 
-func _sync_clip_pose() -> void:
-	if not is_inside_tree() or clip_pose == null:
-		return
-	if model.is_empty():
-		return
-	clip_pose.setup(model)
-
 func _apply_type() -> void:
 	if type:
 		move_speed = type.fly_speed_m_s if is_flying() else type.run_speed_m_s
 	else:
 		move_speed = 0.0
-	_sync_clip_pose()
 	if type and mount != null:
 		mount.wear(type.body)
-	if type and model.is_empty():
-		model = type.model
+		if model.is_empty():
+			model = mount.facts.model_id
 
 func _init_stats() -> void:
 	if type == null or _stats_ready:
@@ -513,11 +503,8 @@ func _init_stats() -> void:
 
 
 func _apply_model() -> void:
-	var visual := get_node_or_null("Tilt/Mesh") as BodyVisual
-	if visual == null or model.is_empty():
+	if model.is_empty():
 		return
-	visual.show_model(model)
-	_sync_clip_pose()
 	var bar := get_node_or_null("HealthBar") as UnitHealthBar
 	if bar:
 		bar.place_above(mount.facts.height_m)

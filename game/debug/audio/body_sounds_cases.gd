@@ -4,8 +4,10 @@ extends RefCounted
 ## - A creature's own field wins; an empty field asks the `fallback` set (the melee set); nothing: silence.
 ## - `summon` of the set wins over UnitSounds.summon; a creature with no set still has the summon sound; a silent cue is silence.
 ## - A wizard has no summon: its set or nothing.
-## - CommandVoice reads the same set (`type.sounds`) of the creature it hears.
+## - CommandVoice reads the same set (the look's `sounds`) of the creature it hears.
 ## Runs only with the gate open (`--audio-probe`).
+
+const _LOOK := preload("res://debug/audio/sound_look.gd")
 
 
 func run(host: Node) -> Dictionary:
@@ -41,10 +43,8 @@ func run(host: Node) -> Dictionary:
 
 	var wizard_set := SoundSet.new()
 	wizard_set.incantation = _cue()
-	var type := WizardType.new()
-	type.sounds = wizard_set
-	results["body_sounds_wizard"] = {"ok": BodySounds.resolve(type.sounds, SoundEvent.INCANTATION) == wizard_set.incantation \
-		and BodySounds.resolve(type.sounds, SoundEvent.SUMMON) == null and BodySounds.resolve(null, SoundEvent.DEATH) == null}
+	results["body_sounds_wizard"] = {"ok": BodySounds.resolve(wizard_set, SoundEvent.INCANTATION) == wizard_set.incantation \
+		and BodySounds.resolve(wizard_set, SoundEvent.SUMMON) == null and BodySounds.resolve(null, SoundEvent.DEATH) == null}
 
 	var voice := CommandVoice.new()
 	voice.channel = AudioStreamPlayer.new()
@@ -52,7 +52,7 @@ func run(host: Node) -> Dictionary:
 	host.add_child(voice)
 	var speaker := UnitBody.new()
 	speaker.type = CreatureType.new()
-	speaker.type.sounds = own
+	_LOOK.give(speaker, own)
 	var selected := _cue()
 	own.selected = selected
 	results["body_sounds_command_voice"] = {"ok": voice.cue_for(speaker, SoundEvent.SELECTED) == selected \
@@ -71,11 +71,11 @@ func _cue() -> SoundCue:
 	return cue
 
 
-## A UnitSounds on a creature that is not in the tree, with `sounds` in its type and `summon` as the shared summon cue.
+## A UnitSounds on a creature that is not in the tree, with `sounds` in its look and `summon` as the shared summon cue.
 func _unit(host: Node, sounds: SoundSet, summon: SoundCue) -> UnitSounds:
 	var body := UnitBody.new()
 	body.type = CreatureType.new()
-	body.type.sounds = sounds
+	_LOOK.give(body, sounds)
 	var sounds_node := UnitSounds.new()
 	sounds_node.body = body
 	sounds_node.health = Health.new()

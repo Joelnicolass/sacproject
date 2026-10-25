@@ -74,8 +74,8 @@ func _report() -> void:
 func _names() -> Dictionary:
 	var names := {}
 	for wizard in GameData.wizards():
-		names[wizard.model] = wizard.display_name
+		names[wizard.model_id()] = wizard.display_name
 	for type in GameData.all_creatures():
-		if not names.has(type.model):
-			names[type.model] = type.display_name
+		if not names.has(type.model_id()):
+			names[type.model_id()] = type.display_name
 	return names

@@ -9,11 +9,15 @@ extends SceneTree
 ##   Godot --headless --path . --script res://tools/bake/new_creature.gd -- res://assets/custom/models/testmonster.glb --name="Test Monster" --god=pyro
 ##
 ## It writes these files, never over an existing one (`--force` rewrites them all and throws away what you edited):
-##   scenes/bodies/models/<tag>.tscn       BodyModel: the .glb, a Clips player with the library, an AnimationTree with one state per role.
+##   scenes/bodies/models/<tag>.tscn       BodyModel: the .glb, a Clips player with the library, an AnimationTree with one state per role, and a
+##                                          hidden HandL / HandR (BoneAttachment3D + Marker3D Socket) for each empty of that name in the .glb
+##                                          (parent it to a bone in Blender; it shows in the `cast` and `cast_run` clips, where HandFx plays).
 ##   scenes/bodies/models/<tag>_clips.tres the AnimationLibrary: role -> Animation, and <tag>_clips/<clip>.res, one Animation per clip
 ##                                          (bone tracks, exact length, the `hit`/`shoot` marker and the method track at the impact).
-##   data/catalog/body_sizes/<tag>.tres    BodySize measured from the mesh (box, height, radius, reach).
-##   data/catalog/creatures/<tag>.tres     CreatureType: the stats of data/templates/creature.tres + the model + its `clips` (the same library:
+##   scenes/units/bodies/<tag>.tscn        BodyFrame: the capsule, the footprint and the sockets (Reach, Center, Top) measured from the mesh,
+##                                          and a placeholder where the look goes. Drag the handles in the editor to tune them.
+##   scenes/units/bodies/<tag>_look.tscn   BodyLook: the model scene, the sounds and the carried effect (what only a client loads).
+##   data/catalog/creatures/<tag>.tres     CreatureType: the stats of data/templates/creature.tres + its `body` + its `clips` (the same library:
 ##                                          the rules read the timing of each swing, shot, stun, flight and death from it).
 ## `--sync` copies the bone tracks of the .glb again into the Animations of the library (after a new export from Blender; the length is the
 ## clip's, the markers and the method track stay) and checks the creature points at the library (keeps your stats). The rules follow the
@@ -29,7 +33,7 @@ extends SceneTree
 ## The HUD icon (F335): `assets/custom/icons/<tag>.png` if it exists (yours, never overwritten); else one is drawn from the model (the idle
 ## pose, the camera framing its box) with tools/bake/creature_icon_render.gd. Drawing needs a renderer: from a headless run it is skipped (a note
 ## says so) and `Godot --path . --script res://tools/bake/creature_icon.gd -- <tag>` (with a window) makes it afterwards.
-## Sounds: it also writes data/audio/creatures/<tag>.tres, a SoundSet over the fist melee set, and puts it in the creature's `sounds`.
+## Sounds: it also writes data/audio/creatures/<tag>.tres, a SoundSet over the fist melee set, and puts it in the `sounds` of the look.
 ## When assets/custom/sounds/creatures/<tag>/ exists, its files (`death_1.wav`, `swing_1.ogg`...: the event names of SoundEvent.BODY)
 ## fill the fields of the set; without that folder the set is empty (drag the files onto it in the inspector). Never over an
 ## existing one (`--force` rewrites it). Also with `--sync`.
@@ -40,7 +44,7 @@ extends SceneTree
 const TEMPLATE := "res://data/templates/creature.tres"
 const MODEL_DIR := "res://assets/custom/models/"
 const SCENE_DIR := "res://scenes/bodies/models/"
-const SIZES_DIR := "res://data/catalog/body_sizes/"
+const BODY_DIR := "res://scenes/units/bodies/"
 const SoundSetWriter := preload("res://tools/bake/sound_set_writer.gd")
 
 const XFADE_S := 0.15
@@ -84,6 +88,13 @@ const RULES := [
 const FALLBACKS := {"shoot": ["attack"], "hover": ["fly"], "fly_death": ["death"], "fly_damage": ["hit"]}
 ## The fallbacks of these roles only make sense for a body that flies.
 const FLIGHT_FALLBACKS: PackedStringArray = ["hover", "fly_death", "fly_damage"]
+
+## The roles whose clip shows the hands (the casting pose: HandFx plays the particles there).
+const HAND_ROLES: PackedStringArray = ["cast", "cast_run"]
+const RESET := &"RESET"
+## Smallest capsule a body gets, and the widest it may be compared with its height (the rule the physics capsule always followed).
+const MIN_CAPSULE_M := 0.6
+const RADIUS_PER_HEIGHT := 0.45
 
 ## Role of each swing (MeleeAttack.SWING_ROLES): the rules pick `attack` or `attack2` at random, `attack3` is the downward blow.
 const ATTACK_ROLES: PackedStringArray = ["attack", "attack2", "attack3"]
@@ -182,25 +193,36 @@ func _create(tag: String, glb_path: String, display: String, god: String) -> int
 	var measure := _measure(instance)
 	var scene_path := SCENE_DIR + tag + ".tscn"
 	var type_path := TypeRef.creature_path(tag)
-	var size_path := SIZES_DIR + tag + ".tres"
+	var body_path := BODY_DIR + tag + ".tscn"
+	var look_path := BODY_DIR + tag + "_look.tscn"
+	var hands := _hands_of(instance)
 	var wrote := PackedStringArray()
 	var kept := PackedStringArray()
 
 	if _may_write(scene_path):
-		if _save_scene(tag, glb, clips, roles, found["impacts"], measure["aabb"]):
+		if _save_scene(tag, glb, clips, roles, found["impacts"], measure["aabb"], hands):
 			wrote.append(scene_path)
 	else:
 		kept.append(scene_path)
-	if _may_write(size_path):
-		if ResourceSaver.save(_body_size(tag, measure), size_path) == OK:
-			wrote.append(size_path)
+	var sounds := _bake_sounds(tag)
+	if sounds["code"] != OK:
+		instance.free()
+		return 1
+	if _may_write(look_path):
+		if _save_look(tag, str(sounds["path"])):
+			wrote.append(look_path)
 	else:
-		kept.append(size_path)
+		kept.append(look_path)
+	if _may_write(body_path):
+		if _save_body(tag, measure):
+			wrote.append(body_path)
+	else:
+		kept.append(body_path)
 	if _may_write(type_path):
 		var type := (load(TEMPLATE) as CreatureType).duplicate() as CreatureType
 		type.tag = tag
 		type.display_name = display if not display.is_empty() else tag.capitalize()
-		type.model = tag
+		type.body = ResourceLoader.load(body_path, "", ResourceLoader.CACHE_MODE_REPLACE) as PackedScene
 		if not roles.has("run") and roles.has("fly"):
 			# A flier with no ground clip: it never walks.
 			type.fly_speed_m_s = type.run_speed_m_s
@@ -217,7 +239,7 @@ func _create(tag: String, glb_path: String, display: String, god: String) -> int
 
 	var icon := await _make_icon(tag, str(roles["idle"]))
 	_report(tag, clips, found, measure, wrote, kept, god, icon)
-	return _bake_sounds(tag)
+	return OK
 
 
 func _may_write(path: String) -> bool:
@@ -413,17 +435,119 @@ func _measure(root: Node3D) -> Dictionary:
 	return {"aabb": box, "raw": raw}
 
 
-## height = the box's; the capsule radius = half its narrow side; reach = half its long side (the melee box). Tune them in the .tres.
-func _body_size(tag: String, measure: Dictionary) -> BodySize:
+## The empties named HandL / HandR of the .glb: [{name, bone, offset}]. An empty parented to a bone arrives as a child of a
+## BoneAttachment3D; its position is the offset in the bone's space. One that hangs from nothing is left out (with a note).
+func _hands_of(root: Node3D) -> Array[Dictionary]:
+	var found: Array[Dictionary] = []
+	for hand_name: String in ["HandL", "HandR"]:
+		var empty := root.find_child(hand_name, true, false) as Node3D
+		if empty == null:
+			continue
+		var attachment := empty.get_parent() as BoneAttachment3D
+		if attachment == null:
+			print("NEW_CREATURE note: the empty %s hangs from no bone, so it is left out (parent it to a bone in Blender)" % hand_name)
+			continue
+		found.append({"name": hand_name, "bone": attachment.bone_name, "offset": empty.position})
+	return found
+
+
+# --- body scene (size and sockets) and look ------------------------------------------------------------------------------
+
+## scenes/units/bodies/<tag>.tscn: a BodyFrame measured from the mesh. height = the box's; footprint radius = half its narrow side;
+## reach = half its long side (the melee box); the physics capsule is the footprint with the floor and the width limit the capsule always
+## had. The `Look` node is a placeholder of <tag>_look.tscn, so loading this scene does not load the model nor the sounds.
+## Tune everything with the handles in the editor.
+func _save_body(tag: String, measure: Dictionary) -> bool:
 	var box: AABB = measure["aabb"]
-	var size := BodySize.new()
-	size.tag = tag
-	size.box = PackedFloat64Array([_mm(box.position.x), _mm(box.position.y), _mm(box.position.z), _mm(box.size.x), _mm(box.size.y), _mm(box.size.z)])
-	size.height = _mm(box.size.y)
-	size.radius = _mm(minf(box.size.x, box.size.z) * 0.5)
-	size.reach = _mm(maxf(box.size.x, box.size.z) * 0.5)
-	size.upright_fix = PackedFloat64Array([0.0, 0.0, 0.0])
-	return size
+	var height := _mm(box.size.y)
+	var radius := _mm(minf(box.size.x, box.size.z) * 0.5)
+	var reach := _mm(maxf(box.size.x, box.size.z) * 0.5)
+	var ground := maxf(height, MIN_CAPSULE_M)
+	var frame := BodyFrame.new()
+	var root: Node3D = frame
+	root.name = tag.capitalize().replace(" ", "")
+	frame.model_id = tag
+	var bounds := Area3D.new()
+	bounds.name = "Bounds"
+	bounds.collision_layer = 0
+	bounds.collision_mask = 0
+	bounds.monitoring = false
+	bounds.monitorable = false
+	root.add_child(bounds)
+	bounds.owner = root
+	var capsule := CapsuleShape3D.new()
+	capsule.height = ground
+	capsule.radius = minf(radius, ground * RADIUS_PER_HEIGHT)
+	frame.capsule = _shape_node(root, bounds, "Capsule", capsule, ground * 0.5)
+	var cylinder := CylinderShape3D.new()
+	cylinder.height = height
+	cylinder.radius = radius
+	frame.footprint = _shape_node(root, bounds, "Footprint", cylinder, height * 0.5)
+	var sockets := Node3D.new()
+	sockets.name = "Sockets"
+	root.add_child(sockets)
+	sockets.owner = root
+	frame.reach = _marker(root, sockets, "Reach", Vector3(0.0, 0.0, reach))
+	frame.center = _marker(root, sockets, "Center", Vector3(0.0, height * 0.5, 0.0))
+	frame.top = _marker(root, sockets, "Top", Vector3(0.0, height, 0.0))
+	var look := (ResourceLoader.load(BODY_DIR + tag + "_look.tscn", "", ResourceLoader.CACHE_MODE_REPLACE) as PackedScene).instantiate()
+	look.name = "Look"
+	root.add_child(look)
+	look.owner = root
+	look.set_scene_instance_load_placeholder(true)
+	frame.look = look
+	return _pack(root, BODY_DIR + tag + ".tscn")
+
+
+func _shape_node(root: Node3D, parent: Node, node_name: String, shape: Shape3D, middle_y: float) -> CollisionShape3D:
+	var node := CollisionShape3D.new()
+	node.name = node_name
+	node.shape = shape
+	node.position = Vector3(0.0, middle_y, 0.0)
+	parent.add_child(node)
+	node.owner = root
+	return node
+
+
+func _marker(root: Node3D, parent: Node, node_name: String, at: Vector3) -> Marker3D:
+	var node := Marker3D.new()
+	node.name = node_name
+	node.position = at
+	parent.add_child(node)
+	node.owner = root
+	return node
+
+
+## scenes/units/bodies/<tag>_look.tscn: the model scene as `Model` and the sounds `set_path` (empty: silent). A client is the only one that
+## loads it. A look with a carried effect or a pose of its own is never rewritten here (_assign_sounds edits it in place).
+func _save_look(tag: String, set_path: String) -> bool:
+	var root := BodyLook.new()
+	root.name = tag.capitalize().replace(" ", "") + "Look"
+	var scene := ResourceLoader.load(SCENE_DIR + tag + ".tscn", "", ResourceLoader.CACHE_MODE_REPLACE) as PackedScene
+	var model := scene.instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE)
+	model.name = "Model"
+	root.add_child(model)
+	model.owner = root
+	root.model = model as BodyModel
+	if not set_path.is_empty() and set_path.begins_with(SoundSetWriter.CUSTOM_OUT):
+		root.sounds = load(set_path) as SoundSet
+	return _pack(root, BODY_DIR + tag + "_look.tscn")
+
+
+## Packs `root` (and frees it) into a scene file. False when it could not be saved.
+func _pack(root: Node, path: String) -> bool:
+	var packed := PackedScene.new()
+	var error := packed.pack(root)
+	root.free()
+	if error != OK:
+		push_error("new_creature: cannot pack %s (%d)" % [path, error])
+		return false
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(path.get_base_dir()))
+	error = ResourceSaver.save(packed, path)
+	if error != OK:
+		push_error("new_creature: cannot save %s (%d)" % [path, error])
+		return false
+	return true
 
 
 ## Rounded to the millimeter (a .tres should read 0.475, not 0.47500000000000003).
@@ -433,15 +557,11 @@ func _mm(value: float) -> float:
 
 # --- model scene -------------------------------------------------------------------------------------------------------
 
-func _save_scene(tag: String, glb: PackedScene, clips: Dictionary, roles: Dictionary, impacts: Dictionary, box: AABB) -> bool:
+func _save_scene(tag: String, glb: PackedScene, clips: Dictionary, roles: Dictionary, impacts: Dictionary, box: AABB, hands: Array[Dictionary]) -> bool:
 	var root := BodyModel.new()
 	root.name = tag
 	root.model = tag
 	root.bind_aabb = box
-	var table := {}
-	for name: String in clips:
-		table[name] = {"hands": []}
-	root.clips = table
 
 	var instance := glb.instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE) as Node3D
 	instance.name = "Model"
@@ -450,7 +570,8 @@ func _save_scene(tag: String, glb: PackedScene, clips: Dictionary, roles: Dictio
 	root.add_child(instance)
 	instance.owner = root
 	var found := instance.find_children("*", "AnimationPlayer", true, false)[0] as AnimationPlayer
-	var library := _save_library(tag, found, clips, roles, impacts)
+	_add_hands(root, instance, hands)
+	var library := _save_library(tag, found, clips, roles, impacts, hands)
 	if library == null:
 		root.free()
 		return false
@@ -494,6 +615,26 @@ func _save_scene(tag: String, glb: PackedScene, clips: Dictionary, roles: Dictio
 	return true
 
 
+## A hidden BoneAttachment3D (HandL, HandR) under the skeleton for each hand, with a Marker3D `Socket` at the offset of the empty. The clips
+## of HAND_ROLES show it (see _animation); BodyRig reads the sockets of the visible ones.
+func _add_hands(root: Node3D, model: Node3D, hands: Array[Dictionary]) -> void:
+	var skeletons := model.find_children("*", "Skeleton3D", true, false)
+	if hands.is_empty() or skeletons.is_empty():
+		return
+	for hand: Dictionary in hands:
+		var attachment := BoneAttachment3D.new()
+		attachment.name = hand["name"]
+		attachment.bone_name = hand["bone"]
+		attachment.visible = false
+		skeletons[0].add_child(attachment)
+		attachment.owner = root
+		var socket := Marker3D.new()
+		socket.name = "Socket"
+		socket.position = hand["offset"]
+		attachment.add_child(socket)
+		socket.owner = root
+
+
 ## One state per role, travel transitions between all, one-shot roles back to idle by themselves.
 func _machine(roles: Dictionary) -> AnimationNodeStateMachine:
 	var machine := AnimationNodeStateMachine.new()
@@ -528,7 +669,7 @@ func _machine(roles: Dictionary) -> AnimationNodeStateMachine:
 ## tracks, the clip's own length, the loop mode its role needs, and, for attack / shoot / cast, the method track at the impact
 ## (attack, attack2 and attack3 -> "attack", shoot -> "shoot", cast -> "cast") with the `hit` / `shoot` marker there. No mark in
 ## the clip's name = the middle of the clip. Null when it could not be saved.
-func _save_library(tag: String, source: AnimationPlayer, clips: Dictionary, roles: Dictionary, impacts: Dictionary) -> AnimationLibrary:
+func _save_library(tag: String, source: AnimationPlayer, clips: Dictionary, roles: Dictionary, impacts: Dictionary, hands: Array[Dictionary]) -> AnimationLibrary:
 	var dir := "%s%s_clips" % [SCENE_DIR, tag]
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dir))
 	var library := AnimationLibrary.new()
@@ -539,13 +680,14 @@ func _save_library(tag: String, source: AnimationPlayer, clips: Dictionary, role
 			continue
 		var clip_name: String = roles[role]
 		var kind := "hold" if BodyModel.HOLD_ROLES.has(role) else ("once" if BodyModel.ONE_SHOT_ROLES.has(role) else "loop")
-		var key := "%s|%s" % [clip_name, kind]
+		var shows_hands := not hands.is_empty() and HAND_ROLES.has(role)
+		var key := "%s|%s|%s" % [clip_name, kind, shows_hands]
 		if not made.has(key):
 			var file := clip_name.validate_filename() + ("" if kind == "loop" else "_" + kind)
 			while files.has(file):
 				file += "_"
 			files[file] = true
-			var anim := _animation(source, clip_name, clips[clip_name], role, kind, float(impacts.get(clip_name, DEFAULT_IMPACT)))
+			var anim := _animation(source, clip_name, clips[clip_name], role, kind, float(impacts.get(clip_name, DEFAULT_IMPACT)), hands if shows_hands else [])
 			var path := "%s/%s.res" % [dir, file]
 			anim.take_over_path(path)
 			if ResourceSaver.save(anim, path) != OK:
@@ -553,6 +695,13 @@ func _save_library(tag: String, source: AnimationPlayer, clips: Dictionary, role
 				return null
 			made[key] = anim
 		library.add_animation(StringName(role), made[key])
+	if not hands.is_empty():
+		# Every role without a hand returns to this: the hands hidden.
+		var reset := Animation.new()
+		reset.length = 0.001
+		for hand: Dictionary in hands:
+			_visible_track(reset, hand["name"], false)
+		library.add_animation(RESET, reset)
 	var library_path := "%s%s_clips.tres" % [SCENE_DIR, tag]
 	library.take_over_path(library_path)
 	if ResourceSaver.save(library, library_path) != OK:
@@ -562,11 +711,13 @@ func _save_library(tag: String, source: AnimationPlayer, clips: Dictionary, role
 
 
 ## One Animation of the library: the clip of the .glb with its length, step, loop mode, method track and marker.
-func _animation(source: AnimationPlayer, clip_name: String, info: Dictionary, role: String, kind: String, impact: float) -> Animation:
+func _animation(source: AnimationPlayer, clip_name: String, info: Dictionary, role: String, kind: String, impact: float, shown_hands: Array) -> Animation:
 	var anim := source.get_animation(StringName(clip_name)).duplicate() as Animation
 	anim.resource_name = clip_name
 	anim.step = 1.0 / float(info["fps"])
 	anim.loop_mode = Animation.LOOP_LINEAR if kind == "loop" else Animation.LOOP_NONE
+	for hand: Dictionary in shown_hands:
+		_visible_track(anim, hand["name"], true)
 	var event := "attack" if role.begins_with("attack") else (role if role == "shoot" or role == "cast" else "")
 	if not event.is_empty():
 		var at := anim.length * impact
@@ -577,6 +728,15 @@ func _animation(source: AnimationPlayer, clip_name: String, info: Dictionary, ro
 		if not marker.is_empty() and not anim.has_marker(marker):
 			anim.add_marker(marker, at)
 	return anim
+
+
+## A track that sets `visible` of a hand node of the model (Skeleton3D/<hand>) at time 0.
+func _visible_track(anim: Animation, hand_name: String, shown: bool) -> void:
+	var track := anim.add_track(Animation.TYPE_VALUE)
+	anim.track_set_path(track, NodePath("Skeleton3D/%s:visible" % hand_name))
+	anim.value_track_set_update_mode(track, Animation.UPDATE_DISCRETE)
+	anim.track_set_interpolation_type(track, Animation.INTERPOLATION_NEAREST)
+	anim.track_insert_key(track, 0.0, shown)
 
 
 ## `--sync`: copies the bone tracks of the .glb again into the Animations of the library and keeps the markers and the method track.
@@ -599,7 +759,8 @@ func _refresh_library(tag: String) -> int:
 		seen[anim] = true
 		var fresh := source.get_animation(StringName(anim.resource_name))
 		for index in range(anim.get_track_count() - 1, -1, -1):
-			if anim.track_get_type(index) != Animation.TYPE_METHOD:
+			var kept := anim.track_get_type(index) == Animation.TYPE_METHOD or String(anim.track_get_path(index)).ends_with(":visible")
+			if not kept:
 				anim.remove_track(index)
 		for index in fresh.get_track_count():
 			fresh.copy_track(index, anim)
@@ -625,7 +786,10 @@ func _sync_creature(tag: String) -> int:
 		print("NEW_CREATURE synced %s: data/catalog/creatures/%s.tres reads the clips of scenes/bodies/models/%s_clips.tres" % [tag, tag, tag])
 		var type := ResourceLoader.load(TypeRef.creature_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as CreatureType
 		print("NEW_CREATURE icon: %s" % await _make_icon(tag, CreatureIconRender.idle_clip_of(type)))
-		code = _bake_sounds(tag)
+		var sounds := _bake_sounds(tag)
+		code = sounds["code"]
+		if code == OK:
+			_assign_sounds(tag, str(sounds["path"]))
 	return code
 
 
@@ -660,9 +824,9 @@ func _make_icon(tag: String, idle_clip: String) -> String:
 # --- sounds -------------------------------------------------------------------------------------------------------------
 
 ## The creature's SoundSet (tools/bake/sound_set_writer.gd): the files of `_sounds_src`/creatures/<tag>/ as its fields, or an empty
-## set over the fist melee set when there are none. It becomes the creature's `sounds` when the set went to data/audio/ and the
-## creature has none yet.
-func _bake_sounds(tag: String) -> int:
+## set over the fist melee set when there are none. {code: OK or 1, path: where the set is}. It becomes the `sounds` of the look when the
+## set went to data/audio/ (_assign_sounds, or _save_look on a new creature).
+func _bake_sounds(tag: String) -> Dictionary:
 	var folder := _sounds_src.path_join("creatures").path_join(tag)
 	var has_files := SoundSetWriter.has_sounds(tag, _sounds_src)
 	var writer := SoundSetWriter.new()
@@ -672,28 +836,31 @@ func _bake_sounds(tag: String) -> int:
 		print("NEW_CREATURE sounds note: %s is not an event with a field in the set. Events: %s" % [file, SoundSetWriter.event_help()])
 	if not writer.failures.is_empty():
 		push_error("new_creature: could not save the sounds: %s" % ", ".join(writer.failures))
-		return 1
+		return {"code": 1, "path": ""}
 	if writer.written.has(path):
 		print("NEW_CREATURE sounds wrote: %s" % path)
 		if not has_files:
 			print("NEW_CREATURE sounds: the set is empty (it uses the fist melee sounds); drag .ogg or .wav files onto its fields, or put <event>_1.wav in %s/ and run again with --force" % folder)
 	else:
 		print("NEW_CREATURE sounds kept (exists; --force rewrites it): %s" % path)
-	_assign_sounds(tag, path)
-	return OK
+	return {"code": OK, "path": path}
 
 
-## `type.sounds = set` in data/catalog/creatures/<tag>.tres when the set is a product file (not a test output) and the creature has none.
+## `sounds = set` in the look of the creature (scenes/units/bodies/<tag>_look.tscn) when the set is a product file (not a test output)
+## and the look has none. The look is read, changed and saved again; its model, effect and pose stay.
 func _assign_sounds(tag: String, set_path: String) -> void:
-	if not set_path.begins_with(SoundSetWriter.CUSTOM_OUT):
+	var look_path := BODY_DIR + tag + "_look.tscn"
+	if not set_path.begins_with(SoundSetWriter.CUSTOM_OUT) or not FileAccess.file_exists(look_path):
 		return
-	var type_path := TypeRef.creature_path(tag)
-	var type := ResourceLoader.load(type_path, "", ResourceLoader.CACHE_MODE_REPLACE) as CreatureType
-	if type == null or type.sounds != null:
+	var old := ResourceLoader.load(look_path, "", ResourceLoader.CACHE_MODE_REPLACE) as PackedScene
+	if old == null or BodyLook.sounds_in(old) != null:
 		return
-	type.sounds = load(set_path) as SoundSet
-	if ResourceSaver.save(type, type_path) == OK:
-		print("NEW_CREATURE sounds: %s uses %s" % [type_path, set_path])
+	var root := old.instantiate(PackedScene.GEN_EDIT_STATE_MAIN) as BodyLook
+	if root == null:
+		return
+	root.sounds = load(set_path) as SoundSet
+	if _pack(root, look_path):
+		print("NEW_CREATURE sounds: %s uses %s" % [look_path, set_path])
 
 
 # --- output ------------------------------------------------------------------------------------------------------------

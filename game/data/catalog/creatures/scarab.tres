@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_alftt"]
-[ext_resource type="Resource" path="res://data/audio/creatures/scarab.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://dso5jlust6xw1" path="res://assets/original/ui/icons/cara.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/slba.tres" id="typed_slba"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/bugl_clips.tres" id="clips_lib"]
@@ -12,7 +11,6 @@ script = ExtResource("1_alftt")
 tag = "cara"
 display_name = "Scarab"
 icon = ExtResource("icon_tex")
-model = "bugl"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1200
@@ -32,4 +30,3 @@ cooldown_s = 3.0
 casting_time_s = 0.7407
 spell_order = 241
 ranged_attack = ExtResource("typed_slba")
-sounds = ExtResource("sounds_set")

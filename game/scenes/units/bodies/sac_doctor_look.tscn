@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_look.gd" id="1_look"]
+[ext_resource type="PackedScene" path="res://scenes/bodies/models/sacd.tscn" id="2_model"]
+
+[node name="SacDoctorLook" type="Node3D" node_paths=PackedStringArray("model")]
+script = ExtResource("1_look")
+model = NodePath("Model")
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

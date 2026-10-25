@@ -111,12 +111,6 @@ var _fade: Tween
 @onready var _avoidance: BodyAvoidance = $Avoidance
 
 
-## The Fsm states and the StuckGuard read the model through here (BodyBox, melee reach).
-var model: String:
-	get:
-		return visual.model if visual else ""
-
-
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
@@ -124,8 +118,6 @@ func _ready() -> void:
 	if type:
 		mount.wear(type.body)
 	(health_bar as UnitHealthBar).place_above(mount.facts.height_m)
-	if clip_player and BodyCatalog.loads_meshes():
-		clip_player.setup(visual.model)
 	(health_bar as UnitHealthBar).bind(health, owner_slot)
 	_apply_pose()
 	if MpKit.is_networked() and not MpKit.is_server():
@@ -392,7 +384,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if health == null:
 		out.append("Asigná `health` (nodo Health).")
 	if visual == null:
-		out.append("Asigná `visual` (BodyVisual con el modelo sacd).")
+		out.append("Asigná `visual` (BodyVisual: dibuja el look del cuerpo).")
 	if collision == null:
 		out.append("Asigná `collision` (CollisionShape3D).")
 	if mount == null:

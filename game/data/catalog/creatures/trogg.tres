@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_lhdmn"]
-[ext_resource type="Resource" path="res://data/audio/creatures/trogg.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://b8xcoo5yinrvi" path="res://assets/original/ui/icons/ycro.png" id="icon_tex"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/eorc_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/trogg.tscn" id="body_scene"]
@@ -11,7 +10,6 @@ script = ExtResource("1_lhdmn")
 tag = "ycro"
 display_name = "Trogg"
 icon = ExtResource("icon_tex")
-model = "eorc"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 960
@@ -31,4 +29,3 @@ souls = 1
 cooldown_s = 2.0
 casting_time_s = 0.4321
 spell_order = 122
-sounds = ExtResource("sounds_set")

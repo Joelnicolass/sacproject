@@ -4,8 +4,8 @@ extends Resource
 
 @export var tag: String = ""
 @export var display_name: String = ""
-@export var model: String = ""
 ## The body the creature wears: its size, capsule and sockets (scenes/units/bodies/<name>.tscn, a BodyFrame). Drag the scene here.
+## Its look (model, sounds, carried effect) is the `<name>_look.tscn` behind the placeholder of that scene: a client builds it, the server never does.
 @export var body: PackedScene
 ## What the model plays and how long each role lasts (scenes/bodies/models/<model>_clips.tres): the same library the body draws,
 ## read by the rules through ClipFacts.
@@ -13,11 +13,6 @@ extends Resource
 ## The picture of the creature in the roster, the book and the info box. Drag any PNG here to change it. A creature of your own gets one
 ## drawn from its model (tools/bake/creature_icon.gd); the original's come from tools/bake/fill_type_icons.gd. Empty: the tag is written.
 @export var icon: Texture2D
-## What the creature sounds like: its voice, swing, hurt and death (data/audio/creatures/<name>.tres). Empty: silent, but
-## its summon sound (UnitSounds.summon) still plays.
-@export var sounds: SoundSet
-## A scene the creature carries (CreatureFx adds it, tinted with the side's mana color): the Manahoar's mana flame. Empty: none.
-@export var carried_fx: PackedScene
 @export var health: int = 0
 @export var regeneration_per_s: float = 0.0
 ## Regenerates in any mode that can heal, also walking, fighting and being hit (the Troll); the rest only at rest, once a hit is over.
@@ -60,6 +55,11 @@ extends Resource
 ## add (Yeti's freeze, Dragon's vines). DeathCloudSpawner and MeleeOnHit walk this list.
 @export var passives: Array[CreaturePassive] = []
 @export_group("")
+
+
+## The model id that travels with the creature on the network (what the original calls its body): the one saved in its body scene.
+func model_id() -> String:
+	return BodyFacts.of(body).model_id
 
 
 ## The id of this creature on the network and in the catalog: its `tag`, or the file name when the tag is empty (new content).

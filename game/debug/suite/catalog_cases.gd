@@ -157,9 +157,9 @@ func _check_lobby() -> void:
 		if creature.id().is_empty() or _catalog.creature(creature.id()) != creature:
 			_report("creatures/%s: id() \"%s\" does not find the creature back" % [_file(creature), creature.id()])
 		# 055c1: the file carries the human name its sound set already has (ycro.tres is trogg.tres, as is data/audio/creatures/trogg.tres).
-		if creature.sounds != null and creature.sounds.resource_path.begins_with("res://data/audio/creatures/") \
-				and creature.sounds.resource_path.get_file() != _file(creature):
-			_report("creatures/%s: the sound set is %s, the file should have the same name" % [_file(creature), creature.sounds.resource_path.get_file()])
+		var voice := BodyLook.sounds_in(BodyLook.of_body(creature.body))
+		if voice != null and voice.resource_path.begins_with("res://data/audio/creatures/") and voice.resource_path.get_file() != _file(creature):
+			_report("creatures/%s: the sound set is %s, the file should have the same name" % [_file(creature), voice.resource_path.get_file()])
 	var seat := load("res://data/ai/seat_vs_ai.tres") as AiSeat
 	if seat == null or seat.wizard == null:
 		_report("data/ai/seat_vs_ai.tres: the seat of «Contra la IA» has no wizard")
@@ -246,15 +246,13 @@ func _catalog_type(folder: String, tag: String) -> Resource:
 
 
 func _check_bodies(tags: Dictionary) -> void:
-	var sizes: Dictionary = tags["body_sizes"]
 	for creature: CreatureType in _catalog.creatures:
-		if not sizes.has(creature.model):
-			_report("creatures/%s: model = \"%s\" has no body_sizes/ file" % [_file(creature), creature.model])
-	for creature: CreatureType in _catalog.creatures:
+		if not BodyFacts.of(creature.body).from_scene:
+			_report("creatures/%s: no complete body scene (a BodyFrame with Capsule, Footprint, Reach, Center and Top)" % _file(creature))
 		_check_custom_model(creature)
 	for wizard: WizardType in _catalog.wizards:
-		if not sizes.has(wizard.model):
-			_report("wizards/%s: model = \"%s\" has no body_sizes/ file" % [_file(wizard), wizard.model])
+		if not BodyFacts.of(wizard.body).from_scene:
+			_report("wizards/%s: no complete body scene (a BodyFrame with Capsule, Footprint, Reach, Center and Top)" % _file(wizard))
 	for size: BodySize in _catalog.body_sizes:
 		if not size.box.is_empty() and size.box.size() != 6:
 			_report("body_sizes/%s: box has %d numbers, it needs 6" % [_file(size), size.box.size()])
@@ -265,11 +263,11 @@ func _check_bodies(tags: Dictionary) -> void:
 ## RFC-051: a creature whose model is a .glb of assets/custom/models/ has its model scene, and every clip of its library is a
 ## clip of that .glb (the library is made by tools/bake/new_creature.gd; `--sync` refreshes it after a new export).
 func _check_custom_model(creature: CreatureType) -> void:
-	var glb_path := "res://assets/custom/models/%s.glb" % creature.model
-	if creature.model.is_empty() or not ResourceLoader.exists(glb_path):
+	var glb_path := "res://assets/custom/models/%s.glb" % creature.model_id()
+	if creature.model_id().is_empty() or not ResourceLoader.exists(glb_path):
 		return
-	if not BodyModel.exists(creature.model):
-		_report("creatures/%s: model \"%s\" has no scenes/bodies/models/%s.tscn (tools/bake/new_creature.gd makes it)" % [_file(creature), creature.model, creature.model])
+	if not BodyModel.exists(creature.model_id()):
+		_report("creatures/%s: model \"%s\" has no scenes/bodies/models/%s.tscn (tools/bake/new_creature.gd makes it)" % [_file(creature), creature.model_id(), creature.model_id()])
 		return
 	var scene := load(glb_path) as PackedScene
 	var root := scene.instantiate() if scene != null else null
@@ -281,13 +279,13 @@ func _check_custom_model(creature: CreatureType) -> void:
 		return
 	var player := players[0] as AnimationPlayer
 	if creature.clips == null:
-		_report("creatures/%s: no clips (run new_creature.gd --sync %s)" % [_file(creature), creature.model])
+		_report("creatures/%s: no clips (run new_creature.gd --sync %s)" % [_file(creature), creature.model_id()])
 	else:
 		for role in creature.clips.get_animation_list():
 			var tag := creature.clips.get_animation(role).resource_name
 			if not tag.is_empty() and not player.has_animation(tag):
 				_report("creatures/%s: the clip \"%s\" of the role %s is not in %s.glb (run new_creature.gd --sync %s)" % [
-					_file(creature), tag, role, creature.model, creature.model])
+					_file(creature), tag, role, creature.model_id(), creature.model_id()])
 		if not creature.clips.has_animation(&"idle"):
 			_report("creatures/%s: no idle role in its clips (a custom creature needs an idle clip)" % _file(creature))
 	if creature.icon == null:

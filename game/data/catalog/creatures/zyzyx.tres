@@ -10,7 +10,6 @@ script = ExtResource("1_d43oa")
 tag = "tnem"
 display_name = "Zyzyx"
 icon = ExtResource("icon_tex")
-model = "FAmr"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1000

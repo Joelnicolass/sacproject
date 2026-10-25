@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_3lqcg"]
-[ext_resource type="Resource" path="res://data/audio/creatures/zombie.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://podq6nbvstem" path="res://assets/original/ui/icons/zepd.png" id="icon_tex"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/dpez_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/zombie.tscn" id="body_scene"]
@@ -11,7 +10,6 @@ script = ExtResource("1_3lqcg")
 tag = "zepd"
 display_name = "Zombie"
 icon = ExtResource("icon_tex")
-model = "dpez"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 500
@@ -25,4 +23,3 @@ melee_resistance = 1.5
 souls = 1
 spell_order = 15
 peasant = true
-sounds = ExtResource("sounds_set")

@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_d0ate"]
-[ext_resource type="Resource" path="res://data/audio/creatures/silverback.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://b1q5o5ky24uaj" path="res://assets/original/ui/icons/grdb.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/rdba.tres" id="typed_rdba"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/!nur.tres" id="typed__nur"]
@@ -14,7 +13,6 @@ script = ExtResource("1_d0ate")
 tag = "grdb"
 display_name = "Silverback"
 icon = ExtResource("icon_tex")
-model = "adrg"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 4800
@@ -40,4 +38,3 @@ spell_order = 988
 ranged_attack = ExtResource("typed_rdba")
 active_ability = ExtResource("typed__nur")
 on_damage = ExtResource("typed_gcil")
-sounds = ExtResource("sounds_set")

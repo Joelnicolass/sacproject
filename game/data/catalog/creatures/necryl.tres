@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_oqlub"]
-[ext_resource type="Resource" path="res://data/audio/creatures/necryl.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://cedbb5ksqd4wv" path="res://assets/original/ui/icons/glsd.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/cena.tres" id="typed_cena"]
 [ext_resource type="Script" path="res://scenes/units/passives/creature_passive.gd" id="typed_passive_script"]
@@ -14,7 +13,6 @@ script = ExtResource("1_oqlub")
 tag = "glsd"
 display_name = "Necryl"
 icon = ExtResource("icon_tex")
-model = "dslg"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1260
@@ -35,4 +33,3 @@ casting_time_s = 0.7407
 spell_order = 245
 ranged_attack = ExtResource("typed_cena")
 passives = Array[ExtResource("typed_passive_script")]([ExtResource("typed_passive_0")])
-sounds = ExtResource("sounds_set")

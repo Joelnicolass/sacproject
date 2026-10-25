@@ -23,11 +23,6 @@ func _frozen_changed() -> void:
 	pass
 
 
-## Sets the model (its scene has the role -> clip mapping).
-func setup(_model: String) -> void:
-	pass
-
-
 func play(_role: String, _restart := false) -> void:
 	pass
 

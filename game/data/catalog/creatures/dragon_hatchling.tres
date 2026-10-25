@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_wa6k1"]
-[ext_resource type="Resource" path="res://data/audio/creatures/dragon_hatchling.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://bnbej6vwrihp6" path="res://assets/original/ui/icons/rdb_o.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/filb.tres" id="typed_filb"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/baby_clips.tres" id="clips_lib"]
@@ -12,7 +11,6 @@ script = ExtResource("1_wa6k1")
 tag = "rdbO"
 display_name = "Dragon Hatchling"
 icon = ExtResource("icon_tex")
-model = "baby"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1375
@@ -36,4 +34,3 @@ cooldown_s = 10.0
 casting_time_s = 3.3333
 spell_order = 1008
 active_ability = ExtResource("typed_filb")
-sounds = ExtResource("sounds_set")

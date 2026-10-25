@@ -27,10 +27,10 @@ signal pick_changed
 	set(value):
 		wizard_tag = value
 		pick_changed.emit()
+## The model id on the network (what the original calls the body): the one of the body scene `wizard_type` wears. Derived from the type.
 @export var model := "":
 	set(value):
 		model = value
-		_apply_model()
 		pick_changed.emit()
 ## The god whose book the wizard casts (data/gods/). Taken from the pick on every peer; a bench without a flow sets it by hand.
 @export var god_type: GodType:
@@ -106,9 +106,6 @@ func _ready() -> void:
 	look_yaw = rotation.y
 	_net_yaw = rotation.y
 	_wear_body()
-	_apply_model()
-	if get_node_or_null("Tilt/Mesh"):
-		_clip_pose.setup(model)
 	if _clip_pose.has_signal("clip_looped"):
 		_clip_pose.connect("clip_looped", _on_clip_looped)
 	_present_prev_pos = global_position
@@ -196,8 +193,8 @@ func _apply_pick() -> void:
 		## The replicated ids (`wizard_tag`, `model`, `god`) stay the wire until the body is a scene of its own (055s).
 		if chosen.wizard != wizard_type:
 			wizard_type = chosen.wizard
-		if chosen.wizard.model != model:
-			model = chosen.wizard.model
+		if chosen.wizard.model_id() != model:
+			model = chosen.wizard.model_id()
 		if chosen.god != god_type:
 			god_type = chosen.god
 	_apply_type()
@@ -214,20 +211,12 @@ func _take_pick_type() -> void:
 		god_type = chosen.god
 
 
-func _sync_clip_pose() -> void:
-	if not is_inside_tree() or _clip_pose == null:
-		return
-	if model.is_empty():
-		return
-	_clip_pose.setup(model)
-
 func _apply_type() -> void:
 	if wizard_type == null:
 		return
 	_wear_body()
 	if wizard_type.run_speed_m_s > 0.0:
 		move_speed = wizard_type.run_speed_m_s
-	_sync_clip_pose()
 	if not is_node_ready() or _stats_ready:
 		return
 	if MpKit.is_networked() and not MpKit.is_server():
@@ -235,14 +224,6 @@ func _apply_type() -> void:
 	_stats_ready = true
 	health.setup(wizard_type.health + level_health_bonus)
 	mana.setup(wizard_type.mana + level_mana_bonus)
-
-func _apply_model() -> void:
-	var visual := get_node_or_null("Tilt/Mesh") as BodyVisual
-	if visual == null or model.is_empty():
-		return
-	visual.show_model(model)
-	_sync_clip_pose()
-
 
 func _wear_body() -> void:
 	if mount != null and wizard_type != null:

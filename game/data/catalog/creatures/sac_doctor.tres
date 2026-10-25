@@ -10,7 +10,6 @@ script = ExtResource("1_k2kp5")
 tag = "dcas"
 display_name = "Sac Doctor"
 icon = ExtResource("icon_tex")
-model = "sacd"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 400

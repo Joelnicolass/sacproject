@@ -6,7 +6,7 @@ extends BodySounds
 ## - `incantation` when a cast starts (Caster.cast_fx_shown goes from "" to a name; it is replicated);
 ## - `damaged` when Health.current goes down while alive (BodySounds limits it);
 ## - `death` when GhostForm.stage becomes DYING, `ghost` when it rises (RISING, or GHOST straight from another stage).
-## Its set is `sounds` of the body's `wizard_type`. No set: silence.
+## Its set is the `sounds` of the look the body wears (BodyMount.look, the appearance of his body scene). No set: silence.
 
 @export var body: WizardBody:
 	set(value):
@@ -43,8 +43,7 @@ func _ready() -> void:
 
 
 func own_set() -> SoundSet:
-	var type: WizardType = body.wizard_type if body != null else null
-	return type.sounds if type != null else null
+	return body.mount.sounds() if body != null and body.mount != null else null
 
 
 func anchor() -> Node3D:

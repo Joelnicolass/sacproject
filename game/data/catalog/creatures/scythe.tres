@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_ne1yr"]
-[ext_resource type="Resource" path="res://data/audio/creatures/scythe.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://mid422vwftvl" path="res://assets/original/ui/icons/dzid.png" id="icon_tex"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/ddiz_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/scythe.tscn" id="body_scene"]
@@ -11,7 +10,6 @@ script = ExtResource("1_ne1yr")
 tag = "dzid"
 display_name = "Scythe"
 icon = ExtResource("icon_tex")
-model = "ddiz"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 540
@@ -29,4 +27,3 @@ souls = 1
 cooldown_s = 2.0
 casting_time_s = 0.3704
 spell_order = 124
-sounds = ExtResource("sounds_set")

@@ -25,8 +25,9 @@ const GROUP := &"feel_presentation"
 @export var life_s := 0.9
 @export var fade_s := 0.35
 @export var rise_m := 1.4
-## Over the body's head (BodyVisual height, else `default_height_m`).
+## Meters over the Top marker of a body (or over the top of a building's mesh) where the number starts.
 @export var head_gap_m := 0.4
+## Height of the number over a thing that has neither a body scene nor a mesh.
 @export var default_height_m := 2.0
 @export var max_distance_m := 90.0
 ## Damage below this is not shown (a sliver of poison or a rounding).
@@ -188,14 +189,19 @@ func _release(label: Label3D, entry: Dictionary) -> void:
 	_free.append(label)
 
 
+## Over the head: the Top marker of the body scene it wears, and `head_gap_m` more. A thing with no body scene (a building, a pillar)
+## uses the top of its mesh, or `default_height_m` without one.
 func _head(body: Node3D) -> Vector3:
-	var height := default_height_m
+	var top := BodyFacts.of_body(body).top if "mount" in body else Vector3(0.0, _mesh_top(body), 0.0)
+	return body.global_position + top + Vector3(0.0, head_gap_m, 0.0)
+
+
+func _mesh_top(body: Node3D) -> float:
 	for path in [^"Tilt/Mesh", ^"Mesh"]:
-		var visual := body.get_node_or_null(path) as BodyVisual
-		if visual != null:
-			height = visual.body_height()
-			break
-	return body.global_position + Vector3.UP * (height + head_gap_m)
+		var shown := body.get_node_or_null(path) as MeshInstance3D
+		if shown != null and shown.mesh != null:
+			return (shown.transform * shown.get_aabb()).end.y
+	return default_height_m
 
 
 static func _presentation_off() -> bool:

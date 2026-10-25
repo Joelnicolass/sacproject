@@ -25,7 +25,7 @@ func _ready() -> void:
 	DirAccess.make_dir_recursive_absolute(_out)
 	_wizard = WIZARD.instantiate() as WizardBody
 	_wizard.wizard_type = GameData.wizard(_tag)
-	_wizard.model = str(GameData.wizard(_tag).model)
+	_wizard.model = str(GameData.wizard(_tag).model_id())
 	add_child(_wizard)
 	_wizard.set_physics_process(false)
 	_wizard.set_process(false)

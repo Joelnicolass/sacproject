@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_x4v5w"]
-[ext_resource type="Resource" path="res://data/audio/creatures/locust.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://dby00c0mjyq85" path="res://assets/original/ui/icons/pazb.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/zbba.tres" id="typed_zbba"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/bugz_clips.tres" id="clips_lib"]
@@ -12,7 +11,6 @@ script = ExtResource("1_x4v5w")
 tag = "pazb"
 display_name = "Locust"
 icon = ExtResource("icon_tex")
-model = "bugz"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 450
@@ -33,4 +31,3 @@ cooldown_s = 2.0
 casting_time_s = 0.3704
 spell_order = 138
 ranged_attack = ExtResource("typed_zbba")
-sounds = ExtResource("sounds_set")

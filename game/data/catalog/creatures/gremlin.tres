@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_nwe2w"]
-[ext_resource type="Resource" path="res://data/audio/creatures/gremlin.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://dh4ksqat4q5ke" path="res://assets/original/ui/icons/lrps.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/psla.tres" id="typed_psla"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/sprl_clips.tres" id="clips_lib"]
@@ -12,7 +11,6 @@ script = ExtResource("1_nwe2w")
 tag = "lrps"
 display_name = "Gremlin"
 icon = ExtResource("icon_tex")
-model = "sprl"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1400
@@ -36,4 +34,3 @@ cooldown_s = 6.0
 casting_time_s = 1.8519
 spell_order = 562
 active_ability = ExtResource("typed_psla")
-sounds = ExtResource("sounds_set")

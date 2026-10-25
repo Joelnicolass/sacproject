@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_g6wjd"]
-[ext_resource type="Resource" path="res://data/audio/creatures/phoenix.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://dxjogj4b33ybh" path="res://assets/original/ui/icons/grdr.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/rdra.tres" id="typed_rdra"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/rifl.tres" id="typed_rifl"]
@@ -15,7 +14,6 @@ script = ExtResource("1_g6wjd")
 tag = "grdr"
 display_name = "Phoenix"
 icon = ExtResource("icon_tex")
-model = "fdrg"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 4800
@@ -41,4 +39,3 @@ spell_order = 986
 ranged_attack = ExtResource("typed_rdra")
 on_damage = ExtResource("typed_rifl")
 passives = Array[ExtResource("typed_passive_script")]([ExtResource("typed_passive_0")])
-sounds = ExtResource("sounds_set")

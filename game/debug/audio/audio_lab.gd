@@ -70,7 +70,7 @@ var _busy := false
 var _status := ""
 var _spawned: Array[Node] = []
 ## The WizardType whose `sounds` the lab replaced, and what it had (put back at the end: the catalog type is shared).
-var _wizard_type: WizardType
+var _wizard_look: BodyLook
 var _wizard_sounds: SoundSet
 
 
@@ -105,19 +105,18 @@ func _start() -> void:
 		_end()
 
 
-## The fixture sounds of the script's "Custom" creature and "Wizard": what their type says is replaced for this run.
+## The fixture sounds of the script's "Custom" creature and "Wizard": what their look says is replaced for this run.
 func _assign_body_sets() -> void:
 	var custom := get_node_or_null("Custom") as UnitBody
 	var custom_set := _custom_set()
-	if custom != null and custom.type != null and custom_set != null:
-		custom.type = custom.type.duplicate() as CreatureType
-		custom.type.sounds = custom_set
+	if custom != null and custom.mount != null and custom.mount.look != null and custom_set != null:
+		custom.mount.look.sounds = custom_set
 	var wizard := get_node_or_null("Wizard") as WizardBody
 	var wizard_set := _lab.get("wizard_set") as SoundSet
-	if wizard != null and wizard.clip_type() != null and wizard_set != null:
-		_wizard_type = wizard.clip_type()
-		_wizard_sounds = _wizard_type.sounds
-		_wizard_type.sounds = wizard_set
+	if wizard != null and wizard.mount != null and wizard.mount.look != null and wizard_set != null:
+		_wizard_look = wizard.mount.look
+		_wizard_sounds = _wizard_look.sounds
+		_wizard_look.sounds = wizard_set
 
 
 func _custom_set() -> SoundSet:
@@ -588,8 +587,8 @@ func _end() -> void:
 	print("AUDIO_LAB DONE %s" % ("PASS" if _failures == 0 else "FAIL (%d)" % _failures))
 	## The audio server lets go of the playbacks a moment (real time) after a stop; quitting before leaks them at exit.
 	SoundBus.shutdown()
-	if _wizard_type != null:
-		_wizard_type.sounds = _wizard_sounds
+	if _wizard_look != null:
+		_wizard_look.sounds = _wizard_sounds
 	var release_at := Time.get_ticks_msec() + 200
 	while Time.get_ticks_msec() < release_at:
 		await get_tree().process_frame

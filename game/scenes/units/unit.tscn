@@ -202,9 +202,10 @@ mount = NodePath("BodyMount")
 
 [node name="Tilt" type="Node3D" parent="."]
 
-[node name="Mesh" type="MeshInstance3D" parent="Tilt" node_paths=PackedStringArray("rig")]
+[node name="Mesh" type="MeshInstance3D" parent="Tilt" node_paths=PackedStringArray("rig", "mount")]
 script = ExtResource("2_visual")
 rig = NodePath("Rig")
+mount = NodePath("../../BodyMount")
 
 [node name="Rig" parent="Tilt/Mesh" instance=ExtResource("f162_rig")]
 
@@ -590,8 +591,9 @@ script = ExtResource("f116_flight")
 body = NodePath("..")
 afflictions = NodePath("../Afflictions")
 
-[node name="BodyMount" type="Node" parent="."]
+[node name="BodyMount" type="Node" parent="." node_paths=PackedStringArray("rig")]
 script = ExtResource("s1_mount")
+rig = NodePath("../Tilt/Mesh/Rig")
 
 [node name="BodyCollider" type="Node" parent="." node_paths=PackedStringArray("mount", "collision", "flight")]
 script = ExtResource("f135_collider")

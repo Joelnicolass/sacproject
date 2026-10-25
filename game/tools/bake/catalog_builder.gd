@@ -35,7 +35,7 @@ static func make_creature(row: Dictionary) -> Resource:
 	var type := _CREATURE_TYPE.new()
 	type.tag = row.get("tag", "")
 	type.display_name = row.get("name", "")
-	type.model = row.get("model", "")
+	## The model lives in the body scene of the type (BodyFrame.model_id), not in the type: the builder leaves `body` empty.
 	type.health = int(row.get("health", 0))
 	type.regeneration_per_s = float(row.get("regeneration_per_s", 0.0))
 	type.drain = float(row.get("drain", 0.0))
@@ -112,7 +112,7 @@ static func make_wizard(row: Dictionary) -> Resource:
 	var type := _WIZARD_TYPE.new()
 	type.tag = row.get("tag", "")
 	type.display_name = row.get("name", "")
-	type.model = row.get("model", "")
+	## The model lives in the body scene of the type (BodyFrame.model_id), not in the type: the builder leaves `body` empty.
 	type.health = int(row.get("health", 0))
 	type.mana = int(row.get("mana", 0))
 	type.run_speed_m_s = float(row.get("running_speed", 0.0))

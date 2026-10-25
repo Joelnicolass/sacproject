@@ -4,8 +4,8 @@ extends Node
 
 ## The shared part of UnitSounds and WizardSounds, the children that turn a body's replicated state into sound events. It owns
 ## how an event finds its cue and the per-body limit of `damaged`; the subclasses only wire the signals. It does not decide
-## what the body sounds like: that is the `sounds` set of its CreatureType or WizardType.
-## - Where a cue comes from: the body's own set (`type.sounds`, with its `fallback` chain: the melee set), then `default_cue`
+## what the body sounds like: that is the `sounds` set of its look (BodyLook, the appearance scene next to its body scene).
+## - Where a cue comes from: the body's own set (`BodyMount.sounds()`, with its `fallback` chain: the melee set), then `default_cue`
 ##   (UnitSounds: the summon cue every creature shares). No cue anywhere: silence, no log entry, no warning.
 ## - Everything is client presentation: it reads replicated state and signals, never writes the body, never draws from the
 ##   global generator (SoundBus has its own), never adds an RPC. With the AudioGate closed (dedicated, room server, headless)

@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_fx88v"]
-[ext_resource type="Resource" path="res://data/audio/creatures/sylph.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://bki4dmo8630lc" path="res://assets/original/ui/icons/ahcr.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/aaba.tres" id="typed_aaba"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/ivni.tres" id="typed_ivni"]
@@ -13,7 +12,6 @@ script = ExtResource("1_fx88v")
 tag = "ahcr"
 display_name = "Sylph"
 icon = ExtResource("icon_tex")
-model = "AArc"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 640
@@ -34,4 +32,3 @@ casting_time_s = 0.2469
 spell_order = 130
 ranged_attack = ExtResource("typed_aaba")
 active_ability = ExtResource("typed_ivni")
-sounds = ExtResource("sounds_set")

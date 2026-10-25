@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_r4vva"]
-[ext_resource type="Resource" path="res://data/audio/creatures/pyromaniac.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://bo3qq5q18tv6h" path="res://assets/original/ui/icons/plff.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/lffa.tres" id="typed_lffa"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/fflp_clips.tres" id="clips_lib"]
@@ -12,7 +11,6 @@ script = ExtResource("1_r4vva")
 tag = "plff"
 display_name = "Pyromaniac"
 icon = ExtResource("icon_tex")
-model = "fflp"
 body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1040
@@ -32,4 +30,3 @@ cooldown_s = 5.0
 casting_time_s = 1.4815
 spell_order = 456
 ranged_attack = ExtResource("typed_lffa")
-sounds = ExtResource("sounds_set")

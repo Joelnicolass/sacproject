@@ -11,7 +11,7 @@ extends RefCounted
 ## {"wizard": id, "model": model, "god": id} of a complete pick. The model is derived from the wizard (it stays on the wire
 ## until the body becomes a scene of its own).
 static func encode_pick(pick: WizardPick) -> Dictionary:
-	return {"wizard": pick.wizard.id(), "model": pick.wizard.model, "god": pick.god.id()}
+	return {"wizard": pick.wizard.id(), "model": pick.wizard.model_id(), "god": pick.god.id()}
 
 
 ## The id of a bot's god; empty (no god) = drawn when the match starts.

@@ -98,7 +98,7 @@ func _run() -> void:
 	var type := unit.type
 	var facts := type.clip_facts() if type != null else ClipFacts.of(null)
 	var checks := {
-		"type_found": type != null and type.model == TAG,
+		"type_found": type != null and type.model_id() == TAG,
 		"scene_exists": BodyModel.exists(TAG),
 		"size_height": absf(float(info.get("height", 0.0)) - 2.0) < 0.05,
 		"size_reach": absf(float(info.get("reach", 0.0)) - 0.475) < 0.01,
@@ -240,7 +240,7 @@ func _dummy(at: Vector3) -> UnitBody:
 	var dummy := UNIT_SCENE.instantiate() as UnitBody
 	dummy.owner_slot = 2
 	dummy.type = GameData.creature("raeb")
-	dummy.model = type.model
+	dummy.model = type.model_id()
 	dummy.idle_aggro = false
 	dummy.target_groups = PackedStringArray()
 	dummy.position = at

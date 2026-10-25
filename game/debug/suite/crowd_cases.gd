@@ -286,7 +286,7 @@ func _unit(parent: Node3D, tag: String, at: Vector3) -> Node3D:
 	unit.position = at
 	unit.set("owner_slot", 1)
 	unit.set("type", GameData.creature(tag))
-	unit.set("model", str(type.model))
+	unit.set("model", type.model_id())
 	unit.set("rules", RULES)
 	unit.set("idle_aggro", false)
 	parent.add_child(unit)

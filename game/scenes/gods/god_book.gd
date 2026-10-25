@@ -16,10 +16,10 @@ var _levels: Dictionary = {}
 var _levels_for := -1
 
 
-## Wizard level at which `tag` enters the book, or -1 when the book has no unlock line for it.
-func level_of(tag: String) -> int:
+## Wizard level at which `type` (the CreatureType or SpellType itself) enters the book, or -1 when the book has no unlock line for it.
+func level_of(type: Resource) -> int:
 	_index_levels()
-	return int(_levels.get(tag, -1))
+	return int(_levels.get(type, -1))
 
 
 ## The book up to a wizard level, like sacengine `getSpells` (state.d:29512): rows of a higher level are left out.
@@ -27,15 +27,15 @@ func level_of(tag: String) -> int:
 func up_to(max_level: int) -> Dictionary:
 	var found_creatures: Array[CreatureType] = []
 	for type in creatures:
-		if type != null and maxi(level_of(type.tag), 0) <= max_level:
+		if type != null and maxi(level_of(type), 0) <= max_level:
 			found_creatures.append(type)
 	var found_spells: Array[SpellType] = []
 	for type in spells:
-		if type != null and maxi(level_of(type.tag), 0) <= max_level:
+		if type != null and maxi(level_of(type), 0) <= max_level:
 			found_spells.append(type)
 	var found_structures: Array[SpellType] = []
 	for type in structures:
-		if type != null and maxi(level_of(type.tag), 0) <= max_level:
+		if type != null and maxi(level_of(type), 0) <= max_level:
 			found_structures.append(type)
 	return {"creatures": found_creatures, "spells": found_spells, "structures": found_structures}
 
@@ -46,6 +46,6 @@ func _index_levels() -> void:
 		return
 	_levels.clear()
 	for unlock in unlocks:
-		if unlock != null and not unlock.tag().is_empty():
-			_levels[unlock.tag()] = unlock.level
+		if unlock != null and unlock.type != null:
+			_levels[unlock.type] = unlock.level
 	_levels_for = unlocks.size()

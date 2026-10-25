@@ -34,26 +34,9 @@ func setup(data: Dictionary) -> void:
 	damage = float(data.get("damage", 0.0))
 	damage_range = float(data.get("damage_range", 0.0))
 	from_slot = int(data.get("slot", 0))
-	_add_visual()
 	_attach_net()
 	## Wrath's trail, played locally on every peer.
 	FxTrail.attach(self, "wrath_trail", TRAIL_INTERVAL_S)
-
-
-func _add_visual() -> void:
-	var visual := MeshInstance3D.new()
-	visual.name = "Mesh"
-	var mesh := SphereMesh.new()
-	mesh.radius = 0.25
-	mesh.height = 0.5
-	visual.mesh = mesh
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(0.45, 0.8, 0.2, 1.0)
-	mat.emission_enabled = true
-	mat.emission = Color(0.25, 0.6, 0.1, 1.0)
-	mat.emission_energy_multiplier = 1.6
-	visual.material_override = mat
-	add_child(visual)
 
 
 func _ready() -> void:

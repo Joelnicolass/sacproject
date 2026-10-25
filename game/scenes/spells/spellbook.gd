@@ -13,6 +13,8 @@ signal book_changed
 signal cooldowns_changed
 
 @export var rules: MatchRules
+## The wizard whose book this is (the scene wires it to the root).
+@export var wizard: WizardBody
 
 ## CreatureType or SpellType, sorted by spell_order.
 var _entries: Array[Resource] = []
@@ -22,16 +24,31 @@ var _structure_rows := PackedInt32Array()
 ## MatchClock tick at which each entry is ready again (0 = ready).
 var _ready_tick := PackedInt64Array()
 var _max_cooldowns := PackedFloat32Array()
-var _god := ""
+## The book and the level the entries were built from: the rebuild key.
+var _built_from: GodBook
 var _level := 0
-
-@onready var _wizard: Node = get_parent()
+var _warned_override := false
 
 
 func _ready() -> void:
-	if _wizard.has_signal("pick_changed"):
-		_wizard.pick_changed.connect(_rebuild)
+	if wizard == null:
+		push_error("Spellbook without a wizard: set the `wizard` socket")
+		return
+	wizard.pick_changed.connect(_rebuild)
+	wizard.book_changed.connect(_rebuild)
 	_rebuild()
+
+
+## The book this wizard casts from: his own override, else the one of his god, else none.
+func current_book() -> GodBook:
+	if wizard.book != null:
+		return wizard.book
+	if wizard.god_type != null and (wizard.god.is_empty() or wizard.god_type.id() == wizard.god):
+		return wizard.god_type.book
+	# WORKAROUND: the `god` id travels on the network and benches set only it, so when it names another god than
+	# `god_type` the id wins, like before. Drop it when every bench sets `god_type` (055e e3).
+	var by_id: GodType = GameData.god(wizard.god) if not wizard.god.is_empty() else null
+	return by_id.book if by_id != null else null
 
 
 func size() -> int:
@@ -167,7 +184,7 @@ func _raise(index: int, value: float) -> void:
 func _push_to_owner() -> void:
 	if not MpKit.is_networked() or not MpKit.is_server():
 		return
-	var peer := MpKit.peer_id_for(int(_wizard.get("owner_slot")))
+	var peer := MpKit.peer_id_for(wizard.owner_slot)
 	if peer > 0 and peer != multiplayer.get_unique_id():
 		var remaining := PackedFloat32Array()
 		remaining.resize(_ready_tick.size())
@@ -190,22 +207,22 @@ func _receive_cooldowns(remaining: PackedFloat32Array, maximum: PackedFloat32Arr
 
 
 func _rebuild() -> void:
-	var god := str(_wizard.get("god"))
-	var level_value: Variant = _wizard.get("level")
-	var level := int(level_value) if level_value != null else 1
-	if god == _god and level == _level and not _entries.is_empty():
+	var book := current_book()
+	var level := wizard.level
+	if book == _built_from and level == _level and not _entries.is_empty():
 		return
-	_god = god
+	_built_from = book
 	_level = level
+	_warn_if_override()
 	# TODO(RFC-030 N2): a level change rebuilds the book and clears every cooldown. Today the level is fixed for the
 	# match; when XP raises it mid-match, keep the cooldowns of the entries that stay (by tag).
-	var book := GameData.book(god, level)
+	var rows: Dictionary = book.up_to(level) if book != null else {}
 	var sorted: Array[Resource] = []
-	for creature in book.get("creatures", []):
+	for creature in rows.get("creatures", []):
 		sorted.append(creature)
-	for spell in book.get("spells", []):
+	for spell in rows.get("spells", []):
 		sorted.append(spell)
-	for structure in book.get("structures", []):
+	for structure in rows.get("structures", []):
 		sorted.append(structure)
 	sorted.sort_custom(func(a: Resource, b: Resource) -> bool: return int(a.get("spell_order")) < int(b.get("spell_order")))
 	_entries = sorted
@@ -224,3 +241,10 @@ func _rebuild() -> void:
 	_max_cooldowns = PackedFloat32Array()
 	_max_cooldowns.resize(_entries.size())
 	book_changed.emit()
+
+
+## A book override is not replicated: online, the other peers would build the god's book. Said once.
+func _warn_if_override() -> void:
+	if wizard.book != null and MpKit.is_networked() and not _warned_override:
+		_warned_override = true
+		push_warning("WizardBody.book is an override of this peer only; it does not travel on the network")

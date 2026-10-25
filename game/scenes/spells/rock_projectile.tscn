@@ -10,7 +10,10 @@
 [node name="RockProjectile" type="Node3D"]
 script = ExtResource("1_script")
 ground_mark = ExtResource("4_mark")
-rock_mesh = ExtResource("mesh_rock")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+unique_name_in_owner = true
+mesh = ExtResource("mesh_rock")
 
 [node name="CastSound" parent="." instance=ExtResource("2_sound")]
 cue = ExtResource("cue_rock_cast")

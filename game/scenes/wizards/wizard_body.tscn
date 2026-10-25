@@ -279,8 +279,9 @@ pace = NodePath("../PaceFactors")
 script = ExtResource("6_souls")
 rules = ExtResource("7_rules")
 
-[node name="Spellbook" type="Node" parent="."]
+[node name="Spellbook" type="Node" parent="." node_paths=PackedStringArray("wizard")]
 script = ExtResource("9_book")
+wizard = NodePath("..")
 rules = ExtResource("7_rules")
 
 [node name="Summoner" type="Node" parent="."]

@@ -18,8 +18,9 @@
 //                   -id = every client but id; a client: to is ignored, it always reaches the host)
 //                   0x05 KICK u32 id   (host only: the relay closes that client, 4007)
 // The host is id 1; clients get 2, 3… A room with a live host is taken: a second host is refused (4009). A host
-// silent for RELAY_HOST_SILENT_MS (pinged every 5 s) is dropped (4010) and its room freed. Clients of a room without
-// a host are refused (4004); when the host leaves every client of the room is closed (4005).
+// silent for RELAY_HOST_SILENT_MS (pinged three times in that span, at most every 5 s) is dropped (4010) and its room
+// freed. Clients of a room without a host are refused (4004); when the host leaves every client of the room is
+// closed (4005).
 
 import http from "node:http";
 import crypto from "node:crypto";
@@ -32,7 +33,8 @@ const MAX_CLIENTS = Number(process.env.RELAY_MAX_CLIENTS || 64);
 const MAX_MESSAGE = Number(process.env.RELAY_MAX_MESSAGE || 262144);
 // A host that sends nothing (not even a pong) for this long is dropped and its room freed (ms).
 const HOST_SILENT_MS = Number(process.env.RELAY_HOST_SILENT_MS || 15000);
-const PING_MS = 5000;
+// Pinged three times within the silence limit, so a live host always answers in time (at most every 5 s).
+const PING_MS = Math.max(250, Math.min(5000, Math.floor(HOST_SILENT_MS / 3)));
 const GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 const WELCOME = 1, JOIN = 2, LEAVE = 3, DATA = 4, KICK = 5;
 

@@ -13,7 +13,9 @@
 # TRANSPORT=ws runs it over WebSocket; TLS=1 over wss:// (lobby and match, self-signed certificate; a client without
 # TLS cannot get in). Prints PASS / FAIL lines and MPKIT ROOMS PASS / MPKIT ROOMS FAIL (exit 0 / 1).
 . "$(dirname "$0")/lib.sh"
-net_group 7 "$@"
+## Reserve only what the asked scenarios need: two rooms (tworooms, cap) run 7 processes at once, the rest 4.
+case " ${SCENARIOS:-public private rejoin abandon wait tworooms cap} " in *" tworooms "*|*" cap "*) NEED=7 ;; *) NEED=4 ;; esac
+net_group "$NEED" "$@"
 TAG="MPKIT ROOMS"
 LIMIT_S="${PROBE_LIMIT_S:-420}"
 PROC_MAX=8

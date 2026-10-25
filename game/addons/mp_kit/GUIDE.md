@@ -880,7 +880,7 @@ mpkit_lab/run/play.sh rooms         # un servidor de salas headless + 2 ventanas
 
 Cerrá las ventanas (o Ctrl+C) para terminar. Los logs quedan en la carpeta que imprime al arrancar.
 
-Toda la matriz de casos automáticos: `mpkit_lab/run/all.sh`. Qué cubre cada prueba: `mpkit_lab/CASES.md`.
+Toda la matriz de casos automáticos: `mpkit_lab/run/all.sh` (una hora con una cola compartida). Para cada cambio, `mpkit_lab/run/all.sh --quick`: uno de cada tipo por ENet, en unos minutos. Fallas del relay (choque de puertos, reinicio, host congelado): `mpkit_lab/run/relayfault.sh`. Qué cubre cada prueba: `mpkit_lab/CASES.md`.
 
 ### 8.7 Cómo leer lo que pasa
 
@@ -906,6 +906,7 @@ Toda la matriz de casos automáticos: `mpkit_lab/run/all.sh`. Qué cubre cada pr
 | `--world=id` | Mundo, si usás el catálogo `MpFlow.worlds` |
 | `--keep-match-files` | Servidor de salas: no borra la carpeta de cada partida |
 | `--lag-comp=off` | Servidor: sin compensación de lag (para comparar) |
+| `--relay-refused-grace-s=N` | Cuánto reintenta un host que el relay rechazó antes de darse por rechazado (3 s; las partidas de un servidor de salas usan 0.5 s) |
 | `--no-flow` | El `MpFlow` no hace nada (herramientas y pruebas) |
 
 Van después de `--` en la línea de comando.
@@ -1241,7 +1242,7 @@ Para probarlo todo junto en tu PC: `mpkit_lab/run/play.sh dedicated --relay` o `
 
 - Pasa paquetes entre el host de una sala y sus clientes, todo por WebSocket (confiable y en orden).
 - Una sala con un host vivo está ocupada, como un puerto en uso: un segundo host se rechaza (4009). Una partida de salas o privada prueba el puerto siguiente; un dedicado o un lobby avisa y se cierra. Cada servidor busca puerto desde uno al azar, así dos jugadores con partida privada casi nunca chocan.
-- Un host que no responde los pings del relay en 15 s se suelta y su sala queda libre (un servidor que se reinició vuelve a entrar en ese tiempo).
+- Un host que no responde los pings del relay en 15 s se suelta y su sala queda libre. Un host rechazado reintenta 3 s antes de darse por rechazado, así un servidor que se reinicia enseguida recupera su sala; las partidas de un servidor de salas reintentan 0.5 s y pasan al puerto siguiente.
 - Un cliente de una sala sin host se rechaza; si el host se va, sus clientes se cierran.
 - Topes, por variables del relay: `RELAY_MAX_CLIENTS` por sala (64), `RELAY_MAX_MESSAGE` en bytes (262144).
 - No guarda nada, no ve el juego. La latencia es la del relay en el medio: elegí una región cerca de tus jugadores.

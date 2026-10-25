@@ -227,6 +227,9 @@ func _build_args(match_id: String, port: int, ticket_path: String) -> PackedStri
 	args.append("--")
 	args.append_array(agent_args)
 	args.append("--mp-port=%d" % port)
+	## Through the relay a taken port is answered at once and this launcher moves on (no restart to wait for).
+	if MpTransport.normalize(config.transport) == MpTransport.RELAY:
+		args.append("--relay-refused-grace-s=0.5")
 	args.append("--match-ticket-file=%s" % ticket_path)
 	args.append("--room-pid=%d" % runner.own_pid())
 	for field in config.agent_fields:

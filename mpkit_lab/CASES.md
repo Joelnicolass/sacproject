@@ -1,6 +1,6 @@
 # MpKit: matriz de casos
 
-Cada caso del framework y la prueba que lo cubre. `run/all.sh` corre todo lo automático; `run/play.sh` lo muestra en ventanas.
+Cada caso del framework y la prueba que lo cubre. `run/all.sh` corre todo lo automático (una hora con la cola compartida); `run/all.sh --quick`, uno de cada tipo por ENet (unos minutos); `run/play.sh` lo muestra en ventanas.
 Transportes: lo marcado **T** corre en ENet, WebSocket y relay (`TRANSPORT=enet|ws|relay`); **TLS** también por `wss://` (`TLS=1`).
 
 ## Sesión
@@ -72,6 +72,10 @@ Transportes: lo marcado **T** corre en ENet, WebSocket y relay (`TRANSPORT=enet|
 | Relay: solo hostea quien tiene el secreto (header o query); sin secreto nadie, salvo `RELAY_OPEN=1` | `relay.sh` |
 | Relay: una sala con host vivo rechaza a un segundo host (4009, como un puerto en uso) | `relay.sh` |
 | Relay: una partida rechazada vuelve a lanzarse en otro puerto y solo se anuncia la que escucha | `tests/test_launcher_relay_retry.gd` |
+| Relay de punta a punta: con todos los puertos menos uno tomados, la partida privada arranca en el libre y se juega | `relayfault.sh` clash |
+| Relay: un dedicado muerto (kill -9) y arrancado otra vez enseguida vuelve a tener su sala | `relayfault.sh` restart |
+| Relay: con el host congelado, otro dedicado se rechaza y se cierra; cuando el relay suelta al mudo, un tercero entra | `relayfault.sh` frozen |
+| Ventanas visibles: LAN, dedicado y salas, también por relay (`play.sh … --watch`) | `play.sh` |
 | Partida privada: invitación en el HUD, segundo clic, otra partida privada en la misma PC (también por relay) | `private.sh` **T** |
 | Botón Leave mientras la partida espera asientos (mundo pausado) | `rooms.sh` wait |
 | `deploy.sh` (comandos que correría), también con `--transport relay` y el secreto aparte | `deploy.sh … --dry-run` |
@@ -84,5 +88,3 @@ Transportes: lo marcado **T** corre en ENet, WebSocket y relay (`TRANSPORT=enet|
 | El relay corriendo en Railway | es el mismo `server.mjs` que se prueba local; Railway no se toca desde acá |
 | Clientes web por el relay con `wss://` público | requiere el dominio de Railway (por `ws://` local sí: `TRANSPORT=relay web.sh`) |
 | Export *Dedicated Server* arrancado sin `--dedicated` | la etiqueta `dedicated_server` solo existe en un export |
-| Choque de puertos por relay de punta a punta (dos partidas en la misma sala) | el reintento se prueba en `test_launcher_relay_retry.gd`; de punta a punta, el puerto al azar casi nunca choca |
-| Un servidor por relay que se reinicia dentro de los 3 s de gracia | se cubre de forma indirecta: arena y salas por relay arrancan cada escenario apenas termina el anterior |

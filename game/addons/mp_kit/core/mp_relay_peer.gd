@@ -26,7 +26,8 @@ var _target: int = 0
 var _refuse: bool = false
 var _welcomed: bool = false
 ## Host: the room may still hold a host that just died (its socket closes a moment later, a quick restart): a
-## refused host tries again for REFUSED_GRACE_S before it reports the room as in use.
+## refused host tries again for REFUSED_GRACE_S (`--relay-refused-grace-s=` changes it) before it reports the room
+## as in use. A launcher's matches use a short one: a new match has no earlier self to wait for.
 const REFUSED_GRACE_S := 3.0
 const REFUSED_RETRY_S := 0.3
 var _url: String = ""
@@ -45,7 +46,8 @@ func start(url: String, room: String, host: bool, secret: String = "", tls: TLSO
 	_headers = PackedStringArray(["X-Relay-Secret: " + secret]) if host and not secret.is_empty() else PackedStringArray()
 	_url = url.trim_suffix("/") + "/" + query
 	_tls = tls
-	_refused_until_ms = Time.get_ticks_msec() + int(REFUSED_GRACE_S * 1000.0)
+	var grace := float(MpBoot.user_value("relay-refused-grace-s", str(REFUSED_GRACE_S)))
+	_refused_until_ms = Time.get_ticks_msec() + int(maxf(grace, 0.0) * 1000.0)
 	var err := _connect()
 	if err != OK:
 		_status = CONNECTION_DISCONNECTED

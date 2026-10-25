@@ -17,6 +17,8 @@ TAG="MPKIT PLAY"
 LIMIT_S="${PLAY_LIMIT_S:-1800}"
 PROC_MAX=6
 PORT="${PLAY_PORT:-7777}"
+## --watch: how long the windows stay open after their run (PLAY_LINGER_S).
+LINGER="${PLAY_LINGER_S:-600}"
 OUT="$(mktemp -d "${TMPDIR:-/tmp}/mpkit_play.XXXXXX")"
 kill_all() { kill_pids; }
 trap 'kill_all; net_stop' EXIT INT TERM
@@ -28,20 +30,20 @@ case "$MODE" in
   dedicated)
     gd "$OUT/server.log" -- --dedicated --transport="$TRANSPORT" --mp-port="$PORT"; SERVER=$LAST_PID
     sleep 1
-    [ "$WATCH_MODE" = 1 ] && W1=(--client1 --mp-port="$PORT" --probe=client --probe-linger-s=600) && W2=(--probe-join="127.0.0.1:$PORT" --probe=late --probe-linger-s=600)
+    [ "$WATCH_MODE" = 1 ] && W1=(--client1 --mp-port="$PORT" --probe=client --probe-linger-s=$LINGER) && W2=(--probe-join="127.0.0.1:$PORT" --probe=late --probe-linger-s=$LINGER)
     gw "$OUT/window1.log" 40 60 -- --transport="$TRANSPORT" --mp-port="$PORT" "${W1[@]}"; A=$LAST_PID
     [ "$WATCH_MODE" = 1 ] && wait_line "$OUT/window1.log" "^PROBE client" "$A" 120
     gw "$OUT/window2.log" 700 60 -- --transport="$TRANSPORT" --mp-port="$PORT" "${W2[@]}"; B=$LAST_PID ;;
   listen)
-    [ "$WATCH_MODE" = 1 ] && W1=(--listen-host --probe=watch --probe-linger-s=600) && W2=(--client1 --probe=client --probe-linger-s=600)
+    [ "$WATCH_MODE" = 1 ] && W1=(--listen-host --probe=watch --probe-linger-s=$LINGER) && W2=(--client1 --probe=client --probe-linger-s=$LINGER)
     gw "$OUT/window1.log" 40 60 -- --transport="$TRANSPORT" --mp-port="$PORT" "${W1[@]}"; A=$LAST_PID
     sleep 1.5
     gw "$OUT/window2.log" 700 60 -- --transport="$TRANSPORT" --mp-port="$PORT" "${W2[@]}"; B=$LAST_PID ;;
   rooms)
     gd "$OUT/server.log" -- --room-server --transport="$TRANSPORT" --lobby-port=7700 --countdown-s=3; SERVER=$LAST_PID
     wait_line "$OUT/server.log" "^rooms ready" "$SERVER" 30
-    [ "$WATCH_MODE" = 1 ] && W1=(--probe=lobby --probe-lobby=127.0.0.1:7700 --probe-name=Ana --probe-create=Arena --probe-linger-s=600) \
-      && W2=(--probe=lobby --probe-lobby=127.0.0.1:7700 --probe-name=Bea --probe-linger-s=600)
+    [ "$WATCH_MODE" = 1 ] && W1=(--probe=lobby --probe-lobby=127.0.0.1:7700 --probe-name=Ana --probe-create=Arena --probe-linger-s=$LINGER) \
+      && W2=(--probe=lobby --probe-lobby=127.0.0.1:7700 --probe-name=Bea --probe-linger-s=$LINGER)
     gw "$OUT/window1.log" 40 60 -- --transport="$TRANSPORT" "${W1[@]}"; A=$LAST_PID
     [ "$WATCH_MODE" = 1 ] && wait_line "$OUT/window1.log" "^PASS took a seat" "$A" 60
     gw "$OUT/window2.log" 700 60 -- --transport="$TRANSPORT" "${W2[@]}"; B=$LAST_PID ;;

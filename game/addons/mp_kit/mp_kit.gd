@@ -49,6 +49,7 @@ var tls_server: TLSOptions
 var tls_client: TLSOptions
 ## This connection's RTT, jitter and loss (and, on the server, every player's). Mp.net_quality() reads it.
 var net_quality: MpNetQuality
+var _listen_refused: bool = false
 var _peer: MultiplayerPeer
 var _world_ready: Dictionary = {}
 var _broadcasting_custom: bool = false
@@ -104,8 +105,10 @@ func is_listening() -> bool:
 
 
 ## Server: the relay turned this server away (its port's room has another live host): host on another port.
+## Kept after the refused peer is dropped (Godot reports a host's lost link as server_disconnected), until the
+## next host / join.
 func listen_refused() -> bool:
-	return is_server() and MpTransport.is_refused(_peer)
+	return _listen_refused or MpTransport.is_refused(_peer)
 
 
 func is_listen_host() -> bool:
@@ -156,6 +159,7 @@ func is_peer_world_ready(peer_id: int) -> bool:
 
 func host(dedicated: bool = false) -> Error:
 	leave()
+	_listen_refused = false
 	ids.dedicated = dedicated
 	var made := MpTransport.create_server(transport, port, _enet_max_clients(), tls_server)
 	var peer := made["peer"] as MultiplayerPeer
@@ -179,6 +183,7 @@ func host_dedicated() -> Error:
 ## `p_port` <= 0 uses `port`. A non-empty `ticket` is presented to the server on connect.
 func join(address: String, p_port: int = -1, ticket: String = "") -> Error:
 	leave()
+	_listen_refused = false
 	var made := MpTransport.create_client(transport, address, p_port if p_port > 0 else port, tls_client)
 	var peer := made["peer"] as MultiplayerPeer
 	if int(made["error"]) != OK:
@@ -412,6 +417,11 @@ func _on_connection_failed() -> void:
 
 func _on_server_disconnected() -> void:
 	if _peer == null:
+		return
+	## A host the relay turned away (its room is taken): not a lost server. Say it through listen_refused().
+	if MpTransport.is_refused(_peer):
+		leave()
+		_listen_refused = true
 		return
 	## Dropped while still waiting for a slot: a rejection whose RPC did not arrive.
 	if not _pending_ticket.is_empty() and ids.local_slot == 0:

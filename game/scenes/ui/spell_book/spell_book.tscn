@@ -9,8 +9,8 @@ layout_mode = 3
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_top = -80.0
-offset_right = 192.0
+offset_top = -96.0
+offset_right = 230.0
 grow_vertical = 0
 mouse_filter = 2
 script = ExtResource("1_book")
@@ -25,48 +25,48 @@ mouse_filter = 2
 [node name="Tabs" type="HBoxContainer" parent="."]
 theme_type_variation = &"HBoxFlush"
 layout_mode = 0
-offset_right = 144.0
-offset_bottom = 48.0
+offset_right = 174.0
+offset_bottom = 58.0
 mouse_filter = 2
 
 [node name="CreatureTab" type="Button" parent="Tabs"]
 theme_type_variation = &"ButtonBare"
 unique_name_in_owner = true
-custom_minimum_size = Vector2(48, 48)
+custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 tooltip_text = "UI_SPELL_BOOK_CREATURE_TAB_TOOLTIP"
 focus_mode = 0
-theme_override_font_sizes/font_size = 7
+theme_override_font_sizes/font_size = 8
 icon_alignment = 1
 expand_icon = true
 
 [node name="SpellTab" type="Button" parent="Tabs"]
 theme_type_variation = &"ButtonBare"
 unique_name_in_owner = true
-custom_minimum_size = Vector2(48, 48)
+custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 tooltip_text = "UI_SPELL_BOOK_SPELL_TAB_TOOLTIP"
 focus_mode = 0
-theme_override_font_sizes/font_size = 7
+theme_override_font_sizes/font_size = 8
 icon_alignment = 1
 expand_icon = true
 
 [node name="StructureTab" type="Button" parent="Tabs"]
 theme_type_variation = &"ButtonBare"
 unique_name_in_owner = true
-custom_minimum_size = Vector2(48, 48)
+custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 tooltip_text = "UI_SPELL_BOOK_STRUCTURE_TAB_TOOLTIP"
 focus_mode = 0
-theme_override_font_sizes/font_size = 7
+theme_override_font_sizes/font_size = 8
 icon_alignment = 1
 expand_icon = true
 
 [node name="TabSelector" type="TextureRect" parent="."]
 unique_name_in_owner = true
 layout_mode = 0
-offset_right = 48.0
-offset_bottom = 48.0
+offset_right = 58.0
+offset_bottom = 58.0
 mouse_filter = 2
 expand_mode = 1
 
@@ -74,6 +74,6 @@ expand_mode = 1
 theme_type_variation = &"HBoxFlush"
 unique_name_in_owner = true
 layout_mode = 0
-offset_top = 48.0
-offset_bottom = 80.0
+offset_top = 58.0
+offset_bottom = 96.0
 mouse_filter = 2

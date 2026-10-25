@@ -1,11 +1,10 @@
 extends Control
 
-## Book of the local wizard, laid out like sacengine renderSpellbook (renderer.d:4872-4975) in
-## HUD units (sized by the shared `hud_scale`, see HudScale): three 48×48
-## tabs (creatures, spells, structures) 80 units above the bottom-left corner, and only the
-## active tab's 32×32 pages along the bottom edge, on a frame strip of max(10, 2·n) segments.
-## Pressing a creature or spell key shows its tab first (switchSpellbookTab, dagonBackend.d:80,104).
-## Hidden while the wizard is dying or a ghost (spellbookVisible, state.d:28104; renderer.d:4991).
+## The local wizard's book at the bottom-left corner: three 58×58 tabs (creatures, spells, structures) over the pages of the
+## active tab, 38×38 each, along the bottom edge on a frame strip of max(10, 2·n) segments. Sizes are canvas pixels of the
+## 1280×720 base; Godot's stretch scales them, so nothing here reads the window.
+## Pressing a creature or spell key shows its tab first. Hidden while the wizard is dying or a ghost.
+## Ref: renderer.d:4872-4975 renderSpellbook (sizes ×1.2), dagonBackend.d:80,104 switchSpellbookTab, state.d:28104 spellbookVisible.
 
 signal spell_pressed(index: int)
 signal creature_pressed(index: int)
@@ -13,10 +12,10 @@ signal structure_pressed(index: int)
 
 enum Tab { CREATURE, SPELL, STRUCTURE }
 
-const PAGE := 32.0
-const TAB := 48.0
-const SEGMENT := Vector2(16.0, 8.0)
-const CAP := Vector2(48.0, 16.0)
+const PAGE := 38.0
+const TAB := 58.0
+const SEGMENT := Vector2(19.0, 10.0)
+const CAP := Vector2(58.0, 19.0)
 ## Sheet regions of SacHud (renderer.d:4204-4213), in pixels of the 128×128 tabs/fram and 64×64 page.
 const TAB_REGIONS: Array[Rect2] = [Rect2(1, 0, 46, 48), Rect2(49, 0, 46, 48), Rect2(1, 48, 46, 48)]
 const SELECTOR_REGION := Rect2(49, 48, 46, 48)
@@ -28,8 +27,6 @@ const TAB_TEXT: PackedStringArray = ["UI_BOOK_TAB_CREATURES", "UI_BOOK_TAB_SPELL
 @export var slot_scene: PackedScene
 ## Frame piece (a TextureRect; texture, rect and rotation are set here).
 @export var piece_scene: PackedScene
-## Shared HUD size (the roster, the armed icon and the cursor read the same one).
-@export var hud_scale: HudScale = preload("res://data/ui/hud_scale.tres")
 @export var min_frame_segments := 10
 
 var tab: int = Tab.CREATURE
@@ -37,15 +34,6 @@ var tab: int = Tab.CREATURE
 var _book: Spellbook
 var _wizard: Node
 var _slots: Array[SpellSlot] = []
-
-
-## Shown only when the script runs in the editor (@tool); kept for the shared-size check.
-func _get_configuration_warnings() -> PackedStringArray:
-	var warnings := PackedStringArray()
-	var scale_warning := HudScale.socket_warning(hud_scale)
-	if not scale_warning.is_empty():
-		warnings.append(scale_warning)
-	return warnings
 
 
 func _ready() -> void:
@@ -57,10 +45,6 @@ func _ready() -> void:
 		tabs[i].text = "" if texture else tr(TAB_TEXT[i])
 		tabs[i].pressed.connect(show_tab.bind(i))
 	%TabSelector.texture = HudIcons.region("tabs", SELECTOR_REGION)
-	get_viewport().size_changed.connect(_fit_screen)
-	if hud_scale:
-		hud_scale.changed.connect(_fit_screen)
-	_fit_screen()
 
 
 func bind(wizard: Node) -> void:
@@ -176,13 +160,6 @@ func _build_frame(count: int) -> void:
 		cap.position = Vector2(SEGMENT.x * segments + CAP.y, size.y - CAP.x)
 		%Frame.add_child(cap)
 	offset_right = maxf(TAB * 3.0, SEGMENT.x * segments + CAP.y)
-
-
-func _fit_screen() -> void:
-	var height := get_viewport().get_visible_rect().size.y
-	var factor := hud_scale.factor(height) if hud_scale else height / HudScale.SACENGINE_HEIGHT
-	pivot_offset = Vector2(0.0, size.y)
-	scale = Vector2(factor, factor)
 
 
 func _process(_delta: float) -> void:

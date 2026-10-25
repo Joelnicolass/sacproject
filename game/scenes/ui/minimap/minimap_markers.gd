@@ -9,7 +9,7 @@ extends Control
 @export var minimap: Minimap
 
 ## Measures for flows and the bench: icons and arrows drawn last frame, microseconds the draw took, and where the
-## local wizard's icon went (local HUD units; INF when it is not on the circle).
+## local wizard's icon went (local canvas pixels; INF when it is not on the circle).
 var icons_drawn := 0
 var arrows_drawn := 0
 var draw_us := 0
@@ -130,14 +130,14 @@ func _draw_icon(at: Vector2, kind: MinimapMarkerStyle, color: Color) -> void:
 			draw_circle(at, half, color)
 
 
-## Arrows sit just inside the edge (sacengine 0.92 R minus 6 units), tip toward the thing.
+## Arrows sit just inside the edge (0.92 R minus 7 px), tip toward the thing.
 func _draw_arrows() -> void:
 	var radius := minimap.radius()
 	var center := Vector2.ONE * radius
 	for entry in _arrows:
 		var direction: Vector2 = entry[0]
 		var kind: MinimapMarkerStyle = entry[2]
-		var at := center + direction * (0.92 * radius - 6.0)
+		var at := center + direction * (0.92 * radius - 7.0)
 		var half := kind.arrow_size_px * 0.5
 		draw_set_transform(at, atan2(direction.x, -direction.y))
 		draw_texture_rect(kind.arrow_texture, Rect2(Vector2.ONE * -half, Vector2.ONE * kind.arrow_size_px), false, entry[1])

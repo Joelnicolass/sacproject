@@ -2,8 +2,8 @@
 class_name RadialLayout
 extends Resource
 
-## What a radial menu holds and how big it is (RFC-038 038c). All sizes are HUD units (the menu scales them with the shared
-## HudScale). Two rings around a dead zone: `inner` between `dead_zone_px` and `inner_radius_px`, `outer` between
+## What a radial menu holds and how big it is (RFC-038 038c). All sizes are canvas pixels of the 1280×720 base (Godot's stretch
+## scales them). Two rings around a dead zone: `inner` between `dead_zone_px` and `inner_radius_px`, `outer` between
 ## `inner_radius_px` and `outer_radius_px`. Entry 0 of a ring is at the top and the rest follow clockwise, each one owning
 ## an equal sector centered on its icon. The pointer picks by angle and distance only; this class is pure math.
 
@@ -13,17 +13,17 @@ extends Resource
 @export var center_icons: Dictionary = {}
 @export var inner: Array[RadialEntry] = []
 @export var outer: Array[RadialEntry] = []
-@export_group("Size (HUD units)")
-@export var dead_zone_px := 34.0
-@export var inner_radius_px := 88.0
-@export var outer_radius_px := 140.0
-@export var icon_px := 38.0
+@export_group("Size (canvas pixels)")
+@export var dead_zone_px := 41.0
+@export var inner_radius_px := 106.0
+@export var outer_radius_px := 168.0
+@export var icon_px := 46.0
 @export_group("Opening")
 ## Seconds the right button (or Tab) is held before the menu opens (sacengine xmenuTime = 15 frames at 60 Hz).
 @export var hold_s := 0.25
 
 
-## Where `offset` (HUD units from the menu center) falls: x = ring (0 the dead zone, 1 inner, 2 outer, -1 outside), y = the
+## Where `offset` (canvas pixels from the menu center) falls: x = ring (0 the dead zone, 1 inner, 2 outer, -1 outside), y = the
 ## index of the entry in that ring (0 for the dead zone, -1 when there is none).
 func locate(offset: Vector2) -> Vector2i:
 	var distance := offset.length()

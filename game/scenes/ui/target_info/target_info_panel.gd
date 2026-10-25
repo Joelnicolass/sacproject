@@ -7,9 +7,9 @@ extends Control
 ##   follows the pointer while it stays on that body. It mirrors to the left of the pointer near the right edge and is clamped
 ##   inside the viewport. Another body, or none, hides it at once (on the probe's next sample, 30 a second).
 ## - Pinned: with nothing hovered and a building inspected by click (StructureInspector), the box shows that building, fixed at
-##   `pinned_margin_units` from the bottom-left corner, until the inspection ends.
+##   `pinned_margin_px` from the bottom-left corner, until the inspection ends.
 ## - The bar and the text follow Health.changed of the body shown, not every frame.
-## - Size: `box_units` HUD units × HudScale (the HUD's one knob). The layout of the children is proportional in the .tscn.
+## - Size: 264×84 canvas pixels, set in the .tscn with the title font; Godot's stretch scales it. The children are laid out by anchors.
 ## - FeelPrefs.hover_info off turns the hover box off; the pinned one still shows (it was clicked).
 
 ## Read-only views for flows and checks (AgentKit reads properties).
@@ -29,17 +29,13 @@ var pinned: bool:
 @export var probe: TargetProbe
 ## Optional: the clicked building stays in the box (empty: no pinned box).
 @export var inspector: StructureInspector
-@export var hud_scale: HudScale
 @export var prefs: FeelPrefs
 ## Seconds the pointer stays on a body before the box shows (renderer.d:66).
 @export var delay_s := 0.5
-@export var box_units := Vector2(220.0, 70.0)
-## HUD units between the pointer and the box.
-@export var cursor_gap_units := 16.0
-## Where the pinned box sits: HUD units from the left and from the bottom edge (above the spell book).
-@export var pinned_margin_units := Vector2(8.0, 120.0)
-## Title font size in HUD units.
-@export var title_font_units := 13.0
+## Canvas pixels between the pointer and the box.
+@export var cursor_gap_px := 19.0
+## Where the pinned box sits: canvas pixels from the left and from the bottom edge (above the spell book).
+@export var pinned_margin_px := Vector2(10.0, 144.0)
 
 ## The body hovered and waiting for the delay, the one shown, and how long it has waited.
 var _pending: Node
@@ -55,9 +51,6 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if probe == null:
 		warnings.append("Asigná `probe` (el TargetProbe que dice qué hay bajo el puntero).")
-	var scale_warning := HudScale.socket_warning(hud_scale)
-	if not scale_warning.is_empty():
-		warnings.append(scale_warning)
 	var prefs_warning := FeelPrefs.socket_warning(prefs)
 	if not prefs_warning.is_empty():
 		warnings.append(prefs_warning)
@@ -74,10 +67,6 @@ func _ready() -> void:
 		probe.hovered_changed.connect(_on_hovered_changed)
 	if inspector:
 		inspector.inspected_changed.connect(_on_inspected_changed)
-	if hud_scale:
-		hud_scale.changed.connect(_resize)
-	get_viewport().size_changed.connect(_resize)
-	_resize()
 
 
 func _process(delta: float) -> void:
@@ -94,7 +83,7 @@ func _process(delta: float) -> void:
 	elif _pending == null and _shown == null:
 		_try_pin()
 	if visible and not _pinned:
-		position = place(probe.pointer if probe else Vector2.ZERO, size, get_viewport_rect().size, cursor_gap_units * _factor())
+		position = place(probe.pointer if probe else Vector2.ZERO, size, get_viewport_rect().size, cursor_gap_px)
 
 
 ## Top-left corner of a box of `box` pixels beside `pointer` inside a `view`-sized screen: `gap` to the right and below the
@@ -147,8 +136,7 @@ func _show(node: Node, pin: bool) -> void:
 	_fill(info)
 	if pin:
 		var view := get_viewport_rect().size
-		var margin := pinned_margin_units * _factor()
-		position = Vector2(margin.x, view.y - margin.y - size.y)
+		position = Vector2(pinned_margin_px.x, view.y - pinned_margin_px.y - size.y)
 	visible = true
 
 
@@ -194,14 +182,3 @@ func _fill(info: TargetInfo) -> void:
 
 func _hover_on() -> bool:
 	return prefs == null or prefs.hover_info()
-
-
-func _factor() -> float:
-	var height := get_viewport_rect().size.y
-	return hud_scale.factor(height) if hud_scale else height / HudScale.SACENGINE_HEIGHT
-
-
-func _resize() -> void:
-	var factor := _factor()
-	size = box_units * factor
-	(%Title as Label).add_theme_font_size_override(&"font_size", maxi(roundi(title_font_units * factor), 8))

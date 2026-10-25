@@ -3,14 +3,15 @@ class_name CommandCue
 extends Control
 
 ## What replaces the words of the old battle line (RFC-025c), drawn at the pointer:
-## `Aim` = the icon of the armed spell, structure, order or ability, 4/32 below the cursor like
-## sacengine renderCursor (renderer.d:4113-4165); `Invalid` = the `ncst` icon, flashed when something
+## `Aim` = the icon of the armed spell, structure, order or ability, a little below the cursor (`aim_offset_px`);
+## `Invalid` = the `ncst` icon, flashed when something
 ## is refused (CommandLog.said with a refusal cue) and held while the pointer is over a target the
 ## armed icon cannot take (an order over the sky, a structure over the wrong body);
 ## `Mirror` = a copy of the hardware cursor, off by default: a window capture does not include the
 ## system cursor, so a flow turns it on to see it.
 ## Without the local cache the images are null and a plain circle / cross is drawn instead.
-## Full screen, ignores the mouse.
+## Full screen, ignores the mouse. The icons are 38×38 canvas pixels, set in the scene; Godot's stretch scales them.
+## Ref: renderer.d:4113-4165 renderCursor (4/32 of the icon below the cursor).
 
 @export var command_log: CommandLog
 @export var cues: CueSet
@@ -28,9 +29,10 @@ extends Control
 @export_group("Fallback")
 @export var fallback_aim := Color(0.95, 0.85, 0.45, 0.9)
 @export var fallback_invalid := Color(0.9, 0.15, 0.1, 0.95)
-## Shared HUD size (the spell book, the roster and the cursor read the same one).
-@export var hud_scale: HudScale = preload("res://data/ui/hud_scale.tres")
-@export var icon_units := 32.0
+## Where the top-left corner of the armed and refused icons sits from the pointer (canvas pixels).
+@export var aim_offset_px := Vector2(-19.0, 5.0)
+## The same for the copy of the hardware cursor.
+@export var mirror_offset_px := Vector2(-19.0, 0.0)
 
 ## Seconds the last flash lasted, measured (a flow compares it with `flash_s`).
 var last_flash_s := 0.0
@@ -46,9 +48,6 @@ func _get_configuration_warnings() -> PackedStringArray:
 		warnings.append("Asigná `command_log` (el nodo Battle).")
 	if cues == null:
 		warnings.append("Asigná `cues` (data/ui/command_cues.tres).")
-	var scale_warning := HudScale.socket_warning(hud_scale)
-	if not scale_warning.is_empty():
-		warnings.append(scale_warning)
 	if HudIcons.icon("ncst") == null:
 		warnings.append("Faltan assets/original/ui/cursors: corré tools/import/import_ui.py. Sin eso se dibuja un círculo de respaldo.")
 	return warnings
@@ -71,8 +70,6 @@ func _ready() -> void:
 		probe.kind_changed.connect(_on_kind_changed)
 	if skin:
 		skin.changed.connect(_on_cursor_changed)
-	if hud_scale:
-		hud_scale.changed.connect(_place)
 	_refresh_process()
 
 
@@ -143,16 +140,11 @@ func _update_invalid() -> void:
 
 
 func _place() -> void:
-	var height := get_viewport().get_visible_rect().size.y
-	var px := float(hud_scale.px(icon_units, height) if hud_scale else roundi(icon_units * height / HudScale.SACENGINE_HEIGHT))
 	var at := probe.pointer_now() if probe else get_viewport().get_mouse_position()
-	var icon_pos := at + Vector2(-0.5 * px, px * 4.0 / 32.0)
 	for rect: TextureRect in [%Aim, %Invalid]:
-		rect.size = Vector2(px, px)
-		rect.position = icon_pos
+		rect.position = at + aim_offset_px
 	%Mirror.visible = mirror_cursor and %Mirror.texture != null
-	%Mirror.size = Vector2(px, px)
-	%Mirror.position = at - Vector2(0.5 * px, 0.0)
+	%Mirror.position = at + mirror_offset_px
 	if %Aim.visible and %Aim.texture == null or %Invalid.visible and %Invalid.texture == null:
 		queue_redraw()
 

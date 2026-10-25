@@ -1,19 +1,17 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/wizard_stats/wizard_stats.gd" id="1_stats"]
 [ext_resource type="Script" path="res://scenes/ui/wizard_stats/stat_bar.gd" id="2_bar"]
 [ext_resource type="Script" path="res://scenes/ui/wizard_stats/soul_counter.gd" id="3_soul"]
-[ext_resource type="Resource" path="res://data/ui/hud_scale.tres" id="4_scale"]
 
 [node name="WizardStats" type="Control" node_paths=PackedStringArray("frames")]
-custom_minimum_size = Vector2(153.6, 115.2)
+custom_minimum_size = Vector2(154, 115)
 layout_mode = 3
 anchors_preset = 0
-offset_right = 153.6
-offset_bottom = 115.2
+offset_right = 154.0
+offset_bottom = 115.0
 mouse_filter = 2
 script = ExtResource("1_stats")
-hud_scale = ExtResource("4_scale")
 frames = [NodePath("Souls/Frame"), NodePath("Mana/Frame"), NodePath("Health/Frame")]
 
 [node name="Souls" type="Control" parent="."]

@@ -5,7 +5,7 @@ extends Node
 ## and quits. It only watches: it plays no input and moves no actor; the camera is its own.
 ## It lives in a subfolder because AgentKit mounts every .gd of agent/harness/ itself.
 ## Args after `--`: --map=<tag> --god=<god of the local wizard> [--biome=<god whose land the map wears; default --god>] [--ai-god=<god>] [--wizard=<tag>] [--after=<s> before the first
-## round] [--shots=<n> rounds] [--every=<s>, from 0.02: a burst of shots; the files end in the milliseconds, _t001500] [--out=<dir>] [--views=wizard,wizard_close,halo,foe_close,aim,scar,zone,rift,cloud,tornado,tornado_far,overview,fountain,manahoar,tower,wall,ground,rim] [--ground-at=<x>,<z> world metres, the point the "ground" view stands over; default the local wizard] [--ground-yaw=<degrees> where it looks, 0 = toward -z] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
+## round] [--shots=<n> rounds] [--every=<s>, from 0.02: a burst of shots; the files end in the milliseconds, _t001500] [--out=<dir>] [--views=wizard,wizard_close,halo,foe_close,aim,scar,zone,rift,cloud,tornado,tornado_far,overview,fountain,manahoar,tower,wall,ground,rim,hud] [hud view (055h-1): the game's own camera and HUD as the player sees them, plus a <png>.json with every widget's rectangle, the cursor size and the pointer/world check; --mana=<0..1> sets the wizard's mana, --select=<n> selects up to n of his creatures, --radial opens the order menu in the middle; the window size is the run's (agent/harness/godot60_res.sh PT_RES) and --ui-scale=<0.75..1.4> the interface size] [--ground-at=<x>,<z> world metres, the point the "ground" view stands over; default the local wizard] [--ground-yaw=<degrees> where it looks, 0 = toward -z] [--hover=wizard] [--structure=htlm|pcas, the Manalith or the Shrine of the wizard's god raised over the free fountain closest to him, before the first round (no casting time, no mana); the match's own flags
 ## [--cast=<spell tag>[,<tag>…], the local wizard casts them one after the other once --after has passed, before the first round: a spell that aims at himself (a ward, Healing Aura) on himself,
 ## one that aims at a soul (pmcd, dnws, deda) on the closest soul he may fetch (the harness makes one when there is none), a wall (lwrf, laws, laww, lawv, cnef) on the ground half way to the closest enemy (--cast-wait=6 to see it grown); any other on the closest enemy (a zone, on the ground at its feet; Rainbow on himself, the first body of its chain; 061e needs --level=4 or more: ntlc, wobr, rifd, olah; 061j needs --level=8: rter with --god=persephone, nrot with --god=stratos); 061i needs --level=8 or more: mrhc, egar, pavi, ivob, taed (the "carrier" view follows the carrier; the report prints the side, rage and swelling of the closest enemy); mana is filled first; --cast-wait=<s> is the wait after the last cast (a cloud rains after its cast: 10 shows the rain, 14 Cloudkill's bolts; Explosion goes off 3.8 s after it starts: 4.5)] (--seed=…, --quality=low|medium|high…) go through as usual. Headless runs the same clock and saves nothing.
 ## Windowed: `-- --agent=flow --flow=match_shots.json` (the flow gives the sandbox that applies the quality preset).
@@ -83,6 +83,9 @@ const TAG_MANAHOAR := &"oham"
 @export var camera: Camera3D
 
 const GroundGrid := preload("res://agent/harness/match_shots/ground_grid.gd")
+const HudLayout := preload("res://agent/harness/match_shots/hud_layout.gd")
+## selection.gd has no class_name.
+const SelectionScript := preload("res://scenes/orders/selection.gd")
 
 var _shot_count := 0
 ## Where the last --cast aimed (the place of the foe it named): the "aim" view frames it, to see a mark or a fall there after the target is gone.
@@ -245,6 +248,9 @@ func _preset(world: MatchWorld) -> String:
 
 
 func _shoot(world: MatchWorld, view: String, file: String) -> void:
+	if view == "hud":
+		await _shoot_hud(world, file)
+		return
 	var wizard := world.local_wizard()
 	var focus := wizard.global_transform.origin
 	var spot := Vector3.ZERO
@@ -408,6 +414,32 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 	await _save(file)
 	if view == "ground":
 		GroundGrid.write(camera, TerrainShape.of(world), _ground_at(focus), ground_grid_reach_m, ProjectSettings.globalize_path(file.get_basename() + ".json"))
+
+
+## The "hud" view: the game's camera, the HUD as the player sees it (mana from --mana, creatures from --select, the order menu from --radial) and
+## the measurements of HudLayout next to the PNG.
+func _shoot_hud(world: MatchWorld, file: String) -> void:
+	var wizard := world.local_wizard() as WizardBody
+	var game_camera := world.get_node("Camera") as Camera3D
+	game_camera.make_current()
+	if not arg("mana").is_empty():
+		var pool := wizard.get_node("ManaPool") as ManaPool
+		pool.current = pool.maximum * clampf(float(arg("mana")), 0.0, 1.0)
+	var wanted := int(arg("select", "0"))
+	if wanted > 0:
+		var mine: Array[Node3D] = []
+		for node in get_tree().get_nodes_in_group(GROUP_UNIT):
+			var unit := node as UnitBody
+			if unit != null and unit.owner_slot == wizard.owner_slot and not unit.is_dead() and mine.size() < wanted:
+				mine.append(unit)
+		(world.get_node("Selection") as SelectionScript).select_only(mine)
+		print("match_shots: %d creatures selected (asked %d)" % [mine.size(), wanted])
+	var menu := world.find_child("RadialMenu", true, false) as RadialMenu
+	if menu != null and OS.get_cmdline_user_args().has("--radial"):
+		menu.open_at(world.get_viewport().get_visible_rect().size * 0.5)
+		await get_tree().create_timer(0.4).timeout
+	await _save(file)
+	HudLayout.write(world, game_camera, ProjectSettings.globalize_path(file.get_basename() + ".json"))
 
 
 ## The top of the wall closest to `focus` in the map's ground mesh (a vertex marked as wall with UV.y 0), or INF without walls.

@@ -138,8 +138,8 @@
   },
   {
    "call": {
-    "harness": "hud_scale_probe",
-    "method": "set_hud",
+    "harness": "ui_scale_probe",
+    "method": "set_ui",
     "args": [
      1.2
     ]
@@ -165,8 +165,8 @@
   },
   {
    "call": {
-    "harness": "hud_scale_probe",
-    "method": "set_hud",
+    "harness": "ui_scale_probe",
+    "method": "set_ui",
     "args": [
      0.6
     ]
@@ -192,10 +192,10 @@
   },
   {
    "call": {
-    "harness": "hud_scale_probe",
-    "method": "set_hud",
+    "harness": "ui_scale_probe",
+    "method": "set_ui",
     "args": [
-     0.8
+     1.0
     ]
    }
   },

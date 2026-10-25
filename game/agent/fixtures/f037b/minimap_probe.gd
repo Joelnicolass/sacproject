@@ -4,7 +4,7 @@ extends Node
 ## calculation, how the Druid's bearing changes when the camera turns, and what the draw costs. Read only.
 ## It also holds a button that shows the baked terrain full screen (a player action the flow clicks, for the 037a capture).
 ##
-##   wizard_err_px    screen px between the wizard's icon and where the formula (camera yaw, HudScale, bottom-right corner) says it goes
+##   wizard_err_px    screen px between the wizard's icon and where the formula (camera yaw, canvas size, bottom-right corner) says it goes
 ##   bearing_deg      bearing of the first creature of another side from the circle's center (0 = up, clockwise)
 ##   bearing_change_deg  absolute change of that bearing since the first frame it was seen (wrapped to 0…180)
 ##   vision_err_deg   degrees between the wedge's bearing and where the wizard faces relative to the camera (formula: facing against the camera's forward and right)
@@ -90,10 +90,9 @@ func _measure_wizard(markers: Control) -> void:
 	var eye := Vector2(camera.global_position.x, camera.global_position.z)
 	var center_world := wizard + forward * eye.distance_to(wizard) * minimap.view.lead_factor
 	var offset := wizard - center_world
-	var height := minimap.get_viewport().get_visible_rect().size
-	var factor := minimap.hud_scale.factor(height.y)
-	var screen_center := height - Vector2.ONE * minimap.radius() * factor
-	var expected := screen_center + Vector2(offset.dot(right), -offset.dot(forward)) * factor / minimap.zoom
+	var canvas := minimap.get_viewport().get_visible_rect().size
+	var screen_center := canvas - Vector2.ONE * minimap.radius()
+	var expected := screen_center + Vector2(offset.dot(right), -offset.dot(forward)) / minimap.zoom
 	var actual := markers.get_global_transform() * icon
 	wizard_err_px = actual.distance_to(expected)
 

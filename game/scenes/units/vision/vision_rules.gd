@@ -49,20 +49,37 @@ static func slot_of(node: Object) -> int:
 	return int(slot) if slot != null else 0
 
 
+static var _raw: Array = []
+static var _sorted: Array = []
+
+
 ## Of `candidates` (any order, repeats allowed), the nodes other than `me` that are in the tree, not corpses, and inside the sight
-## shape and cone around `center`; sorted by name.
+## shape and cone around `center`; sorted by name. The sorted, de-duplicated list is kept while the candidates do not change (every body
+## of a tick asks with the same list), so a look costs one pass over it.
 static func filter(candidates: Array, me: Node3D, round_shape: bool, center: Vector3, range_m: float, fov_deg: float) -> Array[Node3D]:
+	if candidates != _raw:
+		_raw = candidates
+		var done := {}
+		_sorted = []
+		for node: Variant in candidates:
+			if node is Node3D and not done.has(node.get_instance_id()):
+				done[node.get_instance_id()] = true
+				_sorted.append(node)
+		_sorted.sort_custom(by_name)
 	var found: Array[Node3D] = []
-	var done := {}
+	var limit := range_m * range_m
 	var forward := me.global_basis.z
-	for node: Variant in candidates:
-		var other := node as Node3D
-		if other == null or other == me or done.has(other.get_instance_id()) or not other.is_inside_tree() or other.is_in_group(&"corpse"):
+	for node: Variant in _sorted:
+		if not is_instance_valid(node) or node == me:
 			continue
-		done[other.get_instance_id()] = true
-		if covers(round_shape, center, other.global_position, range_m, forward, fov_deg):
+		var other: Node3D = node
+		var offset := other.global_position - center
+		if not round_shape:
+			offset.y = 0.0
+		if offset.length_squared() > limit or not in_cone(forward, offset, fov_deg):
+			continue
+		if other.is_inside_tree() and not other.is_in_group(&"corpse"):
 			found.append(other)
-	found.sort_custom(by_name)
 	return found
 
 

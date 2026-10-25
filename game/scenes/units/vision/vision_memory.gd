@@ -4,28 +4,60 @@ extends RefCounted
 ## What one Vision keeps in mind: the foes it saw lately (id -> tick) and the sides that saw its body strike one of theirs (side -> tick).
 ## It only stores and forgets; it does not look (Vision) nor combine sides (VisionSides).
 
-var forget_ticks := 0
-var _marks: Dictionary = {}
+var forget_ticks := 0:
+	set(value):
+		forget_ticks = value
+		VisionSides.touch()
+## The foes in sight at the last look (`_stamp`) and, once they left, the tick they were last seen (or FOREVER).
+var _current: Dictionary = {}
+var _stamp := -1
+var _older: Dictionary = {}
 var _exposed: Dictionary = {}
 
 
 ## The ids still in mind at tick `now`; the lapsed ones (and the freed bodies) are dropped on the way.
 func ids(now: int) -> Array:
-	return _alive(_marks, now, true)
+	var found: Array = _alive(_older, now, true)
+	if _stamp >= 0 and not VisionRules.lapsed(_stamp, now, forget_ticks):
+		found.append_array(_current.keys())
+	return found
 
 
-## Keeps in mind the foes (and founts) among `sight` for the side `mine` of `observer`: a structure or fount for good, a creature until
-## `forget_ticks` pass. A foe new to the memory makes the unions of the sides stale (VisionSides).
+## The first tick after `now` at which something here lapses (a very large number when nothing will).
+func next_lapse(now: int) -> int:
+	var soonest := Vision.FOREVER
+	if not _current.is_empty():
+		soonest = _stamp + forget_ticks
+	for id: int in _older:
+		if _older[id] != Vision.FOREVER:
+			soonest = mini(soonest, _older[id] + forget_ticks)
+	return maxi(soonest, now + 1)
+
+
+## Keeps in mind the foes (and founts) among `sight` for the side `mine` of `observer`, as of tick `now`. A foe that stays in sight
+## is renewed by the new look; one that left is remembered for `forget_ticks` from the last look that had it; a structure or fount for
+## good. A foe new to the memory makes the unions of the sides stale (VisionSides).
 func take_in(sight: Array, mine: int, observer: Node3D, now: int) -> void:
 	if mine <= 0:
 		return
+	var fresh := {}
 	var learned := false
-	for other: Variant in sight:
-		var node := other as Node3D
-		var fount := node.is_in_group(&"manafount")
-		if fount or TargetRules.is_valid_foe_of(mine, node, observer):
-			learned = learned or not _marks.has(node.get_instance_id())
-			_marks[node.get_instance_id()] = Vision.FOREVER if fount or node.is_in_group(&"structure") else now
+	for node: Node3D in sight:
+		var kind := VisionSides.mark_kind(mine, node, observer)
+		if kind == 0:
+			continue
+		var id := node.get_instance_id()
+		fresh[id] = true
+		learned = learned or not (_current.has(id) or _older.has(id))
+		if kind == 2:
+			_older[id] = Vision.FOREVER
+		else:
+			_older.erase(id)
+	for id: int in _current:
+		if not fresh.has(id) and not _older.has(id):
+			_older[id] = _stamp
+	_current = fresh
+	_stamp = now
 	if learned:
 		VisionSides.touch()
 

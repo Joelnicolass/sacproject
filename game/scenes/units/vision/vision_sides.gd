@@ -11,6 +11,9 @@ static var _visions: Array[Vision] = []
 static var _version := 0
 ## side -> [tick, version, ids]: the union of that side, valid while tick and version are the same.
 static var _cache: Dictionary = {}
+## slot -> {id -> 0 not a foe, 1 a foe, 2 a foe that never moves}, for the tick `_kind_tick`: asked once per body and tick.
+static var _kinds: Dictionary = {}
+static var _kind_tick := -1
 
 
 static func join(vision: Vision) -> void:
@@ -64,22 +67,43 @@ static func reveal(attacker: Node3D, victim: Node3D) -> void:
 		hurt.hurt_by.emit(attacker)
 
 
-## The ids `side` knows now. Cached per tick; rebuilt when any Vision changed.
+## What `node` is for the Vision of side `mine`: 0 not worth remembering, 1 a foe, 2 a foe that stands for good (structure, mana fount).
+static func mark_kind(mine: int, node: Node3D, observer: Node3D) -> int:
+	var now := MatchClock.now()
+	if now != _kind_tick:
+		_kind_tick = now
+		_kinds.clear()
+	var of_slot: Dictionary = _kinds.get(mine, {})
+	_kinds[mine] = of_slot
+	var id := node.get_instance_id()
+	if not of_slot.has(id):
+		var fount := node.is_in_group(&"manafount")
+		var kind := 0
+		if fount or TargetRules.is_valid_foe_of(mine, node, observer):
+			kind = 2 if fount or node.is_in_group(&"structure") else 1
+		of_slot[id] = kind
+	return of_slot[id]
+
+
+## The ids `side` knows now. Kept while no Vision learned a new foe and nothing has lapsed yet; rebuilt otherwise.
 static func known(side: int) -> Dictionary:
 	var now := MatchClock.now()
 	var cached: Array = _cache.get(side, [])
-	if not cached.is_empty() and cached[0] == now and cached[1] == _version:
-		return cached[2]
+	if not cached.is_empty() and cached[0] <= now and now < cached[1] and cached[2] == _version:
+		return cached[3]
 	var ids := {}
 	var allies_of := {}
+	var until := Vision.FOREVER
 	for vision in _visions:
 		if _hears(vision, vision.side(), side, allies_of):
 			for id in vision.memory.ids(now):
 				ids[id] = true
+			until = mini(until, vision.memory.next_lapse(now))
 		for exposed in vision.memory.exposed_sides(now):
+			until = now + 1
 			if _hears(vision, exposed, side, allies_of):
 				ids[vision.body.get_instance_id()] = true
-	_cache[side] = [now, _version, ids]
+	_cache[side] = [now, until, _version, ids]
 	return ids
 
 

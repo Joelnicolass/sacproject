@@ -218,6 +218,7 @@ func _vision_expiry() -> Dictionary:
 	var foe: Node3D = set["foes"][0]
 	var building: Node3D = set["foes"][1]
 	building.add_to_group("structure")
+	VisionSides._kind_tick = -1
 	body.vision.memory.forget_ticks = 6
 	body.vision.refresh()
 	var marked := VisionSides.sees(1, foe) and VisionSides.sees(1, building)

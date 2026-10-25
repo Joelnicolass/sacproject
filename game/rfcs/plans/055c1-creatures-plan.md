@@ -2,6 +2,13 @@
 
 > **Aprobado por el usuario (2026-10-25)** con todas las recomendaciones: la biblioteca de clips es del modelo; extracción única con el migrador (`new_creature --sync` para los propios); el dedicado carga las bibliotecas con tope de +1 s y +100 MB; los `.res` van a git normal si pesan ≤40 MB, si no a LFS; la escena por criatura va en 055s; se borra `CreatureType.god`; las milésimas pasan a escala 1,0 (si un digest cambia, `_permille`); regla C18c; las 7 pasivas y nubes se renombran ahora; el mago toma su tipo del pick; `testmonster.tres` conserva el nombre; las pistas de `Events` van dentro de cada animación si c1-0 lo confirma. Los cortes se implementan sin Godot y se prueban al final; c1-0 (mediciones) lo corre el orquestador.
 
+> **Resultados de c1-0 (2026-10-25, medidos por el orquestador con `debug/creatures/c1_0/`):**
+> - Peso de los `.res` de los 74 modelos: 34,7 MB crudos (17 MB comprimidos) → **git normal** (límite 40 MB).
+> - Carga de todas las bibliotecas estimada en **~770 ms y ~46 MB** (tope +1 s / +100 MB) → OK.
+> - El `AnimationTree` dispara **13/13 marcadores** y **14/14 pistas de método** en el cuadro exacto, también con el crossfade de 0,15 s; el roundtrip del `.res` conserva marcadores y largo en cuadros enteros → **`Events` va dentro de cada animación** (pregunta 12: sí).
+> - La variante sin custom timeline (`oneshot_none`) vuelve sola a idle en los roles de un golpe (19/19); `plain`/`timeline` no (0/19).
+> - Import nativo del `.glb`: guarda un `.res` por rol con nombre (sí), pero **pierde claves** (403 de 480) y no trae marcadores → se usa la **extracción única con el migrador** (pregunta 2), no el import nativo.
+
 Fuente: RFC-055 §13.2 (fila `CreatureType`, «Herramientas de bake»), §13.2b filas **C-1**, **C-2** y **C-8e**, §15 («055c1: `ClipTiming` pasa a marcadores `hit`…»); auditoría `rfcs/research/055R-legacy-audit.md` §3.1, §3.2 y fila «Animación» de §3.8; planes ya hechos `055i-a-identity-plan.md` (identidad en UI, lobby y flujo) y `055o-audio-plan.md` (055o-b: `CreatureType.sounds`/`WizardType.sounds` tipados). Medido en `main` = `ec85bccd` y revisado en `11d8da46` (2026-10-25), rutas relativas a `game/`. En `11d8da46` ya están mergeados 055h-4 (`1930942c`) y 055o-d: los conteos del alcance son los mismos (solo C9 bajó a 319). No hay código escrito; no se corrió Godot.
 
 **Contradicciones entre artefactos (gana lo que se cita):**

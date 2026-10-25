@@ -27,6 +27,8 @@ const CUSTOM_MODELS := "res://assets/custom/models/"
 const SETTING_INSTALL := "sacrifice/original_install_path"
 const LABEL_ORIGINAL := " (requiere juego original)"
 
+## 055s s4: the dedicated server export drops audio and clip tracks (see dedicated_strip.gd).
+var _dedicated_strip := preload("res://addons/sacrifice_tools/dedicated_strip.gd").new()
 var _dialog: AcceptDialog
 var _picker: EditorFileDialog
 var _picking: Dictionary = {}
@@ -41,6 +43,7 @@ var _env_set := false
 
 
 func _enter_tree() -> void:
+	add_export_plugin(_dedicated_strip)
 	_register_settings()
 	_items = ITEMS + ITEMS_ORIGINAL
 	for item: Dictionary in _items:
@@ -67,6 +70,7 @@ func _enter_tree() -> void:
 
 
 func _exit_tree() -> void:
+	remove_export_plugin(_dedicated_strip)
 	for item: Dictionary in _items:
 		remove_tool_menu_item(_label(item))
 	if _pid > 0 and OS.is_process_running(_pid):

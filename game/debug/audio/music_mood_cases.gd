@@ -8,10 +8,10 @@ extends RefCounted
 ## - gauge_hysteresis (CombatGauge): enter at `enter`, stays under `exit` until `hold_s`, then off; a hit on the bound wizard
 ##   keeps the battle on for `wizard_damage_s`.
 ## - music_director (fixture set assigned in `music`): calm, then battle when the gauge flips (a track of the set), the old
-##   player stops after the crossfade; victory is not restarted; a god with no `music` plays `default_music`.
+##   player stops after the crossfade; victory is not restarted; a god whose look has no `music` plays `default_music`.
 ## - ambience_director (fixture set assigned in `ambience`): the bed plays on its own player, one-shots come on the set's
 ##   interval, around the listener, emitter `ambience`.
-## - gods_typed: the five GodType carry their music and their ambience.
+## - gods_typed: the five GodType looks carry their music and their ambience.
 ## - global_rng: the directors and the gauge draw nothing from the global generator.
 ## - original_loops (only when data/audio/ has the original's sets): every ambience bed is a WAV that loops by itself
 ##   (`edit/loop_mode=2`), the looping moods' MP3s loop (`loop=true`) and victory/defeat do not.
@@ -156,9 +156,10 @@ func _director(host: Node) -> Dictionary:
 	checks["calm"] = director.mood == MusicMood.CALM and _logged(MusicMood.CALM)
 	checks["two_players"] = director.track_a != null and director.track_b != null and director.get_child_count() == 2
 	var god := GodType.new()
+	god.look = LookProfile.new()
 	checks["god_without_music_default"] = director.music_of(god) == director.default_music
-	god.music = MusicSet.new()
-	checks["god_music"] = director.music_of(god) == god.music
+	god.look.music = MusicSet.new()
+	checks["god_music"] = director.music_of(god) == god.look.music
 	gauge.force(1.0)
 	var battle_tracks := director.music_set.tracks(MusicMood.BATTLE)
 	checks["battle"] = director.mood == MusicMood.BATTLE and _logged(MusicMood.BATTLE) \
@@ -239,9 +240,10 @@ func _gods_typed() -> Dictionary:
 	var checks := {}
 	for god in GODS:
 		var type := load("res://data/gods/%s.tres" % god) as GodType
-		checks["%s_music" % god] = type != null and type.music != null and type.music.resource_path == "res://data/audio/music/%s.tres" % god
-		checks["%s_ambience" % god] = type != null and type.ambience != null \
-			and type.ambience.resource_path == "res://data/audio/ambience/%s.tres" % god and not AmbienceDirector.one_shot_cues(type.ambience).is_empty()
+		var look := type.look if type != null else null
+		checks["%s_music" % god] = look != null and look.music != null and look.music.resource_path == "res://data/audio/music/%s.tres" % god
+		checks["%s_ambience" % god] = look != null and look.ambience != null \
+			and look.ambience.resource_path == "res://data/audio/ambience/%s.tres" % god and not AmbienceDirector.one_shot_cues(look.ambience).is_empty()
 	return _verdict(checks)
 
 
@@ -249,13 +251,13 @@ func _original_loops() -> Dictionary:
 	var checks := {}
 	for god in GODS:
 		var type := load("res://data/gods/%s.tres" % god) as GodType
-		var ambience := type.ambience if type != null else null
+		var ambience := type.look.ambience if type != null and type.look != null else null
 		if ambience != null and ambience.bed != null:
 			var loops := not ambience.bed.streams.is_empty()
 			for stream in ambience.bed.streams:
 				loops = loops and stream is AudioStreamWAV and (stream as AudioStreamWAV).loop_mode != AudioStreamWAV.LOOP_DISABLED
 			checks["bed_loops_%s" % god] = loops
-		var music := type.music if type != null else null
+		var music := type.look.music if type != null and type.look != null else null
 		if music == null:
 			continue
 		for mood in MusicMood.ALL:
@@ -286,8 +288,9 @@ func _closed(host: Node) -> Dictionary:
 	for _i in 3:
 		await host.get_tree().process_frame
 	var god := GodType.new()
-	god.music = MusicSet.new()
-	god.ambience = AmbienceSet.new()
+	god.look = LookProfile.new()
+	god.look.music = MusicSet.new()
+	god.look.ambience = AmbienceSet.new()
 	music.use_god(god)
 	ambience.use_god(god)
 	gauge.force(1.0)

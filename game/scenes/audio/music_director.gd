@@ -9,7 +9,7 @@ extends Node
 ## - the result: `match_state` (MatchState, or the first of group «match_state») has_result / won(MpKit.local_slot());
 ## - rituals (group «ritual», replicated on every peer): one running within `ritual_radius_m` of the camera, and the
 ##   desecrations that involve the local side.
-## The set: `music` (the menu's in boot.tscn, a fixture in the lab), or the `music` of the GodType that `biome` applies
+## The set: `music` (the menu's in boot.tscn, a fixture in the lab), or the look's `music` of the GodType that `biome` applies
 ## (MatchBiome.applied(god)); a god with no set of its own uses `default_music` (music/common.tres in the match).
 ## `menu` keeps the mood at calm. `victory` and `defeat` play once: the mood stays, the track is not restarted.
 ## Each change goes to SoundBus's log as emitter `music`, event = the mood. With the AudioGate closed (dedicated, room
@@ -82,9 +82,9 @@ func use_god(god: GodType) -> void:
 	use_music(music_of(god))
 
 
-## The set `god` plays: its own `music`, else `default_music`; null when neither exists.
+## The set `god` plays: its look's `music`, else `default_music`; null when neither exists.
 func music_of(god: GodType) -> MusicSet:
-	return god.music if god != null and god.music != null else default_music
+	return god.look.music if god != null and god.look != null and god.look.music != null else default_music
 
 
 ## Plays the mood of `next_set` from the start.

@@ -6,6 +6,8 @@
 [ext_resource type="Material" path="res://assets/original/themes/stratos/ground_classic.tres" id="3_lojgr"]
 [ext_resource type="Resource" path="res://data/look/sky/stratos_sky.tres" id="9_sky"]
 [ext_resource type="Resource" path="res://data/look/grass/stratos_grass.tres" id="10_grass"]
+[ext_resource type="Resource" path="res://data/audio/music/stratos.tres" id="gm_music"]
+[ext_resource type="Resource" path="res://data/audio/ambience/stratos.tres" id="gm_ambience"]
 
 [resource]
 script = ExtResource("1_p")
@@ -16,3 +18,5 @@ light = ExtResource("2_light")
 glow = ExtResource("1_dp2kx")
 ground_classic = ExtResource("3_lojgr")
 grass = ExtResource("10_grass")
+music = ExtResource("gm_music")
+ambience = ExtResource("gm_ambience")

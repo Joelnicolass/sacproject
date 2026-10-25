@@ -18,10 +18,6 @@ extends Resource
 ## The AI profile of a wizard of this god; empty: the original's profile.
 @export var ai_profile: AiProfile
 @export var book: GodBook
-## What plays in a match on this god's land: the music by mood and the ambience (bed and one-shots). Empty: the match's
-## default music, and no ambience.
-@export var music: MusicSet
-@export var ambience: AmbienceSet
 ## The towers this god raises: one row per structure spell (Manalith, Shrine) with the scene of its own model.
 @export var structures: Array[GodStructure] = []
 ## Lobby (055i-a): false takes this god out of the menu, the AI picker and the rooms without deleting the file.

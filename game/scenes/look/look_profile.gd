@@ -27,3 +27,9 @@ extends Resource
 @export var ground: GodGround
 ## The stylized grass around the camera.
 @export var grass: GrassSet
+
+@export_group("Audio")
+## What plays in a match on this land: the music by mood. Empty: the match's default music.
+@export var music: MusicSet
+## The ambience of this land (bed and one-shots). Empty: no ambience.
+@export var ambience: AmbienceSet

@@ -1,6 +1,6 @@
 # data/audio/
 
-Sets de sonido (RFC-052), un `.tres` por emisor. El de una criatura o un mago se asigna en su ficha: `CreatureType.sounds` / `WizardType.sounds` (055o-b). La música y el ambiente de un dios se asignan en su ficha: `GodType.music` / `GodType.ambience` (055o-c). El consejero vive en `scenes/audio/advisor/advisor.tscn` (cada `AdvisorLine` lleva su sonido) y el sacrificio y las almas llevan sus cues en `ritual.tscn` y `soul.tscn`. La UI (clics y menú X) es tipada: `cues/ui_click.tres`, `ui_book_click.tres`, `menu_open.tres` y `menu_back.tres` (055o-d). Nada se busca por ruta ni por texto: cada sonido se arrastra a su campo.
+Sets de sonido (RFC-052), un `.tres` por emisor. El de una criatura o un mago se asigna en su ficha: `CreatureType.sounds` / `WizardType.sounds` (055o-b). La música y el ambiente de un dios se asignan en su look (presentación, el dedicado no lo aplica): `LookProfile.music` / `LookProfile.ambience` en `data/look/<dios>.tres`. El consejero vive en `scenes/audio/advisor/advisor.tscn` (cada `AdvisorLine` lleva su sonido) y el sacrificio y las almas llevan sus cues en `ritual.tscn` y `soul.tscn`. La UI (clics y menú X) es tipada: `cues/ui_click.tres`, `ui_book_click.tres`, `menu_open.tres` y `menu_back.tres` (055o-d). Nada se busca por ruta ni por texto: cada sonido se arrastra a su campo.
 
 ## Cómo se asigna un sonido a una criatura
 
@@ -14,8 +14,8 @@ Sets de sonido (RFC-052), un `.tres` por emisor. El de una criatura o un mago se
 | `wizards/<nombre>.tres` | `SoundSet` de un mago | `wizardSSET` del `WIZD` |
 | `melee/<set>.tres` | sets de golpes compartidos (`fist`, `saw`, `stab`) con `swing` y `shoot` | `meleeSSET`; es el `fallback` de la criatura o del mago |
 | `cues/<nombre>.tres` | un `SoundCue` por sonido de FX, de emisor del mundo, del sacrificio o de las almas (`fireball_cast.tres`, `fountain_loop.tres`, `sacrifice_round.tres`, `soul.tres`…); lo arrastrás a `ParticleType.sound`, `BeamType.sound`, `SoundEmitter3D.cue`, `RitualSounds` o `SoulSounds` | migrado de `fx_sounds.tres` (055o-a) y de `world.tres` (055o-c), sobre los `SAMP` del original |
-| `music/<dios>.tres`, `music/common.tres`, `music/menu.tres` | `MusicSet` (el del dios, en `GodType.music`; `common` es el `default_music` de `match.tscn`; `menu` va en `boot.tscn`): `calm` del dios (`<dios>_normal`) con `fallback` a `common` (battle 1-5, sacrifice 1, sacrifice victory/losing, victory y defeat theme); el menú toca `menu` y guarda God Realm en `extras` | a mano (052f), sobre los MP3 |
-| `ambience/<dios>.tres` | `AmbienceSet` (el del dios, en `GodType.ambience`): fondo en bucle y `one_shots` (los pájaros, el viento, la lava) | a mano (052g); los `A*` de `spel` pasaron a `one_shots` en 055o-c |
+| `music/<dios>.tres`, `music/common.tres`, `music/menu.tres` | `MusicSet` (el del dios, en `LookProfile.music`; `common` es el `default_music` de `match.tscn`; `menu` va en `boot.tscn`): `calm` del dios (`<dios>_normal`) con `fallback` a `common` (battle 1-5, sacrifice 1, sacrifice victory/losing, victory y defeat theme); el menú toca `menu` y guarda God Realm en `extras` | a mano (052f), sobre los MP3 |
+| `ambience/<dios>.tres` | `AmbienceSet` (el del dios, en `LookProfile.ambience`): fondo en bucle y `one_shots` (los pájaros, el viento, la lava) | a mano (052g); los `A*` de `spel` pasaron a `one_shots` en 055o-c |
 
 
 ## Sonidos propios (no necesitan el juego original)

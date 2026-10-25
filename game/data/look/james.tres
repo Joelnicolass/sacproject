@@ -6,6 +6,8 @@
 [ext_resource type="Material" path="res://assets/original/themes/james/ground_classic.tres" id="3_gfkoj"]
 [ext_resource type="Resource" path="res://data/look/sky/james_sky.tres" id="9_sky"]
 [ext_resource type="Resource" path="res://data/look/grass/james_grass.tres" id="10_grass"]
+[ext_resource type="Resource" path="res://data/audio/music/james.tres" id="gm_music"]
+[ext_resource type="Resource" path="res://data/audio/ambience/james.tres" id="gm_ambience"]
 
 [resource]
 script = ExtResource("1_p")
@@ -16,3 +18,5 @@ light = ExtResource("2_light")
 glow = ExtResource("1_ehq6w")
 ground_classic = ExtResource("3_gfkoj")
 grass = ExtResource("10_grass")
+music = ExtResource("gm_music")
+ambience = ExtResource("gm_ambience")

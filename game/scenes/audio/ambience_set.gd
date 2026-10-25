@@ -4,7 +4,7 @@ extends Resource
 
 ## The ambience of one god (data/audio/ambience/<god>.tres), a type template (never written at runtime). AmbienceDirector
 ## plays `bed` in a loop on its own 2D player and, every `interval_s` (drawn with its own generator), one of the one-shots
-## at a point around the listener. It does not say which god uses it: GodType.ambience points here.
+## at a point around the listener. It does not say which god uses it: LookProfile.ambience points here.
 ## - `bed`: a SoundCue whose stream loops by itself (gapless: a WAV with `edit/loop_mode=2` in its .import). Null = none
 ##   (the original has no bed for every god; a custom one goes here).
 ## - `one_shots`: the cues played at random around the listener (the birds, the wind, the lava of the land).

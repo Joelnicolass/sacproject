@@ -12,7 +12,7 @@ extends Node
 ## 052f: `battle` (a default event: the run fails without it) counts the music's mood: the duel next to the local wizard,
 ## held in real time (audio_net_duel `battle_hold_ms`), puts its CombatGauge (match.tscn) over `enter` from the replicated
 ## modes, and its MusicDirector logs emitter `music`, event `battle`. The music is the one of the god of the land
-## (GodType.music, else the match's default_music).
+## (LookProfile.music of GodType.look, else the match's default_music).
 ## --audio-net-trace prints every change of the creatures (mode, swings, shots, position) and the gauge (diagnosis).
 ## Flags: --e2e-name, --mp-port (the kit), --audio-events=summon,swing,damaged,death,fx,advice,battle (each needs a played entry of a
 ## creature, fx of an FX, advice of the advisor),

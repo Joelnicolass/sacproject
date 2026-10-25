@@ -8,6 +8,8 @@ extends Node
 signal status_changed(text: String)
 signal world_loading
 signal world_changed(id: StringName)
+## The server ended the match (MpMatch.finish): every peer gets the result.
+signal match_finished(result: Dictionary)
 
 enum StartWhen {
 	LISTEN_IMMEDIATE, ## host_lan() enters the world now
@@ -18,6 +20,8 @@ enum StartWhen {
 ## Every network setting in one .tres (transport, port, players, TLS). Set = it replaces max_players,
 ## custom_channels and the port here. Empty = the fields below and the flags, as before.
 @export var net_config: MpNetConfig
+## The online lobby screen. A match joined with join_match() comes back here when it ends or the server is lost.
+@export_file("*.tscn") var lobby_path: String = ""
 @export var boot_scene: PackedScene
 @export var world_scene: PackedScene
 @export var boot_path: String = ""
@@ -48,6 +52,9 @@ const GROUP := &"mp_flow"
 
 var match_running: bool = false
 
+var _match_from_lobby: bool = false
+var _tree: SceneTree
+
 var _lan: MpLanBeacon
 
 
@@ -63,6 +70,7 @@ static func find_in_tree(from: Node) -> MpFlow:
 
 func _enter_tree() -> void:
 	add_to_group(GROUP)
+	_tree = get_tree()
 
 
 func _ready() -> void:
@@ -91,6 +99,10 @@ func _ready() -> void:
 	MpKit.join_failed.connect(_on_join_failed)
 	MpKit.server_lost.connect(_on_server_lost)
 	MpKit.snapshot_received.connect(_on_flow_snapshot)
+	MpKit.session_ended.connect(_on_session_ended)
+	## A dedicated started by the room server: the ticket says who may join (unless the game armed its own agent).
+	if not MpBoot.user_value("match-ticket-file", "").is_empty():
+		_ensure_match_agent.call_deferred()
 	var role := MpBoot.role()
 	if role == "server":
 		var err := MpKit.host_dedicated()
@@ -122,10 +134,12 @@ func _ready() -> void:
 		_set_status(dedicated_status % MpKit.port)
 
 
+## Moves this flow under the root. Works even when a scene change already took the boot scene out of the tree
+## (Godot removes the outgoing scene at once and frees it at the end of the frame).
 func _adopt() -> void:
-	if not is_inside_tree() or get_parent() == get_tree().root:
+	if _tree == null or get_parent() == null or get_parent() == _tree.root:
 		return
-	var root := get_tree().root
+	var root := _tree.root
 	for child in root.get_children():
 		if child is MpFlow and child != self:
 			queue_free()
@@ -146,6 +160,8 @@ func _exit_tree() -> void:
 		MpKit.server_lost.disconnect(_on_server_lost)
 	if MpKit.snapshot_received.is_connected(_on_flow_snapshot):
 		MpKit.snapshot_received.disconnect(_on_flow_snapshot)
+	if MpKit.session_ended.is_connected(_on_session_ended):
+		MpKit.session_ended.disconnect(_on_session_ended)
 
 
 func play_solo() -> void:
@@ -201,6 +217,15 @@ func join_address(text: String, ticket: String = "") -> Error:
 			return ERR_INVALID_PARAMETER
 		p_port = raw.to_int()
 	return join_endpoint(host, p_port, ticket)
+
+
+## The lobby's match_ready(host, port, token): join that match; when it ends, come back to `lobby_path`.
+func join_match(host: String, p_port: int, token: String) -> Error:
+	_match_from_lobby = true
+	var err := join_endpoint(host if not host.is_empty() else "127.0.0.1", p_port, token)
+	if err != OK:
+		_match_from_lobby = false
+	return err
 
 
 ## Join a dedicated by host (IPv4 or name) and port; `ticket` is presented for admission.
@@ -327,7 +352,41 @@ func _on_server_lost() -> void:
 	match_running = false
 	_stop_lan()
 	_set_status(server_lost_status)
+	if _back_to_lobby():
+		return
 	_go_boot()
+
+
+func _on_session_ended(result: Dictionary) -> void:
+	match_running = false
+	match_finished.emit(result)
+
+
+## A match from the lobby is over: the lobby screen again (it shows the result). False when there is none.
+func _back_to_lobby() -> bool:
+	if not _match_from_lobby or lobby_path.is_empty():
+		return false
+	_match_from_lobby = false
+	MpKit.leave()
+	get_tree().change_scene_to_file(lobby_path)
+	return true
+
+
+## Called by MpMatch (or the game) once the result was shown: leave the match, back to the lobby or the boot.
+func leave_match() -> void:
+	match_running = false
+	if _back_to_lobby():
+		return
+	return_to_boot()
+
+
+func _ensure_match_agent() -> void:
+	## By path, not by class: the flow must not depend on the lobby scripts to load.
+	if MpKit.admission.is_valid() or not get_tree().get_nodes_in_group(&"mp_match_agent").is_empty():
+		return
+	var agent: Node = (load("res://addons/mp_kit/lobby/mp_match_agent.gd") as GDScript).new()
+	agent.name = "MatchAgent"
+	add_child(agent)
 
 
 func _go_boot() -> void:

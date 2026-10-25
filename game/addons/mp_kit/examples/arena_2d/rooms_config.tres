@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="MpLobbyConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/mp_kit/lobby/mp_lobby_config.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+lobby_port = 7700
+seats_per_room = 2
+countdown_s = 3.0
+max_matches = 4
+match_port_min = 7710
+match_port_max = 7719

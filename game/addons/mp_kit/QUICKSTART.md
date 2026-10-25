@@ -104,6 +104,28 @@ Para probar con red mala, agregá a cada proceso `--net-lag-ms=100 --net-jitter-
 
 | Web | exportá con el preset Web (sin threads). El export usa WebSocket solo y oculta Host y la lista LAN: un navegador solo se une. El servidor es un dedicado con `transport = ws` |
 
+### Online: salas y varias partidas en un servidor
+
+Tres escenas y cero glue (el ejemplo las trae: `rooms.tscn`, `lobby.tscn` y el `MpMatch` de `arena.tscn`):
+
+| Dónde | Nodo | Qué hace |
+|---|---|---|
+| Servidor (VPS o tu PC) | **MpRoomServer** en una escena propia, con un **MpLobbyConfig** (`.tres`: puerto, salas, rango de puertos de partida, tiempos) y opcional un **MpRoomRules** | Abre el lobby. Cuando una sala está llena y todos listos, lanza **un proceso dedicado por partida** con un ticket: solo entran los sentados. Correlo con `godot --headless --path . res://rooms.tscn`. Varias partidas a la vez = varios procesos; el tope es `max_matches` |
+| Cliente | **MpLobbyScreen** (`rooms/ui/mp_lobby_screen.tscn`) en una escena; en el boot, `MpBootMenu.lobby_scene_path` muestra el botón *Online rooms* y `MpFlow.lobby_path` dice adónde volver | Conectar con un nombre, ver salas, crear (pública o con código), sentarse, *listo*, chat. Al arrancar la partida se une solo y al terminar vuelve con el resultado |
+| Mundo | **MpMatch** | En el servidor: `all_loaded`, `player_joined`, `player_left`, `player_back`, `player_abandoned`. `finish(resultado)` termina la partida para todos (`finished` en cada peer) y le avisa a la sala |
+
+El proceso de cada partida es tu mismo proyecto con `--dedicated` y un ticket: `MpFlow` arma solo el agente que valida el ticket. Reglas de sala propias (cuántos asientos según el modo, qué personajes valen):
+
+```gdscript
+extends MpRoomRules
+
+func seats_for(options: Dictionary) -> int:
+	return 4 if options.get("mode") == "2v2" else 2
+
+func accept_pick(pick: Dictionary) -> bool:
+	return pick.get("hero") in ["knight", "archer"]
+```
+
 ### Web
 
 Un navegador no puede abrir un servidor ni usar UDP, así que un juego web se une a un dedicado WebSocket (`MpNetConfig.transport = ws`). Escritorio y web no se mezclan: un servidor WebSocket atiende clientes WebSocket. En el campo de dirección del menú sirven `192.168.1.5`, `juego.ejemplo.com`, cualquiera con `:puerto`, o una URL `wss://…`. Una página servida por `https` necesita `wss://`: o el dedicado tiene certificado y clave en su `MpNetConfig`, o un proxy (Caddy, nginx) pone el TLS delante.

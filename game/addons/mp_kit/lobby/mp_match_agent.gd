@@ -15,6 +15,8 @@ signal result_reported(data: Dictionary)
 ## Start by itself in _ready when `--match-ticket-file` is present.
 @export var auto_start: bool = true
 
+const GROUP := &"mp_match_agent"
+
 var ticket: Dictionary = {}
 var match_id: String = ""
 var finished: bool = false
@@ -28,6 +30,10 @@ var _empty_since_ms: int = 0
 var _ever_joined: bool = false
 ## slot -> {sha, meta, used: bool, peer: int, left_ms: int}
 var _seats: Dictionary = {}
+
+
+func _enter_tree() -> void:
+	add_to_group(GROUP)
 
 
 func _ready() -> void:

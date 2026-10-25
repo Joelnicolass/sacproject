@@ -4,7 +4,8 @@ extends Node
 ## what comes back over the network, printing `PASS …` / `FAIL …` and a last `PROBE <role> PASS|FAIL` line.
 ## Roles: solo | client (the first player) | late (joins after the first one played) | watch (server or host:
 ## waits for a remote player to move and score) | lag (own player under a bad network: response and corrections) |
-## observe (another player, `--probe-watch-slot=N`: how evenly it moves on screen). `--probe-linger-s=N` keeps a
+## observe (another player, `--probe-watch-slot=N`: how evenly it moves on screen) | lobby (online rooms through the
+## lobby screen: `--probe-lobby=host:port --probe-name=X`, `--probe-create=Room` makes the room and scores to win). `--probe-linger-s=N` keeps a
 ## passing process alive N seconds. lag and observe print `METRIC name=value` lines.
 
 ## Seconds each check may wait (`--probe-timeout-s=N` for a person opening a browser by hand).
@@ -45,6 +46,8 @@ func _run() -> void:
 			await _measure_own_lag()
 		"observe":
 			await _measure_proxy_jitter()
+		"lobby":
+			await _play_online()
 		_:
 			_check(false, "known role %s" % _role)
 	print("PROBE %s %s" % [_role, "PASS" if _fails == 0 else "FAIL"])
@@ -162,6 +165,49 @@ func _measure_proxy_jitter() -> void:
 	print("METRIC proxy_speed_px_s=%.1f proxy_speed_cv=%.3f frames=%d" % [mean, cv, speeds.size()])
 	_check(mean > 150.0, "P%d moved at about its real speed on screen" % slot)
 	_check(cv < float(MpBoot.user_value("probe-max-cv", "0.1")), "its on-screen speed was steady (low jitter)")
+
+
+## The whole online path as a person does it, through MpLobbyScreen's buttons: connect, create or join, ready, play
+## the match the room server starts, and come back to the lobby with the result.
+func _play_online() -> void:
+	var flow_ok := await _until(func() -> bool: return MpFlow.find_in_tree(self) != null, "the boot scene has a flow")
+	if not flow_ok:
+		return
+	get_tree().change_scene_to_file(MpFlow.find_in_tree(self).lobby_path)
+	var screens: Array[MpLobbyScreen] = []
+	await _until(func() -> bool:
+		if get_tree().current_scene is MpLobbyScreen:
+			screens.append(get_tree().current_scene)
+		return not screens.is_empty(), "the lobby screen opened")
+	if screens.is_empty():
+		return
+	var screen := screens[0]
+	await get_tree().process_frame
+	_check(MpFlow.find_in_tree(self) != null, "the flow survived the scene change (it lives under the root)")
+	var client := MpLobbyLink.client(get_tree())
+	screen.connect_lobby(MpBoot.user_value("probe-lobby", "127.0.0.1:7700"), MpBoot.user_value("probe-name", "Bot"))
+	await _until(client.is_online, "connected to the lobby")
+	var room_name := MpBoot.user_value("probe-create", "")
+	if not room_name.is_empty():
+		screen.create_room(room_name)
+	else:
+		await _until(func() -> bool: return not screen.listed_rooms().is_empty(), "a room shows in the list")
+		screen.join_listed(0)
+	await _until(func() -> bool: return client.my_seat() >= 0, "took a seat")
+	screen.set_ready(true)
+	await _until(_networked_slot, "the room server started the match and this client got in")
+	var pawn := await _pawn(MpKit.local_slot())
+	if pawn == null:
+		return
+	if not room_name.is_empty():
+		for i in 3:
+			await _tap(&"ui_accept")
+			await get_tree().create_timer(0.2).timeout
+	await _until(func() -> bool: return get_tree().current_scene is MpLobbyScreen, "back in the lobby after the match")
+	await _until(func() -> bool:
+		var result: Variant = client.room.get("last_result", {})
+		return result is Dictionary and (result as Dictionary).has("winner"), "the room shows the match result (winner)")
+	print("METRIC result=%s" % JSON.stringify(client.room.get("last_result", {})))
 
 
 func _pawn(slot: int) -> Node:

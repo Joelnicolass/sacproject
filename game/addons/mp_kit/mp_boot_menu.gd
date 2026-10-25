@@ -10,6 +10,8 @@ signal hosted
 signal joining(ip: String)
 signal status_changed(text: String)
 
+## The online lobby screen (MpLobbyScreen). Set = an "Online rooms" button opens it.
+@export_file("*.tscn") var lobby_scene_path: String = ""
 @export var world_scene: PackedScene
 @export var world_id: StringName = &""
 @export var drive_kit: bool = true
@@ -21,6 +23,7 @@ signal status_changed(text: String)
 @export var play_solo_text: String = "Play solo"
 @export var host_text: String = "Host LAN"
 @export var join_text: String = "Join"
+@export var online_text: String = "Online rooms"
 @export var ip_hint: String = "127.0.0.1"
 @export var rooms_header: String = "LAN rooms"
 @export var idle_status: String = "Pick a mode."
@@ -100,6 +103,8 @@ func _build() -> void:
 	_add_button(box, play_solo_text, _on_play_solo)
 	if MpNetConfig.can_host():
 		_add_button(box, host_text, _on_host)
+	if not lobby_scene_path.is_empty():
+		_add_button(box, online_text, func() -> void: get_tree().change_scene_to_file(lobby_scene_path))
 	var join_row := HBoxContainer.new()
 	join_row.add_theme_constant_override("separation", 8)
 	box.add_child(join_row)

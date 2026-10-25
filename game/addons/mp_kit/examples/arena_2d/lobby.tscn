@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://addons/mp_kit/rooms/ui/mp_lobby_screen.tscn" id="1"]
+
+[node name="Lobby" instance=ExtResource("1")]
+lobby_address = "127.0.0.1:7700"
+back_path = "res://addons/mp_kit/examples/arena_2d/boot.tscn"
+title_text = "MpKit Arena · online"

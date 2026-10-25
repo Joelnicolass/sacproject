@@ -41,13 +41,13 @@ func run_checks() -> Dictionary:
 	var home := {}
 	for body in everyone:
 		home[body] = body.global_position
-	var seen_order: Array[StringName] = []
-	var lost_order: Array[StringName] = []
-	eyes.seen.connect(func(node: Node3D) -> void: seen_order.append(node.name))
-	eyes.lost.connect(func(node: Node3D) -> void: lost_order.append(node.name))
+	var seen_order: Array[String] = []
+	var lost_order: Array[String] = []
+	eyes.seen.connect(func(node: Node3D) -> void: seen_order.append(String(node.name)))
+	eyes.lost.connect(func(node: Node3D) -> void: lost_order.append(String(node.name)))
 
 	eyes.refresh()
-	var sorted_all := _names(foes) + [behind_foe.name]
+	var sorted_all := _names(foes) + [String(behind_foe.name)]
 	sorted_all.sort()
 	var in_range := _names(eyes.in_sight())
 	checks["range_100"] = in_range == sorted_all and not eyes.sees(far_foe)
@@ -113,7 +113,7 @@ func run_checks() -> Dictionary:
 static func _names(nodes: Array) -> Array:
 	var names := []
 	for node: Node in nodes:
-		names.append(node.name)
+		names.append(String(node.name))
 	return names
 
 

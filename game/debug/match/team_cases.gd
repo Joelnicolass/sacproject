@@ -317,7 +317,8 @@ func _vision() -> Dictionary:
 	eyes.refresh()
 	checks["seen_by_marker"] = VisionSides.sees(1, seen)
 	checks["shared_with_ally"] = VisionSides.sees(2, seen)
-	checks["not_shared_with_foe"] = not VisionSides.sees(3, seen) and not VisionSides.sees(4, seen)
+	## Side 3 owns `seen`, so ask what it keeps in mind (known), not sees().
+	checks["not_shared_with_foe"] = not VisionSides.known(3).has(seen.get_instance_id()) and not VisionSides.known(4).has(seen.get_instance_id())
 	var other := _unit(Vector3(5.0, 0.1, -300.0), 3)
 	rules.allied_vision = false
 	eyes.refresh()
@@ -329,7 +330,10 @@ func _vision() -> Dictionary:
 	checks["1v1_not_shared"] = not VisionSides.sees(2, third)
 	for node in [seen, other, third, watcher]:
 		node.free()
-	return _verdict(checks)
+	var verdict := _verdict(checks)
+	if not bool(verdict["ok"]):
+		print("team_vision checks: %s" % str(checks))
+	return verdict
 
 
 # --- Helpers ---

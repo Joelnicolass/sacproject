@@ -49,10 +49,10 @@ static func ftol(x: float) -> int:
 ## regeneration x60 (per second to per frame... the file word), drain x1000, resistances x1000.
 static func stats_of(type: CreatureType) -> Dictionary:
 	return {
-		"melee_accuracy": type.melee_accuracy, "melee_evasion": type.melee_evasion,
-		"run": ftol(type.running_speed * 100.0), "fly": ftol(type.flying_speed * 100.0),
+		"melee_accuracy": type.melee_accuracy_milli(), "melee_evasion": type.melee_evasion_milli(),
+		"run": ftol(type.run_speed_m_s * 100.0), "fly": ftol(type.fly_speed_m_s * 100.0),
 		"health": type.health, "regen": ftol(type.regeneration_per_s * 60.0), "drain": ftol(type.drain * 1000.0),
-		"ranged_accuracy": type.ranged_accuracy,
+		"ranged_accuracy": type.ranged_accuracy_milli(),
 		"melee_res": ftol(type.melee_resistance * 1000.0), "ranged_res": ftol(type.direct_ranged_resistance * 1000.0),
 		"melee_strength": type.melee_strength, "mana": type.mana,
 	}

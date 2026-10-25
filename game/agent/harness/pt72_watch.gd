@@ -128,7 +128,7 @@ func report() -> String:
 func sight_of_first() -> String:
 	for node in get_tree().get_nodes_in_group("unit"):
 		if int(node.get("owner_slot")) == _slot and node.get("type") != null:
-			return "sight_range slot%d=%s" % [_slot, str(node.get("type").sight_range)]
+			return "sight_range slot%d=%s" % [_slot, str(node.get("type").sight_m)]
 	return "sin unidad"
 
 

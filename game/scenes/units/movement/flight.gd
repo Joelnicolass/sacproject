@@ -79,7 +79,7 @@ func goes_by_air(distance: float) -> bool:
 	if state != State.GROUND or _held() or not is_capable() or distance <= 0.0:
 		return false
 	var type := body.type
-	if type.takeoff_time_s() + distance / type.flying_speed >= distance / type.running_speed:
+	if type.takeoff_time_s() + distance / type.fly_speed_m_s >= distance / type.run_speed_m_s:
 		return false
 	_take_off()
 	return true
@@ -143,7 +143,7 @@ func _take_off() -> void:
 
 func _vertical(delta: float, walking: bool, above: float, on_floor: bool) -> float:
 	var step := maxf(delta, 0.000001)
-	var fly := body.type.flying_speed
+	var fly := body.type.fly_speed_m_s
 	if walking:
 		if not is_finite(above):
 			return 0.0

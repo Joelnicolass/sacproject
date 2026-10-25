@@ -221,8 +221,8 @@ func _sync_clip_pose() -> void:
 func _apply_type() -> void:
 	if wizard_type == null:
 		return
-	if wizard_type.running_speed > 0.0:
-		move_speed = wizard_type.running_speed
+	if wizard_type.run_speed_m_s > 0.0:
+		move_speed = wizard_type.run_speed_m_s
 	_sync_clip_pose()
 	if not is_node_ready() or _stats_ready:
 		return

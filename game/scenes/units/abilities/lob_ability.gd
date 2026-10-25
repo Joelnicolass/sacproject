@@ -113,4 +113,4 @@ func _is_foe(target: Node3D) -> bool:
 
 func _accuracy() -> float:
 	var type: CreatureType = user.get("type")
-	return float(type.ranged_accuracy) if type else 0.0
+	return float(type.ranged_accuracy_milli()) if type else 0.0

@@ -209,8 +209,8 @@ func _create(tag: String, glb_path: String, display: String, god: String) -> int
 		type.model = tag
 		if not roles.has("run") and roles.has("fly"):
 			# A flier with no ground clip: it never walks.
-			type.flying_speed = type.running_speed
-			type.running_speed = 0.0
+			type.fly_speed_m_s = type.run_speed_m_s
+			type.run_speed_m_s = 0.0
 		if ResourceSaver.save(type, type_path) == OK:
 			wrote.append(type_path)
 	else:

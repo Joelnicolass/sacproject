@@ -163,7 +163,7 @@ func roll_damage(target: Node3D, anim: Dictionary) -> Dictionary:
 	var foe := profile_of(target)
 	## F130: ×1.5 while the Storm Giant's Lightning Charge is on (dealMeleeDamage, state.d:9237).
 	## RFC 061c: each layer of Slime on the attacker costs accuracy and each on the target costs its evasion, x0.2 (state.d:9237-9238).
-	var accuracy := float(type.melee_accuracy) * (passive.melee_accuracy_factor() if passive != null else 1.0) * Afflictions.stat_factor_of(_body, Afflictions.Stat.ACCURACY)
+	var accuracy := float(type.melee_accuracy_milli()) * (passive.melee_accuracy_factor() if passive != null else 1.0) * Afflictions.stat_factor_of(_body, Afflictions.Stat.ACCURACY)
 	var evasion := float(foe.get("evasion", 0.0)) * Afflictions.stat_factor_of(target, Afflictions.Stat.ACCURACY)
 	var total := accuracy + evasion / facing
 	if not (total > 0.0):
@@ -204,7 +204,7 @@ static func profile_of(target: Node3D) -> Dictionary:
 	}
 	var wizard: WizardType = target.get("wizard_type") if "wizard_type" in target else null
 	if wizard:
-		result["evasion"] = float(wizard.melee_evasion)
+		result["evasion"] = float(wizard.melee_evasion_milli())
 		result["resistance"] = wizard.melee_resistance
 	return result
 

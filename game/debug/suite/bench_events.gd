@@ -164,7 +164,7 @@ func _watch(entry: Dictionary, tick: int) -> void:
 					continue
 				var body := unit as Node3D
 				var flat := Vector2(body.global_position.x - node.global_position.x, body.global_position.z - node.global_position.z).length()
-				var sight: float = (unit.get("type") as CreatureType).sight_range
+				var sight: float = (unit.get("type") as CreatureType).sight_m
 				if int(entry["in_sight_tick"]) < 0 and flat <= sight:
 					entry["in_sight_tick"] = tick
 				if int(entry["attack_tick"]) < 0 and unit.get("target") == node:

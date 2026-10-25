@@ -265,8 +265,8 @@ func _slime_fight() -> Dictionary:
 	slimed_victim.lay(spell, 3)
 	var both := melee.roll_damage(victim, anim)
 	var accuracy := float(both["accuracy"])
-	checks["attacker_accuracy_x02"] = absf(accuracy - float(hitter.type.melee_accuracy) * 0.2) < 0.01
-	checks["target_evasion_x02"] = absf(float(both["evasion"]) - float(victim.type.melee_evasion) * 0.2) < 0.01
+	checks["attacker_accuracy_x02"] = absf(accuracy - float(hitter.type.melee_accuracy_milli()) * 0.2) < 0.01
+	checks["target_evasion_x02"] = absf(float(both["evasion"]) - float(victim.type.melee_evasion_milli()) * 0.2) < 0.01
 	hitter.queue_free()
 	victim.queue_free()
 	return _verdict("control_slime_fight", checks)

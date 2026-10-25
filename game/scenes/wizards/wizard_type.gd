@@ -6,9 +6,11 @@ extends Resource
 @export var model: String = ""
 @export var health: int = 0
 @export var mana: int = 0
-@export var running_speed: float = 0.0
+## How fast the wizard runs, in metres per second.
+@export var run_speed_m_s: float = 0.0
 @export var regeneration_per_s: float = 0.0
-@export var melee_evasion: int = 0
+## How well he dodges blows; 1.0 is a normal creature, 1.25 is what a wizard is.
+@export_range(0.0, 5.0, 0.001) var melee_evasion := 0.0
 @export var melee_resistance: float = 1.0
 @export var direct_spell_resistance: float = 1.0
 @export var splash_spell_resistance: float = 1.0
@@ -38,6 +40,11 @@ extends Resource
 
 ## Lobby (055i-a): false takes this wizard out of the menu and the rooms without deleting the file.
 @export var offered := true
+
+
+## The evasion as the whole thousandths the simulation counts in (1.25 -> 1250): exact for any value with up to three decimals.
+func melee_evasion_milli() -> int:
+	return roundi(melee_evasion * 1000.0)
 
 
 ## The id of this wizard on the network and in the catalog: its `tag`, or the file name when the tag is empty (new content).

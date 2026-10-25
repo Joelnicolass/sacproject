@@ -19,14 +19,15 @@ extends Resource
 @export var regenerates_always := false
 ## CRE8 `drain` (file word / 1000): the AI's rater adds 2x drain to the regeneration (shiny.d:241 `fillStats`).
 @export var drain: float = 0.0
-@export var running_speed: float = 0.0
-@export var flying_speed: float = 0.0
+@export var run_speed_m_s: float = 0.0
+@export var fly_speed_m_s: float = 0.0
 @export var melee_strength: int = 0
-@export var melee_accuracy: int = 0
-@export var melee_evasion: int = 0
-@export var ranged_accuracy: int = 0
-@export var aggressiveness: int = 0
-@export var sight_range: float = 0.0
+## Scales where 1.0 is a normal creature: blows that land, blows dodged, aim and readiness to fight (aggressiveness 0 = a pacifist).
+@export_range(0.0, 5.0, 0.001) var melee_accuracy := 0.0
+@export_range(0.0, 5.0, 0.001) var melee_evasion := 0.0
+@export_range(0.0, 5.0, 0.001) var ranged_accuracy := 0.0
+@export_range(0.0, 5.0, 0.001) var aggressiveness := 0.0
+@export var sight_m: float = 0.0
 @export var melee_resistance: float = 1.0
 @export var direct_spell_resistance: float = 1.0
 @export var splash_spell_resistance: float = 1.0
@@ -105,13 +106,13 @@ func abilities() -> Array[AbilityType]:
 
 
 func is_flying() -> bool:
-	return running_speed <= 0.0 and flying_speed > 0.0
+	return run_speed_m_s <= 0.0 and fly_speed_m_s > 0.0
 
 
 ## sacengine canFly && !mustFly (sacobject.d:81-83, 113-115): walks and flies (the hybrids). It flies when that arrives
 ## first (Flight). A creature that must fly (is_flying) is not a hybrid.
 func is_hybrid_flier() -> bool:
-	return running_speed > 0.0 and flying_speed > 0.0 and flight_animations.has("fly")
+	return run_speed_m_s > 0.0 and fly_speed_m_s > 0.0 and flight_animations.has("fly")
 
 
 ## sacengine takeoffTime (sacobject.d:125-128): takeoff frames / animFPS (30); 0 without a takeoff clip.
@@ -124,6 +125,19 @@ func takeoff_time_s() -> float:
 func land_time_s() -> float:
 	var clip: Dictionary = flight_animations.get("land", {})
 	return float(clip.get("frames", 0)) / 30.0
+
+
+## The scales below as the whole thousandths the simulation counts in (1.1 -> 1100): exact for any value with up to three decimals.
+func melee_accuracy_milli() -> int:
+	return roundi(melee_accuracy * 1000.0)
+
+
+func melee_evasion_milli() -> int:
+	return roundi(melee_evasion * 1000.0)
+
+
+func ranged_accuracy_milli() -> int:
+	return roundi(ranged_accuracy * 1000.0)
 
 
 func level() -> int:

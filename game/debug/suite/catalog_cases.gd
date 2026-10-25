@@ -20,8 +20,8 @@ extends SceneTree
 const MAX_REPORTED := 60
 ## Property -> minimum, per type. A strict minimum (">") is a key ending in ">".
 const CREATURE_RANGES := {
-	"health>": 0, "regeneration_per_s": 0, "drain": 0, "running_speed": 0, "flying_speed": 0, "melee_strength": 0,
-	"melee_accuracy": 0, "melee_evasion": 0, "ranged_accuracy": 0, "aggressiveness": 0, "sight_range": 0,
+	"health>": 0, "regeneration_per_s": 0, "drain": 0, "run_speed_m_s": 0, "fly_speed_m_s": 0, "melee_strength": 0,
+	"melee_accuracy": 0, "melee_evasion": 0, "ranged_accuracy": 0, "aggressiveness": 0, "sight_m": 0,
 	"melee_resistance": 0, "direct_spell_resistance": 0, "splash_spell_resistance": 0, "direct_ranged_resistance": 0,
 	"splash_ranged_resistance": 0, "mana": 0, "mana_cost": 0, "souls": 0, "cooldown_s": 0, "casting_time_s": 0,
 }
@@ -30,7 +30,7 @@ const SPELL_RANGES := {
 	"effect_range_m": 0, "duration_s": 0,
 }
 const WIZARD_RANGES := {
-	"health>": 0, "mana": 0, "running_speed": 0, "regeneration_per_s": 0, "melee_resistance": 0,
+	"health>": 0, "mana": 0, "run_speed_m_s": 0, "regeneration_per_s": 0, "melee_resistance": 0,
 	"direct_spell_resistance": 0, "splash_spell_resistance": 0, "direct_ranged_resistance": 0,
 	"splash_ranged_resistance": 0,
 }

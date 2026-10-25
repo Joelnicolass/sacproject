@@ -176,7 +176,7 @@ func sight_of(observer: Node3D) -> float:
 	if observer.is_in_group("wizard"):
 		return wizard_sight_m
 	var type: Variant = observer.get("type")
-	return float(type.sight_range) if type != null else 0.0
+	return float(type.sight_m) if type != null else 0.0
 
 
 ## Alive, summoned and not held: what sacengine requiresAI(mode) lets look.

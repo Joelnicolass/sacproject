@@ -350,7 +350,7 @@ func _peasant_passive() -> Dictionary:
 	_root.add_child(farmer)
 	farmer.set_physics_process(false)
 	var angry := farmer.type.duplicate() as CreatureType
-	angry.aggressiveness = 1000
+	angry.aggressiveness = 1.0
 	farmer.type = angry
 	var trogg := _unit(1, Vector3(5.0, 0.0, 0.0), "Trogg")
 	var calm := _unit(2, Vector3(10.0, 0.0, 0.0), "Calm", "nmuh")

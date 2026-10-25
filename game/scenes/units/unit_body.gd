@@ -282,7 +282,7 @@ func facing_flat() -> Vector3:
 func melee_profile() -> Dictionary:
 	var info := BodyCatalog.info(model)
 	return {
-		"evasion": float(type.melee_evasion) if type else 0.0,
+		"evasion": float(type.melee_evasion_milli()) if type else 0.0,
 		"resistance": type.melee_resistance if type else 1.0,
 		"reach": float(info.get("reach", 0.35)),
 		"height": float(info.get("height", 1.8)),
@@ -493,7 +493,7 @@ func _sync_clip_pose() -> void:
 
 func _apply_type() -> void:
 	if type:
-		move_speed = type.flying_speed if is_flying() else type.running_speed
+		move_speed = type.fly_speed_m_s if is_flying() else type.run_speed_m_s
 	else:
 		move_speed = 0.0
 	_sync_clip_pose()
@@ -668,7 +668,7 @@ func turn_toward(direction: Vector3, delta: float) -> void:
 
 
 func sight_range() -> float:
-	return type.sight_range if type else 0.0
+	return type.sight_m if type else 0.0
 
 
 func flat_distance(node: Node3D) -> float:
@@ -747,7 +747,7 @@ func is_playing_dead() -> bool:
 ## F116: on every peer (Flight:state is replicated): the pace of the air or the ground, and the clip.
 func _on_flight_changed(_state: Flight.State) -> void:
 	if type:
-		move_speed = type.flying_speed if is_flying() else type.running_speed
+		move_speed = type.fly_speed_m_s if is_flying() else type.run_speed_m_s
 	_update_clip_state()
 
 

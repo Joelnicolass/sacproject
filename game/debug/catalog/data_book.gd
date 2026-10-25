@@ -45,7 +45,7 @@ func _trogg_line() -> String:
 	if trogg == null:
 		return "Trogg: sin datos"
 	var souls := "alma" if trogg.souls == 1 else "almas"
-	return "%s %d vida %s m/s %d %s" % [trogg.display_name, trogg.health, _number(trogg.running_speed), trogg.souls, souls]
+	return "%s %d vida %s m/s %d %s" % [trogg.display_name, trogg.health, _number(trogg.run_speed_m_s), trogg.souls, souls]
 
 
 func _rock_line() -> String:

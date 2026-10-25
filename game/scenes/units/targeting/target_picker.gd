@@ -120,7 +120,7 @@ func pick(center: Vector3, threshold := 0.25, ref_range := 100.0, within := INF)
 	var here := body.global_position
 	var radius := minf(max_query_m, _flat(here, center) + score_cutoff(threshold, ref_range))
 	var vision := _find_vision()
-	var sight := body.type.sight_range if body.type else 0.0
+	var sight := body.type.sight_m if body.type else 0.0
 	var max_height := _max_target_height()
 	var best: Node3D = null
 	var best_score := -1.0

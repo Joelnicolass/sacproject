@@ -251,7 +251,7 @@ func _strike(look: ShotLook, data: Dictionary) -> void:
 
 ## The shooter's ranged accuracy (ShotAim.scatter).
 func _accuracy() -> float:
-	return float(type.ranged_accuracy) if type else 0.0
+	return float(type.ranged_accuracy_milli()) if type else 0.0
 
 
 ## Where a shot leaves: the body's front at shot_height of its height. Public for a strike that follows its shooter.

@@ -24,7 +24,7 @@ func pick(body: UnitBody, center: Vector3, within: float) -> Node3D:
 	var reach := shot.cast_range_m if shot else 0.0
 	var found := _most_wounded(body, center, minf(reach, within))
 	if found == null:
-		found = _most_wounded(body, center, minf(body.type.sight_range if body.type else 0.0, within))
+		found = _most_wounded(body, center, minf(body.type.sight_m if body.type else 0.0, within))
 	return found
 
 

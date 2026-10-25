@@ -192,7 +192,7 @@ func _acquire(center: Vector3, leash: float) -> Node3D:
 	if is_inf(leash):
 		return _body.closest_foe(center, 0.25, 150.0)
 	var threshold := minf(100.0, _flat(_body.global_position, center)) * 0.01
-	var sight: float = _body.type.sight_range if _body.type else 0.0
+	var sight: float = _body.type.sight_m if _body.type else 0.0
 	return _body.closest_foe(center, threshold, 100.0, sight)
 
 

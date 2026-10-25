@@ -272,7 +272,7 @@ func facing_flat() -> Vector3:
 func melee_profile() -> Dictionary:
 	var info := BodyCatalog.info(model)
 	return {
-		"evasion": float(type.melee_evasion) if type else 0.0,
+		"evasion": float(type.melee_evasion_milli()) if type else 0.0,
 		"resistance": type.melee_resistance if type else 1.0,
 		"reach": float(info.get("reach", 0.35)),
 		"height": float(info.get("height", 1.8)),
@@ -282,12 +282,12 @@ func melee_profile() -> Dictionary:
 ## Running speed of the CRE8 (the PathFollower reads it to tell when the body is stuck).
 var move_speed: float:
 	get:
-		return type.running_speed if type else 0.0
+		return type.run_speed_m_s if type else 0.0
 
 
 ## Pace in m/s (running speed of the CRE8 times speed_factor).
 func pace() -> float:
-	return (type.running_speed if type else 0.0) * speed_factor
+	return (type.run_speed_m_s if type else 0.0) * speed_factor
 
 
 # --- Shared by the states ---

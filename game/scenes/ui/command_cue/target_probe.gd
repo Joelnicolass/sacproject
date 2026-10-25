@@ -40,8 +40,13 @@ const ORDER_TARGETS: PackedStringArray = [
 var kind: StringName = NONE
 ## Where it was sampled (screen pixels).
 var pointer := Vector2(-1.0, -1.0)
-## Body under the pointer at the last sample (a Soul, not its target area), or null.
-var hovered: Node
+## Body under the pointer at the last sample (a Soul, not its target area), or null. Never a freed body: one that dies
+## between samples reads as null at once.
+var hovered: Node:
+	get:
+		if not is_instance_valid(hovered):
+			hovered = null
+		return hovered
 var _since := 0.0
 ## What the last _classify found (its body), before `hovered` takes it.
 var _picked: Node
@@ -73,8 +78,6 @@ func sample() -> void:
 	if next != kind:
 		kind = next
 		kind_changed.emit(kind)
-	if hovered != null and not is_instance_valid(hovered):
-		hovered = null
 	if _picked != hovered:
 		hovered = _picked
 		hovered_changed.emit(hovered)

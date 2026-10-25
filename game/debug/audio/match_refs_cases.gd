@@ -18,7 +18,7 @@ const GODS_DIR := "res://data/gods/"
 const ADVISOR_SCENE := "res://scenes/audio/advisor/advisor.tscn"
 const MATCH_SCENE := "res://scenes/match/match.tscn"
 const BOOT_SCENE := "res://scenes/core/boot.tscn"
-const PARITY_JSON := "res://tools/migrate/055o_match_parity.json"
+const MATCH_PARITY_JSON := "res://tools/migrate/055o_match_parity.json"
 const EXPECTED_GODS := 5
 const EXPECTED_LINES := 14
 const EXPECTED_REFUSALS := 7
@@ -37,7 +37,7 @@ func run_match() -> Dictionary:
 		and bool(counts["default_music"]) and bool(counts["boot_music"]) and bool(counts["sacrifice_cues"]), "counts": counts}
 	var stale := stale_references()
 	results["match_text_gone"] = {"ok": stale.is_empty(), "found": stale}
-	var parity := parity_report(PARITY_JSON)
+	var parity := parity_report(MATCH_PARITY_JSON)
 	results["match_parity"] = {"ok": (parity["failures"] as PackedStringArray).is_empty(), "parity": parity}
 	print("SOUND REFS match gods=%d/%d lines=%d parity=%d/%d" % [int(counts["gods_typed"]), int(counts["gods"]), int(counts["lines"]),
 		int(parity["passed"]), int(parity["total"])])
@@ -255,7 +255,9 @@ func _watch_lines(voice: AdvisorVoice) -> Dictionary:
 func _state_node(packed: PackedScene, node_path: String) -> int:
 	var state := packed.get_state()
 	for index in state.get_node_count():
-		if String(state.get_node_path(index)) == node_path:
+		## A PackedScene state names the root's children "./Child".
+		var path := String(state.get_node_path(index)).trim_prefix("./")
+		if path == node_path:
 			return index
 	return -1
 

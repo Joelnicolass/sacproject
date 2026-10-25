@@ -61,11 +61,13 @@ func _get_name() -> String:
 	return "DedicatedStrip"
 
 
-func _begin_customize_resources(_platform: EditorExportPlatform, features: PackedStringArray) -> bool:
+func _begin_customize_resources(_platform: EditorExportPlatform, _features: PackedStringArray) -> bool:
 	_audio = 0
 	_animations = 0
 	_tracks = 0
-	return features.has("dedicated_server") and OS.get_environment(ENV_OFF) != "0"
+	## The preset's "Dedicated Server" mode is not among `features` (Godot passes the platform's and the custom ones): ask the preset.
+	var preset := get_export_preset()
+	return preset != null and preset.is_dedicated_server() and OS.get_environment(ENV_OFF) != "0"
 
 
 func _end_customize_resources() -> void:

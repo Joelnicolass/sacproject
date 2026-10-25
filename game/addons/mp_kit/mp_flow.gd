@@ -20,6 +20,8 @@ enum StartWhen {
 ## Every network setting in one .tres (transport, port, players, TLS). Set = it replaces max_players,
 ## custom_channels and the port here. Empty = the fields below and the flags, as before.
 @export var net_config: MpNetConfig
+## Scene with your MpRoomServer. `--room-server` opens it: one exported binary is client, room server and match.
+@export_file("*.tscn") var room_server_path: String = ""
 ## The online lobby screen. A match joined with join_match() comes back here when it ends or the server is lost.
 @export_file("*.tscn") var lobby_path: String = ""
 @export var boot_scene: PackedScene
@@ -104,6 +106,9 @@ func _ready() -> void:
 	if not MpBoot.user_value("match-ticket-file", "").is_empty():
 		_ensure_match_agent.call_deferred()
 	var role := MpBoot.role()
+	if role == "room-server" and not room_server_path.is_empty():
+		get_tree().change_scene_to_file.call_deferred(room_server_path)
+		return
 	if role == "server":
 		var err := MpKit.host_dedicated()
 		if err != OK:

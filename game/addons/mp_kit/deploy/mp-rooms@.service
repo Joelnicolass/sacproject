@@ -1,0 +1,31 @@
+# MpKit room server, one instance per lobby port: NAME-rooms@7700, NAME-rooms@7701... (deploy.sh fills in the name and the binary).
+# Each instance reads /etc/@NAME@/rooms-%i.env (MATCH_PORT_MIN, MATCH_PORT_MAX, EXTRA_ARGS): its own range of match ports
+# and its own matches folder, so several instances never share a port or a registry.
+# The matches (one dedicated process each) are children: they stop with the service (KillMode=control-group) and close
+# by themselves within parent_check_s if it dies.
+[Unit]
+Description=@NAME@ room server on port %i (MpKit)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=@NAME@
+Group=@NAME@
+WorkingDirectory=/opt/@NAME@
+EnvironmentFile=/etc/@NAME@/rooms-%i.env
+ExecStart=/opt/@NAME@/@BIN@ --headless -- --room-server --lobby-port=%i --match-port-min=${MATCH_PORT_MIN} --match-port-max=${MATCH_PORT_MAX} --matches-root=/var/lib/@NAME@/matches-%i $EXTRA_ARGS
+Restart=on-failure
+RestartSec=3
+KillMode=control-group
+TimeoutStopSec=15
+Environment=HOME=/var/lib/@NAME@
+StateDirectory=@NAME@
+LimitNOFILE=65536
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

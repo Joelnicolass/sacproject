@@ -1,0 +1,26 @@
+# MpKit plain dedicated server (no lobby), one instance per port: NAME-dedicated@7777, NAME-dedicated@7778...
+# Players join with the address and the port. Use this for a game without rooms; use NAME-rooms@ for the lobby.
+# /etc/NAME/dedicated.env (optional) holds EXTRA_ARGS for every instance (e.g. --transport=ws).
+[Unit]
+Description=@NAME@ dedicated server on port %i (MpKit)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=@NAME@
+Group=@NAME@
+WorkingDirectory=/opt/@NAME@
+EnvironmentFile=-/etc/@NAME@/dedicated.env
+ExecStart=/opt/@NAME@/@BIN@ --headless -- --dedicated --mp-port=%i $EXTRA_ARGS
+Restart=always
+RestartSec=3
+Environment=HOME=/var/lib/@NAME@
+StateDirectory=@NAME@
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

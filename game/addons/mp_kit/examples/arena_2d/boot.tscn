@@ -17,6 +17,7 @@ script = ExtResource("1")
 net_config = ExtResource("3")
 boot_path = "res://addons/mp_kit/examples/arena_2d/boot.tscn"
 world_path = "res://addons/mp_kit/examples/arena_2d/arena.tscn"
+room_server_path = "res://addons/mp_kit/examples/arena_2d/rooms.tscn"
 lobby_path = "res://addons/mp_kit/examples/arena_2d/lobby.tscn"
 room_name = "MpKit Arena"
 start_when = 1

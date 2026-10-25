@@ -134,4 +134,8 @@ func accept_pick(pick: Dictionary) -> bool:
 
 Un navegador no puede abrir un servidor ni usar UDP, así que un juego web se une a un dedicado WebSocket (`MpNetConfig.transport = ws`). Escritorio y web no se mezclan: un servidor WebSocket atiende clientes WebSocket. En el campo de dirección del menú sirven `192.168.1.5`, `juego.ejemplo.com`, cualquiera con `:puerto`, o una URL `wss://…`. Una página servida por `https` necesita `wss://`: o el dedicado tiene certificado y clave en su `MpNetConfig`, o un proxy (Caddy, nginx) pone el TLS delante.
 
-Detalle de cada pieza, salas online y despliegue: [README.md](README.md).
+### Subirlo a un VPS
+
+Exportá el preset de Linux y corré `addons/mp_kit/deploy/deploy.sh usuario@vps build/server --rooms 7700 --open-firewall`. Guía completa, varias instancias y web por https: [deploy/README.md](deploy/README.md).
+
+Detalle de cada pieza: [README.md](README.md).

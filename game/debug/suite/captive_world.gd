@@ -48,16 +48,18 @@ func hanging(rules: MatchRules) -> Dictionary:
 
 ## Frees a scenario. The bones stop first and the nodes leave through the queue: freeing bodies that still simulate crashes the engine.
 func release(scenario: Dictionary) -> void:
-	await dispose([scenario.unit], scenario.driver)
-	scenario.doctor.queue_free()
+	## The doctor goes in the same frame as what it carries: alive, it would still reach for the freed body.
+	await dispose([scenario.doctor, scenario.unit], scenario.driver)
 
 
 ## Stops the ragdoll of `body`, queues it for deletion and waits two physics frames.
 func dispose(bodies: Array, ragdoll: RagdollDriver) -> void:
 	if ragdoll != null:
 		ragdoll.set_pose(RagdollDriver.Pose.OFF)
-	for body: Node in bodies:
-		body.queue_free()
+	for body: Variant in bodies:
+		## A body a case already killed (the doctor of dies_hanging) may be gone.
+		if is_instance_valid(body):
+			(body as Node).queue_free()
 	await wait_frames(2)
 
 

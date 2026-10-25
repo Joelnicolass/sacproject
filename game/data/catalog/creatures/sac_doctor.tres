@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_k2kp5"]
 [ext_resource type="Texture2D" uid="uid://bo2r42q2mqqes" path="res://assets/original/ui/icons/dcas.png" id="icon_tex"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/sacd_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/sac_doctor_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/sac_doctor.tscn" id="body_scene"]
 
 [resource]

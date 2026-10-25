@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_2obe3"]
 [ext_resource type="Texture2D" uid="uid://b6ekcu7x37rrp" path="res://assets/original/ui/icons/bobs.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/bsba.tres" id="typed_bsba"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/sbob_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/brainiac_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/brainiac.tscn" id="body_scene"]
 
 [resource]

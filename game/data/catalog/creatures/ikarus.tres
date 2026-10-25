@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_uaw0j"]
 [ext_resource type="Texture2D" uid="uid://b4vgcjc8dwcxu" path="res://assets/original/ui/icons/kace.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/acia.tres" id="typed_acia"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/ecak_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/ikarus_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/ikarus.tscn" id="body_scene"]
 
 [resource]

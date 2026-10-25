@@ -75,7 +75,7 @@ func _report(scan: Dictionary, bytes: int, deflated: int, clips: int, scene_fram
 
 ## Builds and saves the library of one model. Returns the row of numbers, or {error} when something is missing.
 func _build_model(model: String, model_ticks: Dictionary) -> Dictionary:
-	var packed := load(Common.MODELS_DIR + model + ".tscn") as PackedScene
+	var packed := load(BodyModel.scene_path(model)) as PackedScene
 	if packed == null:
 		return {"error": "no model scene"}
 	var inst := packed.instantiate()

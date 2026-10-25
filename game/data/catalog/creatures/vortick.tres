@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_mqc38"]
 [ext_resource type="Texture2D" uid="uid://xrxfxqeqncam" path="res://assets/original/ui/icons/craa.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/cita.tres" id="typed_cita"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/buga_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/vortick_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/vortick.tscn" id="body_scene"]
 
 [resource]

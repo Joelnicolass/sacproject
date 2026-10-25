@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://cp05iswkijk4v" path="res://assets/original/ui/icons/dplk.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/dkba.tres" id="typed_dkba"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/dedp.tres" id="typed_dedp"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/dklp_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/fallen_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/fallen.tscn" id="body_scene"]
 
 [resource]

@@ -22,7 +22,6 @@ extends SceneTree
 
 ## eorc: Trogg (a humanoid) · eber: Taurock (four legs) · FAmr: Familiar (small) · sogr: Storm Giant (big) · ehbt: Gargoyle (winged).
 const DEFAULT_TAGS: PackedStringArray = ["eorc", "eber", "FAmr", "sogr", "ehbt"]
-const MODELS_DIR := "res://scenes/bodies/models/"
 const SIMULATOR_NAME := "Ragdoll"
 const BONE_LAYER := 16
 const BONE_MASK := 1
@@ -59,7 +58,7 @@ func _init() -> void:
 
 ## Writes the physical skeleton of one model. Returns how many bodies it has, -1 when the model could not be baked.
 func _bake(tag: String) -> int:
-	var path := MODELS_DIR + tag + ".tscn"
+	var path := BodyModel.scene_path(tag)
 	var packed := load(path) as PackedScene
 	if packed == null:
 		printerr("bake_ragdolls: no scene %s" % path)

@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_alftt"]
 [ext_resource type="Texture2D" uid="uid://dso5jlust6xw1" path="res://assets/original/ui/icons/cara.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/slba.tres" id="typed_slba"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/bugl_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/scarab_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/scarab.tscn" id="body_scene"]
 
 [resource]

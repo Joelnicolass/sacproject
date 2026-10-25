@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://bvflfj7noeu2i" path="res://assets/original/ui/icons/ycrp.png" id="icon_tex"]
 [ext_resource type="Script" path="res://scenes/units/passives/creature_passive.gd" id="typed_passive_script"]
 [ext_resource type="Resource" path="res://data/passives/yeti_freeze.tres" id="typed_passive_0"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/aprc_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/yeti_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/yeti.tscn" id="body_scene"]
 
 [resource]

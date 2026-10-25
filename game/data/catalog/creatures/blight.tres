@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_k7jck"]
 [ext_resource type="Texture2D" uid="uid://bbmsae7t7gm7n" path="res://assets/original/ui/icons/kacd.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/liba.tres" id="typed_liba"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/dcak_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/blight_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/blight.tscn" id="body_scene"]
 
 [resource]

@@ -32,6 +32,8 @@ const ONE_SHOT_ROLES: PackedStringArray = ["attack", "attack2", "attack3", "shoo
 ## Roles that play once and stay on their last frame; every other role repeats.
 const HOLD_ROLES: PackedStringArray = ["death", "death2", "death3", "fly_death", "fall"]
 const SCENE_DIR := "res://scenes/bodies/models/"
+## Which file holds each model (a tag is not always the name of its files since 055s s6).
+const FILES: ModelFiles = preload("res://scenes/bodies/models/model_files.tres")
 ## The roles whose Animation carries the `hit` marker.
 const MELEE_ROLES: PackedStringArray = ["attack", "attack2", "attack3"]
 ## Frames per second of a glTF animation, which carries none (Godot imports them at 30).
@@ -63,7 +65,22 @@ const PLAYBACK := &"parameters/playback"
 
 
 static func scene_path(model_tag: String) -> String:
-	return SCENE_DIR + model_tag + ".tscn"
+	return SCENE_DIR + FILES.stem_of(model_tag) + ".tscn"
+
+
+## The library of clips of `model_tag` (role -> Animation).
+static func clips_path(model_tag: String) -> String:
+	return SCENE_DIR + FILES.stem_of(model_tag) + "_clips.tres"
+
+
+## The folder with one Animation file per clip of `model_tag`.
+static func clips_dir(model_tag: String) -> String:
+	return SCENE_DIR + FILES.stem_of(model_tag) + "_clips/"
+
+
+## The model tag of a file of SCENE_DIR (`trogg_model.tscn` or `trogg_model_clips.tres` -> "eorc").
+static func tag_of_file(file: String) -> String:
+	return FILES.tag_of(file.get_basename().trim_suffix("_clips"))
 
 
 ## True when `model_tag` has a baked scene (a skeletal model with a playable idle clip).

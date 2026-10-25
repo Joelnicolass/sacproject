@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_ak0mh"]
 [ext_resource type="Texture2D" uid="uid://8ml5vtk1g0pb" path="res://assets/original/ui/icons/mtse.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/kauq.tres" id="typed_kauq"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/estm_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/jabberocky_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/jabberocky.tscn" id="body_scene"]
 
 [resource]

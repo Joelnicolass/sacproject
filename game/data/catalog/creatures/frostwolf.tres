@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_bb17u"]
 [ext_resource type="Texture2D" uid="uid://cwc1uf3nbqfjm" path="res://assets/original/ui/icons/lbog.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/!nur.tres" id="typed__nur"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/gobl_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/frostwolf_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/frostwolf.tscn" id="body_scene"]
 
 [resource]

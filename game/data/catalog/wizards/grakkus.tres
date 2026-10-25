@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="WizardType" format=3]
 
 [ext_resource type="Script" path="res://scenes/wizards/wizard_type.gd" id="1_t780k"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/rigl_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/grakkus_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/wizards/bodies/grakkus.tscn" id="body_scene"]
 
 [resource]

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_2pstc"]
 [ext_resource type="Texture2D" uid="uid://bq8f8c1lwvocp" path="res://assets/original/ui/icons/zepa.png" id="icon_tex"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/apez_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/snowman_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/snowman.tscn" id="body_scene"]
 
 [resource]

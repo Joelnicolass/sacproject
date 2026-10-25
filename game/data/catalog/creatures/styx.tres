@@ -5,7 +5,7 @@
 [ext_resource type="Resource" path="res://data/catalog/abilities/dhga.tres" id="typed_dhga"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/dner.tres" id="typed_dner"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/tdhg.tres" id="typed_tdhg"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/gund_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/styx_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/styx.tscn" id="body_scene"]
 
 [resource]

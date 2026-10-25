@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_feh45"]
 [ext_resource type="Texture2D" uid="uid://uo8ltxkencbr" path="res://assets/original/ui/icons/lort.png" id="icon_tex"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/ltrl_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/troll_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/troll.tscn" id="body_scene"]
 
 [resource]

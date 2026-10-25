@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://d1i2ep17a1n3a" path="res://assets/original/ui/icons/gard.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/hrba.tres" id="typed_hrba"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/HRba_2.tres" id="typed_HRba"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/edmn_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/rhinok_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/rhinok.tscn" id="body_scene"]
 
 [resource]

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_lhdmn"]
 [ext_resource type="Texture2D" uid="uid://b8xcoo5yinrvi" path="res://assets/original/ui/icons/ycro.png" id="icon_tex"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/eorc_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/trogg_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/trogg.tscn" id="body_scene"]
 
 [resource]

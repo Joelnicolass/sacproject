@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_1joh7"]
 [ext_resource type="Texture2D" uid="uid://dl76ap62hhrk5" path="res://assets/original/ui/icons/plfd.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/lfda.tres" id="typed_lfda"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/dflp_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/deadeye_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/deadeye.tscn" id="body_scene"]
 
 [resource]

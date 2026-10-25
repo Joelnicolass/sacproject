@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_kqi83"]
 [ext_resource type="Texture2D" uid="uid://biat2mju52glw" path="res://assets/original/ui/icons/craf.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/sfba.tres" id="typed_sfba"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/bugf_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/tickferno_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/tickferno.tscn" id="body_scene"]
 
 [resource]

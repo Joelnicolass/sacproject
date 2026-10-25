@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_38h3d"]
 [ext_resource type="Texture2D" uid="uid://c6xtq3qlcfinn" path="res://assets/original/ui/icons/guls.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/dpsf.tres" id="typed_dpsf"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/eslg_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/basilisk_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/basilisk.tscn" id="body_scene"]
 
 [resource]

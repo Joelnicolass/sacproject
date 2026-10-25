@@ -1,0 +1,64 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/seraph_model_clips/SPst.res" id="1_SPst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/seraph_model_clips/SPru.res" id="2_SPru"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/seraph_model_clips/SPa1.res" id="3_SPa1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/seraph_model_clips/SPa2.res" id="4_SPa2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/seraph_model_clips/SPa3.res" id="5_SPa3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/seraph_model_clips/SPs1.res" id="6_SPs1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/seraph_model_clips/SPs2.res" id="7_SPs2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/seraph_model_clips/SPd1.res" id="8_SPd1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/seraph_model_clips/SPfi.res" id="9_SPfi"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/seraph_model_clips/SP2t.res" id="10_SP2t"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/seraph_model_clips/SPsa.res" id="11_SPsa"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/seraph_model_clips/SPrz.res" id="12_SPrz"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/seraph_model_clips/SPfl.res" id="13_SPfl"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/seraph_model_clips/SPhv.res" id="14_SPhv"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/seraph_model_clips/SPto.res" id="15_SPto"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/seraph_model_clips/SPla.res" id="16_SPla"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/seraph_model_clips/SPfo.res" id="17_SPfo"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/seraph_model_clips/SPgu.res" id="18_SPgu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/seraph_model_clips/SPfd.res" id="19_SPfd"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/seraph_model_clips/SPhf.res" id="20_SPhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/seraph_model_clips/SPi1.res" id="21_SPi1"]
+
+[sub_resource type="Animation" id="Animation_oeba1"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Skeleton3D/HandL:visible")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[resource]
+_data = {
+&"RESET": SubResource("Animation_oeba1"),
+&"attack": ExtResource("3_SPa1"),
+&"attack2": ExtResource("4_SPa2"),
+&"attack3": ExtResource("5_SPa3"),
+&"death": ExtResource("8_SPd1"),
+&"fly": ExtResource("13_SPfl"),
+&"fly_damage": ExtResource("19_SPfd"),
+&"fly_death": ExtResource("9_SPfi"),
+&"gesture": ExtResource("21_SPi1"),
+&"get_up": ExtResource("18_SPgu"),
+&"held": ExtResource("10_SP2t"),
+&"hit_floor": ExtResource("20_SPhf"),
+&"hover": ExtResource("14_SPhv"),
+&"idle": ExtResource("1_SPst"),
+&"knock": ExtResource("17_SPfo"),
+&"land": ExtResource("16_SPla"),
+&"rise": ExtResource("12_SPrz"),
+&"run": ExtResource("2_SPru"),
+&"shoot": ExtResource("6_SPs1"),
+&"shoot2": ExtResource("7_SPs2"),
+&"takeoff": ExtResource("15_SPto"),
+&"thrash": ExtResource("11_SPsa")
+}

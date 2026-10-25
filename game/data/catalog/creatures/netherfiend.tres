@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_njg5r"]
 [ext_resource type="Texture2D" uid="uid://dy22u0t0qb3he" path="res://assets/original/ui/icons/crpd.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/ifna.tres" id="typed_ifna"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/prcy_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/netherfiend_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/netherfiend.tscn" id="body_scene"]
 
 [resource]

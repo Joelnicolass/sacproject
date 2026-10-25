@@ -35,7 +35,7 @@ func _types() -> Dictionary:
 				continue
 			count += 1
 			var type := load(dir + file) as Resource
-			var path := "%s%s_clips.tres" % [MODELS_DIR, BodyFacts.of(type.get("body") as PackedScene).model_id]
+			var path := BodyModel.clips_path(BodyFacts.of(type.get("body") as PackedScene).model_id)
 			var library := type.get("clips") as AnimationLibrary
 			if library == null:
 				_note(bad, "%s: no clips (its library is %s)" % [file, path])
@@ -60,7 +60,7 @@ func _libraries() -> Dictionary:
 		if not file.ends_with("_clips.tres"):
 			continue
 		libs += 1
-		var model := file.trim_suffix("_clips.tres")
+		var model := BodyModel.tag_of_file(file)
 		var library := load(MODELS_DIR + file) as AnimationLibrary
 		if library == null:
 			_note(bad, file + ": does not load")

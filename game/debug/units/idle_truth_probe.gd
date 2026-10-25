@@ -166,7 +166,7 @@ func _measure_all_models() -> void:
 		return
 	for file in DirAccess.get_files_at(BodyModel.SCENE_DIR):
 		if file.ends_with(".tscn"):
-			gesture_slide_m(file.get_basename())
+			gesture_slide_m(BodyModel.tag_of_file(file))
 
 
 ## Meters the `gesture` clip of `model`'s scene slides the body on the ground (ClipSlide). -1 when the model has no scene

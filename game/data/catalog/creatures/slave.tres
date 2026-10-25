@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_lnqtu"]
 [ext_resource type="Texture2D" uid="uid://cpelo0u22swa2" path="res://assets/original/ui/icons/zepf.png" id="icon_tex"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/fpez_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/slave_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/slave.tscn" id="body_scene"]
 
 [resource]

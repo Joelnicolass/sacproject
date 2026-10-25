@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_ne1yr"]
 [ext_resource type="Texture2D" uid="uid://mid422vwftvl" path="res://assets/original/ui/icons/dzid.png" id="icon_tex"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/ddiz_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/scythe_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/scythe.tscn" id="body_scene"]
 
 [resource]

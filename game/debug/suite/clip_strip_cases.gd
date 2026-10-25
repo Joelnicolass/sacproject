@@ -75,10 +75,10 @@ func _check_facts(file: String, original: AnimationLibrary, copy: AnimationLibra
 
 
 func _paths(bad: PackedStringArray) -> void:
-	for path: String in ["res://scenes/bodies/models/eorc_clips/HUst.res", "res://scenes/bodies/models/AArc_clips/AAa1.res"]:
+	for path: String in ["res://scenes/bodies/models/trogg_model_clips/HUst.res", "res://scenes/bodies/models/sylph_model_clips/AAa1.res"]:
 		if not STRIP.is_clip_path(path):
 			_note(bad, path + ": a clip file that is_clip_path does not recognise")
-	for path: String in ["res://scenes/bodies/models/eorc_clips.tres", "res://scenes/bodies/models/eorc.tscn", "res://scenes/spells/zones/volcano_lava_tube.res", "res://scenes/bodies/models/_clips/"]:
+	for path: String in ["res://scenes/bodies/models/trogg_model_clips.tres", "res://scenes/bodies/models/trogg_model.tscn", "res://scenes/spells/zones/volcano_lava_tube.res", "res://scenes/bodies/models/_clips/"]:
 		if STRIP.is_clip_path(path):
 			_note(bad, path + ": is_clip_path takes a file that is not a clip")
 

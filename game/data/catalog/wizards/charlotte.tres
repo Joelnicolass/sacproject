@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="WizardType" format=3]
 
 [ext_resource type="Script" path="res://scenes/wizards/wizard_type.gd" id="1_3qqnh"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/spdr_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/charlotte_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/wizards/bodies/charlotte.tscn" id="body_scene"]
 
 [resource]

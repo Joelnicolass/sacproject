@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_x4v5w"]
 [ext_resource type="Texture2D" uid="uid://dby00c0mjyq85" path="res://assets/original/ui/icons/pazb.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/zbba.tres" id="typed_zbba"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/bugz_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/locust_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/locust.tscn" id="body_scene"]
 
 [resource]

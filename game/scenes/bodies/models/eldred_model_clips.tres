@@ -1,0 +1,62 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/eldred_model_clips/hest.res" id="1_hest"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eldred_model_clips/hern.res" id="2_hern"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eldred_model_clips/hewa.res" id="3_hewa"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eldred_model_clips/hes2.res" id="4_hes2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eldred_model_clips/her2.res" id="5_her2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eldred_model_clips/death.res" id="6_death"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eldred_model_clips/death2.res" id="7_death2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eldred_model_clips/death3.res" id="8_death3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eldred_model_clips/hefd.res" id="9_hefd"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eldred_model_clips/hegu.res" id="10_hegu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eldred_model_clips/hefd_once.res" id="11_hefd_once"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eldred_model_clips/hei1.res" id="12_hei1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eldred_model_clips/ghost_rise.res" id="13_ghost_rise"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eldred_model_clips/unghost.res" id="14_unghost"]
+
+[sub_resource type="Animation" id="Animation_i1ugp"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Skeleton3D/HandL:visible")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Skeleton3D/HandR:visible")
+tracks/1/interp = 0
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[resource]
+_data = {
+&"RESET": SubResource("Animation_i1ugp"),
+&"cast": ExtResource("4_hes2"),
+&"cast_run": ExtResource("5_her2"),
+&"death": ExtResource("6_death"),
+&"death2": ExtResource("7_death2"),
+&"death3": ExtResource("8_death3"),
+&"gesture": ExtResource("12_hei1"),
+&"get_up": ExtResource("10_hegu"),
+&"ghost_rise": ExtResource("13_ghost_rise"),
+&"hit_floor": ExtResource("11_hefd_once"),
+&"idle": ExtResource("1_hest"),
+&"knock": ExtResource("9_hefd"),
+&"run": ExtResource("2_hern"),
+&"unghost": ExtResource("14_unghost"),
+&"walk": ExtResource("3_hewa")
+}

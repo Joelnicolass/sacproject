@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://6go1ad4gox8t" path="res://assets/original/ui/icons/palk.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/ekba.tres" id="typed_ekba"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/dihk.tres" id="typed_dihk"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/eklp_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/earthfling_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/earthfling.tscn" id="body_scene"]
 
 [resource]

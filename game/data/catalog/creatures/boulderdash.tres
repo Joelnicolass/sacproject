@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_t6t3n"]
 [ext_resource type="Texture2D" uid="uid://ctfljfg6l03m7" path="res://assets/original/ui/icons/llab.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/emba.tres" id="typed_emba"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/bale_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/boulderdash_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/boulderdash.tscn" id="body_scene"]
 
 [resource]

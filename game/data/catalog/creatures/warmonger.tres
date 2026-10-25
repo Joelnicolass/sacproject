@@ -5,7 +5,7 @@
 [ext_resource type="Resource" path="res://data/catalog/abilities/fhga.tres" id="typed_fhga"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/wfhg.tres" id="typed_wfhg"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/tfhg.tres" id="typed_tfhg"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/gunf_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/warmonger_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/warmonger.tscn" id="body_scene"]
 
 [resource]

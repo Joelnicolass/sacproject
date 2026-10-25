@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://5voqoki8jq4x" path="res://assets/original/ui/icons/tbsh.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/absh.tres" id="typed_absh"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/hsba.tres" id="typed_hsba"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/lhbt_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/shrike_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/shrike.tscn" id="body_scene"]
 
 [resource]

@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="WizardType" format=3]
 
 [ext_resource type="Script" path="res://scenes/wizards/wizard_type.gd" id="1_yf2l3"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/xwiz_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/the_ragman_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/wizards/bodies/the_ragman.tscn" id="body_scene"]
 
 [resource]

@@ -5,7 +5,7 @@
 [ext_resource type="Resource" path="res://data/catalog/abilities/rdba.tres" id="typed_rdba"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/!nur.tres" id="typed__nur"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/gcil.tres" id="typed_gcil"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/adrg_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/silverback_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/silverback.tscn" id="body_scene"]
 
 [resource]

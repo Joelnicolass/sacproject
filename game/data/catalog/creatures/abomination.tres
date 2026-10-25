@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_xaj8f"]
 [ext_resource type="Texture2D" uid="uid://d6lu26xqtjao" path="res://assets/original/ui/icons/ctug.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/tugt.tres" id="typed_tugt"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/gutc_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/abomination_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/abomination.tscn" id="body_scene"]
 
 [resource]

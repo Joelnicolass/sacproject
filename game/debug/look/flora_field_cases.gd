@@ -135,8 +135,8 @@ func _maps() -> Dictionary:
 		var groups := MeshPlanter.describe_groups(config, flora)
 		var no_prop := []
 		for group in groups:
-			if not ResourceLoader.exists(OriginalAssets.prop(str(group["model"]))):
-				no_prop.append(group["model"])
+			if group["mesh"] == null:
+				no_prop.append(group["tag"])
 		var kept := 0
 		var best := _fullest(flora, groups, 1)
 		if not best.is_empty():

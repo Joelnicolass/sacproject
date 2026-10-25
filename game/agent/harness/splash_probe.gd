@@ -35,18 +35,17 @@ func check(building_name: String, amount: float, radius: float) -> String:
 	var top := TypeRef.building(tag).scene().instantiate() as MapBuilding
 	var holders: Array[Node3D] = []
 	for part in top.visuals.get_children():
-		if part is Node3D and part.get_child_count() > 0 and part.get_child(0) is BodyVisual:
+		if part is Node3D and part.get_child_count() > 0 and part.get_child(0) is MeshInstance3D:
 			holders.append(part)
-	var model := (holders[0].get_child(0) as BodyVisual).model if holders.size() == 1 else ""
+	var mesh: Mesh = (holders[0].get_child(0) as MeshInstance3D).mesh if holders.size() == 1 else null
 	var plain := holders.size() == 1 and holders[0].transform == Transform3D.IDENTITY
 	top.free()
 	if not plain:
 		return "%s: solo edificios de una pieza sin giro ni desplazamiento" % tag
-	var raw: Array = BodyCatalog.measured(model).get("box", [])
-	if raw.size() != 6:
-		return "%s: sin caja horneada" % tag
-	var low := Vector3(raw[0], raw[1], raw[2])
-	var high := low + Vector3(raw[3], raw[4], raw[5])
+	if mesh == null:
+		return "%s: sin malla" % tag
+	var low := mesh.get_aabb().position
+	var high := mesh.get_aabb().end
 	var local := body.global_transform.affine_inverse() * center
 	var gap := Vector3(maxf(maxf(low.x - local.x, local.x - high.x), 0.0), maxf(maxf(low.y - local.y, local.y - high.y), 0.0), maxf(maxf(low.z - local.z, local.z - high.z), 0.0))
 	var d := gap.length()

@@ -44,6 +44,7 @@ const CLIP_FACTS_CASES := preload("res://debug/suite/clip_facts_cases.gd")  # 05
 const CLIP_STRIP_CASES := preload("res://debug/suite/clip_strip_cases.gd")  # 055s s4
 const BODY_FACTS_CASES := preload("res://debug/suite/body_facts_cases.gd")  # 055s
 const WIRE_CONFIG_CASES := preload("res://debug/net/wire_config_cases.gd")  # 055s
+const PROP_FACTS_CASES := preload("res://debug/suite/prop_facts_cases.gd")  # 055s s5a
 const TEAM_CASES := preload("res://debug/match/team_cases.gd")  # 049b, 049c
 
 @export var auto_run := true
@@ -112,6 +113,7 @@ func _run_suite() -> void:
 	_results.merge(CLIP_STRIP_CASES.new().run(self))  # 055s s4
 	_results.merge(BODY_FACTS_CASES.new().run(self))  # 055s
 	_results.merge(WIRE_CONFIG_CASES.new().run(self))  # 055s
+	_results.merge(PROP_FACTS_CASES.new().run(self))  # 055s s5a
 	_print_suite()
 
 

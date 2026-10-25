@@ -21,8 +21,6 @@ const ARRIVE_DISTANCE := 0.25
 const BURY_DEPTH := 1.0
 ## sacengine rockCastingPosition: 1.5 m past the front of the caster's hit box.
 const CAST_AHEAD := 1.5
-## MODL.WAD rock.MRMM (tools/import/import_props.py), drawn at scale 1.
-const MODEL := "rock"
 ## sacengine makeRock: spins 2π·[0.2, 0.8] rad/s around a random axis.
 const SPIN_MIN := 0.2
 const SPIN_MAX := 0.8
@@ -30,6 +28,8 @@ const SPIN_MAX := 0.8
 const TRAIL_FX := "rock_trail"
 const TRAIL_INTERVAL_S := 2.0 / 60.0
 
+## The rock, drawn at scale 1 (scenes/props/meshes/rock.res).
+@export var rock_mesh: Mesh
 @export var rock_color := Color(0.42, 0.4, 0.34)
 ## 061k-5: the crack it leaves where it bursts (spells/marks/rock_mark.tscn), played on every peer.
 @export var ground_mark: PackedScene
@@ -75,7 +75,7 @@ func setup(data: Dictionary) -> void:
 func _add_visual() -> void:
 	var visual := MeshInstance3D.new()
 	visual.name = "Mesh"
-	visual.mesh = BodyCatalog.mesh(MODEL)
+	visual.mesh = rock_mesh
 	if visual.mesh == null:
 		var ball := SphereMesh.new()
 		ball.radius = HALF_SIZE
@@ -143,9 +143,14 @@ static func cast_position(caster: Node3D) -> Vector3:
 	var ahead := Vector3(0.0, 0.0, 1.0)
 	if caster.has_method("facing_flat"):  # dynamic: unit, wizard and doctor bodies all face
 		ahead = caster.call("facing_flat")
-	var model := str(caster.get("model")) if "model" in caster else ""
-	var front := float(BodyCatalog.info(model).get("reach", 0.5))
+	var front := _reach_mm(BodyFacts.of_body(caster).reach_m)
 	return caster.global_position + ahead * (front + CAST_AHEAD)
+
+
+## The reach as the millimetre double the rules have always read: the body scene keeps it in 32 bits and every body measure has at
+## most three decimals, so dividing the rounded millimetres gives the same double (the cast position stays bit for bit).
+static func _reach_mm(reach_m: float) -> float:
+	return roundi(reach_m * 1000.0) / 1000.0
 
 
 func _fly_step() -> void:

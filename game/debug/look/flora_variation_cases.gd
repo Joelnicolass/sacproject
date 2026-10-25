@@ -47,7 +47,7 @@ static func sample(species: VegetationSpecies, seed: int, n := SAMPLES) -> Array
 		var spots := FloraPlacement.cell_instances(seed, tag, tx, tx * 3, 20, SIDE, Vector2(0.0, 1.0))
 		for i in 20:
 			var at := i * FloraPlacement.STRIDE
-			var t := FloraVariation.instance_transform(variation, seed, tag_h, tx, tx * 3, i, spots[at + 2], spots[at + 3], Vector3.ZERO, Transform3D.IDENTITY)
+			var t := FloraVariation.instance_transform(variation, seed, tag_h, tx, tx * 3, i, spots[at + 2], spots[at + 3], Vector3.ZERO)
 			var c := FloraVariation.instance_color(variation, seed, tag_h, tx, tx * 3, i, spots[at], spots[at + 1])
 			out.append([t.basis.x.length(), c, t.basis])
 		tx += 1

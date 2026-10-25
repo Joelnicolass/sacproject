@@ -6,8 +6,8 @@ extends RefCounted
 ## Does not change anything: it only answers boxes.
 
 
-## The box that holds every BodyVisual under the holders (Node3D children) of `visuals`, in the frame of `visuals`.
-## A zero-size AABB when no part has a baked box.
+## The box that holds every MeshInstance3D part under the holders (Node3D children) of `visuals`, in the frame of `visuals`.
+## A zero-size AABB when no part has a mesh.
 static func parts_box(visuals: Node3D) -> AABB:
 	var merged := AABB()
 	var any := false
@@ -16,12 +16,10 @@ static func parts_box(visuals: Node3D) -> AABB:
 		if placed == null:
 			continue
 		for child in placed.get_children():
-			var visual := child as BodyVisual
-			var raw: Array = BodyCatalog.info(visual.model).get("box", []) if visual != null and BodyCatalog.has_model(visual.model) else []
-			if raw.size() != 6:
+			var part := child as MeshInstance3D
+			if part == null or part.mesh == null:
 				continue
-			var local := AABB(Vector3(raw[0], raw[1], raw[2]), Vector3(raw[3], raw[4], raw[5]))
-			var box: AABB = placed.transform * BodyCatalog.pose(visual.model, false) * local
+			var box: AABB = placed.transform * part.transform * part.mesh.get_aabb()
 			merged = box if not any else merged.merge(box)
 			any = true
 	return merged

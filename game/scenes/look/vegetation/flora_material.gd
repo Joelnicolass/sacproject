@@ -1,7 +1,7 @@
 class_name FloraMaterial
 extends RefCounted
 
-## The material a flora MultiMesh draws with. The prop's own material is shared (OriginalMaterial), so it is never touched:
+## The material a flora MultiMesh draws with. The mesh's own material is a saved file shared by every plant, so it is never touched:
 ## a copy multiplies its albedo by the instance color (`vertex_color_use_as_albedo`, MultiMesh.use_colors) and, when
 ## `fade_m` > 0, dithers out between end - fade and end (camera distance). Presentation only.
 

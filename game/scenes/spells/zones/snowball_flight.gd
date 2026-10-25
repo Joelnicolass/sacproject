@@ -7,10 +7,8 @@ extends Node3D
 ## Ref: sacengine frozenGroundSnowballCastingPosition, updateFrozenGroundSnowball (state.d:11097-11102, 19773-19828).
 
 @export var zone: GroundZone
-## The ball: a mesh child that wears the prop's mesh.
+## The ball: a mesh child (it holds the mesh).
 @export var ball: MeshInstance3D
-## The prop whose mesh the ball wears.
-@export var model := "sbll"
 ## What the ball leaves behind it every tick, two puffs, and what it bursts into on landing.
 @export var trail: ParticleType
 @export var shards: Array[ParticleType] = []
@@ -32,8 +30,6 @@ func _ready() -> void:
 	visible = false
 	if Engine.is_editor_hint() or zone == null:
 		return
-	if ball != null and ball.mesh == null:
-		ball.mesh = BodyCatalog.mesh(model)
 	var rng := MatchSeed.rng(["snowball", String(zone.name)])
 	_axis = Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0)).normalized()
 	_turn = TAU * rng.randf_range(spin_turns.x, spin_turns.y)

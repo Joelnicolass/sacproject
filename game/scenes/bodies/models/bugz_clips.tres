@@ -1,0 +1,41 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/bugz_clips/BZst.res" id="1_BZst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bugz_clips/BZfl.res" id="2_BZfl"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bugz_clips/BZa1.res" id="3_BZa1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bugz_clips/BZa2.res" id="4_BZa2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bugz_clips/BZa3.res" id="5_BZa3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bugz_clips/BZs1.res" id="6_BZs1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bugz_clips/BZd1.res" id="7_BZd1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bugz_clips/BZ2t.res" id="8_BZ2t"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bugz_clips/BZsc.res" id="9_BZsc"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bugz_clips/BZrz.res" id="10_BZrz"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bugz_clips/BZhv.res" id="11_BZhv"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bugz_clips/BZfd.res" id="12_BZfd"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bugz_clips/BZdf.res" id="13_BZdf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bugz_clips/BZhf.res" id="14_BZhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bugz_clips/BZi1.res" id="15_BZi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_BZst"),
+&"run": ExtResource("2_BZfl"),
+&"attack": ExtResource("3_BZa1"),
+&"attack2": ExtResource("4_BZa2"),
+&"attack3": ExtResource("5_BZa3"),
+&"shoot": ExtResource("6_BZs1"),
+&"shoot2": ExtResource("6_BZs1"),
+&"death": ExtResource("7_BZd1"),
+&"fly_death": ExtResource("7_BZd1"),
+&"held": ExtResource("8_BZ2t"),
+&"thrash": ExtResource("9_BZsc"),
+&"rise": ExtResource("10_BZrz"),
+&"fly": ExtResource("2_BZfl"),
+&"hover": ExtResource("11_BZhv"),
+&"land": ExtResource("11_BZhv"),
+&"knock": ExtResource("12_BZfd"),
+&"get_up": ExtResource("2_BZfl"),
+&"fly_damage": ExtResource("13_BZdf"),
+&"hit_floor": ExtResource("14_BZhf"),
+&"gesture": ExtResource("15_BZi1")
+}

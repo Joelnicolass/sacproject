@@ -1,0 +1,35 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/ban2_clips/DZst.res" id="1_DZst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ban2_clips/DDrn.res" id="2_DDrn"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ban2_clips/DDa1.res" id="3_DDa1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ban2_clips/DZa2.res" id="4_DZa2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ban2_clips/DZa3.res" id="5_DZa3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ban2_clips/DZ00.res" id="6_DZ00"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ban2_clips/DZd1.res" id="7_DZd1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ban2_clips/DZ2t.res" id="8_DZ2t"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ban2_clips/DZsc.res" id="9_DZsc"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ban2_clips/DZrz.res" id="10_DZrz"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ban2_clips/DZfa.res" id="11_DZfa"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ban2_clips/DZgu.res" id="12_DZgu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ban2_clips/DZhf.res" id="13_DZhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ban2_clips/DDi1.res" id="14_DDi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_DZst"),
+&"run": ExtResource("2_DDrn"),
+&"attack": ExtResource("3_DDa1"),
+&"attack2": ExtResource("4_DZa2"),
+&"attack3": ExtResource("5_DZa3"),
+&"shoot": ExtResource("6_DZ00"),
+&"shoot2": ExtResource("6_DZ00"),
+&"death": ExtResource("7_DZd1"),
+&"held": ExtResource("8_DZ2t"),
+&"thrash": ExtResource("9_DZsc"),
+&"rise": ExtResource("10_DZrz"),
+&"knock": ExtResource("11_DZfa"),
+&"get_up": ExtResource("12_DZgu"),
+&"hit_floor": ExtResource("13_DZhf"),
+&"gesture": ExtResource("14_DDi1")
+}

@@ -2,13 +2,14 @@
 class_name BodyRig
 extends Node3D
 
-## RFC-023 (023b) / RFC-036 (036g): a skeletal body of the original game. It instances the model's scene
-## (scenes/bodies/models/<model>.tscn, a BodyModel: the .glb, its AnimationTree with one state per ROLE and the clip events)
-## under %ModelSlot and plays ROLES (idle, run, attack...) through that tree. Which clip a role plays, and how the animations
-## look, is edited in the model's scene in the editor; this node only asks the tree to travel to a role.
+## A skeletal body: it instances the model's scene (scenes/bodies/models/<model>.tscn, a BodyModel: the .glb, its library of
+## clips by role and the AnimationTree with one state per ROLE) under %ModelSlot and plays ROLES (idle, run, attack...) through
+## that tree. Which clip a role plays, and how the animations look, is edited in the model's scene in the editor; this node
+## only asks the tree to travel to a role.
 ## Without the scene (a model that is a static mesh) the rig shows nothing and warns in the inspector; no error.
 ## On the dedicated server (headless) nothing loads: the rig is inert.
-## Presentation only: the simulation never reads the rig.
+## Presentation only: the simulation never reads the rig (it reads the same clips through ClipFacts).
+## Ref: RFC-023 (023b), RFC-036 (036g).
 
 ## A model scene was instanced under the rig (its skeleton and sockets exist now).
 signal model_loaded
@@ -63,17 +64,17 @@ func active_role() -> String:
 	return _role
 
 
-## Clip tag, frame count and framerate of a role of the loaded model.
+## Clip tag (the .glb's), frame count and framerate of a role of the loaded model.
 func role_tag(role: String) -> String:
 	return _model_root.tag_for(resolve_role(role)) if _model_root != null else ""
 
 
 func role_frames(role: String) -> int:
-	return _model_root.frames_of(role_tag(role)) if _model_root != null else 0
+	return _model_root.frames_of(resolve_role(role)) if _model_root != null else 0
 
 
 func role_framerate(role: String) -> float:
-	return _model_root.framerate_of(role_tag(role)) if _model_root != null else 30.0
+	return _model_root.framerate_of(resolve_role(role)) if _model_root != null else 30.0
 
 
 ## Seconds into the active clip (within the pass the state machine is in); 0 when nothing plays.
@@ -82,9 +83,9 @@ func play_position() -> float:
 	return playback.get_current_play_position() if playback != null and _model_root.tree().active else 0.0
 
 
-## The frame of the active clip's first attack event (the strike lands on it), -1 without one.
+## The frame of the active clip's first `hit` marker (the strike lands on it), -1 without one.
 func impact_frame() -> int:
-	return _model_root.impact_frame(role_tag(_role)) if _model_root != null and not _role.is_empty() else -1
+	return _model_root.impact_frame(_role) if _model_root != null and not _role.is_empty() else -1
 
 
 ## The node the model scene gives for the sprite effect a creature carries (BodyModel.carried_fx_socket); null without one.
@@ -142,7 +143,6 @@ func set_paused(on: bool) -> void:
 		return
 	var mode := AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL if on else AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_IDLE
 	_model_root.tree().callback_mode_process = mode
-	_model_root.events_player().callback_mode_process = mode
 
 
 ## Plays `role` through the state machine (travel: it blends with xfade). `restart` starts it again from frame 0.
@@ -166,7 +166,6 @@ func play(role: String, restart := false, at := 0.0) -> void:
 		playback.travel(wanted)
 	_role = wanted
 	_apply_hands(wanted)
-	_play_events(wanted)
 	if at > 0.0:
 		tree.advance(at)
 
@@ -178,11 +177,10 @@ func pose_at(role: String, seconds: float) -> void:
 	if _model_root == null:
 		return
 	var wanted := resolve_role(role)
-	var player := _model_root.clip_player()
+	var player := _model_root.clips_player()
 	_model_root.tree().active = false
-	_model_root.events_player().stop()
 	_skeleton.reset_bone_poses()
-	player.play(_model_root.tag_for(wanted))
+	player.play(_model_root.animation_for(wanted))
 	player.seek(seconds, true)
 	player.pause()
 	_role = wanted
@@ -206,21 +204,11 @@ func _playback() -> AnimationNodeStateMachinePlayback:
 	return _model_root.tree().get(BodyModel.PLAYBACK) as AnimationNodeStateMachinePlayback
 
 
-## Stops the .glb's own player only when it holds a clip (pose_at left it paused): stop() seeks it.
+## Stops the clips player only when it holds a clip (pose_at left it paused): stop() seeks it.
 func _stop_player() -> void:
-	var player := _model_root.clip_player() if _model_root != null else null
+	var player := _model_root.clips_player() if _model_root != null else null
 	if player != null and not player.assigned_animation.is_empty():
 		player.stop()
-
-
-## The Events player runs the method tracks (ClipEvents.fire) of the clip a role plays, from its start.
-func _play_events(role: String) -> void:
-	var events := _model_root.events_player()
-	var tag := _model_root.tag_for(role)
-	if events.has_animation(tag):
-		events.play(tag)
-	else:
-		events.stop()
 
 
 func _reload_if_ready() -> void:

@@ -1,0 +1,33 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/eslg_clips/SLst.res" id="1_SLst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eslg_clips/SLrn.res" id="2_SLrn"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eslg_clips/SLa1.res" id="3_SLa1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eslg_clips/SLa2.res" id="4_SLa2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eslg_clips/SLa3.res" id="5_SLa3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eslg_clips/SLEs.res" id="6_SLEs"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eslg_clips/SLd1.res" id="7_SLd1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eslg_clips/SL2t.res" id="8_SL2t"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eslg_clips/SLsc.res" id="9_SLsc"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eslg_clips/SLfd.res" id="10_SLfd"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eslg_clips/SLgu.res" id="11_SLgu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eslg_clips/SLhf.res" id="12_SLhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eslg_clips/SLi1.res" id="13_SLi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_SLst"),
+&"run": ExtResource("2_SLrn"),
+&"attack": ExtResource("3_SLa1"),
+&"attack2": ExtResource("4_SLa2"),
+&"attack3": ExtResource("5_SLa3"),
+&"shoot": ExtResource("6_SLEs"),
+&"shoot2": ExtResource("6_SLEs"),
+&"death": ExtResource("7_SLd1"),
+&"held": ExtResource("8_SL2t"),
+&"thrash": ExtResource("9_SLsc"),
+&"knock": ExtResource("10_SLfd"),
+&"get_up": ExtResource("11_SLgu"),
+&"hit_floor": ExtResource("12_SLhf"),
+&"gesture": ExtResource("13_SLi1")
+}

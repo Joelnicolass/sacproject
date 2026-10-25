@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scenes/bodies/body_model.gd" id="1_0hh2l"]
 [ext_resource type="PackedScene" path="res://assets/original/models/gret.glb" id="2_esxja"]
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_6b52d"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/gret_clips.tres" id="clips_lib"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_nbt0l"]
 radius = 0.060005937
@@ -133,60 +134,25 @@ radius = 0.060005937
 height = 0.13001187
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_chk35"]
-animation = &"grsl"
-use_custom_timeline = true
-timeline_length = 1.6
-stretch_time_scale = false
-start_offset = 0.0
-loop_mode = 1
+animation = &"cast"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_amkwc"]
-animation = &"grrl"
-use_custom_timeline = true
-timeline_length = 1.7
-stretch_time_scale = false
-start_offset = 0.0
-loop_mode = 1
+animation = &"cast_run"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_nbt0l"]
-animation = &"grgu"
-use_custom_timeline = true
-timeline_length = 0.9333333333333332
-stretch_time_scale = false
-start_offset = 0.0
-loop_mode = 1
+animation = &"get_up"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_chcmu"]
-animation = &"grh1"
-use_custom_timeline = true
-timeline_length = 1.6333333333333333
-stretch_time_scale = false
-start_offset = 0.0
-loop_mode = 1
+animation = &"hit_floor"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_f76pl"]
-animation = &"grs1"
-use_custom_timeline = true
-timeline_length = 1.7
-stretch_time_scale = false
-start_offset = 0.0
-loop_mode = 1
+animation = &"idle"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_svcqs"]
-animation = &"grk2"
-use_custom_timeline = true
-timeline_length = 1.8
-stretch_time_scale = false
-start_offset = 0.0
-loop_mode = 1
+animation = &"knock"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_m0a5j"]
-animation = &"grru"
-use_custom_timeline = true
-timeline_length = 1.0
-stretch_time_scale = false
-start_offset = 0.0
-loop_mode = 1
+animation = &"run"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_1ljs5"]
 advance_mode = 2
@@ -219,8 +185,6 @@ states/knock/position = Vector2(860, 40)
 states/run/node = SubResource("AnimationNodeAnimation_m0a5j")
 states/run/position = Vector2(460, 40)
 transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_1ljs5"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_ennfp"), "idle", "cast", SubResource("AnimationNodeStateMachineTransition_ennfp"), "idle", "cast_run", SubResource("AnimationNodeStateMachineTransition_ennfp"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_ennfp"), "run", "cast", SubResource("AnimationNodeStateMachineTransition_ennfp"), "run", "cast_run", SubResource("AnimationNodeStateMachineTransition_ennfp"), "cast", "idle", SubResource("AnimationNodeStateMachineTransition_os0jf"), "cast", "run", SubResource("AnimationNodeStateMachineTransition_ennfp"), "cast", "cast_run", SubResource("AnimationNodeStateMachineTransition_ennfp"), "cast_run", "idle", SubResource("AnimationNodeStateMachineTransition_ennfp"), "cast_run", "run", SubResource("AnimationNodeStateMachineTransition_ennfp"), "cast_run", "cast", SubResource("AnimationNodeStateMachineTransition_ennfp"), "cast", "knock", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "knock", "cast", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "cast_run", "knock", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "knock", "cast_run", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "idle", "knock", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "knock", "idle", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "run", "knock", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "knock", "run", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "cast", "get_up", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "get_up", "cast", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "cast_run", "get_up", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "get_up", "cast_run", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "idle", "get_up", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "get_up", "idle", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "knock", "get_up", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "get_up", "knock", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "run", "get_up", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "get_up", "run", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "cast", "hit_floor", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "hit_floor", "cast", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "cast_run", "hit_floor", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "hit_floor", "cast_run", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "get_up", "hit_floor", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "hit_floor", "get_up", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "idle", "hit_floor", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "hit_floor", "idle", SubResource("AnimationNodeStateMachineTransition_os0jf"), "knock", "hit_floor", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "hit_floor", "knock", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "run", "hit_floor", SubResource("AnimationNodeStateMachineTransition_dh7wh"), "hit_floor", "run", SubResource("AnimationNodeStateMachineTransition_dh7wh")]
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_7twt6"]
 
 [node name="gret" type="Node3D" unique_id=811657262]
 script = ExtResource("1_0hh2l")
@@ -973,17 +937,17 @@ joint_constraints/relaxation = 1.0
 transform = Transform3D(0.26723796, 0.80508024, 0.52955616, -0.80508024, -0.11546433, 0.5818194, 0.52955616, -0.5818194, 0.61729765, 0.048309594, -0.0069285473, -0.03491262)
 shape = SubResource("CapsuleShape3D_4lrl1")
 
+[node name="Clips" type="AnimationPlayer" parent="." unique_id=516633920]
+unique_name_in_owner = true
+root_node = NodePath("../Model")
+libraries/ = ExtResource("clips_lib")
+
 [node name="Tree" type="AnimationTree" parent="." unique_id=1613057280]
 unique_name_in_owner = true
 active = false
 root_node = NodePath("../Model")
 tree_root = SubResource("AnimationNodeStateMachine_007sg")
-anim_player = NodePath("../Model/AnimationPlayer")
-
-[node name="Events" type="AnimationPlayer" parent="." unique_id=1338180566]
-unique_name_in_owner = true
-deterministic = true
-libraries/ = SubResource("AnimationLibrary_7twt6")
+anim_player = NodePath("../Clips")
 
 [node name="ClipEvents" type="Node" parent="." unique_id=1307559115]
 unique_name_in_owner = true

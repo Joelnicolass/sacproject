@@ -1,0 +1,32 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/jnwr_clips/jwst.res" id="1_jwst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/jnwr_clips/jwrn.res" id="2_jwrn"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/jnwr_clips/jws2.res" id="3_jws2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/jnwr_clips/jwr2.res" id="4_jwr2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/jnwr_clips/death.res" id="5_death"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/jnwr_clips/death2.res" id="6_death2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/jnwr_clips/death3.res" id="7_death3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/jnwr_clips/jwfd.res" id="8_jwfd"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/jnwr_clips/jwgu.res" id="9_jwgu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/jnwr_clips/jwh2.res" id="10_jwh2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/jnwr_clips/jwi1.res" id="11_jwi1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/jnwr_clips/ghost_rise.res" id="12_ghost_rise"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/jnwr_clips/unghost.res" id="13_unghost"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_jwst"),
+&"run": ExtResource("2_jwrn"),
+&"cast": ExtResource("3_jws2"),
+&"cast_run": ExtResource("4_jwr2"),
+&"death": ExtResource("5_death"),
+&"death2": ExtResource("6_death2"),
+&"death3": ExtResource("7_death3"),
+&"knock": ExtResource("8_jwfd"),
+&"get_up": ExtResource("9_jwgu"),
+&"hit_floor": ExtResource("10_jwh2"),
+&"gesture": ExtResource("11_jwi1"),
+&"ghost_rise": ExtResource("12_ghost_rise"),
+&"unghost": ExtResource("13_unghost")
+}

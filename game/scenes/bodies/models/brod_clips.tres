@@ -1,0 +1,32 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/brod_clips/brs1.res" id="1_brs1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/brod_clips/brru.res" id="2_brru"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/brod_clips/brsl.res" id="3_brsl"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/brod_clips/brrl.res" id="4_brrl"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/brod_clips/death.res" id="5_death"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/brod_clips/death2.res" id="6_death2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/brod_clips/death3.res" id="7_death3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/brod_clips/brk2.res" id="8_brk2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/brod_clips/brgu.res" id="9_brgu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/brod_clips/brhf.res" id="10_brhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/brod_clips/bri1.res" id="11_bri1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/brod_clips/ghost_rise.res" id="12_ghost_rise"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/brod_clips/unghost.res" id="13_unghost"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_brs1"),
+&"run": ExtResource("2_brru"),
+&"cast": ExtResource("3_brsl"),
+&"cast_run": ExtResource("4_brrl"),
+&"death": ExtResource("5_death"),
+&"death2": ExtResource("6_death2"),
+&"death3": ExtResource("7_death3"),
+&"knock": ExtResource("8_brk2"),
+&"get_up": ExtResource("9_brgu"),
+&"hit_floor": ExtResource("10_brhf"),
+&"gesture": ExtResource("11_bri1"),
+&"ghost_rise": ExtResource("12_ghost_rise"),
+&"unghost": ExtResource("13_unghost")
+}

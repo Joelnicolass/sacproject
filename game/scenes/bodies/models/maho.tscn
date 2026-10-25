@@ -3,86 +3,37 @@
 [ext_resource type="Script" path="res://scenes/bodies/body_model.gd" id="1_u2up3"]
 [ext_resource type="PackedScene" path="res://assets/original/models/maho.glb" id="2_sbd2a"]
 [ext_resource type="Script" path="res://scenes/bodies/clip_events.gd" id="3_1dver"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/maho_clips.tres" id="clips_lib"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_s4fo7"]
-animation = &"MAst"
-use_custom_timeline = true
-timeline_length = 1.3333333333333333
-stretch_time_scale = false
-start_offset = 0.0
-loop_mode = 1
+animation = &"attack"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_v2veb"]
-animation = &"MAst"
-use_custom_timeline = true
-timeline_length = 1.3333333333333333
-stretch_time_scale = false
-start_offset = 0.0
-loop_mode = 1
+animation = &"attack2"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_vebw3"]
-animation = &"MAst"
-use_custom_timeline = true
-timeline_length = 1.3333333333333333
-stretch_time_scale = false
-start_offset = 0.0
-loop_mode = 1
+animation = &"attack3"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_xt7w7"]
-animation = &"MAdi"
-use_custom_timeline = true
-timeline_length = 2.533333333333333
-stretch_time_scale = false
-start_offset = 0.0
-loop_mode = 0
+animation = &"death"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_k6q8d"]
-animation = &"MAi1"
-use_custom_timeline = true
-timeline_length = 1.7666666666666666
-stretch_time_scale = false
-start_offset = 0.0
-loop_mode = 1
+animation = &"gesture"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_h20ht"]
-animation = &"MA2t"
-use_custom_timeline = true
-timeline_length = 0.8
-stretch_time_scale = false
-start_offset = 0.0
-loop_mode = 1
+animation = &"held"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_6orx1"]
-animation = &"MAst"
-use_custom_timeline = true
-timeline_length = 1.3333333333333333
-stretch_time_scale = false
-start_offset = 0.0
-loop_mode = 1
+animation = &"idle"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_bg6fr"]
-animation = &"MArz"
-use_custom_timeline = true
-timeline_length = 1.6
-stretch_time_scale = false
-start_offset = 0.0
-loop_mode = 1
+animation = &"rise"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_iok2b"]
-animation = &"MArn"
-use_custom_timeline = true
-timeline_length = 0.6
-stretch_time_scale = false
-start_offset = 0.0
-loop_mode = 1
+animation = &"run"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_e8a3p"]
-animation = &"MAsc"
-use_custom_timeline = true
-timeline_length = 0.4
-stretch_time_scale = false
-start_offset = 0.0
-loop_mode = 1
+animation = &"thrash"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_t848g"]
 advance_mode = 2
@@ -121,8 +72,6 @@ states/run/position = Vector2(460, 40)
 states/thrash/node = SubResource("AnimationNodeAnimation_e8a3p")
 states/thrash/position = Vector2(460, 150)
 transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_t848g"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "idle", "attack", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "idle", "death", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "idle", "held", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "idle", "thrash", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "idle", "rise", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "idle", "gesture", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "run", "attack", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "run", "death", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "run", "held", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "run", "thrash", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "run", "rise", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "run", "gesture", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "attack", "idle", SubResource("AnimationNodeStateMachineTransition_2vd0u"), "attack", "run", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "attack", "death", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "attack", "held", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "attack", "thrash", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "attack", "rise", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "attack", "gesture", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "death", "idle", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "death", "run", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "death", "attack", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "death", "held", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "death", "thrash", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "death", "rise", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "death", "gesture", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "held", "idle", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "held", "run", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "held", "attack", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "held", "death", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "held", "thrash", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "held", "rise", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "held", "gesture", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "thrash", "idle", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "thrash", "run", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "thrash", "attack", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "thrash", "death", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "thrash", "held", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "thrash", "rise", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "thrash", "gesture", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "rise", "idle", SubResource("AnimationNodeStateMachineTransition_2vd0u"), "rise", "run", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "rise", "attack", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "rise", "death", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "rise", "held", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "rise", "thrash", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "rise", "gesture", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "gesture", "idle", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "gesture", "run", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "gesture", "attack", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "gesture", "death", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "gesture", "held", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "gesture", "thrash", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "gesture", "rise", SubResource("AnimationNodeStateMachineTransition_0e5y2"), "attack", "attack2", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "attack2", "attack", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "death", "attack2", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "attack2", "death", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "gesture", "attack2", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "attack2", "gesture", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "held", "attack2", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "attack2", "held", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "idle", "attack2", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "attack2", "idle", SubResource("AnimationNodeStateMachineTransition_2vd0u"), "rise", "attack2", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "attack2", "rise", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "run", "attack2", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "attack2", "run", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "thrash", "attack2", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "attack2", "thrash", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "attack", "attack3", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "attack3", "attack", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "attack2", "attack3", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "attack3", "attack2", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "death", "attack3", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "attack3", "death", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "gesture", "attack3", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "attack3", "gesture", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "held", "attack3", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "attack3", "held", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "idle", "attack3", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "attack3", "idle", SubResource("AnimationNodeStateMachineTransition_2vd0u"), "rise", "attack3", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "attack3", "rise", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "run", "attack3", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "attack3", "run", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "thrash", "attack3", SubResource("AnimationNodeStateMachineTransition_ap4jk"), "attack3", "thrash", SubResource("AnimationNodeStateMachineTransition_ap4jk")]
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_vvhhi"]
 
 [node name="maho" type="Node3D" unique_id=1153520847 node_paths=PackedStringArray("carried_fx_socket")]
 script = ExtResource("1_u2up3")
@@ -228,17 +177,17 @@ clips = {
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 
+[node name="Clips" type="AnimationPlayer" parent="." unique_id=692014775]
+unique_name_in_owner = true
+root_node = NodePath("../Model")
+libraries/ = ExtResource("clips_lib")
+
 [node name="Tree" type="AnimationTree" parent="." unique_id=153789752]
 unique_name_in_owner = true
 active = false
 root_node = NodePath("../Model")
 tree_root = SubResource("AnimationNodeStateMachine_hov71")
-anim_player = NodePath("../Model/AnimationPlayer")
-
-[node name="Events" type="AnimationPlayer" parent="." unique_id=1937834774]
-unique_name_in_owner = true
-deterministic = true
-libraries/ = SubResource("AnimationLibrary_vvhhi")
+anim_player = NodePath("../Clips")
 
 [node name="ClipEvents" type="Node" parent="." unique_id=2035510905]
 unique_name_in_owner = true

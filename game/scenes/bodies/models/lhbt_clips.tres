@@ -1,0 +1,40 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/lhbt_clips/HBst.res" id="1_HBst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/lhbt_clips/HBfl.res" id="2_HBfl"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/lhbt_clips/HBa1.res" id="3_HBa1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/lhbt_clips/HBa2.res" id="4_HBa2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/lhbt_clips/HBa3.res" id="5_HBa3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/lhbt_clips/HBsh.res" id="6_HBsh"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/lhbt_clips/HBd1.res" id="7_HBd1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/lhbt_clips/HBfi.res" id="8_HBfi"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/lhbt_clips/HBft.res" id="9_HBft"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/lhbt_clips/HBsc.res" id="10_HBsc"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/lhbt_clips/HBrz.res" id="11_HBrz"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/lhbt_clips/HBi1.res" id="12_HBi1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/lhbt_clips/HBfd.res" id="13_HBfd"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/lhbt_clips/HBdf.res" id="14_HBdf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/lhbt_clips/HBhf.res" id="15_HBhf"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_HBst"),
+&"run": ExtResource("2_HBfl"),
+&"attack": ExtResource("3_HBa1"),
+&"attack2": ExtResource("4_HBa2"),
+&"attack3": ExtResource("5_HBa3"),
+&"shoot": ExtResource("6_HBsh"),
+&"shoot2": ExtResource("6_HBsh"),
+&"death": ExtResource("7_HBd1"),
+&"fly_death": ExtResource("8_HBfi"),
+&"held": ExtResource("9_HBft"),
+&"thrash": ExtResource("10_HBsc"),
+&"rise": ExtResource("11_HBrz"),
+&"fly": ExtResource("2_HBfl"),
+&"hover": ExtResource("12_HBi1"),
+&"takeoff": ExtResource("2_HBfl"),
+&"knock": ExtResource("13_HBfd"),
+&"fly_damage": ExtResource("14_HBdf"),
+&"hit_floor": ExtResource("15_HBhf"),
+&"gesture": ExtResource("12_HBi1")
+}

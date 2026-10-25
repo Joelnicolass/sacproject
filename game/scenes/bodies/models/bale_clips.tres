@@ -1,0 +1,35 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/bale_clips/BMst.res" id="1_BMst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bale_clips/BMrn.res" id="2_BMrn"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bale_clips/BMa1.res" id="3_BMa1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bale_clips/BMa2.res" id="4_BMa2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bale_clips/BMa3.res" id="5_BMa3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bale_clips/BMs1.res" id="6_BMs1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bale_clips/BMd1.res" id="7_BMd1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bale_clips/BM2t.res" id="8_BM2t"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bale_clips/BMsa.res" id="9_BMsa"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bale_clips/BMrz.res" id="10_BMrz"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bale_clips/BMfd.res" id="11_BMfd"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bale_clips/BMgu.res" id="12_BMgu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bale_clips/BMhf.res" id="13_BMhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/bale_clips/BMi1.res" id="14_BMi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_BMst"),
+&"run": ExtResource("2_BMrn"),
+&"attack": ExtResource("3_BMa1"),
+&"attack2": ExtResource("4_BMa2"),
+&"attack3": ExtResource("5_BMa3"),
+&"shoot": ExtResource("6_BMs1"),
+&"shoot2": ExtResource("6_BMs1"),
+&"death": ExtResource("7_BMd1"),
+&"held": ExtResource("8_BM2t"),
+&"thrash": ExtResource("9_BMsa"),
+&"rise": ExtResource("10_BMrz"),
+&"knock": ExtResource("11_BMfd"),
+&"get_up": ExtResource("12_BMgu"),
+&"hit_floor": ExtResource("13_BMhf"),
+&"gesture": ExtResource("14_BMi1")
+}

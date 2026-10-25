@@ -261,15 +261,15 @@ func _model_scene() -> String:
 	if model.has_role("hit") or model.has_role("fly"):
 		model.queue_free()
 		return "the model has states for roles it has no clip for"
-	if model.impact_frame("attack_at45") != 18 or model.frames_of("attack_at45") != 40:
-		var got := "%d of %d" % [model.impact_frame("attack_at45"), model.frames_of("attack_at45")]
+	if model.impact_frame("attack") != 18 or model.frames_of("attack") != 40:
+		var got := "%d of %d" % [model.impact_frame("attack"), model.frames_of("attack")]
 		model.queue_free()
 		return "attack impact %s, expected 18 of 40" % got
 	if model.has_role("attack3"):
 		model.queue_free()
 		return "the model has a state for attack3 and no clip for it"
-	if model.impact_frame("attack2_at60") != 30 or model.frames_of("attack2_at60") != 50:
-		var second := "%d of %d" % [model.impact_frame("attack2_at60"), model.frames_of("attack2_at60")]
+	if model.impact_frame("attack2") != 30 or model.frames_of("attack2") != 50:
+		var second := "%d of %d" % [model.impact_frame("attack2"), model.frames_of("attack2")]
 		model.queue_free()
 		return "attack2 impact %s, expected 30 of 50" % second
 	var skeleton := model.skeleton()

@@ -1,0 +1,37 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/gutc_clips/GCst.res" id="1_GCst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gutc_clips/GCru.res" id="2_GCru"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gutc_clips/GCa1.res" id="3_GCa1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gutc_clips/GCa2.res" id="4_GCa2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gutc_clips/GCal.res" id="5_GCal"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gutc_clips/GCsh.res" id="6_GCsh"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gutc_clips/GCdi.res" id="7_GCdi"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gutc_clips/GCst_hold.res" id="8_GCst_hold"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gutc_clips/GC2t.res" id="9_GC2t"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gutc_clips/GCsa.res" id="10_GCsa"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gutc_clips/GCrz.res" id="11_GCrz"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gutc_clips/GCfd.res" id="12_GCfd"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gutc_clips/GCgu.res" id="13_GCgu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gutc_clips/GChf.res" id="14_GChf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gutc_clips/GCid.res" id="15_GCid"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_GCst"),
+&"run": ExtResource("2_GCru"),
+&"attack": ExtResource("3_GCa1"),
+&"attack2": ExtResource("4_GCa2"),
+&"attack3": ExtResource("5_GCal"),
+&"shoot": ExtResource("6_GCsh"),
+&"shoot2": ExtResource("6_GCsh"),
+&"death": ExtResource("7_GCdi"),
+&"fly_death": ExtResource("8_GCst_hold"),
+&"held": ExtResource("9_GC2t"),
+&"thrash": ExtResource("10_GCsa"),
+&"rise": ExtResource("11_GCrz"),
+&"knock": ExtResource("12_GCfd"),
+&"get_up": ExtResource("13_GCgu"),
+&"hit_floor": ExtResource("14_GChf"),
+&"gesture": ExtResource("15_GCid")
+}

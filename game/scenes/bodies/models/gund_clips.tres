@@ -1,0 +1,38 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/gund_clips/GUst.res" id="1_GUst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gund_clips/GUrn.res" id="2_GUrn"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gund_clips/GUa1.res" id="3_GUa1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gund_clips/GUa2.res" id="4_GUa2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gund_clips/GUa3.res" id="5_GUa3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gund_clips/GUs1.res" id="6_GUs1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gund_clips/GUs2.res" id="7_GUs2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gund_clips/GUd1.res" id="8_GUd1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gund_clips/GUst_hold.res" id="9_GUst_hold"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gund_clips/GU2t.res" id="10_GU2t"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gund_clips/GUsc.res" id="11_GUsc"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gund_clips/GUrz.res" id="12_GUrz"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gund_clips/GUfd.res" id="13_GUfd"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gund_clips/GUgu.res" id="14_GUgu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gund_clips/GUhf.res" id="15_GUhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gund_clips/GUi1.res" id="16_GUi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_GUst"),
+&"run": ExtResource("2_GUrn"),
+&"attack": ExtResource("3_GUa1"),
+&"attack2": ExtResource("4_GUa2"),
+&"attack3": ExtResource("5_GUa3"),
+&"shoot": ExtResource("6_GUs1"),
+&"shoot2": ExtResource("7_GUs2"),
+&"death": ExtResource("8_GUd1"),
+&"fly_death": ExtResource("9_GUst_hold"),
+&"held": ExtResource("10_GU2t"),
+&"thrash": ExtResource("11_GUsc"),
+&"rise": ExtResource("12_GUrz"),
+&"knock": ExtResource("13_GUfd"),
+&"get_up": ExtResource("14_GUgu"),
+&"hit_floor": ExtResource("15_GUhf"),
+&"gesture": ExtResource("16_GUi1")
+}

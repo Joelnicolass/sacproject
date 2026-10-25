@@ -1,0 +1,34 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/sage_clips/sgst.res" id="1_sgst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sage_clips/sgrn.res" id="2_sgrn"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sage_clips/sgwa.res" id="3_sgwa"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sage_clips/sgs2.res" id="4_sgs2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sage_clips/sgr2.res" id="5_sgr2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sage_clips/death.res" id="6_death"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sage_clips/death2.res" id="7_death2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sage_clips/death3.res" id="8_death3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sage_clips/sgfd.res" id="9_sgfd"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sage_clips/sggu.res" id="10_sggu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sage_clips/sghf.res" id="11_sghf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sage_clips/sgi1.res" id="12_sgi1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sage_clips/ghost_rise.res" id="13_ghost_rise"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sage_clips/unghost.res" id="14_unghost"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_sgst"),
+&"run": ExtResource("2_sgrn"),
+&"walk": ExtResource("3_sgwa"),
+&"cast": ExtResource("4_sgs2"),
+&"cast_run": ExtResource("5_sgr2"),
+&"death": ExtResource("6_death"),
+&"death2": ExtResource("7_death2"),
+&"death3": ExtResource("8_death3"),
+&"knock": ExtResource("9_sgfd"),
+&"get_up": ExtResource("10_sggu"),
+&"hit_floor": ExtResource("11_sghf"),
+&"gesture": ExtResource("12_sgi1"),
+&"ghost_rise": ExtResource("13_ghost_rise"),
+&"unghost": ExtResource("14_unghost")
+}

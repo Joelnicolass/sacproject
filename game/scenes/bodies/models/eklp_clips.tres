@@ -1,0 +1,38 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/eklp_clips/KLst.res" id="1_KLst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eklp_clips/KErn.res" id="2_KErn"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eklp_clips/KEa1.res" id="3_KEa1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eklp_clips/KLa2.res" id="4_KLa2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eklp_clips/KLal.res" id="5_KLal"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eklp_clips/KLs1.res" id="6_KLs1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eklp_clips/KLs2.res" id="7_KLs2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eklp_clips/KLd1.res" id="8_KLd1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eklp_clips/KLst_hold.res" id="9_KLst_hold"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eklp_clips/KL2t.res" id="10_KL2t"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eklp_clips/KLsc.res" id="11_KLsc"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eklp_clips/KLrz.res" id="12_KLrz"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eklp_clips/KLfd.res" id="13_KLfd"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eklp_clips/KLgu.res" id="14_KLgu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eklp_clips/KLhf.res" id="15_KLhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/eklp_clips/KEi1.res" id="16_KEi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_KLst"),
+&"run": ExtResource("2_KErn"),
+&"attack": ExtResource("3_KEa1"),
+&"attack2": ExtResource("4_KLa2"),
+&"attack3": ExtResource("5_KLal"),
+&"shoot": ExtResource("6_KLs1"),
+&"shoot2": ExtResource("7_KLs2"),
+&"death": ExtResource("8_KLd1"),
+&"fly_death": ExtResource("9_KLst_hold"),
+&"held": ExtResource("10_KL2t"),
+&"thrash": ExtResource("11_KLsc"),
+&"rise": ExtResource("12_KLrz"),
+&"knock": ExtResource("13_KLfd"),
+&"get_up": ExtResource("14_KLgu"),
+&"hit_floor": ExtResource("15_KLhf"),
+&"gesture": ExtResource("16_KEi1")
+}

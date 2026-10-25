@@ -1,0 +1,49 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/peas_clips/PEst.res" id="1_PEst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/peas_clips/PErn.res" id="2_PErn"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/peas_clips/PEa1.res" id="3_PEa1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/peas_clips/PEa2.res" id="4_PEa2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/peas_clips/PE00.res" id="5_PE00"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/peas_clips/PEd1.res" id="6_PEd1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/peas_clips/PEpd.res" id="7_PEpd"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/peas_clips/PE2t.res" id="8_PE2t"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/peas_clips/PEsc.res" id="9_PEsc"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/peas_clips/PErz.res" id="10_PErz"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/peas_clips/PEpu.res" id="11_PEpu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/peas_clips/PEcw.res" id="12_PEcw"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/peas_clips/PEp2.res" id="13_PEp2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/peas_clips/PEtc.res" id="14_PEtc"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/peas_clips/PEdi.res" id="15_PEdi"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/peas_clips/PEfd.res" id="16_PEfd"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/peas_clips/PEgu.res" id="17_PEgu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/peas_clips/PEhf.res" id="18_PEhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/peas_clips/PEi1.res" id="19_PEi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_PEst"),
+&"run": ExtResource("2_PErn"),
+&"attack": ExtResource("3_PEa1"),
+&"attack2": ExtResource("4_PEa2"),
+&"attack3": ExtResource("3_PEa1"),
+&"shoot": ExtResource("5_PE00"),
+&"shoot2": ExtResource("5_PE00"),
+&"death": ExtResource("6_PEd1"),
+&"fly_death": ExtResource("7_PEpd"),
+&"held": ExtResource("8_PE2t"),
+&"thrash": ExtResource("9_PEsc"),
+&"rise": ExtResource("10_PErz"),
+&"fly": ExtResource("11_PEpu"),
+&"takeoff": ExtResource("12_PEcw"),
+&"land": ExtResource("13_PEp2"),
+&"cower": ExtResource("12_PEcw"),
+&"talk_cower": ExtResource("14_PEtc"),
+&"work": ExtResource("15_PEdi"),
+&"pull": ExtResource("11_PEpu"),
+&"knock": ExtResource("16_PEfd"),
+&"get_up": ExtResource("17_PEgu"),
+&"fly_damage": ExtResource("15_PEdi"),
+&"hit_floor": ExtResource("18_PEhf"),
+&"gesture": ExtResource("19_PEi1")
+}

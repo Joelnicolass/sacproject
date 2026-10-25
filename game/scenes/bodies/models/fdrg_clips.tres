@@ -1,0 +1,38 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/fdrg_clips/DFst.res" id="1_DFst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/fdrg_clips/DFfl.res" id="2_DFfl"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/fdrg_clips/DFa1.res" id="3_DFa1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/fdrg_clips/DFa2.res" id="4_DFa2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/fdrg_clips/DFa3.res" id="5_DFa3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/fdrg_clips/DFs1.res" id="6_DFs1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/fdrg_clips/DFs2.res" id="7_DFs2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/fdrg_clips/DFd1.res" id="8_DFd1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/fdrg_clips/DF2t.res" id="9_DF2t"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/fdrg_clips/DFsc.res" id="10_DFsc"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/fdrg_clips/DFrz.res" id="11_DFrz"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/fdrg_clips/DFhv.res" id="12_DFhv"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/fdrg_clips/DFdf.res" id="13_DFdf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/fdrg_clips/DFhf.res" id="14_DFhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/fdrg_clips/DFi1.res" id="15_DFi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_DFst"),
+&"run": ExtResource("2_DFfl"),
+&"attack": ExtResource("3_DFa1"),
+&"attack2": ExtResource("4_DFa2"),
+&"attack3": ExtResource("5_DFa3"),
+&"shoot": ExtResource("6_DFs1"),
+&"shoot2": ExtResource("7_DFs2"),
+&"death": ExtResource("8_DFd1"),
+&"fly_death": ExtResource("8_DFd1"),
+&"held": ExtResource("9_DF2t"),
+&"thrash": ExtResource("10_DFsc"),
+&"rise": ExtResource("11_DFrz"),
+&"fly": ExtResource("2_DFfl"),
+&"hover": ExtResource("12_DFhv"),
+&"fly_damage": ExtResource("13_DFdf"),
+&"hit_floor": ExtResource("14_DFhf"),
+&"gesture": ExtResource("15_DFi1")
+}

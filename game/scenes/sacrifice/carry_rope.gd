@@ -6,7 +6,7 @@ extends Node3D
 ## ring, and sparks at the tip. The needle is a node of the doctor's model (BodyModel.tool_socket, `Needle/Tip` in
 ## sac_doctor_model.tscn): move it there with the gizmo. Without one the rope starts at this node's own origin and a warning says so once.
 ## Local presentation on every peer, drawn from replicated state only: `doctor.carried` (the creature's
-## path) and the creature's own ring (Captive.portal, which exists while it is held). It changes no
+## path) and the creature's own ring (CaptiveRing.ring(), which exists while it is held). It changes no
 ## simulation. The dedicated server draws nothing. Remove the node from doctor.tscn to switch it off.
 ## Ref: sacengine SacDocTether + needle sparks, state.d:15556-15613; the tip is bone 16 of `sacd` (sacobject.d:360-366).
 
@@ -63,9 +63,10 @@ func _portal() -> Node3D:
 	if creature == null:
 		return null
 	var captive := Captive.of(creature)
-	if captive == null or not captive.is_held() or captive.portal == null or not is_instance_valid(captive.portal):
+	var ring := CaptiveRing.of(creature)
+	if captive == null or ring == null or not captive.is_held():
 		return null
-	return captive.portal
+	return ring.ring()
 
 
 ## The tip of the needle in the model; this node itself when the model has none (it warns once).

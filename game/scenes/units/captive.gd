@@ -4,13 +4,13 @@ extends Node
 
 ## A creature taken by a Sac Doctor (RFC-020c). While it is held it is not a creature of the match:
 ## out of the group «unit» (so it cannot be selected, ordered, targeted or separated from), without
-## collision, hanging behind the doctor. Let go, it is the same creature again, alive and with its owner.
+## collision, hanging behind the doctor. The ring around it is `CaptiveRing`. Let go, it is the same creature again, alive and with its owner.
 ## `UnitBody.mode = HELD` is what every peer sees (it is replicated); this node reacts to it. Only the
 ## server (or solo) calls take()/release() and moves the body. Remove the child and the creature
 ## cannot be taken: the Desecrate cast answers «Blanco inválido».
 ## RFC-020e: a Convert doctor also revives a corpse with it (revive(), mode REVIVING: stood up, still
 ## taken, nobody's target) and, if the doctor dies then, release(CARRIER_DIED) kills it again.
-## Numbers: rules.carry_height / carry_distance / carry_speed_factor (sacengine state.d:15759-15766).
+## Numbers: SacrificeFacts.carry_up_m / carry_back_m (the Carry/Hang marker of the places scene), rules.carry_speed_factor (sacengine state.d:15759-15766).
 ## The creature does not use move_and_slide: like sacengine it follows a point without colliding.
 
 ## The doctor took it.
@@ -29,16 +29,11 @@ const UNIT_GROUP := &"unit"
 const _ORDERS := preload("res://scenes/units/unit_orders.gd")
 
 @export var body: UnitBody
-## Ring drawn around the creature while it is held (scenes/fx/portal_disc.tscn, blue). Local
-## presentation on every peer; empty = no ring. sacengine renderer.d:1638-1677.
-@export var portal_scene: PackedScene
-## sacengine: ring radii = 0.65 * (1.1, 0.9) * the diagonal of the creature's box (renderer.d:1639-1644).
-@export var portal_scale := Vector2(1.1, 0.9) * 0.65
+## The creature's own Health and Orders (it is emptied of orders when taken, its health is set when revived).
+@export var health: Health
+@export var orders: _ORDERS
 
 var holder: DoctorBody
-## The ring while it is held or closing. Null on the dedicated server.
-var portal: PortalDisc
-
 var _layer := 0
 var _applied := false
 
@@ -52,9 +47,7 @@ func _ready() -> void:
 	if Engine.is_editor_hint() or body == null:
 		return
 	body.taken_changed.connect(_apply)
-	body.held_changed.connect(_apply_ring)
 	_apply(body.is_taken())
-	_apply_ring(body.is_held())
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -77,8 +70,7 @@ func take(by: DoctorBody) -> bool:
 		return false
 	if not body.is_reviving():
 		body.halt()
-	var orders := body.get_node_or_null("Orders") as _ORDERS
-	if orders:
+	if orders != null:
 		orders.clear()
 	holder = by
 	by.carried = body.get_path()
@@ -126,11 +118,9 @@ func release(reason := Release.LET_GO) -> void:
 func revive(min_health: float, fraction: float) -> bool:
 	if body == null or not body.is_dead():
 		return false
-	var health := body.get_node_or_null("Health") as Health
 	if health == null:
 		return false
-	var orders := body.get_node_or_null("Orders") as _ORDERS
-	if orders:
+	if orders != null:
 		orders.clear()
 	health.current = SacrificeMath.revive_health(health.maximum, min_health, fraction)
 	body.velocity = Vector3.ZERO
@@ -151,7 +141,6 @@ func finish_revive() -> bool:
 
 ## The creature dies where it hangs (a corpse that falls to the floor and leaves its soul there).
 func _kill() -> void:
-	var health := body.get_node_or_null("Health") as Health
 	if health == null:
 		return
 	health.current = 0.0
@@ -181,9 +170,8 @@ func _physics_process(delta: float) -> void:
 		release(Release.CARRIER_DIED)
 		return
 	var rules := holder.rules
-	var want := hang_point(
-		holder.global_position, holder.facing_flat(),
-		rules.carry_height if rules else 3.5, rules.carry_distance if rules else 2.7)
+	var facts := SacrificeFacts.of_rules(rules)
+	var want := hang_point(holder.global_position, holder.facing_flat(), facts.carry_up_m, facts.carry_back_m)
 	var gap := want - body.global_position
 	var distance := gap.length()
 	if distance <= 0.75:
@@ -211,30 +199,3 @@ func _apply(held: bool) -> void:
 		body.remove_from_group(HELD_GROUP)
 		body.add_to_group(UNIT_GROUP)
 
-
-## The ring is only drawn while the doctor carries the creature (HELD), not while it pumps it.
-func _apply_ring(held: bool) -> void:
-	if held:
-		_open_portal()
-	elif portal != null and is_instance_valid(portal):
-		portal.close()
-
-
-## Center of the creature's box and the ring around it. Local presentation: not on the dedicated server.
-func _open_portal() -> void:
-	if portal_scene == null or not BodyLook.loads_meshes():
-		return
-	if portal == null or not is_instance_valid(portal):
-		portal = portal_scene.instantiate() as PortalDisc
-		if portal == null:
-			return
-		portal.openness = 0.0
-		body.add_child(portal)
-	var facts := BodyFacts.of_body(body)
-	var height := facts.height_m
-	var width := 2.0 * facts.radius_m
-	## Diagonal of the box (width x width x height): the original size of the hitbox (estimated).
-	var diagonal := Vector3(width, width, height).length()
-	portal.position = Vector3(0.0, height * 0.5, 0.0)
-	portal.radius = portal_scale * diagonal
-	portal.open()

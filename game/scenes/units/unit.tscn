@@ -22,6 +22,7 @@
 [ext_resource type="Script" path="res://addons/mp_kit/mp_replicate.gd" id="7_replicate"]
 [ext_resource type="Script" path="res://scenes/units/unit_orders.gd" id="f27_orders"]
 [ext_resource type="Script" path="res://scenes/units/captive.gd" id="f59_captive"]
+[ext_resource type="Script" path="res://scenes/units/captive_ring.gd" id="g5_ring"]
 [ext_resource type="Script" path="res://scenes/units/captive_look.gd" id="f055_captive_look"]
 [ext_resource type="PackedScene" path="res://scenes/fx/portal_disc.tscn" id="f59_portal"]
 [ext_resource type="Script" path="res://scenes/components/mana_pool.gd" id="f29_mana"]
@@ -637,10 +638,11 @@ ragdoll = NodePath("../RagdollDriver")
 tipping = NodePath("../TippingFall")
 light = NodePath("../Light")
 
-[node name="Captive" type="Node" parent="." node_paths=PackedStringArray("body")]
+[node name="Captive" type="Node" parent="." node_paths=PackedStringArray("body", "health", "orders")]
 script = ExtResource("f59_captive")
 body = NodePath("..")
-portal_scene = ExtResource("f59_portal")
+health = NodePath("../Health")
+orders = NodePath("../Orders")
 
 [node name="RagdollDriver" type="Node" parent="." node_paths=PackedStringArray("rig", "clip_pose")]
 script = ExtResource("f055_ragdoll")
@@ -753,5 +755,10 @@ script = ExtResource("a052_sounds")
 body = NodePath("..")
 health = NodePath("../Health")
 summon = ExtResource("a055_summon")
+
+[node name="CaptiveRing" type="Node" parent="." node_paths=PackedStringArray("body")]
+script = ExtResource("g5_ring")
+body = NodePath("..")
+portal_scene = ExtResource("f59_portal")
 
 [connection signal="solved" from="Avoidance" to="." method="_on_avoided"]

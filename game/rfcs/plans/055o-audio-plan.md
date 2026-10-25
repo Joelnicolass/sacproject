@@ -1,5 +1,7 @@
 > **Nota del orquestador (2026-10-25):** este plan se escribió como «055k», pero en RFC-055 la letra 055k es la **cámara** (C-8a) y los IDs no se renumeran. El audio pasa a ser **055o**, un corte propio que junta lo de audio que la auditoría repartía entre 055i (`CreatureType.sounds`) y 055x (el sonido dentro del FX). La pregunta 1 del plan (qué letra lleva la cámara) queda resuelta: la cámara sigue siendo 055k.
 
+> **Decisión del usuario (2026-10-25):** sí, el dedicado y el room server cargan los streams (referencias tipadas), con presupuesto medido de +≤1,5 s de arranque y +≤150 MB de memoria. Si se pasa, `CreatureType.sounds` se muda a la escena por criatura de 055c.
+
 # 055o — Audio por recursos tipados (plan del tech lead, pendiente de aprobación)
 
 Fuente: RFC-055 §13.2b fila C-8d, auditoría `research/055R-legacy-audit.md` §3.8 (fila Audio) y §3.1, CONVENTIONS §2b (C17, C21) y §2c. Medido en `main` al 2026-10-25 (`be9943c8`), rutas relativas a `game/`.

@@ -494,7 +494,7 @@ func _case_sacrifice_glue() -> void:
 	_check(not MatchTicketGlue.world_is_valid({"world": "high_noon", "mode": "2v2"}), "the dedicated turns away 2v2 on high_noon")
 	_check(not MatchTicketGlue.world_is_valid({"mode": "nope"}), "the dedicated turns away an unknown mode")
 	_check(MatchTicketGlue.world_is_valid({"world": "high_noon"}), "a v1 ticket (no mode) is a 1v1")
-	_check(String(MatchTicketGlue.setup_from_ticket(ticket).mode_tag) == "2v2", "the setup of the ticket carries the mode")
+	_check(String(MatchTicketGlue.setup_from_ticket(ticket).mode.tag) == "2v2", "the setup of the ticket carries the mode")
 	rules.free()
 
 

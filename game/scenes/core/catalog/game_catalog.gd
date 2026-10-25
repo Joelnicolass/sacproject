@@ -2,7 +2,7 @@
 class_name GameCatalog
 extends Resource
 
-## The game's catalog (RFC-040 040a): every type of data/catalog/<folder>/<tag>.tres, discovered by scanning the folders.
+## The game's catalog: every type of data/catalog/<folder>/<tag>.tres, discovered by scanning the folders.
 ## There is nothing to register: drop a .tres in a folder and it is in the game. The files are the only source of truth;
 ## this class holds no copy of them. Lists are sorted by tag so the order never depends on the file system.
 ## Types are read-only at runtime.
@@ -24,6 +24,8 @@ var _building_by_tag: Dictionary = {}
 var body_sizes: Array[BodySize] = []
 ## The gods of data/gods/<tag>.tres (RFC-042), by sort_order then tag. Each carries its theme, look, AI profile and typed book.
 var gods: Array[GodType] = []
+## The game modes in the order the screens list them (data/modes/mode_catalog.tres).
+var modes: Array[GameMode] = []
 
 static var _shared: GameCatalog
 
@@ -46,6 +48,7 @@ func scan(reload_from_disk := false) -> void:
 	_index_buildings()
 	body_sizes.assign(_load_folder("body_sizes", BodySize, reload_from_disk))
 	gods.assign(_load_gods(reload_from_disk))
+	modes.assign(GameModeCatalog.shared().modes)
 
 
 ## The folder of a catalog kind: data/catalog/<kind>/, except the buildings.
@@ -92,6 +95,12 @@ func wizard(id: String) -> WizardType:
 		if type.id() == id:
 			return type
 	return null
+
+
+## Every map, the default first and the test maps last (scenes/map/maps/<tag>/<tag>.tres). Loads them all, so ask for it from a
+## screen and not from the autoload.
+func maps() -> Array[MapDefinition]:
+	return MapCatalog.shared().maps
 
 
 ## The gods the menu, the AI picker and the rooms list (`offered`), in catalog order.

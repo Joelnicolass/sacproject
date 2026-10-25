@@ -1,6 +1,6 @@
 extends Control
 
-## RFC-034 034f: the room the player is in: players and their seats, the wizard and god, «Estoy listo», the countdown,
+## The room the player is in: players and their seats, the wizard and god, «Estoy listo», the countdown,
 ## the chat, and the result of the last match. It only reads the mirror of `MpLobby.client` and sends its commands.
 ## The wizard and god come from the same selector the menu uses (`character_select.tscn`, built the first time it is
 ## asked for). A player who never opens it takes the pick the menu left in `SacrificeFlow.pick`.
@@ -115,13 +115,13 @@ func _meta_text(room: Dictionary) -> String:
 		parts.append(tr("UI_ROOM_VIEW_CODE") % str(room["code"]))
 	var options: Dictionary = room["options"]
 	## RFC-049 049h: the mode and the map the room was created with.
-	var mode := GameModeCatalog.shared().find(StringName(str(options.get("mode", GameModeCatalog.DEFAULT_TAG))))
+	var mode := MatchWire.mode_in(options)
 	if mode != null:
 		parts.append(tr("UI_ROOM_VIEW_MODE") % tr(mode.display_name))
-	var map := MapCatalog.shared().find(StringName(str(options.get("world", MapCatalog.DEFAULT_TAG))))
+	var map := MatchWire.map_in(options)
 	if map != null:
 		parts.append(tr("UI_ROOM_VIEW_MAP") % map.display_name)
-	var land := GameCatalog.shared().god(str(options.get("biome", "")))
+	var land := MatchWire.land_in(options)
 	if land != null:
 		parts.append(tr("UI_ROOM_VIEW_LAND") % land.display_name)
 	if options.has("level"):

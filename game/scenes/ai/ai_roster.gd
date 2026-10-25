@@ -59,7 +59,7 @@ func _seat_all(seats: Array[AiSeat]) -> void:
 		var chosen := WizardPick.new()
 		chosen.wizard = seat.wizard if seat.wizard != null else SacrificeFlow.default_pick.wizard
 		chosen.god = seat.god
-		SacrificeFlow.set_ai_pick(seat.slot, chosen)
+		SacrificeFlow.board.set_ai(seat.slot, chosen)
 		wizard_spawner.spawn_slot(seat.slot)
 		placed.append(seat)
 	for _tick in MatchClock.ticks_for(settle_s):

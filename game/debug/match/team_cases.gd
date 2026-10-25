@@ -2,7 +2,7 @@ extends RefCounted
 
 ## RFC-049 049b/049c (F291, F292) cases of rules_suite: teams in SideRelations, the victory by team and the rules between allies.
 ## World-less: four sides written by hand (SideRelations.set_rows, no map), four altars and a MatchState with its DefeatRule. The game
-## mode is chosen with GameModeCatalog.use (the same `.tres` of data/modes/). Everything is put back when each case ends.
+## mode is chosen with ActiveMatch.choose on a map with four starts (the same `.tres` of data/modes/). Everything is put back when each case ends.
 
 const ALTAR_SCENE := preload("res://scenes/map/props/altar.tscn")
 const MATCH_SCENE := preload("res://scenes/match/match_state.tscn")
@@ -394,12 +394,12 @@ func _until(condition: Callable, limit: int) -> void:
 
 
 func _use_mode(tag: StringName) -> void:
-	GameModeCatalog.use(tag)
+	ActiveMatch.choose(MapCatalog.shared().find(&"test_flat4"), GameModeCatalog.shared().find(tag))
 	SideRelations.set_rows(_rows(), SEATS)
 
 
 func _restore() -> void:
-	GameModeCatalog.reset()
+	ActiveMatch.forget()
 	SideRelations.refresh()
 
 

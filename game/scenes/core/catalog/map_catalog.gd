@@ -2,18 +2,15 @@
 class_name MapCatalog
 extends RefCounted
 
-## The maps of the game and the one this process plays. A map is a folder scenes/map/maps/<tag>/ with its scene and a
-## MapDefinition `<tag>.tres`; this class finds them by scanning the folder, so adding a map edits no list. The active map is
-## `--map=<tag>` on the command line, or High Noon. Everything that used to name High Noon's files (SideRelations, NavService,
-## GroundMaterial, Terrain, the bake tools, the room rules) asks `MapCatalog.active()`.
-## A definition loads its scene, ground and navmesh: only the ones asked for are loaded (`find`, `active`); `maps` and the tag
-## lists that need a flag of each one (`room_tags`) load them all.
+## The maps of the game, found by scanning the folder scenes/map/maps/<tag>/ (its scene and a MapDefinition `<tag>.tres`):
+## adding a map edits no list. It only lists and finds; which map this process plays is ActiveMatch's.
+## A definition loads its scene, ground and navmesh: only the ones asked for are loaded (`find`); `maps` and the tag lists that
+## need a flag of each one (`room_tags`) load them all.
 
 const DIR := "res://scenes/map/maps"
 const DEFAULT_TAG := &"high_noon"
 
-## Only the tag of the active map is kept, and the definitions already loaded.
-static var _active_tag: StringName = &""
+## The definitions already loaded.
 static var _loaded: Dictionary = {}
 
 ## Every map, the default first, the test maps last. Loads them all.
@@ -31,38 +28,14 @@ static func shared() -> MapCatalog:
 	return MapCatalog.new()
 
 
-## The tag of the map this process plays: `--map=<tag>` (read from the command line here, not through MpBoot: this
-## class must not depend on the flow classes), else the default.
-static func current_tag() -> StringName:
-	if _active_tag == &"":
-		_active_tag = DEFAULT_TAG
-		if not Engine.is_editor_hint():
-			for argument in OS.get_cmdline_user_args() + OS.get_cmdline_args():
-				if argument.begins_with("--map="):
-					_active_tag = StringName(argument.substr(6))
-					break
-	return _active_tag
-
-
-## The map this process plays. An unknown tag is an error and the default plays.
+## The map this process plays (a bridge to ActiveMatch for the readers of the world).
 static func active() -> MapDefinition:
-	current_tag()
-	var definition := shared().find(_active_tag)
-	if definition == null:
-		push_error("MapCatalog: no map '%s' in %s; playing '%s'." % [_active_tag, DIR, DEFAULT_TAG])
-		_active_tag = DEFAULT_TAG
-		definition = shared().find(DEFAULT_TAG)
-	return definition
+	return ActiveMatch.map()
 
 
-## Plays the map with that tag from now on (tests and tools; a match reads it once when it starts).
-static func use(tag: StringName) -> void:
-	_active_tag = tag
-
-
-## Forgets the active map; the next question reads `--map` again.
-static func reset() -> void:
-	_active_tag = &""
+## The tag of the map this process plays.
+static func current_tag() -> StringName:
+	return ActiveMatch.map().tag
 
 
 ## The definition with that tag, loaded once. Null when the folder has none.

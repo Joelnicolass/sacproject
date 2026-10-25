@@ -2,8 +2,9 @@ class_name MatchWire
 extends RefCounted
 
 ## The one place where the product turns a Resource into the text the network carries, and back: a pick, the picks by slot, a
-## god of a bot seat. Screens and gameplay hold `WizardPick` / `GodType` / `WizardType`; only this file (and the catalogs) knows
-## that the wire says `cwa1` and `persephone`. The wire is the same text as always: {"wizard", "model", "god"}, in that order.
+## god of a bot seat, the map and the mode of the match and the options of a room. Screens and gameplay hold `WizardPick` /
+## `GodType` / `MapDefinition` / `GameMode`; only this file (and the catalogs) knows that the wire says `cwa1`, `persephone`,
+## `high_noon` and `1v1`. The wire is the same text as always: a pick is {"wizard", "model", "god"}, in that order.
 ## It does not talk to the network and it does not decide who may pick: SacrificeFlow and SacrificeRoomRules do.
 
 
@@ -71,3 +72,73 @@ static func decode_god(id: String, offered_only := false) -> GodType:
 static func decode_wizard(id: String, offered_only := false) -> WizardType:
 	var wizard: WizardType = GameCatalog.shared().wizard(id) if not id.is_empty() else null
 	return wizard if wizard != null and (wizard.offered or not offered_only) else null
+
+
+## The map with that id, or null (empty or unknown).
+static func decode_map(id: String) -> MapDefinition:
+	return MapCatalog.shared().find(StringName(id)) if not id.is_empty() else null
+
+
+## The mode with that id, or null (empty or unknown).
+static func decode_mode(id: String) -> GameMode:
+	return GameModeCatalog.shared().find(StringName(id)) if not id.is_empty() else null
+
+
+## {"map": id, "mode": id} of what this process plays: the part of the flow snapshot a late joiner needs before the world loads.
+static func encode_choice() -> Dictionary:
+	return {"map": String(ActiveMatch.map().tag), "mode": String(ActiveMatch.mode().tag)}
+
+
+## A client takes the map and the mode the server announced. One this client does not have is an error and the other one is
+## kept (as is anything the message leaves out).
+static func decode_choice(data: Dictionary) -> void:
+	var chosen_mode: GameMode = ActiveMatch.mode()
+	var chosen_map: MapDefinition = ActiveMatch.map()
+	var mode_id := str(data.get("mode", ""))
+	if not mode_id.is_empty():
+		var named_mode: GameMode = decode_mode(mode_id)
+		if named_mode == null:
+			push_error("MatchWire: el servidor mandó el modo '%s' y este cliente no lo tiene." % mode_id)
+		else:
+			chosen_mode = named_mode
+			print("modo de la partida %s (del servidor)" % mode_id)
+	var map_id := str(data.get("map", ""))
+	if not map_id.is_empty():
+		var named_map: MapDefinition = decode_map(map_id)
+		if named_map == null:
+			push_error("MatchWire: el servidor mandó el mapa '%s' y este cliente no lo tiene." % map_id)
+		else:
+			chosen_map = named_map
+			print("mapa de la partida %s (del servidor)" % map_id)
+	ActiveMatch.choose(chosen_map, chosen_mode)
+
+
+## The `options` of a room made from what a form chose: `mode`, `world`, `biome` (ids) and `level` (> 0), each only when set.
+static func options_of(setup: MatchSetup) -> Dictionary:
+	var out := {}
+	if setup.mode != null:
+		out["mode"] = String(setup.mode.tag)
+	if setup.map != null:
+		out["world"] = String(setup.map.tag)
+	if setup.biome != null:
+		out["biome"] = setup.biome.id()
+	if setup.level > 0:
+		out["level"] = setup.level
+	return out
+
+
+## The mode the options of a room name (the default one if they name none); null if it is one this client does not have.
+static func mode_in(options: Dictionary) -> GameMode:
+	var id := str(options.get("mode", ""))
+	return decode_mode(id if not id.is_empty() else String(GameModeCatalog.DEFAULT_TAG))
+
+
+## The map the options of a room name (the default one if they name none); null if it is one this client does not have.
+static func map_in(options: Dictionary) -> MapDefinition:
+	var id := str(options.get("world", ""))
+	return decode_map(id if not id.is_empty() else String(MapCatalog.DEFAULT_TAG))
+
+
+## The god whose land the options of a room name; null = drawn.
+static func land_in(options: Dictionary) -> GodType:
+	return decode_god(str(options.get("biome", "")))

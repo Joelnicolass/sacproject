@@ -69,10 +69,16 @@ func _items(picker: OptionButton) -> PackedStringArray:
 	return out
 
 
+## The id an item carries: the `tag` of the Resource in its metadata.
+func _tag_of(picker: OptionButton, index: int) -> String:
+	var meta: Variant = picker.get_item_metadata(index)
+	return str((meta as Resource).get("tag")) if meta is Resource else str(meta)
+
+
 ## Selects the item whose metadata is `tag` and emits `item_selected` as a click does.
 func _pick(picker: OptionButton, tag: String) -> bool:
 	for i in picker.item_count:
-		if str(picker.get_item_metadata(i)) == tag:
+		if _tag_of(picker, i) == tag:
 			picker.select(i)
 			picker.item_selected.emit(i)
 			return true
@@ -82,7 +88,7 @@ func _pick(picker: OptionButton, tag: String) -> bool:
 ## Every item of the map picker is a map with at least `starts` starts (and there is one).
 func _only_fitting(map: MapPicker, starts: int) -> bool:
 	for i in map.item_count:
-		var definition := MapCatalog.shared().find(StringName(str(map.get_item_metadata(i))))
+		var definition := map.get_item_metadata(i) as MapDefinition
 		if definition == null or definition.player_starts < starts:
 			return false
 	return map.item_count > 0
@@ -90,7 +96,7 @@ func _only_fitting(map: MapPicker, starts: int) -> bool:
 
 func _lists(picker: OptionButton, tag: String) -> bool:
 	for i in picker.item_count:
-		if str(picker.get_item_metadata(i)) == tag:
+		if _tag_of(picker, i) == tag:
 			return true
 	return false
 
@@ -103,7 +109,7 @@ func _check_boot() -> void:
 	var map := boot.get_node(^"%MapPicker") as MapPicker
 	_check(mode != null and map != null, "boot: %ModePicker and %MapPicker exist")
 	_check(_items(mode).has(tr("UI_MODE_PICKER_ITEM") % tr("MODE_2V2")), "boot: the mode picker offers «2 contra 2» (%s)" % ", ".join(_items(mode)))
-	_check(mode.selected_tag() == &"1v1", "boot: the mode starts at 1v1")
+	_check(mode.selected_mode().tag == &"1v1", "boot: the mode starts at 1v1")
 	_check(_pick(mode, "2v2") and _only_fitting(map, 4) and _lists(map, "test_flat4") and not _lists(map, "high_noon"),
 		"boot: with 2v2 the map picker lists only maps of 4 starts, test_flat4 among them (%s)" % ", ".join(_items(map)))
 	_check(_pick(mode, "1v1") and map.item_count > 1, "boot: back to 1v1 the map picker lists every map again")
@@ -235,7 +241,7 @@ func _check_local_server() -> void:
 
 
 func _check_result() -> void:
-	GameModeCatalog.use(&"2v2")
+	ActiveMatch.choose(MapCatalog.shared().find(&"test_flat4"), GameModeCatalog.shared().find(&"2v2"))
 	var world := Node3D.new()
 	add_child(world)
 	var state := MATCH_STATE_SCENE.instantiate() as MatchState
@@ -260,5 +266,5 @@ func _check_result() -> void:
 	_check(lobby == tr("LOBBY_RESULT_TEAM_WON"), "result: the room says «%s» to the ally" % lobby)
 	banner.queue_free()
 	world.queue_free()
-	GameModeCatalog.reset()
+	ActiveMatch.forget()
 	await _frames()

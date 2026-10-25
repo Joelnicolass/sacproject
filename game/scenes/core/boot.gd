@@ -1,6 +1,6 @@
 extends Control
 
-## Product rules: %AiLevel starts at their wizard_level (RFC-030 030d).
+## The product rules: %AiLevel starts at their wizard_level.
 @export var rules: MatchRules
 ## RFC-031 031d (F143): the player's Options → Jugabilidad (data/ui/gameplay_prefs.tres); the matches made here take it.
 @export var gameplay_prefs: GameplayPrefs
@@ -62,12 +62,11 @@ func _setup(level: int) -> MatchSetup:
 		push_warning("Boot: falta gameplay_prefs; la partida usa las reglas y los flags.")
 		setup = MatchSetup.new()
 		setup.level = level
-	## RFC-049 049a: the map of %MapPicker (SacrificeFlow plays it).
-	setup.map_tag = (%MapPicker as MapPicker).selected_tag()
-	## The land of %BiomePicker (empty = drawn from the seed; the authority of the match draws it and sends it to the clients).
-	setup.biome_god = (%BiomePicker as BiomePicker).selected_god()
-	## RFC-049 049h: and the mode of %ModePicker (in «Contra la IA» the AI takes every other seat).
-	setup.mode_tag = (%ModePicker as ModePicker).selected_tag()
+	## The map of %MapPicker and the mode of %ModePicker (in «Contra la IA» the AI takes every other seat); the flow plays them.
+	setup.map = (%MapPicker as MapPicker).selected_map()
+	setup.mode = (%ModePicker as ModePicker).selected_mode()
+	## The land of %BiomePicker (null = drawn from the seed; the authority of the match draws it and sends it to the clients).
+	setup.biome = (%BiomePicker as BiomePicker).selected_god()
 	return setup
 
 ## RFC-030 030d (F115): the level of both wizards in «Contra la IA», 1-9; default = the product rules (9).

@@ -1,10 +1,10 @@
 class_name ModePicker
 extends OptionButton
 
-## RFC-049 049h (F297): the picker of the game mode of a match (1v1, 2v2, all against all). It lists the modes rooms offer
-## (`room_selectable` in their `GameMode`) that have at least one map the same screen offers (MapPicker.offered_tags), so a mode
-## is never offered without a map for its seats. It only reads the catalogs: the choice goes out through `selected_tag()` (the boot's
-## `MatchSetup.mode_tag`, the `mode` option of a room, the local server's ticket). The item starts on the mode of `--mode` when listed.
+## The picker of the game mode of a match (1v1, 2v2, all against all). It lists the modes rooms offer (`room_selectable` in their
+## `GameMode`) that have at least one map the same screen offers (MapPicker.offers), so a mode is never offered without a map for
+## its seats. The metadata of each item is the GameMode itself and `selected_mode()` hands it over. It starts on the mode
+## `ActiveMatch` plays (the one of `--mode`) when listed.
 ## A MapPicker with this node in its `mode_picker` socket lists only the maps that fit the chosen mode.
 
 ## Count the test maps too (same meaning as MapPicker.offer_test_maps; set both the same in a screen).
@@ -20,33 +20,27 @@ func _ready() -> void:
 
 func fill() -> void:
 	clear()
-	var modes := GameModeCatalog.shared()
-	var maps := MapCatalog.shared()
-	var offered := MapPicker.offered_tags(offer_test_maps)
-	var active := GameModeCatalog.current_tag()
+	var maps := GameCatalog.shared().maps()
+	var active := ActiveMatch.mode()
 	var wanted := 0
-	for tag in modes.room_tags():
-		var mode := modes.find(StringName(tag))
-		if not _has_map(mode, maps, offered):
+	for mode in GameCatalog.shared().modes:
+		if not mode.room_selectable or not _has_map(mode, maps):
 			continue
 		add_item(tr(item_text) % tr(mode.display_name))
-		set_item_metadata(item_count - 1, tag)
-		if mode.tag == active:
+		set_item_metadata(item_count - 1, mode)
+		if mode.tag == active.tag:
 			wanted = item_count - 1
 	if item_count > 0:
 		select(wanted)
 
 
-## The tag of the chosen mode; empty if the catalog offers none.
-func selected_tag() -> StringName:
-	if selected < 0:
-		return &""
-	return StringName(str(get_item_metadata(selected)))
+## The chosen mode; null if the catalog offers none.
+func selected_mode() -> GameMode:
+	return get_item_metadata(selected) as GameMode if selected >= 0 else null
 
 
-func _has_map(mode: GameMode, maps: MapCatalog, offered: PackedStringArray) -> bool:
-	for tag in offered:
-		var definition := maps.find(StringName(tag))
-		if definition != null and definition.fits(mode):
+func _has_map(mode: GameMode, maps: Array[MapDefinition]) -> bool:
+	for definition in maps:
+		if MapPicker.offers(definition, offer_test_maps) and definition.fits(mode):
 			return true
 	return false

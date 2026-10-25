@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# MpKit framework e2e (no Sacrifice code): the arena_2d example of the kit, run in the lab project (mpkit_lab), where
+# MpKit framework e2e (no game code): the arena_2d example of the kit, run in the lab project (mpkit_lab), where
 # only MpKit and the lab probe are autoloads. Each scenario is three processes inside ONE group reservation of the queue:
 #   dedicated: server (--server) + first client + a late client that joins after the first one played;
 #   listen:    host (--listen-host) + first client + a late client.
@@ -26,6 +26,7 @@ OUT="$(mktemp -d "${TMPDIR:-/tmp}/mpkit_arena.XXXXXX")"
 kill_all() { kill_pids; }
 trap 'kill_all; net_stop' EXIT
 net_guard
+relay_up
 
 FAILS=0
 verdict() { # verdict <log> <role>

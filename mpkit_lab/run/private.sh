@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# MpKit private match e2e (no Sacrifice code), in mpkit_lab (this folder's project): a player starts MpLocalServer (a dedicated match process on
+# MpKit private match e2e (no game code), in mpkit_lab (this folder's project): a player starts MpLocalServer (a dedicated match process on
 # their own PC with invite codes), a friend joins with "ip:port#code", a stranger with a wrong code is turned away, the
 # host wins and every process is gone at the end. TRANSPORT=ws runs it over WebSocket.
 # Prints PASS / FAIL lines and MPKIT PRIVATE PASS / MPKIT PRIVATE FAIL (exit 0 / 1).
@@ -19,6 +19,7 @@ kill_stray() {
 kill_all() { kill_pids; kill_stray; }
 trap 'kill_all; net_stop' EXIT
 net_guard
+relay_up
 
 COMMON=(--transport="$TRANSPORT" --probe-code-file="$CODE" --probe-timeout-s=30 --matches-root="$MATCHES" --result-quit-delay-s=1)
 gd "$OUT/host.log" -- "${COMMON[@]}" --probe=private

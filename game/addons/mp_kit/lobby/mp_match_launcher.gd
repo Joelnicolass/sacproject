@@ -18,7 +18,7 @@ signal match_failed(match_id: String, reason: String)
 @export var base_args: PackedStringArray = PackedStringArray()
 ## User arguments every match process gets (after `--`).
 @export var agent_args: PackedStringArray = PackedStringArray(["--dedicated"])
-## Engine flag for the per-match log file. Empty = no log. Unverified on 4.7.2 (see RFC-034).
+## Engine flag for the per-match log file. Empty = no log.
 @export var log_file_flag: String = "--log-file"
 @export var runner: MpProcessRunner
 ## Kill matches left in the registry by a previous run when this node enters the tree.
@@ -31,6 +31,7 @@ var _poll_accum: float = 0.0
 
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	if runner == null:
 		runner = MpProcessRunner.new()
 	if config == null:

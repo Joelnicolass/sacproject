@@ -8,17 +8,14 @@ extends "res://debug/audio/sound_refs_cases.gd"
 ##   SoulSounds carry their cues.
 ## - match_text_gone: scenes/ names no world.tres, advisor.tres, set_path, fallback_path nor one_shot_keys, and the files
 ##   of the two sets are gone.
-## - match_parity: when tools/migrate/055o_match_parity.json is there (the one-shot migration's snapshot of how the music,
-##   the ambience, the advisor and the sacrifice sounded before), the typed data gives the same streams and numbers. The file
-##   goes with the migration.
-## Inherits the helpers of sound_refs_cases (cue_problem, _files, _instance); sound_refs_cases.run calls `run_match`.
-## Prints `SOUND REFS match gods=<a>/<b> lines=<c> parity=<p>/<q>`.
+## - match_streams: every cue of the advisor's lines has its streams.
+## Inherits the helpers of sound_refs_cases (streams_report, _files, _instance); sound_refs_cases.run calls `run_match`.
+## Prints `SOUND REFS match gods=<a>/<b> lines=<c> parity=<p>/<q>` (p of q advisor cues with all their streams).
 
 const GODS_DIR := "res://data/gods/"
 const ADVISOR_SCENE := "res://scenes/audio/advisor/advisor.tscn"
 const MATCH_SCENE := "res://scenes/match/match.tscn"
 const BOOT_SCENE := "res://scenes/core/boot.tscn"
-const MATCH_PARITY_JSON := "res://tools/migrate/055o_match_parity.json"
 const EXPECTED_GODS := 5
 const EXPECTED_LINES := 14
 const EXPECTED_REFUSALS := 7
@@ -37,8 +34,8 @@ func run_match() -> Dictionary:
 		and bool(counts["default_music"]) and bool(counts["boot_music"]) and bool(counts["sacrifice_cues"]), "counts": counts}
 	var stale := stale_references()
 	results["match_text_gone"] = {"ok": stale.is_empty(), "found": stale}
-	var parity := parity_report(MATCH_PARITY_JSON)
-	results["match_parity"] = {"ok": (parity["failures"] as PackedStringArray).is_empty(), "parity": parity}
+	var parity := streams_report(_advisor_cues())
+	results["match_streams"] = {"ok": (parity["failures"] as PackedStringArray).is_empty(), "streams": parity}
 	print("SOUND REFS match gods=%d/%d lines=%d parity=%d/%d" % [int(counts["gods_typed"]), int(counts["gods"]), int(counts["lines"]),
 		int(parity["passed"]), int(parity["total"])])
 	return results
@@ -110,112 +107,6 @@ func stale_references() -> PackedStringArray:
 	return found
 
 
-## Compares the snapshot of how the match sounded before the migration with the typed data: {total, passed, failures}.
-## No snapshot file (the migration is over): total 0.
-func parity_report(json_path: String) -> Dictionary:
-	var report := {"total": 0, "passed": 0, "failures": PackedStringArray()}
-	if not FileAccess.file_exists(json_path):
-		return report
-	var snapshot: Variant = JSON.parse_string(FileAccess.get_file_as_string(json_path))
-	if not snapshot is Dictionary:
-		(report["failures"] as PackedStringArray).append("%s no es un JSON válido" % json_path)
-		return report
-	var data: Dictionary = snapshot
-	var cues: Dictionary = data.get("cues", {})
-	for item: Dictionary in data.get("gods", []):
-		_check(report, "dios %s" % item.get("tag", ""), _god_problem(item, cues))
-	var voice := _instance(ADVISOR_SCENE) as AdvisorVoice
-	var advisor: Dictionary = data.get("advisor", {})
-	var lines := advisor_lines(voice) if voice != null else {}
-	for item: Dictionary in advisor.get("lines", []):
-		_check(report, "consejero %s" % item.get("name", ""), _line_problem(lines.get(item.get("name", "")), item, cues))
-	var refusals: Dictionary = advisor.get("refusals", {})
-	for key: String in refusals:
-		var line := voice.line_for_refusal(StringName(key)) if voice != null else null
-		_check(report, "rechazo %s" % key, "" if line != null and line.resource_name == str(refusals[key]) else "no apunta a %s" % refusals[key])
-	var watch := _watch_lines(voice) if voice != null else {}
-	for line_name: String in advisor.get("watch", []):
-		var line := watch.get(line_name) as AdvisorLine
-		_check(report, "aviso %s" % line_name, "" if line != null and line.resource_name == line_name else "no tiene la línea")
-	if voice != null:
-		voice.free()
-	for item: Dictionary in data.get("sacrifice", []):
-		_check(report, "%s %s" % [item.get("node", ""), item.get("prop", "")], _sacrifice_problem(item, cues))
-	var directors: Dictionary = data.get("directors", {})
-	var match_scene := load(MATCH_SCENE) as PackedScene
-	var default_music: Variant = _state_value(match_scene, "MusicDirector", "default_music") if match_scene != null else null
-	_check(report, "default_music", _path_problem(default_music, str(directors.get("match_default_music", ""))))
-	var boot_scene := load(BOOT_SCENE) as PackedScene
-	var boot_music: Variant = _state_value(boot_scene, "MusicDirector", "music") if boot_scene != null else null
-	_check(report, "música del menú", _path_problem(boot_music, str(directors.get("boot_music", ""))))
-	return report
-
-
-func _check(report: Dictionary, label: String, problem: String) -> void:
-	report["total"] += 1
-	if problem.is_empty():
-		report["passed"] += 1
-	else:
-		(report["failures"] as PackedStringArray).append("%s: %s" % [label, problem])
-
-
-## "" when the god points at the music and ambience files it used to play and its one-shots are the same cues.
-func _god_problem(item: Dictionary, cues: Dictionary) -> String:
-	var god := load("res://" + str(item.get("path", ""))) as GodType
-	if god == null:
-		return "no carga"
-	var problem := _path_problem(god.music, str(item.get("music", "")))
-	if problem.is_empty():
-		problem = _path_problem(god.ambience, str(item.get("ambience", "")))
-	if not problem.is_empty():
-		return problem
-	var bed: Variant = item.get("bed")
-	if bed != null:
-		if god.ambience.bed == null:
-			return "perdió el fondo"
-		problem = cue_problem(god.ambience.bed, cues.get(str(bed), {}))
-		if not problem.is_empty():
-			return "fondo: " + problem
-	var shots := AmbienceDirector.one_shot_cues(god.ambience)
-	var wanted: Array = item.get("one_shots", [])
-	if shots.size() != wanted.size():
-		return "%d sueltos y eran %d" % [shots.size(), wanted.size()]
-	for index in shots.size():
-		problem = cue_problem(shots[index], cues.get(str(wanted[index]), {}))
-		if not problem.is_empty():
-			return "suelto %d: %s" % [index, problem]
-	return ""
-
-
-## "" when the advisor line has the cue, priority and quiet time the old table gave its code.
-func _line_problem(line: AdvisorLine, item: Dictionary, cues: Dictionary) -> String:
-	if line == null:
-		return "no existe"
-	var problem := cue_problem(line.cue, cues.get(str(item.get("cue", "")), {}))
-	if not problem.is_empty():
-		return problem
-	if int(line.priority) != int(item.get("priority", -1)):
-		return "prioridad %d y era %d" % [line.priority, int(item.get("priority", -1))]
-	if not is_equal_approx(line.quiet_s, float(item.get("quiet_s", -1.0))):
-		return "silencio %s y era %s" % [line.quiet_s, item.get("quiet_s")]
-	return ""
-
-
-## "" when RitualSounds / SoulSounds carry the cue file with the streams the world set gave that event.
-func _sacrifice_problem(item: Dictionary, cues: Dictionary) -> String:
-	var node := _instance("res://" + str(item.get("scene", "")))
-	var sounds := node.get_node_or_null(NodePath(str(item.get("node", "")))) if node != null else null
-	var cue := sounds.get(str(item.get("prop", ""))) as SoundCue if sounds != null else null
-	var problem := "sin cue"
-	if cue != null:
-		problem = cue_problem(cue, cues.get(str(item.get("cue", "")), {}))
-		if problem.is_empty() and cue.resource_path != "res://" + str(item.get("file", "")):
-			problem = "cue %s y era %s" % [cue.resource_path, item.get("file")]
-	if node != null:
-		node.free()
-	return problem
-
-
 func _sacrifice_cues_ok() -> bool:
 	var ritual := _instance("res://scenes/sacrifice/ritual.tscn")
 	var soul := _instance("res://scenes/souls/soul.tscn")
@@ -229,12 +120,18 @@ func _sacrifice_cues_ok() -> bool:
 	return ok
 
 
-## "" when `resource` is the file `wanted` (a path without res://).
-func _path_problem(resource: Variant, wanted: String) -> String:
-	if not resource is Resource:
-		return "sin recurso"
-	var path: String = (resource as Resource).resource_path
-	return "" if path == "res://" + wanted else "%s y era %s" % [path, wanted]
+## The cue of every advisor line (refusals and warnings).
+func _advisor_cues() -> Array[SoundCue]:
+	var out: Array[SoundCue] = []
+	var voice := _instance(ADVISOR_SCENE) as AdvisorVoice
+	if voice == null:
+		return out
+	var lines := advisor_lines(voice)
+	for line_name: String in lines:
+		var line: AdvisorLine = lines[line_name]
+		out.append(line.cue)
+	voice.free()
+	return out
 
 
 ## The AdvisorLine exports of the voice's AdvisorWatch child by property name.

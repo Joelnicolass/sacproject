@@ -2,7 +2,7 @@
 class_name CombatGauge
 extends Node
 
-## RFC-052 052f (F365): how much fighting the player hears, from what every peer already has (no RPC, nothing written).
+## How much fighting the player hears, from what every peer already has (no RPC, nothing written).
 ## - `intensity` 0..1: the creatures (group «unit») within `radius_m` of the listener (SoundBus.listener_position:
 ##   ListenerFocus on the local wizard) that fight, over `full_at`. A creature fights when its replicated `mode` is a
 ##   fighting one (CHASE, ATTACK, SHOOT: a swing is shorter than a sample) or its `swings`/`shots` counters moved since the
@@ -13,6 +13,7 @@ extends Node
 ## `is_battle()` is either of the two (RFC-052 §14.4); `battle_changed(on)` tells when it flips. It chooses no music.
 ## Sampled every `sample_every_s` of game time. With the AudioGate closed it does nothing. `force(value)` pins the
 ## intensity (the lab's `battle` step); `force(-1)` lets it go.
+## Ref: RFC-052 052f (F365).
 
 signal battle_changed(on: bool)
 
@@ -28,6 +29,8 @@ signal battle_changed(on: bool)
 @export_range(0.0, 600.0, 1.0, "suffix:s") var wizard_damage_s := 120.0
 @export_range(0.05, 5.0, 0.05, "suffix:s") var sample_every_s := 0.25
 ## UnitBody.Mode values that count as fighting.
+## The group the creatures that may be fighting belong to.
+@export var unit_group: StringName = &"unit"
 @export var fighting_modes: Array[int] = [UnitBody.Mode.CHASE, UnitBody.Mode.ATTACK, UnitBody.Mode.SHOOT]
 
 var intensity := 0.0
@@ -103,7 +106,7 @@ func bind_wizard(node: Node3D) -> void:
 	if _health != null and is_instance_valid(_health) and _health.changed.is_connected(_on_health):
 		_health.changed.disconnect(_on_health)
 	wizard = node
-	_health = node.get_node_or_null("Health") as Health if node != null else null
+	_health = Health.of(node)
 	if _health != null:
 		_last_health = _health.current
 		_health.changed.connect(_on_health)
@@ -139,7 +142,7 @@ func measure() -> float:
 	var fighting := 0
 	var reach := radius_m * radius_m
 	var strokes := {}
-	for node in get_tree().get_nodes_in_group(&"unit"):
+	for node in get_tree().get_nodes_in_group(unit_group):
 		var unit := node as UnitBody
 		if unit == null or not unit.is_inside_tree():
 			continue

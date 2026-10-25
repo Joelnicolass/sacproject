@@ -1,12 +1,13 @@
 class_name AudioGate
 extends RefCounted
 
-## RFC-052 052a (F360): does this process have audio? The one rule every audio piece asks before it loads or creates
-## anything (SoundLibrary, SoundBus and, later, the Sounds/Voice/Director nodes).
+## Does this process have audio? The one rule every audio piece asks before it loads or creates
+## anything (SoundBus and the Sounds/Voice/Director nodes).
 ## - Closed in the dedicated server (`--dedicated` or the export feature), in the room server (`--room-server`) and in
 ##   any headless process, so the simulation, the benches and the servers never load an AudioStream.
 ## - `--audio-probe` opens it in a headless process (the audio cases and the lab), never in a server.
 ## The answer is fixed for the life of the process (the flags do not change), so it is computed once.
+## Ref: RFC-052 052a (F360).
 
 const PROBE_FLAG := "--audio-probe"
 

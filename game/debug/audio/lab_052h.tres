@@ -84,4 +84,3 @@ event = &"soul"
 script = ExtResource("1_script")
 cut = "052h"
 steps = Array[ExtResource("2_step")]([SubResource("Step_00"), SubResource("Step_01"), SubResource("Step_02"), SubResource("Step_03"), SubResource("Step_04"), SubResource("Step_05"), SubResource("Step_06"), SubResource("Step_07"), SubResource("Step_08"), SubResource("Step_09"), SubResource("Step_10")])
-fallback_roots = PackedStringArray("res://debug/audio/fixtures/ui_sacrifice/")

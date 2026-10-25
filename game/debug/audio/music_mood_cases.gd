@@ -268,7 +268,7 @@ func _original_loops() -> Dictionary:
 		for stream in menu.tracks(MusicMood.CALM):
 			checks["menu_loops"] = stream is AudioStreamMP3 and (stream as AudioStreamMP3).loop
 	## The sets are there (and their files): something must have been checked.
-	if ResourceDeps.all_exist("res://data/audio/music/common.tres") and ResourceLoader.exists("res://data/audio/music/common.tres"):
+	if ResourceLoader.exists("res://data/audio/music/common.tres"):
 		checks["original_checked"] = checks.size() >= 10
 	var verdict := _verdict(checks)
 	verdict["checked"] = checks.size()

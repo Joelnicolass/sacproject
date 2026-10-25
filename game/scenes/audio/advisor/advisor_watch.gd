@@ -24,6 +24,9 @@ extends Node
 @export var world: Node
 @export var wizard: Node3D
 @export_range(0.05, 5.0, 0.05, "suffix:s") var scan_every_s := 0.25
+## The groups the creatures and the buildings to watch belong to.
+@export var unit_group: StringName = &"unit"
+@export var structure_group: StringName = &"structure"
 @export_range(0.0, 1.0, 0.01) var low_health_ratio := 0.25
 
 @export_group("Lines")
@@ -77,7 +80,7 @@ func bind_wizard(node: Node3D) -> void:
 	if _wizard_health != null and is_instance_valid(_wizard_health) and _wizard_health.changed.is_connected(_on_health):
 		_wizard_health.changed.disconnect(_on_health)
 	wizard = node
-	_wizard_health = _health_of(node)
+	_wizard_health = Health.of(node)
 	if _wizard_health != null:
 		_last[_wizard_health.get_instance_id()] = _wizard_health.current
 		_wizard_health.changed.connect(_on_health.bind(_wizard_health, node, Kind.WIZARD))
@@ -87,15 +90,15 @@ func bind_wizard(node: Node3D) -> void:
 func scan() -> void:
 	if not _open:
 		return
-	for node in get_tree().get_nodes_in_group(&"unit"):
+	for node in get_tree().get_nodes_in_group(unit_group):
 		_watch(node as Node3D, Kind.CREATURE)
-	for node in get_tree().get_nodes_in_group(&"structure"):
+	for node in get_tree().get_nodes_in_group(structure_group):
 		_watch(node as Node3D, Kind.BUILDING)
 	_scan_rituals()
 
 
 func _watch(body: Node3D, kind: Kind) -> void:
-	var health := _health_of(body)
+	var health := Health.of(body)
 	if health == null or _last.has(health.get_instance_id()):
 		return
 	var id := health.get_instance_id()
@@ -148,10 +151,6 @@ func _scan_rituals() -> void:
 func _is_ours(body: Node) -> bool:
 	var slot := MpKit.local_slot()
 	return slot > 0 and int(body.get("owner_slot")) == slot
-
-
-static func _health_of(body: Node) -> Health:
-	return body.get_node_or_null("Health") as Health if body != null else null
 
 
 func _get_configuration_warnings() -> PackedStringArray:

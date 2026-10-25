@@ -16,6 +16,8 @@ signal result_changed
 ## The rules of this match shown to the players changed: taken from the world (server, solo) or from a snapshot (client).
 signal rules_changed
 
+## The group the match state joins; whoever needs it reads it from here.
+const GROUP := &"match_state"
 ## Key of the dict in MpKit.push_snapshot (MpFlow ignores a snapshot with no world_id).
 const SNAPSHOT_KEY := "match"
 const FALLBACK_COLLAPSE_S := 11.0
@@ -55,7 +57,7 @@ var _rules_known := false
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
-	add_to_group(&"match_state")
+	add_to_group(GROUP)
 	if is_authority():
 		take_rules()
 	for altar in altars():

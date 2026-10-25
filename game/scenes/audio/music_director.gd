@@ -174,7 +174,7 @@ func _battle() -> bool:
 
 
 func _result() -> MusicMood.Result:
-	var state := (match_state if match_state != null else get_tree().get_first_node_in_group(&"match_state")) as MatchState
+	var state := (match_state if match_state != null else get_tree().get_first_node_in_group(MatchState.GROUP)) as MatchState
 	if state == null:
 		return MusicMood.Result.NONE
 	var slot := MpKit.local_slot()

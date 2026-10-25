@@ -174,7 +174,6 @@ bash agent/run_determinism.sh table               # veredicto y tabla desde agen
 ```bash
 godot --headless --path . --script res://tools/bake/bake_body_scenes.gd                  # escenas de cuerpo de los modelos que no tienen
 godot --headless --path . res://tools/bake/bake_nav.tscn                                 # navmesh
-godot --headless --path . --script res://tools/bake/bake_sound_sets.gd -- --only=custom  # tus sonidos de assets/custom/sounds/
 godot --resolution 256x256 --path . --script res://tools/bake/new_creature.gd -- <tag> --name="Nombre" --god=pyro   # una criatura desde assets/custom/models/<tag>.glb
 ```
 
@@ -272,7 +271,7 @@ Las rutas son relativas a `game/`.
 | `tools/audit/check_original_assets.sh` | **Sí** | Paridad de `assets/original/` con el original (`ASSETS PARITY PASS/FAIL`) |
 | `tools/import/scaffold_map.py` | No: usa lo que ya dejó `import_map.py` | `MapDefinition`, `map.tscn`, `nav.res` vacío |
 | `tools/import/classify_ground_tiles.py`, `sample_grass_palette.py` | No: usan `assets/original/` | `high_noon_tiles.tres`, paleta de pasto propuesta |
-| `tools/bake/*` (navmesh, catálogo, `bake_body_scenes`, `new_creature`, `bake_sound_sets`, terreno) | No: `bake_body_scenes` usa los `.glb` y `index.json` del repo; `import_terrain.gd` lee el `.bin` que escribe `import_map.py` | Escenas, `.tres` y navmesh |
+| `tools/bake/*` (navmesh, catálogo, `bake_body_scenes`, `new_creature`, terreno) | No: `bake_body_scenes` usa los `.glb` y `index.json` del repo; `import_terrain.gd` lee el `.bin` que escribe `import_map.py` | Escenas, `.tres` y navmesh |
 | Menú **Project > Tools > Sacrifice** | Solo «Listar mapas del original» e «Importar audio del original» (llevan «(requiere juego original)» en el menú) | Salida en un diálogo |
 
 Estas herramientas leen los `.wad` y los `.scp` del juego instalado; **el original no viene en el repo** (es el juego comercial). Si falta, imprimen un mensaje en español que explica qué carpeta hace falta y cómo indicarla, y terminan con error. Todas empiezan su encabezado y su `--help` con «Requiere el juego original instalado (SAC_INSTALL)» o con «No necesita el juego original».

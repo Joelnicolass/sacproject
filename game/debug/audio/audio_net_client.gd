@@ -22,7 +22,6 @@ extends Node
 
 const LOCAL_HOST := "127.0.0.1"
 const RUNNER_META := "audio_net_client_runner"
-const EMPTY_ROOT := "res://debug/audio/fixtures/empty/"
 ## A spell tag no spellbook has: the server refuses it (Refusal.BAD_TARGET).
 const REFUSED_TAG := "zzzz"
 
@@ -49,13 +48,6 @@ func _run() -> void:
 	if not SoundBus.is_active():
 		_finish(false, "sin audio: falta --audio-probe")
 		return
-	var roots := PackedStringArray()
-	if MpBoot.user_flag("audio-no-original"):
-		roots.append(EMPTY_ROOT)
-	else:
-		roots.append_array(SoundLibrary.DEFAULT_ROOTS)
-	SoundLibrary.roots = roots
-	SoundLibrary.clear_cache()
 	var wanted := MpBoot.user_value("audio-events", "summon,swing,damaged,death,fx,advice,battle").split(",", false)
 	for event in wanted:
 		_counts[StringName(event)] = 0

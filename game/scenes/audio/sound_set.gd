@@ -35,9 +35,6 @@ extends Resource
 ## Asked when this set has no cue for an event (the melee set of a creature that has no sound of its own for a swing).
 @export var fallback: SoundSet
 
-## WORKAROUND: nothing reads this dictionary any more (the UI, the sacrifice and the advisor are typed); 055o-e deletes it.
-@export var cues: Dictionary[StringName, SoundCue] = {}
-
 const MAX_HOPS := 8
 
 
@@ -79,5 +76,4 @@ func own_cue(event: StringName) -> SoundCue:
 			return incantation
 		SoundEvent.GHOST:
 			return ghost
-	var legacy: SoundCue = cues.get(event)
-	return legacy
+	return null

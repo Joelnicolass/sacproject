@@ -2,8 +2,7 @@
 # RFC-052 052a (F360): the audio cases in every gate mode, headless, each one through the Godot queue (a few seconds each):
 #   open    --audio-probe on an isolated settings file (user://t_audio.cfg): gate, AudioPrefs and SoundBus cases;
 #   closed  plain headless, --dedicated and --room-server (both with --no-flow: the flow would host or load a world): nothing built nor loaded;
-#   lab     the audio lab (debug/audio/f360_audio_lab.tscn) with each lab_<cut>.tres, with the original's sets and without them
-#           (--audio-no-original: SoundLibrary sees only the fixtures and an empty root);
+#   lab     the audio lab (debug/audio/f360_audio_lab.tscn) with each lab_<cut>.tres;
 #   052i    new_creature writes the sound set of a creature of your own from two fixture files, then lab_052i plays it.
 # Each run has the scene watchdog (20 s real time) and --quit-after 30000 frames as a second stop.
 # Usage: bash agent/runs/run_audio_cases.sh [GODOT_BIN]
@@ -43,17 +42,11 @@ lab() { # RFC-052 052c+: the audio lab with a lab_<cut>.tres, then the user args
   [ "$code" = 0 ] && [ "$line" = "AUDIO_LAB DONE PASS" ] || FAIL=1
 }
 lab lab_052c res://debug/audio/lab_052c.tres
-lab lab_052c_no_original res://debug/audio/lab_052c.tres --audio-no-original
 lab lab_052d res://debug/audio/lab_052d.tres
-lab lab_052d_no_original res://debug/audio/lab_052d.tres --audio-no-original
 lab lab_052e res://debug/audio/lab_052e.tres
-lab lab_052e_no_original res://debug/audio/lab_052e.tres --audio-no-original
 lab lab_052f res://debug/audio/lab_052f.tres
-lab lab_052f_no_original res://debug/audio/lab_052f.tres --audio-no-original
 lab lab_052g res://debug/audio/lab_052g.tres
-lab lab_052g_no_original res://debug/audio/lab_052g.tres --audio-no-original
 lab lab_052h res://debug/audio/lab_052h.tres
-lab lab_052h_no_original res://debug/audio/lab_052h.tres --audio-no-original
 
 # 055o-b: your own sounds, with nothing of the original. Two fixture .wav files
 # (debug/audio/fixtures/custom_sounds/creatures/testmonster/death_1.wav, swing_1.wav) -> new_creature writes the creature's SoundSet
@@ -72,7 +65,6 @@ tool new_creature_052i "^NEW_CREATURE sounds (wrote|kept[^:]*): user://new_creat
   --script res://tools/bake/new_creature.gd -- testmonster --no-icon \
   --sounds=res://debug/audio/fixtures/custom_sounds/ --sounds-out=user://new_creature_052i/ --force-sounds
 lab lab_052i res://debug/audio/lab_052i.tres
-lab lab_052i_no_original res://debug/audio/lab_052i.tres --audio-no-original
 echo "logs: $OUT"
 if [ "$FAIL" = 0 ]; then echo "AUDIO RUN PASS"; else echo "AUDIO RUN FAIL"; fi
 exit $FAIL

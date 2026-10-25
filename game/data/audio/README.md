@@ -1,6 +1,6 @@
 # data/audio/
 
-Sets de sonido (RFC-052), un `.tres` por emisor. El de una criatura o un mago se asigna en su ficha: `CreatureType.sounds` / `WizardType.sounds` (055o-b). La música y el ambiente de un dios se asignan en su ficha: `GodType.music` / `GodType.ambience` (055o-c). El consejero vive en `scenes/audio/advisor/advisor.tscn` (cada `AdvisorLine` lleva su sonido) y el sacrificio y las almas llevan sus cues en `ritual.tscn` y `soul.tscn`. La UI (clics y menú X) es tipada: `cues/ui_click.tres`, `ui_book_click.tres`, `menu_open.tres` y `menu_back.tres` (055o-d). Ya nada se busca por ruta con `SoundLibrary`.
+Sets de sonido (RFC-052), un `.tres` por emisor. El de una criatura o un mago se asigna en su ficha: `CreatureType.sounds` / `WizardType.sounds` (055o-b). La música y el ambiente de un dios se asignan en su ficha: `GodType.music` / `GodType.ambience` (055o-c). El consejero vive en `scenes/audio/advisor/advisor.tscn` (cada `AdvisorLine` lleva su sonido) y el sacrificio y las almas llevan sus cues en `ritual.tscn` y `soul.tscn`. La UI (clics y menú X) es tipada: `cues/ui_click.tres`, `ui_book_click.tres`, `menu_open.tres` y `menu_back.tres` (055o-d). Nada se busca por ruta ni por texto: cada sonido se arrastra a su campo.
 
 ## Cómo se asigna un sonido a una criatura
 

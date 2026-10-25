@@ -8,7 +8,7 @@
 #              RPC and the client's advisor says it (advice).
 # Both run inside ONE group reservation of the Godot queue, with --fixed-fps (NET_FPS, 600); every wait is on a log line or real
 # seconds. Watchdog LIMIT_S kills them by pid and descendants (no pkill). UDP port 7861 by default (E2E_PORT).
-# Extra user args go to the client (e.g. --audio-no-original). Prints the counts and AUDIO NET PASS / AUDIO NET FAIL (exit 0 / 1).
+# Extra user args go to the client. Prints the counts and AUDIO NET PASS / AUDIO NET FAIL (exit 0 / 1).
 . "$(dirname "$0")/../harness/net_e2e.sh"
 net_group 2 "$@"
 TAG="AUDIO NET"

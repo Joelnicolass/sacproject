@@ -176,7 +176,6 @@ bash agent/run_determinism.sh table               # verdict and table from agent
 ```bash
 godot --headless --path . --script res://tools/bake/bake_body_scenes.gd                  # body scenes of the models that lack one
 godot --headless --path . res://tools/bake/bake_nav.tscn                                 # navmesh
-godot --headless --path . --script res://tools/bake/bake_sound_sets.gd -- --only=custom  # your own sounds in assets/custom/sounds/
 godot --resolution 256x256 --path . --script res://tools/bake/new_creature.gd -- <tag> --name="Name" --god=pyro   # a creature from assets/custom/models/<tag>.glb
 ```
 
@@ -274,7 +273,7 @@ Paths are relative to `game/`.
 | `tools/audit/check_original_assets.sh` | **Yes** | Parity of `assets/original/` with the original (`ASSETS PARITY PASS/FAIL`) |
 | `tools/import/scaffold_map.py` | No: uses what `import_map.py` already left | `MapDefinition`, `map.tscn`, empty `nav.res` |
 | `tools/import/classify_ground_tiles.py`, `sample_grass_palette.py` | No: they use `assets/original/` | `high_noon_tiles.tres`, proposed grass palette |
-| `tools/bake/*` (navmesh, catalog, `bake_body_scenes`, `new_creature`, `bake_sound_sets`, terrain) | No: `bake_body_scenes` uses the repo's `.glb` files and `index.json`; `import_terrain.gd` reads the `.bin` written by `import_map.py` | Scenes, `.tres` and navmesh |
+| `tools/bake/*` (navmesh, catalog, `bake_body_scenes`, `new_creature`, terrain) | No: `bake_body_scenes` uses the repo's `.glb` files and `index.json`; `import_terrain.gd` reads the `.bin` written by `import_map.py` | Scenes, `.tres` and navmesh |
 | **Project > Tools > Sacrifice** menu | Only «Listar mapas del original» (List the original's maps) and «Importar audio del original» (Import the original's audio); they are marked «(requiere juego original)» (requires the original game) in the menu | Output in a dialog |
 
 These tools read the `.wad` and `.scp` files of the installed game; **the original is not in the repo** (it is the commercial game). If it is missing, they print a message in Spanish that explains which folder is needed and how to point to it, and exit with an error. All of them start their header and their `--help` with «Requiere el juego original instalado (SAC_INSTALL)» (requires the original game installed) or with «No necesita el juego original» (does not need the original game).

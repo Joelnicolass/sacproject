@@ -14,8 +14,6 @@ extends RefCounted
 ## Closed gate (plain headless, --dedicated, --room-server):
 ## - ui_sacrifice_closed: a press makes no log and UiClickSounds.cue_for is null; RitualSounds and SoulSounds connect nothing.
 
-const FIXTURE_ROOT := "res://debug/audio/fixtures/ui_sacrifice/"
-const EMPTY_ROOT := "res://debug/audio/fixtures/empty/"
 const RITUAL_SCENE := "res://scenes/sacrifice/ritual.tscn"
 const SOUL_SCENE := "res://scenes/souls/soul.tscn"
 const RADIAL_SCENE := "res://scenes/ui/radial/radial_menu.tscn"
@@ -34,14 +32,11 @@ func run(host: Node, open: bool) -> Dictionary:
 	if not SoundBus.is_active():
 		results["ui_sacrifice_cases_active"] = {"ok": false, "reason": "SoundBus inactivo: falta --audio-probe"}
 		return results
-	SoundLibrary.roots = PackedStringArray([FIXTURE_ROOT, EMPTY_ROOT])
-	SoundLibrary.clear_cache()
 	results["ui_clicks"] = await _ui_clicks(host)
 	results["menu_sounds"] = await _menu_sounds(host)
 	results["ritual_sounds"] = await _ritual_sounds(host)
 	results["soul_sounds"] = await _soul_sounds(host)
 	SoundBus.stop_all()
-	SoundLibrary.reset_roots()
 	## The audio server lets go of the stopped playbacks a moment (real time) later; quitting before leaks them at exit.
 	OS.delay_msec(200)
 	for _i in 3:

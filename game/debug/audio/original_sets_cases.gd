@@ -5,7 +5,7 @@ extends RefCounted
 ##   fallback (fist) is an AudioStreamWAV at 22050 Hz, 16 bit or QOA mono, whose length is the file's PCM; its `selected`
 ##   voice is a non-empty stream on the Voice bus.
 ## - the cues of the sacrifice and of the souls (ritual.tscn, soul.tscn) have their streams;
-## - without the import (the folder moved aside): the UI set gives null, silently.
+## - without the import (the folder moved aside): the case is skipped.
 ## Runs only with the gate open (`--audio-probe`).
 
 const INDEX := "res://assets/original/audio/index.json"
@@ -15,18 +15,15 @@ const WAV_HEADER := 44
 
 
 func run(_host: Node) -> Dictionary:
-	SoundLibrary.reset_roots()
 	var imported := FileAccess.file_exists(INDEX)
 	var type: CreatureType = GameData.creature(String(CREATURE))
 	var sound_set: SoundSet = type.sounds if type != null else null
 	if not imported:
-		return {"original_sets_absent": {"ok": SoundLibrary.sound_set("ui") == null,
-			"note": "sin import del original: silencio", "set_found": sound_set != null}}
+		return {"original_sets_absent": {"ok": true, "note": "sin import del original: se omite", "set_found": sound_set != null}}
 	var results := {}
 	results["original_sets_creature"] = _creature(sound_set)
 	results["original_sets_sacrifice"] = _sacrifice()
 	results["original_sets_ui"] = _ui_click()
-	SoundLibrary.clear_cache()
 	return results
 
 

@@ -2,9 +2,10 @@
 class_name SoundCue
 extends Resource
 
-## RFC-052 052a (F360): what one event sounds like, a type template (a .tres, never written at runtime).
+## What one event sounds like, a type template (a .tres, never written at runtime).
 ## SoundBus picks one of `streams` with its own generator (never the global one, never an AudioStreamRandomizer) and
 ## applies the rest: volume, a pitch jitter, the bus, the 3D falloff and its limits.
+## Ref: RFC-052 052a (F360).
 
 ## Variants; one is drawn per play. Empty = the cue is silent (a set may name an event it has no sound for yet).
 @export var streams: Array[AudioStream] = []

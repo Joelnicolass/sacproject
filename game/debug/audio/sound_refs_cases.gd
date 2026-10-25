@@ -6,24 +6,21 @@ extends RefCounted
 ##   spells, props and afflictions + the 6 Sound nodes of the FX scenes); none by text, none without a cue.
 ## - fx_types_sound: 31 ParticleType and 6 BeamType carry a `sound`; the 6 FX scenes of broadcast_scene have a `Sound` child.
 ## - fx_text_gone: nothing in scenes/ names FxSoundMap, fx_sounds.tres or SoundBus.fx_cue.
-## - fx_parity: when tools/migrate/055o_fx_parity.json is there (the one-shot migration's snapshot of how every FX sounded
-##   before), each consumer has the same streams and numbers as the cue it used to have. The file goes with the migration.
+## - fx_streams: every cue file of data/audio/cues/ has its streams, none empty or missing.
 ## 055o-b (bodies):
 ## - bodies_typed: 67 of the 72 CreatureType and the 15 WizardType have `sounds` (the 5 without are the same ones that had no set);
 ##   unit.tscn carries `UnitSounds.summon`; every creature set has the melee `fallback`.
-## - bodies_text_gone: scenes/audio/ names no SoundLibrary.creature/wizard, no `shared_set` and no `aliases`.
-## - bodies_parity: when tools/migrate/055o_bodies_parity.json is there (how every creature and wizard sounded before the
-##   migration, event by event), `BodySounds.resolve` gives the same streams and numbers. The file goes with the migration.
+## - bodies_text_gone: scenes/audio/ names no `shared_set` and no `aliases`.
+## - bodies_streams: every cue of the sets under data/audio/{creatures,wizards,melee}/ has its streams.
 ## 055o-d (UI):
 ## - ui_typed: sound_bus.tscn's UiClickSounds has `click`, spell_slot.tscn carries the cue as its `ui_sound` data and the
 ##   MenuSounds of radial_menu.tscn has its three cues.
 ## - ui_text_gone: scenes/ names no ui_set, ui_click_key, ui_cue_for nor SoundBus.META_*, and no scene gives `ui_sound` as a key.
-## - ui_parity: when tools/migrate/055o_ui_parity.json is there (how every UI event sounded before), each one has the same
-##   streams and numbers, the same cue file and the same log event. The file goes with the migration.
+## - ui_streams: the ui_* and menu_* cue files have their streams.
 ## Open gate only:
 ## - soul_mole_replicated: the Soul Mole's sound of taking the soul plays from the carrier's replicated phase (LEAVING), the
 ##   state a client of a dedicated server has, not from `reached`, which only the server emits.
-## Prints `SOUND REFS typed=<n> text=<m> null=<k> parity=<p>/<q>`, `SOUND REFS bodies creatures=<a>/<b> wizards=<c>/<d> parity=<p>/<q>`
+## Prints `SOUND REFS typed=<n> text=<m> null=<k> parity=<p>/<q>` (p of q cues with all their streams), `SOUND REFS bodies creatures=<a>/<b> wizards=<c>/<d> parity=<p>/<q>`
 ## and `SOUND REFS ui click=<bool> slot=<bool> menu=<n>/3 parity=<p>/<q>`.
 
 const EMITTER_SCENE := "res://scenes/audio/sound_emitter_3d.tscn"
@@ -41,24 +38,20 @@ const FX_SCENES: PackedStringArray = [
 	"res://scenes/spells/zones/erupt_burst.tscn",
 ]
 const CUES_DIR := "res://data/audio/cues/"
-const PARITY_JSON := "res://tools/migrate/055o_fx_parity.json"
+const SET_DIRS: PackedStringArray = ["res://data/audio/creatures/", "res://data/audio/wizards/", "res://data/audio/melee/"]
 const MATCH_REFS := "res://debug/audio/match_refs_cases.gd"
 const EXPECTED_TYPED := 80
 const EXPECTED_PARTICLES := 31
 const EXPECTED_BEAMS := 6
-const BODIES_JSON := "res://tools/migrate/055o_bodies_parity.json"
 const CREATURES_DIR := "res://data/catalog/creatures/"
 const WIZARDS_DIR := "res://data/catalog/wizards/"
 const UNIT_SCENE := "res://scenes/units/unit.tscn"
 const EXPECTED_CREATURES := 72
 const EXPECTED_CREATURE_SETS := 67
 const EXPECTED_WIZARDS := 15
-const UI_JSON := "res://tools/migrate/055o_ui_parity.json"
 const BUS_SCENE := "res://scenes/audio/sound_bus.tscn"
 const SLOT_SCENE := "res://scenes/ui/spell_book/spell_slot.tscn"
 const RADIAL_SCENE := "res://scenes/ui/radial/radial_menu.tscn"
-## The event a UI log entry carries -> the MenuSounds moment that plays it.
-const MENU_MOMENTS := {"menu_open": &"opened", "click": &"chosen", "menu_back": &"cancelled"}
 
 
 func run(host: Node, open: bool) -> Dictionary:
@@ -71,8 +64,8 @@ func run(host: Node, open: bool) -> Dictionary:
 		and int(types["scenes"]) == FX_SCENES.size(), "types": types}
 	var stale := stale_references()
 	results["fx_text_gone"] = {"ok": stale.is_empty(), "found": stale}
-	var parity := parity_report(PARITY_JSON)
-	results["fx_parity"] = {"ok": (parity["failures"] as PackedStringArray).is_empty(), "parity": parity}
+	var parity := streams_report(_cue_files(CUES_DIR))
+	results["fx_streams"] = {"ok": (parity["failures"] as PackedStringArray).is_empty(), "streams": parity}
 	print("SOUND REFS typed=%d text=%d null=%d parity=%d/%d" % [int(scan["typed"]), int(scan["text"]), int(scan["null"]),
 		int(parity["passed"]), int(parity["total"])])
 	var bodies := count_body_sets()
@@ -81,8 +74,8 @@ func run(host: Node, open: bool) -> Dictionary:
 		and bool(bodies["summon"]) and int(bodies["without_fallback"]) == 0, "bodies": bodies}
 	var body_stale := stale_body_references()
 	results["bodies_text_gone"] = {"ok": body_stale.is_empty(), "found": body_stale}
-	var body_parity := bodies_parity_report(BODIES_JSON)
-	results["bodies_parity"] = {"ok": (body_parity["failures"] as PackedStringArray).is_empty(), "parity": body_parity}
+	var body_parity := streams_report(_set_cues())
+	results["bodies_streams"] = {"ok": (body_parity["failures"] as PackedStringArray).is_empty(), "streams": body_parity}
 	print("SOUND REFS bodies creatures=%d/%d wizards=%d/%d parity=%d/%d" % [int(bodies["creature_sets"]), int(bodies["creatures"]),
 		int(bodies["wizard_sets"]), int(bodies["wizards"]), int(body_parity["passed"]), int(body_parity["total"])])
 	results.merge((load(MATCH_REFS) as GDScript).new().run_match())
@@ -90,8 +83,8 @@ func run(host: Node, open: bool) -> Dictionary:
 	results["ui_typed"] = {"ok": bool(ui["click"]) and bool(ui["slot"]) and int(ui["menu"]) == 3, "ui": ui}
 	var ui_stale := stale_ui_references()
 	results["ui_text_gone"] = {"ok": ui_stale.is_empty(), "found": ui_stale}
-	var ui_parity := ui_parity_report(UI_JSON)
-	results["ui_parity"] = {"ok": (ui_parity["failures"] as PackedStringArray).is_empty(), "parity": ui_parity}
+	var ui_parity := streams_report(_cue_files(CUES_DIR, PackedStringArray(["ui_", "menu_"])))
+	results["ui_streams"] = {"ok": (ui_parity["failures"] as PackedStringArray).is_empty(), "streams": ui_parity}
 	print("SOUND REFS ui click=%s slot=%s menu=%d/3 parity=%d/%d" % [ui["click"], ui["slot"], int(ui["menu"]),
 		int(ui_parity["passed"]), int(ui_parity["total"])])
 	if open and SoundBus.is_active():
@@ -168,90 +161,10 @@ func stale_references() -> PackedStringArray:
 	_files("res://scenes", ".tscn", files)
 	for path in files:
 		var body := FileAccess.get_file_as_string(path)
-		for needle: String in ["FxSoundMap", "fx_sounds.tres", "fx_cue("]:
+		for needle: String in ["FxSoundMap", "fx_sounds.tres", "fx_cue(", "SoundLibrary", "ResourceDeps", "SoundBus.lookup"]:
 			if body.contains(needle):
 				found.append("%s: %s" % [path, needle])
 	return found
-
-
-## Compares the snapshot of how every FX sounded before the migration with the typed data: {total, passed, failures}.
-## No snapshot file (the migration is over): {total 0, passed 0, failures []}.
-func parity_report(json_path: String) -> Dictionary:
-	var report := {"total": 0, "passed": 0, "failures": PackedStringArray()}
-	if not FileAccess.file_exists(json_path):
-		return report
-	var snapshot: Variant = JSON.parse_string(FileAccess.get_file_as_string(json_path))
-	if not snapshot is Dictionary:
-		(report["failures"] as PackedStringArray).append("%s no es un JSON válido" % json_path)
-		return report
-	var cues: Dictionary = (snapshot as Dictionary).get("cues", {})
-	var consumers: Array = (snapshot as Dictionary).get("consumers", [])
-	for item: Dictionary in consumers:
-		report["total"] += 1
-		var name := str(item.get("cue", ""))
-		var old: Dictionary = cues.get(name, {})
-		var problem := _cue_problem(name, old)
-		if problem.is_empty():
-			problem = _consumer_problem(item)
-		if problem.is_empty():
-			report["passed"] += 1
-		else:
-			(report["failures"] as PackedStringArray).append("%s %s: %s" % [item.get("path", ""), item.get("node", ""), problem])
-	return report
-
-
-## "" when the cue file has the streams and numbers the old one had.
-func _cue_problem(name: String, old: Dictionary) -> String:
-	var cue := load(CUES_DIR + name + ".tres") as SoundCue
-	if cue == null:
-		return "falta data/audio/cues/%s.tres" % name
-	return cue_problem(cue, old)
-
-
-## "" when `cue` has the streams and numbers of the snapshot entry `old` ({streams, props}).
-func cue_problem(cue: SoundCue, old: Dictionary) -> String:
-	var streams := PackedStringArray()
-	for stream in cue.streams:
-		streams.append(stream.resource_path if stream != null else "")
-	var old_streams: Array = old.get("streams", [])
-	var wanted := PackedStringArray(old_streams)
-	if streams != wanted:
-		return "streams %s y eran %s" % [streams, wanted]
-	var old_props: Array = old.get("props", [])
-	for line: String in old_props:
-		var parts := line.split(" = ", true, 1)
-		if parts.size() != 2 or parts[0] == "streams":
-			continue
-		var expected: Variant = str_to_var(parts[1])
-		var got: Variant = cue.get(parts[0])
-		var same := is_equal_approx(float(got), float(expected)) if (got is float or got is int) and (expected is float or expected is int) \
-			else str(got) == str(expected)
-		if not same:
-			return "%s es %s y era %s" % [parts[0], got, expected]
-	return ""
-
-
-## "" when the consumer of the snapshot points at the cue file it should.
-func _consumer_problem(item: Dictionary) -> String:
-	var wanted := CUES_DIR + str(item.get("cue", "")) + ".tres"
-	var path := "res://" + str(item.get("path", ""))
-	var got: SoundCue = null
-	var kind := str(item.get("kind", ""))
-	if kind == "particle":
-		var particle := load(path) as ParticleType
-		got = particle.sound if particle != null else null
-	elif kind == "beam":
-		var beam := load(path) as BeamType
-		got = beam.sound if beam != null else null
-	else:
-		var node := _instance(path)
-		var emitter := node.get_node_or_null(NodePath(str(item.get("node", ".")))) as SoundEmitter3D if node != null else null
-		got = emitter.cue if emitter != null else null
-		if node != null:
-			node.free()
-	if got == null:
-		return "sin cue"
-	return "" if got.resource_path == wanted else "cue %s y era %s" % [got.resource_path, wanted]
 
 
 ## How many creatures and wizards of the catalog have `sounds`, whether the creature scene has its summon cue and how many
@@ -289,7 +202,7 @@ func stale_body_references() -> PackedStringArray:
 	_files("res://scenes/audio", ".gd", files)
 	for path in files:
 		var body := FileAccess.get_file_as_string(path)
-		for needle: String in ["SoundLibrary.creature(", "SoundLibrary.wizard(", "SoundLibrary.type_file(", "shared_set", "aliases"]:
+		for needle: String in ["shared_set", "aliases"]:
 			if body.contains(needle):
 				found.append("%s: %s" % [path, needle])
 	return found
@@ -303,49 +216,6 @@ func _unit_summon() -> SoundCue:
 	if unit != null:
 		unit.free()
 	return summon
-
-
-## Compares the snapshot of how every creature and wizard sounded before the migration with `BodySounds.resolve` over the typed
-## sets: {total, passed, failures}, one check per (body, event). No snapshot file (the migration is over): total 0.
-func bodies_parity_report(json_path: String) -> Dictionary:
-	var report := {"total": 0, "passed": 0, "failures": PackedStringArray()}
-	if not FileAccess.file_exists(json_path):
-		return report
-	var snapshot: Variant = JSON.parse_string(FileAccess.get_file_as_string(json_path))
-	if not snapshot is Dictionary:
-		(report["failures"] as PackedStringArray).append("%s no es un JSON válido" % json_path)
-		return report
-	var cues: Dictionary = (snapshot as Dictionary).get("cues", {})
-	var summon := _unit_summon()
-	for item: Dictionary in (snapshot as Dictionary).get("bodies", []):
-		var path := "res://" + str(item.get("catalog", ""))
-		var is_creature := str(item.get("kind", "")) == "creature"
-		var sounds: SoundSet = null
-		if is_creature:
-			var creature := load(path) as CreatureType
-			sounds = creature.sounds if creature != null else null
-		else:
-			var wizard := load(path) as WizardType
-			sounds = wizard.sounds if wizard != null else null
-		var events: Dictionary = item.get("events", {})
-		for event: String in events:
-			report["total"] += 1
-			var got := BodySounds.resolve(sounds, StringName(event), summon if is_creature and event == "summon" else null)
-			var problem := _body_problem(got, events[event], cues)
-			if problem.is_empty():
-				report["passed"] += 1
-			else:
-				(report["failures"] as PackedStringArray).append("%s %s: %s" % [item.get("catalog", ""), event, problem])
-	return report
-
-
-## "" when `got` is the cue the snapshot id `wanted` describes (null for null).
-func _body_problem(got: SoundCue, wanted: Variant, cues: Dictionary) -> String:
-	if wanted == null:
-		return "" if got == null else "suena y no sonaba"
-	if got == null:
-		return "no suena y sonaba"
-	return cue_problem(got, cues.get(str(wanted), {}))
 
 
 ## What the UI scenes carry: {click: UiClickSounds.click is assigned, slot: the slot's `ui_sound` is a cue, menu: how many of the
@@ -392,64 +262,51 @@ func stale_ui_references() -> PackedStringArray:
 	return found
 
 
-## Compares the snapshot of how every UI event sounded before the migration with the typed data: {total, passed, failures}.
-## No snapshot file (the migration is over): total 0.
-func ui_parity_report(json_path: String) -> Dictionary:
+## {total, passed, failures}: a cue passes when it has streams and none of them is missing.
+func streams_report(cues: Array[SoundCue]) -> Dictionary:
 	var report := {"total": 0, "passed": 0, "failures": PackedStringArray()}
-	if not FileAccess.file_exists(json_path):
-		return report
-	var snapshot: Variant = JSON.parse_string(FileAccess.get_file_as_string(json_path))
-	if not snapshot is Dictionary:
-		(report["failures"] as PackedStringArray).append("%s no es un JSON válido" % json_path)
-		return report
-	var cues: Dictionary = (snapshot as Dictionary).get("cues", {})
-	for item: Dictionary in (snapshot as Dictionary).get("consumers", []):
+	for cue in cues:
 		report["total"] += 1
-		var name := str(item.get("cue", ""))
-		var problem := _cue_problem(name, cues.get(name, {}))
-		if problem.is_empty():
-			problem = _ui_consumer_problem(item)
-		if problem.is_empty():
-			report["passed"] += 1
+		var missing := cue.is_silent() or cue.streams.has(null)
+		if missing:
+			(report["failures"] as PackedStringArray).append("%s: streams vacíos o faltantes" % cue.resource_path)
 		else:
-			(report["failures"] as PackedStringArray).append("%s %s (%s): %s" % [item.get("path", ""), item.get("node", ""),
-				item.get("old_key", ""), problem])
+			report["passed"] += 1
 	return report
 
 
-## "" when the UI consumer of the snapshot points at the cue file it should and logs the event it logged.
-func _ui_consumer_problem(item: Dictionary) -> String:
-	var wanted := CUES_DIR + str(item.get("cue", "")) + ".tres"
-	var got: SoundCue = null
-	match str(item.get("kind", "")):
-		"button":
-			var bus := _instance(BUS_SCENE)
-			var clicks := bus.get_node_or_null("UiClickSounds") as UiClickSounds if bus != null else null
-			got = clicks.click if clicks != null else null
-			if bus != null:
-				bus.free()
-		"button_meta":
-			var slot := _instance(SLOT_SCENE)
-			var own: Variant = slot.get_meta(UiClickSounds.META_UI_SOUND, null) if slot != null else null
-			got = own if own is SoundCue else null
-			if slot != null:
-				slot.free()
-		"menu":
-			var sounds := _menu_sounds()
-			var event := str(item.get("event", ""))
-			if sounds == null or not MENU_MOMENTS.has(event):
-				return "sin MenuSounds o evento %s desconocido" % event
-			var moment: StringName = MENU_MOMENTS[event]
-			got = sounds.cue_for(moment)
-			var logged := sounds.event_for(moment)
-			sounds.owner.free()
-			if str(logged) != event:
-				return "el evento es %s y era %s" % [logged, event]
-		_:
-			return "kind desconocido"
-	if got == null:
-		return "sin cue"
-	return "" if got.resource_path == wanted else "cue %s y era %s" % [got.resource_path, wanted]
+## The SoundCue files of `dir_path`, only those whose file name starts with one of `prefixes` when given.
+func _cue_files(dir_path: String, prefixes: PackedStringArray = []) -> Array[SoundCue]:
+	var out: Array[SoundCue] = []
+	var files := PackedStringArray()
+	_files(dir_path, ".tres", files)
+	for path in files:
+		var base := path.get_file()
+		var wanted := prefixes.is_empty()
+		for prefix in prefixes:
+			wanted = wanted or base.begins_with(prefix)
+		var cue: SoundCue = load(path) as SoundCue if wanted else null
+		if cue != null:
+			out.append(cue)
+	return out
+
+
+## Every cue the sets of SET_DIRS carry (one entry per field with a cue).
+func _set_cues() -> Array[SoundCue]:
+	var out: Array[SoundCue] = []
+	var files := PackedStringArray()
+	for dir_path in SET_DIRS:
+		_files(dir_path, ".tres", files)
+	for path in files:
+		var sound_set := load(path) as SoundSet
+		if sound_set == null:
+			continue
+		for info: Dictionary in sound_set.get_property_list():
+			if info.get("class_name") == &"SoundCue":
+				var cue := sound_set.get(info.name) as SoundCue
+				if cue != null:
+					out.append(cue)
+	return out
 
 
 func _soul_mole(host: Node) -> Dictionary:

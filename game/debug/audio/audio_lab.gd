@@ -7,8 +7,6 @@ extends Node3D
 ## - Manual (F6): `debug_audio_event` runs the next step of the script; the label shows the last entry and the bus peaks.
 ## - Automatic: `--headless … -- --audio-probe --audio-script[=res://debug/audio/lab_<cut>.tres]` runs every step, prints
 ##   `AUDIO_LAB PASS|FAIL <event> <stream>` per step and `AUDIO_LAB DONE PASS|FAIL (n)`, and quits 0 / 1.
-## - `--audio-no-original`: SoundLibrary sees only the script's roots and an empty one (the UI set; everything else is typed
-##   and sounds as its scene or type says).
 ## The script (an AudioLabScript .tres) is loaded at run time with load(), so a broken one ends in a FAIL line. Watchdog:
 ## `timeout_s` of real time.
 ## 052d: the FX actions call FxBus as a peer does when a broadcast arrives (fx, puff, beam); `spawn` instances a
@@ -36,8 +34,6 @@ extends Node3D
 ## their CreatureType and WizardType say, so a fixture replaces the type's set for the run.
 
 const SCRIPT_FLAG := "audio-script"
-const NO_ORIGINAL_FLAG := "audio-no-original"
-const EMPTY_ROOT := "res://debug/audio/fixtures/empty/"
 ## AudioLabStep.Expect (read without naming the class: the step script is loaded at run time).
 const PLAYED := 0
 const SILENT := 1
@@ -98,18 +94,10 @@ func _start() -> void:
 		_report(false, &"gate", "cerrado: corré con --audio-probe")
 		_end()
 		return
-	var roots := PackedStringArray(_lab.get("roots"))
-	if MpBoot.user_flag(NO_ORIGINAL_FLAG):
-		roots.append(EMPTY_ROOT)
-	else:
-		roots.append_array(SoundLibrary.DEFAULT_ROOTS)
-	roots.append_array(PackedStringArray(_lab.get("fallback_roots")) if _lab.get("fallback_roots") != null else PackedStringArray())
-	SoundLibrary.roots = roots
-	SoundLibrary.clear_cache()
 	_assign_body_sets()
 	SoundBus.reseed(5200)
 	SoundBus.sound_log.clear()
-	print("AUDIO_LAB %s: %d pasos, raíces %s" % [_lab.get("cut"), _lab.get("steps").size(), roots])
+	print("AUDIO_LAB %s: %d pasos, raíces %s" % [_lab.get("cut"), _lab.get("steps").size(), PackedStringArray()])
 	_show("listo: %s pasos (%s)" % [_lab.get("steps").size(), InputMap.action_get_events("debug_audio_event").map(func(e: InputEvent) -> String: return e.as_text())])
 	if _auto:
 		while _next < _lab.get("steps").size() and not _done:
@@ -600,7 +588,6 @@ func _end() -> void:
 	print("AUDIO_LAB DONE %s" % ("PASS" if _failures == 0 else "FAIL (%d)" % _failures))
 	## The audio server lets go of the playbacks a moment (real time) after a stop; quitting before leaks them at exit.
 	SoundBus.shutdown()
-	SoundLibrary.reset_roots()
 	if _wizard_type != null:
 		_wizard_type.sounds = _wizard_sounds
 	var release_at := Time.get_ticks_msec() + 200

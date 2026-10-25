@@ -1,7 +1,7 @@
 class_name MusicMood
 extends RefCounted
 
-## RFC-052 052f (F365): which music plays, as a pure function of what the player's process sees (MusicDirector gathers
+## Which music plays, as a pure function of what the player's process sees (MusicDirector gathers
 ## the inputs and plays; this decides). The original's rules (RFC-052 §2), highest first:
 ## 1. the match has a result: `victory` or `defeat`, once (MusicDirector does not restart a one-shot);
 ## 2. a desecration runs that involves the local side: `winning` (we desecrate) or `losing` (our altar is desecrated);
@@ -9,6 +9,7 @@ extends RefCounted
 ## 4. battle (CombatGauge: combat near the listener, or the local wizard hurt in the last 120 s): `battle`;
 ## 5. otherwise the god's `calm` (its `normal` theme). The menu is always `calm` of the menu set.
 ## No node, no state, no randomness: music_mood_cases tries the table.
+## Ref: RFC-052 052f (F365).
 
 const CALM := &"calm"
 const BATTLE := &"battle"

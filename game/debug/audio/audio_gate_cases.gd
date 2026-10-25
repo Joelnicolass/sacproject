@@ -1,12 +1,7 @@
 extends RefCounted
 
 ## RFC-052 052a (F360): the AudioGate. The rule (every combination of flags) and this process: with the gate closed
-## (plain headless, --dedicated, --room-server) SoundBus built nothing and SoundLibrary loads no set nor stream; with
-## it open (--audio-probe) both work. `expect_open` comes from the runner's --expect-gate.
-
-const FIXTURE_ROOT := "res://debug/audio/fixtures/sets/"
-const FIXTURE_SET := "res://debug/audio/fixtures/sets/creatures/test.tres"
-const FIXTURE_STREAM := "res://debug/audio/fixtures/beep_a.tres"
+## (plain headless, --dedicated, --room-server) SoundBus built nothing; with it open (--audio-probe) it works. `expect_open` comes from the runner's --expect-gate.
 
 
 func run(host: Node, expect_open: bool) -> Dictionary:
@@ -39,9 +34,6 @@ func _rule() -> Dictionary:
 
 func _process(host: Node, expect_open: bool) -> Dictionary:
 	var open := AudioGate.is_open()
-	SoundLibrary.roots = PackedStringArray([FIXTURE_ROOT])
-	SoundLibrary.clear_cache()
-	var sound_set := SoundLibrary.sound_set("creatures/test")
 	var cue := SoundCue.new()
 	cue.streams = [preload_free_stream()]
 	var played: bool = SoundBus.play_2d(cue, &"gate_case", SoundEvent.CLICK)
@@ -53,19 +45,15 @@ func _process(host: Node, expect_open: bool) -> Dictionary:
 		"bus_active": SoundBus.is_active(),
 		"bus_children": SoundBus.get_children().filter(func(c: Node) -> bool: return c is AudioStreamPlayer or c is AudioStreamPlayer3D).size(),
 		"has_log": SoundBus.sound_log != null,
-		"set_found": sound_set != null,
-		"set_cached": ResourceLoader.has_cached(FIXTURE_SET),
-		"stream_cached": ResourceLoader.has_cached(FIXTURE_STREAM),
 		"played": played,
 	}
-	SoundLibrary.reset_roots()
 	var ok := open == expect_open
 	if expect_open:
 		ok = ok and info.bus_active and info.bus_children == SoundBus.pool_3d_size + SoundBus.pool_2d_size \
-			and info.has_log and info.set_found and info.stream_cached and played
+			and info.has_log and played
 	else:
 		ok = ok and not info.bus_active and info.bus_children == 0 and not info.has_log \
-			and not info.set_found and not info.set_cached and not info.stream_cached and not played
+			and not played
 	info["ok"] = ok
 	return info
 

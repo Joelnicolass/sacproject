@@ -3,6 +3,9 @@
 [ext_resource type="Script" path="res://scenes/ui/radial/radial_menu.gd" id="1_menu"]
 [ext_resource type="Resource" path="res://data/ui/radial/orders_layout.tres" id="2_layout"]
 [ext_resource type="Script" path="res://scenes/audio/menu_sounds.gd" id="a052_menu_sounds"]
+[ext_resource type="Resource" path="res://data/audio/cues/menu_open.tres" id="a055_open"]
+[ext_resource type="Resource" path="res://data/audio/cues/ui_book_click.tres" id="a055_chosen"]
+[ext_resource type="Resource" path="res://data/audio/cues/menu_back.tres" id="a055_back"]
 [ext_resource type="Script" path="res://scenes/ui/radial/radial_decor.gd" id="3_decor"]
 [ext_resource type="Script" path="res://scenes/ui/radial/radial_rings.gd" id="4_rings"]
 [ext_resource type="Script" path="res://scenes/ui/radial/radial_animator.gd" id="5_animator"]
@@ -101,9 +104,12 @@ mouse_filter = 2
 script = ExtResource("4_rings")
 
 [node name="MenuSounds" type="Node" parent="." node_paths=PackedStringArray("menu")]
-editor_description = "RFC-052 052h: abrir (XMNU), elegir (Iclk) y cerrar sin elegir (Ibak) del menú X. Sin audio no hace nada."
+editor_description = "Lo que suena al abrir, elegir una entrada y cerrar sin elegir del menú X: tres SoundCue (data/audio/cues/). Vaciá uno y ese momento queda en silencio. Sin audio no hace nada."
 script = ExtResource("a052_menu_sounds")
 menu = NodePath("..")
+opened = ExtResource("a055_open")
+chosen = ExtResource("a055_chosen")
+cancelled = ExtResource("a055_back")
 
 [node name="Animator" type="AnimationPlayer" parent="."]
 editor_description = "Clip open: escala 0,7 a 1 y aparece (0,12 s). Clip close: se desvanece (0,08 s)."

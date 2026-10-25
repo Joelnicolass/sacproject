@@ -25,7 +25,7 @@ extends Node3D
 ## keeps the battle on. A music entry is emitter `music`, event = the mood (MusicMood).
 ## 052g: the ambience (AmbienceDirector, ambience/james): `bed`, `ambient`, `god`, and `wait` with `from_wait` (a one-shot
 ## of the set's interval). An ambience entry is emitter `ambience`, event `bed` or `ambient`.
-## 052h: the UI and the sacrifice. `press` emits a button's `pressed` (SoundBus clicks it: event `click`), `menu` opens
+## 052h: the UI and the sacrifice. `press` emits a button's `pressed` (UiClickSounds clicks it: event `click`), `menu` opens
 ## (`arg` open) or cancels (cancel) the radial menu (MenuSounds: `menu_open`, `menu_back`), `ritual_phase` sets the lab
 ## Ritual's replicated phase (`arg` shoot, wait...) and `ritual_end` its outcome (`arg` completed, aborted), as a client
 ## receives them (RitualSounds); `collect` puts the lab Soul in COLLECTING (SoulSounds).
@@ -228,7 +228,7 @@ func _expected_cue(body: Node, action: StringName, arg: String, event: StringNam
 		return advisor.cue_for(advisor.code_for_refusal(StringName(arg)) if action == &"refuse" else emitter)
 	match action:
 		&"press":
-			return SoundBus.ui_cue_for(body as BaseButton) if body is BaseButton else false
+			return SoundBus.ui_clicks.cue_for(body as BaseButton) if body is BaseButton else false
 		&"menu":
 			var menu_sounds := body.get_node_or_null("MenuSounds") as MenuSounds
 			return menu_sounds.cue_for(MENU_SIGNALS.get(arg, &"")) if menu_sounds != null else false

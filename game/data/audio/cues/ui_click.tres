@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="SoundCue" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/menu/_mcl1.wav" id="7_hper3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/menu/_mcl2.wav" id="8_p7ne0"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/menu/_mcl3.wav" id="9_0q2k3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/menu/_mcl4.wav" id="10_1j0hu"]
+
+[resource]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("7_hper3"), ExtResource("8_p7ne0"), ExtResource("9_0q2k3"), ExtResource("10_1j0hu")])

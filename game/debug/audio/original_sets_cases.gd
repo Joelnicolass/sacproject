@@ -24,7 +24,7 @@ func run(_host: Node) -> Dictionary:
 	var results := {}
 	results["original_sets_creature"] = _creature(sound_set)
 	results["original_sets_world"] = _named("world", [&"sacrifice_round", &"sacrifice_end", &"soul"])
-	results["original_sets_ui"] = _named("ui", [&"click"])
+	results["original_sets_ui"] = _ui_click()
 	SoundLibrary.clear_cache()
 	return results
 
@@ -61,6 +61,12 @@ func _creature(sound_set: SoundSet) -> Dictionary:
 		and voice_stream.get_length() > 0.0 and voice_stream.get_length() < 30.0 \
 		and voice.bus == &"Voice" and swing.bus == &"SFX"
 	return info
+
+
+## The click of sound_bus.tscn (UiClickSounds.click, data/audio/cues/ui_click.tres) has streams of the original.
+func _ui_click() -> Dictionary:
+	var click: SoundCue = SoundBus.ui_clicks.click if SoundBus.ui_clicks != null else null
+	return {"ok": click != null and not click.is_silent(), "streams": click.streams.size() if click != null else 0}
 
 
 func _named(rel: String, events: Array) -> Dictionary:

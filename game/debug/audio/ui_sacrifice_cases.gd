@@ -1,22 +1,29 @@
 extends RefCounted
 
 ## RFC-052 052h (F367): UI clicks, the radial menu, the sacrifice and the souls.
-## Open gate (--audio-probe), on the fixture sets of debug/audio/fixtures/ui_sacrifice/ (and an empty root):
+## Open gate (--audio-probe). The world set (ritual, soul) is the fixture of debug/audio/fixtures/ui_sacrifice/ (and an empty
+## root); the UI cues are typed, so the cases hand their own fixture cues to UiClickSounds and MenuSounds (and give them back):
 ## - ui_clicks: a Button that enters the tree clicks once per press (`click`); meta `no_ui_sound` silences it, `false` does
-##   not; meta `ui_sound` picks its key (Iclk); out and back into the tree it still clicks once (no second connection).
+##   not; meta `ui_sound` (a SoundCue) picks its cue; out and back into the tree it still clicks once (no second connection).
+##   The click of sound_bus.tscn and the cue of spell_slot.tscn are assigned.
 ## - menu_sounds: a RadialMenu with its MenuSounds: open -> menu_open, cancel -> menu_back, a confirm on nothing ->
-##   menu_back; a confirm on nothing of a closed menu says nothing more than its cancel.
+##   menu_back; a confirm on nothing of a closed menu says nothing more than its cancel. radial_menu.tscn assigns its three cues.
 ## - ritual_sounds: ritual.tscn (frozen): phase SHOOT -> sacrifice_round, WAIT nothing, SHOOT again -> another; aborted ->
 ##   no sacrifice_end; a Convert completed -> sacrifice_end and soul.
 ## - soul_sounds: soul.tscn (frozen): COLLECTING -> soul once (also when it then leaves the tree); DEVOURING -> nothing.
 ## Closed gate (plain headless, --dedicated, --room-server):
-## - ui_sacrifice_closed: a press makes no log and ui_cue_for is null; RitualSounds and SoulSounds connect nothing.
+## - ui_sacrifice_closed: a press makes no log and UiClickSounds.cue_for is null; RitualSounds and SoulSounds connect nothing.
 
 const FIXTURE_ROOT := "res://debug/audio/fixtures/ui_sacrifice/"
 const EMPTY_ROOT := "res://debug/audio/fixtures/empty/"
 const RITUAL_SCENE := "res://scenes/sacrifice/ritual.tscn"
 const SOUL_SCENE := "res://scenes/souls/soul.tscn"
 const RADIAL_SCENE := "res://scenes/ui/radial/radial_menu.tscn"
+const SLOT_SCENE := "res://scenes/ui/spell_book/spell_slot.tscn"
+const FIXTURE_STREAMS: Array[String] = [
+	"res://debug/audio/fixtures/custom_sounds/creatures/fixture/death_1.wav",
+	"res://debug/audio/fixtures/custom_sounds/creatures/fixture/death_2.wav",
+]
 
 
 func run(host: Node, open: bool) -> Dictionary:
@@ -60,17 +67,26 @@ static func _mark() -> int:
 
 func _ui_clicks(host: Node) -> Dictionary:
 	var checks := {}
+	var clicks: UiClickSounds = SoundBus.ui_clicks
+	var shipped := clicks.click
+	checks["bus_click_assigned"] = shipped != null and not shipped.is_silent()
+	var slot := (load(SLOT_SCENE) as PackedScene).instantiate() as Button
+	checks["slot_cue_assigned"] = slot.get_meta(UiClickSounds.META_UI_SOUND, null) is SoundCue
+	slot.free()
+	var plain_cue := _fixture_cue()
+	var keyed_cue := _fixture_cue()
+	clicks.click = plain_cue
 	var plain := Button.new()
 	plain.name = "CasePlain"
 	var muted := Button.new()
 	muted.name = "CaseMuted"
-	muted.set_meta(SoundBus.META_NO_UI_SOUND, true)
+	muted.set_meta(UiClickSounds.META_NO_UI_SOUND, true)
 	var unmuted := Button.new()
 	unmuted.name = "CaseUnmuted"
-	unmuted.set_meta(SoundBus.META_NO_UI_SOUND, false)
+	unmuted.set_meta(UiClickSounds.META_NO_UI_SOUND, false)
 	var keyed := Button.new()
 	keyed.name = "CaseKeyed"
-	keyed.set_meta(SoundBus.META_UI_SOUND, &"Iclk")
+	keyed.set_meta(UiClickSounds.META_UI_SOUND, keyed_cue)
 	for button: Button in [plain, muted, unmuted, keyed]:
 		host.add_child(button)
 	await host.get_tree().process_frame
@@ -79,14 +95,14 @@ func _ui_clicks(host: Node) -> Dictionary:
 	checks["plain_clicks"] = _count(at, &"CasePlain", SoundEvent.CLICK) == 1
 	at = _mark()
 	muted.pressed.emit()
-	checks["muted_silent"] = _count(at, &"CaseMuted", SoundEvent.CLICK) == 0 and SoundBus.ui_cue_for(muted) == null
+	checks["muted_silent"] = _count(at, &"CaseMuted", SoundEvent.CLICK) == 0 and clicks.cue_for(muted) == null
 	at = _mark()
 	unmuted.pressed.emit()
 	checks["meta_false_clicks"] = _count(at, &"CaseUnmuted", SoundEvent.CLICK) == 1
 	at = _mark()
 	keyed.pressed.emit()
 	checks["keyed_clicks"] = _count(at, &"CaseKeyed", SoundEvent.CLICK) == 1 \
-		and SoundBus.ui_cue_for(keyed) == SoundBus.lookup("ui", &"Iclk") and SoundBus.ui_cue_for(keyed) != null
+		and clicks.cue_for(keyed) == keyed_cue and clicks.cue_for(plain) == plain_cue
 	host.remove_child(plain)
 	host.add_child(plain)
 	await host.get_tree().process_frame
@@ -95,6 +111,7 @@ func _ui_clicks(host: Node) -> Dictionary:
 	checks["readded_once"] = _count(at, &"CasePlain", SoundEvent.CLICK) == 1
 	for button: Button in [plain, muted, unmuted, keyed]:
 		button.queue_free()
+	clicks.click = shipped
 	await host.get_tree().process_frame
 	return _verdict(checks)
 
@@ -108,7 +125,14 @@ func _menu_sounds(host: Node) -> Dictionary:
 	radial.close_s = 0.0
 	host.add_child(radial)
 	await host.get_tree().process_frame
-	checks["has_menu_sounds"] = radial.get_node_or_null("MenuSounds") is MenuSounds
+	var menu_sounds := radial.get_node_or_null("MenuSounds") as MenuSounds
+	checks["has_menu_sounds"] = menu_sounds != null
+	checks["menu_cues_assigned"] = menu_sounds != null and menu_sounds.opened != null and menu_sounds.chosen != null \
+		and menu_sounds.cancelled != null
+	if menu_sounds != null:
+		menu_sounds.opened = _fixture_cue()
+		menu_sounds.chosen = _fixture_cue()
+		menu_sounds.cancelled = _fixture_cue()
 	var at := _mark()
 	radial.open_at(Vector2(200.0, 200.0))
 	checks["open"] = _count(at, &"CaseRadial", SoundEvent.MENU_OPEN) == 1
@@ -201,7 +225,7 @@ func _closed(host: Node) -> Dictionary:
 	var soul := _soul(host, "CaseClosedSoul")
 	await host.get_tree().process_frame
 	button.pressed.emit()
-	var no_log: bool = SoundBus.sound_log == null and SoundBus.ui_cue_for(button) == null
+	var no_log: bool = SoundBus.sound_log == null and SoundBus.ui_clicks.cue_for(button) == null
 	var ritual_sounds := ritual.get_node("RitualSounds")
 	var soul_sounds := soul.get_node("SoulSounds")
 	var unconnected := not ritual.phase_changed.get_connections().any(func(c: Dictionary) -> bool: return (c.callable as Callable).get_object() == ritual_sounds) \
@@ -210,6 +234,15 @@ func _closed(host: Node) -> Dictionary:
 		node.queue_free()
 	await host.get_tree().process_frame
 	return {"ok": no_log and unconnected, "no_log": no_log, "unconnected": unconnected}
+
+
+## A cue of the two fixture wavs with no voice limit (the real ones are in the original's audio).
+static func _fixture_cue() -> SoundCue:
+	var cue := SoundCue.new()
+	for path in FIXTURE_STREAMS:
+		cue.streams.append(load(path) as AudioStream)
+	cue.max_voices = 0
+	return cue
 
 
 static func _verdict(checks: Dictionary) -> Dictionary:

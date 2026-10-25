@@ -9,7 +9,7 @@ HUD strips). Three numbers, each with its pass level:
   fringe       share of the blob's bounding-box width that the edge takes to go from the blob to the sky, averaged over the rows of the blob
                (a smooth disc ~ 0.01-0.03; a frayed edge, where the twenty layers do not agree, > `--min-fringe`)
   edge_rows    how many rows have a ragged edge: the left edge of the blob moves more than 2 px between neighbour rows (a smooth oval moves <= 1)
-Exit code 0 when core_std passes (fringe and edge_rows are reported: they move with the sky behind the cloud). Level 5 asks for a cloud with visible lumps (calibrated with `--box` hugging the cloud: the flat oval of the first capture 4.3, the second 2.7).
+`--max-mean=0.25` also asks the core's mean luminance (0-1) to stay under it (default: not asked). Exit code 0 when core_std passes (fringe and edge_rows are reported: they move with the sky behind the cloud). Level 5 asks for a cloud with visible lumps (calibrated with `--box` hugging the cloud: the flat oval of the first capture 4.3, the second 2.7).
 """
 
 import sys
@@ -58,9 +58,10 @@ def main() -> int:
     std = float(core.std())
     fringe = float(np.mean(fringes)) if fringes else 0.0
     ragged = int(np.sum(np.abs(np.diff(lefts)) > 2)) if len(lefts) > 1 else 0
-    ok = std >= float(ARGS.get("--min-std", 5))
-    print("cloud_stats: blob %d px, box %dx%d, sky %.0f | core_std %.2f | fringe %.3f | edge_rows %d/%d | %s" % (
-        int(mask.sum()), box_w, int(rows.max() - rows.min()), sky, std, fringe, ragged, len(lefts), "PASS" if ok else "FAIL"))
+    mean = float(core.mean()) / 255.0
+    ok = std >= float(ARGS.get("--min-std", 5)) and mean < float(ARGS.get("--max-mean", 1.0))
+    print("cloud_stats: blob %d px, box %dx%d, sky %.0f | core_mean %.3f | core_std %.2f | fringe %.3f | edge_rows %d/%d | %s" % (
+        int(mask.sum()), box_w, int(rows.max() - rows.min()), sky, mean, std, fringe, ragged, len(lefts), "PASS" if ok else "FAIL"))
     return 0 if ok else 1
 
 

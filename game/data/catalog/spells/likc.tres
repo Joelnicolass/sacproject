@@ -2,11 +2,13 @@
 
 [ext_resource type="PackedScene" path="res://scenes/spells/actions/cloudkill_action.tscn" id="2_action"]
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_gotxs"]
+[ext_resource type="Texture2D" uid="uid://bt8asqla0wy6e" path="res://assets/original/ui/icons/likc.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_gotxs")
 tag = "likc"
 display_name = "Cloudkill"
+icon = ExtResource("icon_tex")
 mana_cost = 1600
 cast_range_m = 100.0
 cooldown_s = 60.0

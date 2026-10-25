@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="AbilityType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_fs2xw"]
+[ext_resource type="Texture2D" uid="uid://b3vs2i4beqi3u" path="res://assets/original/ui/icons/!nur.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_fs2xw")
 tag = "!nur"
 display_name = "Run Away"
+icon = ExtResource("icon_tex")
 mana_cost = 50
 cooldown_s = 10.0
 casting_time_s = 7.4074

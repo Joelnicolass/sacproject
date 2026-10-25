@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_yt7v8"]
 [ext_resource type="Resource" path="res://data/audio/creatures/astaroth.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://c55i2qfp2gq4o" path="res://assets/original/ui/icons/_r_a_m_h.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_yt7v8")
 tag = "RAMH"
 display_name = "Astaroth"
+icon = ExtResource("icon_tex")
 god = "charnel"
 model = "ban2"
 health = 2700

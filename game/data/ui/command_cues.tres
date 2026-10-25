@@ -1,17 +1,35 @@
-[gd_resource type="Resource" script_class="CueSet" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="CueSet" format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/command_cue/cue_set.gd" id="1_cues"]
+[ext_resource type="Texture2D" uid="uid://cyc6tstqg03bk" path="res://assets/original/ui/icons/_matt.png" id="icon_Matt"]
+[ext_resource type="Texture2D" uid="uid://cegt4b0rrt7c3" path="res://assets/original/ui/icons/_mgua.png" id="icon_Mgua"]
+[ext_resource type="Texture2D" uid="uid://baceg2snsdpwo" path="res://assets/original/ui/icons/_mgot.png" id="icon_Mgot"]
+[ext_resource type="Texture2D" uid="uid://phybm6s85ssx" path="res://assets/original/ui/xmenu/zwp1.png" id="icon_zwp1"]
+[ext_resource type="Texture2D" uid="uid://bcg8bqvfumlw0" path="res://assets/original/ui/cursors/Cnor.png" id="cur_Cnor"]
+[ext_resource type="Texture2D" uid="uid://b8agnccbcyxs5" path="res://assets/original/ui/cursors/Cfun.png" id="cur_Cfun"]
+[ext_resource type="Texture2D" uid="uid://b6lyv7yxxxuv3" path="res://assets/original/ui/cursors/Cnun.png" id="cur_Cnun"]
+[ext_resource type="Texture2D" uid="uid://cfnrghs3hsk8l" path="res://assets/original/ui/cursors/Ceun.png" id="cur_Ceun"]
+[ext_resource type="Texture2D" uid="uid://bii5elq8mawja" path="res://assets/original/ui/cursors/Cfbg.png" id="cur_Cfbg"]
+[ext_resource type="Texture2D" uid="uid://fuu7rlnru02y" path="res://assets/original/ui/cursors/Cnbg.png" id="cur_Cnbg"]
+[ext_resource type="Texture2D" uid="uid://b1jcl4reohp8l" path="res://assets/original/ui/cursors/Cebg.png" id="cur_Cebg"]
+[ext_resource type="Texture2D" uid="uid://b1tcxknm46dtw" path="res://assets/original/ui/cursors/Cspr.png" id="cur_Cspr"]
+[ext_resource type="Texture2D" uid="uid://dnnkvbartq8q3" path="res://assets/original/ui/cursors/Tnon.png" id="cur_Tnon"]
+[ext_resource type="Texture2D" uid="uid://h4wnm776u5i1" path="res://assets/original/ui/cursors/Tntr.png" id="cur_Tntr"]
+[ext_resource type="Texture2D" uid="uid://dtm3caonpye11" path="res://assets/original/ui/cursors/Tfrn.png" id="cur_Tfrn"]
+[ext_resource type="Texture2D" uid="uid://cama06q62n6ng" path="res://assets/original/ui/cursors/Tnme.png" id="cur_Tnme"]
+[ext_resource type="Texture2D" uid="uid://dvrxbu4l22exh" path="res://assets/original/ui/icons/ncst.png" id="icon_ncst"]
 
 [resource]
 script = ExtResource("1_cues")
-aim_icons = {
-&"attack": "Matt",
-&"advance": "Matt",
-&"guard": "Mgua",
-&"guard_area": "Mgua",
-&"move": "Mgot",
-&"retreat": "zwp1"
-}
+aim_icons = Dictionary[StringName, Texture2D]({
+&"attack": ExtResource("icon_Matt"),
+&"advance": ExtResource("icon_Matt"),
+&"guard": ExtResource("icon_Mgua"),
+&"guard_area": ExtResource("icon_Mgua"),
+&"move": ExtResource("icon_Mgot"),
+&"retreat": ExtResource("icon_zwp1")
+})
+refused_icon = ExtResource("icon_ncst")
 refusals = {
 &"no_mana": &"refused",
 &"cooling": &"refused",
@@ -32,31 +50,30 @@ refusals = {
 &"no_wizard": &"refused",
 &"creature_limit": &""
 }
-free_cursors = {
-&"none": "Cnor",
-&"ground": "Cnor",
-&"corpse": "Cnor",
-&"own_unit": "Cfun",
-&"neutral_unit": "Cnun",
-&"enemy_unit": "Ceun",
-&"own_building": "Cfbg",
-&"neutral_building": "Cnbg",
-&"enemy_building": "Cebg",
-&"own_soul": "Cspr",
-&"soul": "Cnor"
-}
-target_cursors = {
-&"none": "Tnon",
-&"ground": "Tntr",
-&"corpse": "Tntr",
-&"own_unit": "Tfrn",
-&"neutral_unit": "Tntr",
-&"enemy_unit": "Tnme",
-&"own_building": "Tfrn",
-&"neutral_building": "Tntr",
-&"enemy_building": "Tnme",
-&"own_soul": "Tnon",
-&"soul": "Tnon"
-}
-refused_icon = "ncst"
-hud_cursor = "Cnor"
+free_cursors = Dictionary[StringName, Texture2D]({
+&"none": ExtResource("cur_Cnor"),
+&"ground": ExtResource("cur_Cnor"),
+&"corpse": ExtResource("cur_Cnor"),
+&"own_unit": ExtResource("cur_Cfun"),
+&"neutral_unit": ExtResource("cur_Cnun"),
+&"enemy_unit": ExtResource("cur_Ceun"),
+&"own_building": ExtResource("cur_Cfbg"),
+&"neutral_building": ExtResource("cur_Cnbg"),
+&"enemy_building": ExtResource("cur_Cebg"),
+&"own_soul": ExtResource("cur_Cspr"),
+&"soul": ExtResource("cur_Cnor")
+})
+target_cursors = Dictionary[StringName, Texture2D]({
+&"none": ExtResource("cur_Tnon"),
+&"ground": ExtResource("cur_Tntr"),
+&"corpse": ExtResource("cur_Tntr"),
+&"own_unit": ExtResource("cur_Tfrn"),
+&"neutral_unit": ExtResource("cur_Tntr"),
+&"enemy_unit": ExtResource("cur_Tnme"),
+&"own_building": ExtResource("cur_Tfrn"),
+&"neutral_building": ExtResource("cur_Tntr"),
+&"enemy_building": ExtResource("cur_Tnme"),
+&"own_soul": ExtResource("cur_Tnon"),
+&"soul": ExtResource("cur_Tnon")
+})
+hud_cursor = ExtResource("cur_Cnor")

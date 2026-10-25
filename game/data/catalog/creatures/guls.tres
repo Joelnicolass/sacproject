@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_38h3d"]
 [ext_resource type="Resource" path="res://data/audio/creatures/basilisk.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://c6xtq3qlcfinn" path="res://assets/original/ui/icons/guls.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_38h3d")
 tag = "guls"
 display_name = "Basilisk"
+icon = ExtResource("icon_tex")
 god = "james"
 model = "eslg"
 health = 1680

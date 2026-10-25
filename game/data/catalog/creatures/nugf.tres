@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_n0fcr"]
 [ext_resource type="Resource" path="res://data/audio/creatures/warmonger.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://co2nm8vnn27cl" path="res://assets/original/ui/icons/nugf.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_n0fcr")
 tag = "nugf"
 display_name = "Warmonger"
+icon = ExtResource("icon_tex")
 god = "pyro"
 model = "gunf"
 health = 1200

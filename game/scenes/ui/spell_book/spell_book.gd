@@ -88,12 +88,12 @@ func _rebuild() -> void:
 		if tab == Tab.CREATURE:
 			var creature := _book.creature_at(i)
 			slot.name = "Creature%d" % (i + 1)
-			slot.show_creature(creature, ActionKeyLabel.of("creature_%d" % (i + 1)), page, HudIcons.icon(creature.tag))
+			slot.show_creature(creature, ActionKeyLabel.of("creature_%d" % (i + 1)), page)
 			slot.pressed.connect(creature_pressed.emit.bind(i))
 		else:
 			var spell := _book.structure_at(i) if tab == Tab.STRUCTURE else _book.spell_at(i)
 			slot.name = "Structure%d" % (i + 1) if tab == Tab.STRUCTURE else "Spell%d" % (i + 1)
-			slot.show_spell(spell, ActionKeyLabel.of("spell_%d" % (i + 1)), page, HudIcons.icon(spell.tag))
+			slot.show_spell(spell, ActionKeyLabel.of("spell_%d" % (i + 1)), page)
 			if tab == Tab.STRUCTURE:
 				slot.pressed.connect(structure_pressed.emit.bind(i))
 			else:

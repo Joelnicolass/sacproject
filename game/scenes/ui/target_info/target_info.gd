@@ -47,7 +47,7 @@ static func describe(node: Node, local_slot: int) -> TargetInfo:
 		info.title = (node as WizardBody).display_name()
 	elif node.has_method("display_name") and "owner_slot" in node:
 		info.title = _creature_title(node)
-		info.icon = HudIcons.icon(str(node.get("creature_tag"))) if "creature_tag" in node else null
+		info.icon = CreatureType.icon_of(node)
 	else:
 		return null
 	_read_health(info, node)

@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="AbilityType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_y0jii"]
+[ext_resource type="Texture2D" uid="uid://btyo6siesod23" path="res://assets/original/ui/icons/rifb.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_y0jii")
 tag = "rifb"
 display_name = "Breathe fire"
+icon = ExtResource("icon_tex")
 mana_cost = 50
 cast_range_m = 40.0
 cooldown_s = 4.0

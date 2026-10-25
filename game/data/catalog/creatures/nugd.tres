@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_8orfn"]
 [ext_resource type="Resource" path="res://data/audio/creatures/styx.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://d2qgjk4t3otu5" path="res://assets/original/ui/icons/nugd.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_8orfn")
 tag = "nugd"
 display_name = "Styx"
+icon = ExtResource("icon_tex")
 god = "charnel"
 model = "gund"
 health = 1350

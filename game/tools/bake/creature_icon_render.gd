@@ -3,7 +3,7 @@ extends RefCounted
 
 ## F335 (RFC-051): the HUD icon of a creature of your own, drawn from its model. A SubViewport with its own world holds the .glb in
 ## the pose of its idle clip, a camera frames the box of the mesh, and the picture is put on a dark disc with a gold ring, at the size
-## of the original's icons (32 x 32, assets/original/ui/icons/). The result goes to assets/custom/icons/<tag>.png, where HudIcons looks.
+## of the original's icons (32 x 32, assets/original/ui/icons/). The result goes to assets/custom/icons/<tag>.png, and `link` puts it in the `icon` of the creature's .tres.
 ## A PNG that already exists there is never overwritten (it may be yours): `force` draws it again.
 ## It needs a renderer: a headless run has none, so `ensure` says so and writes nothing.
 
@@ -43,6 +43,22 @@ static func ensure(host: Node, tag: String, idle_clip: String, force := false) -
 	if error != OK:
 		return "not drawn: cannot write %s (%d)" % [path, error]
 	return "wrote %s (%d x %d)" % [path, SIZE, SIZE]
+
+
+## Puts the PNG of `tag` in the `icon` of data/catalog/creatures/<tag>.tres. Godot has to have imported the PNG first (open the editor or run
+## `--import` once); until then it says so and `tools/bake/fill_type_icons.gd` does it later. A creature that already has an icon keeps it.
+static func link(tag: String) -> String:
+	var type_path := "res://data/catalog/creatures/%s.tres" % tag
+	var type := ResourceLoader.load(type_path, "", ResourceLoader.CACHE_MODE_REPLACE) as CreatureType
+	if type == null:
+		return "not linked: %s does not exist" % type_path
+	if type.icon != null:
+		return "icon already set (%s)" % type.icon.resource_path
+	var path := path_for(tag)
+	if not ResourceLoader.exists(path):
+		return "not linked: %s is not imported yet (open the editor or run --import once, then tools/bake/fill_type_icons.gd)" % path
+	type.icon = load(path) as Texture2D
+	return "linked in %s" % type_path if ResourceSaver.save(type, type_path) == OK else "not linked: cannot save %s" % type_path
 
 
 ## The 32 x 32 icon of the model `glb` in the pose of its `idle_clip`, or null without a renderer.

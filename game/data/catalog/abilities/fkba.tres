@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="AbilityType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_246pm"]
+[ext_resource type="Texture2D" uid="uid://bhimnitc5s7d6" path="res://assets/original/ui/icons/fkba.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_246pm")
 tag = "fkba"
 display_name = "Spit fire"
+icon = ExtResource("icon_tex")
 mana_cost = 5
 cast_range_m = 60.0
 cooldown_s = 1.5

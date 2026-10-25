@@ -9,7 +9,7 @@ extends Control
 ## armed icon cannot take (an order over the sky, a structure over the wrong body);
 ## `Mirror` = a copy of the hardware cursor, off by default: a window capture does not include the
 ## system cursor, so a flow turns it on to see it.
-## Without the local cache the images are null and a plain circle / cross is drawn instead.
+## Without a picture (a type with no `icon`, a CueSet with none) a plain circle / cross is drawn instead.
 ## Full screen, ignores the mouse. The icons are 38×38 canvas pixels, set in the scene; Godot's stretch scales them.
 ## Ref: renderer.d:4113-4165 renderCursor (4/32 of the icon below the cursor).
 
@@ -48,8 +48,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 		warnings.append("Asigná `command_log` (el nodo Battle).")
 	if cues == null:
 		warnings.append("Asigná `cues` (data/ui/command_cues.tres).")
-	if HudIcons.icon("ncst") == null:
-		warnings.append("Faltan assets/original/ui/cursors: corré tools/import/import_ui.py. Sin eso se dibuja un círculo de respaldo.")
+	elif cues.refused_icon == null:
+		warnings.append("Asigná `refused_icon` en `cues`. Sin eso se dibuja una cruz de respaldo.")
 	return warnings
 
 
@@ -77,9 +77,9 @@ func _process(_delta: float) -> void:
 	_place()
 
 
-func _on_armed_changed(_kind: String, icon_tag: String) -> void:
+func _on_armed_changed(_kind: String, icon: Texture2D) -> void:
 	var armed := command_log != null and not command_log.armed.is_empty()
-	%Aim.texture = HudIcons.armed(icon_tag)
+	%Aim.texture = icon
 	%Aim.visible = armed
 	_check_hover()
 	_update_invalid()
@@ -134,7 +134,7 @@ func _check_hover() -> void:
 
 func _update_invalid() -> void:
 	var show_it := _flashing or _hover_invalid
-	%Invalid.texture = HudIcons.icon(cues.refused_icon) if (cues and show_it) else null
+	%Invalid.texture = cues.refused_icon if (cues and show_it) else null
 	%Invalid.visible = show_it
 	queue_redraw()
 

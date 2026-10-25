@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_d0ate"]
 [ext_resource type="Resource" path="res://data/audio/creatures/silverback.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://b1q5o5ky24uaj" path="res://assets/original/ui/icons/grdb.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_d0ate")
 tag = "grdb"
 display_name = "Silverback"
+icon = ExtResource("icon_tex")
 god = "stratos"
 model = "adrg"
 health = 4800

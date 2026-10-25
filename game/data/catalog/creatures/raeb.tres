@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_ic8cq"]
 [ext_resource type="Resource" path="res://data/audio/creatures/taurock.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://d3dgng788qv3s" path="res://assets/original/ui/icons/raeb.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_ic8cq")
 tag = "raeb"
 display_name = "Taurock"
+icon = ExtResource("icon_tex")
 god = "james"
 model = "eber"
 health = 1920

@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_ak0mh"]
 [ext_resource type="Resource" path="res://data/audio/creatures/jabberocky.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://8ml5vtk1g0pb" path="res://assets/original/ui/icons/mtse.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_ak0mh")
 tag = "mtse"
 display_name = "Jabberocky"
+icon = ExtResource("icon_tex")
 god = "james"
 model = "estm"
 health = 5600

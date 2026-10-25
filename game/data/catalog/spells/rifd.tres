@@ -3,11 +3,13 @@
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_wdf21"]
 
 [ext_resource type="PackedScene" path="res://scenes/spells/actions/dragonfire_action.tscn" id="2_action"]
+[ext_resource type="Texture2D" uid="uid://cfd6x4ash4ano" path="res://assets/original/ui/icons/rifd.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_wdf21")
 tag = "rifd"
 display_name = "Dragonfire"
+icon = ExtResource("icon_tex")
 mana_cost = 800
 cast_range_m = 90.0
 cooldown_s = 40.0

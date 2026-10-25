@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="AbilityType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_srlda"]
+[ext_resource type="Texture2D" uid="uid://cg3yudrq7ebcd" path="res://assets/original/ui/icons/rdra.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_srlda")
 tag = "rdra"
 display_name = "Heat ray"
+icon = ExtResource("icon_tex")
 mana_cost = 50
 cast_range_m = 80.0
 cooldown_s = 4.0

@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_nkab1"]
 [ext_resource type="Resource" path="res://data/audio/creatures/lord_surtur.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://bw3j53xaogfx8" path="res://assets/original/ui/icons/usl_h.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_nkab1")
 tag = "uslH"
 display_name = "Lord Surtur"
+icon = ExtResource("icon_tex")
 god = "stratos"
 model = "surt"
 health = 2560

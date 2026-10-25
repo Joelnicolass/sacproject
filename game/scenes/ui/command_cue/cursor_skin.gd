@@ -4,8 +4,8 @@ extends Node
 
 ## The mouse cursor of the original game (RFC-025c): `C*` of curs.FLDR while nothing is armed and
 ## `T*` while an icon waits for its target, chosen by what lies under the pointer (TargetProbe) like
-## sacengine `cursor()` (state.d:30830). The image comes from the local cache (HudIcons.cursor); without
-## it the system cursor stays. The hardware cursor is drawn by the OS in window pixels, so Godot's stretch does not scale it: its
+## sacengine `cursor()` (state.d:30830). The pictures are the ones of `cues` (data/ui/command_cues.tres); without
+## one the system cursor stays. The hardware cursor is drawn by the OS in window pixels, so Godot's stretch does not scale it: its
 ## side is `cursor_px` canvas pixels times window height over canvas height, hot spot at the top center. It does nothing in a
 ## headless process or in the dedicated server (no player, no window), and nothing over the HUD beyond picking the plain arrow.
 ## Ref: renderer.d:4113 renderCursor (32 units, ×1.2).
@@ -34,6 +34,7 @@ var apply_count := 0
 var applied_px := 0
 
 var _announced := false
+var _source: Texture2D
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -44,8 +45,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 		warnings.append("Asigná `command_log` (el nodo Battle).")
 	if probe == null:
 		warnings.append("Asigná `probe` (TargetProbe).")
-	if HudIcons.cursor("Cnor") == null:
-		warnings.append("Faltan assets/original/ui/cursors: corré tools/import/import_ui.py. Sin eso queda el cursor del sistema.")
+	elif cues.hud_cursor == null:
+		warnings.append("Asigná `hud_cursor` en `cues`. Sin eso queda el cursor del sistema.")
 	return warnings
 
 
@@ -80,13 +81,26 @@ func _refresh() -> void:
 	var kind: StringName = probe.kind if probe else &"none"
 	var next := cues.cursor_for(kind, armed)
 	var px := physical_px()
-	if next == current and px == applied_px:
+	if next == _source and px == applied_px:
 		return
-	current = next
+	_source = next
+	current = next.resource_path.get_file().get_basename() if next else ""
 	applied_px = px
-	var texture := HudIcons.cursor_sized(next, clampi(px, MIN_PX, MAX_PX))
-	changed.emit(next, texture)
+	var texture := _sized(next, px)
+	changed.emit(current, texture)
 	_apply(texture, px)
+
+
+## The picture at `px` window pixels a side (the hardware cursor takes at most 256), or null.
+func _sized(source: Texture2D, px: int) -> Texture2D:
+	var image := source.get_image() if source else null
+	if image == null or image.is_empty():
+		return null
+	var side := clampi(px, MIN_PX, MAX_PX)
+	if image.get_width() != side or image.get_height() != side:
+		image = image.duplicate()
+		image.resize(side, side, Image.INTERPOLATE_BILINEAR)
+	return ImageTexture.create_from_image(image)
 
 
 ## Side in window pixels the cursor is drawn at: `cursor_px` canvas pixels, times how many window pixels one canvas pixel is.

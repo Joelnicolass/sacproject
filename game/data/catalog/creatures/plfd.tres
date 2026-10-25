@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_1joh7"]
 [ext_resource type="Resource" path="res://data/audio/creatures/deadeye.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://dl76ap62hhrk5" path="res://assets/original/ui/icons/plfd.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_1joh7")
 tag = "plfd"
 display_name = "Deadeye"
+icon = ExtResource("icon_tex")
 god = "charnel"
 model = "dflp"
 health = 1170

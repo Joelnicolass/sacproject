@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="AbilityType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_2jk8m"]
+[ext_resource type="Texture2D" uid="uid://rrdmyvtov8b1" path="res://assets/original/ui/icons/_h_rba.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_2jk8m")
 tag = "HRba"
 display_name = "Halo Of Earth"
+icon = ExtResource("icon_tex")
 mana_cost = 650
 cast_range_m = 100.0
 cooldown_s = 40.0

@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="AbilityType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_5xkgb"]
+[ext_resource type="Texture2D" uid="uid://cmq5r8pwkqil7" path="res://assets/original/ui/icons/psaa.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_5xkgb")
 tag = "psaa"
 display_name = "Cage pull"
+icon = ExtResource("icon_tex")
 mana_cost = 60
 cast_range_m = 50.0
 cooldown_s = 6.0

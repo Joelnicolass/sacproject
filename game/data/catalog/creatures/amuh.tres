@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_eqfkw"]
 [ext_resource type="Resource" path="res://data/audio/creatures/ranger.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://i8n5w3b50ued" path="res://assets/original/ui/icons/amuh.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_eqfkw")
 tag = "amuh"
 display_name = "Ranger"
+icon = ExtResource("icon_tex")
 god = "persephone"
 model = "huma"
 health = 800

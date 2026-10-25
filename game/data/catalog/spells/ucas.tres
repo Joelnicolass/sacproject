@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="SpellType" format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_wpwoe"]
+[ext_resource type="Texture2D" uid="uid://dqs0g7ffpe4uf" path="res://assets/original/ui/icons/ucas.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_wpwoe")
 tag = "ucas"
 display_name = "Desecrate"
+icon = ExtResource("icon_tex")
 mana_cost = 1000
 cast_range_m = 20.0
 cooldown_s = 5.0

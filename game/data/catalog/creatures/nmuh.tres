@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_1aner"]
 [ext_resource type="Resource" path="res://data/audio/creatures/druid.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://bkpqfxsr2p23i" path="res://assets/original/ui/icons/nmuh.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_1aner")
 tag = "nmuh"
 display_name = "Druid"
+icon = ExtResource("icon_tex")
 god = "persephone"
 model = "humn"
 health = 800

@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_oqlub"]
 [ext_resource type="Resource" path="res://data/audio/creatures/necryl.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://cedbb5ksqd4wv" path="res://assets/original/ui/icons/glsd.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_oqlub")
 tag = "glsd"
 display_name = "Necryl"
+icon = ExtResource("icon_tex")
 god = "charnel"
 model = "dslg"
 health = 1260

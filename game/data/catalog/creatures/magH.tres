@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_cbtr8"]
 [ext_resource type="Resource" path="res://data/audio/creatures/gammel.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://dkwt4qld5ypfe" path="res://assets/original/ui/icons/mag_h.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_cbtr8")
 tag = "magH"
 display_name = "Gammel"
+icon = ExtResource("icon_tex")
 god = "james"
 model = "gamm"
 health = 3360

@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_0fo3b"]
 [ext_resource type="Resource" path="res://data/audio/creatures/ghost.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://cirvrf5gk6dk2" path="res://assets/original/ui/icons/tshg.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_0fo3b")
 tag = "tshg"
 display_name = "Ghost"
+icon = ExtResource("icon_tex")
 god = "persephone"
 model = "peas"
 health = 500

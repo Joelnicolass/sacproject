@@ -6,6 +6,8 @@ enum AiUse { NONE, SELF_GUARD, DISABLE_FOE }
 
 @export var tag: String = ""
 @export var display_name: String = ""
+## The picture of the spell in the book and on the cursor while it waits for its target. Drag any PNG here to change it.
+@export var icon: Texture2D
 @export var mana_cost: int = 0
 ## How far from the caster it can be cast (m).
 @export var cast_range_m: float = 0.0

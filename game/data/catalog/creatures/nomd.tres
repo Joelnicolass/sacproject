@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_3nw7s"]
 [ext_resource type="Resource" path="res://data/audio/creatures/hellmouth.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://dkuxo3breglsc" path="res://assets/original/ui/icons/nomd.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_3nw7s")
 tag = "nomd"
 display_name = "Hellmouth"
+icon = ExtResource("icon_tex")
 god = "charnel"
 model = "ddmn"
 health = 5400

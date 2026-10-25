@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_2obe3"]
 [ext_resource type="Resource" path="res://data/audio/creatures/brainiac.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://b6ekcu7x37rrp" path="res://assets/original/ui/icons/bobs.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_2obe3")
 tag = "bobs"
 display_name = "Brainiac"
+icon = ExtResource("icon_tex")
 god = "stratos"
 model = "sbob"
 health = 400

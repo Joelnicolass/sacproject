@@ -36,5 +36,7 @@ func _run() -> void:
 		var type := load("res://data/catalog/creatures/%s.tres" % tag) as CreatureType
 		clip = str(type.idle_animation.get("tag", "")) if type != null else ""
 	var result := await CreatureIconRender.ensure(root, tag, clip, force)
+	if not result.begins_with("not drawn"):
+		result += "; " + CreatureIconRender.link(tag)
 	print("CREATURE_ICON %s: %s" % [tag, result])
 	quit(1 if result.begins_with("not drawn") else 0)

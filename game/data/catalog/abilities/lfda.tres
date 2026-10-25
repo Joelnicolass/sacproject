@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="AbilityType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_pye3f"]
+[ext_resource type="Texture2D" uid="uid://54ifx0x6j263" path="res://assets/original/ui/icons/lfda.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_pye3f")
 tag = "lfda"
 display_name = "Poison Bolt"
+icon = ExtResource("icon_tex")
 mana_cost = 13
 cast_range_m = 200.0
 cooldown_s = 6.0

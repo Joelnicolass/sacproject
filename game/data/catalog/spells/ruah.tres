@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_n0lpo"]
 [ext_resource type="PackedScene" path="res://scenes/spells/actions/healing_aura_action.tscn" id="2_action"]
+[ext_resource type="Texture2D" uid="uid://b6vt2ov8yy10r" path="res://assets/original/ui/icons/ruah.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_n0lpo")
 tag = "ruah"
 display_name = "Healing Aura"
+icon = ExtResource("icon_tex")
 mana_cost = 1200
 cast_range_m = 100.0
 cooldown_s = 40.0

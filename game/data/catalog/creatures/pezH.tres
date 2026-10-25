@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_aanvv"]
 [ext_resource type="Resource" path="res://data/audio/creatures/sara_bella.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://cmxcoa38igf0j" path="res://assets/original/ui/icons/pez_h.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_aanvv")
 tag = "pezH"
 display_name = "Sara Bella"
+icon = ExtResource("icon_tex")
 god = "stratos"
 model = "sara"
 health = 1500

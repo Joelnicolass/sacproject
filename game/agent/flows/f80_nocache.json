@@ -56,13 +56,6 @@
   },
   {
    "assert": {
-    "node": "%Battle",
-    "prop": "armed_icon",
-    "equals": "kcor"
-   }
-  },
-  {
-   "assert": {
     "node": "%CommandCue/Aim",
     "visible": true
    }
@@ -149,7 +142,7 @@
    "assert": {
     "node": "%CommandCue/Aim",
     "prop": "texture",
-    "contains": "ImageTexture"
+    "contains": "Texture2D"
    }
   }
  ]

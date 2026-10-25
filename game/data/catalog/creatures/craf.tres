@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_kqi83"]
 [ext_resource type="Resource" path="res://data/audio/creatures/tickferno.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://biat2mju52glw" path="res://assets/original/ui/icons/craf.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_kqi83")
 tag = "craf"
 display_name = "Tickferno"
+icon = ExtResource("icon_tex")
 god = "pyro"
 model = "bugf"
 health = 1120

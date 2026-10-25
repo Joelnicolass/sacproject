@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_ewb3k"]
 [ext_resource type="Resource" path="res://data/audio/creatures/bombard.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://bx3t28saovwhn" path="res://assets/original/ui/icons/wlcf.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_ewb3k")
 tag = "wlcf"
 display_name = "Bombard"
+icon = ExtResource("icon_tex")
 god = "pyro"
 model = "fclw"
 health = 1520

@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_x23l5"]
+[ext_resource type="Texture2D" uid="uid://bqea1vngr0jxs" path="res://assets/original/ui/icons/imaf.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_x23l5")
 tag = "imaf"
 display_name = "Familiar"
+icon = ExtResource("icon_tex")
 god = "none"
 model = "FAmr"
 health = 1000

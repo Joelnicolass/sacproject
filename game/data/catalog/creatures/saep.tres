@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_e2hfa"]
 [ext_resource type="Resource" path="res://data/audio/creatures/peasant.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://2b440umgg70f" path="res://assets/original/ui/icons/saep.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_e2hfa")
 tag = "saep"
 display_name = "Peasant"
+icon = ExtResource("icon_tex")
 god = "persephone"
 model = "peas"
 health = 500

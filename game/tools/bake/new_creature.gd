@@ -643,7 +643,8 @@ func _impact_frame(model: BodyModel, role: String) -> float:
 func _make_icon(tag: String, idle_clip: String) -> String:
 	if _no_icon:
 		return "skipped (--no-icon)"
-	return await CreatureIconRender.ensure(root, tag, idle_clip, _icon)
+	var result := await CreatureIconRender.ensure(root, tag, idle_clip, _icon)
+	return result if result.begins_with("not drawn") else result + "; " + CreatureIconRender.link(tag)
 
 
 # --- sounds -------------------------------------------------------------------------------------------------------------

@@ -3,11 +3,13 @@
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_chx2t"]
 
 [ext_resource type="PackedScene" path="res://scenes/spells/actions/vaporization_action.tscn" id="2_action"]
+[ext_resource type="Texture2D" uid="uid://dr7kdqhn08fb0" path="res://assets/original/ui/icons/pavi.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_chx2t")
 tag = "pavi"
 display_name = "Intestinal Vaporization"
+icon = ExtResource("icon_tex")
 mana_cost = 1800
 cast_range_m = 100.0
 cooldown_s = 80.0

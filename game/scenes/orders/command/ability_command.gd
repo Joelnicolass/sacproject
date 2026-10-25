@@ -29,7 +29,7 @@ func use() -> void:
 	if ability and ability.flags != 0:
 		armed.mode = "ability"
 		armed.ability_tag = tag
-		_log.arm("ability", tag, "Elegí el blanco", TargetProbe.ORDER_TARGETS)
+		_log.arm("ability", ability.icon, "Elegí el blanco", TargetProbe.ORDER_TARGETS)
 		return
 	_apply(tag, null, null)
 

@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="AbilityType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_eemoy"]
+[ext_resource type="Texture2D" uid="uid://cy5kh6c35ug1p" path="res://assets/original/ui/icons/fhga.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_eemoy")
 tag = "fhga"
 display_name = "Enflame"
+icon = ExtResource("icon_tex")
 mana_cost = 33
 cast_range_m = 50.0
 cooldown_s = 2.0

@@ -49,6 +49,7 @@ func report() -> String:
 	var probe := _scene().find_child("TargetProbe", true, false)
 	if skin == null or battle == null or probe == null:
 		return "missing nodes"
-	var line := "cursor=%s armed=%s icon=%s kind=%s applied=%d" % [skin.get("current"), battle.get("armed"), battle.get("armed_icon"), probe.get("kind"), skin.get("apply_count")]
+	var icon: Texture2D = battle.get("armed_icon")
+	var line := "cursor=%s armed=%s icon=%s kind=%s applied=%d" % [skin.get("current"), battle.get("armed"), icon.resource_path.get_file() if icon else "", probe.get("kind"), skin.get("apply_count")]
 	print("CUE_REPORT ", line)
 	return line

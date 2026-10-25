@@ -6,8 +6,8 @@ extends Resource
 @export var display_name: String = ""
 @export var god: String = ""
 @export var model: String = ""
-## F335: the HUD icon (the roster, the book). Empty: HudIcons looks for assets/custom/icons/<tag>.png (tools/bake/new_creature.gd draws
-## one from the model) and then for the original's. A creature of your own can set it here, in the inspector.
+## The picture of the creature in the roster, the book and the info box. Drag any PNG here to change it. A creature of your own gets one
+## drawn from its model (tools/bake/creature_icon.gd); the original's come from tools/bake/fill_type_icons.gd. Empty: the tag is written.
 @export var icon: Texture2D
 ## What the creature sounds like: its voice, swing, hurt and death (data/audio/creatures/<name>.tres). Empty: silent, but
 ## its summon sound (UnitSounds.summon) still plays.
@@ -108,3 +108,9 @@ func land_time_s() -> float:
 
 func level() -> int:
 	return spell_order / 100
+
+
+## The icon of the type a creature body runs on (its `type`, as UnitBody and DoctorBody have), or null.
+static func icon_of(body: Node) -> Texture2D:
+	var type: CreatureType = body.get("type")
+	return type.icon if type else null

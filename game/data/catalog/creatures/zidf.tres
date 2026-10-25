@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_nylq0"]
 [ext_resource type="Resource" path="res://data/audio/creatures/cog.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://6hpa8m0pfpql" path="res://assets/original/ui/icons/zidf.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_nylq0")
 tag = "zidf"
 display_name = "Cog"
+icon = ExtResource("icon_tex")
 god = "pyro"
 model = "fdzy"
 health = 640

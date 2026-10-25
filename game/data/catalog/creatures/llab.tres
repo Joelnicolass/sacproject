@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_t6t3n"]
 [ext_resource type="Resource" path="res://data/audio/creatures/boulderdash.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://ctfljfg6l03m7" path="res://assets/original/ui/icons/llab.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_t6t3n")
 tag = "llab"
 display_name = "Boulderdash"
+icon = ExtResource("icon_tex")
 god = "james"
 model = "bale"
 health = 1560

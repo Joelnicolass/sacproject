@@ -60,10 +60,10 @@ func arm_order(kind: String, replace := false) -> void:
 	_log.arm(kind, _order_icon(kind), "Elegí el blanco", TargetProbe.ORDER_TARGETS)
 
 
-## The icon of an armed order on the cursor: attack Matt, guard Mgua… (CueSet.aim_icons).
-func _order_icon(kind: String) -> String:
+## The picture of an armed order on the cursor: attack, guard, move… (CueSet.aim_icons).
+func _order_icon(kind: String) -> Texture2D:
 	var cues: CueSet = _log.cues
-	return cues.aim_icon(kind) if cues else ""
+	return cues.aim_icon(kind) if cues else null
 
 
 func _on_local_wizard(wizard: Node3D) -> void:

@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="AbilityType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_px4r0"]
+[ext_resource type="Texture2D" uid="uid://ds8j642pqja1v" path="res://assets/original/ui/icons/eesd.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_px4r0")
 tag = "eesd"
 display_name = "Divine Sight"
+icon = ExtResource("icon_tex")
 mana_cost = 50
 cast_range_m = 250.0
 cooldown_s = 25.0

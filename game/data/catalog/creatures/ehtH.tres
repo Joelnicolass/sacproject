@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_d7ydu"]
 [ext_resource type="Resource" path="res://data/audio/creatures/faestus_persephone.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://bmdmhxmc3m33v" path="res://assets/original/ui/icons/eht_h.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_d7ydu")
 tag = "ehtH"
 display_name = "Faestus"
+icon = ExtResource("icon_tex")
 god = "persephone"
 model = "thes"
 health = 2600

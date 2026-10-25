@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="AbilityType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_gonnb"]
+[ext_resource type="Texture2D" uid="uid://cf0qdjiap5ywn" path="res://assets/original/ui/icons/filb.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_gonnb")
 tag = "filb"
 display_name = "Breath of life"
+icon = ExtResource("icon_tex")
 mana_cost = 50
 cast_range_m = 40.0
 cooldown_s = 4.0

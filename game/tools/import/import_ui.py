@@ -316,7 +316,7 @@ def fx_images() -> tuple:
 
 
 def icon_tags() -> list:
-    """Every tag the game can ask HudIcons.icon for: the keys of creatures, spells and abilities, and the order icons."""
+    """Every tag that has an icon in assets/original/ui/icons (tools/bake/fill_type_icons.gd reads them): the keys of creatures, spells and abilities, and the order icons."""
     tags = list(ORDER_ICONS)
     for table in ("creatures", "spells", "abilities"):
         tags += json.loads((DATA / f"{table}.json").read_text()).keys()

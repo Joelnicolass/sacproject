@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_4djl0"]
 [ext_resource type="Resource" path="res://data/audio/creatures/flurry.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://bn6qifs6uyuky" path="res://assets/original/ui/icons/wlca.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_4djl0")
 tag = "wlca"
 display_name = "Flurry"
+icon = ExtResource("icon_tex")
 god = "stratos"
 model = "aclw"
 health = 1520

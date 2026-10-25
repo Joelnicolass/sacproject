@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_wa6k1"]
 [ext_resource type="Resource" path="res://data/audio/creatures/dragon_hatchling.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://bnbej6vwrihp6" path="res://assets/original/ui/icons/rdb_o.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_wa6k1")
 tag = "rdbO"
 display_name = "Dragon Hatchling"
+icon = ExtResource("icon_tex")
 god = "persephone"
 model = "baby"
 health = 1375

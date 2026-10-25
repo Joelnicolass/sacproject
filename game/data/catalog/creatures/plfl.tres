@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_udh5p"]
 [ext_resource type="Resource" path="res://data/audio/creatures/gnome.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://bsyag4su742jq" path="res://assets/original/ui/icons/plfl.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_udh5p")
 tag = "plfl"
 display_name = "Gnome"
+icon = ExtResource("icon_tex")
 god = "persephone"
 model = "lflp"
 health = 1300

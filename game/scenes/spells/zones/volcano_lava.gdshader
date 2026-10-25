@@ -18,10 +18,13 @@ uniform ivec2 frames = ivec2(4, 2);
 // How many times the skin goes (and comes back, mirrored) around the column.
 uniform float turns = 2.0;
 // Brightness of the skin (the original shades it at 10; under the filmic tonemap that burns it white, so it stays near 1).
-uniform float energy = 1.1;
-// The lava flows down the column: the skin repeats this many times along it and slides at this many repeats a second.
-uniform float flow_repeats = 14.0;
-uniform float flow_speed = 0.25;
+uniform float energy = 1.3;
+// The brightest the skin gets, per channel (a soft shoulder, not a cut): the column must glow, not burn to white.
+uniform float ceiling_level : hint_range(0.3, 1.0) = 0.8;
+// The lava flows down the column: the skin goes this many times along it (mirrored at each turn, so there is no seam where it wraps) and
+// slides at this many repeats a second.
+uniform float flow_repeats = 5.0;
+uniform float flow_speed = 0.2;
 
 varying vec2 v_uv;
 varying vec4 v_cell;
@@ -50,6 +53,9 @@ void vertex() {
 }
 
 void fragment() {
-	vec2 inside = vec2(v_uv.x, fract(v_uv.y * flow_repeats - TIME * flow_speed));
-	ALBEDO = texture(skin, mix(v_cell.xy, v_cell.zw, inside)).rgb * energy;
+	// A triangle wave (period 2) in place of fract(): the skin runs forward, then backward, and never jumps.
+	float run = v_uv.y * flow_repeats - TIME * flow_speed;
+	float along = 1.0 - abs(2.0 * fract(0.5 * run) - 1.0);
+	vec3 lava = texture(skin, mix(v_cell.xy, v_cell.zw, vec2(v_uv.x, along))).rgb * energy;
+	ALBEDO = ceiling_level * (vec3(1.0) - exp(-lava / ceiling_level));
 }

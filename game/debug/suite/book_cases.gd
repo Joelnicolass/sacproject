@@ -24,6 +24,13 @@ func run(host: Node3D) -> Dictionary:
 	out["book_rebuild_once"] = await _rebuild_once()
 	out["book_level_of"] = _level_of()
 	_root.queue_free()
+	## rules_suite reads `ok`: a case passes when every one of its checks holds.
+	for key: String in out:
+		var checks: Dictionary = out[key]
+		var ok := true
+		for check: String in checks:
+			ok = ok and bool(checks[check])
+		checks["ok"] = ok
 	return out
 
 

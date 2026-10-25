@@ -2,6 +2,7 @@ extends SpellProjectile
 
 ## Pyro Fireball (sacengine castFireball/updateFireball, state.d:10519-10528, 16682-16700).
 ## Guided projectile with flying height 0.5 m and splash spell damage on impact.
+## Its trail and its explosion are its own (firy/fbal; xplo/exp2/frck/smok), not Wrath's.
 
 const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
@@ -11,6 +12,11 @@ const SIZE := 0.5
 const ARRIVE_DISTANCE := 0.25
 ## Trail puffs on every peer, by time (FxTrail): one per 2/60 s.
 const TRAIL_INTERVAL_S := 2.0 / 60.0
+
+## Puffs left behind while it flies (FxBus ParticleTypes under data/fx/).
+@export var trail: Array[ParticleType] = []
+## Bursts played where it explodes.
+@export var explosion: Array[ParticleType] = []
 
 var speed := 0.0
 var acceleration := 0.0
@@ -36,8 +42,9 @@ func setup(data: Dictionary) -> void:
 	from_slot = int(data.get("slot", 0))
 	_add_visual()
 	_attach_net()
-	## Wrath's trail, played locally on every peer.
-	FxTrail.attach(self, "wrath_trail", TRAIL_INTERVAL_S)
+	## Its own trail (7 firy + 1 fbal per tick, scale 1.5), played locally on every peer.
+	for type in trail:
+		FxTrail.attach(self, type.bus_name(), TRAIL_INTERVAL_S)
 
 
 func _add_visual() -> void:
@@ -136,9 +143,9 @@ func _explode(direct: Node3D) -> void:
 	else:
 		direct = null
 	SplashDamage.deal(get_tree(), center, damage, damage_range, direct, from_slot, Health.SPLASH_SPELL, Health.IGNITE)
-	FxBus.broadcast("wrath_explosion1", center)
-	FxBus.broadcast("wrath_explosion2", center)
-	FxBus.broadcast("wrath_particle", center)
+	## Its own explosion: xplo + exp2 + frck + smok (sacengine animateFireballExplosion, state.d:16631-16665).
+	for type in explosion:
+		FxBus.broadcast(type.bus_name(), center)
 	set_physics_process(false)
 	set_process(false)
 	queue_free()

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="FxSoundMap" load_steps=158 format=3]
+[gd_resource type="Resource" script_class="FxSoundMap" load_steps=162 format=3]
 
 [ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
 [ext_resource type="Script" path="res://scenes/audio/fx_sound_map.gd" id="2_map"]
@@ -130,6 +130,8 @@
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pers/stkf.wav" id="j61_stkf"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/stra/torn.wav" id="j61_torn"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/stra/trns.wav" id="j61_trns"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/char/sstl.wav" id="r1_sstl"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/spks.wav" id="r1_spks"]
 
 [sub_resource type="Resource" id="Cue_blood"]
 script = ExtResource("1_cue")
@@ -737,6 +739,18 @@ max_distance_m = 160.0
 unit_size = 20.0
 priority = 55
 
+[sub_resource type="Resource" id="Cue_soul_mole_take"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("r1_sstl")])
+max_voices = 2
+volume_db = 6.0
+
+[sub_resource type="Resource" id="Cue_wall_spike"]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("r1_spks")])
+max_voices = 4
+volume_db = 0.0
+
 [resource]
 script = ExtResource("2_map")
 cues = Dictionary[StringName, ExtResource("1_cue")]({
@@ -836,5 +850,7 @@ cues = Dictionary[StringName, ExtResource("1_cue")]({
 &"stalk_grab": SubResource("Cue_stalk_grab"),
 &"stalk_fall": SubResource("Cue_stalk_fall"),
 &"tornado_loop": SubResource("Cue_tornado_loop"),
-&"tornado_cast": SubResource("Cue_tornado_cast")
+&"tornado_cast": SubResource("Cue_tornado_cast"),
+&"soul_mole_take": SubResource("Cue_soul_mole_take"),
+&"wall_spike": SubResource("Cue_wall_spike")
 })

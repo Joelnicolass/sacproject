@@ -59,7 +59,7 @@ shader = ExtResource("14_shader")
 shader_parameter/atlas = ExtResource("15_per2")
 
 [node name="BlindRage" type="Node3D" node_paths=PackedStringArray("hold")]
-editor_description = "Blind Rage (egar): un puno (rage, 12 cuadros del original) sale del mago, vuela a 30 m/s al blanco, se forma 82 ticks a 4 m del suelo y baja; explota con un anillo (per2) que crece a 30 m en 128 ticks. Toda criatura que no sea mago a 30 m queda 30 s enfurecida (BlindRaged). Luz roja (swrl / per2)."
+editor_description = "Blind Rage (egar): un puno (rage, 12 cuadros del original) sale del mago, vuela a 30 m/s al blanco, se forma 82 ticks a 4 m del suelo y baja; explota con un anillo (per2) que crece a 30 m en 128 ticks y sube 7 m (3 del estado + 4 del dibujo). Toda criatura que no sea mago a 30 m queda 30 s enfurecida (BlindRaged). Luz roja (swrl / per2)."
 script = ExtResource("1_carrier")
 motion = 1
 hold = NodePath("Hold")

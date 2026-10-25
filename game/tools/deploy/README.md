@@ -28,9 +28,11 @@ Los dedicados **no** se configuran: el servidor de salas los lanza con un ticket
 
 Notas del preset:
 
-- Es el export **normal** de Linux (`dedicated_server=false`, no el modo «Dedicated Server» que recorta recursos): el mismo binario es el servidor de salas y cada partida, y la partida necesita el mundo completo (terreno, colisiones, navegación). El modo recortado, además, pone la etiqueta `dedicated_server`, que haría que el servidor de salas abriera también un puerto de partida. Si más adelante querés achicar el build, probalo aparte y con una partida entera.
+- Es el modo **«Dedicated Server» de Godot** (`dedicated_server=true`, desde `3626fb2e`): mallas y texturas salen como placeholders. Encima, el plugin `DedicatedStrip` (`addons/sacrifice_tools/dedicated_strip.gd`, 055s s4) vacia al exportar todo `AudioStream` (mismo tipo, sin muestras) y las pistas de las animaciones de `scenes/bodies/models/*_clips/` (queda largo, paso, bucle y marcadores, que es lo que leen las reglas). Hace falta exportar desde el editor o con `--export-pack`/`--export-release` de un Godot que cargue el proyecto con el plugin **Sacrifice** habilitado (ya lo esta en `project.godot`). El mundo completo (terreno, colisiones, navegacion) sigue en el pack: la partida lo necesita.
+- Una partida lanzada por el servidor de salas es este mismo binario, asi que **tambien el servidor de salas lleva la etiqueta `dedicated_server`**: `MpBoot.is_dedicated_process()` da `true` en los dos, y `MpFlow` abre ademas el puerto de partida (7777 por defecto) cuando el proceso es `--room-server`. **NO VERIFICADO en Linux** (en la Mac el binario del editor no trae la etiqueta). Si el servidor de salas lo abre, o se pasa `--mp-port=` distinto, o se separa en dos exports; hay que mirarlo con `ss -lunp` en el VPS.
+- **Costo medido** con `agent/runs/run_055s_dedicated_cost.sh` (Mac, `--main-pack <pck> --headless -- --dedicated --no-flow`): segundos hasta `dedicated listo puerto` y RSS 5 s despues, y de que se compone la memoria. Antes del strip: 4,2 s y 416 MB (`3626fb2e`); objetivo del 055s: <= 3,0 s y <= 380 MB. Los numeros medidos se anotan en `rfcs/plans/055s-body-scenes-plan.md`.
 - Excluye `agent/`, `visual/`, `reviews/`, `rfcs/`, `docs/`, `changes/` y `tools/`: nada de eso lo usa el juego.
-- **El export no se probó** (en la Mac solo se escribió el preset): es lo primero a verificar. Si falla por un recurso excluido, sacalo de `exclude_filter`.
+- `run_055s_dedicated_cost.sh` exporta el `.pck` del preset, lo arranca con el Godot de la Mac y juega una partida contra él, pero **el ejecutable Linux x86_64 con las plantillas no se probó**: es lo primero a verificar en el VPS. Si falla por un recurso excluido, sacalo de `exclude_filter`.
 
 ## 2. Instalar en el VPS
 

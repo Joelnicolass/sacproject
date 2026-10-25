@@ -41,6 +41,7 @@ const BIOME_CASES := preload("res://debug/suite/biome_cases.gd")
 const SPELL_LIGHT_CASES := preload("res://debug/suite/spell_light_cases.gd")  # 061 light pass
 const TIME_UNIT_CASES := preload("res://debug/suite/time_unit_cases.gd")  # 055u
 const CLIP_FACTS_CASES := preload("res://debug/suite/clip_facts_cases.gd")  # 055c1
+const CLIP_STRIP_CASES := preload("res://debug/suite/clip_strip_cases.gd")  # 055s s4
 const TEAM_CASES := preload("res://debug/match/team_cases.gd")  # 049b, 049c
 
 @export var auto_run := true
@@ -106,6 +107,7 @@ func _run_suite() -> void:
 	_results.merge(SPELL_LIGHT_CASES.new().run(self))  # 061 light pass
 	_results.merge(TIME_UNIT_CASES.new().run(self))  # 055u
 	_results.merge(CLIP_FACTS_CASES.new().run(self))  # 055c1
+	_results.merge(CLIP_STRIP_CASES.new().run(self))  # 055s s4
 	_print_suite()
 
 

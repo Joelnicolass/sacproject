@@ -9,7 +9,6 @@ who = 5
 
 [node name="Rock" type="Node"]
 script = ExtResource("1_script")
-tag = "kcor"
 prompt = "Elegí el blanco"
 cast_fx = "dirt_cast"
 target = SubResource("Target_enemy")

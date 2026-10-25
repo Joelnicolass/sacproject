@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_fsi6i"]
 [ext_resource type="Texture2D" uid="uid://dagupp6v2vbte" path="res://assets/original/ui/icons/elet.png" id="icon_tex"]
+[ext_resource type="PackedScene" path="res://scenes/spells/actions/teleport_action.tscn" id="2_action"]
 
 [resource]
 script = ExtResource("1_fsi6i")
@@ -20,3 +21,4 @@ only_allies = true
 ai_phase = 2
 ai_only_on_self = true
 structures = PackedStringArray()
+action = ExtResource("2_action")

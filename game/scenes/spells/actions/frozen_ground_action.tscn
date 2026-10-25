@@ -5,7 +5,6 @@
 [node name="FrozenGround" type="Node"]
 editor_description = "Frozen Ground (zorf): la zona nace al empezar el lanzamiento (la bola crece junto al mago) y cae 2 s despues de terminarlo (arm_s). Particula del lanzamiento: cst0 (SPEL zorf: tcst = cst0)."
 script = ExtResource("1_script")
-tag = "zorf"
 prompt = "Elegí el punto"
 cast_fx = "freeze_cast"
 kind = "FrozenGround"

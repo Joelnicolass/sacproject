@@ -52,6 +52,7 @@ const PROP_FACTS_CASES := preload("res://debug/suite/prop_facts_cases.gd")  # 05
 const SACRIFICE_PLACES_CASES := preload("res://debug/suite/sacrifice_places_cases.gd")  # 055g g1
 const BOOK_CASES := preload("res://debug/suite/book_cases.gd")  # 055e e4
 const SPELL_FIELD_CASES := preload("res://debug/suite/spell_field_cases.gd")  # 055e e1
+const SPELL_LINK_CASES := preload("res://debug/suite/spell_link_cases.gd")  # 055e e3
 const TEAM_CASES := preload("res://debug/match/team_cases.gd")  # 049b, 049c
 
 @export var auto_run := true
@@ -128,6 +129,7 @@ func _run_suite() -> void:
 	_results.merge(SACRIFICE_PLACES_CASES.new().run(self))  # 055g g1
 	_results.merge(await BOOK_CASES.new().run(self))  # 055e e4
 	_results.merge(SPELL_FIELD_CASES.new().run(self))  # 055e e1
+	_results.merge(await SPELL_LINK_CASES.new().run(self))  # 055e e3
 	_print_suite()
 
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=55 format=3]
+[gd_scene load_steps=42 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
 [ext_resource type="PackedScene" path="res://scenes/units/vision/vision.tscn" id="f55c2_vision"]
@@ -24,19 +24,6 @@
 [ext_resource type="Script" path="res://scenes/bodies/body_animator.gd" id="13_clip"]
 [ext_resource type="PackedScene" path="res://scenes/bodies/body_rig.tscn" id="f162_rig"]
 [ext_resource type="Script" path="res://scenes/bodies/hand_fx.gd" id="d023_handfx"]
-[ext_resource type="Script" path="res://scenes/spells/actions/structure_action.gd" id="14_manalith"]
-[ext_resource type="Script" path="res://scenes/spells/actions/desecrate_action.gd" id="15_desecrate"]
-[ext_resource type="Script" path="res://scenes/spells/actions/convert_action.gd" id="16_convert"]
-[ext_resource type="Script" path="res://scenes/spells/actions/guardian_action.gd" id="17_guardian"]
-[ext_resource type="Script" path="res://scenes/spells/actions/teleport_action.gd" id="18_teleport"]
-[ext_resource type="PackedScene" path="res://scenes/fx/teleport_rings.tscn" id="19_rings"]
-[ext_resource type="PackedScene" path="res://scenes/spells/actions/pups_action.tscn" id="a041_pups"]
-[ext_resource type="PackedScene" path="res://scenes/spells/actions/heal_action.tscn" id="a041_heal"]
-[ext_resource type="PackedScene" path="res://scenes/spells/actions/rock_action.tscn" id="a041_rock"]
-[ext_resource type="PackedScene" path="res://scenes/spells/actions/wrath_action.tscn" id="a041_wrath"]
-[ext_resource type="PackedScene" path="res://scenes/spells/actions/fireball_action.tscn" id="a041_fireball"]
-[ext_resource type="PackedScene" path="res://scenes/spells/actions/lightning_action.tscn" id="a041_lightning"]
-[ext_resource type="PackedScene" path="res://scenes/spells/actions/swarm_action.tscn" id="a041_swarm"]
 [ext_resource type="Script" path="res://scenes/units/movement/warp_snap.gd" id="warp_snap"]
 [ext_resource type="Script" path="res://scenes/map/nav/path_follower.gd" id="f72_follower"]
 [ext_resource type="Script" path="res://scenes/units/afflictions/afflictions.gd" id="f120_afflictions"]
@@ -295,57 +282,6 @@ summoner = NodePath("../Summoner")
 actions = NodePath("Actions")
 
 [node name="Actions" type="Node" parent="Caster"]
-
-[node name="Manalith" type="Node" parent="Caster/Actions"]
-script = ExtResource("14_manalith")
-tag = "htlm"
-prompt = "Elegí el suelo"
-
-[node name="Shrine" type="Node" parent="Caster/Actions"]
-script = ExtResource("14_manalith")
-tag = "pcas"
-prompt = "Elegí el suelo"
-
-[node name="Desecrate" type="Node" parent="Caster/Actions"]
-script = ExtResource("15_desecrate")
-tag = "ucas"
-pick = 1
-prompt = "Elegí tu criatura"
-
-[node name="Convert" type="Node" parent="Caster/Actions"]
-script = ExtResource("16_convert")
-tag = "ccas"
-pick = 2
-prompt = "Elegí un alma roja"
-
-[node name="Guardian" type="Node" parent="Caster/Actions"]
-script = ExtResource("17_guardian")
-tag = "ndrg"
-pick = 1
-prompt = "Elegí una criatura propia"
-cast_fx = "heal"
-rules = ExtResource("7_rules")
-
-[node name="Teleport" type="Node" parent="Caster/Actions"]
-script = ExtResource("18_teleport")
-tag = "elet"
-pick = 3
-prompt = "Elegí un edificio propio"
-rings_scene = ExtResource("19_rings")
-
-[node name="Pups" parent="Caster/Actions" instance=ExtResource("a041_pups")]
-
-[node name="Heal" parent="Caster/Actions" instance=ExtResource("a041_heal")]
-
-[node name="Rock" parent="Caster/Actions" instance=ExtResource("a041_rock")]
-
-[node name="Wrath" parent="Caster/Actions" instance=ExtResource("a041_wrath")]
-
-[node name="Fireball" parent="Caster/Actions" instance=ExtResource("a041_fireball")]
-
-[node name="Lightning" parent="Caster/Actions" instance=ExtResource("a041_lightning")]
-
-[node name="Swarm" parent="Caster/Actions" instance=ExtResource("a041_swarm")]
 
 [node name="GhostForm" type="Node" parent="." node_paths=PackedStringArray("visual", "health", "mana", "death_look")]
 script = ExtResource("12_ghost")

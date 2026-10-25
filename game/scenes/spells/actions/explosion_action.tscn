@@ -5,7 +5,6 @@
 [node name="Explosion" type="Node"]
 editor_description = "Explosion (pxef): cinco puntos (el clic y cuatro al azar a <= effect_range) y estalla 3,8 s despues de empezar el lanzamiento (arm_from_start)."
 script = ExtResource("1_script")
-tag = "pxef"
 prompt = "Elegí el punto"
 cast_fx = "wards/fire_cast"
 kind = "Explosion"

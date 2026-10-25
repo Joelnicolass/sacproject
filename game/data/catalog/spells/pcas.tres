@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_bqd7l"]
 [ext_resource type="Texture2D" uid="uid://5dhp1tjgogm7" path="res://assets/original/ui/icons/pcas.png" id="icon_tex"]
+[ext_resource type="PackedScene" path="res://scenes/spells/actions/structure_action.tscn" id="2_action"]
 
 [resource]
 script = ExtResource("1_bqd7l")
@@ -16,3 +17,4 @@ spell_order = 300
 is_structure = true
 targets_structures = true
 only_free_manafounts = true
+action = ExtResource("2_action")

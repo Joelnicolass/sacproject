@@ -4,7 +4,6 @@
 
 [node name="SoulMole" type="Node"]
 script = ExtResource("1_script")
-tag = "pmcd"
 pick = 2
 prompt = "Elegí un alma"
 cast_fx = "dirt_cast"

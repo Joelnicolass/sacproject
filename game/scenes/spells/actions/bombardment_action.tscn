@@ -5,7 +5,6 @@
 [node name="Bombardment" type="Node"]
 editor_description = "Bombardment (rtem): los meteoritos salen de la tierra junto al mago y caen sobre el punto clicado."
 script = ExtResource("1_script")
-tag = "rtem"
 prompt = "Elegí el punto"
 cast_fx = "dirt_cast"
 kind = "Bombardment"

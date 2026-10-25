@@ -35,7 +35,7 @@ func _scenes() -> Dictionary:
 		var action := spell.action.instantiate() as ZoneAction if spell and spell.action else null
 		checks[tag + "_is_zone_action"] = action != null
 		if action != null:
-			action.tag = tag
+			action.spell = spell
 			checks[tag + "_kind"] = action.kind == KINDS[tag] and _spawner.zones.has(action.kind)
 			checks[tag + "_no_warnings"] = action._get_configuration_warnings().is_empty()
 			checks[tag + "_ground_pick"] = action.pick == SpellAction.Pick.GROUND

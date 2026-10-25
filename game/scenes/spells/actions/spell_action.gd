@@ -2,8 +2,8 @@
 class_name SpellAction
 extends Node
 
-## Contract of a spell with its own procedure (RFC-021a). A child of the wizard's `Caster/Actions`;
-## Caster finds it by `tag`, runs the common part (mana, cooldown, casting frames, drain) and asks
+## Contract of a spell with its own procedure (RFC-021a). Instanced by Caster under the wizard's `Caster/Actions`
+## from `SpellType.action`; Caster finds it by `spell`, runs the common part (mana, cooldown, casting frames, drain) and asks
 ## the action for the rest: whether it can be armed, where it lands, what happens when the casting
 ## time ends and what to undo if the wizard dies midway. `pick` tells the click handler what to
 ## aim at, so neither Caster nor MatchCommand names a tag. Taking the child out turns the spell
@@ -30,8 +30,12 @@ class Aim extends RefCounted:
 	var data := {}
 
 
-## SpellType tag this action answers to.
-@export var tag := ""
+## The spell this action casts. Caster sets it when it instances `spell.action`; an action scene does not know its spell.
+var spell: SpellType
+## Network id of the spell (read only: `spell.tag`), "" before Caster sets it.
+var tag: String:
+	get:
+		return spell.tag if spell != null else ""
 ## What the click aims at: the ground, an own creature, a soul or an own building. SELF aims at nothing: the cast starts on the key.
 @export var pick := Pick.GROUND
 ## What the battle line says while the spell is armed.
@@ -42,15 +46,13 @@ class Aim extends RefCounted:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
-	if tag.is_empty():
-		warnings.append("Escribí en `tag` el tag del hechizo.")
 	if prompt.is_empty():
 		warnings.append("Escribí en `prompt` lo que se muestra al armar el hechizo.")
 	var parent := get_parent()
-	if parent != null and not tag.is_empty():
+	if parent != null and spell != null:
 		for sibling in parent.get_children():
-			if sibling != self and sibling is SpellAction and (sibling as SpellAction).tag == tag:
-				warnings.append("Otra acción de `%s` usa el mismo tag." % parent.name)
+			if sibling != self and sibling is SpellAction and (sibling as SpellAction).spell == spell:
+				warnings.append("Otra acción de `%s` lanza el mismo hechizo." % parent.name)
 				break
 	return warnings
 

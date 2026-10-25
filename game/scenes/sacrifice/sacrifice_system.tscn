@@ -1,16 +1,18 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scenes/sacrifice/sacrifice_system.gd" id="1_system"]
 [ext_resource type="Script" path="res://addons/mp_kit/mp_spawner.gd" id="2_spawner"]
+[ext_resource type="Script" path="res://scenes/sacrifice/sacrifice_spawns.gd" id="3_spawns"]
+[ext_resource type="Script" path="res://scenes/sacrifice/sacrifice_targets.gd" id="4_targets"]
+[ext_resource type="Script" path="res://scenes/sacrifice/sacrifice_casts.gd" id="5_casts"]
+[ext_resource type="Script" path="res://scenes/sacrifice/ritual_starter.gd" id="6_starter"]
 
-[node name="SacrificeSystem" type="Node" node_paths=PackedStringArray("doctors_root", "doctor_spawner", "vortices_root", "vortex_spawner", "rituals_root", "ritual_spawner")]
+[node name="SacrificeSystem" type="Node" node_paths=PackedStringArray("spawns", "targets", "casts", "starter")]
 script = ExtResource("1_system")
-doctors_root = NodePath("Doctors")
-doctor_spawner = NodePath("DoctorSpawner")
-vortices_root = NodePath("Vortices")
-vortex_spawner = NodePath("VortexSpawner")
-rituals_root = NodePath("Rituals")
-ritual_spawner = NodePath("RitualSpawner")
+spawns = NodePath("Spawns")
+targets = NodePath("Targets")
+casts = NodePath("Casts")
+starter = NodePath("Starter")
 
 [node name="Doctors" type="Node3D" parent="."]
 unique_name_in_owner = true
@@ -35,3 +37,30 @@ unique_name_in_owner = true
 script = ExtResource("2_spawner")
 spawn_path = NodePath("../Rituals")
 spawnable_scenes = PackedStringArray("res://scenes/sacrifice/ritual.tscn")
+
+[node name="Spawns" type="Node" parent="." node_paths=PackedStringArray("system", "doctors_root", "doctor_spawner", "vortices_root", "vortex_spawner", "rituals_root", "ritual_spawner")]
+script = ExtResource("3_spawns")
+system = NodePath("..")
+doctors_root = NodePath("../Doctors")
+doctor_spawner = NodePath("../DoctorSpawner")
+vortices_root = NodePath("../Vortices")
+vortex_spawner = NodePath("../VortexSpawner")
+rituals_root = NodePath("../Rituals")
+ritual_spawner = NodePath("../RitualSpawner")
+
+[node name="Targets" type="Node" parent="." node_paths=PackedStringArray("system")]
+script = ExtResource("4_targets")
+system = NodePath("..")
+
+[node name="Casts" type="Node" parent="." node_paths=PackedStringArray("system", "spawns", "targets", "starter")]
+script = ExtResource("5_casts")
+system = NodePath("..")
+spawns = NodePath("../Spawns")
+targets = NodePath("../Targets")
+starter = NodePath("../Starter")
+
+[node name="Starter" type="Node" parent="." node_paths=PackedStringArray("system", "spawns", "targets")]
+script = ExtResource("6_starter")
+system = NodePath("..")
+spawns = NodePath("../Spawns")
+targets = NodePath("../Targets")

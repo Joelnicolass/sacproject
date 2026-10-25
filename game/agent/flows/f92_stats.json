@@ -62,8 +62,8 @@
   },
   {
    "print": {
-    "node": "%WizardStats/Souls/SoulCounter",
-    "prop": "frames_played"
+    "node": "%WizardStats/Souls/Spin/SpinPlayer",
+    "prop": "current_animation_position"
    }
   },
   {
@@ -71,8 +71,8 @@
   },
   {
    "print": {
-    "node": "%WizardStats/Souls/SoulCounter",
-    "prop": "frames_played"
+    "node": "%WizardStats/Souls/Spin/SpinPlayer",
+    "prop": "current_animation_position"
    }
   },
   {

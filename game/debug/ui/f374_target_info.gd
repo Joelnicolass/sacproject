@@ -74,7 +74,7 @@ func _run() -> void:
 	house_health.current = house_health.maximum * 0.75
 	await get_tree().process_frame
 	_check("house bar follows its health", panel.visible and absf(panel.shown_fraction - 0.75) <= 0.01 \
-		and absf((panel.get_node("%Bar") as HealthStrip).fraction - 0.75) <= 0.01)
+		and absf((panel.get_node("%Bar") as ProgressBar).value - 0.75) <= 0.01)
 	# Off everything: hidden within 0,1 s.
 	_aim_screen(Vector2(4.0, 4.0))
 	await _wait(0.1)

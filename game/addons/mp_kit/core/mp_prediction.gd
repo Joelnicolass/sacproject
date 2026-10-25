@@ -10,6 +10,13 @@ extends RefCounted
 
 ## How far the last server correction moved the owner's node (0 = the prediction was right).
 var last_correction: float = 0.0
+## Most ticks one reconciliation replays. With a high ping more frames are unacknowledged; past this cap only
+## every n-th server state is reconciled (as Photon Fusion caps resimulations), the others are skipped.
+var max_resim_ticks: int = 32
+## Owner: reconciliations skipped by the cap so far (a test can read it).
+var skipped_reconciles: int = 0
+
+var _states_since_reconcile: int = 0
 
 var _root: Node
 var _input: MpInput
@@ -44,21 +51,38 @@ func server_tick(delta: float, reads_keys_here: bool) -> void:
 
 ## Owner: reconcile when the server sent a new state (`stamp`), then predict this tick.
 func owner_tick(delta: float, stamp: float, motion: MpProxyMotion, net_pos: Vector3, net_rot: Quaternion) -> void:
+	## Pacing (MpInput): an extra frame this tick, before the tick's own. Both belong to THIS tick: a reconciliation
+	## replays only the ticks before it, then both run here, as the server will.
+	var extra := _input.take_extra()
 	if stamp > 0.0 and stamp != _seen_stamp:
 		_seen_stamp = stamp
-		_reconcile(delta, motion, net_pos, net_rot)
+		_states_since_reconcile += 1
+		var replay := _input.replay_chain().size() - 2
+		var every := maxi(int(ceil(float(replay) / float(maxi(max_resim_ticks, 1)))), 1)
+		if _states_since_reconcile >= every:
+			_states_since_reconcile = 0
+			_reconcile(delta, motion, net_pos, net_rot, 2 if not extra.is_empty() else 1)
+		else:
+			skipped_reconciles += 1
+	if not extra.is_empty():
+		var keep := _input.current_frame()
+		var keep_before := _input.previous_frame()
+		_input.use_frame(extra[0], extra[1], false)
+		_root.mp_move(_input, delta)
+		_input.use_frame(keep, keep_before, false)
 	_root.mp_move(_input, delta)
 	_predicted = MpProxyMotion.position_of(_root)
 
 
 ## Back to the server's pose after `acked_seq`, then the ticks it has not seen, up to the last one predicted (this
 ## tick's frame runs next, as every tick).
-func _reconcile(delta: float, motion: MpProxyMotion, net_pos: Vector3, net_rot: Quaternion) -> void:
+## `this_tick`: frames at the end of the history that belong to this tick (1, or 2 with a paced extra frame).
+func _reconcile(delta: float, motion: MpProxyMotion, net_pos: Vector3, net_rot: Quaternion, this_tick: int = 1) -> void:
 	var keep := _input.current_frame()
 	var keep_before := _input.previous_frame()
 	motion.write(net_pos, net_rot)
 	var chain := _input.replay_chain()
-	for i in range(1, chain.size() - 1):
+	for i in range(1, chain.size() - this_tick):
 		_input.use_frame(chain[i], chain[i - 1], true)
 		_root.mp_move(_input, delta)
 	_input.use_frame(keep, keep_before, false)

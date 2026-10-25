@@ -92,6 +92,14 @@ net_guard() {
 
 net_stop() { local p; for p in $WATCH $MONITOR; do [ -n "$p" ] && kill_tree "$p"; done; WATCH=""; MONITOR=""; }
 
+wait_pid() { # wait_pid <pid> <timeout_s>: wait for a process to end; past the timeout, stop it (and its children)
+  local pid="$1" end=$((SECONDS + ${2:-60}))
+  while kill -0 "$pid" 2>/dev/null && [ "$SECONDS" -lt "$end" ]; do sleep 0.1; done
+  kill -0 "$pid" 2>/dev/null && kill_tree "$pid"
+  wait "$pid" 2>/dev/null
+  return 0
+}
+
 wait_line() { # wait_line <file> <regex> <pid> <timeout_s>
   local file="$1" re="$2" pid="$3" end=$((SECONDS + ${4:-60}))
   while [ "$SECONDS" -lt "$end" ]; do

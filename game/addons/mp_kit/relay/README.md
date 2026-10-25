@@ -45,7 +45,8 @@ Flags equivalentes: `--transport=relay --relay-url=wss://… --relay-room=mi-jue
 
 - Pasa paquetes entre el host de una sala y sus clientes (todo por WebSocket: confiable y en orden). El host es el peer 1; los clientes reciben 2, 3…
 - El host manda el secreto en el header `X-Relay-Secret`, no en la URL: así no queda en los logs de acceso.
-- Un host nuevo con el secreto **reemplaza** al anterior de la misma sala (un servidor que se reinició o murió sin cerrar): sus clientes se cierran y se reconectan al nuevo.
+- Una sala con un host vivo está **ocupada**, como un puerto en uso: un segundo host se rechaza (`4009`). El kit lo trata así: una partida de un servidor de salas o una partida privada prueba el puerto siguiente; un dedicado o un lobby avisa que el puerto está en uso y se cierra. Con relay, cada servidor busca puerto desde uno al azar del rango, así dos jugadores que abren una partida privada casi nunca chocan.
+- El relay le hace ping a cada host cada 5 s; uno que no responde en `RELAY_HOST_SILENT_MS` (15 s) se suelta (`4010`) y la sala queda libre. Así un servidor que murió sin cerrar no bloquea su sala para siempre.
 - Un cliente de una sala sin host se rechaza (`4004`); si el host se va, sus clientes se cierran (`4005`). El host puede echar a un cliente (`4007`): así funcionan "servidor lleno" y la admisión por ticket.
 - Topes por entorno: `RELAY_MAX_CLIENTS` por sala (64), `RELAY_MAX_MESSAGE` en bytes (262144).
 - No guarda nada, no ve el juego, no mezcla salas. Latencia: la del relay en el medio (elegí una región cerca de tus jugadores).

@@ -134,6 +134,7 @@ func _ready() -> void:
 		match_running = true
 		_set_status(dedicated_status % MpKit.port)
 		call_deferred("goto_world")
+		_quit_if_refused()
 		return
 	if role == "listen":
 		if host_lan() != OK:
@@ -172,6 +173,20 @@ func _use_game() -> void:
 		lobby_path = game.lobby_scene
 	if room_server_path.is_empty():
 		room_server_path = game.rooms_scene
+
+
+## A dedicated through the relay whose port's room has another live host: say so and stop, as a busy port would.
+## A match of a room server reports it to its launcher instead (MpMatchAgent), which picks another port.
+func _quit_if_refused() -> void:
+	if MpTransport.normalize(MpKit.transport) != MpTransport.RELAY or not MpBoot.user_value("match-ticket-file", "").is_empty():
+		return
+	var end := Time.get_ticks_msec() + 15000
+	while Time.get_ticks_msec() < end and not MpKit.is_listening():
+		if MpKit.listen_refused():
+			push_error("MpFlow: port %d is in use on the relay (another server of this game hosts that room)" % MpKit.port)
+			get_tree().quit(1)
+			return
+		await get_tree().process_frame
 
 
 ## Moves this flow under the root. Works even when a scene change already took the boot scene out of the tree

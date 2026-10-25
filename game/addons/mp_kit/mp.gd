@@ -54,6 +54,16 @@ static func is_online() -> bool:
 	return MpKit.is_networked()
 
 
+## How the connection is doing: {rtt_ms, jitter_ms, loss (0..1), grade (MpNetQuality.Grade), grade_name ("good",
+## "fair", "bad")}. On a client, its link to the server; on the server, the player of `slot` (empty until it pinged).
+static func net_quality(slot: int = 0) -> Dictionary:
+	if MpKit.net_quality == null:
+		return {}
+	if slot > 0 and MpKit.is_server():
+		return MpKit.net_quality.of_slot(slot)
+	return MpKit.net_quality.snapshot()
+
+
 ## This player's seat: 1, 2, 3… (0 on a dedicated server, which plays no seat, and before a seat is given).
 static func me() -> int:
 	return MpKit.local_slot()

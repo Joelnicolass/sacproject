@@ -3,11 +3,37 @@ extends RefCounted
 
 ## Where a proxy (a node this machine only draws) is drawn between server states, for MpActor:
 ##   FOLLOW   - chases the newest state: no delay, but uneven packets show as small stutters;
-##   BUFFERED - draws `delay_s` in the past, between two real states (MpInterpolator): smooth under jitter.
+##   BUFFERED - draws in the past, between two real states (MpInterpolator): smooth under jitter. With `adaptive`
+##              the delay is what this proxy's states need, measured like Photon Fusion does: the percentile
+##              (1 - late_tolerance) of the gaps between states plus the same percentile of how late they arrive,
+##              plus one tick, at most `delay_s`. A steady network ends a few ticks behind; a lossy or jittery one
+##              further. It moves toward that a fraction of the error per frame (as Unity's netcode), never so fast
+##              that the drawn time goes back.
 ## The synchronizer writes the server's pose into MpActor (net_position / net_rotation), never into the node, so
 ## this is the only writer of the node's pose on a client. Not: the owner's predicted node, the server.
 
 var delay_s: float = 0.1
+var adaptive: bool = true
+## Share of states allowed to arrive too late to be drawn on time (they are extrapolated over instead).
+var late_tolerance: float = 0.03
+
+## States measured (about 2 s at 60 Hz).
+const WINDOW := 120
+## Part of the error corrected per frame.
+const CORRECTION := 0.1
+## Limits of that correction, in seconds per second: up fast (late packets; the drawn time slows to a quarter at
+## most, never backwards), down gently (a proxy that catches up runs at most 3 % fast), so motion never jumps.
+const RAISE_PER_S := 0.75
+const LOWER_PER_S := 0.03
+## The first states (about half a second at 60 Hz): the delay goes straight to what they need, before the proxy
+## has moved much; gradual after that.
+const SETTLE_STATES := 30
+
+var _gaps := PackedFloat64Array()
+var _lates := PackedFloat64Array()
+var _delay: float = -1.0
+var _target: float = -1.0
+var _states: int = 0
 var follow_speed: float = 14.0
 var move_position: bool = true
 var move_rotation: bool = true
@@ -33,11 +59,22 @@ func draw(delta: float, stamp: float, net_pos: Vector3, net_rot: Quaternion) -> 
 		_shown_pos = net_pos
 		_shown_rot = net_rot
 	if stamp != _last_stamp:
+		if _last_stamp > 0.0 and stamp > _last_stamp:
+			_gaps.append(stamp - _last_stamp)
+			if _gaps.size() > WINDOW:
+				_gaps.remove_at(0)
 		_last_stamp = stamp
 		MpNetClock.observe(stamp)
+		_lates.append(maxf(MpNetClock.server_time() - stamp, 0.0))
+		if _lates.size() > WINDOW:
+			_lates.remove_at(0)
+		_states += 1
+		_target = -1.0
 		_buffer.push(stamp, net_pos, net_rot)
 	if _buffered:
-		var pose := _buffer.sample(MpNetClock.server_time() - delay_s)
+		var delay := current_delay(delta)
+		MpNetClock.view_delay = delay
+		var pose := _buffer.sample(MpNetClock.server_time() - delay)
 		_shown_pos = pose[0]
 		_shown_rot = pose[1]
 	else:
@@ -47,10 +84,36 @@ func draw(delta: float, stamp: float, net_pos: Vector3, net_rot: Quaternion) -> 
 	write(_shown_pos, _shown_rot)
 
 
+## The delay used this frame (BUFFERED). Not adaptive: `delay_s`.
+func current_delay(delta: float = 0.0) -> float:
+	if not adaptive:
+		return delay_s
+	if _target < 0.0:
+		_target = target_delay()
+	var target := _target
+	if _delay < 0.0 or _states < SETTLE_STATES:
+		_delay = target if _states >= 2 else delay_s
+	else:
+		var step := clampf((target - _delay) * CORRECTION, -LOWER_PER_S * delta, RAISE_PER_S * delta)
+		_delay += step
+	return _delay
+
+
+## What the measured states need now (before the gradual correction).
+func target_delay() -> float:
+	var tick := 1.0 / float(Engine.physics_ticks_per_second)
+	var keep := 1.0 - late_tolerance
+	var gap := maxf(MpNetQuality.percentile(_gaps, keep), tick)
+	return clampf(gap + MpNetQuality.percentile(_lates, keep) + tick, 0.0, delay_s)
+
+
+
 ## Put the node at this pose now (and forget the history: a teleport or a respawn).
 func snap(net_pos: Vector3, net_rot: Quaternion) -> void:
 	_buffer.clear()
 	_last_stamp = 0.0
+	_states = 0
+	_target = -1.0
 	write(net_pos, net_rot)
 
 

@@ -57,3 +57,24 @@ func test_catch_up_is_gentle_and_capped() -> void:
 	for i in 10:
 		taken += q.take_for_tick().size()
 	check(taken <= 10 + MpInputQueue.BURST, "a flood never moves the player faster than one frame per tick plus the bank")
+
+
+func test_adaptive_depth_follows_lateness() -> void:
+	var q := MpInputQueue.new()
+	q.adaptive = true
+	q.depth = 1
+	var tick := 1.0 / float(Engine.physics_ticks_per_second)
+	for seq in range(1, 121):
+		q.add(_frame(seq), seq * tick)
+		q.take_for_tick()
+	check(q.wanted_depth() == 1 and q.depth == 1, "frames that arrive on time: a one-tick buffer")
+	var q2 := MpInputQueue.new()
+	q2.adaptive = true
+	q2.depth = 1
+	for seq in range(1, 121):
+		var late := (3.0 * tick) if seq % 10 == 0 else 0.0
+		q2.add(_frame(seq), seq * tick + late)
+		q2.take_for_tick()
+	check(q2.wanted_depth() >= 4, "one frame in ten three ticks late: the buffer covers it (%d)" % q2.wanted_depth())
+	check(q2.depth >= q2.wanted_depth(), "and the depth follows")
+	check(q2.slack() == q2.waiting() - q2.depth, "slack is what waits beyond the depth")

@@ -25,6 +25,15 @@ var _mode: int = TRANSFER_MODE_RELIABLE
 var _target: int = 0
 var _refuse: bool = false
 var _welcomed: bool = false
+## Host: the room may still hold a host that just died (its socket closes a moment later, a quick restart): a
+## refused host tries again for REFUSED_GRACE_S before it reports the room as in use.
+const REFUSED_GRACE_S := 3.0
+const REFUSED_RETRY_S := 0.3
+var _url: String = ""
+var _tls: TLSOptions
+var _headers := PackedStringArray()
+var _refused_until_ms: int = 0
+var _retry_at_ms: int = 0
 
 
 ## `url` like wss://relay.example.com (or ws://127.0.0.1:8080); `room` the room name; `secret` only for the host.
@@ -33,10 +42,11 @@ func start(url: String, room: String, host: bool, secret: String = "", tls: TLSO
 	var query := "?role=%s&room=%s" % ["host" if host else "client", room.uri_encode()]
 	## The secret goes in a header, not the URL (URLs end up in access logs). Only a host sends it, and a host is
 	## never a browser (a browser cannot set headers).
-	_ws.handshake_headers = PackedStringArray(["X-Relay-Secret: " + secret]) if host and not secret.is_empty() else PackedStringArray()
-	_ws.inbound_buffer_size = 1 << 20
-	_ws.outbound_buffer_size = 1 << 20
-	var err := _ws.connect_to_url(url.trim_suffix("/") + "/" + query, tls)
+	_headers = PackedStringArray(["X-Relay-Secret: " + secret]) if host and not secret.is_empty() else PackedStringArray()
+	_url = url.trim_suffix("/") + "/" + query
+	_tls = tls
+	_refused_until_ms = Time.get_ticks_msec() + int(REFUSED_GRACE_S * 1000.0)
+	var err := _connect()
 	if err != OK:
 		_status = CONNECTION_DISCONNECTED
 		return err
@@ -47,17 +57,45 @@ func start(url: String, room: String, host: bool, secret: String = "", tls: TLSO
 	return OK
 
 
+## Relay close codes the kit acts on.
+const CLOSE_ROOM_IN_USE := 4009
+
+## True when the relay refused this host because its room has a live host (a port in use: pick another), after the
+## grace a quick restart needs.
+func is_refused() -> bool:
+	return _host and _retry_at_ms == 0 and _ws.get_ready_state() == WebSocketPeer.STATE_CLOSED \
+		and _ws.get_close_code() == CLOSE_ROOM_IN_USE
+
+
+func _connect() -> Error:
+	_ws = WebSocketPeer.new()
+	_ws.handshake_headers = _headers
+	_ws.inbound_buffer_size = 1 << 20
+	_ws.outbound_buffer_size = 1 << 20
+	return _ws.connect_to_url(_url, _tls)
+
+
 ## True once the relay accepted this peer (WELCOME): a host is reachable by clients from then on.
 func is_registered() -> bool:
 	return _status == CONNECTION_CONNECTED and _ws.get_ready_state() == WebSocketPeer.STATE_OPEN and (not _host or _welcomed)
 
 
 func _poll() -> void:
+	if _retry_at_ms > 0:
+		if Time.get_ticks_msec() < _retry_at_ms:
+			return
+		_retry_at_ms = 0
+		_connect()
 	_ws.poll()
 	var state := _ws.get_ready_state()
 	if state == WebSocketPeer.STATE_CLOSED:
+		if _host and not _welcomed and _ws.get_close_code() == CLOSE_ROOM_IN_USE and Time.get_ticks_msec() < _refused_until_ms:
+			_retry_at_ms = Time.get_ticks_msec() + int(REFUSED_RETRY_S * 1000.0)
+			return
 		if _status != CONNECTION_DISCONNECTED:
-			if _host:
+			if _host and _ws.get_close_code() == CLOSE_ROOM_IN_USE:
+				push_warning("MpRelayPeer: the relay room is in use by another host (like a port in use)")
+			elif _host:
 				push_error("MpRelayPeer: the relay closed the host (%d %s)" % [_ws.get_close_code(), _ws.get_close_reason()])
 			_drop_all()
 		return
@@ -170,6 +208,8 @@ func _get_connection_status() -> ConnectionStatus:
 
 
 func _close() -> void:
+	_retry_at_ms = 0
+	_refused_until_ms = 0
 	_ws.close()
 	_drop_all()
 

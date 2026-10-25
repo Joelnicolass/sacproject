@@ -62,6 +62,11 @@ func is_listening() -> bool:
 	return _active and MpTransport.is_listening(_peer)
 
 
+## The relay turned the lobby away: its port is in use by another live lobby.
+func listen_refused() -> bool:
+	return _active and MpTransport.is_refused(_peer)
+
+
 func peer_of(session_id: String) -> int:
 	return int(_session_peer.get(session_id, 0))
 

@@ -71,6 +71,10 @@ func _start() -> void:
 		print("match %s failed %s" % [match_id, reason]))
 	## Ready means reachable (a relay accepts the lobby a moment after it starts).
 	while not lobby.is_listening():
+		if lobby.listen_refused():
+			push_error("MpRoomServer: lobby port %d is in use on the relay (another room server of this game)" % launcher.config.lobby_port)
+			get_tree().quit(1)
+			return
 		await get_tree().process_frame
 	print("rooms ready port %d (%s)" % [launcher.config.lobby_port, launcher.config.transport])
 	started.emit(launcher.config.lobby_port)

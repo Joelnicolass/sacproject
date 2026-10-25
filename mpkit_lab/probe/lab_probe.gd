@@ -81,6 +81,12 @@ func _run() -> void:
 			await _browse_lan()
 		"floodwatch":
 			await _watch_flood()
+		"lagtarget":
+			await _walk_as_target()
+		"lagshooter":
+			await _shoot_moving_target()
+		"private_other":
+			await _other_private_server()
 		"invited":
 			await _join_private(true)
 		"badcode":
@@ -194,6 +200,12 @@ func _measure_own_lag() -> void:
 	var net := MpActor.of(pawn)
 	var start_x: float = pawn.position.x
 	Input.action_press(&"ui_left")
+	## The moment of the key, on the machine's wall clock: an observer on the same PC measures when it sees the move.
+	var press_file := MpBoot.user_value("probe-press-file", "")
+	if not press_file.is_empty():
+		var pf := FileAccess.open(press_file, FileAccess.WRITE)
+		pf.store_string("%d" % int(Time.get_unix_time_from_system() * 1000.0))
+		pf.close()
 	var frames := 0
 	while pawn.position.x == start_x and frames < 120:
 		await get_tree().physics_frame
@@ -221,6 +233,17 @@ func _measure_proxy_jitter() -> void:
 	if pawn == null:
 		return
 	var start_x: float = pawn.position.x
+	var press_file := MpBoot.user_value("probe-press-file", "")
+	if not press_file.is_empty():
+		## From the other player's key to the first frame its move shows here.
+		await _until(func() -> bool: return absf(pawn.position.x - start_x) > 0.5, "P%d started moving here" % slot)
+		var seen_ms := int(Time.get_unix_time_from_system() * 1000.0)
+		await _until(func() -> bool: return FileAccess.file_exists(press_file), "the walker wrote when it pressed")
+		var delay_ms := seen_ms - int(FileAccess.get_file_as_string(press_file))
+		print("METRIC remote_delay_ms=%d" % delay_ms)
+		var max_delay := float(MpBoot.user_value("probe-max-remote-delay-ms", "0"))
+		if max_delay > 0.0:
+			_check(delay_ms <= max_delay, "another player's move shows here within %d ms (took %d)" % [max_delay, delay_ms])
 	await _until(func() -> bool: return absf(pawn.position.x - start_x) > 20.0, "P%d started walking" % slot)
 	await get_tree().create_timer(0.3).timeout
 	## Sample after MpActor drew this frame (higher process_priority), with this frame's time.
@@ -253,6 +276,20 @@ func _measure_proxy_jitter() -> void:
 	var mad: float = deviations[deviations.size() / 2] / maxf(median, 0.001) if not deviations.is_empty() else 1.0
 	print("METRIC proxy_speed_px_s=%.1f proxy_speed_median=%.1f proxy_speed_mad=%.3f proxy_speed_cv=%.3f frames=%d" % [mean, median, mad, cv, speeds.size()])
 	_check(median > 150.0, "P%d moved at about its real speed on screen" % slot)
+	var q := Mp.net_quality()
+	print("METRIC net_rtt_ms=%.0f net_jitter_ms=%.1f net_loss=%.3f grade=%s samples=%d" % [q["rtt_ms"], q["jitter_ms"], q["loss"], q["grade_name"], q["samples"]])
+	var rtt_min := float(MpBoot.user_value("probe-rtt-min-ms", "-1"))
+	var rtt_max := float(MpBoot.user_value("probe-rtt-max-ms", "-1"))
+	if rtt_min >= 0.0:
+		_check(q["rtt_ms"] >= rtt_min and q["rtt_ms"] <= rtt_max, "the measured round trip matches the simulated network (%.0f ms in %.0f..%.0f)" % [q["rtt_ms"], rtt_min, rtt_max])
+	var loss_expected := float(MpBoot.user_value("probe-loss-expected", "-1"))
+	if loss_expected >= 0.0:
+		## A few pings measure loss coarsely: allow three standard deviations for that many.
+		var n := maxf(float(q["samples"]), 1.0)
+		var loss_max := loss_expected + 3.0 * sqrt(loss_expected * (1.0 - loss_expected) / n) + 1.0 / n
+		_check(q["loss"] <= loss_max, "the measured loss fits the simulated one (%.3f <= %.3f for %d pings)" % [q["loss"], loss_max, q["samples"]])
+	if MpBoot.user_flag("probe-expect-jitter"):
+		_check(q["jitter_ms"] > 1.0, "jitter on the simulated network is seen (%.1f ms)" % q["jitter_ms"])
 	_check(mad < float(MpBoot.user_value("probe-max-mad", "0.05")), "its on-screen speed was steady frame to frame (low jitter)")
 
 
@@ -436,6 +473,11 @@ func _host_private() -> void:
 	f.store_string("%d %s" % info[0])
 	f.close()
 	await _until(_networked_slot, "the host joined its own private match")
+	_check(MpLocalServer.start_on(get_tree(), 2) == server, "a second Private server gives the running one back")
+	var code: String = info[0][1]
+	await _until(func() -> bool:
+		var labels := get_tree().current_scene.find_children("*", "Label", true, false).filter(func(l: Node) -> bool: return l is MpInviteLabel)
+		return not labels.is_empty() and (labels[0] as Label).visible and (labels[0] as Label).text.contains("%d#%s" % [info[0][0], code]), "the match HUD shows the invite (port and code)")
 	var other := await _pawn(2)
 	if other == null:
 		return
@@ -444,6 +486,85 @@ func _host_private() -> void:
 		await get_tree().create_timer(0.2).timeout
 	await _until(func() -> bool: return not MpKit.is_networked(), "after the win the host left the match")
 	await _until(func() -> bool: return get_tree().root.get_node_or_null("MpLocalServer") == null, "the private server cleaned up")
+
+
+## Walks down and up at a steady speed, in legs of LEG_S: the lag shooter's moving target.
+func _walk_as_target() -> void:
+	await _until(_networked_slot, "the target got a slot")
+	var pawn := await _pawn(MpKit.local_slot())
+	if pawn == null:
+		return
+	await get_tree().create_timer(1.0).timeout
+	var legs := int(MpBoot.user_value("probe-legs", "8"))
+	for i in legs:
+		var key := &"ui_down" if i % 2 == 0 else &"ui_up"
+		Input.action_press(key)
+		await get_tree().create_timer(1.0 if i == 0 else 2.0).timeout
+		Input.action_release(key)
+	print("METRIC target_hits=%d" % pawn.hits)
+
+
+## Shoots, with a lead, at another player walking past (as a person aims at what is on the screen). With lag
+## compensation the server checks against what this player saw, so the shots hit; `--probe-expect-hits=N` / with
+## `--probe-expect-misses` the server runs without it and most shots must miss.
+func _shoot_moving_target() -> void:
+	await _until(_networked_slot, "the shooter got a slot")
+	var me := await _pawn(MpKit.local_slot())
+	var target := await _pawn(2 if MpKit.local_slot() == 1 else 1)
+	if me == null or target == null:
+		return
+	## Closer first, so every shot reaches it within its life.
+	Input.action_press(&"ui_right")
+	await _until(func() -> bool: return absf(target.position.x - me.position.x) < 180.0, "the shooter walked near the target")
+	Input.action_release(&"ui_right")
+	var start_y: float = target.position.y
+	await _until(func() -> bool: return absf(target.position.y - start_y) > 30.0, "the target walks")
+	var aimer := _Aimer.new()
+	aimer.process_priority = 30000
+	add_child(aimer)
+	aimer.input = me.get_node("MpInput") as MpInput
+	var shots := int(MpBoot.user_value("probe-shots", "4"))
+	var hits_before: int = target.hits
+	for i in shots:
+		## Mid-leg (after it turns, as a person waits for a steady target): its velocity on screen, then lead it.
+		var y0: float = target.position.y
+		await get_tree().create_timer(0.05).timeout
+		var dir0 := signf(target.position.y - y0)
+		var last := [target.position.y]
+		await _until(func() -> bool:
+			var moved: float = target.position.y - float(last[0])
+			last[0] = target.position.y
+			return absf(moved) > 0.5 and signf(moved) == -dir0, "the target turned (shot %d)" % (i + 1))
+		await get_tree().create_timer(0.35).timeout
+		var p0: Vector2 = target.position
+		await get_tree().create_timer(0.1).timeout
+		var velocity: Vector2 = (target.position - p0) / 0.1
+		var aim_at: Vector2 = target.position
+		for _iter in 3:
+			aim_at = target.position + velocity * (me.position.distance_to(aim_at) / 600.0)
+		aimer.aim = (aim_at - me.position).normalized()
+		print("LAGSHOT me=%s target=%s v=%s aim=%s" % [me.position, target.position, velocity, aimer.aim])
+		await get_tree().create_timer(0.05).timeout
+		await _tap(&"ui_select")
+
+		await get_tree().create_timer(0.9).timeout
+	var hits: int = target.hits - hits_before
+	print("METRIC lag_shots=%d lag_hits=%d view_delay_ms=%.0f" % [shots, hits, MpNetClock.view_delay * 1000.0])
+	aimer.queue_free()
+	if MpBoot.user_flag("probe-expect-misses"):
+		_check(hits <= 1, "without lag compensation most led shots miss (%d of %d hit)" % [hits, shots])
+	else:
+		_check(hits >= int(MpBoot.user_value("probe-expect-hits", str(shots - 1))), "with lag compensation the led shots hit (%d of %d)" % [hits, shots])
+
+
+## Another process of this PC runs its own private server for a moment: the first one's match must survive it.
+func _other_private_server() -> void:
+	await _until(func() -> bool: return MpFlow.find_in_tree(self) != null, "the boot scene has a flow")
+	var server := MpLocalServer.start_on(get_tree(), 2, {}, false)
+	var ready: Array = []
+	server.server_ready.connect(func(_a: String, _p: int, _c: Dictionary) -> void: ready.append(true))
+	await _until(func() -> bool: return not ready.is_empty(), "a second private server on the same PC listens too")
+	server.stop()
 
 
 func _join_private(right_code: bool) -> void:
@@ -638,6 +759,16 @@ func _check(ok: bool, what: String) -> void:
 	print(("PASS " if ok else "FAIL ") + what)
 	if not ok:
 		_fails += 1
+
+
+## Holds the owner's aim after the player script set it from the mouse (runs later in the frame).
+class _Aimer extends Node:
+	var input: MpInput
+	var aim: Vector2 = Vector2.RIGHT
+
+	func _process(_delta: float) -> void:
+		if input:
+			input.set_value(&"aim", aim)
 
 
 class _Sampler extends Node:

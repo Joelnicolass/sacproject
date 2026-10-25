@@ -8,17 +8,22 @@
 #   lag:       dedicated + an observer + a predicted player, every process with MpLagPeer (LAG_MS one way, JITTER_MS,
 #              LOSS of unreliable packets): the player answers its keys at once and is barely corrected; the observer
 #              sees it move steadily. Prints METRIC lines.
+#              The observer also measures how late the other player's move shows (remote_delay_ms;
+#              MAX_REMOTE_DELAY_MS sets a cap) and checks MpNetQuality against the simulated network (RTT, loss, jitter).
+#   lagshot:   dedicated + a target walking past + a shooter that leads it, every process at SHOT_LAG_MS: with lag
+#              compensation the shots hit; the same with the server's --lag-comp=off, most miss (the control).
 #   flood:     a client sends 500 tunnel messages and 500 to_server calls at once: only the burst gets through.
 # TRANSPORT=ws runs everything over WebSocket (TCP) instead of ENet (UDP). SCENARIOS="dedicated listen lag flood" (default all).
 # Prints PASS / FAIL lines and MPKIT ARENA PASS / MPKIT ARENA FAIL (exit 0 / 1).
 . "$(dirname "$0")/lib.sh"
 net_group 3 "$@"
 TAG="MPKIT ARENA"
-LIMIT_S="${PROBE_LIMIT_S:-120}"
+LIMIT_S="${PROBE_LIMIT_S:-240}"
 PROC_MAX=4
 TRANSPORT="${TRANSPORT:-enet}"
 PORT="${E2E_PORT:-7790}"
-SCENARIOS="${SCENARIOS:-dedicated listen lag flood}"
+SCENARIOS="${SCENARIOS:-dedicated listen lag lagshot flood}"
+SHOT_LAG_MS="${SHOT_LAG_MS:-100}"
 LAG_MS="${LAG_MS:-60}"
 JITTER_MS="${JITTER_MS:-30}"
 LOSS="${LOSS:-0.03}"
@@ -63,6 +68,29 @@ run_scenario() { # run_scenario <name> <server flag> <first client slot>
   fi
 }
 
+run_lagshot() { # dedicated + a walking target + a shooter that leads it; with and without lag compensation
+  local dir="$OUT/lagshot" mode
+  mkdir -p "$dir"
+  local common=(--transport="$TRANSPORT" --mp-port="$PORT" --net-lag-ms="$SHOT_LAG_MS" --net-jitter-ms=5)
+  for mode in ${LAGSHOT_MODES:-on off}; do
+    gd "$dir/server_$mode.log" --max-fps 120 -- --server "${common[@]}" --lag-comp="$mode"
+    local server=$LAST_PID
+    sleep 0.5
+    gd "$dir/shooter_$mode.log" --max-fps 120 -- --client1 "${common[@]}" --probe=lagshooter \
+      $([ "$mode" = off ] && echo --probe-expect-misses)
+    local shooter=$LAST_PID
+    wait_line "$dir/shooter_$mode.log" "^PASS the shooter got a slot" "$shooter" 20
+    gd "$dir/target_$mode.log" --max-fps 120 -- --client2 "${common[@]}" --probe=lagtarget
+    local target=$LAST_PID
+    wait_line "$dir/shooter_$mode.log" "^PROBE lagshooter (PASS|FAIL)" "$shooter" 60
+    for p in $target $shooter $server; do kill_tree "$p"; done
+    echo "--- lagshot ($TRANSPORT, ${SHOT_LAG_MS} ms each way, lag compensation $mode) ---"
+    grep -E "^(PASS|FAIL|METRIC|SCRIPT ERROR|LAGSHOT)" "$dir/shooter_$mode.log" | sed "s/^/shooter: /" | head -n 20
+    verdict "$dir/shooter_$mode.log" lagshooter "lagshot: led shots at a moving target, lag compensation $mode"
+  done
+  if grep -qE "^SCRIPT ERROR" "$dir"/*.log; then echo "FAIL lagshot: script errors"; FAILS=$((FAILS + 1)); fi
+}
+
 run_lag() { # dedicated server + an observer (slot 1) + a predicted player (slot 2), every process on a bad network
   local dir="$OUT/lag"
   mkdir -p "$dir"
@@ -70,10 +98,13 @@ run_lag() { # dedicated server + an observer (slot 1) + a predicted player (slot
   gd "$dir/server.log" --max-fps 120 -- --server "${common[@]}"
   local server=$LAST_PID
   sleep 0.5
-  gd "$dir/observer.log" --max-fps 120 -- --client1 "${common[@]}" --probe=observe --probe-watch-slot=2
+  gd "$dir/observer.log" --max-fps 120 -- --client1 "${common[@]}" --probe=observe --probe-watch-slot=2 \
+    --probe-press-file="$dir/press.txt" ${MAX_REMOTE_DELAY_MS:+--probe-max-remote-delay-ms=$MAX_REMOTE_DELAY_MS} \
+    --probe-rtt-min-ms=$((2 * LAG_MS)) --probe-rtt-max-ms=$((2 * LAG_MS + 2 * JITTER_MS + 40)) \
+    --probe-loss-expected="$(python3 -c "print(1 - (1 - $LOSS) ** 2)")" $([ "$JITTER_MS" -gt 0 ] && echo --probe-expect-jitter)
   local observer=$LAST_PID
   wait_line "$dir/observer.log" "^PASS the observer got a slot" "$observer" 20
-  gd "$dir/player.log" --max-fps 120 -- --client2 "${common[@]}" --probe=lag
+  gd "$dir/player.log" --max-fps 120 -- --client2 "${common[@]}" --probe=lag --probe-press-file="$dir/press.txt"
   local player=$LAST_PID
   wait_line "$dir/player.log" "^PROBE lag (PASS|FAIL)" "$player" 40
   wait_line "$dir/observer.log" "^PROBE observe (PASS|FAIL)" "$observer" 10
@@ -108,6 +139,7 @@ for s in $SCENARIOS; do
     dedicated) run_scenario dedicated --server 1 ;;
     listen) run_scenario listen --listen-host 2 ;;
     lag) run_lag ;;
+    lagshot) run_lagshot ;;
     flood) run_flood ;;
   esac
 done

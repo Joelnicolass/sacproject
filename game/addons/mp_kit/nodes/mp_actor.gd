@@ -59,8 +59,15 @@ static var server_calls := MpRateLimit.new(60.0, 120.0)
 	set(value):
 		smoothing = value
 		_editor_rebuild()
-## BUFFERED: how far in the past proxies are drawn. About two server states; more hides worse networks.
+## BUFFERED: how far in the past proxies are drawn, at most. With adaptive_buffer it uses only what the network
+## needs (a few ticks on a good one); more hides worse networks.
 @export_range(0.0, 0.5, 0.01) var buffer_delay_s: float = 0.1
+## BUFFERED: measure the states' spacing and lateness and draw only that far behind (up to buffer_delay_s).
+## Off: always buffer_delay_s.
+@export var adaptive_buffer: bool = true
+## BUFFERED, adaptive: share of states allowed to come too late to be drawn on time (3 % = the 97th percentile, as
+## Photon Fusion). Lower = smoother on a bad network, a little more behind.
+@export_range(0.0, 0.2, 0.005) var late_tolerance: float = 0.03
 ## FOLLOW: how fast proxies chase the newest state.
 @export var follow_speed: float = 14.0
 @export var freeze_rigid_if_proxy: bool = true
@@ -70,11 +77,17 @@ static var server_calls := MpRateLimit.new(60.0, 120.0)
 	set(value):
 		predict = value
 		_editor_rebuild()
+## Most ticks one correction replays (a high ping replays more); past it, fewer corrections are made.
+@export_range(4, 240) var max_resim_ticks: int = 32
 @export_group("Owner")
 ## The player slot that owns this node (0 = the server). Spawners set it before the node enters the tree.
 @export var owner_slot: int = 0
 ## Who may call mp_sv_* here. OWNER (default) or ANYONE (things of the world every player uses).
 @export var callers: Callers = Callers.OWNER
+@export_group("Lag compensation")
+## Server: keep the last second of this node's poses, so a shot can be checked against where its shooter saw it
+## (MpActor.rewound / seen_position_of on the shooter). Off for things nobody aims at.
+@export var lag_compensate: bool = true
 
 ## Server time of the state being sent (synced with it; 0 = none yet). Proxies and reconciliation read it.
 var net_stamp: float = 0.0
@@ -90,6 +103,8 @@ var _calls: MpCalls
 var _motion: MpProxyMotion
 var _prediction: MpPrediction
 var _sender_slot: int = -1
+## Inside an mp_sv_* call from a client: the server time that client was seeing (0 = unknown).
+var _call_view: float = 0.0
 
 
 ## The MpActor child of `node`, or null.
@@ -104,6 +119,11 @@ static func of(node: Node) -> MpActor:
 
 func _enter_tree() -> void:
 	_editor_rebuild()
+
+
+func _exit_tree() -> void:
+	if not Engine.is_editor_hint() and _root:
+		MpLagComp.forget(_root)
 
 
 func _ready() -> void:
@@ -125,8 +145,11 @@ func _ready() -> void:
 		predict = false
 	if predict:
 		_prediction = MpPrediction.new(_root, input())
+		_prediction.max_resim_ticks = max_resim_ticks
 	_motion = MpProxyMotion.new(_root, smoothing == Smoothing.BUFFERED)
 	_motion.delay_s = buffer_delay_s
+	_motion.adaptive = adaptive_buffer
+	_motion.late_tolerance = late_tolerance
 	_motion.follow_speed = follow_speed
 	_motion.move_position = sync_position
 	_motion.move_rotation = sync_rotation
@@ -187,6 +210,37 @@ func sender_slot() -> int:
 	return _sender_slot
 
 
+## Server: the time the owner of this node was seeing (its proxies are drawn in the past): inside an mp_sv_* call
+## the caller's, else the owner's current input frame's; the present for the host's own player, solo, or unknown.
+## Never ahead of now, never more than MpLagComp.HISTORY_S back.
+func view_stamp() -> float:
+	var now := MpNetClock.stamp()
+	if not MpKit.is_networked() or not MpKit.is_server():
+		return now
+	var view := _call_view
+	if view <= 0.0 and not is_local():
+		var keys := input()
+		if keys and keys.current_frame():
+			view = keys.current_frame().view
+	return MpLagComp.clamp_view(view, now)
+
+
+## Server: how far behind the present this node's owner sees the others, in seconds.
+func view_lag() -> float:
+	return MpNetClock.stamp() - view_stamp()
+
+
+## Server: runs `body` with every other lag-compensated node moved to where this node's owner saw it (then puts
+## them back). For a hitscan shot: `net.rewound(func(): return space.intersect_ray(query))`.
+func rewound(body: Callable) -> Variant:
+	return MpLagComp.rewind(view_stamp(), body, _root)
+
+
+## Server: where `node` was when this node's owner saw it (Vector2 for 2D, Vector3 for 3D).
+func seen_position_of(node: Node) -> Variant:
+	return MpLagComp.position_at_like(node, view_stamp())
+
+
 ## Server (or solo) only: remove this node everywhere. Only for nodes a spawner made (the spawner removes them on every
 ## peer, late joiners never get them). A node of the world scene cannot be despawned: a late joiner loads the scene
 ## and would still have it; hide it instead (sync `visible`) or spawn it.
@@ -215,7 +269,8 @@ func to_server(action: StringName, ...args: Array) -> void:
 	if callers == Callers.OWNER and not is_local():
 		push_warning("MpActor '%s': to_server(%s) from a peer that does not own it (callers = OWNER)" % [_root.name, action])
 		return
-	rpc_server_call.rpc_id(MpAuthority.SERVER_PEER, action, args)
+	## With what this player sees, so the server can rewind the others to it (lag compensation).
+	rpc_server_call_seen.rpc_id(MpAuthority.SERVER_PEER, action, args, MpNetClock.view_stamp())
 
 
 ## Server only: run mp_all_<action>(args...) here and on every peer that has this node.
@@ -249,6 +304,14 @@ func rpc_server_call(action: StringName, args: Array) -> void:
 	_run_sv(action, args, slot)
 
 
+## to_server with the server time the caller was seeing (lag compensation reads it as view_stamp()).
+@rpc("any_peer", "call_remote", "reliable")
+func rpc_server_call_seen(action: StringName, args: Array, view: float) -> void:
+	_call_view = view if is_finite(view) else 0.0
+	rpc_server_call(action, args)
+	_call_view = 0.0
+
+
 @rpc("authority", "call_remote", "reliable")
 func rpc_all_call(action: StringName, args: Array) -> void:
 	_calls.run(ALL_PREFIX, action, args)
@@ -265,6 +328,8 @@ func _publish_pose() -> void:
 	net_stamp = MpNetClock.stamp()
 	net_position = MpProxyMotion.position_of(_root)
 	net_rotation = MpProxyMotion.rotation_of(_root)
+	if lag_compensate and MpKit.is_networked() and sync_position:
+		MpLagComp.record(_root, net_stamp)
 
 
 func _editor_rebuild() -> void:

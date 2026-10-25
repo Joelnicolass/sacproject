@@ -106,9 +106,11 @@ Solo el dueño puede pedir los `mp_sv_*` de su actor (`MpActor › Owner › cal
 | Qué | Dónde | Qué hace |
 |---|---|---|
 | Predicción | **MpActor › Prediction › predict** + `func mp_move(input, delta)` | El dueño se mueve al instante con sus teclas. El servidor corre el mismo `mp_move` una vez por cada frame del dueño, en orden; cuando llega su estado, el dueño vuelve a él y repite los ticks que el servidor no vio (reconciliación). Mismos ticks: la corrección queda en ~0. |
-| Suavizado | **MpActor › Smoothing** | `BUFFERED` (por defecto): los demás jugadores se dibujan `buffer_delay_s` en el pasado, entre dos estados reales del servidor: se ven parejos aunque los paquetes lleguen a destiempo. `FOLLOW`: persigue el último estado (sin demora, con tirones chicos). `NONE`: sin suavizado. |
+| Suavizado | **MpActor › Smoothing** | `BUFFERED` (por defecto): los demás jugadores se dibujan un poco en el pasado, entre dos estados reales del servidor: se ven parejos aunque los paquetes lleguen a destiempo. Con `adaptive_buffer` (prendido) ese "poco" se mide: pocos ticks en una red buena, más en una mala, hasta el tope `buffer_delay_s`. `FOLLOW`: persigue el último estado (sin demora, con tirones chicos). `NONE`: sin suavizado. |
 | Ancho de banda | **MpActor › Sync › send_hz** | Estados por segundo (0 = cada frame). `BUFFERED` tapa los huecos. |
-| Buffer de entrada | automático con predict | El servidor junta unos pocos frames del dueño antes de consumirlos de a uno por tick, así un jugador con jitter se mueve parejo para los demás. Un cliente que manda frames de más no va más rápido. |
+| Buffer de entrada | automático con predict | El servidor junta los frames del dueño que hagan falta según cómo llegan (uno en una red buena) antes de consumirlos de a uno por tick, así un jugador con jitter se mueve parejo para los demás. Si el servidor se queda corto, el dueño acelera apenas para llenarlo. Un cliente que manda frames de más no va más rápido. |
+| Disparos con ping | **MpActor › Lag compensation** + `net.rewound(func)` o `net.view_lag()` | El servidor valida un disparo contra donde el tirador VIO a los demás (un segundo de historia), no contra el presente. |
+| Calidad de red | `Mp.net_quality()` | RTT, jitter, pérdida y una nota (`good`, `fair`, `bad`) para tu interfaz. |
 
 Reglas de `mp_move`: solo movimiento (puede correr varias veces por tick al reconciliar). Si usa inercia o gravedad, agregá `velocity` a *Sync › Extra*: viaja con la pose y la reconciliación parte de él. Sonidos y efectos detrás de `if not keys.is_replaying():`. Saltos con `is_action_just_pressed` sí van adentro: se ven igual en el dueño, en el servidor y al repetir.
 
@@ -154,7 +156,7 @@ Si tu servidor no tiene IP pública (tu PC detrás del router) o querés un domi
 
 ### Partida privada en tu PC (con código)
 
-`MpBootMenu.offer_private_server` muestra *Private server*: arranca un dedicado en tu PC (`MpLocalServer`, mismo código que el VPS, sin servidor de salas), te une solo y muestra `ip:puerto#CÓDIGO`. Tus amigos escriben eso en el campo de dirección; sin el código no entran. Por código: `MpLocalServer.start_on(get_tree(), asientos)` y la señal `server_ready(address, port, codes)`.
+`MpBootMenu.offer_private_server` muestra *Private server*: arranca un dedicado en tu PC (`MpLocalServer`, mismo código que el VPS, sin servidor de salas), te une solo y el HUD de la partida (un `MpInviteLabel`, ya incluido en el `MpWorld`) muestra `ip:puerto#CÓDIGO`. Tus amigos escriben eso en el campo de dirección; sin el código no entran. Un segundo clic devuelve la partida que ya corre. Por código: `MpLocalServer.start_on(get_tree(), asientos)` y la señal `server_ready(address, port, codes)`.
 
 ### Web
 

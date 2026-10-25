@@ -16,6 +16,10 @@ const COLORS: Array[Color] = [Color("e05d5d"), Color("5d9de0"), Color("6cc56c"),
 
 ## How many flashes this peer has drawn (the lab's e2e probe reads it).
 var flashes: int = 0
+## How many shots hit this player, as every peer saw it (mp_all_hit).
+var hits: int = 0
+
+const GROUP := &"arena_player"
 
 @onready var net: MpActor = $MpActor
 @onready var input: MpInput = $MpInput
@@ -23,6 +27,7 @@ var flashes: int = 0
 
 
 func _ready() -> void:
+	add_to_group(GROUP)
 	$Tag.text = "P%d" % net.owner_slot
 	_paint()
 
@@ -65,7 +70,8 @@ func _shoot() -> void:
 	## The aim comes from the client: check it (a Vector2 of length 1) before using it.
 	var aim: Variant = input.get_value(&"aim", Vector2.RIGHT)
 	var direction: Vector2 = (aim as Vector2).normalized() if aim is Vector2 and (aim as Vector2).length() > 0.01 else Vector2.RIGHT
-	shots.spawn_actor(SHOT, {"position": position, "direction": direction}, net.owner_slot)
+	## Lag compensation: the shot checks its hits against the others where this player saw them (net.view_lag()).
+	shots.spawn_actor(SHOT, {"position": position, "direction": direction, "seen_lag": net.view_lag()}, net.owner_slot)
 
 
 func mp_sv_recolor() -> void:
@@ -75,6 +81,12 @@ func mp_sv_recolor() -> void:
 func mp_all_flash() -> void:
 	flashes += 1
 	body.modulate = Color(2.5, 2.5, 2.5)
+	create_tween().tween_property(body, "modulate", Color.WHITE, 0.25)
+
+
+func mp_all_hit() -> void:
+	hits += 1
+	body.modulate = Color(3.0, 0.6, 0.6)
 	create_tween().tween_property(body, "modulate", Color.WHITE, 0.25)
 
 

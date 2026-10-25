@@ -150,6 +150,14 @@ static func is_listening(peer: MultiplayerPeer) -> bool:
 	return peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED
 
 
+## A server peer the relay turned away because its room (its port) has a live host already. ENet / WebSocket
+## learn a busy port when they open it; the relay tells it a moment later.
+static func is_refused(peer: MultiplayerPeer) -> bool:
+	while peer is MpLagPeer:
+		peer = (peer as MpLagPeer).inner()
+	return peer is MpRelayPeer and (peer as MpRelayPeer).is_refused()
+
+
 ## True if `port` can be opened on this machine with `kind` (a probe that opens and closes it).
 static func port_is_free(kind: String, port: int) -> bool:
 	if normalize(kind) == RELAY:

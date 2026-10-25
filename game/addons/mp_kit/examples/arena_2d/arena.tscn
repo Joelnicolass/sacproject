@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://addons/mp_kit/mp_slot_spawner.gd" id="1"]
 [ext_resource type="PackedScene" path="res://addons/mp_kit/examples/arena_2d/player.tscn" id="2"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" path="res://addons/mp_kit/examples/arena_2d/shot.tscn" id="8"]
 [ext_resource type="PackedScene" path="res://addons/mp_kit/examples/arena_2d/bell.tscn" id="9"]
 [ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_leave_button.gd" id="10"]
+[ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_invite_label.gd" id="11"]
 
 [sub_resource type="SceneReplicationConfig" id="state_sync"]
 properties/0/path = NodePath(".:values")
@@ -84,3 +85,10 @@ offset_top = 12.0
 offset_right = 944.0
 offset_bottom = 44.0
 text = "Leave"
+
+[node name="Invite" type="Label" parent="Hud"]
+script = ExtResource("11")
+offset_left = 16.0
+offset_top = 500.0
+offset_right = 944.0
+offset_bottom = 528.0

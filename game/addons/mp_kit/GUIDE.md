@@ -341,7 +341,9 @@ Las transformaciones (y `velocity`) viajan siempre, en el mismo paquete que la p
 | Propiedad | Qué hace | Por defecto |
 |---|---|---|
 | `smoothing` | `BUFFERED`: dibuja un poco en el pasado, entre dos estados reales; parejo aunque los paquetes lleguen desparejos. `FOLLOW`: persigue el último estado, sin demora pero con tirones chicos. `NONE`: dibuja cada estado tal cual llega | `BUFFERED` |
-| `buffer_delay_s` | Con `BUFFERED`: cuánto en el pasado (más = tapa redes peores, pero se ve más atrasado) | 0.1 |
+| `buffer_delay_s` | Con `BUFFERED`: lo más en el pasado que puede dibujar (el tope). Más = tapa redes peores | 0.1 |
+| `adaptive_buffer` | Con `BUFFERED`: mide cada cuánto llegan los estados y con cuánto atraso, y dibuja solo lo necesario, hasta `buffer_delay_s`. En una red buena son pocos ticks; en una mala, más. Apagado = siempre `buffer_delay_s` | on |
+| `late_tolerance` | Con `adaptive_buffer`: qué parte de los estados puede llegar tarde (3% = percentil 97, como Photon Fusion). Menos = más parejo en una red mala, un poco más atrasado | 0.03 |
 | `follow_speed` | Con `FOLLOW`: qué tan rápido persigue | 14.0 |
 | `freeze_rigid_if_proxy` | Si el padre es un `RigidBody`, lo congela en los clientes (la física corre en el servidor) | on |
 
@@ -350,6 +352,7 @@ Las transformaciones (y `velocity`) viajan siempre, en el mismo paquete que la p
 | Propiedad | Qué hace | Por defecto |
 |---|---|---|
 | `predict` | El dueño se mueve al instante. Necesita un `MpInput` al lado y `func mp_move(input, delta)` en el padre | off |
+| `max_resim_ticks` | Lo más que repite una corrección. Con mucho ping hay más ticks sin confirmar; pasado el tope corrige menos seguido, para no gastar CPU | 32 |
 
 **Grupo Owner**:
 
@@ -357,6 +360,12 @@ Las transformaciones (y `velocity`) viajan siempre, en el mismo paquete que la p
 |---|---|---|
 | `owner_slot` | Slot dueño. 0 = el servidor. **No lo toques en un jugador**: lo pone el spawner | 0 |
 | `callers` | Quién puede pedir los `mp_sv_*` de este nodo. `OWNER`: el jugador de `owner_slot` (con `owner_slot` = 0, solo el propio servidor). `ANYONE`: cualquier jugador sentado (puertas, campanas, una tienda); validá lo que piden dentro de `mp_sv_*` | `OWNER` |
+
+**Grupo Lag compensation**:
+
+| Propiedad | Qué hace | Por defecto |
+|---|---|---|
+| `lag_compensate` | El servidor guarda el último segundo de poses de este nodo, para que un disparo se valide contra donde lo vio el tirador (ver 6.8) | on |
 
 Con `smoothing` distinto de `NONE` o con `predict`, la posición no viaja en `position` sino en `MpActor:net_position` (y `net_rotation`, `net_stamp`). Si mirás el panel Replicación del `MpSync`, vas a ver eso: es normal. En el cliente, solo `MpActor` mueve el nodo.
 
@@ -540,6 +549,11 @@ func mp_all_flash() -> void:
 | `net.last_correction()` | Con predicción, en el dueño: cuánto lo corrigió el servidor en el último estado (0 = la predicción acertó) |
 | `net.owner_slot` | El slot dueño (para mostrar "P1", elegir color...) |
 | `MpActor.of(nodo)` | El `MpActor` hijo de un nodo, o `null` |
+| `net.view_lag()` | En el servidor: cuánto atrás ve el dueño de este nodo a los demás, en segundos (su ping más lo que dibuja en el pasado) |
+| `net.rewound(func)` | En el servidor: corre `func` con los demás nodos movidos adonde los vio el dueño, y los devuelve. Para un disparo instantáneo: `net.rewound(func(): return espacio.intersect_ray(consulta))` |
+| `net.seen_position_of(nodo)` | En el servidor: dónde estaba `nodo` cuando lo vio el dueño de este (Vector2 en 2D) |
+
+**Compensación de lag** (como hace Valve): un jugador con ping ve a los demás un poco en el pasado. Si el servidor validara el disparo contra el presente, erraría contra lo que estaba en su pantalla. El kit guarda un segundo de poses y sabe qué momento veía cada jugador, porque viaja con cada frame de input y con cada `to_server`. Validá con `net.rewound`, `net.seen_position_of` o, para un proyectil, guardá `net.view_lag()` al dispararlo y compará con `MpLagComp.position_at_like(blanco, ahora - view_lag)`, como hace `shot.gd` del ejemplo. Nunca rebobina más de un segundo. `--lag-comp=off` en el servidor la apaga, para comparar.
 
 Ejemplo de `snap` después de un respawn:
 
@@ -570,6 +584,7 @@ El `MpActor` es de cada actor. Para lo que es de la partida, la clase **Mp** tie
 | `Mp.state()` | El `MpState` del mundo: `Mp.state().add(&"score")` en el servidor, `get_value` en todos |
 | `Mp.current_match()` | El `MpMatch` del mundo (señales y asientos) |
 | `Mp.finish(resultado)` | En el servidor: termina la partida para todos |
+| `Mp.net_quality()` | La conexión: `rtt_ms`, `jitter_ms`, `loss` (0 a 1), `grade_name` (`good`, `fair`, `bad`). En el servidor, `Mp.net_quality(slot)` da la de ese jugador |
 
 Un menú propio en vez de `mp_boot_menu.tscn` son tres botones: `Mp.play_solo()`, `Mp.host()` y `Mp.join(campo.text)`.
 
@@ -829,9 +844,21 @@ Es solo de salida: ponelo en el servidor **y** en los clientes para tener ida y 
 
 Qué ajustar mirando:
 
-- Los otros jugadores tironean: subí `buffer_delay_s`, o pasá a `BUFFERED`.
+- Los otros jugadores tironean: pasá a `BUFFERED`, bajá `late_tolerance` o subí el tope `buffer_delay_s`.
+- Los otros se ven muy atrasados en una red buena: revisá que `adaptive_buffer` esté prendido.
 - Tu jugador responde tarde: prendé `predict`.
 - Tu jugador "salta" seguido: imprimí `net.last_correction()`; si es alto, revisá que `mp_move` solo dependa de las teclas, la posición y lo que está en Sync (por ejemplo `velocity`, ver [6.2](#62-mp_move-y-sus-reglas)).
+
+Qué hace el kit solo con la red (todo medido, nada fijo):
+
+| Pieza | Qué mide | Qué ajusta |
+|---|---|---|
+| Dibujo de los demás (`MpActor › Smoothing`) | cada cuánto llegan los estados y con cuánto atraso (percentil 97) | cuánto en el pasado se dibujan, un 10% del error por cuadro, nunca para atrás |
+| Input en el servidor | con cuánto atraso llegan los frames de cada jugador (percentil 97) | cuántos frames junta antes de usarlos; crece al quedarse corto, se achica después de 2 s estables |
+| Ritmo del dueño | cuántos frames le sobran o le faltan al servidor | si le faltan, el dueño mete un frame de más cada 16 ticks (alrededor de 6% más rápido), como Overwatch |
+| Calidad de red (`Mp.net_quality()`) | pings 4 por segundo: RTT, jitter, pérdida | nada solo: es para tu interfaz (`grade_name`: `good`, `fair`, `bad`) |
+
+En una PC, sin red, el movimiento de otro jugador aparece en tu pantalla unos 75-90 ms después de que apretó la tecla. Con 60 ms de lag por tramo, 30 ms de jitter y 3% de pérdida, unos 280-310 ms, y sigue parejo.
 
 ### 8.6 Probar como en producción: `mpkit_lab`
 
@@ -1079,9 +1106,11 @@ Sin VPS y sin servidor de salas: un dedicado en tu PC, y tus amigos entran con u
 
 1. En el `Menu` del boot, tildá `offer_private_server`. (El asistente lo deja tildado.)
 2. F5 › **Private server**.
-3. El kit arranca un proceso dedicado en tu PC (`MpLocalServer`), con tantos asientos como `max_players` del `MpNetConfig`, te une solo y muestra en el estado algo como `Private match on 192.168.1.5:7800 · friends join with 192.168.1.5:7800#K7P2QX`.
-4. Tus amigos escriben `192.168.1.5:7800#K7P2QX` en el campo de dirección del menú y **Join**. Cada asiento tiene su código; si hay varios, aparecen separados por coma.
-5. Alguien sin código no entra.
+3. El kit arranca un proceso dedicado en tu PC (`MpLocalServer`), con tantos asientos como `max_players` del juego, y te une solo.
+4. Ya en la partida, el HUD muestra la invitación: `Friends join with 192.168.1.5:7800#K7P2QX`. La muestra un **MpInviteLabel**: el `MpWorld` trae uno en `Hud/Invite`; en un mundo armado a mano, agregá uno al HUD. Se ve solo en la PC que hostea la partida privada.
+5. Tus amigos escriben eso en el campo de dirección del menú y **Join**. Cada asiento tiene su código; si hay varios, aparecen separados por coma.
+6. Alguien sin código no entra.
+7. Un segundo clic en **Private server** no arranca otra partida: devuelve la que ya corre y vuelve a mostrar su invitación. Dos programas en la misma PC pueden tener cada uno su partida privada sin pisarse.
 
 La partida usa el mismo transporte que tu juego (ENet, WebSocket o relay). Por internet sin relay, tus amigos necesitan tu IP pública y el puerto abierto en tu router. Con relay no hace falta: la parte de la IP se ignora y el puerto elige la sala del relay.
 
@@ -1212,7 +1241,8 @@ Para probarlo todo junto en tu PC: `mpkit_lab/run/play.sh dedicated --relay` o `
 ### 12.3 Qué hace y qué no
 
 - Pasa paquetes entre el host de una sala y sus clientes, todo por WebSocket (confiable y en orden).
-- Un host nuevo con el secreto **reemplaza** al anterior de la misma sala (un servidor que se reinició): sus clientes se cierran y se reconectan.
+- Una sala con un host vivo está ocupada, como un puerto en uso: un segundo host se rechaza (4009). Una partida de salas o privada prueba el puerto siguiente; un dedicado o un lobby avisa y se cierra. Cada servidor busca puerto desde uno al azar, así dos jugadores con partida privada casi nunca chocan.
+- Un host que no responde los pings del relay en 15 s se suelta y su sala queda libre (un servidor que se reinició vuelve a entrar en ese tiempo).
 - Un cliente de una sala sin host se rechaza; si el host se va, sus clientes se cierran.
 - Topes, por variables del relay: `RELAY_MAX_CLIENTS` por sala (64), `RELAY_MAX_MESSAGE` en bytes (262144).
 - No guarda nada, no ve el juego. La latencia es la del relay en el medio: elegí una región cerca de tus jugadores.
@@ -1430,7 +1460,7 @@ Con `transport = relay`, poné `relay_url` en el `MpNetConfig` o pasá `--relay-
 **"MpRelayPeer: the relay closed the host (…)"**
 El relay cortó a tu servidor. Causas comunes:
 - El secreto no coincide (`MPKIT_RELAY_SECRET` del servidor ≠ `RELAY_HOST_SECRET` del relay): el relay ni acepta la conexión.
-- Otro servidor se conectó como host de la misma sala y te reemplazó (código 4008). Revisá que no tengas dos servidores con el mismo `relay_room` y puerto.
+- *"port N is in use on the relay"*: otro servidor del mismo juego tiene esa sala (`relay_room` y puerto iguales). Usá otro puerto u otro `relay_room`. Si es tu propio servidor que se reinició, esperá unos segundos: el relay suelta al host anterior a los 15 s sin respuesta.
 - El relay se reinició o se cayó.
 
 **"MpTransport: cannot load TLS certificate … / key …"**
@@ -1457,7 +1487,7 @@ Algún archivo de la carpeta ya existe (`[~]`) o la carpeta no empieza con `res:
 7. ¿Es una partida de sala esperando asientos? El mundo está pausado hasta que cargan todos (`MpMatch.waiting`).
 
 **Se mueve, pero los otros jugadores tironean.**
-Usá `smoothing = BUFFERED` y subí `buffer_delay_s` (0.15, 0.2). Si bajaste `send_hz`, subilo o dejalo en 0.
+Usá `smoothing = BUFFERED` con `adaptive_buffer` prendido; si sigue, bajá `late_tolerance` (0.01) o subí el tope `buffer_delay_s` (0.15, 0.2). Si bajaste `send_hz`, subilo o dejalo en 0.
 
 **Mi jugador responde tarde.**
 Prendé **Prediction › predict** y pasá el movimiento a `mp_move`.
@@ -1568,7 +1598,9 @@ Cambió de pestaña: el navegador la pausó. Ver [11.5](#115-pestaña-oculta).
 | sincronizar una propiedad propia (`health`) | **MpActor › Sync › sync_extra** = `health` (o `Health:current`) |
 | que el jugador responda sin lag | **MpActor › Prediction › predict** + `func mp_move(keys, delta)` |
 | gravedad o inercia con predicción | `velocity` en **Sync › sync_extra** |
-| que los otros se vean parejos | **MpActor › Smoothing** = `BUFFERED`, ajustar `buffer_delay_s` |
+| que los otros se vean parejos | **MpActor › Smoothing** = `BUFFERED` (con `adaptive_buffer`), y `late_tolerance` o el tope `buffer_delay_s` |
+| mostrar el ping o la calidad de la conexión | `Mp.net_quality()` |
+| que un disparo acierte lo que vio el tirador | `net.rewound(func)`, `net.seen_position_of(nodo)` o `net.view_lag()` (compensación de lag) |
 | gastar menos ancho de banda | **MpActor › Sync › send_hz** (por ejemplo 20) |
 | leer las teclas del jugador en el servidor | `input.get_vector`, `input.is_action_just_pressed`… |
 | mandar el punto de mira | `input.set_value(&"aim", v)` en el dueño, `input.get_value(&"aim")` en el servidor (validalo) |

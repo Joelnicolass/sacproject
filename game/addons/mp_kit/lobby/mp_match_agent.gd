@@ -16,6 +16,8 @@ signal result_reported(data: Dictionary)
 @export var auto_start: bool = true
 
 const GROUP := &"mp_match_agent"
+## Result reason when the relay refused this match's port (another live host): the launcher retries another port.
+const PORT_IN_USE := "port_in_use"
 
 var ticket: Dictionary = {}
 var match_id: String = ""
@@ -103,7 +105,7 @@ func report_result(data: Dictionary) -> void:
 	_write_state()
 	MpKit.broadcast_session_ended(out)
 	result_reported.emit(out)
-	var delay := config.result_quit_delay_s if out["reason"] != "room_gone" else 0.0
+	var delay := config.result_quit_delay_s if out["reason"] != "room_gone" and out["reason"] != PORT_IN_USE else 0.0
 	if delay <= 0.0:
 		get_tree().quit()
 	else:
@@ -112,6 +114,10 @@ func report_result(data: Dictionary) -> void:
 
 func _process(delta: float) -> void:
 	if ticket.is_empty() or finished:
+		return
+	## Through the relay this port's room has another live host: say so, the launcher tries another port.
+	if MpKit.listen_refused():
+		report_result({"reason": PORT_IN_USE})
 		return
 	_hb_accum += delta
 	if _hb_accum >= config.heartbeat_s:

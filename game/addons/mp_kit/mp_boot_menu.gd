@@ -190,14 +190,20 @@ func _on_private() -> void:
 	## By path: the menu must not load the lobby scripts unless this button is used.
 	var local_server: GDScript = load("res://addons/mp_kit/rooms/mp_local_server.gd")
 	var seats := _flow.net_config.effective_max_players() if _flow and _flow.net_config else max_players
+	## One per process: a second click gives the running one back (and its invite), it never starts another.
 	var server: Node = local_server.call(&"start_on", get_tree(), seats)
-	server.server_ready.connect(func(address: String, p_port: int, codes: Dictionary) -> void:
+	var show_invite := func(address: String, p_port: int, codes: Dictionary) -> void:
 		var shown := address if not address.is_empty() else "127.0.0.1"
 		var all := ", ".join(PackedStringArray(codes.values()))
 		if MpKit.transport == MpTransport.RELAY:
 			_set_status(private_relay_status % [p_port, all])
 		else:
-			_set_status(private_ready_status % [shown, p_port, shown, p_port, all]))
+			_set_status(private_ready_status % [shown, p_port, shown, p_port, all])
+	if server.call(&"is_ready"):
+		show_invite.call(server.get("address"), server.get("port"), server.get("codes"))
+		return
+	if not server.server_ready.is_connected(show_invite):
+		server.server_ready.connect(show_invite)
 	server.server_failed.connect(func(reason: String) -> void: _set_status(host_fail_status + " (%s)" % reason))
 
 

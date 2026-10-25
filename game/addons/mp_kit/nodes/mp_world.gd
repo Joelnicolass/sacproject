@@ -10,6 +10,7 @@ extends Node
 ##   State        MpState: score, timer, round (`Mp.state()`)
 ##   Match        MpMatch: waits for every seat, players leaving and coming back, finish (`Mp.finish()`)
 ##   Hud/Leave    MpLeaveButton (turn off Leave Button to skip it)
+##   Hud/Invite   MpInviteLabel: in a private match of this PC, what friends type to join
 ## A piece you delete is built again next time the scene opens; a piece you rename is not found (keep the names).
 ## Not: your level (put it next to this node), your player (a scene with MpActor + MpInput, see the Setup game wizard).
 
@@ -20,6 +21,7 @@ const SLOT_SPAWNER := "res://addons/mp_kit/mp_slot_spawner.gd"
 const STATE := "res://addons/mp_kit/nodes/mp_state.gd"
 const MATCH := "res://addons/mp_kit/nodes/mp_match.gd"
 const LEAVE := "res://addons/mp_kit/nodes/mp_leave_button.gd"
+const INVITE := "res://addons/mp_kit/nodes/mp_invite_label.gd"
 const PIECES := ["SpawnPoints", "Actors", "Players", "State", "Match"]
 
 ## The scene every seat gets (it needs an MpActor). Same as Players › Pawn Scene.
@@ -33,6 +35,8 @@ const PIECES := ["SpawnPoints", "Actors", "Players", "State", "Match"]
 @export_range(1, 64) var seats: int = 4
 ## Build a Hud with a Leave button.
 @export var leave_button: bool = true
+## Build the Hud's invite line for private matches (MpInviteLabel).
+@export var invite_label: bool = true
 
 
 ## The MpWorld of the current scene, or null.
@@ -83,15 +87,23 @@ static func build(world: MpWorld, scene_root: Node, is_3d: bool) -> void:
 		match_node.set_script(load(MATCH))
 		match_node.name = "Match"
 		_own(world, match_node, scene_root)
-	if world.leave_button and world.get_node_or_null("Hud") == null:
-		var hud := CanvasLayer.new()
+	var hud := world.get_node_or_null("Hud")
+	if hud == null and (world.leave_button or world.invite_label):
+		hud = CanvasLayer.new()
 		hud.name = "Hud"
 		_own(world, hud, scene_root)
+	if world.leave_button and hud.get_node_or_null("Leave") == null:
 		var leave := Button.new()
 		leave.set_script(load(LEAVE))
 		leave.name = "Leave"
 		leave.position = Vector2(16, 16)
 		_own(hud, leave, scene_root)
+	if world.invite_label and hud.get_node_or_null("Invite") == null:
+		var invite := Label.new()
+		invite.set_script(load(INVITE))
+		invite.name = "Invite"
+		invite.position = Vector2(16, 56)
+		_own(hud, invite, scene_root)
 
 
 static func _own(parent: Node, child: Node, scene_root: Node) -> void:

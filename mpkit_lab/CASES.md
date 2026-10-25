@@ -32,6 +32,10 @@ Transportes: lo marcado **T** corre en ENet, WebSocket y relay (`TRANSPORT=enet|
 | Nodo solo del servidor en `spawn_path`: sin gate, sin romper clientes | `arena.sh` watch `--probe-server-node` **T** |
 | `MpInput.set_value` llega al servidor | `arena.sh` watch (aim) **T** |
 | Predicción: respuesta inmediata y corrección ~0 con lag, jitter y pérdida | `arena.sh` lag **T** |
+| Demora con que aparece el movimiento de otro jugador (`remote_delay_ms`; tope con `MAX_REMOTE_DELAY_MS`) | `arena.sh` lag **T** |
+| `Mp.net_quality()` mide el RTT, la pérdida y el jitter de la red simulada | `arena.sh` lag **T** |
+| Compensación de lag: disparos con anticipación a un blanco que camina aciertan; con `--lag-comp=off`, la mayoría erra | `arena.sh` lagshot **T** |
+| Buffers adaptativos, calidad de red, historial de poses y frame con el momento visto | `tests/test_input_queue.gd`, `test_net_quality.gd`, `test_lag_comp.gd`, `test_input_frame_view.gd` |
 | Suavizado con buffer: el otro jugador se ve parejo | `arena.sh` lag (observe) **T** |
 | Inundación de túnel y de `mp_sv_*`: solo pasan las ráfagas | `arena.sh` flood **T** |
 | Reglas de sync, cola de input, interpolador, reloj, llamadas, tope | `tests/*.gd` |
@@ -66,6 +70,9 @@ Transportes: lo marcado **T** corre en ENet, WebSocket y relay (`TRANSPORT=enet|
 | Cliente web (navegador) contra dedicado WebSocket | `web.sh` (Chrome headless, o abrir la URL a mano) |
 | Cliente web por el relay (el servidor hostea una sala del relay) | `TRANSPORT=relay web.sh` |
 | Relay: solo hostea quien tiene el secreto (header o query); sin secreto nadie, salvo `RELAY_OPEN=1` | `relay.sh` |
+| Relay: una sala con host vivo rechaza a un segundo host (4009, como un puerto en uso) | `relay.sh` |
+| Relay: una partida rechazada vuelve a lanzarse en otro puerto y solo se anuncia la que escucha | `tests/test_launcher_relay_retry.gd` |
+| Partida privada: invitación en el HUD, segundo clic, otra partida privada en la misma PC (también por relay) | `private.sh` **T** |
 | Botón Leave mientras la partida espera asientos (mundo pausado) | `rooms.sh` wait |
 | `deploy.sh` (comandos que correría), también con `--transport relay` y el secreto aparte | `deploy.sh … --dry-run` |
 

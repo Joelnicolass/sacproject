@@ -13,6 +13,10 @@ const DECAY_PER_S := 0.002
 ## An offset this much lower than the current one means another server: start over.
 const RESET_S := 1.0
 
+## How far in the past this machine draws the others (the proxies' buffer, MpProxyMotion): what this player sees is
+## the server at view_stamp(). 0 on the server and with nothing buffered.
+static var view_delay: float = 0.0
+
 static var _offset: float = 0.0
 static var _known: bool = false
 static var _last_local: float = 0.0
@@ -33,6 +37,13 @@ static func server_time() -> float:
 	if MpKit.is_authority():
 		return stamp()
 	return local_time() + _offset
+
+
+## The server time this player is looking at: now minus the proxies' delay (lag compensation rewinds to it).
+static func view_stamp() -> float:
+	if MpKit.is_authority():
+		return stamp()
+	return server_time() - view_delay
 
 
 ## Server time minus local time, as learned so far.
@@ -59,3 +70,4 @@ static func observe(stamp: float) -> void:
 static func reset() -> void:
 	_known = false
 	_offset = 0.0
+	view_delay = 0.0

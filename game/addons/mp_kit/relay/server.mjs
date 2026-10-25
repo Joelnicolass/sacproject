@@ -9,16 +9,17 @@
 //   GET /health -> 200 ok
 //
 // Environment: PORT (default 8080), RELAY_HOST_SECRET (required to host; without it every host is refused, unless
-// RELAY_OPEN=1 lets anyone host: only for local tests), RELAY_MAX_CLIENTS per room (default 64), RELAY_MAX_MESSAGE bytes (default 262144).
+// RELAY_OPEN=1 lets anyone host: only for local tests), RELAY_MAX_CLIENTS per room (default 64), RELAY_MAX_MESSAGE bytes
+// (default 262144), RELAY_HOST_SILENT_MS (default 15000: a host silent that long is dropped).
 // Protocol (binary frames, little-endian):
 //   relay -> peer:  0x01 WELCOME u32 your_id | 0x02 JOIN u32 id (host) | 0x03 LEAVE u32 id (host)
 //                   0x04 DATA u32 from u8 channel u8 mode bytes…
 //   peer -> relay:  0x04 DATA i32 to u8 channel u8 mode bytes…   (host: to = a client id, 0 = every client,
 //                   -id = every client but id; a client: to is ignored, it always reaches the host)
 //                   0x05 KICK u32 id   (host only: the relay closes that client, 4007)
-// The host is id 1; clients get 2, 3… A new host of a room (it knows the secret) replaces the old one and closes
-// its clients (4008); clients of a room without a host are refused (4004); when the host leaves every client of the
-// room is closed (4005).
+// The host is id 1; clients get 2, 3… A room with a live host is taken: a second host is refused (4009). A host
+// silent for RELAY_HOST_SILENT_MS (pinged every 5 s) is dropped (4010) and its room freed. Clients of a room without
+// a host are refused (4004); when the host leaves every client of the room is closed (4005).
 
 import http from "node:http";
 import crypto from "node:crypto";
@@ -29,6 +30,9 @@ const SECRET = process.env.RELAY_HOST_SECRET || "";
 const OPEN = process.env.RELAY_OPEN === "1";
 const MAX_CLIENTS = Number(process.env.RELAY_MAX_CLIENTS || 64);
 const MAX_MESSAGE = Number(process.env.RELAY_MAX_MESSAGE || 262144);
+// A host that sends nothing (not even a pong) for this long is dropped and its room freed (ms).
+const HOST_SILENT_MS = Number(process.env.RELAY_HOST_SILENT_MS || 15000);
+const PING_MS = 5000;
 const GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 const WELCOME = 1, JOIN = 2, LEAVE = 3, DATA = 4, KICK = 5;
 
@@ -41,10 +45,14 @@ class Conn {
     this.buffer = Buffer.alloc(0);
     this.fragments = [];
     this.closed = false;
+    this.heardAt = Date.now();
     this.onMessage = () => {};
     this.onClose = () => {};
     socket.on("data", (chunk) => this.#read(chunk));
     socket.on("close", () => this.#gone());
+    // The HTTP server keeps upgraded sockets half open: the other side ending its half (a process that exits, a
+    // dropped tab) is the end of this connection, at once.
+    socket.on("end", () => { this.#gone(); socket.destroy(); });
     socket.on("error", () => this.#gone());
     socket.setNoDelay(true);
   }
@@ -75,7 +83,12 @@ class Conn {
     this.onClose();
   }
 
+  ping() {
+    if (!this.closed) this.socket.write(Buffer.from([0x89, 0]));
+  }
+
   #read(chunk) {
+    this.heardAt = Date.now();
     this.buffer = Buffer.concat([this.buffer, chunk]);
     while (this.buffer.length >= 2) {
       const b0 = this.buffer[0], b1 = this.buffer[1];
@@ -126,14 +139,12 @@ function sameSecret(given, secret) {
 }
 
 function attachHost(conn, name) {
-  // A new host of a room replaces the old one (a server restart, or one that died without closing its socket): it
-  // proved the secret. The old host and its clients are closed (4008); clients reconnect to the new one.
+  // A room with a live host is taken, like a port in use: a second host is refused (4009) and picks another port.
+  // A host that died without closing its socket stops answering pings and is dropped (4010), freeing the room.
   const old = rooms.get(name);
   if (old) {
-    rooms.delete(name);
-    for (const c of old.clients.values()) c.close(4008, "the host was replaced");
-    old.host.close(4008, "replaced by a new host");
-    log(`host ${name} replaced`);
+    log(`host refused: ${name} is in use`);
+    return conn.close(4009, "room in use");
   }
   const room = { host: conn, clients: new Map(), next: 2 };
   rooms.set(name, room);
@@ -154,6 +165,19 @@ function attachHost(conn, name) {
     log(`host ${name} gone`);
   };
 }
+
+// Pings every host; one silent for HOST_SILENT_MS is closed, so its room is free again.
+setInterval(() => {
+  const now = Date.now();
+  for (const [name, room] of rooms) {
+    if (now - room.host.heardAt > HOST_SILENT_MS) {
+      log(`host ${name} silent, dropped`);
+      room.host.close(4010, "host silent");
+      continue;
+    }
+    room.host.ping();
+  }
+}, PING_MS).unref();
 
 function attachClient(conn, name) {
   const room = rooms.get(name);

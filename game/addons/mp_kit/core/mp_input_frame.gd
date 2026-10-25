@@ -16,6 +16,9 @@ var strengths: PackedFloat32Array = PackedFloat32Array()
 var presses: PackedInt32Array = PackedInt32Array()
 var releases: PackedInt32Array = PackedInt32Array()
 var values: Dictionary = {}
+## The server time this player was seeing when it sampled the frame (its proxies are drawn that far back): lag
+## compensation rewinds the others to it. 0 = unknown (an older client).
+var view: float = 0.0
 
 
 static func sized(count: int) -> MpInputFrame:
@@ -34,6 +37,7 @@ func next() -> MpInputFrame:
 	frame.presses = presses.duplicate()
 	frame.releases = releases.duplicate()
 	frame.values = values.duplicate()
+	frame.view = view
 	return frame
 
 
@@ -61,12 +65,12 @@ func same_as(other: MpInputFrame) -> bool:
 
 
 func pack() -> Array:
-	return [seq, strengths, presses, releases, values]
+	return [seq, strengths, presses, releases, values, view]
 
 
 ## A frame from a packet, or null if it does not fit `count` actions (a broken or hostile client).
 static func unpack(data: Array, count: int) -> MpInputFrame:
-	if data.size() != 5 or var_to_bytes(data).size() > MAX_BYTES:
+	if (data.size() != 5 and data.size() != 6) or var_to_bytes(data).size() > MAX_BYTES:
 		return null
 	if typeof(data[0]) != TYPE_INT or typeof(data[1]) != TYPE_PACKED_FLOAT32_ARRAY:
 		return null
@@ -74,12 +78,15 @@ static func unpack(data: Array, count: int) -> MpInputFrame:
 		return null
 	if typeof(data[4]) != TYPE_DICTIONARY:
 		return null
+	if data.size() == 6 and typeof(data[5]) != TYPE_FLOAT:
+		return null
 	var frame := MpInputFrame.new()
 	frame.seq = data[0]
 	frame.strengths = data[1]
 	frame.presses = data[2]
 	frame.releases = data[3]
 	frame.values = data[4]
+	frame.view = float(data[5]) if data.size() == 6 and is_finite(float(data[5])) else 0.0
 	if frame.strengths.size() != count or frame.presses.size() != count or frame.releases.size() != count:
 		return null
 	if frame.values.size() > MAX_VALUES:

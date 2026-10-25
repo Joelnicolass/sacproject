@@ -17,6 +17,8 @@
 [ext_resource type="Texture2D" path="res://assets/original/themes/persephone/roles/rock_detail.png" id="28_rock_detail"]
 [ext_resource type="Texture2D" path="res://assets/original/themes/persephone/roles/path.png" id="29_path"]
 [ext_resource type="Texture2D" path="res://assets/original/themes/persephone/roles/path_detail.png" id="30_path_detail"]
+[ext_resource type="Resource" path="res://data/audio/music/persephone.tres" id="gm_music"]
+[ext_resource type="Resource" path="res://data/audio/ambience/persephone.tres" id="gm_ambience"]
 
 [sub_resource type="Resource" id="Role_open"]
 script = ExtResource("21_ground_role")
@@ -45,8 +47,6 @@ earth = SubResource("Role_earth")
 rock = SubResource("Role_rock")
 path = SubResource("Role_path")
 edge = ExtResource("22_edge")
-[ext_resource type="Resource" path="res://data/audio/music/persephone.tres" id="gm_music"]
-[ext_resource type="Resource" path="res://data/audio/ambience/persephone.tres" id="gm_ambience"]
 
 [resource]
 script = ExtResource("1_p")

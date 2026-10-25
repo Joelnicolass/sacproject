@@ -33,8 +33,12 @@ signal connected(target: Node3D, was_frozen: bool)
 @export var passive: DamagePassive
 @export var own_health: Health
 
-## Used when the cache has no SXSK data: HUa1, the humanoid attack0 (24 frames, tick 15, 30 fps).
-const FALLBACK_ANIMATION := {"tag": "HUa1", "frames": 24, "framerate": 30, "attack_ticks": [15]}
+## The clip of each swing: attack, attack2 (both picked at random) and attack3 (the downward one).
+const SWING_ROLES: Array[StringName] = [&"attack", &"attack2", &"attack3"]
+## Used when the model has no attack clip: the humanoid swing, 24 frames at 30 fps with the blow on frame 15.
+const FALLBACK_FRAMES := 24
+const FALLBACK_RATE := 30.0
+const FALLBACK_BLOWS: PackedInt32Array = [15]
 
 var type: CreatureType
 var reach := 0.35
@@ -43,8 +47,15 @@ var height := 1.8
 var _body: Node3D
 var _rng: RandomNumberGenerator
 var _target: Node3D
-var _anim: Dictionary = {}
+var _facts := ClipFacts.of(null)
+## The swing in course, read once when it starts: how long it lasts, the frames where its blows land and the share of the
+## damage each blow carries.
+var _swinging := false
 var _index := 0
+var _frames := 0
+var _rate := FALLBACK_RATE
+var _blows := PackedInt32Array()
+var _pending := 0.0
 var _elapsed := 0.0
 var _next_tick := 0
 
@@ -52,6 +63,7 @@ var _next_tick := 0
 func setup(body: Node3D, creature: CreatureType, body_reach: float, body_height: float, rng: RandomNumberGenerator) -> void:
 	_body = body
 	type = creature
+	_facts = creature.clip_facts() if creature != null else ClipFacts.of(null)
 	reach = maxf(body_reach, 0.1)
 	height = maxf(body_height, 0.6)
 	## Never the global RNG: a body without a stream gets one derived from the match seed and its name.
@@ -59,16 +71,16 @@ func setup(body: Node3D, creature: CreatureType, body_reach: float, body_height:
 
 
 func is_swinging() -> bool:
-	return not _anim.is_empty()
+	return _swinging
 
 
-## F336: the slot of `melee_animations` the swing in course (or the last one) plays: 0 attack, 1 attack2, 2 attack3 (the downward one).
+## F336: the clip of the swing in course (or the last one) plays: 0 attack, 1 attack2, 2 attack3 (the downward one).
 func swing_index() -> int:
 	return _index
 
 
 func cancel() -> void:
-	_anim = {}
+	_swinging = false
 	_target = null
 
 
@@ -101,34 +113,24 @@ func close_in(target: Node3D, pace: float, delta: float) -> Vector3:
 ## a random one of attack0/attack1.
 func start(target: Node3D) -> void:
 	_target = target
-	_anim = _pick_animation(target)
+	_begin(_pick_swing(target))
 	_elapsed = 0.0
 	_next_tick = 0
 
 
 ## Advances the swing by delta. Returns false once the animation has ended.
 func advance(delta: float) -> bool:
-	if _anim.is_empty():
+	if not _swinging:
 		return false
 	## RFC 061c: each layer of Slime makes the swing take 5x as long (sacengine slowdownFactor, state.d:1381-1388).
 	_elapsed += delta / Afflictions.stat_factor_of(_body, Afflictions.Stat.ATTACK_TIME)
-	var rate := float(_anim.get("framerate", 30))
-	var ticks: Array = _anim.get("attack_ticks", [])
-	var frames := int(_anim.get("frames", 1))
-	## sacobject.d:420: an animation without attack events hits on its last frame.
-	var tick_frames: Array = ticks if not ticks.is_empty() else [frames - 1]
-	while _next_tick < tick_frames.size() and _elapsed >= float(tick_frames[_next_tick]) / rate:
+	while _next_tick < _blows.size() and _elapsed >= float(_blows[_next_tick]) / _rate:
 		_next_tick += 1
 		_land()
-	if _elapsed >= float(frames) / rate:
-		_anim = {}
+	if _elapsed >= float(_frames) / _rate:
+		_swinging = false
 		return false
 	return true
-
-
-func swing_period_s(index: int) -> float:
-	var anim := _animation(index)
-	return float(anim.get("frames", 0)) / float(anim.get("framerate", 30)) if not anim.is_empty() else 0.0
 
 
 ## Half width of the melee box at `factor` of its size: the reach, widened by the creature's `melee_width_scale`. One owner for
@@ -155,9 +157,8 @@ func in_reach(target: Node3D, factor: float) -> bool:
 
 ## sacengine dealMeleeDamage (state.d:9231-9244), then the melee resistance of
 ## dealDamage (state.d:8951). Effects (slime, lightning charge, shields) are not in this cut.
-func roll_damage(target: Node3D, anim: Dictionary) -> Dictionary:
-	var ticks: Array = anim.get("attack_ticks", [])
-	var pending := float(anim.get("frames", 1)) / (float(anim.get("framerate", 30)) * float(maxi(1, ticks.size())))
+func roll_damage(target: Node3D) -> Dictionary:
+	var pending := _pending
 	var facing := 1.5 + 0.5 * facing_of(_body).dot(facing_of(target))
 	var damage := facing * pending
 	var foe := profile_of(target)
@@ -217,7 +218,7 @@ func _land() -> void:
 	if health == null or health.is_dead():
 		return
 	var was_frozen := Frozen.is_frozen(target)
-	var result := roll_damage(target, _anim)
+	var result := roll_damage(target)
 	## dealDamage scales melee by rockForm and the other shields too (state.d:8962-8969).
 	var factor := health.shield_factor() * _attack_factor()
 	var amount := float(result["amount"]) * factor
@@ -231,28 +232,41 @@ func _land() -> void:
 	connected.emit(target, was_frozen)
 
 
-func _pick_animation(target: Node3D) -> Dictionary:
+## The swing the target calls for: the downward one when it lies below, else a random one of the other two the model has; -1 when
+## the model has none (the fallback swing plays).
+func _pick_swing(target: Node3D) -> int:
 	var own_mid := _body.global_position.y + height * 0.5
 	var foe_mid := target.global_position.y + float(profile_of(target).get("height", 1.8)) * 0.5
-	if foe_mid + downward_threshold < own_mid and not _animation(2).is_empty():
-		_index = 2
-		return _animation(2)
+	if foe_mid + downward_threshold < own_mid and _has_swing(2):
+		return 2
 	var choices: Array[int] = []
 	for index in 2:
-		if not _animation(index).is_empty():
+		if _has_swing(index):
 			choices.append(index)
-	if choices.is_empty():
-		_index = 0
-		return FALLBACK_ANIMATION
-	_index = choices[_rng.randi() % choices.size()]
-	return _animation(_index)
+	return choices[_rng.randi() % choices.size()] if not choices.is_empty() else -1
 
 
-func _animation(index: int) -> Dictionary:
-	if type == null or index >= type.melee_animations.size():
-		return {}
-	var anim: Dictionary = type.melee_animations[index]
-	return anim if int(anim.get("frames", 0)) > 0 else {}
+func _has_swing(index: int) -> bool:
+	return _facts.frames(SWING_ROLES[index]) > 0
+
+
+## Reads the numbers of swing `index` once (-1: the fallback) so the ticks that follow read only variables.
+func _begin(index: int) -> void:
+	_swinging = true
+	_index = maxi(index, 0)
+	if index < 0:
+		_frames = FALLBACK_FRAMES
+		_rate = FALLBACK_RATE
+		_blows = FALLBACK_BLOWS
+	else:
+		var role := SWING_ROLES[index]
+		_frames = _facts.frames(role)
+		_rate = float(_facts.fps(role))
+		_blows = _facts.hits(role)
+		## sacobject.d:420: an animation without attack events hits on its last frame.
+		if _blows.is_empty():
+			_blows = PackedInt32Array([_frames - 1])
+	_pending = float(_frames) / (_rate * float(maxi(1, _blows.size())))
 
 
 ## sacengine attackDamageFactor (state.d:8882-8892): a guardian hits harder (1 for a body without the property), and the

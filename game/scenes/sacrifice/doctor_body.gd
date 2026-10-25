@@ -69,14 +69,8 @@ enum Work { PUMP, LIFT, TORTURE }
 	Pose.WALKING: &"run",
 	Pose.DYING: &"idle",
 }
-## Work -> slot of the CRE8 `melee_animations` list. sacengine animations.d: stab = attack0,
-## pumpCorpse = attack1, pickUpCorpse = attack2. Torture has no exported clip: it uses the stab.
-@export var work_slots := {
-	Work.PUMP: 1,
-	Work.LIFT: 2,
-	Work.TORTURE: 0,
-}
-## Work -> role of the BodyRig state machine that plays that slot's clip (023e). The rig has one state per role of
+## Work -> role of the BodyRig state machine that plays its clip (023e; sacengine animations.d: stab = attack, pumpCorpse = attack2,
+## pickUpCorpse = attack3, and torture has no clip of its own: it uses the stab). The rig has one state per role of
 ## BodyModel.ROLES and the doctor has no states of its own, so each work borrows the role closest to what it does.
 @export var work_roles := {
 	Work.PUMP: &"work",
@@ -237,10 +231,12 @@ func is_dropping() -> bool:
 	return pose == Pose.FALLING or pose == Pose.LANDING
 
 
-## Seconds of the «hit floor» clip (CRE8 stun_animations): how long it stays down after touching the ground.
+## Seconds of the «hit floor» clip: how long it stays down after touching the ground.
 func landing_s() -> float:
-	var clip: Dictionary = type.stun_animations.get("hit_floor", {}) if type else {}
-	return float(clip.get("frames", 0)) / maxf(float(clip.get("framerate", 30.0)), 1.0)
+	if type == null:
+		return 0.0
+	var facts := type.clip_facts()
+	return float(facts.frames(&"hit_floor")) / maxf(float(facts.fps(&"hit_floor")), 1.0)
 
 
 func is_alive() -> bool:

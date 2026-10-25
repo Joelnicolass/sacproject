@@ -130,8 +130,6 @@ bind_aabb = AABB(-10.120699, -3.225535, -4.11145, 20.241398, 6.078446, 9.742033)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0], [8.0]]
 clips = {
 "DG2t": {
-"framerate": 30,
-"frames": 26,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -143,8 +141,6 @@ clips = {
 }]
 },
 "DGa1": {
-"framerate": 30,
-"frames": 43,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -156,8 +152,6 @@ clips = {
 }]
 },
 "DGa2": {
-"framerate": 30,
-"frames": 43,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -169,8 +163,6 @@ clips = {
 }]
 },
 "DGa3": {
-"framerate": 30,
-"frames": 32,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -182,8 +174,6 @@ clips = {
 }]
 },
 "DGd1": {
-"framerate": 30,
-"frames": 148,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -195,8 +185,6 @@ clips = {
 }]
 },
 "DGfd": {
-"framerate": 30,
-"frames": 20,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -208,8 +196,6 @@ clips = {
 }]
 },
 "DGfg": {
-"framerate": 30,
-"frames": 56,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -221,8 +207,6 @@ clips = {
 }]
 },
 "DGfi": {
-"framerate": 30,
-"frames": 93,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -234,8 +218,6 @@ clips = {
 }]
 },
 "DGfl": {
-"framerate": 30,
-"frames": 67,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -247,8 +229,6 @@ clips = {
 }]
 },
 "DGgu": {
-"framerate": 30,
-"frames": 34,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -260,8 +240,6 @@ clips = {
 }]
 },
 "DGhf": {
-"framerate": 30,
-"frames": 121,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -273,8 +251,6 @@ clips = {
 }]
 },
 "DGhv": {
-"framerate": 30,
-"frames": 66,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -286,8 +262,6 @@ clips = {
 }]
 },
 "DGi1": {
-"framerate": 30,
-"frames": 149,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -299,8 +273,6 @@ clips = {
 }]
 },
 "DGla": {
-"framerate": 30,
-"frames": 87,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -312,8 +284,6 @@ clips = {
 }]
 },
 "DGrn": {
-"framerate": 30,
-"frames": 45,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -325,8 +295,6 @@ clips = {
 }]
 },
 "DGrz": {
-"framerate": 30,
-"frames": 92,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -338,8 +306,6 @@ clips = {
 }]
 },
 "DGs1": {
-"framerate": 30,
-"frames": 49,
 "hands": [{
 "bone_name": "bone_09",
 "offset": Vector3(0, 0, 0),
@@ -351,8 +317,6 @@ clips = {
 }]
 },
 "DGsc": {
-"framerate": 30,
-"frames": 24,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -364,8 +328,6 @@ clips = {
 }]
 },
 "DGst": {
-"framerate": 30,
-"frames": 148,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -377,8 +339,6 @@ clips = {
 }]
 },
 "DGto": {
-"framerate": 30,
-"frames": 51,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

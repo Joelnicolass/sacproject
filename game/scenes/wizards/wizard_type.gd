@@ -19,30 +19,26 @@ extends Resource
 @export var splash_spell_resistance: float = 1.0
 @export var direct_ranged_resistance: float = 1.0
 @export var splash_ranged_resistance: float = 1.0
-## RFC-023 023d: the rest pose (stance1, WIZD slot 0). idle_animation (idle0) is the gesture played now and then on top of it.
-@export var stance_animation: Dictionary = {}
-## idle0/run/walk from SXSK/SKEL: locomotion/idle timing for local pose playback.
-@export var idle_animation: Dictionary = {}
-@export var run_animation: Dictionary = {}
-@export var walk_animation: Dictionary = {}
-## Animation frames at 30 fps (death0..2, corpseRise, float2Stance): how long dying,
-## turning into a ghost and turning back last (state.d:14000, 14081, 14091).
-@export var death_frames: PackedInt32Array = PackedInt32Array()
-@export var corpse_rise_frames: int = 0
-@export var float_to_stance_frames: int = 0
-
 ## What the wizard sounds like: damaged, incantation, death, ghost (data/audio/wizards/<name>.tres). Empty: silent.
 @export var sounds: SoundSet
 
-## F138 (RFC-030i-c): knock and get_up clips (WIZD slots 9, 10), role -> {tag, frames, framerate}, like
-## CreatureType.stun_animations. A stunned wizard lies (knock + get_up)·2 ticks (state.d:8138-8146, 14170-14212).
-@export var stun_animations: Dictionary = {}
-## RFC-023 023d: the spellcast loops, role -> {tag, frames, framerate}: `cast` (standing, WIZD slot 27) and `run_cast` (moving,
-## slot 30). Presentation only: the cast lasts what the spell says, not the clip.
-@export var cast_animations: Dictionary = {}
-
 ## Lobby (055i-a): false takes this wizard out of the menu and the rooms without deleting the file.
 @export var offered := true
+
+
+## What the rules know about the clips of his model: how long each role lasts (knock, get_up, death, ghost_rise, unghost...).
+## Built once per library.
+func clip_facts() -> ClipFacts:
+	return ClipFacts.of(clips)
+
+
+## The clips he can die with, in order (death, death2, death3): those his model has. He plays one of them, picked at random.
+func death_roles() -> Array[StringName]:
+	var found: Array[StringName] = []
+	for role: StringName in [&"death", &"death2", &"death3"]:
+		if clip_facts().has(role):
+			found.append(role)
+	return found
 
 
 ## The evasion as the whole thousandths the simulation counts in (1.25 -> 1250): exact for any value with up to three decimals.

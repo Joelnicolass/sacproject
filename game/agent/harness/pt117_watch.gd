@@ -59,9 +59,7 @@ func _raw(attacker: Node, target: Node3D, chance: float, roll: float) -> float:
 	var ma := attacker.get_node_or_null("MeleeAttack")
 	if ma == null:
 		return NAN
-	var anim: Dictionary = ma.get("_anim")
-	var ticks: Array = anim.get("attack_ticks", [])
-	var pending := float(anim.get("frames", 1)) / (float(anim.get("framerate", 30)) * float(maxi(1, ticks.size())))
+	var pending := float(ma.get("_pending"))
 	var facing := 1.5 + 0.5 * _MA.facing_of(attacker as Node3D).dot(_MA.facing_of(target))
 	var damage := facing * pending
 	if roll >= chance:

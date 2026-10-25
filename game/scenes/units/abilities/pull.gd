@@ -17,7 +17,7 @@ extends AbilityEffect
 
 ## The frame of the clip where the pull is loaded (`liba`, not exported: SPs1 and LSs1 have it at 27).
 @export var load_frame := 27
-## Which of the creature's shoot clips it plays (CreatureType.shoot_animations): 0 = shoot1.
+## Which of the creature's shoot clips it plays (AbilityEffect.SHOOT_ROLES): 0 = `shoot`, 1 = `shoot2`.
 @export var clip_index := 0
 ## sacengine Pull.pullSpeed (m/s).
 @export var pull_speed := 16.5
@@ -103,9 +103,9 @@ func first_body_on_path(target: Node3D) -> Node3D:
 ## Frames of the user's clip (LSs1 82, SPs1 102), from its CreatureType. 0 = the creature has no such clip.
 func frames() -> int:
 	var type: CreatureType = user.get("type") if user else null
-	if type == null or clip_index >= type.shoot_animations.size():
+	if type == null or clip_index >= SHOOT_ROLES.size():
 		return 0
-	return int(type.shoot_animations[clip_index].get("frames", 0))
+	return type.clip_facts().frames(SHOOT_ROLES[clip_index])
 
 
 ## The loop of the clip in ticks, and the tick of the loop where it pulls (its last frame, sacengine: no `lrba`).

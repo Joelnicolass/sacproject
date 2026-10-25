@@ -182,8 +182,6 @@ bind_aabb = AABB(-0.448727, -1.209852, -0.165051, 0.916817, 2.001368, 0.691026)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0]]
 clips = {
 "AXgu": {
-"framerate": 30,
-"frames": 28,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -195,8 +193,6 @@ clips = {
 }]
 },
 "AXhf": {
-"framerate": 30,
-"frames": 69,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -208,8 +204,6 @@ clips = {
 }]
 },
 "AXi1": {
-"framerate": 30,
-"frames": 98,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -221,8 +215,6 @@ clips = {
 }]
 },
 "AXrl": {
-"framerate": 30,
-"frames": 48,
 "hands": [{
 "bone_name": "bone_15",
 "offset": Vector3(0, 0, 0),
@@ -234,8 +226,6 @@ clips = {
 }]
 },
 "AXru": {
-"framerate": 30,
-"frames": 24,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -247,8 +237,6 @@ clips = {
 }]
 },
 "AXs1": {
-"framerate": 30,
-"frames": 97,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -260,8 +248,6 @@ clips = {
 }]
 },
 "AXsl": {
-"framerate": 30,
-"frames": 45,
 "hands": [{
 "bone_name": "bone_15",
 "offset": Vector3(0, 0, 0),

@@ -122,39 +122,35 @@ func _shown(on: bool) -> void:
 	_play_fallback(on)
 
 
-## The length from the body's clips (CreatureType or WizardType stun_animations), on every peer. Without knock or
-## get_up the sacengine creature stands in stance1 for one loop; the port uses its rest clip (idle_animation).
+## The length from the body's clips (the knock, get_up, fly_damage and hit_floor roles of its model), on every peer. Without knock
+## or get_up the sacengine creature stands in stance1 for one loop; the port uses its `gesture` clip.
 func _measure() -> void:
 	var body := _body()
-	var type := _clip_type(body)
-	var clips: Dictionary = type.get("stun_animations") if type else {}
+	var facts := _clip_facts(body)
 	_airborne = body is UnitBody and (body as UnitBody).is_flying()
-	var knock := _frames(clips, "hit_floor" if _from_fall else "knock")
-	var up := _frames(clips, "get_up")
+	var knock := facts.frames(&"hit_floor" if _from_fall else &"knock")
+	var up := facts.frames(&"get_up")
 	if _from_fall:
 		_airborne = false
 	elif _airborne:
 		knock = 0
-		up = _frames(clips, "fly_damage")
-		if up == 0 and type is CreatureType:
-			up = int((type as CreatureType).flight_animations.get("fly", {}).get("frames", 0))
-	elif knock + up == 0 and type:
-		up = int((type.get("idle_animation") as Dictionary).get("frames", 0))
+		up = facts.frames(&"fly_damage")
+		if up == 0:
+			up = facts.frames(&"fly")
+	elif knock + up == 0:
+		up = facts.frames(&"gesture")
 	_knock_ticks = knock * FRAME_TICKS
 	_total = maxi(1, (knock + up) * FRAME_TICKS)
 
 
-## F138: a body that says its clip data (a wizard: its WizardType; it has no `type`, which other readers take for a
+## F138: what the body says about its clips (a wizard: its WizardType; it has no `type`, which other readers take for a
 ## creature's), else its CreatureType.
-static func _clip_type(body: Node3D) -> Resource:
+static func _clip_facts(body: Node3D) -> ClipFacts:
 	if body is WizardBody:
-		return (body as WizardBody).clip_type()
-	return body.get("type") as CreatureType if body else null
-
-
-static func _frames(clips: Dictionary, role: String) -> int:
-	var clip: Variant = clips.get(role, {})
-	return int((clip as Dictionary).get("frames", 0)) if clip is Dictionary else 0
+		var wizard: WizardType = (body as WizardBody).clip_type()
+		return wizard.clip_facts() if wizard != null else ClipFacts.of(null)
+	var creature: CreatureType = body.get("type") as CreatureType if body else null
+	return creature.clip_facts() if creature != null else ClipFacts.of(null)
 
 
 func _play_fallback(on: bool) -> void:

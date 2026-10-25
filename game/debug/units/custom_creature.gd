@@ -23,11 +23,11 @@ const MAX_WAIT_FRAMES := 1800
 ## UnitOrders.Command (the enum of a script with no class_name).
 const ORDER_MOVE := 1
 const ORDER_ATTACK := 2
-## The blow lands this many seconds after the swing starts, by variant: attack_ticks [18] of the 30 fps `attack_at45`, [30] of `attack2_at60`.
+## The blow lands this many seconds after the swing starts, by variant: the `hit` marker at frame 18 of the 30 fps `attack_at45`, frame 30 of `attack2_at60`.
 const IMPACT_S: Array[float] = [0.6, 1.0]
 const IMPACT_TOLERANCE_S := 0.08
 
-## One entry per swing of the fight: {index: the melee slot it played, start: frame it started, hit: frame its blow landed or -1}.
+## One entry per swing of the fight: {index: the swing it played, start: frame it started, hit: frame its blow landed or -1}.
 var _swings: Array[Dictionary] = []
 var _frame := 0
 
@@ -96,15 +96,15 @@ func _run() -> void:
 		return
 	var info := BodyCatalog.info(TAG)
 	var type := unit.type
+	var facts := type.clip_facts() if type != null else ClipFacts.of(null)
 	var checks := {
 		"type_found": type != null and type.model == TAG,
 		"scene_exists": BodyModel.exists(TAG),
 		"size_height": absf(float(info.get("height", 0.0)) - 2.0) < 0.05,
 		"size_reach": absf(float(info.get("reach", 0.0)) - 0.475) < 0.01,
-		"melee_clips": type != null and type.melee_animations.size() == 2 and int(type.melee_animations[0]["frames"]) == 40
-			and absf(float(type.melee_animations[0]["attack_ticks"][0]) - 18.0) < 0.01
-			and int(type.melee_animations[1]["frames"]) == 50 and absf(float(type.melee_animations[1]["attack_ticks"][0]) - 30.0) < 0.01,
-		"death_clip": type != null and int(type.death_animations.get("death", {}).get("frames", 0)) == 36,
+		"melee_clips": facts.frames(&"attack") == 40 and facts.hits(&"attack") == PackedInt32Array([18])
+			and facts.frames(&"attack2") == 50 and facts.hits(&"attack2") == PackedInt32Array([30]) and not facts.has(&"attack3"),
+		"death_clip": facts.frames(&"death") == 36,
 	}
 	for key in checks:
 		if not checks[key]:
@@ -134,7 +134,7 @@ func _run() -> void:
 		_fail("it did not walk to the order (%.1f m of 12)" % travelled)
 		return
 
-	# 3. Fight a dummy that does not die. Every swing is recorded: the slot of melee_animations it plays and when its blow lands.
+	# 3. Fight a dummy that does not die. Every swing is recorded: the swing (attack, attack2) it plays and when its blow lands.
 	var dummy := _dummy(unit.global_position + Vector3(2.5, 0.0, 0.0))
 	await _frames(5)
 	var dummy_health: Health = dummy.get_node("Health")
@@ -160,7 +160,7 @@ func _run() -> void:
 			if int(swing["index"]) == index and int(swing["hit"]) >= 0:
 				times.append("%.3f" % (float(int(swing["hit"]) - int(swing["start"])) / 60.0))
 		print("CUSTOM_CREATURE variant %d (%s): %d swings, %d blows landed, after the swing started (s): %s (impact %.2f s)" % [
-			index, type.melee_animations[index]["tag"], _count(index), _landed(index), ", ".join(times), IMPACT_S[index]])
+			index, type.clips.get_animation(MeleeAttack.SWING_ROLES[index]).resource_name, _count(index), _landed(index), ", ".join(times), IMPACT_S[index]])
 	if _landed(0) < 1 or _landed(1) < 1:
 		_fail("both melee variants must land a blow (swings %d of the first, %d of the second; blows %d and %d; dummy %.0f of %.0f)" % [
 			_count(0), _count(1), _landed(0), _landed(1), dummy_health.current, before])
@@ -195,7 +195,7 @@ func _run() -> void:
 	get_tree().quit(0)
 
 
-## Swings of the fight that played melee slot `index`.
+## Swings of the fight that played swing `index`.
 func _count(index: int) -> int:
 	var count := 0
 	for swing in _swings:

@@ -185,8 +185,6 @@ bind_aabb = AABB(-1.411924, -0.92901, -0.80306, 2.834439, 2.350586, 1.450975)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0], [8.0]]
 clips = {
 "BUgu": {
-"framerate": 30,
-"frames": 25,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -198,8 +196,6 @@ clips = {
 }]
 },
 "BUhf": {
-"framerate": 30,
-"frames": 92,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -211,8 +207,6 @@ clips = {
 }]
 },
 "BUi1": {
-"framerate": 30,
-"frames": 51,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -224,8 +218,6 @@ clips = {
 }]
 },
 "BUrl": {
-"framerate": 30,
-"frames": 30,
 "hands": [{
 "bone_name": "bone_06",
 "offset": Vector3(0, 0, 0),
@@ -237,8 +229,6 @@ clips = {
 }]
 },
 "BUru": {
-"framerate": 30,
-"frames": 30,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -250,8 +240,6 @@ clips = {
 }]
 },
 "BUs1": {
-"framerate": 30,
-"frames": 50,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -263,8 +251,6 @@ clips = {
 }]
 },
 "BUsl": {
-"framerate": 30,
-"frames": 51,
 "hands": [{
 "bone_name": "bone_06",
 "offset": Vector3(0, 0, 0),

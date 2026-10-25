@@ -262,8 +262,8 @@ func _check_bodies(tags: Dictionary) -> void:
 			_report("body_sizes/%s: upright_fix has %d numbers, it needs 3" % [_file(size), size.upright_fix.size()])
 
 
-## RFC-051: a creature whose model is a .glb of assets/custom/models/ has its model scene, and every clip its fields name is a
-## clip of that .glb (the fields are filled by tools/bake/new_creature.gd; `--sync` refreshes them after the scene is edited).
+## RFC-051: a creature whose model is a .glb of assets/custom/models/ has its model scene, and every clip of its library is a
+## clip of that .glb (the library is made by tools/bake/new_creature.gd; `--sync` refreshes it after a new export).
 func _check_custom_model(creature: CreatureType) -> void:
 	var glb_path := "res://assets/custom/models/%s.glb" % creature.model
 	if creature.model.is_empty() or not ResourceLoader.exists(glb_path):
@@ -280,34 +280,16 @@ func _check_custom_model(creature: CreatureType) -> void:
 			root.free()
 		return
 	var player := players[0] as AnimationPlayer
-	var clips: Array[Dictionary] = [creature.idle_animation, creature.run_animation, creature.walk_animation]
-	clips.append_array(creature.melee_animations)
-	clips.append_array(creature.shoot_animations)
-	for table: Dictionary in [creature.stun_animations, creature.death_animations, creature.flight_animations,
-			creature.captive_animations, creature.extra_animations]:
-		for role: String in table:
-			clips.append(table[role])
-	for clip in clips:
-		var tag := str(clip.get("tag", ""))
-		if not tag.is_empty() and not player.has_animation(tag):
-			_report("creatures/%s: the clip \"%s\" is not in %s.glb (run new_creature.gd --sync %s)" % [_file(creature), tag, creature.model, creature.model])
-	if creature.idle_animation.is_empty():
-		_report("creatures/%s: no idle_animation (a custom creature needs an idle clip)" % _file(creature))
-	# F336: the melee swings are the slots of melee_animations (attack, attack2, attack3 of the model); each lands on a frame of its clip.
-	if creature.melee_animations.size() > 3:
-		_report("creatures/%s: %d melee_animations, the rules use 3 at most (attack, attack2, attack3)" % [_file(creature), creature.melee_animations.size()])
-	for index in creature.melee_animations.size():
-		var swing: Dictionary = creature.melee_animations[index]
-		var frames := int(swing.get("frames", 0))
-		var ticks: Array = swing.get("attack_ticks", [])
-		if frames <= 0:
-			_report("creatures/%s: melee_animations[%d] has no clip (run new_creature.gd --sync %s)" % [_file(creature), index, creature.model])
-		elif ticks.is_empty():
-			_report("creatures/%s: melee_animations[%d] (%s) has no attack_ticks (the blow would land on the last frame)" % [_file(creature), index, swing.get("tag", "")])
-		else:
-			for tick in ticks:
-				if float(tick) < 0.0 or float(tick) > float(frames):
-					_report("creatures/%s: melee_animations[%d] (%s) lands on frame %s, the clip has %d" % [_file(creature), index, swing.get("tag", ""), tick, frames])
+	if creature.clips == null:
+		_report("creatures/%s: no clips (run new_creature.gd --sync %s)" % [_file(creature), creature.model])
+	else:
+		for role in creature.clips.get_animation_list():
+			var tag := creature.clips.get_animation(role).resource_name
+			if not tag.is_empty() and not player.has_animation(tag):
+				_report("creatures/%s: the clip \"%s\" of the role %s is not in %s.glb (run new_creature.gd --sync %s)" % [
+					_file(creature), tag, role, creature.model, creature.model])
+		if not creature.clips.has_animation(&"idle"):
+			_report("creatures/%s: no idle role in its clips (a custom creature needs an idle clip)" % _file(creature))
 	if creature.icon == null:
 		print("CATALOG warning: creatures/%s has no HUD icon (CreatureType.icon; tools/bake/fill_type_icons.gd or creature_icon.gd fill it)" % _file(creature))
 	root.free()

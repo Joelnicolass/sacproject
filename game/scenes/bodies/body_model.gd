@@ -31,7 +31,7 @@ const HOLD_ROLES: PackedStringArray = ["death", "death2", "death3", "fly_death",
 const SCENE_DIR := "res://scenes/bodies/models/"
 ## The roles whose Animation carries the `hit` marker.
 const MELEE_ROLES: PackedStringArray = ["attack", "attack2", "attack3"]
-## Frames per second of a clip the `clips` table does not list (glTF animations carry none; Godot imports them at 30).
+## Frames per second of a glTF animation, which carries none (Godot imports them at 30).
 const DEFAULT_FRAMERATE := 30
 const PLAYBACK := &"parameters/playback"
 
@@ -55,8 +55,8 @@ const PLAYBACK := &"parameters/playback"
 @export var bind_aabb := AABB()
 ## The body parts each mesh surface merges; the material of a surface is the one of its first part (OriginalMaterial).
 @export var surface_parts: Array = []
-## clip tag -> {frames, framerate, hands: [{on, bone_name, offset}, {...}]}. Only the clips a role uses. `hands` are the two
-## sockets of the clip (a hand on the root bone is "no hand": sacengine leaves it NaN).
+## clip tag -> {hands: [{on, bone_name, offset}, {...}]}. Only the clips a role uses. `hands` are the two sockets of the clip (a
+## hand on the root bone is "no hand": sacengine leaves it NaN). How long a clip lasts is the Animation's, in the library.
 @export var clips: Dictionary = {}
 
 @onready var _model: Node3D = %Model
@@ -149,17 +149,10 @@ func roles() -> PackedStringArray:
 	return out
 
 
-## The `hands` (and, for a clip of your own, the frames) of the .glb clip `tag`. A clip the table does not list (the role was
-## pointed at another clip of the .glb in the inspector) comes without hands.
-func clip_data(tag: String) -> Dictionary:
-	if clips.has(tag):
-		return clips[tag]
-	var player := clip_player()
-	if player == null or not player.has_animation(tag):
-		return {}
-	var animation := player.get_animation(tag)
-	var rate := roundi(1.0 / animation.step) if animation.step > 0.0 else DEFAULT_FRAMERATE
-	return {"frames": roundi(animation.length * rate), "framerate": rate, "hands": []}
+## The two hand sockets of the .glb clip `tag`. A clip the table does not list (the role was pointed at another clip of the .glb
+## in the inspector) comes without hands.
+func hands_of(tag: String) -> Array:
+	return (clips.get(tag, {}) as Dictionary).get("hands", [])
 
 
 ## Frames and frames per second of the Animation `role` plays (0 / 30 without one), read from the library.

@@ -24,6 +24,8 @@ signal fired(target: Node3D, damage: float, mana_before: float, mana_after: floa
 enum Step { APPROACH, HOLD, FIRE }
 
 const FPS := 60.0
+## The clip of the shot, whose `shoot` markers say the frames where a shot leaves.
+const SHOT_ROLE := &"shoot"
 ## sacspell.d:120 fallingAcceleration; 30 for every other tag.
 const FALLING_ACCELERATION := {"dkba": 10.0}
 const DEFAULT_FALLING := 30.0
@@ -55,7 +57,11 @@ var _melee: MeleeAttack
 var _rng: RandomNumberGenerator
 var _cooldown := 0.0
 var _target: Node3D
-var _anim: Dictionary = {}
+## The shot in course, read once when it starts: how long it lasts and the frames where each shot leaves.
+var _shooting := false
+var _frames := 1
+var _rate := 30.0
+var _shots := PackedInt32Array([0])
 var _elapsed := 0.0
 var _next_tick := 0
 
@@ -85,7 +91,7 @@ func has_attack() -> bool:
 
 
 func is_shooting() -> bool:
-	return not _anim.is_empty()
+	return _shooting
 
 
 func cooldown_left() -> float:
@@ -93,7 +99,7 @@ func cooldown_left() -> float:
 
 
 func cancel() -> void:
-	_anim = {}
+	_shooting = false
 	_target = null
 
 
@@ -143,37 +149,41 @@ func aim_direction(target: Node3D) -> Vector3:
 
 ## Advances shoot0 by delta. Returns false once the animation has ended.
 func advance(delta: float) -> bool:
-	if _anim.is_empty():
+	if not _shooting:
 		return false
 	## RFC 061c: each layer of Slime makes the shot take 5x as long (sacengine hasShootTick, state.d:1405-1408).
 	_elapsed += delta / Afflictions.stat_factor_of(_body, Afflictions.Stat.ATTACK_TIME)
-	var rate := float(_anim.get("framerate", 30))
-	var frames := int(_anim.get("frames", 1))
-	var ticks: Array = _anim.get("shoot_ticks", [])
-	var tick_frames: Array = ticks if not ticks.is_empty() else [frames - 1]
-	while _next_tick < tick_frames.size() and _elapsed >= float(tick_frames[_next_tick]) / rate:
+	while _next_tick < _shots.size() and _elapsed >= float(_shots[_next_tick]) / _rate:
 		_next_tick += 1
-		_shoot_tick(tick_frames.size())
-	if _elapsed >= float(frames) / rate:
-		_anim = {}
+		_shoot_tick(_shots.size())
+	if _elapsed >= float(_frames) / _rate:
+		_shooting = false
 		return false
 	return true
 
 
 func _start(target: Node3D) -> void:
 	_target = target
-	_anim = _shoot_animation()
+	_read_clip()
+	_shooting = true
 	_elapsed = 0.0
 	_next_tick = 0
 
 
-func _shoot_animation() -> Dictionary:
-	if type and not type.shoot_animations.is_empty():
-		var anim: Dictionary = type.shoot_animations[0]
-		if int(anim.get("frames", 0)) > 1:
-			return anim
-	## No SXSK shoot0 in the cache: shoot at once, as an animation of one tick.
-	return {"frames": 1, "framerate": 30, "shoot_ticks": [0]}
+## Reads the numbers of the `shoot` clip once, so the ticks that follow read only variables. A model without one shoots at once, as
+## a clip of one frame.
+func _read_clip() -> void:
+	var facts := type.clip_facts() if type else ClipFacts.of(null)
+	if facts.frames(SHOT_ROLE) > 1:
+		_frames = facts.frames(SHOT_ROLE)
+		_rate = float(facts.fps(SHOT_ROLE))
+		_shots = facts.shots(SHOT_ROLE)
+		if _shots.is_empty():
+			_shots = PackedInt32Array([_frames - 1])
+	else:
+		_frames = 1
+		_rate = 30.0
+		_shots = PackedInt32Array([0])
 
 
 func _shoot_tick(tick_count: int) -> void:

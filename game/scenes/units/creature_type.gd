@@ -46,16 +46,6 @@ extends Resource
 @export var melee_width_scale := 1.0
 ## A villager: gets the peasant scene (it digs, cowers and holds a grudge) and never attacks (PeasantBehavior).
 @export var peasant := false
-## stance1 (slot 0): the rest pose sacengine plays between gestures (state.d:7957-7992). RFC-023: the idle role plays it.
-@export var stance_animation: Dictionary = {}
-## idle0 from SXSK/SKEL: baseline breathing/stance loop for presentation timing.
-@export var idle_animation: Dictionary = {}
-## run from SXSK/SKEL: locomotion loop (most creatures use this while moving).
-@export var run_animation: Dictionary = {}
-## walk from SXSK/SKEL: only differs from run on some creatures (e.g. Eldred in sacengine).
-@export var walk_animation: Dictionary = {}
-## attack0..attack2 from the SXSK/SKEL: {tag, frames, framerate, attack_ticks}. Empty dict = missing.
-@export var melee_animations: Array[Dictionary] = []
 @export_group("Abilities")
 ## The ranged attack of the creature (data/catalog/abilities/), or empty for one that only fights in melee.
 @export var ranged_attack: AbilityType
@@ -68,25 +58,6 @@ extends Resource
 ## add (Yeti's freeze, Dragon's vines). DeathCloudSpawner and MeleeOnHit walk this list.
 @export var passives: Array[CreaturePassive] = []
 @export_group("")
-## shoot0, shoot1 from the SXSK/SKEL: {tag, frames, framerate, shoot_ticks}.
-@export var shoot_animations: Array[Dictionary] = []
-## Peasant clips (CRE8 animation slots 32/33/35/37, RFC-028c): role -> {tag, frames, framerate}, with roles
-## cower, pull, work (dig) and talk_cower. Empty for every creature that is not a peasant.
-@export var extra_animations: Dictionary = {}
-## F116 (RFC-030e): takeoff, fly and land clips (CRE8 slots 32-34) as sacengine loads them: a slot that repeats stance1
-## or ends in "00" is left out (Phoenix has only fly; Rhinok none). role -> {tag, frames, framerate}.
-@export var flight_animations: Dictionary = {}
-## RFC-023f: hover joins them (slot 38, the pose in the air; a hybrid flier idles on it). role -> {tag, frames, framerate}.
-## F120 (RFC-030i-a): knock, get_up and fly_damage clips (CRE8 slots 9, 10, 35) by the same rule: role -> {tag, frames,
-## framerate}. Stunned lasts (knock + get_up)·2 ticks on the ground and fly_damage·2 in the air (state.d:8138-8150, 14170-14212).
-## Peasants have no fly_damage (slot 35 is their dig).
-@export var stun_animations: Dictionary = {}
-## RFC-023f: the dying clips (death0 at slot 19, flyDeath at 36 for a body in the air): role "death" / "fly_death" ->
-## {tag, frames, framerate}. A role the SXSK has no clip for is left out (the corpse then tips over with a Tween).
-@export var death_animations: Dictionary = {}
-## RFC-023 023e: what the creature plays while a Sac Doctor holds it (CreatureMode.thrashing, CRE8 slots 46, 49, 25): rise
-## (once), held (float2Thrash, once) and thrash (loop), by the same rule: role -> {tag, frames, framerate}.
-@export var captive_animations: Dictionary = {}
 
 
 ## The id of this creature on the network and in the catalog: its `tag`, or the file name when the tag is empty (new content).
@@ -115,19 +86,12 @@ func is_flying() -> bool:
 ## sacengine canFly && !mustFly (sacobject.d:81-83, 113-115): walks and flies (the hybrids). It flies when that arrives
 ## first (Flight). A creature that must fly (is_flying) is not a hybrid.
 func is_hybrid_flier() -> bool:
-	return run_speed_m_s > 0.0 and fly_speed_m_s > 0.0 and flight_animations.has("fly")
+	return run_speed_m_s > 0.0 and fly_speed_m_s > 0.0 and clip_facts().has(&"fly")
 
 
-## sacengine takeoffTime (sacobject.d:125-128): takeoff frames / animFPS (30); 0 without a takeoff clip.
-func takeoff_time_s() -> float:
-	var clip: Dictionary = flight_animations.get("takeoff", {})
-	return float(clip.get("frames", 0)) / 30.0
-
-
-## sacengine landing: the land clip lasts numFrames·updateAnimFactor ticks (state.d:14155-14160); 0 without one.
-func land_time_s() -> float:
-	var clip: Dictionary = flight_animations.get("land", {})
-	return float(clip.get("frames", 0)) / 30.0
+## What the rules know about the clips of its model: how long each role lasts and where its blow lands. Built once per library.
+func clip_facts() -> ClipFacts:
+	return ClipFacts.of(clips)
 
 
 ## The scales below as the whole thousandths the simulation counts in (1.1 -> 1100): exact for any value with up to three decimals.

@@ -56,28 +56,18 @@ model = "testmonster"
 bind_aabb = AABB(-0.47500002, 0, -0.225, 0.95000005, 2, 0.75)
 clips = {
 "attack2_at60": {
-"framerate": 30,
-"frames": 50,
 "hands": []
 },
 "attack_at45": {
-"framerate": 30,
-"frames": 40,
 "hands": []
 },
 "death": {
-"framerate": 30,
-"frames": 36,
 "hands": []
 },
 "idle": {
-"framerate": 30,
-"frames": 60,
 "hands": []
 },
 "run": {
-"framerate": 30,
-"frames": 24,
 "hands": []
 }
 }

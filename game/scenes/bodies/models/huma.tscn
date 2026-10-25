@@ -100,8 +100,6 @@ bind_aabb = AABB(-0.26486, -0.372383, -1.235845, 0.537486, 0.731546, 1.9072759)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0]]
 clips = {
 "HA2t": {
-"framerate": 30,
-"frames": 26,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -113,8 +111,6 @@ clips = {
 }]
 },
 "HAa1": {
-"framerate": 30,
-"frames": 45,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -126,8 +122,6 @@ clips = {
 }]
 },
 "HAa2": {
-"framerate": 30,
-"frames": 45,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -139,8 +133,6 @@ clips = {
 }]
 },
 "HAal": {
-"framerate": 30,
-"frames": 45,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -152,8 +144,6 @@ clips = {
 }]
 },
 "HAd1": {
-"framerate": 30,
-"frames": 105,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -165,8 +155,6 @@ clips = {
 }]
 },
 "HAfo": {
-"framerate": 30,
-"frames": 37,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -178,8 +166,6 @@ clips = {
 }]
 },
 "HAgu": {
-"framerate": 30,
-"frames": 52,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -191,8 +177,6 @@ clips = {
 }]
 },
 "HAhf": {
-"framerate": 30,
-"frames": 67,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -204,8 +188,6 @@ clips = {
 }]
 },
 "HAi1": {
-"framerate": 30,
-"frames": 39,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -217,8 +199,6 @@ clips = {
 }]
 },
 "HAri": {
-"framerate": 30,
-"frames": 91,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -230,8 +210,6 @@ clips = {
 }]
 },
 "HAru": {
-"framerate": 30,
-"frames": 31,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -243,8 +221,6 @@ clips = {
 }]
 },
 "HAsa": {
-"framerate": 30,
-"frames": 43,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -256,8 +232,6 @@ clips = {
 }]
 },
 "HAsh": {
-"framerate": 30,
-"frames": 58,
 "hands": [{
 "bone_name": "bone_15",
 "offset": Vector3(0, 0, 0),
@@ -269,8 +243,6 @@ clips = {
 }]
 },
 "HAst": {
-"framerate": 30,
-"frames": 37,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

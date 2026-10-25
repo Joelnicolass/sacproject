@@ -13,19 +13,19 @@ extends SceneTree
 ##   scenes/bodies/models/<tag>_clips.tres the AnimationLibrary: role -> Animation, and <tag>_clips/<clip>.res, one Animation per clip
 ##                                          (bone tracks, exact length, the `hit`/`shoot` marker and the method track at the impact).
 ##   data/catalog/body_sizes/<tag>.tres    BodySize measured from the mesh (box, height, radius, reach).
-##   data/catalog/creatures/<tag>.tres     CreatureType: the stats of data/templates/creature.tres + the model + the clip facts
-##                                          the rules read (melee/shoot timing, stun, flight, death).
+##   data/catalog/creatures/<tag>.tres     CreatureType: the stats of data/templates/creature.tres + the model + its `clips` (the same library:
+##                                          the rules read the timing of each swing, shot, stun, flight and death from it).
 ## `--sync` copies the bone tracks of the .glb again into the Animations of the library (after a new export from Blender; the length is the
-## clip's, the markers and the method track stay) and refreshes the creature's clip facts from the scene (keeps your stats). Run it after
-## you change which Animation a role plays, or a marker, in the model scene.
+## clip's, the markers and the method track stay) and checks the creature points at the library (keeps your stats). The rules follow the
+## library, so a marker you move in the model scene is already what they read.
 ##
 ## Roles are found by the NAME of each animation, tolerant of case, separators, a Blender suffix (`Attack.001`) and an armature
 ## prefix (`Armature|Run`): idle, run (or walk), attack, shoot, cast, hit, death, fly, takeoff, land, hover, knock, get_up...
 ## The impact moment of a clip is in its name: `attack_at45` = at 45 % of the clip, `attack_f18` = at frame 18. Without one it is
 ## the middle (50 %). Both are editable afterwards: the `hit` marker (and the "attack" key of the method track) of its Animation.
 ## Attack variants (F336): clips named `attack`, `attack2`, `attack3` (or `attack_a`, `attack_b`, `attack_c`; each with its own `_atNN`/`_fNN`
-## impact) become up to three melee swings, the slots 0, 1 and 2 of `melee_animations`. The rules pick the slot 0 or the slot 1 at random
-## for each swing; the slot 2 is the one against a target well below (a downward blow). Each swing plays its own clip.
+## impact) become up to three melee swings, the roles `attack`, `attack2` and `attack3`. The rules pick `attack` or `attack2` at random
+## for each swing; `attack3` is the one against a target well below (a downward blow). Each swing plays its own clip.
 ## The HUD icon (F335): `assets/custom/icons/<tag>.png` if it exists (yours, never overwritten); else one is drawn from the model (the idle
 ## pose, the camera framing its box) with tools/bake/creature_icon_render.gd. Drawing needs a renderer: from a headless run it is skipped (a note
 ## says so) and `Godot --path . --script res://tools/bake/creature_icon.gd -- <tag>` (with a window) makes it afterwards.
@@ -85,17 +85,8 @@ const FALLBACKS := {"shoot": ["attack"], "hover": ["fly"], "fly_death": ["death"
 ## The fallbacks of these roles only make sense for a body that flies.
 const FLIGHT_FALLBACKS: PackedStringArray = ["hover", "fly_death", "fly_damage"]
 
-## Role of each melee slot (CreatureType.melee_animations): the rules pick 0 or 1 at random, 2 is the downward blow.
+## Role of each swing (MeleeAttack.SWING_ROLES): the rules pick `attack` or `attack2` at random, `attack3` is the downward blow.
 const ATTACK_ROLES: PackedStringArray = ["attack", "attack2", "attack3"]
-
-## CreatureType dictionary -> roles it holds (the rules read these; the key is the role).
-const SETS := {
-	"stun_animations": ["knock", "get_up", "fly_damage"],
-	"death_animations": ["death", "fly_death"],
-	"flight_animations": ["takeoff", "fly", "land", "hover"],
-	"captive_animations": ["rise", "held", "thrash"],
-	"extra_animations": ["cower", "talk_cower", "work"],
-}
 
 var _force := false
 ## Rewrites only the sound set (a test refreshing its output), never the creature's type, scene or icon.
@@ -220,8 +211,8 @@ func _create(tag: String, glb_path: String, display: String, god: String) -> int
 		kept.append(type_path)
 	instance.free()
 
-	# The clip facts come from the saved model scene, the one a human edits: the same path as --sync.
-	if wrote.has(type_path) and _fill_from_scene(tag) != OK:
+	# The rules read the clips from the library of the saved model, the one a human edits: the same path as --sync.
+	if wrote.has(type_path) and _link_clips(tag) != OK:
 		return 1
 
 	var icon := await _make_icon(tag, str(roles["idle"]))
@@ -449,7 +440,7 @@ func _save_scene(tag: String, glb: PackedScene, clips: Dictionary, roles: Dictio
 	root.bind_aabb = box
 	var table := {}
 	for name: String in clips:
-		table[name] = {"frames": clips[name]["frames"], "framerate": clips[name]["fps"], "hands": []}
+		table[name] = {"hands": []}
 	root.clips = table
 
 	var instance := glb.instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE) as Node3D
@@ -503,7 +494,7 @@ func _save_scene(tag: String, glb: PackedScene, clips: Dictionary, roles: Dictio
 	return true
 
 
-## One state per role, travel transitions between all, one-shot roles back to idle by themselves (as bake_body_scenes does).
+## One state per role, travel transitions between all, one-shot roles back to idle by themselves.
 func _machine(roles: Dictionary) -> AnimationNodeStateMachine:
 	var machine := AnimationNodeStateMachine.new()
 	var travel := AnimationNodeStateMachineTransition.new()
@@ -629,79 +620,31 @@ func _sync_creature(tag: String) -> int:
 		return 1
 	var code := _refresh_library(tag)
 	if code == OK:
-		code = _fill_from_scene(tag)
+		code = _link_clips(tag)
 	if code == OK:
-		print("NEW_CREATURE synced %s: the clip facts of data/catalog/creatures/%s.tres follow scenes/bodies/models/%s.tscn" % [tag, tag, tag])
+		print("NEW_CREATURE synced %s: data/catalog/creatures/%s.tres reads the clips of scenes/bodies/models/%s_clips.tres" % [tag, tag, tag])
 		var type := ResourceLoader.load(TypeRef.creature_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as CreatureType
-		print("NEW_CREATURE icon: %s" % await _make_icon(tag, str(type.idle_animation.get("tag", ""))))
+		print("NEW_CREATURE icon: %s" % await _make_icon(tag, CreatureIconRender.idle_clip_of(type)))
 		code = _bake_sounds(tag)
 	return code
 
 
-## Loads the saved model scene and the creature file of `tag`, rewrites the creature's clip dictionaries from the scene
-## (role -> clip from the AnimationTree, frames and framerate from the Animation, impact from its `hit` / `shoot` marker) and saves it.
-func _fill_from_scene(tag: String) -> int:
+## Points the creature of `tag` at the library of its model (`clips`), so the rules read the timing a human edits there. Saves it only
+## when it was not already pointing at it.
+func _link_clips(tag: String) -> int:
 	var type := ResourceLoader.load(TypeRef.creature_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as CreatureType
-	var packed := ResourceLoader.load(BodyModel.scene_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as PackedScene
-	if type == null or packed == null:
-		push_error("new_creature: cannot read the creature or the scene of %s" % tag)
+	var library := ResourceLoader.load(SCENE_DIR + tag + "_clips.tres", "", ResourceLoader.CACHE_MODE_REPLACE) as AnimationLibrary
+	if type == null or library == null:
+		push_error("new_creature: cannot read the creature or the library of %s" % tag)
 		return 1
-	var model := packed.instantiate() as BodyModel
-	# BodyModel finds its nodes when it is ready: it has to be in the tree to answer.
-	root.add_child(model)
-	var roles := model.roles()
-
-	var idle := _clip(model, "idle")
-	type.idle_animation = idle
-	type.stance_animation = {}
-	var run := _clip(model, "run")
-	type.run_animation = run
-	type.walk_animation = run
-	type.melee_animations = [] as Array[Dictionary]
-	if roles.has("attack"):
-		# The slot 1 is the second of the random pair: without an `attack2` but with an `attack3`, it repeats the attack.
-		var slots: Array[String] = ["attack", "attack2" if roles.has("attack2") else ("attack" if roles.has("attack3") else "")]
-		if roles.has("attack3"):
-			slots.append("attack3")
-		for role in slots:
-			if not role.is_empty():
-				var swing := _clip(model, role)
-				swing["attack_ticks"] = [_impact_frame(model, role)]
-				type.melee_animations.append(swing)
-	type.shoot_animations = [] as Array[Dictionary]
-	if roles.has("shoot"):
-		var shoot := _clip(model, "shoot")
-		shoot["shoot_ticks"] = [_impact_frame(model, "shoot")]
-		type.shoot_animations.append(shoot)
-	for property: String in SETS:
-		var table := {}
-		for role: String in SETS[property]:
-			if roles.has(role):
-				table[role] = _clip(model, role)
-		type.set(property, table)
-	root.remove_child(model)
-	model.free()
+	if type.clips != null and type.clips.resource_path == library.resource_path:
+		return OK
+	type.clips = library
 	var error := ResourceSaver.save(type, TypeRef.creature_path(tag))
 	if error != OK:
 		push_error("new_creature: cannot save %s.tres (%d)" % [tag, error])
 		return 1
 	return OK
-
-
-## {tag, frames, framerate} of the clip a role plays in the scene ({} when it has none).
-func _clip(model: BodyModel, role: String) -> Dictionary:
-	if not model.has_role(role):
-		return {}
-	return {"tag": model.tag_for(role), "frames": model.frames_of(role), "framerate": model.framerate_of(role)}
-
-
-## The frame of the first `hit` (`shoot` for a shot) marker of the role's Animation; the middle of the clip without one.
-func _impact_frame(model: BodyModel, role: String) -> float:
-	var anim := model.clips_player().get_animation(model.animation_for(role)) if model.has_role(role) else null
-	var marker := ClipFacts.SHOOT if role.begins_with("shoot") else ClipFacts.HIT
-	if anim != null and anim.has_marker(marker):
-		return snappedf(anim.get_marker_time(marker) * model.framerate_of(role), 0.01)
-	return float(model.frames_of(role)) * DEFAULT_IMPACT
 
 
 # --- icon ---------------------------------------------------------------------------------------------------------------
@@ -777,5 +720,5 @@ func _report(tag: String, clips: Dictionary, found: Dictionary, measure: Diction
 	print("NEW_CREATURE wrote: %s" % ", ".join(wrote))
 	print("NEW_CREATURE icon: %s" % icon)
 	if not kept.is_empty():
-		print("NEW_CREATURE kept (exist; --force rewrites them, --sync refreshes the clip facts only): %s" % ", ".join(kept))
+		print("NEW_CREATURE kept (exist; --force rewrites them, --sync refreshes the clips only): %s" % ", ".join(kept))
 	print("NEW_CREATURE next: put data/catalog/creatures/%s.tres in the book of %s (data/gods/%s.tres > book > creatures, and a line in unlocks), then run the catalog validator." % [tag, god if not god.is_empty() else "a god", god if not god.is_empty() else "<god>"])

@@ -198,8 +198,6 @@ bind_aabb = AABB(-0.766222, -1.214082, -0.209123, 1.5373499, 2.055678, 0.479989)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0]]
 clips = {
 "hefd": {
-"framerate": 30,
-"frames": 26,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -211,8 +209,6 @@ clips = {
 }]
 },
 "hegu": {
-"framerate": 30,
-"frames": 28,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -224,8 +220,6 @@ clips = {
 }]
 },
 "hei1": {
-"framerate": 30,
-"frames": 147,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -237,8 +231,6 @@ clips = {
 }]
 },
 "her2": {
-"framerate": 30,
-"frames": 48,
 "hands": [{
 "bone_name": "bone_28",
 "offset": Vector3(0, 0, 0),
@@ -250,8 +242,6 @@ clips = {
 }]
 },
 "hern": {
-"framerate": 30,
-"frames": 24,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -263,8 +253,6 @@ clips = {
 }]
 },
 "hes2": {
-"framerate": 30,
-"frames": 48,
 "hands": [{
 "bone_name": "bone_28",
 "offset": Vector3(0, 0, 0),
@@ -276,8 +264,6 @@ clips = {
 }]
 },
 "hest": {
-"framerate": 30,
-"frames": 73,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

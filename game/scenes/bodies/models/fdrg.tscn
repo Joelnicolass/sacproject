@@ -110,8 +110,6 @@ bind_aabb = AABB(-6.21406, -5.893, -5.616111, 12.362684, 12.443584, 6.8056626)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0]]
 clips = {
 "DF2t": {
-"framerate": 30,
-"frames": 26,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -123,8 +121,6 @@ clips = {
 }]
 },
 "DFa1": {
-"framerate": 30,
-"frames": 41,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -136,8 +132,6 @@ clips = {
 }]
 },
 "DFa2": {
-"framerate": 30,
-"frames": 67,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -149,8 +143,6 @@ clips = {
 }]
 },
 "DFa3": {
-"framerate": 30,
-"frames": 45,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -162,8 +154,6 @@ clips = {
 }]
 },
 "DFd1": {
-"framerate": 30,
-"frames": 35,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -175,8 +165,6 @@ clips = {
 }]
 },
 "DFdf": {
-"framerate": 30,
-"frames": 68,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -188,8 +176,6 @@ clips = {
 }]
 },
 "DFfl": {
-"framerate": 30,
-"frames": 88,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -201,8 +187,6 @@ clips = {
 }]
 },
 "DFhf": {
-"framerate": 30,
-"frames": 48,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -214,8 +198,6 @@ clips = {
 }]
 },
 "DFhv": {
-"framerate": 30,
-"frames": 88,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -227,8 +209,6 @@ clips = {
 }]
 },
 "DFi1": {
-"framerate": 30,
-"frames": 89,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -240,8 +220,6 @@ clips = {
 }]
 },
 "DFrz": {
-"framerate": 30,
-"frames": 51,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -253,8 +231,6 @@ clips = {
 }]
 },
 "DFs1": {
-"framerate": 30,
-"frames": 89,
 "hands": [{
 "bone_name": "bone_13",
 "offset": Vector3(0, 0.004, 0.001),
@@ -266,8 +242,6 @@ clips = {
 }]
 },
 "DFsc": {
-"framerate": 30,
-"frames": 22,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -279,8 +253,6 @@ clips = {
 }]
 },
 "DFst": {
-"framerate": 30,
-"frames": 88,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

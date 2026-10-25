@@ -90,8 +90,6 @@ bind_aabb = AABB(-1.45094, -1.672962, -1.54875, 2.931336, 3.2929468, 2.86125)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0]]
 clips = {
 "TFa1": {
-"framerate": 30,
-"frames": 29,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -103,8 +101,6 @@ clips = {
 }]
 },
 "TFi1": {
-"framerate": 30,
-"frames": 98,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -116,8 +112,6 @@ clips = {
 }]
 },
 "TFrn": {
-"framerate": 30,
-"frames": 24,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -129,8 +123,6 @@ clips = {
 }]
 },
 "TR2t": {
-"framerate": 30,
-"frames": 21,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -142,8 +134,6 @@ clips = {
 }]
 },
 "TRa1": {
-"framerate": 30,
-"frames": 43,
 "hands": [{
 "bone_name": "bone_06",
 "offset": Vector3(0, 0, 0),
@@ -155,8 +145,6 @@ clips = {
 }]
 },
 "TRa2": {
-"framerate": 30,
-"frames": 49,
 "hands": [{
 "bone_name": "bone_06",
 "offset": Vector3(0, 0, 0),
@@ -168,8 +156,6 @@ clips = {
 }]
 },
 "TRd1": {
-"framerate": 30,
-"frames": 54,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -181,8 +167,6 @@ clips = {
 }]
 },
 "TRfd": {
-"framerate": 30,
-"frames": 12,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -194,8 +178,6 @@ clips = {
 }]
 },
 "TRgu": {
-"framerate": 30,
-"frames": 24,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -207,8 +189,6 @@ clips = {
 }]
 },
 "TRhf": {
-"framerate": 30,
-"frames": 29,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -220,8 +200,6 @@ clips = {
 }]
 },
 "TRrz": {
-"framerate": 30,
-"frames": 48,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -233,8 +211,6 @@ clips = {
 }]
 },
 "TRsc": {
-"framerate": 30,
-"frames": 20,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -246,8 +222,6 @@ clips = {
 }]
 },
 "TRst": {
-"framerate": 30,
-"frames": 32,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

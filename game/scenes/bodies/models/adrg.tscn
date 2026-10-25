@@ -120,8 +120,6 @@ bind_aabb = AABB(-10.352123, -2.735702, -5.120929, 20.710245, 6.315527, 8.370101
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0], [8.0], [9.0]]
 clips = {
 "AD2t": {
-"framerate": 30,
-"frames": 26,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -133,8 +131,6 @@ clips = {
 }]
 },
 "ADa1": {
-"framerate": 30,
-"frames": 58,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -146,8 +142,6 @@ clips = {
 }]
 },
 "ADa2": {
-"framerate": 30,
-"frames": 76,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -159,8 +153,6 @@ clips = {
 }]
 },
 "ADa3": {
-"framerate": 30,
-"frames": 84,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -172,8 +164,6 @@ clips = {
 }]
 },
 "ADd1": {
-"framerate": 30,
-"frames": 142,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -185,8 +175,6 @@ clips = {
 }]
 },
 "ADda": {
-"framerate": 30,
-"frames": 40,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -198,8 +186,6 @@ clips = {
 }]
 },
 "ADfd": {
-"framerate": 30,
-"frames": 37,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -211,8 +197,6 @@ clips = {
 }]
 },
 "ADfi": {
-"framerate": 30,
-"frames": 19,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -224,8 +208,6 @@ clips = {
 }]
 },
 "ADfl": {
-"framerate": 30,
-"frames": 49,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -237,8 +219,6 @@ clips = {
 }]
 },
 "ADgu": {
-"framerate": 30,
-"frames": 55,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -250,8 +230,6 @@ clips = {
 }]
 },
 "ADhg": {
-"framerate": 30,
-"frames": 151,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -263,8 +241,6 @@ clips = {
 }]
 },
 "ADhv": {
-"framerate": 30,
-"frames": 49,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -276,8 +252,6 @@ clips = {
 }]
 },
 "ADi1": {
-"framerate": 30,
-"frames": 119,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -289,8 +263,6 @@ clips = {
 }]
 },
 "ADla": {
-"framerate": 30,
-"frames": 76,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -302,8 +274,6 @@ clips = {
 }]
 },
 "ADrn": {
-"framerate": 30,
-"frames": 39,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -315,8 +285,6 @@ clips = {
 }]
 },
 "ADs1": {
-"framerate": 30,
-"frames": 43,
 "hands": [{
 "bone_name": "bone_13",
 "offset": Vector3(0, 0, 0),
@@ -328,8 +296,6 @@ clips = {
 }]
 },
 "ADsc": {
-"framerate": 30,
-"frames": 25,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -341,8 +307,6 @@ clips = {
 }]
 },
 "ADst": {
-"framerate": 30,
-"frames": 97,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -354,8 +318,6 @@ clips = {
 }]
 },
 "ADto": {
-"framerate": 30,
-"frames": 58,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

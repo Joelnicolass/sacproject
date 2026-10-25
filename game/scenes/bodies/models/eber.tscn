@@ -166,8 +166,6 @@ bind_aabb = AABB(-1.763327, -2.105001, -1.197, 3.4890342, 5.794153, 2.03175)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0]]
 clips = {
 "BEa1": {
-"framerate": 30,
-"frames": 55,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -179,8 +177,6 @@ clips = {
 }]
 },
 "BEa2": {
-"framerate": 30,
-"frames": 72,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -192,8 +188,6 @@ clips = {
 }]
 },
 "BEd1": {
-"framerate": 30,
-"frames": 38,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -205,8 +199,6 @@ clips = {
 }]
 },
 "BEfd": {
-"framerate": 30,
-"frames": 19,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -218,8 +210,6 @@ clips = {
 }]
 },
 "BEfl": {
-"framerate": 30,
-"frames": 50,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -231,8 +221,6 @@ clips = {
 }]
 },
 "BEgu": {
-"framerate": 30,
-"frames": 34,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -244,8 +232,6 @@ clips = {
 }]
 },
 "BEhf": {
-"framerate": 30,
-"frames": 54,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -257,8 +243,6 @@ clips = {
 }]
 },
 "BEi1": {
-"framerate": 30,
-"frames": 29,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -270,8 +254,6 @@ clips = {
 }]
 },
 "BErn": {
-"framerate": 30,
-"frames": 23,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -283,8 +265,6 @@ clips = {
 }]
 },
 "BErr": {
-"framerate": 30,
-"frames": 51,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -296,8 +276,6 @@ clips = {
 }]
 },
 "BEsc": {
-"framerate": 30,
-"frames": 21,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -309,8 +287,6 @@ clips = {
 }]
 },
 "BEst": {
-"framerate": 30,
-"frames": 58,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

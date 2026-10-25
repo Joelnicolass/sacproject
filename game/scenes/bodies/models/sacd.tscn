@@ -67,8 +67,6 @@ bind_aabb = AABB(-0.562, -0.804839, -1.412845, 1.138, 2.54882, 3.072332)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0]]
 clips = {
 "SDda": {
-"framerate": 30,
-"frames": 166,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -80,8 +78,6 @@ clips = {
 }]
 },
 "SDbn": {
-"framerate": 30,
-"frames": 85,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -93,8 +89,6 @@ clips = {
 }]
 },
 "SDex": {
-"framerate": 30,
-"frames": 31,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -106,8 +100,6 @@ clips = {
 }]
 },
 "SDpm": {
-"framerate": 30,
-"frames": 55,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -119,8 +111,6 @@ clips = {
 }]
 },
 "SDpu": {
-"framerate": 30,
-"frames": 42,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -132,8 +122,6 @@ clips = {
 }]
 },
 "SDrn": {
-"framerate": 30,
-"frames": 27,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -145,8 +133,6 @@ clips = {
 }]
 },
 "SDsb": {
-"framerate": 30,
-"frames": 34,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -158,8 +144,6 @@ clips = {
 }]
 },
 "SDst": {
-"framerate": 30,
-"frames": 11,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

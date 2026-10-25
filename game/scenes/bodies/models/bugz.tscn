@@ -120,8 +120,6 @@ bind_aabb = AABB(-1.521388, -1.340881, -1.510086, 3.0430012, 2.867158, 2.1800861
 surface_parts = [[0.0], [1.0], [2.0], [3.0]]
 clips = {
 "BZ2t": {
-"framerate": 30,
-"frames": 6,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -133,8 +131,6 @@ clips = {
 }]
 },
 "BZa1": {
-"framerate": 30,
-"frames": 31,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -146,8 +142,6 @@ clips = {
 }]
 },
 "BZa2": {
-"framerate": 30,
-"frames": 31,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -159,8 +153,6 @@ clips = {
 }]
 },
 "BZa3": {
-"framerate": 30,
-"frames": 59,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -172,8 +164,6 @@ clips = {
 }]
 },
 "BZd1": {
-"framerate": 30,
-"frames": 24,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -185,8 +175,6 @@ clips = {
 }]
 },
 "BZdf": {
-"framerate": 30,
-"frames": 31,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -198,8 +186,6 @@ clips = {
 }]
 },
 "BZfd": {
-"framerate": 30,
-"frames": 51,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -211,8 +197,6 @@ clips = {
 }]
 },
 "BZfl": {
-"framerate": 30,
-"frames": 31,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -224,8 +208,6 @@ clips = {
 }]
 },
 "BZhf": {
-"framerate": 30,
-"frames": 43,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -237,8 +219,6 @@ clips = {
 }]
 },
 "BZhv": {
-"framerate": 30,
-"frames": 31,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -250,8 +230,6 @@ clips = {
 }]
 },
 "BZi1": {
-"framerate": 30,
-"frames": 96,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -263,8 +241,6 @@ clips = {
 }]
 },
 "BZrz": {
-"framerate": 30,
-"frames": 7,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -276,8 +252,6 @@ clips = {
 }]
 },
 "BZs1": {
-"framerate": 30,
-"frames": 31,
 "hands": [{
 "bone_name": "bone_08",
 "offset": Vector3(0, 0, 0),
@@ -289,8 +263,6 @@ clips = {
 }]
 },
 "BZsc": {
-"framerate": 30,
-"frames": 29,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -302,8 +274,6 @@ clips = {
 }]
 },
 "BZst": {
-"framerate": 30,
-"frames": 94,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

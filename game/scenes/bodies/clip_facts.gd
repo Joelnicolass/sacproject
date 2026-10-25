@@ -13,6 +13,8 @@ const SHOOT := "shoot"
 
 ## One ClipFacts per library, built the first time somebody asks.
 static var _cache: Dictionary[AnimationLibrary, ClipFacts] = {}
+## What a type without a library reads: no role at all.
+static var _none: ClipFacts
 
 var _frames: Dictionary[StringName, int] = {}
 var _fps: Dictionary[StringName, int] = {}
@@ -21,10 +23,12 @@ var _hits: Dictionary[StringName, PackedInt32Array] = {}
 var _shots: Dictionary[StringName, PackedInt32Array] = {}
 
 
-## The facts of `library` (built once and shared). An empty one for null.
+## The facts of `library` (built once and shared). An empty one for null. A dictionary lookup, never a load: safe per tick.
 static func of(library: AnimationLibrary) -> ClipFacts:
 	if library == null:
-		return ClipFacts.new()
+		if _none == null:
+			_none = ClipFacts.new()
+		return _none
 	if not _cache.has(library):
 		_cache[library] = ClipFacts.new()._read(library)
 	return _cache[library]
@@ -58,6 +62,12 @@ func hits(role: StringName) -> PackedInt32Array:
 ## The frames where each shot of the clip leaves, in order. Empty: the clip has no `shoot` marker.
 func shots(role: StringName) -> PackedInt32Array:
 	return _shots.get(role, PackedInt32Array())
+
+
+## Seconds the frames of the clip last on the rules' clock, frames / 30 whatever the clip's own rate (sacengine animFPS); 0 without
+## the role. Not `seconds`: that is the Animation's length, which a 32-bit float stores a little off.
+func seconds_at_30(role: StringName) -> float:
+	return float(frames(role)) / float(DEFAULT_FPS)
 
 
 func _read(library: AnimationLibrary) -> ClipFacts:

@@ -135,8 +135,6 @@ bind_aabb = AABB(-0.403654, -0.222168, -0.7512, 0.814324, 0.478206, 1.7310541)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0]]
 clips = {
 "PE2t": {
-"framerate": 30,
-"frames": 16,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -148,8 +146,6 @@ clips = {
 }]
 },
 "PEa1": {
-"framerate": 30,
-"frames": 26,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -161,8 +157,6 @@ clips = {
 }]
 },
 "PEa2": {
-"framerate": 30,
-"frames": 46,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -174,8 +168,6 @@ clips = {
 }]
 },
 "PEcw": {
-"framerate": 30,
-"frames": 56,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -187,8 +179,6 @@ clips = {
 }]
 },
 "PEd1": {
-"framerate": 30,
-"frames": 66,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -200,8 +190,6 @@ clips = {
 }]
 },
 "PEdi": {
-"framerate": 30,
-"frames": 198,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -213,8 +201,6 @@ clips = {
 }]
 },
 "PEfd": {
-"framerate": 30,
-"frames": 25,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -226,8 +212,6 @@ clips = {
 }]
 },
 "PEgu": {
-"framerate": 30,
-"frames": 98,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -239,8 +223,6 @@ clips = {
 }]
 },
 "PEhf": {
-"framerate": 30,
-"frames": 67,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -252,8 +234,6 @@ clips = {
 }]
 },
 "PEi1": {
-"framerate": 30,
-"frames": 34,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -265,8 +245,6 @@ clips = {
 }]
 },
 "PEp2": {
-"framerate": 30,
-"frames": 93,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -278,8 +256,6 @@ clips = {
 }]
 },
 "PEpd": {
-"framerate": 30,
-"frames": 65,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -291,8 +267,6 @@ clips = {
 }]
 },
 "PEpu": {
-"framerate": 30,
-"frames": 445,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -304,8 +278,6 @@ clips = {
 }]
 },
 "PErn": {
-"framerate": 30,
-"frames": 32,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -317,8 +289,6 @@ clips = {
 }]
 },
 "PErz": {
-"framerate": 30,
-"frames": 49,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -330,8 +300,6 @@ clips = {
 }]
 },
 "PEsc": {
-"framerate": 30,
-"frames": 20,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -343,8 +311,6 @@ clips = {
 }]
 },
 "PEst": {
-"framerate": 30,
-"frames": 56,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -356,8 +322,6 @@ clips = {
 }]
 },
 "PEtc": {
-"framerate": 30,
-"frames": 56,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

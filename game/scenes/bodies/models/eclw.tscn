@@ -95,8 +95,6 @@ bind_aabb = AABB(-1.946679, -2.346921, -2.015016, 4.160358, 3.94642, 5.297995)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0]]
 clips = {
 "CP2t": {
-"framerate": 30,
-"frames": 21,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -108,8 +106,6 @@ clips = {
 }]
 },
 "CPa1": {
-"framerate": 30,
-"frames": 54,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -121,8 +117,6 @@ clips = {
 }]
 },
 "CPa2": {
-"framerate": 30,
-"frames": 40,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -134,8 +128,6 @@ clips = {
 }]
 },
 "CPa3": {
-"framerate": 30,
-"frames": 54,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -147,8 +139,6 @@ clips = {
 }]
 },
 "CPd1": {
-"framerate": 30,
-"frames": 123,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -160,8 +150,6 @@ clips = {
 }]
 },
 "CPfd": {
-"framerate": 30,
-"frames": 19,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -173,8 +161,6 @@ clips = {
 }]
 },
 "CPgu": {
-"framerate": 30,
-"frames": 39,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -186,8 +172,6 @@ clips = {
 }]
 },
 "CPhf": {
-"framerate": 30,
-"frames": 53,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -199,8 +183,6 @@ clips = {
 }]
 },
 "CPi1": {
-"framerate": 30,
-"frames": 87,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -212,8 +194,6 @@ clips = {
 }]
 },
 "CPrn": {
-"framerate": 30,
-"frames": 36,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -225,8 +205,6 @@ clips = {
 }]
 },
 "CPrz": {
-"framerate": 30,
-"frames": 48,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -238,8 +216,6 @@ clips = {
 }]
 },
 "CPs1": {
-"framerate": 30,
-"frames": 62,
 "hands": [{
 "bone_name": "bone_15",
 "offset": Vector3(0, 0.0015, -0.0003),
@@ -251,8 +227,6 @@ clips = {
 }]
 },
 "CPsc": {
-"framerate": 30,
-"frames": 37,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -264,8 +238,6 @@ clips = {
 }]
 },
 "CPst": {
-"framerate": 30,
-"frames": 53,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

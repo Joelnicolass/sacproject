@@ -120,8 +120,6 @@ bind_aabb = AABB(-2.439686, -1.02749, -0.782181, 4.8891764, 2.314959, 1.48736)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0]]
 clips = {
 "HBa1": {
-"framerate": 30,
-"frames": 60,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -133,8 +131,6 @@ clips = {
 }]
 },
 "HBa2": {
-"framerate": 30,
-"frames": 66,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -146,8 +142,6 @@ clips = {
 }]
 },
 "HBa3": {
-"framerate": 30,
-"frames": 83,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -159,8 +153,6 @@ clips = {
 }]
 },
 "HBd1": {
-"framerate": 30,
-"frames": 23,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -172,8 +164,6 @@ clips = {
 }]
 },
 "HBdf": {
-"framerate": 30,
-"frames": 48,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -185,8 +175,6 @@ clips = {
 }]
 },
 "HBfd": {
-"framerate": 30,
-"frames": 148,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -198,8 +186,6 @@ clips = {
 }]
 },
 "HBfi": {
-"framerate": 30,
-"frames": 23,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -211,8 +197,6 @@ clips = {
 }]
 },
 "HBfl": {
-"framerate": 30,
-"frames": 56,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -224,8 +208,6 @@ clips = {
 }]
 },
 "HBft": {
-"framerate": 30,
-"frames": 20,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -237,8 +219,6 @@ clips = {
 }]
 },
 "HBhf": {
-"framerate": 30,
-"frames": 148,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -250,8 +230,6 @@ clips = {
 }]
 },
 "HBi1": {
-"framerate": 30,
-"frames": 111,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -263,8 +241,6 @@ clips = {
 }]
 },
 "HBrz": {
-"framerate": 30,
-"frames": 23,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -276,8 +252,6 @@ clips = {
 }]
 },
 "HBsc": {
-"framerate": 30,
-"frames": 40,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -289,8 +263,6 @@ clips = {
 }]
 },
 "HBsh": {
-"framerate": 30,
-"frames": 60,
 "hands": [{
 "bone_name": "bone_15",
 "offset": Vector3(0, 0, 0),
@@ -302,8 +274,6 @@ clips = {
 }]
 },
 "HBst": {
-"framerate": 30,
-"frames": 56,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

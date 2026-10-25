@@ -90,8 +90,6 @@ bind_aabb = AABB(-1.458, -2.774689, -5.714916, 2.8839998, 3.810689, 7.1069164)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0]]
 clips = {
 "ST2t": {
-"framerate": 30,
-"frames": 6,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -103,8 +101,6 @@ clips = {
 }]
 },
 "STa1": {
-"framerate": 30,
-"frames": 43,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -116,8 +112,6 @@ clips = {
 }]
 },
 "STa2": {
-"framerate": 30,
-"frames": 43,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -129,8 +123,6 @@ clips = {
 }]
 },
 "STa3": {
-"framerate": 30,
-"frames": 43,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -142,8 +134,6 @@ clips = {
 }]
 },
 "STd1": {
-"framerate": 30,
-"frames": 148,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -155,8 +145,6 @@ clips = {
 }]
 },
 "STfd": {
-"framerate": 30,
-"frames": 33,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -168,8 +156,6 @@ clips = {
 }]
 },
 "STgu": {
-"framerate": 30,
-"frames": 33,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -181,8 +167,6 @@ clips = {
 }]
 },
 "SThf": {
-"framerate": 30,
-"frames": 65,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -194,8 +178,6 @@ clips = {
 }]
 },
 "STi1": {
-"framerate": 30,
-"frames": 151,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -207,8 +189,6 @@ clips = {
 }]
 },
 "STrz": {
-"framerate": 30,
-"frames": 13,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -220,8 +200,6 @@ clips = {
 }]
 },
 "STsc": {
-"framerate": 30,
-"frames": 21,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -233,8 +211,6 @@ clips = {
 }]
 },
 "STst": {
-"framerate": 30,
-"frames": 103,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -246,8 +222,6 @@ clips = {
 }]
 },
 "STwk": {
-"framerate": 30,
-"frames": 40,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

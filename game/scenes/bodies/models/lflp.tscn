@@ -95,8 +95,6 @@ bind_aabb = AABB(-0.63724, -0.914915, -0.575293, 1.185583, 1.955122, 0.959099)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0]]
 clips = {
 "FG2t": {
-"framerate": 30,
-"frames": 6,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -108,8 +106,6 @@ clips = {
 }]
 },
 "FGa1": {
-"framerate": 30,
-"frames": 43,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -121,8 +117,6 @@ clips = {
 }]
 },
 "FGa2": {
-"framerate": 30,
-"frames": 38,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -134,8 +128,6 @@ clips = {
 }]
 },
 "FGa3": {
-"framerate": 30,
-"frames": 29,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -147,8 +139,6 @@ clips = {
 }]
 },
 "FGd1": {
-"framerate": 30,
-"frames": 124,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -160,8 +150,6 @@ clips = {
 }]
 },
 "FGfd": {
-"framerate": 30,
-"frames": 43,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -173,8 +161,6 @@ clips = {
 }]
 },
 "FGgu": {
-"framerate": 30,
-"frames": 47,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -186,8 +172,6 @@ clips = {
 }]
 },
 "FGhf": {
-"framerate": 30,
-"frames": 30,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -199,8 +183,6 @@ clips = {
 }]
 },
 "FGi1": {
-"framerate": 30,
-"frames": 78,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -212,8 +194,6 @@ clips = {
 }]
 },
 "FGrn": {
-"framerate": 30,
-"frames": 35,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -225,8 +205,6 @@ clips = {
 }]
 },
 "FGrz": {
-"framerate": 30,
-"frames": 13,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -238,8 +216,6 @@ clips = {
 }]
 },
 "FGs1": {
-"framerate": 30,
-"frames": 38,
 "hands": [{
 "bone_name": "bone_18",
 "offset": Vector3(0, 0, 0),
@@ -251,8 +227,6 @@ clips = {
 }]
 },
 "FGsc": {
-"framerate": 30,
-"frames": 21,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -264,8 +238,6 @@ clips = {
 }]
 },
 "FGst": {
-"framerate": 30,
-"frames": 61,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

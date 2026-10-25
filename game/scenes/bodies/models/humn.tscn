@@ -95,8 +95,6 @@ bind_aabb = AABB(-0.258311, -0.187, -1.088481, 0.523419, 0.36900002, 1.9343309)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0]]
 clips = {
 "HU2t": {
-"framerate": 30,
-"frames": 26,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -108,8 +106,6 @@ clips = {
 }]
 },
 "HUa1": {
-"framerate": 30,
-"frames": 24,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -121,8 +117,6 @@ clips = {
 }]
 },
 "HUa2": {
-"framerate": 30,
-"frames": 20,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -134,8 +128,6 @@ clips = {
 }]
 },
 "HUa3": {
-"framerate": 30,
-"frames": 45,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -147,8 +139,6 @@ clips = {
 }]
 },
 "HUd1": {
-"framerate": 30,
-"frames": 54,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -160,8 +150,6 @@ clips = {
 }]
 },
 "HUfd": {
-"framerate": 30,
-"frames": 37,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -173,8 +161,6 @@ clips = {
 }]
 },
 "HUgu": {
-"framerate": 30,
-"frames": 76,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -186,8 +172,6 @@ clips = {
 }]
 },
 "HUhf": {
-"framerate": 30,
-"frames": 67,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -199,8 +183,6 @@ clips = {
 }]
 },
 "HUi1": {
-"framerate": 30,
-"frames": 118,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -212,8 +194,6 @@ clips = {
 }]
 },
 "HUrn": {
-"framerate": 30,
-"frames": 39,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -225,8 +205,6 @@ clips = {
 }]
 },
 "HUrz": {
-"framerate": 30,
-"frames": 55,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -238,8 +216,6 @@ clips = {
 }]
 },
 "HUsa": {
-"framerate": 30,
-"frames": 43,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -251,8 +227,6 @@ clips = {
 }]
 },
 "HUst": {
-"framerate": 30,
-"frames": 76,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

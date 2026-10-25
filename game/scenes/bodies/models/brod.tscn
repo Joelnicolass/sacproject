@@ -174,8 +174,6 @@ bind_aabb = AABB(-1.349655, -1.573177, 0.063703, 2.6984801, 1.401154, 0.806754)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0], [8.0], [9.0], [10.0], [11.0]]
 clips = {
 "brgu": {
-"framerate": 30,
-"frames": 25,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -187,8 +185,6 @@ clips = {
 }]
 },
 "brhf": {
-"framerate": 30,
-"frames": 25,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -200,8 +196,6 @@ clips = {
 }]
 },
 "bri1": {
-"framerate": 30,
-"frames": 182,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -213,8 +207,6 @@ clips = {
 }]
 },
 "brk2": {
-"framerate": 30,
-"frames": 25,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -226,8 +218,6 @@ clips = {
 }]
 },
 "brrl": {
-"framerate": 30,
-"frames": 48,
 "hands": [{
 "bone_name": "bone_18",
 "offset": Vector3(0, 0, 0),
@@ -239,8 +229,6 @@ clips = {
 }]
 },
 "brru": {
-"framerate": 30,
-"frames": 17,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -252,8 +240,6 @@ clips = {
 }]
 },
 "brs1": {
-"framerate": 30,
-"frames": 198,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -265,8 +251,6 @@ clips = {
 }]
 },
 "brsl": {
-"framerate": 30,
-"frames": 48,
 "hands": [{
 "bone_name": "bone_18",
 "offset": Vector3(0, 0, 0),

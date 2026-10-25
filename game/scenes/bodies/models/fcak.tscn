@@ -125,8 +125,6 @@ bind_aabb = AABB(-3.439704, -2.061584, -1.40758, 6.788981, 3.743954, 3.878552)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0]]
 clips = {
 "CKa1": {
-"framerate": 30,
-"frames": 43,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -138,8 +136,6 @@ clips = {
 }]
 },
 "CKa2": {
-"framerate": 30,
-"frames": 48,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -151,8 +147,6 @@ clips = {
 }]
 },
 "CKa3": {
-"framerate": 30,
-"frames": 71,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -164,8 +158,6 @@ clips = {
 }]
 },
 "CKd1": {
-"framerate": 30,
-"frames": 98,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -177,8 +169,6 @@ clips = {
 }]
 },
 "CKfd": {
-"framerate": 30,
-"frames": 98,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -190,8 +180,6 @@ clips = {
 }]
 },
 "CKfi": {
-"framerate": 30,
-"frames": 25,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -203,8 +191,6 @@ clips = {
 }]
 },
 "CKfl": {
-"framerate": 30,
-"frames": 61,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -216,8 +202,6 @@ clips = {
 }]
 },
 "CKgu": {
-"framerate": 30,
-"frames": 58,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -229,8 +213,6 @@ clips = {
 }]
 },
 "CKhf": {
-"framerate": 30,
-"frames": 85,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -242,8 +224,6 @@ clips = {
 }]
 },
 "CKhv": {
-"framerate": 30,
-"frames": 61,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -255,8 +235,6 @@ clips = {
 }]
 },
 "CKi1": {
-"framerate": 30,
-"frames": 95,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -268,8 +246,6 @@ clips = {
 }]
 },
 "CKla": {
-"framerate": 30,
-"frames": 28,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -281,8 +257,6 @@ clips = {
 }]
 },
 "CKrn": {
-"framerate": 30,
-"frames": 61,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -294,8 +268,6 @@ clips = {
 }]
 },
 "CKrz": {
-"framerate": 30,
-"frames": 13,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -307,8 +279,6 @@ clips = {
 }]
 },
 "CKsc": {
-"framerate": 30,
-"frames": 21,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -320,8 +290,6 @@ clips = {
 }]
 },
 "CKst": {
-"framerate": 30,
-"frames": 88,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -333,8 +301,6 @@ clips = {
 }]
 },
 "CKto": {
-"framerate": 30,
-"frames": 26,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -346,8 +312,6 @@ clips = {
 }]
 },
 "Ckfg": {
-"framerate": 30,
-"frames": 61,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -359,8 +323,6 @@ clips = {
 }]
 },
 "FCs1": {
-"framerate": 30,
-"frames": 88,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

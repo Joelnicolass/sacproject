@@ -42,7 +42,7 @@ static func dps_of(type: CreatureType, target_data: Resource = null) -> float:
 			return float(attack.damage) * _resistance(target_data, &"direct_ranged_resistance") / shot_period(type, attack)
 	if type.melee_strength <= 0:
 		return 0.0
-	var swing := maxf(_mean_seconds(type.melee_animations), MIN_PERIOD_S)
+	var swing := maxf(_mean_swing_s(type.clip_facts()), MIN_PERIOD_S)
 	return float(type.melee_strength) * _resistance(target_data, &"melee_resistance") / swing
 
 
@@ -62,13 +62,12 @@ static func heal_rate_of(type: CreatureType, target_max: float) -> float:
 static func shot_period(type: CreatureType, attack: AbilityType) -> float:
 	var length := 0.0
 	var at := 0.0
-	if not type.shoot_animations.is_empty():
-		var clip: Dictionary = type.shoot_animations[0]
-		var rate := float(clip.get("framerate", 30.0))
-		if rate > 0.0 and int(clip.get("frames", 0)) > 1:
-			length = float(clip.get("frames", 0.0)) / rate
-			var ticks: Array = clip.get("shoot_ticks", [])
-			at = float(ticks[0]) / rate if not ticks.is_empty() else length
+	var facts := type.clip_facts()
+	var rate := float(facts.fps(RangedAttack.SHOT_ROLE))
+	if rate > 0.0 and facts.frames(RangedAttack.SHOT_ROLE) > 1:
+		length = float(facts.frames(RangedAttack.SHOT_ROLE)) / rate
+		var shots := facts.shots(RangedAttack.SHOT_ROLE)
+		at = float(shots[0]) / rate if not shots.is_empty() else length
 	return maxf(maxf(length, at + attack.cooldown_s), MIN_PERIOD_S)
 
 
@@ -168,14 +167,13 @@ static func _resistance(data: Resource, field: StringName) -> float:
 	return maxf(0.0, float(value)) if value != null else 1.0
 
 
-## The mean length in seconds of a list of clips ({frames, framerate}).
-static func _mean_seconds(clips: Array[Dictionary]) -> float:
+## The mean length in seconds of the swings (attack, attack2, attack3) the model has.
+static func _mean_swing_s(facts: ClipFacts) -> float:
 	var total := 0.0
 	var count := 0
-	for clip in clips:
-		var rate := float(clip.get("framerate", 0.0))
-		if rate > 0.0:
-			total += float(clip.get("frames", 0.0)) / rate
+	for role: StringName in MeleeAttack.SWING_ROLES:
+		if facts.has(role):
+			total += float(facts.frames(role)) / float(facts.fps(role))
 			count += 1
 	return total / float(count) if count > 0 else 0.0
 

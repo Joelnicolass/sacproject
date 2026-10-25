@@ -79,7 +79,7 @@ func goes_by_air(distance: float) -> bool:
 	if state != State.GROUND or _held() or not is_capable() or distance <= 0.0:
 		return false
 	var type := body.type
-	if type.takeoff_time_s() + distance / type.fly_speed_m_s >= distance / type.run_speed_m_s:
+	if type.clip_facts().seconds_at_30(&"takeoff") + distance / type.fly_speed_m_s >= distance / type.run_speed_m_s:
 		return false
 	_take_off()
 	return true
@@ -133,7 +133,7 @@ func _held() -> bool:
 
 
 func _take_off() -> void:
-	var takeoff := body.type.takeoff_time_s()
+	var takeoff := body.type.clip_facts().seconds_at_30(&"takeoff")
 	if takeoff <= 0.0:
 		state = State.FLYING
 		return
@@ -157,7 +157,7 @@ func _vertical(delta: float, walking: bool, above: float, on_floor: bool) -> flo
 
 
 func _touch_down() -> void:
-	var land := body.type.land_time_s()
+	var land := body.type.clip_facts().seconds_at_30(&"land")
 	if land <= 0.0:
 		state = State.GROUND
 		return

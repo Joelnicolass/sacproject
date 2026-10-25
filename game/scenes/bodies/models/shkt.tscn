@@ -188,8 +188,6 @@ bind_aabb = AABB(-0.338107, -0.801609, -1.000205, 0.66667795, 1.914922, 1.326449
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0], [8.0], [9.0], [10.0]]
 clips = {
 "SHfd": {
-"framerate": 30,
-"frames": 40,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -201,8 +199,6 @@ clips = {
 }]
 },
 "SHhf": {
-"framerate": 30,
-"frames": 53,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -214,8 +210,6 @@ clips = {
 }]
 },
 "SHi1": {
-"framerate": 30,
-"frames": 101,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -227,8 +221,6 @@ clips = {
 }]
 },
 "SHr3": {
-"framerate": 30,
-"frames": 34,
 "hands": [{
 "bone_name": "bone_07",
 "offset": Vector3(0, 0, 0),
@@ -240,8 +232,6 @@ clips = {
 }]
 },
 "SHrn": {
-"framerate": 30,
-"frames": 34,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -253,8 +243,6 @@ clips = {
 }]
 },
 "SHs3": {
-"framerate": 30,
-"frames": 88,
 "hands": [{
 "bone_name": "bone_07",
 "offset": Vector3(0, 0, 0),
@@ -266,8 +254,6 @@ clips = {
 }]
 },
 "SHst": {
-"framerate": 30,
-"frames": 88,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

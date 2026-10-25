@@ -3,7 +3,7 @@ extends UnitState
 
 ## ATTACK (meleeAttacking): faces the target, closes in while the swing plays and goes back to CHASE when it ends.
 
-## Role of each slot of CreatureType.melee_animations.
+## Role of each swing of MeleeAttack.
 const ATTACK_ROLES: PackedStringArray = ["attack", "attack2", "attack3"]
 
 

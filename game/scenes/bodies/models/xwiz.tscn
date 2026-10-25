@@ -182,8 +182,6 @@ bind_aabb = AABB(-0.35568, -1.07895, -1.372543, 0.680707, 1.2843311, 2.352911)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0]]
 clips = {
 "Wcs3": {
-"framerate": 30,
-"frames": 48,
 "hands": [{
 "bone_name": "bone_11",
 "offset": Vector3(0, 0, 0),
@@ -195,8 +193,6 @@ clips = {
 }]
 },
 "Wflo": {
-"framerate": 30,
-"frames": 25,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -208,8 +204,6 @@ clips = {
 }]
 },
 "Wget": {
-"framerate": 30,
-"frames": 28,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -221,8 +215,6 @@ clips = {
 }]
 },
 "Widl": {
-"framerate": 30,
-"frames": 102,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -234,8 +226,6 @@ clips = {
 }]
 },
 "Wrc3": {
-"framerate": 30,
-"frames": 39,
 "hands": [{
 "bone_name": "bone_11",
 "offset": Vector3(0, 0, 0),
@@ -247,8 +237,6 @@ clips = {
 }]
 },
 "Wrun": {
-"framerate": 30,
-"frames": 39,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -260,8 +248,6 @@ clips = {
 }]
 },
 "Wsta": {
-"framerate": 30,
-"frames": 39,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

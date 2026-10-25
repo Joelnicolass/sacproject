@@ -181,7 +181,7 @@ func _physics_process(delta: float) -> void:
 			if desecrations > 0 and health.current < 1.0:
 				health.current = 1.0
 			if desecrations > 0 or health.is_full():
-				_enter(Stage.UNGHOSTING, _seconds(_type().float_to_stance_frames if _type() else 0))
+				_enter(Stage.UNGHOSTING, _clip_s(&"unghost"))
 		Stage.UNGHOSTING:
 			_left -= delta
 			if _left <= 0.0:
@@ -191,7 +191,7 @@ func _physics_process(delta: float) -> void:
 func _on_died(_from_slot: int) -> void:
 	if stage != Stage.ALIVE:
 		return
-	_enter(Stage.DYING, _seconds(_death_frames()))
+	_enter(Stage.DYING, _clip_s(_death_role()))
 
 
 ## sacengine: dying → dead → deadToGhost with an altar, else disappear (state.d:14004-14014);
@@ -201,7 +201,7 @@ func _after_dying() -> void:
 		_enter(Stage.GONE, 0.0)
 		return
 	mana.current = 0.0
-	_enter(Stage.RISING, _seconds(_type().corpse_rise_frames if _type() else 0))
+	_enter(Stage.RISING, _clip_s(&"ghost_rise"))
 
 
 func _on_mana_given(amount: float) -> void:
@@ -216,16 +216,16 @@ func _enter(next: Stage, seconds: float) -> void:
 	print("mago %d %s en %.1f %.1f vida %d mana %d" % [owner_slot(), STAGE_NAMES[next], at.x, at.z, roundi(health.current), roundi(mana.current)])
 
 
-## sacengine pickRandomAnimation(deathCandidatesOnGround): death0, death1 or death2.
-func _death_frames() -> int:
-	var type := _type()
-	if type == null or type.death_frames.is_empty():
-		return 0
-	return type.death_frames[_rng.randi_range(0, type.death_frames.size() - 1)]
+## sacengine pickRandomAnimation(deathCandidatesOnGround): death, death2 or death3, whichever of them his model has.
+func _death_role() -> StringName:
+	var roles: Array[StringName] = []
+	roles.assign(_type().death_roles() if _type() else [])
+	return roles[_rng.randi_range(0, roles.size() - 1)] if not roles.is_empty() else &""
 
 
-func _seconds(frames: int) -> float:
-	return float(frames) / ANIM_FPS
+## Seconds of the wizard's clip `role` (0 when his model has none).
+func _clip_s(role: StringName) -> float:
+	return float(_type().clip_facts().frames(role)) / ANIM_FPS if _type() else 0.0
 
 
 func _type() -> WizardType:
@@ -264,7 +264,7 @@ func _show_stage(animate: bool) -> void:
 			if animate and stage == Stage.DYING and death_look != null:
 				death_look.fall()
 		Stage.RISING:
-			var rise_s := _seconds(_type().corpse_rise_frames if _type() else 0)
+			var rise_s := _clip_s(&"ghost_rise")
 			if animate and rise_s > 0.0 and death_look != null and death_look.is_lying():
 				_fade = death_look.rise(_look.set_transparency, _look.transparency, ghost, rise_s)
 			else:
@@ -273,7 +273,7 @@ func _show_stage(animate: bool) -> void:
 			_look.set_transparency(ghost)
 			visual.visible = _seen_by_viewer()
 		Stage.UNGHOSTING:
-			_fade_to(0.0, _seconds(_type().float_to_stance_frames if _type() else 0), animate)
+			_fade_to(0.0, _clip_s(&"unghost"), animate)
 		Stage.GONE:
 			_fade_to(1.0, vanish_seconds(), animate)
 			if _fade:

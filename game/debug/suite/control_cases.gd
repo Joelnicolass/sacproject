@@ -248,8 +248,7 @@ func _slime_fight() -> Dictionary:
 	melee.start(victim)
 	var index := melee.swing_index()
 	var plain := _swing_ticks(melee)
-	var anim := {"frames": 24, "framerate": 30, "attack_ticks": [15]}
-	var chance_plain := float(melee.roll_damage(victim, anim)["chance"])
+	var chance_plain := float(melee.roll_damage(victim)["chance"])
 	var slimed := hitter.get_node("Afflictions/Slimed") as SpellAffliction
 	slimed.lay(spell, 1)
 	var slow := 0
@@ -260,10 +259,10 @@ func _slime_fight() -> Dictionary:
 			break
 		melee.cancel()
 	checks["swing_5x"] = plain > 0 and absi(slow - plain * 5) <= 5
-	checks["accuracy_lower"] = float(melee.roll_damage(victim, anim)["chance"]) < chance_plain
+	checks["accuracy_lower"] = float(melee.roll_damage(victim)["chance"]) < chance_plain
 	var slimed_victim := victim.get_node("Afflictions/Slimed") as SpellAffliction
 	slimed_victim.lay(spell, 3)
-	var both := melee.roll_damage(victim, anim)
+	var both := melee.roll_damage(victim)
 	var accuracy := float(both["accuracy"])
 	checks["attacker_accuracy_x02"] = absf(accuracy - float(hitter.type.melee_accuracy_milli()) * 0.2) < 0.01
 	checks["target_evasion_x02"] = absf(float(both["evasion"]) - float(victim.type.melee_evasion_milli()) * 0.2) < 0.01

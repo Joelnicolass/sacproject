@@ -26,6 +26,16 @@ static func path_for(tag: String) -> String:
 	return ICON_DIR + tag + ".png"
 
 
+## The .glb clip the creature rests on: the one behind its `gesture` role, else its `idle` ("" without a library).
+static func idle_clip_of(type: CreatureType) -> String:
+	if type == null or type.clips == null:
+		return ""
+	for role: StringName in [&"gesture", &"idle"]:
+		if type.clips.has_animation(role):
+			return type.clips.get_animation(role).resource_name
+	return ""
+
+
 ## Makes assets/custom/icons/<tag>.png if it is missing (or `force`). `host` is a node inside the tree (it holds the viewport for a
 ## few frames). Returns a line saying what happened.
 static func ensure(host: Node, tag: String, idle_clip: String, force := false) -> String:

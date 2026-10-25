@@ -193,8 +193,6 @@ bind_aabb = AABB(-2.497409, -2.387808, -1.02338, 4.678546, 4.236582, 3.235385)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0], [8.0]]
 clips = {
 "mdfd": {
-"framerate": 30,
-"frames": 24,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -206,8 +204,6 @@ clips = {
 }]
 },
 "mdgu": {
-"framerate": 30,
-"frames": 28,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -219,8 +215,6 @@ clips = {
 }]
 },
 "mdhf": {
-"framerate": 30,
-"frames": 66,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -232,8 +226,6 @@ clips = {
 }]
 },
 "mdi1": {
-"framerate": 30,
-"frames": 69,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -245,8 +237,6 @@ clips = {
 }]
 },
 "mdr2": {
-"framerate": 30,
-"frames": 35,
 "hands": [{
 "bone_name": "bone_13",
 "offset": Vector3(0.00039000003, -0.00065, -0.0014300001),
@@ -258,8 +248,6 @@ clips = {
 }]
 },
 "mdrn": {
-"framerate": 30,
-"frames": 34,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -271,8 +259,6 @@ clips = {
 }]
 },
 "mds2": {
-"framerate": 30,
-"frames": 57,
 "hands": [{
 "bone_name": "bone_13",
 "offset": Vector3(0.00039000003, -0.00065, -0.0014300001),
@@ -284,8 +270,6 @@ clips = {
 }]
 },
 "mdst": {
-"framerate": 30,
-"frames": 60,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

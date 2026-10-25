@@ -269,7 +269,7 @@ func _bind_hands() -> void:
 func _apply_hands(role: String) -> void:
 	if _skeleton == null:
 		return
-	var hands: Array = _model_root.clip_data(_model_root.tag_for(role)).get("hands", [])
+	var hands: Array = _model_root.hands_of(_model_root.tag_for(role))
 	var attachments := [_hand_l, _hand_r]
 	_hand_on = [false, false]
 	for i in mini(hands.size(), 2):
@@ -284,5 +284,5 @@ func _apply_hands(role: String) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if _missing:
-		warnings.append("No scene %s: bake it with tools/bake/bake_body_scenes.gd (a model with no playable idle clip is a static mesh)." % BodyModel.scene_path(model))
+		warnings.append("No scene %s: make it with tools/bake/new_creature.gd (a model with no playable idle clip is a static mesh)." % BodyModel.scene_path(model))
 	return warnings

@@ -100,8 +100,6 @@ bind_aabb = AABB(-0.46656, -0.744403, -0.390322, 0.938583, 1.747928, 0.582604)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0]]
 clips = {
 "KDa1": {
-"framerate": 30,
-"frames": 37,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -113,8 +111,6 @@ clips = {
 }]
 },
 "KDi1": {
-"framerate": 30,
-"frames": 53,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -126,8 +122,6 @@ clips = {
 }]
 },
 "KDrn": {
-"framerate": 30,
-"frames": 24,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -139,8 +133,6 @@ clips = {
 }]
 },
 "KL2t": {
-"framerate": 30,
-"frames": 26,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -152,8 +144,6 @@ clips = {
 }]
 },
 "KLa2": {
-"framerate": 30,
-"frames": 31,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -165,8 +155,6 @@ clips = {
 }]
 },
 "KLal": {
-"framerate": 30,
-"frames": 69,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -178,8 +166,6 @@ clips = {
 }]
 },
 "KLd1": {
-"framerate": 30,
-"frames": 43,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -191,8 +177,6 @@ clips = {
 }]
 },
 "KLfd": {
-"framerate": 30,
-"frames": 37,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -204,8 +188,6 @@ clips = {
 }]
 },
 "KLgu": {
-"framerate": 30,
-"frames": 19,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -217,8 +199,6 @@ clips = {
 }]
 },
 "KLhf": {
-"framerate": 30,
-"frames": 37,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -230,8 +210,6 @@ clips = {
 }]
 },
 "KLrz": {
-"framerate": 30,
-"frames": 48,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -243,8 +221,6 @@ clips = {
 }]
 },
 "KLs1": {
-"framerate": 30,
-"frames": 47,
 "hands": [{
 "bone_name": "bone_05",
 "offset": Vector3(0, 0, 0),
@@ -256,8 +232,6 @@ clips = {
 }]
 },
 "KLsc": {
-"framerate": 30,
-"frames": 20,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -269,8 +243,6 @@ clips = {
 }]
 },
 "KLst": {
-"framerate": 30,
-"frames": 27,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

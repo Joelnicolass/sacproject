@@ -105,8 +105,6 @@ bind_aabb = AABB(-1.277843, -3.679921, -0.784081, 2.632361, 4.946715, 1.648001)
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0]]
 clips = {
 "GC2t": {
-"framerate": 30,
-"frames": 22,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -118,8 +116,6 @@ clips = {
 }]
 },
 "GCa1": {
-"framerate": 30,
-"frames": 31,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -131,8 +127,6 @@ clips = {
 }]
 },
 "GCa2": {
-"framerate": 30,
-"frames": 53,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -144,8 +138,6 @@ clips = {
 }]
 },
 "GCal": {
-"framerate": 30,
-"frames": 43,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -157,8 +149,6 @@ clips = {
 }]
 },
 "GCdi": {
-"framerate": 30,
-"frames": 22,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -170,8 +160,6 @@ clips = {
 }]
 },
 "GCfd": {
-"framerate": 30,
-"frames": 54,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -183,8 +171,6 @@ clips = {
 }]
 },
 "GCgu": {
-"framerate": 30,
-"frames": 37,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -196,8 +182,6 @@ clips = {
 }]
 },
 "GChf": {
-"framerate": 30,
-"frames": 14,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -209,8 +193,6 @@ clips = {
 }]
 },
 "GCid": {
-"framerate": 30,
-"frames": 58,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -222,8 +204,6 @@ clips = {
 }]
 },
 "GCru": {
-"framerate": 30,
-"frames": 34,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -235,8 +215,6 @@ clips = {
 }]
 },
 "GCrz": {
-"framerate": 30,
-"frames": 58,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -248,8 +226,6 @@ clips = {
 }]
 },
 "GCsa": {
-"framerate": 30,
-"frames": 36,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -261,8 +237,6 @@ clips = {
 }]
 },
 "GCsh": {
-"framerate": 30,
-"frames": 71,
 "hands": [{
 "bone_name": "bone_08",
 "offset": Vector3(0, 0, 0),
@@ -274,8 +248,6 @@ clips = {
 }]
 },
 "GCst": {
-"framerate": 30,
-"frames": 58,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

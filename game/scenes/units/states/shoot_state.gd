@@ -12,6 +12,6 @@ func physics_update(delta: float) -> void:
 		transition(&"Chase")
 
 
-## The shot clip (shoot0 of CreatureType.shoot_animations) when the model has it, else the rest pose.
+## The shot clip (role `shoot`) when the model has it, else the rest pose.
 func clip_role() -> String:
 	return "shoot" if body.has_clip("shoot") else "idle"

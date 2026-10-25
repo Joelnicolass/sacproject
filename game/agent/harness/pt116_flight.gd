@@ -110,7 +110,7 @@ func _summary() -> void:
 		if int(s["done_tick"]) < 0:
 			near = " | sin llegar, vecino " + _nearest(unit)
 		print("PT116 %s %-10s run %.2f fly %.2f takeoff %.2fs land %.2fs | %s | h_max %.2f air %.2f ground %.2f | fin %.2fs falta %.2f m pies %.3f | cap tierra %.2f vuelo %.2f | clips %s" % [
-			_phase, type.display_name, type.run_speed_m_s, type.fly_speed_m_s, type.takeoff_time_s(), type.land_time_s(),
+			_phase, type.display_name, type.run_speed_m_s, type.fly_speed_m_s, type.clip_facts().seconds_at_30(&"takeoff"), type.clip_facts().seconds_at_30(&"land"),
 			" ".join(s["states"]), s["max_above"], s["max_air_pace"], s["max_ground_pace"], int(s["done_tick"]) / 60.0, miss, feet,
 			s["cap_ground"], s["cap_air"],
 			",".join((s["roles"] as Dictionary).keys())] + near)

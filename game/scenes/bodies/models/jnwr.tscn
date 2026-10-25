@@ -198,8 +198,6 @@ bind_aabb = AABB(-1.059584, -1.369958, -4.287388, 2.1357741, 4.084907, 5.1987987
 surface_parts = [[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0], [8.0], [9.0], [10.0]]
 clips = {
 "jwfd": {
-"framerate": 30,
-"frames": 29,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -211,8 +209,6 @@ clips = {
 }]
 },
 "jwgu": {
-"framerate": 30,
-"frames": 28,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -224,8 +220,6 @@ clips = {
 }]
 },
 "jwh2": {
-"framerate": 30,
-"frames": 40,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -237,8 +231,6 @@ clips = {
 }]
 },
 "jwi1": {
-"framerate": 30,
-"frames": 108,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -250,8 +242,6 @@ clips = {
 }]
 },
 "jwr2": {
-"framerate": 30,
-"frames": 22,
 "hands": [{
 "bone_name": "bone_13",
 "offset": Vector3(0, 0, 0),
@@ -263,8 +253,6 @@ clips = {
 }]
 },
 "jwrn": {
-"framerate": 30,
-"frames": 44,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -276,8 +264,6 @@ clips = {
 }]
 },
 "jws2": {
-"framerate": 30,
-"frames": 22,
 "hands": [{
 "bone_name": "bone_13",
 "offset": Vector3(0, 0, 0),
@@ -289,8 +275,6 @@ clips = {
 }]
 },
 "jwst": {
-"framerate": 30,
-"frames": 108,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

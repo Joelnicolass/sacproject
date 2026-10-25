@@ -23,7 +23,7 @@ const NET_LIMIT := 0.05
 const HOLD_FRAMES := 1.5
 ## What the game shows for a role the scene lacks, and whether that is right.
 const FALLBACKS := {
-	"attack2": "WRONG: plays attack; the sim picks this swing at random and times it by slot 1 (MeleeAttack._pick_animation)",
+	"attack2": "WRONG: plays attack; the sim picks this swing at random and times it by its own clip (MeleeAttack._pick_swing)",
 	"attack3": "WRONG: plays attack; the sim picks this swing when the foe is lower and times it by slot 2",
 	"shoot": "OK: plays idle; its shoot0 is a still two-frame placeholder (PC00, DZ00), so the bake gives no shoot role",
 	"hit_floor": "WRONG-ish: idle + Tween tilt (Stunned) for the whole fall stun, no landing clip",
@@ -120,13 +120,12 @@ func _hold_frame(node: AnimationNodeAnimation, frames: int) -> int:
 	return clampi(roundi(node.start_offset * AnimSampler.FPS), 0, maxi(frames - 1, 0))
 
 
-## A held pose is intentional: only the clip table, the rate and the frame it holds are checked; the wrap checks (seam, drift,
+## A held pose is intentional: only the clip, the rate and the frame it holds are checked; the wrap checks (seam, drift,
 ## loop) do not apply to a pose that never plays.
 func _audit_hold(role: String, tag: String, frame: int, frames: int, checks: Dictionary) -> void:
 	checks["rate"] = _rate(tag)
-	var table: Dictionary = _root.clips.get(tag, {})
-	if frames <= 1 or int(table.get("frames", 0)) != frames:
-		checks["clip"] = ["FAIL", "held clip %s: table says %s frames, the clip has %d" % [tag, table.get("frames", "none"), frames]]
+	if frames <= 1:
+		checks["clip"] = ["FAIL", "held clip %s has %d frame(s)" % [tag, frames]]
 	else:
 		checks["clip"] = ["PASS", ""]
 		holds.append("%s/%s (%s frame %d of %d)" % [_model, role, tag, frame, frames])
@@ -170,11 +169,8 @@ func _map(role: String, tag: String) -> Array:
 
 
 func _clip(role: String, tag: String, node: AnimationNodeAnimation, frames: int) -> Array:
-	var table: Dictionary = _root.clips.get(tag, {})
 	if frames <= 1:
 		return ["FAIL", "%d frame(s)" % frames]
-	if int(table.get("frames", 0)) != frames:
-		return ["FAIL", "clip table says %s frames, the clip has %d" % [table.get("frames", "none"), frames]]
 	for want: Dictionary in _wanted.get(role, []):
 		var entry: Dictionary = want["entry"]
 		if entry["tag"] == tag and int(entry["frames"]) > 0 and int(entry["frames"]) != frames:
@@ -188,10 +184,9 @@ func _clip(role: String, tag: String, node: AnimationNodeAnimation, frames: int)
 
 
 func _rate(tag: String) -> Array:
-	var table: Dictionary = _root.clips.get(tag, {})
 	var step := _player.get_animation(tag).step
-	if int(table.get("framerate", 0)) != 30 or absf(step - 1.0 / 30.0) > 0.0005:
-		return ["FAIL", "framerate %s, step %.4f" % [table.get("framerate", "none"), step]]
+	if absf(step - 1.0 / 30.0) > 0.0005:
+		return ["FAIL", "step %.4f, want %.4f (30 fps)" % [step, 1.0 / 30.0]]
 	return ["PASS", ""]
 
 
@@ -236,7 +231,7 @@ func _motion(share: float) -> Array:
 
 
 func _hands(tag: String) -> Array:
-	var hands: Array = (_root.clips.get(tag, {}) as Dictionary).get("hands", [])
+	var hands: Array = _root.hands_of(tag)
 	var on := 0
 	for hand: Dictionary in hands:
 		if bool(hand.get("on", false)):

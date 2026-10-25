@@ -188,7 +188,7 @@ func report() -> String:
 		var feet := at.y - _ground_y(at.x, at.z)
 		var state := int(u.get_node("Flight").get("state"))
 		print("PT116 R %-12s run %.1f fly %.1f to %.2fs | %s | ahora %s h %.2f | h_max %.2f aire %.2f tierra %.2f | recorrido %.1f m | ordenada %s modo %d | clips %s" % [
-			u.name, type.run_speed_m_s, type.fly_speed_m_s, type.takeoff_time_s(),
+			u.name, type.run_speed_m_s, type.fly_speed_m_s, type.clip_facts().seconds_at_30(&"takeoff"),
 			" ".join(s["states"]), _NAMES[state], feet, s["max_above"], s["air_pace"], s["ground_pace"],
 			Vector2(at.x - start.x, at.z - start.z).length(), u.get("ordered"), int(u.get("mode")),
 			",".join((s["roles"] as Dictionary).keys())])

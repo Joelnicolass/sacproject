@@ -8,8 +8,6 @@ extends EditorPlugin
 const ITEMS := [
 	{"title": "Sacrifice: Validar catálogo", "args": ["--script", "res://debug/suite/catalog_cases.gd"], "rescan": false},
 	{"title": "Sacrifice: Re-hornear navmesh", "args": ["res://tools/bake/bake_nav.tscn"], "rescan": true},
-	{"title": "Sacrifice: Hornear modelos que faltan", "args": ["--script", "res://tools/bake/bake_body_scenes.gd"], "rescan": true,
-		"about": "Crea la escena de cuerpo (.tscn) de cada modelo ya importado (assets/original/models/*.glb) que todavía no tiene una. No pisa las existentes. NO necesita el juego original: usa los modelos que ya están en el repo."},
 	# RFC-051: asks for a .glb of assets/custom/models/ and passes it to the tool.
 	# 055o-b: it also writes the creature's SoundSet (over the fist melee set; with its sound files when assets/custom/sounds/creatures/<tag>/ exists).
 	{"title": "Sacrifice: Nueva criatura desde modelo…", "args": ["--script", "res://tools/bake/new_creature.gd", "--"], "rescan": true, "pick": "glb", "window": true,

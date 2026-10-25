@@ -173,8 +173,6 @@ bind_aabb = AABB(-0.543547, -0.273996, -0.126674, 1.091089, 0.628059, 0.21750799
 surface_parts = [[0.0], [1.0], [2.0], [3.0]]
 clips = {
 "FA2t": {
-"framerate": 30,
-"frames": 63,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -186,8 +184,6 @@ clips = {
 }]
 },
 "FAfl": {
-"framerate": 30,
-"frames": 43,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -199,8 +195,6 @@ clips = {
 }]
 },
 "FAho": {
-"framerate": 30,
-"frames": 59,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),
@@ -212,8 +206,6 @@ clips = {
 }]
 },
 "FAi1": {
-"framerate": 30,
-"frames": 58,
 "hands": [{
 "bone_name": "root",
 "offset": Vector3(0, 0, 0),

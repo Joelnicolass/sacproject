@@ -40,13 +40,8 @@ extends Resource
 
 @export_group("Sacrificios")
 ## The places of the sacrifice (ring, push, reach, hang, vortex) as a scene that is only read, never instanced (SacrificeFacts).
-## An inherited scene (debug/sacrifice/barrier_places.tscn) is a variant. The old numbers below leave in 055g g6.
+## An inherited scene (debug/sacrifice/barrier_places.tscn) is a variant.
 @export var sacrifice_places: PackedScene = preload("res://scenes/sacrifice/sacrifice_places.tscn")
-# 020b
-## Sac Doctor fall: the vortex hangs doctor_drop_height over the ground and the doctor leaves it
-## doctor_exit_depth below (sacengine doctorHeight / doctorOffset, state.d:2639-2641, 15489).
-@export var doctor_drop_height: float = 15.0
-@export var doctor_exit_depth: float = 2.25
 ## sacengine doctor death: 70 + 50 frames at 60 fps (state.d:13999).
 @export var doctor_death_s: float = 2.0
 ## Invention of the port (the user chose it, RFC-020 section 20): the original has no limit. A doctor
@@ -64,27 +59,13 @@ extends Resource
 # 020c
 ## sacengine closestEnemyAltar: the enemy altar must be this close to the wizard on the plane (state.d:28083).
 @export var desecrate_altar_range: float = 75.0
-## The vortex hangs this far from the sacrificed creature, on the wizard's side; the doctor lands halfway
-## (state.d:10190, 10205, findSacDocPositions 10162-10179). The original uses 25 m (exe 0x44a8e0, 0x44ac90).
-@export var doctor_drop_distance: float = 20.0
-## The doctor lifts the creature once it is this close on the plane (state.d:15714-15715).
-@export var desecrate_pickup_distance: float = 10.0
-## The carried creature floats this high, this far behind the doctor, and catches up at this multiple
-## of the doctor's pace: 2 + 0.5 * |scale| with scale 1 (state.d:15759-15766).
-@export var carry_height: float = 3.5
-@export var carry_distance: float = 2.7
+## The carried creature catches up at this multiple of the doctor's pace (state.d:15759-15766).
 @export var carry_speed_factor: float = 1.1
 ## A creature a doctor carries (or pumps back to life) dies when the doctor dies and drops it; its soul stays where it lands.
 ## Off: it lands alive and stunned, as the original does (state.d:15776-15779).
 @export var carried_dies_when_dropped: bool = true
-## The carrier asks for the ritual once it is this close to the site, in 3D (state.d:15780).
-@export var ritual_start_distance: float = 20.0
 
 # 020d
-## The 4 Sac Doctors stand on a ring around the site: radius 20 m, shrinking by `ritual_walk_shrink`
-## in the last fifth of each walk (sacengine ritualPositions, state.d:15854-15863).
-@export var ritual_radius: float = 20.0
-@export var ritual_walk_shrink: float = 3.0
 ## Preparation, then rounds of walk + shoot + wait (sacengine state.d:2713, 15948-15951).
 @export var ritual_setup_s: float = 5.0
 @export var ritual_walk_s: float = 4.5
@@ -98,27 +79,14 @@ extends Resource
 ## original executable could not be reconciled with these numbers (RESEARCH-victory section 3).
 @export var desecrate_health_per_round: float = 200.0
 @export var desecrate_mana_per_round: float = 40.0
-## The creature hangs this high over the site while the ritual lasts (state.d:15928).
-@export var ritual_creature_height: float = 15.0
-## Everything within `ritual_push_radius` of the site is pushed out, except the ritual's doctors and
-## creature: full speed at `ritual_push_inner`, falling to `ritual_push_edge_speed` at the edge.
-## sacengine values: 20 m, 5 m, 20 m/s and 0 at the edge (state.d:16051, 8614-8628). The push ends
-## exactly where the doctors stand, so melee creatures can reach a doctor and cancel the ritual
-## (measured in debug/sacrifice/ritual_push.tscn). The user decided to keep it that way (2026-10-13),
-## although the original ReadMe speaks of a barrier that keeps melee attackers out.
-@export var ritual_push_radius: float = 20.0
-@export var ritual_push_inner: float = 5.0
+## Push speed at the full-speed core of the push (the radii live in sacrifice_places.tscn: 20 m, 5 m).
 @export var ritual_push_speed: float = 20.0
-## Push speed left at the edge. 0 = sacengine. Raising it together with the radius (for example
-## 24 m and 15 m/s, see debug/rules/ritual_barrier.tres) keeps melee creatures out.
+## Push speed left at the edge. 0 = sacengine. Raising it together with the push radius (for example
+## 24 m and 15 m/s, see debug/rules/ritual_barrier.tres + debug/sacrifice/barrier_places.tscn) keeps melee creatures out.
 @export var ritual_push_edge_speed: float = 0.0
 ## Invention of the port: how long a finished ritual node stays so every peer sees how it ended.
 @export var ritual_linger_s: float = 1.5
 
-# 020e
-## Convert: the Sac Doctor starts pumping once it is this close to the corpse, on the plane
-## (sacengine `(sacDoc.position-soulPosition).xy.lengthsqr<4.0f`, state.d:15693).
-@export var convert_reach: float = 2.0
 ## The pump lasts (souls of the corpse + 1) times this (state.d:15697: `(soulNumber+1)*5*updateFPS`).
 @export var convert_pump_s_per_soul: float = 5.0
 ## The creature stands up with min(max(convert_revive_min_health, convert_revive_fraction * max health),

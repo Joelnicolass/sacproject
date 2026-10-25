@@ -10,6 +10,7 @@ const SYSTEM_SCENE := preload("res://scenes/sacrifice/sacrifice_system.tscn")
 const ALTAR_SCENE := preload("res://scenes/map/props/altar.tscn")
 const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
 const RULES := preload("res://data/match_rules.tres")
+var _facts := SacrificeFacts.of_rules(RULES)
 const GOD := "james"
 
 var _host: Node3D
@@ -105,10 +106,10 @@ func _captive() -> Dictionary:
 	unit.use_ability(Vector3.ZERO)
 	checks["no_ability"] = unit.mode == UnitBody.Mode.HELD
 	await _frames(120)
-	var hang := Captive.hang_point(doctor.global_position, doctor.facing_flat(), RULES.carry_height, RULES.carry_distance)
+	var hang := Captive.hang_point(doctor.global_position, doctor.facing_flat(), _facts.carry_up_m, _facts.carry_back_m)
 	## sacengine only steps while farther than 0.75 m from the hang point.
 	checks["hangs_behind_doctor"] = unit.global_position.distance_to(hang) <= 0.75
-	checks["floats_3_5"] = absf((unit.global_position.y - doctor.global_position.y) - RULES.carry_height) < 0.3
+	checks["floats_3_5"] = absf((unit.global_position.y - doctor.global_position.y) - _facts.carry_up_m) < 0.3
 	checks["behind"] = unit.global_position.z < doctor.global_position.z
 	checks["alive_while_held"] = not health.is_dead() and unit.owner_slot == 1
 	doctor.kill(2)
@@ -198,7 +199,7 @@ func _desecrate_check() -> Dictionary:
 	checks["vortex_while_casting"] = vortices.get_child_count() == 1
 	var vortex := vortices.get_child(0) as RedVortex if vortices.get_child_count() > 0 else null
 	checks["vortex_20m_from_offering"] = vortex != null and is_equal_approx(Vector2(vortex.global_position.x - offering.global_position.x, vortex.global_position.z - offering.global_position.z).length(), 20.0)
-	checks["vortex_15m_up"] = vortex != null and is_equal_approx(vortex.global_position.y - offering.global_position.y, RULES.doctor_drop_height)
+	checks["vortex_15m_up"] = vortex != null and is_equal_approx(vortex.global_position.y - offering.global_position.y, _facts.drop_up_m)
 	action.cancel()
 	await _frames(2)
 	checks["vortex_gone_on_interrupt"] = vortices.get_child_count() == 0

@@ -58,7 +58,7 @@ func _numbers() -> Dictionary:
 	checks["revive_4500"] = is_equal_approx(SacrificeMath.revive_health(4500.0), 2250.0)
 	checks["revive_500_floor"] = is_equal_approx(SacrificeMath.revive_health(500.0), 400.0)
 	checks["revive_100_cap"] = is_equal_approx(SacrificeMath.revive_health(100.0), 100.0)
-	checks["rule_numbers"] = is_equal_approx(RULES.convert_reach, 2.0) and is_equal_approx(RULES.convert_revive_min_health, 400.0) \
+	checks["rule_numbers"] = is_equal_approx(SacrificeFacts.of_rules(RULES).pump_reach_m, 2.0) and is_equal_approx(RULES.convert_revive_min_health, 400.0) \
 		and is_equal_approx(RULES.convert_revive_fraction, 0.5) and is_equal_approx(RULES.convert_health_per_round, 550.0)
 	var target := Vector3(100.0, 3.0, 50.0)
 	var caster := Vector3(0.0, 0.0, 50.0)
@@ -203,7 +203,7 @@ func _check() -> Dictionary:
 	var vortex := vortices.get_child(0) as RedVortex if vortices.get_child_count() > 0 else null
 	checks["vortex_while_casting"] = vortices.get_child_count() == 1
 	checks["vortex_past_the_soul"] = vortex != null and vortex.global_position.z > red.global_position.z + 19.0
-	checks["vortex_15m_up"] = vortex != null and absf((vortex.global_position.y - red.global_position.y) - RULES.doctor_drop_height) < 0.01
+	checks["vortex_15m_up"] = vortex != null and absf((vortex.global_position.y - red.global_position.y) - SacrificeFacts.of_rules(RULES).drop_up_m) < 0.01
 	checks["soul_reserved"] = red.is_reserved_for(1) and not red.can_convert_by(1)
 	checks["reserved_rejected"] = action.check(wizard, spell, Vector3.ZERO, red, "").status == SpellAction.BAD_TARGET
 	action.cancel()

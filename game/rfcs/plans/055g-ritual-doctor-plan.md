@@ -219,3 +219,11 @@ Fuera de alcance: pool de chispas de `CarryRope` y `FxBus` por texto (055x), rad
 
 ## 13. Preguntas (recomendaciones aprobadas)
 1. 055r no se fusiona: 055g deja `SceneStateReader` y 055r lo reusa. 2. Lugares en escena aparte leída por `SceneState`. 3. La apunta `MatchRules.sacrifice_places`. 4. Agregar una clase de ritual pide una línea en el enum (id de red). 5. El balance se queda en `MatchRules`. 6. Lugares por sitio: no por ahora. 7. `CarryRope/Needle` se borra. 8. `DoctorBody` ≤200. 9. g0 se corre al principio. 10. Las ramas de `Approach` no pasan a `RitualType`. 11. Los 13 campos viejos se borran en g6. 12. El anillo se centra en el `Center` del cuerpo.
+
+## 14. Cierre (g6): qué cambió respecto del plan
+- Se borraron los 13 campos de lugar de `MatchRules` (grupo «Sacrificios»); todo lector pasa por `SacrificeFacts.of_rules(rules)`. `facts_match_old_rules` compara contra los mismos valores como literales. `debug/rules/ritual_barrier.tres` apunta a `debug/sacrifice/barrier_places.tscn` en vez de `ritual_push_radius`. C20: 17 -> 8 (los 8 que quedan son de 055r).
+- `ritual.gd` quedó en 223 líneas: es la raíz de un actor replicado (tope 200 de CONVENTIONS §1 para esas raíces; el exceso lo carga la sincronización y queda anotado).
+- `doctor_body.gd` quedó en 195 (dentro del tope de 200).
+- La aguja de la cuerda va sobre +Y del hueso `bone_16` (la mano), no en un marcador aparte; `CarryRope/Needle` se borró como decía la pregunta 7.
+- `CaptiveRing` es el último nodo hijo de la escena del cautivo (el orden importa: se centra en el `Center` del cuerpo ya instanciado).
+- El README de `scenes/sacrifice` tiene las cinco líneas (What / Not / Talks to / Edit / Check).

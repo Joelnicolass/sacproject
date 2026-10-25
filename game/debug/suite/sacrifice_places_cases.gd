@@ -1,7 +1,7 @@
 extends RefCounted
 
 ## 055g g1 case of rules_suite: the places of the sacrifice live in a scene (sacrifice_places.tscn) that is only read.
-##   - facts_match_old_rules: the 13 distances SacrificeFacts reads are, bit for bit, the doubles MatchRules holds today;
+##   - facts_match_old_rules: the 13 distances SacrificeFacts reads are, bit for bit, the literals the old MatchRules fields held;
 ##   - barrier_variant: the inherited scene debug/sacrifice/barrier_places.tscn changes only the push (24 m);
 ##   - never_instanced: asking for the facts adds no node (no Area3D, same child count) to the tree;
 ##   - cached: the same scene gives the same SacrificeFacts, and the rules reach it through `sacrifice_places`;
@@ -28,27 +28,27 @@ func run(host: Node) -> Dictionary:
 	return {"sacrifice_places": {"ok": ok, "cases": results}}
 
 
-## (scene value, MatchRules value) per distance, in the order of the plan.
-func _pairs(facts: SacrificeFacts, rules: MatchRules) -> Dictionary[String, Array]:
+## (scene value, literal the old MatchRules fields held) per distance, in the order of the plan.
+func _pairs(facts: SacrificeFacts) -> Dictionary[String, Array]:
 	return {
-		"ritual_radius": [facts.ring_m, rules.ritual_radius],
-		"ritual_walk_shrink": [facts.walk_shrink_m(), rules.ritual_walk_shrink],
-		"ritual_push_radius": [facts.push_m, rules.ritual_push_radius],
-		"ritual_push_inner": [facts.push_core_m, rules.ritual_push_inner],
-		"ritual_start_distance": [facts.carrier_stop_m, rules.ritual_start_distance],
-		"ritual_creature_height": [facts.hang_up_m, rules.ritual_creature_height],
-		"carry_height": [facts.carry_up_m, rules.carry_height],
-		"carry_distance": [facts.carry_back_m, rules.carry_distance],
-		"desecrate_pickup_distance": [facts.pickup_m, rules.desecrate_pickup_distance],
-		"convert_reach": [facts.pump_reach_m, rules.convert_reach],
-		"doctor_drop_distance": [facts.drop_out_m, rules.doctor_drop_distance],
-		"doctor_drop_height": [facts.drop_up_m, rules.doctor_drop_height],
-		"doctor_exit_depth": [facts.exit_down_m, rules.doctor_exit_depth],
+		"ritual_radius": [facts.ring_m, 20.0],
+		"ritual_walk_shrink": [facts.walk_shrink_m(), 3.0],
+		"ritual_push_radius": [facts.push_m, 20.0],
+		"ritual_push_inner": [facts.push_core_m, 5.0],
+		"ritual_start_distance": [facts.carrier_stop_m, 20.0],
+		"ritual_creature_height": [facts.hang_up_m, 15.0],
+		"carry_height": [facts.carry_up_m, 3.5],
+		"carry_distance": [facts.carry_back_m, 2.7],
+		"desecrate_pickup_distance": [facts.pickup_m, 10.0],
+		"convert_reach": [facts.pump_reach_m, 2.0],
+		"doctor_drop_distance": [facts.drop_out_m, 20.0],
+		"doctor_drop_height": [facts.drop_up_m, 15.0],
+		"doctor_exit_depth": [facts.exit_down_m, 2.25],
 	}
 
 
 func _facts_match_old_rules(rules: MatchRules) -> bool:
-	var pairs := _pairs(SacrificeFacts.of_rules(rules), rules)
+	var pairs := _pairs(SacrificeFacts.of_rules(rules))
 	var same := pairs.size() == 13
 	for field: String in pairs:
 		var pair: Array = pairs[field]
@@ -64,7 +64,7 @@ func _barrier_variant(rules: MatchRules) -> bool:
 	var barrier := SacrificeFacts.of(load(BARRIER_SCENE) as PackedScene)
 	var base := SacrificeFacts.of_rules(rules)
 	var rest_same := true
-	var barrier_pairs := _pairs(barrier, rules)
+	var barrier_pairs := _pairs(barrier)
 	for field: String in barrier_pairs:
 		if field == "ritual_push_radius":
 			continue

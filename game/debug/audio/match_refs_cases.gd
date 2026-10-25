@@ -52,7 +52,7 @@ func match_counts() -> Dictionary:
 		if god == null:
 			continue
 		counts["gods"] += 1
-		if god.music != null and god.ambience != null and not AmbienceDirector.one_shot_cues(god.ambience).is_empty():
+		if god.look != null and god.look.music != null and god.look.ambience != null and not AmbienceDirector.one_shot_cues(god.look.ambience).is_empty():
 			counts["gods_typed"] += 1
 	var voice := _instance(ADVISOR_SCENE) as AdvisorVoice
 	if voice != null:

@@ -5,7 +5,7 @@ extends Node
 ## The ambience of this process: the god's bed (a loop on the scene's own AudioStreamPlayer `bed`, bus of the cue:
 ## Ambience) and, every so often, a one-shot in 3D at a point around the listener (SoundBus.play_3d). When, which one-shot
 ## and where come from its own generator, never the global one.
-## The set: `ambience` (a fixture in the lab), or the `ambience` of the GodType that `biome` applies (MatchBiome.applied(god)).
+## The set: `ambience` (a fixture in the lab), or the look's `ambience` of the GodType that `biome` applies (MatchBiome.applied(god)).
 ## No set (a god without one): silence.
 ## In the log: emitter `ambience`, event `bed` or `ambient`. With the AudioGate closed (dedicated, room server, headless)
 ## its player stays idle and it plays nothing. No RPC, nothing written to the simulation.
@@ -53,7 +53,7 @@ func _process(delta: float) -> void:
 
 ## The god's ambience (MatchBiome.applied).
 func use_god(god: GodType) -> void:
-	use_ambience(god.ambience if god != null else null)
+	use_ambience(god.look.ambience if god != null and god.look != null else null)
 
 
 ## Starts the bed of `next_set` and schedules its first one-shot. No set: the bed stops, nothing plays.

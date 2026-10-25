@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/audio/music_director.gd" id="1_director"]
 
 [node name="MusicDirector" type="Node" node_paths=PackedStringArray("track_a", "track_b")]
-editor_description = "La música. Dos reproductores con fundido cruzado (TrackA y TrackB, bus Music); el humor lo decide MusicMood con CombatGauge (gauge), MatchState (match_state) y los rituales. El set es `music` (el del menú en boot.tscn) o el del dios que aplica `biome` (GodType.music; sin set propio, `default_music`). Sin audio (dedicado, headless) los reproductores quedan quietos."
+editor_description = "La música. Dos reproductores con fundido cruzado (TrackA y TrackB, bus Music); el humor lo decide MusicMood con CombatGauge (gauge), MatchState (match_state) y los rituales. El set es `music` (el del menú en boot.tscn) o el del dios que aplica `biome` (LookProfile.music del look del dios; sin set propio, `default_music`). Sin audio (dedicado, headless) los reproductores quedan quietos."
 script = ExtResource("1_director")
 track_a = NodePath("TrackA")
 track_b = NodePath("TrackB")

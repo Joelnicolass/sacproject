@@ -6,6 +6,8 @@
 [ext_resource type="Material" path="res://assets/original/themes/charnel/ground_classic.tres" id="3_kafxn"]
 [ext_resource type="Resource" path="res://data/look/sky/charnel_sky.tres" id="9_sky"]
 [ext_resource type="Resource" path="res://data/look/grass/charnel_grass.tres" id="10_grass"]
+[ext_resource type="Resource" path="res://data/audio/music/charnel.tres" id="gm_music"]
+[ext_resource type="Resource" path="res://data/audio/ambience/charnel.tres" id="gm_ambience"]
 
 [resource]
 script = ExtResource("1_p")
@@ -16,3 +18,5 @@ light = ExtResource("2_light")
 glow = ExtResource("1_s0acu")
 ground_classic = ExtResource("3_kafxn")
 grass = ExtResource("10_grass")
+music = ExtResource("gm_music")
+ambience = ExtResource("gm_ambience")

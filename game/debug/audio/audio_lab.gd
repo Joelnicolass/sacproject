@@ -270,7 +270,7 @@ func _ambience_expected(action: StringName, arg: String, event: StringName) -> V
 	if event == SoundEvent.BED:
 		var ambience_set := ambience.ambience_set
 		if action == &"god":
-			ambience_set = _god(arg).ambience
+			ambience_set = _god(arg).look.ambience
 		var bed := ambience_set.bed if ambience_set != null else null
 		return bed if bed != null and not bed.is_silent() else null
 	var cues := AmbienceDirector.one_shot_cues(ambience.ambience_set)

@@ -5,7 +5,7 @@ extends Node
 ## the MpKit custom channel once that client's world is ready. Every peer with a screen then hands that god's look
 ## to the map's LookRig, after the world's _ready (the rig exists).
 
-## The land is on the map's look rig: the GodType whose `look`, `music` and `ambience` the match uses (MusicDirector and
+## The land is on the map's look rig: the GodType whose `look` (with its music and ambience) the match uses (MusicDirector and
 ## AmbienceDirector listen).
 signal applied(god: GodType)
 

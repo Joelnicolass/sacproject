@@ -38,8 +38,6 @@
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/_stam.tscn" id="gs_mana"]
 [ext_resource type="Script" uid="uid://nrjtqemmijb" path="res://scenes/gods/god_structure.gd" id="gs_script"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/_stsp.tscn" id="gs_shrine"]
-[ext_resource type="Resource" path="res://data/audio/music/stratos.tres" id="gm_music"]
-[ext_resource type="Resource" path="res://data/audio/ambience/stratos.tres" id="gm_ambience"]
 
 [sub_resource type="Resource" id="Unlock_0"]
 script = ExtResource("3_unl")
@@ -199,5 +197,3 @@ look = ExtResource("99_look")
 ai_profile = ExtResource("6_ai")
 book = SubResource("Book_1")
 structures = Array[ExtResource("gs_script")]([SubResource("Structure_0"), SubResource("Structure_1")])
-music = ExtResource("gm_music")
-ambience = ExtResource("gm_ambience")

@@ -167,7 +167,7 @@ func _on_doctor(node: Node, _altar: Vector3, _spot: Vector3) -> void:
 		var follower := doctor.get_node_or_null("PathFollower")
 		if follower != null:
 			follower.queue_free()
-			doctor._path_follower = null
+			doctor.motor.path_follower = null
 	doctor.stuck.connect(func() -> void: _stuck += 1)
 	_doctor_tracks[doctor.get_instance_id()] = {"node": doctor, "name": str(doctor.name), "samples": PackedVector3Array()}
 

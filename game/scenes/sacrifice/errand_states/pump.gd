@@ -1,11 +1,14 @@
 extends ErrandStep
 
-## Convert: the doctor stands over the corpse and pumps it back to life (sacengine SacDocCarry `pump`,
-## state.d:15725-15748; exe 0x44a0f0). When it starts the creature stands up with
+## Convert: the doctor stands over the corpse and pumps it back to life. When it starts the creature stands up with
 ## max(400, 50 % of its max health) and is nobody's target; the doctor works (soul number + 1) times
 ## rules.convert_pump_s_per_soul seconds, then the soul is gone, the creature is taken and goes on to
 ## Haul. If the site falls the doctor dies. If the doctor dies here, CarryErrand drops the creature (it dies again and
 ## leaves its soul on its own side): the soul that was hidden while it pumped is replaced by the one its new death drops.
+## Ref: sacengine SacDocCarry `pump`, state.d:15725-15748; exe 0x44a0f0.
+
+## The burst over the corpse when it stands up (data/fx/heal.tres).
+@export var heal_fx: ParticleType
 
 var _left := 0.0
 ## The corpse really stood up: only then there is something to undo if the doctor dies.
@@ -33,7 +36,8 @@ func enter() -> void:
 	soul.state = Soul.State.REVIVING
 	_left = SacrificeMath.pump_seconds(soul.number, rules.convert_pump_s_per_soul if rules else 5.0)
 	body.begin_work(DoctorBody.Work.PUMP)
-	FxBus.broadcast("heal", corpse.global_position + Vector3.UP)
+	if heal_fx != null:
+		FxBus.broadcast(FxBus.name_of(heal_fx), corpse.global_position + Vector3.UP)
 
 
 func physics_update(delta: float) -> void:

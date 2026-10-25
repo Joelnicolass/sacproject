@@ -7,5 +7,5 @@
 [node name="StuckGuard" parent="." index="5"]
 process_mode = 4
 
-[node name="Tether" parent="CarryRope" index="1"]
+[node name="Tether" parent="CarryRope" index="0"]
 elbow = 0.0

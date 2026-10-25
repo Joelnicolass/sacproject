@@ -135,7 +135,7 @@ func accept_pick(pick: Dictionary) -> bool:
 
 ### Web
 
-Un navegador no puede abrir un servidor ni usar UDP, así que un juego web se une a un dedicado WebSocket (`MpNetConfig.transport = ws`). Escritorio y web no se mezclan: un servidor WebSocket atiende clientes WebSocket. En el campo de dirección del menú sirven `192.168.1.5`, `juego.ejemplo.com`, cualquiera con `:puerto`, o una URL `wss://…`. Una página servida por `https` necesita `wss://`: o el dedicado tiene certificado y clave en su `MpNetConfig`, o un proxy (Caddy, nginx) pone el TLS delante. Un navegador pausa una pestaña oculta: el jugador web que cambia de pestaña se frena para los demás hasta que vuelve, y si tarda más que `rejoin_grace_s` en una partida de sala cuenta como abandono.
+Un navegador no puede abrir un servidor ni usar UDP, así que un juego web se une a un dedicado WebSocket (`MpNetConfig.transport = ws`). Escritorio y web no se mezclan: un servidor WebSocket atiende clientes WebSocket. En el campo de dirección del menú sirven `192.168.1.5`, `juego.ejemplo.com`, cualquiera con `:puerto`, o una URL `wss://…`. Una página servida por `https` necesita `wss://`: el servidor lleva certificado y clave (en su `MpNetConfig`, o en el `MpLobbyConfig` para las salas, o con `deploy.sh --tls-cert … --tls-key …`) y el cliente prende `MpNetConfig.tls_client`. Un navegador pausa una pestaña oculta: el jugador web que cambia de pestaña se frena para los demás hasta que vuelve, y si tarda más que `rejoin_grace_s` en una partida de sala cuenta como abandono.
 
 ### Subirlo a un VPS
 

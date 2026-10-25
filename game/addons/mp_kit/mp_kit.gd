@@ -56,6 +56,8 @@ var _awaiting_ticket: Dictionary = {}
 
 func _ready() -> void:
 	transport = MpTransport.from_flags()
+	tls_server = MpTransport.server_tls_from_flags()
+	tls_client = MpTransport.client_tls_from_flags()
 	_ensure_hub_children()
 	multiplayer.peer_connected.connect(_on_peer_connected)
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)

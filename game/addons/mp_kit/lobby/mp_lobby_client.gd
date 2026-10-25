@@ -57,6 +57,8 @@ var port: int = 0
 
 ## `MpTransport.ENET` or `MpTransport.WS`; must equal the room server's. Default: `--transport=` flag.
 var transport: String = MpTransport.from_flags()
+## WebSocket TLS of the client (wss://): `--tls-client` flags, or set from an MpNetConfig (MpLobbyScreen does it).
+var tls: TLSOptions = MpTransport.client_tls_from_flags()
 var _peer: MultiplayerPeer
 var _connecting_since_msec: int = 0
 ## 0 = not resuming; otherwise the msec after which the client gives up.
@@ -223,7 +225,7 @@ func _ensure_signals() -> void:
 
 
 func _open() -> Error:
-	var made := MpTransport.create_client(transport, host, port)
+	var made := MpTransport.create_client(transport, host, port, tls)
 	var peer := made["peer"] as MultiplayerPeer
 	if int(made["error"]) != OK:
 		print("lobby client: no se pudo abrir %s:%d (%s): %s" % [host, port, transport, error_string(int(made["error"]))])

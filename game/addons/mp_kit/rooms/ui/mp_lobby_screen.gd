@@ -49,6 +49,10 @@ func _ready() -> void:
 
 func _bind() -> void:
 	_client = MpLobbyLink.client(get_tree())
+	## The lobby talks like the matches: the flow's MpNetConfig says whether that is wss:// (and with which CA).
+	var flow := MpFlow.find_in_tree(self)
+	if flow and flow.net_config and flow.net_config.client_tls():
+		_client.tls = flow.net_config.client_tls()
 	_client.lobby_joined.connect(_on_joined)
 	_client.lobby_lost.connect(_on_lost)
 	_client.room_list_received.connect(_on_rooms)

@@ -65,7 +65,7 @@ El transporte es elegible; la API, los RPC y la replicación son los mismos con 
 El kit habla `ws://`. Para `wss://` hay dos caminos, sin cambiar el juego:
 
 1. **Proxy inverso (recomendado)**: nginx/Caddy termina TLS en 443 con el certificado del dominio y reenvía a los puertos WS locales (`proxy_pass http://127.0.0.1:7700;` con `Upgrade`/`Connection`). El cliente web usa `wss://juego.example.com/...`. Un puerto publico por partida es incomodo: mapeá una ruta o un subdominio por rango, o usá un puerto TLS por partida.
-2. **TLS en Godot**: en el `MpNetConfig` del dedicado, `tls_certificate` + `tls_key`; en el del cliente, `tls_client` (y `tls_trusted_ca` si el certificado no es de una CA del sistema). `MpKit.tls_server` / `tls_client` los llevan a `MpTransport`. En `create_client`, `host` puede ser ya una URL completa (`wss://dominio/ruta`). El lobby todavía no los toma.
+2. **TLS en Godot**: en el `MpNetConfig` del dedicado, `tls_certificate` + `tls_key`; en el del cliente, `tls_client` (y `tls_trusted_ca` si el certificado no es de una CA del sistema). `MpKit.tls_server` / `tls_client` los llevan a `MpTransport`. En `create_client`, `host` puede ser ya una URL completa (`wss://dominio/ruta`). Sin `.tres`: flags `--tls-certificate-path=` / `--tls-key-path=` (servidor) y `--tls-client` / `--tls-trusted-ca=` / `--tls-common-name=` (cliente). Salas: `MpLobbyConfig.tls_certificate_path` / `tls_key_path`; el lobby escucha en `wss://` y cada partida recibe el mismo certificado; `MpLobbyScreen` usa el TLS del `MpNetConfig` del flow.
 
 Probar: `TRANSPORT=ws bash agent/run_034d.sh` y `TRANSPORT=ws bash agent/run_034e.sh` (los scripts pasan `--transport=$TRANSPORT`; sin variable, ENet).
 

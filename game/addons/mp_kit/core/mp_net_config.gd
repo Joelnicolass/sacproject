@@ -24,6 +24,8 @@ extends Resource
 ## Client side: on = wss://. Leave `tls_trusted_ca` empty for a normal certificate (the system's CAs).
 @export var tls_client: bool = false
 @export var tls_trusted_ca: X509Certificate
+## The name the server's certificate was issued for, when it is not the address clients type. Empty = that address.
+@export var tls_common_name: String = ""
 
 
 ## The transport this build really uses: WebSocket on the web, the flag or this setting elsewhere.
@@ -51,12 +53,17 @@ func server_tls() -> TLSOptions:
 func client_tls() -> TLSOptions:
 	if not tls_client:
 		return null
-	return TLSOptions.client(tls_trusted_ca)
+	return TLSOptions.client(tls_trusted_ca, tls_common_name)
 
 
 ## Puts these settings on MpKit (before host / join).
 func apply(host_slot: int = 1) -> void:
 	MpKit.configure(effective_port(), max_players, host_slot, custom_channels)
 	MpKit.transport = effective_transport()
-	MpKit.tls_server = server_tls()
-	MpKit.tls_client = client_tls()
+	## What this .tres sets wins; otherwise the TLS flags MpKit read at startup stay.
+	var server := server_tls()
+	if server:
+		MpKit.tls_server = server
+	var client := client_tls()
+	if client:
+		MpKit.tls_client = client

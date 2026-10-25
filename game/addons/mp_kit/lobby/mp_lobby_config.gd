@@ -31,6 +31,10 @@ extends Resource
 @export var reject_flush_s: float = 0.2
 ## Largest `options` / `meta` Dictionary a client may send (var_to_bytes size).
 @export var payload_max_bytes: int = 2048
+## WebSocket TLS (wss://) for the lobby and every match: PEM certificate and key files on the server. Empty = plain.
+## They travel to each match process (agent_fields), so lobby and matches use the same certificate.
+@export var tls_certificate_path: String = ""
+@export var tls_key_path: String = ""
 ## Address sent to the clients for the match processes. Empty = the address they used for the lobby.
 @export var public_host: String = ""
 
@@ -64,7 +68,7 @@ extends Resource
 @export var matches_root: String = "user://mp_matches"
 ## Fields the launcher forwards to the dedicated as `--field-name=value`.
 @export var agent_fields: PackedStringArray = PackedStringArray([
-	"transport", "heartbeat_s", "idle_no_players_s", "rejoin_grace_s", "load_timeout_s", "parent_check_s", "result_quit_delay_s",
+	"transport", "tls_certificate_path", "tls_key_path", "heartbeat_s", "idle_no_players_s", "rejoin_grace_s", "load_timeout_s", "parent_check_s", "result_quit_delay_s",
 ])
 
 

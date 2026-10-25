@@ -28,6 +28,38 @@ static func normalize(name: String) -> String:
 	return ENET
 
 
+## Server TLS from two files (PEM certificate and key), or null when either path is empty. ENet ignores it.
+static func server_tls(certificate_path: String, key_path: String) -> TLSOptions:
+	if certificate_path.is_empty() or key_path.is_empty():
+		return null
+	var cert := X509Certificate.new()
+	var key := CryptoKey.new()
+	if cert.load(certificate_path) != OK or key.load(key_path) != OK:
+		push_error("MpTransport: cannot load TLS certificate %s / key %s" % [certificate_path, key_path])
+		return null
+	return TLSOptions.server(key, cert)
+
+
+## `--tls-certificate-path=` + `--tls-key-path=`: the server speaks wss:// (a VPS, a room server and its matches).
+static func server_tls_from_flags() -> TLSOptions:
+	return server_tls(MpBoot.user_value("tls-certificate-path", ""), MpBoot.user_value("tls-key-path", ""))
+
+
+## `--tls-client`: the client speaks wss://. `--tls-trusted-ca=` (a PEM file, for a private CA or a self-signed
+## certificate; empty = the system's CAs) and `--tls-common-name=` (the name the certificate was issued for).
+static func client_tls_from_flags() -> TLSOptions:
+	if not MpBoot.user_flag("tls-client"):
+		return null
+	var ca: X509Certificate = null
+	var ca_path := MpBoot.user_value("tls-trusted-ca", "")
+	if not ca_path.is_empty():
+		ca = X509Certificate.new()
+		if ca.load(ca_path) != OK:
+			push_error("MpTransport: cannot load TLS CA %s" % ca_path)
+			ca = null
+	return TLSOptions.client(ca, MpBoot.user_value("tls-common-name", ""))
+
+
 ## `{error, peer}`. `max_clients` only applies to ENet (the WebSocket peer has no cap of its own).
 static func create_server(kind: String, port: int, max_clients: int, tls: TLSOptions = null) -> Dictionary:
 	if normalize(kind) == WS:

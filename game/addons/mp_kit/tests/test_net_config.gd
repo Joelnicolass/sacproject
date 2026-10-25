@@ -17,6 +17,9 @@ func test_tls_only_when_set() -> void:
 	check(cfg.server_tls() == null and cfg.client_tls() == null, "no certificate and no client TLS = plain ws://")
 	cfg.tls_client = true
 	check(cfg.client_tls() != null, "client TLS on = wss:// with the system's CAs")
+	cfg.tls_common_name = "game.example.com"
+	check(cfg.client_tls() != null, "a certificate name of its own is accepted")
+	check(MpTransport.server_tls("", "") == null and MpTransport.client_tls_from_flags() == null, "no TLS files and no flags = plain")
 	var crypto := Crypto.new()
 	var key := crypto.generate_rsa(2048)
 	cfg.tls_key = key

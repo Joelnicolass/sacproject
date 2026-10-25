@@ -32,6 +32,7 @@ Eso crea el usuario `juego`, copia el build a `/opt/juego`, instala las unidades
 | Servidores dedicados sin lobby (entrar con IP y puerto) | `--dedicated 7777,7778` |
 | Clientes web | `--transport ws` (el lobby y las partidas por TCP) |
 | Que el script abra los puertos | `--open-firewall` (ufw: UDP con ENet, TCP con WebSocket) |
+| Clientes web por https (`wss://`) | `--transport ws --tls-cert /etc/letsencrypt/live/DOMINIO/fullchain.pem --tls-key /etc/letsencrypt/live/DOMINIO/privkey.pem` |
 
 Varias partidas a la vez en un servidor de salas es automático: cada sala llena lanza su proceso, hasta `max_matches` del `MpLobbyConfig` (o `--max-matches=N`). Cada número del `MpLobbyConfig` se pisa con un flag de su nombre; para una instancia, ponelo en `EXTRA_ARGS` de `/etc/juego/rooms-7700.env` y reiniciá.
 
@@ -47,7 +48,7 @@ Si el servidor de salas se cae, systemd lo levanta y sus partidas se cierran sol
 
 ## Web por https
 
-Una página servida por `https` solo abre `wss://`. Con un dedicado sin lobby alcanza `MpNetConfig.tls_certificate` y `tls_key` en el servidor y `tls_client` en el cliente. El lobby todavía no toma TLS: para salas con clientes web servidos por https hace falta un proxy por puerto, o servir la página por http mientras tanto.
+Una página servida por `https` solo abre `wss://`. En el servidor, `deploy.sh … --transport ws --tls-cert … --tls-key …` (o `tls_certificate_path` / `tls_key_path` en el `MpLobbyConfig`, o los flags `--tls-certificate-path=` y `--tls-key-path=`): el lobby y cada partida usan ese certificado. En el cliente, `MpNetConfig.tls_client` encendido y la dirección del dominio del certificado (`juego.ejemplo.com:7700`). El usuario del servicio tiene que poder leer el certificado y la clave (con Let's Encrypt, por ejemplo, un grupo con permiso sobre `/etc/letsencrypt/live` y `archive`).
 
 ## Verificado y no verificado
 

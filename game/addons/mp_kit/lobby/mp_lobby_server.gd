@@ -73,7 +73,8 @@ func name_of_room(room_id: String) -> String:
 func start(p_config: MpLobbyConfig, launcher: MpMatchLauncher = null) -> Error:
 	stop()
 	config = p_config
-	var made := MpTransport.create_server(config.transport, config.lobby_port, config.max_connections)
+	var tls := MpTransport.server_tls(config.tls_certificate_path, config.tls_key_path)
+	var made := MpTransport.create_server(config.transport, config.lobby_port, config.max_connections, tls)
 	var peer := made["peer"] as MultiplayerPeer
 	if int(made["error"]) != OK:
 		return int(made["error"]) as Error

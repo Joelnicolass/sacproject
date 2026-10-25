@@ -8,6 +8,8 @@
 #                          the first 7800-7899, the second 7900-7999...
 #     --dedicated 7777     plain dedicated instances (no lobby), one per port. Default: none.
 #     --transport enet|ws  forwarded to every instance (default: what the build's MpLobbyConfig says)
+#     --tls-cert PATH      wss:// with this PEM certificate on the server (e.g. /etc/letsencrypt/live/DOMAIN/fullchain.pem)
+#     --tls-key PATH       and its PEM key (…/privkey.pem). The service user must be able to read both.
 #     --open-firewall      also open the ports with ufw (UDP for ENet, TCP for WebSocket and always the lobby's)
 #     --dry-run            print every command instead of running it
 #
@@ -18,13 +20,15 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 TARGET="${1:?usage: deploy.sh user@host path/to/build [options]}"
 BUILD="${2:?usage: deploy.sh user@host path/to/build [options]}"
 shift 2
-NAME=""; ROOMS="7700"; DEDICATED=""; TRANSPORT=""; FIREWALL=0; DRY=0
+NAME=""; ROOMS="7700"; DEDICATED=""; TRANSPORT=""; FIREWALL=0; DRY=0; TLS_CERT=""; TLS_KEY=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --name) NAME="$2"; shift 2 ;;
     --rooms) ROOMS="$2"; shift 2 ;;
     --dedicated) DEDICATED="$2"; shift 2 ;;
     --transport) TRANSPORT="$2"; shift 2 ;;
+    --tls-cert) TLS_CERT="$2"; shift 2 ;;
+    --tls-key) TLS_KEY="$2"; shift 2 ;;
     --open-firewall) FIREWALL=1; shift ;;
     --dry-run) DRY=1; shift ;;
     *) echo "unknown option $1" >&2; exit 2 ;;
@@ -36,6 +40,11 @@ BIN="$(cd "$BUILD" && ls -1 *.x86_64 2>/dev/null | head -n 1 || true)"
 case "$NAME" in *[!a-z0-9_-]*|"") echo "--name must be lower case letters, digits, - or _" >&2; exit 2 ;; esac
 EXTRA=""
 [ -n "$TRANSPORT" ] && EXTRA="--transport=$TRANSPORT"
+if [ -n "$TLS_CERT$TLS_KEY" ]; then
+  [ -n "$TLS_CERT" ] && [ -n "$TLS_KEY" ] || { echo "--tls-cert and --tls-key go together" >&2; exit 2; }
+  [ "$TRANSPORT" = ws ] || { echo "TLS needs --transport ws" >&2; exit 2; }
+  EXTRA="$EXTRA --tls-certificate-path=$TLS_CERT --tls-key-path=$TLS_KEY"
+fi
 
 run() { if [ "$DRY" = 1 ]; then printf 'RUN %s\n' "$*"; else "$@"; fi; }
 remote() { run ssh "$TARGET" "$@"; }

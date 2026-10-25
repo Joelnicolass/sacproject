@@ -424,7 +424,7 @@ Actualizado el 2026-10-24 con la auditoría `research/055R-legacy-audit.md`, que
 - Red host autoritativa.
 - El tag como id de red.
 
-> **Decisión del usuario (2026-10-24):** la v2 del refactor empieza por **055f completo, en un solo corte** (sin una versión MVP previa, para no trabajar doble): la IA usa los 53 hechizos y, en el mismo corte, su percepción y sus tácticas pasan al diseño de 055f (campos con nombre, `AiProfile` con knobs de diseño, sin lo calcado de `shiny.d`). Los cortes que antes iban delante (055c2, 055e) adaptan la IA cuando lleguen. Antes de 055f quedan solo las abolladuras de Bombardment y el visual del Volcano y del Tornado. El terreno de malla (063) va al final de la fase 1 y la pantalla de carga con precalentado de shaders va después de 063.
+> **Decisión del usuario (2026-10-24):** 055f (la IA usa todos los hechizos, percepción y tácticas con diseño propio) queda en su lugar original, después de 055e (paso 11), en un solo corte. Antes de la v2 quedan solo las abolladuras de Bombardment y el visual del Volcano y del Tornado. El terreno de malla (063) va al final de la fase 1 y la pantalla de carga con precalentado de shaders va después de 063.
 
 **Orden propuesto** (prioridad del usuario: hechizos y suelo/terreno en curso, después la v2; detalle y pares paralelos en 055R §4):
 

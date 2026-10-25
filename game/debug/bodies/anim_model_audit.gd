@@ -84,7 +84,7 @@ func _collect_wanted(owners: Array) -> void:
 
 func _audit_role(role: String) -> void:
 	var node := _machine.get_node(role) as AnimationNodeAnimation
-	var tag := String(node.animation)
+	var tag := _root.tag_for(role)
 	var checks: Dictionary = {"map": _map(role, tag)}
 	if not _player.has_animation(tag):
 		checks["clip"] = ["FAIL", "clip %s is not in the .glb" % tag]
@@ -179,8 +179,11 @@ func _clip(role: String, tag: String, node: AnimationNodeAnimation, frames: int)
 		var entry: Dictionary = want["entry"]
 		if entry["tag"] == tag and int(entry["frames"]) > 0 and int(entry["frames"]) != frames:
 			return ["FAIL", "%s data says %d frames, the clip has %d" % [want["who"], entry["frames"], frames]]
-	if not node.use_custom_timeline or absf(node.timeline_length - float(frames) / AnimSampler.FPS) > 0.002:
-		return ["FAIL", "state timeline %.3f s, want %.3f s" % [node.timeline_length, float(frames) / AnimSampler.FPS]]
+	var anim := _root.clips_player().get_animation(node.animation)
+	if absf(anim.length - float(frames) / AnimSampler.FPS) > 0.002:
+		return ["FAIL", "library length %.3f s, want %.3f s" % [anim.length, float(frames) / AnimSampler.FPS]]
+	if node.use_custom_timeline:
+		return ["FAIL", "the state keeps a custom timeline: the Animation of the library carries the length"]
 	return ["PASS", ""]
 
 
@@ -193,11 +196,13 @@ func _rate(tag: String) -> Array:
 
 
 func _loop(role: String, node: AnimationNodeAnimation) -> Array:
-	var holds := MUST_HOLD.has(role)
-	if holds and node.loop_mode != Animation.LOOP_NONE:
+	var mode := _root.clips_player().get_animation(node.animation).loop_mode
+	if MUST_HOLD.has(role) and mode != Animation.LOOP_NONE:
 		return ["FAIL", "should hold its last frame but repeats"]
-	if MUST_LOOP.has(role) and node.loop_mode == Animation.LOOP_NONE:
+	if MUST_LOOP.has(role) and mode == Animation.LOOP_NONE:
 		return ["FAIL", "should repeat but plays once"]
+	if BodyModel.ONE_SHOT_ROLES.has(role) and mode != Animation.LOOP_NONE:
+		return ["FAIL", "one-shot whose Animation repeats: it would never go back to idle"]
 	if BodyModel.ONE_SHOT_ROLES.has(role) and not _returns_to_idle(role):
 		return ["FAIL", "one-shot with no automatic transition back to idle"]
 	return ["PASS", ""]

@@ -1,0 +1,32 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/mrdk_clips/mdst.res" id="1_mdst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/mrdk_clips/mdrn.res" id="2_mdrn"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/mrdk_clips/mds2.res" id="3_mds2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/mrdk_clips/mdr2.res" id="4_mdr2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/mrdk_clips/death.res" id="5_death"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/mrdk_clips/death2.res" id="6_death2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/mrdk_clips/death3.res" id="7_death3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/mrdk_clips/mdfd.res" id="8_mdfd"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/mrdk_clips/mdgu.res" id="9_mdgu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/mrdk_clips/mdhf.res" id="10_mdhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/mrdk_clips/mdi1.res" id="11_mdi1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/mrdk_clips/ghost_rise.res" id="12_ghost_rise"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/mrdk_clips/unghost.res" id="13_unghost"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_mdst"),
+&"run": ExtResource("2_mdrn"),
+&"cast": ExtResource("3_mds2"),
+&"cast_run": ExtResource("4_mdr2"),
+&"death": ExtResource("5_death"),
+&"death2": ExtResource("6_death2"),
+&"death3": ExtResource("7_death3"),
+&"knock": ExtResource("8_mdfd"),
+&"get_up": ExtResource("9_mdgu"),
+&"hit_floor": ExtResource("10_mdhf"),
+&"gesture": ExtResource("11_mdi1"),
+&"ghost_rise": ExtResource("12_ghost_rise"),
+&"unghost": ExtResource("13_unghost")
+}

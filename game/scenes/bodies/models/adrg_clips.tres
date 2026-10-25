@@ -1,0 +1,45 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/adrg_clips/ADst.res" id="1_ADst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/adrg_clips/ADrn.res" id="2_ADrn"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/adrg_clips/ADa1.res" id="3_ADa1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/adrg_clips/ADa2.res" id="4_ADa2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/adrg_clips/ADa3.res" id="5_ADa3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/adrg_clips/ADs1.res" id="6_ADs1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/adrg_clips/ADd1.res" id="7_ADd1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/adrg_clips/ADfi.res" id="8_ADfi"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/adrg_clips/AD2t.res" id="9_AD2t"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/adrg_clips/ADsc.res" id="10_ADsc"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/adrg_clips/ADfl.res" id="11_ADfl"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/adrg_clips/ADhv.res" id="12_ADhv"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/adrg_clips/ADto.res" id="13_ADto"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/adrg_clips/ADla.res" id="14_ADla"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/adrg_clips/ADfd.res" id="15_ADfd"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/adrg_clips/ADgu.res" id="16_ADgu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/adrg_clips/ADda.res" id="17_ADda"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/adrg_clips/ADhg.res" id="18_ADhg"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/adrg_clips/ADi1.res" id="19_ADi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_ADst"),
+&"run": ExtResource("2_ADrn"),
+&"attack": ExtResource("3_ADa1"),
+&"attack2": ExtResource("4_ADa2"),
+&"attack3": ExtResource("5_ADa3"),
+&"shoot": ExtResource("6_ADs1"),
+&"shoot2": ExtResource("6_ADs1"),
+&"death": ExtResource("7_ADd1"),
+&"fly_death": ExtResource("8_ADfi"),
+&"held": ExtResource("9_AD2t"),
+&"thrash": ExtResource("10_ADsc"),
+&"fly": ExtResource("11_ADfl"),
+&"hover": ExtResource("12_ADhv"),
+&"takeoff": ExtResource("13_ADto"),
+&"land": ExtResource("14_ADla"),
+&"knock": ExtResource("15_ADfd"),
+&"get_up": ExtResource("16_ADgu"),
+&"fly_damage": ExtResource("17_ADda"),
+&"hit_floor": ExtResource("18_ADhg"),
+&"gesture": ExtResource("19_ADi1")
+}

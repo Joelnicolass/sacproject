@@ -1,0 +1,35 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/edmn_clips/Eds1.res" id="1_Eds1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/edmn_clips/Edru.res" id="2_Edru"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/edmn_clips/Eda1.res" id="3_Eda1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/edmn_clips/Eda2.res" id="4_Eda2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/edmn_clips/Eda3.res" id="5_Eda3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/edmn_clips/Edsm.res" id="6_Edsm"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/edmn_clips/Edd1.res" id="7_Edd1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/edmn_clips/Eds1_hold.res" id="8_Eds1_hold"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/edmn_clips/Edf2.res" id="9_Edf2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/edmn_clips/Edsa.res" id="10_Edsa"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/edmn_clips/Edkn.res" id="11_Edkn"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/edmn_clips/Edgt.res" id="12_Edgt"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/edmn_clips/Edhf.res" id="13_Edhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/edmn_clips/Edi1.res" id="14_Edi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_Eds1"),
+&"run": ExtResource("2_Edru"),
+&"attack": ExtResource("3_Eda1"),
+&"attack2": ExtResource("4_Eda2"),
+&"attack3": ExtResource("5_Eda3"),
+&"shoot": ExtResource("6_Edsm"),
+&"shoot2": ExtResource("1_Eds1"),
+&"death": ExtResource("7_Edd1"),
+&"fly_death": ExtResource("8_Eds1_hold"),
+&"held": ExtResource("9_Edf2"),
+&"thrash": ExtResource("10_Edsa"),
+&"knock": ExtResource("11_Edkn"),
+&"get_up": ExtResource("12_Edgt"),
+&"hit_floor": ExtResource("13_Edhf"),
+&"gesture": ExtResource("14_Edi1")
+}

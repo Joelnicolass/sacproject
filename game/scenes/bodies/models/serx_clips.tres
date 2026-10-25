@@ -1,0 +1,32 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/serx_clips/ses1.res" id="1_ses1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/serx_clips/seru.res" id="2_seru"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/serx_clips/sesl.res" id="3_sesl"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/serx_clips/serl.res" id="4_serl"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/serx_clips/death.res" id="5_death"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/serx_clips/death2.res" id="6_death2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/serx_clips/death3.res" id="7_death3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/serx_clips/sek2.res" id="8_sek2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/serx_clips/segu.res" id="9_segu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/serx_clips/sehf.res" id="10_sehf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/serx_clips/sei1.res" id="11_sei1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/serx_clips/ghost_rise.res" id="12_ghost_rise"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/serx_clips/unghost.res" id="13_unghost"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_ses1"),
+&"run": ExtResource("2_seru"),
+&"cast": ExtResource("3_sesl"),
+&"cast_run": ExtResource("4_serl"),
+&"death": ExtResource("5_death"),
+&"death2": ExtResource("6_death2"),
+&"death3": ExtResource("7_death3"),
+&"knock": ExtResource("8_sek2"),
+&"get_up": ExtResource("9_segu"),
+&"hit_floor": ExtResource("10_sehf"),
+&"gesture": ExtResource("11_sei1"),
+&"ghost_rise": ExtResource("12_ghost_rise"),
+&"unghost": ExtResource("13_unghost")
+}

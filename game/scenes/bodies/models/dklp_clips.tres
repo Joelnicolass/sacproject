@@ -1,0 +1,36 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/dklp_clips/KLst.res" id="1_KLst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/dklp_clips/KDrn.res" id="2_KDrn"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/dklp_clips/KDa1.res" id="3_KDa1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/dklp_clips/KLa2.res" id="4_KLa2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/dklp_clips/KLal.res" id="5_KLal"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/dklp_clips/KLs1.res" id="6_KLs1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/dklp_clips/KLs2.res" id="7_KLs2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/dklp_clips/KLd1.res" id="8_KLd1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/dklp_clips/KL2t.res" id="9_KL2t"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/dklp_clips/KLsc.res" id="10_KLsc"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/dklp_clips/KLrz.res" id="11_KLrz"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/dklp_clips/KLfd.res" id="12_KLfd"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/dklp_clips/KLgu.res" id="13_KLgu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/dklp_clips/KLhf.res" id="14_KLhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/dklp_clips/KDi1.res" id="15_KDi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_KLst"),
+&"run": ExtResource("2_KDrn"),
+&"attack": ExtResource("3_KDa1"),
+&"attack2": ExtResource("4_KLa2"),
+&"attack3": ExtResource("5_KLal"),
+&"shoot": ExtResource("6_KLs1"),
+&"shoot2": ExtResource("7_KLs2"),
+&"death": ExtResource("8_KLd1"),
+&"held": ExtResource("9_KL2t"),
+&"thrash": ExtResource("10_KLsc"),
+&"rise": ExtResource("11_KLrz"),
+&"knock": ExtResource("12_KLfd"),
+&"get_up": ExtResource("13_KLgu"),
+&"hit_floor": ExtResource("14_KLhf"),
+&"gesture": ExtResource("15_KDi1")
+}

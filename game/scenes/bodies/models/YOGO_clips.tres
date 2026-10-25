@@ -1,0 +1,32 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/YOGO_clips/YOs1.res" id="1_YOs1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/YOGO_clips/YOru.res" id="2_YOru"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/YOGO_clips/YOsl.res" id="3_YOsl"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/YOGO_clips/YOrl.res" id="4_YOrl"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/YOGO_clips/death.res" id="5_death"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/YOGO_clips/death2.res" id="6_death2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/YOGO_clips/death3.res" id="7_death3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/YOGO_clips/YOk2.res" id="8_YOk2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/YOGO_clips/YOgu.res" id="9_YOgu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/YOGO_clips/YOhf.res" id="10_YOhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/YOGO_clips/YOi1.res" id="11_YOi1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/YOGO_clips/ghost_rise.res" id="12_ghost_rise"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/YOGO_clips/unghost.res" id="13_unghost"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_YOs1"),
+&"run": ExtResource("2_YOru"),
+&"cast": ExtResource("3_YOsl"),
+&"cast_run": ExtResource("4_YOrl"),
+&"death": ExtResource("5_death"),
+&"death2": ExtResource("6_death2"),
+&"death3": ExtResource("7_death3"),
+&"knock": ExtResource("8_YOk2"),
+&"get_up": ExtResource("9_YOgu"),
+&"hit_floor": ExtResource("10_YOhf"),
+&"gesture": ExtResource("11_YOi1"),
+&"ghost_rise": ExtResource("12_ghost_rise"),
+&"unghost": ExtResource("13_unghost")
+}

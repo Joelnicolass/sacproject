@@ -1,0 +1,32 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/quil_clips/qust.res" id="1_qust"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/quil_clips/qurn.res" id="2_qurn"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/quil_clips/qus2.res" id="3_qus2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/quil_clips/qur2.res" id="4_qur2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/quil_clips/death.res" id="5_death"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/quil_clips/death2.res" id="6_death2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/quil_clips/death3.res" id="7_death3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/quil_clips/qufd.res" id="8_qufd"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/quil_clips/qugu.res" id="9_qugu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/quil_clips/quhf.res" id="10_quhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/quil_clips/qui1.res" id="11_qui1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/quil_clips/ghost_rise.res" id="12_ghost_rise"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/quil_clips/unghost.res" id="13_unghost"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_qust"),
+&"run": ExtResource("2_qurn"),
+&"cast": ExtResource("3_qus2"),
+&"cast_run": ExtResource("4_qur2"),
+&"death": ExtResource("5_death"),
+&"death2": ExtResource("6_death2"),
+&"death3": ExtResource("7_death3"),
+&"knock": ExtResource("8_qufd"),
+&"get_up": ExtResource("9_qugu"),
+&"hit_floor": ExtResource("10_quhf"),
+&"gesture": ExtResource("11_qui1"),
+&"ghost_rise": ExtResource("12_ghost_rise"),
+&"unghost": ExtResource("13_unghost")
+}

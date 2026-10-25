@@ -1,6 +1,7 @@
 extends SceneTree
 
 ## No necesita el juego original; usa los modelos ya importados en assets/original (los .glb y su index.json).
+## FROZEN since 055c1 (it wrote the old shape of the model scenes; tools/bake/new_creature.gd makes new ones).
 ## RFC-036 (036g, F208): writes scenes/bodies/models/<tag>.tscn, one per skeletal model of assets/original/models/.
 ## Each scene is a BodyModel: the .glb instanced as "Model" (z mirrored, like the baked meshes), an AnimationTree whose state
 ## machine has one state per ROLE playing the model's clip for it, and an "Events" AnimationPlayer whose method tracks fire
@@ -16,6 +17,8 @@ extends SceneTree
 ##
 ## Run:  Godot --headless --path . --script res://tools/bake/bake_body_scenes.gd
 
+## True: the script refuses to run (see _init).
+const FROZEN := true
 const INDEX := "res://assets/original/models/index.json"
 const GLB_DIR := "res://assets/original/models/"
 const OUT_DIR := "res://scenes/bodies/models/"
@@ -67,10 +70,11 @@ func _init() -> void:
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--only="):
 			_only = arg.substr(7).split(",")
-	if _force:
-		# FROZEN (055c1): the 74 model scenes were edited in the editor and the clips live in them now. A new model comes from
-		# tools/bake/new_creature.gd; this script only writes the scenes that are still missing. It is deleted in 055z.
-		push_error("bake_body_scenes: --force is frozen (it would throw away the edits made in the editor). Use tools/bake/new_creature.gd for a new model.")
+	if FROZEN:
+		# FROZEN (055c1 c1-c1): the 74 model scenes were edited in the editor and the clips live in their libraries (<model>_clips.tres).
+		# This script would write the old shape (clip tags, an Events player). A new model comes from tools/bake/new_creature.gd.
+		# It is deleted in 055z.
+		push_error("bake_body_scenes: frozen. Use tools/bake/new_creature.gd for a new model.")
 		quit(1)
 		return
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUT_DIR))

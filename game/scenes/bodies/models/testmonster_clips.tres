@@ -1,0 +1,18 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/testmonster_clips/idle.res" id="1_idle"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/testmonster_clips/run.res" id="2_run"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/testmonster_clips/attack_at45.res" id="3_attack_at45"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/testmonster_clips/attack2_at60.res" id="4_attack2_at60"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/testmonster_clips/death.res" id="5_death"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_idle"),
+&"run": ExtResource("2_run"),
+&"attack": ExtResource("3_attack_at45"),
+&"attack2": ExtResource("4_attack2_at60"),
+&"shoot": ExtResource("3_attack_at45"),
+&"death": ExtResource("5_death"),
+&"gesture": ExtResource("1_idle")
+}

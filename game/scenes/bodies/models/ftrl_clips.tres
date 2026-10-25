@@ -1,0 +1,35 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/ftrl_clips/TRst.res" id="1_TRst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ftrl_clips/TFrn.res" id="2_TFrn"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ftrl_clips/TFa1.res" id="3_TFa1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ftrl_clips/TRa2.res" id="4_TRa2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ftrl_clips/TRa1.res" id="5_TRa1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ftrl_clips/TR00.res" id="6_TR00"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ftrl_clips/TRd1.res" id="7_TRd1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ftrl_clips/TR2t.res" id="8_TR2t"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ftrl_clips/TRsc.res" id="9_TRsc"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ftrl_clips/TRrz.res" id="10_TRrz"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ftrl_clips/TRfd.res" id="11_TRfd"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ftrl_clips/TRgu.res" id="12_TRgu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ftrl_clips/TRhf.res" id="13_TRhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ftrl_clips/TFi1.res" id="14_TFi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_TRst"),
+&"run": ExtResource("2_TFrn"),
+&"attack": ExtResource("3_TFa1"),
+&"attack2": ExtResource("4_TRa2"),
+&"attack3": ExtResource("5_TRa1"),
+&"shoot": ExtResource("6_TR00"),
+&"shoot2": ExtResource("6_TR00"),
+&"death": ExtResource("7_TRd1"),
+&"held": ExtResource("8_TR2t"),
+&"thrash": ExtResource("9_TRsc"),
+&"rise": ExtResource("10_TRrz"),
+&"knock": ExtResource("11_TRfd"),
+&"get_up": ExtResource("12_TRgu"),
+&"hit_floor": ExtResource("13_TRhf"),
+&"gesture": ExtResource("14_TFi1")
+}

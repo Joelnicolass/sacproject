@@ -1,0 +1,30 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/buta_clips/BUs1.res" id="1_BUs1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/buta_clips/BUru.res" id="2_BUru"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/buta_clips/BUsl.res" id="3_BUsl"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/buta_clips/BUrl.res" id="4_BUrl"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/buta_clips/death.res" id="5_death"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/buta_clips/death2.res" id="6_death2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/buta_clips/death3.res" id="7_death3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/buta_clips/BUgu.res" id="8_BUgu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/buta_clips/BUhf.res" id="9_BUhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/buta_clips/BUi1.res" id="10_BUi1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/buta_clips/ghost_rise.res" id="11_ghost_rise"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/buta_clips/unghost.res" id="12_unghost"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_BUs1"),
+&"run": ExtResource("2_BUru"),
+&"cast": ExtResource("3_BUsl"),
+&"cast_run": ExtResource("4_BUrl"),
+&"death": ExtResource("5_death"),
+&"death2": ExtResource("6_death2"),
+&"death3": ExtResource("7_death3"),
+&"get_up": ExtResource("8_BUgu"),
+&"hit_floor": ExtResource("9_BUhf"),
+&"gesture": ExtResource("10_BUi1"),
+&"ghost_rise": ExtResource("11_ghost_rise"),
+&"unghost": ExtResource("12_unghost")
+}

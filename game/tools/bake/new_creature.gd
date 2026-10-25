@@ -8,18 +8,21 @@ extends SceneTree
 ##   Godot --headless --path . --script res://tools/bake/new_creature.gd -- testmonster
 ##   Godot --headless --path . --script res://tools/bake/new_creature.gd -- res://assets/custom/models/testmonster.glb --name="Test Monster" --god=pyro
 ##
-## It writes three files, never over an existing one (`--force` rewrites all three and throws away what you edited):
-##   scenes/bodies/models/<tag>.tscn       BodyModel: the .glb, an AnimationTree with one state per role, the Events player.
+## It writes these files, never over an existing one (`--force` rewrites them all and throws away what you edited):
+##   scenes/bodies/models/<tag>.tscn       BodyModel: the .glb, a Clips player with the library, an AnimationTree with one state per role.
+##   scenes/bodies/models/<tag>_clips.tres the AnimationLibrary: role -> Animation, and <tag>_clips/<clip>.res, one Animation per clip
+##                                          (bone tracks, exact length, the `hit`/`shoot` marker and the method track at the impact).
 ##   data/catalog/body_sizes/<tag>.tres    BodySize measured from the mesh (box, height, radius, reach).
 ##   data/catalog/creatures/<tag>.tres     CreatureType: the stats of data/templates/creature.tres + the model + the clip facts
 ##                                          the rules read (melee/shoot timing, stun, flight, death).
-## `--sync` re-reads the model scene of an existing creature and refreshes only its clip facts (keeps your stats). Run it after
-## you change which clip a role plays, or an event, in the model scene.
+## `--sync` copies the bone tracks of the .glb again into the Animations of the library (after a new export from Blender; the length is the
+## clip's, the markers and the method track stay) and refreshes the creature's clip facts from the scene (keeps your stats). Run it after
+## you change which Animation a role plays, or a marker, in the model scene.
 ##
 ## Roles are found by the NAME of each animation, tolerant of case, separators, a Blender suffix (`Attack.001`) and an armature
 ## prefix (`Armature|Run`): idle, run (or walk), attack, shoot, cast, hit, death, fly, takeoff, land, hover, knock, get_up...
 ## The impact moment of a clip is in its name: `attack_at45` = at 45 % of the clip, `attack_f18` = at frame 18. Without one it is
-## the middle (50 %). Both are editable afterwards: the "attack" key of the Events animation in the model scene.
+## the middle (50 %). Both are editable afterwards: the `hit` marker (and the "attack" key of the method track) of its Animation.
 ## Attack variants (F336): clips named `attack`, `attack2`, `attack3` (or `attack_a`, `attack_b`, `attack_c`; each with its own `_atNN`/`_fNN`
 ## impact) become up to three melee swings, the slots 0, 1 and 2 of `melee_animations`. The rules pick the slot 0 or the slot 1 at random
 ## for each swing; the slot 2 is the one against a target well below (a downward blow). Each swing plays its own clip.
@@ -456,26 +459,29 @@ func _save_scene(tag: String, glb: PackedScene, clips: Dictionary, roles: Dictio
 	root.add_child(instance)
 	instance.owner = root
 	var found := instance.find_children("*", "AnimationPlayer", true, false)[0] as AnimationPlayer
+	var library := _save_library(tag, found, clips, roles, impacts)
+	if library == null:
+		root.free()
+		return false
+
+	var clip_player := AnimationPlayer.new()
+	clip_player.name = "Clips"
+	clip_player.unique_name_in_owner = true
+	clip_player.root_node = NodePath("../Model")
+	clip_player.add_animation_library(&"", library)
+	root.add_child(clip_player)
+	clip_player.owner = root
 
 	var tree := AnimationTree.new()
 	tree.name = "Tree"
 	tree.unique_name_in_owner = true
 	tree.root_node = NodePath("../Model")
-	tree.anim_player = NodePath("../Model/" + str(instance.get_path_to(found)))
-	tree.tree_root = _machine(roles, clips)
+	tree.anim_player = NodePath("../Clips")
+	tree.tree_root = _machine(roles)
 	tree.deterministic = true
 	tree.active = false
 	root.add_child(tree)
 	tree.owner = root
-
-	var events := AnimationPlayer.new()
-	events.name = "Events"
-	events.unique_name_in_owner = true
-	events.root_node = NodePath("..")
-	events.deterministic = true
-	events.add_animation_library(&"", _events_library(roles, clips, impacts))
-	root.add_child(events)
-	events.owner = root
 
 	var sink := ClipEvents.new()
 	sink.name = "ClipEvents"
@@ -498,7 +504,7 @@ func _save_scene(tag: String, glb: PackedScene, clips: Dictionary, roles: Dictio
 
 
 ## One state per role, travel transitions between all, one-shot roles back to idle by themselves (as bake_body_scenes does).
-func _machine(roles: Dictionary, clips: Dictionary) -> AnimationNodeStateMachine:
+func _machine(roles: Dictionary) -> AnimationNodeStateMachine:
 	var machine := AnimationNodeStateMachine.new()
 	var travel := AnimationNodeStateMachineTransition.new()
 	travel.xfade_time = XFADE_S
@@ -512,15 +518,9 @@ func _machine(roles: Dictionary, clips: Dictionary) -> AnimationNodeStateMachine
 	for role in BodyModel.ROLES:
 		if not roles.has(role):
 			continue
-		var tag: String = roles[role]
+		# The state plays the Animation of its role; the Animation says whether it repeats (loop mode) and how long it lasts.
 		var clip := AnimationNodeAnimation.new()
-		clip.animation = StringName(tag)
-		# The glTF clip is not marked as a loop: the state says whether it repeats. Change the clip of a state and
-		# set `timeline_length` to the new clip's seconds.
-		clip.use_custom_timeline = true
-		clip.stretch_time_scale = false
-		clip.timeline_length = float(clips[tag]["seconds"])
-		clip.loop_mode = Animation.LOOP_NONE if BodyModel.HOLD_ROLES.has(role) else Animation.LOOP_LINEAR
+		clip.animation = StringName(role)
 		var at := names.size()
 		machine.add_node(StringName(role), clip, GRID_ORIGIN + Vector2(GRID.x * (at % GRID_COLUMNS), GRID.y * (at / GRID_COLUMNS)))
 		names.append(role)
@@ -533,25 +533,92 @@ func _machine(roles: Dictionary, clips: Dictionary) -> AnimationNodeStateMachine
 	return machine
 
 
-## One small animation per clip a role plays: a method track with ClipEvents.fire(kind) at the impact. attack, attack2 and
-## attack3 -> "attack", shoot -> "shoot", cast -> "cast". No mark in the name = the middle of the clip.
-func _events_library(roles: Dictionary, clips: Dictionary, impacts: Dictionary) -> AnimationLibrary:
+## The model's AnimationLibrary, saved as <tag>_clips.tres with one Animation per clip in <tag>_clips/<clip>.res: the .glb's bone
+## tracks, the clip's own length, the loop mode its role needs, and, for attack / shoot / cast, the method track at the impact
+## (attack, attack2 and attack3 -> "attack", shoot -> "shoot", cast -> "cast") with the `hit` / `shoot` marker there. No mark in
+## the clip's name = the middle of the clip. Null when it could not be saved.
+func _save_library(tag: String, source: AnimationPlayer, clips: Dictionary, roles: Dictionary, impacts: Dictionary) -> AnimationLibrary:
+	var dir := "%s%s_clips" % [SCENE_DIR, tag]
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dir))
 	var library := AnimationLibrary.new()
-	for role in ["attack", "attack2", "attack3", "shoot", "cast"]:
+	var made := {}  # "<clip>|<kind>" -> Animation: roles that play the same clip the same way share it
+	var files := {}
+	for role: String in BodyModel.ROLES:
 		if not roles.has(role):
 			continue
-		var tag: String = roles[role]
-		if library.has_animation(StringName(tag)):
-			continue
-		var seconds: float = clips[tag]["seconds"]
-		var animation := Animation.new()
-		animation.length = seconds
-		animation.loop_mode = Animation.LOOP_NONE
-		var track := animation.add_track(Animation.TYPE_METHOD)
-		animation.track_set_path(track, NodePath("ClipEvents"))
-		animation.track_insert_key(track, seconds * float(impacts.get(tag, DEFAULT_IMPACT)), {"method": &"fire", "args": ["attack" if role.begins_with("attack") else role]})
-		library.add_animation(StringName(tag), animation)
+		var clip_name: String = roles[role]
+		var kind := "hold" if BodyModel.HOLD_ROLES.has(role) else ("once" if BodyModel.ONE_SHOT_ROLES.has(role) else "loop")
+		var key := "%s|%s" % [clip_name, kind]
+		if not made.has(key):
+			var file := clip_name.validate_filename() + ("" if kind == "loop" else "_" + kind)
+			while files.has(file):
+				file += "_"
+			files[file] = true
+			var anim := _animation(source, clip_name, clips[clip_name], role, kind, float(impacts.get(clip_name, DEFAULT_IMPACT)))
+			var path := "%s/%s.res" % [dir, file]
+			anim.take_over_path(path)
+			if ResourceSaver.save(anim, path) != OK:
+				push_error("new_creature: cannot save " + path)
+				return null
+			made[key] = anim
+		library.add_animation(StringName(role), made[key])
+	var library_path := "%s%s_clips.tres" % [SCENE_DIR, tag]
+	library.take_over_path(library_path)
+	if ResourceSaver.save(library, library_path) != OK:
+		push_error("new_creature: cannot save " + library_path)
+		return null
 	return library
+
+
+## One Animation of the library: the clip of the .glb with its length, step, loop mode, method track and marker.
+func _animation(source: AnimationPlayer, clip_name: String, info: Dictionary, role: String, kind: String, impact: float) -> Animation:
+	var anim := source.get_animation(StringName(clip_name)).duplicate() as Animation
+	anim.resource_name = clip_name
+	anim.step = 1.0 / float(info["fps"])
+	anim.loop_mode = Animation.LOOP_LINEAR if kind == "loop" else Animation.LOOP_NONE
+	var event := "attack" if role.begins_with("attack") else (role if role == "shoot" or role == "cast" else "")
+	if not event.is_empty():
+		var at := anim.length * impact
+		var track := anim.add_track(Animation.TYPE_METHOD)
+		anim.track_set_path(track, NodePath("../ClipEvents"))
+		anim.track_insert_key(track, at, {"method": &"fire", "args": [event]})
+		var marker := &"hit" if event == "attack" else (&"shoot" if event == "shoot" else &"")
+		if not marker.is_empty() and not anim.has_marker(marker):
+			anim.add_marker(marker, at)
+	return anim
+
+
+## `--sync`: copies the bone tracks of the .glb again into the Animations of the library and keeps the markers and the method track.
+func _refresh_library(tag: String) -> int:
+	var library := ResourceLoader.load(SCENE_DIR + tag + "_clips.tres", "", ResourceLoader.CACHE_MODE_REPLACE) as AnimationLibrary
+	var glb := ResourceLoader.load(MODEL_DIR + tag + ".glb", "", ResourceLoader.CACHE_MODE_REPLACE) as PackedScene
+	var instance := glb.instantiate() if glb != null else null
+	var players := instance.find_children("*", "AnimationPlayer", true, false) if instance != null else []
+	if library == null or players.is_empty():
+		push_error("new_creature --sync: %s_clips.tres or the animations of %s.glb are missing" % [tag, tag])
+		if instance != null:
+			instance.free()
+		return 1
+	var source := players[0] as AnimationPlayer
+	var seen := {}
+	for role in library.get_animation_list():
+		var anim := library.get_animation(role)
+		if seen.has(anim) or not source.has_animation(StringName(anim.resource_name)):
+			continue
+		seen[anim] = true
+		var fresh := source.get_animation(StringName(anim.resource_name))
+		for index in range(anim.get_track_count() - 1, -1, -1):
+			if anim.track_get_type(index) != Animation.TYPE_METHOD:
+				anim.remove_track(index)
+		for index in fresh.get_track_count():
+			fresh.copy_track(index, anim)
+		anim.length = fresh.length
+		if ResourceSaver.save(anim, anim.resource_path) != OK:
+			push_error("new_creature --sync: cannot save " + anim.resource_path)
+			instance.free()
+			return 1
+	instance.free()
+	return OK
 
 
 # --- clip facts for the rules ------------------------------------------------------------------------------------------
@@ -560,7 +627,9 @@ func _sync_creature(tag: String) -> int:
 	if not FileAccess.file_exists(TypeRef.creature_path(tag)) or not BodyModel.exists(tag):
 		push_error("new_creature --sync: %s.tres or its model scene %s.tscn do not exist" % [tag, tag])
 		return 1
-	var code := _fill_from_scene(tag)
+	var code := _refresh_library(tag)
+	if code == OK:
+		code = _fill_from_scene(tag)
 	if code == OK:
 		print("NEW_CREATURE synced %s: the clip facts of data/catalog/creatures/%s.tres follow scenes/bodies/models/%s.tscn" % [tag, tag, tag])
 		var type := ResourceLoader.load(TypeRef.creature_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as CreatureType
@@ -570,7 +639,7 @@ func _sync_creature(tag: String) -> int:
 
 
 ## Loads the saved model scene and the creature file of `tag`, rewrites the creature's clip dictionaries from the scene
-## (role -> clip from the AnimationTree, frames and framerate from the clip, impact from the Events animation) and saves it.
+## (role -> clip from the AnimationTree, frames and framerate from the Animation, impact from its `hit` / `shoot` marker) and saves it.
 func _fill_from_scene(tag: String) -> int:
 	var type := ResourceLoader.load(TypeRef.creature_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as CreatureType
 	var packed := ResourceLoader.load(BodyModel.scene_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as PackedScene
@@ -623,20 +692,16 @@ func _fill_from_scene(tag: String) -> int:
 func _clip(model: BodyModel, role: String) -> Dictionary:
 	if not model.has_role(role):
 		return {}
-	var tag := model.tag_for(role)
-	return {"tag": tag, "frames": model.frames_of(tag), "framerate": model.framerate_of(tag)}
+	return {"tag": model.tag_for(role), "frames": model.frames_of(role), "framerate": model.framerate_of(role)}
 
 
-## The frame of the first event of the role's clip in the Events animation; the middle of the clip without one.
+## The frame of the first `hit` (`shoot` for a shot) marker of the role's Animation; the middle of the clip without one.
 func _impact_frame(model: BodyModel, role: String) -> float:
-	var tag := model.tag_for(role)
-	var events := model.events_player()
-	if events != null and events.has_animation(tag):
-		var animation := events.get_animation(tag)
-		for track in animation.get_track_count():
-			if animation.track_get_type(track) == Animation.TYPE_METHOD and animation.track_get_key_count(track) > 0:
-				return snappedf(animation.track_get_key_time(track, 0) * model.framerate_of(tag), 0.01)
-	return float(model.frames_of(tag)) * DEFAULT_IMPACT
+	var anim := model.clips_player().get_animation(model.animation_for(role)) if model.has_role(role) else null
+	var marker := ClipFacts.SHOOT if role.begins_with("shoot") else ClipFacts.HIT
+	if anim != null and anim.has_marker(marker):
+		return snappedf(anim.get_marker_time(marker) * model.framerate_of(role), 0.01)
+	return float(model.frames_of(role)) * DEFAULT_IMPACT
 
 
 # --- icon ---------------------------------------------------------------------------------------------------------------

@@ -1,0 +1,32 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/rigl_clips/Wsta.res" id="1_Wsta"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/rigl_clips/Wrun.res" id="2_Wrun"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/rigl_clips/Wcs3.res" id="3_Wcs3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/rigl_clips/Wrc3.res" id="4_Wrc3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/rigl_clips/death.res" id="5_death"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/rigl_clips/death2.res" id="6_death2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/rigl_clips/death3.res" id="7_death3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/rigl_clips/Wflo.res" id="8_Wflo"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/rigl_clips/Wget.res" id="9_Wget"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/rigl_clips/Wflo_once.res" id="10_Wflo_once"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/rigl_clips/Widl.res" id="11_Widl"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/rigl_clips/ghost_rise.res" id="12_ghost_rise"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/rigl_clips/unghost.res" id="13_unghost"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_Wsta"),
+&"run": ExtResource("2_Wrun"),
+&"cast": ExtResource("3_Wcs3"),
+&"cast_run": ExtResource("4_Wrc3"),
+&"death": ExtResource("5_death"),
+&"death2": ExtResource("6_death2"),
+&"death3": ExtResource("7_death3"),
+&"knock": ExtResource("8_Wflo"),
+&"get_up": ExtResource("9_Wget"),
+&"hit_floor": ExtResource("10_Wflo_once"),
+&"gesture": ExtResource("11_Widl"),
+&"ghost_rise": ExtResource("12_ghost_rise"),
+&"unghost": ExtResource("13_unghost")
+}

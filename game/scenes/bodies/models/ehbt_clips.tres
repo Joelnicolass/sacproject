@@ -1,0 +1,42 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/ehbt_clips/HBst.res" id="1_HBst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ehbt_clips/EHrn.res" id="2_EHrn"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ehbt_clips/EHa1.res" id="3_EHa1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ehbt_clips/HBa2.res" id="4_HBa2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ehbt_clips/HBa3.res" id="5_HBa3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ehbt_clips/HBsh.res" id="6_HBsh"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ehbt_clips/HBd1.res" id="7_HBd1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ehbt_clips/HBfi.res" id="8_HBfi"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ehbt_clips/HBft.res" id="9_HBft"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ehbt_clips/HBsc.res" id="10_HBsc"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ehbt_clips/HBrz.res" id="11_HBrz"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ehbt_clips/HBfl.res" id="12_HBfl"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ehbt_clips/HBi1.res" id="13_HBi1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ehbt_clips/HBfd.res" id="14_HBfd"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ehbt_clips/HBdf.res" id="15_HBdf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ehbt_clips/HBhf.res" id="16_HBhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ehbt_clips/EHi1.res" id="17_EHi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_HBst"),
+&"run": ExtResource("2_EHrn"),
+&"attack": ExtResource("3_EHa1"),
+&"attack2": ExtResource("4_HBa2"),
+&"attack3": ExtResource("5_HBa3"),
+&"shoot": ExtResource("6_HBsh"),
+&"shoot2": ExtResource("6_HBsh"),
+&"death": ExtResource("7_HBd1"),
+&"fly_death": ExtResource("8_HBfi"),
+&"held": ExtResource("9_HBft"),
+&"thrash": ExtResource("10_HBsc"),
+&"rise": ExtResource("11_HBrz"),
+&"fly": ExtResource("12_HBfl"),
+&"hover": ExtResource("13_HBi1"),
+&"takeoff": ExtResource("12_HBfl"),
+&"knock": ExtResource("14_HBfd"),
+&"fly_damage": ExtResource("15_HBdf"),
+&"hit_floor": ExtResource("16_HBhf"),
+&"gesture": ExtResource("17_EHi1")
+}

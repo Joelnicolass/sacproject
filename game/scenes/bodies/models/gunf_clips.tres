@@ -1,0 +1,33 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/gunf_clips/GUst.res" id="1_GUst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gunf_clips/GFrn.res" id="2_GFrn"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gunf_clips/GFa1.res" id="3_GFa1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gunf_clips/GUa1.res" id="4_GUa1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gunf_clips/GUs1.res" id="5_GUs1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gunf_clips/GFs2.res" id="6_GFs2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gunf_clips/GUd1.res" id="7_GUd1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gunf_clips/GUst_hold.res" id="8_GUst_hold"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gunf_clips/GU2t.res" id="9_GU2t"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gunf_clips/GUsc.res" id="10_GUsc"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gunf_clips/GUrz.res" id="11_GUrz"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gunf_clips/GUhf.res" id="12_GUhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/gunf_clips/GFi1.res" id="13_GFi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_GUst"),
+&"run": ExtResource("2_GFrn"),
+&"attack": ExtResource("3_GFa1"),
+&"attack2": ExtResource("4_GUa1"),
+&"attack3": ExtResource("4_GUa1"),
+&"shoot": ExtResource("5_GUs1"),
+&"shoot2": ExtResource("6_GFs2"),
+&"death": ExtResource("7_GUd1"),
+&"fly_death": ExtResource("8_GUst_hold"),
+&"held": ExtResource("9_GU2t"),
+&"thrash": ExtResource("10_GUsc"),
+&"rise": ExtResource("11_GUrz"),
+&"hit_floor": ExtResource("12_GUhf"),
+&"gesture": ExtResource("13_GFi1")
+}

@@ -50,7 +50,7 @@ static func measure(player: AnimationPlayer, skeleton: Skeleton3D, animation: An
 static func rig_of(model_root: Node) -> Array:
 	var players := model_root.find_children("*", "AnimationPlayer", true, false)
 	var skeletons := model_root.find_children("*", "Skeleton3D", true, false)
-	# A BodyModel has its own Events AnimationPlayer: the clip player is the one that drives the skeleton.
+	# A BodyModel also has a Clips player (the library by role): the one inside the Model, the .glb's own, comes first in the tree.
 	for node in players:
 		var player := node as AnimationPlayer
 		if not skeletons.is_empty() and player.has_node(player.root_node) and player.get_node(player.root_node).is_ancestor_of(skeletons[0]):

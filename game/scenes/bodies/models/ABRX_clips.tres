@@ -1,0 +1,32 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/ABRX_clips/AXs1.res" id="1_AXs1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ABRX_clips/AXru.res" id="2_AXru"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ABRX_clips/AXsl.res" id="3_AXsl"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ABRX_clips/AXrl.res" id="4_AXrl"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ABRX_clips/death.res" id="5_death"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ABRX_clips/death2.res" id="6_death2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ABRX_clips/death3.res" id="7_death3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ABRX_clips/AXhf.res" id="8_AXhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ABRX_clips/AXgu.res" id="9_AXgu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ABRX_clips/AXhf_once.res" id="10_AXhf_once"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ABRX_clips/AXi1.res" id="11_AXi1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ABRX_clips/ghost_rise.res" id="12_ghost_rise"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ABRX_clips/unghost.res" id="13_unghost"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_AXs1"),
+&"run": ExtResource("2_AXru"),
+&"cast": ExtResource("3_AXsl"),
+&"cast_run": ExtResource("4_AXrl"),
+&"death": ExtResource("5_death"),
+&"death2": ExtResource("6_death2"),
+&"death3": ExtResource("7_death3"),
+&"knock": ExtResource("8_AXhf"),
+&"get_up": ExtResource("9_AXgu"),
+&"hit_floor": ExtResource("10_AXhf_once"),
+&"gesture": ExtResource("11_AXi1"),
+&"ghost_rise": ExtResource("12_ghost_rise"),
+&"unghost": ExtResource("13_unghost")
+}

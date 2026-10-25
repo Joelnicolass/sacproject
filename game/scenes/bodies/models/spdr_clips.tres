@@ -1,0 +1,32 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/spdr_clips/Sps1.res" id="1_Sps1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/spdr_clips/Spru.res" id="2_Spru"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/spdr_clips/Spsl.res" id="3_Spsl"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/spdr_clips/Spr2.res" id="4_Spr2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/spdr_clips/death.res" id="5_death"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/spdr_clips/death2.res" id="6_death2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/spdr_clips/death3.res" id="7_death3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/spdr_clips/Spkn.res" id="8_Spkn"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/spdr_clips/Spgt.res" id="9_Spgt"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/spdr_clips/Sphf.res" id="10_Sphf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/spdr_clips/Spi1.res" id="11_Spi1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/spdr_clips/ghost_rise.res" id="12_ghost_rise"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/spdr_clips/unghost.res" id="13_unghost"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_Sps1"),
+&"run": ExtResource("2_Spru"),
+&"cast": ExtResource("3_Spsl"),
+&"cast_run": ExtResource("4_Spr2"),
+&"death": ExtResource("5_death"),
+&"death2": ExtResource("6_death2"),
+&"death3": ExtResource("7_death3"),
+&"knock": ExtResource("8_Spkn"),
+&"get_up": ExtResource("9_Spgt"),
+&"hit_floor": ExtResource("10_Sphf"),
+&"gesture": ExtResource("11_Spi1"),
+&"ghost_rise": ExtResource("12_ghost_rise"),
+&"unghost": ExtResource("13_unghost")
+}

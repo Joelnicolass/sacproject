@@ -1,0 +1,36 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/estm_clips/ESst.res" id="1_ESst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/estm_clips/ESwk.res" id="2_ESwk"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/estm_clips/ESa1.res" id="3_ESa1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/estm_clips/ESa2.res" id="4_ESa2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/estm_clips/ESa3.res" id="5_ESa3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/estm_clips/ESsm.res" id="6_ESsm"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/estm_clips/ES00.res" id="7_ES00"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/estm_clips/ESd1.res" id="8_ESd1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/estm_clips/ES2t.res" id="9_ES2t"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/estm_clips/ESsc.res" id="10_ESsc"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/estm_clips/ES2f.res" id="11_ES2f"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/estm_clips/ESfd.res" id="12_ESfd"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/estm_clips/ESgu.res" id="13_ESgu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/estm_clips/EShf.res" id="14_EShf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/estm_clips/ESi1.res" id="15_ESi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_ESst"),
+&"run": ExtResource("2_ESwk"),
+&"attack": ExtResource("3_ESa1"),
+&"attack2": ExtResource("4_ESa2"),
+&"attack3": ExtResource("5_ESa3"),
+&"shoot": ExtResource("6_ESsm"),
+&"shoot2": ExtResource("7_ES00"),
+&"death": ExtResource("8_ESd1"),
+&"held": ExtResource("9_ES2t"),
+&"thrash": ExtResource("10_ESsc"),
+&"rise": ExtResource("11_ES2f"),
+&"knock": ExtResource("12_ESfd"),
+&"get_up": ExtResource("13_ESgu"),
+&"hit_floor": ExtResource("14_EShf"),
+&"gesture": ExtResource("15_ESi1")
+}

@@ -1,0 +1,36 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/the2_clips/FGst.res" id="1_FGst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/the2_clips/FGrn.res" id="2_FGrn"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/the2_clips/FGa1.res" id="3_FGa1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/the2_clips/FGa2.res" id="4_FGa2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/the2_clips/FGa3.res" id="5_FGa3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/the2_clips/FGs1.res" id="6_FGs1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/the2_clips/FGs2.res" id="7_FGs2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/the2_clips/FGd1.res" id="8_FGd1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/the2_clips/FG2t.res" id="9_FG2t"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/the2_clips/FGsc.res" id="10_FGsc"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/the2_clips/FGrz.res" id="11_FGrz"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/the2_clips/FGfd.res" id="12_FGfd"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/the2_clips/FGgu.res" id="13_FGgu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/the2_clips/FGhf.res" id="14_FGhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/the2_clips/FGi1.res" id="15_FGi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_FGst"),
+&"run": ExtResource("2_FGrn"),
+&"attack": ExtResource("3_FGa1"),
+&"attack2": ExtResource("4_FGa2"),
+&"attack3": ExtResource("5_FGa3"),
+&"shoot": ExtResource("6_FGs1"),
+&"shoot2": ExtResource("7_FGs2"),
+&"death": ExtResource("8_FGd1"),
+&"held": ExtResource("9_FG2t"),
+&"thrash": ExtResource("10_FGsc"),
+&"rise": ExtResource("11_FGrz"),
+&"knock": ExtResource("12_FGfd"),
+&"get_up": ExtResource("13_FGgu"),
+&"hit_floor": ExtResource("14_FGhf"),
+&"gesture": ExtResource("15_FGi1")
+}

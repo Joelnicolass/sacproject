@@ -1,0 +1,47 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/ddmn_clips/DMst.res" id="1_DMst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ddmn_clips/DMrn.res" id="2_DMrn"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ddmn_clips/DMa1.res" id="3_DMa1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ddmn_clips/DMa3.res" id="4_DMa3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ddmn_clips/DMs1.res" id="5_DMs1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ddmn_clips/DMes.res" id="6_DMes"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ddmn_clips/DMd1.res" id="7_DMd1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ddmn_clips/DMfi.res" id="8_DMfi"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ddmn_clips/DM2t.res" id="9_DM2t"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ddmn_clips/DMsa.res" id="10_DMsa"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ddmn_clips/DMrz.res" id="11_DMrz"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ddmn_clips/DMfl.res" id="12_DMfl"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ddmn_clips/DMhv.res" id="13_DMhv"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ddmn_clips/DMto.res" id="14_DMto"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ddmn_clips/DMla.res" id="15_DMla"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ddmn_clips/DMfd.res" id="16_DMfd"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ddmn_clips/DMgu.res" id="17_DMgu"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ddmn_clips/DMfg.res" id="18_DMfg"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ddmn_clips/DMhf.res" id="19_DMhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/ddmn_clips/DMi1.res" id="20_DMi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_DMst"),
+&"run": ExtResource("2_DMrn"),
+&"attack": ExtResource("3_DMa1"),
+&"attack2": ExtResource("3_DMa1"),
+&"attack3": ExtResource("4_DMa3"),
+&"shoot": ExtResource("5_DMs1"),
+&"shoot2": ExtResource("6_DMes"),
+&"death": ExtResource("7_DMd1"),
+&"fly_death": ExtResource("8_DMfi"),
+&"held": ExtResource("9_DM2t"),
+&"thrash": ExtResource("10_DMsa"),
+&"rise": ExtResource("11_DMrz"),
+&"fly": ExtResource("12_DMfl"),
+&"hover": ExtResource("13_DMhv"),
+&"takeoff": ExtResource("14_DMto"),
+&"land": ExtResource("15_DMla"),
+&"knock": ExtResource("16_DMfd"),
+&"get_up": ExtResource("17_DMgu"),
+&"fly_damage": ExtResource("18_DMfg"),
+&"hit_floor": ExtResource("19_DMhf"),
+&"gesture": ExtResource("20_DMi1")
+}

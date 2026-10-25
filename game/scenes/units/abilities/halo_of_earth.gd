@@ -364,7 +364,7 @@ func _touching(rock: Rock) -> Node3D:
 
 
 func _under_land(at: Vector3) -> bool:
-	var shape := TerrainShape.of(self)
+	var shape := GroundSurface.of(self)
 	return shape != null and shape.is_on_ground(at.x, at.z) and at.y < shape.height_at(at.x, at.z)
 
 

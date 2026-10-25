@@ -40,7 +40,7 @@ extends ShotInFlight
 
 var _rng: RandomNumberGenerator
 var _shot_name := ""
-var _shape: TerrainShape
+var _shape: GroundSurface
 var _touches := 0
 var _stopped_at := -1
 var _rest := Vector3.ZERO
@@ -107,7 +107,7 @@ func _fly(shot: RangedShot, at: Vector3) -> void:
 
 
 ## The closest live creature or wizard within the range, any side, whose feet are at most max_target_height over the land.
-func _closest(shot: RangedShot, from: Vector3, shape: TerrainShape) -> Node3D:
+func _closest(shot: RangedShot, from: Vector3, shape: GroundSurface) -> Node3D:
 	var reach := _reach(shot)
 	var best: Node3D = null
 	var best_d := INF
@@ -127,14 +127,14 @@ func _closest(shot: RangedShot, from: Vector3, shape: TerrainShape) -> Node3D:
 
 
 ## Its feet are at most max_target_height over the land (or it is off the land).
-func _low_enough(body: Node3D, shape: TerrainShape) -> bool:
+func _low_enough(body: Node3D, shape: GroundSurface) -> bool:
 	if shape == null or not shape.is_on_ground(body.global_position.x, body.global_position.z):
 		return true
 	return body.global_position.y <= shape.height_at(body.global_position.x, body.global_position.z) + max_target_height
 
 
 ## `close`, or the intended target when it is within the range (it goes first).
-func _intended(shot: RangedShot, from: Vector3, close: Node3D, shape: TerrainShape) -> Node3D:
+func _intended(shot: RangedShot, from: Vector3, close: Node3D, shape: GroundSurface) -> Node3D:
 	var path := String(shot.spawn_data.get("intended", ""))
 	if path.is_empty() or close == null:
 		return close
@@ -153,9 +153,9 @@ func _reach(shot: RangedShot) -> float:
 	return shot.ability.effect_range_m if shot.ability != null and shot.ability.effect_range_m > 0.0 else fallback_range
 
 
-func _land(shot: RangedShot) -> TerrainShape:
+func _land(shot: RangedShot) -> GroundSurface:
 	if _shape == null or not is_instance_valid(_shape):
-		_shape = shot.get_tree().get_first_node_in_group(TerrainShape.GROUP) as TerrainShape
+		_shape = shot.get_tree().get_first_node_in_group(GroundSurface.GROUP) as GroundSurface
 	return _shape
 
 

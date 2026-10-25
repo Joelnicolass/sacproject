@@ -2,7 +2,7 @@ extends SceneTree
 
 ## RFC-040 040b: the catalog is valid, whatever the balance is. It does NOT compare against the original JSON: changing
 ## a number in a data/catalog/<folder>/<tag>.tres is allowed. It checks that the content is coherent.
-##   - every file is a type of its folder, named after its tag (a case-only repeat gets _2, _3...)
+##   - every file is a type of its folder, named after its tag (a case-only repeat gets _2, _3...); wizards only need a unique tag and a snake_case file name
 ##   - no duplicate tags in a folder
 ##   - every tag that abilities mention exists
 ##   - every god (RFC-042) has theme, look, AI profile and a typed book whose rows are files of the catalog
@@ -88,12 +88,23 @@ func _check_folder(folder: String, types: Array) -> Dictionary:
 			_report("buildings/%s: no scene of parts" % file)
 		var base: String = type.tag.validate_filename()
 		var stem: String = file.get_basename()
-		if folder != "buildings" and stem != base and not _is_case_repeat(stem, base):
+		if folder == "wizards":
+			# Wizards have human file names (jadugarr.tres, tag cwa0): the id is the tag field, the file only has to be snake_case.
+			if not _is_snake_case(stem):
+				_report("%s/%s: the file name should be snake_case (a-z, 0-9, _)" % [folder, file])
+		elif folder != "buildings" and stem != base and not _is_case_repeat(stem, base):
 			_report("%s/%s: tag = \"%s\", the file should be %s.tres" % [folder, file, type.tag, base])
 	var tags := {}
 	for tag: String in seen:
 		tags[tag] = true
 	return tags
+
+
+## True for names like "the_ragman": lower-case letters, digits and underscores, starting with a letter.
+func _is_snake_case(text: String) -> bool:
+	var pattern := RegEx.new()
+	pattern.compile("^[a-z][a-z0-9_]*$")
+	return pattern.search(text) != null
 
 
 ## "name_2", "name_3"... for a tag whose lower-case form is already taken in the folder (macOS file names).

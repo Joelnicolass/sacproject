@@ -126,6 +126,10 @@ func accept_pick(pick: Dictionary) -> bool:
 	return pick.get("hero") in ["knight", "archer"]
 ```
 
+### Partida privada en tu PC (con código)
+
+`MpBootMenu.offer_private_server` muestra *Private server*: arranca un dedicado en tu PC (`MpLocalServer`, mismo código que el VPS, sin servidor de salas), te une solo y muestra `ip:puerto#CÓDIGO`. Tus amigos escriben eso en el campo de dirección; sin el código no entran. Por código: `MpLocalServer.start_on(get_tree(), asientos)` y la señal `server_ready(address, port, codes)`.
+
 ### Web
 
 Un navegador no puede abrir un servidor ni usar UDP, así que un juego web se une a un dedicado WebSocket (`MpNetConfig.transport = ws`). Escritorio y web no se mezclan: un servidor WebSocket atiende clientes WebSocket. En el campo de dirección del menú sirven `192.168.1.5`, `juego.ejemplo.com`, cualquiera con `:puerto`, o una URL `wss://…`. Una página servida por `https` necesita `wss://`: o el dedicado tiene certificado y clave en su `MpNetConfig`, o un proxy (Caddy, nginx) pone el TLS delante.

@@ -10,6 +10,8 @@ signal hosted
 signal joining(ip: String)
 signal status_changed(text: String)
 
+## Show a "Private server" button: a dedicated match on this PC with an invite code (MpLocalServer).
+@export var offer_private_server: bool = false
 ## The online lobby screen (MpLobbyScreen). Set = an "Online rooms" button opens it.
 @export_file("*.tscn") var lobby_scene_path: String = ""
 @export var world_scene: PackedScene
@@ -24,6 +26,8 @@ signal status_changed(text: String)
 @export var host_text: String = "Host LAN"
 @export var join_text: String = "Join"
 @export var online_text: String = "Online rooms"
+@export var private_text: String = "Private server"
+@export var private_ready_status: String = "Private match on %s:%d · friends join with %s:%d#%s"
 @export var ip_hint: String = "127.0.0.1"
 @export var rooms_header: String = "LAN rooms"
 @export var idle_status: String = "Pick a mode."
@@ -103,6 +107,8 @@ func _build() -> void:
 	_add_button(box, play_solo_text, _on_play_solo)
 	if MpNetConfig.can_host():
 		_add_button(box, host_text, _on_host)
+	if offer_private_server and MpNetConfig.can_host():
+		_add_button(box, private_text, _on_private)
 	if not lobby_scene_path.is_empty():
 		_add_button(box, online_text, func() -> void: get_tree().change_scene_to_file(lobby_scene_path))
 	var join_row := HBoxContainer.new()
@@ -176,6 +182,17 @@ func _on_host() -> void:
 			MpKit.broadcast_load_world()
 			_ensure_late_join()
 	_go_world()
+
+
+func _on_private() -> void:
+	## By path: the menu must not load the lobby scripts unless this button is used.
+	var local_server: GDScript = load("res://addons/mp_kit/rooms/mp_local_server.gd")
+	var server: Node = local_server.call(&"start_on", get_tree(), max_players)
+	server.server_ready.connect(func(address: String, p_port: int, codes: Dictionary) -> void:
+		var shown := address if not address.is_empty() else "127.0.0.1"
+		var all := ", ".join(PackedStringArray(codes.values()))
+		_set_status(private_ready_status % [shown, p_port, shown, p_port, all]))
+	server.server_failed.connect(func(reason: String) -> void: _set_status(host_fail_status + " (%s)" % reason))
 
 
 func _on_join() -> void:

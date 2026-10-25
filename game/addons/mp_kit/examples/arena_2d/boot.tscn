@@ -22,6 +22,7 @@ room_name = "MpKit Arena"
 start_when = 1
 
 [node name="Menu" parent="." instance=ExtResource("2")]
+offer_private_server = true
 lobby_scene_path = "res://addons/mp_kit/examples/arena_2d/lobby.tscn"
 title_text = "MpKit Arena"
 room_name = "MpKit Arena"

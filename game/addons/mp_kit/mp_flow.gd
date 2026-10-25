@@ -196,10 +196,13 @@ func join_lan(ip: String) -> Error:
 	return OK
 
 
-## What a player types: "192.168.1.5", "play.example.com" or either with ":port" (default MpKit.port).
-## A full "wss://…" URL goes as is (WebSocket).
+## What a player types: "192.168.1.5", "play.example.com" or either with ":port" (default MpKit.port), and
+## "#CODE" at the end for a private match (MpLocalServer). A full "wss://…" URL goes as is (WebSocket).
 func join_address(text: String, ticket: String = "") -> Error:
 	var clean := text.strip_edges()
+	if clean.contains("#"):
+		ticket = clean.get_slice("#", 1).strip_edges().to_upper()
+		clean = clean.get_slice("#", 0).strip_edges()
 	if clean.contains("://"):
 		var err := MpKit.join(clean, MpKit.port, ticket)
 		if err != OK:

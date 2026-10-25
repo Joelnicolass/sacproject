@@ -5,7 +5,9 @@ extends Node
 ## Roles: solo | client (the first player) | late (joins after the first one played) | watch (server or host:
 ## waits for a remote player to move and score) | lag (own player under a bad network: response and corrections) |
 ## observe (another player, `--probe-watch-slot=N`: how evenly it moves on screen) | lobby (online rooms through the
-## lobby screen: `--probe-lobby=host:port --probe-name=X`, `--probe-create=Room` makes the room and scores to win). `--probe-linger-s=N` keeps a
+## lobby screen: `--probe-lobby=host:port --probe-name=X`, `--probe-create=Room` makes the room and scores to win) |
+## private (MpLocalServer on this PC; writes "port code" to `--probe-code-file`, plays and wins) | invited (joins
+## with "ip:port#CODE" from that file) | badcode (same address, a wrong code: must be turned away). `--probe-linger-s=N` keeps a
 ## passing process alive N seconds. lag and observe print `METRIC name=value` lines.
 
 ## Seconds each check may wait (`--probe-timeout-s=N` for a person opening a browser by hand).
@@ -48,6 +50,12 @@ func _run() -> void:
 			await _measure_proxy_jitter()
 		"lobby":
 			await _play_online()
+		"private":
+			await _host_private()
+		"invited":
+			await _join_private(true)
+		"badcode":
+			await _join_private(false)
 		_:
 			_check(false, "known role %s" % _role)
 	print("PROBE %s %s" % [_role, "PASS" if _fails == 0 else "FAIL"])
@@ -208,6 +216,48 @@ func _play_online() -> void:
 		var result: Variant = client.room.get("last_result", {})
 		return result is Dictionary and (result as Dictionary).has("winner"), "the room shows the match result (winner)")
 	print("METRIC result=%s" % JSON.stringify(client.room.get("last_result", {})))
+
+
+func _host_private() -> void:
+	await _until(func() -> bool: return MpFlow.find_in_tree(self) != null, "the boot scene has a flow")
+	var server := MpLocalServer.start_on(get_tree(), 2)
+	var info: Array = []
+	server.server_ready.connect(func(_address: String, p_port: int, codes: Dictionary) -> void: info.append([p_port, codes[2]]))
+	if not await _until(func() -> bool: return not info.is_empty(), "the private match process listens"):
+		return
+	var f := FileAccess.open(MpBoot.user_value("probe-code-file", "user://probe_code.txt"), FileAccess.WRITE)
+	f.store_string("%d %s" % info[0])
+	f.close()
+	await _until(_networked_slot, "the host joined its own private match")
+	var other := await _pawn(2)
+	if other == null:
+		return
+	for i in 3:
+		await _tap(&"ui_accept")
+		await get_tree().create_timer(0.2).timeout
+	await _until(func() -> bool: return not MpKit.is_networked(), "after the win the host left the match")
+	await _until(func() -> bool: return get_tree().root.get_node_or_null("MpLocalServer") == null, "the private server cleaned up")
+
+
+func _join_private(right_code: bool) -> void:
+	var path := MpBoot.user_value("probe-code-file", "user://probe_code.txt")
+	if not await _until(func() -> bool: return FileAccess.file_exists(path), "the host published its code"):
+		return
+	var parts := FileAccess.get_file_as_string(path).split(" ")
+	var code := parts[1] if right_code else "WRONG9"
+	var rejected: Array = []
+	MpKit.admission_rejected.connect(func(reason: String) -> void: rejected.append(reason))
+	await _until(func() -> bool: return MpFlow.find_in_tree(self) != null, "the boot scene has a flow")
+	var flow := MpFlow.find_in_tree(self)
+	var finished: Array = []
+	flow.match_finished.connect(func(result: Dictionary) -> void: finished.append(result))
+	flow.join_address("127.0.0.1:%s#%s" % [parts[0], code.to_lower()])
+	if not right_code:
+		await _until(func() -> bool: return not rejected.is_empty(), "a wrong code is turned away")
+		return
+	await _until(_networked_slot, "the friend got in with the code (typed in lower case)")
+	await _pawn(2)
+	await _until(func() -> bool: return not finished.is_empty(), "the friend saw the match end")
 
 
 func _pawn(slot: int) -> Node:

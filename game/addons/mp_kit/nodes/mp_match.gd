@@ -16,6 +16,8 @@ signal player_back(slot: int)
 signal player_abandoned(slot: int)
 ## Every peer: the server called finish(result).
 signal finished(result: Dictionary)
+## Every peer: the match waits for seats to load (the world is paused here too, so nobody walks ahead) or runs.
+signal waiting_changed(waiting: bool)
 
 ## Lobby match: keep the world paused until every seat loaded (or load_timeout_s of MpLobbyConfig passed).
 @export var pause_until_loaded: bool = true
@@ -32,6 +34,8 @@ var _seen: Dictionary = {}
 var _gone: Dictionary = {}
 var _all_sent: bool = false
 var _start_ms: int = 0
+## True while the match waits for every seat (every peer: the server says so).
+var waiting: bool = false
 
 
 func _ready() -> void:
@@ -61,12 +65,12 @@ func _ready() -> void:
 		if MpKit.is_peer_world_ready(peer_id):
 			_loaded[MpKit.slot_for_peer(peer_id)] = true
 	if pause_until_loaded:
-		get_tree().paused = true
+		_set_waiting(true)
 	_check_loaded()
 
 
 func _exit_tree() -> void:
-	if get_tree().paused and _agent:
+	if waiting:
 		get_tree().paused = false
 
 
@@ -121,6 +125,9 @@ func _on_peer_left(_peer_id: int, slot: int) -> void:
 
 func _on_world_ready(peer_id: int) -> void:
 	_loaded[MpKit.slot_for_peer(peer_id)] = true
+	## Its world exists now: tell it whether the match still waits.
+	if waiting:
+		rpc_waiting.rpc_id(peer_id, true)
 	_check_loaded()
 
 
@@ -137,7 +144,12 @@ func _send_all_loaded() -> void:
 	if _all_sent:
 		return
 	_all_sent = true
-	get_tree().paused = false
+	if waiting:
+		_set_waiting(false)
+		if MpKit.is_networked():
+			for peer_id in multiplayer.get_peers():
+				if MpKit.is_peer_world_ready(peer_id):
+					rpc_waiting.rpc_id(peer_id, false)
 	all_loaded.emit()
 
 
@@ -150,6 +162,19 @@ func _give_up(slot: int) -> void:
 		return
 	_gone[slot] = true
 	player_abandoned.emit(slot)
+
+
+func _set_waiting(on: bool) -> void:
+	if waiting == on:
+		return
+	waiting = on
+	get_tree().paused = on
+	waiting_changed.emit(on)
+
+
+@rpc("authority", "call_remote", "reliable")
+func rpc_waiting(on: bool) -> void:
+	_set_waiting(on)
 
 
 func _on_session_ended(result: Dictionary) -> void:

@@ -257,7 +257,19 @@ func _measure_proxy_jitter() -> void:
 
 
 ## The whole online path as a person does it, through MpLobbyScreen's buttons: connect, create or join, ready, play
-## the match the room server starts, and come back to the lobby with the result.
+## the match the room server starts, and come back to the lobby with the result. Options:
+##   --probe-create=Room [--probe-private]       make the room (private: its code goes to --probe-code-file)
+##   --probe-join-room=Room | --probe-join-code   join by name from the list, or with the code from the file
+##   --probe-chat=text / --probe-expect-chat=text say something / wait to read it
+##   --probe-leave-room-once                      leave the room once after sitting, and come back
+##   --probe-drop=rejoin|abandon                  in the match: leave it, and come back with the same ticket (or not)
+##   --probe-delay-join-s=N                       join the match N seconds after the room server started it
+##   --probe-check-paused                         the world must not move until every seat loaded
+##   --probe-score=N (default 3 for the creator, 0 for the rest)  points this player scores (3 wins)
+##   --probe-hold-s=N                             stay in the match N seconds before scoring
+##   --probe-expect-back=N                        wait for MpState back_N before scoring
+##   --probe-expect-error=code                    the lobby must answer this error instead of a match
+##   --probe-expect-result=key:value              the room's result must have it (default winner present)
 func _play_online() -> void:
 	var flow_ok := await _until(func() -> bool: return MpFlow.find_in_tree(self) != null, "the boot scene has a flow")
 	if not flow_ok:
@@ -274,29 +286,121 @@ func _play_online() -> void:
 	await get_tree().process_frame
 	_check(MpFlow.find_in_tree(self) != null, "the flow survived the scene change (it lives under the root)")
 	var client := MpLobbyLink.client(get_tree())
+	var ticket: Array = []
+	client.match_ready.connect(func(h: String, p: int, t: String) -> void: ticket.assign([h, p, t]))
+	var errors: Array[String] = []
+	client.error_received.connect(func(code: String) -> void: errors.append(code))
+	var chat: Array[String] = []
+	client.chat_received.connect(func(_seat: int, _who: String, text: String) -> void: chat.append(text))
+	var delay := float(MpBoot.user_value("probe-delay-join-s", "0"))
+	if delay > 0.0:
+		screen.auto_join_match = false
+		screen.match_found.connect(func(_h: String, _p: int, _t: String) -> void:
+			await get_tree().create_timer(delay).timeout
+			screen.join_found())
 	screen.connect_lobby(MpBoot.user_value("probe-lobby", "127.0.0.1:7700"), MpBoot.user_value("probe-name", "Bot"))
 	await _until(client.is_online, "connected to the lobby")
-	var room_name := MpBoot.user_value("probe-create", "")
-	if not room_name.is_empty():
-		screen.create_room(room_name)
-	else:
-		await _until(func() -> bool: return not screen.listed_rooms().is_empty(), "a room shows in the list")
-		screen.join_listed(0)
-	await _until(func() -> bool: return client.my_seat() >= 0, "took a seat")
+	await _enter_room(screen, client)
+	if client.my_seat() < 0:
+		return
+	if MpBoot.user_flag("probe-leave-room-once"):
+		screen.leave_room()
+		await _until(func() -> bool: return client.my_seat() < 0, "left the room (back to the list)")
+		await _enter_room(screen, client)
+	var say := MpBoot.user_value("probe-chat", "")
+	if not say.is_empty():
+		await _until(func() -> bool: return _seated(client) >= 2, "the room is full before chatting")
+		screen.send_chat(say)
+	var expect_chat := MpBoot.user_value("probe-expect-chat", "")
+	if not expect_chat.is_empty():
+		await _until(func() -> bool: return chat.has(expect_chat), "the chat line arrived (%s)" % expect_chat)
 	screen.set_ready(true)
+	var expect_error := MpBoot.user_value("probe-expect-error", "")
+	if not expect_error.is_empty():
+		await _until(func() -> bool: return errors.has(expect_error), "the lobby answered %s" % expect_error)
+		return
 	await _until(_networked_slot, "the room server started the match and this client got in")
 	var pawn := await _pawn(MpKit.local_slot())
 	if pawn == null:
 		return
-	if not room_name.is_empty():
-		for i in 3:
-			await _tap(&"ui_accept")
-			await get_tree().create_timer(0.2).timeout
+	if MpBoot.user_flag("probe-check-paused"):
+		var start_x: float = pawn.position.x
+		Input.action_press(&"ui_right")
+		await get_tree().create_timer(1.0).timeout
+		_check(absf(pawn.position.x - start_x) < 1.0, "the world waits (paused) until every seat loaded")
+		Input.action_release(&"ui_right")
+		await _pawn(2 if MpKit.local_slot() == 1 else 1)
+		Input.action_press(&"ui_right")
+		await _until(func() -> bool: return pawn.position.x > start_x + 20.0, "once everyone loaded the match runs")
+		Input.action_release(&"ui_right")
+	var drop := MpBoot.user_value("probe-drop", "")
+	if not drop.is_empty():
+		await get_tree().create_timer(0.5).timeout
+		MpKit.leave()
+		_check(not MpKit.is_networked(), "left the match on purpose")
+		if drop == "abandon":
+			return
+		await get_tree().create_timer(0.5).timeout
+		MpFlow.find_in_tree(self).join_match(ticket[0], ticket[1], ticket[2])
+		await _until(_networked_slot, "came back to the match with the same ticket")
+		await _pawn(MpKit.local_slot())
+	var back := MpBoot.user_value("probe-expect-back", "")
+	if not back.is_empty():
+		await _until(func() -> bool: return int(_state().get_value(StringName("back_%s" % back), 0)) >= 1, "the match saw P%s come back (player_back)" % back)
+	await get_tree().create_timer(float(MpBoot.user_value("probe-hold-s", "0"))).timeout
+	var creator := not MpBoot.user_value("probe-create", "").is_empty()
+	for i in int(MpBoot.user_value("probe-score", "3" if creator else "0")):
+		await _tap(&"ui_accept")
+		await get_tree().create_timer(0.2).timeout
 	await _until(func() -> bool: return get_tree().current_scene is MpLobbyScreen, "back in the lobby after the match")
+	var want := MpBoot.user_value("probe-expect-result", "winner")
 	await _until(func() -> bool:
 		var result: Variant = client.room.get("last_result", {})
-		return result is Dictionary and (result as Dictionary).has("winner"), "the room shows the match result (winner)")
+		if not result is Dictionary:
+			return false
+		var key := want.get_slice(":", 0)
+		if not (result as Dictionary).has(key):
+			return false
+		return want.count(":") == 0 or str((result as Dictionary)[key]) == want.get_slice(":", 1), "the room shows the match result (%s)" % want)
 	print("METRIC result=%s" % JSON.stringify(client.room.get("last_result", {})))
+
+
+## Create or join a room the way the options say, and take a seat.
+func _enter_room(screen: MpLobbyScreen, client: MpLobbyClient) -> void:
+	var room_name := MpBoot.user_value("probe-create", "")
+	var code_file := MpBoot.user_value("probe-code-file", "user://probe_room_code.txt")
+	if not room_name.is_empty() and client.room.is_empty():
+		screen.create_room(room_name, MpBoot.user_flag("probe-private"))
+		await _until(func() -> bool: return client.my_seat() >= 0, "took a seat")
+		if MpBoot.user_flag("probe-private"):
+			await _until(func() -> bool: return client.room.has("code"), "the private room has a code")
+			var f := FileAccess.open(code_file, FileAccess.WRITE)
+			f.store_string(str(client.room["code"]))
+			f.close()
+		return
+	if MpBoot.user_flag("probe-join-code"):
+		await _until(func() -> bool: return FileAccess.file_exists(code_file), "the room's code was published")
+		screen.join_code(FileAccess.get_file_as_string(code_file).to_lower())
+	else:
+		var wanted := MpBoot.user_value("probe-join-room", "")
+		await _until(func() -> bool: return _listed_index(client, wanted) >= 0, "the room shows in the list")
+		screen.join_room(str(client.rooms[_listed_index(client, wanted)]["id"]))
+	await _until(func() -> bool: return client.my_seat() >= 0, "took a seat")
+
+
+func _listed_index(client: MpLobbyClient, room_name: String) -> int:
+	for i in client.rooms.size():
+		if room_name.is_empty() or str(client.rooms[i]["name"]) == room_name:
+			return i
+	return -1
+
+
+func _seated(client: MpLobbyClient) -> int:
+	var n := 0
+	for seat: Dictionary in client.room.get("seats", []):
+		if not bool(seat["free"]):
+			n += 1
+	return n
 
 
 func _host_private() -> void:

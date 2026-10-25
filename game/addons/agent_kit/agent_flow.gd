@@ -463,13 +463,15 @@ func _mark_holder(
 	holder[0] = true
 
 
+## The text the player sees: a Label or Button holding a translation key shows it translated
+## (auto_translate_mode), so the key is passed through atr() like the control does.
 func _node_text(node: Node) -> String:
 	if node is Label:
-		return (node as Label).text
+		return node.atr((node as Label).text)
 	if node is RichTextLabel:
 		return (node as RichTextLabel).get_parsed_text()
 	if node is LineEdit:
 		return (node as LineEdit).text
 	if node is Button:
-		return (node as Button).text
+		return node.atr((node as Button).text)
 	return str(node.get("text"))

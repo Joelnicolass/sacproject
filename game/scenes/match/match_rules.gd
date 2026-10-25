@@ -39,6 +39,9 @@ extends Resource
 @export var ai_seats: Array[AiSeat] = []
 
 @export_group("Sacrificios")
+## The places of the sacrifice (ring, push, reach, hang, vortex) as a scene that is only read, never instanced (SacrificeFacts).
+## An inherited scene (debug/sacrifice/barrier_places.tscn) is a variant. The old numbers below leave in 055g g6.
+@export var sacrifice_places: PackedScene = preload("res://scenes/sacrifice/sacrifice_places.tscn")
 # 020b
 ## Sac Doctor fall: the vortex hangs doctor_drop_height over the ground and the doctor leaves it
 ## doctor_exit_depth below (sacengine doctorHeight / doctorOffset, state.d:2639-2641, 15489).

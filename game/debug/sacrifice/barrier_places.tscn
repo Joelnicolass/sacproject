@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/sacrifice/sacrifice_places.tscn" id="1_places"]
+
+[sub_resource type="SphereShape3D" id="Sphere_push"]
+radius = 24.0
+
+[node name="BarrierPlaces" instance=ExtResource("1_places")]
+
+[node name="Push" parent="Ritual/Bounds" index="2"]
+shape = SubResource("Sphere_push")

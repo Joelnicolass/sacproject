@@ -3,7 +3,7 @@ extends RefCounted
 
 ## The size and sockets of a body that the rules need (how tall, how wide, how far its blow reaches, where its hand and center are),
 ## read once from its BodyFrame scene and kept. A creature or wizard asks its BodyMount for them; nothing loads a scene or searches
-## a node per frame. The measures (height, radius, reach, flying height) are decoded to the mm (_mm): the scene keeps 32 bits and the
+## a node per frame. The measures (height, radius, reach, flying height) are decoded to the mm (SceneStateReader.mm): the scene keeps 32 bits and the
 ## rules read them as doubles, which today come from text with at most 3 decimals. Capsules and sockets stay 32-bit (a shape, a Vector3).
 ## What it does not do: move a body, size a physics shape (BodyCollider) or choose which scene a body wears (BodyMount).
 
@@ -78,18 +78,12 @@ func half_size_m() -> float:
 ## Fills these facts from the saved BodyFrame `state` (its node paths, shapes and marker positions). False when a node the
 ## rules need is missing (the same as BodyFrame.is_complete()).
 func _read(state: SceneState) -> bool:
-	var nodes := {}
-	for index in state.get_node_count():
-		var props := {}
-		for slot in state.get_node_property_count(index):
-			props[String(state.get_node_property_name(index, slot))] = state.get_node_property_value(index, slot)
-		## A PackedScene state names the root "." and its children "./Child".
-		nodes[String(state.get_node_path(index)).trim_prefix("./")] = props
+	var nodes := SceneStateReader.nodes_of(state)
 	var root: Dictionary = nodes.get(".", {})
-	var footprint := _shape(nodes, root, "footprint") as CylinderShape3D
-	var ground := _shape(nodes, root, "capsule") as CapsuleShape3D
+	var footprint := SceneStateReader.shape(nodes, root, "footprint") as CylinderShape3D
+	var ground := SceneStateReader.shape(nodes, root, "capsule") as CapsuleShape3D
 	var air_path: Variant = root.get("flying_capsule")
-	var air := _shape(nodes, root, "flying_capsule") as CapsuleShape3D
+	var air := SceneStateReader.shape(nodes, root, "flying_capsule") as CapsuleShape3D
 	var marks: Array[String] = ["reach", "center", "top"]
 	for mark: String in marks:
 		if not root.has(mark) or not nodes.has(String(root[mark])):
@@ -98,43 +92,21 @@ func _read(state: SceneState) -> bool:
 		return false
 	from_scene = true
 	model_id = str(root["model_id"])
-	radius_m = _mm(footprint.radius)
-	height_m = _mm(footprint.height)
-	reach_m = _mm(_marker(nodes, root, "reach").z)
+	radius_m = SceneStateReader.mm(footprint.radius)
+	height_m = SceneStateReader.mm(footprint.height)
+	reach_m = SceneStateReader.mm(SceneStateReader.marker(nodes, root, "reach").z)
 	capsule_height_m = ground.height
 	capsule_radius_m = ground.radius
 	flying_height_m = height_m
 	flying_capsule_height_m = capsule_height_m
 	if air != null:
-		flying_height_m = _mm(air.height)
+		flying_height_m = SceneStateReader.mm(air.height)
 		flying_capsule_height_m = air.height
-	center = _marker(nodes, root, "center")
-	top = _marker(nodes, root, "top")
-	feet = _marker(nodes, root, "feet")
-	muzzle = _marker(nodes, root, "muzzle") if root.has("muzzle") else _hand(height_m, reach_m)
+	center = SceneStateReader.marker(nodes, root, "center")
+	top = SceneStateReader.marker(nodes, root, "top")
+	feet = SceneStateReader.marker(nodes, root, "feet")
+	muzzle = SceneStateReader.marker(nodes, root, "muzzle") if root.has("muzzle") else _hand(height_m, reach_m)
 	return true
-
-
-## The shape of the CollisionShape3D the root's `prop` points at, or null.
-static func _shape(nodes: Dictionary, root: Dictionary, prop: String) -> Shape3D:
-	if not root.has(prop):
-		return null
-	var props: Dictionary = nodes.get(String(root[prop]), {})
-	return props.get("shape") as Shape3D
-
-
-## The local position of the Marker3D the root's `prop` points at (zero when it is not saved or has no transform).
-static func _marker(nodes: Dictionary, root: Dictionary, prop: String) -> Vector3:
-	if not root.has(prop):
-		return Vector3.ZERO
-	var props: Dictionary = nodes.get(String(root[prop]), {})
-	var xform: Variant = props.get("transform")
-	return (xform as Transform3D).origin if xform is Transform3D else Vector3.ZERO
-
-
-## The double a measure of at most 3 decimals had before the scene stored it in 32 bits.
-static func _mm(value: float) -> float:
-	return roundi(value * 1000.0) / 1000.0
 
 
 static func _hand(height: float, reach: float) -> Vector3:

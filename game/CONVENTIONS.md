@@ -76,6 +76,7 @@ var muzzle_pos := muzzle.global_position
 
 ## 2c. Lineamientos del proyecto (los pidió el usuario; valen igual que las reglas)
 
+- **La meta de todo (2026-10-24).** Cada sistema se diseña para que un humano pueda **entender, modificar, agregar, quitar, crear y escalar** fácilmente, sin leer código ni el original. El plan de cada corte trae una tabla corta «cómo lo hace un humano» con esos seis verbos (qué abre, qué toca en el inspector o el viewport, cuántos archivos), por ejemplo: «agregar un hechizo = duplicar un `.tres` y una escena, asignarlo en el libro del dios». Si un verbo pide código nuevo o más de dos lugares, el diseño se revisa antes de implementar.
 - **Human first, Godot priority.** Se programa como cualquier juego Godot moderno. Nada de calcar el código del 2000: sacengine y el original dicen QUÉ hace el juego, nunca CÓMO.
 - **Un dueño por estado.** Si dos cosas escriben el mismo estado, se hace un componente único, derivado e idempotente; nada de parches de orden (`call_deferred` encadenados, banderas de «ya lo hice»).
 - **Nada disperso.** Lo que un humano edita junto vive en UN lugar que se abre y se ve en el viewport, con nodos estándar de Godot. Sin cadenas de `.tres` que se referencian entre sí cuando una escena o un recurso embebido alcanza.
@@ -142,3 +143,4 @@ Pocas plantas en un lugar: `VegetationPatch` (especie, `radius_m`, `count`, `see
 - ¿El lint está verde, y bajó el conteo de lo que el corte tocaba?
 - ¿Cada escena de actor tiene sus sockets (`Marker3D`) en vez de alturas en código?
 - ¿Hay hijos `INTERNAL_MODE` nuevos fuera de flora/grass/previews?
+- ¿La tabla «cómo lo hace un humano» del plan se cumple? Entender, modificar, agregar, quitar, crear y escalar: cada uno sin código nuevo y en uno o dos lugares.

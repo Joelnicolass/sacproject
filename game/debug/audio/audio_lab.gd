@@ -142,7 +142,7 @@ func _run_step() -> void:
 	var step: Resource = _lab.get("steps")[_next]
 	_next += 1
 	var wait_s := float(step.get("wait_s"))
-	var before := SoundBus.sound_log.entries().size()
+	var before: int = SoundBus.sound_log.entries().size()
 	if wait_s > 0.0:
 		var until := BodySounds.game_seconds() + wait_s
 		while BodySounds.game_seconds() < until:
@@ -487,9 +487,12 @@ func _spawn(body: Node3D, path: String) -> bool:
 	return true
 
 
+## Out of the tree at once (queue_free alone waits for the frame's end): the next step's "LabProjectile" keeps its name.
 func _free_spawned() -> void:
 	for node in _spawned:
 		if is_instance_valid(node):
+			if node.get_parent() == self:
+				remove_child(node)
 			node.queue_free()
 	_spawned.clear()
 
@@ -520,7 +523,7 @@ func _sounds_of(body: Node) -> BodySounds:
 
 
 func _played_since(before: int, emitter: StringName, event: StringName) -> Dictionary:
-	var entries := SoundBus.sound_log.entries()
+	var entries: Array[Dictionary] = SoundBus.sound_log.entries()
 	for i in range(mini(before, entries.size()), entries.size()):
 		var entry: Dictionary = entries[i]
 		if entry.emitter == emitter and entry.event == event and bool(entry.played):

@@ -231,7 +231,7 @@ func _soul_mole(host: Node) -> Dictionary:
 	SoundBus.sound_log.clear()
 	carrier.phase = SpellCarrier.Phase.LEAVING
 	var last: Dictionary = SoundBus.sound_log.last()
-	var played := SoundBus.sound_log.size() == 1 and last.get("emitter") == &"CaseMole" and last.get("event") == SoundEvent.CAST \
+	var played: bool = SoundBus.sound_log.size() == 1 and last.get("emitter") == &"CaseMole" and last.get("event") == SoundEvent.CAST \
 		and bool(last.get("played"))
 	carrier.queue_free()
 	return {"ok": wired and synced and played, "wired": wired, "phase_replicated": synced, "played_from_phase": played}

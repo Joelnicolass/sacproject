@@ -44,14 +44,14 @@ func _process(host: Node, expect_open: bool) -> Dictionary:
 	var sound_set := SoundLibrary.creature(&"test")
 	var cue := SoundCue.new()
 	cue.streams = [preload_free_stream()]
-	var played := SoundBus.play_2d(cue, &"gate_case", SoundEvent.CLICK)
+	var played: bool = SoundBus.play_2d(cue, &"gate_case", SoundEvent.CLICK)
 	for i in 3:
 		await host.get_tree().process_frame
 	var info := {
 		"expected_open": expect_open,
 		"open": open,
 		"bus_active": SoundBus.is_active(),
-		"bus_children": SoundBus.get_child_count(),
+		"bus_children": SoundBus.get_children().filter(func(c: Node) -> bool: return c is AudioStreamPlayer or c is AudioStreamPlayer3D).size(),
 		"has_log": SoundBus.sound_log != null,
 		"set_found": sound_set != null,
 		"set_cached": ResourceLoader.has_cached(FIXTURE_SET),

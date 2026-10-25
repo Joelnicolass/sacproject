@@ -90,7 +90,7 @@ func _advisor_channel(host: Node) -> Dictionary:
 	var checks := {}
 	checks["lowm_speaks"] = advisor.say(&"lowm") and advisor.speaking() == &"lowm" and _played(0, &"lowm")
 	checks["watt_cuts"] = advisor.say(&"watt") and advisor.speaking() == &"watt" and _played(0, &"watt")
-	var mark := SoundBus.sound_log.size()
+	var mark: int = SoundBus.sound_log.size()
 	checks["orng_waits"] = advisor.say(&"orng") and advisor.speaking() == &"watt" and advisor.waiting() == [&"orng"] \
 		and not _played(mark, &"orng")
 	checks["lowm_quiet"] = not advisor.say(&"lowm") and advisor.waiting() == [&"orng"]
@@ -220,7 +220,7 @@ func _closed(host: Node) -> Dictionary:
 	await host.get_tree().process_frame
 	var no_channel := advisor.get_node_or_null("Channel") == null and voice.get_node_or_null("Channel") == null
 	var quiet := not advisor.say(&"lowm") and advisor.cue_for(&"lowm") == null
-	var no_log := SoundBus.sound_log == null
+	var no_log: bool = SoundBus.sound_log == null
 	for node: Node in [advisor, made[1], voice]:
 		node.queue_free()
 	await host.get_tree().process_frame
@@ -262,7 +262,7 @@ func _health(body: Node) -> Health:
 
 
 func _played(since: int, code: StringName) -> bool:
-	var entries := SoundBus.sound_log.entries()
+	var entries: Array[Dictionary] = SoundBus.sound_log.entries()
 	for i in range(mini(since, entries.size()), entries.size()):
 		if entries[i].emitter == code and entries[i].event == SoundEvent.ADVICE and bool(entries[i].played):
 			return true

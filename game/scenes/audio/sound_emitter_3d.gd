@@ -95,7 +95,7 @@ func emitter_name() -> StringName:
 func _look() -> void:
 	var found := cue if active else null
 	var wanted := found != null and is_inside_tree() and _in_range(found)
-	var held := SoundBus.holds_loop(self)
+	var held: bool = SoundBus.holds_loop(self)
 	if wanted and not held:
 		SoundBus.claim_loop(self, found, emitter_name(), SoundEvent.LOOP)
 	elif not wanted and held:
@@ -103,7 +103,7 @@ func _look() -> void:
 
 
 func _in_range(found: SoundCue) -> bool:
-	var ear := SoundBus.listener_position()
+	var ear: Vector3 = SoundBus.listener_position()
 	return ear == Vector3.INF or global_position.distance_to(ear) <= found.max_distance_m
 
 

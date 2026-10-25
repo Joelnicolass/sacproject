@@ -46,7 +46,7 @@ func _beep() -> AudioStream:
 
 
 func _type_sound() -> Dictionary:
-	var fx := SoundBus.fx_sounds
+	var fx: FxSounds = SoundBus.fx_sounds
 	var blood := load(BLOOD) as ParticleType
 	var lightning := load(LIGHTNING) as BeamType
 	var burst := blood != null and blood.sound != null and fx.cue_of(FxBus.KIND_BURST, "blood") == blood.sound
@@ -63,15 +63,15 @@ func _bridge(host: Node) -> Dictionary:
 	SoundBus.stop_all()
 	await host.get_tree().process_frame
 	SoundBus.sound_log.clear()
-	var before := SoundBus.sound_log.size()
+	var before: int = SoundBus.sound_log.size()
 	FxBus.play("blood", Vector3(1, 0, 0))
 	var last: Dictionary = SoundBus.sound_log.last()
 	var blood: bool = SoundBus.sound_log.size() == before + 1 and last.get("emitter") == &"blood" \
 		and last.get("event") == SoundEvent.FX and bool(last.get("played"))
-	var after_blood := SoundBus.sound_log.size()
+	var after_blood: int = SoundBus.sound_log.size()
 	FxBus.play_puff("blood", Vector3(2, 0, 0))
 	FxBus.play("dirt", Vector3(3, 0, 0))
-	var quiet := SoundBus.sound_log.size() == after_blood
+	var quiet: bool = SoundBus.sound_log.size() == after_blood
 	FxBus.play_beam("lightning", Vector3(0, 4, 0), Vector3.ZERO)
 	var beam: bool = SoundBus.sound_log.last().get("emitter") == &"lightning"
 	return {"ok": blood and quiet and beam, "blood": blood, "puff_and_missing_quiet": quiet, "beam": beam}
@@ -98,17 +98,17 @@ func _loop_budget(host: Node) -> Dictionary:
 		cues.append(cue)
 	for i in 200:
 		SoundBus.play_3d(cues[i % cues.size()], Vector3(i, 0, 0), &"case", SoundEvent.FX)
-	var active := SoundBus.active_voices(true)
-	var loops_kept := SoundBus.active_loops() == 3
+	var active: int = SoundBus.active_voices(true)
+	var loops_kept: bool = SoundBus.active_loops() == 3
 	for i in range(3, SoundBus.max_loops_3d):
 		SoundBus.claim_loop(players[i], loop_cue, &"case_loop")
 	var refused: bool = not SoundBus.claim_loop(players[SoundBus.max_loops_3d], loop_cue, &"case_loop") \
 		and SoundBus.sound_log.last().get("reason") == &"loops_full"
-	var capped := SoundBus.active_voices(true) <= SoundBus.pool_size(true)
+	var capped: bool = SoundBus.active_voices(true) <= SoundBus.pool_size(true)
 	for player in players:
 		SoundBus.release_loop(player)
 		player.queue_free()
-	var released := SoundBus.active_loops() == 0
+	var released: bool = SoundBus.active_loops() == 0
 	var ok: bool = held == 3 and active <= SoundBus.pool_size(true) and active > 3 and loops_kept and refused and capped and released
 	return {"ok": ok, "held": held, "active": active, "pool": SoundBus.pool_size(true), "loops_kept": loops_kept,
 		"refused": refused, "capped": capped, "released": released}
@@ -123,16 +123,16 @@ func _emitter_one_shot(host: Node) -> Dictionary:
 	emitter.cue = _cue([_beep()])
 	holder.add_child(emitter)
 	SoundBus.sound_log.clear()
-	var before := SoundBus.sound_log.size()
+	var before: int = SoundBus.sound_log.size()
 	host.add_child(holder)
 	var last: Dictionary = SoundBus.sound_log.last()
 	var played: bool = SoundBus.sound_log.size() == before + 1 and last.get("emitter") == &"CaseProjectile" \
 		and last.get("event") == SoundEvent.CAST and bool(last.get("played"))
 	holder.queue_free()
 	var no_cue := (load(EMITTER_SCENE) as PackedScene).instantiate() as SoundEmitter3D
-	var count := SoundBus.sound_log.size()
+	var count: int = SoundBus.sound_log.size()
 	host.add_child(no_cue)
-	var quiet := SoundBus.sound_log.size() == count
+	var quiet: bool = SoundBus.sound_log.size() == count
 	no_cue.queue_free()
 	return {"ok": played and quiet, "played": played, "no_cue_quiet": quiet}
 

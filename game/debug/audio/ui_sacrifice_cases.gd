@@ -45,7 +45,7 @@ func run(host: Node, open: bool) -> Dictionary:
 ## Played entries of `emitter`/`event` since log index `since`.
 static func _count(since: int, emitter: StringName, event: StringName) -> int:
 	var n := 0
-	var entries := SoundBus.sound_log.entries()
+	var entries: Array[Dictionary] = SoundBus.sound_log.entries()
 	for i in range(mini(since, entries.size()), entries.size()):
 		var entry: Dictionary = entries[i]
 		if entry.emitter == emitter and entry.event == event and bool(entry.played):
@@ -201,7 +201,7 @@ func _closed(host: Node) -> Dictionary:
 	var soul := _soul(host, "CaseClosedSoul")
 	await host.get_tree().process_frame
 	button.pressed.emit()
-	var no_log := SoundBus.sound_log == null and SoundBus.ui_cue_for(button) == null
+	var no_log: bool = SoundBus.sound_log == null and SoundBus.ui_cue_for(button) == null
 	var ritual_sounds := ritual.get_node("RitualSounds")
 	var soul_sounds := soul.get_node("SoulSounds")
 	var unconnected := not ritual.phase_changed.get_connections().any(func(c: Dictionary) -> bool: return (c.callable as Callable).get_object() == ritual_sounds) \

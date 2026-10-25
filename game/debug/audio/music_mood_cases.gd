@@ -192,7 +192,7 @@ func _ambience(host: Node) -> Dictionary:
 	SoundBus.sound_log.clear()
 	var listener := Node3D.new()
 	host.add_child(listener)
-	var before_listener := SoundBus.listener
+	var before_listener: Node3D = SoundBus.listener
 	SoundBus.listener = listener
 	var director := (load(AMBIENCE_DIRECTOR) as PackedScene).instantiate() as AmbienceDirector
 	director.set_path = "ambience/james"

@@ -27,7 +27,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if loop:
 		super(delta)
-	var ear := SoundBus.listener_position()
+	var ear: Vector3 = SoundBus.listener_position()
 	if ear != Vector3.INF:
 		var along := clampf(WallRules.along(ear, wall.center, wall.direction), wall.left, wall.right)
 		global_position = wall.point_at(along)

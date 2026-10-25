@@ -46,7 +46,7 @@ func _initialize() -> void:
 ## Also used by debug/suite/terrain_bake_cases.gd for its edited copies.
 static func export_data(data: MapTerrainData, out: String) -> Error:
 	var terrain := Terrain.new()
-	terrain.shape = TerrainShape.with_data(data)
+	terrain.shape = GroundSurface.with_data(data)
 	terrain.add_child(terrain.shape)
 	var arrays := terrain.bake_arrays()
 	terrain.free()

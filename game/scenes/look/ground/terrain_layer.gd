@@ -70,7 +70,7 @@ func _unwatch() -> void:
 
 
 func _refresh() -> void:
-	var terrain := _rig.terrain if _rig else null
+	var terrain := _mesh()
 	if terrain == null:
 		return
 	# The terrain keeps a private copy of the classic material (the grass paints into it): hand it over once per material.
@@ -90,9 +90,14 @@ func _refresh() -> void:
 
 
 func _restore() -> void:
-	var terrain := _rig.terrain if _rig else null
+	var terrain := _mesh()
 	if terrain:
 		terrain.call("clear_ground_override")  # dynamic: Terrain or the grass lab's GrassLabGround (debug/look) answers it
+
+
+## The node that draws the map's ground (the first of `ground.meshes`).
+func _mesh() -> MeshInstance3D:
+	return _rig.ground.main_mesh() if _rig and _rig.ground else null
 
 
 func _exit_tree() -> void:

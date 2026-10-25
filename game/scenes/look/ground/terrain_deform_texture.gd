@@ -11,10 +11,10 @@ extends LookLayer
 const MAP := &"terrain_deform_map"
 const ON := &"terrain_deform_on"
 
-## The rig this layer belongs to (look_rig.tscn sets it): its `terrain` is the ground to follow.
+## The rig this layer belongs to (look_rig.tscn sets it): its `ground` is the one to follow.
 @export var rig: LookRig
 
-var _shape: TerrainShape
+var _shape: GroundSurface
 var _image: Image
 var _texture: ImageTexture
 var _dirty := false
@@ -30,21 +30,21 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 func _process(_delta: float) -> void:
 	if _shape == null:
-		_follow(rig.terrain as Terrain if rig != null else null)
+		_follow(rig.ground if rig != null else null)
 	elif _dirty:
 		_upload()
 
 
-func _follow(terrain: Terrain) -> void:
-	if terrain == null or terrain.shape == null or not terrain.shape.is_loaded():
+func _follow(ground: GroundSurface) -> void:
+	if ground == null or not ground.is_loaded():
 		return
-	_shape = terrain.shape
-	_image = Image.create_empty(TerrainDisplacement.SIDE, TerrainDisplacement.SIDE, false, Image.FORMAT_RGF)
+	_shape = ground
+	_image = Image.create_empty(_shape.field().size.x, _shape.field().size.y, false, Image.FORMAT_RGF)
 	_texture = ImageTexture.create_from_image(_image)
 	RenderingServer.global_shader_parameter_set(MAP, _texture)
 	_shape.changed.connect(_on_changed)
 	# Something may have moved before this layer started (a peer that joined late).
-	_dirty = _shape.displacement().rev > 0 or _shape.displacement().live_count() > 0
+	_dirty = _shape.field().rev > 0 or _shape.field().live_count() > 0
 
 
 func _on_changed(_area: Rect2) -> void:
@@ -53,7 +53,7 @@ func _on_changed(_area: Rect2) -> void:
 
 func _upload() -> void:
 	_dirty = false
-	_image.set_data(TerrainDisplacement.SIDE, TerrainDisplacement.SIDE, false, Image.FORMAT_RGF, _shape.displacement().texels.to_byte_array())
+	_image.set_data(_shape.field().size.x, _shape.field().size.y, false, Image.FORMAT_RGF, _shape.field().texels.to_byte_array())
 	_texture.update(_image)
 	RenderingServer.global_shader_parameter_set(ON, 1.0)
 

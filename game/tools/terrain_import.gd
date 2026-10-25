@@ -9,7 +9,7 @@ extends EditorScenePostImport
 ## The static helpers are shared with tools/bake/terrain_glb_export.gd and debug/suite/terrain_bake_cases.gd.
 
 const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain.gd"
-const SHAPE_SCRIPT := "res://scenes/map/terrain/terrain_shape.gd"
+const SHAPE_SCRIPT := "res://scenes/map/terrain/ground_surface.gd"
 const GLB_MAGIC := 0x46546C67
 const CHUNK_JSON := 0x4E4F534A
 const CHUNK_BIN := 0x004E4942

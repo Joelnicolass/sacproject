@@ -27,7 +27,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _frame_close() -> void:
 	var camera := get_node(camera_path) as Camera3D
-	var terrain := TerrainShape.of(self)
+	var terrain := GroundSurface.of(self)
 	var height := 0.0
 	if terrain:
 		var found: float = terrain.height_at(close_at.x, close_at.y)

@@ -35,14 +35,14 @@ var _ticks := 0
 var _next_at := 0
 var _last := Vector2i(-1, -1)
 var _deformer: TerrainDeformer
-var _land: TerrainShape
+var _land: GroundSurface
 
 
 func _ready() -> void:
 	process_physics_priority = -1
 	set_physics_process(zone != null and zone.is_authority() and not Engine.is_editor_hint())
 	_deformer = TerrainDeformer.of(self)
-	_land = TerrainShape.of(self)
+	_land = GroundSurface.of(self)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -105,7 +105,7 @@ func _give_back() -> void:
 		return
 	var id := _taken[_taken.size() - 1]
 	_taken.remove_at(_taken.size() - 1)
-	if _deformer.shape.displacement().is_removed(id):
+	if _deformer.shape.field().is_removed(id):
 		_deformer.set_removed(id, false)
 		if restore_burst != null:
 			FxBus.broadcast(FxBus.name_of(restore_burst), _vertex_point(Vector2i(id % TerrainRules.GRID, id / TerrainRules.GRID)))

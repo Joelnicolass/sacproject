@@ -33,8 +33,8 @@ signal vegetation_toggled(enabled: bool)
 @export var quality: QualityApplier
 ## The sun layer, for tools that turn the sun by hand.
 @export var sun_layer: SunLayer
-## The map's terrain (a `terrain.gd` MeshInstance3D) the ground layer gives its material to.
-@export var terrain: MeshInstance3D
+## The map's ground numbers; the nodes that draw it (`ground.meshes`) are what the ground layer dresses.
+@export var ground: GroundSurface
 ## Which `GroundSet` slot paints each of the map's tile ids. The classic ground (a biome without a
 ## PBR `GroundSet`) uses it so the grass knows where it grows; it belongs to the map, not to a biome.
 @export var tile_map: TileLayerMap
@@ -142,6 +142,6 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if layers == null:
 		warnings.append("Falta el socket Layers.")
-	if terrain == null:
-		warnings.append("Falta el socket Terrain: la capa de suelo no actua sin el.")
+	if ground == null:
+		warnings.append("Falta el socket Ground (el GroundSurface del mapa): la capa de suelo no actua sin el.")
 	return warnings

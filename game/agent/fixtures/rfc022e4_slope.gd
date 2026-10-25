@@ -13,7 +13,7 @@ extends Node
 func _ready() -> void:
 	await get_tree().create_timer(settle_s).timeout
 	var wizard := get_tree().get_first_node_in_group("local_wizard") as Node3D
-	var terrain := TerrainShape.of(self)
+	var terrain := GroundSurface.of(self)
 	if wizard == null or terrain == null:
 		print("RFC022E4_SLOPE no wizard/terrain")
 		return

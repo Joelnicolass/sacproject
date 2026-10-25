@@ -1,12 +1,12 @@
 extends Node
 
-## Peaks' TerrainShape against the ground index made straight from its data (TerrainRules): 4096 grid points over the
+## Peaks' GroundSurface against the ground index made straight from its data (TerrainRules): 4096 grid points over the
 ## ground's box (plus a margin, so the rim and the holes are asked) and 64 seeded random points. PASS when every height is the same float (max delta 0), a
 ## point has a height exactly where `is_on_ground` says so, and the thread-safe sampler answers like `height_at`.
 ## Prints one line `TERRAIN SHAPE PASS|FAIL ...` and, with `quit_when_done`, quits. Headless: Godot --headless --path game
 ## res://debug/map/terrain_shape.tscn
 
-@export var shape: TerrainShape
+@export var shape: GroundSurface
 @export_range(1, 128) var grid := 64
 @export var random_points := 64
 @export var random_seed := 7

@@ -1,14 +1,16 @@
-class_name TerrainDisplacement
+class_name GroundField
 extends RefCounted
 
-## How far the ground has moved from the map file, vertex by vertex of the 10 m lattice (256x256): what stays for good (a
-## mound, a crater), what moves right now (the stamps that are playing) and which vertices were taken away (holes). It
-## only keeps numbers and adds them up; who may write is TerrainDeformer, who asks the height is TerrainShape. A live
-## stamp is stored whole and the sum is made again from it, never added to, so dropping it leaves the ground as it was.
+## How far the ground has moved from the map file, vertex by vertex of a regular lattice: what stays (a mound, a crater),
+## what moves right now (playing stamps) and which vertices were taken away (holes). It only keeps numbers and adds them up;
+## who may write is TerrainDeformer, who asks the height is GroundSurface. A live stamp is stored whole and the sum made
+## again from it, never added to, so dropping it leaves the ground as it was.
 
-const SIDE := TerrainRules.GRID
+const SIDE := TerrainRules.GRID  ## the grid map's lattice; anyone who needs the size reads `size`
 const COUNT := SIDE * SIDE
-
+## Vertices per side (x, z) and metres between two of them: the ground covers `size * cell_m` from the origin.
+var size := Vector2i(SIDE, SIDE)
+var cell_m := TerrainRules.CELL
 ## Two floats per vertex (the layout the ground shader reads): [0] how far it is raised (permanent + live), [1] 1 if taken away.
 var texels := PackedFloat32Array()
 ## What stays (floats, one per vertex). Only `commit` changes it.
@@ -19,9 +21,7 @@ var rev := 0
 var version := 0
 ## The vertices taken away, as a list (`texels` holds the same in its second float).
 var holes := TerrainHoles.new()
-
-## Stamps playing now: key -> [rect, values] (values row by row over the rect).
-var _live := {}
+var _live := {}  ## stamps playing now: key -> [rect, values] (values row by row over the rect)
 var _snapshot := PackedFloat32Array()
 var _snapshot_version := -1
 

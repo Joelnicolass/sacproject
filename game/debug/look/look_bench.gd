@@ -207,7 +207,7 @@ func _measure_flora() -> void:
 		return
 	var high := _presets[2]
 	var spot := _densest(field.density())
-	var terrain := TerrainShape.of(self)
+	var terrain := GroundSurface.of(self)
 	var ground := terrain.height_at(spot.x, spot.y) if terrain else 0.0
 	ground = 0.0 if is_nan(ground) else ground
 	view_camera.global_position = Vector3(spot.x, ground + 6.0, spot.y - 30.0)
@@ -293,7 +293,7 @@ func _make_views() -> void:
 
 
 func _fill_units() -> void:
-	var terrain := TerrainShape.of(self)
+	var terrain := GroundSurface.of(self)
 	var rows := ceili(float(unit_count) / unit_columns)
 	for i in unit_count:
 		var unit: Node3D = unit_scene.instantiate()

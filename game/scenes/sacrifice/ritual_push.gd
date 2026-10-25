@@ -29,7 +29,7 @@ func _physics_process(delta: float) -> void:
 		return
 	var rules := ritual.rules
 	var center := ritual.center()
-	var shape := TerrainShape.of(self)
+	var shape := GroundSurface.of(self)
 	var seen: Dictionary = {}
 	for group in GROUPS:
 		for node in get_tree().get_nodes_in_group(group):
@@ -40,7 +40,7 @@ func _physics_process(delta: float) -> void:
 			_push(body, center, rules, shape, delta)
 
 
-func _push(body: CharacterBody3D, center: Vector3, rules: MatchRules, shape: TerrainShape, delta: float) -> void:
+func _push(body: CharacterBody3D, center: Vector3, rules: MatchRules, shape: GroundSurface, delta: float) -> void:
 	var flat := Vector3(body.global_position.x - center.x, 0.0, body.global_position.z - center.z)
 	var distance := (body.global_position + Vector3.UP - center).length()
 	if flat.length_squared() < 0.000001 or distance >= rules.ritual_push_radius:

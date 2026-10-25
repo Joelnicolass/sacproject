@@ -13,8 +13,8 @@ extends Node
 ## The texture is ready (or was drawn again).
 signal baked
 
-## Optional: a map ground whose mesh is drawn instead of the one in `ground` (the world scene points at %Terrain).
-@export var terrain: MeshInstance3D
+## Optional: the map's ground surface; the mesh it lists is drawn instead of the one in `ground` (the map points at its Shape).
+@export var surface: GroundSurface
 @export_group("Parts")
 @export var viewport: SubViewport
 ## The mesh drawn: the map's terrain mesh (`terrain`) with the classic ground material (the minimap never shows a biome's PBR ground).
@@ -23,7 +23,7 @@ signal baked
 ## Shown only when this scene runs alone.
 @export var preview: TextureRect
 @export_group("Bake")
-## Texels per side. 1024 over a 2560 m map = 2.5 m per texel.
+## Texels per side (1024 over a 2560 m map = 2.5 m per texel).
 @export_range(256, 4096, 256) var resolution := 1024
 ## The camera sits this far over the highest point of the mesh.
 @export var camera_margin_m := 50.0
@@ -88,9 +88,10 @@ func _rebake_in_editor() -> void:
 func bake() -> void:
 	if viewport == null or ground == null or camera == null:
 		return
-	if terrain != null and terrain.mesh != null:
-		ground.mesh = terrain.mesh
-		ground.transform = terrain.global_transform
+	var drawn := surface.main_mesh() if surface != null else null
+	if drawn != null and drawn.mesh != null:
+		ground.mesh = drawn.mesh
+		ground.transform = drawn.global_transform
 	if ground.mesh == null:
 		push_warning("MinimapTerrainBake: no hay malla de terreno que hornear.")
 		return

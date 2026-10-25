@@ -16,7 +16,7 @@ var flat_normals := PackedVector3Array()
 var smooth_normals := PackedVector3Array()
 
 
-## `tiles` is the 256x256 tile index of the map (TerrainShape.tile_ids), empty for tile 0 everywhere.
+## `tiles` is the 256x256 tile index of the map (GroundSurface.tile_ids), empty for tile 0 everywhere.
 ## Null when `data` is not usable.
 static func from_data(data: MapTerrainData, tiles: PackedByteArray) -> TerrainMeshArrays:
 	if data == null or not data.is_valid():

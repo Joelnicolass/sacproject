@@ -1,7 +1,7 @@
 class_name TerrainDeformer
 extends Node
 
-## The one writer of the ground's displacement (TerrainShape.displacement). A stamp that is playing registers its shift
+## The one writer of the ground's displacement (GroundSurface.field). A stamp that is playing registers its shift
 ## with `set_live` on every peer (each one plays it from its own clock); what must stay (a mound, a crater, a hole) is
 ## decided by the server only: it calls `commit`, and every client applies the same bytes, so none of them recomputes
 ## it. A peer that joins later gets the whole ground in one snapshot. After each change the shape tells its listeners.
@@ -11,7 +11,7 @@ const GROUP := &"terrain_deformer"
 ## Key of the dict in MpKit.push_snapshot.
 const SNAPSHOT_KEY := "terrain"
 
-@export var shape: TerrainShape
+@export var shape: GroundSurface
 
 
 ## The deformer of the map `node` is in, null outside a map.
@@ -30,7 +30,7 @@ func _ready() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if shape != null else PackedStringArray(["Falta el socket `shape` (el TerrainShape del mapa)."])
+	return PackedStringArray() if shape != null else PackedStringArray(["Falta el socket `shape` (el GroundSurface del mapa)."])
 
 
 ## True on the server (and alone): the only peer that decides what stays.
@@ -40,12 +40,12 @@ func is_authority() -> bool:
 
 ## A stamp that is playing: its shift over `rect` right now (replaces its previous one). Every peer, from its own clock.
 func set_live(key: String, rect: Rect2i, values: PackedFloat32Array) -> void:
-	shape.notify_changed(shape.displacement().set_live(key, rect, values))
+	shape.notify_changed(shape.field().set_live(key, rect, values))
 
 
 ## The stamp under `key` is over.
 func drop_live(key: String) -> void:
-	shape.notify_changed(shape.displacement().drop_live(key))
+	shape.notify_changed(shape.field().drop_live(key))
 
 
 ## Server (or solo): adds `delta` (row by row over `rect`) to what stays, takes away the live stamp `key` in the same step,
@@ -54,7 +54,7 @@ func commit(rect: Rect2i, delta: PackedFloat32Array, key := "") -> void:
 	if not is_authority():
 		push_warning("TerrainDeformer.commit: only the server decides what stays.")
 		return
-	var ground := shape.displacement()
+	var ground := shape.field()
 	shape.notify_changed(ground.commit(rect, delta, key if not key.is_empty() else null))
 	if MpKit.is_server():
 		rpc_commit.rpc(ground.rev, key, rect, delta)
@@ -65,7 +65,7 @@ func set_removed(id: int, removed: bool) -> void:
 	if not is_authority():
 		push_warning("TerrainDeformer.set_removed: only the server decides the holes.")
 		return
-	var ground := shape.displacement()
+	var ground := shape.field()
 	if ground.set_removed(id, removed):
 		ground.rev += 1
 		_tell_holes(id)
@@ -75,7 +75,7 @@ func set_removed(id: int, removed: bool) -> void:
 
 @rpc("authority", "call_remote", "reliable")
 func rpc_commit(rev: int, key: String, rect: Rect2i, delta: PackedFloat32Array) -> void:
-	var ground := shape.displacement()
+	var ground := shape.field()
 	if rev <= ground.rev:
 		return
 	shape.notify_changed(ground.commit(rect, delta, key if not key.is_empty() else null))
@@ -84,7 +84,7 @@ func rpc_commit(rev: int, key: String, rect: Rect2i, delta: PackedFloat32Array) 
 
 @rpc("authority", "call_remote", "reliable")
 func rpc_removed(rev: int, id: int, removed: bool) -> void:
-	var ground := shape.displacement()
+	var ground := shape.field()
 	if rev <= ground.rev:
 		return
 	ground.set_removed(id, removed)
@@ -94,17 +94,18 @@ func rpc_removed(rev: int, id: int, removed: bool) -> void:
 
 ## The vertex `id` came or went: the shape says it moved, and that it was a hole (the collision flushes, the navmesh is baked again).
 func _tell_holes(id: int) -> void:
-	var around := Rect2i(id % TerrainDisplacement.SIDE - 1, id / TerrainDisplacement.SIDE - 1, 3, 3)
+	var lattice := shape.field()
+	var around := Rect2i(id % lattice.size.x - 1, id / lattice.size.x - 1, 3, 3)
 	shape.notify_changed(around)
-	shape.holes_changed.emit(Rect2(Vector2(around.position) * TerrainRules.CELL, Vector2(around.size) * TerrainRules.CELL))
+	shape.holes_changed.emit(Rect2(Vector2(around.position) * lattice.cell_m, Vector2(around.size) * lattice.cell_m))
 
 
 func _push_snapshot(peer_id: int) -> void:
-	MpKit.push_snapshot_to(peer_id, {SNAPSHOT_KEY: shape.displacement().to_snapshot()})
+	MpKit.push_snapshot_to(peer_id, {SNAPSHOT_KEY: shape.field().to_snapshot()})
 
 
 func _on_snapshot(data: Dictionary) -> void:
 	var mine: Variant = data.get(SNAPSHOT_KEY)
-	if mine is Dictionary and int((mine as Dictionary)["rev"]) >= shape.displacement().rev:
-		shape.displacement().apply_snapshot(mine)
-		shape.notify_changed(Rect2i(0, 0, TerrainDisplacement.SIDE, TerrainDisplacement.SIDE))
+	if mine is Dictionary and int((mine as Dictionary)["rev"]) >= shape.field().rev:
+		shape.field().apply_snapshot(mine)
+		shape.notify_changed(Rect2i(Vector2i.ZERO, shape.field().size))

@@ -58,7 +58,7 @@ func _process(_delta: float) -> void:
 	var shown := since > 0 and remaining > 0 and not zone.cancelled
 	for part in [lava, cloud, spatter]:
 		part.visible = shown
-	var land := TerrainShape.of(self)
+	var land := GroundSurface.of(self)
 	if not shown or land == null:
 		return
 	var mouth := Vector2(global_position.x, global_position.z)
@@ -86,7 +86,7 @@ func _apply(part: MeshInstance3D, values: Dictionary) -> void:
 
 
 ## Asks the land for a few more angles of the picture the splash lies on (all of them in `ANGLES / angles_per_frame` frames).
-func _renew_ground(land: TerrainShape, mouth: Vector2) -> void:
+func _renew_ground(land: GroundSurface, mouth: Vector2) -> void:
 	for _n in angles_per_frame:
 		var angle := 0.5 * PI + TAU * float(_next_angle) / ANGLES
 		for column in ground_steps:

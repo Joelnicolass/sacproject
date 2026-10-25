@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/map/map_root.gd" id="1_root"]
 [ext_resource type="Script" uid="uid://cnbnjgq6ehkv7" path="res://scenes/map/terrain/terrain.gd" id="2_terrain"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain_shape.gd" id="shape_script"]
+[ext_resource type="Script" path="res://scenes/map/terrain/ground_surface.gd" id="shape_script"]
 [ext_resource type="Script" path="res://scenes/map/terrain/terrain_deformer.gd" id="deformer_script"]
 [ext_resource type="Script" path="res://scenes/map/terrain/terrain_collision.gd" id="collision_script"]
 [ext_resource type="Script" uid="uid://bahus244cwp1m" path="res://scenes/map/props/map_props.gd" id="6_props"]
@@ -54,9 +54,10 @@
 [ext_resource type="Texture2D" path="res://scenes/map/maps/high_noon/ground_roles.png" id="62_roles"]
 [ext_resource type="Texture2D" path="res://assets/original/maps/high_noon/light.png" id="62_light"]
 
-[node name="Map" type="Node3D" unique_id=1044000001 node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
+[node name="Map" type="Node3D" unique_id=1044000001 node_paths=PackedStringArray("terrain", "ground", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
 terrain = NodePath("Terrain")
+ground = NodePath("Terrain/Shape")
 nav_region = NodePath("NavRegion")
 starts = NodePath("MapProps/Starts")
 look = NodePath("Look")
@@ -65,9 +66,9 @@ buildings = NodePath("Buildings")
 npcs = NodePath("Npcs")
 props = NodePath("Props")
 
-[node name="Look" parent="." unique_id=1022000001 node_paths=PackedStringArray("terrain") instance=ExtResource("f22_look")]
+[node name="Look" parent="." unique_id=1022000001 node_paths=PackedStringArray("ground") instance=ExtResource("f22_look")]
 unique_name_in_owner = true
-terrain = NodePath("../Terrain")
+ground = NodePath("../Terrain/Shape")
 tile_map = ExtResource("f22_tiles")
 
 [node name="Terrain" parent="." unique_id=1483961628 node_paths=PackedStringArray("shape", "missing") groups=["nav_source"] instance=ExtResource("f195_terrain_glb")]
@@ -525,9 +526,9 @@ navigation_mesh = ExtResource("f200_navmesh")
 script = ExtResource("f200_nav_region")
 bake_settings = ExtResource("f200_bake")
 
-[node name="MinimapBake" parent="." unique_id=1037000020 node_paths=PackedStringArray("terrain") instance=ExtResource("f212_bake")]
+[node name="MinimapBake" parent="." unique_id=1037000020 node_paths=PackedStringArray("surface") instance=ExtResource("f212_bake")]
 unique_name_in_owner = true
-terrain = NodePath("../Terrain")
+surface = NodePath("../Terrain/Shape")
 
 [node name="Vegetation" type="Node3D" parent="."]
 

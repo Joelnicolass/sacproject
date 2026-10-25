@@ -58,6 +58,6 @@ static func land_of(map: MapDefinition) -> Terrain:
 	if data == null or not data.is_valid():
 		return null
 	var land := Terrain.new()
-	land.shape = TerrainShape.with_data(data)
+	land.shape = GroundSurface.with_data(data)
 	land.add_child(land.shape)
 	return land

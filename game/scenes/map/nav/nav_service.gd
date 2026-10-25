@@ -19,8 +19,8 @@ const GROUP := &"nav_service"
 const BAKE_SETTINGS := "res://data/nav/nav_bake.tres"
 const SEARCH_LOG_MAX := 200000
 
-## The map's ground numbers (Terrain.shape): the path points take the land height from it.
-@export var terrain_shape: TerrainShape
+## The map's ground numbers (MapRoot.ground): the path points take the land height from it.
+@export var ground: GroundSurface
 ## The map's NavigationRegion3D (MapRoot.nav_region). Empty: the service puts one under itself with the navmesh of the active map.
 @export var region: NavigationRegion3D
 ## Time between a change and the swap of the re-baked navmesh (the bake takes a couple of seconds on a worker thread; if it
@@ -80,8 +80,8 @@ func _ready() -> void:
 	if MpKit.is_networked() and not MpKit.is_server():
 		set_physics_process(false)
 		return
-	if terrain_shape != null:
-		terrain_shape.holes_changed.connect(_on_holes_changed.unbind(1))
+	if ground != null:
+		ground.holes_changed.connect(_on_holes_changed.unbind(1))
 	if structures != null:
 		structures.child_entered_tree.connect(_on_structure_changed.unbind(1))
 		structures.child_exiting_tree.connect(_on_structure_changed.unbind(1))
@@ -137,7 +137,7 @@ static func path_length(from: Vector3, points: PackedVector3Array) -> float:
 
 ## Builds the pathfinder (again). Returns the milliseconds it took.
 func build() -> float:
-	if terrain_shape == null:
+	if ground == null:
 		return 0.0
 	if not _build_navmesh():
 		return 0.0
@@ -270,8 +270,8 @@ func find_path(from: Vector3, to: Vector3) -> PackedVector3Array:
 	if path.is_empty():
 		return PackedVector3Array([to])
 	for k in path.size():
-		var ground: float = terrain_shape.height_at(path[k].x, path[k].z) if terrain_shape else NAN
-		path[k].y = from.y if is_nan(ground) else ground
+		var height: float = ground.height_at(path[k].x, path[k].z) if ground else NAN
+		path[k].y = from.y if is_nan(height) else height
 	return path
 
 
@@ -331,10 +331,10 @@ func search_percentile_us(fraction: float) -> int:
 
 ## `point` at the height of the ground under it (the navmesh is asked in 3D); the point itself off the land.
 func _grounded(point: Vector3) -> Vector3:
-	var ground: float = terrain_shape.height_at(point.x, point.z) if terrain_shape else NAN
-	if is_nan(ground):
+	var height: float = ground.height_at(point.x, point.z) if ground else NAN
+	if is_nan(height):
 		return point
-	return Vector3(point.x, ground, point.z)
+	return Vector3(point.x, height, point.z)
 
 
 ## One entry per collision shape of the blocker nodes: [Vector2 center, radius] for a cylinder or a sphere and

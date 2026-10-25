@@ -19,11 +19,11 @@ const THROW_SPEED := 8.0
 const THROW_UP := 3.0
 const FALL_TICKS := 900
 
-var _terrain: TerrainShape
+var _terrain: GroundSurface
 var _nav: NavService
 
 
-func run(host: Node3D, terrain: TerrainShape, nav: NavService) -> Dictionary:
+func run(host: Node3D, terrain: GroundSurface, nav: NavService) -> Dictionary:
 	_terrain = terrain
 	_nav = nav
 	var edge := _find_edge()

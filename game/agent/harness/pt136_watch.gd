@@ -43,10 +43,10 @@ func _pf() -> int:
 	return Engine.get_physics_frames()
 
 
-func _terrain() -> TerrainShape:
+func _terrain() -> GroundSurface:
 	if get_tree().current_scene == null:
 		return null
-	return TerrainShape.of(self)
+	return GroundSurface.of(self)
 
 
 func _ground_y(x: float, z: float) -> float:

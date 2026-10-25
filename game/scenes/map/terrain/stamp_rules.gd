@@ -26,13 +26,13 @@ static func values(profile: StampProfile, center: Vector2, reach_m: float, peak_
 
 ## The height of each lattice vertex of `rect` (row by row) with what stays on the ground but not the stamps that are playing
 ## (NAN over a hole or off the land): what a stamp that starts now flattens. Every peer has the same permanent ground.
-static func ground_under(shape: TerrainShape, rect: Rect2i) -> PackedFloat32Array:
+static func ground_under(shape: GroundSurface, rect: Rect2i) -> PackedFloat32Array:
 	var out := PackedFloat32Array()
 	out.resize(rect.size.x * rect.size.y)
-	var ground := shape.displacement()
+	var ground := shape.field()
 	for row in rect.size.y:
 		for column in rect.size.x:
-			var id := (rect.position.y + row) * TerrainDisplacement.SIDE + rect.position.x + column
+			var id := (rect.position.y + row) * GroundField.SIDE + rect.position.x + column
 			var spot := Vector2(rect.position + Vector2i(column, row)) * TerrainRules.CELL
 			out[row * rect.size.x + column] = shape.height_at(spot.x, spot.y) - ground.at(id) + ground.permanent[id]
 	return out

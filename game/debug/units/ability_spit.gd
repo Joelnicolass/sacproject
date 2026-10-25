@@ -149,7 +149,7 @@ func _field_spot(origin: Vector3, ahead: Vector3) -> Array:
 
 
 func _spot_clear(at: Vector3) -> bool:
-	var terrain := TerrainShape.of(self)
+	var terrain := GroundSurface.of(self)
 	if terrain and not terrain.is_on_ground(at.x, at.z):
 		return false
 	var flat := Vector2(at.x, at.z)
@@ -161,7 +161,7 @@ func _spot_clear(at: Vector3) -> bool:
 
 
 func _on_land(at: Vector3) -> Vector3:
-	var terrain := TerrainShape.of(self)
+	var terrain := GroundSurface.of(self)
 	if terrain:
 		var height := float(terrain.height_at(at.x, at.z))
 		if is_finite(height):

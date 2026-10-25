@@ -8,7 +8,7 @@ extends RefCounted
 
 ## World-space MultiMesh buffer (MeshPlanter.XFORM_STRIDE floats each): the spots of the disc around `patch_xform` that
 ## are on the ground of `shape` (placed at `map_xform`) and outside every clear (rows x, z, radius, edge in world coordinates).
-static func plan(species: VegetationSpecies, seed: int, count: int, radius_m: float, patch_xform: Transform3D, shape: TerrainShape,
+static func plan(species: VegetationSpecies, seed: int, count: int, radius_m: float, patch_xform: Transform3D, shape: GroundSurface,
 		map_xform: Transform3D, density_scale: float, clears: PackedVector4Array) -> PackedFloat32Array:
 	var tag := species.density_tag()
 	var tag_h := FloraPlacement.tag_hash(tag)

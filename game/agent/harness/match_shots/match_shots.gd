@@ -379,7 +379,7 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 			var toward := (focus - tower.global_transform.origin) * Vector3(1.0, 0.0, 1.0)
 			spot = look + (toward.normalized() if toward.length() > 0.1 else Vector3.BACK) * tower_m + Vector3.UP * tower_up_m
 		"ground":
-			var shape := TerrainShape.of(world)
+			var shape := GroundSurface.of(world)
 			if shape == null:
 				print("match_shots: no ground loaded; view skipped")
 				return
@@ -413,7 +413,7 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 		_hover(world, wizard)
 	await _save(file)
 	if view == "ground":
-		GroundGrid.write(camera, TerrainShape.of(world), _ground_at(focus), ground_grid_reach_m, ProjectSettings.globalize_path(file.get_basename() + ".json"))
+		GroundGrid.write(camera, GroundSurface.of(world), _ground_at(focus), ground_grid_reach_m, ProjectSettings.globalize_path(file.get_basename() + ".json"))
 
 
 ## The "hud" view: the game's camera, the HUD as the player sees it (mana from --mana, creatures from --select, the order menu from --radial) and
@@ -573,7 +573,7 @@ func _clear_spot(look: Vector3, toward: Vector3, distance := zone_m, up := zone_
 
 ## `spot` raised to `margin` above the land (with its displacement) under it.
 func _over_land(spot: Vector3, margin: float) -> Vector3:
-	var shape := TerrainShape.of(self)
+	var shape := GroundSurface.of(self)
 	var ground := shape.height_at(spot.x, spot.z) if shape != null else NAN
 	if not is_nan(ground):
 		spot.y = maxf(spot.y, ground + margin)

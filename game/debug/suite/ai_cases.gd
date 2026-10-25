@@ -337,7 +337,7 @@ func _nav_rebuild(host: Node3D) -> Dictionary:
 	root.name = "NavRebuildCases"
 	var terrain := Terrain.new()
 	terrain.name = "Terrain"
-	terrain.shape = TerrainShape.with_data(MapCatalog.active().terrain)
+	terrain.shape = GroundSurface.with_data(MapCatalog.active().terrain)
 	terrain.add_child(terrain.shape)
 	terrain.add_to_group(NavFingerprint.GROUP)
 	root.add_child(terrain)
@@ -346,7 +346,7 @@ func _nav_rebuild(host: Node3D) -> Dictionary:
 	root.add_child(structures)
 	var service := NavService.new()
 	service.name = "Nav"
-	service.terrain_shape = terrain.shape
+	service.ground = terrain.shape
 	service.structures = structures
 	service.build_on_ready = false
 	root.add_child(service)

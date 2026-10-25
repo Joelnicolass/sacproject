@@ -9,8 +9,8 @@ extends MeshInstance3D
 @export var center := Vector2(1500.0, 1500.0)
 @export var half_size_m := 65.0
 @export var step_m := 2.5
-## The ground numbers of High Noon (a TerrainShape child of this node).
-@export var shape: TerrainShape
+## The ground numbers of High Noon (a GroundSurface child of this node).
+@export var shape: GroundSurface
 ## The map's zone ids -> ground layers; every cell gets a tile that paints the first layer.
 @export var tiles: TileLayerMap:
 	set(value):
@@ -18,6 +18,11 @@ extends MeshInstance3D
 		_paint_tiles()
 
 var _material_classic := StandardMaterial3D.new()
+
+
+func _enter_tree() -> void:
+	if shape != null:
+		shape.meshes.assign([self])
 
 
 func _ready() -> void:

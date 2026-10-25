@@ -7,7 +7,7 @@ extends RefCounted
 
 
 ## Bodies over `rect` (lattice vertices of the stamp) that the land of `shape` buried by at most `reach_m` stand on it again.
-static func lift(tree: SceneTree, shape: TerrainShape, rect: Rect2i, reach_m: float) -> void:
+static func lift(tree: SceneTree, shape: GroundSurface, rect: Rect2i, reach_m: float) -> void:
 	var area := Rect2(Vector2(rect.position) * TerrainRules.CELL, Vector2(rect.size) * TerrainRules.CELL)
 	for group in [&"unit", &"wizard"]:
 		for node in tree.get_nodes_in_group(group):

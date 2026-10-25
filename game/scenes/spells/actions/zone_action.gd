@@ -110,7 +110,7 @@ func _data(wizard: WizardBody, spell: SpellType, click: Vector3, frames: int) ->
 ## The roots of a ring on the ground: a root off the land is drawn again around where it fell (the zone keeps the last one when none fits).
 func _roots(rng: RandomNumberGenerator, click: Vector3) -> PackedVector3Array:
 	var roots := ZoneRules.ring_points(rng, click, ring_count, ring_inner_m, ring_outer_m, deg_to_rad(ring_jitter_deg))
-	var shape := TerrainShape.of(self)
+	var shape := GroundSurface.of(self)
 	for i in roots.size():
 		var fell := roots[i]
 		for _try in ring_retries:
@@ -123,6 +123,6 @@ func _roots(rng: RandomNumberGenerator, click: Vector3) -> PackedVector3Array:
 
 ## `at` with the height of the land under it (the click's own height when there is no land to ask).
 func _ground(at: Vector3) -> Vector3:
-	var shape := TerrainShape.of(self)
+	var shape := GroundSurface.of(self)
 	var land := shape.height_at(at.x, at.z) if shape != null else NAN
 	return Vector3(at.x, at.y if is_nan(land) else land, at.z)

@@ -30,7 +30,7 @@ func _rules() -> Dictionary:
 	var cylinder := (stamp.get_node("Reach") as CollisionShape3D).shape as CylinderShape3D
 	checks["radius_15_depth_1_2"] = is_equal_approx(cylinder.radius, RADIUS_M) and is_equal_approx(cylinder.height, DEPTH_M)
 	checks["manual_and_kept"] = stamp.manual and stamp.keep
-	var rect := TerrainDisplacement.vertex_rect(CENTER, cylinder.radius)
+	var rect := GroundField.vertex_rect(CENTER, cylinder.radius)
 	var values := StampRules.values(stamp.profile, CENTER, cylinder.radius, cylinder.height, stamp.profile.duration_s() - 1e-4, rect)
 	var worst := 0.0
 	var centre_value := 0.0
@@ -52,8 +52,8 @@ func _rules() -> Dictionary:
 ## Two meteorites end on the map: -1.2 m under the first, and the second one 10 m away adds its own dent to the vertex between them.
 func _impact() -> Dictionary:
 	var checks := {}
-	var shape: TerrainShape = _c._shape
-	var ground := shape.displacement()
+	var shape: GroundSurface = _c._shape
+	var ground := shape.field()
 	var near := CENTER + Vector2(10.0, 0.0)
 	var rect := Rect2i(Vector2i(CENTER / TerrainRules.CELL) - Vector2i(4, 4), Vector2i(9, 9))
 	var before := ground.permanent.duplicate()
@@ -82,7 +82,7 @@ func _impact() -> Dictionary:
 	restore.resize(rect.size.x * rect.size.y)
 	for row in rect.size.y:
 		for column in rect.size.x:
-			var id := (rect.position.y + row) * TerrainDisplacement.SIDE + rect.position.x + column
+			var id := (rect.position.y + row) * GroundField.SIDE + rect.position.x + column
 			restore[row * rect.size.x + column] = before[id] - ground.permanent[id]
 	(_c._bed.get_node("Deformer") as TerrainDeformer).commit(rect, restore)
 	await _c._frames(2)

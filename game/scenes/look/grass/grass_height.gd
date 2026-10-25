@@ -2,18 +2,17 @@ class_name GrassHeight
 extends RefCounted
 
 ## The land height the grass layer reads (RFC-022e), derived from the terrain when the grass loads instead of read from a
-## baked height.exr (RFC-033 033f). RG float, 1024x1024 over the 2560 m map (2.5 m per texel): R = height, G = 1 where land
-## lies under the texel centre (`TerrainShape.height_at` is not NAN), 0 over holes and the map rim. Hole texels take the
+## baked height.exr (RFC-033 033f). RG float, 1024x1024 over the whole map (2.5 m per texel on a 2560 m map): R = height, G = 1 where land
+## lies under the texel centre (`GroundSurface.height_at` is not NAN), 0 over holes and the map rim. Hole texels take the
 ## height of the nearest land texel so a bilinear read near a hole edge does not dip to 0. The grass is off today, so this
 ## costs nothing at start-up; it runs once, when a grass field first loads.
 
 const SIZE := 1024
-const MAP_M := 2560.0
 
 
-## `shape`: a loaded TerrainShape (height_at is NAN over a hole).
-static func from_shape(shape: TerrainShape) -> Image:
-	var texel := MAP_M / float(SIZE)
+## `shape`: a loaded GroundSurface (height_at is NAN over a hole).
+static func from_shape(shape: GroundSurface) -> Image:
+	var texel := shape.bounds().size.x / float(SIZE)
 	var heights := PackedFloat32Array()
 	heights.resize(SIZE * SIZE)
 	var land := PackedByteArray()

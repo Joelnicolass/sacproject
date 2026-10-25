@@ -53,7 +53,7 @@ var _quality: LookQuality
 
 
 func _ready() -> void:
-	rig.terrain = ground as MeshInstance3D
+	rig.ground = ground.shape
 	sun = rig.sun_layer.sun
 	var profile := GameCatalog.shared().god("persephone").look
 	grass_set = profile.grass

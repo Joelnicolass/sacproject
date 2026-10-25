@@ -22,8 +22,8 @@ func view(x: float, z: float, d: float, h: float, y: float) -> void:
 	active = true
 
 
-func _terrain() -> TerrainShape:
-	return TerrainShape.of(self)
+func _terrain() -> GroundSurface:
+	return GroundSurface.of(self)
 
 
 func _process(_dt: float) -> void:

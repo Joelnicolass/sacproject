@@ -7,6 +7,8 @@ extends RefCounted
 ## The reader (tools/import/sac_formats/scar.py) checks `size = 16 + 1024 + 2*w*h` on all 19 while the importer runs.
 
 const SCARS_DIR := "res://assets/original/scars/"
+## Tiles per side of the grid map (2560 m / 10 m), what `GroundScarRules.grid_for` gives its footprint.
+const GRID := Vector2i(256, 256)
 ## Pixels of the 19 pictures (061S section 1.4).
 const SIZES := {
 	"scar": Vector2i(52, 51), "volc": Vector2i(256, 256), "oils": Vector2i(64, 64), "mean": Vector2i(64, 64),
@@ -50,12 +52,13 @@ func _files() -> Dictionary:
 func _tiles_touched() -> Dictionary:
 	var big := Vector2i(256, 256)
 	var checks := {}
-	checks["offset_25"] = GroundScarRules.tiles_touched(Vector2i(32, 32), big).size() == 25
-	checks["aligned_16"] = GroundScarRules.tiles_touched(Vector2i(128, 64), big).size() == 16
-	checks["small_in_one"] = _same(GroundScarRules.tiles_touched(Vector2i(70, 70), Vector2i(16, 16)), [Vector2i(1, 1)])
-	checks["small_on_corner"] = GroundScarRules.tiles_touched(Vector2i(60, 60), Vector2i(16, 16)).size() == 4
-	checks["off_the_map_left_out"] = _same(GroundScarRules.tiles_touched(Vector2i(-40, -40), Vector2i(64, 64)), [Vector2i(0, 0)])
-	checks["rim"] = _same(GroundScarRules.tiles_touched(Vector2i(256 * 64 - 8, 10), Vector2i(16, 16)), [Vector2i(255, 0)])
+	checks["offset_25"] = GroundScarRules.tiles_touched(Vector2i(32, 32), big, GRID).size() == 25
+	checks["aligned_16"] = GroundScarRules.tiles_touched(Vector2i(128, 64), big, GRID).size() == 16
+	checks["small_in_one"] = _same(GroundScarRules.tiles_touched(Vector2i(70, 70), Vector2i(16, 16), GRID), [Vector2i(1, 1)])
+	checks["small_on_corner"] = GroundScarRules.tiles_touched(Vector2i(60, 60), Vector2i(16, 16), GRID).size() == 4
+	checks["off_the_map_left_out"] = _same(GroundScarRules.tiles_touched(Vector2i(-40, -40), Vector2i(64, 64), GRID), [Vector2i(0, 0)])
+	checks["grid_from_bounds"] = GroundScarRules.grid_for(Rect2(0.0, 0.0, 2560.0, 2560.0)) == GRID and GroundScarRules.grid_for(Rect2(0.0, 0.0, 2561.0, 100.0)) == Vector2i(257, 10)
+	checks["rim"] = _same(GroundScarRules.tiles_touched(Vector2i(256 * 64 - 8, 10), Vector2i(16, 16), GRID), [Vector2i(255, 0)])
 	return _result(checks)
 
 

@@ -85,5 +85,5 @@ func _watch(unit: Node3D) -> void:
 
 
 func _above(unit: Node3D) -> float:
-	var terrain := TerrainShape.of(scene)
+	var terrain := GroundSurface.of(scene)
 	return unit.position.y - terrain.height_at(unit.position.x, unit.position.z)

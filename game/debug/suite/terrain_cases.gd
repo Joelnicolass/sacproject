@@ -1,7 +1,7 @@
 extends "res://debug/suite/zone_case_base.gd"
 
 ## RFC-057 061k-1 cases of rules_suite: the ground that moves. The arithmetic (a shifted corner, a taken-away vertex), the numbers
-## TerrainDisplacement keeps (live stamps leave no trace, a commit adds up, a snapshot copies), Erupt end to end on the map of
+## GroundField keeps (live stamps leave no trace, a commit adds up, a snapshot copies), Erupt end to end on the map of
 ## High Noon (the mound at 4.2 s, the ground back at 5.2 s, the ray of the collision against height_at, the damage, the throw and
 ## the stun), a hole in the collision, and the plants planted again at the new height. No network here (terrain_late_join).
 
@@ -23,7 +23,7 @@ const CASE_CAP_S := 60.0
 
 var _case_started := 0
 var _bed: Node3D
-var _shape: TerrainShape
+var _shape: GroundSurface
 var _collision: TerrainCollision
 ## The Bore cases (they borrow this world); kept here because their Callables do not keep them alive.
 var _bore
@@ -36,7 +36,7 @@ func run(host: Node3D) -> Dictionary:
 	_bed = BED.instantiate() as Node3D
 	_root.add_child(_bed)
 	_note("collision chunks built ms", [snappedf((Time.get_ticks_usec() - started) / 1000.0, 0.1)])
-	_shape = _bed.get_node("Shape") as TerrainShape
+	_shape = _bed.get_node("Shape") as GroundSurface
 	_collision = _bed.get_node("Collision") as TerrainCollision
 	await _frames(2)
 	var only := ""
@@ -84,30 +84,30 @@ func _net() -> Dictionary:
 	var host := server.get_node("Deformer") as TerrainDeformer
 	var first := early.get_node("Deformer") as TerrainDeformer
 	var second := late.get_node("Deformer") as TerrainDeformer
-	var rect := TerrainDisplacement.vertex_rect(CENTER, 35.0)
+	var rect := GroundField.vertex_rect(CENTER, 35.0)
 	var delta := PackedFloat32Array()
 	delta.resize(rect.size.x * rect.size.y)
 	for k in delta.size():
 		delta[k] = 2.0 + sin(float(k))
 	host.commit(rect, delta)
-	first.rpc_commit(host.shape.displacement().rev, "", rect, delta)
+	first.rpc_commit(host.shape.field().rev, "", rect, delta)
 	var hole := TerrainRules.vertex_id(CENTER.x, CENTER.y + 30.0)
 	host.set_removed(hole, true)
-	first.rpc_removed(host.shape.displacement().rev, hole, true)
-	var truth := host.shape.displacement()
-	checks["early_client_same"] = first.shape.displacement().checksum() == truth.checksum() and first.shape.displacement().rev == truth.rev
+	first.rpc_removed(host.shape.field().rev, hole, true)
+	var truth := host.shape.field()
+	checks["early_client_same"] = first.shape.field().checksum() == truth.checksum() and first.shape.field().rev == truth.rev
 	first.rpc_commit(1, "", rect, delta)
-	checks["old_commit_ignored"] = first.shape.displacement().checksum() == truth.checksum()
+	checks["old_commit_ignored"] = first.shape.field().checksum() == truth.checksum()
 	second._on_snapshot({TerrainDeformer.SNAPSHOT_KEY: truth.to_snapshot()})
-	checks["late_client_same"] = second.shape.displacement().checksum() == truth.checksum() and second.shape.displacement().rev == truth.rev
+	checks["late_client_same"] = second.shape.field().checksum() == truth.checksum() and second.shape.field().rev == truth.rev
 	second.rpc_commit(1, "", rect, delta)
-	checks["late_ignores_commit_in_snapshot"] = second.shape.displacement().checksum() == truth.checksum()
+	checks["late_ignores_commit_in_snapshot"] = second.shape.field().checksum() == truth.checksum()
 	var more := PackedFloat32Array([0.5])
 	host.commit(Rect2i(rect.position, Vector2i.ONE), more)
 	for client in [first, second]:
 		client.rpc_commit(truth.rev, "", Rect2i(rect.position, Vector2i.ONE), more)
-	checks["both_follow_after"] = first.shape.displacement().checksum() == truth.checksum() and second.shape.displacement().checksum() == truth.checksum()
-	checks["hole_arrived"] = second.shape.displacement().is_removed(hole) and not second.shape.is_on_ground(CENTER.x + 1.0, CENTER.y + 31.0)
+	checks["both_follow_after"] = first.shape.field().checksum() == truth.checksum() and second.shape.field().checksum() == truth.checksum()
+	checks["hole_arrived"] = second.shape.field().is_removed(hole) and not second.shape.is_on_ground(CENTER.x + 1.0, CENTER.y + 31.0)
 	_note("net crc/rev", [truth.checksum(), truth.rev])
 	for bed in [server, early, late]:
 		bed.queue_free()
@@ -125,7 +125,7 @@ func _rules() -> Dictionary:
 	var inside := (a + b + c) / 3.0
 	var base := TerrainRules.height_in(inside.x, inside.z, index.ground, index.cells)
 	var texels := PackedFloat32Array()
-	texels.resize(TerrainDisplacement.COUNT * 2)
+	texels.resize(GroundField.COUNT * 2)
 	for k in 3:
 		texels[corners[k] * 2] = 5.0
 	var lifted := TerrainRules.height_in(inside.x, inside.z, index.ground, index.cells, texels, corners)
@@ -148,7 +148,7 @@ func _rules() -> Dictionary:
 ## Live stamps are summed again, never added: dropping one leaves exactly the ground it found. Commits add up; a snapshot copies.
 func _displacement() -> Dictionary:
 	var checks := {}
-	var ground := TerrainDisplacement.new()
+	var ground := GroundField.new()
 	var rect := Rect2i(100, 100, 3, 3)
 	var nine := PackedFloat32Array([1, 1, 1, 1, 1, 1, 1, 1, 1])
 	ground.set_live("a", rect, nine)
@@ -166,10 +166,10 @@ func _displacement() -> Dictionary:
 	ground.commit(rect, nine, "c")
 	checks["commit_takes_live_in_one_step"] = ground.at(100 * 256 + 100) == 3.0 and ground.live_count() == 0
 	checks["removed"] = ground.set_removed(5, true) and not ground.set_removed(5, true) and ground.removed_ids() == PackedInt32Array([5])
-	var copy := TerrainDisplacement.new()
+	var copy := GroundField.new()
 	copy.apply_snapshot(ground.to_snapshot())
 	checks["snapshot_copy"] = copy.checksum() == ground.checksum() and copy.rev == ground.rev and copy.at(100 * 256 + 100) == 3.0
-	var rect_far := TerrainDisplacement.vertex_rect(Vector2(1000.0, 1000.0), 25.0)
+	var rect_far := GroundField.vertex_rect(Vector2(1000.0, 1000.0), 25.0)
 	checks["vertex_rect"] = rect_far == Rect2i(97, 97, 7, 7)
 	return _verdict("terrain_displacement", checks)
 
@@ -181,7 +181,7 @@ func _hole() -> Dictionary:
 	var spot := CENTER + Vector2(3.0, 63.0)
 	var base := _shape.height_at(spot.x, spot.y)
 	checks["on_land"] = not is_nan(base) and _collision.chunk_count() > 0
-	var rect := TerrainDisplacement.vertex_rect(spot, 20.0)
+	var rect := GroundField.vertex_rect(spot, 20.0)
 	var delta := PackedFloat32Array()
 	delta.resize(rect.size.x * rect.size.y)
 	delta.fill(4.0)
@@ -217,7 +217,7 @@ func _hole() -> Dictionary:
 func _erupt_ground() -> Dictionary:
 	var checks := {}
 	var wizard := _wizard(1, _far_wizard_spot(), "james", 6)
-	var rev_before := _shape.displacement().rev
+	var rev_before := _shape.field().rev
 	var base_center := _shape.height_at(CENTER.x, CENTER.y)
 	var base_40 := _shape.height_at(CENTER.x + 40.0, CENTER.y)
 	var zone := _erupt(wizard)
@@ -230,14 +230,14 @@ func _erupt_ground() -> Dictionary:
 		await _frames(1)
 	checks["center_15"] = absf(_shape.height_at(CENTER.x, CENTER.y) - base_center - 15.0) < 0.1
 	checks["east_40_is_1_8"] = absf(_shape.height_at(CENTER.x + 40.0, CENTER.y) - base_40 - 1.8) < 0.1
-	checks["only_the_mound_plays_at_4_2"] = _shape.displacement().live_count() == 1
+	checks["only_the_mound_plays_at_4_2"] = _shape.field().live_count() == 1
 	while mound.ticks < OVER_TICKS:
 		await _frames(1)
 	var worst := 0.0
-	for id in TerrainDisplacement.COUNT:
-		worst = maxf(worst, absf(_shape.displacement().at(id)))
-	checks["back_to_zero"] = worst < 0.01 and _shape.displacement().live_count() == 0
-	checks["permanent_untouched"] = _shape.displacement().rev == rev_before
+	for id in GroundField.COUNT:
+		worst = maxf(worst, absf(_shape.field().at(id)))
+	checks["back_to_zero"] = worst < 0.01 and _shape.field().live_count() == 0
+	checks["permanent_untouched"] = _shape.field().rev == rev_before
 	zone.queue_free()
 	wizard.queue_free()
 	await _frames(2)
@@ -298,7 +298,7 @@ func _flora() -> Dictionary:
 	var quality := (load("res://data/look/quality_high.tres") as LookQuality).vegetation_for(config.id)
 	var holder := Node3D.new()
 	_root.add_child(holder)
-	var planter := MeshPlanter.new(config, quality, flora, land, holder)
+	var planter := MeshPlanter.new(config, quality, flora, land.shape, holder)
 	planter.threaded = false
 	var spot := (Vector2(key) + Vector2(0.5, 0.5)) * MeshPlanter.CELL_M
 	var eye := Vector3(spot.x, 30.0, spot.y)
@@ -308,11 +308,11 @@ func _flora() -> Dictionary:
 	var before := MeshPlanter.plan_cell(config, flora, plain, 1.0, key, old_ground, PackedVector4Array())
 	var watch := FloraGroundWatch.new()
 	watch.follow(land.shape)
-	var rect := TerrainDisplacement.vertex_rect(spot, 40.0)
+	var rect := GroundField.vertex_rect(spot, 40.0)
 	var delta := PackedFloat32Array()
 	delta.resize(rect.size.x * rect.size.y)
 	delta.fill(10.0)
-	land.shape.displacement().commit(rect, delta)
+	land.shape.field().commit(rect, delta)
 	land.shape.notify_changed(rect)
 	var after := MeshPlanter.plan_cell(config, flora, plain, 1.0, key, land.shape.sampler(), PackedVector4Array())
 	checks["old_sampler_keeps_old_ground"] = MeshPlanter.plan_cell(config, flora, plain, 1.0, key, old_ground, PackedVector4Array()) == before
@@ -371,7 +371,7 @@ func _volcano_rules() -> Dictionary:
 	checks["picture_center_255"] = picture.get_pixel(16, 16).r8 == 255 and picture.get_pixel(0, 0).r8 == 0
 	var mound := zone.get_node("Mound") as TerrainStamp
 	var reach := (mound.reach.shape as CylinderShape3D)
-	var rect := TerrainDisplacement.vertex_rect(CENTER, reach.radius)
+	var rect := GroundField.vertex_rect(CENTER, reach.radius)
 	checks["mound_rect_33"] = rect.size == Vector2i(33, 33)
 	var flat := PackedFloat32Array()
 	flat.resize(33 * 33)
@@ -399,21 +399,21 @@ func _volcano_rules() -> Dictionary:
 func _volcano_cut() -> Dictionary:
 	var checks := {}
 	var wizard := _wizard(1, _far_wizard_spot(), "pyro", 8)
-	var ground := _shape.displacement()
+	var ground := _shape.field()
 	var rev_before := ground.rev
 	var zone := _volcano(wizard)
 	var mound := zone.get_node("Mound") as TerrainStamp
 	while mound.ticks < 150:
 		await _frames(1)
 	var raised := 0.0
-	for id in TerrainDisplacement.COUNT:
+	for id in GroundField.COUNT:
 		raised = maxf(raised, absf(ground.at(id)))
 	checks["it_rose"] = raised > 20.0 and ground.live_count() == 1
 	zone.cancel()
 	await _frames(3)
 	var worst := 0.0
 	var kept := 0.0
-	for id in TerrainDisplacement.COUNT:
+	for id in GroundField.COUNT:
 		worst = maxf(worst, absf(ground.at(id)))
 		kept = maxf(kept, absf(ground.permanent[id]))
 	_note("cut: raised/after/kept/live", [raised, worst, kept, ground.live_count()])
@@ -431,9 +431,9 @@ func _volcano_cut() -> Dictionary:
 func _volcano_ground() -> Dictionary:
 	var checks := {}
 	var wizard := _wizard(1, _far_wizard_spot(), "pyro", 8)
-	var rect := TerrainDisplacement.vertex_rect(CENTER, 160.0)
+	var rect := GroundField.vertex_rect(CENTER, 160.0)
 	var before := StampRules.ground_under(_shape, rect)
-	var rev_before := _shape.displacement().rev
+	var rev_before := _shape.field().rev
 	var target := before[16 * 33 + 16]
 	var picture := (load(VOLCANO_SHAPE) as Texture2D).get_image()
 	var zone := _volcano(wizard)
@@ -451,19 +451,19 @@ func _volcano_ground() -> Dictionary:
 	var opened := _shape.height_at(CENTER.x, CENTER.y) - target
 	_note("center after the crater (expected 40.86)", [opened])
 	checks["crater_opens_at_the_eruption"] = absf(opened - (51.0 * (1.0 - 0.0125 * (285.0 / 60.0 - 4.4444)) - 10.0)) < 0.3 and crater.ticks > ERUPT_TICKS
-	checks["two_stamps_playing_then_one"] = _shape.displacement().live_count() == 1 and _shape.displacement().rev == rev_before + 1
+	checks["two_stamps_playing_then_one"] = _shape.field().live_count() == 1 and _shape.field().rev == rev_before + 1
 	for stamp in [mound, crater]:
 		(stamp as TerrainStamp).ticks = VOLCANO_OVER_TICKS - 3
 		(stamp as TerrainStamp).synced_ticks = VOLCANO_OVER_TICKS - 3
 	while mound.ticks < VOLCANO_OVER_TICKS + 3:
 		await _frames(1)
-	var ground := _shape.displacement()
+	var ground := _shape.field()
 	var worst := 0.0
 	var at_100 := 0.0
 	var outside := 0.0
-	for id in TerrainDisplacement.COUNT:
-		var x := id % TerrainDisplacement.SIDE
-		var z := id / TerrainDisplacement.SIDE
+	for id in GroundField.COUNT:
+		var x := id % GroundField.SIDE
+		var z := id / GroundField.SIDE
 		if not rect.has_point(Vector2i(x, z)):
 			outside = maxf(outside, absf(ground.permanent[id]))
 			continue

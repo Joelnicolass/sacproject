@@ -385,8 +385,8 @@ func _on_reached_site(errand: CarryErrand) -> void:
 		_waiting.append(errand)
 
 
-func _shape() -> TerrainShape:
-	return TerrainShape.of(self)
+func _shape() -> GroundSurface:
+	return GroundSurface.of(self)
 
 
 func _on_ground(point: Vector3) -> bool:

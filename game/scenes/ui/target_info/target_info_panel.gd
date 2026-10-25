@@ -104,9 +104,13 @@ func screen_rect() -> Rect2:
 	return Rect2(position, size)
 
 
+func _local_slot() -> int:
+	return probe.local_slot if probe != null else 0
+
+
 func _on_hovered_changed(node: Node) -> void:
 	_wait = 0.0
-	_pending = node if TargetInfo.describe(node, MpKit.local_slot()) != null else null
+	_pending = node if TargetInfo.describe(node, _local_slot()) != null else null
 	if _shown != null and _shown != _pending:
 		_hide()
 
@@ -123,7 +127,7 @@ func _try_pin() -> void:
 
 
 func _show(node: Node, pin: bool) -> void:
-	var info := TargetInfo.describe(node, MpKit.local_slot())
+	var info := TargetInfo.describe(node, _local_slot())
 	if info == null:
 		_pending = null
 		return
@@ -158,7 +162,7 @@ func _on_health_changed(_current: float, _maximum: float) -> void:
 	if _shown == null or not is_instance_valid(_shown):
 		_hide()
 		return
-	var info := TargetInfo.describe(_shown, MpKit.local_slot())
+	var info := TargetInfo.describe(_shown, _local_slot())
 	if info == null:
 		_hide()
 		return

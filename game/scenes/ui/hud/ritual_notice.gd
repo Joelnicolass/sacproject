@@ -13,6 +13,8 @@ extends Label
 @export var profaned_text := "UI_RITUAL_PROFANED"
 @export var flash_s := 4.0
 
+## Slot of the player of this process; 0 until `bind` (the dedicated server never binds: nothing shows).
+var local_slot := 0
 var _flash_left := 0.0
 var _flash_text := ""
 ## Rituals seen running, by instance id, so each end is announced once.
@@ -23,10 +25,15 @@ func _ready() -> void:
 	visible = false
 
 
+## The local wizard arrived (MatchWorld.local_wizard_changed).
+func bind(wizard: WizardBody) -> void:
+	local_slot = wizard.owner_slot if wizard != null else 0
+
+
 func _process(delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
-	var slot := MpKit.local_slot()
+	var slot := local_slot
 	if slot <= 0:
 		visible = false
 		return

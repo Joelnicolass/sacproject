@@ -9,6 +9,8 @@ signal local_wizard_changed(wizard: Node3D)
 const MAP_NODE := "Map"
 
 @export var rules: MatchRules
+## The minimap gets the baked terrain of the map. Empty (the minimap was removed): nothing to give it.
+@export var minimap: Minimap
 
 ## The map of this match (set in _enter_tree).
 var map: MapRoot
@@ -62,7 +64,8 @@ func _bind_map() -> void:
 	var population := %Population as MapPopulation
 	population.buildings = map.buildings
 	population.npcs = map.npcs
-	%Minimap.set("terrain_bake", map.minimap_bake)
+	if minimap != null:
+		minimap.terrain_bake = map.minimap_bake
 	$GraphicsApplier.set("rig", map.look)
 
 
@@ -81,7 +84,7 @@ func _ready() -> void:
 	print("mundo listo %d ms" % (Time.get_ticks_msec() - _entered_ms))
 
 
-## The wizard of MpKit.local_slot(); null on the dedicated server or before the spawn arrives.
+## The wizard of this process's player; null on the dedicated server or before the spawn arrives.
 func local_wizard() -> Node3D:
 	if _local_wizard and is_instance_valid(_local_wizard):
 		return _local_wizard
@@ -98,8 +101,6 @@ func _check_local(node: Node) -> void:
 		return
 	_local_wizard = node as Node3D
 	%Camera.set_follow(_local_wizard)
-	%WizardHud.bind(_local_wizard)
-	%SpellBook.bind(_local_wizard)
 	_place_creature.call_deferred()
 	local_wizard_changed.emit(_local_wizard)
 

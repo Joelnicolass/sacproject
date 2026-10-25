@@ -43,6 +43,8 @@ var ability_tag := ""
 var summary: String:
 	get:
 		return _summary()
+## Slot of the player of this process; 0 until `bind` (the dedicated server never binds: the roster stays hidden).
+var local_slot := 0
 ## Cells on show (visible), readable by flows.
 var cells_shown := 0
 ## Lowest health fraction among the cells on show after the last refresh (-1 with none); flows read it.
@@ -201,8 +203,14 @@ func _on_refresh() -> void:
 	last_refresh_us = Time.get_ticks_usec() - started
 
 
+## The local wizard arrived (MatchWorld.local_wizard_changed): the roster shows for its side.
+func bind(wizard: WizardBody) -> void:
+	local_slot = wizard.owner_slot if wizard != null else 0
+	_update_visible()
+
+
 func _update_visible() -> void:
-	visible = MpKit.local_slot() > 0
+	visible = local_slot > 0
 
 
 func _summary() -> String:

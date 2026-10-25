@@ -6,6 +6,8 @@ extends Node
 ## the spot). A left click with nothing armed does nothing (P2): the original keeps the camera on the wizard and has no
 ## box here.
 
+## The minimap that gives the points. Empty (the minimap was removed): this does nothing.
+@export var minimap: Minimap
 @export var armed: ArmedCommand
 @export var ray: PointerRay
 @export var spells: SpellCommand
@@ -14,7 +16,8 @@ extends Node
 
 
 func _ready() -> void:
-	(%Minimap as Minimap).ground_pointed.connect(_on_pointed)
+	if minimap != null:
+		minimap.ground_pointed.connect(_on_pointed)
 
 
 func _on_pointed(point: Vector3, button: int) -> void:

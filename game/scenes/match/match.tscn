@@ -101,9 +101,10 @@
 bg_color = Color(1, 1, 1, 0)
 
 
-[node name="HighNoon" type="Node3D" unique_id=741096982]
+[node name="HighNoon" type="Node3D" unique_id=741096982 node_paths=PackedStringArray("minimap")]
 script = ExtResource("1_world")
 rules = ExtResource("12_rules")
+minimap = NodePath("Hud/Minimap")
 
 
 [node name="Camera" type="Camera3D" parent="." unique_id=1948599183 node_paths=PackedStringArray("edge_area", "wheel_blockers", "shake")]
@@ -259,8 +260,9 @@ orders = NodePath("OrderCommand")
 abilities = NodePath("AbilityCommand")
 
 
-[node name="PointerRay" type="Node" parent="MatchCommand" unique_id=1625250101]
+[node name="PointerRay" type="Node" parent="MatchCommand" unique_id=1625250101 node_paths=PackedStringArray("minimap")]
 script = ExtResource("ef25_pointer_ray")
+minimap = NodePath("../../Hud/Minimap")
 
 
 [node name="CommandFeedback" type="Node" parent="MatchCommand" unique_id=1625258020]
@@ -271,14 +273,16 @@ script = ExtResource("ef25_command_feedback")
 script = ExtResource("ef25_armed_command")
 feedback = NodePath("../CommandFeedback")
 
-[node name="SpellCommand" type="Node" parent="MatchCommand" unique_id=1625273858 node_paths=PackedStringArray("armed", "ray", "feedback")]
+[node name="SpellCommand" type="Node" parent="MatchCommand" unique_id=1625273858 node_paths=PackedStringArray("armed", "ray", "feedback", "book")]
 script = ExtResource("ef25_spell_command")
+book = NodePath("../../Hud/SpellBook")
 armed = NodePath("../ArmedCommand")
 ray = NodePath("../PointerRay")
 feedback = NodePath("../CommandFeedback")
 
-[node name="AbilityCommand" type="Node" parent="MatchCommand" unique_id=1625281777 node_paths=PackedStringArray("armed", "ray", "feedback")]
+[node name="AbilityCommand" type="Node" parent="MatchCommand" unique_id=1625281777 node_paths=PackedStringArray("armed", "ray", "feedback", "roster")]
 script = ExtResource("ef25_ability_command")
+roster = NodePath("../../Hud/SelectionRoster")
 armed = NodePath("../ArmedCommand")
 ray = NodePath("../PointerRay")
 feedback = NodePath("../CommandFeedback")
@@ -302,8 +306,9 @@ abilities = NodePath("../AbilityCommand")
 orders = NodePath("../OrderCommand")
 group_keys = NodePath("../GroupKeys")
 
-[node name="MinimapPointing" type="Node" parent="MatchCommand" unique_id=1625313453 node_paths=PackedStringArray("armed", "ray", "spells", "abilities", "orders")]
+[node name="MinimapPointing" type="Node" parent="MatchCommand" unique_id=1625313453 node_paths=PackedStringArray("minimap", "armed", "ray", "spells", "abilities", "orders")]
 script = ExtResource("ef25_minimap_pointing")
+minimap = NodePath("../../Hud/Minimap")
 armed = NodePath("../ArmedCommand")
 ray = NodePath("../PointerRay")
 spells = NodePath("../SpellCommand")
@@ -503,3 +508,10 @@ camera = NodePath("../Camera")
 
 [node name="AmbienceDirector" parent="." node_paths=PackedStringArray("biome") instance=ExtResource("a052_ambience")]
 biome = NodePath("../MatchBiome")
+
+[connection signal="local_wizard_changed" from="." to="Hud/WizardHud" method="bind"]
+[connection signal="local_wizard_changed" from="." to="Hud/SpellBook" method="bind"]
+[connection signal="local_wizard_changed" from="." to="Hud/SelectionRoster" method="bind"]
+[connection signal="local_wizard_changed" from="." to="Hud/Minimap" method="bind"]
+[connection signal="local_wizard_changed" from="." to="Hud/RitualNotice" method="bind"]
+[connection signal="local_wizard_changed" from="." to="Hud/TargetProbe" method="bind"]

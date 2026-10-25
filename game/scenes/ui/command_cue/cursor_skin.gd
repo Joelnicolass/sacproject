@@ -55,6 +55,7 @@ func _ready() -> void:
 		return
 	if probe:
 		probe.kind_changed.connect(_refresh.unbind(1))
+		probe.local_slot_changed.connect(_refresh.unbind(1))
 	if command_log:
 		command_log.armed_changed.connect(_refresh.unbind(2))
 	get_viewport().size_changed.connect(_refresh)
@@ -72,7 +73,7 @@ func _exit_tree() -> void:
 func _refresh() -> void:
 	if not enabled or cues == null:
 		return
-	if MpKit.local_slot() <= 0:
+	if probe == null or probe.local_slot <= 0:
 		if not _announced:
 			_announced = true
 			print("CursorSkin: sin jugador local, no se toca el cursor del sistema")

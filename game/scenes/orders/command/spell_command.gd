@@ -11,12 +11,17 @@ const _SPELL_BOOK := preload("res://scenes/ui/spell_book/spell_book.gd")
 @export var armed: ArmedCommand
 @export var ray: PointerRay
 @export var feedback: CommandFeedback
+## The wizard's book (spell_book.gd). Empty (the book was removed): the keys do nothing.
+@export var book: Control
 
 @onready var _log: CommandLog = %Battle
-@onready var _book: _SPELL_BOOK = %SpellBook
+var _book: _SPELL_BOOK
 
 
 func _ready() -> void:
+	_book = book as _SPELL_BOOK
+	if _book == null:
+		return
 	_book.spell_pressed.connect(arm_spell)
 	_book.creature_pressed.connect(summon)
 	_book.structure_pressed.connect(arm_structure)
@@ -24,7 +29,7 @@ func _ready() -> void:
 
 ## The key of a spell or structure entry: the book's open tab says which one it is.
 func arm_by_key(index: int) -> void:
-	if int(_book.tab) == _SPELL_BOOK.Tab.STRUCTURE:
+	if _book != null and int(_book.tab) == _SPELL_BOOK.Tab.STRUCTURE:
 		arm_structure(index)
 	else:
 		arm_spell(index)
@@ -32,7 +37,8 @@ func arm_by_key(index: int) -> void:
 
 ## sacengine: a creature has no target; it appears in front of the wizard at once.
 func summon(index: int) -> void:
-	_book.show_tab(_SPELL_BOOK.Tab.CREATURE)
+	if _book != null:
+		_book.show_tab(_SPELL_BOOK.Tab.CREATURE)
 	var caster := _caster_ready()
 	if caster == null:
 		return
@@ -50,7 +56,8 @@ func summon(index: int) -> void:
 
 ## sacengine selectSpell: an unaffordable or cooling spell is not armed.
 func arm_spell(index: int) -> void:
-	_book.show_tab(_SPELL_BOOK.Tab.SPELL)
+	if _book != null:
+		_book.show_tab(_SPELL_BOOK.Tab.SPELL)
 	var caster := _caster_ready()
 	if caster == null:
 		return
@@ -81,7 +88,8 @@ func _cast_on_self(caster: Caster, spell: SpellType) -> void:
 
 ## Structure tab entries are armed here and applied on the next left click.
 func arm_structure(index: int) -> void:
-	_book.show_tab(_SPELL_BOOK.Tab.STRUCTURE)
+	if _book != null:
+		_book.show_tab(_SPELL_BOOK.Tab.STRUCTURE)
 	var caster := _caster_ready()
 	if caster == null:
 		return

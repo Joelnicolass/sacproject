@@ -13,6 +13,8 @@ extends Node
 signal kind_changed(kind: StringName)
 ## The body under the pointer changed (null: none). Emitted on the sample that saw the change.
 signal hovered_changed(node: Node)
+## The local player's slot arrived (`bind`). CursorSkin measures the cursor again.
+signal local_slot_changed(slot: int)
 
 const NONE := &"none"
 const GROUND := &"ground"
@@ -36,6 +38,8 @@ const ORDER_TARGETS: PackedStringArray = [
 ## The world camera: its `debug_pointer` is where flows aim.
 @export var camera: Camera3D
 
+## Slot of the player of this process; 0 until `bind` (and for good on the dedicated server: it never binds).
+var local_slot := 0
 ## Class under the pointer at the last sample.
 var kind: StringName = NONE
 ## Where it was sampled (screen pixels).
@@ -59,9 +63,15 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 
+## The local wizard arrived (MatchWorld.local_wizard_changed): from now on the pointer is sampled for its side.
+func bind(wizard: WizardBody) -> void:
+	local_slot = wizard.owner_slot if wizard != null else 0
+	local_slot_changed.emit(local_slot)
+
+
 func _process(delta: float) -> void:
-	# The dedicated server has no player (local_slot() == 0): nothing to point at.
-	if MpKit.local_slot() <= 0:
+	# The dedicated server has no player (local_slot == 0): nothing to point at.
+	if local_slot <= 0:
 		return
 	_since += delta
 	if _since < 1.0 / maxf(hover_hz, 1.0):
@@ -119,7 +129,7 @@ func _classify(screen: Vector2) -> StringName:
 	if node.is_in_group("soul_target"):
 		var soul := node.get_parent()
 		_picked = soul
-		return &"own_soul" if soul != null and _slot_of(soul) == MpKit.local_slot() else &"soul"
+		return &"own_soul" if soul != null and _slot_of(soul) == local_slot else &"soul"
 	if node.is_in_group("corpse"):
 		_picked = node
 		return &"corpse"
@@ -160,7 +170,7 @@ static func _slot_of(node: Node) -> int:
 
 func _with_owner(node: Node, noun: String) -> StringName:
 	var slot := _slot_of(node)
-	if slot > 0 and slot == MpKit.local_slot():
+	if slot > 0 and slot == local_slot:
 		return StringName("own_" + noun)
 	if slot <= 0:
 		return StringName("neutral_" + noun)

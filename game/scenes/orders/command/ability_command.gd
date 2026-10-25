@@ -11,13 +11,16 @@ const _SELECTION := preload("res://scenes/orders/selection.gd")
 @export var armed: ArmedCommand
 @export var ray: PointerRay
 @export var feedback: CommandFeedback
+## The roster whose ability icon uses the ability. Empty (the roster was removed): only the keys use it.
+@export var roster: SelectionRoster
 
 @onready var _log: CommandLog = %Battle
 @onready var _selection: _SELECTION = %Selection
 
 
 func _ready() -> void:
-	%SelectionRoster.ability_pressed.connect(use)
+	if roster != null:
+		roster.ability_pressed.connect(use)
 
 
 ## Ctrl+Q / Shift+B and the roster's ability icon.

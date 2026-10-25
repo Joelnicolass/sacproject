@@ -21,6 +21,9 @@ signal ground_pointed(point: Vector3, button: int)
 ## Height the ground ray starts from (meters); the map is far lower.
 const GROUND_RAY_TOP := 1500.0
 
+## Slot of the player of this process (0 until `bind`); the markers read it to tell your things from the foe's.
+var local_slot := 0
+
 @export_group("Sockets")
 ## The world camera (WorldCamera). Reads its turn and the wizard it follows.
 @export var camera: Camera3D
@@ -59,13 +62,22 @@ func _ready() -> void:
 		zoom = _zoom_of(view.view_radius_m)
 	if Engine.is_editor_hint():
 		return
-	# No local player on the dedicated server: nothing to show.
-	if MpKit.local_slot() <= 0:
-		visible = false
-		set_process(false)
-		set_process_unhandled_input(false)
-		return
-	_update_state()
+	# No local player until `bind`, and never on the dedicated server: nothing to show.
+	_set_active(false)
+
+
+## The local wizard arrived (MatchWorld.local_wizard_changed): the map shows for its side.
+func bind(wizard: WizardBody) -> void:
+	local_slot = wizard.owner_slot if wizard != null else 0
+	_set_active(local_slot > 0)
+	if local_slot > 0:
+		_update_state()
+
+
+func _set_active(on: bool) -> void:
+	visible = on
+	set_process(on)
+	set_process_unhandled_input(on)
 
 
 func _process(_delta: float) -> void:
@@ -169,7 +181,7 @@ func _update_state() -> void:
 		var eye := Vector2(camera.global_position.x, camera.global_position.z)
 		target = eye
 		var followed: Variant = camera.get("follow") if "follow" in camera else null
-		# The followed wizard can be freed (e.g. after MpKit.leave()) before the camera drops it.
+		# The followed wizard can be freed (e.g. after leaving the match) before the camera drops it.
 		if is_instance_valid(followed) and followed is Node3D and (followed as Node3D).is_inside_tree():
 			target = Vector2((followed as Node3D).global_position.x, (followed as Node3D).global_position.z)
 		var lead := eye.distance_to(target) * (view.lead_factor if view else 0.0)

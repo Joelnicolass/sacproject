@@ -54,6 +54,8 @@ func inspect_house() -> void:
 
 
 func _run() -> void:
+	# The scene has no MatchWorld: the probe gets the slot of this process as the match would hand it over.
+	probe.local_slot = MpKit.local_slot()
 	await _wait(0.3)
 	var house_health := house.get_node("Health") as Health
 	var cases := [

@@ -75,3 +75,6 @@ camera = NodePath("../../OrdersGroup/HighNoon/Camera")
 terrain_bake = NodePath("../../OrdersGroup/HighNoon/Map/MinimapBake")
 structures_root = NodePath("../../OrdersGroup/HighNoon/Structures")
 view = ExtResource("5_north")
+
+[connection signal="local_wizard_changed" from="OrdersGroup/HighNoon" to="Agent/CloseMinimap" method="bind"]
+[connection signal="local_wizard_changed" from="OrdersGroup/HighNoon" to="Agent/NorthMinimap" method="bind"]

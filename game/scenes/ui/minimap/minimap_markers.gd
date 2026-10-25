@@ -28,7 +28,7 @@ func _draw() -> void:
 		return
 	var started := Time.get_ticks_usec()
 	var style := minimap.style
-	var slot := MpKit.local_slot()
+	var slot := minimap.local_slot
 	icons_drawn = 0
 	arrows_drawn = 0
 	local_wizard_icon = Vector2(INF, INF)

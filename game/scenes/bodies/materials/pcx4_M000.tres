@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/pcx4/M000.png" id="1_vn7at"]
+
+[resource]
+resource_name = "pcx4_M000"
+albedo_texture = ExtResource("1_vn7at")
+roughness = 0.85

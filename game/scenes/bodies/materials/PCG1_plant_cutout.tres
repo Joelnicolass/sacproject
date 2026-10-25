@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/PCG1/plant.png" id="1_l1m3n"]
+
+[resource]
+resource_name = "PCG1_plant_cutout"
+transparency = 2
+alpha_scissor_threshold = 0.4
+alpha_antialiasing_mode = 0
+albedo_texture = ExtResource("1_l1m3n")
+roughness = 0.85

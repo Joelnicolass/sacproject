@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/JAW3/plant.png" id="1_5fq1l"]
+
+[resource]
+resource_name = "JAW3_plant_cutout"
+transparency = 2
+alpha_scissor_threshold = 0.4
+alpha_antialiasing_mode = 0
+albedo_texture = ExtResource("1_5fq1l")
+roughness = 0.85

@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/puac/M000.png" id="1_ms74l"]
+
+[resource]
+resource_name = "puac_M000"
+albedo_texture = ExtResource("1_ms74l")
+roughness = 0.85

@@ -1,8 +1,10 @@
-[gd_resource type="Resource" script_class="VegetationSpecies" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="VegetationSpecies" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/look/vegetation/vegetation_species.gd" id="1_species"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/PCF2.res" id="mesh_pcf2"]
 
 [resource]
 script = ExtResource("1_species")
 tag = "PCF2"
 tint_cluster_m = 20.0
+mesh = ExtResource("mesh_pcf2")

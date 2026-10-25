@@ -1,8 +1,7 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/drops/zone_drop.gd" id="drop"]
 [ext_resource type="Script" path="res://scenes/fx/spinner.gd" id="spinner"]
-[ext_resource type="Script" path="res://scenes/spells/carrier/prop_look.gd" id="prop"]
 [ext_resource type="Script" path="res://scenes/fx/fx_trail.gd" id="trail"]
 [ext_resource type="Script" path="res://scenes/spells/drops/drop_blast.gd" id="blast"]
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="ptype"]
@@ -14,6 +13,7 @@
 [ext_resource type="Script" path="res://scenes/map/terrain/terrain_stamp.gd" id="stamp"]
 [ext_resource type="Script" path="res://scenes/map/terrain/stamp_profile.gd" id="profile"]
 [ext_resource type="Script" path="res://scenes/spells/drops/drop_dent.gd" id="dent"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/rock.res" id="mesh_rock"]
 
 [sub_resource type="Curve" id="Curve_dent_radial"]
 _limits = [-1.0, 0.0, 0.0, 1.0]
@@ -47,8 +47,7 @@ script = ExtResource("spinner")
 
 [node name="Rock" type="MeshInstance3D" parent="Spin"]
 transform = Transform3D(1.875, 0, 0, 0, 1.875, 0, 0, 0, 1.875, 0, 0, 0)
-script = ExtResource("prop")
-model = "rock"
+mesh = ExtResource("mesh_rock")
 
 [node name="Trail" type="Node3D" parent="."]
 script = ExtResource("trail")

@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/pcfn/M000.png" id="1_kgoaf"]
+
+[resource]
+resource_name = "pcfn_M000"
+albedo_texture = ExtResource("1_kgoaf")
+roughness = 0.85

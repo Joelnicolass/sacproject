@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/e2ux/M000.png" id="1_yiava"]
+
+[resource]
+resource_name = "e2ux_M000"
+albedo_texture = ExtResource("1_yiava")
+roughness = 0.85

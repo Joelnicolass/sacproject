@@ -107,7 +107,7 @@ func _bake(key: String) -> void:
 	var paths: Array = []
 	var untextured: Array = []
 	for i in baked.get_surface_count():
-		var label := source.surface_get_name(i)
+		var label: String = source.surface_get_name(i)
 		var built := OriginalMaterial.for_label(key, label)
 		if built == null:
 			untextured.append(label)

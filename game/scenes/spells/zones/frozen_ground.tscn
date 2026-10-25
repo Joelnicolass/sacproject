@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="1_zone"]
 [ext_resource type="Resource" path="res://data/catalog/spells/zorf.tres" id="2_spell"]
@@ -18,6 +18,7 @@
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
 [ext_resource type="Resource" path="res://data/audio/cues/frozen_ground_cast.tres" id="cue_frozen_ground_cast"]
 [ext_resource type="Resource" path="res://data/audio/cues/frozen_ground_hit.tres" id="cue_frozen_ground_hit"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/sbll.res" id="mesh_sbll"]
 
 [sub_resource type="ShaderMaterial" id="Mat_ice"]
 shader = ExtResource("9_shader")
@@ -40,6 +41,7 @@ shards = Array[ExtResource("7_ptype")]([ExtResource("5_burst"), ExtResource("6_b
 
 [node name="Ball" type="MeshInstance3D" parent="Snowball"]
 cast_shadow = 0
+mesh = ExtResource("mesh_sbll")
 
 [node name="Ice" type="MeshInstance3D" parent="." node_paths=PackedStringArray("zone")]
 editor_description = "El hielo pegado al suelo (icec, alfa 0,2, energia 10). El radio y lo ya roto los pone IcePatch por instancia. `lift_m`: a cuanta altura flota sobre el terreno."

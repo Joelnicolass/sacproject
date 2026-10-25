@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/mmx3/M000.png" id="1_tgpwo"]
+
+[resource]
+resource_name = "mmx3_M000"
+albedo_texture = ExtResource("1_tgpwo")
+roughness = 0.85

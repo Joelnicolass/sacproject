@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/esb1/M000.png" id="1_qm55p"]
+
+[resource]
+resource_name = "esb1_M000"
+albedo_texture = ExtResource("1_qm55p")
+roughness = 0.85

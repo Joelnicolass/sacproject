@@ -2,7 +2,9 @@
 
 [ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_building"]
 [ext_resource type="Resource" path="res://data/buildings/charnel_mard.tres" id="2_type"]
-[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/marb.res" id="mesh_marb"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/marm.res" id="mesh_marm"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/mars.res" id="mesh_mars"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_body"]
 size = Vector3(4, 4, 4)
@@ -13,52 +15,40 @@ type = ExtResource("2_type")
 [node name="Base" type="Node3D" parent="Visuals"]
 
 [node name="Mesh" type="MeshInstance3D" parent="Visuals/Base"]
-script = ExtResource("1_visual")
-model = "marb"
-stand_on_feet = false
+mesh = ExtResource("mesh_marb")
 
 [node name="Main" type="Node3D" parent="Visuals"]
 
 [node name="Mesh" type="MeshInstance3D" parent="Visuals/Main"]
-script = ExtResource("1_visual")
-model = "marm"
-stand_on_feet = false
+mesh = ExtResource("mesh_marm")
 
 [node name="Str1" type="Node3D" parent="Visuals"]
 position = Vector3(-20, 0, -20)
 rotation = Vector3(0, -0.7853982, 0)
 
 [node name="Mesh" type="MeshInstance3D" parent="Visuals/Str1"]
-script = ExtResource("1_visual")
-model = "mars"
-stand_on_feet = false
+mesh = ExtResource("mesh_mars")
 
 [node name="Str2" type="Node3D" parent="Visuals"]
 position = Vector3(20, 0, -20)
 rotation = Vector3(0, -2.3561945, 0)
 
 [node name="Mesh" type="MeshInstance3D" parent="Visuals/Str2"]
-script = ExtResource("1_visual")
-model = "mars"
-stand_on_feet = false
+mesh = ExtResource("mesh_mars")
 
 [node name="Str3" type="Node3D" parent="Visuals"]
 position = Vector3(20, 0, 20)
 rotation = Vector3(0, -3.9269907, 0)
 
 [node name="Mesh" type="MeshInstance3D" parent="Visuals/Str3"]
-script = ExtResource("1_visual")
-model = "mars"
-stand_on_feet = false
+mesh = ExtResource("mesh_mars")
 
 [node name="Str4" type="Node3D" parent="Visuals"]
 position = Vector3(-20, 0, 20)
 rotation = Vector3(0, -5.497787, 0)
 
 [node name="Mesh" type="MeshInstance3D" parent="Visuals/Str4"]
-script = ExtResource("1_visual")
-model = "mars"
-stand_on_feet = false
+mesh = ExtResource("mesh_mars")
 
 [node name="Collision" parent="." index="1"]
 position = Vector3(0, 2, 0)

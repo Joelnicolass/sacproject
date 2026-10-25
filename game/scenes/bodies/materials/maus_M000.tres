@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/maus/M000.png" id="1_t5c6j"]
+
+[resource]
+resource_name = "maus_M000"
+albedo_texture = ExtResource("1_t5c6j")
+roughness = 0.85

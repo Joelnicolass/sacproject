@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/ctx1/M000.png" id="1_02y6c"]
+
+[resource]
+resource_name = "ctx1_M000"
+albedo_texture = ExtResource("1_02y6c")
+roughness = 0.85

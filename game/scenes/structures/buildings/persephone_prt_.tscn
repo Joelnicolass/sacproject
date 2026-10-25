@@ -2,7 +2,9 @@
 
 [ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_building"]
 [ext_resource type="Resource" path="res://data/buildings/persephone_prt_.tres" id="2_type"]
-[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/prt1.res" id="mesh_prt1"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/prt2.res" id="mesh_prt2"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/prt3.res" id="mesh_prt3"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_body"]
 size = Vector3(4, 4, 4)
@@ -13,40 +15,30 @@ type = ExtResource("2_type")
 [node name="Base" type="Node3D" parent="Visuals"]
 
 [node name="Mesh" type="MeshInstance3D" parent="Visuals/Base"]
-script = ExtResource("1_visual")
-model = "prt1"
-stand_on_feet = false
+mesh = ExtResource("mesh_prt1")
 
 [node name="Sat1" type="Node3D" parent="Visuals"]
 
 [node name="Mesh" type="MeshInstance3D" parent="Visuals/Sat1"]
-script = ExtResource("1_visual")
-model = "prt2"
-stand_on_feet = false
+mesh = ExtResource("mesh_prt2")
 
 [node name="Sat2" type="Node3D" parent="Visuals"]
 rotation = Vector3(0, -1.5707964, 0)
 
 [node name="Mesh" type="MeshInstance3D" parent="Visuals/Sat2"]
-script = ExtResource("1_visual")
-model = "prt2"
-stand_on_feet = false
+mesh = ExtResource("mesh_prt2")
 
 [node name="Sat3" type="Node3D" parent="Visuals"]
 rotation = Vector3(0, -3.1415927, 0)
 
 [node name="Mesh" type="MeshInstance3D" parent="Visuals/Sat3"]
-script = ExtResource("1_visual")
-model = "prt3"
-stand_on_feet = false
+mesh = ExtResource("mesh_prt3")
 
 [node name="Sat4" type="Node3D" parent="Visuals"]
 rotation = Vector3(0, -4.712389, 0)
 
 [node name="Mesh" type="MeshInstance3D" parent="Visuals/Sat4"]
-script = ExtResource("1_visual")
-model = "prt2"
-stand_on_feet = false
+mesh = ExtResource("mesh_prt2")
 
 [node name="Collision" parent="." index="1"]
 position = Vector3(0, 2, 0)

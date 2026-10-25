@@ -12,6 +12,8 @@ const SPECIES_DIR := "res://data/vegetation/species/"
 const SHOTS_DIR := "res://data/shots/"
 const SCAN_DIRS: PackedStringArray = ["res://scenes/", "res://data/"]
 const MAX_LINES := 12
+## Meshes the original draws without a texture (their label M000 has none in textures/index.json): no material, as before 055s.
+const UNTEXTURED: PackedStringArray = ["bold.res", "sbll.res"]
 
 
 func run(_host: Node) -> Dictionary:
@@ -31,6 +33,7 @@ func run(_host: Node) -> Dictionary:
 		var dressed := true
 		for i in mesh.get_surface_count():
 			dressed = dressed and mesh.surface_get_material(i) != null
+		dressed = dressed or file in UNTEXTURED
 		with_mesh += 1 if dressed else 0
 		if not dressed:
 			_note(notes, "%s: a surface has no material" % file)

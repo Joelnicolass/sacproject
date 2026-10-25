@@ -2,7 +2,9 @@
 
 [ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_building"]
 [ext_resource type="Resource" path="res://data/buildings/charnel_cmf_.tres" id="2_type"]
-[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/cmfb.res" id="mesh_cmfb"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/cmfg.res" id="mesh_cmfg"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/cmfp.res" id="mesh_cmfp"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_body"]
 size = Vector3(4, 4, 4)
@@ -13,23 +15,17 @@ type = ExtResource("2_type")
 [node name="Base" type="Node3D" parent="Visuals"]
 
 [node name="Mesh" type="MeshInstance3D" parent="Visuals/Base"]
-script = ExtResource("1_visual")
-model = "cmfb"
-stand_on_feet = false
+mesh = ExtResource("mesh_cmfb")
 
 [node name="Gun" type="Node3D" parent="Visuals"]
 
 [node name="Mesh" type="MeshInstance3D" parent="Visuals/Gun"]
-script = ExtResource("1_visual")
-model = "cmfg"
-stand_on_feet = false
+mesh = ExtResource("mesh_cmfg")
 
 [node name="Pivt" type="Node3D" parent="Visuals"]
 
 [node name="Mesh" type="MeshInstance3D" parent="Visuals/Pivt"]
-script = ExtResource("1_visual")
-model = "cmfp"
-stand_on_feet = false
+mesh = ExtResource("mesh_cmfp")
 
 [node name="Collision" parent="." index="1"]
 position = Vector3(0, 2, 0)

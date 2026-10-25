@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/mars/M000.png" id="1_n6rwr"]
+
+[resource]
+resource_name = "mars_M000"
+albedo_texture = ExtResource("1_n6rwr")
+roughness = 0.85

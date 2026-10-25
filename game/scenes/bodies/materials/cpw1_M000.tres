@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/cpw1/M000.png" id="1_hruje"]
+
+[resource]
+resource_name = "cpw1_M000"
+albedo_texture = ExtResource("1_hruje")
+roughness = 0.85

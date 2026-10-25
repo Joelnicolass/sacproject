@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/CAP1/plant.png" id="1_auhn3"]
+
+[resource]
+resource_name = "CAP1_plant"
+albedo_texture = ExtResource("1_auhn3")
+roughness = 0.85

@@ -1,6 +1,5 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=14 format=3]
 
-[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
 [ext_resource type="Script" path="res://scenes/map/props/mana_source.gd" id="2_source"]
 [ext_resource type="Resource" path="res://data/match_rules.tres" id="3_rules"]
 [ext_resource type="Script" path="res://scenes/map/props/altar.gd" id="4_altar"]
@@ -9,6 +8,9 @@
 [ext_resource type="Script" path="res://scenes/spells/guardian/guard_post.gd" id="7_post"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="8_sound"]
 [ext_resource type="Resource" path="res://data/audio/cues/altar_loop.tres" id="cue_altar_loop"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/alba.res" id="mesh_alba"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/alpi.res" id="mesh_alpi"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/alto.res" id="mesh_alto"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_base"]
 height = 3.2
@@ -31,46 +33,34 @@ loop_sound = NodePath("LoopSound")
 [node name="Visuals" type="Node3D" parent="."]
 
 [node name="Base" type="MeshInstance3D" parent="Visuals"]
-script = ExtResource("1_visual")
-model = "alba"
-stand_on_feet = false
+mesh = ExtResource("mesh_alba")
 
 [node name="Pillar1" type="Node3D" parent="Visuals"]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 20, 0, 20)
 
 [node name="Visual" type="MeshInstance3D" parent="Visuals/Pillar1"]
-script = ExtResource("1_visual")
-model = "alpi"
-stand_on_feet = false
+mesh = ExtResource("mesh_alpi")
 
 [node name="Pillar2" type="Node3D" parent="Visuals"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, 20)
 
 [node name="Visual" type="MeshInstance3D" parent="Visuals/Pillar2"]
-script = ExtResource("1_visual")
-model = "alpi"
-stand_on_feet = false
+mesh = ExtResource("mesh_alpi")
 
 [node name="Pillar3" type="Node3D" parent="Visuals"]
 transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 20, 0, -20)
 
 [node name="Visual" type="MeshInstance3D" parent="Visuals/Pillar3"]
-script = ExtResource("1_visual")
-model = "alpi"
-stand_on_feet = false
+mesh = ExtResource("mesh_alpi")
 
 [node name="Pillar4" type="Node3D" parent="Visuals"]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -20, 0, -20)
 
 [node name="Visual" type="MeshInstance3D" parent="Visuals/Pillar4"]
-script = ExtResource("1_visual")
-model = "alpi"
-stand_on_feet = false
+mesh = ExtResource("mesh_alpi")
 
 [node name="Top" type="MeshInstance3D" parent="Visuals"]
-script = ExtResource("1_visual")
-model = "alto"
-stand_on_feet = false
+mesh = ExtResource("mesh_alto")
 
 [node name="BaseCollision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)

@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
 [ext_resource type="Script" path="res://scenes/look/grass/vegetation_clear.gd" id="2_clear"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pcr2.res" id="mesh_pcr2"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_rock"]
 size = Vector3(6.879, 10.19, 7.366)
@@ -11,9 +11,7 @@ collision_layer = 1
 collision_mask = 0
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
-script = ExtResource("1_visual")
-model = "pcr2"
-stand_on_feet = false
+mesh = ExtResource("mesh_pcr2")
 
 [node name="Collision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.582, 3.094, 0.127)

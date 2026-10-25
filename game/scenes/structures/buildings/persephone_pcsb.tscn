@@ -2,8 +2,8 @@
 
 [ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_building"]
 [ext_resource type="Resource" path="res://data/buildings/persephone_pcsb.tres" id="2_type"]
-[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
 [ext_resource type="Script" path="res://scenes/look/grass/vegetation_clear.gd" id="3_clear"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pcsb.res" id="mesh_pcsb"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_body"]
 size = Vector3(1140.174, 1067.865, 1134.509)
@@ -14,9 +14,7 @@ type = ExtResource("2_type")
 [node name="Base" type="Node3D" parent="Visuals"]
 
 [node name="Mesh" type="MeshInstance3D" parent="Visuals/Base"]
-script = ExtResource("1_visual")
-model = "pcsb"
-stand_on_feet = false
+mesh = ExtResource("mesh_pcsb")
 
 [node name="VegetationClear" type="Node3D" parent="Visuals"]
 position = Vector3(-12.218018, 0, -0.90948486)

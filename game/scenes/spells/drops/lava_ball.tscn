@@ -1,8 +1,7 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/drops/zone_drop.gd" id="drop"]
 [ext_resource type="Script" path="res://scenes/fx/spinner.gd" id="spinner"]
-[ext_resource type="Script" path="res://scenes/spells/carrier/prop_look.gd" id="prop"]
 [ext_resource type="Script" path="res://scenes/fx/fx_trail.gd" id="trail"]
 [ext_resource type="Script" path="res://scenes/spells/drops/drop_blast.gd" id="blast"]
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="ptype"]
@@ -12,6 +11,7 @@
 [ext_resource type="Resource" path="res://data/fx/fireball_smoke.tres" id="b4"]
 [ext_resource type="Resource" path="res://data/fx/fire.tres" id="fire"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="light"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/rock.res" id="mesh_rock"]
 
 [node name="LavaBall" type="Node3D"]
 editor_description = "Una bola de lava del Volcano: una roca que sale de la boca (hasta 120 m sobre el suelo) con la velocidad del hechizo (30 m/s) inclinada hacia arriba para compensar la gravedad (30 m/s²), deja un rastro de fuego y explota al tocar el suelo o la primera criatura (caja de 2 m): el daño del hechizo en el golpe y en la salpicadura de 10 m, con fuego de 1 s. Vive 20 s como mucho."
@@ -27,8 +27,7 @@ script = ExtResource("spinner")
 [node name="Rock" type="MeshInstance3D" parent="Spin"]
 editor_description = "La roca de la bola (el modelo `rock`); su tamaño es la escala de este nodo."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-script = ExtResource("prop")
-model = "rock"
+mesh = ExtResource("mesh_rock")
 
 [node name="Trail" type="Node3D" parent="."]
 script = ExtResource("trail")

@@ -1,9 +1,8 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/carrier/spell_carrier.gd" id="1_carrier"]
 [ext_resource type="Script" path="res://scenes/spells/carrier/soul_fetch.gd" id="2_fetch"]
 [ext_resource type="Script" path="res://scenes/spells/carrier/carrier_pulse.gd" id="3_pulse"]
-[ext_resource type="Script" path="res://scenes/spells/carrier/prop_look.gd" id="4_prop"]
 [ext_resource type="Script" path="res://scenes/fx/sprite_emitter.gd" id="5_emitter"]
 [ext_resource type="Resource" path="res://data/fx/soul_mole_dust.tres" id="6_dust"]
 [ext_resource type="Resource" path="res://data/fx/soul_mole_rocks.tres" id="7_rocks"]
@@ -12,6 +11,7 @@
 [ext_resource type="Script" path="res://scenes/spells/carrier/phase_cue.gd" id="9_phase"]
 [ext_resource type="Resource" path="res://data/audio/cues/quake.tres" id="cue_quake"]
 [ext_resource type="Resource" path="res://data/audio/cues/soul_mole_take.tres" id="cue_soul_mole_take"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/rock.res" id="mesh_rock"]
 
 [sub_resource type="SphereShape3D" id="Sphere_reach"]
 radius = 10.0
@@ -22,8 +22,7 @@ script = ExtResource("1_carrier")
 [node name="Look" type="Node3D" parent="."]
 
 [node name="Rock" type="MeshInstance3D" parent="Look"]
-script = ExtResource("4_prop")
-model = "rock"
+mesh = ExtResource("mesh_rock")
 
 [node name="Dust" type="CPUParticles3D" parent="Look"]
 use_fixed_seed = true

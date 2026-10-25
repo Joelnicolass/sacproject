@@ -2,8 +2,8 @@
 
 [ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_building"]
 [ext_resource type="Resource" path="res://data/buildings/james_hoodoo.tres" id="2_type"]
-[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
 [ext_resource type="Script" path="res://scenes/look/grass/vegetation_clear.gd" id="3_clear"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/jst1.res" id="mesh_jst1"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_body"]
 size = Vector3(25.736, 38.412, 26.991)
@@ -14,9 +14,7 @@ type = ExtResource("2_type")
 [node name="Base" type="Node3D" parent="Visuals"]
 
 [node name="Mesh" type="MeshInstance3D" parent="Visuals/Base"]
-script = ExtResource("1_visual")
-model = "jst1"
-stand_on_feet = false
+mesh = ExtResource("mesh_jst1")
 
 [node name="VegetationClear" type="Node3D" parent="Visuals"]
 position = Vector3(-1.717, 0, -7.4805)

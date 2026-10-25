@@ -3,7 +3,6 @@
 [ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="1_zone"]
 [ext_resource type="Resource" path="res://data/catalog/spells/erob.tres" id="2_spell"]
 [ext_resource type="Script" path="res://scenes/spells/zones/bore_drill.gd" id="3_drill"]
-[ext_resource type="Script" path="res://scenes/spells/carrier/prop_look.gd" id="4_prop"]
 [ext_resource type="Script" path="res://scenes/fx/sprite_emitter.gd" id="5_emitter"]
 [ext_resource type="Resource" path="res://data/fx/bore_dirt.tres" id="6_dirt"]
 [ext_resource type="Resource" path="res://data/fx/soul_mole_rocks.tres" id="7_rocks"]
@@ -16,6 +15,7 @@
 [ext_resource type="Resource" path="res://data/fx/bore_hole.tres" id="14_hole"]
 [ext_resource type="Resource" path="res://data/fx/bore_repair.tres" id="15_repair"]
 [ext_resource type="Resource" path="res://data/audio/cues/quake.tres" id="cue_quake"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/rock.res" id="mesh_rock"]
 
 [node name="BoreZone" type="Node3D"]
 editor_description = "Bore (erob): desde que empieza el lanzamiento una roca (el Drill) recorre una espiral que se abre de 5 m a 50 m alrededor del clic, tirando tierra y dejando una marca bscr en cada paso. A los 10 s el Cutter recorre la misma espiral un poco mas rapido, quita el vertice del suelo bajo el (un agujero de verdad: nunca en el borde del mapa ni a menos de 11 m de un edificio), lanza lo que queda sin suelo y deja caer un pedazo. Al llegar espera 3 s y 2 ticks y repone un vertice cada 0,5 s, el ultimo primero; con el ultimo la zona termina. La velocidad y el alcance son los del hechizo (data/catalog/spells/erob.tres)."
@@ -38,8 +38,7 @@ sound = NodePath("Sound")
 
 [node name="Rock" type="MeshInstance3D" parent="Drill/Look"]
 cast_shadow = 0
-script = ExtResource("4_prop")
-model = "rock"
+mesh = ExtResource("mesh_rock")
 
 [node name="Dirt" type="CPUParticles3D" parent="Drill/Look"]
 use_fixed_seed = true

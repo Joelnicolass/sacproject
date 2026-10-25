@@ -1,12 +1,10 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/ctx1.res" id="mesh_ctx1"]
 
 [node name="CharnelCat2Ruin" type="Node3D"]
 
 [node name="Base" type="Node3D" parent="."]
 
 [node name="Mesh" type="MeshInstance3D" parent="Base"]
-script = ExtResource("1_visual")
-model = "ctx1"
-stand_on_feet = false
+mesh = ExtResource("mesh_ctx1")

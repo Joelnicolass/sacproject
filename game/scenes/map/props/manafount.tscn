@@ -1,6 +1,5 @@
 [gd_scene load_steps=15 format=3]
 
-[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
 [ext_resource type="Script" path="res://scenes/map/props/mana_source.gd" id="2_source"]
 [ext_resource type="Resource" path="res://data/match_rules.tres" id="3_rules"]
 [ext_resource type="Script" path="res://scenes/map/props/manafount_body.gd" id="4_body"]
@@ -13,6 +12,7 @@
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
 [ext_resource type="Resource" path="res://data/audio/cues/fountain_loop.tres" id="cue_fountain_loop"]
 [ext_resource type="Resource" path="res://data/audio/cues/manalith_loop.tres" id="cue_manalith_loop"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pcfn.res" id="mesh_pcfn"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_pool"]
 height = 4.0
@@ -24,11 +24,10 @@ collision_mask = 0
 script = ExtResource("4_body")
 building = ExtResource("10_bldg")
 visual = NodePath("Visual")
+fallback_mesh = ExtResource("mesh_pcfn")
 
 [node name="Visual" type="MeshInstance3D" parent="."]
-script = ExtResource("1_visual")
-model = "pcfn"
-stand_on_feet = false
+mesh = ExtResource("mesh_pcfn")
 
 [node name="Collision" type="CollisionShape3D" parent="."]
 position = Vector3(0, 1, 0)

@@ -43,10 +43,10 @@ func _action_lookup(host: Node3D) -> Dictionary:
 	checks["unknown_tag_null"] = caster.action_for("zzzz") == null
 	checks["not_implemented_key"] = SpellAction.NOT_IMPLEMENTED == &"not_implemented"
 	var bare := SpellAction.new()
-	checks["bare_warns"] = bare._get_configuration_warnings().size() == 2
+	checks["bare_warns"] = bare._get_configuration_warnings().size() == 1
 	bare.free()
 	var twin := StructureAction.new()
-	twin.tag = "htlm"
+	twin.spell = manalith.spell
 	twin.prompt = "x"
 	caster.actions.add_child(twin)
 	checks["duplicate_tag_warns"] = twin._get_configuration_warnings().size() == 1
@@ -54,9 +54,10 @@ func _action_lookup(host: Node3D) -> Dictionary:
 	twin.free()
 	caster.actions.remove_child(manalith)
 	manalith.free()
-	checks["removed_gone"] = caster.action_for("htlm") == null
-	checks["removed_not_implemented"] = caster.structure_status(index) == SpellAction.NOT_IMPLEMENTED
-	checks["removed_request_is_quiet"] = caster._try_structure(index, Vector3.ZERO) == SpellAction.NOT_IMPLEMENTED
+	## 055e e3: the action comes from SpellType.action, so a removed child is made again on the next ask.
+	var again: SpellAction = caster.action_for("htlm")
+	checks["removed_made_again"] = again is StructureAction and is_instance_valid(again)
+	checks["removed_still_armable"] = caster.structure_status(index) == ""
 	checks["spells_tab_untouched"] = _spells_tab_status(caster, book)
 	return _verdict(checks, wizard)
 

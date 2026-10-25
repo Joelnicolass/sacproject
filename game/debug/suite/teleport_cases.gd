@@ -176,7 +176,7 @@ func _action() -> Dictionary:
 	action.cancel()
 	checks["cancel_forgets"] = action.finish(wizard, spell, null) == SpellAction.BAD_TARGET and own_unit.global_position.is_equal_approx(before)
 	var bare := TeleportAction.new()
-	checks["tag_warns"] = bare._get_configuration_warnings().size() == 2
+	checks["tag_warns"] = bare._get_configuration_warnings().size() == 1
 	bare.free()
 	for node in [wizard, near, far, enemy, own_unit, dying]:
 		if is_instance_valid(node):

@@ -363,7 +363,7 @@ func _action() -> Dictionary:
 	held.mode = UnitBody.Mode.HELD
 	checks["held_invalid"] = not GuardianAction.can_guard(1, held)
 	var rules_less := GuardianAction.new()
-	checks["rules_warns"] = rules_less._get_configuration_warnings().size() == 3
+	checks["rules_warns"] = rules_less._get_configuration_warnings().size() == 2
 	rules_less.free()
 	checks["other_slot_invalid"] = not GuardianAction.can_guard(2, mine) and not GuardianAction.can_guard(0, mine)
 	for node in [wizard, near_post, far_post, mine, other, distant, dead, rooted, bare, held]:

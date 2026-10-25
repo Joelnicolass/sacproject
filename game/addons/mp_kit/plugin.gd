@@ -20,7 +20,11 @@ var _flow_world: LineEdit
 var _flow_start: OptionButton
 
 
+var _setup_dialog: AcceptDialog
+
+
 func _enter_tree() -> void:
+	add_tool_menu_item("MpKit: Setup game...", _on_setup_game)
 	add_tool_menu_item("MpKit: Wire replication on selection", _on_wire_replication)
 	add_tool_menu_item("MpKit: New replicated feature...", _on_new_feature)
 	add_tool_menu_item("MpKit: New session flow...", _on_new_flow)
@@ -29,6 +33,10 @@ func _enter_tree() -> void:
 
 
 func _exit_tree() -> void:
+	remove_tool_menu_item("MpKit: Setup game...")
+	if _setup_dialog:
+		_setup_dialog.queue_free()
+		_setup_dialog = null
 	remove_tool_menu_item("MpKit: Wire replication on selection")
 	remove_tool_menu_item("MpKit: New replicated feature...")
 	remove_tool_menu_item("MpKit: New session flow...")
@@ -47,6 +55,17 @@ func _enable_plugin() -> void:
 
 func _disable_plugin() -> void:
 	remove_autoload_singleton(AUTOLOAD_NAME)
+
+
+## The whole game in one dialog: boot, world, player, network .tres and (optional) online rooms. Never overwrites.
+func _on_setup_game() -> void:
+	if _setup_dialog == null:
+		_setup_dialog = (load("res://addons/mp_kit/editor/mp_setup_dialog.gd") as GDScript).new()
+		_setup_dialog.created.connect(func(boot: String) -> void:
+			EditorInterface.get_resource_filesystem().scan()
+			EditorInterface.open_scene_from_path.call_deferred(boot))
+		EditorInterface.get_base_control().add_child(_setup_dialog)
+	_setup_dialog.popup_centered()
 
 
 func _on_wire_replication() -> void:

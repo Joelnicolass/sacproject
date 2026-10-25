@@ -2,7 +2,7 @@ extends Node
 
 ## Lab-only player robot for the arena_2d example. Inert without `--probe=`. It presses keys like a person and checks
 ## what comes back over the network, printing `PASS …` / `FAIL …` and a last `PROBE <role> PASS|FAIL` line.
-## Roles: solo | client (the first player) | late (joins after the first one played) | watch (server or host:
+## Roles: solo | client (the first player) | basic (any game: move and score only, e.g. one the wizard wrote) | late (joins after the first one played) | watch (server or host:
 ## waits for a remote player to move and score) | lag (own player under a bad network: response and corrections) |
 ## observe (another player, `--probe-watch-slot=N`: how evenly it moves on screen) | lobby (online rooms through the
 ## lobby screen: `--probe-lobby=host:port --probe-name=X`, `--probe-create=Room` makes the room and scores to win) |
@@ -16,6 +16,8 @@ var step_timeout_s := 20.0
 
 var _role := ""
 var _fails := 0
+## Stand-in while the current scene has no MpState (between scenes).
+var _empty_state: MpState
 
 
 func _ready() -> void:
@@ -41,6 +43,9 @@ func _run() -> void:
 		"client":
 			await _until(_networked_slot, "the server gave this client a slot")
 			await _play_as(MpKit.local_slot())
+		"basic":
+			await _until(_networked_slot, "the server gave this client a slot")
+			await _play_basic(MpKit.local_slot())
 		"late":
 			await _check_late()
 		"watch":
@@ -87,6 +92,19 @@ func _play_as(slot: int) -> void:
 	await _until(func() -> bool: return pawn.color_index == 1, "recolor went to the server and back (to_server + sync)")
 
 
+## Only what every MpKit game has: the arrows move the own player (server simulated) and Enter scores.
+func _play_basic(slot: int) -> void:
+	var pawn := await _pawn(slot)
+	if pawn == null:
+		return
+	var start_x: float = pawn.position.x
+	Input.action_press(&"ui_right")
+	await _until(func() -> bool: return pawn.position.x > start_x + 1.0, "P%d moved right" % slot)
+	Input.action_release(&"ui_right")
+	await _tap(&"ui_accept")
+	await _until(func() -> bool: return int(_state().get_value(StringName("p%d" % slot), 0)) == 1, "the score reached 1")
+
+
 ## A player who joins after the first one played (`--probe-first=N`, default 1) sees it where it went, its score
 ## and its color.
 func _check_late() -> void:
@@ -111,7 +129,8 @@ func _check_watch() -> void:
 	if pawn == null:
 		return
 	var start_x: float = pawn.position.x
-	await _until(func() -> bool: return pawn.position.x > start_x + 60.0, "the remote P%d input moved it on the server" % slot)
+	var min_move := float(MpBoot.user_value("probe-min-move", "60"))
+	await _until(func() -> bool: return pawn.position.x > start_x + min_move, "the remote P%d input moved it on the server" % slot)
 	await _until(func() -> bool: return int(_state().get_value(StringName("p%d" % slot), 0)) >= 1, "the remote P%d scored on the server" % slot)
 
 
@@ -309,7 +328,10 @@ func _networked_slot() -> bool:
 
 
 func _state() -> MpState:
-	return MpState.of(get_tree().current_scene)
+	var state := MpState.of(get_tree().current_scene)
+	if state == null and _empty_state == null:
+		_empty_state = MpState.new()
+	return state if state else _empty_state
 
 
 func _tap(action: StringName) -> void:

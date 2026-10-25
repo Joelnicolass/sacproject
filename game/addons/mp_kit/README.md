@@ -476,6 +476,7 @@ No metas meshes, puntaje ni `kind` de bala en el túnel.
 
 Con el plugin enabled, **Project → Tools**:
 
+- **Setup game...** — un juego multijugador completo desde un diálogo (`editor/mp_setup_wizard.gd`): boot, mundo, jugador con `MpActor` predicho + `MpInput`, `MpNetConfig` y, opcional, salas online. Muestra el árbol de archivos (`[+]` / `[~]`) y nunca pisa uno existente. Prueba: `game/agent/runs/run_mpkit_wizard.sh` (genera un juego y lo juega en red; `WIZARD_3D=1` para 3D)
 - **Wire replication on selection** — hijo `MpReplicate` + `MultiplayerSynchronizer`
 - **New replicated feature...** — `res://features/<id>/<id>.gd` + `.tscn`
 - **New session flow...** — autoload `MpFlow` (`res://glue/session_flow.tscn`)

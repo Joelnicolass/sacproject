@@ -14,6 +14,10 @@ config/features=PackedStringArray("4.7", "GL Compatibility")
 MpKit="*res://addons/mp_kit/mp_kit.gd"
 MpLabProbe="*res://probe/lab_probe.gd"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/mp_kit/plugin.cfg")
+
 [display]
 
 window/size/viewport_width=960

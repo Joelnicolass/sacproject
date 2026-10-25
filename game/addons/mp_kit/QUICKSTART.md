@@ -4,6 +4,8 @@ Un juego multijugador sin escribir código de red: nodos en el editor y un scrip
 
 El ejemplo completo está en `examples/arena_2d/`: abrí `boot.tscn` y apretá F6.
 
+**El camino más corto**: con el plugin activo, **Proyecto › Herramientas › MpKit: Setup game...**. Elegís carpeta, 2D o 3D, jugadores, transporte y si querés salas online; el diálogo muestra los archivos que va a crear (`[+]`, y `[~]` si ya existen: entonces no escribe nada) y arma boot, mundo, jugador predicho y la red. F5 y ya se juega solo, en LAN, dedicado u online. Los pasos de abajo explican qué armó, por si lo querés hacer a mano.
+
 ## 1. Instalar
 
 Copiá `addons/mp_kit/` a tu proyecto y activá **MpKit** en Proyecto → Ajustes del proyecto → Plugins. Eso agrega el autoload `MpKit`.

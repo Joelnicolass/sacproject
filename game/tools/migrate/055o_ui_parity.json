@@ -1,0 +1,91 @@
+{
+ "consumers": [
+  {
+   "cue": "ui_click",
+   "event": "click",
+   "kind": "button",
+   "node": "UiClickSounds",
+   "old_key": "click",
+   "path": "scenes/audio/sound_bus.tscn"
+  },
+  {
+   "cue": "ui_book_click",
+   "event": "click",
+   "kind": "button_meta",
+   "node": ".",
+   "old_key": "Iclk",
+   "path": "scenes/ui/spell_book/spell_slot.tscn"
+  },
+  {
+   "cue": "menu_open",
+   "event": "menu_open",
+   "kind": "menu",
+   "node": "MenuSounds",
+   "old_key": "XMNU",
+   "path": "scenes/ui/radial/radial_menu.tscn"
+  },
+  {
+   "cue": "ui_book_click",
+   "event": "click",
+   "kind": "menu",
+   "node": "MenuSounds",
+   "old_key": "Iclk",
+   "path": "scenes/ui/radial/radial_menu.tscn"
+  },
+  {
+   "cue": "menu_back",
+   "event": "menu_back",
+   "kind": "menu",
+   "node": "MenuSounds",
+   "old_key": "Ibak",
+   "path": "scenes/ui/radial/radial_menu.tscn"
+  }
+ ],
+ "cues": {
+  "menu_back": {
+   "props": [
+    "streams = Array[AudioStream]([ExtResource(\"2_2sm4n\")])"
+   ],
+   "streams": [
+    "res://assets/original/audio/sfx/menu/_ibak.wav"
+   ]
+  },
+  "menu_open": {
+   "props": [
+    "streams = Array[AudioStream]([ExtResource(\"5_mynh1\")])"
+   ],
+   "streams": [
+    "res://assets/original/audio/sfx/menu/xmnu.wav"
+   ]
+  },
+  "ui_book_click": {
+   "props": [
+    "streams = Array[AudioStream]([ExtResource(\"3_x4p73\"), ExtResource(\"4_1spdp\")])"
+   ],
+   "streams": [
+    "res://assets/original/audio/sfx/menu/_icl1.wav",
+    "res://assets/original/audio/sfx/menu/_icl2.wav"
+   ]
+  },
+  "ui_click": {
+   "props": [
+    "streams = Array[AudioStream]([ExtResource(\"7_hper3\"), ExtResource(\"8_p7ne0\"), ExtResource(\"9_0q2k3\"), ExtResource(\"10_1j0hu\")])"
+   ],
+   "streams": [
+    "res://assets/original/audio/sfx/menu/_mcl1.wav",
+    "res://assets/original/audio/sfx/menu/_mcl2.wav",
+    "res://assets/original/audio/sfx/menu/_mcl3.wav",
+    "res://assets/original/audio/sfx/menu/_mcl4.wav"
+   ]
+  }
+ },
+ "unused_keys": [
+  "back",
+  "goda",
+  "godd",
+  "lvdn",
+  "lvup",
+  "spav",
+  "spir"
+ ]
+}

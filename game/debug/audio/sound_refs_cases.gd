@@ -14,10 +14,17 @@ extends RefCounted
 ## - bodies_text_gone: scenes/audio/ names no SoundLibrary.creature/wizard, no `shared_set` and no `aliases`.
 ## - bodies_parity: when tools/migrate/055o_bodies_parity.json is there (how every creature and wizard sounded before the
 ##   migration, event by event), `BodySounds.resolve` gives the same streams and numbers. The file goes with the migration.
+## 055o-d (UI):
+## - ui_typed: sound_bus.tscn's UiClickSounds has `click`, spell_slot.tscn carries the cue as its `ui_sound` data and the
+##   MenuSounds of radial_menu.tscn has its three cues.
+## - ui_text_gone: scenes/ names no ui_set, ui_click_key, ui_cue_for nor SoundBus.META_*, and no scene gives `ui_sound` as a key.
+## - ui_parity: when tools/migrate/055o_ui_parity.json is there (how every UI event sounded before), each one has the same
+##   streams and numbers, the same cue file and the same log event. The file goes with the migration.
 ## Open gate only:
 ## - soul_mole_replicated: the Soul Mole's sound of taking the soul plays from the carrier's replicated phase (LEAVING), the
 ##   state a client of a dedicated server has, not from `reached`, which only the server emits.
-## Prints `SOUND REFS typed=<n> text=<m> null=<k> parity=<p>/<q>` and `SOUND REFS bodies creatures=<a>/<b> wizards=<c>/<d> parity=<p>/<q>`.
+## Prints `SOUND REFS typed=<n> text=<m> null=<k> parity=<p>/<q>`, `SOUND REFS bodies creatures=<a>/<b> wizards=<c>/<d> parity=<p>/<q>`
+## and `SOUND REFS ui click=<bool> slot=<bool> menu=<n>/3 parity=<p>/<q>`.
 
 const EMITTER_SCENE := "res://scenes/audio/sound_emitter_3d.tscn"
 const EMITTER_SCENES: PackedStringArray = [
@@ -46,6 +53,12 @@ const UNIT_SCENE := "res://scenes/units/unit.tscn"
 const EXPECTED_CREATURES := 72
 const EXPECTED_CREATURE_SETS := 67
 const EXPECTED_WIZARDS := 15
+const UI_JSON := "res://tools/migrate/055o_ui_parity.json"
+const BUS_SCENE := "res://scenes/audio/sound_bus.tscn"
+const SLOT_SCENE := "res://scenes/ui/spell_book/spell_slot.tscn"
+const RADIAL_SCENE := "res://scenes/ui/radial/radial_menu.tscn"
+## The event a UI log entry carries -> the MenuSounds moment that plays it.
+const MENU_MOMENTS := {"menu_open": &"opened", "click": &"chosen", "menu_back": &"cancelled"}
 
 
 func run(host: Node, open: bool) -> Dictionary:
@@ -73,6 +86,14 @@ func run(host: Node, open: bool) -> Dictionary:
 	print("SOUND REFS bodies creatures=%d/%d wizards=%d/%d parity=%d/%d" % [int(bodies["creature_sets"]), int(bodies["creatures"]),
 		int(bodies["wizard_sets"]), int(bodies["wizards"]), int(body_parity["passed"]), int(body_parity["total"])])
 	results.merge((load(MATCH_REFS) as GDScript).new().run_match())
+	var ui := count_ui_cues()
+	results["ui_typed"] = {"ok": bool(ui["click"]) and bool(ui["slot"]) and int(ui["menu"]) == 3, "ui": ui}
+	var ui_stale := stale_ui_references()
+	results["ui_text_gone"] = {"ok": ui_stale.is_empty(), "found": ui_stale}
+	var ui_parity := ui_parity_report(UI_JSON)
+	results["ui_parity"] = {"ok": (ui_parity["failures"] as PackedStringArray).is_empty(), "parity": ui_parity}
+	print("SOUND REFS ui click=%s slot=%s menu=%d/3 parity=%d/%d" % [ui["click"], ui["slot"], int(ui["menu"]),
+		int(ui_parity["passed"]), int(ui_parity["total"])])
 	if open and SoundBus.is_active():
 		results["soul_mole_replicated"] = await _soul_mole(host)
 	return results
@@ -325,6 +346,110 @@ func _body_problem(got: SoundCue, wanted: Variant, cues: Dictionary) -> String:
 	if got == null:
 		return "no suena y sonaba"
 	return cue_problem(got, cues.get(str(wanted), {}))
+
+
+## What the UI scenes carry: {click: UiClickSounds.click is assigned, slot: the slot's `ui_sound` is a cue, menu: how many of the
+## three MenuSounds cues are assigned}.
+func count_ui_cues() -> Dictionary:
+	var counts := {"click": false, "slot": false, "menu": 0}
+	var bus := _instance(BUS_SCENE)
+	var clicks := bus.get_node_or_null("UiClickSounds") as UiClickSounds if bus != null else null
+	counts["click"] = clicks != null and clicks.click != null
+	if bus != null:
+		bus.free()
+	var slot := _instance(SLOT_SCENE)
+	counts["slot"] = slot != null and slot.get_meta(UiClickSounds.META_UI_SOUND, null) is SoundCue
+	if slot != null:
+		slot.free()
+	var sounds := _menu_sounds()
+	if sounds != null:
+		for cue: SoundCue in [sounds.opened, sounds.chosen, sounds.cancelled]:
+			counts["menu"] += 1 if cue != null else 0
+		sounds.owner.free()
+	return counts
+
+
+## The MenuSounds of a fresh radial menu (its owner, the menu, is the one to free), or null.
+func _menu_sounds() -> MenuSounds:
+	var radial := _instance(RADIAL_SCENE)
+	var sounds := radial.get_node_or_null("MenuSounds") as MenuSounds if radial != null else null
+	if sounds == null and radial != null:
+		radial.free()
+	return sounds
+
+
+## Lines of scenes/ that still use what 055o-d removed: the UI set by key on SoundBus and the key-valued `ui_sound` data.
+func stale_ui_references() -> PackedStringArray:
+	var found := PackedStringArray()
+	var files := PackedStringArray()
+	_files("res://scenes", ".gd", files)
+	_files("res://scenes", ".tscn", files)
+	for path in files:
+		var body := FileAccess.get_file_as_string(path)
+		for needle: String in ["ui_set", "ui_click_key", "ui_cue_for", "SoundBus.META_", "metadata/ui_sound = &", "ui.tres"]:
+			if body.contains(needle):
+				found.append("%s: %s" % [path, needle])
+	return found
+
+
+## Compares the snapshot of how every UI event sounded before the migration with the typed data: {total, passed, failures}.
+## No snapshot file (the migration is over): total 0.
+func ui_parity_report(json_path: String) -> Dictionary:
+	var report := {"total": 0, "passed": 0, "failures": PackedStringArray()}
+	if not FileAccess.file_exists(json_path):
+		return report
+	var snapshot: Variant = JSON.parse_string(FileAccess.get_file_as_string(json_path))
+	if not snapshot is Dictionary:
+		(report["failures"] as PackedStringArray).append("%s no es un JSON válido" % json_path)
+		return report
+	var cues: Dictionary = (snapshot as Dictionary).get("cues", {})
+	for item: Dictionary in (snapshot as Dictionary).get("consumers", []):
+		report["total"] += 1
+		var name := str(item.get("cue", ""))
+		var problem := _cue_problem(name, cues.get(name, {}))
+		if problem.is_empty():
+			problem = _ui_consumer_problem(item)
+		if problem.is_empty():
+			report["passed"] += 1
+		else:
+			(report["failures"] as PackedStringArray).append("%s %s (%s): %s" % [item.get("path", ""), item.get("node", ""),
+				item.get("old_key", ""), problem])
+	return report
+
+
+## "" when the UI consumer of the snapshot points at the cue file it should and logs the event it logged.
+func _ui_consumer_problem(item: Dictionary) -> String:
+	var wanted := CUES_DIR + str(item.get("cue", "")) + ".tres"
+	var got: SoundCue = null
+	match str(item.get("kind", "")):
+		"button":
+			var bus := _instance(BUS_SCENE)
+			var clicks := bus.get_node_or_null("UiClickSounds") as UiClickSounds if bus != null else null
+			got = clicks.click if clicks != null else null
+			if bus != null:
+				bus.free()
+		"button_meta":
+			var slot := _instance(SLOT_SCENE)
+			var own: Variant = slot.get_meta(UiClickSounds.META_UI_SOUND, null) if slot != null else null
+			got = own if own is SoundCue else null
+			if slot != null:
+				slot.free()
+		"menu":
+			var sounds := _menu_sounds()
+			var event := str(item.get("event", ""))
+			if sounds == null or not MENU_MOMENTS.has(event):
+				return "sin MenuSounds o evento %s desconocido" % event
+			var moment: StringName = MENU_MOMENTS[event]
+			got = sounds.cue_for(moment)
+			var logged := sounds.event_for(moment)
+			sounds.owner.free()
+			if str(logged) != event:
+				return "el evento es %s y era %s" % [logged, event]
+		_:
+			return "kind desconocido"
+	if got == null:
+		return "sin cue"
+	return "" if got.resource_path == wanted else "cue %s y era %s" % [got.resource_path, wanted]
 
 
 func _soul_mole(host: Node) -> Dictionary:

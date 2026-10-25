@@ -35,8 +35,7 @@ extends Resource
 ## Asked when this set has no cue for an event (the melee set of a creature that has no sound of its own for a swing).
 @export var fallback: SoundSet
 
-## WORKAROUND: the UI set (`ui.tres`) still holds its cues by text key until 055o-d gives each user a typed cue. A creature, a
-## wizard, the sacrifice and the advisor never use this; it goes with that file.
+## WORKAROUND: nothing reads this dictionary any more (the UI, the sacrifice and the advisor are typed); 055o-e deletes it.
 @export var cues: Dictionary[StringName, SoundCue] = {}
 
 const MAX_HOPS := 8

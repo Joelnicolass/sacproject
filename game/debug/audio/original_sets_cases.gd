@@ -25,7 +25,7 @@ func run(_host: Node) -> Dictionary:
 	var results := {}
 	results["original_sets_creature"] = _creature(sound_set)
 	results["original_sets_sacrifice"] = _sacrifice()
-	results["original_sets_ui"] = _named("ui", [&"click"])
+	results["original_sets_ui"] = _ui_click()
 	SoundLibrary.clear_cache()
 	return results
 
@@ -64,14 +64,10 @@ func _creature(sound_set: SoundSet) -> Dictionary:
 	return info
 
 
-func _named(rel: String, events: Array) -> Dictionary:
-	var sound_set := SoundLibrary.sound_set(rel)
-	if sound_set == null:
-		return {"ok": false, "reason": "no %s.tres" % rel}
-	var missing := events.filter(func(event: StringName) -> bool:
-		var cue := sound_set.cue(event)
-		return cue == null or cue.is_silent())
-	return {"ok": missing.is_empty(), "missing": missing, "cues": sound_set.cues.size()}
+## The click of sound_bus.tscn (UiClickSounds.click, data/audio/cues/ui_click.tres) has streams of the original.
+func _ui_click() -> Dictionary:
+	var click: SoundCue = SoundBus.ui_clicks.click if SoundBus.ui_clicks != null else null
+	return {"ok": click != null and not click.is_silent(), "streams": click.streams.size() if click != null else 0}
 
 
 ## The cues RitualSounds and SoulSounds carry have streams (the scenes assign them, nothing is looked up by name).

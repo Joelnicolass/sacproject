@@ -1,7 +1,9 @@
 class_name OriginalMaterial
 extends RefCounted
 
-## RFC-033 (033b): the one place that builds the material of a model from the original game.
+## RFC-033 (033b): the one place that builds the material of a prop from the original game. 055s: the skeletal models and the
+## hybrid meshes keep their materials saved (scenes/bodies/materials/, written by tools/bake/bake_materials_055s.gd, which
+## reads this class); the props leave it with 055s s5a.
 ## One StandardMaterial3D per texture file, shared by every mesh and clip frame that uses it.
 ## Textures are the PNGs of assets/original/textures/ (importer: tools/import/import_textures.py), with the colour key
 ## already in the alpha channel; textures/index.json says which texture each model's material label uses and
@@ -48,12 +50,7 @@ static func for_label(model: String, label: String) -> StandardMaterial3D:
 	return built
 
 
-## The material of surface `part` of a skeletal model (.glb): surface i is the model's body part i (see apply_to for merged surfaces).
-static func for_part(model: String, part: int) -> StandardMaterial3D:
-	return for_label(model, part_label(part))
-
-
-## A new material over an already loaded texture. Use for_label()/for_part() to get the shared one.
+## A new material over an already loaded texture. Use for_label() to get the shared one.
 static func for_texture(tex: Texture2D, cutout: bool, label: String = "") -> StandardMaterial3D:
 	var mat := StandardMaterial3D.new()
 	mat.resource_name = label
@@ -63,21 +60,6 @@ static func for_texture(tex: Texture2D, cutout: bool, label: String = "") -> Sta
 		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
 		mat.alpha_scissor_threshold = ALPHA_SCISSOR_THRESHOLD
 	return mat
-
-
-## Puts the shared materials on every surface of the meshes under `root` (a model's .glb scene, which has none).
-## `surface_parts` (BodyModel.surface_parts, baked from the exporter's index): the body parts each surface merges (parts with one texture are one surface); the
-## material is the one of its first part. Empty: surface i is body part i.
-static func apply_to(root: Node, model: String, surface_parts: Array = []) -> void:
-	for node in root.find_children("*", "MeshInstance3D", true, false):
-		var instance := node as MeshInstance3D
-		if instance.mesh == null:
-			continue
-		for i in instance.mesh.get_surface_count():
-			var part := int((surface_parts[i] as Array)[0]) if i < surface_parts.size() else i
-			var mat := for_part(model, part)
-			if mat != null:
-				instance.set_surface_override_material(i, mat)
 
 
 static func _entry(model: String, label: String) -> Dictionary:

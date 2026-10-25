@@ -53,8 +53,6 @@ const PLAYBACK := &"parameters/playback"
 @export_group("Baked from the original")
 ## Bounding box of the rest pose (from the exporter index at bake time).
 @export var bind_aabb := AABB()
-## The body parts each mesh surface merges; the material of a surface is the one of its first part (OriginalMaterial).
-@export var surface_parts: Array = []
 ## clip tag -> {hands: [{on, bone_name, offset}, {...}]}. Only the clips a role uses. `hands` are the two sockets of the clip (a
 ## hand on the root bone is "no hand": sacengine leaves it NaN). How long a clip lasts is the Animation's, in the library.
 @export var clips: Dictionary = {}
@@ -74,7 +72,7 @@ static func exists(model_tag: String) -> bool:
 
 
 func _ready() -> void:
-	_dress()
+	_fit_bounds()
 	if Engine.is_editor_hint():
 		preview(preview_role)
 
@@ -180,10 +178,9 @@ func preview(role: String) -> void:
 		playback.start(role, true)
 
 
-## Puts the shared materials on the meshes and a fixed box with margin on them (the skinned mesh's box is the rest pose's: it
-## would be culled mid-swing). Not saved: the .glb is an instance.
-func _dress() -> void:
-	OriginalMaterial.apply_to(_model, model, surface_parts)
+## Puts a fixed box with margin on the meshes (the skinned mesh's box is the rest pose's: it would be culled mid-swing).
+## Not saved: the .glb is an instance. The materials are saved in this scene (surface_material_override on the meshes).
+func _fit_bounds() -> void:
 	if bind_aabb.size == Vector3.ZERO:
 		return
 	var box := bind_aabb.grow(aabb_margin)

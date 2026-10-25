@@ -130,6 +130,10 @@ func rpc_spawner_ready() -> void:
 func _on_child_entered(node: Node) -> void:
 	if node.get_parent() != _root:
 		return
+	# A node a server script adds by hand (a server-only effect) never reaches a peer: no gate, nothing to hold.
+	# A gate there would be a synchronizer the peers never get, and its sync would fail by path on every client.
+	if MpKit.is_server() and not _is_replicated(node):
+		return
 	if MpKit.is_server() and not node.is_node_ready():
 		# Synchronizers the actor adds while it sets up (_enter_tree, _ready) still
 		# go in its spawn packet; later ones do not.
@@ -148,6 +152,17 @@ func _on_child_entered(node: Node) -> void:
 		return
 	for sync in _syncs_under(node):
 		_hold(sync)
+
+
+## True when the engine replicates `node`: spawn() made it or its scene is spawnable. The engine tracks those by connecting
+## its own handlers (tree_exiting, and ready in some versions) before this spawner hears the node enter spawn_path; a node
+## added by hand is not tracked.
+func _is_replicated(node: Node) -> bool:
+	for sig: Signal in [node.tree_exiting, node.ready]:
+		for connection in sig.get_connections():
+			if (connection["callable"] as Callable).get_object() == self:
+				return true
+	return false
 
 
 ## Every synchronizer entering this spawner's scope is held before the engine

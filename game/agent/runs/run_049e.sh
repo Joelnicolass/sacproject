@@ -10,6 +10,7 @@
 # F350: all of them run inside ONE group reservation of the Godot queue (agent/harness/godot_group.sh), started directly, with --fixed-fps (NET_FPS,
 # 600); the waits are on log lines or real seconds (Ana lingers E2E_LINGER_S, Beto waits E2E_REJECT_WAIT_S). Own watchdog: LIMIT_S kills them
 # by pid and descendants (no pkill). UDP port 7849 by default (E2E_PORT).
+# E2E_AI_GOD=stratos gives the three AI that god (default: drawn from the match seed); E2E_KEEP=1 keeps the logs of a PASS.
 # Prints the checks and E2E PASS / E2E FAIL (exit 0 / 1). Needs `--import` once first (new class_names).
 . "$(dirname "$0")/../harness/net_e2e.sh"
 net_group 4 "$@"
@@ -34,7 +35,7 @@ SOLO=$LAST_PID
 
 # --- 1. the dedicated with three AI ----------------------------------------------------------------------------------
 gd "$OUT/server.log" "${FPS_FLAGS[@]}" -- --dedicated --mp-port="$PORT" --map=test_flat4 --mode=2v2 --ai-slots=2,3,4 \
-  --world="$WORLD" --force-defeat-slot=3,4 --force-defeat-after-ticks="$FORCE_TICKS"
+  --world="$WORLD" --force-defeat-slot=3,4 --force-defeat-after-ticks="$FORCE_TICKS" ${E2E_AI_GOD:+--ai-god="$E2E_AI_GOD"}
 SERVER=$LAST_PID
 READY=0
 wait_line "$OUT/server.log" "dedicated listo" "$SERVER" 30 && READY=1
@@ -97,5 +98,5 @@ if [ "$STRAY" != 0 ]; then echo "FAIL $STRAY Godot process of this run still ali
 [ -s "$OUT/timeout.flag" ] && { cat "$OUT/timeout.flag"; VERDICT=1; }
 net_stop
 echo "$((SECONDS - START_S)) s"
-if [ "$VERDICT" = 0 ]; then echo "E2E PASS"; rm -rf "$OUT"; else echo "E2E FAIL (logs in $OUT)"; fi
+if [ "$VERDICT" = 0 ]; then echo "E2E PASS"; [ -n "${E2E_KEEP:-}" ] && echo "logs in $OUT" || rm -rf "$OUT"; else echo "E2E FAIL (logs in $OUT)"; fi
 exit "$VERDICT"

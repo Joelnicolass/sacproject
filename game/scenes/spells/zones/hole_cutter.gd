@@ -88,7 +88,7 @@ func _take(vertex: Vector2i) -> void:
 	if not HoleRules.can_remove(_land, vertex, _building_parts()):
 		return
 	var id := vertex.y * TerrainRules.GRID + vertex.x
-	var at := Vector3(vertex.x * TerrainRules.CELL, _land.height_at(vertex.x * TerrainRules.CELL, vertex.y * TerrainRules.CELL), vertex.y * TerrainRules.CELL)
+	var at := _vertex_point(vertex)
 	_deformer.set_removed(id, true)
 	_taken.append(id)
 	_fling(at)
@@ -107,11 +107,24 @@ func _give_back() -> void:
 	_taken.remove_at(_taken.size() - 1)
 	if _deformer.shape.displacement().is_removed(id):
 		_deformer.set_removed(id, false)
-		var spot := Vector2(id % TerrainRules.GRID, id / TerrainRules.GRID) * TerrainRules.CELL
 		if restore_burst != null:
-			FxBus.broadcast(FxBus.name_of(restore_burst), Vector3(spot.x, _land.height_at(spot.x, spot.y), spot.y))
+			FxBus.broadcast(FxBus.name_of(restore_burst), _vertex_point(Vector2i(id % TerrainRules.GRID, id / TerrainRules.GRID)))
 		vertex_given_back.emit(id)
 	_next_at = _ticks + maxi(1, MatchClock.ticks_for(restore_every_s))
+
+
+## The grid vertex on the ground. Once its neighbours are taken no land triangle touches it and height_at is NAN, so it tries
+## a little inside each of the four cells around it and, with all of them gone, the zone's own height. Never NAN: a NAN
+## point would reach the chunk, the burst and the bodies flung.
+func _vertex_point(vertex: Vector2i) -> Vector3:
+	var spot := Vector2(vertex) * TerrainRules.CELL
+	var height := _land.height_at(spot.x, spot.y)
+	for side in [Vector2(1, 1), Vector2(-1, 1), Vector2(1, -1), Vector2(-1, -1)]:
+		if not is_nan(height):
+			break
+		var inside := spot + side * TerrainRules.CELL * 0.25
+		height = _land.height_at(inside.x, inside.y)
+	return Vector3(spot.x, zone.global_position.y if is_nan(height) else height, spot.y)
 
 
 ## What stood over the new hole and is not on land any more falls: a body on the ground is thrown with no speed.

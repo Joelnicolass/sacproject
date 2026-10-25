@@ -5,7 +5,7 @@ extends Node
 ## Same code for listen-server and dedicated.
 
 @export var actor: NodePath
-## Properties Wire replication puts on the new synchronizer (spawn + always).
+## Properties the synchronizer of this actor should send (spawn + always). Informative: MpActor builds its own.
 ## The synchronizer must exist in the scene; this node does not create it at runtime.
 @export var sync_properties: PackedStringArray = PackedStringArray([
 	".:position",
@@ -32,7 +32,7 @@ func _ready() -> void:
 		# A child cannot add a sibling here (the actor is still setting up its
 		# children), and a later one would miss the spawn packet.
 		push_error(
-			"MpReplicate: '%s' has no MultiplayerSynchronizer. Add it in the scene (Project → Tools → MpKit: Wire replication on selection) or with MpAuthority.ensure_sync before add_child."
+			"MpReplicate: '%s' has no MultiplayerSynchronizer. Add one in the scene (or use MpActor, which builds it) or call MpAuthority.ensure_sync before add_child."
 			% _target.name
 		)
 	if freeze_rigid_if_proxy:

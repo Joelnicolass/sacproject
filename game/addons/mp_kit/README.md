@@ -273,7 +273,7 @@ Reglas:
 
 1. Escena packed: `CharacterBody2D` o `CharacterBody3D`.
 2. Collision + visual. `@export var player_slot: int = 1`.
-3. Seleccioná la raíz → Project → Tools → **MpKit: Wire replication on selection**.  
+3. Más simple: seleccioná la raíz → Project → Tools → **MpKit: Make selection a network actor** (agrega `MpActor` + `MpInput`; ver QUICKSTART). Con `MpReplicate` (camino de abajo) agregá a mano el hijo `MpReplicate` y un `MultiplayerSynchronizer`.  
    Eso agrega hijo `MpReplicate` + `MultiplayerSynchronizer` ya con posición / rotación / visible. El synchronizer tiene que vivir en la escena: `MpReplicate` no lo crea en runtime y, si falta, lo reporta con `push_error`.
 4. En el dock **Replication** del synchronizer (o en el `.tscn`) agregá el resto:
 
@@ -477,7 +477,7 @@ No metas meshes, puntaje ni `kind` de bala en el túnel.
 Con el plugin enabled, **Project → Tools**:
 
 - **Setup game...** — un juego multijugador completo desde un diálogo (`editor/mp_setup_wizard.gd`): boot, mundo, jugador con `MpActor` predicho + `MpInput`, `MpNetConfig` y, opcional, salas online. Muestra el árbol de archivos (`[+]` / `[~]`) y nunca pisa uno existente. Prueba: `game/agent/runs/run_mpkit_wizard.sh` (genera un juego y lo juega en red; `WIZARD_3D=1` para 3D)
-- **Wire replication on selection** — hijo `MpReplicate` + `MultiplayerSynchronizer`
+- **Make selection a network actor** — hijo `MpActor` (con su `MpSync`, que se arma y se guarda con la escena) y, si es un `CharacterBody`, `MpInput`
 - **New replicated feature...** — `res://features/<id>/<id>.gd` + `.tscn`
 - **New session flow...** — autoload `MpFlow` (`res://glue/session_flow.tscn`)
 - **Install Cursor/VS Code snippets** — `.vscode/mpkit.code-snippets`

@@ -31,7 +31,7 @@ var _rate_left := 0.0
 
 
 func _ready() -> void:
-	if body == null or not BodyCatalog.loads_meshes():
+	if body == null or not BodyLook.loads_meshes():
 		set_process(false)
 		return
 	if rig != null:

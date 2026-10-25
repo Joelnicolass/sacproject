@@ -2,8 +2,8 @@ extends Node
 
 ## Observation only (RFC-028b playtest): `watch()` keeps where the next spell leaves %Spells (a Wrath bursts
 ## and frees itself in the same frame, so that is the burst point); `check` compares a building's splash
-## with amount·(1 − d/r), d measured here, independently of SplashDamage: from the burst to the model box
-## in data/catalog/body_sizes/ (single-piece BLDG at the building's origin, unturned). Moves no actor,
+## with amount·(1 − d/r), d measured here, independently of SplashDamage: from the burst to the box of the
+## mesh of the building's one part (single-piece BLDG at the building's origin, unturned). Moves no actor,
 ## edits no rule.
 
 

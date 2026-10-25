@@ -3,7 +3,7 @@ extends RefCounted
 
 ## RFC-033: the one place that knows where the original's assets live under res://assets/original/.
 ## Only the importers in tools/ write there; the game only reads. Moving a family is a one-line change here.
-## Consumers migrate one family at a time (033b: textures, via OriginalMaterial; 033c: props and sizes, via BodyCatalog).
+## Bodies, props and materials are baked scenes now: the game no longer reads the original's models, props or textures, only the tools do.
 
 const ROOT := "res://assets/original/"
 const TEXTURES_DIR := ROOT + "textures/"

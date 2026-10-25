@@ -18,7 +18,7 @@ func _ready() -> void:
 	var lines := PackedStringArray()
 	for job: Array in _jobs():
 		var model: String = job[0]
-		if not BodyCatalog.has_skeletal(model):
+		if not BodyModel.exists(model):
 			lines.append("%s|nonskeletal" % model)
 			continue
 		_show(rig, model, job[1])

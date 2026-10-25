@@ -94,14 +94,14 @@ func _run() -> void:
 	if unit == null or unit.is_summoning():
 		_fail("the creature never appeared (summon feedback?)")
 		return
-	var info := BodyCatalog.info(TAG)
+	var body := BodyFacts.of_body(unit)
 	var type := unit.type
 	var facts := type.clip_facts() if type != null else ClipFacts.of(null)
 	var checks := {
 		"type_found": type != null and type.model_id() == TAG,
 		"scene_exists": BodyModel.exists(TAG),
-		"size_height": absf(float(info.get("height", 0.0)) - 2.0) < 0.05,
-		"size_reach": absf(float(info.get("reach", 0.0)) - 0.475) < 0.01,
+		"size_height": absf(body.height_m - 2.0) < 0.05,
+		"size_reach": absf(body.reach_m - 0.475) < 0.01,
 		"melee_clips": facts.frames(&"attack") == 40 and facts.hits(&"attack") == PackedInt32Array([18])
 			and facts.frames(&"attack2") == 50 and facts.hits(&"attack2") == PackedInt32Array([30]) and not facts.has(&"attack3"),
 		"death_clip": facts.frames(&"death") == 36,

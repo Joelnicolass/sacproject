@@ -4,7 +4,7 @@ extends RefCounted
 ## RFC-023 (023f): the see-through look of ONE body (the ghost of a wizard): transparency, no shadow and the shadeless
 ## material with energy that follows the fade (sacengine shadelessBoneMaterialBackend, energy 1 -> ghostEnergy).
 ## It works on the meshes of that instance only: a BodyVisual with a BodyRig draws with the skeleton's skinned meshes,
-## a baked body with its own mesh. The materials the other bodies share (OriginalMaterial) are never touched: the
+## a baked body with its own mesh. The materials the other bodies share (scenes/bodies/materials/) are never touched: the
 ## shadeless copy goes on each MeshInstance3D as a surface override.
 
 var visual: GeometryInstance3D
@@ -93,7 +93,7 @@ func _undress() -> void:
 	_dressed_meshes.clear()
 
 
-## The unshaded copy of what the surface shows (its override, as the skeleton's meshes carry the OriginalMaterial there, or
+## The unshaded copy of what the surface shows (its override, as the skeleton's meshes carry the shared material there, or
 ## the mesh's own); the previous overrides are kept to put back.
 func _dress(instance: MeshInstance3D) -> void:
 	if instance.mesh == null:

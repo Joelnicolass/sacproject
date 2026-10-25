@@ -53,7 +53,7 @@ static var _materials: Dictionary = {}
 
 var _dressed: Mesh
 ## RFC-023: when `mesh` is a BodyVisual that a BodyRig draws for, the skinned meshes of the rig are dressed instead. The
-## materials they had (OriginalMaterial overrides, not the mesh's own) are kept here to put back: instance id -> Array.
+## materials they had (the shared material overrides, not the mesh's own) are kept here to put back: instance id -> Array.
 var _dressed_root: Node
 var _saved: Dictionary = {}
 

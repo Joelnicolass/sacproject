@@ -1,17 +1,11 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=2 format=3]
 
 [ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
-[ext_resource type="Script" path="res://debug/bodies/capsule_preview.gd" id="2_capsule"]
 
 [node name="GalleryBody" type="Node3D"]
 
 [node name="Visual" type="MeshInstance3D" parent="."]
 script = ExtResource("1_visual")
-
-[node name="Capsule" type="MeshInstance3D" parent="." node_paths=PackedStringArray("visual")]
-visible = false
-script = ExtResource("2_capsule")
-visual = NodePath("../Visual")
 
 [node name="Name" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.9, 0)

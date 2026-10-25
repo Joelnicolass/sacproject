@@ -3,8 +3,8 @@ class_name PlayerStart
 extends Node3D
 
 ## Where one player starts: the altar of that slot and, in `WizardSpot`, the spot where its wizard appears (move and turn the
-## marker with the gizmo: the wizard stands where it stands, looking where it looks). The ghost wizard and the name over
-## it (Preview, PreviewWizard) only live in the editor. `team` says who this seat is allied with: seats with the same
+## marker with the gizmo: the wizard stands where it stands, looking where it looks). The name over it (Preview) only lives in
+## the editor. `team` says who this seat is allied with: seats with the same
 ## team above 0 are allies, 0 is alone (MapSides reads it with `slot`).
 
 const SCENE_PATH := "res://scenes/map/props/player_start.tscn"
@@ -17,11 +17,6 @@ const LABEL_TEXT := "Jugador %d"
 		_refresh_starts()
 ## Seats with the same team above 0 are allies; 0 = on its own (an enemy of every other seat).
 @export_range(0, 8) var team := 0
-## Model of the ghost wizard shown in the editor.
-@export var preview_model := "jnwr":
-	set(value):
-		preview_model = value
-		_show_preview()
 
 
 func _enter_tree() -> void:
@@ -34,9 +29,9 @@ func _ready() -> void:
 		_refresh_starts()
 		_show_preview()
 		return
-	for preview in [get_node_or_null("%Preview"), get_node_or_null("%PreviewWizard")]:
-		if preview:
-			preview.queue_free()
+	var preview := get_node_or_null("%Preview")
+	if preview:
+		preview.queue_free()
 
 
 func _exit_tree() -> void:
@@ -83,9 +78,6 @@ func _show_preview() -> void:
 	var label := get_node_or_null("%PreviewLabel") as Label3D
 	if label:
 		label.text = LABEL_TEXT % slot
-	var visual := get_node_or_null("%PreviewVisual")
-	if visual and visual.get("model") != preview_model:
-		visual.set("model", preview_model)
 
 
 ## The preview is rebuilt on every load: nothing of it is written to player_start.tscn.
@@ -95,9 +87,6 @@ func _clear_preview() -> void:
 	var label := get_node_or_null("%PreviewLabel") as Label3D
 	if label:
 		label.text = ""
-	var visual := get_node_or_null("%PreviewVisual")
-	if visual:
-		visual.set("model", "")
 
 
 ## The other starts of the same map: the siblings of this node.

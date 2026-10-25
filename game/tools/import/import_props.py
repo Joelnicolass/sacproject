@@ -4,7 +4,7 @@
 Import the original's static models (buildings, BLDG components, plants) to assets/original/props/ as .glb.
 
 RFC-033 (033c). One .glb per model, no textures: one primitive per OBJ material label, with a glTF material that only
-carries the label as its name (Godot names the surface after it; OriginalMaterial puts the shared textured material on
+carries the label as its name (Godot names the surface after it; the baked .res puts the shared textured material on
 top by that name). The geometry is the one the game used to build with ObjMesh.build (scenes/bodies/obj_mesh.gd):
 winding checked against the file normals, plants drawn on both sides with their own normals. Written into Godot's
 clockwise winding mirrored for glTF (the importer flips it back), so the vertices that reach the game are the same.
@@ -24,11 +24,10 @@ is built in memory as the OBJ text it has always been imported from (5 decimals)
 the result is versioned. An existing .glb.import is never touched (it carries the UID). Deterministic: a second run writes
 nothing.
 
-The mesh the game draws is not read from these .glb at run time since 055s: tools/bake/bake_props_055s.gd saves each prop that
-is used as scenes/props/meshes/<tag>.res (materials included). After importing a new prop run, from game/:
-  python3 tools/bake/bake_props_055s.py --list
-  "$GODOT" --headless --path . --script res://tools/bake/bake_props_055s.gd
-and drag the new .res onto the part, species or shot that uses it. This script writes no measures any more (BodySize is gone).
+The mesh the game draws is not read from these .glb at run time since 055s: each prop it uses is a scenes/props/meshes/<tag>.res
+(materials included). To use a new prop: open the imported .glb in the editor, save its mesh as a .res in scenes/props/meshes/, give the
+surfaces the materials of scenes/bodies/materials/ and drag the .res onto the part, species or shot that uses it. This script writes
+no measures (the size of a building is the box of its scene).
 """
 
 import json

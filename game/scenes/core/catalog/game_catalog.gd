@@ -21,8 +21,6 @@ var buildings: Array[BuildingType] = []
 var duplicate_building_tags := PackedStringArray()
 var _building_by_tag: Dictionary = {}
 var _creature_by_id: Dictionary = {}
-## Bodies and props together; `BodySize.is_prop` tells them apart.
-var body_sizes: Array[BodySize] = []
 ## The gods of data/gods/<tag>.tres (RFC-042), by sort_order then tag. Each carries its theme, look, AI profile and typed book.
 var gods: Array[GodType] = []
 ## The game modes in the order the screens list them (data/modes/mode_catalog.tres).
@@ -50,7 +48,6 @@ func scan(reload_from_disk := false) -> void:
 	abilities.assign(_load_folder("abilities", AbilityType, reload_from_disk))
 	buildings.assign(_load_folder("buildings", BuildingType, reload_from_disk))
 	_index_buildings()
-	body_sizes.assign(_load_folder("body_sizes", BodySize, reload_from_disk))
 	gods.assign(_load_gods(reload_from_disk))
 	modes.assign(GameModeCatalog.shared().modes)
 

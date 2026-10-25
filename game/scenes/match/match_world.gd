@@ -101,7 +101,6 @@ func _check_local(node: Node) -> void:
 		return
 	_local_wizard = node as Node3D
 	%Camera.set_follow(_local_wizard)
-	_place_creature.call_deferred()
 	local_wizard_changed.emit(_local_wizard)
 
 
@@ -112,14 +111,3 @@ func _on_result_changed() -> void:
 	var view := get_node_or_null("%View") as Button
 	if view:
 		view.disabled = true
-
-
-func _place_creature() -> void:
-	var wizard := local_wizard()
-	if wizard == null:
-		return
-	for _attempt in 3:
-		await get_tree().physics_frame
-	var creature: Node3D = %Creature
-	creature.position = wizard.position + Vector3(6, 0, 0)
-	creature.visible = false

@@ -22,7 +22,7 @@ var _waited := 0.0
 
 
 func _ready() -> void:
-	if not BodyCatalog.loads_meshes() or caster == null:
+	if not BodyLook.loads_meshes() or caster == null:
 		set_process(false)
 		return
 	caster.cast_fx_changed.connect(_on_cast_fx_changed)

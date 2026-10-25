@@ -64,17 +64,12 @@ scenes/world/match_biome.gd,scenes/match/match_biome.gd,d
 scenes/world/match_clock.gd,scenes/match/match_clock.gd,d
 scenes/world/match_seed.gd,scenes/match/match_seed.gd,d
 # ---- cut e
-scenes/data/body_pose_override.gd,scenes/bodies/body_pose_override.gd,e
-scenes/data/body_pose_overrides.gd,scenes/bodies/body_pose_overrides.gd,e
-scenes/data/body_size.gd,scenes/bodies/body_size.gd,e
 scenes/world/body/,scenes/bodies/,e
 scenes/world/body_box.gd,scenes/bodies/body_box.gd,e
-scenes/world/body_catalog.gd,scenes/bodies/body_catalog.gd,e
 scenes/world/body_library.gd,scenes/bodies/body_library.gd,e
 scenes/world/body_visual.gd,scenes/bodies/body_visual.gd,e
 scenes/world/components/clip_playback.gd,scenes/bodies/clip_playback.gd,e
 scenes/world/obj_mesh.gd,scenes/bodies/obj_mesh.gd,e
-scenes/world/original_material.gd,scenes/bodies/original_material.gd,e
 # ---- cut f
 scenes/data/ability_catalog.gd,scenes/units/abilities/ability_catalog.gd,f
 scenes/data/ability_type.gd,scenes/units/abilities/ability_type.gd,f
@@ -239,10 +234,8 @@ debug/biome_gallery_close.tscn,debug/look/biome_gallery_close.tscn,i
 debug/biome_pick.tscn,debug/look/biome_pick.tscn,i
 debug/body_gallery.gd,debug/bodies/body_gallery.gd,i
 debug/body_gallery.tscn,debug/bodies/body_gallery.tscn,i
-debug/body_pose_bench.tscn,debug/bodies/body_pose_bench.tscn,i
 debug/camera_edges.gd,debug/camera/camera_edges.gd,i
 debug/camera_edges.tscn,debug/camera/camera_edges.tscn,i
-debug/capsule_preview.gd,debug/bodies/capsule_preview.gd,i
 debug/cast_charnel.tscn,debug/spells/cast_charnel.tscn,i
 debug/cast_heal.tscn,debug/spells/cast_heal.tscn,i
 debug/cast_pyro.tscn,debug/spells/cast_pyro.tscn,i

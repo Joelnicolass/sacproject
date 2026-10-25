@@ -66,7 +66,7 @@ func _ready() -> void:
 	top_level = true
 	global_transform = Transform3D.IDENTITY
 	cast_shadow = SHADOW_CASTING_SETTING_OFF
-	if not BodyCatalog.loads_meshes():
+	if not BodyLook.loads_meshes():
 		visible = false
 		set_process(false)
 		set_physics_process(false)

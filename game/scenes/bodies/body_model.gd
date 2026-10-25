@@ -38,7 +38,7 @@ const MELEE_ROLES: PackedStringArray = ["attack", "attack2", "attack3"]
 const DEFAULT_FRAMERATE := 30
 const PLAYBACK := &"parameters/playback"
 
-## Model tag (eorc, jnwr...). Filled by the bake: BodyCatalog and the rig find the scene by it.
+## Model tag (eorc, jnwr...). Filled by the bake: the name of the scene it roots.
 @export var model := ""
 ## Meters added to every side of the skinned mesh's bounding box (it is the rest pose's; arms swing outside it).
 @export_range(0.0, 4.0, 0.05, "or_greater") var aabb_margin := 0.5

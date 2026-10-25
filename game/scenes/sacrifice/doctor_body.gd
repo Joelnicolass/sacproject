@@ -356,7 +356,7 @@ func _apply_pose() -> void:
 		return
 	remove_from_group(GROUP)
 	collision.set_deferred("disabled", true)
-	if not BodyCatalog.loads_meshes():
+	if not BodyLook.loads_meshes():
 		return
 	if _fade:
 		_fade.kill()
@@ -366,7 +366,7 @@ func _apply_pose() -> void:
 
 
 func _play_clip() -> void:
-	if clip_player == null or not BodyCatalog.loads_meshes():
+	if clip_player == null or not BodyLook.loads_meshes():
 		return
 	var role := ""
 	if pose == Pose.WORKING:

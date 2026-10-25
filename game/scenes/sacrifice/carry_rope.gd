@@ -26,7 +26,7 @@ var _spark_left := 0.0
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
-	if not BodyCatalog.loads_meshes():
+	if not BodyLook.loads_meshes():
 		set_process(false)
 
 

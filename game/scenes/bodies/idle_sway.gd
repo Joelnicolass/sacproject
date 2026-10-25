@@ -32,7 +32,7 @@ var _weight := 0.0
 
 
 func _ready() -> void:
-	if Engine.is_editor_hint() or not BodyCatalog.loads_meshes() or pivot == null:
+	if Engine.is_editor_hint() or not BodyLook.loads_meshes() or pivot == null:
 		set_process(false)
 		return
 	_rest = pivot.transform

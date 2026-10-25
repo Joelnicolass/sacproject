@@ -262,7 +262,7 @@ func _apply_ring(held: bool) -> void:
 
 ## Center of the creature's box and the ring around it. Local presentation: not on the dedicated server.
 func _open_portal() -> void:
-	if portal_scene == null or not BodyCatalog.loads_meshes():
+	if portal_scene == null or not BodyLook.loads_meshes():
 		return
 	if portal == null or not is_instance_valid(portal):
 		portal = portal_scene.instantiate() as PortalDisc

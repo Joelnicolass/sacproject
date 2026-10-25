@@ -118,7 +118,7 @@ xargs grep -nE 'FxBus\.[a-z_]+\([ ]*&?"|@export[a-z_]* var [a-z_]*(fx|sfx|sound|
 } | grep -vE ':[0-9]+:[ 	]*#' >> "$OUT/C17.txt" || true
 
 # C18: text-tag lookups of content in gameplay (allowed in spawners, scenes/net/, scenes/core/catalog/).
-xargs grep -nE 'GameData\.(creature|spell|ability|wizard|god|book)[a-z_]*\(|BodyCatalog\.(info|pose|has_model)\(|MapCatalog\.|GameModeCatalog\.' < "$OUT/all.txt" 2>/dev/null \
+xargs grep -nE 'GameData\.(creature|spell|ability|wizard|god|book)[a-z_]*\(|MapCatalog\.|GameModeCatalog\.' < "$OUT/all.txt" 2>/dev/null \
 	| grep -vE '^scenes/(net|core/catalog)/|^scenes/[a-z_/]*[a-z_]*spawn[a-z_]*\.gd:' \
 	| grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C18.txt" || true
 

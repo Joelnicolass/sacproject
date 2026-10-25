@@ -775,7 +775,7 @@ _TEXTURE_INDEX = None
 
 def material_key(model_tag: str, part: int):
     """What the game draws body part `part` with: (owner, file, cutout) of textures/index.json. Parts with the same key
-    share one OriginalMaterial and so one primitive. A part with no entry stays alone."""
+    share one material and so one primitive. A part with no entry stays alone."""
     global _TEXTURE_INDEX
     if _TEXTURE_INDEX is None:
         path = ROOT / "assets" / "original" / "textures" / "index.json"

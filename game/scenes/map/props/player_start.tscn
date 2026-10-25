@@ -1,8 +1,7 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/map/props/player_start.gd" id="1_start"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/altar.tscn" id="2_altar"]
-[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="3_visual"]
 [ext_resource type="Script" path="res://scenes/components/ground_snap.gd" id="4_snap"]
 
 [node name="PlayerStart" type="Node3D"]
@@ -14,18 +13,6 @@ unique_name_in_owner = true
 [node name="WizardSpot" type="Marker3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 30)
-
-[node name="PreviewWizard" type="Node3D" parent="WizardSpot"]
-unique_name_in_owner = true
-
-[node name="PreviewVisual" type="MeshInstance3D" parent="WizardSpot/PreviewWizard"]
-unique_name_in_owner = true
-transparency = 0.5
-cast_shadow = 0
-script = ExtResource("3_visual")
-
-[node name="GroundSnap" type="Node3D" parent="WizardSpot/PreviewWizard"]
-script = ExtResource("4_snap")
 
 [node name="Preview" type="Node3D" parent="."]
 unique_name_in_owner = true

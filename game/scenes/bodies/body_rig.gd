@@ -38,7 +38,7 @@ var _sockets: Array[Node3D] = []
 
 
 func _ready() -> void:
-	if not BodyCatalog.loads_meshes():
+	if not BodyLook.loads_meshes():
 		process_mode = Node.PROCESS_MODE_DISABLED
 		return
 	if _pending != null:

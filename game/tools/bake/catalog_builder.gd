@@ -9,10 +9,8 @@ const _CREATURE_TYPE := preload("res://scenes/units/creature_type.gd")
 const _SPELL_TYPE := preload("res://scenes/spells/spell_type.gd")
 const _ABILITY_TYPE := preload("res://scenes/units/abilities/ability_type.gd")
 const _WIZARD_TYPE := preload("res://scenes/wizards/wizard_type.gd")
-const _BODY_SIZE := preload("res://scenes/bodies/body_size.gd")
 
 const DATA_DIR := "res://assets/original/data/"
-const SIZES_PATH := "res://assets/original/models/sizes.json"
 
 
 static func read_json(path: String) -> Dictionary:
@@ -124,20 +122,4 @@ static func make_wizard(row: Dictionary) -> Resource:
 	type.splash_spell_resistance = float(resist.get("splash_spell", 1.0))
 	type.direct_ranged_resistance = float(resist.get("direct_ranged", 1.0))
 	type.splash_ranged_resistance = float(resist.get("splash_ranged", 1.0))
-	return type
-
-
-static func make_body_size(tag: String, row: Dictionary, is_prop: bool) -> Resource:
-	var type := _BODY_SIZE.new()
-	type.tag = tag
-	type.is_prop = is_prop
-	type.box = PackedFloat64Array(row.get("box", []))
-	type.foot_offset = float(row.get("foot_offset", 0.0))
-	type.height = float(row.get("height", 0.0))
-	type.radius = float(row.get("radius", 0.0))
-	type.reach = float(row.get("reach", 0.0))
-	type.upright_fix = PackedFloat64Array(row.get("upright_fix", []))
-	type.pose_source = str(row.get("pose_source", ""))
-	type.has_upright_checked = row.has("upright_checked")
-	type.upright_checked = bool(row.get("upright_checked", false))
 	return type

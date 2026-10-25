@@ -1,7 +1,7 @@
 extends Node
 
 ## Read-only observer for the F135 playtest (RFC-030 030e2b): the Collision capsule height of every hybrid flier
-## against BodyCatalog.info(model) (height on the ground, height_flying while FLYING). It never moves, orders or
+## against the BodyFacts of the body it wears (height on the ground, flying height while FLYING). It never moves, orders or
 ## spawns anything. The only thing it adds is an optional translucent overlay mesh under each Collision node
 ## (overlay(true)), so the capsule can be seen in a shot; it does not touch the shape.
 ##
@@ -43,10 +43,10 @@ func _cap(u: Node3D) -> float:
 
 
 func _want(u: Node3D, state: int) -> float:
-	var info := BodyCatalog.info(str(u.get("model")))
-	var h := float(info.get("height", 1.8))
+	var facts := BodyFacts.of_body(u)
+	var h := facts.height_m
 	if state == 2:
-		h = float(info.get("height_flying", h))
+		h = facts.flying_height_m
 	return maxf(h, 0.6)
 
 
@@ -57,9 +57,9 @@ func _state(u: Node3D) -> int:
 
 func _line(u: Node3D) -> String:
 	var st := _state(u)
-	var info := BodyCatalog.info(str(u.get("model")))
+	var facts := BodyFacts.of_body(u)
 	return "%s model=%s %s cap=%.2f want=%.2f (tierra %.2f vuelo %.2f)" % [u.name, str(u.get("model")), _NAMES[st] if st >= 0 else "?",
-		_cap(u), _want(u, st), float(info.get("height", 0.0)), float(info.get("height_flying", 0.0))]
+		_cap(u), _want(u, st), facts.height_m, facts.flying_height_m]
 
 
 func arm(slot: int = -1) -> String:

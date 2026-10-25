@@ -90,7 +90,7 @@ func _process(delta: float) -> void:
 func _refresh() -> void:
 	if not _started:
 		return
-	if not BodyCatalog.loads_meshes():
+	if not BodyLook.loads_meshes():
 		visible = false
 		return
 	if mesh == null:

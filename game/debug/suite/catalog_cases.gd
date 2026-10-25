@@ -6,7 +6,7 @@ extends SceneTree
 ##   - no duplicate tags in a folder
 ##   - every tag that abilities mention exists
 ##   - every god (RFC-042) has theme, look, AI profile and a typed book whose rows are files of the catalog
-##   - every creature and wizard has its BodySize
+##   - every creature and wizard has a complete body scene (a BodyFrame)
 ##   - the numbers are sane (health > 0, costs >= 0, ...)
 ##   - (RFC-049 049d) every map has as many PlayerStart (slots 1..N, no repeats) as its `player_starts`, and every mode has
 ##     teams 0..T-1 without gaps and a map with `player_starts >= seats`; a mode no room map can host is only a warning
@@ -35,7 +35,6 @@ const WIZARD_RANGES := {
 	"splash_ranged_resistance": 0,
 }
 const BUILDING_RANGES := {"max_health": 0}
-const BODY_RANGES := {"height": 0, "radius": 0, "reach": 0}
 
 var _failures := 0
 var _catalog: GameCatalog
@@ -45,7 +44,7 @@ func _initialize() -> void:
 	_catalog = GameCatalog.shared(true)
 	var tables := {
 		"creatures": _catalog.creatures, "spells": _catalog.spells, "wizards": _catalog.wizards,
-		"abilities": _catalog.abilities, "buildings": _catalog.buildings, "body_sizes": _catalog.body_sizes,
+		"abilities": _catalog.abilities, "buildings": _catalog.buildings,
 	}
 	var tags := {}
 	for folder: String in tables:
@@ -55,7 +54,6 @@ func _initialize() -> void:
 	_check_ranges("abilities", _catalog.abilities, SPELL_RANGES)
 	_check_ranges("wizards", _catalog.wizards, WIZARD_RANGES)
 	_check_ranges("buildings", _catalog.buildings, BUILDING_RANGES)
-	_check_ranges("body_sizes", _catalog.body_sizes, BODY_RANGES)
 	_check_references(tags)
 	_check_gods(tags)
 	_check_lobby()
@@ -64,7 +62,7 @@ func _initialize() -> void:
 	_check_audio()
 	print("CATALOG creatures %d spells %d wizards %d abilities %d buildings %d body sizes %d gods %d" % [
 		_catalog.creatures.size(), _catalog.spells.size(), _catalog.wizards.size(), _catalog.abilities.size(),
-		_catalog.buildings.size(), _catalog.body_sizes.size(), _catalog.gods.size()])
+		_catalog.buildings.size(), _body_scenes(), _catalog.gods.size()])
 	print("CATALOG PASS" if _failures == 0 else "CATALOG FAIL (%d problems)" % _failures)
 	quit(0 if _failures == 0 else 1)
 
@@ -253,11 +251,16 @@ func _check_bodies(tags: Dictionary) -> void:
 	for wizard: WizardType in _catalog.wizards:
 		if not BodyFacts.of(wizard.body).from_scene:
 			_report("wizards/%s: no complete body scene (a BodyFrame with Capsule, Footprint, Reach, Center and Top)" % _file(wizard))
-	for size: BodySize in _catalog.body_sizes:
-		if not size.box.is_empty() and size.box.size() != 6:
-			_report("body_sizes/%s: box has %d numbers, it needs 6" % [_file(size), size.box.size()])
-		if not size.upright_fix.is_empty() and size.upright_fix.size() != 3:
-			_report("body_sizes/%s: upright_fix has %d numbers, it needs 3" % [_file(size), size.upright_fix.size()])
+
+
+## How many creatures and wizards wear a body scene (the number the line "body sizes" prints).
+func _body_scenes() -> int:
+	var count := 0
+	for creature: CreatureType in _catalog.creatures:
+		count += 1 if creature.body != null else 0
+	for wizard: WizardType in _catalog.wizards:
+		count += 1 if wizard.body != null else 0
+	return count
 
 
 ## RFC-051: a creature whose model is a .glb of assets/custom/models/ has its model scene, and every clip of its library is a

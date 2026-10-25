@@ -191,7 +191,7 @@ func _apply_post() -> void:
 		_tether = null
 		return
 	get_tree().call_group(SELECTION_GROUP, "drop", body)
-	if tether_scene == null or not BodyCatalog.loads_meshes():
+	if tether_scene == null or not BodyLook.loads_meshes():
 		return
 	if _tether != null and is_instance_valid(_tether):
 		_tether.retire()

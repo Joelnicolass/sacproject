@@ -52,7 +52,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 func _process(delta: float) -> void:
-	if Engine.is_editor_hint() or ritual == null or not BodyCatalog.loads_meshes():
+	if Engine.is_editor_hint() or ritual == null or not BodyLook.loads_meshes():
 		return
 	var live := ritual.outcome == Ritual.Outcome.RUNNING and ritual.phase != Ritual.Phase.OFF
 	var wizard := _wizard()

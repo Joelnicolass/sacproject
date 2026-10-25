@@ -1,12 +1,12 @@
 extends RefCounted
 
-## 055s (s1) case of rules_suite: the size and sockets a body scene saves (BodyFacts) are the ones BodyCatalog.info(model) gives today,
-## so moving the readers to the scene changes nothing the rules see. For every CreatureType and WizardType:
+## 055s case of rules_suite: the size and sockets a body scene saves (BodyFacts) are the ones the rules need. For every CreatureType and
+## WizardType:
 ##   - it points at a complete BodyFrame (with its `model_id`), with no synchronizer or spawner inside;
-##   - height, radius, reach and flying height BodyFacts gives (decoded to the mm from the 32 bits the shapes and markers keep) are the
-##     doubles BodyCatalog.info holds, bit for bit. `exact_double` counts the types whose four raw 32-bit numbers already were;
-##   - the capsule is what BodyCollider used to compute (height >= 0.6, radius <= 0.45 of it), the ground one and the flying one;
-##   - the Muzzle, Center and Top are the positions the code used to build from the height and the reach.
+##   - height, radius, reach and flying height BodyFacts gives are positive and have at most 3 decimals (the doubles the rules always read:
+##     the scene keeps 32 bits and BodyFacts decodes them to the mm). `exact_double` counts the types whose raw 32-bit numbers already were;
+##   - the capsule is what BodyCollider computes (height >= 0.6, radius <= 0.45 of it), the ground one and the flying one;
+##   - the Muzzle, Center and Top are the positions the code builds from the height and the reach.
 ## Plus: BodyMount ignores the same scene twice, and BodyCollider writes the capsule of the scene a body wears (and only that).
 ## Prints BODY FACTS bodies=<n> equal=<n> differ=<n> and BODY FACTS doubles ... (the detail of the precision).
 
@@ -45,7 +45,7 @@ func run(_host: Node) -> Dictionary:
 	return {"body_facts": {"ok": bodies > 0 and equal == bodies and mount_ok and collider_ok, "bodies": bodies, "equal": equal, "notes": notes}}
 
 
-## "" when the type's body scene agrees with BodyCatalog.info(model), else what differs.
+## "" when the type's body scene gives sane facts, else what differs.
 func _check_type(path: String, wizard: bool) -> String:
 	var type := load(path) as Resource
 	var scene := type.get("body") as PackedScene
@@ -64,21 +64,21 @@ func _check_type(path: String, wizard: bool) -> String:
 	if not problem.is_empty():
 		return problem
 	var facts := BodyFacts.of(scene)
-	var info := BodyCatalog.info(model)
-	var height := float(info.get("height", 0.0))
-	var radius := float(info.get("radius", 0.0))
-	var reach := float(info.get("reach", 0.0))
-	var flying := float(info.get("height_flying", height))
-	var sizes := {"height": [facts.height_m, height], "radius": [facts.radius_m, radius], "reach": [facts.reach_m, reach],
-			"flying": [facts.flying_height_m, flying]}
+	var height := facts.height_m
+	var radius := facts.radius_m
+	var reach := facts.reach_m
+	var flying := facts.flying_height_m
+	var sizes := {"height": height, "radius": radius, "reach": reach, "flying": flying}
 	var exact := true
 	var decoded := true
 	for key: String in sizes:
-		var pair: Array = sizes[key]
-		if var_to_bytes(float(pair[0])) != var_to_bytes(float(pair[1])):
-			return "%s: scene %s, BodyCatalog %s" % [key, str(pair[0]), str(pair[1])]
-		exact = exact and PackedFloat32Array([pair[1]])[0] == float(pair[1])
-		decoded = decoded and roundi(float(pair[0]) * 1000.0) / 1000.0 == float(pair[1])
+		var value: float = sizes[key]
+		if value <= 0.0:
+			return "%s: %s is not positive" % [key, str(value)]
+		if roundi(value * 1000.0) / 1000.0 != value:
+			return "%s: %s has more than 3 decimals" % [key, str(value)]
+		exact = exact and PackedFloat32Array([value])[0] == value
+		decoded = decoded and roundi(value * 1000.0) / 1000.0 == value
 	_exact_double += 1 if exact else 0
 	_decoded_double += 1 if decoded else 0
 	var capsule := _old_capsule(height, radius, wizard or model == "sacd", false)
@@ -89,9 +89,9 @@ func _check_type(path: String, wizard: bool) -> String:
 		return "flying capsule: scene %s, BodyCollider rule %s" % [str(facts.flying_capsule_height_m), str(air.height)]
 	var hand := Vector3.UP * height * HAND_FRACTION
 	if facts.muzzle != Vector3(0.0, hand.y, Vector3(0.0, 0.0, reach).z):
-		return "muzzle: scene %s, old rule (0, %s, %s)" % [str(facts.muzzle), str(hand.y), str(reach)]
+		return "muzzle: scene %s, rule (0, %s, %s)" % [str(facts.muzzle), str(hand.y), str(reach)]
 	if facts.center != Vector3(0.0, height * 0.5, 0.0) or facts.top != Vector3(0.0, height, 0.0):
-		return "center or top: scene %s %s, old rule from height %s" % [str(facts.center), str(facts.top), str(height)]
+		return "center or top: scene %s %s, rule from height %s" % [str(facts.center), str(facts.top), str(height)]
 	return ""
 
 

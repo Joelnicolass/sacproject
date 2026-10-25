@@ -12,7 +12,6 @@ const _HAND_FRACTION := 0.65
 
 ## One BodyFacts per body scene, built the first time somebody asks.
 static var _cache: Dictionary[PackedScene, BodyFacts] = {}
-static var _model_cache: Dictionary[String, BodyFacts] = {}
 ## What a body that wears nothing reads: the size of an unknown model.
 static var _fallback: BodyFacts
 
@@ -54,33 +53,14 @@ static func of(scene: PackedScene) -> BodyFacts:
 	return _cache[scene]
 
 
-## The facts of the body scene `body` wears (a UnitBody, WizardBody or DoctorBody has a `mount`). Anything else with a
-## `model` (a building, a structure a blow aims at) keeps the baked size of that model until 055s s5a/s5b give props their
-## own facts; the default when there is neither.
+## The facts of the body scene `body` wears (a UnitBody, WizardBody or DoctorBody has a `mount`). Anything else (a building, a
+## structure a blow aims at, a body that wears nothing yet) reads the unknown-model default: 1.8 m tall, 0.35 m wide and of reach.
 static func of_body(body: Object) -> BodyFacts:
 	var found: Variant = body.get("mount") if body != null and "mount" in body else null
 	var mount := found as BodyMount
 	if mount != null:
 		return mount.facts
-	if body != null and "model" in body:
-		return _of_model(str(body.get("model")))
 	return fallback()
-
-
-## A prop's size from BodyCatalog (doubles from the .tres, as the rules read them before 055s). Built once per model.
-static func _of_model(model: String) -> BodyFacts:
-	if model.is_empty():
-		return fallback()
-	if not _model_cache.has(model):
-		var info := BodyCatalog.info(model)
-		var built := BodyFacts.new()
-		built.height_m = float(info.get("height", 1.8))
-		built.flying_height_m = built.height_m
-		built.radius_m = float(info.get("radius", 0.35))
-		built.reach_m = float(info.get("reach", 0.35))
-		built.muzzle = _hand(built.height_m, built.reach_m)
-		_model_cache[model] = built
-	return _model_cache[model]
 
 
 ## The size of a body with no scene: 1.8 m tall, 0.35 m wide, 0.35 m of reach.

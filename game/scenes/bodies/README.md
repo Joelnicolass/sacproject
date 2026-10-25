@@ -4,11 +4,11 @@ What: the size and sockets of every creature and wizard (`BodyFrame` scenes in `
 Not: what a creature does (that is `units/`) or how long a swing lasts in the match (the rules read `ClipFacts`, they never play a clip).
 Talks to: a body calls `BodyMount.wear(type.body)`; `BodyCollider` sizes the physics capsule from `BodyMount.facts`; melee, avoidance and formations read `BodyFacts.of_body(body)`. on a client `BodyMount` hands the look to `BodyRig.mount`, `BodyAnimator` listens to it and asks `BodyRig` for a role; `HandFx` reads the hand sockets (`HandL`/`HandR` under the skeleton of the model, shown by a `visible` track of the clip, hidden by `RESET`); `UnitSounds`, `WizardSounds`, `CommandVoice` and `CreatureFx` read `BodyMount.look`; `BodyRig` travels the model's Tree; the Animations call `ClipEvents.fire(kind)`; `UnitBody`/`WizardBody` read `ClipFacts.of(library)`.
 Edit: open `scenes/units/bodies/<name>.tscn` (or `scenes/wizards/bodies/`) and drag `Bounds/Capsule`, `Bounds/Footprint` and the `Sockets/` markers · open `models/<tag>.tscn` (F6): `Clips` > Animation panel for a role (length, `hit` marker, method calls), `Tree` for the states; a new model is `tools/bake/new_creature.gd`.
-Check: `debug/suite/presentation_refs_cases.gd`, `debug/suite/body_facts_cases.gd` and `debug/suite/clip_facts_cases.gd` (rules_suite), `debug/bodies/anim_model_audit.gd`, `debug/bodies/anim_gallery.tscn` (F6).
+Check: `debug/suite/presentation_refs_cases.gd`, `debug/suite/body_facts_cases.gd` and `debug/suite/clip_facts_cases.gd` (rules_suite) · `debug/bodies/body_gallery.tscn` (F6: every body with its look) · `debug/bodies/unit_parity_gallery.tscn`.
 
 ---
 
-Cuerpos y modelos: animador, cajas, catalogo de modelos y `models/`. Los `.tscn` de modelos se editan en el editor; los clips de cada uno viven en `models/<tag>_clips.tres` (la biblioteca) y `models/<tag>_clips/<clip>.res` (un archivo por clip, con sus pistas de huesos, el marcador del golpe y los eventos). Un modelo nuevo sale de `tools/bake/new_creature.gd`.
+Cuerpos y modelos: animador, cajas, tamanos (`BodyFacts`) y `models/`. Los `.tscn` de modelos se editan en el editor; los clips de cada uno viven en `models/<tag>_clips.tres` (la biblioteca) y `models/<tag>_clips/<clip>.res` (un archivo por clip, con sus pistas de huesos, el marcador del golpe y los eventos). Un modelo nuevo sale de `tools/bake/new_creature.gd`.
 
 Agregar uno nuevo: poner el script y la escena aca, componer con nodos hijos y `@export` (nada de herencia profunda), y los datos de tipo en `data/` como `.tres`. Las pruebas de este dominio van en `debug/bodies/`.
 

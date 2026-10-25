@@ -3,13 +3,12 @@ extends SceneTree
 ## No necesita el juego original; usa los modelos y datos ya importados en assets/original (versionados).
 ## Seed tool (RFC-036 036c, RFC-040 040a): writes the game's catalog as one .tres per type. From then on those files are the
 ## source of truth and the only thing the game reads: GameCatalog scans the folders, so there is no list to keep. The JSON
-## files (creatures.json, spells.json, wizards.json, abilities.json, books.json, sizes.json) are only this
+## files (creatures.json, spells.json, wizards.json, abilities.json, books.json) are only this
 ## tool's input.
 ##   data/catalog/creatures/<tag>.tres    CreatureType
 ##   data/catalog/spells/<tag>.tres       SpellType
 ##   data/catalog/wizards/<tag>.tres      WizardType
 ##   data/catalog/abilities/<tag>.tres    AbilityType
-##   data/catalog/body_sizes/<tag>.tres   BodySize
 ## The buildings are NOT written here either: since RFC-055 055d they are authored in data/buildings/<name>.tres with a scene of parts.
 ## The gods and their books are NOT written here: they are authored in data/gods/<god>.tres (RFC-042). books.json only tells
 ## which spells are structures.
@@ -47,10 +46,9 @@ func _initialize() -> void:
 	var spells := _BUILDER.read_json(dir + "spells.json")
 	var abilities := _BUILDER.read_json(dir + "abilities.json")
 	var wizards := _BUILDER.read_json(dir + "wizards.json")
-	var sizes := _BUILDER.read_json(_BUILDER.SIZES_PATH)
 	if creatures.is_empty() or spells.is_empty() or wizards.is_empty() or abilities.is_empty() \
-			or books.is_empty() or sizes.is_empty():
-		push_error("bake_catalog: missing or empty JSON under %s or %s." % [dir, _BUILDER.SIZES_PATH])
+			or books.is_empty():
+		push_error("bake_catalog: missing or empty JSON under %s." % dir)
 		quit(1)
 		return
 	var structures: Dictionary = _BUILDER.structure_tags(books)
@@ -63,10 +61,6 @@ func _initialize() -> void:
 		_save(_BUILDER.make_wizard(wizards[tag]), "wizards", tag, taken)
 	for tag in abilities:
 		_save(_BUILDER.make_ability(abilities[tag]), "abilities", tag, taken)
-	for kind in ["bodies", "props"]:
-		var group: Dictionary = sizes.get(kind, {})
-		for tag in group:
-			_save(_BUILDER.make_body_size(tag, group[tag], kind == "props"), "body_sizes", tag, taken)
 	print("bake_catalog: wrote %d files, kept %d existing%s" % [_written, _kept, "" if _force else " (use -- --force to overwrite)"])
 	for failure in _failures:
 		push_error("bake_catalog: could not save " + failure)

@@ -20,6 +20,11 @@ extends Node3D
 @export var carried_fx: PackedScene
 
 
+## The editor always shows meshes; a headless run (the dedicated server) never loads them.
+static func loads_meshes() -> bool:
+	return Engine.is_editor_hint() or DisplayServer.get_name() != "headless"
+
+
 ## True when a skeleton draws this look.
 func has_model() -> bool:
 	return model != null

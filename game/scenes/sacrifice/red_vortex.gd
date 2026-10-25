@@ -70,7 +70,7 @@ func _process(delta: float) -> void:
 
 ## Before the children leave the tree: a closing copy of the ring stays where it was.
 func _leave_closing_ring() -> void:
-	if Engine.is_editor_hint() or disc == null or not BodyCatalog.loads_meshes():
+	if Engine.is_editor_hint() or disc == null or not BodyLook.loads_meshes():
 		return
 	var tree := get_tree()
 	if tree == null or tree.root == null or disc.openness <= 0.0:

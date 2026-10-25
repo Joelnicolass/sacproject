@@ -5,7 +5,7 @@ extends Control
 ## A radial menu (RFC-038 038c, sacengine's X menu): two rings of icons around the point where it opened. It shows the entries of its
 ## `layout`, says which one the pointer is on (by angle and distance, `RadialLayout.locate`) and emits `entry_chosen` or `cancelled`.
 ## It knows no order and no network. Whoever opens it feeds the pointer (`point_at`) and ends it (`confirm` on release, `cancel`).
-## Everything is laid out in HUD units and `scale` grows it with the shared HudScale around its center.
+## Everything is laid out in canvas pixels of the 1280×720 base; Godot's stretch scales it.
 ## Feedback: it opens with a quick scale + fade, the hovered icon grows and glows (the others dim), a wedge and a line mark the
 ## sector the pointer is in, and the center shows the hovered name (and, for a formation, its shape in dots). The name is drawn
 ## with `draw_string`, not a Label: the HUD text audit (RFC-025c) counts Controls with text.
@@ -27,7 +27,6 @@ const SLOT_SCENE := preload("res://scenes/ui/radial/radial_slot.tscn")
 		layout = value
 		if is_node_ready():
 			_rebuild()
-@export var hud_scale: HudScale = preload("res://data/ui/hud_scale.tres")
 ## Editor only: shows the menu open in the middle of its own rectangle.
 @export var preview_open := false:
 	set(value):
@@ -49,11 +48,11 @@ const SLOT_SCENE := preload("res://scenes/ui/radial/radial_slot.tscn")
 @export var pointer_color := Color(1.0, 0.88, 0.45, 0.85)
 @export var text_color := Color(1.0, 0.95, 0.8, 1.0)
 @export var text_outline := Color(0, 0, 0, 1)
-@export_range(6, 16) var font_size := 9
+@export_range(6, 20) var font_size := 11
 @export var dot_color := Color(1.0, 0.85, 0.4, 1.0)
-@export var dot_radius := 1.9
-## Side of the box the formation dots are fitted in (HUD units).
-@export var preview_px := 26.0
+@export var dot_radius := 2.3
+## Side of the box the formation dots are fitted in (canvas pixels).
+@export var preview_px := 31.0
 @export_group("Sockets")
 @export var center_rect: TextureRect
 @export var rings: Control
@@ -63,7 +62,6 @@ var hovered: RadialEntry
 
 var _slots: Array[RadialSlot] = []
 var _origin := Vector2.ZERO
-var _factor := 1.0
 var _standalone := false
 var _open := false
 var _offset := Vector2.ZERO
@@ -78,9 +76,6 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if layout == null or center_rect == null or rings == null:
 		warnings.append("Asigná layout, center_rect y rings.")
-	var scale_warning := HudScale.socket_warning(hud_scale)
-	if not scale_warning.is_empty():
-		warnings.append(scale_warning)
 	return warnings
 
 
@@ -111,10 +106,7 @@ func open_at(screen: Vector2, center_icon: Texture2D = null) -> void:
 	if layout == null:
 		return
 	_origin = screen
-	_factor = 1.0
-	if not Engine.is_editor_hint() and hud_scale != null:
-		_factor = hud_scale.factor(get_viewport().get_visible_rect().size.y)
-	_fit()
+	_resize_to_layout()
 	position = screen - size * 0.5
 	center_rect.texture = center_icon if center_icon != null else (layout.center.display_icon() if layout.center else null)
 	_open = true
@@ -131,10 +123,10 @@ func open_at(screen: Vector2, center_icon: Texture2D = null) -> void:
 		modulate.a = 1.0
 	else:
 		modulate.a = 0.0
-		scale = Vector2.ONE * _factor * open_scale
+		scale = Vector2.ONE * open_scale
 		_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		_tween.tween_property(self, "modulate:a", 1.0, open_s)
-		_tween.tween_property(self, "scale", Vector2.ONE * _factor, open_s)
+		_tween.tween_property(self, "scale", Vector2.ONE, open_s)
 	queue_redraw()
 	opened.emit()
 
@@ -143,7 +135,7 @@ func open_at(screen: Vector2, center_icon: Texture2D = null) -> void:
 func point_at(screen: Vector2) -> RadialEntry:
 	if layout == null:
 		return null
-	_offset = (screen - _origin) / maxf(_factor, 0.001)
+	_offset = screen - _origin
 	_spot = layout.locate(_offset)
 	hovered = layout.entry_of(_spot)
 	_show_hover(hovered)
@@ -152,7 +144,7 @@ func point_at(screen: Vector2) -> RadialEntry:
 
 ## The entry the pointer is on, without moving anything. Same math as `point_at`.
 func entry_at(screen: Vector2) -> RadialEntry:
-	return layout.entry_at((screen - _origin) / maxf(_factor, 0.001)) if layout else null
+	return layout.entry_at(screen - _origin) if layout else null
 
 
 ## Ends the menu where the pointer is: `entry_chosen` with its entry, or `cancelled` over nothing. Returns the entry.
@@ -213,9 +205,9 @@ func _draw() -> void:
 	draw_circle(middle, layout.outer_radius_px, backdrop_color)
 	draw_circle(middle, layout.inner_radius_px, ring_tint)
 	draw_circle(middle, layout.dead_zone_px, center_color)
-	draw_arc(middle, layout.dead_zone_px, 0.0, TAU, 48, line_color, 1.0, true)
-	draw_arc(middle, layout.inner_radius_px, 0.0, TAU, 64, line_color, 1.0, true)
-	draw_arc(middle, layout.outer_radius_px, 0.0, TAU, 64, line_color, 1.5, true)
+	draw_arc(middle, layout.dead_zone_px, 0.0, TAU, 48, line_color, 1.2, true)
+	draw_arc(middle, layout.inner_radius_px, 0.0, TAU, 64, line_color, 1.2, true)
+	draw_arc(middle, layout.outer_radius_px, 0.0, TAU, 64, line_color, 1.8, true)
 	_draw_wedge(middle)
 	_draw_pointer(middle)
 	_draw_center(middle)
@@ -250,8 +242,8 @@ func _draw_pointer(middle: Vector2) -> void:
 	var direction := _offset.normalized()
 	var tip := middle + direction * minf(_offset.length(), layout.outer_radius_px)
 	var base := middle + direction * layout.dead_zone_px
-	draw_line(base, tip, pointer_color, 2.0, true)
-	draw_circle(tip, 2.5, pointer_color)
+	draw_line(base, tip, pointer_color, 2.4, true)
+	draw_circle(tip, 3.0, pointer_color)
 
 
 ## The hovered name (and the shape of a formation) in the dead zone; the context icon when nothing is hovered.
@@ -276,7 +268,7 @@ func _draw_center(middle: Vector2) -> void:
 	var top := middle.y + dead * 0.3
 	for i in lines.size():
 		var at := Vector2(middle.x - dead, top + i * (font_size + 1))
-		draw_string_outline(font, at, lines[i], HORIZONTAL_ALIGNMENT_CENTER, dead * 2.0, font_size, 3, text_outline)
+		draw_string_outline(font, at, lines[i], HORIZONTAL_ALIGNMENT_CENTER, dead * 2.0, font_size, 4, text_outline)
 		draw_string(font, at, lines[i], HORIZONTAL_ALIGNMENT_CENTER, dead * 2.0, font_size, text_color)
 
 
@@ -303,14 +295,14 @@ func _draw_dots(formation: FormationType, center: Vector2, box: float) -> void:
 	var mid := (low + high) * 0.5
 	for slot in slots:
 		var at := center + (Vector2(slot.x, -slot.y) - mid) * fit
-		draw_circle(at, dot_radius + 0.9, text_outline)
+		draw_circle(at, dot_radius + 1.1, text_outline)
 		draw_circle(at, dot_radius, dot_color)
 
 
-func _fit() -> void:
+func _resize_to_layout() -> void:
 	size = Vector2.ONE * layout.outer_radius_px * 2.0
 	pivot_offset = size * 0.5
-	scale = Vector2.ONE * _factor
+	scale = Vector2.ONE
 	var middle := size * 0.5
 	center_rect.size = Vector2.ONE * layout.dead_zone_px * 1.5
 	center_rect.position = middle - center_rect.size * 0.5
@@ -324,7 +316,7 @@ func _rebuild() -> void:
 		return
 	_add_ring(layout.inner, layout.inner_mid())
 	_add_ring(layout.outer, layout.outer_mid())
-	_fit()
+	_resize_to_layout()
 	queue_redraw()
 
 

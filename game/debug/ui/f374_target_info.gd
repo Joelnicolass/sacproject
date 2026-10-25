@@ -6,7 +6,7 @@ extends Node3D
 ## - hidden at 0,4 s and shown at 0,6 s after the pointer lands on it; hidden again within 0,1 s when it leaves;
 ## - the exact title, the bar (none on the gravestone `grv3`) and its fraction (± 0,01), also after the house loses health;
 ## - the house inspected and nothing hovered: the box pinned; the inspection cleared: hidden;
-## - `TargetInfoPanel.place` inside 1280×720 and 1920×1080 with the HUD at 100 % and 150 %, and the live box inside the viewport.
+## - `TargetInfoPanel.place` inside the 1280×720 canvas and the 914×514 one (interface size 1.4), and the live box inside the viewport.
 ## Prints `TARGET_INFO <check>: PASS|FAIL` and `TARGET_INFO PASS|FAIL`; quits 0 / 1. Watchdog: `timeout_s` real seconds.
 
 ## Real seconds (not game time: --fixed-fps would stretch a game-time timer).
@@ -111,24 +111,19 @@ func _hover_case(body: Node3D, title: String, bar: bool) -> void:
 	_check("%s box inside the viewport" % label, _inside(panel.screen_rect(), get_viewport().get_visible_rect().size))
 
 
-## Every pointer on a grid of the screen, at both sizes and both HUD scales: the box stays inside.
+## Every pointer on a grid of the canvas, at the 16:9 base and a canvas 1.4 times smaller (interface size 1.4): the box stays inside.
 func _check_placement() -> void:
-	var scale := (panel.hud_scale.duplicate() as HudScale)
-	scale.max_scale = 2.0
 	var ok := true
-	for view in [Vector2(1280.0, 720.0), Vector2(1920.0, 1080.0)]:
-		for hud in [1.0, 1.5]:
-			scale.set_scale(hud, false)
-			var factor := scale.factor(view.y)
-			var box: Vector2 = panel.box_units * factor
-			for x in 11:
-				for y in 11:
-					var pointer := Vector2(view.x * x / 10.0, view.y * y / 10.0)
-					var at := TargetInfoPanel.place(pointer, box, view, panel.cursor_gap_units * factor)
-					if not _inside(Rect2(at, box), view):
-						ok = false
-						print("TARGET_INFO_NOTE outside: view %s hud %s pointer %s at %s" % [view, hud, pointer, at])
-	_check("place() inside 1280x720 and 1920x1080 at HUD 100 % and 150 %", ok)
+	for view in [Vector2(1280.0, 720.0), Vector2(914.0, 514.0)]:
+		var box := panel.size
+		for x in 11:
+			for y in 11:
+				var pointer := Vector2(view.x * x / 10.0, view.y * y / 10.0)
+				var at := TargetInfoPanel.place(pointer, box, view, panel.cursor_gap_px)
+				if not _inside(Rect2(at, box), view):
+					ok = false
+					print("TARGET_INFO_NOTE outside: view %s pointer %s at %s" % [view, pointer, at])
+	_check("place() inside the 1280x720 canvas and the 914x514 one (interface size 1.4)", ok)
 
 
 ## The live box at 1920×1080, the pointer near the bottom-right corner: it mirrors and stays inside.
@@ -142,7 +137,7 @@ func _check_live_1080() -> void:
 	var at := camera.unproject_position(_aim_point(trogg))
 	_check("live box shown at %s" % view, panel.visible)
 	_check("live box inside %s" % view, _inside(panel.screen_rect(), view))
-	_check("live box beside the pointer", panel.screen_rect().grow(panel.cursor_gap_units * 4.0).has_point(at))
+	_check("live box beside the pointer", panel.screen_rect().grow(panel.cursor_gap_px * 4.0).has_point(at))
 
 
 static func _inside(rect: Rect2, view: Vector2) -> bool:

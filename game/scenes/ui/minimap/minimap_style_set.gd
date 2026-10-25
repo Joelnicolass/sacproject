@@ -26,5 +26,5 @@ extends Resource
 @export_group("Vision wedge")
 @export var fov_color := Color(1.0, 1.0, 0.0)
 @export_range(10.0, 180.0, 1.0) var fov_deg := 82.0
-## Line width in HUD units (sacengine 0.5).
-@export var fov_width := 0.5
+## Line width in canvas pixels.
+@export var fov_width := 0.6

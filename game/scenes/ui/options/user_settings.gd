@@ -2,7 +2,7 @@ class_name UserSettings
 extends RefCounted
 
 ## RFC-031 031c (F142): the one reader and writer of the player's local preferences, `user://settings.cfg`.
-## Each owner keeps its own section (`[hud]` HudScale, `[graphics]` GraphicsPrefs); a write loads the file first,
+## Each owner keeps its own section (`[ui]` UiScalePrefs, `[graphics]` GraphicsPrefs); a write loads the file first,
 ## so the other sections stay as they are.
 ## A file that exists but cannot be read (corrupt, no permission) is never overwritten: the reads fall back to the
 ## caller's defaults and the writes are refused, with one warning each. After a failed load the file is not read again in this run:

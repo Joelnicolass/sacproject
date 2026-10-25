@@ -2,14 +2,14 @@
 
 [ext_resource type="Script" path="res://scenes/ui/options/graphics_tab.gd" id="1_tab"]
 [ext_resource type="Resource" path="res://data/ui/graphics_prefs.tres" id="2_prefs"]
-[ext_resource type="Resource" path="res://data/ui/hud_scale.tres" id="3_hud"]
+[ext_resource type="Resource" path="res://data/ui/ui_scale.tres" id="3_hud"]
 
 [node name="GraphicsTab" type="VBoxContainer"]
 theme_type_variation = &"VBoxForm"
 custom_minimum_size = Vector2(360, 0)
 script = ExtResource("1_tab")
 prefs = ExtResource("2_prefs")
-hud_scale = ExtResource("3_hud")
+ui_scale = ExtResource("3_hud")
 
 [node name="QualityRow" type="HBoxContainer" parent="."]
 layout_mode = 2
@@ -92,14 +92,14 @@ custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
-min_value = 0.6
-max_value = 1.2
+min_value = 0.75
+max_value = 1.4
 step = 0.05
-value = 0.8
+value = 1.0
 
 [node name="HudValue" type="Label" parent="HudRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(48, 0)
 layout_mode = 2
-text = "80 %"
+text = "100 %"
 horizontal_alignment = 2

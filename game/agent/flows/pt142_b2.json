@@ -87,7 +87,7 @@
   },
   {
    "call": {
-    "harness": "hud_scale_probe",
+    "harness": "ui_scale_probe",
     "method": "report",
     "args": []
    }
@@ -140,7 +140,7 @@
   },
   {
    "call": {
-    "harness": "hud_scale_probe",
+    "harness": "ui_scale_probe",
     "method": "report",
     "args": []
    }

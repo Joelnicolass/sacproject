@@ -140,7 +140,8 @@ func _ragdoll() -> Dictionary:
 	var skeleton := model.skeleton()
 	var simulator := skeleton.find_children("*", "PhysicalBoneSimulator3D", false, false)[0] as PhysicalBoneSimulator3D
 	var hips := simulator.get_child(0) as PhysicalBone3D
-	var checks := {"bound": look.ragdoll.bind(skeleton), "off_while_alive": simulator.process_mode == Node.PROCESS_MODE_DISABLED}
+	look.ragdoll.bind_model(model)
+	var checks := {"bound": look.ragdoll.available(), "off_while_alive": simulator.process_mode == Node.PROCESS_MODE_DISABLED}
 	checks["plain_has_none"] = not (plain.find_child("CorpseLook", false, false) as CorpseLook).ragdoll.available()
 	await _frames(5)
 	var start := hips.global_position
@@ -181,7 +182,7 @@ func _ragdoll() -> Dictionary:
 	for bone in skeleton.get_bone_count():
 		highest = maxf(highest, (skeleton.global_transform * skeleton.get_bone_global_pose(bone)).origin.y - rag.global_position.y)
 	checks["lies_flat"] = highest < 0.7
-	look.ragdoll.reset()
+	look.ragdoll.set_pose(RagdollDriver.Pose.OFF)
 	checks["reset_to_rest"] = skeleton.get_bone_global_pose(10).is_equal_approx(skeleton.get_bone_global_rest(10))
 	plain.free()
 	rag.free()

@@ -17,6 +17,8 @@ const _LOCKED: PackedStringArray = ["mesh", "position", "rotation", "scale"]
 ## The body scene this visual draws (BodyMount of the creature, wizard or doctor): `body_height` and `body_radius` come from there.
 @export var mount: BodyMount
 
+## The tween of `fade_to`; this node is its only owner.
+var _fade_tween: Tween
 ## A BodyLook draws this body (a creature or a wizard): `_ready` leaves the mesh and the transform alone from then on.
 var _look_drawn := false
 
@@ -45,10 +47,33 @@ func draw_look(look: BodyLook) -> void:
 
 
 ## GeometryInstance3D.transparency of the whole body, rig included (it does not inherit): summoning, play dead, stealth.
+## It cuts a fade that `fade_to` is running.
 func set_fade(value: float) -> void:
+	_kill_fade()
+	_apply_fade(value)
+
+
+## Fades the whole body from how transparent it is now to `target` in `seconds` (0 or less: at once). The one owner of the fade
+## tween: a new fade, or a `set_fade`, replaces the one that runs.
+func fade_to(target: float, seconds: float) -> void:
+	_kill_fade()
+	if seconds <= 0.0:
+		_apply_fade(target)
+		return
+	_fade_tween = create_tween()
+	_fade_tween.tween_method(_apply_fade, transparency, target, seconds)
+
+
+func _apply_fade(value: float) -> void:
 	transparency = value
 	if rig != null:
 		rig.set_fade(value)
+
+
+func _kill_fade() -> void:
+	if _fade_tween != null:
+		_fade_tween.kill()
+		_fade_tween = null
 
 
 func _get_configuration_warnings() -> PackedStringArray:

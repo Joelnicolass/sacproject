@@ -11,7 +11,7 @@ extends Node
 @export var body: Node3D
 ## The model that is drawn.
 @export var visual: BodyVisual
-## Plays the clips; frozen while the body lies so no clip fights the physics.
+## Plays the clips (the driver holds them still while the body lies).
 @export var clip_pose: ClipPlayback
 ## The physical skeleton of the model.
 @export var ragdoll: RagdollDriver
@@ -23,12 +23,12 @@ var _lying := false
 func fall() -> bool:
 	if _lying:
 		return true
-	var skeleton := visual.rig.skeleton() if visual != null and visual.rig != null else null
-	if skeleton == null or not ragdoll.bind(skeleton):
+	var model := visual.rig.model_root() if visual != null and visual.rig != null else null
+	ragdoll.bind_model(model)
+	if not ragdoll.available():
 		return false
-	clip_pose.frozen = true
 	_lying = true
-	ragdoll.start(-Vector3(0.0, 0.0, 1.0).rotated(Vector3.UP, body.rotation.y))
+	ragdoll.set_pose(RagdollDriver.Pose.FALL, -Vector3(0.0, 0.0, 1.0).rotated(Vector3.UP, body.rotation.y))
 	return true
 
 
@@ -41,8 +41,7 @@ func stand() -> void:
 	if not _lying:
 		return
 	_lying = false
-	ragdoll.reset()
-	clip_pose.frozen = false
+	ragdoll.set_pose(RagdollDriver.Pose.OFF)
 	clip_pose.play("idle", true)
 
 

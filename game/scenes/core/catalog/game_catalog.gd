@@ -20,6 +20,7 @@ var buildings: Array[BuildingType] = []
 ## Tags that two building files claim (the catalog test fails on them).
 var duplicate_building_tags := PackedStringArray()
 var _building_by_tag: Dictionary = {}
+var _creature_by_id: Dictionary = {}
 ## Bodies and props together; `BodySize.is_prop` tells them apart.
 var body_sizes: Array[BodySize] = []
 ## The gods of data/gods/<tag>.tres (RFC-042), by sort_order then tag. Each carries its theme, look, AI profile and typed book.
@@ -41,6 +42,9 @@ static func shared(refresh := false) -> GameCatalog:
 ## Fills the lists from the folders. Files that are not the folder's type are skipped with a warning.
 func scan(reload_from_disk := false) -> void:
 	creatures.assign(_load_folder("creatures", CreatureType, reload_from_disk))
+	_creature_by_id.clear()
+	for type in creatures:
+		_creature_by_id[type.id()] = type
 	spells.assign(_load_folder("spells", SpellType, reload_from_disk))
 	wizards.assign(_load_folder("wizards", WizardType, reload_from_disk))
 	abilities.assign(_load_folder("abilities", AbilityType, reload_from_disk))
@@ -81,24 +85,24 @@ func _index_buildings() -> void:
 		_building_by_tag[type.tag] = type
 
 
+## The creature with that id (its `tag`, or the file name when the tag is empty), or null. Indexed in scan().
+func creature(id: String) -> CreatureType:
+	return _creature_by_id.get(id)
+
+
 ## The god with that id (its `tag`, or the file name when the tag is empty), or null.
 func god(id: String) -> GodType:
-	for type in gods:
-		if type.id() == id:
-			return type
-	return null
+	var found := gods.filter(func(type: GodType) -> bool: return type.id() == id)
+	return found[0] if not found.is_empty() else null
 
 
 ## The wizard with that id (its `tag`, or the file name when the tag is empty), or null.
 func wizard(id: String) -> WizardType:
-	for type in wizards:
-		if type.id() == id:
-			return type
-	return null
+	var found := wizards.filter(func(type: WizardType) -> bool: return type.id() == id)
+	return found[0] if not found.is_empty() else null
 
 
-## Every map, the default first and the test maps last (scenes/map/maps/<tag>/<tag>.tres). Loads them all, so ask for it from a
-## screen and not from the autoload.
+## Every map, the default first and the test maps last. Loads them all: ask for it from a screen, not from the autoload.
 func maps() -> Array[MapDefinition]:
 	return MapCatalog.shared().maps
 
@@ -106,18 +110,14 @@ func maps() -> Array[MapDefinition]:
 ## The gods the menu, the AI picker and the rooms list (`offered`), in catalog order.
 func offered_gods() -> Array[GodType]:
 	var out: Array[GodType] = []
-	for type in gods:
-		if type.offered:
-			out.append(type)
+	out.assign(gods.filter(func(type: GodType) -> bool: return type.offered))
 	return out
 
 
 ## The wizards the menu and the rooms list (`offered`), in catalog order.
 func offered_wizards() -> Array[WizardType]:
 	var out: Array[WizardType] = []
-	for type in wizards:
-		if type.offered:
-			out.append(type)
+	out.assign(wizards.filter(func(type: WizardType) -> bool: return type.offered))
 	return out
 
 

@@ -84,6 +84,11 @@ extends Resource
 @export var captive_animations: Dictionary = {}
 
 
+## The id of this creature on the network and in the catalog: its `tag`, or the file name when the tag is empty (new content).
+func id() -> String:
+	return tag if not tag.is_empty() else resource_path.get_file().get_basename()
+
+
 func is_flying() -> bool:
 	return running_speed <= 0.0 and flying_speed > 0.0
 

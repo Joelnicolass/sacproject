@@ -48,7 +48,7 @@ static func ensure(host: Node, tag: String, idle_clip: String, force := false) -
 ## Puts the PNG of `tag` in the `icon` of data/catalog/creatures/<tag>.tres. Godot has to have imported the PNG first (open the editor or run
 ## `--import` once); until then it says so and `tools/bake/fill_type_icons.gd` does it later. A creature that already has an icon keeps it.
 static func link(tag: String) -> String:
-	var type_path := "res://data/catalog/creatures/%s.tres" % tag
+	var type_path := TypeRef.creature_path(tag)
 	var type := ResourceLoader.load(type_path, "", ResourceLoader.CACHE_MODE_REPLACE) as CreatureType
 	if type == null:
 		return "not linked: %s does not exist" % type_path

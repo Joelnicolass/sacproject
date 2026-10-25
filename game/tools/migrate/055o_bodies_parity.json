@@ -1,7 +1,7 @@
 {
  "bodies": [
   {
-   "catalog": "data/catalog/creatures/EHTH_2.tres",
+   "catalog": "data/catalog/creatures/faestus_pyro.tres",
    "events": {
     "ack": "f496fe534f",
     "annoyed": "ff24eedb01",
@@ -17,7 +17,7 @@
    "old_set": "data/audio/creatures/EHTH_2.tres"
   },
   {
-   "catalog": "data/catalog/creatures/RAMH_2.tres",
+   "catalog": "data/catalog/creatures/astaroth.tres",
    "events": {
     "ack": "01f1023ea7",
     "annoyed": "128cad06c8",
@@ -33,7 +33,7 @@
    "old_set": "data/audio/creatures/RAMH_2.tres"
   },
   {
-   "catalog": "data/catalog/creatures/ahcr.tres",
+   "catalog": "data/catalog/creatures/sylph.tres",
    "events": {
     "ack": "bbfa49866b",
     "annoyed": "b5020203b2",
@@ -49,7 +49,7 @@
    "old_set": "data/audio/creatures/ahcr.tres"
   },
   {
-   "catalog": "data/catalog/creatures/alab.tres",
+   "catalog": "data/catalog/creatures/squall.tres",
    "events": {
     "ack": "70cb61be1c",
     "annoyed": "80876ca4f8",
@@ -65,7 +65,7 @@
    "old_set": "data/audio/creatures/alab.tres"
   },
   {
-   "catalog": "data/catalog/creatures/amuh.tres",
+   "catalog": "data/catalog/creatures/ranger.tres",
    "events": {
     "ack": "e67abd0205",
     "annoyed": "942f6fb6ef",
@@ -81,7 +81,7 @@
    "old_set": "data/audio/creatures/amuh.tres"
   },
   {
-   "catalog": "data/catalog/creatures/bobs.tres",
+   "catalog": "data/catalog/creatures/brainiac.tres",
    "events": {
     "ack": "9299b93a14",
     "annoyed": "f88ad87315",
@@ -97,7 +97,7 @@
    "old_set": "data/audio/creatures/bobs.tres"
   },
   {
-   "catalog": "data/catalog/creatures/cara.tres",
+   "catalog": "data/catalog/creatures/scarab.tres",
    "events": {
     "ack": "810fd1934d",
     "annoyed": "0110c6cdf3",
@@ -113,7 +113,7 @@
    "old_set": "data/audio/creatures/cara.tres"
   },
   {
-   "catalog": "data/catalog/creatures/cbab.tres",
+   "catalog": "data/catalog/creatures/mutant.tres",
    "events": {
     "ack": "f0010f28ef",
     "annoyed": "2397cd6fd3",
@@ -129,7 +129,7 @@
    "old_set": "data/audio/creatures/cbab.tres"
   },
   {
-   "catalog": "data/catalog/creatures/craa.tres",
+   "catalog": "data/catalog/creatures/vortick.tres",
    "events": {
     "ack": "d37f09b5e8",
     "annoyed": "a8b31040d3",
@@ -145,7 +145,7 @@
    "old_set": "data/audio/creatures/craa.tres"
   },
   {
-   "catalog": "data/catalog/creatures/craf.tres",
+   "catalog": "data/catalog/creatures/tickferno.tres",
    "events": {
     "ack": "fb84471e33",
     "annoyed": "866cae793a",
@@ -161,7 +161,7 @@
    "old_set": "data/audio/creatures/craf.tres"
   },
   {
-   "catalog": "data/catalog/creatures/crpd.tres",
+   "catalog": "data/catalog/creatures/netherfiend.tres",
    "events": {
     "ack": "33255bf0e4",
     "annoyed": "d458b2c254",
@@ -177,7 +177,7 @@
    "old_set": "data/audio/creatures/crpd.tres"
   },
   {
-   "catalog": "data/catalog/creatures/ctug.tres",
+   "catalog": "data/catalog/creatures/abomination.tres",
    "events": {
     "ack": "ccf84efb6e",
     "annoyed": "2f31f6ea9f",
@@ -193,7 +193,7 @@
    "old_set": "data/audio/creatures/ctug.tres"
   },
   {
-   "catalog": "data/catalog/creatures/dcas.tres",
+   "catalog": "data/catalog/creatures/sac_doctor.tres",
    "events": {
     "ack": null,
     "annoyed": null,
@@ -209,7 +209,7 @@
    "old_set": null
   },
   {
-   "catalog": "data/catalog/creatures/dplk.tres",
+   "catalog": "data/catalog/creatures/fallen.tres",
    "events": {
     "ack": "ef587f5b93",
     "annoyed": "8e70494c5c",
@@ -225,7 +225,7 @@
    "old_set": "data/audio/creatures/dplk.tres"
   },
   {
-   "catalog": "data/catalog/creatures/dzid.tres",
+   "catalog": "data/catalog/creatures/scythe.tres",
    "events": {
     "ack": "0d331e4648",
     "annoyed": "d9b2bb392b",
@@ -241,7 +241,7 @@
    "old_set": "data/audio/creatures/dzid.tres"
   },
   {
-   "catalog": "data/catalog/creatures/eafH.tres",
+   "catalog": "data/catalog/creatures/thestor.tres",
    "events": {
     "ack": "16bd1c7af9",
     "annoyed": "2380116503",
@@ -257,7 +257,7 @@
    "old_set": "data/audio/creatures/eafH.tres"
   },
   {
-   "catalog": "data/catalog/creatures/ehtH.tres",
+   "catalog": "data/catalog/creatures/faestus_persephone.tres",
    "events": {
     "ack": "f496fe534f",
     "annoyed": "ff24eedb01",
@@ -273,7 +273,7 @@
    "old_set": "data/audio/creatures/ehtH.tres"
   },
   {
-   "catalog": "data/catalog/creatures/fplk.tres",
+   "catalog": "data/catalog/creatures/flame_minion.tres",
    "events": {
     "ack": "b7d5a9adb1",
     "annoyed": "9da040de06",
@@ -289,7 +289,7 @@
    "old_set": "data/audio/creatures/fplk.tres"
   },
   {
-   "catalog": "data/catalog/creatures/gard.tres",
+   "catalog": "data/catalog/creatures/rhinok.tres",
    "events": {
     "ack": "02c28c69de",
     "annoyed": "244813f16b",
@@ -305,7 +305,7 @@
    "old_set": "data/audio/creatures/gard.tres"
   },
   {
-   "catalog": "data/catalog/creatures/glsd.tres",
+   "catalog": "data/catalog/creatures/necryl.tres",
    "events": {
     "ack": "22a633c66a",
     "annoyed": "5b79fedb0d",
@@ -321,7 +321,7 @@
    "old_set": "data/audio/creatures/glsd.tres"
   },
   {
-   "catalog": "data/catalog/creatures/grdb.tres",
+   "catalog": "data/catalog/creatures/silverback.tres",
    "events": {
     "ack": "ef5f2a9300",
     "annoyed": "456c176893",
@@ -337,7 +337,7 @@
    "old_set": "data/audio/creatures/grdb.tres"
   },
   {
-   "catalog": "data/catalog/creatures/grdg.tres",
+   "catalog": "data/catalog/creatures/dragon.tres",
    "events": {
     "ack": "2ff69a12d8",
     "annoyed": "6fc5b3cb1e",
@@ -353,7 +353,7 @@
    "old_set": "data/audio/creatures/grdg.tres"
   },
   {
-   "catalog": "data/catalog/creatures/grdr.tres",
+   "catalog": "data/catalog/creatures/phoenix.tres",
    "events": {
     "ack": "c32e6a2472",
     "annoyed": "b84b2f2be9",
@@ -369,7 +369,7 @@
    "old_set": "data/audio/creatures/grdr.tres"
   },
   {
-   "catalog": "data/catalog/creatures/grps.tres",
+   "catalog": "data/catalog/creatures/seraph.tres",
    "events": {
     "ack": "540d3c5a34",
     "annoyed": "dd90cdd65f",
@@ -385,7 +385,7 @@
    "old_set": "data/audio/creatures/grps.tres"
   },
   {
-   "catalog": "data/catalog/creatures/guls.tres",
+   "catalog": "data/catalog/creatures/basilisk.tres",
    "events": {
     "ack": "be543ca8e9",
     "annoyed": "9381205e77",
@@ -401,7 +401,7 @@
    "old_set": "data/audio/creatures/guls.tres"
   },
   {
-   "catalog": "data/catalog/creatures/imaf.tres",
+   "catalog": "data/catalog/creatures/familiar.tres",
    "events": {
     "ack": null,
     "annoyed": null,
@@ -417,7 +417,7 @@
    "old_set": null
   },
   {
-   "catalog": "data/catalog/creatures/kacd.tres",
+   "catalog": "data/catalog/creatures/blight.tres",
    "events": {
     "ack": "74c2bc12af",
     "annoyed": "2a11a9a09b",
@@ -433,7 +433,7 @@
    "old_set": "data/audio/creatures/kacd.tres"
   },
   {
-   "catalog": "data/catalog/creatures/kace.tres",
+   "catalog": "data/catalog/creatures/ikarus.tres",
    "events": {
     "ack": "e6ef419843",
     "annoyed": "717a85ca8c",
@@ -449,7 +449,7 @@
    "old_set": "data/audio/creatures/kace.tres"
   },
   {
-   "catalog": "data/catalog/creatures/kacf.tres",
+   "catalog": "data/catalog/creatures/pyrodactyl.tres",
    "events": {
     "ack": "bfd82718d5",
     "annoyed": "dcef1b40e4",
@@ -465,7 +465,7 @@
    "old_set": "data/audio/creatures/kacf.tres"
   },
   {
-   "catalog": "data/catalog/creatures/lbog.tres",
+   "catalog": "data/catalog/creatures/frostwolf.tres",
    "events": {
     "ack": "f43f4db1da",
     "annoyed": "c2f30a9d9a",
@@ -481,7 +481,7 @@
    "old_set": "data/audio/creatures/lbog.tres"
   },
   {
-   "catalog": "data/catalog/creatures/llab.tres",
+   "catalog": "data/catalog/creatures/boulderdash.tres",
    "events": {
     "ack": "2d4669c090",
     "annoyed": "5eb9d31de9",
@@ -497,7 +497,7 @@
    "old_set": "data/audio/creatures/llab.tres"
   },
   {
-   "catalog": "data/catalog/creatures/lort.tres",
+   "catalog": "data/catalog/creatures/troll.tres",
    "events": {
     "ack": "42fb1f955d",
     "annoyed": "870f59db1c",
@@ -513,7 +513,7 @@
    "old_set": "data/audio/creatures/lort.tres"
   },
   {
-   "catalog": "data/catalog/creatures/lrps.tres",
+   "catalog": "data/catalog/creatures/gremlin.tres",
    "events": {
     "ack": "7080d63d04",
     "annoyed": "5bb5faec21",
@@ -529,7 +529,7 @@
    "old_set": "data/audio/creatures/lrps.tres"
   },
   {
-   "catalog": "data/catalog/creatures/lrtf.tres",
+   "catalog": "data/catalog/creatures/firefist.tres",
    "events": {
     "ack": "850b19eea1",
     "annoyed": "81f84f8386",
@@ -545,7 +545,7 @@
    "old_set": "data/audio/creatures/lrtf.tres"
   },
   {
-   "catalog": "data/catalog/creatures/magH.tres",
+   "catalog": "data/catalog/creatures/gammel.tres",
    "events": {
     "ack": "88cb0bcf80",
     "annoyed": "b38538498d",
@@ -561,7 +561,7 @@
    "old_set": "data/audio/creatures/magH.tres"
   },
   {
-   "catalog": "data/catalog/creatures/mtse.tres",
+   "catalog": "data/catalog/creatures/jabberocky.tres",
    "events": {
     "ack": "fc633189a1",
     "annoyed": "7598e117bb",
@@ -577,7 +577,7 @@
    "old_set": "data/audio/creatures/mtse.tres"
   },
   {
-   "catalog": "data/catalog/creatures/mtsl.tres",
+   "catalog": "data/catalog/creatures/ent.tres",
    "events": {
     "ack": "0028eb9c75",
     "annoyed": "9adb04440c",
@@ -593,7 +593,7 @@
    "old_set": "data/audio/creatures/mtsl.tres"
   },
   {
-   "catalog": "data/catalog/creatures/nmuh.tres",
+   "catalog": "data/catalog/creatures/druid.tres",
    "events": {
     "ack": "9a445b650b",
     "annoyed": "e3cfbdc792",
@@ -609,7 +609,7 @@
    "old_set": "data/audio/creatures/nmuh.tres"
   },
   {
-   "catalog": "data/catalog/creatures/nomd.tres",
+   "catalog": "data/catalog/creatures/hellmouth.tres",
    "events": {
     "ack": "53de59357f",
     "annoyed": "e7cdb2ec4a",
@@ -625,7 +625,7 @@
    "old_set": "data/audio/creatures/nomd.tres"
   },
   {
-   "catalog": "data/catalog/creatures/nugd.tres",
+   "catalog": "data/catalog/creatures/styx.tres",
    "events": {
     "ack": "b2cdbad4f7",
     "annoyed": "810225a094",
@@ -641,7 +641,7 @@
    "old_set": "data/audio/creatures/nugd.tres"
   },
   {
-   "catalog": "data/catalog/creatures/nugf.tres",
+   "catalog": "data/catalog/creatures/warmonger.tres",
    "events": {
     "ack": "7a8c0c12a1",
     "annoyed": "528fd6bc6a",
@@ -657,7 +657,7 @@
    "old_set": "data/audio/creatures/nugf.tres"
   },
   {
-   "catalog": "data/catalog/creatures/oham.tres",
+   "catalog": "data/catalog/creatures/manahoar.tres",
    "events": {
     "ack": null,
     "annoyed": null,
@@ -673,7 +673,7 @@
    "old_set": null
   },
   {
-   "catalog": "data/catalog/creatures/oohH.tres",
+   "catalog": "data/catalog/creatures/toldor.tres",
    "events": {
     "ack": "a528067597",
     "annoyed": "e271ab1fc3",
@@ -689,7 +689,7 @@
    "old_set": "data/audio/creatures/oohH.tres"
   },
   {
-   "catalog": "data/catalog/creatures/palk.tres",
+   "catalog": "data/catalog/creatures/earthfling.tres",
    "events": {
     "ack": "d780164258",
     "annoyed": "cf376e148e",
@@ -705,7 +705,7 @@
    "old_set": "data/audio/creatures/palk.tres"
   },
   {
-   "catalog": "data/catalog/creatures/pazb.tres",
+   "catalog": "data/catalog/creatures/locust.tres",
    "events": {
     "ack": "0872c81c5c",
     "annoyed": "928f71e8ba",
@@ -721,7 +721,7 @@
    "old_set": "data/audio/creatures/pazb.tres"
   },
   {
-   "catalog": "data/catalog/creatures/pezH.tres",
+   "catalog": "data/catalog/creatures/sara_bella.tres",
    "events": {
     "ack": "18d301aeab",
     "annoyed": "ca76d71f8c",
@@ -737,7 +737,7 @@
    "old_set": "data/audio/creatures/pezH.tres"
   },
   {
-   "catalog": "data/catalog/creatures/plfd.tres",
+   "catalog": "data/catalog/creatures/deadeye.tres",
    "events": {
     "ack": "da6f708219",
     "annoyed": "1a176df809",
@@ -753,7 +753,7 @@
    "old_set": "data/audio/creatures/plfd.tres"
   },
   {
-   "catalog": "data/catalog/creatures/plff.tres",
+   "catalog": "data/catalog/creatures/pyromaniac.tres",
    "events": {
     "ack": "23baf376e1",
     "annoyed": "ecc5b86c33",
@@ -769,7 +769,7 @@
    "old_set": "data/audio/creatures/plff.tres"
   },
   {
-   "catalog": "data/catalog/creatures/plfl.tres",
+   "catalog": "data/catalog/creatures/gnome.tres",
    "events": {
     "ack": "a2b866665a",
     "annoyed": "ae67d69e1b",
@@ -785,7 +785,7 @@
    "old_set": "data/audio/creatures/plfl.tres"
   },
   {
-   "catalog": "data/catalog/creatures/raeb.tres",
+   "catalog": "data/catalog/creatures/taurock.tres",
    "events": {
     "ack": "5fe3a27920",
     "annoyed": "cffd9d2805",
@@ -801,7 +801,7 @@
    "old_set": "data/audio/creatures/raeb.tres"
   },
   {
-   "catalog": "data/catalog/creatures/ramH.tres",
+   "catalog": "data/catalog/creatures/gangrel.tres",
    "events": {
     "ack": "0d6354bcf9",
     "annoyed": "b248455f71",
@@ -817,7 +817,7 @@
    "old_set": "data/audio/creatures/ramH.tres"
   },
   {
-   "catalog": "data/catalog/creatures/rdbO.tres",
+   "catalog": "data/catalog/creatures/dragon_hatchling.tres",
    "events": {
     "ack": "2ff69a12d8",
     "annoyed": "6fc5b3cb1e",
@@ -833,7 +833,7 @@
    "old_set": "data/audio/creatures/rdbO.tres"
   },
   {
-   "catalog": "data/catalog/creatures/rgos.tres",
+   "catalog": "data/catalog/creatures/storm_giant.tres",
    "events": {
     "ack": "7741c9c5db",
     "annoyed": "9f0bc2ce29",
@@ -849,7 +849,7 @@
    "old_set": "data/audio/creatures/rgos.tres"
   },
   {
-   "catalog": "data/catalog/creatures/risH.tres",
+   "catalog": "data/catalog/creatures/sirocco.tres",
    "events": {
     "ack": "3c8580dd0e",
     "annoyed": "5c7dfc32ba",
@@ -865,7 +865,7 @@
    "old_set": "data/audio/creatures/risH.tres"
   },
   {
-   "catalog": "data/catalog/creatures/saep.tres",
+   "catalog": "data/catalog/creatures/peasant.tres",
    "events": {
     "ack": null,
     "annoyed": null,
@@ -881,7 +881,7 @@
    "old_set": "data/audio/creatures/saep.tres"
   },
   {
-   "catalog": "data/catalog/creatures/sohe.tres",
+   "catalog": "data/catalog/creatures/gargoyle.tres",
    "events": {
     "ack": "2564c47814",
     "annoyed": "bca589575c",
@@ -897,7 +897,7 @@
    "old_set": "data/audio/creatures/sohe.tres"
   },
   {
-   "catalog": "data/catalog/creatures/sohf.tres",
+   "catalog": "data/catalog/creatures/spitfire.tres",
    "events": {
     "ack": "5fdb9df63b",
     "annoyed": "29e2aa7f46",
@@ -913,7 +913,7 @@
    "old_set": "data/audio/creatures/sohf.tres"
   },
   {
-   "catalog": "data/catalog/creatures/tbsh.tres",
+   "catalog": "data/catalog/creatures/shrike.tres",
    "events": {
     "ack": "3cd601fa09",
     "annoyed": "2c6306266d",
@@ -945,7 +945,7 @@
    "old_set": null
   },
   {
-   "catalog": "data/catalog/creatures/tnem.tres",
+   "catalog": "data/catalog/creatures/zyzyx.tres",
    "events": {
     "ack": null,
     "annoyed": null,
@@ -961,7 +961,7 @@
    "old_set": null
   },
   {
-   "catalog": "data/catalog/creatures/tshg.tres",
+   "catalog": "data/catalog/creatures/ghost.tres",
    "events": {
     "ack": null,
     "annoyed": null,
@@ -977,7 +977,7 @@
    "old_set": "data/audio/creatures/tshg.tres"
   },
   {
-   "catalog": "data/catalog/creatures/uslH.tres",
+   "catalog": "data/catalog/creatures/lord_surtur.tres",
    "events": {
     "ack": "c4581283a9",
     "annoyed": "ad602ba940",
@@ -993,7 +993,7 @@
    "old_set": "data/audio/creatures/uslH.tres"
   },
   {
-   "catalog": "data/catalog/creatures/wlca.tres",
+   "catalog": "data/catalog/creatures/flurry.tres",
    "events": {
     "ack": "5eed9683b5",
     "annoyed": "6478271516",
@@ -1009,7 +1009,7 @@
    "old_set": "data/audio/creatures/wlca.tres"
   },
   {
-   "catalog": "data/catalog/creatures/wlce.tres",
+   "catalog": "data/catalog/creatures/flummox.tres",
    "events": {
     "ack": "a8d7a65564",
     "annoyed": "900a6ff4be",
@@ -1025,7 +1025,7 @@
    "old_set": "data/audio/creatures/wlce.tres"
   },
   {
-   "catalog": "data/catalog/creatures/wlcf.tres",
+   "catalog": "data/catalog/creatures/bombard.tres",
    "events": {
     "ack": "e85d6aa1f9",
     "annoyed": "c21a912781",
@@ -1041,7 +1041,7 @@
    "old_set": "data/audio/creatures/wlcf.tres"
   },
   {
-   "catalog": "data/catalog/creatures/ycro.tres",
+   "catalog": "data/catalog/creatures/trogg.tres",
    "events": {
     "ack": "e30d1185a8",
     "annoyed": "19bce4dc2b",
@@ -1057,7 +1057,7 @@
    "old_set": "data/audio/creatures/ycro.tres"
   },
   {
-   "catalog": "data/catalog/creatures/ycrp.tres",
+   "catalog": "data/catalog/creatures/yeti.tres",
    "events": {
     "ack": "fbe15529ff",
     "annoyed": "2d6c66b045",
@@ -1073,7 +1073,7 @@
    "old_set": "data/audio/creatures/ycrp.tres"
   },
   {
-   "catalog": "data/catalog/creatures/zepa.tres",
+   "catalog": "data/catalog/creatures/snowman.tres",
    "events": {
     "ack": null,
     "annoyed": null,
@@ -1089,7 +1089,7 @@
    "old_set": "data/audio/creatures/zepa.tres"
   },
   {
-   "catalog": "data/catalog/creatures/zepd.tres",
+   "catalog": "data/catalog/creatures/zombie.tres",
    "events": {
     "ack": null,
     "annoyed": null,
@@ -1105,7 +1105,7 @@
    "old_set": "data/audio/creatures/zepd.tres"
   },
   {
-   "catalog": "data/catalog/creatures/zepe.tres",
+   "catalog": "data/catalog/creatures/farmer.tres",
    "events": {
     "ack": null,
     "annoyed": null,
@@ -1121,7 +1121,7 @@
    "old_set": "data/audio/creatures/zepe.tres"
   },
   {
-   "catalog": "data/catalog/creatures/zepf.tres",
+   "catalog": "data/catalog/creatures/slave.tres",
    "events": {
     "ack": null,
     "annoyed": null,
@@ -1137,7 +1137,7 @@
    "old_set": "data/audio/creatures/zepf.tres"
   },
   {
-   "catalog": "data/catalog/creatures/zidf.tres",
+   "catalog": "data/catalog/creatures/cog.tres",
    "events": {
     "ack": "45d9f31d6a",
     "annoyed": "6e7c790221",

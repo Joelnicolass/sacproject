@@ -37,7 +37,6 @@ extends SceneTree
 const TEMPLATE := "res://data/templates/creature.tres"
 const MODEL_DIR := "res://assets/custom/models/"
 const SCENE_DIR := "res://scenes/bodies/models/"
-const CREATURES_DIR := "res://data/catalog/creatures/"
 const SIZES_DIR := "res://data/catalog/body_sizes/"
 const SoundSetWriter := preload("res://tools/bake/sound_set_writer.gd")
 
@@ -188,7 +187,7 @@ func _create(tag: String, glb_path: String, display: String, god: String) -> int
 		return 1
 	var measure := _measure(instance)
 	var scene_path := SCENE_DIR + tag + ".tscn"
-	var type_path := CREATURES_DIR + tag + ".tres"
+	var type_path := TypeRef.creature_path(tag)
 	var size_path := SIZES_DIR + tag + ".tres"
 	var wrote := PackedStringArray()
 	var kept := PackedStringArray()
@@ -559,13 +558,13 @@ func _events_library(roles: Dictionary, clips: Dictionary, impacts: Dictionary) 
 # --- clip facts for the rules ------------------------------------------------------------------------------------------
 
 func _sync_creature(tag: String) -> int:
-	if not FileAccess.file_exists(CREATURES_DIR + tag + ".tres") or not BodyModel.exists(tag):
+	if not FileAccess.file_exists(TypeRef.creature_path(tag)) or not BodyModel.exists(tag):
 		push_error("new_creature --sync: %s.tres or its model scene %s.tscn do not exist" % [tag, tag])
 		return 1
 	var code := _fill_from_scene(tag)
 	if code == OK:
 		print("NEW_CREATURE synced %s: the clip facts of data/catalog/creatures/%s.tres follow scenes/bodies/models/%s.tscn" % [tag, tag, tag])
-		var type := ResourceLoader.load(CREATURES_DIR + tag + ".tres", "", ResourceLoader.CACHE_MODE_REPLACE) as CreatureType
+		var type := ResourceLoader.load(TypeRef.creature_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as CreatureType
 		print("NEW_CREATURE icon: %s" % await _make_icon(tag, str(type.idle_animation.get("tag", ""))))
 		code = _bake_sounds(tag)
 	return code
@@ -574,7 +573,7 @@ func _sync_creature(tag: String) -> int:
 ## Loads the saved model scene and the creature file of `tag`, rewrites the creature's clip dictionaries from the scene
 ## (role -> clip from the AnimationTree, frames and framerate from the clip, impact from the Events animation) and saves it.
 func _fill_from_scene(tag: String) -> int:
-	var type := ResourceLoader.load(CREATURES_DIR + tag + ".tres", "", ResourceLoader.CACHE_MODE_REPLACE) as CreatureType
+	var type := ResourceLoader.load(TypeRef.creature_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as CreatureType
 	var packed := ResourceLoader.load(BodyModel.scene_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as PackedScene
 	if type == null or packed == null:
 		push_error("new_creature: cannot read the creature or the scene of %s" % tag)
@@ -614,7 +613,7 @@ func _fill_from_scene(tag: String) -> int:
 		type.set(property, table)
 	root.remove_child(model)
 	model.free()
-	var error := ResourceSaver.save(type, CREATURES_DIR + tag + ".tres")
+	var error := ResourceSaver.save(type, TypeRef.creature_path(tag))
 	if error != OK:
 		push_error("new_creature: cannot save %s.tres (%d)" % [tag, error])
 		return 1
@@ -681,7 +680,7 @@ func _bake_sounds(tag: String) -> int:
 func _assign_sounds(tag: String, set_path: String) -> void:
 	if not set_path.begins_with(SoundSetWriter.CUSTOM_OUT):
 		return
-	var type_path := CREATURES_DIR + tag + ".tres"
+	var type_path := TypeRef.creature_path(tag)
 	var type := ResourceLoader.load(type_path, "", ResourceLoader.CACHE_MODE_REPLACE) as CreatureType
 	if type == null or type.sounds != null:
 		return

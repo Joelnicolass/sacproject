@@ -86,31 +86,29 @@ static func decode_mode(id: String) -> GameMode:
 
 ## {"map": id, "mode": id} of what this process plays: the part of the flow snapshot a late joiner needs before the world loads.
 static func encode_choice() -> Dictionary:
-	return {"map": String(ActiveMatch.map().tag), "mode": String(ActiveMatch.mode().tag)}
+	return {"map": String(ActiveMatch.map_tag()), "mode": String(ActiveMatch.mode_tag())}
 
 
 ## A client takes the map and the mode the server announced. One this client does not have is an error and the other one is
-## kept (as is anything the message leaves out).
+## kept (as is anything the message leaves out). By tag only: loading the map's definition here held the admission for seconds.
 static func decode_choice(data: Dictionary) -> void:
-	var chosen_mode: GameMode = ActiveMatch.mode()
-	var chosen_map: MapDefinition = ActiveMatch.map()
+	var chosen_mode: StringName = ActiveMatch.mode_tag()
+	var chosen_map: StringName = ActiveMatch.map_tag()
 	var mode_id := str(data.get("mode", ""))
 	if not mode_id.is_empty():
-		var named_mode: GameMode = decode_mode(mode_id)
-		if named_mode == null:
+		if decode_mode(mode_id) == null:
 			push_error("MatchWire: el servidor mandó el modo '%s' y este cliente no lo tiene." % mode_id)
 		else:
-			chosen_mode = named_mode
+			chosen_mode = StringName(mode_id)
 			print("modo de la partida %s (del servidor)" % mode_id)
 	var map_id := str(data.get("map", ""))
 	if not map_id.is_empty():
-		var named_map: MapDefinition = decode_map(map_id)
-		if named_map == null:
+		if not MapCatalog.shared().has(StringName(map_id)):
 			push_error("MatchWire: el servidor mandó el mapa '%s' y este cliente no lo tiene." % map_id)
 		else:
-			chosen_map = named_map
+			chosen_map = StringName(map_id)
 			print("mapa de la partida %s (del servidor)" % map_id)
-	ActiveMatch.choose(chosen_map, chosen_mode)
+	ActiveMatch.choose_ids(chosen_map, chosen_mode)
 
 
 ## The `options` of a room made from what a form chose: `mode`, `world`, `biome` (ids) and `level` (> 0), each only when set.

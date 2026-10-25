@@ -26,7 +26,7 @@ static func active() -> GameMode:
 
 ## The tag of the mode this process plays.
 static func current_tag() -> StringName:
-	return ActiveMatch.mode().tag
+	return ActiveMatch.mode_tag()
 
 
 ## RFC-049 049f: seats of the mode with that tag (empty = the default mode); 0 if there is no such mode. Plain ints and bools, for

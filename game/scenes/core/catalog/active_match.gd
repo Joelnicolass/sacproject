@@ -37,6 +37,28 @@ static func mode() -> GameMode:
 	return found
 
 
+## The tag of the map this process plays, without loading its definition (the wire and the logs only need the tag).
+static func map_tag() -> StringName:
+	if _map_id == &"":
+		_map_id = _flag("map", MapCatalog.DEFAULT_TAG)
+	return _map_id
+
+
+## The tag of the mode this process plays, without loading the catalog. SideRelations asks it on every side query (thousands of
+## times a frame): it must cost a variable read.
+static func mode_tag() -> StringName:
+	if _mode_id == &"":
+		_mode_id = _flag("mode", GameModeCatalog.DEFAULT_TAG)
+	return _mode_id
+
+
+## A client plays the map and the mode the server announced, by tag: the server already checked that they fit, and the map's
+## definition (its scene, ground and navmesh) loads only when the world needs it, not while the client is being admitted.
+static func choose_ids(map_id: StringName, mode_id: StringName) -> void:
+	_map_id = map_id
+	_mode_id = mode_id
+
+
 ## How many seats the match has (those of the mode).
 static func seats() -> int:
 	var found := mode()

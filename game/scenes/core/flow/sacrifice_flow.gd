@@ -59,7 +59,7 @@ func _ready() -> void:
 	MpKit.slot_assigned.connect(func(_slot: int) -> void: board.announce(pick))
 	super._ready()
 	if MpBoot.is_dedicated_process():
-		print("dedicado listo puerto ", MpKit.port)
+		print("dedicated listo puerto ", MpKit.port)
 
 
 func set_pick(chosen: WizardPick) -> void:

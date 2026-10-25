@@ -35,7 +35,12 @@ static func active() -> MapDefinition:
 
 ## The tag of the map this process plays.
 static func current_tag() -> StringName:
-	return ActiveMatch.map().tag
+	return ActiveMatch.map_tag()
+
+
+## True when the folder has a definition with that tag. Loads nothing (a definition brings its scene, ground and navmesh: seconds).
+func has(tag: StringName) -> bool:
+	return ResourceLoader.exists("%s/%s/%s.tres" % [DIR, tag, tag])
 
 
 ## The definition with that tag, loaded once. Null when the folder has none.

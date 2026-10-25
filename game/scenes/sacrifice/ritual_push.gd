@@ -2,13 +2,13 @@
 class_name RitualPush
 extends Node
 
-## What keeps melee creatures from reaching the doctors (RFC-020: the ReadMe's «barrier of magical
-## energy»; sacengine pushAll, state.d:16046-16051, 8606-8628). Every frame, everything alive within
-## rules.ritual_push_radius of the site is pushed out along the ground, except the ritual's doctors and
-## creature: `ritual_push_speed` m/s inside `ritual_push_inner`, less and less out to the edge. The
-## doctors of someone else are pushed hard (superpush: 1.1 times their pace, state.d:8623-8627).
-## Move bodies with move_and_collide, like a hit would; ground and holes are respected. Server only.
+## The barrier that keeps melee creatures from reaching the doctors. Every frame, everything alive within the push radius of
+## the site (`Push` in sacrifice_places.tscn, SacrificeFacts.push_m) is pushed out along the ground, except the ritual's doctors
+## and creature: `ritual_push_speed` m/s inside the core (`PushCore`), less and less out to the edge. The doctors of someone else
+## are pushed hard (superpush: 1.1 times their pace). Bodies move with move_and_collide, like a hit would; ground and holes are
+## respected (SacrificeGround). Server only.
 ## Take this node out of ritual.tscn and nothing is pushed: then melee creatures can kill doctors.
+## Ref: sacengine pushAll, state.d:16046-16051, 8606-8628, 8623-8627.
 
 @export var ritual: Ritual
 
@@ -25,11 +25,11 @@ func _get_configuration_warnings() -> PackedStringArray:
 func _physics_process(delta: float) -> void:
 	if Engine.is_editor_hint() or ritual == null or not ritual.is_running() or ritual.rules == null:
 		return
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not ritual.simulates():
 		return
 	var rules := ritual.rules
+	var facts := SacrificeFacts.of_rules(rules)
 	var center := ritual.center()
-	var shape := GroundSurface.of(self)
 	var seen: Dictionary = {}
 	for group in GROUPS:
 		for node in get_tree().get_nodes_in_group(group):
@@ -37,25 +37,24 @@ func _physics_process(delta: float) -> void:
 			if body == null or seen.has(body) or ritual.is_part(body) or not _alive(body):
 				continue
 			seen[body] = true
-			_push(body, center, rules, shape, delta)
+			_push(body, center, rules, facts, delta)
 
 
-func _push(body: CharacterBody3D, center: Vector3, rules: MatchRules, shape: GroundSurface, delta: float) -> void:
+func _push(body: CharacterBody3D, center: Vector3, rules: MatchRules, facts: SacrificeFacts, delta: float) -> void:
 	var flat := Vector3(body.global_position.x - center.x, 0.0, body.global_position.z - center.z)
 	var distance := (body.global_position + Vector3.UP - center).length()
-	if flat.length_squared() < 0.000001 or distance >= rules.ritual_push_radius:
+	if flat.length_squared() < 0.000001 or distance >= facts.push_m:
 		return
-	var speed := SacrificeMath.push_speed(distance, rules.ritual_push_inner, rules.ritual_push_radius, rules.ritual_push_speed, rules.ritual_push_edge_speed)
+	var speed := SacrificeMath.push_speed(distance, facts.push_core_m, facts.push_m, rules.ritual_push_speed, rules.ritual_push_edge_speed)
 	var doctor := body as DoctorBody
-	if doctor != null and distance < rules.ritual_push_radius - 0.1:
+	if doctor != null and distance < facts.push_m - 0.1:
 		speed = 1.1 * doctor.pace()
 	var step := flat.normalized() * speed * delta
 	var target := body.global_position + step
-	if shape != null:
-		if not shape.is_on_ground(target.x, target.z):
-			return
-		if body.is_on_floor():
-			step.y = shape.height_at(target.x, target.z) - body.global_position.y
+	if not SacrificeGround.on_ground(self, target):
+		return
+	if body.is_on_floor():
+		step.y = SacrificeGround.height_at(self, target) - body.global_position.y
 	body.move_and_collide(step)
 
 

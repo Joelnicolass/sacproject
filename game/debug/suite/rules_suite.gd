@@ -50,6 +50,7 @@ const PRESENTATION_REFS_CASES := preload("res://debug/suite/presentation_refs_ca
 const WIRE_CONFIG_CASES := preload("res://debug/net/wire_config_cases.gd")  # 055s
 const PROP_FACTS_CASES := preload("res://debug/suite/prop_facts_cases.gd")  # 055s s5a
 const SACRIFICE_PLACES_CASES := preload("res://debug/suite/sacrifice_places_cases.gd")  # 055g g1
+const RITUAL_PARTS_CASES := preload("res://debug/suite/ritual_parts_cases.gd")  # 055g g3
 const BOOK_CASES := preload("res://debug/suite/book_cases.gd")  # 055e e4
 const SPELL_FIELD_CASES := preload("res://debug/suite/spell_field_cases.gd")  # 055e e1
 const TEAM_CASES := preload("res://debug/match/team_cases.gd")  # 049b, 049c
@@ -126,6 +127,7 @@ func _run_suite() -> void:
 	_results.merge(WIRE_CONFIG_CASES.new().run(self))  # 055s
 	_results.merge(PROP_FACTS_CASES.new().run(self))  # 055s s5a
 	_results.merge(SACRIFICE_PLACES_CASES.new().run(self))  # 055g g1
+	_results.merge(await RITUAL_PARTS_CASES.new().run(self))  # 055g g3
 	_results.merge(await BOOK_CASES.new().run(self))  # 055e e4
 	_results.merge(SPELL_FIELD_CASES.new().run(self))  # 055e e1
 	_print_suite()

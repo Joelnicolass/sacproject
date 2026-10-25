@@ -1,0 +1,46 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://debug/bodies/ragdoll_gallery.gd" id="1_gallery"]
+
+[sub_resource type="Environment" id="Environment_gallery"]
+background_mode = 1
+background_color = Color(0.1, 0.11, 0.14, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.55, 0.55, 0.6, 1)
+ambient_light_energy = 0.8
+tonemap_mode = 3
+
+[sub_resource type="BoxShape3D" id="Box_floor"]
+size = Vector3(400, 2, 400)
+
+[sub_resource type="StandardMaterial3D" id="Material_ground"]
+albedo_color = Color(0.3, 0.27, 0.22, 1)
+
+[sub_resource type="PlaneMesh" id="Plane_ground"]
+material = SubResource("Material_ground")
+size = Vector2(400, 400)
+
+[node name="RagdollGallery" type="Node3D"]
+script = ExtResource("1_gallery")
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_gallery")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, 0.25, -0.433, 0, 0.866, 0.5, 0.5, -0.433, 0.75, 0, 10, 0)
+
+[node name="Ground" type="StaticBody3D" parent="."]
+collision_layer = 1
+
+[node name="Shape" type="CollisionShape3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+shape = SubResource("Box_floor")
+
+[node name="Mesh" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("Plane_ground")
+
+[node name="Camera" type="Camera3D" parent="."]
+unique_name_in_owner = true
+current = true
+fov = 50.0
+far = 600.0

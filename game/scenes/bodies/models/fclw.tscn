@@ -97,162 +97,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_b455r")
 model = "fclw"
 bind_aabb = AABB(-1.808256, -2.426421, -2.112516, 3.727935, 3.972921, 5.780995)
-clips = {
-"CP2t": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-},
-"CPa1": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-},
-"CPa2": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-},
-"CPa3": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-},
-"CPd1": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-},
-"CPfd": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-},
-"CPgu": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-},
-"CPhf": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-},
-"CPi1": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-},
-"CPrn": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-},
-"CPrz": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-},
-"CPs1": {
-"hands": [{
-"bone_name": "bone_15",
-"offset": Vector3(0, 0.0015, -0.0003),
-"on": true
-}, {
-"bone_name": "bone_18",
-"offset": Vector3(0, 0, 0),
-"on": true
-}]
-},
-"CPsc": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-},
-"CPst": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-}
-}
 
 [node name="Model" parent="." unique_id=248205777 instance=ExtResource("2_n42hm")]
 unique_name_in_owner = true
@@ -280,3 +124,17 @@ anim_player = NodePath("../Clips")
 [node name="ClipEvents" type="Node" parent="." unique_id=427326857]
 unique_name_in_owner = true
 script = ExtResource("3_kgmrq")
+
+[node name="HandL" type="BoneAttachment3D" parent="Model/Skeleton3D"]
+visible = false
+bone_name = "bone_15"
+
+[node name="Socket" type="Marker3D" parent="Model/Skeleton3D/HandL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.0015, -0.0003)
+
+[node name="HandR" type="BoneAttachment3D" parent="Model/Skeleton3D"]
+visible = false
+bone_name = "bone_18"
+
+[node name="Socket" type="Marker3D" parent="Model/Skeleton3D/HandR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.0, 0.0)

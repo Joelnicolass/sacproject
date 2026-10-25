@@ -199,96 +199,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_e8smg")
 model = "mrdk"
 bind_aabb = AABB(-2.497409, -2.387808, -1.02338, 4.678546, 4.236582, 3.235385)
-clips = {
-"mdfd": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-},
-"mdgu": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-},
-"mdhf": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-},
-"mdi1": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-},
-"mdr2": {
-"hands": [{
-"bone_name": "bone_13",
-"offset": Vector3(0.00039000003, -0.00065, -0.0014300001),
-"on": true
-}, {
-"bone_name": "bone_13",
-"offset": Vector3(0.00039000003, -0.00065, -0.0014300001),
-"on": true
-}]
-},
-"mdrn": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-},
-"mds2": {
-"hands": [{
-"bone_name": "bone_13",
-"offset": Vector3(0.00039000003, -0.00065, -0.0014300001),
-"on": true
-}, {
-"bone_name": "bone_13",
-"offset": Vector3(0.00039000003, -0.00065, -0.0014300001),
-"on": true
-}]
-},
-"mdst": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-}
-}
 
 [node name="Model" parent="." unique_id=461085438 instance=ExtResource("2_3xusd")]
 unique_name_in_owner = true
@@ -957,3 +867,17 @@ unique_name_in_owner = true
 script = ExtResource("3_kwiuk")
 
 [editable path="Model"]
+
+[node name="HandL" type="BoneAttachment3D" parent="Model/Skeleton3D"]
+visible = false
+bone_name = "bone_13"
+
+[node name="Socket" type="Marker3D" parent="Model/Skeleton3D/HandL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00039000003, -0.00065, -0.0014300001)
+
+[node name="HandR" type="BoneAttachment3D" parent="Model/Skeleton3D"]
+visible = false
+bone_name = "bone_13"
+
+[node name="Socket" type="Marker3D" parent="Model/Skeleton3D/HandR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00039000003, -0.00065, -0.0014300001)

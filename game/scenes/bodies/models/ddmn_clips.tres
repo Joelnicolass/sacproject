@@ -21,27 +21,43 @@
 [ext_resource type="Animation" path="res://scenes/bodies/models/ddmn_clips/DMhf.res" id="19_DMhf"]
 [ext_resource type="Animation" path="res://scenes/bodies/models/ddmn_clips/DMi1.res" id="20_DMi1"]
 
+[sub_resource type="Animation" id="Animation_i62ny"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Skeleton3D/HandL:visible")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
 [resource]
 _data = {
-&"idle": ExtResource("1_DMst"),
-&"run": ExtResource("2_DMrn"),
+&"RESET": SubResource("Animation_i62ny"),
 &"attack": ExtResource("3_DMa1"),
 &"attack2": ExtResource("3_DMa1"),
 &"attack3": ExtResource("4_DMa3"),
+&"death": ExtResource("7_DMd1"),
+&"fly": ExtResource("12_DMfl"),
+&"fly_damage": ExtResource("18_DMfg"),
+&"fly_death": ExtResource("8_DMfi"),
+&"gesture": ExtResource("20_DMi1"),
+&"get_up": ExtResource("17_DMgu"),
+&"held": ExtResource("9_DM2t"),
+&"hit_floor": ExtResource("19_DMhf"),
+&"hover": ExtResource("13_DMhv"),
+&"idle": ExtResource("1_DMst"),
+&"knock": ExtResource("16_DMfd"),
+&"land": ExtResource("15_DMla"),
+&"rise": ExtResource("11_DMrz"),
+&"run": ExtResource("2_DMrn"),
 &"shoot": ExtResource("5_DMs1"),
 &"shoot2": ExtResource("6_DMes"),
-&"death": ExtResource("7_DMd1"),
-&"fly_death": ExtResource("8_DMfi"),
-&"held": ExtResource("9_DM2t"),
-&"thrash": ExtResource("10_DMsa"),
-&"rise": ExtResource("11_DMrz"),
-&"fly": ExtResource("12_DMfl"),
-&"hover": ExtResource("13_DMhv"),
 &"takeoff": ExtResource("14_DMto"),
-&"land": ExtResource("15_DMla"),
-&"knock": ExtResource("16_DMfd"),
-&"get_up": ExtResource("17_DMgu"),
-&"fly_damage": ExtResource("18_DMfg"),
-&"hit_floor": ExtResource("19_DMhf"),
-&"gesture": ExtResource("20_DMi1")
+&"thrash": ExtResource("10_DMsa")
 }

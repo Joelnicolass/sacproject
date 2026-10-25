@@ -15,21 +15,49 @@
 [ext_resource type="Animation" path="res://scenes/bodies/models/ftrl_clips/TRhf.res" id="13_TRhf"]
 [ext_resource type="Animation" path="res://scenes/bodies/models/ftrl_clips/TFi1.res" id="14_TFi1"]
 
+[sub_resource type="Animation" id="Animation_8myym"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Skeleton3D/HandL:visible")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Skeleton3D/HandR:visible")
+tracks/1/interp = 0
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
 [resource]
 _data = {
-&"idle": ExtResource("1_TRst"),
-&"run": ExtResource("2_TFrn"),
+&"RESET": SubResource("Animation_8myym"),
 &"attack": ExtResource("3_TFa1"),
 &"attack2": ExtResource("4_TRa2"),
 &"attack3": ExtResource("5_TRa1"),
+&"death": ExtResource("7_TRd1"),
+&"gesture": ExtResource("14_TFi1"),
+&"get_up": ExtResource("12_TRgu"),
+&"held": ExtResource("8_TR2t"),
+&"hit_floor": ExtResource("13_TRhf"),
+&"idle": ExtResource("1_TRst"),
+&"knock": ExtResource("11_TRfd"),
+&"rise": ExtResource("10_TRrz"),
+&"run": ExtResource("2_TFrn"),
 &"shoot": ExtResource("6_TR00"),
 &"shoot2": ExtResource("6_TR00"),
-&"death": ExtResource("7_TRd1"),
-&"held": ExtResource("8_TR2t"),
-&"thrash": ExtResource("9_TRsc"),
-&"rise": ExtResource("10_TRrz"),
-&"knock": ExtResource("11_TRfd"),
-&"get_up": ExtResource("12_TRgu"),
-&"hit_floor": ExtResource("13_TRhf"),
-&"gesture": ExtResource("14_TFi1")
+&"thrash": ExtResource("9_TRsc")
 }

@@ -18,25 +18,41 @@
 [ext_resource type="Animation" path="res://scenes/bodies/models/ehbt_clips/HBhf.res" id="16_HBhf"]
 [ext_resource type="Animation" path="res://scenes/bodies/models/ehbt_clips/EHi1.res" id="17_EHi1"]
 
+[sub_resource type="Animation" id="Animation_8ec0d"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Skeleton3D/HandL:visible")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
 [resource]
 _data = {
-&"idle": ExtResource("1_HBst"),
-&"run": ExtResource("2_EHrn"),
+&"RESET": SubResource("Animation_8ec0d"),
 &"attack": ExtResource("3_EHa1"),
 &"attack2": ExtResource("4_HBa2"),
 &"attack3": ExtResource("5_HBa3"),
+&"death": ExtResource("7_HBd1"),
+&"fly": ExtResource("12_HBfl"),
+&"fly_damage": ExtResource("15_HBdf"),
+&"fly_death": ExtResource("8_HBfi"),
+&"gesture": ExtResource("17_EHi1"),
+&"held": ExtResource("9_HBft"),
+&"hit_floor": ExtResource("16_HBhf"),
+&"hover": ExtResource("13_HBi1"),
+&"idle": ExtResource("1_HBst"),
+&"knock": ExtResource("14_HBfd"),
+&"rise": ExtResource("11_HBrz"),
+&"run": ExtResource("2_EHrn"),
 &"shoot": ExtResource("6_HBsh"),
 &"shoot2": ExtResource("6_HBsh"),
-&"death": ExtResource("7_HBd1"),
-&"fly_death": ExtResource("8_HBfi"),
-&"held": ExtResource("9_HBft"),
-&"thrash": ExtResource("10_HBsc"),
-&"rise": ExtResource("11_HBrz"),
-&"fly": ExtResource("12_HBfl"),
-&"hover": ExtResource("13_HBi1"),
 &"takeoff": ExtResource("12_HBfl"),
-&"knock": ExtResource("14_HBfd"),
-&"fly_damage": ExtResource("15_HBdf"),
-&"hit_floor": ExtResource("16_HBhf"),
-&"gesture": ExtResource("17_EHi1")
+&"thrash": ExtResource("10_HBsc")
 }

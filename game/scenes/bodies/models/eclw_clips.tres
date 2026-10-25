@@ -16,21 +16,49 @@
 [ext_resource type="Animation" path="res://scenes/bodies/models/eclw_clips/CPhf.res" id="14_CPhf"]
 [ext_resource type="Animation" path="res://scenes/bodies/models/eclw_clips/CPi1.res" id="15_CPi1"]
 
+[sub_resource type="Animation" id="Animation_o6hrg"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Skeleton3D/HandL:visible")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Skeleton3D/HandR:visible")
+tracks/1/interp = 0
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
 [resource]
 _data = {
-&"idle": ExtResource("1_CPst"),
-&"run": ExtResource("2_CPrn"),
+&"RESET": SubResource("Animation_o6hrg"),
 &"attack": ExtResource("3_CPa1"),
 &"attack2": ExtResource("4_CPa2"),
 &"attack3": ExtResource("5_CPa3"),
+&"death": ExtResource("8_CPd1"),
+&"gesture": ExtResource("15_CPi1"),
+&"get_up": ExtResource("13_CPgu"),
+&"held": ExtResource("9_CP2t"),
+&"hit_floor": ExtResource("14_CPhf"),
+&"idle": ExtResource("1_CPst"),
+&"knock": ExtResource("12_CPfd"),
+&"rise": ExtResource("11_CPrz"),
+&"run": ExtResource("2_CPrn"),
 &"shoot": ExtResource("6_CPs1"),
 &"shoot2": ExtResource("7_CPs2"),
-&"death": ExtResource("8_CPd1"),
-&"held": ExtResource("9_CP2t"),
-&"thrash": ExtResource("10_CPsc"),
-&"rise": ExtResource("11_CPrz"),
-&"knock": ExtResource("12_CPfd"),
-&"get_up": ExtResource("13_CPgu"),
-&"hit_floor": ExtResource("14_CPhf"),
-&"gesture": ExtResource("15_CPi1")
+&"thrash": ExtResource("10_CPsc")
 }

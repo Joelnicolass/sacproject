@@ -202,85 +202,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_kqjfg")
 model = "hero"
 bind_aabb = AABB(-0.766222, -1.214082, -0.209123, 1.5373499, 2.055678, 0.479989)
-clips = {
-"hefd": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-},
-"hegu": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-},
-"hei1": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-},
-"her2": {
-"hands": [{
-"bone_name": "bone_28",
-"offset": Vector3(0, 0, 0),
-"on": true
-}, {
-"bone_name": "bone_23",
-"offset": Vector3(0, 0, 0),
-"on": true
-}]
-},
-"hern": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-},
-"hes2": {
-"hands": [{
-"bone_name": "bone_28",
-"offset": Vector3(0, 0, 0),
-"on": true
-}, {
-"bone_name": "bone_23",
-"offset": Vector3(0, 0, 0),
-"on": true
-}]
-},
-"hest": {
-"hands": [{
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}, {
-"bone_name": "root",
-"offset": Vector3(0, 0, 0),
-"on": false
-}]
-}
-}
 
 [node name="Model" parent="." unique_id=1740022557 instance=ExtResource("2_evl82")]
 unique_name_in_owner = true
@@ -947,3 +868,17 @@ unique_name_in_owner = true
 script = ExtResource("3_7b76x")
 
 [editable path="Model"]
+
+[node name="HandL" type="BoneAttachment3D" parent="Model/Skeleton3D"]
+visible = false
+bone_name = "bone_28"
+
+[node name="Socket" type="Marker3D" parent="Model/Skeleton3D/HandL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.0, 0.0)
+
+[node name="HandR" type="BoneAttachment3D" parent="Model/Skeleton3D"]
+visible = false
+bone_name = "bone_23"
+
+[node name="Socket" type="Marker3D" parent="Model/Skeleton3D/HandR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.0, 0.0)

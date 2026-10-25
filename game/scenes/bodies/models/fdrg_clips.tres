@@ -16,23 +16,39 @@
 [ext_resource type="Animation" path="res://scenes/bodies/models/fdrg_clips/DFhf.res" id="14_DFhf"]
 [ext_resource type="Animation" path="res://scenes/bodies/models/fdrg_clips/DFi1.res" id="15_DFi1"]
 
+[sub_resource type="Animation" id="Animation_ju03a"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Skeleton3D/HandL:visible")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
 [resource]
 _data = {
-&"idle": ExtResource("1_DFst"),
-&"run": ExtResource("2_DFfl"),
+&"RESET": SubResource("Animation_ju03a"),
 &"attack": ExtResource("3_DFa1"),
 &"attack2": ExtResource("4_DFa2"),
 &"attack3": ExtResource("5_DFa3"),
+&"death": ExtResource("8_DFd1"),
+&"fly": ExtResource("2_DFfl"),
+&"fly_damage": ExtResource("13_DFdf"),
+&"fly_death": ExtResource("8_DFd1"),
+&"gesture": ExtResource("15_DFi1"),
+&"held": ExtResource("9_DF2t"),
+&"hit_floor": ExtResource("14_DFhf"),
+&"hover": ExtResource("12_DFhv"),
+&"idle": ExtResource("1_DFst"),
+&"rise": ExtResource("11_DFrz"),
+&"run": ExtResource("2_DFfl"),
 &"shoot": ExtResource("6_DFs1"),
 &"shoot2": ExtResource("7_DFs2"),
-&"death": ExtResource("8_DFd1"),
-&"fly_death": ExtResource("8_DFd1"),
-&"held": ExtResource("9_DF2t"),
-&"thrash": ExtResource("10_DFsc"),
-&"rise": ExtResource("11_DFrz"),
-&"fly": ExtResource("2_DFfl"),
-&"hover": ExtResource("12_DFhv"),
-&"fly_damage": ExtResource("13_DFdf"),
-&"hit_floor": ExtResource("14_DFhf"),
-&"gesture": ExtResource("15_DFi1")
+&"thrash": ExtResource("10_DFsc")
 }

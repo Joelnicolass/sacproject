@@ -54,23 +54,6 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 script = ExtResource("1_veeoh")
 model = "testmonster"
 bind_aabb = AABB(-0.47500002, 0, -0.225, 0.95000005, 2, 0.75)
-clips = {
-"attack2_at60": {
-"hands": []
-},
-"attack_at45": {
-"hands": []
-},
-"death": {
-"hands": []
-},
-"idle": {
-"hands": []
-},
-"run": {
-"hands": []
-}
-}
 
 [node name="Model" parent="." unique_id=499990555 instance=ExtResource("2_33wy2")]
 unique_name_in_owner = true

@@ -8,6 +8,7 @@
 [ext_resource type="Resource" path="res://data/passives/dragon_vines.tres" id="typed_passive_0"]
 [ext_resource type="Resource" path="res://data/death_clouds/mutant_cloud.tres" id="typed_passive_1"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/sirc_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://scenes/units/bodies/sirocco.tscn" id="body_scene"]
 
 [resource]
 script = ExtResource("1_oyuso")
@@ -15,6 +16,7 @@ tag = "risH"
 display_name = "Sirocco"
 icon = ExtResource("icon_tex")
 model = "sirc"
+body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 6875
 regeneration_per_s = 29.1667

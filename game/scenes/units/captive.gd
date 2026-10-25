@@ -270,9 +270,9 @@ func _open_portal() -> void:
 			return
 		portal.openness = 0.0
 		body.add_child(portal)
-	var info := BodyCatalog.info(body.model)
-	var height := float(info.get("height", 1.5))
-	var width := 2.0 * float(info.get("radius", 0.5))
+	var facts := BodyFacts.of_body(body)
+	var height := facts.height_m
+	var width := 2.0 * facts.radius_m
 	## Diagonal of the box (width x width x height): the original size of the hitbox (estimated).
 	var diagonal := Vector3(width, width, height).length()
 	portal.position = Vector3(0.0, height * 0.5, 0.0)

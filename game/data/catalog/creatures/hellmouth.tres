@@ -6,6 +6,7 @@
 [ext_resource type="Resource" path="res://data/catalog/abilities/mhba.tres" id="typed_mhba"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/ifna.tres" id="typed_ifna"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/ddmn_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://scenes/units/bodies/hellmouth.tscn" id="body_scene"]
 
 [resource]
 script = ExtResource("1_3nw7s")
@@ -13,6 +14,7 @@ tag = "nomd"
 display_name = "Hellmouth"
 icon = ExtResource("icon_tex")
 model = "ddmn"
+body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 5400
 drain = 0.5

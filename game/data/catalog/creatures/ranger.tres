@@ -6,6 +6,7 @@
 [ext_resource type="Resource" path="res://data/catalog/abilities/wobf.tres" id="typed_wobf"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/eesd.tres" id="typed_eesd"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/huma_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://scenes/units/bodies/ranger.tscn" id="body_scene"]
 
 [resource]
 script = ExtResource("1_eqfkw")
@@ -13,6 +14,7 @@ tag = "amuh"
 display_name = "Ranger"
 icon = ExtResource("icon_tex")
 model = "huma"
+body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 800
 regeneration_per_s = 29.1667

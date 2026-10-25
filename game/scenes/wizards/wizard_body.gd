@@ -20,6 +20,8 @@ signal pick_changed
 		_apply_type()
 		if value != null and wizard_tag != value.id():
 			wizard_tag = value.id()
+## Wears the body scene of `wizard_type` (BodyFrame): its size and sockets. It is the one place that says which body this is.
+@export var mount: BodyMount
 ## The id of `wizard_type` on the network (it travels in the synchronizer). Derived from the type: set the type, not this.
 @export var wizard_tag := "":
 	set(value):
@@ -103,6 +105,7 @@ func _ready() -> void:
 	floor_snap_length = 0.5
 	look_yaw = rotation.y
 	_net_yaw = rotation.y
+	_wear_body()
 	_apply_model()
 	if get_node_or_null("Tilt/Mesh"):
 		_clip_pose.setup(model)
@@ -221,6 +224,7 @@ func _sync_clip_pose() -> void:
 func _apply_type() -> void:
 	if wizard_type == null:
 		return
+	_wear_body()
 	if wizard_type.run_speed_m_s > 0.0:
 		move_speed = wizard_type.run_speed_m_s
 	_sync_clip_pose()
@@ -238,26 +242,16 @@ func _apply_model() -> void:
 		return
 	visual.show_model(model)
 	_sync_clip_pose()
-	_fit_shape()
-
-func _fit_shape() -> void:
-	var visual := get_node_or_null("Tilt/Mesh") as BodyVisual
-	var col := get_node_or_null("Collision") as CollisionShape3D
-	if visual == null or col == null:
-		return
-	var capsule := CapsuleShape3D.new()
-	capsule.height = maxf(visual.body_height(), 0.6)
-	capsule.radius = minf(visual.body_radius(), capsule.height * 0.45)
-	col.shape = capsule
-	col.position = Vector3(0.0, capsule.height * 0.5, 0.0)
 
 
+func _wear_body() -> void:
+	if mount != null and wizard_type != null:
+		mount.wear(wizard_type.body)
+
+
+## How far the soles of the feet are below the origin of the body (the Feet marker of its body scene).
 func feet_drop() -> float:
-	var col := get_node_or_null("Collision") as CollisionShape3D
-	if col == null or not col.shape is CapsuleShape3D:
-		return 0.0
-	var capsule := col.shape as CapsuleShape3D
-	return col.position.y - capsule.height * 0.5
+	return mount.facts.feet.y
 
 
 func facing_flat() -> Vector3:

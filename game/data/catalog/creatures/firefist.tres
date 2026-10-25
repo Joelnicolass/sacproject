@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://ujrbppcigecj" path="res://assets/original/ui/icons/lrtf.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/ahtf.tres" id="typed_ahtf"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/ftrl_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://scenes/units/bodies/firefist.tscn" id="body_scene"]
 
 [resource]
 script = ExtResource("1_c7lma")
@@ -12,6 +13,7 @@ tag = "lrtf"
 display_name = "Firefist"
 icon = ExtResource("icon_tex")
 model = "ftrl"
+body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1280
 regeneration_per_s = 16.6667

@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://diylvydsq1ii2" path="res://assets/original/ui/icons/_e_h_t_h.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/lffa.tres" id="typed_lffa"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/the2_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://scenes/units/bodies/faestus_pyro.tscn" id="body_scene"]
 
 [resource]
 script = ExtResource("1_v1qwj")
@@ -12,6 +13,7 @@ tag = "EHTH"
 display_name = "Faestus"
 icon = ExtResource("icon_tex")
 model = "the2"
+body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 2080
 regeneration_per_s = 16.6667

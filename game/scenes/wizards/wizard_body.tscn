@@ -1,4 +1,4 @@
-[gd_scene load_steps=52 format=3]
+[gd_scene load_steps=54 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
 [ext_resource type="Script" path="res://scenes/wizards/wizard_body.gd" id="1_body"]
@@ -7,6 +7,8 @@
 [ext_resource type="PackedScene" path="res://scenes/units/status/clinging.tscn" id="f129_cling"]
 [ext_resource type="Resource" path="res://scenes/wizards/walk_step.tres" id="2_step"]
 [ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="3_visual"]
+[ext_resource type="Script" path="res://scenes/bodies/body_mount.gd" id="s1_mount"]
+[ext_resource type="Script" path="res://scenes/units/movement/body_collider.gd" id="s1_collider"]
 [ext_resource type="Script" path="res://scenes/components/health.gd" id="4_health"]
 [ext_resource type="Script" path="res://scenes/components/mana_pool.gd" id="5_mana"]
 [ext_resource type="Script" path="res://scenes/components/soul_purse.gd" id="6_souls"]
@@ -165,9 +167,10 @@ properties/22/replication_mode = 2
 
 [sub_resource type="BoxMesh" id="Box_unit"]
 
-[node name="Wizard" type="CharacterBody3D"]
+[node name="Wizard" type="CharacterBody3D" node_paths=PackedStringArray("mount")]
 floor_max_angle = 1.4835298
 script = ExtResource("1_body")
+mount = NodePath("BodyMount")
 step = ExtResource("2_step")
 wizard_type = ExtResource("typed_cwa0")
 model = "jnwr"
@@ -195,6 +198,14 @@ priority = 4.0
 [node name="Collision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_body")
+
+[node name="BodyMount" type="Node" parent="."]
+script = ExtResource("s1_mount")
+
+[node name="BodyCollider" type="Node" parent="." node_paths=PackedStringArray("mount", "collision")]
+script = ExtResource("s1_collider")
+mount = NodePath("../BodyMount")
+collision = NodePath("../Collision")
 
 [node name="Health" type="Node" parent="." node_paths=PackedStringArray("oil", "afflictions", "poisoning", "wards")]
 script = ExtResource("4_health")

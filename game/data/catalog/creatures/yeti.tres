@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://scenes/units/passives/creature_passive.gd" id="typed_passive_script"]
 [ext_resource type="Resource" path="res://data/passives/yeti_freeze.tres" id="typed_passive_0"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/aprc_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://scenes/units/bodies/yeti.tscn" id="body_scene"]
 
 [resource]
 script = ExtResource("1_iod8r")
@@ -13,6 +14,7 @@ tag = "ycrp"
 display_name = "Yeti"
 icon = ExtResource("icon_tex")
 model = "aprc"
+body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 3600
 regeneration_per_s = 16.6667

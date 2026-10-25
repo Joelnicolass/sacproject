@@ -10,9 +10,6 @@ extends SpellAction
 
 const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
-## Hands of a wizard, as a fraction of the body height (a thrown ball leaves from there).
-const HAND_HEIGHT := 0.65
-
 
 ## The body the cast lands on, or null (the click named nothing valid). Default: a living enemy.
 func resolve_target(wizard: WizardBody, _spell: SpellType, picked: Node3D) -> Node3D:
@@ -51,16 +48,16 @@ static func ally_or_self(wizard: Node3D, picked: Node3D) -> Node3D:
 	return picked if is_ally(wizard, picked) else null
 
 
-## Where a thrown ball leaves: the front of the wizard's hit box, at hand height (there are no hand bones).
+## Where a thrown ball leaves: the Muzzle marker of the wizard's body scene (hand height, in front of his hit box).
 static func hand_origin(wizard: WizardBody) -> Vector3:
 	return hand_origin_facing(wizard, wizard.facing_flat())
 
 
 ## The same spot with the wizard turned to `facing` (flat, unit): the AI asks where the ball will leave once he turns to his target.
 static func hand_origin_facing(wizard: WizardBody, facing: Vector3) -> Vector3:
-	var info := BodyCatalog.info(str(wizard.get("model")))
-	var at := wizard.global_position + Vector3.UP * float(info.get("height", 1.8)) * HAND_HEIGHT
-	at += facing * float(info.get("reach", 0.5))
+	var muzzle := BodyFacts.of_body(wizard).muzzle
+	var at := wizard.global_position + Vector3(0.0, muzzle.y, 0.0)
+	at += facing * muzzle.z
 	return at
 
 

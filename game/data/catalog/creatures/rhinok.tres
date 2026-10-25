@@ -6,6 +6,7 @@
 [ext_resource type="Resource" path="res://data/catalog/abilities/hrba.tres" id="typed_hrba"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/HRba_2.tres" id="typed_HRba"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/edmn_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://scenes/units/bodies/rhinok.tscn" id="body_scene"]
 
 [resource]
 script = ExtResource("1_ng7lu")
@@ -13,6 +14,7 @@ tag = "gard"
 display_name = "Rhinok"
 icon = ExtResource("icon_tex")
 model = "edmn"
+body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 7200
 regeneration_per_s = 16.6667

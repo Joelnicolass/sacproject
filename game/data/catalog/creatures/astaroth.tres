@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://data/audio/creatures/astaroth.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://c55i2qfp2gq4o" path="res://assets/original/ui/icons/_r_a_m_h.png" id="icon_tex"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/ban2_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://scenes/units/bodies/astaroth.tscn" id="body_scene"]
 
 [resource]
 script = ExtResource("1_yt7v8")
@@ -11,6 +12,7 @@ tag = "RAMH"
 display_name = "Astaroth"
 icon = ExtResource("icon_tex")
 model = "ban2"
+body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 2700
 drain = 0.5

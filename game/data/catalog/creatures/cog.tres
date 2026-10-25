@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://scenes/units/passives/creature_passive.gd" id="typed_passive_script"]
 [ext_resource type="Resource" path="res://data/death_clouds/cog_cloud.tres" id="typed_passive_0"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/fdzy_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://scenes/units/bodies/cog.tscn" id="body_scene"]
 
 [resource]
 script = ExtResource("1_nylq0")
@@ -13,6 +14,7 @@ tag = "zidf"
 display_name = "Cog"
 icon = ExtResource("icon_tex")
 model = "fdzy"
+body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 640
 regeneration_per_s = 16.6667

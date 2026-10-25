@@ -5,6 +5,8 @@ extends Resource
 @export var tag: String = ""
 @export var display_name: String = ""
 @export var model: String = ""
+## The body the creature wears: its size, capsule and sockets (scenes/units/bodies/<name>.tscn, a BodyFrame). Drag the scene here.
+@export var body: PackedScene
 ## What the model plays and how long each role lasts (scenes/bodies/models/<model>_clips.tres): the same library the body draws,
 ## read by the rules through ClipFacts.
 @export var clips: AnimationLibrary

@@ -305,9 +305,7 @@ func _closest_enemy_creature(unit: Node3D, spot: Vector3) -> Node3D:
 
 ## Half the body width: the larger of the collision radius and the melee reach.
 static func _half_size(body: Node3D) -> float:
-	var model := str(body.get("model")) if "model" in body else ""
-	var info := BodyCatalog.info(model)
-	return maxf(float(info.get("radius", 0.35)), float(info.get("reach", 0.35)))
+	return BodyFacts.of_body(body).half_size_m()
 
 
 static func _yaw_of(node: Node3D) -> float:

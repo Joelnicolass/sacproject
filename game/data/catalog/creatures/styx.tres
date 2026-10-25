@@ -7,6 +7,7 @@
 [ext_resource type="Resource" path="res://data/catalog/abilities/dner.tres" id="typed_dner"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/tdhg.tres" id="typed_tdhg"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/gund_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://scenes/units/bodies/styx.tscn" id="body_scene"]
 
 [resource]
 script = ExtResource("1_8orfn")
@@ -14,6 +15,7 @@ tag = "nugd"
 display_name = "Styx"
 icon = ExtResource("icon_tex")
 model = "gund"
+body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1350
 drain = 0.5

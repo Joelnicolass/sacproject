@@ -3,12 +3,14 @@
 [ext_resource type="Script" path="res://scenes/wizards/wizard_type.gd" id="1_txlru"]
 [ext_resource type="Resource" path="res://data/audio/wizards/mithras.tres" id="sounds_set"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/sage_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://scenes/wizards/bodies/mithras.tscn" id="body_scene"]
 
 [resource]
 script = ExtResource("1_txlru")
 tag = "cwe1"
 display_name = "Mithras"
 model = "sage"
+body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1500
 mana = 1000

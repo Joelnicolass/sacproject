@@ -1,8 +1,10 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=22 format=3]
 
 [ext_resource type="Script" path="res://scenes/sacrifice/doctor_body.gd" id="1_body"]
 [ext_resource type="PackedScene" path="res://scenes/units/movement/body_avoidance.tscn" id="f207_avoid"]
 [ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="2_visual"]
+[ext_resource type="Script" path="res://scenes/bodies/body_mount.gd" id="s1_mount"]
+[ext_resource type="Script" path="res://scenes/units/movement/body_collider.gd" id="s1_collider"]
 [ext_resource type="Script" path="res://scenes/components/health.gd" id="3_health"]
 [ext_resource type="PackedScene" path="res://scenes/units/unit_health_bar.tscn" id="4_bar"]
 [ext_resource type="Script" path="res://scenes/sacrifice/stuck_guard.gd" id="5_guard"]
@@ -53,7 +55,7 @@ properties/7/path = NodePath(".:carried")
 properties/7/spawn = true
 properties/7/replication_mode = 2
 
-[node name="Doctor" type="CharacterBody3D" node_paths=PackedStringArray("health", "visual", "collision", "health_bar", "states", "clip_player")]
+[node name="Doctor" type="CharacterBody3D" node_paths=PackedStringArray("health", "visual", "collision", "mount", "health_bar", "states", "clip_player")]
 collision_layer = 2
 floor_snap_length = 0.5
 floor_max_angle = 1.4835298
@@ -63,6 +65,7 @@ rules = ExtResource("13_rules")
 health = NodePath("Health")
 visual = NodePath("Pivot/Mesh")
 collision = NodePath("Collision")
+mount = NodePath("BodyMount")
 health_bar = NodePath("HealthBar")
 states = NodePath("States")
 clip_player = NodePath("ClipPose")
@@ -88,6 +91,14 @@ pivot = NodePath("../Pivot/Mesh/Rig")
 [node name="Collision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
 shape = SubResource("CapsuleShape3D_doctor")
+
+[node name="BodyMount" type="Node" parent="."]
+script = ExtResource("s1_mount")
+
+[node name="BodyCollider" type="Node" parent="." node_paths=PackedStringArray("mount", "collision")]
+script = ExtResource("s1_collider")
+mount = NodePath("../BodyMount")
+collision = NodePath("../Collision")
 
 [node name="Health" type="Node" parent="."]
 script = ExtResource("3_health")

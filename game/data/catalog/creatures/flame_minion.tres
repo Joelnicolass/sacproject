@@ -6,6 +6,7 @@
 [ext_resource type="Resource" path="res://data/catalog/abilities/fkba.tres" id="typed_fkba"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/!nur.tres" id="typed__nur"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/fklp_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://scenes/units/bodies/flame_minion.tscn" id="body_scene"]
 
 [resource]
 script = ExtResource("1_5iwmj")
@@ -13,6 +14,7 @@ tag = "fplk"
 display_name = "Flame Minion"
 icon = ExtResource("icon_tex")
 model = "fklp"
+body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 640
 regeneration_per_s = 16.6667

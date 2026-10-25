@@ -66,15 +66,15 @@ func finish(wizard: WizardBody, spell: SpellType, target: Node3D) -> String:
 	var widths := PackedFloat32Array()
 	var heights := PackedFloat32Array()
 	for body in travelers(wizard, radius):
-		var info := BodyCatalog.info(str(body.get("model")))
+		var facts := BodyFacts.of_body(body)
 		var flying := body is UnitBody and (body as UnitBody).is_flying()
 		var spot := TeleportMath.carried(body.global_position, start, destination, flying, on_ground)
 		spot.y = _land_y(shape, spot, destination.y)
 		froms.append(_feet_of(body))
 		body.call("warp_to", spot)  # dynamic: a unit or a wizard warps
 		tos.append(_feet_of(body))
-		widths.append(2.0 * float(info.get("radius", 0.4)))
-		heights.append(float(info.get("height", 1.8)))
+		widths.append(2.0 * facts.radius_m)
+		heights.append(facts.height_m)
 	_announce(froms, tos, widths, heights)
 	return ""
 
@@ -138,9 +138,9 @@ func _on_ground_of(shape: TerrainShape) -> Callable:
 	return shape.is_on_ground
 
 
-## Where the feet of a body are (the origin of a wizard is higher: his capsule).
+## Where the feet of a body are: its Feet marker (a wizard's origin sits above the soles).
 func _feet_of(body: Node3D) -> Vector3:
-	return body.global_position + Vector3.UP * ((body as WizardBody).feet_drop() if body is WizardBody else 0.0)
+	return body.global_position + BodyFacts.of_body(body).feet
 
 
 ## Server or solo: every peer shows the same burst at the origin and at the destination of each body.

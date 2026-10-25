@@ -5,7 +5,7 @@ extends Node
 ## - At the start (`scan_global`, once, shiny.d:1175-1183) it takes in every structure, wizard and creature of the map:
 ##   the enemy altar, the enemy creatures and the NPC of the villages (Farmers and Taurocks), the way
 ##   thaum.exe did (`config is 0x10 at all three AI-creation call sites`, shiny.d:1158).
-## - After that it adds its own bodies when they appear and an enemy body only when its side SEES it (SideVision.marked,
+## - After that it adds its own bodies when they appear and an enemy body only when its side SEES it (VisionSides,
 ##   shiny.d:616-635), and removes what dies (shiny.d:563-566). A foe it has not seen keeps the position it had when it
 ##   was taken in: updateBase only follows own bodies and the ones flagged «seen» (shiny.d:1025), and the flag comes from discover (1373).
 ## - It only follows what lies in the wizard's own region of the pathfinder (`shouldTrack`, shiny.d:754-775).
@@ -50,7 +50,6 @@ var _lost: Dictionary = {}
 
 var _bodies: Array = [[], [], [], []]
 var _structures: Array = [[], [], [], []]
-var _vision: SideVision
 var _nav: NavService
 var _tag_accs: Dictionary = {}
 var _sacrifice: SacrificeSystem
@@ -62,23 +61,10 @@ func _ready() -> void:
 		set_process(false)
 
 
-func vision() -> SideVision:
-	if _vision == null or not is_instance_valid(_vision):
-		_vision = get_tree().get_first_node_in_group(SideVision.GROUP) as SideVision
-		if _vision != null and not _vision.marked.is_connected(_on_marked):
-			_vision.marked.connect(_on_marked)
-	return _vision
-
-
 func nav() -> NavService:
 	if _nav == null or not is_instance_valid(_nav):
 		_nav = get_tree().get_first_node_in_group(NavService.GROUP) as NavService
 	return _nav
-
-
-## setup (shiny.d:659-669) plus the vision hook: the AI starts to listen to what its side sees.
-func begin() -> void:
-	vision()
 
 
 ## scanGlobal (shiny.d:1175-1183): add-if-unknown every structure, then every wizard and creature of the map.
@@ -347,13 +333,11 @@ func update_nodes(dt: int) -> void:
 ## again (else a group seen near the wizard and gone stays there for good and keeps his threat up). The original never needs it: it
 ## reads the real position (Hard keeps that rule).
 func _forget_checked() -> void:
-	var service := vision()
-	if service == null:
-		return
 	var lookers: Array = []
 	for own: AiTrack in bodies(0):
 		if own.is_valid():
-			var sight := service.sight_of(own.node)
+			var eyes := VisionSides.of(own.node)
+			var sight := eyes.range_m() if eyes != null else 0.0
 			if sight > 0.0:
 				lookers.append([own.node.global_position, sight * sight])
 	if lookers.is_empty():
@@ -378,7 +362,6 @@ func _forget_checked() -> void:
 func _recall_seen() -> void:
 	if _lost.is_empty():
 		return
-	var service := vision()
 	for id in _lost.keys():
 		## Variant: the body may have been freed since (a typed Node3D would not take a freed instance)
 		var held: Variant = _lost[id]
@@ -386,7 +369,7 @@ func _recall_seen() -> void:
 			_lost.erase(id)
 			continue
 		var node := held as Node3D
-		if service != null and service.is_visible_to(slot, node):
+		if VisionSides.sees(slot, node):
 			_lost.erase(id)
 			var t := add_node(node, &"seen")
 			if t != null:
@@ -451,7 +434,7 @@ static func _maho_ready(node: Node) -> bool:
 ## discover (shiny.d:1373-1400) for what it does here: bodies it has seen get the «seen» flag so updateBase follows
 ## them; ghost wizards and dead bodies go.
 func discover() -> void:
-	var service := vision()
+	_take_in_seen()
 	for t: AiTrack in tracks.values():
 		if not t.is_valid():
 			_erase(t)
@@ -464,7 +447,7 @@ func discover() -> void:
 		if _is_dead(t.node):
 			_erase(t)
 			continue
-		if service != null and service.last_seen_tick(slot, t.node) >= 0 and not (t.flags & AiTrack.SEEN):
+		if not (t.flags & AiTrack.SEEN) and VisionSides.sees(slot, t.node):
 			t.flags |= AiTrack.SEEN
 			t.age_seen = t.age
 
@@ -528,21 +511,21 @@ func _on_altar_state(_state: int, node: Node3D) -> void:
 		remove_node(node)
 
 
-## SideVision: the side saw `node` (botSeen, shiny.d:616-635): own bodies are tracked by their own events.
-func _on_marked(side: int, node: Node3D) -> void:
-	if side != slot or tracks.has(node.get_instance_id()):
-		return
-	add_node(node, &"seen")
+## botSeen (shiny.d:616-635): the foes the side sees that it does not track yet join what it knows, in name order. Own bodies are
+## tracked by their own events.
+func _take_in_seen() -> void:
+	for node in VisionSides.seen_by(slot):
+		if not tracks.has(node.get_instance_id()):
+			add_node(node, &"seen")
 
 
-## Tracks the audit calls a leak: neither from the start nor own, and no mark of the side's vision behind them.
+## Tracks the audit calls a leak: neither from the start nor own, and the side does not see them.
 func leak_count() -> int:
-	var service := vision()
 	var leaks := 0
 	for t: AiTrack in tracks.values():
 		if t.origin == &"scan" or (t.flags & AiTrack.OWN):
 			continue
-		if service == null or not t.is_valid() or service.last_seen_tick(slot, t.node) < 0:
+		if not t.is_valid() or ((t.flags & AiTrack.SEEN) == 0 and not VisionSides.sees(slot, t.node)):
 			leaks += 1
 	return leaks
 
@@ -550,13 +533,12 @@ func leak_count() -> int:
 # ---- 024e: what the AI knows of a body (perfect information or the last it saw) ----
 
 ## The side sees `t` now: its own and its allies' bodies, structures and souls always (structures stand still and are marked for good
-## once seen; souls are not gated in the original either, shiny.d:583); a body of another side while SideVision.is_visible_to holds
-## (384 ticks after its last mark: the rule the creatures pick their targets by).
+## once seen; souls are not gated in the original either, shiny.d:583); a body of another side while the side's Vision keeps it in mind
+## (VisionSides.sees: the rule the creatures pick their targets by).
 func sees(t: AiTrack) -> bool:
 	if t == null or (t.flags & (AiTrack.OWN | AiTrack.ALLY)) or not t.is_body():
 		return true
-	var service := vision()
-	return service == null or service.is_visible_to(slot, t.node)
+	return VisionSides.sees(slot, t.node)
 
 
 ## The AI may read the real state of `t`: perfect information, or the side sees it.

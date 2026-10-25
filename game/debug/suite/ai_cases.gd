@@ -551,16 +551,11 @@ func _profiles_by_god() -> Dictionary:
 ## health and mana it saw last, and cannot aim a cast at it; once the side sees it, the real ones. With perfect information it reads the
 ## real state, and each such read of an unseen body is counted.
 func _limited_information(host: Node3D) -> Dictionary:
-	var vision := SideVision.new()
-	vision.name = "AiCasesVision"
-	host.add_child(vision)
-	vision.set_physics_process(false)
 	var perception := AiPerception.new()
 	perception.name = "AiCasesPerception"
 	perception.profile = load("res://data/ai/profile_original.tres")
 	perception.slot = 2
 	host.add_child(perception)
-	perception._vision = vision
 	var port := AiCommandPort.new()
 	port.perception = perception
 	host.add_child(port)
@@ -570,7 +565,7 @@ func _limited_information(host: Node3D) -> Dictionary:
 	var t := perception.add_node(foe, &"scan")
 	checks["tracked"] = t != null
 	if t == null:
-		for node: Node in [vision, perception, port, foe]:
+		for node: Node in [perception, port, foe]:
 			node.queue_free()
 		return _verdict(checks)
 	var seen_at := t.cur_pos
@@ -584,7 +579,11 @@ func _limited_information(host: Node3D) -> Dictionary:
 	t.flags |= AiTrack.SEEN
 	perception._update_node(t, 1)
 	checks["frozen_track"] = t.frozen and t.cur_pos == seen_at
-	vision.mark(2, foe)
+	## A body of its side stands next to the foe and looks: the side sees it now.
+	var watcher := _unit(host, 2, Vector3(740.0, 0.0, 700.0))
+	var eyes := watcher.get("vision") as Vision
+	eyes.watching = false
+	eyes.refresh()
 	checks["seen_real_position"] = perception.pos_of(t).distance_to(Vector3(760.0, 0.0, 700.0)) < 0.01
 	checks["seen_real_health"] = perception.health_of(t).x == AiRater.ftol(hp_seen.x * 0.5)
 	checks["seen_can_aim"] = port.can_aim(t)
@@ -597,7 +596,7 @@ func _limited_information(host: Node3D) -> Dictionary:
 	checks["perfect_reads_real"] = u != null and perception.pos_of(u).distance_to(Vector3(730.0, 0.0, 720.0)) < 0.01
 	checks["perfect_read_counted"] = perception.unseen_reads == 1
 	checks["perfect_can_aim"] = u != null and port.can_aim(u)
-	for node: Node in [vision, perception, port, foe, other]:
+	for node: Node in [watcher, perception, port, foe, other]:
 		node.queue_free()
 	return _verdict(checks, {"seen_at": seen_at, "reads": perception.unseen_reads})
 
@@ -623,24 +622,21 @@ func _reserved_soul() -> Dictionary:
 ## 024e, without perfect information: the side looks where it last knew a foe (an own body has the place in its sight) and the foe is
 ## not seen: the AI forgets it; once its side sees it again it knows it again. With perfect information nothing is forgotten.
 func _forget_checked(host: Node3D) -> Dictionary:
-	var vision := SideVision.new()
-	vision.name = "AiCasesVision2"
-	host.add_child(vision)
-	vision.set_physics_process(false)
 	var perception := AiPerception.new()
 	perception.name = "AiCasesPerception2"
 	perception.profile = load("res://data/ai/profile_original.tres")
 	perception.slot = 2
 	host.add_child(perception)
-	perception._vision = vision
 	var foe := _unit(host, 1, Vector3(900.0, 0.0, 900.0))
 	var mine := _unit(host, 2, Vector3(960.0, 0.0, 900.0))
+	var eyes := mine.get("vision") as Vision
+	eyes.watching = false
 	await host.get_tree().process_frame
 	var checks := {}
 	var t := perception.add_node(foe, &"scan")
 	perception.add_node(mine, &"event")
 	foe.global_position = Vector3(1300.0, 0.0, 900.0)
-	var sight := vision.sight_of(mine)
+	var sight := eyes.range_m()
 	checks["sight_covers"] = sight >= 60.0
 	perception.perfect_information = true
 	perception.update_nodes(1)
@@ -648,11 +644,12 @@ func _forget_checked(host: Node3D) -> Dictionary:
 	perception.perfect_information = false
 	perception.update_nodes(1)
 	checks["forgotten"] = perception.find(foe) == null and perception.forgotten == 1
-	vision.mark(2, foe)
+	foe.global_position = Vector3(1000.0, 0.0, 900.0)
+	eyes.refresh()
 	perception.update_nodes(1)
 	var again := perception.find(foe)
 	checks["known_again"] = again != null and (again.flags & AiTrack.SEEN) != 0
-	for node: Node in [vision, perception, foe, mine]:
+	for node: Node in [perception, foe, mine]:
 		node.queue_free()
 	return _verdict(checks, {"sight": sight, "tracked": t != null})
 

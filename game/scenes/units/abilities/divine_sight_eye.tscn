@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/divine_sight_eye.gd" id="1_eye"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/scri.png" id="2_scri"]
+[ext_resource type="PackedScene" path="res://scenes/units/vision/vision.tscn" id="3_vision"]
 
 [sub_resource type="StandardMaterial3D" id="Mat_eye"]
 transparency = 1
@@ -15,12 +16,16 @@ billboard_mode = 1
 [sub_resource type="QuadMesh" id="Mesh_eye"]
 size = Vector2(2.5, 2.25)
 
-[node name="DivineSightEye" type="Node3D" node_paths=PackedStringArray("glow")]
-editor_description = "F165 (RFC-030): el ojo del Divine Sight del Ranger (eesd). DivineSight (AbilityEffect) lo crea en el ShotSpawner (spawn_scene); lo simula solo el servidor (sube 45 ticks hasta 4 m, vuela recto a 30 m/s hasta 250 m o fija a la criatura enemiga más cercana a 250 m y la persigue con aceleración 3, ilumina 75 m de la grilla de SideVision de su lado, vive 30 s) y los clientes reciben posición y escala. Look: el sprite scri del original (hoja 4x4 de 16 cuadros, assets/original/fx/scri.png, tools/import/import_ui.py) en un quad de 2,5 x 2,25 m, sin sombreado, energía 3 (albedo_color), transparente con alfa = escala²; el script corre los cuadros por uv1_offset (frames_h, frames_v, frame_s). Knobs: flying_height, rising_s, refresh_s, target_groups."
+[node name="DivineSightEye" type="Node3D" node_paths=PackedStringArray("glow", "vision")]
+editor_description = "F165 (RFC-030): el ojo del Divine Sight del Ranger (eesd). DivineSight (AbilityEffect) lo crea en el ShotSpawner (spawn_scene); lo simula solo el servidor (sube 45 ticks hasta 4 m, vuela recto a 30 m/s hasta 250 m o fija a la criatura enemiga más cercana a 250 m y la persigue con aceleración 3, su Vision (hijo) ve a las criaturas enemigas a 75 m para su lado, vive 30 s) y los clientes reciben posición y escala. Look: el sprite scri del original (hoja 4x4 de 16 cuadros, assets/original/fx/scri.png, tools/import/import_ui.py) en un quad de 2,5 x 2,25 m, sin sombreado, energía 3 (albedo_color), transparente con alfa = escala²; el script corre los cuadros por uv1_offset (frames_h, frames_v, frame_s). Knobs: flying_height, rising_s, refresh_s, target_groups."
 script = ExtResource("1_eye")
 glow = NodePath("Glow")
+vision = NodePath("Vision")
 
 [node name="Glow" type="MeshInstance3D" parent="."]
 cast_shadow = 0
 mesh = SubResource("Mesh_eye")
 material_override = SubResource("Mat_eye")
+
+[node name="Vision" parent="." node_paths=PackedStringArray("body") instance=ExtResource("3_vision")]
+body = NodePath("..")

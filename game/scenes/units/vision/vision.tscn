@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/vision/vision.gd" id="1_vision"]
+[ext_resource type="Resource" path="res://data/match_rules.tres" id="2_rules"]
+
+[sub_resource type="CylinderShape3D" id="Cylinder_sight"]
+resource_local_to_scene = true
+height = 400.0
+radius = 100.0
+
+[node name="Vision" type="Area3D" node_paths=PackedStringArray("shape")]
+editor_description = "Lo que ve un cuerpo: quien está dentro de su cilindro (y cono) de visión, en orden de nombre. Arrastrá el borde del Shape para cambiar el radio (o poné radius_m; 0 = el vision_m del tipo). La vista del bando es la unión de los Vision de sus cuerpos (VisionSides). Costo: use_area deja que la física filtre candidatos; el resultado es el mismo."
+collision_layer = 0
+collision_mask = 2
+monitoring = false
+monitorable = false
+script = ExtResource("1_vision")
+shape = NodePath("Shape")
+rules = ExtResource("2_rules")
+
+[node name="Shape" type="CollisionShape3D" parent="."]
+shape = SubResource("Cylinder_sight")

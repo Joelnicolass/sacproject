@@ -22,6 +22,8 @@ signal pick_changed
 			wizard_tag = value.id()
 ## Wears the body scene of `wizard_type` (BodyFrame): its size and sockets. It is the one place that says which body this is.
 @export var mount: BodyMount
+## What he sees (Vision): its range comes from `wizard_type.vision_m`; the side's sight is the union of these (VisionSides).
+@export var vision: Vision
 ## The id of `wizard_type` on the network (it travels in the synchronizer). Derived from the type: set the type, not this.
 @export var wizard_tag := "":
 	set(value):
@@ -111,6 +113,7 @@ func _ready() -> void:
 	_present_prev_pos = global_position
 	_present_prev_ready = true
 	if MpKit.is_networked() and not MpKit.is_server():
+		vision.watching = false
 		_take_pick_type()
 		SacrificeFlow.slot_picks_changed.connect(_take_pick_type)
 		return
@@ -215,6 +218,8 @@ func _apply_type() -> void:
 	if wizard_type == null:
 		return
 	_wear_body()
+	if vision != null:
+		vision.adopt_range(wizard_type.vision_m)
 	if wizard_type.run_speed_m_s > 0.0:
 		move_speed = wizard_type.run_speed_m_s
 	if not is_node_ready() or _stats_ready:

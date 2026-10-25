@@ -122,7 +122,6 @@ func _start() -> void:
 	if _started or wizard == null:
 		return
 	_started = true
-	perception.begin()
 	started.emit()
 
 

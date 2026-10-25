@@ -27,7 +27,10 @@ extends Resource
 @export_range(0.0, 5.0, 0.001) var melee_evasion := 0.0
 @export_range(0.0, 5.0, 0.001) var ranged_accuracy := 0.0
 @export_range(0.0, 5.0, 0.001) var aggressiveness := 0.0
-@export var sight_m: float = 0.0
+@export_group("Senses")
+## How far it sees, in metres: the range of its Vision (units/vision/). The cylinder in the viewport follows it.
+@export var vision_m: float = 0.0
+@export_group("")
 @export var melee_resistance: float = 1.0
 @export var direct_spell_resistance: float = 1.0
 @export var splash_spell_resistance: float = 1.0

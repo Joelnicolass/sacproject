@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://debug/units/vision_perf.gd" id="1_perf"]
+
+[node name="VisionPerf" type="Node3D"]
+editor_description = "055c2. Costo de Vision con 150 cuerpos (mitad Trogg del lado 1, mitad Druid del lado 2, en grilla): tiempo de cada refresh() recorriendo los grupos y con el area de fisica, de las consultas del bando (VisionSides.sees), del paso de fisica con 150 areas, y comprueba que ambos modos ven lo mismo en el mismo orden. Sin ventana: `godot --headless --fixed-fps 60 res://debug/units/vision_perf.tscn` imprime VISION_PERF {json}. Presupuesto del plan 055c: refresh_per_tick_ms muy por debajo de 1 ms; si el area no es mas barata, use_area queda apagado."
+script = ExtResource("1_perf")

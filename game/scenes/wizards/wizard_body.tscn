@@ -1,6 +1,7 @@
-[gd_scene load_steps=54 format=3]
+[gd_scene load_steps=55 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
+[ext_resource type="PackedScene" path="res://scenes/units/vision/vision.tscn" id="f55c2_vision"]
 [ext_resource type="Script" path="res://scenes/wizards/wizard_body.gd" id="1_body"]
 [ext_resource type="PackedScene" path="res://scenes/units/movement/body_avoidance.tscn" id="f207_avoid"]
 [ext_resource type="PackedScene" path="res://scenes/units/status/pace_factors.tscn" id="f129_pace"]
@@ -167,10 +168,11 @@ properties/22/replication_mode = 2
 
 [sub_resource type="BoxMesh" id="Box_unit"]
 
-[node name="Wizard" type="CharacterBody3D" node_paths=PackedStringArray("mount")]
+[node name="Wizard" type="CharacterBody3D" node_paths=PackedStringArray("mount", "vision")]
 floor_max_angle = 1.4835298
 script = ExtResource("1_body")
 mount = NodePath("BodyMount")
+vision = NodePath("Vision")
 step = ExtResource("2_step")
 wizard_type = ExtResource("typed_cwa0")
 model = "jnwr"
@@ -198,6 +200,9 @@ priority = 4.0
 [node name="Collision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_body")
+
+[node name="Vision" parent="." node_paths=PackedStringArray("body") instance=ExtResource("f55c2_vision")]
+body = NodePath("..")
 
 [node name="BodyMount" type="Node" parent="." node_paths=PackedStringArray("rig")]
 script = ExtResource("s1_mount")

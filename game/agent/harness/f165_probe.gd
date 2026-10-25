@@ -14,7 +14,6 @@ const FOE_SIDE := 2
 
 var ranger: UnitBody
 var foe: UnitBody
-var vision: SideVision
 var _armed := false
 var _pose := Vector4.ZERO
 var _has_pose := false
@@ -43,12 +42,12 @@ var _spawn_xz := Vector2.ZERO
 var _last_pos := Vector3.ZERO
 var _prev_valid := false
 
-## SideVision answers about the eye's side.
+## The eye's Vision answers: who it sees now, which points lie in its range, and whether it ever saw the foe.
 var sees_foe := false
 var sees_beside_60 := false
 var sees_beside_90 := false
 var sees_behind_ranger_90 := false
-var visible_cells := 0
+var eye_sees_count := 0
 var explored_foe := false
 
 var eye_count: int:
@@ -74,13 +73,10 @@ func _physics_process(_delta: float) -> void:
 	if not is_instance_valid(ranger) or not is_instance_valid(foe):
 		_find_bodies()
 		return
-	if vision == null:
-		vision = get_tree().get_first_node_in_group(SideVision.GROUP) as SideVision
 	var eyes := get_tree().get_nodes_in_group(DivineSightEye.GROUP)
 	if not eyes.is_empty():
 		_sample(eyes[0] as DivineSightEye)
-	if vision:
-		_read_vision(_last_pos)
+	_read_vision(eyes[0] as DivineSightEye if not eyes.is_empty() else null)
 
 
 func _find_bodies() -> void:
@@ -128,15 +124,16 @@ func _sample(eye: DivineSightEye) -> void:
 	_prev_valid = true
 
 
-func _read_vision(eye_at: Vector3) -> void:
+func _read_vision(eye: DivineSightEye) -> void:
+	var eyes: Vision = eye.vision if eye != null else null
+	var eye_at := _last_pos
 	var side := _forward.cross(Vector3.UP)
-	var foe_at := _at(foe)
-	visible_cells = vision.visible_cell_count(SIDE)
-	sees_foe = vision.position_visible_to(SIDE, foe_at)
-	explored_foe = vision.position_explored_by(SIDE, foe_at)
-	sees_beside_60 = vision.position_visible_to(SIDE, eye_at + side * 60.0) and vision.position_visible_to(SIDE, eye_at - side * 60.0)
-	sees_beside_90 = vision.position_visible_to(SIDE, eye_at + side * 90.0) or vision.position_visible_to(SIDE, eye_at - side * 90.0)
-	sees_behind_ranger_90 = vision.position_visible_to(SIDE, _start_at - _forward * 90.0)
+	eye_sees_count = eyes.in_sight().size() if eyes != null else 0
+	sees_foe = eyes != null and eyes.sees(foe)
+	explored_foe = explored_foe or sees_foe
+	sees_beside_60 = eyes != null and eyes.covers(eye_at + side * 60.0) and eyes.covers(eye_at - side * 60.0)
+	sees_beside_90 = eyes != null and (eyes.covers(eye_at + side * 90.0) or eyes.covers(eye_at - side * 90.0))
+	sees_behind_ranger_90 = eyes != null and eyes.covers(_start_at - _forward * 90.0)
 
 
 func _at(node: Node3D) -> Vector3:

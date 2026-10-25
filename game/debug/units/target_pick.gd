@@ -64,10 +64,9 @@ func _release() -> void:
 	_released = true
 	_release_tick = _ticks
 	var picker := trogg.get_node("TargetPicker") as TargetPicker
-	var vision := get_tree().get_first_node_in_group(SideVision.GROUP) as SideVision
-	## Every body observes once (the side has not looked yet at tick 0).
+	## Every body looks once (the side has not looked yet at tick 0).
 	for body in [trogg, near_foe, far_foe, unseen_foe]:
-		vision.observe(body)
+		body.vision.refresh()
 	var here := trogg.global_position
 	var near_d := _flat(here, near_foe.global_position)
 	var far_d := _flat(here, far_foe.global_position)
@@ -78,7 +77,7 @@ func _release() -> void:
 	_report["without_attacker"] = _name_of(without)
 	_report["table_without"] = _table(picker)
 	## The far Druid "hits first": what UnitBody.struck does through TargetPicker._on_struck.
-	vision.reveal(far_foe, trogg)
+	VisionSides.reveal(far_foe, trogg)
 	picker.note_attacker(far_foe)
 	var chosen := picker.pick(here)
 	var expected_near := TargetPicker.score(near_d, REF, false, false, false)
@@ -91,7 +90,7 @@ func _release() -> void:
 	_report["expected"] = _name_of(expected)
 	_report["table_with_attacker"] = _table(picker)
 	_report["unseen_in_table"] = _in_table(picker, unseen_foe)
-	_report["unseen_visible"] = vision.is_visible_to(1, unseen_foe)
+	_report["unseen_visible"] = VisionSides.sees(1, unseen_foe)
 	_report["ok"] = chosen == expected and not bool(_report["unseen_in_table"]) and not bool(_report["unseen_visible"])
 	trogg.idle_aggro = true
 	if follow_with_camera and not _headless:

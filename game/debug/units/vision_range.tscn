@@ -1,0 +1,58 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://debug/units/vision_range.gd" id="1_runner"]
+[ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="2_unit"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/trogg.tres" id="3_trogg"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/druid.tres" id="4_druid"]
+
+[node name="VisionRange" type="Node3D" node_paths=PackedStringArray("seer", "foes", "far_foe", "behind_foe")]
+editor_description = "055c2. Un Trogg (lado 1, ve 100 m, mira a +Z) y cinco Druids quietos del lado 2: tres dentro del alcance (50, 72 y 85 m; en el árbol van C, A, B para que el orden del árbol no sea el de nombre), uno justo afuera (110 m) y uno detrás (60 m). Arrastrá cualquiera con el gizmo y corré de nuevo (F6): la visión se ve en el cilindro del Vision del Trogg. Verifica quién ve, el orden por nombre, el radio a mano, el cono, cilindro contra esfera, el área de física contra recorrer los grupos y el olvido del bando. Sin ventana: `--headless res://debug/units/vision_range.tscn` imprime VISION_RANGE PASS/FAIL."
+script = ExtResource("1_runner")
+seer = NodePath("Seer")
+foes = [NodePath("FoeC"), NodePath("FoeA"), NodePath("FoeB")]
+far_foe = NodePath("FoeFar")
+behind_foe = NodePath("FoeBehind")
+
+[node name="Seer" parent="." instance=ExtResource("2_unit")]
+type = ExtResource("3_trogg")
+owner_slot = 1
+idle_aggro = false
+rng_seed = 21
+
+[node name="FoeC" parent="." instance=ExtResource("2_unit")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 50)
+type = ExtResource("4_druid")
+owner_slot = 2
+idle_aggro = false
+rng_seed = 22
+
+[node name="FoeA" parent="." instance=ExtResource("2_unit")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, 80)
+type = ExtResource("4_druid")
+owner_slot = 2
+idle_aggro = false
+rng_seed = 23
+
+[node name="FoeB" parent="." instance=ExtResource("2_unit")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0, 60)
+type = ExtResource("4_druid")
+owner_slot = 2
+idle_aggro = false
+rng_seed = 24
+
+[node name="FoeFar" parent="." instance=ExtResource("2_unit")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 110)
+type = ExtResource("4_druid")
+owner_slot = 2
+idle_aggro = false
+rng_seed = 25
+
+[node name="FoeBehind" parent="." instance=ExtResource("2_unit")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -60)
+type = ExtResource("4_druid")
+owner_slot = 2
+idle_aggro = false
+rng_seed = 26
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.5, 0.866, 0, -0.866, 0.5, 0, 150, 60)

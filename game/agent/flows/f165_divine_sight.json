@@ -215,7 +215,7 @@
   {
    "print": {
     "node": "AgentKit/f165_probe",
-    "prop": "visible_cells"
+    "prop": "eye_sees_count"
    }
   },
   {
@@ -278,8 +278,8 @@
   {
    "assert": {
     "node": "AgentKit/f165_probe",
-    "prop": "visible_cells",
-    "gte": 120
+    "prop": "eye_sees_count",
+    "gte": 1
    }
   },
   {
@@ -344,7 +344,7 @@
   {
    "assert": {
     "node": "AgentKit/f165_probe",
-    "prop": "visible_cells",
+    "prop": "eye_sees_count",
     "equals": 0
    }
   },

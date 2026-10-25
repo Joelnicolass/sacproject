@@ -44,7 +44,7 @@ static func make_creature(row: Dictionary) -> Resource:
 	type.melee_evasion = int(row.get("melee_evasion", 0)) / 1000.0
 	type.ranged_accuracy = int(row.get("ranged_accuracy", 0)) / 1000.0
 	type.aggressiveness = int(row.get("aggressiveness", 0)) / 1000.0
-	type.sight_m = float(row.get("sight_range", 0.0))
+	type.vision_m = float(row.get("sight_range", 0.0))
 	var resist: Dictionary = row.get("resistances", {})
 	type.melee_resistance = float(resist.get("melee", 1.0))
 	type.direct_spell_resistance = float(resist.get("direct_spell", 1.0))

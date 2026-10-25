@@ -307,26 +307,27 @@ func _manahoar() -> Dictionary:
 func _vision() -> Dictionary:
 	_use_mode(&"2v2")
 	var checks := {}
-	var vision := SideVision.new()
 	var rules := RULES.duplicate() as MatchRules
-	vision.rules = rules
-	_root.add_child(vision)
 	var seen := _unit(Vector3(0.0, 0.1, -300.0), 3)
+	var watcher := _unit(Vector3(0.0, 0.1, -280.0), 1)
+	var eyes := watcher.get("vision") as Vision
+	eyes.watching = false
+	eyes.rules = rules
 	rules.allied_vision = true
-	vision.mark(1, seen)
-	checks["seen_by_marker"] = vision.last_seen_tick(1, seen) >= 0
-	checks["shared_with_ally"] = vision.last_seen_tick(2, seen) >= 0
-	checks["not_shared_with_foe"] = vision.last_seen_tick(3, seen) < 0 and vision.last_seen_tick(4, seen) < 0
+	eyes.refresh()
+	checks["seen_by_marker"] = VisionSides.sees(1, seen)
+	checks["shared_with_ally"] = VisionSides.sees(2, seen)
+	checks["not_shared_with_foe"] = not VisionSides.sees(3, seen) and not VisionSides.sees(4, seen)
 	var other := _unit(Vector3(5.0, 0.1, -300.0), 3)
 	rules.allied_vision = false
-	vision.mark(1, other)
-	checks["off_not_shared"] = vision.last_seen_tick(1, other) >= 0 and vision.last_seen_tick(2, other) < 0
+	eyes.refresh()
+	checks["off_not_shared"] = VisionSides.sees(1, other) and not VisionSides.sees(2, other)
 	_use_mode(&"1v1")
 	rules.allied_vision = true
 	var third := _unit(Vector3(10.0, 0.1, -300.0), 3)
-	vision.mark(1, third)
-	checks["1v1_not_shared"] = vision.last_seen_tick(2, third) < 0
-	for node in [seen, other, third, vision]:
+	eyes.refresh()
+	checks["1v1_not_shared"] = not VisionSides.sees(2, third)
+	for node in [seen, other, third, watcher]:
 		node.free()
 	return _verdict(checks)
 

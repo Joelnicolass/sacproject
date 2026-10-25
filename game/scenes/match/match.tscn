@@ -41,7 +41,6 @@
 [ext_resource type="PackedScene" path="res://scenes/sacrifice/sacrifice_system.tscn" id="f59_sacrifice"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud/ritual_notice.tscn" id="f60_notice"]
 [ext_resource type="Script" uid="uid://bdlkj5tbi1wvh" path="res://scenes/map/nav/nav_service.gd" id="f72_nav"]
-[ext_resource type="Script" uid="uid://t8pnos2jmli" path="res://scenes/units/targeting/side_vision.gd" id="f72_vision"]
 [ext_resource type="PackedScene" path="res://scenes/units/peasant.tscn" id="f73_peasant"]
 [ext_resource type="Script" uid="uid://qtxfsr581l1s" path="res://scenes/map/map_population.gd" id="f73_population"]
 [ext_resource type="Script" uid="uid://uifgkgnynkf6" path="res://scenes/ai/ai_roster.gd" id="f77_roster"]
@@ -227,11 +226,6 @@ world = NodePath("..")
 unique_name_in_owner = true
 script = ExtResource("f72_nav")
 structures = NodePath("../Structures")
-
-
-[node name="Vision" type="Node" parent="." unique_id=1763951431]
-unique_name_in_owner = true
-script = ExtResource("f72_vision")
 
 
 [node name="Selection" type="Node" parent="." unique_id=1294781756 node_paths=PackedStringArray("box")]

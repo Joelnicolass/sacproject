@@ -1,6 +1,7 @@
-[gd_scene load_steps=98 format=3]
+[gd_scene load_steps=99 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
+[ext_resource type="PackedScene" path="res://scenes/units/vision/vision.tscn" id="f55c2_vision"]
 [ext_resource type="Script" path="res://scenes/units/unit_body.gd" id="1_body"]
 [ext_resource type="PackedScene" path="res://scenes/units/movement/body_avoidance.tscn" id="f207_avoid"]
 [ext_resource type="PackedScene" path="res://scenes/units/status/pace_factors.tscn" id="f129_pace"]
@@ -195,11 +196,12 @@ properties/22/replication_mode = 2
 
 [sub_resource type="BoxMesh" id="Box_unit"]
 
-[node name="Unit" type="CharacterBody3D" node_paths=PackedStringArray("mount")]
+[node name="Unit" type="CharacterBody3D" node_paths=PackedStringArray("mount", "vision")]
 collision_layer = 2
 floor_max_angle = 1.4835298
 script = ExtResource("1_body")
 mount = NodePath("BodyMount")
+vision = NodePath("Vision")
 
 [node name="Tilt" type="Node3D" parent="."]
 
@@ -666,6 +668,9 @@ net = NodePath("../Net")
 replication_config = SubResource("SceneReplicationConfig_unit")
 
 [node name="Avoidance" parent="." node_paths=PackedStringArray("body") instance=ExtResource("f207_avoid")]
+body = NodePath("..")
+
+[node name="Vision" parent="." node_paths=PackedStringArray("body") instance=ExtResource("f55c2_vision")]
 body = NodePath("..")
 
 [node name="Air" type="Node" parent="." node_paths=PackedStringArray("body")]

@@ -11,7 +11,7 @@ extends Node
 ##   physics_frame to the next inside the same frame, and the TIME_PHYSICS_PROCESS monitor, the
 ##   longest step of a second), the script process (from SceneTree.process_frame to this node's _process,
 ##   last too: highest process_priority), the CPU side of the render (RenderingServer frame_pre_draw to
-##   frame_post_draw), the counters the game already has (TargetPicker.total_us, SideVision.total_us, AiSide.tick_ms, Orders.last_apply_us), draws,
+##   frame_post_draw), the counters the game already has (TargetPicker.total_us, AiSide.tick_ms, Orders.last_apply_us), draws,
 ##   primitives, objects, VRAM and RSS.
 ## Then the render by subtraction (Metal reports no GPU time): the base with the tree paused, and the
 ## frame running live without grass, without health bars, without sun shadows and without the bodies'
@@ -323,20 +323,17 @@ func _stats(rec: Recorder) -> Dictionary:
 	return row
 
 
-## Totals that grow over time, read before a window (TargetPicker/SideVision per node, AiSide samples).
+## Totals that grow over time, read before a window (TargetPicker per node, AiSide samples; Vision is timed by debug/units/vision_perf.tscn).
 func _counters_now() -> Dictionary:
 	var pickers := {}
 	for node in get_tree().get_nodes_in_group("unit") + get_tree().get_nodes_in_group("wizard"):
 		var picker := node.get_node_or_null("TargetPicker")
 		if picker:
 			pickers[picker.get_instance_id()] = int(picker.get("total_us"))
-	var vision := {}
-	for node in _find_class(get_tree().root, "SideVision"):
-		vision[node.get_instance_id()] = int(node.get("total_us"))
 	var ai := {}
 	for side in _ai_sides:
 		ai[side.get_instance_id()] = (side.get("tick_ms") as PackedFloat32Array).size()
-	return {"pickers": pickers, "vision": vision, "ai": ai}
+	return {"pickers": pickers, "ai": ai}
 
 
 func _counters_delta(before: Dictionary, rec: Recorder) -> Dictionary:
@@ -346,9 +343,6 @@ func _counters_delta(before: Dictionary, rec: Recorder) -> Dictionary:
 		var picker := node.get_node_or_null("TargetPicker")
 		if picker:
 			picker_us += int(picker.get("total_us")) - int(before["pickers"].get(picker.get_instance_id(), 0))
-	var vision_us := 0
-	for node in _find_class(get_tree().root, "SideVision"):
-		vision_us += int(node.get("total_us")) - int(before["vision"].get(node.get_instance_id(), 0))
 	var ai_ms := 0.0
 	for side in _ai_sides:
 		if not is_instance_valid(side):
@@ -361,7 +355,7 @@ func _counters_delta(before: Dictionary, rec: Recorder) -> Dictionary:
 	return {
 		"ticks": rec.tick_count,
 		"target_picker": _r(picker_us / 1000.0 / ticks),
-		"vision": _r(vision_us / 1000.0 / ticks),
+		"vision": 0.0,
 		"ai_sides": _r(ai_ms / ticks),
 		"orders_last_apply_ms": _r(int(orders.get("last_apply_us")) / 1000.0) if orders and orders.get("last_apply_us") != null else 0.0,
 	}

@@ -34,7 +34,7 @@ func run(host: Node3D) -> Dictionary:
 	out["target_pick_current_wins"] = _pick_current()
 	out["target_pick_threshold"] = _pick_threshold()
 	out["target_vision_side"] = _vision_side()
-	out["target_vision_expiry"] = _vision_expiry()
+	out["target_vision_expiry"] = await _vision_expiry()
 	out["target_attacker_wiring"] = _wiring()
 	out["target_pacifist"] = _pacifist()
 	out["target_zero_health_no_foe"] = _zero_health()
@@ -189,77 +189,73 @@ func _pick_threshold() -> Dictionary:
 ## A foe out of the sight of every body of the side is not picked; once an ally at its side sees it, it is,
 ## although it is farther than the picker's own sight (the whole side shares what it has seen).
 func _vision_side() -> Dictionary:
-	var vision := _vision()
 	var set := _scene(Vector3.ZERO, [Vector3(130.0, 0.0, 0.0)])
 	var picker: TargetPicker = set["picker"]
 	var foe: Node3D = set["foes"][0]
-	vision.observe(set["body"])
 	var alone := picker.pick(Vector3.ZERO, 0.0)
-	var seen_alone := vision.is_visible_to(1, foe)
+	var seen_alone := VisionSides.sees(1, foe)
 	var ally := _unit(1, Vector3(120.0, 0.0, 0.0), "Ally")
-	vision.observe(ally)
+	_look()
 	var together := picker.pick(Vector3.ZERO, 0.0)
 	var checks := {
 		"unseen_not_picked": alone == null,
 		"unseen_not_visible": not seen_alone,
-		"ally_sees": vision.is_visible_to(1, foe),
+		"ally_sees": VisionSides.sees(1, foe),
 		"seen_picked_beyond_own_sight": together == foe,
-		"own_side_always_visible": vision.is_visible_to(2, foe),
-		"other_side_does_not_share": not vision.is_visible_to(3, foe),
+		"own_side_always_visible": VisionSides.sees(2, foe),
+		"other_side_does_not_share": not VisionSides.sees(3, foe),
 	}
 	ally.free()
 	_clean(set)
-	vision.free()
 	return _verdict(checks, {})
 
 
-## A foe is visible 384 ticks after its mark and not after (state.d:29692); a building stays for good.
+## A foe stays known to the side for the Vision's forget time after it was last seen and not after; a structure stays for good.
+## Six ticks of memory here (the default is 6.4 s): the foes walk out of sight and the physics frames go by.
 func _vision_expiry() -> Dictionary:
-	var vision := _vision()
-	var set := _scene(Vector3.ZERO, [Vector3(40.0, 0.0, 0.0)])
+	var set := _scene(Vector3.ZERO, [Vector3(40.0, 0.0, 0.0), Vector3(50.0, 0.0, 0.0)])
+	var body: UnitBody = set["body"]
 	var foe: Node3D = set["foes"][0]
-	vision.observe(set["body"])
-	var marked := vision.is_visible_to(1, foe)
-	vision.tick += SideVision.SEEN_TICKS - 2
-	var still := vision.is_visible_to(1, foe)
-	vision.tick += 4
-	var gone := not vision.is_visible_to(1, foe)
-	var structure := Node3D.new()
-	structure.name = "FakeStructure"
-	structure.add_to_group("structure")
-	_root.add_child(structure)
-	vision.mark(1, structure)
-	var building_mark := vision.last_seen_tick(1, structure)
-	vision.tick += 100000
+	var building: Node3D = set["foes"][1]
+	building.add_to_group("structure")
+	body.vision.memory.forget_ticks = 6
+	body.vision.refresh()
+	var marked := VisionSides.sees(1, foe) and VisionSides.sees(1, building)
+	foe.position = Vector3(900.0, 0.0, 0.0)
+	building.position = Vector3(900.0, 0.0, 10.0)
+	body.vision.refresh()
+	var out_of_sight := not body.vision.sees(foe)
+	for _tick in 5:
+		await _host.get_tree().physics_frame
+	var still := VisionSides.sees(1, foe)
+	for _tick in 3:
+		await _host.get_tree().physics_frame
 	var checks := {
 		"marked": marked,
-		"still_at_383": still,
-		"gone_after_384": gone,
-		"building_permanent": building_mark >= SideVision.PERMANENT,
+		"out_of_sight_now": out_of_sight,
+		"still_before_forget": still,
+		"gone_after_forget": not VisionSides.sees(1, foe),
+		"building_permanent": VisionSides.sees(1, building),
 	}
-	structure.free()
 	_clean(set)
-	vision.free()
 	return _verdict(checks, {})
 
 
 ## A strike of A on B (MeleeAttack.struck) makes A visible to B's side and B remember A as last attacker.
 func _wiring() -> Dictionary:
-	var vision := _vision()
 	var a := _unit(1, Vector3.ZERO, "Hitter")
 	var b := _unit(2, Vector3(300.0, 0.0, 0.0), "Hit")
-	var before := vision.is_visible_to(2, a)
+	var before := VisionSides.sees(2, a)
 	a.emit_signal("struck", b, 25.0, 0.8, 0.1)
 	var picker_b := b.get_node("TargetPicker") as TargetPicker
 	var checks := {
 		"unseen_before": not before,
-		"visible_after": vision.is_visible_to(2, a),
+		"visible_after": VisionSides.sees(2, a),
 		"last_attacker": picker_b.last_attacker_id == a.get_instance_id(),
-		"a_not_marked_by_b": not vision.is_visible_to(1, b),
+		"a_not_marked_by_b": not VisionSides.sees(1, b),
 	}
 	a.free()
 	b.free()
-	vision.free()
 	return _verdict(checks, {})
 
 
@@ -322,6 +318,7 @@ func _passive_weight() -> Dictionary:
 	var set := _scene(Vector3.ZERO, [Vector3(30.0, 0.0, 0.0)])
 	var picker: TargetPicker = set["picker"]
 	var farmer := _unit(3, Vector3(10.0, 0.0, 0.0), "Farmer", "zepe")
+	_look()
 	var halved := picker.pick(Vector3.ZERO)
 	var farmer_score := _score_of(picker, farmer)
 	picker.passive_weight = 1.0
@@ -415,7 +412,6 @@ func _guard() -> Dictionary:
 	shape.position = Vector3(100.0, -1.0, 0.0)
 	floor_body.add_child(shape)
 	_root.add_child(floor_body)
-	var vision := _vision()
 	var guard := _unit(1, Vector3(0.0, 0.2, 0.0), "Guard")
 	var ally := _unit(1, Vector3(140.0, 0.2, 20.0), "Spotter")
 	var foe := _unit(2, Vector3(150.0, 0.2, 0.0), "Far", "nmuh")
@@ -431,7 +427,7 @@ func _guard() -> Dictionary:
 	var seen := false
 	for _tick in 1800:
 		await _host.get_tree().physics_frame
-		seen = seen or vision.is_visible_to(1, foe)
+		seen = seen or VisionSides.sees(1, foe)
 		if int(guard.mode) != last_mode:
 			changes += 1
 			last_mode = int(guard.mode)
@@ -442,18 +438,17 @@ func _guard() -> Dictionary:
 		"stays_at_anchor": farthest <= 2.0,
 	}
 	var out := _verdict(checks, {"mode_changes": changes, "farthest_m": farthest})
-	for node in [guard, ally, foe, vision, floor_body]:
+	for node in [guard, ally, foe, floor_body]:
 		node.free()
 	return out
 
 
-func _vision() -> SideVision:
-	var vision := SideVision.new()
-	vision.name = "TestVision"
-	vision.observer_groups = PackedStringArray([GROUP])
-	vision.seen_groups = PackedStringArray([GROUP])
-	_root.add_child(vision)
-	return vision
+## Every body of the cases looks once: the sight of a side is what its Visions saw just now.
+func _look() -> void:
+	for node in _root.get_children():
+		var body := node as UnitBody
+		if body != null:
+			body.vision.refresh()
 
 
 func _unit(slot: int, at: Vector3, label: String, tag := "ycro") -> UnitBody:
@@ -465,6 +460,7 @@ func _unit(slot: int, at: Vector3, label: String, tag := "ycro") -> UnitBody:
 	unit.idle_aggro = false
 	unit.position = at
 	unit.target_groups = PackedStringArray([GROUP])
+	unit.vision.seen_groups = PackedStringArray([GROUP])
 	_root.add_child(unit)
 	unit.add_to_group(GROUP)
 	unit.set_physics_process(false)
@@ -479,6 +475,7 @@ func _scene(at: Vector3, spots: Array) -> Dictionary:
 	var foes: Array[Node3D] = []
 	for k in spots.size():
 		foes.append(_unit(2, spots[k], "Foe%d" % k, "nmuh"))
+	_look()
 	return {"body": body, "picker": picker, "foes": foes}
 
 

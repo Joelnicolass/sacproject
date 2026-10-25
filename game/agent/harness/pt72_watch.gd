@@ -128,7 +128,7 @@ func report() -> String:
 func sight_of_first() -> String:
 	for node in get_tree().get_nodes_in_group("unit"):
 		if int(node.get("owner_slot")) == _slot and node.get("type") != null:
-			return "sight_range slot%d=%s" % [_slot, str(node.get("type").sight_m)]
+			return "sight_range slot%d=%s" % [_slot, str(node.get("type").vision_m)]
 	return "sin unidad"
 
 
@@ -174,16 +174,15 @@ func wizard_info() -> String:
 	return text
 
 
-## Whether the side of `_slot` has the foes in sight right now (SideVision.is_visible_to), and the foes' health.
+## Whether the side of `_slot` has the foes in sight right now (VisionSides.sees), and the foes' health.
 func seen_report() -> String:
-	var vision = get_tree().get_first_node_in_group("side_vision")
 	var out := PackedStringArray()
 	for node in get_tree().get_nodes_in_group("unit"):
 		var slot := int(node.get("owner_slot"))
 		if slot == _slot or slot <= 0:
 			continue
 		var hp = node.get_node_or_null("Health")
-		out.append("%s visto_por_bando=%s vida=%s" % [node.name, str(vision.is_visible_to(_slot, node)) if vision else "sin_vision", str(hp.get("current")) if hp else "-"])
+		out.append("%s visto_por_bando=%s vida=%s" % [node.name, str(VisionSides.sees(_slot, node)), str(hp.get("current")) if hp else "-"])
 	text = "; ".join(out)
 	return text
 

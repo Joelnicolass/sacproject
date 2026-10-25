@@ -17,13 +17,13 @@ extends Node3D
 ##   the target's top over the land + half flying_height. A target that is gone (dead, freed) is dropped for good: the eye keeps the
 ##   velocity it had and never looks again (target = −1).
 ##   It never goes under land + flying height: the velocity is not changed but that step is pushed up (capped at the speed).
-##   After the rise it lights the terrain sight of its side within the SPEL's effectRange (75 m): SideVision.update_vision, every
-##   refresh_s (the cells stay lit for that long).
+##   After the rise its Vision (a child) sees, for its side, every foe within the SPEL's effectRange (75 m) of the eye: it looks every
+##   refresh_s and the side keeps in mind what it saw for twice that long.
 ## Ends at the lifetime. It survives the death of the one who cast it.
 ## Divergences (declared): (1) frontOfAIQueue: sacengine looks for the target only on the ticks its creature is at the front of the
 ## side's AI queue; the eye looks every tick. (2) The target is a valid foe by TargetRules.is_valid_foe_of (no stealth, no rock, no
-## corpse), the port's one definition. (3) The sight has no terrain line of sight (SideVision's own approximation) and its refresh
-## starts at the first flying tick, not at (id + frame) % 30.
+## corpse), the port's one definition. (3) The sight has no terrain line of sight and it marks foes, not a grid of terrain cells (the port has no fog
+## of war): it looks on the tick of its own cycle, not at (id + frame) % 30.
 ## Look (SacDivineSight, renderer.d:882-891 and 3517-3530): the sprite `scri` (4x4 sheet, 16 frames) on a 2.5 x 2.25 m billboard,
 ## shadeless, energy 3 (the material's albedo_color), alpha blended with alpha = scale². One cell per animationDelay (4) x
 ## updateAnimFactor (2) = 8 ticks, so a cycle is 128 ticks. Each copy runs its own clock from the tick it appears (presentation only:
@@ -38,13 +38,15 @@ const GROUP := &"divine_sight_eye"
 ## How long the eye rises before it flies.
 ## Ref: sacengine divineSightNumRisingFrames (45 ticks).
 @export_range(0.0333, 10.0, 0.0001, "suffix:s") var rising_s := 0.75
-## How often the eye lights its cells (they stay lit as long).
+## How often the eye looks again; the side keeps what it saw twice as long.
 ## Ref: sacengine updateVision `refresh` = updateFPS / 2.
 @export_range(0.0166, 5.0, 0.0001, "suffix:s") var refresh_s := 0.5
 ## Who may be the target: the moving bodies of sacengine's creature type.
 @export var target_groups: Array[StringName] = [&"wizard", &"unit"]
 ## The sprite (a MeshInstance3D with its own StandardMaterial3D whose uv1_scale is one cell); its alpha follows scale².
 @export var glow: MeshInstance3D
+## What the eye sees for the side of the Ranger who sent it (its radius is the SPEL's effectRange).
+@export var vision: Vision
 ## Cells of the sprite sheet (scri.png) and how long each one stays (sacengine animationDelay 4 x updateAnimFactor 2 ticks).
 @export var frames_h := 4
 @export var frames_v := 4
@@ -66,7 +68,6 @@ var _born := -1
 var _last_frame := 0
 var _last_land := 0.0
 var _shooter_name := ""
-var _vision: SideVision
 var _material: StandardMaterial3D
 var _first_tick := 0
 
@@ -80,6 +81,11 @@ func setup(data: Dictionary, eye_ability: AbilityType) -> void:
 	slot = int(data.get("slot", 0))
 	ability = eye_ability
 	_shooter_name = str(data.get("shooter", ""))
+	vision.side_slot = slot
+	vision.radius_m = eye_ability.effect_range_m
+	vision.refresh_s = refresh_s
+	vision.forget_s = refresh_s * 2.0
+	vision.watching = false
 	_last_land = position.y
 	scale = Vector3.ONE * 0.001
 	## The spawn packet lists the synchronizers that exist now (a late joiner's copy must already have them).
@@ -100,7 +106,6 @@ func _ready() -> void:
 		set_physics_process(false)
 		return
 	_born = MatchClock.now()
-	_vision = get_tree().get_first_node_in_group(SideVision.GROUP) as SideVision
 	if DebugLog.on(&"eye"):
 		print("ojo %s de %s nace en (%.3f, %.3f, %.3f) v (%.3f, %.3f, %.3f) lado %d (cuadro %d)" % [name, _shooter_name, position.x,
 			position.y, position.z, velocity.x, velocity.y, velocity.z, slot, _born])
@@ -144,6 +149,8 @@ func _step(at_frame: int) -> bool:
 	if frame < rising_ticks:
 		position.y = _height(position) + 0.5 * flying_height + float(frame) * (0.5 * flying_height) / float(rising_ticks - 1)
 		return true
+	if not vision.watching:
+		vision.watching = true
 	var flying := flying_height
 	if target == null and not lost:
 		var travel := frame - rising_ticks
@@ -179,8 +186,6 @@ func _step(at_frame: int) -> bool:
 			pushed = pushed.normalized() * ability.speed_m_s
 		next = position + pushed / MatchClock.TICKS_PER_SECOND_F
 	position = next
-	if _vision and (frame - rising_ticks) % maxi(1, MatchClock.ticks_for(refresh_s)) == 0:
-		_vision.update_vision(slot, position, ability.effect_range_m)
 	return float(frame) < lifetime
 
 

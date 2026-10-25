@@ -56,7 +56,7 @@ var threat_tick := 0
 var souls_snap_tick := 0
 var souls_snap := 0
 var mana_snap := 0
-## Why the AI knows it: «scan» (scanGlobal, t = 0), «event» (its own bodies), «seen» (SideVision marked it).
+## Why the AI knows it: «scan» (scanGlobal, t = 0), «event» (its own bodies), «seen» (the side's Vision saw it).
 var origin := &"scan"
 var group: AiGroup
 var record: AiRecord

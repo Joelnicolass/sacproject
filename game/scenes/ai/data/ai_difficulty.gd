@@ -32,7 +32,7 @@ extends Resource
 @export_group("Información")
 ## true: the AI reads the real state of the bodies it knows (position, health, mana), seen or not, as the original does
 ## (shiny.d:1710-1711 «cached live entPos», healthPair, startCasting on the entity). false: of an enemy, ally or neutral body its side
-## does not see now (SideVision.is_visible_to) it uses only what it saw last: the position where it was (extrapolated one step),
+## does not see now (VisionSides.sees) it uses only what it saw last: the position where it was (extrapolated one step),
 ## its health and mana of that moment; it cannot cast on it nor order its creatures after it (a human cannot click what he does not
 ## see). Deviation of the port in Normal (decision of the user, 2026-10-15); Hard = the original.
 @export var perfect_information := false

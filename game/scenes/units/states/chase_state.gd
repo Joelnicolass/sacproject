@@ -25,7 +25,7 @@ func enter() -> void:
 
 func physics_update(delta: float) -> void:
 	var foe := body.target
-	if not body.accepts_target(foe) or (not body.ordered and body.flat_distance(foe) > body.sight_range()):
+	if not body.accepts_target(foe) or (not body.ordered and body.flat_distance(foe) > body.vision.range_m()):
 		body.target = null
 		transition(&"Idle")
 		return

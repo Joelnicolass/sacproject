@@ -15,7 +15,7 @@ func accepts(body: UnitBody, node: Variant, _explicit: bool) -> bool:
 
 
 func pick(body: UnitBody, center: Vector3, within: float) -> Node3D:
-	var radius := minf(body.sight_range(), within)
+	var radius := minf(body.vision.range_m(), within)
 	var best: Node3D = null
 	var best_d := radius
 	for group in groups:

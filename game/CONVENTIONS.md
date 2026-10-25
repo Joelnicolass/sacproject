@@ -94,7 +94,7 @@ var muzzle_pos := muzzle.global_position
 # units/vision
 What: a creature sees foes inside its Vision area; the side remembers them for `memory_s`.
 Not: who to attack (Engagement), what the AI knows (AiPerception).
-Talks to: Vision.seen(foe) goes up to UnitBody -> Engagement; SideVision listens to every Vision.seen.
+Talks to: Vision.seen(foe) goes up to UnitBody -> Engagement; VisionSides joins every Vision of a side.
 Edit: unit.tscn/Vision radius_m · data/creatures/<name>.tres vision_m.
 Check: debug/units/vision_range.tscn (F6) · rules_suite vision_cases.
 ```

@@ -14,6 +14,10 @@ extends Resource
 ## How fast the wizard runs, in metres per second.
 @export var run_speed_m_s: float = 0.0
 @export var regeneration_per_s: float = 0.0
+@export_group("Senses")
+## How far he sees, in metres (his Vision): a wizard has no sight range in the original data, so he sees like a creature of the roster.
+@export var vision_m: float = 100.0
+@export_group("")
 ## How well he dodges blows; 1.0 is a normal creature, 1.25 is what a wizard is.
 @export_range(0.0, 5.0, 0.001) var melee_evasion := 0.0
 @export var melee_resistance: float = 1.0

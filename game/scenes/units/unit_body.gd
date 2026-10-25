@@ -49,6 +49,8 @@ const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 var creature_tag := ""
 ## Wears the body scene of `type` (BodyFrame): its size and sockets. It is the one place that says which body this is.
 @export var mount: BodyMount
+## What it sees (Vision): its range comes from `type.vision_m`; the side's sight is the union of these (VisionSides).
+@export var vision: Vision
 ## The model id on the network: the one of the body scene `type` wears (BodyFrame.model_id). Derived from `type`: set the type, not this.
 @export var model := "":
 	set(value):
@@ -227,6 +229,10 @@ func _ready() -> void:
 	collision_mask = ground_mask
 	_apply_type()
 	_apply_model()
+	if rules != null:
+		vision.rules = rules
+	mode_changed.connect(_sync_vision.unbind(2))
+	_sync_vision()
 	if clip_pose and clip_pose.has_signal("clip_looped"):
 		clip_pose.connect("clip_looped", _on_clip_looped)
 	if flight:
@@ -488,10 +494,18 @@ func _apply_type() -> void:
 		move_speed = type.fly_speed_m_s if is_flying() else type.run_speed_m_s
 	else:
 		move_speed = 0.0
+	if vision != null:
+		vision.adopt_range(type.vision_m if type else 0.0)
 	if type and mount != null:
 		mount.wear(type.body)
 		if model.is_empty():
 			model = mount.facts.model_id
+
+
+## A body looks only while it simulates and is alive, summoned and free: not as a corpse, a summon in the making or a held creature.
+func _sync_vision() -> void:
+	vision.watching = simulates() and mode != Mode.DEAD and mode != Mode.SUMMONING and not is_taken()
+
 
 func _init_stats() -> void:
 	if type == null or _stats_ready:
@@ -652,10 +666,6 @@ func cancel_attacks() -> void:
 func turn_toward(direction: Vector3, delta: float) -> void:
 	var wanted := atan2(direction.x, direction.z)
 	rotation.y = rotate_toward(rotation.y, wanted, turn_rate * delta)
-
-
-func sight_range() -> float:
-	return type.sight_m if type else 0.0
 
 
 func flat_distance(node: Node3D) -> float:

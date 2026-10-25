@@ -1,7 +1,7 @@
 class_name TargetRules
 extends RefCounted
 
-## Who a body of a player may fight. TargetPicker, SideVision and UnitBody share it, so what is visible and what is
+## Who a body of a player may fight. TargetPicker, Vision and UnitBody share it, so what is visible and what is
 ## attackable never drift apart.
 
 
@@ -54,7 +54,7 @@ static func is_passive_npc(node: Node) -> bool:
 ## The closest foe of `body` within its sight range of `center`, over the groups it targets (a body with no TargetPicker).
 static func closest_in_sight(body: UnitBody, center: Vector3) -> Node3D:
 	var best: Node3D = null
-	var best_d := body.sight_range()
+	var best_d := body.vision.range_m()
 	for group in body.target_groups:
 		for node in body.get_tree().get_nodes_in_group(group):
 			if not body.accepts_target(node):

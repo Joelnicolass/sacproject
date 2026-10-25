@@ -156,7 +156,7 @@ func _close_streak(record: Dictionary) -> void:
 func _foe_in_sight(body: UnitBody) -> bool:
 	for group in [&"unit", &"wizard", &"structure"]:
 		for node in get_tree().get_nodes_in_group(group):
-			if node != body and node is Node3D and body.is_foe(node) and body.flat_distance(node as Node3D) <= body.sight_range():
+			if node != body and node is Node3D and body.is_foe(node) and body.flat_distance(node as Node3D) <= body.vision.range_m():
 				return true
 	return false
 

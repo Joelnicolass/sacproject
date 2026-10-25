@@ -9,7 +9,7 @@ extends Node
 ##                           s = 0.25*ref/d            when d >= ref            (targetScore, 12926-12929)
 ## a building keeps that score (12930); anything else is x1.25 (12931), x1.2 if it was the last to hit us
 ## (12932) and x1.3 if it is the current target (12933). The foe must be visible to the side
-## (visibleFilter, 12936: SideVision) and score above `threshold` (0.25 patrol). The query radius is
+## (visibleFilter, 12936: VisionSides) and score above `threshold` (0.25 patrol). The query radius is
 ## |center - body| + the distance where the best possible score (x1.25x1.2x1.3) falls to the threshold
 ## (12961-12963), not the sight range. Deviation from sacengine: with `within` (a guard or an escort) the
 ## candidates must also lie within that distance of the anchor, because patrolAround's threshold is ~0 at
@@ -19,7 +19,6 @@ extends Node
 ## RFC-053 053a (F370): a passive body (TargetRules.is_passive: aggressiveness 0 or a peasant) weighs `passive_weight` (a deviation: the original weighs
 ## them as any foe, and creatures stuck on villagers read as «they do not attack»); a melee-only walker skips flyers above its
 ## swing (maxTargetHeight, state.d:12879, 28774); a target TargetFutility banned is skipped.
-## Where the world has no SideVision (a bare body in a test), "visible" is "within its sight range".
 
 signal picked(target: Node3D)
 
@@ -54,7 +53,6 @@ signal picked(target: Node3D)
 @export var rage_policy: TargetPolicy
 
 var last_attacker_id := 0
-var _vision: SideVision
 ## What the last pick weighed, for probes and the report: [{node, score}] best first.
 var last_scores: Array = []
 var picks := 0
@@ -67,7 +65,8 @@ func _ready() -> void:
 		body = get_parent() as UnitBody
 	if body != null and not body.struck.is_connected(_on_struck):
 		body.struck.connect(_on_struck)
-	_find_vision()
+	if body != null and body.vision != null and not body.vision.hurt_by.is_connected(note_attacker):
+		body.vision.hurt_by.connect(note_attacker)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -119,8 +118,6 @@ func pick(center: Vector3, threshold := 0.25, ref_range := 100.0, within := INF)
 	var slot := body.owner_slot
 	var here := body.global_position
 	var radius := minf(max_query_m, _flat(here, center) + score_cutoff(threshold, ref_range))
-	var vision := _find_vision()
-	var sight := body.type.sight_m if body.type else 0.0
 	var max_height := _max_target_height()
 	var best: Node3D = null
 	var best_score := -1.0
@@ -137,10 +134,7 @@ func pick(center: Vector3, threshold := 0.25, ref_range := 100.0, within := INF)
 			var from_body := _flat(here, other.global_position)
 			if from_body > radius:
 				continue
-			if vision != null:
-				if not vision.is_visible_to(slot, other):
-					continue
-			elif from_body > sight:
+			if not VisionSides.sees(slot, other):
 				continue
 			var distance := _flat(center, other.global_position)
 			if distance > within:
@@ -211,27 +205,10 @@ func note_attacker(attacker: Node3D) -> void:
 	last_attacker_id = attacker.get_instance_id() if attacker != null else 0
 
 
-## This body hit `foe`: the foe's side sees it. SideVision tells the victim's own picker (revealed).
+## This body hit `foe`: the foe's side sees it, and the foe remembers who (Vision.hurt_by reaches its own picker).
 func _on_struck(foe: Node3D, amount: float, _hit_chance: float, _roll: float) -> void:
-	if amount <= 0.0 or foe == null or not is_instance_valid(foe):
-		return
-	var vision := _find_vision()
-	if vision != null:
-		vision.reveal(body, foe)
-
-
-## Somebody hurt a body: when it is this one, remember who (x1.2 until the next hit).
-func _on_revealed(attacker: Node3D, victim: Node3D) -> void:
-	if victim == body:
-		note_attacker(attacker)
-
-
-func _find_vision() -> SideVision:
-	if _vision == null or not is_instance_valid(_vision):
-		_vision = get_tree().get_first_node_in_group(SideVision.GROUP) as SideVision
-		if _vision != null and not _vision.revealed.is_connected(_on_revealed):
-			_vision.revealed.connect(_on_revealed)
-	return _vision
+	if amount > 0.0 and foe != null and is_instance_valid(foe):
+		VisionSides.reveal(body, foe)
 
 
 static func _flat(a: Vector3, b: Vector3) -> float:

@@ -94,7 +94,7 @@ func _cached(rules: MatchRules) -> bool:
 func _frame_warnings() -> bool:
 	var scene := load("res://scenes/sacrifice/sacrifice_places.tscn") as PackedScene
 	var frame := scene.instantiate() as SacrificeFrame
-	var quiet := frame.call("_get_configuration_warnings").is_empty()
+	var quiet: bool = (frame.call("_get_configuration_warnings") as PackedStringArray).is_empty()
 	frame.push = null
 	frame.vortex = null
 	var warnings: PackedStringArray = frame.call("_get_configuration_warnings")

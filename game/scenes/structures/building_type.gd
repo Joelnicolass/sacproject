@@ -39,18 +39,18 @@ func scene() -> PackedScene:
 	return load(path) as PackedScene if ResourceLoader.exists(path) else null
 
 
-## The model of the first part (the base of a fountain). "" when there is no scene.
-func base_model() -> String:
+## The mesh of the first part (the base of a fountain). Null when there is no scene.
+func base_mesh() -> Mesh:
 	var packed := scene()
 	if packed == null:
-		return ""
+		return null
 	var top := packed.instantiate() as MapBuilding
-	var model := ""
+	var found: Mesh = null
 	if top != null and top.visuals != null:
 		for part in top.visuals.get_children():
 			for child in part.get_children():
-				if child is BodyVisual and model.is_empty():
-					model = (child as BodyVisual).model
+				if child is MeshInstance3D and found == null:
+					found = (child as MeshInstance3D).mesh
 	if top != null:
 		top.free()
-	return model
+	return found

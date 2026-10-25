@@ -16,9 +16,9 @@ const CLUSTER_WEIGHT := 0.8
 
 ## The final transform of instance i of cell (tx, tz) (a patch passes 0, 0): yaw about up, a hashed lean of up to
 ## `tilt_max_deg` toward a hashed direction, uniform scale in `scale_range` by `scale_u` (the unit from `cell_instances`)
-## and a hashed height stretch, then `origin` and the model `pose`. Pure: `variation` is VegetationSpecies.variation().
+## and a hashed height stretch, then `origin`. Pure: `variation` is VegetationSpecies.variation().
 static func instance_transform(variation: Dictionary, seed: int, tag_h: int, tx: int, tz: int, i: int, yaw: float, scale_u: float,
-		origin: Vector3, pose: Transform3D) -> Transform3D:
+		origin: Vector3) -> Transform3D:
 	var range_v: Vector2 = variation["scale_range"]
 	var s := lerpf(range_v.x, range_v.y, scale_u)
 	var jitter: float = variation["height_jitter"]
@@ -28,7 +28,7 @@ static func instance_transform(variation: Dictionary, seed: int, tag_h: int, tx:
 	if lean > 0.0:
 		var toward := FloraPlacement.unit(FloraPlacement.cell_hash(seed ^ SALT_TILT_DIR, tag_h, tx, tz, i)) * TAU
 		basis = Basis(Vector3(cos(toward), 0.0, sin(toward)), lean) * basis
-	return Transform3D(basis.scaled_local(Vector3(s, tall, s)), origin) * pose
+	return Transform3D(basis.scaled_local(Vector3(s, tall, s)), origin)
 
 
 ## The multiplier color of instance i, `tint_dark` to `tint_light`. With `tint_cluster_m` > 0 it follows value noise of

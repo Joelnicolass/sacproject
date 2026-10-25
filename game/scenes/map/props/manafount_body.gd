@@ -9,22 +9,22 @@ extends StaticBody3D
 ## the right state. The dedicated process draws nothing (SpriteEmitter.set_active is a no-op there).
 ## The column also lights the ground with the mana colour of its side (ManalithLight, a StateLight that fades in and out with it).
 ## RFC-052 052d: the jet loops `fountain_loop` and the Manalith `manalith_loop` (SoundEmitter3D, silent with the gate closed).
-## The model is the first part of `building`, the BLDG the map's NTTS row names (jfnt James, cafn Charnel, pfon Pyro,
+## The mesh is the first part of `building`, the BLDG the map's NTTS row names (jfnt James, cafn Charnel, pfon Pyro,
 ## stmf Stratos, font Persephone = pcfn). Visual only: the collision and the source are the same for every land.
 
 ## The group every manafount joins.
 const GROUP := &"manafount"
 
-## Drawn when `building` is empty or has no parts: the Persephone fountain.
-const FALLBACK_MODEL := "pcfn"
-
-## The fountain's BLDG (data/buildings/<name>.tres): drag the land's fountain here; the model shows in the editor.
+## The fountain's BLDG (data/buildings/<name>.tres): drag the land's fountain here; the mesh shows in the editor.
 @export var building: BuildingType:
 	set(value):
 		building = value
 		if is_node_ready():
-			_show_model()
-@export var visual: BodyVisual
+			_show_mesh()
+## Where the fountain is drawn.
+@export var visual: MeshInstance3D
+## Drawn when `building` is empty or has no parts: the Persephone fountain.
+@export var fallback_mesh: Mesh
 
 var _occupied_by := NodePath()
 var _source_rate := 0.0
@@ -37,7 +37,7 @@ var _source_rate := 0.0
 
 
 func _ready() -> void:
-	_show_model()
+	_show_mesh()
 	# The editor only shows the model; none of the game runs there.
 	if Engine.is_editor_hint():
 		return
@@ -51,21 +51,23 @@ func _ready() -> void:
 	_manalith_sound.set_active(false)
 
 
-## The model of this fountain: the first part of its BLDG, else FALLBACK_MODEL.
-func model() -> String:
-	var base := building.base_model() if building != null else ""
-	return base if not base.is_empty() else FALLBACK_MODEL
+## The mesh of this fountain: the first part of its BLDG, else `fallback_mesh`.
+func fountain_mesh() -> Mesh:
+	var base := building.base_mesh() if building != null else null
+	return base if base != null else fallback_mesh
 
 
-func _show_model() -> void:
+func _show_mesh() -> void:
 	update_configuration_warnings()
-	if visual != null and visual.model != model():
-		visual.show_model(model())
+	if visual != null:
+		var wanted := fountain_mesh()
+		if visual.mesh != wanted:
+			visual.mesh = wanted
 
 
 func _get_configuration_warnings() -> PackedStringArray:
 	if visual == null:
-		return PackedStringArray(["Asigná `visual` (el BodyVisual de la fuente)."])
+		return PackedStringArray(["Asigná `visual` (el MeshInstance3D de la fuente)."])
 	return PackedStringArray()
 
 

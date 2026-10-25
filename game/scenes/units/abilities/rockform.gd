@@ -7,8 +7,8 @@ extends AbilityEffect
 ## (state.d:8964; UnitBody sets damage_factor), still regenerates (state.d:1430), is hidden from enemy AI and does nothing until it
 ## gets an order (state.d:13663-13669). status()/fire() are the server's; show_rock_form() runs on every peer, from UnitBody's mode setter.
 
-## Baked model of the rock shell (the Rock spell's rock.MRMM).
-@export var rock_model := "rock"
+## The rock shell: scenes/props/meshes/rock.res (the Rock spell's rock).
+@export var rock_mesh: Mesh
 @export var rock_scale_factor := 0.55
 ## sacengine RockForm.numFrames at 60 fps.
 @export var rock_grow_s := 0.5
@@ -39,7 +39,7 @@ func show_rock_form(on: bool) -> void:
 	if on and _shell == null:
 		_shell = MeshInstance3D.new()
 		_shell.name = "RockShell"
-		_shell.mesh = BodyCatalog.mesh(rock_model)
+		_shell.mesh = rock_mesh
 		if _shell.mesh == null:
 			var ball := SphereMesh.new()
 			_shell.mesh = ball

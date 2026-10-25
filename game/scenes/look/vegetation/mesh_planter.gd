@@ -7,7 +7,7 @@ extends RefCounted
 ## - Build (`plan_cell`, a pure function): per data cell (pixel) and species, FloraPlacement gives the instances; they are
 ##   ordered by rank (i + 0.5) / n so any prefix of a 32 m cell is an even sample of its 16 data cells; the height is
 ##   TerrainShape.height_at, and an instance off the ground or inside a VegetationClear is dropped (the clear's edge thins
-##   them by a hash). Final transform: T·R·S·BodyCatalog.pose(model, false). Meshes and materials are BodyCatalog's,
+##   them by a hash). Final transform: T·R·S (the plant's mesh stands upright already). The meshes and materials are the species',
 ##   shared by every cell.
 ## - Threads (054e, F384): `plan_cell` runs on a WorkerThreadPool task, at most `max_builds_per_frame` cells at once, the
 ##   nearest first. A task gets copies of what it reads (the groups without meshes, the clears, a TerrainShape.sampler
@@ -44,7 +44,7 @@ var terrain: Terrain
 var shape: TerrainShape
 var host: Node3D
 
-## Per species drawn: {tag, tag_index, model, pose, scale_range, cast_shadow, end_m, mesh, material, per_cell, texel_m}.
+## Per species drawn: {tag, tag_index, variation, cast_shadow, visibility_end_m, end_m, mesh, material, per_cell, texel_m}.
 var groups: Array[Dictionary] = []
 ## The map's transform (the terrain's global transform) and its inverse.
 var map_xform := Transform3D.IDENTITY
@@ -118,12 +118,12 @@ func _init(layer: VegetationLayerConfig, preset: VegetationQuality, map: FloraDe
 	groups = describe_groups(config, flora)
 	for group in groups:
 		group["end_m"] = species_end(group, config, quality)
-		group["mesh"] = FloraMaterial.mesh_for(BodyCatalog.mesh(str(group["model"])))
+		group["mesh"] = FloraMaterial.mesh_for(group["mesh"] as Mesh)
 		group["material"] = FloraMaterial.for_mesh(group["mesh"], float(group["end_m"]), config.fade_m)
 	groups = groups.filter(func(group: Dictionary) -> bool: return group["mesh"] != null)
 
 
-## The species the FloraLayers of a map draw, without meshes (headless-safe): one entry per layer.
+## The species the FloraLayers of a map draw, with the species' raw mesh and no material (headless-safe): one entry per layer.
 static func describe_groups(layer: VegetationLayerConfig, map: FloraDensity) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	if map == null:
@@ -133,19 +133,12 @@ static func describe_groups(layer: VegetationLayerConfig, map: FloraDensity) -> 
 	return out
 
 
-## The pose of a plant prop (its model transform; plants have no offset).
-static func pose_of(model: String) -> Transform3D:
-	return BodyCatalog.pose(model, false)
-
-
 static func _group(index: int, map: FloraDensity) -> Dictionary:
 	var entry := map.species[index]
-	var model := entry.prop()
 	return {
 		"tag": map.tags[index],
 		"tag_index": index,
-		"model": model,
-		"pose": pose_of(model),
+		"mesh": entry.mesh,
 		"variation": entry.variation(),
 		"cast_shadow": entry.cast_shadow,
 		"visibility_end_m": entry.visibility_end_m,
@@ -158,7 +151,7 @@ static func _group(index: int, map: FloraDensity) -> Dictionary:
 static func plan_groups(layer_groups: Array[Dictionary]) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	for group in layer_groups:
-		out.append({"tag": group["tag"], "tag_index": group["tag_index"], "pose": group["pose"],
+		out.append({"tag": group["tag"], "tag_index": group["tag_index"],
 			"variation": group["variation"], "texel_m": group["texel_m"], "per_cell": group["per_cell"]})
 	return out
 
@@ -207,7 +200,6 @@ static func plan_cell(layer: VegetationLayerConfig, map: FloraDensity, layer_gro
 		var list: Array = items[g]
 		list.sort_custom(_by_rank)
 		var group: Dictionary = layer_groups[g]
-		var pose: Transform3D = group["pose"]
 		var variation: Dictionary = group["variation"]
 		var buffer := PackedFloat32Array()
 		buffer.resize(list.size() * XFORM_STRIDE)
@@ -220,7 +212,7 @@ static func plan_cell(layer: VegetationLayerConfig, map: FloraDensity, layer_gro
 			var y: float = height.call(x, z)
 			if is_nan(y):
 				continue
-			var at := FloraVariation.instance_transform(variation, seed, int(item[6]), int(item[7]), int(item[8]), int(item[9]), float(item[4]), float(item[5]), Vector3(x - corner.x, y, z - corner.y), pose)
+			var at := FloraVariation.instance_transform(variation, seed, int(item[6]), int(item[7]), int(item[8]), int(item[9]), float(item[4]), float(item[5]), Vector3(x - corner.x, y, z - corner.y))
 			FloraVariation.write_instance(buffer, kept, at, FloraVariation.instance_color(variation, seed, int(item[6]), int(item[7]), int(item[8]), int(item[9]), x, z))
 			kept += 1
 		buffer.resize(kept * XFORM_STRIDE)

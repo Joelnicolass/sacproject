@@ -8,7 +8,7 @@ extends StaticBody3D
 ## smaller by `inset_m` on x and z; the box itself is the melee reach and the splash.
 ## A destroyed building gives no souls and shows its ruin on every peer. owner_slot 0 is the neutral side 31.
 ## Joins `map_building`, `structure` (unless it flattens the ground) and, while it shelters, `shelter`.
-## Does not draw the parts nor measure them: BodyVisual and BuildingFit do.
+## Does not draw the parts nor measure them: their MeshInstance3D and BuildingFit do.
 
 signal destroyed(building: MapBuilding)
 
@@ -122,7 +122,7 @@ func _read_body(flat: bool) -> void:
 func _fit_to_parts() -> void:
 	var parts := BuildingFit.parts_box(visuals)
 	if parts.size == Vector3.ZERO or not collision.shape is BoxShape3D:
-		push_warning("%s: needs a BodyVisual part to measure and a BoxShape3D in `collision`." % name)
+		push_warning("%s: needs a MeshInstance3D part with a mesh to measure and a BoxShape3D in `collision`." % name)
 		return
 	var shape := collision.shape.duplicate() as BoxShape3D
 	shape.size = parts.size

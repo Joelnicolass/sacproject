@@ -24,11 +24,11 @@ is built in memory as the OBJ text it has always been imported from (5 decimals)
 the result is versioned. An existing .glb.import is never touched (it carries the UID). Deterministic: a second run writes
 nothing.
 
-assets/original/models/sizes.json (the measurements the dedicated server reads without meshes) is a versioned datum since
-RFC-023 023h (its generator, tools/bake_bodies.gd, was retired with the baked bodies). This script only adds the "props" entry
-of a prop that has none, measured from its mesh as bake_bodies did (box, height, foot_offset, radius, reach); an existing
-entry is never changed (a changed box would change a collision). Not with `--out`. Then
-tools/bake/bake_catalog.gd writes the missing data/catalog/body_sizes/<tag>.tres from it.
+The mesh the game draws is not read from these .glb at run time since 055s: tools/bake/bake_props_055s.gd saves each prop that
+is used as scenes/props/meshes/<tag>.res (materials included). After importing a new prop run, from game/:
+  python3 tools/bake/bake_props_055s.py --list
+  "$GODOT" --headless --path . --script res://tools/bake/bake_props_055s.gd
+and drag the new .res onto the part, species or shot that uses it. This script writes no measures any more (BodySize is gone).
 """
 
 import json
@@ -45,7 +45,6 @@ from sac_formats.gltf_writer import (ARRAY_BUFFER, ELEMENT_ARRAY_BUFFER, FLOAT, 
 from sac_formats import props as propslib  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
-SIZES = ROOT / "assets" / "original" / "models" / "sizes.json"
 ARGS = {a.split("=", 1)[0]: (a.split("=", 1)[1] if "=" in a else True) for a in sys.argv[1:]}
 OUT = Path(ARGS.get("--out", ROOT / "assets" / "original" / "props"))
 ## RFC-023 023h: where the bind-pose OBJ of the static bodies is (<dir>/<model>/<model>.obj, sacengine's saveObj). Only needed
@@ -336,39 +335,6 @@ def write_if_changed(target: Path, name: str, surfaces, check: bool) -> tuple:
     return len(data), changed
 
 
-def snapped(x: float) -> float:
-    """Godot's snappedf(x, 0.001)."""
-    return round(math.floor(x / 0.001 + 0.5) * 0.001, 3)
-
-
-def measure(surfaces) -> dict:
-    """bake_bodies.gd _describe(mesh, no turn): the mesh box (float32, as ArrayMesh.get_aabb) and the capsule taken from it."""
-    lo = [min(v[k] for _l, verts, _u, _n in surfaces for v in verts) for k in range(3)]
-    hi = [max(v[k] for _l, verts, _u, _n in surfaces for v in verts) for k in range(3)]
-    size = [f32(h - l) for h, l in zip(hi, lo)]
-    return {
-        "box": [snapped(lo[0]), snapped(lo[1]), snapped(lo[2]), snapped(size[0]), snapped(size[1]), snapped(size[2])],
-        "foot_offset": snapped(-lo[1]) + 0.0,
-        "height": snapped(size[1]),
-        "radius": snapped(max(min(size[0], size[2]) * 0.35, 0.2)),
-        "reach": snapped(max(size[0], size[2]) * 0.5),
-        "upright_fix": [0.0, 0.0, 0.0],
-    }
-
-
-def add_sizes(measured: dict, check: bool) -> tuple:
-    """Adds the missing "props" entries of sizes.json. Returns (added, existing entries that measure differently)."""
-    doc = json.loads(SIZES.read_text())
-    props = doc["props"]
-    added = sorted(name for name in measured if name not in props)
-    differ = sorted(name for name in measured if name in props and props[name] != measured[name])
-    if added and not check:
-        for name in added:
-            props[name] = measured[name]
-        SIZES.write_text(json.dumps(doc, indent=1, sort_keys=True) + "\n")
-    return added, differ
-
-
 def main() -> None:
     if "--list-static" in ARGS:
         print(" ".join(STATIC_BODIES))
@@ -379,11 +345,9 @@ def main() -> None:
     items = propslib.all_props()
     written = kept = 0
     total = 0
-    measured = {}
     for item in items:
         surfaces = build_surfaces(item.obj, item.foliage)
         assert surfaces, item.name
-        measured[item.name] = measure(surfaces)
         size, changed = write_if_changed(OUT / (item.name + ".glb"), item.name, surfaces, check)
         total += size
         written += changed
@@ -395,11 +359,6 @@ def main() -> None:
         bodies_written += changed
     print("props %d (%d written, %d unchanged); static bodies %d (%d written); %.2f MB of .glb%s" % (
         len(items), written, kept, len(STATIC_BODIES) if BODIES_FROM else 0, bodies_written, total / 1e6, " [check]" if check else ""))
-    if "--out" not in ARGS:
-        added, differ = add_sizes(measured, check)
-        print("sizes.json props: %d added%s; %d existing measure differently (left alone)%s" % (
-            len(added), (" (" + " ".join(added) + ")") if added and check else "", len(differ),
-            (": " + " ".join(differ)) if differ else ""))
 
 
 if __name__ == "__main__":

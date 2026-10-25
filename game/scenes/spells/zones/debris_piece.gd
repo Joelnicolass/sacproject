@@ -5,8 +5,6 @@ extends Node3D
 ## when it stops bouncing or after `life_s`. Presentation only: every peer draws its own and a headless process draws none. It hurts nobody.
 ## Ref: sacengine updateDebris (state.d:15054-15083).
 
-## The prop whose mesh the rock wears.
-@export var model := "bold"
 @export var rock: MeshInstance3D
 ## Optional. The mark it leaves on the ground where it stops (a crack).
 @export var landing_mark: ScarMark
@@ -30,8 +28,6 @@ func _ready() -> void:
 	if DisplayServer.get_name() == "headless":
 		queue_free()
 		return
-	if rock != null and rock.mesh == null:
-		rock.mesh = BodyCatalog.mesh(model)
 	_land = TerrainShape.of(self)
 
 

@@ -3,9 +3,63 @@
 [ext_resource type="Script" path="res://scenes/ui/radial/radial_menu.gd" id="1_menu"]
 [ext_resource type="Resource" path="res://data/ui/radial/orders_layout.tres" id="2_layout"]
 [ext_resource type="Script" path="res://scenes/audio/menu_sounds.gd" id="a052_menu_sounds"]
+[ext_resource type="Script" path="res://scenes/ui/radial/radial_decor.gd" id="3_decor"]
+[ext_resource type="Script" path="res://scenes/ui/radial/radial_rings.gd" id="4_rings"]
+[ext_resource type="Script" path="res://scenes/ui/radial/radial_animator.gd" id="5_animator"]
+[ext_resource type="Script" path="res://scenes/ui/radial/radial_standalone.gd" id="6_standalone"]
 
-[node name="RadialMenu" type="Control" node_paths=PackedStringArray("center_rect", "rings")]
-editor_description = "RFC-038 038c: radial menu of two rings. It shows the entries of its RadialLayout and emits entry_chosen / cancelled; OrderRadial feeds it the pointer. preview_open shows it in the editor; F6 runs it alone."
+[sub_resource type="Animation" id="Animation_open"]
+resource_name = "open"
+length = 0.12
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate:a")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.12),
+"transitions": PackedFloat32Array(0.4, 1),
+"update": 0,
+"values": [0.0, 1.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.12),
+"transitions": PackedFloat32Array(0.4, 1),
+"update": 0,
+"values": [Vector2(0.7, 0.7), Vector2(1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_close"]
+resource_name = "close"
+length = 0.08
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate:a")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.08),
+"transitions": PackedFloat32Array(2, 1),
+"update": 0,
+"values": [1.0, 0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_radial"]
+_data = {
+&"close": SubResource("Animation_close"),
+&"open": SubResource("Animation_open")
+}
+
+[node name="RadialMenu" type="Control" node_paths=PackedStringArray("decor", "rings", "animator")]
+editor_description = "RFC-038 038c: radial menu of two rings. It shows the entries of its RadialLayout and emits entry_chosen / cancelled; OrderRadial feeds it the pointer. preview_open shows it in the editor; F6 runs it alone. Look: Decor; icons: Rings; open / close: Animator (clips open and close)."
 layout_mode = 3
 anchors_preset = 0
 offset_right = 336.0
@@ -13,8 +67,21 @@ offset_bottom = 336.0
 mouse_filter = 2
 script = ExtResource("1_menu")
 layout = ExtResource("2_layout")
-center_rect = NodePath("Center")
+decor = NodePath("Decor")
 rings = NodePath("Rings")
+animator = NodePath("Animator")
+
+[node name="Decor" type="Control" parent="." node_paths=PackedStringArray("center_rect")]
+editor_description = "Draws the rings, the hovered sector, the pointer line and the name in the dead zone. Colors and sizes are its Look group."
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_decor")
+center_rect = NodePath("../Center")
 
 [node name="Center" type="TextureRect" parent="."]
 texture_filter = 1
@@ -31,8 +98,21 @@ stretch_mode = 5
 layout_mode = 3
 anchors_preset = 0
 mouse_filter = 2
+script = ExtResource("4_rings")
 
 [node name="MenuSounds" type="Node" parent="." node_paths=PackedStringArray("menu")]
 editor_description = "RFC-052 052h: abrir (XMNU), elegir (Iclk) y cerrar sin elegir (Ibak) del menú X. Sin audio no hace nada."
 script = ExtResource("a052_menu_sounds")
+menu = NodePath("..")
+
+[node name="Animator" type="AnimationPlayer" parent="."]
+editor_description = "Clip open: escala 0,7 a 1 y aparece (0,12 s). Clip close: se desvanece (0,08 s)."
+libraries = {
+"": SubResource("AnimationLibrary_radial")
+}
+script = ExtResource("5_animator")
+
+[node name="Standalone" type="Node" parent="." node_paths=PackedStringArray("menu")]
+editor_description = "Solo F6 sobre esta escena: la abre en el medio y la mueve con el mouse. Dentro de una partida no hace nada."
+script = ExtResource("6_standalone")
 menu = NodePath("..")

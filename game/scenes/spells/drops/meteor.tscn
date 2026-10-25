@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/drops/zone_drop.gd" id="drop"]
 [ext_resource type="Script" path="res://scenes/fx/spinner.gd" id="spinner"]
@@ -11,8 +11,31 @@
 [ext_resource type="PackedScene" path="res://scenes/spells/marks/rock_mark.tscn" id="mark_gscr"]
 [ext_resource type="PackedScene" path="res://scenes/spells/marks/crack_mark.tscn" id="mark_ecrk"]
 
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain_stamp.gd" id="stamp"]
+[ext_resource type="Script" path="res://scenes/map/terrain/stamp_profile.gd" id="profile"]
+[ext_resource type="Script" path="res://scenes/spells/drops/drop_dent.gd" id="dent"]
+
+[sub_resource type="Curve" id="Curve_dent_radial"]
+_limits = [-1.0, 0.0, 0.0, 1.0]
+_data = [Vector2(0, -1.000000), 0.000000, 0.012502, 1, 1, Vector2(0.025, -0.999687), 0.012502, 0.037529, 1, 1, Vector2(0.05, -0.998749), 0.037529, 0.062627, 1, 1, Vector2(0.075, -0.997184), 0.062627, 0.087844, 1, 1, Vector2(0.1, -0.994987), 0.087844, 0.113228, 1, 1, Vector2(0.125, -0.992157), 0.113228, 0.138830, 1, 1, Vector2(0.15, -0.988686), 0.138830, 0.164703, 1, 1, Vector2(0.175, -0.984568), 0.164703, 0.190901, 1, 1, Vector2(0.2, -0.979796), 0.190901, 0.217485, 1, 1, Vector2(0.225, -0.974359), 0.217485, 0.244517, 1, 1, Vector2(0.25, -0.968246), 0.244517, 0.272064, 1, 1, Vector2(0.275, -0.961444), 0.272064, 0.300201, 1, 1, Vector2(0.3, -0.953939), 0.300201, 0.329007, 1, 1, Vector2(0.325, -0.945714), 0.329007, 0.358573, 1, 1, Vector2(0.35, -0.936750), 0.358573, 0.388996, 1, 1, Vector2(0.375, -0.927025), 0.388996, 0.420387, 1, 1, Vector2(0.4, -0.916515), 0.420387, 0.452872, 1, 1, Vector2(0.425, -0.905193), 0.452872, 0.486592, 1, 1, Vector2(0.45, -0.893029), 0.486592, 0.521710, 1, 1, Vector2(0.475, -0.879986), 0.521710, 0.558416, 1, 1, Vector2(0.5, -0.866025), 0.558416, 0.596927, 1, 1, Vector2(0.525, -0.851102), 0.596927, 0.637503, 1, 1, Vector2(0.55, -0.835165), 0.637503, 0.680450, 1, 1, Vector2(0.575, -0.818153), 0.680450, 0.726136, 1, 1, Vector2(0.6, -0.800000), 0.726136, 0.775010, 1, 1, Vector2(0.625, -0.780625), 0.775010, 0.827622, 1, 1, Vector2(0.65, -0.759934), 0.827622, 0.884659, 1, 1, Vector2(0.675, -0.737818), 0.884659, 0.946995, 1, 1, Vector2(0.7, -0.714143), 0.946995, 1.015759, 1, 1, Vector2(0.725, -0.688749), 1.015759, 1.092442, 1, 1, Vector2(0.75, -0.661438), 1.092442, 1.179064, 1, 1, Vector2(0.775, -0.631961), 1.179064, 1.278449, 1, 1, Vector2(0.8, -0.600000), 1.278449, 1.394691, 1, 1, Vector2(0.825, -0.565133), 1.394691, 1.534002, 1, 1, Vector2(0.85, -0.526783), 1.534002, 1.706391, 1, 1, Vector2(0.875, -0.484123), 1.706391, 1.929321, 1, 1, Vector2(0.9, -0.435890), 1.929321, 2.236912, 1, 1, Vector2(0.925, -0.379967), 2.236912, 2.708688, 1, 1, Vector2(0.95, -0.312250), 2.708688, 3.601802, 1, 1, Vector2(0.975, -0.222205), 3.601802, 8.888194, 1, 1, Vector2(1, -0.000000), 8.888194, 0.000000, 1, 1]
+point_count = 41
+
+[sub_resource type="Curve" id="Curve_dent_time"]
+_limits = [0.0, 1.0, 0.0, 0.05]
+_data = [Vector2(0.0, 1.0), 0.0, 0.0, 1, 1, Vector2(0.05, 1.0), 0.0, 0.0, 1, 1]
+point_count = 2
+
+[sub_resource type="Resource" id="Profile_dent"]
+script = ExtResource("profile")
+radial = SubResource("Curve_dent_radial")
+timeline = SubResource("Curve_dent_time")
+
+[sub_resource type="CylinderShape3D" id="Reach_dent"]
+height = 1.2
+radius = 15.0
+
 [node name="Meteor" type="Node3D"]
-editor_description = "Un meteorito de Bombardment: sale de la tierra, cruza el cielo en un arco de 12 s (gravedad 20) y solo choca bajando, con una caja de 3 m; al llegar, 400 de dano de hechizo, salpicadura de 5 m que aturde 8 s, piedras, polvo y temblor. Sin abolladura del terreno (061k)."
+editor_description = "Un meteorito de Bombardment: sale de la tierra, cruza el cielo en un arco de 12 s (gravedad 20) y solo choca bajando, con una caja de 3 m; al llegar, 400 de dano de hechizo, salpicadura de 5 m que aturde 8 s, piedras, polvo y temblor. Al llegar deja una abolladura permanente: el sello Dent (-sqrt(1 - d^2/15^2) * 1,2 m; radio y profundidad son su cilindro Reach, la forma su StampProfile) y DropDent lo aplica donde termina el vuelo."
 script = ExtResource("drop")
 gravity_m_s2 = 20.0
 contact_m = 3.0
@@ -38,3 +61,18 @@ drop = NodePath("..")
 bursts = Array[ExtResource("ptype")]([ExtResource("hit"), ExtResource("dirt")])
 stun_s = 8.0
 ground_marks = Array[PackedScene]([ExtResource("mark_gscr"), ExtResource("mark_ecrk")])
+
+[node name="Dent" type="Node3D" parent="." node_paths=PackedStringArray("reach")]
+script = ExtResource("stamp")
+profile = SubResource("Profile_dent")
+reach = NodePath("Reach")
+manual = true
+keep = true
+
+[node name="Reach" type="CollisionShape3D" parent="Dent"]
+shape = SubResource("Reach_dent")
+
+[node name="DentOnImpact" type="Node" parent="." node_paths=PackedStringArray("drop", "stamp")]
+script = ExtResource("dent")
+drop = NodePath("..")
+stamp = NodePath("../Dent")

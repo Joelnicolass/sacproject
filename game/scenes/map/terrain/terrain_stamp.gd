@@ -22,6 +22,8 @@ extends Node3D
 @export_range(0.5, 20.0, 0.5, "suffix:m") var carry_reach_m := 6.0
 ## It shows a new shift only when it differs from the last one shown by this many metres of its peak (a slow decline is not redrawn each tick).
 @export_range(0.0, 2.0, 0.01, "suffix:m") var min_step_m := 0.0
+## It does not play by itself: something else leaves its mark at once (DropDent, a meteorite's dent).
+@export var manual := false
 ## Ticks a peer may be off the server's count before it takes the server's.
 @export_range(1, 60) var resync_ticks := 8
 
@@ -46,7 +48,7 @@ func _ready() -> void:
 		return
 	_deformer = TerrainDeformer.of(self)
 	_key = String(get_path())
-	set_physics_process(_deformer != null and is_ready())
+	set_physics_process(_deformer != null and is_ready() and not manual)
 
 
 func _get_configuration_warnings() -> PackedStringArray:

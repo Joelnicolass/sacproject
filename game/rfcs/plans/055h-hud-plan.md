@@ -1,5 +1,7 @@
 # 055h — HUD nativo de Godot (plan del tech lead, pendiente de aprobación)
 
+> **Aprobado por el usuario (2026-10-25)** con todas las recomendaciones: escala de toda la interfaz («Tamaño de la interfaz», 0,75–1,4, sin migrar la preferencia vieja); cajas y marcos en el Theme; barras como ProgressBar; almas con fuente de imagen fn10 (Label si no da ±1 px); h-4 y h-5 entran en este corte; la extracción a hud.tscn queda para otro corte. La cámara sigue siendo 055k y el audio es 055o. Estrategia: los cortes se implementan sin Godot y se prueban todos juntos al final.
+
 Fuente: RFC-055 §13.2 (fila «Lecturas del original»), §13.2b C-8b y el orden (paso 2–7, «055h en paralelo»); auditoría `research/055R-legacy-audit.md` §3.4 y §3.8 (fila HUD/UI). Conteos de `main` al 2026-10-25 (`3e06e217`), medidos con `tools/lint/conventions.sh --verbose`, `grep` y `wc`.
 
 **Qué se mantiene (identidad, no se toca el diseño):** el libro abajo a la izquierda con sus tres pestañas y la tira, el plantel a la izquierda, el bloque de almas + maná + vida arriba a la derecha, el minimapa redondo abajo a la derecha, el menú radial de dos anillos, la caja de info junto al puntero y el cursor del original. Cambia **cómo** se dibujan y se escalan, no **qué** se ve.

@@ -1,5 +1,7 @@
 # 055i-a — Identidad por recursos en la UI, el lobby y `sacrifice_flow` (plan, pendiente de aprobación)
 
+> **Aprobado por el usuario (2026-10-25)** con todas las recomendaciones: SacrificeFlow como escena autoload; regla C18b; `offered` en GodType y WizardType; hechizos con nombre humano (a4) al cerrar 061; bake_catalog congelado y borrado en 055z; `model` se mantiene en el pick hasta 055s; tag vacío = nombre del archivo en contenido nuevo; uid en el catálogo si el paso 0 lo confirma. La cámara sigue siendo 055k y el audio es 055o. Los cortes se implementan sin Godot y se prueban juntos al final.
+
 Fuente: RFC-055 §13.2 (fila `CreatureType`, «Herramientas de bake») y §13.2b fila **C-1**; auditoría `rfcs/research/055R-legacy-audit.md` §3.1 (C18) y §5.1 (decisión del usuario: 055i en dos partes). Plan del tech lead; no hay código escrito. Conteos de `main` al 2026-10-25 (`bash tools/lint/conventions.sh --verbose`, C18 = 131, base 132).
 
 Alcance: **UI (`scenes/ui/`), lobby (`scenes/net/` + las pantallas de salas y de servidor local) y `scenes/core/flow/`**. La parte de unidades, IA de combate y audio (`CreatureType`, `wizard_body`, `SoundLibrary`, `HudIcons`) es **055i-b** y va con 055c1: no se toca acá salvo las 3–4 líneas de frontera que se nombran abajo. `addons/mp_kit/` no se toca (es genérico; no sabe qué es un mago ni un dios).

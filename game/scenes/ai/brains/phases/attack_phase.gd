@@ -54,7 +54,7 @@ func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:
 			brain.stance.enemy_ratio(), best_track.node.name if best_track != null and best_track.is_valid() else "-", best, total])
 	if total == 0.0 or best_track == null:
 		return
-	var found := brain.eval.find_best(wizard, best_track, AiSpellEval.ATTACK_MASK)
+	var found := brain.eval.find_best(wizard, best_track, SpellType.AiPhase.ATTACK)
 	if float(found["score"]) <= 0.0:
 		return
 	var entry := AiCastQueue.make(0, AiField.f32(AiField.safediv(best * w3[0], total)), best_track, found["spell"], float(found["range"]), found["obj"])

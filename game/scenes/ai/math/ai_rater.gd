@@ -101,7 +101,7 @@ static func fill_by_tag(type: CreatureType, abilities: Array) -> PackedFloat32Ar
 
 ## shiny.d:283-306 `fillFromObject` (the worth of a body on the field, with its mana now): creatures use their abilities
 ## that are attacks on creatures (flags1 & 0x4000 and flags & targetCreatures); a wizard adds its book (spells with
-## flags1 & 0xfc00: amount2*range*(1-f)*0.04). `ts` from stats_of() or WIZARD_STATS.
+## an AI phase: ai_worth*range*(1-f)*0.04). `ts` from stats_of() or WIZARD_STATS.
 static func fill_from_object(ts: Dictionary, current_mana: int, abilities: Array, spells: Array) -> PackedFloat32Array:
 	var acc := new_acc()
 	fill_stats(acc, ts)
@@ -112,9 +112,9 @@ static func fill_from_object(ts: Dictionary, current_mana: int, abilities: Array
 			continue
 		ability_acc(acc, float(ability.amount2), ability.cast_range_m, float(ability.mana_cost), float(ts["melee_accuracy"]), float(ts["ranged_accuracy"]), mana_f, float(ts["fly"]))
 	for spell: SpellType in spells:
-		if spell == null or (spell.flags1 & 0xfc00) == 0:
+		if spell == null or spell.ai_phase == SpellType.AiPhase.NEVER:
 			continue
-		var t := float(spell.amount2) * spell.cast_range_m
+		var t := float(spell.ai_worth) * spell.cast_range_m
 		var f := AiField.safediv(float(spell.mana_cost), mana_f) if mana_f > float(spell.mana_cost) else 1.0
 		t *= (1.0 - f)
 		t *= ABILITY_K

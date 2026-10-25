@@ -432,9 +432,9 @@ func _spell_eval() -> Dictionary:
 	checks["speedup_fn"] = AiSpellEval.rating_fn(speed) == AiSpellEval.FN_SPEEDUP
 	checks["rock_single"] = AiSpellEval.rating_fn(rock) == AiSpellEval.FN_SINGLE
 	checks["wrath_area"] = AiSpellEval.rating_fn(wrath) == AiSpellEval.FN_AREA
-	checks["support_takes_heal_speedup"] = AiSpellEval.accepts(heal, AiSpellEval.SUPPORT_MASK) and AiSpellEval.accepts(speed, AiSpellEval.SUPPORT_MASK)
-	checks["support_leaves_attack"] = not AiSpellEval.accepts(rock, AiSpellEval.SUPPORT_MASK) and not AiSpellEval.accepts(wrath, AiSpellEval.SUPPORT_MASK)
-	checks["attack_leaves_support"] = AiSpellEval.accepts(rock, AiSpellEval.ATTACK_MASK) and not AiSpellEval.accepts(heal, AiSpellEval.ATTACK_MASK)
+	checks["support_takes_heal_speedup"] = AiSpellEval.casts_in(heal, SpellType.AiPhase.SUPPORT) and AiSpellEval.casts_in(speed, SpellType.AiPhase.SUPPORT)
+	checks["support_leaves_attack"] = not AiSpellEval.casts_in(rock, SpellType.AiPhase.SUPPORT) and not AiSpellEval.casts_in(wrath, SpellType.AiPhase.SUPPORT)
+	checks["attack_leaves_support"] = AiSpellEval.casts_in(rock, SpellType.AiPhase.ATTACK) and not AiSpellEval.casts_in(heal, SpellType.AiPhase.ATTACK)
 	checks["convert_none"] = AiSpellEval.rating_fn(GameData.spell("ccas")) == AiSpellEval.FN_NONE
 	return _verdict(checks)
 

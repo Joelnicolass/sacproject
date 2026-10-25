@@ -358,14 +358,14 @@ func is_done_except(row: Dictionary) -> bool:
 	return true
 
 
-## F371: a cast of the AI's port. Only attack spells count (AiSpellEval.ATTACK_MASK) on a body of `object`. F372: a row with a
+## F371: a cast of the AI's port. Only attack spells count (an ATTACK phase) on a body of `object`. F372: a row with a
 ## `spell` counts the casts of that spell only, whatever its kind, and with an empty `object` on any body; «first_cast» is decided
 ## by the first one.
 func _on_cast(slot: int, tag: String, target: Node) -> void:
 	if not _started or _finished:
 		return
 	var spell := GameData.spell(tag)
-	var attack := spell != null and AiSpellEval.accepts(spell, AiSpellEval.ATTACK_MASK)
+	var attack := spell != null and AiSpellEval.casts_in(spell, SpellType.AiPhase.ATTACK)
 	print("EXPECT_NOTE cast slot %d %s -> %s%s (tick %d)" % [slot, tag, target.name if target != null else "-", "" if attack else " (no ataque)", _tick])
 	if target == null:
 		return

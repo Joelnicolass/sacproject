@@ -1,8 +1,13 @@
 class_name SpellType
 extends Resource
 
-## What the AI wants a spell for (AiSpellEval reads it before the old flag bits).
-enum AiUse { NONE, SELF_GUARD, DISABLE_FOE }
+## What the AI wants a spell for. Saved as an integer: only append at the end.
+## SELF_GUARD: a ward on himself. DISABLE_FOE: a control spell on a foe. HIT_ONE / HIT_AREA: damage on one body or on a group.
+## HEAL / SPEEDUP: help for an own body. CONVERT / DESECRATE: the spells of the altar, the brain casts them in their own phases.
+enum AiUse { NONE, SELF_GUARD, DISABLE_FOE, HIT_ONE, HIT_AREA, HEAL, SPEEDUP, CONVERT, DESECRATE }
+## When the wizard of the AI may cast it: against a foe (ATTACK), for his own side (SUPPORT) or never on his own (NEVER).
+## Saved as an integer: only append at the end.
+enum AiPhase { NEVER, ATTACK, SUPPORT }
 
 @export var tag: String = ""
 @export var display_name: String = ""
@@ -19,23 +24,36 @@ enum AiUse { NONE, SELF_GUARD, DISABLE_FOE }
 ## Acceleration of what it sends (m/s²).
 @export var acceleration_m_s2: float = 0.0
 @export var damage: int = 0
-## SPEL `amount2` (u32 at 96): the AI's spell evaluators read it (shiny.d:2650-2690).
-@export var amount2: int = 0
-## SPEL `amount3` (u32 at 100): how many hits, kills or targets a spell takes (Death: 8). 0 = not written in the .tres (the SPEL says 1 for most).
-@export var count: int = 0
 ## Radius of its damage around where it hits (m).
 @export var damage_range_m: float = 0.0
 ## Reach of its effect (m).
 @export var effect_range_m: float = 0.0
 ## How long its effect lasts (s).
 @export var duration_s: float = 0.0
-@export var flags: int = 0
-@export var flags1: int = 0
-@export var flags2: int = 0
 @export var is_structure: bool = false
 ## Scene of the SpellAction that casts this spell (RFC-041). Caster instances it under its `actions` node when the wizard
 ## has no child for the tag, so a new spell is a `.tres` plus a scene, with no edit in Caster.
 @export var action: PackedScene
-## What the wizard of the AI casts it for. SELF_GUARD: on himself when foes are near and the ward is off. DISABLE_FOE: on the enemy whose
-## being held is worth the most (Freeze, Grasping Vines, Rings of Fire, Slime).
+@export_group("AI: who it may land on")
+## Nothing ticked = anything. Ticks widen it to those kinds of body; a body of another kind is not a target for the AI.
+@export var targets_wizards := false
+@export var targets_souls := false
+@export var targets_creatures := false
+@export var targets_corpses := false
+@export var targets_structures := false
+## Only a free manafount (the spell that builds a Shrine).
+@export var only_free_manafounts := false
+@export var only_allies := false
+@export var never_allies := false
+@export var targets_ground := false
+@export_group("AI")
+## What the wizard of the AI casts it for (see AiUse).
 @export var ai_use := AiUse.NONE
+@export var ai_phase := AiPhase.NEVER
+## The AI casts it only on the wizard himself (Halo of Earth, the wards).
+@export var ai_only_on_self := false
+## How much health the AI counts this spell takes from a body (Rock: 650). Not the damage it really does.
+@export var ai_worth := 0
+@export_group("")
+## How many bodies it takes before it is over (Death: 8). 0 = not limited.
+@export var max_targets := 0

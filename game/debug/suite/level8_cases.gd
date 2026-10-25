@@ -40,11 +40,12 @@ func run(host: Node3D) -> Dictionary:
 	return out
 
 
-## The five spells have their action scene (a CarrierAction without warnings), are in their god's book at level 9 and the AI does not own them.
+## The five spells have their action scene (a CarrierAction without warnings), are in their god's book at level 9 and the AI rates them like the original flags did.
 func _data() -> Dictionary:
 	var checks := {}
-	checks["death_counts_eight"] = GameData.spell("taed").count == 8
+	checks["death_counts_eight"] = GameData.spell("taed").max_targets == 8
 	checks["death_duration_is_forty"] = is_equal_approx(GameData.spell("taed").duration_s, 40.0)
+	var fn_of := {"mrhc": AiSpellEval.FN_NONE, "egar": AiSpellEval.FN_AREA, "pavi": AiSpellEval.FN_SINGLE, "ivob": AiSpellEval.FN_SINGLE, "taed": AiSpellEval.FN_NONE}
 	for pair in [["mrhc", "persephone"], ["egar", "pyro"], ["pavi", "charnel"], ["ivob", "james"], ["taed", "charnel"]]:
 		var tag: String = pair[0]
 		var spell := GameData.spell(tag)
@@ -60,7 +61,7 @@ func _data() -> Dictionary:
 		for entry in GameData.book(pair[1], 9)["spells"]:
 			tags.append(entry.tag)
 		checks[tag + "_in_book"] = tags.has(tag)
-		checks[tag + "_ai_use_none"] = spell.ai_use == SpellType.AiUse.NONE
+		checks[tag + "_evaluator"] = AiSpellEval.rating_fn(spell) == fn_of[tag]
 	return _w.verdict("level8_data", checks)
 
 
@@ -358,7 +359,7 @@ func _death_time() -> Dictionary:
 	return _w.verdict("level8_death_time", checks)
 
 
-## The AI does not own the five (`ai_use` none) and reads them without breaking.
+## The AI reads the five without breaking (Charm and Death have no evaluator).
 func _ai() -> Dictionary:
 	var checks := {}
 	for tag in ["mrhc", "egar", "pavi", "ivob", "taed"]:

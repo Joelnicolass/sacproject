@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://cp05iswkijk4v" path="res://assets/original/ui/icons/dplk.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/dkba.tres" id="typed_dkba"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/dedp.tres" id="typed_dedp"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/dklp_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_wsjns")
@@ -12,6 +13,7 @@ tag = "dplk"
 display_name = "Fallen"
 icon = ExtResource("icon_tex")
 model = "dklp"
+clips = ExtResource("clips_lib")
 health = 720
 drain = 0.5
 run_speed_m_s = 12.0

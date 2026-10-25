@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://data/audio/creatures/taurock.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://d3dgng788qv3s" path="res://assets/original/ui/icons/raeb.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/korq.tres" id="typed_korq"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/eber_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_ic8cq")
@@ -11,6 +12,7 @@ tag = "raeb"
 display_name = "Taurock"
 icon = ExtResource("icon_tex")
 model = "eber"
+clips = ExtResource("clips_lib")
 health = 1920
 regeneration_per_s = 16.6667
 run_speed_m_s = 6.0

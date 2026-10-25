@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://5voqoki8jq4x" path="res://assets/original/ui/icons/tbsh.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/absh.tres" id="typed_absh"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/hsba.tres" id="typed_hsba"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/lhbt_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_747c0")
@@ -12,6 +13,7 @@ tag = "tbsh"
 display_name = "Shrike"
 icon = ExtResource("icon_tex")
 model = "lhbt"
+clips = ExtResource("clips_lib")
 health = 450
 regeneration_per_s = 29.1667
 fly_speed_m_s = 15.0

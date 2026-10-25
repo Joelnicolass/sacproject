@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://data/audio/creatures/abomination.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://d6lu26xqtjao" path="res://assets/original/ui/icons/ctug.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/tugt.tres" id="typed_tugt"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/gutc_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_xaj8f")
@@ -11,6 +12,7 @@ tag = "ctug"
 display_name = "Abomination"
 icon = ExtResource("icon_tex")
 model = "gutc"
+clips = ExtResource("clips_lib")
 health = 1710
 drain = 0.5
 run_speed_m_s = 6.0

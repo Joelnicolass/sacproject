@@ -155,7 +155,21 @@ func _make(source: AnimationPlayer, spec: Dictionary) -> Animation:
 	return anim
 
 
-## Markers `name`, `name2`... at the given seconds.
+## Markers `name`, `name2`... at the given seconds. Two markers at the same instant replace each other (a clip that is both the
+## attack and the shot of a creature), so a taken instant moves by NUDGE_S: far less than half a frame, the same frame once rounded.
+const NUDGE_S := 0.0001
+
+
 func _add_markers(anim: Animation, marker: String, seconds: Array) -> void:
 	for i in seconds.size():
-		anim.add_marker(StringName(marker if i == 0 else "%s%d" % [marker, i + 1]), minf(float(seconds[i]), anim.length))
+		var at := minf(float(seconds[i]), anim.length)
+		while _marker_at(anim, at):
+			at -= NUDGE_S
+		anim.add_marker(StringName(marker if i == 0 else "%s%d" % [marker, i + 1]), at)
+
+
+func _marker_at(anim: Animation, at: float) -> bool:
+	for name: StringName in anim.get_marker_names():
+		if is_equal_approx(anim.get_marker_time(name), at):
+			return true
+	return false

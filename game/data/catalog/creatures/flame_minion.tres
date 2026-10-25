@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://r7hdquidis3h" path="res://assets/original/ui/icons/fplk.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/fkba.tres" id="typed_fkba"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/!nur.tres" id="typed__nur"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/fklp_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_5iwmj")
@@ -12,6 +13,7 @@ tag = "fplk"
 display_name = "Flame Minion"
 icon = ExtResource("icon_tex")
 model = "fklp"
+clips = ExtResource("clips_lib")
 health = 640
 regeneration_per_s = 16.6667
 run_speed_m_s = 12.0

@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://bw3j53xaogfx8" path="res://assets/original/ui/icons/usl_h.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/gsba.tres" id="typed_gsba"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/gcil.tres" id="typed_gcil"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/surt_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_nkab1")
@@ -12,6 +13,7 @@ tag = "uslH"
 display_name = "Lord Surtur"
 icon = ExtResource("icon_tex")
 model = "surt"
+clips = ExtResource("clips_lib")
 health = 2560
 regeneration_per_s = 16.6667
 run_speed_m_s = 11.25

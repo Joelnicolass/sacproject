@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" path="res://scenes/units/mana_flame.tscn" id="2_flame"]
 [ext_resource type="Texture2D" uid="uid://decnulic3iwu2" path="res://assets/original/ui/icons/oham.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/hmba.tres" id="typed_hmba"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/maho_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_bou3e")
@@ -11,6 +12,7 @@ tag = "oham"
 display_name = "Manahoar"
 icon = ExtResource("icon_tex")
 model = "maho"
+clips = ExtResource("clips_lib")
 carried_fx = ExtResource("2_flame")
 health = 550
 regeneration_per_s = 16.6667

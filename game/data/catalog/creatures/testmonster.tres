@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_d4j27"]
 [ext_resource type="Texture2D" uid="uid://bo6bmb0pv50g0" path="res://assets/custom/icons/testmonster.png" id="icon_tex"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/testmonster_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_d4j27")
@@ -9,6 +10,7 @@ tag = "testmonster"
 display_name = "Test Monster"
 icon = ExtResource("icon_tex")
 model = "testmonster"
+clips = ExtResource("clips_lib")
 health = 1000
 regeneration_per_s = 10.0
 run_speed_m_s = 6.0

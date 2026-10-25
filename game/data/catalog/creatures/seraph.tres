@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://data/audio/creatures/seraph.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://cm7p1cd07usua" path="res://assets/original/ui/icons/grps.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/psaa.tres" id="typed_psaa"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/sprg_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_wbuvc")
@@ -11,6 +12,7 @@ tag = "grps"
 display_name = "Seraph"
 icon = ExtResource("icon_tex")
 model = "sprg"
+clips = ExtResource("clips_lib")
 health = 1120
 regeneration_per_s = 16.6667
 run_speed_m_s = 9.37

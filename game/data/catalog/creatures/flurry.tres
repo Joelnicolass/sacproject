@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://data/audio/creatures/flurry.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://bn6qifs6uyuky" path="res://assets/original/ui/icons/wlca.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/caba.tres" id="typed_caba"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/aclw_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_4djl0")
@@ -11,6 +12,7 @@ tag = "wlca"
 display_name = "Flurry"
 icon = ExtResource("icon_tex")
 model = "aclw"
+clips = ExtResource("clips_lib")
 health = 1520
 regeneration_per_s = 16.6667
 run_speed_m_s = 7.5

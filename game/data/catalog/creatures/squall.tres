@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://data/audio/creatures/squall.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://bu4c0wmpy4853" path="res://assets/original/ui/icons/alab.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/amba.tres" id="typed_amba"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/bala_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_st0ga")
@@ -11,6 +12,7 @@ tag = "alab"
 display_name = "Squall"
 icon = ExtResource("icon_tex")
 model = "bala"
+clips = ExtResource("clips_lib")
 health = 1040
 regeneration_per_s = 16.6667
 run_speed_m_s = 10.0

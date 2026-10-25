@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://data/audio/creatures/brainiac.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://b6ekcu7x37rrp" path="res://assets/original/ui/icons/bobs.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/bsba.tres" id="typed_bsba"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/sbob_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_2obe3")
@@ -11,6 +12,7 @@ tag = "bobs"
 display_name = "Brainiac"
 icon = ExtResource("icon_tex")
 model = "sbob"
+clips = ExtResource("clips_lib")
 health = 400
 regeneration_per_s = 16.6667
 fly_speed_m_s = 18.75

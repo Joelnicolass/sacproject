@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://data/audio/creatures/toldor.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://0nl7lyp4p1b1" path="res://assets/original/ui/icons/ooh_h.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/HSba_2.tres" id="typed_HSba"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/hoom_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_3qucp")
@@ -11,6 +12,7 @@ tag = "oohH"
 display_name = "Toldor"
 icon = ExtResource("icon_tex")
 model = "hoom"
+clips = ExtResource("clips_lib")
 health = 5625
 regeneration_per_s = 29.1667
 run_speed_m_s = 8.75

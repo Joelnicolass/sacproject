@@ -2,12 +2,14 @@
 
 [ext_resource type="Script" path="res://scenes/wizards/wizard_type.gd" id="1_r86mw"]
 [ext_resource type="Resource" path="res://data/audio/wizards/ambassador_buta.tres" id="sounds_set"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/buta_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_r86mw")
 tag = "cwf0"
 display_name = "Ambassador Buta"
 model = "buta"
+clips = ExtResource("clips_lib")
 health = 1500
 mana = 1000
 run_speed_m_s = 10.0

@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://data/audio/creatures/deadeye.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://dl76ap62hhrk5" path="res://assets/original/ui/icons/plfd.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/lfda.tres" id="typed_lfda"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/dflp_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_1joh7")
@@ -11,6 +12,7 @@ tag = "plfd"
 display_name = "Deadeye"
 icon = ExtResource("icon_tex")
 model = "dflp"
+clips = ExtResource("clips_lib")
 health = 1170
 drain = 0.5
 run_speed_m_s = 8.0

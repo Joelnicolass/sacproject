@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_0fo3b"]
 [ext_resource type="Resource" path="res://data/audio/creatures/ghost.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://cirvrf5gk6dk2" path="res://assets/original/ui/icons/tshg.png" id="icon_tex"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/peas_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_0fo3b")
@@ -10,6 +11,7 @@ tag = "tshg"
 display_name = "Ghost"
 icon = ExtResource("icon_tex")
 model = "peas"
+clips = ExtResource("clips_lib")
 health = 500
 regeneration_per_s = 16.6667
 run_speed_m_s = 7.25

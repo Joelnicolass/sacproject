@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://data/audio/creatures/locust.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://dby00c0mjyq85" path="res://assets/original/ui/icons/pazb.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/zbba.tres" id="typed_zbba"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/bugz_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_x4v5w")
@@ -11,6 +12,7 @@ tag = "pazb"
 display_name = "Locust"
 icon = ExtResource("icon_tex")
 model = "bugz"
+clips = ExtResource("clips_lib")
 health = 450
 drain = 0.875
 fly_speed_m_s = 15.0

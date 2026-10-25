@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://data/audio/creatures/gammel.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://dkwt4qld5ypfe" path="res://assets/original/ui/icons/mag_h.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/acia.tres" id="typed_acia"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/gamm_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_cbtr8")
@@ -11,6 +12,7 @@ tag = "magH"
 display_name = "Gammel"
 icon = ExtResource("icon_tex")
 model = "gamm"
+clips = ExtResource("clips_lib")
 health = 3360
 regeneration_per_s = 16.6667
 run_speed_m_s = 7.03

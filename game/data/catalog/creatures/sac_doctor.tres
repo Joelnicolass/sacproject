@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_k2kp5"]
 [ext_resource type="Texture2D" uid="uid://bo2r42q2mqqes" path="res://assets/original/ui/icons/dcas.png" id="icon_tex"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/sacd_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_k2kp5")
@@ -9,6 +10,7 @@ tag = "dcas"
 display_name = "Sac Doctor"
 icon = ExtResource("icon_tex")
 model = "sacd"
+clips = ExtResource("clips_lib")
 health = 400
 regeneration_per_s = 83.3333
 run_speed_m_s = 10.0

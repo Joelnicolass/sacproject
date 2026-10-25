@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://data/audio/creatures/gargoyle.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://cvg33nxgcefqx" path="res://assets/original/ui/icons/sohe.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/ehba.tres" id="typed_ehba"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/ehbt_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_nni0f")
@@ -11,6 +12,7 @@ tag = "sohe"
 display_name = "Gargoyle"
 icon = ExtResource("icon_tex")
 model = "ehbt"
+clips = ExtResource("clips_lib")
 health = 625
 regeneration_per_s = 16.6667
 fly_speed_m_s = 11.25

@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://data/audio/creatures/boulderdash.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://ctfljfg6l03m7" path="res://assets/original/ui/icons/llab.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/emba.tres" id="typed_emba"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/bale_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_t6t3n")
@@ -11,6 +12,7 @@ tag = "llab"
 display_name = "Boulderdash"
 icon = ExtResource("icon_tex")
 model = "bale"
+clips = ExtResource("clips_lib")
 health = 1560
 regeneration_per_s = 16.6667
 run_speed_m_s = 6.0

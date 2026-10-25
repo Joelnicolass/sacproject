@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://data/audio/creatures/basilisk.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://c6xtq3qlcfinn" path="res://assets/original/ui/icons/guls.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/dpsf.tres" id="typed_dpsf"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/eslg_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_38h3d")
@@ -11,6 +12,7 @@ tag = "guls"
 display_name = "Basilisk"
 icon = ExtResource("icon_tex")
 model = "eslg"
+clips = ExtResource("clips_lib")
 health = 1680
 regeneration_per_s = 16.6667
 run_speed_m_s = 6.75

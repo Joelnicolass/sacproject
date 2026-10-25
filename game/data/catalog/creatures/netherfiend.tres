@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://data/audio/creatures/netherfiend.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://dy22u0t0qb3he" path="res://assets/original/ui/icons/crpd.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/ifna.tres" id="typed_ifna"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/prcy_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_njg5r")
@@ -11,6 +12,7 @@ tag = "crpd"
 display_name = "Netherfiend"
 icon = ExtResource("icon_tex")
 model = "prcy"
+clips = ExtResource("clips_lib")
 health = 1800
 drain = 0.5
 run_speed_m_s = 7.0

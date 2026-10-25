@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_feh45"]
 [ext_resource type="Resource" path="res://data/audio/creatures/troll.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://uo8ltxkencbr" path="res://assets/original/ui/icons/lort.png" id="icon_tex"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/ltrl_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_feh45")
@@ -10,6 +11,7 @@ tag = "lort"
 display_name = "Troll"
 icon = ExtResource("icon_tex")
 model = "ltrl"
+clips = ExtResource("clips_lib")
 health = 1600
 regeneration_per_s = 29.1667
 regenerates_always = true

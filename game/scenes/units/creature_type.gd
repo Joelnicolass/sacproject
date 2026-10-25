@@ -5,6 +5,9 @@ extends Resource
 @export var tag: String = ""
 @export var display_name: String = ""
 @export var model: String = ""
+## What the model plays and how long each role lasts (scenes/bodies/models/<model>_clips.tres): the same library the body draws,
+## read by the rules through ClipFacts.
+@export var clips: AnimationLibrary
 ## The picture of the creature in the roster, the book and the info box. Drag any PNG here to change it. A creature of your own gets one
 ## drawn from its model (tools/bake/creature_icon.gd); the original's come from tools/bake/fill_type_icons.gd. Empty: the tag is written.
 @export var icon: Texture2D

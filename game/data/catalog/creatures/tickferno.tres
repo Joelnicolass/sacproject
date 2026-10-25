@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://data/audio/creatures/tickferno.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://biat2mju52glw" path="res://assets/original/ui/icons/craf.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/sfba.tres" id="typed_sfba"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/bugf_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_kqi83")
@@ -11,6 +12,7 @@ tag = "craf"
 display_name = "Tickferno"
 icon = ExtResource("icon_tex")
 model = "bugf"
+clips = ExtResource("clips_lib")
 health = 1120
 regeneration_per_s = 16.6667
 run_speed_m_s = 9.0

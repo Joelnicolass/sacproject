@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://data/audio/creatures/faestus_persephone.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://bmdmhxmc3m33v" path="res://assets/original/ui/icons/eht_h.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/plfa.tres" id="typed_plfa"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/thes_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_d7ydu")
@@ -11,6 +12,7 @@ tag = "ehtH"
 display_name = "Faestus"
 icon = ExtResource("icon_tex")
 model = "thes"
+clips = ExtResource("clips_lib")
 health = 2600
 regeneration_per_s = 29.1667
 run_speed_m_s = 10.0

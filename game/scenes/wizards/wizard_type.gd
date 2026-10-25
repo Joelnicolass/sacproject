@@ -4,6 +4,9 @@ extends Resource
 @export var tag: String = ""
 @export var display_name: String = ""
 @export var model: String = ""
+## What the model plays and how long each role lasts (scenes/bodies/models/<model>_clips.tres): the same library the body draws,
+## read by the rules through ClipFacts.
+@export var clips: AnimationLibrary
 @export var health: int = 0
 @export var mana: int = 0
 ## How fast the wizard runs, in metres per second.

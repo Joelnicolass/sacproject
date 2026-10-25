@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://data/audio/creatures/pyrodactyl.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://cc5jf8w74ht5x" path="res://assets/original/ui/icons/kacf.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/kcfa.tres" id="typed_kcfa"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/fcak_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_8736l")
@@ -11,6 +12,7 @@ tag = "kacf"
 display_name = "Pyrodactyl"
 icon = ExtResource("icon_tex")
 model = "fcak"
+clips = ExtResource("clips_lib")
 health = 1120
 regeneration_per_s = 16.6667
 run_speed_m_s = 7.5

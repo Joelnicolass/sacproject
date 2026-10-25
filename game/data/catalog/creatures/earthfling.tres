@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://6go1ad4gox8t" path="res://assets/original/ui/icons/palk.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/ekba.tres" id="typed_ekba"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/dihk.tres" id="typed_dihk"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/eklp_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_onlcn")
@@ -12,6 +13,7 @@ tag = "palk"
 display_name = "Earthfling"
 icon = ExtResource("icon_tex")
 model = "eklp"
+clips = ExtResource("clips_lib")
 health = 960
 regeneration_per_s = 16.6667
 run_speed_m_s = 9.0

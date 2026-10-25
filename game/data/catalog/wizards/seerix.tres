@@ -2,12 +2,14 @@
 
 [ext_resource type="Script" path="res://scenes/wizards/wizard_type.gd" id="1_wiuln"]
 [ext_resource type="Resource" path="res://data/audio/wizards/seerix.tres" id="sounds_set"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/serx_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_wiuln")
 tag = "cwa1"
 display_name = "Seerix"
 model = "serx"
+clips = ExtResource("clips_lib")
 health = 1500
 mana = 1000
 run_speed_m_s = 10.0

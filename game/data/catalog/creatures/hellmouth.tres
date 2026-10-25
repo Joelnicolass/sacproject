@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://dkuxo3breglsc" path="res://assets/original/ui/icons/nomd.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/mhba.tres" id="typed_mhba"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/ifna.tres" id="typed_ifna"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/ddmn_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_3nw7s")
@@ -12,6 +13,7 @@ tag = "nomd"
 display_name = "Hellmouth"
 icon = ExtResource("icon_tex")
 model = "ddmn"
+clips = ExtResource("clips_lib")
 health = 5400
 drain = 0.5
 run_speed_m_s = 10.0

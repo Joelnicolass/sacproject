@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_potvo"]
 [ext_resource type="Resource" path="res://data/audio/creatures/farmer.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://cxqvukdh1w3e1" path="res://assets/original/ui/icons/zepe.png" id="icon_tex"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/epez_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_potvo")
@@ -10,6 +11,7 @@ tag = "zepe"
 display_name = "Farmer"
 icon = ExtResource("icon_tex")
 model = "epez"
+clips = ExtResource("clips_lib")
 health = 500
 regeneration_per_s = 16.6667
 run_speed_m_s = 7.25

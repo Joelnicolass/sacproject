@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://data/audio/creatures/gnome.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://bsyag4su742jq" path="res://assets/original/ui/icons/plfl.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/plfa.tres" id="typed_plfa"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/lflp_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_udh5p")
@@ -11,6 +12,7 @@ tag = "plfl"
 display_name = "Gnome"
 icon = ExtResource("icon_tex")
 model = "lflp"
+clips = ExtResource("clips_lib")
 health = 1300
 regeneration_per_s = 29.1667
 run_speed_m_s = 8.0

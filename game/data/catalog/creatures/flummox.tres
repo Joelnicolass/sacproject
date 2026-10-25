@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://data/audio/creatures/flummox.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://ckfjgwxrxuh5u" path="res://assets/original/ui/icons/wlce.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/crba.tres" id="typed_crba"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/eclw_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_vkkob")
@@ -11,6 +12,7 @@ tag = "wlce"
 display_name = "Flummox"
 icon = ExtResource("icon_tex")
 model = "eclw"
+clips = ExtResource("clips_lib")
 health = 2280
 regeneration_per_s = 16.6667
 run_speed_m_s = 4.5

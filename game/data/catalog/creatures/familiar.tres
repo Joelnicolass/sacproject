@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_x23l5"]
 [ext_resource type="Texture2D" uid="uid://bqea1vngr0jxs" path="res://assets/original/ui/icons/imaf.png" id="icon_tex"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/FAmr_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_x23l5")
@@ -9,6 +10,7 @@ tag = "imaf"
 display_name = "Familiar"
 icon = ExtResource("icon_tex")
 model = "FAmr"
+clips = ExtResource("clips_lib")
 health = 1000
 regeneration_per_s = 16.6667
 run_speed_m_s = 10.0

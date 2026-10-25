@@ -6,6 +6,7 @@
 [ext_resource type="Resource" path="res://data/catalog/abilities/fhga.tres" id="typed_fhga"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/wfhg.tres" id="typed_wfhg"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/tfhg.tres" id="typed_tfhg"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/gunf_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_n0fcr")
@@ -13,6 +14,7 @@ tag = "nugf"
 display_name = "Warmonger"
 icon = ExtResource("icon_tex")
 model = "gunf"
+clips = ExtResource("clips_lib")
 health = 1200
 regeneration_per_s = 16.6667
 run_speed_m_s = 8.0

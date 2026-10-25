@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://d1i2ep17a1n3a" path="res://assets/original/ui/icons/gard.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/hrba.tres" id="typed_hrba"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/HRba_2.tres" id="typed_HRba"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/edmn_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_ng7lu")
@@ -12,6 +13,7 @@ tag = "gard"
 display_name = "Rhinok"
 icon = ExtResource("icon_tex")
 model = "edmn"
+clips = ExtResource("clips_lib")
 health = 7200
 regeneration_per_s = 16.6667
 run_speed_m_s = 7.5

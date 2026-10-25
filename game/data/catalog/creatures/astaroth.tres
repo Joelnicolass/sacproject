@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_yt7v8"]
 [ext_resource type="Resource" path="res://data/audio/creatures/astaroth.tres" id="sounds_set"]
 [ext_resource type="Texture2D" uid="uid://c55i2qfp2gq4o" path="res://assets/original/ui/icons/_r_a_m_h.png" id="icon_tex"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/ban2_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_yt7v8")
@@ -10,6 +11,7 @@ tag = "RAMH"
 display_name = "Astaroth"
 icon = ExtResource("icon_tex")
 model = "ban2"
+clips = ExtResource("clips_lib")
 health = 2700
 drain = 0.5
 run_speed_m_s = 13.75

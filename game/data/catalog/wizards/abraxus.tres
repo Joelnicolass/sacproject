@@ -2,12 +2,14 @@
 
 [ext_resource type="Script" path="res://scenes/wizards/wizard_type.gd" id="1_p8fh3"]
 [ext_resource type="Resource" path="res://data/audio/wizards/abraxus.tres" id="sounds_set"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/ABRX_clips.tres" id="clips_lib"]
 
 [resource]
 script = ExtResource("1_p8fh3")
 tag = "cwe0"
 display_name = "Abraxus"
 model = "ABRX"
+clips = ExtResource("clips_lib")
 health = 1500
 mana = 1000
 run_speed_m_s = 10.0

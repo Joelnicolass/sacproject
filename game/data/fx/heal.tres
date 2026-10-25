@@ -1,8 +1,9 @@
-[gd_resource type="Resource" script_class="ParticleType" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="ParticleType" load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
 [ext_resource type="Resource" path="res://data/fx/lights/heal_glow.tres" id="9_light"]
 [ext_resource type="Texture2D" uid="uid://b1y8qqxialh7y" path="res://assets/original/fx/glo2.png" id="atlas_png"]
+[ext_resource type="Resource" path="res://data/audio/cues/heal.tres" id="cue_heal"]
 
 [resource]
 script = ExtResource("1_type")
@@ -21,3 +22,4 @@ scale_min = 2.0
 scale_max = 2.0
 emission_radius = 0.8
 light = ExtResource("9_light")
+sound = ExtResource("cue_heal")

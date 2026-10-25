@@ -1,7 +1,8 @@
-[gd_resource type="Resource" script_class="ParticleType" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="ParticleType" load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
 [ext_resource type="Texture2D" uid="uid://bmi6i2ckuwgm3" path="res://assets/original/fx/rock.png" id="atlas_png"]
+[ext_resource type="Resource" path="res://data/audio/cues/petrify_rocks.tres" id="cue_petrify_rocks"]
 
 [resource]
 script = ExtResource("1_type")
@@ -21,3 +22,4 @@ scale_max = 0.75
 emission_radius = 0.6
 additive = false
 lit = true
+sound = ExtResource("cue_petrify_rocks")

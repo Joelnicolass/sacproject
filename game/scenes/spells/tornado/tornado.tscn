@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="1_zone"]
 [ext_resource type="Script" path="res://scenes/spells/tornado/tornado_drift.gd" id="2_drift"]
@@ -16,6 +16,8 @@
 [ext_resource type="Texture2D" path="res://assets/original/fx/edge.png" id="14_edge"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="15_light"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="16_sound"]
+[ext_resource type="Resource" path="res://data/audio/cues/tornado_cast.tres" id="cue_tornado_cast"]
+[ext_resource type="Resource" path="res://data/audio/cues/tornado_loop.tres" id="cue_tornado_loop"]
 
 [sub_resource type="ShaderMaterial" id="Material_upper"]
 resource_local_to_scene = true
@@ -101,8 +103,8 @@ fade_out_s = 1.5
 zone = NodePath("../..")
 
 [node name="CastSound" parent="." instance=ExtResource("16_sound")]
-cue = &"tornado_cast"
+cue = ExtResource("cue_tornado_cast")
 
 [node name="WindSound" parent="." instance=ExtResource("16_sound")]
-cue = &"tornado_loop"
+cue = ExtResource("cue_tornado_loop")
 loop = true

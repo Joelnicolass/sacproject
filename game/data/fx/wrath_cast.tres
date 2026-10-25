@@ -1,7 +1,8 @@
-[gd_resource type="Resource" script_class="ParticleType" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="ParticleType" load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
 [ext_resource type="Texture2D" uid="uid://sbrraa57kkou" path="res://assets/original/fx/flao.png" id="atlas_png"]
+[ext_resource type="Resource" path="res://data/audio/cues/wrath_cast.tres" id="cue_wrath_cast"]
 
 [resource]
 script = ExtResource("1_type")
@@ -14,3 +15,4 @@ frame_s = 0.03333
 lifetime_s = 0.517
 count = 60
 emission_radius = 0.1
+sound = ExtResource("cue_wrath_cast")

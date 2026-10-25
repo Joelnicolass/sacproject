@@ -1,4 +1,4 @@
-[gd_scene load_steps=94 format=3]
+[gd_scene load_steps=101 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
 [ext_resource type="Script" path="res://scenes/units/unit_body.gd" id="1_body"]
@@ -113,6 +113,13 @@
 [ext_resource type="Resource" path="res://data/afflictions/blind_raged.tres" id="i8_raged_type"]
 [ext_resource type="Resource" path="res://data/targeting/rage.tres" id="i8_rage_policy"]
 [ext_resource type="Resource" path="res://data/fx/rage_swirl.tres" id="i8_swirl"]
+[ext_resource type="Resource" path="res://data/audio/cues/freeze_block.tres" id="cue_freeze_block"]
+[ext_resource type="Resource" path="res://data/audio/cues/vines_grab.tres" id="cue_vines_grab"]
+[ext_resource type="Resource" path="res://data/audio/cues/vines_release.tres" id="cue_vines_release"]
+[ext_resource type="Resource" path="res://data/audio/cues/rings_start.tres" id="cue_rings_start"]
+[ext_resource type="Resource" path="res://data/audio/cues/rings_end.tres" id="cue_rings_end"]
+[ext_resource type="Resource" path="res://data/audio/cues/rings_loop.tres" id="cue_rings_loop"]
+[ext_resource type="Resource" path="res://data/audio/cues/slime_hit.tres" id="cue_slime_hit"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_unit"]
 radius = 0.3
@@ -345,7 +352,7 @@ affliction = NodePath("..")
 on_start = NodePath("../FreezeSound")
 
 [node name="FreezeSound" parent="Afflictions/Frozen" instance=ExtResource("l161_snd")]
-cue = &"freeze_block"
+cue = ExtResource("cue_freeze_block")
 loop = false
 play_on_ready = false
 active = false
@@ -391,13 +398,13 @@ on_start = NodePath("../GrabSound")
 on_end = NodePath("../ReleaseSound")
 
 [node name="GrabSound" parent="Afflictions/Vined" instance=ExtResource("l161_snd")]
-cue = &"vines_grab"
+cue = ExtResource("cue_vines_grab")
 loop = false
 play_on_ready = false
 active = false
 
 [node name="ReleaseSound" parent="Afflictions/Vined" instance=ExtResource("l161_snd")]
-cue = &"vines_release"
+cue = ExtResource("cue_vines_release")
 loop = false
 play_on_ready = false
 active = false
@@ -454,19 +461,19 @@ on_end = NodePath("../EndSound")
 loop = NodePath("../LoopSound")
 
 [node name="StartSound" parent="Afflictions/RingsOfFire" instance=ExtResource("l161_snd")]
-cue = &"rings_start"
+cue = ExtResource("cue_rings_start")
 loop = false
 play_on_ready = false
 active = false
 
 [node name="EndSound" parent="Afflictions/RingsOfFire" instance=ExtResource("l161_snd")]
-cue = &"rings_end"
+cue = ExtResource("cue_rings_end")
 loop = false
 play_on_ready = false
 active = false
 
 [node name="LoopSound" parent="Afflictions/RingsOfFire" instance=ExtResource("l161_snd")]
-cue = &"rings_loop"
+cue = ExtResource("cue_rings_loop")
 loop = true
 play_on_ready = false
 active = false
@@ -523,7 +530,7 @@ affliction = NodePath("..")
 on_start = NodePath("../HitSound")
 
 [node name="HitSound" parent="Afflictions/Slimed" instance=ExtResource("l161_snd")]
-cue = &"slime_hit"
+cue = ExtResource("cue_slime_hit")
 loop = false
 play_on_ready = false
 active = false

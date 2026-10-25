@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/stalks/stalk.gd" id="1_stalk"]
 [ext_resource type="Script" path="res://scenes/spells/stalks/stalk_hunt.gd" id="2_hunt"]
@@ -14,6 +14,9 @@
 [ext_resource type="Resource" path="res://data/fx/stalk_grab.tres" id="12_grab"]
 [ext_resource type="PackedScene" path="res://scenes/spells/scar_mark.tscn" id="13_scar"]
 [ext_resource type="Texture2D" path="res://assets/original/scars/mean.png" id="14_mean"]
+[ext_resource type="Resource" path="res://data/audio/cues/stalk_rise.tres" id="cue_stalk_rise"]
+[ext_resource type="Resource" path="res://data/audio/cues/stalk_grab.tres" id="cue_stalk_grab"]
+[ext_resource type="Resource" path="res://data/audio/cues/stalk_fall.tres" id="cue_stalk_fall"]
 
 [sub_resource type="ShaderMaterial" id="Material_stalk"]
 resource_local_to_scene = true
@@ -58,12 +61,12 @@ fade_out_s = 2.0
 texture = ExtResource("14_mean")
 
 [node name="RiseSound" parent="." instance=ExtResource("10_sound")]
-cue = &"stalk_rise"
+cue = ExtResource("cue_stalk_rise")
 
 [node name="GrabSound" parent="." instance=ExtResource("10_sound")]
-cue = &"stalk_grab"
+cue = ExtResource("cue_stalk_grab")
 play_on_ready = false
 
 [node name="FallSound" parent="." instance=ExtResource("10_sound")]
-cue = &"stalk_fall"
+cue = ExtResource("cue_stalk_fall")
 play_on_ready = false

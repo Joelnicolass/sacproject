@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3]
+[gd_scene load_steps=25 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/carrier/spell_carrier.gd" id="1_carrier"]
 [ext_resource type="Script" path="res://scenes/spells/carrier/carrier_fall.gd" id="2_fall"]
@@ -22,6 +22,7 @@
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="20_ptype"]
 [ext_resource type="PackedScene" path="res://scenes/spells/marks/cow_mark.tscn" id="21_mark"]
 [ext_resource type="PackedScene" path="res://scenes/spells/marks/cow_crack_mark.tscn" id="22_crack"]
+[ext_resource type="Resource" path="res://data/audio/cues/cow_emerge.tres" id="cue_cow_emerge"]
 
 [sub_resource type="Resource" id="Gib_cow"]
 script = ExtResource("4_gib")
@@ -100,7 +101,7 @@ priority = 3.0
 lit_on_ready = true
 
 [node name="EmergeSound" parent="." instance=ExtResource("18_sound")]
-cue = &"cow_emerge"
+cue = ExtResource("cue_cow_emerge")
 play_on_ready = false
 
 [node name="EmergeCue" type="Node" parent="." node_paths=PackedStringArray("carrier", "sound")]

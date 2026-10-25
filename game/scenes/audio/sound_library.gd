@@ -30,7 +30,7 @@ static func find(rel: String) -> Resource:
 
 
 ## Every root's resource of `rel`, in root order (empty when the gate is closed or no root has it). A table looked up
-## key by key (FxSoundMap) takes the first root that answers the key, so a custom one overrides only what it names.
+## key by key takes the first root that answers the key, so a custom one overrides only what it names.
 static func find_all(rel: String) -> Array[Resource]:
 	var out: Array[Resource] = []
 	if not AudioGate.is_open() or rel.is_empty():

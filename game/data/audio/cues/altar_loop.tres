@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="SoundCue" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/afir.wav" id="51_afir"]
+
+[resource]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("51_afir")])
+max_voices = 2
+volume_db = -6.0
+max_distance_m = 80.0
+unit_size = 8.0
+priority = 20

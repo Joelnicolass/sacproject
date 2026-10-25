@@ -1,10 +1,11 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="zone"]
 [ext_resource type="Resource" path="res://data/catalog/spells/rtem.tres" id="spell"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/zone_sound.tscn" id="sound"]
 [ext_resource type="Script" path="res://scenes/spells/zones/zone_dropper.gd" id="dropper"]
 [ext_resource type="Script" path="res://scenes/spells/zones/drop_launcher.gd" id="launcher"]
+[ext_resource type="Resource" path="res://data/audio/cues/bombardment_loop.tres" id="cue_bombardment_loop"]
 
 [node name="Bombardment" type="Node3D"]
 editor_description = "Bombardment (rtem): sin nube. 2 meteoritos por segundo durante 20 s; cada uno sale de la tierra a <= 12,5 m del mago y cruza el cielo en un arco de 12 s hasta un punto del disco de 50 m alrededor del clic. Sin abolladuras (061k)."
@@ -32,7 +33,7 @@ buried_m = 1.0
 fall_s = 12.0
 
 [node name="Sound0" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("sound")]
-cue = &"bombardment_loop"
+cue = ExtResource("cue_bombardment_loop")
 loop = true
 zone = NodePath("..")
 from_phase = 2

@@ -1,11 +1,13 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/zones/ice_shatter.gd" id="1_script"]
 [ext_resource type="Script" path="res://scenes/fx/sprite_emitter.gd" id="2_emitter"]
 [ext_resource type="Resource" path="res://data/fx/ice_shard.tres" id="3_type"]
+[ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="sound_emitter"]
+[ext_resource type="Resource" path="res://data/audio/cues/ice_shatter.tres" id="cue_ice_shatter"]
 
 [node name="IceShatter" type="Node3D" node_paths=PackedStringArray("shards")]
-editor_description = "Un paso de la rotura del hielo de Frozen Ground (FxBus.broadcast_scene): 150 trozos que suben a 10 m/s desde el anillo de suelo roto. Su sonido es la clave `ice_shatter` de fx_sounds.tres (ish1 a ish4)."
+editor_description = "Un paso de la rotura del hielo de Frozen Ground (FxBus.broadcast_scene): 150 trozos que suben a 10 m/s desde el anillo de suelo roto. Su sonido es el nodo Sound (cue ice_shatter: ish1 a ish4)."
 script = ExtResource("1_script")
 shards = NodePath("Shards")
 
@@ -13,3 +15,6 @@ shards = NodePath("Shards")
 use_fixed_seed = true
 script = ExtResource("2_emitter")
 type = ExtResource("3_type")
+
+[node name="Sound" parent="." instance=ExtResource("sound_emitter")]
+cue = ExtResource("cue_ice_shatter")

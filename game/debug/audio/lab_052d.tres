@@ -49,11 +49,10 @@ expect = 2
 [sub_resource type="Resource" id="Step_05"]
 script = ExtResource("2_step")
 target = NodePath(".")
-action = &"scene"
+action = &"spawn"
 arg = "res://scenes/fx/spike_field.tscn"
-emitter = &"spike_field"
-event = &"fx"
-expect = 2
+emitter = &"LabProjectile"
+event = &"cast"
 
 [sub_resource type="Resource" id="Step_06"]
 script = ExtResource("2_step")

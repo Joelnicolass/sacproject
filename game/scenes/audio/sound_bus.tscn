@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_bus.gd" id="1_bus"]
+[ext_resource type="Script" path="res://scenes/audio/fx_sounds.gd" id="2_fx"]
+
+[node name="SoundBus" type="Node" node_paths=PackedStringArray("fx_sounds")]
+editor_description = "El autoload que reproduce SoundCues: el pool de 32 voces 3D y 8 voces 2D, la prioridad, el cooldown y el límite por cue. Los topes (pool_3d_size, max_loops_3d) se tocan acá. FxSounds es el hijo que convierte los efectos de FxBus en sonidos."
+script = ExtResource("1_bus")
+fx_sounds = NodePath("FxSounds")
+
+[node name="FxSounds" type="Node" parent="."]
+editor_description = "Cuando FxBus reproduce una ráfaga o un rayo en este par, suena el `sound` de su ParticleType o BeamType. Los efectos de escena suenan por el SoundEmitter3D que llevan adentro."
+script = ExtResource("2_fx")

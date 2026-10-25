@@ -3,8 +3,8 @@ extends Node
 ## Autoload FxBus. Plays ParticleType bursts by name (res://data/fx/<name>.tres) from a pool of
 ## SpriteParticles per type (RFC-029 029b): a play reuses an idle emitter instead of instancing one.
 ## RFC-052 052d (F363): every play, beam and scene emits `played` on the peer that draws it (also headless, before the
-## headless guard, so an --audio-probe process hears it): SoundBus turns it into a sound through FxSoundMap. Local only,
-## never an RPC: a broadcast reaches every peer through the RPCs that already exist.
+## headless guard, so an --audio-probe process hears it): FxSounds turns a burst or a beam into the `sound` of its type.
+## Local only, never an RPC: a broadcast reaches every peer through the RPCs that already exist.
 
 ## What was played: `kind` is one of the KIND_* constants, `fx_name` the type name (a beam type, or the scene path for
 ## KIND_SCENE), `at` where (the middle of a beam).
@@ -305,6 +305,9 @@ func play_scene(scene_path: String, at: Vector3, params: Dictionary) -> void:
 		if node:
 			node.free()
 		return
+	## Placed before it enters the tree: a SoundEmitter3D inside the scene plays where it is born.
+	var parent_3d := parent as Node3D
+	node.position = parent_3d.global_transform.affine_inverse() * at if parent_3d != null else at
 	parent.add_child(node)
 	node.global_position = at
 	node.call("play", params)

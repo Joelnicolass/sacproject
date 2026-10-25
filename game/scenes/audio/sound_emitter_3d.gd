@@ -2,24 +2,22 @@
 class_name SoundEmitter3D
 extends AudioStreamPlayer3D
 
-## RFC-052 052d (F363): a sound that belongs to a node of the world: a spell projectile on its spawn, a building's loop.
-## - It names a key (`cue`) of a table (`source`, a SoundLibrary path: an FxSoundMap or a SoundSet), never a stream, and
-##   resolves it lazily, only with the AudioGate open: a dedicated server, the room server and a headless bench load the
-##   scene and no audio at all.
+## A sound that belongs to a node of the world: a spell projectile when it is born, a building's loop, a ward's hum.
+## - Its `cue` is a SoundCue dropped in the inspector (data/audio/cues/fireball_cast.tres, or one made right there); no
+##   texts, no tables, no lookups.
 ## - One-shot (`loop` off): with `play_on_ready` it plays once when it enters the tree, through SoundBus's 3D pool at its
-##   position (cooldown, max_voices, priority, the 32-voice cap). It does not follow the node: the original does not either.
+##   position (cooldown, max_voices, priority, the 32-voice cap). It does not follow the node.
 ## - Loop: it plays on this player (it follows the node) while `active` and within the cue's `max_distance_m` of the
 ##   listener, looking every `check_s`. SoundBus counts the loop in the 3D budget (`claim_loop`). Gapless when the stream
 ##   loops (the WAV import loop mode); a stream that does not loop is started again when it ends.
-## - No table, no key, a silent cue: silence, no warning. Presentation only: it reads nothing of the simulation.
+## - No cue or a silent cue: silence. A dedicated server, the room server and a headless bench (AudioGate closed) load the
+##   scene and its cue file, and play nothing. Presentation only: it reads nothing of the simulation.
+## Ref: the original's one-shots do not follow their node either.
 
-## SoundLibrary path of the table (data/audio/<source>.tres, data/audio/custom/<source>.tres win key by key).
-@export var source := "fx_sounds"
-## The key of the cue in `source`.
-@export var cue: StringName:
+## What this emitter sounds like. Empty = silence (the scene tree shows a warning).
+@export var cue: SoundCue:
 	set(value):
 		cue = value
-		_resolved = false
 		update_configuration_warnings()
 @export var loop := false
 ## One-shot: play once on entering the tree. Loop: claim it on entering the tree (in range and `active`).
@@ -32,8 +30,6 @@ extends AudioStreamPlayer3D
 @export var host: Node
 
 var _open := false
-var _resolved := false
-var _cue: SoundCue
 var _left := 0.0
 
 
@@ -70,7 +66,7 @@ func _exit_tree() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if not cue.is_empty() else PackedStringArray(["Asigná `cue`: la clave del sonido en `source`."])
+	return PackedStringArray() if cue != null else PackedStringArray(["Asigná `cue`: el SoundCue que suena (data/audio/cues/)."])
 
 
 ## Turns a loop on or off (a one-shot only remembers it for its next play_once).
@@ -84,29 +80,7 @@ func set_active(on: bool) -> void:
 func play_once() -> bool:
 	if not _open or not is_inside_tree():
 		return false
-	var found := resolved_cue()
-	return found != null and SoundBus.play_3d(found, global_position, emitter_name(), SoundEvent.CAST)
-
-
-## Lets go of the loop and looks again with the table resolved anew (SoundLibrary's roots changed: the lab).
-func restart() -> void:
-	if not _open:
-		return
-	_resolved = false
-	if loop:
-		SoundBus.release_loop(self)
-		_left = check_s
-		_look()
-
-
-## The cue of `cue` in `source`, or null; looked up once (only with the gate open).
-func resolved_cue() -> SoundCue:
-	if not _open:
-		return null
-	if not _resolved:
-		_resolved = true
-		_cue = SoundBus.lookup(source, cue)
-	return _cue
+	return cue != null and SoundBus.play_3d(cue, global_position, emitter_name(), SoundEvent.CAST)
 
 
 func is_looping() -> bool:
@@ -119,7 +93,7 @@ func emitter_name() -> StringName:
 
 
 func _look() -> void:
-	var found := resolved_cue() if active else null
+	var found := cue if active else null
 	var wanted := found != null and is_inside_tree() and _in_range(found)
 	var held := SoundBus.holds_loop(self)
 	if wanted and not held:

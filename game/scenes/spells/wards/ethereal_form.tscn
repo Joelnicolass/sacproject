@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/wards/ward.gd" id="1_ward"]
 [ext_resource type="Script" path="res://scenes/spells/wards/ward_emitter.gd" id="2_emitter"]
@@ -9,6 +9,8 @@
 [ext_resource type="Resource" path="res://data/fx/wards/ethereal_hand.tres" id="8_cast"]
 [ext_resource type="PackedScene" path="res://scenes/spells/wards/ward_sound.tscn" id="9_sound"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
+[ext_resource type="Resource" path="res://data/audio/cues/ward_ethereal_start.tres" id="cue_ward_ethereal_start"]
+[ext_resource type="Resource" path="res://data/audio/cues/ward_ethereal_zap.tres" id="cue_ward_ethereal_zap"]
 
 [node name="EtherealForm" type="Node3D"]
 script = ExtResource("1_ward")
@@ -55,12 +57,12 @@ half_axes_m = Vector3(0.93, 1.38, 0.93)
 on_surface = false
 
 [node name="SoundStart" parent="." node_paths=PackedStringArray("ward") instance=ExtResource("9_sound")]
-cue = &"ward_ethereal_start"
+cue = ExtResource("cue_ward_ethereal_start")
 ward = NodePath("..")
 
 [node name="SoundZap" parent="." node_paths=PackedStringArray("ward") instance=ExtResource("9_sound")]
 editor_description = "El sonido tipo rayo (ltn1-6, ganancia 2) que sacengine suena al prender. El SPEL efrm no lo lista (solo winv): NO VERIFICADO."
-cue = &"ward_ethereal_zap"
+cue = ExtResource("cue_ward_ethereal_zap")
 ward = NodePath("..")
 
 [node name="Glow" parent="." instance=ExtResource("glow_state_light")]

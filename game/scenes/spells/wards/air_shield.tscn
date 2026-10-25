@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/wards/ward.gd" id="1_ward"]
 [ext_resource type="Script" path="res://scenes/spells/wards/ward_emitter.gd" id="2_emitter"]
@@ -11,6 +11,8 @@
 [ext_resource type="Resource" path="res://data/fx/wards/air_converge.tres" id="9_converge"]
 [ext_resource type="PackedScene" path="res://scenes/spells/wards/ward_sound.tscn" id="10_sound"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
+[ext_resource type="Resource" path="res://data/audio/cues/ward_air.tres" id="cue_ward_air"]
+[ext_resource type="Resource" path="res://data/audio/cues/ward_air_hiss.tres" id="cue_ward_air_hiss"]
 
 [sub_resource type="SphereShape3D" id="Sphere_reach"]
 radius = 5.0
@@ -92,22 +94,22 @@ on_surface = false
 pull_m_s2 = 18.0
 
 [node name="SoundCast" parent="." node_paths=PackedStringArray("ward") instance=ExtResource("10_sound")]
-cue = &"ward_air"
+cue = ExtResource("cue_ward_air")
 ward = NodePath("..")
 when = 3
 
 [node name="SoundOn" parent="." node_paths=PackedStringArray("ward") instance=ExtResource("10_sound")]
-cue = &"ward_air"
+cue = ExtResource("cue_ward_air")
 ward = NodePath("..")
 
 [node name="SoundOff" parent="." node_paths=PackedStringArray("ward") instance=ExtResource("10_sound")]
-cue = &"ward_air"
+cue = ExtResource("cue_ward_air")
 ward = NodePath("..")
 when = 1
 
 [node name="SoundHiss" parent="." node_paths=PackedStringArray("ward") instance=ExtResource("10_sound")]
 editor_description = "ashh.wav es el segundo sonido del SPEL dlhs (bandera 8). NO VERIFICADO cuando suena: aca al apagar, junto a ashd."
-cue = &"ward_air_hiss"
+cue = ExtResource("cue_ward_air_hiss")
 ward = NodePath("..")
 when = 1
 

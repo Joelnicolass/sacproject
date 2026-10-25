@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/walls/spell_wall.gd" id="1_wall"]
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_touch.gd" id="2_touch"]
@@ -16,6 +16,8 @@
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_sound.gd" id="14_wallsound"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="15_light"]
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_light_follow.gd" id="16_follow"]
+[ext_resource type="Resource" path="res://data/audio/cues/wall_vine_root.tres" id="cue_wall_vine_root"]
+[ext_resource type="Resource" path="res://data/audio/cues/wall_vine_down.tres" id="cue_wall_vine_down"]
 
 [sub_resource type="BoxShape3D" id="Box_body"]
 size = Vector3(110, 7.5, 5)
@@ -99,13 +101,13 @@ type = ExtResource("12_cast")
 
 [node name="Raise" parent="." node_paths=PackedStringArray("wall") instance=ExtResource("13_sound")]
 script = ExtResource("14_wallsound")
-cue = &"wall_vine_root"
+cue = ExtResource("cue_wall_vine_root")
 wall = NodePath("..")
 when = 0
 
 [node name="Sink" parent="." node_paths=PackedStringArray("wall") instance=ExtResource("13_sound")]
 script = ExtResource("14_wallsound")
-cue = &"wall_vine_down"
+cue = ExtResource("cue_wall_vine_down")
 wall = NodePath("..")
 when = 1
 

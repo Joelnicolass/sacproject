@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="SoundCue" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/dfi4.wav" id="e_dfi4"]
+
+[resource]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("e_dfi4")])
+max_voices = 2
+volume_db = 6.0
+max_distance_m = 60.0
+unit_size = 6.0
+priority = 30

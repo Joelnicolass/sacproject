@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="SoundCue" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/char/swr1.wav" id="45_swr1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/char/swr2.wav" id="46_swr2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/char/swr3.wav" id="47_swr3"]
+
+[resource]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("45_swr1"), ExtResource("46_swr2"), ExtResource("47_swr3")])
+max_voices = 3
+cooldown_s = 0.2

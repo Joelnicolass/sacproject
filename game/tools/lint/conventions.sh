@@ -108,6 +108,14 @@ xargs grep -nE 'Vector3\.UP[ ]*\*[ ]*([-0-9.(]|[a-z_]*(height|offset|lift|reach|
 # C17: FX/sound named by text literal or by an exported String instead of a typed Resource.
 xargs grep -nE 'FxBus\.[a-z_]+\([ ]*&?"|@export[a-z_]* var [a-z_]*(fx|sfx|sound|effect)[a-z_]*[ ]*:[ ]*(String|StringName)\b' < "$OUT/all.txt" 2>/dev/null \
 	| grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C17.txt" || true
+# C17 for sound (055o): a sound is a SoundCue/SoundSet/MusicSet assigned in the inspector, not a key looked up by text.
+{
+	xargs grep -nE 'SoundLibrary\.|SoundBus\.(lookup|fx_cue)\(|FxSoundMap\b' < "$OUT/all.txt" 2>/dev/null
+	xargs grep -nE '@export[a-z_]* var (cue|source|set_path|fallback_path|shared_set|ui_set|ui_click_key|one_shot_source|one_shot_keys)[ ]*(:[ ]*(String|StringName)\b|:=[ ]*&?")' < "$OUT/all.txt" 2>/dev/null
+	grep '^scenes/audio/' "$OUT/all.txt" | xargs grep -nE '@export.*Dictionary\[StringName,[ ]*(StringName|PackedStringArray|int|float)\]|@export var [a-z_]*[ ]*:=[ ]*&"[A-Za-z0-9]{4}"' 2>/dev/null
+	find scenes data \( -name '*.tscn' -o -name '*.tres' \) 2>/dev/null | sort \
+		| xargs grep -nE '^(cue = &"|source = "|set_path = "|fallback_path = "|metadata/ui_sound = "|one_shot_keys = )' 2>/dev/null
+} | grep -vE ':[0-9]+:[ 	]*#' >> "$OUT/C17.txt" || true
 
 # C18: text-tag lookups of content in gameplay (allowed in spawners, scenes/net/, scenes/core/catalog/).
 xargs grep -nE 'GameData\.(creature|spell|ability|wizard|god|book)[a-z_]*\(|BodyCatalog\.(info|pose|has_model)\(|MapCatalog\.|GameModeCatalog\.' < "$OUT/all.txt" 2>/dev/null \

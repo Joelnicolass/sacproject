@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/zones/explosion_burst.gd" id="1_script"]
 [ext_resource type="Shader" path="res://scenes/spells/zones/fire_sphere.gdshader" id="2_shader"]
@@ -6,6 +6,8 @@
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/debris_piece.tscn" id="4_piece"]
 [ext_resource type="PackedScene" path="res://scenes/spells/scar_mark.tscn" id="5_mark"]
 [ext_resource type="Texture2D" path="res://assets/original/scars/scar.png" id="6_scar"]
+[ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="sound_emitter"]
+[ext_resource type="Resource" path="res://data/audio/cues/explosion_burst.tres" id="cue_explosion_burst"]
 
 [sub_resource type="ShaderMaterial" id="Mat_blast"]
 shader = ExtResource("2_shader")
@@ -21,7 +23,7 @@ radial_segments = 24
 rings = 25
 
 [node name="ExplosionBurst" type="Node3D" node_paths=PackedStringArray("big", "small", "scar")]
-editor_description = "El estallido de un punto de Explosion (FxBus.broadcast_scene): dos esferas de lava exeg que se hinchan, la grande a 40 m/s hasta 30 m y la chica a 10 m/s hasta 5 m, y 15 rocas bold. Su sonido es la clave `explosion_burst` de fx_sounds.tres. Las partículas (xplo, exp2, ceniza, humo) las toca la zona al lado."
+editor_description = "El estallido de un punto de Explosion (FxBus.broadcast_scene): dos esferas de lava exeg que se hinchan, la grande a 40 m/s hasta 30 m y la chica a 10 m/s hasta 5 m, y 15 rocas bold. Su sonido es el nodo Sound (cue explosion_burst). Las partículas (xplo, exp2, ceniza, humo) las toca la zona al lado."
 script = ExtResource("1_script")
 big = NodePath("Big")
 small = NodePath("Small")
@@ -40,3 +42,6 @@ mesh = SubResource("Mesh_blast")
 editor_description = "Explosion (pxef): la quemadura `scar` (8 m) bajo el estallido, solo si este queda a menos de 10 m del suelo."
 texture = ExtResource("6_scar")
 max_height_m = 10.0
+
+[node name="Sound" parent="." instance=ExtResource("sound_emitter")]
+cue = ExtResource("cue_explosion_burst")

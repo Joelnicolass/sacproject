@@ -2,8 +2,8 @@
 class_name AuraImpact
 extends Node
 
-## The mark an aura leaves on a body it hurts: a burst of sprites on the victim (and the sound that goes with that burst in
-## data/audio/fx_sounds.tres), at most once every `every_s` per victim. The server (or solo) decides when; FxBus draws it on every peer.
+## The mark an aura leaves on a body it hurts: a burst of sprites on the victim (and the `sound` that goes with that burst's
+## ParticleType), at most once every `every_s` per victim. The server (or solo) decides when; FxBus draws it on every peer.
 ## It does not hurt anyone (BodyAura) nor draw the ward itself (WardEmitter).
 ## Ref: sacengine ignite (fire on the victim and ign1, every 1/3 s) and the swarm's sting sound (state.d:17254-17261, 17397-17420).
 

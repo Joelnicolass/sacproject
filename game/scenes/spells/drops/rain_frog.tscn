@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/drops/zone_drop.gd" id="drop"]
 [ext_resource type="Script" path="res://scenes/fx/atlas_sprite.gd" id="atlas"]
@@ -11,6 +11,7 @@
 [ext_resource type="Resource" path="res://data/fx/frog_burst.tres" id="frog_burst"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="emitter"]
 [ext_resource type="Script" path="res://scenes/spells/drops/frog_look.gd" id="look"]
+[ext_resource type="Resource" path="res://data/audio/cues/frog_croak.tres" id="cue_frog_croak"]
 
 [sub_resource type="QuadMesh" id="Quad_Sprite"]
 size = Vector2(0.75, 0.75)
@@ -50,7 +51,7 @@ drop = NodePath("..")
 bursts = Array[ExtResource("ptype")]([ExtResource("frog_burst")])
 
 [node name="Croak" parent="." instance=ExtResource("emitter")]
-cue = &"frog_croak"
+cue = ExtResource("cue_frog_croak")
 play_on_ready = false
 
 [node name="Look" type="Node" parent="." node_paths=PackedStringArray("drop", "sprite", "croak")]

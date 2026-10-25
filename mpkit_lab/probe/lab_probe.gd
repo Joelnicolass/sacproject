@@ -194,9 +194,17 @@ func _measure_proxy_jitter() -> void:
 	for v in speeds:
 		spread += (v - mean) * (v - mean)
 	var cv := sqrt(spread / maxf(speeds.size(), 1)) / maxf(mean, 0.001)
-	print("METRIC proxy_speed_px_s=%.1f proxy_speed_cv=%.3f frames=%d" % [mean, cv, speeds.size()])
-	_check(mean > 150.0, "P%d moved at about its real speed on screen" % slot)
-	_check(cv < float(MpBoot.user_value("probe-max-cv", "0.1")), "its on-screen speed was steady (low jitter)")
+	## Robust spread: median of |speed - median| / median. Jitter on every frame raises it; one stall of a process
+	## (the walker paused, then caught up: correct behaviour) does not. cv shows both.
+	var sorted := Array(speeds)
+	sorted.sort()
+	var median: float = sorted[sorted.size() / 2] if not sorted.is_empty() else 0.0
+	var deviations := sorted.map(func(v: float) -> float: return absf(v - median))
+	deviations.sort()
+	var mad: float = deviations[deviations.size() / 2] / maxf(median, 0.001) if not deviations.is_empty() else 1.0
+	print("METRIC proxy_speed_px_s=%.1f proxy_speed_median=%.1f proxy_speed_mad=%.3f proxy_speed_cv=%.3f frames=%d" % [mean, median, mad, cv, speeds.size()])
+	_check(median > 150.0, "P%d moved at about its real speed on screen" % slot)
+	_check(mad < float(MpBoot.user_value("probe-max-mad", "0.05")), "its on-screen speed was steady frame to frame (low jitter)")
 
 
 ## The whole online path as a person does it, through MpLobbyScreen's buttons: connect, create or join, ready, play

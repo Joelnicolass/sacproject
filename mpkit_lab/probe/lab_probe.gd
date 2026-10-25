@@ -16,6 +16,10 @@ var step_timeout_s := 20.0
 
 var _role := ""
 var _fails := 0
+## What the network told this process (session cases read them).
+var _join_failed := false
+var _server_lost := false
+var _rejected := ""
 ## Stand-in while the current scene has no MpState (between scenes).
 var _empty_state: MpState
 
@@ -23,6 +27,9 @@ var _empty_state: MpState
 func _ready() -> void:
 	_role = MpBoot.user_value("probe", "")
 	step_timeout_s = float(MpBoot.user_value("probe-timeout-s", "20"))
+	MpKit.join_failed.connect(func() -> void: _join_failed = true)
+	MpKit.server_lost.connect(func() -> void: _server_lost = true)
+	MpKit.admission_rejected.connect(func(reason: String) -> void: _rejected = reason)
 	if _role.is_empty():
 		return
 	print("probe %s start" % _role)
@@ -60,6 +67,18 @@ func _run() -> void:
 			await _host_private()
 		"flood":
 			await _flood()
+		"failjoin":
+			await _check_fail_join()
+		"refused":
+			await _check_refused()
+		"leaver":
+			await _leave_and_return()
+		"rejoinwatch":
+			await _watch_leave_and_return()
+		"lost":
+			await _check_server_lost()
+		"browse":
+			await _browse_lan()
 		"floodwatch":
 			await _watch_flood()
 		"invited":
@@ -320,6 +339,72 @@ func _join_private(right_code: bool) -> void:
 	await _until(_networked_slot, "the friend got in with the code (typed in lower case)")
 	await _pawn(2)
 	await _until(func() -> bool: return not finished.is_empty(), "the friend saw the match end")
+
+
+## Joining an address nobody serves fails cleanly: the failure is reported and the menu still plays solo.
+func _check_fail_join() -> void:
+	await _until(func() -> bool: return _join_failed or _server_lost, "joining a dead address is reported as failed")
+	await _until(func() -> bool: return not MpKit.is_networked(), "after the failure this process is offline again")
+	MpFlow.find_in_tree(self).play_solo()
+	await _pawn(1)
+
+
+## A peer the server turns away (full, wrong transport) never gets a slot and ends offline.
+func _check_refused() -> void:
+	var waited := Time.get_ticks_msec()
+	await _until(func() -> bool: return _join_failed or _server_lost or _rejected != "" or Time.get_ticks_msec() - waited > 6000, "the connection ended or timed out")
+	_check(not (MpKit.is_networked() and MpKit.has_local_slot()), "the refused peer never got a slot")
+	await _until(func() -> bool: return not MpKit.is_networked() or Time.get_ticks_msec() - waited > 15000, "the refused peer ends offline (or still waiting, harmless)")
+
+
+## Leave to the menu (the Leave button) and come back: a new pawn, the server forgot the old one.
+func _leave_and_return() -> void:
+	await _until(_networked_slot, "the leaver got a slot")
+	var pawn := await _pawn(MpKit.local_slot())
+	if pawn == null:
+		return
+	var flow := MpFlow.find_in_tree(self)
+	flow.return_to_boot()
+	await _until(func() -> bool: return get_tree().current_scene.name == "Boot" and not MpKit.is_networked(), "Leave goes back to the menu, offline")
+	await get_tree().create_timer(1.0).timeout
+	flow.join_address("127.0.0.1:%s" % MpBoot.user_value("mp-port", "7777"))
+	await _until(_networked_slot, "joining again gets a slot")
+	await _pawn(MpKit.local_slot())
+
+
+## Server side of the leaver: the pawn goes when its player leaves and comes back when it joins again.
+func _watch_leave_and_return() -> void:
+	await _until(func() -> bool: return MpKit.is_server(), "this process is the server")
+	await _pawn(1)
+	await _until(func() -> bool: return get_tree().current_scene.get_node_or_null("Actors/Pawn_1") == null, "the pawn of a player who left is removed")
+	await _pawn(1)
+
+
+## The server goes away: the client is told and lands on the menu.
+func _check_server_lost() -> void:
+	await _until(_networked_slot, "the client got a slot")
+	await _pawn(MpKit.local_slot())
+	print("READY for the server to go")
+	await _until(func() -> bool: return _server_lost, "the client noticed the server went away")
+	await _until(func() -> bool: return get_tree().current_scene != null and get_tree().current_scene.name == "Boot", "and is back on the menu")
+
+
+## A listen host advertises on the LAN; this client finds it in the boot menu's list and joins from there.
+func _browse_lan() -> void:
+	var menus: Array[MpBootMenu] = []
+	await _until(func() -> bool:
+		var found := get_tree().get_nodes_in_group(MpBootMenu.GROUP)
+		if not found.is_empty():
+			menus.append(found[0])
+		return not menus.is_empty(), "the boot menu is up")
+	if menus.is_empty():
+		return
+	var menu := menus[0]
+	if not await _until(func() -> bool: return not menu.lan_rooms().is_empty(), "the menu's LAN list shows the host (MpLan)"):
+		return
+	menu.join_lan_room(0)
+	await _until(_networked_slot, "joining from the LAN list gets a slot")
+	await _pawn(MpKit.local_slot())
 
 
 func _flood() -> void:

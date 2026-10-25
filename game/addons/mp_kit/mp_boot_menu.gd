@@ -45,7 +45,12 @@ var _room_rows: Array[Dictionary] = []
 var _flow: MpFlow
 
 
+## Group of every boot menu (tools and tests find it there).
+const GROUP := &"mp_boot_menu"
+
+
 func _ready() -> void:
+	add_to_group(GROUP)
 	set_anchors_and_offsets_preset(PRESET_FULL_RECT)
 	_build()
 	_flow = MpFlow.find_in_tree(self)
@@ -218,6 +223,19 @@ func _on_join_failed() -> void:
 	_set_status(join_fail_status)
 
 
+## The rooms the LAN list shows now: [{name, address, port, players, max_players}].
+func lan_rooms() -> Array[Dictionary]:
+	return _room_rows.duplicate()
+
+
+## Join the LAN room at `index` of the list (what clicking it and Join does).
+func join_lan_room(index: int) -> void:
+	if index < 0 or index >= _room_rows.size():
+		return
+	_ip.text = "%s:%d" % [_room_rows[index].get("address", ""), int(_room_rows[index].get("port", 0))]
+	_on_join()
+
+
 func _on_rooms(found: Array) -> void:
 	_room_rows.clear()
 	_rooms.clear()
@@ -239,7 +257,7 @@ func _on_room_selected(index: int) -> void:
 	if index < 0 or index >= _room_rows.size():
 		return
 	var row: Dictionary = _room_rows[index]
-	_ip.text = str(row.get("address", ""))
+	_ip.text = "%s:%d" % [row.get("address", ""), int(row.get("port", 0))]
 
 
 func _apply_world_to_flow() -> void:

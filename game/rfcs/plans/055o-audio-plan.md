@@ -1,11 +1,13 @@
-# 055k — Audio por recursos tipados (plan del tech lead, pendiente de aprobación)
+> **Nota del orquestador (2026-10-25):** este plan se escribió como «055k», pero en RFC-055 la letra 055k es la **cámara** (C-8a) y los IDs no se renumeran. El audio pasa a ser **055o**, un corte propio que junta lo de audio que la auditoría repartía entre 055i (`CreatureType.sounds`) y 055x (el sonido dentro del FX). La pregunta 1 del plan (qué letra lleva la cámara) queda resuelta: la cámara sigue siendo 055k.
+
+# 055o — Audio por recursos tipados (plan del tech lead, pendiente de aprobación)
 
 Fuente: RFC-055 §13.2b fila C-8d, auditoría `research/055R-legacy-audit.md` §3.8 (fila Audio) y §3.1, CONVENTIONS §2b (C17, C21) y §2c. Medido en `main` al 2026-10-25 (`be9943c8`), rutas relativas a `game/`.
 
 **Contradicciones entre artefactos (gana lo que se cita):**
-- **Nombre del corte.** RFC-055 §13.2b fila C-8a y §15 llaman **055k a la cámara** (`Curve` de zoom), y la fila de audio C-8d la reparte entre 055i-b y 055x. El orquestador llama ahora 055k al audio. En este plan, 055k es el audio. Hay que darle otra letra a la cámara (pregunta 1). El «055k-a» que aparece en el orden de 055R §4, paso 3, era la cámara.
-- **RFC-052 contra C17/C21.** RFC-052 (y `AudioGate`) pide que el servidor, los bancos y los headless «never load an AudioStream». Por eso hoy todo se nombra por texto y se resuelve tarde. Una referencia tipada (`@export var cue: SoundCue`) carga los streams al cargar la escena o el `.tres`. Gana RFC-055/CONVENTIONS (más nuevo, aprobado por el usuario: «una referencia es un tipo»), pero el costo se mide antes de seguir (055k-a paso 1, pregunta 2).
-- **El audio del original «sin el original».** Hoy `SoundLibrary` saltea un set cuyos archivos faltan (`ResourceDeps`) y el lab corre `--audio-no-original`. `assets/original/audio/` está versionado por LFS, igual que los modelos, y un clon lo trae. El «sin el original» de la memoria es *sin la instalación del juego*. Con referencias tipadas, un stream que falta aborta la carga del `.tres` que lo nombra (Godot por defecto aborta ante dependencias faltantes). Esto está **NO VERIFICADO** en 4.7 y se mide en 055k-a paso 1 (pregunta 3).
+- **Nombre del corte.** RFC-055 §13.2b fila C-8a y §15 llaman **055o a la cámara** (`Curve` de zoom), y la fila de audio C-8d la reparte entre 055i-b y 055x. El orquestador llama ahora 055o al audio. En este plan, 055o es el audio. Hay que darle otra letra a la cámara (pregunta 1). El «055o-a» que aparece en el orden de 055R §4, paso 3, era la cámara.
+- **RFC-052 contra C17/C21.** RFC-052 (y `AudioGate`) pide que el servidor, los bancos y los headless «never load an AudioStream». Por eso hoy todo se nombra por texto y se resuelve tarde. Una referencia tipada (`@export var cue: SoundCue`) carga los streams al cargar la escena o el `.tres`. Gana RFC-055/CONVENTIONS (más nuevo, aprobado por el usuario: «una referencia es un tipo»), pero el costo se mide antes de seguir (055o-a paso 1, pregunta 2).
+- **El audio del original «sin el original».** Hoy `SoundLibrary` saltea un set cuyos archivos faltan (`ResourceDeps`) y el lab corre `--audio-no-original`. `assets/original/audio/` está versionado por LFS, igual que los modelos, y un clon lo trae. El «sin el original» de la memoria es *sin la instalación del juego*. Con referencias tipadas, un stream que falta aborta la carga del `.tres` que lo nombra (Godot por defecto aborta ante dependencias faltantes). Esto está **NO VERIFICADO** en 4.7 y se mide en 055o-a paso 1 (pregunta 3).
 
 ## Objetivo (criterios de aceptación)
 - Cada sonido que el juego toca sale de un `SoundCue`/`SoundSet`/`MusicSet`/`AmbienceSet` asignado por `@export` (o embebido) en el recurso o la escena que suena. Cero búsquedas por ruta, por tag o por clave de texto en `scenes/`.
@@ -95,7 +97,7 @@ scenes/spells/**, scenes/map/props/{altar,manafount}.tscn, units/afflictions/** 
 scenes/spells/carrier/[~] reached_cue.gd   escucha un estado replicado del carrier, no `reached` del servidor (§4)
 scenes/units/[~] unit.tscn              UnitSounds.summon = data/audio/cues/summon.tres
 scenes/sacrifice/[~] ritual.tscn · scenes/souls/[~] soul.tscn   cues tipados
-scenes/ui/radial/[~] radial_menu.tscn · scenes/ui/spell_book/[~] spell_slot.tscn   cues tipados (055k-d, después de 055h)
+scenes/ui/radial/[~] radial_menu.tscn · scenes/ui/spell_book/[~] spell_slot.tscn   cues tipados (055o-d, después de 055h)
 scenes/core/[~] boot.tscn               MusicDirector.music = data/audio/music/menu.tres
 scenes/match/[~] match.tscn             AdvisorVoice/AdvisorWatch → instancia de advisor.tscn (pregunta 6: MatchAudio)
 project.godot                           [~] SoundBus="*res://scenes/audio/sound_bus.tscn"
@@ -111,7 +113,7 @@ data/audio/
 data/catalog/creatures/*.tres [~] 72 (sounds = su set; 5 sin set quedan en null) · wizards/*.tres [~] 15
 data/gods/*.tres [~] 5 (music, ambience) · data/fx/*.tres [~] 31 + data/fx/beams/*.tres [~] 6 (sound)
 tools/
-  [+] migrate/migrate_055k_audio.gd     una vez: lee lo de hoy, escribe lo tipado y el informe de paridad; se borra al cerrar
+  [+] migrate/migrate_055o_audio.gd     una vez: lee lo de hoy, escribe lo tipado y el informe de paridad; se borra al cerrar
   [-] bake/bake_sound_sets.gd           (parte del original; congelado → borrado, pregunta 5)
   [~] bake/sound_set_writer.gd          escribe un SoundSet con campos; solo lo usa new_creature.gd
   [~] bake/new_creature.gd              asigna CreatureType.sounds al set que crea
@@ -227,9 +229,9 @@ El sonido es presentación: nunca hay una RPC de audio, nada escribe en la simul
 - Sonidos propios: un `.ogg`/`.wav` en cualquier carpeta (`assets/custom/sounds/` por costumbre), arrastrado a un `SoundCue`. Nunca hace falta el original. `catalog_cases` sigue validando que un set propio no nombre `assets/original/`.
 - Herramientas:
   - `import_audio.py` ya dice al arrancar «Requiere el juego original instalado (SAC_INSTALL)».
-  - `migrate_055k_audio.gd` no necesita el original: lee los `.tres` de hoy. Si los streams no están (clon sin LFS), avisa al arrancar: «Faltan los archivos de assets/original/audio (git lfs pull): la paridad de streams no se puede medir».
+  - `migrate_055o_audio.gd` no necesita el original: lee los `.tres` de hoy. Si los streams no están (clon sin LFS), avisa al arrancar: «Faltan los archivos de assets/original/audio (git lfs pull): la paridad de streams no se puede medir».
   - `bake_sound_sets.gd` (necesita `index.json` del import) se borra (pregunta 5).
-- Un clon sin el LFS del audio: ver pregunta 3. Hoy el juego corre mudo. Con referencias tipadas, si Godot aborta ante dependencias faltantes, una `CreatureType` con `sounds` no cargaría. Se mide en 055k-a paso 1 antes de tocar el catálogo (055k-b).
+- Un clon sin el LFS del audio: ver pregunta 3. Hoy el juego corre mudo. Con referencias tipadas, si Godot aborta ante dependencias faltantes, una `CreatureType` con `sounds` no cargaría. Se mide en 055o-a paso 1 antes de tocar el catálogo (055o-b).
 
 ---
 
@@ -242,7 +244,7 @@ El sonido es presentación: nunca hay una RPC de audio, nada escribe en la simul
 - `@export var x := &"<4 letras>"` en `scenes/audio/`;
 - en `.tscn`/`.tres`: `^cue = &"`, `^source = "`, `^set_path = "`, `^fallback_path = "`, `metadata/ui_sound = "`, `^one_shot_keys = `.
 
-| Regla | Hoy | Al cerrar 055k |
+| Regla | Hoy | Al cerrar 055o |
 |---|---|---|
 | C17 ampliado | 23 + **130** = 153 (borrador del patrón; el developer fija el número exacto al agregarlo y reescribe la base) | **23** (solo los `FxBus.broadcast("…")` de 055x) |
 | C18 | 131 | **129** (−2 `sound_library.gd`) |
@@ -258,13 +260,13 @@ El sonido es presentación: nunca hay una RPC de audio, nada escribe en la simul
 3. Paridad, una sola vez antes de borrar lo viejo: para cada par (emisor, evento) que el juego tocaba hoy, el cue tipado tiene **el mismo conjunto de streams** (rutas) que daba `SoundLibrary` + `aliases` + `shared_set`. Son 99 − 1 huérfana claves de FX, 66 sets de cuerpo × sus eventos, 5 + 1 músicas, 5 ambientes, 14 líneas del consejero y 4 de UI. Esperado: **100 %**. El informe del migrador lista las claves que se descartan sin uso (`Xres`, `TNT*`, `grp*`… y `wall_vine_up`).
 4. `grep -rn "SoundLibrary\|FxSoundMap\|fx_sounds" scenes/` = **0**.
 
-**Costo de cargar todo tipado** (055k-a paso 1, antes de migrar). Se mide con `Performance.MEMORY_STATIC` y con el tiempo hasta `GameData` listo y hasta el `match` cargado:
+**Costo de cargar todo tipado** (055o-a paso 1, antes de migrar). Se mide con `Performance.MEMORY_STATIC` y con el tiempo hasta `GameData` listo y hasta el `match` cargado:
 - en un cliente, en `--dedicated --no-flow` y en un headless de banco;
 - antes y después de asignar los sets a las 72 + 15 fichas y los cues a las 39 escenas, en una rama de prueba.
 
 Hoy los streams que nombran los sets pesan 11,3 MB (FX), 39,8 MB (2 466 archivos de criaturas, magos y cuerpo a cuerpo), 18,7 MB (mundo, UI y consejero) y unos 26 MB (música).
 
-Presupuesto propuesto: **+≤ 1,5 s de arranque y +≤ 150 MB en el dedicado**. Si se pasa, se aplica la alternativa de la pregunta 2 antes de 055k-b.
+Presupuesto propuesto: **+≤ 1,5 s de arranque y +≤ 150 MB en el dedicado**. Si se pasa, se aplica la alternativa de la pregunta 2 antes de 055o-b.
 
 **Partida.** Los 7 labs `lab_052c…i` pasan con las mismas expectativas (los `_no_original` se borran o se reescriben, pregunta 3). `run_audio_net.sh` da las mismas cuentas por evento en solo y en el cliente del dedicado, +1 `soul_mole_take` en el cliente. Se agrega el caso de late join (§4). `rules_suite` y `quick` como humo: el audio no toca la sim y el digest no cambia.
 
@@ -287,23 +289,23 @@ Presupuesto propuesto: **+≤ 1,5 s de arranque y +≤ 150 MB en el dedicado**. 
 
 | Corte | Qué | Archivos | En paralelo con 055h / 055i-a |
 |---|---|---|---|
-| **055k-a** FX y emisores tipados | 1) Medir el costo (§6) y la carga con dependencia faltante (pregunta 3). 2) `SoundEmitter3D.cue: SoundCue`; migrador → `data/audio/cues/` y 39 escenas; `ParticleType`/`BeamType.sound`; `FxSounds`; 5 escenas FX con `Sound`; `play_scene` ubica antes de `add_child`; `ReachedCue` replicado; `ShakeMap.key_of`; fuera `FxSoundMap` y `fx_sounds.tres` | `scenes/audio/` (emisor, bus), `scenes/fx/`, `scenes/spells/**`, `scenes/map/props/`, `scenes/units/afflictions/**`, `data/fx/`, `data/audio/cues/`, `tools/migrate/`, `debug/audio/` | **Sí con los dos**: no toca `scenes/ui/`, lobby, `sacrifice_flow`, catálogo ni `data/gods`. Las corridas de Godot van por la cola |
-| **055k-b** cuerpos | `SoundSet` con campos; `CreatureType.sounds`/`WizardType.sounds`; 67 + 15 + 3 sets con nombre humano; `UnitSounds`/`WizardSounds`/`BodySounds`/`CommandVoice` tipados; `summon` en `unit.tscn` | `creature_type.gd`, `wizard_type.gd`, `data/catalog/{creatures,wizards}/`, `data/audio/{creatures,wizards,melee}/`, `unit.tscn`, `wizard_body.tscn`, `command_voice.gd` | **Sí con 055h.** Con 055i-a, solo si su árbol no edita `wizard_type.gd` ni `data/catalog/wizards/` (hay que confirmarlo, porque el lobby elige mago). Tiene que mergear **antes** de 055c1 + 055i-b, que reescriben `creature_type.gd` |
-| **055k-c** partida | `GodType.music/ambience`; `MusicDirector`/`AmbienceDirector` tipados y con players en `.tscn`; `advisor.tscn` con `AdvisorLine`; `RitualSounds`/`SoulSounds` tipados; `one_shots` del ambiente; fuera `world.tres` y `advisor.tres` | `god_type.gd`, `data/gods/`, `scenes/audio/*director*`, `advisor/`, `ritual.tscn`, `soul.tscn`, `match.tscn`, `boot.tscn` | **No en paralelo con 055i-a** (`data/gods/`, `boot.tscn`, menú) ni con 055h si 055h toca `match.tscn`/`boot.tscn`. Va después de los dos, o se cede `boot.tscn` (2 líneas) a quien esté |
-| **055k-d** UI | `UiClickSounds.click`, meta `ui_sound` con `SoundCue`, `MenuSounds` tipado; fuera `ui.tres` | `sound_bus.tscn`, `scenes/ui/radial/radial_menu.tscn`, `scenes/ui/spell_book/spell_slot.tscn`, `menu_sounds.gd` | **Después de 055h** (comparte `scenes/ui/`), o lo hace 055h como un renglón de su plan |
-| **055k-e** cierre | `SoundBus` partido (≤ 150) y como escena autoload; borrar `SoundLibrary`, `ResourceDeps` (o moverlo a `debug/suite/`), el migrador y `bake_sound_sets`; C9 = 0; C5/C6; READMEs; C17 ampliado y baseline | `scenes/audio/`, `tools/`, `debug/audio/`, `project.godot`, `tools/lint/` | Sí con 055h (salvo `project.godot`, que es una línea) |
+| **055o-a** FX y emisores tipados | 1) Medir el costo (§6) y la carga con dependencia faltante (pregunta 3). 2) `SoundEmitter3D.cue: SoundCue`; migrador → `data/audio/cues/` y 39 escenas; `ParticleType`/`BeamType.sound`; `FxSounds`; 5 escenas FX con `Sound`; `play_scene` ubica antes de `add_child`; `ReachedCue` replicado; `ShakeMap.key_of`; fuera `FxSoundMap` y `fx_sounds.tres` | `scenes/audio/` (emisor, bus), `scenes/fx/`, `scenes/spells/**`, `scenes/map/props/`, `scenes/units/afflictions/**`, `data/fx/`, `data/audio/cues/`, `tools/migrate/`, `debug/audio/` | **Sí con los dos**: no toca `scenes/ui/`, lobby, `sacrifice_flow`, catálogo ni `data/gods`. Las corridas de Godot van por la cola |
+| **055o-b** cuerpos | `SoundSet` con campos; `CreatureType.sounds`/`WizardType.sounds`; 67 + 15 + 3 sets con nombre humano; `UnitSounds`/`WizardSounds`/`BodySounds`/`CommandVoice` tipados; `summon` en `unit.tscn` | `creature_type.gd`, `wizard_type.gd`, `data/catalog/{creatures,wizards}/`, `data/audio/{creatures,wizards,melee}/`, `unit.tscn`, `wizard_body.tscn`, `command_voice.gd` | **Sí con 055h.** Con 055i-a, solo si su árbol no edita `wizard_type.gd` ni `data/catalog/wizards/` (hay que confirmarlo, porque el lobby elige mago). Tiene que mergear **antes** de 055c1 + 055i-b, que reescriben `creature_type.gd` |
+| **055o-c** partida | `GodType.music/ambience`; `MusicDirector`/`AmbienceDirector` tipados y con players en `.tscn`; `advisor.tscn` con `AdvisorLine`; `RitualSounds`/`SoulSounds` tipados; `one_shots` del ambiente; fuera `world.tres` y `advisor.tres` | `god_type.gd`, `data/gods/`, `scenes/audio/*director*`, `advisor/`, `ritual.tscn`, `soul.tscn`, `match.tscn`, `boot.tscn` | **No en paralelo con 055i-a** (`data/gods/`, `boot.tscn`, menú) ni con 055h si 055h toca `match.tscn`/`boot.tscn`. Va después de los dos, o se cede `boot.tscn` (2 líneas) a quien esté |
+| **055o-d** UI | `UiClickSounds.click`, meta `ui_sound` con `SoundCue`, `MenuSounds` tipado; fuera `ui.tres` | `sound_bus.tscn`, `scenes/ui/radial/radial_menu.tscn`, `scenes/ui/spell_book/spell_slot.tscn`, `menu_sounds.gd` | **Después de 055h** (comparte `scenes/ui/`), o lo hace 055h como un renglón de su plan |
+| **055o-e** cierre | `SoundBus` partido (≤ 150) y como escena autoload; borrar `SoundLibrary`, `ResourceDeps` (o moverlo a `debug/suite/`), el migrador y `bake_sound_sets`; C9 = 0; C5/C6; READMEs; C17 ampliado y baseline | `scenes/audio/`, `tools/`, `debug/audio/`, `project.godot`, `tools/lint/` | Sí con 055h (salvo `project.godot`, que es una línea) |
 
-Orden: **055k-a** → (pregunta 2 resuelta) **055k-b** → **055k-c** y **055k-d** (cuando cierren 055i-a y 055h) → **055k-e**. Cada uno es un developer, sin review salvo 055k-b/c (cambian lo que se oye). El playtest con ventana se hace una sola vez, al cerrar 055k-c: una partida corta en High Noon, porque el cambio es audible y no visible (ver la pregunta 7).
+Orden: **055o-a** → (pregunta 2 resuelta) **055o-b** → **055o-c** y **055o-d** (cuando cierren 055i-a y 055h) → **055o-e**. Cada uno es un developer, sin review salvo 055o-b/c (cambian lo que se oye). El playtest con ventana se hace una sola vez, al cerrar 055o-c: una partida corta en High Noon, porque el cambio es audible y no visible (ver la pregunta 7).
 
 ## 9. Orden de implementación (pasos cortos)
-1. **055k-a.1** En una rama de prueba: asignar tipado lo mínimo para medir el arranque y la memoria (cliente, dedicado, banco). Probar la carga de un `.tres` cuyo stream falta. Anotar los números en este plan.
-2. **055k-a.2** `SoundEmitter3D.cue: SoundCue` (warning si falta) y la parte FX del migrador: `data/audio/cues/<clave>.tres` y la reescritura de los 74 nodos de las 39 escenas. Primero el informe de paridad.
-3. **055k-a.3** `ParticleType.sound`, `BeamType.sound`, `FxSounds`. Las 5 escenas FX con `Sound`. `play_scene` ubica antes de `add_child`. `ReachedCue` replicado. Borrar `FxSoundMap`, `fx_sounds.tres` y `SoundBus.fx_cue`. Lab `052d` y `run_audio_net.sh`.
-4. **055k-b.1** `SoundSet` con campos, más la parte de cuerpos del migrador (paridad), con renombres a nombre humano.
-5. **055k-b.2** `CreatureType.sounds`/`WizardType.sounds` asignados. Lectores tipados. `UnitSounds.summon`. Fuera `aliases`/`shared_set`. Labs `052c`/`052e`.
-6. **055k-c.1** `GodType.music/ambience`, directores tipados y players en `.tscn`. **055k-c.2** `advisor.tscn` + `AdvisorLine`, ritual y alma, `one_shots`. Labs `052f`/`052g`/`052h`. Caso de late join.
-7. **055k-d** UI (después de 055h).
-8. **055k-e** partir `SoundBus`, borrar lo que queda, C9, C5/C6, READMEs, C17 ampliado, `--update-baseline`, sonda final.
+1. **055o-a.1** En una rama de prueba: asignar tipado lo mínimo para medir el arranque y la memoria (cliente, dedicado, banco). Probar la carga de un `.tres` cuyo stream falta. Anotar los números en este plan.
+2. **055o-a.2** `SoundEmitter3D.cue: SoundCue` (warning si falta) y la parte FX del migrador: `data/audio/cues/<clave>.tres` y la reescritura de los 74 nodos de las 39 escenas. Primero el informe de paridad.
+3. **055o-a.3** `ParticleType.sound`, `BeamType.sound`, `FxSounds`. Las 5 escenas FX con `Sound`. `play_scene` ubica antes de `add_child`. `ReachedCue` replicado. Borrar `FxSoundMap`, `fx_sounds.tres` y `SoundBus.fx_cue`. Lab `052d` y `run_audio_net.sh`.
+4. **055o-b.1** `SoundSet` con campos, más la parte de cuerpos del migrador (paridad), con renombres a nombre humano.
+5. **055o-b.2** `CreatureType.sounds`/`WizardType.sounds` asignados. Lectores tipados. `UnitSounds.summon`. Fuera `aliases`/`shared_set`. Labs `052c`/`052e`.
+6. **055o-c.1** `GodType.music/ambience`, directores tipados y players en `.tscn`. **055o-c.2** `advisor.tscn` + `AdvisorLine`, ritual y alma, `one_shots`. Labs `052f`/`052g`/`052h`. Caso de late join.
+7. **055o-d** UI (después de 055h).
+8. **055o-e** partir `SoundBus`, borrar lo que queda, C9, C5/C6, READMEs, C17 ampliado, `--update-baseline`, sonda final.
 
 ## 10. Cómo lo verifica un humano en el editor
 - Abrir `scenes/spells/fireball_projectile.tscn` → nodo `Sound`: el inspector muestra `Cue` = `fireball_cast.tres`. Clic en el recurso → `Streams`, `Volume Db`. Con F6 suena una vez.
@@ -315,25 +317,25 @@ Orden: **055k-a** → (pregunta 2 resuelta) **055k-b** → **055k-c** y **055k-d
 
 ## Fuera de alcance
 - Los `FxBus.broadcast("…")` y `broadcast_scene(path)` por texto (C17 23): **055x**. Ahí `FxBus.played` pasa a llevar el recurso y `FxSounds` deja de resolver nombres.
-- La cámara (la vieja 055k, pregunta 1).
+- La cámara (la vieja 055o, pregunta 1).
 - La identidad de las fichas por tag y los nombres humanos de `data/catalog/`: 055i-b. Las referencias tipadas sobreviven a sus renombres.
 - Contenido de audio nuevo (eventos sin sonido hoy: `ghost`, `foot`, `slaw`, `ewiz`…).
 - El port web (otro worktree). La memoria del navegador con todo tipado se anota como riesgo con los números del paso 1.
 - MpKit.
 
 ## Riesgos
-- **Costo de carga tipada** en el dedicado, el room server (un proceso por sala) y el web. Se mide en 055k-a.1. La alternativa está en la pregunta 2.
+- **Costo de carga tipada** en el dedicado, el room server (un proceso por sala) y el web. Se mide en 055o-a.1. La alternativa está en la pregunta 2.
 - **Dependencia faltante aborta la carga** (pregunta 3, NO VERIFICADO en 4.7).
-- **`match.tscn` y `boot.tscn` son archivos calientes:** 055k-c va en serie.
+- **`match.tscn` y `boot.tscn` son archivos calientes:** 055o-c va en serie.
 - **One-shots en el late join** (§4, NO VERIFICADO).
 - **Los labs dependen de las raíces:** reescribir `debug/audio/` (2 501 líneas) es la parte más larga. Se hace por sub-corte, y cada uno deja su lab verde.
 
 ## 11. Preguntas abiertas (con recomendación)
-1. **¿Qué letra lleva la cámara?** RFC-055 llama 055k a la cámara. **Recomiendo** dejar 055k para el audio (como lo pidió el orquestador), pasar la cámara a **055m** y corregir RFC-055 §13.2b C-8a/C-8d, §15 y 055R §4 en el mismo commit de 055k-a.
+1. **¿Qué letra lleva la cámara?** RFC-055 llama 055o a la cámara. **Recomiendo** dejar 055o para el audio (como lo pidió el orquestador), pasar la cámara a **055m** y corregir RFC-055 §13.2b C-8a/C-8d, §15 y 055R §4 en el mismo commit de 055o-a.
 2. **¿Se acepta que el dedicado y el room server carguen los streams?** (rompe la meta de RFC-052 «never load an AudioStream»). **Recomiendo que sí**, dentro del presupuesto medido (+≤ 1,5 s, +≤ 150 MB), porque es lo que hace cualquier juego Godot con referencias tipadas y el export dedicado de Godot puede quitarlos después (NO VERIFICADO para audio). Si se pasa: `CreatureType.sounds` se mueve a la escena por criatura que trae 055c (se carga al instanciar), y la música queda en `GodType`.
 3. **¿Un clon sin el LFS del audio tiene que correr mudo?** **Recomiendo que no**: tratar el audio como los modelos (parte del repo), borrar `--audio-no-original` y `ResourceDeps` del producto, y que `check_original_assets.sh` avise si faltan. Si el usuario quiere mantenerlo, el paso 1 mide si `ResourceLoader.set_abort_on_missing_resources(false)` al arrancar alcanza, con un solo aviso en el log.
 4. **¿Los cues de FX van en archivos (`data/audio/cues/<nombre>.tres`) o embebidos en cada escena?** **Recomiendo archivos**: 11 claves se usan en 2 o 3 lugares (`ward_air` ×3, `rings_*`, `explosion_loop`, `cloud_loop`…), y bajar un sonido tiene que cambiarlo en todos lados. Embebido solo para lo que se usa una vez y se crea a mano.
 5. **¿Se borra `bake_sound_sets.gd`?** **Recomiendo que sí**: después de la migración los sets son de los humanos y volver a hornear los pisaría (lo mismo que se decidió para `bake_catalog`). Se mantiene `sound_set_writer.gd` para «Nueva criatura desde modelo…».
 6. **¿Se juntan los nodos de audio de la partida en una escena `match_audio.tscn`?** (`ListenerFocus`, `CommandVoice`, el consejero, `CombatGauge`, `MusicDirector`, `AmbienceDirector`). **Recomiendo** hacerlo solo con el consejero en este corte (`advisor.tscn`) y dejar el resto en `match.tscn`. Juntarlo todo pide una raíz que reparta 6 sockets, y es justo el archivo que más se pisa con 055h/055i-a.
-7. **¿Hace falta playtest con ventana?** La memoria dice «ventana solo con cambios visibles», y esto es audible. **Recomiendo** una sola partida corta con ventana al cerrar 055k-c, escuchada por el usuario. Lo automático (sonda, labs, red) cubre los números.
+7. **¿Hace falta playtest con ventana?** La memoria dice «ventana solo con cambios visibles», y esto es audible. **Recomiendo** una sola partida corta con ventana al cerrar 055o-c, escuchada por el usuario. Lo automático (sonda, labs, red) cubre los números.
 8. **¿Se descartan las claves horneadas que el juego no toca** (`Xres`, `TNT*`, `grp*`, `asg*`, órdenes de los magos)? **Recomiendo que sí**: el informe del migrador las lista, los archivos quedan en `assets/original/audio/`, y un corte de contenido las agrega como campos con nombre cuando tengan un evento.

@@ -2,7 +2,6 @@ extends SpellProjectile
 
 ## Pyro Fireball (sacengine castFireball/updateFireball, state.d:10519-10528, 16682-16700).
 ## Guided projectile with flying height 0.5 m and splash spell damage on impact.
-## Its trail and its explosion are its own (firy/fbal; xplo/exp2/frck/smok), not Wrath's.
 
 const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 

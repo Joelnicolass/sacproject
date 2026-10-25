@@ -3,8 +3,8 @@ extends AbilityEffect
 
 ## F131 (RFC-030 030t-a): the Netherfiend's (crpd) and the Hellmouth's (nomd) Devour (ifna, flags 4098). sacengine useAbility →
 ## shoot1 (state.d:13463-13561): the body prepares (startUsingAbility, shoot1: PCes c36 72 ticks, DMes c46 92) and at the shoot
-## tick shootOnTick calls devourSoul (12735-12736, 13138-13163). It costs no mana and has no cooldown, so ActiveAbility spends 0.
-## The preparation is ActiveAbility's (UsingAbility + windup()); what the soul goes through is Soul's (begin_devour); what the
+## tick shootOnTick calls devourSoul (12735-12736, 13138-13163). It costs no mana and has no cooldown, so AbilitySlot spends 0.
+## The preparation is AbilityWindup's (UsingAbility + windup()); what the soul goes through is Soul's (begin_devour); what the
 ## eater becomes is DevourGrowth's; the cure is HealEffect's. This effect only judges the target and tells them.
 ##
 ## Target (isApplicable, summarize: 30820-30825): a soul (or the corpse it waits on) that is blue for the eater's slot (free or
@@ -21,12 +21,12 @@ const _HEAL := preload("res://scenes/spells/heal_effect.gd")
 
 func status(_target_pos: Vector3, target: Node3D) -> String:
 	if ability == null or user == null:
-		return ActiveAbility.BAD_TARGET
+		return Refusal.BAD_TARGET
 	var soul := _soul_of(target)
 	if soul == null or not soul.is_free_or_own(_slot()) or not (soul.state == Soul.State.NORMAL or soul.state == Soul.State.EMERGING):
-		return ActiveAbility.BAD_TARGET
+		return Refusal.BAD_TARGET
 	if _flat_distance(soul) > reach():
-		return ActiveAbility.OUT_OF_RANGE
+		return Refusal.OUT_OF_RANGE
 	return ""
 
 

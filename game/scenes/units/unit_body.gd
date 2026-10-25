@@ -51,6 +51,9 @@ var creature_tag := ""
 @export var mount: BodyMount
 ## What it sees (Vision): its range comes from `type.vision_m`; the side's sight is the union of these (VisionSides).
 @export var vision: Vision
+## What it hurts with (Weapons) and what it does on command (Abilities): their children are the weapons and the ability.
+@export var weapons: Weapons
+@export var abilities: Abilities
 ## The model id on the network: the one of the body scene `type` wears (BodyFrame.model_id). Derived from `type`: set the type, not this.
 @export var model := "":
 	set(value):
@@ -240,10 +243,10 @@ func _ready() -> void:
 	var health := _health()
 	health.changed.connect(_on_health_changed)
 	($HealthBar as UnitHealthBar).bind(health, owner_slot, self)
-	$MeleeAttack.struck.connect(_on_struck)
+	weapons.struck.connect(_on_struck)
 	afflictions.held_changed.connect(cancel_attacks.unbind(1))
-	($RangedAttack as RangedAttack).setup(self, type, $ManaPool as ManaPool, $MeleeAttack as MeleeAttack, _rng)
-	($ActiveAbility as ActiveAbility).setup(self, type, $ManaPool as ManaPool)
+	weapons.setup(self, type, _rng)
+	abilities.setup(self, type)
 	var mana_support := get_node_or_null("ManaSupport") as UnitManaSupport
 	if mana_support:
 		mana_support.setup(self, type, owner_slot, rules)
@@ -261,7 +264,7 @@ func _ready() -> void:
 	MatchSeed.seed_rng(_rng, ["body", String(name)], rng_seed)
 	if type and not is_flying():
 		air.seat_left = seat_attempts
-	_setup_melee()
+	weapons.setup(self, type, _rng)
 
 
 func display_name() -> String:
@@ -383,38 +386,18 @@ func is_cowering() -> bool:
 
 
 ## F27 calls this for Ctrl+Q / Shift+B on the owner's peer. Returns the local refusal (mana,
-## no ability, «No implementado»), or "" once sent. The server checks the cooldown again.
+## no ability, «No implementado»), or "" once sent. The server checks the cooldown again. The Abilities port does the work.
 func request_ability(target_pos: Vector3, foe: Node3D = null) -> String:
-	var reason := ability_status(target_pos, foe)
-	if not reason.is_empty() or not MpAuthority.should_send_command():
-		return reason if not reason.is_empty() else use_ability(target_pos, foe)
-	submit_ability.rpc_id(MpAuthority.SERVER_PEER, {
-		"x": target_pos.x, "y": target_pos.y, "z": target_pos.z,
-		"target": str(foe.get_path()) if foe else "",
-	})
-	return ""
+	return abilities.port.request(target_pos, foe)
 
 
 func ability_status(target_pos: Vector3, foe: Node3D = null) -> String:
-	if mode == Mode.DEAD or mode == Mode.SUMMONING or is_taken() or afflictions.holds():
-		return ActiveAbility.BAD_TARGET
-	return ($ActiveAbility as ActiveAbility).status(target_pos, foe)
+	return abilities.port.status(target_pos, foe)
 
 
 ## Server or solo: sacengine useAbility. "" = used.
 func use_ability(target_pos: Vector3, foe: Node3D = null) -> String:
-	if mode == Mode.DEAD or mode == Mode.SUMMONING or is_taken() or afflictions.holds():
-		return ActiveAbility.BAD_TARGET
-	return ($ActiveAbility as ActiveAbility).use(target_pos, foe)
-
-
-@rpc("any_peer", "call_remote", "reliable")
-func submit_ability(payload: Dictionary) -> void:
-	if not MpAuthority.accept_command(self, owner_slot):
-		return
-	var path := str(payload.get("target", ""))
-	var foe := get_node_or_null(path) as Node3D if not path.is_empty() else null
-	use_ability(Vector3(float(payload["x"]), float(payload["y"]), float(payload["z"])), foe)
+	return abilities.port.use(target_pos, foe)
 
 
 ## sacengine rockForm (state.d:13052): drops its order and target and stands as a rock.
@@ -523,11 +506,7 @@ func _apply_model() -> void:
 	if bar:
 		bar.place_above(mount.facts.height_m)
 	if is_node_ready():
-		_setup_melee()
-
-
-func _setup_melee() -> void:
-	($MeleeAttack as MeleeAttack).setup(self, type, mount.facts.reach_m, mount.facts.height_m, _rng)
+		weapons.setup(self, type, _rng)
 
 
 func _physics_process(delta: float) -> void:
@@ -658,8 +637,7 @@ func set_walk_goal(goal: Vector3) -> void:
 func cancel_attacks() -> void:
 	if mode == Mode.ROCK_FORM and simulates() and afflictions.breaks_special_modes():
 		mode = Mode.IDLE  ## F137: petrified ends Rockform (state.d:11631-11640); Afflictions.held_changed calls here.
-	($MeleeAttack as MeleeAttack).cancel()
-	($RangedAttack as RangedAttack).cancel()
+	weapons.cancel_all()
 	_clips.cancel_lunge()
 
 

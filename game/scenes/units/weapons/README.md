@@ -1,0 +1,6 @@
+# units/weapons
+What: the weapons of a creature are the children of its `Weapons` node (`Melee`, `Ranged`, ...); the first one that wants the foe is the one used. A breath is a `RangedWeapon` whose `ShotLook` has a wave as `in_flight`.
+Not: who to attack (the chase state), the flight of a shot (`attacks/ranged_shot.gd`), what a shot does when it arrives (`ShotLook` and `ShotImpact`), what a creature does on command (`abilities/`).
+Talks to: `ChaseState` walks `Weapons.ordered()` (`wants`, `aim`, `announce`, `busy_state`); `Weapons.struck` and `fired` go up to `UnitBody`; `MeleeOnHit` (child of `Melee`) listens to `Weapon.connected`; `RangedWeapon` holds the `ShotLook` of its ability (`data/shots/<tag>.tscn`) as a child and `RangedFire` spawns the shot.
+Edit: add = drop `ranged_weapon.tscn` or `melee_weapon.tscn` under `Weapons` and set `attack_type` · remove = delete the node, or untick `enabled` · change = `attack_type`, the box and range knobs on the weapon · priority = the order of the children.
+Check: `debug/units/weapon_swap.tscn` (F6) · rules_suite `weapon_cases`.

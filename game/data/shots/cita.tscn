@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/attacks/shot_look.gd" id="1_look"]
+[ext_resource type="PackedScene" path="res://scenes/units/impacts/vortex_impact.tscn" id="2_impact"]
+
+[node name="Cita" type="Node"]
+script = ExtResource("1_look")
+hit_size = 0.45
+sweep = true
+impact = ExtResource("2_impact")
+burst_at_range_end = true
+fallback_color = Color(0.7, 0.8, 0.9, 1)
+fallback_radius = 0.25

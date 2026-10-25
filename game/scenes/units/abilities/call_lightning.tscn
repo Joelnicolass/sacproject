@@ -5,7 +5,7 @@
 [ext_resource type="Resource" path="res://data/catalog/spells/ntil.tres" id="typed_spell"]
 
 [node name="CallLightning" type="Node"]
-editor_description = "F130 (RFC-030 030s-a): efecto propio del Call lightning del Storm Giant (gsba). ActiveAbility lo instancia como \"Effect\" desde data/abilities/ability_catalog.tres. Sin preparación ni enfriamiento; lanza un LightningStrike `ntil` (750) desde un punto del cielo hasta el propio centro del Giant (rebota en el primer cuerpo del camino)."
+editor_description = "F130 (RFC-030 030s-a): efecto propio del Call lightning del Storm Giant (gsba). AbilitySlot lo instancia como \"Effect\" desde el campo effect de su AbilityType (data/catalog/abilities/). Sin preparación ni enfriamiento; lanza un LightningStrike `ntil` (750) desde un punto del cielo hasta el propio centro del Giant (rebota en el primer cuerpo del camino)."
 script = ExtResource("1_call")
 spell = ExtResource("typed_spell")
 bolt_scene = ExtResource("2_bolt")

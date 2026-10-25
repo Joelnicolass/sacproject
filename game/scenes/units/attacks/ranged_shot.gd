@@ -31,7 +31,7 @@ var look: ShotLook
 ## The shot's SPEL (ranges for its impact); null when GameData has no such tag.
 var ability: AbilityType
 
-## F125: the packet it was spawned with (RangedAttack._fire). Its ShotInFlight reads what the flight needs (ShotSplit:
+## F125: the packet it was spawned with (RangedFire.fire). Its ShotInFlight reads what the flight needs (ShotSplit:
 ## volley_index, aim_distance). Read only.
 var spawn_data: Dictionary = {}
 
@@ -53,7 +53,8 @@ func setup(data: Dictionary, shot_ability: AbilityType = null) -> void:
 	max_distance = float(data.get("max_distance", INF))
 	target_path = NodePath(str(data.get("target", "")))
 	shooter_path = NodePath(str(data.get("shooter", "")))
-	look = ShotLook.for_tag(str(data.get("tag", "")))
+	look = ShotLook.make(str(data.get("tag", "")))
+	add_child(look)
 	ability = shot_ability
 	mods = Health.IGNITE if look.ignites else 0
 	var rng := RandomNumberGenerator.new()

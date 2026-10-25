@@ -5,6 +5,6 @@
 
 [node name="Protector" type="Node"]
 process_physics_priority = -1
-editor_description = "F126 (RFC-030 030o-a): efecto propio del Protector del Ent (HSba). ActiveAbility lo instancia como \"Effect\" desde data/abilities/ability_catalog.tres. Se escuda en el tick de la orden y escuda a los aliados a 30 m en el tick siguiente."
+editor_description = "F126 (RFC-030 030o-a): efecto propio del Protector del Ent (HSba). AbilitySlot lo instancia como \"Effect\" desde el campo effect de su AbilityType (data/catalog/abilities/). Se escuda en el tick de la orden y escuda a los aliados a 30 m en el tick siguiente."
 script = ExtResource("1_protector")
 life_shield = ExtResource("typed_life_shield")

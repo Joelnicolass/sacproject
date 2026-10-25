@@ -442,8 +442,8 @@ func _case_taurockfight() -> void:
 	var trace := []
 	for sec in 30:
 		await _ticks(60)
-		var melee := hunter.get_node("MeleeAttack")
-		trace.append([sec + 1, snappedf(_flat(hunter.global_position, taurock.global_position), 0.1), UnitBody.Mode.keys()[hunter.mode], UnitBody.Mode.keys()[taurock.mode], snappedf(float(taurock.get_node("Health").get("current")), 1.0), snappedf(float(hunter.get_node("Health").get("current")), 1.0), melee.in_reach(taurock, 0.8), str(melee.profile_of(taurock))])
+		var melee := hunter.weapons.melee
+		trace.append([sec + 1, snappedf(_flat(hunter.global_position, taurock.global_position), 0.1), UnitBody.Mode.keys()[hunter.mode], UnitBody.Mode.keys()[taurock.mode], snappedf(float(taurock.get_node("Health").get("current")), 1.0), snappedf(float(hunter.get_node("Health").get("current")), 1.0), melee.in_reach(taurock, 0.8), str(MeleeRules.profile_of(taurock))])
 	_out["trace"] = trace
 
 

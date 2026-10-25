@@ -15,12 +15,10 @@ extends Node3D
 
 
 
-## ShotLook tag of the breath (data/shots/breath_of_life.tres). `breath_of_life` is not a SpellTag.
+## ShotLook tag of the breath (data/shots/breath_of_life.tscn). `breath_of_life` is not a SpellTag.
 @export var look_tag := "breath_of_life"
 ## The revival the breath starts on arrival (fast_revive.tscn).
 @export var fast_revive_scene: PackedScene
-## The ability when BreathOfLifeAbility does not hand one over (a scene run alone): data/catalog/abilities/filb.tres.
-@export var default_ability: AbilityType
 ## Arrived when the velocity of the tick is under this (updateBreathOfLife: 0.01 m/s).
 @export var arrive_speed := 0.01
 
@@ -40,7 +38,7 @@ var _who := "?"
 ## Before the node enters the tree. `shot_spawner` is the shot container's spawner.
 func setup(body: Node3D, type: AbilityType, shot_spawner: ShotSpawner, target: UnitBody) -> void:
 	user = body
-	ability = type if type else default_ability
+	ability = type
 	spawner = shot_spawner
 	corpse = target
 	_born = MatchClock.now()
@@ -96,9 +94,9 @@ func _arrive() -> void:
 	_finish()
 
 
-## sacengine shotPosition: the Dragon's shot origin (its RangedAttack), or its feet lifted when it has none.
+## sacengine shotPosition: the Dragon's shot origin (its RangedWeapon), or its feet lifted when it has none.
 func _origin() -> Vector3:
-	return RangedAttack.origin_of(user)
+	return ShotAim.shot_position(user)
 
 
 ## The breath's body: a RangedShot of the shot container, placed by this node every tick.

@@ -6,7 +6,7 @@ extends Node
 ## (state.d:13138-13163), per soul eaten: health and maximum +500; the regeneration increment is 0.25·maximum the first time
 ## and 0.75·increment + 125 after; regeneration += increment/60 a second; the five resistances ×0.9; numBulks +1. The bulk is
 ## render only: 2 − 0.75ⁿ, reached by a smoothing of exp(ln 0.1/60) a tick (state.d:13943-13948).
-## Nobody else keeps these numbers: Health asks resistance_factor() (and MeleeAttack through resistance_factor_of), UnitBody asks
+## Nobody else keeps these numbers: Health asks resistance_factor() (and MeleeWeapon through resistance_factor_of), UnitBody asks
 ## extra_regeneration_of() when it regenerates, DevourAbility calls grow(). The cure (Rainbow) is HealEffect's.
 ## `shown` (the souls eaten) is replicated (the unit's MultiplayerSynchronizer, "DevourGrowth:shown"): every peer draws the bulk
 ## from it. Declared: the bulk is a scale of the mesh, not sacengine's bone bulge (placeholder).
@@ -65,7 +65,7 @@ static func of(node: Node) -> DevourGrowth:
 	return (node.get_node_or_null("DevourGrowth") as DevourGrowth) if node else null
 
 
-## ×0.9ⁿ the body took (1 with none). MeleeAttack and Health multiply their resistance by it.
+## ×0.9ⁿ the body took (1 with none). MeleeWeapon and Health multiply their resistance by it.
 static func resistance_factor_of(node: Node) -> float:
 	var growth := of(node)
 	return growth.resistance_factor() if growth else 1.0

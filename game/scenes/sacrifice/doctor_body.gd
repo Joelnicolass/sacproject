@@ -260,7 +260,7 @@ func facing_flat() -> Vector3:
 	return ahead.normalized() if ahead.length_squared() > 0.000001 else Vector3(0.0, 0.0, 1.0)
 
 
-## Defense and size for MeleeAttack.profile_of: evasion and resistance of the CRE8, size of `sacd`.
+## Defense and size for MeleeRules.profile_of: evasion and resistance of the CRE8, size of `sacd`.
 func melee_profile() -> Dictionary:
 	return {
 		"evasion": float(type.melee_evasion_milli()) if type else 0.0,

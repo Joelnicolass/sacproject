@@ -3,7 +3,7 @@ extends Node3D
 
 ## F124 (RFC-030 030m): a creature's ranged attack with no flight, in place of a RangedShot: the Gnome's ray (plfa,
 ## gnomeShoot state.d:11724-11735), the Styx's bolt at the next tick (dhga, StyxShoot 11852-11855, 24154-24172) and the
-## Warmonger's gun (fhga, 030m-b). The scene is ShotLook.strike; RangedAttack instances it on the server (or solo) only,
+## Warmonger's gun (fhga, 030m-b). The scene is ShotLook.strike; RangedFire instances it on the server (or solo) only,
 ## as its own child, and calls launch() once. The strike is not replicated: what peers see goes through FxBus.
 ##
 ## Ticks: launch() runs tick 0 in the tick of the shot; then every physics tick runs the ticks MatchClock advanced
@@ -14,29 +14,28 @@ extends Node3D
 ## shooter_path.
 
 const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
-const _MELEE := preload("res://scenes/units/attacks/melee_attack.gd")
 
 ## Already scaled by the shooter (attack_factor).
 var damage := 0.0
 var from_slot := 0
-## The shot's direction (accuracy drawn once by RangedAttack) times the ability speed.
+## The shot's direction (accuracy drawn once by RangedFire) times the ability speed.
 var velocity := Vector3.ZERO
 var ability: AbilityType
 var target_path := NodePath()
 var shooter_path := NodePath()
 var look: ShotLook
-## Where the shot leaves (RangedAttack.shot_origin at the shot tick).
+## Where the shot leaves (RangedWeapon.shot_origin at the shot tick).
 var origin := Vector3.ZERO
 ## The predicted target center, without accuracy (sacengine `target` of the *Shoot functions).
 var aim := Vector3.ZERO
 ## The shooter's ranged accuracy (CreatureType.ranged_accuracy), for the strikes that draw it again.
 var accuracy := 0.0
-## The ability range (RangedAttack's max_distance).
+## The ability range (RangedFire's max_distance).
 var max_distance := 0.0
 ## The ability tag, for the log.
 var tag := ""
-## The RangedAttack that fired it (its shot_origin() for a strike that follows the shooter). Injected by launch().
-var source: RangedAttack
+## The RangedWeapon that fired it (its shot_origin() for a strike that follows the shooter). Injected by launch().
+var source: RangedWeapon
 
 
 var _born_tick := 0
@@ -44,9 +43,10 @@ var _done_tick := 0
 var _finished := false
 
 
-## `data`: the keys of RangedAttack._fire (the ones of RangedShot.setup plus aim_x/y/z and accuracy). Call it once the
-## strike is in the tree: tick 0 may already cast against the world. `from`: the RangedAttack that fired it.
-func launch(data: Dictionary, shot_look: ShotLook, shot_ability: AbilityType, from: RangedAttack = null) -> void:
+## `data`: the keys of RangedFire.fire (the ones of RangedShot.setup plus aim_x/y/z and accuracy). Call it once the
+## strike is in the tree: tick 0 may already cast against the world. `from`: the RangedWeapon that fired it. A look nobody holds yet
+## becomes a child of the strike.
+func launch(data: Dictionary, shot_look: ShotLook, shot_ability: AbilityType, from: RangedWeapon = null) -> void:
 	source = from
 	tag = str(data.get("tag", ""))
 	origin = Vector3(float(data.get("x", 0.0)), float(data.get("y", 0.0)), float(data.get("z", 0.0)))
@@ -60,6 +60,8 @@ func launch(data: Dictionary, shot_look: ShotLook, shot_ability: AbilityType, fr
 	target_path = NodePath(str(data.get("target", "")))
 	shooter_path = NodePath(str(data.get("shooter", "")))
 	look = shot_look if shot_look != null else ShotLook.new()
+	if look.get_parent() == null:
+		add_child(look)
 	ability = shot_ability
 	_born_tick = MatchClock.now()
 	_done_tick = 0
@@ -118,10 +120,6 @@ func _land(target: Node3D, point: Vector3) -> float:
 	return ShotImpact.land(self, look, target, point, ability)
 
 
-## A body's center (sacengine obj.center): its Collision shape, else half its height over its feet. The same rule as
-## RangedAttack._center.
+## A body's center (sacengine obj.center): ShotAim.center.
 static func center_of(body: Node3D) -> Vector3:
-	var col := body.get_node_or_null("Collision") as Node3D
-	if col:
-		return col.global_position
-	return body.global_position + Vector3.UP * float(_MELEE.profile_of(body).get("height", 1.8)) * 0.5
+	return ShotAim.center(body)

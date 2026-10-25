@@ -2,7 +2,7 @@ class_name TimedStateAbility
 extends AbilityEffect
 
 ## F133 (RFC-030 030v-b): an ability that turns a UnitBody flag on for a time and off again: Play Dead (dedp) and Stealth (ivni), moved
-## from ActiveAbility's branches without a change. Which flag is `body_setter`; the time is «until tick N» on MatchClock (RFC-032),
+## from AbilitySlot's branches without a change. Which flag is `body_setter`; the time is «until tick N» on MatchClock (RFC-032),
 ## the SPEL's duration but never less than `min_duration_s`. Refused while its own flag is on. Server only (fire() needs authority).
 
 ## UnitBody method that takes a bool: set_playing_dead / set_stealth.
@@ -19,7 +19,7 @@ var _until := 0
 
 func status(_target_pos: Vector3, _target: Node3D) -> String:
 	if _until > 0:
-		return ActiveAbility.BAD_TARGET
+		return Refusal.BAD_TARGET
 	return ""
 
 

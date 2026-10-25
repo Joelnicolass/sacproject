@@ -96,7 +96,7 @@ const RESET := &"RESET"
 const MIN_CAPSULE_M := 0.6
 const RADIUS_PER_HEIGHT := 0.45
 
-## Role of each swing (MeleeAttack.SWING_ROLES): the rules pick `attack` or `attack2` at random, `attack3` is the downward blow.
+## Role of each swing (MeleeRules.SWING_ROLES): the rules pick `attack` or `attack2` at random, `attack3` is the downward blow.
 const ATTACK_ROLES: PackedStringArray = ["attack", "attack2", "attack3"]
 
 var _force := false

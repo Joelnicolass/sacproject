@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/attacks/shot_look.gd" id="1_look"]
+[ext_resource type="PackedScene" path="res://scenes/units/impacts/disease_impact.tscn" id="2_impact"]
+
+[node name="Cena" type="Node"]
+script = ExtResource("1_look")
+hit_size = 0.15
+trail_fx = "poison"
+trail_every = 2
+impact = ExtResource("2_impact")
+sweep = true
+fallback_color = Color(0.45, 0.75, 0.25, 1)
+fallback_radius = 0.12

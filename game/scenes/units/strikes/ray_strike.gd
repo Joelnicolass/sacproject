@@ -20,7 +20,7 @@ extends ShotStrike
 ## Rays per burst.
 @export_range(1, 8) var rays_per_burst := 1
 ## Each ray draws the accuracy again around the aimed point (ShotAim.scatter with a stream of its own). Off: every ray
-## goes along the shot's direction (accuracy drawn once by RangedAttack).
+## goes along the shot's direction (accuracy drawn once by RangedWeapon).
 @export var reroll := false
 ## Every burst leaves from the shooter's shot origin of that tick, and the strike ends when the shooter is no longer
 ## live. Off: from the origin of the shot.

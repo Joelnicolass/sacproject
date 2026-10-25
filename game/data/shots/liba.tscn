@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/attacks/shot_look.gd" id="1_look"]
+[ext_resource type="PackedScene" path="res://scenes/units/attacks/mite_hop.tscn" id="2_hop"]
+[ext_resource type="PackedScene" path="res://scenes/units/impacts/mite_impact.tscn" id="3_impact"]
+
+[node name="Liba" type="Node"]
+script = ExtResource("1_look")
+hit_size = 0.5
+hits_every_side = true
+hits_only_poisonable = true
+impact = ExtResource("3_impact")
+in_flight = ExtResource("2_hop")
+fallback_color = Color(0.55, 0.65, 0.2, 1)
+fallback_radius = 0.1

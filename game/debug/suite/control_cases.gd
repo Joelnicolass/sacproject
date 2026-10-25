@@ -244,7 +244,7 @@ func _slime_fight() -> Dictionary:
 	var hitter := _unit("ycro", Vector3(30.0, 0.0, 0.0), 3)
 	var victim := _unit("ycro", Vector3(30.0, 0.0, 1.0), 1)
 	await _frames(3)
-	var melee := hitter.get_node("MeleeAttack") as MeleeAttack
+	var melee := hitter.weapons.melee
 	melee.start(victim)
 	var index := melee.swing_index()
 	var plain := _swing_ticks(melee)
@@ -271,7 +271,7 @@ func _slime_fight() -> Dictionary:
 	return _verdict("control_slime_fight", checks)
 
 
-func _swing_ticks(melee: MeleeAttack) -> int:
+func _swing_ticks(melee: MeleeWeapon) -> int:
 	var ticks := 0
 	while melee.advance(1.0 / 60.0) and ticks < 5000:
 		ticks += 1

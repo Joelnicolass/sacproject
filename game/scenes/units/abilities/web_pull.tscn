@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" path="res://scenes/units/abilities/pull_thread.tscn" id="2_thread"]
 
 [node name="WebPull" type="Node"]
-editor_description = "F128 (RFC-030 030q-a): efecto propio del Web pull del Gremlin (psla). ActiveAbility lo instancia como \"Effect\" desde data/abilities/ability_catalog.tres (clave \"psla\"). Prepara 54 ticks (carga en el cuadro 27 de LSs1), acepta una criatura o un mago no aliado a 50 m o menos sin Life Shield, y arranca el Pulling del usuario. Sin enfriamiento (starts_cooldown, fase 2)."
+editor_description = "F128 (RFC-030 030q-a): efecto propio del Web pull del Gremlin (psla). AbilitySlot lo instancia como \"Effect\" desde el campo effect de su AbilityType (data/catalog/abilities/). Prepara 54 ticks (carga en el cuadro 27 de LSs1), acepta una criatura o un mago no aliado a 50 m o menos sin Life Shield, y arranca el Pulling del usuario. Sin enfriamiento (starts_cooldown, fase 2)."
 script = ExtResource("1_pull")
 starts_cooldown = false
 load_frame = 27

@@ -40,7 +40,7 @@ signal picked(target: Node3D)
 ## F370: a passive body (aggressiveness 0) is worth this much (not in sacengine). 1 = as any foe.
 @export var passive_weight := 0.5
 ## F370: maxTargetHeight: a creature with no ranged attack that walks skips bodies whose feet are higher over the ground than
-## the top of its swing (MeleeAttack.height).
+## the top of its swing (MeleeWeapon.height).
 @export var melee_height_filter := true
 ## F370: the futile targets of the body (optional: without it nothing is banned).
 @export var futility: TargetFutility
@@ -176,7 +176,7 @@ func is_banned(node: Variant) -> bool:
 func _max_target_height() -> float:
 	if not melee_height_filter or body.type == null or body.type.ranged_attack != null or body.is_flying():
 		return INF
-	var melee := body.get_node_or_null("MeleeAttack") as MeleeAttack
+	var melee := body.weapons.melee
 	return melee.height if melee != null else INF
 
 

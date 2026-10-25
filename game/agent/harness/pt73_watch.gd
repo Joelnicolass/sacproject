@@ -186,12 +186,12 @@ func melee_probe(attacker_name: String, target_name: String) -> String:
 	var target := _find(target_name)
 	if attacker == null or target == null:
 		return "falta %s o %s" % [attacker_name, target_name]
-	var melee: Variant = attacker.get_node("MeleeAttack")
+	var melee := (attacker as UnitBody).weapons.melee
 	var d := target.global_transform.origin - attacker.global_transform.origin
 	var flat := Vector2(d.x, d.z)
 	var facing: Vector3 = attacker.facing_flat()
 	return "dist=%.2f dy=%.2f can_start=%s in_reach1=%s reach=%.2f foe=%s facing_dot=%.2f speed=%s ordered=%s" % [
-		flat.length(), d.y, melee.can_start(target), melee.in_reach(target, 1.0), melee.reach, str(melee.profile_of(target)),
+		flat.length(), d.y, melee.can_start(target), melee.in_reach(target, 1.0), melee.reach, str(MeleeRules.profile_of(target)),
 		facing.dot(Vector3(d.x, 0, d.z).normalized()), attacker.get("move_speed"), attacker.get("ordered")]
 
 

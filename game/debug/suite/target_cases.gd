@@ -242,7 +242,7 @@ func _vision_expiry() -> Dictionary:
 	return _verdict(checks, {})
 
 
-## A strike of A on B (MeleeAttack.struck) makes A visible to B's side and B remember A as last attacker.
+## A strike of A on B (MeleeWeapon.struck) makes A visible to B's side and B remember A as last attacker.
 func _wiring() -> Dictionary:
 	var a := _unit(1, Vector3.ZERO, "Hitter")
 	var b := _unit(2, Vector3(300.0, 0.0, 0.0), "Hit")
@@ -392,7 +392,7 @@ func _melee_height() -> Dictionary:
 	var shooter := _unit(1, Vector3(3.0, 0.0, 0.0), "Shooter", "amuh")
 	var limit: float = trogg.get_node("TargetPicker").call("_max_target_height")
 	var checks := {
-		"melee_finite": limit < INF and _same(limit, (trogg.get_node("MeleeAttack") as MeleeAttack).height),
+		"melee_finite": limit < INF and _same(limit, trogg.weapons.melee.height),
 		"shooter_unlimited": is_inf(float(shooter.get_node("TargetPicker").call("_max_target_height"))),
 	}
 	trogg.free()

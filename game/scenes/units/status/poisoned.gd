@@ -10,7 +10,7 @@ extends DamageOverTime
 ## `resistance_debuff` to the body's poisonResistance (×1e-3 to every resistance, state.d:8950) and multiplies its
 ## regeneration by `regeneration_factor` (state.d:14403). From its update at frame `mana_block_frame` (Poison.manaBlockDelay,
 ## 2 s) until it ends it blocks the body's mana (numManaBlocks, state.d:23556-23558; giveMana, 8829). Poisoning reads these
-## to answer Health, ManaPool and MeleeAttack; the dose itself only deals its damage.
+## to answer Health, ManaPool and MeleeWeapon; the dose itself only deals its damage.
 
 var infectious := false
 ## sacengine Poison.resistanceDebuff (SPEL `ires`): poisonResistance += it while the dose lasts.

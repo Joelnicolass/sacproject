@@ -65,7 +65,7 @@ func souls(n: String) -> String:
 			continue
 		var to := ""
 		if nb != null:
-			to = " a %.2f m de %s" % [soul.global_transform.origin.distance_to(RangedAttack.origin_of(nb)), n]
+			to = " a %.2f m de %s" % [soul.global_transform.origin.distance_to(ShotAim.shot_position(nb)), n]
 		parts.append("%s %s escala %.2f%s" % [soul.label(), Soul.State.keys()[soul.state], soul.scaling, to])
 	var line := "PT131 tick %d rel %d · almas: %s" % [tick, rel, " | ".join(parts) if not parts.is_empty() else "ninguna"]
 	print(line)

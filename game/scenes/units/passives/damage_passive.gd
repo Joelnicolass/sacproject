@@ -3,7 +3,7 @@ class_name DamagePassive
 extends Node
 
 ## F117 (RFC-030f): the only owner of the damage multipliers of a creature's passiveOnDamage (sacobject.d:426). Health asks
-## incoming_factor() for every hit the body takes; MeleeAttack asks outgoing_melee_factor() for every blow it lands. The
+## incoming_factor() for every hit the body takes; MeleeWeapon asks outgoing_melee_factor() for every blow it lands. The
 ## formula lives in the DamagePassiveType of the creature's `on_damage`; a creature without one (or an ability with no resource here) is ×1.
 ## A child of unit.tscn; take it out and no passive applies.
 ## F130: gcil (the Storm Giant's Lightning Charge) has side effects and is not a DamagePassiveType: its LightningCharge is the
@@ -12,7 +12,7 @@ extends Node
 ## The body whose CreatureType.on_damage picks the resource. Read on every query: a body that changes its type changes its
 ## passive with it.
 @export var body: UnitBody
-## The passives of this shape (korq, ahtf). A new one is a new .tres here; Health and MeleeAttack do not change.
+## The passives of this shape (korq, ahtf). A new one is a new .tres here; Health and MeleeWeapon do not change.
 @export var types: Array[DamagePassiveType] = []
 ## F130: the body's Lightning Charge. Optional: empty = no charge. It only counts for a body whose `on_damage` is its `passive`.
 @export var charge: LightningCharge

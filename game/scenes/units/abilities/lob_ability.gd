@@ -3,16 +3,16 @@ extends AbilityEffect
 
 ## F129 (RFC-030 030r-a): an ability that lobs `shots` ballistic shots at the target: the Ikarus's Sticky bomb (acia, 10 bombs,
 ## spread 0.2), the Pyrodactyl's Viscous oil (kcfa, 1 shot, spread 0) and the Bilemites (030 later). sacengine useAbility →
-## shoot!true (state.d:13463-13493): the body prepares (startUsingAbility, shoot1, ActiveAbility's windup()) and at the shoot tick
+## shoot!true (state.d:13463-13493): the body prepares (startUsingAbility, shoot1, AbilitySlot's windup()) and at the shoot tick
 ## shootOnTick calls stickyBombShoot / oilShoot (13179-13194) and drains the mana (12746-12748; the cooldown if it was 0).
 ## Each shot: direction = getShotDirectionWithGravity (11506-11510: the way to the target, plus 0.5·g·d/speed² up) with
 ## the ranged accuracy (ShotAim.scatter: 2 draws), plus `spread · uniformDirection` (3 draws; a point of the cube [−1, 1]³,
 ## normalized, state.d:29106-29111); v = direction · speed, NOT normalized (the bomb flies a little faster or slower than
 ## the SPEL's speed). The stream is MatchSeed.rng(["lob", user, tick]): the same match and tick give the same volley.
-## The target: an enemy creature is aimed at by its center led by its pace (predictShotTargetPosition, like RangedAttack);
+## The target: an enemy creature is aimed at by its center led by its pace (predictShotTargetPosition, like RangedWeapon);
 ## anything else is the point (the ground): an ally as the target is treated as the ground (checkAbility, 13451-13458).
 ## Range: the SPEL's cast_range, to the aimed point.
-## The shots are RangedShot of the shot container with the look data/shots/<tag>.tres (gravity `falling`, sacspell.d:123:
+## The shots are RangedShot of the shot container with the look data/shots/<tag>.tscn (gravity `falling`, sacspell.d:123:
 ## 20 for blightMites, stickyBomb, oil, bombardment); what each does where it lands is that look's ShotImpact (StickImpact).
 ## They carry no intended target, so one of the shooter's own side is never hit.
 ## Divergences (declared): the shot leaves from ShotAim.origin (the body's front at shot_height, not the animation's hand); a
@@ -24,9 +24,9 @@ extends AbilityEffect
 @export var spread := 0.2
 ## The shots' gravity in m/s² (sacspell.d:123). Also what the aim lifts the direction by.
 @export var falling := 20.0
-## The shot leaves from the body's front at this fraction of its height (as RangedAttack.shot_height).
+## The shot leaves from the body's front at this fraction of its height (as RangedWeapon.shot_height).
 @export var shot_height := 0.7
-## ShotLook tag of the shots; empty = the ability's own tag (data/shots/acia.tres).
+## ShotLook tag of the shots; empty = the ability's own tag (data/shots/acia.tscn).
 @export var shot_tag := ""
 ## A shot that has not hit anything flies at most this far.
 @export var flight_limit := 300.0
@@ -34,9 +34,9 @@ extends AbilityEffect
 
 func status(target_pos: Vector3, target: Node3D) -> String:
 	if ability == null or user == null:
-		return ActiveAbility.BAD_TARGET
+		return Refusal.BAD_TARGET
 	if user.global_position.distance_to(_aim_point(target_pos, target)) > ability.cast_range_m:
-		return ActiveAbility.OUT_OF_RANGE
+		return Refusal.OUT_OF_RANGE
 	return ""
 
 

@@ -37,22 +37,22 @@ extends AbilityEffect
 @export var break_fx := ""
 
 
-## 2 ticks per frame up to the load frame. The one owner of the preparation of a pull (ActiveAbility asks).
+## 2 ticks per frame up to the load frame. The one owner of the preparation of a pull (AbilitySlot asks).
 func windup() -> int:
 	return FRAME_TICKS * load_frame
 
 
 func status(_target_pos: Vector3, target: Node3D) -> String:
 	if ability == null or user == null or Pulling.of(user) == null or frames() <= 0:
-		return ActiveAbility.BAD_TARGET
+		return Refusal.BAD_TARGET
 	if not applicable(target):
-		return ActiveAbility.BAD_TARGET
+		return Refusal.BAD_TARGET
 	if user.global_position.distance_to(target.global_position) > ability.cast_range_m:
-		return ActiveAbility.OUT_OF_RANGE
+		return Refusal.OUT_OF_RANGE
 	return ""
 
 
-## True even if the target is gone by the load tick: sacengine drains the mana there all the same (ActiveAbility spends).
+## True even if the target is gone by the load tick: sacengine drains the mana there all the same (AbilitySlot spends).
 func fire(_target_pos: Vector3, target: Node3D) -> bool:
 	if not _has_authority():
 		return false
@@ -131,7 +131,7 @@ static func is_live(node: Node) -> bool:
 
 ## Where the thread leaves: the user's shot origin (sacengine shotPosition), else its center.
 func _origin() -> Vector3:
-	var ranged := user.get_node_or_null("RangedAttack") as RangedAttack
+	var ranged := user.weapons.ranged
 	if ranged != null:
 		return ranged.shot_origin()
 	return BodyNudge.center(user)

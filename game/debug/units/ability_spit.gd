@@ -108,7 +108,7 @@ func _start() -> void:
 	_target.global_position = target_at
 	var target_mana := _target.get_node("ManaPool")
 	target_mana.set("current", float(target_mana.get("maximum")) * target_mana_share)
-	_shooter.get_node("RangedAttack").fired.connect(_on_fired)
+	(_shooter as UnitBody).weapons.ranged.fired.connect(_on_fired)
 	_target.get_node("Health").hurt.connect(_on_hurt)
 	_shooter.connect("struck", _on_struck.bind(_shooter))
 	_target.connect("struck", _on_struck.bind(_target))
@@ -177,10 +177,10 @@ func _physics_process(_delta: float) -> void:
 	var mode := int(_target.get("mode"))
 	if mode != UnitBody.Mode.IDLE and mode != UnitBody.Mode.CHASE:
 		return
-	var melee := _target.get_node("MeleeAttack")
-	if melee.call("is_swinging") or not melee.call("can_start", _shooter):
+	var melee := (_target as UnitBody).weapons.melee
+	if melee.is_swinging() or not melee.can_start(_shooter):
 		return
-	melee.call("start", _shooter)
+	melee.start(_shooter)
 	_target.set("target", _shooter)
 	_target.set("swings", int(_target.get("swings")) + 1)
 	_target.set("mode", UnitBody.Mode.ATTACK)

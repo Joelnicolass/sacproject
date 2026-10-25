@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/attacks/shot_look.gd" id="1_look"]
+[ext_resource type="PackedScene" path="res://scenes/units/attacks/frost_wave.tscn" id="2_wave"]
+
+[node name="Rdba" type="Node"]
+script = ExtResource("1_look")
+hit_size = 0.5
+trail_fx = "frost_breath"
+trail_every = 1
+in_flight = ExtResource("2_wave")
+collides = false
+fallback_color = Color(0.75, 0.9, 1, 1)
+fallback_radius = 0.05

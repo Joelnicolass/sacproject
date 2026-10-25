@@ -1,10 +1,12 @@
-[gd_resource type="Resource" script_class="AbilityType" format=3]
+[gd_resource type="Resource" script_class="AbilityType" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_gonnb"]
 [ext_resource type="Texture2D" uid="uid://cf0qdjiap5ywn" path="res://assets/original/ui/icons/filb.png" id="icon_tex"]
+[ext_resource type="PackedScene" path="res://scenes/units/abilities/breath_of_life_ability.tscn" id="effect_scene"]
 
 [resource]
 script = ExtResource("1_gonnb")
+effect = ExtResource("effect_scene")
 tag = "filb"
 display_name = "Breath of life"
 icon = ExtResource("icon_tex")

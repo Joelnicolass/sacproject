@@ -1,7 +1,7 @@
 extends Node
 
 ## Read-only observer for the F125 window run (RFC-030 030n-a: Boulderdash emba fan, Phoenix rdra heat ray). It never moves, orders
-## or damages anything: it reads Health and ManaPool, listens to RangedAttack.fired and re-frames the screen camera
+## or damages anything: it reads Health and ManaPool, listens to RangedWeapon.fired and re-frames the screen camera
 ## (like a player scrolling the view; the bench camera is fixed).
 ##
 ##   frame(x, z, ox, oy, oz)    screen camera at ground(x, z) + offset, looking at ground(x, z).
@@ -28,9 +28,10 @@ func _find(n: String) -> Node3D:
 	var found := get_tree().root.find_child(n, true, false) as Node3D
 	if found:
 		_bodies[n] = found
-		var ranged := found.get_node_or_null("RangedAttack")
-		if ranged != null and ranged.has_signal("fired"):
-			ranged.connect("fired", _on_fired.bind(n))
+		var carrier := found as UnitBody
+		var ranged := carrier.weapons.ranged if carrier != null else null
+		if ranged != null:
+			ranged.fired.connect(_on_fired.bind(n))
 	return found
 
 

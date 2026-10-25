@@ -9,7 +9,7 @@ extends AbilityEffect
 ## and the Lightning Charge takes it.
 ## The random direction is MatchSeed's stream ["call_lightning", user, tick]: three draws of [-1, 1) in sacengine's axes
 ## (x, y, z up), which the port reads as (x, z, y up).
-## Server (or solo) only: ActiveAbility does not call fire() on a client.
+## Server (or solo) only: AbilitySlot does not call fire() on a client.
 
 ## The coordinator's scene (lightning_strike.tscn).
 @export var bolt_scene: PackedScene

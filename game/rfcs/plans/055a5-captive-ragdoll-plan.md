@@ -242,3 +242,21 @@ Sobre `trogg_model`: 11 m/s durante 2 s y frenado; medido 7 s. El spike original
   - **Los 7 nuevos se quedan SIN ragdoll** y siguen muriendo con su clip, como hasta hoy: scythe, blight, ikarus, pyrodactyl, jabberocky, ent y cog.
   - **taurock no se toca:** ya tenía ragdoll antes del corte, así que se ve como siempre.
   - **Pendiente:** marcar en la escena del modelo que no lleva ragdoll, para que `--missing` no lo vuelva a hornear. Hasta entonces, se pasan con `--skip`.
+
+### 17.3 055a-5j, segunda ronda (spike, orquestador)
+| Variante | loose | stretch | speed@3s | Lectura |
+|---|---|---|---|---|
+| J (D + rearmar solo las 3 articulaciones hacia la raíz) | 3/18 (ahora bone_02→01, 05→04, 17→16) | 1036 | 54 | Rearmar una articulación suelta las de sus hijos |
+| J' (D + rearmar las 18, de la raíz hacia afuera) | 18/18 | 22,8 | 107 | Están todas, pero explota |
+| J'' (J' + ancla 4× la masa total) | 11/18 | 16,4 | 120 | La masa del ancla no lo estabiliza |
+| K (rearmar las 18 + caída libre, sin ancla) | **0/18** | **1,0** | 49 (caída) | **El rearmado funciona: lo que explota es el cuerpo colgado** |
+| L (A, el ancla cinemática sin simular, + rearmar) | 12/18 | 19,5 | 108 | Explota la cadena pesada del torso (bone_04…15) |
+| M (L + todas las masas iguales a 3) | 12/18 | 21,1 | 145 | Las masas tampoco son la causa |
+| N (L con el ancla en el pecho, bone_05) | 0/18 | 1,0 | 49 | El ancla del pecho cae: no queda fuera de la simulación |
+**Conclusiones:**
+- (1) Godot no arma las 3 articulaciones hacia la raíz. Rearmarlas en orden con todo ya simulando las arma.
+- (2) Con todas armadas, el cuerpo colgado de la cadera explota. Las masas y la colisión entre huesos (la máscara ya es 1) quedan descartadas. La sospecha que queda es la pelea entre los límites del cono (swing 55°) y la gravedad, que dobla el torso casi 180° al colgarlo de la cadera.
+- (3) Para colgar del pecho primero hay que lograr que el ancla quede fuera de la simulación: el `bone_name` de la lista de `physical_bones_start_simulation` no alcanzó.
+
+**Próximo intento:** ancla en el pecho, con el ancla fuera de la simulación verificada (pose y velocidad del ancla impresas por tick), y límites del cono más anchos solo mientras cuelga.
+`RagdollDriver` y `RagdollPose` NO se cambian: el rearmado también afectaría la muerte (FALL) y eso no está medido. HANG sigue apagado.

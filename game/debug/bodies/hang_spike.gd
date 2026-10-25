@@ -11,6 +11,7 @@ extends SceneTree
 ## Run headless (one process per variant so each starts clean; the orchestrator runs these):
 ##   godot_run.sh Godot --headless --path . --script res://debug/bodies/hang_spike.gd -- a
 ##   godot_run.sh Godot --headless --path . --script res://debug/bodies/hang_spike.gd -- b
+##   ... -- j   (D with RagdollPose.start; criterion: `SPIKE J loose 0/18` and stretch <= 1.3)
 ##   godot_run.sh Godot --headless --path . --script res://debug/bodies/hang_spike.gd           (runs a and b as child processes, prints SPIKE CHOICE A|B|NONE)
 
 const MODEL_SCENE := "res://scenes/bodies/models/trogg_model.tscn"
@@ -31,7 +32,7 @@ func _initialize() -> void:
 	_variant = "".join(OS.get_cmdline_user_args()).to_lower()
 	var limit := TIMEOUT_S if _variant != "" else TIMEOUT_S * 2.0
 	create_timer(limit).timeout.connect(_on_timeout)
-	if _variant in ["a", "b", "c", "d", "e", "f", "g", "h", "i"]:
+	if _variant in ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n"]:
 		_run_variant()
 	else:
 		_run_all()
@@ -87,6 +88,11 @@ func _run_variant() -> void:
 		bodies[pb.get_bone_id()] = pb
 		if pb.joint_type == PhysicalBone3D.JOINT_TYPE_NONE and anchor == null:
 			anchor = pb
+	if _variant == "n":
+		## N: L hung from the chest (bone_05: head and both arms hang from it) instead of the hips.
+		for id: int in bodies:
+			if (bodies[id] as PhysicalBone3D).bone_name == "bone_05":
+				anchor = bodies[id]
 	if anchor == null or bodies.size() < 2:
 		print("SPIKE %s FAIL no_anchor_or_bodies" % _variant.to_upper())
 		quit(1)
@@ -133,6 +139,41 @@ func _run_variant() -> void:
 			if kind != PhysicalBone3D.JOINT_TYPE_NONE:
 				bone.joint_type = PhysicalBone3D.JOINT_TYPE_NONE
 				bone.joint_type = kind
+	elif _variant == "j":
+		## J: D with the fix of RagdollPose.start (the joints of the root's children are rebuilt in the start frame).
+		var total_mass := 0.0
+		for id: int in bodies:
+			total_mass += (bodies[id] as PhysicalBone3D).mass
+		anchor.mass = total_mass * 4.0
+		for id: int in bodies:
+			var b := bodies[id] as PhysicalBone3D
+			b.collision_mask = b.collision_mask & ~b.collision_layer
+		print("SPIKE J detail anchor_mass=%.1f" % anchor.mass)
+		_start_rebuilt(sim)
+	elif _variant == "m":
+		## M: L with every bone weighing the same (tests whether the mass ratios make the chain explode).
+		var masses := PackedFloat32Array()
+		for id: int in bodies:
+			masses.append((bodies[id] as PhysicalBone3D).mass)
+			(bodies[id] as PhysicalBone3D).mass = 3.0
+		print("SPIKE M detail masses_before min=%.2f max=%.2f" % [Array(masses).min(), Array(masses).max()])
+		var rest_names_m: Array[StringName] = []
+		for id: int in bodies:
+			if bodies[id] != anchor:
+				rest_names_m.append(StringName((bodies[id] as PhysicalBone3D).bone_name))
+		sim.physical_bones_start_simulation(rest_names_m)
+		_rebuild_cones(sim, skeleton)
+	elif _variant == "l" or _variant == "n":
+		## L: A (the anchor does not simulate and rides the skeleton) + every cone joint rebuilt once the rest simulates.
+		var rest_names: Array[StringName] = []
+		for id: int in bodies:
+			if bodies[id] != anchor:
+				rest_names.append(StringName((bodies[id] as PhysicalBone3D).bone_name))
+		sim.physical_bones_start_simulation(rest_names)
+		_rebuild_cones(sim, skeleton)
+	elif _variant == "k":
+		## K: free fall like C, with every joint rebuilt at start (RagdollPose.start). No anchor, no motion.
+		_start_rebuilt(sim)
 	elif _variant == "c" or _variant == "d" or _variant == "g":
 		## Control: every bone simulating, no anchor and no motion (a free fall). Shows whether the joints hold at all.
 		sim.physical_bones_start_simulation()
@@ -221,7 +262,7 @@ func _measure(holder: Node3D, skeleton: Skeleton3D, bodies: Dictionary, anchor: 
 	var ticks := int((MOVE_S + MEASURE_AFTER_STOP_S) / dt)
 	var rel_anchor_basis: Basis = (skeleton.global_transform.affine_inverse() * anchor.global_transform).basis
 	for i in ticks:
-		if _variant in ["d", "e", "g", "h", "i"]:
+		if _variant in ["d", "e", "g", "h", "i", "j"]:
 			## D: every bone simulates; the anchor gets the velocity that takes it to where the skeleton carries it this tick.
 			var goal := skeleton.global_transform * rel_anchor
 			if t_next_moves(i, dt):
@@ -253,7 +294,7 @@ func _measure(holder: Node3D, skeleton: Skeleton3D, bodies: Dictionary, anchor: 
 			var d: float = (pair[0] as PhysicalBone3D).global_position.distance_to((pair[1] as PhysicalBone3D).global_position)
 			out.stretch = maxf(out.stretch, d / float(pair[2]))
 		out.extent = maxf(out.extent, (hi - lo).length() / height)
-		if t < MOVE_S and _variant != "c" and _variant != "f":
+		if t < MOVE_S and not _variant in ["c", "f", "k"]:
 			holder.position.x += SPEED_MPS * dt
 	var loose := PackedStringArray()
 	for pair in pairs:
@@ -266,3 +307,38 @@ func _measure(holder: Node3D, skeleton: Skeleton3D, bodies: Dictionary, anchor: 
 
 func t_next_moves(i: int, dt: float) -> bool:
 	return float(i) * dt < MOVE_S
+
+
+## Starts every bone and rebuilds every cone joint, nearest the root first (variants j, k).
+func _start_rebuilt(sim: PhysicalBoneSimulator3D) -> void:
+	sim.physical_bones_start_simulation()
+	_rebuild_cones(sim, sim.get_parent() as Skeleton3D)
+
+
+## Swaps every cone joint off and on (Godot builds it again) and puts its limits back, parents before children.
+func _rebuild_cones(sim: PhysicalBoneSimulator3D, skeleton: Skeleton3D) -> void:
+	var cones: Array[PhysicalBone3D] = []
+	for child in sim.get_children():
+		var bone := child as PhysicalBone3D
+		if bone != null and bone.joint_type == PhysicalBone3D.JOINT_TYPE_CONE:
+			cones.append(bone)
+	cones.sort_custom(func(a: PhysicalBone3D, b: PhysicalBone3D) -> bool:
+		return _bone_depth(skeleton, a.get_bone_id()) < _bone_depth(skeleton, b.get_bone_id()))
+	for bone in cones:
+		var keys := ["swing_span", "twist_span", "bias", "softness", "relaxation"]
+		var saved := {}
+		for key: String in keys:
+			saved[key] = bone.get("joint_constraints/" + key)
+		bone.joint_type = PhysicalBone3D.JOINT_TYPE_NONE
+		bone.joint_type = PhysicalBone3D.JOINT_TYPE_CONE
+		for key: String in keys:
+			bone.set("joint_constraints/" + key, saved[key])
+
+
+func _bone_depth(skeleton: Skeleton3D, bone: int) -> int:
+	var depth := 0
+	var up := skeleton.get_bone_parent(bone)
+	while up >= 0:
+		depth += 1
+		up = skeleton.get_bone_parent(up)
+	return depth

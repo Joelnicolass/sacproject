@@ -14,6 +14,7 @@ const INPUT := "res://addons/mp_kit/nodes/mp_input.gd"
 const STATE := "res://addons/mp_kit/nodes/mp_state.gd"
 const MATCH := "res://addons/mp_kit/nodes/mp_match.gd"
 const SLOT_SPAWNER := "res://addons/mp_kit/mp_slot_spawner.gd"
+const LEAVE := "res://addons/mp_kit/nodes/mp_leave_button.gd"
 
 
 static func player_script(is_3d: bool) -> String:
@@ -132,6 +133,14 @@ static func world(is_3d: bool, players: int, player_scene: PackedScene) -> Node:
 	var match_node: Node = load(MATCH).new()
 	match_node.name = "Match"
 	_add(root, match_node)
+	var hud := CanvasLayer.new()
+	hud.name = "Hud"
+	_add(root, hud)
+	var leave := Button.new()
+	leave.name = "Leave"
+	leave.set_script(load(LEAVE))
+	leave.position = Vector2(16, 16)
+	_add(hud, leave)
 	return root
 
 
@@ -146,7 +155,6 @@ static func boot(net: Resource, paths: Dictionary, private_server: bool) -> Node
 	flow.set("world_path", paths["world"])
 	flow.set("lobby_path", paths["lobby"])
 	flow.set("room_server_path", paths["rooms"])
-	flow.set("start_when", 1)
 	_add(root, flow)
 	var menu: Node = (load(MENU) as PackedScene).instantiate()
 	menu.name = "Menu"
@@ -163,11 +171,12 @@ static func lobby(back_path: String) -> Node:
 	return root
 
 
-static func room_server(config: Resource) -> Node:
+static func room_server(config: Resource, net: Resource) -> Node:
 	var root := Node.new()
 	root.name = "Rooms"
 	root.set_script(load(ROOM_SERVER))
 	root.set("config", config)
+	root.set("net_config", net)
 	return root
 
 

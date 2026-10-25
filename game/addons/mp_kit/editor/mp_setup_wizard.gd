@@ -63,11 +63,12 @@ func write() -> Error:
 	if err == OK:
 		err = _save_scene(MpSetupTemplates.world(dimension_3d, max_players, load(_p(PLAYER))), _p(WORLD))
 	if err == OK and online_rooms:
+		## The room server takes transport, relay and TLS from net.tres (MpRoomServer.net_config): one place.
 		var config := MpLobbyConfig.new()
 		config.seats_per_room = mini(max_players, 2)
 		err = ResourceSaver.save(config, _p(ROOMS_CONFIG))
 		if err == OK:
-			err = _save_scene(MpSetupTemplates.room_server(load(_p(ROOMS_CONFIG))), _p(ROOMS))
+			err = _save_scene(MpSetupTemplates.room_server(load(_p(ROOMS_CONFIG)), load(_p(NET))), _p(ROOMS))
 		if err == OK:
 			err = _save_scene(MpSetupTemplates.lobby(_p(BOOT)), _p(LOBBY))
 	if err == OK:

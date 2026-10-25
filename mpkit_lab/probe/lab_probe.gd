@@ -286,8 +286,6 @@ func _play_online() -> void:
 	await get_tree().process_frame
 	_check(MpFlow.find_in_tree(self) != null, "the flow survived the scene change (it lives under the root)")
 	var client := MpLobbyLink.client(get_tree())
-	var ticket: Array = []
-	client.match_ready.connect(func(h: String, p: int, t: String) -> void: ticket.assign([h, p, t]))
 	var errors: Array[String] = []
 	client.error_received.connect(func(code: String) -> void: errors.append(code))
 	var chat: Array[String] = []
@@ -340,8 +338,18 @@ func _play_online() -> void:
 		_check(not MpKit.is_networked(), "left the match on purpose")
 		if drop == "abandon":
 			return
-		await get_tree().create_timer(0.5).timeout
-		MpFlow.find_in_tree(self).join_match(ticket[0], ticket[1], ticket[2])
+		## What a dropped connection does (MpKit emits server_lost): the flow takes the player back to the lobby,
+		## which offers "Back to the match".
+		MpKit.server_lost.emit()
+		var back_screens: Array[MpLobbyScreen] = []
+		await _until(func() -> bool:
+			if get_tree().current_scene is MpLobbyScreen:
+				back_screens.append(get_tree().current_scene)
+			return not back_screens.is_empty(), "after the drop the player is back in the lobby")
+		if back_screens.is_empty():
+			return
+		await _until(func() -> bool: return back_screens[0].can_rejoin(), "the lobby offers Back to the match")
+		back_screens[0].rejoin_match()
 		await _until(_networked_slot, "came back to the match with the same ticket")
 		await _pawn(MpKit.local_slot())
 	var back := MpBoot.user_value("probe-expect-back", "")

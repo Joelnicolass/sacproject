@@ -5,11 +5,17 @@ extends Node
 ## Drop one inside anything the network shares: a player, a bullet, a door. The server owns that node; what you
 ## tick under "Sync" reaches every peer (the synchronizer is built here, in the editor, and saved in the scene) and
 ## is drawn smoothly there. `owner_slot` says which player owns it (0 = nobody, the server). Calls travel by name:
-##   net.to_server(&"buy", item)  ->  mp_sv_buy(item)  runs on the server (only the owner may ask)
+##   net.to_server(&"buy", item)  ->  mp_sv_buy(item)  runs on the server (the owner may ask; see `callers`)
 ##   net.to_all(&"flash")         ->  mp_all_flash()   runs on every peer (only the server may send)
 ## With `predict`, movement goes in `mp_move(input, delta)`: the server runs it, and the owner runs it at once with
 ## its own keys and corrects itself from the server's state (reconciliation), so its node answers without lag.
 ## Not: spawning (MpSpawner), input (MpInput), match state (MpState).
+
+## Who may ask for this node's mp_sv_* calls.
+enum Callers {
+	OWNER, ## the player in owner_slot (with owner_slot 0: only the server itself)
+	ANYONE, ## any seated player (a door, a bell, a shop): check what they ask inside mp_sv_*
+}
 
 enum Smoothing {
 	NONE, ## draw each server state as it arrives
@@ -67,6 +73,8 @@ static var server_calls := MpRateLimit.new(60.0, 120.0)
 @export_group("Owner")
 ## The player slot that owns this node (0 = the server). Spawners set it before the node enters the tree.
 @export var owner_slot: int = 0
+## Who may call mp_sv_* here. OWNER (default) or ANYONE (things of the world every player uses).
+@export var callers: Callers = Callers.OWNER
 
 ## Server time of the state being sent (synced with it; 0 = none yet). Proxies and reconciliation read it.
 var net_stamp: float = 0.0
@@ -176,10 +184,16 @@ func sender_slot() -> int:
 	return _sender_slot
 
 
-## Server (or solo) only: remove this node everywhere (the spawner that made it removes it on every peer).
+## Server (or solo) only: remove this node everywhere. Only for nodes a spawner made (the spawner removes them on every
+## peer, late joiners never get them). A node of the world scene cannot be despawned: a late joiner loads the scene
+## and would still have it; hide it instead (sync `visible`) or spawn it.
 func despawn() -> void:
 	if not MpKit.is_authority():
 		push_warning("MpActor '%s': despawn() only runs on the server" % _root.name)
+		return
+	## Saved in the world scene = it has an owner; a node a spawner made has none.
+	if _root.owner != null:
+		push_error("MpActor '%s': despawn() on a node of the world scene; hide it (sync visible) or spawn it" % _root.name)
 		return
 	_root.queue_free()
 
@@ -195,8 +209,8 @@ func to_server(action: StringName, ...args: Array) -> void:
 	if MpKit.is_authority():
 		_run_sv(action, args, MpKit.local_slot())
 		return
-	if owner_slot != 0 and not is_local():
-		push_warning("MpActor '%s': to_server(%s) from a peer that does not own it" % [_root.name, action])
+	if callers == Callers.OWNER and not is_local():
+		push_warning("MpActor '%s': to_server(%s) from a peer that does not own it (callers = OWNER)" % [_root.name, action])
 		return
 	rpc_server_call.rpc_id(MpAuthority.SERVER_PEER, action, args)
 
@@ -225,7 +239,7 @@ func rpc_server_call(action: StringName, args: Array) -> void:
 	if not multiplayer.is_server():
 		return
 	var slot := MpKit.slot_for_peer(multiplayer.get_remote_sender_id())
-	if slot <= 0 or (owner_slot != 0 and slot != owner_slot):
+	if slot <= 0 or (callers == Callers.OWNER and slot != owner_slot):
 		return
 	if var_to_bytes(args).size() > MAX_ARGS_BYTES or not server_calls.allow(multiplayer.get_remote_sender_id()):
 		return

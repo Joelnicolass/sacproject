@@ -1,27 +1,63 @@
 class_name MpTransport
 extends RefCounted
 
-## Network transport of the kit: ENet (UDP, the default) or WebSocket (TCP, needed by a web export and by TCP
-## tunnels). Only builds the `MultiplayerPeer`; RPCs, slots and replication do not change with it.
-## The names are the values of `--transport=enet|ws` and of `MpLobbyConfig.transport`.
+## Network transport of the kit: ENet (UDP, the default), WebSocket (TCP, needed by a web export) or relay (WebSocket
+## through an MpKit relay, addons/mp_kit/relay: the server connects out, so it needs no public port; web and desktop).
+## Only builds the `MultiplayerPeer`; RPCs, slots and replication do not change with it.
+## The names are the values of `--transport=enet|ws|relay` and of `MpLobbyConfig.transport`.
+## Relay settings: `relay_url` (wss://…), `relay_room` (room prefix; each port is the room `<prefix>-<port>`) from
+## `--relay-url=` / `--relay-room=` or an MpNetConfig / MpLobbyConfig; the host secret from `--relay-secret=` or the
+## MPKIT_RELAY_SECRET environment variable (never in a .tres the clients get).
 ## `wss://` (TLS): pass `TLSOptions` to `create_server` / `create_client`, or terminate TLS in a reverse proxy
 ## (see the README). `--net-lag-ms` / `--net-jitter-ms` / `--net-loss` wrap the peer in MpLagPeer (tests only).
 
 const ENET := "enet"
 const WS := "ws"
+const RELAY := "relay"
+
+static var relay_url: String = ""
+static var relay_room: String = "mpkit"
+static var _relay_read: bool = false
 
 
-## `--transport=` flag; an unknown value falls back to ENet with a warning. A web export is always WebSocket.
+## The relay settings from the flags and the environment (once); a config may override them afterwards.
+static func relay_from_flags() -> void:
+	if _relay_read:
+		return
+	_relay_read = true
+	## An empty flag (a room server forwards its empty fields) leaves the setting as it is.
+	var url := MpBoot.user_value("relay-url", "")
+	var room := MpBoot.user_value("relay-room", "")
+	if not url.is_empty():
+		relay_url = url
+	if not room.is_empty():
+		relay_room = room
+
+
+static func relay_secret() -> String:
+	var flag := MpBoot.user_value("relay-secret", "")
+	return flag if not flag.is_empty() else OS.get_environment("MPKIT_RELAY_SECRET")
+
+
+## The relay room of a kit "port".
+static func relay_room_for(port: int) -> String:
+	return "%s-%d" % [relay_room, port]
+
+
+## `--transport=` flag; an unknown value falls back to ENet with a warning. A web export is WebSocket or relay.
 static func from_flags(default: String = ENET) -> String:
-	if OS.has_feature("web"):
+	var chosen := normalize(MpBoot.user_value("transport", default))
+	if OS.has_feature("web") and chosen == ENET:
 		return WS
-	return normalize(MpBoot.user_value("transport", default))
+	return chosen
 
 
 static func normalize(name: String) -> String:
 	var low := name.strip_edges().to_lower()
 	if low == WS or low == "websocket" or low == "wss":
 		return WS
+	if low == RELAY or low == "tunnel":
+		return RELAY
 	if low.is_empty() or low == ENET or low == "udp":
 		return ENET
 	push_warning("--transport=%s: unknown, ENet is used" % name)
@@ -62,6 +98,8 @@ static func client_tls_from_flags() -> TLSOptions:
 
 ## `{error, peer}`. `max_clients` only applies to ENet (the WebSocket peer has no cap of its own).
 static func create_server(kind: String, port: int, max_clients: int, tls: TLSOptions = null) -> Dictionary:
+	if normalize(kind) == RELAY:
+		return _relay(relay_room_for(port), true, "")
 	if normalize(kind) == WS:
 		var ws := WebSocketMultiplayerPeer.new()
 		var err_ws := ws.create_server(port, "*", tls)
@@ -74,6 +112,9 @@ static func create_server(kind: String, port: int, max_clients: int, tls: TLSOpt
 ## `{error, peer}`. WebSocket builds `ws://host:port` (or `wss://` with `tls`); a `host` that already has a
 ## scheme (`wss://play.example.com/x`) is used as is.
 static func create_client(kind: String, host: String, port: int, tls: TLSOptions = null) -> Dictionary:
+	if normalize(kind) == RELAY:
+		## A full URL as the host is the relay itself (a link someone shared); otherwise the configured relay.
+		return _relay(relay_room_for(port), false, host if host.contains("://") else "")
 	if normalize(kind) == WS:
 		var ws := WebSocketMultiplayerPeer.new()
 		var scheme := "wss" if tls != null else "ws"
@@ -86,7 +127,20 @@ static func create_client(kind: String, host: String, port: int, tls: TLSOptions
 
 
 ## True if `port` can be opened on this machine with `kind` (a probe that opens and closes it).
+static func _relay(room: String, host: bool, url_override: String) -> Dictionary:
+	relay_from_flags()
+	var url := url_override if not url_override.is_empty() else relay_url
+	if url.is_empty():
+		push_error("MpTransport: the relay transport needs a relay URL (--relay-url=wss://… or MpNetConfig.relay_url)")
+		return {"error": ERR_UNCONFIGURED, "peer": null}
+	var peer := MpRelayPeer.new()
+	var err := peer.start(url, room, host, relay_secret() if host else "")
+	return {"error": err, "peer": MpLagPeer.wrap_from_flags(peer)}
+
+
 static func port_is_free(kind: String, port: int) -> bool:
+	if normalize(kind) == RELAY:
+		return true
 	if normalize(kind) == WS:
 		var tcp := TCPServer.new()
 		var err_tcp := tcp.listen(port)

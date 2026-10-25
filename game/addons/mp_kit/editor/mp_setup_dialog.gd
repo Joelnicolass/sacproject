@@ -42,7 +42,7 @@ func _init() -> void:
 	box.add_child(files_title)
 	_files = Label.new()
 	box.add_child(_files)
-	for control in [_folder, _dimension, _players, _transport, _rooms]:
+	for control in [_folder, _dimension, _players, _transport, _rooms, _main]:
 		var refresh := func(_a: Variant = null) -> void: _show_plan()
 		if control is LineEdit:
 			control.text_changed.connect(refresh)
@@ -69,8 +69,8 @@ func wizard() -> MpSetupWizard:
 
 func _show_plan() -> void:
 	var w := wizard()
-	_files.text = w.plan_text()
-	get_ok_button().disabled = not w.folder.begins_with("res://") or _files.text.contains("[~]")
+	_files.text = w.plan_text() + ("\n[~] project.godot (main scene)" if _main.button_pressed else "")
+	get_ok_button().disabled = not w.folder.begins_with("res://") or w.plan_text().contains("[~]")
 
 
 func _on_create() -> void:

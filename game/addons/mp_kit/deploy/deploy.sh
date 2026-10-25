@@ -4,13 +4,13 @@
 #
 #   deploy.sh user@host path/to/build [options]
 #     --name NAME          service and user name (default: the build's binary name without .x86_64)
-#     --rooms 7700,7701    room server instances, one per lobby port (default 7700). Each gets 100 match ports:
+#     --rooms 7700,7701    room server instances, one per lobby port (default 7700 unless --dedicated is given). Each gets 100 match ports:
 #                          the first 7800-7899, the second 7900-7999...
 #     --dedicated 7777     plain dedicated instances (no lobby), one per port. Default: none.
 #     --transport enet|ws  forwarded to every instance (default: what the build's MpLobbyConfig says)
 #     --tls-cert PATH      wss:// with this PEM certificate on the server (e.g. /etc/letsencrypt/live/DOMAIN/fullchain.pem)
 #     --tls-key PATH       and its PEM key (…/privkey.pem). The service user must be able to read both.
-#     --open-firewall      also open the ports with ufw (UDP for ENet, TCP for WebSocket and always the lobby's)
+#     --open-firewall      also open the ports with ufw (UDP for ENet, TCP for WebSocket; the lobby and its matches alike)
 #     --dry-run            print every command instead of running it
 #
 # The build folder holds the Linux export: NAME.x86_64 and NAME.pck (see deploy/README.md). Run it again to update:
@@ -20,7 +20,7 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 TARGET="${1:?usage: deploy.sh user@host path/to/build [options]}"
 BUILD="${2:?usage: deploy.sh user@host path/to/build [options]}"
 shift 2
-NAME=""; ROOMS="7700"; DEDICATED=""; TRANSPORT=""; FIREWALL=0; DRY=0; TLS_CERT=""; TLS_KEY=""
+NAME=""; ROOMS=""; DEDICATED=""; TRANSPORT=""; FIREWALL=0; DRY=0; TLS_CERT=""; TLS_KEY=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --name) NAME="$2"; shift 2 ;;
@@ -34,6 +34,8 @@ while [ $# -gt 0 ]; do
     *) echo "unknown option $1" >&2; exit 2 ;;
   esac
 done
+## No instances asked for = one room server on 7700.
+[ -z "$ROOMS$DEDICATED" ] && ROOMS="7700"
 BIN="$(cd "$BUILD" && ls -1 *.x86_64 2>/dev/null | head -n 1 || true)"
 [ -n "$BIN" ] || { echo "no *.x86_64 in $BUILD: export the Linux preset first (deploy/README.md)" >&2; exit 1; }
 [ -n "$NAME" ] || NAME="${BIN%.x86_64}"
@@ -79,4 +81,4 @@ for port in ${DEDICATED//,/ }; do
   echo "   dedicated on $port"
   [ "$FIREWALL" = 1 ] && remote "sudo ufw allow $port/$([ "$TRANSPORT" = ws ] && echo tcp || echo udp)"
 done
-echo "== done. Logs: ssh $TARGET journalctl -u '$NAME-rooms@*' -f"
+echo "== done. Logs: ssh $TARGET journalctl -u '$NAME-$([ -n "$ROOMS" ] && echo rooms || echo dedicated)@*' -f"

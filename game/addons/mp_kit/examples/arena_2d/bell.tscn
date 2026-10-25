@@ -31,6 +31,7 @@ sync_position = false
 sync_rotation = false
 sync_extra = PackedStringArray("rings")
 smoothing = 0
+callers = 1
 
 [node name="MpSync" type="MultiplayerSynchronizer" parent="MpActor"]
 root_path = NodePath("../..")

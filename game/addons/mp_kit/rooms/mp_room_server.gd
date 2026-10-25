@@ -12,6 +12,9 @@ extends Node
 signal started(port: int)
 
 @export var config: MpLobbyConfig
+## The game's network .tres (the same one its MpFlow uses): the lobby and every match take transport, relay and TLS
+## from it, so they always talk like the game. Empty = what `config` says.
+@export var net_config: MpNetConfig
 ## Empty = the defaults (anything goes, 2 seats).
 @export var rules: MpRoomRules
 ## Scene each match process opens. Empty = the project's main scene (the usual case: it holds the MpFlow).
@@ -31,6 +34,9 @@ func _start() -> void:
 		config = load(chosen)
 	if config == null:
 		config = MpLobbyConfig.new()
+	config = config.duplicate()
+	if net_config:
+		net_config.fill_lobby_config(config)
 	launcher = MpMatchLauncher.new()
 	launcher.name = "Launcher"
 	launcher.config = config

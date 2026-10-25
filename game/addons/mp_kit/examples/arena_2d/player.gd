@@ -62,8 +62,10 @@ func _shoot() -> void:
 	var shots := get_tree().get_first_node_in_group(&"shot_spawner") as MpSpawner
 	if shots == null:
 		return
-	var aim: Vector2 = input.get_value(&"aim", Vector2.RIGHT)
-	shots.spawn_actor(SHOT, {"position": position, "direction": aim if aim != Vector2.ZERO else Vector2.RIGHT}, net.owner_slot)
+	## The aim comes from the client: check it (a Vector2 of length 1) before using it.
+	var aim: Variant = input.get_value(&"aim", Vector2.RIGHT)
+	var direction: Vector2 = (aim as Vector2).normalized() if aim is Vector2 and (aim as Vector2).length() > 0.01 else Vector2.RIGHT
+	shots.spawn_actor(SHOT, {"position": position, "direction": direction}, net.owner_slot)
 
 
 func mp_sv_recolor() -> void:

@@ -7,7 +7,11 @@ extends Control
 ## the look comes from the Theme. Each button calls a public method, so a game can build its own screen on them.
 ## Not: the rules of a room (MpRoomRules on the server), the player's pick (call `set_pick` from your own UI).
 
-@export var lobby_address: String = "127.0.0.1:7700"
+## The lobby: "host:port", a name, or a wss:// URL (read like the Join field, MpAddress). Empty = the flow's
+## MpNetConfig.public_host on port LOBBY_PORT (or 127.0.0.1).
+@export var lobby_address: String = ""
+## Options every room created here carries (map, mode…): MpRoomRules.seats_for / accept_options read them.
+@export var room_options: Dictionary = {}
 @export var player_name: String = "Player"
 ## The pick every seat starts with (character, team...). The lobby needs one before "ready"; a game without
 ## choices can keep this one. Change it with set_pick() (and check it in MpRoomRules.accept_pick).
@@ -36,9 +40,14 @@ extends Control
 @export var countdown_status: String = "Starting in %d…"
 @export var joining_status: String = "Joining the match…"
 @export var result_status: String = "Last match: %s"
+@export var rejoin_text: String = "Back to the match"
+@export var rejoin_status: String = "Your match is still running."
+@export var bad_address_status: String = "Invalid lobby address"
 
 ## The room server started this player's match (only with auto_join_match off; call join_found() to go).
 signal match_found(host: String, port: int, token: String)
+
+const LOBBY_PORT := 7700
 
 var _ui: MpLobbyUi
 var _found: Array = []
@@ -57,8 +66,10 @@ func _bind() -> void:
 	_client = MpLobbyLink.client(get_tree())
 	## The lobby talks like the matches: the flow's MpNetConfig says whether that is wss:// (and with which CA).
 	var flow := MpFlow.find_in_tree(self)
-	if flow and flow.net_config and flow.net_config.client_tls():
-		_client.tls = flow.net_config.client_tls()
+	if flow and flow.net_config:
+		_client.transport = flow.net_config.effective_transport()
+		if flow.net_config.client_tls():
+			_client.tls = flow.net_config.client_tls()
 	_client.lobby_joined.connect(_on_joined)
 	_client.lobby_lost.connect(_on_lost)
 	_client.room_list_received.connect(_on_rooms)
@@ -80,11 +91,37 @@ func _bind() -> void:
 
 ## "host:port" (or the default lobby address) and a display name.
 func connect_lobby(address: String = "", display_name: String = "") -> Error:
-	var text := address.strip_edges() if not address.is_empty() else lobby_address
-	var host := text.get_slice(":", 0)
-	var port := int(text.get_slice(":", 1)) if text.count(":") == 1 else 7700
+	var parsed := MpAddress.parse(address if not address.strip_edges().is_empty() else default_address(), LOBBY_PORT)
+	if not parsed.is_valid():
+		_status(bad_address_status)
+		return ERR_INVALID_PARAMETER
 	_status(connecting_status)
-	return _client.connect_to(host, port, display_name if not display_name.is_empty() else player_name)
+	var host := parsed.url if not parsed.url.is_empty() else parsed.host
+	return _client.connect_to(host, parsed.port if parsed.url.is_empty() else LOBBY_PORT, display_name if not display_name.is_empty() else player_name)
+
+
+## The address the Connect field starts with.
+func default_address() -> String:
+	if not lobby_address.is_empty():
+		return lobby_address
+	var flow := MpFlow.find_in_tree(self)
+	if flow and flow.net_config and not flow.net_config.public_host.is_empty():
+		return MpAddress.parse(flow.net_config.public_host, LOBBY_PORT).host + ":%d" % LOBBY_PORT
+	return "127.0.0.1:%d" % LOBBY_PORT
+
+
+## Your match still runs (you dropped out of it): join it again with the same ticket, within rejoin_grace_s.
+func rejoin_match() -> void:
+	var last := _client.last_match()
+	if last.is_empty():
+		return
+	_found = [str(last["host"]), int(last["port"]), str(last["token"])]
+	join_found()
+
+
+## True when this player's room is in a match that is still running.
+func can_rejoin() -> bool:
+	return int(_client.room.get("state", -1)) == MpLobbyRooms.State.IN_MATCH and not _client.last_match().is_empty()
 
 
 func refresh() -> void:
@@ -92,7 +129,7 @@ func refresh() -> void:
 
 
 func create_room(room_name: String, is_private: bool = false, options: Dictionary = {}) -> void:
-	_client.create_room(room_name, is_private, options)
+	_client.create_room(room_name, is_private, options if not options.is_empty() else room_options)
 
 
 func join_room(room_id: String) -> void:
@@ -205,6 +242,9 @@ func _on_room(view: Dictionary) -> void:
 		lines.append("%d  %s%s%s" % [int(seat["seat"]) + 1, who, marks, "  ←" if bool(seat.get("you", false)) else ""])
 	var code := "  [%s]" % view["code"] if view.has("code") else ""
 	_ui.set_room(str(view["name"]) + code, lines)
+	_ui.show_rejoin(can_rejoin())
+	if can_rejoin():
+		_status(rejoin_status)
 	if view.get("last_result", {}) is Dictionary and not (view["last_result"] as Dictionary).is_empty():
 		_status(result_status % JSON.stringify(view["last_result"]))
 

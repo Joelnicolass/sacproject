@@ -73,6 +73,11 @@ func name_of_room(room_id: String) -> String:
 func start(p_config: MpLobbyConfig, launcher: MpMatchLauncher = null) -> Error:
 	stop()
 	config = p_config
+	MpTransport.relay_from_flags()
+	if not config.relay_url.is_empty():
+		MpTransport.relay_url = config.relay_url
+	if not config.relay_room.is_empty():
+		MpTransport.relay_room = config.relay_room
 	var tls := MpTransport.server_tls(config.tls_certificate_path, config.tls_key_path)
 	var made := MpTransport.create_server(config.transport, config.lobby_port, config.max_connections, tls)
 	var peer := made["peer"] as MultiplayerPeer

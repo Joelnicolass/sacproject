@@ -11,10 +11,14 @@ signal world_changed(id: StringName)
 ## The server ended the match (MpMatch.finish): every peer gets the result.
 signal match_finished(result: Dictionary)
 
+## When the server enters the world. A listen host (Host LAN) always enters at once, and so does a process started
+## with `--dedicated` (a dedicated server loads its world as soon as it starts). This only changes a "Dedicated
+## Server" export started without that flag: DEDICATED_FIRST_CLIENT waits for the first client, MANUAL never loads by
+## itself (glue calls start_match() / goto_world()).
 enum StartWhen {
-	LISTEN_IMMEDIATE, ## host_lan() enters the world now
-	DEDICATED_FIRST_CLIENT, ## dedicated enters when the first client joins
-	MANUAL, ## the flow never loads the world by itself; glue calls start_match()/goto_world()
+	LISTEN_IMMEDIATE, ## enter the world at once (the default)
+	DEDICATED_FIRST_CLIENT, ## a "Dedicated Server" export without --dedicated: enter when the first client joins
+	MANUAL, ## never load the world by itself; glue calls start_match() / goto_world()
 }
 
 ## Every network setting in one .tres (transport, port, players, TLS). Set = it replaces max_players,
@@ -26,8 +30,8 @@ enum StartWhen {
 @export_file("*.tscn") var lobby_path: String = ""
 @export var boot_scene: PackedScene
 @export var world_scene: PackedScene
-@export var boot_path: String = ""
-@export var world_path: String = ""
+@export_file("*.tscn") var boot_path: String = ""
+@export_file("*.tscn") var world_path: String = ""
 ## Several maps: fill this and call `select_world(&"2d")`. Empty = single world_path/world_scene.
 @export var worlds: Array[MpWorldRef] = []
 @export var world_id: StringName = &""
@@ -40,7 +44,7 @@ enum StartWhen {
 
 @export var host_fail_status: String = "Could not host (port busy?)"
 @export var join_fail_status: String = "Could not join"
-@export var bad_ip_status: String = "Invalid IPv4"
+@export var bad_ip_status: String = "Invalid address (an IP or a name, optionally :port)"
 @export var joining_status: String = "Connecting to %s…"
 @export var server_lost_status: String = "Lost the server"
 @export var dedicated_status: String = "Dedicated on port %d"
@@ -56,6 +60,8 @@ var match_running: bool = false
 
 var _match_from_lobby: bool = false
 var _tree: SceneTree
+## Where this flow came from (its scene, or an autoload): two flows of different origins is a setup mistake.
+var _origin: String = ""
 
 var _lan: MpLanBeacon
 
@@ -73,6 +79,8 @@ static func find_in_tree(from: Node) -> MpFlow:
 func _enter_tree() -> void:
 	add_to_group(GROUP)
 	_tree = get_tree()
+	if _origin.is_empty():
+		_origin = owner.scene_file_path if owner else "autoload %s" % name
 
 
 func _ready() -> void:
@@ -102,8 +110,13 @@ func _ready() -> void:
 	MpKit.server_lost.connect(_on_server_lost)
 	MpKit.snapshot_received.connect(_on_flow_snapshot)
 	MpKit.session_ended.connect(_on_session_ended)
-	## A dedicated started by the room server: the ticket says who may join (unless the game armed its own agent).
+	## A dedicated started by the room server: the ticket says who may join (unless the game armed its own agent),
+	## and how many seats the match has, before the port opens.
 	if not MpBoot.user_value("match-ticket-file", "").is_empty():
+		var seats := _ticket_seats()
+		if seats > MpKit.max_players:
+			max_players = seats
+			MpKit.configure(MpKit.port, seats, host_slot, custom_channels)
 		_ensure_match_agent.call_deferred()
 	var role := MpBoot.role()
 	if role == "room-server" and not room_server_path.is_empty():
@@ -147,6 +160,10 @@ func _adopt() -> void:
 	var root := _tree.root
 	for child in root.get_children():
 		if child is MpFlow and child != self:
+			## The same boot scene loaded again: its flow gives way quietly. A flow of another origin (an autoload and
+			## a node in the boot, two boot scenes) is a setup mistake: say so, its inspector settings are ignored.
+			if (child as MpFlow)._origin != _origin:
+				push_warning("MpFlow: two flows (%s and %s); the one already running stays, this one's settings are ignored" % [(child as MpFlow)._origin, _origin])
 			queue_free()
 			return
 	get_parent().remove_child(self)
@@ -204,27 +221,17 @@ func join_lan(ip: String) -> Error:
 ## What a player types: "192.168.1.5", "play.example.com" or either with ":port" (default MpKit.port), and
 ## "#CODE" at the end for a private match (MpLocalServer). A full "wss://…" URL goes as is (WebSocket).
 func join_address(text: String, ticket: String = "") -> Error:
-	var clean := text.strip_edges()
-	if clean.contains("#"):
-		ticket = clean.get_slice("#", 1).strip_edges().to_upper()
-		clean = clean.get_slice("#", 0).strip_edges()
-	if clean.contains("://"):
-		var err := MpKit.join(clean, MpKit.port, ticket)
-		if err != OK:
-			_set_status(join_fail_status)
-		else:
-			_set_status(joining_status % clean)
+	var address := MpAddress.parse(text, MpKit.port)
+	if not address.is_valid():
+		_set_status(bad_ip_status)
+		return ERR_INVALID_PARAMETER
+	if not address.code.is_empty():
+		ticket = address.code
+	if not address.url.is_empty():
+		var err := MpKit.join(address.url, MpKit.port, ticket)
+		_set_status(join_fail_status if err != OK else joining_status % address.url)
 		return err
-	var host := clean
-	var p_port := MpKit.port
-	if clean.count(":") == 1:
-		host = clean.get_slice(":", 0)
-		var raw := clean.get_slice(":", 1)
-		if not raw.is_valid_int():
-			_set_status(bad_ip_status)
-			return ERR_INVALID_PARAMETER
-		p_port = raw.to_int()
-	return join_endpoint(host, p_port, ticket)
+	return join_endpoint(address.host, address.port, ticket)
 
 
 ## The lobby's match_ready(host, port, token): join that match; when it ends, come back to `lobby_path`.
@@ -386,6 +393,18 @@ func leave_match() -> void:
 	if _back_to_lobby():
 		return
 	return_to_boot()
+
+
+## The highest slot of the ticket this match process was started with (0 if none or unreadable).
+func _ticket_seats() -> int:
+	var text := FileAccess.get_file_as_string(MpBoot.user_value("match-ticket-file", ""))
+	var ticket: Variant = JSON.parse_string(text) if not text.is_empty() else null
+	var top := 0
+	if ticket is Dictionary:
+		for row in (ticket as Dictionary).get("seats", []):
+			if row is Dictionary:
+				top = maxi(top, int((row as Dictionary).get("slot", 0)))
+	return top
 
 
 func _ensure_match_agent() -> void:

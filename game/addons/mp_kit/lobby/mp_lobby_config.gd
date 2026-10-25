@@ -2,14 +2,18 @@ class_name MpLobbyConfig
 extends Resource
 
 ## Limits and times of the room server and its match processes. Pure data: no product text.
-## Every int/float field can be overridden by a command-line flag with the same name, dashes
+## Every int, float and String field can be overridden by a command-line flag with the same name, dashes
 ## instead of underscores (`max_matches` -> `--max-matches=4`), through `with_cli_overrides()`.
 
 @export_group("Lobby")
 @export var lobby_port: int = 7700
 @export var max_connections: int = 64
 ## `enet` (UDP, default) or `ws` (WebSocket over TCP). Used by the lobby and forwarded to every dedicated.
-@export_enum("enet", "ws") var transport: String = "enet"
+@export_enum("enet", "ws", "relay") var transport: String = "enet"
+## relay transport: the relay address and room prefix the lobby and every match use (the secret comes from the
+## MPKIT_RELAY_SECRET environment variable, which the matches inherit).
+@export var relay_url: String = ""
+@export var relay_room: String = ""
 @export var max_rooms: int = 32
 ## Seats of a room when the game does not say otherwise (`MpLobbyRooms.seat_count_for` unset).
 @export var seats_per_room: int = 2
@@ -68,7 +72,7 @@ extends Resource
 @export var matches_root: String = "user://mp_matches"
 ## Fields the launcher forwards to the dedicated as `--field-name=value`.
 @export var agent_fields: PackedStringArray = PackedStringArray([
-	"transport", "tls_certificate_path", "tls_key_path", "heartbeat_s", "idle_no_players_s", "rejoin_grace_s", "load_timeout_s", "parent_check_s", "result_quit_delay_s",
+	"transport", "tls_certificate_path", "tls_key_path", "relay_url", "relay_room", "heartbeat_s", "idle_no_players_s", "rejoin_grace_s", "load_timeout_s", "parent_check_s", "result_quit_delay_s",
 ])
 
 
@@ -76,7 +80,7 @@ static func flag_for(field: String) -> String:
 	return "--%s" % field.replace("_", "-")
 
 
-## A copy with the command-line flags applied (int and float fields only).
+## A copy with the command-line flags applied (int, float and String fields).
 func with_cli_overrides() -> MpLobbyConfig:
 	var out := duplicate() as MpLobbyConfig
 	for prop in get_property_list():

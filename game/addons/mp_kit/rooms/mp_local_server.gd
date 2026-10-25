@@ -41,6 +41,10 @@ func start(seats: int = 2, options: Dictionary = {}, join_host: bool = true) -> 
 	_join_host = join_host
 	if config == null:
 		config = MpLobbyConfig.new()
+		## The match talks like this process does (its MpFlow already applied the game's MpNetConfig).
+		config.transport = MpKit.transport
+		config.relay_url = MpTransport.relay_url
+		config.relay_room = MpTransport.relay_room
 	_launcher = MpMatchLauncher.new()
 	_launcher.name = "Launcher"
 	_launcher.config = config

@@ -1,8 +1,10 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://addons/mp_kit/rooms/mp_room_server.gd" id="1"]
 [ext_resource type="Resource" path="res://addons/mp_kit/examples/arena_2d/rooms_config.tres" id="2"]
+[ext_resource type="Resource" path="res://addons/mp_kit/examples/arena_2d/arena_net.tres" id="3"]
 
 [node name="Rooms" type="Node"]
 script = ExtResource("1")
 config = ExtResource("2")
+net_config = ExtResource("3")

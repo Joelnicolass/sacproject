@@ -1,7 +1,7 @@
 extends Node2D
 
-## A bell of the world that belongs to no player: anyone rings it with net.to_server(&"ring"), the server runs
-## mp_sv_ring and knows who it was (sender_slot). Every peer sees the count, a late joiner too.
+## A bell of the world that belongs to no player (MpActor › Owner › callers = ANYONE): anyone rings it with
+## net.to_server(&"ring"), the server runs mp_sv_ring and knows who it was (sender_slot). Every peer sees the count, a late joiner too.
 
 const GROUP := &"bell"
 

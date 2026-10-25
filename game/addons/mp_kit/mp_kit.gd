@@ -426,6 +426,9 @@ func rpc_present_ticket(ticket: String) -> void:
 	if slot <= 0:
 		_reject_peer(sender, "rejected")
 		return
+	if slot < ids.first_client_slot() or slot > ids.max_players:
+		_reject_peer(sender, "slot_out_of_range")
+		return
 	if not ids.bind_client(sender, slot):
 		_reject_peer(sender, "slot_taken")
 		return

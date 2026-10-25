@@ -56,8 +56,10 @@ for c in $CASES; do
     lan)
       server "$d/server.log" --listen-host
       gd "$d/client.log" -- --mp-port="$PORT" --probe=browse --probe-timeout-s=20; CLIENT=$LAST_PID
-      wait "$CLIENT"; stop $SERVER
-      verdict "$d/client.log" browse "lan: the client found the listen host in the LAN list and joined it" ;;
+      gd "$d/client2.log" -- --mp-port="$PORT" --probe=browse --probe-timeout-s=20; CLIENT2=$LAST_PID
+      wait "$CLIENT"; wait "$CLIENT2"; stop $SERVER
+      verdict "$d/client.log" browse "lan: the client found the listen host in the LAN list and joined it"
+      verdict "$d/client2.log" browse "lan: a second window on the same PC browsing at once found it too" ;;
     mismatch)
       server "$d/server.log" --server --transport=ws
       gd "$d/enet.log" -- --transport=enet --probe-join="127.0.0.1:$PORT" --probe=refused --probe-timeout-s=20

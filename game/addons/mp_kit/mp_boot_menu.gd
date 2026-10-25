@@ -66,18 +66,13 @@ func _ready() -> void:
 		visible = false
 
 
+## With a flow, the flow owns the session (world, room name, players, LAN): the menu only shows it. The menu's own
+## world_scene / room_name / max_players / advertise_lan are for a menu without a flow (drive_kit).
 func _bind_flow() -> void:
 	_flow.status_changed.connect(_set_status)
-	if world_scene != null:
-		_flow.world_scene = world_scene
-	if world_id != &"":
-		_flow.select_world(world_id)
-	if not room_name.is_empty():
-		_flow.room_name = room_name
-	## A flow with an MpNetConfig owns these settings; the menu only fills them for a flow without one.
-	if _flow.net_config == null:
-		_flow.advertise_lan = advertise_lan and MpNetConfig.can_host()
-		_flow.max_players = max_players
+	## Where players find the server online, if the game says (MpNetConfig.public_host).
+	if _flow.net_config and not _flow.net_config.public_host.is_empty():
+		_ip.text = _flow.net_config.public_host
 
 
 func _bind_local() -> void:
@@ -162,7 +157,6 @@ func _add_button(box: VBoxContainer, text: String, cb: Callable) -> void:
 func _on_play_solo() -> void:
 	play_solo_pressed.emit()
 	if _flow:
-		_apply_world_to_flow()
 		_flow.play_solo()
 		return
 	if drive_kit:
@@ -173,7 +167,6 @@ func _on_play_solo() -> void:
 func _on_host() -> void:
 	hosted.emit()
 	if _flow:
-		_apply_world_to_flow()
 		_flow.host_lan()
 		return
 	if drive_kit:
@@ -192,7 +185,8 @@ func _on_host() -> void:
 func _on_private() -> void:
 	## By path: the menu must not load the lobby scripts unless this button is used.
 	var local_server: GDScript = load("res://addons/mp_kit/rooms/mp_local_server.gd")
-	var server: Node = local_server.call(&"start_on", get_tree(), max_players)
+	var seats := _flow.net_config.effective_max_players() if _flow and _flow.net_config else max_players
+	var server: Node = local_server.call(&"start_on", get_tree(), seats)
 	server.server_ready.connect(func(address: String, p_port: int, codes: Dictionary) -> void:
 		var shown := address if not address.is_empty() else "127.0.0.1"
 		var all := ", ".join(PackedStringArray(codes.values()))
@@ -258,15 +252,6 @@ func _on_room_selected(index: int) -> void:
 		return
 	var row: Dictionary = _room_rows[index]
 	_ip.text = "%s:%d" % [row.get("address", ""), int(row.get("port", 0))]
-
-
-func _apply_world_to_flow() -> void:
-	if _flow == null:
-		return
-	if world_scene != null:
-		_flow.world_scene = world_scene
-	if world_id != &"":
-		_flow.select_world(world_id)
 
 
 func _go_world() -> void:

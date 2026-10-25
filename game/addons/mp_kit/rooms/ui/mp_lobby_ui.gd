@@ -16,6 +16,7 @@ var _code: LineEdit
 var _room_title: Label
 var _seats: ItemList
 var _ready: CheckButton
+var _rejoin: Button
 var _chat: ItemList
 var _chat_line: LineEdit
 
@@ -67,6 +68,10 @@ func set_room(title: String, seat_lines: PackedStringArray) -> void:
 		_seats.add_item(line)
 
 
+func show_rejoin(on: bool) -> void:
+	_rejoin.visible = on
+
+
 func add_chat(line: String) -> void:
 	_chat.add_item(line)
 	_chat.ensure_current_is_visible()
@@ -75,7 +80,7 @@ func add_chat(line: String) -> void:
 func _build_connect(parent: Control) -> void:
 	var page := _page(parent, &"connect")
 	_name = _line(page, _screen.player_name)
-	_address = _line(page, _screen.lobby_address)
+	_address = _line(page, _screen.default_address())
 	var row := _hbox(page)
 	_button(row, _screen.connect_text, func() -> void: _screen.connect_lobby(_address.text, _name.text))
 	_button(row, _screen.back_text, _screen.go_back)
@@ -122,6 +127,8 @@ func _build_room(parent: Control) -> void:
 	_button(row, _screen.leave_text, func() -> void:
 		_ready.set_pressed_no_signal(false)
 		_screen.leave_room())
+	_rejoin = _button(row, _screen.rejoin_text, _screen.rejoin_match)
+	_rejoin.visible = false
 	_chat = ItemList.new()
 	_chat.custom_minimum_size = Vector2(420, 90)
 	page.add_child(_chat)

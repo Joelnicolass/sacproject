@@ -29,7 +29,7 @@ Eso crea el usuario `juego`, copia el build a `/opt/juego`, instala las unidades
 | Querés | Opción |
 |---|---|
 | Más servidores de salas en el mismo VPS | `--rooms 7700,7701,7702` (cada uno tiene 100 puertos de partida propios: 7800, 7900, 8000…) |
-| Servidores dedicados sin lobby (entrar con IP y puerto) | `--dedicated 7777,7778` |
+| Servidores dedicados sin lobby (entrar con IP y puerto) | `--dedicated 7777,7787` (sin `--rooms`, no instala salas; 7778-7781 los usa la búsqueda LAN) |
 | Clientes web | `--transport ws` (el lobby y las partidas por TCP) |
 | Que el script abra los puertos | `--open-firewall` (ufw: UDP con ENet, TCP con WebSocket) |
 | Clientes web por https (`wss://`) | `--transport ws --tls-cert /etc/letsencrypt/live/DOMINIO/fullchain.pem --tls-key /etc/letsencrypt/live/DOMINIO/privkey.pem` |

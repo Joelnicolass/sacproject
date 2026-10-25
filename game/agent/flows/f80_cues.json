@@ -92,6 +92,18 @@
     },
     "steps": [
      {
+      "call": {
+       "harness": "cue_probe",
+       "method": "aim_on",
+       "args": [
+        "Nmuh1"
+       ]
+      }
+     },
+     {
+      "wait": 0.1
+     },
+     {
       "press": {
        "name": "zoom_out",
        "hold": 0.03
@@ -111,6 +123,13 @@
     "node": "%TargetProbe",
     "prop": "kind",
     "equals": "enemy_unit"
+   }
+  },
+  {
+   "assert": {
+    "node": "%TargetProbe",
+    "prop": "hovered.name",
+    "equals": "Nmuh1"
    }
   },
   {
@@ -191,23 +210,19 @@
    "shot": "f80_1_rock_armed_enemy.png"
   },
   {
-   "repeat": {
-    "times": 60,
-    "until": {
-     "node": "%HitLog",
-     "text_contains": "mira suelo"
-    },
-    "steps": [
-     {
-      "press": {
-       "name": "zoom_in",
-       "hold": 0.03
-      }
-     },
-     {
-      "wait": 0.15
-     }
-    ]
+   "call": {
+    "harness": "cue_probe",
+    "method": "aim_ground"
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "wait_until": {
+    "node": "%HitLog",
+    "text_contains": "mira suelo",
+    "timeout": 2
    }
   },
   {
@@ -278,6 +293,23 @@
   },
   {
    "shot": "f80_4_refused.png"
+  },
+  {
+   "wait_until": {
+    "node": "%CommandCue/Invalid",
+    "visible": false,
+    "timeout": 2
+   }
+  },
+  {
+   "click": "%View"
+  },
+  {
+   "wait_until": {
+    "node": "%CommandCue/Invalid",
+    "visible": true,
+    "timeout": 1
+   }
   },
   {
    "wait_until": {

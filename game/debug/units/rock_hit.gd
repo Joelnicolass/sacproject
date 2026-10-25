@@ -3,8 +3,9 @@ extends Node
 ## F28: enemy creatures standing still ahead of the local wizard, to watch spell damage.
 ## Creature i is `tags[i]` at `spots[i]` = (meters to the wizard's right, meters ahead),
 ## facing him, on `enemy_slot`, with no aggro (empty target_groups). The label shows their
-## health, the body under the screen center (where a click on %View aims) and the hits of the
-## last physics frame (a Wrath burst: the direct hit, then the splash), also printed.
+## health, the body under the pointer (the camera's debug_pointer, else the screen center: where a click
+## on %View aims) and the hits of the last physics frame (a Wrath burst: the direct hit, then the
+## splash), also printed.
 ## RFC-028b: map buildings (`building_tags` at `building_spots`, same frame) stand among them, to watch
 ## the splash reach a cactus or a house; their health goes to the label too.
 
@@ -129,6 +130,9 @@ func _body_at_center() -> String:
 	if cam == null:
 		return ""
 	var screen := get_viewport().get_visible_rect().size * 0.5
+	var forced: Vector2 = cam.get("debug_pointer") if "debug_pointer" in cam else Vector2(-1.0, -1.0)
+	if forced.x >= 0.0:
+		screen = forced
 	var origin := cam.project_ray_origin(screen)
 	var query := PhysicsRayQueryParameters3D.create(origin, origin + cam.project_ray_normal(screen) * 10000.0)
 	query.collision_mask = 3

@@ -62,13 +62,8 @@
   },
   {
    "call": {
-    "harness": "wizard_travel",
-    "method": "set_pointer_world",
-    "args": [
-     1520,
-     16,
-     1450
-    ]
+    "harness": "cue_probe",
+    "method": "aim_ground"
    }
   },
   {
@@ -92,8 +87,8 @@
   },
   {
    "call": {
-    "harness": "selection_probe",
-    "method": "aim_body",
+    "harness": "cue_probe",
+    "method": "aim_on",
     "args": [
      "Guard1"
     ]
@@ -107,6 +102,13 @@
     "node": "%TargetProbe",
     "prop": "kind",
     "equals": "own_unit"
+   }
+  },
+  {
+   "assert": {
+    "node": "%TargetProbe",
+    "prop": "hovered.name",
+    "equals": "Guard1"
    }
   },
   {

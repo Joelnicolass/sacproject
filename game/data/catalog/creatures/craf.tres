@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_kqi83"]
+[ext_resource type="Resource" path="res://data/audio/creatures/tickferno.tres" id="sounds_set"]
 
 [resource]
 script = ExtResource("1_kqi83")
@@ -121,3 +122,4 @@ captive_animations = {
 "tag": "BGsc"
 }
 }
+sounds = ExtResource("sounds_set")

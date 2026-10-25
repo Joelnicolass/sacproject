@@ -4,7 +4,7 @@
 #   closed  plain headless, --dedicated and --room-server (both with --no-flow: the flow would host or load a world): nothing built nor loaded;
 #   lab     the audio lab (debug/audio/f360_audio_lab.tscn) with each lab_<cut>.tres, with the original's sets and without them
 #           (--audio-no-original: SoundLibrary sees only the fixtures and an empty root);
-#   052i    the bake of your own sounds (bake_sound_sets, new_creature) on two fixture files, then lab_052i.
+#   052i    new_creature writes the sound set of a creature of your own from two fixture files, then lab_052i plays it.
 # Each run has the scene watchdog (20 s real time) and --quit-after 30000 frames as a second stop.
 # Usage: bash agent/runs/run_audio_cases.sh [GODOT_BIN]
 # Prints each mode's AUDIO CASES line, the AudioStreamRandomizer finding and AUDIO RUN PASS / FAIL (exit 0 / 1).
@@ -55,11 +55,10 @@ lab lab_052g_no_original res://debug/audio/lab_052g.tres --audio-no-original
 lab lab_052h res://debug/audio/lab_052h.tres
 lab lab_052h_no_original res://debug/audio/lab_052h.tres --audio-no-original
 
-# RFC-052 052i (F368): your own sounds, with nothing of the original. Two fixture .wav files
-# (debug/audio/fixtures/custom_sounds/creatures/testmonster/death_1.wav, swing_1.wav) -> bake_sound_sets (as «Hornear sonidos»,
-# --only=custom, --force into user://bake_052i/) -> the lab plays them (lab_052i.tres looks in user://bake_052i/ first, then in the
-# committed bake debug/audio/fixtures/custom_baked/). new_creature bakes the same folder for testmonster (into user://, nothing
-# of the repo changes: the creature's files exist and are kept).
+# 055o-b: your own sounds, with nothing of the original. Two fixture .wav files
+# (debug/audio/fixtures/custom_sounds/creatures/testmonster/death_1.wav, swing_1.wav) -> new_creature writes the creature's SoundSet
+# (as «Nueva criatura desde modelo…»; into user://new_creature_052i/, nothing of the repo changes: the creature's files exist and are
+# kept) -> the lab plays it (lab_052i.tres looks in user:// first, then in the committed copy debug/audio/fixtures/custom_baked/).
 tool() { # name, expected line (grep -E), then the args after --path
   local name="$1" expect="$2"; shift 2
   bash "$RUN" "$GODOT_BIN" --headless --path "$ROOT" "$@" > "$OUT/$name.log" 2>&1
@@ -69,9 +68,6 @@ tool() { # name, expected line (grep -E), then the args after --path
   grep -E "SCRIPT ERROR|ERROR:" "$OUT/$name.log" | head -20
   [ "$code" = 0 ] && [ -n "$line" ] || FAIL=1
 }
-tool bake_052i "^bake_sound_sets: wrote user://bake_052i/creatures/testmonster.tres$" \
-  --script res://tools/bake/bake_sound_sets.gd -- --only=custom --force \
-  --custom=res://debug/audio/fixtures/custom_sounds/ --out-custom=user://bake_052i/
 tool new_creature_052i "^NEW_CREATURE sounds (wrote|kept[^:]*): user://new_creature_052i/creatures/testmonster.tres$" \
   --script res://tools/bake/new_creature.gd -- testmonster --no-icon \
   --sounds=res://debug/audio/fixtures/custom_sounds/ --sounds-out=user://new_creature_052i/

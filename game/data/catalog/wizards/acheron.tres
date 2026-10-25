@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="WizardType" format=3]
 
 [ext_resource type="Script" path="res://scenes/wizards/wizard_type.gd" id="1_dd3d0"]
+[ext_resource type="Resource" path="res://data/audio/wizards/acheron.tres" id="sounds_set"]
 
 [resource]
 script = ExtResource("1_dd3d0")
@@ -67,3 +68,4 @@ cast_animations = {
 "tag": "qur2"
 }
 }
+sounds = ExtResource("sounds_set")

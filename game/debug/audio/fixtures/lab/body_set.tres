@@ -2,46 +2,45 @@
 
 [ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="1_set"]
 [ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="2_cue"]
-[ext_resource type="AudioStream" path="res://debug/audio/fixtures/custom_sounds/creatures/fixture/death_1.wav" id="3_a"]
-[ext_resource type="AudioStream" path="res://debug/audio/fixtures/custom_sounds/creatures/fixture/death_2.wav" id="4_b"]
+[ext_resource type="AudioStream" path="res://debug/audio/fixtures/custom_sounds/creatures/fixture/death_1.wav" id="s1"]
+[ext_resource type="AudioStream" path="res://debug/audio/fixtures/custom_sounds/creatures/fixture/death_2.wav" id="s2"]
 
-[sub_resource type="Resource" id="Resource_summon"]
+[sub_resource type="Resource" id="cue_swing"]
 script = ExtResource("2_cue")
-streams = Array[AudioStream]([ExtResource("3_a"), ExtResource("4_b")])
+streams = Array[AudioStream]([ExtResource("s1"), ExtResource("s2")])
 max_voices = 0
 
-[sub_resource type="Resource" id="Resource_swing"]
+[sub_resource type="Resource" id="cue_damaged"]
 script = ExtResource("2_cue")
-streams = Array[AudioStream]([ExtResource("3_a"), ExtResource("4_b")])
+streams = Array[AudioStream]([ExtResource("s1"), ExtResource("s2")])
 max_voices = 0
 
-[sub_resource type="Resource" id="Resource_damaged"]
+[sub_resource type="Resource" id="cue_death"]
 script = ExtResource("2_cue")
-streams = Array[AudioStream]([ExtResource("3_a"), ExtResource("4_b")])
+streams = Array[AudioStream]([ExtResource("s1"), ExtResource("s2")])
 max_voices = 0
 
-[sub_resource type="Resource" id="Resource_death"]
+[sub_resource type="Resource" id="cue_summon"]
 script = ExtResource("2_cue")
-streams = Array[AudioStream]([ExtResource("3_a"), ExtResource("4_b")])
+streams = Array[AudioStream]([ExtResource("s1"), ExtResource("s2")])
 max_voices = 0
 
-[sub_resource type="Resource" id="Resource_incantation"]
+[sub_resource type="Resource" id="cue_incantation"]
 script = ExtResource("2_cue")
-streams = Array[AudioStream]([ExtResource("3_a"), ExtResource("4_b")])
+streams = Array[AudioStream]([ExtResource("s1"), ExtResource("s2")])
 max_voices = 0
 
-[sub_resource type="Resource" id="Resource_ghost"]
+[sub_resource type="Resource" id="cue_ghost"]
 script = ExtResource("2_cue")
-streams = Array[AudioStream]([ExtResource("3_a"), ExtResource("4_b")])
+streams = Array[AudioStream]([ExtResource("s1"), ExtResource("s2")])
 max_voices = 0
 
 [resource]
 script = ExtResource("1_set")
-cues = Dictionary[StringName, ExtResource("2_cue")]({
-&"summon": SubResource("Resource_summon"),
-&"swing": SubResource("Resource_swing"),
-&"damaged": SubResource("Resource_damaged"),
-&"death": SubResource("Resource_death"),
-&"incantation": SubResource("Resource_incantation"),
-&"ghost": SubResource("Resource_ghost")
-})
+swing = SubResource("cue_swing")
+shoot = SubResource("cue_swing")
+damaged = SubResource("cue_damaged")
+death = SubResource("cue_death")
+summon = SubResource("cue_summon")
+incantation = SubResource("cue_incantation")
+ghost = SubResource("cue_ghost")

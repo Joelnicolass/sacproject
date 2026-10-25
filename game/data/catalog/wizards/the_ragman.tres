@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="WizardType" format=3]
 
 [ext_resource type="Script" path="res://scenes/wizards/wizard_type.gd" id="1_yf2l3"]
+[ext_resource type="Resource" path="res://data/audio/wizards/the_ragman.tres" id="sounds_set"]
 
 [resource]
 script = ExtResource("1_yf2l3")
@@ -67,3 +68,4 @@ cast_animations = {
 "tag": "Wrc3"
 }
 }
+sounds = ExtResource("sounds_set")

@@ -26,9 +26,10 @@ extends SceneTree
 ## The HUD icon (F335): `assets/custom/icons/<tag>.png` if it exists (yours, never overwritten); else one is drawn from the model (the idle
 ## pose, the camera framing its box) with tools/bake/creature_icon_render.gd. Drawing needs a renderer: from a headless run it is skipped (a note
 ## says so) and `Godot --path . --script res://tools/bake/creature_icon.gd -- <tag>` (with a window) makes it afterwards.
-## Sounds (RFC-052 052i, F368): when assets/custom/sounds/creatures/<tag>/ exists, its files (`death_1.wav`, `swing_1.ogg`...: the
-## event names of SoundEvent) become data/audio/custom/creatures/<tag>.tres, the set the game finds for the creature. Never over an
-## existing one (`--force` rewrites it). Also with `--sync`. Without that folder the creature is silent (or uses the shared sounds).
+## Sounds: it also writes data/audio/creatures/<tag>.tres, a SoundSet over the fist melee set, and puts it in the creature's `sounds`.
+## When assets/custom/sounds/creatures/<tag>/ exists, its files (`death_1.wav`, `swing_1.ogg`...: the event names of SoundEvent.BODY)
+## fill the fields of the set; without that folder the set is empty (drag the files onto it in the inspector). Never over an
+## existing one (`--force` rewrites it). Also with `--sync`.
 ## Options: --name="Display name"  --god=<god tag>  --fps=<n> (default: the animation's own step, 30)  --force  --sync
 ##          --icon (draw the icon again even if the PNG exists)  --no-icon (do not draw one)
 ##          --sounds=res://dir/ --sounds-out=res://dir/ (another source / target for the sounds, e.g. a fixture)
@@ -645,29 +646,43 @@ func _make_icon(tag: String, idle_clip: String) -> String:
 	return await CreatureIconRender.ensure(root, tag, idle_clip, _icon)
 
 
-# --- sounds (RFC-052 052i) ----------------------------------------------------------------------------------------------
+# --- sounds -------------------------------------------------------------------------------------------------------------
 
-## The creature's SoundSet from `_sounds_src`/creatures/<tag>/ (tools/bake/sound_set_writer.gd, the same as «Hornear sonidos»).
+## The creature's SoundSet (tools/bake/sound_set_writer.gd): the files of `_sounds_src`/creatures/<tag>/ as its fields, or an empty
+## set over the fist melee set when there are none. It becomes the creature's `sounds` when the set went to data/audio/ and the
+## creature has none yet.
 func _bake_sounds(tag: String) -> int:
 	var folder := _sounds_src.path_join("creatures").path_join(tag)
-	if not DirAccess.dir_exists_absolute(folder):
-		print("NEW_CREATURE sounds: none (put <event>_1.wav or .ogg in %s/: %s)" % [folder, SoundSetWriter.event_help()])
-		return OK
+	var has_files := SoundSetWriter.has_sounds(tag, _sounds_src)
 	var writer := SoundSetWriter.new()
 	writer.force = _force
-	var path := writer.bake_folder("creatures", tag, _sounds_src, _sounds_out)
+	var path := writer.write_creature_set(tag, _sounds_src, _sounds_out)
 	for file in writer.unknown:
-		print("NEW_CREATURE sounds note: %s is not an event the game plays. Events: %s" % [file, SoundSetWriter.event_help()])
+		print("NEW_CREATURE sounds note: %s is not an event with a field in the set. Events: %s" % [file, SoundSetWriter.event_help()])
 	if not writer.failures.is_empty():
 		push_error("new_creature: could not save the sounds: %s" % ", ".join(writer.failures))
 		return 1
-	if path.is_empty():
-		print("NEW_CREATURE sounds: %s has no .ogg or .wav" % folder)
-	elif writer.written.has(path):
+	if writer.written.has(path):
 		print("NEW_CREATURE sounds wrote: %s" % path)
+		if not has_files:
+			print("NEW_CREATURE sounds: the set is empty (it uses the fist melee sounds); drag .ogg or .wav files onto its fields, or put <event>_1.wav in %s/ and run again with --force" % folder)
 	else:
 		print("NEW_CREATURE sounds kept (exists; --force rewrites it): %s" % path)
+	_assign_sounds(tag, path)
 	return OK
+
+
+## `type.sounds = set` in data/catalog/creatures/<tag>.tres when the set is a product file (not a test output) and the creature has none.
+func _assign_sounds(tag: String, set_path: String) -> void:
+	if not set_path.begins_with(SoundSetWriter.CUSTOM_OUT):
+		return
+	var type_path := CREATURES_DIR + tag + ".tres"
+	var type := ResourceLoader.load(type_path, "", ResourceLoader.CACHE_MODE_REPLACE) as CreatureType
+	if type == null or type.sounds != null:
+		return
+	type.sounds = load(set_path) as SoundSet
+	if ResourceSaver.save(type, type_path) == OK:
+		print("NEW_CREATURE sounds: %s uses %s" % [type_path, set_path])
 
 
 # --- output ------------------------------------------------------------------------------------------------------------

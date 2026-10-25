@@ -8,7 +8,7 @@ extends BodySounds
 ##   creature, once a round);
 ## - `sacrifice_end` (Xgib: the creature bursts) when the ritual ends completed (a cancelled one lets the creature go alive);
 ## - `soul` (spir) as well when a Convert ends completed: its souls go to the caster.
-## The cues come from the shared set (`shared_set`, world: the original's `spel`), at the ritual's center. No RPC, nothing
+## The cues come from the world set (`world.tres`), at the ritual's center. No RPC, nothing
 ## written. With the AudioGate closed it connects nothing. Remove the node to silence every ritual.
 
 @export var ritual: Ritual:
@@ -28,6 +28,11 @@ func _ready() -> void:
 
 func anchor() -> Node3D:
 	return ritual
+
+
+## WORKAROUND: the cue comes from the world set (`world.tres`, found by its text key) until 055o-c gives this node typed cues.
+func default_cue(event: StringName) -> SoundCue:
+	return SoundBus.lookup("world", event)
 
 
 func _on_phase_changed(phase: Ritual.Phase) -> void:

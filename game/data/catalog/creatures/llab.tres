@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_t6t3n"]
+[ext_resource type="Resource" path="res://data/audio/creatures/boulderdash.tres" id="sounds_set"]
 
 [resource]
 script = ExtResource("1_t6t3n")
@@ -116,3 +117,4 @@ captive_animations = {
 "tag": "BMsa"
 }
 }
+sounds = ExtResource("sounds_set")

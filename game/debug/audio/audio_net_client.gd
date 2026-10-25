@@ -3,8 +3,8 @@ extends Node
 ## RFC-052 052c (F362). The headless client of agent/runs/run_audio_net.sh: joins a dedicated started by hand (with the debug
 ## world audio_net_match.tscn), and counts in its own SoundLog the creature sounds of the duel the server sets up. The client
 ## only receives replicated state (mode, swings, shots, Health), so every entry proves a sound deduced on a remote peer.
-## Needs `--audio-probe` (a headless process has no audio otherwise). The sets come from the fixtures first
-## (debug/audio/fixtures/lab/: the duel's ycro and plfl sound without the original); `--audio-no-original` leaves only them.
+## Needs `--audio-probe` (a headless process has no audio otherwise). The creatures sound as their CreatureType says
+## (`sounds`: the duel's ycro and plfl, with the original's audio files, which the repo versions in LFS).
 ## 052d: `fx` counts the FX sounds (FxBus.played of a broadcast FX -> FxSounds; the emitter is the FX name).
 ## 052e: `advice` counts the advisor's lines. The client asks its wizard's Caster for a spell it does not have (`REFUSED_TAG`),
 ## once a second until one is heard: the server answers with a Refusal key (bad_target) through the feedback RPC every cast
@@ -23,7 +23,6 @@ extends Node
 
 const LOCAL_HOST := "127.0.0.1"
 const RUNNER_META := "audio_net_client_runner"
-const FIXTURE_ROOT := "res://debug/audio/fixtures/lab/"
 const EMPTY_ROOT := "res://debug/audio/fixtures/empty/"
 const VOICES_ROOT := "res://debug/audio/fixtures/voices/"
 const MUSIC_ROOT := "res://debug/audio/fixtures/music/"
@@ -53,7 +52,7 @@ func _run() -> void:
 	if not SoundBus.is_active():
 		_finish(false, "sin audio: falta --audio-probe")
 		return
-	var roots := PackedStringArray([FIXTURE_ROOT])
+	var roots := PackedStringArray()
 	if MpBoot.user_flag("audio-no-original"):
 		roots.append(EMPTY_ROOT)
 	else:

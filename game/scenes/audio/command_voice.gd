@@ -2,18 +2,17 @@
 class_name CommandVoice
 extends Node
 
-## RFC-052 052e (F364): the creatures answer the local player (sacengine speakCommand / responseSoundType), on one voice
-## channel of their own (an AudioStreamPlayer; the newest answer cuts the one speaking).
-## - Selecting: Selection.changed -> the first selected creature says `selected` (the original's `Xcnt`). Selecting the same
-##   creature again and again: past `annoy_after` times in a row it says `annoyed` instead (`Xann`), when its set has one.
+## The creatures answer the local player, on one voice channel of their own (an AudioStreamPlayer; the newest answer cuts the
+## one speaking).
+## - Selecting: Selection.changed -> the first selected creature says `selected`. Selecting the same creature again and again: past `annoy_after` times in a row it says `annoyed` instead, when its set has one.
 ##   A selection that only shrank (a creature died, was dropped) says nothing.
 ## - Ordering: Orders.requested(units, command) (the local order path, before it is sent) -> the first one says
-##   `order_events[command]`: `ack` for move and guard (`Xcnf`), `attack_ack` for attack and advance (`Xcat`). An order
+##   `order_events[command]`: `ack` for move and guard, `attack_ack` for attack and advance. An order
 ##   starts the count of `annoyed` again.
 ## - Each kind keeps its cooldown (`cooldown_s` selections, `ack_cooldown_s` orders): clicking fast does not chain voices.
-## The cue is the creature's own set (SoundLibrary.creature of its tag, with the fallback chain), then `aliases`. No set or no
-## cue: silence, no log entry. Only the local player's (Selection and Orders.request are local). With the AudioGate closed
-## (dedicated, room server, headless) it creates nothing. No RPC, nothing written to the simulation.
+## The cue is the creature's own set (`type.sounds`, with its fallback chain). No set or no cue: silence, no log entry.
+## Only the local player's (Selection and Orders.request are local). With the AudioGate closed (dedicated, room server,
+## headless) it creates nothing. No RPC, nothing written to the simulation.
 
 ## Emits `changed(units: Array)` (scenes/orders/selection.gd, %Selection).
 @export var selection: Node:
@@ -38,12 +37,6 @@ extends Node
 	"guard_area": SoundEvent.ACK,
 	"attack": SoundEvent.ATTACK_ACK,
 	"advance": SoundEvent.ATTACK_ACK,
-}
-## Event -> other keys tried in order in the creature's set when it has no cue for the event (the baked sets keep the
-## original's codes for the events that had none when they were baked).
-@export var aliases: Dictionary[StringName, PackedStringArray] = {
-	SoundEvent.ATTACK_ACK: PackedStringArray(["Xcat", "ack"]),
-	SoundEvent.ANNOYED: PackedStringArray(["Xann"]),
 }
 
 var _open := false
@@ -71,24 +64,14 @@ func _ready() -> void:
 
 
 ## The cue `unit` answers `event` with, or null (no set, no cue: silence).
-func cue_for(unit: Node, event: StringName) -> SoundCue:
-	if not _open or unit == null or not is_instance_valid(unit):
+func cue_for(unit: UnitBody, event: StringName) -> SoundCue:
+	if not _open or unit == null or not is_instance_valid(unit) or unit.type == null:
 		return null
-	var own := SoundLibrary.creature(StringName(str(unit.get("creature_tag"))))
-	if own == null:
-		return null
-	var keys: Array[StringName] = [event]
-	for alias in aliases.get(event, PackedStringArray()):
-		keys.append(StringName(alias))
-	for key in keys:
-		var cue := own.cue(key)
-		if cue != null and not cue.is_silent():
-			return cue
-	return null
+	return BodySounds.resolve(unit.type.sounds, event)
 
 
 ## `unit` says `event` on the channel now (cutting the line speaking). False when it is silent or was dropped.
-func speak(unit: Node, event: StringName) -> bool:
+func speak(unit: UnitBody, event: StringName) -> bool:
 	var cue := cue_for(unit, event)
 	if cue == null:
 		return false
@@ -96,7 +79,7 @@ func speak(unit: Node, event: StringName) -> bool:
 
 
 ## The event the next selection of `unit` would say (`annoyed` past the count, when there is a cue for it).
-func selection_event(unit: Node) -> StringName:
+func selection_event(unit: UnitBody) -> StringName:
 	var count := _count + 1 if unit != null and unit.get_instance_id() == _last_unit_id else 1
 	if count > annoy_after and cue_for(unit, SoundEvent.ANNOYED) != null:
 		return SoundEvent.ANNOYED
@@ -108,7 +91,9 @@ func _on_selection_changed(units: Array) -> void:
 	_last_size = units.size()
 	if shrank or units.is_empty() or not is_instance_valid(units[0]):
 		return
-	var first: Node = units[0]
+	var first := units[0] as UnitBody
+	if first == null:
+		return
 	var event := selection_event(first)
 	var id := first.get_instance_id()
 	_count = _count + 1 if id == _last_unit_id else 1
@@ -128,7 +113,7 @@ func _on_orders_requested(units: Array, command: String) -> void:
 	var now := BodySounds.game_seconds()
 	if now - _last_ack_s < ack_cooldown_s:
 		return
-	if speak(units[0], event):
+	if speak(units[0] as UnitBody, event):
 		_last_ack_s = now
 
 

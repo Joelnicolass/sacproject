@@ -1,329 +1,55 @@
-[gd_resource type="Resource" script_class="SoundSet" format=3]
+[gd_resource type="Resource" script_class="SoundSet" load_steps=40 format=3]
 
-[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_dyvkx"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_t1.ogg" id="2_35im4"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_t2.ogg" id="3_0kxs3"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_t3.ogg" id="4_l8wd6"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_t4.ogg" id="5_k3cf0"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_x.ogg" id="6_e77j6"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o11.ogg" id="7_ir3vb"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o12.ogg" id="8_hkv1r"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r1.ogg" id="9_h85g0"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r2.ogg" id="10_bt6ef"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r3.ogg" id="11_yt43l"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r4.ogg" id="12_ndev5"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r5.ogg" id="13_r3pib"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r6.ogg" id="14_e1ugt"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r7.ogg" id="15_0qqp3"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r8.ogg" id="16_yrwyo"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r9.ogg" id="17_mbq8l"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_a.ogg" id="18_ss26o"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_b.ogg" id="19_sssdt"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_d.ogg" id="20_7hgfl"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_e.ogg" id="21_qr2ht"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_f.ogg" id="22_pnbhq"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_g.ogg" id="23_lu5ks"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_h.ogg" id="24_s68hd"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_i.ogg" id="25_2w6ql"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_j.ogg" id="26_3oo1j"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_k.ogg" id="27_4rldv"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_l.ogg" id="28_113od"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_m.ogg" id="29_i4xbk"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_n.ogg" id="30_47nti"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_o.ogg" id="31_05h65"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_p.ogg" id="32_dso0g"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_q.ogg" id="33_22ga3"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_r.ogg" id="34_ww3tq"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_s.ogg" id="35_lj35r"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_t.ogg" id="36_tjyi3"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_u.ogg" id="37_poci4"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_v.ogg" id="38_se4lo"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_w.ogg" id="39_2gjvg"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_h.ogg" id="40_fxwed"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_i.ogg" id="41_32v4o"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_j.ogg" id="42_48623"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_k.ogg" id="43_bkkfu"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_l.ogg" id="44_n2tyd"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_m.ogg" id="45_0nlsn"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_n.ogg" id="46_hr3pv"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_o.ogg" id="47_ys6sb"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_p.ogg" id="48_p5nl0"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_q.ogg" id="49_n0ahu"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_r.ogg" id="50_siybj"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_s.ogg" id="51_ujce6"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_t.ogg" id="52_fdeii"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c1.ogg" id="53_ho8r6"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c3.ogg" id="54_36vjq"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c4.ogg" id="55_7r5om"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c2.ogg" id="56_rky24"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c5.ogg" id="57_d6ppo"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c6.ogg" id="58_hbpc7"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_u.ogg" id="59_bkyk8"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_v.ogg" id="60_nv7dw"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_w.ogg" id="61_48wn1"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_z.ogg" id="62_35g76"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c7.ogg" id="63_8sr15"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c8.ogg" id="64_6vg7n"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c9.ogg" id="65_le47k"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_a.ogg" id="66_w8iab"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_b.ogg" id="67_6x872"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_c.ogg" id="68_fmbsa"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_d.ogg" id="69_u2ota"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_e.ogg" id="70_06v13"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_f.ogg" id="71_bk365"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_g.ogg" id="72_xjsnx"]
-[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_y.ogg" id="73_ldk3g"]
-[ext_resource type="Resource" path="res://data/audio/melee/fist.tres" id="74_redlh"]
-[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="75_a6801"]
+[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_c_x.ogg" id="s1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o11.ogg" id="s2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o12.ogg" id="s3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r1.ogg" id="s4"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r2.ogg" id="s5"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r3.ogg" id="s6"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r4.ogg" id="s7"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r5.ogg" id="s8"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r6.ogg" id="s9"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r7.ogg" id="s10"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r8.ogg" id="s11"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r9.ogg" id="s12"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_a.ogg" id="s13"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_b.ogg" id="s14"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_d.ogg" id="s15"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_e.ogg" id="s16"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_f.ogg" id="s17"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_g.ogg" id="s18"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_h.ogg" id="s19"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_i.ogg" id="s20"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_j.ogg" id="s21"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_k.ogg" id="s22"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_l.ogg" id="s23"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_m.ogg" id="s24"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_n.ogg" id="s25"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_o.ogg" id="s26"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_p.ogg" id="s27"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_q.ogg" id="s28"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_r.ogg" id="s29"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_s.ogg" id="s30"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_t.ogg" id="s31"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_u.ogg" id="s32"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_v.ogg" id="s33"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/sorc/_s_o_r_w.ogg" id="s34"]
+[ext_resource type="Resource" path="res://data/audio/melee/fist.tres" id="3_fallback"]
 
-[sub_resource type="Resource" id="Resource_hdmvg"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("2_35im4")])
+[sub_resource type="Resource" id="cue_damaged"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s1"), ExtResource("s2"), ExtResource("s3")])
 bus = &"Voice"
 
-[sub_resource type="Resource" id="Resource_40874"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("3_0kxs3")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_33m1s"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("4_l8wd6")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_4c0ck"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("5_k3cf0")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_1yhtx"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("6_e77j6"), ExtResource("7_ir3vb"), ExtResource("8_hkv1r")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_rykcd"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("9_h85g0"), ExtResource("10_bt6ef"), ExtResource("11_yt43l"), ExtResource("12_ndev5"), ExtResource("13_r3pib"), ExtResource("14_e1ugt"), ExtResource("15_0qqp3"), ExtResource("16_yrwyo"), ExtResource("17_mbq8l"), ExtResource("18_ss26o"), ExtResource("19_sssdt"), ExtResource("20_7hgfl"), ExtResource("21_qr2ht"), ExtResource("22_pnbhq"), ExtResource("23_lu5ks"), ExtResource("24_s68hd"), ExtResource("25_2w6ql"), ExtResource("26_3oo1j"), ExtResource("27_4rldv"), ExtResource("28_113od"), ExtResource("29_i4xbk"), ExtResource("30_47nti"), ExtResource("31_05h65"), ExtResource("32_dso0g"), ExtResource("33_22ga3"), ExtResource("34_ww3tq"), ExtResource("35_lj35r"), ExtResource("36_tjyi3"), ExtResource("37_poci4"), ExtResource("38_se4lo"), ExtResource("39_2gjvg")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_l7pad"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("40_fxwed")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_80lc5"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("41_32v4o")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_ujc3d"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("42_48623")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_3624k"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("43_bkkfu")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_lhti1"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("44_n2tyd")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_35vtn"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("45_0nlsn")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_dvpar"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("46_hr3pv")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_tggqa"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("47_ys6sb")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_qd4sm"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("48_p5nl0")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_rodel"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("49_n0ahu")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_7thh5"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("50_siybj")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_jqlon"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("51_ujce6")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_odl65"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("52_fdeii")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_1p5lm"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("53_ho8r6")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_s0mt1"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("54_36vjq")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_xb6op"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("55_7r5om")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_515qv"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("56_rky24")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_ikew1"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("57_d6ppo")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_urcga"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("58_hbpc7")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_b3hc6"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("59_bkyk8")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_5ckg7"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("60_nv7dw")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_qog66"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("61_48wn1")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_l76kv"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("62_35g76")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_3iq4g"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("63_8sr15")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_l1tfx"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("64_6vg7n")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_6m2pj"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("65_le47k")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_suq3y"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("66_w8iab")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_ok367"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("67_6x872")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_n765o"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("68_fmbsa")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_8vf70"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("69_u2ota")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_388ul"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("70_06v13")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_sselt"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("71_bk365")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_bqhkp"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("72_xjsnx")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_tg441"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("73_ldk3g")])
-bus = &"Voice"
-
-[sub_resource type="Resource" id="Resource_81vlg"]
-script = ExtResource("1_dyvkx")
-streams = Array[AudioStream]([ExtResource("2_35im4"), ExtResource("3_0kxs3"), ExtResource("4_l8wd6"), ExtResource("5_k3cf0")])
+[sub_resource type="Resource" id="cue_incantation"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s4"), ExtResource("s5"), ExtResource("s6"), ExtResource("s7"), ExtResource("s8"), ExtResource("s9"), ExtResource("s10"), ExtResource("s11"), ExtResource("s12"), ExtResource("s13"), ExtResource("s14"), ExtResource("s15"), ExtResource("s16"), ExtResource("s17"), ExtResource("s18"), ExtResource("s19"), ExtResource("s20"), ExtResource("s21"), ExtResource("s22"), ExtResource("s23"), ExtResource("s24"), ExtResource("s25"), ExtResource("s26"), ExtResource("s27"), ExtResource("s28"), ExtResource("s29"), ExtResource("s30"), ExtResource("s31"), ExtResource("s32"), ExtResource("s33"), ExtResource("s34")])
 bus = &"Voice"
 
 [resource]
-script = ExtResource("75_a6801")
-cues = Dictionary[StringName, ExtResource("1_dyvkx")]({
-&"TNT1": SubResource("Resource_hdmvg"),
-&"TNT2": SubResource("Resource_40874"),
-&"TNT3": SubResource("Resource_33m1s"),
-&"TNT4": SubResource("Resource_4c0ck"),
-&"asg0": SubResource("Resource_l7pad"),
-&"asg1": SubResource("Resource_80lc5"),
-&"asg2": SubResource("Resource_ujc3d"),
-&"asg3": SubResource("Resource_3624k"),
-&"asg4": SubResource("Resource_lhti1"),
-&"asg5": SubResource("Resource_35vtn"),
-&"asg6": SubResource("Resource_dvpar"),
-&"asg7": SubResource("Resource_tggqa"),
-&"asg8": SubResource("Resource_qd4sm"),
-&"asg9": SubResource("Resource_rodel"),
-&"attB": SubResource("Resource_7thh5"),
-&"attG": SubResource("Resource_jqlon"),
-&"attU": SubResource("Resource_odl65"),
-&"damaged": SubResource("Resource_1yhtx"),
-&"fcir": SubResource("Resource_1p5lm"),
-&"flin": SubResource("Resource_s0mt1"),
-&"fpha": SubResource("Resource_xb6op"),
-&"fsem": SubResource("Resource_515qv"),
-&"fskr": SubResource("Resource_ikew1"),
-&"fwdj": SubResource("Resource_urcga"),
-&"grdB": SubResource("Resource_b3hc6"),
-&"grdG": SubResource("Resource_5ckg7"),
-&"grdM": SubResource("Resource_qog66"),
-&"grdU": SubResource("Resource_l76kv"),
-&"grp0": SubResource("Resource_3iq4g"),
-&"grp1": SubResource("Resource_l1tfx"),
-&"grp2": SubResource("Resource_6m2pj"),
-&"grp3": SubResource("Resource_suq3y"),
-&"grp4": SubResource("Resource_ok367"),
-&"grp5": SubResource("Resource_n765o"),
-&"grp6": SubResource("Resource_8vf70"),
-&"grp7": SubResource("Resource_388ul"),
-&"grp8": SubResource("Resource_sselt"),
-&"grp9": SubResource("Resource_bqhkp"),
-&"incantation": SubResource("Resource_rykcd"),
-&"movG": SubResource("Resource_tg441"),
-&"xTNT": SubResource("Resource_81vlg")
-})
-fallback = ExtResource("74_redlh")
+script = ExtResource("1_set")
+damaged = SubResource("cue_damaged")
+incantation = SubResource("cue_incantation")
+fallback = ExtResource("3_fallback")

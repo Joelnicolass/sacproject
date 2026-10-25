@@ -32,7 +32,7 @@ const LINT_ALLOWED_LINES := {
 	"spells/rock_projectile.gd": "var rng := RandomNumberGenerator.new()",  # spin of the rock, hash(name)
 	"spells/animate_dead/animate_dead_fx.gd": "var _rng := RandomNumberGenerator.new()",  # RFC-061d: when a stream is born, hash(name)
 	"spells/animate_dead/streamer_fx.gd": "var rng := RandomNumberGenerator.new()",  # RFC-061d: the arc of a stream, from the effect's seed
-	"audio/sound_bus.gd": "var _rng := RandomNumberGenerator.new()",  # RFC-052: own generator, seeded with rng_seed
+	"audio/cue_playback.gd": "var _rng := RandomNumberGenerator.new()",  # RFC-052 / 055o-e: the bus's own generator (moved from sound_bus.gd), seeded with rng_seed
 	"audio/music_director.gd": "var _rng := RandomNumberGenerator.new()",  # RFC-052 052f: battle track, seeded with rng_seed
 	"audio/ambience_director.gd": "var _rng := RandomNumberGenerator.new()",  # RFC-052 052g: one-shots, seeded with rng_seed
 }

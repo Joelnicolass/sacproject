@@ -103,8 +103,9 @@ Para probar con red mala, agregá a cada proceso `--net-lag-ms=100 --net-jitter-
 | LAN | Depurar → Ejecutar varias instancias (2). Una: Host LAN. Otra: Unirse a `127.0.0.1` |
 | Dedicado | `godot --headless --path . -- --dedicated` y los clientes se unen a `127.0.0.1` |
 | WebSocket | agregá `--transport=ws` a todos los procesos (un servidor WS solo atiende clientes WS) |
-
 | Web | exportá con el preset Web (sin threads). El export usa WebSocket solo y oculta Host y la lista LAN: un navegador solo se une. El servidor es un dedicado con `transport = ws` |
+
+## Más allá de los 6 pasos
 
 ### Online: salas y varias partidas en un servidor
 

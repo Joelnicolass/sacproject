@@ -6,23 +6,23 @@
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hover"]
 bg_color = Color(1, 1, 1, 0.14)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
+corner_radius_top_left = 19
+corner_radius_top_right = 19
+corner_radius_bottom_right = 19
+corner_radius_bottom_left = 19
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pressed"]
 bg_color = Color(1, 1, 1, 0.28)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
+corner_radius_top_left = 19
+corner_radius_top_right = 19
+corner_radius_bottom_right = 19
+corner_radius_bottom_left = 19
 
 [node name="RosterCell" type="Button"]
-custom_minimum_size = Vector2(34, 32)
+custom_minimum_size = Vector2(41, 38)
 focus_mode = 0
 theme_override_colors/font_color = Color(0.9, 0.85, 0.6, 1)
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 11
 theme_override_styles/normal = SubResource("StyleBoxEmpty_cell")
 theme_override_styles/hover = SubResource("StyleBoxFlat_hover")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_pressed")
@@ -32,28 +32,28 @@ script = ExtResource("1_cell")
 [node name="Icon" type="TextureRect" parent="."]
 unique_name_in_owner = true
 layout_mode = 0
-offset_right = 34.0
-offset_bottom = 32.0
+offset_right = 41.0
+offset_bottom = 38.0
 mouse_filter = 2
 expand_mode = 1
 
 [node name="Health" type="ColorRect" parent="."]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 32.0
+offset_left = 38.0
 offset_top = 0.0
-offset_right = 34.0
-offset_bottom = 30.0
+offset_right = 40.0
+offset_bottom = 36.0
 mouse_filter = 2
 color = Color(0.752941, 0, 0, 1)
 
 [node name="Mana" type="ColorRect" parent="."]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 34.0
+offset_left = 41.0
 offset_top = 0.0
-offset_right = 36.0
-offset_bottom = 30.0
+offset_right = 43.0
+offset_bottom = 36.0
 mouse_filter = 2
 color = Color(0, 0.376471, 0.752941, 1)
 
@@ -62,11 +62,11 @@ theme_type_variation = &"LabelOutline"
 unique_name_in_owner = true
 visible = false
 layout_mode = 0
-offset_left = 8.0
-offset_top = 19.0
-offset_right = 34.0
-offset_bottom = 32.0
+offset_left = 10.0
+offset_top = 23.0
+offset_right = 41.0
+offset_bottom = 38.0
 mouse_filter = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 13
 text = "0"
 horizontal_alignment = 2

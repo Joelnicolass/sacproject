@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/carrier/spell_carrier.gd" id="1_carrier"]
 [ext_resource type="Script" path="res://scenes/spells/carrier/carrier_hold.gd" id="2_hold"]
@@ -14,6 +14,8 @@
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="12_sound"]
 [ext_resource type="Script" path="res://scenes/spells/carrier/phase_cue.gd" id="13_cue"]
 [ext_resource type="Resource" path="res://data/fx/vaporize_burst.tres" id="14_flash"]
+[ext_resource type="Resource" path="res://data/audio/cues/vaporize_cast.tres" id="cue_vaporize_cast"]
+[ext_resource type="Resource" path="res://data/audio/cues/vaporize_hit.tres" id="cue_vaporize_hit"]
 
 [sub_resource type="QuadMesh" id="Mesh_quad"]
 
@@ -137,7 +139,7 @@ priority = 3.0
 lit_on_ready = true
 
 [node name="CastSound" parent="." instance=ExtResource("12_sound")]
-cue = &"vaporize_cast"
+cue = ExtResource("cue_vaporize_cast")
 play_on_ready = false
 
 [node name="CastCue" type="Node" parent="." node_paths=PackedStringArray("carrier", "sound")]
@@ -147,7 +149,7 @@ phase = 1
 sound = NodePath("../CastSound")
 
 [node name="HitSound" parent="." instance=ExtResource("12_sound")]
-cue = &"vaporize_hit"
+cue = ExtResource("cue_vaporize_hit")
 play_on_ready = false
 
 [node name="HitCue" type="Node" parent="." node_paths=PackedStringArray("carrier", "sound")]

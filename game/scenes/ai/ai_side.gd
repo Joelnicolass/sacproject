@@ -87,7 +87,7 @@ func setup(world_node: Node3D, wizard_body: Node3D, ai_seat: AiSeat) -> void:
 	slot = ai_seat.slot
 	difficulty = ai_seat.difficulty_or_normal()
 	## 024e: the difficulty scales the periods and sets the aggression on a copy of the god's profile; the .tres are never changed.
-	profile = difficulty.apply_to(ai_seat.profile if ai_seat.profile != null else AiProfile.for_god(ai_seat.god))
+	profile = difficulty.apply_to(ai_seat.profile if ai_seat.profile != null else AiProfile.for_type(ai_seat.god))
 	for node: Node in [perception, stance, groups, board, brain, creature_brain]:
 		node.set("profile", profile)
 	perception.slot = slot

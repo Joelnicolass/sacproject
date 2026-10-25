@@ -1,0 +1,66 @@
+[gd_resource type="Resource" script_class="WizardType" format=3]
+
+[ext_resource type="Script" path="res://scenes/wizards/wizard_type.gd" id="1_r86mw"]
+[ext_resource type="Resource" path="res://data/audio/wizards/ambassador_buta.tres" id="sounds_set"]
+
+[resource]
+script = ExtResource("1_r86mw")
+tag = "cwf0"
+spell_tag = "0fwc"
+display_name = "Ambassador Buta"
+model = "buta"
+health = 1500
+mana = 1000
+running_speed = 10.0
+regeneration_per_s = 16.6667
+melee_evasion = 1250
+direct_spell_resistance = 0.5
+splash_spell_resistance = 0.5
+stance_animation = {
+"framerate": 30.0,
+"frames": 50.0,
+"tag": "BUs1"
+}
+idle_animation = {
+"framerate": 30.0,
+"frames": 51.0,
+"tag": "BUi1"
+}
+run_animation = {
+"framerate": 30.0,
+"frames": 30.0,
+"tag": "BUru"
+}
+walk_animation = {
+"framerate": 30.0,
+"frames": 30.0,
+"tag": "BUru"
+}
+death_frames = PackedInt32Array(69, 96, 113)
+corpse_rise_frames = 51
+float_to_stance_frames = 69
+stun_animations = {
+"get_up": {
+"framerate": 30.0,
+"frames": 25.0,
+"tag": "BUgu"
+},
+"hit_floor": {
+"framerate": 30.0,
+"frames": 92.0,
+"tag": "BUhf"
+}
+}
+cast_animations = {
+"cast": {
+"framerate": 30.0,
+"frames": 51.0,
+"tag": "BUsl"
+},
+"run_cast": {
+"framerate": 30.0,
+"frames": 30.0,
+"tag": "BUrl"
+}
+}
+sounds = ExtResource("sounds_set")

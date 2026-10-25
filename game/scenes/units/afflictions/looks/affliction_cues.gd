@@ -2,7 +2,7 @@ class_name AfflictionCues
 extends Node
 
 ## The sounds of a state: one when it goes on, one when it ends, and a loop while it lasts. Each is a SoundEmitter3D child of the state
-## (the cue key lives in the emitter, the table in data/audio/fx_sounds.tres). It does not decide when the state is on (Affliction).
+## (the SoundCue lives in the emitter). It does not decide when the state is on (Affliction).
 ## Presentation only, on every peer, from the replicated mask; a dedicated server plays nothing (the emitters stay silent).
 
 @export var affliction: Affliction

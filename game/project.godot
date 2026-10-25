@@ -23,15 +23,17 @@ buses/default_bus_layout="res://default_bus_layout.tres"
 MpKit="*res://addons/mp_kit/mp_kit.gd"
 MpLobby="*res://addons/mp_kit/lobby/mp_lobby.gd"
 GameData="*res://scenes/core/catalog/game_data.gd"
-SacrificeFlow="*res://scenes/core/flow/sacrifice_flow.gd"
+SacrificeFlow="*res://scenes/core/flow/sacrifice_flow.tscn"
 AgentKit="*res://addons/agent_kit/agent_kit.gd"
 FxBus="*res://scenes/fx/fx_bus.gd"
-SoundBus="*res://scenes/audio/sound_bus.gd"
+SoundBus="*res://scenes/audio/sound_bus.tscn"
 
 [display]
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
 
 [editor_plugins]
 

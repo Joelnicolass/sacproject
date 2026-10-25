@@ -1,9 +1,0 @@
-[gd_scene format=3]
-
-[node name="RosterPlate" type="Panel"]
-theme_type_variation = &"PanelPlate"
-offset_left = -4.0
-offset_top = 20.0
-offset_right = 76.0
-offset_bottom = 236.0
-mouse_filter = 2

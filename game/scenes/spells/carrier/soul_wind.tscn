@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/carrier/spell_carrier.gd" id="1_carrier"]
 [ext_resource type="Script" path="res://scenes/spells/carrier/soul_fetch.gd" id="2_fetch"]
@@ -11,6 +11,7 @@
 [ext_resource type="Shader" path="res://scenes/spells/carrier/funnel.gdshader" id="11_shader"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/swnd.png" id="12_swnd"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
+[ext_resource type="Resource" path="res://data/audio/cues/soul_wind.tres" id="cue_soul_wind"]
 
 [sub_resource type="SphereShape3D" id="Sphere_reach"]
 radius = 30.0
@@ -56,8 +57,7 @@ shape = SubResource("Sphere_reach")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 
 [node name="Sound" parent="." instance=ExtResource("8_sound")]
-source = "world"
-cue = &"Xfbl"
+cue = ExtResource("cue_soul_wind")
 
 [node name="Glow" parent="." instance=ExtResource("glow_state_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)

@@ -1,54 +1,68 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/wizard_stats/wizard_stats.gd" id="1_stats"]
-[ext_resource type="Script" path="res://scenes/ui/wizard_stats/stat_bar.gd" id="2_bar"]
-[ext_resource type="Script" path="res://scenes/ui/wizard_stats/soul_counter.gd" id="3_soul"]
-[ext_resource type="Resource" path="res://data/ui/hud_scale.tres" id="4_scale"]
+[ext_resource type="Texture2D" path="res://assets/original/ui/hud/spir.png" id="2_spir"]
 
-[node name="WizardStats" type="Control" node_paths=PackedStringArray("frames")]
-custom_minimum_size = Vector2(153.6, 115.2)
-layout_mode = 3
-anchors_preset = 0
-offset_right = 153.6
-offset_bottom = 115.2
+[sub_resource type="AtlasTexture" id="AtlasTexture_soul"]
+atlas = ExtResource("2_spir")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="Animation" id="Animation_spin"]
+resource_name = "spin"
+length = 0.533333
+loop_mode = 1
+step = 0.0666667
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture:region")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2, 0.266667, 0.333333, 0.4, 0.466667),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [Rect2(0, 0, 64, 64), Rect2(64, 0, 64, 64), Rect2(128, 0, 64, 64), Rect2(192, 0, 64, 64), Rect2(0, 64, 64, 64), Rect2(64, 64, 64, 64), Rect2(128, 64, 64, 64), Rect2(192, 64, 64, 64)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_soul"]
+_data = {
+&"spin": SubResource("Animation_spin")
+}
+
+[node name="WizardStats" type="HBoxContainer"]
+editor_description = "Soul count, mana and health. Frames, bars and font come from data/ui/theme.tres (Hud* variations); the soul turns with SpinPlayer (8 frames of spir.png at 15 a second)."
+theme_type_variation = &"HBoxFlush"
+custom_minimum_size = Vector2(154, 115)
 mouse_filter = 2
 script = ExtResource("1_stats")
-hud_scale = ExtResource("4_scale")
-frames = [NodePath("Souls/Frame"), NodePath("Mana/Frame"), NodePath("Health/Frame")]
 
-[node name="Souls" type="Control" parent="."]
-layout_mode = 1
-anchor_left = 0.0
-anchor_right = 0.5
-anchor_bottom = 1.0
+[node name="Souls" type="Panel" parent="."]
+theme_type_variation = &"HudSoulFrame"
+custom_minimum_size = Vector2(77, 115)
+layout_mode = 2
 mouse_filter = 2
 
-[node name="Frame" type="Control" parent="Souls"]
+[node name="Spin" type="TextureRect" parent="Souls"]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchor_left = 0.075
+anchor_top = 0.075
+anchor_right = 0.925
+anchor_bottom = 0.925
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-
-[node name="Top" type="TextureRect" parent="Souls/Frame"]
-layout_mode = 1
-anchor_right = 1.0
-anchor_bottom = 0.5
-mouse_filter = 2
+texture = SubResource("AtlasTexture_soul")
 expand_mode = 1
 
-[node name="Bottom" type="TextureRect" parent="Souls/Frame"]
-layout_mode = 1
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 1.0
-mouse_filter = 2
-expand_mode = 1
-flip_v = true
+[node name="SpinPlayer" type="AnimationPlayer" parent="Souls/Spin"]
+libraries = {
+"": SubResource("AnimationLibrary_soul")
+}
+autoplay = "spin"
 
-[node name="SoulCounter" type="Control" parent="Souls"]
+[node name="Count" type="Label" parent="Souls" groups=["hud_text_allowed"]]
+theme_type_variation = &"HudSoulCount"
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -57,108 +71,50 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-script = ExtResource("3_soul")
-
-[node name="Count" type="Label" parent="Souls/SoulCounter" groups=["hud_text_allowed"]]
-theme_type_variation = &"LabelOutline"
-unique_name_in_owner = true
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-theme_override_font_sizes/font_size = 18
 text = "0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Mana" type="Control" parent="."]
-layout_mode = 1
-anchor_left = 0.5
-anchor_right = 0.75
-anchor_bottom = 1.0
+[node name="Mana" type="Panel" parent="."]
+theme_type_variation = &"HudStatsFrame"
+custom_minimum_size = Vector2(38.5, 115)
+layout_mode = 2
 mouse_filter = 2
 
-[node name="Frame" type="Control" parent="Mana"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="Top" type="TextureRect" parent="Mana/Frame"]
-layout_mode = 1
-anchor_right = 1.0
-anchor_bottom = 0.5
-mouse_filter = 2
-expand_mode = 1
-
-[node name="Bottom" type="TextureRect" parent="Mana/Frame"]
-layout_mode = 1
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 1.0
-mouse_filter = 2
-expand_mode = 1
-flip_v = true
-
-[node name="ManaBar" type="Control" parent="Mana"]
+[node name="ManaBar" type="ProgressBar" parent="Mana"]
+theme_type_variation = &"HudManaBar"
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 15
+anchor_top = 0.104167
 anchor_right = 1.0
-anchor_bottom = 1.0
+anchor_bottom = 0.916667
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-script = ExtResource("2_bar")
+max_value = 1.0
+step = 0.0
+value = 1.0
+fill_mode = 3
+show_percentage = false
 
-[node name="Health" type="Control" parent="."]
-layout_mode = 1
-anchor_left = 0.75
-anchor_right = 1.0
-anchor_bottom = 1.0
+[node name="Health" type="Panel" parent="."]
+theme_type_variation = &"HudStatsFrame"
+custom_minimum_size = Vector2(38.5, 115)
+layout_mode = 2
 mouse_filter = 2
 
-[node name="Frame" type="Control" parent="Health"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="Top" type="TextureRect" parent="Health/Frame"]
-layout_mode = 1
-anchor_right = 1.0
-anchor_bottom = 0.5
-mouse_filter = 2
-expand_mode = 1
-
-[node name="Bottom" type="TextureRect" parent="Health/Frame"]
-layout_mode = 1
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 1.0
-mouse_filter = 2
-expand_mode = 1
-flip_v = true
-
-[node name="HealthBar" type="Control" parent="Health"]
+[node name="HealthBar" type="ProgressBar" parent="Health"]
+theme_type_variation = &"HudHealthBar"
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 15
+anchor_top = 0.104167
 anchor_right = 1.0
-anchor_bottom = 1.0
+anchor_bottom = 0.916667
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-script = ExtResource("2_bar")
-strip_prefix = "stat_health"
-fallback_color = Color(0.7529412, 0, 0, 1)
+max_value = 1.0
+step = 0.0
+value = 1.0
+fill_mode = 3
+show_percentage = false

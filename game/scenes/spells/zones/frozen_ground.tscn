@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=22 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="1_zone"]
 [ext_resource type="Resource" path="res://data/catalog/spells/zorf.tres" id="2_spell"]
@@ -16,6 +16,8 @@
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/ice_shatter.tscn" id="14_shards"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/zone_sound.tscn" id="15_sound"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
+[ext_resource type="Resource" path="res://data/audio/cues/frozen_ground_cast.tres" id="cue_frozen_ground_cast"]
+[ext_resource type="Resource" path="res://data/audio/cues/frozen_ground_hit.tres" id="cue_frozen_ground_hit"]
 
 [sub_resource type="ShaderMaterial" id="Mat_ice"]
 shader = ExtResource("9_shader")
@@ -63,14 +65,14 @@ shards = ExtResource("14_shards")
 
 [node name="CastSound" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("15_sound")]
 editor_description = "Xcnj: el conjuro de la bola (comn/cnj1 a cnj6) mientras el mago lanza."
-cue = &"frozen_ground_cast"
+cue = ExtResource("cue_frozen_ground_cast")
 loop = true
 zone = NodePath("..")
 to_phase = 0
 
 [node name="HitSound" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("15_sound")]
 editor_description = "Xfrz: la bola cae (stra/frez, ganancia 4 en el original)."
-cue = &"frozen_ground_hit"
+cue = ExtResource("cue_frozen_ground_hit")
 zone = NodePath("..")
 when = 1
 from_phase = 2

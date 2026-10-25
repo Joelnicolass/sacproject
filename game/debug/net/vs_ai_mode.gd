@@ -50,9 +50,9 @@ func _run() -> void:
 		get_tree().quit(1))
 	add_child(timeout)
 	timeout.start()
-	SacrificeFlow.play_vs_ai(&"", null)
+	SacrificeFlow.play_vs_ai(null, null)
 	var slots: Array[int] = []
-	for seat in SacrificeFlow.solo_ai_seats:
+	for seat: AiSeat in SacrificeFlow.solo_ai_seats:
 		slots.append(seat.slot)
 	var expected: Array[int] = []
 	for slot in range(2, seats + 1):

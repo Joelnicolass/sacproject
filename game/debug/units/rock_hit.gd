@@ -37,7 +37,10 @@ var _last_frame := -1
 
 func _enter_tree() -> void:
 	if not wizard_god.is_empty():
-		SacrificeFlow.set_pick(str(SacrificeFlow.pick.get("wizard", "")), wizard_god)
+		var chosen := WizardPick.new()
+		chosen.wizard = SacrificeFlow.pick.wizard
+		chosen.god = MatchWire.decode_god(wizard_god)
+		SacrificeFlow.set_pick(chosen)
 
 
 func _ready() -> void:

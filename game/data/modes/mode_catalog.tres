@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="GameModeCatalog" load_steps=7 format=3]
 
-[ext_resource type="Script" path="res://scenes/match/game_mode_catalog.gd" id="1_catalog"]
+[ext_resource type="Script" path="res://scenes/core/catalog/game_mode_catalog.gd" id="1_catalog"]
 [ext_resource type="Script" path="res://scenes/match/game_mode.gd" id="2_mode"]
 [ext_resource type="Resource" path="res://data/modes/1v1.tres" id="3_1v1"]
 [ext_resource type="Resource" path="res://data/modes/2v2.tres" id="4_2v2"]

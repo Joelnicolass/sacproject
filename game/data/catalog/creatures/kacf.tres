@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_8736l"]
+[ext_resource type="Resource" path="res://data/audio/creatures/pyrodactyl.tres" id="sounds_set"]
 
 [resource]
 script = ExtResource("1_8736l")
@@ -151,3 +152,4 @@ captive_animations = {
 "tag": "CKsc"
 }
 }
+sounds = ExtResource("sounds_set")

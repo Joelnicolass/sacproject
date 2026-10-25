@@ -9,8 +9,8 @@ extends Node
 const _WORLD := preload("res://scenes/match/match_world.gd")
 const _CAMERA := preload("res://scenes/camera/world_camera.gd")
 
-## A click on the minimap finds a body within this many minimap units of it (meters = units × the minimap zoom).
-@export var minimap_pick_units := 3.0
+## A click on the minimap finds a body within this many minimap pixels of it (meters = pixels × the minimap zoom).
+@export var minimap_pick_units := 3.6
 
 @onready var _minimap: Minimap = %Minimap
 @onready var _camera: _CAMERA = get_node_or_null("%Camera")
@@ -118,7 +118,7 @@ func is_empty_at(screen: Vector2) -> bool:
 	return true
 
 
-## The body (wizard or creature, not a corpse) closest to a world point and within `minimap_pick_units` HUD units of the
+## The body (wizard or creature, not a corpse) closest to a world point and within `minimap_pick_units` minimap pixels of the
 ## minimap at its current zoom; an enemy that cannot be targeted (stealth) is not found. `own_only`: only the local side's.
 func body_near(point: Vector3, own_only := false) -> Node3D:
 	var reach := minimap_pick_units * float(_minimap.zoom)

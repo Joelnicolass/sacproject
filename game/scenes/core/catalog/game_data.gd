@@ -44,11 +44,11 @@ func reload(from_disk := false) -> void:
 		_abilities[type.tag] = type
 	for type in catalog.wizards:
 		_wizards.append(type)
-		_wizards_by_tag[type.tag] = type
+		_wizards_by_tag[type.id()] = type
 	for type in catalog.gods:
 		_gods.append(type)
-		_gods_by_tag[type.tag] = type
-		_god_tags.append(type.tag)
+		_gods_by_tag[type.id()] = type
+		_god_tags.append(type.id())
 
 
 func is_loaded() -> bool:

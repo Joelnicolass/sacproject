@@ -11,13 +11,10 @@ const ITEMS := [
 	{"title": "Sacrifice: Hornear modelos que faltan", "args": ["--script", "res://tools/bake/bake_body_scenes.gd"], "rescan": true,
 		"about": "Crea la escena de cuerpo (.tscn) de cada modelo ya importado (assets/original/models/*.glb) que todavía no tiene una. No pisa las existentes. NO necesita el juego original: usa los modelos que ya están en el repo."},
 	# RFC-051: asks for a .glb of assets/custom/models/ and passes it to the tool.
-	# RFC-052 052i: it also bakes the creature's sounds when assets/custom/sounds/creatures/<tag>/ exists.
+	# 055o-b: it also writes the creature's SoundSet (over the fist melee set; with its sound files when assets/custom/sounds/creatures/<tag>/ exists).
 	{"title": "Sacrifice: Nueva criatura desde modelo…", "args": ["--script", "res://tools/bake/new_creature.gd", "--"], "rescan": true, "pick": "glb", "window": true,
-		"about": "Crea la escena, el tamaño y la criatura (data/catalog/creatures/<tag>.tres) desde un .glb de assets/custom/models/. Si existe assets/custom/sounds/creatures/<tag>/ con <evento>_1.wav u .ogg (death, swing, damaged, selected…), también hornea sus sonidos en data/audio/custom/creatures/<tag>.tres."},
+		"about": "Crea la escena, el tamaño y la criatura (data/catalog/creatures/<tag>.tres) desde un .glb de assets/custom/models/. También crea su SoundSet (data/audio/creatures/<tag>.tres, sobre los golpes del puño) y lo asigna a la criatura: si existe assets/custom/sounds/creatures/<tag>/ con <evento>_1.wav u .ogg (death, swing, damaged, selected…) los pone en sus campos; si no, queda vacío para arrastrar los archivos."},
 	{"title": "Sacrifice: Sincronizar criatura con su modelo…", "args": ["--script", "res://tools/bake/new_creature.gd", "--", "--sync"], "rescan": true, "pick": "glb", "window": true},
-	# RFC-052 052b / 052i: the SoundSets of data/audio/ from assets/original/audio/index.json and assets/custom/sounds/.
-	{"title": "Sacrifice: Hornear sonidos", "args": ["--script", "res://tools/bake/bake_sound_sets.gd"], "rescan": true,
-		"about": "Crea los sets de sonido (data/audio/*.tres) que faltan: los del original desde assets/original/audio/ (si ya está importado; está en el repo por LFS), y los tuyos desde assets/custom/sounds/<tipo>/<tag>/<evento>_N.ogg|wav (van a data/audio/custom/ y ganan). No pisa los existentes. Para tus sonidos no hace falta el juego original."},
 ]
 # Entries with "original": true read the ORIGINAL game (not in the repo); their label says so. "exe": the command is that program
 # (not this Godot) and "args" are paths relative to the project. SETTING_INSTALL is passed to every child process as SAC_INSTALL.
@@ -26,7 +23,7 @@ const ITEMS_ORIGINAL := [
 		"original": true, "about": "Lista los mapas (.scp) del juego original instalado."},
 	# RFC-052 052b: sounds.wad, local/sfx_english.wad and music/*.mp3 -> assets/original/audio/ (voices as Ogg; needs ffmpeg).
 	{"title": "Sacrifice: Importar audio del original", "exe": "python3", "args": ["tools/import/import_audio.py"], "rescan": true,
-		"original": true, "about": "Lee sounds.wad, local/sfx_english.wad y music/*.mp3 del juego original instalado y escribe assets/original/audio/ (efectos WAV, voces Ogg con ffmpeg, música MP3). Solo inglés y solo las voces de escaramuza. Después corré «Hornear sonidos»."},
+		"original": true, "about": "Lee sounds.wad, local/sfx_english.wad y music/*.mp3 del juego original instalado y escribe assets/original/audio/ (efectos WAV, voces Ogg con ffmpeg, música MP3). Solo inglés y solo las voces de escaramuza."},
 ]
 const CUSTOM_MODELS := "res://assets/custom/models/"
 const SETTING_INSTALL := "sacrifice/original_install_path"

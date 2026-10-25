@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="1_visual"]
 [ext_resource type="Script" path="res://scenes/map/props/mana_source.gd" id="2_source"]
@@ -11,6 +11,8 @@
 [ext_resource type="Resource" path="res://data/buildings/persephone_font.tres" id="10_bldg"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="9_sound"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
+[ext_resource type="Resource" path="res://data/audio/cues/fountain_loop.tres" id="cue_fountain_loop"]
+[ext_resource type="Resource" path="res://data/audio/cues/manalith_loop.tres" id="cue_manalith_loop"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_pool"]
 height = 4.0
@@ -50,13 +52,13 @@ type = ExtResource("8_column")
 [node name="FountSound" parent="." instance=ExtResource("9_sound")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
-cue = &"fountain_loop"
+cue = ExtResource("cue_fountain_loop")
 loop = true
 
 [node name="ManalithSound" parent="." instance=ExtResource("9_sound")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
-cue = &"manalith_loop"
+cue = ExtResource("cue_manalith_loop")
 loop = true
 active = false
 

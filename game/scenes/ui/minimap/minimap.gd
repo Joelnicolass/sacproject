@@ -2,16 +2,15 @@
 class_name Minimap
 extends Control
 
-## RFC-037: the circle at the bottom right of the HUD (sacengine renderMinimap). It builds the frame's state (center, turn,
-## zoom) and hands it to its children: `Ground` draws the baked terrain, `Markers` the icons. It knows no unit type.
+## The circle at the bottom right of the HUD. It builds the frame's state (center, turn, zoom) and hands it to its children:
+## `Ground` draws the baked terrain, `Markers` the icons. It knows no unit type. Ref: renderMinimap (sacengine), RFC-037.
 ## Local presentation: nothing is replicated. Input (037c): the wheel over the circle zooms the map, `M` shows or hides it, and a
 ## click gives a ground point (`ground_pointed`); MatchCommand turns it into an order or an aim, so no order starts here.
 ##
-## Everything is laid out in HUD units (sized by the shared `hud_scale`, like SpellBook and SelectionRoster) and
-## `scale` grows it from the bottom-right corner. Heading up (the default) turns the map with the camera so up is where
-## it looks; the center is `lead_factor` camera distances ahead of the followed wizard. `view.heading_up = false`
-## keeps north up and centers on the wizard.
-## Map axes: world (x, z) → local units. A top view has +x right and +z down, so no flip is needed.
+## Everything is laid out in canvas pixels of the 1280×720 base, anchored to the bottom-right corner; Godot's stretch scales it.
+## Heading up (the default) turns the map with the camera so up is where it looks; the center is `lead_factor` camera distances
+## ahead of the followed wizard. `view.heading_up = false` keeps north up and centers on the wizard.
+## Map axes: world (x, z) → local pixels. A top view has +x right and +z down, so no flip is needed.
 
 ## `Minimap.zoom` changed (037c wheel).
 signal zoom_changed(zoom: float)
@@ -35,17 +34,13 @@ const GROUND_RAY_TOP := 1500.0
 @export_group("Resources")
 @export var style: MinimapStyleSet
 @export var view: MinimapView
-## Shared HUD size (the spell book, the roster and the cursor read the same one).
-@export var hud_scale: HudScale = preload("res://data/ui/hud_scale.tres")
 
-## Meters of the world per HUD unit in play (starts at `view.zoom`).
-var zoom := 2.7
+## Meters of the world per canvas pixel in play (starts at `view.view_radius_m` over the radius).
+var zoom := 2.25
 ## World x/z drawn at the circle's center, this frame.
 var center_world := Vector2.ZERO
 ## Unit vector the camera looks along on the ground, world x/z.
 var heading := Vector2(0.0, 1.0)
-## HUD scale in use (screen pixels per HUD unit).
-var factor := 1.0
 
 var _to_local := Transform2D.IDENTITY
 
@@ -56,15 +51,12 @@ func _get_configuration_warnings() -> PackedStringArray:
 		warnings.append("Asigná camera, terrain_bake, ground y markers.")
 	if style == null or view == null:
 		warnings.append("Asigná style y view (data/ui/minimap/).")
-	var scale_warning := HudScale.socket_warning(hud_scale)
-	if not scale_warning.is_empty():
-		warnings.append(scale_warning)
 	return warnings
 
 
 func _ready() -> void:
 	if view:
-		zoom = view.zoom
+		zoom = _zoom_of(view.view_radius_m)
 	if Engine.is_editor_hint():
 		return
 	# No local player on the dedicated server: nothing to show.
@@ -73,10 +65,6 @@ func _ready() -> void:
 		set_process(false)
 		set_process_unhandled_input(false)
 		return
-	get_viewport().size_changed.connect(_fit_screen)
-	if hud_scale:
-		hud_scale.changed.connect(_fit_screen)
-	_fit_screen()
 	_update_state()
 
 
@@ -136,12 +124,12 @@ func _ground_at(xz: Vector2) -> Variant:
 	return GroundRay.surface_point(camera, Vector3(xz.x, 0.0, xz.y), 1, [], GROUND_RAY_TOP)
 
 
-## Radius of the circle in HUD units.
+## Radius of the circle in canvas pixels.
 func radius() -> float:
-	return view.radius_px if view else 80.0
+	return view.radius_px if view else 96.0
 
 
-## Local position (HUD units, this control's origin) of a world point.
+## Local position (canvas pixels, this control's origin) of a world point.
 func world_to_minimap(point: Vector3) -> Vector2:
 	return _to_local * Vector2(point.x, point.z)
 
@@ -156,13 +144,13 @@ func world_dir_to_local(direction: Vector2) -> Vector2:
 	return _to_local.basis_xform(direction).normalized()
 
 
-## Maps world x/z to local units; the ground draws under it.
+## Maps world x/z to local pixels; the ground draws under it.
 func world_transform() -> Transform2D:
 	return _to_local
 
 
 func set_zoom(value: float) -> void:
-	var next := clampf(value, view.min_zoom, view.max_zoom) if view else value
+	var next := clampf(value, _zoom_of(view.min_radius_m), _zoom_of(view.max_radius_m)) if view else value
 	if is_equal_approx(next, zoom):
 		return
 	zoom = next
@@ -170,8 +158,7 @@ func set_zoom(value: float) -> void:
 
 
 func _update_state() -> void:
-	var meters_per_unit := maxf(zoom, 0.001)
-	var scale_px := 1.0 / meters_per_unit
+	var scale_px := 1.0 / maxf(zoom, 0.001)
 	var target := Vector2.ZERO
 	if camera and camera.is_inside_tree():
 		var forward3 := -camera.global_transform.basis.z
@@ -197,13 +184,10 @@ func _update_state() -> void:
 	if compass:
 		var north := world_dir_to_local(Vector2(0.0, -1.0))
 		compass.pivot_offset = compass.size * 0.5
-		compass.position = middle + north * (radius() - (view.compass_inset if view else 3.0)) - compass.pivot_offset
+		compass.position = middle + north * (radius() - (view.compass_inset if view else 4.0)) - compass.pivot_offset
 		compass.rotation = atan2(north.x, -north.y)
 
 
-## The size knob: the control keeps its bottom-right corner and grows with the shared HUD scale.
-func _fit_screen() -> void:
-	var height := get_viewport().get_visible_rect().size.y
-	factor = hud_scale.factor(height) if hud_scale else height / HudScale.SACENGINE_HEIGHT
-	pivot_offset = size
-	scale = Vector2(factor, factor)
+## Meters per pixel that make the circle's radius show `radius_m` meters.
+func _zoom_of(radius_m: float) -> float:
+	return radius_m / maxf(radius(), 1.0)

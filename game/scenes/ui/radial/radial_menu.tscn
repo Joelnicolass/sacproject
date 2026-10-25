@@ -8,8 +8,8 @@
 editor_description = "RFC-038 038c: radial menu of two rings. It shows the entries of its RadialLayout and emits entry_chosen / cancelled; OrderRadial feeds it the pointer. preview_open shows it in the editor; F6 runs it alone."
 layout_mode = 3
 anchors_preset = 0
-offset_right = 248.0
-offset_bottom = 248.0
+offset_right = 336.0
+offset_bottom = 336.0
 mouse_filter = 2
 script = ExtResource("1_menu")
 layout = ExtResource("2_layout")
@@ -19,10 +19,10 @@ rings = NodePath("Rings")
 [node name="Center" type="TextureRect" parent="."]
 texture_filter = 1
 layout_mode = 0
-offset_left = 104.0
-offset_top = 104.0
-offset_right = 144.0
-offset_bottom = 144.0
+offset_left = 127.0
+offset_top = 127.0
+offset_right = 209.0
+offset_bottom = 209.0
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5

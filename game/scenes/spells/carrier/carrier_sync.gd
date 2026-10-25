@@ -1,15 +1,19 @@
 class_name CarrierSync
 extends RefCounted
 
-## What a SpellCarrier reads from its spawn data and what it replicates to the clients: a soul-trip carrier only its position (the look is a rock or
-## a funnel walking); every other one also its rotation, scale and phase (the look follows them). Nothing else.
+## What a SpellCarrier reads from its spawn data and what it replicates to the clients: a soul-trip carrier its position (the look is a rock or
+## a funnel walking) and its phase (it turns to LEAVING when it takes the soul: the clients hear it); every other one also its rotation and
+## scale (the look follows them). Nothing else.
+
+const PROPS_SOUL_TRIP: Array[String] = [".:position", ".:phase"]
+const PROPS_OTHER: Array[String] = [".:position", ".:rotation", ".:scale", ".:phase"]
 
 
 ## Server, client and solo: the carrier's `Net` child, once, as `setup` runs.
 static func attach(carrier: SpellCarrier) -> void:
 	var net := MpReplicate.new()
 	net.name = "Net"
-	net.sync_properties = PackedStringArray([".:position"] if carrier.motion == SpellCarrier.Motion.SOUL_TRIP else [".:position", ".:rotation", ".:scale", ".:phase"])
+	net.sync_properties = PackedStringArray(PROPS_SOUL_TRIP if carrier.motion == SpellCarrier.Motion.SOUL_TRIP else PROPS_OTHER)
 	MpAuthority.ensure_sync(carrier, net.sync_properties)
 	carrier.add_child(net)
 

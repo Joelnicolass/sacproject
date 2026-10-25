@@ -47,7 +47,7 @@ func bind(server: MpLobbyServer) -> void:
 
 ## `meta` of a seat: the wizard and the god, checked by the same function the dedicated uses.
 func is_valid_pick(meta: Dictionary) -> bool:
-	return not SacrificeFlow.sanitize_pick(meta).is_empty()
+	return MatchWire.decode_pick(meta, true) != null
 
 
 ## RFC-049 049f: a bot seat's `meta`: a god (empty = drawn when the match starts, else one the game has). 049h: and a `difficulty`
@@ -60,7 +60,7 @@ func is_valid_bot(meta: Dictionary) -> bool:
 	var difficulty: Variant = meta.get("difficulty", "")
 	if not (difficulty is String and (String(difficulty).is_empty() or AiSeat.DIFFICULTY_TAGS.has(String(difficulty)))):
 		return false
-	return god is String and (String(god).is_empty() or GameData.gods().has(String(god)))
+	return god is String and (String(god).is_empty() or MatchWire.decode_god(String(god), true) != null)
 
 
 ## Options of a room: only known keys, each of its type and inside the rules' range. Empty is fine. RFC-049 049f: the map and the
@@ -122,7 +122,7 @@ func build_ticket(seats: Array, options: Dictionary) -> Dictionary:
 			continue
 		rows.append({
 			"slot": int(row["slot"]), "token": str(row["token"]),
-			"meta": SacrificeFlow.sanitize_pick(row.get("meta", {})),
+			"meta": MatchWire.clean_pick(row.get("meta", {})),
 		})
 	var clean := clean_options(options)
 	return {

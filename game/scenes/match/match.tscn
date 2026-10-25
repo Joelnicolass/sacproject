@@ -57,6 +57,8 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/pause_menu/pause_menu.tscn" id="f141_pause"]
 [ext_resource type="Script" uid="uid://c8tyaqoovx84y" path="res://scenes/ui/options/graphics_applier.gd" id="f142_applier"]
 [ext_resource type="Resource" path="res://data/ui/graphics_prefs.tres" id="f142_prefs"]
+[ext_resource type="Script" path="res://scenes/ui/options/ui_scale_applier.gd" id="h1_ui_applier"]
+[ext_resource type="Resource" path="res://data/ui/ui_scale.tres" id="h1_ui_scale"]
 [ext_resource type="PackedScene" path="res://scenes/units/attacks/droplet_rain.tscn" id="f148_rain"]
 [ext_resource type="PackedScene" path="res://scenes/ui/lobby/lobby_return.tscn" id="f183_return"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap.tscn" id="f213_minimap"]
@@ -359,10 +361,9 @@ theme_override_styles/focus = SubResource("StyleBoxFlat_clear")
 flat = true
 
 
-[node name="SelectionRoster" parent="Hud" unique_id=1154554107 node_paths=PackedStringArray("selection", "avoid") instance=ExtResource("f79_roster")]
+[node name="SelectionRoster" parent="Hud" unique_id=1154554107 node_paths=PackedStringArray("selection") instance=ExtResource("f79_roster")]
 unique_name_in_owner = true
 selection = NodePath("../../Selection")
-avoid = NodePath("../SpellBook")
 
 
 [node name="SelectionBox" type="ReferenceRect" parent="Hud" unique_id=2145779674]
@@ -392,9 +393,8 @@ structures_root = NodePath("../../Structures")
 [node name="RadialMenu" parent="Hud" unique_id=834462750 instance=ExtResource("f218_radial")]
 unique_name_in_owner = true
 visible = false
-offset_right = 280.0
-offset_bottom = 280.0
-pivot_offset = Vector2(140, 140)
+offset_right = 336.0
+offset_bottom = 336.0
 
 
 [node name="WizardHud" parent="Hud" unique_id=1561071952 instance=ExtResource("14_hud")]
@@ -427,6 +427,7 @@ camera = NodePath("../../Camera")
 unique_name_in_owner = true
 script = ExtResource("f80_skin")
 cues = ExtResource("f80_cues")
+ui_scale = ExtResource("h1_ui_scale")
 command_log = NodePath("../Battle")
 probe = NodePath("../TargetProbe")
 
@@ -461,6 +462,11 @@ unique_name_in_owner = true
 [node name="GraphicsApplier" type="Node" parent="." unique_id=2135902278]
 script = ExtResource("f142_applier")
 prefs = ExtResource("f142_prefs")
+
+[node name="UiScaleApplier" type="Node" parent="."]
+editor_description = "055h-1: el tamaño de la interfaz del jugador (Opciones › Gráficos) sobre la ventana. Único escritor de Window.content_scale_factor junto al de boot.tscn."
+script = ExtResource("h1_ui_applier")
+prefs = ExtResource("h1_ui_scale")
 
 
 [node name="ListenerFocus" type="AudioListener3D" parent="." node_paths=PackedStringArray("world", "camera")]

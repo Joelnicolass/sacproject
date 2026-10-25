@@ -7,11 +7,13 @@ extends Node3D
 ## - Manual (F6): `debug_audio_event` runs the next step of the script; the label shows the last entry and the bus peaks.
 ## - Automatic: `--headless … -- --audio-probe --audio-script[=res://debug/audio/lab_<cut>.tres]` runs every step, prints
 ##   `AUDIO_LAB PASS|FAIL <event> <stream>` per step and `AUDIO_LAB DONE PASS|FAIL (n)`, and quits 0 / 1.
-## - `--audio-no-original`: SoundLibrary sees only the script's roots and an empty one (a clone without the original's audio).
+## - `--audio-no-original`: SoundLibrary sees only the script's roots and an empty one (the world, UI, advisor and music sets; the
+##   bodies sound as their types say).
 ## The script (an AudioLabScript .tres) is loaded at run time with load(), so a broken one ends in a FAIL line. Watchdog:
 ## `timeout_s` of real time.
-## 052d: the FX actions call FxBus as a peer does when a broadcast arrives (fx, puff, beam, scene); `spawn` instances a
-## projectile scene (frozen) and frees it after the look; `loop` restarts the loops of the target's SoundEmitter3D nodes;
+## 052d: the FX actions call FxBus as a peer does when a broadcast arrives (fx, puff, beam); `spawn` instances a
+## projectile or FX scene (frozen) and frees it after the look (a scene FX sounds through its own Sound child; the headless
+## FxBus.play_scene draws nothing); `loop` lets go of the loops of the target's SoundEmitter3D nodes and looks again;
 ## `occupy`/`release` put a Manalith on the Fountain and take it off.
 ## 052e: the player's voices. `select` leaves the target alone in the lab's Selection (CommandVoice hears Selection.changed),
 ## `order` emits Orders.requested for it as OrderCommand's request does, `refuse` says a Refusal key on the CommandLog
@@ -27,9 +29,11 @@ extends Node3D
 ## (`arg` open) or cancels (cancel) the radial menu (MenuSounds: `menu_open`, `menu_back`), `ritual_phase` sets the lab
 ## Ritual's replicated phase (`arg` shoot, wait...) and `ritual_end` its outcome (`arg` completed, aborted), as a client
 ## receives them (RitualSounds); `collect` puts the lab Soul in COLLECTING (SoulSounds).
-## 052i: your own sounds. lab_052i.tres plays the testmonster set baked by tools/bake/bake_sound_sets.gd from two fixture
-## files (debug/audio/fixtures/custom_sounds/creatures/testmonster/) into debug/audio/fixtures/custom_baked/; `stream_has`
-## checks the file that sounded.
+## 052i: your own sounds. lab_052i.tres plays the testmonster set that tools/bake/new_creature.gd writes from two fixture
+## files (debug/audio/fixtures/custom_sounds/creatures/testmonster/) under user://, or the committed copy in
+## debug/audio/fixtures/custom_baked/; `stream_has` checks the file that sounded.
+## 055o-b: a script may give its "Custom" creature and its "Wizard" other `sounds` (custom_set, wizard_set): the bodies sound as
+## their CreatureType and WizardType say, so a fixture replaces the type's set for the run.
 
 const SCRIPT_FLAG := "audio-script"
 const NO_ORIGINAL_FLAG := "audio-no-original"
@@ -69,6 +73,9 @@ var _auto := false
 var _busy := false
 var _status := ""
 var _spawned: Array[Node] = []
+## The WizardType whose `sounds` the lab replaced, and what it had (put back at the end: the catalog type is shared).
+var _wizard_type: WizardType
+var _wizard_sounds: SoundSet
 
 
 func _ready() -> void:
@@ -99,14 +106,12 @@ func _start() -> void:
 	roots.append_array(PackedStringArray(_lab.get("fallback_roots")) if _lab.get("fallback_roots") != null else PackedStringArray())
 	SoundLibrary.roots = roots
 	SoundLibrary.clear_cache()
-	## The emitters resolved their cues on entering the tree, with the default roots.
-	for node in find_children("*", "SoundEmitter3D", true, false):
-		(node as SoundEmitter3D).restart()
-	## So did the directors (052f, 052g).
+	## The directors looked their sets up on entering the tree, with the default roots (052f, 052g).
 	if music != null:
 		music.use_set(music.set_path)
 	if ambience != null:
 		ambience.use_set(ambience.set_path)
+	_assign_body_sets()
 	SoundBus.reseed(5200)
 	SoundBus.sound_log.clear()
 	print("AUDIO_LAB %s: %d pasos, raíces %s" % [_lab.get("cut"), _lab.get("steps").size(), roots])
@@ -115,6 +120,28 @@ func _start() -> void:
 		while _next < _lab.get("steps").size() and not _done:
 			await _run_step()
 		_end()
+
+
+## The fixture sounds of the script's "Custom" creature and "Wizard": what their type says is replaced for this run.
+func _assign_body_sets() -> void:
+	var custom := get_node_or_null("Custom") as UnitBody
+	var custom_set := _custom_set()
+	if custom != null and custom.type != null and custom_set != null:
+		custom.type = custom.type.duplicate() as CreatureType
+		custom.type.sounds = custom_set
+	var wizard := get_node_or_null("Wizard") as WizardBody
+	var wizard_set := _lab.get("wizard_set") as SoundSet
+	if wizard != null and wizard.clip_type() != null and wizard_set != null:
+		_wizard_type = wizard.clip_type()
+		_wizard_sounds = _wizard_type.sounds
+		_wizard_type.sounds = wizard_set
+
+
+func _custom_set() -> SoundSet:
+	for path in PackedStringArray(_lab.get("custom_set_paths")):
+		if ResourceLoader.exists(path):
+			return load(path) as SoundSet
+	return _lab.get("custom_set") as SoundSet
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -144,7 +171,7 @@ func _run_step() -> void:
 	var step: Resource = _lab.get("steps")[_next]
 	_next += 1
 	var wait_s := float(step.get("wait_s"))
-	var before := SoundBus.sound_log.entries().size()
+	var before: int = SoundBus.sound_log.entries().size()
 	if wait_s > 0.0:
 		var until := BodySounds.game_seconds() + wait_s
 		while BodySounds.game_seconds() < until:
@@ -206,20 +233,18 @@ func _expected_cue(body: Node, action: StringName, arg: String, event: StringNam
 			var menu_sounds := body.get_node_or_null("MenuSounds") as MenuSounds
 			return menu_sounds.cue_for(MENU_SIGNALS.get(arg, &"")) if menu_sounds != null else false
 		&"select", &"order":
-			return command_voice.cue_for(body, event) if command_voice != null else false
+			return command_voice.cue_for(body as UnitBody, event) if command_voice != null else false
 		&"fx":
-			return SoundBus.fx_cue(FxBus.KIND_BURST, arg)
+			return SoundBus.fx_sounds.cue_of(FxBus.KIND_BURST, arg)
 		&"puff":
-			return SoundBus.fx_cue(FxBus.KIND_PUFF, arg)
+			return SoundBus.fx_sounds.cue_of(FxBus.KIND_PUFF, arg)
 		&"beam":
-			return SoundBus.fx_cue(FxBus.KIND_BEAM, arg)
-		&"scene":
-			return SoundBus.fx_cue(FxBus.KIND_SCENE, arg)
+			return SoundBus.fx_sounds.cue_of(FxBus.KIND_BEAM, arg)
 		&"spawn":
 			return true
 		&"loop", &"occupy", &"release":
 			var emitters := _emitters_of(body)
-			return emitters[0].resolved_cue() if not emitters.is_empty() else false
+			return emitters[0].cue if not emitters.is_empty() else false
 	var sounds := _sounds_of(body)
 	return sounds.cue_for(event) if sounds != null else false
 
@@ -308,7 +333,7 @@ func _act(body: Node, action: StringName, arg := "") -> bool:
 			return body is Node3D and _spawn(body as Node3D, arg)
 		&"loop":
 			for emitter in _emitters_of(body):
-				emitter.restart()
+				_relisten(emitter)
 			return true
 		&"select":
 			if selection == null:
@@ -370,7 +395,7 @@ func _act(body: Node, action: StringName, arg := "") -> bool:
 			if not body.has_method("occupy"):
 				return false
 			for emitter in _emitters_of(body):
-				emitter.restart()
+				_relisten(emitter)
 			if action == &"occupy":
 				body.call("occupy", get_node("Wizard").get_path())
 			else:
@@ -491,11 +516,20 @@ func _spawn(body: Node3D, path: String) -> bool:
 	return true
 
 
+## Out of the tree at once (queue_free alone waits for the frame's end): the next step's "LabProjectile" keeps its name.
 func _free_spawned() -> void:
 	for node in _spawned:
 		if is_instance_valid(node):
+			if node.get_parent() == self:
+				remove_child(node)
 			node.queue_free()
 	_spawned.clear()
+
+
+## A loop lets go and looks again, as if the listener had just come into range.
+func _relisten(emitter: SoundEmitter3D) -> void:
+	SoundBus.release_loop(emitter)
+	emitter.set_active(emitter.active)
 
 
 ## The SoundEmitter3D loops under `body` (any depth).
@@ -518,7 +552,7 @@ func _sounds_of(body: Node) -> BodySounds:
 
 
 func _played_since(before: int, emitter: StringName, event: StringName) -> Dictionary:
-	var entries := SoundBus.sound_log.entries()
+	var entries: Array[Dictionary] = SoundBus.sound_log.entries()
 	for i in range(mini(before, entries.size()), entries.size()):
 		var entry: Dictionary = entries[i]
 		if entry.emitter == emitter and entry.event == event and bool(entry.played):
@@ -554,6 +588,8 @@ func _end() -> void:
 	## The audio server lets go of the playbacks a moment (real time) after a stop; quitting before leaks them at exit.
 	SoundBus.shutdown()
 	SoundLibrary.reset_roots()
+	if _wizard_type != null:
+		_wizard_type.sounds = _wizard_sounds
 	var release_at := Time.get_ticks_msec() + 200
 	while Time.get_ticks_msec() < release_at:
 		await get_tree().process_frame

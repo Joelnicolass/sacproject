@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_alftt"]
+[ext_resource type="Resource" path="res://data/audio/creatures/scarab.tres" id="sounds_set"]
 
 [resource]
 script = ExtResource("1_alftt")
@@ -121,3 +122,4 @@ captive_animations = {
 "tag": "BGsc"
 }
 }
+sounds = ExtResource("sounds_set")

@@ -96,7 +96,7 @@ func play_one_shot() -> bool:
 	_schedule()
 	if _one_shots.is_empty() or not SoundBus.can_play():
 		return false
-	var at := SoundBus.listener_position()
+	var at: Vector3 = SoundBus.listener_position()
 	if at == Vector3.INF:
 		return false
 	var cue := _one_shots[_rng.randi_range(0, _one_shots.size() - 1)]
@@ -113,7 +113,7 @@ static func one_shot_cues(ambience: AmbienceSet) -> Array[SoundCue]:
 	if ambience == null:
 		return out
 	for key in ambience.one_shot_keys:
-		var cue := SoundBus.lookup(ambience.one_shot_source, key)
+		var cue: SoundCue = SoundBus.lookup(ambience.one_shot_source, key)
 		if cue != null:
 			out.append(cue)
 	for cue in ambience.one_shots:

@@ -171,13 +171,12 @@ func _offsets_are(units: Array, formation_id: StringName) -> bool:
 ## Screen position of an entry of the open menu's ring.
 func _entry_spot(menu: RadialMenu, id: StringName) -> Vector2:
 	var layout := menu.layout
-	var factor := menu.hud_scale.factor(get_viewport().get_visible_rect().size.y)
 	var origin := menu.position + menu.size * 0.5
 	for ring in [[layout.inner, layout.inner_mid()], [layout.outer, layout.outer_mid()]]:
 		var entries: Array = ring[0]
 		for i in entries.size():
 			if entries[i].id == id:
-				return origin + RadialLayout.slot_offset(entries.size(), i, float(ring[1])) * factor
+				return origin + RadialLayout.slot_offset(entries.size(), i, float(ring[1]))
 	return origin
 
 

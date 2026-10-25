@@ -29,7 +29,7 @@ func _process(_delta: float) -> void:
 		light.show_lit(wanted)
 	if not wanted:
 		return
-	var ear := SoundBus.listener_position()
+	var ear: Vector3 = SoundBus.listener_position()
 	if posts != null:
 		light.global_position = _nearest_post(ear)
 		return

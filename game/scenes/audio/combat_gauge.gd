@@ -133,7 +133,7 @@ func sample() -> void:
 
 ## The intensity now, from the replicated modes of the creatures near the listener (0 without a listener).
 func measure() -> float:
-	var at := SoundBus.listener_position()
+	var at: Vector3 = SoundBus.listener_position()
 	if at == Vector3.INF:
 		return 0.0
 	var fighting := 0

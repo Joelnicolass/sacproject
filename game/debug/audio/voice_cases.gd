@@ -10,7 +10,7 @@ extends RefCounted
 ## - advisor_watch: the bound wizard's health down -> watt, below the low ratio -> whlt; an own building hit -> bdam, to 0 ->
 ##   bdst; a building of another side says nothing; a Desecrate on the local altar -> dese; it ends completed -> sacc.
 ## - command_voice: Selection.changed -> selected (three times), the fourth time in a row annoyed; Orders.requested move -> ack,
-##   attack -> attack_ack (the set's Xcat); retreat says nothing; an order starts the count again; a selection that shrank
+##   attack -> attack_ack (its own field of the set); retreat says nothing; an order starts the count again; a selection that shrank
 ##   says nothing; a creature with no set says nothing; within the cooldown nothing.
 ## Closed gate (plain headless, --dedicated, --room-server):
 ## - voices_closed: AdvisorVoice (with its AdvisorWatch) and CommandVoice enter the tree and create no channel; say() is false.
@@ -90,7 +90,7 @@ func _advisor_channel(host: Node) -> Dictionary:
 	var checks := {}
 	checks["lowm_speaks"] = advisor.say(&"lowm") and advisor.speaking() == &"lowm" and _played(0, &"lowm")
 	checks["watt_cuts"] = advisor.say(&"watt") and advisor.speaking() == &"watt" and _played(0, &"watt")
-	var mark := SoundBus.sound_log.size()
+	var mark: int = SoundBus.sound_log.size()
 	checks["orng_waits"] = advisor.say(&"orng") and advisor.speaking() == &"watt" and advisor.waiting() == [&"orng"] \
 		and not _played(mark, &"orng")
 	checks["lowm_quiet"] = not advisor.say(&"lowm") and advisor.waiting() == [&"orng"]
@@ -161,7 +161,6 @@ func _advisor_watch(host: Node) -> Dictionary:
 
 
 func _command_voice(host: Node) -> Dictionary:
-	_use_roots(VOICES_ROOT)
 	var selection := Node.new()
 	selection.add_user_signal("changed", [{"name": "units", "type": TYPE_ARRAY}])
 	var orders := Node.new()
@@ -174,9 +173,10 @@ func _command_voice(host: Node) -> Dictionary:
 	voice.cooldown_s = 0.0
 	voice.ack_cooldown_s = 0.0
 	host.add_child(voice)
-	var unit := _creature(host, "Speaker", "nmuh")
-	var other := _creature(host, "Other", "nmuh")
-	var mute := _creature(host, "Mute", "zzzz")
+	var voices := load(VOICES_ROOT + "command_set.tres") as SoundSet
+	var unit := _creature("Speaker", voices)
+	var other := _creature("Other", voices)
+	var mute := _creature("Mute", null)
 	await host.get_tree().process_frame
 	SoundBus.sound_log.clear()
 	var checks := {}
@@ -189,7 +189,7 @@ func _command_voice(host: Node) -> Dictionary:
 	orders.emit_signal("requested", [unit], "retreat")
 	var events := _events_of(&"Speaker")
 	checks["orders_ack"] = events == [&"ack", &"attack_ack"]
-	checks["attack_ack_from_xcat"] = _stream_of(&"Speaker", &"attack_ack") != ""
+	checks["attack_ack_has_stream"] = _stream_of(&"Speaker", &"attack_ack") != ""
 	SoundBus.sound_log.clear()
 	selection.emit_signal("changed", [unit])
 	checks["order_resets_count"] = _events_of(&"Speaker") == [&"selected"]
@@ -203,8 +203,10 @@ func _command_voice(host: Node) -> Dictionary:
 	SoundBus.sound_log.clear()
 	selection.emit_signal("changed", [unit, other])
 	checks["cooldown_quiet"] = SoundBus.sound_log.size() == 0
-	for node: Node in [voice, selection, orders, unit, other, mute]:
+	for node: Node in [voice, selection, orders]:
 		node.queue_free()
+	for unit_body: UnitBody in [unit, other, mute]:
+		unit_body.free()
 	await host.get_tree().process_frame
 	return _verdict(checks)
 
@@ -220,7 +222,7 @@ func _closed(host: Node) -> Dictionary:
 	await host.get_tree().process_frame
 	var no_channel := advisor.get_node_or_null("Channel") == null and voice.get_node_or_null("Channel") == null
 	var quiet := not advisor.say(&"lowm") and advisor.cue_for(&"lowm") == null
-	var no_log := SoundBus.sound_log == null
+	var no_log: bool = SoundBus.sound_log == null
 	for node: Node in [advisor, made[1], voice]:
 		node.queue_free()
 	await host.get_tree().process_frame
@@ -246,14 +248,12 @@ func _body(host: Node, body_name: String, slot: int, group: String) -> Node3D:
 	return body
 
 
-func _creature(host: Node, body_name: String, tag: String) -> Node3D:
-	var script := GDScript.new()
-	script.source_code = "extends Node3D\nvar creature_tag := \"%s\"\n" % tag
-	script.reload()
-	var body := Node3D.new()
-	body.set_script(script)
+## A creature that is not in the tree (CommandVoice only reads its name and `type.sounds`) with the given sounds.
+func _creature(body_name: String, sounds: SoundSet) -> UnitBody:
+	var body := UnitBody.new()
 	body.name = body_name
-	host.add_child(body)
+	body.type = CreatureType.new()
+	body.type.sounds = sounds
 	return body
 
 
@@ -262,7 +262,7 @@ func _health(body: Node) -> Health:
 
 
 func _played(since: int, code: StringName) -> bool:
-	var entries := SoundBus.sound_log.entries()
+	var entries: Array[Dictionary] = SoundBus.sound_log.entries()
 	for i in range(mini(since, entries.size()), entries.size()):
 		if entries[i].emitter == code and entries[i].event == SoundEvent.ADVICE and bool(entries[i].played):
 			return true

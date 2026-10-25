@@ -1,11 +1,12 @@
 extends Control
 
-## Book of the local wizard, laid out like sacengine renderSpellbook (renderer.d:4872-4975) in
-## HUD units (sized by the shared `hud_scale`, see HudScale): three 48×48
-## tabs (creatures, spells, structures) 80 units above the bottom-left corner, and only the
-## active tab's 32×32 pages along the bottom edge, on a frame strip of max(10, 2·n) segments.
-## Pressing a creature or spell key shows its tab first (switchSpellbookTab, dagonBackend.d:80,104).
-## Hidden while the wizard is dying or a ghost (spellbookVisible, state.d:28104; renderer.d:4991).
+## The local wizard's book at the bottom-left corner: three 58×58 tabs (creatures, spells, structures) over the pages of the
+## active tab, 38×38 each, along the bottom edge on a frame strip of max(10, 2·n) segments with a cap at its end. Sizes are
+## canvas pixels of the 1280×720 base; Godot's stretch scales them, so nothing here reads the window. Tabs, pages and the spirit
+## mark are icons of the theme type `SpellBook`, the strip and the cap are the theme variations HudBookStrip and HudBookCap
+## (data/ui/theme.tres). This script only counts segments and moves the cap.
+## Pressing a creature or spell key shows its tab first. Hidden while the wizard is dying or a ghost.
+## Ref: renderer.d:4872-4975 renderSpellbook (sizes ×1.2), dagonBackend.d:80,104 switchSpellbookTab, state.d:28104 spellbookVisible.
 
 signal spell_pressed(index: int)
 signal creature_pressed(index: int)
@@ -13,23 +14,15 @@ signal structure_pressed(index: int)
 
 enum Tab { CREATURE, SPELL, STRUCTURE }
 
-const PAGE := 32.0
-const TAB := 48.0
-const SEGMENT := Vector2(16.0, 8.0)
-const CAP := Vector2(48.0, 16.0)
-## Sheet regions of SacHud (renderer.d:4204-4213), in pixels of the 128×128 tabs/fram and 64×64 page.
-const TAB_REGIONS: Array[Rect2] = [Rect2(1, 0, 46, 48), Rect2(49, 0, 46, 48), Rect2(1, 48, 46, 48)]
-const SELECTOR_REGION := Rect2(49, 48, 46, 48)
-const PAGE_REGIONS: Array[Rect2] = [Rect2(0, 0, 32, 32), Rect2(32, 0, 32, 32), Rect2(0, 32, 32, 32)]
-const FRAME_SEGMENT_REGION := Rect2(64, 40, 16, 8)
-const FRAME_CAP_REGION := Rect2(80.5, 32.5, 47.5, 15.5)
-const TAB_TEXT: PackedStringArray = ["UI_BOOK_TAB_CREATURES", "UI_BOOK_TAB_SPELLS", "UI_BOOK_TAB_STRUCTURES"]
+const TAB := 58.0
+## Width of one frame segment and of the cap, and the theme type that holds the book's icons.
+const SEGMENT_WIDTH := 19.0
+const CAP_WIDTH := 19.0
+const THEME_TYPE := &"SpellBook"
+const TAB_ICONS: Array[StringName] = [&"tab_creature", &"tab_spell", &"tab_structure"]
+const PAGE_ICONS: Array[StringName] = [&"page_creature", &"page_spell", &"page_structure"]
 
 @export var slot_scene: PackedScene
-## Frame piece (a TextureRect; texture, rect and rotation are set here).
-@export var piece_scene: PackedScene
-## Shared HUD size (the roster, the armed icon and the cursor read the same one).
-@export var hud_scale: HudScale = preload("res://data/ui/hud_scale.tres")
 @export var min_frame_segments := 10
 
 var tab: int = Tab.CREATURE
@@ -39,28 +32,13 @@ var _wizard: Node
 var _slots: Array[SpellSlot] = []
 
 
-## Shown only when the script runs in the editor (@tool); kept for the shared-size check.
-func _get_configuration_warnings() -> PackedStringArray:
-	var warnings := PackedStringArray()
-	var scale_warning := HudScale.socket_warning(hud_scale)
-	if not scale_warning.is_empty():
-		warnings.append(scale_warning)
-	return warnings
-
-
 func _ready() -> void:
 	visible = false
 	var tabs: Array[Button] = [%CreatureTab, %SpellTab, %StructureTab]
 	for i in tabs.size():
-		var texture := HudIcons.region("tabs", TAB_REGIONS[i])
-		tabs[i].icon = texture
-		tabs[i].text = "" if texture else tr(TAB_TEXT[i])
+		tabs[i].icon = get_theme_icon(TAB_ICONS[i], THEME_TYPE)
 		tabs[i].pressed.connect(show_tab.bind(i))
-	%TabSelector.texture = HudIcons.region("tabs", SELECTOR_REGION)
-	get_viewport().size_changed.connect(_fit_screen)
-	if hud_scale:
-		hud_scale.changed.connect(_fit_screen)
-	_fit_screen()
+	%TabSelector.texture = get_theme_icon(&"tab_selector", THEME_TYPE)
 
 
 func bind(wizard: Node) -> void:
@@ -97,19 +75,12 @@ func _rebuild() -> void:
 		%Slots.remove_child(child)
 		child.queue_free()
 	_slots.clear()
-	var creatures: int = _book.creature_count() if _book else 0
-	var spells: int = _book.size() if _book else 0
-	var structures: int = _book.structure_count() if _book else 0
-	var page := HudIcons.region("page", PAGE_REGIONS[tab])
-	var spirit := HudIcons.sheet("spi2")
-	var count := 0
-	match tab:
-		Tab.CREATURE:
-			count = creatures
-		Tab.SPELL:
-			count = spells
-		Tab.STRUCTURE:
-			count = structures
+	var counts: Array[int] = [0, 0, 0]
+	if _book:
+		counts = [_book.creature_count(), _book.size(), _book.structure_count()]
+	var count: int = counts[tab]
+	var page := get_theme_icon(PAGE_ICONS[tab], THEME_TYPE)
+	var spirit := get_theme_icon(&"spirit", THEME_TYPE)
 	for i in count:
 		var slot := slot_scene.instantiate() as SpellSlot
 		%Slots.add_child(slot)
@@ -117,29 +88,25 @@ func _rebuild() -> void:
 		if tab == Tab.CREATURE:
 			var creature := _book.creature_at(i)
 			slot.name = "Creature%d" % (i + 1)
-			slot.show_creature(creature, key_label("creature_%d" % (i + 1)), page, icon_for(creature.tag))
+			slot.show_creature(creature, ActionKeyLabel.of("creature_%d" % (i + 1)), page, HudIcons.icon(creature.tag))
 			slot.pressed.connect(creature_pressed.emit.bind(i))
 		else:
 			var spell := _book.structure_at(i) if tab == Tab.STRUCTURE else _book.spell_at(i)
 			slot.name = "Structure%d" % (i + 1) if tab == Tab.STRUCTURE else "Spell%d" % (i + 1)
-			slot.show_spell(spell, key_label("spell_%d" % (i + 1)), page, icon_for(spell.tag))
+			slot.show_spell(spell, ActionKeyLabel.of("spell_%d" % (i + 1)), page, HudIcons.icon(spell.tag))
 			if tab == Tab.STRUCTURE:
 				slot.pressed.connect(structure_pressed.emit.bind(i))
 			else:
 				slot.pressed.connect(spell_pressed.emit.bind(i))
 		_slots.append(slot)
 	%TabSelector.position = Vector2(TAB * tab, 0.0)
-	_build_frame(count)
+	_fit_frame(count)
 	_refresh_visible()
 
 
 func _refresh_visible() -> void:
-	var has_entries := false
-	if _book and is_instance_valid(_book):
-		has_entries = _book.creature_count() + _book.size() + _book.structure_count() > 0
-	var wizard_allows := true
-	if _wizard is WizardBody and is_instance_valid(_wizard):
-		wizard_allows = (_wizard as WizardBody).spellbook_visible()
+	var has_entries := is_instance_valid(_book) and _book.creature_count() + _book.size() + _book.structure_count() > 0
+	var wizard_allows: bool = not (_wizard is WizardBody and is_instance_valid(_wizard)) or (_wizard as WizardBody).spellbook_visible()
 	visible = has_entries and wizard_allows
 
 
@@ -154,35 +121,11 @@ static func _ghost_of(wizard: Node) -> Node:
 
 
 ## spellbookFrame1 segments 8 units above the pages, spellbookFrame2 turned 90° as the end cap.
-func _build_frame(count: int) -> void:
-	for child in %Frame.get_children():
-		%Frame.remove_child(child)
-		child.queue_free()
-	var segments := maxi(min_frame_segments, 2 * count)
-	var piece := HudIcons.region("fram", FRAME_SEGMENT_REGION)
-	if piece:
-		for i in segments:
-			var rect: TextureRect = piece_scene.instantiate()
-			rect.texture = piece
-			rect.position = Vector2(SEGMENT.x * i, size.y - PAGE - SEGMENT.y)
-			rect.size = SEGMENT
-			%Frame.add_child(rect)
-	var cap_texture := HudIcons.region("fram", FRAME_CAP_REGION)
-	if cap_texture:
-		var cap: TextureRect = piece_scene.instantiate()
-		cap.texture = cap_texture
-		cap.size = CAP
-		cap.rotation = PI * 0.5
-		cap.position = Vector2(SEGMENT.x * segments + CAP.y, size.y - CAP.x)
-		%Frame.add_child(cap)
-	offset_right = maxf(TAB * 3.0, SEGMENT.x * segments + CAP.y)
-
-
-func _fit_screen() -> void:
-	var height := get_viewport().get_visible_rect().size.y
-	var factor := hud_scale.factor(height) if hud_scale else height / HudScale.SACENGINE_HEIGHT
-	pivot_offset = Vector2(0.0, size.y)
-	scale = Vector2(factor, factor)
+func _fit_frame(count: int) -> void:
+	var width := SEGMENT_WIDTH * maxi(min_frame_segments, 2 * count)
+	(%Strip as Control).size.x = width
+	(%Cap as Control).position.x = width
+	offset_right = maxf(TAB * 3.0, width + CAP_WIDTH)
 
 
 func _process(_delta: float) -> void:
@@ -204,26 +147,3 @@ func _process(_delta: float) -> void:
 			slot.show_cooldown(_book.structure_cooldown(i), _book.structure_max_cooldown(i))
 		else:
 			slot.show_cooldown(_book.cooldown(i), _book.max_cooldown(i))
-
-
-## The CRE8/SPEL icon exported by tools/import/import_ui.py, or null.
-static func icon_for(spell_tag: String) -> Texture2D:
-	return HudIcons.icon(spell_tag)
-
-
-static func key_label(action: String) -> String:
-	if not InputMap.has_action(action):
-		return ""
-	for event in InputMap.action_get_events(action):
-		if event is InputEventKey:
-			var key := event as InputEventKey
-			var code := key.keycode if key.keycode != KEY_NONE else key.physical_keycode
-			var text := UiText.t("UI_KEY_SPACE") if code == KEY_SPACE else OS.get_keycode_string(code)
-			if key.alt_pressed:
-				text = "Alt+" + text
-			if key.shift_pressed:
-				text = "Shift+" + text
-			if key.ctrl_pressed:
-				text = "Ctrl+" + text
-			return text
-	return ""

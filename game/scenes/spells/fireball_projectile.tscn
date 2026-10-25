@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="3_light"]
 [ext_resource type="Script" path="res://scenes/spells/fireball_projectile.gd" id="1_script"]
@@ -10,6 +10,7 @@
 [ext_resource type="Resource" path="res://data/fx/fireball_blast2.tres" id="8_b2"]
 [ext_resource type="Resource" path="res://data/fx/fireball_ash.tres" id="9_b3"]
 [ext_resource type="Resource" path="res://data/fx/fireball_smoke.tres" id="10_b4"]
+[ext_resource type="Resource" path="res://data/audio/cues/fireball_cast.tres" id="cue_fireball_cast"]
 
 [node name="FireballProjectile" type="Node3D"]
 script = ExtResource("1_script")
@@ -17,7 +18,7 @@ trail = Array[ExtResource("4_ptype")]([ExtResource("5_trail1"), ExtResource("6_t
 explosion = Array[ExtResource("4_ptype")]([ExtResource("7_b1"), ExtResource("8_b2"), ExtResource("9_b3"), ExtResource("10_b4")])
 
 [node name="CastSound" parent="." instance=ExtResource("2_sound")]
-cue = &"fireball_cast"
+cue = ExtResource("cue_fireball_cast")
 
 [node name="Light" parent="." instance=ExtResource("3_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

@@ -3,11 +3,11 @@ extends Node
 ## F142 (RFC-031 031c) observer. Read-only: never changes the game. Tolerates scene == null.
 ##   arm()     starts watching the longest frame (it runs while the tree is paused too).
 ##   state()   one line: modal count, paused, scene, the shared GraphicsPrefs, what the engine holds (max_fps, VSync,
-##             window mode), the HUD scale and, in a match, the rig preset, the viewport read_back vs that preset,
+##             window mode), the interface size and, in a match, the rig preset, the viewport read_back vs that preset,
 ##             the grass fields (preset id, active, cells) and the longest frame since arm().
 
 const PREFS := preload("res://data/ui/graphics_prefs.tres")
-const HUD := preload("res://data/ui/hud_scale.tres")
+const UI_SCALE := preload("res://data/ui/ui_scale.tres")
 
 var _max_dt := 0.0
 var _armed := false
@@ -35,8 +35,8 @@ func state() -> String:
 		return "no tree"
 	var line := "pt142 modal=%d paused=%s" % [tree.get_nodes_in_group(WorldInput.MODAL).size(), tree.paused]
 	line += " prefs=%s vsync=%s full=%s fps=%d" % [PREFS.quality_id(), PREFS.vsync(), PREFS.fullscreen(), PREFS.max_fps()]
-	line += " engine_fps=%d ds_vsync=%d win_mode=%d hud=%.2f" % [
-		Engine.max_fps, DisplayServer.window_get_vsync_mode(), get_window().mode, HUD.get_scale()]
+	line += " engine_fps=%d ds_vsync=%d win_mode=%d ui=%.2f" % [
+		Engine.max_fps, DisplayServer.window_get_vsync_mode(), get_window().mode, UI_SCALE.get_scale()]
 	var scene := tree.current_scene
 	if scene == null:
 		line += " scene=null"

@@ -1,0 +1,77 @@
+[gd_resource type="Resource" script_class="SoundSet" load_steps=36 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_h_u_a1.ogg" id="s1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_h_u_a2.ogg" id="s2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_h_u_a3.ogg" id="s3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_h_uc1.ogg" id="s4"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_h_uc2.ogg" id="s5"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_h_uc3.ogg" id="s6"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_h_uc4.ogg" id="s7"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_h_uc5.ogg" id="s8"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_h_ua1.ogg" id="s9"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_h_ud1.ogg" id="s10"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_h_u_a4.ogg" id="s11"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_h_u_a5.ogg" id="s12"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_h_u_c1.ogg" id="s13"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_h_u_c2.ogg" id="s14"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_h_u_c3.ogg" id="s15"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_h_u_c4.ogg" id="s16"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_h_u_c5.ogg" id="s17"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_h_u_d1.ogg" id="s18"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_d_r_u2.ogg" id="s19"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_d_r_u3.ogg" id="s20"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_d_r_u4.ogg" id="s21"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_d_r_u5.ogg" id="s22"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_d_r_u6.ogg" id="s23"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_d_r_u7.ogg" id="s24"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/drui/_d_r_u8.ogg" id="s25"]
+[ext_resource type="Resource" path="res://data/audio/melee/fist.tres" id="3_fallback"]
+
+[sub_resource type="Resource" id="cue_selected"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s1"), ExtResource("s2"), ExtResource("s3")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="cue_ack"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s4"), ExtResource("s5"), ExtResource("s6"), ExtResource("s7")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="cue_attack_ack"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s8"), ExtResource("s9"), ExtResource("s10")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="cue_annoyed"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s11"), ExtResource("s12"), ExtResource("s13"), ExtResource("s14"), ExtResource("s15"), ExtResource("s16"), ExtResource("s17")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="cue_swing"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s18"), ExtResource("s19")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="cue_damaged"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s20"), ExtResource("s21"), ExtResource("s22")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="cue_death"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s23"), ExtResource("s24"), ExtResource("s25")])
+bus = &"Voice"
+
+[resource]
+script = ExtResource("1_set")
+selected = SubResource("cue_selected")
+ack = SubResource("cue_ack")
+attack_ack = SubResource("cue_attack_ack")
+annoyed = SubResource("cue_annoyed")
+swing = SubResource("cue_swing")
+shoot = SubResource("cue_swing")
+damaged = SubResource("cue_damaged")
+death = SubResource("cue_death")
+fallback = ExtResource("3_fallback")

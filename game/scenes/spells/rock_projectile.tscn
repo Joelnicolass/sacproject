@@ -1,16 +1,17 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="3_light"]
 [ext_resource type="Script" path="res://scenes/spells/rock_projectile.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="2_sound"]
 [ext_resource type="PackedScene" path="res://scenes/spells/marks/rock_mark.tscn" id="4_mark"]
+[ext_resource type="Resource" path="res://data/audio/cues/rock_cast.tres" id="cue_rock_cast"]
 
 [node name="RockProjectile" type="Node3D"]
 script = ExtResource("1_script")
 ground_mark = ExtResource("4_mark")
 
 [node name="CastSound" parent="." instance=ExtResource("2_sound")]
-cue = &"rock_cast"
+cue = ExtResource("cue_rock_cast")
 
 [node name="Light" parent="." instance=ExtResource("3_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

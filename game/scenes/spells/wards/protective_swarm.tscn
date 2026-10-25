@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/wards/ward.gd" id="1_ward"]
 [ext_resource type="Script" path="res://scenes/spells/wards/ward_emitter.gd" id="2_emitter"]
@@ -10,6 +10,8 @@
 [ext_resource type="Script" path="res://scenes/spells/wards/aura_impact.gd" id="8_impact"]
 [ext_resource type="PackedScene" path="res://scenes/spells/wards/ward_sound.tscn" id="9_sound"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
+[ext_resource type="Resource" path="res://data/audio/cues/ward_swarm_buzz.tres" id="cue_ward_swarm_buzz"]
+[ext_resource type="Resource" path="res://data/audio/cues/ward_swarm_loop.tres" id="cue_ward_swarm_loop"]
 
 [sub_resource type="SphereShape3D" id="Sphere_reach"]
 radius = 4.0
@@ -63,12 +65,12 @@ type = ExtResource("7_sting")
 
 [node name="SoundBuzz" parent="." node_paths=PackedStringArray("ward") instance=ExtResource("9_sound")]
 editor_description = "buzz.wav es tfx2 del SPEL rwsp. NO VERIFICADO cuando suena: aca al prender el escudo."
-cue = &"ward_swarm_buzz"
+cue = ExtResource("cue_ward_swarm_buzz")
 ward = NodePath("..")
 
 [node name="SoundLoop" parent="." node_paths=PackedStringArray("ward") instance=ExtResource("9_sound")]
 editor_description = "Lazo swr3 (3rws): desde el lanzamiento hasta que termina el escudo."
-cue = &"ward_swarm_loop"
+cue = ExtResource("cue_ward_swarm_loop")
 ward = NodePath("..")
 when = 2
 

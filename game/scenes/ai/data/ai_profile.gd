@@ -122,7 +122,11 @@ func ages_for(seconds: float) -> int:
 
 ## The profile of a god (the `ai_profile` of data/gods/<god>.tres), or the original when the god has none.
 static func for_god(god_name: StringName) -> AiProfile:
-	var type := GameCatalog.shared().god(String(god_name))
+	return for_type(GameCatalog.shared().god(String(god_name)))
+
+
+## The profile of a god Resource (null = no god), or the original when it has none.
+static func for_type(type: GodType) -> AiProfile:
 	if type != null and type.ai_profile != null:
 		return type.ai_profile
 	return load(DIR.path_join("profile_original.tres")) as AiProfile

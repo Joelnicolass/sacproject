@@ -73,6 +73,10 @@ enum Blend { ADD, MIX }
 ## Beams of this type FxBus keeps; when all are playing, the oldest one starts over.
 @export_range(1, 64) var pool_max := 6
 
+@export_group("Sound")
+## What each beam of this type sounds like (a SoundCue from data/audio/cues/), played at the middle of the beam. Empty = silent.
+@export var sound: SoundCue
+
 
 ## Brightness at `t` seconds of the beam's life.
 func energy_at(t: float) -> float:

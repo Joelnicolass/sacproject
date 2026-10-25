@@ -1,9 +1,11 @@
-[gd_resource type="Resource" script_class="BenchRules" load_steps=8 format=3]
+[gd_resource type="Resource" script_class="BenchRules" load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://debug/suite/bench_rules.gd" id="1_rules"]
 [ext_resource type="Script" path="res://debug/suite/bench_group.gd" id="2_group"]
 [ext_resource type="Script" path="res://scenes/ai/data/ai_seat.gd" id="3_seat"]
 [ext_resource type="Script" path="res://debug/suite/bench_structure.gd" id="4_structure"]
+[ext_resource type="Resource" path="res://data/catalog/wizards/jadugarr.tres" id="seat_wizard_jadugarr"]
+[ext_resource type="Resource" uid="uid://dxr20hx8hlmpf" path="res://data/gods/james.tres" id="seat_god_james"]
 
 ; RFC-024 024e (adenda §6): rendimiento de la IA. IA contra IA (Normal y Normal; otras con --difficulties=hard,hard), 30 criaturas
 ; por bando puestas junto a su mago (60 en el campo), 12 almas y mana lleno con un Manalith cada uno (la IA convoca, convierte y
@@ -13,14 +15,14 @@
 [sub_resource type="Resource" id="Seat_1"]
 script = ExtResource("3_seat")
 slot = 1
-wizard = "cwa0"
-god = &"james"
+wizard = ExtResource("seat_wizard_jadugarr")
+god = ExtResource("seat_god_james")
 
 [sub_resource type="Resource" id="Seat_2"]
 script = ExtResource("3_seat")
 slot = 2
-wizard = "cwa0"
-god = &"james"
+wizard = ExtResource("seat_wizard_jadugarr")
+god = ExtResource("seat_god_james")
 
 [sub_resource type="Resource" id="Troggs_1"]
 script = ExtResource("2_group")

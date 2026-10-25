@@ -28,6 +28,11 @@ func anchor() -> Node3D:
 	return soul
 
 
+## WORKAROUND: the cue comes from the world set (`world.tres`, found by its text key) until 055o-c gives this node typed cues.
+func default_cue(event: StringName) -> SoundCue:
+	return SoundBus.lookup("world", event)
+
+
 func _on_state_changed(_was: Soul.State, now: Soul.State) -> void:
 	if now == Soul.State.COLLECTING and not _played:
 		_played = true

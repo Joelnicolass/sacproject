@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_d0ate"]
+[ext_resource type="Resource" path="res://data/audio/creatures/silverback.tres" id="sounds_set"]
 
 [resource]
 script = ExtResource("1_d0ate")
@@ -149,3 +150,4 @@ captive_animations = {
 "tag": "ADsc"
 }
 }
+sounds = ExtResource("sounds_set")

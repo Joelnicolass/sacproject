@@ -10,6 +10,6 @@ region = Rect2(36.5, 1, 10.5, 10)
 [resource]
 script = ExtResource("1_style")
 texture = SubResource("tex")
-size_px = 11.0
+size_px = 13.0
 use_side_color = false
 fixed_color = Color(0, 0.627451, 0.858824, 1)

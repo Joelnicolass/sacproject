@@ -27,8 +27,8 @@
   { "print": { "node": "%CommandCue/Aim", "prop": "size" } },
   { "print": { "node": "%CommandCue/Mirror", "prop": "position" } },
   { "print": { "node": "%CommandCue/Mirror", "prop": "size" } },
-  { "call": { "harness": "hud_scale_probe", "method": "report" } },
-  { "assert": { "node": "AgentKit/hud_scale_probe", "prop": "same", "equals": true } },
+  { "call": { "harness": "ui_scale_probe", "method": "report" } },
+  { "assert": { "node": "AgentKit/ui_scale_probe", "prop": "same", "equals": true } },
   { "shot": "g2_rock_armed.png" }
  ]
 }

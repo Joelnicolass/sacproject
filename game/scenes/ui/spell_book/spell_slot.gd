@@ -1,11 +1,12 @@
 class_name SpellSlot
 extends Button
 
-## One page of the book, as sacengine renderSpellbook draws it (renderer.d:4912-4975): the tab's
-## page, the entry's icon shrunk and faded by mana/manaCost, the spirit mark when souls are
-## short, and the cooldown sweep. Without an exported icon the name is written instead.
+## One page of the book: the tab's page, the entry's icon shrunk and faded by mana/manaCost, the spirit mark when souls are
+## short, and the cooldown sweep. Without an icon the name is written instead.
+## Ref: renderer.d:4912-4975 renderSpellbook.
 
-const SIZE := 32.0
+## Side of a page in canvas pixels (the 1280×720 base).
+const SIZE := 38.0
 
 var _mana_cost := 1.0
 var _soul_cost := 0

@@ -1,0 +1,71 @@
+[gd_resource type="Resource" script_class="WizardType" format=3]
+
+[ext_resource type="Script" path="res://scenes/wizards/wizard_type.gd" id="1_wiuln"]
+[ext_resource type="Resource" path="res://data/audio/wizards/seerix.tres" id="sounds_set"]
+
+[resource]
+script = ExtResource("1_wiuln")
+tag = "cwa1"
+spell_tag = "1awc"
+display_name = "Seerix"
+model = "serx"
+health = 1500
+mana = 1000
+running_speed = 10.0
+regeneration_per_s = 16.6667
+melee_evasion = 1250
+direct_spell_resistance = 0.5
+splash_spell_resistance = 0.5
+stance_animation = {
+"framerate": 30.0,
+"frames": 87.0,
+"tag": "ses1"
+}
+idle_animation = {
+"framerate": 30.0,
+"frames": 88.0,
+"tag": "sei1"
+}
+run_animation = {
+"framerate": 30.0,
+"frames": 48.0,
+"tag": "seru"
+}
+walk_animation = {
+"framerate": 30.0,
+"frames": 48.0,
+"tag": "seru"
+}
+death_frames = PackedInt32Array(44, 118, 118)
+corpse_rise_frames = 61
+float_to_stance_frames = 43
+stun_animations = {
+"get_up": {
+"framerate": 30.0,
+"frames": 28.0,
+"tag": "segu"
+},
+"hit_floor": {
+"framerate": 30.0,
+"frames": 103.0,
+"tag": "sehf"
+},
+"knock": {
+"framerate": 30.0,
+"frames": 34.0,
+"tag": "sek2"
+}
+}
+cast_animations = {
+"cast": {
+"framerate": 30.0,
+"frames": 48.0,
+"tag": "sesl"
+},
+"run_cast": {
+"framerate": 30.0,
+"frames": 48.0,
+"tag": "serl"
+}
+}
+sounds = ExtResource("sounds_set")

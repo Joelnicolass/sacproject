@@ -176,14 +176,15 @@ func _refresh_owner() -> void:
 
 
 func _apply_pick() -> void:
-	var chosen: Dictionary = SacrificeFlow.pick_for(owner_slot)
-	if not chosen.is_empty():
-		if str(chosen.get("wizard", "")) != wizard_tag:
-			wizard_tag = str(chosen.get("wizard", ""))
-		if str(chosen.get("model", "")) != model:
-			model = str(chosen.get("model", ""))
-		if str(chosen.get("god", "")) != god:
-			god = str(chosen.get("god", ""))
+	var chosen: WizardPick = SacrificeFlow.pick_for(owner_slot)
+	if chosen != null and chosen.is_complete():
+		## The replicated ids (`wizard_tag`, `model`, `god`) stay the wire until the body is a scene of its own (055i-b, 055s).
+		if chosen.wizard.id() != wizard_tag:
+			wizard_tag = chosen.wizard.id()
+		if chosen.wizard.model != model:
+			model = chosen.wizard.model
+		if chosen.god.id() != god:
+			god = chosen.god.id()
 	_apply_type()
 
 

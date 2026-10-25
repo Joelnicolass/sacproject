@@ -1,8 +1,9 @@
-[gd_resource type="Resource" script_class="ParticleType" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="ParticleType" load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
 [ext_resource type="GradientTexture1D" path="res://data/fx/ramps/ice.tres" id="ramp_ice"]
 [ext_resource type="Texture2D" uid="uid://bmg3vdsq7rluc" path="res://assets/original/fx/shrd.png" id="atlas_png"]
+[ext_resource type="Resource" path="res://data/audio/cues/freeze_shards.tres" id="cue_freeze_shards"]
 
 
 [resource]
@@ -25,3 +26,4 @@ emission_radius = 0.6
 additive = false
 lit = false
 color_ramp = ExtResource("ramp_ice")
+sound = ExtResource("cue_freeze_shards")

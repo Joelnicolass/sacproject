@@ -69,9 +69,10 @@ static func state_text(state: int) -> String:
 static func pick_text(meta: Dictionary) -> String:
 	if meta.is_empty():
 		return UiText.t("LOBBY_NO_PICK")
-	var wizard: WizardType = GameData.wizard(str(meta.get("wizard", "")))
-	var wizard_name := wizard.display_name if wizard != null else str(meta.get("model", meta.get("wizard", "?")))
-	return UiText.t("LOBBY_PICK_FORMAT") % [wizard_name, str(meta.get("god", "?")).capitalize()]
+	var pick: WizardPick = MatchWire.decode_pick(meta)
+	if pick == null:
+		return UiText.t("LOBBY_PICK_FORMAT") % [str(meta.get("model", meta.get("wizard", "?"))), str(meta.get("god", "?")).capitalize()]
+	return UiText.t("LOBBY_PICK_FORMAT") % [pick.wizard.display_name, pick.god.display_name]
 
 
 ## RFC-049 049h (F297): «Dios: X · Normal» of a bot seat's meta ({god, difficulty}); an empty god is drawn when the match starts.
@@ -79,7 +80,7 @@ static func bot_text(meta: Dictionary) -> String:
 	var god := str(meta.get("god", ""))
 	var god_name := UiText.t("LOBBY_BOT_RANDOM_GOD")
 	if not god.is_empty():
-		var data: GodType = GameData.god(god)
+		var data: GodType = MatchWire.decode_god(god)
 		god_name = data.display_name if data != null else god.capitalize()
 	return UiText.t("LOBBY_BOT_FORMAT") % [god_name, AiDifficultyPicker.difficulty_name(str(meta.get("difficulty", "normal")))]
 

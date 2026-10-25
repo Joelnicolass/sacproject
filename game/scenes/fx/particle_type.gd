@@ -67,6 +67,10 @@ const RAMP_POINTS := 25
 ## `fx_max_lights`). Empty = no light.
 @export var light: FxLightSpec
 
+@export_group("Sound")
+## What each burst of this type sounds like (a SoundCue from data/audio/cues/). Empty = silent. A trail's puffs never sound.
+@export var sound: SoundCue
+
 
 ## sacengine getAlpha over the normalised life (RFC-053 053i shares it between SpriteEmitter and SpriteParticles):
 ## min(`cap`, (time_left / fade)^2), fade = `fade_s`, or `fallback_fade_s` (at most half the life) when the type has none

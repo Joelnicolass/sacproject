@@ -1,21 +1,18 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/target_info/target_info_panel.gd" id="1_panel"]
-[ext_resource type="Resource" path="res://data/ui/hud_scale.tres" id="2_scale"]
 [ext_resource type="Resource" path="res://data/ui/feel_prefs.tres" id="3_prefs"]
 [ext_resource type="Theme" path="res://data/ui/theme.tres" id="4_theme"]
-[ext_resource type="Script" path="res://scenes/ui/target_info/health_strip.gd" id="5_strip"]
 
 [node name="TargetInfoPanel" type="Control"]
 visible = false
 layout_mode = 3
 anchors_preset = 0
-offset_right = 176.0
-offset_bottom = 56.0
+offset_right = 264.0
+offset_bottom = 84.0
 mouse_filter = 2
 theme = ExtResource("4_theme")
 script = ExtResource("1_panel")
-hud_scale = ExtResource("2_scale")
 prefs = ExtResource("3_prefs")
 
 [node name="Background" type="ColorRect" parent="."]
@@ -46,12 +43,14 @@ anchor_left = 0.2182
 anchor_top = 0.1143
 anchor_right = 0.9636
 anchor_bottom = 0.5714
+theme_override_font_sizes/font_size = 16
 vertical_alignment = 1
 autowrap_mode = 3
 clip_text = true
 text = "Trogg de Eldred"
 
-[node name="Bar" type="Control" parent="."]
+[node name="Bar" type="ProgressBar" parent="."]
+theme_type_variation = &"HudHealthStrip"
 unique_name_in_owner = true
 layout_mode = 1
 anchor_left = 0.0364
@@ -59,4 +58,7 @@ anchor_top = 0.6857
 anchor_right = 0.9636
 anchor_bottom = 0.8857
 mouse_filter = 2
-script = ExtResource("5_strip")
+max_value = 1.0
+step = 0.0
+value = 1.0
+show_percentage = false

@@ -26,9 +26,21 @@ extends Resource
 @export var death_frames: PackedInt32Array = PackedInt32Array()
 @export var corpse_rise_frames: int = 0
 @export var float_to_stance_frames: int = 0
+
+## What the wizard sounds like: damaged, incantation, death, ghost (data/audio/wizards/<name>.tres). Empty: silent.
+@export var sounds: SoundSet
+
 ## F138 (RFC-030i-c): knock and get_up clips (WIZD slots 9, 10), role -> {tag, frames, framerate}, like
 ## CreatureType.stun_animations. A stunned wizard lies (knock + get_up)·2 ticks (state.d:8138-8146, 14170-14212).
 @export var stun_animations: Dictionary = {}
 ## RFC-023 023d: the spellcast loops, role -> {tag, frames, framerate}: `cast` (standing, WIZD slot 27) and `run_cast` (moving,
 ## slot 30). Presentation only: the cast lasts what the spell says, not the clip.
 @export var cast_animations: Dictionary = {}
+
+## Lobby (055i-a): false takes this wizard out of the menu and the rooms without deleting the file.
+@export var offered := true
+
+
+## The id of this wizard on the network and in the catalog: its `tag`, or the file name when the tag is empty (new content).
+func id() -> String:
+	return tag if not tag.is_empty() else resource_path.get_file().get_basename()

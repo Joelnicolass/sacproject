@@ -108,11 +108,29 @@ xargs grep -nE 'Vector3\.UP[ ]*\*[ ]*([-0-9.(]|[a-z_]*(height|offset|lift|reach|
 # C17: FX/sound named by text literal or by an exported String instead of a typed Resource.
 xargs grep -nE 'FxBus\.[a-z_]+\([ ]*&?"|@export[a-z_]* var [a-z_]*(fx|sfx|sound|effect)[a-z_]*[ ]*:[ ]*(String|StringName)\b' < "$OUT/all.txt" 2>/dev/null \
 	| grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C17.txt" || true
+# C17 for sound (055o): a sound is a SoundCue/SoundSet/MusicSet assigned in the inspector, not a key looked up by text.
+{
+	xargs grep -nE 'SoundLibrary\.|SoundBus\.(lookup|fx_cue)\(|FxSoundMap\b' < "$OUT/all.txt" 2>/dev/null
+	xargs grep -nE '@export[a-z_]* var (cue|source|set_path|fallback_path|shared_set|ui_set|ui_click_key|one_shot_source|one_shot_keys)[ ]*(:[ ]*(String|StringName)\b|:=[ ]*&?")' < "$OUT/all.txt" 2>/dev/null
+	grep '^scenes/audio/' "$OUT/all.txt" | xargs grep -nE '@export.*Dictionary\[StringName,[ ]*(StringName|PackedStringArray|int|float)\]|@export var [a-z_]*[ ]*:=[ ]*&"[A-Za-z0-9]{4}"' 2>/dev/null
+	find scenes data \( -name '*.tscn' -o -name '*.tres' \) 2>/dev/null | sort \
+		| xargs grep -nE '^(cue = &"|source = "|set_path = "|fallback_path = "|metadata/ui_sound = "|one_shot_keys = )' 2>/dev/null
+} | grep -vE ':[0-9]+:[ 	]*#' >> "$OUT/C17.txt" || true
 
 # C18: text-tag lookups of content in gameplay (allowed in spawners, scenes/net/, scenes/core/catalog/).
 xargs grep -nE 'GameData\.(creature|spell|ability|wizard|god|book)[a-z_]*\(|BodyCatalog\.(info|pose|has_model)\(|MapCatalog\.|GameModeCatalog\.' < "$OUT/all.txt" 2>/dev/null \
 	| grep -vE '^scenes/(net|core/catalog)/|^scenes/[a-z_/]*[a-z_]*spawn[a-z_]*\.gd:' \
 	| grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C18.txt" || true
+
+# C18b: lookups by id that C18 does not see (catalog god/building by tag, TypeRef, AI profile by god, biome look by god, wire decode).
+# Same allowlist as C18. Screens and gameplay receive the Resource; only the catalogs and the wire turn text back into one.
+# `MatchWire.decode_*` is also allowed in the flow and in the room/local-server screens: they hold the raw text the network gives
+# them (the seat metas of a room, the channels of the flow) and the wire is the one place that turns it into a Resource (RFC-055 055i-a Q3).
+{
+	xargs grep -nE 'GameCatalog\.shared\(\)\.(god|building)\(|TypeRef\.|AiProfile\.for_god\(|BiomeRules\.has_look\(' < "$OUT/all.txt" 2>/dev/null
+	xargs grep -nE 'MatchWire\.decode_' < "$OUT/all.txt" 2>/dev/null | grep -vE '^scenes/core/flow/|^scenes/ui/(lobby|local_server)/'
+} | grep -vE '^scenes/(net|core/catalog)/|^scenes/[a-z_/]*[a-z_]*spawn[a-z_]*\.gd:' \
+	| grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C18b.txt" || true
 
 # C19: data/*.tres that store positions/offsets/transforms (counted by FILE). debug/ is reported, not ratcheted.
 TRES_POS='^([a-z_0-9]*_(offset|position|origin|transform|pos)|position[a-z_0-9]*|offsets|origin|transform) = |Transform3D\('
@@ -132,7 +150,7 @@ xargs grep -nE '^@export(_[a-z]+)?(\([^)]*\))? var [a-z_0-9]*(_ticks|frames)[a-z
 	| grep -vE '^scenes/(ui|net)/' | grep -vE ':@export_storage ' \
 	| grep -vE 'var (h_frames|v_frames|frames_h|frames_v|frames_per_s|resync_ticks)\b' > "$OUT/C22.txt" || true
 
-RULES="C1a:scripts>150_lines C1b:scripts>300_lines C5:get_node(\"Cap\") C6:group_lookup_literal C7:.call/has_method C8:raw_fields_in_*_type.gd C9:doc_opens_with_original C11:inheritance_depth>=2 C12:MpKit_outside_allowlist C13:reads_original_assets C14:print() C15:content_nodes_with_new C16:height_offset_in_code C17:fx_by_text C18:content_lookup_by_text C19:data_tres_with_positions C20:matchrules_place_radii C21:export_file C22:time_in_ticks"
+RULES="C1a:scripts>150_lines C1b:scripts>300_lines C5:get_node(\"Cap\") C6:group_lookup_literal C7:.call/has_method C8:raw_fields_in_*_type.gd C9:doc_opens_with_original C11:inheritance_depth>=2 C12:MpKit_outside_allowlist C13:reads_original_assets C14:print() C15:content_nodes_with_new C16:height_offset_in_code C17:fx_by_text C18:content_lookup_by_text C18b:content_lookup_by_id C19:data_tres_with_positions C20:matchrules_place_radii C21:export_file C22:time_in_ticks"
 
 baseline_of() { grep -E "^$1=" "$BASELINE" 2>/dev/null | head -1 | cut -d= -f2; }
 

@@ -14,5 +14,5 @@ region = Rect2(47, 0, 13, 12)
 [resource]
 script = ExtResource("1_style")
 texture = SubResource("tex")
-size_px = 12.0
+size_px = 14.5
 arrow_texture = SubResource("arrow")

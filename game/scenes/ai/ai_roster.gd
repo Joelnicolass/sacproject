@@ -54,11 +54,12 @@ func _seat_all(seats: Array[AiSeat]) -> void:
 	for template in seats:
 		## The .tres is never changed: the god drawn for this match goes on a copy.
 		var seat := template.duplicate() as AiSeat
-		if not GameData.gods().has(str(seat.god)):
+		if seat.god == null:
 			seat.god = _draw_god(seat.slot)
-		var wizard_type := GameData.wizard(seat.wizard)
-		SacrificeFlow.set_ai_pick(seat.slot, {
-			"wizard": seat.wizard, "model": wizard_type.model if wizard_type != null else "jnwr", "god": str(seat.god)})
+		var chosen := WizardPick.new()
+		chosen.wizard = seat.wizard if seat.wizard != null else SacrificeFlow.default_pick.wizard
+		chosen.god = seat.god
+		SacrificeFlow.set_ai_pick(seat.slot, chosen)
 		wizard_spawner.spawn_slot(seat.slot)
 		placed.append(seat)
 	for _tick in MatchClock.ticks_for(settle_s):
@@ -74,12 +75,12 @@ func _seat_all(seats: Array[AiSeat]) -> void:
 		side.setup(world, wizard, seat)
 		side.active = seat.start_active
 		sides[seat.slot] = side
-		print("ia slot %d lista (%s, %s)" % [seat.slot, seat.god, side.difficulty.display_name])
+		print("ia slot %d lista (%s, %s)" % [seat.slot, seat.god.id(), side.difficulty.display_name])
 		seated.emit(seat.slot, side)
 
 
-## A seat without a god («Aleatorio»): drawn from the match seed, so a seeded match draws the same god.
-func _draw_god(slot: int) -> StringName:
-	var gods := GameData.gods()
+## A seat without a god («Aleatorio»): drawn from the match seed among the gods the lobby offers, so a seeded match draws the same god.
+func _draw_god(slot: int) -> GodType:
+	var gods := GameCatalog.shared().offered_gods()
 	var rng := MatchSeed.rng(["ai_god", slot])
-	return StringName(gods[rng.randi_range(0, gods.size() - 1)])
+	return gods[rng.randi_range(0, gods.size() - 1)]

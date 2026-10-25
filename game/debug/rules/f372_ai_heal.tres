@@ -1,15 +1,17 @@
-[gd_resource type="Resource" script_class="BenchRules" load_steps=15 format=3]
+[gd_resource type="Resource" script_class="BenchRules" load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://debug/suite/bench_rules.gd" id="1_rules"]
 [ext_resource type="Script" path="res://debug/suite/bench_group.gd" id="2_group"]
 [ext_resource type="Script" path="res://scenes/ai/data/ai_seat.gd" id="3_seat"]
 [ext_resource type="Script" path="res://debug/suite/bench_expect.gd" id="4_expect"]
+[ext_resource type="Resource" path="res://data/catalog/wizards/jadugarr.tres" id="seat_wizard_jadugarr"]
+[ext_resource type="Resource" uid="uid://b2h7s83blbac8" path="res://data/gods/persephone.tres" id="seat_god_persephone"]
 
 [sub_resource type="Resource" id="Seat_persephone"]
 script = ExtResource("3_seat")
 slot = 2
-wizard = "cwa0"
-god = &"persephone"
+wizard = ExtResource("seat_wizard_jadugarr")
+god = ExtResource("seat_god_persephone")
 
 [sub_resource type="Resource" id="Group_low"]
 script = ExtResource("2_group")

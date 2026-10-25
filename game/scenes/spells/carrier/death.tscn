@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3]
+[gd_scene load_steps=35 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/carrier/spell_carrier.gd" id="1_carrier"]
 [ext_resource type="Script" path="res://scenes/spells/carrier/carrier_hunt.gd" id="2_hunt"]
@@ -17,6 +17,7 @@
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="15_light"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="16_sound"]
 [ext_resource type="Script" path="res://scenes/spells/carrier/phase_cue.gd" id="17_cue"]
+[ext_resource type="Resource" path="res://data/audio/cues/death_cast.tres" id="cue_death_cast"]
 
 [sub_resource type="Resource" id="Kill_blow"]
 script = ExtResource("5_kill")
@@ -145,7 +146,7 @@ priority = 4.0
 lit_on_ready = true
 
 [node name="CastSound" parent="." instance=ExtResource("16_sound")]
-cue = &"death_cast"
+cue = ExtResource("cue_death_cast")
 play_on_ready = false
 
 [node name="CastCue" type="Node" parent="." node_paths=PackedStringArray("carrier", "sound")]

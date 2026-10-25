@@ -15,6 +15,9 @@ extends SceneTree
 ## which spells are structures.
 ## The values are built by tools/bake/catalog_builder.gd. File names are the tags; two tags that differ only by case get a
 ## numeric suffix (macOS is case-insensitive). It never embeds types in another file.
+## FROZEN (055i-a): once data/catalog/ has files this tool exits with a message and writes nothing. The wizards were renamed to
+## human names (jadugarr.tres, not cwa0.tres), so running it again would write the 15 old tag-named files next to them. It goes
+## away in 055z together with catalog_builder.gd. To rename catalog files use tools/migrate/rename_resources.py.
 ## Human edits are safe: without --force a file that already exists is left alone and only missing ones are written.
 ## --force overwrites everything with the JSON values.
 ## "$GODOT" --headless --path game --script res://tools/bake/bake_catalog.gd [-- --force]
@@ -32,6 +35,11 @@ var _failures: Array[String] = []
 
 
 func _initialize() -> void:
+	var existing := _existing_files()
+	if existing > 0:
+		push_error("bake_catalog: frozen. %s already holds %d .tres files and is the source of truth (renamed by hand and by tools/migrate/rename_resources.py); baking again would write the old tag-named files. Nothing was written." % [OUT_DIR, existing])
+		quit(1)
+		return
 	_force = OS.get_cmdline_user_args().has("--force")
 	var dir := _BUILDER.DATA_DIR
 	var books := _BUILDER.read_json(dir + "books.json")
@@ -64,6 +72,16 @@ func _initialize() -> void:
 		push_error("bake_catalog: could not save " + failure)
 	print("bake_catalog: %s" % ("FAIL" if not _failures.is_empty() else "done"))
 	quit(1 if not _failures.is_empty() else 0)
+
+
+## How many .tres files data/catalog/ holds in all its folders (0 means a fresh checkout that still needs the first bake).
+func _existing_files() -> int:
+	var count := 0
+	for folder: String in DirAccess.get_directories_at(OUT_DIR):
+		for file: String in DirAccess.get_files_at(OUT_DIR + folder):
+			if file.ends_with(".tres"):
+				count += 1
+	return count
 
 
 ## Saves `type` as data/catalog/<folder>/<tag>.tres.

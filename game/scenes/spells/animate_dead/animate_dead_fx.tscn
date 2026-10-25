@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/animate_dead/animate_dead_fx.gd" id="1_fx"]
 [ext_resource type="PackedScene" path="res://scenes/spells/animate_dead/streamer_fx.tscn" id="2_streamer"]
@@ -6,6 +6,7 @@
 [ext_resource type="Resource" path="res://data/fx/animate_dead_burst.tres" id="4_burst"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="5_sound"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
+[ext_resource type="Resource" path="res://data/audio/cues/animate_dead.tres" id="cue_animate_dead"]
 
 [node name="AnimateDeadFx" type="Node3D" node_paths=PackedStringArray("burst")]
 script = ExtResource("1_fx")
@@ -19,8 +20,7 @@ script = ExtResource("3_emitter")
 type = ExtResource("4_burst")
 
 [node name="Sound" parent="." instance=ExtResource("5_sound")]
-source = "world"
-cue = &"Xanm"
+cue = ExtResource("cue_animate_dead")
 
 [node name="Glow" parent="." instance=ExtResource("glow_state_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

@@ -11,7 +11,7 @@ extends Resource
 ## - «Cantidad de marcas»: how many 10 m tiles of the ground can hold a mark (burns, cracks) at once; GroundScars reads it when the map loads.
 ## - First run: `default_quality` (medium), VSync on, windowed, no cap. The Mac safety rule: nothing here raises the
 ##   GPU use unless the player asks for it.
-## Like HudScale, every node must share the instance at `SHARED_PATH` (a copy would not follow the player's choice);
+## Like UiScalePrefs, every node must share the instance at `SHARED_PATH` (a copy would not follow the player's choice);
 ## the values are runtime state of that instance and the exported fields are never written. Changes emit `changed`.
 
 const SHARED_PATH := "res://data/ui/graphics_prefs.tres"

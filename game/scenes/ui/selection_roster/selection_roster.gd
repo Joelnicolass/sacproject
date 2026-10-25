@@ -2,10 +2,9 @@
 class_name SelectionRoster
 extends Control
 
-## The selected creatures at the left edge, like sacengine renderSelectionRoster (renderer.d:4400-4466).
-## Laid out in HUD units (sized by the shared `hud_scale`, see HudScale): a 138×256 frame at
-## x = -34 centered vertically, 34×32 cells (column 0 at x = -1, column 1 at x = 35, rows every 32
-## from y = 32) and the active ability's 34×34 icon at x = 71. The frame is drawn even when empty.
+## The selected creatures at the left edge. Laid out in canvas pixels of the 1280×720 base (Godot's stretch scales them): the
+## `Frame` panel (166×307 at x = -41, drawn by the theme variation HudRosterFrame) centered vertically, 41×38 cells (column 0 at
+## x = -1, column 1 at x = 43, rows every 38 from y = 38) and the active ability's 41×41 icon at x = 85. The frame shows even when empty.
 ##
 ## Up to `capacity` (columns × rows) creatures: one cell each, the newest first, with its bars.
 ## More than that: one cell per type (largest group first) with the number of members, and the
@@ -13,42 +12,24 @@ extends Control
 ## _on_cell_activated); the roster never owns the selection, `Selection` does.
 ## Hidden on the dedicated server (no local player). The view refreshes the bars on a timer: no
 ## per-creature signal is connected.
+## Ref: renderer.d:4400-4466 renderSelectionRoster (sizes ×1.2).
 
 ## The ability icon was pressed; MatchCommand uses the selection's ability.
 signal ability_pressed
 
-## renderer.d:4410: the frame quad is 138×256 units, drawn from x = -34.
 ## selection.gd has no class_name (other scripts preload it).
 const _SELECTION := preload("res://scenes/orders/selection.gd")
-const FRAME_SIZE := Vector2(138.0, 256.0)
-const FRAME_X := -34.0
-## Half of the frame texture (u -63.5/128 … 63.5/128, mirrored around x = 35) over v 0…2: the lower
-## 128 units are the upper ones flipped (the art is symmetric top to bottom, six holes in all).
-const HALF_REGION := Rect2(0.0, 0.0, 63.5, 128.0)
-const HALF_WIDTH := 69.0
 
 ## Local selection (`%Selection`).
 @export var selection: Node
 @export var cell_scene: PackedScene
-## Frame piece (a TextureRect; texture, flips and rect are set here) and the dark plate drawn when the `fram` sheet is missing.
-@export var piece_scene: PackedScene
-@export var plate_scene: PackedScene
-## Shared HUD size (the spell book, the armed icon and the cursor read the same one).
-@export var hud_scale: HudScale = preload("res://data/ui/hud_scale.tres")
-## Control the roster must not overlap (the spell book under it). When the shared size would make
-## them touch, the roster shrinks to fit between the screen center and the top of this control.
-@export var avoid: Control
-## Screen pixels kept between the roster and `avoid`.
-@export var avoid_margin := 4.0
 @export var columns := 2
 @export var rows := 6
-@export var cell_size := Vector2(34.0, 32.0)
+@export var cell_size := Vector2(41.0, 38.0)
 ## Bars and tooltips refresh this often (RFC-025: 10 Hz).
 @export_range(1.0, 60.0, 1.0) var refresh_hz := 10.0
 @export var tooltips := true
 
-## Scale in use after the last fit (smaller than the shared one when `avoid` would be overlapped).
-var fitted_factor := 0.0
 ## Creatures selected, as the view last saw them.
 var count := 0
 ## "unit" (one cell per creature) or "group" (one cell per type).
@@ -92,13 +73,6 @@ func _get_configuration_warnings() -> PackedStringArray:
 		warnings.append("selection is empty: assign the Selection node.")
 	if cell_scene == null:
 		warnings.append("cell_scene is empty: assign roster_cell.tscn.")
-	if piece_scene == null:
-		warnings.append("piece_scene is empty: assign frame_piece.tscn.")
-	if plate_scene == null:
-		warnings.append("plate_scene is empty: assign roster_plate.tscn.")
-	var scale_warning := HudScale.socket_warning(hud_scale)
-	if not scale_warning.is_empty():
-		warnings.append(scale_warning)
 	return warnings
 
 
@@ -109,49 +83,10 @@ func _ready() -> void:
 	%Refresh.timeout.connect(_on_refresh)
 	%Ability.pressed.connect(ability_pressed.emit)
 	%Ability.visible = false
-	get_viewport().size_changed.connect(_fit_screen.call_deferred)
-	if hud_scale:
-		hud_scale.changed.connect(_fit_screen.call_deferred)
-	_fit_screen.call_deferred()
-	_build_frame()
 	if selection:
 		selection.changed.connect(_on_selection_changed)
 		_on_selection_changed((selection as _SELECTION).units())
 	_update_visible()
-
-
-## Deferred: `avoid` fits itself first on the same signal.
-func _fit_screen() -> void:
-	var height := get_viewport().get_visible_rect().size.y
-	var factor := hud_scale.factor(height) if hud_scale else height / HudScale.SACENGINE_HEIGHT
-	if avoid and is_instance_valid(avoid) and size.y > 0.0:
-		var room := avoid.get_global_rect().position.y - avoid_margin - height * 0.5
-		factor = clampf(room / (size.y * 0.5), 0.0, factor)
-	pivot_offset = Vector2(0.0, size.y * 0.5)
-	scale = Vector2(factor, factor)
-	fitted_factor = factor
-
-
-## The 128×128 `fram` sheet's left half, mirrored left-right at x = 35 and top-bottom at y = 128. Without
-## the cache a dark plate stands in.
-func _build_frame() -> void:
-	for child in %Frame.get_children():
-		%Frame.remove_child(child)
-		child.queue_free()
-	var half := HudIcons.region("fram", HALF_REGION)
-	if half == null:
-		%Frame.add_child(plate_scene.instantiate())
-		return
-	for side in 2:
-		for repeat in 2:
-			var piece: TextureRect = piece_scene.instantiate()
-			piece.texture = half
-			piece.stretch_mode = TextureRect.STRETCH_SCALE
-			piece.flip_h = side == 0
-			piece.flip_v = repeat == 1
-			piece.position = Vector2(FRAME_X + HALF_WIDTH * side, FRAME_SIZE.y * 0.5 * repeat)
-			piece.size = Vector2(HALF_WIDTH, FRAME_SIZE.y * 0.5)
-			%Frame.add_child(piece)
 
 
 func _on_selection_changed(units: Array) -> void:

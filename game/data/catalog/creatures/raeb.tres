@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_ic8cq"]
+[ext_resource type="Resource" path="res://data/audio/creatures/taurock.tres" id="sounds_set"]
 
 [resource]
 script = ExtResource("1_ic8cq")
@@ -115,3 +116,4 @@ captive_animations = {
 "tag": "BEsc"
 }
 }
+sounds = ExtResource("sounds_set")

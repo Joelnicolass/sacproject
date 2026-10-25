@@ -1,21 +1,20 @@
-[gd_resource type="Resource" script_class="SoundSet" format=3]
+[gd_resource type="Resource" script_class="SoundSet" load_steps=7 format=3]
 
-[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_36lbc"]
-[ext_resource type="AudioStream" path="res://debug/audio/fixtures/custom_sounds/creatures/testmonster/death_1.wav" id="2_sb1ku"]
-[ext_resource type="AudioStream" path="res://debug/audio/fixtures/custom_sounds/creatures/testmonster/swing_1.wav" id="3_axu2v"]
-[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="4_wm2pq"]
+[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" path="res://debug/audio/fixtures/custom_sounds/creatures/testmonster/swing_1.wav" id="s1"]
+[ext_resource type="AudioStream" path="res://debug/audio/fixtures/custom_sounds/creatures/testmonster/death_1.wav" id="s2"]
 
-[sub_resource type="Resource" id="Resource_oya2a"]
-script = ExtResource("1_36lbc")
-streams = Array[AudioStream]([ExtResource("2_sb1ku")])
+[sub_resource type="Resource" id="cue_swing"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s1")])
 
-[sub_resource type="Resource" id="Resource_8crur"]
-script = ExtResource("1_36lbc")
-streams = Array[AudioStream]([ExtResource("3_axu2v")])
+[sub_resource type="Resource" id="cue_death"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s2")])
 
 [resource]
-script = ExtResource("4_wm2pq")
-cues = Dictionary[StringName, ExtResource("1_36lbc")]({
-&"death": SubResource("Resource_oya2a"),
-&"swing": SubResource("Resource_8crur")
-})
+script = ExtResource("1_set")
+swing = SubResource("cue_swing")
+shoot = SubResource("cue_swing")
+death = SubResource("cue_death")

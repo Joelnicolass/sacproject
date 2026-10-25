@@ -41,13 +41,13 @@ Prueba de punta a punta (criatura de Blender, convocada, camina, pega en el golp
 
 No necesitan nada del juego original. Funcionan para cualquier criatura (también una tuya de Blender), mago o set.
 
-1. **Dejá los archivos** (`.ogg` o `.wav`) en `assets/custom/sounds/<tipo>/<tag>/<evento>[_n].ogg`. Por ejemplo, `assets/custom/sounds/creatures/mibicho/death_1.wav` y `swing_1.wav`. `<tipo>` es `creatures` o `wizards`, y `<tag>` es el de la criatura o el mago. Cada archivo del mismo evento es una variante (`death_1`, `death_2`…), y el juego elige una al azar.
-2. **Nombres de evento** (los de `SoundEvent`, en `scenes/audio/sound_event.gd`):
-   - Criatura: `summon` (al invocarla), `swing` (golpe), `shoot` (disparo; sin él usa `swing`), `damaged` (recibe daño), `death`, `selected` (la elegís), `ack` (acusa moverse), `attack_ack` (acusa atacar), `annoyed` (la elegiste muchas veces).
+1. **Dejá los archivos** (`.ogg` o `.wav`) en `assets/custom/sounds/creatures/<nombre>/<evento>[_n].ogg`. Por ejemplo, `assets/custom/sounds/creatures/mibicho/death_1.wav` y `swing_1.wav`. Cada archivo del mismo evento es una variante (`death_1`, `death_2`…), y el juego elige una al azar.
+2. **Nombres de evento** (son los campos de `SoundSet`, `scenes/audio/sound_set.gd`):
+   - Criatura: `summon` (al invocarla; vacío usa el de todas), `swing` (golpe), `shoot` (disparo; un `swing` sin `shoot` suena también al disparar), `damaged` (recibe daño), `death`, `selected` (la elegís), `ack` (acusa moverse), `attack_ack` (acusa atacar), `annoyed` (la elegiste muchas veces).
    - Mago: `incantation` (lanza), `damaged`, `death`, `ghost` (se levanta como fantasma).
-   - `selected`, `ack`, `attack_ack`, `annoyed` e `incantation` van al bus `Voice`; el resto, a `SFX`. Un nombre que no está en la lista se hornea igual, pero el juego no lo toca, y el horneado avisa.
-3. **Hornear:** **Project > Tools > Sacrifice: Hornear sonidos** (o `$G --headless --path . --script res://tools/bake/bake_sound_sets.gd -- --only=custom`). Escribe `data/audio/custom/<tipo>/<tag>.tres`, que gana sobre el del original. No pisa uno que exista: `--force` lo rehace y pierde lo que editaste. Si la criatura es nueva, «Nueva criatura desde modelo…» hornea su carpeta `creatures/<tag>/` de una vez.
-4. **Revisar:** abrí el `.tres` en el inspector. Hay un cue por evento, y ▶ en un stream lo toca. Ahí se ajustan volumen, `cooldown_s` y `max_voices`. En el juego, el lab `debug/audio/f360_audio_lab.tscn` (F6 y la acción `debug_audio_event`) muestra cada evento que suena y su archivo. Sin ventana, la prueba es `bash agent/runs/run_audio_cases.sh`; el caso `lab_052i` hornea dos `.wav` de prueba para `testmonster` y los toca.
+   - `selected`, `ack`, `attack_ack`, `annoyed` e `incantation` van al bus `Voice`; el resto, a `SFX`. Un nombre que no es un campo se salta y la herramienta avisa.
+3. **Crear el set:** **Project > Tools > Sacrifice: Nueva criatura desde modelo…** escribe `data/audio/creatures/<nombre>.tres` (los archivos de la carpeta en sus campos; sobre el set de golpes `melee/fist.tres`) y lo asigna al campo `Sounds` de la criatura. No pisa uno que exista: `--force` lo rehace y pierde lo que editaste. Sin carpeta de sonidos el set queda vacío: arrastrá los archivos a sus campos.
+4. **Revisar:** abrí el `.tres` en el inspector. Hay un cue por evento, y ▶ en un stream lo toca. Ahí se ajustan volumen, `cooldown_s` y `max_voices`. En el juego, el lab `debug/audio/f360_audio_lab.tscn` (F6 y la acción `debug_audio_event`) muestra cada evento que suena y su archivo. Sin ventana, la prueba es `bash agent/runs/run_audio_cases.sh`; el caso `lab_052i` crea el set de `testmonster` con dos `.wav` de prueba y los toca.
 
 Más detalle (sonidos de FX, música y ambiente por dios): `data/audio/README.md`.
 
@@ -204,7 +204,7 @@ Las rutas son relativas a `game/`.
 | `tools/audit/check_original_assets.sh` | **Sí** | Paridad de `assets/original/` con el original (`ASSETS PARITY PASS/FAIL`) |
 | `tools/import/scaffold_map.py` | No: usa lo que ya dejó `import_map.py` | `MapDefinition`, `map.tscn`, `nav.res` vacío |
 | `tools/import/classify_ground_tiles.py`, `sample_grass_palette.py` | No: usan `assets/original/` | `high_noon_tiles.tres`, paleta de pasto propuesta |
-| `tools/bake/*` (navmesh, catálogo, `bake_body_scenes`, `new_creature`, `bake_sound_sets`, terreno) | No: `bake_body_scenes` usa los `.glb` y `index.json` del repo; `import_terrain.gd` lee el `.bin` que escribe `import_map.py` | Escenas, `.tres` y navmesh |
+| `tools/bake/*` (navmesh, catálogo, `bake_body_scenes`, `new_creature`, terreno) | No: `bake_body_scenes` usa los `.glb` y `index.json` del repo; `import_terrain.gd` lee el `.bin` que escribe `import_map.py` | Escenas, `.tres` y navmesh |
 | Menú **Project > Tools > Sacrifice** | Solo «Listar mapas del original» e «Importar audio del original» (llevan «(requiere juego original)» en el menú) | Salida en un diálogo |
 
 Estas herramientas leen los `.wad` y los `.scp` del juego instalado; **el original no viene en el repo** (es el juego comercial). Si falta, imprimen un mensaje en español que explica qué carpeta hace falta y cómo indicarla, y terminan con error. Todas empiezan su encabezado y su `--help` con «Requiere el juego original instalado (SAC_INSTALL)» o con «No necesita el juego original».

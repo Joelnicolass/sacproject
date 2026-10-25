@@ -61,8 +61,8 @@ func team_text_for(slot: int) -> String:
 
 
 func _name_of(slot: int) -> String:
-	var wizard: WizardType = GameData.wizard(str(SacrificeFlow.pick_for(slot).get("wizard", "")))
-	return wizard.display_name if wizard != null else tr(slot_text) % slot
+	var chosen: WizardPick = SacrificeFlow.pick_for(slot)
+	return chosen.wizard.display_name if chosen != null else tr(slot_text) % slot
 
 
 func _refresh() -> void:

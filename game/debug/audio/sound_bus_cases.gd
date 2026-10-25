@@ -46,7 +46,7 @@ func _voice_limit(host: Node) -> Dictionary:
 	for i in 5:
 		if SoundBus.play_3d(cue, Vector3(i, 0, 0), &"case", SoundEvent.SWING):
 			played += 1
-	var active := SoundBus.active_voices(true, cue)
+	var active: int = SoundBus.active_voices(true, cue)
 	var last: Dictionary = SoundBus.sound_log.last()
 	return {"ok": played == 2 and active == 2 and last.get("reason") == &"max_voices", "played": played, "active": active}
 
@@ -54,11 +54,11 @@ func _voice_limit(host: Node) -> Dictionary:
 func _cooldown(host: Node) -> Dictionary:
 	SoundBus.stop_all()
 	var cue := _cue(0, 0.1)
-	var first := SoundBus.play_2d(cue, &"case", SoundEvent.DAMAGED)
-	var again := SoundBus.play_2d(cue, &"case", SoundEvent.DAMAGED)
+	var first: bool = SoundBus.play_2d(cue, &"case", SoundEvent.DAMAGED)
+	var again: bool = SoundBus.play_2d(cue, &"case", SoundEvent.DAMAGED)
 	var reason: StringName = SoundBus.sound_log.last().get("reason", &"")
 	await host.get_tree().create_timer(0.15, true).timeout
-	var later := SoundBus.play_2d(cue, &"case", SoundEvent.DAMAGED)
+	var later: bool = SoundBus.play_2d(cue, &"case", SoundEvent.DAMAGED)
 	return {"ok": first and not again and reason == &"cooldown" and later, "first": first, "again": again, "later": later}
 
 
@@ -68,13 +68,13 @@ func _priority(host: Node) -> Dictionary:
 	var low := _cue(0, 0.0, 10)
 	var lower := _cue(0, 0.0, 5)
 	var high := _cue(0, 0.0, 90)
-	var size := SoundBus.pool_size(false)
+	var size: int = SoundBus.pool_size(false)
 	for i in size:
 		SoundBus.play_2d(low, &"case", SoundEvent.CLICK)
-	var full := SoundBus.active_voices(false) == size
-	var lower_played := SoundBus.play_2d(lower, &"case", SoundEvent.CLICK)
+	var full: bool = SoundBus.active_voices(false) == size
+	var lower_played: bool = SoundBus.play_2d(lower, &"case", SoundEvent.CLICK)
 	var lower_reason: StringName = SoundBus.sound_log.last().get("reason", &"")
-	var high_played := SoundBus.play_2d(high, &"case", SoundEvent.ADVICE)
+	var high_played: bool = SoundBus.play_2d(high, &"case", SoundEvent.ADVICE)
 	var ok := full and not lower_played and lower_reason == &"pool_full" and high_played \
 		and SoundBus.active_voices(false, low) == size - 1 and SoundBus.active_voices(false, high) == 1
 	return {"ok": ok, "full": full, "lower_played": lower_played, "high_played": high_played}
@@ -88,7 +88,7 @@ func _pool_cap(host: Node) -> Dictionary:
 		cues.append(_cue(0, 0.0, i * 10))
 	for i in 200:
 		SoundBus.play_3d(cues[i % cues.size()], Vector3(i, 0, 0), &"case", SoundEvent.FX)
-	var active := SoundBus.active_voices(true)
+	var active: int = SoundBus.active_voices(true)
 	return {"ok": active <= SoundBus.pool_size(true) and active > 0, "active": active, "pool": SoundBus.pool_size(true)}
 
 

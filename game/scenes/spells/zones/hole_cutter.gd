@@ -119,7 +119,7 @@ func _give_back() -> void:
 func _vertex_point(vertex: Vector2i) -> Vector3:
 	var spot := Vector2(vertex) * TerrainRules.CELL
 	var height := _land.height_at(spot.x, spot.y)
-	for side in [Vector2(1, 1), Vector2(-1, 1), Vector2(1, -1), Vector2(-1, -1)]:
+	for side: Vector2 in [Vector2(1, 1), Vector2(-1, 1), Vector2(1, -1), Vector2(-1, -1)]:
 		if not is_nan(height):
 			break
 		var inside := spot + side * TerrainRules.CELL * 0.25

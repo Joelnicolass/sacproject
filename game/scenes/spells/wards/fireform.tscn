@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/wards/ward.gd" id="1_ward"]
 [ext_resource type="Script" path="res://scenes/spells/wards/ward_emitter.gd" id="2_emitter"]
@@ -10,6 +10,9 @@
 [ext_resource type="Script" path="res://scenes/spells/wards/aura_impact.gd" id="8_impact"]
 [ext_resource type="PackedScene" path="res://scenes/spells/wards/ward_sound.tscn" id="9_sound"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
+[ext_resource type="Resource" path="res://data/audio/cues/ward_fire_ignite.tres" id="cue_ward_fire_ignite"]
+[ext_resource type="Resource" path="res://data/audio/cues/ward_fire_flame.tres" id="cue_ward_fire_flame"]
+[ext_resource type="Resource" path="res://data/audio/cues/ward_fire_loop.tres" id="cue_ward_fire_loop"]
 
 [sub_resource type="SphereShape3D" id="Sphere_reach"]
 radius = 5.0
@@ -61,19 +64,19 @@ aura = NodePath("../Aura")
 type = ExtResource("7_hit")
 
 [node name="SoundIgnite" parent="." node_paths=PackedStringArray("ward") instance=ExtResource("9_sound")]
-cue = &"ward_fire_ignite"
+cue = ExtResource("cue_ward_fire_ignite")
 ward = NodePath("..")
 when = 3
 
 [node name="SoundFlame" parent="." node_paths=PackedStringArray("ward") instance=ExtResource("9_sound")]
 editor_description = "flam.wav es el primer sonido del SPEL ffrm (bandera 2) y ign1 es el de sacengine: suenan los dos al empezar el lanzamiento."
-cue = &"ward_fire_flame"
+cue = ExtResource("cue_ward_fire_flame")
 ward = NodePath("..")
 when = 3
 
 [node name="SoundLoop" parent="." node_paths=PackedStringArray("ward") instance=ExtResource("9_sound")]
 editor_description = "Lazo flp5 (SPEL ffrm, ganancia 4 de sacengine): desde el lanzamiento hasta que termina el escudo."
-cue = &"ward_fire_loop"
+cue = ExtResource("cue_ward_fire_loop")
 ward = NodePath("..")
 when = 2
 

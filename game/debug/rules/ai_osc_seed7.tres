@@ -1,10 +1,12 @@
-[gd_resource type="Resource" script_class="BenchRules" load_steps=12 format=3]
+[gd_resource type="Resource" script_class="BenchRules" load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://debug/suite/bench_rules.gd" id="1_rules"]
 [ext_resource type="Script" path="res://scenes/ai/data/ai_seat.gd" id="2_seat"]
 [ext_resource type="Resource" path="res://data/ai/difficulty_easy.tres" id="3_easy"]
 [ext_resource type="Resource" path="res://data/ai/difficulty_normal.tres" id="4_normal"]
 [ext_resource type="Script" path="res://debug/suite/bench_expect.gd" id="5_expect"]
+[ext_resource type="Resource" path="res://data/catalog/wizards/jadugarr.tres" id="seat_wizard_jadugarr"]
+[ext_resource type="Resource" uid="uid://dxr20hx8hlmpf" path="res://data/gods/james.tres" id="seat_god_james"]
 
 ; Ida y vuelta, quietud con almas y hechizos inutiles (RFC-053, informe del usuario sobre ai_easy_vs_normal --seed=7 --npcs): las mismas
 ; reglas que ai_easy_vs_normal.tres con semilla 7, NPC presentes y 4 min (cubre la ventana 196-210 s del video). Antes del arreglo: el mago
@@ -17,15 +19,15 @@
 [sub_resource type="Resource" id="Seat_easy"]
 script = ExtResource("2_seat")
 slot = 1
-wizard = "cwa0"
-god = &"james"
+wizard = ExtResource("seat_wizard_jadugarr")
+god = ExtResource("seat_god_james")
 difficulty = ExtResource("3_easy")
 
 [sub_resource type="Resource" id="Seat_normal"]
 script = ExtResource("2_seat")
 slot = 2
-wizard = "cwa0"
-god = &"james"
+wizard = ExtResource("seat_wizard_jadugarr")
+god = ExtResource("seat_god_james")
 difficulty = ExtResource("4_normal")
 
 [sub_resource type="Resource" id="Expect_osc"]

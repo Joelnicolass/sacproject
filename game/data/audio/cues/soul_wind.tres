@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="SoundCue" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/fbal.wav" id="78_w1qsu"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/fba2.wav" id="79_a8xti"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/fba3.wav" id="80_dtu81"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/fba4.wav" id="81_ylyp6"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/fba5.wav" id="82_0kd7c"]
+
+[resource]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("78_w1qsu"), ExtResource("79_a8xti"), ExtResource("80_dtu81"), ExtResource("81_ylyp6"), ExtResource("82_0kd7c")])

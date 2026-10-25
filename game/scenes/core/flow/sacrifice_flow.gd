@@ -4,13 +4,16 @@ signal slot_picks_changed
 
 const PICK_CHANNEL := &"pick"
 const SLOT_PICKS_CHANNEL := &"slot_picks"
-## The seat of «Contra la IA» (RFC-024 024f): slot 2, the god drawn, Normal.
-const VS_AI_SEAT := "res://data/ai/seat_vs_ai.tres"
 
-## Local choice: {wizard: "cwa1", model: "serx", god: "persephone"}.
-var pick: Dictionary = {"wizard": "cwa0", "model": "jnwr", "god": "james"}
+## The pick the menu starts with (Jadugarr, James). Change it in the inspector of `sacrifice_flow.tscn`.
+@export var default_pick: WizardPick
+## The seat of «Contra la IA»: slot 2, the god drawn, Normal. Drag another AiSeat to change the rival.
+@export var vs_ai_seat: AiSeat
+
+## Local choice. Never null after `_ready`.
+var pick: WizardPick
 ## Server-validated picks by MpKit slot, replicated to clients.
-var slot_picks: Dictionary = {}
+var slot_picks: Dictionary[int, WizardPick] = {}
 ## RFC-034 034f: the room screens (the menu's «Salas online» and where a match from a room comes back to).
 const LOBBY_SCENE := "res://scenes/ui/lobby/lobby_screen.tscn"
 ## RFC-034 034m: the menu's «Servidor local» (a dedicated on the player's PC, apart from the rooms).
@@ -33,6 +36,7 @@ var _cli_setup := MatchSetup.new()
 var ticket_glue: MatchTicketGlue
 
 func _ready() -> void:
+	pick = default_pick.duplicate() as WizardPick
 	boot_path = "res://scenes/core/boot.tscn"
 	## `--world=res://debug/….tscn` on the dedicated and its clients plays a debug scene online.
 	world_path = MpBoot.user_value("world", "res://scenes/match/match.tscn")
@@ -63,36 +67,20 @@ func _ready() -> void:
 		print("dedicated listo puerto ", MpKit.port)
 
 
-func set_pick(wizard_tag: String, god: String) -> void:
-	var chosen := sanitize_pick({"wizard": wizard_tag, "god": god})
-	if chosen.is_empty():
+func set_pick(chosen: WizardPick) -> void:
+	if chosen == null or not chosen.is_complete():
 		return
 	pick = chosen
-	print("pick %s %s" % [pick["model"], pick["god"]])
+	print("pick %s %s" % [pick.wizard.model, pick.god.id()])
 
 
-func sanitize_pick(raw: Dictionary) -> Dictionary:
-	var tag := str(raw.get("wizard", ""))
-	var god := str(raw.get("god", ""))
-	if not GameData.gods().has(god):
-		return {}
-	var wizard: WizardType = GameData.wizard(tag)
-	if wizard != null:
-		return {"wizard": wizard.tag, "model": wizard.model, "god": god}
-	if GameData.is_loaded():
-		return {}
-	var model := str(raw.get("model", "")).validate_filename()
-	if tag.is_empty() or model.is_empty():
-		return {}
-	return {"wizard": tag, "model": model, "god": god}
-
-
-func pick_for(slot: int) -> Dictionary:
+## The pick of `slot`: the one the server published, or the local one for the local slot; null if none.
+func pick_for(slot: int) -> WizardPick:
 	if slot_picks.has(slot):
 		return slot_picks[slot]
 	if slot == MpKit.local_slot():
 		return pick
-	return {}
+	return null
 
 
 ## Solo. `chosen` is what the boot chose (GameplayPrefs, RFC-031 031d): every field it sets wins over the flags of this
@@ -104,9 +92,9 @@ func play_solo(chosen: MatchSetup = null) -> void:
 
 
 ## «Contra la IA»: solo, with the AI in every seat but the player's (slot 2 in a 1v1; with a mode, slots 2..seats: in a 2v2 the
-## player has an AI ally and two AI foes). `god` empty = drawn when the match starts. `chosen` is the boot's setup
+## player has an AI ally and two AI foes). `god` null = drawn when the match starts. `chosen` is the boot's setup
 ## (GameplayPrefs + the level of %AiLevel, 1-9 for both wizards, 030d); its fields win over the flags.
-func play_vs_ai(god: StringName = &"", chosen: MatchSetup = null) -> void:
+func play_vs_ai(god: GodType = null, chosen: MatchSetup = null) -> void:
 	setup = _cli_setup.overlaid_by(chosen)
 	## The map and the mode are decided now (the same call that runs when the world loads, idempotent) to know how many seats there are.
 	_apply_match_choice()
@@ -117,7 +105,8 @@ func play_vs_ai(god: StringName = &"", chosen: MatchSetup = null) -> void:
 func _play_alone() -> void:
 	from_lobby = false
 	super.play_solo()
-	slot_picks = {MpKit.local_slot(): pick.duplicate()}
+	slot_picks.clear()
+	slot_picks[MpKit.local_slot()] = pick
 	slot_picks_changed.emit()
 
 
@@ -208,7 +197,7 @@ func goto_world() -> void:
 
 ## RFC-034 034e: joins the match process the room server assigned (`MpLobbyClient.match_ready`). The ticket is the token.
 func join_from_lobby(host: String, p_port: int, token: String) -> Error:
-	slot_picks = {}
+	slot_picks.clear()
 	solo_ai_seats = []
 	var err := join_endpoint(host, p_port, token)
 	from_lobby = err == OK
@@ -219,14 +208,14 @@ func join_from_lobby(host: String, p_port: int, token: String) -> Error:
 ## the way out of the match goes to the menu.
 func join_local_server(host: String, p_port: int, code: String) -> Error:
 	from_lobby = false
-	slot_picks = {}
+	slot_picks.clear()
 	solo_ai_seats = []
 	return join_endpoint(host, p_port, code)
 
 
 func join_lan(ip: String) -> Error:
 	from_lobby = false
-	slot_picks = {}
+	slot_picks.clear()
 	solo_ai_seats = []
 	return super.join_lan(ip)
 
@@ -245,7 +234,7 @@ func _go_boot() -> void:
 
 
 ## Solo or server: the pick of an AI slot (AiRoster), published like a human's.
-func set_ai_pick(slot: int, chosen: Dictionary) -> void:
+func set_ai_pick(slot: int, chosen: WizardPick) -> void:
 	if MpKit.is_networked() and not MpKit.is_server():
 		return
 	slot_picks[slot] = chosen
@@ -255,17 +244,17 @@ func set_ai_pick(slot: int, chosen: Dictionary) -> void:
 		slot_picks_changed.emit()
 
 
-func _vs_ai_seat(god: StringName, slot := 2) -> AiSeat:
-	var seat := (load(VS_AI_SEAT) as AiSeat).duplicate() as AiSeat
-	## An unknown god is drawn by AiRoster (GameData is not ready yet when the dedicated reads its flags).
-	if god != &"":
+func _vs_ai_seat(god: GodType, slot := 2) -> AiSeat:
+	var seat := vs_ai_seat.duplicate() as AiSeat
+	## No god (an empty or unknown id) is drawn by AiRoster.
+	if god != null:
 		seat.god = god
 	seat.slot = slot
 	return seat
 
 
 ## One AI seat for each slot from 2 to `seats`.
-func _vs_ai_seats(god: StringName, seats: int) -> Array[AiSeat]:
+func _vs_ai_seats(god: GodType, seats: int) -> Array[AiSeat]:
 	var found: Array[AiSeat] = []
 	for slot in range(2, maxi(seats, 2) + 1):
 		found.append(_vs_ai_seat(god, slot))
@@ -300,7 +289,7 @@ func _read_dedicated_ai() -> void:
 		push_warning("--ai-slots=%s: los slots IA tendrían que ser la cola de los %d asientos; los humanos toman los más bajos" % [raw, max_players])
 	var seats: Array[AiSeat] = []
 	for slot in slots:
-		seats.append(_vs_ai_seat(StringName(MpBoot.user_value("ai-god", "")), slot))
+		seats.append(_vs_ai_seat(MatchWire.decode_god(MpBoot.user_value("ai-god", ""), true), slot))
 	solo_ai_seats = seats
 	max_players = slots[0] - 1
 	print("dedicado con ia en slots %s" % str(slots))
@@ -331,7 +320,7 @@ func _arm_ticket_glue() -> bool:
 		max_players = ticket_seats
 	var ai_found: Array[AiSeat] = []
 	for row in glue.ai_seats():
-		var bot := _vs_ai_seat(StringName(str(row["god"])), int(row["slot"]))
+		var bot := _vs_ai_seat(MatchWire.decode_god(str(row["god"]), true), int(row["slot"]))
 		## RFC-049 049h: the difficulty the host chose in the room (empty = the seat's own, Normal).
 		var difficulty := AiSeat.difficulty_of(str(row.get("difficulty", "")))
 		if difficulty != null:
@@ -348,9 +337,9 @@ func _arm_ticket_glue() -> bool:
 		## RFC-034 034m: a seat whose pick the ticket leaves open (Servidor local) sends it on admission.
 		if glue.is_pick_open(int(slot)):
 			continue
-		var chosen := sanitize_pick(metas[slot])
-		slot_picks[int(slot)] = chosen if not chosen.is_empty() else pick.duplicate()
-		print("partida %s: slot %d pick %s %s" % [glue.agent.match_id, int(slot), slot_picks[int(slot)]["model"], slot_picks[int(slot)]["god"]])
+		var chosen: WizardPick = MatchWire.decode_pick(metas[slot], true)
+		slot_picks[int(slot)] = chosen if chosen != null else pick
+		print("partida %s: slot %d pick %s %s" % [glue.agent.match_id, int(slot), slot_picks[int(slot)].wizard.model, slot_picks[int(slot)].god.id()])
 	setup = _cli_setup.overlaid_by(glue.match_setup())
 	## The world waits for the open picks: the first admission does not start it (see `_accept_open_pick`).
 	if glue.picks_pending():
@@ -360,7 +349,7 @@ func _arm_ticket_glue() -> bool:
 
 func _on_slot_assigned(_slot: int) -> void:
 	if MpKit.is_networked() and not MpKit.is_server():
-		MpKit.send_custom(PICK_CHANNEL, pick)
+		MpKit.send_custom(PICK_CHANNEL, MatchWire.encode_pick(pick))
 
 
 func _on_custom_received(channel: StringName, data: Dictionary, from_peer: int) -> void:
@@ -369,7 +358,7 @@ func _on_custom_received(channel: StringName, data: Dictionary, from_peer: int) 
 	elif channel == SLOT_PICKS_CHANNEL and not MpKit.is_server():
 		var picks: Variant = data.get("picks")
 		if picks is Dictionary:
-			slot_picks = picks
+			slot_picks = MatchWire.decode_picks(picks)
 			slot_picks_changed.emit()
 
 
@@ -387,25 +376,25 @@ func _store_pick(data: Dictionary, from_peer: int) -> void:
 	var slot := MpKit.slot_for_peer(from_peer)
 	if slot <= 0:
 		return
-	var chosen := sanitize_pick(data)
-	if chosen.is_empty():
+	var chosen: WizardPick = MatchWire.decode_pick(data, true)
+	if chosen == null:
 		return
 	slot_picks[slot] = chosen
-	print("slot %d pick %s %s" % [slot, chosen["model"], chosen["god"]])
+	print("slot %d pick %s %s" % [slot, chosen.wizard.model, chosen.god.id()])
 	_publish_picks()
 
 
 ## RFC-034 034m: the pick of a seat the ticket left open, checked by the same rules as a room's. An invalid one is rejected (the
 ## player is told `bad_pick` and may come back with the same credential and choose again). With every pick in, the world starts.
 func _accept_open_pick(from_peer: int, slot: int, data: Dictionary) -> void:
-	var chosen := sanitize_pick(data)
-	if chosen.is_empty():
+	var chosen: WizardPick = MatchWire.decode_pick(data, true)
+	if chosen == null:
 		print("partida %s: slot %d pick inválido, rechazado" % [ticket_glue.agent.match_id, slot])
 		MpKit.reject_peer(from_peer, "bad_pick")
 		return
 	slot_picks[slot] = chosen
 	ticket_glue.close_pick(slot)
-	print("partida %s: slot %d pick %s %s (elegido al entrar)" % [ticket_glue.agent.match_id, slot, chosen["model"], chosen["god"]])
+	print("partida %s: slot %d pick %s %s (elegido al entrar)" % [ticket_glue.agent.match_id, slot, chosen.wizard.model, chosen.god.id()])
 	_publish_picks()
 	if not ticket_glue.picks_pending():
 		start_match()
@@ -420,5 +409,5 @@ func _on_peer_left(peer_id: int, slot: int) -> void:
 
 
 func _publish_picks() -> void:
-	MpKit.broadcast_custom(SLOT_PICKS_CHANNEL, {"picks": slot_picks})
+	MpKit.broadcast_custom(SLOT_PICKS_CHANNEL, {"picks": MatchWire.encode_picks(slot_picks)})
 	slot_picks_changed.emit()

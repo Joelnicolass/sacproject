@@ -14,8 +14,7 @@ extends Node
 ##   no pool, no log, no prefs; every play returns false.
 ## Its clock advances with `_process` (process_mode ALWAYS), so cooldowns follow --fixed-fps and a paused match.
 ## RFC-052 052d (F363):
-## - The FxBus bridge: FxBus.played (every peer) -> the cue of that FX in FxSoundMap (`fx_map`, looked up key by key
-##   over SoundLibrary's roots) -> play_3d at the FX. No map, no key: silence, no log entry.
+## - What an FX sounds like is FxSounds, a child of the SoundBus scene: it listens to FxBus.played and calls play_3d.
 ## - Loops (SoundEmitter3D): `claim_loop` plays a cue on the emitter's own player (it follows its node) and counts it in
 ##   the 3D budget: pooled 3D voices + loops never pass `pool_3d_size`. A claim with the budget full takes the pooled
 ##   voice of the lowest priority (if not above its own); `max_loops_3d` caps the loops alone.
@@ -30,8 +29,6 @@ extends Node
 ## `Iclk`, the in-game click); one with meta `no_ui_sound` (any value but false) plays nothing. The metas are read on press.
 
 const PREFS_PATH := AudioPrefs.SHARED_PATH
-## SoundLibrary path of the FX sound table (data/audio/fx_sounds.tres, data/audio/custom/fx_sounds.tres).
-const FX_MAP := "fx_sounds"
 ## 052h: metas a BaseButton may carry (read on press).
 const META_NO_UI_SOUND := &"no_ui_sound"
 const META_UI_SOUND := &"ui_sound"
@@ -45,6 +42,9 @@ const META_UI_SOUND := &"ui_sound"
 ## 052h: SoundLibrary path of the UI set and the key a plain button press plays ("" = no button clicks).
 @export var ui_set := "ui"
 @export var ui_click_key: StringName = SoundEvent.CLICK
+
+## The child that turns FxBus's bursts and beams into sounds (sound_bus.tscn).
+@export var fx_sounds: FxSounds
 
 ## Null while the gate is closed.
 var sound_log: SoundLog
@@ -101,7 +101,6 @@ func _ready() -> void:
 	else:
 		prefs.changed.connect(apply_prefs)
 		apply_prefs()
-	FxBus.played.connect(_on_fx_played)
 	get_tree().node_added.connect(_on_node_added)
 	## The main scene entered the tree with the autoloads, before this _ready: its buttons are already there.
 	for node in get_tree().root.find_children("*", "BaseButton", true, false):
@@ -117,7 +116,7 @@ func is_active() -> bool:
 	return _started
 
 
-## The cue of `key` in the first of SoundLibrary's roots whose `rel` answers it (a SoundSet or an FxSoundMap), or null.
+## The cue of `key` in the first of SoundLibrary's roots whose `rel` answers it (a SoundSet), or null.
 func lookup(rel: String, key: StringName) -> SoundCue:
 	if not _started or key.is_empty():
 		return null
@@ -125,18 +124,6 @@ func lookup(rel: String, key: StringName) -> SoundCue:
 		var table := found as SoundSet
 		var cue := table.cue(key) if table != null else null
 		if cue != null and not cue.is_silent():
-			return cue
-	return null
-
-
-## The cue FxBus's `kind`/`fx_name` sounds with (FxSoundMap over the roots, key by key), or null.
-func fx_cue(kind: StringName, fx_name: String) -> SoundCue:
-	if not _started or fx_name.is_empty():
-		return null
-	for found in SoundLibrary.find_all(FX_MAP):
-		var map := found as FxSoundMap
-		var cue := map.fx_cue(kind, fx_name) if map != null else null
-		if cue != null:
 			return cue
 	return null
 
@@ -431,15 +418,6 @@ func _on_button_pressed(button: BaseButton) -> void:
 	var cue := ui_cue_for(button) if is_instance_valid(button) else null
 	if cue != null:
 		play_2d(cue, StringName(button.name), SoundEvent.CLICK)
-
-
-## FxBus.played: the FX's cue at the FX (emitter = the FX name, event = fx). No cue: silence, no entry.
-func _on_fx_played(kind: StringName, fx_name: String, at: Vector3) -> void:
-	if kind == FxBus.KIND_PUFF:
-		return
-	var cue := fx_cue(kind, fx_name)
-	if cue != null:
-		play_3d(cue, at, StringName(FxSoundMap.key_of(kind, fx_name)), SoundEvent.FX)
 
 
 func _draw_stream(cue: SoundCue) -> AudioStream:

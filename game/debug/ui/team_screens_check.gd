@@ -107,7 +107,19 @@ func _check_boot() -> void:
 	_check(_pick(mode, "2v2") and _only_fitting(map, 4) and _lists(map, "test_flat4") and not _lists(map, "high_noon"),
 		"boot: with 2v2 the map picker lists only maps of 4 starts, test_flat4 among them (%s)" % ", ".join(_items(map)))
 	_check(_pick(mode, "1v1") and map.item_count > 1, "boot: back to 1v1 the map picker lists every map again")
-	_check((boot.get_node(^"%AiGod") as AiGodPicker).item_count == GameData.gods().size() + 1, "boot: the AI god picker has «Aleatorio» and every god")
+	var ai_god := boot.get_node(^"%AiGod") as AiGodPicker
+	_check(ai_god.item_count == GameData.gods().size() + 1, "boot: the AI god picker has «Aleatorio» and every god")
+	## 055i-a: a god that is not `offered` leaves the picker; its metadata is the GodType, and the pick text is its display_name.
+	var god := GameCatalog.shared().gods[0]
+	god.offered = false
+	ai_god.fill()
+	_check(ai_god.item_count == GameData.gods().size(), "boot: a god with offered = false is not in the AI god picker")
+	god.offered = true
+	ai_god.fill()
+	ai_god.select(1)
+	_check(ai_god.selected_god() == GameCatalog.shared().offered_gods()[0], "boot: the AI god picker carries the GodType")
+	var meta := MatchWire.encode_pick(SacrificeFlow.pick)
+	_check(LobbyText.pick_text(meta).contains(SacrificeFlow.pick.god.display_name), "lobby: the pick text names the god by its display_name")
 	boot.queue_free()
 	await _frames()
 

@@ -3,7 +3,6 @@
 [ext_resource type="Script" path="res://scenes/ui/minimap/minimap.gd" id="1_minimap"]
 [ext_resource type="Script" path="res://scenes/ui/minimap/minimap_ground.gd" id="2_ground"]
 [ext_resource type="Script" path="res://scenes/ui/minimap/minimap_markers.gd" id="3_markers"]
-[ext_resource type="PackedScene" path="res://scenes/ui/hud/frame_piece.tscn" id="4_piece"]
 [ext_resource type="Texture2D" path="res://assets/original/ui/hud/fram.png" id="5_fram"]
 [ext_resource type="Resource" path="res://data/ui/minimap/style_set.tres" id="6_style"]
 [ext_resource type="Resource" path="res://data/ui/minimap/view.tres" id="7_view"]
@@ -20,10 +19,6 @@ anti_aliasing_size = 1.0
 [sub_resource type="AtlasTexture" id="AtlasTexture_compass"]
 atlas = ExtResource("5_fram")
 region = Rect2(101, 3, 21, 21)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_quarter"]
-atlas = ExtResource("5_fram")
-region = Rect2(64, 64, 64, 64)
 
 [node name="Minimap" type="Control" unique_id=1037000010 node_paths=PackedStringArray("ground", "markers", "compass")]
 editor_description = "RFC-037: circle at the bottom right. Anchored by its corner; Godot's stretch scales it. mouse_filter STOP, but only over the circle (Minimap._has_point); the wheel zooms the map, M toggles it, a click gives ground_pointed."
@@ -77,43 +72,12 @@ mouse_filter = 2
 script = ExtResource("3_markers")
 minimap = NodePath("../..")
 
-[node name="Frame" type="Control" parent="." unique_id=1037000014]
-anchors_preset = 0
+[node name="Frame" type="Panel" parent="." unique_id=1037000014]
+theme_type_variation = &"HudMinimapFrame"
+layout_mode = 0
 offset_right = 192.0
 offset_bottom = 192.0
 mouse_filter = 2
-
-[node name="TopLeft" parent="Frame" unique_id=1037000015 instance=ExtResource("4_piece")]
-layout_mode = 0
-offset_right = 96.0
-offset_bottom = 96.0
-texture = SubResource("AtlasTexture_quarter")
-
-[node name="TopRight" parent="Frame" unique_id=1037000016 instance=ExtResource("4_piece")]
-layout_mode = 0
-offset_left = 96.0
-offset_right = 192.0
-offset_bottom = 96.0
-texture = SubResource("AtlasTexture_quarter")
-flip_h = true
-
-[node name="BottomLeft" parent="Frame" unique_id=1037000017 instance=ExtResource("4_piece")]
-layout_mode = 0
-offset_top = 96.0
-offset_right = 96.0
-offset_bottom = 192.0
-texture = SubResource("AtlasTexture_quarter")
-flip_v = true
-
-[node name="BottomRight" parent="Frame" unique_id=1037000018 instance=ExtResource("4_piece")]
-layout_mode = 0
-offset_left = 96.0
-offset_top = 96.0
-offset_right = 192.0
-offset_bottom = 192.0
-texture = SubResource("AtlasTexture_quarter")
-flip_h = true
-flip_v = true
 
 [node name="Compass" type="TextureRect" parent="." unique_id=1037000019]
 layout_mode = 0

@@ -7,12 +7,16 @@ extends RefCounted
 
 ## How far from the corners the four corner points of the pointer check sit, in canvas pixels.
 const POINT_INSET_PX := 60.0
-## Widgets measured: [key, node name]. Found by name under the match (recursive).
+## Widgets measured: [key, node name, optional "parent"]. Found by name under the match (recursive). `ManaBar`/`HealthBar` are the
+## frame panels the bars sit in (the same rectangles as before 055h-2, found as the bar's parent); `ManaFill`/`HealthFill` are the
+## ProgressBars themselves (caps included).
 const WIDGETS: Array = [
 	["SpellBook", "SpellBook"],
 	["WizardStats", "WizardStats"],
-	["ManaBar", "ManaBar"],
-	["HealthBar", "HealthBar"],
+	["ManaBar", "ManaBar", "parent"],
+	["HealthBar", "HealthBar", "parent"],
+	["ManaFill", "ManaBar"],
+	["HealthFill", "HealthBar"],
 	["Minimap", "Minimap"],
 	["RadialMenu", "RadialMenu"],
 ]
@@ -44,19 +48,14 @@ static func _rects(world: MatchWorld, canvas: Vector2) -> Dictionary:
 	var out := {}
 	for entry: Array in WIDGETS:
 		var control := world.find_child(entry[1], true, false) as Control
+		if control != null and entry.size() > 2:
+			control = control.get_parent() as Control
 		if control != null:
 			out[entry[0]] = _entry(control.get_global_rect(), canvas, control.is_visible_in_tree())
 	var roster := world.find_child("SelectionRoster", true, false) as Control
-	var frame := roster.find_child("Frame", true, false) if roster != null else null
+	var frame: Control = roster.find_child("Frame", true, false) as Control if roster != null else null
 	if frame != null:
-		var union := Rect2()
-		var first := true
-		for child in frame.get_children():
-			if child is Control:
-				var rect := (child as Control).get_global_rect()
-				union = rect if first else union.merge(rect)
-				first = false
-		out["RosterFrame"] = _entry(union, canvas, roster.is_visible_in_tree())
+		out["RosterFrame"] = _entry(frame.get_global_rect(), canvas, roster.is_visible_in_tree())
 	return out
 
 

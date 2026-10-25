@@ -1,5 +1,0 @@
-[gd_scene format=3]
-
-[node name="FramePiece" type="TextureRect"]
-mouse_filter = 2
-expand_mode = 1

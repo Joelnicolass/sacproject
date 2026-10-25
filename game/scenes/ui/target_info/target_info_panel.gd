@@ -174,10 +174,10 @@ func _fill(info: TargetInfo) -> void:
 	icon.visible = info.icon != null
 	# Without an icon the title starts where the icon would (the .tscn's proportional layout).
 	(%Title as Label).anchor_left = _title_left if icon.visible else icon.anchor_left
-	var bar := %Bar as HealthStrip
+	var bar := %Bar as ProgressBar
 	bar.visible = info.has_bar()
 	if info.has_bar():
-		bar.fraction = info.fraction
+		bar.value = info.fraction
 
 
 func _hover_on() -> bool:

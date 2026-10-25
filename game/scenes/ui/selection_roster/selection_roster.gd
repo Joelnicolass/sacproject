@@ -2,9 +2,9 @@
 class_name SelectionRoster
 extends Control
 
-## The selected creatures at the left edge. Laid out in canvas pixels of the 1280×720 base (Godot's stretch scales them): a
-## 166×307 frame at x = -41 centered vertically, 41×38 cells (column 0 at x = -1, column 1 at x = 43, rows every 38 from y = 38)
-## and the active ability's 41×41 icon at x = 85. The frame is drawn even when empty.
+## The selected creatures at the left edge. Laid out in canvas pixels of the 1280×720 base (Godot's stretch scales them): the
+## `Frame` panel (166×307 at x = -41, drawn by the theme variation HudRosterFrame) centered vertically, 41×38 cells (column 0 at
+## x = -1, column 1 at x = 43, rows every 38 from y = 38) and the active ability's 41×41 icon at x = 85. The frame shows even when empty.
 ##
 ## Up to `capacity` (columns × rows) creatures: one cell each, the newest first, with its bars.
 ## More than that: one cell per type (largest group first) with the number of members, and the
@@ -19,19 +19,10 @@ signal ability_pressed
 
 ## selection.gd has no class_name (other scripts preload it).
 const _SELECTION := preload("res://scenes/orders/selection.gd")
-const FRAME_SIZE := Vector2(166.0, 307.0)
-const FRAME_X := -41.0
-## Half of the frame texture (u -63.5/128 … 63.5/128, mirrored around the middle of the frame): the lower
-## half is the upper one flipped (the art is symmetric top to bottom, six holes in all).
-const HALF_REGION := Rect2(0.0, 0.0, 63.5, 128.0)
-const HALF_WIDTH := 83.0
 
 ## Local selection (`%Selection`).
 @export var selection: Node
 @export var cell_scene: PackedScene
-## Frame piece (a TextureRect; texture, flips and rect are set here) and the dark plate drawn when the `fram` sheet is missing.
-@export var piece_scene: PackedScene
-@export var plate_scene: PackedScene
 @export var columns := 2
 @export var rows := 6
 @export var cell_size := Vector2(41.0, 38.0)
@@ -82,10 +73,6 @@ func _get_configuration_warnings() -> PackedStringArray:
 		warnings.append("selection is empty: assign the Selection node.")
 	if cell_scene == null:
 		warnings.append("cell_scene is empty: assign roster_cell.tscn.")
-	if piece_scene == null:
-		warnings.append("piece_scene is empty: assign frame_piece.tscn.")
-	if plate_scene == null:
-		warnings.append("plate_scene is empty: assign roster_plate.tscn.")
 	return warnings
 
 
@@ -96,33 +83,10 @@ func _ready() -> void:
 	%Refresh.timeout.connect(_on_refresh)
 	%Ability.pressed.connect(ability_pressed.emit)
 	%Ability.visible = false
-	_build_frame()
 	if selection:
 		selection.changed.connect(_on_selection_changed)
 		_on_selection_changed((selection as _SELECTION).units())
 	_update_visible()
-
-
-## The 128×128 `fram` sheet's left half, mirrored left-right and top-bottom. Without
-## the cache a dark plate stands in.
-func _build_frame() -> void:
-	for child in %Frame.get_children():
-		%Frame.remove_child(child)
-		child.queue_free()
-	var half := HudIcons.region("fram", HALF_REGION)
-	if half == null:
-		%Frame.add_child(plate_scene.instantiate())
-		return
-	for side in 2:
-		for repeat in 2:
-			var piece: TextureRect = piece_scene.instantiate()
-			piece.texture = half
-			piece.stretch_mode = TextureRect.STRETCH_SCALE
-			piece.flip_h = side == 0
-			piece.flip_v = repeat == 1
-			piece.position = Vector2(FRAME_X + HALF_WIDTH * side, FRAME_SIZE.y * 0.5 * repeat)
-			piece.size = Vector2(HALF_WIDTH, FRAME_SIZE.y * 0.5)
-			%Frame.add_child(piece)
 
 
 func _on_selection_changed(units: Array) -> void:

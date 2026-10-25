@@ -1,9 +1,7 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/selection_roster/selection_roster.gd" id="1_roster"]
 [ext_resource type="PackedScene" path="res://scenes/ui/selection_roster/roster_cell.tscn" id="2_cell"]
-[ext_resource type="PackedScene" path="res://scenes/ui/hud/frame_piece.tscn" id="3_piece"]
-[ext_resource type="PackedScene" path="res://scenes/ui/selection_roster/roster_plate.tscn" id="4_plate"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ability"]
 
@@ -26,13 +24,14 @@ grow_vertical = 2
 mouse_filter = 0
 script = ExtResource("1_roster")
 cell_scene = ExtResource("2_cell")
-piece_scene = ExtResource("3_piece")
-plate_scene = ExtResource("4_plate")
 
-[node name="Frame" type="Control" parent="."]
+[node name="Frame" type="Panel" parent="."]
+theme_type_variation = &"HudRosterFrame"
 unique_name_in_owner = true
-layout_mode = 3
-anchors_preset = 0
+layout_mode = 0
+offset_left = -41.0
+offset_right = 125.0
+offset_bottom = 307.0
 mouse_filter = 2
 
 [node name="Scroll" type="ScrollContainer" parent="."]

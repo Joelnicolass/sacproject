@@ -2,8 +2,8 @@ class_name BiomePicker
 extends OptionButton
 
 ## The picker of the land of a match: «Aleatoria» (the match draws it from its seed) or the land of one of the gods that bring a look.
-## Used by the boot (solo, «Contra la IA»), the room form and the local server form. It only lists: the choice goes out through
-## `selected_god()` (the boot's `MatchSetup.biome_god`, the `biome` option of a room); whoever simulates the match applies it.
+## Used by the boot (solo, «Contra la IA»), the room form and the local server form. It only lists: the metadata of each item is the
+## GodType and the choice goes out through `selected_god()` (null = drawn); whoever simulates the match applies it.
 
 ## Item 0 (metadata ""): the match draws the land.
 @export var random_text := "UI_BIOME_RANDOM"
@@ -18,17 +18,14 @@ func _ready() -> void:
 func fill() -> void:
 	clear()
 	add_item(tr(random_text))
-	set_item_metadata(0, "")
-	for type in GameCatalog.shared().gods:
-		if not BiomeRules.has_look(StringName(type.tag)):
+	for type in GameCatalog.shared().offered_gods():
+		if type.look == null:
 			continue
 		add_item(tr(item_text) % type.display_name)
-		set_item_metadata(item_count - 1, type.tag)
+		set_item_metadata(item_count - 1, type)
 	select(0)
 
 
-## The tag of the chosen god; empty = drawn.
-func selected_god() -> StringName:
-	if selected < 0:
-		return &""
-	return StringName(str(get_item_metadata(selected)))
+## The god whose land was chosen; null = drawn.
+func selected_god() -> GodType:
+	return get_item_metadata(selected) as GodType if selected >= 0 else null

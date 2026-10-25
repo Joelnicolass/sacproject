@@ -19,7 +19,7 @@ var _index := 0
 
 func _init() -> void:
 	# The terrain, the grass and the plants ask the active map for its tiles: it has to be this one before they are built.
-	MapCatalog.use(MAP_TAG)
+	ActiveMatch.choose(MapCatalog.shared().find(MAP_TAG), null)
 
 
 func _ready() -> void:

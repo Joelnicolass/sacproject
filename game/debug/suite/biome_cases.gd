@@ -34,6 +34,10 @@ func run(_host: Node) -> Dictionary:
 	return {"biome": {"ok": failures.is_empty(), "failures": failures}}
 
 
+func catalog_god(tag: StringName) -> GodType:
+	return GameCatalog.shared().god(String(tag))
+
+
 func _check_setup(failures: PackedStringArray, with_look: Array[StringName]) -> void:
 	if with_look.is_empty():
 		return
@@ -41,17 +45,18 @@ func _check_setup(failures: PackedStringArray, with_look: Array[StringName]) -> 
 	var setup := MatchSetup.new()
 	if not setup.is_empty() or setup.apply_to(rules) != rules:
 		failures.append("an empty setup must return the very same rules")
-	setup.biome_god = with_look[0]
+	var god: GodType = catalog_god(with_look[0])
+	setup.biome = god
 	if setup.is_empty():
 		failures.append("a setup with a biome is not empty")
 	var applied := setup.apply_to(rules) as MatchRules
 	if applied == rules or applied.biome_god != with_look[0] or rules.biome_god != &"":
 		failures.append("apply_to must copy the rules with the biome and leave the original alone")
 	var merged := MatchSetup.new().overlaid_by(setup)
-	if merged.biome_god != with_look[0] or setup.copy().biome_god != with_look[0]:
+	if merged.biome != god or setup.copy().biome != god:
 		failures.append("overlaid_by and copy must carry the biome")
 	var empty_over := setup.overlaid_by(MatchSetup.new())
-	if empty_over.biome_god != with_look[0]:
+	if empty_over.biome != god:
 		failures.append("an empty overlay must keep the biome")
 
 
@@ -66,8 +71,8 @@ func _check_ticket(failures: PackedStringArray, with_look: Array[StringName]) ->
 		failures.append("a room option with an unknown or non-text land must be invalid")
 	var ticket := room_rules.build_ticket([], options)
 	var setup := MatchTicketGlue.setup_from_ticket(ticket)
-	if setup.biome_god != with_look[0]:
-		failures.append("the ticket must bring the land to the match setup (got '%s')" % setup.biome_god)
-	if MatchTicketGlue.setup_from_ticket(room_rules.build_ticket([], {})).biome_god != &"":
+	if setup.biome != catalog_god(with_look[0]):
+		failures.append("the ticket must bring the land to the match setup (got '%s')" % setup.biome)
+	if MatchTicketGlue.setup_from_ticket(room_rules.build_ticket([], {})).biome != null:
 		failures.append("a ticket without a land must leave it drawn")
 	room_rules.free()

@@ -11,7 +11,7 @@ extends Resource
 ##   so a flag of the process, or else the rules, decides it: explicit choice > flag > rules (RFC-031 §3.5).
 ## - Under AgentKit UserSettings is a sandbox: a playtest starts from the defaults and never writes the player's file.
 ## - Only the boot reads it (to_setup). The dedicated server and the benches never go through the boot, so they keep
-##   the rules and the flags of their process (MatchSetup.from_cli).
+##   the rules and the flags of their process (LaunchFlags).
 ## Like GraphicsPrefs, every node must share the instance at `SHARED_PATH`; the values are runtime state of that instance
 ## and the exported fields are never written. Changes emit `changed`.
 

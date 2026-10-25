@@ -14,7 +14,7 @@ const MAP_TAG := &"high_noon"
 
 func _init() -> void:
 	# The plants ask the active map for its tiles: it has to be this one before they are built.
-	MapCatalog.use(MAP_TAG)
+	ActiveMatch.choose(MapCatalog.shared().find(MAP_TAG), null)
 
 
 func _ready() -> void:

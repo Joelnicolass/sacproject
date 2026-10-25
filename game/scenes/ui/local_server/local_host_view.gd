@@ -1,6 +1,6 @@
 extends Control
 
-## RFC-034 034m: create a «Servidor local». The host's pick comes from the menu (`SacrificeFlow.pick`); here he chooses
+## Creates a «Servidor local». The host's pick comes from the menu (`SacrificeFlow.pick`); here he chooses
 ## the transport (the rival chooses his own wizard and god when he joins). «Crear» launches the dedicated on this PC (`LocalServerHost`); when it listens the
 ## view shows the address, the port, the transport and the rival's code. «Entrar a la partida» joins it as a normal client.
 ## RFC-049 049h (F297): the host also chooses the mode and the map (the map picker lists the maps that fit the mode) and, for each
@@ -48,18 +48,12 @@ func _on_create() -> void:
 	_server.server_failed.connect(_on_server_failed)
 	_server.server_closed.connect(_on_server_closed)
 	var kind: String = str(_transport.get_item_metadata(_transport.selected))
-	## RFC-049 049a: the map of the match goes in the ticket like a room's `world` option.
-	var options := {}
-	var world := (%HostMap as MapPicker).selected_tag()
-	if world != &"":
-		options["world"] = String(world)
-	var biome := (%HostBiome as BiomePicker).selected_god()
-	if biome != &"":
-		options["biome"] = String(biome)
-	var mode := (%HostMode as ModePicker).selected_tag()
-	if mode != &"":
-		options["mode"] = String(mode)
-	var err := _server.start(SacrificeFlow.pick, kind, options, ai_seats())
+	## The mode, the map and the land go in the ticket like a room's options.
+	var chosen := MatchSetup.new()
+	chosen.mode = (%HostMode as ModePicker).selected_mode()
+	chosen.map = (%HostMap as MapPicker).selected_map()
+	chosen.biome = (%HostBiome as BiomePicker).selected_god()
+	var err := _server.start(SacrificeFlow.pick, kind, MatchWire.options_of(chosen), ai_seats())
 	if err != OK:
 		_server.queue_free()
 		_server = null
@@ -89,7 +83,7 @@ func _build_seats() -> void:
 	for child in holder.get_children():
 		holder.remove_child(child)
 		child.queue_free()
-	var mode := GameModeCatalog.shared().find((%HostMode as ModePicker).selected_tag())
+	var mode := (%HostMode as ModePicker).selected_mode()
 	if mode == null:
 		return
 	for slot in range(LocalServerHost.RIVAL_SLOT, mode.seats() + 1):

@@ -1,18 +1,24 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" uid="uid://lfuoh6n1jq8h" path="res://scenes/core/flow/sacrifice_flow.gd" id="1_flow"]
 [ext_resource type="Script" path="res://scenes/core/flow/wizard_pick.gd" id="2_pick"]
 [ext_resource type="Resource" path="res://data/catalog/wizards/jadugarr.tres" id="3_wizard"]
 [ext_resource type="Resource" uid="uid://dxr20hx8hlmpf" path="res://data/gods/james.tres" id="4_god"]
 [ext_resource type="Resource" path="res://data/ai/seat_vs_ai.tres" id="5_seat"]
+[ext_resource type="Script" path="res://scenes/net/pick_board.gd" id="6_board"]
 
 [sub_resource type="Resource" id="Resource_pick"]
 script = ExtResource("2_pick")
 wizard = ExtResource("3_wizard")
 god = ExtResource("4_god")
 
-[node name="SacrificeFlow" type="Node"]
+[node name="SacrificeFlow" type="Node" node_paths=PackedStringArray("board")]
 editor_description = "El autoload que lleva al jugador del menú a la partida (solo, contra la IA, sala, servidor local). default_pick es lo que está elegido al abrir el menú; vs_ai_seat es el rival de «Contra la IA». Los dos se cambian acá arrastrando un mago, un dios o un asiento."
 script = ExtResource("1_flow")
 default_pick = SubResource("Resource_pick")
 vs_ai_seat = ExtResource("5_seat")
+board = NodePath("PickBoard")
+
+[node name="PickBoard" type="Node" parent="."]
+editor_description = "Los picks de cada asiento: el servidor guarda lo que manda cada cliente y publica la tabla; el cliente copia la que recibe."
+script = ExtResource("6_board")

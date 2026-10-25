@@ -1,9 +1,9 @@
 class_name MatchSetup
 extends RefCounted
 
-## RFC-031 031a2 (F140): what the one who creates the match chose over the rules (boot, or the flags of this process).
-## SacrificeFlow keeps one; HighNoon applies it on the authority before the seed (apply_to). Never touches the `.tres`.
-## Precedence: boot > flag > rules (the boot overwrites the fields read from_cli()).
+## What the one who creates the match chose over the rules (the menu, the flags of this process or a room's ticket).
+## SacrificeFlow keeps one; the world applies it on the authority before the seed (`apply_to`). It never touches the `.tres`.
+## Precedence: menu > flag > rules (`overlaid_by`). It holds Resources, never tags: MatchWire turns the text of the network into them.
 
 ## Wizard level of both wizards, 1-9. 0 = the rules' wizard_level.
 var level := 0
@@ -16,16 +16,14 @@ var starting_souls := -1
 ## RFC-034 034e: the seed of the match; 0 = the rules' `match_seed` (the one who simulates draws it). The room server draws it
 ## and puts it in the ticket (`--match-ticket-file`); `--match-seed=N` sets it by hand. The benches pass none.
 var match_seed := 0
-## RFC-049 049a (F290): the map of the match (a tag of the MapCatalog); empty = the one of `--map` or the default. It is not a rule of
-## the round: `apply_to` and `is_empty` ignore it. SacrificeFlow._apply_match_choice is the only one that turns it into `MapCatalog.use`.
-var map_tag: StringName = &""
-## RFC-049 049b (F291): the game mode of the match (a tag of the GameModeCatalog); empty = the one of `--mode` or 1v1. Like `map_tag` it is not a
-## rule of the round; SacrificeFlow._apply_match_choice is the only one that turns it into `GameModeCatalog.use`.
-var mode_tag: StringName = &""
-## The land (the god whose look the map wears) of the match; empty = drawn from the seed like always. Unlike `map_tag` it IS a rule
-## of the round for `apply_to`: the copy of the rules carries it (`biome_god`), MatchBiome on the authority reads it and sends the result
-## to the clients on its own channel. A tag with no look is ignored there (BiomeRules.choose draws).
-var biome_god: StringName = &""
+## The map of the match; null = the one of `--map` or the default. It is not a rule of the round: `apply_to` and `is_empty`
+## ignore it, and SacrificeFlow hands it to ActiveMatch.
+var map: MapDefinition
+## The game mode of the match; null = the one of `--mode` or 1v1. Like `map`, it is not a rule of the round.
+var mode: GameMode
+## The land of the match (the god whose look the map wears); null = drawn from the seed. Unlike `map` it IS a rule of the round for
+## `apply_to`: the copy of the rules carries its id (`biome_god`) and MatchBiome on the authority sends the result to the clients.
+var biome: GodType
 
 
 func copy() -> MatchSetup:
@@ -35,14 +33,14 @@ func copy() -> MatchSetup:
 	other.drop_soul = drop_soul
 	other.starting_souls = starting_souls
 	other.match_seed = match_seed
-	other.map_tag = map_tag
-	other.mode_tag = mode_tag
-	other.biome_god = biome_god
+	other.map = map
+	other.mode = mode
+	other.biome = biome
 	return other
 
 
 func is_empty() -> bool:
-	return level == 0 and friendly_fire < 0 and drop_soul < 0 and starting_souls < 0 and match_seed == 0 and biome_god == &""
+	return level == 0 and friendly_fire < 0 and drop_soul < 0 and starting_souls < 0 and match_seed == 0 and biome == null
 
 
 ## A copy of this setup where every field `over` sets wins (boot > flag: the boot's setup over the flags' one).
@@ -60,12 +58,12 @@ func overlaid_by(over: MatchSetup) -> MatchSetup:
 		merged.starting_souls = over.starting_souls
 	if over.match_seed > 0:
 		merged.match_seed = over.match_seed
-	if over.map_tag != &"":
-		merged.map_tag = over.map_tag
-	if over.mode_tag != &"":
-		merged.mode_tag = over.mode_tag
-	if over.biome_god != &"":
-		merged.biome_god = over.biome_god
+	if over.map != null:
+		merged.map = over.map
+	if over.mode != null:
+		merged.mode = over.mode
+	if over.biome != null:
+		merged.biome = over.biome
 	return merged
 
 
@@ -85,49 +83,6 @@ func apply_to(rules: Variant) -> Variant:
 		copy.starting_souls = starting_souls
 	if match_seed > 0:
 		copy.match_seed = match_seed
-	if biome_god != &"":
-		copy.biome_god = biome_god
+	if biome != null:
+		copy.biome_god = StringName(biome.id())
 	return copy
-
-
-## --biome=<god> (the land of the match), --level=N (1-9, like sacengine app.d:276), --souls=N (app.d:278; the one owner of this flag, the bench ai_match
-## included: it reaches the bench through HighNoon like any other match), and the option flags --friendly-fire /
-## --no-friendly-fire and --drop-soul / --no-drop-soul (app.d:333-355: the flag is the name of the option field).
-## Prints what it took. With both forms of a flag the --no- one wins (sacengine keeps the last one in argv; passing
-## both is a usage error).
-static func from_cli() -> MatchSetup:
-	var setup := MatchSetup.new()
-	var raw := MpBoot.user_value("level", "")
-	if not raw.is_empty():
-		var wanted := int(raw)
-		if wanted >= 1 and wanted <= 9:
-			setup.level = wanted
-			print("nivel del mago %d (--level)" % wanted)
-		else:
-			push_warning("--level=%s: fuera de 1-9, se usa el de las reglas" % raw)
-	if MpBoot.user_flag("no-friendly-fire"):
-		setup.friendly_fire = 0
-	elif MpBoot.user_flag("friendly-fire"):
-		setup.friendly_fire = 1
-	if MpBoot.user_flag("no-drop-soul"):
-		setup.drop_soul = 0
-	elif MpBoot.user_flag("drop-soul"):
-		setup.drop_soul = 1
-	var souls := MpBoot.user_value("souls", "")
-	if not souls.is_empty():
-		if souls.is_valid_int() and int(souls) >= 0:
-			setup.starting_souls = int(souls)
-			print("almas iniciales %d (--souls)" % setup.starting_souls)
-		else:
-			push_warning("--souls=%s: no es un número ≥ 0, se usan las de las reglas" % souls)
-	var wanted_seed := MpBoot.user_value("match-seed", "")
-	if not wanted_seed.is_empty():
-		if wanted_seed.is_valid_int() and int(wanted_seed) > 0:
-			setup.match_seed = int(wanted_seed)
-			print("semilla de la partida %d (--match-seed)" % setup.match_seed)
-		else:
-			push_warning("--match-seed=%s: no es un número > 0, se usa el de las reglas" % wanted_seed)
-	var biome := MpBoot.user_value("biome", "")
-	if not biome.is_empty():
-		setup.biome_god = StringName(biome)
-	return setup

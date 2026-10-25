@@ -10,7 +10,7 @@ extends Node
 ## Options after `--`: rules, seed (0 = drawn), minutes, out (a .json path; AgentKit's own --out folder is ignored), events (the lines of the record),
 ## sample-s (seconds between position samples, 10 by default), npcs (the map's villagers on the field even if the rules say no),
 ## difficulties=easy,normal (the difficulty of each AI seat in order, 024e), souls=N (starting souls of every wizard: read by
-## MatchSetup.from_cli, its one owner since RFC-031 031d, and applied by HighNoon to the world's copy of these rules),
+## LaunchFlags, its one owner since RFC-031 031d, and applied by HighNoon to the world's copy of these rules),
 ## autostart (skip the pause with a window), quit (quit at the end with a window), watchdog-s=N (F370: quit with exit code 1 after N
 ## seconds of wall clock, whatever the run is doing; 0 = none). Headless it starts
 ## and quits by itself; with a window it waits in «Pendiente» for check_tick (Enter) and stays on screen.

@@ -1,7 +1,7 @@
 class_name MatchTicketGlue
 extends Node
 
-## RFC-034 034e: the Sacrifice side of a dedicated that the room server launched (`--match-ticket-file`).
+## The Sacrifice side of a dedicated that the room server launched (`--match-ticket-file`).
 ## SacrificeFlow instances it only in that process. It gives the match agent (kit) its Sacrifice meaning:
 ## - the ticket becomes what the match needs: the pick of each slot, the options (MatchSetup) and the seed;
 ## - the result of the match (MatchState) is reported to the agent, which writes result.json and tells the clients;
@@ -24,6 +24,8 @@ extends Node
 
 ## The agent of the kit (admission, heartbeat, result.json). Null if the ticket was not usable.
 var agent: MpMatchAgent
+## True when the ticket names a map or a mode the catalog does not have: `bad_ticket` was reported and the process quits.
+var rejected := false
 
 var _seat_metas: Dictionary = {}
 var _setup := MatchSetup.new()
@@ -87,6 +89,25 @@ func _ready() -> void:
 		ai_seats().size()])
 
 
+## The glue of this process's ticket (`--match-ticket-file`), added under `parent`; null when there is no usable ticket. A ticket
+## the catalog cannot play is reported as `bad_ticket` and the process quits (`rejected`).
+static func attach(parent: Node) -> MatchTicketGlue:
+	if MpBoot.user_value("match-ticket-file", "").is_empty():
+		return null
+	var glue := MatchTicketGlue.new()
+	glue.name = "MatchTicketGlue"
+	parent.add_child(glue)
+	if glue.agent == null or glue.agent.ticket.is_empty():
+		glue.queue_free()
+		return null
+	if not world_is_valid(glue.agent.ticket):
+		push_error("partida %s: bad_ticket, el ticket pide el mapa '%s' y no existe" % [glue.agent.match_id, str(glue.agent.ticket.get("world", ""))])
+		glue.agent.report_result({"winner_slot": 0, "defeated_slots": [], "reason": "bad_ticket"})
+		parent.get_tree().quit(1)
+		glue.rejected = true
+	return glue
+
+
 ## slot -> the `meta` (pick) the lobby validated for that seat. Raw wire text: the flow reads it again with MatchWire.
 func seat_metas() -> Dictionary:
 	return _seat_metas.duplicate(true)
@@ -123,9 +144,9 @@ static func setup_from_ticket(ticket: Dictionary) -> MatchSetup:
 		setup.drop_soul = 1 if bool(options["drop_soul"]) else 0
 	setup.starting_souls = int(options.get("starting_souls", -1))
 	setup.match_seed = int(ticket.get("seed", 0))
-	setup.map_tag = StringName(str(ticket.get("world", "")))
-	setup.mode_tag = StringName(str(ticket.get("mode", "")))
-	setup.biome_god = StringName(str(options.get("biome", "")))
+	setup.map = MatchWire.decode_map(str(ticket.get("world", "")))
+	setup.mode = MatchWire.decode_mode(str(ticket.get("mode", "")))
+	setup.biome = MatchWire.decode_god(str(options.get("biome", "")))
 	return setup
 
 

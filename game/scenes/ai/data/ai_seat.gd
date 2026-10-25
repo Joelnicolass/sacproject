@@ -36,3 +36,20 @@ static func difficulty_of(tag: String) -> AiDifficulty:
 ## The difficulty of the seat, Normal when it has none.
 func difficulty_or_normal() -> AiDifficulty:
 	return difficulty if difficulty != null else load(NORMAL) as AiDifficulty
+
+
+## A copy of this seat for `p_slot`, with `p_god` when given (null keeps the seat's own god; none = drawn when the match starts).
+func for_slot(p_slot: int, p_god: GodType = null) -> AiSeat:
+	var seat := duplicate() as AiSeat
+	seat.slot = p_slot
+	if p_god != null:
+		seat.god = p_god
+	return seat
+
+
+## A copy of this seat for each slot from 2 to `seats` (slot 1 is the player's), all with `p_god` when given.
+func for_seats(seats: int, p_god: GodType = null) -> Array[AiSeat]:
+	var found: Array[AiSeat] = []
+	for slot in range(2, maxi(seats, 2) + 1):
+		found.append(for_slot(slot, p_god))
+	return found

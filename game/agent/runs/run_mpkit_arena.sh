@@ -5,7 +5,10 @@
 #   listen:    host (--listen-host) + first client + a late client.
 # The probes (mpkit_lab/probe/lab_probe.gd) press keys and check: remote input moves the pawn on the server and it syncs
 # back, MpState score, a to_all event, a to_server call, and that the late client sees what happened before it joined.
-# TRANSPORT=ws runs everything over WebSocket (TCP) instead of ENet (UDP). SCENARIOS="dedicated listen" (default both).
+#   lag:       dedicated + an observer + a predicted player, every process with MpLagPeer (LAG_MS one way, JITTER_MS,
+#              LOSS of unreliable packets): the player answers its keys at once and is barely corrected; the observer
+#              sees it move steadily. Prints METRIC lines.
+# TRANSPORT=ws runs everything over WebSocket (TCP) instead of ENet (UDP). SCENARIOS="dedicated listen lag" (default all).
 # Prints PASS / FAIL lines and MPKIT ARENA PASS / MPKIT ARENA FAIL (exit 0 / 1).
 . "$(dirname "$0")/../harness/net_e2e.sh"
 net_group 3 "$@"
@@ -14,7 +17,10 @@ LIMIT_S="${PROBE_LIMIT_S:-120}"
 PROC_MAX=4
 TRANSPORT="${TRANSPORT:-enet}"
 PORT="${E2E_PORT:-7790}"
-SCENARIOS="${SCENARIOS:-dedicated listen}"
+SCENARIOS="${SCENARIOS:-dedicated listen lag}"
+LAG_MS="${LAG_MS:-60}"
+JITTER_MS="${JITTER_MS:-30}"
+LOSS="${LOSS:-0.03}"
 ROOT="$(cd "$ROOT/../mpkit_lab" && pwd)" # gd and the guard work on the lab project from here on
 OUT="$(mktemp -d "${TMPDIR:-/tmp}/mpkit_arena.XXXXXX")"
 kill_all() { kill_pids; }
@@ -51,10 +57,35 @@ run_scenario() { # run_scenario <name> <server flag> <first client slot>
   if grep -qE "^SCRIPT ERROR" "$dir"/*.log; then echo "FAIL $name: script errors"; FAILS=$((FAILS + 1)); fi
 }
 
+run_lag() { # dedicated server + an observer (slot 1) + a predicted player (slot 2), every process on a bad network
+  local dir="$OUT/lag"
+  mkdir -p "$dir"
+  local common=(--transport="$TRANSPORT" --mp-port="$PORT" --net-lag-ms="$LAG_MS" --net-jitter-ms="$JITTER_MS" --net-loss="$LOSS")
+  gd "$dir/server.log" --max-fps 120 -- --server "${common[@]}"
+  local server=$LAST_PID
+  sleep 0.5
+  gd "$dir/observer.log" --max-fps 120 -- --client1 "${common[@]}" --probe=observe --probe-watch-slot=2
+  local observer=$LAST_PID
+  wait_line "$dir/observer.log" "^PASS the observer got a slot" "$observer" 20
+  gd "$dir/player.log" --max-fps 120 -- --client2 "${common[@]}" --probe=lag
+  local player=$LAST_PID
+  wait_line "$dir/player.log" "^PROBE lag (PASS|FAIL)" "$player" 40
+  wait_line "$dir/observer.log" "^PROBE observe (PASS|FAIL)" "$observer" 10
+  for p in $player $observer $server; do kill_tree "$p"; done
+  echo "--- lag ($TRANSPORT, ${LAG_MS} ms + ${JITTER_MS} ms jitter, loss $LOSS, every process) ---"
+  for r in observer player; do
+    grep -E "^(PASS|FAIL|METRIC|SCRIPT ERROR|ERROR)" "$dir/$r.log" | sed "s/^/$r: /" | head -n 20
+  done
+  verdict "$dir/player.log" lag "lag: the predicted player answers at once and is barely corrected"
+  verdict "$dir/observer.log" observe "lag: another player moves steadily on screen (buffered interpolation)"
+  if grep -qE "^SCRIPT ERROR" "$dir"/*.log; then echo "FAIL lag: script errors"; FAILS=$((FAILS + 1)); fi
+}
+
 for s in $SCENARIOS; do
   case "$s" in
     dedicated) run_scenario dedicated --server 1 ;;
     listen) run_scenario listen --listen-host 2 ;;
+    lag) run_lag ;;
   esac
 done
 net_stop

@@ -5,7 +5,7 @@ extends RefCounted
 ## tunnels). Only builds the `MultiplayerPeer`; RPCs, slots and replication do not change with it.
 ## The names are the values of `--transport=enet|ws` and of `MpLobbyConfig.transport`.
 ## `wss://` (TLS): pass `TLSOptions` to `create_server` / `create_client`, or terminate TLS in a reverse proxy
-## (see the README).
+## (see the README). `--net-lag-ms` / `--net-jitter-ms` / `--net-loss` wrap the peer in MpLagPeer (tests only).
 
 const ENET := "enet"
 const WS := "ws"
@@ -31,10 +31,10 @@ static func create_server(kind: String, port: int, max_clients: int, tls: TLSOpt
 	if normalize(kind) == WS:
 		var ws := WebSocketMultiplayerPeer.new()
 		var err_ws := ws.create_server(port, "*", tls)
-		return {"error": err_ws, "peer": ws}
+		return {"error": err_ws, "peer": MpLagPeer.wrap_from_flags(ws)}
 	var enet := ENetMultiplayerPeer.new()
 	var err := enet.create_server(port, max_clients)
-	return {"error": err, "peer": enet}
+	return {"error": err, "peer": MpLagPeer.wrap_from_flags(enet)}
 
 
 ## `{error, peer}`. WebSocket builds `ws://host:port` (or `wss://` with `tls`); a `host` that already has a
@@ -45,10 +45,10 @@ static func create_client(kind: String, host: String, port: int, tls: TLSOptions
 		var scheme := "wss" if tls != null else "ws"
 		var url := host if host.contains("://") else "%s://%s:%d" % [scheme, host, port]
 		var err_ws := ws.create_client(url, tls)
-		return {"error": err_ws, "peer": ws}
+		return {"error": err_ws, "peer": MpLagPeer.wrap_from_flags(ws)}
 	var enet := ENetMultiplayerPeer.new()
 	var err := enet.create_client(host, port)
-	return {"error": err, "peer": enet}
+	return {"error": err, "peer": MpLagPeer.wrap_from_flags(enet)}
 
 
 ## True if `port` can be opened on this machine with `kind` (a probe that opens and closes it).

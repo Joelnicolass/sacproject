@@ -7,12 +7,14 @@ extends RefCounted
 ## Not: deciding what to sync (MpActor / MpState own that list) or showing it to peers (MpSpawner).
 ##
 ## An entry is a property of the synchronizer's root ("position") or of a node under it ("Health:current").
-## Every entry is sent when the node spawns. Transforms are sent every interval (ALWAYS); anything else
+## Every entry is sent when the node spawns. Transforms (and MpActor's stamp / MpInput's ack, which must travel in
+## the same packet as them) are sent every interval (ALWAYS); anything else
 ## only when it changes (ON_CHANGE, reliable). `spawn_only` entries are sent once at spawn (NEVER).
 
 const ALWAYS_PROPS: PackedStringArray = [
 	"position", "rotation", "rotation_degrees", "scale", "transform", "quaternion", "basis",
 	"global_position", "global_rotation", "global_transform", "velocity", "linear_velocity", "angular_velocity",
+	"net_stamp", "net_position", "net_rotation", "acked_seq",
 ]
 
 

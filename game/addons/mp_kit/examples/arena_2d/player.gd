@@ -1,7 +1,8 @@
 extends CharacterBody2D
 
-## The example player, written like a single-player script. Arrows move it, Enter scores a point and flashes it,
-## Tab changes its color. MpActor (sync, owner, calls) and MpInput (keys of the owner) carry it over the network.
+## The example player, written like a single-player script. Arrows move it (predicted: no lag for its owner), Enter
+## scores a point and flashes it, Tab changes its color. MpActor (sync, owner, calls, prediction) and MpInput (keys of
+## the owner) carry it over the network.
 
 const SPEED := 220.0
 const COLORS: Array[Color] = [Color("e05d5d"), Color("5d9de0"), Color("6cc56c"), Color("e0c25d")]
@@ -25,12 +26,17 @@ func _ready() -> void:
 	_paint()
 
 
+## Movement (MpActor > Prediction is on): the server runs it, and the owner runs it at once with its own keys,
+## so the player answers without waiting for the network. Keep only movement here: it may run more than once.
+func mp_move(keys: MpInput, _delta: float) -> void:
+	velocity = keys.get_vector(&"ui_left", &"ui_right", &"ui_up", &"ui_down") * SPEED
+	move_and_slide()
+
+
 ## Server and solo: the rules. Clients only draw what the server sends.
 func _physics_process(_delta: float) -> void:
 	if not net.is_authority():
 		return
-	velocity = input.get_vector(&"ui_left", &"ui_right", &"ui_up", &"ui_down") * SPEED
-	move_and_slide()
 	if input.is_action_just_pressed(&"ui_accept"):
 		MpState.of(self).add(StringName("p%d" % net.owner_slot))
 		net.to_all(&"flash")

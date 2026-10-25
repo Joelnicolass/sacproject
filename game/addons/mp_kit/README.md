@@ -488,9 +488,16 @@ Nodos de alto nivel (lo que usa un humano; detalle y ejemplos en [QUICKSTART.md]
 | `nodes/mp_actor.gd` | `MpActor`: hijo de lo que la red comparte. El servidor es su autoridad; la lista *Sync* arma en el editor un `MultiplayerSynchronizer` (`MpSync`) que se guarda en la escena; suaviza proxies; `owner_slot` (lo pone el spawner, viaja al nacer). `to_server(&"x", args)` corre `mp_sv_x(args)` en el servidor (solo el dueño puede pedirlo; `sender_slot()` dice quién); `to_all(&"x", args)` corre `mp_all_x(args)` en todos los peers que ya tienen el nodo (solo el servidor). `is_authority()`, `is_local()`, `MpActor.of(nodo)` |
 | `nodes/mp_input.gd` | `MpInput`: junto a un `MpActor`. El dueño manda sus acciones del InputMap (frames con secuencia, contadores de pulsación que no se pierden con un paquete); en el servidor se leen con la API de `Input` (`get_vector`, `is_action_just_pressed`...). `set_value` / `get_value` para valores propios (mira, cursor) |
 | `nodes/mp_state.gd` | `MpState`: valores de partida (`set_value`, `add`, `get_value`, señal `changed`). Lo escribe el servidor; lo reciben todos, también el que entra tarde. `MpState.of(nodo)` |
-| `core/mp_sync_builder.gd` | lista del inspector → `SceneReplicationConfig` (transformaciones ALWAYS, el resto ON_CHANGE, `owner_slot` solo al nacer) |
-| `core/mp_input_frame.gd` | el frame de input que viaja al servidor; valida tamaño y tipos |
-| `core/mp_smoother.gd` | suavizado de proxies que usan `MpActor` y `MpReplicate` |
+| `core/mp_sync_builder.gd` | lista del inspector → `SceneReplicationConfig` (transformaciones, sello y ack ALWAYS, el resto ON_CHANGE, `owner_slot` solo al nacer) |
+| `core/mp_actor_sync.gd` | qué manda el synchronizer de un `MpActor` en cada modo: con suavizado o predicción la pose viaja en `MpActor.net_position` / `net_rotation` + `net_stamp`, nunca en la del nodo, así en el cliente solo `MpActor` mueve el nodo |
+| `core/mp_input_frame.gd` | el frame de input que viaja al servidor; valida tamaño y tipos; contadores de pulsación |
+| `core/mp_input_queue.gd` | servidor con predicción: frames del dueño en orden, cada uno una vez; buffer de jitter (`depth`), puesta al día suave y presupuesto (un cliente no puede ir más rápido mandando frames de más) |
+| `core/mp_prediction.gd` | predicción del dueño y reconciliación: el servidor corre `mp_move` por cada frame del dueño; el dueño vuelve al estado del servidor y repite los frames sin ack, dentro del tick de física |
+| `core/mp_proxy_motion.gd` / `mp_interpolator.gd` | dibujo de proxies: `BUFFERED` (en el pasado, entre dos estados reales) o `FOLLOW` |
+| `core/mp_net_clock.gd` | tiempo de simulación del servidor (ticks / tps, parejo) y su estimación en el cliente (sigue al paquete menos demorado) |
+| `core/mp_lag_peer.gd` | red mala a propósito para probar: `--net-lag-ms`, `--net-jitter-ms`, `--net-loss` envuelven el peer (ENet o WS). Solo pruebas |
+| `core/mp_calls.gd` | llamadas por nombre (`mp_sv_*`, `mp_all_*`) con chequeo de cantidad de argumentos |
+| `core/mp_smoother.gd` | suavizado exponencial de `MpReplicate` |
 | `tests/` | tests propios del kit: `godot --headless --path <proyecto> --script res://addons/mp_kit/tests/mp_test_runner.gd` |
 | `examples/arena_2d/` | ejemplo mínimo (boot, arena, jugador); sirve de quickstart y de prueba e2e |
 

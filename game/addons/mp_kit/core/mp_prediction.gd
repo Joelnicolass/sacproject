@@ -1,0 +1,65 @@
+class_name MpPrediction
+extends RefCounted
+
+## Client-side prediction and server reconciliation for one MpActor with `predict`. The parent's `mp_move(input,
+## delta)` is the only movement code:
+##   server - runs it once per frame the owner sent (MpInputQueue), in order, so it simulates the owner's own ticks;
+##   owner  - runs it at once every tick with its own keys; when a server state arrives it goes back to that state
+##            and replays the frames the server has not applied yet (`acked_seq`). Same ticks, so corrections ~0.
+## Everything runs inside the physics tick (move_and_slide uses its delta). Not: drawing proxies (MpProxyMotion).
+
+## How far the last server correction moved the owner's node (0 = the prediction was right).
+var last_correction: float = 0.0
+
+var _root: Node
+var _input: MpInput
+var _predicted := Vector3.ZERO
+var _seen_stamp: float = -1.0
+
+
+func _init(root: Node, input: MpInput) -> void:
+	_root = root
+	_input = input
+
+
+## The owner's node starts at the server's pose (its spawn).
+func start_at(position: Vector3) -> void:
+	_predicted = position
+
+
+## Server (or solo / the host's own player): this tick's movement.
+func server_tick(delta: float, reads_keys_here: bool) -> void:
+	if reads_keys_here:
+		_root.mp_move(_input, delta)
+		return
+	var keep := _input.current_frame()
+	var keep_before := _input.previous_frame()
+	var before := keep_before
+	for frame in _input.tick_frames():
+		_input.use_frame(frame, before, false)
+		_root.mp_move(_input, delta)
+		before = frame
+	_input.use_frame(keep, keep_before, false)
+
+
+## Owner: reconcile when the server sent a new state (`stamp`), then predict this tick.
+func owner_tick(delta: float, stamp: float, motion: MpProxyMotion, net_pos: Vector3, net_rot: Quaternion) -> void:
+	if stamp > 0.0 and stamp != _seen_stamp:
+		_seen_stamp = stamp
+		_reconcile(delta, motion, net_pos, net_rot)
+	_root.mp_move(_input, delta)
+	_predicted = MpProxyMotion.position_of(_root)
+
+
+## Back to the server's pose after `acked_seq`, then the ticks it has not seen, up to the last one predicted (this
+## tick's frame runs next, as every tick).
+func _reconcile(delta: float, motion: MpProxyMotion, net_pos: Vector3, net_rot: Quaternion) -> void:
+	var keep := _input.current_frame()
+	var keep_before := _input.previous_frame()
+	motion.write(net_pos, net_rot)
+	var chain := _input.replay_chain()
+	for i in range(1, chain.size() - 1):
+		_input.use_frame(chain[i], chain[i - 1], true)
+		_root.mp_move(_input, delta)
+	_input.use_frame(keep, keep_before, false)
+	last_correction = MpProxyMotion.position_of(_root).distance_to(_predicted)

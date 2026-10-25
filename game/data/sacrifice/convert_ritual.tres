@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="RitualType" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/sacrifice/ritual_type.gd" id="1_type"]
+
+[resource]
+script = ExtResource("1_type")
+kind = 1
+ending = 1
+drains_target_wizard = false
+collapses_target_altar = false
+marks_target_ghost = false
+counts_as_conversion = true

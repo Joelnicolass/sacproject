@@ -1,7 +1,8 @@
 extends RitualStep
 
-## Each doctor walks a quarter turn around the site; the radius shrinks from 20 to 17 m in the last
-## fifth (sacengine ritualPositions, state.d:15854-15863, 15953-15972). Rounds start one quarter further.
+## Each doctor walks a quarter turn around the site; the ring (`Ring` / `RingEnd` of sacrifice_places.tscn, SacrificeFacts) shrinks
+## from 20 to 17 m in the last fifth. Rounds start one quarter further.
+## Ref: sacengine ritualPositions, state.d:15854-15863, 15953-15972.
 
 
 func enter() -> void:
@@ -15,9 +16,10 @@ func enter() -> void:
 func physics_update(delta: float) -> void:
 	super.physics_update(delta)
 	var rules := ritual.rules
+	var facts := SacrificeFacts.of_rules(rules)
 	var progress := clampf(time / rules.ritual_walk_s, 0.0, 1.0)
 	for k in ritual.doctors.size():
-		var point := SacrificeMath.ring_point(ritual.center(), k + ritual.round_index, progress, rules.ritual_radius, rules.ritual_walk_shrink)
+		var point := SacrificeMath.ring_point(ritual.center(), k + ritual.round_index, progress, facts.ring_m, facts.walk_shrink_m())
 		ritual.doctors[k].walk_to(point)
 	if time >= rules.ritual_walk_s:
 		transition(&"Shoot")

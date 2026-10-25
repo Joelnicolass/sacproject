@@ -11,7 +11,7 @@ extends RefCounted
 ##   touches (GrowingWave), flight (GroundHug), split (ShotSplit), strikes (ShotStrike), spikes (SpikeWave/SpikeImpact),
 ##   oil (Oiled and OilImpact), walk (Firewalking), vines (Vined), pull (Pulling), breath (BreathOfLife), quake (QuakeWave),
 ##   bolt (LightningStrike), halo (HaloOfEarth), devour (DevourGrowth), revive (FastRevive),
-##   cling (Clinging, StickImpact), souls (Soul), hop (MiteHop), targets (TargetFutility), biome (MatchBiome: the god a match drew).
+##   cling (Clinging, StickImpact), souls (Soul), hop (MiteHop), targets (TargetFutility), biome (MatchBiome: the god a match drew), ritual (Ritual and its parts: begin, complete, cancel).
 ## Off even in the bench (only `--log=`): ai_attack (AttackPhase: threat, enemy_ratio and the target of each replan, F371).
 ## ai_focus (FocusTask: each commitment with its kill seconds and score, F373). ai_order (AiCommandPort: every order the AI gives, with
 ## its ostate and goal; CreatureBrain: the wizard's trip to a mana source). gap (MeleeReach.close_in: one line per tick of every melee
@@ -22,7 +22,7 @@ extends RefCounted
 const BENCH: Array[StringName] = [
 	&"melee", &"on_hit", &"drain", &"charge", &"shield", &"shields", &"effects", &"ability", &"touches",
 	&"flight", &"split", &"strikes", &"spikes", &"oil", &"walk", &"vines", &"pull", &"breath", &"quake", &"bolt",
-	&"halo", &"devour", &"revive", &"cling", &"souls", &"hop", &"targets",
+	&"halo", &"devour", &"revive", &"cling", &"souls", &"hop", &"targets", &"ritual",
 ]
 
 static var _on: Dictionary = {}

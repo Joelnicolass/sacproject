@@ -2,7 +2,8 @@ extends RitualStep
 
 ## The doctors turn to the site and torture the creature (the rope shows it: doctor.carried). Within the
 ## window rules.ritual_drain_start_s .. + ritual_drain_s the wizard loses a round's worth of life and
-## mana, evenly (state.d:15975, 15997-16011). At the end: complete or wait (state.d:16020-16042).
+## mana, evenly (RitualDrain). At the end: complete or wait.
+## Ref: sacengine state.d:15975, 15997-16011, 16020-16042.
 
 const FACING_TOLERANCE := 0.05
 
@@ -22,8 +23,8 @@ func physics_update(delta: float) -> void:
 	var to := minf(from + rules.ritual_drain_s, rules.ritual_shoot_s)
 	if to > from:
 		var overlap := minf(time, to) - maxf(time - delta, from)
-		if overlap > 0.0:
-			ritual.drain(overlap / (to - from))
+		if overlap > 0.0 and ritual.drain != null:
+			ritual.drain.apply(overlap / (to - from))
 	if time >= rules.ritual_shoot_s:
 		ritual.finish_round()
 

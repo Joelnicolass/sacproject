@@ -2,16 +2,20 @@
 class_name SoulSounds
 extends BodySounds
 
-## RFC-052 052h (F367): child of souls/soul.tscn. `soul` (the original's spir, in the shared set `world`) when a wizard takes
-## the soul: its replicated `state` becomes COLLECTING (Soul.state_changed, the setter, on every peer). A soul that leaves
+## Child of souls/soul.tscn. `collected_cue` when a wizard takes the soul: its replicated `state` becomes COLLECTING
+## (Soul.state_changed, the setter, on every peer). A soul that leaves
 ## the tree while COLLECTING and never played (its state and its despawn arrived together) plays then. Eaten (DEVOURING),
 ## burst or revived: silence. A Convert sounds through RitualSounds when it ends. No RPC, nothing written. With the AudioGate
 ## closed it connects nothing. Remove the node to silence every soul.
+## Ref: RFC-052 052h (F367).
 
 @export var soul: Soul:
 	set(value):
 		soul = value
 		update_configuration_warnings()
+
+## The sound of the soul being taken (assigned in soul.tscn).
+@export var collected_cue: SoundCue
 
 var _played := false
 
@@ -28,9 +32,9 @@ func anchor() -> Node3D:
 	return soul
 
 
-## WORKAROUND: the cue comes from the world set (`world.tres`, found by its text key) until 055o-c gives this node typed cues.
+## The cue that answers `event`: `collected_cue` for the soul being taken.
 func default_cue(event: StringName) -> SoundCue:
-	return SoundBus.lookup("world", event)
+	return collected_cue if event == SoundEvent.SOUL else null
 
 
 func _on_state_changed(_was: Soul.State, now: Soul.State) -> void:

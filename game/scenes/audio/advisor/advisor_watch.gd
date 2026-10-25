@@ -2,10 +2,10 @@
 class_name AdvisorWatch
 extends Node
 
-## RFC-052 052e (F364): the game's warnings for the advisor (child of AdvisorVoice). It reads what every peer already has
-## (replicated Health of the bodies, the Ritual nodes) and asks `advisor.say(code)`; the advisor decides priority, queue and
-## cooldown. Only the side of this process (MpKit.local_slot(); 0 on a dedicated: nothing). Remove the node and only the
-## refusals speak.
+## The game's warnings for the advisor (child of AdvisorVoice). It reads what every peer already has
+## (replicated Health of the bodies, the Ritual nodes) and asks `advisor.say(line)`; the line carries its priority and quiet
+## time and the advisor decides the queue. Only the side of this process (MpKit.local_slot(); 0 on a dedicated: nothing).
+## Remove the node and only the refusals speak.
 ## - The local wizard (MatchWorld.local_wizard_changed, or `wizard` set by hand): its health goes down -> `wizard_attacked`;
 ##   below `low_health_ratio` of its bar -> `wizard_low_health`.
 ## - Own creatures (group «unit»): health down -> `creatures_attacked`; health to 0 -> `creature_died`.
@@ -14,6 +14,7 @@ extends Node
 ##   ends completed -> `sacrifice_complete`.
 ## Bodies and rituals are looked up every `scan_every_s` (a client gets them from spawners at any time); the owner is checked
 ## when the event comes (a converted creature changes side). Reads only: no RPC, nothing written to the simulation.
+## Ref: RFC-052 052e (F364).
 
 @export var advisor: AdvisorVoice:
 	set(value):
@@ -25,15 +26,15 @@ extends Node
 @export_range(0.05, 5.0, 0.05, "suffix:s") var scan_every_s := 0.25
 @export_range(0.0, 1.0, 0.01) var low_health_ratio := 0.25
 
-@export_group("Codes")
-@export var wizard_attacked := &"watt"
-@export var wizard_low_health := &"whlt"
-@export var creatures_attacked := &"uatt"
-@export var creature_died := &"cdie"
-@export var building_attacked := &"bdam"
-@export var building_destroyed := &"bdst"
-@export var desecrated := &"dese"
-@export var sacrifice_complete := &"sacc"
+@export_group("Lines")
+@export var wizard_attacked: AdvisorLine
+@export var wizard_low_health: AdvisorLine
+@export var creatures_attacked: AdvisorLine
+@export var creature_died: AdvisorLine
+@export var building_attacked: AdvisorLine
+@export var building_destroyed: AdvisorLine
+@export var desecrated: AdvisorLine
+@export var sacrifice_complete: AdvisorLine
 
 enum Kind { WIZARD, CREATURE, BUILDING }
 

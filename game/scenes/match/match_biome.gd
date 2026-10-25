@@ -5,7 +5,9 @@ extends Node
 ## the MpKit custom channel once that client's world is ready. Every peer with a screen then hands that god's look
 ## to the map's LookRig, after the world's _ready (the rig exists).
 
-signal applied(god: StringName)
+## The land is on the map's look rig: the GodType whose `look`, `music` and `ambience` the match uses (MusicDirector and
+## AmbienceDirector listen).
+signal applied(god: GodType)
 
 const CHANNEL := &"biome"
 
@@ -82,7 +84,8 @@ func _on_world_ready() -> void:
 func _apply() -> void:
 	if not _world_ready or god == &"" or world == null or MpKit.is_dedicated():
 		return
+	var type := GameCatalog.shared().god(String(god))
 	var rig := world.map.look if world.map else null
 	if is_instance_valid(rig) and not rig.is_queued_for_deletion():
-		rig.apply_profile(GameCatalog.shared().god(String(god)).look)
-	applied.emit(god)
+		rig.apply_profile(type.look)
+	applied.emit(type)

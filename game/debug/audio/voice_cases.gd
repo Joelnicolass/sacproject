@@ -4,20 +4,36 @@ extends RefCounted
 ## Open gate (--audio-probe):
 ## - queue_rules (VoiceQueue, pure): a higher line cuts and drops the lower ones waiting; the same or a lower one waits; a key
 ##   speaking or waiting is dropped; past max_queued it is dropped; finish() hands the highest waiting, the oldest among equals.
-## - advisor_channel (AdvisorVoice on looping fixture lines, so «speaking» does not depend on real time): lowm, then watt
-##   cuts it; orng waits; lowm again is quiet (cooldown); dese cuts and drops orng; bdam (same priority) waits and speaks when
-##   the channel ends; CommandLog.say("no_mana") says lowm and a message that is no refusal says nothing.
-## - advisor_watch: the bound wizard's health down -> watt, below the low ratio -> whlt; an own building hit -> bdam, to 0 ->
-##   bdst; a building of another side says nothing; a Desecrate on the local altar -> dese; it ends completed -> sacc.
+## - advisor_channel (AdvisorVoice on looping fixture lines with the priorities and quiet times of advisor.tscn, so «speaking»
+##   does not depend on real time): low_mana, then wizard_attacked cuts it; out_of_range waits; low_mana again is quiet; desecrated
+##   cuts and drops out_of_range; building_attacked (same priority) waits and speaks when the channel ends;
+##   CommandLog.say("no_mana") says low_mana and a message that is no refusal says nothing.
+## - advisor_watch: the bound wizard's health down -> wizard_attacked, below the low ratio -> wizard_low_health; an own building
+##   hit -> building_attacked, to 0 -> building_destroyed; a building of another side says nothing; a Desecrate on the local altar
+##   -> desecrated; it ends completed -> sacrifice_complete.
+## - advisor_scene: advisor.tscn carries the 14 lines with a stream each, the seven refusals, the eight warnings and a channel.
 ## - command_voice: Selection.changed -> selected (three times), the fourth time in a row annoyed; Orders.requested move -> ack,
 ##   attack -> attack_ack (its own field of the set); retreat says nothing; an order starts the count again; a selection that shrank
 ##   says nothing; a creature with no set says nothing; within the cooldown nothing.
 ## Closed gate (plain headless, --dedicated, --room-server):
-## - voices_closed: AdvisorVoice (with its AdvisorWatch) and CommandVoice enter the tree and create no channel; say() is false.
+## - voices_closed: AdvisorVoice (with its AdvisorWatch) and CommandVoice enter the tree and their channels stay idle; say() is false.
 
-const LOOP_ROOT := "res://debug/audio/fixtures/voices_loop/"
+const LOOP_CUE := "res://debug/audio/fixtures/beep_a.tres"
 const VOICES_ROOT := "res://debug/audio/fixtures/voices/"
 const CUES := "res://data/ui/command_cues.tres"
+const ADVISOR_SCENE := "res://scenes/audio/advisor/advisor.tscn"
+## name, priority (AdvisorLine.Priority), quiet_s: the values of advisor.tscn.
+const LINES: Array = [
+	[&"wizard_attacked", 1, 15.0], [&"wizard_low_health", 2, 5.0], [&"creatures_attacked", 1, 15.0], [&"creature_died", 1, 5.0],
+	[&"building_attacked", 2, 5.0], [&"building_destroyed", 1, 1.0], [&"desecrated", 2, 5.0], [&"sacrifice_complete", 1, 2.0],
+	[&"low_mana", 0, 5.0], [&"not_ready", 0, 2.0], [&"out_of_range", 0, 2.0], [&"invalid_target", 0, 2.0],
+	[&"need_souls", 0, 2.0], [&"far_from_altar", 0, 2.0],
+]
+## The lines AdvisorWatch holds (its exports have these names).
+const WATCH_LINES: PackedStringArray = ["wizard_attacked", "wizard_low_health", "creatures_attacked", "creature_died",
+	"building_attacked", "building_destroyed", "desecrated", "sacrifice_complete"]
+const REFUSALS := {&"no_mana": &"low_mana", &"cooling": &"not_ready", &"out_of_range": &"out_of_range",
+	&"bad_target": &"invalid_target", &"no_target": &"invalid_target", &"no_souls": &"need_souls", &"far_from_altar": &"far_from_altar"}
 
 
 func run(host: Node, open: bool) -> Dictionary:
@@ -29,11 +45,11 @@ func run(host: Node, open: bool) -> Dictionary:
 		results["voice_cases_active"] = {"ok": false, "reason": "SoundBus inactivo: falta --audio-probe"}
 		return results
 	results["queue_rules"] = _queue_rules()
+	results["advisor_scene"] = _advisor_scene()
 	results["advisor_channel"] = await _advisor_channel(host)
 	results["advisor_watch"] = await _advisor_watch(host)
 	results["command_voice"] = await _command_voice(host)
 	SoundBus.stop_all()
-	SoundLibrary.reset_roots()
 	## The audio server lets go of the stopped playbacks a moment (real time) later; quitting before leaks them at exit.
 	## A wait of real time, not of frames: under --fixed-fps a headless frame takes microseconds and --quit-after would come first.
 	OS.delay_msec(200)
@@ -65,49 +81,106 @@ func _queue_rules() -> Dictionary:
 	return _verdict(checks)
 
 
-func _use_roots(root: String) -> void:
-	SoundLibrary.roots = PackedStringArray([root])
-	SoundLibrary.clear_cache()
+## The 14 lines of the advisor over a looping fixture stream, by name.
+func _lines() -> Dictionary:
+	var cue := SoundCue.new()
+	cue.streams = [load(LOOP_CUE) as AudioStream]
+	cue.bus = &"Voice"
+	cue.max_voices = 0
+	var out := {}
+	for row: Array in LINES:
+		var line := AdvisorLine.new()
+		line.resource_name = String(row[0])
+		line.cue = cue
+		line.priority = row[1]
+		line.quiet_s = row[2]
+		out[row[0]] = line
+	return out
 
 
+## An AdvisorVoice with its Channel and the refusal table of advisor.tscn; [advisor, command log, lines].
 func _advisor(host: Node) -> Array:
 	var log := CommandLog.new()
 	log.cues = load(CUES)
 	host.add_child(log)
+	var lines := _lines()
 	var advisor := AdvisorVoice.new()
 	advisor.command_log = log
+	advisor.channel = _channel(advisor)
+	for key: StringName in REFUSALS:
+		advisor.refusal_lines[key] = lines[REFUSALS[key]]
 	host.add_child(advisor)
-	return [advisor, log]
+	return [advisor, log, lines]
+
+
+## A voice channel child named «Channel» on `owner_node` (what a scene gives its voice).
+func _channel(owner_node: Node) -> AudioStreamPlayer:
+	var channel := AudioStreamPlayer.new()
+	channel.name = "Channel"
+	owner_node.add_child(channel)
+	return channel
+
+
+func _advisor_scene() -> Dictionary:
+	var advisor := (load(ADVISOR_SCENE) as PackedScene).instantiate() as AdvisorVoice
+	var watch := advisor.get_node_or_null("AdvisorWatch") as AdvisorWatch
+	var checks := {}
+	checks["has_channel"] = advisor.channel != null and advisor.channel.bus == &"Voice"
+	checks["watch_child"] = watch != null and watch.advisor == advisor
+	var names := {}
+	for row: Array in LINES:
+		names[row[0]] = row
+	var found := {}
+	for key: StringName in advisor.refusal_lines:
+		found[StringName(advisor.refusal_lines[key].resource_name)] = advisor.refusal_lines[key]
+	if watch != null:
+		for name: StringName in names:
+			var line := watch.get(name) as AdvisorLine
+			if line != null:
+				found[name] = line
+	checks["fourteen_lines"] = found.size() == LINES.size()
+	checks["refusals"] = advisor.refusal_lines.size() == REFUSALS.size() and REFUSALS.keys().all(
+		func(key: StringName) -> bool: return advisor.line_for_refusal(key) != null and advisor.line_for_refusal(key).resource_name == REFUSALS[key])
+	var all_ok := true
+	for name: StringName in found:
+		var line: AdvisorLine = found[name]
+		var row: Array = names.get(name, [])
+		all_ok = all_ok and not row.is_empty() and line.cue != null and not line.cue.is_silent() and line.cue.bus == &"Voice" \
+			and line.priority == row[1] and is_equal_approx(line.quiet_s, row[2])
+	checks["priorities_and_quiet"] = all_ok
+	checks["only_log_warning"] = advisor._get_configuration_warnings().size() == 1
+	advisor.free()
+	return _verdict(checks)
 
 
 func _advisor_channel(host: Node) -> Dictionary:
-	_use_roots(LOOP_ROOT)
 	var made := _advisor(host)
 	var advisor: AdvisorVoice = made[0]
 	var log: CommandLog = made[1]
+	var lines: Dictionary = made[2]
 	await host.get_tree().process_frame
 	SoundBus.sound_log.clear()
 	var checks := {}
-	checks["lowm_speaks"] = advisor.say(&"lowm") and advisor.speaking() == &"lowm" and _played(0, &"lowm")
-	checks["watt_cuts"] = advisor.say(&"watt") and advisor.speaking() == &"watt" and _played(0, &"watt")
+	checks["low_mana_speaks"] = advisor.say(lines.low_mana) and advisor.speaking() == &"low_mana" and _played(0, &"low_mana")
+	checks["attacked_cuts"] = advisor.say(lines.wizard_attacked) and advisor.speaking() == &"wizard_attacked" and _played(0, &"wizard_attacked")
 	var mark: int = SoundBus.sound_log.size()
-	checks["orng_waits"] = advisor.say(&"orng") and advisor.speaking() == &"watt" and advisor.waiting() == [&"orng"] \
-		and not _played(mark, &"orng")
-	checks["lowm_quiet"] = not advisor.say(&"lowm") and advisor.waiting() == [&"orng"]
-	checks["dese_cuts_drops_lower"] = advisor.say(&"dese") and advisor.speaking() == &"dese" and advisor.waiting().is_empty()
+	checks["out_of_range_waits"] = advisor.say(lines.out_of_range) and advisor.speaking() == &"wizard_attacked" \
+		and advisor.waiting() == [&"out_of_range"] and not _played(mark, &"out_of_range")
+	checks["low_mana_quiet"] = not advisor.say(lines.low_mana) and advisor.waiting() == [&"out_of_range"]
+	checks["desecrated_cuts_drops_lower"] = advisor.say(lines.desecrated) and advisor.speaking() == &"desecrated" and advisor.waiting().is_empty()
 	mark = SoundBus.sound_log.size()
-	checks["bdam_waits"] = advisor.say(&"bdam") and advisor.speaking() == &"dese" and advisor.waiting() == [&"bdam"] \
-		and not _played(mark, &"bdam")
-	(advisor.get_node("Channel") as AudioStreamPlayer).stop()
+	checks["building_waits"] = advisor.say(lines.building_attacked) and advisor.speaking() == &"desecrated" \
+		and advisor.waiting() == [&"building_attacked"] and not _played(mark, &"building_attacked")
+	advisor.channel.stop()
 	await host.get_tree().process_frame
 	await host.get_tree().process_frame
-	checks["bdam_after_end"] = advisor.speaking() == &"bdam" and _played(mark, &"bdam")
+	checks["building_after_end"] = advisor.speaking() == &"building_attacked" and _played(mark, &"building_attacked")
 	advisor.reset()
 	mark = SoundBus.sound_log.size()
 	log.say("Mago")
 	checks["no_refusal_quiet"] = advisor.speaking() == &"" and SoundBus.sound_log.size() == mark
 	log.say(String(Refusal.NO_MANA))
-	checks["refusal_says_lowm"] = advisor.speaking() == &"lowm" and _played(mark, &"lowm")
+	checks["refusal_says_low_mana"] = advisor.speaking() == &"low_mana" and _played(mark, &"low_mana")
 	advisor.reset()
 	advisor.queue_free()
 	log.queue_free()
@@ -116,11 +189,14 @@ func _advisor_channel(host: Node) -> Dictionary:
 
 
 func _advisor_watch(host: Node) -> Dictionary:
-	_use_roots(LOOP_ROOT)
 	var made := _advisor(host)
 	var advisor: AdvisorVoice = made[0]
+	var lines: Dictionary = made[2]
 	var watch := AdvisorWatch.new()
 	watch.advisor = advisor
+	for line: AdvisorLine in lines.values():
+		if line.resource_name in WATCH_LINES:
+			watch.set(line.resource_name, line)
 	watch.scan_every_s = 100.0
 	advisor.add_child(watch)
 	var wizard := _body(host, "LabWizard", 1, "")
@@ -131,15 +207,15 @@ func _advisor_watch(host: Node) -> Dictionary:
 	watch.scan()
 	var checks := {}
 	_health(wizard).current = 90.0
-	checks["wizard_hit_watt"] = advisor.speaking() == &"watt"
+	checks["wizard_hit_attacked"] = advisor.speaking() == &"wizard_attacked"
 	_health(wizard).current = 20.0
-	checks["wizard_low_whlt"] = advisor.speaking() == &"whlt"
+	checks["wizard_low_health"] = advisor.speaking() == &"wizard_low_health"
 	_health(theirs).current = 50.0
 	checks["their_building_quiet"] = advisor.waiting().is_empty()
 	_health(ours).current = 50.0
-	checks["building_hit_bdam"] = advisor.waiting() == [&"bdam"]
+	checks["building_hit"] = advisor.waiting() == [&"building_attacked"]
 	_health(ours).current = 0.0
-	checks["building_down_bdst"] = advisor.waiting() == [&"bdam", &"bdst"]
+	checks["building_down"] = advisor.waiting() == [&"building_attacked", &"building_destroyed"]
 	advisor.reset()
 	var ritual := Ritual.new()
 	ritual.process_mode = Node.PROCESS_MODE_DISABLED
@@ -149,10 +225,10 @@ func _advisor_watch(host: Node) -> Dictionary:
 	host.add_child(ritual)
 	ritual.phase = Ritual.Phase.SETUP
 	watch.scan()
-	checks["desecration_dese"] = advisor.speaking() == &"dese"
+	checks["desecration"] = advisor.speaking() == &"desecrated"
 	ritual.outcome = Ritual.Outcome.COMPLETED
 	watch.scan()
-	checks["complete_sacc"] = advisor.waiting() == [&"sacc"]
+	checks["complete"] = advisor.waiting() == [&"sacrifice_complete"]
 	advisor.reset()
 	for node: Node in [advisor, made[1], wizard, ours, theirs, ritual]:
 		node.queue_free()
@@ -168,6 +244,7 @@ func _command_voice(host: Node) -> Dictionary:
 	host.add_child(selection)
 	host.add_child(orders)
 	var voice := CommandVoice.new()
+	voice.channel = _channel(voice)
 	voice.selection = selection
 	voice.orders = orders
 	voice.cooldown_s = 0.0
@@ -212,21 +289,29 @@ func _command_voice(host: Node) -> Dictionary:
 
 
 func _closed(host: Node) -> Dictionary:
-	var made := _advisor(host)
-	var advisor: AdvisorVoice = made[0]
+	var log := CommandLog.new()
+	log.cues = load(CUES)
+	host.add_child(log)
+	var line := AdvisorLine.new()
+	line.resource_name = "low_mana"
+	var advisor := AdvisorVoice.new()
+	advisor.command_log = log
+	advisor.channel = _channel(advisor)
+	host.add_child(advisor)
 	var watch := AdvisorWatch.new()
 	watch.advisor = advisor
 	advisor.add_child(watch)
 	var voice := CommandVoice.new()
+	voice.channel = _channel(voice)
 	host.add_child(voice)
 	await host.get_tree().process_frame
-	var no_channel := advisor.get_node_or_null("Channel") == null and voice.get_node_or_null("Channel") == null
-	var quiet := not advisor.say(&"lowm") and advisor.cue_for(&"lowm") == null
+	var idle := not advisor.channel.playing and not voice.channel.playing
+	var quiet := not advisor.say(line) and advisor.cue_for(line) == null
 	var no_log: bool = SoundBus.sound_log == null
-	for node: Node in [advisor, made[1], voice]:
+	for node: Node in [advisor, log, voice]:
 		node.queue_free()
 	await host.get_tree().process_frame
-	return {"ok": no_channel and quiet and no_log, "no_channel": no_channel, "quiet": quiet, "no_log": no_log}
+	return {"ok": idle and quiet and no_log, "idle": idle, "quiet": quiet, "no_log": no_log}
 
 
 ## A Node3D with `owner_slot` and a Health child of 100, in `group` (none when empty).

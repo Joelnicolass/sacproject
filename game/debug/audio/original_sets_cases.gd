@@ -4,7 +4,8 @@ extends RefCounted
 ## - with the import (assets/original/audio/index.json): the `sounds` of the creature CREATURE resolve; the swing of its melee
 ##   fallback (fist) is an AudioStreamWAV at 22050 Hz, 16 bit or QOA mono, whose length is the file's PCM; its `selected`
 ##   voice is a non-empty stream on the Voice bus.
-## - without it (the folder moved aside): the world set gives null, silently.
+## - the cues of the sacrifice and of the souls (ritual.tscn, soul.tscn) have their streams;
+## - without the import (the folder moved aside): the UI set gives null, silently.
 ## Runs only with the gate open (`--audio-probe`).
 
 const INDEX := "res://assets/original/audio/index.json"
@@ -19,11 +20,11 @@ func run(_host: Node) -> Dictionary:
 	var type: CreatureType = GameData.creature(String(CREATURE))
 	var sound_set: SoundSet = type.sounds if type != null else null
 	if not imported:
-		return {"original_sets_absent": {"ok": SoundLibrary.sound_set("world") == null,
+		return {"original_sets_absent": {"ok": SoundLibrary.sound_set("ui") == null,
 			"note": "sin import del original: silencio", "set_found": sound_set != null}}
 	var results := {}
 	results["original_sets_creature"] = _creature(sound_set)
-	results["original_sets_world"] = _named("world", [&"sacrifice_round", &"sacrifice_end", &"soul"])
+	results["original_sets_sacrifice"] = _sacrifice()
 	results["original_sets_ui"] = _named("ui", [&"click"])
 	SoundLibrary.clear_cache()
 	return results
@@ -71,3 +72,20 @@ func _named(rel: String, events: Array) -> Dictionary:
 		var cue := sound_set.cue(event)
 		return cue == null or cue.is_silent())
 	return {"ok": missing.is_empty(), "missing": missing, "cues": sound_set.cues.size()}
+
+
+## The cues RitualSounds and SoulSounds carry have streams (the scenes assign them, nothing is looked up by name).
+func _sacrifice() -> Dictionary:
+	var ritual := (load("res://scenes/sacrifice/ritual.tscn") as PackedScene).instantiate()
+	var soul := (load("res://scenes/souls/soul.tscn") as PackedScene).instantiate()
+	var ritual_sounds := ritual.get_node_or_null("RitualSounds") as RitualSounds
+	var soul_sounds := soul.get_node_or_null("SoulSounds") as SoulSounds
+	var missing: Array[String] = []
+	for entry: Array in [[ritual_sounds, "round_cue"], [ritual_sounds, "finished_cue"], [ritual_sounds, "converted_cue"], [soul_sounds, "collected_cue"]]:
+		var sounds: Node = entry[0]
+		var cue := sounds.get(entry[1]) as SoundCue if sounds != null else null
+		if cue == null or cue.is_silent():
+			missing.append(entry[1])
+	ritual.free()
+	soul.free()
+	return {"ok": missing.is_empty(), "missing": missing}

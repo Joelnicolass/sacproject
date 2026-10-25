@@ -8,12 +8,11 @@ extends Node
 ## 052d: `fx` counts the FX sounds (FxBus.played of a broadcast FX -> FxSounds; the emitter is the FX name).
 ## 052e: `advice` counts the advisor's lines. The client asks its wizard's Caster for a spell it does not have (`REFUSED_TAG`),
 ## once a second until one is heard: the server answers with a Refusal key (bad_target) through the feedback RPC every cast
-## already has, CommandLog says it and AdvisorVoice speaks (`invl`). The advisor's set is the original's, else the fixture
-## of debug/audio/fixtures/voices/ (searched last).
+## already has, CommandLog says it and AdvisorVoice speaks (`invalid_target`: a typed AdvisorLine of advisor.tscn).
 ## 052f: `battle` (a default event: the run fails without it) counts the music's mood: the duel next to the local wizard,
 ## held in real time (audio_net_duel `battle_hold_ms`), puts its CombatGauge (match.tscn) over `enter` from the replicated
-## modes, and its MusicDirector logs emitter `music`, event `battle`. The music sets are the original's,
-## else the fixture's common set (debug/audio/fixtures/music/, searched last).
+## modes, and its MusicDirector logs emitter `music`, event `battle`. The music is the one of the god of the land
+## (GodType.music, else the match's default_music).
 ## --audio-net-trace prints every change of the creatures (mode, swings, shots, position) and the gauge (diagnosis).
 ## Flags: --e2e-name, --mp-port (the kit), --audio-events=summon,swing,damaged,death,fx,advice,battle (each needs a played entry of a
 ## creature, fx of an FX, advice of the advisor),
@@ -24,8 +23,6 @@ extends Node
 const LOCAL_HOST := "127.0.0.1"
 const RUNNER_META := "audio_net_client_runner"
 const EMPTY_ROOT := "res://debug/audio/fixtures/empty/"
-const VOICES_ROOT := "res://debug/audio/fixtures/voices/"
-const MUSIC_ROOT := "res://debug/audio/fixtures/music/"
 ## A spell tag no spellbook has: the server refuses it (Refusal.BAD_TARGET).
 const REFUSED_TAG := "zzzz"
 
@@ -57,8 +54,6 @@ func _run() -> void:
 		roots.append(EMPTY_ROOT)
 	else:
 		roots.append_array(SoundLibrary.DEFAULT_ROOTS)
-	roots.append(VOICES_ROOT)
-	roots.append(MUSIC_ROOT)
 	SoundLibrary.roots = roots
 	SoundLibrary.clear_cache()
 	var wanted := MpBoot.user_value("audio-events", "summon,swing,damaged,death,fx,advice,battle").split(",", false)

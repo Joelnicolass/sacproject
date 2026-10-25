@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://scenes/sacrifice/ritual.gd" id="1_ritual"]
 [ext_resource type="Script" path="res://addons/fsm_kit/fsm_machine.gd" id="2_machine"]
@@ -14,6 +14,9 @@
 [ext_resource type="Script" path="res://addons/mp_kit/mp_replicate.gd" id="12_net"]
 [ext_resource type="Resource" path="res://data/match_rules.tres" id="13_rules"]
 [ext_resource type="Script" path="res://scenes/audio/ritual_sounds.gd" id="a052_ritual_sounds"]
+[ext_resource type="Resource" path="res://data/audio/cues/sacrifice_round.tres" id="a055_sacrifice_round"]
+[ext_resource type="Resource" path="res://data/audio/cues/sacrifice_end.tres" id="a055_sacrifice_end"]
+[ext_resource type="Resource" path="res://data/audio/cues/soul.tres" id="a055_soul"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_ritual"]
 properties/0/path = NodePath(".:phase")
@@ -90,3 +93,6 @@ replication_config = SubResource("SceneReplicationConfig_ritual")
 editor_description = "RFC-052 052h: Xsac en cada ronda (phase pasa a SHOOT) y Xgib al terminar completo (outcome); un Convertir completo suma spir. Solo lee estado replicado. Sin audio no hace nada."
 script = ExtResource("a052_ritual_sounds")
 ritual = NodePath("..")
+round_cue = ExtResource("a055_sacrifice_round")
+finished_cue = ExtResource("a055_sacrifice_end")
+converted_cue = ExtResource("a055_soul")

@@ -2,20 +2,27 @@
 class_name RitualSounds
 extends BodySounds
 
-## RFC-052 052h (F367): child of sacrifice/ritual.tscn. A sacrifice's sounds from what every peer already has: the replicated
-## `Ritual.phase` (phase_changed) and `outcome` (ended, emitted by its setter on every peer).
-## - `sacrifice_round` (the original's Xsac) each time the phase becomes `round_phase` (SHOOT: the doctors torture the
-##   creature, once a round);
-## - `sacrifice_end` (Xgib: the creature bursts) when the ritual ends completed (a cancelled one lets the creature go alive);
-## - `soul` (spir) as well when a Convert ends completed: its souls go to the caster.
-## The cues come from the world set (`world.tres`), at the ritual's center. No RPC, nothing
-## written. With the AudioGate closed it connects nothing. Remove the node to silence every ritual.
+## Child of sacrifice/ritual.tscn. A sacrifice's sounds from what every peer already has: the replicated `Ritual.phase`
+## (phase_changed) and `outcome` (ended, emitted by its setter on every peer).
+## - `round_cue` each time the phase becomes `round_phase` (SHOOT: the doctors torture the creature, once a round);
+## - `finished_cue` (the creature bursts) when the ritual ends completed (a cancelled one lets the creature go alive);
+## - `converted_cue` as well when a Convert ends completed: its souls go to the caster.
+## The cues are assigned in ritual.tscn and sound at the ritual's center. No RPC, nothing written. With the AudioGate closed
+## it connects nothing. Remove the node to silence every ritual.
+## Ref: RFC-052 052h (F367).
 
 @export var ritual: Ritual:
 	set(value):
 		ritual = value
 		update_configuration_warnings()
 @export var round_phase := Ritual.Phase.SHOOT
+@export_group("Cues")
+## One round of the sacrifice.
+@export var round_cue: SoundCue
+## The ritual ends completed.
+@export var finished_cue: SoundCue
+## A Convert ends completed (its souls reach the caster).
+@export var converted_cue: SoundCue
 
 
 func _ready() -> void:
@@ -30,9 +37,16 @@ func anchor() -> Node3D:
 	return ritual
 
 
-## WORKAROUND: the cue comes from the world set (`world.tres`, found by its text key) until 055o-c gives this node typed cues.
+## The cue that answers `event`: one of the three exported here.
 func default_cue(event: StringName) -> SoundCue:
-	return SoundBus.lookup("world", event)
+	match event:
+		SoundEvent.SACRIFICE_ROUND:
+			return round_cue
+		SoundEvent.SACRIFICE_END:
+			return finished_cue
+		SoundEvent.SOUL:
+			return converted_cue
+	return null
 
 
 func _on_phase_changed(phase: Ritual.Phase) -> void:

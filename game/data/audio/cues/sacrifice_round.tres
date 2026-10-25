@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="SoundCue" load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/sacr/sac0.wav" id="s2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/sacr/sac1.wav" id="s3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/sacr/sac2.wav" id="s4"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/sacr/sac3.wav" id="s5"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/sacr/sac4.wav" id="s6"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/sacr/sac5.wav" id="s7"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/sacr/sac6.wav" id="s8"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/sacr/sac7.wav" id="s9"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/sacr/sac8.wav" id="s10"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/sacr/sac9.wav" id="s11"]
+
+[resource]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("s2"), ExtResource("s3"), ExtResource("s4"), ExtResource("s5"), ExtResource("s6"), ExtResource("s7"), ExtResource("s8"), ExtResource("s9"), ExtResource("s10"), ExtResource("s11")])

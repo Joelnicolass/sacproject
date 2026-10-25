@@ -24,6 +24,8 @@ extends Node
 	set(value):
 		orders = value
 		update_configuration_warnings()
+## The player the answers come out of (child of the scene, bus Voice).
+@export var channel: AudioStreamPlayer
 ## Game seconds between two selection voices.
 @export_range(0.0, 5.0, 0.05, "suffix:s") var cooldown_s := 0.5
 ## Game seconds between two order voices.
@@ -40,7 +42,6 @@ extends Node
 }
 
 var _open := false
-var _player: AudioStreamPlayer
 var _last_size := 0
 var _last_unit_id := 0
 var _count := 0
@@ -51,12 +52,9 @@ var _last_ack_s := -INF
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
-	_open = AudioGate.is_open()
+	_open = AudioGate.is_open() and channel != null
 	if not _open:
 		return
-	_player = AudioStreamPlayer.new()
-	_player.name = "Channel"
-	add_child(_player)
 	if selection != null and selection.has_signal("changed"):
 		selection.connect("changed", _on_selection_changed)
 	if orders != null and orders.has_signal("requested"):
@@ -75,7 +73,7 @@ func speak(unit: UnitBody, event: StringName) -> bool:
 	var cue := cue_for(unit, event)
 	if cue == null:
 		return false
-	return SoundBus.play_on(_player, cue, StringName(unit.name), event)
+	return SoundBus.play_on(channel, cue, StringName(unit.name), event)
 
 
 ## The event the next selection of `unit` would say (`annoyed` past the count, when there is a cue for it).
@@ -119,6 +117,8 @@ func _on_orders_requested(units: Array, command: String) -> void:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
+	if channel == null:
+		out.append("Asigná `channel` (el AudioStreamPlayer hijo): sin él las criaturas no contestan.")
 	if selection == null:
 		out.append("Asigná `selection` (%Selection): sin ella elegir no habla.")
 	if orders == null:

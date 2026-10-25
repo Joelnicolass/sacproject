@@ -1,0 +1,206 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/advisor/advisor_voice.gd" id="1_voice"]
+[ext_resource type="Script" path="res://scenes/audio/advisor/advisor_watch.gd" id="2_watch"]
+[ext_resource type="Script" path="res://scenes/audio/advisor/advisor_line.gd" id="3_line"]
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="4_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/advi/_a_d23.ogg" id="s1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/advi/_a_d04.ogg" id="s2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/advi/_a_d05.ogg" id="s3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/advi/_a_d06.ogg" id="s4"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/advi/_a_d02.ogg" id="s5"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/advi/_a_d03.ogg" id="s6"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/advi/_a_d00.ogg" id="s7"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/advi/_a_d20.ogg" id="s8"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/advi/_a_d11.ogg" id="s9"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/advi/_a_d22.ogg" id="s10"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/advi/_a_d19.ogg" id="s11"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/advi/_a_d10.ogg" id="s12"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/advi/_a_d18.ogg" id="s13"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/advi/_a_d15.ogg" id="s14"]
+
+[sub_resource type="Resource" id="Cue_wizard_attacked"]
+script = ExtResource("4_cue")
+streams = Array[AudioStream]([ExtResource("s1")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Line_wizard_attacked"]
+resource_name = "wizard_attacked"
+script = ExtResource("3_line")
+cue = SubResource("Cue_wizard_attacked")
+priority = 1
+quiet_s = 15.0
+
+[sub_resource type="Resource" id="Cue_wizard_low_health"]
+script = ExtResource("4_cue")
+streams = Array[AudioStream]([ExtResource("s2")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Line_wizard_low_health"]
+resource_name = "wizard_low_health"
+script = ExtResource("3_line")
+cue = SubResource("Cue_wizard_low_health")
+priority = 2
+quiet_s = 5.0
+
+[sub_resource type="Resource" id="Cue_creatures_attacked"]
+script = ExtResource("4_cue")
+streams = Array[AudioStream]([ExtResource("s3")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Line_creatures_attacked"]
+resource_name = "creatures_attacked"
+script = ExtResource("3_line")
+cue = SubResource("Cue_creatures_attacked")
+priority = 1
+quiet_s = 15.0
+
+[sub_resource type="Resource" id="Cue_creature_died"]
+script = ExtResource("4_cue")
+streams = Array[AudioStream]([ExtResource("s4")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Line_creature_died"]
+resource_name = "creature_died"
+script = ExtResource("3_line")
+cue = SubResource("Cue_creature_died")
+priority = 1
+quiet_s = 5.0
+
+[sub_resource type="Resource" id="Cue_building_attacked"]
+script = ExtResource("4_cue")
+streams = Array[AudioStream]([ExtResource("s5")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Line_building_attacked"]
+resource_name = "building_attacked"
+script = ExtResource("3_line")
+cue = SubResource("Cue_building_attacked")
+priority = 2
+quiet_s = 5.0
+
+[sub_resource type="Resource" id="Cue_building_destroyed"]
+script = ExtResource("4_cue")
+streams = Array[AudioStream]([ExtResource("s6")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Line_building_destroyed"]
+resource_name = "building_destroyed"
+script = ExtResource("3_line")
+cue = SubResource("Cue_building_destroyed")
+priority = 1
+quiet_s = 1.0
+
+[sub_resource type="Resource" id="Cue_desecrated"]
+script = ExtResource("4_cue")
+streams = Array[AudioStream]([ExtResource("s7")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Line_desecrated"]
+resource_name = "desecrated"
+script = ExtResource("3_line")
+cue = SubResource("Cue_desecrated")
+priority = 2
+quiet_s = 5.0
+
+[sub_resource type="Resource" id="Cue_sacrifice_complete"]
+script = ExtResource("4_cue")
+streams = Array[AudioStream]([ExtResource("s8")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Line_sacrifice_complete"]
+resource_name = "sacrifice_complete"
+script = ExtResource("3_line")
+cue = SubResource("Cue_sacrifice_complete")
+priority = 1
+
+[sub_resource type="Resource" id="Cue_low_mana"]
+script = ExtResource("4_cue")
+streams = Array[AudioStream]([ExtResource("s9")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Line_low_mana"]
+resource_name = "low_mana"
+script = ExtResource("3_line")
+cue = SubResource("Cue_low_mana")
+quiet_s = 5.0
+
+[sub_resource type="Resource" id="Cue_not_ready"]
+script = ExtResource("4_cue")
+streams = Array[AudioStream]([ExtResource("s10")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Line_not_ready"]
+resource_name = "not_ready"
+script = ExtResource("3_line")
+cue = SubResource("Cue_not_ready")
+
+[sub_resource type="Resource" id="Cue_out_of_range"]
+script = ExtResource("4_cue")
+streams = Array[AudioStream]([ExtResource("s11")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Line_out_of_range"]
+resource_name = "out_of_range"
+script = ExtResource("3_line")
+cue = SubResource("Cue_out_of_range")
+
+[sub_resource type="Resource" id="Cue_invalid_target"]
+script = ExtResource("4_cue")
+streams = Array[AudioStream]([ExtResource("s12")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Line_invalid_target"]
+resource_name = "invalid_target"
+script = ExtResource("3_line")
+cue = SubResource("Cue_invalid_target")
+
+[sub_resource type="Resource" id="Cue_need_souls"]
+script = ExtResource("4_cue")
+streams = Array[AudioStream]([ExtResource("s13")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Line_need_souls"]
+resource_name = "need_souls"
+script = ExtResource("3_line")
+cue = SubResource("Cue_need_souls")
+
+[sub_resource type="Resource" id="Cue_far_from_altar"]
+script = ExtResource("4_cue")
+streams = Array[AudioStream]([ExtResource("s14")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="Line_far_from_altar"]
+resource_name = "far_from_altar"
+script = ExtResource("3_line")
+cue = SubResource("Cue_far_from_altar")
+
+[node name="AdvisorVoice" type="Node" node_paths=PackedStringArray("channel")]
+editor_description = "El consejero: un canal con cola y prioridad (Channel, bus Voice). Los rechazos llegan por command_log (CommandLog.said) y salen de refusal_lines; los avisos del juego, por el hijo AdvisorWatch. Cada AdvisorLine trae su sonido, su prioridad y su silencio. Sin audio (dedicado, headless) no dice nada."
+script = ExtResource("1_voice")
+channel = NodePath("Channel")
+refusal_lines = Dictionary[StringName, ExtResource("3_line")]({
+&"no_mana": SubResource("Line_low_mana"),
+&"cooling": SubResource("Line_not_ready"),
+&"out_of_range": SubResource("Line_out_of_range"),
+&"bad_target": SubResource("Line_invalid_target"),
+&"no_target": SubResource("Line_invalid_target"),
+&"no_souls": SubResource("Line_need_souls"),
+&"far_from_altar": SubResource("Line_far_from_altar")
+})
+
+[node name="Channel" type="AudioStreamPlayer" parent="."]
+bus = &"Voice"
+
+[node name="AdvisorWatch" type="Node" parent="." node_paths=PackedStringArray("advisor")]
+editor_description = "Los avisos del juego (el mago local recibe daño, un edificio o una criatura propia caen, el altar se profana): lee estado replicado y le pide una línea al consejero. Sacá el nodo y solo hablan los rechazos."
+script = ExtResource("2_watch")
+advisor = NodePath("..")
+wizard_attacked = SubResource("Line_wizard_attacked")
+wizard_low_health = SubResource("Line_wizard_low_health")
+creatures_attacked = SubResource("Line_creatures_attacked")
+creature_died = SubResource("Line_creature_died")
+building_attacked = SubResource("Line_building_attacked")
+building_destroyed = SubResource("Line_building_destroyed")
+desecrated = SubResource("Line_desecrated")
+sacrifice_complete = SubResource("Line_sacrifice_complete")

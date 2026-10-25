@@ -47,6 +47,8 @@ func run(host: Node) -> Dictionary:
 		and BodySounds.resolve(type.sounds, SoundEvent.SUMMON) == null and BodySounds.resolve(null, SoundEvent.DEATH) == null}
 
 	var voice := CommandVoice.new()
+	voice.channel = AudioStreamPlayer.new()
+	voice.add_child(voice.channel)
 	host.add_child(voice)
 	var speaker := UnitBody.new()
 	speaker.type = CreatureType.new()

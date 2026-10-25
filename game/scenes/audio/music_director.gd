@@ -2,29 +2,33 @@
 class_name MusicDirector
 extends Node
 
-## RFC-052 052f (F365): the music of this process. Two AudioStreamPlayer (bus of the set: Music) that crossfade in the
+## The music of this process. Two AudioStreamPlayer of the scene (TrackA, TrackB; bus of the set: Music) that crossfade in the
 ## set's `crossfade_s` (0.5 s); the track of a mood is drawn with its own generator (the battle one among battle1-5),
 ## never the global one. MusicMood decides the mood; this node only gathers its inputs and plays:
 ## - battle: `gauge` (CombatGauge.is_battle; it computes the intensity, not this node);
 ## - the result: `match_state` (MatchState, or the first of group «match_state») has_result / won(MpKit.local_slot());
 ## - rituals (group «ritual», replicated on every peer): one running within `ritual_radius_m` of the camera, and the
 ##   desecrations that involve the local side.
-## The set: `set_path` (SoundLibrary: "music/menu" in boot.tscn, "music/james" in the lab), or the god of `biome`
-## (MatchBiome.applied(god) -> "music/<god>"); a god with no set of its own uses `fallback_path` (music/common.tres).
+## The set: `music` (the menu's in boot.tscn, a fixture in the lab), or the `music` of the GodType that `biome` applies
+## (MatchBiome.applied(god)); a god with no set of its own uses `default_music` (music/common.tres in the match).
 ## `menu` keeps the mood at calm. `victory` and `defeat` play once: the mood stays, the track is not restarted.
 ## Each change goes to SoundBus's log as emitter `music`, event = the mood. With the AudioGate closed (dedicated, room
-## server, headless) it creates no player and loads nothing. No RPC, nothing written to the simulation.
+## server, headless) its players stay idle and it plays nothing. No RPC, nothing written to the simulation.
+## Ref: RFC-052 052f (F365).
 
 signal mood_changed(mood: StringName)
 
 const EMITTER := &"music"
 
-## SoundLibrary path of the set when there is no `biome` (or before it applies).
-@export var set_path := ""
-## Used when the set of `set_path` (or of the god) does not exist. Empty = silence.
-@export var fallback_path := "music/common"
-## Emits `applied(god: StringName)` (MatchBiome). Optional.
-@export var biome: Node
+## The set there is before a biome applies (the menu's, or the lab's). Empty: silence until a god comes.
+@export var music: MusicSet
+## What a god with no `music` of its own plays. Empty: silence.
+@export var default_music: MusicSet
+## The two players that crossfade (children of the scene).
+@export var track_a: AudioStreamPlayer
+@export var track_b: AudioStreamPlayer
+## Emits `applied(god)` with the GodType of the land (MatchBiome). Optional.
+@export var biome: MatchBiome
 @export var gauge: CombatGauge
 ## MatchState (has_result, won, result_changed). Optional: else the first node of group «match_state».
 @export var match_state: Node
@@ -53,18 +57,16 @@ func _ready() -> void:
 		set_process(false)
 		return
 	_rng.seed = rng_seed
-	for i in 2:
-		var player := AudioStreamPlayer.new()
-		player.name = "Track%d" % i
-		add_child(player)
-		SoundBus.adopt_channel(player)
-		_players.append(player)
-	if biome != null and biome.has_signal("applied"):
-		biome.connect("applied", use_god)
+	for player: AudioStreamPlayer in [track_a, track_b]:
+		if player != null:
+			SoundBus.adopt_channel(player)
+			_players.append(player)
+	if biome != null:
+		biome.applied.connect(use_god)
 	if gauge != null:
 		gauge.battle_changed.connect(func(_on: bool) -> void: look())
-	if not set_path.is_empty():
-		use_set(set_path)
+	if music != null:
+		use_music(music)
 
 
 func _process(delta: float) -> void:
@@ -76,25 +78,21 @@ func _process(delta: float) -> void:
 
 
 ## The god's music (MatchBiome.applied).
-func use_god(god: StringName) -> void:
-	use_set("music/%s" % god)
+func use_god(god: GodType) -> void:
+	use_music(music_of(god))
 
 
-## Loads the set of `path` (or `fallback_path`) and plays its mood from the start.
-func use_set(path: String) -> void:
+## The set `god` plays: its own `music`, else `default_music`; null when neither exists.
+func music_of(god: GodType) -> MusicSet:
+	return god.music if god != null and god.music != null else default_music
+
+
+## Plays the mood of `next_set` from the start.
+func use_music(next_set: MusicSet) -> void:
 	if not _open:
 		return
-	set_path = path
-	music_set = resolve(path)
+	music_set = next_set
 	restart()
-
-
-## The set of `path`, else the one of `fallback_path`; null when neither exists (or the gate is closed).
-func resolve(path: String) -> MusicSet:
-	var found := SoundLibrary.find(path) as MusicSet
-	if found == null and not fallback_path.is_empty():
-		found = SoundLibrary.find(fallback_path) as MusicSet
-	return found
 
 
 ## Forgets the mood and looks again (the next track starts with a crossfade).
@@ -105,7 +103,7 @@ func restart() -> void:
 
 ## Decides the mood now and switches when it changed (the gauge's flips and the lab call it so as not to wait).
 func look() -> void:
-	if not _open or music_set == null or not SoundBus.can_play():
+	if not _open or music_set == null or _players.size() < 2 or not SoundBus.can_play():
 		return
 	var next := MusicMood.CALM if menu else MusicMood.decide(_result(), _desecration(), _ritual_near(), _battle())
 	if next != mood:
@@ -203,3 +201,10 @@ func _ritual_near() -> bool:
 		if ritual != null and ritual.is_running() and ritual.center().distance_squared_to(view.global_position) <= reach:
 			return true
 	return false
+
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var out := PackedStringArray()
+	if track_a == null or track_b == null:
+		out.append("Asigná `track_a` y `track_b` (los dos AudioStreamPlayer hijos): sin ellos no suena.")
+	return out

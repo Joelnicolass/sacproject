@@ -2,6 +2,10 @@
 
 [ext_resource type="Script" path="res://scenes/audio/ambience_director.gd" id="1_director"]
 
-[node name="AmbienceDirector" type="Node"]
-editor_description = "RFC-052 052g: el ambiente del dios. Fondo en bucle (bus Ambience) y sueltos 3D al azar alrededor del oyente (los códigos A* del set spel). El set sale de set_path o del dios de biome (MatchBiome). Sin audio (dedicado, headless) no crea nada."
+[node name="AmbienceDirector" type="Node" node_paths=PackedStringArray("bed")]
+editor_description = "El ambiente del dios. Fondo en bucle (Bed, bus Ambience) y sueltos 3D al azar alrededor del oyente (AmbienceSet.one_shots). El set es `ambience` o el del dios que aplica `biome` (GodType.ambience). Sin audio (dedicado, headless) el reproductor queda quieto."
 script = ExtResource("1_director")
+bed = NodePath("Bed")
+
+[node name="Bed" type="AudioStreamPlayer" parent="."]
+bus = &"Ambience"

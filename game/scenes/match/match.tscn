@@ -67,8 +67,8 @@
 [ext_resource type="PackedScene" path="res://scenes/fx/order_marker.tscn" id="f220_marker"]
 [ext_resource type="Script" path="res://scenes/audio/listener_focus.gd" id="a052_listener"]
 [ext_resource type="Script" path="res://scenes/audio/command_voice.gd" id="a052_command_voice"]
-[ext_resource type="Script" path="res://scenes/audio/advisor_voice.gd" id="a052_advisor"]
-[ext_resource type="Script" path="res://scenes/audio/advisor_watch.gd" id="a052_advisor_watch"]
+[ext_resource type="PackedScene" path="res://scenes/audio/advisor/advisor.tscn" id="a055_advisor"]
+[ext_resource type="Resource" path="res://data/audio/music/common.tres" id="a055_common_music"]
 [ext_resource type="Script" path="res://scenes/audio/combat_gauge.gd" id="a052_gauge"]
 [ext_resource type="PackedScene" path="res://scenes/audio/music_director.tscn" id="a052_music"]
 [ext_resource type="PackedScene" path="res://scenes/audio/ambience_director.tscn" id="a052_ambience"]
@@ -479,20 +479,20 @@ script = ExtResource("a052_listener")
 world = NodePath("..")
 camera = NodePath("../Camera")
 
-[node name="CommandVoice" type="Node" parent="." node_paths=PackedStringArray("selection", "orders")]
+[node name="CommandVoice" type="Node" parent="." node_paths=PackedStringArray("selection", "orders", "channel")]
 editor_description = "RFC-052 052e: las criaturas contestan al jugador local (elegir: selected/annoyed; ordenar: ack/attack_ack), un canal propio en el bus Voice. Sin audio (dedicado, headless) no hace nada."
 script = ExtResource("a052_command_voice")
 selection = NodePath("../Selection")
 orders = NodePath("../Orders")
+channel = NodePath("Channel")
 
-[node name="AdvisorVoice" type="Node" parent="." node_paths=PackedStringArray("command_log")]
-editor_description = "RFC-052 052e: el consejero, un canal con cola y prioridad (bus Voice). Los rechazos llegan por %Battle (CommandLog.said); los avisos del juego, por el hijo AdvisorWatch."
-script = ExtResource("a052_advisor")
+[node name="Channel" type="AudioStreamPlayer" parent="CommandVoice"]
+bus = &"Voice"
+
+[node name="AdvisorVoice" parent="." node_paths=PackedStringArray("command_log") instance=ExtResource("a055_advisor")]
 command_log = NodePath("../Hud/Battle")
 
-[node name="AdvisorWatch" type="Node" parent="AdvisorVoice" node_paths=PackedStringArray("advisor", "world")]
-script = ExtResource("a052_advisor_watch")
-advisor = NodePath("..")
+[node name="AdvisorWatch" parent="AdvisorVoice" index="1" node_paths=PackedStringArray("world")]
 world = NodePath("../..")
 
 [node name="CombatGauge" type="Node" parent="." node_paths=PackedStringArray("world")]
@@ -505,6 +505,7 @@ biome = NodePath("../MatchBiome")
 gauge = NodePath("../CombatGauge")
 match_state = NodePath("../Match")
 camera = NodePath("../Camera")
+default_music = ExtResource("a055_common_music")
 
 [node name="AmbienceDirector" parent="." node_paths=PackedStringArray("biome") instance=ExtResource("a052_ambience")]
 biome = NodePath("../MatchBiome")

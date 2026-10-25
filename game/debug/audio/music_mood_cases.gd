@@ -7,26 +7,20 @@ extends RefCounted
 ## - music_set_fallback: a god's set answers calm itself and battle from its fallback (common); a mood nobody has is empty.
 ## - gauge_hysteresis (CombatGauge): enter at `enter`, stays under `exit` until `hold_s`, then off; a hit on the bound wizard
 ##   keeps the battle on for `wizard_damage_s`.
-## - music_director (fixture sets): calm, then battle when the gauge flips (a track of the set), the old player stops
-##   after the crossfade; victory is not restarted.
-## - ambience_director (fixture set): the bed plays on its own player, one-shots come on the set's interval, around the
-##   listener, emitter `ambience`.
+## - music_director (fixture set assigned in `music`): calm, then battle when the gauge flips (a track of the set), the old
+##   player stops after the crossfade; victory is not restarted; a god with no `music` plays `default_music`.
+## - ambience_director (fixture set assigned in `ambience`): the bed plays on its own player, one-shots come on the set's
+##   interval, around the listener, emitter `ambience`.
+## - gods_typed: the five GodType carry their music and their ambience.
 ## - global_rng: the directors and the gauge draw nothing from the global generator.
 ## - original_loops (only when data/audio/ has the original's sets): every ambience bed is a WAV that loops by itself
 ##   (`edit/loop_mode=2`), the looping moods' MP3s loop (`loop=true`) and victory/defeat do not.
 ## Closed gate (plain headless, --dedicated, --room-server):
-## - music_closed: MusicDirector, AmbienceDirector and CombatGauge enter the tree, create no player and load no set.
+## - music_closed: MusicDirector, AmbienceDirector and CombatGauge enter the tree, play nothing and keep no set.
 
-const MUSIC_ROOT := "res://debug/audio/fixtures/music/"
-const AMBIENCE_ROOT := "res://debug/audio/fixtures/ambience/"
-const ORIGINAL_SETS: PackedStringArray = [
-	"res://data/audio/music/james.tres",
-	"res://data/audio/music/common.tres",
-	"res://data/audio/music/menu.tres",
-	"res://data/audio/ambience/james.tres",
-	"res://debug/audio/fixtures/music/music/common.tres",
-	"res://debug/audio/fixtures/ambience/ambience/james.tres",
-]
+const MUSIC_FIXTURE := "res://debug/audio/fixtures/music/common.tres"
+const AMBIENCE_FIXTURE := "res://debug/audio/fixtures/ambience/james.tres"
+const GODS: PackedStringArray = ["james", "persephone", "pyro", "stratos", "charnel"]
 const MUSIC_DIRECTOR := "res://scenes/audio/music_director.tscn"
 const AMBIENCE_DIRECTOR := "res://scenes/audio/ambience_director.tscn"
 
@@ -45,9 +39,9 @@ func run(host: Node, open: bool) -> Dictionary:
 	results["music_director"] = await _director(host)
 	results["ambience_director"] = await _ambience(host)
 	results["global_rng"] = await _global_rng(host)
+	results["gods_typed"] = _gods_typed()
 	results["original_loops"] = _original_loops()
 	SoundBus.stop_all()
-	SoundLibrary.reset_roots()
 	## Real time, not frames (--fixed-fps): the audio server lets go of the stopped playbacks a moment later.
 	OS.delay_msec(200)
 	for _i in 3:
@@ -149,19 +143,22 @@ func _gauge(host: Node) -> Dictionary:
 
 
 func _director(host: Node) -> Dictionary:
-	SoundLibrary.roots = PackedStringArray([MUSIC_ROOT])
-	SoundLibrary.clear_cache()
 	SoundBus.sound_log.clear()
 	var gauge := CombatGauge.new()
 	host.add_child(gauge)
 	var director := (load(MUSIC_DIRECTOR) as PackedScene).instantiate() as MusicDirector
 	director.gauge = gauge
-	director.set_path = "music/james"
+	director.music = load(MUSIC_FIXTURE) as MusicSet
+	director.default_music = director.music
 	host.add_child(director)
 	var checks := {}
-	checks["fallback_set"] = director.music_set != null and director.music_set.resource_path.ends_with("music/common.tres")
+	checks["music_set"] = director.music_set != null and director.music_set == director.music
 	checks["calm"] = director.mood == MusicMood.CALM and _logged(MusicMood.CALM)
-	checks["two_players"] = director.get_child_count() == 2
+	checks["two_players"] = director.track_a != null and director.track_b != null and director.get_child_count() == 2
+	var god := GodType.new()
+	checks["god_without_music_default"] = director.music_of(god) == director.default_music
+	god.music = MusicSet.new()
+	checks["god_music"] = director.music_of(god) == god.music
 	gauge.force(1.0)
 	var battle_tracks := director.music_set.tracks(MusicMood.BATTLE)
 	checks["battle"] = director.mood == MusicMood.BATTLE and _logged(MusicMood.BATTLE) \
@@ -187,18 +184,16 @@ func _director(host: Node) -> Dictionary:
 
 
 func _ambience(host: Node) -> Dictionary:
-	SoundLibrary.roots = PackedStringArray([AMBIENCE_ROOT])
-	SoundLibrary.clear_cache()
 	SoundBus.sound_log.clear()
 	var listener := Node3D.new()
 	host.add_child(listener)
 	var before_listener: Node3D = SoundBus.listener
 	SoundBus.listener = listener
 	var director := (load(AMBIENCE_DIRECTOR) as PackedScene).instantiate() as AmbienceDirector
-	director.set_path = "ambience/james"
+	director.ambience = load(AMBIENCE_FIXTURE) as AmbienceSet
 	host.add_child(director)
 	var checks := {}
-	checks["bed"] = _logged(SoundEvent.BED, AmbienceDirector.EMITTER) and (director.get_child(0) as AudioStreamPlayer).playing
+	checks["bed"] = _logged(SoundEvent.BED, AmbienceDirector.EMITTER) and director.bed.playing
 	checks["one_shots"] = director.has_one_shots()
 	await _game_seconds(host, 2.0)
 	var count := 0
@@ -207,8 +202,8 @@ func _ambience(host: Node) -> Dictionary:
 			count += 1
 	## The fixture's interval is 0.2-0.4 s: 2 s hold between 5 and 10.
 	checks["interval"] = count >= 4 and count <= 11
-	director.use_set("ambience/none")
-	checks["no_set_silent"] = not (director.get_child(0) as AudioStreamPlayer).playing and not director.has_one_shots()
+	director.use_ambience(null)
+	checks["no_set_silent"] = not director.bed.playing and not director.has_one_shots()
 	director.queue_free()
 	SoundBus.listener = before_listener
 	listener.queue_free()
@@ -216,8 +211,6 @@ func _ambience(host: Node) -> Dictionary:
 
 
 func _global_rng(host: Node) -> Dictionary:
-	SoundLibrary.roots = PackedStringArray([MUSIC_ROOT, AMBIENCE_ROOT])
-	SoundLibrary.clear_cache()
 	seed(4242)
 	var expected := randi()
 	seed(4242)
@@ -225,10 +218,10 @@ func _global_rng(host: Node) -> Dictionary:
 	host.add_child(gauge)
 	var music := (load(MUSIC_DIRECTOR) as PackedScene).instantiate() as MusicDirector
 	music.gauge = gauge
-	music.set_path = "music/james"
+	music.music = load(MUSIC_FIXTURE) as MusicSet
 	host.add_child(music)
 	var ambience := (load(AMBIENCE_DIRECTOR) as PackedScene).instantiate() as AmbienceDirector
-	ambience.set_path = "ambience/james"
+	ambience.ambience = load(AMBIENCE_FIXTURE) as AmbienceSet
 	host.add_child(ambience)
 	for i in 6:
 		gauge.force(float(i % 2))
@@ -241,18 +234,28 @@ func _global_rng(host: Node) -> Dictionary:
 	return _verdict({"same_next_randi": got == expected})
 
 
-func _original_loops() -> Dictionary:
-	SoundLibrary.roots = PackedStringArray(["res://data/audio/"])
-	SoundLibrary.clear_cache()
+## A GodType per tag of the five gods of the game.
+func _gods_typed() -> Dictionary:
 	var checks := {}
-	for god in ["james", "persephone", "pyro", "stratos", "charnel"]:
-		var ambience := SoundLibrary.find("ambience/%s" % god) as AmbienceSet
+	for god in GODS:
+		var type := load("res://data/gods/%s.tres" % god) as GodType
+		checks["%s_music" % god] = type != null and type.music != null and type.music.resource_path == "res://data/audio/music/%s.tres" % god
+		checks["%s_ambience" % god] = type != null and type.ambience != null \
+			and type.ambience.resource_path == "res://data/audio/ambience/%s.tres" % god and not AmbienceDirector.one_shot_cues(type.ambience).is_empty()
+	return _verdict(checks)
+
+
+func _original_loops() -> Dictionary:
+	var checks := {}
+	for god in GODS:
+		var type := load("res://data/gods/%s.tres" % god) as GodType
+		var ambience := type.ambience if type != null else null
 		if ambience != null and ambience.bed != null:
 			var loops := not ambience.bed.streams.is_empty()
 			for stream in ambience.bed.streams:
 				loops = loops and stream is AudioStreamWAV and (stream as AudioStreamWAV).loop_mode != AudioStreamWAV.LOOP_DISABLED
 			checks["bed_loops_%s" % god] = loops
-		var music := SoundLibrary.find("music/%s" % god) as MusicSet
+		var music := type.music if type != null else null
 		if music == null:
 			continue
 		for mood in MusicMood.ALL:
@@ -260,13 +263,12 @@ func _original_loops() -> Dictionary:
 				var mp3 := stream as AudioStreamMP3
 				if mp3 != null:
 					checks["%s_%s_%s" % [god, mood, stream.resource_path.get_file().get_basename()]] = mp3.loop != MusicMood.is_once(mood)
-	var menu := SoundLibrary.find("music/menu") as MusicSet
+	var menu := load("res://data/audio/music/menu.tres") as MusicSet
 	if menu != null:
 		for stream in menu.tracks(MusicMood.CALM):
 			checks["menu_loops"] = stream is AudioStreamMP3 and (stream as AudioStreamMP3).loop
-	SoundLibrary.reset_roots()
 	## The sets are there (and their files): something must have been checked.
-	if SoundLibrary.has_dependencies("res://data/audio/music/common.tres") and ResourceLoader.exists("res://data/audio/music/common.tres"):
+	if ResourceDeps.all_exist("res://data/audio/music/common.tres") and ResourceLoader.exists("res://data/audio/music/common.tres"):
 		checks["original_checked"] = checks.size() >= 10
 	var verdict := _verdict(checks)
 	verdict["checked"] = checks.size()
@@ -278,36 +280,26 @@ func _closed(host: Node) -> Dictionary:
 	host.add_child(gauge)
 	var music := (load(MUSIC_DIRECTOR) as PackedScene).instantiate() as MusicDirector
 	music.gauge = gauge
-	music.set_path = "music/james"
 	host.add_child(music)
 	var ambience := (load(AMBIENCE_DIRECTOR) as PackedScene).instantiate() as AmbienceDirector
-	ambience.set_path = "ambience/james"
 	host.add_child(ambience)
 	for _i in 3:
 		await host.get_tree().process_frame
-	music.use_god(&"pyro")
-	ambience.use_god(&"stratos")
+	var god := GodType.new()
+	god.music = MusicSet.new()
+	god.ambience = AmbienceSet.new()
+	music.use_god(god)
+	ambience.use_god(god)
 	gauge.force(1.0)
 	music.look()
 	var checks := {}
-	checks["no_players"] = music.get_child_count() == 0 and ambience.get_child_count() == 0
+	checks["players_idle"] = not music.track_a.playing and not music.track_b.playing and not ambience.bed.playing
 	checks["no_set"] = music.music_set == null and ambience.ambience_set == null
 	checks["no_battle"] = not gauge.is_battle()
-	var cached := PackedStringArray()
-	for path in ORIGINAL_SETS:
-		if ResourceLoader.has_cached(path):
-			cached.append(path)
-	for path in ["res://data/audio/music/pyro.tres", "res://data/audio/ambience/stratos.tres"]:
-		if ResourceLoader.has_cached(path):
-			cached.append(path)
-	checks["nothing_loaded"] = cached.is_empty()
 	music.queue_free()
 	ambience.queue_free()
 	gauge.queue_free()
-	var verdict := _verdict(checks)
-	if not cached.is_empty():
-		verdict["cached"] = cached
-	return verdict
+	return _verdict(checks)
 
 
 func _logged(event: StringName, emitter: StringName = MusicDirector.EMITTER) -> bool:

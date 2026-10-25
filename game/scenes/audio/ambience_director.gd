@@ -2,25 +2,27 @@
 class_name AmbienceDirector
 extends Node
 
-## RFC-052 052g (F366): the ambience of this process: the god's bed (a loop on its own AudioStreamPlayer, bus of the cue:
-## Ambience) and, every so often, a one-shot in 3D at a point around the listener (SoundBus.play_3d), as the original's
-## `A*` ambient sounds. When, which one-shot and where come from its own generator, never the global one.
-## The set: `set_path` (SoundLibrary: "ambience/james" in the lab), or the god of `biome` (MatchBiome.applied(god) ->
-## "ambience/<god>"). No set (a god without one, the original not imported): silence.
+## The ambience of this process: the god's bed (a loop on the scene's own AudioStreamPlayer `bed`, bus of the cue:
+## Ambience) and, every so often, a one-shot in 3D at a point around the listener (SoundBus.play_3d). When, which one-shot
+## and where come from its own generator, never the global one.
+## The set: `ambience` (a fixture in the lab), or the `ambience` of the GodType that `biome` applies (MatchBiome.applied(god)).
+## No set (a god without one): silence.
 ## In the log: emitter `ambience`, event `bed` or `ambient`. With the AudioGate closed (dedicated, room server, headless)
-## it creates no player and loads nothing. No RPC, nothing written to the simulation.
+## its player stays idle and it plays nothing. No RPC, nothing written to the simulation.
+## Ref: RFC-052 052g (F366).
 
 const EMITTER := &"ambience"
 
-## SoundLibrary path of the set when there is no `biome` (or before it applies).
-@export var set_path := ""
-## Emits `applied(god: StringName)` (MatchBiome). Optional.
-@export var biome: Node
+## The set there is before a biome applies. Empty: silence until a god comes.
+@export var ambience: AmbienceSet
+## The player of the bed loop (child of the scene).
+@export var bed: AudioStreamPlayer
+## Emits `applied(god)` with the GodType of the land (MatchBiome). Optional.
+@export var biome: MatchBiome
 @export var rng_seed := 5202
 
 var ambience_set: AmbienceSet
 var _open := false
-var _bed: AudioStreamPlayer
 var _rng := RandomNumberGenerator.new()
 var _clock := 0.0
 var _next_at := INF
@@ -31,19 +33,16 @@ var _one_shots: Array[SoundCue] = []
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
-	_open = AudioGate.is_open() and SoundBus.can_play()
+	_open = AudioGate.is_open() and SoundBus.can_play() and bed != null
 	if not _open:
 		set_process(false)
 		return
 	_rng.seed = rng_seed
-	_bed = AudioStreamPlayer.new()
-	_bed.name = "Bed"
-	add_child(_bed)
-	SoundBus.adopt_channel(_bed)
-	if biome != null and biome.has_signal("applied"):
-		biome.connect("applied", use_god)
-	if not set_path.is_empty():
-		use_set(set_path)
+	SoundBus.adopt_channel(bed)
+	if biome != null:
+		biome.applied.connect(use_god)
+	if ambience != null:
+		use_ambience(ambience)
 
 
 func _process(delta: float) -> void:
@@ -53,16 +52,15 @@ func _process(delta: float) -> void:
 
 
 ## The god's ambience (MatchBiome.applied).
-func use_god(god: StringName) -> void:
-	use_set("ambience/%s" % god)
+func use_god(god: GodType) -> void:
+	use_ambience(god.ambience if god != null else null)
 
 
-## Loads the set of `path`, starts its bed and schedules the first one-shot. No set: the bed stops, nothing plays.
-func use_set(path: String) -> void:
+## Starts the bed of `next_set` and schedules its first one-shot. No set: the bed stops, nothing plays.
+func use_ambience(next_set: AmbienceSet) -> void:
 	if not _open:
 		return
-	set_path = path
-	ambience_set = SoundLibrary.find(path) as AmbienceSet
+	ambience_set = next_set
 	_one_shots = one_shot_cues(ambience_set)
 	restart_bed()
 	_schedule()
@@ -72,11 +70,11 @@ func use_set(path: String) -> void:
 func restart_bed() -> bool:
 	if not _open:
 		return false
-	_bed.stop()
+	bed.stop()
 	var cue := bed_cue()
 	if cue == null or not SoundBus.can_play():
 		return false
-	return SoundBus.play_on(_bed, cue, EMITTER, SoundEvent.BED)
+	return SoundBus.play_on(bed, cue, EMITTER, SoundEvent.BED)
 
 
 ## The set's bed cue (null when it has none or it is silent).
@@ -107,16 +105,12 @@ func play_one_shot() -> bool:
 	return SoundBus.play_3d(cue, at + offset, EMITTER, SoundEvent.AMBIENT)
 
 
-## The playable one-shots of `ambience`: its keys looked up in `one_shot_source` over SoundLibrary's roots, then its own.
-static func one_shot_cues(ambience: AmbienceSet) -> Array[SoundCue]:
+## The playable one-shots of `ambience_set` (the cues with a stream).
+static func one_shot_cues(ambience_set: AmbienceSet) -> Array[SoundCue]:
 	var out: Array[SoundCue] = []
-	if ambience == null:
+	if ambience_set == null:
 		return out
-	for key in ambience.one_shot_keys:
-		var cue: SoundCue = SoundBus.lookup(ambience.one_shot_source, key)
-		if cue != null:
-			out.append(cue)
-	for cue in ambience.one_shots:
+	for cue in ambience_set.one_shots:
 		if cue != null and not cue.is_silent():
 			out.append(cue)
 	return out
@@ -128,3 +122,7 @@ func _schedule() -> void:
 		return
 	var low := maxf(ambience_set.interval_s.x, 0.1)
 	_next_at = _clock + _rng.randf_range(low, maxf(low, ambience_set.interval_s.y))
+
+
+func _get_configuration_warnings() -> PackedStringArray:
+	return PackedStringArray() if bed != null else PackedStringArray(["Asigná `bed` (el AudioStreamPlayer hijo): sin él no suena el fondo."])

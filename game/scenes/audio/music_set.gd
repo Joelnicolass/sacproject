@@ -2,11 +2,12 @@
 class_name MusicSet
 extends Resource
 
-## RFC-052 052f (F365): the music of one god (data/audio/music/<god>.tres) or of the menu (music/menu.tres), a type
-## template (never written at runtime). One list of tracks per MusicMood; MusicDirector plays one of them (the battle
+## The music of one god (data/audio/music/<god>.tres) or of the menu (music/menu.tres), a type template (never written at
+## runtime). One list of tracks per MusicMood; MusicDirector plays one of them (the battle
 ## track is drawn with its own generator). A mood with no track here is asked to `fallback` (the gods share
 ## music/common.tres: battle, sacrifice, winning, losing, victory, defeat), and silence when nobody has one.
 ## Looping is the stream's own (the .import of a looping track has `loop=true`); `victory` and `defeat` play once.
+## Ref: RFC-052 052f (F365).
 
 @export var calm: Array[AudioStream] = []
 @export var battle: Array[AudioStream] = []

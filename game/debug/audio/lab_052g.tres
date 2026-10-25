@@ -58,5 +58,4 @@ expect = 2
 [resource]
 script = ExtResource("1_script")
 cut = "052g"
-fallback_roots = PackedStringArray("res://debug/audio/fixtures/ambience/")
 steps = Array[ExtResource("2_step")]([SubResource("Step_00"), SubResource("Step_01"), SubResource("Step_02"), SubResource("Step_03"), SubResource("Step_04"), SubResource("Step_05")])

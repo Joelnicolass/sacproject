@@ -7,8 +7,8 @@ extends Node3D
 ## - Manual (F6): `debug_audio_event` runs the next step of the script; the label shows the last entry and the bus peaks.
 ## - Automatic: `--headless … -- --audio-probe --audio-script[=res://debug/audio/lab_<cut>.tres]` runs every step, prints
 ##   `AUDIO_LAB PASS|FAIL <event> <stream>` per step and `AUDIO_LAB DONE PASS|FAIL (n)`, and quits 0 / 1.
-## - `--audio-no-original`: SoundLibrary sees only the script's roots and an empty one (the world, UI, advisor and music sets; the
-##   bodies sound as their types say).
+## - `--audio-no-original`: SoundLibrary sees only the script's roots and an empty one (the UI set; everything else is typed
+##   and sounds as its scene or type says).
 ## The script (an AudioLabScript .tres) is loaded at run time with load(), so a broken one ends in a FAIL line. Watchdog:
 ## `timeout_s` of real time.
 ## 052d: the FX actions call FxBus as a peer does when a broadcast arrives (fx, puff, beam); `spawn` instances a
@@ -18,12 +18,12 @@ extends Node3D
 ## 052e: the player's voices. `select` leaves the target alone in the lab's Selection (CommandVoice hears Selection.changed),
 ## `order` emits Orders.requested for it as OrderCommand's request does, `refuse` says a Refusal key on the CommandLog
 ## (AdvisorVoice), `hit` takes a tenth of a building's Health and `ritual` starts a Desecrate on the local altar or ends it
-## completed (AdvisorWatch). An advisor line is looked up as emitter = its code, event `advice`.
-## 052f: the music. A CombatGauge (on the wizard, short hold), a MusicDirector (music/james) and a MatchState (no
+## completed (AdvisorWatch). An advisor line is looked up as emitter = its name (`low_mana`), event `advice`.
+## 052f: the music. A CombatGauge (on the wizard, short hold), a MusicDirector (music = data/audio/music/james.tres) and a MatchState (no
 ## DefeatRule: the death steps must not end the match). `battle` pins the gauge, `ritual convert`/`desecrate`/`complete`
 ## start and end a ritual next to the camera, `result won` ends the match, `god` changes the set; the wizard's `damaged`
 ## keeps the battle on. A music entry is emitter `music`, event = the mood (MusicMood).
-## 052g: the ambience (AmbienceDirector, ambience/james): `bed`, `ambient`, `god`, and `wait` with `from_wait` (a one-shot
+## 052g: the ambience (AmbienceDirector, ambience = data/audio/ambience/james.tres): `bed`, `ambient`, `god`, and `wait` with `from_wait` (a one-shot
 ## of the set's interval). An ambience entry is emitter `ambience`, event `bed` or `ambient`.
 ## 052h: the UI and the sacrifice. `press` emits a button's `pressed` (SoundBus clicks it: event `click`), `menu` opens
 ## (`arg` open) or cancels (cancel) the radial menu (MenuSounds: `menu_open`, `menu_back`), `ritual_phase` sets the lab
@@ -106,11 +106,6 @@ func _start() -> void:
 	roots.append_array(PackedStringArray(_lab.get("fallback_roots")) if _lab.get("fallback_roots") != null else PackedStringArray())
 	SoundLibrary.roots = roots
 	SoundLibrary.clear_cache()
-	## The directors looked their sets up on entering the tree, with the default roots (052f, 052g).
-	if music != null:
-		music.use_set(music.set_path)
-	if ambience != null:
-		ambience.use_set(ambience.set_path)
 	_assign_body_sets()
 	SoundBus.reseed(5200)
 	SoundBus.sound_log.clear()
@@ -214,6 +209,24 @@ func _run_step() -> void:
 	_busy = false
 
 
+## The GodType of `tag` (data/gods/<tag>.tres): the lab's `god` action changes the land by name.
+func _god(tag: String) -> GodType:
+	return load("res://data/gods/%s.tres" % tag) as GodType
+
+
+## The advisor's line named `line_name`: one of the refusals or one of the warnings AdvisorWatch holds; null when none.
+func _advisor_line(line_name: StringName) -> AdvisorLine:
+	var lines: Array = advisor.refusal_lines.values()
+	if advisor_watch != null:
+		for info: Dictionary in advisor_watch.get_property_list():
+			if info.get("class_name") == &"AdvisorLine":
+				lines.append(advisor_watch.get(info.name))
+	for line: AdvisorLine in lines:
+		if line != null and line.resource_name == String(line_name):
+			return line
+	return null
+
+
 ## The cue the step's emitter has for `event` now (a SoundCue), null when it has none, false when the target cannot do it.
 func _expected_cue(body: Node, action: StringName, arg: String, event: StringName, emitter: StringName = &"") -> Variant:
 	if body == null:
@@ -225,7 +238,7 @@ func _expected_cue(body: Node, action: StringName, arg: String, event: StringNam
 	if event == SoundEvent.ADVICE:
 		if advisor == null:
 			return false
-		return advisor.cue_for(advisor.code_for_refusal(StringName(arg)) if action == &"refuse" else emitter)
+		return advisor.cue_for(advisor.line_for_refusal(StringName(arg)) if action == &"refuse" else _advisor_line(emitter))
 	match action:
 		&"press":
 			return SoundBus.ui_cue_for(body as BaseButton) if body is BaseButton else false
@@ -255,7 +268,7 @@ func _music_expected(action: StringName, arg: String, event: StringName) -> Vari
 		return false
 	var music_set := music.music_set
 	if action == &"god":
-		music_set = music.resolve("music/%s" % arg)
+		music_set = music.music_of(_god(arg))
 	if music_set == null:
 		return null
 	var tracks := music_set.tracks(event)
@@ -269,7 +282,7 @@ func _ambience_expected(action: StringName, arg: String, event: StringName) -> V
 	if event == SoundEvent.BED:
 		var ambience_set := ambience.ambience_set
 		if action == &"god":
-			ambience_set = SoundLibrary.find("ambience/%s" % arg) as AmbienceSet
+			ambience_set = _god(arg).ambience
 		var bed := ambience_set.bed if ambience_set != null else null
 		return bed if bed != null and not bed.is_silent() else null
 	var cues := AmbienceDirector.one_shot_cues(ambience.ambience_set)
@@ -299,10 +312,10 @@ func _act(body: Node, action: StringName, arg := "") -> bool:
 			return _result(arg)
 		&"god":
 			if body == music:
-				music.use_god(StringName(arg))
+				music.use_god(_god(arg))
 				return true
 			if body == ambience:
-				ambience.use_god(StringName(arg))
+				ambience.use_god(_god(arg))
 				return true
 			return false
 		&"bed":

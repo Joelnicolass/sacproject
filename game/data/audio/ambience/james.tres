@@ -1,7 +1,28 @@
 [gd_resource type="Resource" script_class="AmbienceSet" format=3]
 
 [ext_resource type="Script" path="res://scenes/audio/ambience_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="shot_script"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/coy1.wav" id="shot_s1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/coy2.wav" id="shot_s2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/sna1.wav" id="shot_s3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/sna2.wav" id="shot_s4"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/vul1.wav" id="shot_s5"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/vul2.wav" id="shot_s6"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/vul3.wav" id="shot_s7"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/dwn1.wav" id="shot_s8"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/dwn2.wav" id="shot_s9"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/dwn3.wav" id="shot_s10"]
+
+[sub_resource type="Resource" id="OneShot_0"]
+script = ExtResource("shot_script")
+streams = Array[AudioStream]([ExtResource("shot_s1"), ExtResource("shot_s2"), ExtResource("shot_s3"), ExtResource("shot_s4"), ExtResource("shot_s5"), ExtResource("shot_s6"), ExtResource("shot_s7")])
+bus = &"Ambience"
+
+[sub_resource type="Resource" id="OneShot_1"]
+script = ExtResource("shot_script")
+streams = Array[AudioStream]([ExtResource("shot_s8"), ExtResource("shot_s9"), ExtResource("shot_s10")])
+bus = &"Ambience"
 
 [resource]
 script = ExtResource("1_set")
-one_shot_keys = Array[StringName]([&"AjaN", &"AjaU"])
+one_shots = Array[SoundCue]([SubResource("OneShot_0"), SubResource("OneShot_1")])

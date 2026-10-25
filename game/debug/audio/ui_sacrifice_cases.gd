@@ -1,7 +1,8 @@
 extends RefCounted
 
 ## RFC-052 052h (F367): UI clicks, the radial menu, the sacrifice and the souls.
-## Open gate (--audio-probe), on the fixture sets of debug/audio/fixtures/ui_sacrifice/ (and an empty root):
+## Open gate (--audio-probe). The UI cases use the fixture set of debug/audio/fixtures/ui_sacrifice/ (and an empty root); the
+## ritual and the soul sound with the cues their scenes carry (data/audio/cues/):
 ## - ui_clicks: a Button that enters the tree clicks once per press (`click`); meta `no_ui_sound` silences it, `false` does
 ##   not; meta `ui_sound` picks its key (Iclk); out and back into the tree it still clicks once (no second connection).
 ## - menu_sounds: a RadialMenu with its MenuSounds: open -> menu_open, cancel -> menu_back, a confirm on nothing ->

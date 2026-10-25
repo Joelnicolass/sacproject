@@ -81,7 +81,7 @@ script = ExtResource("2_step")
 target = NodePath(".")
 action = &"refuse"
 arg = "no_mana"
-emitter = &"lowm"
+emitter = &"low_mana"
 event = &"advice"
 expect = 2
 
@@ -89,7 +89,7 @@ expect = 2
 script = ExtResource("2_step")
 target = NodePath("Wizard")
 action = &"damaged"
-emitter = &"watt"
+emitter = &"wizard_attacked"
 event = &"advice"
 expect = 2
 
@@ -98,7 +98,7 @@ script = ExtResource("2_step")
 target = NodePath(".")
 action = &"refuse"
 arg = "out_of_range"
-emitter = &"orng"
+emitter = &"out_of_range"
 event = &"advice"
 expect = 1
 
@@ -106,7 +106,7 @@ expect = 1
 script = ExtResource("2_step")
 target = NodePath("Wizard")
 action = &"damaged"
-emitter = &"watt"
+emitter = &"wizard_attacked"
 event = &"advice"
 expect = 1
 
@@ -123,7 +123,7 @@ script = ExtResource("2_step")
 target = NodePath(".")
 action = &"ritual"
 arg = "desecrate"
-emitter = &"dese"
+emitter = &"desecrated"
 event = &"advice"
 expect = 2
 
@@ -131,12 +131,11 @@ expect = 2
 script = ExtResource("2_step")
 target = NodePath("Building")
 action = &"hit"
-emitter = &"bdam"
+emitter = &"building_attacked"
 event = &"advice"
 expect = 1
 
 [resource]
 script = ExtResource("1_script")
 cut = "052e"
-fallback_roots = PackedStringArray("res://debug/audio/fixtures/voices/")
 steps = Array[ExtResource("2_step")]([SubResource("Step_00"), SubResource("Step_01"), SubResource("Step_02"), SubResource("Step_03"), SubResource("Step_04"), SubResource("Step_05"), SubResource("Step_06"), SubResource("Step_07"), SubResource("Step_08"), SubResource("Step_09"), SubResource("Step_10"), SubResource("Step_11"), SubResource("Step_12"), SubResource("Step_13"), SubResource("Step_14"), SubResource("Step_15")])

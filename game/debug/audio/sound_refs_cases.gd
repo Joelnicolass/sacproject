@@ -35,6 +35,7 @@ const FX_SCENES: PackedStringArray = [
 ]
 const CUES_DIR := "res://data/audio/cues/"
 const PARITY_JSON := "res://tools/migrate/055o_fx_parity.json"
+const MATCH_REFS := "res://debug/audio/match_refs_cases.gd"
 const EXPECTED_TYPED := 80
 const EXPECTED_PARTICLES := 31
 const EXPECTED_BEAMS := 6
@@ -71,6 +72,7 @@ func run(host: Node, open: bool) -> Dictionary:
 	results["bodies_parity"] = {"ok": (body_parity["failures"] as PackedStringArray).is_empty(), "parity": body_parity}
 	print("SOUND REFS bodies creatures=%d/%d wizards=%d/%d parity=%d/%d" % [int(bodies["creature_sets"]), int(bodies["creatures"]),
 		int(bodies["wizard_sets"]), int(bodies["wizards"]), int(body_parity["passed"]), int(body_parity["total"])])
+	results.merge((load(MATCH_REFS) as GDScript).new().run_match())
 	if open and SoundBus.is_active():
 		results["soul_mole_replicated"] = await _soul_mole(host)
 	return results

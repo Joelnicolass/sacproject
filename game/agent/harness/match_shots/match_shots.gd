@@ -43,6 +43,14 @@ const TAG_MANAHOAR := &"oham"
 ## The "cloud" view (061h: --cast=grfr|rifr|galp|likc|rtem): the camera looks at the middle between the first zone's land and its cloud, from 1.9 times
 ## the cloud's height away (at least this far) and a third of it up, on the first of 8 bearings with a clear line to the land.
 @export_range(10.0, 200.0, 1.0, "suffix:m") var cloud_min_m := 45.0
+## The "tornado" view (061j: --god=stratos --cast=nrot): the camera stands this far from the Tornado's foot (toward the wizard), this high, and looks
+## this high up the funnel, so the funnel is seen from outside. "tornado_far" is the same from far enough to see its whole height.
+@export_range(10.0, 300.0, 1.0, "suffix:m") var tornado_m := 90.0
+@export_range(0.0, 300.0, 1.0, "suffix:m") var tornado_up_m := 40.0
+@export_range(0.0, 500.0, 1.0, "suffix:m") var tornado_look_up_m := 120.0
+@export_range(100.0, 1500.0, 5.0, "suffix:m") var tornado_far_m := 450.0
+@export_range(0.0, 600.0, 1.0, "suffix:m") var tornado_far_up_m := 200.0
+@export_range(0.0, 500.0, 1.0, "suffix:m") var tornado_far_look_up_m := 220.0
 ## The "scar" view: the camera stands this far from the last mark painted on the ground (toward the wizard), this high, looking at it.
 @export_range(5.0, 80.0, 1.0, "suffix:m") var scar_m := 22.0
 @export_range(2.0, 80.0, 0.5, "suffix:m") var scar_up_m := 16.0
@@ -273,6 +281,19 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 			look = _over_land(zone.global_position + Vector3.UP * 1.0, 1.0)
 			var toward_zone := (focus - zone.global_position) * Vector3(1.0, 0.0, 1.0)
 			spot = _clear_spot(look, toward_zone.normalized() if toward_zone.length() > 0.1 else Vector3.BACK)
+		"tornado", "tornado_far":
+			var twister: GroundZone = null
+			for node in get_tree().get_nodes_in_group(GroundZone.GROUP):
+				var found := node as GroundZone
+				if found != null and found.spell != null and found.spell.tag == "nrot":
+					twister = found
+			if twister == null:
+				print("match_shots: no Tornado alive (--god=stratos --cast=nrot); view skipped")
+				return
+			var far := view == "tornado_far"
+			look = twister.global_position + Vector3.UP * (tornado_far_look_up_m if far else tornado_look_up_m)
+			var toward_twister := (focus - twister.global_position) * Vector3(1.0, 0.0, 1.0)
+			spot = _clear_spot(look, toward_twister.normalized() if toward_twister.length() > 0.1 else Vector3.BACK, tornado_far_m if far else tornado_m, tornado_far_up_m if far else tornado_up_m)
 		"rift":
 			var rift: GroundZone = null
 			for node in get_tree().get_nodes_in_group(GroundZone.GROUP):

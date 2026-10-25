@@ -18,12 +18,12 @@ uniform ivec2 frames = ivec2(4, 2);
 // How many times the skin goes (and comes back, mirrored) around the column.
 uniform float turns = 2.0;
 // Brightness of the skin (the original shades it at 10; under the filmic tonemap that burns it white, so it stays near 1).
-uniform float energy = 1.3;
+uniform float energy = 1.1;
 // The brightest the skin gets, per channel (a soft shoulder, not a cut): the column must glow, not burn to white.
-uniform float ceiling_level : hint_range(0.3, 1.0) = 0.8;
+uniform float ceiling_level : hint_range(0.3, 1.0) = 0.95;
 // The lava flows down the column: the skin goes this many times along it (mirrored at each turn, so there is no seam where it wraps) and
 // slides at this many repeats a second.
-uniform float flow_repeats = 5.0;
+uniform float flow_repeats = 14.0;
 uniform float flow_speed = 0.2;
 
 varying vec2 v_uv;

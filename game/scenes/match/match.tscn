@@ -92,6 +92,7 @@
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/bombardment.tscn" id="z61h_Bombardment"]
 [ext_resource type="PackedScene" path="res://scenes/spells/stalks/meanstalks.tscn" id="z61_stalks"]
 [ext_resource type="PackedScene" path="res://scenes/spells/tornado/tornado.tscn" id="z61_tornado"]
+[ext_resource type="PackedScene" path="res://scenes/look/post/psx_screen.tscn" id="post_psx"]
 
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
@@ -337,6 +338,9 @@ world = NodePath("..")
 wizard_spawner = NodePath("../WizardSpawner")
 side_scene = ExtResource("f77_side")
 
+
+[node name="PostFx" parent="." instance=ExtResource("post_psx")]
+visible = false
 
 [node name="Hud" type="CanvasLayer" parent="." unique_id=1419423165]
 

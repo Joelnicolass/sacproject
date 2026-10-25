@@ -1,0 +1,22 @@
+[gd_scene format=3]
+
+[ext_resource type="Shader" path="res://scenes/look/post/psx_screen.gdshader" id="1_psx"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_psx"]
+shader = ExtResource("1_psx")
+shader_parameter/virtual_height = 240.0
+shader_parameter/color_levels = 32.0
+shader_parameter/dither_amount = 1.0
+shader_parameter/strength = 1.0
+
+[node name="PsxScreen" type="CanvasLayer"]
+layer = -1
+
+[node name="Screen" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_psx")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

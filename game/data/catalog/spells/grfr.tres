@@ -2,11 +2,13 @@
 
 [ext_resource type="PackedScene" path="res://scenes/spells/actions/rain_of_frogs_action.tscn" id="2_action"]
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_6i3i4"]
+[ext_resource type="Texture2D" uid="uid://bfsreoonqs5or" path="res://assets/original/ui/icons/grfr.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_6i3i4")
 tag = "grfr"
 display_name = "Rain Of Frogs"
+icon = ExtResource("icon_tex")
 mana_cost = 1000
 cast_range_m = 100.0
 cooldown_s = 50.0

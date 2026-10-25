@@ -20,10 +20,6 @@ const AUDIO_DIR := ROOT + "audio/"
 const AUDIO_SFX_DIR := AUDIO_DIR + "sfx/"
 const AUDIO_VOICE_DIR := AUDIO_DIR + "voice/"
 const AUDIO_MUSIC_DIR := AUDIO_DIR + "music/"
-const UI_ICONS_DIR := UI_DIR + "icons/"
-const UI_HUD_DIR := UI_DIR + "hud/"
-const UI_CURSORS_DIR := UI_DIR + "cursors/"
-const UI_XMENU_DIR := UI_DIR + "xmenu/"
 ## The files of each map under maps/<map>/ are named by its MapDefinition (RFC-044), not here.
 
 

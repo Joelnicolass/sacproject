@@ -2,11 +2,13 @@
 
 [ext_resource type="PackedScene" path="res://scenes/spells/actions/soul_mole_action.tscn" id="2_action"]
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_7gkxr"]
+[ext_resource type="Texture2D" uid="uid://cxkrb3ul3lpp5" path="res://assets/original/ui/icons/pmcd.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_7gkxr")
 tag = "pmcd"
 display_name = "Soul Mole"
+icon = ExtResource("icon_tex")
 mana_cost = 50
 cast_range_m = 200.0
 cooldown_s = 1.0

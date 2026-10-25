@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_l2bu3"]
 [ext_resource type="Resource" path="res://data/audio/creatures/spitfire.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://t5shjbaadrna" path="res://assets/original/ui/icons/sohf.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_l2bu3")
 tag = "sohf"
 display_name = "Spitfire"
+icon = ExtResource("icon_tex")
 god = "pyro"
 model = "fhbt"
 health = 400

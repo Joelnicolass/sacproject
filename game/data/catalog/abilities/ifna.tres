@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="AbilityType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_aq5b5"]
+[ext_resource type="Texture2D" uid="uid://bv6kofw0noj3p" path="res://assets/original/ui/icons/ifna.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_aq5b5")
 tag = "ifna"
 display_name = "Devour"
+icon = ExtResource("icon_tex")
 cast_range_m = 2.0
 flags = 4098
 flags1 = 8240

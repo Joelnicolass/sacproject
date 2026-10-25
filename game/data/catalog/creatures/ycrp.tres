@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_iod8r"]
 [ext_resource type="Resource" path="res://data/audio/creatures/yeti.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://bvflfj7noeu2i" path="res://assets/original/ui/icons/ycrp.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_iod8r")
 tag = "ycrp"
 display_name = "Yeti"
+icon = ExtResource("icon_tex")
 god = "stratos"
 model = "aprc"
 health = 3600

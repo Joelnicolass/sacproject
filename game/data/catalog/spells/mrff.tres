@@ -3,11 +3,13 @@
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_6hie3"]
 
 [ext_resource type="PackedScene" path="res://scenes/spells/actions/ward_action.tscn" id="2_action"]
+[ext_resource type="Texture2D" uid="uid://rrigyvtm85ff" path="res://assets/original/ui/icons/mrff.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_6hie3")
 tag = "mrff"
 display_name = "Fireform"
+icon = ExtResource("icon_tex")
 mana_cost = 400
 cooldown_s = 45.0
 casting_time_s = 0.9877

@@ -21,7 +21,7 @@
   { "press": "spell_2" },
   { "wait": 0.4 },
   { "assert": { "node": "%Battle", "prop": "armed", "equals": "spell" } },
-  { "assert": { "node": "%Battle", "prop": "armed_icon", "equals": "kcor" } },
+  { "assert": { "node": "%Battle", "prop": "armed_icon.resource_path", "contains": "kcor" } },
   { "assert": { "node": "%CommandCue/Aim", "visible": true } },
   { "print": { "node": "%CommandCue/Aim", "prop": "position" } },
   { "print": { "node": "%CommandCue/Aim", "prop": "size" } },

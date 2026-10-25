@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_747c0"]
 [ext_resource type="Resource" path="res://data/audio/creatures/shrike.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://5voqoki8jq4x" path="res://assets/original/ui/icons/tbsh.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_747c0")
 tag = "tbsh"
 display_name = "Shrike"
+icon = ExtResource("icon_tex")
 god = "persephone"
 model = "lhbt"
 health = 450

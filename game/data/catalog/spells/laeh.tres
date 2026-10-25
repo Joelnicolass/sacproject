@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="SpellType" format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_jgq3y"]
+[ext_resource type="Texture2D" uid="uid://bcf058lyrm6o2" path="res://assets/original/ui/icons/laeh.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_jgq3y")
 tag = "laeh"
 display_name = "Heal"
+icon = ExtResource("icon_tex")
 mana_cost = 300
 cast_range_m = 100.0
 cooldown_s = 1.0

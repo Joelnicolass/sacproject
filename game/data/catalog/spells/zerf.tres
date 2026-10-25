@@ -2,11 +2,13 @@
 
 [ext_resource type="PackedScene" path="res://scenes/spells/actions/freeze_action.tscn" id="2_action"]
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_oxxll"]
+[ext_resource type="Texture2D" uid="uid://w5lktdn82bet" path="res://assets/original/ui/icons/zerf.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_oxxll")
 tag = "zerf"
 display_name = "Freeze"
+icon = ExtResource("icon_tex")
 mana_cost = 400
 cast_range_m = 100.0
 cooldown_s = 20.0

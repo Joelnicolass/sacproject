@@ -2,11 +2,13 @@
 
 [ext_resource type="PackedScene" path="res://scenes/spells/actions/fence_action.tscn" id="2_action"]
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_kkw63"]
+[ext_resource type="Texture2D" uid="uid://ct28rq54j5k7c" path="res://assets/original/ui/icons/cnef.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_kkw63")
 tag = "cnef"
 display_name = "Fence"
+icon = ExtResource("icon_tex")
 mana_cost = 1400
 cast_range_m = 100.0
 cooldown_s = 60.0

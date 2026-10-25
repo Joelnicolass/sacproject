@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="AbilityType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_fq6q2"]
+[ext_resource type="Texture2D" uid="uid://dfi58sds24iac" path="res://assets/original/ui/icons/ahtf.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_fq6q2")
 tag = "ahtf"
 display_name = "Firefist Passive"
+icon = ExtResource("icon_tex")
 mana_cost = 10
 cast_range_m = 100.0
 cooldown_s = 1.25

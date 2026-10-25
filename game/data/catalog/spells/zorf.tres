@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_kh5xf"]
 [ext_resource type="PackedScene" path="res://scenes/spells/actions/frozen_ground_action.tscn" id="2_action"]
+[ext_resource type="Texture2D" uid="uid://74nig8224q7w" path="res://assets/original/ui/icons/zorf.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_kh5xf")
 tag = "zorf"
 display_name = "Frozen Ground"
+icon = ExtResource("icon_tex")
 mana_cost = 1200
 cast_range_m = 100.0
 cooldown_s = 30.0

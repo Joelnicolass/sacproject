@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_a7kj3"]
 [ext_resource type="PackedScene" path="res://scenes/spells/actions/explosion_action.tscn" id="2_action"]
+[ext_resource type="Texture2D" uid="uid://djiruvyeg2jvw" path="res://assets/original/ui/icons/pxef.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_a7kj3")
 tag = "pxef"
 display_name = "Explosion"
+icon = ExtResource("icon_tex")
 mana_cost = 1000
 cast_range_m = 100.0
 cooldown_s = 30.0

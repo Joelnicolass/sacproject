@@ -2,11 +2,13 @@
 
 [ext_resource type="PackedScene" path="res://scenes/spells/actions/firewall_action.tscn" id="2_action"]
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_ubft4"]
+[ext_resource type="Texture2D" uid="uid://bf5uxawhlnci5" path="res://assets/original/ui/icons/lwrf.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_ubft4")
 tag = "lwrf"
 display_name = "Firewall"
+icon = ExtResource("icon_tex")
 mana_cost = 1200
 cast_range_m = 100.0
 cooldown_s = 50.0

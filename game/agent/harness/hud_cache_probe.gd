@@ -1,34 +1,68 @@
 extends Node
 
-## Playtest helper for RFC-025b «respaldo sin caché»: points HudIcons at an empty folder and swaps
-## the roster for a fresh copy of its own scene, as on a clone without assets/original/ui. The product has
-## no reload API: the copy is built from `scene_file_path` after the folders changed.
+## Playtest helper for the fallback of the HUD when pictures are missing (RFC-025b): empties the `icon` of every creature, spell and
+## ability type and the pictures of the CueSet (cursors, order icons, refusal icon) in memory, and swaps the roster for a fresh copy of
+## its own scene, as if the types had no icon assigned. The files are not touched; `restore_cache` puts the pictures back. The product has
+## no reload API: the copy is built from `scene_file_path` after the icons changed.
 ##
-##   hide_cache()    HudIcons.icon_dir / hud_dir -> a folder with nothing; new roster.
-##   restore_cache() the real folders again; new roster.
+##   hide_cache()    every type icon and every CueSet picture -> null; new roster.
+##   restore_cache() the real pictures again; new roster.
 ##   silence_roster() hides and freezes the roster (baseline runs of older flows).
 
-const EMPTY := "res://agent/out/_no_assets/"
+var _icons: Dictionary = {}
+var _aim: Dictionary = {}
+var _refused: Texture2D
+var _free: Dictionary = {}
+var _target: Dictionary = {}
+var _hud_cursor: Texture2D
+var _hidden := false
 
 
 func hide_cache() -> String:
-	HudIcons.icon_dir = EMPTY
-	HudIcons.hud_dir = EMPTY
-	HudIcons.cursor_dir = EMPTY
-	HudIcons.xmenu_dir = EMPTY
+	if not _hidden:
+		_hidden = true
+		var catalog := GameCatalog.shared()
+		for list: Array in [catalog.creatures, catalog.spells, catalog.abilities]:
+			for type: Resource in list:
+				_icons[type] = type.get("icon")
+				type.set("icon", null)
+		var cues := _cues()
+		if cues != null:
+			_aim = cues.aim_icons.duplicate()
+			_refused = cues.refused_icon
+			_free = cues.free_cursors.duplicate()
+			_target = cues.target_cursors.duplicate()
+			_hud_cursor = cues.hud_cursor
+			cues.aim_icons.clear()
+			cues.refused_icon = null
+			cues.free_cursors.clear()
+			cues.target_cursors.clear()
+			cues.hud_cursor = null
 	return _swap()
 
 
 func restore_cache() -> String:
-	HudIcons.icon_dir = HudIcons.ICON_DIR
-	HudIcons.hud_dir = HudIcons.HUD_DIR
-	HudIcons.cursor_dir = HudIcons.CURSOR_DIR
-	HudIcons.xmenu_dir = HudIcons.XMENU_DIR
+	if _hidden:
+		_hidden = false
+		for type: Resource in _icons:
+			type.set("icon", _icons[type])
+		_icons.clear()
+		var cues := _cues()
+		if cues != null:
+			cues.aim_icons.assign(_aim)
+			cues.refused_icon = _refused
+			cues.free_cursors.assign(_free)
+			cues.target_cursors.assign(_target)
+			cues.hud_cursor = _hud_cursor
 	return _swap()
 
 
+func _cues() -> CueSet:
+	var battle := get_tree().current_scene.find_child("Battle", true, false) as CommandLog
+	return battle.cues if battle else null
+
+
 func _swap() -> String:
-	HudIcons.reset()
 	var old := get_tree().current_scene.find_child("SelectionRoster", true, false) as SelectionRoster
 	if old == null:
 		return "no roster"

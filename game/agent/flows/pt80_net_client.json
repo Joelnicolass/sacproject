@@ -50,8 +50,8 @@
   {
    "assert": {
     "node": "%Battle",
-    "prop": "armed_icon",
-    "equals": "kcor"
+    "prop": "armed_icon.resource_path",
+    "contains": "kcor"
    }
   },
   {
@@ -64,7 +64,7 @@
    "assert": {
     "node": "%CommandCue/Aim",
     "prop": "texture",
-    "contains": "ImageTexture"
+    "contains": "Texture2D"
    }
   },
   {
@@ -117,8 +117,8 @@
   {
    "assert": {
     "node": "%Battle",
-    "prop": "armed_icon",
-    "equals": "Matt"
+    "prop": "armed_icon.resource_path",
+    "contains": "_matt"
    }
   },
   {

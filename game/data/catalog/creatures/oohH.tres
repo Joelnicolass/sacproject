@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_3qucp"]
 [ext_resource type="Resource" path="res://data/audio/creatures/toldor.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://0nl7lyp4p1b1" path="res://assets/original/ui/icons/ooh_h.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_3qucp")
 tag = "oohH"
 display_name = "Toldor"
+icon = ExtResource("icon_tex")
 god = "persephone"
 model = "hoom"
 health = 5625

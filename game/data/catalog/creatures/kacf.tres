@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_8736l"]
 [ext_resource type="Resource" path="res://data/audio/creatures/pyrodactyl.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://cc5jf8w74ht5x" path="res://assets/original/ui/icons/kacf.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_8736l")
 tag = "kacf"
 display_name = "Pyrodactyl"
+icon = ExtResource("icon_tex")
 god = "pyro"
 model = "fcak"
 health = 1120

@@ -3,11 +3,13 @@
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_uyto4"]
 
 [ext_resource type="PackedScene" path="res://scenes/spells/actions/ward_action.tscn" id="2_action"]
+[ext_resource type="Texture2D" uid="uid://hbe0chffdbl4" path="res://assets/original/ui/icons/niks.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_uyto4")
 tag = "niks"
 display_name = "Skin Of Stone"
+icon = ExtResource("icon_tex")
 mana_cost = 400
 cooldown_s = 110.0
 casting_time_s = 0.9877

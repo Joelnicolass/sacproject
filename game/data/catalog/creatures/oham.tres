@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_bou3e"]
 [ext_resource type="PackedScene" path="res://scenes/units/mana_flame.tscn" id="2_flame"]
+[ext_resource type="Texture2D" uid="uid://decnulic3iwu2" path="res://assets/original/ui/icons/oham.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_bou3e")
 tag = "oham"
 display_name = "Manahoar"
+icon = ExtResource("icon_tex")
 god = "none"
 model = "maho"
 carried_fx = ExtResource("2_flame")

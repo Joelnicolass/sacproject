@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_ne1yr"]
 [ext_resource type="Resource" path="res://data/audio/creatures/scythe.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://mid422vwftvl" path="res://assets/original/ui/icons/dzid.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_ne1yr")
 tag = "dzid"
 display_name = "Scythe"
+icon = ExtResource("icon_tex")
 god = "charnel"
 model = "ddiz"
 health = 540

@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_v1qwj"]
 [ext_resource type="Resource" path="res://data/audio/creatures/faestus_pyro.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://diylvydsq1ii2" path="res://assets/original/ui/icons/_e_h_t_h.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_v1qwj")
 tag = "EHTH"
 display_name = "Faestus"
+icon = ExtResource("icon_tex")
 god = "pyro"
 model = "the2"
 health = 2080

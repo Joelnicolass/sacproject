@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="AbilityType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_lqgvu"]
+[ext_resource type="Texture2D" uid="uid://d0ysryk4pk81" path="res://assets/original/ui/icons/_h_sba.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_lqgvu")
 tag = "HSba"
 display_name = "Protector"
+icon = ExtResource("icon_tex")
 mana_cost = 300
 cooldown_s = 20.0
 casting_time_s = 14.8148

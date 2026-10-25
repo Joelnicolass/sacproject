@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_x4v5w"]
 [ext_resource type="Resource" path="res://data/audio/creatures/locust.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://dby00c0mjyq85" path="res://assets/original/ui/icons/pazb.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_x4v5w")
 tag = "pazb"
 display_name = "Locust"
+icon = ExtResource("icon_tex")
 god = "charnel"
 model = "bugz"
 health = 450

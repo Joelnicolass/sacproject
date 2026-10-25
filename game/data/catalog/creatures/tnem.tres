@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_d43oa"]
+[ext_resource type="Texture2D" uid="uid://trvlofmv6hl3" path="res://assets/original/ui/icons/tnem.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_d43oa")
 tag = "tnem"
 display_name = "Zyzyx"
+icon = ExtResource("icon_tex")
 god = "none"
 model = "FAmr"
 health = 1000

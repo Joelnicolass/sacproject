@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_mcmcm"]
 [ext_resource type="PackedScene" path="res://scenes/spells/actions/meanstalks_action.tscn" id="2_action"]
+[ext_resource type="Texture2D" uid="uid://div0k3jgi0lja" path="res://assets/original/ui/icons/rter.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_mcmcm")
 tag = "rter"
 display_name = "Meanstalks"
+icon = ExtResource("icon_tex")
 mana_cost = 1800
 cast_range_m = 100.0
 cooldown_s = 240.0

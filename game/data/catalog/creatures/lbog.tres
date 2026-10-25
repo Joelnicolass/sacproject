@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_bb17u"]
 [ext_resource type="Resource" path="res://data/audio/creatures/frostwolf.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://cwc1uf3nbqfjm" path="res://assets/original/ui/icons/lbog.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_bb17u")
 tag = "lbog"
 display_name = "Frostwolf"
+icon = ExtResource("icon_tex")
 god = "stratos"
 model = "gobl"
 health = 640

@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_xaj8f"]
 [ext_resource type="Resource" path="res://data/audio/creatures/abomination.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://d6lu26xqtjao" path="res://assets/original/ui/icons/ctug.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_xaj8f")
 tag = "ctug"
 display_name = "Abomination"
+icon = ExtResource("icon_tex")
 god = "charnel"
 model = "gutc"
 health = 1710

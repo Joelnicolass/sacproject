@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="AbilityType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_av7gt"]
+[ext_resource type="Texture2D" uid="uid://c8gos3xx1mkk7" path="res://assets/original/ui/icons/ekba.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_av7gt")
 tag = "ekba"
 display_name = "Spit rock"
+icon = ExtResource("icon_tex")
 mana_cost = 5
 cast_range_m = 75.0
 cooldown_s = 1.5

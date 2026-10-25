@@ -196,6 +196,8 @@ func _check_book(file: String, book: GodBook, tags: Dictionary) -> void:
 			var tag := str(type.get("tag"))
 			if not tags[lists[list][1]].has(tag) or type != _catalog_type(lists[list][1], tag):
 				_report("gods/%s: book.%s has \"%s\", which is not a file of %s/" % [file, list, tag, lists[list][1]])
+			if type.get("icon") == null:
+				_report("gods/%s: book.%s \"%s\" has no icon (the book would write its name; tools/bake/fill_type_icons.gd)" % [file, list, tag])
 			if seen.has(tag):
 				_report("gods/%s: book.%s repeats \"%s\"" % [file, list, tag])
 			seen[tag] = true
@@ -296,8 +298,8 @@ func _check_custom_model(creature: CreatureType) -> void:
 			for tick in ticks:
 				if float(tick) < 0.0 or float(tick) > float(frames):
 					_report("creatures/%s: melee_animations[%d] (%s) lands on frame %s, the clip has %d" % [_file(creature), index, swing.get("tag", ""), tick, frames])
-	if creature.icon == null and not ResourceLoader.exists("res://assets/custom/icons/%s.png" % creature.model):
-		print("CATALOG warning: creatures/%s has no HUD icon (assets/custom/icons/%s.png or CreatureType.icon; new_creature.gd draws one with a window)" % [_file(creature), creature.model])
+	if creature.icon == null:
+		print("CATALOG warning: creatures/%s has no HUD icon (CreatureType.icon; tools/bake/fill_type_icons.gd or creature_icon.gd fill it)" % _file(creature))
 	root.free()
 
 

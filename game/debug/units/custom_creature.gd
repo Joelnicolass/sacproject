@@ -8,7 +8,7 @@ extends Node
 ##   3. it fights a dummy that does not die: the swings play both melee variants of the model (`attack_at45` and `attack2_at60`, F336)
 ##      and each blow lands at the impact its clip's name carries (45 % of 40 frames = 0.6 s; 60 % of 50 frames = 1.0 s), not at the end of
 ##      the clip nor at the default middle; the dummy loses health;
-##   3b. its HUD icon (F335, assets/custom/icons/testmonster.png) is what HudIcons gives the roster and the book, 32 x 32, not the original's;
+##   3b. its HUD icon (F335, assets/custom/icons/testmonster.png) is the `icon` of its CreatureType (the roster and the book read it), 32 x 32, not the original's;
 ##   4. it dies and its corpse settles;
 ##   5. its model scene maps the roles to the .glb clips and the death role really lays the skeleton down (the rig is inert on a
 ##      headless run, so the scene is driven by hand, the way BodyRig drives it).
@@ -19,7 +19,6 @@ const TAG := "testmonster"
 const GOD := "pyro"
 const SLOT := 1
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
-const SPELL_BOOK := preload("res://scenes/ui/spell_book/spell_book.gd")
 const MAX_WAIT_FRAMES := 1800
 ## UnitOrders.Command (the enum of a script with no class_name).
 const ORDER_MOVE := 1
@@ -214,14 +213,13 @@ func _landed(index: int) -> int:
 	return count
 
 
-## F335: the roster and the book ask HudIcons for the creature's tag. A creature of your own with assets/custom/icons/<tag>.png (or an
-## `icon` in its type) gets that picture: a 32 x 32 image with something drawn on it. "" when it is fine.
+## F335: the roster and the book show `CreatureType.icon`. A creature of your own gets the picture drawn from its model: a 32 x 32 image
+## with something drawn on it. "" when it is fine.
 func _icon_verdict() -> String:
-	var texture := HudIcons.icon(TAG)
+	var type := GameData.creature(TAG)
+	var texture: Texture2D = type.icon if type else null
 	if texture == null:
-		return "HudIcons.icon(%s) is null (assets/custom/icons/%s.png missing?)" % [TAG, TAG]
-	if SPELL_BOOK.icon_for(TAG) != texture:
-		return "the book shows another icon than HudIcons.icon"
+		return "CreatureType.icon of %s is empty (run tools/bake/fill_type_icons.gd or creature_icon.gd)" % TAG
 	var image := texture.get_image()
 	if image == null or image.get_width() != 32 or image.get_height() != 32:
 		return "the icon is not 32 x 32"
@@ -230,7 +228,7 @@ func _icon_verdict() -> String:
 		for x in 32:
 			if image.get_pixel(x, y).a > 0.5:
 				opaque += 1
-	print("CUSTOM_CREATURE icon: %s, %d x %d, %d of 1024 pixels drawn (book and roster read HudIcons.icon)" % [texture.resource_path, image.get_width(), image.get_height(), opaque])
+	print("CUSTOM_CREATURE icon: %s, %d x %d, %d of 1024 pixels drawn (book and roster read CreatureType.icon)" % [texture.resource_path, image.get_width(), image.get_height(), opaque])
 	if opaque < 300 or opaque > 900:
 		return "the icon looks empty or flat (%d of 1024 pixels drawn)" % opaque
 	return ""

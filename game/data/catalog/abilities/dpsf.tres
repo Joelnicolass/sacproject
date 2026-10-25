@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="AbilityType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_3svju"]
+[ext_resource type="Texture2D" uid="uid://c00thq766jx52" path="res://assets/original/ui/icons/dpsf.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_3svju")
 tag = "dpsf"
 display_name = "Basilisk gaze"
+icon = ExtResource("icon_tex")
 mana_cost = 21
 cast_range_m = 110.0
 cooldown_s = 8.0

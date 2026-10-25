@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_rrj4x"]
 [ext_resource type="Resource" path="res://data/audio/creatures/storm_giant.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://dwmkn2rjxminm" path="res://assets/original/ui/icons/rgos.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_rrj4x")
 tag = "rgos"
 display_name = "Storm Giant"
+icon = ExtResource("icon_tex")
 god = "stratos"
 model = "sogr"
 health = 1280

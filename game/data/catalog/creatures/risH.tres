@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_oyuso"]
 [ext_resource type="Resource" path="res://data/audio/creatures/sirocco.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://dgy8stlnkln0j" path="res://assets/original/ui/icons/ris_h.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_oyuso")
 tag = "risH"
 display_name = "Sirocco"
+icon = ExtResource("icon_tex")
 god = "persephone"
 model = "sirc"
 health = 6875

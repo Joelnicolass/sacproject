@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="AbilityType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_ljk8q"]
+[ext_resource type="Texture2D" uid="uid://v8ypnr7o2bhr" path="res://assets/original/ui/icons/dner.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_ljk8q")
 tag = "dner"
 display_name = "Rend Soul"
+icon = ExtResource("icon_tex")
 mana_cost = 100
 cast_range_m = 90.0
 cooldown_s = 10.0

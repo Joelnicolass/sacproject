@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_dtvq4"]
 [ext_resource type="Resource" path="res://data/audio/creatures/thestor.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://crppaxi3c5887" path="res://assets/original/ui/icons/eaf_h.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_dtvq4")
 tag = "eafH"
 display_name = "Thestor"
+icon = ExtResource("icon_tex")
 god = "persephone"
 model = "faez"
 health = 2600

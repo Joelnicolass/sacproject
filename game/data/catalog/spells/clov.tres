@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_36vbx"]
 [ext_resource type="PackedScene" path="res://scenes/spells/actions/volcano_action.tscn" id="2_action"]
+[ext_resource type="Texture2D" uid="uid://c768fsclw4tic" path="res://assets/original/ui/icons/clov.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_36vbx")
 tag = "clov"
 display_name = "Volcano"
+icon = ExtResource("icon_tex")
 mana_cost = 1800
 cast_range_m = 100.0
 cooldown_s = 360.0

@@ -108,7 +108,7 @@ func _show_units() -> void:
 		var cell := _cells[i]
 		if i < count:
 			var unit: Node = _units[i]
-			cell.show_unit(unit, HudIcons.icon(str(unit.get("creature_tag"))))
+			cell.show_unit(unit, CreatureType.icon_of(unit))
 			cell.tooltip_text = _unit_tooltip(unit) if tooltips else ""
 		else:
 			cell.hide_cell()
@@ -134,7 +134,7 @@ func _show_groups() -> void:
 		if i < tags.size():
 			var tag: String = tags[i]
 			var group: Array = by_tag[tag]
-			cell.show_group(tag, group, HudIcons.icon(tag))
+			cell.show_group(tag, group, CreatureType.icon_of(group[0]))
 			cell.tooltip_text = ("%s ×%d" % [_name_of(group[0]), group.size()]) if tooltips else ""
 		else:
 			cell.hide_cell()
@@ -164,10 +164,10 @@ func _show_ability() -> void:
 	button.visible = not ability_tag.is_empty()
 	if ability_tag.is_empty():
 		return
-	var icon := HudIcons.icon(ability_tag)
+	var ability: AbilityType = GameData.ability(ability_tag)
+	var icon: Texture2D = ability.icon if ability else null
 	%AbilityIcon.texture = icon
 	button.text = "" if icon else ability_tag
-	var ability: AbilityType = GameData.ability(ability_tag)
 	button.tooltip_text = (ability.display_name if ability else ability_tag) if tooltips else ""
 
 

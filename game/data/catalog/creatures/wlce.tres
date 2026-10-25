@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_vkkob"]
 [ext_resource type="Resource" path="res://data/audio/creatures/flummox.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://ckfjgwxrxuh5u" path="res://assets/original/ui/icons/wlce.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_vkkob")
 tag = "wlce"
 display_name = "Flummox"
+icon = ExtResource("icon_tex")
 god = "james"
 model = "eclw"
 health = 2280

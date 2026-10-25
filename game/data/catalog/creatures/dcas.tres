@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="CreatureType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_k2kp5"]
+[ext_resource type="Texture2D" uid="uid://bo2r42q2mqqes" path="res://assets/original/ui/icons/dcas.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_k2kp5")
 tag = "dcas"
 display_name = "Sac Doctor"
+icon = ExtResource("icon_tex")
 god = "none"
 model = "sacd"
 health = 400

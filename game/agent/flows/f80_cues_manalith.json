@@ -43,8 +43,8 @@
   {
    "assert": {
     "node": "%Battle",
-    "prop": "armed_icon",
-    "equals": "htlm"
+    "prop": "armed_icon.resource_path",
+    "contains": "htlm"
    }
   },
   {
@@ -57,7 +57,7 @@
    "assert": {
     "node": "%CommandCue/Aim",
     "prop": "texture",
-    "contains": "ImageTexture"
+    "contains": "Texture2D"
    }
   },
   {
@@ -119,7 +119,7 @@
    "assert": {
     "node": "%CommandCue/Invalid",
     "prop": "texture",
-    "contains": "ImageTexture"
+    "contains": "Texture2D"
    }
   },
   {

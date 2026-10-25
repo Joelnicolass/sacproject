@@ -2,11 +2,13 @@
 
 [ext_resource type="PackedScene" path="res://scenes/spells/actions/vinewall_action.tscn" id="2_action"]
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_78y2m"]
+[ext_resource type="Texture2D" uid="uid://cp45jqcax16no" path="res://assets/original/ui/icons/lawv.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_78y2m")
 tag = "lawv"
 display_name = "Vinewall"
+icon = ExtResource("icon_tex")
 mana_cost = 1500
 cast_range_m = 100.0
 cooldown_s = 80.0

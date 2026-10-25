@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_lhdmn"]
 [ext_resource type="Resource" path="res://data/audio/creatures/trogg.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://b8xcoo5yinrvi" path="res://assets/original/ui/icons/ycro.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_lhdmn")
 tag = "ycro"
 display_name = "Trogg"
+icon = ExtResource("icon_tex")
 god = "james"
 model = "eorc"
 health = 960

@@ -2,11 +2,13 @@
 
 [ext_resource type="PackedScene" path="res://scenes/spells/actions/wall_of_spikes_action.tscn" id="2_action"]
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_ww0ln"]
+[ext_resource type="Texture2D" uid="uid://bg08n1v1u6fui" path="res://assets/original/ui/icons/laws.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_ww0ln")
 tag = "laws"
 display_name = "Wall Of Spikes"
+icon = ExtResource("icon_tex")
 mana_cost = 1200
 cast_range_m = 100.0
 cooldown_s = 50.0

@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="AbilityType" format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_trfa1"]
+[ext_resource type="Texture2D" uid="uid://eo2bokqutoyl" path="res://assets/original/ui/icons/mhba.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_trfa1")
 tag = "mhba"
 display_name = "Hellmouth Shoot"
+icon = ExtResource("icon_tex")
 mana_cost = 50
 cast_range_m = 40.0
 cooldown_s = 4.0

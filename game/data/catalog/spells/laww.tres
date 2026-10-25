@@ -2,11 +2,13 @@
 
 [ext_resource type="PackedScene" path="res://scenes/spells/actions/wailing_wall_action.tscn" id="2_action"]
 [ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_jcfxs"]
+[ext_resource type="Texture2D" uid="uid://1bqtxe75ll07" path="res://assets/original/ui/icons/laww.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_jcfxs")
 tag = "laww"
 display_name = "Wailing Wall"
+icon = ExtResource("icon_tex")
 mana_cost = 1200
 cast_range_m = 100.0
 cooldown_s = 70.0

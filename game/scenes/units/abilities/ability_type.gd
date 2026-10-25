@@ -3,6 +3,8 @@ extends Resource
 
 @export var tag: String = ""
 @export var display_name: String = ""
+## The picture of the ability on the roster button and on the cursor while it waits for its target. Empty: the tag is written instead.
+@export var icon: Texture2D
 @export var mana_cost: int = 0
 ## How far from the caster it can be cast (m).
 @export var cast_range_m: float = 0.0

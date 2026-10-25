@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_lnqtu"]
 [ext_resource type="Resource" path="res://data/audio/creatures/slave.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://cpelo0u22swa2" path="res://assets/original/ui/icons/zepf.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_lnqtu")
 tag = "zepf"
 display_name = "Slave"
+icon = ExtResource("icon_tex")
 god = "pyro"
 model = "fpez"
 health = 500

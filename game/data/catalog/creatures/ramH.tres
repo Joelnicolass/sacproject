@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_vx1gb"]
 [ext_resource type="Resource" path="res://data/audio/creatures/gangrel.tres" id="sounds_set"]
+[ext_resource type="Texture2D" uid="uid://c7glllnpeynhx" path="res://assets/original/ui/icons/ram_h.png" id="icon_tex"]
 
 [resource]
 script = ExtResource("1_vx1gb")
 tag = "ramH"
 display_name = "Gangrel"
+icon = ExtResource("icon_tex")
 god = "charnel"
 model = "bane"
 health = 1500

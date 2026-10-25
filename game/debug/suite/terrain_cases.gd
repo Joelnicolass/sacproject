@@ -8,6 +8,7 @@ extends "res://debug/suite/zone_case_base.gd"
 const BED := preload("res://debug/map/terrain_bed.tscn")
 const Maps := preload("res://debug/look/flora_test_maps.gd")
 const BORE_CASES := preload("res://debug/suite/bore_cases.gd")
+const DENT_CASES := preload("res://debug/suite/dent_cases.gd")
 ## A vertex of the lattice of High Noon on land, with land 40 m to its east.
 const CENTER := Vector2(1260.0, 1270.0)
 const BURST_TICKS := 252
@@ -26,6 +27,7 @@ var _shape: TerrainShape
 var _collision: TerrainCollision
 ## The Bore cases (they borrow this world); kept here because their Callables do not keep them alive.
 var _bore
+var _dent
 
 
 func run(host: Node3D) -> Dictionary:
@@ -48,6 +50,8 @@ func run(host: Node3D) -> Dictionary:
 	}
 	_bore = BORE_CASES.new(self)
 	cases.merge(_bore.cases())
+	_dent = DENT_CASES.new(self)
+	cases.merge(_dent.cases())
 	var out := {}
 	for name: String in cases:
 		if only.is_empty() or only == name:

@@ -35,6 +35,7 @@ Escena con raíz `Node2D` o `Node3D` (tu nivel) y un nodo **MpWorld** con **Play
 | `State` | puntaje, reloj, ronda: lo ven todos (`Mp.state()`) |
 | `Match` | espera a que carguen todos, quién se va y quién vuelve, el final (`Mp.finish()`) |
 | `Hud/Leave` | botón para salir de la partida |
+| `Hud/Invite` | en una partida privada de esta PC, lo que escriben los amigos para entrar |
 
 Si borrás una pieza, se vuelve a armar al abrir la escena. No les cambies el nombre.
 
@@ -124,7 +125,7 @@ Para probar con red mala, agregá a cada proceso `--net-lag-ms=100 --net-jitter-
 | LAN | Depurar → Ejecutar varias instancias (2). Una: Host LAN. Otra: Unirse a `127.0.0.1` |
 | Dedicado | `godot --headless --path . -- --dedicated` y los clientes se unen a `127.0.0.1` |
 | WebSocket | agregá `--transport=ws` a todos los procesos (un servidor WS solo atiende clientes WS) |
-| Web | exportá con el preset Web (sin threads). El export usa WebSocket solo y oculta Host y la lista LAN: un navegador solo se une. El servidor es un dedicado con `transport = ws` |
+| Web | exportá con el preset Web (sin threads). El export usa WebSocket (directo, o por el relay si el juego dice `relay`) y oculta Host y la lista LAN: un navegador solo se une. El servidor es un dedicado con `transport = ws`, o cualquiera por el relay |
 
 ## Más allá de lo básico
 
@@ -152,7 +153,7 @@ func accept_pick(pick: Dictionary) -> bool:
 
 ### Sin IP pública: el relay (Railway u otro host)
 
-Si tu servidor no tiene IP pública (tu PC detrás del router) o querés un dominio con TLS para la web, usá el relay: un servidor Node chico (`relay/server.mjs`, sin dependencias) que hace de túnel. El servidor Godot se conecta hacia afuera y los jugadores también. En el `MpNetConfig`: `transport = relay`, `relay_url = wss://tu-relay.up.railway.app`, `relay_room = mi-juego`; el servidor recibe el secreto por `MPKIT_RELAY_SECRET`. Salas, partidas y partida privada funcionan igual. Pasos para Railway: [relay/README.md](relay/README.md).
+Si tu servidor no tiene IP pública (tu PC detrás del router) o querés un dominio con TLS para la web, usá el relay: un servidor Node chico (`relay/server.mjs`, sin dependencias) que hace de túnel. El servidor Godot se conecta hacia afuera y los jugadores también. En `game.tres`: `transport = relay`, `relay_url = wss://tu-relay.up.railway.app`, `relay_room = mi-juego`; el servidor recibe el secreto por `MPKIT_RELAY_SECRET`. Salas, partidas y partida privada funcionan igual. Pasos para Railway: [relay/README.md](relay/README.md).
 
 ### Partida privada en tu PC (con código)
 
@@ -160,10 +161,10 @@ Si tu servidor no tiene IP pública (tu PC detrás del router) o querés un domi
 
 ### Web
 
-Un navegador no puede abrir un servidor ni usar UDP, así que un juego web se une a un dedicado WebSocket (`MpNetConfig.transport = ws`). Escritorio y web no se mezclan: un servidor WebSocket atiende clientes WebSocket. En el campo de dirección del menú sirven `192.168.1.5`, `juego.ejemplo.com`, cualquiera con `:puerto`, o una URL `wss://…`. Una página servida por `https` necesita `wss://`: el servidor lleva certificado y clave (en su `MpNetConfig`, o en el `MpLobbyConfig` para las salas, o con `deploy.sh --tls-cert … --tls-key …`) y el cliente prende `MpNetConfig.tls_client`. Un navegador pausa una pestaña oculta: el jugador web que cambia de pestaña se frena para los demás hasta que vuelve, y si tarda más que `rejoin_grace_s` en una partida de sala cuenta como abandono.
+Un navegador no puede abrir un servidor ni usar UDP, así que un juego web se une a un dedicado WebSocket (`transport = ws` en `game.tres`) o por el relay (`transport = relay`). Escritorio y web no se mezclan: un servidor WebSocket atiende clientes WebSocket. En el campo de dirección del menú sirven `192.168.1.5`, `juego.ejemplo.com`, cualquiera con `:puerto`, o una URL `wss://…`. Una página servida por `https` necesita `wss://`: el servidor lleva certificado y clave (en su `game.tres`, o en el `MpLobbyConfig` para las salas, o con `deploy.sh --tls-cert … --tls-key …`) y el cliente prende `tls_client` en `game.tres`. Un navegador pausa una pestaña oculta: el jugador web que cambia de pestaña se frena para los demás hasta que vuelve, y si tarda más que `rejoin_grace_s` en una partida de sala cuenta como abandono.
 
 ### Subirlo a un VPS
 
 Exportá el preset de Linux y corré `addons/mp_kit/deploy/deploy.sh usuario@vps build/server --rooms 7700 --open-firewall`. Guía completa, varias instancias y web por https: [deploy/README.md](deploy/README.md).
 
-Detalle de cada pieza: [README.md](README.md).
+Detalle de cada pieza: [README.md](README.md). Paso a paso, para una persona: [GUIDE.md](GUIDE.md).

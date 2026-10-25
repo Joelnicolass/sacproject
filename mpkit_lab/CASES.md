@@ -80,7 +80,9 @@ Transportes: lo marcado **T** corre en ENet, WebSocket y relay (`TRANSPORT=enet|
 
 | Caso | Motivo |
 |---|---|
-| Export de Linux y un VPS real | faltan las plantillas de Linux en esta Mac; no hay VPS de prueba |
+| Export de Linux y un VPS real | requieren las plantillas de export de Linux y un VPS de prueba |
 | El relay corriendo en Railway | es el mismo `server.mjs` que se prueba local; Railway no se toca desde acá |
 | Clientes web por el relay con `wss://` público | requiere el dominio de Railway (por `ws://` local sí: `TRANSPORT=relay web.sh`) |
-| Export *Dedicated Server* arrancado sin `--dedicated` | la etiqueta `dedicated_server` solo existe en un export; faltan las plantillas de Linux |
+| Export *Dedicated Server* arrancado sin `--dedicated` | la etiqueta `dedicated_server` solo existe en un export |
+| Choque de puertos por relay de punta a punta (dos partidas en la misma sala) | el reintento se prueba en `test_launcher_relay_retry.gd`; de punta a punta, el puerto al azar casi nunca choca |
+| Un servidor por relay que se reinicia dentro de los 3 s de gracia | se cubre de forma indirecta: arena y salas por relay arrancan cada escenario apenas termina el anterior |

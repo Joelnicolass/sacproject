@@ -167,7 +167,8 @@ World (Node2D o Node3D)
     ├── State            (MpState, con su MpSync)
     ├── Match            (MpMatch)
     └── Hud
-        └── Leave        (MpLeaveButton: sale de la partida)
+        ├── Leave        (MpLeaveButton: sale de la partida)
+        └── Invite       (MpInviteLabel: en una partida privada, el código para los amigos)
 ```
 
 **`boot.tscn`**:
@@ -268,7 +269,7 @@ Qué hace el `MpFlow`: arranca la red con la config, cambia de escena (boot ↔ 
 ### 5.3 Escena del mundo
 
 1. **Escena › Nueva escena**. Raíz: **Escena 2D** (`Node2D`) o **Escena 3D** (`Node3D`). Renombrala `World`. Tu nivel va acá, como siempre.
-2. **Agregar nodo hijo**, buscá **MpWorld** y agregalo. Al soltarlo, arma sus piezas como hijos: `SpawnPoints` (un marcador por asiento), `Actors`, `Players` (un `MpSlotSpawner`), `State` (un `MpState`), `Match` (un `MpMatch`) y `Hud/Leave` (un `MpLeaveButton`). Detecta solo si el mundo es 2D o 3D.
+2. **Agregar nodo hijo**, buscá **MpWorld** y agregalo. Al soltarlo, arma sus piezas como hijos: `SpawnPoints` (un marcador por asiento), `Actors`, `Players` (un `MpSlotSpawner`), `State` (un `MpState`), `Match` (un `MpMatch`), `Hud/Leave` (un `MpLeaveButton`) y `Hud/Invite` (un `MpInviteLabel`). Detecta solo si el mundo es 2D o 3D.
 3. En su inspector:
 
 | Propiedad | Qué hace | Por defecto |
@@ -276,6 +277,7 @@ Qué hace el `MpFlow`: arranca la red con la config, cambia de escena (boot ↔ 
 | `player_scene` | Tu `player.tscn` (lo armás en 5.4; podés volver después). Es la escena que recibe cada asiento | vacío |
 | `seats` | Cuántos marcadores arma en `SpawnPoints` (si hay más jugadores, vuelven a empezar) | 4 |
 | `leave_button` | Arma `Hud/Leave` | on |
+| `invite_label` | Arma `Hud/Invite`: en una partida privada de esta PC muestra el código para los amigos | on |
 
 4. Mové los marcadores de `MpWorld/SpawnPoints` adonde querés que nazca cada jugador.
 5. **Guardá la escena** (Ctrl+S).
@@ -304,7 +306,7 @@ El `MpWorld` solo arma nodos que también podés poner vos. Sirve si tu mundo ya
 
 6. Opcional, para el puntaje: agregá un hijo **MpState** llamado `Score`.
 7. Opcional, para inicio y fin: agregá un hijo **MpMatch** llamado `Match`.
-8. Para salir: agregá un `CanvasLayer` llamado `Hud` y, adentro, un **MpLeaveButton** llamado `Leave` (ver [7.6](#76-salir-de-la-partida)).
+8. Para salir: agregá un `CanvasLayer` llamado `Hud` y, adentro, un **MpLeaveButton** llamado `Leave` (ver [7.6](#76-salir-de-la-partida)), y un **MpInviteLabel** para las partidas privadas.
 9. **Guardá la escena** (Ctrl+S). Al guardar, el `MpState` arma su hijo `MpSync` y queda guardado.
 
 Qué hace el `MpSlotSpawner`: crea un jugador por slot ocupado. En solo, el tuyo. En LAN, el del host al arrancar y el de cada cliente cuando termina de cargar el mundo. En dedicado, ninguno para el servidor. Los llama `Pawn_1`, `Pawn_2`... y les pone `MpActor.owner_slot` antes de que entren al árbol.
@@ -724,7 +726,7 @@ Métodos y propiedades:
 | `waiting` | Verdadero mientras espera asientos, en todos los peers |
 | `pause_until_loaded` | (on) En una partida de sala, el mundo queda **pausado en todos los peers** hasta que cargan todos o pasa `load_timeout_s`. Así nadie camina antes que los demás |
 
-Mientras espera, el árbol está pausado. La red del kit sigue andando (MpKit, el lobby, el agente, el lanzador, el beacon LAN corren igual). Lo tuyo no: si querés mostrar "Esperando jugadores…", poné ese nodo del HUD con **Process › Mode = Always** y escuchá `waiting_changed`.
+Mientras espera, el árbol está pausado. La red del kit sigue andando (MpKit, el lobby, el agente, el lanzador, el beacon LAN corren igual), y también el botón Leave y la línea de invitación. Lo tuyo no: si querés mostrar "Esperando jugadores…", poné ese nodo del HUD con **Process › Mode = Always** y escuchá `waiting_changed`.
 
 ```gdscript
 func _ready() -> void:
@@ -771,17 +773,17 @@ func _on_finished(result: Dictionary) -> void:
 
 ### 7.6 Salir de la partida
 
-Agregá un **MpLeaveButton** al HUD (es un `Button`):
+Agregá un **MpLeaveButton** al HUD (es un `Button`; el `MpWorld` ya trae uno en `Hud/Leave`):
 
 1. En el mundo, un `CanvasLayer` llamado `Hud`.
 2. Adentro, **Agregar nodo hijo › MpLeaveButton**. Si no le ponés texto, dice *Leave*.
 
-Hace `MpFlow.leave_match()`: al lobby si la partida vino del lobby, si no al menú. Sirve igual en solo, en el host y en un cliente. No termina la partida para los demás (eso es `MpMatch.finish`).
+Hace `MpFlow.leave_match()`: al lobby si la partida vino del lobby, si no al menú. Sirve igual en solo, en el host y en un cliente, y también con el mundo pausado esperando asientos. No termina la partida para los demás (eso es `MpMatch.finish`).
 
 Por código, lo mismo:
 
 ```gdscript
-MpFlow.find_in_tree(self).leave_match()     # al lobby o al menú
+Mp.leave()                                  # al lobby o al menú
 MpFlow.find_in_tree(self).return_to_boot()  # siempre al menú
 ```
 
@@ -817,7 +819,7 @@ Desde el editor: en el diálogo de personalizar instancias del menú **Depurar**
 
 ### 8.4 WebSocket y relay
 
-Agregá `--transport=ws` a **todos** los procesos (servidor y clientes), o poné `transport = ws` en el `MpNetConfig`. Un servidor WebSocket solo atiende clientes WebSocket.
+Agregá `--transport=ws` a **todos** los procesos (servidor y clientes), o poné `transport = ws` en `game.tres`. Un servidor WebSocket solo atiende clientes WebSocket.
 
 ```bash
 godot --headless --path . -- --dedicated --transport=ws
@@ -858,7 +860,7 @@ Qué hace el kit solo con la red (todo medido, nada fijo):
 | Ritmo del dueño | cuántos frames le sobran o le faltan al servidor | si le faltan, el dueño mete un frame de más cada 16 ticks (alrededor de 6% más rápido), como Overwatch |
 | Calidad de red (`Mp.net_quality()`) | pings 4 por segundo: RTT, jitter, pérdida | nada solo: es para tu interfaz (`grade_name`: `good`, `fair`, `bad`) |
 
-En una PC, sin red, el movimiento de otro jugador aparece en tu pantalla unos 75-90 ms después de que apretó la tecla. Con 60 ms de lag por tramo, 30 ms de jitter y 3% de pérdida, unos 280-310 ms, y sigue parejo.
+En una PC, sin red, el movimiento de otro jugador aparece en tu pantalla unos 80-90 ms después de que apretó la tecla. Con 60 ms de lag por tramo, 30 ms de jitter y 3% de pérdida, unos 275-335 ms, y sigue parejo. `mpkit_lab/run/arena.sh` lo mide en cada corrida (`remote_delay_ms`).
 
 ### 8.6 Probar como en producción: `mpkit_lab`
 
@@ -896,13 +898,14 @@ Toda la matriz de casos automáticos: `mpkit_lab/run/all.sh`. Qué cubre cada pr
 | `--dedicated` | Arranca como servidor dedicado y carga el mundo |
 | `--listen-host` | Arranca hosteando LAN, sin tocar el menú |
 | `--client1` / `--client2` + `--join-ip=IP` | Arranca uniéndose a esa IP (por defecto `127.0.0.1`) |
-| `--room-server` | Abre la escena de `MpFlow.room_server_path` |
-| `--mp-port=N` | Puerto (le gana al `MpNetConfig`) |
-| `--max-players=N` | Jugadores (le gana al `MpNetConfig`) |
+| `--room-server` | Abre la escena de salas (`rooms_scene` del juego, o `MpFlow.room_server_path`) |
+| `--mp-port=N` | Puerto (le gana a `game.tres`) |
+| `--max-players=N` | Jugadores (le gana a `game.tres`) |
 | `--transport=enet` / `ws` / `relay` | Transporte |
 | `--relay-url=`, `--relay-room=`, `--relay-secret=` | Relay (ver [12](#12-relay-túnel-por-railway-u-otro-host)) |
 | `--world=id` | Mundo, si usás el catálogo `MpFlow.worlds` |
 | `--keep-match-files` | Servidor de salas: no borra la carpeta de cada partida |
+| `--lag-comp=off` | Servidor: sin compensación de lag (para comparar) |
 | `--no-flow` | El `MpFlow` no hace nada (herramientas y pruebas) |
 
 Van después de `--` en la línea de comando.
@@ -913,7 +916,7 @@ Van después de `--` en la línea de comando.
 godot --headless --path . --script res://addons/mp_kit/tests/mp_test_runner.gd
 ```
 
-Tiene que terminar con `MPKIT TESTS PASS (n)`. Prueban piezas sueltas (slots, frames de input, sincronizador, direcciones, asistente), no partidas en red: eso es `mpkit_lab`.
+Tiene que terminar con `MPKIT TESTS PASS (n)`. Prueban piezas sueltas (slots, frames de input, sincronizador, direcciones, asistente, buffers adaptativos, compensación de lag), no partidas en red: eso es `mpkit_lab`.
 
 ## 9. Online con salas
 
@@ -958,7 +961,7 @@ Creala como recurso nuevo (**Nuevo › Recurso › MpLobbyConfig**).
 | `empty_room_close_s` | Cierra una sala vacía después de esto | 120.0 |
 | `resume_grace_s` | Cuánto guarda el lobby el asiento de alguien que se cayó del lobby | 120.0 |
 | `public_host` | Dirección de las partidas que se manda a los clientes. Vacío = la misma que usaron para el lobby | vacío |
-| `tls_certificate_path`, `tls_key_path` | Certificado y clave PEM para `wss://` (con `net_config`, salen de sus `tls_*` si acá están vacíos) | vacío |
+| `tls_certificate_path`, `tls_key_path` | Certificado y clave PEM para `wss://` (vacíos = los `tls_*` de `game.tres`) | vacío |
 | `max_matches` | Partidas a la vez en esta máquina (cada una es un proceso) | 99 |
 | `match_port_min`, `match_port_max` | Rango de puertos de las partidas | 7800-7899 |
 | `ticket_ttl_s` | Cuánto vale el ticket para entrar a la partida | 60.0 |
@@ -971,7 +974,7 @@ Cualquier campo se pisa con un flag de su nombre, con guiones: `max_matches` →
 
 El ejemplo (`rooms_config.tres`) usa lobby 7700, 2 asientos, cuenta de 3 s, 4 partidas y puertos 7710-7719.
 
-Cada partida se arma con tantos lugares como asientos tiene su ticket, aunque sean más que el `max_players` del `MpNetConfig`.
+Cada partida se arma con tantos lugares como asientos tiene su ticket, aunque sean más que el `max_players` del juego.
 
 ### 9.3 Reglas propias: `MpRoomRules`
 
@@ -1059,16 +1062,10 @@ En el mundo, el `MpMatch` hace el resto: espera a que carguen todos, avisa ausen
 En tu PC, para probar:
 
 ```bash
-godot --headless --path . res://rooms.tscn
-# o, con MpFlow.room_server_path puesto:
 godot --headless --path . -- --room-server
 ```
 
-Con el ejemplo:
-
-```bash
-godot --headless --path . res://addons/mp_kit/examples/arena_2d/rooms.tscn
-```
+Arranca por el boot, y el `MpFlow` abre `rooms_scene` de `game.tres`: así el servidor de salas toma la red del juego y cada partida abre el boot del juego. Con el ejemplo, nombrá su boot: `godot --headless --path . res://addons/mp_kit/examples/arena_2d/boot.tscn -- --room-server`. Abrir `rooms.tscn` directo también anda, pero sin flow: toma la red de su propio `net_config` y las partidas abren la escena principal.
 
 Esperá la línea `rooms ready port 7700 (…)`. Después abrí dos clientes (F5 dos veces), **Online rooms**, **Connect**, uno crea la sala, el otro entra, los dos tildan **Ready**. Arranca la cuenta y la partida. (O todo junto: `mpkit_lab/run/play.sh rooms`.)
 
@@ -1130,8 +1127,10 @@ server.server_failed.connect(func(reason: String) -> void: print("falló: ", rea
 | `server_failed(reason)` | No pudo arrancar |
 | `server_ended(result)` | Terminó la partida |
 | `stop()` | Mata la partida |
+| `invites()` / `invite_text()` | Lo que escriben los amigos, uno por asiento libre: `192.168.1.5:7801#K7P2QX` (por relay, `:7801#K7P2QX`) |
+| `MpLocalServer.running(tree)` | El servidor privado que corre en este proceso, o `null`. `start_on` con uno corriendo lo devuelve |
 
-Usa los tiempos y puertos de un `MpLobbyConfig` por defecto (partidas en 7800-7899) y el transporte y relay de tu proceso.
+Usa los tiempos y puertos de un `MpLobbyConfig` por defecto (partidas en 7800-7899) y la red de tu `game.tres` (transporte, relay, TLS). Con relay, busca puerto desde uno al azar del rango, y si el relay lo rechaza porque otro lo usa, prueba el siguiente.
 
 ## 11. Web
 
@@ -1139,20 +1138,20 @@ Usa los tiempos y puertos de un `MpLobbyConfig` por defecto (partidas en 7800-78
 
 Un navegador no puede abrir un servidor ni usar UDP. Entonces:
 
-- Un export web usa **siempre WebSocket**, diga lo que diga el `MpNetConfig`.
+- Un export web usa **WebSocket**: directo, o por el relay si `game.tres` dice `transport = relay`. Con `enet` en el `.tres`, usa WebSocket directo, porque un navegador no tiene ENet.
 - No puede hostear ni buscar salas LAN: el menú oculta **Host LAN**, **Private server** y la lista LAN. Si algo llama `host_lan()`, el estado dice *This build cannot host (web): join a server*.
-- Solo se une: a un dedicado WebSocket o a un servidor de salas WebSocket.
+- Solo se une: a un dedicado o un servidor de salas WebSocket, o a cualquiera por el relay.
 
 ### 11.2 Por qué no se mezcla con escritorio
 
-Un servidor WebSocket solo atiende clientes WebSocket, y uno ENet solo atiende ENet. Si querés web y escritorio en la misma partida, usá WebSocket para todos (`transport = ws` en el `MpNetConfig`).
+Un servidor WebSocket solo atiende clientes WebSocket, y uno ENet solo atiende ENet. Si querés web y escritorio en la misma partida, usá WebSocket para todos (`transport = ws` en `game.tres`), o el relay para todos.
 
 ### 11.3 Exportar
 
 1. Copiá el preset *Web* de `addons/mp_kit/deploy/export_presets.example.cfg` a tu `export_presets.cfg` (o crealo en **Proyecto › Exportar**).
 2. Es sin threads (`variant/thread_support=false`): cualquier hosting estático sirve, sin cabeceras especiales.
 3. Exportá a `build/web/index.html` y subilo a tu hosting.
-4. El servidor: un dedicado (o un servidor de salas) con `transport = ws`.
+4. El servidor: un dedicado (o un servidor de salas) con `transport = ws`, o cualquiera por el relay.
 
 ### 11.4 `wss://` y TLS
 
@@ -1164,7 +1163,7 @@ En el servidor, alguna de estas:
 
 | Dónde | Qué poner |
 |---|---|
-| `MpNetConfig` del dedicado | `tls_certificate` (`X509Certificate`) y `tls_key` (`CryptoKey`) |
+| `game.tres` del dedicado | `tls_certificate` (`X509Certificate`) y `tls_key` (`CryptoKey`). Las partidas de un servidor de salas los reciben como archivo: en un export, el kit los copia a `user://` |
 | Flags del dedicado | `--tls-certificate-path=/ruta/fullchain.pem --tls-key-path=/ruta/privkey.pem` |
 | `MpLobbyConfig` (salas) | `tls_certificate_path` y `tls_key_path`. El lobby escucha en `wss://` y cada partida recibe el mismo certificado. Si están vacíos, salen del `tls_*` de `game.tres` |
 | `deploy.sh` | `--transport ws --tls-cert … --tls-key …` (ver [13](#13-subir-a-un-vps)) |
@@ -1173,10 +1172,10 @@ En el cliente:
 
 | Dónde | Qué poner |
 |---|---|
-| `MpNetConfig` del cliente | `tls_client` = on. `tls_trusted_ca` vacío para un certificado normal (Let's Encrypt). `tls_common_name` solo si el certificado es de otro nombre que la dirección |
+| `game.tres` del cliente | `tls_client` = on. `tls_trusted_ca` vacío para un certificado normal (Let's Encrypt). `tls_common_name` solo si el certificado es de otro nombre que la dirección |
 | Flags | `--tls-client`, `--tls-trusted-ca=archivo.pem`, `--tls-common-name=nombre` |
 
-La dirección tiene que ser el **dominio** del certificado (`juego.ejemplo.com:7700`), no una IP. La pantalla de lobby toma el transporte y el TLS del `MpNetConfig` del flow.
+La dirección tiene que ser el **dominio** del certificado (`juego.ejemplo.com:7700`), no una IP. La pantalla de lobby toma el transporte y el TLS del `game.tres` del flow.
 
 **Camino 2: proxy inverso.** nginx o Caddy terminan TLS en el puerto 443 y reenvían al puerto WS local. El juego no cambia. En el campo de dirección del menú se puede escribir una URL completa: `wss://juego.ejemplo.com/ruta`. Detalle en [README.md](README.md) (sección *wss:// (TLS) para el VPS*).
 
@@ -1259,7 +1258,7 @@ Un solo binario de Linux hace todo: cliente, servidor de salas (`--room-server`)
 
 - Un VPS Linux x86_64 con systemd (Ubuntu o Debian) y un usuario con `sudo` al que entrás por SSH.
 - En tu PC, las plantillas de export de Linux de tu versión de Godot (**Editor › Administrar plantillas de exportación**).
-- En el proyecto: el `MpFlow` con `room_server_path` (si usás salas) y un `MpNetConfig`.
+- En el proyecto: un `game.tres` con `rooms_scene` (si usás salas) en el `MpFlow` del boot.
 
 ### 13.2 Exportar
 
@@ -1345,7 +1344,7 @@ ssh usuario@mi-vps sudo systemctl disable --now juego-rooms@7701   # apagar uno
 
 Si el servidor de salas se cae, systemd lo levanta. Sus partidas se cierran solas en pocos segundos.
 
-En los clientes, poné la dirección del VPS en `MpNetConfig.public_host` (por ejemplo `juego.ejemplo.com`): el menú y la pantalla de lobby arrancan con ella. Para dedicados sueltos, los jugadores escriben `juego.ejemplo.com:7777` en el menú.
+En los clientes, poné la dirección del VPS en `public_host` de `game.tres` (por ejemplo `juego.ejemplo.com`): el menú y la pantalla de lobby arrancan con ella. Para dedicados sueltos, los jugadores escriben `juego.ejemplo.com:7777` en el menú.
 
 Más detalle: [deploy/README.md](deploy/README.md).
 
@@ -1362,7 +1361,8 @@ Más detalle: [deploy/README.md](deploy/README.md).
 | Admisión por ticket (partidas de sala y privadas) | Solo entran los tickets del asiento. Tickets de hasta 512 caracteres. Sin ticket en 5 s, afuera. Hasta 64 conexiones esperando ticket a la vez |
 | Lobby | Valida versión, nombre (24 caracteres), tamaño de opciones y picks (2048 bytes), ritmo del chat, y tiempo para saludar (`hello_timeout_s`). El cliente nunca elige slot, puerto ni semilla |
 | Slots | Los asigna el servidor. El cliente nunca dice "soy el 2" |
-| Relay | Solo hostea quien tiene el secreto (`RELAY_HOST_SECRET`). El secreto nunca va en el `.tres` |
+| Compensación de lag | Nunca rebobina más de un segundo (como `sv_maxunlag` de Valve): un momento visto más atrás, o adelante de ahora, se recorta |
+| Relay | Solo hostea quien tiene el secreto (`RELAY_HOST_SECRET`); viaja en un header, nunca en la URL. El secreto nunca va en el `.tres`. Una sala con host vivo no se puede tomar |
 
 ### 14.2 Lo que tiene que validar tu juego
 
@@ -1401,10 +1401,16 @@ Agregá `func mp_move(keys: MpInput, delta: float) -> void:` al script del padre
 **"Put an MpActor next to this MpInput (same parent)."**
 El `MpInput` tiene que ser hermano de un `MpActor`, o tener `actor` asignado.
 
+**"Set Player Scene: the scene every seat gets (it needs an MpActor)."** (en `MpWorld`)
+Asigná `player_scene` en el `MpWorld`.
+
 ### Errores al jugar (panel Depurador)
 
 **"MpActor on 'X': no MpSync child. Open the scene in the editor and save it (the editor builds it)."**
 Igual que el primer aviso: abrí y guardá la escena del actor.
+
+**"MpWorld 'X': no Y child. Open the scene in the editor and save it (the editor builds it)."**
+Falta una pieza del `MpWorld` (le cambiaste el nombre, o la escena nunca se abrió en el editor). Abrí la escena del mundo y guardala: el `MpWorld` arma lo que falta.
 
 **"MpActor on 'X': predict needs an MpInput next to it and mp_move(input, delta) on the parent"**
 Falta el `MpInput` o `mp_move`. El kit apaga `predict` para ese nodo y sigue.
@@ -1419,7 +1425,7 @@ Un jugador llamó `to_server` en un nodo que no es suyo. Si es el jugador de otr
 El nombre o la cantidad de argumentos no coincide. `to_server(&"buy", item)` necesita `func mp_sv_buy(item)`. Sin prefijo en la llamada: `&"buy"`, no `&"mp_sv_buy"`.
 
 **"… only runs on the server"** (`to_all`, `despawn`, `MpState.set_value`, `MpMatch.finish`, `spawn_actor`)
-Lo llamaste en un cliente. Ponelo detrás de `if net.is_authority():` (o `MpKit.is_authority()`).
+Lo llamaste en un cliente. Ponelo detrás de `if net.is_authority():` (o `Mp.is_server()`).
 
 **"MpActor 'X': despawn() on a node of the world scene; hide it (sync visible) or spawn it"**
 Ese nodo está guardado en la escena del mundo: no se puede borrar para todos. Ocultalo con `sync_visible`, o hacelo aparecer con un `MpSpawner` para poder borrarlo (ver [7.3](#73-borrar-cosas)).
@@ -1455,13 +1461,15 @@ Hay más de 4 ventanas buscando salas LAN en la misma PC, u otro programa usa es
 Valores válidos: `enet`, `ws` o `relay` (también se aceptan `udp`, `websocket`, `wss`, `tunnel`).
 
 **"MpTransport: the relay transport needs a relay URL (--relay-url=wss://… or MpNetConfig.relay_url)"**
-Con `transport = relay`, poné `relay_url` en el `MpNetConfig` o pasá `--relay-url=`.
+Con `transport = relay`, poné `relay_url` en `game.tres` o pasá `--relay-url=`.
 
 **"MpRelayPeer: the relay closed the host (…)"**
 El relay cortó a tu servidor. Causas comunes:
 - El secreto no coincide (`MPKIT_RELAY_SECRET` del servidor ≠ `RELAY_HOST_SECRET` del relay): el relay ni acepta la conexión.
-- *"port N is in use on the relay"*: otro servidor del mismo juego tiene esa sala (`relay_room` y puerto iguales). Usá otro puerto u otro `relay_room`. Si es tu propio servidor que se reinició, esperá unos segundos: el relay suelta al host anterior a los 15 s sin respuesta.
 - El relay se reinició o se cayó.
+
+**"MpRelayPeer: the relay room is in use by another host (like a port in use)"** / **"MpFlow: port N is in use on the relay …"** / **"MpRoomServer: lobby port N is in use on the relay …"**
+Otro servidor del mismo juego tiene esa sala del relay (`relay_room` y puerto iguales). Una partida de salas o privada prueba sola otro puerto; un dedicado o un lobby se cierran. Usá otro puerto u otro `relay_room`. Si es tu propio servidor que se reinició, el kit reintenta 3 s y el relay suelta a un host mudo a los 15 s.
 
 **"MpTransport: cannot load TLS certificate … / key …"**
 La ruta está mal o el usuario del servicio no puede leer el archivo.
@@ -1483,17 +1491,23 @@ Algún archivo de la carpeta ya existe (`[~]`) o la carpeta no empieza con `res:
 3. ¿Con `predict` y sin `mp_move`? Mirá el error del depurador: el kit apagó la predicción.
 4. ¿Sin `predict`, movés detrás de `is_authority()`? Si movés detrás de `is_local()`, el cliente se mueve en su pantalla pero el servidor lo devuelve a su lugar.
 5. ¿`sync_position` está tildado? ¿Guardaste la escena del jugador después de tildarlo?
-6. ¿El `MpSlotSpawner` tiene `spawn_path` y `pawn_scene`?
+6. ¿El `MpSlotSpawner` (el `Players` del `MpWorld`) tiene `spawn_path` y `pawn_scene`?
 7. ¿Es una partida de sala esperando asientos? El mundo está pausado hasta que cargan todos (`MpMatch.waiting`).
 
 **Se mueve, pero los otros jugadores tironean.**
 Usá `smoothing = BUFFERED` con `adaptive_buffer` prendido; si sigue, bajá `late_tolerance` (0.01) o subí el tope `buffer_delay_s` (0.15, 0.2). Si bajaste `send_hz`, subilo o dejalo en 0.
+
+**Los otros se ven muy atrasados, aun en una red buena.**
+Revisá que `adaptive_buffer` esté prendido. Apagado, se dibujan siempre todo `buffer_delay_s` atrás.
 
 **Mi jugador responde tarde.**
 Prendé **Prediction › predict** y pasá el movimiento a `mp_move`.
 
 **Con gravedad o inercia, mi jugador se corrige seguido.**
 Agregá `velocity` (y lo que `mp_move` lea) a **Sync › sync_extra**. Ver [6.2](#62-mp_move-y-sus-reglas).
+
+**Los disparos no aciertan lo que estaba en la pantalla del tirador.**
+Validá contra lo que vio el tirador: `net.rewound(func)`, `net.seen_position_of(nodo)` o, para un proyectil, `net.view_lag()` como hace `shot.gd` del ejemplo ([6.8](#68-más-del-mpactor)).
 
 **El que entra tarde no ve X.**
 - Si X lo hiciste con `to_all`: es un efecto de una vez, no queda. Usá una propiedad en **Sync › Extra** o `MpState`.
@@ -1504,7 +1518,7 @@ Agregá `velocity` (y lo que `mp_move` lea) a **Sync › sync_extra**. Ver [6.2]
 
 **No encuentro la sala LAN.**
 1. La lista muestra solo partidas **Host LAN** (no dedicados ni privadas).
-2. `lan_discovery` del `MpNetConfig` y `advertise_lan` del `Flow` tienen que estar en on en el host.
+2. `lan_discovery` de `game.tres` y `advertise_lan` del `Flow` tienen que estar en on en el host.
 3. El anuncio va por UDP broadcast a los puertos 7778-7781: el firewall de las dos PCs lo tiene que dejar pasar, y tienen que estar en la misma red (no funciona por internet ni entre subredes).
 4. Más de 4 ventanas en la misma PC: ver el warning `MpLanBeacon` de arriba.
 5. En web no hay lista LAN.
@@ -1521,10 +1535,10 @@ La dirección está mal escrita: un puerto fuera de 1-65535, un nombre con carac
 - Con relay: ¿el servidor ya está conectado al relay? Un cliente de una sala sin host se rechaza.
 
 **El web no conecta por https.**
-1. La página es `https`: necesita `wss://`. Prendé `tls_client` en el `MpNetConfig` del cliente.
+1. La página es `https`: necesita `wss://`. Prendé `tls_client` en el `game.tres` del cliente.
 2. El servidor tiene que tener certificado y clave (ver [11.4](#114-wss-y-tls)), o un proxy inverso.
 3. Usá el dominio del certificado, no la IP.
-4. El servidor tiene que ser WebSocket (`transport = ws`), también el de salas.
+4. El servidor tiene que ser WebSocket (`transport = ws`), también el de salas, o ir por el relay.
 
 **"Lost the server".**
 El servidor se cerró o se cortó la red. El flow vuelve al boot (o al lobby si la partida vino de una sala, donde aparece **Back to the match** si sigue corriendo).
@@ -1542,6 +1556,9 @@ Tu `accept_pick` rechazó el pick. Revisá `default_pick` de la pantalla de lobb
 **La partida de sala no arranca.**
 Todos los asientos tienen que estar ocupados y en **Ready**. Mirá el log del servidor de salas: si dice `match … failed …`, el proceso de partida no arrancó (puerto, `max_matches`, el ejecutable). Con `--keep-match-files` queda el log de esa partida.
 
+**No veo el código de mi partida privada.**
+Lo muestra el HUD de la partida con un **MpInviteLabel** (en `Hud/Invite` del `MpWorld`). En un mundo armado a mano, agregá uno al HUD.
+
 **El jugador web se congela para los demás.**
 Cambió de pestaña: el navegador la pausó. Ver [11.5](#115-pestaña-oculta).
 
@@ -1551,9 +1568,12 @@ Cambió de pestaña: el navegador la pausó. Ver [11.5](#115-pestaña-oculta).
 |---|---|
 | `MpKit` | El autoload: red, slots, mensajes de sesión |
 | `MpFlow` | El nodo que maneja escenas y modos (solo, LAN, unirse, dedicado). Es dueño de la sesión |
-| `Mp` | La clase con los verbos de la partida: `play_solo`, `host`, `join`, `leave`, `is_server`, `me`, `state`, `finish` |
+| `Mp` | La clase con los verbos de la partida: `play_solo`, `host`, `join`, `leave`, `is_server`, `me`, `state`, `finish`, `net_quality` |
 | `MpGame` | El juego en un `.tres`: la red (es un `MpNetConfig`) y las escenas (boot, mundo, lobby, salas) |
-| `MpWorld` | Un nodo en el mundo que arma puntos de aparición, actores, spawner, estado, partida y botón Leave |
+| `MpWorld` | Un nodo en el mundo que arma puntos de aparición, actores, spawner, estado, partida, botón Leave e invitación |
+| `MpInviteLabel` | En el HUD: en una partida privada de esta PC, lo que escriben los amigos para entrar |
+| `MpNetQuality` | La calidad de la conexión (RTT, jitter, pérdida, nota); se lee con `Mp.net_quality()` |
+| `MpLagComp` | La compensación de lag: un segundo de poses en el servidor, para validar un disparo contra lo que vio el tirador |
 | `MpNetConfig` | Recurso `.tres` con la red del juego: transporte, puerto, jugadores, dirección pública, relay, TLS |
 | `MpAddress` | El lector de direcciones (IP, nombre, `:puerto`, `#CÓDIGO`, URL) que usan el menú, el flow y el lobby |
 | `MpBootMenu` | El menú listo para usar (`mp_boot_menu.tscn`) |
@@ -1582,6 +1602,7 @@ Cambió de pestaña: el navegador la pausó. Ver [11.5](#115-pestaña-oculta).
 | Pick | Lo que eligió un jugador en su asiento (personaje, equipo) |
 | Predicción | El dueño se mueve al instante |
 | Reconciliación | El dueño vuelve al estado del servidor y repite lo que faltaba |
+| Compensación de lag | El servidor valida un disparo contra lo que vio el tirador |
 | `BUFFERED` / `FOLLOW` / `NONE` | Modos de suavizado de proxies |
 | ENet | Transporte UDP (escritorio) |
 | WebSocket / `ws` / `wss` | Transporte TCP (web); `wss` = cifrado con TLS |
@@ -1630,7 +1651,7 @@ Cambió de pestaña: el navegador la pausó. Ver [11.5](#115-pestaña-oculta).
 | partida con código en mi PC | `MpBootMenu.offer_private_server` o `MpLocalServer.start_on` |
 | que el menú ya tenga la dirección del servidor | `public_host` en `game.tres` |
 | servidor sin IP pública ni puertos | relay: `transport = relay`, `relay_url`, `MPKIT_RELAY_SECRET` |
-| juego web | `MpNetConfig.transport = ws`, servidor dedicado WS, export Web |
+| juego web | `transport = ws` (o `relay`) en `game.tres`, servidor WS o relay, export Web |
 | web por https | `wss://`: `tls_client` en el cliente y certificado en el servidor |
 | probar con lag | `--net-lag-ms=100 --net-jitter-ms=30 --net-loss=0.05` |
 | ver una partida entera sin jugar | `mpkit_lab/run/play.sh dedicated --watch` |
@@ -1639,7 +1660,7 @@ Cambió de pestaña: el navegador la pausó. Ver [11.5](#115-pestaña-oculta).
 
 ## 18. Dónde seguir
 
-- [QUICKSTART.md](QUICKSTART.md): la versión corta, en seis pasos.
+- [QUICKSTART.md](QUICKSTART.md): la versión corta.
 - [README.md](README.md): referencia de cada pieza, transporte, túnel `Dictionary`, salas hub y bajo nivel.
 - [deploy/README.md](deploy/README.md): despliegue en un VPS en detalle.
 - [relay/README.md](relay/README.md): el relay, Railway y su protocolo.

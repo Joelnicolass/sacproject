@@ -29,10 +29,16 @@ func spawn_tower(scene: PackedScene, fount: ManafountBody, slot: int, yaw: float
 		"name": "Tower%d" % _serial, "scene": index, "slot": slot, "yaw": yaw,
 		"x": at.x, "y": at.y, "z": at.z, "fount": str(fount.get_path()),
 	}
+	var tower: CastTower
 	if MpKit.is_networked():
-		return spawn(data) as CastTower if MpKit.is_server() else null
-	var tower := _make(data)
-	get_node(spawn_path).add_child(tower)
+		if not MpKit.is_server():
+			return null
+		tower = spawn(data) as CastTower
+	else:
+		tower = _make(data) as CastTower
+		get_node(spawn_path).add_child(tower)
+	if tower != null:
+		tower.clear_footprint()
 	return tower
 
 

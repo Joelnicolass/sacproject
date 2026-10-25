@@ -18,6 +18,9 @@ extends Node3D
 enum State { NORMAL, EMERGING, COLLECTING, REVIVING, DEVOURING }
 enum SoulColor { BLUE, RED }
 
+## Every soul in play.
+const GROUP := &"soul"
+
 ## The state changed (every peer: the setter runs on the replicated value too). RFC-052 052h: SoulSounds listens.
 signal state_changed(was: State, now: State)
 
@@ -112,7 +115,7 @@ func setup(data: Dictionary) -> void:
 
 
 func _ready() -> void:
-	add_to_group("soul")
+	add_to_group(GROUP)
 	if _visual == null:
 		_visual = Node3D.new()
 		_visual.name = "Visual"

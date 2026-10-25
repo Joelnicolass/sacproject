@@ -15,6 +15,9 @@ signal dissolving_changed(on: bool)
 ## A Convert doctor brought the body back to life: it is a creature again.
 signal stood_up
 
+## Every body that lies dead on the map.
+const GROUP := &"corpse"
+
 ## Physics layer of corpses: off the unit layer (2) so picks and other bodies ignore it.
 @export_flags_3d_physics var corpse_layer := 8
 ## A body on the ground counts as fallen after this long (as the tip-over lasted).
@@ -67,7 +70,7 @@ func lay_down(body: UnitBody, role := "", instant := false) -> void:
 	_body = body
 	_ticks = 0
 	body.remove_from_group("unit")
-	body.add_to_group("corpse")
+	body.add_to_group(GROUP)
 	body.collision_layer = corpse_layer
 	body.velocity = Vector3.ZERO
 	laid_down.emit(instant)
@@ -88,7 +91,7 @@ func stand_up(body: UnitBody) -> void:
 	clip_driven = false
 	dissolving = false
 	set_physics_process(false)
-	body.remove_from_group("corpse")
+	body.remove_from_group(GROUP)
 	body.add_to_group("unit")
 	body.collision_layer = body.unit_layer
 	stood_up.emit()

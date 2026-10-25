@@ -9,6 +9,7 @@ const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
 const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
 const ALTAR_SCENE := preload("res://scenes/map/props/altar.tscn")
 const FOUNT_SCENE := preload("res://scenes/map/props/manafount.tscn")
+const SOUL_SCENE := preload("res://scenes/souls/soul.tscn")
 const SYSTEM_SCENE := preload("res://scenes/sacrifice/sacrifice_system.tscn")
 const RULES := preload("res://data/match_rules.tres")
 const MANALITHS: Array[String] = ["mana", "pyma", "jman", "stam", "cama"]
@@ -213,6 +214,14 @@ func _cast() -> Dictionary:
 		checks[god + "_in_book"] = spell != null and action != null and action.arm_status(wizard, spell) == ""
 		checks[god + "_not_implemented_gone"] = index >= 0 and caster.structure_status(index) != SpellAction.NOT_IMPLEMENTED
 		spawner.scenes = [wizard.god_type().structure_for(spell).scene]
+		var dead := Node3D.new()
+		dead.name = "Corpse"
+		dead.add_to_group(Corpse.GROUP)
+		dead.position = fount.global_position + Vector3(1.0, 0.0, 0.5)
+		_root.add_child(dead)
+		var soul := SOUL_SCENE.instantiate() as Soul
+		soul.position = fount.global_position + Vector3(-0.5, 0.0, 1.0)
+		_root.add_child(soul)
 		var aim := action.check(wizard, spell, fount.global_position, null, "")
 		checks[god + "_aim_ok"] = aim.status.is_empty()
 		action.begin(wizard, spell, aim)
@@ -220,6 +229,13 @@ func _cast() -> Dictionary:
 		var tower := towers.get_child(0) as CastTower if towers.get_child_count() == 1 else null
 		results[god] = tower.type.tag if tower != null else ""
 		checks[god + "_fount_taken"] = tower != null and not fount.is_free()
+		## The dead on the fount go out of the footprint (a doctor could never reach them inside the box), onto the ground.
+		var ring := (tower.footprint_m() + TowerRules.MARGIN_M - 0.01) if tower != null else INF
+		for body: Node3D in [dead, soul]:
+			var flat := Vector2(body.global_position.x - fount.global_position.x, body.global_position.z - fount.global_position.z)
+			checks[god + "_%s_pushed_out" % body.name] = flat.length() >= ring and absf(body.global_position.y) < 0.05
+		dead.queue_free()
+		soul.queue_free()
 		checks[god + "_busy_fount"] = action.check(wizard, spell, fount.global_position, null, "").status == StructureAction.NO_FOUNT
 		if tower != null:
 			tower.health.damage(99999.0, 2)

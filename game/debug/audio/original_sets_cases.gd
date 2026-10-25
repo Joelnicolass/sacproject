@@ -23,7 +23,7 @@ func run(_host: Node) -> Dictionary:
 			"note": "sin import del original: silencio", "set_found": sound_set != null}}
 	var results := {}
 	results["original_sets_creature"] = _creature(sound_set)
-	results["original_sets_world"] = _named("world", [&"sacrifice_round", &"sacrifice_end", &"soul", &"summon"])
+	results["original_sets_world"] = _named("world", [&"sacrifice_round", &"sacrifice_end", &"soul"])
 	results["original_sets_ui"] = _named("ui", [&"click"])
 	SoundLibrary.clear_cache()
 	return results
@@ -32,7 +32,8 @@ func run(_host: Node) -> Dictionary:
 func _creature(sound_set: SoundSet) -> Dictionary:
 	if sound_set == null:
 		return {"ok": false, "reason": "no set for %s" % CREATURE}
-	var swing := sound_set.cue(SoundEvent.SWING)
+	## The WAV kind comes from the melee fallback (fist): the gnome's own `swing` is a voice (OGG), as it sounded before.
+	var swing: SoundCue = sound_set.fallback.cue(SoundEvent.SWING) if sound_set.fallback != null else null
 	var voice := sound_set.cue(SoundEvent.SELECTED)
 	var info := {"has_swing": swing != null, "has_voice": voice != null, "fallback": sound_set.fallback != null}
 	if swing == null or voice == null or swing.streams.is_empty() or voice.streams.is_empty():

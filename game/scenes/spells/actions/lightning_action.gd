@@ -1,22 +1,37 @@
+@tool
 class_name LightningAction
-extends AimedAction
+extends SpellAction
 
 ## Lightning (ntil): an instant strike on a living enemy when the casting ends (sacengine castLightning).
 ## The bolt is a BeamType drawn by FxBus; the damage is DamageMod.lightning, which charges a Storm Giant.
 
 const _HEALTH := preload("res://scenes/components/health.gd")
+const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
 ## BeamType of the strike (res://data/fx/beams/), RFC-029 029d.
 @export var beam := "lightning"
+## Who may be struck (a living body of another player).
+@export var target: SpellTarget
 
 
-func finish(wizard: WizardBody, spell: SpellType, target: Node3D) -> String:
-	if target == null or not _ROCK.is_live_body(target):
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings := super()
+	if target == null:
+		warnings.append("Falta `target`: quién es un blanco válido.")
+	return warnings
+
+
+func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String) -> Aim:
+	return aim_at_body(wizard, spell, point, funds, target.pick(wizard, picked) if target != null else null)
+
+
+func finish(wizard: WizardBody, spell: SpellType, body: Node3D) -> String:
+	if body == null or not _ROCK.is_live_body(body):
 		return ""
 	## F130: DamageMod.lightning, which charges a Storm Giant (state.d:9017-9022).
-	var taken := (target.get_node("Health") as Health).damage_typed(float(spell.damage), _HEALTH.DIRECT_SPELL, wizard.owner_slot, false, false, _HEALTH.LIGHTNING)
-	_ROCK.report(target, taken, _HEALTH.DIRECT_SPELL)
-	FxBus.broadcast_beam(beam, _origin(wizard), _ROCK.body_center(target), target)
+	var taken := (body.get_node("Health") as Health).damage_typed(float(spell.damage), _HEALTH.DIRECT_SPELL, wizard.owner_slot, false, false, _HEALTH.LIGHTNING)
+	_ROCK.report(body, taken, _HEALTH.DIRECT_SPELL)
+	FxBus.broadcast_beam(beam, _origin(wizard), _ROCK.body_center(body), body)
 	return ""
 
 

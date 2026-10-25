@@ -75,4 +75,4 @@ func _reach(body: Node3D) -> void:
 static func _is_friend(wizard: Node3D, body: Node3D) -> bool:
 	if wizard == null:
 		return false
-	return AimedAction.is_ally(wizard, body) or SideRelations.stance(int(wizard.get("owner_slot")), int(body.get("owner_slot"))) == SideRelations.Stance.ALLY
+	return SpellTarget.same_owner(wizard, body) or SideRelations.stance(int(wizard.get("owner_slot")), int(body.get("owner_slot"))) == SideRelations.Stance.ALLY

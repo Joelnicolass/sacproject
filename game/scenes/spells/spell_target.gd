@@ -9,9 +9,13 @@ extends Resource
 
 const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
-enum Who { SELF, ALLY_OR_SELF, ENEMY, ANY }
+## OWN_OR_SELF and NOT_OWN compare `owner_slot` only (the wizard and the creatures of his player); ALLY_OR_SELF and ENEMY use the side
+## relations (allies of other players count). Append only: the values are saved as integers.
+enum Who { SELF, ALLY_OR_SELF, ENEMY, ANY, OWN_OR_SELF, NOT_OWN }
 
 @export var who := Who.ENEMY
+## Off: a dead or untargetable body is valid too (Heal and Speedup only ask for the body they act on).
+@export var alive_only := true
 ## Refuses a body that flies (Grasping Vines: a flier is never tied).
 @export var ground_only := false
 ## Refuses a body that is ccProtected: shielded, petrified, frozen, in Rings of Fire, slimed or vined.
@@ -26,7 +30,7 @@ enum Who { SELF, ALLY_OR_SELF, ENEMY, ANY }
 ## give the wizard.
 func pick(wizard: Node3D, picked: Node3D) -> Node3D:
 	var body := _by_who(wizard, picked)
-	if body == null or not _ROCK.is_live_body(body):
+	if body == null or (alive_only and not _ROCK.is_live_body(body)):
 		return null
 	if ground_only and BodyNudge.airborne(body):
 		return null
@@ -41,11 +45,20 @@ func pick(wizard: Node3D, picked: Node3D) -> Node3D:
 	return body
 
 
+## The wizard himself or a body of the same player (same `owner_slot`).
+static func same_owner(wizard: Node3D, body: Node) -> bool:
+	return body == wizard or int(body.get("owner_slot") if "owner_slot" in body else 0) == int(wizard.get("owner_slot"))
+
+
 func _by_who(wizard: Node3D, picked: Node3D) -> Node3D:
 	if who == Who.SELF:
 		return wizard
 	if who == Who.ANY:
 		return picked
+	if who == Who.OWN_OR_SELF:
+		return wizard if picked == null else (picked if same_owner(wizard, picked) else null)
+	if who == Who.NOT_OWN:
+		return picked if picked != null and not same_owner(wizard, picked) else null
 	if picked == null:
 		return wizard if who == Who.ALLY_OR_SELF else null
 	var allied := picked == wizard or SideRelations.stance(int(wizard.get("owner_slot")), int(picked.get("owner_slot"))) == SideRelations.Stance.ALLY

@@ -1,10 +1,17 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/actions/pups_action.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://scenes/spells/speedup_effect.tscn" id="2_effect"]
+[ext_resource type="Script" path="res://scenes/spells/spell_target.gd" id="9_target"]
+
+[sub_resource type="Resource" id="Target_own"]
+script = ExtResource("9_target")
+who = 4
+alive_only = false
 
 [node name="Pups" type="Node"]
 script = ExtResource("1_script")
 tag = "pups"
 prompt = "Elegí el blanco"
 effect_scene = ExtResource("2_effect")
+target = SubResource("Target_own")

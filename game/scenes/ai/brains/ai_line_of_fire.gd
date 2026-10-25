@@ -2,7 +2,7 @@ class_name AiLineOfFire
 extends RefCounted
 
 ## Whether the AI's wizard has a clear shot at a body (RFC-053 053b, F371; executeBestCast's line of fire and sight, shiny.d:3246-3270).
-## One owner of the question: a ray from where the ball leaves (AimedAction.hand_origin, the wizard turned to the target) to the
+## One owner of the question: a ray from where the ball leaves (LaunchPoint.from_hand, the wizard turned to the target) to the
 ## center of the target.
 ##   A projectile (Rock, Wrath, Fireball, Swarm): the first body the ball would burst on that is not the target blocks it. The
 ##   bodies are the ones `pick_body` takes (mask 3, live bodies of Attackable, the caster skipped; the thrown balls skip their
@@ -35,7 +35,7 @@ static func trace(wizard: WizardBody, target: Node3D, spell: SpellType) -> Dicti
 	## the wizard turns to the target as he casts: the ball leaves from his hands facing it
 	var facing := to - wizard.global_position
 	facing.y = 0.0
-	var from := AimedAction.hand_origin_facing(wizard, facing.normalized()) if facing.length_squared() > 0.0001 else AimedAction.hand_origin(wizard)
+	var from := LaunchPoint.from_hand_facing(wizard, facing.normalized()) if facing.length_squared() > 0.0001 else LaunchPoint.from_hand(wizard)
 	var out := _ray(wizard, target, from, to, flight)
 	if out["blocker"] == null and flight != FLIGHT_NONE:
 		## A ball flies lower than the straight line (its box, the lift over the ground): a second ray LOW_RAY_M under it.

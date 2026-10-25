@@ -101,6 +101,22 @@ func standing_status(funds: String, wizard: WizardBody, spell: SpellType, point:
 	return ""
 
 
+## The shared answer of a spell aimed at one body: funds first (cooldown, mana), then a valid body (`body`, already picked with the
+## action's SpellTarget; null = not valid), then the cast range.
+func aim_at_body(wizard: WizardBody, spell: SpellType, point: Vector3, funds: String, body: Node3D) -> Aim:
+	var aim := Aim.new()
+	aim.point = point
+	if not funds.is_empty():
+		aim.status = funds
+		return aim
+	aim.target = body
+	if body == null:
+		aim.status = BAD_TARGET
+	elif wizard.global_position.distance_to(body.global_position) > spell.cast_range_m:
+		aim.status = OUT_OF_RANGE
+	return aim
+
+
 ## The spawner of projectiles in the world, or null.
 func projectile_spawner() -> SpellSpawner:
 	return get_tree().get_first_node_in_group("spell_spawner") as SpellSpawner

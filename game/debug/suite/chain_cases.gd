@@ -502,7 +502,7 @@ func _ai() -> Dictionary:
 func _make_carrier(wizard: WizardBody, target: Node3D) -> SpellCarrier:
 	var spawner := _spells.get_parent().get_node("SpellSpawner") as SpellSpawner
 	var spell := GameData.spell("rifd")
-	var data := AimedAction.projectile_data(wizard, spell, wizard.global_position, target, target.global_position)
+	var data := LaunchPoint.projectile_data(wizard, spell, wizard.global_position, target, target.global_position)
 	data["damage_range"] = spell.damage_range_m
 	var carrier := spawner.spawn_projectile("Dragonfire", data) as SpellCarrier
 	carrier.begin(wizard, spell, target, target.global_position, 10)

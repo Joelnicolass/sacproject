@@ -250,5 +250,4 @@ static func _yaw_of(node: Node3D) -> float:
 
 
 static func _radius_of(node: Node3D) -> float:
-	var model := str(node.get("model")) if "model" in node else ""
-	return float(BodyCatalog.info(model).get("radius", 0.35))
+	return BodyFacts.of_body(node).radius_m

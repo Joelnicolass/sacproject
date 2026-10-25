@@ -16,7 +16,7 @@ signal died(tag: String, owner_slot: int, at: Vector3)
 signal struck(target: Node3D, amount: float, hit_chance: float, roll: float)
 ## The summon cast ended; it now acts and joins its owner's selection.
 signal summoned
-## F135: `model` changed (data, not order). BodyCollider refits the capsule from it.
+## F135: `model` changed (data, not order). FireShield reads the box again; the capsule follows BodyMount.worn.
 signal model_changed
 ## Held by a Sac Doctor (true) or let go (false). The Captive child draws its ring.
 signal held_changed(held: bool)
@@ -47,6 +47,8 @@ const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 		_apply_type()
 ## The id of `type` on the network (it travels in the synchronizer). Derived from `type`: set the type, not this.
 var creature_tag := ""
+## Wears the body scene of `type` (BodyFrame): its size and sockets. It is the one place that says which body this is.
+@export var mount: BodyMount
 ## Baked model; empty = the CreatureType model.
 @export var model := "":
 	set(value):
@@ -280,12 +282,11 @@ func facing_flat() -> Vector3:
 
 
 func melee_profile() -> Dictionary:
-	var info := BodyCatalog.info(model)
 	return {
 		"evasion": float(type.melee_evasion_milli()) if type else 0.0,
 		"resistance": type.melee_resistance if type else 1.0,
-		"reach": float(info.get("reach", 0.35)),
-		"height": float(info.get("height", 1.8)),
+		"reach": mount.facts.reach_m,
+		"height": mount.facts.height_m,
 	}
 
 
@@ -497,6 +498,8 @@ func _apply_type() -> void:
 	else:
 		move_speed = 0.0
 	_sync_clip_pose()
+	if type and mount != null:
+		mount.wear(type.body)
 	if type and model.is_empty():
 		model = type.model
 
@@ -515,18 +518,15 @@ func _apply_model() -> void:
 		return
 	visual.show_model(model)
 	_sync_clip_pose()
-	# The capsule is BodyCollider's (F135): the only writer of the Collision shape.
-	var height := visual.body_height()
 	var bar := get_node_or_null("HealthBar") as UnitHealthBar
 	if bar:
-		bar.place_above(height)
+		bar.place_above(mount.facts.height_m)
 	if is_node_ready():
 		_setup_melee()
 
 
 func _setup_melee() -> void:
-	var info := BodyCatalog.info(model)
-	($MeleeAttack as MeleeAttack).setup(self, type, float(info.get("reach", 0.35)), float(info.get("height", 1.8)), _rng)
+	($MeleeAttack as MeleeAttack).setup(self, type, mount.facts.reach_m, mount.facts.height_m, _rng)
 
 
 func _physics_process(delta: float) -> void:
@@ -727,8 +727,8 @@ func soul_anchor() -> Vector3:
 	if pivot == null or visual == null:
 		return global_position
 	# A clip lays the body down (the pivot stays upright): the soul sits where the Tween would have left the center.
-	var lie := corpse().lying_pose(visual.body_radius())
-	return pivot.global_transform * lie * Vector3(0.0, visual.body_height() * 0.5, 0.0)
+	var lie := corpse().lying_pose(mount.facts.radius_m)
+	return pivot.global_transform * lie * mount.facts.center
 
 
 func _update_clip_state() -> void:

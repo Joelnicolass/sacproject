@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://b4vgcjc8dwcxu" path="res://assets/original/ui/icons/kace.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/acia.tres" id="typed_acia"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/ecak_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://scenes/units/bodies/ikarus.tscn" id="body_scene"]
 
 [resource]
 script = ExtResource("1_uaw0j")
@@ -12,6 +13,7 @@ tag = "kace"
 display_name = "Ikarus"
 icon = ExtResource("icon_tex")
 model = "ecak"
+body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1680
 regeneration_per_s = 16.6667

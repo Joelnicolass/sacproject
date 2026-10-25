@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://cjdmxibb4cbi5" path="res://assets/original/ui/icons/mtsl.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/HSba_2.tres" id="typed_HSba"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/stmp_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://scenes/units/bodies/ent.tscn" id="body_scene"]
 
 [resource]
 script = ExtResource("1_4q8pd")
@@ -12,6 +13,7 @@ tag = "mtsl"
 display_name = "Ent"
 icon = ExtResource("icon_tex")
 model = "stmp"
+body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 4500
 regeneration_per_s = 29.1667

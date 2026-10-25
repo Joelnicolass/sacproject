@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_d43oa"]
 [ext_resource type="Texture2D" uid="uid://trvlofmv6hl3" path="res://assets/original/ui/icons/tnem.png" id="icon_tex"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/FAmr_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://scenes/units/bodies/zyzyx.tscn" id="body_scene"]
 
 [resource]
 script = ExtResource("1_d43oa")
@@ -10,6 +11,7 @@ tag = "tnem"
 display_name = "Zyzyx"
 icon = ExtResource("icon_tex")
 model = "FAmr"
+body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1000
 regeneration_per_s = 16.6667

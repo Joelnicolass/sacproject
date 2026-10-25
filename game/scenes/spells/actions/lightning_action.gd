@@ -23,7 +23,7 @@ func finish(wizard: WizardBody, spell: SpellType, target: Node3D) -> String:
 ## sacengine updateLightningCasting (state.d:16322-16341): the bolt starts 0.5 above the top of the
 ## wizard's hitbox and 0.75 ahead of its front. Presentation only.
 func _origin(wizard: WizardBody) -> Vector3:
-	var info := BodyCatalog.info(str(wizard.get("model")))
-	var at := wizard.global_position + Vector3.UP * (float(info.get("height", 1.8)) + 0.5)
-	at += wizard.facing_flat() * (float(info.get("reach", 0.5)) + 0.75)
+	var facts := BodyFacts.of_body(wizard)
+	var at := wizard.global_position + Vector3(0.0, facts.top.y + 0.5, 0.0)
+	at += wizard.facing_flat() * (facts.reach_m + 0.75)
 	return at

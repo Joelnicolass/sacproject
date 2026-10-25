@@ -2,18 +2,17 @@ class_name BodyBox
 extends RefCounted
 
 ## The size of a body as the others see it: half the width of its box (the avoidance radius, the formation spacing and the
-## trample radius) and its height. Both come from the baked model (BodyCatalog), the same for the avoidance agent, Orders
+## trample radius) and its height. Both come from the body scene it wears (BodyFacts), the same for the avoidance agent, Orders
 ## (getFormationOffsets) and the melee gap. The bodies do not push each other by physics: BodyAvoidance steers them apart.
 
 
-## Half the box width: max(radius, reach) of the model.
+## Half the box width: the larger of the footprint radius and the reach of the body.
 static func half_size(body: Node3D) -> float:
-	var info := BodyCatalog.info(_model_of(body))
-	return maxf(float(info.get("radius", 0.35)), float(info.get("reach", 0.35)))
+	return BodyFacts.of_body(body).half_size_m()
 
 
 static func body_height(body: Node3D) -> float:
-	return float(BodyCatalog.info(_model_of(body)).get("height", 1.8))
+	return BodyFacts.of_body(body).height_m
 
 
 ## (half width, height) of `body`.
@@ -33,7 +32,3 @@ static func is_obstacle(body: Node) -> bool:
 	if body.has_method("is_obstacle"):  # dynamic: unit, wizard and doctor bodies answer it
 		return bool(body.call("is_obstacle"))
 	return true
-
-
-static func _model_of(body: Node3D) -> String:
-	return str(body.get("model")) if "model" in body else ""

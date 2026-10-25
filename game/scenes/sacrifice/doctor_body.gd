@@ -82,6 +82,8 @@ enum Work { PUMP, LIFT, TORTURE }
 @export var health: Health
 @export var visual: BodyVisual
 @export var collision: CollisionShape3D
+## Wears the body scene of `type` (BodyFrame): its size and sockets; BodyCollider sizes `collision` from it.
+@export var mount: BodyMount
 @export var health_bar: MeshInstance3D
 @export var states: FsmMachine
 ## Plays the clips by role on the BodyRig under `visual` (BodyAnimator, RFC-023 023e). Presentation only: the dedicated
@@ -119,7 +121,9 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
 	add_to_group(GROUP)
-	_fit_collision()
+	if type:
+		mount.wear(type.body)
+	(health_bar as UnitHealthBar).place_above(mount.facts.height_m)
 	if clip_player and BodyCatalog.loads_meshes():
 		clip_player.setup(visual.model)
 	(health_bar as UnitHealthBar).bind(health, owner_slot)
@@ -266,12 +270,11 @@ func facing_flat() -> Vector3:
 
 ## Defense and size for MeleeAttack.profile_of: evasion and resistance of the CRE8, size of `sacd`.
 func melee_profile() -> Dictionary:
-	var info := BodyCatalog.info(model)
 	return {
 		"evasion": float(type.melee_evasion_milli()) if type else 0.0,
 		"resistance": type.melee_resistance if type else 1.0,
-		"reach": float(info.get("reach", 0.35)),
-		"height": float(info.get("height", 1.8)),
+		"reach": mount.facts.reach_m,
+		"height": mount.facts.height_m,
 	}
 
 
@@ -336,16 +339,6 @@ func _ground_height(at: Vector3) -> float:
 	return GroundRay.surface_y(self, at, 1, [get_rid()], at.y)
 
 
-func _fit_collision() -> void:
-	var height := visual.body_height()
-	var capsule := CapsuleShape3D.new()
-	capsule.height = maxf(height, 0.6)
-	capsule.radius = minf(visual.body_radius(), capsule.height * 0.45)
-	collision.shape = capsule
-	collision.position = Vector3(0.0, capsule.height * 0.5, 0.0)
-	(health_bar as UnitHealthBar).place_above(height)
-
-
 func _on_health_died(from_slot: int) -> void:
 	_die(from_slot)
 
@@ -402,6 +395,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 		out.append("Asigná `visual` (BodyVisual con el modelo sacd).")
 	if collision == null:
 		out.append("Asigná `collision` (CollisionShape3D).")
+	if mount == null:
+		out.append("Asigná `mount` (BodyMount): sin él el doctor no sabe su tamaño.")
 	if health_bar == null:
 		out.append("Asigná `health_bar` (unit_health_bar.tscn).")
 	if states == null:

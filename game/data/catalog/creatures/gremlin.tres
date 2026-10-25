@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://dh4ksqat4q5ke" path="res://assets/original/ui/icons/lrps.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/psla.tres" id="typed_psla"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/sprl_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://scenes/units/bodies/gremlin.tscn" id="body_scene"]
 
 [resource]
 script = ExtResource("1_nwe2w")
@@ -12,6 +13,7 @@ tag = "lrps"
 display_name = "Gremlin"
 icon = ExtResource("icon_tex")
 model = "sprl"
+body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1400
 regeneration_per_s = 29.1667

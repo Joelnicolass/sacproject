@@ -1,10 +1,10 @@
 # scenes/bodies
 
-What: the 74 skeletal models (`models/<tag>.tscn`) and what draws them: each has a library of clips by role (`<tag>_clips.tres`, one Animation per role with its exact length, `hit`/`shoot` markers and event calls) and a Tree with one state per role; `BodyRig` plays a role, `ClipFacts` gives the rules the same numbers.
+What: the size and sockets of every creature and wizard (`BodyFrame` scenes in `units/bodies/` and `wizards/bodies/`: capsule, footprint, reach, center, top, muzzle, feet; `BodyFacts` reads them once, `BodyMount` says which one a body wears) and the 74 skeletal models (`models/<tag>.tscn`) and what draws them: each has a library of clips by role (`<tag>_clips.tres`, one Animation per role with its exact length, `hit`/`shoot` markers and event calls) and a Tree with one state per role; `BodyRig` plays a role, `ClipFacts` gives the rules the same numbers.
 Not: what a creature does (that is `units/`) or how long a swing lasts in the match (the rules read `ClipFacts`, they never play a clip).
-Talks to: `BodyAnimator` asks `BodyRig` for a role; `BodyRig` travels the model's Tree; the Animations call `ClipEvents.fire(kind)`; `UnitBody`/`WizardBody` read `ClipFacts.of(library)`.
-Edit: open `models/<tag>.tscn` (F6): `Clips` > Animation panel for a role (length, `hit` marker, method calls), `Tree` for the states; a new model is `tools/bake/new_creature.gd`.
-Check: `debug/suite/clip_facts_cases.gd` (rules_suite), `debug/bodies/anim_model_audit.gd`, `debug/bodies/anim_gallery.tscn` (F6).
+Talks to: a body calls `BodyMount.wear(type.body)`; `BodyCollider` sizes the physics capsule from `BodyMount.facts`; melee, avoidance and formations read `BodyFacts.of_body(body)`. `BodyAnimator` asks `BodyRig` for a role; `BodyRig` travels the model's Tree; the Animations call `ClipEvents.fire(kind)`; `UnitBody`/`WizardBody` read `ClipFacts.of(library)`.
+Edit: open `scenes/units/bodies/<name>.tscn` (or `scenes/wizards/bodies/`) and drag `Bounds/Capsule`, `Bounds/Footprint` and the `Sockets/` markers · open `models/<tag>.tscn` (F6): `Clips` > Animation panel for a role (length, `hit` marker, method calls), `Tree` for the states; a new model is `tools/bake/new_creature.gd`.
+Check: `debug/suite/body_facts_cases.gd` and `debug/suite/clip_facts_cases.gd` (rules_suite), `debug/bodies/anim_model_audit.gd`, `debug/bodies/anim_gallery.tscn` (F6).
 
 ---
 

@@ -7,6 +7,7 @@
 [ext_resource type="Resource" path="res://data/catalog/abilities/!nur.tres" id="typed__nur"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/gcil.tres" id="typed_gcil"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/adrg_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://scenes/units/bodies/silverback.tscn" id="body_scene"]
 
 [resource]
 script = ExtResource("1_d0ate")
@@ -14,6 +15,7 @@ tag = "grdb"
 display_name = "Silverback"
 icon = ExtResource("icon_tex")
 model = "adrg"
+body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 4800
 regeneration_per_s = 16.6667

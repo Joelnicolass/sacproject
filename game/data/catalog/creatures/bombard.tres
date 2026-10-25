@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://bx3t28saovwhn" path="res://assets/original/ui/icons/wlcf.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/cfba.tres" id="typed_cfba"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/fclw_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://scenes/units/bodies/bombard.tscn" id="body_scene"]
 
 [resource]
 script = ExtResource("1_ewb3k")
@@ -12,6 +13,7 @@ tag = "wlcf"
 display_name = "Bombard"
 icon = ExtResource("icon_tex")
 model = "fclw"
+body = ExtResource("body_scene")
 clips = ExtResource("clips_lib")
 health = 1520
 regeneration_per_s = 16.6667

@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/sacrifice/doctor.tscn" id="1_doctor"]
 [ext_resource type="Script" path="res://scenes/sacrifice/carry_errand.gd" id="2_errand"]
@@ -8,8 +8,13 @@
 [ext_resource type="Script" path="res://scenes/sacrifice/errand_states/pump.gd" id="7_pump"]
 [ext_resource type="Script" path="res://scenes/sacrifice/errand_states/haul.gd" id="6_haul"]
 [ext_resource type="Script" path="res://scenes/map/nav/path_follower.gd" id="8_follower"]
+[ext_resource type="Resource" path="res://data/fx/heal.tres" id="9_heal"]
 
-[node name="CarrierDoctor" instance=ExtResource("1_doctor")]
+[node name="CarrierDoctor" node_paths=PackedStringArray("errand") instance=ExtResource("1_doctor")]
+errand = NodePath("Errand")
+
+[node name="Motor" parent="." index="10" node_paths=PackedStringArray("path_follower")]
+path_follower = NodePath("../PathFollower")
 
 [node name="PathFollower" type="Node" parent="." node_paths=PackedStringArray("body")]
 script = ExtResource("8_follower")
@@ -33,6 +38,7 @@ script = ExtResource("5_approach")
 
 [node name="Pump" type="Node" parent="Errand/Steps"]
 script = ExtResource("7_pump")
+heal_fx = ExtResource("9_heal")
 
 [node name="Haul" type="Node" parent="Errand/Steps"]
 script = ExtResource("6_haul")

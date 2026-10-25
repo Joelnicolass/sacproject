@@ -105,6 +105,11 @@ func carried_fx_socket() -> Node3D:
 	return _model_root.carried_fx_socket if _model_root != null else null
 
 
+## The node the model scene gives for the tool the body works with (BodyModel.tool_socket); null without one.
+func tool_socket() -> Node3D:
+	return _model_root.tool_socket if _model_root != null else null
+
+
 func skeleton() -> Skeleton3D:
 	return _skeleton
 

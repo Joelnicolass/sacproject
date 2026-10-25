@@ -1,12 +1,11 @@
 extends ErrandStep
 
 ## The doctor walks to the ritual site with the creature hanging behind it (Captive follows it).
-## sacengine SacDocCarry `move` (state.d:15750-15790): if the creature is gone or the site fell, the
-## doctor dies; on the ground and closer than rules.ritual_start_distance (3D) it stops and says
-## `reached_site`. From then on it waits holding the creature: RFC-020d starts the ritual from that
-## signal (and hands the errand over); until then, and while the site is busy, the carrier stays.
-## If the doctor dies here the creature is let go: alive, its original owner's, falling to the ground
-## (state.d:15776-15779).
+## If the creature is gone or the site fell, the doctor dies; on the ground and closer than `carrier_stop_m` of SacrificeFacts (3D) it
+## stops and says `reached_site`. From then on it waits holding the creature: the ritual starts from that signal (and takes the errand
+## over); until then, and while the site is busy, the carrier stays. If the doctor dies here the creature is let go: alive, its
+## original owner's, falling to the ground.
+## Ref: sacengine SacDocCarry `move`, state.d:15750-15790.
 
 
 func physics_update(_delta: float) -> void:
@@ -19,8 +18,7 @@ func physics_update(_delta: float) -> void:
 	if errand.arrived:
 		return
 	var center := errand.site.center()
-	var start := body.rules.ritual_start_distance if body.rules else 20.0
-	if body.is_targetable() and body.global_position.distance_to(center) < start:
+	if body.is_targetable() and body.global_position.distance_to(center) < SacrificeFacts.of_rules(body.rules).carrier_stop_m:
 		errand.arrive()
 		return
-	body.walk_to(center)
+	body.motor.walk_to(center)

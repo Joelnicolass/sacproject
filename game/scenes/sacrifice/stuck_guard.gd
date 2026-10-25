@@ -37,16 +37,17 @@ var _idle_for := 0.0
 func _physics_process(delta: float) -> void:
 	if Engine.is_editor_hint() or body == null or not body.is_inside_tree():
 		return
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not body.simulates():
 		return
 	_watch_idle(delta)
 	if not body.is_walking() or not body.is_targetable():
 		_reset()
 		return
-	if _goal == Vector3.INF or Vector2(_goal.x - body.goal.x, _goal.z - body.goal.z).length() > 0.5:
-		_goal = body.goal
+	var goal := body.motor.goal
+	if _goal == Vector3.INF or Vector2(_goal.x - goal.x, _goal.z - goal.z).length() > 0.5:
+		_goal = goal
 		_reset()
-	var distance := Vector2(body.goal.x - body.global_position.x, body.goal.z - body.global_position.z).length()
+	var distance := Vector2(goal.x - body.global_position.x, goal.z - body.global_position.z).length()
 	if _best == INF:
 		_best = distance
 		_window_left = window_s
@@ -98,8 +99,8 @@ func _watch_idle(delta: float) -> void:
 
 func _dodge() -> void:
 	_side = -_side
-	body.dodge_angle = deg_to_rad(dodge_deg) * _side
-	body.dodge_left = dodge_s
+	body.motor.dodge_angle = deg_to_rad(dodge_deg) * _side
+	body.motor.dodge_left = dodge_s
 	dodged.emit()
 
 

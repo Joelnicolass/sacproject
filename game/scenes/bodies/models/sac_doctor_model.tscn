@@ -68,8 +68,9 @@ states/work/node = SubResource("AnimationNodeAnimation_gvrrl")
 states/work/position = Vector2(260, 150)
 transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_tuq7c"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_fns17"), "idle", "attack", SubResource("AnimationNodeStateMachineTransition_fns17"), "idle", "cast", SubResource("AnimationNodeStateMachineTransition_fns17"), "idle", "work", SubResource("AnimationNodeStateMachineTransition_fns17"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_fns17"), "run", "attack", SubResource("AnimationNodeStateMachineTransition_fns17"), "run", "cast", SubResource("AnimationNodeStateMachineTransition_fns17"), "run", "work", SubResource("AnimationNodeStateMachineTransition_fns17"), "attack", "idle", SubResource("AnimationNodeStateMachineTransition_mgxcb"), "attack", "run", SubResource("AnimationNodeStateMachineTransition_fns17"), "attack", "cast", SubResource("AnimationNodeStateMachineTransition_fns17"), "attack", "work", SubResource("AnimationNodeStateMachineTransition_fns17"), "cast", "idle", SubResource("AnimationNodeStateMachineTransition_mgxcb"), "cast", "run", SubResource("AnimationNodeStateMachineTransition_fns17"), "cast", "attack", SubResource("AnimationNodeStateMachineTransition_fns17"), "cast", "work", SubResource("AnimationNodeStateMachineTransition_fns17"), "work", "idle", SubResource("AnimationNodeStateMachineTransition_fns17"), "work", "run", SubResource("AnimationNodeStateMachineTransition_fns17"), "work", "attack", SubResource("AnimationNodeStateMachineTransition_fns17"), "work", "cast", SubResource("AnimationNodeStateMachineTransition_fns17"), "idle", "fall", SubResource("AnimationNodeStateMachineTransition_fns17"), "idle", "hit_floor", SubResource("AnimationNodeStateMachineTransition_fns17"), "run", "fall", SubResource("AnimationNodeStateMachineTransition_fns17"), "run", "hit_floor", SubResource("AnimationNodeStateMachineTransition_fns17"), "attack", "fall", SubResource("AnimationNodeStateMachineTransition_fns17"), "attack", "hit_floor", SubResource("AnimationNodeStateMachineTransition_fns17"), "cast", "fall", SubResource("AnimationNodeStateMachineTransition_fns17"), "cast", "hit_floor", SubResource("AnimationNodeStateMachineTransition_fns17"), "work", "fall", SubResource("AnimationNodeStateMachineTransition_fns17"), "work", "hit_floor", SubResource("AnimationNodeStateMachineTransition_fns17"), "fall", "idle", SubResource("AnimationNodeStateMachineTransition_fns17"), "fall", "run", SubResource("AnimationNodeStateMachineTransition_fns17"), "fall", "attack", SubResource("AnimationNodeStateMachineTransition_fns17"), "fall", "cast", SubResource("AnimationNodeStateMachineTransition_fns17"), "fall", "work", SubResource("AnimationNodeStateMachineTransition_fns17"), "fall", "hit_floor", SubResource("AnimationNodeStateMachineTransition_fns17"), "hit_floor", "idle", SubResource("AnimationNodeStateMachineTransition_mgxcb"), "hit_floor", "run", SubResource("AnimationNodeStateMachineTransition_fns17"), "hit_floor", "attack", SubResource("AnimationNodeStateMachineTransition_fns17"), "hit_floor", "cast", SubResource("AnimationNodeStateMachineTransition_fns17"), "hit_floor", "work", SubResource("AnimationNodeStateMachineTransition_fns17"), "hit_floor", "fall", SubResource("AnimationNodeStateMachineTransition_fns17")]
 
-[node name="sacd" type="Node3D" unique_id=1644232663]
+[node name="sacd" type="Node3D" unique_id=1644232663 node_paths=PackedStringArray("tool_socket")]
 script = ExtResource("1_twkdh")
+tool_socket = NodePath("Model/Skeleton3D/Needle/Tip")
 model = "sacd"
 bind_aabb = AABB(-0.562, -0.804839, -1.412845, 1.138, 2.54882, 3.072332)
 
@@ -86,6 +87,12 @@ surface_material_override/4 = ExtResource("mat_sacd_005")
 surface_material_override/5 = ExtResource("mat_sacd_006")
 surface_material_override/6 = ExtResource("mat_sacd_007")
 surface_material_override/7 = ExtResource("mat_sacd_008")
+
+[node name="Needle" type="BoneAttachment3D" parent="Model/Skeleton3D" index="1"]
+bone_name = "bone_16"
+
+[node name="Tip" type="Marker3D" parent="Model/Skeleton3D/Needle"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 2.2, 0)
 
 [node name="Clips" type="AnimationPlayer" parent="." unique_id=557685384]
 unique_name_in_owner = true

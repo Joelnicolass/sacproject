@@ -54,6 +54,9 @@ const PLAYBACK := &"parameters/playback"
 ## Where the sprite effect a creature carries floats (the Manahoar's mana flame): a node that follows a bone of the skeleton,
 ## placed in this scene so the editor moves it with a gizmo. Empty: the model carries none (CreatureFx then uses its fallback offset).
 @export var carried_fx_socket: Node3D
+## Where the tool a body works with sits (the Sac Doctor's needle tip, `Needle/Tip` under the skeleton): a Marker3D that follows a bone of the
+## skeleton, placed in this scene so the editor moves it with a gizmo. Its +Z is the direction the tool points. Empty: the model has none.
+@export var tool_socket: Node3D
 
 @export_group("Baked from the original")
 ## Bounding box of the rest pose (from the exporter index at bake time).

@@ -36,7 +36,7 @@ var _done := false
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not body.simulates():
 		steps.run_physics = false
 		steps.run_process = false
 		return

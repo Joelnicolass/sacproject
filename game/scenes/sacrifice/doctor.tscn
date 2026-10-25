@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3]
+[gd_scene load_steps=24 format=3]
 
 [ext_resource type="Script" path="res://scenes/sacrifice/doctor_body.gd" id="1_body"]
 [ext_resource type="PackedScene" path="res://scenes/units/movement/body_avoidance.tscn" id="f207_avoid"]
@@ -19,6 +19,8 @@
 [ext_resource type="Script" path="res://scenes/bodies/body_animator.gd" id="14_clip"]
 [ext_resource type="PackedScene" path="res://scenes/bodies/body_rig.tscn" id="14_rig"]
 [ext_resource type="Script" path="res://scenes/bodies/idle_sway.gd" id="18_sway"]
+[ext_resource type="Script" path="res://scenes/sacrifice/doctor_motor.gd" id="19_motor"]
+[ext_resource type="Script" path="res://scenes/sacrifice/doctor_look.gd" id="20_look"]
 
 [ext_resource type="Script" path="res://scenes/sacrifice/carry_rope.gd" id="15_rope"]
 [ext_resource type="PackedScene" path="res://scenes/fx/tether.tscn" id="16_tether"]
@@ -55,7 +57,7 @@ properties/7/path = NodePath(".:carried")
 properties/7/spawn = true
 properties/7/replication_mode = 2
 
-[node name="Doctor" type="CharacterBody3D" node_paths=PackedStringArray("health", "visual", "collision", "mount", "health_bar", "states", "clip_player")]
+[node name="Doctor" type="CharacterBody3D" node_paths=PackedStringArray("health", "collision", "mount", "health_bar", "states", "motor")]
 collision_layer = 2
 floor_snap_length = 0.5
 floor_max_angle = 1.4835298
@@ -63,12 +65,11 @@ script = ExtResource("1_body")
 type = ExtResource("typed_dcas")
 rules = ExtResource("13_rules")
 health = NodePath("Health")
-visual = NodePath("Pivot/Mesh")
 collision = NodePath("Collision")
 mount = NodePath("BodyMount")
 health_bar = NodePath("HealthBar")
 states = NodePath("States")
-clip_player = NodePath("ClipPose")
+motor = NodePath("Motor")
 
 [node name="Pivot" type="Node3D" parent="."]
 
@@ -132,20 +133,28 @@ script = ExtResource("10_working")
 [node name="Dying" type="Node" parent="States"]
 script = ExtResource("11_dying")
 
-[node name="CarryRope" type="Node3D" parent="." node_paths=PackedStringArray("doctor", "needle", "tether")]
+[node name="Motor" type="Node" parent="." node_paths=PackedStringArray("body", "avoidance")]
+script = ExtResource("19_motor")
+body = NodePath("..")
+avoidance = NodePath("../Avoidance")
+
+[node name="Look" type="Node" parent="." node_paths=PackedStringArray("body", "clip_player", "visual")]
+script = ExtResource("20_look")
+body = NodePath("..")
+clip_player = NodePath("../ClipPose")
+visual = NodePath("../Pivot/Mesh")
+
+[node name="CarryRope" type="Node3D" parent="." node_paths=PackedStringArray("doctor", "rig", "tether")]
 script = ExtResource("15_rope")
 doctor = NodePath("..")
-needle = NodePath("Needle")
+rig = NodePath("../Pivot/Mesh/Rig")
 tether = NodePath("Tether")
 spark_type = ExtResource("17_needle")
-
-[node name="Needle" type="Marker3D" parent="CarryRope"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, 0.6)
 
 [node name="Tether" parent="CarryRope" node_paths=PackedStringArray("start") instance=ExtResource("16_tether")]
 elbow = 1.0
 energy_scale = 0.6
-start = NodePath("../Needle")
+start = NodePath("..")
 
 [node name="Net" type="Node" parent="."]
 script = ExtResource("12_net")
@@ -157,4 +166,4 @@ replication_config = SubResource("SceneReplicationConfig_doctor")
 [node name="Avoidance" parent="." node_paths=PackedStringArray("body") instance=ExtResource("f207_avoid")]
 body = NodePath("..")
 
-[connection signal="solved" from="Avoidance" to="." method="_on_avoided"]
+[connection signal="solved" from="Avoidance" to="Motor" method="_on_avoided"]

@@ -16,4 +16,4 @@ func enter() -> void:
 
 func physics_update(delta: float) -> void:
 	body.regenerate(delta)
-	body.advance_on_ground(Vector3.ZERO, delta)
+	body.motor.advance_on_ground(Vector3.ZERO, delta)

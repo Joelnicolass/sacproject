@@ -2,17 +2,17 @@
 class_name CarryRope
 extends Node3D
 
-## What joins a Sac Doctor to the creature it carries (sacengine SacDocTether + needle sparks, state.d:15556-15613):
-## a rope (`tether`) from the needle to the center of the creature's ring, and sparks at the needle tip.
+## What joins a Sac Doctor to the creature it carries: a rope (`tether`) from the tip of the needle to the center of the creature's
+## ring, and sparks at the tip. The needle is a node of the doctor's model (BodyModel.tool_socket, `Needle/Tip` in
+## sac_doctor_model.tscn): move it there with the gizmo. Without one the rope starts at this node's own origin and a warning says so once.
 ## Local presentation on every peer, drawn from replicated state only: `doctor.carried` (the creature's
 ## path) and the creature's own ring (Captive.portal, which exists while it is held). It changes no
 ## simulation. The dedicated server draws nothing. Remove the node from doctor.tscn to switch it off.
+## Ref: sacengine SacDocTether + needle sparks, state.d:15556-15613; the tip is bone 16 of `sacd` (sacobject.d:360-366).
 
 @export var doctor: DoctorBody
-## Where the needle tip is, in the doctor's model. ESTIMADO: sacengine uses bone 16 of `sacd` with the
-## offset (0, 0, 2.2) (sacobject.d:360-366); the port animates by meshes per frame, without a skeleton,
-## so this marker is placed by eye at the syringe. Move it in doctor.tscn.
-@export var needle: Marker3D
+## The rig that wears the doctor's model: it hands out the needle tip (BodyRig.tool_socket).
+@export var rig: BodyRig
 @export var tether: Tether
 @export_group("Needle sparks")
 ## Sparks at the needle tip (data/fx/needle.tres). Empty = none. sacengine: 2 per tick (120/s).
@@ -21,6 +21,7 @@ extends Node3D
 @export_range(0.01, 1.0, 0.0001, "suffix:s") var spark_period_s := 0.0333
 
 var _spark_left := 0.0
+var _warned := false
 
 
 func _ready() -> void:
@@ -34,8 +35,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if doctor == null:
 		warnings.append("Asigná en `doctor` el DoctorBody que lleva a la criatura.")
-	if needle == null:
-		warnings.append("Asigná en `needle` el Marker3D de la punta de la aguja.")
+	if rig == null:
+		warnings.append("Asigná en `rig` el BodyRig del doctor: de su modelo sale la punta de la aguja.")
 	if tether == null:
 		warnings.append("Asigná en `tether` la cuerda (scenes/fx/tether.tscn).")
 	return warnings
@@ -48,8 +49,10 @@ func _process(delta: float) -> void:
 	if portal == null:
 		tether.end = null
 		return
+	var needle := _needle()
+	tether.start = needle
 	tether.end = portal
-	_spark(delta)
+	_spark(delta, needle)
 
 
 ## The ring of the creature this doctor carries, or null.
@@ -65,8 +68,17 @@ func _portal() -> Node3D:
 	return captive.portal
 
 
-func _spark(delta: float) -> void:
-	if spark_type == null or needle == null:
+## The tip of the needle in the model; this node itself when the model has none (it warns once).
+func _needle() -> Node3D:
+	var socket: Node3D = rig.tool_socket() if rig != null else null
+	if socket == null and not _warned:
+		_warned = true
+		push_warning("CarryRope: the model of %s has no tool_socket (BodyModel.tool_socket): the rope starts at the doctor's origin." % doctor.name)
+	return socket if socket != null else self
+
+
+func _spark(delta: float, needle: Node3D) -> void:
+	if spark_type == null:
 		return
 	_spark_left -= delta
 	if _spark_left > 0.0:

@@ -1,12 +1,12 @@
 extends ErrandStep
 
-## The doctor walks to what it came for.
-## Desecrate (sacengine SacDocCarry `walk`, state.d:15700-15722): if the creature is no longer a valid
-## target (dead, changed owner, taken) or the site fell, the doctor dies; closer than
-## rules.desecrate_pickup_distance on the plane it takes the creature and goes on to Haul.
-## Convert (state.d:15676-15699): if the soul is not there to convert any more (somebody took it, its
-## corpse is gone) or the site fell, the doctor dies; closer than rules.convert_reach on the plane it goes
-## on to Pump. Nothing to undo if the doctor dies here, but a Convert soul becomes convertible again.
+## The doctor walks to what it came for, through its `motor`.
+## Desecrate: if the creature is no longer a valid target (dead, changed owner, taken) or the site fell, the doctor dies; closer than
+## `pickup_m` of SacrificeFacts (on the plane) it takes the creature and goes on to Haul.
+## Convert: if the soul is not there to convert any more (somebody took it, its corpse is gone) or the site fell, the doctor dies;
+## closer than `pump_reach_m` (on the plane) it goes on to Pump. Nothing to undo if the doctor dies here, but a Convert soul becomes
+## convertible again.
+## Ref: sacengine SacDocCarry `walk`, state.d:15676-15722.
 
 
 func physics_update(_delta: float) -> void:
@@ -24,9 +24,8 @@ func _desecrate(body: DoctorBody) -> void:
 		body.kill()
 		return
 	var creature := errand.creature
-	var pickup := body.rules.desecrate_pickup_distance if body.rules else 10.0
-	if _flat_distance(body, creature.global_position) >= pickup:
-		body.walk_to(creature.global_position)
+	if _flat_distance(body, creature.global_position) >= SacrificeFacts.of_rules(body.rules).pickup_m:
+		body.motor.walk_to(creature.global_position)
 		return
 	var captive := Captive.of(creature)
 	if captive == null or not captive.take(body):
@@ -41,9 +40,8 @@ func _convert(body: DoctorBody) -> void:
 		body.kill()
 		return
 	var soul_at := errand.soul.global_position
-	var reach := body.rules.convert_reach if body.rules else 2.0
-	if _flat_distance(body, soul_at) >= reach:
-		body.walk_to(soul_at)
+	if _flat_distance(body, soul_at) >= SacrificeFacts.of_rules(body.rules).pump_reach_m:
+		body.motor.walk_to(soul_at)
 		return
 	transition(&"Pump")
 

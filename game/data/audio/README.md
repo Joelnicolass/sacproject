@@ -1,6 +1,6 @@
 # data/audio/
 
-Sets de sonido (RFC-052), un `.tres` por emisor. El de una criatura o un mago se asigna en su ficha: `CreatureType.sounds` / `WizardType.sounds` (055o-b). Los demás (`world`, `ui`, `advisor`, `music/`, `ambience/`) todavía se buscan por ruta con `SoundLibrary` hasta 055o-c y 055o-d.
+Sets de sonido (RFC-052), un `.tres` por emisor. El de una criatura o un mago se asigna en su ficha: `CreatureType.sounds` / `WizardType.sounds` (055o-b). Los demás (`world`, `advisor`, `music/`, `ambience/`) todavía se buscan por ruta con `SoundLibrary` hasta 055o-c. La UI (clics y menú X) ya es tipada: `cues/ui_click.tres`, `ui_book_click.tres`, `menu_open.tres` y `menu_back.tres` (055o-d).
 
 ## Cómo se asigna un sonido a una criatura
 
@@ -15,7 +15,6 @@ Sets de sonido (RFC-052), un `.tres` por emisor. El de una criatura o un mago se
 | `melee/<set>.tres` | sets de golpes compartidos (`fist`, `saw`, `stab`) con `swing` y `shoot` | `meleeSSET`; es el `fallback` de la criatura o del mago |
 | `world.tres` | el mundo: sacrificio, almas, invocación, hechizos, ambiente `A*` | set `spel` |
 | `advisor.tres` | los avisos del consejero, bus `Voice` | set `advi` |
-| `ui.tres` | clics de menú, volver, menú X, subir de nivel | set `ifac` |
 | `cues/<nombre>.tres` | un `SoundCue` por sonido de FX o de emisor del mundo (`fireball_cast.tres`, `fountain_loop.tres`, `heal.tres`…); lo arrastrás a `ParticleType.sound`, `BeamType.sound` o `SoundEmitter3D.cue` | migrado de `fx_sounds.tres` (055o-a), sobre los `SAMP` del original |
 | `music/<dios>.tres`, `music/common.tres`, `music/menu.tres` | `MusicSet`: `calm` del dios (`<dios>_normal`) con `fallback` a `common` (battle 1-5, sacrifice 1, sacrifice victory/losing, victory y defeat theme); el menú toca `menu` y guarda God Realm en `extras` | a mano (052f), sobre los MP3 |
 | `ambience/<dios>.tres` | `AmbienceSet`: fondo en bucle y códigos `A*` de `spel` | a mano (052g) |
@@ -49,7 +48,7 @@ Referencia de cómo se llamaban en el original (el juego ya no los lee: cada có
 | `Xgib` (`spel`) | `sacrifice_end` | final del sacrificio |
 | `spir` (`spel`) | `soul` | alma |
 | `SUMN` (`spel`) | `summon` | invocación |
-| `clik` (`ifac`) | `click` | clic de botón (`Mcl1-4`; 052h: `SoundBus`) |
-| `Iclk`, `Ibak`, `XMNU` (`ifac`) | (clave tal cual) | clic de la interfaz en partida (libro), volver, menú X (052h: meta `ui_sound`, `MenuSounds`) |
+| `clik` (`ifac`) | `cues/ui_click.tres` | clic de botón (`Mcl1-4`; `UiClickSounds.click`) |
+| `Iclk`, `Ibak`, `XMNU` (`ifac`) | `cues/ui_book_click.tres`, `menu_back.tres`, `menu_open.tres` | clic de la interfaz en partida (libro: dato `ui_sound`), volver, menú X (`MenuSounds`) |
 
 El mago además emite `ghost` al levantarse como fantasma; el original no trae sonido para eso (ni para la muerte del mago), así que suena solo con un set propio. `shoot` no tiene código en el original: los sets migrados llevan el cue del `swing` también en `Shoot`.

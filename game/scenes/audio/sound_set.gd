@@ -35,8 +35,8 @@ extends Resource
 ## Asked when this set has no cue for an event (the melee set of a creature that has no sound of its own for a swing).
 @export var fallback: SoundSet
 
-## WORKAROUND: sets that are not a body (the world's `world.tres`, `ui.tres`, `advisor.tres`) still hold their cues by text key
-## until 055o-c and 055o-d give each user a typed cue. A creature or a wizard never uses this; it goes with those three files.
+## WORKAROUND: sets that are not a body (the world's `world.tres` and `advisor.tres`) still hold their cues by text key
+## until 055o-c gives each user a typed cue. A creature or a wizard never uses this; it goes with those two files.
 @export var cues: Dictionary[StringName, SoundCue] = {}
 
 const MAX_HOPS := 8

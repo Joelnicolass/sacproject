@@ -1,13 +1,21 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/audio/sound_bus.gd" id="1_bus"]
 [ext_resource type="Script" path="res://scenes/audio/fx_sounds.gd" id="2_fx"]
+[ext_resource type="Script" path="res://scenes/audio/ui_click_sounds.gd" id="3_ui"]
+[ext_resource type="Resource" path="res://data/audio/cues/ui_click.tres" id="4_click"]
 
-[node name="SoundBus" type="Node" node_paths=PackedStringArray("fx_sounds")]
+[node name="SoundBus" type="Node" node_paths=PackedStringArray("fx_sounds", "ui_clicks")]
 editor_description = "El autoload que reproduce SoundCues: el pool de 32 voces 3D y 8 voces 2D, la prioridad, el cooldown y el límite por cue. Los topes (pool_3d_size, max_loops_3d) se tocan acá. FxSounds es el hijo que convierte los efectos de FxBus en sonidos."
 script = ExtResource("1_bus")
 fx_sounds = NodePath("FxSounds")
+ui_clicks = NodePath("UiClickSounds")
 
 [node name="FxSounds" type="Node" parent="."]
 editor_description = "Cuando FxBus reproduce una ráfaga o un rayo en este par, suena el `sound` de su ParticleType o BeamType. Los efectos de escena suenan por el SoundEmitter3D que llevan adentro."
 script = ExtResource("2_fx")
+
+[node name="UiClickSounds" type="Node" parent="."]
+editor_description = "Cada botón que entra al árbol suena `click` al apretarlo. Un botón con el dato `ui_sound` (un SoundCue) suena ese; con `no_ui_sound` en true, ninguno."
+script = ExtResource("3_ui")
+click = ExtResource("4_click")

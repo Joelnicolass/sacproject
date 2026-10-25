@@ -2,45 +2,64 @@
 class_name MenuSounds
 extends Node
 
-## RFC-052 052h (F367): a menu's sounds from its own signals (local UI, no RPC). Each signal of `menu` named in `cues` plays
-## that key of the `ui_set` set on SoundBus's 2D pool; emitter = the menu's name, event = `events[signal]` (else `click`).
-## On the radial X menu (radial_menu.tscn): opened -> XMNU, entry_chosen -> Iclk, cancelled -> Ibak. A signal the menu does
-## not have, or a key the set lacks, is silence. With the AudioGate closed it connects nothing. Remove the node to silence it.
+## What the radial X menu sounds like: a cue when it opens, one when an entry is chosen and one when it closes without choosing.
+## Each plays on SoundBus's 2D pool when the menu emits its signal (local UI, no RPC); emitter = the menu's name, events
+## `menu_open`, `click` and `menu_back`. An empty cue is silence for that moment. With the AudioGate closed it connects
+## nothing. Remove the node to silence the whole menu.
 
-@export var menu: Node:
+@export var menu: RadialMenu:
 	set(value):
 		menu = value
 		update_configuration_warnings()
-## SoundLibrary path of the set the keys are in.
-@export var ui_set := "ui"
-## Signal of `menu` -> key in `ui_set`.
-@export var cues: Dictionary[StringName, StringName] = {&"opened": &"XMNU", &"entry_chosen": &"Iclk", &"cancelled": &"Ibak"}
-## Signal of `menu` -> the SoundEvent of the log entry (a signal not here logs `click`).
-@export var events: Dictionary[StringName, StringName] = {&"opened": SoundEvent.MENU_OPEN, &"cancelled": SoundEvent.MENU_BACK}
+## The menu opened (`RadialMenu.opened`).
+@export var opened: SoundCue
+## An entry was chosen (`RadialMenu.entry_chosen`).
+@export var chosen: SoundCue
+## The menu closed without choosing (`RadialMenu.cancelled`).
+@export var cancelled: SoundCue
 
 
 func _ready() -> void:
 	if Engine.is_editor_hint() or menu == null or not AudioGate.is_open():
 		return
-	for info: Dictionary in menu.get_signal_list():
-		var signal_name := StringName(info.name)
-		if cues.has(signal_name):
-			var argc := (info.args as Array).size()
-			var call := play.bind(signal_name)
-			menu.connect(signal_name, call.unbind(argc) if argc > 0 else call)
+	menu.opened.connect(play.bind(&"opened"))
+	menu.entry_chosen.connect(_on_entry_chosen)
+	menu.cancelled.connect(play.bind(&"cancelled"))
 
 
-## The cue `signal_name` plays now, or null. The lab asks it to know what to expect.
-func cue_for(signal_name: StringName) -> SoundCue:
-	return SoundBus.lookup(ui_set, cues[signal_name]) if cues.has(signal_name) else null
+## The cue `moment` (`opened`, `chosen` or `cancelled`) plays now, or null when it is empty or silent. The lab asks it to know what to expect.
+func cue_for(moment: StringName) -> SoundCue:
+	var found: SoundCue = null
+	match moment:
+		&"opened":
+			found = opened
+		&"chosen":
+			found = chosen
+		&"cancelled":
+			found = cancelled
+	return found if found != null and not found.is_silent() else null
 
 
-## Plays the cue of `signal_name`. False when it is silent or SoundBus dropped it.
-func play(signal_name: StringName) -> bool:
-	var cue := cue_for(signal_name)
-	if cue == null or menu == null:
+## The SoundEvent the log entry of `moment` carries.
+func event_for(moment: StringName) -> StringName:
+	match moment:
+		&"opened":
+			return SoundEvent.MENU_OPEN
+		&"cancelled":
+			return SoundEvent.MENU_BACK
+	return SoundEvent.CLICK
+
+
+## Plays the cue of `moment`. False when it is silent or SoundBus dropped it.
+func play(moment: StringName) -> bool:
+	var found := cue_for(moment)
+	if found == null or menu == null:
 		return false
-	return SoundBus.play_2d(cue, StringName(menu.name), events.get(signal_name, SoundEvent.CLICK))
+	return SoundBus.play_2d(found, StringName(menu.name), event_for(moment))
+
+
+func _on_entry_chosen(_entry: RadialEntry) -> void:
+	play(&"chosen")
 
 
 func _get_configuration_warnings() -> PackedStringArray:

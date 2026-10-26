@@ -40,8 +40,8 @@ var tag: String:
 @export var pick := Pick.GROUND
 ## What the battle line says while the spell is armed.
 @export var prompt := ""
-## Particle (FxBus name) the wizard throws while he casts this spell. Empty = the one of his god.
-@export var cast_fx := ""
+## Particle the wizard's hands throw while he casts this spell. Empty = the one of his god (GodType.cast_fx).
+@export var cast_fx: ParticleType
 
 
 func _get_configuration_warnings() -> PackedStringArray:

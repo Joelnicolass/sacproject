@@ -21,9 +21,9 @@ const DOCTOR_GROUP := &"doctor"
 
 ## Groups a building can be in to be aimed at. A shrine would add its own.
 @export var target_groups: PackedStringArray = PackedStringArray(["structure", "altar"])
-## Particle (FxBus name, res://data/fx/<name>.tres) at the origin and at the destination of each body.
-@export var out_fx := "teleport_out"
-@export var in_fx := "teleport_in"
+## The burst at the origin and at the destination of each body (at its Center). Empty = none.
+@export var out_fx: ParticleType
+@export var in_fx: ParticleType
 ## The rings of blue light of each body (TeleportRings). Empty = no rings.
 @export var rings_scene: PackedScene
 
@@ -164,8 +164,8 @@ func _show_jump(froms: PackedVector3Array, tos: PackedVector3Array, widths: Pack
 		_burst(in_fx, false, tos[i], widths[i], heights[i], centers[i])
 
 
-func _burst(fx: String, going_out: bool, feet: Vector3, width: float, height: float, center_y: float) -> void:
-	if not fx.is_empty():
+func _burst(fx: ParticleType, going_out: bool, feet: Vector3, width: float, height: float, center_y: float) -> void:
+	if fx != null:
 		FxBus.play(fx, feet + Vector3(0.0, center_y, 0.0))
 	if rings_scene == null:
 		return

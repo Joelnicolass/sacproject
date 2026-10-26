@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/actions/launch_action.gd" id="1_script"]
 [ext_resource type="Script" path="res://scenes/spells/spell_target.gd" id="2_target"]
 [ext_resource type="PackedScene" path="res://scenes/spells/chain/chain_lightning.tscn" id="3_launch"]
 [ext_resource type="PackedScene" path="res://scenes/spells/chain/cast_bolts.tscn" id="4_cast"]
+[ext_resource type="Resource" path="res://data/fx/chain_cast.tres" id="fx_chain_cast"]
 
 [sub_resource type="Resource" id="Target_enemy"]
 script = ExtResource("2_target")
@@ -14,7 +15,7 @@ refuse_cc_protected = false
 [node name="ChainLightning" type="Node"]
 script = ExtResource("1_script")
 prompt = "Elegí el blanco"
-cast_fx = "chain_cast"
+cast_fx = ExtResource("fx_chain_cast")
 target = SubResource("Target_enemy")
 launch_scene = ExtResource("3_launch")
 cast_scene = ExtResource("4_cast")

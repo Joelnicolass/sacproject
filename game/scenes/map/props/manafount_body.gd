@@ -34,6 +34,7 @@ var _source_rate := 0.0
 @onready var _manalith_light: StateLight = %ManalithLight
 @onready var _fount_sound: SoundEmitter3D = %FountSound
 @onready var _manalith_sound: SoundEmitter3D = %ManalithSound
+@onready var _summon_spot: Marker3D = %SummonSpot
 
 
 func _ready() -> void:
@@ -97,6 +98,11 @@ func release(by: NodePath = NodePath()) -> void:
 
 func anchor() -> Vector3:
 	return global_position
+
+
+## Where the burst of a tower rising here plays: the SummonSpot marker of the scene (its own position without one).
+func summon_point() -> Vector3:
+	return _summon_spot.global_position if _summon_spot != null else global_position
 
 
 func _set_active(active: bool) -> void:

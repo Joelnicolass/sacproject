@@ -103,7 +103,7 @@ var _clip_flat_speed := 0.0
 @onready var souls: SoulPurse = $SoulPurse
 @onready var ghost: GhostForm = $GhostForm
 @onready var _clip_pose: ClipPlayback = $ClipPose
-## The cast in progress as every peer sees it: `cast_fx_shown` is replicated, so the pose follows it on a client too.
+## The cast in progress as every peer sees it (`is_casting()` reads the replicated `cast_fx_shown` on a client), so the pose follows it.
 @onready var _caster: Caster = $Caster
 ## F138 (RFC-030i-c): the one owner of «held» (stunned, petrified); walking, turning, casting and summoning ask it.
 @onready var _afflictions: Afflictions = $Afflictions
@@ -499,7 +499,7 @@ func _update_clip_state(flat_speed: float) -> void:
 		return
 	var moving := flat_speed > 0.1 and ghost.can_move()
 	# RFC-023 023d: the spellcast loop while the Caster casts (the server says so, it is replicated), standing or walking.
-	if not _caster.cast_fx_shown.is_empty():
+	if _caster.is_casting():
 		_gesturing = false
 		_clip_pose.play("cast_run" if moving else "cast")
 		return

@@ -38,6 +38,7 @@
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/_jman.tscn" id="gs_mana"]
 [ext_resource type="Script" uid="uid://nrjtqemmijb" path="res://scenes/gods/god_structure.gd" id="gs_script"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/_jsac.tscn" id="gs_shrine"]
+[ext_resource type="Resource" path="res://data/fx/cast_james.tres" id="fx_cast"]
 
 [sub_resource type="Resource" id="Unlock_0"]
 script = ExtResource("3_unl")
@@ -194,7 +195,7 @@ tag = "james"
 display_name = "James"
 sort_order = 2
 look = ExtResource("99_look")
-cast_fx_path = "res://data/fx/cast_james.tres"
+cast_fx = ExtResource("fx_cast")
 ai_profile = ExtResource("6_ai")
 book = SubResource("Book_1")
 structures = Array[ExtResource("gs_script")]([SubResource("Structure_0"), SubResource("Structure_1")])

@@ -64,7 +64,7 @@ func started(wizard: WizardBody, spell: SpellType, aim: Aim, frames: int) -> voi
 	_aim = aim
 	_ticks = frames
 	if cast_scene != null:
-		FxBus.broadcast_scene(cast_scene.resource_path, _birth(wizard, aim), {"ticks": frames, "target": str(aim.target.get_path()) if aim.target != null else ""})
+		FxBus.broadcast_scene(cast_scene, _birth(wizard, aim), {"ticks": frames, "target": str(aim.target.get_path()) if aim.target != null else ""})
 	if spawn_when == When.START:
 		_spawn(wizard, spell)
 

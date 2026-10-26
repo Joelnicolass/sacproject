@@ -1,10 +1,11 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/actions/zone_action.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/fx/wards/fire_cast.tres" id="fx_fire_cast"]
 
 [node name="RainOfFire" type="Node"]
 editor_description = "Rain of Fire (rifr): una nube de fuego que cae al terminar el lanzamiento."
 script = ExtResource("1_script")
 prompt = "Elegí el punto"
-cast_fx = "wards/fire_cast"
+cast_fx = ExtResource("fx_fire_cast")
 kind = "RainOfFire"

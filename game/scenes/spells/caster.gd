@@ -12,8 +12,9 @@ extends Node
 ## no action: the Summoner puts it in front of the wizard when the cast starts and finishes it when it ends.
 
 signal feedback(text: String)
-## The cast particle that is showing changed: "" when the wizard is not casting (RFC-023 023d). Every peer emits it.
-signal cast_fx_changed(type_name: String)
+## A cast began (`casting` true; `fx` is the particle of the hands, null for a god without one) or ended or was cut (false, null).
+## Every peer emits it, from the replicated `cast_fx_shown`: HandFx, WizardSounds, Ward and the pose follow it.
+signal cast_changed(casting: bool, fx: ParticleType)
 
 ## sacengine updateFPS: casting and drain are counted in frames.
 const FPS := 60.0
@@ -31,6 +32,8 @@ const BUSY := Refusal.CASTING
 const NO_ROOM := SpellAction.NO_ROOM
 ## RFC-036 036d: MatchRules.max_creatures_per_player reached.
 const CREATURE_LIMIT := Refusal.CREATURE_LIMIT
+## `cast_fx_shown` of a cast without a particle (a god without one): the pose and the incantation still follow it.
+const BARE := "-"
 
 @export var rules: MatchRules
 @export var spellbook: Spellbook
@@ -46,21 +49,32 @@ var _drain_left := 0
 var _drain_per_frame := 0.0
 ## The action whose cast is running, or null.
 var _active: SpellAction
+## What `cast_fx_shown` says while the cast in progress lasts (an FxWire id or BARE), taken when it starts.
+var _shown_id := ""
 
-## RFC-023 023d: the ParticleType name of the cast in progress ("" while idle). The server sets it and it is replicated, so
-## the wizard's hands (HandFx) play the god's casting particle and the body its spellcast pose on every peer. Presentation only.
+## The cast in progress as every peer sees it: the FxWire id of the hands' particle, BARE without one, "" while idle. The server
+## writes it and the body's synchronizer replicates it; nothing in the simulation reads it. Presentation only.
+## Ref: RFC-023 023d.
 @export var cast_fx_shown := "":
 	set(value):
 		if value == cast_fx_shown:
 			return
 		cast_fx_shown = value
-		cast_fx_changed.emit(value)
+		cast_changed.emit(not value.is_empty(), cast_fx())
 
 @onready var _wizard: WizardBody = get_parent()
 
 
+## A cast is in progress: the server knows the entry; a client reads the replicated `cast_fx_shown`.
 func is_casting() -> bool:
-	return _entry != null
+	return _entry != null or not cast_fx_shown.is_empty()
+
+
+## The particle the hands throw now, or null (idle, or a cast without one). Every peer.
+func cast_fx() -> ParticleType:
+	if cast_fx_shown.is_empty() or cast_fx_shown == BARE:
+		return null
+	return FxWire.resource(cast_fx_shown) as ParticleType
 
 
 ## sacengine canCast (state.d:9520): only an idle or moving wizard, not a dying or ghost one.
@@ -343,6 +357,7 @@ func _start(entry: Resource, target: Node3D) -> int:
 	_drain_left = mini(frames, ceili(cost * FPS / rules.cast_drain_per_s))
 	_drain_per_frame = cost / float(maxi(_drain_left, 1))
 	spellbook.apply_cooldown(str(entry.get("tag")))
+	_shown_id = _cast_fx_id()
 	var verb := "convoca" if entry is CreatureType else "lanza"
 	print("%s %s slot %d" % [verb, str(entry.get("display_name")), int(_wizard.get("owner_slot"))])
 	return frames
@@ -357,7 +372,7 @@ func _physics_process(_delta: float) -> void:
 	if _drain_left > 0:
 		_drain_left -= 1
 		_spend(_drain_per_frame)
-	cast_fx_shown = _cast_fx()
+	cast_fx_shown = _shown_id
 	_frames_left -= 1
 	if _frames_left <= 0:
 		_finish()
@@ -397,13 +412,15 @@ func _finish() -> void:
 			_tell_owner(text)
 
 
-## The cast particle of the action (Rock throws dirt, Wrath its own sparks: state.d:16386, 16707); the rest
-## use the casting particle of the wizard's god, a summon included (a creature only comes out of its god's book).
-func _cast_fx() -> String:
-	if _active != null and not _active.cast_fx.is_empty():
-		return _active.cast_fx
-	var god_type := _wizard.god_type
-	return god_type.cast_fx_name() if god_type != null else "cast_%s" % _wizard.god
+## The id of the hands' particle: the action's own (Rock throws dirt, Wrath its sparks), else the god's, a summon included (a
+## creature only comes out of its god's book). BARE when there is none.
+## Ref: state.d:16386, 16707.
+func _cast_fx_id() -> String:
+	var fx: ParticleType = _active.cast_fx if _active != null else null
+	if fx == null and _wizard.god_type != null:
+		fx = _wizard.god_type.cast_fx
+	var id := FxWire.id_of(fx) if fx != null else ""
+	return id if not id.is_empty() else BARE
 
 
 ## The spell of the book by tag, from either tab, or null.

@@ -1,6 +1,6 @@
 extends Node2D
 
-## The example's match rules: the first player to 3 points wins; in a lobby match, a player who comes back is counted
+## The example's match rules: the first player to 3 points wins; a player who comes back (rejoin) is counted
 ## (MpState back_N) and one who stays away past the grace loses. The server decides; MpMatch tells every peer, and after
 ## a moment each player leaves (back to the lobby for an online match, to the menu otherwise).
 
@@ -17,7 +17,7 @@ func _ready() -> void:
 	match_node.player_abandoned.connect(_on_abandoned)
 
 
-## A lobby match: a player who stays away past the grace loses; the first other seat wins.
+## A player who stays away past the grace loses; the first other seat wins.
 func _on_abandoned(slot: int) -> void:
 	for other in match_node.seats():
 		if other != slot:

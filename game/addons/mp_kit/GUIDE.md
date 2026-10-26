@@ -264,7 +264,7 @@ Qué tiene el menú: **Play solo**, **Host LAN**, **Private server** (opcional),
 
 El campo de dirección acepta: `192.168.1.5`, `juego.ejemplo.com`, cualquiera con `:puerto`, `#CÓDIGO` al final (partida privada) o una URL `ws://…` / `wss://…`. Lo mismo acepta la pantalla de lobby y `MpFlow.join_address` (los tres usan `MpAddress.parse`).
 
-Qué hace el `MpFlow`: arranca la red con la config, cambia de escena (boot ↔ mundo), le manda el mundo al que entra tarde y vuelve al boot si se cae el servidor. Se muda solo a la raíz del árbol y sobrevive a los cambios de escena. No hace falta autoload.
+Qué hace el `MpFlow`: arranca la red con la config, arma la puerta de arranque, cambia de escena (boot ↔ mundo), le manda el mundo a cada asiento admitido (también al que vuelve) y vuelve al boot si se cae el servidor. Se muda solo a la raíz del árbol y sobrevive a los cambios de escena. No hace falta autoload.
 
 ### 5.3 Escena del mundo
 
@@ -703,17 +703,23 @@ No escribas `state.values["x"] = 3` a mano: no se sincroniza. Usá `set_value`.
 
 ### 7.5 Inicio y fin: `MpMatch`
 
-Un `MpMatch` en el mundo dice cuándo empieza la partida, quién se fue y quién volvió, y la termina para todos.
+Un `MpMatch` en el mundo dice cuándo empieza la partida, quién se fue y quién volvió, y la termina para todos. Lo que cuenta lo decide la **puerta de arranque** (`MpMatchGate`, en `/root/MpKit/Gate`, `Mp.gate()`), que el `MpFlow` arma en cada camino que hostea (Host LAN, dedicado a mano, dedicado de sala):
+
+- **Antes del arranque** los asientos libres están abiertos. El mundo queda **pausado en todos los peers** hasta que cargan los asientos que espera: todos en una partida de sala o en Host LAN (`start_seats` = 0), y uno en un dedicado a mano (`dedicated_start_seats` = 1). `--start-seats=N` cambia ese número sin tocar la escena. Pasado `load_timeout_s` desde el primero que entró, arranca con los que cargaron.
+- **Después del arranque** solo vuelve un asiento que se fue, dentro de `rejoin_grace_s`, al mismo slot (*rejoin*). En LAN el cliente vuelve solo con la credencial que el servidor le dio al sentarlo (en memoria, por `host:puerto`); en una sala, con su ticket. Cualquier otro peer se rechaza con un motivo: `match_started`, `full`, `grace_over`, `slot_taken`. El cliente recibe `admission_rejected(motivo)` y el flow lo muestra con `rejection_text(motivo)` (pisalo para traducir).
+- Un asiento que no vuelve a tiempo, o que nunca cargó, **abandona** (`player_abandoned`). Si se fueron todos, nadie abandona: la puerta espera y, cuando pasó la gracia de todos, emite `all_gone`.
+
+Los knobs están en el inspector del `MpFlow`, grupo **Match start** (`rejoin_grace_s`, `load_timeout_s`, `start_seats`, `dedicated_start_seats`, `pause_clients`, `match_started_status`). En una partida de sala, la gracia y el tiempo de carga salen del `MpLobbyConfig`. En el Remote del editor, `/root/MpKit/Gate` muestra `phase`, `expected`, `loaded` y `away`. En Host LAN el host puede arrancar con los que ya cargaron: `Mp.gate().can_start_now()` / `Mp.gate().start_now()` (para un botón «Empezar ya»).
 
 Señales:
 
 | Señal | Dónde | Cuándo |
 |---|---|---|
-| `all_loaded` | servidor | Están todos (partida de sala) o el mundo está listo (LAN, dedicado, solo) |
+| `all_loaded` | servidor | La partida arranca (cargaron los asientos que esperaba) o el mundo está listo (solo) |
 | `player_joined(slot)` | servidor | Entró un jugador por primera vez |
 | `player_left(slot)` | servidor | Se fue un jugador |
-| `player_back(slot)` | servidor | Solo partida de sala: volvió dentro de la gracia, mismo slot |
-| `player_abandoned(slot)` | servidor | Solo partida de sala: no volvió a tiempo, o nunca cargó |
+| `player_back(slot)` | servidor | Volvió dentro de la gracia, mismo slot |
+| `player_abandoned(slot)` | servidor | No volvió a tiempo, o nunca cargó |
 | `waiting_changed(waiting)` | **todos** | La partida empieza o deja de esperar asientos |
 | `finished(result)` | **todos** | El servidor llamó `finish` |
 
@@ -722,9 +728,8 @@ Métodos y propiedades:
 | Nombre | Qué hace |
 |---|---|
 | `finish(result)` | Solo servidor: termina la partida. Todos reciben `finished(result)`. En una partida de sala, además escribe el resultado para la sala |
-| `seats()` | Los slots del ticket de sala (vacío fuera de una partida de sala) |
+| `seats()` | Los slots de la partida (los de la puerta; vacío en solo) |
 | `waiting` | Verdadero mientras espera asientos, en todos los peers |
-| `pause_until_loaded` | (on) En una partida de sala, el mundo queda **pausado en todos los peers** hasta que cargan todos o pasa `load_timeout_s`. Así nadie camina antes que los demás |
 
 Mientras espera, el árbol está pausado. La red del kit sigue andando (MpKit, el lobby, el agente, el lanzador, el beacon LAN corren igual), y también el botón Leave y la línea de invitación. Lo tuyo no: si querés mostrar "Esperando jugadores…", poné ese nodo del HUD con **Process › Mode = Always** y escuchá `waiting_changed`.
 
@@ -1493,7 +1498,10 @@ Algún archivo de la carpeta ya existe (`[~]`) o la carpeta no empieza con `res:
 4. ¿Sin `predict`, movés detrás de `is_authority()`? Si movés detrás de `is_local()`, el cliente se mueve en su pantalla pero el servidor lo devuelve a su lugar.
 5. ¿`sync_position` está tildado? ¿Guardaste la escena del jugador después de tildarlo?
 6. ¿El `MpSlotSpawner` (el `Players` del `MpWorld`) tiene `spawn_path` y `pawn_scene`?
-7. ¿Es una partida de sala esperando asientos? El mundo está pausado hasta que cargan todos (`MpMatch.waiting`).
+7. ¿La partida espera asientos? El mundo está pausado hasta que cargan los que espera (`MpMatch.waiting`, `Mp.gate().is_waiting()`). Con un solo cliente en Host LAN o en un dedicado para varios, probá `--start-seats=1`.
+
+**Un segundo cliente no entra: «The match already started» (`match_started`).**
+La puerta ya arrancó la partida: después del arranque solo vuelve un asiento que se fue. Para que entren varios, que carguen antes del arranque: `--start-seats=N` en el servidor (o `dedicated_start_seats` / `start_seats` en el inspector del `MpFlow`).
 
 **Se mueve, pero los otros jugadores tironean.**
 Usá `smoothing = BUFFERED` con `adaptive_buffer` prendido; si sigue, bajá `late_tolerance` (0.01) o subí el tope `buffer_delay_s` (0.15, 0.2). Si bajaste `send_hz`, subilo o dejalo en 0.

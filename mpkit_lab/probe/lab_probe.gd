@@ -2,7 +2,8 @@ extends Node
 
 ## Lab-only player robot for the arena_2d example. Inert without `--probe=`. It presses keys like a person and checks
 ## what comes back over the network, printing `PASS …` / `FAIL …` and a last `PROBE <role> PASS|FAIL` line.
-## Roles: solo | client (the first player) | basic (any game: move and score only, e.g. one the wizard wrote) | late (joins after the first one played) | watch (server or host:
+## Roles: solo | client (the first player; `--probe-rejoin`: then it leaves and joins again, same slot) | basic (any game: move and score
+## only, e.g. one the wizard wrote) | late (joins after the match started: the start gate turns it away, `--probe-reason=`) | watch (server or host:
 ## waits for a remote player to move and score) | lag (own player under a bad network: response and corrections) |
 ## observe (another player, `--probe-watch-slot=N`: how evenly it moves on screen) | lobby (online rooms through the
 ## lobby screen: `--probe-lobby=host:port --probe-name=X`, `--probe-create=Room` makes the room and scores to win) |
@@ -20,6 +21,8 @@ var _fails := 0
 var _join_failed := false
 var _server_lost := false
 var _rejected := ""
+var _ever_slot := 0
+var _last_status := ""
 ## Stand-in while the current scene has no MpState (between scenes).
 var _empty_state: MpState
 
@@ -30,6 +33,7 @@ func _ready() -> void:
 	MpKit.join_failed.connect(func() -> void: _join_failed = true)
 	MpKit.server_lost.connect(func() -> void: _server_lost = true)
 	MpKit.admission_rejected.connect(func(reason: String) -> void: _rejected = reason)
+	MpKit.slot_assigned.connect(func(slot: int) -> void: _ever_slot = slot)
 	if _role.is_empty():
 		return
 	print("probe %s start" % _role)
@@ -41,6 +45,7 @@ func _run() -> void:
 	var address := MpBoot.user_value("probe-join", "")
 	if not address.is_empty():
 		await _until(func() -> bool: return MpFlow.find_in_tree(self) != null, "the boot scene has a flow")
+		MpFlow.find_in_tree(self).status_changed.connect(func(text: String) -> void: _last_status = text)
 		_check(MpFlow.find_in_tree(self).join_address(address) == OK, "join_address(%s) started" % address)
 	match _role:
 		"solo":
@@ -49,7 +54,10 @@ func _run() -> void:
 			await _play_as(1)
 		"client":
 			await _until(_networked_slot, "the server gave this client a slot")
-			await _play_as(MpKit.local_slot())
+			var slot := MpKit.local_slot()
+			await _play_as(slot)
+			if MpBoot.user_flag("probe-rejoin"):
+				await _rejoin(slot)
 		"basic":
 			await _until(_networked_slot, "the server gave this client a slot")
 			await _play_basic(MpKit.local_slot())
@@ -143,28 +151,47 @@ func _who_rang(slot: int) -> int:
 	return slot
 
 
-## A player who joins after the first one played (`--probe-first=N`, default 1) sees it where it went, its score
-## and its color.
+## A player who joins after the match started: the start gate turns it away (`--probe-reason=`, default match_started). It never
+## gets a slot nor the world, ends offline, and the flow shows the reason (MpFlow.rejection_text).
 func _check_late() -> void:
-	var slot := int(MpBoot.user_value("probe-first", "1"))
-	await _until(_networked_slot, "the late client got a slot")
-	var own := await _pawn(MpKit.local_slot())
-	var first := await _pawn(slot)
-	if own == null or first == null:
+	var reason := MpBoot.user_value("probe-reason", MpMatchGate.MATCH_STARTED)
+	if not await _until(func() -> bool: return _rejected != "", "the late client was turned away"):
 		return
-	var marker_x: float = _in_world("SpawnPoints/P%d" % slot).position.x
-	await _until(func() -> bool: return first.position.x > marker_x + 50.0, "P%d shows where it moved before this client joined" % slot)
-	var key := StringName("p%d" % slot)
-	await _until(func() -> bool: return int(_state().get_value(key, 0)) == 1, "the score made before joining arrived")
-	await _until(func() -> bool: return first.color_index == 1, "P%d's color made before joining arrived" % slot)
-	var bell := get_tree().get_first_node_in_group(&"bell")
-	await _until(func() -> bool: return bell.rings == 1, "the bell rung before joining shows (a static actor, late join)")
-	_check(get_tree().current_scene.get_node("Projectiles").get_child_count() == 0, "no leftover shots reached the late peer")
-	## Bypass the client-side guard: send the RPC by hand for an actor this peer does not own.
-	var their := MpActor.of(first)
-	their.rpc_server_call.rpc_id(1, &"recolor", [])
+	_check(_rejected == reason, "the reason is %s (got %s)" % [reason, _rejected])
+	_check(_ever_slot == 0, "the late client never got a slot")
+	await _until(func() -> bool: return not MpKit.is_networked(), "the late client ends offline")
+	_check(_in_world("Actors") == null, "the late client never loaded the world")
+	var flow := MpFlow.find_in_tree(self)
+	_check(flow != null and _last_status == flow.rejection_text(reason), "the flow shows the reason (%s)" % _last_status)
+
+
+## The first player leaves (the Leave path: back to the menu, offline) and joins the same address again: the server gives it the
+## same slot (its seat credential), MpMatch counts the comeback, and what it made before is still there.
+func _rejoin(slot: int) -> void:
+	var flow := MpFlow.find_in_tree(self)
+	var address := "127.0.0.1:%d" % MpKit.port
+	flow.return_to_boot()
+	await _until(func() -> bool: return get_tree().current_scene.name == "Boot" and not MpKit.is_networked(), "rejoin: left to the menu, offline")
 	await get_tree().create_timer(1.0).timeout
-	_check(first.color_index == 1, "the server refused a to_server call from a peer that does not own the actor")
+	_ever_slot = 0
+	_check(flow.join_address(address) == OK, "rejoin: join_address(%s) started" % address)
+	await _until(func() -> bool: return _networked_slot() and _ever_slot != 0, "rejoin: the server let the seat back in")
+	_check(MpKit.local_slot() == slot, "rejoin: the same slot (%d, got %d)" % [slot, MpKit.local_slot()])
+	if await _pawn(slot) == null:
+		return
+	await _until(func() -> bool: return int(_state().get_value(StringName("p%d" % slot), 0)) == 1, "rejoin: the score made before leaving is still there")
+	await _until(func() -> bool: return int(_state().get_value(StringName("back_%d" % slot), 0)) == 1, "rejoin: the server counted the comeback (MpMatch.player_back)")
+	var bell := get_tree().get_first_node_in_group(&"bell")
+	await _until(func() -> bool: return bell.rings == 1, "rejoin: the bell rung before leaving shows (a static actor)")
+	_check(get_tree().current_scene.get_node("Projectiles").get_child_count() == 0, "rejoin: no leftover shots reached the peer")
+	var host_pawn := _in_world("Actors/Pawn_1") if slot != 1 else null
+	if host_pawn == null:
+		return
+	## Bypass the client-side guard: send the RPC by hand for an actor this peer does not own.
+	var color: int = host_pawn.color_index
+	MpActor.of(host_pawn).rpc_server_call.rpc_id(1, &"recolor", [])
+	await get_tree().create_timer(1.0).timeout
+	_check(host_pawn.color_index == color, "the server refused a to_server call from a peer that does not own the actor")
 
 
 ## Server or host: a remote player's input moves its pawn here and its score counts here.

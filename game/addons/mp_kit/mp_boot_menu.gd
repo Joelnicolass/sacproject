@@ -21,6 +21,8 @@ signal status_changed(text: String)
 @export var max_players: int = 4
 @export var room_name: String = "MpKit"
 @export var advertise_lan: bool = true
+## Without a flow (drive_kit): clients that must load before a hosted match starts (0 = every seat).
+@export var start_seats: int = 1
 
 @export var title_text: String = "MpKit"
 @export var play_solo_text: String = "Play solo"
@@ -180,9 +182,11 @@ func _on_host() -> void:
 			return
 		if advertise_lan:
 			MpLan.advertise(MpKit, room_name, MpKit.port)
-		if world_scene != null:
-			MpKit.broadcast_load_world()
-			_ensure_late_join()
+		## The start gate decides who sits; every seat it lets in gets the world.
+		MpKit.gate.host_present = true
+		MpKit.gate.arm(MpKit.open_seats(), start_seats)
+		if world_scene != null and not MpKit.peer_joined.is_connected(MpBootMenu._send_world):
+			MpKit.peer_joined.connect(MpBootMenu._send_world)
 	_go_world()
 
 
@@ -278,21 +282,10 @@ func _set_status(text: String) -> void:
 	status_changed.emit(text)
 
 
-func _ensure_late_join() -> void:
-	if MpKit.has_node("MpBootLateJoin"):
-		return
-	var bridge := LateJoin.new()
-	bridge.name = "MpBootLateJoin"
-	MpKit.add_child(bridge)
-
-
-class LateJoin extends Node:
-	func _ready() -> void:
-		MpKit.peer_joined.connect(_on_peer)
-
-	func _on_peer(peer_id: int, _slot: int) -> void:
-		if MpKit.is_server():
-			MpKit.load_world_to(peer_id)
+## Static: the menu is gone once the world loads, the connection is not. Inert once the gate is closed again (leave).
+static func _send_world(peer_id: int, _slot: int) -> void:
+	if MpKit.is_server() and MpKit.gate.is_armed():
+		MpKit.load_world_to(peer_id)
 
 
 ## The lobby scene: this menu's own, or the flow's (MpGame.lobby_scene).

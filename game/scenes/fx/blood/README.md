@@ -1,0 +1,6 @@
+# fx/blood
+What: every creature and wizard that loses health bleeds red: `BloodFx` (a child of unit.tscn and wizard_body.tscn) hears `Health.changed` and, on a drop, plays the `BloodType` spray at the body's CENTER and asks `GroundScars` for `blud` marks at its FEET (permanent, in the «Cantidad de marcas» pool).
+Not: the simulation (nothing here writes it, no RPC; headless/dedicated does nothing), the gib's cloud (Gib), who owns the marks (GroundScars), buildings.
+Talks to: Health.changed -> BloodFx -> BloodRules.kind_for (none / light / heavy) -> FxBus.play(spray) + GroundScars.of(self).stamp(mark); the look's `BodyLook.blood` or BloodFx `fallback` picks the type.
+Edit: data/fx/blood/red.tres (thresholds, marks) · data/fx/blood_hit.tres / blood_hit_heavy.tres (particles) · another blood = duplicate red.tres and set `blood` on a `<creature>_look.tscn` root.
+Check: debug/fx/blood_lab.tscn (F6; K, Shift+K) · `-- --blood-script` (BLOOD … PASS|FAIL) · Remote: `BloodFx.sprays` / `marks` · `GroundScars.log_lines` says why a mark was refused.

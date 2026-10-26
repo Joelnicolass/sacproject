@@ -1,0 +1,82 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://debug/fx/blood_lab.gd" id="1_lab"]
+[ext_resource type="Script" path="res://debug/fx/blood_checks.gd" id="2_checks"]
+[ext_resource type="PackedScene" path="res://scenes/map/maps/test_flat/map.tscn" id="3_map"]
+[ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="4_unit"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/trogg.tres" id="5_trogg"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/earthfling.tres" id="6_earthfling"]
+[ext_resource type="Resource" path="res://data/fx/blood/none.tres" id="7_none"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_lab"]
+
+[sub_resource type="Sky" id="Sky_lab"]
+sky_material = SubResource("ProceduralSkyMaterial_lab")
+
+[sub_resource type="Environment" id="Environment_lab"]
+background_mode = 2
+sky = SubResource("Sky_lab")
+ambient_light_source = 3
+tonemap_mode = 3
+
+[node name="BloodLab" type="Node3D" node_paths=PackedStringArray("checks", "targets", "status")]
+editor_description = "Sangre: F6, K golpea el 20 % al siguiente cuerpo, Shift+K el 45 %. Stone usa none.tres solo acá. Sin ventana: -- --blood-headless; con ventana: -- --blood-script (BLOOD PASS|FAIL)."
+script = ExtResource("1_lab")
+checks = NodePath("Checks")
+targets = [NodePath("World/TroggA"), NodePath("World/TroggB"), NodePath("World/Stone")]
+status = NodePath("Overlay/Status")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_lab")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, 0.25, -0.433, 0, 0.866, 0.5, 0.5, -0.433, 0.75, 1255, 60, 1300)
+
+[node name="Map" parent="." instance=ExtResource("3_map")]
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.8321, 0.5547, 0, -0.5547, 0.8321, 1255, 18, 1312)
+current = true
+far = 3000.0
+
+[node name="World" type="Node3D" parent="."]
+
+[node name="TroggA" parent="World" instance=ExtResource("4_unit")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1252, 10, 1300)
+type = ExtResource("5_trogg")
+owner_slot = 2
+idle_aggro = false
+
+[node name="TroggB" parent="World" instance=ExtResource("4_unit")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1258, 10, 1300)
+type = ExtResource("5_trogg")
+owner_slot = 2
+idle_aggro = false
+
+[node name="Stone" parent="World" instance=ExtResource("4_unit")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1255, 10, 1295)
+type = ExtResource("6_earthfling")
+owner_slot = 2
+idle_aggro = false
+
+[node name="BloodFx" parent="World/Stone"]
+fallback = ExtResource("7_none")
+
+[node name="Checks" type="Node" parent="." node_paths=PackedStringArray("trogg_a", "trogg_b", "stone")]
+script = ExtResource("2_checks")
+trogg_a = NodePath("../World/TroggA")
+trogg_b = NodePath("../World/TroggB")
+stone = NodePath("../World/Stone")
+
+[node name="Overlay" type="CanvasLayer" parent="."]
+
+[node name="Status" type="Label" parent="Overlay"]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 900.0
+offset_bottom = 48.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+text = "K: golpe 20 % · Shift+K: golpe 45 %"
+
+[editable path="World/Stone"]

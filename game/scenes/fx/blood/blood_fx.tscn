@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/blood/blood_fx.gd" id="1_blood"]
+[ext_resource type="Resource" path="res://data/fx/blood/red.tres" id="2_red"]
+
+[node name="BloodFx" type="Node"]
+editor_description = "El cuerpo sangra cuando baja su Health.current: salpicadura roja desde el centro y mancha en el suelo a sus pies. Al instanciarlo asigná body, health y mount."
+script = ExtResource("1_blood")
+fallback = ExtResource("2_red")

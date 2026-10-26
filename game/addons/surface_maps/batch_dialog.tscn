@@ -1,0 +1,82 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://addons/surface_maps/batch_dialog.gd" id="1_batch"]
+[ext_resource type="Script" path="res://addons/surface_maps/recipe_form.gd" id="2_form"]
+
+[node name="BatchDialog" type="ConfirmationDialog"]
+title = "Generar relieve"
+size = Vector2i(560, 640)
+dialog_hide_on_ok = false
+script = ExtResource("1_batch")
+
+[node name="Body" type="VBoxContainer" parent="."]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 552.0
+offset_bottom = 591.0
+
+[node name="What" type="Label" parent="Body"]
+text = "Qué: carpetas (sus .tres, sin subcarpetas) o materiales, separados por coma."
+autowrap_mode = 3
+
+[node name="PathRow" type="HBoxContainer" parent="Body"]
+
+[node name="Paths" type="LineEdit" parent="Body/PathRow"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+placeholder_text = "res://scenes/bodies/materials/"
+
+[node name="Browse" type="Button" parent="Body/PathRow"]
+unique_name_in_owner = true
+tooltip_text = "Elegir una carpeta."
+text = "Carpeta…"
+
+[node name="UseSelection" type="Button" parent="Body/PathRow"]
+unique_name_in_owner = true
+tooltip_text = "Usa los archivos y carpetas seleccionados en el panel FileSystem."
+text = "Selección"
+
+[node name="Skip" type="CheckBox" parent="Body"]
+unique_name_in_owner = true
+tooltip_text = "No toca los materiales que ya tienen todos sus mapas en disco (ni los genera, ni los asigna, ni los guarda)."
+button_pressed = true
+text = "Saltear existentes"
+
+[node name="Overwrite" type="CheckBox" parent="Body"]
+unique_name_in_owner = true
+tooltip_text = "Reemplaza los PNG que ya existen (se pierde lo retocado a mano)."
+text = "Sobrescribir"
+
+[node name="RecipeTitle" type="Label" parent="Body"]
+text = "Receta (la misma de la sección del inspector, solo por esta sesión):"
+
+[node name="Scroll" type="ScrollContainer" parent="Body"]
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Form" type="VBoxContainer" parent="Body/Scroll"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+script = ExtResource("2_form")
+
+[node name="Progress" type="ProgressBar" parent="Body"]
+unique_name_in_owner = true
+step = 1.0
+
+[node name="StatusRow" type="HBoxContainer" parent="Body"]
+
+[node name="Status" type="Label" parent="Body/StatusRow"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+autowrap_mode = 3
+
+[node name="Stop" type="Button" parent="Body/StatusRow"]
+unique_name_in_owner = true
+visible = false
+tooltip_text = "Termina el material actual y para; lo ya escrito se importa y se asigna igual."
+text = "Detener"
+
+[node name="FolderPicker" type="EditorFileDialog" parent="."]
+unique_name_in_owner = true
+title = "Elegir carpeta"
+file_mode = 2

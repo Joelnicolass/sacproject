@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scenes/ai/ai_side.gd" id="1_ai_side"]
 [ext_resource type="Script" path="res://scenes/ai/perception/ai_perception.gd" id="2_perception"]
@@ -14,6 +14,8 @@
 [ext_resource type="Script" path="res://scenes/ai/brains/manahoar_brain.gd" id="16_maho"]
 [ext_resource type="Resource" path="res://data/ai/profile_original.tres" id="99_profile"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/hmba.tres" id="98_mana_source"]
+[ext_resource type="Script" path="res://scenes/ai/brains/wizard_casting.gd" id="f3_casting"]
+[ext_resource type="Script" path="res://scenes/ai/command/ai_orders_out.gd" id="f3_orders"]
 
 [node name="AiSide" type="Node" node_paths=PackedStringArray("perception", "stance", "groups", "board", "brain", "creature_brain", "port")]
 script = ExtResource("1_ai_side")
@@ -41,9 +43,10 @@ perception = NodePath("../Perception")
 groups = NodePath("../Groups")
 profile = ExtResource("99_profile")
 
-[node name="Port" type="Node" parent="." node_paths=PackedStringArray("perception")]
+[node name="Port" type="Node" parent="." node_paths=PackedStringArray("perception", "orders")]
 script = ExtResource("5_port")
 perception = NodePath("../Perception")
+orders = NodePath("Orders")
 
 [node name="CreatureBrain" type="Node" parent="." node_paths=PackedStringArray("port", "perception")]
 script = ExtResource("6_creature")
@@ -58,7 +61,7 @@ groups = NodePath("../Groups")
 creature_brain = NodePath("../CreatureBrain")
 port = NodePath("../Port")
 
-[node name="Brain" type="Node" parent="." node_paths=PackedStringArray("perception", "stance", "groups", "port", "creature_brain")]
+[node name="Brain" type="Node" parent="." node_paths=PackedStringArray("perception", "stance", "groups", "port", "creature_brain", "casting")]
 script = ExtResource("7_brain")
 perception = NodePath("../Perception")
 stance = NodePath("../Stance")
@@ -66,6 +69,7 @@ groups = NodePath("../Groups")
 port = NodePath("../Port")
 creature_brain = NodePath("../CreatureBrain")
 profile = ExtResource("99_profile")
+casting = NodePath("Casting")
 
 [node name="SummonPhase" type="Node" parent="Brain"]
 script = ExtResource("9_summon")
@@ -87,3 +91,12 @@ script = ExtResource("11_guard")
 [node name="IdleTask" type="Node" parent="Tasks"]
 script = ExtResource("12_idle")
 
+[node name="Casting" type="Node" parent="Brain" node_paths=PackedStringArray("perception", "stance", "port")]
+script = ExtResource("f3_casting")
+perception = NodePath("../../Perception")
+stance = NodePath("../../Stance")
+port = NodePath("../../Port")
+
+[node name="Orders" type="Node" parent="Port" node_paths=PackedStringArray("perception")]
+script = ExtResource("f3_orders")
+perception = NodePath("../../Perception")

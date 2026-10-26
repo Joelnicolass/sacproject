@@ -21,12 +21,11 @@ func run(wizard: AiTrack, _w3: Array[float], _record: AiRecord) -> void:
 	var profile := brain.profile
 	var node := wizard.node
 	var max_mana := AiRater.ftol(AiBody.mana_max(node))
-	var purse := node.get_node_or_null("SoulPurse")
-	var souls := int(purse.get("count")) if purse != null else 0
+	var souls := AiBody.souls(node)
 	if max_mana == 0 or souls == 0:
 		return
 	## Adenda 1.3: the difficulty's own pace (Easy): no summon before its interval has passed. Normal and Hard: always over.
-	if not brain.summon_interval_over():
+	if not brain.casting.pace.interval_over(brain.port.now_tick()):
 		_note(wizard, "intervalo")
 		return
 	var stance := brain.stance
@@ -60,7 +59,7 @@ func run(wizard: AiTrack, _w3: Array[float], _record: AiRecord) -> void:
 		if type.souls > souls:
 			continue
 		## Adenda 1.3: the mana the difficulty keeps (Easy) is not spent on a creature. Normal and Hard: no reserve.
-		if not brain.keeps_reserve(wizard, type.mana_cost):
+		if not brain.casting.pace.keeps_reserve(wizard, type.mana_cost):
 			continue
 		var field := AiRater.new_acc()
 		AiRater.combine(field, 1.0, stance.acc1, share)

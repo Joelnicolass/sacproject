@@ -94,13 +94,13 @@ func setup(world_node: Node3D, wizard_body: Node3D, ai_seat: AiSeat) -> void:
 	perception.wizard = wizard
 	perception.perfect_information = difficulty.perfect_information
 	port.delay_ticks = difficulty.delay_ticks(Engine.physics_ticks_per_second)
-	brain.summon_interval_ticks = difficulty.summon_interval_ticks(Engine.physics_ticks_per_second)
-	brain.mana_reserve = difficulty.mana_reserve
+	brain.casting.pace.interval_ticks = difficulty.summon_interval_ticks(Engine.physics_ticks_per_second)
+	brain.casting.pace.mana_reserve = difficulty.mana_reserve
 	## RFC-053: the common sense of the difficulty (clear line, own splash, heal discipline, focus).
 	brain.tactics = difficulty.tactics_or_normal()
 	if creature_brain != null:
 		creature_brain.tactics = brain.tactics
-	port.can_cast = brain.cast_refusal
+	port.can_cast = brain.casting.cast_refusal
 	brain.prepare()
 	port.bind(slot, wizard, world.get_node("%Orders"))
 	port.audit = audit

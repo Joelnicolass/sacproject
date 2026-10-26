@@ -49,6 +49,6 @@ func think(t: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> int:
 				best_deficit = deficit
 				best_member = m
 		if best_member != null:
-			port.order_if_changed(t, AiCommandPort.AiOrder.GUARD, best_member, null)
+			port.orders.order_if_changed(t, AiCommandPort.AiOrder.GUARD, best_member, null)
 			return 1
 	return creature_brain.think(t, task_kind, record)

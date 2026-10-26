@@ -29,17 +29,17 @@ func think(t: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> int:
 			return 1
 		AiTask.Kind.GUARD:
 			if record.target != null:
-				port.order_target_radius(t, AiCommandPort.AiOrder.REFILL, record.target, profile.retreat_hold_m if profile != null else 10.0)
+				port.orders.order_target_radius(t, AiCommandPort.AiOrder.REFILL, record.target, profile.retreat_hold_m if profile != null else 10.0)
 			return 1
 		AiTask.Kind.CAPTURE:
 			## thaum: (1 - value6c) * 160, with value6c the wizard's threat (a creature's is 0).
 			var reach := AiField.f32((1.0 - t.value_6c()) * (profile.interact_reach_m if profile != null else 160.0))
-			port.order_interact(t, record.anchor, record.target, reach)
+			port.orders.order_interact(t, record.anchor, record.target, reach)
 			return 1
 		AiTask.Kind.FOCUS:
 			## RFC-053 053d (F373): attack the target the side committed to, the order of a human's right click.
 			if record.target != null and AiWizardBrain.target_alive(record.target):
-				port.order_if_changed(t, AiCommandPort.AiOrder.ATTACK, record.target, null)
+				port.orders.order_if_changed(t, AiCommandPort.AiOrder.ATTACK, record.target, null)
 			return 1
 	return 1
 
@@ -68,7 +68,7 @@ func auto_capture(t: AiTrack) -> int:
 			_min_mana(t), refill_until(t, pair.y),
 			source.node.name, t.cur_pos.distance_to(source.cur_pos)])
 	if radius * radius < t.cur_pos.distance_squared_to(source.cur_pos):
-		port.order_if_changed(t, AiCommandPort.AiOrder.REFILL, source, null)
+		port.orders.order_if_changed(t, AiCommandPort.AiOrder.REFILL, source, null)
 	return 1
 
 
@@ -79,8 +79,7 @@ func _min_mana(t: AiTrack) -> int:
 			return AiRater.ftol(t.min_mana_cost)
 		var head: Resource = (t.cast_queue[0] as Dictionary)["spell"]
 		if head is CreatureType:
-			var purse := t.node.get_node_or_null("SoulPurse")
-			var souls := int(purse.get("count")) if purse != null else 0
+			var souls := AiBody.souls(t.node)
 			if souls > (head as CreatureType).souls:
 				@warning_ignore("integer_division")
 				return 5 * AiRater.ftol(float((head as CreatureType).mana_cost)) / 4

@@ -1,6 +1,6 @@
 # Plan 066: editor de mapas (Mapa nuevo, pincel de flora, pincel de roles)
 
-Estado: **propuesto**, espera el OK del usuario.
+Estado: **aprobado 2026-10-26** con todas las recomendaciones de §13. Además (plan 058 P7): la plantilla `_template/map.tscn` trae un nodo vacío `LifeSpots (Node3D)` para los lugares de vida ambiental.
 
 Este es el plan para tres herramientas en el editor: «Mapa nuevo», pintar flora y pintar roles del suelo. No toqué el repo y no corrí Godot. Una nota previa: `game/debug/terrain/edit_bed.tscn` hoy apunta al `ground_roles.png` de `test_flat`. Si alguien pinta roles en ese banco, sobrescribe el PNG de `test_flat`. Por eso el plan arma un banco nuevo con su propia imagen.
 

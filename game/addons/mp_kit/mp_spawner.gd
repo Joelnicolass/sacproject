@@ -62,6 +62,9 @@ func _ready() -> void:
 		add_spawnable_scene(path)
 
 	_wrap_spawn_function()
+	## Also once the whole scene is set up: a sibling's or the parent's _ready (which runs after this one) usually sets
+	## spawn_function, and nothing spawns before the end of this frame.
+	_wrap_spawn_function.call_deferred()
 	if spawn_path.is_empty() or spawn_path == NodePath("."):
 		push_warning("MpSpawner '%s': set spawn_path to the parent of replicated actors" % name)
 		return
@@ -204,11 +207,12 @@ func _on_child_entered(node: Node) -> void:
 
 ## True when the engine replicates `node`: its scene is in this spawner's list (the engine replicates those), or
 ## spawn(data) made it (the wrapped spawn_function marks it). A node a server script adds by hand is neither.
-## Contract: set spawn_function before this spawner's _ready (before super._ready()); one set later is wrapped
-## the first time a node enters spawn_path, with a warning (that first node counts as added by hand).
+## Contract: set spawn_function in any _ready of the scene (this spawner's, a sibling's or the parent's): it is wrapped at
+## the end of that frame. One set later is wrapped the first time a node enters spawn_path, with a warning (that first
+## node counts as added by hand).
 func _is_replicated(node: Node) -> bool:
 	if spawn_function.is_valid() and spawn_function.get_method() != &"_marked_spawn":
-		push_warning("MpSpawner '%s': spawn_function was set after _ready; set it before super._ready()" % name)
+		push_warning("MpSpawner '%s': spawn_function was set after the scene was set up; set it in a _ready" % name)
 		_wrap_spawn_function()
 	if not node.scene_file_path.is_empty() and _lists(node.scene_file_path):
 		return true

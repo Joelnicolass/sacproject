@@ -17,7 +17,7 @@ func _ready() -> void:
 		return
 	gate.waiting_changed.connect(_on_waiting_changed)
 	%StartNow.pressed.connect(_on_start_now)
-	_on_waiting_changed(gate.is_waiting(), gate.loaded_slots().size(), gate.expected_slots().size())
+	_on_waiting_changed(gate.is_waiting(), gate.loaded_count(), gate.expected_count())
 
 
 func _on_waiting_changed(waiting: bool, loaded: int, expected: int) -> void:

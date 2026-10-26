@@ -6,7 +6,7 @@ Producto: juego Godot 4. Checks de web, SQL, auth y negocio: no aplican.
 
 - Godot 4.7.2 (`/Applications/Godot.app`, binario `/Applications/Godot.app/Contents/MacOS/Godot`). Verificado con `--version`.
 - GDScript.
-- MpKit 0.11.0 (`plugin.cfg`; RFC-034, puerta de arranque RFC-068). El RC publicado es `rc/v0.10.0`; el hotfix de 068 va como `rc/v0.11.0`. No meter reglas de Sacrifice en el addon. Si el plugin necesita un arreglo, se edita: el autor es el mismo del juego y el cambio se sube después a `godot-studio-skills`.
+- MpKit 0.11.1 (`plugin.cfg`; RFC-034, puerta de arranque RFC-068). El RC publicado es `rc/v0.10.0`; el hotfix de 068 va como `rc/v0.11.0` y el de 0.11.1 (la puerta decide sola: ENet deja lugar a los que esperan y el rechazo llega con razón; el mundo del host LAN carga al final del frame; `spawn_function` se toma al final del `_ready` de la escena; la puerta da sus cuentas también en el cliente) como `rc/v0.11.1`. No meter reglas de Sacrifice en el addon. Si el plugin necesita un arreglo, se edita: el autor es el mismo del juego y el cambio se sube después a `godot-studio-skills`.
 
 ## Arquitectura
 

@@ -67,8 +67,10 @@ var _first_admit_ms: int = -1
 var _all_gone_sent: bool = false
 ## Client: this peer's world reported ready (MpKit.request_world_ready); the pause the server asks for applies from then on.
 var _local_world_ready: bool = false
-## Client: what the last state RPC asked for.
+## Client: what the last state RPC asked for, and the counts it told.
 var _server_pause: bool = false
+var _told_loaded: int = 0
+var _told_expected: int = 0
 ## slot -> credential (open mode)
 var _credentials: Dictionary = {}
 ## slot -> peer id while connected
@@ -187,6 +189,16 @@ func is_waiting() -> bool:
 	return _waiting
 
 
+## Seats loaded and seats the match waits for, the numbers waiting_changed carries. Every peer: a client answers with what the
+## server last told it (expected_slots() is the server's list only).
+func loaded_count() -> int:
+	return _loaded_count() if _is_server() else _told_loaded
+
+
+func expected_count() -> int:
+	return _target() if _is_server() else _told_expected
+
+
 func is_abandoned(slot: int) -> bool:
 	return _abandoned.has(slot)
 
@@ -230,6 +242,8 @@ func reset() -> void:
 	_waiting = false
 	_local_world_ready = false
 	_server_pause = false
+	_told_loaded = 0
+	_told_expected = 0
 	if _paused_by_me:
 		_paused_by_me = false
 		if is_inside_tree():
@@ -382,12 +396,14 @@ func _send_state_to(peer_id: int) -> void:
 
 
 @rpc("authority", "call_remote", "reliable")
-func rpc_state(waiting: bool, loaded_count: int, expected_count: int, pause: bool) -> void:
+func rpc_state(waiting: bool, loaded_now: int, expected_now: int, pause: bool) -> void:
 	phase = Phase.FILLING if waiting else Phase.RUNNING
 	_waiting = waiting
 	_server_pause = pause
+	_told_loaded = loaded_now
+	_told_expected = expected_now
 	_apply_client_pause()
-	waiting_changed.emit(waiting, loaded_count, expected_count)
+	waiting_changed.emit(waiting, loaded_now, expected_now)
 
 
 ## Client: paused while the match waits and this peer's world is loaded (a world still loading is not held: it must finish).

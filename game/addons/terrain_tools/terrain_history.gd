@@ -3,8 +3,8 @@ extends RefCounted
 
 ## Every change the editor makes to a map through a brush canvas (a stroke, «Aplanar bases»), as one step of the scene's
 ## undo history: it writes the before or after patches into that canvas (BrushCanvas.write), and Ctrl+S saves every canvas
-## with changes. It keeps one canvas per thing painted: the ground's heights (`lattice`; the roles and the flora densities
-## join in 066c and 066d). Not: what a dab does or how a canvas stores and shows it (the canvases), the mouse (BrushPainter).
+## with changes. It keeps one canvas per thing painted: the ground's heights (`lattice`), its roles (`roles`; the flora
+## densities join in 066d). Not: what a dab does or how a canvas stores and shows it (the canvases), the mouse (BrushPainter).
 
 ## A step of `canvas` was done, undone or redone over its cells `rect`.
 signal written(canvas: BrushCanvas, rect: Rect2i)
@@ -15,6 +15,7 @@ var budget := RefreshBudget.new()
 var _undo: EditorUndoRedoManager
 var _canvases: Array[BrushCanvas] = []
 var _lattices := {}  ## TerrainHeights (or the Terrain while it has none) -> LatticeCanvas
+var _roles := {}  ## ground_roles Texture2D -> RolesCanvas
 
 
 func _init(undo: EditorUndoRedoManager) -> void:
@@ -27,6 +28,18 @@ func lattice(terrain: Terrain) -> LatticeCanvas:
 	if not _lattices.has(key):
 		_lattices[key] = _kept(LatticeCanvas.of(terrain, budget))
 	var canvas: LatticeCanvas = _lattices[key]
+	canvas.use(terrain)
+	return canvas
+
+
+## The canvas of `terrain`'s ground_roles.png (one per texture, so a reopened scene finds its unsaved strokes); null
+## when it has none.
+func roles(terrain: Terrain) -> RolesCanvas:
+	if terrain.ground_roles == null:
+		return null
+	if not _roles.has(terrain.ground_roles):
+		_roles[terrain.ground_roles] = _kept(RolesCanvas.of(terrain))
+	var canvas: RolesCanvas = _roles[terrain.ground_roles]
 	canvas.use(terrain)
 	return canvas
 

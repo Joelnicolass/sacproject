@@ -1,8 +1,8 @@
 class_name WizardBody
 extends CharacterBody3D
 
-## One per player slot (WizardSpawner). The server (or solo) simulates the body;
-## only the owning client sends drive/walk commands.
+## One per player slot (WizardSpawner). The server (or solo) simulates the body; the owning client sends drive/walk
+## commands, the listen host's own wizard reads its keys right there.
 
 signal walk_changed(walking: bool)
 signal pick_changed
@@ -379,13 +379,14 @@ func _physics_process(delta: float) -> void:
 	if pace <= 0.0 and step:
 		pace = step.speed()
 	pace *= speed_factor * ghost.speed_factor()
+	## The player at this machine (solo or the listen host) drives with his own keys and camera; a remote player, by submit_drive.
 	var forward := 0.0
 	var yaw := look_yaw
-	if MpKit.is_networked():
+	if is_local():
+		forward = _read_forward()
+	elif MpKit.is_networked():
 		forward = _net_forward
 		yaw = _net_yaw
-	elif is_local():
-		forward = _read_forward()
 	## Held (F138) or casting a structure (Caster.holds_wizard): it neither walks nor turns, and a walk order waits for it (state.d:93-145, 1140-1142).
 	var held := _afflictions.holds() or _caster.holds_wizard()
 	if held or not ghost.can_move():

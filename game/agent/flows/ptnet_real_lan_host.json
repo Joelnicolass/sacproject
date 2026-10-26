@@ -182,6 +182,22 @@
    }
   },
   {
+   "press": {
+    "name": "move_backward",
+    "hold": 3.0
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "gap_to",
+    "args": [
+     1300,
+     1180
+    ]
+   }
+  },
+  {
    "press": "creature_2"
   },
   {

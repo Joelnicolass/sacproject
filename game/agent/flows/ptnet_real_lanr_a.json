@@ -202,7 +202,7 @@
    "shot": "a03_boot_away.png"
   },
   {
-   "wait": 30.0
+   "wait": 15.0
   },
   {
    "repeat": {

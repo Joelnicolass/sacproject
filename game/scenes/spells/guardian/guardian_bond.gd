@@ -13,8 +13,8 @@ extends Node
 ## playing dead (state.d:14069); does not teleport (canTeleport, state.d:10309: group `rooted`). When tied it
 ## leaves the selection and its orders (state.d:10408-10410); afterwards it can be selected and ordered again.
 ## It is released when it dies, changes side, is taken by a doctor, or the post closes (isValidGuard,
-## state.d:15352-15355; the building gone, state.d:15362). Farther than rules.guardian_leash from the attach
-## point it gets a move order back to rules.guardian_return_distance of the building (state.d:15366-15376).
+## state.d:15352-15355; the building gone, state.d:15362). Farther than the leash (ReachFacts) from the attach
+## point it gets a move order back to the return distance of the building (state.d:15366-15376).
 ## `post_path` is replicated: whoever joins late sees the bond and draws the beam.
 
 ## Tied to `post`.
@@ -26,8 +26,6 @@ signal released
 const ROOTED := &"rooted"
 const SELECTION_GROUP := &"selection"
 const _ORDERS := preload("res://scenes/units/unit_orders.gd")
-## Height of the creature's center over its feet, for the leash distance (the original measures from the center).
-const CENTER_HEIGHT := 0.9
 
 @export var body: UnitBody
 @export var health: Health
@@ -139,17 +137,17 @@ func _physics_process(delta: float) -> void:
 ## Farther than the leash from the attach point: a move order back to the return distance of the
 ## building (state.d:15366-15376). An order that already goes there stays.
 func _keep_near() -> void:
-	var rule := _rules()
+	var reach := ReachFacts.of_rules(_rules())
 	var attach := post.attach_position()
-	var gap := body.global_position + Vector3.UP * CENTER_HEIGHT - attach
-	if gap.length_squared() <= rule.guardian_leash * rule.guardian_leash:
+	var gap := body.global_position + reach.guardian_leash_from - attach
+	if gap.length_squared() <= reach.guardian_leash_m * reach.guardian_leash_m:
 		return
 	var current := orders as _ORDERS
 	if current == null:
 		return
-	if current.command == _ORDERS.Command.MOVE and (current.point - attach).length_squared() < rule.guardian_leash * rule.guardian_leash:
+	if current.command == _ORDERS.Command.MOVE and (current.point - attach).length_squared() < reach.guardian_leash_m * reach.guardian_leash_m:
 		return
-	var spot := attach + rule.guardian_return_distance * gap.normalized()
+	var spot := attach + reach.guardian_return_m * gap.normalized()
 	spot.y = body.global_position.y
 	current.give(_ORDERS.Command.MOVE, null, spot, Vector2.ZERO, 0.0)
 

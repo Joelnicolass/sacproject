@@ -242,13 +242,13 @@ func _leash() -> Dictionary:
 	await _frames(3)
 	var far_orders := far.get_node("Orders")
 	var gap := Vector2(far_orders.point.x, far_orders.point.z).length()
-	checks["far_gets_order"] = far_orders.command == far_orders.Command.MOVE and absf(gap - RULES.guardian_return_distance) < 1.5
+	checks["far_gets_order"] = far_orders.command == far_orders.Command.MOVE and absf(gap - ReachFacts.of_rules(RULES).guardian_return_m) < 1.5
 	checks["near_no_order"] = near.get_node("Orders").command == near.get_node("Orders").Command.NONE
 	checks["busy_order_kept"] = busy_orders.point.is_equal_approx(Vector3(40.0, 0.0, 0.0))
-	checks["leash_numbers"] = is_equal_approx(RULES.guardian_leash, 50.0) and is_equal_approx(RULES.guardian_return_distance, 20.0)
+	checks["leash_numbers"] = is_equal_approx(ReachFacts.of_rules(RULES).guardian_leash_m, 50.0) and is_equal_approx(ReachFacts.of_rules(RULES).guardian_return_m, 20.0)
 	checks["still_bound"] = GuardianBond.of(far).is_bound()
 	await _frames(1200)
-	checks["comes_back"] = Vector2(far.global_position.x, far.global_position.z).length() < RULES.guardian_leash
+	checks["comes_back"] = Vector2(far.global_position.x, far.global_position.z).length() < ReachFacts.of_rules(RULES).guardian_leash_m
 	structure.queue_free()
 	for unit in [near, far, busy]:
 		unit.queue_free()

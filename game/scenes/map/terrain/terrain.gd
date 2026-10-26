@@ -169,7 +169,7 @@ func keep(rev: int, key: String, rect: Rect2i, delta: PackedFloat32Array) -> voi
 	var standing := StampCarry.standing(self, rect)
 	var moved := _field.commit(rect, delta, key if not key.is_empty() else null)
 	_field.rev = rev
-	StampCarry.lift(standing, self)
+	StampCarry.follow(standing, self)
 	_tell(moved, true)
 	kept.emit(rev, key, rect, delta)
 
@@ -207,7 +207,7 @@ func _on_live_ticked(shifts: Array, ended: PackedStringArray) -> void:
 	var moved := gone
 	for shift: TerrainLive.Shift in shifts:
 		moved = TerrainGrid.union(moved, _field.set_live(shift.key, shift.rect, shift.values))
-	StampCarry.lift(standing, self)
+	StampCarry.follow(standing, self)
 	_tell(moved, false)
 	if gone.has_area():
 		settled.emit(TerrainGrid.area_of(gone))

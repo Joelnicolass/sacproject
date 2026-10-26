@@ -67,7 +67,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1600, 10, 1300)
 
 [node name="Vegetation" type="Node3D" parent="."]
 
+[node name="AmbientLife" parent="Look/Layers" node_paths=PackedStringArray("spots")]
+spots = NodePath("../../../LifeSpots")
+
 [node name="LifeSpots" type="Node3D" parent="."]
+editor_description = "Lugares con vida ambiental (RFC-058). Arrastrá life_spot.tscn acá, elegí el hábitat y escalá la caja."
 
 [node name="NavRegion" type="NavigationRegion3D" parent="."]
 unique_name_in_owner = true

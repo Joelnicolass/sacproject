@@ -127,7 +127,7 @@ func _write_fog(look: SkyLook, sample: AtmosphereSample) -> void:
 
 func _write_light(look: LightLook, sample: AtmosphereSample) -> void:
 	_env.ambient_light_color = look.ambient_color * sample.ambient_tint
-	_env.ambient_light_energy = look.ambient_energy * sample.ambient_energy
+	_env.ambient_light_energy = look.ambient_energy * sample.ambient_energy * (1.0 + sample.flash)  # a storm flash lights it
 	_env.tonemap_mode = look.tonemap_mode
 	_env.tonemap_exposure = look.tonemap_exposure
 	_env.tonemap_white = look.tonemap_white

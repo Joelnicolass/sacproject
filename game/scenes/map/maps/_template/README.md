@@ -1,5 +1,5 @@
 # map/maps/_template
-What: the starting point of every new map: Proyecto → Herramientas → «Mapa nuevo…» copies this folder to `maps/<tag>/` (flat ground at 10 m, all grass, two starts, three founts, empty `Buildings`/`Npcs`/`Props`/`Vegetation`/`LifeSpots`, the Persephone look in the editor) and writes `<tag>.tres` and `nav.res` there.
+What: the starting point of every new map: Proyecto → Herramientas → «Mapa nuevo…» copies this folder to `maps/<tag>/` (flat ground at 10 m, all grass, two starts, three founts, empty `Buildings`/`Npcs`/`Props`/`Vegetation`/`LifeSpots` (wired to `Look/Layers/AmbientLife.spots`), the Persephone look in the editor) and writes `<tag>.tres` and `nav.res` there.
 Not: a map. It has no `_template.tres`, so `MapCatalog`, rooms and `check_map` never list it; the export leaves it out; no `void.png` (a void appears when you paint the first hole).
 Talks to: `addons/terrain_tools/new_map/new_map_files.gd` reads `map.tscn`, `heights.png`, `ground_roles.png` and their `.import` (it takes the uid out of the copy).
 Edit: open `map.tscn` and change what every new map should start with; save. `heights.png` (16-bit grey, all 100 = 10 m) and `ground_roles.png` (RGBA, all (255,0,0,0) = grass) are 256²; keep their `.import` as they are (lossless, no mipmaps, `fix_alpha_border=false`).

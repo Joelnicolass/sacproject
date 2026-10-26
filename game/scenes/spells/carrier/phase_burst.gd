@@ -26,4 +26,4 @@ func _on_phase(now: SpellCarrier.Phase) -> void:
 	if now != phase:
 		return
 	for type in effects:
-		FxBus.broadcast(type.bus_name(), carrier.global_position + Vector3(0.0, lift_m, 0.0))
+		FxBus.broadcast(type, carrier.global_position + Vector3(0.0, lift_m, 0.0))

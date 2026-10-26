@@ -31,8 +31,8 @@ func _ready() -> void:
 func _on_landed(at: Vector3) -> void:
 	QuakeWave.launch(wave_scene, carrier, at, carrier.spell.tag if carrier.spell != null else "")
 	if burst_scene != null:
-		FxBus.broadcast_scene(burst_scene.resource_path, at, {})
+		FxBus.broadcast_scene(burst_scene, at, {})
 	for type in effects:
-		FxBus.broadcast(type.bus_name(), at)
+		FxBus.broadcast(type, at)
 	for mark in marks:
 		ScarMark.broadcast(mark, at)

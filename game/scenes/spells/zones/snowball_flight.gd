@@ -44,7 +44,7 @@ func _on_phase(phase: int) -> void:
 		_from = global_position
 	elif phase == GroundZone.Phase.ACTIVE:
 		for type in shards:
-			FxBus.play(type.bus_name(), zone.points[0])
+			FxBus.play(type, zone.points[0])
 
 
 func _process(delta: float) -> void:
@@ -54,8 +54,8 @@ func _process(delta: float) -> void:
 	else:
 		_fly()
 	if trail != null and zone.phase == GroundZone.Phase.ARMING:
-		FxBus.puff(trail.bus_name(), global_position)
-		FxBus.puff(trail.bus_name(), global_position)
+		FxBus.puff(trail, global_position)
+		FxBus.puff(trail, global_position)
 
 
 ## In front of the wizard, rising from his feet to over his head as it grows from nothing to its size.

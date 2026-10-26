@@ -110,7 +110,7 @@ func _strike() -> void:
 	_frame = 0
 	carrier.phase = SpellCarrier.Phase.STRIKING
 	if swing_fx != null:
-		FxBus.broadcast(swing_fx.bus_name(), _chest())
+		FxBus.broadcast(swing_fx, _chest())
 
 
 func _leave() -> void:

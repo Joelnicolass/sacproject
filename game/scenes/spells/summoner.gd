@@ -24,6 +24,10 @@ const NO_SOULS := Refusal.NO_SOULS
 @export var clear_half_height := 10.0
 @export var blocker_groups: PackedStringArray = PackedStringArray(["unit", "wizard"])
 @export_flags_3d_physics var ground_mask := 1
+## Played on the creature when it appears. Empty = no burst.
+@export var summon_fx: ParticleType = preload("res://data/fx/summon.tres")
+## Where on the new creature's body the burst plays.
+@export var summon_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
 @onready var _wizard: WizardBody = get_parent()
 
@@ -46,7 +50,7 @@ func begin(type: CreatureType) -> Node3D:
 		"summoning": true,
 	})
 	if unit:
-		FxBus.broadcast("summon", at + Vector3.UP)
+		FxBus.broadcast(summon_fx, BodyFacts.point(unit, summon_socket))
 	return unit
 
 

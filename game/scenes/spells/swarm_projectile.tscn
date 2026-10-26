@@ -1,9 +1,13 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="3_light"]
 [ext_resource type="Script" path="res://scenes/spells/swarm_projectile.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="2_sound"]
 [ext_resource type="Resource" path="res://data/audio/cues/swarm_cast.tres" id="cue_swarm_cast"]
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="fx_ptype"]
+[ext_resource type="Resource" path="res://data/fx/wrath_trail.tres" id="fx_wrath_trail"]
+[ext_resource type="Resource" path="res://data/fx/wrath_explosion1.tres" id="fx_wrath_explosion1"]
+[ext_resource type="Resource" path="res://data/fx/wrath_explosion2.tres" id="fx_wrath_explosion2"]
 
 [sub_resource type="SphereMesh" id="Swarm_ball"]
 radius = 0.25
@@ -17,6 +21,8 @@ emission_energy_multiplier = 1.6
 
 [node name="SwarmProjectile" type="Node3D"]
 script = ExtResource("1_script")
+trail = ExtResource("fx_wrath_trail")
+explosion = Array[ExtResource("fx_ptype")]([ExtResource("fx_wrath_explosion1"), ExtResource("fx_wrath_explosion2")])
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
 unique_name_in_owner = true

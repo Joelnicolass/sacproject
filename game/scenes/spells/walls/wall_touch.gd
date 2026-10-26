@@ -116,7 +116,7 @@ func _touch(body: Node3D, now: int) -> void:
 		params["target"] = str(body.get_path())
 		params["ticks"] = MatchClock.ticks_for(slow_s)
 		params["seed"] = id ^ now
-		FxBus.broadcast_scene(hit_scene.resource_path, body.global_position, params)
+		FxBus.broadcast_scene(hit_scene, body.global_position, params)
 	touched.emit(body)
 
 

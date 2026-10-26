@@ -14,7 +14,11 @@ const FPS := 60.0
 ## sacengine int.max (32 bits): satAdd caps the frames of heals that add up there (state.d:10455).
 const FRAMES_CAP := 2147483647
 
-## Seconds between `heal` bursts on the target (sacengine spawns particles every frame).
+## Played on the target every `fx_interval_s`. Empty = no bursts.
+@export var heal_fx: ParticleType
+## Where on the target's body the burst plays.
+@export var heal_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
+## Seconds between `heal_fx` bursts on the target (sacengine spawns particles every frame).
 @export var fx_interval_s := 0.5
 
 ## Prints «cura <who> total N vida V» when it ends (the Healing Shower's log, F118). Off for the Heal spell.
@@ -88,7 +92,7 @@ func _physics_process(delta: float) -> void:
 	_fx_left -= delta
 	if _fx_left <= 0.0:
 		_fx_left = fx_interval_s
-		FxBus.broadcast("heal", (get_parent() as Node3D).global_position + Vector3.UP)
+		FxBus.broadcast(heal_fx, BodyFacts.point(get_parent() as Node3D, heal_socket))
 	if _health.is_full():
 		_end()
 

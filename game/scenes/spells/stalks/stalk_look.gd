@@ -31,7 +31,7 @@ func _ready() -> void:
 	if stalk != null:
 		stalk.mode_changed.connect(_on_mode)
 		if dirt != null:
-			FxBus.play(dirt.bus_name(), stalk.global_position)
+			FxBus.play(dirt, stalk.global_position)
 		if scar != null:
 			scar.mark()
 
@@ -53,7 +53,7 @@ func _on_mode(mode: int) -> void:
 		if grab_sound != null:
 			grab_sound.play_once()
 		if grab_burst != null:
-			FxBus.play(grab_burst.bus_name(), stalk.tip)
+			FxBus.play(grab_burst, stalk.tip)
 	elif mode == Stalk.Mode.SHRINKING:
 		if fall_sound != null:
 			fall_sound.play_once()

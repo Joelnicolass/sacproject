@@ -2,9 +2,10 @@
 class_name TerrainBrush
 extends Resource
 
-## The brush every ground tool shares (raise and lower, smooth and flatten, void and fill): how far it reaches, how soft
-## its edge is, its shape and how fast it raises. A preset is another `.tres`. Not: painting (BrushRules, BrushStroke),
-## the tool bar or the cursor.
+## The brush every map tool shares (raise and lower, smooth and flatten, void and fill, the ground's roles, flora): how far
+## it reaches, how soft its edge is, its shape, how fast it raises, and for pictures how far a dab moves a pixel (flow) and
+## what flora it leaves (density). A preset is another `.tres`. Not: painting (BrushRules, PaintRules, the canvases), the
+## tool bar or the cursor.
 
 ## The outline of the brush seen from above.
 enum Shape {
@@ -20,3 +21,7 @@ enum Shape {
 @export var shape := Shape.CIRCLE
 ## Raise and lower: metres the centre moves for each pixel the mouse is dragged up (down lowers).
 @export_range(0.01, 2.0, 0.01, "or_greater", "suffix:m/px") var strength_m := 0.1
+## Pictures (roles, flora): how far one dab moves a pixel toward the paint (1 = all the way under the hard core).
+@export_range(0.0, 1.0, 0.01) var flow := 0.5
+## Flora: the density a full dab leaves (1 = the layer's max_per_cell, white).
+@export_range(0.0, 1.0, 0.01) var density := 1.0

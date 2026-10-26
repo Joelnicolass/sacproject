@@ -1,10 +1,10 @@
 class_name BrushStroke
 extends RefCounted
 
-## One drag of a ground brush, from press to release: what the tool is, the height under the press (flatten aims at it),
-## the rect of vertices touched so far and the ground as it was, so `finish()` hands back the exact before and after of
-## that rect for undo and redo. It edits the arrays it was given IN PLACE (the caller's, shared). Not: editor input, the
-## undo history (the plugin keeps the patches), the mesh refresh. No editor API: it runs headless.
+## One drag of a brush, from press to release, on any BrushCanvas (the ground's lattice, a picture): the canvas's mode,
+## the rect of cells touched so far and a copy of the canvas as it was, so `finish()` hands back the exact before and after
+## of that rect for undo and redo. What a dab does is the canvas's (LatticeCanvas for the ground). Not: editor input, the
+## undo history, the mesh refresh. No editor API: it runs headless.
 
 ## What a drag does. Lower is RAISE dragged down; FLATTEN is Shift + smooth; FILL is Shift + void.
 enum Mode { RAISE, SMOOTH, FLATTEN, VOID, FILL }
@@ -40,66 +40,42 @@ class Patch extends RefCounted:
 			mask[vertices[i]] = void_mask[i]
 
 
-var mode := Mode.RAISE
-## The height of the vertex nearest to where the stroke began.
-var start_height_m := 0.0
+## The canvas's mode (BrushStroke.Mode on the lattice).
+var mode := 0
+## What this stroke paints on.
+var canvas: BrushCanvas
 
-var _brush: TerrainBrush
-var _heights: PackedFloat32Array
-var _mask: PackedByteArray
-var _heights_before: PackedFloat32Array
-var _mask_before: PackedByteArray
+var _before: Variant
 var _rect := Rect2i()
 var _touched := false
 
 
-## Starts a stroke at the ground point `at` (x, z in metres) on these lattice arrays. It changes nothing yet: the caller
-## calls `drag()` right away for the press itself.
-func begin(heights: PackedFloat32Array, mask: PackedByteArray, stroke_mode: Mode, brush: TerrainBrush, at: Vector2) -> void:
-	_heights = heights
-	_mask = mask
-	_heights_before = heights.duplicate()
-	_mask_before = mask.duplicate()
+## Starts a stroke on `on` at the ground point `at` (x, z in metres). It changes nothing yet: the caller calls `drag()`
+## right away for the press itself.
+func begin(on: BrushCanvas, stroke_mode: int, brush: TerrainBrush, at: Vector2) -> void:
+	canvas = on
 	mode = stroke_mode
-	_brush = brush
-	start_height_m = heights[TerrainGrid.vertex_id(at.x, at.y)]
+	canvas.begin(stroke_mode, brush, at)
+	_before = canvas.copy()
 	_rect = Rect2i()
 	_touched = false
 
 
 ## One dab at `at` (x, z in metres). `vertical_px` is how far the mouse moved up since the last dab (negative = down);
-## only RAISE uses it.
+## only raising uses it.
 func drag(at: Vector2, vertical_px: float) -> void:
-	var rect := TerrainGrid.vertex_rect(at, _brush.size_m)
-	var weights := BrushRules.weights(_brush, at, rect)
-	match mode:
-		Mode.RAISE:
-			BrushRules.raise(_heights, rect, weights, vertical_px * _brush.strength_m)
-		Mode.SMOOTH:
-			BrushRules.smooth(_heights, rect, weights, PASS_STRENGTH)
-		Mode.FLATTEN:
-			BrushRules.flatten(_heights, rect, weights, start_height_m)
-		Mode.VOID:
-			BrushRules.paint_void(_mask, rect, weights, true)
-		Mode.FILL:
-			BrushRules.paint_void(_mask, rect, weights, false)
+	var rect := canvas.dab(at, vertical_px)
 	_rect = _rect.merge(rect) if _touched else rect
 	_touched = true
 
 
-## The vertices touched so far (empty before the first dab).
+## The cells touched so far (empty before the first dab).
 func dirty_rect() -> Rect2i:
 	return _rect
 
 
-## Ends the stroke: `{rect: Rect2i, before: Patch, after: Patch}` for the touched rect.
+## Ends the stroke: `{rect: Rect2i, before: Array, after: Array}`, one patch each for the touched rect.
 func finish() -> Dictionary:
-	var result := {
-		"rect": _rect,
-		"before": Patch.read(_heights_before, _mask_before, _rect),
-		"after": Patch.read(_heights, _mask, _rect),
-	}
-	_heights_before = PackedFloat32Array()
-	_mask_before = PackedByteArray()
+	var result := {"rect": _rect, "before": [canvas.patch(_rect, _before)], "after": [canvas.patch(_rect)]}
+	_before = null
 	return result
-

@@ -94,7 +94,7 @@ func level_bases(terrain: Terrain) -> void:
 	if after.is_empty():
 		EditorDialogs.say("Aplanar bases", "La escena no tiene ningún GroundFootprint (la base de un altar o de un manantial).")
 		return
-	_history.commit(terrain, "Terreno: aplanar bases", edit["before"], after)
+	_history.commit(_history.lattice(terrain), "Terreno: aplanar bases", edit["before"], after)
 	EditorDialogs.say("Aplanar bases", "%d bases a nivel. Ctrl+Z lo deshace; Ctrl+S escribe heights.png." % after.size())
 
 

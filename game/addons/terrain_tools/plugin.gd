@@ -3,8 +3,8 @@ extends EditorPlugin
 
 ## The terrain tools of the editor, wired together: the importer of a map's heights.png and void.png (and a reimport of
 ## heights.png when the void.png beside it changes, since an importer reads one source file), the ground's buttons in a
-## Terrain's inspector, and the ground brush (its bar in the 3D menu, the mouse in the 3D viewport while a Terrain is
-## selected, the pictures written on save). Dev only: the export excludes `addons/terrain_tools/*`.
+## Terrain's inspector, and the map brush (its bar in the 3D menu, the mouse in the 3D viewport while a Terrain or a
+## FloraLayer is selected, the pictures written on save). Dev only: the export excludes `addons/terrain_tools/*`.
 ## Not: any of those tools (each is its own script), what a map's ground is (Terrain).
 
 const Importer := preload("res://addons/terrain_tools/terrain_heights_importer.gd")
@@ -13,6 +13,7 @@ const TerrainHistory := preload("res://addons/terrain_tools/terrain_history.gd")
 const TerrainActions := preload("res://addons/terrain_tools/terrain_actions.gd")
 const Inspector := preload("res://addons/terrain_tools/terrain_inspector.gd")
 const ToolbarScene := preload("res://addons/terrain_tools/brush/brush_toolbar.tscn")
+const Toolbar := preload("res://addons/terrain_tools/brush/brush_toolbar.gd")
 const BrushPainter := preload("res://addons/terrain_tools/brush/brush_painter.gd")
 const EditorDialogs := preload("res://addons/terrain_tools/editor_dialogs.gd")
 const NewMapAction := preload("res://addons/terrain_tools/new_map/new_map_action.gd")
@@ -57,11 +58,13 @@ func _exit_tree() -> void:
 
 
 func _handles(object: Object) -> bool:
-	return object is Terrain
+	return object is Terrain or object is FloraLayer
 
 
 func _edit(object: Object) -> void:
-	_painter.edit(object as Terrain)
+	if object != null:
+		_toolbar.show_for(Toolbar.Kind.FLORA if object is FloraLayer else Toolbar.Kind.TERRAIN)
+	_painter.edit(object as Node)
 
 
 func _make_visible(visible: bool) -> void:
@@ -75,7 +78,7 @@ func _forward_3d_gui_input(camera: Camera3D, event: InputEvent) -> int:
 	return AFTER_GUI_INPUT_STOP if _painter.input(camera, event) else AFTER_GUI_INPUT_PASS
 
 
-## Ctrl+S: the heights the brushes or «Aplanar bases» changed go to their heights.png and void.png.
+## Ctrl+S: every picture the brushes or «Aplanar bases» changed is written (heights.png and void.png, ...).
 func _save_external_data() -> void:
 	var errors := _history.save()
 	if not errors.is_empty():
@@ -84,11 +87,12 @@ func _save_external_data() -> void:
 
 ## Closing the editor with heights not yet written asks first.
 func _get_unsaved_status(for_scene: String) -> String:
-	return "Hay alturas del terreno sin guardar en heights.png." if for_scene.is_empty() and _history.has_unsaved() else ""
+	return "Hay cambios del mapa sin guardar (alturas, roles o flora)." if for_scene.is_empty() and _history.has_unsaved() else ""
 
 
 ## A void.png came in or changed: the heights.png beside it imports again, unless it already did in the same batch.
 func _on_resources_reimported(resources: PackedStringArray) -> void:
+	_history.reimported(resources)
 	var stale := PackedStringArray()
 	for path in resources:
 		if path.get_file() != MapImages.VOID_FILE:

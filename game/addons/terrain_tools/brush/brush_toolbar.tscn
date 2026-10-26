@@ -6,11 +6,12 @@
 [sub_resource type="ButtonGroup" id="ButtonGroup_tools"]
 
 [node name="BrushToolbar" type="HBoxContainer"]
-editor_description = "La barra del pincel de terreno (addon terrain_tools): aparece arriba del 3D cuando está seleccionado un Terrain. Herramienta del clic izquierdo y las perillas del pincel compartido (default_brush.tres)."
+editor_description = "La barra del pincel del mapa (addon terrain_tools): aparece arriba del 3D cuando está seleccionado un Terrain (grupos Relieve y Roles) o un FloraLayer (grupo Flora). Herramienta del clic izquierdo y las perillas del pincel compartido (default_brush.tres)."
 script = ExtResource("1_bar")
 brush = ExtResource("2_brush")
 
 [node name="Title" type="Label" parent="."]
+unique_name_in_owner = true
 text = "Terreno:"
 
 [node name="Off" type="Button" parent="."]
@@ -22,7 +23,12 @@ button_group = SubResource("ButtonGroup_tools")
 text = "Ninguno"
 flat = true
 
-[node name="Raise" type="Button" parent="."]
+[node name="Relief" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+
+[node name="ReliefSeparator" type="VSeparator" parent="Relief"]
+
+[node name="Raise" type="Button" parent="Relief"]
 unique_name_in_owner = true
 tooltip_text = "Clic y arrastrá el mouse hacia arriba para subir la tierra, hacia abajo para bajarla (Fuerza: metros por píxel)."
 toggle_mode = true
@@ -30,7 +36,7 @@ button_group = SubResource("ButtonGroup_tools")
 text = "Subir/Bajar"
 flat = true
 
-[node name="Smooth" type="Button" parent="."]
+[node name="Smooth" type="Button" parent="Relief"]
 unique_name_in_owner = true
 tooltip_text = "Arrastrá para suavizar. Con Shift aplana a la altura del punto donde empezó el trazo."
 toggle_mode = true
@@ -38,13 +44,65 @@ button_group = SubResource("ButtonGroup_tools")
 text = "Suavizar"
 flat = true
 
-[node name="Void" type="Button" parent="."]
+[node name="Void" type="Button" parent="Relief"]
 unique_name_in_owner = true
 tooltip_text = "Pintá vacío (sin tierra; la altura de abajo se guarda). Con Shift rellena y vuelve la tierra de antes."
 toggle_mode = true
 button_group = SubResource("ButtonGroup_tools")
 text = "Hueco"
 flat = true
+
+[node name="Roles" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+
+[node name="RolesSeparator" type="VSeparator" parent="Roles"]
+
+[node name="RoleOpen" type="Button" parent="Roles"]
+unique_name_in_owner = true
+tooltip_text = "Pintá pasto en el suelo (ground_roles.png, canal R). Se ve con un dios con GodGround en Look (Persephone)."
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tools")
+text = "Pasto"
+flat = true
+
+[node name="RoleEarth" type="Button" parent="Roles"]
+unique_name_in_owner = true
+tooltip_text = "Pintá tierra en el suelo (ground_roles.png, canal G)."
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tools")
+text = "Tierra"
+flat = true
+
+[node name="RoleRock" type="Button" parent="Roles"]
+unique_name_in_owner = true
+tooltip_text = "Pintá roca en el suelo (ground_roles.png, canal B)."
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tools")
+text = "Roca"
+flat = true
+
+[node name="RolePath" type="Button" parent="Roles"]
+unique_name_in_owner = true
+tooltip_text = "Pintá camino en el suelo (ground_roles.png, canal A)."
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tools")
+text = "Camino"
+flat = true
+
+[node name="FloraGroup" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+
+[node name="FloraSeparator" type="VSeparator" parent="FloraGroup"]
+
+[node name="Flora" type="Button" parent="FloraGroup"]
+unique_name_in_owner = true
+tooltip_text = "Pintá dónde crece esta capa de flora (su PNG de densidad; se crea si falta). Con Shift la borra."
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tools")
+text = "Pintar"
+flat = true
+
+[node name="KnobsSeparator" type="VSeparator" parent="."]
 
 [node name="SizeLabel" type="Label" parent="."]
 text = "Tamaño"
@@ -80,10 +138,13 @@ popup/item_1/id = 1
 popup/item_2/text = "Cruz"
 popup/item_2/id = 2
 
-[node name="StrengthLabel" type="Label" parent="."]
+[node name="StrengthKnob" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+
+[node name="StrengthLabel" type="Label" parent="StrengthKnob"]
 text = "Fuerza"
 
-[node name="Strength" type="SpinBox" parent="."]
+[node name="Strength" type="SpinBox" parent="StrengthKnob"]
 unique_name_in_owner = true
 tooltip_text = "Subir/Bajar: metros que se mueve el centro por cada píxel de arrastre."
 min_value = 0.01
@@ -92,6 +153,32 @@ step = 0.01
 value = 0.1
 allow_greater = true
 suffix = "m/px"
+
+[node name="FlowKnob" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+
+[node name="FlowLabel" type="Label" parent="FlowKnob"]
+text = "Flujo"
+
+[node name="Flow" type="SpinBox" parent="FlowKnob"]
+unique_name_in_owner = true
+tooltip_text = "Roles y flora: cuánto acerca cada toque un píxel a la pintura (1 = del todo bajo el centro duro)."
+max_value = 1.0
+step = 0.05
+value = 0.5
+
+[node name="DensityKnob" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+
+[node name="DensityLabel" type="Label" parent="DensityKnob"]
+text = "Densidad"
+
+[node name="Density" type="SpinBox" parent="DensityKnob"]
+unique_name_in_owner = true
+tooltip_text = "Flora: la densidad que deja un toque lleno (1 = blanco, max_per_cell plantas)."
+max_value = 1.0
+step = 0.05
+value = 1.0
 
 [node name="Rebuild" type="Button" parent="."]
 unique_name_in_owner = true

@@ -8,3 +8,5 @@ size_m = 50.0
 falloff = 0.5
 shape = 0
 strength_m = 0.1
+flow = 0.5
+density = 1.0

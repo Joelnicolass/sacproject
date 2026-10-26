@@ -21,16 +21,9 @@ signal forced(bits: int)
 signal tracked(track: AiTrack)
 signal untracked(track: AiTrack)
 
-## BLDG header flags of the structures the AI looks at (data/buildings/: altars `ca_a`…, founts `jfnt`…,
-## Manaliths `jman`…; equal for the five gods). The word `unknown1[3]` that gates READY is not exported: READY is
-## given to a mana structure with no structure on top («aprox.»).
-const BLDG_ALTAR := 0x1407
-const BLDG_FOUNT := 0x2810
-const BLDG_MANALITH := 0x55a0
-const BLDG_SHRINE := 0x15a6
-const MAHO_TAG := "oham"
-
 @export var profile: AiProfile
+## The passive that makes a creature a Manahoar for the AI (data/catalog/abilities/hmba.tres, the one UnitManaSupport.source uses).
+@export var mana_source: AbilityType
 ## Set by AiSide from the difficulty (024e).
 @export var perfect_information := false
 
@@ -61,6 +54,13 @@ func _ready() -> void:
 		set_process(false)
 
 
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings := PackedStringArray()
+	if mana_source == null:
+		warnings.append("Falta `mana_source` (data/catalog/abilities/hmba.tres): sin ella la IA no reconoce al Manahoar.")
+	return warnings
+
+
 func nav() -> NavService:
 	if _nav == null or not is_instance_valid(_nav):
 		_nav = get_tree().get_first_node_in_group(NavService.GROUP) as NavService
@@ -87,7 +87,7 @@ func add_node(node: Node3D, origin: StringName = &"event") -> AiTrack:
 	var id := node.get_instance_id()
 	if tracks.has(id):
 		return tracks[id]
-	var kind := kind_of(node)
+	var kind := AiTrackFacts.kind_of(node, mana_source)
 	if kind == AiTrack.Kind.NONE or not _should_track(node, kind):
 		return null
 	var t := AiTrack.new()
@@ -95,15 +95,15 @@ func add_node(node: Node3D, origin: StringName = &"event") -> AiTrack:
 	t.node = node
 	t.id = id
 	t.origin = origin
-	_setup(t)
+	AiTrackFacts.setup(t, self)
 	tracks[id] = t
 	_list_of(t).append(t)
 	## A body forgotten (024e) and known again keeps its connection: connect only once.
-	if kind == AiTrack.Kind.CRE or kind == AiTrack.Kind.MAHO:
+	if kind == AiTrack.Kind.CREATURE or kind == AiTrack.Kind.MANAHOAR:
 		var on_died := _on_unit_died.bind(node)
 		if not node.is_connected("died", on_died):
 			node.connect("died", on_died)
-	elif kind == AiTrack.Kind.STR and node.has_signal("state_changed"):
+	elif kind == AiTrack.Kind.STRUCTURE and node.has_signal("state_changed"):
 		var on_state := _on_altar_state.bind(node)
 		if not node.is_connected("state_changed", on_state):
 			node.connect("state_changed", on_state)
@@ -134,31 +134,16 @@ func find(node: Node) -> AiTrack:
 	return tracks.get(node.get_instance_id()) if node != null else null
 
 
-static func kind_of(node: Node) -> AiTrack.Kind:
-	if node.is_in_group(&"wizard"):
-		return AiTrack.Kind.WIZ
-	if node.is_in_group(&"unit"):
-		var type: Variant = node.get("type")
-		if type != null and (type as CreatureType).tag == MAHO_TAG:
-			return AiTrack.Kind.MAHO
-		return AiTrack.Kind.CRE
-	if node.is_in_group(Altar.GROUP) or node.is_in_group(&"manafount"):
-		return AiTrack.Kind.STR
-	if node is CastTower:
-		return AiTrack.Kind.STR
-	return AiTrack.Kind.NONE
-
-
-## relation (shiny.d:739-745): 0 own, 1 ally, 2 neutral, 3 enemy.
-func relation_of(node: Node) -> int:
+## The side of `node` for this AI: own, ally, enemy or neutral. ## Ref: shiny.d:739-745 relation.
+func relation_of(node: Node) -> AiTrack.Relation:
 	var other := owner_slot_of(node)
 	if other == slot:
-		return 0
+		return AiTrack.Relation.OWN
 	if SideRelations.stance(slot, other) == SideRelations.Stance.ALLY or SideRelations.stance(other, slot) == SideRelations.Stance.ALLY:
-		return 1
+		return AiTrack.Relation.ALLY
 	if SideRelations.stance(slot, other) == SideRelations.Stance.ENEMY or SideRelations.stance(other, slot) == SideRelations.Stance.ENEMY:
-		return 3
-	return 2
+		return AiTrack.Relation.ENEMY
+	return AiTrack.Relation.NEUTRAL
 
 
 static func owner_slot_of(node: Node) -> int:
@@ -172,114 +157,9 @@ func _should_track(node: Node3D, kind: AiTrack.Kind) -> bool:
 	if wizard != null and is_instance_valid(wizard) and service != null and service.is_ready():
 		if not service.same_region(wizard.global_position, node.global_position):
 			return false
-	if kind == AiTrack.Kind.STR:
+	if kind == AiTrack.Kind.STRUCTURE:
 		return true
-	return not _is_dead(node)
-
-
-static func _is_dead(node: Node) -> bool:
-	return node.has_method("is_dead") and bool(node.call("is_dead"))  # dynamic: unit and structure bodies answer it
-
-
-func _setup(t: AiTrack) -> void:
-	var relation := relation_of(t.node)
-	t.flags = [AiTrack.OWN, AiTrack.ALLY, 0, AiTrack.ENEMY][relation]
-	if relation == 0:
-		t.age_seen = 0
-	var here := t.node.global_position
-	t.cur_pos = here
-	t.prev_pos = here
-	t.extrap_pos = here
-	if t.is_body():
-		_snapshot(t)
-	match t.kind:
-		AiTrack.Kind.WIZ:
-			t.flags |= AiTrack.BODY | 0x40 | AiTrack.WIZARD
-			t.status = AiTrack.WIZARD_STATUS | AiTrack.ACTIVE
-			t.min_mana_cost = float(AiRater.ftol(_mana_max(t.node)) / 4)
-			t.spell_dirty = true
-			_rate(t)
-		AiTrack.Kind.CRE, AiTrack.Kind.MAHO:
-			t.flags |= AiTrack.BODY | 0x40
-			var type := t.node.get("type") as CreatureType
-			if type != null and (_ability_count(type) > 0 or type.aggressiveness != 0):
-				t.status |= AiTrack.ACTIVE
-			## setupT4oBody (shiny.d:892-900): the mana below which a creature with abilities goes to a source to recharge
-			## (the Manahoar has none: setupMaho). 024d (autoCapture).
-			if t.kind == AiTrack.Kind.CRE and type != null:
-				t.min_mana_cost = float(AiRater.ftol(_mana_max(t.node))) if _ability_count(type) > 0 else 0.0
-				for ability in type.abilities():
-					if float(ability.mana_cost) < t.min_mana_cost:
-						t.min_mana_cost = float(ability.mana_cost)
-			_rate(t)
-		AiTrack.Kind.STR:
-			t.flags |= AiTrack.STRUCTURE
-			var bfl := _bldg_flags(t.node)
-			if bfl & 1:
-				t.flags |= 0x300
-			if bfl & 0xc17:
-				t.flags |= AiTrack.CAPTURABLE
-			_status_of_structure(t)
-
-
-## The abilities the creature really has: an empty slot does not count (shiny.d:891-894 counts the non-null ones).
-static func _ability_count(type: CreatureType) -> int:
-	return type.abilities().size()
-
-
-func _bldg_flags(node: Node) -> int:
-	if node.is_in_group(&"manafount"):
-		return BLDG_FOUNT
-	if node.is_in_group(Altar.GROUP):
-		return BLDG_ALTAR
-	if node is CastTower and (node as CastTower).type.role == BuildingType.Role.SHRINE:
-		return BLDG_SHRINE
-	return BLDG_MANALITH
-
-
-func _status_of_structure(t: AiTrack) -> void:
-	var bfl := _bldg_flags(t.node)
-	var top_free := true
-	if t.node.is_in_group(&"manafount"):
-		top_free = (t.node as ManafountBody).is_free()
-		if (bfl & 0x10) and top_free:
-			t.status |= AiTrack.UNBUILT
-		else:
-			t.status &= ~AiTrack.UNBUILT
-	if top_free and (bfl & 0xc00):
-		t.status |= AiTrack.READY
-	else:
-		t.status &= ~AiTrack.READY
-	if bfl & 0x4000:
-		t.status |= AiTrack.MANALITH
-	else:
-		t.status &= ~AiTrack.MANALITH
-	if bfl & 2:
-		t.status |= 0x40000
-	else:
-		t.status &= ~0x40000
-
-
-## The current mana and the file stats a body is rated by.
-func _rate(t: AiTrack) -> void:
-	var node := t.node
-	var abilities: Array = []
-	var spells: Array = []
-	var ts: Dictionary
-	if t.kind == AiTrack.Kind.WIZ:
-		ts = AiRater.WIZARD_STATS
-		var book := node.get_node_or_null("Spellbook") as Spellbook
-		if book != null:
-			for i in book.size():
-				spells.append(book.spell_at(i))
-	else:
-		var type := node.get("type") as CreatureType
-		if type == null:
-			return
-		ts = AiRater.stats_of(type)
-		abilities.assign(type.abilities())
-	t.acc = AiRater.fill_from_object(ts, mana_of(t).x, abilities, spells)
-	t.cached_rate = AiRater.rate(t.acc)
+	return not AiBody.is_dead(node)
 
 
 ## fillByTag cache (shiny.d:392-405 `tagAcc`): what a creature a wizard may summon is worth.
@@ -293,24 +173,6 @@ func tag_acc(type: CreatureType) -> PackedFloat32Array:
 	return acc
 
 
-static func _mana_now(node: Node) -> float:
-	var pool := node.get_node_or_null("ManaPool")
-	return float(pool.get("current")) if pool != null else 0.0
-
-
-static func _mana_max(node: Node) -> float:
-	var pool := node.get_node_or_null("ManaPool")
-	return float(pool.get("maximum")) if pool != null else 0.0
-
-
-## (current, maximum) of health, shiny.d:2715-2722 `healthPair`.
-static func health_pair(t: AiTrack) -> Vector2i:
-	var health := t.node.get_node_or_null("Health")
-	if health == null:
-		return Vector2i.ZERO
-	return Vector2i(AiRater.ftol(float(health.get("current"))), AiRater.ftol(float(health.get("maximum"))))
-
-
 ## updateNtts (shiny.d:1289-1297; the soul snapshot of updateWiz, shiny.d:1080-1083, is read for the own wizard only: sacengine
 ## reads the enemy wizard's too, without seeing him, and the port does not): drops what no longer exists, updates the rest. `dt` = ticks since the last run.
 func update_nodes(dt: int) -> void:
@@ -319,7 +181,7 @@ func update_nodes(dt: int) -> void:
 			if not (_soul_tracks[id] as AiTrack).is_valid():
 				_soul_tracks.erase(id)
 	for t: AiTrack in tracks.values():
-		if not t.is_valid() or (t.kind != AiTrack.Kind.WIZ and t.is_body() and _is_dead(t.node)):
+		if not t.is_valid() or (t.kind != AiTrack.Kind.WIZARD and t.is_body() and AiBody.is_dead(t.node)):
 			_erase(t)
 			continue
 		_update_node(t, dt)
@@ -365,7 +227,7 @@ func _recall_seen() -> void:
 	for id in _lost.keys():
 		## Variant: the body may have been freed since (a typed Node3D would not take a freed instance)
 		var held: Variant = _lost[id]
-		if not is_instance_valid(held) or _is_dead(held as Node3D):
+		if not is_instance_valid(held) or AiBody.is_dead(held as Node3D):
 			_lost.erase(id)
 			continue
 		var node := held as Node3D
@@ -373,13 +235,13 @@ func _recall_seen() -> void:
 			_lost.erase(id)
 			var t := add_node(node, &"seen")
 			if t != null:
-				t.flags |= AiTrack.SEEN
+				t.seen = true
 
 
 ## updateBase (shiny.d:1024-1038): own and seen bodies follow the real position. Without perfect information (024e) a seen body that
 ## the side does not see now stays where it was seen last, one step of its last velocity ahead.
 func _update_base(t: AiTrack, dt: int) -> void:
-	if not (t.flags & (AiTrack.OWN | AiTrack.SEEN)):
+	if t.relation != AiTrack.Relation.OWN and not t.seen:
 		return
 	t.age += dt
 	if not knows_live(t):
@@ -401,28 +263,25 @@ func _update_base(t: AiTrack, dt: int) -> void:
 
 func _update_node(t: AiTrack, dt: int) -> void:
 	_update_base(t, dt)
-	if t.is_body() and not (t.flags & AiTrack.OWN) and sees(t):
-		_snapshot(t)
+	if t.is_body() and t.relation != AiTrack.Relation.OWN and sees(t):
+		snapshot(t)
 	match t.kind:
-		AiTrack.Kind.CRE, AiTrack.Kind.MAHO, AiTrack.Kind.WIZ:
+		AiTrack.Kind.CREATURE, AiTrack.Kind.MANAHOAR, AiTrack.Kind.WIZARD:
 			if t.age >= t.rerate_tick:
 				t.rerate_tick = t.age + profile.rerate_age
-				_rate(t)
-			if t.kind == AiTrack.Kind.MAHO and t.age >= t.status_tick:
+				AiTrackFacts.rate(t, self)
+			if t.kind == AiTrack.Kind.MANAHOAR and t.age >= t.status_tick:
 				t.status_tick = t.age + profile.status_age
-				if _maho_ready(t.node):
-					t.status |= AiTrack.READY
-				else:
-					t.status &= ~AiTrack.READY
-			if t.kind == AiTrack.Kind.WIZ and (t.flags & AiTrack.OWN) and t.age >= t.souls_snap_tick:
+				t.ready = _maho_ready(t.node)
+			if t.kind == AiTrack.Kind.WIZARD and t.relation == AiTrack.Relation.OWN and t.age >= t.souls_snap_tick:
 				t.souls_snap_tick = t.age + profile.souls_snapshot_age
 				var purse := t.node.get_node_or_null("SoulPurse")
 				if purse != null:
 					t.souls_snap = int(purse.get("count"))
-		AiTrack.Kind.STR:
+		AiTrack.Kind.STRUCTURE:
 			if t.age >= t.status_tick:
 				t.status_tick = t.age + profile.status_age
-				_status_of_structure(t)
+				AiTrackFacts.refresh_structure(t)
 
 
 ## manahoarAbilityEnabled: it works while it is not dead, not being summoned and not held.
@@ -439,16 +298,16 @@ func discover() -> void:
 		if not t.is_valid():
 			_erase(t)
 			continue
-		if t.flags & AiTrack.OWN:
+		if t.relation == AiTrack.Relation.OWN:
 			continue
-		if t.kind == AiTrack.Kind.WIZ and (t.node as WizardBody).is_ghost():
+		if t.kind == AiTrack.Kind.WIZARD and (t.node as WizardBody).is_ghost():
 			_erase(t)
 			continue
-		if _is_dead(t.node):
+		if AiBody.is_dead(t.node):
 			_erase(t)
 			continue
-		if not (t.flags & AiTrack.SEEN) and VisionSides.sees(slot, t.node):
-			t.flags |= AiTrack.SEEN
+		if not t.seen and VisionSides.sees(slot, t.node):
+			t.seen = true
 			t.age_seen = t.age
 
 
@@ -456,12 +315,12 @@ func discover() -> void:
 func update_stats() -> void:
 	var souls := 0
 	for t: AiTrack in tracks.values():
-		if t.kind == AiTrack.Kind.WIZ:
+		if t.kind == AiTrack.Kind.WIZARD:
 			souls += t.mana_snap + t.souls_snap
 	max_souls_seen = maxi(max_souls_seen, souls)
 	neutral_founts = 0
 	for t in structures(2):
-		if (t.status & AiTrack.UNBUILT) and t.node.is_in_group(&"manafount"):
+		if t.free_fount and t.node.is_in_group(&"manafount"):
 			neutral_founts += 1
 
 
@@ -523,9 +382,9 @@ func _take_in_seen() -> void:
 func leak_count() -> int:
 	var leaks := 0
 	for t: AiTrack in tracks.values():
-		if t.origin == &"scan" or (t.flags & AiTrack.OWN):
+		if t.origin == &"scan" or t.relation == AiTrack.Relation.OWN:
 			continue
-		if not t.is_valid() or ((t.flags & AiTrack.SEEN) == 0 and not VisionSides.sees(slot, t.node)):
+		if not t.is_valid() or (not t.seen and not VisionSides.sees(slot, t.node)):
 			leaks += 1
 	return leaks
 
@@ -536,7 +395,7 @@ func leak_count() -> int:
 ## once seen; souls are not gated in the original either, shiny.d:583); a body of another side while the side's Vision keeps it in mind
 ## (VisionSides.sees: the rule the creatures pick their targets by).
 func sees(t: AiTrack) -> bool:
-	if t == null or (t.flags & (AiTrack.OWN | AiTrack.ALLY)) or not t.is_body():
+	if t == null or t.relation == AiTrack.Relation.OWN or t.relation == AiTrack.Relation.ALLY or not t.is_body():
 		return true
 	return VisionSides.sees(slot, t.node)
 
@@ -559,7 +418,7 @@ func health_of(t: AiTrack) -> Vector2i:
 	if not knows_live(t):
 		return t.seen_health
 	_count_read(t)
-	return health_pair(t)
+	return AiBody.health_pair(t.node)
 
 
 ## (current, maximum) mana the AI believes `t` has.
@@ -567,17 +426,18 @@ func mana_of(t: AiTrack) -> Vector2i:
 	if not knows_live(t):
 		return t.seen_mana
 	_count_read(t)
-	return AiGroups._mana_pair(t)
+	return AiBody.mana_pair(t)
 
 
 func _count_read(t: AiTrack) -> void:
-	if perfect_information and t.is_body() and not (t.flags & (AiTrack.OWN | AiTrack.ALLY)) and not sees(t):
+	if perfect_information and t.is_body() and t.relation != AiTrack.Relation.OWN and t.relation != AiTrack.Relation.ALLY and not sees(t):
 		unseen_reads += 1
 
 
-func _snapshot(t: AiTrack) -> void:
-	t.seen_health = health_pair(t)
-	t.seen_mana = AiGroups._mana_pair(t)
+## What the side sees of `t` now becomes what it believes of it (its health and mana of this moment).
+func snapshot(t: AiTrack) -> void:
+	t.seen_health = AiBody.health_pair(t.node)
+	t.seen_mana = AiBody.mana_pair(t)
 
 
 func foes_count() -> int:

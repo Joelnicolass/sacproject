@@ -11,7 +11,7 @@ static func rate(spell: SpellType, caster: AiTrack, target: AiTrack, tactics: Ai
 	var wizard := caster.node as WizardBody
 	var casting := Caster.of(wizard)
 	var action := casting.action_for(spell.tag) as AfflictAction if casting != null else null
-	if action == null or action.target == null or target.node == null or not (target.flags & AiTrack.ENEMY):
+	if action == null or action.target == null or target.node == null or target.relation != AiTrack.Relation.ENEMY:
 		return 0.0
 	var body := action.target.pick(wizard, target.node as Node3D)
 	if body == null:

@@ -12,6 +12,7 @@ const FOUNT_SCENE := preload("res://scenes/map/props/manafount.tscn")
 const SOUL_SCENE := preload("res://scenes/souls/soul.tscn")
 const SYSTEM_SCENE := preload("res://scenes/sacrifice/sacrifice_system.tscn")
 const RULES := preload("res://data/match_rules.tres")
+const MANAHOAR: CreatureType = preload("res://data/catalog/creatures/manahoar.tres")
 const MANALITHS: Array[String] = ["mana", "pyma", "jman", "stam", "cama"]
 const SHRINES: Array[String] = ["pcsh", "pasp", "jsac", "stsp", "casp"]
 const MANA_TOLERANCE := 0.01
@@ -274,11 +275,10 @@ func _wizard(slot: int, at: Vector3, god := "james", level := 1) -> WizardBody:
 
 
 func _unit(at: Vector3, slot: int) -> UnitBody:
-	var tag := AiPerception.MAHO_TAG
-	var type := GameData.creature(tag)
+	var type := MANAHOAR
 	var unit := UNIT_SCENE.instantiate() as UnitBody
 	unit.owner_slot = slot
-	unit.type = GameData.creature(tag)
+	unit.type = MANAHOAR
 	unit.model = type.model_id() if type else ""
 	unit.rules = RULES
 	unit.idle_aggro = false

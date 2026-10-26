@@ -33,7 +33,7 @@ func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:
 		if not AiWizardBrain.target_alive(foe) or brain.spell_futile(foe):
 			continue
 		var distance := wizard.extrap_pos.distance_to(foe.extrap_pos)
-		var w := AiField.attack_weight(distance, thr, foe.status, false)
+		var w := AiField.attack_weight(distance, thr, foe)
 		if TargetRules.is_passive_npc(foe.node):
 			w *= brain.tactics.npc_passive_weight
 		if committed != null:

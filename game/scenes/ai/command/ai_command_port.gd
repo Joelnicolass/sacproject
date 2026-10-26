@@ -16,6 +16,13 @@ extends Node
 ## side does not see now (the human cannot click it): an order goes to where it was seen last. `unseen_target_reads` counts the
 ## requests that took the real body or position of an unseen one (only Hard, like the original's startCasting on the entity).
 
+## What a brain asks a body to do (`ostate`). The numbers are the original's order states and show in the logs.
+##   MOVE_NEAR  walk to within a radius of a point        GUARD    stay near a body (or a place) and fight what comes
+##   MOVE       walk to a point (the anchor of a record)  REFILL   stay by a body or a mana source (retreat, autoCapture)
+##   ATTACK     attack a body                             ADVANCE  advance to a point, fighting on the way
+##   TAKE_SOUL  the wizard walks onto a soul
+enum AiOrder { MOVE_NEAR = 2, GUARD = 3, MOVE = 4, REFILL = 5, ATTACK = 6, ADVANCE = 7, TAKE_SOUL = 34 }
+
 const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 ## orders.gd has no class_name (other scripts preload it).
 const _ORDERS := preload("res://scenes/orders/orders.gd")
@@ -222,13 +229,13 @@ func _new_summoned_unit(tag: String) -> Node:
 
 ## orderIfChanged (shiny.d:2393-2431). `target` is a track or null; `pos` a Vector3 or null.
 func order_if_changed(t: AiTrack, ostate: int, target: AiTrack, pos: Variant) -> void:
-	if t.kind == AiTrack.Kind.STR or not t.is_valid():
+	if t.kind == AiTrack.Kind.STRUCTURE or not t.is_valid():
 		return
 	var reason := "changed"
 	if t.ord_state == ostate and (target == null or t.ord_target == target.id):
 		if pos == null or t.ord_pos.distance_squared_to(pos as Vector3) <= SAME_POS_SQ:
 			## completed orders are retained: fixed-position orders are not re-issued once the body has arrived (shiny.d:2400-2409)
-			if (ostate == 4 or ostate == 7) and t.cur_pos.distance_squared_to(t.ord_pos) <= 0.25:
+			if (ostate == AiOrder.MOVE or ostate == AiOrder.ADVANCE) and t.cur_pos.distance_squared_to(t.ord_pos) <= 0.25:
 				return
 			if _has_live_order(t):
 				return
@@ -238,7 +245,7 @@ func order_if_changed(t: AiTrack, ostate: int, target: AiTrack, pos: Variant) ->
 			reason = "moved<3" if d < 3.0 else ("moved<10" if d < 10.0 else "moved")
 			if (pos as Vector3) == t.cur_pos:
 				reason += " hold"
-			if t.kind != AiTrack.Kind.WIZ:
+			if t.kind != AiTrack.Kind.WIZARD:
 				reason += " walking" if (t.node as UnitBody).is_walking() else " still"
 	var key := "%s %d %s" % [AiTrack.Kind.keys()[t.kind], ostate, reason]
 	if DebugLog.on(&"ai_order"):
@@ -258,7 +265,7 @@ func order_if_changed(t: AiTrack, ostate: int, target: AiTrack, pos: Variant) ->
 		var spent := Time.get_ticks_usec() - began
 		game_us += spent
 		_note_order(key, spent)
-	t.ord_state = 7 if (t.kind == AiTrack.Kind.WIZ and ostate == 6) else ostate
+	t.ord_state = AiOrder.ADVANCE if (t.kind == AiTrack.Kind.WIZARD and ostate == AiOrder.ATTACK) else ostate
 	t.ord_target = target.id if target != null else 0
 	t.ord_pos = goal
 
@@ -281,24 +288,24 @@ func order_pos_radius(t: AiTrack, ostate: int, pos: Vector3, radius: float) -> i
 	return 1
 
 
-## orderInteract (shiny.d:2452-2478, 0x487550): too far from `anchor` (more than `radius`): go there (move). Near: at a structure
-## stay by it and fight what comes (ostate 5), at an enemy Manalith (BLDG flag 0x80) attack it (6; 7 with more than one guardian,
-## which the port does not count), else advance to the anchor (7). Returns 1 when it is near.
+## orderInteract (shiny.d:2452-2478, 0x487550): too far from `anchor` (more than `radius`): go there (MOVE). Near: at a structure
+## stay by it and fight what comes (REFILL), at an enemy Manalith attack it (ATTACK; ADVANCE with more than one guardian, which the
+## port does not count), else advance to the anchor (ADVANCE). Returns 1 when it is near.
 func order_interact(t: AiTrack, anchor: Vector3, target: AiTrack, radius: float) -> int:
 	if radius * radius < t.cur_pos.distance_squared_to(anchor):
-		order_if_changed(t, 4, null, anchor)
+		order_if_changed(t, AiOrder.MOVE, null, anchor)
 		return 0
-	if target != null and target.kind == AiTrack.Kind.STR:
-		if target.status & AiTrack.MANALITH:
-			order_if_changed(t, 6, target, anchor)
+	if target != null and target.kind == AiTrack.Kind.STRUCTURE:
+		if target.site == AiTrack.Site.MANALITH:
+			order_if_changed(t, AiOrder.ATTACK, target, anchor)
 		else:
-			order_if_changed(t, 5, target, null)
+			order_if_changed(t, AiOrder.REFILL, target, null)
 	else:
-		order_if_changed(t, 7, null, anchor)
+		order_if_changed(t, AiOrder.ADVANCE, null, anchor)
 	return 1
 
 
-## A walk to a place (the wizard going to a soul, ostate 0x22 of the original: «brain-driven engage», a move here).
+## A walk to a place (the wizard going to a soul, AiOrder.TAKE_SOUL: the original's «brain-driven engage», a move here).
 func order_go_to(t: AiTrack, ostate: int, pos: Vector3) -> void:
 	order_if_changed(t, ostate, null, pos)
 
@@ -307,19 +314,19 @@ func order_go_to(t: AiTrack, ostate: int, pos: Vector3) -> void:
 func _has_live_order(t: AiTrack) -> bool:
 	if _pending_orders.has(t.id):
 		return true
-	if t.kind == AiTrack.Kind.WIZ:
+	if t.kind == AiTrack.Kind.WIZARD:
 		## still walking, or standing at the spot he was sent to (a retained, completed order)
 		return (t.node as WizardBody).is_walking() or t.cur_pos.distance_squared_to(t.ord_pos) <= 4.0
 	var orders_node := t.node.get_node_or_null("Orders")
 	return orders_node != null and int(orders_node.get("command")) != UnitOrders.Command.NONE
 
 
-## issueOrder (shiny.d:2350-2391) in the commands of the port. A «retreat» of the original (ostates 3 and 5 with a target:
+## issueOrder (shiny.d:2350-2391) in the commands of the port. A «retreat» of the original (GUARD and REFILL with a target:
 ## stay near it and fight) is `guard` here: Orders `retreat` orders every creature of the side to the wizard.
 func _issue(t: AiTrack, ostate: int, target: AiTrack, pos: Variant) -> Vector3:
-	if t.kind == AiTrack.Kind.WIZ:
+	if t.kind == AiTrack.Kind.WIZARD:
 		var goal: Vector3 = (pos as Vector3) if pos != null else (target.cur_pos if target != null else t.cur_pos)
-		if pos == null and target != null and (ostate == 3 or ostate == 5):
+		if pos == null and target != null and (ostate == AiOrder.GUARD or ostate == AiOrder.REFILL):
 			var back := t.cur_pos - target.cur_pos
 			back.y = 0.0
 			if back.length() > WIZARD_STOP_M:
@@ -333,24 +340,24 @@ func _issue(t: AiTrack, ostate: int, target: AiTrack, pos: Variant) -> Vector3:
 		return goal
 	var command := ""
 	match ostate:
-		2, 4:
+		AiOrder.MOVE_NEAR, AiOrder.MOVE:
 			command = "move"
-		3:
+		AiOrder.GUARD:
 			command = "guard" if target != null else "guard_area"
-		5:
+		AiOrder.REFILL:
 			command = "guard" if target != null else "move"
-		6:
+		AiOrder.ATTACK:
 			command = "attack"
-		7:
+		AiOrder.ADVANCE:
 			command = "advance"
-		34:
+		AiOrder.TAKE_SOUL:
 			command = "guard" if target != null else "guard_area"
 		_:
 			return t.cur_pos
 	## The game refuses «advance» and «attack» to a pacifist (Orders._own_units, sacengine order()): the original AI keeps asking
 	## and is refused every time; the port does not call, so the Manahoars wait where they were summoned.
 	var type: Variant = t.node.get("type")
-	if (ostate == 6 or ostate == 7) and type != null and (type as CreatureType).aggressiveness <= 0:
+	if (ostate == AiOrder.ATTACK or ostate == AiOrder.ADVANCE) and type != null and (type as CreatureType).aggressiveness <= 0:
 		return t.cur_pos
 	var goal_node: Node3D = target.node if target != null and target.is_valid() else null
 	var seen_at := t.cur_pos

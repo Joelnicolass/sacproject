@@ -20,7 +20,7 @@ extends AiPhase
 func run(wizard: AiTrack, _w3: Array[float], _record: AiRecord) -> void:
 	var profile := brain.profile
 	var node := wizard.node
-	var max_mana := AiRater.ftol(AiPerception._mana_max(node))
+	var max_mana := AiRater.ftol(AiBody.mana_max(node))
 	var purse := node.get_node_or_null("SoulPurse")
 	var souls := int(purse.get("count")) if purse != null else 0
 	if max_mana == 0 or souls == 0:

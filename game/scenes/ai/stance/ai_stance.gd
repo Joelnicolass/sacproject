@@ -23,6 +23,9 @@ class Rec extends RefCounted:
 	var acc := AiRater.new_acc()
 
 
+## After every run of update() (diagnostic: the bench's decision log listens; nothing in the game does).
+signal updated
+
 @export var perception: AiPerception
 @export var groups: AiGroups
 @export var profile: AiProfile
@@ -48,7 +51,7 @@ func update() -> void:
 			rec.souls_b += pair.y
 			rec.souls_all += pair.x + pair.y
 		for t: AiTrack in perception.structures(k):
-			if t.status & AiTrack.MANALITH:
+			if t.site == AiTrack.Site.MANALITH:
 				rec.manaliths += 1
 		recs[k] = rec
 	for k in range(1, 4):
@@ -59,22 +62,22 @@ func update() -> void:
 		rec.ratio_c = _ratio(own.souls_all, rec.souls_all + own.souls_all)
 	enemy_wizards = 0
 	for t: AiTrack in perception.bodies(3):
-		if t.kind == AiTrack.Kind.WIZ:
+		if t.kind == AiTrack.Kind.WIZARD:
 			enemy_wizards += 1
 	## strengthRatio (shiny.d:1268-1280).
 	var ebx := 0
 	var ebp := 0
 	for t: AiTrack in perception.structures(3):
-		if t.flags & AiTrack.ALTAR:
+		if t.is_altar():
 			ebx += 1
-		if t.flags & AiTrack.SEEN:
+		if t.seen:
 			ebp += 1
 	var edx := 0
 	var edi := 0
 	for t: AiTrack in perception.structures(2):
-		if t.flags & AiTrack.CAPTURABLE:
+		if t.capturable():
 			edx += 1
-		if t.flags & AiTrack.SEEN:
+		if t.seen:
 			edi += 1
 	strength_ratio = 1.0 if (edi + ebp == 0 and edx + ebx == 0) else AiField.f32(AiField.safediv(float(edi + ebp), float(edx + ebx)))
 	acc1 = AiRater.new_acc()
@@ -84,6 +87,7 @@ func update() -> void:
 	acc2 = AiRater.new_acc()
 	AiRater.combine(acc2, 1.0, recs[3].acc, 1.0)
 	AiRater.divide(acc2, float(_bits(recs[3].ratio_a)))
+	updated.emit()
 
 
 static func _ratio(num: int, den: int) -> float:
@@ -111,7 +115,7 @@ func manalith_count() -> int:
 func influence(category: int, at: Vector3, near: float, far: float, acc: PackedFloat32Array) -> float:
 	var souls_w := 0.0
 	for group: AiGroup in groups.list(category):
-		if not (group.status_or & 1):
+		if not group.has_fighter:
 			continue
 		var d := at.distance_to(group.center)
 		var w := 0.0
@@ -136,7 +140,7 @@ func local_strength(category: int, at: Vector3, radius: float) -> float:
 	var sum := 0.0
 	var radius_sq := radius * radius
 	for t: AiTrack in perception.bodies(category):
-		if t.kind == AiTrack.Kind.WIZ or not AiGroups.alive(t):
+		if t.kind == AiTrack.Kind.WIZARD or not AiGroups.alive(t):
 			continue
 		var pos := perception.pos_of(t)
 		var dx := pos.x - at.x
@@ -173,7 +177,7 @@ func npc_share(at: Vector3, radius: float) -> float:
 
 ## updateWiz (shiny.d:1061-1085): the threat of the wizard track, every 8 ticks of its age.
 func update_threat(wizard: AiTrack) -> void:
-	if wizard == null or not (wizard.flags & AiTrack.OWN) or wizard.age < wizard.threat_tick:
+	if wizard == null or wizard.relation != AiTrack.Relation.OWN or wizard.age < wizard.threat_tick:
 		return
 	wizard.threat_tick = wizard.age + profile.threat_age
 	wizard.threat = 0.0

@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scenes/ai/ai_side.gd" id="1_ai_side"]
 [ext_resource type="Script" path="res://scenes/ai/perception/ai_perception.gd" id="2_perception"]
@@ -13,6 +13,7 @@
 [ext_resource type="Script" path="res://scenes/ai/tasks/idle_task.gd" id="12_idle"]
 [ext_resource type="Script" path="res://scenes/ai/brains/manahoar_brain.gd" id="16_maho"]
 [ext_resource type="Resource" path="res://data/ai/profile_original.tres" id="99_profile"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/hmba.tres" id="98_mana_source"]
 
 [node name="AiSide" type="Node" node_paths=PackedStringArray("perception", "stance", "groups", "board", "brain", "creature_brain", "port")]
 script = ExtResource("1_ai_side")
@@ -27,6 +28,7 @@ port = NodePath("Port")
 [node name="Perception" type="Node" parent="."]
 script = ExtResource("2_perception")
 profile = ExtResource("99_profile")
+mana_source = ExtResource("98_mana_source")
 
 [node name="Groups" type="Node" parent="." node_paths=PackedStringArray("perception")]
 script = ExtResource("3_groups")

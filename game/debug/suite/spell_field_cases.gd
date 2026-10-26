@@ -12,7 +12,7 @@ const LEGACY := preload("res://debug/suite/legacy_spell_bits.gd")
 const SPELL_BITS := preload("res://tools/bake/spell_bits.gd")
 const SPELLS_DIR := "res://data/catalog/spells/"
 const GODS := ["james", "stratos", "persephone", "charnel", "pyro"]
-const KIND_BITS := {AiTrack.Kind.WIZ: 1, AiTrack.Kind.CRE: 4, AiTrack.Kind.MAHO: 4, AiTrack.Kind.STR: 0x10, AiTrack.Kind.NONE: 0}
+const KIND_BITS := {AiTrack.Kind.WIZARD: 1, AiTrack.Kind.CREATURE: 4, AiTrack.Kind.MANAHOAR: 4, AiTrack.Kind.STRUCTURE: 0x10, AiTrack.Kind.NONE: 0}
 const BOOLS := ["targets_wizards", "targets_souls", "targets_creatures", "targets_corpses", "targets_structures", "only_free_manafounts",
 	"only_allies", "never_allies", "targets_ground"]
 

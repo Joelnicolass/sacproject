@@ -12,7 +12,8 @@ extends Node
 ## difficulties=easy,normal (the difficulty of each AI seat in order, 024e), souls=N (starting souls of every wizard: read by
 ## LaunchFlags, its one owner since RFC-031 031d, and applied by HighNoon to the world's copy of these rules),
 ## autostart (skip the pause with a window), quit (quit at the end with a window), watchdog-s=N (F370: quit with exit code 1 after N
-## seconds of wall clock, whatever the run is doing; 0 = none). Headless it starts
+## seconds of wall clock, whatever the run is doing; 0 = none), gods=pyro,charnel (the god of each AI seat in order, 055f),
+## decisions=<file> (055f: DecisionLog writes every decision of the AI sides there, for agent/runs/run_ai_decisions.sh). Headless it starts
 ## and quits by itself; with a window it waits in «Pendiente» for check_tick (Enter) and stays on screen.
 ## Determinism (RFC-032): the digest is indexed by audit.tick, but while it waits for Enter the world already runs,
 ## so a window run is comparable with headless only with --autostart (ventana comparable solo con --autostart).
@@ -30,6 +31,8 @@ const REPORT_TAG := "AI_REPORT "
 @export var ai_side_scene: PackedScene
 ## F370 (RFC-053 §4): measures BenchRules.expects and prints EXPECT lines. Optional: without it the criteria are not judged.
 @export var judge: ExpectJudge
+## 055f: the record of the AI's decisions (--decisions=). Optional.
+@export var decision_log: DecisionLog
 ## F370: the scene of a BenchBuilding (scenes/map/map_building.tscn).
 @export var default_minutes := 2.0
 @export var sample_every_s := 10.0
@@ -94,6 +97,8 @@ func _ready() -> void:
 	for minute in str(_args.get("checkpoints", "6,10")).split(",", false):
 		_checkpoint_ticks.append(int(round(float(minute) * 3600.0)))
 	audit.keep_lines = _args.has("events")
+	if _args.has("decisions") and decision_log != null:
+		decision_log.begin(str(_args["decisions"]))
 	_apply_human_god()
 	_world = world_scene.instantiate()
 	_world.set("rules", _rules)
@@ -135,13 +140,17 @@ func _load_rules() -> BenchRules:
 	if _args.has("seed"):
 		rules.match_seed = int(_args["seed"])
 	## --difficulties=easy,normal: the difficulty of each seat, in the order of the rules (024e; data/ai/difficulty_<name>.tres).
-	if _args.has("difficulties"):
-		var names := str(_args["difficulties"]).split(",")
+	## --gods=pyro,charnel: the god of each seat, in the same order (055f; data/gods/<name>.tres).
+	if _args.has("difficulties") or _args.has("gods"):
+		var names := str(_args.get("difficulties", "")).split(",")
+		var gods := str(_args.get("gods", "")).split(",")
 		var seats: Array[AiSeat] = []
 		for i in rules.ai_seats.size():
 			var seat := rules.ai_seats[i].duplicate() as AiSeat
 			if i < names.size() and not names[i].is_empty():
 				seat.difficulty = load("res://data/ai/difficulty_%s.tres" % names[i]) as AiDifficulty
+			if i < gods.size() and not gods[i].is_empty():
+				seat.god = load("res://data/gods/%s.tres" % gods[i]) as GodType
 			seats.append(seat)
 		rules.ai_seats = seats
 	return rules
@@ -359,6 +368,8 @@ func _finish(winner: int, reason: String) -> void:
 	print(REPORT_TAG + text)
 	## The kit's recorder writes the JSON (--out=) and the lines (--events=); digest, events and end_tick are already in the report.
 	audit.recorder.write_outputs(_report)
+	if decision_log != null:
+		decision_log.write()
 	_set_status("Terminado · semilla %d" % MatchSeed.current)
 	var passed := judge.finish() if judge != null else true
 	if _headless or _args.has("quit"):
@@ -575,6 +586,8 @@ func _start_ais() -> void:
 		add_child(side)
 		side.setup(_world, wizard, seat)
 		_sides[seat.slot] = side
+		if decision_log != null:
+			decision_log.watch(side)
 		## a seat with its own side scene is the bench bot (debug/ai/ai_side_trivial.tscn): it has no difficulty to show
 		if seat.side_scene != null:
 			_seats_text += " · %d Bot trivial" % seat.slot
@@ -676,7 +689,7 @@ static func _wizard_info(t: AiTrack) -> Dictionary:
 	return {
 		"near7": near, "slide": cols, "vel": str((t.node as CharacterBody3D).velocity) if t.node is CharacterBody3D else "",
 		"at": AiAudit.fmt(t.node.global_position), "walking": bool(t.node.call("is_walking")), "ord_state": t.ord_state, "ord_pos": AiAudit.fmt(t.ord_pos),
-		"queue_head": head, "queue": t.cast_queue.size(), "mana": snappedf(AiPerception._mana_now(t.node), 0.1),
+		"queue_head": head, "queue": t.cast_queue.size(), "mana": snappedf(AiBody.mana_now(t.node), 0.1),
 		"waypoints": str(follower.get("waypoints")) if follower != null else "", "follower_active": bool(follower.get("active")) if follower != null else false,
 		"record_target": str(t.record.target.node.name) if t.record != null and t.record.target != null and t.record.target.is_valid() else "-",
 		"next_reissue": t.next_reissue, "age": t.age,
